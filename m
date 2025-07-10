@@ -1,48 +1,48 @@
 Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7480D220F32
-	for <syzbot@lists.linux.dev>; Thu, 10 Jul 2025 09:23:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86341291C16
+	for <syzbot@lists.linux.dev>; Thu, 10 Jul 2025 09:24:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752139420; cv=none; b=L+A8v4rKbzmQvVfQWardqoJY1DhNXoDo3zUeUT6UaqZr5iUn6VE4vgW6bIiDGKWCmV1ewS2El/uyFke8pe8J2uOpRIb4ETiBaGw4Hkf/Zz4Heb2wK7C5+hVY3O6tk+ApRPz70RWMrMfITT9g9IfjSa7F3gmXgbSGXo8hdryffVo=
+	t=1752139449; cv=none; b=S4qYC5MTkdsxwENKsUdBvThcGeoq/S7SG8GYC1Z4cIsaNTjdDAKJFjWeDHzOLtUP0DpqSvX2lKw1ZyetBtq5wetovY4ccT6UtQDidZGRIMTqtD4OLaKQ+XTQOcErNqQnp3CUay/MKRQQPbk2RAd2IydBb9z6OVD9t6nghZ6PAdg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752139420; c=relaxed/simple;
-	bh=Q0K1TgP5BjxbSpaXz2q6/GKS4vOWRDdbpe6UCBSK2Rg=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Aq5p2VJluj0g/ua/zhKTgKBWM92ErFEEpVR2fxEcLtmCK3jPw/uE/VRj2MjW8jGPde/903lJy3WeJia9WQbB04UVZTdIDfyZLM9cAGRZJSJslVhNBvzDNzt8xs/Uy41JtsSi9RcdMRNLTcnO2uHfA703pKZhupAzKPVJVtXG5dY=
+	s=arc-20240116; t=1752139449; c=relaxed/simple;
+	bh=p5c2/9PUXRaUzieQ/Hq1zpGwV+hFi7RosCBwq4rO6XA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=KbffcInRN0gCjVcQoHB8Fo8OSP5csILJ7nfReqm5T1ho9bnmpewAucK3TBuDfDldxHfrLZLr5CHWNaH6O2kDWtOSDRjTQ7v9617bG4L9rMtJzZhxZOpWcY1YXRMwyX2M5e9lXdmrqpFdzyVv3TU3xACohGdM9SjTOZrXYNIaq3k=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-86cff1087deso160558439f.2
-        for <syzbot@lists.linux.dev>; Thu, 10 Jul 2025 02:23:38 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-86d07ccc9ecso60586939f.0
+        for <syzbot@lists.linux.dev>; Thu, 10 Jul 2025 02:24:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752139417; x=1752744217;
+        d=1e100.net; s=20230601; t=1752139448; x=1752744248;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=6fAZlIZMF3fX19LqV3SXFR6GSzKevguYIbtmCwOw21A=;
-        b=r+WDOS/s36j8HsIAtOI9LQ1KY3hPdkfKSXwh4rKfGuP/5VYlWkzWg31J9DEhXrCE8N
-         c7Zye+ytcYWntgn1EF5fekuaX+v17ltoiJfgysOSNavXcToQngk6rT8Q9qIZX15M2XUW
-         F21SSQCbYEgiqRJvFDKgnoqQ00EOjXOTvlvrnka1rTkCt9Ujt7dfOCehjjIVkWeYZOa0
-         2LVh50OgyIFZyxx8a7/A4ehMxfNT/e9dCgvY+QiZUf2FmGru6cbBXx85Zg1FhqDMgX9P
-         Gq5xh4vnPfyZD5meN4hpeOcO7fDSXJTw5PmLo9FvRfGm3XvMpFBsrmg/9O3gc4zLO1q1
-         vvrw==
-X-Gm-Message-State: AOJu0YxXCnkAV8pUKgt9VDU9NkcQ79GLlw4kAFE9MeAahS3dQ6drXiZl
-	JPa6U94VTfEF+CLJJy8dfnvHNZ8ZTU+r02zV/fq+Hz3cFRIewyhIqGNxO9TMmJbOhkBYmGwF7Mq
-	cmoTWFTog/S7No3ebvM/X3ZS4RDd+Pnb7uOqV/VvzZEnqXAcbKh2hrycZBH4=
-X-Google-Smtp-Source: AGHT+IGy59JfMQik881jvm32vy6CpsenrLJ6ltqG1GuxOGsBnEg4uTZqlqgmKfJZgI99oq1zeCInwdNQj3r0srGzoFZ8nZaGdwSV
+        bh=8vv8Qm54aDEdTjrkO/2LO3uoXpT46BFg5egxtyjReSk=;
+        b=gBII7lvsdLp/dQPo+XhDEmwAg/J60p1bPHUBoGGr31TU4/lA++64keUllvRshIN5R+
+         mov9uvJeO9rb6ztoX2r+UVSjN/kuIFZNYwhAxz1INdNcQEyQEkaAzB2bNEQKAeO9j3iX
+         XW4gfMqobz1CeDVhyAaF12YfYVY8FKp+ulhadiQxuu5kVMSSue5Pfm5W9D7Ogg7m/6qz
+         W69+cbGMGLo+6R4okQEEZ/snRwQFqAI/m35lBMnvkezlZDSOPrHACLgg82c+s8J6m5oo
+         FxARcBsCfBB6P9XAIh/CnUIb0X2bZTIQO/mih0C4TWxNZBTrmrUB9ve3NaGPNSqrKhwQ
+         lmGw==
+X-Gm-Message-State: AOJu0YynnZJkgSZBNsqEeMkxcJbKPPXzs51lDUqV40osRMtQ8vLeFJUe
+	1cO5UxnMU7+u8OJAXA7OHAbQ1RTDibFKWsr+VTO0435ZkUD0ZaLXlgv1KT3qZOeLMQtFI2fWZo1
+	j3ylX6W+WW9WOQE3ErRYwPCSLdrRjqiUxezeLF0gNH5sdKIEt+/IeYCs3ipc=
+X-Google-Smtp-Source: AGHT+IHkDRUd4Y8TQbH8j50CXyrg133gywxlwIPsvi5/Ns80uZgaWOxgZnmThvA5jzPDjRCYNDNYXFauqmOafZKzHkoAhy5v197Z
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:6d03:b0:875:b8b7:7864 with SMTP id
- ca18e2360f4ac-879671e28eemr333401339f.6.1752139417510; Thu, 10 Jul 2025
- 02:23:37 -0700 (PDT)
-Date: Thu, 10 Jul 2025 02:23:37 -0700
+X-Received: by 2002:a05:6602:6785:b0:873:3691:6fb8 with SMTP id
+ ca18e2360f4ac-87968fca51amr169580239f.8.1752139447760; Thu, 10 Jul 2025
+ 02:24:07 -0700 (PDT)
+Date: Thu, 10 Jul 2025 02:24:07 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <686f8699.a00a0220.26a83e.000c.GAE@google.com>
+Message-ID: <686f86b7.a00a0220.26a83e.000d.GAE@google.com>
 Subject: [moderation/CI] Re: net: atm: Fix incorrect net_device lec check
 From: syzbot@syzkaller.appspotmail.com
 To: syzkaller-upstream-moderation@googlegroups.com
@@ -51,9 +51,9 @@ Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has processed the following series
 
-[v1] net: atm: Fix incorrect net_device lec check
+[v2] net: atm: Fix incorrect net_device lec check
 
-* [PATCH net] net: atm: Fix incorrect net_device lec check
+* [PATCH net v2] net: atm: Fix incorrect net_device lec check
 
 and found the following issues:
 * failed to build the kernel
