@@ -1,50 +1,49 @@
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BC6328C5D5
-	for <syzbot@lists.linux.dev>; Thu, 10 Jul 2025 09:22:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25DE928BAB3
+	for <syzbot@lists.linux.dev>; Thu, 10 Jul 2025 09:23:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752139360; cv=none; b=K9IO9egyMkHGi7g0vzP3ml7kE8AbPFZFW5HFhfZcIBELVwAZKQMPx5Baw3bHmVliHc7UEcVTx1ZLsKBD3jiSP91cnXS/CoV29x7YIEed/08HZYLSunpqYjOIiPE8lV4VooVJ/7GF8AcwlBJNujD0iuTfv6odbZ1uwpJ/YnncQDU=
+	t=1752139389; cv=none; b=LKaiwOZGEOrgpj6f6KW+8mtSNr4htAfdWSMXLSd82jB6K0MpbgRpbUiSMsUn97uRsHMGpgLoL337QISjp0QIJzzFiiBU26Toskd5AkVY7VfdJiexhzXybGNsYkRy3915olbmkTRPid2YkJmbY2MEsU7LrCRtxFmhD+P9QAd2C3A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752139360; c=relaxed/simple;
-	bh=YkMPYBr03+FodunGvpi+nv/gd2kx+cce3eKJ22asoko=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=iidKMMyzW6kE6R8tw/BFdSbrRBVF6ssfKg0NhSwZ/gbDFDVm8Koe/AO2JVtHZD32Okz5QM6FWp/vCEU/HaU1/8UyxkJQziymUpuNx5CPq14VKd6n3vEYc4FUMFiJH7Hy1vAsY4FF8SCZLKDlOAriHa/BJ6HZChCsf6Cei1fCGGM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
+	s=arc-20240116; t=1752139389; c=relaxed/simple;
+	bh=JQpzG6kmwx2LRlQsXmGGJ0tcxqHzyvws+vKw3aF8UVQ=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=sDK1bsXKB7X/frx6UzoOTraQxArDcNxh8P77+mpANDjFuVDTNypxvr3lIu+78TmRaP5E3kSsu3bSLFovWEUCeZguJVlV4ppB7rEl9NMtfyS0r0R8sBgVIR4y5IoXwbEtRZ49sbrpuNcs8VnQ0i7swPlrDKwwZBOXN2z7JANdLs4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-3e168c6bb92so14384425ab.3
-        for <syzbot@lists.linux.dev>; Thu, 10 Jul 2025 02:22:36 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-86d01ff56ebso133845539f.1
+        for <syzbot@lists.linux.dev>; Thu, 10 Jul 2025 02:23:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752139356; x=1752744156;
+        d=1e100.net; s=20230601; t=1752139387; x=1752744187;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=Rz7pyXDJ4U3zCEqdK5rfjBvpdw6Vz00afx4tzqSvbWs=;
-        b=Ed4tZxgCeAcfX0Q9Ea0AX1FQBv3Cm8qJk+6jeW4atKDlD1aQL49Fg5af+z6uAxQSYM
-         pRTKSL09M6f2Bp7cRQWVCEWemOCWY6tJXJYvWLq04XWa8rZZHEfAk9YC+15Z2lec8BfH
-         EMiJqfIK1j92+JKHx+Yc7XtfZkQB57mII7Mqy2gpvOBoLiZ6MOeudUMezK4tybJo76P/
-         k8xn17AO+7dOm7Rai0jRLuGqb1JHc2o6Gu0i/tPohd30X1bgNOR+/MvtOIvsb0k6Hffx
-         R4m0aAk/0IRsLU4b8kpmSVVkcePEqKjChkF4vGXFO3e6i1OibMra9Z0kZx74lBKtICXB
-         891g==
-X-Gm-Message-State: AOJu0YyaNQZILZ66RtGKNJPfLFkckOjATCU7saXU/YlbDMgrEF03Ksq7
-	ZWsHICrCTAf7B7wr+GLRsXXgtsgn1ft1UGyB0jgxSHD7Ganw2PdYREhKr3feZkqFZqMo0UkiJtM
-	6jaLIKZrbD7zxnZKFejBw3EjnFY3q+KWnMV/IOamD63ax1recw8FtMunA3xE=
-X-Google-Smtp-Source: AGHT+IFrdBuLa1n9ST6B/7OpJN2nEasWj9pn1bqqLKqQVAFL5Rwe4JcQL1pbXm9k0fJAIUNE1peEaIVJ5Gt0j7stvkGhnGkioJNK
+        bh=OkQN3viWaIG3rNEscruAoViUGN9AVbpBPcsYDEh1zes=;
+        b=Cgm6TbTJsx2PIJVMOhiI/mc5PIvSzJmMmLrxoNh3vje57VSUcCRvdx8/t5BQ3Jnk2U
+         XP6PgVpZTpoYN1cbvSSHNLQAw50EjtTZl4uOve9CAa05HhHfv2576ROr9gxYL9eUBpQ+
+         FmDbqccFI5wiUa+rSQl8TYeyk3xWyzd/MJzHZsiv+Q+GKYGJ2vw51qCWH1t/xUA1NKoa
+         euStS+7bMJ2QuWfEI4gtH2WzCv4oOzfbD2AvM0ZiEqkx5hx22ciIIMyC9U5sg/lsCOPv
+         d8ratctkUvS9zgHIjp4eWKS8zhZX8q99/LQ3QcFuNE4Uf9MXggk2VAdSocaTk/yIvNI4
+         7tfg==
+X-Gm-Message-State: AOJu0YzbytOrpd28TQSxz4h1y7m456gcKvcnlPwnN8jqe+Q0e/juME+V
+	gx2zEBcSQMjR6dJrRVeILQeVrrm+IycerHf8q3j+YfAnKttY+j2M43WHqleLuuyz9Lv+90bF784
+	CXbWazlszHco0cLlowqt5vDpSG9lcBUKRH1o6ddBU9y/u0ytX2u4Td5evTQM=
+X-Google-Smtp-Source: AGHT+IFgTi2k50aq25/mPyDzs/nsVCeR692i3RccIkBgZKK3AoTYO17AyyMXRCSyu6gQjPGTfDN4XZO8AA+9kAQcFt7wHD9QqqEh
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:2292:b0:3dd:c04e:49af with SMTP id
- e9e14a558f8ab-3e166feb089mr73644695ab.3.1752139356211; Thu, 10 Jul 2025
- 02:22:36 -0700 (PDT)
-Date: Thu, 10 Jul 2025 02:22:36 -0700
+X-Received: by 2002:a05:6602:740e:b0:86c:ef0b:3a52 with SMTP id
+ ca18e2360f4ac-8796906115bmr193416439f.11.1752139387293; Thu, 10 Jul 2025
+ 02:23:07 -0700 (PDT)
+Date: Thu, 10 Jul 2025 02:23:07 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <686f865c.a00a0220.26a83e.000a.GAE@google.com>
-Subject: [moderation/CI] Re: net: phy: declare package-related struct members
- only if CONFIG_PHY_PACKAGE is enabled
+Message-ID: <686f867b.a00a0220.26a83e.000b.GAE@google.com>
+Subject: [moderation/CI] Re: net: usb: lan78xx: stop including phy_fixed.h
 From: syzbot@syzkaller.appspotmail.com
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
@@ -52,9 +51,9 @@ Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has processed the following series
 
-[v1] net: phy: declare package-related struct members only if CONFIG_PHY_PACKAGE is enabled
+[v1] net: usb: lan78xx: stop including phy_fixed.h
 
-* [PATCH net-next] net: phy: declare package-related struct members only if CONFIG_PHY_PACKAGE is enabled
+* [PATCH net-next] net: usb: lan78xx: stop including phy_fixed.h
 
 and found the following issues:
 * failed to build the kernel
