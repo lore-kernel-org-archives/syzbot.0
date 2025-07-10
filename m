@@ -1,75 +1,98 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 797502D9EE5
-	for <syzbot@lists.linux.dev>; Fri,  4 Jul 2025 13:52:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4211F291C16
+	for <syzbot@lists.linux.dev>; Thu, 10 Jul 2025 09:22:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751637152; cv=none; b=DsJK159g1HYm2BNWYXrNIzMExkb91Ztna0APQ0IIyhSDA5ZbKcOOdgZKuXiAd3F517n7PDoo5x9+kxd2d2W0myMhnLSJCyzQvbVN4pfrC7w7VqO5hvP1HmoZTnWIqFl4ydSMXiLE3vW5DypUOeYHWE6JjyMOtLHaYVUXgze2POQ=
+	t=1752139354; cv=none; b=imoWaO2eZhthDDqD6zRoPw9JnFQb0f5scpRm0G5Aio4ftz54e1A8HVxV55BphQPy0aUXDfEwVkYUeqfkyVVHmvzrXjBsCL7az3M9MitE0k35/cHbo9y8VF5IeH5Ce9UU1OK76onY1Uu1Q7AnT0Lr71NaOJwjO3BZIBgiP6fE+lw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751637152; c=relaxed/simple;
-	bh=pf9Tu2+ZnIyBJs5h6pVblZTtyGfFHlOWVVJ2qkorWuU=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=eED4mLCKFFGBSj6bNms/ZF9OoP3iAgwRKMU10NKR8e49IMzBktLrxguervqxmY0eQSDykEQrza8ffqErw7odsSIHag/3VHCojgxKbpQLdfP1Bvf/hJx+RI9vkrUzZC2FY1k4E5GZThYBeaDILZKQeo7YXw5HfixvAMi0mBAiouA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=B+0pKMcv; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="B+0pKMcv"
-Received: by smtp.kernel.org (Postfix)
-	id 36DC3C4CEEB; Fri,  4 Jul 2025 13:52:32 +0000 (UTC)
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 742BAC4CEE3
-	for <syzbot@kernel.org>; Fri,  4 Jul 2025 13:52:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.kernel.org 742BAC4CEE3
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=google.com
-Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-315cd33fa79so793614a91.3
-        for <syzbot@kernel.org>; Fri, 04 Jul 2025 06:52:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1751637150; x=1752241950; darn=kernel.org;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=pf9Tu2+ZnIyBJs5h6pVblZTtyGfFHlOWVVJ2qkorWuU=;
-        b=B+0pKMcvz/UK3/1mceSnfebuLlWHfMlqtQZJrZ2evYAPeNqNPlKg8thQ3zR4z6vKCU
-         mZ37S4QIDSfsdYdDm0vUxzPHd/9PvlQ03DnecSEWYq4hXNqxJVH6XeoRsAu4M5Gk5KXA
-         vOopMIyb72H+rxw2TZk8J/90tALQBb045JD600vwga9H9Ox/6SnQHY7uD7SczoEHGfKG
-         SQEsTShARmxy0NcvNYzrBCgziHcmrUkxVJkle82Mbaxw1TYsrlKCZo4RmuvDllDiHtch
-         z8snbpc7zeZFe3nI7GF6oX4l4YmYTjOYQl2s7hR1aviqscwsMe5z7KHWL9Pp/Mbe0GSb
-         BPZw==
+	s=arc-20240116; t=1752139354; c=relaxed/simple;
+	bh=Ubho0Q/2TDR7/a7MnTFePohUzBFTM+KIZOvucZ2b+aU=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=S+654Xrf3XMWSiyq6dR9nxi6OhxUkSupXJiKmaOxZdtO6SP3BdS/c0zv+aNaP+fSHgAOW2VqCbPtdYZF3gckKGIx1inx/sYvit15lPyPVFhC2vPQB3sThPPSmvtkK5ZAz5MRXqVpuyx5hucaXDpu7eDCKZxhqFjeO0TIWrix+pM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-3ddc0a6d4bdso8496305ab.0
+        for <syzbot@lists.linux.dev>; Thu, 10 Jul 2025 02:22:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751637150; x=1752241950;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+        d=1e100.net; s=20230601; t=1752139352; x=1752744152;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=pf9Tu2+ZnIyBJs5h6pVblZTtyGfFHlOWVVJ2qkorWuU=;
-        b=Se4+2SeMEXC4cjfy8kR0arrjUQzKeBWgwFmPsNm5Be7Zkw4WBdsjY+EmsAyJF26TAH
-         NfIAjjFrp6TlhDODvrkq+982kn/2+KTB9h073IrAW0hob1aHzuwITk7e9wl9MWqRd7HL
-         JpOnSFjKETcZT9x8Ti/SeRUK1LxPcNxK23lxg/dWIne9VijD+PDm8TQALyIekn44RrXa
-         Azpco3RO++vESDLvgKFUxOabClVUQ2+c1AUCX0O30gEyUiwNHrRLLpF3jnana1Kqgy9I
-         wsgbGiiQJUkLX/FxvuXvb3xHTtaJ4hen66N8yTbnfUw72bC5Me6Ry99xbeTQnwgH1YqD
-         l4yg==
-X-Gm-Message-State: AOJu0YyAqV7EGgj9MH+Aop094vHR55mdpFYLasS6dC6LzwAsQl8j82w4
-	cYoLESNXWxdETrckELBt9FdcrNQOL4VwO6hdWtSmMQY2SRQsgLeTstLft4mntXyOg8i7kYSd3te
-	KyIIadbai4cB7d9BkLVdd9ghymYpMmbi3oSUuav7yAI2muGgxDXY+kSEc
-X-Gm-Gg: ASbGncutMtcnIWUyO0Gxoz/U8XgUMIYetpQcoAPp0en9K/vQ+udrcueTl2RVMDearyf
-	K12Q9bI0ys/4LSbIptyZGl4EpOHDKUGiGwRiBwj2qzXI6m84CvrnzTSDO/aF3W239HmmRkexHNj
-	Cv+DLZGkc5BXz/fP57V53R9EzNPKNZbzCjcOdscfGm8RjdFfwI3eT5J9rMbSRpDYeGKZcq3L+K
-X-Google-Smtp-Source: AGHT+IG8Wf8r899c/YvjxrZ0CyzWlc8OiBoKGPru3rOWc0XQybR3DmJgrtamCEF6INla9pueCc5DsAsGtu7WdzSI6TU=
-X-Received: by 2002:a17:90b:3905:b0:311:b5ac:6f5d with SMTP id
- 98e67ed59e1d1-31aac53db73mr4417117a91.29.1751637149948; Fri, 04 Jul 2025
- 06:52:29 -0700 (PDT)
+        bh=811L7On//zc6KEnnmxGDxm5a2GIyhecKCVEm858mvYE=;
+        b=JaYztu0KR5/NPusz0NAqy+iJ05kQHJf+25GlFaq1lgN/F/lqAz6Tu/qO85a4/DsrRP
+         LFlt/1wScOxy1tyuAyuk+gZDd1l267l2J1QWf2zKJYmP16OxP6Q2FN6/sHR9/AOzDTdz
+         ox7dBFHEw5S5/b7T23v4MyU7BNT646mWnojSBBU2ut0mY884mkzochzTBLMRaE8GqO3Q
+         5GeqN9QFaMZCPAw++RLqJH/GrT5DQgOm5WVqL4GcB8U5L96z/E25GSepfUiHHiXiVFsX
+         gUxXZIfmWo9OgpHxk/r8nkUPF4CYT1t0+6oW/PY3sMzB3yKIOT/kcF+t8ZrCT7MeDQKK
+         u7xg==
+X-Gm-Message-State: AOJu0YwX39WLOsntejee/LCWZ0GrLVdBD5uMI7Y71myIlBoH5nEuHysG
+	tDMd7MF51GpXbDArZQHHXaWwotUG5ZZK8Gzxw2QNnRSwJxOUCoFd3ILfv2qOgnKGwMFdTO8E4wW
+	Pa8HKULJktOu0m8igvnMRta5PDc+bLodDbJmH2PQygsEViuFL9uH2AFMBJYA=
+X-Google-Smtp-Source: AGHT+IFn7OBz6zYUiDaBI7QWgiT7X+JflZyM0Tzal8RJ5aZaPgPD2P1iW2azUHL2SrJSRiu2eO0U9CxyDZSERdyHClrP487ZQEy2
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Aleksandr Nogikh <nogikh@google.com>
-Date: Fri, 4 Jul 2025 15:52:18 +0200
-X-Gm-Features: Ac12FXw_9HyboXhpK4n9Bv45lana20Rgp07Ad8RhJVkNucWrTatDbleuRsxZCp8
-Message-ID: <CANp29Y4rGx4vCPeSrREnPM4EC4S5YdOuGC=29cm_CtAj17k-vw@mail.gmail.com>
-Subject: An external email to syzbot@kernel.org
-To: syzbot@kernel.org
+X-Received: by 2002:a05:6e02:1a4f:b0:3df:39e2:f1a8 with SMTP id
+ e9e14a558f8ab-3e2461e0fcemr12490965ab.16.1752139352338; Thu, 10 Jul 2025
+ 02:22:32 -0700 (PDT)
+Date: Thu, 10 Jul 2025 02:22:32 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <686f8658.a00a0220.26a83e.0009.GAE@google.com>
+Subject: [moderation/CI] Re: ipv6: Drop RTNL from mcast.c and anycast.c
+From: syzbot@syzkaller.appspotmail.com
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
-Let's check if it's delivered.
+syzbot ci has processed the following series
+
+[v3] ipv6: Drop RTNL from mcast.c and anycast.c
+
+* [PATCH v3 net-next 01/15] ipv6: ndisc: Remove __in6_dev_get() in pndisc_{constructor,destructor}().
+* [PATCH v3 net-next 02/15] ipv6: mcast: Replace locking comments with lockdep annotations.
+* [PATCH v3 net-next 03/15] ipv6: mcast: Check inet6_dev-&gt;dead under idev-&gt;mc_lock in __ipv6_dev_mc_inc().
+* [PATCH v3 net-next 04/15] ipv6: mcast: Remove mca_get().
+* [PATCH v3 net-next 05/15] ipv6: mcast: Use in6_dev_get() in ipv6_dev_mc_dec().
+* [PATCH v3 net-next 06/15] ipv6: mcast: Don&#39;t hold RTNL for IPV6_ADD_MEMBERSHIP and MCAST_JOIN_GROUP.
+* [PATCH v3 net-next 07/15] ipv6: mcast: Don&#39;t hold RTNL for IPV6_DROP_MEMBERSHIP and MCAST_LEAVE_GROUP.
+* [PATCH v3 net-next 08/15] ipv6: mcast: Don&#39;t hold RTNL in ipv6_sock_mc_close().
+* [PATCH v3 net-next 09/15] ipv6: mcast: Don&#39;t hold RTNL for MCAST_ socket options.
+* [PATCH v3 net-next 10/15] ipv6: mcast: Remove unnecessary ASSERT_RTNL and comment.
+* [PATCH v3 net-next 11/15] ipv6: anycast: Don&#39;t use rtnl_dereference().
+* [PATCH v3 net-next 12/15] ipv6: anycast: Don&#39;t hold RTNL for IPV6_LEAVE_ANYCAST and IPV6_ADDRFORM.
+* [PATCH v3 net-next 13/15] ipv6: anycast: Unify two error paths in ipv6_sock_ac_join().
+* [PATCH v3 net-next 14/15] ipv6: anycast: Don&#39;t hold RTNL for IPV6_JOIN_ANYCAST.
+* [PATCH v3 net-next 15/15] ipv6: Remove setsockopt_needs_rtnl().
+
+and found the following issues:
+* failed to build the kernel
+
+The series was applied to the following base tree:
+* Tree:   
+* Commit: 
+
+Full report is available here:
+
+
+***
+
+failed to build the kernel
+
+
+
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
