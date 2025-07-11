@@ -1,62 +1,63 @@
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86341291C16
-	for <syzbot@lists.linux.dev>; Thu, 10 Jul 2025 09:24:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 231172EF28B
+	for <syzbot@lists.linux.dev>; Fri, 11 Jul 2025 16:05:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752139449; cv=none; b=S4qYC5MTkdsxwENKsUdBvThcGeoq/S7SG8GYC1Z4cIsaNTjdDAKJFjWeDHzOLtUP0DpqSvX2lKw1ZyetBtq5wetovY4ccT6UtQDidZGRIMTqtD4OLaKQ+XTQOcErNqQnp3CUay/MKRQQPbk2RAd2IydBb9z6OVD9t6nghZ6PAdg=
+	t=1752249944; cv=none; b=c5b9IxyMHAD6TwYBPuWaGuEpwoX21BOfuDKNnDBz35vun8VwizOp0Du9ldFZQ+2UcAqpsMCsLg/p4aiUNJ6QtDVzI1/dmLrCAvgFKn5z04tbQyzRJIfgMWdxm/5lrhATK+Yr67JjfUS8uXQOpBQKbRYOvrjlZ4NcC4FJ6WF6O/g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752139449; c=relaxed/simple;
-	bh=p5c2/9PUXRaUzieQ/Hq1zpGwV+hFi7RosCBwq4rO6XA=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=KbffcInRN0gCjVcQoHB8Fo8OSP5csILJ7nfReqm5T1ho9bnmpewAucK3TBuDfDldxHfrLZLr5CHWNaH6O2kDWtOSDRjTQ7v9617bG4L9rMtJzZhxZOpWcY1YXRMwyX2M5e9lXdmrqpFdzyVv3TU3xACohGdM9SjTOZrXYNIaq3k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.70
+	s=arc-20240116; t=1752249944; c=relaxed/simple;
+	bh=Hsf478GPWdb8qBGiKPh7AfAIY6lbcGhy5D2s+rt11m0=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=uaOxD82UJyHwSO3Wm0zBSmaMf8agwgWiHuOrCARnCYq6VYwSKsLHGFhx8EhFIUITz5fMpH3ASEn8qVLo10LzDxv6tAOjkPQLldxNIRYfU+a3WQ01FIiiOpCP7AlQ7oKHwWP+mu2UJiN08EnTmAR+C6uWnZP9PAO2O+s6hc2Ln/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-86d07ccc9ecso60586939f.0
-        for <syzbot@lists.linux.dev>; Thu, 10 Jul 2025 02:24:08 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-87632a0275dso205907239f.1
+        for <syzbot@lists.linux.dev>; Fri, 11 Jul 2025 09:05:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752139448; x=1752744248;
+        d=1e100.net; s=20230601; t=1752249942; x=1752854742;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=8vv8Qm54aDEdTjrkO/2LO3uoXpT46BFg5egxtyjReSk=;
-        b=gBII7lvsdLp/dQPo+XhDEmwAg/J60p1bPHUBoGGr31TU4/lA++64keUllvRshIN5R+
-         mov9uvJeO9rb6ztoX2r+UVSjN/kuIFZNYwhAxz1INdNcQEyQEkaAzB2bNEQKAeO9j3iX
-         XW4gfMqobz1CeDVhyAaF12YfYVY8FKp+ulhadiQxuu5kVMSSue5Pfm5W9D7Ogg7m/6qz
-         W69+cbGMGLo+6R4okQEEZ/snRwQFqAI/m35lBMnvkezlZDSOPrHACLgg82c+s8J6m5oo
-         FxARcBsCfBB6P9XAIh/CnUIb0X2bZTIQO/mih0C4TWxNZBTrmrUB9ve3NaGPNSqrKhwQ
-         lmGw==
-X-Gm-Message-State: AOJu0YynnZJkgSZBNsqEeMkxcJbKPPXzs51lDUqV40osRMtQ8vLeFJUe
-	1cO5UxnMU7+u8OJAXA7OHAbQ1RTDibFKWsr+VTO0435ZkUD0ZaLXlgv1KT3qZOeLMQtFI2fWZo1
-	j3ylX6W+WW9WOQE3ErRYwPCSLdrRjqiUxezeLF0gNH5sdKIEt+/IeYCs3ipc=
-X-Google-Smtp-Source: AGHT+IHkDRUd4Y8TQbH8j50CXyrg133gywxlwIPsvi5/Ns80uZgaWOxgZnmThvA5jzPDjRCYNDNYXFauqmOafZKzHkoAhy5v197Z
+        bh=tsxiS4XnCpNhPUno2wvSn4qZp1HRaTSErpepPTitvrU=;
+        b=jNQr9AytsRDhsL/L6xHsZu/aOcNMqy2d8OfYlNxY8+MMNjCVtjeIk3MQxNca/1/wl3
+         tuhngaWAYlR+lFaB+8Sk8zC5HMMNKrCVVfhCIHCKx3US3beXo4uGVt3rQU21gmyP9oZB
+         kI/zDNBq/fj3d9pB6Al8Q9JcTGWBslD50962z6b/la0VowaLRF1oLDkj756mbk8ZSaRT
+         69BM0U14ZdTOEm9CDN8qF2L5B6hRElUP0m4MtxpBN7RLoZcc7S/5XU101ue1ZxUv2PQF
+         su3dtX8OOicNyEsQfFsIg1UZ+13GP2npJ8G0k+NzH6gSei7ZwhYspJ3OtDbuvU0h0OuS
+         hZKg==
+X-Gm-Message-State: AOJu0YzLqESYF+OiPccxlTpgBDwztwQuk3lMMn3A8OewqOAaW28k0O+4
+	nMbrFgWosmAb5GsqzewNa08V55enAe8tvCwQrpzlS9kAcCk8W2/kjiBuRvVLopNf1Tbw2rOgliq
+	58P8643cVchRZDW796ExmAufwtURaXSCPk27xjZL90h4GwPXCEB4w9PYihj4=
+X-Google-Smtp-Source: AGHT+IHr2sMDxwlDtxh9DOsCo3piGYSlXO4KMOFswKKMZLlJYNLV8FUPOoC7eHs8claHgULkUPd8JnTM4LwXeMJhnr7VYdNeNOQj
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:6785:b0:873:3691:6fb8 with SMTP id
- ca18e2360f4ac-87968fca51amr169580239f.8.1752139447760; Thu, 10 Jul 2025
- 02:24:07 -0700 (PDT)
-Date: Thu, 10 Jul 2025 02:24:07 -0700
+X-Received: by 2002:a05:6602:6417:b0:876:c5ff:24d4 with SMTP id
+ ca18e2360f4ac-87977f78015mr521587139f.4.1752249942166; Fri, 11 Jul 2025
+ 09:05:42 -0700 (PDT)
+Date: Fri, 11 Jul 2025 09:05:42 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <686f86b7.a00a0220.26a83e.000d.GAE@google.com>
-Subject: [moderation/CI] Re: net: atm: Fix incorrect net_device lec check
-From: syzbot@syzkaller.appspotmail.com
+Message-ID: <68713656.a00a0220.26a83e.0054.GAE@google.com>
+Subject: [moderation/CI] Re: fix two issues on tpacket_snd()
+From: syzbot+ci510f501978acf972@syzkaller.appspotmail.com
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has processed the following series
 
-[v2] net: atm: Fix incorrect net_device lec check
+[v3] fix two issues on tpacket_snd()
 
-* [PATCH net v2] net: atm: Fix incorrect net_device lec check
+* [PATCH v3 1/2] af_packet: fix the SO_SNDTIMEO constraint not effective on tpacked_snd()
+* [PATCH v3 2/2] af_packet: fix soft lockup issue caused by tpacket_snd()
 
 and found the following issues:
-* failed to build the kernel
+* kernel build error
 
 The series was applied to the following base tree:
 * Tree:   
@@ -67,10 +68,10 @@ Full report is available here:
 
 ***
 
-failed to build the kernel
+kernel build error
 
 
-
+net/packet/af_packet.c:2956:30: error: expected &#39;;&#39; after do/while statement
 
 ---
 This report is generated by a bot. It may contain errors.
