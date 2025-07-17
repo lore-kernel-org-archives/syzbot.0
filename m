@@ -1,87 +1,85 @@
 Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 669567464
-	for <syzbot@lists.linux.dev>; Mon, 14 Jul 2025 22:11:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C34B52FA62E
+	for <syzbot@lists.linux.dev>; Thu, 17 Jul 2025 15:55:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752531097; cv=none; b=QDbFMuoAzD60pmxkAvVkO98Mo/YGyOQlGXBFHgIhBSEns2JDTzVNc20ko+iBbV1fbAxfNTrKFRE1qlZ24CAd1ZgECp0f9XySVqTj9TpisBowimg610rwiuBlxYVDQGFOfISAc7ucUDeyxtk7jhuN7zCiLv0Os3PhBtuu9xopvpY=
+	t=1752767751; cv=none; b=gUWiBSjwEsUpl2N6ICCDcWlgSDvQ7qzHbsA1COdxVj59PaB4pdLsEo/Gx/9f6gMTAUrkUuOVzWMCtstaFvJLtzgTcU1CddOyymT+R5UaZw3pp+CG4bFEf7qw5voHTJ4+GQQaBd/de31BeCQPeFz+nNK2hYkYRTUrviJF9zJfYzA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752531097; c=relaxed/simple;
-	bh=NVw/6f/iSvAXZSvDYJyHrQoLygxkn/lOqD5lOx7QYOY=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=dMVygcNj2mJL1BsYXAU9/HeHj/vqaG2yQRXdt2WytQaZ0bJFvzSDGUmOON+fkT78al+2c00XZPsJZR2DM4bWxU2lNBihpOw519igX6Xiw3VE8508pph3GkgtrUdOycNjt6c8B4pNTqs4k4erischVkvP6V75302MAutjSsU07fA=
+	s=arc-20240116; t=1752767751; c=relaxed/simple;
+	bh=YsLRgtwfow/EhhLleDBB26QP3fa3j4FfpQtO3cFYE4E=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=LVvknn6WriVbveS0dybGHu0WGZ9y6BRDX9WVAoYAw5CEiC7W96H+dg4tNHav1to2LKoQY9yNCYm/XRAst7Xbj+MHoyKjUKfdvjeHOCh/1IIN6z21mo6bNx9epdS3LpYV1xm5m+qoOae/1NO1HmuS8Ny33Ke/uEfKTcxniCZabQg=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-8649be94fa1so954703239f.0
-        for <syzbot@lists.linux.dev>; Mon, 14 Jul 2025 15:11:36 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-86f4f032308so170291739f.1
+        for <syzbot@lists.linux.dev>; Thu, 17 Jul 2025 08:55:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752531095; x=1753135895;
+        d=1e100.net; s=20230601; t=1752767749; x=1753372549;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=fDgnV9XTqf35LqhR5trNxoGyJTToOdT2BWOZfyu7zXI=;
-        b=r3Z7OfBGBSW3p7wURajbM6gAdg9TCteBgfBi2gGvQMtWnBlK+41bgjuXa4WVVyUBNu
-         xTN/BKEISp64qbpKWfe4Gg+p5kRZArHLF6d+LzVsGk8/VXZaFo0ThsdOtO2AQYIcfvkv
-         RkfCRujE7tLFQJ4hR2RnYS/wvOzAFyOnNu+gCT4Q+FaiYo9Vx8bxVHT+P8RzyVAvkcOI
-         JXXHbU5s14FKZm7mqRpyTeut0Ij+YMolDnQSD1wz5/VDz56zfEUhqI9J2cMaLGcB3GDM
-         N2J3tod72pTNOPAd4uboDcKyMtLNycHfKADuX2uC1ImI3H97b1rp8Zc+Aunly7QxpFYL
-         hh+g==
-X-Gm-Message-State: AOJu0Yxb44fuqYjvg/zgJDF9DRhpjeLdZW46DW+XxlCWEYmQeYhfNgGX
-	bnfW0mb4AVokso/hrosQko+iMFDjaBTUMEaLhA1YkASDz6KC+WJBDXRfYHs0bXT0bktvzD5vVxD
-	m6Wh3qGQpC9AVS02wNMEOAtZoHrHzBwjRUrbOyWfKfS8s7/txGe7bdaWhJ54=
-X-Google-Smtp-Source: AGHT+IFazUGQVcgkfbOk7cKF9F21txKhFCTqHUBhtfiWvcZyubB3NjPNK7DcIsbz49W6bolmJf5kRr00j/1xvDD6CsvL84DivrKT
+        bh=SgmTCEOtQTnJiGr4gXIlvVDmZLWnJvfdr3u7L2R72Vc=;
+        b=Ltem/3KjQ6yNhYxjmFiPY1PGsSwhs8KfwdwYqZUEPXJRJxprT5bnTL0ZmiIsX+0/x0
+         H4GHkZCNKMNWIM5pqRmLBoIvV5kgoHy+70pELwgzLh0AyI+3LPzy/PiSE+71gCgbvP7n
+         3VIrwXiVjguiHxFjuefWs+V0enM1OqMdgK08VNXP7UIFxTsZmku7v2eCE0WVc+VycF8g
+         dak3UKfDgpozyajv1xcjkF3jouo6Hhf6KdEFZL2vTlIZDWn+FxCv2K8dCCsjezVaR9De
+         nAl42859BGVFM8yg4cFWPUYqzVjTPJ9oGo2a5pduODsDPJFgT1mrNbR5pcrzuLYv0qCK
+         Spbw==
+X-Gm-Message-State: AOJu0YwBpZOD5z2d8cQFZDj0FASdX56yQdqoscoG89I4Ag9BzN+bX9jL
+	j1eDUkI3sAU7xEW7U7WSe90wQh9/u0pky1QsBuKaRrttYlmfQ73dIQKV4/k3ozHSZUzoeyCYD65
+	a5D44PBmyopjJP2BRH2niMghwCHXKNdGqNJ9EAg9NGpkAixGnXW04u/NkCBI=
+X-Google-Smtp-Source: AGHT+IEV6ECxk2lKnEiIFtfI2Pr78K+6b7DBV3W6zY/Sm6h9TP7ttAE8DTJpjceWJ/CDrMk05m9YpClK/9VimQltttgbF6iQpCVM
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:6d8c:b0:876:5527:fe2a with SMTP id
- ca18e2360f4ac-879b0b31a9cmr59905339f.11.1752531095459; Mon, 14 Jul 2025
- 15:11:35 -0700 (PDT)
-Date: Mon, 14 Jul 2025 15:11:35 -0700
+X-Received: by 2002:a05:6602:140e:b0:879:870b:1b85 with SMTP id
+ ca18e2360f4ac-879c093a47bmr1102196039f.13.1752767748777; Thu, 17 Jul 2025
+ 08:55:48 -0700 (PDT)
+Date: Thu, 17 Jul 2025 08:55:48 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68758097.a70a0220.18f9d4.000c.GAE@google.com>
-Subject: [moderation/CI] Re: Bluetooth: hci_core: fix typos in macros
-From: syzbot+ci9380cc4b718e62f9@syzkaller.appspotmail.com
+Message-ID: <68791d04.a70a0220.693ce.004c.GAE@google.com>
+Subject: [moderation/CI] Re: ext4: clear extent index structure after file delete
+From: syzbot ci <syzbot+ci78d1982b3a37e0ff@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] Bluetooth: hci_core: fix typos in macros
-https://lore.kernel.org/all/<20250714202744.11578-2-ceggers@arri.de>
-* [PATCH 1/3] Bluetooth: hci_core: fix typos in macros
-* [PATCH 2/3] Bluetooth: hci_core: add missing braces when using macro parameters
-* [PATCH 3/3] Bluetooth: hci_dev: replace 'quirks' integer by 'quirk_flags' bitmap
+[v1] ext4: clear extent index structure after file delete
+https://lore.kernel.org/all/<20250717132805.813944-1-bretznic@gmail.com>
+* [PATCH] ext4: clear extent index structure after file delete
 
-and found the following issues:
-* kernel build error
+and found the following issue:
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/b4586b72-e906-49fb-8247-0e1cc1361e8a
+https://ci.syzbot.org/series/d1ea1a0d-09ca-4270-a35f-d1d14bba14fd
 
 ***
 
 kernel build error
 
-tree:      netdev
-base:      47c84997c686b4d43b225521b732492552b84758
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      40f92e79b0aabbf3575e371f9054657a421a3e79
 arch:      amd64
 compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp1~20250616065826.132), Debian LLD 20.1.7
-config:    https://ci.syzbot.org/builds/4a4d9434-59cf-4d58-9fbc-d71fc278ae0a/config
+config:    https://ci.syzbot.org/builds/0bb21d08-439f-45c6-b6dc-819d4e4de6c9/config
 
-drivers/bluetooth/hci_ll.c:652:48: error: no member named 'quirks' in 'struct hci_dev'
-drivers/bluetooth/hci_ll.c:656:49: error: no member named 'quirks' in 'struct hci_dev'
+fs/ext4/extents.c:3066:27: error: incompatible pointer types passing 'struct ext4_extent_idx *' to parameter of type 'struct ext4_extent *' [-Werror,-Wincompatible-pointer-types]
 
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[]
+[adilger.kernel@dilger.ca bretznic@gmail.com linux-ext4@vger.kernel.org tytso@mit.edu]
 
 If the report looks fine to you, reply with:
 #syz upstream
