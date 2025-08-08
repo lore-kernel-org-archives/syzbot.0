@@ -1,380 +1,413 @@
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 684C7227E83
-	for <syzbot@lists.linux.dev>; Thu,  7 Aug 2025 22:57:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 518BF221577
+	for <syzbot@lists.linux.dev>; Fri,  8 Aug 2025 07:28:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754607453; cv=none; b=XvzJddLbgZwfxV5fyX0kaU522gEj31zyat8SXpNatISDdJNvOOSUFPgyvZ4m+m/quOkhp9Q57gKDCC/T4FOqSzDRee2VsSXDMn80PL8MRI54pYsw7p0n56CkeLvHIeWjCBsQW4bjTKRjRVlXIj56TEhR3DASau14K5u8XJzqpmU=
+	t=1754638082; cv=none; b=pnVysSJnIVLwe/UBidBCMUyVeMjyH/H2jZIjOt6AtfkH1F/mGFtBgoeqjzpnSfUkdheF4u1oGPQcvLxHD6+SHRsI9TyfD0PDW1unyLjn9YgC20sGd4cY5tYzo0MZVGuTar7hT6PATGUOILKMlhBP14iaLbQR9+REQqjsk8VTXhM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754607453; c=relaxed/simple;
-	bh=C0DDRDU8Lr323bmQ1yNFC4R+sIB3JRoAHc46SIkirmc=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=erzHQsIpqP64t6kmjBYf7A6LVt2+EepxulkiflRJ6q0y4HSRdmvHvN5zNOnqHUOMHGsXYmPP49V/CVNaZ0E9p7sGcpJfA2N0HE6gkB/3ptRjxhYvRwF/smoBVGwrHYc5t8rPohLkkglRJT9Od68gSFPR86UR1nZftogPXS9fCbI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f69.google.com with SMTP id ca18e2360f4ac-8819fe65fa9so138089839f.1
-        for <syzbot@lists.linux.dev>; Thu, 07 Aug 2025 15:57:31 -0700 (PDT)
+	s=arc-20240116; t=1754638082; c=relaxed/simple;
+	bh=AO/yyhftMYpNWVBdfvvH/e1CkuoCKCGoAGbGVRE1a7A=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=d2qll78QhwL5uZYoD7bJhBmUkrTndUet+TSdrynjMdlMAubMBggBxE3fMW4Ct+UtXsJrMnL6VVEJVDbQqtSYi4PPNVTlbcxXwrlaq51v60DgKd1m2t7zozTjW92Ugvix9PV34fOR149epUz9tLTFYKQZgm1SCmP53utwaMZad4s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WqIVmSnW; arc=none smtp.client-ip=209.85.210.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WqIVmSnW"
+Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-76bd041c431so1789274b3a.2
+        for <syzbot@lists.linux.dev>; Fri, 08 Aug 2025 00:28:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1754638079; x=1755242879; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kF61RaXvaYrzh4P1JVPvxUFhMyvmB7FaHqFA++jY6fA=;
+        b=WqIVmSnWFWsmD6P6b5tY/XbrCfs3SL/VfB8F+vHOU1upnpjB527VixX+6xOVL3WucI
+         b8cP1X1SpS7AhgadpnwEh31zpTKpVF9qXi9pZKcSk7XaqlWloVZCispqaRfs9FumzB1W
+         xwmZ6nkNKf/ByHQLq/f/K1uiL0y1da3ND7UifcJG83FpA+S9EIf25SZgX/8RIWMteQFk
+         WUeW/AO+uYP6TaiqUHTA1Mb4+T/VtTnwZWZ9I6jC6W0pP/NyJlqQuPUmWJVovznen1uO
+         K7ms1WlSomIALNLLfCWb/wm4GyiioBsFwg3zpMd3uDZ9Dv4yKSMnlF4uKuUuUIQ29nfr
+         EPkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754607450; x=1755212250;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=YeGNnbtJYiYOAUHV0YKZ1Rl7v8CeegMNau38C7TH13k=;
-        b=iRiweJdYH152aUVN/8oFTGxMWOeNnFGUt7FgQ2sjMTkkAH6ui2vv5n0/5AKAbMLvq2
-         TPpeKtxr06sNj6ldGH3W2MeDo8G13t+VLIm7w6sNWPMVEqRX95nmyi8fBAfyRwpsdCAO
-         Mx0MXlS7dCm4vvzy4z6dB441OgxxJUXmfBw303SZYstWFz+mWjrzkruo6TYP4cPs7cMe
-         rcIUBcnef0RUeQEBSDFyAL3koCD2iyM6ZGj4g7TQHQNRzk3wIwJqe814rWRBBsMlhbV/
-         Wwtbya7TJ7kcdCcUxTF7caq5EFUPpKrakVurq1jXgPVLFyn32vdZNjG4ZcexKMc3twwh
-         xcjA==
-X-Gm-Message-State: AOJu0YwhtDAnz2i2WtFlSYNH1VjyAdLKkxxaApcLrIvizVdU2jtxuPQ8
-	P5AckAGbKfLkJoinhO1fszs2icmGqTgK0E4NZtMnbDRbq4agaP7dIKIGb/qmX9PExfRWG2KzfG8
-	64bRjxuxpYgWgAjU+/aE/JnYwbZNteKDbbkZpQP00/sxozFMhiSiUlmBnKMk=
-X-Google-Smtp-Source: AGHT+IFXzF24UsvpDC+o3oUrbez+1GNkp3fr7winbi3V0pQq+i3bnsZI7eAqonOsdbEaBvqC64FVN5UZ9+5Ej6brRb+xyvSbIJx3
+        d=1e100.net; s=20230601; t=1754638079; x=1755242879;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=kF61RaXvaYrzh4P1JVPvxUFhMyvmB7FaHqFA++jY6fA=;
+        b=fM3+ys2JZuLSJv92lh8sXzHDZwwd2Ax+SK1z6wiAdgSvGQHJeUJJz8vnid86Jfp9R0
+         Cafiu5oIgthPyT8TrteLEOHoipQxjhA2nGVlV+Ne3CFWAKbXw9db+iooAkaQczwTq2y/
+         uVMDYN+6jVXYZZ1OXs7dlj1Ph63BtOQ+n+px+GfDLl4bHVt0HuKXzWe97Tur+bhYo9X/
+         FXOvjl4DUeMkB45NvNiJGSJ3lVFToMB+/3qvxp3gQz1epQLNcRrWcLVA8Gnd//L9b+xr
+         1dZCnkRTOjm1fsoWnaWM0fkiCVreoSMaYDidPGV47ZD5cW/7Mj3/d3HD8pWqYmaL0A1G
+         vugQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUWfG9Mz/Q1EsXKNqFbSl8so/0BkJOtyZTCWdxbvx6db1veJ7FrqTnK8zBU/RO6MsA4qSChj+4=@lists.linux.dev
+X-Gm-Message-State: AOJu0YwUjcbMaUGO+kaUc8ZBS19clRchXBgtiYyqhp/C7VVQJaRfVHip
+	2lAD3BovyhUU5lX1FtQd2YxZ82+wS0Fo4BDVfNbfRlzd0t8a/rONC+x/82abKyR6orOTx0kE+i/
+	2s3BeOx32JpUa356z0Hop/GAX2rpFNAyXOoeDfpz6
+X-Gm-Gg: ASbGnctq/rRtO/ip+UspTuwOW4jWwGiC6yyYIEQuD6RFMgi3jcTXbcnkPbHZvPlS9zp
+	W6SKdzv9v7TFlG6SK6+7dhkk4UxXqj2N//p2BmnfN3xSVSUFtGjYbmTDZ9jgiJJOKcMoKyZpiFI
+	ihgveO3qnJLBYYDVEeinn+dOsHPgQTnn9xsIXQqXp18amCjc4IoGd2yfK/h9bOEXeXuc8j8gBgB
+	qUP9ns9nlipKoCmoiKDez+7IuaJr4onpQjImU1oNXMzwOve
+X-Google-Smtp-Source: AGHT+IH6xDsiJY6RhWQIcgY0qnSMtwkVkf17TVNGauVsG7WE+0+Mg63XF1te5U6roMW+/S6lXxYVJjiqUZHL1XdqX4E=
+X-Received: by 2002:a17:903:1106:b0:23f:cf96:3072 with SMTP id
+ d9443c01a7336-242c21e08a1mr32630395ad.26.1754638077158; Fri, 08 Aug 2025
+ 00:27:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2dc8:b0:881:8067:ba37 with SMTP id
- ca18e2360f4ac-883f1819df3mr128285139f.4.1754607450537; Thu, 07 Aug 2025
- 15:57:30 -0700 (PDT)
-Date: Thu, 07 Aug 2025 15:57:30 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68952f5a.050a0220.7f033.004b.GAE@google.com>
-Subject: [moderation/CI] Re: bpf: refactor max_depth computation in bpf_get_stack()
-From: syzbot ci <syzbot+ci2d9ad6bb3360385c@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
+References: <68952f5a.050a0220.7f033.004b.GAE@google.com>
+In-Reply-To: <68952f5a.050a0220.7f033.004b.GAE@google.com>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Fri, 8 Aug 2025 09:27:45 +0200
+X-Gm-Features: Ac12FXz1zzAyOmLMF4oz2s0DLGciJFmwDgkiENFcy0vQEK4WtKPnTrX0uVw-kQM
+Message-ID: <CANp29Y45+ESqpBZdLE5cj_wDAv3uJ+GC_oL=dbtHtYAEsqh-bQ@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: bpf: refactor max_depth computation in bpf_get_stack()
+To: syzbot ci <syzbot+ci2d9ad6bb3360385c@syzkaller.appspotmail.com>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
-
-[v1] bpf: refactor max_depth computation in bpf_get_stack()
-https://lore.kernel.org/all/20250807175032.7381-1-contact@arnaud-lcm.com
-* [PATCH 1/2] bpf: refactor max_depth computation in bpf_get_stack()
-* [PATCH 2/2] bpf: fix stackmap overflow check in __bpf_get_stackid()
-
-and found the following issues:
-* KASAN: stack-out-of-bounds Write in __bpf_get_stack
-* PANIC: double fault in its_return_thunk
-
-Full report is available here:
-https://ci.syzbot.org/series/2af1b227-99e3-4e64-ac23-827848a4b8a5
-
-***
-
-KASAN: stack-out-of-bounds Write in __bpf_get_stack
-
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
--next.git
-base:      f3af62b6cee8af9f07012051874af2d2a451f0e5
-arch:      amd64
-compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp=
-1~20250616065826.132), Debian LLD 20.1.7
-config:    https://ci.syzbot.org/builds/5e5c6698-7b84-4bf2-a1ee-1b6223c8d4c=
-3/config
-C repro:   https://ci.syzbot.org/findings/1355d710-d133-43fd-9061-18b2de684=
-4a4/c_repro
-syz repro: https://ci.syzbot.org/findings/1355d710-d133-43fd-9061-18b2de684=
-4a4/syz_repro
-
-netdevsim netdevsim1 netdevsim0: renamed from eth0
-netdevsim netdevsim1 netdevsim1: renamed from eth1
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-BUG: KASAN: stack-out-of-bounds in __bpf_get_stack+0x54a/0xa70 kernel/bpf/s=
-tackmap.c:501
-Write of size 208 at addr ffffc90003655ee8 by task syz-executor/5952
-
-CPU: 1 UID: 0 PID: 5952 Comm: syz-executor Not tainted 6.16.0-syzkaller-111=
-13-gf3af62b6cee8-dirty #0 PREEMPT(full)=20
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
-.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
- print_address_description mm/kasan/report.c:378 [inline]
- print_report+0xca/0x240 mm/kasan/report.c:482
- kasan_report+0x118/0x150 mm/kasan/report.c:595
- check_region_inline mm/kasan/generic.c:-1 [inline]
- kasan_check_range+0x2b0/0x2c0 mm/kasan/generic.c:189
- __asan_memcpy+0x40/0x70 mm/kasan/shadow.c:106
- __bpf_get_stack+0x54a/0xa70 kernel/bpf/stackmap.c:501
- ____bpf_get_stack kernel/bpf/stackmap.c:525 [inline]
- bpf_get_stack+0x33/0x50 kernel/bpf/stackmap.c:522
- ____bpf_get_stack_raw_tp kernel/trace/bpf_trace.c:1835 [inline]
- bpf_get_stack_raw_tp+0x1a9/0x220 kernel/trace/bpf_trace.c:1825
- bpf_prog_4e330ebee64cb698+0x43/0x4b
- bpf_dispatcher_nop_func include/linux/bpf.h:1332 [inline]
- __bpf_prog_run include/linux/filter.h:718 [inline]
- bpf_prog_run include/linux/filter.h:725 [inline]
- __bpf_trace_run kernel/trace/bpf_trace.c:2257 [inline]
- bpf_trace_run10+0x2e4/0x500 kernel/trace/bpf_trace.c:2306
- __bpf_trace_percpu_alloc_percpu+0x364/0x400 include/trace/events/percpu.h:=
-11
- __do_trace_percpu_alloc_percpu include/trace/events/percpu.h:11 [inline]
- trace_percpu_alloc_percpu include/trace/events/percpu.h:11 [inline]
- pcpu_alloc_noprof+0x1534/0x16b0 mm/percpu.c:1892
- fib_nh_common_init+0x9c/0x3b0 net/ipv4/fib_semantics.c:620
- fib6_nh_init+0x1608/0x1ff0 net/ipv6/route.c:3671
- ip6_route_info_create_nh+0x16a/0xab0 net/ipv6/route.c:3892
- ip6_route_add+0x6e/0x1b0 net/ipv6/route.c:3944
- addrconf_add_mroute net/ipv6/addrconf.c:2552 [inline]
- addrconf_add_dev+0x24f/0x340 net/ipv6/addrconf.c:2570
- addrconf_dev_config net/ipv6/addrconf.c:3479 [inline]
- addrconf_init_auto_addrs+0x57c/0xa30 net/ipv6/addrconf.c:3567
- addrconf_notify+0xacc/0x1010 net/ipv6/addrconf.c:3740
- notifier_call_chain+0x1b6/0x3e0 kernel/notifier.c:85
- call_netdevice_notifiers_extack net/core/dev.c:2267 [inline]
- call_netdevice_notifiers net/core/dev.c:2281 [inline]
- __dev_notify_flags+0x18d/0x2e0 net/core/dev.c:-1
- netif_change_flags+0xe8/0x1a0 net/core/dev.c:9608
- do_setlink+0xc55/0x41c0 net/core/rtnetlink.c:3143
- rtnl_changelink net/core/rtnetlink.c:3761 [inline]
- __rtnl_newlink net/core/rtnetlink.c:3920 [inline]
- rtnl_newlink+0x160b/0x1c70 net/core/rtnetlink.c:4057
- rtnetlink_rcv_msg+0x7cf/0xb70 net/core/rtnetlink.c:6946
- netlink_rcv_skb+0x208/0x470 net/netlink/af_netlink.c:2552
- netlink_unicast_kernel net/netlink/af_netlink.c:1320 [inline]
- netlink_unicast+0x82f/0x9e0 net/netlink/af_netlink.c:1346
- netlink_sendmsg+0x805/0xb30 net/netlink/af_netlink.c:1896
- sock_sendmsg_nosec net/socket.c:714 [inline]
- __sock_sendmsg+0x21c/0x270 net/socket.c:729
- __sys_sendto+0x3bd/0x520 net/socket.c:2228
- __do_sys_sendto net/socket.c:2235 [inline]
- __se_sys_sendto net/socket.c:2231 [inline]
- __x64_sys_sendto+0xde/0x100 net/socket.c:2231
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fec5c790a7c
-Code: 2a 5f 02 00 44 8b 4c 24 2c 4c 8b 44 24 20 89 c5 44 8b 54 24 28 48 8b =
-54 24 18 b8 2c 00 00 00 48 8b 74 24 10 8b 7c 24 08 0f 05 <48> 3d 00 f0 ff f=
-f 77 34 89 ef 48 89 44 24 08 e8 70 5f 02 00 48 8b
-RSP: 002b:00007fff7b55f7b0 EFLAGS: 00000293 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 00007fec5d4e35c0 RCX: 00007fec5c790a7c
-RDX: 0000000000000030 RSI: 00007fec5d4e3610 RDI: 0000000000000006
-RBP: 0000000000000000 R08: 00007fff7b55f804 R09: 000000000000000c
-R10: 0000000000000000 R11: 0000000000000293 R12: 0000000000000006
-R13: 0000000000000000 R14: 00007fec5d4e3610 R15: 0000000000000000
- </TASK>
-
-The buggy address belongs to stack of task syz-executor/5952
- and is located at offset 296 in frame:
- __bpf_get_stack+0x0/0xa70 include/linux/mmap_lock.h:-1
-
-This frame has 1 object:
- [32, 36) 'rctx.i'
-
-The buggy address belongs to a 8-page vmalloc region starting at 0xffffc900=
-03650000 allocated at copy_process+0x54b/0x3c00 kernel/fork.c:2002
-The buggy address belongs to the physical page:
-page: refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff888024c632=
-00 pfn:0x24c62
-flags: 0xfff00000000000(node=3D0|zone=3D1|lastcpupid=3D0x7ff)
-raw: 00fff00000000000 0000000000000000 dead000000000122 0000000000000000
-raw: ffff888024c63200 0000000000000000 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0x2dc2(GFP=
-_KERNEL|__GFP_HIGHMEM|__GFP_ZERO|__GFP_NOWARN), pid 5845, tgid 5845 (syz-ex=
-ecutor), ts 59049058263, free_ts 59031992240
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x240/0x2a0 mm/page_alloc.c:1851
- prep_new_page mm/page_alloc.c:1859 [inline]
- get_page_from_freelist+0x21e4/0x22c0 mm/page_alloc.c:3858
- __alloc_frozen_pages_noprof+0x181/0x370 mm/page_alloc.c:5148
- alloc_pages_mpol+0x232/0x4a0 mm/mempolicy.c:2416
- alloc_frozen_pages_noprof mm/mempolicy.c:2487 [inline]
- alloc_pages_noprof+0xa9/0x190 mm/mempolicy.c:2507
- vm_area_alloc_pages mm/vmalloc.c:3642 [inline]
- __vmalloc_area_node mm/vmalloc.c:3720 [inline]
- __vmalloc_node_range_noprof+0x97d/0x12f0 mm/vmalloc.c:3893
- __vmalloc_node_noprof+0xc2/0x110 mm/vmalloc.c:3956
- alloc_thread_stack_node kernel/fork.c:318 [inline]
- dup_task_struct+0x3e7/0x860 kernel/fork.c:879
- copy_process+0x54b/0x3c00 kernel/fork.c:2002
- kernel_clone+0x21e/0x840 kernel/fork.c:2603
- __do_sys_clone3 kernel/fork.c:2907 [inline]
- __se_sys_clone3+0x256/0x2d0 kernel/fork.c:2886
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-page last free pid 5907 tgid 5907 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- free_pages_prepare mm/page_alloc.c:1395 [inline]
- __free_frozen_pages+0xbc4/0xd30 mm/page_alloc.c:2895
- vfree+0x25a/0x400 mm/vmalloc.c:3434
- kcov_put kernel/kcov.c:439 [inline]
- kcov_close+0x28/0x50 kernel/kcov.c:535
- __fput+0x44c/0xa70 fs/file_table.c:468
- task_work_run+0x1d4/0x260 kernel/task_work.c:227
- exit_task_work include/linux/task_work.h:40 [inline]
- do_exit+0x6b5/0x2300 kernel/exit.c:966
- do_group_exit+0x21c/0x2d0 kernel/exit.c:1107
- get_signal+0x1286/0x1340 kernel/signal.c:3034
- arch_do_signal_or_restart+0x9a/0x750 arch/x86/kernel/signal.c:337
- exit_to_user_mode_loop+0x75/0x110 kernel/entry/common.c:40
- exit_to_user_mode_prepare include/linux/irq-entry-common.h:225 [inline]
- syscall_exit_to_user_mode_work include/linux/entry-common.h:175 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:210 [inline]
- do_syscall_64+0x2bd/0x3b0 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-Memory state around the buggy address:
- ffffc90003655e00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffffc90003655e80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffffc90003655f00: 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00 00 f2 f2
-                                           ^
- ffffc90003655f80: 00 00 00 00 00 00 00 00 00 00 f3 f3 f3 f3 f3 f3
- ffffc90003656000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-
-
-***
-
-PANIC: double fault in its_return_thunk
-
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
--next.git
-base:      f3af62b6cee8af9f07012051874af2d2a451f0e5
-arch:      amd64
-compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp=
-1~20250616065826.132), Debian LLD 20.1.7
-config:    https://ci.syzbot.org/builds/5e5c6698-7b84-4bf2-a1ee-1b6223c8d4c=
-3/config
-C repro:   https://ci.syzbot.org/findings/1bf5dce6-467f-4bcd-9357-2726101d2=
-ad1/c_repro
-syz repro: https://ci.syzbot.org/findings/1bf5dce6-467f-4bcd-9357-2726101d2=
-ad1/syz_repro
-
-traps: PANIC: double fault, error_code: 0x0
-Oops: double fault: 0000 [#1] SMP KASAN PTI
-CPU: 0 UID: 0 PID: 5789 Comm: syz-executor930 Not tainted 6.16.0-syzkaller-=
-11113-gf3af62b6cee8-dirty #0 PREEMPT(full)=20
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
-.2-1 04/01/2014
-RIP: 0010:its_return_thunk+0x0/0x10 arch/x86/lib/retpoline.S:412
-Code: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc =
-cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc <c3> cc 90 90 90 9=
-0 90 90 90 90 90 90 90 90 90 90 e9 6b 2b b9 f5 cc
-RSP: 0018:ffffffffa0000877 EFLAGS: 00010246
-RAX: 2161df6de464b300 RBX: 4800be48c0315641 RCX: 2161df6de464b300
-RDX: 0000000000000000 RSI: ffffffff8dba01ee RDI: ffff888105cc9cc0
-RBP: eb7a3aa9e9c95e41 R08: ffffffff81000130 R09: ffffffff81000130
-R10: ffffffff81d017ac R11: ffffffff8b7707da R12: 3145ffff888028c3
-R13: ee8948f875894cf6 R14: 000002baf8c68348 R15: e1cb3861e8c93100
-FS:  0000555557cbc380(0000) GS:ffff8880b862a000(0000) knlGS:000000000000000=
-0
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffa0000868 CR3: 0000000028468000 CR4: 00000000000006f0
-Call Trace:
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:its_return_thunk+0x0/0x10 arch/x86/lib/retpoline.S:412
-Code: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc =
-cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc <c3> cc 90 90 90 9=
-0 90 90 90 90 90 90 90 90 90 90 e9 6b 2b b9 f5 cc
-RSP: 0018:ffffffffa0000877 EFLAGS: 00010246
-RAX: 2161df6de464b300 RBX: 4800be48c0315641 RCX: 2161df6de464b300
-RDX: 0000000000000000 RSI: ffffffff8dba01ee RDI: ffff888105cc9cc0
-RBP: eb7a3aa9e9c95e41 R08: ffffffff81000130 R09: ffffffff81000130
-R10: ffffffff81d017ac R11: ffffffff8b7707da R12: 3145ffff888028c3
-R13: ee8948f875894cf6 R14: 000002baf8c68348 R15: e1cb3861e8c93100
-FS:  0000555557cbc380(0000) GS:ffff8880b862a000(0000) knlGS:000000000000000=
-0
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffa0000868 CR3: 0000000028468000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess):
-   0:	cc                   	int3
-   1:	cc                   	int3
-   2:	cc                   	int3
-   3:	cc                   	int3
-   4:	cc                   	int3
-   5:	cc                   	int3
-   6:	cc                   	int3
-   7:	cc                   	int3
-   8:	cc                   	int3
-   9:	cc                   	int3
-   a:	cc                   	int3
-   b:	cc                   	int3
-   c:	cc                   	int3
-   d:	cc                   	int3
-   e:	cc                   	int3
-   f:	cc                   	int3
-  10:	cc                   	int3
-  11:	cc                   	int3
-  12:	cc                   	int3
-  13:	cc                   	int3
-  14:	cc                   	int3
-  15:	cc                   	int3
-  16:	cc                   	int3
-  17:	cc                   	int3
-  18:	cc                   	int3
-  19:	cc                   	int3
-  1a:	cc                   	int3
-  1b:	cc                   	int3
-  1c:	cc                   	int3
-  1d:	cc                   	int3
-  1e:	cc                   	int3
-  1f:	cc                   	int3
-  20:	cc                   	int3
-  21:	cc                   	int3
-  22:	cc                   	int3
-  23:	cc                   	int3
-  24:	cc                   	int3
-  25:	cc                   	int3
-  26:	cc                   	int3
-  27:	cc                   	int3
-  28:	cc                   	int3
-  29:	cc                   	int3
-* 2a:	c3                   	ret <-- trapping instruction
-  2b:	cc                   	int3
-  2c:	90                   	nop
-  2d:	90                   	nop
-  2e:	90                   	nop
-  2f:	90                   	nop
-  30:	90                   	nop
-  31:	90                   	nop
-  32:	90                   	nop
-  33:	90                   	nop
-  34:	90                   	nop
-  35:	90                   	nop
-  36:	90                   	nop
-  37:	90                   	nop
-  38:	90                   	nop
-  39:	90                   	nop
-  3a:	e9 6b 2b b9 f5       	jmp    0xf5b92baa
-  3f:	cc                   	int3
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-The email will later be sent to:
-[andrii@kernel.org ast@kernel.org bpf@vger.kernel.org contact@arnaud-lcm.co=
-m daniel@iogearbox.net eddyz87@gmail.com haoluo@google.com john.fastabend@g=
-mail.com jolsa@kernel.org kpsingh@kernel.org linux-kernel@vger.kernel.org m=
-artin.lau@linux.dev sdf@fomichev.me song@kernel.org syzbot@syzkaller.appspo=
-tmail.com syzkaller-bugs@googlegroups.com yonghong.song@linux.dev]
-
-If the report looks fine to you, reply with:
 #syz upstream
 
+On Fri, Aug 8, 2025 at 12:57=E2=80=AFAM syzbot ci
+<syzbot+ci2d9ad6bb3360385c@syzkaller.appspotmail.com> wrote:
+>
+> syzbot ci has tested the following series
+>
+> [v1] bpf: refactor max_depth computation in bpf_get_stack()
+> https://lore.kernel.org/all/20250807175032.7381-1-contact@arnaud-lcm.com
+> * [PATCH 1/2] bpf: refactor max_depth computation in bpf_get_stack()
+> * [PATCH 2/2] bpf: fix stackmap overflow check in __bpf_get_stackid()
+>
+> and found the following issues:
+> * KASAN: stack-out-of-bounds Write in __bpf_get_stack
+> * PANIC: double fault in its_return_thunk
+>
+> Full report is available here:
+> https://ci.syzbot.org/series/2af1b227-99e3-4e64-ac23-827848a4b8a5
+>
+> ***
+>
+> KASAN: stack-out-of-bounds Write in __bpf_get_stack
+>
+> tree:      bpf-next
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/b=
+pf-next.git
+> base:      f3af62b6cee8af9f07012051874af2d2a451f0e5
+> arch:      amd64
+> compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~e=
+xp1~20250616065826.132), Debian LLD 20.1.7
+> config:    https://ci.syzbot.org/builds/5e5c6698-7b84-4bf2-a1ee-1b6223c8d=
+4c3/config
+> C repro:   https://ci.syzbot.org/findings/1355d710-d133-43fd-9061-18b2de6=
+844a4/c_repro
+> syz repro: https://ci.syzbot.org/findings/1355d710-d133-43fd-9061-18b2de6=
+844a4/syz_repro
+>
+> netdevsim netdevsim1 netdevsim0: renamed from eth0
+> netdevsim netdevsim1 netdevsim1: renamed from eth1
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> BUG: KASAN: stack-out-of-bounds in __bpf_get_stack+0x54a/0xa70 kernel/bpf=
+/stackmap.c:501
+> Write of size 208 at addr ffffc90003655ee8 by task syz-executor/5952
+>
+> CPU: 1 UID: 0 PID: 5952 Comm: syz-executor Not tainted 6.16.0-syzkaller-1=
+1113-gf3af62b6cee8-dirty #0 PREEMPT(full)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
+>  print_address_description mm/kasan/report.c:378 [inline]
+>  print_report+0xca/0x240 mm/kasan/report.c:482
+>  kasan_report+0x118/0x150 mm/kasan/report.c:595
+>  check_region_inline mm/kasan/generic.c:-1 [inline]
+>  kasan_check_range+0x2b0/0x2c0 mm/kasan/generic.c:189
+>  __asan_memcpy+0x40/0x70 mm/kasan/shadow.c:106
+>  __bpf_get_stack+0x54a/0xa70 kernel/bpf/stackmap.c:501
+>  ____bpf_get_stack kernel/bpf/stackmap.c:525 [inline]
+>  bpf_get_stack+0x33/0x50 kernel/bpf/stackmap.c:522
+>  ____bpf_get_stack_raw_tp kernel/trace/bpf_trace.c:1835 [inline]
+>  bpf_get_stack_raw_tp+0x1a9/0x220 kernel/trace/bpf_trace.c:1825
+>  bpf_prog_4e330ebee64cb698+0x43/0x4b
+>  bpf_dispatcher_nop_func include/linux/bpf.h:1332 [inline]
+>  __bpf_prog_run include/linux/filter.h:718 [inline]
+>  bpf_prog_run include/linux/filter.h:725 [inline]
+>  __bpf_trace_run kernel/trace/bpf_trace.c:2257 [inline]
+>  bpf_trace_run10+0x2e4/0x500 kernel/trace/bpf_trace.c:2306
+>  __bpf_trace_percpu_alloc_percpu+0x364/0x400 include/trace/events/percpu.=
+h:11
+>  __do_trace_percpu_alloc_percpu include/trace/events/percpu.h:11 [inline]
+>  trace_percpu_alloc_percpu include/trace/events/percpu.h:11 [inline]
+>  pcpu_alloc_noprof+0x1534/0x16b0 mm/percpu.c:1892
+>  fib_nh_common_init+0x9c/0x3b0 net/ipv4/fib_semantics.c:620
+>  fib6_nh_init+0x1608/0x1ff0 net/ipv6/route.c:3671
+>  ip6_route_info_create_nh+0x16a/0xab0 net/ipv6/route.c:3892
+>  ip6_route_add+0x6e/0x1b0 net/ipv6/route.c:3944
+>  addrconf_add_mroute net/ipv6/addrconf.c:2552 [inline]
+>  addrconf_add_dev+0x24f/0x340 net/ipv6/addrconf.c:2570
+>  addrconf_dev_config net/ipv6/addrconf.c:3479 [inline]
+>  addrconf_init_auto_addrs+0x57c/0xa30 net/ipv6/addrconf.c:3567
+>  addrconf_notify+0xacc/0x1010 net/ipv6/addrconf.c:3740
+>  notifier_call_chain+0x1b6/0x3e0 kernel/notifier.c:85
+>  call_netdevice_notifiers_extack net/core/dev.c:2267 [inline]
+>  call_netdevice_notifiers net/core/dev.c:2281 [inline]
+>  __dev_notify_flags+0x18d/0x2e0 net/core/dev.c:-1
+>  netif_change_flags+0xe8/0x1a0 net/core/dev.c:9608
+>  do_setlink+0xc55/0x41c0 net/core/rtnetlink.c:3143
+>  rtnl_changelink net/core/rtnetlink.c:3761 [inline]
+>  __rtnl_newlink net/core/rtnetlink.c:3920 [inline]
+>  rtnl_newlink+0x160b/0x1c70 net/core/rtnetlink.c:4057
+>  rtnetlink_rcv_msg+0x7cf/0xb70 net/core/rtnetlink.c:6946
+>  netlink_rcv_skb+0x208/0x470 net/netlink/af_netlink.c:2552
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1320 [inline]
+>  netlink_unicast+0x82f/0x9e0 net/netlink/af_netlink.c:1346
+>  netlink_sendmsg+0x805/0xb30 net/netlink/af_netlink.c:1896
+>  sock_sendmsg_nosec net/socket.c:714 [inline]
+>  __sock_sendmsg+0x21c/0x270 net/socket.c:729
+>  __sys_sendto+0x3bd/0x520 net/socket.c:2228
+>  __do_sys_sendto net/socket.c:2235 [inline]
+>  __se_sys_sendto net/socket.c:2231 [inline]
+>  __x64_sys_sendto+0xde/0x100 net/socket.c:2231
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7fec5c790a7c
+> Code: 2a 5f 02 00 44 8b 4c 24 2c 4c 8b 44 24 20 89 c5 44 8b 54 24 28 48 8=
+b 54 24 18 b8 2c 00 00 00 48 8b 74 24 10 8b 7c 24 08 0f 05 <48> 3d 00 f0 ff=
+ ff 77 34 89 ef 48 89 44 24 08 e8 70 5f 02 00 48 8b
+> RSP: 002b:00007fff7b55f7b0 EFLAGS: 00000293 ORIG_RAX: 000000000000002c
+> RAX: ffffffffffffffda RBX: 00007fec5d4e35c0 RCX: 00007fec5c790a7c
+> RDX: 0000000000000030 RSI: 00007fec5d4e3610 RDI: 0000000000000006
+> RBP: 0000000000000000 R08: 00007fff7b55f804 R09: 000000000000000c
+> R10: 0000000000000000 R11: 0000000000000293 R12: 0000000000000006
+> R13: 0000000000000000 R14: 00007fec5d4e3610 R15: 0000000000000000
+>  </TASK>
+>
+> The buggy address belongs to stack of task syz-executor/5952
+>  and is located at offset 296 in frame:
+>  __bpf_get_stack+0x0/0xa70 include/linux/mmap_lock.h:-1
+>
+> This frame has 1 object:
+>  [32, 36) 'rctx.i'
+>
+> The buggy address belongs to a 8-page vmalloc region starting at 0xffffc9=
+0003650000 allocated at copy_process+0x54b/0x3c00 kernel/fork.c:2002
+> The buggy address belongs to the physical page:
+> page: refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff888024c6=
+3200 pfn:0x24c62
+> flags: 0xfff00000000000(node=3D0|zone=3D1|lastcpupid=3D0x7ff)
+> raw: 00fff00000000000 0000000000000000 dead000000000122 0000000000000000
+> raw: ffff888024c63200 0000000000000000 00000001ffffffff 0000000000000000
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 0, migratetype Unmovable, gfp_mask 0x2dc2(G=
+FP_KERNEL|__GFP_HIGHMEM|__GFP_ZERO|__GFP_NOWARN), pid 5845, tgid 5845 (syz-=
+executor), ts 59049058263, free_ts 59031992240
+>  set_page_owner include/linux/page_owner.h:32 [inline]
+>  post_alloc_hook+0x240/0x2a0 mm/page_alloc.c:1851
+>  prep_new_page mm/page_alloc.c:1859 [inline]
+>  get_page_from_freelist+0x21e4/0x22c0 mm/page_alloc.c:3858
+>  __alloc_frozen_pages_noprof+0x181/0x370 mm/page_alloc.c:5148
+>  alloc_pages_mpol+0x232/0x4a0 mm/mempolicy.c:2416
+>  alloc_frozen_pages_noprof mm/mempolicy.c:2487 [inline]
+>  alloc_pages_noprof+0xa9/0x190 mm/mempolicy.c:2507
+>  vm_area_alloc_pages mm/vmalloc.c:3642 [inline]
+>  __vmalloc_area_node mm/vmalloc.c:3720 [inline]
+>  __vmalloc_node_range_noprof+0x97d/0x12f0 mm/vmalloc.c:3893
+>  __vmalloc_node_noprof+0xc2/0x110 mm/vmalloc.c:3956
+>  alloc_thread_stack_node kernel/fork.c:318 [inline]
+>  dup_task_struct+0x3e7/0x860 kernel/fork.c:879
+>  copy_process+0x54b/0x3c00 kernel/fork.c:2002
+>  kernel_clone+0x21e/0x840 kernel/fork.c:2603
+>  __do_sys_clone3 kernel/fork.c:2907 [inline]
+>  __se_sys_clone3+0x256/0x2d0 kernel/fork.c:2886
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> page last free pid 5907 tgid 5907 stack trace:
+>  reset_page_owner include/linux/page_owner.h:25 [inline]
+>  free_pages_prepare mm/page_alloc.c:1395 [inline]
+>  __free_frozen_pages+0xbc4/0xd30 mm/page_alloc.c:2895
+>  vfree+0x25a/0x400 mm/vmalloc.c:3434
+>  kcov_put kernel/kcov.c:439 [inline]
+>  kcov_close+0x28/0x50 kernel/kcov.c:535
+>  __fput+0x44c/0xa70 fs/file_table.c:468
+>  task_work_run+0x1d4/0x260 kernel/task_work.c:227
+>  exit_task_work include/linux/task_work.h:40 [inline]
+>  do_exit+0x6b5/0x2300 kernel/exit.c:966
+>  do_group_exit+0x21c/0x2d0 kernel/exit.c:1107
+>  get_signal+0x1286/0x1340 kernel/signal.c:3034
+>  arch_do_signal_or_restart+0x9a/0x750 arch/x86/kernel/signal.c:337
+>  exit_to_user_mode_loop+0x75/0x110 kernel/entry/common.c:40
+>  exit_to_user_mode_prepare include/linux/irq-entry-common.h:225 [inline]
+>  syscall_exit_to_user_mode_work include/linux/entry-common.h:175 [inline]
+>  syscall_exit_to_user_mode include/linux/entry-common.h:210 [inline]
+>  do_syscall_64+0x2bd/0x3b0 arch/x86/entry/syscall_64.c:100
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> Memory state around the buggy address:
+>  ffffc90003655e00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>  ffffc90003655e80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> >ffffc90003655f00: 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00 00 f2 f2
+>                                            ^
+>  ffffc90003655f80: 00 00 00 00 00 00 00 00 00 00 f3 f3 f3 f3 f3 f3
+>  ffffc90003656000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+>
+> ***
+>
+> PANIC: double fault in its_return_thunk
+>
+> tree:      bpf-next
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/b=
+pf-next.git
+> base:      f3af62b6cee8af9f07012051874af2d2a451f0e5
+> arch:      amd64
+> compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~e=
+xp1~20250616065826.132), Debian LLD 20.1.7
+> config:    https://ci.syzbot.org/builds/5e5c6698-7b84-4bf2-a1ee-1b6223c8d=
+4c3/config
+> C repro:   https://ci.syzbot.org/findings/1bf5dce6-467f-4bcd-9357-2726101=
+d2ad1/c_repro
+> syz repro: https://ci.syzbot.org/findings/1bf5dce6-467f-4bcd-9357-2726101=
+d2ad1/syz_repro
+>
+> traps: PANIC: double fault, error_code: 0x0
+> Oops: double fault: 0000 [#1] SMP KASAN PTI
+> CPU: 0 UID: 0 PID: 5789 Comm: syz-executor930 Not tainted 6.16.0-syzkalle=
+r-11113-gf3af62b6cee8-dirty #0 PREEMPT(full)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> RIP: 0010:its_return_thunk+0x0/0x10 arch/x86/lib/retpoline.S:412
+> Code: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc c=
+c cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc <c3> cc 90 90 90=
+ 90 90 90 90 90 90 90 90 90 90 90 e9 6b 2b b9 f5 cc
+> RSP: 0018:ffffffffa0000877 EFLAGS: 00010246
+> RAX: 2161df6de464b300 RBX: 4800be48c0315641 RCX: 2161df6de464b300
+> RDX: 0000000000000000 RSI: ffffffff8dba01ee RDI: ffff888105cc9cc0
+> RBP: eb7a3aa9e9c95e41 R08: ffffffff81000130 R09: ffffffff81000130
+> R10: ffffffff81d017ac R11: ffffffff8b7707da R12: 3145ffff888028c3
+> R13: ee8948f875894cf6 R14: 000002baf8c68348 R15: e1cb3861e8c93100
+> FS:  0000555557cbc380(0000) GS:ffff8880b862a000(0000) knlGS:0000000000000=
+000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: ffffffffa0000868 CR3: 0000000028468000 CR4: 00000000000006f0
+> Call Trace:
+> Modules linked in:
+> ---[ end trace 0000000000000000 ]---
+> RIP: 0010:its_return_thunk+0x0/0x10 arch/x86/lib/retpoline.S:412
+> Code: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc c=
+c cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc <c3> cc 90 90 90=
+ 90 90 90 90 90 90 90 90 90 90 90 e9 6b 2b b9 f5 cc
+> RSP: 0018:ffffffffa0000877 EFLAGS: 00010246
+> RAX: 2161df6de464b300 RBX: 4800be48c0315641 RCX: 2161df6de464b300
+> RDX: 0000000000000000 RSI: ffffffff8dba01ee RDI: ffff888105cc9cc0
+> RBP: eb7a3aa9e9c95e41 R08: ffffffff81000130 R09: ffffffff81000130
+> R10: ffffffff81d017ac R11: ffffffff8b7707da R12: 3145ffff888028c3
+> R13: ee8948f875894cf6 R14: 000002baf8c68348 R15: e1cb3861e8c93100
+> FS:  0000555557cbc380(0000) GS:ffff8880b862a000(0000) knlGS:0000000000000=
+000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: ffffffffa0000868 CR3: 0000000028468000 CR4: 00000000000006f0
+> ----------------
+> Code disassembly (best guess):
+>    0:   cc                      int3
+>    1:   cc                      int3
+>    2:   cc                      int3
+>    3:   cc                      int3
+>    4:   cc                      int3
+>    5:   cc                      int3
+>    6:   cc                      int3
+>    7:   cc                      int3
+>    8:   cc                      int3
+>    9:   cc                      int3
+>    a:   cc                      int3
+>    b:   cc                      int3
+>    c:   cc                      int3
+>    d:   cc                      int3
+>    e:   cc                      int3
+>    f:   cc                      int3
+>   10:   cc                      int3
+>   11:   cc                      int3
+>   12:   cc                      int3
+>   13:   cc                      int3
+>   14:   cc                      int3
+>   15:   cc                      int3
+>   16:   cc                      int3
+>   17:   cc                      int3
+>   18:   cc                      int3
+>   19:   cc                      int3
+>   1a:   cc                      int3
+>   1b:   cc                      int3
+>   1c:   cc                      int3
+>   1d:   cc                      int3
+>   1e:   cc                      int3
+>   1f:   cc                      int3
+>   20:   cc                      int3
+>   21:   cc                      int3
+>   22:   cc                      int3
+>   23:   cc                      int3
+>   24:   cc                      int3
+>   25:   cc                      int3
+>   26:   cc                      int3
+>   27:   cc                      int3
+>   28:   cc                      int3
+>   29:   cc                      int3
+> * 2a:   c3                      ret <-- trapping instruction
+>   2b:   cc                      int3
+>   2c:   90                      nop
+>   2d:   90                      nop
+>   2e:   90                      nop
+>   2f:   90                      nop
+>   30:   90                      nop
+>   31:   90                      nop
+>   32:   90                      nop
+>   33:   90                      nop
+>   34:   90                      nop
+>   35:   90                      nop
+>   36:   90                      nop
+>   37:   90                      nop
+>   38:   90                      nop
+>   39:   90                      nop
+>   3a:   e9 6b 2b b9 f5          jmp    0xf5b92baa
+>   3f:   cc                      int3
+>
+>
+> ***
+>
+> If these findings have caused you to resend the series or submit a
+> separate fix, please add the following tag to your commit message:
+> Tested-by: syzbot@syzkaller.appspotmail.com
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+>
+> The email will later be sent to:
+> [andrii@kernel.org ast@kernel.org bpf@vger.kernel.org contact@arnaud-lcm.=
+com daniel@iogearbox.net eddyz87@gmail.com haoluo@google.com john.fastabend=
+@gmail.com jolsa@kernel.org kpsingh@kernel.org linux-kernel@vger.kernel.org=
+ martin.lau@linux.dev sdf@fomichev.me song@kernel.org syzbot@syzkaller.apps=
+potmail.com syzkaller-bugs@googlegroups.com yonghong.song@linux.dev]
+>
+> If the report looks fine to you, reply with:
+> #syz upstream
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/68952f5a.050a0220.7f033.004b.GAE%40google.com.
