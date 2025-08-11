@@ -1,162 +1,104 @@
 Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AE2C1E8338
-	for <syzbot@lists.linux.dev>; Fri,  8 Aug 2025 19:33:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30059213E90
+	for <syzbot@lists.linux.dev>; Mon, 11 Aug 2025 21:20:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754681632; cv=none; b=QBMUp4buK18w7N0/pyk2MjZzwtYbu7kQKPUI1bHIa3fmUyj5wcqwOQsNz17Hx9tJ3l2EjBCewjRPaN+DzmcZ2uJwt4vGuuSn61QsQHvrWuyl5Q7vb4kN62XNCB2V6lEaFjQdQtkfGL5y9ltioMXZ7WlwBiwzPOgFGTk1VETYC5o=
+	t=1754947226; cv=none; b=Y7uh/RwFZ5LHbdHiFbwbHFNRR4i/b53f30an039gtXgQW/cItnvKLw0CX664WyMs8aYrAZ9oOmEaSlFGdHIzDI6PqwYemSpsh+2eyNUPNAU2VoKyRJivgxswlQecH5nd+sT13juWfEr8rtVgWvW8OEMogzSRDrzhH67d40NnGKQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754681632; c=relaxed/simple;
-	bh=ms/pVaoQqOgGiV430f2WqbB8SnyVC07S3OsBQ6xzaHg=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=uwMBm8Uvva0puTItYuTOJhXhxICTJ2JpkutCv57TPV7BlbvjCUJRjB2mFa/bGfolBm040VmZdcW2ISazEJng4XjcZS5Sgt88DM867KUDV+UbeoXuS/qq5gfGxjNLFcHbtBvjSlW9b+JxJuHC7i08V5Sn+ece8tV7BtMswLTEcj0=
+	s=arc-20240116; t=1754947226; c=relaxed/simple;
+	bh=TeQjZ417LtAAKg6A3PAt3iY6dKc+CdOLHYVefSK9a4o=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=oVy+Ozb0bRKzZFoIUUoIbCwEV8BqfQRYIMren/EaZEdrlH/IU/5cZQbsPA9J3/LBa+1iVeiS3qSbIAgQx1tRlIMI0uIJg4vD3vsA27Fk8EbqK7V/7IHMtqOB7YdNDdicpa+SjvpCp95lb5WrWCCta0VrGmMNIf1ITltVCwggH98=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-881855cd566so248277139f.2
-        for <syzbot@lists.linux.dev>; Fri, 08 Aug 2025 12:33:50 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-8841d3db1a3so19661939f.3
+        for <syzbot@lists.linux.dev>; Mon, 11 Aug 2025 14:20:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754681630; x=1755286430;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=PJ4QNSucLp3lg6gtIXtQ36rPonTR5UPedNLhb5Hvpj0=;
-        b=LGwwME7hmOC+DCO4iQmIZgMW/kvpSnzmmlvOX8oFqGjxUkpFH+ZqFUBck31CDaKLYi
-         20vL1EluAHKBftbO8pUc6L7H231+CDvDq+tYbUn2LNMzZwsVtk3jNgKbiqpNoMfXYHu6
-         ghHQusOF4jUmyr8qmWqOa8MNmnIzV5hnAEmDdvNnNIsSeiYTqUneYjaqSAyJLqjZ5hH4
-         Iit5ipTHEwEkI25wQKmW96TR6iQI8L01ByX0KKmjqjjUPlCRd4twgEgb4iBK/CPa4AX3
-         IQfpafIjCrEJYfWNn+Etc0ViOvfILgNGS6uDWc3QnXZ2DP6XmfunpXJQw45juiFO5cz2
-         beeg==
-X-Gm-Message-State: AOJu0YxNqYt9ctMwgH198eossObGqKXB/bLQTD/erab3UqY9kTDQCv4D
-	K9ImcgBWFWCXZ44s3cvauRx8FjoyPR6jHFgfV6DA90WIsJ4KGJN7VfhgnHifQsUvJ93LSdWhvbD
-	f3dfjyWYA/ui5TdIh9bZo8LYsvaz2AnwWYchUaFUTCClcVhca9TcHI/2khyU=
-X-Google-Smtp-Source: AGHT+IHDARiz/A/iKJftayzfILsno7n236kXIpOHO40uVKmHagaNTInRIv43JxuhI44oxt4yszG8HR7wlKSNUew80GHGyKx/KLJf
+        d=1e100.net; s=20230601; t=1754947224; x=1755552024;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=o8O74EWP5s7dJXPsA+EAHQJFwN2bAcXvpCbFN9bFo3w=;
+        b=XQntzQsPlHpnacopdTUpcC87fevvRaJJGT4nYmbzcGCgWhDWmQNIRpo3aiyVyhbXoh
+         x2PcOpKawJ3pfTzqgq6+ssrputH4aB8lG9atQ0s8uC3+4wQZYgS1hc227lq4hGQCnpaW
+         31hE35ZmSl5+w0vwhuOnxXgUb758ZPW9Jlz+CQrUfpdKHyiLwqK/syH0nuKkbwJkKciy
+         sE35yjvRT15+aiMEjMNf759xqFrwufaF4DGRlNeixaCYmiyGtD8KxKV/jiKoq9bNpjPi
+         +NmL5Nrcg86vpSY70NRBnU0AfWqPNv5K5NKwp6dGt8MBFfuPT1KLhmQ57nC89FiBWTe/
+         N20Q==
+X-Gm-Message-State: AOJu0YwotdDyLq+SxMjHNk4XW9LuExG+4noG3DMqSc56/Qotu4CBu0CP
+	i19IR2j5OO8ivueTreabJ1shnqHUgTDBEsYmiDn2Zi1v6q+oznkFxQBFBiE2pY9+XpJ5g2h3PNT
+	uoESAs4AwDsQ5Bhnw9oUAPnXfZ8OT6B/NUrdiZA4ikbJOh6TlGk18n1PN7Ic=
+X-Google-Smtp-Source: AGHT+IHIsjqcY9ZqZxOF5ruPRDIrB4U9RtyANyuKuHVetH0w3/3UT9kU5C/vAEuiEejZMkC1XZrY4QK2RAXdagMhg10a3+hdeh7A
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:1595:b0:881:99eb:e212 with SMTP id
- ca18e2360f4ac-883f12550d5mr771824239f.9.1754681630334; Fri, 08 Aug 2025
- 12:33:50 -0700 (PDT)
-Date: Fri, 08 Aug 2025 12:33:50 -0700
-In-Reply-To: <20250808153721.261334-1-simon.schippers@tu-dortmund.de>
+X-Received: by 2002:a05:6602:1485:b0:883:f8dc:df53 with SMTP id
+ ca18e2360f4ac-8841be3997amr245980639f.3.1754947224201; Mon, 11 Aug 2025
+ 14:20:24 -0700 (PDT)
+Date: Mon, 11 Aug 2025 14:20:24 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6896511e.050a0220.7f033.0088.GAE@google.com>
-Subject: [syzbot ci] Re: TUN/TAP: Improving throughput and latency by avoiding
- SKB drops
-From: syzbot ci <syzbot+cieaa424e2117e71dd@syzkaller.appspotmail.com>
-To: jasowang@redhat.com, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
-	simon.schippers@tu-dortmund.de, tim.gebauer@tu-dortmund.de, 
-	willemdebruijn.kernel@gmail.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <689a5e98.050a0220.7f033.0102.GAE@google.com>
+Subject: [moderation/CI] Re: net-memcg: Decouple controlled memcg from sk->sk_prot->memory_allocated.
+From: syzbot ci <syzbot+ci5c068abc2c1451ef@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] TUN/TAP: Improving throughput and latency by avoiding SKB drops
-https://lore.kernel.org/all/20250808153721.261334-1-simon.schippers@tu-dortmund.de
-* [PATCH net] TUN/TAP: Improving throughput and latency by avoiding SKB drops
+[v2] net-memcg: Decouple controlled memcg from sk->sk_prot->memory_allocate=
+d.
+https://lore.kernel.org/all/20250811173116.2829786-1-kuniyu@google.com
+* [PATCH v2 net-next 01/12] mptcp: Fix up subflow's memcg when CONFIG_SOCK_=
+CGROUP_DATA=3Dn.
+* [PATCH v2 net-next 02/12] mptcp: Use tcp_under_memory_pressure() in mptcp=
+_epollin_ready().
+* [PATCH v2 net-next 03/12] tcp: Simplify error path in inet_csk_accept().
+* [PATCH v2 net-next 04/12] net: Call trace_sock_exceed_buf_limit() for mem=
+cg failure with SK_MEM_RECV.
+* [PATCH v2 net-next 05/12] net: Clean up __sk_mem_raise_allocated().
+* [PATCH v2 net-next 06/12] net-memcg: Introduce mem_cgroup_from_sk().
+* [PATCH v2 net-next 07/12] net-memcg: Introduce mem_cgroup_sk_enabled().
+* [PATCH v2 net-next 08/12] net-memcg: Pass struct sock to mem_cgroup_sk_(u=
+n)?charge().
+* [PATCH v2 net-next 09/12] net-memcg: Pass struct sock to mem_cgroup_sk_un=
+der_memory_pressure().
+* [PATCH v2 net-next 10/12] net: Define sk_memcg under CONFIG_MEMCG.
+* [PATCH v2 net-next 11/12] net-memcg: Store MEMCG_SOCK_ISOLATED in sk->sk_=
+memcg.
+* [PATCH v2 net-next 12/12] net-memcg: Decouple controlled memcg from globa=
+l protocol memory accounting.
 
 and found the following issue:
-general protection fault in tun_net_xmit
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/4a9dd6ad-3c81-4957-b447-4d1e8e9ee7a2
+https://ci.syzbot.org/series/6fc666d9-cfec-413c-a98c-75c91ad6c07d
 
 ***
 
-general protection fault in tun_net_xmit
+kernel build error
 
-tree:      net
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
-base:      ae633388cae349886f1a3cfb27aa092854b24c1b
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net-next.git
+base:      37816488247ddddbc3de113c78c83572274b1e2e
 arch:      amd64
-compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp1~20250616065826.132), Debian LLD 20.1.7
-config:    https://ci.syzbot.org/builds/f35af9e4-44af-4a13-8842-d9d36ecb06e7/config
-C repro:   https://ci.syzbot.org/findings/e400bf02-40dc-43bb-8c15-d21b7ecb7304/c_repro
-syz repro: https://ci.syzbot.org/findings/e400bf02-40dc-43bb-8c15-d21b7ecb7304/syz_repro
+compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp=
+1~20250616065826.132), Debian LLD 20.1.7
+config:    https://ci.syzbot.org/builds/a5d5d856-2809-4eee-87ca-2cd1630214a=
+e/config
 
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000002: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
-CPU: 1 UID: 0 PID: 12 Comm: kworker/u8:0 Not tainted 6.16.0-syzkaller-06620-gae633388cae3-dirty #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: ipv6_addrconf addrconf_dad_work
-RIP: 0010:__ptr_ring_full include/linux/ptr_ring.h:51 [inline]
-RIP: 0010:ptr_ring_full include/linux/ptr_ring.h:59 [inline]
-RIP: 0010:tun_net_xmit+0x3ee/0x19c0 drivers/net/tun.c:1026
-Code: 54 24 18 48 89 d0 48 c1 e8 03 48 89 44 24 58 42 0f b6 04 28 84 c0 0f 85 f9 11 00 00 48 63 02 48 8d 1c c3 48 89 d8 48 c1 e8 03 <42> 80 3c 28 00 74 08 48 89 df e8 d3 0f ac fb 48 8b 1b 48 8b 7c 24
-RSP: 0018:ffffc900000f6f00 EFLAGS: 00010202
-RAX: 0000000000000002 RBX: 0000000000000010 RCX: dffffc0000000000
-RDX: ffff88811bf90940 RSI: 0000000000000004 RDI: ffffc900000f6e80
-RBP: ffffc900000f7050 R08: 0000000000000003 R09: 0000000000000004
-R10: dffffc0000000000 R11: fffff5200001edd0 R12: 0000000000000000
-R13: dffffc0000000000 R14: ffff8881054c8000 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8881a3c80000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000200000002280 CR3: 0000000110b70000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- __netdev_start_xmit include/linux/netdevice.h:5219 [inline]
- netdev_start_xmit include/linux/netdevice.h:5228 [inline]
- xmit_one net/core/dev.c:3827 [inline]
- dev_hard_start_xmit+0x2d7/0x830 net/core/dev.c:3843
- sch_direct_xmit+0x241/0x4b0 net/sched/sch_generic.c:344
- __dev_xmit_skb net/core/dev.c:4102 [inline]
- __dev_queue_xmit+0x1857/0x3b50 net/core/dev.c:4679
- neigh_output include/net/neighbour.h:547 [inline]
- ip6_finish_output2+0x11fe/0x16a0 net/ipv6/ip6_output.c:141
- NF_HOOK include/linux/netfilter.h:318 [inline]
- ndisc_send_skb+0xb54/0x1440 net/ipv6/ndisc.c:512
- addrconf_dad_completed+0x7ae/0xd60 net/ipv6/addrconf.c:4360
- addrconf_dad_work+0xc36/0x14b0 net/ipv6/addrconf.c:-1
- process_one_work kernel/workqueue.c:3238 [inline]
- process_scheduled_works+0xae1/0x17b0 kernel/workqueue.c:3321
- worker_thread+0x8a0/0xda0 kernel/workqueue.c:3402
- kthread+0x711/0x8a0 kernel/kthread.c:464
- ret_from_fork+0x3fc/0x770 arch/x86/kernel/process.c:148
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:__ptr_ring_full include/linux/ptr_ring.h:51 [inline]
-RIP: 0010:ptr_ring_full include/linux/ptr_ring.h:59 [inline]
-RIP: 0010:tun_net_xmit+0x3ee/0x19c0 drivers/net/tun.c:1026
-Code: 54 24 18 48 89 d0 48 c1 e8 03 48 89 44 24 58 42 0f b6 04 28 84 c0 0f 85 f9 11 00 00 48 63 02 48 8d 1c c3 48 89 d8 48 c1 e8 03 <42> 80 3c 28 00 74 08 48 89 df e8 d3 0f ac fb 48 8b 1b 48 8b 7c 24
-RSP: 0018:ffffc900000f6f00 EFLAGS: 00010202
-RAX: 0000000000000002 RBX: 0000000000000010 RCX: dffffc0000000000
-RDX: ffff88811bf90940 RSI: 0000000000000004 RDI: ffffc900000f6e80
-RBP: ffffc900000f7050 R08: 0000000000000003 R09: 0000000000000004
-R10: dffffc0000000000 R11: fffff5200001edd0 R12: 0000000000000000
-R13: dffffc0000000000 R14: ffff8881054c8000 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8881a3c80000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000200000002280 CR3: 0000000110b70000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess):
-   0:	54                   	push   %rsp
-   1:	24 18                	and    $0x18,%al
-   3:	48 89 d0             	mov    %rdx,%rax
-   6:	48 c1 e8 03          	shr    $0x3,%rax
-   a:	48 89 44 24 58       	mov    %rax,0x58(%rsp)
-   f:	42 0f b6 04 28       	movzbl (%rax,%r13,1),%eax
-  14:	84 c0                	test   %al,%al
-  16:	0f 85 f9 11 00 00    	jne    0x1215
-  1c:	48 63 02             	movslq (%rdx),%rax
-  1f:	48 8d 1c c3          	lea    (%rbx,%rax,8),%rbx
-  23:	48 89 d8             	mov    %rbx,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1) <-- trapping instruction
-  2f:	74 08                	je     0x39
-  31:	48 89 df             	mov    %rbx,%rdi
-  34:	e8 d3 0f ac fb       	call   0xfbac100c
-  39:	48 8b 1b             	mov    (%rbx),%rbx
-  3c:	48                   	rex.W
-  3d:	8b                   	.byte 0x8b
-  3e:	7c 24                	jl     0x64
-
+net/tls/tls_device.c:374:8: error: call to undeclared function 'sk_should_e=
+nter_memory_pressure'; ISO C99 and later do not support implicit function d=
+eclarations [-Wimplicit-function-declaration]
 
 ***
 
@@ -167,3 +109,16 @@ Tested-by: syzbot@syzkaller.appspotmail.com
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[akpm@linux-foundation.org almasrymina@google.com cgroups@vger.kernel.org d=
+avem@davemloft.net edumazet@google.com geliang@kernel.org hannes@cmpxchg.or=
+g horms@kernel.org kuba@kernel.org kuni1840@gmail.com kuniyu@google.com lin=
+ux-mm@kvack.org martineau@kernel.org matttbe@kernel.org mhocko@kernel.org m=
+koutny@suse.com mptcp@lists.linux.dev muchun.song@linux.dev ncardwell@googl=
+e.com netdev@vger.kernel.org pabeni@redhat.com roman.gushchin@linux.dev sha=
+keel.butt@linux.dev tj@kernel.org willemb@google.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
