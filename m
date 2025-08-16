@@ -1,65 +1,65 @@
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9905F1D6188
-	for <syzbot@lists.linux.dev>; Sat, 16 Aug 2025 20:34:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51A731EF092
+	for <syzbot@lists.linux.dev>; Sat, 16 Aug 2025 21:14:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755376495; cv=none; b=a5AswzBBrrGIjmN3RH3jHsEQF4SDkuYIDZsA5BsXGzAtITt/GOkNxJ1zdhJ2yMRBJDQWvxw0klLgLWQPTj5qFiPbBSyVuiVkN/sXLa6Lmb9bt6dBWjjzS7Lsiagh1t1H5AIZUtsq71Qaq9xrPuf17CuBjEZbMBHAGsiXRekvtY8=
+	t=1755378895; cv=none; b=WE3Y7VyOkrsPI/BZt7i31o+w0P+sHKkFY3GSTJREQ7zYJnpFKpI4+ecLns8HlUUqTeBRpmwHcdPrVz9qPawkLYDFQFdf74SGqwn46A2/tYZtejJXrz62X1lSkRwb63Tg4YM0fhJCVYO15Admi+UiMo9RsGtwROxtZqE6xlsGzcY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755376495; c=relaxed/simple;
-	bh=cw0qX3oXOqyKoN0hIqkh3q1sE1MC25b2ugot8mUdekU=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=SdKKSVSpHISSekMTd9RtQPG/SiHL51F9owHlzNYnu/vaxg9HJdOiAU6J7kVtxszITK6l8dNFEJRAbZKQA0veVYaL6mMRT74XKij17DWKtX/PvHDVzor/J8YH7FZCXiXiZoNX+oo8UQhC6wyd+arpYQ8hq7/FVfRJ+CWVzLcg3Bc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.72
+	s=arc-20240116; t=1755378895; c=relaxed/simple;
+	bh=pY7MOP212zelAAt4HoSoMXvUR20zf7p2xdLlVgT/rpM=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=O1U5wOjIsEAu+zqbMR42cEqQeL9dhuw5mOcXt+mIUbSIpVUssorVjzKV30z5dFBkXOaU+5BFYPqulaEFFHPo8iCxO1CaIHB04JNzIwD8ePt3hUXKCxGNW8Tni210roWFQeRefn/Lqh7U0AHCuyzYJ9MWjuveM8HOQmdi9jXYeCM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-884454c97dbso100328339f.1
-        for <syzbot@lists.linux.dev>; Sat, 16 Aug 2025 13:34:52 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-3e57d9eaa4cso28933435ab.2
+        for <syzbot@lists.linux.dev>; Sat, 16 Aug 2025 14:14:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755376492; x=1755981292;
+        d=1e100.net; s=20230601; t=1755378893; x=1755983693;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=fgTjmQ9lOvcswldY4btb21Bmim8wTLhWl/tvS5qNPzc=;
-        b=spBk2jG73cDhmvRHy3w+C+db9wmuVy6lc3tsGxd34phAEn2So8CkBdrnDJo3Vczjsb
-         Dl2cFtvFUwcUi+bxIDtkJL7yPus7JUsErJRBQyYUzXiSP/T89scIzUKNpi+nC8XR0Aqe
-         V8/U/V8mVMpyefRvCZOujKCo4FyUm10m2by6aGD2NXcs9hkqp9u9xrCQ9ZtJCnO+QnGV
-         4u/7IzHWVa0lFSkUzXRfwQDjhZ7JMv7VmEMruWS6u3U5YDscVyhdyplrkIm5+xalBgMX
-         OvEvo5wW9/ztdQUDjCYY3me394VqgLhP9ujYKfzliBkf0E5UpDsF7IMyPR+LzsRvt6Ut
-         pFoA==
-X-Gm-Message-State: AOJu0YyQ9Zs8kWIs1CJpykN32eGUSRrsrvRdQtH4jsfXzbK0d7sKnFUD
-	yCHGJL4O3REwROBvhp+lo/ohJXKGgNjQtFc7sKaayAOvm8FNstcGRPCWddl8lX85RxRyFocTpJx
-	3tc/iZC9cUhYVqXOBeYptiznJzHdnagjYQITIXO9Wj7kfVPdZojXoMIAmFUs=
-X-Google-Smtp-Source: AGHT+IFsRk5COkD2DqQhrEjk1/tCDEoUwiyww+SI8W33wfUwirY/DDS77ve9HYwx/WqkcMJOlzKTC8lQ0CJ5KrSkCV9Kt0WtDNdq
+        bh=LLoNHv80TM/uJ8PIX3rXWTjNLQHPW0xH6HIVNdAGPNY=;
+        b=OChvXGryeNg7SO6coIT49eqs+ZNSWOXCbLcet0HRGJ422gAsGvwZ2vvJLjt4ywKZlv
+         D1G4CfTjXmqItVnfAQ2SdKkxC12XhLq05f3glYQtCOXqmbg3b6B2QcrOLJz5GKPWpvVX
+         lZYyHMck/Dm/U0cKmHYT63O7Kv1JzWW5P0s6H609EdDGwD9rEQyghSaQAGzu7hk/1f03
+         5yu5hSLO+t4XaewKCumzokmzvuE8iZyVx8rWNVmnbhBiMaEWjHR0ktDCy1O/h3zS46dn
+         CN0LNp+swv9JkncqTjUqQdtDECEBP9fmzJjtlYQFz+J57DxxhVJeDpYp2Smqvok4tA+g
+         z/Gw==
+X-Gm-Message-State: AOJu0YwMZwGzG/N/OPaLJlkj5U5DfmcJsJA1DuxKEzNbux1Rh8soSbx5
+	pZJwjAir11OiIS7nhs0RU1Li8/gf4lQOIBXZ31juaIyE7SCgHuh9fbDeOoHkPMqyN/pMBE2qxWs
+	f42gzXnQetZRUrCDP4iCgvwPq2a30UI3QVY2v98tWzV+0i5bUc3tVprtF09A=
+X-Google-Smtp-Source: AGHT+IEOCZc30jgoVpKDJOvfgI5qXuyU3BfFcTNfShzzNNi0drLIKL6aZq4WN+2OLobDh2P49O2uG7/NnxHKFHP1oKDx0bIYn53s
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:c318:0:b0:864:68b0:60b3 with SMTP id
- ca18e2360f4ac-8843e4c33a7mr1243733139f.12.1755376491805; Sat, 16 Aug 2025
- 13:34:51 -0700 (PDT)
-Date: Sat, 16 Aug 2025 13:34:51 -0700
+X-Received: by 2002:a05:6e02:4813:b0:3e6:6730:9f5b with SMTP id
+ e9e14a558f8ab-3e667309fc5mr8216355ab.24.1755378893585; Sat, 16 Aug 2025
+ 14:14:53 -0700 (PDT)
+Date: Sat, 16 Aug 2025 14:14:53 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68a0eb6b.050a0220.e29e5.004c.GAE@google.com>
-Subject: [moderation/CI] Re: mm/cma: print total and used pages in cma_alloc()
-From: syzbot ci <syzbot+ci7a9ce109032ccdc4@syzkaller.appspotmail.com>
+Message-ID: <68a0f4cd.050a0220.e29e5.004d.GAE@google.com>
+Subject: [moderation/CI] Re: mm/migrate: Fix NULL movable_ops if CONFIG_ZSMALLOC=m
+From: syzbot ci <syzbot+cife12972d26c1d610@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] mm/cma: print total and used pages in cma_alloc()
-https://lore.kernel.org/all/20250816042842.3959315-1-gxxa03070307@gmail.com
-* [PATCH] mm/cma: print total and used pages in cma_alloc()
+[v1] mm/migrate: Fix NULL movable_ops if CONFIG_ZSMALLOC=m
+https://lore.kernel.org/all/20250816072149.1952348-1-chenhuacai@loongson.cn
+* [PATCH V2] mm/migrate: Fix NULL movable_ops if CONFIG_ZSMALLOC=m
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/e8741b6e-91e4-438c-8db8-440dbf9782e5
+https://ci.syzbot.org/series/eb730f91-fa42-4f8a-98a4-34c2eb58b60e
 
 ***
 
@@ -70,10 +70,10 @@ URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/lin
 base:      dfc0f6373094dd88e1eaf76c44f2ff01b65db851
 arch:      amd64
 compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp1~20250616065826.132), Debian LLD 20.1.7
-config:    https://ci.syzbot.org/builds/60e94b76-3f46-4fdc-936c-352408b3de6e/config
+config:    https://ci.syzbot.org/builds/6e9f1115-01df-4059-8502-b456992d1353/config
 
-mm/cma.c:784:28: error: no member named 'bitmap' in 'struct cma'
-mm/cma.c:784:61: error: too few arguments to function call, expected 2, have 1
+mm/migrate.c:58:42: error: too few arguments provided to function-like macro invocation
+mm/migrate.c:58:1: error: type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
 
 ***
 
@@ -86,7 +86,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[akpm@linux-foundation.org david@redhat.com gaoxiang17@xiaomi.com gxxa03070307@gmail.com liam.howlett@oracle.com linux-kernel@vger.kernel.org linux-mm@kvack.org lorenzo.stoakes@oracle.com mhocko@suse.com rppt@kernel.org surenb@google.com vbabka@suse.cz]
+[akpm@linux-foundation.org chenhuacai@kernel.org chenhuacai@loongson.cn david@redhat.com harry.yoo@oracle.com linux-kernel@vger.kernel.org linux-mm@kvack.org lorenzo.stoakes@oracle.com ziy@nvidia.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
