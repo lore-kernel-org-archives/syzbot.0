@@ -1,164 +1,78 @@
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D47C3451D8
-	for <syzbot@lists.linux.dev>; Mon, 18 Aug 2025 20:34:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 586C71863E
+	for <syzbot@lists.linux.dev>; Tue, 19 Aug 2025 06:03:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755549291; cv=none; b=dOTkiE+ikHJ9q6n/tPKo9QOD7lP77/N+QYE23Y9+bE2EsmfD5iaB3ZlAngkQgvAswZqh6mqj00Nx6Jt0uyvsJc3QqgliVHMjrJZjZTlolO99bEWZZHkMGKaP8j+jWTONMalzTDQPDxm9WAUyvfCXKY8UHaPIisg1TNhjzfLUR5g=
+	t=1755583430; cv=none; b=YG0RUq0oeymGbsWmTlicsIa2rNZBrQ7miaFgnefIit1qgkNfrWjLYWh929Ra+2fH2T2Q9kGJCys3WmX+Ei4JDuGh18z1+F8w5PK0xDfRbRralo33083mxRyzY288g33z+BK8Ao/IR9YaWmwY9F2Cr/4vfRQGfDaQ/GTynUPnX2I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755549291; c=relaxed/simple;
-	bh=4yzR6A/7YT7dkBSIHHnIP6X6uiQtC55TRFGBGAZKAqc=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=iqfw2jbkPSqGSUtR7R1Hul4RARqWFzl35+DT1y2D21NgIB4OOrEsIXYP/o3H+E0sVQ8djWBsoI0nFHZLuwfNYA/22bMHHLlY6yOQ5ZzJBYThcWiSDiUsszCCX/JWUhvF6KgZwriL3ibjybPboCn9+FQ1UrN6sCFoN4do2x8acz4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.71
+	s=arc-20240116; t=1755583430; c=relaxed/simple;
+	bh=QfxYsOp2sDKJ09PJWk6aV58R96Zyc63xrE396bHLlBY=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=SWvijzn9H5YnDltuugIJiRIUSnHE+EvC9KIki4kYGOrozU+m8oYU62dQtaImA69NaDhbZZa9oulrwdBxi63TFZsIEEpPuEWfmUwX6Kz85cQ8f6beu/OGGrZRjFOO0QG1lRaRyZBnaBZ3dCzlQJQ3a10YeKgaDTXqbKfJpUQK6XY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-884328d81aaso584442039f.0
-        for <syzbot@lists.linux.dev>; Mon, 18 Aug 2025 13:34:50 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-3e56ff8e3d1so177174215ab.1
+        for <syzbot@lists.linux.dev>; Mon, 18 Aug 2025 23:03:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755549289; x=1756154089;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=BoyDXRCgvcjVqUxNOBAbCb/T5mB8K10LtUqB4WgCHGI=;
-        b=G76R5Q5f8/IVwJ/JsGq4iIaIJHqNmhbbhSKiEAxdOCwaI8DdFSuW1MnA/oHog7xHlZ
-         W9ZWf74GuvEpKS2nC30nqFB4Bjw5L5jkZoy26Gm2kwPyjBcVRsBIrEAWYr0HkK0saCeL
-         OBxF553yTR4xrhbVQr5NqnS3HTbBl3gSjnEtFPnosDv93rr7tXYzJa628XoZm5VDJqpA
-         ktG3tx7B7mc6fNysqMw43/TJmY6UjXnx/vBKt777lbNA4rnbfJxjLjMobVlL8V7N2/SE
-         hoD4OvhR689d6iMWem9vPyExC+9i0ZbHj/GUAWZIIhzK8Ni6xvm2E72AypJ7lPZNASVF
-         lPEw==
-X-Gm-Message-State: AOJu0YyO3rtrnm0lB8JlHwaS1Yc8rI+wZkQVHcxLjjWtml5xKdpVn+KU
-	VIfvPIXE3XhhTKQHUDMQsixUZsXm0rg9+9V/4HrM9s1WUqWKHnmLrDF0GtiR33b9/WALJHtA35k
-	mxz1rTs51Z9MElnJZWEAdBSUADE2z35Y+HCCfdWoMsCDVIX2NKBlJS7aZiFg=
-X-Google-Smtp-Source: AGHT+IEscCi8svlk8WsDY8x+xwVRIzZF13WoqcjB/dQGvc5tqQF1D4ea+7/v7dUmnepiBNUqBGnOnxMsqZFWlGRHF7XCbser3WEg
+        d=1e100.net; s=20230601; t=1755583427; x=1756188227;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zqikTLP6kOqLD7JTF/M7//pPEl44LoqG/nmHtpBvJPA=;
+        b=jN2MFcjyjlngnvEGmLPIPBBZuLTW1dfKPcJirgTX3Mn+qBDo4Bjdf6zqweebgCTdkq
+         A9CqJcFzJYOSnSAh0EWU1isMdwrah7alup7kCTtHAuPWonB2b8hpHnWxXm7Qa3KAo61+
+         MZrVCLPJNMKxG0QDcOav5nvFbY1bLPpmiis6gVPQZbkdBVTFx4RdL3qmM+SIzWL0bN3P
+         Bpye00tAD0QSIQa/+65uFWMBwL0XVMVozl6G4E8jyjVsIOypquodiJZiS7jqLPk988FA
+         Vfmq5gzc+d1+oZhG93UYtGhWQpsxed9jWHgmJ0TaUGU0NR6PgBigDmX/NzFwmJ/aHqvs
+         013w==
+X-Gm-Message-State: AOJu0YwyouyAGekuvnIxJLxgsCtCPi/oHJF80PfBIabQWN+lI4OubS8x
+	ceKs/5auVTCIcHD3B8hC9xMNJhgQBGzpXBGASg3imCzLy+E27zTzuMsxuPqwfBbq+TiO2KLHGPh
+	m8qMJ3/mKHJ4L+QFyt7YXSMB6y4mRQzsG7fto3hipcpUvljUpn+QElmxwbRw=
+X-Google-Smtp-Source: AGHT+IElCZ4l9ySIN94BOQO1gH5cOX3XyF+vt4L1wdQ4gQlLM62Mdi69/j6uwADyO/pC8ew6NOTjBRKYO2gip3nJG/DfKgwb5VNA
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:1d90:b0:884:125c:6949 with SMTP id
- ca18e2360f4ac-88466706613mr156775239f.7.1755549289419; Mon, 18 Aug 2025
- 13:34:49 -0700 (PDT)
-Date: Mon, 18 Aug 2025 13:34:49 -0700
+X-Received: by 2002:a05:6e02:1c06:b0:3e5:7437:13d3 with SMTP id
+ e9e14a558f8ab-3e67667be69mr30149085ab.23.1755583427454; Mon, 18 Aug 2025
+ 23:03:47 -0700 (PDT)
+Date: Mon, 18 Aug 2025 23:03:47 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68a38e69.050a0220.e29e5.00b3.GAE@google.com>
-Subject: [moderation/CI] Re: net: Convert to skb_dstref_steal and skb_dstref_restore
-From: syzbot ci <syzbot+cifa4f8269e9e14b21@syzkaller.appspotmail.com>
+Message-ID: <68a413c3.050a0220.e29e5.00bd.GAE@google.com>
+Subject: [moderation/CI] Re: mm/cma: add available_count and total count in trace_cma_alloc_start
+From: syzbot ci <syzbot+cid8f4c5ed3e5472ef@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v2] net: Convert to skb_dstref_steal and skb_dstref_restore
-https://lore.kernel.org/all/20250818154032.3173645-1-sdf@fomichev.me
-* [PATCH net-next v2 1/7] net: Add skb_dstref_steal and skb_dstref_restore
-* [PATCH net-next v2 2/7] xfrm: Switch to skb_dstref_steal to clear dst_ent=
-ry
-* [PATCH net-next v2 3/7] netfilter: Switch to skb_dstref_steal to clear ds=
-t_entry
-* [PATCH net-next v2 4/7] net: Switch to skb_dstref_steal/skb_dstref_restor=
-e for ip_route_input callers
-* [PATCH net-next v2 5/7] staging: octeon: Convert to skb_dst_drop
-* [PATCH net-next v2 6/7] chtls: Convert to skb_dst_reset
-* [PATCH net-next v2 7/7] net: Add skb_dst_check_unset
+[v1] mm/cma: add available_count and total count in trace_cma_alloc_start
+https://lore.kernel.org/all/20250819032654.4345-1-gxxa03070307@gmail.com
+* [PATCH] mm/cma: add available_count and total count in trace_cma_alloc_start
 
 and found the following issue:
-WARNING in nf_reject_fill_skb_dst
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/74fec874-bca1-42a5-bb58-f3f49b95e348
+https://ci.syzbot.org/series/85453446-131c-431b-b71d-6543dc867579
 
 ***
 
-WARNING in nf_reject_fill_skb_dst
+kernel build error
 
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net-next.git
-base:      8159572936392b514e404bab2d60e47cebd5acfe
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      dfc0f6373094dd88e1eaf76c44f2ff01b65db851
 arch:      amd64
-compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp=
-1~20250616065826.132), Debian LLD 20.1.7
-config:    https://ci.syzbot.org/builds/10161afb-c9c1-4272-851c-1ded1599587=
-9/config
-C repro:   https://ci.syzbot.org/findings/7f681f6a-9952-49a0-8533-0bc185291=
-f81/c_repro
-syz repro: https://ci.syzbot.org/findings/7f681f6a-9952-49a0-8533-0bc185291=
-f81/syz_repro
+compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp1~20250616065826.132), Debian LLD 20.1.7
+config:    https://ci.syzbot.org/builds/d5a8122e-9512-4143-b6be-c2094ad5f20c/config
 
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 5862 at ./include/linux/skbuff.h:1165 skb_dst_check_un=
-set include/linux/skbuff.h:1164 [inline]
-WARNING: CPU: 1 PID: 5862 at ./include/linux/skbuff.h:1165 skb_dst_set incl=
-ude/linux/skbuff.h:1211 [inline]
-WARNING: CPU: 1 PID: 5862 at ./include/linux/skbuff.h:1165 nf_reject_fill_s=
-kb_dst+0x2a4/0x330 net/ipv4/netfilter/nf_reject_ipv4.c:234
-Modules linked in:
-CPU: 1 UID: 0 PID: 5862 Comm: kworker/u8:2 Not tainted 6.17.0-rc1-syzkaller=
--00207-g815957293639-dirty #0 PREEMPT(full)=20
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
-.2-1 04/01/2014
-Workqueue: ipv6_addrconf addrconf_dad_work
-RIP: 0010:skb_dst_check_unset include/linux/skbuff.h:1164 [inline]
-RIP: 0010:skb_dst_set include/linux/skbuff.h:1211 [inline]
-RIP: 0010:nf_reject_fill_skb_dst+0x2a4/0x330 net/ipv4/netfilter/nf_reject_i=
-pv4.c:234
-Code: 8b 0d 60 75 8b 08 48 3b 8c 24 e0 00 00 00 75 5d 48 8d 65 d8 5b 41 5c =
-41 5d 41 5e 41 5f 5d e9 03 91 67 01 cc e8 ad d0 aa f7 90 <0f> 0b 90 e9 38 f=
-f ff ff 44 89 f9 80 e1 07 fe c1 38 c1 0f 8c 2b fe
-RSP: 0018:ffffc900001e0360 EFLAGS: 00010246
-RAX: ffffffff8a14dae3 RBX: ffff88810f943b00 RCX: ffff888109618000
-RDX: 0000000000000100 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffffc900001e0490 R08: ffffffff8fa37e37 R09: 1ffffffff1f46fc6
-R10: dffffc0000000000 R11: fffffbfff1f46fc7 R12: ffff88810ec56101
-R13: dffffc0000000001 R14: 1ffff9200003c070 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8881a3c1b000(0000) knlGS:000000000000000=
-0
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000002f6a520 CR3: 0000000027716000 CR4: 00000000000006f0
-Call Trace:
- <IRQ>
- nf_send_unreach+0x17b/0x6e0 net/ipv4/netfilter/nf_reject_ipv4.c:325
- nft_reject_inet_eval+0x4bc/0x690 net/netfilter/nft_reject_inet.c:27
- expr_call_ops_eval net/netfilter/nf_tables_core.c:237 [inline]
- nft_do_chain+0x40c/0x1920 net/netfilter/nf_tables_core.c:285
- nft_do_chain_inet+0x25d/0x340 net/netfilter/nft_chain_filter.c:161
- nf_hook_entry_hookfn include/linux/netfilter.h:158 [inline]
- nf_hook_slow+0xc5/0x220 net/netfilter/core.c:623
- nf_hook include/linux/netfilter.h:273 [inline]
- NF_HOOK+0x206/0x3a0 include/linux/netfilter.h:316
- __netif_receive_skb_one_core net/core/dev.c:5979 [inline]
- __netif_receive_skb+0x143/0x380 net/core/dev.c:6092
- process_backlog+0x60e/0x14f0 net/core/dev.c:6444
- __napi_poll+0xc7/0x360 net/core/dev.c:7494
- napi_poll net/core/dev.c:7557 [inline]
- net_rx_action+0x707/0xe30 net/core/dev.c:7684
- handle_softirqs+0x286/0x870 kernel/softirq.c:579
- do_softirq+0xec/0x180 kernel/softirq.c:480
- </IRQ>
- <TASK>
- __local_bh_enable_ip+0x17d/0x1c0 kernel/softirq.c:407
- local_bh_enable include/linux/bottom_half.h:33 [inline]
- rcu_read_unlock_bh include/linux/rcupdate.h:910 [inline]
- __dev_queue_xmit+0x1d79/0x3b50 net/core/dev.c:4740
- neigh_output include/net/neighbour.h:547 [inline]
- ip6_finish_output2+0x11fe/0x16a0 net/ipv6/ip6_output.c:141
- NF_HOOK include/linux/netfilter.h:318 [inline]
- ndisc_send_skb+0xb96/0x1470 net/ipv6/ndisc.c:512
- ndisc_send_ns+0xcb/0x150 net/ipv6/ndisc.c:670
- addrconf_dad_work+0xaae/0x14b0 net/ipv6/addrconf.c:4282
- process_one_work kernel/workqueue.c:3236 [inline]
- process_scheduled_works+0xae1/0x17b0 kernel/workqueue.c:3319
- worker_thread+0x8a0/0xda0 kernel/workqueue.c:3400
- kthread+0x711/0x8a0 kernel/kthread.c:463
- ret_from_fork+0x3fc/0x770 arch/x86/kernel/process.c:148
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-
+./include/trace/events/cma.h:56:12: error: no member named 'count' in 'struct trace_event_raw_cma_alloc_start'
 
 ***
 
@@ -171,13 +85,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[abhishektamboli9@gmail.com andrew@lunn.ch ayush.sawal@chelsio.com coreteam=
-@netfilter.org davem@davemloft.net dsahern@kernel.org edumazet@google.com f=
-w@strlen.de gregkh@linuxfoundation.org herbert@gondor.apana.org.au horms@ke=
-rnel.org kadlec@netfilter.org kuba@kernel.org linux-kernel@vger.kernel.org =
-linux-staging@lists.linux.dev mhal@rbox.co netdev@vger.kernel.org netfilter=
--devel@vger.kernel.org pabeni@redhat.com pablo@netfilter.org sdf@fomichev.m=
-e steffen.klassert@secunet.com]
+[akpm@linux-foundation.org david@redhat.com gaoxiang17@xiaomi.com gxxa03070307@gmail.com liam.howlett@oracle.com linux-kernel@vger.kernel.org linux-mm@kvack.org lorenzo.stoakes@oracle.com mhocko@suse.com rppt@kernel.org surenb@google.com vbabka@suse.cz]
 
 If the report looks fine to you, reply with:
 #syz upstream
