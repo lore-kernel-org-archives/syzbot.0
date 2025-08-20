@@ -1,93 +1,86 @@
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4CBC1798F
-	for <syzbot@lists.linux.dev>; Tue, 19 Aug 2025 16:54:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B71644A01;
+	Wed, 20 Aug 2025 00:58:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755622467; cv=none; b=s0Rtx7B5LOykHUfMPFTtY23ngnlBJfSHqe8GtWcI6pkHXv0uq9nZxO/+5oycyKxyf/ROW4pbE2lzD8uvOY1dGAQR8HMZgIW85kJJrAPgz0yBrmIO5yWNpTFUfxNxSO3BTQm6kjCDGUz/KHOgMKt5aA68g7IJlaqSedg4Nl0oiGQ=
+	t=1755651524; cv=none; b=JOR06J2fN8XurhJ+Ix0wRXH465UAJIn5SNgyVfEmiccn/broE8dtUF214CMbTwDFgvl3ICA83VU/75oWP0mv8IGRCf1QsAKnVgcFU/wOeOEtOVqEpDurG9enoi+ZhrC9VyQnrPMEEaW9kH/mJeYqF0PrN2ao08CdP1e4/15XKkc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755622467; c=relaxed/simple;
-	bh=wgqqEuNFdebvIAf9Z2YLjAwPwMzxq7iFO7agpNeoMms=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=F9wqFUDBEIOE1ne4HzST30EbqLH4YwJTuwT50t4BX+BIj5qL5t8siNBq0orNqqxySDCB0wHIVEYHH6AaqB7JvPtq/Z18ub4TIxvfZoC/RapgQj23AIojEspsQnvbf9lweiYgJeo53WSKhOuFTcN+9XUpiDhyZRG+mfNwKITv33c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-88432e140b8so626415339f.2
-        for <syzbot@lists.linux.dev>; Tue, 19 Aug 2025 09:54:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755622465; x=1756227265;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Eur4A9dxWzdpRi5tz+Bi4Da+Gi1fv4nm9QGDT8Q3qdk=;
-        b=WMUFGgCcGyDtw3Q+34EERzbs/SdybyQbJ02/JpqJMBWz0bzFEDg7L2gHVjzskAXPEI
-         nC6dZAjEGyDrfUxkAyAhPUHeLNLnAd9APmQt9829kk8dnjnI1kRJSBXLBsZgr9FHdRz8
-         g7vUPbR2CMcjxjUu5YY6uE6lznskINC/x++OSORD++QBdJtMmwmYYGtv+ZAK7LB4eNao
-         bkPvFFjA8R1lGHbzvvozWCJMmu/QAIzx8ZKV5RUAYs238PrbdytuwSEt3Oil84PlOWZJ
-         eZ/lryRROiDylLnrSRjOkGFcqsT4mb5zqJns6ugqg2hNqbwKdn3PUGVeY2Q9cu6PwVuo
-         60aw==
-X-Gm-Message-State: AOJu0YxcclBHONVB28noaVEv5xJZVV2Kvrwpr/egP4eA83rrQuzcvyPC
-	BrrG3d1828oB/CvA1703bEBeaVhCaBvI9PP/CmH5fZWmRYuEgfc2AjV1+Vriw+TK9VSD5cJzHYV
-	bwLT9Z/tW8c6TKkjbytQ7nB9qi9NhUu2YLezvqt88rPg7o9BqmnXk4pVmjIE=
-X-Google-Smtp-Source: AGHT+IFCyeHOfPqPogQVusmAXm9yyMeMZRrx6yH5yLpV20leKeZN/s28gGPMdvx4lTSpyMQslITU7+qP95yIS4sRy0DObFGwnfZV
+	s=arc-20240116; t=1755651524; c=relaxed/simple;
+	bh=/349ALdsu4QBDpaXh3U9xGpGjsaL10DyieyEXYkgeSs=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=A3GHpsObI6Avogv4hII/FFtvCTUoJJIn/9TgNQDCvUrqrreHXMnAWn5xcTaJypQRLERr+cdSXunLndFC4KWr2mMBN5BEm2saVIThWbL5G6GzOl7qT7UYJ1CUP+FvGUX60YtoSbV2hLDKdtEACyoQ6B7Rc/LR9dtZ9Jl5FV3KZOA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ATcMYPB4; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ATcMYPB4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C0EBC4CEF1;
+	Wed, 20 Aug 2025 00:58:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1755651524;
+	bh=/349ALdsu4QBDpaXh3U9xGpGjsaL10DyieyEXYkgeSs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=ATcMYPB4KRqpAleWMOvmhVlKcZdpONku/9K5sCzlADLVRkrdf8ogJh/7c7DS54K/S
+	 hXXXPomJ5r75cKXxwktrQ6MS8n8rrRuyoUDHi+vlZQv/Jkqtzo5dbq5/1GlEq478LL
+	 NxnpRAanHm0IArifUsELU0TWiFoCRPv2PZfrbcRufy8PrJ2I7GljRiE37EOvT5JdXj
+	 eFtjm6dbsXqMFn8GRYrzuRyZ+xpzZWFkLj9riYSST9PhSVzX7CjJcBJ+2TSX1bTAhc
+	 wwOQ2mx4dTS0CzcqTkHG7qszkhsW2iCtyLdVa5WjDgmsppMQOhgCoU2OESbOU2IMv6
+	 GursPn9kkxY8Q==
+Date: Tue, 19 Aug 2025 17:58:42 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Aleksandr Nogikh <nogikh@google.com>
+Cc: syzbot ci <syzbot+ci77a5caa9fce14315@syzkaller.appspotmail.com>,
+ abhishektamboli9@gmail.com, andrew@lunn.ch, ayush.sawal@chelsio.com,
+ coreteam@netfilter.org, davem@davemloft.net, dsahern@kernel.org,
+ edumazet@google.com, fw@strlen.de, gregkh@linuxfoundation.org,
+ herbert@gondor.apana.org.au, horms@kernel.org, kadlec@netfilter.org,
+ linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev, mhal@rbox.co,
+ netdev@vger.kernel.org, netfilter-devel@vger.kernel.org, pabeni@redhat.com,
+ pablo@netfilter.org, sdf@fomichev.me, steffen.klassert@secunet.com,
+ syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot ci] Re: net: Convert to skb_dstref_steal and
+ skb_dstref_restore
+Message-ID: <20250819175842.7edaf8a5@kernel.org>
+In-Reply-To: <68a49b30.050a0220.e29e5.00c8.GAE@google.com>
+References: <20250818154032.3173645-1-sdf@fomichev.me>
+	<68a49b30.050a0220.e29e5.00c8.GAE@google.com>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:a905:0:b0:87c:a4e:fc7d with SMTP id
- ca18e2360f4ac-88471aec288mr9074739f.14.1755622464781; Tue, 19 Aug 2025
- 09:54:24 -0700 (PDT)
-Date: Tue, 19 Aug 2025 09:54:24 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68a4ac40.050a0220.e29e5.00cb.GAE@google.com>
-Subject: [moderation/CI] Re: mm/cma: add 'available count' and 'total count'
- to trace_cma_alloc_start
-From: syzbot ci <syzbot+ci08f4b179bfd32e8e@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-syzbot ci has tested the following series
+On Tue, 19 Aug 2025 08:41:36 -0700 syzbot ci wrote:
+> syzbot ci has tested the following series
+> 
+> [v2] net: Convert to skb_dstref_steal and skb_dstref_restore
+> https://lore.kernel.org/all/20250818154032.3173645-1-sdf@fomichev.me
+> * [PATCH net-next v2 1/7] net: Add skb_dstref_steal and skb_dstref_restore
+> * [PATCH net-next v2 2/7] xfrm: Switch to skb_dstref_steal to clear dst_entry
+> * [PATCH net-next v2 3/7] netfilter: Switch to skb_dstref_steal to clear dst_entry
+> * [PATCH net-next v2 4/7] net: Switch to skb_dstref_steal/skb_dstref_restore for ip_route_input callers
+> * [PATCH net-next v2 5/7] staging: octeon: Convert to skb_dst_drop
+> * [PATCH net-next v2 6/7] chtls: Convert to skb_dst_reset
+> * [PATCH net-next v2 7/7] net: Add skb_dst_check_unset
 
-[v1] mm/cma: add 'available count' and 'total count' to trace_cma_alloc_start
-https://lore.kernel.org/all/20250819134817.247495-1-gxxa03070307@gmail.com
-* [PATCH] mm/cma: add 'available count' and 'total count' to trace_cma_alloc_start
+> ***
+> 
+> If these findings have caused you to resend the series or submit a
+> separate fix, please add the following tag to your commit message:
+> Tested-by: syzbot@syzkaller.appspotmail.com
 
-and found the following issue:
-kernel build error
+Hi Aleksandr!
 
-Full report is available here:
-https://ci.syzbot.org/series/04e5c3e0-46eb-416a-9f9e-8ba894b4c331
+Could we do something about this Tested-by: tag?
+Since the syzbot CI reports are sent in reply to a series patchwork and
+other tooling will think that syzbot is sending it's Tested-by tag for
+this series.
 
-***
+In some cases we know that the issues found are unrelated, or rather
+expect them to be fixed separately.
 
-kernel build error
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      dfc0f6373094dd88e1eaf76c44f2ff01b65db851
-arch:      amd64
-compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp1~20250616065826.132), Debian LLD 20.1.7
-config:    https://ci.syzbot.org/builds/470ed714-fbd7-4ae9-ad8c-97c3fe525587/config
-
-./include/trace/events/cma.h:56:12: error: no member named 'count' in 'struct trace_event_raw_cma_alloc_start'
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-The email will later be sent to:
-[akpm@linux-foundation.org david@redhat.com gaoxiang17@xiaomi.com gxxa03070307@gmail.com liam.howlett@oracle.com linux-kernel@vger.kernel.org linux-mm@kvack.org lorenzo.stoakes@oracle.com mhocko@suse.com rppt@kernel.org surenb@google.com vbabka@suse.cz]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
+Could we perhaps indent the tag with a couple of spaces? Not 100% sure
+but I _think_ most tools will match the tags only from start of line.
