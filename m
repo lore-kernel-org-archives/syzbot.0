@@ -1,166 +1,147 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEE552E7182
-	for <syzbot@lists.linux.dev>; Wed, 20 Aug 2025 11:34:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB2042D94BF
+	for <syzbot@lists.linux.dev>; Wed, 20 Aug 2025 13:39:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755689660; cv=none; b=harbVh5aQa+E6WgoX2fYQpmBQG1adBS7znc/mAnlX8hgqHDBVfjZlJ7eA3ALE3jr7JW0HeAMBaooniRoMLDSlx+unqmloBngq0RURxHLebr76HxhMmOcBnIo7S0cJbN+0pzVFEkXZhmlyPghPhq4z2fn7MsPX1O07jvjxu1kz3w=
+	t=1755697158; cv=none; b=YOnMxmYWqVEvo8izRIVYF1y4jnfPoB2Y5aqwF6J1vPH8pRBPO+a50/epfVOJXMUZs7Da/Qi3fO2ouW3AIN7ifuz6TbotrNtn89sYPNfFjHDBW97WI4as5MF2BXuAES0ZWQGNofMI2+rml8JQKT190z/yEe+qbmOHl0cL5KlenEk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755689660; c=relaxed/simple;
-	bh=d2CMTsFOfospJM6Ts49dEKniaIoVRgIPj7W278GzAJ8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YFfbqXfYY566FdW+ygyvKnliRNKkgC4ThjKVvn7711dfFWS1JLJef9Pc561zGyT0ymryjl9AD58ne+vkUys5apRQ9xOV8tVB4oPuISedsVYNIkoRbAWlRVelQE6aaB0kfWcaHq9O8sJj+Hk03H+l0ubkciDx/pjz6Td4tH/GcnI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cM3u9h0F; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cM3u9h0F"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-45b4a25ccceso2768835e9.3
-        for <syzbot@lists.linux.dev>; Wed, 20 Aug 2025 04:34:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1755689656; x=1756294456; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uXH+qPEUNUSeKVkwKxdBzrKxeCxplvf+HtayDB2icuw=;
-        b=cM3u9h0FDpLS1ZH8gzkamdF38G8P8UEl55sVUrp/UyH1xQRNN+seNlJWSv5540tlIb
-         xnHcZKpk3IK3gP4Y4rsGiQhKg+llH7s6xUQZ7XM1yg7O3CjAzB6jNAmuT0gt4+PaN4LI
-         uiu5eZOeYmIWgODP/5LXHHjyNApJyHnxlfame/mE8WsogWRt4csRcDAUGTQOw+6hVglK
-         mJTGUt9/UwC9NahcAA9GHHgnNA3sgLGMDtJUFur+VCga181hyRzGtRz00yB1/P5e9/7+
-         YvV/Yi0ZogmINgDuzfmANX81GdiCo/pCj3xY2DyV+lEBbzvZwoA+XQblcvNNJrjcG2My
-         K+6A==
+	s=arc-20240116; t=1755697158; c=relaxed/simple;
+	bh=A7szlMuxj9+l/LShgbe909kui/Wz9p61VR9MyU9ZLQA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Dztr6iTCB3TulL9CoUXQJy5GAd2MEZyBYd5nR4+OLd38aR/u85fQXSt3KaNQ+0lku9jc7GkyvMXeFwInfOjTSNiDLS5p5kZ1dydIpifn2HF3+rqHt0m2vc8AVSEVAA1HOiJN71LHmjEcGDcAbCDUwXBFXi+h8j6vKlOZAKNwugc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-88432da036bso726061339f.1
+        for <syzbot@lists.linux.dev>; Wed, 20 Aug 2025 06:39:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755689656; x=1756294456;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uXH+qPEUNUSeKVkwKxdBzrKxeCxplvf+HtayDB2icuw=;
-        b=EP1ovdXQ3Fqas1AtHnLklH245vuwsCZDGmESC9b+RNckOstXbwqKH68KQcJyGmcsk6
-         LbVEZrL3gctmfAi5jLBDgBSfl0MGJqE8EVIE0n08WZbFx4ctnJraMvgZ5CYiY/wbjL7r
-         hvTg8y2Xm51pw9h0/aYVvp/A8mU2SD8aLMkhtHm2GL19x47YYmBUIPZOo0rgCdWKGWxv
-         voNcojyyBtRyIzJ5U6Hds+XL+ItLCyo2qEo5+D/663NM1EpWqsk1CRskrrjC1TTa6MLb
-         I4n5Ym8Yt/1jNRqEbjQdnjUn9Kuu9zajJjTyM3cwhacWkhhQXYiYc2+IvDnLDPsMurb4
-         ZDOg==
-X-Forwarded-Encrypted: i=1; AJvYcCX8OSWEMRvovOdw4YtHrepDtb66l1rWSlrbl0mwZuxZlnlfGVtCvUhQ4n3bEhxumtowGhWGg0A=@lists.linux.dev
-X-Gm-Message-State: AOJu0YxM5YGBqo4UvI9QkvquoR+dmqlIN2K0MlUnFv6uQGnnm8IhquhX
-	TxsIGwzHRQbZ6ImKka/CFFQ5JGdZthTRly+OkQgRjRaKTrB6TbmjokfS
-X-Gm-Gg: ASbGncsQEdU2IXVSSlWSNdEQ7fm/sv2EoLAvN9/GGwz/4cD0iiytEwYrcY4rKPiLJv9
-	z78rAVKGStT+C6bHfJk0XENZKkcLcHPFPOkVk4d2Fa41fzP3go0eNbEfXp65/5GDhz5NtXx0FwU
-	TgiQdYVDZFxiL3BmdnuLbhsDPkaCvYNoIlTDG5LibSmMyR2haHUYq/ChqGgxGpNKmjPqh3QsJVP
-	21k9UaHT+pa5onqMw9+rf55ereJHDnWqny04VOJKgTNTxq+61CqHmEsi47zD8enyDHTkcspi/RG
-	mLg1uLYycp+MUuP6iSqdDema/fMHrxcCksafJ/y+sfX5GWcpUWpj1ny7/IGI8dnn61PRNqz30fb
-	9VR3zkT1hG3uBW2XTDKsP2IZzjOydcLQoKuOlICEJtbEdByTIPq23MU+G2Zj/c8Fl6emE4D3jBI
-	wj3Soevdj2z/9ihHqcXrybPUh/YIOV/+E=
-X-Google-Smtp-Source: AGHT+IECunXqBGlVdSyROfRgJ5fukZidvqWlPfHSoea9nFU4IDulE/wYai8mTkzdV1RYKNEodU61Fw==
-X-Received: by 2002:a05:6000:2481:b0:3b7:8268:8335 with SMTP id ffacd0b85a97d-3c32fb2fe1emr1793826f8f.42.1755689655922;
-        Wed, 20 Aug 2025 04:34:15 -0700 (PDT)
-Received: from mail.gmail.com (2a01cb0889497e0086dd4a301ba288fd.ipv6.abo.wanadoo.fr. [2a01:cb08:8949:7e00:86dd:4a30:1ba2:88fd])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3c0771c1677sm7546278f8f.39.2025.08.20.04.34.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Aug 2025 04:34:15 -0700 (PDT)
-Date: Wed, 20 Aug 2025 13:34:13 +0200
-From: Paul Chaignon <paul.chaignon@gmail.com>
-To: syzbot ci <syzbot+ci59254af1cb47328a@syzkaller.appspotmail.com>
-Cc: andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-	daniel@iogearbox.net, eddyz87@gmail.com, shung-hsi.yu@suse.com,
-	yonghong.song@linux.dev, syzbot@lists.linux.dev,
-	syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot ci] Re: bpf: Use tnums for JEQ/JNE is_branch_taken logic
-Message-ID: <aKWytdZ8mRegBE0H@mail.gmail.com>
-References: <ba9baf9f73d51d9bce9ef13778bd39408d67db79.1755098817.git.paul.chaignon@gmail.com>
- <689eeec8.050a0220.e29e5.000f.GAE@google.com>
+        d=1e100.net; s=20230601; t=1755697156; x=1756301956;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=bjhxpn1DiG+O92jFf7g7vwSa4Vs7zOfCE2Tsti/rrxE=;
+        b=dLB3fw3Erawb9YWBIMzmO8azhkP2ZfDWmpPxofdoUJbqB/WQvbiI2VUKrg1olkY0xJ
+         +GcldpHUKwW/oDPyz58s1krcAW7XJN10/+seTfxI8KXa8gpTKXYVaXKTgvTPiztgCS8R
+         wHT/QeoHBtC12KWugXhiT9jnQtgx9/Z9eHTJWuEyOA6OLTrQoTeW9fIBx6q6gyZWbWtj
+         WDiITpccg/dE1CyJNVPs+WDkR0Ff63D2UX/qaXozAYDyHZDLDggKcJyxHplSMLROfzBh
+         cimL5/MPtWi13NzbYUM9WJL0hHcFBaC8167QA2kwlM8WGraI+p/XusWeKUgQGhoGyY2K
+         8i+w==
+X-Gm-Message-State: AOJu0Ywm03nRkF06HkkWbae0NmRzvE3fh1Xq/Fr+aDcFH3eHOz4BRK5w
+	zooVnBtFym3qD9xG5RSCrcjm9k4572fm/9dRjJajFRQFzs0XgEtnEK055R9RBcX8leWsbYYWzJp
+	BYKvPbQvsx8S9lyViJQJxJbkHBzKC08o9emenpjWRojNmCfMhDSBLvi6xkGQ=
+X-Google-Smtp-Source: AGHT+IEnq8/lc7a0hCHIMReYZayQL1Gao/BlzwlKHzg/yPNj8Dl8C+EIxUXgU6fH1meZHWDvGpDg5WMgK5ZL0agFoPy9lcXPEE9g
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <689eeec8.050a0220.e29e5.000f.GAE@google.com>
+X-Received: by 2002:a05:6602:6d16:b0:881:99eb:e212 with SMTP id
+ ca18e2360f4ac-88471b3468emr645380639f.9.1755697156044; Wed, 20 Aug 2025
+ 06:39:16 -0700 (PDT)
+Date: Wed, 20 Aug 2025 06:39:16 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68a5d004.050a0220.3d78fd.0002.GAE@google.com>
+Subject: [moderation/CI] Re: net: af_packet: Use hrtimer to do the retire operation
+From: syzbot ci <syzbot+ci1b055c1c5811b39f@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Aug 15, 2025 at 01:24:40AM -0700, syzbot ci wrote:
-> syzbot ci has tested the following series
-> 
-> [v1] bpf: Use tnums for JEQ/JNE is_branch_taken logic
-> https://lore.kernel.org/all/ba9baf9f73d51d9bce9ef13778bd39408d67db79.1755098817.git.paul.chaignon@gmail.com
-> * [PATCH bpf-next 1/2] bpf: Use tnums for JEQ/JNE is_branch_taken logic
-> * [PATCH bpf-next 2/2] selftests/bpf: Tests for is_scalar_branch_taken tnum logic
-> 
-> and found the following issue:
-> WARNING in reg_bounds_sanity_check
-> 
-> Full report is available here:
-> https://ci.syzbot.org/series/fd950b40-1da8-44b1-bd12-4366e4a354b1
-> 
-> ***
-> 
-> WARNING in reg_bounds_sanity_check
-> 
-> tree:      bpf-next
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf-next.git
-> base:      07866544e410e4c895a729971e4164861b41fad5
-> arch:      amd64
-> compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp1~20250616065826.132), Debian LLD 20.1.7
-> config:    https://ci.syzbot.org/builds/c4af872a-9b42-4821-a832-941921acc063/config
-> C repro:   https://ci.syzbot.org/findings/8dfae15e-cda5-4fa6-8f95-aab106ebd860/c_repro
-> syz repro: https://ci.syzbot.org/findings/8dfae15e-cda5-4fa6-8f95-aab106ebd860/syz_repro
-> 
-> verifier bug: REG INVARIANTS VIOLATION (true_reg1): range bounds violation u64=[0xffffdfcd, 0xffffffffffffdfcc] s64=[0x80000000ffffdfcd, 0x7fffffffffffdfcc] u32=[0xffffdfcd, 0xffffdfcc] s32=[0xffffdfcd, 0xffffdfcc] var_off=(0xffffdfcc, 0xffffffff00000000)
+syzbot ci has tested the following series
 
-My is_branch_taken patch fixes some invariant violations. The test from
-the second patch is even adapted from a syzkaller reproduction manually
-extracted from logs at [1]. Ironically, by improving the branch
-detection, we can also sometimes degrade state pruning (as discussed in
-the first patch) which causes the exploration of new branches.
+[v6] net: af_packet: Use hrtimer to do the retire operation
+https://lore.kernel.org/all/20250820092925.2115372-1-jackzxcui1989@163.com
+* [PATCH net-next v6] net: af_packet: Use hrtimer to do the retire operation
 
-All that to say the current syzkaller repro is not directly caused by
-my patch. It simply causes a new branch to be explored, and there is a
-different kind of invariant violation on that branch. The full (sk_skb)
-program is below [2], but the end of verifier logs are enough to
-understand what's happening:
+and found the following issue:
+WARNING in hrtimer_forward
 
-    12: (2f) r5 *= r6                  ; R5_w=scalar(smax=0x7ffffffffffffffc,umax=0xfffffffffffffffc,smax32=0x7ffffffc,umax32=0xfffffffc,var_off=(0x0; 0xfffffffffffffffc)) R6_w=0x9fe719f2
-    13: (65) if r7 s> 0x1 goto pc-7    ; R7_w=scalar(id=67,smin=smin32=0,smax=umax=smax32=umax32=1,var_off=(0x0; 0x1))
-    14: (07) r7 += -8243               ; R7=scalar(smin=smin32=-8243,smax=smax32=-8242,umin=0xffffffffffffdfcd,umax=0xffffffffffffdfce,umin32=0xffffdfcd,umax32=0xffffdfce,var_off=(0xffffffffffffdfcc; 0x3))
-    15: (1e) if w5 == w7 goto pc+0
-    verifier bug: REG INVARIANTS VIOLATION (true_reg1): range bounds violation u64=[0xffffdfcd, 0xffffffffffffdfcc] s64=[0x80000000ffffdfcd, 0x7fffffffffffdfcc] u32=[0xffffdfcd, 0xffffdfcc] s32=[0xffffdfcd, 0xffffdfcc] var_off=(0xffffdfcc, 0xffffffff00000000)
+Full report is available here:
+https://ci.syzbot.org/series/81b08fd6-a740-4520-9c88-b7dcdc7953a1
 
-The invariant violation follows the same pattern as usual: the verifier
-walks a dead branch, uses it to improve ranges, and ends up with
-inconsistent ranges. In this case, the u32 min value is larger than the
-u32 max value. We can notice that the condition at instruction 15 is
-always false because, if w5 and w7 were equal, the intersection of their
-tnums would give us a constant (0xffffdfcc) that isn't within R7's u32
-range. Hence, w5 and w7 can't be equal.
+***
 
-I have a patch to potentially fix this, but I'm still testing it and
-would prefer to send it separately as it doesn't really relate to my
-current patchset.
+WARNING in hrtimer_forward
 
-1 - https://syzkaller.appspot.com/bug?extid=c711ce17dd78e5d4fdcf
-2 - syzkaller program:
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      da114122b83149d1f1db0586b1d67947b651aa20
+arch:      amd64
+compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp1~20250616065826.132), Debian LLD 20.1.7
+config:    https://ci.syzbot.org/builds/0ebac6ed-b7ae-4c3d-9edc-db3a521ad7a0/config
+C repro:   https://ci.syzbot.org/findings/c3421800-7bbc-4097-a1cf-36e97a4dea98/c_repro
+syz repro: https://ci.syzbot.org/findings/c3421800-7bbc-4097-a1cf-36e97a4dea98/syz_repro
 
-    r5 = *(u32 *)(r1 +112)
-    r3 = *(u32 *)(r1 +108)
-    r0 = r10
-    r0 += 85328110
-    if w3 != w0 goto +1
-    if w5 == 0x0 goto +0
-    r6 = *(u16 *)(r1 +62)
-    r7 = r0
-    if w5 > 0x2007ff0f goto +7
-    r6 <<= 32
-    w6 -= 1612244494
-    r0 = r5
-    r5 *= r6
-    if r7 s> 0x1 goto -7
-    r7 += -8243
-    if w5 == w7 goto +0
-    r4 = r5
-    r4 += -458748
-    if r3 < r4 goto +1
-    exit
-    if r0 == 0x0 goto +0
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 6012 at kernel/time/hrtimer.c:1052 hrtimer_forward+0x1d6/0x2b0 kernel/time/hrtimer.c:1052
+Modules linked in:
+CPU: 1 UID: 0 PID: 6012 Comm: syz.0.20 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:hrtimer_forward+0x1d6/0x2b0 kernel/time/hrtimer.c:1052
+Code: 4c 89 33 48 8b 04 24 eb 07 e8 66 30 12 00 31 c0 48 83 c4 18 5b 41 5c 41 5d 41 5e 41 5f 5d e9 01 b0 ce 09 cc e8 4b 30 12 00 90 <0f> 0b 90 eb df 48 89 e8 4c 09 f8 48 c1 e8 20 74 0a 48 89 e8 31 d2
+RSP: 0018:ffffc900029def90 EFLAGS: 00010293
+RAX: ffffffff81ad7be5 RBX: ffff888028782648 RCX: ffff88810e88d640
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: 000000000000116b R08: ffffffff8fa37e37 R09: 1ffffffff1f46fc6
+R10: dffffc0000000000 R11: ffffffff81724e10 R12: ffff888028782660
+R13: 00000000007a1200 R14: 1ffff110050f04cc R15: 0000000000000001
+FS:  000055555f6cd500(0000) GS:ffff8881a3c1c000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffcf1be3d88 CR3: 0000000023c86000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ hrtimer_forward_now include/linux/hrtimer.h:366 [inline]
+ _prb_refresh_rx_retire_blk_timer net/packet/af_packet.c:697 [inline]
+ prb_open_block+0x3a7/0x5e0 net/packet/af_packet.c:930
+ prb_dispatch_next_block net/packet/af_packet.c:994 [inline]
+ __packet_lookup_frame_in_block net/packet/af_packet.c:1152 [inline]
+ packet_current_rx_frame net/packet/af_packet.c:1178 [inline]
+ tpacket_rcv+0x1229/0x2f40 net/packet/af_packet.c:2409
+ deliver_skb net/core/dev.c:2472 [inline]
+ deliver_ptype_list_skb net/core/dev.c:2487 [inline]
+ __netif_receive_skb_core+0x3107/0x4020 net/core/dev.c:5923
+ __netif_receive_skb_list_core+0x23f/0x800 net/core/dev.c:6054
+ __netif_receive_skb_list net/core/dev.c:6121 [inline]
+ netif_receive_skb_list_internal+0x975/0xcc0 net/core/dev.c:6212
+ netif_receive_skb_list+0x54/0x450 net/core/dev.c:6264
+ xdp_recv_frames net/bpf/test_run.c:280 [inline]
+ xdp_test_run_batch net/bpf/test_run.c:361 [inline]
+ bpf_test_run_xdp_live+0x1786/0x1b10 net/bpf/test_run.c:390
+ bpf_prog_test_run_xdp+0x713/0x1000 net/bpf/test_run.c:1322
+ bpf_prog_test_run+0x2c7/0x340 kernel/bpf/syscall.c:4590
+ __sys_bpf+0x581/0x870 kernel/bpf/syscall.c:6047
+ __do_sys_bpf kernel/bpf/syscall.c:6139 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:6137 [inline]
+ __x64_sys_bpf+0x7c/0x90 kernel/bpf/syscall.c:6137
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f31da38ebe9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffcf1be5358 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 00007f31da5b5fa0 RCX: 00007f31da38ebe9
+RDX: 0000000000000050 RSI: 0000200000000600 RDI: 000000000000000a
+RBP: 00007f31da411e19 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f31da5b5fa0 R14: 00007f31da5b5fa0 R15: 0000000000000003
+ </TASK>
 
-[...]
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[davem@davemloft.net edumazet@google.com ferenc@fejes.dev horms@kernel.org jackzxcui1989@163.com kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com willemdebruijn.kernel@gmail.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
