@@ -1,151 +1,135 @@
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAA582E62D4
-	for <syzbot@lists.linux.dev>; Thu, 21 Aug 2025 06:54:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D6242206AF
+	for <syzbot@lists.linux.dev>; Thu, 21 Aug 2025 10:04:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755759261; cv=none; b=s1BofRyB+zcivIDisZLPtp4b15Y9ZEUo+J4LyLj6Ge8ewF+Bb6nLCFKVD+RoaaU1OVkwatlvag9c16hbREJ1w8D6K2Ylcl1QkE4KcwIXMi6IdwVj6tdZfRMJsze1Cy5+GityVxH5dzh3SehSlsYqfq2aHiPvXl+epEW6D6EYOnE=
+	t=1755770682; cv=none; b=nnGYeDxeGx3FgICjqnIwrwMJjfkrKjV9Mk4wisip+NwdlNxZzxoJz/nD8VNFDKSCf3G5BbQohefaN6i8Riqg6ELNhEmvrldKaP8kExm6YmWCuSAaIOVOmsDy2YFUboyk/T2NV7930jUw3xqD37TWCj6vaVaEhfNRgVKR+2Cm3Ao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755759261; c=relaxed/simple;
-	bh=hrAWFGV+CGAe+qIHaf2Sc+WoGVgtk7TiCGGGYrfaqBo=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=aEo0Lf5lSKD6du/ZxtbNGNRkhRjYqVT7Q7xShwqpPDlDFv7hoQ98Vrq3zPNKYawPD2OAc0k4o6JXDidc+PUTjH14P7FkgFjRqeGUAjBzPLqLHBq6DsgtnolP1isLDkaYhF1XiYp1x8Ej3Rp/gqKhg+LY3X1uQyPEAUji7XssvGI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-3e56ff20434so5788335ab.0
-        for <syzbot@lists.linux.dev>; Wed, 20 Aug 2025 23:54:19 -0700 (PDT)
+	s=arc-20240116; t=1755770682; c=relaxed/simple;
+	bh=eHtjpzeBUotBe9iJ5shsBWXjPiisjrMOZofLgwf8DmA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qrxC9fCiN8JILJPDdwu1AKi9KhzxON3Qb2jXn4mpqn5BcXKdaPmBjBBn4mZQjIq2ghTw9ocwLcW82lGmpqRhY/ypxkyXMoLLMaibEf9pRQM109F0cqfvh5lcmfNeOjqkkSoKIp/oFVEXDcy/QPRm+xYNaw7Nzco29OcbCj2GSNE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bUNiSjGC; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bUNiSjGC"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-45a1abf5466so5317985e9.0
+        for <syzbot@lists.linux.dev>; Thu, 21 Aug 2025 03:04:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1755770679; x=1756375479; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+qSqnNW5BPDmS3JUddq1Dx24H6xetXszPTWmtepLBsE=;
+        b=bUNiSjGCXet0v08L1G6VPbrpOWDQ1aL2+7S6nrG3i4EIKeIa7rK8TErpwaqBGQHMQZ
+         WU0AaWugHQH1cRm6pR92nZhxiTU0eoMywcjn4RIfCTh9BlKuudurcHfDkawYuYCOLXJD
+         0B7FG4+Hmd8M5UPnhPyeMc7pYmQ2MxQYYnNH4YJuFm6NI8a4eXKS/k3GlIVL1i4Y7Mqc
+         KN2fx+vMOCmXzyqFbrnkSK2/7IKd33I0vLXn5zwLfV9UFfiGX3M3XTJ2BtdosbZ+Gzzi
+         q+JGe+gsaxm2JtOrZO1oJ4UO8zTBHwyA/ZfNfqcjYFWkXYxzjoIIZb+iWdAYxpHwAvAK
+         WmkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755759259; x=1756364059;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GqATkk+gA0fXgoSzHNuDLvT5KX5gJtJjvtcaee5t9Ak=;
-        b=i5SFjT/CTy9HwPzNqbQQy6QdCC/4eL6UtAi+ifm1issV8o76fe9VqLEufZ7/KjF2Tc
-         p2eJoNZQzWW3eTHMZMymNj+thWyqesnopezxg4tcGuf9whd5EynEN6Dx9duLpBhVzv/g
-         BuD+ILaZmqlN/9ywzHtieprdAC2DDF+HvJ4FH0WAL/J3ScNzYy/aN/RV+7N0Q9JAZ/2G
-         nN6V0oPLWTnNLu8mSgQ9NbY4YbK+GK0V0YLF7ThVYrIcaQ7hj4b55KclpGEuQ32xBs94
-         Xgi9wlvJhrCpvXFC9bh4n8Zzxml2SGvZsdzI2bNTr8Vkjx3tkZRqqftSpM7Hy6PpTQl4
-         pq4A==
-X-Gm-Message-State: AOJu0Yw3Iqwlo5R9lLz6QUn0OY6MSilpXA94aKfo2yQhzPvI5qW88csa
-	j3w1989T2Zt5MAO/mrKJChLfO6jCI66KvLO9fahCZ+pK6goQBfCLrXkULB/UzaM68Ht7lzSKP7B
-	yU8CZ13EVqF1yb5Dy9M+xnpCFMsk758iXoQC8kllzqpaqkO/nQWzXukqB8EU=
-X-Google-Smtp-Source: AGHT+IHA8ppsE5wbzTdts67r1zk4x+sHmZ2FcMVx5FD9+NT77/o9wDkG/YuDjtLK9QxY3bPa1bVi6D+JF3JRuvEEiVQi+jUrn9jd
+        d=1e100.net; s=20230601; t=1755770679; x=1756375479;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+qSqnNW5BPDmS3JUddq1Dx24H6xetXszPTWmtepLBsE=;
+        b=vdxlBGDh8AIdoahViBDFhPcHnZFt3/XGli9vorlBlU6+VJS7TWIa0LxqNhHtke0koU
+         Hd66IKizG5aE5m3D1YD9pCe1/aillkuBhvfGeAsV0Z7ZTsh6rZnFEVzDDygmVfiuX6W6
+         DY61C8E1DXP6RreOZZvwuelNL5WdMiIKj9BW3iVUmPdgImlN0FBY0U29LkTTOjkfAPHi
+         fDSGo4qByMZzvdLramcg6WpChpQnfWcwF9fFAxRKDBwlGtCqhG7yvmLHVA7/tOd40vhT
+         Sd7/7Z7IjJts4B3Z+PJSWlt05+/8IWAnFFWktynqB4x7gR4ofJaBDmomT95wsuKHPrvj
+         bGKw==
+X-Forwarded-Encrypted: i=1; AJvYcCWQeqAi8dNeqonebafzwtVq0HD2mGlb6nXxt6aF41cXeTYe2/+drjOAylQI3NmeF5MrmuVqnfs=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz1BUwWfegrDH7YmLsw4HFrDofKrekAemSuZH+MGWbWwZp8NA32
+	2t83c3KxX42K9jPNiZKl+yGCEGV4zSVlXbyHdFwXzJX+K7NLlsACuVAC
+X-Gm-Gg: ASbGncsXCXh4gTAxSG6dvA9WVH9TX7/IxJvdw+2LK2VUoPxAzUS8ysI6MFysqGelcm+
+	44Eq8mCZp1aG+5MZ1l7DSm7/94LqE1oPqnTlVLUmbZ4kJT8SW/2gGKdx0gCR1NcZmDE0LgsGnHH
+	B1+hLhrwjs5L1BB/Ebyl92PVepe/LxNLCcSVNfjYnVew0IgQfm9mx3/GMwCNr67ZByce8ZHfQtP
+	IR1o85zz9xYSj9DEgviKFoJgiKpnHnntlB3Jc5ZvhRtT92ChsMdbb2DsUlOHKjoj0q5MFrAZ1Hs
+	T7MWbGJCkLPJCcwwiZPa2HfznSwvhAmryYGo85dBWk4m3S/AoPzadmakzft/0Lb3ZUfpejw/8mn
+	zXceDfGERRpCBZ2hxgVqQHShXxAff7PUTQcmuSOpCWWt/9RpWRb2QCxuPWkB1y9P++6BbNHhWHh
+	A1aHlx3o7YoYt5yf4WtE7KEgPSZ+2apYw=
+X-Google-Smtp-Source: AGHT+IE+6GXkISYGbni+uaCAjkw1VzDWAcm9sJXxkCr8OoOVKD4QCrcDcbCgM7Qv9pG6Y3Wc4AVqDQ==
+X-Received: by 2002:a05:600c:4f53:b0:458:d289:3e26 with SMTP id 5b1f17b1804b1-45b4d8de8b9mr15459915e9.2.1755770678710;
+        Thu, 21 Aug 2025 03:04:38 -0700 (PDT)
+Received: from mail.gmail.com (2a01cb0889497e00765727e34656ae4a.ipv6.abo.wanadoo.fr. [2a01:cb08:8949:7e00:7657:27e3:4656:ae4a])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45b4db387fdsm23361045e9.11.2025.08.21.03.04.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Aug 2025 03:04:38 -0700 (PDT)
+Date: Thu, 21 Aug 2025 12:04:36 +0200
+From: Paul Chaignon <paul.chaignon@gmail.com>
+To: Eduard Zingerman <eddyz87@gmail.com>
+Cc: syzbot ci <syzbot+ci59254af1cb47328a@syzkaller.appspotmail.com>,
+	andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+	daniel@iogearbox.net, shung-hsi.yu@suse.com,
+	yonghong.song@linux.dev, syzbot@lists.linux.dev,
+	syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot ci] Re: bpf: Use tnums for JEQ/JNE is_branch_taken logic
+Message-ID: <aKbvNM0WDUy7v4DB@mail.gmail.com>
+References: <ba9baf9f73d51d9bce9ef13778bd39408d67db79.1755098817.git.paul.chaignon@gmail.com>
+ <689eeec8.050a0220.e29e5.000f.GAE@google.com>
+ <aKWytdZ8mRegBE0H@mail.gmail.com>
+ <6d172613960339eff4b3a9261ef61a2c50f69dae.camel@gmail.com>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1987:b0:3e3:bcd7:590 with SMTP id
- e9e14a558f8ab-3e6d3d7751cmr21007425ab.7.1755759258804; Wed, 20 Aug 2025
- 23:54:18 -0700 (PDT)
-Date: Wed, 20 Aug 2025 23:54:18 -0700
-In-Reply-To: <e2f14b20-2ad4-4e59-9966-26dd6aa70f31@kernel.dk>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68a6c29a.050a0220.3d78fd.001c.GAE@google.com>
-Subject: [syzbot ci] Re: io_uring/kbuf: ensure ring ctx is held locked over io_put_kbuf()
-From: syzbot ci <syzbot+cid6b8ec9663859ff0@syzkaller.appspotmail.com>
-To: asml.silence@gmail.com, axboe@kernel.dk, io-uring@vger.kernel.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6d172613960339eff4b3a9261ef61a2c50f69dae.camel@gmail.com>
 
-syzbot ci has tested the following series
+On Wed, Aug 20, 2025 at 12:37:46PM -0700, Eduard Zingerman wrote:
+> On Wed, 2025-08-20 at 13:34 +0200, Paul Chaignon wrote:
+> 
+> [...]
+> 
+> > I have a patch to potentially fix this, but I'm still testing it and
+> > would prefer to send it separately as it doesn't really relate to my
+> > current patchset.
+> 
+> I'd like to bring this point again: this is a cat-and-mouse game.
+> is_scalar_branch_taken() and regs_refine_cond_op() are essentially
+> same operation and should be treated as such: produce register states
+> for both branches and prune those that result in an impossible state.
 
-[v1] io_uring/kbuf: ensure ring ctx is held locked over io_put_kbuf()
-https://lore.kernel.org/all/e2f14b20-2ad4-4e59-9966-26dd6aa70f31@kernel.dk
-* [PATCH] io_uring/kbuf: ensure ring ctx is held locked over io_put_kbuf()
+I agree. I've been slowly convincing myself of the same :)
+So far, the syzkaller invariant violation reports have been useful to
+retrieve examples of where the two functions diverge and to deduce
+improvements. But syzkaller now seems to be iterating between the same
+three different cases of violations, so maybe it's time to look at a
+more generic solution.
 
-and found the following issue:
-possible deadlock in io_req_defer_failed
+I assume you would call regs_refine_cond_op() then reg_bounds_sync()
+and use the result in is_scalar_branch_taken()? Most of the impossible
+states are only exposed once passed through reg_bounds_sync().
 
-Full report is available here:
-https://ci.syzbot.org/series/fd113bf0-fc76-46b7-8c0b-08fa3c8bda14
+> There is nothing wrong with this logically and we haven't got a single
+> real bug from the invariant violations check if I remember correctly.
 
-***
+That's correct. We also have pretty good coverage of this logic in
+selftests and now it seems in syzkaller as well. Agni is also
+continuously verifying reg_bounds_sync(). So I think the risk of relying
+on regs_refine_cond_op() and reg_bounds_sync() in
+is_scalar_branch_taken() would be low.
 
-possible deadlock in io_req_defer_failed
+> 
+> Comparing the two functions, it looks like tricky cases are BPF_JE/JNE
+> and BPF_JSET/JSET|BPF_X. However, given that regs_refine_cond_op() is
+> called for a false branch with opcode reversed it looks like there is
+> no issues with these cases.
+> 
+> I'll give this a try.
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      dfc0f6373094dd88e1eaf76c44f2ff01b65db851
-arch:      amd64
-compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp1~20250616065826.132), Debian LLD 20.1.7
-config:    https://ci.syzbot.org/builds/e832762c-b6ee-4bb3-b01f-da0e8f70d1d0/config
-C repro:   https://ci.syzbot.org/findings/57691bf2-072c-42f3-8742-80414426104c/c_repro
-syz repro: https://ci.syzbot.org/findings/57691bf2-072c-42f3-8742-80414426104c/syz_repro
+I'd be happy to contribute selftests extracted from the syzkaller logs.
+It's still hitting three different kinds of invariant violations: the
+one reported here, the one addressed by my patch, and another one.
 
-============================================
-WARNING: possible recursive locking detected
-syzkaller #0 Not tainted
---------------------------------------------
-syz.0.17/6012 is trying to acquire lock:
-ffff88802aa620a8 (&ctx->uring_lock){+.+.}-{4:4}, at: io_ring_submit_lock io_uring/io_uring.h:287 [inline]
-ffff88802aa620a8 (&ctx->uring_lock){+.+.}-{4:4}, at: io_put_kbuf io_uring/kbuf.h:132 [inline]
-ffff88802aa620a8 (&ctx->uring_lock){+.+.}-{4:4}, at: io_req_defer_failed+0x166/0x550 io_uring/io_uring.c:988
+And I'm of course interested to run any patch through Cilium's CI to
+check the complexity impact.
 
-but task is already holding lock:
-ffff88802aa620a8 (&ctx->uring_lock){+.+.}-{4:4}, at: __do_sys_io_uring_enter io_uring/io_uring.c:3463 [inline]
-ffff88802aa620a8 (&ctx->uring_lock){+.+.}-{4:4}, at: __se_sys_io_uring_enter+0x2d4/0x2b20 io_uring/io_uring.c:3398
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&ctx->uring_lock);
-  lock(&ctx->uring_lock);
-
- *** DEADLOCK ***
-
- May be due to missing lock nesting notation
-
-1 lock held by syz.0.17/6012:
- #0: ffff88802aa620a8 (&ctx->uring_lock){+.+.}-{4:4}, at: __do_sys_io_uring_enter io_uring/io_uring.c:3463 [inline]
- #0: ffff88802aa620a8 (&ctx->uring_lock){+.+.}-{4:4}, at: __se_sys_io_uring_enter+0x2d4/0x2b20 io_uring/io_uring.c:3398
-
-stack backtrace:
-CPU: 0 UID: 0 PID: 6012 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
- print_deadlock_bug+0x28b/0x2a0 kernel/locking/lockdep.c:3041
- check_deadlock kernel/locking/lockdep.c:3093 [inline]
- validate_chain+0x1a3f/0x2140 kernel/locking/lockdep.c:3895
- __lock_acquire+0xab9/0xd20 kernel/locking/lockdep.c:5237
- lock_acquire+0x120/0x360 kernel/locking/lockdep.c:5868
- __mutex_lock_common kernel/locking/mutex.c:598 [inline]
- __mutex_lock+0x187/0x1360 kernel/locking/mutex.c:760
- io_ring_submit_lock io_uring/io_uring.h:287 [inline]
- io_put_kbuf io_uring/kbuf.h:132 [inline]
- io_req_defer_failed+0x166/0x550 io_uring/io_uring.c:988
- io_queue_sqe io_uring/io_uring.c:2032 [inline]
- io_submit_sqe io_uring/io_uring.c:2284 [inline]
- io_submit_sqes+0xe28/0x1d10 io_uring/io_uring.c:2397
- __do_sys_io_uring_enter io_uring/io_uring.c:3464 [inline]
- __se_sys_io_uring_enter+0x2df/0x2b20 io_uring/io_uring.c:3398
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f36d418ebe9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffc1d32a978 EFLAGS: 00000246 ORIG_RAX: 00000000000001aa
-RAX: ffffffffffffffda RBX: 00007f36d43b5fa0 RCX: 00007f36d418ebe9
-RDX: 0000000000000000 RSI: 0000000000003516 RDI: 0000000000000003
-RBP: 00007f36d4211e19 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f36d43b5fa0 R14: 00007f36d43b5fa0 R15: 0000000000000006
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+> 
+> [...]
