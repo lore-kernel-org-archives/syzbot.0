@@ -1,127 +1,188 @@
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12633393DF9
-	for <syzbot@lists.linux.dev>; Thu, 21 Aug 2025 21:08:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE574393DC2
+	for <syzbot@lists.linux.dev>; Thu, 21 Aug 2025 21:26:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755810524; cv=none; b=r2mWu+V1/raQulEyldtSwXdmWJk00qGRr3mq2fptaa9ixEQnDZ0Y+902YR4O6n5qnV4VNAOCCxpslhzBcixvokC4fYYXqeJ2nlwgE8IPTeS/c5wSOX1sO32JYIcPZ/LS7WT5UIesAHO76C6uTYXLXiuUEm4fc4V4vynJcB00I10=
+	t=1755811606; cv=none; b=rE0t6XsPGz3J1G9H1OxvPSf8g7Cs1CdYA0h4dc2NrHuUggUBTOe68qBwf3zvn1xgXtnnI3a7Ma//atNxX/nL0AQ8ZMDfSzMW+AXslCH8LmcSVFuJPMMtyWDLUHHPhL5Goh6o+EdN4r8M6OG3bbbYP5pm0TjCN9L4mi+x4WqxXFI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755810524; c=relaxed/simple;
-	bh=zk8csAc8L1o5NyH4LCY8w7m8QI5oHEPLEzMRDMqaZzg=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=B2BkLY29NFgdt68aJd8o2VDfRkqfPvyoJq/kepHjpqi38hmxaE7UzI7uWISw4m8qEROov6Iww0BFA198GcfmrHFCfRrwd6sSGi4hmUFmmuTYUJJbogkwq9RztbCrj0XN7Z0JhpLO115mrW5Sh3IisCo6WnQvisj02+biRegkdF8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.71
+	s=arc-20240116; t=1755811606; c=relaxed/simple;
+	bh=PEF6OoE4wh6RUprzMrxJhOeey2rDxaXBpEWIxpPRBo8=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=aoILGaC0+9bvXX3cm+mbs5CpUBbpRKK/GfLwXTc6+S2x1vBMRDopspHX812uiN5XLYmnhOhwNNKiL4gSRCl18v6wTwVPzkvyNpViWBCCQO3Nr1/y/jg7an0ItyQ8hXh4UdAlJWNy638Yt6TyqNyrT86nxmaldTq0RpT87dM7G1U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-88432ccc4f9so294776839f.0
-        for <syzbot@lists.linux.dev>; Thu, 21 Aug 2025 14:08:42 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-3e66b7e4a94so38315665ab.1
+        for <syzbot@lists.linux.dev>; Thu, 21 Aug 2025 14:26:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755810522; x=1756415322;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QnvL0gqtMtu3l99kRZCNvg8+EMSBd0U7TtxyOUGurlY=;
-        b=I6gukk1pFlwHWvo+lurGfQ1EAEEhp5Gv4+pc1LZXls/uBHmKOGrhVuKB75guya9lS+
-         w6f55RcEgHzx8lYTVV3aVcpuXfF8000ioEuGUn3EqbxAmCG9uu5v4YPE/kWpbP4iuoqI
-         ALHKMfPcvN/ZHNbBSUcxz7ijIokZgZlSM24iQ2qWBxuoNgHfiP5hPG+ebeCo8AyltSTK
-         GSVzv9xokNSAaUz5q7l/swCrmtae6V//31g0ZIALPhIr+fkaEqX7A5lyIQMpLeWMFhG0
-         7w/qkyJf1q94f8Pvbd3Mb0KktRDcf14UD9nz/XqKmBgn9r6OdilOTklbZAPzvsURNoZR
-         0gEA==
-X-Gm-Message-State: AOJu0YyWfOLYmxXt/jSSjXh9cKNyY1RNDynCBE21hg7qLXio1rNQvzR7
-	Q7RdFWVPpJoegX2tpX4uorr9conlkYp2wyKJbapZQmth0y/24zBpBg6+WlgBxW3nTj5y7mfeRWu
-	34EVoOXeBBv2vmhMBlVciPAlg/FOISY4QRpuEnKJOFR1jtaomZHSr1iKWQzw=
-X-Google-Smtp-Source: AGHT+IEeSoKKjuHtp5PQVQKNd9XvwOOp0DiOmh+VD+D9dTownmwqD8kx2dFUoqw087f6VKOzGwaKYBgk7nn8LykMstaKQ8/W98VB
+        d=1e100.net; s=20230601; t=1755811603; x=1756416403;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=iQRbYqng6DJZWZTQAiKk2rUANfGZNS2BSO+FPvNWsIY=;
+        b=Z/uYPuZmOwPckSs3kBdk8qKqJZ6RFhUZ5ZaDLqZHq1r2c+R56G1XPTyKRgiUhaHsej
+         X+2cKv69LBORjVB/F3ryV7b780Bn1amUPbTKQye7hi9TeZHKFLSz4JV/oQUXoRaKri/u
+         IPzT5oMJS+x18WtwCHH3BrYYIXjV584ljjWMX7gie+JfcHn4JbYN+FKa3/0I95LqjTYS
+         IN/4o1U+D96Z9pEsK4EVZwge6kEd/3l1ddF9NtZhjzzyDybIN6F3LvMdHXLDSygvwl4d
+         aSgrEmj/AiCuFIttjeB5qrkdAeninwMYUusVWfP4wnEVRWI8HzAoB0NRcSwDbpnGIknN
+         MIdA==
+X-Gm-Message-State: AOJu0YzAM2qKAny/f94nWYEGyhCkqD8yYMzSy6SX/FDbNiUKwXpngJdP
+	lr77t4+EpGFJVrNikiLbqT7YJVc2ufk1nV2X85SiyLCLwxEsq9DIoY7vrlN5S69VwHbe7cbtyzR
+	+9Gx35GdqaYVTxaeJyClQ6bVchlCmmh/b4VCAi3TB44mnDPkDM3yP6pgrjJM=
+X-Google-Smtp-Source: AGHT+IHZTRoph59fAlVCJja4af6q6ydaTcQdUiSRgiMInrw5rO721dFXpzjbuDSKB3AlBpPLu1Lo5+Lzld5+1LqmFSDE2fYAqieY
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:3c03:b0:3e8:78b5:6834 with SMTP id
- e9e14a558f8ab-3e91fc22a64mr16178765ab.2.1755810522143; Thu, 21 Aug 2025
- 14:08:42 -0700 (PDT)
-Date: Thu, 21 Aug 2025 14:08:42 -0700
+X-Received: by 2002:a05:6e02:1fce:b0:3e5:4da2:93ad with SMTP id
+ e9e14a558f8ab-3e92158139dmr16118885ab.11.1755811602817; Thu, 21 Aug 2025
+ 14:26:42 -0700 (PDT)
+Date: Thu, 21 Aug 2025 14:26:42 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68a78ada.050a0220.cb3d1.0001.GAE@google.com>
-Subject: [moderation/CI] Re: fs: rework inode reference counting
-From: syzbot ci <syzbot+ci12cae37568402b9e@syzkaller.appspotmail.com>
+Message-ID: <68a78f12.050a0220.13802c.0001.GAE@google.com>
+Subject: [moderation/CI] Re: mm: remove nth_page()
+From: syzbot ci <syzbot+ci9f7bbeba00c17e6c@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] fs: rework inode reference counting
-https://lore.kernel.org/all/cover.1755806649.git.josef@toxicpanda.com
-* [PATCH 01/50] fs: add an i_obj_count refcount to the inode
-* [PATCH 02/50] fs: make the i_state flags an enum
-* [PATCH 03/50] fs: hold an i_obj_count reference in wait_sb_inodes
-* [PATCH 04/50] fs: hold an i_obj_count reference for the i_wb_list
-* [PATCH 05/50] fs: hold an i_obj_count reference for the i_io_list
-* [PATCH 06/50] fs: hold an i_obj_count reference in writeback_sb_inodes
-* [PATCH 07/50] fs: hold an i_obj_count reference while on the hashtable
-* [PATCH 08/50] fs: hold an i_obj_count reference while on the LRU list
-* [PATCH 09/50] fs: hold an i_obj_count reference while on the sb inode list
-* [PATCH 10/50] fs: stop accessing ->i_count directly in f2fs and gfs2
-* [PATCH 11/50] fs: hold an i_obj_count when we have an i_count reference
-* [PATCH 12/50] fs: rework iput logic
-* [PATCH 13/50] fs: add an I_LRU flag to the inode
-* [PATCH 14/50] fs: maintain a list of pinned inodes
-* [PATCH 15/50] fs: delete the inode from the LRU list on lookup
-* [PATCH 16/50] fs: change evict_inodes to use iput instead of evict directly
-* [PATCH 17/50] fs: hold a full ref while the inode is on a LRU
-* [PATCH 18/50] fs: disallow 0 reference count inodes
-* [PATCH 19/50] fs: make evict_inodes add to the dispose list under the i_lock
-* [PATCH 20/50] fs: convert i_count to refcount_t
-* [PATCH 21/50] fs: use refcount_inc_not_zero in igrab
-* [PATCH 22/50] fs: use inode_tryget in find_inode*
-* [PATCH 23/50] fs: update find_inode_*rcu to check the i_count count
-* [PATCH 24/50] fs: use igrab in insert_inode_locked
-* [PATCH 25/50] fs: remove I_WILL_FREE|I_FREEING check from __inode_add_lru
-* [PATCH 26/50] fs: remove I_WILL_FREE|I_FREEING check in inode_pin_lru_isolating
-* [PATCH 27/50] fs: use inode_tryget in evict_inodes
-* [PATCH 28/50] fs: change evict_dentries_for_decrypted_inodes to use refcount
-* [PATCH 29/50] block: use igrab in sync_bdevs
-* [PATCH 30/50] bcachefs: use the refcount instead of I_WILL_FREE|I_FREEING
-* [PATCH 31/50] btrfs: don't check I_WILL_FREE|I_FREEING
-* [PATCH 32/50] fs: use igrab in drop_pagecache_sb
-* [PATCH 33/50] fs: stop checking I_FREEING in d_find_alias_rcu
-* [PATCH 34/50] ext4: stop checking I_WILL_FREE|IFREEING in ext4_check_map_extents_env
-* [PATCH 35/50] fs: remove I_WILL_FREE|I_FREEING from fs-writeback.c
-* [PATCH 36/50] gfs2: remove I_WILL_FREE|I_FREEING usage
-* [PATCH 37/50] fs: remove I_WILL_FREE|I_FREEING check from dquot.c
-* [PATCH 38/50] notify: remove I_WILL_FREE|I_FREEING checks in fsnotify_unmount_inodes
-* [PATCH 39/50] xfs: remove I_FREEING check
-* [PATCH 40/50] landlock: remove I_FREEING|I_WILL_FREE check
-* [PATCH 41/50] fs: change inode_is_dirtytime_only to use refcount
-* [PATCH 42/50] btrfs: remove references to I_FREEING
-* [PATCH 43/50] ext4: remove reference to I_FREEING in inode.c
-* [PATCH 44/50] ext4: remove reference to I_FREEING in orphan.c
-* [PATCH 45/50] pnfs: use i_count refcount to determine if the inode is going away
-* [PATCH 46/50] fs: remove some spurious I_FREEING references in inode.c
-* [PATCH 47/50] xfs: remove reference to I_FREEING|I_WILL_FREE
-* [PATCH 48/50] ocfs2: do not set I_WILL_FREE
-* [PATCH 49/50] fs: remove I_FREEING|I_WILL_FREE
-* [PATCH 50/50] fs: add documentation explaining the reference count rules for inodes
+[v1] mm: remove nth_page()
+https://lore.kernel.org/all/20250821200701.1329277-1-david@redhat.com
+* [PATCH RFC 01/35] mm: stop making SPARSEMEM_VMEMMAP user-selectable
+* [PATCH RFC 02/35] arm64: Kconfig: drop superfluous "select SPARSEMEM_VMEM=
+MAP"
+* [PATCH RFC 03/35] s390/Kconfig: drop superfluous "select SPARSEMEM_VMEMMA=
+P"
+* [PATCH RFC 04/35] x86/Kconfig: drop superfluous "select SPARSEMEM_VMEMMAP=
+"
+* [PATCH RFC 05/35] wireguard: selftests: remove CONFIG_SPARSEMEM_VMEMMAP=
+=3Dy from qemu kernel config
+* [PATCH RFC 06/35] mm/page_alloc: reject unreasonable folio/compound page =
+sizes in alloc_contig_range_noprof()
+* [PATCH RFC 07/35] mm/memremap: reject unreasonable folio/compound page si=
+zes in memremap_pages()
+* [PATCH RFC 08/35] mm/hugetlb: check for unreasonable folio sizes when reg=
+istering hstate
+* [PATCH RFC 09/35] mm/mm_init: make memmap_init_compound() look more like =
+prep_compound_page()
+* [PATCH RFC 10/35] mm/hugetlb: cleanup hugetlb_folio_init_tail_vmemmap()
+* [PATCH RFC 11/35] mm: sanity-check maximum folio size in folio_set_order(=
+)
+* [PATCH RFC 12/35] mm: limit folio/compound page sizes in problematic kern=
+el configs
+* [PATCH RFC 13/35] mm: simplify folio_page() and folio_page_idx()
+* [PATCH RFC 14/35] mm/mm/percpu-km: drop nth_page() usage within single al=
+location
+* [PATCH RFC 15/35] fs: hugetlbfs: remove nth_page() usage within folio in =
+adjust_range_hwpoison()
+* [PATCH RFC 16/35] mm/pagewalk: drop nth_page() usage within folio in foli=
+o_walk_start()
+* [PATCH RFC 17/35] mm/gup: drop nth_page() usage within folio when recordi=
+ng subpages
+* [PATCH RFC 18/35] io_uring/zcrx: remove "struct io_copy_cache" and one nt=
+h_page() usage
+* [PATCH RFC 19/35] io_uring/zcrx: remove nth_page() usage within folio
+* [PATCH RFC 20/35] mips: mm: convert __flush_dcache_pages() to __flush_dca=
+che_folio_pages()
+* [PATCH RFC 21/35] mm/cma: refuse handing out non-contiguous page ranges
+* [PATCH RFC 22/35] dma-remap: drop nth_page() in dma_common_contiguous_rem=
+ap()
+* [PATCH RFC 23/35] scatterlist: disallow non-contigous page ranges in a si=
+ngle SG entry
+* [PATCH RFC 24/35] ata: libata-eh: drop nth_page() usage within SG entry
+* [PATCH RFC 25/35] drm/i915/gem: drop nth_page() usage within SG entry
+* [PATCH RFC 26/35] mspro_block: drop nth_page() usage within SG entry
+* [PATCH RFC 27/35] memstick: drop nth_page() usage within SG entry
+* [PATCH RFC 28/35] mmc: drop nth_page() usage within SG entry
+* [PATCH RFC 29/35] scsi: core: drop nth_page() usage within SG entry
+* [PATCH RFC 30/35] vfio/pci: drop nth_page() usage within SG entry
+* [PATCH RFC 31/35] crypto: remove nth_page() usage within SG entry
+* [PATCH RFC 32/35] mm/gup: drop nth_page() usage in unpin_user_page_range_=
+dirty_lock()
+* [PATCH RFC 33/35] kfence: drop nth_page() usage
+* [PATCH RFC 34/35] block: update comment of "struct bio_vec" regarding nth=
+_page()
+* [PATCH RFC 35/35] mm: remove nth_page()
 
 and found the following issue:
-kernel build error
+general protection fault in kfence_guarded_alloc
 
 Full report is available here:
-https://ci.syzbot.org/series/743e203c-480a-40b0-a5b2-65be9b42c520
+https://ci.syzbot.org/series/f6f0aea1-9616-4675-8c80-f9b59ba3211c
 
 ***
 
-kernel build error
+general protection fault in kfence_guarded_alloc
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      068a56e56fa81e42fc5f08dff34fab149bb60a09
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net-next.git
+base:      da114122b83149d1f1db0586b1d67947b651aa20
 arch:      amd64
-compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp1~20250616065826.132), Debian LLD 20.1.7
-config:    https://ci.syzbot.org/builds/43927ea0-33b7-4247-9afc-871999c47ee6/config
+compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp=
+1~20250616065826.132), Debian LLD 20.1.7
+config:    https://ci.syzbot.org/builds/705b7862-eb10-40bd-a4cf-4820b491246=
+6/config
 
-fs/smb/client/inode.c:2782:37: error: no member named 'counter' in 'struct refcount_struct'
+smpboot: CPU0: Intel(R) Xeon(R) CPU @ 2.80GHz (family: 0x6, model: 0x55, st=
+epping: 0x7)
+Oops: general protection fault, probably for non-canonical address 0xdffffc=
+0000000001: 0000 [#1] SMP KASAN NOPTI
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full)=
+=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:kfence_guarded_alloc+0x643/0xc70
+Code: 41 c1 e5 18 bf 00 00 00 f5 44 89 ee e8 a6 67 9c ff 45 31 f6 41 81 fd =
+00 00 00 f5 4c 0f 44 f3 49 8d 7e 08 48 89 f8 48 c1 e8 03 <42> 80 3c 20 00 7=
+4 05 e8 f1 cb ff ff 4c 8b 6c 24 18 4d 89 6e 08 49
+RSP: 0000:ffffc90000047740 EFLAGS: 00010202
+RAX: 0000000000000001 RBX: ffffea0004d90080 RCX: 0000000000000000
+RDX: ffff88801c2e8000 RSI: 00000000ff000000 RDI: 0000000000000008
+RBP: ffffc90000047850 R08: ffffffff99b2201b R09: 1ffffffff3364403
+R10: dffffc0000000000 R11: fffffbfff3364404 R12: dffffc0000000000
+R13: 00000000ff000000 R14: 0000000000000000 R15: ffff88813fec7068
+FS:  0000000000000000(0000) GS:ffff8880b861c000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffff88813ffff000 CR3: 000000000df36000 CR4: 0000000000350ef0
+Call Trace:
+ <TASK>
+ __kfence_alloc+0x385/0x3b0
+ __kmalloc_noprof+0x440/0x4f0
+ __alloc_workqueue+0x103/0x1b70
+ alloc_workqueue_noprof+0xd4/0x210
+ init_mm_internals+0x17/0x140
+ kernel_init_freeable+0x307/0x4b0
+ kernel_init+0x1d/0x1d0
+ ret_from_fork+0x3f9/0x770
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:kfence_guarded_alloc+0x643/0xc70
+Code: 41 c1 e5 18 bf 00 00 00 f5 44 89 ee e8 a6 67 9c ff 45 31 f6 41 81 fd =
+00 00 00 f5 4c 0f 44 f3 49 8d 7e 08 48 89 f8 48 c1 e8 03 <42> 80 3c 20 00 7=
+4 05 e8 f1 cb ff ff 4c 8b 6c 24 18 4d 89 6e 08 49
+RSP: 0000:ffffc90000047740 EFLAGS: 00010202
+RAX: 0000000000000001 RBX: ffffea0004d90080 RCX: 0000000000000000
+RDX: ffff88801c2e8000 RSI: 00000000ff000000 RDI: 0000000000000008
+RBP: ffffc90000047850 R08: ffffffff99b2201b R09: 1ffffffff3364403
+R10: dffffc0000000000 R11: fffffbfff3364404 R12: dffffc0000000000
+R13: 00000000ff000000 R14: 0000000000000000 R15: ffff88813fec7068
+FS:  0000000000000000(0000) GS:ffff8880b861c000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffff88813ffff000 CR3: 000000000df36000 CR4: 0000000000350ef0
+
 
 ***
 
@@ -134,7 +195,35 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[brauner@kernel.org josef@toxicpanda.com kernel-team@fb.com linux-btrfs@vger.kernel.org linux-ext4@vger.kernel.org linux-fsdevel@vger.kernel.org linux-xfs@vger.kernel.org viro@zeniv.linux.org.uk]
+[agordeev@linux.ibm.com airlied@gmail.com akpm@linux-foundation.org alex.wi=
+lliamson@redhat.com alex@ghiti.fr andreas@gaisler.com aou@eecs.berkeley.edu=
+ axboe@kernel.dk borntraeger@linux.ibm.com bp@alien8.de brett.creeley@amd.c=
+om cassel@kernel.org catalin.marinas@arm.com chenhuacai@kernel.org christop=
+he.leroy@csgroup.eu cl@gentwo.org dave.hansen@linux.intel.com davem@davemlo=
+ft.net david@redhat.com dennis@kernel.org dgilbert@interlog.com dlemoal@ker=
+nel.org dri-devel@lists.freedesktop.org dvyukov@google.com elver@google.com=
+ glider@google.com gor@linux.ibm.com hannes@cmpxchg.org hca@linux.ibm.com h=
+erbert@gondor.apana.org.au intel-gfx@lists.freedesktop.org io-uring@vger.ke=
+rnel.org iommu@lists.linux.dev jackmanb@google.com james.bottomley@hansenpa=
+rtnership.com jani.nikula@linux.intel.com jason@zx2c4.com jesper.nilsson@ax=
+is.com jgg@nvidia.com jgg@ziepe.ca jhubbard@nvidia.com joonas.lahtinen@linu=
+x.intel.com kasan-dev@googlegroups.com kernel@xen0n.name kevin.tian@intel.c=
+om kvm@vger.kernel.org lars.persson@axis.com liam.howlett@oracle.com linux-=
+arm-kernel@axis.com linux-arm-kernel@lists.infradead.org linux-crypto@vger.=
+kernel.org linux-ide@vger.kernel.org linux-kernel@vger.kernel.org linux-kse=
+lftest@vger.kernel.org linux-mips@vger.kernel.org linux-mm@kvack.org linux-=
+mmc@vger.kernel.org linux-riscv@lists.infradead.org linux-s390@vger.kernel.=
+org linux-scsi@vger.kernel.org lorenzo.stoakes@oracle.com m.szyprowski@sams=
+ung.com maddy@linux.ibm.com martin.petersen@oracle.com maximlevitsky@gmail.=
+com mhocko@suse.com mingo@redhat.com mpe@ellerman.id.au muchun.song@linux.d=
+ev netdev@vger.kernel.org npiggin@gmail.com oakad@yahoo.com osalvador@suse.=
+de palmer@dabbelt.com paul.walmsley@sifive.com peterx@redhat.com robin.murp=
+hy@arm.com rodrigo.vivi@intel.com rppt@kernel.org shameerali.kolothum.thodi=
+@huawei.com shuah@kernel.org simona@ffwll.ch surenb@google.com svens@linux.=
+ibm.com tglx@linutronix.de tj@kernel.org torvalds@linux-foundation.org tsbo=
+gend@alpha.franken.de tursulin@ursulin.net ulf.hansson@linaro.org vbabka@su=
+se.cz virtualization@lists.linux.dev will@kernel.org wireguard@lists.zx2c4.=
+com x86@kernel.org ziy@nvidia.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
