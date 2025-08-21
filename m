@@ -1,107 +1,157 @@
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E4E036CE0C
-	for <syzbot@lists.linux.dev>; Wed, 20 Aug 2025 19:37:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73DC1244670
+	for <syzbot@lists.linux.dev>; Thu, 21 Aug 2025 03:03:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755718670; cv=none; b=OE4tUYytwbVwEXBnOmdWHNUzTxG8afWEQdzgMVR9KFB0Bp1/feD0zpV0J3EINmxB5sfhGIh/np4w+vCsyE17MejUoJ7M6Ms/Pi6YY157WxuMSUyx4d0gXKgJTr+k3oM/O0rkTP0fsYcWnEV7+gOS2OdXKIy4JMyhpM026sDT5Hc=
+	t=1755745394; cv=none; b=uO2WHU25p7Lss/Zwscn92EIx2KBPJWIim4LDKuWCaYf5UNy6d9ETS1sFHHOh68McZaX2Pbyr7VQNSraCD+tgdXIVb6qZwe9c48TMOhXcw1ShYfE701XTYWuwVNKgRwpuzuFSkvdfmmakZ1iJD8F9uZgebonVBqZHKlqo0Whf7gE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755718670; c=relaxed/simple;
-	bh=BUM2rK0xOxORB1dKeU1g6C2tjv6DCOl/j122K9iH2r4=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=BgO4P46Cn/Cv+IbMjXIqVV7fqzqrHLNSj8iS9wOksvl4IOlgrutxvjsjmukEU2RZGHhjoXJMMFkNk+6GUhIjG+uGGCRAE+91Yta0xASGS5vA0aL1IGsTcfXevMYi6Dlaz5LYNS4qDCyXHPshKn9PXwmYvsghwXQKpiph/Dee3Kg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BAX53rI+; arc=none smtp.client-ip=209.85.210.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BAX53rI+"
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-76e2ea933b7so295644b3a.1
-        for <syzbot@lists.linux.dev>; Wed, 20 Aug 2025 12:37:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1755718669; x=1756323469; darn=lists.linux.dev;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=BUM2rK0xOxORB1dKeU1g6C2tjv6DCOl/j122K9iH2r4=;
-        b=BAX53rI+v03n2Lqx3M8AOLJ2Shpt8LOpGuUAMLUu30blHILu13r0gPYKSb1zi6pC3h
-         TeLeDlgb3xpwlLLiVwPqXGYgUfR7ANAaI+6YRd3c7q6HJGwMZFpjJDRS1IuXvhd8Lcr2
-         XUy/YC9JK6hJbSGGFDlIFQAWfKrMPqrmIQOjtZ5F7pQ+AXexasNp9U07/CWRYv8YLbDl
-         Ndm6NIH1SIs9q+4Rq8BM4IkyFs3sPI/Nq1orV3LSCbDC3fOG0yWmGpZvtQknuj/0MHCg
-         TaP+Hg5/q2UC0ToAUci9EAemEafFb6LAaHFInHAe3YmldpvKhWwItJ5/V/oueOQuyK62
-         YrZQ==
+	s=arc-20240116; t=1755745394; c=relaxed/simple;
+	bh=6Z1hqC/d9XS4+JEO4C0WNZ8OveAQ63N2ASonNn7NfeM=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=s+4H5J7EWERCnrt/QClD/CWboxCz60LQw/6SgnOI7uZU2eyay5ZD1tYY6odfrmemNxq3BjiKnhCSNYbCW5wrxJabM4OLdp6tHc+4dBP3nGekbuAjC9kTGMEIRVUZCGBgmRGJAiRrCFD9U5P8+aInLZPNQE1MrEVWZhI+tZvw/pc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f197.google.com with SMTP id e9e14a558f8ab-3e67189ba24so6485195ab.2
+        for <syzbot@lists.linux.dev>; Wed, 20 Aug 2025 20:03:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755718669; x=1756323469;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+        d=1e100.net; s=20230601; t=1755745391; x=1756350191;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=BUM2rK0xOxORB1dKeU1g6C2tjv6DCOl/j122K9iH2r4=;
-        b=dRFxrOc+0+BriN98cuUlL97KXWBKZZrtAK6DC1a5EWhhQdiPnXjvdLcGHn5EuAaSTa
-         qo/v/7FSxeMnaKzcrtIjt/mAL6LcPc7kb4vP/U0o/9+1RmvgMGmNGVdbcC69gGl6o+wI
-         F+FfWttuGrNjZI/xP05g9PgyX/Wp6u2eUbg52XEl4C+FeMnw6UyUUaEF02IXUOg7XrDX
-         Mc50FgfKjYFIr0rp/idqk6ct0iQo6W1sjvO8KBABsiOCms+jTqOmIeHfgqTfz7hup6po
-         QrRykfruEN29w2yeBqqpUqCTF+S8D0s2w85mJAk0tkgNIvzJLd/Y3KdNfTA76IEiWgfu
-         wEBQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVNBC9JbTctnJQotBHXUugLQhcASurf8j7ZFk2LpmSy+rUebJBrL5+gCFcggL2IYVbhi9iGXF4=@lists.linux.dev
-X-Gm-Message-State: AOJu0YyxVMEWRQlaBhkJPqs8bmXTMtyCNsxWfC1243sOAzeuzDp+ECcj
-	EHWf7S/dunCa8A7IutOG53XWxdIxTNwo/w7b6dPI0+Lm9FWgbIA5G5jn
-X-Gm-Gg: ASbGnctwEq4vV4cXoBqK0NOPKCuo+O4DgzYcch/XfQHfEKzmtJeROXETvLVFNonD7nY
-	ChmPcot9/373dfUfUAH7uHLmpSHBUwzWyJYZJcyJbj1TqYtwQowuKXujKfgeFe78KqWLkY6909W
-	hmQ6oYXnTn+HWmL0jVDA0FG1mQIFayMi8o1IHZ0063xT/3hOzI0slPc3e95OfbPfc4pgX/GYOEv
-	ZcpRqzpsarGjjFVtBnem2epkLVd7jkOGEWaGOozlY74AuXbD5xuPAqmgJ7bR/DfGFsMWRNUWa+s
-	EtgHxjnc0PCCFiHUq9BDd5i+PVT5UkgmR30KLnZX9wkKcQvpjEuwW6uM4nM+vQgouW0ZPll8D2u
-	PbfwtQyE1RIZh06Zmi6sPoR+frzb2
-X-Google-Smtp-Source: AGHT+IEgcqxQXp0DtQiZzjrKj3RNca/SxPqPpD87Z2MPAvBr195OBZlxFJVCjwkb4fbbV7O+pyP/Ew==
-X-Received: by 2002:a05:6a00:188c:b0:76e:7aba:cb44 with SMTP id d2e1a72fcca58-76ea0091dfbmr989496b3a.16.1755718668546;
-        Wed, 20 Aug 2025 12:37:48 -0700 (PDT)
-Received: from ?IPv6:2620:10d:c096:14a::8c7? ([2620:10d:c090:600::1:f668])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-76e7d4fa74asm5959100b3a.56.2025.08.20.12.37.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Aug 2025 12:37:48 -0700 (PDT)
-Message-ID: <6d172613960339eff4b3a9261ef61a2c50f69dae.camel@gmail.com>
-Subject: Re: [syzbot ci] Re: bpf: Use tnums for JEQ/JNE is_branch_taken logic
-From: Eduard Zingerman <eddyz87@gmail.com>
-To: Paul Chaignon <paul.chaignon@gmail.com>, syzbot ci
-	 <syzbot+ci59254af1cb47328a@syzkaller.appspotmail.com>
-Cc: andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
- daniel@iogearbox.net, 	shung-hsi.yu@suse.com, yonghong.song@linux.dev,
- syzbot@lists.linux.dev, 	syzkaller-bugs@googlegroups.com
-Date: Wed, 20 Aug 2025 12:37:46 -0700
-In-Reply-To: <aKWytdZ8mRegBE0H@mail.gmail.com>
-References: 
-	<ba9baf9f73d51d9bce9ef13778bd39408d67db79.1755098817.git.paul.chaignon@gmail.com>
-	 <689eeec8.050a0220.e29e5.000f.GAE@google.com>
-	 <aKWytdZ8mRegBE0H@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2 (3.56.2-1.fc42) 
+        bh=aN9FbYmnKvGMMYcjfuoT5C//oXiAZdwqqrfgumS0hX0=;
+        b=WE+yJPyS/ZOpKMYkLbzhSgMWkdl3w7FJFACwDF1bebw3+BIy2hcR9PCRydlYRLHvRi
+         A6I+Ml9jy4BGuoB6upH4aOLG5rzaGDhz3eUk0y0cx40yPLfRLo8IhuzIeDUx4mqZERFb
+         KYQe86AmO+WxqJ82g1EFSCG4DnLHRCGXmfR9aJlEnFzcBEGHakzXyOfD16L9dPoLLRji
+         pcZ/J/NuEtuGrDj/3CDlXDSV1tPq3XT2M2oj8sw0x78DwAD+lVy9zU9ssGDBXJSR5bRw
+         8ban/jBqSWHYvS3xxtaY8k11Xz41FSYZZJmRexDQFcsYs22yxnb9tmuHXlEqZfJYBlQy
+         d1mg==
+X-Gm-Message-State: AOJu0Yxi94CNYQXV7C/A/aKEXOSPDvyCIaQne/qroSDHItk9AqOJxsVR
+	lhnzB2ShgWcgauCjbjo+FnJ+fum1yx9pjeAmSZgcviPbfd5bPuPTUD1MGxEPlinIeQGLz2nfypB
+	vv3UGSMsY9PGBT1ewFxMJDQgur91yB2r5QJErRXV3ZauwT/Jd/76KADT1Ipg=
+X-Google-Smtp-Source: AGHT+IHWI+hOp/hp66noDVgNZWxXy2cybo1aMrHtG1lJbLBnkbM0p7nVIlx8lfmcMMTijxc35ENoticP2K5f67FkF8sJHMhDuZyc
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-Received: by 2002:a05:6e02:2168:b0:3e5:5af7:7c92 with SMTP id
+ e9e14a558f8ab-3e6d6ace8a4mr15368415ab.14.1755745391462; Wed, 20 Aug 2025
+ 20:03:11 -0700 (PDT)
+Date: Wed, 20 Aug 2025 20:03:11 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68a68c6f.050a0220.3d78fd.0013.GAE@google.com>
+Subject: [moderation/CI] Re: io_uring/kbuf: ensure ring ctx is held locked
+ over io_put_kbuf()
+From: syzbot ci <syzbot+ci0a9892aadf35c415@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, 2025-08-20 at 13:34 +0200, Paul Chaignon wrote:
+syzbot ci has tested the following series
 
-[...]
+[v1] io_uring/kbuf: ensure ring ctx is held locked over io_put_kbuf()
+https://lore.kernel.org/all/e2f14b20-2ad4-4e59-9966-26dd6aa70f31@kernel.dk
+* [PATCH] io_uring/kbuf: ensure ring ctx is held locked over io_put_kbuf()
 
-> I have a patch to potentially fix this, but I'm still testing it and
-> would prefer to send it separately as it doesn't really relate to my
-> current patchset.
+and found the following issue:
+possible deadlock in io_req_defer_failed
 
-I'd like to bring this point again: this is a cat-and-mouse game.
-is_scalar_branch_taken() and regs_refine_cond_op() are essentially
-same operation and should be treated as such: produce register states
-for both branches and prune those that result in an impossible state.
-There is nothing wrong with this logically and we haven't got a single
-real bug from the invariant violations check if I remember correctly.
+Full report is available here:
+https://ci.syzbot.org/series/fd113bf0-fc76-46b7-8c0b-08fa3c8bda14
 
-Comparing the two functions, it looks like tricky cases are BPF_JE/JNE
-and BPF_JSET/JSET|BPF_X. However, given that regs_refine_cond_op() is
-called for a false branch with opcode reversed it looks like there is
-no issues with these cases.
+***
 
-I'll give this a try.
+possible deadlock in io_req_defer_failed
 
-[...]
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      dfc0f6373094dd88e1eaf76c44f2ff01b65db851
+arch:      amd64
+compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp1~20250616065826.132), Debian LLD 20.1.7
+config:    https://ci.syzbot.org/builds/e832762c-b6ee-4bb3-b01f-da0e8f70d1d0/config
+C repro:   https://ci.syzbot.org/findings/57691bf2-072c-42f3-8742-80414426104c/c_repro
+syz repro: https://ci.syzbot.org/findings/57691bf2-072c-42f3-8742-80414426104c/syz_repro
+
+============================================
+WARNING: possible recursive locking detected
+syzkaller #0 Not tainted
+--------------------------------------------
+syz.0.17/6012 is trying to acquire lock:
+ffff88802aa620a8 (&ctx->uring_lock){+.+.}-{4:4}, at: io_ring_submit_lock io_uring/io_uring.h:287 [inline]
+ffff88802aa620a8 (&ctx->uring_lock){+.+.}-{4:4}, at: io_put_kbuf io_uring/kbuf.h:132 [inline]
+ffff88802aa620a8 (&ctx->uring_lock){+.+.}-{4:4}, at: io_req_defer_failed+0x166/0x550 io_uring/io_uring.c:988
+
+but task is already holding lock:
+ffff88802aa620a8 (&ctx->uring_lock){+.+.}-{4:4}, at: __do_sys_io_uring_enter io_uring/io_uring.c:3463 [inline]
+ffff88802aa620a8 (&ctx->uring_lock){+.+.}-{4:4}, at: __se_sys_io_uring_enter+0x2d4/0x2b20 io_uring/io_uring.c:3398
+
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(&ctx->uring_lock);
+  lock(&ctx->uring_lock);
+
+ *** DEADLOCK ***
+
+ May be due to missing lock nesting notation
+
+1 lock held by syz.0.17/6012:
+ #0: ffff88802aa620a8 (&ctx->uring_lock){+.+.}-{4:4}, at: __do_sys_io_uring_enter io_uring/io_uring.c:3463 [inline]
+ #0: ffff88802aa620a8 (&ctx->uring_lock){+.+.}-{4:4}, at: __se_sys_io_uring_enter+0x2d4/0x2b20 io_uring/io_uring.c:3398
+
+stack backtrace:
+CPU: 0 UID: 0 PID: 6012 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
+ print_deadlock_bug+0x28b/0x2a0 kernel/locking/lockdep.c:3041
+ check_deadlock kernel/locking/lockdep.c:3093 [inline]
+ validate_chain+0x1a3f/0x2140 kernel/locking/lockdep.c:3895
+ __lock_acquire+0xab9/0xd20 kernel/locking/lockdep.c:5237
+ lock_acquire+0x120/0x360 kernel/locking/lockdep.c:5868
+ __mutex_lock_common kernel/locking/mutex.c:598 [inline]
+ __mutex_lock+0x187/0x1360 kernel/locking/mutex.c:760
+ io_ring_submit_lock io_uring/io_uring.h:287 [inline]
+ io_put_kbuf io_uring/kbuf.h:132 [inline]
+ io_req_defer_failed+0x166/0x550 io_uring/io_uring.c:988
+ io_queue_sqe io_uring/io_uring.c:2032 [inline]
+ io_submit_sqe io_uring/io_uring.c:2284 [inline]
+ io_submit_sqes+0xe28/0x1d10 io_uring/io_uring.c:2397
+ __do_sys_io_uring_enter io_uring/io_uring.c:3464 [inline]
+ __se_sys_io_uring_enter+0x2df/0x2b20 io_uring/io_uring.c:3398
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f36d418ebe9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc1d32a978 EFLAGS: 00000246 ORIG_RAX: 00000000000001aa
+RAX: ffffffffffffffda RBX: 00007f36d43b5fa0 RCX: 00007f36d418ebe9
+RDX: 0000000000000000 RSI: 0000000000003516 RDI: 0000000000000003
+RBP: 00007f36d4211e19 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f36d43b5fa0 R14: 00007f36d43b5fa0 R15: 0000000000000006
+ </TASK>
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[asml.silence@gmail.com axboe@kernel.dk io-uring@vger.kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
