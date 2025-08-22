@@ -1,187 +1,136 @@
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98DF62C0288
-	for <syzbot@lists.linux.dev>; Thu, 21 Aug 2025 21:37:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC8821EA65
+	for <syzbot@lists.linux.dev>; Fri, 22 Aug 2025 08:54:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755812237; cv=none; b=LbxuWQ7D8k5HNbpy7tvES64lnt/aAgryxi3lY8Op7GrXZI1rAbAAGxVm3BFxYSUFUGK+V7mcchFLpytPJe8v5LIXPs+XoU8f1qMP4AlKs1L6WPJFb0OoMimcFeB2aIf50OqengCCQvbgzLpvyWASYNtMNQi34Wpm6ff5xlEx9q8=
+	t=1755852846; cv=none; b=AIhCnIIDmng+ZHNs39OjbkI47yMVuKovknbDySu1aFSxU+jhjYrznSkBhGuvCspcqvp0QM7qkmq/NZaIZYFa/TS8kOvFgnmDxErszXxiKQRFsFLmdJzNPwpYnVKn70+X0RV82pybvbjww23ISem29duPvWadU7DRTTtxw0Qwzzw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755812237; c=relaxed/simple;
-	bh=D7mG/7eHvAByRVz7e7xhMg1OUUyaclPfbPriELhFlwc=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=Qw1axKgGFNKGnnhaBMM1CK1xKwOhiR1FMCXRuHIQONZV7dERceIG7y/1fVhqbQJUmARI6zzhBDRBmgwOhjPfw4SiiUu014cFlfXtF/fHql5PwT973L9z43x+W9s7MxQUBCV1iKa0yrKQhKjEQ2kk5dc4ymk6Ob01mDZQwEJ26tA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
+	s=arc-20240116; t=1755852846; c=relaxed/simple;
+	bh=aCogyRPiXISKJy10lIwGhjiv+PVV/wxMw5oIstd4pBA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=uBlRYzWh7vrqc8lQJi1wgD1fURK14sLxBOrSvmg//uQ/EQ5Xfsbz7/WDIUhzdJqtv0J9OSM7F0QFSys49hH4q26bpBKMHBm/w4O9G+4kTnyW/rhjOv4hEKUXYK0u4gmgIzPeHi4QCAVR8tJhSG0KqbMd5IzW6bNAnbpughFbdV0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-3e67df0ed87so42690115ab.2
-        for <syzbot@lists.linux.dev>; Thu, 21 Aug 2025 14:37:14 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id ca18e2360f4ac-88432cb438cso436936539f.0
+        for <syzbot@lists.linux.dev>; Fri, 22 Aug 2025 01:54:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755812234; x=1756417034;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Q4cr6QMqKu3ZXE5LbmZFl5rCj+PzGQQulyaw1Vp4aNc=;
-        b=QMKpCi+PbzmR9MFUSEmJMHBcuovDFsvSutxZDNELx5KG8JRpTzz8uU3i/KcEsPkcoE
-         +Abr6W7dVTeLi++yE5hQWOwFkthteiML9yDtZiXX9DocLdrGeQRMB3cJlVttip9zmU9P
-         SmU7PIDYOQOUQwH8bSBERyI/sPZQvilQ9Z3w57K3LuN2LqJG6LINEmgcMClGumt8QjH/
-         E3vVftXzxjRM2hFcarrJtl+tMNk7/9f+R1tDk/dxEcReyq5CPcbea8us1aAckxNw/yoC
-         Qu56kbTpwby4SCgzObU958leEyJJaJ9qaMWgr6eoPqa1zp9KFqgz/TN4lRxha4LEVF+c
-         cxbw==
-X-Gm-Message-State: AOJu0YxIXVd83zjPvdjNBKm9zc1gE2JnX5M8/hdAiHhFQqQhL/fc0Jzc
-	ZBFBBQATVgBC+cXmgwr5L2JIGdMgUOEG4naRclv9DmugXf6IrjbivUv2qtldIOWFQXckkX7g4zH
-	yYpWLWoruqY95nU5TreUSPJ5DaZCtIQnq7QBZwa7BkEZDvCpkA+XEiRrgMoY=
-X-Google-Smtp-Source: AGHT+IF7KMX4PQ9MbhjzaZS9KH1hsBks7Ag/V1kb+FvUzHNpAJ+XwFEszukCkWQQAtI/yieVASDRCVnTSkaGoVJY87X1Pd3k81yl
+        d=1e100.net; s=20230601; t=1755852844; x=1756457644;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3nDqa62E4nqy40gueSWnXHSguUCNpfNrq8WtvsjEtYw=;
+        b=SQTxs3v4w9wl3EerW0RjR4uwgSxP6FAMehgb21N8Wcx/ABcbgeexE3u2p0MJPMb+Ic
+         lZlIr6V8NCpEVFVOetuHGDZT9ulzjmSxwHLE0kEuCYBk/rGjDY3Tl4A/6s3kveA536YN
+         AqEri2JwX42cQIWihmCd8ZtykkaVdNI8uxqs9P1X4Y+XJXmglBjWTsnngsk8py6aszlm
+         5Of5zR4H/0Lq4jRlKn/3h0LUeGOc5vl/GcAVsbG5sFNw52cu/AWArNERj+CWAqTFRDRa
+         yEqVtfCYMktzU9UCRKslzK94GsVrOEIUPbB0NMqCO+eBX8FPmAUGxwZJLTUu4Z93WR1i
+         Z16Q==
+X-Gm-Message-State: AOJu0Yw4LRHzL+J92ZsQwzTvEvJ46x8duIL/wm6x1Q6Q2LC9p1wVBwGe
+	PGRpVpYu0cPr2Mt9CJ0upWRKGNbaDuy3+dQXTzohqPG3LAo8U6GuHrnQpoVn5Tr8P2eaTLIKUyB
+	8IViPsY3bQ7gj6J1m/RmEpPhb0693bFgk60uPfisQkrkBjrcMiHQmLK7pXto=
+X-Google-Smtp-Source: AGHT+IG+C0l08JaEmHtSTtnFDU3R573R4trofI63QZq99xNTS90jp7iOK1/Z67pLXLFd4SnxBDuPqsyf2MSUfnNchSxJ07depbf9
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:19c6:b0:3e6:6c55:643 with SMTP id
- e9e14a558f8ab-3e9201f3d92mr16380665ab.7.1755812233632; Thu, 21 Aug 2025
- 14:37:13 -0700 (PDT)
-Date: Thu, 21 Aug 2025 14:37:13 -0700
-In-Reply-To: <20250821200701.1329277-1-david@redhat.com>
+X-Received: by 2002:a05:6e02:1607:b0:3e3:fd25:f6a with SMTP id
+ e9e14a558f8ab-3e921a5c447mr36011705ab.11.1755852844119; Fri, 22 Aug 2025
+ 01:54:04 -0700 (PDT)
+Date: Fri, 22 Aug 2025 01:54:04 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68a79189.050a0220.cb3d1.0004.GAE@google.com>
-Subject: [syzbot ci] Re: mm: remove nth_page()
-From: syzbot ci <syzbot+ci0b43493baa45553d@syzkaller.appspotmail.com>
-To: agordeev@linux.ibm.com, airlied@gmail.com, akpm@linux-foundation.org, 
-	alex.williamson@redhat.com, alex@ghiti.fr, andreas@gaisler.com, 
-	aou@eecs.berkeley.edu, axboe@kernel.dk, borntraeger@linux.ibm.com, 
-	bp@alien8.de, brett.creeley@amd.com, cassel@kernel.org, 
-	catalin.marinas@arm.com, chenhuacai@kernel.org, christophe.leroy@csgroup.eu, 
-	cl@gentwo.org, dave.hansen@linux.intel.com, davem@davemloft.net, 
-	david@redhat.com, dennis@kernel.org, dgilbert@interlog.com, 
-	dlemoal@kernel.org, dri-devel@lists.freedesktop.org, dvyukov@google.com, 
-	elver@google.com, glider@google.com, gor@linux.ibm.com, hannes@cmpxchg.org, 
-	hca@linux.ibm.com, herbert@gondor.apana.org.au, 
-	intel-gfx@lists.freedesktop.org, io-uring@vger.kernel.org, 
-	iommu@lists.linux.dev, jackmanb@google.com, 
-	james.bottomley@hansenpartnership.com, jani.nikula@linux.intel.com, 
-	jason@zx2c4.com, jesper.nilsson@axis.com, jgg@nvidia.com, jgg@ziepe.ca, 
-	jhubbard@nvidia.com, joonas.lahtinen@linux.intel.com, 
-	kasan-dev@googlegroups.com, kernel@xen0n.name, kevin.tian@intel.com, 
-	kvm@vger.kernel.org, lars.persson@axis.com, liam.howlett@oracle.com, 
-	linux-arm-kernel@axis.com, linux-arm-kernel@lists.infradead.org, 
-	linux-crypto@vger.kernel.org, linux-ide@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-	linux-mips@vger.kernel.org, linux-mm@kvack.org, linux-mmc@vger.kernel.org, 
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, 
-	linux-scsi@vger.kernel.org, lorenzo.stoakes@oracle.com, 
-	m.szyprowski@samsung.com, maddy@linux.ibm.com, martin.petersen@oracle.com, 
-	maximlevitsky@gmail.com, mhocko@suse.com, mingo@redhat.com, 
-	mpe@ellerman.id.au, muchun.song@linux.dev, netdev@vger.kernel.org, 
-	npiggin@gmail.com, oakad@yahoo.com, osalvador@suse.de, palmer@dabbelt.com, 
-	paul.walmsley@sifive.com, peterx@redhat.com, robin.murphy@arm.com, 
-	rodrigo.vivi@intel.com, rppt@kernel.org, shameerali.kolothum.thodi@huawei.com, 
-	shuah@kernel.org, simona@ffwll.ch, surenb@google.com, svens@linux.ibm.com, 
-	tglx@linutronix.de, tj@kernel.org, torvalds@linux-foundation.org, 
-	tsbogend@alpha.franken.de, tursulin@ursulin.net, ulf.hansson@linaro.org, 
-	vbabka@suse.cz, virtualization@lists.linux.dev, will@kernel.org, 
-	wireguard@lists.zx2c4.com, x86@kernel.org, ziy@nvidia.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <68a8302c.a00a0220.33401d.0253.GAE@google.com>
+Subject: [moderation/CI] Re: tcp: Destroy TCP-AO, TCP-MD5 keys in .sk_destruct()
+From: syzbot ci <syzbot+ci8912e284da8aa743@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] mm: remove nth_page()
-https://lore.kernel.org/all/20250821200701.1329277-1-david@redhat.com
-* [PATCH RFC 01/35] mm: stop making SPARSEMEM_VMEMMAP user-selectable
-* [PATCH RFC 02/35] arm64: Kconfig: drop superfluous "select SPARSEMEM_VMEMMAP"
-* [PATCH RFC 03/35] s390/Kconfig: drop superfluous "select SPARSEMEM_VMEMMAP"
-* [PATCH RFC 04/35] x86/Kconfig: drop superfluous "select SPARSEMEM_VMEMMAP"
-* [PATCH RFC 05/35] wireguard: selftests: remove CONFIG_SPARSEMEM_VMEMMAP=y from qemu kernel config
-* [PATCH RFC 06/35] mm/page_alloc: reject unreasonable folio/compound page sizes in alloc_contig_range_noprof()
-* [PATCH RFC 07/35] mm/memremap: reject unreasonable folio/compound page sizes in memremap_pages()
-* [PATCH RFC 08/35] mm/hugetlb: check for unreasonable folio sizes when registering hstate
-* [PATCH RFC 09/35] mm/mm_init: make memmap_init_compound() look more like prep_compound_page()
-* [PATCH RFC 10/35] mm/hugetlb: cleanup hugetlb_folio_init_tail_vmemmap()
-* [PATCH RFC 11/35] mm: sanity-check maximum folio size in folio_set_order()
-* [PATCH RFC 12/35] mm: limit folio/compound page sizes in problematic kernel configs
-* [PATCH RFC 13/35] mm: simplify folio_page() and folio_page_idx()
-* [PATCH RFC 14/35] mm/mm/percpu-km: drop nth_page() usage within single allocation
-* [PATCH RFC 15/35] fs: hugetlbfs: remove nth_page() usage within folio in adjust_range_hwpoison()
-* [PATCH RFC 16/35] mm/pagewalk: drop nth_page() usage within folio in folio_walk_start()
-* [PATCH RFC 17/35] mm/gup: drop nth_page() usage within folio when recording subpages
-* [PATCH RFC 18/35] io_uring/zcrx: remove "struct io_copy_cache" and one nth_page() usage
-* [PATCH RFC 19/35] io_uring/zcrx: remove nth_page() usage within folio
-* [PATCH RFC 20/35] mips: mm: convert __flush_dcache_pages() to __flush_dcache_folio_pages()
-* [PATCH RFC 21/35] mm/cma: refuse handing out non-contiguous page ranges
-* [PATCH RFC 22/35] dma-remap: drop nth_page() in dma_common_contiguous_remap()
-* [PATCH RFC 23/35] scatterlist: disallow non-contigous page ranges in a single SG entry
-* [PATCH RFC 24/35] ata: libata-eh: drop nth_page() usage within SG entry
-* [PATCH RFC 25/35] drm/i915/gem: drop nth_page() usage within SG entry
-* [PATCH RFC 26/35] mspro_block: drop nth_page() usage within SG entry
-* [PATCH RFC 27/35] memstick: drop nth_page() usage within SG entry
-* [PATCH RFC 28/35] mmc: drop nth_page() usage within SG entry
-* [PATCH RFC 29/35] scsi: core: drop nth_page() usage within SG entry
-* [PATCH RFC 30/35] vfio/pci: drop nth_page() usage within SG entry
-* [PATCH RFC 31/35] crypto: remove nth_page() usage within SG entry
-* [PATCH RFC 32/35] mm/gup: drop nth_page() usage in unpin_user_page_range_dirty_lock()
-* [PATCH RFC 33/35] kfence: drop nth_page() usage
-* [PATCH RFC 34/35] block: update comment of "struct bio_vec" regarding nth_page()
-* [PATCH RFC 35/35] mm: remove nth_page()
+[v1] tcp: Destroy TCP-AO, TCP-MD5 keys in .sk_destruct()
+https://lore.kernel.org/all/20250822-b4-tcp-ao-md5-rst-finwait2-v1-0-25825d=
+085dcb@arista.com
+* [PATCH net-next 1/2] tcp: Destroy TCP-AO, TCP-MD5 keys in .sk_destruct()
+* [PATCH net-next 2/2] tcp: Free TCP-AO/TCP-MD5 info/keys without RCU
 
 and found the following issue:
-general protection fault in kfence_guarded_alloc
+WARNING in inet_sock_destruct
 
 Full report is available here:
-https://ci.syzbot.org/series/f6f0aea1-9616-4675-8c80-f9b59ba3211c
+https://ci.syzbot.org/series/4e53fc18-79b4-47d6-87c4-89e499e12879
 
 ***
 
-general protection fault in kfence_guarded_alloc
+WARNING in inet_sock_destruct
 
 tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
-base:      da114122b83149d1f1db0586b1d67947b651aa20
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net-next.git
+base:      a9af709fda7edafa17e072bffe610d9e7ed7a5df
 arch:      amd64
-compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp1~20250616065826.132), Debian LLD 20.1.7
-config:    https://ci.syzbot.org/builds/705b7862-eb10-40bd-a4cf-4820b4912466/config
+compiler:  Debian clang version 20.1.7 (++20250616065708+6146a88f6049-1~exp=
+1~20250616065826.132), Debian LLD 20.1.7
+config:    https://ci.syzbot.org/builds/d6e1c7cd-df1b-4192-bc2d-a2db6998779=
+3/config
+C repro:   https://ci.syzbot.org/findings/62fd81c8-8c8c-49fe-aa87-8e1418bcc=
+053/c_repro
+syz repro: https://ci.syzbot.org/findings/62fd81c8-8c8c-49fe-aa87-8e1418bcc=
+053/syz_repro
 
-smpboot: CPU0: Intel(R) Xeon(R) CPU @ 2.80GHz (family: 0x6, model: 0x55, stepping: 0x7)
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] SMP KASAN NOPTI
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:kfence_guarded_alloc+0x643/0xc70
-Code: 41 c1 e5 18 bf 00 00 00 f5 44 89 ee e8 a6 67 9c ff 45 31 f6 41 81 fd 00 00 00 f5 4c 0f 44 f3 49 8d 7e 08 48 89 f8 48 c1 e8 03 <42> 80 3c 20 00 74 05 e8 f1 cb ff ff 4c 8b 6c 24 18 4d 89 6e 08 49
-RSP: 0000:ffffc90000047740 EFLAGS: 00010202
-RAX: 0000000000000001 RBX: ffffea0004d90080 RCX: 0000000000000000
-RDX: ffff88801c2e8000 RSI: 00000000ff000000 RDI: 0000000000000008
-RBP: ffffc90000047850 R08: ffffffff99b2201b R09: 1ffffffff3364403
-R10: dffffc0000000000 R11: fffffbfff3364404 R12: dffffc0000000000
-R13: 00000000ff000000 R14: 0000000000000000 R15: ffff88813fec7068
-FS:  0000000000000000(0000) GS:ffff8880b861c000(0000) knlGS:0000000000000000
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 6012 at net/ipv4/af_inet.c:153 inet_sock_destruct+0x5f=
+9/0x730 net/ipv4/af_inet.c:153
+Modules linked in:
+CPU: 0 UID: 0 PID: 6012 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:inet_sock_destruct+0x5f9/0x730 net/ipv4/af_inet.c:153
+Code: 00 41 0f b6 74 24 12 48 c7 c7 20 91 9e 8c 4c 89 e2 48 83 c4 20 5b 41 =
+5c 41 5d 41 5e 41 5f 5d e9 dd 38 24 f7 e8 68 44 bc f7 90 <0f> 0b 90 e9 62 f=
+e ff ff e8 5a 44 bc f7 90 0f 0b 90 e9 95 fe ff ff
+RSP: 0018:ffffc90003a0fc58 EFLAGS: 00010293
+RAX: ffffffff8a0366c8 RBX: dffffc0000000000 RCX: ffff888106891cc0
+RDX: 0000000000000000 RSI: 00000000000003c0 RDI: 0000000000000000
+RBP: 00000000000003c0 R08: ffff88803bb429c3 R09: 1ffff11007768538
+R10: dffffc0000000000 R11: ffffed1007768539 R12: ffff88803bb42880
+R13: dffffc0000000000 R14: ffff88803bb429c0 R15: 1ffff11007768512
+FS:  00005555690ff500(0000) GS:ffff8880b861a000(0000) knlGS:000000000000000=
+0
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffff88813ffff000 CR3: 000000000df36000 CR4: 0000000000350ef0
+CR2: 0000200000f65000 CR3: 0000000106d3a000 CR4: 00000000000006f0
 Call Trace:
  <TASK>
- __kfence_alloc+0x385/0x3b0
- __kmalloc_noprof+0x440/0x4f0
- __alloc_workqueue+0x103/0x1b70
- alloc_workqueue_noprof+0xd4/0x210
- init_mm_internals+0x17/0x140
- kernel_init_freeable+0x307/0x4b0
- kernel_init+0x1d/0x1d0
- ret_from_fork+0x3f9/0x770
- ret_from_fork_asm+0x1a/0x30
+ __sk_destruct+0x89/0x660 net/core/sock.c:2339
+ inet_release+0x144/0x190 net/ipv4/af_inet.c:435
+ __sock_release net/socket.c:649 [inline]
+ sock_close+0xc3/0x240 net/socket.c:1439
+ __fput+0x44c/0xa70 fs/file_table.c:468
+ task_work_run+0x1d4/0x260 kernel/task_work.c:227
+ resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
+ exit_to_user_mode_loop+0xec/0x110 kernel/entry/common.c:43
+ exit_to_user_mode_prepare include/linux/irq-entry-common.h:225 [inline]
+ syscall_exit_to_user_mode_work include/linux/entry-common.h:175 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:210 [inline]
+ do_syscall_64+0x2bd/0x3b0 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fa54ab8ebe9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc0978c268 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
+RAX: 0000000000000000 RBX: 000000000000ce2e RCX: 00007fa54ab8ebe9
+RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000001 R09: 000000040978c55f
+R10: 0000001b30220000 R11: 0000000000000246 R12: 00007fa54adb5fac
+R13: 00007fa54adb5fa0 R14: ffffffffffffffff R15: 0000000000000006
  </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:kfence_guarded_alloc+0x643/0xc70
-Code: 41 c1 e5 18 bf 00 00 00 f5 44 89 ee e8 a6 67 9c ff 45 31 f6 41 81 fd 00 00 00 f5 4c 0f 44 f3 49 8d 7e 08 48 89 f8 48 c1 e8 03 <42> 80 3c 20 00 74 05 e8 f1 cb ff ff 4c 8b 6c 24 18 4d 89 6e 08 49
-RSP: 0000:ffffc90000047740 EFLAGS: 00010202
-RAX: 0000000000000001 RBX: ffffea0004d90080 RCX: 0000000000000000
-RDX: ffff88801c2e8000 RSI: 00000000ff000000 RDI: 0000000000000008
-RBP: ffffc90000047850 R08: ffffffff99b2201b R09: 1ffffffff3364403
-R10: dffffc0000000000 R11: fffffbfff3364404 R12: dffffc0000000000
-R13: 00000000ff000000 R14: 0000000000000000 R15: ffff88813fec7068
-FS:  0000000000000000(0000) GS:ffff8880b861c000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffff88813ffff000 CR3: 000000000df36000 CR4: 0000000000350ef0
 
 
 ***
@@ -193,3 +142,13 @@ separate fix, please add the following tag to your commit message:
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[0x7f454c46@gmail.com davem@davemloft.net devnull@kernel.org dima@arista.co=
+m dsahern@kernel.org edumazet@google.com gilligan@arista.com horms@kernel.o=
+rg kuba@kernel.org kuniyu@google.com linux-kernel@vger.kernel.org ncardwell=
+@google.com netdev@vger.kernel.org noureddine@arista.com pabeni@redhat.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
