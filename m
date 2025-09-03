@@ -1,213 +1,171 @@
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03D1E2EC56F
-	for <syzbot@lists.linux.dev>; Wed,  3 Sep 2025 21:53:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 012FE2DFA2B
+	for <syzbot@lists.linux.dev>; Wed,  3 Sep 2025 21:54:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756936425; cv=none; b=tv/WU70/y+qTvklEhndOPuuOaCn/L4be1ZuGSrw0ts5yyNH0dBm1LpXvl/HHko2agX84AXlBh3yOTzpq8TPlVgz3SYIVe5gZe6I6A8QA9FDCZTfRRs3Y6VY+nKZd7CFKxcW2UK+kNNKmRL5Pq/c7ytpSefQaNaGT+hMqNM7suz0=
+	t=1756936464; cv=none; b=iSdONUZ+8g7f6WIGBptyBoWfhsNGJHBklYnVPkwMPUpXEhtkCaObfWnslqSzL5RTJxjyhUS6krVqpxyLU6FU6409hkhgkcS1cvSuxRXpf1p++BjZp8ULvFE704Z8XyBlyfh5trf8wVWDgMJzQR1mr8kaZMe8Zyu7xPycyGj/o+8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756936425; c=relaxed/simple;
-	bh=GDCbW90cFJ3OVUHaq2eU5ygnheokkwkvlymXL8mtCL8=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=XrJMg6iksE2pZ01TxAOWQ8KvLF0TpLmwgaeN8i5hhfP2Ujj4aK2ahfA4JlmOKllH1ktOwpfz9+i9GVrmm7wgy0Pw57WeeklVSVnQYTk1HJFe0FqxjX5Sdo1e9fISJRlhdEuoCKaHt7OofsLSBiFIfbZImeVVB8JkF8dNbKJLfVc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-3f12be6bc4aso4160175ab.1
-        for <syzbot@lists.linux.dev>; Wed, 03 Sep 2025 14:53:43 -0700 (PDT)
+	s=arc-20240116; t=1756936464; c=relaxed/simple;
+	bh=NBLnENhsmmQK/S5Th8UNqWISAdtCBp29nE/QAbcGOZo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=pBDpr12ofwXc888VeTiQ4rB+ur76UaKlf3uCxKTzasnNBCxVd72UcXdmfo3dp0eb63bYwQH5zDwp1O6D/NGzpug2NsxCT+I+ckhQc+kfVexoaSQlJPeXYZCOpxQaJnQGa7zW7ZOeNe5hIsyhn319j5EcxMmTNfFSWLxVABkXm14=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IYk1lfsT; arc=none smtp.client-ip=209.85.161.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IYk1lfsT"
+Received: by mail-oo1-f44.google.com with SMTP id 006d021491bc7-61e1f772403so94144eaf.3
+        for <syzbot@lists.linux.dev>; Wed, 03 Sep 2025 14:54:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1756936459; x=1757541259; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oCXDBzTwIEZiznNvsj1oIcV1R750dObXYBFEQaVTYlQ=;
+        b=IYk1lfsTubSJwUWSu1rCBJ8iC3ocoVcX9mwGu61L9zpql7+2+eD8n2/EaL0Zn79VHl
+         h6kr2HA3n+WmjcWVqgD/UfoKDzWgjgOpV+x3L9L59ZMboOsFoSwTOGi/O1QQ0PqsHP9h
+         EAeVaE7iIXYvCBE5tgHPVH32Pwn2AbCjFBPLGbf/YP2BJzJaiE9MWiO1SQzlWgYP9Se4
+         gKx9QxRjNIxNL4d2S+gLXpMpAdr4WhdA1vtpUlkFIVg5vBMtaQKBez6AgUt6Rodc/vuk
+         Fbhw4NYrPpPtt33wbfUYbeVF0RihdoqJ4uiZWVFuUQuGDAM2A0Jl5F1yIAO79nqXC2+l
+         0U8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756936423; x=1757541223;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0se4TpCFyD6RILSNfsbrrII1qLTm3jujIuylWaXL718=;
-        b=dFqGhu1lvADY3Q3NwkEXOnUR95NL033/wsobea6E8vWXgmB79NYnbUVDwHI0W29oYj
-         VMWrhaU/aZE1JArHuiPb8kI6aUVMw5aWSTVNmD1VUM5/3tSe0ihzJv3Lr7bVxgSrSecN
-         V2nCe+5bPy2uXqQh0Tl9g8t5JIIiLUTALqheBrpWnQ/x6/9tR6UYfyfgiAWjrgfNj30v
-         6H5Wge8Kt5ESF85Hquu/rdJGqc65JKcAdzJZE1+w9V6mAVNdN75fsAKNqSCYw1ueM6tz
-         cLEUoVFJHpUPT++l5jlm9hxlAOyJFmk7Lkkadcc1lpMUSYQf5KcwewpKu4nkszLoi0LS
-         Ww6Q==
-X-Gm-Message-State: AOJu0YyXhcRxdm61efG3UUtiCwtRsMMOEEQvsE8HvFlRVTX+nrOVOsDy
-	mm6KQxecG/2cDjMJVnD+6+aQoSYOxJPuQI+SPafJyfdw5kN3U8/phCAD4NeeTLCJSit8+oBQy9m
-	xWiF48JJVb0kfiyDlv1QoR7V1A+fu11Q/8E+uP4eBfMH2o59LclFIFS65fMU=
-X-Google-Smtp-Source: AGHT+IEJ0nYfBB5EYbHNoEHlmJTQiN3zZygLidkrnPGvykMjam1Lc+j5uH0mhmBEHx0U40x9wmuRP/LIKPX84kwyMmXtXCYb48Lb
+        d=1e100.net; s=20230601; t=1756936459; x=1757541259;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=oCXDBzTwIEZiznNvsj1oIcV1R750dObXYBFEQaVTYlQ=;
+        b=shDJBjmQkijNNu1hTRTTaxaG7VBf1qqDvKT0j48jPLyYBxb/O0ZnbQFXiSJMW4z4CX
+         NyVgpsh9Y12uiWwkqSB0NnEdF40gjiQoDaCs+GLT+HPZhLutfE0QdhXpOJ1N/bVDqiIG
+         cUgjpasT9PdhTEH3A4Dk6EThU7uoJdBu+JquwfqS/hyAmWBY5J4SPLf/vBXUkIfPIKU1
+         Xi1l8dwT18wg4Ei6HhusdzW4kAy8Mud6WfYy9HFJ65aruXfLqJxUA4yi3sZusp2AR0Db
+         rggxdmkrKIgNgVWg+gheKgkW/rxeDSUSyKgRvp1822szABErO01+QYvZyonIrCZCilUZ
+         hjjQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX+F2mnZDlkE7i420h17sokmkPq4UUG5oZEJBwsfJSBNuUOOKIfY3ipZ5vubGAiDJkdYzWz4gs=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzT7lb8nXqdNSwXchgfSUaMf5/hV+ZUckSbeONsAwrowVcLv4Zt
+	m3ldR7ezskj1H5tL8vwfs381ee6l5mHyaOwO6qAQNC8e2NJO2ihCVA9qhpk5sKps3exdeBH6QDd
+	cN3UW7XBJRwXHI1DhREoph+ifYVNvbhlGwLVpr0zU
+X-Gm-Gg: ASbGncvuApfTJXJqn3tbWWNNcVRgbmWtEPr8SsfAomw3uA8Ne29ypxOdooLt3DyK2dE
+	Tif1Jx/DdJkyt8W+RGOUQPhH39fgru+d4XQmyK+hJvF1zdlXAKlwXLBaCy1Tlr1bHL2fbW7vnyZ
+	1CDND4HF6KOPzOJxYb5vbX/M0+WTuOwGyvpk0A/r7UiFg4pfXY+83dn8mr4LRSTHDsa1zH2k/yp
+	0nFbpt+Kj/Clg9NfSR02aGw7bRfQCobVqsyIeP2TQQne+wlTttyW9c6pg==
+X-Google-Smtp-Source: AGHT+IGGCE0JK5kegn3qCQKcUc4tSvYgHBq+JNBoZyYBR1ShIBNp5hxGLEolrFja6DkhPHPGkQaAt0MkAEjKjkR9lQw=
+X-Received: by 2002:a05:6820:603:b0:61e:e12:976 with SMTP id
+ 006d021491bc7-61e3375d5dfmr7919445eaf.6.1756936458679; Wed, 03 Sep 2025
+ 14:54:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:4903:b0:3f6:5621:fbde with SMTP id
- e9e14a558f8ab-3f65621fe5fmr153119265ab.6.1756936423199; Wed, 03 Sep 2025
- 14:53:43 -0700 (PDT)
-Date: Wed, 03 Sep 2025 14:53:43 -0700
-In-Reply-To: <20250903024406.2418362-1-xuanqiang.luo@linux.dev>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68b8b8e7.050a0220.3db4df.0204.GAE@google.com>
-Subject: [syzbot ci] Re: inet: Avoid established lookup missing active sk
-From: syzbot ci <syzbot+ci5d61d9552f28b0e0@syzkaller.appspotmail.com>
-To: davem@davemloft.net, edumazet@google.com, kernelxing@tencent.com, 
-	kuba@kernel.org, kuniyu@google.com, luoxuanqiang@kylinos.cn, 
-	netdev@vger.kernel.org, xuanqiang.luo@linux.dev
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <68b8a0dc.050a0220.3db4df.01ff.GAE@google.com>
+In-Reply-To: <68b8a0dc.050a0220.3db4df.01ff.GAE@google.com>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Wed, 3 Sep 2025 23:54:07 +0200
+X-Gm-Features: Ac12FXzBV4NP_EUBK1GArb5QLV3ztQTE5PUF1H2Q6rPpbk-1XYqJ6kISvogccK0
+Message-ID: <CANp29Y5V3mPtpJ2_MAatOY=f_5RYD=WpAKobUWCbMxcoCnP4YQ@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: io_uring: avoid uring_lock for IORING_SETUP_SINGLE_ISSUER
+To: syzbot ci <syzbot+ci46ad6c40cc3229d9@syzkaller.appspotmail.com>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
+#syz upstream
 
-[v1] inet: Avoid established lookup missing active sk
-https://lore.kernel.org/all/20250903024406.2418362-1-xuanqiang.luo@linux.dev
-* [PATCH net] inet: Avoid established lookup missing active sk
-
-and found the following issue:
-inconsistent lock state in valid_state
-
-Full report is available here:
-https://ci.syzbot.org/series/e3eb0778-d6ff-4b0c-ae24-a5451a3472cb
-
-***
-
-inconsistent lock state in valid_state
-
-tree:      net
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
-base:      788bc43d8330511af433bf282021a8fecb6b9009
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/4fba502f-1812-45fd-881c-e5889996074b/config
-C repro:   https://ci.syzbot.org/findings/1fde3273-fc6e-4ca1-9a99-a8f866c822cd/c_repro
-syz repro: https://ci.syzbot.org/findings/1fde3273-fc6e-4ca1-9a99-a8f866c822cd/syz_repro
-
-================================
-WARNING: inconsistent lock state
-syzkaller #0 Not tainted
---------------------------------
-inconsistent {IN-SOFTIRQ-W} -> {SOFTIRQ-ON-W} usage.
-syz.0.17/5984 [HC0[0]:SC0[0]:HE1:SE1] takes:
-ffffc90000069958 (&ptr[i]){+.?.}-{3:3}, at: spin_lock include/linux/spinlock.h:351 [inline]
-ffffc90000069958 (&ptr[i]){+.?.}-{3:3}, at: __inet_lookup_established+0x71d/0x8d0 net/ipv4/inet_hashtables.c:537
-{IN-SOFTIRQ-W} state was registered at:
-  lock_acquire+0x120/0x360 kernel/locking/lockdep.c:5868
-  __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
-  _raw_spin_lock+0x2e/0x40 kernel/locking/spinlock.c:154
-  spin_lock include/linux/spinlock.h:351 [inline]
-  __inet_lookup_established+0x71d/0x8d0 net/ipv4/inet_hashtables.c:537
-  tcp_v4_early_demux+0x4e1/0x9d0 net/ipv4/tcp_ipv4.c:1995
-  ip_rcv_finish_core+0x108e/0x1c00 net/ipv4/ip_input.c:346
-  ip_list_rcv_finish net/ipv4/ip_input.c:616 [inline]
-  ip_sublist_rcv+0x397/0x9b0 net/ipv4/ip_input.c:642
-  ip_list_rcv+0x3e2/0x430 net/ipv4/ip_input.c:676
-  __netif_receive_skb_list_ptype net/core/dev.c:6034 [inline]
-  __netif_receive_skb_list_core+0x7d2/0x800 net/core/dev.c:6081
-  __netif_receive_skb_list net/core/dev.c:6133 [inline]
-  netif_receive_skb_list_internal+0x975/0xcc0 net/core/dev.c:6224
-  gro_normal_list include/net/gro.h:532 [inline]
-  gro_flush_normal include/net/gro.h:540 [inline]
-  napi_complete_done+0x2f2/0x7c0 net/core/dev.c:6593
-  e1000_clean+0xd0b/0x2b00 drivers/net/ethernet/intel/e1000/e1000_main.c:3815
-  __napi_poll+0xc7/0x360 net/core/dev.c:7506
-  napi_poll net/core/dev.c:7569 [inline]
-  net_rx_action+0x707/0xe30 net/core/dev.c:7696
-  handle_softirqs+0x286/0x870 kernel/softirq.c:579
-  __do_softirq kernel/softirq.c:613 [inline]
-  invoke_softirq kernel/softirq.c:453 [inline]
-  __irq_exit_rcu+0xca/0x1f0 kernel/softirq.c:680
-  irq_exit_rcu+0x9/0x30 kernel/softirq.c:696
-  common_interrupt+0xbb/0xe0 arch/x86/kernel/irq.c:318
-  asm_common_interrupt+0x26/0x40 arch/x86/include/asm/idtentry.h:693
-  native_safe_halt arch/x86/include/asm/irqflags.h:48 [inline]
-  pv_native_safe_halt+0x13/0x20 arch/x86/kernel/paravirt.c:81
-  arch_safe_halt arch/x86/include/asm/paravirt.h:107 [inline]
-  default_idle+0x13/0x20 arch/x86/kernel/process.c:757
-  default_idle_call+0x74/0xb0 kernel/sched/idle.c:122
-  cpuidle_idle_call kernel/sched/idle.c:190 [inline]
-  do_idle+0x1e8/0x510 kernel/sched/idle.c:330
-  cpu_startup_entry+0x44/0x60 kernel/sched/idle.c:428
-  start_secondary+0x101/0x110 arch/x86/kernel/smpboot.c:315
-  common_startup_64+0x13e/0x147
-irq event stamp: 807
-hardirqs last  enabled at (807): [<ffffffff8184e7fd>] __local_bh_enable_ip+0x12d/0x1c0 kernel/softirq.c:412
-hardirqs last disabled at (805): [<ffffffff8184e79e>] __local_bh_enable_ip+0xce/0x1c0 kernel/softirq.c:389
-softirqs last  enabled at (806): [<ffffffff8962777b>] local_bh_disable include/linux/bottom_half.h:20 [inline]
-softirqs last  enabled at (806): [<ffffffff8962777b>] rcu_read_lock_bh include/linux/rcupdate.h:892 [inline]
-softirqs last  enabled at (806): [<ffffffff8962777b>] __dev_queue_xmit+0x27b/0x3b50 net/core/dev.c:4650
-softirqs last disabled at (798): [<ffffffff8962777b>] local_bh_disable include/linux/bottom_half.h:20 [inline]
-softirqs last disabled at (798): [<ffffffff8962777b>] rcu_read_lock_bh include/linux/rcupdate.h:892 [inline]
-softirqs last disabled at (798): [<ffffffff8962777b>] __dev_queue_xmit+0x27b/0x3b50 net/core/dev.c:4650
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&ptr[i]);
-  <Interrupt>
-    lock(&ptr[i]);
-
- *** DEADLOCK ***
-
-1 lock held by syz.0.17/5984:
- #0: ffffffff8e139ee0 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:331 [inline]
- #0: ffffffff8e139ee0 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:841 [inline]
- #0: ffffffff8e139ee0 (rcu_read_lock){....}-{1:3}, at: inet_diag_find_one_icsk+0x2e/0x790 net/ipv4/inet_diag.c:527
-
-stack backtrace:
-CPU: 0 UID: 0 PID: 5984 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
- print_usage_bug+0x297/0x2e0 kernel/locking/lockdep.c:4042
- valid_state+0xc3/0xf0 kernel/locking/lockdep.c:4056
- mark_lock_irq+0x36/0x390 kernel/locking/lockdep.c:4267
- mark_lock+0x11b/0x190 kernel/locking/lockdep.c:4753
- mark_usage kernel/locking/lockdep.c:-1 [inline]
- __lock_acquire+0x9e2/0xd20 kernel/locking/lockdep.c:5191
- lock_acquire+0x120/0x360 kernel/locking/lockdep.c:5868
- __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
- _raw_spin_lock+0x2e/0x40 kernel/locking/spinlock.c:154
- spin_lock include/linux/spinlock.h:351 [inline]
- __inet_lookup_established+0x71d/0x8d0 net/ipv4/inet_hashtables.c:537
- __inet_lookup include/net/inet_hashtables.h:408 [inline]
- inet_lookup+0xc4/0x290 include/net/inet_hashtables.h:428
- inet_diag_find_one_icsk+0x1c1/0x790 net/ipv4/inet_diag.c:529
- inet_diag_dump_one_icsk+0xa4/0x520 net/ipv4/inet_diag.c:576
- inet_diag_cmd_exact+0x3d5/0x4e0 net/ipv4/inet_diag.c:628
- inet_diag_get_exact_compat net/ipv4/inet_diag.c:1406 [inline]
- inet_diag_rcv_msg_compat+0x2b5/0x3b0 net/ipv4/inet_diag.c:1428
- sock_diag_rcv_msg+0x4cc/0x600 net/core/sock_diag.c:-1
- netlink_rcv_skb+0x208/0x470 net/netlink/af_netlink.c:2552
- netlink_unicast_kernel net/netlink/af_netlink.c:1320 [inline]
- netlink_unicast+0x82f/0x9e0 net/netlink/af_netlink.c:1346
- netlink_sendmsg+0x805/0xb30 net/netlink/af_netlink.c:1896
- sock_sendmsg_nosec net/socket.c:714 [inline]
- __sock_sendmsg+0x21c/0x270 net/socket.c:729
- ____sys_sendmsg+0x505/0x830 net/socket.c:2614
- ___sys_sendmsg+0x21f/0x2a0 net/socket.c:2668
- __sys_sendmsg net/socket.c:2700 [inline]
- __do_sys_sendmsg net/socket.c:2705 [inline]
- __se_sys_sendmsg net/socket.c:2703 [inline]
- __x64_sys_sendmsg+0x19b/0x260 net/socket.c:2703
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f0e1a18ebe9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffd085aadc8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f0e1a3c5fa0 RCX: 00007f0e1a18ebe9
-RDX: 0000000000000000 RSI: 0000200000000200 RDI: 0000000000000003
-RBP: 00007f0e1a211e19 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f0e1a3c5fa0 R14: 00007f0e1a3c5fa0 R15: 0000000000000003
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+On Wed, Sep 3, 2025 at 10:11=E2=80=AFPM syzbot ci
+<syzbot+ci46ad6c40cc3229d9@syzkaller.appspotmail.com> wrote:
+>
+> syzbot ci has tested the following series
+>
+> [v1] io_uring: avoid uring_lock for IORING_SETUP_SINGLE_ISSUER
+> https://lore.kernel.org/all/20250903032656.2012337-1-csander@purestorage.=
+com
+> * [PATCH 1/4] io_uring: don't include filetable.h in io_uring.h
+> * [PATCH 2/4] io_uring/rsrc: respect submitter_task in io_register_clone_=
+buffers()
+> * [PATCH 3/4] io_uring: factor out uring_lock helpers
+> * [PATCH 4/4] io_uring: avoid uring_lock for IORING_SETUP_SINGLE_ISSUER
+>
+> and found the following issue:
+> WARNING in io_handle_tw_list
+>
+> Full report is available here:
+> https://ci.syzbot.org/series/54ae0eae-5e47-4cfe-9ae7-9eaaf959b5ae
+>
+> ***
+>
+> WARNING in io_handle_tw_list
+>
+> tree:      linux-next
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/=
+linux-next
+> base:      5d50cf9f7cf20a17ac469c20a2e07c29c1f6aab7
+> arch:      amd64
+> compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~e=
+xp1~20250708183702.136), Debian LLD 20.1.8
+> config:    https://ci.syzbot.org/builds/1de646dd-4ee2-418d-9c62-617d88ed4=
+fd2/config
+> syz repro: https://ci.syzbot.org/findings/e229a878-375f-4286-89fe-b6724c2=
+3addd/syz_repro
+>
+> ------------[ cut here ]------------
+> WARNING: io_uring/io_uring.h:127 at io_ring_ctx_lock io_uring/io_uring.h:=
+127 [inline], CPU#1: iou-sqp-6294/6297
+> WARNING: io_uring/io_uring.h:127 at io_handle_tw_list+0x234/0x2e0 io_urin=
+g/io_uring.c:1155, CPU#1: iou-sqp-6294/6297
+> Modules linked in:
+> CPU: 1 UID: 0 PID: 6297 Comm: iou-sqp-6294 Not tainted syzkaller #0 PREEM=
+PT(full)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> RIP: 0010:io_ring_ctx_lock io_uring/io_uring.h:127 [inline]
+> RIP: 0010:io_handle_tw_list+0x234/0x2e0 io_uring/io_uring.c:1155
+> Code: 00 00 48 c7 c7 e0 90 02 8c be 8e 04 00 00 31 d2 e8 01 e5 d2 fc 2e 2=
+e 2e 31 c0 45 31 e4 4d 85 ff 75 89 eb 7c e8 ad fb 00 fd 90 <0f> 0b 90 e9 cf=
+ fe ff ff 89 e9 80 e1 07 80 c1 03 38 c1 0f 8c 22 ff
+> RSP: 0018:ffffc900032cf938 EFLAGS: 00010293
+> RAX: ffffffff84bfcba3 RBX: dffffc0000000000 RCX: ffff888107f61cc0
+> RDX: 0000000000000000 RSI: 0000000000001000 RDI: 0000000000000000
+> RBP: ffff8881119a8008 R08: ffff888110bb69c7 R09: 1ffff11022176d38
+> R10: dffffc0000000000 R11: ffffed1022176d39 R12: ffff8881119a8000
+> R13: ffff888108441e90 R14: ffff888107f61cc0 R15: 0000000000000000
+> FS:  00007f81f25716c0(0000) GS:ffff8881a39f5000(0000) knlGS:0000000000000=
+000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000001b31b63fff CR3: 000000010f24c000 CR4: 00000000000006f0
+> Call Trace:
+>  <TASK>
+>  tctx_task_work_run+0x99/0x370 io_uring/io_uring.c:1223
+>  io_sq_tw io_uring/sqpoll.c:244 [inline]
+>  io_sq_thread+0xed1/0x1e50 io_uring/sqpoll.c:327
+>  ret_from_fork+0x47f/0x820 arch/x86/kernel/process.c:148
+>  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+>  </TASK>
+>
+>
+> ***
+>
+> If these findings have caused you to resend the series or submit a
+> separate fix, please add the following tag to your commit message:
+>   Tested-by: syzbot@syzkaller.appspotmail.com
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+>
+> The email will later be sent to:
+> [axboe@kernel.dk csander@purestorage.com io-uring@vger.kernel.org linux-k=
+ernel@vger.kernel.org]
+>
+> If the report looks fine to you, reply with:
+> #syz upstream
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/68b8a0dc.050a0220.3db4df.01ff.GAE%40google.com.
