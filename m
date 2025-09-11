@@ -1,195 +1,87 @@
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93C4725BEE5
-	for <syzbot@lists.linux.dev>; Thu, 11 Sep 2025 06:57:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFDE413EFE3
+	for <syzbot@lists.linux.dev>; Thu, 11 Sep 2025 19:15:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757573866; cv=none; b=LaUKO02i+pIIMZHAkU6iQoQSolC+ykfU+iQK/NjpcHEAGlxVHYEtUgtPoLE3yB81HpSvS6sB+1NrMn4OvNesxYstclgo3lDXFSwFxXZ+W+khWrHBAq3jxFYEUewKO9tVTnVJIlvGmIg3NGMlOFndrE5kFI0PgZVcg5n8vgylgNQ=
+	t=1757618138; cv=none; b=PvqnQaNnpB7Xr2xll/MraebBS4s6yAcPMdkk0usPsPo3D/0pndTqK32PRqBwCdAStL0VHisKBN1AMp7Ni+C2rWvw8WKOFYcbt+38d68BW+Tfum9nirjXiuCFHRWUFpfOZ9gHYrp+cHzPvK8q9ZhLBGrLch8k2yOMn8nvh0G1A+0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757573866; c=relaxed/simple;
-	bh=VVm23+2rDOtMhhjpZaytq/wtRhRsAUKiq2SaAgIHKtI=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=penKgK/wIVwkw9xzWNSROhIwzacufqsRskju5ls3fRX1dgPbKjeOs5e0p1Gn0Uv1+AwLmlLxCHZxjUltmvcpOKRHDG3sSseyi73jFWVl695MCg2k4eYmgE8MMgmxuNkFJr8Z1sUnNvcKYttJJNouh0zuqDz91nuQD1pJmvcW8tQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.197
+	s=arc-20240116; t=1757618138; c=relaxed/simple;
+	bh=ETpJmXaE3AgOSIM42Gwgt2wtsJdTVEkLg17OOBhdRu0=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=QhpShSm/CBJhr3Y0l+1qgiXbX/+YTwUB+1DOz3hFqdGSLTl7Uy0ydouizIu5JFNvOohTaWdk7beqeXw8mJkgSo+oRikzAXIAn4T3boe9M5s55dc5+8tFTEWII7Vmk3R4IO12p0bMZwY7HeZPHGW7mQkeGGvBK9JUAM9JAesrT0A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f197.google.com with SMTP id e9e14a558f8ab-41a85a4cd4eso5446715ab.1
-        for <syzbot@lists.linux.dev>; Wed, 10 Sep 2025 23:57:44 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-40e59fba17dso17843775ab.1
+        for <syzbot@lists.linux.dev>; Thu, 11 Sep 2025 12:15:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757573864; x=1758178664;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LG9M6En5TuPR6QTQMmZQf2npH+rIu+hDoGgmYdW26cQ=;
-        b=QRvLgHHuFOHLVDyqjiw1vZelLpzIOA6Kvj0U4gAuQYHDQ51tXzar35JI/SCmMkV6e+
-         V8r+8KTSUVPRDr81VvkPWjOnbQtA8maSObdYVoe/P9Jxuj+gspY7GFddeHG9rH96dSz0
-         MmdQuSUEa4yg5LYw6+GOz8ee6D+OfhrIcX8Q54TJcwj5PT87NITupOd2BPTNWh4tIrOy
-         5ArRAth7bJVxxcUF/eQv1JqILYVc1/WJe/wLVinZebdooLwVMWC5QeQZuH//jnn4XBWl
-         Q8CmHT2hhBXwDyhXnqGZQNmu8nfK9YaoIPzBovj7Mbwzf3YkfD9MjVYzOGVbAyQ2cyLt
-         tj8A==
-X-Gm-Message-State: AOJu0Yw3Tji45mzTwMbtuhbhzaxvWtFyNXKTMiCMWgeLaGyle6wyA3Da
-	zew3d4ywIBQ/c0hr56lMcsJfGe7qzmdL2jyr7PP1NXXksCJHqDrm5O5jPzOBu84vtgEwUsXS2ao
-	AWDbpenM5PcoE+0oYS2OFk8ph3pwAtWykEV11NNOrozYvTLH0drrtnfEbuIA=
-X-Google-Smtp-Source: AGHT+IEAh+dieFc2sAs3qZxfQ4/X+h9Wm1acKeoQkXQN5HiJnopvctmEOrniIB21A50C9emxROLD0QbzsAnPTekUjZL+KVUai9Jm
+        d=1e100.net; s=20230601; t=1757618136; x=1758222936;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hVc6z/DKRUrU+QxklqBfZBWVFMA8MgZ2PA/fWVL0dQg=;
+        b=LBB93DPfhEkgRNuWuiQ8yRlG3/OUXpuWA9Wv30QXu+n6LFiDkGqU2Iu0HAVpM2XOTJ
+         kiTe6Ql9nxNnCcJ2rjAHt0AZ2fdwC+pVyX203neT66c5R0GS6g32Rt98OgiRXBlkjQ2v
+         gOQCeUwb/zlIeLkFoF46r30sf0Ekx2xYkrVmbCGeTZHgyGdihOjiU417YHyAGeUjSP5F
+         p0VdGEk3KRUbpmByahm7yvq+Czx7AbdQJR5kE+5e/EpS/e1AN6g7BhdImc6QIkQrRklZ
+         NbBwMuCGiSC7RaSl8WDtAPkWtXQfybsZQ4uoP5vkAogmAxbhScpjjou9o4r9ZAIsUKtn
+         M8fw==
+X-Gm-Message-State: AOJu0YwfreOLJ5WvutFJascSLOelVgSxVl0zMgWHNuTmqDAsHFnWhC1g
+	5Q+p+o76CfbElSVdMIvW7Ntp6s5wvwKYL79hj0o61H58tStnzfni6bKv9QLMhudbRSDZhXDpySE
+	J4CWjfupw3Rk3HFD5ICKN3Q9SsqW9zQOPyphmzOC0+ZlP0Ap3eP9lUWD0wS8=
+X-Google-Smtp-Source: AGHT+IENZmxBllAv//n1VznRgxvFxG7fZIDzLTeY0PFT+U0eldt7hlDUignDSDKjj4FJS/XFAS8Qj862gQY/4DT4tHB7Q6yUeqe7
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:190d:b0:412:c994:db15 with SMTP id
- e9e14a558f8ab-412c994dcd6mr127428115ab.14.1757573863748; Wed, 10 Sep 2025
- 23:57:43 -0700 (PDT)
-Date: Wed, 10 Sep 2025 23:57:43 -0700
-In-Reply-To: <20250911010437.2779173-1-eddyz87@gmail.com>
+X-Received: by 2002:a05:6e02:17ca:b0:413:d5e2:b751 with SMTP id
+ e9e14a558f8ab-4209d5f850emr12037935ab.6.1757618135807; Thu, 11 Sep 2025
+ 12:15:35 -0700 (PDT)
+Date: Thu, 11 Sep 2025 12:15:35 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68c272e7.050a0220.2ff435.00f3.GAE@google.com>
-Subject: [syzbot ci] Re: bpf: replace path-sensitive with path-insensitive
- live stack analysis
-From: syzbot ci <syzbot+ci8e503a0d4aea89ba@syzkaller.appspotmail.com>
-To: andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org, 
-	daniel@iogearbox.net, eddyz87@gmail.com, kernel-team@fb.com, 
-	martin.lau@linux.dev, yonghong.song@linux.dev
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <68c31fd7.050a0220.2ff435.0247.GAE@google.com>
+Subject: [moderation/CI] Re: Error recovery for vfio-pci devices on s390x
+From: syzbot ci <syzbot+ci0e94c5978a35bbd5@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] bpf: replace path-sensitive with path-insensitive live stack analysis
-https://lore.kernel.org/all/20250911010437.2779173-1-eddyz87@gmail.com
-* [PATCH bpf-next v1 01/10] bpf: bpf_verifier_state->cleaned flag instead of REG_LIVE_DONE
-* [PATCH bpf-next v1 02/10] bpf: use compute_live_registers() info in clean_func_state
-* [PATCH bpf-next v1 03/10] bpf: remove redundant REG_LIVE_READ check in stacksafe()
-* [PATCH bpf-next v1 04/10] bpf: declare a few utility functions as internal api
-* [PATCH bpf-next v1 05/10] bpf: compute instructions postorder per subprogram
-* [PATCH bpf-next v1 06/10] bpf: callchain sensitive stack liveness tracking using CFG
-* [PATCH bpf-next v1 07/10] bpf: enable callchain sensitive stack liveness tracking
-* [PATCH bpf-next v1 08/10] bpf: signal error if old liveness is more conservative than new
-* [PATCH bpf-next v1 09/10] bpf: disable and remove registers chain based liveness
-* [PATCH bpf-next v1 10/10] bpf: table based bpf_insn_successors()
+[v3] Error recovery for vfio-pci devices on s390x
+https://lore.kernel.org/all/20250911183307.1910-1-alifm@linux.ibm.com
+* [PATCH v3 01/10] PCI: Avoid saving error values for config space
+* [PATCH v3 02/10] PCI: Add additional checks for flr reset
+* [PATCH v3 03/10] PCI: Allow per function PCI slots
+* [PATCH v3 04/10] s390/pci: Add architecture specific resource/bus address translation
+* [PATCH v3 05/10] s390/pci: Restore IRQ unconditionally for the zPCI device
+* [PATCH v3 06/10] s390/pci: Update the logic for detecting passthrough device
+* [PATCH v3 07/10] s390/pci: Store PCI error information for passthrough devices
+* [PATCH v3 08/10] vfio-pci/zdev: Add a device feature for error information
+* [PATCH v3 09/10] vfio: Add a reset_done callback for vfio-pci driver
+* [PATCH v3 10/10] vfio: Remove the pcie check for VFIO_PCI_ERR_IRQ_INDEX
 
 and found the following issue:
-KASAN: slab-out-of-bounds Write in compute_postorder
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/c42e236b-f40c-4d72-8ae7-da4e21c37e17
+https://ci.syzbot.org/series/3eb74c21-a02b-4403-8f7c-df336466361a
 
 ***
 
-KASAN: slab-out-of-bounds Write in compute_postorder
+kernel build error
 
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf-next.git
-base:      e12873ee856ffa6f104869b8ea10c0f741606f13
+tree:      kvm-next
+URL:       https://kernel.googlesource.com/pub/scm/virt/kvm/kvm/
+base:      a6ad54137af92535cfe32e19e5f3bc1bb7dbd383
 arch:      amd64
 compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/6d2bc952-3d65-4bcd-9a84-1207b810a1b5/config
-C repro:   https://ci.syzbot.org/findings/338e6ce4-7207-484f-a508-9b00b3121701/c_repro
-syz repro: https://ci.syzbot.org/findings/338e6ce4-7207-484f-a508-9b00b3121701/syz_repro
+config:    https://ci.syzbot.org/builds/e8d6c5f8-5227-41fb-a3f8-8058ff9719a5/config
 
-==================================================================
-BUG: KASAN: slab-out-of-bounds in compute_postorder+0x802/0xcb0 kernel/bpf/verifier.c:17840
-Write of size 4 at addr ffff88801f1d4b98 by task syz.0.17/5991
-
-CPU: 0 UID: 0 PID: 5991 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
- print_address_description mm/kasan/report.c:378 [inline]
- print_report+0xca/0x240 mm/kasan/report.c:482
- kasan_report+0x118/0x150 mm/kasan/report.c:595
- compute_postorder+0x802/0xcb0 kernel/bpf/verifier.c:17840
- bpf_check+0x1f90/0x1d440 kernel/bpf/verifier.c:24437
- bpf_prog_load+0x1318/0x1930 kernel/bpf/syscall.c:2979
- __sys_bpf+0x528/0x870 kernel/bpf/syscall.c:6029
- __do_sys_bpf kernel/bpf/syscall.c:6139 [inline]
- __se_sys_bpf kernel/bpf/syscall.c:6137 [inline]
- __x64_sys_bpf+0x7c/0x90 kernel/bpf/syscall.c:6137
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f366058eba9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffef8486b28 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 00007f36607d5fa0 RCX: 00007f366058eba9
-RDX: 0000000000000070 RSI: 0000200000000440 RDI: 0000000000000005
-RBP: 00007f3660611e19 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f36607d5fa0 R14: 00007f36607d5fa0 R15: 0000000000000003
- </TASK>
-
-Allocated by task 5991:
- kasan_save_stack mm/kasan/common.c:47 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:68
- poison_kmalloc_redzone mm/kasan/common.c:388 [inline]
- __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:405
- kasan_kmalloc include/linux/kasan.h:260 [inline]
- __do_kmalloc_node mm/slub.c:4365 [inline]
- __kvmalloc_node_noprof+0x30d/0x5f0 mm/slub.c:5052
- kvmalloc_array_node_noprof include/linux/slab.h:1065 [inline]
- compute_postorder+0xd6/0xcb0 kernel/bpf/verifier.c:17823
- bpf_check+0x1f90/0x1d440 kernel/bpf/verifier.c:24437
- bpf_prog_load+0x1318/0x1930 kernel/bpf/syscall.c:2979
- __sys_bpf+0x528/0x870 kernel/bpf/syscall.c:6029
- __do_sys_bpf kernel/bpf/syscall.c:6139 [inline]
- __se_sys_bpf kernel/bpf/syscall.c:6137 [inline]
- __x64_sys_bpf+0x7c/0x90 kernel/bpf/syscall.c:6137
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-The buggy address belongs to the object at ffff88801f1d4b80
- which belongs to the cache kmalloc-cg-32 of size 32
-The buggy address is located 0 bytes to the right of
- allocated 24-byte region [ffff88801f1d4b80, ffff88801f1d4b98)
-
-The buggy address belongs to the physical page:
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0xffff88801f1d4e40 pfn:0x1f1d4
-memcg:ffff888026bbb801
-flags: 0xfff00000000000(node=0|zone=1|lastcpupid=0x7ff)
-page_type: f5(slab)
-raw: 00fff00000000000 ffff88801a449b40 dead000000000100 dead000000000122
-raw: ffff88801f1d4e40 000000008040003f 00000000f5000000 ffff888026bbb801
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0x52cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP), pid 532, tgid 532 (kworker/u10:0), ts 5351847364, free_ts 0
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x240/0x2a0 mm/page_alloc.c:1851
- prep_new_page mm/page_alloc.c:1859 [inline]
- get_page_from_freelist+0x21e4/0x22c0 mm/page_alloc.c:3858
- __alloc_frozen_pages_noprof+0x181/0x370 mm/page_alloc.c:5148
- alloc_pages_mpol+0x232/0x4a0 mm/mempolicy.c:2416
- alloc_slab_page mm/slub.c:2487 [inline]
- allocate_slab+0x8a/0x370 mm/slub.c:2655
- new_slab mm/slub.c:2709 [inline]
- ___slab_alloc+0xbeb/0x1410 mm/slub.c:3891
- __slab_alloc mm/slub.c:3981 [inline]
- __slab_alloc_node mm/slub.c:4056 [inline]
- slab_alloc_node mm/slub.c:4217 [inline]
- __do_kmalloc_node mm/slub.c:4364 [inline]
- __kmalloc_noprof+0x305/0x4f0 mm/slub.c:4377
- kmalloc_noprof include/linux/slab.h:909 [inline]
- kzalloc_noprof include/linux/slab.h:1039 [inline]
- lsm_blob_alloc security/security.c:684 [inline]
- lsm_cred_alloc security/security.c:701 [inline]
- security_prepare_creds+0x52/0x390 security/security.c:3271
- prepare_kernel_cred+0x2ee/0x500 kernel/cred.c:617
- call_usermodehelper_exec_async+0xd0/0x360 kernel/umh.c:88
- ret_from_fork+0x3fc/0x770 arch/x86/kernel/process.c:148
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
-page_owner free stack trace missing
-
-Memory state around the buggy address:
- ffff88801f1d4a80: fa fb fb fb fc fc fc fc 00 00 00 fc fc fc fc fc
- ffff88801f1d4b00: 00 00 00 fc fc fc fc fc fa fb fb fb fc fc fc fc
->ffff88801f1d4b80: 00 00 00 fc fc fc fc fc fa fb fb fb fc fc fc fc
-                            ^
- ffff88801f1d4c00: fa fb fb fb fc fc fc fc fa fb fb fb fc fc fc fc
- ffff88801f1d4c80: fa fb fb fb fc fc fc fc fa fb fb fb fc fc fc fc
-==================================================================
-
+drivers/vfio/pci/vfio_pci_priv.h:108:1: error: expected identifier or '('
 
 ***
 
@@ -200,3 +92,10 @@ separate fix, please add the following tag to your commit message:
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[alex.williamson@redhat.com alifm@linux.ibm.com helgaas@kernel.org kvm@vger.kernel.org linux-kernel@vger.kernel.org linux-pci@vger.kernel.org linux-s390@vger.kernel.org mjrosato@linux.ibm.com schnelle@linux.ibm.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
