@@ -1,158 +1,191 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FD6A342C88
-	for <syzbot@lists.linux.dev>; Thu, 11 Sep 2025 22:11:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E49627C145
+	for <syzbot@lists.linux.dev>; Fri, 12 Sep 2025 09:13:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757628714; cv=none; b=UQpf1W/wD919TQ42r0qABHbNcQmBVvqlesn0i19YyH/HFv73nKDdekIygTkbloMO3D3FpPGZn0z8QG3pJA7O2OrHZfJGTR24HVgVHzJnl8mVN96r1Q+LIkhVHFacWg+qe0J14tdlmhoeLELYPAKYYA0+ubWiMkRPC5Nor++wLG8=
+	t=1757668442; cv=none; b=q3JKLD8fa+uzQfb9p8FlQzSHaivThlB8QoxeB7Gn9/WdbZhHmg14c8BLfbP8x0h2W/UC8fy+om9yO4/IfdtIfQ+vkQqTnqGAK2L5YLckF7HaTKw22kFMFsAjdok3DM5HZ+q2glqOEv02XkobpuPHse3PQb1ZUNBy4qzVWyy0fFY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757628714; c=relaxed/simple;
-	bh=/dtwzvh9M+PgQdX8hypJZzDko9hlbh7/OsgqgQkn4Go=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=IGZatFtUGYffQlcXsZGui7fn+pJm4woPayAkSYdZ29TqjsCtXGpvYNeIQ82Q6PdA8YcPBqEvoGFzOuWC8QZXU0EtK400Aewd5xDIHr968QycDA7IXp6o8s4JYDcWxrJ1mfNunCB5c43F2nmY6598jjCCFcBiG1S54ziVa+PhCmc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K8x9Yn2B; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K8x9Yn2B"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-45df0cde41bso9167785e9.3
-        for <syzbot@lists.linux.dev>; Thu, 11 Sep 2025 15:11:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1757628711; x=1758233511; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tls1+yb1vfMgq/iZh3MeTOsXTDuu7dvV5qBYdDLIrks=;
-        b=K8x9Yn2BqXK/W45xvjW58nUBQ6jyVfaEZiKyAoRhg+J+m2vPG3zxlTMGIjKkfTvbhj
-         BnL6t2kSgvhoQ4K56BVjnNJuiKW3fBAOe+wvWSBXaL9vg04K8tW8nE04gMfX7fNB8pam
-         5nPBo79iqrKMCsh0JXUf1xHOYYY+a0s8RW7JZ0CrOS6F2C0fnG0dWikWvFmmgleaHrEg
-         YSB3KsbSUaQIuhHRy3ImFaV70qAS5m0/2yQQ3ukYDxEtWwS2mnqp9NXHj7zIg3oug9BZ
-         d1kxmQWUZa93SMYbv0NDT5deHcoI7wcI1aYdUEX+8+i6GClVjoUKbsDcXtxx+kgZFkBV
-         k+WQ==
+	s=arc-20240116; t=1757668442; c=relaxed/simple;
+	bh=hSDrM8ps+5FA8OGGzNQYID8KkXK+lKtQ55OVq3P93fE=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=KkfMELvh7xSOm+UVGHwERY9nRzctdN/pq4L8va4TsKFi6LTcQEcIfj+PS974zn61+Ww3ABlE3YuSNY0xZmUZRR3H6LAmk5ovKUpzhtXpMPdq/ljhtg/7dl5Lbq56alMWExoRxsFoMW4iL8PsYgBzBLLJtdInzfxj+8FnzBntmiA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-4020e59b735so46615565ab.1
+        for <syzbot@lists.linux.dev>; Fri, 12 Sep 2025 02:13:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757628711; x=1758233511;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tls1+yb1vfMgq/iZh3MeTOsXTDuu7dvV5qBYdDLIrks=;
-        b=e1RQie1zF+L87Sxp7YDAjl5PMJMKA1nLsPw1KArbFXp1/IpdwRO/v2c4YoAgjhVpCx
-         jiqyxZ4+Xb6FN2yO9WRnfelQ41EdCgnNoJBEtotnHGxK69LHQcWMamvVFx7JMKUhAOp+
-         WzGYp7MXES3+oTZrXv9QSIjA1hGjfhVnnrRV9zdMDOGPHdfqlkFWDPyODGQ1bEp+79+Q
-         Xya3UF4rEaINBsxBdOULmSXxBknXMRKEZZSsUs7mCNPLnYM6ri0ZDJNnjE78Jpf3MeJD
-         UwlkkDO1V433jcir/0i1E2KtRNy/enrkooUyoSdPToKXfOzFMMywd5G506b20USKnSWl
-         6ELg==
-X-Forwarded-Encrypted: i=1; AJvYcCV01vH7zuzHB3/e0S6XcuY59sSRYl/7AUcme8N1L2otya1ny6qFN0spFJXhlwghobjqaUiPgUg=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzHri8FWfAkr+gIaiGNbDIFhr5W/4xW0I9AdSUASkAoBxYavgMs
-	TY0IKV41ikIMw8MI4OhsyokAGvtQTFeOuLImo6WQeJL3W5zupLC3x8peMgqGNE/EHHeThWTtu1K
-	H5LPkUHGxuFRFz2flbLYlEvfpuQQER/wJRI1E
-X-Gm-Gg: ASbGncuxdYKL0UX5JDPbdeB7W88gZgcOoCJVJeDDZhVWApE6j/dDUsRwwJ8Ue40f7eO
-	2Kg2s1FNkI+Sor8k/uPqSKzeQKqpqo4XARwitpa+89nZIk8lFimtYV7aWgxvK0R5JaR6W0RBxxk
-	izFKeygCMjVNktotQeLgvuxrcTISW8R8ySNKHApI7XxqoDQsFp2Rkrj711wTbY7JHeuxFTdoa/t
-	m15UJOmyRoI0eaNhp4B5Xx+Q/PJLW3GyQQBOHQMBwo0zEw=
-X-Google-Smtp-Source: AGHT+IGDOzDXGaTONtyBMca5RofIcMwXveTWTnti2H6JgsJgzCzIDnWonFIjFrIoP8tZJCUM2ZghM4LjzuPaCH1mugo=
-X-Received: by 2002:a05:600c:1c0c:b0:45d:d099:873 with SMTP id
- 5b1f17b1804b1-45f212c9668mr7139165e9.6.1757628710902; Thu, 11 Sep 2025
- 15:11:50 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1757668439; x=1758273239;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=KtM+eiQ6gNp85Lma2ltR5Som4fmBz72Pno9At/v15Nc=;
+        b=L4O9XNSAnke4zWPyc0S46sBZkXGx6KV3MVHyfL80HY/6a5oR2KeCRZDtLpJ5aFmvG0
+         Hf+i3ePpuYZn18CrxwQqIi/17Lr4lRFoKWWQkbs2g7h1GeImrgFCihqvy/5+95UyIz/2
+         nxfXsOWR0Rwm8/Pi7PxqS2Op1MdF/WTQwUKrWlXV/GuPZYP5gRK7Fe+wW83Mhemby3oB
+         h2jynnDUafm65DYtocDU+ghpG4CEw8U+n1iOzktSYtGUIYdSHETAqKhXLo+wGO5SMJtX
+         MXBWwCcKgwLDZqxgSpzbg/vb84OwwQj9Jl98OE1xWhNghBsi0+D4mrm3y/xb15d2WnBi
+         pLAw==
+X-Gm-Message-State: AOJu0Yyn3H+pHmYg93O21J1NtwG5IaWDDwtiqfny3nflouEbv5IzzHBQ
+	4n2JTBZt8+ZkXJJGRhAU34WfvkrPBUeOy1ocgeb70wb91S37e7KbLzYu6STt67BUwNdlUHkgMhi
+	1Am+CPzvU+Y6AD1DduAmKZiTfJgbqwP0l3uNspbUq5a+R6tv2HXCmzZfiChc=
+X-Google-Smtp-Source: AGHT+IHY66huh2cgKjSJXKOcgiUg9x8yN9+uHJOLIAs/t0QDGwmknsVhmICwSnoByas4HciOK3UPJkquo8Ns4QBmN7/8zUoWze0o
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <68c272e7.050a0220.2ff435.00f3.GAE@google.com> <03440441db6f719e8576cafe0318aa9994621cab.camel@gmail.com>
- <CAADnVQKy-M2vZHaJKD1KJw9kqtL+8Ddn7NYcQTQfG4izE82FkA@mail.gmail.com> <5f0ef19a7961a6f703ea6e035ca2239865227abc.camel@gmail.com>
-In-Reply-To: <5f0ef19a7961a6f703ea6e035ca2239865227abc.camel@gmail.com>
-From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date: Thu, 11 Sep 2025 15:11:39 -0700
-X-Gm-Features: AS18NWDxjnr9Upya1b6lQlbmMufgukF6m71ysgUMhCA8QiVyogBvm1XqAdM4WKE
-Message-ID: <CAADnVQKf2zauKO78qqt73=mZZD7-1ejm+C_zOQh7HUw9ExrjJw@mail.gmail.com>
-Subject: Re: [syzbot ci] Re: bpf: replace path-sensitive with path-insensitive
- live stack analysis
-To: Eduard Zingerman <eddyz87@gmail.com>
-Cc: syzbot ci <syzbot+ci8e503a0d4aea89ba@syzkaller.appspotmail.com>, 
-	Andrii Nakryiko <andrii@kernel.org>, Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>, 
-	Daniel Borkmann <daniel@iogearbox.net>, Kernel Team <kernel-team@fb.com>, 
-	Martin KaFai Lau <martin.lau@linux.dev>, Yonghong Song <yonghong.song@linux.dev>, syzbot@lists.linux.dev, 
-	syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+X-Received: by 2002:a05:6e02:378d:b0:41b:3987:b3d3 with SMTP id
+ e9e14a558f8ab-420a3ca7924mr33245275ab.20.1757668439235; Fri, 12 Sep 2025
+ 02:13:59 -0700 (PDT)
+Date: Fri, 12 Sep 2025 02:13:59 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68c3e457.050a0220.3c6139.049e.GAE@google.com>
+Subject: [moderation/CI] Re: net: devmem: improve cpu cost of RX token management
+From: syzbot ci <syzbot+ci6b3b9a0c3f217c63@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Sep 11, 2025 at 3:06=E2=80=AFPM Eduard Zingerman <eddyz87@gmail.com=
-> wrote:
->
-> On Thu, 2025-09-11 at 14:58 -0700, Alexei Starovoitov wrote:
-> > On Thu, Sep 11, 2025 at 2:09=E2=80=AFPM Eduard Zingerman <eddyz87@gmail=
-.com> wrote:
-> > >
-> > > On Wed, 2025-09-10 at 23:57 -0700, syzbot ci wrote:
-> > > > syzbot ci has tested the following series
-> > > >
-> > > > [v1] bpf: replace path-sensitive with path-insensitive live stack a=
-nalysis
-> > > > https://lore.kernel.org/all/20250911010437.2779173-1-eddyz87@gmail.=
-com
-> > > > * [PATCH bpf-next v1 01/10] bpf: bpf_verifier_state->cleaned flag i=
-nstead of REG_LIVE_DONE
-> > > > * [PATCH bpf-next v1 02/10] bpf: use compute_live_registers() info =
-in clean_func_state
-> > > > * [PATCH bpf-next v1 03/10] bpf: remove redundant REG_LIVE_READ che=
-ck in stacksafe()
-> > > > * [PATCH bpf-next v1 04/10] bpf: declare a few utility functions as=
- internal api
-> > > > * [PATCH bpf-next v1 05/10] bpf: compute instructions postorder per=
- subprogram
-> > > > * [PATCH bpf-next v1 06/10] bpf: callchain sensitive stack liveness=
- tracking using CFG
-> > > > * [PATCH bpf-next v1 07/10] bpf: enable callchain sensitive stack l=
-iveness tracking
-> > > > * [PATCH bpf-next v1 08/10] bpf: signal error if old liveness is mo=
-re conservative than new
-> > > > * [PATCH bpf-next v1 09/10] bpf: disable and remove registers chain=
- based liveness
-> > > > * [PATCH bpf-next v1 10/10] bpf: table based bpf_insn_successors()
-> > > >
-> > > > and found the following issue:
-> > > > KASAN: slab-out-of-bounds Write in compute_postorder
-> > > >
-> > > > Full report is available here:
-> > > > https://ci.syzbot.org/series/c42e236b-f40c-4d72-8ae7-da4e21c37e17
-> > > >
-> > > > ***
-> > > >
-> > > > KASAN: slab-out-of-bounds Write in compute_postorder
-> > > >
-> > > > tree:      bpf-next
-> > > > URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git=
-/bpf/bpf-next.git
-> > > > base:      e12873ee856ffa6f104869b8ea10c0f741606f13
-> > > > arch:      amd64
-> > > > compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b79=
-76-1~exp1~20250708183702.136), Debian LLD 20.1.8
-> > > > config:    https://ci.syzbot.org/builds/6d2bc952-3d65-4bcd-9a84-120=
-7b810a1b5/config
-> > > > C repro:   https://ci.syzbot.org/findings/338e6ce4-7207-484f-a508-9=
-b00b3121701/c_repro
-> > > > syz repro: https://ci.syzbot.org/findings/338e6ce4-7207-484f-a508-9=
-b00b3121701/syz_repro
-> > > >
-> > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > > BUG: KASAN: slab-out-of-bounds in compute_postorder+0x802/0xcb0 ker=
-nel/bpf/verifier.c:17840
-> > > > Write of size 4 at addr ffff88801f1d4b98 by task syz.0.17/5991
-> > >
-> > > The error is caused by the following program:
-> > >
-> > >   (e5) if r15 (null) 0xffffffff goto pc-1 <---- absence of DISCOVERED=
-/EXPLORED mark here
-> >
-> > (null) ?
->
-> The `code` byte is 0xe5, BPF_OP(0xe5) =3D=3D 0xe0, which is an invalid
-> opcode.  But opcodes are verified after check_cfg()/compute_postorder().
+syzbot ci has tested the following series
 
-hmm.
-resolve_pseudo_ldimm64() -> bpf_opcode_in_insntable()
-does it before check_cfg.
+[v2] net: devmem: improve cpu cost of RX token management
+https://lore.kernel.org/all/20250911-scratch-bobbyeshleman-devmem-tcp-token=
+-upstream-v2-0-c80d735bd453@meta.com
+* [PATCH net-next v2 1/3] net: devmem: rename tx_vec to vec in dmabuf bindi=
+ng
+* [PATCH net-next v2 2/3] net: devmem: use niov array for token management
+* [PATCH net-next v2 3/3] net: ethtool: prevent user from breaking devmem s=
+ingle-binding rule
+
+and found the following issue:
+general protection fault in sock_devmem_dontneed
+
+Full report is available here:
+https://ci.syzbot.org/series/40b2252a-f8bb-4cec-bfc1-2ff8a3c55336
+
+***
+
+general protection fault in sock_devmem_dontneed
+
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net-next.git
+base:      5adf6f2b9972dbb69f4dd11bae52ba251c64ecb7
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/2c30c608-f14f-4e6d-9772-cc5e129939f=
+c/config
+C repro:   https://ci.syzbot.org/findings/c89c36f8-4666-47d0-bc39-35662a268=
+e4d/c_repro
+syz repro: https://ci.syzbot.org/findings/c89c36f8-4666-47d0-bc39-35662a268=
+e4d/syz_repro
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc=
+0000000000: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 1 UID: 0 PID: 6028 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:sock_devmem_dontneed+0x40b/0x910 net/core/sock.c:1112
+Code: 8b 44 24 18 44 8b 20 44 03 64 24 14 48 8b 44 24 68 80 3c 18 00 74 08 =
+4c 89 ef e8 f0 bb c9 f8 4d 8b 7d 00 4c 89 f8 48 c1 e8 03 <80> 3c 18 00 74 0=
+8 4c 89 ff e8 d7 bb c9 f8 4d 8b 2f 4c 89 e8 48 c1
+RSP: 0018:ffffc90002987ac0 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 1ffff11020d27e78
+RDX: ffff88810a039cc0 RSI: 0000000000000003 RDI: 0000000000000000
+RBP: ffffc90002987c50 R08: ffffc90002987bdf R09: 0000000000000000
+R10: ffffc90002987b60 R11: fffff52000530f7c R12: 0000000000000006
+R13: ffff8881235cb710 R14: 0000000000000000 R15: 0000000000000000
+FS:  000055555e866500(0000) GS:ffff8881a3c14000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b31b63fff CR3: 0000000027a20000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ sk_setsockopt+0x682/0x2dc0 net/core/sock.c:1301
+ do_sock_setsockopt+0x11b/0x1b0 net/socket.c:2340
+ __sys_setsockopt net/socket.c:2369 [inline]
+ __do_sys_setsockopt net/socket.c:2375 [inline]
+ __se_sys_setsockopt net/socket.c:2372 [inline]
+ __x64_sys_setsockopt+0x13f/0x1b0 net/socket.c:2372
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7faf24f8eba9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc3eb96018 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
+RAX: ffffffffffffffda RBX: 00007faf251d5fa0 RCX: 00007faf24f8eba9
+RDX: 0000000000000050 RSI: 0000000000000001 RDI: 0000000000000003
+RBP: 00007faf25011e19 R08: 0000000000000048 R09: 0000000000000000
+R10: 0000200000000100 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007faf251d5fa0 R14: 00007faf251d5fa0 R15: 0000000000000005
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:sock_devmem_dontneed+0x40b/0x910 net/core/sock.c:1112
+Code: 8b 44 24 18 44 8b 20 44 03 64 24 14 48 8b 44 24 68 80 3c 18 00 74 08 =
+4c 89 ef e8 f0 bb c9 f8 4d 8b 7d 00 4c 89 f8 48 c1 e8 03 <80> 3c 18 00 74 0=
+8 4c 89 ff e8 d7 bb c9 f8 4d 8b 2f 4c 89 e8 48 c1
+RSP: 0018:ffffc90002987ac0 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 1ffff11020d27e78
+RDX: ffff88810a039cc0 RSI: 0000000000000003 RDI: 0000000000000000
+RBP: ffffc90002987c50 R08: ffffc90002987bdf R09: 0000000000000000
+R10: ffffc90002987b60 R11: fffff52000530f7c R12: 0000000000000006
+R13: ffff8881235cb710 R14: 0000000000000000 R15: 0000000000000000
+FS:  000055555e866500(0000) GS:ffff8881a3c14000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b31b63fff CR3: 0000000027a20000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	8b 44 24 18          	mov    0x18(%rsp),%eax
+   4:	44 8b 20             	mov    (%rax),%r12d
+   7:	44 03 64 24 14       	add    0x14(%rsp),%r12d
+   c:	48 8b 44 24 68       	mov    0x68(%rsp),%rax
+  11:	80 3c 18 00          	cmpb   $0x0,(%rax,%rbx,1)
+  15:	74 08                	je     0x1f
+  17:	4c 89 ef             	mov    %r13,%rdi
+  1a:	e8 f0 bb c9 f8       	call   0xf8c9bc0f
+  1f:	4d 8b 7d 00          	mov    0x0(%r13),%r15
+  23:	4c 89 f8             	mov    %r15,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	80 3c 18 00          	cmpb   $0x0,(%rax,%rbx,1) <-- trapping instruct=
+ion
+  2e:	74 08                	je     0x38
+  30:	4c 89 ff             	mov    %r15,%rdi
+  33:	e8 d7 bb c9 f8       	call   0xf8c9bc0f
+  38:	4d 8b 2f             	mov    (%r15),%r13
+  3b:	4c 89 e8             	mov    %r13,%rax
+  3e:	48                   	rex.W
+  3f:	c1                   	.byte 0xc1
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[almasrymina@google.com bobbyeshleman@gmail.com bobbyeshleman@meta.com dave=
+m@davemloft.net dsahern@kernel.org edumazet@google.com horms@kernel.org kub=
+a@kernel.org kuniyu@google.com linux-kernel@vger.kernel.org ncardwell@googl=
+e.com netdev@vger.kernel.org pabeni@redhat.com sdf@fomichev.me willemb@goog=
+le.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
