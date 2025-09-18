@@ -1,188 +1,78 @@
 Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0EE83161AE
-	for <syzbot@lists.linux.dev>; Thu, 18 Sep 2025 16:04:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA76B34BA47
+	for <syzbot@lists.linux.dev>; Thu, 18 Sep 2025 18:33:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758211462; cv=none; b=pZMLV+0xxuav+GpfoSb6R1kmcvCd2sZ9eCF/xeu5FVfOaAVFCBGEKonFOh9pSYKIB5jq+8uv6WmrhetrvT9ScIbD2RRPgisL8x8BB835nz3xESAJh7sxH00ZqpOCzd5VB5HdhyQTCyq3ieUyVgZWRPyGTNKKFhXQEwEGKpHvfcc=
+	t=1758220407; cv=none; b=m150SWgY3F3/vfOdmsfc3SECFiqoF/zLIfUy0jbDbWwpDFvZP3NM8HaS5OjfWP0sQSIxVvL1TJRPqQmZIH5ECeMMRa0g4cs00ca9+xHVtAQwwTfTup04gsCJY7+iGFOubF3nqm4T4kSVx8mpZRQJFFvq94A+7+8WE1sEO43K61w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758211462; c=relaxed/simple;
-	bh=We1XX4a/dUUDI5VTk/iNVQAL18h+yKn1MK/5KlPq/Oo=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Oq/WxL23tlzirQMzMF52xkB8DisvisIZqxxdyENn6wCe6Fy8a71RV7aV7HMjru+5+TPlvnDUwmbyVy8z+ozOmdGFcn1Ab+HJuM62fAaKJ9/DCCMqUgmi+1omIUsLLZgjOVufEWg7d66iiEWv1gZvlaVErwZnJ13vyfkfWIJ7FJA=
+	s=arc-20240116; t=1758220407; c=relaxed/simple;
+	bh=aS2sNo/YcIZUNU+rY5K6WoH8yKg2ZmvLhnvwuhkgNdw=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=HdwIPoAgzTzK9tc3wZZaBJNlWRBk8X8wsCv1S7jk/4LmM+kAjciNLpdooPhui9NnpdL2rTdd4nwijOReCpOvHAruGNm1ntGyPcpDPwy1yUtDdYsrDjIRpE8X/kqAKWEtNsxmibr1JZn8DZ0V69fl4AQPrsyzpMLFvawR1uD52iM=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-424395c6ad3so12896595ab.1
-        for <syzbot@lists.linux.dev>; Thu, 18 Sep 2025 09:04:20 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-4240730201bso17441985ab.3
+        for <syzbot@lists.linux.dev>; Thu, 18 Sep 2025 11:33:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758211460; x=1758816260;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+wLGpuPRzGrj0GuQ1pr3htCtf/Bg6efoARFUILLNjzQ=;
-        b=thzjTbzhNJKpCYzfCUh6sXTmKo2Dm3QsoM+7tackNm1zLKc0hXMaI2BXuNLtmwQQc3
-         x+kOrk7z8c/V5QfbDhqY4WGJFMoUeMNr0ku012CERjHHlRPjpU7Q7reW1zOqWWAlHR47
-         Pcrslh3XOzujawfDmO2SfSsXfGg3j+rpjkxuDqwjP8ymNJG3wcl7XWrF+eOCtxg6bfkn
-         NQa90b/42fyZX/8n+UNyO1PZbhH0cClhkNo46lgwUHcKMLbyKERjP97xVI/6K7oZQ4pA
-         UUOuyArdkWIyno4yZinwyAKERoGsFw9g3z9VhNppM32s+amIcBizvOcMdug/IKGPSyl4
-         eNWA==
-X-Gm-Message-State: AOJu0YzCA6cChLB/kJepnUS+F0kHLnLaE7LyAGBOhLuv3/VCYeoxYre/
-	z6//mxcFGSLTKxTrBfHDfV48JCQRzPvDy8d8xGl+EP63N9JkPYNwiB6e8kLnF/e6VWxhnmXzOuy
-	5LVBXwwYWlDrq9doPtWFd3QevhpQfMTyXE9DAa/jYCRxne2yMOdiFrjlY8no=
-X-Google-Smtp-Source: AGHT+IF65rRoPfZXqpEumRzAEHoCIUP/eHAEEt7gsM6QChJSPzxPJaRy9ujecsXR7hAi9ep+n81i7f6jabJd1WKz94sAa1IK28nS
+        d=1e100.net; s=20230601; t=1758220405; x=1758825205;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4WIMK5ljzr9yNWMDdNuaTZeK66ZOnGKTRSssq4rWdU8=;
+        b=melUjs0oQuBywjDhgI40J31JwFRegrzNX9FvqTRLJvqxbcRQ5ILXvT9HW/DPHbiOuj
+         e8nRHOMfqDFO+Ik1Dawm/O8ToLbdguJmLMFw0hN5MD89X+WrokDniTR7TIHl4yR0hcC0
+         8pgcjEZe5FftOXU8svDlpjCnHqPq3sBEA8SXhMQ6mbdR5RZvlTJxn1B+nf43FSd0JE87
+         iRrPiuOPryFFLF2+A71dNxZTLJ8THCOHbZUbZzifGHwMrcygOH8IyKIG8MiqPLUmgPve
+         pYSBAzB3cUBdnBxfUZtPchkrUDlp38zXixEmrtj8gkGIroWjcPBl59ZZpPQS3SDkmyBq
+         /7pA==
+X-Gm-Message-State: AOJu0YzZ/BFV1rI/sTsIROe/f/7c/tAdcTnZwWsqMzlhBkTpkfnetkSP
+	XiIgnv0KSDnmSuAj//uIbkatAiEJC9Dit+iXVlYS3mfqrQYAkEGj38WQBjwGqD0O7bmWgOkusJR
+	93N/h60VMmE3+H6nmEw5hkG/WeoUMuGfF9Gp6TsU26j1AWQdUjaYevALd/M0=
+X-Google-Smtp-Source: AGHT+IEyIaAIW3OC2g0oFQ3GWlM3glM8QZJv5/JmnH39Y2NpdB3YX69lhFgS4+GUzv+HAQdxj853qlA9BH/r28E3h5xkbCWysbV1
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:b4a:b0:424:7d95:b8ff with SMTP id
- e9e14a558f8ab-4248190270amr1831475ab.2.1758211459017; Thu, 18 Sep 2025
- 09:04:19 -0700 (PDT)
-Date: Thu, 18 Sep 2025 09:04:18 -0700
+X-Received: by 2002:a05:6e02:1d8a:b0:408:1ec5:ddd7 with SMTP id
+ e9e14a558f8ab-42481984138mr8155725ab.20.1758220404781; Thu, 18 Sep 2025
+ 11:33:24 -0700 (PDT)
+Date: Thu, 18 Sep 2025 11:33:24 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68cc2d82.050a0220.28a605.0008.GAE@google.com>
-Subject: [moderation/CI] Re: Compiler-Based Capability- and Locking-Analysis
-From: syzbot ci <syzbot+ci21e81c3e9679b2a0@syzkaller.appspotmail.com>
+Message-ID: <68cc5074.050a0220.28a605.000b.GAE@google.com>
+Subject: [moderation/CI] Re: dm-crypt: allow unaligned bio_vecs for direct io
+From: syzbot ci <syzbot+cic233d0fef33be460@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v3] Compiler-Based Capability- and Locking-Analysis
-https://lore.kernel.org/all/20250918140451.1289454-1-elver@google.com
-* [PATCH v3 01/35] compiler_types: Move lock checking attributes to compile=
-r-capability-analysis.h
-* [PATCH v3 02/35] compiler-capability-analysis: Add infrastructure for Cla=
-ng's capability analysis
-* [PATCH v3 03/35] compiler-capability-analysis: Add test stub
-* [PATCH v3 04/35] Documentation: Add documentation for Compiler-Based Capa=
-bility Analysis
-* [PATCH v3 05/35] checkpatch: Warn about capability_unsafe() without comme=
-nt
-* [PATCH v3 06/35] cleanup: Basic compatibility with capability analysis
-* [PATCH v3 07/35] lockdep: Annotate lockdep assertions for capability anal=
-ysis
-* [PATCH v3 08/35] locking/rwlock, spinlock: Support Clang's capability ana=
-lysis
-* [PATCH v3 09/35] compiler-capability-analysis: Change __cond_acquires to =
-take return value
-* [PATCH v3 10/35] locking/mutex: Support Clang's capability analysis
-* [PATCH v3 11/35] locking/seqlock: Support Clang's capability analysis
-* [PATCH v3 12/35] bit_spinlock: Include missing <asm/processor.h>
-* [PATCH v3 13/35] bit_spinlock: Support Clang's capability analysis
-* [PATCH v3 14/35] rcu: Support Clang's capability analysis
-* [PATCH v3 15/35] srcu: Support Clang's capability analysis
-* [PATCH v3 16/35] kref: Add capability-analysis annotations
-* [PATCH v3 17/35] locking/rwsem: Support Clang's capability analysis
-* [PATCH v3 18/35] locking/local_lock: Include missing headers
-* [PATCH v3 19/35] locking/local_lock: Support Clang's capability analysis
-* [PATCH v3 20/35] locking/ww_mutex: Support Clang's capability analysis
-* [PATCH v3 21/35] debugfs: Make debugfs_cancellation a capability struct
-* [PATCH v3 22/35] compiler-capability-analysis: Remove Sparse support
-* [PATCH v3 23/35] compiler-capability-analysis: Remove __cond_lock() funct=
-ion-like helper
-* [PATCH v3 24/35] compiler-capability-analysis: Introduce header suppressi=
-ons
-* [PATCH v3 25/35] compiler: Let data_race() imply disabled capability anal=
-ysis
-* [PATCH v3 26/35] MAINTAINERS: Add entry for Capability Analysis
-* [PATCH v3 27/35] kfence: Enable capability analysis
-* [PATCH v3 28/35] kcov: Enable capability analysis
-* [PATCH v3 29/35] kcsan: Enable capability analysis
-* [PATCH v3 30/35] stackdepot: Enable capability analysis
-* [PATCH v3 31/35] rhashtable: Enable capability analysis
-* [PATCH v3 32/35] printk: Move locking annotation to printk.c
-* [PATCH v3 33/35] security/tomoyo: Enable capability analysis
-* [PATCH v3 34/35] crypto: Enable capability analysis
-* [PATCH v3 35/35] sched: Enable capability analysis for core.c and fair.c
+[v1] dm-crypt: allow unaligned bio_vecs for direct io
+https://lore.kernel.org/all/20250918161642.2867886-1-kbusch@meta.com
+* [RFC PATCH] dm-crypt: allow unaligned bio_vecs for direct io
 
 and found the following issue:
-general protection fault in validate_page_before_insert
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/81182522-74c0-4494-bcf8-976133df7dc7
+https://ci.syzbot.org/series/613aac3a-6ac5-422a-86a4-c1f0b6845e2a
 
 ***
 
-general protection fault in validate_page_before_insert
+kernel build error
 
 tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
-s/linux
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
 base:      f83ec76bf285bea5727f478a68b894f5543ca76e
 arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
-1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/8f7ff868-4cf7-40da-b62b-45ebfec4e99=
-4/config
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/6441f6d0-523e-471e-9aa7-706d3367f153/config
 
-cgroup: Unknown subsys name 'net'
-cgroup: Unknown subsys name 'cpuset'
-cgroup: Unknown subsys name 'rlimit'
-Oops: general protection fault, probably for non-canonical address 0xdffffc=
-0000000001: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 UID: 0 PID: 5775 Comm: syz-executor Not tainted syzkaller #0 PREEMPT=
-(full)=20
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
-.2-1 04/01/2014
-RIP: 0010:validate_page_before_insert+0x2a/0x300
-Code: 55 41 57 41 56 41 55 41 54 53 48 89 f3 49 89 fe 49 bd 00 00 00 00 00 =
-fc ff df e8 f1 3f b3 ff 4c 8d 7b 08 4c 89 f8 48 c1 e8 03 <42> 80 3c 28 00 7=
-4 08 4c 89 ff e8 17 b3 16 00 4d 8b 3f 4c 89 fe 48
-RSP: 0018:ffffc90002a5f608 EFLAGS: 00010202
-RAX: 0000000000000001 RBX: 0000000000000000 RCX: ffff888022891cc0
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff888028c71200
-RBP: ffffc90002a5f720 R08: 0000000000000000 R09: 1ffff11021cf81e0
-R10: dffffc0000000000 R11: ffffed1021cf81e1 R12: dffffc0000000000
-R13: dffffc0000000000 R14: ffff888028c71200 R15: 0000000000000008
-FS:  00005555815ad500(0000) GS:ffff8880b8615000(0000) knlGS:000000000000000=
-0
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f1788fd20b8 CR3: 000000010d8a4000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- insert_page+0x90/0x2c0
- kcov_mmap+0xc3/0x130
- mmap_region+0x18ae/0x20c0
- do_mmap+0xc45/0x10d0
- vm_mmap_pgoff+0x2a6/0x4d0
- ksys_mmap_pgoff+0x51f/0x760
- do_syscall_64+0xfa/0x3b0
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f1788d8ebe3
-Code: f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 =
-41 89 ca 41 f7 c1 ff 0f 00 00 75 14 b8 09 00 00 00 0f 05 <48> 3d 00 f0 ff f=
-f 77 25 c3 0f 1f 40 00 48 c7 c0 a8 ff ff ff 64 c7
-RSP: 002b:00007ffc8a37e638 EFLAGS: 00000246 ORIG_RAX: 0000000000000009
-RAX: ffffffffffffffda RBX: 00007ffc8a37e670 RCX: 00007f1788d8ebe3
-RDX: 0000000000000003 RSI: 0000000000400000 RDI: 00007f17867ff000
-RBP: 00007ffc8a37e940 R08: 00000000000000d8 R09: 0000000000000000
-R10: 0000000000000011 R11: 0000000000000246 R12: 0000000000000003
-R13: 0000000000000000 R14: 00007f1788fa11c0 R15: 00007f1788e2e478
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:validate_page_before_insert+0x2a/0x300
-Code: 55 41 57 41 56 41 55 41 54 53 48 89 f3 49 89 fe 49 bd 00 00 00 00 00 =
-fc ff df e8 f1 3f b3 ff 4c 8d 7b 08 4c 89 f8 48 c1 e8 03 <42> 80 3c 28 00 7=
-4 08 4c 89 ff e8 17 b3 16 00 4d 8b 3f 4c 89 fe 48
-RSP: 0018:ffffc90002a5f608 EFLAGS: 00010202
-RAX: 0000000000000001 RBX: 0000000000000000 RCX: ffff888022891cc0
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff888028c71200
-RBP: ffffc90002a5f720 R08: 0000000000000000 R09: 1ffff11021cf81e0
-R10: dffffc0000000000 R11: ffffed1021cf81e1 R12: dffffc0000000000
-R13: dffffc0000000000 R14: ffff888028c71200 R15: 0000000000000008
-FS:  00005555815ad500(0000) GS:ffff8880b8615000(0000) knlGS:000000000000000=
-0
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f1788fd20b8 CR3: 000000010d8a4000 CR4: 00000000000006f0
-
+drivers/md/dm-crypt.c:1473:8: error: assigning to 'struct scatterlist *' from incompatible type 'struct scatterlist'; take the address with &
 
 ***
 
@@ -195,21 +85,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[arnd@arndb.de boqun.feng@gmail.com bvanassche@acm.org corbet@lwn.net davem=
-@davemloft.net dvyukov@google.com edumazet@google.com elver@google.com fred=
-eric@kernel.org glider@google.com gregkh@linuxfoundation.org hch@lst.de her=
-bert@gondor.apana.org.au irogers@google.com jannh@google.com joelagnelf@nvi=
-dia.com josh@joshtriplett.org justinstitt@google.com kasan-dev@googlegroups=
-.com kees@kernel.org linux-crypto@vger.kernel.org linux-doc@vger.kernel.org=
- linux-kbuild@vger.kernel.org linux-kernel@vger.kernel.org linux-mm@kvack.o=
-rg linux-security-module@vger.kernel.org linux-sparse@vger.kernel.org llvm@=
-lists.linux.dev longman@redhat.com luc.vanoostenryck@gmail.com lukas.bulwah=
-n@gmail.com mark.rutland@arm.com mathieu.desnoyers@efficios.com mingo@kerne=
-l.org mingo@redhat.com morbo@google.com nathan@kernel.org neeraj.upadhyay@k=
-ernel.org nick.desaulniers@gmail.com ojeda@kernel.org paulmck@kernel.org pe=
-nguin-kernel@i-love.sakura.ne.jp peterz@infradead.org rcu@vger.kernel.org r=
-ostedt@goodmis.org takedakn@nttdata.co.jp tglx@linutronix.de tgraf@suug.ch =
-urezki@gmail.com will@kernel.org]
+[dm-devel@lists.linux.dev ebiggers@google.com kbusch@kernel.org kbusch@meta.com linux-block@vger.kernel.org mpatocka@redhat.com snitzer@kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
