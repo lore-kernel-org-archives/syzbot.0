@@ -1,147 +1,216 @@
-Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D12730DD33
-	for <syzbot@lists.linux.dev>; Thu, 18 Sep 2025 15:48:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0EE83161AE
+	for <syzbot@lists.linux.dev>; Thu, 18 Sep 2025 16:04:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758210522; cv=none; b=I6lzvile+0ffIZftzDJrfnVXdlaCKhbj6UOn8oigU4n7cYTM0j8C1QlD7f8UKebfySYvyxH1yF26tA2xOJnDsDSyYP/C3hJo8EGIrBb1aSst5yjr62zRugGKcd/fc68uZQT6NqKmi/J0QEiUTlWoRKiFvIpUi0UrLlfbKIgGOnc=
+	t=1758211462; cv=none; b=pZMLV+0xxuav+GpfoSb6R1kmcvCd2sZ9eCF/xeu5FVfOaAVFCBGEKonFOh9pSYKIB5jq+8uv6WmrhetrvT9ScIbD2RRPgisL8x8BB835nz3xESAJh7sxH00ZqpOCzd5VB5HdhyQTCyq3ieUyVgZWRPyGTNKKFhXQEwEGKpHvfcc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758210522; c=relaxed/simple;
-	bh=3fuPAHF2wqUzCF+Ih+V96s2Pa8BfHBVrf909ozzJYxs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=iXe0IaSVURIvi4B17lGVddLRKKebGqp5YdfZblnJTdoTn1Chh5PxiKs7hG/9iBXWsu5FgltetAAuPd8kgN9gwx5ua3kFz77d4xSxBAiZYjqtOZs9Uhe0HNP1gTtjOdHKg/M67Zb4DehyDgsQTIVD2CJABQkslyiJt9Rt/c0zwKA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=xYIKjKnf; arc=none smtp.client-ip=209.85.161.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="xYIKjKnf"
-Received: by mail-oo1-f50.google.com with SMTP id 006d021491bc7-621a3c43df3so507095eaf.0
-        for <syzbot@lists.linux.dev>; Thu, 18 Sep 2025 08:48:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1758210520; x=1758815320; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3fuPAHF2wqUzCF+Ih+V96s2Pa8BfHBVrf909ozzJYxs=;
-        b=xYIKjKnflkMRbR+wm+14XTYMyNRdTwmhhCZtHjlYrw44gIoY9fWL1bnfOwkEaF3wu4
-         TWt1X0WjkEo+fxFGNo3XZ6Qq1fwT2mQYyIgychrSvjsqSBqHJzJx2+jx9+vDnI3OwzQC
-         FLS1eriMgUxshm8+lM/vItu/VT7XjbQI7UOsS0gbftJVScrk9b6qXnyVpjVwayD1HjfH
-         34FYTRJPPSilCQ0vmr3ccivSvgLKuBgHsDJUadEOvCvS8cwhjXNlVSEsbBD/4lTc+kdg
-         5TJcZEJa9FJ8jJFf3jVc472s247Jbr5RJTvLau7d2rQbgYMs5fYO3L8cKcvp1oE7mLJ+
-         wYaw==
+	s=arc-20240116; t=1758211462; c=relaxed/simple;
+	bh=We1XX4a/dUUDI5VTk/iNVQAL18h+yKn1MK/5KlPq/Oo=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Oq/WxL23tlzirQMzMF52xkB8DisvisIZqxxdyENn6wCe6Fy8a71RV7aV7HMjru+5+TPlvnDUwmbyVy8z+ozOmdGFcn1Ab+HJuM62fAaKJ9/DCCMqUgmi+1omIUsLLZgjOVufEWg7d66iiEWv1gZvlaVErwZnJ13vyfkfWIJ7FJA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-424395c6ad3so12896595ab.1
+        for <syzbot@lists.linux.dev>; Thu, 18 Sep 2025 09:04:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758210520; x=1758815320;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3fuPAHF2wqUzCF+Ih+V96s2Pa8BfHBVrf909ozzJYxs=;
-        b=F1siPHrXIaUZjZqovwukdkZ1Bs4/N9Vf/SSu0dOdrpUgTqMqkGSpofEeF7yB+GQA4a
-         Rfh6h9ScAsRqA8Yj3MPsWmTBPaLtyEgRXDiGmk8kyny4HAbwcYY26o4YCswBcZ73DEpc
-         q+KnHT4ph1UlnMIo06/v4WUKNS2b6LhXS5Grw5SqoIcizhqU595P2Al7RtgtWED7++5o
-         cu1/k6OZ/Xu2Q75C7oq1iKeFE4mfzEuj5R9ccnZ4a+ljm7CILA/y05Hh4/6hFTSdb4Bw
-         x5QicavPEV+TBUgrioVN+WoZQdRmV3Mv/JVHNpCy3X0QOjr0Em+Fgsf7iqUajDrWHEea
-         2pAw==
-X-Forwarded-Encrypted: i=1; AJvYcCWrbfjsx11x0zpvzW8TWxnSCdfuLtmHQPflRnPLqaJcSK85KBmh+DXb3UEr9pquLEy+LWnEkwY=@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywpzash4QhAPOzOT0ul+d8cbdAXbW+RVdl03pHBx83Ba3kRHxtV
-	82cySx6QpdU8ZTfjoG1R+nMO2Xl0K1Z8dIBhQK1pUFFtsa5iNGczJlXwp7l+9RFBc4vKlotGMj0
-	DhAJGd9OzAscMGmLLTqSF104ePqz/vKnv15xtjWH1
-X-Gm-Gg: ASbGncvsutk2BGwhvJkEvr2Tz2+nX9UTbFO5J4HMcokKv/7YzmK+lNrdIbCsRGedaVZ
-	FaRbKbxuKhDXnIcJl5f9EUvFvxN9qzQUZgBigfSCN5T2sHN8ED0joBqwn4TTf6QuLPCmGdO3R2x
-	/hAmInkI+xeGhoHWcvt/Wvak26tbNU47uIbl3bsFm7Ev0BZEFH4+dCTqfPERYdvMGPVM/mG6rGL
-	z/scJJC0PDMWfuK3FexOXQZU1RCSsxV9GLmuPUjBkrqdHGxWY2ogkjS92/DZoU=
-X-Google-Smtp-Source: AGHT+IGZQIGtkvyQ7wUbXbPktQnaEGHmteV66ZUVON5NljKX83ZF9JtYWo+pN7TerpN49zbUut8goBymhFyWExBBTaQ=
-X-Received: by 2002:a05:6820:c006:b0:624:abae:b650 with SMTP id
- 006d021491bc7-624abaeb894mr2040726eaf.0.1758210519920; Thu, 18 Sep 2025
- 08:48:39 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1758211460; x=1758816260;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+wLGpuPRzGrj0GuQ1pr3htCtf/Bg6efoARFUILLNjzQ=;
+        b=thzjTbzhNJKpCYzfCUh6sXTmKo2Dm3QsoM+7tackNm1zLKc0hXMaI2BXuNLtmwQQc3
+         x+kOrk7z8c/V5QfbDhqY4WGJFMoUeMNr0ku012CERjHHlRPjpU7Q7reW1zOqWWAlHR47
+         Pcrslh3XOzujawfDmO2SfSsXfGg3j+rpjkxuDqwjP8ymNJG3wcl7XWrF+eOCtxg6bfkn
+         NQa90b/42fyZX/8n+UNyO1PZbhH0cClhkNo46lgwUHcKMLbyKERjP97xVI/6K7oZQ4pA
+         UUOuyArdkWIyno4yZinwyAKERoGsFw9g3z9VhNppM32s+amIcBizvOcMdug/IKGPSyl4
+         eNWA==
+X-Gm-Message-State: AOJu0YzCA6cChLB/kJepnUS+F0kHLnLaE7LyAGBOhLuv3/VCYeoxYre/
+	z6//mxcFGSLTKxTrBfHDfV48JCQRzPvDy8d8xGl+EP63N9JkPYNwiB6e8kLnF/e6VWxhnmXzOuy
+	5LVBXwwYWlDrq9doPtWFd3QevhpQfMTyXE9DAa/jYCRxne2yMOdiFrjlY8no=
+X-Google-Smtp-Source: AGHT+IF65rRoPfZXqpEumRzAEHoCIUP/eHAEEt7gsM6QChJSPzxPJaRy9ujecsXR7hAi9ep+n81i7f6jabJd1WKz94sAa1IK28nS
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250916234425.1274735-1-joannelkoong@gmail.com>
- <68ca71bd.050a0220.2ff435.04fc.GAE@google.com> <CAJnrk1YKPWkaBXe7D2mftN2DMEBqFow80reUGE=2_U8oVFc1tQ@mail.gmail.com>
-In-Reply-To: <CAJnrk1YKPWkaBXe7D2mftN2DMEBqFow80reUGE=2_U8oVFc1tQ@mail.gmail.com>
-From: Aleksandr Nogikh <nogikh@google.com>
-Date: Thu, 18 Sep 2025 17:48:28 +0200
-X-Gm-Features: AS18NWAU9uKKLdv_CQUnITI5tezk67S_wzRhWyVluYMjy37dGuE_05c1-3Y9NYc
-Message-ID: <CANp29Y5Y8iO+UbKHtDEc=0d+76WxbWJK1asLaux++_n+Pr+d5g@mail.gmail.com>
-Subject: Re: [syzbot ci] Re: fuse: use iomap for buffered reads + readahead
-To: Joanne Koong <joannelkoong@gmail.com>
-Cc: syzbot ci <syzbot+ci9b5a486340e6bcdf@syzkaller.appspotmail.com>, 
-	syzbot <syzkaller@googlegroups.com>, brauner@kernel.org, djwong@kernel.org, 
-	gfs2@lists.linux.dev, hch@infradead.org, hch@lst.de, 
-	hsiangkao@linux.alibaba.com, kernel-team@meta.com, 
-	linux-block@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-xfs@vger.kernel.org, miklos@szeredi.hu, 
-	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+X-Received: by 2002:a05:6e02:b4a:b0:424:7d95:b8ff with SMTP id
+ e9e14a558f8ab-4248190270amr1831475ab.2.1758211459017; Thu, 18 Sep 2025
+ 09:04:19 -0700 (PDT)
+Date: Thu, 18 Sep 2025 09:04:18 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68cc2d82.050a0220.28a605.0008.GAE@google.com>
+Subject: [moderation/CI] Re: Compiler-Based Capability- and Locking-Analysis
+From: syzbot ci <syzbot+ci21e81c3e9679b2a0@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Joanne,
+syzbot ci has tested the following series
 
-On Wed, Sep 17, 2025 at 9:59=E2=80=AFPM Joanne Koong <joannelkoong@gmail.co=
-m> wrote:
->
-> On Wed, Sep 17, 2025 at 1:37=E2=80=AFAM syzbot ci
-> <syzbot+ci9b5a486340e6bcdf@syzkaller.appspotmail.com> wrote:
-> >
-> > syzbot ci has tested the following series
-> >
-> > [v3] fuse: use iomap for buffered reads + readahead
-> > https://lore.kernel.org/all/20250916234425.1274735-1-joannelkoong@gmail=
-.com
-> > * [PATCH v3 01/15] iomap: move bio read logic into helper function
-> > * [PATCH v3 02/15] iomap: move read/readahead bio submission logic into=
- helper function
-> > * [PATCH v3 03/15] iomap: store read/readahead bio generically
-> > * [PATCH v3 04/15] iomap: iterate over entire folio in iomap_readpage_i=
-ter()
-> > * [PATCH v3 05/15] iomap: rename iomap_readpage_iter() to iomap_read_fo=
-lio_iter()
-> > * [PATCH v3 06/15] iomap: rename iomap_readpage_ctx struct to iomap_rea=
-d_folio_ctx
-> > * [PATCH v3 07/15] iomap: track read/readahead folio ownership internal=
-ly
-> > * [PATCH v3 08/15] iomap: add public start/finish folio read helpers
-> > * [PATCH v3 09/15] iomap: add caller-provided callbacks for read and re=
-adahead
-> > * [PATCH v3 10/15] iomap: add bias for async read requests
-> > * [PATCH v3 11/15] iomap: move buffered io bio logic into new file
-> > * [PATCH v3 12/15] iomap: make iomap_read_folio() a void return
-> > * [PATCH v3 13/15] fuse: use iomap for read_folio
-> > * [PATCH v3 14/15] fuse: use iomap for readahead
-> > * [PATCH v3 15/15] fuse: remove fc->blkbits workaround for partial writ=
-es
-> >
-> > and found the following issues:
-> > * WARNING in iomap_iter_advance
-> > * WARNING in iomap_readahead
-> > * kernel BUG in folio_end_read
-> >
-> > Full report is available here:
-> > https://ci.syzbot.org/series/6845596a-1ec9-4396-b9c4-48bddc606bef
-> >
-> > ***
-> >
-> Thanks. Do you get run on every patchset that is sent upstream or is
-> it random? Trying to figure out if this means v2 is right and i just
-> messed up v3 or if you just didn't run on v2.
+[v3] Compiler-Based Capability- and Locking-Analysis
+https://lore.kernel.org/all/20250918140451.1289454-1-elver@google.com
+* [PATCH v3 01/35] compiler_types: Move lock checking attributes to compile=
+r-capability-analysis.h
+* [PATCH v3 02/35] compiler-capability-analysis: Add infrastructure for Cla=
+ng's capability analysis
+* [PATCH v3 03/35] compiler-capability-analysis: Add test stub
+* [PATCH v3 04/35] Documentation: Add documentation for Compiler-Based Capa=
+bility Analysis
+* [PATCH v3 05/35] checkpatch: Warn about capability_unsafe() without comme=
+nt
+* [PATCH v3 06/35] cleanup: Basic compatibility with capability analysis
+* [PATCH v3 07/35] lockdep: Annotate lockdep assertions for capability anal=
+ysis
+* [PATCH v3 08/35] locking/rwlock, spinlock: Support Clang's capability ana=
+lysis
+* [PATCH v3 09/35] compiler-capability-analysis: Change __cond_acquires to =
+take return value
+* [PATCH v3 10/35] locking/mutex: Support Clang's capability analysis
+* [PATCH v3 11/35] locking/seqlock: Support Clang's capability analysis
+* [PATCH v3 12/35] bit_spinlock: Include missing <asm/processor.h>
+* [PATCH v3 13/35] bit_spinlock: Support Clang's capability analysis
+* [PATCH v3 14/35] rcu: Support Clang's capability analysis
+* [PATCH v3 15/35] srcu: Support Clang's capability analysis
+* [PATCH v3 16/35] kref: Add capability-analysis annotations
+* [PATCH v3 17/35] locking/rwsem: Support Clang's capability analysis
+* [PATCH v3 18/35] locking/local_lock: Include missing headers
+* [PATCH v3 19/35] locking/local_lock: Support Clang's capability analysis
+* [PATCH v3 20/35] locking/ww_mutex: Support Clang's capability analysis
+* [PATCH v3 21/35] debugfs: Make debugfs_cancellation a capability struct
+* [PATCH v3 22/35] compiler-capability-analysis: Remove Sparse support
+* [PATCH v3 23/35] compiler-capability-analysis: Remove __cond_lock() funct=
+ion-like helper
+* [PATCH v3 24/35] compiler-capability-analysis: Introduce header suppressi=
+ons
+* [PATCH v3 25/35] compiler: Let data_race() imply disabled capability anal=
+ysis
+* [PATCH v3 26/35] MAINTAINERS: Add entry for Capability Analysis
+* [PATCH v3 27/35] kfence: Enable capability analysis
+* [PATCH v3 28/35] kcov: Enable capability analysis
+* [PATCH v3 29/35] kcsan: Enable capability analysis
+* [PATCH v3 30/35] stackdepot: Enable capability analysis
+* [PATCH v3 31/35] rhashtable: Enable capability analysis
+* [PATCH v3 32/35] printk: Move locking annotation to printk.c
+* [PATCH v3 33/35] security/tomoyo: Enable capability analysis
+* [PATCH v3 34/35] crypto: Enable capability analysis
+* [PATCH v3 35/35] sched: Enable capability analysis for core.c and fair.c
 
-The intent is to run on every patchset, but since the system is
-currently still in the experimental state, some of the series are
-skipped due to various reasons. E.g. syzbot tried to process v2, but
-failed to find the kernel tree to which the series applies without
-problems: https://ci.syzbot.org/series/7085b21e-ae1e-4bf9-b486-24a82ea9b37d
+and found the following issue:
+general protection fault in validate_page_before_insert
 
-In the original email, there are links to the C reproducers, so these
-can be used locally to determine if v1/v2 were affected.
+Full report is available here:
+https://ci.syzbot.org/series/81182522-74c0-4494-bcf8-976133df7dc7
 
---=20
-Aleksandr
+***
 
->
-> Thanks,
-> Joanne
->
+general protection fault in validate_page_before_insert
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      f83ec76bf285bea5727f478a68b894f5543ca76e
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/8f7ff868-4cf7-40da-b62b-45ebfec4e99=
+4/config
+
+cgroup: Unknown subsys name 'net'
+cgroup: Unknown subsys name 'cpuset'
+cgroup: Unknown subsys name 'rlimit'
+Oops: general protection fault, probably for non-canonical address 0xdffffc=
+0000000001: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+CPU: 0 UID: 0 PID: 5775 Comm: syz-executor Not tainted syzkaller #0 PREEMPT=
+(full)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:validate_page_before_insert+0x2a/0x300
+Code: 55 41 57 41 56 41 55 41 54 53 48 89 f3 49 89 fe 49 bd 00 00 00 00 00 =
+fc ff df e8 f1 3f b3 ff 4c 8d 7b 08 4c 89 f8 48 c1 e8 03 <42> 80 3c 28 00 7=
+4 08 4c 89 ff e8 17 b3 16 00 4d 8b 3f 4c 89 fe 48
+RSP: 0018:ffffc90002a5f608 EFLAGS: 00010202
+RAX: 0000000000000001 RBX: 0000000000000000 RCX: ffff888022891cc0
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff888028c71200
+RBP: ffffc90002a5f720 R08: 0000000000000000 R09: 1ffff11021cf81e0
+R10: dffffc0000000000 R11: ffffed1021cf81e1 R12: dffffc0000000000
+R13: dffffc0000000000 R14: ffff888028c71200 R15: 0000000000000008
+FS:  00005555815ad500(0000) GS:ffff8880b8615000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f1788fd20b8 CR3: 000000010d8a4000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ insert_page+0x90/0x2c0
+ kcov_mmap+0xc3/0x130
+ mmap_region+0x18ae/0x20c0
+ do_mmap+0xc45/0x10d0
+ vm_mmap_pgoff+0x2a6/0x4d0
+ ksys_mmap_pgoff+0x51f/0x760
+ do_syscall_64+0xfa/0x3b0
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f1788d8ebe3
+Code: f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 =
+41 89 ca 41 f7 c1 ff 0f 00 00 75 14 b8 09 00 00 00 0f 05 <48> 3d 00 f0 ff f=
+f 77 25 c3 0f 1f 40 00 48 c7 c0 a8 ff ff ff 64 c7
+RSP: 002b:00007ffc8a37e638 EFLAGS: 00000246 ORIG_RAX: 0000000000000009
+RAX: ffffffffffffffda RBX: 00007ffc8a37e670 RCX: 00007f1788d8ebe3
+RDX: 0000000000000003 RSI: 0000000000400000 RDI: 00007f17867ff000
+RBP: 00007ffc8a37e940 R08: 00000000000000d8 R09: 0000000000000000
+R10: 0000000000000011 R11: 0000000000000246 R12: 0000000000000003
+R13: 0000000000000000 R14: 00007f1788fa11c0 R15: 00007f1788e2e478
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:validate_page_before_insert+0x2a/0x300
+Code: 55 41 57 41 56 41 55 41 54 53 48 89 f3 49 89 fe 49 bd 00 00 00 00 00 =
+fc ff df e8 f1 3f b3 ff 4c 8d 7b 08 4c 89 f8 48 c1 e8 03 <42> 80 3c 28 00 7=
+4 08 4c 89 ff e8 17 b3 16 00 4d 8b 3f 4c 89 fe 48
+RSP: 0018:ffffc90002a5f608 EFLAGS: 00010202
+RAX: 0000000000000001 RBX: 0000000000000000 RCX: ffff888022891cc0
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff888028c71200
+RBP: ffffc90002a5f720 R08: 0000000000000000 R09: 1ffff11021cf81e0
+R10: dffffc0000000000 R11: ffffed1021cf81e1 R12: dffffc0000000000
+R13: dffffc0000000000 R14: ffff888028c71200 R15: 0000000000000008
+FS:  00005555815ad500(0000) GS:ffff8880b8615000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f1788fd20b8 CR3: 000000010d8a4000 CR4: 00000000000006f0
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[arnd@arndb.de boqun.feng@gmail.com bvanassche@acm.org corbet@lwn.net davem=
+@davemloft.net dvyukov@google.com edumazet@google.com elver@google.com fred=
+eric@kernel.org glider@google.com gregkh@linuxfoundation.org hch@lst.de her=
+bert@gondor.apana.org.au irogers@google.com jannh@google.com joelagnelf@nvi=
+dia.com josh@joshtriplett.org justinstitt@google.com kasan-dev@googlegroups=
+.com kees@kernel.org linux-crypto@vger.kernel.org linux-doc@vger.kernel.org=
+ linux-kbuild@vger.kernel.org linux-kernel@vger.kernel.org linux-mm@kvack.o=
+rg linux-security-module@vger.kernel.org linux-sparse@vger.kernel.org llvm@=
+lists.linux.dev longman@redhat.com luc.vanoostenryck@gmail.com lukas.bulwah=
+n@gmail.com mark.rutland@arm.com mathieu.desnoyers@efficios.com mingo@kerne=
+l.org mingo@redhat.com morbo@google.com nathan@kernel.org neeraj.upadhyay@k=
+ernel.org nick.desaulniers@gmail.com ojeda@kernel.org paulmck@kernel.org pe=
+nguin-kernel@i-love.sakura.ne.jp peterz@infradead.org rcu@vger.kernel.org r=
+ostedt@goodmis.org takedakn@nttdata.co.jp tglx@linutronix.de tgraf@suug.ch =
+urezki@gmail.com will@kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
