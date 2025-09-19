@@ -1,175 +1,134 @@
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8E8C1B394F
-	for <syzbot@lists.linux.dev>; Thu, 18 Sep 2025 23:38:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AC222C08AA
+	for <syzbot@lists.linux.dev>; Fri, 19 Sep 2025 07:06:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758238716; cv=none; b=l6mhqflB2zwcDF+6dPQGfOLPgOru+yZPQpBn91NlqvoMZqM8LIalA4KSA+9Q6d8ATfVzbJUAqACAHrB25HqOplMixuQKiICXCVvt9zqC2NdZJLPrbE6sER/BVsqWAj64qiiCzac0/PlCKsYbQ4FnoUgkHT5RoipOVNJS56m4txU=
+	t=1758265567; cv=none; b=K+VQG6NDZ388x7I57vO5/BPFVwjrOE+euFWSCzdymuTVON/42oR6vVbvuQO1j8ljUK6X10yYC86yWZbitkIwMelGDwyIeTrpWvam1Arep3um+SM5j8kiHasKbKnvmMc2rSBBz8w9YZD+dqLKZUBFvZJV2bmOYx7NLZgsTaoUjV0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758238716; c=relaxed/simple;
-	bh=+2vTAoG7L0bwv0s53u3My/qirTzKAXexH+0xpIoBpLY=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=SHqI+FYD40beiM1cqRiIPh6zzAnEbq5gS1sQ5SjeFOs64uWoHxbTO4Ywb+pUHKvc/VsfGtzZlZ69F3+tEU3vPQ6L9wtrPIdu3aVAIBM6U5nKIJsIGBln+trhLiqNPYceuraYvHE4jT/TpI90fpdd7UxPx58iotNk27BtM1O0o2M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-42404bb4284so20394725ab.0
-        for <syzbot@lists.linux.dev>; Thu, 18 Sep 2025 16:38:34 -0700 (PDT)
+	s=arc-20240116; t=1758265567; c=relaxed/simple;
+	bh=ItZKaGQl9It/js9gzPNXCsAEXczA+CYbzua9BHh+ovk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gFxppYKBVuaqrFjNOM1Z/tfl49iSEwJY31yTktCq56jdEuwpi/pwfViLuPEwbl+z0yvrM3beBTYQZf9kImjl3UvURSI/mK65HtF/4AzAr+nw2e8UuhEyvfJXUAmxBAIdx2rTu116JZ5nYHVAZVLxG93hPd9Iwo8wtttM3AenUEA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=AE4+VVtL; arc=none smtp.client-ip=209.85.221.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="AE4+VVtL"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-3ee12807d97so1291523f8f.0
+        for <syzbot@lists.linux.dev>; Fri, 19 Sep 2025 00:06:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1758265564; x=1758870364; darn=lists.linux.dev;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/Klo+L3KBBL4ssbFZ2YOqJt7BcxJ8M+dYCfYzeUYYBY=;
+        b=AE4+VVtLgpatTSTUzspGOTpIYM909p/UpznHttQjQ6K9WHvPPsIjLf5s7st0io5iIE
+         gixFHTcdI9ytsIyg7rrHH0LwTX/d7NUzgEfZFz1uS7n5E/I/QEecrlFpsl4UJ77I3giP
+         ADCq/DN4ASrzIS3IVuPY1YpgnXtobWkCynZVyJJrfa/phWZgzFziJc4voR7ixxwCdO04
+         W/L3Lvl6t9RQGYgPKpKqhhD2BbJw+BB+V8476uQtReZp7DSs1tQestwAdDklAWC91Cu/
+         woXDiqhM44s+tmds2RzdjtbOZL0DvXVV9+pDRRHI9VYB40mKFQYTEC+CUBGzgJbIF8VQ
+         +pJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758238714; x=1758843514;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=SeB2ku0gALdMoKkizyzsqL8Af3fGjpVi+sw+QYKGvPs=;
-        b=NnDMAllDt8FHHWAa1ZGfGtLfagGTzEBcQoDZLrOo2vvhAHJnY2aakgJLRrwerXbxag
-         aIKzptjYeJ8E8vkV9psPuyHSmwaM1oXD/iDuaWUJPoPjGwYZB6Vf4sGGtxx2O5HQtyQc
-         p7DawrPHvNB0VWQDboOyCcueLyGn5htF2Rs3gF4tP/wf8yqPgfHhWDjpgJMu2Ok7DwUL
-         ecuiVvonddwlWesrH628hfuZ1POTkviTwSelTAcF9et3I/xQmXdDTAhWV/Ul912vSIcK
-         OisB3tWVitBLAF2W8mOG4SyLGzYxqPGUTctr+1nn1eeh0y8V4nwDwgzqCbUBKEXoHmPj
-         gh8g==
-X-Gm-Message-State: AOJu0YxWTZnj06YBaq5vm6EQpIkRNxgFLgMgBVgTiCtszxXS7JRC6mfh
-	ySUlKV6Nzs7+Hj6hGp4Xe0sz7bwHBn89UMboq4e68odrkCDE0IryhZICEXm7KIO2/viPJHI503q
-	aH2S8mdLx+LJp6wZoebb/5gfDqTMIDcYX2BNr6o3nUuCI4GZQeZUonuysf/s=
-X-Google-Smtp-Source: AGHT+IHYrzTUq6iRUNf+6/zDkA7ryII08T3p+uEUvSibrjvRzXx8+lO1XI1LUEEmPMhzGYhdz2tTZmOKn7h0T+I4xMGvBnA6lYGw
+        d=1e100.net; s=20230601; t=1758265564; x=1758870364;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/Klo+L3KBBL4ssbFZ2YOqJt7BcxJ8M+dYCfYzeUYYBY=;
+        b=jMUjJXjFYJtCbrwO7bz/jQ8Cygjj2+lvHd1QdhQDwAAksX7usQ1Jm3oKB9OkZqqlhf
+         548nc9ydAUGY1nmXYveBHpqRbdIYfH/ZRw9bAqoCAOyvn6F27MOD4DPiHnIdjgcv+NnR
+         55+MgmbJljOrA1MggdKpbxD1WzdNlcfgOcPtbgomxYTMSxHoLGQuWW94oximZuLMZTJv
+         vWQPqDQhAMec9aySl04Q/BjZEhp2okPri9KT289Bvk1rpWQQRlp/AEfaUsrj/sxYQT0S
+         ql4XiZYmtMJbX3tXY1sqSqGHoZ93BmR9jR2VA2DOpTuVD8l9fkxKwtry0qXJMJPAjQTO
+         44dQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW6hkRPa7jTaVg4RMB55Zg41y36rmEJiH3KWdPnqXOxf0hl/LnxdTV6ZSvOf4k5cQRRvCZWvQ4=@lists.linux.dev
+X-Gm-Message-State: AOJu0YyWQJJBE2lRMqea+0Eu9MPUf3v6qDZsu4cFhiQ8f8ODxJUf+fgH
+	lNsnPPhAolbsLbZfwJOQLxBQK+akq+fio8WavIa/Wxxj+DOc7esx6Nm/Y76ovRoI/g==
+X-Gm-Gg: ASbGncuerlJejA/8R6EX/8yeZf3nbGwhdh58eNlnutCE+lWDJz0PWkHx+Za1E4zjpfR
+	vbq1mivpTv7zdA1BD9KeEzSuG7/ZoaRfvxy58vE0SQJXBWfz35ejZaBzS+eH1L/DJ+eBl8s+gOn
+	hHWUcV+PyhWdsSvQKMRKDbbEtyljyWXz0uyBgTcDv0UhUGNJIB1gByppUBvkhzCk5Un8tgk5NGA
+	jqaZeAwi4A/yE+BUGc+dSPvxhkYcFeNxM6xEM8oPBr6a6jfH1rfSK7wAvCQm89xuxXnHL6u1RuT
+	hQMAuA7BEHesetJP2Mu0ZWhNXtb/WYG/At1w+jMQEyfgYB9Tr4leiNcCvSBGDtxD0+SBZzkFzDd
+	jy7dvKo0oexJyz+Plt2dXydim+BNtSicBJCjGzuoPlwphPPhnRa9wBQbS6iE=
+X-Google-Smtp-Source: AGHT+IHPi1pgPaxjy0qFYAQQyA+9c6RpQAFZf3vA/UzVRkHTrs+JR5MqjC9zARfGu5kWXbLyHGkoeg==
+X-Received: by 2002:a05:6000:2c0b:b0:3ea:6680:8fcd with SMTP id ffacd0b85a97d-3ee7c925245mr1570227f8f.13.1758265563176;
+        Fri, 19 Sep 2025 00:06:03 -0700 (PDT)
+Received: from elver.google.com ([2a00:79e0:2834:9:1f7a:8520:7568:dac6])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3ee0fbf1d35sm7200088f8f.55.2025.09.19.00.06.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Sep 2025 00:06:02 -0700 (PDT)
+Date: Fri, 19 Sep 2025 09:05:54 +0200
+From: Marco Elver <elver@google.com>
+To: syzbot ci <syzbot+ciac51bb7578ba7c59@syzkaller.appspotmail.com>
+Cc: arnd@arndb.de, boqun.feng@gmail.com, bvanassche@acm.org, corbet@lwn.net,
+	davem@davemloft.net, dvyukov@google.com, edumazet@google.com,
+	frederic@kernel.org, glider@google.com, gregkh@linuxfoundation.org,
+	hch@lst.de, herbert@gondor.apana.org.au, irogers@google.com,
+	jannh@google.com, joelagnelf@nvidia.com, josh@joshtriplett.org,
+	justinstitt@google.com, kasan-dev@googlegroups.com, kees@kernel.org,
+	linux-crypto@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-security-module@vger.kernel.org,
+	linux-sparse@vger.kernel.org, llvm@lists.linux.dev,
+	longman@redhat.com, luc.vanoostenryck@gmail.com,
+	lukas.bulwahn@gmail.com, mark.rutland@arm.com,
+	mathieu.desnoyers@efficios.com, mingo@kernel.org, mingo@redhat.com,
+	morbo@google.com, nathan@kernel.org, neeraj.upadhyay@kernel.org,
+	nick.desaulniers@gmail.com, ojeda@kernel.org, paulmck@kernel.org,
+	penguin-kernel@i-love.sakura.ne.jp, peterz@infradead.org,
+	rcu@vger.kernel.org, rostedt@goodmis.org, takedakn@nttdata.co.jp,
+	tglx@linutronix.de, tgraf@suug.ch, urezki@gmail.com,
+	will@kernel.org, syzbot@lists.linux.dev,
+	syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot ci] Re: Compiler-Based Capability- and Locking-Analysis
+Message-ID: <aM0A0p4-3lwLeAWF@elver.google.com>
+References: <20250918140451.1289454-1-elver@google.com>
+ <68cc6067.a00a0220.37dadf.0003.GAE@google.com>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1fc8:b0:424:7f6c:c238 with SMTP id
- e9e14a558f8ab-42481991871mr22840285ab.30.1758238713774; Thu, 18 Sep 2025
- 16:38:33 -0700 (PDT)
-Date: Thu, 18 Sep 2025 16:38:33 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68cc97f9.050a0220.139b6.000b.GAE@google.com>
-Subject: [moderation/CI] Re: kernel: Introduce multikernel architecture support
-From: syzbot ci <syzbot+cid1ab3854931cd1b5@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <68cc6067.a00a0220.37dadf.0003.GAE@google.com>
+User-Agent: Mutt/2.2.13 (2024-03-09)
 
-syzbot ci has tested the following series
+On Thu, Sep 18, 2025 at 12:41PM -0700, syzbot ci wrote:
+> syzbot ci has tested the following series
+> 
+> [v3] Compiler-Based Capability- and Locking-Analysis
+[...]
+> and found the following issue:
+> general protection fault in validate_page_before_insert
+> 
+> Full report is available here:
+> https://ci.syzbot.org/series/81182522-74c0-4494-bcf8-976133df7dc7
+> 
+> ***
+> 
+> general protection fault in validate_page_before_insert
 
-[v1] kernel: Introduce multikernel architecture support
-https://lore.kernel.org/all/20250918222607.186488-1-xiyou.wangcong@gmail.com
-* [RFC Patch 1/7] kexec: Introduce multikernel support via kexec
-* [RFC Patch 2/7] x86: Introduce SMP INIT trampoline for multikernel CPU bootstrap
-* [RFC Patch 3/7] x86: Introduce MULTIKERNEL_VECTOR for inter-kernel communication
-* [RFC Patch 4/7] kernel: Introduce generic multikernel IPI communication framework
-* [RFC Patch 5/7] x86: Introduce arch_cpu_physical_id() to obtain physical CPU ID
-* [RFC Patch 6/7] kexec: Implement dynamic kimage tracking
-* [RFC Patch 7/7] kexec: Add /proc/multikernel interface for kimage tracking
+Thanks, syzbot ci!
 
-and found the following issue:
-WARNING in note_page
-
-Full report is available here:
-https://ci.syzbot.org/series/9ca759c7-776a-4d45-a2f9-5e6ca245e989
-
-***
-
-WARNING in note_page
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      f83ec76bf285bea5727f478a68b894f5543ca76e
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/645f543b-aa06-4977-81f2-45a0b44a2133/config
-
-Key type fscrypt-provisioning registered
-kAFS: Red Hat AFS client v0.1 registering.
-Btrfs loaded, assert=on, ref-verify=on, zoned=yes, fsverity=yes
-Key type big_key registered
-Key type encrypted registered
-AppArmor: AppArmor sha256 policy hashing enabled
-ima: No TPM chip found, activating TPM-bypass!
-Loading compiled-in module X.509 certificates
-Loaded X.509 cert 'Build time autogenerated kernel key: 75e3f237904f24df4a2b6e4eae1a8f34effb6643'
-ima: Allocated hash algorithm: sha256
-ima: No architecture policies found
-evm: Initialising EVM extended attributes:
-evm: security.selinux (disabled)
-evm: security.SMACK64 (disabled)
-evm: security.SMACK64EXEC (disabled)
-evm: security.SMACK64TRANSMUTE (disabled)
-evm: security.SMACK64MMAP (disabled)
-evm: security.apparmor
-evm: security.ima
-evm: security.capability
-evm: HMAC attrs: 0x1
-PM:   Magic number: 9:738:504
-usb usb41-port1: hash matches
-usb usb40-port2: hash matches
-netconsole: network logging started
-gtp: GTP module loaded (pdp ctx size 128 bytes)
-rdma_rxe: loaded
-cfg80211: Loading compiled-in X.509 certificates for regulatory database
-Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
-Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
-clk: Disabling unused clocks
-ALSA device list:
-  #0: Dummy 1
-  #1: Loopback 1
-  #2: Virtual MIDI Card 1
-check access for rdinit=/init failed: -2, ignoring
-md: Waiting for all devices to be available before autodetect
-md: If you don't use raid, use raid=noautodetect
-md: Autodetecting RAID arrays.
-md: autorun ...
-md: ... autorun DONE.
-EXT4-fs (sda1): mounted filesystem b4773fba-1738-4da0-8a90-0fe043d0a496 ro with ordered data mode. Quota mode: none.
-VFS: Mounted root (ext4 filesystem) readonly on device 8:1.
-devtmpfs: mounted
-Freeing unused kernel image (initmem) memory: 26168K
-Write protecting the kernel read-only data: 210944k
-Freeing unused kernel image (text/rodata gap) memory: 104K
-Freeing unused kernel image (rodata/data gap) memory: 300K
-------------[ cut here ]------------
-x86/mm: Found insecure W+X mapping at address 0xffff888000096000
-WARNING: CPU: 1 PID: 1 at arch/x86/mm/dump_pagetables.c:248 note_page+0x12a5/0x14a0
-Modules linked in:
-CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:note_page+0x12a5/0x14a0
-Code: d5 49 00 c6 05 bd 7d 17 0e 01 90 43 80 3c 2e 00 74 08 4c 89 ff e8 9b 47 ad 00 49 8b 37 48 c7 c7 40 98 88 8b e8 1c 53 0d 00 90 <0f> 0b 90 90 49 bd 00 00 00 00 00 fc ff df e9 5a f1 ff ff 44 89 f9
-RSP: 0000:ffffc90000047678 EFLAGS: 00010246
-RAX: 0829288c8ce4fa00 RBX: ffffc90000047cf0 RCX: ffff88801c2d0000
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000002
-RBP: 0000000000000001 R08: 0000000000000003 R09: 0000000000000004
-R10: dffffc0000000000 R11: fffffbfff1bfa274 R12: ffffffffffffffff
-R13: dffffc0000000000 R14: 1ffff92000008fb2 R15: ffffc90000047d90
-FS:  0000000000000000(0000) GS:ffff8881a3c09000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 000000000df36000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- ptdump_pte_entry+0xc6/0xe0
- walk_pte_range_inner+0x1ba/0x380
- walk_pgd_range+0x1467/0x1d40
- walk_page_range_debug+0x312/0x3d0
- ptdump_walk_pgd+0x126/0x320
- ptdump_walk_pgd_level_core+0x260/0x3e0
- kernel_init+0x53/0x1d0
- ret_from_fork+0x439/0x7d0
- ret_from_fork_asm+0x1a/0x30
- </TASK>
+I messed up the type when moving kcov->area access inside the critical
+section. This is the fix:
 
 
-***
+    fixup! kcov: Enable capability analysis
 
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-The email will later be sent to:
-[akpm@linux-foundation.org bhe@redhat.com changyuanl@google.com cwang@multikernel.io graf@amazon.com kexec@lists.infradead.org linux-kernel@vger.kernel.org linux-mm@kvack.org pasha.tatashin@soleen.com rppt@kernel.org xiyou.wangcong@gmail.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
+diff --git a/kernel/kcov.c b/kernel/kcov.c
+index 1897c8ca6209..e81e3c0d01c6 100644
+--- a/kernel/kcov.c
++++ b/kernel/kcov.c
+@@ -497,7 +497,7 @@ static int kcov_mmap(struct file *filep, struct vm_area_struct *vma)
+ 	unsigned long size, off;
+ 	struct page *page;
+ 	unsigned long flags;
+-	unsigned long *area;
++	void *area;
+ 
+ 	spin_lock_irqsave(&kcov->lock, flags);
+ 	size = kcov->size * sizeof(unsigned long);
