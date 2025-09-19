@@ -1,264 +1,225 @@
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 135732C0F81
-	for <syzbot@lists.linux.dev>; Fri, 19 Sep 2025 09:21:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FB56253351
+	for <syzbot@lists.linux.dev>; Fri, 19 Sep 2025 10:08:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758273721; cv=none; b=ouPda3o2OAHiL0oGYz7aLSlZkHrmp+V/olYppLIkLtg9Dro9tHCq1BvA3E1XHZNfJaW7rYsLWXuK94lJZdjezdGT04dmzqrOV0d3iMfdW+ojzvGrfZ6ZLiQHaAv/g9K2sFSJvTOg/ZHMEJq/N2hlf5mdU9pEJZTzJPZb8ftJ+Iw=
+	t=1758276496; cv=none; b=XZq51fsSoDDydcgrCTZE7iDuLhb3GPaeaUAJBy0XBw19EqUHiyYUS5gxHxuQmnc9n1WiS+BST8bpYy/RoAQYmF+KEeTgMElGRzu5ex9njEI56eVgzzDe+uw4sMMGPc3mSOfDF8yaSuGMjy+sgWGf32IVvHQE3FO9zVibLdon4Co=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758273721; c=relaxed/simple;
-	bh=qb4ze/aofVEsM++c4W5E8+qNY6C9HhNc85GzOpXWSO8=;
+	s=arc-20240116; t=1758276496; c=relaxed/simple;
+	bh=dFd7y3VySgz804qsDPN9znRKVnWGavTMSyNy4jDR6/k=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MG9Mo9LHa2do6sF1ErbxIVekqPngkMSj2xs4gg2rE4pPhEHxJ38Ex2uh+gTuYCRUf1lh/BhfHhUFd5Axf06mwXgB8Ga4A65b74l5XmPxsM3K1Mhc+efZvArLaixXIflK1buqE7shMMktHkJLLVxbBHJ0h0mskT9qn9Nz+QySA54=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=0vwdEAnv; arc=none smtp.client-ip=209.85.216.41
+	 To:Cc:Content-Type; b=owgl8AkkZuQbXWrdSFuAvThxl9tSWiHBfLufDMZphLy+f2w44nGbf5d3x0nqVM0jO0VH+LTa4hbgTLLpqjvQ+XS1EpIkknjlwI4/qkm7zChYbCIeyplyxjyMNoSXvwDS5YziTHVv29yPuQTQhRC7u7bl3VCr0uDNyQrdsDqLwiU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Yv0pbB7c; arc=none smtp.client-ip=209.85.161.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="0vwdEAnv"
-Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-32e372c413aso1956292a91.0
-        for <syzbot@lists.linux.dev>; Fri, 19 Sep 2025 02:21:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Yv0pbB7c"
+Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-621b965a114so989112eaf.1
+        for <syzbot@lists.linux.dev>; Fri, 19 Sep 2025 03:08:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1758273718; x=1758878518; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1758276493; x=1758881293; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Z9cINSDTWBM2Tv4jYPTBmDGlfEkWYS+6S8PkKVT8EaM=;
-        b=0vwdEAnv4u+r+XnizoVY2OHWXudR/7pcKyf7PRASMUGKyMvodU1wjVHfzCq2msXoKY
-         A71z04gv53ZP6LA2fFVN5KenCuZAkJujWn6+pzA/suF+2iS5g1rk825gCgzfMetrtJfh
-         Cs4Q8ju8vFsGQY8C1g6Y0kX82tKIHhCMYIKmUbrYG475iIx1UKjw0dNKzD6C6kUppkve
-         wz30HhunGZ1I70Ld1L1/9mo7oPGLpLwgNDKI2YBcUrHpnSmNjPhanA3z0xlQVZtWA6Nt
-         Dxber7qLlpi+a8W3yR8pE9+9jAVKabxKrlBja4ZsgqIh4Dyt7MKG+Fzp9JZIKcIAGs39
-         Iuag==
+        bh=9Xsd0WGnjpmUvtcvmairXIx5/RXbnvvbDZV+hIADI3Y=;
+        b=Yv0pbB7c4wL7Ux711nShVZYST5Xf4e8u75Lgz69wsofuR8oYHZFkCKIk2JjsfYvkDO
+         9b3FCxm/HRigPoouzBcSF1VoQKY+Js8fojp+i52egS1FxGSpksdjmqxxi9wX611wdn6L
+         Xja/lFC9RZQhswPqIebHo6Zu7Xh066OpuG3UX0HbYwJikx6xjupkNTwGq4enHTo4HzUR
+         izg3VqTk4niIwlbNjT0xn6O1wE0CWKeUzQDDK8PtrKmFeo9r6UNVmIsNhzQZb74hQuWw
+         dLpVMUOAwC1TYvDO9iVsCSRxEVzIJEMN12Ojan1rjizKWcwR+8TuJ1b+jLWPH9GgolNw
+         5Azw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758273718; x=1758878518;
+        d=1e100.net; s=20230601; t=1758276493; x=1758881293;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Z9cINSDTWBM2Tv4jYPTBmDGlfEkWYS+6S8PkKVT8EaM=;
-        b=S/fOO37MNB5XfPh9Q+0iaePmhXBrxK5zbBUBB70dGbdrR5499n2Uf0+hE+wAGOQgnX
-         Uk8oGLMReCoy2KJtVVXNUasp5ZyTCPNOI/4prkSsbVrqIsQ2lZLVEq99+IW9gxa7SDLP
-         JHKqbBmqo7ofBwMO+xSxxtLFIf9rne6bZ52M5VM+BmMHUdiY1o7EKf1NidPjI0oGyhK4
-         Bleq1hgotHjXMjybXQBKD5//Dfg4d592krntjGuTjQVRq6iI2b7G1d665wKW1oESgPZw
-         XN+O1QRbI9T63JN2Cv02Df3COqFfQKsG/P7Kdb4/70J5erX/PNvfYZoP6u6z823NAOYj
-         GKAg==
-X-Forwarded-Encrypted: i=1; AJvYcCV/7Rr/4w+kfxELXhsiSyKSDunBaD/VuaNeZZMpzVvJgxviLO2A/CK/6i6pALUR7l9CTT5DPI8=@lists.linux.dev
-X-Gm-Message-State: AOJu0YziTfHZU/LdcmXmeyz1GNyaYUgva4eefJnxW6ztMRbjho65/qLq
-	4azb7BKyJb1OZTx0kJfVzohzOAoYwgSGH/CIIF5RFf4hfyxQGycgtJDdZcyVXQy4tcrCCI+ID24
-	mmyjNUK4jZEi7PZ0lWJGzB4CtM0oIFst1hIPQySum
-X-Gm-Gg: ASbGncvnEUuackHIEykmKOrg9W7hp8m1LUVgxMZmzdJhSRgxYZjd2lUS2uvPirOl+5y
-	HstioHtd40xzVwFMb9qIunvxUKwc0XKRgVDhF6DLIAh+r1DJVna5C3OlJtY0CqV/liTlPhmQrXw
-	EvJrmJzaCF3wvUG2/FeumzqvAMXa27/XH5UYVLWJsUSSAJqy2oUXFdmsJFnG2qsikwhJtJiDiqV
-	79aP4goCfWEKMnG+ckOYDY84sMS3yf1sLRc
-X-Google-Smtp-Source: AGHT+IGUt4b/j2jlHWVrlmY8MEdFNDGFD5FnO5buzO8V1MvpMOvmB39V+k5uGjtDXXX+5I8IyPhoY1WN/qTaje/GFu4=
-X-Received: by 2002:a17:90b:48:b0:330:65b8:1bdf with SMTP id
- 98e67ed59e1d1-3309836e62amr3318348a91.32.1758273718035; Fri, 19 Sep 2025
- 02:21:58 -0700 (PDT)
+        bh=9Xsd0WGnjpmUvtcvmairXIx5/RXbnvvbDZV+hIADI3Y=;
+        b=vPo5Gbb1xy00yvEEK1W4VVQtLHeqwEKTk1uprfy3nCjj+lKEfpqsb04H/1l7jrDJJg
+         foMkYToO1pY3v9FMdL8awoDTGUGh94P1YBNzYPeHSSkccThkyKTCQj/5r0Y7xjfz7lQD
+         mB7/V+vHBb9vnv5E/RWs28i+izc3/c4oa6VACZ59y03Or1kIVzyqtPJUNx/854hexZdD
+         X165yI5+UsdyO5eLz3EqvwhTmvgQGuZuf1kwLAYg16dHFgrB3uBfHM6Sn30u8+V0o3m6
+         ntOwXLJ+EvBImi2hOL5aF3m7ntTtWbqFxPt/4hEDEOx9c3wmLBxpr8hpJ144XdCB3j6+
+         Ou8A==
+X-Forwarded-Encrypted: i=1; AJvYcCUrtKdgMJMTm2KUMw/FqSfZYjXsTobJzw2tz5ZiaHUkgpzQjnxLrtbdgQwg0UrJjjXm9ngmUFw=@lists.linux.dev
+X-Gm-Message-State: AOJu0YxyPN1sVCIGrouBaUf4Illh8XsYWkDm7EC+dkaNFw14xwTCFkcM
+	aBMnWpfGcM+6GqOO8egyRl3BFkJtRGQQEe+uxPfJvlaZW3rqGEVGag2JOY3Ydo7zY7DTrAk3edj
+	HnBpStD1tB4pGaEpP/3tGtIrTA9GgHA3nYxWGNiqt
+X-Gm-Gg: ASbGncuFdgET5oNuDVKNt656JmOeC25l+5+T1vUti6idPiqIjRWGlGdRb86AssUlmDx
+	Q8OpQuC8ycEV8jPqI/GOdqvG2zSseLB13E9R5QOjvM9p81LClNj/sPJ2edpNfhJX2cyL3HCxFTf
+	xBSDZaTADk87osy64Ly82H5t4yxI/9L4YzNNMxapQRLUzvSKvhakiLX42LMokdgn1mgGd9hYSys
+	otyWjEyxKrqZcy24NHAWjYCPNOpR9P3LLQv3w==
+X-Google-Smtp-Source: AGHT+IFOJo+7ic7SFXfMp/KKwQfgHhaskLWop9zYYy6MHjxupm5ggzqE1qCpfdQMuGwqH/nWxBtuPVaBv8u4yHe2Tvs=
+X-Received: by 2002:a05:6820:160c:b0:623:42cb:243 with SMTP id
+ 006d021491bc7-6272a608737mr1159275eaf.4.1758276493268; Fri, 19 Sep 2025
+ 03:08:13 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <68cc2d82.050a0220.28a605.0008.GAE@google.com> <CANp29Y4UrEsGCF1uwvqY8-6yA8kNDur2scOAqL87o8F90XRdtg@mail.gmail.com>
-In-Reply-To: <CANp29Y4UrEsGCF1uwvqY8-6yA8kNDur2scOAqL87o8F90XRdtg@mail.gmail.com>
-From: Marco Elver <elver@google.com>
-Date: Fri, 19 Sep 2025 11:21:21 +0200
-X-Gm-Features: AS18NWDDiiaVtsQn0CnBqAOOjpKlG9NZ3i2Y91SOXYcQEOgrAlw7g7a3Fh0kfaM
-Message-ID: <CANpmjNMEpGUzJNvMNT-5GG9mKkBo6B3AmO_CE-Gsw-RO=xXvtQ@mail.gmail.com>
-Subject: Re: [moderation/CI] Re: Compiler-Based Capability- and Locking-Analysis
-To: Aleksandr Nogikh <nogikh@google.com>
-Cc: syzbot ci <syzbot+ci21e81c3e9679b2a0@syzkaller.appspotmail.com>, 
-	syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+References: <68cc97f9.050a0220.139b6.000b.GAE@google.com>
+In-Reply-To: <68cc97f9.050a0220.139b6.000b.GAE@google.com>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Fri, 19 Sep 2025 12:08:01 +0200
+X-Gm-Features: AS18NWBCYJ4BK4-jUFO-8E2ZOFtvXsYgTtPn11Uj5HWlTqMIojjh839wnZK2lb0
+Message-ID: <CANp29Y6AOo1qOGHMT9SVJ5SME07uj7gmUAYkZHPt8gPTAfjEXQ@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: kernel: Introduce multikernel architecture support
+To: syzbot ci <syzbot+cid1ab3854931cd1b5@syzkaller.appspotmail.com>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Glad to have syzbot ci here! Wouldn't have caught otherwise.
+#syz upstream
 
-On Thu, 18 Sept 2025 at 21:39, 'Aleksandr Nogikh' via
-syzkaller-upstream-moderation
-<syzkaller-upstream-moderation@googlegroups.com> wrote:
+On Fri, Sep 19, 2025 at 1:38=E2=80=AFAM syzbot ci
+<syzbot+cid1ab3854931cd1b5@syzkaller.appspotmail.com> wrote:
 >
+> syzbot ci has tested the following series
+>
+> [v1] kernel: Introduce multikernel architecture support
+> https://lore.kernel.org/all/20250918222607.186488-1-xiyou.wangcong@gmail.=
+com
+> * [RFC Patch 1/7] kexec: Introduce multikernel support via kexec
+> * [RFC Patch 2/7] x86: Introduce SMP INIT trampoline for multikernel CPU =
+bootstrap
+> * [RFC Patch 3/7] x86: Introduce MULTIKERNEL_VECTOR for inter-kernel comm=
+unication
+> * [RFC Patch 4/7] kernel: Introduce generic multikernel IPI communication=
+ framework
+> * [RFC Patch 5/7] x86: Introduce arch_cpu_physical_id() to obtain physica=
+l CPU ID
+> * [RFC Patch 6/7] kexec: Implement dynamic kimage tracking
+> * [RFC Patch 7/7] kexec: Add /proc/multikernel interface for kimage track=
+ing
+>
+> and found the following issue:
+> WARNING in note_page
+>
+> Full report is available here:
+> https://ci.syzbot.org/series/9ca759c7-776a-4d45-a2f9-5e6ca245e989
+>
+> ***
+>
+> WARNING in note_page
+>
+> tree:      torvalds
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torva=
+lds/linux
+> base:      f83ec76bf285bea5727f478a68b894f5543ca76e
+> arch:      amd64
+> compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~e=
+xp1~20250708183702.136), Debian LLD 20.1.8
+> config:    https://ci.syzbot.org/builds/645f543b-aa06-4977-81f2-45a0b44a2=
+133/config
+>
+> Key type fscrypt-provisioning registered
+> kAFS: Red Hat AFS client v0.1 registering.
+> Btrfs loaded, assert=3Don, ref-verify=3Don, zoned=3Dyes, fsverity=3Dyes
+> Key type big_key registered
+> Key type encrypted registered
+> AppArmor: AppArmor sha256 policy hashing enabled
+> ima: No TPM chip found, activating TPM-bypass!
+> Loading compiled-in module X.509 certificates
+> Loaded X.509 cert 'Build time autogenerated kernel key: 75e3f237904f24df4=
+a2b6e4eae1a8f34effb6643'
+> ima: Allocated hash algorithm: sha256
+> ima: No architecture policies found
+> evm: Initialising EVM extended attributes:
+> evm: security.selinux (disabled)
+> evm: security.SMACK64 (disabled)
+> evm: security.SMACK64EXEC (disabled)
+> evm: security.SMACK64TRANSMUTE (disabled)
+> evm: security.SMACK64MMAP (disabled)
+> evm: security.apparmor
+> evm: security.ima
+> evm: security.capability
+> evm: HMAC attrs: 0x1
+> PM:   Magic number: 9:738:504
+> usb usb41-port1: hash matches
+> usb usb40-port2: hash matches
+> netconsole: network logging started
+> gtp: GTP module loaded (pdp ctx size 128 bytes)
+> rdma_rxe: loaded
+> cfg80211: Loading compiled-in X.509 certificates for regulatory database
+> Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+> Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
+> clk: Disabling unused clocks
+> ALSA device list:
+>   #0: Dummy 1
+>   #1: Loopback 1
+>   #2: Virtual MIDI Card 1
+> check access for rdinit=3D/init failed: -2, ignoring
+> md: Waiting for all devices to be available before autodetect
+> md: If you don't use raid, use raid=3Dnoautodetect
+> md: Autodetecting RAID arrays.
+> md: autorun ...
+> md: ... autorun DONE.
+> EXT4-fs (sda1): mounted filesystem b4773fba-1738-4da0-8a90-0fe043d0a496 r=
+o with ordered data mode. Quota mode: none.
+> VFS: Mounted root (ext4 filesystem) readonly on device 8:1.
+> devtmpfs: mounted
+> Freeing unused kernel image (initmem) memory: 26168K
+> Write protecting the kernel read-only data: 210944k
+> Freeing unused kernel image (text/rodata gap) memory: 104K
+> Freeing unused kernel image (rodata/data gap) memory: 300K
+> ------------[ cut here ]------------
+> x86/mm: Found insecure W+X mapping at address 0xffff888000096000
+> WARNING: CPU: 1 PID: 1 at arch/x86/mm/dump_pagetables.c:248 note_page+0x1=
+2a5/0x14a0
+> Modules linked in:
+> CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(ful=
+l)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> RIP: 0010:note_page+0x12a5/0x14a0
+> Code: d5 49 00 c6 05 bd 7d 17 0e 01 90 43 80 3c 2e 00 74 08 4c 89 ff e8 9=
+b 47 ad 00 49 8b 37 48 c7 c7 40 98 88 8b e8 1c 53 0d 00 90 <0f> 0b 90 90 49=
+ bd 00 00 00 00 00 fc ff df e9 5a f1 ff ff 44 89 f9
+> RSP: 0000:ffffc90000047678 EFLAGS: 00010246
+> RAX: 0829288c8ce4fa00 RBX: ffffc90000047cf0 RCX: ffff88801c2d0000
+> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000002
+> RBP: 0000000000000001 R08: 0000000000000003 R09: 0000000000000004
+> R10: dffffc0000000000 R11: fffffbfff1bfa274 R12: ffffffffffffffff
+> R13: dffffc0000000000 R14: 1ffff92000008fb2 R15: ffffc90000047d90
+> FS:  0000000000000000(0000) GS:ffff8881a3c09000(0000) knlGS:0000000000000=
+000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000000000000000 CR3: 000000000df36000 CR4: 00000000000006f0
+> Call Trace:
+>  <TASK>
+>  ptdump_pte_entry+0xc6/0xe0
+>  walk_pte_range_inner+0x1ba/0x380
+>  walk_pgd_range+0x1467/0x1d40
+>  walk_page_range_debug+0x312/0x3d0
+>  ptdump_walk_pgd+0x126/0x320
+>  ptdump_walk_pgd_level_core+0x260/0x3e0
+>  kernel_init+0x53/0x1d0
+>  ret_from_fork+0x439/0x7d0
+>  ret_from_fork_asm+0x1a/0x30
+>  </TASK>
+>
+>
+> ***
+>
+> If these findings have caused you to resend the series or submit a
+> separate fix, please add the following tag to your commit message:
+>   Tested-by: syzbot@syzkaller.appspotmail.com
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+>
+> The email will later be sent to:
+> [akpm@linux-foundation.org bhe@redhat.com changyuanl@google.com cwang@mul=
+tikernel.io graf@amazon.com kexec@lists.infradead.org linux-kernel@vger.ker=
+nel.org linux-mm@kvack.org pasha.tatashin@soleen.com rppt@kernel.org xiyou.=
+wangcong@gmail.com]
+>
+> If the report looks fine to you, reply with:
 > #syz upstream
->
-> On Thu, Sep 18, 2025 at 6:04=E2=80=AFPM syzbot ci
-> <syzbot+ci21e81c3e9679b2a0@syzkaller.appspotmail.com> wrote:
-> >
-> > syzbot ci has tested the following series
-> >
-> > [v3] Compiler-Based Capability- and Locking-Analysis
-> > https://lore.kernel.org/all/20250918140451.1289454-1-elver@google.com
-> > * [PATCH v3 01/35] compiler_types: Move lock checking attributes to com=
-piler-capability-analysis.h
-> > * [PATCH v3 02/35] compiler-capability-analysis: Add infrastructure for=
- Clang's capability analysis
-> > * [PATCH v3 03/35] compiler-capability-analysis: Add test stub
-> > * [PATCH v3 04/35] Documentation: Add documentation for Compiler-Based =
-Capability Analysis
-> > * [PATCH v3 05/35] checkpatch: Warn about capability_unsafe() without c=
-omment
-> > * [PATCH v3 06/35] cleanup: Basic compatibility with capability analysi=
-s
-> > * [PATCH v3 07/35] lockdep: Annotate lockdep assertions for capability =
-analysis
-> > * [PATCH v3 08/35] locking/rwlock, spinlock: Support Clang's capability=
- analysis
-> > * [PATCH v3 09/35] compiler-capability-analysis: Change __cond_acquires=
- to take return value
-> > * [PATCH v3 10/35] locking/mutex: Support Clang's capability analysis
-> > * [PATCH v3 11/35] locking/seqlock: Support Clang's capability analysis
-> > * [PATCH v3 12/35] bit_spinlock: Include missing <asm/processor.h>
-> > * [PATCH v3 13/35] bit_spinlock: Support Clang's capability analysis
-> > * [PATCH v3 14/35] rcu: Support Clang's capability analysis
-> > * [PATCH v3 15/35] srcu: Support Clang's capability analysis
-> > * [PATCH v3 16/35] kref: Add capability-analysis annotations
-> > * [PATCH v3 17/35] locking/rwsem: Support Clang's capability analysis
-> > * [PATCH v3 18/35] locking/local_lock: Include missing headers
-> > * [PATCH v3 19/35] locking/local_lock: Support Clang's capability analy=
-sis
-> > * [PATCH v3 20/35] locking/ww_mutex: Support Clang's capability analysi=
-s
-> > * [PATCH v3 21/35] debugfs: Make debugfs_cancellation a capability stru=
-ct
-> > * [PATCH v3 22/35] compiler-capability-analysis: Remove Sparse support
-> > * [PATCH v3 23/35] compiler-capability-analysis: Remove __cond_lock() f=
-unction-like helper
-> > * [PATCH v3 24/35] compiler-capability-analysis: Introduce header suppr=
-essions
-> > * [PATCH v3 25/35] compiler: Let data_race() imply disabled capability =
-analysis
-> > * [PATCH v3 26/35] MAINTAINERS: Add entry for Capability Analysis
-> > * [PATCH v3 27/35] kfence: Enable capability analysis
-> > * [PATCH v3 28/35] kcov: Enable capability analysis
-> > * [PATCH v3 29/35] kcsan: Enable capability analysis
-> > * [PATCH v3 30/35] stackdepot: Enable capability analysis
-> > * [PATCH v3 31/35] rhashtable: Enable capability analysis
-> > * [PATCH v3 32/35] printk: Move locking annotation to printk.c
-> > * [PATCH v3 33/35] security/tomoyo: Enable capability analysis
-> > * [PATCH v3 34/35] crypto: Enable capability analysis
-> > * [PATCH v3 35/35] sched: Enable capability analysis for core.c and fai=
-r.c
-> >
-> > and found the following issue:
-> > general protection fault in validate_page_before_insert
-> >
-> > Full report is available here:
-> > https://ci.syzbot.org/series/81182522-74c0-4494-bcf8-976133df7dc7
-> >
-> > ***
-> >
-> > general protection fault in validate_page_before_insert
-> >
-> > tree:      torvalds
-> > URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/tor=
-valds/linux
-> > base:      f83ec76bf285bea5727f478a68b894f5543ca76e
-> > arch:      amd64
-> > compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1=
-~exp1~20250708183702.136), Debian LLD 20.1.8
-> > config:    https://ci.syzbot.org/builds/8f7ff868-4cf7-40da-b62b-45ebfec=
-4e994/config
-> >
-> > cgroup: Unknown subsys name 'net'
-> > cgroup: Unknown subsys name 'cpuset'
-> > cgroup: Unknown subsys name 'rlimit'
-> > Oops: general protection fault, probably for non-canonical address 0xdf=
-fffc0000000001: 0000 [#1] SMP KASAN PTI
-> > KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-> > CPU: 0 UID: 0 PID: 5775 Comm: syz-executor Not tainted syzkaller #0 PRE=
-EMPT(full)
-> > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-=
-1.16.2-1 04/01/2014
-> > RIP: 0010:validate_page_before_insert+0x2a/0x300
-> > Code: 55 41 57 41 56 41 55 41 54 53 48 89 f3 49 89 fe 49 bd 00 00 00 00=
- 00 fc ff df e8 f1 3f b3 ff 4c 8d 7b 08 4c 89 f8 48 c1 e8 03 <42> 80 3c 28 =
-00 74 08 4c 89 ff e8 17 b3 16 00 4d 8b 3f 4c 89 fe 48
-> > RSP: 0018:ffffc90002a5f608 EFLAGS: 00010202
-> > RAX: 0000000000000001 RBX: 0000000000000000 RCX: ffff888022891cc0
-> > RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff888028c71200
-> > RBP: ffffc90002a5f720 R08: 0000000000000000 R09: 1ffff11021cf81e0
-> > R10: dffffc0000000000 R11: ffffed1021cf81e1 R12: dffffc0000000000
-> > R13: dffffc0000000000 R14: ffff888028c71200 R15: 0000000000000008
-> > FS:  00005555815ad500(0000) GS:ffff8880b8615000(0000) knlGS:00000000000=
-00000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 00007f1788fd20b8 CR3: 000000010d8a4000 CR4: 00000000000006f0
-> > Call Trace:
-> >  <TASK>
-> >  insert_page+0x90/0x2c0
-> >  kcov_mmap+0xc3/0x130
-> >  mmap_region+0x18ae/0x20c0
-> >  do_mmap+0xc45/0x10d0
-> >  vm_mmap_pgoff+0x2a6/0x4d0
-> >  ksys_mmap_pgoff+0x51f/0x760
-> >  do_syscall_64+0xfa/0x3b0
-> >  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> > RIP: 0033:0x7f1788d8ebe3
-> > Code: f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f=
- 00 41 89 ca 41 f7 c1 ff 0f 00 00 75 14 b8 09 00 00 00 0f 05 <48> 3d 00 f0 =
-ff ff 77 25 c3 0f 1f 40 00 48 c7 c0 a8 ff ff ff 64 c7
-> > RSP: 002b:00007ffc8a37e638 EFLAGS: 00000246 ORIG_RAX: 0000000000000009
-> > RAX: ffffffffffffffda RBX: 00007ffc8a37e670 RCX: 00007f1788d8ebe3
-> > RDX: 0000000000000003 RSI: 0000000000400000 RDI: 00007f17867ff000
-> > RBP: 00007ffc8a37e940 R08: 00000000000000d8 R09: 0000000000000000
-> > R10: 0000000000000011 R11: 0000000000000246 R12: 0000000000000003
-> > R13: 0000000000000000 R14: 00007f1788fa11c0 R15: 00007f1788e2e478
-> >  </TASK>
-> > Modules linked in:
-> > ---[ end trace 0000000000000000 ]---
-> > RIP: 0010:validate_page_before_insert+0x2a/0x300
-> > Code: 55 41 57 41 56 41 55 41 54 53 48 89 f3 49 89 fe 49 bd 00 00 00 00=
- 00 fc ff df e8 f1 3f b3 ff 4c 8d 7b 08 4c 89 f8 48 c1 e8 03 <42> 80 3c 28 =
-00 74 08 4c 89 ff e8 17 b3 16 00 4d 8b 3f 4c 89 fe 48
-> > RSP: 0018:ffffc90002a5f608 EFLAGS: 00010202
-> > RAX: 0000000000000001 RBX: 0000000000000000 RCX: ffff888022891cc0
-> > RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff888028c71200
-> > RBP: ffffc90002a5f720 R08: 0000000000000000 R09: 1ffff11021cf81e0
-> > R10: dffffc0000000000 R11: ffffed1021cf81e1 R12: dffffc0000000000
-> > R13: dffffc0000000000 R14: ffff888028c71200 R15: 0000000000000008
-> > FS:  00005555815ad500(0000) GS:ffff8880b8615000(0000) knlGS:00000000000=
-00000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 00007f1788fd20b8 CR3: 000000010d8a4000 CR4: 00000000000006f0
-> >
-> >
-> > ***
-> >
-> > If these findings have caused you to resend the series or submit a
-> > separate fix, please add the following tag to your commit message:
-> >   Tested-by: syzbot@syzkaller.appspotmail.com
-> >
-> > ---
-> > This report is generated by a bot. It may contain errors.
-> > syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-> >
-> > The email will later be sent to:
-> > [arnd@arndb.de boqun.feng@gmail.com bvanassche@acm.org corbet@lwn.net d=
-avem@davemloft.net dvyukov@google.com edumazet@google.com elver@google.com =
-frederic@kernel.org glider@google.com gregkh@linuxfoundation.org hch@lst.de=
- herbert@gondor.apana.org.au irogers@google.com jannh@google.com joelagnelf=
-@nvidia.com josh@joshtriplett.org justinstitt@google.com kasan-dev@googlegr=
-oups.com kees@kernel.org linux-crypto@vger.kernel.org linux-doc@vger.kernel=
-.org linux-kbuild@vger.kernel.org linux-kernel@vger.kernel.org linux-mm@kva=
-ck.org linux-security-module@vger.kernel.org linux-sparse@vger.kernel.org l=
-lvm@lists.linux.dev longman@redhat.com luc.vanoostenryck@gmail.com lukas.bu=
-lwahn@gmail.com mark.rutland@arm.com mathieu.desnoyers@efficios.com mingo@k=
-ernel.org mingo@redhat.com morbo@google.com nathan@kernel.org neeraj.upadhy=
-ay@kernel.org nick.desaulniers@gmail.com ojeda@kernel.org paulmck@kernel.or=
-g penguin-kernel@i-love.sakura.ne.jp peterz@infradead.org rcu@vger.kernel.o=
-rg rostedt@goodmis.org takedakn@nttdata.co.jp tglx@linutronix.de tgraf@suug=
-.ch urezki@gmail.com will@kernel.org]
-> >
-> > If the report looks fine to you, reply with:
-> > #syz upstream
-> >
-> > --
-> > You received this message because you are subscribed to the Google Grou=
-ps "syzkaller-upstream-moderation" group.
-> > To unsubscribe from this group and stop receiving emails from it, send =
-an email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> > To view this discussion visit https://groups.google.com/d/msgid/syzkall=
-er-upstream-moderation/68cc2d82.050a0220.28a605.0008.GAE%40google.com.
 >
 > --
 > You received this message because you are subscribed to the Google Groups=
@@ -266,5 +227,4 @@ er-upstream-moderation/68cc2d82.050a0220.28a605.0008.GAE%40google.com.
 > To unsubscribe from this group and stop receiving emails from it, send an=
  email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
 > To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/CANp29Y4UrEsGCF1uwvqY8-6yA8kNDur2scOAqL87o8F90XRdtg%40=
-mail.gmail.com.
+-upstream-moderation/68cc97f9.050a0220.139b6.000b.GAE%40google.com.
