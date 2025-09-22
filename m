@@ -1,117 +1,118 @@
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B23926AEC
-	for <syzbot@lists.linux.dev>; Mon, 22 Sep 2025 07:58:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66F512DAFDA
+	for <syzbot@lists.linux.dev>; Mon, 22 Sep 2025 23:08:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758527904; cv=none; b=Jxb+cOTniExLRCqoxl08+1ZFZ4LO3xaqUGFc5Eikm4zLKFavhwHVwEPVAEvh/b6n4crLXylAruFDpBcdpLuegrn4kky57c+4HqNXlGMg8GDNhs8JFP66Yc3t+mfyHshFtRn/ZXDfU5tAfetcAFtuAbsVeosJptBZhv/z2WkTp40=
+	t=1758582518; cv=none; b=NHND8IWPGcbUxYiZqbPTE6H8Ro44tb3c5kCPa3D3BUtxVDC+FcneX2hjnFp2OgYuHnfBzGqv9yQMIK81KwiiejETwJlMrxEqHille67T9K/pTj2lctqCDOPZzZiwzK+ZlqH2BcKvWwacfdzYyAz4EHf1Ci1SYadaNTEB+04yYQk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758527904; c=relaxed/simple;
-	bh=HTNUj1N4/rHopqWeYeINmgos2Syd2I3wUp8ZHmKexyk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=i4o9sEiPPSHJfpcUCEipZaCyan4RnR+msBeUjgZAdml2JpMQw72ZlHMoSCtg1B3biIZQfamy25OLpnJ9T0UvNG8Tz+SLxC6DaEQS27+Z8D8gWks0GiBColQjppnSYTbXgxHzD93MQ175OzYY1DI6LPvaPD5ecveA1WbgIh8P0pM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=phYR6L/Z; arc=none smtp.client-ip=209.85.167.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="phYR6L/Z"
-Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-43d271944beso2186258b6e.0
-        for <syzbot@lists.linux.dev>; Mon, 22 Sep 2025 00:58:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1758527902; x=1759132702; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oahqWdT4eJWKdEhecbMn96m+F3MRAL5sNNVQ7KistOo=;
-        b=phYR6L/ZVgQv2JeOPGRlE5E6NdmtRncgt910Vewu9ubRzncHvZeKgjreanWm3XgwPJ
-         Wr1FaHc8+ruh2McKky+WRVSCxg+J38KFhfkhR1KSw1m03EmbxH5M2kYk8aPP0xJhcbcn
-         mmNWyaL8L1GjmQ3bziAm9qYU0stYbgTU/sLTwu9FbLC0G0Sr0wNsCzF9gKgdsIbAjxgJ
-         CIz94ylFFsuVT47O8AgYFDMAlpmLlrkzrF7OJOG8eEZL2mwd9jUJce62JKaosa+8Mte/
-         E0VCDFWIWo1jmAITJjJ6R+1iRXAO4poNYO/RkCu1qbzRUP84CE/PdgGAYPYv+B9Aun6W
-         VBmQ==
+	s=arc-20240116; t=1758582518; c=relaxed/simple;
+	bh=PSnWE4ufHWduyoheQ6vx6rEvi6NcmW7Je4L/xVqPalc=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=A057v5Co3mvuUgsg7AX/Rrd14qoTjsJfbDACy/Sj6iQvAaW41oxPqlvgjQ2cK6d99Fw/FQGgvilY5ZRksRO0Reiy3lShj7zxb7k/nDG8ptqCi6vzHmOHKqYUNiKno9ljaHORXRnoeMk8z963o9FwVIRWfR1ZyDOpTg7Y1xIfIxo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-4247d389921so58318125ab.0
+        for <syzbot@lists.linux.dev>; Mon, 22 Sep 2025 16:08:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758527902; x=1759132702;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oahqWdT4eJWKdEhecbMn96m+F3MRAL5sNNVQ7KistOo=;
-        b=RT9nz4cmBQSl09JvT08P8ZE26xz33P7IgOfk/PndkPovl8ZJGbyIm9fGifzH87Ltbd
-         YXYToO74YeLqqeutbBJ/3QYCOV/3MyNGdSPqFl50uazuxXC/N94VsUK79lR1vW+RrqoH
-         FpVp/lHyGChTpHlvqPSbTTwQWQdx0yDt4ShHtOvrjYoxBW5U4gopGhYBhO8E2EHUt6xU
-         wUQL5aqsssPH9l+yX5YjU4EwjDnD2/1Jk/clT+HLQq4PgFRkUqju1xMoVBke79DXs+1o
-         S9tsq6maFoizZPYxCWoOtRSI5arjqiY1nPIdTAnbDDmH1EDiyHRiXUQW1dj6EW6jagyV
-         T/fg==
-X-Forwarded-Encrypted: i=1; AJvYcCWzz7xEiH4KDUzwENRg0EXX/gK8rsFdf2G0BAE63R31wp0k2+If8OOex87thu1+XAAUmADNW7o=@lists.linux.dev
-X-Gm-Message-State: AOJu0YwrAUOyL0+3bBHTTddm+5pr1gPg/njGqESDM+kP5B3GFL5MQTY6
-	iizkKgdG7GyoB/okEnpD2ToChJXq7HmoxPP8o4hjn2Ks9WzmAMWuZIqQpsLYZJdcnQvY3KPfpxZ
-	gxXe+s4BsfMAH1zMiwTk6wQTYmpagzsWzpzIZ/CZh
-X-Gm-Gg: ASbGnctkKhn0Cs4V56a1FDWtw4zt4VofwHT/hIjyqUcOJtJOQ06OpP1LNOnIUkCuLNQ
-	+GGqiCB3NPjYQ4bUEzR+tpoNhgmPUCnuyOn+EuZizFYn2k0QMiLgfWT6vMpEMy93ULhVwFeiXbt
-	EzQu48tZQt/RCuqaZDJwzNRpo40VwA+eemmmQxd2EE6SfZJWGAHoNn/2snB12qFcoNRyGS+9oDs
-	LIZ
-X-Google-Smtp-Source: AGHT+IF8RmArNn08xqgz2YL++Bkd1waSXT6QYxQLrepHMkn220jZgScbG31ZDE0t39Xo6Z2cBJvnXWgH9psMC4tPY90=
-X-Received: by 2002:a05:6808:4f1e:b0:438:398d:b262 with SMTP id
- 5614622812f47-43d6b72b33bmr5873578b6e.8.1758527901672; Mon, 22 Sep 2025
- 00:58:21 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1758582515; x=1759187315;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=P/NHLz8Ahg0OP6N3XeQCClzVhobsW7m6s9olUpo01o4=;
+        b=rhT6JhbX4t7RcYmnV0O5bhHf9z+tCebcwnuCI+HCt2tn98PhwDVb/tip1yBaPlWJ7o
+         XFMCDR7AyaDQ/8Pwwvbht+MPrHWiVdAlaWLdef1cSvsVUcIvOdzw0pIYaOUXe/AK3UWX
+         0QB3LaR90wgFfJYMyyAkIxgWEDfQmKYrzEsskYSI2pBrhUwSgbUxdxQV94jn3FeXb2rO
+         vcC7Un0o2BZSBsDkRDW6t6UhrOWegMQ4SityOhkVyZQacaebSnevJFa+MJrl2lY8NfN0
+         snVPHTamDB+6vXNp33/Ao07sBPnRxUcLza1Z9P53vY0+AgZDtGN0NgqjRj4vs/+E6MpL
+         /dTw==
+X-Gm-Message-State: AOJu0YzVXYAE84/CseUiBKQ1t00u0c1t0UwDy0nUGs9+hfJ5fRqvWJL9
+	j4PIPqYLXqlhtKUot/SPiw5tSKaTDvhmG6ivs3HfPty7QcPri/G510O36mGYx1h/BwmGZcfOpXL
+	uCzVtSDZnVmexdrGWyik/wmRM4A+6I5tcyjz1IDS+w8Rxco1rTxZL0IfOiRg=
+X-Google-Smtp-Source: AGHT+IHFg8NtPwpAHqc+atCfVc5wo+FrKGdpDZS+wkGKNL8OqHklrV8GOR3e04vvKd1TH9/iFVth1/mwQobwv6gBV2Jb47PeErNK
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <68ce3c87.a00a0220.37dadf.0025.GAE@google.com> <2ea0ad29b6956b7d5b812d688b9676e1824dad30.camel@sipsolutions.net>
-In-Reply-To: <2ea0ad29b6956b7d5b812d688b9676e1824dad30.camel@sipsolutions.net>
-From: Aleksandr Nogikh <nogikh@google.com>
-Date: Mon, 22 Sep 2025 09:58:10 +0200
-X-Gm-Features: AS18NWCEcgDFLsPjMsqTcyYqoT9kdjid6s7FWOmr5KWPuTbUV7k9nx3w9J0JWwc
-Message-ID: <CANp29Y7T6JRHjMDZZN9UpcbJB0vwkuq2pJv+54VvFJRh5NXL7Q@mail.gmail.com>
-Subject: Re: [syzbot ci] Re: wifi: cfg80211: remove IEEE80211_CHAN_{1,2,4,8,16}MHZ
- flags
-To: Johannes Berg <johannes@sipsolutions.net>
-Cc: syzbot ci <syzbot+cib69b4e10bd070489@syzkaller.appspotmail.com>, 
-	lachlan.hodges@morsemicro.com, linux-wireless@vger.kernel.org, 
-	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+X-Received: by 2002:a05:6e02:1542:b0:424:86d:7bb9 with SMTP id
+ e9e14a558f8ab-42582209805mr7803105ab.0.1758582515594; Mon, 22 Sep 2025
+ 16:08:35 -0700 (PDT)
+Date: Mon, 22 Sep 2025 16:08:35 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68d1d6f3.a70a0220.1b52b.0006.GAE@google.com>
+Subject: [moderation/CI] Re: TUN/TAP & vhost_net: netdev queue flow control to
+ avoid ptr_ring tail drop
+From: syzbot ci <syzbot+ci70ad5aa902a2d029@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Sep 22, 2025 at 9:46=E2=80=AFAM Johannes Berg <johannes@sipsolution=
-s.net> wrote:
->
-> On Fri, 2025-09-19 at 22:32 -0700, syzbot ci wrote:
-> > syzbot ci has tested the following series
-> >
-> > [v1] wifi: cfg80211: remove IEEE80211_CHAN_{1,2,4,8,16}MHZ flags
-> > https://lore.kernel.org/all/20250919122325.f0abcf092b9b.I04478fde87a79c=
-7909f1cc4249430deaf71e8bd0@changeid
-> > * [PATCH wireless-next] wifi: cfg80211: remove IEEE80211_CHAN_{1,2,4,8,=
-16}MHZ flags
-> >
-> > and found the following issue:
-> > kernel build error
->
-> Hmm. I don't know if this is really useful? The 0-day bot does similar
-> build tests, probably more comprehensively, and
->
-> > tree:      torvalds
-> > URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/tor=
-valds/linux
-> > base:      f83ec76bf285bea5727f478a68b894f5543ca76e
->
-> unlike syzbot, I'm pretty sure it would've known not to attempt applying
-> the patches to Linus's tree when they were destined to wireless-next.
->
->
-> IMHO there's enough noise already, this only adds to the noise, not to
-> the signal.
+syzbot ci has tested the following series
 
-I'll drop reporting build errors from syzbot ci so that only fuzzer
-bugs are reported, thanks for the feedback.
+[v5] TUN/TAP & vhost_net: netdev queue flow control to avoid ptr_ring tail =
+drop
+https://lore.kernel.org/all/20250922221553.47802-1-simon.schippers@tu-dortm=
+und.de
+* [PATCH net-next v5 1/8] __ptr_ring_full_next: Returns if ring will be ful=
+l after next insertion
+* [PATCH net-next v5 2/8] Move the decision of invalidation out of __ptr_ri=
+ng_discard_one
+* [PATCH net-next v5 3/8] TUN, TAP & vhost_net: Stop netdev queue before re=
+aching a full ptr_ring
+* [PATCH net-next v5 4/8] TUN & TAP: Wake netdev queue after consuming an e=
+ntry
+* [PATCH net-next v5 5/8] TUN & TAP: Provide ptr_ring_consume_batched wrapp=
+ers for vhost_net
+* [PATCH net-next v5 6/8] TUN & TAP: Provide ptr_ring_unconsume wrappers fo=
+r vhost_net
+* [PATCH net-next v5 7/8] TUN & TAP: Methods to determine whether file is T=
+UN/TAP for vhost_net
+* [PATCH net-next v5 8/8] vhost_net: Replace rx_ring with calls of TUN/TAP =
+wrappers
 
---=20
-Aleksandr
+and found the following issue:
+kernel build error
 
->
-> johannes
->
-> --
+Full report is available here:
+https://ci.syzbot.org/series/98c840f1-64e9-4a8b-8295-1b659c3e44b8
+
+***
+
+kernel build error
+
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net-next.git
+base:      315f423be0d1ebe720d8fd4fa6bed68586b13d34
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/48a2870a-cee0-4520-88c3-d0c38ba25fb=
+e/config
+
+drivers/vhost/net.c:197:3: error: expected expression
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[eperezma@redhat.com jasowang@redhat.com kvm@vger.kernel.org leiyang@redhat=
+.com linux-kernel@vger.kernel.org mst@redhat.com netdev@vger.kernel.org sim=
+on.schippers@tu-dortmund.de stephen@networkplumber.org tim.gebauer@tu-dortm=
+und.de virtualization@lists.linux.dev willemdebruijn.kernel@gmail.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
