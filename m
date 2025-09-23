@@ -1,299 +1,197 @@
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F2D87464
-	for <syzbot@lists.linux.dev>; Tue, 23 Sep 2025 06:49:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B32A122097
+	for <syzbot@lists.linux.dev>; Tue, 23 Sep 2025 09:03:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758610193; cv=none; b=k4qPS01J3OTflXJ6ScRN6PrNH4YUrgOY+AFPRQKCh+k7viWxJ+btq99tAZfrSQl9sbP0KkApr+0ubmWdw1pAkSAxXYXwq/JfNVIHb7EZgGVsRDGiirGcbWAWwXF44u5X/0P7WDUH27mtPY9d+OY+wjqTURahriDfK/m7OznuTcA=
+	t=1758618237; cv=none; b=mryYU6AjzEQXPkyKCoVL5yOXQQRsOwoZOgvtnRxTR/bLooY/CK8SEKqASKdspaWSvuQYnRM25gXafIgqZeOkJ9LhniXJRZCHNfENwntN7r+7+PECODYMbwEbh+8NLzDMcfLAs0A4isgQe/fwteW3eS2J0cffu/CTMNJFTm6HXWk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758610193; c=relaxed/simple;
-	bh=y2xXAN6fsjiOsrglwVGUYqI/+fngTfO6twy2UxLP/0s=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=FWiUXqpl8MTd0P7x6PGJBH7c1bSGX1KD30Sj6BUiPGbA7fTWOKsCQtrcFwDmdTLVbQzbaT0HBbFB8QZ0o0KsiF46/601JK4hxtTvenPv+RdyUW5DwKzgwGqYMWaLwfDpYdMHF2sB3EGp9RZLFWyj5mX2c6crZZuK8ca+NWzYrn8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.197
+	s=arc-20240116; t=1758618237; c=relaxed/simple;
+	bh=N1nCjwqHYxvpgeyGrHH32+YieTE9OD+kiMv4JO83+B4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=rQPhAVnE6j1Nj8WfvkREMhBMMPeWxmBeKFaGy0GdVVOmLzXxHWML6poP3Hos2Z/CTbVjSXgeXx9E9tcTYSVDMwpf5BSI1PaDY2JImYJc50lBAqiLSJ2tdPSBxrKpCUAMlGXhgTVw3M758Vf8BMxIwkaDqQkSdAhfTZdIUGIYbq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f197.google.com with SMTP id e9e14a558f8ab-4241c41110eso132407545ab.1
-        for <syzbot@lists.linux.dev>; Mon, 22 Sep 2025 23:49:51 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-425753ebc0aso30086915ab.0
+        for <syzbot@lists.linux.dev>; Tue, 23 Sep 2025 02:03:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758610190; x=1759214990;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=D+0nR0l5xi2ZPgeAlq0yrhc9opZMrbgxpYLe7VwbU0k=;
-        b=v3lxBainoUQp0KnuvCZiNFL64+D8AOYc3ZA6J26PzPc1ywF81PzPz9ZTjcXIZrTYbE
-         YVG4ZUBwh7acvZvUF4BbJtx1zEZiQyTRothQD/1ONVr4kQ1+8VpO8d8tgXqpaCDOJXox
-         uKXM2DA1KiWbgB1BXVC7jVq9CTtuf/UGLInEvOI2QFIyG4dN1Q7EcrGFmFEkiEvdMQhh
-         KqrpXkxyEoJ1vpJcZxIjs2InwuYYFT4vpjoUEdhm+yPC5dHVA2tzl3ACYSWBsbZRcOSE
-         e9tsMlQHQ14SPOfG/UJpL8mLb6B6mfjBT0N4+gcYssnVLQTa2ZL21U861S+EMODVABBH
-         KuoA==
-X-Gm-Message-State: AOJu0YxChaWfUtYoBS1VCUwhKeSc4BW6qzCpcQOWshjHVS0+F6BEWPms
-	ahuFFaruOyLCUAvx22Fx84PMxYfUeshULYl8cEI3O9pcE7Z5wRbAfMvYWTMg/c17i//L8S2+fGx
-	FxlnTNqCB1Sdti4apXZKL9yRqHRQitSxE1Jt7eW7aKxogl9iu1PkzX7f9ZTk=
-X-Google-Smtp-Source: AGHT+IFeLnxF3U/PAtUlvPa5vrcP3KxC1j1HJfHxGNlK2xFKnExpBUAmcG4od6VkJRuL/TxzJ7t51KWUVLg7HLZwpBUdzfmV0Tze
+        d=1e100.net; s=20230601; t=1758618235; x=1759223035;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=IibcgMJijWGxyY5w1F/S7tyjoKkC6U+OXFqpcBbJCug=;
+        b=fMw52S9APQFSIrRVD6+N488eNJQaraafC2pEMzjUILDaL8TlKBc+lVQzjDImkFWrW6
+         L/nm39eVFxS/YvgLcNYf5+PPwEcGalO4TNwm30OlEcwUs+wt07KCdwAoHQ6fYct+Mzp7
+         UXraXhTiocIU9AFPsoC4y+3fKnnOkMPcxW5R8pT1JFVfIYq1j0++3QVMtmCvHB2hmcFZ
+         aQfV3q6ZMmvTrtyf1xI4cEEstWBq6z1T9xakVY5ZeD+xVinJb/qJ34Mf0lA6qkeTLCzQ
+         46mjPc2fbnUNj0YtgCtNI4BXuESHz7TyfTDs/wxs3VYwS7tsxnOKKztVpHeV/78E0Njc
+         /eiw==
+X-Gm-Message-State: AOJu0YxfFyVkFD/a6SvMymNnyisEfVZDzx9wkQAq0kWr7LIQYft2e24q
+	HV8pGvxY/x8QYXGPm6pcne37JhHzfMiSYEsQSPpz/ZNOZLICffP9E4WvH103PyMMtKPT5IHI7IL
+	ZIRgIjm+BWAG+7xHb3/5ohkCiqLELxcJyYT0gSeDwCMIwPRz99WZ1q7+8Tkg=
+X-Google-Smtp-Source: AGHT+IEUEhM32x5rDI0wHKgzJXOROOiXMN9CLYrxYBbOI/PXHU7ZMnOYREw+hjL462JwRzs9I/GxfSIFMGO8f8Ve2Wm/4+ZJD9jL
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1529:b0:424:a30:d64b with SMTP id
- e9e14a558f8ab-42581e82000mr20932565ab.19.1758610190557; Mon, 22 Sep 2025
- 23:49:50 -0700 (PDT)
-Date: Mon, 22 Sep 2025 23:49:50 -0700
-In-Reply-To: <20250923012724.2378858-1-yi.zhang@huaweicloud.com>
+X-Received: by 2002:a05:6e02:1c24:b0:424:6c8e:617f with SMTP id
+ e9e14a558f8ab-42581e1ee1bmr25650985ab.8.1758618234848; Tue, 23 Sep 2025
+ 02:03:54 -0700 (PDT)
+Date: Tue, 23 Sep 2025 02:03:54 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68d2430e.050a0220.139b6.0020.GAE@google.com>
-Subject: [syzbot ci] Re: ext4: optimize online defragment
-From: syzbot ci <syzbot+ci8005d4bb935760f0@syzkaller.appspotmail.com>
-To: adilger.kernel@dilger.ca, jack@suse.cz, libaokun1@huawei.com, 
-	linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, tytso@mit.edu, yangerkun@huawei.com, 
-	yi.zhang@huawei.com, yi.zhang@huaweicloud.com, yukuai3@huawei.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <68d2627a.a70a0220.1b52b.02a5.GAE@google.com>
+Subject: [moderation/CI] Re: AMD: Add Secure AVIC KVM Support
+From: syzbot ci <syzbot+cid6c004f06ccdd5f2@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] ext4: optimize online defragment
-https://lore.kernel.org/all/20250923012724.2378858-1-yi.zhang@huaweicloud.com
-* [PATCH 01/13] ext4: fix an off-by-one issue during moving extents
-* [PATCH 02/13] ext4: correct the checking of quota files before moving extents
-* [PATCH 03/13] ext4: introduce seq counter for the extent status entry
-* [PATCH 04/13] ext4: make ext4_es_lookup_extent() pass out the extent seq counter
-* [PATCH 05/13] ext4: pass out extent seq counter when mapping blocks
-* [PATCH 06/13] ext4: use EXT4_B_TO_LBLK() in mext_check_arguments()
-* [PATCH 07/13] ext4: add mext_check_validity() to do basic check
-* [PATCH 08/13] ext4: refactor mext_check_arguments()
-* [PATCH 09/13] ext4: rename mext_page_mkuptodate() to mext_folio_mkuptodate()
-* [PATCH 10/13] ext4: introduce mext_move_extent()
-* [PATCH 11/13] ext4: switch to using the new extent movement method
-* [PATCH 12/13] ext4: add large folios support for moving extents
-* [PATCH 13/13] ext4: add two trace points for moving extents
+[v2] AMD: Add Secure AVIC KVM Support
+https://lore.kernel.org/all/20250923050317.205482-1-Neeraj.Upadhyay@amd.com
+* [RFC PATCH v2 01/17] KVM: x86/lapic: Differentiate protected APIC interru=
+pt mechanisms
+* [RFC PATCH v2 02/17] x86/cpufeatures: Add Secure AVIC CPU feature
+* [RFC PATCH v2 03/17] KVM: SVM: Add support for Secure AVIC capability in =
+KVM
+* [RFC PATCH v2 04/17] KVM: SVM: Set guest APIC protection flags for Secure=
+ AVIC
+* [RFC PATCH v2 05/17] KVM: SVM: Do not intercept SECURE_AVIC_CONTROL MSR f=
+or SAVIC guests
+* [RFC PATCH v2 06/17] KVM: SVM: Implement interrupt injection for Secure A=
+VIC
+* [RFC PATCH v2 07/17] KVM: SVM: Add IPI Delivery Support for Secure AVIC
+* [RFC PATCH v2 08/17] KVM: SVM: Do not inject exception for Secure AVIC
+* [RFC PATCH v2 09/17] KVM: SVM: Do not intercept exceptions for Secure AVI=
+C guests
+* [RFC PATCH v2 10/17] KVM: SVM: Set VGIF in VMSA area for Secure AVIC gues=
+ts
+* [RFC PATCH v2 11/17] KVM: SVM: Enable NMI support for Secure AVIC guests
+* [RFC PATCH v2 12/17] KVM: SVM: Add VMGEXIT handler for Secure AVIC backin=
+g page
+* [RFC PATCH v2 13/17] KVM: SVM: Add IOAPIC EOI support for Secure AVIC gue=
+sts
+* [RFC PATCH v2 14/17] KVM: x86/ioapic: Disable RTC EOI tracking for protec=
+ted APIC guests
+* [RFC PATCH v2 15/17] KVM: SVM: Check injected timers for Secure AVIC gues=
+ts
+* [RFC PATCH v2 16/17] KVM: x86/cpuid: Disable paravirt APIC features for p=
+rotected APIC
+* [RFC PATCH v2 17/17] KVM: SVM: Advertise Secure AVIC support for SNP gues=
+ts
 
-and found the following issues:
-* KASAN: slab-out-of-bounds Read in ext4_inode_journal_mode
-* general protection fault in ext4_inode_journal_mode
+and found the following issue:
+general protection fault in kvm_apply_cpuid_pv_features_quirk
 
 Full report is available here:
-https://ci.syzbot.org/series/89adca9b-1e59-47cd-8ba6-0a57d76309c9
+https://ci.syzbot.org/series/887b895e-0315-498c-99e5-966704f16fb5
 
 ***
 
-KASAN: slab-out-of-bounds Read in ext4_inode_journal_mode
+general protection fault in kvm_apply_cpuid_pv_features_quirk
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      07e27ad16399afcd693be20211b0dfae63e0615f
+tree:      kvm-next
+URL:       https://kernel.googlesource.com/pub/scm/virt/kvm/kvm/
+base:      a6ad54137af92535cfe32e19e5f3bc1bb7dbd383
 arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/17d2b187-99c8-4493-9c72-e8fcf7741d20/config
-C repro:   https://ci.syzbot.org/findings/b98c412d-c481-4663-b80b-a50550db3406/c_repro
-syz repro: https://ci.syzbot.org/findings/b98c412d-c481-4663-b80b-a50550db3406/syz_repro
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/a65d3de7-36d8-4181-8566-80e0f071995=
+5/config
+C repro:   https://ci.syzbot.org/findings/939a8c5a-41b2-4e9b-9129-80dff6d03=
+9c4/c_repro
+syz repro: https://ci.syzbot.org/findings/939a8c5a-41b2-4e9b-9129-80dff6d03=
+9c4/syz_repro
 
-EXT4-fs (loop0): mounted filesystem 00000000-0000-0000-0000-000000000000 r/w without journal. Quota mode: writeback.
-ext4 filesystem being mounted at /0/bus supports timestamps until 2038-01-19 (0x7fffffff)
-==================================================================
-BUG: KASAN: slab-out-of-bounds in ext4_inode_journal_mode+0x7b/0x480 fs/ext4/ext4_jbd2.c:12
-Read of size 8 at addr ffff88801cefc378 by task syz.0.17/5984
-
-CPU: 0 UID: 0 PID: 5984 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
- print_address_description mm/kasan/report.c:378 [inline]
- print_report+0xca/0x240 mm/kasan/report.c:482
- kasan_report+0x118/0x150 mm/kasan/report.c:595
- ext4_inode_journal_mode+0x7b/0x480 fs/ext4/ext4_jbd2.c:12
- ext4_should_journal_data fs/ext4/ext4_jbd2.h:381 [inline]
- mext_check_validity fs/ext4/move_extent.c:426 [inline]
- ext4_move_extents+0x2bb/0x3630 fs/ext4/move_extent.c:579
- __ext4_ioctl fs/ext4/ioctl.c:1356 [inline]
- ext4_ioctl+0x26a7/0x33c0 fs/ext4/ioctl.c:1616
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:598 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:584
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f6a6678ec29
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffea3688b38 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f6a669d5fa0 RCX: 00007f6a6678ec29
-RDX: 0000200000000040 RSI: 00000000c028660f RDI: 0000000000000004
-RBP: 00007f6a66811e41 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f6a669d5fa0 R14: 00007f6a669d5fa0 R15: 0000000000000003
- </TASK>
-
-Allocated by task 1:
- kasan_save_stack mm/kasan/common.c:47 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:68
- poison_kmalloc_redzone mm/kasan/common.c:388 [inline]
- __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:405
- kasan_kmalloc include/linux/kasan.h:260 [inline]
- __kmalloc_cache_noprof+0x230/0x3d0 mm/slub.c:4407
- kmalloc_noprof include/linux/slab.h:905 [inline]
- kzalloc_noprof include/linux/slab.h:1039 [inline]
- shmem_fill_super+0xc8/0x1190 mm/shmem.c:5059
- vfs_get_super fs/super.c:1325 [inline]
- get_tree_nodev+0xbb/0x150 fs/super.c:1344
- vfs_get_tree+0x92/0x2b0 fs/super.c:1815
- fc_mount fs/namespace.c:1247 [inline]
- vfs_kern_mount+0xbe/0x160 fs/namespace.c:1286
- devtmpfs_init+0x98/0x330 drivers/base/devtmpfs.c:484
- driver_init+0x15/0x60 drivers/base/init.c:25
- do_basic_setup+0xf/0x70 init/main.c:1363
- kernel_init_freeable+0x334/0x4b0 init/main.c:1579
- kernel_init+0x1d/0x1d0 init/main.c:1469
- ret_from_fork+0x439/0x7d0 arch/x86/kernel/process.c:148
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
-
-The buggy address belongs to the object at ffff88801cefc000
- which belongs to the cache kmalloc-512 of size 512
-The buggy address is located 544 bytes to the right of
- allocated 344-byte region [ffff88801cefc000, ffff88801cefc158)
-
-The buggy address belongs to the physical page:
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1cefc
-head: order:2 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
-flags: 0xfff00000000040(head|node=0|zone=1|lastcpupid=0x7ff)
-page_type: f5(slab)
-raw: 00fff00000000040 ffff88801a441c80 dead000000000122 0000000000000000
-raw: 0000000000000000 0000000000100010 00000000f5000000 0000000000000000
-head: 00fff00000000040 ffff88801a441c80 dead000000000122 0000000000000000
-head: 0000000000000000 0000000000100010 00000000f5000000 0000000000000000
-head: 00fff00000000002 ffffea000073bf01 00000000ffffffff 00000000ffffffff
-head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000004
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 2, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 1, tgid 1 (swapper/0), ts 1877776345, free_ts 0
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x240/0x2a0 mm/page_alloc.c:1851
- prep_new_page mm/page_alloc.c:1859 [inline]
- get_page_from_freelist+0x21e4/0x22c0 mm/page_alloc.c:3858
- __alloc_frozen_pages_noprof+0x181/0x370 mm/page_alloc.c:5148
- alloc_pages_mpol+0x232/0x4a0 mm/mempolicy.c:2416
- alloc_slab_page mm/slub.c:2492 [inline]
- allocate_slab+0x8a/0x370 mm/slub.c:2660
- new_slab mm/slub.c:2714 [inline]
- ___slab_alloc+0xbeb/0x1420 mm/slub.c:3901
- __slab_alloc mm/slub.c:3992 [inline]
- __slab_alloc_node mm/slub.c:4067 [inline]
- slab_alloc_node mm/slub.c:4228 [inline]
- __kmalloc_cache_noprof+0x296/0x3d0 mm/slub.c:4402
- kmalloc_noprof include/linux/slab.h:905 [inline]
- kzalloc_noprof include/linux/slab.h:1039 [inline]
- shmem_fill_super+0xc8/0x1190 mm/shmem.c:5059
- vfs_get_super fs/super.c:1325 [inline]
- get_tree_nodev+0xbb/0x150 fs/super.c:1344
- vfs_get_tree+0x92/0x2b0 fs/super.c:1815
- fc_mount fs/namespace.c:1247 [inline]
- vfs_kern_mount+0xbe/0x160 fs/namespace.c:1286
- devtmpfs_init+0x98/0x330 drivers/base/devtmpfs.c:484
- driver_init+0x15/0x60 drivers/base/init.c:25
- do_basic_setup+0xf/0x70 init/main.c:1363
- kernel_init_freeable+0x334/0x4b0 init/main.c:1579
- kernel_init+0x1d/0x1d0 init/main.c:1469
-page_owner free stack trace missing
-
-Memory state around the buggy address:
- ffff88801cefc200: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88801cefc280: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff88801cefc300: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                                                                ^
- ffff88801cefc380: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88801cefc400: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-==================================================================
-
-
-***
-
-general protection fault in ext4_inode_journal_mode
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      07e27ad16399afcd693be20211b0dfae63e0615f
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/17d2b187-99c8-4493-9c72-e8fcf7741d20/config
-syz repro: https://ci.syzbot.org/findings/9f9fdff9-ee39-4921-9a7a-35ab05cc081b/syz_repro
-
-EXT4-fs (loop1): mounted filesystem 76b65be2-f6da-4727-8c75-0525a5b65a09 r/w without journal. Quota mode: none.
-ext4 filesystem being mounted at /0/mnt supports timestamps until 2038-01-19 (0x7fffffff)
-Oops: general protection fault, probably for non-canonical address 0xdffffc000000006f: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000378-0x000000000000037f]
-CPU: 0 UID: 0 PID: 6013 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:ext4_inode_journal_mode+0x6d/0x480 fs/ext4/ext4_jbd2.c:12
-Code: 00 4d 03 7d 00 4c 89 f8 48 c1 e8 03 80 3c 28 00 74 08 4c 89 ff e8 03 9e b6 ff 41 bc 78 03 00 00 4d 03 27 4c 89 e0 48 c1 e8 03 <80> 3c 28 00 74 08 4c 89 e7 e8 e5 9d b6 ff 49 83 3c 24 00 0f 84 01
-RSP: 0018:ffffc90002d6f638 EFLAGS: 00010206
-RAX: 000000000000006f RBX: ffff88811249ad48 RCX: ffff888021ed9cc0
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff88811249ad48
-RBP: dffffc0000000000 R08: ffff88811249ae2f R09: 1ffff110224935c5
-R10: dffffc0000000000 R11: ffffed10224935c6 R12: 0000000000000378
-R13: ffff88811249ad70 R14: 1ffff110224935ae R15: ffff88801bfa6640
-FS:  00007fa922e456c0(0000) GS:ffff8880b8612000(0000) knlGS:0000000000000000
+Oops: general protection fault, probably for non-canonical address 0xdffffc=
+0000000013: 0000 [#1] SMP KASAN NOPTI
+KASAN: null-ptr-deref in range [0x0000000000000098-0x000000000000009f]
+CPU: 0 UID: 0 PID: 5992 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:kvm_apply_cpuid_pv_features_quirk+0x38c/0x4f0 arch/x86/kvm/cpuid.=
+c:248
+Code: c1 e8 03 80 3c 10 00 74 12 4c 89 ff e8 9d d8 d4 00 48 ba 00 00 00 00 =
+00 fc ff df bb 9c 00 00 00 49 03 1f 48 89 d8 48 c1 e8 03 <0f> b6 04 10 84 c=
+0 0f 85 c2 00 00 00 80 3b 00 74 2e e8 4e 6a 71 00
+RSP: 0018:ffffc90004f871a0 EFLAGS: 00010203
+RAX: 0000000000000013 RBX: 000000000000009c RCX: ffff888107562440
+RDX: dffffc0000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: ffffc90004f87250 R08: 0000000000000005 R09: 000000008b838003
+R10: ffffc90004f872e0 R11: fffff520009f0e61 R12: ffff888034f30970
+R13: 1ffff110069e612e R14: ffff888020170528 R15: ffff888034f302f8
+FS:  000055556af3f500(0000) GS:ffff8880b861b000(0000) knlGS:000000000000000=
+0
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000200000000040 CR3: 000000010f5f6000 CR4: 00000000000006f0
+CR2: 00007ffff40f56c8 CR3: 0000000020cc0000 CR4: 0000000000352ef0
 Call Trace:
  <TASK>
- ext4_should_journal_data fs/ext4/ext4_jbd2.h:381 [inline]
- mext_check_validity fs/ext4/move_extent.c:426 [inline]
- ext4_move_extents+0x2bb/0x3630 fs/ext4/move_extent.c:579
- __ext4_ioctl fs/ext4/ioctl.c:1356 [inline]
- ext4_ioctl+0x26a7/0x33c0 fs/ext4/ioctl.c:1616
+ kvm_vcpu_after_set_cpuid+0xc75/0x18a0 arch/x86/kvm/cpuid.c:432
+ kvm_set_cpuid+0xea4/0x1110 arch/x86/kvm/cpuid.c:551
+ kvm_vcpu_ioctl_set_cpuid2+0xbe/0x130 arch/x86/kvm/cpuid.c:626
+ kvm_arch_vcpu_ioctl+0x13c5/0x2a80 arch/x86/kvm/x86.c:5975
+ kvm_vcpu_ioctl+0x74d/0xe90 virt/kvm/kvm_main.c:4637
  vfs_ioctl fs/ioctl.c:51 [inline]
  __do_sys_ioctl fs/ioctl.c:598 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:584
+ __se_sys_ioctl+0xf9/0x170 fs/ioctl.c:584
  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
  do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fa921f8ec29
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fa922e45038 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007fa9221d5fa0 RCX: 00007fa921f8ec29
-RDX: 0000200000000040 RSI: 00000000c028660f RDI: 0000000000000004
-RBP: 00007fa922011e41 R08: 0000000000000000 R09: 0000000000000000
+RIP: 0033:0x7f14f278e82b
+Code: 00 48 89 44 24 18 31 c0 48 8d 44 24 60 c7 04 24 10 00 00 00 48 89 44 =
+24 08 48 8d 44 24 20 48 89 44 24 10 b8 10 00 00 00 0f 05 <89> c2 3d 00 f0 f=
+f ff 77 1c 48 8b 44 24 18 64 48 2b 04 25 28 00 00
+RSP: 002b:00007ffff40f55f0 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007ffff40f5d40 RCX: 00007f14f278e82b
+RDX: 00007ffff40f5d40 RSI: 000000004008ae90 RDI: 0000000000000005
+RBP: 00002000008fc000 R08: 0000000000000000 R09: 0000000000000006
 R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fa9221d6038 R14: 00007fa9221d5fa0 R15: 00007ffcaaedca68
+R13: 0000000000000063 R14: 00002000008fb000 R15: 00002000008fc800
  </TASK>
 Modules linked in:
 ---[ end trace 0000000000000000 ]---
-RIP: 0010:ext4_inode_journal_mode+0x6d/0x480 fs/ext4/ext4_jbd2.c:12
-Code: 00 4d 03 7d 00 4c 89 f8 48 c1 e8 03 80 3c 28 00 74 08 4c 89 ff e8 03 9e b6 ff 41 bc 78 03 00 00 4d 03 27 4c 89 e0 48 c1 e8 03 <80> 3c 28 00 74 08 4c 89 e7 e8 e5 9d b6 ff 49 83 3c 24 00 0f 84 01
-RSP: 0018:ffffc90002d6f638 EFLAGS: 00010206
-RAX: 000000000000006f RBX: ffff88811249ad48 RCX: ffff888021ed9cc0
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff88811249ad48
-RBP: dffffc0000000000 R08: ffff88811249ae2f R09: 1ffff110224935c5
-R10: dffffc0000000000 R11: ffffed10224935c6 R12: 0000000000000378
-R13: ffff88811249ad70 R14: 1ffff110224935ae R15: ffff88801bfa6640
-FS:  00007fa922e456c0(0000) GS:ffff8881a3c12000(0000) knlGS:0000000000000000
+RIP: 0010:kvm_apply_cpuid_pv_features_quirk+0x38c/0x4f0 arch/x86/kvm/cpuid.=
+c:248
+Code: c1 e8 03 80 3c 10 00 74 12 4c 89 ff e8 9d d8 d4 00 48 ba 00 00 00 00 =
+00 fc ff df bb 9c 00 00 00 49 03 1f 48 89 d8 48 c1 e8 03 <0f> b6 04 10 84 c=
+0 0f 85 c2 00 00 00 80 3b 00 74 2e e8 4e 6a 71 00
+RSP: 0018:ffffc90004f871a0 EFLAGS: 00010203
+RAX: 0000000000000013 RBX: 000000000000009c RCX: ffff888107562440
+RDX: dffffc0000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: ffffc90004f87250 R08: 0000000000000005 R09: 000000008b838003
+R10: ffffc90004f872e0 R11: fffff520009f0e61 R12: ffff888034f30970
+R13: 1ffff110069e612e R14: ffff888020170528 R15: ffff888034f302f8
+FS:  000055556af3f500(0000) GS:ffff8881a3c1b000(0000) knlGS:000000000000000=
+0
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00002000000012c0 CR3: 000000010f5f6000 CR4: 00000000000006f0
+CR2: 000055df3be04900 CR3: 0000000020cc0000 CR4: 0000000000352ef0
 ----------------
 Code disassembly (best guess):
-   0:	00 4d 03             	add    %cl,0x3(%rbp)
-   3:	7d 00                	jge    0x5
-   5:	4c 89 f8             	mov    %r15,%rax
-   8:	48 c1 e8 03          	shr    $0x3,%rax
-   c:	80 3c 28 00          	cmpb   $0x0,(%rax,%rbp,1)
-  10:	74 08                	je     0x1a
-  12:	4c 89 ff             	mov    %r15,%rdi
-  15:	e8 03 9e b6 ff       	call   0xffb69e1d
-  1a:	41 bc 78 03 00 00    	mov    $0x378,%r12d
-  20:	4d 03 27             	add    (%r15),%r12
-  23:	4c 89 e0             	mov    %r12,%rax
+   0:	c1 e8 03             	shr    $0x3,%eax
+   3:	80 3c 10 00          	cmpb   $0x0,(%rax,%rdx,1)
+   7:	74 12                	je     0x1b
+   9:	4c 89 ff             	mov    %r15,%rdi
+   c:	e8 9d d8 d4 00       	call   0xd4d8ae
+  11:	48 ba 00 00 00 00 00 	movabs $0xdffffc0000000000,%rdx
+  18:	fc ff df
+  1b:	bb 9c 00 00 00       	mov    $0x9c,%ebx
+  20:	49 03 1f             	add    (%r15),%rbx
+  23:	48 89 d8             	mov    %rbx,%rax
   26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	80 3c 28 00          	cmpb   $0x0,(%rax,%rbp,1) <-- trapping instruction
-  2e:	74 08                	je     0x38
-  30:	4c 89 e7             	mov    %r12,%rdi
-  33:	e8 e5 9d b6 ff       	call   0xffb69e1d
-  38:	49 83 3c 24 00       	cmpq   $0x0,(%r12)
-  3d:	0f                   	.byte 0xf
-  3e:	84 01                	test   %al,(%rcx)
+* 2a:	0f b6 04 10          	movzbl (%rax,%rdx,1),%eax <-- trapping instruct=
+ion
+  2e:	84 c0                	test   %al,%al
+  30:	0f 85 c2 00 00 00    	jne    0xf8
+  36:	80 3b 00             	cmpb   $0x0,(%rbx)
+  39:	74 2e                	je     0x69
+  3b:	e8 4e 6a 71 00       	call   0x716a8e
 
 
 ***
@@ -305,3 +203,14 @@ separate fix, please add the following tag to your commit message:
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[bp@alien8.de david.kaplan@amd.com huibo.wang@amd.com kvm@vger.kernel.org l=
+inux-kernel@vger.kernel.org naveen.rao@amd.com neeraj.upadhyay@amd.com niku=
+nj@amd.com pbonzini@redhat.com santosh.shukla@amd.com seanjc@google.com sur=
+avee.suthikulpanit@amd.com thomas.lendacky@amd.com tiala@microsoft.com vasa=
+nt.hegde@amd.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
