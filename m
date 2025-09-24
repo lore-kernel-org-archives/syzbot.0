@@ -1,126 +1,144 @@
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+Received: from mail-il1-f174.google.com (mail-il1-f174.google.com [209.85.166.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 187B81311AC
-	for <syzbot@lists.linux.dev>; Wed, 24 Sep 2025 16:10:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16D2418BC3B
+	for <syzbot@lists.linux.dev>; Wed, 24 Sep 2025 17:38:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758730225; cv=none; b=RK8ZnS7K+p3XAy4Z/EtMCN/n1g0vC1/qcjj8kzK3lgsyp7B+JYSZuAXKCZaLFsL76PS0XpbZSpAPEJd7LtaFs+jPG3/eV6SlExa1/SJ/lbqxMnxeU1L22eI3V6Kp2ZagJULlEwKeZBNxPpSD9kd2gbpeqwuX1OBandgPBWIDWwM=
+	t=1758735506; cv=none; b=BADnMRqw2+28j+UixM1iKjWODztdkyfczDxkAtTIKv8CfYTV3G4iiPJ/E6UrhTY3M5OuIGu13Aq+RZLA4hDvd1L0QnB9QoMBQKKU+nr/YzDLsvOEVBrk6882pRQ1m76mBidhXWwx6gBw0GbrkVqyWEeELFjA0W//aco8KZKZDFI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758730225; c=relaxed/simple;
-	bh=/76XAI1gWCrWA+5MxxUe2RClHxa6g3zIwvaefU2L0oo=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=bPuGVL0hiRgpU4VyJ2rVIoBFY9xu9bRUORVZgUaPV0n3CEqO6Mp54GjYC4WA3hAZ9ux/EcaYuAnY+D3ByO7z9g/ZOIEZrFD6JFZGRXYO9fM5svaNPnnI7+txcInmb2HNlBlr/snnbMgcjlsvRg9hLWAhQgjj2T7fqATnzE3OVc0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.70
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-88de776aab6so77569139f.0
-        for <syzbot@lists.linux.dev>; Wed, 24 Sep 2025 09:10:23 -0700 (PDT)
+	s=arc-20240116; t=1758735506; c=relaxed/simple;
+	bh=Z17DVKG/RBCGaD1+SPrxGUmyIL1h9oOOffGlgKmOAgw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=idtkUaTaoxez17oYvNGzGOudgU9isBQ42jtt934WgR7yNTIFQ3brlSUol/Y5DplYL5I5UjkfsOx7Nb9jPEM+k0XhQIu8cG/ed2PxkKs6zTkGXOr/pfRvHfBYNpnkKEnASatb83MclkSLQu8MgXfcd389EkLjPe23xiLpaQ+WHYE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Vez/QiUA; arc=none smtp.client-ip=209.85.166.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Vez/QiUA"
+Received: by mail-il1-f174.google.com with SMTP id e9e14a558f8ab-4256f0fac67so306575ab.2
+        for <syzbot@lists.linux.dev>; Wed, 24 Sep 2025 10:38:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1758735504; x=1759340304; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=30S3XZGJU9mWOJVs113Jcz1pN9m3tlO1m1w4FB2QQH0=;
+        b=Vez/QiUACLHzb4K7+MKin8e192plGsEvfP1yNt9a78QDHs3s97YB+sugBTogxRj+wa
+         hf/LUWnfU2bxXfVx6KW0NBuqFPFE3nLvn3gBC0P7XzOBBf1idNZuBa3NsYgwxlWZJBmf
+         D+Nmw2JyVNG+mxkPHjGFdqsgkQKYcd2Yp+ibPss05xrCpRTc3uIeGs75LWK39if993+X
+         /9iAqfpuCuWIJs2h9NoqnYPmSSwzR11OhXNsruOL14TihakZsXL6kBApSJH0Mwj0cur5
+         n/zpbwVJyNzlKlkb9SEPkIuGx6ZvErOycvVhVn3OMM9CPac6nvHMtMK1QzkxwCHwMVtf
+         jxpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758730223; x=1759335023;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8edUGLE5X1GmucSzvDz+Q5Y/Vux46lDGWBOELvzaFto=;
-        b=Koc3Yn9FbIBtoWP2PIYLj1FG6i9BRuV/+Yv3FOMwcpHiDiVGjDwpJEIFYHGy+XEGj1
-         vXskT/THXL7yPXZIoijT61xCqesSCe8XWCdwKlC9J0jjFFkHLxXCLq+9csQdVzj6bv+H
-         1XzTjKWHNAfp2MYTIHACJT7SNTbNvgnu8wn8RWcNuT17F6rEhpKGznZkYVY487zcLH0M
-         ViPxJXlCKB2DVLGFxRarWWPA4kSJz7Vzkpk6k8+diIdXnT2Q36ogT7jLB2K1wik+Vf+H
-         WeyUFIgxNxdWAmu8pLzQck7YQXmWsHT9KaMkn1cdiW+q0n16C4QXWUHEiKYTTkLpI8Gl
-         /3lw==
-X-Gm-Message-State: AOJu0YyRZkBxsseWGHwGUOwXeU8piHZmuF2/9Yq0+7ZgUf4J+9un95Uz
-	ou28jastgOZrozat6PGq4eh5l+4q9ZYetGHhqHwh0b9h+SrYcrhoeD6///HvMdt4b939uHYaVyH
-	jrQKf+N8IAHfF21r4vC2f1W0UBpDc0yvmgFy/y9GAt2WY8FsfFG96VSw7WRY=
-X-Google-Smtp-Source: AGHT+IFvUDzZZrFMsW87hg2A8iJ9SHkAiNCJlyUhq4rzQM7hK2SwN0761Zm/wN6cjOr+565sl0KgQnb64GmMlK6orEyrdPll+cvs
+        d=1e100.net; s=20230601; t=1758735504; x=1759340304;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=30S3XZGJU9mWOJVs113Jcz1pN9m3tlO1m1w4FB2QQH0=;
+        b=Jn69rBQYguIFiZQ577ecPGGTLBlSOd4AfSkTZnCyPyVupz5MEgLWXOWNgGL7gHxlAZ
+         +CR8omwTAOJoh+Aa0gu6/qiuyesMKLxN4ESRzdII/M9G8wHAnLtZmsFMVUm7t2e8W0qM
+         HAX3G++D00pvBLvVl/kF358pc7leoQ/MJetJYpe+dSP58ndojhh8hOddEj5LXso0Pkm5
+         VlAcRzLBfmqlF28002SGSLhXcbHIAliTfw3Kzr0/VxZfN2sZ67lEb242T/Aqy3l2pRMx
+         XXj54LX/fyL8y38pivVthgIJF8vHxNt4oyFC5p46IAFu8ZJsvpe7/Xg5z6in7T2hZez9
+         x6Zg==
+X-Forwarded-Encrypted: i=1; AJvYcCU2Hruo95l63ZeYQiAvG5FZuvXqF5jtXXZDEpnUTbFBeYc4uoOfqHcG5vm61iJmya1FadpCgdk=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz2KhsW2drh74kR3a3uhDenZx+HNWWDg6GMlP9KN62DOW+fPL0+
+	EGkUOhN0Z/VBor4PAr338CnUEZRdxuVkj5xnnOkqWqpbo7uVzT/OXu6MC+I1ByxMjqPhkdQ7Nrh
+	hXq/8c7sEgFMF4q0noZcN1vc8eqI155s=
+X-Gm-Gg: ASbGncto3cMBooW5SDPwANqWRvIwcjLM754S/Es9ewhl74nQZTMiD5t7OKD669vhXzU
+	cD4+8SPvMgH0t/25sCInS3E6tERLMKm0VLBz4u2GT9i5ZOA6VChOTUL9bCvXtzi5Pv7qvtFZK4D
+	DJjyABM5uX5Ir0O6TCpnZhIK++TCZo+mouSdpPBMtwJ5Ju80h05j4UobIILGLxyGJCye1HTOSGo
+	+/d
+X-Google-Smtp-Source: AGHT+IF6MTXy6w1DyXC7/o/nI0lSM4Q/Gz/7/Id81c+he4tFC30Z8cRyZeTvBBdURAh4Zo5aTq0YpXpMF9IG5v6/6so=
+X-Received: by 2002:a05:6e02:218f:b0:424:1c9a:cadf with SMTP id
+ e9e14a558f8ab-425955ed4d8mr6926285ab.3.1758735503219; Wed, 24 Sep 2025
+ 10:38:23 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:2501:b0:424:7128:a06a with SMTP id
- e9e14a558f8ab-42595602a6amr2177265ab.7.1758730223197; Wed, 24 Sep 2025
- 09:10:23 -0700 (PDT)
-Date: Wed, 24 Sep 2025 09:10:23 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68d417ef.a70a0220.1b52b.02cf.GAE@google.com>
-Subject: [moderation/CI] Re: mm: ASI direct map management
-From: syzbot ci <syzbot+ci20a368d4a653c2dd@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
+References: <20250923102547.2545992-1-vitaly.wool@konsulko.se>
+ <68d2cfc2.a70a0220.4f78.000a.GAE@google.com> <20250923215929.GA1122379@cmpxchg.org>
+ <aabca3ff-3cbe-468a-9b65-290d5239d987@konsulko.se>
+In-Reply-To: <aabca3ff-3cbe-468a-9b65-290d5239d987@konsulko.se>
+From: Nhat Pham <nphamcs@gmail.com>
+Date: Wed, 24 Sep 2025 10:38:11 -0700
+X-Gm-Features: AS18NWAPSCyNKHQcdiRVEaduc42g7VmVYowOBIJ4ozJua0iyYaZ3jlavJyn10Pg
+Message-ID: <CAKEwX=P18Krj-+rXvTSCocRt+Q3o07Ghisv4nJLRCJ8tLus54Q@mail.gmail.com>
+Subject: Re: [syzbot ci] Re: rust: zpool: add API for C and Rust
+To: Vitaly Wool <vitaly.wool@konsulko.se>
+Cc: Johannes Weiner <hannes@cmpxchg.org>, 
+	syzbot ci <syzbot+cica6a1c285444b25f@syzkaller.appspotmail.com>, a.hindborg@kernel.org, 
+	akpm@linux-foundation.org, alex.gaynor@gmail.com, aliceryhl@google.com, 
+	bjorn3_gh@protonmail.com, boqun.feng@gmail.com, chengming.zhou@linux.dev, 
+	dakr@kernel.org, david@redhat.com, gary@garyguo.net, 
+	gregkh@linuxfoundation.org, liam.howlett@oracle.com, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, lorenzo.stoakes@oracle.com, 
+	lossin@kernel.org, mhocko@suse.com, minchan@kernel.org, ojeda@kernel.org, 
+	rppt@kernel.org, rust-for-linux@vger.kernel.org, senozhatsky@chromium.org, 
+	surenb@google.com, tmgross@umich.edu, vbabka@suse.cz, yosry.ahmed@linux.dev, 
+	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
+On Tue, Sep 23, 2025 at 10:46=E2=80=AFPM Vitaly Wool <vitaly.wool@konsulko.=
+se> wrote:
+>
+>
+>
+> On 9/23/25 23:59, Johannes Weiner wrote:
+> > On Tue, Sep 23, 2025 at 09:50:10AM -0700, syzbot ci wrote:
+> >> syzbot ci has tested the following series
+> >>
+> >> [v6] rust: zpool: add API for C and Rust
+> >> https://lore.kernel.org/all/20250923102547.2545992-1-vitaly.wool@konsu=
+lko.se
+> >> * [PATCH v6 1/2] mm: reinstate zpool as a thin API
+> >> * [PATCH v6 2/2] rust: zpool: add abstraction for zpool drivers
+> >>
+> >> and found the following issues:
+> >> * BUG: unable to handle kernel NULL pointer dereference in zswap_store
+> >> * KASAN: slab-out-of-bounds Read in zpool_get_total_pages
+> >> * KASAN: slab-out-of-bounds Read in zswap_store
+> >> * KASAN: slab-use-after-free Read in zpool_get_total_pages
+> >> * KASAN: use-after-free Read in zpool_get_total_pages
+> >>
+> >> Full report is available here:
+> >> https://ci.syzbot.org/series/e8b22352-ae56-4d7c-9113-75573acf2b64
+> >>
+> >> ***
+> >>
+> >> BUG: unable to handle kernel NULL pointer dereference in zswap_store
+> >
+> > struct zpool {
+> >       void *pool;
+> > };
+> >
+> > struct zpool *zpool_create_pool(const char *name) \
+> > { \
+> >       return (struct zpool *) prefix ## _create_pool(name); \
+> > } \
+> >
+> > u64 zpool_get_total_pages(struct zpool *zpool) \
+> > { \
+> >       return prefix ## _get_total_pages(zpool->pool); \
+> > }
+> >
+> > You create the zpool by simply casting the backend pool, but then you
+> > deref it twice as if it were an actual container for the backend pool.
+> >
+> > I'm guessing you didn't test this even superficially?
+>
+> LOL, no, forgot to run git commit --amend so came up with a wrong version=
+.
+>
+> The Rust version is correct though.
+>
+> > This also still proposes an API with no in-kernel user.
+>
+> That's not correct, zsmalloc is the user.
 
-[v1] mm: ASI direct map management
-https://lore.kernel.org/all/20250924-b4-asi-page-alloc-v1-0-2d861768041f@go=
-ogle.com
-* [PATCH 01/21] x86/mm/asi: Add CONFIG_MITIGATION_ADDRESS_SPACE_ISOLATION
-* [PATCH 02/21] x86/mm/asi: add X86_FEATURE_ASI and asi=3D
-* [PATCH 03/21] x86/mm: factor out phys_pgd_init()
-* [PATCH 04/21] x86/mm/asi: set up asi_nonsensitive_pgd
-* [PATCH 05/21] x86/mm/pat: mirror direct map changes to ASI
-* [PATCH 06/21] mm/page_alloc: add __GFP_SENSITIVE and always set it
-* [PATCH 07/21] mm: introduce for_each_free_list()
-* [PATCH 08/21] mm: rejig pageblock mask definitions
-* [PATCH 09/21] mm/page_alloc: Invert is_check_pages_enabled() check
-* [PATCH 10/21] mm/page_alloc: remove ifdefs from pindex helpers
-* [PATCH 11/21] mm: introduce freetype_t
-* [PATCH 12/21] mm/asi: encode sensitivity in freetypes and pageblocks
-* [PATCH 13/21] mm/page_alloc_test: unit test pindex helpers
-* [PATCH 14/21] x86/mm/pat: introduce cpa_fault option
-* [PATCH 15/21] mm/page_alloc: rename ALLOC_NON_BLOCK back to _HARDER
-* [PATCH 16/21] mm/page_alloc: introduce ALLOC_NOBLOCK
-* [PATCH 17/21] mm/slub: defer application of gfp_allowed_mask
-* [PATCH 18/21] mm/asi: support changing pageblock sensitivity
-* [PATCH 19/21] mm/asi: bad_page() when ASI mappings are wrong
-* [PATCH 20/21] x86/mm/asi: don't use global pages when ASI enabled
-* [PATCH 21/21] mm: asi_test: smoke test for [non]sensitive page allocs
-
-and found the following issue:
-kernel build error
-
-Full report is available here:
-https://ci.syzbot.org/series/c5d6edfc-6999-4b8b-a338-e60860e51a28
-
-***
-
-kernel build error
-
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
-nux-next
-base:      ce7f1a983b074f6cf8609068088ca3182c569ee4
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
-1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/e0b7d7f4-8eca-4d2b-aa86-2950c847524=
-b/config
-
-mm/compaction.c:2319:7: error: use of undeclared identifier 'migratetype'; =
-did you mean 'migrate_pfn'?
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-The email will later be sent to:
-[akpm@linux-foundation.org axelrasmussen@google.com bp@alien8.de dave.hanse=
-n@linux.intel.com david@redhat.com derkling@google.com hannes@cmpxchg.org j=
-ackmanb@google.com junaids@google.com liam.howlett@oracle.com linux-kernel@=
-vger.kernel.org linux-mm@kvack.org lorenzo.stoakes@oracle.com luto@kernel.o=
-rg mhocko@suse.com mingo@redhat.com peterz@infradead.org reijiw@google.com =
-rientjes@google.com roman.gushchin@linux.dev rppt@kernel.org surenb@google.=
-com tglx@linutronix.de vbabka@suse.cz x86@kernel.org yosry.ahmed@linux.dev =
-yuanchu@google.com ziy@nvidia.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
+A single user does not an API make.
