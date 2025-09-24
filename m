@@ -1,144 +1,114 @@
-Received: from mail-il1-f174.google.com (mail-il1-f174.google.com [209.85.166.174])
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16D2418BC3B
-	for <syzbot@lists.linux.dev>; Wed, 24 Sep 2025 17:38:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5A7D327A1A
+	for <syzbot@lists.linux.dev>; Wed, 24 Sep 2025 20:30:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758735506; cv=none; b=BADnMRqw2+28j+UixM1iKjWODztdkyfczDxkAtTIKv8CfYTV3G4iiPJ/E6UrhTY3M5OuIGu13Aq+RZLA4hDvd1L0QnB9QoMBQKKU+nr/YzDLsvOEVBrk6882pRQ1m76mBidhXWwx6gBw0GbrkVqyWEeELFjA0W//aco8KZKZDFI=
+	t=1758745835; cv=none; b=lL1CdpbLxtNslDXE8s4pI0/+oy4i9aod/ePSHwCFqIqg5yOKbEt52SljGcBaKvM5WeZgUscwijiYQ1jGDpXC0oqMSRpJrXOmTkyV7pMz1lotB2qsXE2mSHhNpmRjmmvoBUT+uQRJHx0PXBTRE1woN6/eqOPcsArtDGqG3jHldrI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758735506; c=relaxed/simple;
-	bh=Z17DVKG/RBCGaD1+SPrxGUmyIL1h9oOOffGlgKmOAgw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=idtkUaTaoxez17oYvNGzGOudgU9isBQ42jtt934WgR7yNTIFQ3brlSUol/Y5DplYL5I5UjkfsOx7Nb9jPEM+k0XhQIu8cG/ed2PxkKs6zTkGXOr/pfRvHfBYNpnkKEnASatb83MclkSLQu8MgXfcd389EkLjPe23xiLpaQ+WHYE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Vez/QiUA; arc=none smtp.client-ip=209.85.166.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Vez/QiUA"
-Received: by mail-il1-f174.google.com with SMTP id e9e14a558f8ab-4256f0fac67so306575ab.2
-        for <syzbot@lists.linux.dev>; Wed, 24 Sep 2025 10:38:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1758735504; x=1759340304; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=30S3XZGJU9mWOJVs113Jcz1pN9m3tlO1m1w4FB2QQH0=;
-        b=Vez/QiUACLHzb4K7+MKin8e192plGsEvfP1yNt9a78QDHs3s97YB+sugBTogxRj+wa
-         hf/LUWnfU2bxXfVx6KW0NBuqFPFE3nLvn3gBC0P7XzOBBf1idNZuBa3NsYgwxlWZJBmf
-         D+Nmw2JyVNG+mxkPHjGFdqsgkQKYcd2Yp+ibPss05xrCpRTc3uIeGs75LWK39if993+X
-         /9iAqfpuCuWIJs2h9NoqnYPmSSwzR11OhXNsruOL14TihakZsXL6kBApSJH0Mwj0cur5
-         n/zpbwVJyNzlKlkb9SEPkIuGx6ZvErOycvVhVn3OMM9CPac6nvHMtMK1QzkxwCHwMVtf
-         jxpA==
+	s=arc-20240116; t=1758745835; c=relaxed/simple;
+	bh=Ehc2kXcfuau9ZZ9+W2ImwMvhUTf0eWezs7HPVTQ16UY=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=dnYkNkHMPrpv3em/yDAW/njv2jV/Ot48JLdp6gmWk6d/UUelmtxgWOWr9BvkBPc0UMHS0TR1jjuTD9gn0wPMxAWhrKUxj639Yo6sfkQuIl2bPnDna6F0q0vw6/maCcIBe9qFaH9YMFxXhkv8BAgC/8Oqw7wdYJojx4+iu9hbAz0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-4247661a0c9so3622725ab.3
+        for <syzbot@lists.linux.dev>; Wed, 24 Sep 2025 13:30:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758735504; x=1759340304;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=30S3XZGJU9mWOJVs113Jcz1pN9m3tlO1m1w4FB2QQH0=;
-        b=Jn69rBQYguIFiZQ577ecPGGTLBlSOd4AfSkTZnCyPyVupz5MEgLWXOWNgGL7gHxlAZ
-         +CR8omwTAOJoh+Aa0gu6/qiuyesMKLxN4ESRzdII/M9G8wHAnLtZmsFMVUm7t2e8W0qM
-         HAX3G++D00pvBLvVl/kF358pc7leoQ/MJetJYpe+dSP58ndojhh8hOddEj5LXso0Pkm5
-         VlAcRzLBfmqlF28002SGSLhXcbHIAliTfw3Kzr0/VxZfN2sZ67lEb242T/Aqy3l2pRMx
-         XXj54LX/fyL8y38pivVthgIJF8vHxNt4oyFC5p46IAFu8ZJsvpe7/Xg5z6in7T2hZez9
-         x6Zg==
-X-Forwarded-Encrypted: i=1; AJvYcCU2Hruo95l63ZeYQiAvG5FZuvXqF5jtXXZDEpnUTbFBeYc4uoOfqHcG5vm61iJmya1FadpCgdk=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz2KhsW2drh74kR3a3uhDenZx+HNWWDg6GMlP9KN62DOW+fPL0+
-	EGkUOhN0Z/VBor4PAr338CnUEZRdxuVkj5xnnOkqWqpbo7uVzT/OXu6MC+I1ByxMjqPhkdQ7Nrh
-	hXq/8c7sEgFMF4q0noZcN1vc8eqI155s=
-X-Gm-Gg: ASbGncto3cMBooW5SDPwANqWRvIwcjLM754S/Es9ewhl74nQZTMiD5t7OKD669vhXzU
-	cD4+8SPvMgH0t/25sCInS3E6tERLMKm0VLBz4u2GT9i5ZOA6VChOTUL9bCvXtzi5Pv7qvtFZK4D
-	DJjyABM5uX5Ir0O6TCpnZhIK++TCZo+mouSdpPBMtwJ5Ju80h05j4UobIILGLxyGJCye1HTOSGo
-	+/d
-X-Google-Smtp-Source: AGHT+IF6MTXy6w1DyXC7/o/nI0lSM4Q/Gz/7/Id81c+he4tFC30Z8cRyZeTvBBdURAh4Zo5aTq0YpXpMF9IG5v6/6so=
-X-Received: by 2002:a05:6e02:218f:b0:424:1c9a:cadf with SMTP id
- e9e14a558f8ab-425955ed4d8mr6926285ab.3.1758735503219; Wed, 24 Sep 2025
- 10:38:23 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1758745833; x=1759350633;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4+Q/u1pQKFYvCChU5EzVkga00fGgoZbGkNgMlp9XHs8=;
+        b=MUWOyRSiF/b8SaAv/Dokfy8jOlmMD4ThkLxEzJ/OKiKcAJHvnUry4OMXd/D54iGfkw
+         ftVKf6/gD9SQl26iCq3zxlin8vgUxIGFlI1i9lvqcdR3jHU2IBZBUt5z0QMrwkSbl91Z
+         K+cDlkhSYgc/pEniNq+xX7TjAYk8Iw+z2tnZIYhjajOiEL0svpxHi5qvYc4GMTp5zReR
+         rQh6l71AEPm2VeFvYbzWZ/tcdsBdfwOK5XAkYrsYU8ZHx5N5ZkdkVE6xMxE4UubuTLAx
+         iMJB7zb5dO6v7H6gxeIcgqAJJyu+zVy6QTcHvR08wfqEPyq+YVnlUDbNFOyMoRl7gAzD
+         6FEw==
+X-Gm-Message-State: AOJu0YwprNHI1kDJcWGqes6AbK0oa6sYp8Tjk8bGMh7IIwDk/i3UyliX
+	Zp1RU7s2HgJlLf/1ohMOcWiP4FTSVQcqFoMRUlsZJySoAp5mSCx772bL3jC0aWTQCEgnqChspOp
+	1tsOhPEy2/xKc7Ysa5XqyI5arvQHWuZ3VBmdLrTI21jPbvTppgEDdoTC491Q=
+X-Google-Smtp-Source: AGHT+IFfUc7hzDtIB/o3D6u3Tx0vVYk5LFnySdp6/YxgEwjhrAyuu6LUtIBxiriCFAm3cSkkVEox9MNLpgA00GzhYUXLmQ8H/aM0
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250923102547.2545992-1-vitaly.wool@konsulko.se>
- <68d2cfc2.a70a0220.4f78.000a.GAE@google.com> <20250923215929.GA1122379@cmpxchg.org>
- <aabca3ff-3cbe-468a-9b65-290d5239d987@konsulko.se>
-In-Reply-To: <aabca3ff-3cbe-468a-9b65-290d5239d987@konsulko.se>
-From: Nhat Pham <nphamcs@gmail.com>
-Date: Wed, 24 Sep 2025 10:38:11 -0700
-X-Gm-Features: AS18NWAPSCyNKHQcdiRVEaduc42g7VmVYowOBIJ4ozJua0iyYaZ3jlavJyn10Pg
-Message-ID: <CAKEwX=P18Krj-+rXvTSCocRt+Q3o07Ghisv4nJLRCJ8tLus54Q@mail.gmail.com>
-Subject: Re: [syzbot ci] Re: rust: zpool: add API for C and Rust
-To: Vitaly Wool <vitaly.wool@konsulko.se>
-Cc: Johannes Weiner <hannes@cmpxchg.org>, 
-	syzbot ci <syzbot+cica6a1c285444b25f@syzkaller.appspotmail.com>, a.hindborg@kernel.org, 
-	akpm@linux-foundation.org, alex.gaynor@gmail.com, aliceryhl@google.com, 
-	bjorn3_gh@protonmail.com, boqun.feng@gmail.com, chengming.zhou@linux.dev, 
-	dakr@kernel.org, david@redhat.com, gary@garyguo.net, 
-	gregkh@linuxfoundation.org, liam.howlett@oracle.com, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, lorenzo.stoakes@oracle.com, 
-	lossin@kernel.org, mhocko@suse.com, minchan@kernel.org, ojeda@kernel.org, 
-	rppt@kernel.org, rust-for-linux@vger.kernel.org, senozhatsky@chromium.org, 
-	surenb@google.com, tmgross@umich.edu, vbabka@suse.cz, yosry.ahmed@linux.dev, 
-	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+X-Received: by 2002:a05:6e02:471c:b0:425:70b9:243c with SMTP id
+ e9e14a558f8ab-425955e5344mr14674805ab.14.1758745832848; Wed, 24 Sep 2025
+ 13:30:32 -0700 (PDT)
+Date: Wed, 24 Sep 2025 13:30:32 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68d454e8.a70a0220.4f78.002d.GAE@google.com>
+Subject: [moderation/CI] Re: psp: add a kselftest suite and netdevsim implementation.
+From: syzbot ci <syzbot+ci5d0a47e9e4d83263@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 23, 2025 at 10:46=E2=80=AFPM Vitaly Wool <vitaly.wool@konsulko.=
-se> wrote:
->
->
->
-> On 9/23/25 23:59, Johannes Weiner wrote:
-> > On Tue, Sep 23, 2025 at 09:50:10AM -0700, syzbot ci wrote:
-> >> syzbot ci has tested the following series
-> >>
-> >> [v6] rust: zpool: add API for C and Rust
-> >> https://lore.kernel.org/all/20250923102547.2545992-1-vitaly.wool@konsu=
-lko.se
-> >> * [PATCH v6 1/2] mm: reinstate zpool as a thin API
-> >> * [PATCH v6 2/2] rust: zpool: add abstraction for zpool drivers
-> >>
-> >> and found the following issues:
-> >> * BUG: unable to handle kernel NULL pointer dereference in zswap_store
-> >> * KASAN: slab-out-of-bounds Read in zpool_get_total_pages
-> >> * KASAN: slab-out-of-bounds Read in zswap_store
-> >> * KASAN: slab-use-after-free Read in zpool_get_total_pages
-> >> * KASAN: use-after-free Read in zpool_get_total_pages
-> >>
-> >> Full report is available here:
-> >> https://ci.syzbot.org/series/e8b22352-ae56-4d7c-9113-75573acf2b64
-> >>
-> >> ***
-> >>
-> >> BUG: unable to handle kernel NULL pointer dereference in zswap_store
-> >
-> > struct zpool {
-> >       void *pool;
-> > };
-> >
-> > struct zpool *zpool_create_pool(const char *name) \
-> > { \
-> >       return (struct zpool *) prefix ## _create_pool(name); \
-> > } \
-> >
-> > u64 zpool_get_total_pages(struct zpool *zpool) \
-> > { \
-> >       return prefix ## _get_total_pages(zpool->pool); \
-> > }
-> >
-> > You create the zpool by simply casting the backend pool, but then you
-> > deref it twice as if it were an actual container for the backend pool.
-> >
-> > I'm guessing you didn't test this even superficially?
->
-> LOL, no, forgot to run git commit --amend so came up with a wrong version=
-.
->
-> The Rust version is correct though.
->
-> > This also still proposes an API with no in-kernel user.
->
-> That's not correct, zsmalloc is the user.
+syzbot ci has tested the following series
 
-A single user does not an API make.
+[v1] psp: add a kselftest suite and netdevsim implementation.
+https://lore.kernel.org/all/20250924194959.2845473-1-daniel.zahka@gmail.com
+* [PATCH net-next 1/9] netdevsim: a basic test PSP implementation
+* [PATCH net-next 2/9] selftests: net: add skip all feature to ksft_run()
+* [PATCH net-next 3/9] selftests: drv-net: base device access API test
+* [PATCH net-next 4/9] selftests: drv-net: add PSP responder
+* [PATCH net-next 5/9] selftests: drv-net: psp: add basic data transfer and=
+ key rotation tests
+* [PATCH net-next 6/9] selftests: drv-net: psp: add association tests
+* [PATCH net-next 7/9] selftests: drv-net: psp: add connection breaking tes=
+ts
+* [PATCH net-next 8/9] selftests: drv-net: psp: add test for auto-adjusting=
+ TCP MSS
+* [PATCH net-next 9/9] selftests: drv-net: psp: add tests for destroying de=
+vices
+
+and found the following issue:
+kernel build error
+
+Full report is available here:
+https://ci.syzbot.org/series/46a0e02b-c024-4e50-b9fc-1c9cc812acbb
+
+***
+
+kernel build error
+
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net-next.git
+base:      dc1dea796b197aba2c3cae25bfef45f4b3ad46fe
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/c5fd66ce-3fe0-4b57-be0d-9bec7f6091c=
+6/config
+
+drivers/net/netdevsim/netdev.c:116:22: error: use of undeclared identifier =
+'SKB_EXT_PSP'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[andrew@lunn.ch cjubran@nvidia.com daniel.zahka@gmail.com davem@davemloft.n=
+et donald.hunter@gmail.com edumazet@google.com horms@kernel.org kuba@kernel=
+.org leitao@debian.org netdev@vger.kernel.org pabeni@redhat.com petrm@nvidi=
+a.com shaw.leon@gmail.com shuah@kernel.org willemb@google.com yuyanghuang@g=
+oogle.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
