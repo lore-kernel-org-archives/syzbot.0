@@ -1,87 +1,82 @@
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 739F510FD
-	for <syzbot@lists.linux.dev>; Fri, 26 Sep 2025 15:43:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FBD62DE70C
+	for <syzbot@lists.linux.dev>; Fri, 26 Sep 2025 16:52:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758901405; cv=none; b=DzotufET/YYFlUftWkoMcB8x/PyCkKyXGNFz6mwGfam0IcT0QelyUcDNWAAF/0r6cGp1P+IOIkk4s0wk2HtmN7vLTUb30bO0sqhu5GkDbQPmA/bwbQmiXmpDaH2i50ksAfX07W2vg7incG4xxbmQx+KiNvjRhcPONcqlQGihUZM=
+	t=1758905548; cv=none; b=BkbCutFk0lNscMEyvZlztJw85NQ9WLb8nk5M55DWduKaeIWLvXiV2nWpcRPjqS9bt4Q969cFJwRHkttLkS7X603dFsRyjaJwG/8+5/kPJ3W7ZceqMTSLA2z+A45/LPMz3NniFyUhgMbe9bbJ2H3S/5BY5QBFCh+k9e1Nvm4pxX8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758901405; c=relaxed/simple;
-	bh=L81OMl3NxDUo54m91FiYRs0xE7z/NErAbwt0x+otaQs=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=qc9W6doNbkIh4M1E3lQ7DkEYoeGGI3iT5dw1nsI37IFve9C6oQtCjig18UzEz025uC9GminKD4WrdaOYSOFa9U7JT3cTScDMW2PcQ7XG7Ng6zTUCgLYnwfucZg1hgisR2Zl9kDdmx3Pc84cT5T9lf/ptjJH4sUxUsCdgRtq+BEY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.69
+	s=arc-20240116; t=1758905548; c=relaxed/simple;
+	bh=Y4DCFB0DEhYy0uV1Z5Ko/SbRADm6TD7un5y7/6WUigo=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=fWsbF11+0VOwCLoURTM5HddkXyhMrg6gFuINlTnofe166QJ/pRLQlt8qVZ/1z46VoFW9CONhf1XrcDo/vMV5dizcx0rV2vlmf7aNssjF74GUR6Vd709oD+H9z/puS/7gonq8GzzkYqJV9nZ3zP6c4WLNKbZZbEGFL7dRh8OfzS8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f69.google.com with SMTP id ca18e2360f4ac-88ad82b713cso289879539f.1
-        for <syzbot@lists.linux.dev>; Fri, 26 Sep 2025 08:43:23 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id e9e14a558f8ab-42486f6da6fso34250245ab.2
+        for <syzbot@lists.linux.dev>; Fri, 26 Sep 2025 09:52:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758901402; x=1759506202;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=pA0jlvuEyrIwG3AlBdAWvOP+0O0zDxPGTyqN7DXg/0Q=;
-        b=mEle8rb4EYVweyv1fYeUi/Q99BvAViaWuqXdnavLHIZU42a/Qxux9G+H2EcFiUS++7
-         EDE7/oDpuZXtoc3/yuVeWznedyZ36kknKHmNHOiNbDtHoqfjPIIqlhf3pxlP1kB8mQcZ
-         878NcKPDVsnYqPdcH35bNoRqbj2PyM+nYwfqjXQpf7oN81gPwp7Wfo1VTarY6V633KYV
-         snNsjjUWllkNzYz9puLcMCM87NY/2GOKrzpWytziSPGBjIHgnFt9SfprD9CLm2NdNi+i
-         W7OUIniirKM+EHTCCtdisYAQKcOrJ2vrM5hGznz1uFfCLDNjdaXoXBm5yO2XautIsbG+
-         7KEg==
-X-Gm-Message-State: AOJu0YyDVbMig8phqBBkSDRSbMqQ9Yv7GrR7IwPIKl3Ub1dXF+scwzaf
-	r12r6nXJkaUXG7/TD9R/UG4LVo1G7rfX2NXmY8/oNYLUCKzidMUk20qFmck9D41mhHoJURJxTUx
-	k5x0TqItBuVGwUVbIruwOIwV8MoZlTdnreA+pyopTtE51beQBIscWXJbJHvw=
-X-Google-Smtp-Source: AGHT+IGbfp0W+hE4FxHJrwuafINF2sBQZeDzvefOvH9g399YJIdvl5PGuo2wG+Y5Mn9WcCWiYIH/WFOeVAb9HcGoMKREOq1c8dzY
+        d=1e100.net; s=20230601; t=1758905545; x=1759510345;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4lXckM/12GHC6qMIc4AbTjXiBEnwmyDjCVu/mYQztNY=;
+        b=ZgfObDjFMyaIxt9hVT/ONKydNkONFzQZh7JJeHcYR12Du3n/jvvu5gioycNmJraajT
+         Q6knTmvd+js6jTJ6N3z5ZQQ/CFrwWdqpwKxOscAAYh8aJuQ86RDlCCIodAmaFXKcbvOi
+         xJcIolswPkYuVJvR4eTivvgr7LuWxmt7l7zMwrWJ4kWEY74J6cExIPQAovDXdB0wXLJb
+         ZgAU7kE8eqEN+xQgDGJi4WxvUa5Z9p2IoEXw17/3GVz/FwtrtSQfA+ZUZAsKDpsbQAU/
+         3usrdzxjF01BC6IWEi4l0Zy6oQsqnes/PMbbmGUhHvb7fD6IGKiTi+YDjvJ9aKmdYuK+
+         1Pxw==
+X-Gm-Message-State: AOJu0YxHWBaG9oPI2n3R6t/73pk8FMZS1MfF93fJ7Cq9rQSEPLAbZHww
+	xq+RxZ8mUfEAHYsHcWQHNK2l8o+5YJWvns5TX1W1YdCzeXsQAbuKXkSfRACsRdVKzepfIm7TNFK
+	bhaH3BZG/0XS2g9IqCNTlxg1PGJ3Q521vhKfWAT9R9k6YEW+nGkfgQU51QGs=
+X-Google-Smtp-Source: AGHT+IFqKu6EqXSBUptpG+r0eOGOQerURqc5naXy71+LlUqhRTWP1eT7vJGe7hE4Llsh5GpajH8NB9IzuHq5E1srYqiO3iJUaS+y
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1fcd:b0:426:4470:376e with SMTP id
- e9e14a558f8ab-42644703b4emr106470625ab.29.1758901402439; Fri, 26 Sep 2025
- 08:43:22 -0700 (PDT)
-Date: Fri, 26 Sep 2025 08:43:22 -0700
+X-Received: by 2002:a05:6e02:2706:b0:425:8d77:547f with SMTP id
+ e9e14a558f8ab-425955c4eafmr104112435ab.5.1758905545415; Fri, 26 Sep 2025
+ 09:52:25 -0700 (PDT)
+Date: Fri, 26 Sep 2025 09:52:25 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68d6b49a.050a0220.3390a8.0016.GAE@google.com>
-Subject: [moderation/CI] Re: net: devmem: improve cpu cost of RX token management
-From: syzbot ci <syzbot+ci0bbe7d78854ef9f6@syzkaller.appspotmail.com>
+Message-ID: <68d6c4c9.050a0220.3390a8.0017.GAE@google.com>
+Subject: [moderation/CI] Re: mm/swapfile.c: select the swap device with
+ default priority round robin
+From: syzbot ci <syzbot+ci0b96ae7dfe16e38a@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v3] net: devmem: improve cpu cost of RX token management
-https://lore.kernel.org/all/20250926-scratch-bobbyeshleman-devmem-tcp-token=
--upstream-v3-0-084b46bda88f@meta.com
-* [PATCH net-next v3 1/2] net: devmem: rename tx_vec to vec in dmabuf bindi=
-ng
-* [PATCH net-next v3 2/2] net: devmem: use niov array for token management
+[v2] mm/swapfile.c: select the swap device with default priority round robin
+https://lore.kernel.org/all/20250926155504.5122-1-bhe@redhat.com
+* [PATCH v2 1/1] mm/swapfile.c: select the swap device with default priority round robin
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/e81af5ec-56ef-4ac8-b819-b7c693a9f977
+https://ci.syzbot.org/series/4cc3b2a6-ba4a-41a8-bb50-f8ffc773fb00
 
 ***
 
 kernel build error
 
-tree:      net
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net.git
-base:      4ff71af020ae59ae2d83b174646fc2ad9fcd4dc4
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      07e27ad16399afcd693be20211b0dfae63e0615f
 arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
-1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/966856af-5973-4648-b78a-9571e11b420=
-5/config
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/54c56b73-e7be-4d82-9f9c-acce5c5eb5f0/config
 
-net/core/sock.c:1124:36: error: no member named 'sk_user_frags' in 'struct =
-sock'
+mm/swapfile.c:2550:24: error: use of undeclared identifier 'swap_active_head'; did you mean 'swap_avail_head'?
+mm/swapfile.c:2655:27: error: use of undeclared identifier 'swap_active_head'; did you mean 'swap_avail_head'?
+mm/swapfile.c:2677:23: error: use of undeclared identifier 'swap_active_head'; did you mean 'swap_avail_head'?
+mm/swapfile.c:3835:28: error: use of undeclared identifier 'swap_active_head'; did you mean 'swap_avail_head'?
 
 ***
 
@@ -94,11 +89,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[almasrymina@google.com bobbyeshleman@gmail.com bobbyeshleman@meta.com dave=
-m@davemloft.net dsahern@kernel.org edumazet@google.com horms@kernel.org kub=
-a@kernel.org kuniyu@google.com linux-kernel@vger.kernel.org ncardwell@googl=
-e.com netdev@vger.kernel.org pabeni@redhat.com sdf@fomichev.me willemb@goog=
-le.com]
+[aaron.lu@intel.com akpm@linux-foundation.org baohua@kernel.org bhe@redhat.com chrisl@kernel.org kasong@tencent.com linux-mm@kvack.org nphamcs@gmail.com shikemeng@huaweicloud.com youngjun.park@lge.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
