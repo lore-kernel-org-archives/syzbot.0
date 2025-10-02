@@ -1,193 +1,278 @@
-Received: from out-172.mta0.migadu.com (out-172.mta0.migadu.com [91.218.175.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EA9C268688
-	for <syzbot@lists.linux.dev>; Tue, 30 Sep 2025 11:20:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FFC31DA3D
+	for <syzbot@lists.linux.dev>; Thu,  2 Oct 2025 01:36:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759231242; cv=none; b=cX+jOvkpT7LeLMQmhCTPuXAIejX0Sh8T9GvmH82sF+VS7Rij+X9pGOYTy02GkXOusPypucEqjSDYmpW8/35Qa0wLxVKlD30Mbh08vWgATrqvHONsR+IBt1pmAT9SwPkRMgzQ7Y4PQPyKcZJKoIRUQW23kMQk8VIki83cGKWEk7I=
+	t=1759368966; cv=none; b=btu0tu5zghs1VBjYDv8LERjMY+6dKq57aXxErHT9xelAg6E8EdKmibxivbVfxiAZPp53o1gFtqeEXRq5nEOxoyQ4ZZrSMGedA262m+3TOFBUFXylvlVkR/HEzq8yklyjCgqaVPnqOur0OcpRLOrLKscrJ23sLKFq40YvSn9Ufqw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759231242; c=relaxed/simple;
-	bh=4XN0NYoPtAzx19N0avneoLlVcPYM9dOyssM9uDjtj7A=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UkhFPTSzp3eD7vV56E6kV8mQn8myb1TqxwOE6D6khJIJ5c9362wvT0V+nb9wc0sH0UniWEpPsBA8QjpSFuaWbi6CDK/yEAan8Hx84hf22ZlJd6N/7Y8mfBP8wHYqiAV4+lXCgS07mo1o9YPXLej5kZhbmSFjker2iwB4tthrz50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=NwR4r4Y0; arc=none smtp.client-ip=91.218.175.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="NwR4r4Y0"
-Message-ID: <fd30aff2-fbe3-4228-a38f-08b242ef33a2@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1759231237;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=FwItMkCXdMaYwI2Rw03q5KkFnMdZIJjcXXc+fJQ+dcM=;
-	b=NwR4r4Y01p8bjyaYC2Cb+KDyNJfvm65DPlrkQwIIuK4GySHW+teXi5V/VZoIQmwBsOF9QJ
-	195hhGBcC5XcbY0uotAldgCMQ6LUsRE4r23TXSNBmr0fD4APWT38tyPtxjFNFlgSMUo8+E
-	y+U25NBfb7aXWLuuFxytFy9omxROj9s=
-Date: Tue, 30 Sep 2025 19:20:23 +0800
+	s=arc-20240116; t=1759368966; c=relaxed/simple;
+	bh=7gfV8uifsF9So9HnvDmqTHbEEl8Mh08IehXrY09Mp/Q=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=aMb4aYg29VacJVP6vL3TK2dAmE/XR7RXURwAETRYnPl0r3Xa9ngahLpZACDAsStPk7od1jFnL6/AbudaychgpUW9biqaiukWsXJLpM7kK33mORudvyuB2MnicLUh15hNdHWUoYDtGJ3eycrPMn8kyF/BDb4gQ0nJB7+Me0ER8Ug=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-425745467d1so7653705ab.0
+        for <syzbot@lists.linux.dev>; Wed, 01 Oct 2025 18:36:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759368963; x=1759973763;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6arTfjV5HJigOwjIBIwA6u9r/q1VD47dr01QGQhKYXs=;
+        b=BjbmRd2lTWoHlMG1DzrDiQrXolJEcSCyPXWWn4sLe5oTz2v2VlCO0fyffsiWq0ZBU8
+         DnXBrBG+v0jasMH5CUhORTZ4gJqCcLbLRKaBS7HbRJtzcmpQ01DE4hylmiBP0urtAUP1
+         4YObcMyKJUKtDMq3DAdChNv/p9TlplIr8gu428O8YL2tq4tArRCTjAxIUtZ7clfEXWhc
+         ZRLfkmwsolppY+mhsyRabkJ2HoPArCWc5jSLy3SOxuYHdMIu2TUVlYeP0vFQmgZ6LaG/
+         Sy0hXgxewjcwZ3WyVfc5z4yMozp3Jh0+tQjqh2keQ6SfRfqnFYyiNOn2uAKR/lr5YdIb
+         Agvg==
+X-Gm-Message-State: AOJu0Yyh4G2pRAArF0UxYMfMGnSrUixCjKwomw0RaL9umMMEmLUzdL5y
+	PfRWx0xjs7J9lQX+H2709qlgbGnW0tY2PkHg+u65/Zh72HScXIq4kBS/DCjS6jReBd13OYPBNxG
+	ivCr2YNBsLDmVhtSs4C5ncAlABLTuJOYM6TZkOn23n18iTS6wEC3b1mbcXxQ=
+X-Google-Smtp-Source: AGHT+IFcX4x6Dejqb6me6qvP1uHlVcTOwxCuk16MPY6zk7EL4LzIEUHEINkrJPuKJEX6YUOIwJ8ZoWNbfDCd5080cVnny8ZT/r/E
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [syzbot ci] Re: mm/rmap: fix soft-dirty and uffd-wp bit loss when
- remapping zero-filled mTHP subpage to shared zeropage
-Content-Language: en-US
-To: syzbot ci <syzbot+ci4a5736baef02a97d@syzkaller.appspotmail.com>
-Cc: syzbot@lists.linux.dev, liam.howlett@oracle.com, usamaarif642@gmail.com,
- rakie.kim@sk.com, david@redhat.com, dev.jain@arm.com, ioworker0@gmail.com,
- syzkaller-bugs@googlegroups.com, ziy@nvidia.com, byungchul@sk.com,
- baolin.wang@linux.alibaba.com, akpm@linux-foundation.org,
- apopple@nvidia.com, vbabka@suse.cz, joshua.hahnjy@gmail.com,
- gourry@gourry.net, linux-mm@kvack.org, matthew.brost@intel.com,
- lorenzo.stoakes@oracle.com, ying.huang@linux.alibaba.com,
- linux-kernel@vger.kernel.org, baohua@kernel.org, npache@redhat.com,
- yuzhao@google.com, ryan.roberts@arm.com, riel@surriel.com,
- stable@vger.kernel.org, peterx@redhat.com, jannh@google.com,
- harry.yoo@oracle.com
-References: <68dbbc27.a00a0220.102ee.0047.GAE@google.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Lance Yang <lance.yang@linux.dev>
-In-Reply-To: <68dbbc27.a00a0220.102ee.0047.GAE@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
+X-Received: by 2002:a05:6e02:12c5:b0:426:3ab1:74bd with SMTP id
+ e9e14a558f8ab-42d81617608mr73781215ab.18.1759368963427; Wed, 01 Oct 2025
+ 18:36:03 -0700 (PDT)
+Date: Wed, 01 Oct 2025 18:36:03 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68ddd703.a00a0220.102ee.0071.GAE@google.com>
+Subject: [moderation/CI] Re: Support non-linear skbs for BPF_PROG_TEST_RUN
+From: syzbot ci <syzbot+ci41c5d92324cdf5b0@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+
+syzbot ci has tested the following series
+
+[v4] Support non-linear skbs for BPF_PROG_TEST_RUN
+https://lore.kernel.org/all/cover.1759341538.git.paul.chaignon@gmail.com
+* [PATCH bpf-next v4 1/5] bpf: Refactor cleanup of bpf_prog_test_run_skb
+* [PATCH bpf-next v4 2/5] bpf: Reorder bpf_prog_test_run_skb initialization
+* [PATCH bpf-next v4 3/5] bpf: Craft non-linear skbs in BPF_PROG_TEST_RUN
+* [PATCH bpf-next v4 4/5] selftests/bpf: Support non-linear flag in test loader
+* [PATCH bpf-next v4 5/5] selftests/bpf: Test direct packet access on non-linear skbs
+
+and found the following issue:
+KASAN: invalid-free in bpf_prog_test_run_skb
+
+Full report is available here:
+https://ci.syzbot.org/series/356d4048-147c-4079-ae1f-94b437c8f9ef
+
+***
+
+KASAN: invalid-free in bpf_prog_test_run_skb
+
+tree:      bpf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf-next.git
+base:      4ef77dd584cfd915526328f516fec59e3a54d66e
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/e93ac4a0-f0c0-48d2-b7f6-3c9dfeba06d8/config
+C repro:   https://ci.syzbot.org/findings/d21cac8a-ab8d-4fbe-972c-dd47b243d83e/c_repro
+syz repro: https://ci.syzbot.org/findings/d21cac8a-ab8d-4fbe-972c-dd47b243d83e/syz_repro
+
+==================================================================
+BUG: KASAN: double-free in bpf_prog_test_run_skb+0x568/0x1bd0 net/bpf/test_run.c:1198
+Free of addr ffff88810f002c00 by task syz.0.17/5995
+
+CPU: 1 UID: 0 PID: 5995 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
+ print_address_description mm/kasan/report.c:378 [inline]
+ print_report+0xca/0x240 mm/kasan/report.c:482
+ kasan_report_invalid_free+0xea/0x110 mm/kasan/report.c:557
+ check_slab_allocation+0xe1/0x130 include/linux/page-flags.h:-1
+ kasan_slab_pre_free include/linux/kasan.h:198 [inline]
+ slab_free_hook mm/slub.c:2367 [inline]
+ slab_free mm/slub.c:4695 [inline]
+ kfree+0x13f/0x440 mm/slub.c:4894
+ bpf_prog_test_run_skb+0x568/0x1bd0 net/bpf/test_run.c:1198
+ bpf_prog_test_run+0x2c7/0x340 kernel/bpf/syscall.c:4673
+ __sys_bpf+0x562/0x860 kernel/bpf/syscall.c:6152
+ __do_sys_bpf kernel/bpf/syscall.c:6244 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:6242 [inline]
+ __x64_sys_bpf+0x7c/0x90 kernel/bpf/syscall.c:6242
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fba7578ec29
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffd3f323258 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 00007fba759d5fa0 RCX: 00007fba7578ec29
+RDX: 0000000000000050 RSI: 0000200000002300 RDI: 000000000000000a
+RBP: 00007fba75811e41 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fba759d5fa0 R14: 00007fba759d5fa0 R15: 0000000000000003
+ </TASK>
+
+Allocated by task 5995:
+ kasan_save_stack mm/kasan/common.c:47 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:68
+ poison_kmalloc_redzone mm/kasan/common.c:388 [inline]
+ __kasan_krealloc+0xe7/0x140 mm/kasan/common.c:475
+ kasan_krealloc include/linux/kasan.h:280 [inline]
+ __do_krealloc mm/slub.c:4953 [inline]
+ krealloc_noprof+0x1b8/0x340 mm/slub.c:5010
+ __slab_build_skb net/core/skbuff.c:400 [inline]
+ slab_build_skb+0x8b/0x3e0 net/core/skbuff.c:420
+ bpf_prog_test_run_skb+0x41b/0x1bd0 net/bpf/test_run.c:1058
+ bpf_prog_test_run+0x2c7/0x340 kernel/bpf/syscall.c:4673
+ __sys_bpf+0x562/0x860 kernel/bpf/syscall.c:6152
+ __do_sys_bpf kernel/bpf/syscall.c:6244 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:6242 [inline]
+ __x64_sys_bpf+0x7c/0x90 kernel/bpf/syscall.c:6242
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Freed by task 5995:
+ kasan_save_stack mm/kasan/common.c:47 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:68
+ kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:576
+ poison_slab_object mm/kasan/common.c:243 [inline]
+ __kasan_slab_free+0x5b/0x80 mm/kasan/common.c:275
+ kasan_slab_free include/linux/kasan.h:233 [inline]
+ slab_free_hook mm/slub.c:2422 [inline]
+ slab_free mm/slub.c:4695 [inline]
+ kfree+0x18e/0x440 mm/slub.c:4894
+ skb_release_data+0x62d/0x7c0 net/core/skbuff.c:1086
+ skb_release_all net/core/skbuff.c:1151 [inline]
+ __kfree_skb net/core/skbuff.c:1165 [inline]
+ sk_skb_reason_drop+0x127/0x170 net/core/skbuff.c:1203
+ vti_tunnel_xmit+0xf5a/0x18b0 net/ipv4/ip_vti.c:-1
+ __netdev_start_xmit include/linux/netdevice.h:5222 [inline]
+ netdev_start_xmit include/linux/netdevice.h:5231 [inline]
+ xmit_one net/core/dev.c:3839 [inline]
+ dev_hard_start_xmit+0x2d7/0x830 net/core/dev.c:3855
+ __dev_queue_xmit+0x1b8d/0x3b50 net/core/dev.c:4725
+ dev_queue_xmit include/linux/netdevice.h:3361 [inline]
+ __bpf_tx_skb+0x18e/0x260 net/core/filter.c:2153
+ ____bpf_clone_redirect net/core/filter.c:2478 [inline]
+ bpf_clone_redirect+0x272/0x3d0 net/core/filter.c:2448
+ bpf_prog_69c2527fbc57d46b+0x5f/0x68
+ bpf_dispatcher_nop_func include/linux/bpf.h:1350 [inline]
+ __bpf_prog_run include/linux/filter.h:721 [inline]
+ bpf_prog_run include/linux/filter.h:728 [inline]
+ bpf_test_run+0x318/0x7b0 net/bpf/test_run.c:434
+ bpf_prog_test_run_skb+0xd42/0x1bd0 net/bpf/test_run.c:1153
+ bpf_prog_test_run+0x2c7/0x340 kernel/bpf/syscall.c:4673
+ __sys_bpf+0x562/0x860 kernel/bpf/syscall.c:6152
+ __do_sys_bpf kernel/bpf/syscall.c:6244 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:6242 [inline]
+ __x64_sys_bpf+0x7c/0x90 kernel/bpf/syscall.c:6242
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+The buggy address belongs to the object at ffff88810f002c00
+ which belongs to the cache kmalloc-512 of size 512
+The buggy address is located 0 bytes inside of
+ 512-byte region [ffff88810f002c00, ffff88810f002e00)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x10f000
+head: order:2 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+flags: 0x57ff00000000040(head|node=1|zone=2|lastcpupid=0x7ff)
+page_type: f5(slab)
+raw: 057ff00000000040 ffff88801a441c80 dead000000000122 0000000000000000
+raw: 0000000000000000 0000000080100010 00000000f5000000 0000000000000000
+head: 057ff00000000040 ffff88801a441c80 dead000000000122 0000000000000000
+head: 0000000000000000 0000000080100010 00000000f5000000 0000000000000000
+head: 057ff00000000002 ffffea00043c0001 00000000ffffffff 00000000ffffffff
+head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000004
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 2, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5965, tgid 5965 (udevd), ts 56045734118, free_ts 55352678471
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x240/0x2a0 mm/page_alloc.c:1851
+ prep_new_page mm/page_alloc.c:1859 [inline]
+ get_page_from_freelist+0x21e4/0x22c0 mm/page_alloc.c:3858
+ __alloc_frozen_pages_noprof+0x181/0x370 mm/page_alloc.c:5148
+ alloc_pages_mpol+0x232/0x4a0 mm/mempolicy.c:2416
+ alloc_slab_page mm/slub.c:2492 [inline]
+ allocate_slab+0x8a/0x370 mm/slub.c:2660
+ new_slab mm/slub.c:2714 [inline]
+ ___slab_alloc+0xbeb/0x1420 mm/slub.c:3901
+ __slab_alloc mm/slub.c:3992 [inline]
+ __slab_alloc_node mm/slub.c:4067 [inline]
+ slab_alloc_node mm/slub.c:4228 [inline]
+ __kmalloc_cache_noprof+0x296/0x3d0 mm/slub.c:4402
+ kmalloc_noprof include/linux/slab.h:905 [inline]
+ kzalloc_noprof include/linux/slab.h:1039 [inline]
+ kernfs_fop_open+0x397/0xca0 fs/kernfs/file.c:623
+ do_dentry_open+0x953/0x13f0 fs/open.c:965
+ vfs_open+0x3b/0x340 fs/open.c:1095
+ do_open fs/namei.c:3887 [inline]
+ path_openat+0x2ee5/0x3830 fs/namei.c:4046
+ do_filp_open+0x1fa/0x410 fs/namei.c:4073
+ do_sys_openat2+0x121/0x1c0 fs/open.c:1435
+ do_sys_open fs/open.c:1450 [inline]
+ __do_sys_openat fs/open.c:1466 [inline]
+ __se_sys_openat fs/open.c:1461 [inline]
+ __x64_sys_openat+0x138/0x170 fs/open.c:1461
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+page last free pid 5594 tgid 5594 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ free_pages_prepare mm/page_alloc.c:1395 [inline]
+ __free_frozen_pages+0xbc4/0xd30 mm/page_alloc.c:2895
+ discard_slab mm/slub.c:2758 [inline]
+ __put_partials+0x156/0x1a0 mm/slub.c:3223
+ put_cpu_partial+0x17c/0x250 mm/slub.c:3298
+ __slab_free+0x2d5/0x3c0 mm/slub.c:4565
+ qlink_free mm/kasan/quarantine.c:163 [inline]
+ qlist_free_all+0x97/0x140 mm/kasan/quarantine.c:179
+ kasan_quarantine_reduce+0x148/0x160 mm/kasan/quarantine.c:286
+ __kasan_slab_alloc+0x22/0x80 mm/kasan/common.c:340
+ kasan_slab_alloc include/linux/kasan.h:250 [inline]
+ slab_post_alloc_hook mm/slub.c:4191 [inline]
+ slab_alloc_node mm/slub.c:4240 [inline]
+ kmem_cache_alloc_node_noprof+0x1bb/0x3c0 mm/slub.c:4292
+ __alloc_skb+0x112/0x2d0 net/core/skbuff.c:659
+ netlink_sendmsg+0x5c6/0xb30 net/netlink/af_netlink.c:1871
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ __sock_sendmsg+0x21c/0x270 net/socket.c:729
+ __sys_sendto+0x3bd/0x520 net/socket.c:2228
+ __do_sys_sendto net/socket.c:2235 [inline]
+ __se_sys_sendto net/socket.c:2231 [inline]
+ __x64_sys_sendto+0xde/0x100 net/socket.c:2231
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Memory state around the buggy address:
+ ffff88810f002b00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88810f002b80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff88810f002c00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                   ^
+ ffff88810f002c80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88810f002d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
+***
 
-On 2025/9/30 19:16, syzbot ci wrote:
-> syzbot ci has tested the following series
-> 
-> [v4] mm/rmap: fix soft-dirty and uffd-wp bit loss when remapping zero-filled mTHP subpage to shared zeropage
-> https://lore.kernel.org/all/20250930071053.36158-1-lance.yang@linux.dev
-> * [PATCH v4 1/1] mm/rmap: fix soft-dirty and uffd-wp bit loss when remapping zero-filled mTHP subpage to shared zeropage
-> 
-> and found the following issue:
-> general protection fault in remove_migration_pte
-> 
-> Full report is available here:
-> https://ci.syzbot.org/series/8cc7e52f-a859-4251-bd08-9787cdaf7928
-> 
-> ***
-> 
-> general protection fault in remove_migration_pte
-> 
-> tree:      linux-next
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-> base:      262858079afde6d367ce3db183c74d8a43a0e83f
-> arch:      amd64
-> compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-> config:    https://ci.syzbot.org/builds/97ee4826-5d29-472d-a85d-51543b0e45de/config
-> C repro:   https://ci.syzbot.org/findings/f4819db2-21f2-4280-8bc4-942445398953/c_repro
-> syz repro: https://ci.syzbot.org/findings/f4819db2-21f2-4280-8bc4-942445398953/syz_repro
-> 
-> Oops: general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] SMP KASAN PTI
-> KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
-This is a known issue that I introduced in the v3 patch. I spotted
-this exact NULL pointer dereference bug[1] myself and have already
-sent out a v5 version[2] with the fix.
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-The root cause is that ptep_get() is called before the !pwmw.pte
-check, which handles PMD-mapped THP migration entries.
+The email will later be sent to:
+[ameryhung@gmail.com andrii@kernel.org ast@kernel.org bpf@vger.kernel.org daniel@iogearbox.net eddyz87@gmail.com martin.lau@linux.dev paul.chaignon@gmail.com]
 
-[1] 
-https://lore.kernel.org/linux-mm/2d21c9bc-e299-4ca6-85ba-b01a1f346d9d@linux.dev
-[2] 
-https://lore.kernel.org/linux-mm/20250930081040.80926-1-lance.yang@linux.dev
-
-Thanks,
-Lance
-
-> CPU: 0 UID: 0 PID: 6025 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> RIP: 0010:ptep_get include/linux/pgtable.h:340 [inline]
-> RIP: 0010:remove_migration_pte+0x369/0x2320 mm/migrate.c:352
-> Code: 00 48 8d 43 20 48 89 44 24 68 49 8d 47 40 48 89 84 24 e8 00 00 00 4c 89 64 24 48 4c 8b b4 24 50 01 00 00 4c 89 f0 48 c1 e8 03 <42> 80 3c 28 00 74 08 4c 89 f7 e8 f8 3e ff ff 49 8b 06 48 89 44 24
-> RSP: 0018:ffffc90002fb73e0 EFLAGS: 00010246
-> RAX: 0000000000000000 RBX: ffff88802957e300 RCX: 1ffffd40008c9006
-> RDX: 0000000000000000 RSI: 0000000000030dff RDI: 0000000000030c00
-> RBP: ffffc90002fb75d0 R08: 0000000000000003 R09: 0000000000000004
-> R10: dffffc0000000000 R11: fffff520005f6e34 R12: ffffea0004648008
-> R13: dffffc0000000000 R14: 0000000000000000 R15: ffffea0004648000
-> FS:  00005555624de500(0000) GS:ffff8880b83fc000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000200000000300 CR3: 000000010d8b8000 CR4: 00000000000006f0
-> Call Trace:
->   <TASK>
->   rmap_walk_anon+0x553/0x730 mm/rmap.c:2855
->   remove_migration_ptes mm/migrate.c:469 [inline]
->   migrate_folio_move mm/migrate.c:1381 [inline]
->   migrate_folios_move mm/migrate.c:1711 [inline]
->   migrate_pages_batch+0x202e/0x35e0 mm/migrate.c:1967
->   migrate_pages_sync mm/migrate.c:1997 [inline]
->   migrate_pages+0x1bcc/0x2930 mm/migrate.c:2106
->   migrate_to_node mm/mempolicy.c:1244 [inline]
->   do_migrate_pages+0x5ee/0x800 mm/mempolicy.c:1343
->   kernel_migrate_pages mm/mempolicy.c:1858 [inline]
->   __do_sys_migrate_pages mm/mempolicy.c:1876 [inline]
->   __se_sys_migrate_pages+0x544/0x650 mm/mempolicy.c:1872
->   do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->   do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
->   entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7fb18e18ec29
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007ffdca5c9838 EFLAGS: 00000246 ORIG_RAX: 0000000000000100
-> RAX: ffffffffffffffda RBX: 00007fb18e3d5fa0 RCX: 00007fb18e18ec29
-> RDX: 0000200000000300 RSI: 0000000000000003 RDI: 0000000000000000
-> RBP: 00007fb18e211e41 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000200000000040 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fb18e3d5fa0 R14: 00007fb18e3d5fa0 R15: 0000000000000004
->   </TASK>
-> Modules linked in:
-> ---[ end trace 0000000000000000 ]---
-> RIP: 0010:ptep_get include/linux/pgtable.h:340 [inline]
-> RIP: 0010:remove_migration_pte+0x369/0x2320 mm/migrate.c:352
-> Code: 00 48 8d 43 20 48 89 44 24 68 49 8d 47 40 48 89 84 24 e8 00 00 00 4c 89 64 24 48 4c 8b b4 24 50 01 00 00 4c 89 f0 48 c1 e8 03 <42> 80 3c 28 00 74 08 4c 89 f7 e8 f8 3e ff ff 49 8b 06 48 89 44 24
-> RSP: 0018:ffffc90002fb73e0 EFLAGS: 00010246
-> RAX: 0000000000000000 RBX: ffff88802957e300 RCX: 1ffffd40008c9006
-> RDX: 0000000000000000 RSI: 0000000000030dff RDI: 0000000000030c00
-> RBP: ffffc90002fb75d0 R08: 0000000000000003 R09: 0000000000000004
-> R10: dffffc0000000000 R11: fffff520005f6e34 R12: ffffea0004648008
-> R13: dffffc0000000000 R14: 0000000000000000 R15: ffffea0004648000
-> FS:  00005555624de500(0000) GS:ffff8880b83fc000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000200000000300 CR3: 000000010d8b8000 CR4: 00000000000006f0
-> ----------------
-> Code disassembly (best guess):
->     0:	00 48 8d             	add    %cl,-0x73(%rax)
->     3:	43 20 48 89          	rex.XB and %cl,-0x77(%r8)
->     7:	44 24 68             	rex.R and $0x68,%al
->     a:	49 8d 47 40          	lea    0x40(%r15),%rax
->     e:	48 89 84 24 e8 00 00 	mov    %rax,0xe8(%rsp)
->    15:	00
->    16:	4c 89 64 24 48       	mov    %r12,0x48(%rsp)
->    1b:	4c 8b b4 24 50 01 00 	mov    0x150(%rsp),%r14
->    22:	00
->    23:	4c 89 f0             	mov    %r14,%rax
->    26:	48 c1 e8 03          	shr    $0x3,%rax
-> * 2a:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1) <-- trapping instruction
->    2f:	74 08                	je     0x39
->    31:	4c 89 f7             	mov    %r14,%rdi
->    34:	e8 f8 3e ff ff       	call   0xffff3f31
->    39:	49 8b 06             	mov    (%r14),%rax
->    3c:	48                   	rex.W
->    3d:	89                   	.byte 0x89
->    3e:	44                   	rex.R
->    3f:	24                   	.byte 0x24
-> 
-> 
-> ***
-> 
-> If these findings have caused you to resend the series or submit a
-> separate fix, please add the following tag to your commit message:
->    Tested-by: syzbot@syzkaller.appspotmail.com
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+If the report looks fine to you, reply with:
+#syz upstream
 
