@@ -1,77 +1,95 @@
-Received: from out-181.mta1.migadu.com (out-181.mta1.migadu.com [95.215.58.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7142212572
-	for <syzbot@lists.linux.dev>; Fri,  3 Oct 2025 06:44:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DC4B14A4F9
+	for <syzbot@lists.linux.dev>; Sun,  5 Oct 2025 13:25:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759473870; cv=none; b=L+lXU5zzvrQ+PEavSZ1L8nFNHC9XOvFobVNomfwDbzd7QLpsmBJazsV+YQRgZFBS4MItcfQDTaN2Z/JX+tf0RfSPmzLGmusJ1HtaZavjhh6eHEUYF5u0Cjg9xSWfxiC8lWdJV0E0efY/y5f9tqeU9dJJX0JeBAOZ5ADcepdYB/o=
+	t=1759670725; cv=none; b=E+QVMpQYvlZSypkSGgERGWEIXlS0vaQYt9E7wZBI4hv5Rrmh/JKsztpW0pYAL8V4JagwAAEyn4+C+Ufj1nNs4jT/VAD9JYK9PVXBimlmfjQnJpcmyQPlDO1cs/7uKi3V25P98fcfAVRjIZ+UZsiyfd7TY69EltcRO7mV+icJTco=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759473870; c=relaxed/simple;
-	bh=bUObHg2k+81a02x7bAACKW/Uat4WIu1MH9PjcD/i7F8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ji3hDth/1xxbgYVi+gPFFsiu5KpRJUpPHKBDZvnG95Q0XKykDl7uAT7WhECn0jtljw1L890ZP0lOFERxTinqWd10jnQwj0Mlpdp4K49e28uqNy4SknCRTZmBQedYgRE3NXkNrdrjGJaHAZn1S5filDMkT9c7NxbURhQeS99e+8w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=KtLMK6/E; arc=none smtp.client-ip=95.215.58.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="KtLMK6/E"
-Message-ID: <d9140324-fc67-4b74-9e63-66e41e9c3cfa@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1759473866;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=YBbirY9XIGvjegRyZyA+juBhAubmUFU1H+Ti7+My030=;
-	b=KtLMK6/EbIVS/vKLELQwNFaY80U/DDg+EAK++kTAAUhhX1HNZvnCe01Z7CY9MvW0hGAq4S
-	0KIg0HvEyqHZVbvlssdQuDLHa5ZpcFC0Sn8v6aD6LSJTjWlL8tcSXEMS6t/VMkwL1FD3YJ
-	DoAHUa51tydJPVklPa3/u9JQTfURmjU=
-Date: Fri, 3 Oct 2025 14:44:19 +0800
+	s=arc-20240116; t=1759670725; c=relaxed/simple;
+	bh=+BKUoKxrsZ+ua6eEdPd84Tbe9K1A+thD16iOEQqcffg=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=WTvxQgtLlJswlQJ95Pj/v98xMb7heYMa0fquHove/Ulq1SV8LrNy1j80xu1vYUDxRjAtPEqpvFN627pYVO2e49uI4rMZRF2ocXVnfkoFLcAdshwhZ8BNgtuyIVBm6sZnRS/eK0Xd9TZ39VufVnBCiQo+dGFeLsM2WRjjtpF53ME=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-42f6c3feed8so6431355ab.0
+        for <syzbot@lists.linux.dev>; Sun, 05 Oct 2025 06:25:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759670723; x=1760275523;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=QrP8PqZ1xN5sTFGkL8OxArbCXNxOuLjuXVblJvqSKrE=;
+        b=Yej9P7b5c0DD1pmF2icv7KqMkFt1HJeMUptfbbnLZdfgTPqCCmY6FW+tVOpr/hXHcG
+         z0wO6vyRhm/kv9KRigpl07h/N6IuPBna6gI7eB1EcJRk3a2teM4XIWSaVJKFgtXFyq/X
+         u2NMTviYle1SQIDwt6PNsct4QfdjF7zBP0F15vLe76WE1U6z5wGIkigyEeShMvi6xR6o
+         hcmGjRXeJ4dNa/KFPtOQZnbm2ZjukPvIkWcW6TeFrNQnY50QgG85auG+VxBWRCVCfhQ4
+         WxaQE8EQna2gGRQCJQtUM+3JRcobDZM3Vgk8XJ0d6RScmrwyNXE7niODtJYKb/kvFR7c
+         o/jw==
+X-Gm-Message-State: AOJu0YxfSZiH7MqDnG5E0Ea7xj58VYiYxXevHJFAWjbmxWmfpyUn1tZF
+	GHvDtTFuQVsE+Dce8XS7p+2Y/QSw5hpRahzijjbnzUWS87aq3SwsRAxkIJs9FyjRbTZAXUegVXv
+	10xt7QUVtzZWZePkosCPHjlWNP2rk9FqHDn3RYCosw2jNr37fVu2LLO7OLAU=
+X-Google-Smtp-Source: AGHT+IHYifQlmLCTc5x23t/VgiPuA1wieXWwGLetkobB3vuvqfXg8e4T9EN6q1H//y3Qhq2vvo1jdl6q74rLZRdiPAZoRTFSWN9E
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [syzbot ci] Re: bpf: Extend bpf syscall with common attributes
- support
-Content-Language: en-US
-To: syzbot ci <syzbot+ci17fb38a78c944e07@syzkaller.appspotmail.com>,
- andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-References: <68df6f7d.050a0220.2c17c1.001b.GAE@google.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Leon Hwang <leon.hwang@linux.dev>
-In-Reply-To: <68df6f7d.050a0220.2c17c1.001b.GAE@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
+X-Received: by 2002:a05:6e02:16c9:b0:424:b860:7d84 with SMTP id
+ e9e14a558f8ab-42e7adaa636mr118810465ab.27.1759670723288; Sun, 05 Oct 2025
+ 06:25:23 -0700 (PDT)
+Date: Sun, 05 Oct 2025 06:25:23 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68e271c3.a00a0220.2ba410.0012.GAE@google.com>
+Subject: [moderation/CI] Re: wireguard: allowedips: Use kfree_rcu() instead of call_rcu()
+From: syzbot ci <syzbot+cicf3db1f6ebc973af@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
+syzbot ci has tested the following series
 
+[v1] wireguard: allowedips: Use kfree_rcu() instead of call_rcu()
+https://lore.kernel.org/all/20251005122626.26988-1-wangfushuai@baidu.com
+* [PATCH] wireguard: allowedips: Use kfree_rcu() instead of call_rcu()
 
-On 3/10/25 14:38, syzbot ci wrote:
-> syzbot ci has tested the following series
-> 
-> [v3] bpf: Extend bpf syscall with common attributes support
-> https://lore.kernel.org/all/20251002154841.99348-1-leon.hwang@linux.dev
-> * [RFC PATCH bpf-next v3 01/10] bpf: Extend bpf syscall with common attributes support
-> * [RFC PATCH bpf-next v3 02/10] libbpf: Add support for extended bpf syscall
-> * [RFC PATCH bpf-next v3 03/10] bpf: Refactor reporting log_true_size for prog_load
-> * [RFC PATCH bpf-next v3 04/10] bpf: Add common attr support for prog_load
-> * [RFC PATCH bpf-next v3 05/10] bpf: Refactor reporting btf_log_true_size for btf_load
-> * [RFC PATCH bpf-next v3 06/10] bpf: Add common attr support for btf_load
-> * [RFC PATCH bpf-next v3 07/10] bpf: Add warnings for internal bugs in map_create
-> * [RFC PATCH bpf-next v3 08/10] bpf: Add common attr support for map_create
-> * [RFC PATCH bpf-next v3 09/10] libbpf: Add common attr support for map_create
-> * [RFC PATCH bpf-next v3 10/10] selftests/bpf: Add cases to test map create failure log
-> 
-> and found the following issue:
-> WARNING in map_create
-> 
-The added WARNINGs in map_create will be dropped in the next revision.
+and found the following issue:
+kernel build error
 
-Thanks,
-Leon
+Full report is available here:
+https://ci.syzbot.org/series/cb617eae-c567-4d00-80c6-1a03a38ebfd7
 
-[...]
+***
+
+kernel build error
+
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      f1455695d2d99894b65db233877acac9a0e120b9
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/a1ef39a1-d868-4c46-a47c-895eda046f0f/config
+
+drivers/net/wireguard/allowedips.c:269:2: error: offsetof requires struct, union, or class type, 'typeof (*(&node))' (aka 'struct allowedips_node *') invalid
+drivers/net/wireguard/allowedips.c:269:2: error: member reference base type 'struct allowedips_node *' is not a structure or union
+drivers/net/wireguard/allowedips.c:275:2: error: offsetof requires struct, union, or class type, 'typeof (*(&parent))' (aka 'struct allowedips_node *') invalid
+drivers/net/wireguard/allowedips.c:275:2: error: member reference base type 'struct allowedips_node *' is not a structure or union
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[andrew@lunn.ch davem@davemloft.net edumazet@google.com jason@zx2c4.com kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com wangfushuai@baidu.com wireguard@lists.zx2c4.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
