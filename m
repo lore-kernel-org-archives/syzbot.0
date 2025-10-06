@@ -1,81 +1,228 @@
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DC4B14A4F9
-	for <syzbot@lists.linux.dev>; Sun,  5 Oct 2025 13:25:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E56301A254E
+	for <syzbot@lists.linux.dev>; Mon,  6 Oct 2025 23:24:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759670725; cv=none; b=E+QVMpQYvlZSypkSGgERGWEIXlS0vaQYt9E7wZBI4hv5Rrmh/JKsztpW0pYAL8V4JagwAAEyn4+C+Ufj1nNs4jT/VAD9JYK9PVXBimlmfjQnJpcmyQPlDO1cs/7uKi3V25P98fcfAVRjIZ+UZsiyfd7TY69EltcRO7mV+icJTco=
+	t=1759793092; cv=none; b=hwOidQAJrli+UfSn0cGUwwGEONUlbUd9ApMbOGK1Dx+dTmCqGVEhX3UsazLZ+Z7g7To2A+JnlkmCqWe4p1toyB8m/XIIf/FJX0BV81+D2P+6BZ6EkWwMH5pibUoK0GReYxMrfb3/0lzravOJ7G8Yx7TBT862CNYP7Ju8ctzSLHs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759670725; c=relaxed/simple;
-	bh=+BKUoKxrsZ+ua6eEdPd84Tbe9K1A+thD16iOEQqcffg=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=WTvxQgtLlJswlQJ95Pj/v98xMb7heYMa0fquHove/Ulq1SV8LrNy1j80xu1vYUDxRjAtPEqpvFN627pYVO2e49uI4rMZRF2ocXVnfkoFLcAdshwhZ8BNgtuyIVBm6sZnRS/eK0Xd9TZ39VufVnBCiQo+dGFeLsM2WRjjtpF53ME=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
+	s=arc-20240116; t=1759793092; c=relaxed/simple;
+	bh=As74jcugoMB5m/J1Ug5TcEl+8BtNdb2bgb7ViE6lu3w=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=WJ6+ZHBd3zx+KRIr4nTWAa8XMToM2MBWwrqlPUrK2gU3wOYzzsjr7DmZ+Z00vhXRMoooVgHqFv6WVdRqyfDiR7UoSekxBRUl1fqcXkSK2iRWyA6D0DcGnW9a6Pajn8N5D5IfLZ30yO8POVwPOlA9RSV2uZMg9fFjQRYaqUjFK/s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-42f6c3feed8so6431355ab.0
-        for <syzbot@lists.linux.dev>; Sun, 05 Oct 2025 06:25:23 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-88c2f1635e1so537896939f.0
+        for <syzbot@lists.linux.dev>; Mon, 06 Oct 2025 16:24:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759670723; x=1760275523;
+        d=1e100.net; s=20230601; t=1759793090; x=1760397890;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=QrP8PqZ1xN5sTFGkL8OxArbCXNxOuLjuXVblJvqSKrE=;
-        b=Yej9P7b5c0DD1pmF2icv7KqMkFt1HJeMUptfbbnLZdfgTPqCCmY6FW+tVOpr/hXHcG
-         z0wO6vyRhm/kv9KRigpl07h/N6IuPBna6gI7eB1EcJRk3a2teM4XIWSaVJKFgtXFyq/X
-         u2NMTviYle1SQIDwt6PNsct4QfdjF7zBP0F15vLe76WE1U6z5wGIkigyEeShMvi6xR6o
-         hcmGjRXeJ4dNa/KFPtOQZnbm2ZjukPvIkWcW6TeFrNQnY50QgG85auG+VxBWRCVCfhQ4
-         WxaQE8EQna2gGRQCJQtUM+3JRcobDZM3Vgk8XJ0d6RScmrwyNXE7niODtJYKb/kvFR7c
-         o/jw==
-X-Gm-Message-State: AOJu0YxfSZiH7MqDnG5E0Ea7xj58VYiYxXevHJFAWjbmxWmfpyUn1tZF
-	GHvDtTFuQVsE+Dce8XS7p+2Y/QSw5hpRahzijjbnzUWS87aq3SwsRAxkIJs9FyjRbTZAXUegVXv
-	10xt7QUVtzZWZePkosCPHjlWNP2rk9FqHDn3RYCosw2jNr37fVu2LLO7OLAU=
-X-Google-Smtp-Source: AGHT+IHYifQlmLCTc5x23t/VgiPuA1wieXWwGLetkobB3vuvqfXg8e4T9EN6q1H//y3Qhq2vvo1jdl6q74rLZRdiPAZoRTFSWN9E
+        bh=VEMESSvZBXAjSBnn9Z6MMrYJ935O53zRBCQa2+UbmHo=;
+        b=ChwimPbeP+SHzLucjWgKHSNZZ6ovMZHoTQuZVoFxpFWf7Cv/DjhN42EsxQ4hdUljsT
+         dnL8nvfiO1KzOb4wWyeAwlsYsC0KVrQZPfugim7hdFSsS9ijeZyMsmYUsjndI2YFaYv1
+         vQrJx2YfkSr2JSItrXsLio6ZLFVf58xHX1c+XP1JoDOwMFozT2vsc3HfqtNNakFFqpQg
+         TXdkNebhZg/s3shJHIBIUViGlEOO3EbV1mns6Y36ACvIq5fk7IxSPsyKzCrtVjYMVrCr
+         qRf5pQT4NzPWxXwHEJmg0ccaLdU99Px8oPQf3nvACj5EtQ/2MgnSXJwPTuJkfX2Cx5r9
+         2mUg==
+X-Gm-Message-State: AOJu0YwLvupEPCxhryRcaImTbPUvPHbvE0qWWb82LdtR3Mvmhz55HMUY
+	Cr9kNWBFtlMSxfM2jXXy79Vugi0TADQWfIrSYEDmBUQ+Dwg+vf1fS92s5SYwxwWSmuG7NWxrA5i
+	uu3OK08zAyvUN1gTFLnmaCl0Q0XDK0o8OldWvqAHgKAm5TyMWnsDOs/2bVxY=
+X-Google-Smtp-Source: AGHT+IH+9xhB1dai6HvK/rWo4brS6HKHvWu/FmJI51V2qSAk7qFa73PAMkHX0w3ufZr2RzKJ0IwQnKcbHgBOBXJgfINCycMubJ4b
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:16c9:b0:424:b860:7d84 with SMTP id
- e9e14a558f8ab-42e7adaa636mr118810465ab.27.1759670723288; Sun, 05 Oct 2025
- 06:25:23 -0700 (PDT)
-Date: Sun, 05 Oct 2025 06:25:23 -0700
+X-Received: by 2002:a05:6e02:1c2e:b0:42e:73ae:55ab with SMTP id
+ e9e14a558f8ab-42e7ad8676fmr162661965ab.20.1759793089992; Mon, 06 Oct 2025
+ 16:24:49 -0700 (PDT)
+Date: Mon, 06 Oct 2025 16:24:49 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68e271c3.a00a0220.2ba410.0012.GAE@google.com>
-Subject: [moderation/CI] Re: wireguard: allowedips: Use kfree_rcu() instead of call_rcu()
-From: syzbot ci <syzbot+cicf3db1f6ebc973af@syzkaller.appspotmail.com>
+Message-ID: <68e44fc1.a00a0220.2a5ca.000f.GAE@google.com>
+Subject: [moderation/CI] Re: net: optimize TX throughput and efficiency
+From: syzbot ci <syzbot+ciede28f385e48dda7@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] wireguard: allowedips: Use kfree_rcu() instead of call_rcu()
-https://lore.kernel.org/all/20251005122626.26988-1-wangfushuai@baidu.com
-* [PATCH] wireguard: allowedips: Use kfree_rcu() instead of call_rcu()
+[v1] net: optimize TX throughput and efficiency
+https://lore.kernel.org/all/20251006193103.2684156-1-edumazet@google.com
+* [PATCH RFC net-next 1/5] net: add add indirect call wrapper in skb_release_head_state()
+* [PATCH RFC net-next 2/5] net/sched: act_mirred: add loop detection
+* [PATCH RFC net-next 3/5] Revert "net/sched: Fix mirred deadlock on device recursion"
+* [PATCH RFC net-next 4/5] net: sched: claim one cache line in Qdisc
+* [PATCH RFC net-next 5/5] net: dev_queue_xmit() llist adoption
 
 and found the following issue:
-kernel build error
+KASAN: slab-use-after-free Read in netem_dequeue
 
 Full report is available here:
-https://ci.syzbot.org/series/cb617eae-c567-4d00-80c6-1a03a38ebfd7
+https://ci.syzbot.org/series/e8660f67-35a0-406e-96ee-a401d3f30ff9
 
 ***
 
-kernel build error
+KASAN: slab-use-after-free Read in netem_dequeue
 
 tree:      net-next
 URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
 base:      f1455695d2d99894b65db233877acac9a0e120b9
 arch:      amd64
 compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/a1ef39a1-d868-4c46-a47c-895eda046f0f/config
+config:    https://ci.syzbot.org/builds/2db7ec92-610b-4887-bf33-d0b4c04760c8/config
+syz repro: https://ci.syzbot.org/findings/3ca47f46-1b94-48b6-bab9-5996b7162c30/syz_repro
 
-drivers/net/wireguard/allowedips.c:269:2: error: offsetof requires struct, union, or class type, 'typeof (*(&node))' (aka 'struct allowedips_node *') invalid
-drivers/net/wireguard/allowedips.c:269:2: error: member reference base type 'struct allowedips_node *' is not a structure or union
-drivers/net/wireguard/allowedips.c:275:2: error: offsetof requires struct, union, or class type, 'typeof (*(&parent))' (aka 'struct allowedips_node *') invalid
-drivers/net/wireguard/allowedips.c:275:2: error: member reference base type 'struct allowedips_node *' is not a structure or union
+==================================================================
+BUG: KASAN: slab-use-after-free in netem_dequeue+0x4e7/0x1430 net/sched/sch_netem.c:720
+Read of size 8 at addr ffff888020b65b30 by task ksoftirqd/1/23
+
+CPU: 1 UID: 0 PID: 23 Comm: ksoftirqd/1 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
+ print_address_description mm/kasan/report.c:378 [inline]
+ print_report+0xca/0x240 mm/kasan/report.c:482
+ kasan_report+0x118/0x150 mm/kasan/report.c:595
+ netem_dequeue+0x4e7/0x1430 net/sched/sch_netem.c:720
+ dequeue_skb net/sched/sch_generic.c:294 [inline]
+ qdisc_restart net/sched/sch_generic.c:399 [inline]
+ __qdisc_run+0x23c/0x15f0 net/sched/sch_generic.c:417
+ qdisc_run+0xc5/0x290 include/net/pkt_sched.h:126
+ net_tx_action+0x7c9/0x980 net/core/dev.c:5731
+ handle_softirqs+0x286/0x870 kernel/softirq.c:579
+ run_ksoftirqd+0x9b/0x100 kernel/softirq.c:968
+ smpboot_thread_fn+0x542/0xa60 kernel/smpboot.c:160
+ kthread+0x711/0x8a0 kernel/kthread.c:463
+ ret_from_fork+0x439/0x7d0 arch/x86/kernel/process.c:148
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
+
+Allocated by task 5913:
+ kasan_save_stack mm/kasan/common.c:47 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:68
+ unpoison_slab_object mm/kasan/common.c:330 [inline]
+ __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:356
+ kasan_slab_alloc include/linux/kasan.h:250 [inline]
+ slab_post_alloc_hook mm/slub.c:4191 [inline]
+ slab_alloc_node mm/slub.c:4240 [inline]
+ kmem_cache_alloc_node_noprof+0x1bb/0x3c0 mm/slub.c:4292
+ __alloc_skb+0x112/0x2d0 net/core/skbuff.c:660
+ alloc_skb include/linux/skbuff.h:1383 [inline]
+ mld_newpack+0x13c/0xc40 net/ipv6/mcast.c:1775
+ add_grhead+0x5a/0x2a0 net/ipv6/mcast.c:1886
+ add_grec+0x1452/0x1740 net/ipv6/mcast.c:2025
+ mld_send_cr net/ipv6/mcast.c:2148 [inline]
+ mld_ifc_work+0x6ed/0xd60 net/ipv6/mcast.c:2693
+ process_one_work kernel/workqueue.c:3236 [inline]
+ process_scheduled_works+0xae1/0x17b0 kernel/workqueue.c:3319
+ worker_thread+0x8a0/0xda0 kernel/workqueue.c:3400
+ kthread+0x711/0x8a0 kernel/kthread.c:463
+ ret_from_fork+0x439/0x7d0 arch/x86/kernel/process.c:148
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+Freed by task 23:
+ kasan_save_stack mm/kasan/common.c:47 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:68
+ kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:576
+ poison_slab_object mm/kasan/common.c:243 [inline]
+ __kasan_slab_free+0x5b/0x80 mm/kasan/common.c:275
+ kasan_slab_free include/linux/kasan.h:233 [inline]
+ slab_free_hook mm/slub.c:2422 [inline]
+ slab_free mm/slub.c:4695 [inline]
+ kmem_cache_free+0x18f/0x400 mm/slub.c:4797
+ br_dev_xmit+0x11b3/0x1840 net/bridge/br_device.c:108
+ __netdev_start_xmit include/linux/netdevice.h:5248 [inline]
+ netdev_start_xmit include/linux/netdevice.h:5257 [inline]
+ xmit_one net/core/dev.c:3845 [inline]
+ dev_hard_start_xmit+0x2d7/0x830 net/core/dev.c:3861
+ sch_direct_xmit+0x241/0x4b0 net/sched/sch_generic.c:344
+ qdisc_restart net/sched/sch_generic.c:409 [inline]
+ __qdisc_run+0xb16/0x15f0 net/sched/sch_generic.c:417
+ qdisc_run+0xc5/0x290 include/net/pkt_sched.h:126
+ net_tx_action+0x7c9/0x980 net/core/dev.c:5731
+ handle_softirqs+0x286/0x870 kernel/softirq.c:579
+ run_ksoftirqd+0x9b/0x100 kernel/softirq.c:968
+ smpboot_thread_fn+0x542/0xa60 kernel/smpboot.c:160
+ kthread+0x711/0x8a0 kernel/kthread.c:463
+ ret_from_fork+0x439/0x7d0 arch/x86/kernel/process.c:148
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+The buggy address belongs to the object at ffff888020b65b00
+ which belongs to the cache skbuff_head_cache of size 240
+The buggy address is located 48 bytes inside of
+ freed 240-byte region [ffff888020b65b00, ffff888020b65bf0)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x20b64
+head: order:1 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+flags: 0xfff00000000040(head|node=0|zone=1|lastcpupid=0x7ff)
+page_type: f5(slab)
+raw: 00fff00000000040 ffff88801cedf8c0 dead000000000122 0000000000000000
+raw: 0000000000000000 0000000000150015 00000000f5000000 0000000000000000
+head: 00fff00000000040 ffff88801cedf8c0 dead000000000122 0000000000000000
+head: 0000000000000000 0000000000150015 00000000f5000000 0000000000000000
+head: 00fff00000000001 ffffea000082d901 00000000ffffffff 00000000ffffffff
+head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000002
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 1, migratetype Unmovable, gfp_mask 0x72820(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_MEMALLOC|__GFP_COMP), pid 0, tgid 0 (swapper/0), ts 96149950019, free_ts 42914869228
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x240/0x2a0 mm/page_alloc.c:1851
+ prep_new_page mm/page_alloc.c:1859 [inline]
+ get_page_from_freelist+0x21e4/0x22c0 mm/page_alloc.c:3858
+ __alloc_frozen_pages_noprof+0x181/0x370 mm/page_alloc.c:5148
+ alloc_pages_mpol+0x232/0x4a0 mm/mempolicy.c:2416
+ alloc_slab_page mm/slub.c:2492 [inline]
+ allocate_slab+0x8a/0x370 mm/slub.c:2660
+ new_slab mm/slub.c:2714 [inline]
+ ___slab_alloc+0xbeb/0x1420 mm/slub.c:3901
+ __slab_alloc mm/slub.c:3992 [inline]
+ __slab_alloc_node mm/slub.c:4067 [inline]
+ slab_alloc_node mm/slub.c:4228 [inline]
+ kmem_cache_alloc_node_noprof+0x280/0x3c0 mm/slub.c:4292
+ __alloc_skb+0x112/0x2d0 net/core/skbuff.c:660
+ __netdev_alloc_skb+0x108/0x970 net/core/skbuff.c:734
+ netdev_alloc_skb include/linux/skbuff.h:3484 [inline]
+ dev_alloc_skb include/linux/skbuff.h:3497 [inline]
+ __ieee80211_beacon_get+0xc06/0x1880 net/mac80211/tx.c:5652
+ ieee80211_beacon_get_tim+0xb4/0x2b0 net/mac80211/tx.c:5774
+ ieee80211_beacon_get include/net/mac80211.h:5667 [inline]
+ mac80211_hwsim_beacon_tx+0x3ce/0x860 drivers/net/wireless/virtual/mac80211_hwsim.c:2355
+ __iterate_interfaces+0x2ab/0x590 net/mac80211/util.c:761
+ ieee80211_iterate_active_interfaces_atomic+0xdb/0x180 net/mac80211/util.c:797
+ mac80211_hwsim_beacon+0xbb/0x1c0 drivers/net/wireless/virtual/mac80211_hwsim.c:2389
+ __run_hrtimer kernel/time/hrtimer.c:1761 [inline]
+ __hrtimer_run_queues+0x52c/0xc60 kernel/time/hrtimer.c:1825
+page last free pid 0 tgid 0 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ free_pages_prepare mm/page_alloc.c:1395 [inline]
+ __free_frozen_pages+0xbc4/0xd30 mm/page_alloc.c:2895
+ rcu_do_batch kernel/rcu/tree.c:2605 [inline]
+ rcu_core+0xcab/0x1770 kernel/rcu/tree.c:2861
+ handle_softirqs+0x286/0x870 kernel/softirq.c:579
+ __do_softirq kernel/softirq.c:613 [inline]
+ invoke_softirq kernel/softirq.c:453 [inline]
+ __irq_exit_rcu+0xca/0x1f0 kernel/softirq.c:680
+ irq_exit_rcu+0x9/0x30 kernel/softirq.c:696
+ instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1050 [inline]
+ sysvec_apic_timer_interrupt+0xa6/0xc0 arch/x86/kernel/apic/apic.c:1050
+ asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.h:702
+
+Memory state around the buggy address:
+ ffff888020b65a00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc
+ ffff888020b65a80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff888020b65b00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                     ^
+ ffff888020b65b80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc
+ ffff888020b65c00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
+
 
 ***
 
@@ -88,7 +235,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[andrew@lunn.ch davem@davemloft.net edumazet@google.com jason@zx2c4.com kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com wangfushuai@baidu.com wireguard@lists.zx2c4.com]
+[davem@davemloft.net edumazet@google.com eric.dumazet@gmail.com horms@kernel.org jhs@mojatatu.com jiri@resnulli.us kuba@kernel.org kuniyu@google.com netdev@vger.kernel.org pabeni@redhat.com willemb@google.com xiyou.wangcong@gmail.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
