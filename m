@@ -1,78 +1,78 @@
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4002534BA3B
-	for <syzbot@lists.linux.dev>; Wed,  8 Oct 2025 18:02:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 189E52236FA
+	for <syzbot@lists.linux.dev>; Sat, 11 Oct 2025 09:59:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759946543; cv=none; b=ACRcsBDkYsvwX7Sh7ggm3Kji29TPkPQqeC/Oq3H/cDyqNxHdPIQrxpQpMZxhhbY0LmXppPYfBafErTmq75rDu2G35hJDib/id7Xh6uCoJKK/jtGMWOrEnSTPoZvnKZm6zvr/UqWSuaX5iMljZ2/wFfhSQhD0m4NVvcfWoa7SeZs=
+	t=1760176803; cv=none; b=pIv17F4OJFOJi5+8ZDJ3J6EMcDCy6gnwYrFFkKbzdS5tZ62FYqfE6MTDw4W5CINBKoc/zZ+HrEa1KTDQMD/sedMSjAIfJ2A+Mx4DBY5GDqIz5eoAZ3GKn2N9zgqlLY3K2+ZwZ3GnfqC8DOr+iz/mbp4XJuuyN6w/7KQnfajTkHg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759946543; c=relaxed/simple;
-	bh=ZVpBD+X4UKREQfbgDVDG/ND6iCka1ZoSdeFwtWEcIQ8=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=uaMSx2/+2Hlbg8NIqHwsPXZYbflDLNe4hzzSENquQgHmwI4vL+U3+QpSS+H9/3yF6zqcaDfO60yKkdTgQ52vk/HcASB7Z2lJJcDkfBN0+iHxfZ3ZFSvAD+ox7iN+v8uiz67nzOS5TY+b9aAY8pyhTM8l1fLnWIaRcdWE7CA5Y5Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
+	s=arc-20240116; t=1760176803; c=relaxed/simple;
+	bh=bzF/jAWbTwe6NSgvzd3wApIHxxIsQDPbUpNJrKkbdI4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=btl75ZCiL8jDUGzNubNimIdxGhWbZLBrGd6Y3NOfZbS3qTbqPACJ/jPtbEmAaRlazZ1xheFbi8Vs7ntWJH0eQ9nq3GdVkg4nlfV8hS/x+ck9Jz5RPfSX/vEkx8adwY43rDOz0pneg9ttT5ugPQtXwPdwsZJMhdtECgeeahksuoo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-42b2a51fad2so23737465ab.1
-        for <syzbot@lists.linux.dev>; Wed, 08 Oct 2025 11:02:21 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-930db3a16c0so1862707639f.2
+        for <syzbot@lists.linux.dev>; Sat, 11 Oct 2025 02:59:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759946541; x=1760551341;
+        d=1e100.net; s=20230601; t=1760176797; x=1760781597;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=FuGYjrkWFZ+d0t8B0sQ7FCpBbaGVwv4uGH62keJMGaY=;
-        b=OlJeUWjECCjls+TsGuSHboos3UwxTko/msPnFd6z11AiOjEZQVrlqyhWMEQ3QVkS8G
-         ZtTips05nBkmPqaKK2WZoXQ5bYdBqn8csZ8IBQM9EcUo3+0+oxxnKGfDID4q7QCULPHR
-         TCGvSgqXajvac0Xb40OrkwX/r6DPo3X9liTkXiqSkIkVufuCxKu7fj2Hx5zbjAPCkd+g
-         5cZJoKFHPKEek+X1IT3wLfs3t4obAfIP7SKGvACIAliqHdvdJUyaN2dC/OooFyhBOdAQ
-         DXsVARLVv+WjJlrZ5dHX3B0xt4gr6Hhi8thtRvpZoBGs+QaTyo53ZmwXmdgS1lRAcstI
-         v+aA==
-X-Gm-Message-State: AOJu0Yx2W8q4oM1EGoOOdLOObXSdDXWuAlq39872iaU7qxYMkLHNUwqV
-	LnUT+6iGylWxPZ5zl/mLnsiZj6aJr/U1XkZzpwZcLCIroPoN5O7GoJx2rHVh9kIrvWzMqr4SBXs
-	aobSnM66CNjxRUs3eFL4mmXBGIM9wSNJyTv55dizrtqajRqrwwfmZtF8qHk8=
-X-Google-Smtp-Source: AGHT+IEcSfuxK+p2x9SBwcWqGrAl4GJblSYoXkxVlCMxIQsDtim5c5caHxyb7Xu94MJxqs+sVtXI9liGXhTHMXZZ43Av65OyfKBL
+        bh=eb+bKL+FXahHPhTE7DEjYpcBWqRibUwVxXYu1WreNRE=;
+        b=BZjvOKsipsJR9F/LbEK14wsUGtmK9A+/TEO8dqvwxpWFvwhhwvVzvb04e3dOCEGUmP
+         DA7y5aqgQsvTUQ4EMYdsO9Y/G5IMoefmibPrxsQ2L9ldfHWgpl6DwmLSh6oUgAYRmICt
+         6t32oh/2Kr9Ua/9NVImR23FfYuD+tvnDZNBAVzuymcPaMlnXFG/5zedSclapQtPWkC9q
+         Q6Ly0bh5IVi5z0DMPDXEcw1jps7CNSXOCGsZfrGnFLb4uH1nr8EE5AFSj2TcXppZfzOU
+         57W8Fy9LlKdj3oCC9smsqLdM34kHjca4Lkf0pnh1O9cZJcC9JCSWu5PtyLxaN/loIQ+D
+         QMrQ==
+X-Gm-Message-State: AOJu0YwK0hk9aa6qL1c+9ebOrO3h4rnh1eCU8W5/zmSxasqew5PGWPQo
+	1Lvkl9doW2r4KRxXTzTCHVzCNWC6Wl4q396DmYZX2CZuYsmwrDQJS/+XPm2KrzIHKqZAW0lsKb0
+	MKuI+QH97Fk2HSRMkyhgsck/UrPuFnHBeaYhmV7ng7TjvBusEjZVcc7h2/Hk=
+X-Google-Smtp-Source: AGHT+IEMJPr0bWzVTytVe6qhBN1hOl0wAJj6lo61mDoSxEY1fcbEasO0aFjd6JEqdIt1zvx+vJsLs9T/1tgHS/d1yVyOtKmGVsgf
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:174f:b0:42b:7615:46a1 with SMTP id
- e9e14a558f8ab-42f87401002mr40754535ab.6.1759946539803; Wed, 08 Oct 2025
- 11:02:19 -0700 (PDT)
-Date: Wed, 08 Oct 2025 11:02:19 -0700
+X-Received: by 2002:a05:6602:2c09:b0:919:629f:9770 with SMTP id
+ ca18e2360f4ac-93bd192916cmr2137421239f.10.1760176797290; Sat, 11 Oct 2025
+ 02:59:57 -0700 (PDT)
+Date: Sat, 11 Oct 2025 02:59:57 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68e6a72b.050a0220.256323.00dd.GAE@google.com>
-Subject: [moderation/CI] Re: fs: ext4: fix uninitialized symbols
-From: syzbot ci <syzbot+ci2d0548ff01453855@syzkaller.appspotmail.com>
+Message-ID: <68ea2a9d.050a0220.91a22.01cd.GAE@google.com>
+Subject: [moderation/CI] Re: mm: convert VM flags from macros to enum
+From: syzbot ci <syzbot+cie1fd169c18565fec@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] fs: ext4: fix uninitialized symbols
-https://lore.kernel.org/all/20251008171614.12129-1-vnranganath.20@gmail.com
-* [PATCH] fs: ext4: fix uninitialized symbols
+[v1] mm: convert VM flags from macros to enum
+https://lore.kernel.org/all/20251011093054.886460-1-ye.liu@linux.dev
+* [RFC RFC PATCH] mm: convert VM flags from macros to enum
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/d58a8a11-8fc6-43d8-a91e-e02466813226
+https://ci.syzbot.org/series/725db1a7-60b8-44dd-b2b7-29c495be3a0f
 
 ***
 
 kernel build error
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      e406d57be7bd2a4e73ea512c1ae36a40a44e499e
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
+base:      4a71531471926e3c391665ee9c42f4e0295a4585
 arch:      amd64
 compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/fe83ffea-5ebe-4438-a387-bbf2bc543086/config
+config:    https://ci.syzbot.org/builds/e439ac1e-2898-4f54-a585-0792f1b2e1c5/config
 
-fs/ext4/inode.c:3547:15: error: incompatible pointer to integer conversion initializing 'ext4_fsblk_t' (aka 'unsigned long long') with an expression of type 'void *' [-Wint-conversion]
+failed to run ["make" "KERNELVERSION=syzkaller" "KERNELRELEASE=syzkaller" "LOCALVERSION=-syzkaller" "-j" "48" "ARCH=x86_64" "LLVM=1" "bzImage"]: exit status 2
 
 ***
 
@@ -85,7 +85,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[adilger.kernel@dilger.ca david.hunter.linux@gmail.com khalid@kernel.org linux-ext4@vger.kernel.org linux-kernel-mentees@lists.linuxfoundation.org linux-kernel@vger.kernel.org skhan@linuxfoundation.org tytso@mit.edu vnranganath.20@gmail.com]
+[akpm@linux-foundation.org david@redhat.com liam.howlett@oracle.com linux-kernel@vger.kernel.org linux-mm@kvack.org liuye@kylinos.cn lorenzo.stoakes@oracle.com mhocko@suse.com rppt@kernel.org surenb@google.com vbabka@suse.cz ye.liu@linux.dev]
 
 If the report looks fine to you, reply with:
 #syz upstream
