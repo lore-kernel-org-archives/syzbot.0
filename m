@@ -1,91 +1,170 @@
-Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7186C3101A5
-	for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 11:46:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BD1D31355E
+	for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 12:27:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760442391; cv=none; b=JfcD/rZEsdmSFNyVEgHJpWEvTtQhbCLM0XfyGwnXeDIwozjLVUxDXC5tjp+j9SJ7CIFpncXfdlvNkRN2H8/YclVTNgW5bLcb7ZVoI8zxQeWuMA8F3+ebj2pQOF7oW6xhGhnGBkEDw3TAHNrcJo6BeHVUSSLOfRQeijXEsD76zvQ=
+	t=1760444877; cv=none; b=UNmwTjYChV7/5qCEb60nXu9u9NrPLiou/HZ/SZ58M4pYLBU5AgqA6nenLho4ULVvZypW0IcAdNBhfxPz+TrLtLwwmcphMxXBogcUZ6uiXDjqxDHmrJbhWaRptxgcRV4zi/++Yl5L0qX6zeatjoP+66ZdtB3vrE2EGgdssWxQXFs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760442391; c=relaxed/simple;
-	bh=V97HSBuyCddwPX2eWiNiWvy6SrgdwsdzX5FKBWhIi1E=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=N2G0NCu+olxzE+dXuKcxXoUAJ/gdxAyw/623QtZ/cvzephSt1jtMsKMMrPUGWWSgpalvBV+V0Cq/gXCIBTWW6I0HlYXnwLXkpmQtvhgBsIJg5NKZYlYfTT+E5zwNw3ZRbvPGwElscAt35HuPdqrCeKhBr4h+lAY/alccDVFVcgQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--jackmanb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=3jqpoexT; arc=none smtp.client-ip=209.85.128.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--jackmanb.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="3jqpoexT"
-Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-46e35baddc1so57758045e9.2
-        for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 04:46:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1760442388; x=1761047188; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=V97HSBuyCddwPX2eWiNiWvy6SrgdwsdzX5FKBWhIi1E=;
-        b=3jqpoexTKjvl2UmL2JSK0Qquq+YX2ccqccdQHeZR0/qd8znxq7YryEptz9y+wcjXma
-         uTw5XA3zA4syapi2ewjPnl5AUWqr/4azx+b7WGzbxf67iiEwR4pLw7Kdiw/Ykrm6QuKL
-         OBrvYvR7CPT9WDVGxwmUtveX6DM+xVb8E9l+aQVF7mus30NH5opgbtf+0cbpWL2XjgVg
-         laFOuwDKo3H6DQoarQQZLaqMt8bMeTxjZnzggkPMwzqwymKXhQB5Qmjhp0h3OqJdbUco
-         z/xi6Pbq8gxBqGpIAIlIZ8jGdM9v5YLrEZk2KU6k6ln9wZPlYzMQ1ovxrO9YzAnC74eF
-         BrRA==
+	s=arc-20240116; t=1760444877; c=relaxed/simple;
+	bh=01uuTvR4bDXnHAQRDRjMZhk7JBI1YmoaZSVufen84XI=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=E6wIvQr+FT+1FGxQeVujlAllelzKdl9k6b8qUcRw7PE1rz61tEQtA6E8EqipbRrCxcWtZEtWkbxs0U9LYo4D0+kbkxK58vCOTWDM6uudF9WI+aYJO/kiFQiUeKyYWkSKOEg28oPQ4S4XYHxQymTYCFFxm6Tytr63reHmXHUSfDw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-430929af37bso27407105ab.0
+        for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 05:27:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760442388; x=1761047188;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=V97HSBuyCddwPX2eWiNiWvy6SrgdwsdzX5FKBWhIi1E=;
-        b=RGDDlyc00xDjp3yY6uweWoWxUEYgmUqorvDRdUBxziEDt1VK1yGvdtT9n3FpJ22SSY
-         8VjQj7KeE4uPPyQtU2FcJBY0i3e9JtZUI7EiNOspneXzobPbKqFatoHnc/5fZryJ34uo
-         1q8ISMDQss9K4zNUJKUmUUz2n/GRiHKwbTNz5bTyEPr6qdyyg/e1djknbAYQxpxvkCnr
-         6e0co1dFIe8w2yf44hPC+rNhsGXvqRGQ1TKg0tZU/Pw4lt/fM97HbzxlFAgw+hD6Qd0/
-         L5ZCZfI5UhExg8RYZyEE4j9Qdhf3cjuo6g9vpky2wF5klUBaM9lvky3XV1/jp3K5Nlpx
-         YqcQ==
-X-Gm-Message-State: AOJu0YyTtx97wibrm3CAsZYqSZ36fcjh4hedb1+8C1UXwG1y7BsA0/se
-	nRrwbpAYbClQnMXDvegsTWH5+ryfe9B6v2Tr3Q3DzeUexrq3OZRCOX0Qyu+X0/3KKLR3XdHlJR1
-	Fm0oLftjG26ITXg==
-X-Google-Smtp-Source: AGHT+IGOyIRofYjYdpZa5szgrk6yrVf55DI0nc+jrKz4dMBV/l2/6mxV2A4AekmoWWzzSKpimbmwyKo7J/9+QQ==
-X-Received: from wmnp21.prod.google.com ([2002:a05:600c:2e95:b0:46e:5bd7:fc8])
- (user=jackmanb job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:1987:b0:46e:4a2b:d351 with SMTP id 5b1f17b1804b1-46fa9b0792cmr172082275e9.28.1760442387950;
- Tue, 14 Oct 2025 04:46:27 -0700 (PDT)
-Date: Tue, 14 Oct 2025 11:46:27 +0000
-In-Reply-To: <DDHX5G54GS7D.1YC8514SPRGQF@google.com>
+        d=1e100.net; s=20230601; t=1760444875; x=1761049675;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DBDpa0FgwoN86WXS0sJErvW4jbuJmz8TH8QSweQ0osU=;
+        b=HEnNySAsncv6A0Sabgv5jtxA0kKFa4FYfvDsKt8ec2XJyqv8SOF/eraWXICpil1D7Z
+         ITCl/jCMe3Bpe+qJyw/d/SxB+NzVkNZV3SDHdJkzFauy6ZQtON/R6R2wmJKpG1iqYQeD
+         4/c/qLQ1IsoSVcnUS8ESQi1LAjov/zFqcEMknQHrx8ZkK3oKDMzioibb18EJGonqal2B
+         zVzOjwBeqiV64poBWQhuoS7A4YJ/iBdA6UXTO0PRnpMLqtoRLGhRmirZDUsTWl+KpyMw
+         oeiI8QlynPZI8Hu9Es3uXftDGyClcQMf8gYRoS5GHyEQAdN+lgZzlKl82cV+PCAyEVXe
+         HTCw==
+X-Gm-Message-State: AOJu0Yy5xCAwNlU1tMG3iG0QTfpZqIa1kNzkGtjswyjuDPaXMWa80cye
+	sVrq7sizD1xVDk9Np/crjEJEK+e1GWzGyzb8DC1Up9lLqR9rOT5/H2HAuBLtW9xKp237poQmGV8
+	hribewCmMnWpiyg1FJDZHd1dHyssbQLzcMixucssFy+P//E1D4RUW4fRwywY=
+X-Google-Smtp-Source: AGHT+IFfUXN2BK2Qia9xZh4QB+UySFtuzHaXUhvyiqlZT/KLmsbByZrRuPQNVILaGysIWrlQLrPoGc20NCrzrqjfpKkGo9DOZlr1
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20251013-b4-l1tf-percpu-v1-1-d65c5366ea1a@google.com>
- <68edea17.050a0220.91a22.01fd.GAE@google.com> <DDHX5G54GS7D.1YC8514SPRGQF@google.com>
-X-Mailer: aerc 0.21.0
-Message-ID: <DDI0QRWVTMQT.3BA2T46YJLIII@google.com>
-Subject: Re: [syzbot ci] Re: KVM: x86: Unify L1TF flushing under per-CPU variable
-From: Brendan Jackman <jackmanb@google.com>
-To: Brendan Jackman <jackmanb@google.com>, 
-	syzbot ci <syzbot+ci693402a94575bcb2@syzkaller.appspotmail.com>, <bp@alien8.de>, 
-	<dave.hansen@linux.intel.com>, <hpa@zytor.com>, <kvm@vger.kernel.org>, 
-	<linux-kernel@vger.kernel.org>, <mingo@redhat.com>, <pbonzini@redhat.com>, 
-	<seanjc@google.com>, <tglx@linutronix.de>, <x86@kernel.org>
-Cc: <syzbot@lists.linux.dev>, <syzkaller-bugs@googlegroups.com>
+MIME-Version: 1.0
+X-Received: by 2002:a05:6e02:219a:b0:42f:9542:7b4a with SMTP id
+ e9e14a558f8ab-42f95427d9bmr204334345ab.15.1760444875112; Tue, 14 Oct 2025
+ 05:27:55 -0700 (PDT)
+Date: Tue, 14 Oct 2025 05:27:55 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68ee41cb.050a0220.91a22.020b.GAE@google.com>
+Subject: [moderation/CI] Re: slab: Introduce __SECOND_OBJEXT_FLAG for objext_flags
+From: syzbot ci <syzbot+cia3f00a4d25e231dd@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue Oct 14, 2025 at 8:57 AM UTC, Brendan Jackman wrote:
-> On Tue Oct 14, 2025 at 6:13 AM UTC, syzbot ci wrote:
->> BUG: using __this_cpu_write() in preemptible code in x86_emulate_instruction
->
-> Ah. And now I realise I never booted my debug config on an actual
-> Skylake host, I'd better do that, presumably running the KVM selftests
-> with DEBUG_PREEMPT etc would have been enough to catch this earlier.
->
-> Anyway, I guest we just want to use vcpu->arch.last_vmentry_cpu instead
-> of smp_processor_id()?
+syzbot ci has tested the following series
 
-Just went to code it up and changed my mind about this. If the vCPU is
-being migrated, it doesn't really matter which CPU stuff like
-x86_emulate_instruction() sets the bit on since it's vcpu_load()'s job to
-make sure it's set on the CPU that actually needs it. So I think instead
-we just want raw_cpu_write() here, then there's no pointless remote
-updates. The bit might get set on a CPU that doesn't end up needing it
-for the current vCPU, but it was gonna get the bit set before it ran the
-next vCPU anyway.
+[v1] slab: Introduce __SECOND_OBJEXT_FLAG for objext_flags
+https://lore.kernel.org/all/20251014093124.300012-1-hao.ge@linux.dev
+* [PATCH] slab: Introduce __SECOND_OBJEXT_FLAG for objext_flags
+
+and found the following issue:
+general protection fault in percpu_ref_get_many
+
+Full report is available here:
+https://ci.syzbot.org/series/6fd66120-211f-479f-b6a1-35f990da2dc2
+
+***
+
+general protection fault in percpu_ref_get_many
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      0d97f2067c166eb495771fede9f7b73999c67f66
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/74de5bb7-695b-4115-9a4b-ee7d7fd0cca=
+2/config
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc=
+00177780ff: 0000 [#1] SMP KASAN PTI
+KASAN: probably user-memory-access in range [0x00000000bbbc07f8-0x00000000b=
+bbc07ff]
+CPU: 1 UID: 0 PID: 6155 Comm: syz-executor Not tainted syzkaller #0 PREEMPT=
+(full)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:percpu_ref_get_many+0x8d/0x140
+Code: 01 48 c7 c7 80 70 78 8b be 65 03 00 00 48 c7 c2 c0 70 78 8b e8 64 2b =
+6f ff 49 bc 00 00 00 00 00 fc ff df 4c 89 f8 48 c1 e8 03 <42> 80 3c 20 00 7=
+4 08 4c 89 ff e8 c4 50 f7 ff 49 8b 07 a8 03 75 62
+RSP: 0018:ffffc90004df7500 EFLAGS: 00010206
+RAX: 00000000177780ff RBX: ffffffff822de139 RCX: 14bab840e71f4400
+RDX: 0000000000000000 RSI: ffffffff8bc074c0 RDI: ffffffff8bc07480
+RBP: 0000000000000088 R08: 0000000000000000 R09: ffffffff822de139
+R10: dffffc0000000000 R11: fffffbfff1f3c1ef R12: dffffc0000000000
+R13: ffff88823c63b5c0 R14: 0000000000000001 R15: 00000000bbbc07f8
+FS:  0000555570ae6500(0000) GS:ffff8882a9d12000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000555562d8c5c8 CR3: 0000000113444000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ refill_obj_stock+0x254/0x850
+ __memcg_slab_free_hook+0x123/0x3b0
+ kfree+0x3f7/0x6d0
+ kobject_uevent_env+0x361/0x8c0
+ netdev_queue_update_kobjects+0x346/0x6c0
+ netdev_register_kobject+0x258/0x310
+ register_netdevice+0x126c/0x1ae0
+ __ip_tunnel_create+0x3e7/0x560
+ ip_tunnel_init_net+0x2ba/0x800
+ ops_init+0x35c/0x5c0
+ setup_net+0xfe/0x320
+ copy_net_ns+0x34e/0x4e0
+ create_new_namespaces+0x3f3/0x720
+ unshare_nsproxy_namespaces+0x11c/0x170
+ ksys_unshare+0x4c8/0x8c0
+ __x64_sys_unshare+0x38/0x50
+ do_syscall_64+0xfa/0xfa0
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f85c81906c7
+Code: 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f =
+1f 84 00 00 00 00 00 0f 1f 44 00 00 b8 10 01 00 00 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffe57c0ca58 EFLAGS: 00000246 ORIG_RAX: 0000000000000110
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f85c81906c7
+RDX: 00007f85c818eec9 RSI: 00007ffe57c0ca20 RDI: 0000000040000000
+RBP: 00007ffe57c0cac0 R08: 00007f85c83a69d0 R09: 00007f85c83a69d0
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffe57c0cac0
+R13: 00007ffe57c0cac8 R14: 0000000000000009 R15: 0000000000000000
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:percpu_ref_get_many+0x8d/0x140
+Code: 01 48 c7 c7 80 70 78 8b be 65 03 00 00 48 c7 c2 c0 70 78 8b e8 64 2b =
+6f ff 49 bc 00 00 00 00 00 fc ff df 4c 89 f8 48 c1 e8 03 <42> 80 3c 20 00 7=
+4 08 4c 89 ff e8 c4 50 f7 ff 49 8b 07 a8 03 75 62
+RSP: 0018:ffffc90004df7500 EFLAGS: 00010206
+RAX: 00000000177780ff RBX: ffffffff822de139 RCX: 14bab840e71f4400
+RDX: 0000000000000000 RSI: ffffffff8bc074c0 RDI: ffffffff8bc07480
+RBP: 0000000000000088 R08: 0000000000000000 R09: ffffffff822de139
+R10: dffffc0000000000 R11: fffffbfff1f3c1ef R12: dffffc0000000000
+R13: ffff88823c63b5c0 R14: 0000000000000001 R15: 00000000bbbc07f8
+FS:  0000555570ae6500(0000) GS:ffff8882a9d12000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000555562d8c5c8 CR3: 0000000113444000 CR4: 00000000000006f0
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[akpm@linux-foundation.org ast@kernel.org cgroups@vger.kernel.org gehao@kyl=
+inos.cn hannes@cmpxchg.org hao.ge@linux.dev harry.yoo@oracle.com linux-kern=
+el@vger.kernel.org linux-mm@kvack.org mhocko@kernel.org muchun.song@linux.d=
+ev roman.gushchin@linux.dev shakeel.butt@linux.dev surenb@google.com vbabka=
+@suse.cz]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
