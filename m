@@ -1,141 +1,85 @@
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FA25315D5B
-	for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 13:10:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87DAB30F94E
+	for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 14:13:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760447459; cv=none; b=cPVb9udwkx0rIU4hJnt8bHh/lmh1yTej1+HEfRVQLWbqG5JhZqOJ/biyZrIOsh5DqZiJ7Q6tn9y3cnwZTBvaKlGvDscYlNJ3jEcyW5SLbxPOmZ5axXezSzfzlTC2Vr7DoJOWl5V6LAzqp1zg1NWoy+N50PDnf09lvtuJ/QsyjrE=
+	t=1760451241; cv=none; b=HPqLygyjsDCyi/CdwDULqqYBLtcsr4RhudTS5JQsgA89R9Xzi5JXZ6tQwiRBuqxV/FOfDbl/Xb6i9kRePM1rK+YbeGmO/FtONb9RHp6BFLRUq/PGgCschqJDqNClGCrBuKpnK7FyOdJbcRDIgOn6wCUk5v1nTFfq6GJMJRBXA8k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760447459; c=relaxed/simple;
-	bh=Dh2gIj78AlhZH9jhvU+ALwIFDJlhmM9v2sNPvwECyPg=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=pmy2C+T9aJ/PMz0BpIEgrPz1tRumw+8qpAh0eUbi6VnXeQ8FVEapWnsaWZAJntJ0CKzVAZ3L4Y92EvCWtZm/t2JqCgsLzVMsD23fknDHlU3HJETNmJW2UXulIdFo3TQkt0U/kKURoP2U9IaxAqul3Z0ZErio6GtxaafPUOOx7XQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
+	s=arc-20240116; t=1760451241; c=relaxed/simple;
+	bh=LH/BdAGfjNvYC5UQTzknn+Z1akveUGeTUh+sqnq3pEQ=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=LDr5KkbbdWBXwHauKk3kNWzPoeb48vbFJct9oBBd3+yxZZRKdBy/1otjTB149VDXv4sodLeXsGyu8YJrgE40bb1J9WanbztO1K6xkNMYegFe1fu+A3s0i4xecUMciX4ZkEnELdnz/c5I2u3zZrTGx7187fRGKoh3cKmgtoDRdfo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-429278a11f7so121562675ab.1
-        for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 06:10:57 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-9374627bb7eso1489157939f.1
+        for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 07:13:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760447456; x=1761052256;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=YTvCLh80L5RCIEYpK48k3nL1zjTVSsw4OaSTIePcCmg=;
-        b=Iuo1l0Wi79TarG9eZVBrYwBReEZtW7Qwf/z680N1F2I+HmGNEVuwpKfedSbx2yi7oy
-         GVdeIB0+ZcvbEDTH1bm5LEAlskIPULkx0aQ5Z0AnjkCF68ds7s8TW5jjyXF+tfD4aWal
-         T37QnuLb8uhC0DtaM1R3RTk9u40uMiFvljBB4wt8bFP/yLz55OG/eosczSuTP56h1VA/
-         y6OuDGNkSOxJaydut0gpV4Xc/V4H8yEn9BfoaVAQ8Y4CDKBTEzUGAUv0tm3airCDXd0Z
-         RJuBlRVLTV9kKgBs7kVCrrlBbFWJIR1a6E6g1L89TOW6j8tfe+5IGsntE1eYH0oKAgxi
-         vbNA==
-X-Gm-Message-State: AOJu0YyrLwBcqnW8NJ/lKOB8pB2AmdrDBL9VK/zoH+zNxcn+3g1KpISu
-	E41zwThEVMW7Ke/g42yCt29A43qHAnNrM54yWrfL+FP0dEaz8eVtidlcuIdt1YOUiJB/euqKQqS
-	z+EItFDXB60CE3GR09L4YI1LjNg6oUxVavo9669LGRzlJk+aXcF93lhniieg=
-X-Google-Smtp-Source: AGHT+IEPH9IF89ITwygTX0sulnxlR817dJPiW7sqU1Z8BIDZ/6e+3f2GvHQhEGN5ckeXiKxOq+fc0U8MPZ/A5YbCtFxHLytXbbXL
+        d=1e100.net; s=20230601; t=1760451239; x=1761056039;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=HPav+hd7SYRd+nRAsEZXLNzUIbR3OGreBnn0nIfR3aE=;
+        b=Ezp5nQ3o8XcGqTZeSbjzPBV59n9Hawkjxed+HuZ8Ytl3mfcpXr7F/M0dHh4CY4DlVZ
+         aLJ/8xHBywhEEU2KLowTUVMT3WXyPwW4gluUYYSjqbXvDAsDbXgbT89RYuIzNDShcJ0k
+         /+FOEmJ4ALyLTOEZJExRYJBjPfbI/I/fiLIta8neCKo6MOOwyYUuD1evDmgj6J5/aQKO
+         pRPhzmAOkHWp5gJwfLticAKG3TROx3nqSsibA5ymU8QbCEdWPLIXk5yTvHma/WW/HClv
+         BG3sbk/9NwyL+mcNelSwuEB8fk8n2r2HBiHwcJxOwIXNGlOrQ0wl/YPPfMhBVuRIggM6
+         aYQA==
+X-Gm-Message-State: AOJu0Yz0yumLJMa5W5vySFcylLW1tPrrVwDpErsaOGogQgfn4dnEQf+I
+	HPd7lwcBsuwb/YZjiBOTt/0hRW/1hel8eQaDkQ3AfPTIDEn1NgsJiVr+9ElejR4zbN6JuDannWG
+	w/vg+p0ctDgKxaVfqFSKZi335UJrNiuMhjCS6r00RnXDlqWi3wMlkYcSb984=
+X-Google-Smtp-Source: AGHT+IF0iOZxh4MHWen645JpS+aE/K6uAjOYDOTSn66L3ADNcXID93U0lgXBWHTeiWSoPLwOhcCztyLl0fckKJseQ8HNLVY7E71g
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:12c5:b0:426:39a:90f1 with SMTP id
- e9e14a558f8ab-42f873d62c7mr267953315ab.18.1760447456621; Tue, 14 Oct 2025
- 06:10:56 -0700 (PDT)
-Date: Tue, 14 Oct 2025 06:10:56 -0700
-In-Reply-To: <20251014093124.300012-1-hao.ge@linux.dev>
+X-Received: by 2002:a05:6e02:2489:b0:42f:9649:56b4 with SMTP id
+ e9e14a558f8ab-42f96495934mr196107705ab.13.1760451238729; Tue, 14 Oct 2025
+ 07:13:58 -0700 (PDT)
+Date: Tue, 14 Oct 2025 07:13:58 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68ee4be0.050a0220.ac43.0104.GAE@google.com>
-Subject: [syzbot ci] Re: slab: Introduce __SECOND_OBJEXT_FLAG for objext_flags
-From: syzbot ci <syzbot+cid6b2cf8227adc21a@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, ast@kernel.org, cgroups@vger.kernel.org, 
-	gehao@kylinos.cn, hannes@cmpxchg.org, hao.ge@linux.dev, harry.yoo@oracle.com, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, mhocko@kernel.org, 
-	muchun.song@linux.dev, roman.gushchin@linux.dev, shakeel.butt@linux.dev, 
-	surenb@google.com, vbabka@suse.cz
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <68ee5aa6.a00a0220.361615.0003.GAE@google.com>
+Subject: [moderation/CI] Re: netfilter: Added nfct_seqadj_ext_add() for ftp's conntrack.
+From: syzbot ci <syzbot+ci7cbc94ef74d03d09@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] slab: Introduce __SECOND_OBJEXT_FLAG for objext_flags
-https://lore.kernel.org/all/20251014093124.300012-1-hao.ge@linux.dev
-* [PATCH] slab: Introduce __SECOND_OBJEXT_FLAG for objext_flags
+[v1] netfilter: Added nfct_seqadj_ext_add() for ftp's conntrack.
+https://lore.kernel.org/all/20251014114334.4167561-1-a.melnychenko@vyos.io
+* [PATCH 1/1] netfilter: Added nfct_seqadj_ext_add() for ftp's conntrack.
 
 and found the following issue:
-general protection fault in percpu_ref_get_many
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/6fd66120-211f-479f-b6a1-35f990da2dc2
+https://ci.syzbot.org/series/ea34dee6-450d-4d4e-a2f9-ccabc1aab84f
 
 ***
 
-general protection fault in percpu_ref_get_many
+kernel build error
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      0d97f2067c166eb495771fede9f7b73999c67f66
+tree:      nf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilt=
+er/nf-next.git
+base:      07fdad3a93756b872da7b53647715c48d0f4a2d0
 arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/74de5bb7-695b-4115-9a4b-ee7d7fd0cca2/config
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/f8c866c7-68ca-4810-8720-97f96c21133=
+4/config
 
-Oops: general protection fault, probably for non-canonical address 0xdffffc00177780ff: 0000 [#1] SMP KASAN PTI
-KASAN: probably user-memory-access in range [0x00000000bbbc07f8-0x00000000bbbc07ff]
-CPU: 1 UID: 0 PID: 6155 Comm: syz-executor Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:percpu_ref_get_many+0x8d/0x140
-Code: 01 48 c7 c7 80 70 78 8b be 65 03 00 00 48 c7 c2 c0 70 78 8b e8 64 2b 6f ff 49 bc 00 00 00 00 00 fc ff df 4c 89 f8 48 c1 e8 03 <42> 80 3c 20 00 74 08 4c 89 ff e8 c4 50 f7 ff 49 8b 07 a8 03 75 62
-RSP: 0018:ffffc90004df7500 EFLAGS: 00010206
-RAX: 00000000177780ff RBX: ffffffff822de139 RCX: 14bab840e71f4400
-RDX: 0000000000000000 RSI: ffffffff8bc074c0 RDI: ffffffff8bc07480
-RBP: 0000000000000088 R08: 0000000000000000 R09: ffffffff822de139
-R10: dffffc0000000000 R11: fffffbfff1f3c1ef R12: dffffc0000000000
-R13: ffff88823c63b5c0 R14: 0000000000000001 R15: 00000000bbbc07f8
-FS:  0000555570ae6500(0000) GS:ffff8882a9d12000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000555562d8c5c8 CR3: 0000000113444000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- refill_obj_stock+0x254/0x850
- __memcg_slab_free_hook+0x123/0x3b0
- kfree+0x3f7/0x6d0
- kobject_uevent_env+0x361/0x8c0
- netdev_queue_update_kobjects+0x346/0x6c0
- netdev_register_kobject+0x258/0x310
- register_netdevice+0x126c/0x1ae0
- __ip_tunnel_create+0x3e7/0x560
- ip_tunnel_init_net+0x2ba/0x800
- ops_init+0x35c/0x5c0
- setup_net+0xfe/0x320
- copy_net_ns+0x34e/0x4e0
- create_new_namespaces+0x3f3/0x720
- unshare_nsproxy_namespaces+0x11c/0x170
- ksys_unshare+0x4c8/0x8c0
- __x64_sys_unshare+0x38/0x50
- do_syscall_64+0xfa/0xfa0
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f85c81906c7
-Code: 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 b8 10 01 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffe57c0ca58 EFLAGS: 00000246 ORIG_RAX: 0000000000000110
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f85c81906c7
-RDX: 00007f85c818eec9 RSI: 00007ffe57c0ca20 RDI: 0000000040000000
-RBP: 00007ffe57c0cac0 R08: 00007f85c83a69d0 R09: 00007f85c83a69d0
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffe57c0cac0
-R13: 00007ffe57c0cac8 R14: 0000000000000009 R15: 0000000000000000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:percpu_ref_get_many+0x8d/0x140
-Code: 01 48 c7 c7 80 70 78 8b be 65 03 00 00 48 c7 c2 c0 70 78 8b e8 64 2b 6f ff 49 bc 00 00 00 00 00 fc ff df 4c 89 f8 48 c1 e8 03 <42> 80 3c 20 00 74 08 4c 89 ff e8 c4 50 f7 ff 49 8b 07 a8 03 75 62
-RSP: 0018:ffffc90004df7500 EFLAGS: 00010206
-RAX: 00000000177780ff RBX: ffffffff822de139 RCX: 14bab840e71f4400
-RDX: 0000000000000000 RSI: ffffffff8bc074c0 RDI: ffffffff8bc07480
-RBP: 0000000000000088 R08: 0000000000000000 R09: ffffffff822de139
-R10: dffffc0000000000 R11: fffffbfff1f3c1ef R12: dffffc0000000000
-R13: ffff88823c63b5c0 R14: 0000000000000001 R15: 00000000bbbc07f8
-FS:  0000555570ae6500(0000) GS:ffff8882a9d12000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000555562d8c5c8 CR3: 0000000113444000 CR4: 00000000000006f0
-
+net/netfilter/nf_conntrack_ftp.c:394:4: error: call to undeclared function =
+'nfct_seqadj_ext_add'; ISO C99 and later do not support implicit function d=
+eclarations [-Wimplicit-function-declaration]
 
 ***
 
@@ -146,3 +90,13 @@ separate fix, please add the following tag to your commit message:
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[a.melnychenko@vyos.io coreteam@netfilter.org davem@davemloft.net edumazet@=
+google.com fw@strlen.de horms@kernel.org kadlec@netfilter.org kuba@kernel.o=
+rg linux-kernel@vger.kernel.org netdev@vger.kernel.org netfilter-devel@vger=
+.kernel.org pabeni@redhat.com pablo@netfilter.org phil@nwl.cc]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
