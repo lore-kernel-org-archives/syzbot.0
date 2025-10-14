@@ -1,113 +1,86 @@
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D22BE2DCF45
-	for <syzbot@lists.linux.dev>; Mon, 13 Oct 2025 21:23:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB2702E975E
+	for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 03:01:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760390640; cv=none; b=YGzfg9gpXNZIy2CPhInnsekom+YQmQX2JRCv3Taju84O2oQBumcG78cWtlU8oCSWRR/0TUh5kPz0lOYOWYhx88XIb3Bmgx/fNbVrl4PrbD0nPbXrgVRz7hztG7X3ZxTMNbJvnJORpM4lCqDOgcwqY/KNh05V3N2eBQ75frceKIc=
+	t=1760410869; cv=none; b=HIX0ZzLiOA32Umh7Yq0cFb6tioqRDOGSp34VYFvYB6WAgfpjaET2dCrA6LsBhz+s2KOpPotRU7mP5dKrqAayblc/LXQFNfHt7zy1t3Itwp9A3WBfI9DqO7JFuB61761iQCOpEyvu+YW1sCXKdS1aF/zUyEn2XLhc+KchG99gmEM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760390640; c=relaxed/simple;
-	bh=WIo7nxm0mjdKbOHE6uhCTDvalwJ0U4iAVZezzgGzI0U=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=qHTEH2X9yEqPBF1YJbxL5bYC1L2ZUXEPZm2Ycthx6bA62Ngt9oD7qCD99Krpo2TcEtmZFExFaN3JrjaMLajwfuNwxFkSKY/UoFmJ6Bp4zHwBo2RJCFO+TJCBQHieAhD/EsOh8nja4pFOhRJs4HRex7+3xVx4mQI4mcp6/1/ej64=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.70
+	s=arc-20240116; t=1760410869; c=relaxed/simple;
+	bh=FRw7KcTG0B0H+qxIS0C3SL845gEBxfk0E1/01QwJWmA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=JNQJo/G6Qg+K2xyc0oaxE5rp5KAEER1C9chs9jSkd9mnlpcb+v6iJz+XujMKL3KI5H6/H+N71Gjkc2VC1Jv7/Ud+UGQoTYRgWf3JCQXwzEZO4dd0Pg4NPqnXjdjulNKOUOfWdxPPmxmkEcZb5SMHvIcAz/1CSrB4sug2V66UH5U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-919d48f1869so2882583639f.0
-        for <syzbot@lists.linux.dev>; Mon, 13 Oct 2025 14:23:58 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id e9e14a558f8ab-430a442092eso1710875ab.2
+        for <syzbot@lists.linux.dev>; Mon, 13 Oct 2025 20:01:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760390638; x=1760995438;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=AuedoF3HxoFuNqyyGQzlzOND691M6Z4JEh01M7irQAs=;
-        b=N+uVLUZe6wl9Acf2UVhQ8Vwxc9XW+BeU/X3K+Y3x7awGicR7/zI3iRMde4xCTDThT2
-         GF6AgdwVehG6eD+fVGyWGlp/UdBs0wkxFABcVgCvG/adok35vVXt4hCM0j3Vn+vnp76Y
-         V6h42WxP68bCimf2Iwv3+oY0B6mL30FciCqtiJ1D32U7eCa6Nxy/nSyVgeqeoyahdklB
-         nRmNWLLPGh7HU1qejwDHvl5FeXXcglZDe7Hj2Cjoay1IM8oqhu24mefdN2rwDRUo0xF8
-         HDh7qi+IrAdZMI3xcxlQZngusBzYW6G3f8o2yheUO/ZujFmXHs0VU89/NUExI2AsyZWS
-         1Yog==
-X-Gm-Message-State: AOJu0YwByB2KmP2/D6NsKPJGL/ShoWEUMTGwkJOLWxv+NOS6wV2jwOgW
-	4BU3VWPgZZe8M9szMcu2RmM6yXlxRxDO5THGT5ve7ljCYcQmuvl+9Ip+uD7J1xbZU1BEsubxyZy
-	fN51N4oR0K/Lw6HLgH2bj0drYFaLunGyrMoHeKFhhjq/fGqt4Bm9Z+KLYq00=
-X-Google-Smtp-Source: AGHT+IFFe1fNK5RO4Atm+BOUHY1pBrGD6azAWxNtFhN2TL8jtbopXP9nB5BjxwFy9MY/zRRDR86YIRYCo/mHFVnYVyzYfII4kXpq
+        d=1e100.net; s=20230601; t=1760410867; x=1761015667;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=lV5nGWcC5/816OGzfhUY/JNmANqw5hgRKlO+dNfRXoc=;
+        b=dm2kqTzqoNFe/nNHPjHPRCuFZ8WvuzAzV9ZekOHNKCSo2NWjfYT0/W8e3Dx/5DYEyV
+         36OVUIdgTWCXeak/s2m+nnDxzpJuT/LVbcZ9SDf9zrz3krLYP3zPvVl8rUWIk1sQQiVb
+         gs76bycsrr7aT2G2QrpOyKieSSB50kv4rDvSi8utPXISxP/3PD+USBG7hjq3l+im9v2m
+         YJg/l3YqyQdk6q85k4f/gWQsgS4t4ZbESFNTl1k8iuFnqi63bB5JJyFsnZKk41hqMQaL
+         b4q68j+YwSKhiT2lLygKwmMLoJydBA3yu+bdvVfQeUp4yYvgXF2Q8OLdW1EHLFmREvXE
+         y+8A==
+X-Gm-Message-State: AOJu0YzsHP747R2HHOUYQ1pH1NgS4jgLP6sJCQWIfzjrsXLcDY1v89BY
+	QXHXiJ8O++Vy6kRANy0U4tjpfymqRrnUKIGmdAyDHJZsfY5X9vCGrhwdASQUY5b9o4s8yukeET9
+	03EbzinR7p6Sekr9ntgz72DKDH0BPfVdXI5Y+CKtzmuGyiELwR1DOvGyxQLc=
+X-Google-Smtp-Source: AGHT+IGQjbO1ATqOXYWt5fY0FCaIZWVKgbxwvIFhQora7zNvaSM3YevScae5wYIKpyCR/SIuYZMOz3RHQUsjtWRC/oGdIeKLritK
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:3c04:b0:42e:729d:5f65 with SMTP id
- e9e14a558f8ab-42f87350876mr231018935ab.1.1760390637908; Mon, 13 Oct 2025
- 14:23:57 -0700 (PDT)
-Date: Mon, 13 Oct 2025 14:23:57 -0700
+X-Received: by 2002:a05:6e02:3a04:b0:42e:70fd:f5a1 with SMTP id
+ e9e14a558f8ab-42f8735560cmr266083905ab.3.1760410867044; Mon, 13 Oct 2025
+ 20:01:07 -0700 (PDT)
+Date: Mon, 13 Oct 2025 20:01:07 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68ed6ded.050a0220.91a22.01eb.GAE@google.com>
-Subject: [moderation/CI] Re: KVM: x86: Unify L1TF flushing under per-CPU variable
-From: syzbot ci <syzbot+ci995bc9256a200467@syzkaller.appspotmail.com>
+Message-ID: <68edbcf3.050a0220.ac43.0080.GAE@google.com>
+Subject: [moderation/CI] Re: ovl: brtfs' temp_fsid doesn't work with ovl index=on
+From: syzbot ci <syzbot+cif1a685ed4fedda3c@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] KVM: x86: Unify L1TF flushing under per-CPU variable
-https://lore.kernel.org/all/20251013-b4-l1tf-percpu-v1-1-d65c5366ea1a@google.com
-* [PATCH] KVM: x86: Unify L1TF flushing under per-CPU variable
+[v1] ovl: brtfs' temp_fsid doesn't work with ovl index=3Don
+https://lore.kernel.org/all/20251014015707.129013-1-andrealmeid@igalia.com
+* [RFC PATCH 1/1] ovl: Use fsid as unique identifier for trusted origin
 
 and found the following issue:
-BUG: using __this_cpu_write() in preemptible code in x86_emulate_instruction
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/c0a39c51-4121-4883-a21f-4277f63b3118
+https://ci.syzbot.org/series/4340d138-387c-44f4-8c56-ae6b02b8f9bd
 
 ***
 
-BUG: using __this_cpu_write() in preemptible code in x86_emulate_instruction
+kernel build error
 
-tree:      kvm-next
-URL:       https://kernel.googlesource.com/pub/scm/virt/kvm/kvm/
-base:      6b36119b94d0b2bb8cea9d512017efafd461d6ac
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      0d97f2067c166eb495771fede9f7b73999c67f66
 arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/a964957a-128c-43dd-b6df-7758575a9993/config
-C repro:   https://ci.syzbot.org/findings/c0c645e8-abe2-437f-aa29-1adf339cb732/c_repro
-syz repro: https://ci.syzbot.org/findings/c0c645e8-abe2-437f-aa29-1adf339cb732/syz_repro
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/386d1795-79d4-4df9-965d-d25c2114654=
+d/config
 
-BUG: using __this_cpu_write() in preemptible [00000000] code: syz.0.17/5962
-caller is kvm_set_cpu_l1tf_flush_l1d arch/x86/include/asm/kvm_host.h:2486 [inline]
-caller is x86_emulate_instruction+0x1a4/0x1f70 arch/x86/kvm/x86.c:9405
-CPU: 1 UID: 0 PID: 5962 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
- check_preemption_disabled+0x10a/0x120 lib/smp_processor_id.c:47
- kvm_set_cpu_l1tf_flush_l1d arch/x86/include/asm/kvm_host.h:2486 [inline]
- x86_emulate_instruction+0x1a4/0x1f70 arch/x86/kvm/x86.c:9405
- kvm_mmu_page_fault+0x91a/0xb70 arch/x86/kvm/mmu/mmu.c:6385
- __vmx_handle_exit arch/x86/kvm/vmx/vmx.c:6624 [inline]
- vmx_handle_exit+0x10a4/0x18c0 arch/x86/kvm/vmx/vmx.c:6641
- vcpu_enter_guest arch/x86/kvm/x86.c:11461 [inline]
- vcpu_run+0x4359/0x6fc0 arch/x86/kvm/x86.c:11619
- kvm_arch_vcpu_ioctl_run+0xfc9/0x1940 arch/x86/kvm/x86.c:11958
- kvm_vcpu_ioctl+0x95c/0xe90 virt/kvm/kvm_main.c:4476
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:598 [inline]
- __se_sys_ioctl+0xf9/0x170 fs/ioctl.c:584
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f0f9698eec9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fff7c8600c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f0f96be5fa0 RCX: 00007f0f9698eec9
-RDX: 0000000000000000 RSI: 000000000000ae80 RDI: 0000000000000005
-RBP: 00007f0f96a11f91 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f0f96be5fa0 R14: 00007f0f96be5fa0 R15: 0000000000000003
- </TASK>
-
+fs/overlayfs/copy_up.c:431:9: error: array type '__u8[16]' (aka 'unsigned c=
+har[16]') is not assignable
+fs/overlayfs/copy_up.c:470:17: error: indirection requires pointer operand =
+('uuid_t' invalid)
 
 ***
 
@@ -120,7 +93,10 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[bp@alien8.de dave.hansen@linux.intel.com hpa@zytor.com jackmanb@google.com kvm@vger.kernel.org linux-kernel@vger.kernel.org mingo@redhat.com pbonzini@redhat.com seanjc@google.com tglx@linutronix.de x86@kernel.org]
+[amir73il@gmail.com anand.jain@oracle.com andrealmeid@igalia.com clm@fb.com=
+ dsterba@suse.com gpiccoli@igalia.com kernel-dev@igalia.com linux-btrfs@vge=
+r.kernel.org linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org lin=
+ux-unionfs@vger.kernel.org miklos@szeredi.hu]
 
 If the report looks fine to you, reply with:
 #syz upstream
