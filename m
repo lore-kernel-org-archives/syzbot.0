@@ -1,80 +1,188 @@
-Received: from mail-wm1-f73.google.com (mail-wm1-f73.google.com [209.85.128.73])
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1802526E706
-	for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 08:57:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24C7F16F265
+	for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 09:10:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760432256; cv=none; b=mI8g8xiHvtuug+hHMzaLTldPMxdIOcrw2pg9ddw3zbaF07yCPyNZzik1T2uw/gEBLoJsXMBF7nRndhmJOJzmv1ikZqm6Zz45o04zuEqMbWXkEv82/KdWeFmSWDQr5BIR1kPThWxRAuMgyHQ6/wU9y++3XK8hSsljlk6LcpKcYdA=
+	t=1760433021; cv=none; b=VdEILC8INcMyz5vxVwughlubFSx3r5676nQrGlEp1+tREALemCt1qG6HRO/kqF1feKYFJ5E+ahUhUSqPZT+w9ed7PzIA12hUS/GHqf/gC4Zl+F88D1lUhZpT+zENlQ2wtfTIDEXGPMJDWFIsmorfenMWJWtOm02dBghqOXNVTsM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760432256; c=relaxed/simple;
-	bh=E4F6zCQxofT/ijQ1Lk9Sq4gLTN9jp0PKg+b/gO7SpP8=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=ZakzJjhRcdcOiduDv+i+KhMDhrlBf501uWyDE7rWIkFJyKFaNOYozMwgIMeHccpCFJluvH/pI4xLSyyuu3tz2Lu3DlZUVoI9KGwVy7JX4cMK7Jwz7cw4Z4zxM0gTwmGc2FZjJaMrwSQrTKQwkPxpNea8AZvaxedunRjr7Ah7X0A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--jackmanb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=i93E5jw8; arc=none smtp.client-ip=209.85.128.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--jackmanb.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="i93E5jw8"
-Received: by mail-wm1-f73.google.com with SMTP id 5b1f17b1804b1-46e4d34ff05so27771615e9.2
-        for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 01:57:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1760432253; x=1761037053; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=E4F6zCQxofT/ijQ1Lk9Sq4gLTN9jp0PKg+b/gO7SpP8=;
-        b=i93E5jw85tXMWgCEttvnE7IcKYBJ4EnUArlvoW7fXLHBsou2eQsGJ9CAxWCnTbttjS
-         akYUwQ3O/cUn23QdqedhFdxxKeXT3OWR3Wo9d8YcEf8fPWTa7iYg2OB4147HLZyrinoC
-         6HMBblCSTjcrt6IftF6eK34cVoSNGoIHKcgAwgjlnMyV3poJrgH1Gt0001K6v24Vb49C
-         wRYYQ1u1ZCJ8j8rCXmOLDLwcaJ5TF9rf8LgYPxYgfQAOjQhl5Hc3+6zu1+67tytZZcPO
-         +WQES4oBEU8SAmqnJBoQZ71B+wpcdBARYxLccm/7NYkG+5RroIXeeGehG0mFQD2S2o2v
-         3zYQ==
+	s=arc-20240116; t=1760433021; c=relaxed/simple;
+	bh=v2R1yCJ/bHbyUIngERGEF22+BO7zlVUYRmLNbKpfxlg=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=dT2a5dVIXeBeEPcZqdU2EYpNqXRuT6/sgssQqOV6YLe7ak3eJZP6ysgB+uTeMaGECiIlxR+QC7TFwkzfGMxBM3q9qrL9wOZuUcYl3OE7PpFFK8zqiEWp71nhSGMoLpHGLQY+jBVxP43UfXEASfZj1WviLuA0kjLyd9e1GIWi6EU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-42f6639fb22so153566685ab.0
+        for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 02:10:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760432253; x=1761037053;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=E4F6zCQxofT/ijQ1Lk9Sq4gLTN9jp0PKg+b/gO7SpP8=;
-        b=GO2gHXpAyk5vj19SMB3maXekCDTC48YlW1p1gKR/JSln0TmeaL3FcPYlrmOcV7T6mE
-         uhM+GuY//HXSRm8q+nNFUfj/xwpWKvsOSS0uKK0BGWb70VP4lc2k0QqXa2JeyASxPlSJ
-         UJ1/JIxy/PLxU18z+C16vtGue5jfp0+hVXuCscoppNoVo11AHSva3/sdIPEGVzvf4c5q
-         1Smcqr/zmH0h+nko8TNRf0gMQn1mMU9tRzpbJpbTFTJbY3xdglXswOEccY43H9V1F1IZ
-         aYWeVQpse620iDafaWosj5HE+sgVzEGWj0Hn5r+W7Q5MMgxxWqhiUdgD05Mo4RYwZ2E7
-         68fw==
-X-Gm-Message-State: AOJu0YwBjjUeEjUZslRmPyhXuBGvxX6NwJhQKBerZWMmSEgs+OE4Zplg
-	Djrtnv8UaXcAQj8lG3EbUZOTwb+GUcQbpNSCLW0Mwhz+fPHGksGsq9SZXOLVrKGRD/IiOiZeOoC
-	knhU+hYcH15vySQ==
-X-Google-Smtp-Source: AGHT+IG3ne3PsSqSbyFbnpOiDKEA5Cl7N+bezBY3keJ7BevMSp8mdAb5PmKQd21efPgwnEf76x9mBJX1JTeeNg==
-X-Received: from wmpj26.prod.google.com ([2002:a05:600c:489a:b0:46e:3921:1b1])
- (user=jackmanb job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:6287:b0:46f:b42e:e365 with SMTP id 5b1f17b1804b1-46fb42ee3f5mr101990975e9.39.1760432253068;
- Tue, 14 Oct 2025 01:57:33 -0700 (PDT)
-Date: Tue, 14 Oct 2025 08:57:32 +0000
-In-Reply-To: <68edea17.050a0220.91a22.01fd.GAE@google.com>
+        d=1e100.net; s=20230601; t=1760433018; x=1761037818;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=AEKg+GQli6vomCmfpEoGzv10+EYzyEvISu4AthJO1dY=;
+        b=GxuOsnhe/uhUcyVAxIhHCuW2/QiLYfCZHnZYaXcpCetVtgymuzMWWc3OCwlZhzT6dX
+         oDRYvrHWUHf9MjvRQk+wZBlDj6x1HwjVBXBtERqrz2L7jnFGSkjZvmoDEfoEn9M8uALK
+         3KnnZUeJfogIBx/TM5vmWYRhOcd+WJyRPS0qHhUMgQ+QNiVIU+clQN3aa9m/YduwMxsd
+         gpf1RHzmO8UXoFyQGaXsMev3JwMk6qz5TtkkLDeJZhWbMwOddyaearEXDd8dbVLZafsd
+         /ZOfjoJY9eKQNrriJMxRG2bzJmneU+rgIYnyoqYKFWU0P9Fs0h0DB/0kb3If7fcgo+dA
+         DD4w==
+X-Gm-Message-State: AOJu0Yz6Ox8jkJ6QFFZdyMyhXw52bAy6Xcrhb1GpB3l18JI5AosrawHr
+	NfL4lM6QGi0sztKwNBOEixFq8dOqePivo4ywuNAuJdVzIeAGhfrgLAEH/q4y8/k3XYmayBEVi+r
+	/lbXoCwVUhqHb27Vk9FjJLrw8pCzLIdfV4JpIcYLvVqLxA9VziVsakxfZas0=
+X-Google-Smtp-Source: AGHT+IG3TEDnbfyNFhBwtdvx9xpv6RG1wYvoLXHGw3ptWBPUeY5axpKZJlWMFIwzBBQcQRK/3pv67pvjNaf2w9q4Q1UU7n7ZnKZS
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20251013-b4-l1tf-percpu-v1-1-d65c5366ea1a@google.com> <68edea17.050a0220.91a22.01fd.GAE@google.com>
-X-Mailer: aerc 0.21.0
-Message-ID: <DDHX5G54GS7D.1YC8514SPRGQF@google.com>
-Subject: Re: [syzbot ci] Re: KVM: x86: Unify L1TF flushing under per-CPU variable
-From: Brendan Jackman <jackmanb@google.com>
-To: syzbot ci <syzbot+ci693402a94575bcb2@syzkaller.appspotmail.com>, <bp@alien8.de>, 
-	<dave.hansen@linux.intel.com>, <hpa@zytor.com>, <jackmanb@google.com>, 
-	<kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>, <mingo@redhat.com>, 
-	<pbonzini@redhat.com>, <seanjc@google.com>, <tglx@linutronix.de>, 
-	<x86@kernel.org>
-Cc: <syzbot@lists.linux.dev>, <syzkaller-bugs@googlegroups.com>
+MIME-Version: 1.0
+X-Received: by 2002:a05:6e02:3082:b0:430:a0f7:a5b1 with SMTP id
+ e9e14a558f8ab-430a0f7b7b0mr24483835ab.24.1760433018236; Tue, 14 Oct 2025
+ 02:10:18 -0700 (PDT)
+Date: Tue, 14 Oct 2025 02:10:18 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68ee137a.050a0220.91a22.0202.GAE@google.com>
+Subject: [moderation/CI] Re: net/tls: support setting the maximum payload size
+From: syzbot ci <syzbot+cie109a12f1eafee2c@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue Oct 14, 2025 at 6:13 AM UTC, syzbot ci wrote:
-> BUG: using __this_cpu_write() in preemptible code in x86_emulate_instruction
+syzbot ci has tested the following series
 
-Ah. And now I realise I never booted my debug config on an actual
-Skylake host, I'd better do that, presumably running the KVM selftests
-with DEBUG_PREEMPT etc would have been enough to catch this earlier.
+[v5] net/tls: support setting the maximum payload size
+https://lore.kernel.org/all/20251014051825.1084403-2-wilfred.opensource@gma=
+il.com
+* [PATCH net-next v5 1/2] net/tls: support setting the maximum payload size
+* [PATCH net-next v5 2/2] selftests: tls: add tls record_size_limit test
 
-Anyway, I guest we just want to use vcpu->arch.last_vmentry_cpu instead
-of smp_processor_id()?
+and found the following issue:
+general protection fault in tls_setsockopt
+
+Full report is available here:
+https://ci.syzbot.org/series/210c88bf-945a-460c-9fe3-c55bd1958b5d
+
+***
+
+general protection fault in tls_setsockopt
+
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net-next.git
+base:      18a7e218cfcdca6666e1f7356533e4c988780b57
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/ae03b3d4-e809-4b0e-bd4a-76b4ae8e9d7=
+4/config
+C repro:   https://ci.syzbot.org/findings/d0b97737-6ea7-4c05-b10b-71dc834c9=
+393/c_repro
+syz repro: https://ci.syzbot.org/findings/d0b97737-6ea7-4c05-b10b-71dc834c9=
+393/syz_repro
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc=
+0000000023: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000118-0x000000000000011f]
+CPU: 1 UID: 0 PID: 5970 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:do_tls_setsockopt_tx_payload_len net/tls/tls_main.c:847 [inline]
+RIP: 0010:do_tls_setsockopt net/tls/tls_main.c:887 [inline]
+RIP: 0010:tls_setsockopt+0x189/0x1590 net/tls/tls_main.c:906
+Code: ff df 80 3c 08 00 74 08 4c 89 ff e8 51 67 3c f8 41 bc 18 01 00 00 4d =
+03 27 4c 89 e0 48 c1 e8 03 49 bf 00 00 00 00 00 fc ff df <42> 80 3c 38 00 7=
+4 08 4c 89 e7 e8 28 67 3c f8 49 83 3c 24 00 0f 84
+RSP: 0018:ffffc90003e57cc0 EFLAGS: 00010202
+RAX: 0000000000000023 RBX: ffff88816adfcc00 RCX: dffffc0000000000
+RDX: 0000000000000006 RSI: ffffffff8d7e872a RDI: ffffffff8bc074e0
+RBP: ffffc90003e57e38 R08: ffffffff8f9e0f77 R09: 1ffffffff1f3c1ee
+R10: dffffc0000000000 R11: fffffbfff1f3c1ef R12: 0000000000000118
+R13: 1ffff920007cafa4 R14: ffff88816b33bde8 R15: dffffc0000000000
+FS:  00005555585b2500(0000) GS:ffff8882a9d0f000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000200000000180 CR3: 000000010739e000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ do_sock_setsockopt+0x17c/0x1b0 net/socket.c:2360
+ __sys_setsockopt net/socket.c:2385 [inline]
+ __do_sys_setsockopt net/socket.c:2391 [inline]
+ __se_sys_setsockopt net/socket.c:2388 [inline]
+ __x64_sys_setsockopt+0x13f/0x1b0 net/socket.c:2388
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f499fb8eec9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffecf309e88 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
+RAX: ffffffffffffffda RBX: 00007f499fde5fa0 RCX: 00007f499fb8eec9
+RDX: 0000000000000005 RSI: 000000000000011a RDI: 0000000000000003
+RBP: 00007f499fc11f91 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f499fde5fa0 R14: 00007f499fde5fa0 R15: 0000000000000005
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:do_tls_setsockopt_tx_payload_len net/tls/tls_main.c:847 [inline]
+RIP: 0010:do_tls_setsockopt net/tls/tls_main.c:887 [inline]
+RIP: 0010:tls_setsockopt+0x189/0x1590 net/tls/tls_main.c:906
+Code: ff df 80 3c 08 00 74 08 4c 89 ff e8 51 67 3c f8 41 bc 18 01 00 00 4d =
+03 27 4c 89 e0 48 c1 e8 03 49 bf 00 00 00 00 00 fc ff df <42> 80 3c 38 00 7=
+4 08 4c 89 e7 e8 28 67 3c f8 49 83 3c 24 00 0f 84
+RSP: 0018:ffffc90003e57cc0 EFLAGS: 00010202
+RAX: 0000000000000023 RBX: ffff88816adfcc00 RCX: dffffc0000000000
+RDX: 0000000000000006 RSI: ffffffff8d7e872a RDI: ffffffff8bc074e0
+RBP: ffffc90003e57e38 R08: ffffffff8f9e0f77 R09: 1ffffffff1f3c1ee
+R10: dffffc0000000000 R11: fffffbfff1f3c1ef R12: 0000000000000118
+R13: 1ffff920007cafa4 R14: ffff88816b33bde8 R15: dffffc0000000000
+FS:  00005555585b2500(0000) GS:ffff8882a9d0f000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000200000000180 CR3: 000000010739e000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess), 1 bytes skipped:
+   0:	df 80 3c 08 00 74    	filds  0x7400083c(%rax)
+   6:	08 4c 89 ff          	or     %cl,-0x1(%rcx,%rcx,4)
+   a:	e8 51 67 3c f8       	call   0xf83c6760
+   f:	41 bc 18 01 00 00    	mov    $0x118,%r12d
+  15:	4d 03 27             	add    (%r15),%r12
+  18:	4c 89 e0             	mov    %r12,%rax
+  1b:	48 c1 e8 03          	shr    $0x3,%rax
+  1f:	49 bf 00 00 00 00 00 	movabs $0xdffffc0000000000,%r15
+  26:	fc ff df
+* 29:	42 80 3c 38 00       	cmpb   $0x0,(%rax,%r15,1) <-- trapping instruct=
+ion
+  2e:	74 08                	je     0x38
+  30:	4c 89 e7             	mov    %r12,%rdi
+  33:	e8 28 67 3c f8       	call   0xf83c6760
+  38:	49 83 3c 24 00       	cmpq   $0x0,(%r12)
+  3d:	0f                   	.byte 0xf
+  3e:	84                   	.byte 0x84
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[corbet@lwn.net davem@davemloft.net edumazet@google.com horms@kernel.org jo=
+hn.fastabend@gmail.com kuba@kernel.org linux-doc@vger.kernel.org linux-kern=
+el@vger.kernel.org linux-kselftest@vger.kernel.org netdev@vger.kernel.org p=
+abeni@redhat.com sd@queasysnail.net shuah@kernel.org wilfred.mallawa@wdc.co=
+m wilfred.opensource@gmail.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
