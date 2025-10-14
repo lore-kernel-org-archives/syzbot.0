@@ -1,125 +1,80 @@
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+Received: from mail-wm1-f73.google.com (mail-wm1-f73.google.com [209.85.128.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 152FE7262D
-	for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 06:13:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1802526E706
+	for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 08:57:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760422425; cv=none; b=DOQ4Nez8eYgXygtwsbR8qfAtFLvlSzali2kfbFCPcGYrnldLUGa6YlzMy7hPcr5hCAwBsNfLL2pcm8sAQ6+rWzp0uAEQ0ha2/pT1M9zFvFD5gN3eOeKyw7UHM2XB/dYtZ318TNXSNVxBAC83DXXhZKAYrdCeSdADG3L5OJWhmKM=
+	t=1760432256; cv=none; b=mI8g8xiHvtuug+hHMzaLTldPMxdIOcrw2pg9ddw3zbaF07yCPyNZzik1T2uw/gEBLoJsXMBF7nRndhmJOJzmv1ikZqm6Zz45o04zuEqMbWXkEv82/KdWeFmSWDQr5BIR1kPThWxRAuMgyHQ6/wU9y++3XK8hSsljlk6LcpKcYdA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760422425; c=relaxed/simple;
-	bh=YSW3cVmJTLq0P9Z69cpcttKtEg1Y9/htUjbx6+Wc3rg=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=ZfMRT4JOVXO4tZtqEDfBw/0Q5zYVaM1ffmn6dK8gnPP0lcP7AiqP8wR2o4+YkOdHgcRftbXMHgvuYtKevgXzgsdiiipNnPFs2uGcwMXD75yTVjC8aWEkZqZpJciRDdBnhIEHPAV0COlR2HOqgpgEcWlmuNsn+qkCnmxaL6gzB2Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-930db3a16c9so1109597039f.0
-        for <syzbot@lists.linux.dev>; Mon, 13 Oct 2025 23:13:43 -0700 (PDT)
+	s=arc-20240116; t=1760432256; c=relaxed/simple;
+	bh=E4F6zCQxofT/ijQ1Lk9Sq4gLTN9jp0PKg+b/gO7SpP8=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=ZakzJjhRcdcOiduDv+i+KhMDhrlBf501uWyDE7rWIkFJyKFaNOYozMwgIMeHccpCFJluvH/pI4xLSyyuu3tz2Lu3DlZUVoI9KGwVy7JX4cMK7Jwz7cw4Z4zxM0gTwmGc2FZjJaMrwSQrTKQwkPxpNea8AZvaxedunRjr7Ah7X0A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--jackmanb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=i93E5jw8; arc=none smtp.client-ip=209.85.128.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--jackmanb.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="i93E5jw8"
+Received: by mail-wm1-f73.google.com with SMTP id 5b1f17b1804b1-46e4d34ff05so27771615e9.2
+        for <syzbot@lists.linux.dev>; Tue, 14 Oct 2025 01:57:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1760432253; x=1761037053; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=E4F6zCQxofT/ijQ1Lk9Sq4gLTN9jp0PKg+b/gO7SpP8=;
+        b=i93E5jw85tXMWgCEttvnE7IcKYBJ4EnUArlvoW7fXLHBsou2eQsGJ9CAxWCnTbttjS
+         akYUwQ3O/cUn23QdqedhFdxxKeXT3OWR3Wo9d8YcEf8fPWTa7iYg2OB4147HLZyrinoC
+         6HMBblCSTjcrt6IftF6eK34cVoSNGoIHKcgAwgjlnMyV3poJrgH1Gt0001K6v24Vb49C
+         wRYYQ1u1ZCJ8j8rCXmOLDLwcaJ5TF9rf8LgYPxYgfQAOjQhl5Hc3+6zu1+67tytZZcPO
+         +WQES4oBEU8SAmqnJBoQZ71B+wpcdBARYxLccm/7NYkG+5RroIXeeGehG0mFQD2S2o2v
+         3zYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760422423; x=1761027223;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZubFNhWcbuzmyn2fCiien/rQoEi8wwx6tXeFV3OPrlg=;
-        b=v3MyVwx1YLz71ZKQW8D4Lb2hSEeTWa2TjUF/YM3ip4OSPTnL9QZVFXyuT9w6eYDvdW
-         ZDuIZiCQPad1Wm/bgORpmQ/iZd/J2tzNIEB00nq9zWwZz3DJM1PP3taJ8BsipP8wZd80
-         jTdd46F6roDw5Fo1Va508UmU5oq864/GoptseLlwj2vKAJHmGKCZsPm4C04jpgL8JAUR
-         aqNQR3JdWkfreGJC08St0F1RFza9xXehZu4dK0HIiCgigCX+dOYSVLNxM3W+oNx4AJ2V
-         mEquiaNpU+TlR337JtV7bnchdlDiuluon12gnq7sC6hBbcyUIdpv6Vfl8O5qFWeQRokm
-         07/A==
-X-Gm-Message-State: AOJu0Yxu628jdSHH1czh6oRjIQDuyu8xg9YNsF/Oaze6XzkSyl74P2Yg
-	zUUv1oSrZ4T765TxO4EJt14b1/+LwZ2m/PKepssJTvukhS/n4bTPOppnaHam48BUC4UIioiDYnh
-	qMMoXPWqvB7AT1iEf3/K5wqjp+ldjNuURZPtNpUMqSyGGq6upHOabTS8nW8Q=
-X-Google-Smtp-Source: AGHT+IH77SyfJDzBSRXva3BYzxiwYFsXqUsNi6yOgAlgjQrJbB1r0/usBzxeXB/c8QMzHnqpZonGzF3CBzrda2KDHIxO3UwCfKF5
+        d=1e100.net; s=20230601; t=1760432253; x=1761037053;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=E4F6zCQxofT/ijQ1Lk9Sq4gLTN9jp0PKg+b/gO7SpP8=;
+        b=GO2gHXpAyk5vj19SMB3maXekCDTC48YlW1p1gKR/JSln0TmeaL3FcPYlrmOcV7T6mE
+         uhM+GuY//HXSRm8q+nNFUfj/xwpWKvsOSS0uKK0BGWb70VP4lc2k0QqXa2JeyASxPlSJ
+         UJ1/JIxy/PLxU18z+C16vtGue5jfp0+hVXuCscoppNoVo11AHSva3/sdIPEGVzvf4c5q
+         1Smcqr/zmH0h+nko8TNRf0gMQn1mMU9tRzpbJpbTFTJbY3xdglXswOEccY43H9V1F1IZ
+         aYWeVQpse620iDafaWosj5HE+sgVzEGWj0Hn5r+W7Q5MMgxxWqhiUdgD05Mo4RYwZ2E7
+         68fw==
+X-Gm-Message-State: AOJu0YwBjjUeEjUZslRmPyhXuBGvxX6NwJhQKBerZWMmSEgs+OE4Zplg
+	Djrtnv8UaXcAQj8lG3EbUZOTwb+GUcQbpNSCLW0Mwhz+fPHGksGsq9SZXOLVrKGRD/IiOiZeOoC
+	knhU+hYcH15vySQ==
+X-Google-Smtp-Source: AGHT+IG3ne3PsSqSbyFbnpOiDKEA5Cl7N+bezBY3keJ7BevMSp8mdAb5PmKQd21efPgwnEf76x9mBJX1JTeeNg==
+X-Received: from wmpj26.prod.google.com ([2002:a05:600c:489a:b0:46e:3921:1b1])
+ (user=jackmanb job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:600c:6287:b0:46f:b42e:e365 with SMTP id 5b1f17b1804b1-46fb42ee3f5mr101990975e9.39.1760432253068;
+ Tue, 14 Oct 2025 01:57:33 -0700 (PDT)
+Date: Tue, 14 Oct 2025 08:57:32 +0000
+In-Reply-To: <68edea17.050a0220.91a22.01fd.GAE@google.com>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:378e:b0:42d:89d8:20b7 with SMTP id
- e9e14a558f8ab-42f874261f4mr233253785ab.31.1760422423241; Mon, 13 Oct 2025
- 23:13:43 -0700 (PDT)
-Date: Mon, 13 Oct 2025 23:13:43 -0700
-In-Reply-To: <20251013-b4-l1tf-percpu-v1-1-d65c5366ea1a@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68edea17.050a0220.91a22.01fd.GAE@google.com>
-Subject: [syzbot ci] Re: KVM: x86: Unify L1TF flushing under per-CPU variable
-From: syzbot ci <syzbot+ci693402a94575bcb2@syzkaller.appspotmail.com>
-To: bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com, 
-	jackmanb@google.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	mingo@redhat.com, pbonzini@redhat.com, seanjc@google.com, tglx@linutronix.de, 
-	x86@kernel.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Mime-Version: 1.0
+References: <20251013-b4-l1tf-percpu-v1-1-d65c5366ea1a@google.com> <68edea17.050a0220.91a22.01fd.GAE@google.com>
+X-Mailer: aerc 0.21.0
+Message-ID: <DDHX5G54GS7D.1YC8514SPRGQF@google.com>
+Subject: Re: [syzbot ci] Re: KVM: x86: Unify L1TF flushing under per-CPU variable
+From: Brendan Jackman <jackmanb@google.com>
+To: syzbot ci <syzbot+ci693402a94575bcb2@syzkaller.appspotmail.com>, <bp@alien8.de>, 
+	<dave.hansen@linux.intel.com>, <hpa@zytor.com>, <jackmanb@google.com>, 
+	<kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>, <mingo@redhat.com>, 
+	<pbonzini@redhat.com>, <seanjc@google.com>, <tglx@linutronix.de>, 
+	<x86@kernel.org>
+Cc: <syzbot@lists.linux.dev>, <syzkaller-bugs@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 
-syzbot ci has tested the following series
+On Tue Oct 14, 2025 at 6:13 AM UTC, syzbot ci wrote:
+> BUG: using __this_cpu_write() in preemptible code in x86_emulate_instruction
 
-[v1] KVM: x86: Unify L1TF flushing under per-CPU variable
-https://lore.kernel.org/all/20251013-b4-l1tf-percpu-v1-1-d65c5366ea1a@google.com
-* [PATCH] KVM: x86: Unify L1TF flushing under per-CPU variable
+Ah. And now I realise I never booted my debug config on an actual
+Skylake host, I'd better do that, presumably running the KVM selftests
+with DEBUG_PREEMPT etc would have been enough to catch this earlier.
 
-and found the following issue:
-BUG: using __this_cpu_write() in preemptible code in x86_emulate_instruction
-
-Full report is available here:
-https://ci.syzbot.org/series/c0a39c51-4121-4883-a21f-4277f63b3118
-
-***
-
-BUG: using __this_cpu_write() in preemptible code in x86_emulate_instruction
-
-tree:      kvm-next
-URL:       https://kernel.googlesource.com/pub/scm/virt/kvm/kvm/
-base:      6b36119b94d0b2bb8cea9d512017efafd461d6ac
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/a964957a-128c-43dd-b6df-7758575a9993/config
-C repro:   https://ci.syzbot.org/findings/c0c645e8-abe2-437f-aa29-1adf339cb732/c_repro
-syz repro: https://ci.syzbot.org/findings/c0c645e8-abe2-437f-aa29-1adf339cb732/syz_repro
-
-BUG: using __this_cpu_write() in preemptible [00000000] code: syz.0.17/5962
-caller is kvm_set_cpu_l1tf_flush_l1d arch/x86/include/asm/kvm_host.h:2486 [inline]
-caller is x86_emulate_instruction+0x1a4/0x1f70 arch/x86/kvm/x86.c:9405
-CPU: 1 UID: 0 PID: 5962 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
- check_preemption_disabled+0x10a/0x120 lib/smp_processor_id.c:47
- kvm_set_cpu_l1tf_flush_l1d arch/x86/include/asm/kvm_host.h:2486 [inline]
- x86_emulate_instruction+0x1a4/0x1f70 arch/x86/kvm/x86.c:9405
- kvm_mmu_page_fault+0x91a/0xb70 arch/x86/kvm/mmu/mmu.c:6385
- __vmx_handle_exit arch/x86/kvm/vmx/vmx.c:6624 [inline]
- vmx_handle_exit+0x10a4/0x18c0 arch/x86/kvm/vmx/vmx.c:6641
- vcpu_enter_guest arch/x86/kvm/x86.c:11461 [inline]
- vcpu_run+0x4359/0x6fc0 arch/x86/kvm/x86.c:11619
- kvm_arch_vcpu_ioctl_run+0xfc9/0x1940 arch/x86/kvm/x86.c:11958
- kvm_vcpu_ioctl+0x95c/0xe90 virt/kvm/kvm_main.c:4476
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:598 [inline]
- __se_sys_ioctl+0xf9/0x170 fs/ioctl.c:584
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f0f9698eec9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fff7c8600c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f0f96be5fa0 RCX: 00007f0f9698eec9
-RDX: 0000000000000000 RSI: 000000000000ae80 RDI: 0000000000000005
-RBP: 00007f0f96a11f91 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f0f96be5fa0 R14: 00007f0f96be5fa0 R15: 0000000000000003
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+Anyway, I guest we just want to use vcpu->arch.last_vmentry_cpu instead
+of smp_processor_id()?
