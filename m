@@ -1,145 +1,122 @@
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A88327B34D
-	for <syzbot@lists.linux.dev>; Wed, 15 Oct 2025 18:47:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D444325480;
+	Wed, 15 Oct 2025 19:13:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.133.104.62
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760554039; cv=none; b=nvju16idrrextZC3l48B5hgh8vsCf7Iznjx+G+qALDXPmARwd6YImF7ywqFTHQW5KdI6dg6yaTwCMBDALeNcnCUcPPx7VgD8CCxapau5EbJW+D2Z/D0dBpj+e3l1i5+1ja5vaWB8CurifcrqF4LX4jLwGLWTYbzIBATEzhG+N6k=
+	t=1760555623; cv=none; b=gY10llcy/+D8p0HgW7RYgr2bipP1wWf4Ddy/UamhP0enskIcN7aiOlBP8Bg8KrjNkZ702WLM+syBAKmwtQGH6f4z7dGVjreQSNwOfIGxKW+Xppia69S+BR2oUfAd79WhJ+NOD8vmxElRvBRmeethZ0aNkTLY4VgIpBODzq67U6E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760554039; c=relaxed/simple;
-	bh=HHX7GSHxmnjGTUsk+R3olZrhoT3lOXEtIKPbaY1UK9k=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=Abubut3x+y+J7fOjZ6PsJdto5U7VY8/8MuP6zhiXF6s4t7FLV7CDn6aStvxm/KBYx3D2wp53SaazpDxaED1/B/1th2CJdkIGDb5XDtD4czypKsvjk0EpwM7gKIXNv+MAunAFGiPJAVhZ/40h7Fx1tQdnoHeJqPLln6PEhbn9zKo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f197.google.com with SMTP id e9e14a558f8ab-42fa6ace903so118550385ab.3
-        for <syzbot@lists.linux.dev>; Wed, 15 Oct 2025 11:47:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760554037; x=1761158837;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=tXhwfDe5x5DiOvEHEE1cuwjprX0AALWQhFCn8f5jiQw=;
-        b=BsLTPNHgDkqffPAtBYHam+pUwCvnceHDooXVdhLKlyldU5QRs5CdjschnEm8VsGGrZ
-         1sOM2BbalLQrqH8K/KfPGCcQvtbHSNoD+VfISJ06e9fluRn4B0Qy2OSmAfMIUnpKOEm+
-         xCmkzt06yOP1gStiF7MYE3TDmp79n12gUO+fKCcNksPn3Wy4ymjutwdc7xPosM/U6SZf
-         el6YQj7Qy21Ls6fMz4aPrz4F/rZSzVqPkgoNx8Zk42ehV6YxUq/D1W0G/w8YyzUEJczF
-         wFTjs84dTjlvOUjNt+j1oQzRGo9mGhHCZRxc3FwmZo1BDPqOyMTe8JQvZ2IaPMo1CmJX
-         /1vg==
-X-Gm-Message-State: AOJu0YwF0B/hgy9Me/tJijzOryISRuq8WDrjIty2rpBwM4eLwuDrdLo7
-	XM/Y7UAmMzv9L/SC1AfeqV0x+QkkSbq+a1mAW24Fy2rlW/WA0whjDz6wTS0BuMR5cUX5D8t4NAn
-	5ipGfycvKFCIpQBIp36JbMfA6Nel5mdwwmZVCQyMruLnP4qa4rV5dAqhPQtY=
-X-Google-Smtp-Source: AGHT+IG0/Sg8YvnECSK7GV2NJsTOXSLgXIRXiVuzVAgRUG1C8KfWcQJ5eUQr5G0dAEr10p0umA0y5+yLQeAuCnx18GqAJ1pXvjgJ
+	s=arc-20240116; t=1760555623; c=relaxed/simple;
+	bh=vSb4mrhFemKGqe3wwEhmxVv3m7IlnmCRLSwmub2K9+g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LUC9Eop+kqb/wyZojPA4GgNyz/dwBUgqx21FXM/mjojqVSUZLlMUtx4A3hABksneDiUbDfCrPPfkN1FKqeBZ5flGexkiA8HM/9BNxQn8cqThOmLFIF4EREl62GwZaK5ghfx7lk9E6Zhg9GwM5yBF7PxmLhxi6JjCv1AmQr5UVM0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=iogearbox.net; spf=pass smtp.mailfrom=iogearbox.net; dkim=pass (2048-bit key) header.d=iogearbox.net header.i=@iogearbox.net header.b=nmA9wUyY; arc=none smtp.client-ip=213.133.104.62
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=iogearbox.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iogearbox.net
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=iogearbox.net header.i=@iogearbox.net header.b="nmA9wUyY"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
+	bh=XG6SLsUlqGKped8qznvDiJBkM1uZY8YiRJu4fS2D3rs=; b=nmA9wUyYRUbdz8ASRiRlXirT4A
+	PomfmYDjTJNuz1tKbGZTCRUINIAQ+3LNjGwcGaMBrn+0voFeOePQ5ltSe+ywqNeAt/U1UjfopH2WQ
+	ozVEIHNztLNCEipRanG3voLhimH5tFVDgD0P4Qt1MBpZ9dR9d19F7FECntBkCrTrCvTRN+j7Km/0g
+	sGl4gpCphsgaN17t5KdNdEByzVuQ9LC5cXYj2iM2tCnXxrJCtKOkpks+hB2/Krl2gs4AOuRH6JOz1
+	vN6hDuwVOZETHYIpbfcwMtDtQTNuTjpN2sa45NsKSwUy9p7Q5wE8q+qyewWNQ8qDV6rQmTSPUCEe2
+	VZ/6TBeg==;
+Received: from sslproxy07.your-server.de ([78.47.199.104])
+	by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.96.2)
+	(envelope-from <daniel@iogearbox.net>)
+	id 1v96wC-0009kC-1y;
+	Wed, 15 Oct 2025 21:13:28 +0200
+Received: from localhost ([127.0.0.1])
+	by sslproxy07.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <daniel@iogearbox.net>)
+	id 1v96wB-0007So-1e;
+	Wed, 15 Oct 2025 21:13:27 +0200
+Message-ID: <90793a62-83c2-4a49-adbb-ab45dced76fc@iogearbox.net>
+Date: Wed, 15 Oct 2025 21:13:26 +0200
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:2197:b0:430:b32d:c197 with SMTP id
- e9e14a558f8ab-430b32dc94bmr22039435ab.27.1760554037558; Wed, 15 Oct 2025
- 11:47:17 -0700 (PDT)
-Date: Wed, 15 Oct 2025 11:47:17 -0700
-In-Reply-To: <20251015125945.481950-1-hao.ge@linux.dev>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68efec35.050a0220.91a22.02cb.GAE@google.com>
-Subject: [syzbot ci] Re: slab: clear OBJEXTS_ALLOC_FAIL when freeing a slab
-From: syzbot ci <syzbot+cib7b0db858ede4f18@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, ast@kernel.org, cl@gentwo.org, gehao@kylinos.cn, 
-	hao.ge@linux.dev, harry.yoo@oracle.com, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, rientjes@google.com, roman.gushchin@linux.dev, 
-	shakeel.butt@linux.dev, surenb@google.com, vbabka@suse.cz
+User-Agent: Mozilla Thunderbird
+Subject: Re: [syzbot ci] Re: netkit: Support for io_uring zero-copy and AF_XDP
+To: syzbot ci <syzbot+ci7c73a60f40f79ce2@syzkaller.appspotmail.com>,
+ bpf@vger.kernel.org, davem@davemloft.net, dw@davidwei.uk,
+ john.fastabend@gmail.com, jordan@jrife.io, kuba@kernel.org,
+ maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+ martin.lau@kernel.org, netdev@vger.kernel.org, pabeni@redhat.com,
+ razor@blackwall.org, sdf@fomichev.me, toke@redhat.com,
+ wangdongdong.6@bytedance.com, willemb@google.com, yangzhenze@bytedance.com
 Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+References: <68efec17.050a0220.91a22.02ca.GAE@google.com>
+Content-Language: en-US
+From: Daniel Borkmann <daniel@iogearbox.net>
+Autocrypt: addr=daniel@iogearbox.net; keydata=
+ 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
+In-Reply-To: <68efec17.050a0220.91a22.02ca.GAE@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: Clear (ClamAV 1.0.9/27793/Wed Oct 15 11:29:40 2025)
 
-syzbot ci has tested the following series
+On 10/15/25 8:46 PM, syzbot ci wrote:
+> syzbot ci has tested the following series
+[...]
+> WARNING: CPU: 1 PID: 5959 at ./include/net/netdev_lock.h:17 netdev_assert_locked include/net/netdev_lock.h:17 [inline]
+> WARNING: CPU: 1 PID: 5959 at ./include/net/netdev_lock.h:17 netif_get_rx_queue_peer_locked+0x2f1/0x3a0 net/core/netdev_rx_queue.c:71
+[...]
+>   <TASK>
+>   xsk_reg_pool_at_qid+0x20b/0x630 net/xdp/xsk.c:159
 
-[v4] slab: clear OBJEXTS_ALLOC_FAIL when freeing a slab
-https://lore.kernel.org/all/20251015125945.481950-1-hao.ge@linux.dev
-* [PATCH v4] slab: clear OBJEXTS_ALLOC_FAIL when freeing a slab
-
-and found the following issue:
-kernel BUG in __free_slab
-
-Full report is available here:
-https://ci.syzbot.org/series/61ff4fe1-2e84-410d-ad85-42ead772d9c8
-
-***
-
-kernel BUG in __free_slab
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      3a8660878839faadb4f1a6dd72c3179c1df56787
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/e5875084-ea86-418c-979d-5b00cded86ca/config
-syz repro: https://ci.syzbot.org/findings/1f8913d8-6d9a-448a-9419-90b758c82c3b/syz_repro
-
- ___sys_sendmsg+0x21f/0x2a0 net/socket.c:2684
- __sys_sendmsg net/socket.c:2716 [inline]
- __do_sys_sendmsg net/socket.c:2721 [inline]
- __se_sys_sendmsg net/socket.c:2719 [inline]
- __x64_sys_sendmsg+0x19b/0x260 net/socket.c:2719
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-------------[ cut here ]------------
-kernel BUG at mm/slab.h:544!
-Oops: invalid opcode: 0000 [#1] SMP KASAN PTI
-CPU: 0 UID: 0 PID: 15 Comm: ksoftirqd/0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:slab_obj_exts mm/slab.h:543 [inline]
-RIP: 0010:free_slab_obj_exts mm/slub.c:2178 [inline]
-RIP: 0010:unaccount_slab mm/slub.c:3186 [inline]
-RIP: 0010:__free_slab+0x1b8/0x1e0 mm/slub.c:3286
-Code: e8 2d 8a 0c ff 90 0f 0b 48 89 df 48 c7 c6 18 ad 91 8d e8 1b 8a 0c ff 90 0f 0b 48 89 df 48 c7 c6 9d 66 95 8d e8 09 8a 0c ff 90 <0f> 0b 48 89 df 48 c7 c6 18 ad 91 8d e8 f7 89 0c ff 90 0f 0b 48 89
-RSP: 0000:ffffc900001478b0 EFLAGS: 00010246
-RAX: 680205e52e87ff00 RBX: ffffea00044c3c80 RCX: 680205e52e87ff00
-RDX: 0000000000000000 RSI: ffffffff8d7e835a RDI: ffffffff8bc076e0
-RBP: 0000000000000001 R08: ffffffff8f9e1177 R09: 1ffffffff1f3c22e
-R10: dffffc0000000000 R11: fffffbfff1f3c22f R12: ffffffff821b61b0
-R13: ffffffff81a82877 R14: ffff888160415a00 R15: ffffea00044c3c98
-FS:  0000000000000000(0000) GS:ffff88818e70c000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fef42bb12f8 CR3: 000000000df38000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- rcu_do_batch kernel/rcu/tree.c:2605 [inline]
- rcu_core+0xcab/0x1770 kernel/rcu/tree.c:2861
- handle_softirqs+0x286/0x870 kernel/softirq.c:622
- run_ksoftirqd+0x9b/0x100 kernel/softirq.c:1063
- smpboot_thread_fn+0x542/0xa60 kernel/smpboot.c:160
- kthread+0x711/0x8a0 kernel/kthread.c:463
- ret_from_fork+0x4bc/0x870 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:slab_obj_exts mm/slab.h:543 [inline]
-RIP: 0010:free_slab_obj_exts mm/slub.c:2178 [inline]
-RIP: 0010:unaccount_slab mm/slub.c:3186 [inline]
-RIP: 0010:__free_slab+0x1b8/0x1e0 mm/slub.c:3286
-Code: e8 2d 8a 0c ff 90 0f 0b 48 89 df 48 c7 c6 18 ad 91 8d e8 1b 8a 0c ff 90 0f 0b 48 89 df 48 c7 c6 9d 66 95 8d e8 09 8a 0c ff 90 <0f> 0b 48 89 df 48 c7 c6 18 ad 91 8d e8 f7 89 0c ff 90 0f 0b 48 89
-RSP: 0000:ffffc900001478b0 EFLAGS: 00010246
-RAX: 680205e52e87ff00 RBX: ffffea00044c3c80 RCX: 680205e52e87ff00
-RDX: 0000000000000000 RSI: ffffffff8d7e835a RDI: ffffffff8bc076e0
-RBP: 0000000000000001 R08: ffffffff8f9e1177 R09: 1ffffffff1f3c22e
-R10: dffffc0000000000 R11: fffffbfff1f3c22f R12: ffffffff821b61b0
-R13: ffffffff81a82877 R14: ffff888160415a00 R15: ffffea00044c3c98
-FS:  0000000000000000(0000) GS:ffff88818e70c000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fef42bb12f8 CR3: 000000000df38000 CR4: 00000000000006f0
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+Hmm, looks like syzkaller tried using batman_adv interface. The lock in the
+xsk path uses netdev_lock_ops() which is why the assert hits. I'll change
+netif_get_rx_queue_peer_locked() to check for netdev_need_ops_lock() in v3.
