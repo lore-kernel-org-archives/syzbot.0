@@ -1,127 +1,203 @@
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 885B5324B2D;
-	Thu, 16 Oct 2025 12:12:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.133.104.62
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B651E32D0CA
+	for <syzbot@lists.linux.dev>; Thu, 16 Oct 2025 16:01:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760616753; cv=none; b=rKfb9vCFEiAeLVwJ0ZI2tGe4vVBPg0ISofNSwpgr3YhA38RIXZofHeK0Ae5nmTn/qBs/GkZ2/Itcm2k2r8b/U1cXlIAwpmQUkSeop/4Bi8+XdBO3IvKsOpY8id10IozPD8dEDpJWITYB4UxOcvhTs7evTyN9eoxqJjyo3aGD4q4=
+	t=1760630487; cv=none; b=e9p3VaQnKdR0IXXt4xcjDbGz8GR1Js93IG0Q5qvcm4P7GDoKh9egKJbd3SsRWFpi04KO8peiENwDkEfnkSXBqPBjmIxjPmxXHAQmG06p+0OpFAPaTP9GuSE6Izv8h9zC7uSMrv9BW07cIs/kLSjAIwXuX571eJyp66lXgekcpew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760616753; c=relaxed/simple;
-	bh=fwAXieYTCK507W+mQKqPqbGE/FlnVpHDh1BWb7bGdRA=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=CAPtrzlflg9cbAFqls5r2bnEPij3xcLrEo8E37iOMDUnrWRr/ArAfsU4Yg5Meg/OSq4D7bC2zTcGWlek78tDY+8XjG0Xy93KX8WRc0y7OZqdXPb5PufMmBYvPKwWvmQXPn4OiOy1FQk3iUChUtO/DupNBDaWPUTT+FAFtMbMk3M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=iogearbox.net; spf=pass smtp.mailfrom=iogearbox.net; dkim=pass (2048-bit key) header.d=iogearbox.net header.i=@iogearbox.net header.b=RK0TMhLv; arc=none smtp.client-ip=213.133.104.62
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=iogearbox.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iogearbox.net
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=iogearbox.net header.i=@iogearbox.net header.b="RK0TMhLv"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:References:Cc:To:From:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=hTuHt352I1Ge1vcDinPq6vVLQ4ecDq3PF92Iprrt3aE=; b=RK0TMhLvbOpKFUKL8rWHPEvQot
-	RUkL3uuJauaiYxeOq4SMKdm5VDEZ89NnbmvSy1hPJNtlZwjALMPekF4KKEbLigB30A6r4GlGI0+2a
-	vzPOP5wgrPPWHyU9LM1h5umYLny4YdsZYuBfvg7ex1vW+D4/uaZwwhLQ3H+GLgWcIvQs/Pxi7/Hvv
-	of0qfOfNNJrfUjipgDpgvs90ib9fpjeIC8ny7liWDcOCLwbzJ+SqB0cUxEJcqM6Xe8FAJZfufCFvi
-	PO5px78SIWXXcSsAL+Q0SaOIDPOfintgihiKtRPsyfp7hqlTRMCZO8BZDPgau+mPFpp9DYZcQ/79/
-	mffWKGnA==;
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-	by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96.2)
-	(envelope-from <daniel@iogearbox.net>)
-	id 1v9MqH-0005is-2v;
-	Thu, 16 Oct 2025 14:12:25 +0200
-Received: from localhost ([127.0.0.1])
-	by sslproxy06.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <daniel@iogearbox.net>)
-	id 1v9MqG-000Kt0-2Q;
-	Thu, 16 Oct 2025 14:12:24 +0200
-Message-ID: <3589f74a-ee6e-4f5d-a93e-8b0f8a3d1222@iogearbox.net>
-Date: Thu, 16 Oct 2025 14:12:24 +0200
+	s=arc-20240116; t=1760630487; c=relaxed/simple;
+	bh=KPgnmmj/gDY2XLNJiQbcwcH/4J8hegf+mBh0P/reWpU=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Ch5vyemLzJod8p99W4DjvvW9gu+kxM0hY1JQtDmWHTA+WMITwRyv753ejVDJtj+3N6mygCdpQWTG7mreuuGSPKTgwoi0ofss15skwBs/oYzGGGATCefCq1UGtpVM06VLOjJvn3xQ7+mcpf0+wG+pLjQymkWeIhInaS5OGse3LkE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-42a076e4f9eso10906385ab.1
+        for <syzbot@lists.linux.dev>; Thu, 16 Oct 2025 09:01:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760630484; x=1761235284;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=c1aVEPAkZrjRwXzC5FnilETPujGZYn/5PH3BO/J2wfc=;
+        b=dRs6RK5LM1kSrNJefZ6N9piLGncRxY/Ak4zEd4rIUSBf1nuUPm5fIJEUlGZj2wao/H
+         Iegej9OWMjqTkSD2bDbPcpll85YVTlU2gxowLDNS1wDRWCe1ZiPQrQlvLiWosJ6ykVpF
+         ++mo0TfPPaac/LyLtuJSy8bNoqNTK1xuAWkPTms2umaU+4XL8MVQWN04IbcwJa0rOxbh
+         8+jPRmoH+M43KfP9cKnHgvzGNR9PZe87KaWzzYsSzDLWc5gzBUBvhJVYA081QQTJVNKz
+         KaTiAAP6EjfLmiT+y3DfBaW2dqMhI0zNrdNHpmeUQVe5gfnFXF6gCfixhG2vXgV/Jy5/
+         nRVg==
+X-Gm-Message-State: AOJu0YyPr7OcRkOlnduhGbtqijDqnYl34gxBUF5Pf+uPwj+c227jjpFu
+	EJUxRYtFll52vquA1atTolWWa4Dgrf2gKgMCIuW7v9H6kixSZT66S8ULoqclaumQOTlZ/iC+DOQ
+	jSdAkBvDiHKHLmtmDjZ3Qk32ykx47anAql10dqjL6Qhq9P72eYYmB0XlQlQY=
+X-Google-Smtp-Source: AGHT+IG0Dm9q/EvBx7+51RjmfbguQkQXOuA7Q1vshDsBUNvhtosyo0Qnc038UdDRVQjOfbnf+5/rNbMtPooBAiAglIXM04jiIaGR
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [syzbot ci] Re: netkit: Support for io_uring zero-copy and AF_XDP
-From: Daniel Borkmann <daniel@iogearbox.net>
-To: syzbot ci <syzbot+ci7c73a60f40f79ce2@syzkaller.appspotmail.com>,
- bpf@vger.kernel.org, davem@davemloft.net, dw@davidwei.uk,
- john.fastabend@gmail.com, jordan@jrife.io, kuba@kernel.org,
- maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
- martin.lau@kernel.org, netdev@vger.kernel.org, pabeni@redhat.com,
- razor@blackwall.org, sdf@fomichev.me, toke@redhat.com,
- wangdongdong.6@bytedance.com, willemb@google.com, yangzhenze@bytedance.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-References: <68efec17.050a0220.91a22.02ca.GAE@google.com>
- <90793a62-83c2-4a49-adbb-ab45dced76fc@iogearbox.net>
-Content-Language: en-US
-Autocrypt: addr=daniel@iogearbox.net; keydata=
- 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
-In-Reply-To: <90793a62-83c2-4a49-adbb-ab45dced76fc@iogearbox.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: Clear (ClamAV 1.0.9/27794/Thu Oct 16 11:30:03 2025)
+X-Received: by 2002:a05:6e02:156c:b0:430:ad98:981f with SMTP id
+ e9e14a558f8ab-430c524b96bmr10717395ab.4.1760630483802; Thu, 16 Oct 2025
+ 09:01:23 -0700 (PDT)
+Date: Thu, 16 Oct 2025 09:01:23 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68f116d3.050a0220.91a22.0410.GAE@google.com>
+Subject: [moderation/CI] Re: mm: add huge pfnmap support for remap_pfn_range()
+From: syzbot ci <syzbot+ci78f39f7f9c183deb@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 10/15/25 9:13 PM, Daniel Borkmann wrote:
-> On 10/15/25 8:46 PM, syzbot ci wrote:
->> syzbot ci has tested the following series
-> [...]
->> WARNING: CPU: 1 PID: 5959 at ./include/net/netdev_lock.h:17 netdev_assert_locked include/net/netdev_lock.h:17 [inline]
->> WARNING: CPU: 1 PID: 5959 at ./include/net/netdev_lock.h:17 netif_get_rx_queue_peer_locked+0x2f1/0x3a0 net/core/netdev_rx_queue.c:71
-> [...]
->>   <TASK>
->>   xsk_reg_pool_at_qid+0x20b/0x630 net/xdp/xsk.c:159
-> 
-> Hmm, looks like syzkaller tried using batman_adv interface. The lock in the
-> xsk path uses netdev_lock_ops() which is why the assert hits. I'll change
-> netif_get_rx_queue_peer_locked() to check for netdev_need_ops_lock() in v3.
+syzbot ci has tested the following series
 
-(Just to clarify: I now locally replaced the netdev_assert_locked() into using
-netdev_ops_assert_locked() to address it.)
+[v2] mm: add huge pfnmap support for remap_pfn_range()
+https://lore.kernel.org/all/20251016112704.179280-1-yintirui@huawei.com
+* [PATCH RFC 1/2] pgtable: add pte_clrhuge() implementation for arm64 and r=
+iscv
+* [PATCH RFC 2/2] mm: add PMD-level huge page support for remap_pfn_range()
+
+and found the following issue:
+stack segment fault in pgtable_trans_huge_withdraw
+
+Full report is available here:
+https://ci.syzbot.org/series/d04c2914-0d99-4132-89d4-899e22abf904
+
+***
+
+stack segment fault in pgtable_trans_huge_withdraw
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      3a8660878839faadb4f1a6dd72c3179c1df56787
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/9d7864e5-ad3a-4c0d-b21d-86cfc476792=
+e/config
+C repro:   https://ci.syzbot.org/findings/b9fca361-413d-4db1-b8b2-1849cd2c5=
+0dd/c_repro
+syz repro: https://ci.syzbot.org/findings/b9fca361-413d-4db1-b8b2-1849cd2c5=
+0dd/syz_repro
+
+Oops: stack segment: 0000 [#1] SMP KASAN PTI
+CPU: 0 UID: 0 PID: 5968 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:pgtable_trans_huge_withdraw+0x115/0x310 mm/pgtable-generic.c:188
+Code: c3 10 48 89 d8 48 c1 e8 03 42 80 3c 28 00 74 08 48 89 df e8 9d e9 13 =
+00 48 8b 03 48 89 04 24 4c 8d 78 08 4c 89 fd 48 c1 ed 03 <42> 80 7c 2d 00 0=
+0 74 08 4c 89 ff e8 7b e9 13 00 49 8b 07 48 8d 48
+RSP: 0018:ffffc90003717300 EFLAGS: 00010202
+RAX: 0000000000000000 RBX: ffffea00044848d0 RCX: ffff88816c890000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000001 R08: ffff88816db66a23 R09: 1ffff1102db6cd44
+R10: dffffc0000000000 R11: ffffed102db6cd45 R12: ffff888112123000
+R13: dffffc0000000000 R14: ffff888112123000 R15: 0000000000000008
+FS:  000055556cb5f500(0000) GS:ffff88818e70c000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 00000001102a4000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ zap_deposited_table mm/huge_memory.c:2169 [inline]
+ zap_huge_pmd+0xa25/0xf50 mm/huge_memory.c:2197
+ zap_pmd_range mm/memory.c:1926 [inline]
+ zap_pud_range mm/memory.c:1975 [inline]
+ zap_p4d_range mm/memory.c:1996 [inline]
+ unmap_page_range+0x9fe/0x4370 mm/memory.c:2017
+ unmap_single_vma mm/memory.c:2060 [inline]
+ unmap_vmas+0x399/0x580 mm/memory.c:2104
+ exit_mmap+0x240/0xb40 mm/mmap.c:1280
+ __mmput+0x118/0x430 kernel/fork.c:1133
+ copy_process+0x2910/0x3c00 kernel/fork.c:2460
+ kernel_clone+0x21e/0x840 kernel/fork.c:2609
+ __do_sys_clone kernel/fork.c:2750 [inline]
+ __se_sys_clone kernel/fork.c:2734 [inline]
+ __x64_sys_clone+0x18b/0x1e0 kernel/fork.c:2734
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f946958eec9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc41c94258 EFLAGS: 00000206 ORIG_RAX: 0000000000000038
+RAX: ffffffffffffffda RBX: 00007f94697e5fa0 RCX: 00007f946958eec9
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000002001000
+RBP: 00007f9469611f91 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000206 R12: 0000000000000000
+R13: 00007f94697e5fa0 R14: 00007f94697e5fa0 R15: 0000000000000006
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:pgtable_trans_huge_withdraw+0x115/0x310 mm/pgtable-generic.c:188
+Code: c3 10 48 89 d8 48 c1 e8 03 42 80 3c 28 00 74 08 48 89 df e8 9d e9 13 =
+00 48 8b 03 48 89 04 24 4c 8d 78 08 4c 89 fd 48 c1 ed 03 <42> 80 7c 2d 00 0=
+0 74 08 4c 89 ff e8 7b e9 13 00 49 8b 07 48 8d 48
+RSP: 0018:ffffc90003717300 EFLAGS: 00010202
+RAX: 0000000000000000 RBX: ffffea00044848d0 RCX: ffff88816c890000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000001 R08: ffff88816db66a23 R09: 1ffff1102db6cd44
+R10: dffffc0000000000 R11: ffffed102db6cd45 R12: ffff888112123000
+R13: dffffc0000000000 R14: ffff888112123000 R15: 0000000000000008
+FS:  000055556cb5f500(0000) GS:ffff88818e70c000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 00000001102a4000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	c3                   	ret
+   1:	10 48 89             	adc    %cl,-0x77(%rax)
+   4:	d8 48 c1             	fmuls  -0x3f(%rax)
+   7:	e8 03 42 80 3c       	call   0x3c80420f
+   c:	28 00                	sub    %al,(%rax)
+   e:	74 08                	je     0x18
+  10:	48 89 df             	mov    %rbx,%rdi
+  13:	e8 9d e9 13 00       	call   0x13e9b5
+  18:	48 8b 03             	mov    (%rbx),%rax
+  1b:	48 89 04 24          	mov    %rax,(%rsp)
+  1f:	4c 8d 78 08          	lea    0x8(%rax),%r15
+  23:	4c 89 fd             	mov    %r15,%rbp
+  26:	48 c1 ed 03          	shr    $0x3,%rbp
+* 2a:	42 80 7c 2d 00 00    	cmpb   $0x0,0x0(%rbp,%r13,1) <-- trapping instr=
+uction
+  30:	74 08                	je     0x3a
+  32:	4c 89 ff             	mov    %r15,%rdi
+  35:	e8 7b e9 13 00       	call   0x13e9b5
+  3a:	49 8b 07             	mov    (%r15),%rax
+  3d:	48                   	rex.W
+  3e:	8d                   	.byte 0x8d
+  3f:	48                   	rex.W
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[abrestic@rivosinc.com akpm@linux-foundation.org alex@ghiti.fr anshuman.kha=
+ndual@arm.com aou@eecs.berkeley.edu apopple@nvidia.com ardb@kernel.org baoh=
+ua@kernel.org baolin.wang@linux.alibaba.com catalin.marinas@arm.com chenjun=
+102@huawei.com david@redhat.com dev.jain@arm.com liam.howlett@oracle.com li=
+nux-arm-kernel@lists.infradead.org linux-kernel@vger.kernel.org linux-mm@kv=
+ack.org linux-riscv@lists.infradead.org lorenzo.stoakes@oracle.com luxu.ker=
+nel@bytedance.com mhocko@suse.com npache@redhat.com palmer@dabbelt.com paul=
+.walmsley@sifive.com rppt@kernel.org ryan.roberts@arm.com samuel.holland@si=
+five.com surenb@google.com vbabka@suse.cz wangkefeng.wang@huawei.com will@k=
+ernel.org willy@infradead.org yangyicong@hisilicon.com yintirui@huawei.com =
+yongxuan.wang@sifive.com ziy@nvidia.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
