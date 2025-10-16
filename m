@@ -1,109 +1,123 @@
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31E152E2DD8
-	for <syzbot@lists.linux.dev>; Thu, 16 Oct 2025 07:25:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFCCD129A78;
+	Thu, 16 Oct 2025 08:04:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760599512; cv=none; b=u0dpNLsgW6PKYkx0mgifMU1w0LXsT6YcUHmutudfRUq9bCA1CO71AkoXS/3zsaUFYlugYJAMWz4oSfpQoIebLxwapwl6R2TKIhVukRjOWF+7d4uvqKxiehcft9s9/8Q9go80u/ccWLjC9K7vhPZp3+9p8BeNKkIHYDWJbnUXE+s=
+	t=1760601880; cv=none; b=BSwIV5K8Oku9/doOCpycdrofNAhH6MO/Bz8lag34wwNSss98S7SpHHmUgYlskixleqQ0oCg3DKWR555DmYhbO/wBkAYIJLp36z2HCjCqB50OBHgTC3mIUlxInxTA1A1LrvPdSQazMT4Xy36izi0j2F3Qfo60+LxTJTMT50sVlA8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760599512; c=relaxed/simple;
-	bh=L4NJQBsUgF0KIddexJUkmQPvUrNX0j5phTknQgvTaGM=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=eEjrIxitt3rl9yw6t6FAg4FnXS+jscbUG7yj6L9PVESXuckZbmcC5KRKkiLiFQs8NEPHnE/mHSQMBH0ZBRHYTgipEBXTNph+dYctWVd0uFe4OutXIo/btsNiXbXJm5ZGmdFFu59UGwqEJ3aDb05Fm9aI7QKx/xNtzndykAjsJl4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f197.google.com with SMTP id e9e14a558f8ab-430b1473c07so20354935ab.1
-        for <syzbot@lists.linux.dev>; Thu, 16 Oct 2025 00:25:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760599509; x=1761204309;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=pr4C72Gem7JyjR0sVGMdoZLRgP3aBaX7dpayODFyW3k=;
-        b=pBR5A3TYYCUqBSXX00QC3e7y8CIxCsguQYEsmaxNIvwOifmNYrctGVM/M+dRe4ipRz
-         P4GiZkZNmytFF3TjATAbPcld0ap6pBzzhS+V8RBaERNNihxY+N61U3nWAe3wo4/lf/e+
-         lvHYN/VYjwaqaYWfXrlQDNS52UNiZ8+qfmgaWwtqmDE+dgSrb9CGlinWGx/lAIstDqJP
-         rQdcW/yXwOFyndGdMNP9ZJAQWOw3M1N1PhvOg/Gd/rXCsniDAHfzMQQKha8oiqEml0uZ
-         AacRZpRFMo6FJONVAJedrEABLdR4AoCP7/gVNiBrar5HuN+PuyXlWh46dpRBP+SpVqFA
-         IwYQ==
-X-Gm-Message-State: AOJu0YxR6m4Sw5Q9Vt24XuEg3mbvVFriqGlGxxoer5GY2/sGKopDVaNj
-	FzCtV5eW7cHe9iV753/62EM2qZAaBC8z940pHP3z6av5uKsaS+bFwpug2e/MO9EoOvtMZmKEeqg
-	iqySSmrXE5ewi0SbpvKviIqast9k7jsdGy47JVxLSCpOzubrjuyfVq4N3bnA=
-X-Google-Smtp-Source: AGHT+IGBQNux6fAnjcr3BQoh4iFsTP3i++NpID3FhHBJ1CUOgA9WNLizSSV6hATQMlWQ+uDEx3briEzLgoMh9WWaagIEo7tEhGIr
+	s=arc-20240116; t=1760601880; c=relaxed/simple;
+	bh=ffNPg05OO9ZQ+iVrLLpApjwzhDydYcOe6ZOBkwVV7T0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=kY2tvthMgDnmApl8Kp8N3gjuY+G4/lVUslsVTuhIodzzsEvjYEkp0aMa1bMfSNvz4g+FoG2WtZZOqAfZcQ7VjzuVxQfvZfZyqhY7sxNMpGHqckuOnStnwYT/FLDUj8xsudOV9odTft+AR3bDBKvWfGWlD59pGZKJ+Lt/OPmR6s4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mehtNlDq; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mehtNlDq"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1760601879; x=1792137879;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ffNPg05OO9ZQ+iVrLLpApjwzhDydYcOe6ZOBkwVV7T0=;
+  b=mehtNlDq38p7LqQtOw3B7XtD3t0NS5nPePXMkhVCbyUzTHEkePE3LQCf
+   H8+PEuWEkLUo9vzx3QcG6XdowybTAX7xl0uYQPa6WmJfa8tgKNkdprelR
+   sZW5aZob9jnkEpDhsEaMb2AW3xub1YVD24eQu6zvaNPqtlupsuu07l6gn
+   HpxrNcPNYPAggnPWcULGF/qnNq9p68h3w6CS40sUZsvtLRRaMNJ+2A4Bu
+   /Oig5KYtm6Z+Ki32P0JUplLuJgjmnnXdZv268HJ3KorgsS6+htdXhsZAU
+   Jb4nSgOy38qanhixpR2r6+3ixORv98tcJ+Dfei19l5QHofpjekHfUe9jc
+   w==;
+X-CSE-ConnectionGUID: kpmnALsCTPy58gtUQJ4GBQ==
+X-CSE-MsgGUID: Wsu4tmLDQ7CFUsM9sTQvHw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11583"; a="62830270"
+X-IronPort-AV: E=Sophos;i="6.19,233,1754982000"; 
+   d="scan'208";a="62830270"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2025 01:04:38 -0700
+X-CSE-ConnectionGUID: cA4TqZ1TSxyq3V7qZWSmMQ==
+X-CSE-MsgGUID: I4mYOUFQTfaDa93MhgX5nQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,233,1754982000"; 
+   d="scan'208";a="187674419"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2025 01:04:29 -0700
+Message-ID: <8cdb459f-f7d1-4ca0-a6a0-5c83d5092cd8@linux.intel.com>
+Date: Thu, 16 Oct 2025 16:00:47 +0800
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1709:b0:430:a4f0:899a with SMTP id
- e9e14a558f8ab-430a4f090d5mr109176695ab.31.1760599509301; Thu, 16 Oct 2025
- 00:25:09 -0700 (PDT)
-Date: Thu, 16 Oct 2025 00:25:09 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68f09dd5.050a0220.91a22.03ba.GAE@google.com>
-Subject: [moderation/CI] Re: page_pool: check if nmdesc->pp is !NULL to
- confirm its usage as pp for net_iov
-From: syzbot ci <syzbot+cieb7e65077a0bd1bf@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [syzbot ci] Re: Fix stale IOTLB entries for kernel address space
+To: Dave Hansen <dave.hansen@intel.com>,
+ syzbot ci <syzbot+cid009622971eb4566@syzkaller.appspotmail.com>,
+ akpm@linux-foundation.org, apopple@nvidia.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, david@redhat.com, iommu@lists.linux.dev,
+ jannh@google.com, jean-philippe@linaro.org, jgg@nvidia.com, joro@8bytes.org,
+ kevin.tian@intel.com, liam.howlett@oracle.com, linux-kernel@vger.kernel.org,
+ linux-mm@kvack.org, lorenzo.stoakes@oracle.com, luto@kernel.org,
+ mhocko@kernel.org, mingo@redhat.com, peterz@infradead.org,
+ robin.murphy@arm.com, rppt@kernel.org, security@kernel.org,
+ stable@vger.kernel.org, tglx@linutronix.de, urezki@gmail.com,
+ vasant.hegde@amd.com, vbabka@suse.cz, will@kernel.org, willy@infradead.org,
+ x86@kernel.org, yi1.lai@intel.com
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <68eeb99e.050a0220.91a22.0220.GAE@google.com>
+ <89146527-3f41-4f1e-8511-0d06e169c09e@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <89146527-3f41-4f1e-8511-0d06e169c09e@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-syzbot ci has tested the following series
+On 10/16/25 00:25, Dave Hansen wrote:
+> Here's the part that confuses me:
+> 
+> On 10/14/25 13:59, syzbot ci wrote:
+>> page last free pid 5965 tgid 5964 stack trace:
+>>   reset_page_owner include/linux/page_owner.h:25 [inline]
+>>   free_pages_prepare mm/page_alloc.c:1394 [inline]
+>>   __free_frozen_pages+0xbc4/0xd30 mm/page_alloc.c:2906
+>>   pmd_free_pte_page+0xa1/0xc0 arch/x86/mm/pgtable.c:783
+>>   vmap_try_huge_pmd mm/vmalloc.c:158 [inline]
+> ...
+> 
+> So, vmap_try_huge_pmd() did a pmd_free_pte_page(). Yet, somehow, the PMD
+> stuck around so that it *could* be used after being freed. It _looks_
+> like pmd_free_pte_page() freed the page, returned 0, and made
+> vmap_try_huge_pmd() return early, skipping the pmd pmd_set_huge().
+> 
+> But I don't know how that could possibly happen.
 
-[v1] page_pool: check if nmdesc->pp is !NULL to confirm its usage as pp for=
- net_iov
-https://lore.kernel.org/all/20251016063657.81064-1-byungchul@sk.com
-* [PATCH net-next] page_pool: check if nmdesc->pp is !NULL to confirm its u=
-sage as pp for net_iov
+The reported issue is only related to this patch:
 
-and found the following issue:
-kernel build error
+- [PATCH v6 3/7] x86/mm: Use 'ptdesc' when freeing PMD pages
 
-Full report is available here:
-https://ci.syzbot.org/series/ad6ce078-6497-42e2-a2ef-5749153b9dc6
+It appears that the pmd_ptdesc() helper can't be used directly here in
+this patch. pmd_ptdesc() retrieves the page table page that the PMD
+entry resides in:
 
-***
+static inline struct page *pmd_pgtable_page(pmd_t *pmd)
+{
+         unsigned long mask = ~(PTRS_PER_PMD * sizeof(pmd_t) - 1);
+         return virt_to_page((void *)((unsigned long) pmd & mask));
+}
 
-kernel build error
+static inline struct ptdesc *pmd_ptdesc(pmd_t *pmd)
+{
+         return page_ptdesc(pmd_pgtable_page(pmd));
+}
 
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net-next.git
-base:      18a7e218cfcdca6666e1f7356533e4c988780b57
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
-1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/d3d59dee-0e1f-48be-8dc1-5e0f7bed50c=
-3/config
+while, in this patch, we need the page descriptor that a pmd entry
+points to. Perhaps we should roll back to the previous approach used in
+v5?
 
-net/core/netmem_priv.h:29:12: error: call to undeclared function 'netmem_to=
-_nmdesc'; ISO C99 and later do not support implicit function declarations [=
--Wimplicit-function-declaration]
-net/core/netmem_priv.h:29:38: error: member reference type 'int' is not a p=
-ointer
+I'm sorry that I didn't discover this during my development testing.
+Fortunately, I can reproduce it stably on my development machine now.
 
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-The email will later be sent to:
-[almasrymina@google.com ap420073@gmail.com asml.silence@gmail.com axboe@ker=
-nel.dk byungchul@sk.com davem@davemloft.net dtatulea@nvidia.com dw@davidwei=
-.uk edumazet@google.com hawk@kernel.org horms@kernel.org ilias.apalodimas@l=
-inaro.org io-uring@vger.kernel.org kernel_team@skhynix.com kuba@kernel.org =
-linux-kernel@vger.kernel.org max.byungchul.park@gmail.com netdev@vger.kerne=
-l.org pabeni@redhat.com sdf@fomichev.me toke@redhat.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
+Thanks,
+baolu
