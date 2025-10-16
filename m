@@ -1,50 +1,46 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFCCD129A78;
-	Thu, 16 Oct 2025 08:04:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 885B5324B2D;
+	Thu, 16 Oct 2025 12:12:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.133.104.62
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760601880; cv=none; b=BSwIV5K8Oku9/doOCpycdrofNAhH6MO/Bz8lag34wwNSss98S7SpHHmUgYlskixleqQ0oCg3DKWR555DmYhbO/wBkAYIJLp36z2HCjCqB50OBHgTC3mIUlxInxTA1A1LrvPdSQazMT4Xy36izi0j2F3Qfo60+LxTJTMT50sVlA8=
+	t=1760616753; cv=none; b=rKfb9vCFEiAeLVwJ0ZI2tGe4vVBPg0ISofNSwpgr3YhA38RIXZofHeK0Ae5nmTn/qBs/GkZ2/Itcm2k2r8b/U1cXlIAwpmQUkSeop/4Bi8+XdBO3IvKsOpY8id10IozPD8dEDpJWITYB4UxOcvhTs7evTyN9eoxqJjyo3aGD4q4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760601880; c=relaxed/simple;
-	bh=ffNPg05OO9ZQ+iVrLLpApjwzhDydYcOe6ZOBkwVV7T0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=kY2tvthMgDnmApl8Kp8N3gjuY+G4/lVUslsVTuhIodzzsEvjYEkp0aMa1bMfSNvz4g+FoG2WtZZOqAfZcQ7VjzuVxQfvZfZyqhY7sxNMpGHqckuOnStnwYT/FLDUj8xsudOV9odTft+AR3bDBKvWfGWlD59pGZKJ+Lt/OPmR6s4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mehtNlDq; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1760616753; c=relaxed/simple;
+	bh=fwAXieYTCK507W+mQKqPqbGE/FlnVpHDh1BWb7bGdRA=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=CAPtrzlflg9cbAFqls5r2bnEPij3xcLrEo8E37iOMDUnrWRr/ArAfsU4Yg5Meg/OSq4D7bC2zTcGWlek78tDY+8XjG0Xy93KX8WRc0y7OZqdXPb5PufMmBYvPKwWvmQXPn4OiOy1FQk3iUChUtO/DupNBDaWPUTT+FAFtMbMk3M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=iogearbox.net; spf=pass smtp.mailfrom=iogearbox.net; dkim=pass (2048-bit key) header.d=iogearbox.net header.i=@iogearbox.net header.b=RK0TMhLv; arc=none smtp.client-ip=213.133.104.62
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=iogearbox.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iogearbox.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mehtNlDq"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1760601879; x=1792137879;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ffNPg05OO9ZQ+iVrLLpApjwzhDydYcOe6ZOBkwVV7T0=;
-  b=mehtNlDq38p7LqQtOw3B7XtD3t0NS5nPePXMkhVCbyUzTHEkePE3LQCf
-   H8+PEuWEkLUo9vzx3QcG6XdowybTAX7xl0uYQPa6WmJfa8tgKNkdprelR
-   sZW5aZob9jnkEpDhsEaMb2AW3xub1YVD24eQu6zvaNPqtlupsuu07l6gn
-   HpxrNcPNYPAggnPWcULGF/qnNq9p68h3w6CS40sUZsvtLRRaMNJ+2A4Bu
-   /Oig5KYtm6Z+Ki32P0JUplLuJgjmnnXdZv268HJ3KorgsS6+htdXhsZAU
-   Jb4nSgOy38qanhixpR2r6+3ixORv98tcJ+Dfei19l5QHofpjekHfUe9jc
-   w==;
-X-CSE-ConnectionGUID: kpmnALsCTPy58gtUQJ4GBQ==
-X-CSE-MsgGUID: Wsu4tmLDQ7CFUsM9sTQvHw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11583"; a="62830270"
-X-IronPort-AV: E=Sophos;i="6.19,233,1754982000"; 
-   d="scan'208";a="62830270"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2025 01:04:38 -0700
-X-CSE-ConnectionGUID: cA4TqZ1TSxyq3V7qZWSmMQ==
-X-CSE-MsgGUID: I4mYOUFQTfaDa93MhgX5nQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,233,1754982000"; 
-   d="scan'208";a="187674419"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2025 01:04:29 -0700
-Message-ID: <8cdb459f-f7d1-4ca0-a6a0-5c83d5092cd8@linux.intel.com>
-Date: Thu, 16 Oct 2025 16:00:47 +0800
+	dkim=pass (2048-bit key) header.d=iogearbox.net header.i=@iogearbox.net header.b="RK0TMhLv"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:References:Cc:To:From:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
+	bh=hTuHt352I1Ge1vcDinPq6vVLQ4ecDq3PF92Iprrt3aE=; b=RK0TMhLvbOpKFUKL8rWHPEvQot
+	RUkL3uuJauaiYxeOq4SMKdm5VDEZ89NnbmvSy1hPJNtlZwjALMPekF4KKEbLigB30A6r4GlGI0+2a
+	vzPOP5wgrPPWHyU9LM1h5umYLny4YdsZYuBfvg7ex1vW+D4/uaZwwhLQ3H+GLgWcIvQs/Pxi7/Hvv
+	of0qfOfNNJrfUjipgDpgvs90ib9fpjeIC8ny7liWDcOCLwbzJ+SqB0cUxEJcqM6Xe8FAJZfufCFvi
+	PO5px78SIWXXcSsAL+Q0SaOIDPOfintgihiKtRPsyfp7hqlTRMCZO8BZDPgau+mPFpp9DYZcQ/79/
+	mffWKGnA==;
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+	by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.96.2)
+	(envelope-from <daniel@iogearbox.net>)
+	id 1v9MqH-0005is-2v;
+	Thu, 16 Oct 2025 14:12:25 +0200
+Received: from localhost ([127.0.0.1])
+	by sslproxy06.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <daniel@iogearbox.net>)
+	id 1v9MqG-000Kt0-2Q;
+	Thu, 16 Oct 2025 14:12:24 +0200
+Message-ID: <3589f74a-ee6e-4f5d-a93e-8b0f8a3d1222@iogearbox.net>
+Date: Thu, 16 Oct 2025 14:12:24 +0200
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -52,72 +48,80 @@ List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [syzbot ci] Re: Fix stale IOTLB entries for kernel address space
-To: Dave Hansen <dave.hansen@intel.com>,
- syzbot ci <syzbot+cid009622971eb4566@syzkaller.appspotmail.com>,
- akpm@linux-foundation.org, apopple@nvidia.com, bp@alien8.de,
- dave.hansen@linux.intel.com, david@redhat.com, iommu@lists.linux.dev,
- jannh@google.com, jean-philippe@linaro.org, jgg@nvidia.com, joro@8bytes.org,
- kevin.tian@intel.com, liam.howlett@oracle.com, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, lorenzo.stoakes@oracle.com, luto@kernel.org,
- mhocko@kernel.org, mingo@redhat.com, peterz@infradead.org,
- robin.murphy@arm.com, rppt@kernel.org, security@kernel.org,
- stable@vger.kernel.org, tglx@linutronix.de, urezki@gmail.com,
- vasant.hegde@amd.com, vbabka@suse.cz, will@kernel.org, willy@infradead.org,
- x86@kernel.org, yi1.lai@intel.com
+Subject: Re: [syzbot ci] Re: netkit: Support for io_uring zero-copy and AF_XDP
+From: Daniel Borkmann <daniel@iogearbox.net>
+To: syzbot ci <syzbot+ci7c73a60f40f79ce2@syzkaller.appspotmail.com>,
+ bpf@vger.kernel.org, davem@davemloft.net, dw@davidwei.uk,
+ john.fastabend@gmail.com, jordan@jrife.io, kuba@kernel.org,
+ maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+ martin.lau@kernel.org, netdev@vger.kernel.org, pabeni@redhat.com,
+ razor@blackwall.org, sdf@fomichev.me, toke@redhat.com,
+ wangdongdong.6@bytedance.com, willemb@google.com, yangzhenze@bytedance.com
 Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-References: <68eeb99e.050a0220.91a22.0220.GAE@google.com>
- <89146527-3f41-4f1e-8511-0d06e169c09e@intel.com>
+References: <68efec17.050a0220.91a22.02ca.GAE@google.com>
+ <90793a62-83c2-4a49-adbb-ab45dced76fc@iogearbox.net>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <89146527-3f41-4f1e-8511-0d06e169c09e@intel.com>
+Autocrypt: addr=daniel@iogearbox.net; keydata=
+ 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
+In-Reply-To: <90793a62-83c2-4a49-adbb-ab45dced76fc@iogearbox.net>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: Clear (ClamAV 1.0.9/27794/Thu Oct 16 11:30:03 2025)
 
-On 10/16/25 00:25, Dave Hansen wrote:
-> Here's the part that confuses me:
+On 10/15/25 9:13 PM, Daniel Borkmann wrote:
+> On 10/15/25 8:46 PM, syzbot ci wrote:
+>> syzbot ci has tested the following series
+> [...]
+>> WARNING: CPU: 1 PID: 5959 at ./include/net/netdev_lock.h:17 netdev_assert_locked include/net/netdev_lock.h:17 [inline]
+>> WARNING: CPU: 1 PID: 5959 at ./include/net/netdev_lock.h:17 netif_get_rx_queue_peer_locked+0x2f1/0x3a0 net/core/netdev_rx_queue.c:71
+> [...]
+>>   <TASK>
+>>   xsk_reg_pool_at_qid+0x20b/0x630 net/xdp/xsk.c:159
 > 
-> On 10/14/25 13:59, syzbot ci wrote:
->> page last free pid 5965 tgid 5964 stack trace:
->>   reset_page_owner include/linux/page_owner.h:25 [inline]
->>   free_pages_prepare mm/page_alloc.c:1394 [inline]
->>   __free_frozen_pages+0xbc4/0xd30 mm/page_alloc.c:2906
->>   pmd_free_pte_page+0xa1/0xc0 arch/x86/mm/pgtable.c:783
->>   vmap_try_huge_pmd mm/vmalloc.c:158 [inline]
-> ...
-> 
-> So, vmap_try_huge_pmd() did a pmd_free_pte_page(). Yet, somehow, the PMD
-> stuck around so that it *could* be used after being freed. It _looks_
-> like pmd_free_pte_page() freed the page, returned 0, and made
-> vmap_try_huge_pmd() return early, skipping the pmd pmd_set_huge().
-> 
-> But I don't know how that could possibly happen.
+> Hmm, looks like syzkaller tried using batman_adv interface. The lock in the
+> xsk path uses netdev_lock_ops() which is why the assert hits. I'll change
+> netif_get_rx_queue_peer_locked() to check for netdev_need_ops_lock() in v3.
 
-The reported issue is only related to this patch:
-
-- [PATCH v6 3/7] x86/mm: Use 'ptdesc' when freeing PMD pages
-
-It appears that the pmd_ptdesc() helper can't be used directly here in
-this patch. pmd_ptdesc() retrieves the page table page that the PMD
-entry resides in:
-
-static inline struct page *pmd_pgtable_page(pmd_t *pmd)
-{
-         unsigned long mask = ~(PTRS_PER_PMD * sizeof(pmd_t) - 1);
-         return virt_to_page((void *)((unsigned long) pmd & mask));
-}
-
-static inline struct ptdesc *pmd_ptdesc(pmd_t *pmd)
-{
-         return page_ptdesc(pmd_pgtable_page(pmd));
-}
-
-while, in this patch, we need the page descriptor that a pmd entry
-points to. Perhaps we should roll back to the previous approach used in
-v5?
-
-I'm sorry that I didn't discover this during my development testing.
-Fortunately, I can reproduce it stably on my development machine now.
-
-Thanks,
-baolu
+(Just to clarify: I now locally replaced the netdev_assert_locked() into using
+netdev_ops_assert_locked() to address it.)
