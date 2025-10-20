@@ -1,238 +1,212 @@
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B5D81F30A9
-	for <syzbot@lists.linux.dev>; Mon, 20 Oct 2025 06:43:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62802320CC3
+	for <syzbot@lists.linux.dev>; Mon, 20 Oct 2025 14:26:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760942596; cv=none; b=elV6Adx1N1G+j96QMorqHbxsiLaNQMQ6qzSau6f7/mecNiYU3aFMLha6Zgrk/MwKGTd5NsDULk5W3kJeAG1x68nkolFt4FqOuUfOcjQziAJonmTt3kDtlXbKVkDL4/mdL0d7bQVNq458HR8pKV47yoOyaFUevHEc0RLM7b6Iynw=
+	t=1760970370; cv=none; b=ug/h5aBUp1tivlszNRGB4nnw5eOC+poSdC38oYYnZLOq/ZzMaPOyfweQ8miIbv6jSMPuDkH+4IbviCvMAJufuq+cDlkErsKLab0aLBeS9K+NOmp4OIIoXqSKE4QOtU6w6rnt0pX6O3QTlGLfzrNDVm6lbbzBhkj1kJS6YMDk8sQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760942596; c=relaxed/simple;
-	bh=RfsPLuk/4e9TMdezk1CDoIQ0U9URgJH0Izb8WitoXSE=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=hFreqTBbbbto7/WbjUNBHK7LC2NpUMvnwtg+Q+Um9RwPpAA/2yWKioog3yvaRYwFmbKyGnN/fzM2Iz3bTWl0/VThPnfqqEpNRDYpzdt5zltdpDILT2Z+ySsEFngBCTxTCBcqOjKjjyKByP8oOl/G5yBEzFZ1aE5qrsS8EIEkIRU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-93e86696b5fso189084039f.1
-        for <syzbot@lists.linux.dev>; Sun, 19 Oct 2025 23:43:14 -0700 (PDT)
+	s=arc-20240116; t=1760970370; c=relaxed/simple;
+	bh=hQAelAZ9HvVlNDMc9j43CpUIrb6f3Hpl+8tUuJ8nWUE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BdzZN2P2Y02kEk3ioxMzLMujRTJDQTMcmujLtCAYcQ2t2WXg41vKooaSJkTO3EAOBPOCTs5p0IMS0ir4eAx5zVAx254mUHxL3DrlV9G+qV6SfKknCztykam/YDEy+KlrOsLYVFkV1qoG//3COTnqrb8zVbWW9DHF7PW104ng+HY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=bvQV5ree; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="bvQV5ree"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1760970367;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=pQyqqPVnzX80M9s6VBgWNHBBaztCyITJ++CqjP/sV5c=;
+	b=bvQV5reeDITVvD5GR0dHTxfpab0PuPAJhWWGjRqBMyd4472FqdbWQydPbRsZMU+vXjuUWx
+	uF4B5eASoviQ0UZngUQUm4LTwI7hNXcd28se+HSKajIKOmDSXDccVsvuguLUIvtV1+bc3E
+	peXs4YcZCZwJRe+er/bGS+aHD+ljSC4=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-684-la40m-RZMISycNUEyFjKfA-1; Mon, 20 Oct 2025 10:26:06 -0400
+X-MC-Unique: la40m-RZMISycNUEyFjKfA-1
+X-Mimecast-MFC-AGG-ID: la40m-RZMISycNUEyFjKfA_1760970365
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-47113dcc15dso32657825e9.1
+        for <syzbot@lists.linux.dev>; Mon, 20 Oct 2025 07:26:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760942593; x=1761547393;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HqrCkr2sjCfBLL7q9AdHaNdtwcieYGi6wC0wgKB8odU=;
-        b=ezV5mh2DZEK1Wz7dismwswN1VEzhK2CRRbAuGiuQ8dYs7QzSCmC7WIrVurhsDGnbAO
-         vDzf5SC0vvXzIPVKFKJJe0Tyt8YfaAKU101fKv8F9d23eAsazs9qH5NhMI55yv+NO/EE
-         hVqVZ73O80dN4dbrvbCKlGPMzrN9ZWSvi2PyNlS3VwENKs/nLolkJZmEr0WNysv0/Kti
-         8uEfxQ7SFGGr0151orzghOXLiYn5daUt2aajYuMTK4tkaZi9MS/rSsCF9UKoDtI1Sgnx
-         8MSsmadVU4Vt66Vgcr0GFh5gNBX29of+YTkNshTpz78XAv8U4Csa9/RVcwnxj3upEuTp
-         toaA==
-X-Gm-Message-State: AOJu0YwkIgCHj4DK7Zw5L1SQGhsYEV9a9mi2h/beexWbLIsG2xqzBkXr
-	JwqWI3zDWu40SfMIoAy5+k9DJIklSwTrSp2+0pPiE9vhf04SIJ0vjdxcdswhGOkkJATjKj4xYLr
-	sDlc8JkOyWON46mXIF0OHaMhPk26OWc1gUmHxK28pUSbtiwA2s47FpxjO4Qc=
-X-Google-Smtp-Source: AGHT+IFIz8Mu/jwsmlKZvzPM/2PEC3SH2VPM/vNb6A+2t3BVkUwtQATCp/9khxbUgmnGmEy2M1TnTZY5OES4n+QzTGnMT43WoKgg
+        d=1e100.net; s=20230601; t=1760970365; x=1761575165;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=pQyqqPVnzX80M9s6VBgWNHBBaztCyITJ++CqjP/sV5c=;
+        b=X38P/5UNr3kwXQkvFLmilBgyhkUM390YEgJXGLKJKEty9bodqauwxjSQmKmO6AAZLC
+         dmcj8R6PbYLjNa8OzZHcRMWkMXsrU5QyVfWyTNM7U7rexrMcxgmWlYANf0dtE7aAuCvb
+         tMcLQ0xavQGthgdUybqRH9DEXNCxCVYLAeYuGZkenZuMQ2NP6scnpi6oECGFKN1c66xM
+         JzH6enhZ88otMsEukQSE5gVyi9bNpKwnHyLZIA5VrYiXgFfDrh8YytNt0/EoGVxX6H8C
+         tYwLgACUH13e19/1AOE/UyfvzmkfNiRQCDuAwSpyHTxr4uHhE6FzO/Ckr23A1eHVyjW+
+         QXyA==
+X-Gm-Message-State: AOJu0Yz7IrtLQHdURLv4oGonA0La2WbaROb8pjXElAsltmqkX66vmu+u
+	Kt/DU8Ku22s1bMAtKTLVJrnjzwlocJcYuPB39roj5NEb56DeiHCKcB1qgCZU2NZzC1jUOVNawK5
+	TSOoluBoDhBYG6eVKDrJtw1d8/wEJogqm4M5GQOO2ScMfkeF6zP5/Rzz0Ug==
+X-Gm-Gg: ASbGncuZOvrHmuxuNf+YnCeZLyhJveIlKgUk+FqHWsIBNti0OMGvFgwma5UYx/x4btl
+	1jl9lHCSIjUTK2Hnic5NXfSnbnvaJxlC4JRBaif0CZC0mOhHaJCF15LviOEPNrpNmam8mL4sJCQ
+	/pk+fhoz9EE4H8KlzF/bnN8YaFyQGZZShoTxfbKR+HZfNKt2HsPcU4gcJCJNSSVh5p5ltN6KpgM
+	sa2NnajeZSACQ3s8I/98zphzoUupA02qzpPGD07Rv+j6GKUa0W76H/TNSxq5CoQcR6Dv28EcTzH
+	QH/Zmr8aXfxvNDWykKCN/Dh5D+C0bj39w6XpfIMmN89LmrxVUmMzS0C6XQrovRFHT8iYnfMvrlV
+	5a5WLkoqQpxPytUAaDxcri17Vvs84jD20LCeVBKH1D3BqhfpwvzGLLaz0FYVALb2LG6uoe2ivKL
+	qNmANiG6YdYos8vWbvvKYh5FJZJmY=
+X-Received: by 2002:a05:600d:62b1:b0:46f:b43a:aef4 with SMTP id 5b1f17b1804b1-471b5341411mr31713425e9.38.1760970364937;
+        Mon, 20 Oct 2025 07:26:04 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFivef5uKK4dO0bLoUG5afbj0PkGjj8ivIcoCqNvXGcEAdVc8Dd+wjfTpX6dFddxGB9NaRtjw==
+X-Received: by 2002:a05:600d:62b1:b0:46f:b43a:aef4 with SMTP id 5b1f17b1804b1-471b5341411mr31713105e9.38.1760970364447;
+        Mon, 20 Oct 2025 07:26:04 -0700 (PDT)
+Received: from ?IPV6:2003:d8:2f0c:c200:fa4a:c4ff:1b32:21ce? (p200300d82f0cc200fa4ac4ff1b3221ce.dip0.t-ipconnect.de. [2003:d8:2f0c:c200:fa4a:c4ff:1b32:21ce])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4715520d753sm148339825e9.13.2025.10.20.07.26.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Oct 2025 07:26:03 -0700 (PDT)
+Message-ID: <4f2066f8-f26e-4704-9f75-4652d4018cd9@redhat.com>
+Date: Mon, 20 Oct 2025 16:26:00 +0200
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:1687:b0:940:d7b0:e766 with SMTP id
- ca18e2360f4ac-940d7b0e8camr393999339f.16.1760942593629; Sun, 19 Oct 2025
- 23:43:13 -0700 (PDT)
-Date: Sun, 19 Oct 2025 23:43:13 -0700
-In-Reply-To: <20251020001652.2116669-1-willy@infradead.org>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68f5da01.050a0220.91a22.043f.GAE@google.com>
-Subject: [syzbot ci] Re: Separate ptdesc from struct page
-From: syzbot ci <syzbot+cia36a04b74f498e9d@syzkaller.appspotmail.com>
-To: hannes@cmpxchg.org, linux-mm@kvack.org, vishal.moola@gmail.com, 
-	willy@infradead.org
+User-Agent: Mozilla Thunderbird
+Subject: Re: [syzbot ci] Re: Fix stale IOTLB entries for kernel address space
+To: Baolu Lu <baolu.lu@linux.intel.com>, Dave Hansen <dave.hansen@intel.com>,
+ syzbot ci <syzbot+cid009622971eb4566@syzkaller.appspotmail.com>,
+ akpm@linux-foundation.org, apopple@nvidia.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, iommu@lists.linux.dev, jannh@google.com,
+ jean-philippe@linaro.org, jgg@nvidia.com, joro@8bytes.org,
+ kevin.tian@intel.com, liam.howlett@oracle.com, linux-kernel@vger.kernel.org,
+ linux-mm@kvack.org, lorenzo.stoakes@oracle.com, luto@kernel.org,
+ mhocko@kernel.org, mingo@redhat.com, peterz@infradead.org,
+ robin.murphy@arm.com, rppt@kernel.org, security@kernel.org,
+ stable@vger.kernel.org, tglx@linutronix.de, urezki@gmail.com,
+ vasant.hegde@amd.com, vbabka@suse.cz, will@kernel.org, willy@infradead.org,
+ x86@kernel.org, yi1.lai@intel.com
 Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+References: <68eeb99e.050a0220.91a22.0220.GAE@google.com>
+ <89146527-3f41-4f1e-8511-0d06e169c09e@intel.com>
+ <8cdb459f-f7d1-4ca0-a6a0-5c83d5092cd8@linux.intel.com>
+ <d1a6c65c-6518-4227-8ec3-f2af4f7724ad@redhat.com>
+ <13d660ea-9bff-47dc-9cd7-ae74869edc5a@linux.intel.com>
+From: David Hildenbrand <david@redhat.com>
+Autocrypt: addr=david@redhat.com; keydata=
+ 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
+ qIws/H2t
+In-Reply-To: <13d660ea-9bff-47dc-9cd7-ae74869edc5a@linux.intel.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: k46qyHPQXfvtikYalYXKXdwjMTqXxQOHdTkVj9Sdc-A_1760970365
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-syzbot ci has tested the following series
+On 20.10.25 07:34, Baolu Lu wrote:
+> On 10/18/25 01:10, David Hildenbrand wrote:
+>> On 16.10.25 10:00, Baolu Lu wrote:
+>>> On 10/16/25 00:25, Dave Hansen wrote:
+>>>> Here's the part that confuses me:
+>>>>
+>>>> On 10/14/25 13:59, syzbot ci wrote:
+>>>>> page last free pid 5965 tgid 5964 stack trace:
+>>>>>     reset_page_owner include/linux/page_owner.h:25 [inline]
+>>>>>     free_pages_prepare mm/page_alloc.c:1394 [inline]
+>>>>>     __free_frozen_pages+0xbc4/0xd30 mm/page_alloc.c:2906
+>>>>>     pmd_free_pte_page+0xa1/0xc0 arch/x86/mm/pgtable.c:783
+>>>>>     vmap_try_huge_pmd mm/vmalloc.c:158 [inline]
+>>>> ...
+>>>>
+>>>> So, vmap_try_huge_pmd() did a pmd_free_pte_page(). Yet, somehow, the PMD
+>>>> stuck around so that it *could* be used after being freed. It _looks_
+>>>> like pmd_free_pte_page() freed the page, returned 0, and made
+>>>> vmap_try_huge_pmd() return early, skipping the pmd pmd_set_huge().
+>>>>
+>>>> But I don't know how that could possibly happen.
+>>>
+>>> The reported issue is only related to this patch:
+>>>
+>>> - [PATCH v6 3/7] x86/mm: Use 'ptdesc' when freeing PMD pages
+>>>
+>>> It appears that the pmd_ptdesc() helper can't be used directly here in
+>>> this patch. pmd_ptdesc() retrieves the page table page that the PMD
+>>> entry resides in:
+>>>
+>>> static inline struct page *pmd_pgtable_page(pmd_t *pmd)
+>>> {
+>>>            unsigned long mask = ~(PTRS_PER_PMD * sizeof(pmd_t) - 1);
+>>>            return virt_to_page((void *)((unsigned long) pmd & mask));
+>>> }
+>>>
+>>> static inline struct ptdesc *pmd_ptdesc(pmd_t *pmd)
+>>> {
+>>>            return page_ptdesc(pmd_pgtable_page(pmd));
+>>> }
+>>>
+>>> while, in this patch, we need the page descriptor that a pmd entry
+>>> points to.
+>>
+>> Ah. But that's just pointing at a leaf page table, right?
+> 
+> Yes, that points to a leaf page table.
 
-[v1] Separate ptdesc from struct page
-https://lore.kernel.org/all/20251020001652.2116669-1-willy@infradead.org
-* [RFC PATCH 1/7] mm: Use frozen pages for page tables
-* [RFC PATCH 2/7] mm: Account pagetable memory when allocated
-* [RFC PATCH 3/7] mm: Mark pagetable memory when allocated
-* [RFC PATCH 4/7] pgtable: Remove uses of page->lru
-* [RFC PATCH 5/7] x86: Call preallocate_vmalloc_pages() later
-* [RFC PATCH 6/7] mm: Add alloc_pages_memdesc family of APIs
-* [RFC PATCH 7/7] mm: Allocate ptdesc from slab
+Right, so I guess there is no simplifying that.
 
-and found the following issue:
-kernel BUG in pte_free_now
+Like we have in pte_lockptr():
 
-Full report is available here:
-https://ci.syzbot.org/series/034eb8df-67a6-4c07-8ba5-3ac0df045a40
+	return ptlock_ptr(page_ptdesc(pmd_page(*pmd)));
 
-***
+So page_ptdesc(pmd_page()) is the way to go for now.
 
-kernel BUG in pte_free_now
+Sorry for the confusion.
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      3a8660878839faadb4f1a6dd72c3179c1df56787
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/2cf2c360-080f-4864-9be9-e277d29fc594/config
-syz repro: https://ci.syzbot.org/findings/1f85642a-695a-4b8d-a5ee-b95a5105cc53/syz_repro
+-- 
+Cheers
 
- __do_softirq kernel/softirq.c:656 [inline]
- invoke_softirq kernel/softirq.c:496 [inline]
- __irq_exit_rcu+0xca/0x1f0 kernel/softirq.c:723
- irq_exit_rcu+0x9/0x30 kernel/softirq.c:739
- instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1052 [inline]
- sysvec_apic_timer_interrupt+0xa6/0xc0 arch/x86/kernel/apic/apic.c:1052
- asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.h:697
-------------[ cut here ]------------
-kernel BUG at ./include/linux/mm.h:2959!
-Oops: invalid opcode: 0000 [#1] SMP KASAN PTI
-CPU: 0 UID: 0 PID: 6093 Comm: syz.1.54 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:page_ptdesc include/linux/mm.h:2959 [inline]
-RIP: 0010:pte_free include/asm-generic/pgalloc.h:115 [inline]
-RIP: 0010:pte_free_now+0xc2/0xd0 mm/pgtable-generic.c:249
-Code: 48 89 df e8 20 d1 13 00 48 8b 13 48 c7 c7 c0 89 76 8b 4c 89 f6 e8 6e 66 15 ff 4c 89 ff 48 c7 c6 00 8a 76 8b e8 1f c3 15 ff 90 <0f> 0b 66 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90
-RSP: 0018:ffffc90000007bb0 EFLAGS: 00010246
-RAX: de62a9f92d629d00 RBX: ffffea0005ca91e0 RCX: de62a9f92d629d00
-RDX: 0000000000000002 RSI: ffffffff8d9d1d2d RDI: ffff8881127ad700
-RBP: ffffc90000007e30 R08: ffffc90000007567 R09: 1ffff92000000eac
-R10: dffffc0000000000 R11: fffff52000000ead R12: dffffc0000000000
-R13: ffffffff81a82b37 R14: 0000000000000000 R15: ffffea0005ca91c0
-FS:  00007f66c98976c0(0000) GS:ffff88818e70c000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f66c9896fc8 CR3: 0000000112a72000 CR4: 00000000000006f0
-Call Trace:
- <IRQ>
- rcu_do_batch kernel/rcu/tree.c:2605 [inline]
- rcu_core+0xcab/0x1770 kernel/rcu/tree.c:2861
- handle_softirqs+0x286/0x870 kernel/softirq.c:622
- __do_softirq kernel/softirq.c:656 [inline]
- invoke_softirq kernel/softirq.c:496 [inline]
- __irq_exit_rcu+0xca/0x1f0 kernel/softirq.c:723
- irq_exit_rcu+0x9/0x30 kernel/softirq.c:739
- instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1052 [inline]
- sysvec_apic_timer_interrupt+0xa6/0xc0 arch/x86/kernel/apic/apic.c:1052
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.h:697
-RIP: 0010:clear_page_rep+0xe/0x20 arch/x86/lib/clear_page_64.S:23
-Code: cc cc cc cc cc cc cc cc cc cc cc cc 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 f3 0f 1e fa b9 00 02 00 00 31 c0 f3 48 ab <e9> 8d 46 04 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90
-RSP: 0018:ffffc90003cb76d0 EFLAGS: 00000246
-RAX: 0000000000000000 RBX: fffa800000000000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff8880123a2000
-RBP: fffa8000123a1000 R08: ffffea000048e847 R09: 1ffffd4000091d08
-R10: dffffc0000000000 R11: fffff94000091d09 R12: 0000000000000000
-R13: 1ffffffff1b404a6 R14: 1ffffffff1b404a4 R15: 0000000000000000
- clear_page arch/x86/include/asm/page_64.h:54 [inline]
- clear_highpage include/linux/highmem.h:240 [inline]
- shmem_get_folio_gfp+0xaad/0x1660 mm/shmem.c:2583
- shmem_fault+0x179/0x390 mm/shmem.c:2734
- __do_fault+0x138/0x390 mm/memory.c:5280
- do_read_fault mm/memory.c:5698 [inline]
- do_fault mm/memory.c:5832 [inline]
- do_pte_missing mm/memory.c:4361 [inline]
- handle_pte_fault mm/memory.c:6177 [inline]
- __handle_mm_fault+0x35e3/0x5400 mm/memory.c:6318
- handle_mm_fault+0x40a/0x8e0 mm/memory.c:6487
- faultin_page mm/gup.c:1126 [inline]
- __get_user_pages+0x165c/0x2a00 mm/gup.c:1428
- populate_vma_page_range+0x29f/0x3a0 mm/gup.c:1860
- __mm_populate+0x24c/0x380 mm/gup.c:1963
- mm_populate include/linux/mm.h:3451 [inline]
- vm_mmap_pgoff+0x387/0x4d0 mm/util.c:586
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f66c898efc9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f66c9897038 EFLAGS: 00000246 ORIG_RAX: 0000000000000009
-RAX: ffffffffffffffda RBX: 00007f66c8be6090 RCX: 00007f66c898efc9
-RDX: b635773f06ebbeef RSI: 0000000000b36000 RDI: 0000200000000000
-RBP: 00007f66c8a11f91 R08: ffffffffffffffff R09: 00000000e9ba1000
-R10: 0000000000008031 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f66c8be6128 R14: 00007f66c8be6090 R15: 00007ffcfaf828b8
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:page_ptdesc include/linux/mm.h:2959 [inline]
-RIP: 0010:pte_free include/asm-generic/pgalloc.h:115 [inline]
-RIP: 0010:pte_free_now+0xc2/0xd0 mm/pgtable-generic.c:249
-Code: 48 89 df e8 20 d1 13 00 48 8b 13 48 c7 c7 c0 89 76 8b 4c 89 f6 e8 6e 66 15 ff 4c 89 ff 48 c7 c6 00 8a 76 8b e8 1f c3 15 ff 90 <0f> 0b 66 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90
-RSP: 0018:ffffc90000007bb0 EFLAGS: 00010246
-RAX: de62a9f92d629d00 RBX: ffffea0005ca91e0 RCX: de62a9f92d629d00
-RDX: 0000000000000002 RSI: ffffffff8d9d1d2d RDI: ffff8881127ad700
-RBP: ffffc90000007e30 R08: ffffc90000007567 R09: 1ffff92000000eac
-R10: dffffc0000000000 R11: fffff52000000ead R12: dffffc0000000000
-R13: ffffffff81a82b37 R14: 0000000000000000 R15: ffffea0005ca91c0
-FS:  00007f66c98976c0(0000) GS:ffff88818e70c000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f66c9896fc8 CR3: 0000000112a72000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess):
-   0:	cc                   	int3
-   1:	cc                   	int3
-   2:	cc                   	int3
-   3:	cc                   	int3
-   4:	cc                   	int3
-   5:	cc                   	int3
-   6:	cc                   	int3
-   7:	cc                   	int3
-   8:	cc                   	int3
-   9:	cc                   	int3
-   a:	cc                   	int3
-   b:	cc                   	int3
-   c:	90                   	nop
-   d:	90                   	nop
-   e:	90                   	nop
-   f:	90                   	nop
-  10:	90                   	nop
-  11:	90                   	nop
-  12:	90                   	nop
-  13:	90                   	nop
-  14:	90                   	nop
-  15:	90                   	nop
-  16:	90                   	nop
-  17:	90                   	nop
-  18:	90                   	nop
-  19:	90                   	nop
-  1a:	90                   	nop
-  1b:	90                   	nop
-  1c:	f3 0f 1e fa          	endbr64
-  20:	b9 00 02 00 00       	mov    $0x200,%ecx
-  25:	31 c0                	xor    %eax,%eax
-  27:	f3 48 ab             	rep stos %rax,%es:(%rdi)
-* 2a:	e9 8d 46 04 00       	jmp    0x446bc <-- trapping instruction
-  2f:	90                   	nop
-  30:	90                   	nop
-  31:	90                   	nop
-  32:	90                   	nop
-  33:	90                   	nop
-  34:	90                   	nop
-  35:	90                   	nop
-  36:	90                   	nop
-  37:	90                   	nop
-  38:	90                   	nop
-  39:	90                   	nop
-  3a:	90                   	nop
-  3b:	90                   	nop
-  3c:	90                   	nop
-  3d:	90                   	nop
-  3e:	90                   	nop
-  3f:	90                   	nop
+David / dhildenb
 
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
