@@ -1,90 +1,93 @@
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1FB52E7F1D
-	for <syzbot@lists.linux.dev>; Fri, 24 Oct 2025 20:15:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B0452E7F03
+	for <syzbot@lists.linux.dev>; Mon, 27 Oct 2025 11:10:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761336913; cv=none; b=EhcIFv0/LiGycx8/cVr92DSKh/m48xV9Y4CULsLEXFH8KBSBAhEc3tOz67Q0o5avuJ4rXQJ9S6GqRpFHEsqbSBegwPSN2lZ+//tWHeHZzUDOixffiGjrR9ZMjTEWKeO2nuR+1yhX/gte6i2LwMAz5zyQ58c/s+9uCjPSRvNKKMs=
+	t=1761563420; cv=none; b=VWhE6iRvvOZcRUs5DfJBXqJo0jfqavhUq+xGHU7Pm2XEjt/ELmyN6QC88DtrUBdQq1ELrsjwqh3qX+05wvgYIcuUDTpUlpOwn+aoHRzp4v45flaYaZybqND/aWEZzw0SCFNHtzolNcEeHxQjxVvvrn0RQSmCaKzNnnRo7iN33uM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761336913; c=relaxed/simple;
-	bh=9qjM/p2/ly2yeYK+M2MaF9ZfXyVXQUd6hlxo0Hyu5H4=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=F0sNbIQgb7QJ0QAGf7uiVb1/Q+2J0RtRNLRfBhYvbRh52gwj4WggPowLfwcscs0YLBo9kfXD7oPSjIAIW+ne7/XWyAOwLcVOjrItwT74/S1aoNkb6ZfUr7KjOZqnV33X5yV/X9Wxsb4IOi3XSqA/2g+4fe5bX0+CETS/Mt8QJIQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
+	s=arc-20240116; t=1761563420; c=relaxed/simple;
+	bh=3OHuJz+ZzKhx0BlvnQVkKZkUBbV3uHjb1wYKStSjKQI=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=soxxGxYFfhOI551o4AZITuPiCFEOUtn0OHD88x9gZ+Hf1eQKeAlIWoCGYT57DRajcCD2/4DCe9p4bnz+vs10F8YuU0kxIW40UYwrdT0ETmXsb42xGuGYx6MAGM20vnV3lUpm1B8UC+THs31UckwoKqOlzGRGk3kuOj6m6cn6mKg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-430d0cf9b85so92060685ab.2
-        for <syzbot@lists.linux.dev>; Fri, 24 Oct 2025 13:15:09 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-93e809242d0so1361452039f.0
+        for <syzbot@lists.linux.dev>; Mon, 27 Oct 2025 04:10:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761336909; x=1761941709;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=CFZizCra+5BvQ4wI1JtV3MPKxIrV08EJSui5ZcNE1Oc=;
-        b=RTnElrr/SeWfvoTWVEugS5XT/2DNegGhRjqFrUKRUdF5Q0AkUMQSKEvKwa2+Q1HR1d
-         JIRP/pTLm6xjziofOL4veRSZPQQzmGl0L8erQxN2XUZrvT9CudZx0yilm0FqWFC25C5I
-         D0CFEJZA22MWi5CRhp77oTzlNYXCkqEVYCyfrdKbCQLSnCZBIi8zINcJCmZzDu0CEIKh
-         fuMzlPKkz9OSCNKf0l/uxYA95hen5p/j1ccEkKoSSECse2rgsUcOM0aXl92owNSK4yrU
-         Nio11ww86sYgO1rfxtNQ3WJ5OlMUfiXXiJjb28F27tAvFZ9zd5dqQ2nCvqb695MiC2t2
-         63Pw==
-X-Gm-Message-State: AOJu0YzWqFpzSljx9Foq3AW7pOj6tbUuYa1NlKhNUNExbEBBhjDyPeGD
-	WZUfJ6fe5J+i03P619RTh3SQ77oOByI+O1m78Y8T48rc0zfI7zS56DhItIFVIOBVD6sFBQjqKGD
-	1/PYhpN3Wft3cL9YPI8vWccmm/DJ6firlrBCbAWnvmekRsCcmewrrO9/0sLA=
-X-Google-Smtp-Source: AGHT+IEoA55ZQ35bMGjZIDvj0EWOF4EOuXiC3Q4Q51zYV9VCL8DAOISAl6iBC/GAP9sNp7imCDaQ0LMWvA32cI3DrYl3Ud8iRTjV
+        d=1e100.net; s=20230601; t=1761563418; x=1762168218;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ZI2ig/W93vK9LYpfG64petZJ2lttifS6IFbH0MisS7s=;
+        b=KTA3Z9ZiSJ7rL7xHN7PsxPjhRTLcJhTtj2SP02gWLYPSCEC2ArzwDklR1CEf1EYKl3
+         4I7DjQ9LjKQ/B5qfilmFquuGjOPPJVGj4TJmxC0R9J8tL1IyEFKt2+oKdP8Pirg6c1wf
+         z+COAOGA9GfQp2iuydpvmuxo0P8WDmBPTy2TfW6ZTbUDLp5b+jlaHFoxfQ/EymaoSCVi
+         khmKZ+qJNglCPX5lWhLdC29UD+400LzWlEt3qFbNjYRWFJAWTXVwuO1rQQpCPYv46Zzn
+         AMbQljo9WmhvEad4w3WiPrsv6CrNve6xclYWQ4c7THGovtncBP68waliq3JD6Q47kRht
+         VUOA==
+X-Gm-Message-State: AOJu0YyHzkC0cNoSnb0S4VtlKDjHe1sJLbu3uJWZU2BYx5Owj4/xK2QR
+	auz2CDzD1OauywjWa6FqU8uzsrZRbQOaOiUjncFOMij7lCghtgeUSkXcYLaucnpk6xwp3K4cgGh
+	0jkfr+hgnC1zJ6cFNL5JR64iQLpn4YbCd3MYsuxHJWISqvV1dPVMIDvojUW4=
+X-Google-Smtp-Source: AGHT+IH0cPc0Ibix3tvABxu2mrlfpnd54LjpJU2J0wa+4En9089O+ZBsgt6FN2D+BQHL2L0JJKLxoeP70Gtydj1EZ0CI/aigjYPB
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1546:b0:42f:8b0f:bad2 with SMTP id
- e9e14a558f8ab-431ebedf889mr51156495ab.10.1761336909185; Fri, 24 Oct 2025
- 13:15:09 -0700 (PDT)
-Date: Fri, 24 Oct 2025 13:15:09 -0700
+X-Received: by 2002:a05:6e02:1aa7:b0:430:b32d:c1a1 with SMTP id
+ e9e14a558f8ab-431dc139f4dmr203893365ab.7.1761563418431; Mon, 27 Oct 2025
+ 04:10:18 -0700 (PDT)
+Date: Mon, 27 Oct 2025 04:10:18 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68fbde4d.050a0220.346f24.0171.GAE@google.com>
-Subject: [moderation/CI] Re: Fix ftrace for livepatch + BPF fexit programs
-From: syzbot ci <syzbot+ci6f0efd85fecb43d4@syzkaller.appspotmail.com>
+Message-ID: <68ff531a.050a0220.3344a1.037e.GAE@google.com>
+Subject: [moderation/CI] Re: vhost: add a new ioctl VHOST_GET_VRING_WORKER_INFO
+ and use in net.c
+From: syzbot ci <syzbot+ci5018284c6e427e81@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v2] Fix ftrace for livepatch + BPF fexit programs
-https://lore.kernel.org/all/20251024182901.3247573-1-song@kernel.org
-* [PATCH v2 bpf 1/3] ftrace: Fix BPF fexit with livepatch
-* [PATCH v2 bpf 2/3] ftrace: bpf: Fix IPMODIFY + DIRECT in modify_ftrace_di=
-rect()
-* [PATCH v2 bpf 3/3] selftests/bpf: Add tests for livepatch + bpf trampolin=
-e
+[v1] vhost: add a new ioctl VHOST_GET_VRING_WORKER_INFO and use in net.c
+https://lore.kernel.org/all/20251027102644.622305-1-nhudson@akamai.com
+* [PATCH] vhost: add a new ioctl VHOST_GET_VRING_WORKER_INFO and use in net.c
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/00cb80f1-d683-4670-ad05-00eaba93a8ff
+https://ci.syzbot.org/series/1df205d3-fe0c-4d10-8971-710c01c77f0d
 
 ***
 
 kernel build error
 
-tree:      bpf
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
-.git
-base:      7221b9caf84b3294688228a19273d74ea19a2ee4
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      bfe62db5422b1a5f25752bd0877a097d436d876d
 arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
-1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/e69229e6-e6f5-44d1-87a9-ce16781a327=
-6/config
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/d97eaf43-dfb4-484b-ba23-67d850d9c866/config
 
-kernel/bpf/trampoline.c:229:11: error: incomplete definition of type 'struc=
-t ftrace_ops'
-kernel/bpf/trampoline.c:230:11: error: incomplete definition of type 'struc=
-t ftrace_ops'
+drivers/vhost/vhost.c:2403:3: error: use of undeclared identifier 'worker'
+drivers/vhost/vhost.c:2403:34: error: use of undeclared identifier 'vq'
+drivers/vhost/vhost.c:2404:30: error: use of undeclared identifier 'dev'
+drivers/vhost/vhost.c:2405:8: error: use of undeclared identifier 'worker'
+drivers/vhost/vhost.c:2406:4: error: use of undeclared identifier 'ret'
+drivers/vhost/vhost.c:2410:39: error: use of undeclared identifier 'ring_worker_info'; did you mean 'print_worker_info'?
+drivers/vhost/vhost.c:2410:11: error: use of undeclared identifier 'ring_worker_info'; did you mean 'print_worker_info'?
+drivers/vhost/vhost.c:2411:3: error: use of undeclared identifier 'ring_worker_info'; did you mean 'print_worker_info'?
+drivers/vhost/vhost.c:2411:19: error: member reference base type 'void (const char *, struct task_struct *)' is not a structure or union
+drivers/vhost/vhost.c:2411:28: error: use of undeclared identifier 'idx'
+drivers/vhost/vhost.c:2412:3: error: use of undeclared identifier 'ring_worker_info'; did you mean 'print_worker_info'?
+drivers/vhost/vhost.c:2412:19: error: member reference base type 'void (const char *, struct task_struct *)' is not a structure or union
+drivers/vhost/vhost.c:2412:32: error: use of undeclared identifier 'worker'
+drivers/vhost/vhost.c:2413:3: error: use of undeclared identifier 'ring_worker_info'; did you mean 'print_worker_info'?
+drivers/vhost/vhost.c:2413:19: error: member reference base type 'void (const char *, struct task_struct *)' is not a structure or union
 
 ***
 
@@ -97,10 +100,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[andrey.grodzovsky@crowdstrike.com andrii@kernel.org ast@kernel.org bpf@vge=
-r.kernel.org daniel@iogearbox.net kernel-team@meta.com linux-trace-kernel@v=
-ger.kernel.org live-patching@vger.kernel.org mhiramat@kernel.org olsajiri@g=
-mail.com rostedt@goodmis.org song@kernel.org stable@vger.kernel.org]
+[eperezma@redhat.com jasowang@redhat.com kvm@vger.kernel.org linux-kernel@vger.kernel.org mst@redhat.com mtottenh@akamai.com netdev@vger.kernel.org nhudson@akamai.com virtualization@lists.linux.dev]
 
 If the report looks fine to you, reply with:
 #syz upstream
