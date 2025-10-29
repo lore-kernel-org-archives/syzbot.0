@@ -1,65 +1,101 @@
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEFCC2741B5
-	for <syzbot@lists.linux.dev>; Wed, 29 Oct 2025 00:25:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25F7522D792
+	for <syzbot@lists.linux.dev>; Wed, 29 Oct 2025 02:04:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761697511; cv=none; b=JhfnPbnT8ToocmfcUCWo4F6lCndB0KH/ZaKlGxG5YEMpJCN31mS1XpXGgDNSPeB88BYc2P70XoUxO2mzrzYw6cSzJ0hoj08QHoL5vI9uW+dCb34Anpsih5TEUTcCjbBOkXxrNQ63Cy13E7xh8bnDMVkX+gX4btB2YotU7CmwgbQ=
+	t=1761703455; cv=none; b=W3tzqv5LwsCGL6lCMbQnjmFi0DeKY21NMeVkEpwEIz9HzPOqeYh6RN4NQMqsnl50ZAxT+7H2hgnUOJaoodbnARvIUcQdRaBC7gvXNOtktqB9RiMhiiHZXuI088ggGvcEfsZ9VQVq9sH8IOnixCz27dQDH0pzWayNf/FRybk1qtE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761697511; c=relaxed/simple;
-	bh=DjcBVY8mJqbGJnCRObWENCx0c6xRt7QNzm9li1dg71c=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=owIs6n2LN4mYO2J3azAa0mlM8gB24TrX4NC0IHdUGGz4erfyRbFYhlQt65Cmmuz9OkYBSLxg8YIhFboy8cpV9QyPT1zXQsXNLpSqC9TWWJMbBx+8VZFidJPR4KmyHGhXbRXdu12RSExdX3dSqovXwpLNStWGfn19c5V7BRO+Om8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.71
+	s=arc-20240116; t=1761703455; c=relaxed/simple;
+	bh=v5p+HryV1q8iFdkGT6Lz9j5YHn5vZ7cDLXAdGFNWB3Y=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=NMywToPeo/xg3u3oA16Ag4pb9/Ui7JyfSlwVN+L5fVYWEf/sB6kVDKdpguizogMSOBuwf8NzaKDsPLts2dMF7lM/cZGyA5n9aqBo+v2eecFJcbjx5pyzUh4UWOZuzw75p1UQSM9m4MOcSyKbEddceQ04ZvIdftxWTzdU1P2fGNA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-9435917adb9so464931939f.2
-        for <syzbot@lists.linux.dev>; Tue, 28 Oct 2025 17:25:09 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-430d83d262fso267536835ab.2
+        for <syzbot@lists.linux.dev>; Tue, 28 Oct 2025 19:04:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761697509; x=1762302309;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DjcBVY8mJqbGJnCRObWENCx0c6xRt7QNzm9li1dg71c=;
-        b=UgyWVmwnkNX+0jpcsX+XKfdenXqDK5FsQEUtrOs1JkvmLpOE8yXr8CjhiPMc/9k9CF
-         JRlFQEVHgYKomOZdc/1ixkfZ6Aj/EEDu7unDt2iyyUPPGw4MFLzgk2vU4bWOAoCMWtZX
-         qjvKx4wq8Sn79i7141/fWH3HPoFWA3Z3BYpqs1X/tH/179cukiSOZvjbAyzdVoEtlf7/
-         p1mLdXiAVvO2J5lZf12JkxHP/tGaaNB02+0OKzKlhssUO8tIs79FWnwigRaSHTGABT9n
-         H8qpknpNfWJ0i9FfLEVbs8yipj1nqUMWOLHCQhrJDLIWKcyU15O0HVa7SOpstlo7aTEi
-         /0sg==
-X-Forwarded-Encrypted: i=1; AJvYcCVBFgiEuz2cfuXjqwW5AlBY4ZFqGwbR+dtZFsjojqRQuXwDOoZ2nNKQjmAWz10kfpy3PU/Pf8o=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz65g6PUE7UpaP4d3hml2KEPpN7V3g+qViFIjp6pBeVcCB+/LtG
-	LVm9b4o/EWP9RcKT+67eZ5ZoAGsIHwAoDbq4oAagKoZLumunNuUG0T3L4rAHsn02ciaRlhMvDHx
-	TYBR+UnjosTh/y6WsY7qbir2vSPIT4pnj5Ohu0s8korCWRlD2IkjQdNw2B7g=
-X-Google-Smtp-Source: AGHT+IHRPJ5vQoHGCAChMRTb+GIwk2dkZrqG6byeJVWlhSwoPis1XmTYkNmxVcxDmVOk4U7RHrNmmt0Y0/QA/uPrHF/tucDVAqRX
+        d=1e100.net; s=20230601; t=1761703452; x=1762308252;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=cNog995ShVx1UA2B1FVaPjpRSK63gcQwiNAr/7oSDPc=;
+        b=CbZejDrp9D8Wy/xKhv0KhuAyJY66Bt8LvAqJuo/Grebwlxj0kjNLh0jWDFXut5z4pH
+         D6KDXjQlXJOWw2Gh0MKJd26pOefu4FakF9BfUvOi1Q8Fa2S3QVdLk445lSt1WZFAFmLx
+         tH5H3gTbp/fF1GEXjtTIr1/gGrcWcEQHH2cmtillSKEI8nCXmwkc7ipbv2qTdhjjhcUg
+         3JP3ZC9hI4OrIbsTWYEDt6ouIvqwJNDj9HjdEwc9aJrQZkJ4vPOLtKAWwTIJqkBkFj3T
+         G4TiA3rTNwrnjFlRGLV73BeTJ76iphXRIFtM+ElHfwrg3LgPzXp8nySjzU1qMosSXpYZ
+         JVwg==
+X-Gm-Message-State: AOJu0YwtzROkVlJ1J9ovxPKdR9GoW+r48fGBk4MPb077PLwqrJ0dh1HF
+	cirvkCBZmc4yqePAOeIb5zQH8xl4nn9Ct1TN/L7FwK8lm70d4AITgG16O3b0/NKFwmZ4SqnKTAf
+	A8l893h37fFS0BYDAo8cu8IKjM7vfoBeDtGO7rt+PPfHSJJXxWV2sEAeI5vM=
+X-Google-Smtp-Source: AGHT+IFeoQlRG05zUIr+eFfuIdROpr9hI1v708Do2CxRckLrbpnhES0njJBf7fpQgqz5wAG9ILL4cDottJNIvYp/a9YaQ5eqNwsb
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:9:b0:42e:d74:7252 with SMTP id
- e9e14a558f8ab-432f906642amr16004065ab.31.1761697508978; Tue, 28 Oct 2025
- 17:25:08 -0700 (PDT)
-Date: Tue, 28 Oct 2025 17:25:08 -0700
-In-Reply-To: <aQFeMG8WEvrWaNf0@hyeyoo>
+X-Received: by 2002:a05:6e02:328a:b0:42f:946f:8eb4 with SMTP id
+ e9e14a558f8ab-432f906495dmr17741465ab.21.1761703452303; Tue, 28 Oct 2025
+ 19:04:12 -0700 (PDT)
+Date: Tue, 28 Oct 2025 19:04:12 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69015ee4.050a0220.3344a1.03f9.GAE@google.com>
-Subject: Re: Re: [syzbot ci] Re: Eliminate Dying Memory Cgroup
-From: syzbot ci <syzbot@syzkaller.appspotmail.com>
-To: harry.yoo@oracle.com
-Cc: akpm@linux-foundation.org, axelrasmussen@google.com, 
-	cgroups@vger.kernel.org, chengming.zhou@linux.dev, david@redhat.com, 
-	hannes@cmpxchg.org, harry.yoo@oracle.com, hughd@google.com, 
-	imran.f.khan@oracle.com, kamalesh.babulal@oracle.com, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, lorenzo.stoakes@oracle.com, 
-	mhocko@suse.com, muchun.song@linux.dev, nphamcs@gmail.com, qi.zheng@linux.dev, 
-	roman.gushchin@linux.dev, shakeel.butt@linux.dev, songmuchun@bytedance.com, 
-	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com, weixugc@google.com, 
-	yuanchu@google.com, zhengqi.arch@bytedance.com, ziy@nvidia.com
+Message-ID: <6901761c.050a0220.3344a1.03fc.GAE@google.com>
+Subject: [moderation/CI] Re: virtio_net: fix alignment for virtio_net_hdr_v1_hash
+From: syzbot ci <syzbot+ci221bb49767e2b145@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+syzbot ci has tested the following series
 
-Unknown command
+[v1] virtio_net: fix alignment for virtio_net_hdr_v1_hash
+https://lore.kernel.org/all/20251029012434.75576-1-jasowang@redhat.com
+* [PATCH net] virtio_net: fix alignment for virtio_net_hdr_v1_hash
+
+and found the following issue:
+kernel build error
+
+Full report is available here:
+https://ci.syzbot.org/series/4f6a48be-fb04-4626-9d6b-6b847795754a
+
+***
+
+kernel build error
+
+tree:      net
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net.git
+base:      ab431bc39741e9d9bd3102688439e1864c857a74
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/9628e07c-1d56-46d1-b556-a7b12aac9a8=
+c/config
+
+./include/linux/virtio_net.h:404:24: error: no member named 'hash_value' in=
+ 'struct virtio_net_hdr_v1_hash'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[andrew@lunn.ch davem@davemloft.net edumazet@google.com eperezma@redhat.com=
+ jasowang@redhat.com kuba@kernel.org linux-kernel@vger.kernel.org mst@redha=
+t.com netdev@vger.kernel.org pabeni@redhat.com stable@vger.kernel.org virtu=
+alization@lists.linux.dev xuanzhuo@linux.alibaba.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
 
