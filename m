@@ -1,152 +1,132 @@
-Received: from out-187.mta1.migadu.com (out-187.mta1.migadu.com [95.215.58.187])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC5C2244EA1
-	for <syzbot@lists.linux.dev>; Wed, 29 Oct 2025 03:12:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.187
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E874A37A3CC
+	for <syzbot@lists.linux.dev>; Wed, 29 Oct 2025 16:43:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761707560; cv=none; b=G8YgCbPqgM1+Wuj9F8N4mzitBMYh/dLhIYktbCxhiqbA9TWoLaEORkqOCgKvqfItnLFdikf1OYdlMbYoFvaK3aBvG9bOSI85dSwl4kDPlfDXFIWkA1sAdy/4ZQ7iAxR/WOvRTSSelMyo4TBLA83E2FMpzaIfqIw+WM6wTT5uMoA=
+	t=1761756189; cv=none; b=qI8TAKkEWpJ+DkO1NFmg0+zkl+PcnKw85bEhYB3jRsMDlQhf5vLeFNTOuopsQTpVEVu2MlF0Bv+92KRtYV7MJWoKn6Y1nxhibc8ghYRtcmoLCeLLPF4f3kJoaRdwPC5YkEOgW/K08o4WGVIxEk46yWVMc0jb7+t3X3CmJC/pfsA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761707560; c=relaxed/simple;
-	bh=hytguSx1VQCNNuHx835HgjhxZYkwWh6Hhjo1p4lF9Ig=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jUMDpFq3QTSQbOvRe6+8VbOKeTPHNsJ+Oxw5zwbgn2hxnHQ2sy+2NYuUz10tlAB1tx9wChhzqJYxPkd0VwuLHsukLPTCUxaBaZjhhXCa/CfYrXkNZZWC3E1y11ad6wDH/1Hv4/pWfvEnY3Tr8Oz7x3cIgbp0tn9qX5FcVMHZsmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=DruSDcLg; arc=none smtp.client-ip=95.215.58.187
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="DruSDcLg"
-Message-ID: <a8892c17-5161-4e27-9fdb-70e2e5c53f2c@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1761707555;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=8U2/SRrzdo4Rwp5cpioI5+15rE47Gvkhsrn4dsdPbQM=;
-	b=DruSDcLgKCqasjSORgvtKLccMIgUgAw9AbnSQzVZDb1mLkpujqTjHHUBMYj1SRcHgLqZN9
-	a2itK2hbxjSdRqD/XLybZHvtRP3ZIxiDA0D4Mrwv0f5/H4OsJIm8AfJOem4Es5HcY7726o
-	G2rmoLCw0O5hZNmyy2+zlbFzAnWtuFw=
-Date: Wed, 29 Oct 2025 11:12:24 +0800
+	s=arc-20240116; t=1761756189; c=relaxed/simple;
+	bh=dz4UHPy1Vxy5VvJOIeJ51vLlzplc1f2ed6NvorK4/xo=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=tVYj45NvcZXgwX65XkLP3fwkhwx7idP5UbjSZrXgnLQWNzGa8hsU0yqLqgFzjcxr4lZ4OanQyeKXSNeT0qWtUM1kiDHeZgSwJLZxNIjCiNjvkAFGFeQWG9D4GLWnIWJ5wpyTDWn+pH3+k+cYEDkG8f4Ssfp1TUaZuEoNqFpdRlo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-431d84fdb91so215928915ab.3
+        for <syzbot@lists.linux.dev>; Wed, 29 Oct 2025 09:43:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1761756187; x=1762360987;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=woE0XQKxe4eeNubirOfdPpNmIiETt2fkjQU6OvBxbCU=;
+        b=W59mNDxm8FiwZMfUd04n8DYMO56pZIloic3B0F1MoCA2VdXb47EAxe9x3PbqQ7F2Be
+         JVMJrHL7eXcm73eCaNacJBUT6MqpJLWHxt2Ns4E54xQfp+q0FD0h23VdL+T/ukVkl2st
+         imXjp58UjDilzrtDRKL8p7ob8sx/7/hboW2OjsjgOZntj3yGD2DaN6kcf53sAX8JdIgp
+         1UihEQDQgzgz2lX5Rq6jznTLplTI45evlYZ/4s/KT5V5+HhFrtHoNuFpsF1sutv+6Zrz
+         VJXverSKlJnBcKBsgflhSftuw5HW1F+7Xi2WV4GDtZ06VWkyONVMgJkbp5oDfX3Y9fgR
+         1wXw==
+X-Gm-Message-State: AOJu0YwxFe0ptX66zVx+2COXxQDpMo410fYWlRkVKpXmuH5K7zzGOtt3
+	E7fpuElMpLEL2fvO4vYRF9MVbUKOPE+Tvm2T2FdowsI6Cl3SoUjZwGz4Myhzqfhcr+xhmqs5opE
+	/GW/GMvlhzfidjYT8AZoDc+ZxSE/eqq12lXgxCDD/+3rE+lw6ZS+MPvcBF9I=
+X-Google-Smtp-Source: AGHT+IEGKB7Ft+/JHKzGsrj8hrje3p98ZQhXVlF6GMUgqp4Oo5VN8H+0MLSKdaAhTvERNKqepvI+x4OwpSrt0KURE9VObXhCo4xC
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [syzbot ci] Re: Eliminate Dying Memory Cgroup
-To: Harry Yoo <harry.yoo@oracle.com>,
- syzbot ci <syzbot+cie7d8f1fc805fcd7a@syzkaller.appspotmail.com>
-Cc: akpm@linux-foundation.org, axelrasmussen@google.com,
- cgroups@vger.kernel.org, chengming.zhou@linux.dev, david@redhat.com,
- hannes@cmpxchg.org, hughd@google.com, imran.f.khan@oracle.com,
- kamalesh.babulal@oracle.com, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, lorenzo.stoakes@oracle.com, mhocko@suse.com,
- muchun.song@linux.dev, nphamcs@gmail.com, roman.gushchin@linux.dev,
- shakeel.butt@linux.dev, songmuchun@bytedance.com, weixugc@google.com,
- yuanchu@google.com, zhengqi.arch@bytedance.com, ziy@nvidia.com,
- syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-References: <cover.1761658310.git.zhengqi.arch@bytedance.com>
- <69012e79.050a0220.3344a1.03ee.GAE@google.com> <aQFeMG8WEvrWaNf0@hyeyoo>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Qi Zheng <qi.zheng@linux.dev>
-In-Reply-To: <aQFeMG8WEvrWaNf0@hyeyoo>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
+X-Received: by 2002:a92:ca0b:0:b0:430:ab98:7b1f with SMTP id
+ e9e14a558f8ab-432f902b528mr48928175ab.18.1761756186996; Wed, 29 Oct 2025
+ 09:43:06 -0700 (PDT)
+Date: Wed, 29 Oct 2025 09:43:06 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6902441a.050a0220.3344a1.042a.GAE@google.com>
+Subject: [moderation/CI] Re: mm, swap: never bypass swap cache and cleanup
+ flags (swap table phase II)
+From: syzbot ci <syzbot+ci7353ed648947c91d@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Harry,
+syzbot ci has tested the following series
 
-On 10/29/25 8:22 AM, Harry Yoo wrote:
-> On Tue, Oct 28, 2025 at 01:58:33PM -0700, syzbot ci wrote:
->> syzbot ci has tested the following series
->>
->> [v1] Eliminate Dying Memory Cgroup
->> https://lore.kernel.org/all/cover.1761658310.git.zhengqi.arch@bytedance.com
->> * [PATCH v1 01/26] mm: memcontrol: remove dead code of checking parent memory cgroup
->> * [PATCH v1 02/26] mm: workingset: use folio_lruvec() in workingset_refault()
->> * [PATCH v1 03/26] mm: rename unlock_page_lruvec_irq and its variants
->> * [PATCH v1 04/26] mm: vmscan: refactor move_folios_to_lru()
->> * [PATCH v1 05/26] mm: memcontrol: allocate object cgroup for non-kmem case
->> * [PATCH v1 06/26] mm: memcontrol: return root object cgroup for root memory cgroup
->> * [PATCH v1 07/26] mm: memcontrol: prevent memory cgroup release in get_mem_cgroup_from_folio()
->> * [PATCH v1 08/26] buffer: prevent memory cgroup release in folio_alloc_buffers()
->> * [PATCH v1 09/26] writeback: prevent memory cgroup release in writeback module
->> * [PATCH v1 10/26] mm: memcontrol: prevent memory cgroup release in count_memcg_folio_events()
->> * [PATCH v1 11/26] mm: page_io: prevent memory cgroup release in page_io module
->> * [PATCH v1 12/26] mm: migrate: prevent memory cgroup release in folio_migrate_mapping()
->> * [PATCH v1 13/26] mm: mglru: prevent memory cgroup release in mglru
->> * [PATCH v1 14/26] mm: memcontrol: prevent memory cgroup release in mem_cgroup_swap_full()
->> * [PATCH v1 15/26] mm: workingset: prevent memory cgroup release in lru_gen_eviction()
->> * [PATCH v1 16/26] mm: thp: prevent memory cgroup release in folio_split_queue_lock{_irqsave}()
->> * [PATCH v1 17/26] mm: workingset: prevent lruvec release in workingset_refault()
->> * [PATCH v1 18/26] mm: zswap: prevent lruvec release in zswap_folio_swapin()
->> * [PATCH v1 19/26] mm: swap: prevent lruvec release in swap module
->> * [PATCH v1 20/26] mm: workingset: prevent lruvec release in workingset_activation()
->> * [PATCH v1 21/26] mm: memcontrol: prepare for reparenting LRU pages for lruvec lock
->> * [PATCH v1 22/26] mm: vmscan: prepare for reparenting traditional LRU folios
->> * [PATCH v1 23/26] mm: vmscan: prepare for reparenting MGLRU folios
->> * [PATCH v1 24/26] mm: memcontrol: refactor memcg_reparent_objcgs()
->> * [PATCH v1 25/26] mm: memcontrol: eliminate the problem of dying memory cgroup for LRU folios
->> * [PATCH v1 26/26] mm: lru: add VM_WARN_ON_ONCE_FOLIO to lru maintenance helpers
->>
->> and found the following issue:
->> WARNING in folio_memcg
->>
->> Full report is available here:
->> https://ci.syzbot.org/series/0d48a77a-fb4f-485d-9fd6-086afd6fb650
->>
->> ***
->>
->> WARNING in folio_memcg
->>
->> tree:      mm-new
->> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
->> base:      b227c04932039bccc21a0a89cd6df50fa57e4716
->> arch:      amd64
->> compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
->> config:    https://ci.syzbot.org/builds/503d7034-ae99-44d1-8fb2-62e7ef5e1c7c/config
->> C repro:   https://ci.syzbot.org/findings/880c374a-1b49-436e-9be2-63d5e2c6b6ab/c_repro
->> syz repro: https://ci.syzbot.org/findings/880c374a-1b49-436e-9be2-63d5e2c6b6ab/syz_repro
->>
->> exFAT-fs (loop0): failed to load upcase table (idx : 0x00010000, chksum : 0xe5674ec2, utbl_chksum : 0xe619d30d)
->> exFAT-fs (loop0): failed to load alloc-bitmap
->> exFAT-fs (loop0): failed to recognize exfat type
->> ------------[ cut here ]------------
->> WARNING: CPU: 1 PID: 5965 at ./include/linux/memcontrol.h:380 obj_cgroup_memcg include/linux/memcontrol.h:380 [inline]
->> WARNING: CPU: 1 PID: 5965 at ./include/linux/memcontrol.h:380 folio_memcg+0x148/0x1c0 include/linux/memcontrol.h:434
-> 
-> This is understandable as the code snippet was added fairly recently
-> and is easy to miss during rebasing.
+[v1] mm, swap: never bypass swap cache and cleanup flags (swap table phase =
+II)
+https://lore.kernel.org/all/20251029-swap-table-p2-v1-0-3d43f3b6ec32@tencen=
+t.com
+* [PATCH 01/19] mm/swap: rename __read_swap_cache_async to swap_cache_alloc=
+_folio
+* [PATCH 02/19] mm, swap: split swap cache preparation loop into a standalo=
+ne helper
+* [PATCH 03/19] mm, swap: never bypass the swap cache even for SWP_SYNCHRON=
+OUS_IO
+* [PATCH 04/19] mm, swap: always try to free swap cache for SWP_SYNCHRONOUS=
+_IO devices
+* [PATCH 05/19] mm, swap: simplify the code and reduce indention
+* [PATCH 06/19] mm, swap: free the swap cache after folio is mapped
+* [PATCH 07/19] mm/shmem: never bypass the swap cache for SWP_SYNCHRONOUS_I=
+O
+* [PATCH 08/19] mm/shmem, swap: remove SWAP_MAP_SHMEM
+* [PATCH 09/19] mm, swap: swap entry of a bad slot should not be considered=
+ as swapped out
+* [PATCH 10/19] mm, swap: consolidate cluster reclaim and check logic
+* [PATCH 11/19] mm, swap: split locked entry duplicating into a standalone =
+helper
+* [PATCH 12/19] mm, swap: use swap cache as the swap in synchronize layer
+* [PATCH 13/19] mm, swap: remove workaround for unsynchronized swap map cac=
+he state
+* [PATCH 14/19] mm, swap: sanitize swap entry management workflow
+* [PATCH 15/19] mm, swap: add folio to swap cache directly on allocation
+* [PATCH 16/19] mm, swap: check swap table directly for checking cache
+* [PATCH 17/19] mm, swap: clean up and improve swap entries freeing
+* [PATCH 18/19] mm, swap: drop the SWAP_HAS_CACHE flag
+* [PATCH 19/19] mm, swap: remove no longer needed _swap_info_get
 
-My mistake, I should recheck it.
+and found the following issue:
+kernel build error
 
-> 
-> #syz test
-> 
-> diff --git a/mm/zswap.c b/mm/zswap.c
-> index a341814468b9..738d914e5354 100644
-> --- a/mm/zswap.c
-> +++ b/mm/zswap.c
-> @@ -896,11 +896,14 @@ static bool zswap_compress(struct page *page, struct zswap_entry *entry,
->   	 * to the active LRU list in the case.
->   	 */
->   	if (comp_ret || !dlen || dlen >= PAGE_SIZE) {
-> +		rcu_read_lock();
->   		if (!mem_cgroup_zswap_writeback_enabled(
->   					folio_memcg(page_folio(page)))) {
-> +			rcu_read_unlock();
->   			comp_ret = comp_ret ? comp_ret : -EINVAL;
->   			goto unlock;
->   		}
-> +		rcu_read_unlock();
->   		comp_ret = 0;
->   		dlen = PAGE_SIZE;
->   		dst = kmap_local_page(page);
+Full report is available here:
+https://ci.syzbot.org/series/01d6b19c-9614-4f8f-949e-c5adf3eab00f
 
-LGTM, will do in the next version.
+***
 
-Thanks!
+kernel build error
 
-> 
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
+.git
+base:      f30d294530d939fa4b77d61bc60f25c4284841fa
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/345b9221-49ac-41ee-9a72-57ed683ef06=
+7/config
+
+mm/swapfile.c:1368:2: error: void function 'swap_alloc_slow' should not ret=
+urn a value [-Wreturn-mismatch]
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[akpm@linux-foundation.org baohua@kernel.org baolin.wang@linux.alibaba.com =
+bhe@redhat.com chrisl@kernel.org david@redhat.com hannes@cmpxchg.org hughd@=
+google.com kasong@tencent.com linux-kernel@vger.kernel.org linux-mm@kvack.o=
+rg lorenzo.stoakes@oracle.com nphamcs@gmail.com ryncsn@gmail.com shikemeng@=
+huaweicloud.com willy@infradead.org ying.huang@linux.alibaba.com yosry.ahme=
+d@linux.dev youngjun.park@lge.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
 
