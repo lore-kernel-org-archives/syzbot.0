@@ -1,101 +1,152 @@
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-187.mta1.migadu.com (out-187.mta1.migadu.com [95.215.58.187])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25F7522D792
-	for <syzbot@lists.linux.dev>; Wed, 29 Oct 2025 02:04:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC5C2244EA1
+	for <syzbot@lists.linux.dev>; Wed, 29 Oct 2025 03:12:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.187
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761703455; cv=none; b=W3tzqv5LwsCGL6lCMbQnjmFi0DeKY21NMeVkEpwEIz9HzPOqeYh6RN4NQMqsnl50ZAxT+7H2hgnUOJaoodbnARvIUcQdRaBC7gvXNOtktqB9RiMhiiHZXuI088ggGvcEfsZ9VQVq9sH8IOnixCz27dQDH0pzWayNf/FRybk1qtE=
+	t=1761707560; cv=none; b=G8YgCbPqgM1+Wuj9F8N4mzitBMYh/dLhIYktbCxhiqbA9TWoLaEORkqOCgKvqfItnLFdikf1OYdlMbYoFvaK3aBvG9bOSI85dSwl4kDPlfDXFIWkA1sAdy/4ZQ7iAxR/WOvRTSSelMyo4TBLA83E2FMpzaIfqIw+WM6wTT5uMoA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761703455; c=relaxed/simple;
-	bh=v5p+HryV1q8iFdkGT6Lz9j5YHn5vZ7cDLXAdGFNWB3Y=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=NMywToPeo/xg3u3oA16Ag4pb9/Ui7JyfSlwVN+L5fVYWEf/sB6kVDKdpguizogMSOBuwf8NzaKDsPLts2dMF7lM/cZGyA5n9aqBo+v2eecFJcbjx5pyzUh4UWOZuzw75p1UQSM9m4MOcSyKbEddceQ04ZvIdftxWTzdU1P2fGNA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-430d83d262fso267536835ab.2
-        for <syzbot@lists.linux.dev>; Tue, 28 Oct 2025 19:04:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761703452; x=1762308252;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=cNog995ShVx1UA2B1FVaPjpRSK63gcQwiNAr/7oSDPc=;
-        b=CbZejDrp9D8Wy/xKhv0KhuAyJY66Bt8LvAqJuo/Grebwlxj0kjNLh0jWDFXut5z4pH
-         D6KDXjQlXJOWw2Gh0MKJd26pOefu4FakF9BfUvOi1Q8Fa2S3QVdLk445lSt1WZFAFmLx
-         tH5H3gTbp/fF1GEXjtTIr1/gGrcWcEQHH2cmtillSKEI8nCXmwkc7ipbv2qTdhjjhcUg
-         3JP3ZC9hI4OrIbsTWYEDt6ouIvqwJNDj9HjdEwc9aJrQZkJ4vPOLtKAWwTIJqkBkFj3T
-         G4TiA3rTNwrnjFlRGLV73BeTJ76iphXRIFtM+ElHfwrg3LgPzXp8nySjzU1qMosSXpYZ
-         JVwg==
-X-Gm-Message-State: AOJu0YwtzROkVlJ1J9ovxPKdR9GoW+r48fGBk4MPb077PLwqrJ0dh1HF
-	cirvkCBZmc4yqePAOeIb5zQH8xl4nn9Ct1TN/L7FwK8lm70d4AITgG16O3b0/NKFwmZ4SqnKTAf
-	A8l893h37fFS0BYDAo8cu8IKjM7vfoBeDtGO7rt+PPfHSJJXxWV2sEAeI5vM=
-X-Google-Smtp-Source: AGHT+IFeoQlRG05zUIr+eFfuIdROpr9hI1v708Do2CxRckLrbpnhES0njJBf7fpQgqz5wAG9ILL4cDottJNIvYp/a9YaQ5eqNwsb
+	s=arc-20240116; t=1761707560; c=relaxed/simple;
+	bh=hytguSx1VQCNNuHx835HgjhxZYkwWh6Hhjo1p4lF9Ig=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jUMDpFq3QTSQbOvRe6+8VbOKeTPHNsJ+Oxw5zwbgn2hxnHQ2sy+2NYuUz10tlAB1tx9wChhzqJYxPkd0VwuLHsukLPTCUxaBaZjhhXCa/CfYrXkNZZWC3E1y11ad6wDH/1Hv4/pWfvEnY3Tr8Oz7x3cIgbp0tn9qX5FcVMHZsmg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=DruSDcLg; arc=none smtp.client-ip=95.215.58.187
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="DruSDcLg"
+Message-ID: <a8892c17-5161-4e27-9fdb-70e2e5c53f2c@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1761707555;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=8U2/SRrzdo4Rwp5cpioI5+15rE47Gvkhsrn4dsdPbQM=;
+	b=DruSDcLgKCqasjSORgvtKLccMIgUgAw9AbnSQzVZDb1mLkpujqTjHHUBMYj1SRcHgLqZN9
+	a2itK2hbxjSdRqD/XLybZHvtRP3ZIxiDA0D4Mrwv0f5/H4OsJIm8AfJOem4Es5HcY7726o
+	G2rmoLCw0O5hZNmyy2+zlbFzAnWtuFw=
+Date: Wed, 29 Oct 2025 11:12:24 +0800
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:328a:b0:42f:946f:8eb4 with SMTP id
- e9e14a558f8ab-432f906495dmr17741465ab.21.1761703452303; Tue, 28 Oct 2025
- 19:04:12 -0700 (PDT)
-Date: Tue, 28 Oct 2025 19:04:12 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6901761c.050a0220.3344a1.03fc.GAE@google.com>
-Subject: [moderation/CI] Re: virtio_net: fix alignment for virtio_net_hdr_v1_hash
-From: syzbot ci <syzbot+ci221bb49767e2b145@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [syzbot ci] Re: Eliminate Dying Memory Cgroup
+To: Harry Yoo <harry.yoo@oracle.com>,
+ syzbot ci <syzbot+cie7d8f1fc805fcd7a@syzkaller.appspotmail.com>
+Cc: akpm@linux-foundation.org, axelrasmussen@google.com,
+ cgroups@vger.kernel.org, chengming.zhou@linux.dev, david@redhat.com,
+ hannes@cmpxchg.org, hughd@google.com, imran.f.khan@oracle.com,
+ kamalesh.babulal@oracle.com, linux-kernel@vger.kernel.org,
+ linux-mm@kvack.org, lorenzo.stoakes@oracle.com, mhocko@suse.com,
+ muchun.song@linux.dev, nphamcs@gmail.com, roman.gushchin@linux.dev,
+ shakeel.butt@linux.dev, songmuchun@bytedance.com, weixugc@google.com,
+ yuanchu@google.com, zhengqi.arch@bytedance.com, ziy@nvidia.com,
+ syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <cover.1761658310.git.zhengqi.arch@bytedance.com>
+ <69012e79.050a0220.3344a1.03ee.GAE@google.com> <aQFeMG8WEvrWaNf0@hyeyoo>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Qi Zheng <qi.zheng@linux.dev>
+In-Reply-To: <aQFeMG8WEvrWaNf0@hyeyoo>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 
-syzbot ci has tested the following series
+Hi Harry,
 
-[v1] virtio_net: fix alignment for virtio_net_hdr_v1_hash
-https://lore.kernel.org/all/20251029012434.75576-1-jasowang@redhat.com
-* [PATCH net] virtio_net: fix alignment for virtio_net_hdr_v1_hash
+On 10/29/25 8:22 AM, Harry Yoo wrote:
+> On Tue, Oct 28, 2025 at 01:58:33PM -0700, syzbot ci wrote:
+>> syzbot ci has tested the following series
+>>
+>> [v1] Eliminate Dying Memory Cgroup
+>> https://lore.kernel.org/all/cover.1761658310.git.zhengqi.arch@bytedance.com
+>> * [PATCH v1 01/26] mm: memcontrol: remove dead code of checking parent memory cgroup
+>> * [PATCH v1 02/26] mm: workingset: use folio_lruvec() in workingset_refault()
+>> * [PATCH v1 03/26] mm: rename unlock_page_lruvec_irq and its variants
+>> * [PATCH v1 04/26] mm: vmscan: refactor move_folios_to_lru()
+>> * [PATCH v1 05/26] mm: memcontrol: allocate object cgroup for non-kmem case
+>> * [PATCH v1 06/26] mm: memcontrol: return root object cgroup for root memory cgroup
+>> * [PATCH v1 07/26] mm: memcontrol: prevent memory cgroup release in get_mem_cgroup_from_folio()
+>> * [PATCH v1 08/26] buffer: prevent memory cgroup release in folio_alloc_buffers()
+>> * [PATCH v1 09/26] writeback: prevent memory cgroup release in writeback module
+>> * [PATCH v1 10/26] mm: memcontrol: prevent memory cgroup release in count_memcg_folio_events()
+>> * [PATCH v1 11/26] mm: page_io: prevent memory cgroup release in page_io module
+>> * [PATCH v1 12/26] mm: migrate: prevent memory cgroup release in folio_migrate_mapping()
+>> * [PATCH v1 13/26] mm: mglru: prevent memory cgroup release in mglru
+>> * [PATCH v1 14/26] mm: memcontrol: prevent memory cgroup release in mem_cgroup_swap_full()
+>> * [PATCH v1 15/26] mm: workingset: prevent memory cgroup release in lru_gen_eviction()
+>> * [PATCH v1 16/26] mm: thp: prevent memory cgroup release in folio_split_queue_lock{_irqsave}()
+>> * [PATCH v1 17/26] mm: workingset: prevent lruvec release in workingset_refault()
+>> * [PATCH v1 18/26] mm: zswap: prevent lruvec release in zswap_folio_swapin()
+>> * [PATCH v1 19/26] mm: swap: prevent lruvec release in swap module
+>> * [PATCH v1 20/26] mm: workingset: prevent lruvec release in workingset_activation()
+>> * [PATCH v1 21/26] mm: memcontrol: prepare for reparenting LRU pages for lruvec lock
+>> * [PATCH v1 22/26] mm: vmscan: prepare for reparenting traditional LRU folios
+>> * [PATCH v1 23/26] mm: vmscan: prepare for reparenting MGLRU folios
+>> * [PATCH v1 24/26] mm: memcontrol: refactor memcg_reparent_objcgs()
+>> * [PATCH v1 25/26] mm: memcontrol: eliminate the problem of dying memory cgroup for LRU folios
+>> * [PATCH v1 26/26] mm: lru: add VM_WARN_ON_ONCE_FOLIO to lru maintenance helpers
+>>
+>> and found the following issue:
+>> WARNING in folio_memcg
+>>
+>> Full report is available here:
+>> https://ci.syzbot.org/series/0d48a77a-fb4f-485d-9fd6-086afd6fb650
+>>
+>> ***
+>>
+>> WARNING in folio_memcg
+>>
+>> tree:      mm-new
+>> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
+>> base:      b227c04932039bccc21a0a89cd6df50fa57e4716
+>> arch:      amd64
+>> compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
+>> config:    https://ci.syzbot.org/builds/503d7034-ae99-44d1-8fb2-62e7ef5e1c7c/config
+>> C repro:   https://ci.syzbot.org/findings/880c374a-1b49-436e-9be2-63d5e2c6b6ab/c_repro
+>> syz repro: https://ci.syzbot.org/findings/880c374a-1b49-436e-9be2-63d5e2c6b6ab/syz_repro
+>>
+>> exFAT-fs (loop0): failed to load upcase table (idx : 0x00010000, chksum : 0xe5674ec2, utbl_chksum : 0xe619d30d)
+>> exFAT-fs (loop0): failed to load alloc-bitmap
+>> exFAT-fs (loop0): failed to recognize exfat type
+>> ------------[ cut here ]------------
+>> WARNING: CPU: 1 PID: 5965 at ./include/linux/memcontrol.h:380 obj_cgroup_memcg include/linux/memcontrol.h:380 [inline]
+>> WARNING: CPU: 1 PID: 5965 at ./include/linux/memcontrol.h:380 folio_memcg+0x148/0x1c0 include/linux/memcontrol.h:434
+> 
+> This is understandable as the code snippet was added fairly recently
+> and is easy to miss during rebasing.
 
-and found the following issue:
-kernel build error
+My mistake, I should recheck it.
 
-Full report is available here:
-https://ci.syzbot.org/series/4f6a48be-fb04-4626-9d6b-6b847795754a
+> 
+> #syz test
+> 
+> diff --git a/mm/zswap.c b/mm/zswap.c
+> index a341814468b9..738d914e5354 100644
+> --- a/mm/zswap.c
+> +++ b/mm/zswap.c
+> @@ -896,11 +896,14 @@ static bool zswap_compress(struct page *page, struct zswap_entry *entry,
+>   	 * to the active LRU list in the case.
+>   	 */
+>   	if (comp_ret || !dlen || dlen >= PAGE_SIZE) {
+> +		rcu_read_lock();
+>   		if (!mem_cgroup_zswap_writeback_enabled(
+>   					folio_memcg(page_folio(page)))) {
+> +			rcu_read_unlock();
+>   			comp_ret = comp_ret ? comp_ret : -EINVAL;
+>   			goto unlock;
+>   		}
+> +		rcu_read_unlock();
+>   		comp_ret = 0;
+>   		dlen = PAGE_SIZE;
+>   		dst = kmap_local_page(page);
 
-***
+LGTM, will do in the next version.
 
-kernel build error
+Thanks!
 
-tree:      net
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net.git
-base:      ab431bc39741e9d9bd3102688439e1864c857a74
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
-1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/9628e07c-1d56-46d1-b556-a7b12aac9a8=
-c/config
-
-./include/linux/virtio_net.h:404:24: error: no member named 'hash_value' in=
- 'struct virtio_net_hdr_v1_hash'
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-The email will later be sent to:
-[andrew@lunn.ch davem@davemloft.net edumazet@google.com eperezma@redhat.com=
- jasowang@redhat.com kuba@kernel.org linux-kernel@vger.kernel.org mst@redha=
-t.com netdev@vger.kernel.org pabeni@redhat.com stable@vger.kernel.org virtu=
-alization@lists.linux.dev xuanzhuo@linux.alibaba.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
+> 
 
