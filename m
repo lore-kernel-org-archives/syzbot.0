@@ -1,113 +1,97 @@
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E874A37A3CC
-	for <syzbot@lists.linux.dev>; Wed, 29 Oct 2025 16:43:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9BCD2EFDBB
+	for <syzbot@lists.linux.dev>; Wed, 29 Oct 2025 20:14:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761756189; cv=none; b=qI8TAKkEWpJ+DkO1NFmg0+zkl+PcnKw85bEhYB3jRsMDlQhf5vLeFNTOuopsQTpVEVu2MlF0Bv+92KRtYV7MJWoKn6Y1nxhibc8ghYRtcmoLCeLLPF4f3kJoaRdwPC5YkEOgW/K08o4WGVIxEk46yWVMc0jb7+t3X3CmJC/pfsA=
+	t=1761768856; cv=none; b=cwTuwB2O1g76U9fWqB90IqT69N2bDqJY6TRF4PwXDDdvg37VnCyFI8nuZyM3TQgwcQ1L5XgTeuo8CwI7XKJuJgNmhfu9RKGsZs0J+StVyZOLFqboDYOr74ob3mQq6Y075YTSsFVW+fSR0EbF3p/hTA2Z77iV2wTkirJIJRdcMw4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761756189; c=relaxed/simple;
-	bh=dz4UHPy1Vxy5VvJOIeJ51vLlzplc1f2ed6NvorK4/xo=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=tVYj45NvcZXgwX65XkLP3fwkhwx7idP5UbjSZrXgnLQWNzGa8hsU0yqLqgFzjcxr4lZ4OanQyeKXSNeT0qWtUM1kiDHeZgSwJLZxNIjCiNjvkAFGFeQWG9D4GLWnIWJ5wpyTDWn+pH3+k+cYEDkG8f4Ssfp1TUaZuEoNqFpdRlo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
+	s=arc-20240116; t=1761768856; c=relaxed/simple;
+	bh=G+9/8jcp8AXP8mVZwtvzhJNv4mXeuYdzpFHVfthTi8k=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=dAuOi04hHhAF7XI6R5fYIRgAaAwYBqnv3jAW8CPqvo9wx40x30hJr6KjvGZzxTSEDpNwr7oJp0a7lVPkPR5W8BnBuSPBuqLpRVsqYG598FLCsITv9mSW6J6WRzCR4OSpEBXQRuNqsZA9QhxBBn9k7w7wn2vIb+T8415OD9EgRTQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-431d84fdb91so215928915ab.3
-        for <syzbot@lists.linux.dev>; Wed, 29 Oct 2025 09:43:07 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id e9e14a558f8ab-430d4a4dec5so8981635ab.1
+        for <syzbot@lists.linux.dev>; Wed, 29 Oct 2025 13:14:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761756187; x=1762360987;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=woE0XQKxe4eeNubirOfdPpNmIiETt2fkjQU6OvBxbCU=;
-        b=W59mNDxm8FiwZMfUd04n8DYMO56pZIloic3B0F1MoCA2VdXb47EAxe9x3PbqQ7F2Be
-         JVMJrHL7eXcm73eCaNacJBUT6MqpJLWHxt2Ns4E54xQfp+q0FD0h23VdL+T/ukVkl2st
-         imXjp58UjDilzrtDRKL8p7ob8sx/7/hboW2OjsjgOZntj3yGD2DaN6kcf53sAX8JdIgp
-         1UihEQDQgzgz2lX5Rq6jznTLplTI45evlYZ/4s/KT5V5+HhFrtHoNuFpsF1sutv+6Zrz
-         VJXverSKlJnBcKBsgflhSftuw5HW1F+7Xi2WV4GDtZ06VWkyONVMgJkbp5oDfX3Y9fgR
-         1wXw==
-X-Gm-Message-State: AOJu0YwxFe0ptX66zVx+2COXxQDpMo410fYWlRkVKpXmuH5K7zzGOtt3
-	E7fpuElMpLEL2fvO4vYRF9MVbUKOPE+Tvm2T2FdowsI6Cl3SoUjZwGz4Myhzqfhcr+xhmqs5opE
-	/GW/GMvlhzfidjYT8AZoDc+ZxSE/eqq12lXgxCDD/+3rE+lw6ZS+MPvcBF9I=
-X-Google-Smtp-Source: AGHT+IEGKB7Ft+/JHKzGsrj8hrje3p98ZQhXVlF6GMUgqp4Oo5VN8H+0MLSKdaAhTvERNKqepvI+x4OwpSrt0KURE9VObXhCo4xC
+        d=1e100.net; s=20230601; t=1761768854; x=1762373654;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6cm2VbLxcfPQVytuNpC4NSXtsDTrYo5sb+RcPuhKPXQ=;
+        b=eV6rA3TThWDIXbs2oGL+FJnwPMQ5F4sLzka5WIpdlh2WhhdInVi5Sc5aLF51rPhefz
+         +xKSXtwDWtu/2Wrf9acqWO1rykGMrR0yn29HGAbam2zXwZajcHc8SxIuBrrK7ojXdB5r
+         7bhRZLEU5Dc6nKDalN/BNqOhLj3p+rx1ohGyL0nW6BhglAzDNoBksQEH35siUF8cqdNQ
+         FlX3dOoigBs4TVopgzfklUzwcDlPJiymsqoU7CPRPEl9wKvlVxi5R875JYztr0Jpq38m
+         0pD935E21KURfmg70FF1U4xO++10oyHHJUE/n0oaeVA9W78tcLhZmGzC3fFJ9ffm5f/m
+         eiPA==
+X-Gm-Message-State: AOJu0Yz2JJ/WS14cphYTHqMRbHcyFDkQfT2O0A56sR9Tf8hFX2JGni1K
+	2CWzPbgGMcstkqQa1+t3sDks5E/N/W2R1QnAukSZyyAGTsUBoNy+oYmhKPw9GksEdDouKd9M7he
+	GJlwGtmuTnsIZcH6z1605jWGlzNLqHUSCvFsiYcThJjRVU6fWe4O3JSzPqgU=
+X-Google-Smtp-Source: AGHT+IEWJZh+Y45p40PCR/VH7Ok31D9hixltcruIiIJgQHt6yQmxs7g4wyGsu2WA5TR4qmqgW5zok1yhqEnw9smTPEld7BRxC0zD
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a92:ca0b:0:b0:430:ab98:7b1f with SMTP id
- e9e14a558f8ab-432f902b528mr48928175ab.18.1761756186996; Wed, 29 Oct 2025
- 09:43:06 -0700 (PDT)
-Date: Wed, 29 Oct 2025 09:43:06 -0700
+X-Received: by 2002:a05:6e02:308b:b0:430:b2e3:8fb with SMTP id
+ e9e14a558f8ab-432f8fad6e3mr60458385ab.9.1761768854008; Wed, 29 Oct 2025
+ 13:14:14 -0700 (PDT)
+Date: Wed, 29 Oct 2025 13:14:13 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6902441a.050a0220.3344a1.042a.GAE@google.com>
-Subject: [moderation/CI] Re: mm, swap: never bypass swap cache and cleanup
- flags (swap table phase II)
-From: syzbot ci <syzbot+ci7353ed648947c91d@syzkaller.appspotmail.com>
+Message-ID: <69027595.050a0220.3344a1.0431.GAE@google.com>
+Subject: [moderation/CI] Re: bpf: magic kernel functions
+From: syzbot ci <syzbot+ci7b3ea35a8e8f336d@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] mm, swap: never bypass swap cache and cleanup flags (swap table phase =
-II)
-https://lore.kernel.org/all/20251029-swap-table-p2-v1-0-3d43f3b6ec32@tencen=
-t.com
-* [PATCH 01/19] mm/swap: rename __read_swap_cache_async to swap_cache_alloc=
-_folio
-* [PATCH 02/19] mm, swap: split swap cache preparation loop into a standalo=
-ne helper
-* [PATCH 03/19] mm, swap: never bypass the swap cache even for SWP_SYNCHRON=
-OUS_IO
-* [PATCH 04/19] mm, swap: always try to free swap cache for SWP_SYNCHRONOUS=
-_IO devices
-* [PATCH 05/19] mm, swap: simplify the code and reduce indention
-* [PATCH 06/19] mm, swap: free the swap cache after folio is mapped
-* [PATCH 07/19] mm/shmem: never bypass the swap cache for SWP_SYNCHRONOUS_I=
-O
-* [PATCH 08/19] mm/shmem, swap: remove SWAP_MAP_SHMEM
-* [PATCH 09/19] mm, swap: swap entry of a bad slot should not be considered=
- as swapped out
-* [PATCH 10/19] mm, swap: consolidate cluster reclaim and check logic
-* [PATCH 11/19] mm, swap: split locked entry duplicating into a standalone =
-helper
-* [PATCH 12/19] mm, swap: use swap cache as the swap in synchronize layer
-* [PATCH 13/19] mm, swap: remove workaround for unsynchronized swap map cac=
-he state
-* [PATCH 14/19] mm, swap: sanitize swap entry management workflow
-* [PATCH 15/19] mm, swap: add folio to swap cache directly on allocation
-* [PATCH 16/19] mm, swap: check swap table directly for checking cache
-* [PATCH 17/19] mm, swap: clean up and improve swap entries freeing
-* [PATCH 18/19] mm, swap: drop the SWAP_HAS_CACHE flag
-* [PATCH 19/19] mm, swap: remove no longer needed _swap_info_get
+[v1] bpf: magic kernel functions
+https://lore.kernel.org/all/20251029190113.3323406-1-ihor.solodrai@linux.dev
+* [PATCH bpf-next v1 1/8] bpf: Add BTF_ID_LIST_END and BTF_ID_LIST_SIZE macros
+* [PATCH bpf-next v1 2/8] bpf: Refactor btf_kfunc_id_set_contains
+* [PATCH bpf-next v1 3/8] bpf: Support for kfuncs with KF_MAGIC_ARGS
+* [PATCH bpf-next v1 4/8] bpf: Support __magic prog_aux arguments for kfuncs
+* [PATCH bpf-next v1 5/8] bpf: Re-define bpf_wq_set_callback as magic kfunc
+* [PATCH bpf-next v1 6/8] bpf,docs: Document KF_MAGIC_ARGS flag and __magic annotation
+* [PATCH bpf-next v1 7/8] bpf: Re-define bpf_task_work_schedule_* kfuncs as magic
+* [PATCH bpf-next v1 8/8] bpf: Re-define bpf_stream_vprintk as a magic kfunc
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/01d6b19c-9614-4f8f-949e-c5adf3eab00f
+https://ci.syzbot.org/series/a0db24e6-4dc0-4e96-9ec7-a38b92e6c3db
 
 ***
 
 kernel build error
 
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
-.git
-base:      f30d294530d939fa4b77d61bc60f25c4284841fa
+tree:      bpf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf-next.git
+base:      54c134f379ee2816f60130d44e0e386c261dff45
 arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
-1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/345b9221-49ac-41ee-9a72-57ed683ef06=
-7/config
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/6a004c3f-8609-4657-8665-e36f93dc75e7/config
 
-mm/swapfile.c:1368:2: error: void function 'swap_alloc_slow' should not ret=
-urn a value [-Wreturn-mismatch]
+kernel/bpf/verifier.c:3280:1: error: invalid storage class specifier in function declarator
+kernel/bpf/verifier.c:3280:12: error: parameter named 'magic_kfunc_by_impl' is missing
+kernel/bpf/verifier.c:3280:49: error: expected ';' at end of declaration
+kernel/bpf/verifier.c:3278:17: error: parameter 'magic_kfuncs' was not declared, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+kernel/bpf/verifier.c:3278:1: error: type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+kernel/bpf/verifier.c:3284:18: error: call to undeclared function 'BTF_ID_LIST_SIZE'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+kernel/bpf/verifier.c:3285:19: error: subscripted value is not an array, pointer, or vector
+kernel/bpf/verifier.c:3285:26: error: use of undeclared identifier 'impl_func_id'
+kernel/bpf/verifier.c:3286:23: error: subscripted value is not an array, pointer, or vector
+kernel/bpf/verifier.c:3278:1: error: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Werror,-Wdeprecated-non-prototype]
+kernel/bpf/verifier.c:3295:18: error: call to undeclared function 'BTF_ID_LIST_SIZE'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+kernel/bpf/verifier.c:3416:17: error: call to undeclared function 'magic_kfunc_by_impl'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+kernel/bpf/verifier.c:13752:17: error: call to undeclared function 'magic_kfunc_by_impl'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 
 ***
 
@@ -120,12 +104,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[akpm@linux-foundation.org baohua@kernel.org baolin.wang@linux.alibaba.com =
-bhe@redhat.com chrisl@kernel.org david@redhat.com hannes@cmpxchg.org hughd@=
-google.com kasong@tencent.com linux-kernel@vger.kernel.org linux-mm@kvack.o=
-rg lorenzo.stoakes@oracle.com nphamcs@gmail.com ryncsn@gmail.com shikemeng@=
-huaweicloud.com willy@infradead.org ying.huang@linux.alibaba.com yosry.ahme=
-d@linux.dev youngjun.park@lge.com]
+[acme@kernel.org alan.maguire@oracle.com andrii@kernel.org ast@kernel.org bpf@vger.kernel.org dwarves@vger.kernel.org eddyz87@gmail.com ihor.solodrai@linux.dev kernel-team@meta.com tj@kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
