@@ -1,51 +1,51 @@
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FFED332ED3
-	for <syzbot@lists.linux.dev>; Thu,  6 Nov 2025 20:37:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33A8A307AF7
+	for <syzbot@lists.linux.dev>; Thu,  6 Nov 2025 21:54:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762461443; cv=none; b=WwPpvVD/etARgz4cnAN4KALM1knCffKxGxuLD015VCsyOpgOWvvijzGQ494Y3UCKZzwdr0sY0nHWOEgziMXAyEFGMcvMD/x1hqQmiPnIPa2tmAdc0bCEYCz+Y6WoXh0MJ7nW+bq4skD9MVRRFwas6RbTiNT+qFtQS16QPhVBPWw=
+	t=1762466067; cv=none; b=WlIlt+nbQn9aP9kzgNtsntq0GGQdWflPWz/g1XRtdv8O6LTlUVEWBKiMa5bbwlh+LgHwrmc3nLWhOiZL/eJyivkxh2CZcmf9fyYee989sSL1v/tRhxOBh3TCv4kgOhfZgrNp00EX8nNgM+T7bBvIsIJHXy/eWLs4rQWhNSahm2g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762461443; c=relaxed/simple;
-	bh=hi/LTBgiB/Ti1fjgEW4q4j60TqM2SC5U0NWpIMh6b5A=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=O87i/ndpBpd+4GPAzaM0Q8hTRJudYdz18RCbftG6BqsJHIQvjBKQ73yTMUccBbSxzzewfSj1Pp5UMFHM2F8q+B0SBkg044JJy9WGc1S8l+8AE4X2AjBILnIvpAhoKXDnCpHi/9glGh+2hOLzppEZPp6HLlaZqN98xFlI9d+MfFc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.71
+	s=arc-20240116; t=1762466067; c=relaxed/simple;
+	bh=JDHxOtCZE5cP81CqABNHO7nnws4e6Ut+cDkj3XFrSlk=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=BpBn2b7mlTe4MrzpCZY/7o0Gv7U3J9ZybcFl7/ZsNEsoH0AkXc2gg/PF2OGE07LbZ4HYUolz09CWBX3zwAjWbn/FbwwUUmpoCzjWw7gmiY54UeeIUI8QQq9e9yGJtzKzbl4U0rLkc/5DqdkXIwIdI1VROBlMGqkL28QvP/7Bo1g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-940e4cf730aso12140539f.1
-        for <syzbot@lists.linux.dev>; Thu, 06 Nov 2025 12:37:21 -0800 (PST)
+Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-9486ebd1e4dso13003139f.3
+        for <syzbot@lists.linux.dev>; Thu, 06 Nov 2025 13:54:24 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762461441; x=1763066241;
+        d=1e100.net; s=20230601; t=1762466064; x=1763070864;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=eOth0/BdBK/YTWTrtUS5AVlgMZuZ9KcyYTMqeS3lb5M=;
-        b=wpltuVnARUtajXPJCqn+ZFANYrUw7mxmgQo86KakTmPZI3sRvs/zM4T8QxUrf8KGqI
-         yzjbFdaO+z6E+g/oWWvEyAC2ZVER1yQCqkvB4LM5fYH9PcUPgBnhwdd+qLUfedRn+dH9
-         JLlXrrEpR3G892y6vuGn2qeIokwIECE2bxPFBq0GDc8BYS6xzeHXjB6oNGHk0MR0OWVV
-         d5LYs3ugvVQv4ZPV3A7KdhRp44Xr5vHIvXmr9jwncwVI5krIuM1+rSMB+OhS4elBkW8t
-         +aXtSohPHqKHEO70j6mmLX4cfWf0IhCcZQXLIqVdzKfp9lBi0xAqLCRS6OnBMFdvFVc8
-         A9OQ==
-X-Gm-Message-State: AOJu0YwrUTDumUEZfV/F07IdLUX6XthI3F5/oifFMS9k7kOYeNytDcDm
-	1ceudaofNBMEM8KAg9jjjjbnv1vQOX1tnXx1kVYA8+IEjI9lZOjCruEEgAJRScqh2rqG8eEY4sk
-	fHPsVx5YQNJft7v/KgtgqErpoZ4dtkii8JEs9cR7YZ57XVffFEic4jv400qM=
-X-Google-Smtp-Source: AGHT+IEaSzaUuilRw0oYM/MP+HEa4oJRR8Ts5GoPNI9RzIOg2MY0jkDaKfw9CHATMwyXFj/AGCCNRFoP5YthlezH7fApyH7CaPT2
+        bh=9e1rFV466Z0rAVyE+tGADdxR41j71RWiGxMNyzG+xSc=;
+        b=MA75+dEq2SZ/XXr1S5swiBo+Uo4KUqNSA4ickTyXChJwE2Fy/5Ne4vsPSFeuz4CTu/
+         vWKs8U8ECY9p6cDhsITRSRb260SaF8i8d9nF7yikFJgWYeJRGVQ27Mz1LXG6kZ7hJko+
+         TaO82KTEBUDIkn1kUAjxY7d9DhlGRw9pL/Nf/gATjWCXN5wBJkmdkgeMsF0Xl3C16m9D
+         727tdnM4pw2PlvEE2pDmU6c/E0/cVgXe4wzszfh2EITW58HzJN8uB5dw177AWoeR5o5R
+         8nkDZhbVzij85eve5/pxbX2y5owKh8DaKT8i5cfHJQd/pA3tnm5e/0u4yyZ6VquKJt1P
+         /IAQ==
+X-Gm-Message-State: AOJu0YxJq3JSb2fO+tiAEacPrZjyczgX7e+60W7MQAZL0igCgtEmE5qG
+	XzcfrSpGUg8m/UxR9lwMW4LKB1SXpEV6ofV7CF6x4515H2S963ndtIrjt8XpitKGUlI/kDz6d/x
+	B1P/Sc5cC4saAjgFHhey4m+8YhajrBXaQ3R6fDDs6bib4E+VHDS5qPAyyv/g=
+X-Google-Smtp-Source: AGHT+IFLD4D4Vn6bUSoaTqMfIhwOmWtR0SizW3G7liX9Sqcxn4vkv8bJtjQfeM7HRUWQGsVTbm8mGGk8cAzKFeX2ifpLN96W8q7k
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:6c19:b0:943:5917:b6fb with SMTP id
- ca18e2360f4ac-94888bea4ebmr129398239f.0.1762461441349; Thu, 06 Nov 2025
- 12:37:21 -0800 (PST)
-Date: Thu, 06 Nov 2025 12:37:21 -0800
+X-Received: by 2002:a05:6602:4805:b0:948:3e23:549a with SMTP id
+ ca18e2360f4ac-948890e8864mr143752239f.19.1762466064197; Thu, 06 Nov 2025
+ 13:54:24 -0800 (PST)
+Date: Thu, 06 Nov 2025 13:54:24 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <690d0701.a70a0220.22f260.0009.GAE@google.com>
-Subject: [moderation/CI] Re: net: sched: initialize struct tc_ife to fix kernel-infoleak
-From: syzbot ci <syzbot+ci2ff4f7ab3081ef1b@syzkaller.appspotmail.com>
+Message-ID: <690d1910.a70a0220.22f260.000c.GAE@google.com>
+Subject: [moderation/CI] Re: net: core: Initialize new header to zero in pskb_expand_head
+From: syzbot ci <syzbot+cif3ae3d42891eb754@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -53,22 +53,19 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v3] net: sched: initialize struct tc_ife to fix kernel-infoleak
-https://lore.kernel.org/all/20251106195635.2438-1-vnranganath.20@gmail.com
-* [PATCH v3 1/2] net: sched: act_connmark: initialize struct tc_ife to fix =
-kernel leak
-* [PATCH v3 2/2] net: sched: act_ife: initialize struct tc_ife to fix KMSAN=
- kernel-infoleak
+[v1] net: core: Initialize new header to zero in pskb_expand_head
+https://lore.kernel.org/all/20251106192423.412977-1-activprithvi@gmail.com
+* [PATCH] net: core: Initialize new header to zero in pskb_expand_head
 
 and found the following issue:
-kernel build error
+SYZFATAL: image testing failed w/o kernel bug
 
 Full report is available here:
-https://ci.syzbot.org/series/f3c7f46d-8212-4324-a799-61641305db5c
+https://ci.syzbot.org/series/24c6ebc1-a247-4b1c-a588-3d7dc94838f8
 
 ***
 
-kernel build error
+SYZFATAL: image testing failed w/o kernel bug
 
 tree:      net-next
 URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
@@ -77,18 +74,10 @@ base:      89aec171d9d1ab168e43fcf9754b82e4c0aef9b9
 arch:      amd64
 compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
 1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/975a8113-dd10-45cb-8ada-7546faa4260=
-e/config
+config:    https://ci.syzbot.org/builds/6c3d8beb-a61a-4970-82e5-0ab355b6abe=
+f/config
 
-net/sched/act_connmark.c:203:2: error: call to undeclared library function =
-'index' with type 'char *(const char *, int)'; ISO C99 and later do not sup=
-port implicit function declarations [-Wimplicit-function-declaration]
-net/sched/act_connmark.c:203:10: error: non-object type 'char *(const char =
-*, int)' is not assignable
-net/sched/act_connmark.c:204:2: error: use of undeclared identifier 'refcnt=
-'
-net/sched/act_connmark.c:205:2: error: use of undeclared identifier 'bindcn=
-t'
+
 
 ***
 
@@ -101,11 +90,12 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[davem@davemloft.net david.hunter.linux@gmail.com edumazet@google.com horms=
-@kernel.org jhs@mojatatu.com jiri@resnulli.us khalid@kernel.org kuba@kernel=
-.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com =
-skhan@linuxfoundation.org syzbot@syzkaller.appspotmail.com vnranganath.20@g=
-mail.com xiyou.wangcong@gmail.com]
+[activprithvi@gmail.com alexanderduyck@fb.com chuck.lever@oracle.com davem@=
+davemloft.net david.hunter.linux@gmail.com edumazet@google.com horms@kernel=
+.org khalid@kernel.org kuba@kernel.org linux-kernel-mentees@lists.linux.dev=
+ linux-kernel@vger.kernel.org linyunsheng@huawei.com netdev@vger.kernel.org=
+ pabeni@redhat.com skhan@linuxfoundation.org syzbot@syzkaller.appspotmail.c=
+om]
 
 If the report looks fine to you, reply with:
 #syz upstream
