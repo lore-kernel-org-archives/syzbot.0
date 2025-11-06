@@ -1,102 +1,74 @@
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33A8A307AF7
-	for <syzbot@lists.linux.dev>; Thu,  6 Nov 2025 21:54:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 029DB33B964;
+	Thu,  6 Nov 2025 22:30:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762466067; cv=none; b=WlIlt+nbQn9aP9kzgNtsntq0GGQdWflPWz/g1XRtdv8O6LTlUVEWBKiMa5bbwlh+LgHwrmc3nLWhOiZL/eJyivkxh2CZcmf9fyYee989sSL1v/tRhxOBh3TCv4kgOhfZgrNp00EX8nNgM+T7bBvIsIJHXy/eWLs4rQWhNSahm2g=
+	t=1762468207; cv=none; b=KNf2ctDMsPH/g8sFNQzCiQiBRD97nac0SQPPZIzuNJqjM/mDZXVeijeit8y+u0UEd/Js/bDjauwaHN0ScRclT1Vh4IfTmCE+2wDGskir4WqFKRcLUDtM7c8fcLXgX+pY2a2dh8oMcUjC+WrXsxiUOA37d73H015QcL9HDDAF9Cc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762466067; c=relaxed/simple;
-	bh=JDHxOtCZE5cP81CqABNHO7nnws4e6Ut+cDkj3XFrSlk=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=BpBn2b7mlTe4MrzpCZY/7o0Gv7U3J9ZybcFl7/ZsNEsoH0AkXc2gg/PF2OGE07LbZ4HYUolz09CWBX3zwAjWbn/FbwwUUmpoCzjWw7gmiY54UeeIUI8QQq9e9yGJtzKzbl4U0rLkc/5DqdkXIwIdI1VROBlMGqkL28QvP/7Bo1g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-9486ebd1e4dso13003139f.3
-        for <syzbot@lists.linux.dev>; Thu, 06 Nov 2025 13:54:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762466064; x=1763070864;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=9e1rFV466Z0rAVyE+tGADdxR41j71RWiGxMNyzG+xSc=;
-        b=MA75+dEq2SZ/XXr1S5swiBo+Uo4KUqNSA4ickTyXChJwE2Fy/5Ne4vsPSFeuz4CTu/
-         vWKs8U8ECY9p6cDhsITRSRb260SaF8i8d9nF7yikFJgWYeJRGVQ27Mz1LXG6kZ7hJko+
-         TaO82KTEBUDIkn1kUAjxY7d9DhlGRw9pL/Nf/gATjWCXN5wBJkmdkgeMsF0Xl3C16m9D
-         727tdnM4pw2PlvEE2pDmU6c/E0/cVgXe4wzszfh2EITW58HzJN8uB5dw177AWoeR5o5R
-         8nkDZhbVzij85eve5/pxbX2y5owKh8DaKT8i5cfHJQd/pA3tnm5e/0u4yyZ6VquKJt1P
-         /IAQ==
-X-Gm-Message-State: AOJu0YxJq3JSb2fO+tiAEacPrZjyczgX7e+60W7MQAZL0igCgtEmE5qG
-	XzcfrSpGUg8m/UxR9lwMW4LKB1SXpEV6ofV7CF6x4515H2S963ndtIrjt8XpitKGUlI/kDz6d/x
-	B1P/Sc5cC4saAjgFHhey4m+8YhajrBXaQ3R6fDDs6bib4E+VHDS5qPAyyv/g=
-X-Google-Smtp-Source: AGHT+IFLD4D4Vn6bUSoaTqMfIhwOmWtR0SizW3G7liX9Sqcxn4vkv8bJtjQfeM7HRUWQGsVTbm8mGGk8cAzKFeX2ifpLN96W8q7k
+	s=arc-20240116; t=1762468207; c=relaxed/simple;
+	bh=grgz70MrxjYE02neZOSjO46NidNyWXWXQVXB6qderrs=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=M4UVjmWAGkYaLxeJlT3xzs7bitiI4EpVQ7HwzpbstzwlikvTvZXSIzCV1r34vbgchiadI4oFDmpJ5Yc4XYwz52cQKwBDz9NzbMJeB+lRa9/Opqu9C1aa7rWidQ8QDP9b+e/LQMCXbfQgN46eBu5RU94aQ95b2MiebXZudJC7kbc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pQfZOH8S; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pQfZOH8S"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C22BCC4CEF7;
+	Thu,  6 Nov 2025 22:30:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1762468206;
+	bh=grgz70MrxjYE02neZOSjO46NidNyWXWXQVXB6qderrs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=pQfZOH8SEKQzmLDrtfnPo4yrX1IVp11TCu4VuBCWVDSTHw/Lmp8YY8wkXIR1eS2jg
+	 OzetIqGFm4L52hQwGUYeYsI49ip/oJzu2Qy1ASidZ8VeW/AX0z2u8zI/9nTzbfkCiM
+	 M3JJ5w+vMVMrTaCS4kDDWss9Off+mPxeMiogfAA0FgyK/1P860ah0itvE7lLdvkIwt
+	 iSjdIVgRnVonGTsT0+l11h+D9y4xnPhmXo2lKNkGlCedOwDsqp080aZoBdmSZGU23K
+	 c1FCltUiYDkAucmICAP89L/oLg1mKEQ+TDnxl/KIDF8JeZ7QMLIBgWO59fzoPKAoqi
+	 S0H8kSCO76sDA==
+Date: Thu, 6 Nov 2025 14:30:04 -0800
+From: Jakub Kicinski <kuba@kernel.org>
+To: Kuniyuki Iwashima <kuniyu@google.com>
+Cc: syzbot+cif2d6d318f7e85f0b@syzkaller.appspotmail.com,
+ davem@davemloft.net, edumazet@google.com, hoang.h.le@dektech.com.au,
+ horms@kernel.org, jmaloy@redhat.com, kuni1840@gmail.com,
+ netdev@vger.kernel.org, pabeni@redhat.com, syzbot@lists.linux.dev,
+ syzbot@syzkaller.appspotmail.com, syzkaller-bugs@googlegroups.com,
+ tipc-discussion@lists.sourceforge.net
+Subject: Re: [syzbot ci] Re: tipc: Fix use-after-free in
+ tipc_mon_reinit_self().
+Message-ID: <20251106143004.55f4f3fc@kernel.org>
+In-Reply-To: <20251106175926.686885-1-kuniyu@google.com>
+References: <690c6ca9.050a0220.1e8caa.00d2.GAE@google.com>
+	<20251106175926.686885-1-kuniyu@google.com>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:4805:b0:948:3e23:549a with SMTP id
- ca18e2360f4ac-948890e8864mr143752239f.19.1762466064197; Thu, 06 Nov 2025
- 13:54:24 -0800 (PST)
-Date: Thu, 06 Nov 2025 13:54:24 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <690d1910.a70a0220.22f260.000c.GAE@google.com>
-Subject: [moderation/CI] Re: net: core: Initialize new header to zero in pskb_expand_head
-From: syzbot ci <syzbot+cif3ae3d42891eb754@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-syzbot ci has tested the following series
+On Thu,  6 Nov 2025 17:59:17 +0000 Kuniyuki Iwashima wrote:
+> -void tipc_mon_reinit_self(struct net *net)
+> +void tipc_mon_reinit_self(struct net *net, bool rtnl_held)
+>  {
+>  	struct tipc_monitor *mon;
+>  	int bearer_id;
+>  
+> -	rtnl_lock();
+> +	if (!rtnl_held)
+> +		rtnl_lock();
 
-[v1] net: core: Initialize new header to zero in pskb_expand_head
-https://lore.kernel.org/all/20251106192423.412977-1-activprithvi@gmail.com
-* [PATCH] net: core: Initialize new header to zero in pskb_expand_head
+I haven't looked closely but for the record conditional locking 
+is generally considered to be poor code design. Extract the body
+into a __tipc_mon_reinit_self() helper and call that when lock 
+is already held? And:
 
-and found the following issue:
-SYZFATAL: image testing failed w/o kernel bug
-
-Full report is available here:
-https://ci.syzbot.org/series/24c6ebc1-a247-4b1c-a588-3d7dc94838f8
-
-***
-
-SYZFATAL: image testing failed w/o kernel bug
-
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net-next.git
-base:      89aec171d9d1ab168e43fcf9754b82e4c0aef9b9
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
-1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/6c3d8beb-a61a-4970-82e5-0ab355b6abe=
-f/config
-
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-The email will later be sent to:
-[activprithvi@gmail.com alexanderduyck@fb.com chuck.lever@oracle.com davem@=
-davemloft.net david.hunter.linux@gmail.com edumazet@google.com horms@kernel=
-.org khalid@kernel.org kuba@kernel.org linux-kernel-mentees@lists.linux.dev=
- linux-kernel@vger.kernel.org linyunsheng@huawei.com netdev@vger.kernel.org=
- pabeni@redhat.com skhan@linuxfoundation.org syzbot@syzkaller.appspotmail.c=
-om]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
+void tipc_mon_reinit_self(struct net *net)
+{
+	rtnl_lock();
+	__tipc_mon_reinit_self(net);
+	rtnl_unlock();
+}
