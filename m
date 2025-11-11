@@ -1,121 +1,141 @@
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E911434F465
-	for <syzbot@lists.linux.dev>; Tue, 11 Nov 2025 11:07:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B423024BBEE
+	for <syzbot@lists.linux.dev>; Tue, 11 Nov 2025 13:57:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762859246; cv=none; b=sXU+T3E3jZOdeyPqoAuEqAQ/8soislVZXcqWORyK2EFrpuahhPSfGaybp91t7mkvwQY2/ox+YXc5dUZlitEEjeij3QFuBpvXW4d5DBO37LKEVrEzdZ+WdAV6uz1pD8nO+0kE202RRtt2bZ7wS0yVh9hDaW1QKMMEM2tfRMwc9XQ=
+	t=1762869455; cv=none; b=YttyyT06rIKhRHhd3W2MO2MoE5VQhNRokkD/p8mBqoVnhH3ft/74Bel7Gcbv0cBNj84x5uPS8LZWOyGnGZ4sj6Cqd9rxHfxDseTZ7/Rb4Zymn5xQheKiSwEmUP4Ud6sHBEHYDTI8m77o+Czn6NK4Nz3jkOTB5Lq+IaV5FNJ/5Ac=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762859246; c=relaxed/simple;
-	bh=57J3UojNzyDbNggpJC8RzOifjfGTP4E+9oSM5g8JJNo=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=CPF9cFBd+lv6CZX5/k0fte8xGaaSbW2LDwtFkbv5DlBd6hnYxR1EXRTX7ZCgyVfuhbD/c3yXQ6GZC89AcMpILROxuB1g75ihDQUYx8cGoEte3HtbzcmkOXZcu30ebmS1rxGtTg0lfi1p32lchR0V1oHOTZz8Qilfx5aCYTOJsfw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.72
+	s=arc-20240116; t=1762869455; c=relaxed/simple;
+	bh=Wvc6FsZK2gDWgfL90zgB5F+D5wknavJt8zUcGqivBnI=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=LX8rAjJE9cSO3ROQRGAOZZn0CzAiKss1IGjwTDVTM6ygP4cIa4DibX5nmzUsytvilzv2riIBv12UdlhTMtIxZ5qR2wAG9ntTBOVKAcsqjmf4MdB1VsmgI3yXwprxx36oUxjfcK78JvpDeUfmDU8dTpSp1SfKkWUAgPgPDfpC6ZE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-9486f0954daso564315039f.0
-        for <syzbot@lists.linux.dev>; Tue, 11 Nov 2025 03:07:24 -0800 (PST)
+Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-4330f62ef60so41956735ab.0
+        for <syzbot@lists.linux.dev>; Tue, 11 Nov 2025 05:57:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762859244; x=1763464044;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ycyv/DWmCOmMaglejVyCoUigqrgIZyyfjnJz442/EHc=;
-        b=sqrJmmnztswFNQA4yMvAcWAsMIx7A9qOipsenfX1FBP1S47Kqfev1YXXaQGzlzpy3h
-         6LRQzkKVNpwVCa7M4mX0SpUSQGXKwfGrXUoF8FFbLcmsZZnBY8YGGBKvlhzJWVqqJvor
-         6TwHf5/cvx3mEN8AJiP93tpgBWNWstJtqac8bbZCVNUAPIBtNo216jX/rqCsz1YgxES+
-         Cqj4Z+Ua3AI4Iiw+dtpf+AlLiLOJgbBjLoQaNL7P0VpnkiLSyW+vS2TdCKbgQLcE3DvE
-         nVICDyRDXH0qBlL+b8IIn4IPAX2qLhgaPwL1ot5bqjQeS6ZL1mUXh+Ea0970fUgJmZZb
-         CKRw==
-X-Gm-Message-State: AOJu0YxZeQcZxUrr4gEIcbneYwpvyvswChNnNXPlC7DKGIJXW93mIMNi
-	lsIhCZVmrb03S+P6P3An3P3yeb8LQFyLgfMgreZ75R0WZLfnHJO/ZzFI1jc0eC+gaPLFqlQ8ynD
-	/u6N701BqWUVlLuyevP1gvNeDLEqtLcnMyi52MXf4aWTFOStlgAoAZ9DzVvI=
-X-Google-Smtp-Source: AGHT+IFT+7nRnPIvP4DCD6JLiZSDHI6PUROEUCPH7owIkXKvDH1233I6CjWkc4dBw66iAeTK+5j3xmuiN084gVeHgkw2/kQPVDtx
+        d=1e100.net; s=20230601; t=1762869450; x=1763474250;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Td4XCIdP6sjFAHR5ajxneypDBlD+akuQxrUxb8F0HxI=;
+        b=ZymynSB5OHwMr3jId3n4k8BUSHd8h9tnOe90O4xuiiYI8Amc0A4tzLyIsCJDqXLAwq
+         Eb/eds0b8LSbbjNB0f7DBChrhmy0sOJEAp9wiH4AMv8o/6GI0TVwNDdTS1L3BmnxM4Da
+         LxBSmKoko9uJOk21zMfSrQl5yUXOO3ewPNygBd/5XV4+psdx7nejECiI1nkcZ2Xb+7zk
+         2U1U0OpISitVz7EXRKnmwF2nCuLrFD07tRUz1P9KNNpUU7dGrtvdwwmKGM475O64Fh9t
+         HuIfNsEiiOYTTNyADTswndMuPBOVrTpG8M33fPV5JRBxqeIXhtvNDswz3KGrTDV9AXBa
+         IM8A==
+X-Gm-Message-State: AOJu0YwidZJgNEfPIRvlG90aTbWegUvEgFDdijduoh53jTOTU76XgoRO
+	3OcGotPFKZ4bOZTJGmcatXu/mNp7/ugpbT312FLs9TiBpyHJBLIWz4ITzuduE1GR/Hnlw8aYHgv
+	kIhOQftoa+7hlL0NVXlSjpFOi90KOO3BIcboO7zKIGzMkCwT2g7lLbFDl1gk=
+X-Google-Smtp-Source: AGHT+IFFWkYY108u60E+w9meHy77ASiU/ISrbneCnuNXg4U80bpja2kOzQX6JIaMggDq9ifNk1pu+Y63/mfBDwErlwxTC3d/qTOU
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1845:b0:433:7a94:6fcc with SMTP id
- e9e14a558f8ab-4337a94723bmr120766535ab.2.1762859244091; Tue, 11 Nov 2025
- 03:07:24 -0800 (PST)
-Date: Tue, 11 Nov 2025 03:07:24 -0800
+X-Received: by 2002:a92:c001:0:b0:433:7641:5cda with SMTP id
+ e9e14a558f8ab-43376415e5cmr113875125ab.9.1762869449791; Tue, 11 Nov 2025
+ 05:57:29 -0800 (PST)
+Date: Tue, 11 Nov 2025 05:57:29 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <691318ec.a70a0220.22f260.0136.GAE@google.com>
-Subject: [moderation/CI] Re: vfio/pci: Allow MMIO regions to be exported
- through dma-buf
-From: syzbot ci <syzbot+cib465c1c7faa13a41@syzkaller.appspotmail.com>
+Message-ID: <691340c9.a70a0220.22f260.013a.GAE@google.com>
+Subject: [moderation/CI] Re: net_sched: speedup qdisc dequeue
+From: syzbot ci <syzbot+ciae3d45b95de4eab5@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v8] vfio/pci: Allow MMIO regions to be exported through dma-buf
-https://lore.kernel.org/all/20251111-dmabuf-vfio-v8-0-fd9aa5df478f@nvidia.c=
-om
-* [PATCH v8 01/11] PCI/P2PDMA: Separate the mmap() support from the core lo=
-gic
-* [PATCH v8 02/11] PCI/P2PDMA: Simplify bus address mapping API
-* [PATCH v8 03/11] PCI/P2PDMA: Refactor to separate core P2P functionality =
-from memory allocation
-* [PATCH v8 04/11] PCI/P2PDMA: Provide an access to pci_p2pdma_map_type() f=
-unction
-* [PATCH v8 05/11] PCI/P2PDMA: Document DMABUF model
-* [PATCH v8 06/11] dma-buf: provide phys_vec to scatter-gather mapping rout=
-ine
-* [PATCH v8 07/11] vfio: Export vfio device get and put registration helper=
-s
-* [PATCH v8 08/11] vfio/pci: Share the core device pointer while invoking f=
-eature functions
-* [PATCH v8 09/11] vfio/pci: Enable peer-to-peer DMA transactions by defaul=
-t
-* [PATCH v8 10/11] vfio/pci: Add dma-buf export support for MMIO regions
-* [PATCH v8 11/11] vfio/nvgrace: Support get_dmabuf_phys
+[v2] net_sched: speedup qdisc dequeue
+https://lore.kernel.org/all/20251111093204.1432437-1-edumazet@google.com
+* [PATCH v2 net-next 01/14] net_sched: make room for (struct qdisc_skb_cb)->pkt_segs
+* [PATCH v2 net-next 02/14] net: init shinfo->gso_segs from qdisc_pkt_len_init()
+* [PATCH v2 net-next 03/14] net_sched: initialize qdisc_skb_cb(skb)->pkt_segs in qdisc_pkt_len_init()
+* [PATCH v2 net-next 04/14] net: use qdisc_pkt_len_segs_init() in sch_handle_ingress()
+* [PATCH v2 net-next 05/14] net_sched: use qdisc_skb_cb(skb)->pkt_segs in bstats_update()
+* [PATCH v2 net-next 06/14] net_sched: cake: use qdisc_pkt_segs()
+* [PATCH v2 net-next 07/14] net_sched: add Qdisc_read_mostly and Qdisc_write groups
+* [PATCH v2 net-next 08/14] net_sched: sch_fq: move qdisc_bstats_update() to fq_dequeue_skb()
+* [PATCH v2 net-next 09/14] net_sched: sch_fq: prefetch one skb ahead in dequeue()
+* [PATCH v2 net-next 10/14] net: prefech skb->priority in __dev_xmit_skb()
+* [PATCH v2 net-next 11/14] net: annotate a data-race in __dev_xmit_skb()
+* [PATCH v2 net-next 12/14] net_sched: add tcf_kfree_skb_list() helper
+* [PATCH v2 net-next 13/14] net_sched: add qdisc_dequeue_drop() helper
+* [PATCH v2 net-next 14/14] net_sched: use qdisc_dequeue_drop() in cake, codel, fq_codel
 
 and found the following issue:
-kernel build error
+WARNING in sk_skb_reason_drop
 
 Full report is available here:
-https://ci.syzbot.org/series/85689e16-0e61-409d-8a1d-8d2fd515e42f
+https://ci.syzbot.org/series/a9dbee91-6b1f-4ab9-b55d-43f7f50de064
 
 ***
 
-kernel build error
+WARNING in sk_skb_reason_drop
 
-tree:      kvm-next
-URL:       https://kernel.googlesource.com/pub/scm/virt/kvm/kvm/
-base:      6b36119b94d0b2bb8cea9d512017efafd461d6ac
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      a0c3aefb08cd81864b17c23c25b388dba90b9dad
 arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
-1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/8d1707f9-4b1b-42ae-a8eb-b3d6f05aa9b=
-4/config
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/a5059d85-d1f8-4036-a0fd-b677b5945ea9/config
+C repro:   https://ci.syzbot.org/findings/e529fc3a-766e-4d6c-899a-c35a8fdaa940/c_repro
+syz repro: https://ci.syzbot.org/findings/e529fc3a-766e-4d6c-899a-c35a8fdaa940/syz_repro
 
-drivers/dma-buf/dma-buf.c:1393:10: error: use of undeclared identifier 'DMA=
-_ATTR_MMIO'
-drivers/dma-buf/dma-buf.c:1399:11: error: call to undeclared function 'dma_=
-map_phys'; ISO C99 and later do not support implicit function declarations =
-[-Wimplicit-function-declaration]
-drivers/dma-buf/dma-buf.c:1401:10: error: use of undeclared identifier 'DMA=
-_ATTR_MMIO'
-drivers/dma-buf/dma-buf.c:1441:6: error: use of undeclared identifier 'DMA_=
-ATTR_MMIO'
-drivers/dma-buf/dma-buf.c:1444:4: error: call to undeclared function 'dma_u=
-nmap_phys'; ISO C99 and later do not support implicit function declarations=
- [-Wimplicit-function-declaration]
-drivers/dma-buf/dma-buf.c:1445:34: error: use of undeclared identifier 'DMA=
-_ATTR_MMIO'
-drivers/dma-buf/dma-buf.c:1476:6: error: use of undeclared identifier 'DMA_=
-ATTR_MMIO'
-drivers/dma-buf/dma-buf.c:1481:4: error: call to undeclared function 'dma_u=
-nmap_phys'; ISO C99 and later do not support implicit function declarations=
- [-Wimplicit-function-declaration]
-drivers/dma-buf/dma-buf.c:1482:34: error: use of undeclared identifier 'DMA=
-_ATTR_MMIO'
+syzkaller0: entered promiscuous mode
+syzkaller0: entered allmulticast mode
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 5965 at net/core/skbuff.c:1192 __sk_skb_reason_drop net/core/skbuff.c:1189 [inline]
+WARNING: CPU: 0 PID: 5965 at net/core/skbuff.c:1192 sk_skb_reason_drop+0x76/0x170 net/core/skbuff.c:1214
+Modules linked in:
+CPU: 0 UID: 0 PID: 5965 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:__sk_skb_reason_drop net/core/skbuff.c:1189 [inline]
+RIP: 0010:sk_skb_reason_drop+0x76/0x170 net/core/skbuff.c:1214
+Code: 20 2e a0 f8 83 fd 01 75 26 41 8d ae 00 00 fd ff bf 01 00 fd ff 89 ee e8 08 2e a0 f8 81 fd 00 00 fd ff 77 32 e8 bb 29 a0 f8 90 <0f> 0b 90 eb 53 bf 01 00 00 00 89 ee e8 e9 2d a0 f8 85 ed 0f 8e b2
+RSP: 0018:ffffc9000284f3b0 EFLAGS: 00010293
+RAX: ffffffff891fdcd5 RBX: ffff888113587680 RCX: ffff88816e6f3a00
+RDX: 0000000000000000 RSI: 000000006e1a2a10 RDI: 00000000fffd0001
+RBP: 000000006e1a2a10 R08: ffff888113587767 R09: 1ffff110226b0eec
+R10: dffffc0000000000 R11: ffffed10226b0eed R12: ffff888113587764
+R13: dffffc0000000000 R14: 000000006e1d2a10 R15: 0000000000000000
+FS:  000055558e11c500(0000) GS:ffff88818eb38000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000200000002280 CR3: 000000011053c000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ kfree_skb_reason include/linux/skbuff.h:1322 [inline]
+ tcf_kfree_skb_list include/net/sch_generic.h:1127 [inline]
+ __dev_xmit_skb net/core/dev.c:4258 [inline]
+ __dev_queue_xmit+0x2669/0x3180 net/core/dev.c:4783
+ packet_snd net/packet/af_packet.c:3076 [inline]
+ packet_sendmsg+0x3e33/0x5080 net/packet/af_packet.c:3108
+ sock_sendmsg_nosec net/socket.c:727 [inline]
+ __sock_sendmsg+0x21c/0x270 net/socket.c:742
+ ____sys_sendmsg+0x505/0x830 net/socket.c:2630
+ ___sys_sendmsg+0x21f/0x2a0 net/socket.c:2684
+ __sys_sendmsg net/socket.c:2716 [inline]
+ __do_sys_sendmsg net/socket.c:2721 [inline]
+ __se_sys_sendmsg net/socket.c:2719 [inline]
+ __x64_sys_sendmsg+0x19b/0x260 net/socket.c:2719
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fc1a7b8efc9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fff4ba6d968 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007fc1a7de5fa0 RCX: 00007fc1a7b8efc9
+RDX: 0000000000000004 RSI: 00002000000000c0 RDI: 0000000000000007
+RBP: 00007fc1a7c11f91 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fc1a7de5fa0 R14: 00007fc1a7de5fa0 R15: 0000000000000003
+ </TASK>
+
 
 ***
 
@@ -128,17 +148,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[akpm@linux-foundation.org alex@shazbot.org amastro@fb.com ankita@nvidia.co=
-m axboe@kernel.dk bhelgaas@google.com christian.koenig@amd.com corbet@lwn.n=
-et dri-devel@lists.freedesktop.org gustavoars@kernel.org iommu@lists.linux.=
-dev jgg@nvidia.com jgg@ziepe.ca joro@8bytes.org kees@kernel.org kevin.tian@=
-intel.com kjaju@nvidia.com kvm@vger.kernel.org leon@kernel.org linaro-mm-si=
-g@lists.linaro.org linux-block@vger.kernel.org linux-doc@vger.kernel.org li=
-nux-hardening@vger.kernel.org linux-kernel@vger.kernel.org linux-media@vger=
-.kernel.org linux-mm@kvack.org linux-pci@vger.kernel.org logang@deltatee.co=
-m m.szyprowski@samsung.com mochs@nvidia.com nicolinc@nvidia.com robin.murph=
-y@arm.com skolothumtho@nvidia.com sumit.semwal@linaro.org vivek.kasireddy@i=
-ntel.com will@kernel.org yishaih@nvidia.com]
+[davem@davemloft.net edumazet@google.com eric.dumazet@gmail.com horms@kernel.org jhs@mojatatu.com jiri@resnulli.us kuba@kernel.org kuniyu@google.com netdev@vger.kernel.org pabeni@redhat.com toke@redhat.com willemb@google.com xiyou.wangcong@gmail.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
