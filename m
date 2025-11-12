@@ -1,211 +1,110 @@
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2304B33B973
-	for <syzbot@lists.linux.dev>; Wed, 12 Nov 2025 15:50:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2851034575A
+	for <syzbot@lists.linux.dev>; Wed, 12 Nov 2025 18:38:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762962611; cv=none; b=WGE49JodgI38qCc6zqT7EGes+Aze/2me3NLa7qhmluJe+pFS+sT/gXl4mS/m5S+f1TCZvmtRYi3E05EF0W/HkX0Pl/UaCm1+IlK1ulAVeVjCwe4+uhRCfLuQqIvvgXm2c/B4/DwneAWs86PcJx+xDi3QAwqEREukyp3vGmbcZ48=
+	t=1762972717; cv=none; b=ryYIQq1Q0hzllkYfBQaxatsy5FFw3OUsVdFWNduIKEmrltFk/3EcKMQZJV5p62HPPteDNe2h3JeJedVrtHP8BBLRxvP98SuSf1usG937XQsIaqzrMZyNp3bOs0W5rueimI5z3iRsGSmYmEO2Tmp8pqTENfjpZXeWi+F6i8c5rCw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762962611; c=relaxed/simple;
-	bh=06stUVdVrCwvUplAh76gT2K++oQBpkVUJo5TM4Bsguw=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=PZRTwNkviiMzQCqkFuWyNDOl62jDCij4HLsWkWaUexQlLVOU5JriEKScm+bJEapGDKgFUwxUJowD/YYwvBxybK6PGXUGZuISfQgPZOzgChum5tr25KdGoWbebebIL71dDbm7A79xm+ujLhnNn9egsEGlotu18xQYB5VSmKUl1Uo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-43478a7659bso4675735ab.0
-        for <syzbot@lists.linux.dev>; Wed, 12 Nov 2025 07:50:09 -0800 (PST)
+	s=arc-20240116; t=1762972717; c=relaxed/simple;
+	bh=rjdI/hPxB57OWIfqIRPggSIvkjgsaZxLZ95HFelCcGY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=i8oXYz3g69zOIZZtXBTYpgvJsgUKVSW6Li4TysSRKdSPF38zESR50RZ1ldetrJ3XWURQk7aSfAU8YzMxQ9pEEDtkvS03beaTlEq+wSeMXnShwQGF/kn7WNgN/jLfdjaf4Dgj8xrUjvGplh9G6QepuaDpmQ1dKGgmPu4AnWh4pF8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KgSbhvDQ; arc=none smtp.client-ip=209.85.210.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KgSbhvDQ"
+Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-7af603c06easo3855b3a.0
+        for <syzbot@lists.linux.dev>; Wed, 12 Nov 2025 10:38:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1762972715; x=1763577515; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=d+G8+iIuAhEgULEzocPDssGo8BH46zvY9bxVPTxi2Vs=;
+        b=KgSbhvDQGTBR/4lMnmctcnCrjJjwUGVFALcO8JSZo5isIXoobtIT/wNNf6udlQKv2y
+         FbdxPcEev2qyNH+lqPADocYdE8bjWyIZyF8hqlfvYrNIaIifF8RlpBaj5LYuzAO8zxK6
+         CIlGofFghnn55eta6NJaC6t4KzqXHlOhOilTuxWnHGrAPh/FKq2Oco9Yus6WcwZLpdml
+         c7fj6yMngZSl7Cu65Pj/4C3PJk+VK+W8wptAZtwo2NyTzT0FF7yPRyk9mscOpZZDd+KO
+         nK+TBPwQOEEiKf0D3meu2wLDVPD3m2z6NqyftpZ56xZHKFGpmFhh7gxVA6hNpYzv5T1N
+         R5dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762962608; x=1763567408;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3zTsXzAL2O8FBHRHQuZTZdGfLgKf82AqMuTf8WBrX6k=;
-        b=lEAqqZJhiUl9Ntit2NqquA/0Bp6el/aOdR8U8asnTI8qejDZkesXystMqm0T13JWWS
-         wHuwJE68PJJYisBtxiY/MaKDhYBCvQ9uzsONcrX908bV3S8jj5h2fxyV0O8/1vpo8151
-         yV9m3AhL7xjLPcXzpUv6bstir7eijaBfMKyfUEo1pAdfaGACIR4XxeC7TM7jBqbKmWN3
-         0ryLTujwGppeZdZGO49+tIEsRrXgPuunRu7cwS49J/wNJFCSW2f1H1ngtNMCcVaDExEm
-         CuXNGT1WAV4SVIpcysytB5EZEY0NdWU2j1X8quBEt0P6mVPiQ7LtmigLJilT4qGjoTiH
-         1g0g==
-X-Gm-Message-State: AOJu0Yw9fx0p0N5OObIAwUKWiwGaQ0C+OJSDASUaBYmKLZaH+aUuW1V/
-	zhu2CHzXKyysM40vQ6beH7WishDyp6fAv+/wnsjwzQsUnxwPyWL+1U5uT7vG3gqg7j8WxImEjlw
-	mUWHlqt7WAWMfjubfOt3+ltoLjQohh6HfUJv1b1Gnj2o6ECmlhgZ+MADmhU4=
-X-Google-Smtp-Source: AGHT+IHmXHfyTAC7o3gX451a5IIahr28v38z8/NoQnIggiwkPwHCChNJsSaHf6XMCJZzy1ZplwASB2f9wVZN0PHDzjagie+boMEe
+        d=1e100.net; s=20230601; t=1762972715; x=1763577515;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=d+G8+iIuAhEgULEzocPDssGo8BH46zvY9bxVPTxi2Vs=;
+        b=P/Spkw3pbcjmo8JTY5mQKSiXG4Zud4E3WJOgaJ/+JlQBBBpH8dPP1F4j0LPPbuYRr0
+         VHivI3skdXSCV81BQigRwKA4K0DiLll1eRNqswYSdPMQbwM4nNcUhk2JrNmNapOn0vDk
+         k4lz+CVNU6cicxSpeZljzlENTxU4XJ0Tc7U7NW/D+w6cWVptzF26vXKPaTJ9/VN+Kfmb
+         icB3LSg4lqKJs1RBBo8YzgpSW84DtySbO1F+P90QOGoKRfkYj8dOWmcHSwovtDAExrje
+         t78brhVH0rf6rraxlPjEg/GbTitz4ocgN6ZkTkPMmTySx9DDnMNRCI3q/FoJosrAAnEO
+         cghg==
+X-Forwarded-Encrypted: i=1; AJvYcCVZ3/1wLDxsTtefEIwCIee6PO8eOsQoAtLwNpdy8KuHodCyMOilGCEspYDhQPickAQOHLAhEgI=@lists.linux.dev
+X-Gm-Message-State: AOJu0YwnpKVOIk5RhJiTboTpEQHx4cZkVhNJG/7SpjZMPoa8vfPlaWBt
+	JTeP+eb9di6KIr1O6zSzs4LrCiLTyjfM9Mb09Wce4t2Ksa6GbkrO6Qx7
+X-Gm-Gg: ASbGncuu18ulhtgFRoyoYBedp9J9UEfot3rv2HMcZBie4yIgQ46/txCQl6rnM3V6ins
+	kdRT25Kr9BuEGw4BjnmiAMxbeWmshVrRtd/Eqpxv6L3ts555AWMR7UERznUqvdHYXIPlH8Msj8i
+	UKfeMcJVYjDFiBqnxLK0C/odMb/8pSPjd/4eOqvYZXDaj1TBGeCTQv8NbxMPxk8wdr7GR44Pi3i
+	7OmE3q/E/3Sulmc6lZ0Jw2wzuRAU1aMfq/FAR/KlUZQGVHXrGe0qhawJx56moo3DHQTUpQFbNMa
+	K1zn7AQqYwk0eY+YOu2YsbvlB07q0+DjnzAG8S0/xERtZyQhMq21Qkw6U2+ZUC5vAjo1UcoIbC2
+	PbnH1XLYDsu8HlVqKeJhcJ4w4I6E53GvBkA/iRysnt6lM4yl7/grLvOZ2RRB35OYqLjXSIrhpvo
+	QUrXfBqxphbAAUj704tF+KyPuHLD1+ADX0
+X-Google-Smtp-Source: AGHT+IHkCPrM3gjJlcuUw/ai+5zW7z604YwPQxNzYFX5718wDwKJoqe+bSM0awd32yJLRzmocpTJQg==
+X-Received: by 2002:aa7:88d6:0:b0:7a2:7f45:5898 with SMTP id d2e1a72fcca58-7b8e01e21a5mr455797b3a.3.1762972715085;
+        Wed, 12 Nov 2025 10:38:35 -0800 (PST)
+Received: from fedora (c-67-164-59-41.hsd1.ca.comcast.net. [67.164.59.41])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7b0cc17a956sm19641876b3a.44.2025.11.12.10.38.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Nov 2025 10:38:34 -0800 (PST)
+Date: Wed, 12 Nov 2025 10:38:32 -0800
+From: "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
+To: Uladzislau Rezki <urezki@gmail.com>
+Cc: syzbot ci <syzbot+ci9989da8336cb2bc7@syzkaller.appspotmail.com>,
+	akpm@linux-foundation.org, hch@lst.de, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, syzbot@lists.linux.dev,
+	syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot ci] Re: make vmalloc gfp flags usage more apparent
+Message-ID: <aRTUKDMa8avHdvKp@fedora>
+References: <20251110160457.61791-1-vishal.moola@gmail.com>
+ <69123b72.a70a0220.22f260.0105.GAE@google.com>
+ <aROasppMPmek9Afh@milan>
+ <aRQyMck_MeVvvCdX@infradead.org>
+ <aRR3O7l2Ewx-VRoE@milan>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:3521:b0:433:481d:fd61 with SMTP id
- e9e14a558f8ab-43473d92995mr43099555ab.18.1762962608328; Wed, 12 Nov 2025
- 07:50:08 -0800 (PST)
-Date: Wed, 12 Nov 2025 07:50:08 -0800
-In-Reply-To: <cover.1762945505.git.ojaswin@linux.ibm.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6914acb0.050a0220.3565dc.0004.GAE@google.com>
-Subject: [syzbot ci] Re: xfs: single block atomic writes for buffered IO
-From: syzbot ci <syzbot+cie14707853a77f22b@syzkaller.appspotmail.com>
-To: axboe@kernel.dk, brauner@kernel.org, dchinner@redhat.com, 
-	djwong@kernel.org, hch@lst.de, jack@suse.cz, john.g.garry@oracle.com, 
-	linux-block@vger.kernel.org, linux-ext4@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, linux-trace-kernel@vger.kernel.org, 
-	linux-xfs@vger.kernel.org, martin.petersen@oracle.com, nilay@linux.ibm.com, 
-	ojaswin@linux.ibm.com, ritesh.list@gmail.com, rostedt@goodmis.org, 
-	tytso@mit.edu, willy@infradead.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aRR3O7l2Ewx-VRoE@milan>
 
-syzbot ci has tested the following series
+On Wed, Nov 12, 2025 at 01:02:03PM +0100, Uladzislau Rezki wrote:
+> On Tue, Nov 11, 2025 at 11:07:29PM -0800, Christoph Hellwig wrote:
+> > On Tue, Nov 11, 2025 at 09:21:06PM +0100, Uladzislau Rezki wrote:
+> > > > Unexpected gfp: 0x100000 (__GFP_HARDWALL). Fixing up to gfp: 0xdc0 (GFP_KERNEL|__GFP_ZERO). Fix your code!
+> > > >
+> > > It looks like we need to add __GFP_HARDWALL to the white-list-mask.
+> > 
+> > __GFP_HARDWALL is part of GFP_USER.  Doing GFP_USER vmalloc sounds like
+> > a bit of an odd idea to me, but there are a few users mostly in bpf
+> > and drm code (why do these always show up for odd API usage patterns?).
+> > 
+> > So I guess yes, we'll need to allow it for now, but I'd like to start
+> > a discussion if it really makes much sense.
+> > 
+> <snip>
+> 	/* plain bpf_prog allocation */
+> 	prog = bpf_prog_alloc(bpf_prog_size(attr->insn_cnt), GFP_USER);
+> 	if (!prog) {
+> <snip>
+> 
+> I assume that was the place that triggered the splat.
+> 
+> Vishal, will you send the patch adding GFP_USER to address the splat?
 
-[v1] xfs: single block atomic writes for buffered IO
-https://lore.kernel.org/all/cover.1762945505.git.ojaswin@linux.ibm.com
-* [RFC PATCH 1/8] fs: Rename STATX{_ATTR}_WRITE_ATOMIC -> STATX{_ATTR}_WRITE_ATOMIC_DIO
-* [RFC PATCH 2/8] mm: Add PG_atomic
-* [RFC PATCH 3/8] fs: Add initial buffered atomic write support info to statx
-* [RFC PATCH 4/8] iomap: buffered atomic write support
-* [RFC PATCH 5/8] iomap: pin pages for RWF_ATOMIC buffered write
-* [RFC PATCH 6/8] xfs: Report atomic write min and max for buf io as well
-* [RFC PATCH 7/8] iomap: Add bs<ps buffered atomic writes support
-* [RFC PATCH 8/8] xfs: Lift the bs == ps restriction for HW buffered atomic writes
-
-and found the following issue:
-KASAN: slab-out-of-bounds Read in __bitmap_clear
-
-Full report is available here:
-https://ci.syzbot.org/series/430a088a-50e2-46d3-87ff-a1f0fa67b66c
-
-***
-
-KASAN: slab-out-of-bounds Read in __bitmap_clear
-
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-base:      ab40c92c74c6b0c611c89516794502b3a3173966
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/02d3e137-5d7e-4c95-8f32-43b8663d95df/config
-C repro:   https://ci.syzbot.org/findings/92a3582f-40a6-4936-8fcd-dc55c447a432/c_repro
-syz repro: https://ci.syzbot.org/findings/92a3582f-40a6-4936-8fcd-dc55c447a432/syz_repro
-
-==================================================================
-BUG: KASAN: slab-out-of-bounds in __bitmap_clear+0x155/0x180 lib/bitmap.c:395
-Read of size 8 at addr ffff88816ced7cd0 by task kworker/0:1/10
-
-CPU: 0 UID: 0 PID: 10 Comm: kworker/0:1 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: xfs-conv/loop0 xfs_end_io
-Call Trace:
- <TASK>
- dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
- print_address_description mm/kasan/report.c:378 [inline]
- print_report+0xca/0x240 mm/kasan/report.c:482
- kasan_report+0x118/0x150 mm/kasan/report.c:595
- __bitmap_clear+0x155/0x180 lib/bitmap.c:395
- bitmap_clear include/linux/bitmap.h:496 [inline]
- ifs_clear_range_atomic fs/iomap/buffered-io.c:241 [inline]
- iomap_clear_range_atomic+0x25c/0x630 fs/iomap/buffered-io.c:268
- iomap_finish_folio_write+0x2f0/0x410 fs/iomap/buffered-io.c:1971
- iomap_finish_ioend_buffered+0x223/0x5e0 fs/iomap/ioend.c:58
- iomap_finish_ioends+0x116/0x2b0 fs/iomap/ioend.c:295
- xfs_end_ioend+0x50b/0x690 fs/xfs/xfs_aops.c:168
- xfs_end_io+0x253/0x2d0 fs/xfs/xfs_aops.c:205
- process_one_work+0x94a/0x15d0 kernel/workqueue.c:3267
- process_scheduled_works kernel/workqueue.c:3350 [inline]
- worker_thread+0x9b0/0xee0 kernel/workqueue.c:3431
- kthread+0x711/0x8a0 kernel/kthread.c:463
- ret_from_fork+0x599/0xb30 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-
-Allocated by task 5952:
- kasan_save_stack mm/kasan/common.c:56 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:77
- poison_kmalloc_redzone mm/kasan/common.c:397 [inline]
- __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:414
- kasan_kmalloc include/linux/kasan.h:262 [inline]
- __do_kmalloc_node mm/slub.c:5672 [inline]
- __kmalloc_noprof+0x41d/0x800 mm/slub.c:5684
- kmalloc_noprof include/linux/slab.h:961 [inline]
- kzalloc_noprof include/linux/slab.h:1094 [inline]
- ifs_alloc+0x1e4/0x530 fs/iomap/buffered-io.c:356
- iomap_writeback_folio+0x81c/0x26a0 fs/iomap/buffered-io.c:2084
- iomap_writepages+0x162/0x2d0 fs/iomap/buffered-io.c:2168
- xfs_vm_writepages+0x28a/0x300 fs/xfs/xfs_aops.c:701
- do_writepages+0x32e/0x550 mm/page-writeback.c:2598
- filemap_writeback mm/filemap.c:387 [inline]
- filemap_fdatawrite_range mm/filemap.c:412 [inline]
- file_write_and_wait_range+0x23e/0x340 mm/filemap.c:786
- xfs_file_fsync+0x195/0x800 fs/xfs/xfs_file.c:137
- generic_write_sync include/linux/fs.h:2639 [inline]
- xfs_file_buffered_write+0x723/0x8a0 fs/xfs/xfs_file.c:1015
- do_iter_readv_writev+0x623/0x8c0 fs/read_write.c:-1
- vfs_writev+0x31a/0x960 fs/read_write.c:1057
- do_pwritev fs/read_write.c:1153 [inline]
- __do_sys_pwritev2 fs/read_write.c:1211 [inline]
- __se_sys_pwritev2+0x179/0x290 fs/read_write.c:1202
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-The buggy address belongs to the object at ffff88816ced7c80
- which belongs to the cache kmalloc-96 of size 96
-The buggy address is located 0 bytes to the right of
- allocated 80-byte region [ffff88816ced7c80, ffff88816ced7cd0)
-
-The buggy address belongs to the physical page:
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x16ced7
-flags: 0x57ff00000000000(node=1|zone=2|lastcpupid=0x7ff)
-page_type: f5(slab)
-raw: 057ff00000000000 ffff888100041280 dead000000000100 dead000000000122
-raw: 0000000000000000 0000000080200020 00000000f5000000 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0x252800(GFP_NOWAIT|__GFP_NORETRY|__GFP_COMP|__GFP_THISNODE), pid 1, tgid 1 (swapper/0), ts 12041529441, free_ts 0
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x240/0x2a0 mm/page_alloc.c:1851
- prep_new_page mm/page_alloc.c:1859 [inline]
- get_page_from_freelist+0x2365/0x2440 mm/page_alloc.c:3920
- __alloc_frozen_pages_noprof+0x181/0x370 mm/page_alloc.c:5209
- alloc_slab_page mm/slub.c:3086 [inline]
- allocate_slab+0x71/0x350 mm/slub.c:3257
- new_slab mm/slub.c:3311 [inline]
- ___slab_alloc+0xf56/0x1990 mm/slub.c:4671
- __slab_alloc+0x65/0x100 mm/slub.c:4794
- __slab_alloc_node mm/slub.c:4870 [inline]
- slab_alloc_node mm/slub.c:5266 [inline]
- __kmalloc_cache_node_noprof+0x4b7/0x6f0 mm/slub.c:5799
- kmalloc_node_noprof include/linux/slab.h:983 [inline]
- alloc_node_nr_active kernel/workqueue.c:4908 [inline]
- __alloc_workqueue+0x6a9/0x1b80 kernel/workqueue.c:5762
- alloc_workqueue_noprof+0xd4/0x210 kernel/workqueue.c:5822
- nbd_dev_add+0x4f1/0xae0 drivers/block/nbd.c:1961
- nbd_init+0x168/0x1f0 drivers/block/nbd.c:2691
- do_one_initcall+0x25a/0x860 init/main.c:1378
- do_initcall_level+0x104/0x190 init/main.c:1440
- do_initcalls+0x59/0xa0 init/main.c:1456
- kernel_init_freeable+0x334/0x4b0 init/main.c:1688
- kernel_init+0x1d/0x1d0 init/main.c:1578
-page_owner free stack trace missing
-
-Memory state around the buggy address:
- ffff88816ced7b80: 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc
- ffff88816ced7c00: 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc
->ffff88816ced7c80: 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc
-                                                 ^
- ffff88816ced7d00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
- ffff88816ced7d80: 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc
-==================================================================
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+Yes, I'll send a new version including __GFP_HARDWALL in the mask and
+update the comment accordingly.
