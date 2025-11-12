@@ -1,131 +1,188 @@
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from flow-a4-smtp.messagingengine.com (flow-a4-smtp.messagingengine.com [103.168.172.139])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAF5B26E717
-	for <syzbot@lists.linux.dev>; Wed, 12 Nov 2025 20:45:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2404123ED6A;
+	Wed, 12 Nov 2025 22:50:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762980320; cv=none; b=SQJpFS6Qtewo+XpA9oyHdDyRMVa6l+i9GiPTOaHTWXbzzakbxtYZTSKCFDfR2T6PvQJnqBDk8J+4D4cLtDIXg2m4ImGqvZqXP4i6h6ep4Dng3IQhN3sOa+W20v7jQZB858sSepUzTg+4BioPkf8u10o1ySRtBELKmvq54QGo2Zg=
+	t=1762987850; cv=none; b=XbTJue//sy0scXSRKJTwfJoFWTZN+U65M5yqRH/2auEVUbGTJA2n25BNXZJcegI8zR1jzuBa6/BCEdoW9ahRm8XfId/34Cxno09uG+Tb6AzSjs9ogLaypBO5J9yHq6+z94AJgr4GZtcFqpxSxKH2Z1sSlSAE7qWHpMUJfcra3rQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762980320; c=relaxed/simple;
-	bh=i0M2Ds/6fKqVtgInowiv26bGgqdM3LwJwDxnD2RGVEw=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=SPyM02Gu0/lG2GeQl5BZKDLF+7gODKhLAyrJTXxGSMf5v0bCDTrGQ+HgIX5ZNYI92yhSFZb2TMtod+3o8rka8cx2+wTE92BMo1dY/q83b5gksuUh3ekwQTRuKAMiQ69qDM72UfR6ck1xyB05eaRBA+dfre6nxSPcSQ+jLPok5NM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-940d88b8c15so23117739f.2
-        for <syzbot@lists.linux.dev>; Wed, 12 Nov 2025 12:45:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762980318; x=1763585118;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=de80dDytFfdBi9RAKfxz7F+CKYhmFukDCzsyNkQKp2U=;
-        b=OD4QP2fmbD3DgxrfLmhy8jn31WGos0u/XXmshlp1YV17CkfLPmVY2Subax3OqOUMYa
-         Du0pOdQDErY2eTactgWGxQzIdhcW9unINAkH9IckeNN2A4iCTeI/waGaMce/veouyr6n
-         EoucYb1WzNYsSjrwA4syWcZDClk1sz9Q1IrF+8ExeRyQpSgRBy+viKfdb3tB+uPb2Pfc
-         M/3oU2jbcp8YSZjpAf9hklHlzvnq9xwRHGNI7EucGD2JJfvE1sNFFaxtcpKcMBBXKAPS
-         srPYMOzQ5RHLmeA+EI1L3ew9mgGmK7QJ4/9Gr0G9v4RdCWLGQ+857freAxxn0qz6tCGt
-         fGJg==
-X-Gm-Message-State: AOJu0Yy48ZPmmUA4jkQq7QRgNLOTYTGuafrZBpFNYBhB7XSTft76XB68
-	fgRQDv/Bc8HUhioL1q+OWs+nMRDBte3hH70b3edJEIShInvQfUlWij14O7LD5g/42kt1ipH7FSe
-	7tnOlibVeqfgCDXzAFqj/kCfQx+RoBT7p2fB0zA1+uiDT73HQSsqtxolEX+8=
-X-Google-Smtp-Source: AGHT+IHZuVyeixeQ2jRg9jWO2Ykfc0lNRz2bYReCLgz3FM5zJXa9NL0lWbcUyzN3udqyQ1mpM+AgOljELiyNWn1eKSpXPKVqBwIL
+	s=arc-20240116; t=1762987850; c=relaxed/simple;
+	bh=gk7jTwjg4YxTK3MshudwEyHBJmgG7UmOjt2m1+Hpy58=;
+	h=Content-Type:MIME-Version:From:To:Cc:Subject:In-reply-to:
+	 References:Date:Message-id; b=JJxF7PHVLyFgeQlOJqiqed0D2G9/3uIm2W7cx6kvH4cnY0IjW56gi8PSk7PNps4PlfmfMx3QW3cr70nuRCY1W2ELBGnwTd8ifOSclFI1nRUWeWX2cuYsY+pofd4IG8G3e03r6cA40rqJbywt5CgqlFfvumPNEcf5izYy0aZL5AU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ownmail.net; spf=pass smtp.mailfrom=ownmail.net; dkim=pass (2048-bit key) header.d=ownmail.net header.i=@ownmail.net header.b=jir4MDTS; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=BLfz97DO; arc=none smtp.client-ip=103.168.172.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ownmail.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ownmail.net
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ownmail.net header.i=@ownmail.net header.b="jir4MDTS";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="BLfz97DO"
+Received: from phl-compute-09.internal (phl-compute-09.internal [10.202.2.49])
+	by mailflow.phl.internal (Postfix) with ESMTP id 2988313806A6;
+	Wed, 12 Nov 2025 17:50:47 -0500 (EST)
+Received: from phl-mailfrontend-02 ([10.202.2.163])
+  by phl-compute-09.internal (MEProxy); Wed, 12 Nov 2025 17:50:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ownmail.net; h=
+	cc:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:reply-to:subject:subject:to:to; s=fm3; t=
+	1762987847; x=1762995047; bh=hNbQnRc+kFUP5bxPugl1ooBdBy11Z0986aY
+	SJmKRoLs=; b=jir4MDTSxsZfdM2IRl9MZbN0ALWiQls5PQ+nkklZ0+Odf25WN63
+	px+vcxmJZ/343yP0NnlBKVwK9UifM3DSBJDQPbAFUEV9RD5AqwZvUJdQhaLuTQmw
+	UMa/+H1qYZUQYbJ01k3iXjj+uLQe7TureLQBiP2RBEbTDpfefArurTdZIdbV79J/
+	VG9hoPkx4Re71SD1pdP5jdsU8c4x8Ezycn/VnUN5FCrl/jR70BlyL4zfNzJy/h3A
+	nfRtqg2lcQaFC5lamfb3UvooMox2B6ZgIGDv1YGF6LqG6+o9WobjyEhGWpJol2dM
+	OhU0GqkHlPpxdhVwG/7n3HoSAb6+icZzBmA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1762987847; x=
+	1762995047; bh=hNbQnRc+kFUP5bxPugl1ooBdBy11Z0986aYSJmKRoLs=; b=B
+	Lfz97DOs9f3pV8SMym55iFWtFF0Whk7qDnQ7uIoppMUeJlo6Z0wL/odbqfprJdGy
+	FnYb68xmGsmOb4bwylkvMw9b4omvIT1aH6A93ZOUtT4iIQDLLSTrgX0qy9L8EkJx
+	2zLSUyHXFGTj3nsbQOhT9OJZCobm3DukzPSXo2q4pi0NvwU8nF5h8OcA0NO+5+WA
+	0PEOnjwgyw2GICsat/bKQx5g2FiKE36lmJ2EeDP81tYbdF2UKae3j5A0ArfiPEkq
+	tRNKKiTUoVkBXzLbRPb+3CMC74viLl/0M55NkH+tCt3g9/mQCG6MbNsCmCzOGKZi
+	c2sokfrybzXBgGwQIO8xQ==
+X-ME-Sender: <xms:RQ8VafhhigNHwThNGgZL6VDUmCMzXzWdXCNwp2pF9cAfKCwuajl6KA>
+    <xme:RQ8VaRrwL2PAkM5MKDdTENePzo0MjHhfVHYDfATSpFFtRSDGrSBcOfJ_2gZsV_Bhk
+    uahMwsauI6qCdXkAeG549afc_l-kQDyx0JOK71rMbO5t_g8>
+X-ME-Received: <xmr:RQ8VaXJM8GaoDYtM7fK95Dxg6WkypMVogX_gysXAEdMyX14QpFP4ew9huDyHB4B5ld3mGurSzbtmUMvrPXcurN68ClN2Anzm-nOx7SrNsNiE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggddvtdehfeduucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucenucfjughrpegtgfgghffvvefujghffffkrhesthhqre
+    dttddtjeenucfhrhhomheppfgvihhluehrohifnhcuoehnvghilhgssehofihnmhgrihhl
+    rdhnvghtqeenucggtffrrghtthgvrhhnpeffhefggfegfeefuddtvdektdekheduudeftd
+    dufefhgfetteffudehheffjeefgeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgpdhs
+    hiiisghothdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehnvghilhgssehofihnmhgrihhlrdhnvghtpdhnsggprhgtphhtthhopeeg
+    fedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepvhhirhhoseiivghnihhvrdhlih
+    hnuhigrdhorhhgrdhukhdprhgtphhtthhopehsvghlihhnuhigsehvghgvrhdrkhgvrhhn
+    vghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqgihfshesvhhgvghrrdhkvghrnhgvlh
+    drohhrghdprhgtphhtthhopehlihhnuhigqdhunhhiohhnfhhssehvghgvrhdrkhgvrhhn
+    vghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqshgvtghurhhithihqdhmohguuhhlvg
+    esvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhnfhhssehv
+    ghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlse
+    hvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqfhhsuggvvhgv
+    lhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdgtihhfsh
+    esvhhgvghrrdhkvghrnhgvlhdrohhrgh
+X-ME-Proxy: <xmx:RQ8VaU_TZlxPuvrWeAqkACaP2k8Al-3-wPUeHNBrUxdJjRalfLbJiQ>
+    <xmx:RQ8VabLvN9wKNh7vsrGQuPbdRitR6XBWPg0OYSH6a_8Jv-ozj0HwQA>
+    <xmx:RQ8VacyF-HUMepz3fbS9mezvCzbSlJV_E4Q-4rygphXSIubclEfTDQ>
+    <xmx:RQ8VaZQFjRq0rKiXJyTmjlzTiI1hgqKgTB2deemjEUNcNAYbcMDMYQ>
+    <xmx:Rw8VaRng3xIxkUPzVLT2SQWh71AIXEEteEsvxx4LCf38ADBus3t6KOp1>
+Feedback-ID: iab3e480c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 12 Nov 2025 17:50:34 -0500 (EST)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:184a:b0:433:4fc9:7b38 with SMTP id
- e9e14a558f8ab-43473db4a60mr53046105ab.28.1762980317920; Wed, 12 Nov 2025
- 12:45:17 -0800 (PST)
-Date: Wed, 12 Nov 2025 12:45:17 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6914f1dd.a70a0220.3124cb.000e.GAE@google.com>
-Subject: [moderation/CI] Re: make vmalloc gfp flags usage more apparent
-From: syzbot ci <syzbot+cid2ec7a2d0105f633@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+From: NeilBrown <neilb@ownmail.net>
+To: "syzbot ci" <syzbot+ci853f3070c3383748@syzkaller.appspotmail.com>
+Cc: amir73il@gmail.com, brauner@kernel.org, cem@kernel.org,
+ chuck.lever@oracle.com, clm@fb.com, code@tyhicks.com, dai.ngo@oracle.com,
+ dakr@kernel.org, dhowells@redhat.com, djwong@kernel.org,
+ dsterba@suse.com, ecryptfs@vger.kernel.org, gregkh@linuxfoundation.org,
+ jack@suse.cz, jlayton@kernel.org, jmorris@namei.org,
+ john.johansen@canonical.com, linkinjeon@kernel.org,
+ linux-cifs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
+ linux-security-module@vger.kernel.org, linux-unionfs@vger.kernel.org,
+ linux-xfs@vger.kernel.org, lorenzo.stoakes@oracle.com, miklos@szeredi.hu,
+ mjguzik@gmail.com, netfs@lists.linux.dev, okorniev@redhat.com,
+ omosnace@redhat.com, paul@paul-moore.com, rafael@kernel.org,
+ selinux@vger.kernel.org, senozhatsky@chromium.org, serge@hallyn.com,
+ smfrench@gmail.com, stefanb@linux.ibm.com,
+ stephen.smalley.work@gmail.com, viro@zeniv.linux.org.uk,
+ syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot ci] Re: Create and use APIs to centralise locking for
+ directory ops.
+In-reply-to: <690c6437.050a0220.baf87.0083.GAE@google.com>
+References: <20251106005333.956321-1-neilb@ownmail.net>,
+ <690c6437.050a0220.baf87.0083.GAE@google.com>
+Date: Thu, 13 Nov 2025 09:50:26 +1100
+Message-id: <176298782655.634289.16817979269470605281@noble.neil.brown.name>
+Reply-To: NeilBrown <neil@brown.name>
 
-syzbot ci has tested the following series
+On Thu, 06 Nov 2025, syzbot ci wrote:
+> syzbot ci has tested the following series
+>=20
+> [v5] Create and use APIs to centralise locking for directory ops.
+> https://lore.kernel.org/all/20251106005333.956321-1-neilb@ownmail.net
+> * [PATCH v5 01/14] debugfs: rename end_creating() to debugfs_end_creating()
+> * [PATCH v5 02/14] VFS: introduce start_dirop() and end_dirop()
+> * [PATCH v5 03/14] VFS: tidy up do_unlinkat()
+> * [PATCH v5 04/14] VFS/nfsd/cachefiles/ovl: add start_creating() and end_cr=
+eating()
+> * [PATCH v5 05/14] VFS/nfsd/cachefiles/ovl: introduce start_removing() and =
+end_removing()
+> * [PATCH v5 06/14] VFS: introduce start_creating_noperm() and start_removin=
+g_noperm()
+> * [PATCH v5 07/14] VFS: introduce start_removing_dentry()
+> * [PATCH v5 08/14] VFS: add start_creating_killable() and start_removing_ki=
+llable()
+> * [PATCH v5 09/14] VFS/nfsd/ovl: introduce start_renaming() and end_renamin=
+g()
+> * [PATCH v5 10/14] VFS/ovl/smb: introduce start_renaming_dentry()
+> * [PATCH v5 11/14] Add start_renaming_two_dentries()
+> * [PATCH v5 12/14] ecryptfs: use new start_creating/start_removing APIs
+> * [PATCH v5 13/14] VFS: change vfs_mkdir() to unlock on failure.
+> * [PATCH v5 14/14] VFS: introduce end_creating_keep()
+>=20
+> and found the following issues:
+> * WARNING: lock held when returning to user space in start_creating
+> * possible deadlock in mnt_want_write
+>=20
+> Full report is available here:
+> https://ci.syzbot.org/series/4f406e4d-6aba-457a-b9c1-21f4407176a0
+>=20
+> ***
+>=20
+> WARNING: lock held when returning to user space in start_creating
 
-[v2] make vmalloc gfp flags usage more apparent
-https://lore.kernel.org/all/20251112185834.32487-1-vishal.moola@gmail.com
-* [PATCH v2 1/4] mm/vmalloc: warn on invalid vmalloc gfp flags
-* [PATCH v2 2/4] mm/vmalloc: Add a helper to optimize vmalloc allocation gfps
-* [PATCH v2 3/4] mm/vmalloc: cleanup large_gfp in vm_area_alloc_pages()
-* [PATCH v2 4/4] mm/vmalloc: cleanup gfp flag use in new_vmap_block()
+I think this was due to a bug in=20
+   VFS: change vfs_mkdir() to unlock on failure.
+in ovl_create_real()
 
-and found the following issue:
-WARNING: kmalloc bug in bpf_prog_alloc_no_stats
+That patch removed a end_creating() call that was after
+ovl_create_real() returned failure, but didn't add end_creating() in
+ovl_create_real() on failure.  So it could exit with the lock still
+held.
 
-Full report is available here:
-https://ci.syzbot.org/series/46d6cb1a-188d-4ff5-8fab-9c58465d74d3
+This patch should fix it, particularly the second hunk.
 
-***
+Thanks,
+NeilBrown
 
-WARNING: kmalloc bug in bpf_prog_alloc_no_stats
-
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-base:      b179ce312bafcb8c68dc718e015aee79b7939ff0
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/3449e2a5-35e0-4eac-86c6-97ca0ec741d7/config
-
-------------[ cut here ]------------
-Unexpected gfp: 0x400000 (__GFP_ACCOUNT). Fixing up to gfp: 0xdc0 (GFP_KERNEL|__GFP_ZERO). Fix your code!
-WARNING: mm/vmalloc.c:3938 at vmalloc_fix_flags+0x9c/0xe0, CPU#1: syz-executor/6079
-Modules linked in:
-CPU: 1 UID: 0 PID: 6079 Comm: syz-executor Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:vmalloc_fix_flags+0x9c/0xe0
-Code: 81 e6 1f 52 ee ff 89 74 24 30 81 e3 e0 ad 11 00 89 5c 24 20 90 48 c7 c7 40 c3 76 8b 4c 89 fa 89 d9 4d 89 f0 e8 a5 a1 6c ff 90 <0f> 0b 90 90 8b 44 24 20 48 c7 04 24 0e 36 e0 45 4b c7 04 2c 00 00
-RSP: 0018:ffffc90005557b00 EFLAGS: 00010246
-RAX: a6bff5ae8e950700 RBX: 0000000000000dc0 RCX: ffff888173b29d40
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000002
-RBP: ffffc90005557b98 R08: 0000000000000003 R09: 0000000000000004
-R10: dffffc0000000000 R11: fffffbfff1bba6ec R12: 1ffff92000aaaf60
-R13: dffffc0000000000 R14: ffffc90005557b20 R15: ffffc90005557b30
-FS:  000055557c070500(0000) GS:ffff8882a9ec0000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f86f6df0000 CR3: 0000000113d64000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- __vmalloc_noprof+0xf2/0x120
- bpf_prog_alloc_no_stats+0x4a/0x4d0
- bpf_prog_alloc+0x3c/0x1a0
- bpf_prog_create_from_user+0xa7/0x440
- do_seccomp+0x7b1/0xd90
- __se_sys_prctl+0xc3c/0x1830
- do_syscall_64+0xfa/0xfa0
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fcbe2f90b0d
-Code: 00 48 89 44 24 18 31 c0 48 8d 44 24 60 c7 04 24 18 00 00 00 48 89 44 24 08 48 8d 44 24 20 48 89 44 24 10 b8 9d 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 1b 48 8b 54 24 18 64 48 2b 14 25 28 00 00 00
-RSP: 002b:00007ffed4000b80 EFLAGS: 00000246 ORIG_RAX: 000000000000009d
-RAX: ffffffffffffffda RBX: 00007fcbe302cf80 RCX: 00007fcbe2f90b0d
-RDX: 00007ffed4000be0 RSI: 0000000000000002 RDI: 0000000000000016
-RBP: 00007ffed4000bf0 R08: 0000000000000006 R09: 0000000000000071
-R10: 0000000000000071 R11: 0000000000000246 R12: 000000000000006d
-R13: 00007ffed4001018 R14: 00007ffed4001298 R15: 0000000000000000
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-The email will later be sent to:
-[akpm@linux-foundation.org bpf@vger.kernel.org hch@infradead.org hch@lst.de linux-kernel@vger.kernel.org linux-mm@kvack.org urezki@gmail.com vishal.moola@gmail.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
+diff --git a/fs/overlayfs/dir.c b/fs/overlayfs/dir.c
+index a4a0dc261310..739f974dc258 100644
+--- a/fs/overlayfs/dir.c
++++ b/fs/overlayfs/dir.c
+@@ -187,7 +187,7 @@ struct dentry *ovl_create_real(struct ovl_fs *ofs, struct=
+ dentry *parent,
+ 			if (!err && ofs->casefold !=3D ovl_dentry_casefolded(newdentry)) {
+ 				pr_warn_ratelimited("wrong inherited casefold (%pd2)\n",
+ 						    newdentry);
+-				dput(newdentry);
++				end_creating(newdentry);
+ 				err =3D -EINVAL;
+ 			}
+ 			break;
+@@ -237,8 +237,7 @@ struct dentry *ovl_create_real(struct ovl_fs *ofs, struct=
+ dentry *parent,
+ 	}
+ out:
+ 	if (err) {
+-		if (!IS_ERR(newdentry))
+-			dput(newdentry);
++		end_creating(newdentry);
+ 		return ERR_PTR(err);
+ 	}
+ 	return newdentry;
