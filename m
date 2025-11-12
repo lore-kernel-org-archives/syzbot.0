@@ -1,276 +1,234 @@
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C299232B9B1
-	for <syzbot@lists.linux.dev>; Wed, 12 Nov 2025 12:22:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4178339B28
+	for <syzbot@lists.linux.dev>; Wed, 12 Nov 2025 15:08:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762950131; cv=none; b=H8t8HJCQD/TLgrokOhlrIr+kR4KNcEfi/y6AiNJM8F9tt8HR/QIx5CB9eijKZAeDOrespmqF08B4ZkeeXCA8GleiGe4rK4LwJ8YVlnUJg5svMumd6QnkVCHU0xyrexCrCzy0zLohf27kvacEEZ1hathbMLXM5RVQzRU4lzFEx8k=
+	t=1762960119; cv=none; b=hxxJZ4zvKWMsdQy/D8PDQXswP+HQA/ULXJL/qoNkCvnAtZSX4pNJj0ilzT9DCTtracDXC5ZFpT3yJJ9g2UZCxA86FBiJ5H5E5gmNCfk8U7G1BMN9PBd0Qe2wxrjwgg8B0XauA02myzWeAcyRflyMiN0XnSnw6XZQpp6C01dBy2k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762950131; c=relaxed/simple;
-	bh=8VbH1vPLVeOTC5gudSX/EGeep5DkWGS1lhpes6CR8/U=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=VgwOHyQ4r/Mn4BcylrcZ2/FucfIr2RLSPNfHiIh7qSdW2yKZv71ymve0/MU3crFpWlvVsAR7ZSed9BDVs4ey2qZruG+sMlfCU7Y/2cnY/4UuZEYTVBPdJnQDQIGqNxPlvP8ixvmMuRn/A/0OqomopYKStPyWmBtGAlYE32/PNT0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=I9ni1HFy; arc=none smtp.client-ip=209.85.222.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="I9ni1HFy"
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-8b272a4ca78so113815385a.1
-        for <syzbot@lists.linux.dev>; Wed, 12 Nov 2025 04:22:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1762950129; x=1763554929; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OAyyz8vpOHqT/CVE44dcXbZcQ7/MzpxYyZh4muhHTJE=;
-        b=I9ni1HFydSZUT6aqZGcAP2P/tpIndhmXPS3xa/Id5WRmfYWQmykvYRNjjbhuyr6GtY
-         oNXmLpFZLW606/Df/k+uhLjZZjrEDyzpUC6jGAY9AZ3tHlBqqqqhE1mhUCwMzucT0vQO
-         RKEORaPyxlil/iHnNKCZoqfs3d/zmN8OMFcSO4f0W8JwpIzV9IgjVlscAz1I3uj3JyEI
-         UGzNHGKox2H1tYiWiIGZkDmF7teuz4A/V+XRN1uvPOkifzacuYBdXekGMvw2uk6Zej0a
-         GaFEQ+bLJqPZhLHwCR6h4/lp0IvSJfxzB33HfN12QRgFFqc6y9j90foUsQxUWhhF7sK2
-         bR7Q==
+	s=arc-20240116; t=1762960119; c=relaxed/simple;
+	bh=OeYJO/8a7ESBTx7Xh/JKTdOtG1uhrued5c9HROSF0wI=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=EQI9pEWu1RkYsDY7BKncZMW39HFrfd0NdwLtFBGd4JUgtirYrykeAZOXqTqOOLHIihg3bzhDAUQH7/eUbiI4gxlBpvd/SyqruDfyN2cznYzOB8RVIDOZZq7FHQYa55dX6WXo0Qsjw/PCcQmVa0cvY+dnh9K3y6T8nMBClETkdfY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-937e5f9ea74so100441139f.1
+        for <syzbot@lists.linux.dev>; Wed, 12 Nov 2025 07:08:37 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762950129; x=1763554929;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=OAyyz8vpOHqT/CVE44dcXbZcQ7/MzpxYyZh4muhHTJE=;
-        b=BOuZM4vPTNTQ2RnPb3okhbnSHS0Kj+jxwy/W+7x8eKqhq2LE47GoNywRenHk6rUajL
-         w2fnD7BNgEe6aR0aRCBAqSXx0U2rrEL3Qp4Bg3HF0977klG2yFisqySwhyoqoecEyZOo
-         1+xOfTICApvaGKWCYCuzpW08exV8ythlOTTw47gSn/li+TtOWo3eFAFNyRVI0S/OWmjY
-         HCf0CORXUHbKy1yuG8ZtRl46sttE4Ld2HcGFYymDisARV//RWABbLGyNC9nXbt/8rr8U
-         dIQy1/CUWQPMKyrbwlcgnemddefapzLoNDQuULFqMa5hdWkaQ2z67V9xsWmXv7ZfROpd
-         CKoQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVsaD347uyW3zczsSIfic00JMtOVJT715AszyiTbt0TFSnghqPIQRGsGxamlm9YMGaqZtvwoBA=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz8Kt2o6EEdjqkI3I1b5/B+CT2J83Humrf3R9tAI1L7lgYuX0/e
-	t7I9hQw+5shuvnbcmM82qUcwIFXn34Utl4C6BJ3/0NnbWBHnpm5U6BCIboq3uPrUZjMW/9VaFPJ
-	pYgEl7cE9M+Xmj5tawxxkq43r1Apn6/PYgPhCsbLU
-X-Gm-Gg: ASbGncvZTYfyOS2TWwSo9x1iyt+73Y2x3xmihtXdr19X3zdqryCVR1Nnbnr0VmRoTVs
-	ML6Pr5nifDNPyrD1x6uxYuq8KUmTAB6cQ6fexB8C89VNWOgvKive+bxVe8L3jzm0k9Fmp+kBzqs
-	Hysua5qug/oB8Qr75FsnECCtoPTV1f+r3yZIRijt4QeX1bDxM/GRgJFxWvKXSTo2+RlaHfSJzkN
-	H4ES7y3wCy1zy9YdrppaVdJx+UCi97ipqKqxk2oWseaX3lKiEK8OKS4fta2osGzW6+3HPuv
-X-Google-Smtp-Source: AGHT+IEDEurm/WUEke6yg+UTL4G3UfZssgo1RO1I9dkC9flwOu7hFLM+dba0o2uxTQhL+29tuiKuMUDku06TvENvqoA=
-X-Received: by 2002:a05:620a:1a82:b0:8b1:5f62:a5c8 with SMTP id
- af79cd13be357-8b29b7df4fbmr340813585a.62.1762950128090; Wed, 12 Nov 2025
- 04:22:08 -0800 (PST)
+        d=1e100.net; s=20230601; t=1762960117; x=1763564917;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ymMX6eOUaXIxeMAN1SEHEMLcR/EvZDoKfQaYdVETDFc=;
+        b=H4e7UTiIhIeCzrQPpBQ+I1dHwJL8vanWVKr/Cn2JNSxdcQ5K4SQ9McJdGOQwkQYnTk
+         naG1GONeLQBdF9OgWhY9BnaPoSezizZl6q07rvDUHIgntuOxnKKw6P3dTZGCl9HVS7wV
+         WVP9a/6+fv1r2LH4uvkSsq5yzb9AeU0fYn6OZWZ+BD/c+AdxUQOrq/SHfW4xmrtvRQnJ
+         h0/3ZDTnws6MGhJp/cfe6+/exLNUzWf6fgbeKw7uXvqwai22DiGCbiaZ5BPle1CJNRZj
+         nt0Y+lVXFCSUsMFnm/r7WKDoqp8C4fPmDVMTistExP1aE/ON1YUUKKo2pCULTcsYznil
+         zFSQ==
+X-Gm-Message-State: AOJu0YwK3LGS5+uVLZPsa8+hX09xGzpE4H8CHbdDESFNSh9XWTS8Zi0Y
+	Um1mgwlWZurV9VvH2zf9iEtu45CTi4TtuluvWRoKiAyapQtrLjkJWFCmJJDUIE7UaALWuKH49CK
+	Ew0eQ2cEcoqwKu03YSmeU39zOKj33y3wcOh9zzuvQKEpCD5+zkAUIb3QampI=
+X-Google-Smtp-Source: AGHT+IE5SJKAbA1F2ihZacz46DPpfXzPQg39O/G3bCBBjLtvjUk5FssushEFwunuEO7q/E7jBtNwzZJdPN+HYbrGLahm3XYbd7Os
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20251111093204.1432437-1-edumazet@google.com> <6913437c.a70a0220.22f260.013b.GAE@google.com>
- <CANn89iKgYo=f+NyOVFfLjkYLczWsqopxt4F5adutf5eY9TAJmA@mail.gmail.com>
- <CANn89iJ5p3xY_LJcexq8n2-91A6ERPV6yqjPGphD_w6wr_NHew@mail.gmail.com>
- <CANn89iKLDetsEpMrFU4F_XbTF_N0ranLkzJvf1qG=o-ecfseZg@mail.gmail.com>
- <CA+NMeC9boCccv944JsADbbkp8T8rRDy_ce__m_ETut0059o7DQ@mail.gmail.com> <CAM0EoMkx3rpiATyoqirtsiRhGALVcMvT_DL4yicLCQmB3_ZUAQ@mail.gmail.com>
-In-Reply-To: <CAM0EoMkx3rpiATyoqirtsiRhGALVcMvT_DL4yicLCQmB3_ZUAQ@mail.gmail.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Wed, 12 Nov 2025 04:21:57 -0800
-X-Gm-Features: AWmQ_bmy1VYheZXEu6_eH390vZemgE6oEpJp0JelwqspGstN8dqm_2xOImnbWsA
-Message-ID: <CANn89iKYvgikRmHc5MOS-eEBwy9-4+ODf5HNYnL2NUcpGBUXTQ@mail.gmail.com>
-Subject: Re: [syzbot ci] Re: net_sched: speedup qdisc dequeue
-To: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Victor Nogueira <victor@mojatatu.com>, 
-	syzbot ci <syzbot+ci51c71986dfbbfee2@syzkaller.appspotmail.com>, 
-	Daniel Borkmann <daniel@iogearbox.net>, davem@davemloft.net, eric.dumazet@gmail.com, 
-	horms@kernel.org, jiri@resnulli.us, kuba@kernel.org, kuniyu@google.com, 
-	netdev@vger.kernel.org, pabeni@redhat.com, toke@redhat.com, 
-	willemb@google.com, xiyou.wangcong@gmail.com, syzbot@lists.linux.dev, 
-	syzkaller-bugs@googlegroups.com, Alexei Starovoitov <ast@kernel.org>
+X-Received: by 2002:a92:c24d:0:b0:430:be92:b60d with SMTP id
+ e9e14a558f8ab-43473da7037mr40667945ab.26.1762960116221; Wed, 12 Nov 2025
+ 07:08:36 -0800 (PST)
+Date: Wed, 12 Nov 2025 07:08:36 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6914a2f4.a70a0220.3124cb.0004.GAE@google.com>
+Subject: [moderation/CI] Re: xfs: single block atomic writes for buffered IO
+From: syzbot ci <syzbot+ci0a2621b0bce36927@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 11, 2025 at 1:34=E2=80=AFPM Jamal Hadi Salim <jhs@mojatatu.com>=
- wrote:
->
-> On Tue, Nov 11, 2025 at 4:04=E2=80=AFPM Victor Nogueira <victor@mojatatu.=
-com> wrote:
-> >
-> > Hi Eric,
-> >
-> > On Tue, Nov 11, 2025 at 4:44=E2=80=AFPM Eric Dumazet <edumazet@google.c=
-om> wrote:
-> > >
-> > > On Tue, Nov 11, 2025 at 11:23=E2=80=AFAM Eric Dumazet <edumazet@googl=
-e.com> wrote:
-> > > >
-> > > > On Tue, Nov 11, 2025 at 8:28=E2=80=AFAM Eric Dumazet <edumazet@goog=
-le.com> wrote:
-> > > > >
-> > > > > On Tue, Nov 11, 2025 at 6:09=E2=80=AFAM syzbot ci
-> > > > > <syzbot+ci51c71986dfbbfee2@syzkaller.appspotmail.com> wrote:
-> > > > > >
-> > > > > > syzbot ci has tested the following series
-> > > > > >
-> > > > > > [v2] net_sched: speedup qdisc dequeue
-> > > > > > [...]
-> > > > > > and found the following issue:
-> > > > > > WARNING in sk_skb_reason_drop
-> > > > > >
-> > > > > > Full report is available here:
-> > > > > > https://ci.syzbot.org/series/a9dbee91-6b1f-4ab9-b55d-43f7f50de0=
-64
-> > > > > >
-> > > > > > ***
-> > > > > >
-> > > > > > WARNING in sk_skb_reason_drop
-> > > > > > [...]
-> > > > struct bpf_skb_data_end {
-> > > >   struct qdisc_skb_cb qdisc_cb;
-> > > >   void *data_meta;
-> > > >    void *data_end;
-> > > > };
-> > > >
-> > > > So anytime BPF calls bpf_compute_data_pointers(), it overwrites
-> > > > tc_skb_cb(skb)->drop_reason,
-> > > > because offsetof(   ..., data_meta) =3D=3D offsetof(... drop_reason=
-)
-> > > >
-> > > > CC Victor and Daniel
-> > >
-> > > Quick and dirty patch to save/restore the space.
-> > >
-> > > diff --git a/net/sched/cls_bpf.c b/net/sched/cls_bpf.c
-> > > index 7fbe42f0e5c2b7aca0a28c34cd801c3a767c804e..004d8fe2f29d89bd7df82=
-d90b7a1e2881f7a463b
-> > > 100644
-> > > --- a/net/sched/cls_bpf.c
-> > > +++ b/net/sched/cls_bpf.c
-> > > @@ -82,11 +82,16 @@ TC_INDIRECT_SCOPE int cls_bpf_classify(struct sk_=
-buff *skb,
-> > >                                        const struct tcf_proto *tp,
-> > >                                        struct tcf_result *res)
-> > >  {
-> > > +       struct bpf_skb_data_end *cb =3D (struct bpf_skb_data_end *)sk=
-b->cb;
-> > >         struct cls_bpf_head *head =3D rcu_dereference_bh(tp->root);
-> > >         bool at_ingress =3D skb_at_tc_ingress(skb);
-> > >         struct cls_bpf_prog *prog;
-> > > +       void *save[2];
-> > >         int ret =3D -1;
-> > >
-> > > +       save[0] =3D cb->data_meta;
-> > > +       save[1] =3D cb->data_end;
-> > > +
-> > >         list_for_each_entry_rcu(prog, &head->plist, link) {
-> > >                 int filter_res;
-> > >
-> > > @@ -133,7 +138,8 @@ TC_INDIRECT_SCOPE int cls_bpf_classify(struct sk_=
-buff *skb,
-> > >
-> > >                 break;
-> > >         }
-> > > -
-> > > +       cb->data_meta =3D save[0];
-> > > +       cb->data_end =3D save[1];
-> > >         return ret;
-> > >  }
-> >
-> > I think you are on the right track.
-> > Maybe we can create helper functions for this.
-> > Something like bpf_compute_and_save_data_end [1] and
-> > and bpf_restore_data_end [2], but for data_meta as well.
-> > Also, I think we might have the same issue in tcf_bpf_act [3].
-> >
-> > [1] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/tree=
-/include/linux/filter.h#n907
-> > [2] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/tree=
-/include/linux/filter.h#n917
-> > [3] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/tree=
-/net/sched/act_bpf.c#n50
-> >
->
-> Digging a bit - when you send the fixes, this overwritting i believe
-> was introduced in:
-> commit db58ba45920255e967cc1d62a430cebd634b5046
+syzbot ci has tested the following series
 
-I will test the following :
+[v1] xfs: single block atomic writes for buffered IO
+https://lore.kernel.org/all/cover.1762945505.git.ojaswin@linux.ibm.com
+* [RFC PATCH 1/8] fs: Rename STATX{_ATTR}_WRITE_ATOMIC -> STATX{_ATTR}_WRIT=
+E_ATOMIC_DIO
+* [RFC PATCH 2/8] mm: Add PG_atomic
+* [RFC PATCH 3/8] fs: Add initial buffered atomic write support info to sta=
+tx
+* [RFC PATCH 4/8] iomap: buffered atomic write support
+* [RFC PATCH 5/8] iomap: pin pages for RWF_ATOMIC buffered write
+* [RFC PATCH 6/8] xfs: Report atomic write min and max for buf io as well
+* [RFC PATCH 7/8] iomap: Add bs<ps buffered atomic writes support
+* [RFC PATCH 8/8] xfs: Lift the bs =3D=3D ps restriction for HW buffered at=
+omic writes
 
- include/linux/filter.h |   20 ++++++++++++++++++++
- net/sched/act_bpf.c    |    7 +++----
- net/sched/cls_bpf.c    |    6 ++----
- 3 files changed, 25 insertions(+), 8 deletions(-)
+and found the following issue:
+KASAN: slab-out-of-bounds Read in __bitmap_clear
 
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index a104b39942305af245b9f2938a0acf7d7ab33c23..03e7516c61872c1aa98e0be743a=
-bb96d496e49c3
-100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -901,6 +901,26 @@ static inline void
-bpf_compute_data_pointers(struct sk_buff *skb)
-        cb->data_end  =3D skb->data + skb_headlen(skb);
- }
+Full report is available here:
+https://ci.syzbot.org/series/430a088a-50e2-46d3-87ff-a1f0fa67b66c
 
-+static inline int bpf_prog_run_data_pointers(
-+       const struct bpf_prog *prog,
-+       struct sk_buff *skb)
-+{
-+       struct bpf_skb_data_end *cb =3D (struct bpf_skb_data_end *)skb->cb;
-+       void *save_data_meta, *save_data_end;
-+       int res;
-+
-+       save_data_meta =3D cb->data_meta;
-+       save_data_end =3D cb->data_end;
-+
-+       bpf_compute_data_pointers(skb);
-+       res =3D bpf_prog_run(prog, skb);
-+
-+       cb->data_meta =3D save_data_meta;
-+       cb->data_end =3D save_data_end;
-+
-+       return res;
-+}
-+
- /* Similar to bpf_compute_data_pointers(), except that save orginal
-  * data in cb->data and cb->meta_data for restore.
-  */
-diff --git a/net/sched/act_bpf.c b/net/sched/act_bpf.c
-index 396b576390d00aad56bca6a18b7796e5324c0aef..3f5a5dc55c29433525b319f1307=
-725d7feb015c6
-100644
---- a/net/sched/act_bpf.c
-+++ b/net/sched/act_bpf.c
-@@ -47,13 +47,12 @@ TC_INDIRECT_SCOPE int tcf_bpf_act(struct sk_buff *skb,
-        filter =3D rcu_dereference(prog->filter);
-        if (at_ingress) {
-                __skb_push(skb, skb->mac_len);
--               bpf_compute_data_pointers(skb);
--               filter_res =3D bpf_prog_run(filter, skb);
-+               filter_res =3D bpf_prog_run_data_pointers(filter, skb);
-                __skb_pull(skb, skb->mac_len);
-        } else {
--               bpf_compute_data_pointers(skb);
--               filter_res =3D bpf_prog_run(filter, skb);
-+               filter_res =3D bpf_prog_run_data_pointers(filter, skb);
-        }
-+
-        if (unlikely(!skb->tstamp && skb->tstamp_type))
-                skb->tstamp_type =3D SKB_CLOCK_REALTIME;
-        if (skb_sk_is_prefetched(skb) && filter_res !=3D TC_ACT_OK)
-diff --git a/net/sched/cls_bpf.c b/net/sched/cls_bpf.c
-index 7fbe42f0e5c2b7aca0a28c34cd801c3a767c804e..a32754a2658bb7d21e8ceb62c67=
-d6684ed4f9fcc
-100644
---- a/net/sched/cls_bpf.c
-+++ b/net/sched/cls_bpf.c
-@@ -97,12 +97,10 @@ TC_INDIRECT_SCOPE int cls_bpf_classify(struct sk_buff *=
-skb,
-                } else if (at_ingress) {
-                        /* It is safe to push/pull even if skb_shared() */
-                        __skb_push(skb, skb->mac_len);
--                       bpf_compute_data_pointers(skb);
--                       filter_res =3D bpf_prog_run(prog->filter, skb);
-+                       filter_res =3D
-bpf_prog_run_data_pointers(prog->filter, skb);
-                        __skb_pull(skb, skb->mac_len);
-                } else {
--                       bpf_compute_data_pointers(skb);
--                       filter_res =3D bpf_prog_run(prog->filter, skb);
-+                       filter_res =3D
-bpf_prog_run_data_pointers(prog->filter, skb);
-                }
-                if (unlikely(!skb->tstamp && skb->tstamp_type))
-                        skb->tstamp_type =3D SKB_CLOCK_REALTIME;
+***
+
+KASAN: slab-out-of-bounds Read in __bitmap_clear
+
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
+nux-next
+base:      ab40c92c74c6b0c611c89516794502b3a3173966
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/02d3e137-5d7e-4c95-8f32-43b8663d95d=
+f/config
+C repro:   https://ci.syzbot.org/findings/92a3582f-40a6-4936-8fcd-dc55c447a=
+432/c_repro
+syz repro: https://ci.syzbot.org/findings/92a3582f-40a6-4936-8fcd-dc55c447a=
+432/syz_repro
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+BUG: KASAN: slab-out-of-bounds in __bitmap_clear+0x155/0x180 lib/bitmap.c:3=
+95
+Read of size 8 at addr ffff88816ced7cd0 by task kworker/0:1/10
+
+CPU: 0 UID: 0 PID: 10 Comm: kworker/0:1 Not tainted syzkaller #0 PREEMPT(fu=
+ll)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+Workqueue: xfs-conv/loop0 xfs_end_io
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
+ print_address_description mm/kasan/report.c:378 [inline]
+ print_report+0xca/0x240 mm/kasan/report.c:482
+ kasan_report+0x118/0x150 mm/kasan/report.c:595
+ __bitmap_clear+0x155/0x180 lib/bitmap.c:395
+ bitmap_clear include/linux/bitmap.h:496 [inline]
+ ifs_clear_range_atomic fs/iomap/buffered-io.c:241 [inline]
+ iomap_clear_range_atomic+0x25c/0x630 fs/iomap/buffered-io.c:268
+ iomap_finish_folio_write+0x2f0/0x410 fs/iomap/buffered-io.c:1971
+ iomap_finish_ioend_buffered+0x223/0x5e0 fs/iomap/ioend.c:58
+ iomap_finish_ioends+0x116/0x2b0 fs/iomap/ioend.c:295
+ xfs_end_ioend+0x50b/0x690 fs/xfs/xfs_aops.c:168
+ xfs_end_io+0x253/0x2d0 fs/xfs/xfs_aops.c:205
+ process_one_work+0x94a/0x15d0 kernel/workqueue.c:3267
+ process_scheduled_works kernel/workqueue.c:3350 [inline]
+ worker_thread+0x9b0/0xee0 kernel/workqueue.c:3431
+ kthread+0x711/0x8a0 kernel/kthread.c:463
+ ret_from_fork+0x599/0xb30 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
+
+Allocated by task 5952:
+ kasan_save_stack mm/kasan/common.c:56 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:77
+ poison_kmalloc_redzone mm/kasan/common.c:397 [inline]
+ __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:414
+ kasan_kmalloc include/linux/kasan.h:262 [inline]
+ __do_kmalloc_node mm/slub.c:5672 [inline]
+ __kmalloc_noprof+0x41d/0x800 mm/slub.c:5684
+ kmalloc_noprof include/linux/slab.h:961 [inline]
+ kzalloc_noprof include/linux/slab.h:1094 [inline]
+ ifs_alloc+0x1e4/0x530 fs/iomap/buffered-io.c:356
+ iomap_writeback_folio+0x81c/0x26a0 fs/iomap/buffered-io.c:2084
+ iomap_writepages+0x162/0x2d0 fs/iomap/buffered-io.c:2168
+ xfs_vm_writepages+0x28a/0x300 fs/xfs/xfs_aops.c:701
+ do_writepages+0x32e/0x550 mm/page-writeback.c:2598
+ filemap_writeback mm/filemap.c:387 [inline]
+ filemap_fdatawrite_range mm/filemap.c:412 [inline]
+ file_write_and_wait_range+0x23e/0x340 mm/filemap.c:786
+ xfs_file_fsync+0x195/0x800 fs/xfs/xfs_file.c:137
+ generic_write_sync include/linux/fs.h:2639 [inline]
+ xfs_file_buffered_write+0x723/0x8a0 fs/xfs/xfs_file.c:1015
+ do_iter_readv_writev+0x623/0x8c0 fs/read_write.c:-1
+ vfs_writev+0x31a/0x960 fs/read_write.c:1057
+ do_pwritev fs/read_write.c:1153 [inline]
+ __do_sys_pwritev2 fs/read_write.c:1211 [inline]
+ __se_sys_pwritev2+0x179/0x290 fs/read_write.c:1202
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+The buggy address belongs to the object at ffff88816ced7c80
+ which belongs to the cache kmalloc-96 of size 96
+The buggy address is located 0 bytes to the right of
+ allocated 80-byte region [ffff88816ced7c80, ffff88816ced7cd0)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x16ced7
+flags: 0x57ff00000000000(node=3D1|zone=3D2|lastcpupid=3D0x7ff)
+page_type: f5(slab)
+raw: 057ff00000000000 ffff888100041280 dead000000000100 dead000000000122
+raw: 0000000000000000 0000000080200020 00000000f5000000 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x252800(G=
+FP_NOWAIT|__GFP_NORETRY|__GFP_COMP|__GFP_THISNODE), pid 1, tgid 1 (swapper/=
+0), ts 12041529441, free_ts 0
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x240/0x2a0 mm/page_alloc.c:1851
+ prep_new_page mm/page_alloc.c:1859 [inline]
+ get_page_from_freelist+0x2365/0x2440 mm/page_alloc.c:3920
+ __alloc_frozen_pages_noprof+0x181/0x370 mm/page_alloc.c:5209
+ alloc_slab_page mm/slub.c:3086 [inline]
+ allocate_slab+0x71/0x350 mm/slub.c:3257
+ new_slab mm/slub.c:3311 [inline]
+ ___slab_alloc+0xf56/0x1990 mm/slub.c:4671
+ __slab_alloc+0x65/0x100 mm/slub.c:4794
+ __slab_alloc_node mm/slub.c:4870 [inline]
+ slab_alloc_node mm/slub.c:5266 [inline]
+ __kmalloc_cache_node_noprof+0x4b7/0x6f0 mm/slub.c:5799
+ kmalloc_node_noprof include/linux/slab.h:983 [inline]
+ alloc_node_nr_active kernel/workqueue.c:4908 [inline]
+ __alloc_workqueue+0x6a9/0x1b80 kernel/workqueue.c:5762
+ alloc_workqueue_noprof+0xd4/0x210 kernel/workqueue.c:5822
+ nbd_dev_add+0x4f1/0xae0 drivers/block/nbd.c:1961
+ nbd_init+0x168/0x1f0 drivers/block/nbd.c:2691
+ do_one_initcall+0x25a/0x860 init/main.c:1378
+ do_initcall_level+0x104/0x190 init/main.c:1440
+ do_initcalls+0x59/0xa0 init/main.c:1456
+ kernel_init_freeable+0x334/0x4b0 init/main.c:1688
+ kernel_init+0x1d/0x1d0 init/main.c:1578
+page_owner free stack trace missing
+
+Memory state around the buggy address:
+ ffff88816ced7b80: 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc
+ ffff88816ced7c00: 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc
+>ffff88816ced7c80: 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc
+                                                 ^
+ ffff88816ced7d00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+ ffff88816ced7d80: 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[axboe@kernel.dk brauner@kernel.org dchinner@redhat.com djwong@kernel.org h=
+ch@lst.de jack@suse.cz john.g.garry@oracle.com linux-block@vger.kernel.org =
+linux-ext4@vger.kernel.org linux-fsdevel@vger.kernel.org linux-kernel@vger.=
+kernel.org linux-mm@kvack.org linux-trace-kernel@vger.kernel.org linux-xfs@=
+vger.kernel.org martin.petersen@oracle.com nilay@linux.ibm.com ojaswin@linu=
+x.ibm.com ritesh.list@gmail.com rostedt@goodmis.org tytso@mit.edu willy@inf=
+radead.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
