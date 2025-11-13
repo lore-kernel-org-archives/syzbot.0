@@ -1,188 +1,144 @@
-Received: from flow-a4-smtp.messagingengine.com (flow-a4-smtp.messagingengine.com [103.168.172.139])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2404123ED6A;
-	Wed, 12 Nov 2025 22:50:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DF7A2FB63D
+	for <syzbot@lists.linux.dev>; Thu, 13 Nov 2025 02:30:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762987850; cv=none; b=XbTJue//sy0scXSRKJTwfJoFWTZN+U65M5yqRH/2auEVUbGTJA2n25BNXZJcegI8zR1jzuBa6/BCEdoW9ahRm8XfId/34Cxno09uG+Tb6AzSjs9ogLaypBO5J9yHq6+z94AJgr4GZtcFqpxSxKH2Z1sSlSAE7qWHpMUJfcra3rQ=
+	t=1763001031; cv=none; b=tIDhnTkAuYZQJahmWfJyj3yTPcm0W8HkR4HWDieWqiaBXHw9oQWdVsfIeRqckqbpp2NXAYN5lmICBdQyOH9o84cDjWfslA/f2kacuKfhVeMT/KSlTs37K0dzOlEwumsB0Qcg0dxVmOyntQEMgBIbNgIbE3XVX9L7MRZVkUUX7WA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762987850; c=relaxed/simple;
-	bh=gk7jTwjg4YxTK3MshudwEyHBJmgG7UmOjt2m1+Hpy58=;
-	h=Content-Type:MIME-Version:From:To:Cc:Subject:In-reply-to:
-	 References:Date:Message-id; b=JJxF7PHVLyFgeQlOJqiqed0D2G9/3uIm2W7cx6kvH4cnY0IjW56gi8PSk7PNps4PlfmfMx3QW3cr70nuRCY1W2ELBGnwTd8ifOSclFI1nRUWeWX2cuYsY+pofd4IG8G3e03r6cA40rqJbywt5CgqlFfvumPNEcf5izYy0aZL5AU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ownmail.net; spf=pass smtp.mailfrom=ownmail.net; dkim=pass (2048-bit key) header.d=ownmail.net header.i=@ownmail.net header.b=jir4MDTS; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=BLfz97DO; arc=none smtp.client-ip=103.168.172.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ownmail.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ownmail.net
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ownmail.net header.i=@ownmail.net header.b="jir4MDTS";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="BLfz97DO"
-Received: from phl-compute-09.internal (phl-compute-09.internal [10.202.2.49])
-	by mailflow.phl.internal (Postfix) with ESMTP id 2988313806A6;
-	Wed, 12 Nov 2025 17:50:47 -0500 (EST)
-Received: from phl-mailfrontend-02 ([10.202.2.163])
-  by phl-compute-09.internal (MEProxy); Wed, 12 Nov 2025 17:50:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ownmail.net; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:reply-to:subject:subject:to:to; s=fm3; t=
-	1762987847; x=1762995047; bh=hNbQnRc+kFUP5bxPugl1ooBdBy11Z0986aY
-	SJmKRoLs=; b=jir4MDTSxsZfdM2IRl9MZbN0ALWiQls5PQ+nkklZ0+Odf25WN63
-	px+vcxmJZ/343yP0NnlBKVwK9UifM3DSBJDQPbAFUEV9RD5AqwZvUJdQhaLuTQmw
-	UMa/+H1qYZUQYbJ01k3iXjj+uLQe7TureLQBiP2RBEbTDpfefArurTdZIdbV79J/
-	VG9hoPkx4Re71SD1pdP5jdsU8c4x8Ezycn/VnUN5FCrl/jR70BlyL4zfNzJy/h3A
-	nfRtqg2lcQaFC5lamfb3UvooMox2B6ZgIGDv1YGF6LqG6+o9WobjyEhGWpJol2dM
-	OhU0GqkHlPpxdhVwG/7n3HoSAb6+icZzBmA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1762987847; x=
-	1762995047; bh=hNbQnRc+kFUP5bxPugl1ooBdBy11Z0986aYSJmKRoLs=; b=B
-	Lfz97DOs9f3pV8SMym55iFWtFF0Whk7qDnQ7uIoppMUeJlo6Z0wL/odbqfprJdGy
-	FnYb68xmGsmOb4bwylkvMw9b4omvIT1aH6A93ZOUtT4iIQDLLSTrgX0qy9L8EkJx
-	2zLSUyHXFGTj3nsbQOhT9OJZCobm3DukzPSXo2q4pi0NvwU8nF5h8OcA0NO+5+WA
-	0PEOnjwgyw2GICsat/bKQx5g2FiKE36lmJ2EeDP81tYbdF2UKae3j5A0ArfiPEkq
-	tRNKKiTUoVkBXzLbRPb+3CMC74viLl/0M55NkH+tCt3g9/mQCG6MbNsCmCzOGKZi
-	c2sokfrybzXBgGwQIO8xQ==
-X-ME-Sender: <xms:RQ8VafhhigNHwThNGgZL6VDUmCMzXzWdXCNwp2pF9cAfKCwuajl6KA>
-    <xme:RQ8VaRrwL2PAkM5MKDdTENePzo0MjHhfVHYDfATSpFFtRSDGrSBcOfJ_2gZsV_Bhk
-    uahMwsauI6qCdXkAeG549afc_l-kQDyx0JOK71rMbO5t_g8>
-X-ME-Received: <xmr:RQ8VaXJM8GaoDYtM7fK95Dxg6WkypMVogX_gysXAEdMyX14QpFP4ew9huDyHB4B5ld3mGurSzbtmUMvrPXcurN68ClN2Anzm-nOx7SrNsNiE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggddvtdehfeduucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucenucfjughrpegtgfgghffvvefujghffffkrhesthhqre
-    dttddtjeenucfhrhhomheppfgvihhluehrohifnhcuoehnvghilhgssehofihnmhgrihhl
-    rdhnvghtqeenucggtffrrghtthgvrhhnpeffhefggfegfeefuddtvdektdekheduudeftd
-    dufefhgfetteffudehheffjeefgeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgpdhs
-    hiiisghothdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
-    hlfhhrohhmpehnvghilhgssehofihnmhgrihhlrdhnvghtpdhnsggprhgtphhtthhopeeg
-    fedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepvhhirhhoseiivghnihhvrdhlih
-    hnuhigrdhorhhgrdhukhdprhgtphhtthhopehsvghlihhnuhigsehvghgvrhdrkhgvrhhn
-    vghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqgihfshesvhhgvghrrdhkvghrnhgvlh
-    drohhrghdprhgtphhtthhopehlihhnuhigqdhunhhiohhnfhhssehvghgvrhdrkhgvrhhn
-    vghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqshgvtghurhhithihqdhmohguuhhlvg
-    esvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhnfhhssehv
-    ghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlse
-    hvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqfhhsuggvvhgv
-    lhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdgtihhfsh
-    esvhhgvghrrdhkvghrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:RQ8VaU_TZlxPuvrWeAqkACaP2k8Al-3-wPUeHNBrUxdJjRalfLbJiQ>
-    <xmx:RQ8VabLvN9wKNh7vsrGQuPbdRitR6XBWPg0OYSH6a_8Jv-ozj0HwQA>
-    <xmx:RQ8VacyF-HUMepz3fbS9mezvCzbSlJV_E4Q-4rygphXSIubclEfTDQ>
-    <xmx:RQ8VaZQFjRq0rKiXJyTmjlzTiI1hgqKgTB2deemjEUNcNAYbcMDMYQ>
-    <xmx:Rw8VaRng3xIxkUPzVLT2SQWh71AIXEEteEsvxx4LCf38ADBus3t6KOp1>
-Feedback-ID: iab3e480c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 12 Nov 2025 17:50:34 -0500 (EST)
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+	s=arc-20240116; t=1763001031; c=relaxed/simple;
+	bh=bfJiZ4qb6HdurRm6MBuYuOqk3e4YFIfk1ZBSRy8rLP0=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=EvPU04NWqWRzY6lIQ/k7q/QbY6B9GHZs2N9DkJXOUDtQWDfoqug/Ur2byCL9R8KG/JImU4BIdj3CNA0JMuCBGbWKs2TZ6KHcUZ+8d9N4B0qnvSHvwwCK+l7bqxr7jP4EDtDOpeM6GoTCLBS6g11l5FvH3gwyt1oWTqnd0prjIu0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-43335646758so5470055ab.3
+        for <syzbot@lists.linux.dev>; Wed, 12 Nov 2025 18:30:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1763001028; x=1763605828;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Lv06dNs3S6Sz+Cyk17MvOoHyQ+U+2wVnTZsAD5l5I+w=;
+        b=Uvhw9CyPjvzYWdtZalI/ztDfwdMXUH9rZ0TKZT8xNmgowUiIZ55aPt2YU4+Ax94YtG
+         3J8oRWe8A9OUo5BSB0Z4BLEpXflkmI+yDhVsG+Z/g6kJB7ck6466Dy7xijZAil6NxxBh
+         nrVMhVb+avJYvj6T/JbN84lX6d6A1bqnoHI+WtuswWsmIEkunDRj3mRFm88LFZnZONML
+         LWKsjPum4z7HEQA/pYbdTpxRt7lKfh6yd7KN5utT6/Bz08KN/++epEII3vVuEbgYoXO7
+         nbF3jUozX1iQjoojoEAdfbbMZAPs2kfKcmKPTDNQSj8QCGtPb2wbfRh8HrWib7p7hFBq
+         rzvg==
+X-Gm-Message-State: AOJu0YwmLSjC6WS7nI342tdutWlX3rgNOqbVpCn//neu8M2cyFaFdhUd
+	fZeHi/812VQfXfuaF4K1Xb5okYEthQJfSE3eS7rC0fFttNLlJozNpyKOAEcpDHpfHFW/yGe5eaO
+	0NSUrnIp9/+V4imk41xELPnRC2UJCpRgoC92UT/EiiSKuDtvLAAk0xYl9lXI=
+X-Google-Smtp-Source: AGHT+IGYkVdXYpOza0p1TkwIDmO04CtKx+pEagm33TjWt3TmXY1NwLSo1+kJRXTvgm1thFsBTiDVgyBQhgaqqBlEhnjOfOkSUcmT
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: NeilBrown <neilb@ownmail.net>
-To: "syzbot ci" <syzbot+ci853f3070c3383748@syzkaller.appspotmail.com>
-Cc: amir73il@gmail.com, brauner@kernel.org, cem@kernel.org,
- chuck.lever@oracle.com, clm@fb.com, code@tyhicks.com, dai.ngo@oracle.com,
- dakr@kernel.org, dhowells@redhat.com, djwong@kernel.org,
- dsterba@suse.com, ecryptfs@vger.kernel.org, gregkh@linuxfoundation.org,
- jack@suse.cz, jlayton@kernel.org, jmorris@namei.org,
- john.johansen@canonical.com, linkinjeon@kernel.org,
- linux-cifs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
- linux-security-module@vger.kernel.org, linux-unionfs@vger.kernel.org,
- linux-xfs@vger.kernel.org, lorenzo.stoakes@oracle.com, miklos@szeredi.hu,
- mjguzik@gmail.com, netfs@lists.linux.dev, okorniev@redhat.com,
- omosnace@redhat.com, paul@paul-moore.com, rafael@kernel.org,
- selinux@vger.kernel.org, senozhatsky@chromium.org, serge@hallyn.com,
- smfrench@gmail.com, stefanb@linux.ibm.com,
- stephen.smalley.work@gmail.com, viro@zeniv.linux.org.uk,
- syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot ci] Re: Create and use APIs to centralise locking for
- directory ops.
-In-reply-to: <690c6437.050a0220.baf87.0083.GAE@google.com>
-References: <20251106005333.956321-1-neilb@ownmail.net>,
- <690c6437.050a0220.baf87.0083.GAE@google.com>
-Date: Thu, 13 Nov 2025 09:50:26 +1100
-Message-id: <176298782655.634289.16817979269470605281@noble.neil.brown.name>
-Reply-To: NeilBrown <neil@brown.name>
+X-Received: by 2002:a05:6e02:1fc1:b0:433:31b5:573a with SMTP id
+ e9e14a558f8ab-43473dbc5f7mr67752755ab.18.1763001028559; Wed, 12 Nov 2025
+ 18:30:28 -0800 (PST)
+Date: Wed, 12 Nov 2025 18:30:28 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <691542c4.a70a0220.3124cb.0012.GAE@google.com>
+Subject: [moderation/CI] Re: riscv: Memory type control for platforms with
+ physical memory aliases
+From: syzbot ci <syzbot+ci10430a670a819e2c@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 06 Nov 2025, syzbot ci wrote:
-> syzbot ci has tested the following series
->=20
-> [v5] Create and use APIs to centralise locking for directory ops.
-> https://lore.kernel.org/all/20251106005333.956321-1-neilb@ownmail.net
-> * [PATCH v5 01/14] debugfs: rename end_creating() to debugfs_end_creating()
-> * [PATCH v5 02/14] VFS: introduce start_dirop() and end_dirop()
-> * [PATCH v5 03/14] VFS: tidy up do_unlinkat()
-> * [PATCH v5 04/14] VFS/nfsd/cachefiles/ovl: add start_creating() and end_cr=
-eating()
-> * [PATCH v5 05/14] VFS/nfsd/cachefiles/ovl: introduce start_removing() and =
-end_removing()
-> * [PATCH v5 06/14] VFS: introduce start_creating_noperm() and start_removin=
-g_noperm()
-> * [PATCH v5 07/14] VFS: introduce start_removing_dentry()
-> * [PATCH v5 08/14] VFS: add start_creating_killable() and start_removing_ki=
-llable()
-> * [PATCH v5 09/14] VFS/nfsd/ovl: introduce start_renaming() and end_renamin=
-g()
-> * [PATCH v5 10/14] VFS/ovl/smb: introduce start_renaming_dentry()
-> * [PATCH v5 11/14] Add start_renaming_two_dentries()
-> * [PATCH v5 12/14] ecryptfs: use new start_creating/start_removing APIs
-> * [PATCH v5 13/14] VFS: change vfs_mkdir() to unlock on failure.
-> * [PATCH v5 14/14] VFS: introduce end_creating_keep()
->=20
-> and found the following issues:
-> * WARNING: lock held when returning to user space in start_creating
-> * possible deadlock in mnt_want_write
->=20
-> Full report is available here:
-> https://ci.syzbot.org/series/4f406e4d-6aba-457a-b9c1-21f4407176a0
->=20
-> ***
->=20
-> WARNING: lock held when returning to user space in start_creating
+syzbot ci has tested the following series
 
-I think this was due to a bug in=20
-   VFS: change vfs_mkdir() to unlock on failure.
-in ovl_create_real()
+[v3] riscv: Memory type control for platforms with physical memory aliases
+https://lore.kernel.org/all/20251113014656.2605447-1-samuel.holland@sifive.=
+com
+* [PATCH v3 01/22] mm/ptdump: replace READ_ONCE() with standard page table =
+accessors
+* [PATCH v3 02/22] mm: replace READ_ONCE() with standard page table accesso=
+rs
+* [PATCH v3 03/22] mm/dirty: replace READ_ONCE() with pudp_get()
+* [PATCH v3 04/22] perf/events: replace READ_ONCE() with standard page tabl=
+e accessors
+* [PATCH v3 05/22] mm: Move the fallback definitions of pXXp_get()
+* [PATCH v3 06/22] mm: Always use page table accessor functions
+* [PATCH v3 07/22] checkpatch: Warn on page table access without accessors
+* [PATCH v3 08/22] mm: Allow page table accessors to be non-idempotent
+* [PATCH v3 09/22] riscv: hibernate: Replace open-coded pXXp_get()
+* [PATCH v3 10/22] riscv: mm: Always use page table accessor functions
+* [PATCH v3 11/22] riscv: mm: Simplify set_p4d() and set_pgd()
+* [PATCH v3 12/22] riscv: mm: Deduplicate _PAGE_CHG_MASK definition
+* [PATCH v3 13/22] riscv: ptdump: Only show N and MT bits when enabled in t=
+he kernel
+* [PATCH v3 14/22] riscv: mm: Fix up memory types when writing page tables
+* [PATCH v3 15/22] riscv: mm: Expose all page table bits to assembly code
+* [PATCH v3 16/22] riscv: alternative: Add an ALTERNATIVE_3 macro
+* [PATCH v3 17/22] riscv: alternative: Allow calls with alternate link regi=
+sters
+* [PATCH v3 18/22] riscv: Fix logic for selecting DMA_DIRECT_REMAP
+* [PATCH v3 19/22] dt-bindings: riscv: Describe physical memory regions
+* [PATCH v3 20/22] riscv: mm: Use physical memory aliases to apply PMAs
+* [PATCH v3 21/22] riscv: dts: starfive: jh7100: Use physical memory ranges=
+ for DMA
+* [PATCH v3 22/22] riscv: dts: eswin: eic7700: Use physical memory ranges f=
+or DMA
 
-That patch removed a end_creating() call that was after
-ovl_create_real() returned failure, but didn't add end_creating() in
-ovl_create_real() on failure.  So it could exit with the lock still
-held.
+and found the following issue:
+kernel build error
 
-This patch should fix it, particularly the second hunk.
+Full report is available here:
+https://ci.syzbot.org/series/4de98f65-e317-44c6-a89f-e12318c634fd
 
-Thanks,
-NeilBrown
+***
 
-diff --git a/fs/overlayfs/dir.c b/fs/overlayfs/dir.c
-index a4a0dc261310..739f974dc258 100644
---- a/fs/overlayfs/dir.c
-+++ b/fs/overlayfs/dir.c
-@@ -187,7 +187,7 @@ struct dentry *ovl_create_real(struct ovl_fs *ofs, struct=
- dentry *parent,
- 			if (!err && ofs->casefold !=3D ovl_dentry_casefolded(newdentry)) {
- 				pr_warn_ratelimited("wrong inherited casefold (%pd2)\n",
- 						    newdentry);
--				dput(newdentry);
-+				end_creating(newdentry);
- 				err =3D -EINVAL;
- 			}
- 			break;
-@@ -237,8 +237,7 @@ struct dentry *ovl_create_real(struct ovl_fs *ofs, struct=
- dentry *parent,
- 	}
- out:
- 	if (err) {
--		if (!IS_ERR(newdentry))
--			dput(newdentry);
-+		end_creating(newdentry);
- 		return ERR_PTR(err);
- 	}
- 	return newdentry;
+kernel build error
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      24172e0d79900908cf5ebf366600616d29c9b417
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/89f41951-5456-4192-94ce-11b4c3b3f7e=
+d/config
+
+mm/pgtable-generic.c:27:2: error: cannot take the address of an rvalue of t=
+ype 'pgd_t'
+mm/pgtable-generic.c:34:2: error: cannot take the address of an rvalue of t=
+ype 'p4d_t'
+mm/pgtable-generic.c:42:2: error: cannot take the address of an rvalue of t=
+ype 'pud_t'
+mm/pgtable-generic.c:54:2: error: cannot take the address of an rvalue of t=
+ype 'pmd_t'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[acme@kernel.org ajones@ventanamicro.com akpm@linux-foundation.org alex@ghi=
+ti.fr alexghiti@rivosinc.com anshuman.khandual@arm.com apw@canonical.com co=
+nor@kernel.org david@redhat.com dev.jain@arm.com devicetree@vger.kernel.org=
+ dwaipayanray1@gmail.com joe@perches.com julia.lawall@inria.fr kernel@esmil=
+.dk krzk@kernel.org lance.yang@linux.dev liam.howlett@oracle.com linux-kern=
+el@vger.kernel.org linux-mm@kvack.org linux-perf-users@vger.kernel.org linu=
+x-riscv@lists.infradead.org lorenzo.stoakes@oracle.com lukas.bulwahn@gmail.=
+com mhocko@suse.com mingo@redhat.com namhyung@kernel.org nicolas.palix@imag=
+.fr osalvador@suse.de palmer@dabbelt.com peterz@infradead.org pjw@kernel.or=
+g richard.weiyang@gmail.com robh@kernel.org rppt@kernel.org samuel.holland@=
+sifive.com sj@kernel.org surenb@google.com vbabka@suse.cz]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
