@@ -1,121 +1,80 @@
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2B46329E50
-	for <syzbot@lists.linux.dev>; Thu, 13 Nov 2025 07:41:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB0D41FF7B3
+	for <syzbot@lists.linux.dev>; Thu, 13 Nov 2025 12:13:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763019701; cv=none; b=cC7mHHXgPDkixNvTkh6rrJtKmN2rfktm+lIa3ZRGKjajpdiN7Z5G23UJsq8g/lPApbjMy8AJRUjqSLLbvElu2XVuSZ0WFt4prwBO5UGwmFKsoJTI4m8/GWO2JamEU9ATU9NdFZwb7HwGTXC/JKdqyvoMPK4dktBoCmt11z18Gnk=
+	t=1763036030; cv=none; b=oP7YUheVfcIizYQEUqJrcYoPgv13O2B8NCKCkLFXktTA09ruDrqqlg7WjvEAbT408hdTsVNDxlOvs6Y47nSRZcMACdaixYK9MkIRepJ52vaFevoVdORx6Agsna96ZEzYLekvf/phiBOIhuiVXpfrogIqu9LMatj56riA6dsq0Uk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763019701; c=relaxed/simple;
-	bh=wL3ajtIbhIl7uczCpuXPKbOTU1CBaLDkdZK72JB/MnQ=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=HBAkZIwJreoqwKey75RVoNXiD/cfIyjA9/uJSf2/RE4rEruYNUeFwZvFKL3pkuKDcNPdGNdvcuit/FejpemJ8CGqMzLIuYkNLHb3uwAOkDw0+hNDcIwdFpjRXHqJVFqu8t+ieIrQanTpFl6S28goAKibYEEvJ5wU2HC4PkiCDMw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.71
+	s=arc-20240116; t=1763036030; c=relaxed/simple;
+	bh=XZ4vGTrOMPrSZNyRpoqn6H26BqoHguyzqa81YR8raEs=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=L5SKgLq4uZAyJck1uxcb3WFUiKdAYDZiv2wfO6zW+F8dMTK55T91KUPmd7Jysjf1Bg0as/LTe3DQdSP4ZSF8BJ1VzRBfi9he/+Mr4J7phrEVnu0JnC5+hQe5ynWb521h09aDnVNZzn8HlrMBO/PIc+wb5b384L+8JZSGv0yGoPw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-948af64c58dso55644239f.3
-        for <syzbot@lists.linux.dev>; Wed, 12 Nov 2025 23:41:38 -0800 (PST)
+Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-4347bc50df4so9533705ab.0
+        for <syzbot@lists.linux.dev>; Thu, 13 Nov 2025 04:13:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763019697; x=1763624497;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jWzdKl7vgdIGJfdYX6z8A/NZowwAqQ9vSHhm0lIHqaA=;
-        b=rv+bgr59Isafb5F12Virt8X2h9BDl7C3XlAz8aNt2qCGCz/64SC/t5xGVrTC74lwsz
-         p7nMJ7dg/b6b4dDIJ9ajSqCPXRsXYS6gTDgwBkefv2wnx/hWJOtqNhmZJeI9xdceRKwh
-         Lh7Ep7gjwNaJU/ZGpY4hlhiw1FhiSdAOhiRJ6qeDsE0v2gkxe1DFaljngm5N+502ATQY
-         clTtK9oVbQoQGNNPjUuSlLBYfOG5t0zsJOkQMLdzKs377SUwJeg/ztfSFWiex94Z8862
-         kCZbL4uj8VHtIlKrTmwDlS/ku5HiR0hRO77GiVLSJLKiSBnwyGupL0n6kc4J6mYSebfu
-         PIcg==
-X-Gm-Message-State: AOJu0YyDH1RUhY/nCRh5c3oxmSmJzvvLB8FYfbktYnV54Wo5dFncEIba
-	MQ1Nh3yL+4q0h1GeVZV1LoGQ426ktp44M4DMpPxjJ7ZLV6NfVywEBtJkdwGk80sd3HK+R5NKXOT
-	IQRgwG2uOKUCa1/DO4ZnraRbD9t9IqqXXTgVXaG/saozxfkiOueog9f/1Ruo=
-X-Google-Smtp-Source: AGHT+IG3FVRXoV3IJYse4nKZ7YA6tLNSXRmqIqWo6eFJ4/fcr5tzXzRXuvajfRcvKmFz7PDAabk2bViR8Eeqb1Oz5r5xzHzojmQl
+        d=1e100.net; s=20230601; t=1763036026; x=1763640826;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=pMeyoW7FsUJBVDdFHgJCFUF+NgZlrTlXQf/+oZYDl7Q=;
+        b=nCK4jXnchDWszN9mCTr/BK1rUvmSfKvdBQuJ/QneUjfeGk16B4nntEIp4qvrY55ULc
+         /88dkD1U8AVEQ5ppJF29ALWtB5JbJjJ7uHj0DiWzmmFr3KfJd5XJdM9QzbZu1IaS/LZv
+         dyghXRuSjtKI2PmYR56cSxqXn7dbjjgSh/1lJsu1RMY8V6dwxl+90SsCJCpYtOt7Yghd
+         ZeAsNpSkK411STTQJ6iIgQVuLSjD5JuId31x5Y25sbXSGdCb9djZpij9MIlLKSGqiNsp
+         Qfz/U/R4jvjeXHHkb+Vx818BiN12Spk8z824pWgbya7MwHjyDuqjwi0gAHYrjjlwMs1C
+         uDaQ==
+X-Gm-Message-State: AOJu0YxhKJUIWjIkek6euTgKZeebs3psnLUqhi24T3wwvx9gn8hLk2Dq
+	9XP5ygZ8Su+fyqsMTQDiuUS43uUN0B4msAtQnOdnSTA4RnPUISUtfE7NkcNGnQ8P7oROBnWVsDD
+	bS1RAYMsRx+/p9fL6ncr7BDW5vUqaxQiEVMMjLEKVYlZLQhPmNsbpLLINv1A=
+X-Google-Smtp-Source: AGHT+IFp9pLKIraFolpgaybmbtqtYDG5X4nhzYd395jpLomu260YxiDbAY3uc2Fp2M6mINJPI38QXgHx1h2ZzNz2WrBKKLdf2tUc
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:2283:b0:433:2812:8066 with SMTP id
- e9e14a558f8ab-43473ddd4edmr74082945ab.23.1763019697635; Wed, 12 Nov 2025
- 23:41:37 -0800 (PST)
-Date: Wed, 12 Nov 2025 23:41:37 -0800
-In-Reply-To: <20251112185834.32487-1-vishal.moola@gmail.com>
+X-Received: by 2002:a05:6e02:1c29:b0:433:3060:f5b with SMTP id
+ e9e14a558f8ab-4347c4fb9e5mr39804945ab.12.1763036025905; Thu, 13 Nov 2025
+ 04:13:45 -0800 (PST)
+Date: Thu, 13 Nov 2025 04:13:45 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69158bb1.a70a0220.3124cb.001e.GAE@google.com>
-Subject: [syzbot ci] Re: make vmalloc gfp flags usage more apparent
-From: syzbot ci <syzbot+cicff749feae9a145a@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, bpf@vger.kernel.org, hch@infradead.org, 
-	hch@lst.de, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
-	urezki@gmail.com, vishal.moola@gmail.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <6915cb79.a70a0220.3124cb.0025.GAE@google.com>
+Subject: [moderation/CI] Re: zcrx and SQ/CQ queries
+From: syzbot ci <syzbot+ci363703bd273892c0@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v2] make vmalloc gfp flags usage more apparent
-https://lore.kernel.org/all/20251112185834.32487-1-vishal.moola@gmail.com
-* [PATCH v2 1/4] mm/vmalloc: warn on invalid vmalloc gfp flags
-* [PATCH v2 2/4] mm/vmalloc: Add a helper to optimize vmalloc allocation gfps
-* [PATCH v2 3/4] mm/vmalloc: cleanup large_gfp in vm_area_alloc_pages()
-* [PATCH v2 4/4] mm/vmalloc: cleanup gfp flag use in new_vmap_block()
+[v1] zcrx and SQ/CQ queries
+https://lore.kernel.org/all/cover.1763030298.git.asml.silence@gmail.com
+* [PATCH 1/2] io_uring/query: introduce zcrx query
+* [PATCH 2/2] io_uring/query: introduce rings info query
 
 and found the following issue:
-WARNING: kmalloc bug in bpf_prog_alloc_no_stats
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/46d6cb1a-188d-4ff5-8fab-9c58465d74d3
+https://ci.syzbot.org/series/9e89d3e4-ac43-4315-875e-ffb1cdfef215
 
 ***
 
-WARNING: kmalloc bug in bpf_prog_alloc_no_stats
+kernel build error
 
 tree:      linux-next
 URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
 base:      b179ce312bafcb8c68dc718e015aee79b7939ff0
 arch:      amd64
 compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/3449e2a5-35e0-4eac-86c6-97ca0ec741d7/config
+config:    https://ci.syzbot.org/builds/a03cef7d-70e9-4508-8de8-15b3b539496b/config
 
-------------[ cut here ]------------
-Unexpected gfp: 0x400000 (__GFP_ACCOUNT). Fixing up to gfp: 0xdc0 (GFP_KERNEL|__GFP_ZERO). Fix your code!
-WARNING: mm/vmalloc.c:3938 at vmalloc_fix_flags+0x9c/0xe0, CPU#1: syz-executor/6079
-Modules linked in:
-CPU: 1 UID: 0 PID: 6079 Comm: syz-executor Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:vmalloc_fix_flags+0x9c/0xe0
-Code: 81 e6 1f 52 ee ff 89 74 24 30 81 e3 e0 ad 11 00 89 5c 24 20 90 48 c7 c7 40 c3 76 8b 4c 89 fa 89 d9 4d 89 f0 e8 a5 a1 6c ff 90 <0f> 0b 90 90 8b 44 24 20 48 c7 04 24 0e 36 e0 45 4b c7 04 2c 00 00
-RSP: 0018:ffffc90005557b00 EFLAGS: 00010246
-RAX: a6bff5ae8e950700 RBX: 0000000000000dc0 RCX: ffff888173b29d40
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000002
-RBP: ffffc90005557b98 R08: 0000000000000003 R09: 0000000000000004
-R10: dffffc0000000000 R11: fffffbfff1bba6ec R12: 1ffff92000aaaf60
-R13: dffffc0000000000 R14: ffffc90005557b20 R15: ffffc90005557b30
-FS:  000055557c070500(0000) GS:ffff8882a9ec0000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f86f6df0000 CR3: 0000000113d64000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- __vmalloc_noprof+0xf2/0x120
- bpf_prog_alloc_no_stats+0x4a/0x4d0
- bpf_prog_alloc+0x3c/0x1a0
- bpf_prog_create_from_user+0xa7/0x440
- do_seccomp+0x7b1/0xd90
- __se_sys_prctl+0xc3c/0x1830
- do_syscall_64+0xfa/0xfa0
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fcbe2f90b0d
-Code: 00 48 89 44 24 18 31 c0 48 8d 44 24 60 c7 04 24 18 00 00 00 48 89 44 24 08 48 8d 44 24 20 48 89 44 24 10 b8 9d 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 1b 48 8b 54 24 18 64 48 2b 14 25 28 00 00 00
-RSP: 002b:00007ffed4000b80 EFLAGS: 00000246 ORIG_RAX: 000000000000009d
-RAX: ffffffffffffffda RBX: 00007fcbe302cf80 RCX: 00007fcbe2f90b0d
-RDX: 00007ffed4000be0 RSI: 0000000000000002 RDI: 0000000000000016
-RBP: 00007ffed4000bf0 R08: 0000000000000006 R09: 0000000000000071
-R10: 0000000000000071 R11: 0000000000000246 R12: 000000000000006d
-R13: 00007ffed4001018 R14: 00007ffed4001298 R15: 0000000000000000
- </TASK>
-
+io_uring/query.c:37:22: error: use of undeclared identifier 'ZCRX_REG_IMPORT'
+io_uring/query.c:39:23: error: use of undeclared identifier '__ZCRX_CTRL_LAST'
 
 ***
 
@@ -126,3 +85,10 @@ separate fix, please add the following tag to your commit message:
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[asml.silence@gmail.com io-uring@vger.kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
