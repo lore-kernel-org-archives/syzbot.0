@@ -1,130 +1,117 @@
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78CB93596FC
-	for <syzbot@lists.linux.dev>; Thu, 13 Nov 2025 16:54:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 880D83054FD
+	for <syzbot@lists.linux.dev>; Fri, 14 Nov 2025 10:32:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763052862; cv=none; b=NlXivdHPawsA7dAyJhm/7iZF5cSdHiiFJSwYAdcqD2CgSENl00vm05/7oMLx93bQPeRRvZq859ruy9T3PKedVEJSzyQIGsuFTCCOVFs6dZSdrSm7EBhsIq/pvKrJ6QKyzcplOC4riHmQmpE3jvdJp09xtiZp+fmIz0C2vKwrtd0=
+	t=1763116356; cv=none; b=ustbE27Lsew+7xlFNUm9XluUCjnfI1FiSuWsKHVtdCfZ1uu3oWZMIV7XN0JPSCiAIzJa9hs76Bmcl6FJAWDCcM0dj8BUIvUgduSXY3dAY63liaffuxDyYE+b/C8HMr/wV8en72jdtqrkTDr3Tv/eQb1GqYaeurnFshSWzp95Plo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763052862; c=relaxed/simple;
-	bh=XQKSNRiFdFgqas04TlGNKyX+jgREILg+oYD/Bn1ut4U=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IFlvkwd6m17feyKp7UBWi6SRm/pQsoLQLqbPer1R/nWgp6x4Ce5hkV1ay0DN3cB+8DL70+fHFsaHB//Oj6FL5DhLeBvSJCYzsHppIW9ZClYuEVudASNv2zN0BRgLq6sibeUIZ7mhkrFM7wZ3oxy2L4XMDBXhvYEQhJAksCsA+Dg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R+yLQRHM; arc=none smtp.client-ip=209.85.208.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R+yLQRHM"
-Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-37ba781a6c3so3825131fa.0
-        for <syzbot@lists.linux.dev>; Thu, 13 Nov 2025 08:54:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1763052859; x=1763657659; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=etMtDfwD+3QZuYUqVZKqjI6mrl2ackYWEvqoK5GuUAQ=;
-        b=R+yLQRHMWX945pgRqeOvHTS7EOu81VwfAMvdFKpnkOeynejkMXYs8UwXqwdM2gqHPl
-         SMNMFwN/+vqNBhxdwEB6RdbRzYpySVYeJ/wuK658ZRMxOWsUNbvl1JLjyCfWbOtVx/9O
-         arcW+e5dCw6nAS3W2wM1jY6/meJTF89Tpwyw6YC37/K16MdhNe4KBvXBBL1RL0fw7VYK
-         M7FertqNDHOZfcGdwDXjFh9GAx97c6JnGqM3bRTwe7dUMngIUiZmyByFF1UpgjUzyTOM
-         AiP85zaeGGRs9eJOah3BA4GhwTREhmOo040jMfAitxdx7A33cRiAYQMODBqADWe92BNu
-         CFPA==
+	s=arc-20240116; t=1763116356; c=relaxed/simple;
+	bh=IOvLQz1ZNikUU4kObHi7ATk2ZrDL1S6wwp4l3YgnzFY=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=YOgy1pvP5CZ6CFeYwwW7DrlR5oX/kFcyLtXvqiQX0jpVfAM3eV5eyE9pFYjdgbYujNKLBOTQuZ0fk8uX/37jp074cfPmB7mWlA5Fc3jjI+DgHtXImavQgys8WiDzIaoFgiCvyitAqWv//ZNBa0RMHuGm+YaB+XKh/Jpjzw5bR7M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-43323ffc26bso17602565ab.0
+        for <syzbot@lists.linux.dev>; Fri, 14 Nov 2025 02:32:33 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763052859; x=1763657659;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=etMtDfwD+3QZuYUqVZKqjI6mrl2ackYWEvqoK5GuUAQ=;
-        b=mLFygX732e2OI9J7sOvQwUrXpKArTfJh/jJc+/fWNJMs1QqENoLMVyEUBwbZvCMxpC
-         a65tzpOdxm7ug385PB+N4qv/s65vyMN1A7oI5iXNo2I86lENI+vvq1ajfafDCAaqRIy8
-         bCHDpeiUIMd5ugop8K3V25s/HQGNFGEIS/mYBfAdPbXBskpHrU8imhrhV+WNUntlWLdG
-         j4sYbTdlmU09nIVmsz0nY27Z9rN+hiwudpIRDyIWGoTQ1gONMfOg5/EScCePEHdkXC03
-         I1MfAQ61g4z3npNrTXi9FWgnsDdGfgbwxKk1e1N+ddmomPBITkPC01AbWZfLS7O5RInH
-         Ay3g==
-X-Forwarded-Encrypted: i=1; AJvYcCWMGTl3QycodT8tpcUjbBZL0GpuWhbPzKHSb1Qco6QYYwhT3OsHua/b3QG1l4DCVZ2ld1k0e6s=@lists.linux.dev
-X-Gm-Message-State: AOJu0YwhK+0NRMlKm69syQ/9THVsxmb/iCXqmJNGMuxr59nt8Im3pQOg
-	MK/2rvX605Loli9ZUGBYP/j1Kgr+IFHKapZw1s5WTb15MnZxTtLxQ2Gz
-X-Gm-Gg: ASbGncv/I6F2TfwBRoJx1J/qC6zEF+a7j+U4MOvK64DL7/76kJVpZ07/Ydx9SeviIUB
-	P7sS/K2LukQFzyRf5VVXcQ5Khvl50GQkpfMJXCCliE/lLIjymbeV4UxA4RlxplVkK+1B3R2Dje1
-	8pnPgXYMV2eZoL0z2LYz1LpunzvnoZu5vvC6UqEtwQHjYkbwYWuNDWBl6HTZ/VpIVfApoIK24ai
-	kpbAuBdlxkHzMOU1xRuEsxr8FrN6t68KlDRJ8xzGsJKGXizGatzeGz4zUqSxjr4ezh02S9nMLD/
-	GNONokGLYp5uzmBg8aL3onUJmPfijaHcCn6hU5NfG+iH8uB6+/dF/HodB0J35AW5GwAIpFO/jg+
-	vbUTDH3sPR0VvSVTh1GD1+YBhcuWfrOvrFYSm9SDSR9U=
-X-Google-Smtp-Source: AGHT+IEPT42mAJ6MUQqgjo5ZM8rlqgnxDoAaqQlhU3CiG0tihICqar5Ppn5XfbeoxErgayfhRkMTWw==
-X-Received: by 2002:a05:6512:b20:b0:594:35d5:9a1f with SMTP id 2adb3069b0e04-59584265411mr32340e87.50.1763052858346;
-        Thu, 13 Nov 2025 08:54:18 -0800 (PST)
-Received: from milan ([2001:9b1:d5a0:a500::24b])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5958040576csm507458e87.88.2025.11.13.08.54.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Nov 2025 08:54:17 -0800 (PST)
-From: Uladzislau Rezki <urezki@gmail.com>
-X-Google-Original-From: Uladzislau Rezki <urezki@milan>
-Date: Thu, 13 Nov 2025 17:54:16 +0100
-To: "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
-Cc: Uladzislau Rezki <urezki@gmail.com>, akpm@linux-foundation.org,
-	bpf@vger.kernel.org, hch@infradead.org, hch@lst.de,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot ci] Re: make vmalloc gfp flags usage more apparent
-Message-ID: <aRYNOIQ0A4g6BClW@milan>
-References: <20251112185834.32487-1-vishal.moola@gmail.com>
- <69158bb1.a70a0220.3124cb.001e.GAE@google.com>
- <aRXeK_C44xGb3ovg@milan>
- <aRYL6XVX5pfhLqBX@fedora>
+        d=1e100.net; s=20230601; t=1763116353; x=1763721153;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mYiOQ76cfwTn3MreYz5box8VS3UKmJBhX2lToEjQjTw=;
+        b=Txpjz1lgUPPzmfkyCdy85NA0+hNkH6HwIj/6Y1MoiW5RvUZdSgoPHoUvBX51U7W4Wq
+         zseNzs1x+a6vhDZ+tX/pvHCTNFHya+0VOYbyF6CQU8VQtdL3vnjMpXm59QhZf4sec3No
+         m7rNnAQ93tUt917c7fd2vZYC1CCkTdnvxE0tZs98vI6FYWuvNxwmUsTpayY0mwefoKts
+         x9nduhBAFTodYKzsUbfFJIbog2XZl7jo6Qh0t9KXng0oYSn9UsCbFed1GwFRwSQJbq6B
+         IKtZJkeuazTI8eatGNn/u5W5fcY77K7wp9PIBXhKa1ya9dSywEjJDiuNrTAsBi1yrx/H
+         H1ug==
+X-Gm-Message-State: AOJu0Yy1/uc3RZEU2IvqEOg6833UUvXPsHXIwUo1Xsd7t1ir7bZS1Qy6
+	Eq8e4F1MLb/JKknRfwLjsuTWW1WgyqzO+qq/PVYZ3lQATU3aFntrucUMIGgfo8LktVWVbb9wSTM
+	XJaxtDc5rpVxPzyqf+DWFmBeOhmBzTuIyiAI6MC8X+XtgVvM08K3d+a0vmis=
+X-Google-Smtp-Source: AGHT+IGgIf8JMbcB1mySb2Zx2isYYpYdhnZ0ug+iDXOY8jt6GiZ4Vb8hnlZ39MtIohT6N9TozJIisdzcgLCYQ98eeywJEixqdQKY
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aRYL6XVX5pfhLqBX@fedora>
+X-Received: by 2002:a05:6e02:1563:b0:433:3035:7426 with SMTP id
+ e9e14a558f8ab-4348c93b211mr38960255ab.16.1763116352762; Fri, 14 Nov 2025
+ 02:32:32 -0800 (PST)
+Date: Fri, 14 Nov 2025 02:32:32 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69170540.a70a0220.3124cb.004b.GAE@google.com>
+Subject: [moderation/CI] Re: bpf trampoline support "jmp" mode
+From: syzbot ci <syzbot+ci39ad38d3bb2c360c@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 13, 2025 at 08:48:41AM -0800, Vishal Moola (Oracle) wrote:
-> On Thu, Nov 13, 2025 at 02:33:31PM +0100, Uladzislau Rezki wrote:
-> > On Wed, Nov 12, 2025 at 11:41:37PM -0800, syzbot ci wrote:
-> > > syzbot ci has tested the following series
-> > > 
-> > > [v2] make vmalloc gfp flags usage more apparent
-> > > https://lore.kernel.org/all/20251112185834.32487-1-vishal.moola@gmail.com
-> > > * [PATCH v2 1/4] mm/vmalloc: warn on invalid vmalloc gfp flags
-> > > * [PATCH v2 2/4] mm/vmalloc: Add a helper to optimize vmalloc allocation gfps
-> > > * [PATCH v2 3/4] mm/vmalloc: cleanup large_gfp in vm_area_alloc_pages()
-> > > * [PATCH v2 4/4] mm/vmalloc: cleanup gfp flag use in new_vmap_block()
-> > > 
-> > > and found the following issue:
-> > > WARNING: kmalloc bug in bpf_prog_alloc_no_stats
-> > > 
-> > > Full report is available here:
-> > > https://ci.syzbot.org/series/46d6cb1a-188d-4ff5-8fab-9c58465d74d3
-> > > 
-> > > ***
-> > > 
-> > > WARNING: kmalloc bug in bpf_prog_alloc_no_stats
-> > > 
-> > > tree:      linux-next
-> > > URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-> > > base:      b179ce312bafcb8c68dc718e015aee79b7939ff0
-> > > arch:      amd64
-> > > compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-> > > config:    https://ci.syzbot.org/builds/3449e2a5-35e0-4eac-86c6-97ca0ec741d7/config
-> > > 
-> > > ------------[ cut here ]------------
-> > > Unexpected gfp: 0x400000 (__GFP_ACCOUNT). Fixing up to gfp: 0xdc0 (GFP_KERNEL|__GFP_ZERO). Fix your code!
-> > > WARNING: mm/vmalloc.c:3938 at vmalloc_fix_flags+0x9c/0xe0, CPU#1: syz-executor/6079
-> > > Modules linked in:
-> > >
-> > Again bpf :)
-> > 
-> > GFP_KERNEL_ACCOUNT? I saw there have been __GFP_HARDWALL added already,
-> > IMO it is worth to replace it by "high level flag", which is GFP_USER.
-> 
-> Yeah I'll replace __GFP_HARDWALL with GFP_USER, and add
-> GFP_KERNEL_ACCOUNT. At this point I'll just add GFP_NOFS and GFP_NOIO
-> as well so its easier to understand the mask.
->
-Sounds good!
+syzbot ci has tested the following series
 
---
-Uladzislau Rezki
+[v1] bpf trampoline support "jmp" mode
+https://lore.kernel.org/all/20251114092450.172024-1-dongml2@chinatelecom.cn
+* [PATCH RFC bpf-next 1/7] ftrace: introduce FTRACE_OPS_FL_JMP
+* [PATCH RFC bpf-next 2/7] x86/ftrace: implement DYNAMIC_FTRACE_WITH_JMP
+* [PATCH RFC bpf-next 3/7] bpf: fix the usage of BPF_TRAMP_F_SKIP_FRAME
+* [PATCH RFC bpf-next 4/7] bpf,x86: adjust the "jmp" mode for bpf trampolin=
+e
+* [PATCH RFC bpf-next 5/7] bpf: introduce bpf_arch_text_poke_type
+* [PATCH RFC bpf-next 6/7] bpf,x86: implement bpf_arch_text_poke_type for x=
+86_64
+* [PATCH RFC bpf-next 7/7] bpf: implement "jmp" mode for trampoline
+
+and found the following issue:
+kernel build error
+
+Full report is available here:
+https://ci.syzbot.org/series/94b38701-bd30-4339-be30-e395e6237f5b
+
+***
+
+kernel build error
+
+tree:      bpf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
+-next.git
+base:      026bcf9c286c42aacc34359a18aebcc1787f12d2
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/c564f88b-ade0-465f-87ea-bb953779c1d=
+e/config
+
+kernel/bpf/trampoline.c:499:11: error: incomplete definition of type 'struc=
+t ftrace_ops'
+kernel/bpf/trampoline.c:499:22: error: use of undeclared identifier 'FTRACE=
+_OPS_FL_JMP'
+kernel/bpf/trampoline.c:501:11: error: incomplete definition of type 'struc=
+t ftrace_ops'
+kernel/bpf/trampoline.c:501:23: error: use of undeclared identifier 'FTRACE=
+_OPS_FL_JMP'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[andrii@kernel.org ast@kernel.org bpf@vger.kernel.org daniel@iogearbox.net =
+eddyz87@gmail.com haoluo@google.com john.fastabend@gmail.com jolsa@kernel.o=
+rg kpsingh@kernel.org linux-kernel@vger.kernel.org linux-trace-kernel@vger.=
+kernel.org mark.rutland@arm.com martin.lau@linux.dev mathieu.desnoyers@effi=
+cios.com menglong8.dong@gmail.com mhiramat@kernel.org rostedt@goodmis.org s=
+df@fomichev.me song@kernel.org yonghong.song@linux.dev]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
