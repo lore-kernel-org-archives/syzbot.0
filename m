@@ -1,51 +1,51 @@
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 737B62749E0
-	for <syzbot@lists.linux.dev>; Wed, 19 Nov 2025 02:24:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B4ED1369B4
+	for <syzbot@lists.linux.dev>; Wed, 19 Nov 2025 06:35:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763519091; cv=none; b=DI5gBQ3g1LTsE0v1TMFyfauLoS4IpCjv6WN/iLP4MNGlOS4IIjzZZ0eFrsCpHGXK8H+qsIC5KDphYxKGqP5CBcek4nCEtGW+Vn1uuDsgV1fuOxgJqQLjjgYRHeYfj/cALfNVw+8WaoD/L9ADv6pskhIjKOuDkr0bgpNJom50RiE=
+	t=1763534159; cv=none; b=kmMcpSXlNGewqxwaRNQ4SPENTbcHkr0fP/8uEFYe+jfcy0o3oeRERytk0SL/+kRQMQz+DoNrXlXLQLX5eIf3Zw3ysDLAMftxPOYLjpYe0lk8ut15ZYJJ2BvQUlDbe18hFQgII3JFxDUMXxaox5+jCS3utUGqChwem5yVYNjBuXM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763519091; c=relaxed/simple;
-	bh=N9wysnO9x0hU2YT6OkdbqOpt4PX8kxGp6PMYlcw0dd4=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=cE/8uIE8nuB1s/jDsTN3pHujOHZLicYUqUha3QeN8DQIf6fsPWqdVWG93cpawSTgrAcosHMamKWLMyLd7mn7JwrYDnsRny0PGYqed1VbodOlKaN2/2VtBh35Eb+7Y77tCdD6E3HrRKgW63rFYGabsFWbcSFdv7EQcanbd/SXv0U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
+	s=arc-20240116; t=1763534159; c=relaxed/simple;
+	bh=dXX6YykmXWyXZSLJtCWfxFWvyt1iReT0rWbC0l/gnbE=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=YwY47TN0O1fJQ7cHvGgsjqMQv8xs+y0veX4P9vwVdRdwCUJDrZaLPJbnRs75S142bv4SIJgx6CYrM31EOLPZBsVk/bRzbr/ePF9Wlx6cvAxTg1xDePcdT4zlX9wVTjkWzajpm60UBpWuz6fSUow25mfgfQVrWtLKr1MivymXhps=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-433689014feso72344685ab.1
-        for <syzbot@lists.linux.dev>; Tue, 18 Nov 2025 18:24:49 -0800 (PST)
+Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-433312ee468so5827755ab.1
+        for <syzbot@lists.linux.dev>; Tue, 18 Nov 2025 22:35:56 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763519088; x=1764123888;
+        d=1e100.net; s=20230601; t=1763534156; x=1764138956;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=4qwyUERpb9LQrmcXx7wACWCjHqASFiHRZRoGH7ThtSo=;
-        b=N7GzUeoPJA/VDmHEQypq7WF4OqHRMshQObfWREeabaihuXM1ReecyeOxyGAESKd8dW
-         k9a69+dm8+WfVbCRkuDdXM10kI+2QvcgWKThR+aehHGkg8nbjhm4k8Z4DJEjK5k3U/Eg
-         Je6iEbsXUh3GNC7vi4cRFw86c5qd1Br3rhTdayCR47jSqPnl/OmBIAYWlHu8cq0o//fh
-         MaDHSCj4QTV3ZONpyVUgzqAl0sCo0CQgIPgikwTcBP3nuiJOan3MEnUrdQ0uFWQGi0T6
-         6Q9KJpcueTcFiqKmeC/uonwDRXsaLbStZZUQN7ZvAkAC4/AyrvGv2eDMbKyc1eHMQzpM
-         twFg==
-X-Gm-Message-State: AOJu0Yx0eTpq4gAKqZtexcM9IeBMddZ/mDFq2dEJswdKOIo9f08Vlns/
-	NvnyXtWcyfSar3SGq0e7Y+VooNorI2uvXT7xl/zPI7OIx+I1zYfFireFQHdUx++CkrR2OSymnfc
-	GCS5XAGOI8KcHrGzOGlY6lXN0c8i4wwSdWclq3na22R0bfGWifFWhFfZz9qc=
-X-Google-Smtp-Source: AGHT+IGSQD9YDJQDaKRYVVEAhf5ACCmoT0L4x/fuqpj0N9YvyxrubRFWYH9xLdSaO1+dohoqk8Vgr2S83pnHIBN7qU3KSOOe7n+b
+        bh=yG4BUhjvhw3mBRE5terxnjRCzfP0yobi+kVBP1eKQgc=;
+        b=KBn9BpazxKJypmsnl6nbmEEwjhPwGsx50P6Ow4uvOMnNH763UmMXCKhMNs8l0zFrwr
+         Y1ZNwhX71SbnJkkzGnvLvxkSzD35dyshZrl0EPXZCgP9f3wTLCYU+VphO8zAC5+t4MfF
+         yqRRzSuWLocnnXVNuvcC6Wjs5s8+todJ+h9U9h1vLKOJzCIysHSZjTZIYJBAixcWrFIR
+         2msdXPXTIiH1UMKGd3as2RAM2qJu3NYEiQ1Likd06UOikXC6l7qEgHWVvfiRlRh9/NWb
+         oRxgqfnNVeSiRT22fcUdOhRsXPqLavZnpuFfjXZSQs0BQr88oEtws3nexg4w3SEAz+oA
+         8TRw==
+X-Gm-Message-State: AOJu0YybBP7hI8JfuM506omJltACPHnkrcUXY9d911iAIgygwPaRzW9e
+	3TCI34oxfEUBewdsjeyfuYIxq8+eiJWWfuq+tR/pTru14Nt2viqmR6bPKCnbWb7uuDvcMUS+HEH
+	2BmmB4BmbL4CsYssC3ewxVFjNu5ImbFoAGZcmnrFzp0DXAq/UbSWXT585lFg=
+X-Google-Smtp-Source: AGHT+IFq0rA7j3xSNs3bqR1enwpqyM5nAMKFknnQ8m9/kh/kF8QlXA34dt34AvfV+hYUC3HZanTIp67zHKtc6qmyXhyrJuphYiLo
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:214f:b0:433:305c:179d with SMTP id
- e9e14a558f8ab-4348c953130mr273489005ab.28.1763519088609; Tue, 18 Nov 2025
- 18:24:48 -0800 (PST)
-Date: Tue, 18 Nov 2025 18:24:48 -0800
+X-Received: by 2002:a92:dc0f:0:b0:434:96ea:ca1a with SMTP id
+ e9e14a558f8ab-435a017ca2cmr8806185ab.18.1763534156242; Tue, 18 Nov 2025
+ 22:35:56 -0800 (PST)
+Date: Tue, 18 Nov 2025 22:35:56 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <691d2a70.a70a0220.d98e3.0002.GAE@google.com>
-Subject: [moderation/CI] Re: Memory Controller eBPF support
-From: syzbot ci <syzbot+ci74d3533275516618@syzkaller.appspotmail.com>
+Message-ID: <691d654c.a70a0220.2ea503.0012.GAE@google.com>
+Subject: [moderation/CI] Re: virtio-net: fix for VIRTIO_NET_F_GUEST_HDRLEN
+From: syzbot ci <syzbot+ci3cb96f1e58ca3851@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -53,34 +53,34 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] Memory Controller eBPF support
-https://lore.kernel.org/all/cover.1763457705.git.zhuhui@kylinos.cn
-* [RFC PATCH 1/3] memcg: add eBPF struct ops support for memory charging
-* [RFC PATCH 2/3] selftests/bpf: add memcg eBPF struct ops test
-* [RFC PATCH 3/3] samples/bpf: add example memcg eBPF program
+[v6] virtio-net: fix for VIRTIO_NET_F_GUEST_HDRLEN
+https://lore.kernel.org/all/20251119055522.617-1-xuanzhuo@linux.alibaba.com
+* [PATCH net v6 1/2] virtio-net: correct hdr_len handling for VIRTIO_NET_F_=
+GUEST_HDRLEN
+* [PATCH net v6 2/2] virtio-net: correct hdr_len handling for tunnel gso
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/4870ca10-e779-4263-bbf0-620b6b3f7339
+https://ci.syzbot.org/series/9431b637-afd5-413a-9862-69c624b86fb8
 
 ***
 
 kernel build error
 
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
--next.git
-base:      4722981cca373a338bbcf3a93ecf7144a892b03b
+tree:      net
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net.git
+base:      5442a9da69789741bfda39f34ee7f69552bf0c56
 arch:      amd64
 compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
 1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/6158e239-7d3d-4449-a22c-d0143decb63=
-f/config
+config:    https://ci.syzbot.org/builds/2333941a-fb9e-4de3-b3de-bc15fb81d69=
+a/config
 
-mm/memcontrol.c:2341:14: error: assigning to 'unsigned long' from incompati=
-ble type 'void'
+./include/linux/virtio_net.h:218:7: error: use of undeclared identifier 'si=
+nfo'
 
 ***
 
@@ -93,17 +93,11 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[akpm@linux-foundation.org andrii@kernel.org ast@kernel.org bpf@vger.kernel=
-.org brauner@kernel.org brgerst@gmail.com cgroups@vger.kernel.org daniel@io=
-gearbox.net eddyz87@gmail.com geliang@kernel.org hannes@cmpxchg.org haoluo@=
-google.com hui.zhu@linux.dev jeffxu@chromium.org john.fastabend@gmail.com j=
-olsa@kernel.org kees@kernel.org kernel@jfarr.cc kpsingh@kernel.org linux-ke=
-rnel@vger.kernel.org linux-kselftest@vger.kernel.org linux-mm@kvack.org mar=
-tin.lau@linux.dev masahiroy@kernel.org mhocko@kernel.org mkoutny@suse.com m=
-uchun.song@linux.dev nathan@kernel.org ojeda@kernel.org peterz@infradead.or=
-g rdunlap@infradead.org roman.gushchin@linux.dev sdf@fomichev.me shakeel.bu=
-tt@linux.dev shuah@kernel.org song@kernel.org tj@kernel.org yonghong.song@l=
-inux.dev zhuhui@kylinos.cn]
+[alvaro.karsz@solid-run.com andrew@lunn.ch davem@davemloft.net edumazet@goo=
+gle.com eperezma@redhat.com jasowang@redhat.com jiri@resnulli.us kuba@kerne=
+l.org mst@redhat.com netdev@vger.kernel.org pabeni@redhat.com virtualizatio=
+n@lists.linux.dev willemdebruijn.kernel@gmail.com xuanzhuo@linux.alibaba.co=
+m]
 
 If the report looks fine to you, reply with:
 #syz upstream
