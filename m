@@ -1,80 +1,204 @@
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6ACC3002AA
-	for <syzbot@lists.linux.dev>; Fri, 21 Nov 2025 20:25:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83B2321B91D
+	for <syzbot@lists.linux.dev>; Sat, 22 Nov 2025 08:15:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763756743; cv=none; b=C/R8QUvgj06V3zZ5pwkI17LPFhXvwwJG034WC4VG0m6g/s0/pEM593G9/rzMKIrt2I5FKg2G4+aCgBhOgy8aAMnOjLTocThbbrXqNq8qYhRSHyzCkaNulwN1cu49x/56y1GEb4Alg+mBEXyai2mpklOghaF8RlN2teQpReOwws0=
+	t=1763799342; cv=none; b=Wg0mV+MCKn86MIKr2W38NKtDcSlr/Hb+M/W4SNHc71gX4bNy/gV2e616Ft+qmfEfiN9/IOuqzhw6ejynLz50szDC5nkZ8Kp96BnFLkshBXVtP9UR4COOBiNjxhBJizcfcaqJEtkL1i6yBoLKnoxVa/7jm8yIPxHxR3wIHPooAuE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763756743; c=relaxed/simple;
-	bh=+TJnxfX6wGmVHy3VRVAjzQNfDt8ik046EeFAnk8txgc=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=SXIn13KTcl6V83yDLx69n8HAgLzRo/bmMndNdoCVxy/93Tj8MAXvCAU8L/6zNUGZ5Uy/T0BBr0sfVfAGQOUYR7YGiZ6RU+IwRA0k+1orVvgc20tixYzUihe3cRyYY0GoPPuiyyhoXn2E9KXwquLVaZ1gvHaSQsGMYuC9qito79c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
+	s=arc-20240116; t=1763799342; c=relaxed/simple;
+	bh=9Wqp3p6MoaW+UfgHeVjnNhuV64sWBPB+q4zMgtHC55o=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=V8LRTWI5sJkQa6GY5QJ2gF0rYR36P1E3Dp3lgOVbARc6/C5/qzfJAGLvpxcUZR2oEK26eZTyzNplJEcl8MS45Cgaaa2TnATZFOjs1vEe6i6sZZyAeqXJCIqA7qweUTnUPjlMatgknhM8vSllfV+jH2mz2E2YHr/p4Yx/8xXUOTI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-43322fcfae7so26640475ab.1
-        for <syzbot@lists.linux.dev>; Fri, 21 Nov 2025 12:25:41 -0800 (PST)
+Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-949356ff502so224263839f.0
+        for <syzbot@lists.linux.dev>; Sat, 22 Nov 2025 00:15:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763756741; x=1764361541;
+        d=1e100.net; s=20230601; t=1763799329; x=1764404129;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=aNzjwfkMnudJbo25Oj4CCYpkQNI+Cx8us1HdsZQk2ZE=;
-        b=uoR2jMSTuYlzx1kCdD4HdyES00QJIoc9z67pY9FrS6aYXlKPL/a3r6q2MPb05M49jL
-         f8MJ7xsegIiVhk1SCfvufUp/ZGnPoHI6mqKO7Kk7uGlHo5NwBwCbt5q+P3TPi2CMVOt5
-         ngCQ3P0sXFFPe/N6W8aj5FvO7zAEyrTFOafmJcl+1i7jcQg8uMBezzumfH2lD7VgdV9J
-         5khPSZeVry+ZgqRYIKWlDGfAAPND3qle5CjlprrTAflOFksRT1redU7Y1Q2wnx9Q2mxW
-         nDgzX8REkFBlxzBUYccxT7BmHPIfz1DQQZ2mphzryREXkBlK+G2fRaLWF2IF7ZWP68IO
-         /sCw==
-X-Gm-Message-State: AOJu0YyeX/f1T4UsdyAb0bzbQNb3fTjOOjPrj/LRhpOFu1QxmBE3Kxeq
-	SS5B/fg06615j+ms8bA9lBOxx8o6hLnYGL/XcL7rSGlPdFt+OS7zXCpAXbP84iJAaSd+c/wfYq9
-	sZA2wWSBND+Kt+0FwF+Q/b7/Zis7moMTUQR6IscI0hLEtyaFTTzHRRrMuxVU=
-X-Google-Smtp-Source: AGHT+IGY7VinQzeMPfimaVb4wcUfi5lS7gOd1USCHyGvYs3pD5fUKbIkS0dyE1/98p3kBW/zQ0ECAynKllUUMN5UVTho8afCgAke
+        bh=1WQccvNvmfsaIritq+ZZb+GplJoU63FdL9J5fDkXJd8=;
+        b=ma6o8xc4OJn3807rKy/MZRHLBwdR70gkf4U4nNWbwu+B8h4Kx5gsq5aqLszvjGrQbk
+         3BotNB7a6rotNtmd0mjYQrOnP2TeSxMuaW38ex2SGuskIX3IjvhUKrLzQvMrKbEb11kh
+         YDPmI8jBzNubTJg9HU8V/ttp5PFHoD9R84U+avN3xVZ1wK8i2AyCEffQOSEx83/c9gFs
+         F6hEydaLqn8UfgKoVnOl2g7da/Q1b6fm2ichwf7KyHHzKxL8VFXq+Qlqo5T457UOPQs+
+         6JEwv+yQRs31HTT8C5BIEh0gNZqMiBThT7F4WcnILpJ8y5dPeOBl2Mb2CaeabLjs0gmz
+         8GJA==
+X-Gm-Message-State: AOJu0YxoRHd9Bro8uipZ5u1nwJGyBXxvQzQ44lu47SjcIhdzoSmoPDB3
+	NuAsZ4Wgd4Cw5H7hrx3gkCJ34nK1lzoYX9fWYrKZHz0p1HjzsQTLNViCibzyjbjKYpr4IB7TkGP
+	lhehRawvzc7KM2qpRvVP004v9XASIlHoEV+E+n+8bwJ3qgRCGrBTT5deGfrw=
+X-Google-Smtp-Source: AGHT+IFLW/B3xU7FR48VESOHb7MvLS+Pp3fYHK785h0glUstvF6BUTjkzm5j4Kjd63MmrWaC9ov644KRcqInTKcyfXvsjLJ/JKtL
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1aad:b0:433:29c3:c4f6 with SMTP id
- e9e14a558f8ab-435b8c44fb0mr28770515ab.15.1763756740893; Fri, 21 Nov 2025
- 12:25:40 -0800 (PST)
-Date: Fri, 21 Nov 2025 12:25:40 -0800
+X-Received: by 2002:a92:c248:0:b0:434:96ea:ff55 with SMTP id
+ e9e14a558f8ab-435b98ee9d9mr42281445ab.38.1763799329671; Sat, 22 Nov 2025
+ 00:15:29 -0800 (PST)
+Date: Sat, 22 Nov 2025 00:15:29 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6920cac4.a70a0220.d98e3.0049.GAE@google.com>
-Subject: [moderation/CI] Re: tmpfs: zero post-eof ranges on file extension
-From: syzbot ci <syzbot+cia46f815800036a65@syzkaller.appspotmail.com>
+Message-ID: <69217121.a70a0220.2ea503.0066.GAE@google.com>
+Subject: [moderation/CI] Re: ext4: fix unaligned preallocation with bigalloc
+From: syzbot ci <syzbot+ci0809eb078654ccec@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v3] tmpfs: zero post-eof ranges on file extension
-https://lore.kernel.org/all/20251121152246.1023918-1-bfoster@redhat.com
-* [PATCH v3 1/3] tmpfs: factor out folio zeroing logic at writeout time
-* [PATCH v3 2/3] tmpfs: zero post-eof folio ranges on swapout
-* [PATCH v3 3/3] tmpfs: zero post-eof ranges on file extension
+[v2] ext4: fix unaligned preallocation with bigalloc
+https://lore.kernel.org/all/20251122024555.140798-2-eraykrdg1@gmail.com
+* [PATCH v2] ext4: fix unaligned preallocation with bigalloc
 
-and found the following issue:
-kernel build error
+and found the following issues:
+* WARNING in ext4_mb_complex_scan_group
+* WARNING in mb_update_avg_fragment_size
 
 Full report is available here:
-https://ci.syzbot.org/series/7d334ce5-b341-41d6-93fa-4d7f53e35611
+https://ci.syzbot.org/series/ba644d0c-b0cd-47e5-aac4-5bc33f8d2823
 
 ***
 
-kernel build error
+WARNING in ext4_mb_complex_scan_group
 
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      0635e407a2fa61b93ec8dda0324ad68542e12f0c
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      23cb64fb76257309e396ea4cec8396d4a1dbae68
 arch:      amd64
 compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/39340c2e-2e4d-4538-974f-1d3d2066ea32/config
+config:    https://ci.syzbot.org/builds/3d0f1523-91b4-4aa0-b4ec-0f13803a4e4e/config
+C repro:   https://ci.syzbot.org/findings/d24ca945-6ee1-4b64-827e-93a61ab96735/c_repro
+syz repro: https://ci.syzbot.org/findings/d24ca945-6ee1-4b64-827e-93a61ab96735/syz_repro
 
-mm/shmem.c:1112:23: error: call to undeclared function 'folio_next_pos'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+EXT4-fs: Ignoring removed bh option
+EXT4-fs (loop0): mounted filesystem 00000000-0000-0000-0000-000000000000 r/w without journal. Quota mode: writeback.
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 5962 at fs/ext4/mballoc.c:2531 ext4_mb_complex_scan_group+0xd64/0xf30 fs/ext4/mballoc.c:2531
+Modules linked in:
+CPU: 1 UID: 0 PID: 5962 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:ext4_mb_complex_scan_group+0xd64/0xf30 fs/ext4/mballoc.c:2531
+Code: 81 c4 c8 00 00 00 5b 41 5c 41 5d 41 5e 41 5f 5d e9 01 f8 cc 08 cc e8 1b 97 43 ff 90 0f 0b 90 e9 3d fe ff ff e8 0d 97 43 ff 90 <0f> 0b 65 48 8b 05 62 e3 f1 0f 48 3b 84 24 c0 00 00 00 75 20 90 eb
+RSP: 0018:ffffc90003c069c8 EFLAGS: 00010293
+RAX: ffffffff827c6cb3 RBX: 00000000fffffff8 RCX: ffff888114d61d00
+RDX: 0000000000000000 RSI: 00000000fffffff8 RDI: 0000000000000001
+RBP: ffff88816ef5b000 R08: ffff888114d61d00 R09: 0000000000000005
+R10: 0000000000000004 R11: 0000000000000000 R12: ffff888166fec000
+R13: ffff888166fec638 R14: ffff8881b7ac0000 R15: dffffc0000000000
+FS:  0000555585e78500(0000) GS:ffff8882a9f3b000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b2ec63fff CR3: 000000011407a000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ __ext4_mb_scan_group fs/ext4/mballoc.c:2664 [inline]
+ ext4_mb_scan_group+0x116e/0x18e0 fs/ext4/mballoc.c:2955
+ ext4_mb_scan_groups_linear+0xe8/0x360 fs/ext4/mballoc.c:1146
+ ext4_mb_scan_groups fs/ext4/mballoc.c:1180 [inline]
+ ext4_mb_regular_allocator+0x90e/0x2970 fs/ext4/mballoc.c:3026
+ ext4_mb_new_blocks+0xd11/0x4720 fs/ext4/mballoc.c:6320
+ ext4_ext_map_blocks+0x161a/0x6ac0 fs/ext4/extents.c:4383
+ ext4_map_create_blocks fs/ext4/inode.c:609 [inline]
+ ext4_map_blocks+0x860/0x1740 fs/ext4/inode.c:811
+ _ext4_get_block+0x200/0x4c0 fs/ext4/inode.c:910
+ ext4_get_block_unwritten+0x2e/0x100 fs/ext4/inode.c:943
+ ext4_block_write_begin+0x993/0x1710 fs/ext4/inode.c:1198
+ ext4_write_begin+0xc04/0x19a0 fs/ext4/ext4_jbd2.h:-1
+ ext4_da_write_begin+0x445/0xda0 fs/ext4/inode.c:3129
+ generic_perform_write+0x2c5/0x900 mm/filemap.c:4254
+ ext4_buffered_write_iter+0xce/0x3a0 fs/ext4/file.c:299
+ ext4_file_write_iter+0x298/0x1bc0 fs/ext4/file.c:-1
+ new_sync_write fs/read_write.c:593 [inline]
+ vfs_write+0x5c9/0xb30 fs/read_write.c:686
+ ksys_write+0x145/0x250 fs/read_write.c:738
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f3f93f8f749
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fff83277a88 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 00007f3f941e5fa0 RCX: 00007f3f93f8f749
+RDX: 0000000000001006 RSI: 0000200000000940 RDI: 0000000000000005
+RBP: 00007f3f94013f91 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f3f941e5fa0 R14: 00007f3f941e5fa0 R15: 0000000000000003
+ </TASK>
+
+
+***
+
+WARNING in mb_update_avg_fragment_size
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      23cb64fb76257309e396ea4cec8396d4a1dbae68
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/3d0f1523-91b4-4aa0-b4ec-0f13803a4e4e/config
+C repro:   https://ci.syzbot.org/findings/4f77b4c9-f795-4c41-ad77-5c5a174be3a1/c_repro
+syz repro: https://ci.syzbot.org/findings/4f77b4c9-f795-4c41-ad77-5c5a174be3a1/syz_repro
+
+EXT4-fs (loop0): mounted filesystem 00000000-0000-0000-0000-000000000000 r/w without journal. Quota mode: writeback.
+EXT4-fs: Ignoring removed orlov option
+EXT4-fs (loop0): can't enable nombcache during remount
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 5969 at fs/ext4/mballoc.c:839 mb_avg_fragment_size_order fs/ext4/mballoc.c:839 [inline]
+WARNING: CPU: 1 PID: 5969 at fs/ext4/mballoc.c:839 mb_update_avg_fragment_size+0x304/0x450 fs/ext4/mballoc.c:856
+Modules linked in:
+CPU: 1 UID: 0 PID: 5969 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:mb_avg_fragment_size_order fs/ext4/mballoc.c:839 [inline]
+RIP: 0010:mb_update_avg_fragment_size+0x304/0x450 fs/ext4/mballoc.c:856
+Code: 5d 41 5e 41 5f 5d e9 1b 6a cd 08 e8 96 57 44 ff 48 83 c4 28 5b 41 5c 41 5d 41 5e 41 5f 5d c3 cc cc cc cc cc e8 7d 57 44 ff 90 <0f> 0b 90 48 bb 00 00 00 00 00 fc ff df 41 0f b6 44 1d 00 84 c0 0f
+RSP: 0018:ffffc90003a56f48 EFLAGS: 00010293
+RAX: ffffffff827bac43 RBX: 000000000000000d RCX: ffff8881037ad700
+RDX: 0000000000000000 RSI: 000000000000000c RDI: 000000000000001e
+RBP: 000000000000001e R08: ffff8881a9014007 R09: 1ffff11035202800
+R10: dffffc0000000000 R11: ffffed1035202801 R12: ffff88810b77e014
+R13: 1ffff110216efc02 R14: 000000000000001f R15: 000000000000000c
+FS:  000055557ed08500(0000) GS:ffff8882a9f3b000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f9c75c3f000 CR3: 0000000112a5a000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ mb_mark_used+0xfd8/0x12f0 fs/ext4/mballoc.c:2195
+ ext4_mb_use_best_found+0x192/0x7e0 fs/ext4/mballoc.c:2216
+ ext4_mb_check_limits fs/ext4/mballoc.c:2280 [inline]
+ ext4_mb_complex_scan_group+0xd27/0xf30 fs/ext4/mballoc.c:2596
+ __ext4_mb_scan_group fs/ext4/mballoc.c:2664 [inline]
+ ext4_mb_scan_group+0x116e/0x18e0 fs/ext4/mballoc.c:2955
+ ext4_mb_scan_groups_linear+0xe8/0x360 fs/ext4/mballoc.c:1146
+ ext4_mb_scan_groups fs/ext4/mballoc.c:1180 [inline]
+ ext4_mb_regular_allocator+0x90e/0x2970 fs/ext4/mballoc.c:3026
+ ext4_mb_new_blocks+0xd11/0x4720 fs/ext4/mballoc.c:6320
+ ext4_ext_map_blocks+0x161a/0x6ac0 fs/ext4/extents.c:4383
+ ext4_map_create_blocks fs/ext4/inode.c:609 [inline]
+ ext4_map_blocks+0x860/0x1740 fs/ext4/inode.c:811
+ ext4_convert_inline_data_nolock+0x249/0x970 fs/ext4/inline.c:1112
+ ext4_convert_inline_data+0x4b3/0x5e0 fs/ext4/inline.c:1976
+ ext4_fallocate+0x1e2/0x3d0 fs/ext4/extents.c:4793
+ vfs_fallocate+0x669/0x7e0 fs/open.c:342
+ ksys_fallocate fs/open.c:366 [inline]
+ __do_sys_fallocate fs/open.c:371 [inline]
+ __se_sys_fallocate fs/open.c:369 [inline]
+ __x64_sys_fallocate+0xc0/0x110 fs/open.c:369
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f9c7eb8f749
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffd1029f7c8 EFLAGS: 00000246 ORIG_RAX: 000000000000011d
+RAX: ffffffffffffffda RBX: 00007f9c7ede5fa0 RCX: 00007f9c7eb8f749
+RDX: 0000000000004003 RSI: 0000000000000000 RDI: 0000000000000004
+RBP: 00007f9c7ec13f91 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000010000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f9c7ede5fa0 R14: 00007f9c7ede5fa0 R15: 0000000000000004
+ </TASK>
+
 
 ***
 
@@ -87,7 +211,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[baolin.wang@linux.alibaba.com bfoster@redhat.com hughd@google.com linux-mm@kvack.org]
+[adilger.kernel@dilger.ca albinbabuvarghese20@gmail.com david.hunter.linux@gmail.com eraykrdg1@gmail.com linux-ext4@vger.kernel.org linux-kernel@vger.kernel.org skhan@linuxfoundation.org syzbot@syzkaller.appspotmail.com tytso@mit.edu]
 
 If the report looks fine to you, reply with:
 #syz upstream
