@@ -1,317 +1,209 @@
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27CBA285071
-	for <syzbot@lists.linux.dev>; Wed, 26 Nov 2025 08:13:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A7752D23B8
+	for <syzbot@lists.linux.dev>; Wed, 26 Nov 2025 08:13:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764144804; cv=none; b=AT10TphD4+VwTfQUcPDaZYKLxd+CNrkOIH1Wknt1kFuB7h8Op2HgwifBmNso12fGAhIHU/36DP7QProDPFs4NejOKTDja+SOYBEeR84gr/R948qQzV0RsSxN7NuzkUwY11u5+fjnGoQnyIqN0/CjaGTO13FNEyw9ppon0e07yQw=
+	t=1764144811; cv=none; b=ApKl2WZp4OqlOkhaBGjuJxHymkH1rKejGuYqmrshs0y/XUsJITXvzlYvH44qh3c/pox4syZnbQUrzlpDzchZw+dsqmmPueoA+p9ZlTiS8VJu7cV+gacB+Tko9O7AC1F5OSmc3L3qgtqSxX3jIqXxZ+gdqRTmcfDItnjNU0pOM3o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764144804; c=relaxed/simple;
-	bh=eSIdUr7EPRZjezWgfIb/uh9XWEveB7c/IzGLutQFuXs=;
+	s=arc-20240116; t=1764144811; c=relaxed/simple;
+	bh=pf/DLEIc+pwRijNVdOGAOk/xaH1//VpDh5QNv7G8Cg8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fuUDvPGpNOULGWO2m7wV/jc2WSPf3HHDwTkev8qw+iuLU4zopCTUiu5A1wxa5YDpBBhz4vZSWGAMpcWXptxdOiSpS8UCWN3jH3DCte1gU8J/KXywojytrvxNiLtSzQ41kyklYav+WtmuXjnG5ET3dYZyVgLU77epQW//M/Lf+D0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=3VoPmf3e; arc=none smtp.client-ip=209.85.210.51
+	 To:Cc:Content-Type; b=Bt7n9WQgJtzSCk1cSgN2gf5/tydeqcoMtsLYxTl734hG2Tn6wUFE2JBh/XUM7W9uKJg/WvIi1eoOan9a2UznIgZJqVBasMoC5HWi6kNVLvsOnL6077xxjc2rh1NF5NyRk48BRo+WtacJMQlRE3WiCergf0hcH+ZZfn8G3Fvw8ok=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iFxI5t+B; arc=none smtp.client-ip=209.85.161.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="3VoPmf3e"
-Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7c7533dbd87so4472957a34.2
-        for <syzbot@lists.linux.dev>; Wed, 26 Nov 2025 00:13:21 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iFxI5t+B"
+Received: by mail-oo1-f46.google.com with SMTP id 006d021491bc7-656b52c0f88so2526765eaf.0
+        for <syzbot@lists.linux.dev>; Wed, 26 Nov 2025 00:13:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1764144801; x=1764749601; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1764144809; x=1764749609; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=PlcBV8zSULgfwMFJyMyaz/TGU93Napb7ToFhrDmYEDw=;
-        b=3VoPmf3eLR9fqH2UYNLfw90Np8EORxl9nKank4rkQXsAVpOLS6LbYeIX/p3vQTiL+r
-         IbUZXWj3BmlaFDDb2+HTSTjdggmVm9mplC473cBxBhaezKZzy8SP3/TePKXHMH/K8kgO
-         Z8PgdGTlT8+qu2Izpc+WeX7eefxyioJgoNBpjTZcVAuJfzaVYCsoiH470jME30jzjUn1
-         DDBCK5ky4iu1lkrXsel142kJLbhv/vpn3qFDBnDmyknw2D4Qu49QTNoBeJ6jFMMAJ+fZ
-         E3hEH6uvRJ09Cwjic3dsHagySGiONhc+kstxWdiSJvQJUHXG6I5nDR93ih0yOLn+xp44
-         QpMQ==
+        bh=uQv7+hAzkr/eMcB2vNXRFXE9iNJnWZsKWLNMbPm1F0I=;
+        b=iFxI5t+BcrXdf1u2AfQDsquA7uugR9cVLIEt+BboBI3VJ2g7ORH+wGxCppSVN/SKhO
+         m/806LGKkVi0ID3z5rZMQa4MFeC3aNk/xfM38wHUZmeI2sz5rU2fKeaiVAN82y+U55/y
+         BWvhkL/qs4BZz6bU3f9FkmP1/yoP+0sINDBbapClLF93j9D2G+TkIzs81bX6lJdRgzRG
+         TnhHtJjrKjSpSY3OtBojTZnzLWFpoW+mUM+885z44kIsCO7DYUCu1RZCk5hpYPErfywb
+         5btGfNC7NnfHzR95d6Oh+aDCKAdgT21DsnHx51x52nDNOyPGzx9z8CWSRxcOgnNOOTbM
+         aMMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764144801; x=1764749601;
+        d=1e100.net; s=20230601; t=1764144809; x=1764749609;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=PlcBV8zSULgfwMFJyMyaz/TGU93Napb7ToFhrDmYEDw=;
-        b=GjvwaBGmXKzJ0CuInVsgqbEYRmE6b+Z2t5OM64m99dfgiw1jmdb/u/lg3xd9RwvcMc
-         Yvvvxl3aA1S1fMgfOGZKcgVtz3T4hbW5KKOHKiOHgOkPFYt8bk2d1Wwk5cK//cROdiNS
-         Vyzul7dvivuQJjjwWtBzVIW8lnYKCqwTtFTcFQ0p4tVO/tbV2vmzcijshAGmv7j2YQAr
-         7tlhD3ADx7sPGtHfFMoNWRg5O23SKrjIA/vXS6kZh++AN7AY4A/E7amEUftIqVJR2qVG
-         DnsLGsEvMfhsaEnlloRX2w/w0dwkKUhbcRr+U0KvBZqHEvkTj6yW7OUcTudVuOajuvJT
-         c7Rg==
-X-Forwarded-Encrypted: i=1; AJvYcCUhvBWFx6XeRlhKe0k0LA5NFyj46u/nhw1QKDLZ+bkofZip2pA8B8yXSGnba8BW48RY2HN6OBY=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzReznnTMUrt+TTCQDiyDVju6kLJkpvEcftsJlsZxkoYA+Bkm9Q
-	K16t6A9Syrxs/UixyB5SFVVNa0D5IV5bOdYxSs216CZqSdh3zTitUYIB4rNjkgilVkMymp61ZdI
-	4DLfGnFx6qZXgBeRLn3vomJFlsTTDE21niFTvpVXF
-X-Gm-Gg: ASbGncv5NUMvhZww6BbBar0P/3ABb3FOUMixbvFZl9s/V2sZ6WPnBxLMDcjMnAni6Bk
-	WhWfHHVeTsth3XU5R4AlWbBXJz23ntFbPFsUs1/Ll9DX90qKxGMWwcsg1NMP3BS21d3pmLHKugo
-	lxLSwiao6aUHP7AqFWjjjK4TN80DwT9Ylsawk/6R2PBFAV18uW5gF3J2lcTfQPnEiGmAR+YlmCa
-	Gej5RQl7M84CBT7RzyT56PF0Ln13NvLGM9oBXYImfU3h3odGlhiYkTpn6Qh/L7SwVKBnnmqlGE/
-	jE7dbjOsUZ9Z8f1uyKnEa+wr2lPcPtljE9I2p65BMSXv77ybQ1Lg8kcj09SUpnNR68gl
-X-Google-Smtp-Source: AGHT+IGmLNRYH7O7IZVOKZV2E8c5mRZDegHTmvmS3YViSka5Ejrh8vH6cZHeoolTit+ahUg/dQ8ZnGGrZ5t4GjOd424=
-X-Received: by 2002:a05:6830:a92:b0:7a0:239:809f with SMTP id
- 46e09a7af769-7c7c412cb8fmr3144307a34.11.1764144800860; Wed, 26 Nov 2025
- 00:13:20 -0800 (PST)
+        bh=uQv7+hAzkr/eMcB2vNXRFXE9iNJnWZsKWLNMbPm1F0I=;
+        b=YYuAu2VvVHZiqk3m6k8Unxmw2FNoV4b+wztDgEoq8w6hk9dl9t4aRiIps0lMydL2Z4
+         oDh1wH4g13BcBcqMBrpE3CqtgNZjpEVXDKLqczEabc17VeiecRLXmwAI2JEcndbHYXgD
+         DsYYkw3+Q/I9TP8ytA4gEU9fSL/EtTGt72SthhdBVUbGjrl/ue59iFg5rE2bDwREZS17
+         cItan6LfO7ynpX7Q45A09moGuQbO7ASadMKOFumfUIm3c+1SByJsY7B+mtPSuEAxbn7R
+         g5Popo8WsEfv+G0H5LDDD+FT2ml8mWaE0l90UJN4KxEdznxhWUDkPEA4zhueS9SacDdx
+         oVEQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW8ko/h5Ap8+APlN94ByzLFTTyLjy0EgbI5tb0V8OQluj4mFEb3+XF6udX643WCBixRjOcnvqg=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx4SstOTjeo0mSKI2k8emzyJagzni7n/d943oE2bepe2JexG/Ws
+	mUeqo099wGMXdyy+24gRrHfJ02PvpbqChEbXrYB+oLQpS1qiYo1aKCt9a8swDRBkyGc/NfAGYXL
+	XTcANKqFQA1lyQUkjkqTlZzRiOVUhROt230/NBFrS
+X-Gm-Gg: ASbGncvSFibm5uvDwwKz02KZq46MGyUqVeSxs6jYSecWyogO13T5sb1YSh44q20WcOK
+	jE9JV+EOv22C5zt1nacJgc9t/TcKyNQ4epDz6oIPK80Z/3dNZhi+DY9rmAhmv4ISBOMvY3Yj348
+	Ho06Nbjpaf63c5fvp1YvIVRvkO91f/7fiAcL92KGNtOL6Wba1FB+WhHLMBVZilNtXG7rWUJEpht
+	SfJka1I0uc8FW+Dqr8WDuYc5y7Hq5KK68YHFNdNV7eGRyD0EYS4Z6bWP/8gPwcfWLiB/2nBgrdv
+	g9wGIVFhWSLueTYbpHeRpWkNigkavOFNQ6p3Gf5nHVBDJxkITXv74dOkyg==
+X-Google-Smtp-Source: AGHT+IGfdXZYezC4R1wPPXcRSnS9NltPVKS94xEQtAoPDIFqR7xqfZ57BAD4lS2S801WmtSojcfbChDacFkf3e9fWc4=
+X-Received: by 2002:a05:6820:2982:b0:657:60b8:b07c with SMTP id
+ 006d021491bc7-657bdae7b8bmr1830988eaf.2.1764144808867; Wed, 26 Nov 2025
+ 00:13:28 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <692686c2.a70a0220.d98e3.00ca.GAE@google.com>
-In-Reply-To: <692686c2.a70a0220.d98e3.00ca.GAE@google.com>
+References: <69268031.a70a0220.d98e3.00c9.GAE@google.com>
+In-Reply-To: <69268031.a70a0220.d98e3.00c9.GAE@google.com>
 From: Aleksandr Nogikh <nogikh@google.com>
-Date: Wed, 26 Nov 2025 09:13:09 +0100
-X-Gm-Features: AWmQ_blGOIhaSK8jxKniRu1nBaBeNdc5j2BhCXBmQv3zy7sAwUlfVNpwwvxfPAg
-Message-ID: <CANp29Y7pSxnU8QO0WfTS2A+hX4KOK=R8kzjBnuhcLfQDvmbOVA@mail.gmail.com>
-Subject: Re: [moderation/CI] Re: io_uring: avoid uring_lock for IORING_SETUP_SINGLE_ISSUER
-To: syzbot ci <syzbot+ci1daaf56d0d213e2a@syzkaller.appspotmail.com>
+Date: Wed, 26 Nov 2025 09:13:17 +0100
+X-Gm-Features: AWmQ_bmVcxKGNexzolmyPU9ndvAahBYE6p4ZeeUja5_9tjR5HhShnq4JKiiDFRI
+Message-ID: <CANp29Y57JW-XeYOOo0r=pa_dOoSRCieHf6Va0T44zEah7W4H2Q@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: net/sched: Introduce qdisc quirk_chk op
+To: syzbot ci <syzbot+cie1cc744dda2cfc97@syzkaller.appspotmail.com>
 Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 #syz upstream
 
-
-On Wed, Nov 26, 2025 at 5:49=E2=80=AFAM syzbot ci
-<syzbot+ci1daaf56d0d213e2a@syzkaller.appspotmail.com> wrote:
+On Wed, Nov 26, 2025 at 5:21=E2=80=AFAM syzbot ci
+<syzbot+cie1cc744dda2cfc97@syzkaller.appspotmail.com> wrote:
 >
 > syzbot ci has tested the following series
 >
-> [v3] io_uring: avoid uring_lock for IORING_SETUP_SINGLE_ISSUER
-> https://lore.kernel.org/all/20251125233928.3962947-1-csander@purestorage.=
-com
-> * [PATCH v3 1/4] io_uring: clear IORING_SETUP_SINGLE_ISSUER for IORING_SE=
-TUP_SQPOLL
-> * [PATCH v3 2/4] io_uring: use io_ring_submit_lock() in io_iopoll_req_iss=
-ued()
-> * [PATCH v3 3/4] io_uring: factor out uring_lock helpers
-> * [PATCH v3 4/4] io_uring: avoid uring_lock for IORING_SETUP_SINGLE_ISSUE=
-R
+> [v2] net/sched: Introduce qdisc quirk_chk op
+> https://lore.kernel.org/all/20251125224604.872351-1-victor@mojatatu.com
+> * [RFC PATCH net-next v2] net/sched: Introduce qdisc quirk_chk op
 >
-> and found the following issues:
-> * SYZFAIL: failed to recv rpc
-> * WARNING in io_ring_ctx_wait_and_kill
-> * WARNING in io_uring_alloc_task_context
-> * WARNING: suspicious RCU usage in io_eventfd_unregister
+> and found the following issue:
+> general protection fault in netem_quirk_chk
 >
 > Full report is available here:
-> https://ci.syzbot.org/series/dde98852-0135-44b2-bbef-9ff9d772f924
+> https://ci.syzbot.org/series/aa7207e5-00c6-4c9d-b330-9b2041104daf
 >
 > ***
 >
-> SYZFAIL: failed to recv rpc
+> general protection fault in netem_quirk_chk
 >
-> tree:      linux-next
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/=
-linux-next
-> base:      92fd6e84175befa1775e5c0ab682938eca27c0b2
+> tree:      net-next
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netde=
+v/net-next.git
+> base:      e2c20036a8879476c88002730d8a27f4e3c32d4b
 > arch:      amd64
 > compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~e=
 xp1~20250708183702.136), Debian LLD 20.1.8
-> config:    https://ci.syzbot.org/builds/9d67ded7-d9a8-41e3-8b58-51340991c=
-f96/config
-> C repro:   https://ci.syzbot.org/findings/19ae4090-3486-4e2a-973e-dcb6ec3=
-ba0d1/c_repro
-> syz repro: https://ci.syzbot.org/findings/19ae4090-3486-4e2a-973e-dcb6ec3=
-ba0d1/syz_repro
+> config:    https://ci.syzbot.org/builds/bbda2e20-2099-41bd-a7d4-c298c61ed=
+2f5/config
+> C repro:   https://ci.syzbot.org/findings/21f8d5f6-c5af-4e81-a8d5-56f5feb=
+d6f03/c_repro
+> syz repro: https://ci.syzbot.org/findings/21f8d5f6-c5af-4e81-a8d5-56f5feb=
+d6f03/syz_repro
 >
-> SYZFAIL: failed to recv rpc
-> fd=3D3 want=3D4 recv=3D0 n=3D0 (errno 9: Bad file descriptor)
->
->
-> ***
->
-> WARNING in io_ring_ctx_wait_and_kill
->
-> tree:      linux-next
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/=
-linux-next
-> base:      92fd6e84175befa1775e5c0ab682938eca27c0b2
-> arch:      amd64
-> compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~e=
-xp1~20250708183702.136), Debian LLD 20.1.8
-> config:    https://ci.syzbot.org/builds/9d67ded7-d9a8-41e3-8b58-51340991c=
-f96/config
-> C repro:   https://ci.syzbot.org/findings/f5ff9320-bf6f-40b4-a6b3-eee18fa=
-83053/c_repro
-> syz repro: https://ci.syzbot.org/findings/f5ff9320-bf6f-40b4-a6b3-eee18fa=
-83053/syz_repro
->
-> ------------[ cut here ]------------
-> WARNING: io_uring/io_uring.h:266 at io_ring_ctx_lock io_uring/io_uring.h:=
-266 [inline], CPU#0: syz.0.17/5967
-> WARNING: io_uring/io_uring.h:266 at io_ring_ctx_wait_and_kill+0x35f/0x490=
- io_uring/io_uring.c:3119, CPU#0: syz.0.17/5967
-> Modules linked in:
-> CPU: 0 UID: 0 PID: 5967 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(f=
+> netlink: 28 bytes leftover after parsing attributes in process `syz.0.17'=
+.
+> Oops: general protection fault, probably for non-canonical address 0xdfff=
+fc0000000000: 0000 [#1] SMP KASAN PTI
+> KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+> CPU: 1 UID: 0 PID: 5961 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(f=
 ull)
 > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
 16.2-1 04/01/2014
-> RIP: 0010:io_ring_ctx_lock io_uring/io_uring.h:266 [inline]
-> RIP: 0010:io_ring_ctx_wait_and_kill+0x35f/0x490 io_uring/io_uring.c:3119
-> Code: 4e 11 48 3b 84 24 20 01 00 00 0f 85 1e 01 00 00 48 8d 65 d8 5b 41 5=
-c 41 5d 41 5e 41 5f 5d c3 cc cc cc cc cc e8 92 fa 96 00 90 <0f> 0b 90 e9 be=
- fd ff ff 48 8d 7c 24 40 ba 70 00 00 00 31 f6 e8 08
-> RSP: 0018:ffffc90004117b80 EFLAGS: 00010293
-> RAX: ffffffff812ac5ee RBX: ffff88810d784000 RCX: ffff888104363a80
-> RDX: 0000000000000000 RSI: 0000000000001000 RDI: 0000000000000000
-> RBP: ffffc90004117d00 R08: ffffc90004117c7f R09: 0000000000000000
-> R10: ffffc90004117c40 R11: fffff52000822f90 R12: 1ffff92000822f74
-> R13: dffffc0000000000 R14: ffffc90004117c70 R15: 0000000000000000
-> FS:  000055558ddb3500(0000) GS:ffff88818e88a000(0000) knlGS:0000000000000=
+> RIP: 0010:nla_len include/net/netlink.h:1296 [inline]
+> RIP: 0010:parse_attr net/sched/sch_netem.c:960 [inline]
+> RIP: 0010:netem_quirk_chk+0x8a/0x740 net/sched/sch_netem.c:990
+> Code: 7c 24 60 49 c1 ef 03 43 c7 04 27 f1 f1 f1 f1 43 c7 44 27 13 f3 f3 f=
+3 f3 43 c6 44 27 17 f3 e8 8d 68 67 f8 48 89 d8 48 c1 e8 03 <42> 0f b6 04 20=
+ 84 c0 0f 85 32 06 00 00 0f b7 03 83 c0 fc 44 0f b7
+> RSP: 0018:ffffc900032c7140 EFLAGS: 00010246
+> RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffff88810ff73a00
+> RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff8881b82ce000
+> RBP: ffffc900032c72b8 R08: ffff88810ff73a00 R09: 0000000000000002
+> R10: 00000000fffffff1 R11: ffffffff89589ab0 R12: dffffc0000000000
+> R13: ffffffff89589ab0 R14: ffffffff8f7d9580 R15: 1ffff92000658e34
+> FS:  000055558efa7500(0000) GS:ffff8882a9f35000(0000) knlGS:0000000000000=
 000
 > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f07135e7dac CR3: 00000001728f4000 CR4: 00000000000006f0
+> CR2: 0000200000000100 CR3: 0000000114760000 CR4: 00000000000006f0
 > Call Trace:
 >  <TASK>
->  io_uring_create+0x6b6/0x940 io_uring/io_uring.c:3738
->  io_uring_setup io_uring/io_uring.c:3764 [inline]
->  __do_sys_io_uring_setup io_uring/io_uring.c:3798 [inline]
->  __se_sys_io_uring_setup+0x235/0x240 io_uring/io_uring.c:3789
+>  qdisc_create+0x73f/0xf10 net/sched/sch_api.c:1319
+>  __tc_modify_qdisc net/sched/sch_api.c:1765 [inline]
+>  tc_modify_qdisc+0x1582/0x2140 net/sched/sch_api.c:1829
+>  rtnetlink_rcv_msg+0x77c/0xb70 net/core/rtnetlink.c:6967
+>  netlink_rcv_skb+0x208/0x470 net/netlink/af_netlink.c:2550
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
+>  netlink_unicast+0x82f/0x9e0 net/netlink/af_netlink.c:1344
+>  netlink_sendmsg+0x805/0xb30 net/netlink/af_netlink.c:1894
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg+0x21c/0x270 net/socket.c:742
+>  ____sys_sendmsg+0x505/0x830 net/socket.c:2630
+>  ___sys_sendmsg+0x21f/0x2a0 net/socket.c:2684
+>  __sys_sendmsg net/socket.c:2716 [inline]
+>  __do_sys_sendmsg net/socket.c:2721 [inline]
+>  __se_sys_sendmsg net/socket.c:2719 [inline]
+>  __x64_sys_sendmsg+0x19b/0x260 net/socket.c:2719
 >  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0xfa/0xf80 arch/x86/entry/syscall_64.c:94
+>  do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
 >  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7f071338f749
+> RIP: 0033:0x7f1beb98f749
 > Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f=
 7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
  ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007fff80b05b58 EFLAGS: 00000246 ORIG_RAX: 00000000000001a9
-> RAX: ffffffffffffffda RBX: 00007f07135e5fa0 RCX: 00007f071338f749
-> RDX: 0000000000000000 RSI: 0000200000000040 RDI: 0000000000000024
-> RBP: 00007f0713413f91 R08: 0000000000000000 R09: 0000000000000000
+> RSP: 002b:00007ffd1afcc778 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007f1bebbe5fa0 RCX: 00007f1beb98f749
+> RDX: 0000000000000000 RSI: 0000200000000000 RDI: 0000000000000003
+> RBP: 00007f1beba13f91 R08: 0000000000000000 R09: 0000000000000000
 > R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007f07135e5fa0 R14: 00007f07135e5fa0 R15: 0000000000000002
+> R13: 00007f1bebbe5fa0 R14: 00007f1bebbe5fa0 R15: 0000000000000003
 >  </TASK>
->
->
-> ***
->
-> WARNING in io_uring_alloc_task_context
->
-> tree:      linux-next
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/=
-linux-next
-> base:      92fd6e84175befa1775e5c0ab682938eca27c0b2
-> arch:      amd64
-> compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~e=
-xp1~20250708183702.136), Debian LLD 20.1.8
-> config:    https://ci.syzbot.org/builds/9d67ded7-d9a8-41e3-8b58-51340991c=
-f96/config
-> C repro:   https://ci.syzbot.org/findings/7aa56677-dbe1-4fdc-bbc4-cc701c1=
-0fa7e/c_repro
-> syz repro: https://ci.syzbot.org/findings/7aa56677-dbe1-4fdc-bbc4-cc701c1=
-0fa7e/syz_repro
->
-> ------------[ cut here ]------------
-> WARNING: io_uring/io_uring.h:266 at io_ring_ctx_lock io_uring/io_uring.h:=
-266 [inline], CPU#0: syz.0.17/5982
-> WARNING: io_uring/io_uring.h:266 at io_init_wq_offload io_uring/tctx.c:23=
- [inline], CPU#0: syz.0.17/5982
-> WARNING: io_uring/io_uring.h:266 at io_uring_alloc_task_context+0x677/0x8=
-c0 io_uring/tctx.c:86, CPU#0: syz.0.17/5982
 > Modules linked in:
-> CPU: 0 UID: 0 PID: 5982 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(f=
-ull)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> RIP: 0010:io_ring_ctx_lock io_uring/io_uring.h:266 [inline]
-> RIP: 0010:io_init_wq_offload io_uring/tctx.c:23 [inline]
-> RIP: 0010:io_uring_alloc_task_context+0x677/0x8c0 io_uring/tctx.c:86
-> Code: d8 5b 41 5c 41 5d 41 5e 41 5f 5d c3 cc cc cc cc cc e8 3d ad 96 00 b=
-b f4 ff ff ff eb ab e8 31 ad 96 00 eb 9c e8 2a ad 96 00 90 <0f> 0b 90 e9 12=
- fb ff ff 4c 8d 64 24 60 4c 8d b4 24 f0 00 00 00 ba
-> RSP: 0018:ffffc90003dcf9c0 EFLAGS: 00010293
-> RAX: ffffffff812b1356 RBX: 0000000000000000 RCX: ffff8881777957c0
-> RDX: 0000000000000000 RSI: 0000000000001000 RDI: 0000000000000000
-> RBP: ffffc90003dcfb50 R08: ffffffff8f7de377 R09: 1ffffffff1efbc6e
-> R10: dffffc0000000000 R11: fffffbfff1efbc6f R12: ffff8881052bf000
-> R13: ffff888104bf2000 R14: 0000000000001000 R15: 1ffff1102097e400
-> FS:  00005555613bd500(0000) GS:ffff88818e88a000(0000) knlGS:0000000000000=
+> ---[ end trace 0000000000000000 ]---
+> RIP: 0010:nla_len include/net/netlink.h:1296 [inline]
+> RIP: 0010:parse_attr net/sched/sch_netem.c:960 [inline]
+> RIP: 0010:netem_quirk_chk+0x8a/0x740 net/sched/sch_netem.c:990
+> Code: 7c 24 60 49 c1 ef 03 43 c7 04 27 f1 f1 f1 f1 43 c7 44 27 13 f3 f3 f=
+3 f3 43 c6 44 27 17 f3 e8 8d 68 67 f8 48 89 d8 48 c1 e8 03 <42> 0f b6 04 20=
+ 84 c0 0f 85 32 06 00 00 0f b7 03 83 c0 fc 44 0f b7
+> RSP: 0018:ffffc900032c7140 EFLAGS: 00010246
+> RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffff88810ff73a00
+> RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff8881b82ce000
+> RBP: ffffc900032c72b8 R08: ffff88810ff73a00 R09: 0000000000000002
+> R10: 00000000fffffff1 R11: ffffffff89589ab0 R12: dffffc0000000000
+> R13: ffffffff89589ab0 R14: ffffffff8f7d9580 R15: 1ffff92000658e34
+> FS:  000055558efa7500(0000) GS:ffff8882a9f35000(0000) knlGS:0000000000000=
 000
 > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f7773fe7dac CR3: 000000016cd1c000 CR4: 00000000000006f0
-> Call Trace:
->  <TASK>
->  __io_uring_add_tctx_node+0x455/0x710 io_uring/tctx.c:112
->  io_uring_create+0x559/0x940 io_uring/io_uring.c:3719
->  io_uring_setup io_uring/io_uring.c:3764 [inline]
->  __do_sys_io_uring_setup io_uring/io_uring.c:3798 [inline]
->  __se_sys_io_uring_setup+0x235/0x240 io_uring/io_uring.c:3789
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0xfa/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7f7773d8f749
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f=
-7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
- ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007ffe094f0b68 EFLAGS: 00000246 ORIG_RAX: 00000000000001a9
-> RAX: ffffffffffffffda RBX: 00007f7773fe5fa0 RCX: 00007f7773d8f749
-> RDX: 0000000000000000 RSI: 0000200000000780 RDI: 0000000000000f08
-> RBP: 00007f7773e13f91 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007f7773fe5fa0 R14: 00007f7773fe5fa0 R15: 0000000000000002
->  </TASK>
->
->
-> ***
->
-> WARNING: suspicious RCU usage in io_eventfd_unregister
->
-> tree:      linux-next
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/=
-linux-next
-> base:      92fd6e84175befa1775e5c0ab682938eca27c0b2
-> arch:      amd64
-> compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~e=
-xp1~20250708183702.136), Debian LLD 20.1.8
-> config:    https://ci.syzbot.org/builds/9d67ded7-d9a8-41e3-8b58-51340991c=
-f96/config
-> C repro:   https://ci.syzbot.org/findings/84c08f15-f4f9-4123-b889-1d8d19f=
-3e0b1/c_repro
-> syz repro: https://ci.syzbot.org/findings/84c08f15-f4f9-4123-b889-1d8d19f=
-3e0b1/syz_repro
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
-> WARNING: suspicious RCU usage
-> syzkaller #0 Not tainted
-> -----------------------------
-> io_uring/eventfd.c:160 suspicious rcu_dereference_protected() usage!
->
-> other info that might help us debug this:
->
->
-> rcu_scheduler_active =3D 2, debug_locks =3D 1
-> 2 locks held by kworker/u10:12/3941:
->  #0: ffff888168f41148 ((wq_completion)iou_exit){+.+.}-{0:0}, at: process_=
-one_work+0x841/0x15a0 kernel/workqueue.c:3236
->  #1: ffffc90021f3fb80 ((work_completion)(&ctx->exit_work)){+.+.}-{0:0}, a=
-t: process_one_work+0x868/0x15a0 kernel/workqueue.c:3237
->
-> stack backtrace:
-> CPU: 1 UID: 0 PID: 3941 Comm: kworker/u10:12 Not tainted syzkaller #0 PRE=
-EMPT(full)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Workqueue: iou_exit io_ring_exit_work
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
->  lockdep_rcu_suspicious+0x140/0x1d0 kernel/locking/lockdep.c:6876
->  io_eventfd_unregister+0x18b/0x1c0 io_uring/eventfd.c:159
->  io_ring_ctx_free+0x18a/0x820 io_uring/io_uring.c:2882
->  io_ring_exit_work+0xe71/0x1030 io_uring/io_uring.c:3110
->  process_one_work+0x93a/0x15a0 kernel/workqueue.c:3261
->  process_scheduled_works kernel/workqueue.c:3344 [inline]
->  worker_thread+0x9b0/0xee0 kernel/workqueue.c:3425
->  kthread+0x711/0x8a0 kernel/kthread.c:463
->  ret_from_fork+0x599/0xb30 arch/x86/kernel/process.c:158
->  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
->  </TASK>
+> CR2: 0000200000000100 CR3: 0000000114760000 CR4: 00000000000006f0
+> ----------------
+> Code disassembly (best guess), 1 bytes skipped:
+>    0:   24 60                   and    $0x60,%al
+>    2:   49 c1 ef 03             shr    $0x3,%r15
+>    6:   43 c7 04 27 f1 f1 f1    movl   $0xf1f1f1f1,(%r15,%r12,1)
+>    d:   f1
+>    e:   43 c7 44 27 13 f3 f3    movl   $0xf3f3f3f3,0x13(%r15,%r12,1)
+>   15:   f3 f3
+>   17:   43 c6 44 27 17 f3       movb   $0xf3,0x17(%r15,%r12,1)
+>   1d:   e8 8d 68 67 f8          call   0xf86768af
+>   22:   48 89 d8                mov    %rbx,%rax
+>   25:   48 c1 e8 03             shr    $0x3,%rax
+> * 29:   42 0f b6 04 20          movzbl (%rax,%r12,1),%eax <-- trapping in=
+struction
+>   2e:   84 c0                   test   %al,%al
+>   30:   0f 85 32 06 00 00       jne    0x668
+>   36:   0f b7 03                movzwl (%rbx),%eax
+>   39:   83 c0 fc                add    $0xfffffffc,%eax
+>   3c:   44                      rex.R
+>   3d:   0f                      .byte 0xf
+>   3e:   b7                      .byte 0xb7
 >
 >
 > ***
@@ -325,8 +217,9 @@ EMPT(full)
 > syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 >
 > The email will later be sent to:
-> [axboe@kernel.dk csander@purestorage.com io-uring@vger.kernel.org linux-k=
-ernel@vger.kernel.org]
+> [davem@davemloft.net edumazet@google.com horms@kernel.org jhs@mojatatu.co=
+m jiri@resnulli.us kuba@kernel.org netdev@vger.kernel.org pabeni@redhat.com=
+ stephen@networkplumber.org victor@mojatatu.com xiyou.wangcong@gmail.com]
 >
 > If the report looks fine to you, reply with:
 > #syz upstream
@@ -337,4 +230,4 @@ ernel@vger.kernel.org]
 > To unsubscribe from this group and stop receiving emails from it, send an=
  email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
 > To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/692686c2.a70a0220.d98e3.00ca.GAE%40google.com.
+-upstream-moderation/69268031.a70a0220.d98e3.00c9.GAE%40google.com.
