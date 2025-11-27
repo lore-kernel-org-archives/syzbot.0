@@ -1,80 +1,78 @@
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F49223AB95
-	for <syzbot@lists.linux.dev>; Thu, 27 Nov 2025 02:40:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9298E2E92B7
+	for <syzbot@lists.linux.dev>; Thu, 27 Nov 2025 21:40:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764211216; cv=none; b=TWMRxfNhszbrNeL5VD+bWkCbYtWYJcVAGeZ1jQ0SE2MIju8jfGn7goVWZpayijruI+4cksakhWpz1aDjBwTIt42i1jAypl9oGRjrRh1Fc8ZrD66RmUpp87FckvfpO97rRUqtI+lxBfn0xXyyXKOiv6I3NipJVoVN+kHzVjxPRO0=
+	t=1764279648; cv=none; b=pSBoNLethnIyaptGNcJCE30RtzSdC+ftGAQknFuBr2l/rNu6hYmSUGvHKmhDfmUdn5lD3GPDQzgLVNWYcRGZLgevLHvTn7dPMOxo8Ddb7Kw0+QWY3dD9PIdOsKlfhXMOAZc/2cUIyw1ePwRaahytIFPo/1hIZT1GxyBXFMl+6WE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764211216; c=relaxed/simple;
-	bh=lC9RQ6irwa54dKb5hEZUwiDQc6qZqThN6SpoIHLcsYM=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ppF5GJUml8MWRlFAWOaFa/AGowVTcgyiAZBqBL92XgO+lXk40bTqWw+JIf13nBRceHJi5XS94/nhFL7PuI0AqJeQBznz1kDz78P1fqi9DeNgcwW0Kwr0y9bLhgXmQwlLdbPThyJD5l/5evrPS5IpJsZ9DYRWAR4QyZZzb7a2aCE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
+	s=arc-20240116; t=1764279648; c=relaxed/simple;
+	bh=k7igYkvFJ39NBWJ199O/htodzWe4Zy/38URQ385wBwo=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ffM7mMYALPX6GOvp+TfCsDdKAcA2jC/g14fTBQn3lfyT01Xk5rC9AhO5dzQPLTppWbGAR1RdRsp5EJKkAcgxDD8rGpDyYQTMwrVUiA36Q0dIZmXVeta2/f+g+9ius1IONHWZAcNfwyWSvsZIf3OAIoI+Wz640twTBFwq17TzC/4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-4330ead8432so3404575ab.0
-        for <syzbot@lists.linux.dev>; Wed, 26 Nov 2025 18:40:14 -0800 (PST)
+Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-43373024b5eso8673685ab.1
+        for <syzbot@lists.linux.dev>; Thu, 27 Nov 2025 13:40:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764211214; x=1764816014;
+        d=1e100.net; s=20230601; t=1764279646; x=1764884446;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=G3KrKtu2vt4/kHkQ+6I4eHXzTWgAJ+hjc9+SYbRQY90=;
-        b=rWhrtGY/5CQX3wZvZRR2mXOOMjFKI9xdxmbxkpN8Y+xpB6zUoc1TflvviTmYNpqKMw
-         SexhttPCqHTXp7MLBw1CEr/Sz7DLEMgyerLdEp0vWw1jPbY7HZRWW3u97yBp65/qMzoS
-         MgjqJsfKFWTvzeoLu7+HXQYlbhWORgaE2LD/f/1XwTpEZn3BA2Jr3oAd6xqqynqtROf7
-         k5eqQvSCZM/yH4lgp66SpJVzexTUDKYoaDI1flHLVolDcZNWRINUbWkylf7TrIy1sqhc
-         2x+XI32XzS3DuoEsxLpDUBuZfX9NVN8Iq++Ypbn6fwMpG7KfU2izLF0y9PIKadrr/PxE
-         1OMA==
-X-Gm-Message-State: AOJu0Yx/doUWNA53ycR6Ec23IC1D40EyRD9vaa4ehLcalro79qp2aDIH
-	b3e8dHayd1cg3eScZi9PtU29AoxcuiCpp+NATJmYfOFP4/rR17UY0eT+wHHJjzcWVQqpGNLVJK3
-	gnXtot6uPYGcjBWZ4Dygwcmh3ijnO8+TJqPbYUvYR4m9HmuOC9JGZsSCMckE=
-X-Google-Smtp-Source: AGHT+IFapDG+BAY4pOzeGBeAoIZr/bu3Yc03dfm4kyTFrY4UuLekJEeaARuiz+MstKRUJH6mN+83yQY0SOELgJyXpcDg0Pkali13
+        bh=aPVbG0krE8S3Qm41Dq9Hw2igOjRm1RVnaZT2Mb1Cs2w=;
+        b=ChKpcjOOT5SkruVN5tDlXi+P5dWp+yOw7hrahJPL32wYh55Ykmox80ix2pCE3U/9Kt
+         1Nha1PCdD1XE3aChpw8eUtNFspiI+QYHlR0qV6LELePV0X/Xo4mZn7FKUEY+jjZsor9m
+         VtFNz8cVhDBoWn7y+Wk5NNj6FPwdGQtHkoQqVuCp08sZTDQ0AVq+OFjDLqGjm0NAvvHa
+         ZUN7iODbV2r1RNXy4bmit284EN30QCT3KoDS40i7Y17RFG6VjySJPSCoq+zRUue2C7ns
+         zJ70g9Sxzu39a1KxL9F1YQwfVaS2PTEo48Rem9OWCdwfkhHRveIQA+MEK3m/9cMjgb7c
+         E1rg==
+X-Gm-Message-State: AOJu0YzYzQ/O5m8vKwRh6wRKc0CsGAy3uUlxCNnHQ+5G0IoGJnIGj21C
+	k3uO2JbjqWEwOg9BtbrMYq4LJvveXoGMwuxG6JLSj/OybV9nyDdHsv+L3ajC9RoSCSLa78TGSdT
+	fw0y/SGcI1Pce+rlU6YNm1353d8F0cAFYTJOjoaouz1AdWuFuGoTC3X5iz84=
+X-Google-Smtp-Source: AGHT+IEk/I1YX1QAUGpSbUw+BIJNNDQXtNLhidc8SWbYvX/QEWWi/BK1lfafP0U+2w+Uuw6A/jHz1BR/XuaONIhIomV6p29WHjXj
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1a49:b0:434:a78e:f6f0 with SMTP id
- e9e14a558f8ab-435dd07483cmr78841295ab.14.1764211214137; Wed, 26 Nov 2025
- 18:40:14 -0800 (PST)
-Date: Wed, 26 Nov 2025 18:40:14 -0800
+X-Received: by 2002:a05:6e02:3e8c:b0:433:51e2:d7ac with SMTP id
+ e9e14a558f8ab-435dd03c755mr110728645ab.9.1764279645789; Thu, 27 Nov 2025
+ 13:40:45 -0800 (PST)
+Date: Thu, 27 Nov 2025 13:40:45 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6927ba0e.a70a0220.d98e3.00ea.GAE@google.com>
-Subject: [moderation/CI] Re: blk-mq: use array manage hctx map instead of xarray
-From: syzbot ci <syzbot+cibefc566da4f5c17c@syzkaller.appspotmail.com>
+Message-ID: <6928c55d.a70a0220.d98e3.0118.GAE@google.com>
+Subject: [moderation/CI] Re: io_uring/zcrx: implement large rx buffer support
+From: syzbot ci <syzbot+cidf5d85076b338c72@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v2] blk-mq: use array manage hctx map instead of xarray
-https://lore.kernel.org/all/20251127013908.66118-1-fengnanchang@gmail.com
-* [PATCH v2 1/2] blk-mq: use array manage hctx map instead of xarray
-* [PATCH v2 2/2] blk-mq: fix potential uaf for 'queue_hw_ctx'
+[v1] io_uring/zcrx: implement large rx buffer support
+https://lore.kernel.org/all/7486ab32e99be1f614b3ef8d0e9bc77015b173f7.1764265323.git.asml.silence@gmail.com
+* [PATCH review-only] io_uring/zcrx: implement large rx buffer support
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/d5880bdd-81d6-4fce-8444-e63cc81aab91
+https://ci.syzbot.org/series/eb38d633-11eb-4de2-b1fb-e4a7bd0c943f
 
 ***
 
 kernel build error
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      4941a17751c99e17422be743c02c923ad706f888
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
+base:      92fd6e84175befa1775e5c0ab682938eca27c0b2
 arch:      amd64
 compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/e158b2bc-0c62-491c-9385-3853a7d6a687/config
+config:    https://ci.syzbot.org/builds/bde1c86a-d7b7-474a-9faa-cdeb8160fcf5/config
 
-drivers/block/rnbd/rnbd-clt.c:1324:2: error: call to undeclared function 'queue_hctx'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-drivers/block/rnbd/rnbd-clt.c:1324:2: error: incompatible integer to pointer conversion assigning to 'struct blk_mq_hw_ctx *' from 'int' [-Wint-conversion]
+io_uring/zcrx.c:833:11: error: no member named 'rx_buf_len' in 'struct pp_memory_provider_params'
 
 ***
 
@@ -87,7 +85,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[axboe@kernel.dk changfengnan@bytedance.com fengnanchang@gmail.com hare@suse.de hch@lst.de linux-block@vger.kernel.org ming.lei@redhat.com yukuai3@huawei.com]
+[asml.silence@gmail.com io-uring@vger.kernel.org netdev@vger.kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
