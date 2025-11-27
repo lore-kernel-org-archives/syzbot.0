@@ -1,78 +1,78 @@
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9298E2E92B7
-	for <syzbot@lists.linux.dev>; Thu, 27 Nov 2025 21:40:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BAC02BE630
+	for <syzbot@lists.linux.dev>; Thu, 27 Nov 2025 21:56:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764279648; cv=none; b=pSBoNLethnIyaptGNcJCE30RtzSdC+ftGAQknFuBr2l/rNu6hYmSUGvHKmhDfmUdn5lD3GPDQzgLVNWYcRGZLgevLHvTn7dPMOxo8Ddb7Kw0+QWY3dD9PIdOsKlfhXMOAZc/2cUIyw1ePwRaahytIFPo/1hIZT1GxyBXFMl+6WE=
+	t=1764280608; cv=none; b=duYa/gP0T5HaQ7tFcYdRnQGeHyAUxKfZcV9BcpQeVX7nQwLV9YvtSt5S/SaJ+ScQvk4uIX/sqn4+sa1FCQSL6bGo7yuhINZC78dOkf5gakgNitiyGQ9QGvka7rypwSNQA2cp7iCUA+jrIKoi5+Wt1l/3sMpQ64yg9HWl49hEOic=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764279648; c=relaxed/simple;
-	bh=k7igYkvFJ39NBWJ199O/htodzWe4Zy/38URQ385wBwo=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ffM7mMYALPX6GOvp+TfCsDdKAcA2jC/g14fTBQn3lfyT01Xk5rC9AhO5dzQPLTppWbGAR1RdRsp5EJKkAcgxDD8rGpDyYQTMwrVUiA36Q0dIZmXVeta2/f+g+9ius1IONHWZAcNfwyWSvsZIf3OAIoI+Wz640twTBFwq17TzC/4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
+	s=arc-20240116; t=1764280608; c=relaxed/simple;
+	bh=HqExT+ENhvK60q9LGhKeMMn6olCMb2EFcjc8sFWBmmQ=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=j0TsWGxc+pgnviHtJg28tISlIpo5rCsSuFyNJAeDBiiiFP7yi94pCcMSh6a/fRzRJjHUBCFxtXSH0q7hVEoPBbT/8KM5b7CWpcJrSI6toL7Nnxb+Zsbm4MuL/fCd7hkWIbVKxtfA0nEzomLremg2mqcRk23Bk3A/0ixruaewz08=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-43373024b5eso8673685ab.1
-        for <syzbot@lists.linux.dev>; Thu, 27 Nov 2025 13:40:46 -0800 (PST)
+Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-43328dcdac1so11098675ab.2
+        for <syzbot@lists.linux.dev>; Thu, 27 Nov 2025 13:56:47 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764279646; x=1764884446;
+        d=1e100.net; s=20230601; t=1764280606; x=1764885406;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=aPVbG0krE8S3Qm41Dq9Hw2igOjRm1RVnaZT2Mb1Cs2w=;
-        b=ChKpcjOOT5SkruVN5tDlXi+P5dWp+yOw7hrahJPL32wYh55Ykmox80ix2pCE3U/9Kt
-         1Nha1PCdD1XE3aChpw8eUtNFspiI+QYHlR0qV6LELePV0X/Xo4mZn7FKUEY+jjZsor9m
-         VtFNz8cVhDBoWn7y+Wk5NNj6FPwdGQtHkoQqVuCp08sZTDQ0AVq+OFjDLqGjm0NAvvHa
-         ZUN7iODbV2r1RNXy4bmit284EN30QCT3KoDS40i7Y17RFG6VjySJPSCoq+zRUue2C7ns
-         zJ70g9Sxzu39a1KxL9F1YQwfVaS2PTEo48Rem9OWCdwfkhHRveIQA+MEK3m/9cMjgb7c
-         E1rg==
-X-Gm-Message-State: AOJu0YzYzQ/O5m8vKwRh6wRKc0CsGAy3uUlxCNnHQ+5G0IoGJnIGj21C
-	k3uO2JbjqWEwOg9BtbrMYq4LJvveXoGMwuxG6JLSj/OybV9nyDdHsv+L3ajC9RoSCSLa78TGSdT
-	fw0y/SGcI1Pce+rlU6YNm1353d8F0cAFYTJOjoaouz1AdWuFuGoTC3X5iz84=
-X-Google-Smtp-Source: AGHT+IEk/I1YX1QAUGpSbUw+BIJNNDQXtNLhidc8SWbYvX/QEWWi/BK1lfafP0U+2w+Uuw6A/jHz1BR/XuaONIhIomV6p29WHjXj
+        bh=JsL6qvg3Hs3GxfgKe6SlEh3X9GIUm1l6wwazvmKOIlo=;
+        b=JnKeboZ/67Vphezr11hq92jLOSFLAinZl18cwWQ6inGMEoKVm8e8eGDp6URRrVt3wz
+         /rF8IXups8jb/WQjDCNBIb5UHh4eu1Z4ATWT9zrb5gNFERp4wNuopOfwgLKHGlpkqL3D
+         CVpqErYQsU53Vte0glxLBQgBgdnvKxlWV32u+Bxr7sdsFOuEp32hfJtRRfipYoJwkOS9
+         QYHus0eAThVyzm/PEFjAZPyF2pk5eHxiwkkWwN4DbUIWeUBCoxEqtRnlmm/tZAYzg3l1
+         yufJfeW1lNvRZwXixCe8nLFXdfNQE/O20sw3ECita632p6T/U0EpFemKoquRuSCb4uMO
+         3Mog==
+X-Gm-Message-State: AOJu0YxyPLwxhvclplJ8C92JcCbTGJv49OWnf59Peqvum/jLes5csobg
+	3uGSjH8Lv2KMcGSyh5hut+s0RPnYlalIK7YD0CXxnFZB1mwzt85TooyFDgN16c2DUwmxbmammoJ
+	1OC/q0lqQhRhgwomNyJMM4JXXP26PynqNCjslQ5Hn/K2/OCoSyA2DrDA8G4U=
+X-Google-Smtp-Source: AGHT+IFdJAcJAvqz0bN2mX0foNoz6lGeQ+SQ7efyJYX1UESAzEf/q3fRQ9TE+U8XBT2dD2nTBU1HNcCPWVwRlJBROc0FvQ+nYYtg
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:3e8c:b0:433:51e2:d7ac with SMTP id
- e9e14a558f8ab-435dd03c755mr110728645ab.9.1764279645789; Thu, 27 Nov 2025
- 13:40:45 -0800 (PST)
-Date: Thu, 27 Nov 2025 13:40:45 -0800
+X-Received: by 2002:a05:6e02:250d:b0:433:78fa:8000 with SMTP id
+ e9e14a558f8ab-435dd0e8d2fmr94141325ab.24.1764280606600; Thu, 27 Nov 2025
+ 13:56:46 -0800 (PST)
+Date: Thu, 27 Nov 2025 13:56:46 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6928c55d.a70a0220.d98e3.0118.GAE@google.com>
-Subject: [moderation/CI] Re: io_uring/zcrx: implement large rx buffer support
-From: syzbot ci <syzbot+cidf5d85076b338c72@syzkaller.appspotmail.com>
+Message-ID: <6928c91e.a70a0220.d98e3.011e.GAE@google.com>
+Subject: [moderation/CI] Re: bpf: check for insn arrays in check_ptr_alignment
+From: syzbot ci <syzbot+ci744778633ebbc17c@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] io_uring/zcrx: implement large rx buffer support
-https://lore.kernel.org/all/7486ab32e99be1f614b3ef8d0e9bc77015b173f7.1764265323.git.asml.silence@gmail.com
-* [PATCH review-only] io_uring/zcrx: implement large rx buffer support
+[v1] bpf: check for insn arrays in check_ptr_alignment
+https://lore.kernel.org/all/20251127210732.3241888-1-a.s.protopopov@gmail.com
+* [PATCH bpf-next] bpf: check for insn arrays in check_ptr_alignment
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/eb38d633-11eb-4de2-b1fb-e4a7bd0c943f
+https://ci.syzbot.org/series/1a9e3044-2e1a-4d53-9086-9e8da1793af5
 
 ***
 
 kernel build error
 
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-base:      92fd6e84175befa1775e5c0ab682938eca27c0b2
+tree:      bpf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf-next.git
+base:      5262cb23393f7e86a64d1a45eeaa8a6f99f03d10
 arch:      amd64
 compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/bde1c86a-d7b7-474a-9faa-cdeb8160fcf5/config
+config:    https://ci.syzbot.org/builds/1eba2ba3-74cf-49e5-87bb-fbc49cde69ac/config
 
-io_uring/zcrx.c:833:11: error: no member named 'rx_buf_len' in 'struct pp_memory_provider_params'
+kernel/bpf/verifier.c:7568:25: error: use of undeclared identifier 'insn_array'
 
 ***
 
@@ -85,7 +85,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[asml.silence@gmail.com io-uring@vger.kernel.org netdev@vger.kernel.org]
+[a.s.protopopov@gmail.com ast@kernel.org bpf@vger.kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
