@@ -1,201 +1,177 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 833C21DFF7
-	for <syzbot@lists.linux.dev>; Mon,  1 Dec 2025 00:27:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3EA92032D
+	for <syzbot@lists.linux.dev>; Mon,  1 Dec 2025 00:43:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764548823; cv=none; b=SpPczF4cH6MEyfD1xRxXh7xjmy7f0jAivBmHIQCNmIHmF3Kbm0clLYza1niHF3u7eI50z4/XmvcbvNfHcipe1gr+0JBsCXaH2ShEXCpMNUp5KZmA641W+gn7UHfO9A40/EC2+dYHonoQhwC+DftzsWPCT2fr7CDZRCBNfhMeaqY=
+	t=1764549792; cv=none; b=VagPmYgVihO3FISVUlMUr08eKCoHeRADKzkUSaFk8CpFZip4pqTaTrv7h/szkghoqosxhs/AdV2z4+gM/9iHC6cbS/cmzn/M3m6nPgvhcWHDtVAyK4qGe34tDUS4Y0PAtEo67YDepres4kFtmBa/oSevGrJmkn0HQTqXHilPViI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764548823; c=relaxed/simple;
-	bh=vsOGfrQzQL2f5q2Tu3FjKWqtT1syS1Ahw0I8b6xuyRY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IO0SrMLQqZIPdatLBlPmRuaoIY6KGb2ahUZqj1t4uxvt55lPgiW+8KKUrMbLqTZ2M47AVPN+ECt/qPXhK3cmMK1k94F8kDXQ1EihvaAU01yL/0ZGyBOOK3Pkehl52iJhag0AMfb5BqImMnS4KoBELH62oQ8HnyVCPA0kMytZ+E4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=AGHl8m3H; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="AGHl8m3H"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1764548820;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=fd4h/FUgUJM96qwVG508VBNXscpnOt58b1YzYn2vCdg=;
-	b=AGHl8m3H9I5n+9han3qHRw8fFgJypPmBe6G5HhXtstQbOIg3Ao1ojNED7fy5Nz+2ikz6RD
-	s/1chHnj1rm7DyC4zfAZ5IQpA9XYdqPh2GllklbDv/pf9gAhz85zeqScmOgbvI8wWnPHoM
-	dpG6R68WoHhiERjBxuGNxlVZlKvyNhA=
-Received: from mx-prod-mc-08.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-35-165-154-97.us-west-2.compute.amazonaws.com [35.165.154.97]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-62-xTnCGx7POYSAhW3AWFR1zA-1; Sun,
- 30 Nov 2025 19:26:55 -0500
-X-MC-Unique: xTnCGx7POYSAhW3AWFR1zA-1
-X-Mimecast-MFC-AGG-ID: xTnCGx7POYSAhW3AWFR1zA_1764548813
-Received: from mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.93])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-08.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 1FAAA1800447;
-	Mon,  1 Dec 2025 00:26:53 +0000 (UTC)
-Received: from fedora (unknown [10.72.116.20])
-	by mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 5DADB1800346;
-	Mon,  1 Dec 2025 00:26:46 +0000 (UTC)
-Date: Mon, 1 Dec 2025 08:26:41 +0800
-From: Ming Lei <ming.lei@redhat.com>
-To: Yu Kuai <yukuai@fnnas.com>
-Cc: syzbot ci <syzbot+cifc73f799778e73e7@syzkaller.appspotmail.com>,
-	axboe@kernel.dk, bvanassche@acm.org, linux-block@vger.kernel.org,
-	nilay@linux.ibm.com, tj@kernel.org, syzbot@lists.linux.dev,
-	syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot ci] Re: blk-mq: fix possible deadlocks
-Message-ID: <aSzgwai7vSElcjLo@fedora>
-References: <692c17ca.a70a0220.d98e3.016c.GAE@google.com>
- <18d6c3dc-2a86-46cd-972d-0158d7c3c461@fnnas.com>
+	s=arc-20240116; t=1764549792; c=relaxed/simple;
+	bh=OfonqANNDfjrcZ39PYwLRZo5MDQkU3q71u43KlEmkbg=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Sorv8u9ZOUwoIj2R0bHeti9yHDwk4oFUkQuj6lqaiy1HY3rvOoqH3UNCIgy2cm6UcsZS6eKSznXaWUohJxe8FnWABZfLr2lMFbs89716xLczAjRzZ03oIwemWScxX0+hR+rd/e4/LPNvGS6zdpy8NYxwMyqGUjhMWAUJ/uDINgw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-43300f41682so22742825ab.1
+        for <syzbot@lists.linux.dev>; Sun, 30 Nov 2025 16:43:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764549789; x=1765154589;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=yNQFxc9Ss+4rqrcBp6y+RRW36ZBhpN1V5ZYEiLRbQyY=;
+        b=pxpJk7Ci+iXZ8frgyg7BGa0GmLLKOEh6Y/sbB5i1Rcx4BrQaoPtwA+uw/H5sQYTWYZ
+         DJS9pPJ6HZZ0J9IGXIWgAYffm/LEcKXYbDdly/dS6SZ5YL4CIq3cDTLejK2b787wyM80
+         VrEAUUqoVc+SFQyez80A/nbeBlwmeJvUpNY9XnWeNYPCSziobcGeC84aJyS/9xzpUQwK
+         yqCtN08y0JctoDi70SdZBk4i4no1pjIFtbAonbOxay+xPsH6v95Tvq6dmvyyRhwGvJjF
+         hg5OuId4HXXDml6Q6sD+oNOBFVWAvYJEsgSbdTZWGVeKZs1rkUyLFnnwKf6SYHn6MEfT
+         Gf7w==
+X-Gm-Message-State: AOJu0YyhvURKiqpWkhnUpNugq7m8Q18drnn7ohfMvwLuM1lGxVN+Qti6
+	MyaLJVXzgVzkT0WS1qwz0nLq943D6qxz3FecOfpsMunFrCXIRWo1hOp6R1e1FFYct1w0jut2vbE
+	H1vIEIVATkdcjh9Hf6zdVeP3BqprDKT/J3UP/sc8+k7656Ii684UZNv56TVA=
+X-Google-Smtp-Source: AGHT+IENkZ+wQAA0hW/bzaygAOUoqjOB3YHVGermmffUmyKIeCUhAiCOUM/o1nU2nAhdhdIE50J8fUAfZ4jWhStCHEdvcDgiQ/MA
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <18d6c3dc-2a86-46cd-972d-0158d7c3c461@fnnas.com>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.93
+X-Received: by 2002:a05:6e02:1749:b0:433:7cf7:14ce with SMTP id
+ e9e14a558f8ab-435b986a858mr291882265ab.11.1764549788741; Sun, 30 Nov 2025
+ 16:43:08 -0800 (PST)
+Date: Sun, 30 Nov 2025 16:43:08 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <692ce49c.a70a0220.2ea503.00aa.GAE@google.com>
+Subject: [moderation/CI] Re: Multi-queue aware sch_cake
+From: syzbot ci <syzbot+ci17459ab283a71134@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Dec 01, 2025 at 03:50:22AM +0800, Yu Kuai wrote:
-> Hi,
-> 
-> 在 2025/11/30 18:09, syzbot ci 写道:
-> > syzbot ci has tested the following series
-> >
-> > [v3] blk-mq: fix possible deadlocks
-> > https://lore.kernel.org/all/20251130024349.2302128-1-yukuai@fnnas.com
-> > * [PATCH v3 01/10] blk-mq-debugfs: factor out a helper to register debugfs for all rq_qos
-> > * [PATCH v3 02/10] blk-rq-qos: fix possible debugfs_mutex deadlock
-> > * [PATCH v3 03/10] blk-mq-debugfs: make blk_mq_debugfs_register_rqos() static
-> > * [PATCH v3 04/10] blk-mq-debugfs: warn about possible deadlock
-> > * [PATCH v3 05/10] block/blk-rq-qos: add a new helper rq_qos_add_frozen()
-> > * [PATCH v3 06/10] blk-wbt: fix incorrect lock order for rq_qos_mutex and freeze queue
-> > * [PATCH v3 07/10] blk-iocost: fix incorrect lock order for rq_qos_mutex and freeze queue
-> > * [PATCH v3 08/10] blk-iolatency: fix incorrect lock order for rq_qos_mutex and freeze queue
-> > * [PATCH v3 09/10] blk-throttle: remove useless queue frozen
-> > * [PATCH v3 10/10] block/blk-rq-qos: cleanup rq_qos_add()
-> >
-> > and found the following issue:
-> > possible deadlock in pcpu_alloc_noprof
-> >
-> > Full report is available here:
-> > https://ci.syzbot.org/series/1aec77f0-c53f-4b3b-93fb-b3853983b6bd
-> >
-> > ***
-> >
-> > possible deadlock in pcpu_alloc_noprof
-> >
-> > tree:      linux-next
-> > URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-> > base:      7d31f578f3230f3b7b33b0930b08f9afd8429817
-> > arch:      amd64
-> > compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-> > config:    https://ci.syzbot.org/builds/70dca9e4-6667-4930-9024-150d656e503e/config
-> >
-> > soft_limit_in_bytes is deprecated and will be removed. Please report your usecase to linux-mm@kvack.org if you depend on this functionality.
-> > ======================================================
-> > WARNING: possible circular locking dependency detected
-> > syzkaller #0 Not tainted
-> > ------------------------------------------------------
-> > syz-executor/6047 is trying to acquire lock:
-> > ffffffff8e04f760 (fs_reclaim){+.+.}-{0:0}, at: prepare_alloc_pages+0x152/0x650
-> >
-> > but task is already holding lock:
-> > ffffffff8e02dde8 (pcpu_alloc_mutex){+.+.}-{4:4}, at: pcpu_alloc_noprof+0x25b/0x1750
-> >
-> > which lock already depends on the new lock.
-> >
-> >
-> > the existing dependency chain (in reverse order) is:
-> >
-> > -> #2 (pcpu_alloc_mutex){+.+.}-{4:4}:
-> >         __mutex_lock+0x187/0x1350
-> >         pcpu_alloc_noprof+0x25b/0x1750
-> >         blk_stat_alloc_callback+0xd5/0x220
-> >         wbt_init+0xa3/0x500
-> >         wbt_enable_default+0x25d/0x350
-> >         blk_register_queue+0x36a/0x3f0
-> >         __add_disk+0x677/0xd50
-> >         add_disk_fwnode+0xfc/0x480
-> >         loop_add+0x7f0/0xad0
-> >         loop_init+0xd9/0x170
-> >         do_one_initcall+0x1fb/0x820
-> >         do_initcall_level+0x104/0x190
-> >         do_initcalls+0x59/0xa0
-> >         kernel_init_freeable+0x334/0x4b0
-> >         kernel_init+0x1d/0x1d0
-> >         ret_from_fork+0x599/0xb30
-> >         ret_from_fork_asm+0x1a/0x30
-> >
-> > -> #1 (&q->q_usage_counter(io)#17){++++}-{0:0}:
-> >         blk_alloc_queue+0x538/0x620
-> >         __blk_mq_alloc_disk+0x15c/0x340
-> >         loop_add+0x411/0xad0
-> >         loop_init+0xd9/0x170
-> >         do_one_initcall+0x1fb/0x820
-> >         do_initcall_level+0x104/0x190
-> >         do_initcalls+0x59/0xa0
-> >         kernel_init_freeable+0x334/0x4b0
-> >         kernel_init+0x1d/0x1d0
-> >         ret_from_fork+0x599/0xb30
-> >         ret_from_fork_asm+0x1a/0x30
-> >
-> > -> #0 (fs_reclaim){+.+.}-{0:0}:
-> >         __lock_acquire+0x15a6/0x2cf0
-> >         lock_acquire+0x117/0x340
-> >         fs_reclaim_acquire+0x72/0x100
-> >         prepare_alloc_pages+0x152/0x650
-> >         __alloc_frozen_pages_noprof+0x123/0x370
-> >         __alloc_pages_noprof+0xa/0x30
-> >         pcpu_populate_chunk+0x182/0xb30
-> >         pcpu_alloc_noprof+0xcb6/0x1750
-> >         xt_percpu_counter_alloc+0x161/0x220
-> >         translate_table+0x1323/0x2040
-> >         ip6t_register_table+0x106/0x7d0
-> >         ip6table_nat_table_init+0x43/0x2e0
-> >         xt_find_table_lock+0x30c/0x3e0
-> >         xt_request_find_table_lock+0x26/0x100
-> >         do_ip6t_get_ctl+0x730/0x1180
-> >         nf_getsockopt+0x26e/0x290
-> >         ipv6_getsockopt+0x1ed/0x290
-> >         do_sock_getsockopt+0x2b4/0x3d0
-> >         __x64_sys_getsockopt+0x1a5/0x250
-> >         do_syscall_64+0xfa/0xf80
-> >         entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> >
-> > other info that might help us debug this:
-> >
-> > Chain exists of:
-> >    fs_reclaim --> &q->q_usage_counter(io)#17 --> pcpu_alloc_mutex
-> >
-> >   Possible unsafe locking scenario:
-> >
-> >         CPU0                    CPU1
-> >         ----                    ----
-> >    lock(pcpu_alloc_mutex);
-> >                                 lock(&q->q_usage_counter(io)#17);
-> >                                 lock(pcpu_alloc_mutex);
-> >    lock(fs_reclaim);
-> 
-> This does not look like introduced by this set, wbt_init() will hold
-> pcpu_alloc_mutex, and it can be called with queue frozen without this
-> set.
+syzbot ci has tested the following series
 
-It is introduced by your patch 6 in which blk_mq_freeze_queue() is added
-before calling wb_init() from wbt_enable_default(), then the warning is
-triggered.
+[v3] Multi-queue aware sch_cake
+https://lore.kernel.org/all/20251130-mq-cake-sub-qdisc-v3-0-5f66c548ecdc@redhat.com
+* [PATCH net-next v3 1/5] net/sched: Export mq functions for reuse
+* [PATCH net-next v3 2/5] net/sched: sch_cake: Factor out config variables into separate struct
+* [PATCH net-next v3 3/5] net/sched: sch_cake: Add cake_mq qdisc for using cake on mq devices
+* [PATCH net-next v3 4/5] net/sched: sch_cake: Share config across cake_mq sub-qdiscs
+* [PATCH net-next v3 5/5] net/sched: sch_cake: share shaper state across sub-instances of cake_mq
+
+and found the following issue:
+general protection fault in cake_destroy
+
+Full report is available here:
+https://ci.syzbot.org/series/469dbe1a-fdda-4481-ae02-4a1ec685d27e
+
+***
+
+general protection fault in cake_destroy
+
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      db4029859d6fd03f0622d394f4cdb1be86d7ec62
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/e4777953-23df-407f-8d5c-6b069ad52321/config
+C repro:   https://ci.syzbot.org/findings/c250604b-a027-4732-9850-88499503b6a4/c_repro
+syz repro: https://ci.syzbot.org/findings/c250604b-a027-4732-9850-88499503b6a4/syz_repro
+
+netlink: 'syz.0.17': attribute type 9 has an invalid length.
+Oops: general protection fault, probably for non-canonical address 0xdffffc0000000006: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000030-0x0000000000000037]
+CPU: 1 UID: 0 PID: 5958 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:cake_destroy+0x9f/0x100 net/sched/sch_cake.c:2790
+Code: 81 c3 98 02 00 00 48 89 d8 48 c1 e8 03 42 80 3c 38 00 74 08 48 89 df e8 bf 0f c8 f8 48 8b 1b 4c 8d 73 34 4c 89 f0 48 c1 e8 03 <42> 0f b6 04 38 84 c0 75 35 41 0f b6 2e 31 ff 89 ee e8 eb 4e 62 f8
+RSP: 0018:ffffc90003247298 EFLAGS: 00010207
+RAX: 0000000000000006 RBX: 0000000000000000 RCX: 13d577b5b867bd00
+RDX: 0000000000000000 RSI: ffffffff8bbf08c0 RDI: ffffffff8bbf0880
+RBP: ffffc90003247410 R08: ffffc9000324727f R09: 0000000000000000
+R10: ffffc90003247260 R11: fffff52000648e50 R12: ffffffff895db710
+R13: 00000000ffffffde R14: 0000000000000034 R15: dffffc0000000000
+FS:  000055555e5bf500(0000) GS:ffff8882a9f31000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055555e5bf808 CR3: 00000001bb50a000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ qdisc_create+0xaa3/0xea0 net/sched/sch_api.c:1353
+ __tc_modify_qdisc net/sched/sch_api.c:1753 [inline]
+ tc_modify_qdisc+0x1547/0x2020 net/sched/sch_api.c:1817
+ rtnetlink_rcv_msg+0x77c/0xb70 net/core/rtnetlink.c:6967
+ netlink_rcv_skb+0x208/0x470 net/netlink/af_netlink.c:2550
+ netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
+ netlink_unicast+0x82f/0x9e0 net/netlink/af_netlink.c:1344
+ netlink_sendmsg+0x805/0xb30 net/netlink/af_netlink.c:1894
+ sock_sendmsg_nosec net/socket.c:727 [inline]
+ __sock_sendmsg+0x21c/0x270 net/socket.c:742
+ ____sys_sendmsg+0x505/0x830 net/socket.c:2630
+ ___sys_sendmsg+0x21f/0x2a0 net/socket.c:2684
+ __sys_sendmsg net/socket.c:2716 [inline]
+ __do_sys_sendmsg net/socket.c:2721 [inline]
+ __se_sys_sendmsg net/socket.c:2719 [inline]
+ __x64_sys_sendmsg+0x19b/0x260 net/socket.c:2719
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7ff769b8f7c9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffd59035098 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007ff769de5fa0 RCX: 00007ff769b8f7c9
+RDX: 0000000000000000 RSI: 0000200000000000 RDI: 0000000000000003
+RBP: 00007ff769bf297f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ff769de5fa0 R14: 00007ff769de5fa0 R15: 0000000000000003
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:cake_destroy+0x9f/0x100 net/sched/sch_cake.c:2790
+Code: 81 c3 98 02 00 00 48 89 d8 48 c1 e8 03 42 80 3c 38 00 74 08 48 89 df e8 bf 0f c8 f8 48 8b 1b 4c 8d 73 34 4c 89 f0 48 c1 e8 03 <42> 0f b6 04 38 84 c0 75 35 41 0f b6 2e 31 ff 89 ee e8 eb 4e 62 f8
+RSP: 0018:ffffc90003247298 EFLAGS: 00010207
+RAX: 0000000000000006 RBX: 0000000000000000 RCX: 13d577b5b867bd00
+RDX: 0000000000000000 RSI: ffffffff8bbf08c0 RDI: ffffffff8bbf0880
+RBP: ffffc90003247410 R08: ffffc9000324727f R09: 0000000000000000
+R10: ffffc90003247260 R11: fffff52000648e50 R12: ffffffff895db710
+R13: 00000000ffffffde R14: 0000000000000034 R15: dffffc0000000000
+FS:  000055555e5bf500(0000) GS:ffff8882a9f31000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055555e5bf808 CR3: 00000001bb50a000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	81 c3 98 02 00 00    	add    $0x298,%ebx
+   6:	48 89 d8             	mov    %rbx,%rax
+   9:	48 c1 e8 03          	shr    $0x3,%rax
+   d:	42 80 3c 38 00       	cmpb   $0x0,(%rax,%r15,1)
+  12:	74 08                	je     0x1c
+  14:	48 89 df             	mov    %rbx,%rdi
+  17:	e8 bf 0f c8 f8       	call   0xf8c80fdb
+  1c:	48 8b 1b             	mov    (%rbx),%rbx
+  1f:	4c 8d 73 34          	lea    0x34(%rbx),%r14
+  23:	4c 89 f0             	mov    %r14,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 0f b6 04 38       	movzbl (%rax,%r15,1),%eax <-- trapping instruction
+  2f:	84 c0                	test   %al,%al
+  31:	75 35                	jne    0x68
+  33:	41 0f b6 2e          	movzbl (%r14),%ebp
+  37:	31 ff                	xor    %edi,%edi
+  39:	89 ee                	mov    %ebp,%esi
+  3b:	e8 eb 4e 62 f8       	call   0xf8624f2b
 
 
+***
 
-Thanks,
-Ming
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[cake@lists.bufferbloat.net davem@davemloft.net edumazet@google.com horms@kernel.org j.koeppeler@tu-berlin.de jhs@mojatatu.com jiri@resnulli.us kuba@kernel.org netdev@vger.kernel.org pabeni@redhat.com toke@redhat.com toke@toke.dk xiyou.wangcong@gmail.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
 
