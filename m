@@ -1,97 +1,214 @@
-Received: from out162-62-57-252.mail.qq.com (out162-62-57-252.mail.qq.com [162.62.57.252])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sg-1-18.ptr.blmpb.com (sg-1-18.ptr.blmpb.com [118.26.132.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA3B81F09B3;
-	Mon,  1 Dec 2025 03:41:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.57.252
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C23A5B21A
+	for <syzbot@lists.linux.dev>; Mon,  1 Dec 2025 04:43:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=118.26.132.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764560485; cv=none; b=V1hiZPtJT4BOGAd72jnGHs1lAsoI2Q8VImUv86v/QPBiFPaHs64KrdhF8vnrTDMnj0PAsk3mpfjg75idktYkqI0TgaFwjpDpYP8qdcv3AD73J7mPrZwCinfu7B7qBBecGzLyJ3jAgxi28MSzj8LS1296RXvKCM7MQdTn5goMBdk=
+	t=1764564204; cv=none; b=IWyLiUJgowoc5tnzuhuOaxQdjFL+AFbFku5scSrXX019T5RHOnKP93JykK6abSEReei5vMtPHL//OQbgnhXJcsB6EQRFwLVYU9NlFhipRT8402YkNOE9AeDdvr8BHsvO5lUsx0ocDirjtrasMUfjdTQnju3btZxcuh6CEkztxHU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764560485; c=relaxed/simple;
-	bh=leCy//KoczHnqhz2R2YoPDhsJC6dgrFmCg+gWRwh7T4=;
-	h=Message-ID:From:To:Cc:Subject:Date:In-Reply-To:References:
-	 MIME-Version; b=NBej2KJHNXqUQqVWpQOKMvTFDUuRVqqVnoLbGAvk2S9vSKZhETtVdkkHqHCyQd5V0XYxhxGY7uVQltLzgIK8Ii+Lh1yAc20YcCRoac7LJz4bBdchCdqsd8z7i51WwWcdacU8VdcpBJcceT777fXwXzGPgUtuLNT1GbhCM/oB4ao=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=zrNYlckH; arc=none smtp.client-ip=162.62.57.252
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
+	s=arc-20240116; t=1764564204; c=relaxed/simple;
+	bh=6xy6KfWbznYZWOUyBONr635zqqNGsE7Sm/2A3nSsnkI=;
+	h=Mime-Version:To:Cc:Content-Type:From:Subject:Date:In-Reply-To:
+	 Message-Id:References; b=jH1jqI0mUxgORZTcCl5IDYqBIKgOXVsC8toRInAbW1NQVshvwDucIjk1BRjjAUuK7o44N4QLW28/+KUM2ooXQ2xrNitz2IRMjzv45VW/nRJjrUpKK2fThU6gZ1LQnMDn6T2OmwbHMMaGBvpvDh+G29MjscFm1++tCNPkmuHfF1U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=fnnas.com; spf=none smtp.mailfrom=fnnas.com; dkim=pass (2048-bit key) header.d=fnnas-com.20200927.dkim.feishu.cn header.i=@fnnas-com.20200927.dkim.feishu.cn header.b=pPcLvvK8; arc=none smtp.client-ip=118.26.132.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=fnnas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=fnnas.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="zrNYlckH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1764560470; bh=h1ElSL1Dua1skk8vctxiE38fat4PN7OeW8/o828lFH0=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=zrNYlckHZ29+sbZuH9lr99zbht65ADgBrT3M3JyfW06Iquh2IdciCnWyq/Ix8aD82
-	 SHPaKYnVuDacKN3rjr9u3cqBDd2eJ7z382WT9r9zyiyYZDwNtxafQ+qny0K0TYZcQD
-	 gS4e16spgpBMXAnTTldE0UqeHF/Warl9LwDPonJ4=
-Received: from lxu-ped-host.. ([111.201.7.117])
-	by newxmesmtplogicsvrszb51-0.qq.com (NewEsmtp) with SMTP
-	id A4628C90; Mon, 01 Dec 2025 11:41:06 +0800
-X-QQ-mid: xmsmtpt1764560466tv4m7kq4c
-Message-ID: <tencent_7B73E6D013636363696CC3A34444F77AF705@qq.com>
-X-QQ-XMAILINFO: M1rD3f8svNznlXm1wtdwYLpaX6NI7m7ByGt+tAfGDFF8BgBVgBU80YYV6OZs9/
-	 gcY/Piad/qhewzLPwuV6BMcBWBTLZEie7bvFNEg+wIq735cke7o6NP/VBDpAgH+9Mmntxou+p/RT
-	 +zJDJFLXvnHWK8vUtE4d4NsFNZ2tvH3hmF1MkivD2geXIoKsHb0e14GN9RWpzneXjpyjyhvnWdEm
-	 0b3lORU9WItCgu9bLGMJL4jDlXptvmZj+jI6zCZoxmhtZ+Q0UFxApFfYuvYkuVGyTTPg1tVJkGqW
-	 pJusXEdL25gPBK4NehgzrgZyRItZsVGx0n8q/fm3O3QAfLAoJtQ0C3X2kLeukTqMWbe15e5QSXBe
-	 wTOedVbVCRUTKWpTalubRdI9OAWaFAdHlLKGaM1WKa+b+ujrwnAdD7CCgJXUvmv3NZvI0klw1Qxc
-	 tTBehPxv+fbFYoCuZVMwfv0i8PojyO7e+66rq70IzngkdhfY86uDa3tuaIMDVIRehKmP5ivabJ0T
-	 og0pEEf3c931ms1HrqP8wTv7wVG1D54uORehCKxrwIaug/fbMk3VWvp2XKgceVXQD7Z+t/pqRw0W
-	 o4/eOurfxJE7S15h6D6xafRauGnXXlagotaLgzJL+8VbRf2crCNxeVY1ZUv5PJblr3AO8LGJM5SM
-	 vGb43NI4lrKyljLEuQDLibHsGH6Tzco4xtX5UWi1Bcpc0JCY7LVMMGSmnyHT2CxxQXa/HsH9WNEC
-	 DutOMuFdQMy95sL0dlPw0eJPlWmEbHSrHdB4jGxId0VjVOu+sAhJv/zlHeyvFFNv9FjDQgPMSgzX
-	 5uGwcui810S5yNIhX/7RUhM/rHNeLecqJvkNzHOGGRWsiv7TAmbWfw+o0sYQ/WkoMdQIag625WfU
-	 IwHP6EeNFUsLUYh9zsE4uR7thsUeqImvfqGlTYMVvmGFlyVdWwxWwp+LPhgDLhsju16TMoUFIgIV
-	 E+eTCVAqg2vBezwVz96fexbPF/TPGTgcdfrhQfQ7AiZPFJMAXu/Lx27IHx2CEOa4aV5Wo0yHEbXn
-	 ixccxcLUM2rv0fxa6Xp4Bf6uHze3w=
-X-QQ-XMRINFO: OD9hHCdaPRBwq3WW+NvGbIU=
-From: Edward Adam Davis <eadavis@qq.com>
-To: kuba@kernel.org
-Cc: davem@davemloft.net,
-	eadavis@qq.com,
-	edumazet@google.com,
-	eperezma@redhat.com,
-	horms@kernel.org,
-	jasowang@redhat.com,
-	kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	mst@redhat.com,
-	netdev@vger.kernel.org,
-	pabeni@redhat.com,
-	sgarzare@redhat.com,
-	stefanha@redhat.com,
-	syzbot+ci3edb9412aeb2e703@syzkaller.appspotmail.com,
-	syzbot@lists.linux.dev,
-	syzbot@syzkaller.appspotmail.com,
-	syzkaller-bugs@googlegroups.com,
-	virtualization@lists.linux.dev,
-	xuanzhuo@linux.alibaba.com
-Subject: Re: [PATCH Next V2] net: restore the iterator to its original state when an error occurs
-Date: Mon,  1 Dec 2025 11:41:07 +0800
-X-OQ-MSGID: <20251201034106.206190-2-eadavis@qq.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20251128093946.18c645c6@kernel.org>
-References: <20251128093946.18c645c6@kernel.org>
+	dkim=pass (2048-bit key) header.d=fnnas-com.20200927.dkim.feishu.cn header.i=@fnnas-com.20200927.dkim.feishu.cn header.b="pPcLvvK8"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=s1; d=fnnas-com.20200927.dkim.feishu.cn; t=1764564188;
+  h=from:subject:mime-version:from:date:message-id:subject:to:cc:
+ reply-to:content-type:mime-version:in-reply-to:message-id;
+ bh=1VddponRGVNPku2nmOO6NM5OzN1VovjTnki9d+Nto9A=;
+ b=pPcLvvK8Nm9ZHbOqzegX9T7R/11lGktikaaPrlYGmVna/K1c1+Ghb8/dqzroWKOnIVBLJ3
+ qbgN23hQsZhrI9weqJjAHCFNOtp2NKoZFHjGKBWixavKINVKt7Cxq+Md8NfdrYdszWiYs+
+ QVerewzXlU40Ckjpo5dNeMavV55msJnRvEMyPfQXDNsknIp6+2kchveB/LXfKUEMHLUvL/
+ llLVBXJlKAs4D2SGpvdlcqfitcHZuNag2bWQLrdsu7D9Lyn8fsReiOke88t8XodLfGmmN/
+ 1D2UOYofIiYibMswL9d1w5YCj7C4FNt7Q9LlOz07Pp2Pi+PmtTy51LSGH2bl4w==
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Received: from [192.168.1.104] ([39.182.0.153]) by smtp.feishu.cn with ESMTPS; Mon, 01 Dec 2025 12:43:05 +0800
+X-Original-From: Yu Kuai <yukuai@fnnas.com>
+Reply-To: yukuai@fnnas.com
+To: "Ming Lei" <ming.lei@redhat.com>
+Cc: "syzbot ci" <syzbot+cifc73f799778e73e7@syzkaller.appspotmail.com>, 
+	<axboe@kernel.dk>, <bvanassche@acm.org>, <linux-block@vger.kernel.org>, 
+	<nilay@linux.ibm.com>, <tj@kernel.org>, <syzbot@lists.linux.dev>, 
+	<syzkaller-bugs@googlegroups.com>, "Yu Kuai" <yukuai@fnnas.com>
+User-Agent: Mozilla Thunderbird
+Content-Type: text/plain; charset=UTF-8
+From: "Yu Kuai" <yukuai@fnnas.com>
+Subject: Re: [syzbot ci] Re: blk-mq: fix possible deadlocks
+Date: Mon, 1 Dec 2025 12:43:03 +0800
+Content-Language: en-US
+In-Reply-To: <aSzgwai7vSElcjLo@fedora>
+Message-Id: <af82c6b9-e1da-499c-b01f-42f748787044@fnnas.com>
+Content-Transfer-Encoding: quoted-printable
+Organization: fnnas
+X-Lms-Return-Path: <lba+2692d1cda+d4d896+lists.linux.dev+yukuai@fnnas.com>
+References: <692c17ca.a70a0220.d98e3.016c.GAE@google.com> <18d6c3dc-2a86-46cd-972d-0158d7c3c461@fnnas.com> <aSzgwai7vSElcjLo@fedora>
 
-On Fri, 28 Nov 2025 09:39:46 -0800, Jakub Kicinski wrote:
-> > In zerocopy_fill_skb_from_iter(), if two copy operations are performed
-> > and the first one succeeds while the second one fails, it returns a
-> > failure but the count in iterator has already been decremented due to
-> > the first successful copy. This ultimately affects the local variable
-> > rest_len in virtio_transport_send_pkt_info(), causing the remaining
-> > count in rest_len to be greater than the actual iterator count. As a
-> > result, packet sending operations continue even when the iterator count
-> > is zero, which further leads to skb->len being 0 and triggers the warning
-> > reported by syzbot [1].
-> 
-> Please follow the subsystem guidelines for posting patches:
-> https://www.kernel.org/doc/html/next/process/maintainer-netdev.html
-> Your patch breaks zerocopy tests.
-I see that they all timed out. I'm not familiar with this test, how can
-I get more details about it?
+Hi,
 
+=E5=9C=A8 2025/12/1 8:26, Ming Lei =E5=86=99=E9=81=93:
+> On Mon, Dec 01, 2025 at 03:50:22AM +0800, Yu Kuai wrote:
+>> Hi,
+>>
+>> =E5=9C=A8 2025/11/30 18:09, syzbot ci =E5=86=99=E9=81=93:
+>>> syzbot ci has tested the following series
+>>>
+>>> [v3] blk-mq: fix possible deadlocks
+>>> https://lore.kernel.org/all/20251130024349.2302128-1-yukuai@fnnas.com
+>>> * [PATCH v3 01/10] blk-mq-debugfs: factor out a helper to register debu=
+gfs for all rq_qos
+>>> * [PATCH v3 02/10] blk-rq-qos: fix possible debugfs_mutex deadlock
+>>> * [PATCH v3 03/10] blk-mq-debugfs: make blk_mq_debugfs_register_rqos() =
+static
+>>> * [PATCH v3 04/10] blk-mq-debugfs: warn about possible deadlock
+>>> * [PATCH v3 05/10] block/blk-rq-qos: add a new helper rq_qos_add_frozen=
+()
+>>> * [PATCH v3 06/10] blk-wbt: fix incorrect lock order for rq_qos_mutex a=
+nd freeze queue
+>>> * [PATCH v3 07/10] blk-iocost: fix incorrect lock order for rq_qos_mute=
+x and freeze queue
+>>> * [PATCH v3 08/10] blk-iolatency: fix incorrect lock order for rq_qos_m=
+utex and freeze queue
+>>> * [PATCH v3 09/10] blk-throttle: remove useless queue frozen
+>>> * [PATCH v3 10/10] block/blk-rq-qos: cleanup rq_qos_add()
+>>>
+>>> and found the following issue:
+>>> possible deadlock in pcpu_alloc_noprof
+>>>
+>>> Full report is available here:
+>>> https://ci.syzbot.org/series/1aec77f0-c53f-4b3b-93fb-b3853983b6bd
+>>>
+>>> ***
+>>>
+>>> possible deadlock in pcpu_alloc_noprof
+>>>
+>>> tree:      linux-next
+>>> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/nex=
+t/linux-next
+>>> base:      7d31f578f3230f3b7b33b0930b08f9afd8429817
+>>> arch:      amd64
+>>> compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1=
+~exp1~20250708183702.136), Debian LLD 20.1.8
+>>> config:    https://ci.syzbot.org/builds/70dca9e4-6667-4930-9024-150d656=
+e503e/config
+>>>
+>>> soft_limit_in_bytes is deprecated and will be removed. Please report yo=
+ur usecase to linux-mm@kvack.org if you depend on this functionality.
+>>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
+>>> WARNING: possible circular locking dependency detected
+>>> syzkaller #0 Not tainted
+>>> ------------------------------------------------------
+>>> syz-executor/6047 is trying to acquire lock:
+>>> ffffffff8e04f760 (fs_reclaim){+.+.}-{0:0}, at: prepare_alloc_pages+0x15=
+2/0x650
+>>>
+>>> but task is already holding lock:
+>>> ffffffff8e02dde8 (pcpu_alloc_mutex){+.+.}-{4:4}, at: pcpu_alloc_noprof+=
+0x25b/0x1750
+>>>
+>>> which lock already depends on the new lock.
+>>>
+>>>
+>>> the existing dependency chain (in reverse order) is:
+>>>
+>>> -> #2 (pcpu_alloc_mutex){+.+.}-{4:4}:
+>>>          __mutex_lock+0x187/0x1350
+>>>          pcpu_alloc_noprof+0x25b/0x1750
+>>>          blk_stat_alloc_callback+0xd5/0x220
+>>>          wbt_init+0xa3/0x500
+>>>          wbt_enable_default+0x25d/0x350
+>>>          blk_register_queue+0x36a/0x3f0
+>>>          __add_disk+0x677/0xd50
+>>>          add_disk_fwnode+0xfc/0x480
+>>>          loop_add+0x7f0/0xad0
+>>>          loop_init+0xd9/0x170
+>>>          do_one_initcall+0x1fb/0x820
+>>>          do_initcall_level+0x104/0x190
+>>>          do_initcalls+0x59/0xa0
+>>>          kernel_init_freeable+0x334/0x4b0
+>>>          kernel_init+0x1d/0x1d0
+>>>          ret_from_fork+0x599/0xb30
+>>>          ret_from_fork_asm+0x1a/0x30
+>>>
+>>> -> #1 (&q->q_usage_counter(io)#17){++++}-{0:0}:
+>>>          blk_alloc_queue+0x538/0x620
+>>>          __blk_mq_alloc_disk+0x15c/0x340
+>>>          loop_add+0x411/0xad0
+>>>          loop_init+0xd9/0x170
+>>>          do_one_initcall+0x1fb/0x820
+>>>          do_initcall_level+0x104/0x190
+>>>          do_initcalls+0x59/0xa0
+>>>          kernel_init_freeable+0x334/0x4b0
+>>>          kernel_init+0x1d/0x1d0
+>>>          ret_from_fork+0x599/0xb30
+>>>          ret_from_fork_asm+0x1a/0x30
+>>>
+>>> -> #0 (fs_reclaim){+.+.}-{0:0}:
+>>>          __lock_acquire+0x15a6/0x2cf0
+>>>          lock_acquire+0x117/0x340
+>>>          fs_reclaim_acquire+0x72/0x100
+>>>          prepare_alloc_pages+0x152/0x650
+>>>          __alloc_frozen_pages_noprof+0x123/0x370
+>>>          __alloc_pages_noprof+0xa/0x30
+>>>          pcpu_populate_chunk+0x182/0xb30
+>>>          pcpu_alloc_noprof+0xcb6/0x1750
+>>>          xt_percpu_counter_alloc+0x161/0x220
+>>>          translate_table+0x1323/0x2040
+>>>          ip6t_register_table+0x106/0x7d0
+>>>          ip6table_nat_table_init+0x43/0x2e0
+>>>          xt_find_table_lock+0x30c/0x3e0
+>>>          xt_request_find_table_lock+0x26/0x100
+>>>          do_ip6t_get_ctl+0x730/0x1180
+>>>          nf_getsockopt+0x26e/0x290
+>>>          ipv6_getsockopt+0x1ed/0x290
+>>>          do_sock_getsockopt+0x2b4/0x3d0
+>>>          __x64_sys_getsockopt+0x1a5/0x250
+>>>          do_syscall_64+0xfa/0xf80
+>>>          entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>>>
+>>> other info that might help us debug this:
+>>>
+>>> Chain exists of:
+>>>     fs_reclaim --> &q->q_usage_counter(io)#17 --> pcpu_alloc_mutex
+>>>
+>>>    Possible unsafe locking scenario:
+>>>
+>>>          CPU0                    CPU1
+>>>          ----                    ----
+>>>     lock(pcpu_alloc_mutex);
+>>>                                  lock(&q->q_usage_counter(io)#17);
+>>>                                  lock(pcpu_alloc_mutex);
+>>>     lock(fs_reclaim);
+>> This does not look like introduced by this set, wbt_init() will hold
+>> pcpu_alloc_mutex, and it can be called with queue frozen without this
+>> set.
+> It is introduced by your patch 6 in which blk_mq_freeze_queue() is added
+> before calling wb_init() from wbt_enable_default(), then the warning is
+> triggered.
+
+Yes, I know this, I mean it's the same before this set from queue_wb_lat_st=
+ore(),
+where freeze queue is already called before wbt_init(), and this is not a n=
+ew
+problem.
+
+>
+>
+> Thanks,
+> Ming
+>
+>
+--=20
+Thanks,
+Kuai
