@@ -1,89 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C78BA10F1;
-	Mon,  1 Dec 2025 19:15:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB84A2367D5
+	for <syzbot@lists.linux.dev>; Tue,  2 Dec 2025 16:13:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764616559; cv=none; b=jWEQTdkhwNlMazxnf1TtpGTHsOLipymqBKFCnZnLG05Tc16fiin3zzNqt6ihKoW1rIH2rU6yQcvMs4Hr4Y7sl9EpJ2TbNdkbuswsoPz7QaWNbh0lI8U5JmGMb8qKoREuoWep3Iu8xC1iDxTf64jXTYcZo30rZBE760JUkRtcKKE=
+	t=1764692025; cv=none; b=fZ5MNVaO5ImNhHyMtzuN8NStZgxWdS6MVweQxjPiuLbivO/F9q24M8bgqzeu+b/nh5O0rJLd82GOPHv2g+yfw+/ZGtpRH0/+ylEbXa383K+h7kB18X93hGL65PxHWh6UDjdorIvGvtM5TsJOWQIQXflwZJtYNuqPJ1Bj3VrQhIM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764616559; c=relaxed/simple;
-	bh=4XgmDLSCEg6VsFoBcwzl521M4IJOdgdZ7BMmz88L2/M=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jidf7kkmulpSrfhbT6zLqFmXgfHJagYGJg34YvG2MUQEA5Fdgw68yCn+hlvbatALSZgr2x5lb+gBpabT2CtTFungxTawB+NIZ9wucYdNkfjlGJ8UsCufGADFhp+p99feHtLssJI83InaSd36ojlY5uNOqZAH8Yd+PBpilgthsXM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HlJ3KRjP; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HlJ3KRjP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CD9BC4CEF1;
-	Mon,  1 Dec 2025 19:15:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1764616559;
-	bh=4XgmDLSCEg6VsFoBcwzl521M4IJOdgdZ7BMmz88L2/M=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=HlJ3KRjP7xZ4T9ko7eFxV7P6PoXSWyCu3HrexUTNs8fV3q+nABoR50xZLZKAzpGNa
-	 ADyv8W1zgjFaujFUmt88AkFSgo2NDY7bT1mmvqKppbdXFiBm7yNvoVFcbZoOhHFKXj
-	 ZZlSoYYVw+0jbvdRNqzJLmN1JxyjhH/KsEKWI2z27KIarFfW9BcXFPoPejMDxnUuyt
-	 WHT4zqZu1fr3xCQNnE8UkS9fWmat3w/7+wlNQuRe1MAEFQW7SUwSZWx2kYcTzahhz7
-	 fk3vdyF7i7BFoNI67EtyLp2penSN5GgpwofhL5VPA1TiZcHr6gLcyXvEtyz6Rtcaww
-	 b7z6WXVZjzQkg==
-Date: Mon, 1 Dec 2025 11:15:57 -0800
-From: Jakub Kicinski <kuba@kernel.org>
-To: Edward Adam Davis <eadavis@qq.com>
-Cc: davem@davemloft.net, edumazet@google.com, eperezma@redhat.com,
- horms@kernel.org, jasowang@redhat.com, kvm@vger.kernel.org,
- linux-kernel@vger.kernel.org, mst@redhat.com, netdev@vger.kernel.org,
- pabeni@redhat.com, sgarzare@redhat.com, stefanha@redhat.com,
- syzbot+ci3edb9412aeb2e703@syzkaller.appspotmail.com,
- syzbot@lists.linux.dev, syzbot@syzkaller.appspotmail.com,
- syzkaller-bugs@googlegroups.com, virtualization@lists.linux.dev,
- xuanzhuo@linux.alibaba.com
-Subject: Re: [PATCH Next V2] net: restore the iterator to its original state
- when an error occurs
-Message-ID: <20251201111557.15cb9415@kernel.org>
-In-Reply-To: <tencent_7B73E6D013636363696CC3A34444F77AF705@qq.com>
-References: <20251128093946.18c645c6@kernel.org>
-	<tencent_7B73E6D013636363696CC3A34444F77AF705@qq.com>
+	s=arc-20240116; t=1764692025; c=relaxed/simple;
+	bh=TFSaHEK3uI5AaX+6jyJfjPnOlZRHQNiWRr84V6vLRw0=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Uy4GjjX26yXO972deVPVai+3pzdY0bN3LZ3HIwpuZAKzV3+kWlU5BrzG1L36wWZnFdUdWgoBbG/F+YKCxau0U3cu8/lgfCGfl8ZXJGNf8+65E+7v1bVZEtsh/ZZeiysXAeqrXOTE2x7XKYypiz9sDQxrV0pCgSi08rdHm/Biae4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-450c16f2bc1so5218204b6e.3
+        for <syzbot@lists.linux.dev>; Tue, 02 Dec 2025 08:13:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764692023; x=1765296823;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=MRpcKJXgucXsI4QrIGlqGHX5RMCSfVrlV6khHJ0ZnWA=;
+        b=lWFsg/ryRTOpBVq993t1o7gUaMGLNKnSkgBvY4+wjhGVULMzt2iszelIjyXpQhboQ+
+         01D8YhwR9olbF9EclZGNXTjfGICJzXxqLmKIbdQPZY42/yq0KHiuvk5Dzh5jSLKSZfD0
+         EMJBiK7879kV3xgkx/xvBT1PkdfFTxbklgMO0U3OHIp1S3HO4C3dgLo1EFlmtRv/xIL9
+         4FuBGDOaAg/ERKDiT4kAX7Px7Vpljti4Zrv8eIadxl373Sroa8q5Q+xI941ntWuH1xDU
+         8YxTfDRkH/7zE6MaaG16WMVVIO7nP5iWja7n2i/ITCvDBxL34yttV/bht2vCihENQreE
+         F8cA==
+X-Gm-Message-State: AOJu0Yx/cvyu/PZmTe0xJwJf08LoCtMUJ61uMpXXT807ge+CHU/JSUj2
+	bEa8w843ZP+L0+xhqUbuJZO8VxBJOtbFz8YOlgOMrqxZiBnismcy+rhT33ARKJep/sUHNBW9P13
+	fVz5jqsqjh8W54Asl5LMxoLRY90mDlJ+g2W2YhirvdNQvGbe0rUFTc4VJdXc=
+X-Google-Smtp-Source: AGHT+IHkIGAovr+pGIZYl2DqpQhgjQlC+apgrb+tn+1z3laj5OHO7W9G6djDUYKM3n+xWjghm7xL2BSPOLftxe3pIbRflPDw/6NF
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6808:6787:b0:450:cdc3:7a0f with SMTP id
+ 5614622812f47-45112bde919mr20404228b6e.57.1764692022944; Tue, 02 Dec 2025
+ 08:13:42 -0800 (PST)
+Date: Tue, 02 Dec 2025 08:13:42 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <692f1036.a70a0220.d98e3.019e.GAE@google.com>
+Subject: [moderation/CI] Re: configfs: enable kernel-space item registration
+From: syzbot ci <syzbot+cibc074c2fc4a0e4e4@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon,  1 Dec 2025 11:41:07 +0800 Edward Adam Davis wrote:
-> On Fri, 28 Nov 2025 09:39:46 -0800, Jakub Kicinski wrote:
-> > > In zerocopy_fill_skb_from_iter(), if two copy operations are performed
-> > > and the first one succeeds while the second one fails, it returns a
-> > > failure but the count in iterator has already been decremented due to
-> > > the first successful copy. This ultimately affects the local variable
-> > > rest_len in virtio_transport_send_pkt_info(), causing the remaining
-> > > count in rest_len to be greater than the actual iterator count. As a
-> > > result, packet sending operations continue even when the iterator count
-> > > is zero, which further leads to skb->len being 0 and triggers the warning
-> > > reported by syzbot [1].  
-> > 
-> > Please follow the subsystem guidelines for posting patches:
-> > https://www.kernel.org/doc/html/next/process/maintainer-netdev.html
-> > Your patch breaks zerocopy tests.  
-> I see that they all timed out. I'm not familiar with this test, how can
-> I get more details about it?
+syzbot ci has tested the following series
 
-IIRC its was the packetdrill tests:
+[v1] configfs: enable kernel-space item registration
+https://lore.kernel.org/all/20251202-configfs_netcon-v1-0-b4738ead8ee8@debi=
+an.org
+* [PATCH RFC 1/2] configfs: add kernel-space item registration API
+* [PATCH RFC 2/2] netconsole: Plug to dynamic configfs item
 
-tools/testing/selftests/net/packetdrill/tcp_fastopen_server_basic-zero-payload.pkt
-tools/testing/selftests/net/packetdrill/tcp_zerocopy_basic.pkt
-tools/testing/selftests/net/packetdrill/tcp_zerocopy_batch.pkt
-tools/testing/selftests/net/packetdrill/tcp_zerocopy_client.pkt
-tools/testing/selftests/net/packetdrill/tcp_zerocopy_closed.pkt
-tools/testing/selftests/net/packetdrill/tcp_zerocopy_epoll_edge.pkt
-tools/testing/selftests/net/packetdrill/tcp_zerocopy_epoll_exclusive.pkt
-tools/testing/selftests/net/packetdrill/tcp_zerocopy_epoll_oneshot.pkt
-tools/testing/selftests/net/packetdrill/tcp_zerocopy_fastopen-client.pkt
-tools/testing/selftests/net/packetdrill/tcp_zerocopy_fastopen-server.pkt
-tools/testing/selftests/net/packetdrill/tcp_zerocopy_maxfrags.pkt
-tools/testing/selftests/net/packetdrill/tcp_zerocopy_small.pkt
+and found the following issue:
+kernel build error
 
-If you have the packetdrill command installed those _should_ be
-relatively easy to run via standard kselftest commands
+Full report is available here:
+https://ci.syzbot.org/series/d96d193b-5349-4f30-be4c-b8950ecce808
+
+***
+
+kernel build error
+
+tree:      net
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net.git
+base:      779bcdd4b9ae6566f309043c53c946e8ac0015fd
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/bdd14175-68c7-4ea2-8a84-b64131d9050=
+b/config
+
+drivers/net/netconsole.c:231:1: error: non-void function does not return a =
+value [-Werror,-Wreturn-type]
+drivers/net/netconsole.c:1892:10: error: no member named 'group' in 'struct=
+ netconsole_target'
+drivers/net/netconsole.c:1893:33: error: no member named 'group' in 'struct=
+ netconsole_target'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[a.hindborg@kernel.org andrew@lunn.ch asantostc@gmail.com calvin@wbinvd.org=
+ davem@davemloft.net edumazet@google.com gustavold@gmail.com hch@infradead.=
+org jlbec@evilplan.org kernel-team@meta.com kuba@kernel.org leitao@debian.o=
+rg linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org netdev@vger.k=
+ernel.org pabeni@redhat.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
