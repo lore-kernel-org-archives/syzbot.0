@@ -1,51 +1,52 @@
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99D482F260C
-	for <syzbot@lists.linux.dev>; Tue,  2 Dec 2025 21:03:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A65E1AA7A6
+	for <syzbot@lists.linux.dev>; Wed,  3 Dec 2025 07:16:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764709435; cv=none; b=gx3LoN8wiqEqiwTTmbXYz4jI96no4M0qk0/nbADpOfsbRDHIkNVhnpzz9YoQ1+q+7FxUYuovGAggYY1AwdTAiXXWxolrE2wF1yXINqSCFuIFJ3LLSWUwpm4NNhQpng+uoUkIG/YnIQRasMsNZ1cWlLgKDqRBLyPO4D88kiv5Ks0=
+	t=1764746173; cv=none; b=RnVoyDd6ki+avlrgYJAR6MG8gKoWbevRqmyXmBbrRYlWUiO803bX5yEbEYFDZfgni6oSKKRg3oaSXOkyZcwi/ZBzBQe1Nok898ArHUPLRmOHqkVtOOjmARvIC/r1jcyWkT3A5mnTUJ5CwzuemwZvWtLGIHTq4jGAljQsho00nGs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764709435; c=relaxed/simple;
-	bh=bXpj5JHzNRVvFPLMVd3dYEzfrUSjtm6ZJn/oSdEBYKg=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ipZDl0DTdzYFHoZ90KvsXNpVqMNBENHoBibssyDjgEp2p4wir5cfRIcL2YpB+sjltVWDfwmfpX9FQ0zvkSBG/SS67x6gXzy/9Hcn8HF01PEiBYtr8D7fT2XYi2PrCjtMI9Xtxc2RdmAmk24d6dXdr1apvsCpk9a6Ku4jV2xLk9I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
+	s=arc-20240116; t=1764746173; c=relaxed/simple;
+	bh=b3nXe5B6m7MvljsGYzy4XDoIxTAMtdODDAE/DcEuTHE=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=YMfSxoZQeYwManmJHmBYVL6UB6J/0kjMvUk/4X72rcKU4wMzE6dDgI7NJOqjKrYZwS73lcr1B0SV4/brcCk9l08B3V9lFzoiRo3+aZvMJfKKCdGZ3TvPIh9NEHdz6GXq+sSL8wijoCm5PYSsb6BZYJ+2N6jaxbxiQdsb/jz4rr8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4510650aea0so7213159b6e.3
-        for <syzbot@lists.linux.dev>; Tue, 02 Dec 2025 13:03:53 -0800 (PST)
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7c7595cde21so8489132a34.2
+        for <syzbot@lists.linux.dev>; Tue, 02 Dec 2025 23:16:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764709433; x=1765314233;
+        d=1e100.net; s=20230601; t=1764746168; x=1765350968;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=OUAuETrPK6nKohwXS5x3bSeh3bj5aFs+/sH+rOl3XlA=;
-        b=eogluwFnjXQhQlH0Frrp8Yz/aQLsrGQcD2otHsMPP9gooLzOMyo9CYy/v3IlA0YBBC
-         PpncYptiLbyy4NfFetp3qD469o67hNzTuyEZzuTSS+9MJaUdMZm3kmGzMIY53J9Yw/R0
-         qY3oiZYY0PblvjibVOy5R/iJuyuETcKLLTF+xP/9OXzNKDRUph/b2R/UgBSzt07Et0KH
-         gBunapSX535N1W3VDtnx8dSegAxC/fArT0yljczMz2l7A4hKhtDWcgHb9B20kz31sHI7
-         9Y0sDD7E3zBrD2qr3p0i1QSm64uH/7NOFtUdQMc+/C7Sr6IHGUb+/AasLlzxwOADnrHC
-         DgRg==
-X-Gm-Message-State: AOJu0YxBhn9fWj+cSBxxsWB+rJ02pUmTUpT6SUe7pkQhxmQTwLkQ4Isc
-	PjwjkVYLkXMVMG7ySQdbU0GILSSL/oJHlFh8MLnLBUX08TMHNlRvQI3disFfgFItxz01YUQqTDO
-	JfHanpga+fQ7tVdqYL4FqA1zK50XvwpoyyqaxUYcy4vB3izHoDvPU4lN22rw=
-X-Google-Smtp-Source: AGHT+IE+Phjco3wA7lAv5Lgo70X+rJLDCGpLQLZ8HamjRdiIYMQQp/m+4zuOsXo6j/UCC/sXSziHQPP/kLO8P3EzvnaRfZDtRZI0
+        bh=Tuclsouhy/CamivMOZBe58yUcE6UJj2j73pm5hqeqRo=;
+        b=FKTeKcMBG2bfx+vIvQa6uclRLYZofmegrp8lF814TQqlP1rRoPgpEuUnhZq6smr3tN
+         eQ/fNidHgtCurO1HnMu+6kR4vJG+uVNyae216mYDR/3eUk0NnLv84sp6441/EmAz0VYX
+         hcyQFjgJgV7rGZFSocKri97VNtVZDldbmM058+LNcwuGzGYBFu2E9WrPON6aTJIbk2hM
+         FxIBv/rKw4D3+AYA8sb32p5/MohK6i/lrHtH2t4HBtuwo0DfBk3vJsSpPUjDnt+06/N4
+         xJ8Yu2Q6kOU9nK+EXcAv+Un3Lsb9UwSrrTRjF2N+WvvX7OzIi8j8zSppBTwX4e0tdRgr
+         Wqgg==
+X-Gm-Message-State: AOJu0Yxduu/MIT3H+lT/0G+UESgDyhocT9MwY/NGF64sHZQQpWwIum4I
+	KZWvyG2cYYsdzNSUim7YMQ0zwBGqDJWrpiWZGjBbuQ7lfw4zFVQDaof9QL5FbjUdp9ujtGz7uh3
+	kHPVNZzNZi2JYxfPhDYIDOi7rwxRu35PWjAhLyg4i82vVncxq7Ra+uoyFaJo=
+X-Google-Smtp-Source: AGHT+IEftkv58oxDSmTuBDi1FMCp8qoiPmPQv6fH7pWB71CAa3ygywpGFzWVe/0gSmZpOE6rHZJwl1awzZxaHyI0kYf1TXW2bkfb
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1312:b0:450:c423:205d with SMTP id
- 5614622812f47-4536a2cd0e7mr538214b6e.46.1764709432741; Tue, 02 Dec 2025
- 13:03:52 -0800 (PST)
-Date: Tue, 02 Dec 2025 13:03:52 -0800
+X-Received: by 2002:a05:6808:c2b5:b0:450:ca65:ef59 with SMTP id
+ 5614622812f47-4536e41d29cmr585758b6e.30.1764746168348; Tue, 02 Dec 2025
+ 23:16:08 -0800 (PST)
+Date: Tue, 02 Dec 2025 23:16:08 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <692f5438.a70a0220.d98e3.01a6.GAE@google.com>
-Subject: [moderation/CI] Re: ptp: vmclock: Add VM generation counter and ACPI notification
-From: syzbot ci <syzbot+cia17a287c9c7b25e7@syzkaller.appspotmail.com>
+Message-ID: <692fe3b8.a70a0220.2ea503.00cc.GAE@google.com>
+Subject: [moderation/CI] Re: page_alloc: allow migration of smaller hugepages
+ during contig_alloc
+From: syzbot ci <syzbot+ci9c2f2c7f0dfb6460@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -53,41 +54,32 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v2] ptp: vmclock: Add VM generation counter and ACPI notification
-https://lore.kernel.org/all/20251202201118.20209-1-bchalios@amazon.es
-* [PATCH v2 1/4] ptp: vmclock: add vm generation counter
-* [PATCH v2 2/4] ptp: vmclock: support device notifications
-* [PATCH v2 3/4] dt-bindings: clock: Add device tree bindings for vmclock
-* [PATCH v2 4/4] ptp: ptp_vmclock: Add device tree support
+[v4] page_alloc: allow migration of smaller hugepages during contig_alloc
+https://lore.kernel.org/all/20251203063004.185182-1-gourry@gourry.net
+* [PATCH v4] page_alloc: allow migration of smaller hugepages during contig=
+_alloc
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/d29f967e-9917-4e96-9188-cd7119984862
+https://ci.syzbot.org/series/38366b6e-ec98-470f-8c10-780a2228255f
 
 ***
 
 kernel build error
 
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net-next.git
-base:      0177f0f07886e54e12c6f18fa58f63e63ddd3c58
+tree:      kvm-next
+URL:       https://kernel.googlesource.com/pub/scm/virt/kvm/kvm/
+base:      6b36119b94d0b2bb8cea9d512017efafd461d6ac
 arch:      amd64
 compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
 1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/034ae7ca-2752-41c2-8ab3-5c728dfa4ac=
-c/config
+config:    https://ci.syzbot.org/builds/bc635f01-9ae9-4058-b199-3375952e2af=
+9/config
 
-:587:8: error: unknown type name 'irqreturn_t'
-drivers/ptp/ptp_vmclock.c:593:9: error: use of undeclared identifier 'IRQ_H=
-ANDLED'
-drivers/ptp/ptp_vmclock.c:620:9: error: call to undeclared function 'devm_r=
-equest_irq'; ISO C99 and later do not support implicit function declaration=
-s [-Wimplicit-function-declaration]
-drivers/ptp/ptp_vmclock.c:620:60: error: use of undeclared identifier 'IRQF=
-_SHARED'
+mm/page_alloc.c:7013:18: error: use of undeclared identifier 'MAX_FOLIO_ORD=
+ER'
 
 ***
 
@@ -100,10 +92,13 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[andrew@lunn.ch bchalios@amazon.es davem@davemloft.net dwmw2@infradead.org =
-dwmw@amazon.co.uk edumazet@google.com graf@amazon.de kuba@kernel.org linux-=
-kernel@vger.kernel.org mzxreary@0pointer.de netdev@vger.kernel.org pabeni@r=
-edhat.com richardcochran@gmail.com]
+[akpm@linux-foundation.org dave.hansen@linux.intel.com david@redhat.com gou=
+rry@gourry.net hannes@cmpxchg.org jackmanb@google.com joshua.hahnjy@gmail.c=
+om kas@kernel.org kernel-team@meta.com kvm@vger.kernel.org linux-coco@lists=
+.linux.dev linux-kernel@vger.kernel.org linux-mm@kvack.org mhocko@suse.com =
+muchun.song@linux.dev osalvador@suse.de richard.weiyang@gmail.com rick.p.ed=
+gecombe@intel.com rientjes@google.com surenb@google.com vbabka@suse.cz x86@=
+kernel.org ziy@nvidia.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
