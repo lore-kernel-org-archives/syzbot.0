@@ -1,52 +1,51 @@
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D2BF13D539
-	for <syzbot@lists.linux.dev>; Fri,  5 Dec 2025 20:35:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 735CF2673A5
+	for <syzbot@lists.linux.dev>; Fri,  5 Dec 2025 22:55:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764966922; cv=none; b=URB35hhwvGvhGPma61Gc4VHroJjG/1701yC7G4+LnH4yzGCRg6NezjLobvLT0816Ps9YPy9XOHQ+9YvSBO+hQNBU+zau74YlMvyuEk88WFxdcUw3Cq0z2Rbo2ifzwmRjVN2Vw6zf3+VtKBBVDpUFHCiU5bigfgXD1l1xa+Hh6BI=
+	t=1764975327; cv=none; b=RMmfbcBlSdqlHojw6etUZXWW2yNo2Hi/hLlCafYJBlO1+mdYbw2M+8++uknVh1llnNMW2yRhKS1V/lsxyQCLJYiLLd3R0S8UdPlcwTk0cie0l2PoVGEXaMLmwEqs0NPF9VevB8xGb8y9FVtj4UTr2THqeQfZ6uTvXN5+eqoFnQM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764966922; c=relaxed/simple;
-	bh=HIP4H/oyJreZFgL5TKL77/IhvEtpt5DoieCwq4pjYfM=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=SfaaNi5bQ/q02KqYYIgQjyxagAPsc7Q62gihUx1L72BddHrXsr8NceszJM/wZc4MltnLslDv9mbVXPYXyuV93e4TLgxD6k6uTGBemZ+58+1hkbmtdCbTDlfz7thJ7fZO5dbSfFk6kfZ2SpmuuzLnEEaezP2HKad3/4kQr53AmRs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
+	s=arc-20240116; t=1764975327; c=relaxed/simple;
+	bh=/pcXn55iidpXB71SB5ONlzYlVb+16iJywhbrjJV15xI=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=mgyHH/pqbAqg1h5BRCml6r45RD6HxjFWqexe/ht+TONr7YBevHMk+VJnl28z9dpy2S7dA3nRtU1POCPTac33ZpbWPRXFhFWnzyDvy57nK2/By0D1rdyUNm1S9h83qWd2v05WqMzd75VBhZzT1KKgAu5Y2cHoq7xBjhtnI5R41ZM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-65742f8c565so3289806eaf.1
-        for <syzbot@lists.linux.dev>; Fri, 05 Dec 2025 12:35:20 -0800 (PST)
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-65747547d90so2965013eaf.0
+        for <syzbot@lists.linux.dev>; Fri, 05 Dec 2025 14:55:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764966920; x=1765571720;
+        d=1e100.net; s=20230601; t=1764975324; x=1765580124;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=dBJ6NxXDZa9lA3+bh6oMo1+Rx6kQYI/UpFppVhKnwLo=;
-        b=S7dtbdQV+MBUyQURzaPW/ugSZJdj/m3oaxbZgB7O0sTtM4pI5rjEGIliuuJBsYgAFA
-         iVVAkRU8eodgOO5cgJxEJboB3HqDNCMiKwWvYyJvId3ctVyvZbQOHw5mhLgukbeJQOEe
-         DpmXO76GjAJiY5+fAXnD93PVf85nn7tnIk3pAL9DVqJ7k3w4dcSHJNCTsmyaQ83x5nBn
-         rWkZujezcrmnjgDEjYBqRRWvlPCJVtUEeAcen+a24FGnn/RVsupOI8lvVwILmK6Jchxe
-         /4H0KvNfCvkJOvFmrNaZzASymyHM7tDTDCMwKbT3yXhU3Y6s/XZ/XzmmkAmxBFaJWH8z
-         tpHQ==
-X-Gm-Message-State: AOJu0YyC/B9KOHLGqtvqo2A7+sq0yq8u/9H/IoMiBHz1eebNUo8gKTM1
-	8InEygwGKVdxfPiYiDeiE/T1mO2APg3YH1Crgfc0wk4hbCqutVd3tDuTv2xsqZBDo2pnTXJPv+n
-	cEM4dqzwTR0zzTiLkbxQe8OWC2m7nnvk5WNPyW5dZQhQrPWU2DjL1IfxWjhE=
-X-Google-Smtp-Source: AGHT+IEzd5PWJsVo1GcMT43h23po/oUUblKrN40Mme8aOh3M3hM/wVyp99pYk0E/siJfzk/jot8kD1fUJ3/BiIxy6H6qFtWB2Ij9
+        bh=5LkdIPJMgtTjsQrhdA5cUdH0FvzyfcVcriDp2qBCFYY=;
+        b=hyj0OgogTbQIUXC1P5pR6ew26ww6/5iT+JPu1zpJQuXcyig6mH3Yob/2wwyP6MS0tj
+         32kU0jU0hJBZyN/bacUcmU+0aIeP4704DxZIn8i5eLmsg4js6AmK9CdtK12FKdqeCwGh
+         TQ5zawaIGyG/YPVoM0OnVkYWiX1p/6OstU4EL3Nhf0NoWzcYHgLNE2AYc/aRFYT2l/io
+         69dljiDVzVmDrTWsxKGbLgHaRuqMdTQxleWaqZXRHsenB3IhLHPNpemIZNmX5DBP6vVZ
+         NZZeSNNjy1D8L/YdXttTmVx4GA2lQZmOX1LZFArzDQsFWnyyaO6srxV3nhkUIoBSZMRU
+         JYsA==
+X-Gm-Message-State: AOJu0YzJnb9wnvosd171QTvaNzLsOL7kBFiPR8bbfmL3OoauiwPrPhgi
+	kUYi4eT5OMOefn+gQmo1hC9rMZQtcu2/p2iBMgfc5R20HUn/HrXLcICaDjfRi+E0KLzj/IzaacQ
+	89yiETmM7eRtPaODL+mQnNjGtykQoCGglqeFvcmgPSnHOY13HAqk1nNGv39A=
+X-Google-Smtp-Source: AGHT+IF09qOWyyazKn5vR3bg+EJKgQVE3zFwJko4mBHPszyqE+ClXuCbQC6GmgUFd7Rs5nHb2lFBIalbmVkVEfFKD5j+QFgk3iAX
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:60a:b0:659:9a49:8fa0 with SMTP id
- 006d021491bc7-6599a8d9d21mr241158eaf.25.1764966920380; Fri, 05 Dec 2025
- 12:35:20 -0800 (PST)
-Date: Fri, 05 Dec 2025 12:35:20 -0800
+X-Received: by 2002:a05:6820:818b:b0:657:61da:5089 with SMTP id
+ 006d021491bc7-6599a8c4341mr350946eaf.7.1764975324536; Fri, 05 Dec 2025
+ 14:55:24 -0800 (PST)
+Date: Fri, 05 Dec 2025 14:55:24 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69334208.a70a0220.38f243.0009.GAE@google.com>
-Subject: [moderation/CI] Re: mm/hugetlb: Eliminate fake head pages from
- vmemmap optimization
-From: syzbot ci <syzbot+ci19d6a3394b57f8e9@syzkaller.appspotmail.com>
+Message-ID: <693362dc.a70a0220.243dc6.0020.GAE@google.com>
+Subject: [moderation/CI] Re: hfsplus: fix memory leak on mount failure
+From: syzbot ci <syzbot+cid8885472ac3f3978@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -54,31 +53,23 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] mm/hugetlb: Eliminate fake head pages from vmemmap optimization
-https://lore.kernel.org/all/20251205194351.1646318-1-kas@kernel.org
-* [PATCH 01/11] mm: Change the interface of prep_compound_tail()
-* [PATCH 02/11] mm: Rename the 'compound_head' field in the 'struct page' t=
-o 'compound_info'
-* [PATCH 03/11] mm: Move set/clear_compound_head() to compound_head()
-* [PATCH 04/11] mm: Rework compound_head() for power-of-2 sizeof(struct pag=
-e)
-* [PATCH 05/11] mm/hugetlb: Refactor code around vmemmap_walk
-* [PATCH 06/11] mm/hugetlb: Remove fake head pages
-* [PATCH 07/11] mm: Drop fake head checks and fix a race condition
-* [PATCH 08/11] hugetlb: Remove VMEMMAP_SYNCHRONIZE_RCU
-* [PATCH 09/11] mm/hugetlb: Remove hugetlb_optimize_vmemmap_key static key
-* [PATCH 10/11] mm: Remove the branch from compound_head()
-* [PATCH 11/11] hugetlb: Update vmemmap_dedup.rst
+[v1] hfsplus: fix memory leak on mount failure
+https://lore.kernel.org/all/20251206000902.71178-1-swarajgaikwad1925@gmail.=
+com
+* [PATCH v1] hfsplus: fix memory leak on mount failure
 
-and found the following issue:
-kernel build error
+and found the following issues:
+* SYZFAIL: failed to recv rpc
+* WARNING: ODEBUG bug in hfsplus_kill_sb
+* general protection fault in __timer_delete
+* general protection fault in hfsplus_sync_fs
 
 Full report is available here:
-https://ci.syzbot.org/series/4fa90690-ec1a-4c64-84e8-f0cf29c125c6
+https://ci.syzbot.org/series/ea775ab1-67a5-4497-b4d6-8c7b2b7d90aa
 
 ***
 
-kernel build error
+SYZFAIL: failed to recv rpc
 
 tree:      torvalds
 URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
@@ -87,15 +78,334 @@ base:      2061f18ad76ecaddf8ed17df81b8611ea88dbddd
 arch:      amd64
 compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
 1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/d01167aa-6df0-44ac-90bb-974914f50c3=
-e/config
+config:    https://ci.syzbot.org/builds/591f3943-d010-4b2d-a026-67cc7580237=
+6/config
+C repro:   https://ci.syzbot.org/findings/53a2b5e3-41ae-4650-9300-ec3fdd87f=
+47a/c_repro
+syz repro: https://ci.syzbot.org/findings/53a2b5e3-41ae-4650-9300-ec3fdd87f=
+47a/syz_repro
 
-mm/kasan/../slab.h:142:25: error: no member named 'compound_head' in 'struc=
-t page'; did you mean 'compound_info'?
-mm/kfence/../slab.h:142:25: error: no member named 'compound_head' in 'stru=
-ct page'; did you mean 'compound_info'?
-kernel/bpf/../../mm/slab.h:142:25: error: no member named 'compound_head' i=
-n 'struct page'; did you mean 'compound_info'?
+SYZFAIL: failed to recv rpc
+
+
+***
+
+WARNING: ODEBUG bug in hfsplus_kill_sb
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      2061f18ad76ecaddf8ed17df81b8611ea88dbddd
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/591f3943-d010-4b2d-a026-67cc7580237=
+6/config
+C repro:   https://ci.syzbot.org/findings/3c918e05-49e7-4855-bee1-5aafc9a5b=
+5a4/c_repro
+syz repro: https://ci.syzbot.org/findings/3c918e05-49e7-4855-bee1-5aafc9a5b=
+5a4/syz_repro
+
+------------[ cut here ]------------
+ODEBUG: free active (active state 0) object: ffff88810a17ea38 object type: =
+timer_list hint: delayed_sync_fs+0x0/0xf0 fs/hfsplus/super.c:-1
+WARNING: lib/debugobjects.c:615 at 0x0, CPU#1: syz-executor/5946
+Modules linked in:
+CPU: 1 UID: 0 PID: 5946 Comm: syz-executor Not tainted syzkaller #0 PREEMPT=
+(full)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:debug_print_object lib/debugobjects.c:612 [inline]
+RIP: 0010:__debug_check_no_obj_freed lib/debugobjects.c:1099 [inline]
+RIP: 0010:debug_check_no_obj_freed+0x44a/0x550 lib/debugobjects.c:1129
+Code: 89 44 24 20 e8 47 4a 92 fd 48 8b 44 24 20 4c 8b 4d 00 4c 89 ef 48 c7 =
+c6 20 02 c0 8b 48 c7 c2 40 07 c0 8b 8b 0c 24 4d 89 f8 50 <67> 48 0f b9 3a 4=
+8 83 c4 08 4c 8b 6c 24 18 48 b9 00 00 00 00 00 fc
+RSP: 0018:ffffc900032b7c18 EFLAGS: 00010246
+RAX: ffffffff829ca540 RBX: ffffffff99a849a0 RCX: 0000000000000000
+RDX: ffffffff8bc00740 RSI: ffffffff8bc00220 RDI: ffffffff8f8b7a70
+RBP: ffffffff8b6d2540 R08: ffff88810a17ea38 R09: ffffffff8b6d36a0
+R10: dffffc0000000000 R11: ffffffff81ae6210 R12: ffff88810a17ec00
+R13: ffffffff8f8b7a70 R14: ffff88810a17e000 R15: ffff88810a17ea38
+FS:  0000555587657500(0000) GS:ffff8882a9e8e000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055b55b316738 CR3: 0000000175d56000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ slab_free_hook mm/slub.c:2471 [inline]
+ slab_free mm/slub.c:6663 [inline]
+ kfree+0x13b/0x660 mm/slub.c:6871
+ hfsplus_kill_sb+0x72/0xb0 fs/hfsplus/super.c:717
+ deactivate_locked_super+0xbc/0x130 fs/super.c:474
+ cleanup_mnt+0x425/0x4c0 fs/namespace.c:1318
+ task_work_run+0x1d4/0x260 kernel/task_work.c:233
+ resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
+ __exit_to_user_mode_loop kernel/entry/common.c:44 [inline]
+ exit_to_user_mode_loop+0xff/0x4f0 kernel/entry/common.c:75
+ __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
+ syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [in=
+line]
+ syscall_exit_to_user_mode_work include/linux/entry-common.h:159 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:194 [inline]
+ do_syscall_64+0x2e3/0xf80 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f540cf90af7
+Code: a8 ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 0f 1f 44 00 00 31 f6 e9 09 =
+00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 <48> 3d 00 f0 ff f=
+f 77 01 c3 48 c7 c2 a8 ff ff ff f7 d8 64 89 02 b8
+RSP: 002b:00007ffc80b82ab8 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
+RAX: 0000000000000000 RBX: 00007f540cfee72f RCX: 00007f540cf90af7
+RDX: 0000000000000000 RSI: 0000000000000009 RDI: 00007ffc80b82b70
+RBP: 00007ffc80b82b70 R08: 0000000000000000 R09: 0000000000000000
+R10: 00000000ffffffff R11: 0000000000000246 R12: 00007ffc80b83c00
+R13: 00007f540cfee72f R14: 000000000001120e R15: 00007ffc80b83c40
+ </TASK>
+----------------
+Code disassembly (best guess):
+   0:	89 44 24 20          	mov    %eax,0x20(%rsp)
+   4:	e8 47 4a 92 fd       	call   0xfd924a50
+   9:	48 8b 44 24 20       	mov    0x20(%rsp),%rax
+   e:	4c 8b 4d 00          	mov    0x0(%rbp),%r9
+  12:	4c 89 ef             	mov    %r13,%rdi
+  15:	48 c7 c6 20 02 c0 8b 	mov    $0xffffffff8bc00220,%rsi
+  1c:	48 c7 c2 40 07 c0 8b 	mov    $0xffffffff8bc00740,%rdx
+  23:	8b 0c 24             	mov    (%rsp),%ecx
+  26:	4d 89 f8             	mov    %r15,%r8
+  29:	50                   	push   %rax
+* 2a:	67 48 0f b9 3a       	ud1    (%edx),%rdi <-- trapping instruction
+  2f:	48 83 c4 08          	add    $0x8,%rsp
+  33:	4c 8b 6c 24 18       	mov    0x18(%rsp),%r13
+  38:	48                   	rex.W
+  39:	b9 00 00 00 00       	mov    $0x0,%ecx
+  3e:	00 fc                	add    %bh,%ah
+
+
+***
+
+general protection fault in __timer_delete
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      2061f18ad76ecaddf8ed17df81b8611ea88dbddd
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/591f3943-d010-4b2d-a026-67cc7580237=
+6/config
+syz repro: https://ci.syzbot.org/findings/58118c78-00cf-40ba-b5b2-a878d7311=
+794/syz_repro
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc=
+0000000048: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000240-0x0000000000000247]
+CPU: 1 UID: 0 PID: 5944 Comm: syz-executor Not tainted syzkaller #0 PREEMPT=
+(full)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:timer_is_static_object+0x26/0x80 kernel/time/timer.c:691
+Code: 90 90 90 90 f3 0f 1e fa 41 57 41 56 53 48 89 fb 49 bf 00 00 00 00 00 =
+fc ff df e8 95 e8 12 00 4c 8d 73 08 4c 89 f0 48 c1 e8 03 <42> 80 3c 38 00 7=
+4 08 4c 89 f7 e8 8b e0 78 00 49 83 3e 00 74 09 e8
+RSP: 0018:ffffc900044279a8 EFLAGS: 00010006
+RAX: 0000000000000048 RBX: 0000000000000238 RCX: ffff88817417d7c0
+RDX: 0000000000000000 RSI: 0000000000000004 RDI: 0000000000000238
+RBP: ffffffff99a2bcc0 R08: 0000000000000003 R09: 0000000000000004
+R10: dffffc0000000000 R11: ffffffff81ae62d0 R12: ffffffff8b6d2550
+R13: fffffffffffffffe R14: 0000000000000240 R15: dffffc0000000000
+FS:  000055555c51f500(0000) GS:ffff8882a9e8e000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffd2077ec08 CR3: 00000001138de000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ lookup_object_or_alloc lib/debugobjects.c:679 [inline]
+ debug_object_assert_init+0x16f/0x380 lib/debugobjects.c:1008
+ debug_timer_assert_init kernel/time/timer.c:803 [inline]
+ debug_assert_init kernel/time/timer.c:848 [inline]
+ __timer_delete+0x31/0x390 kernel/time/timer.c:1366
+ try_to_grab_pending kernel/workqueue.c:2061 [inline]
+ work_grab_pending+0x121/0x990 kernel/workqueue.c:2154
+ __cancel_work+0x85/0x2c0 kernel/workqueue.c:4368
+ __cancel_work_sync+0x1f/0x110 kernel/workqueue.c:4385
+ hfsplus_put_super+0x56/0x3e0 fs/hfsplus/super.c:328
+ generic_shutdown_super+0x135/0x2c0 fs/super.c:643
+ kill_block_super+0x44/0x90 fs/super.c:1730
+ deactivate_locked_super+0xbc/0x130 fs/super.c:474
+ cleanup_mnt+0x425/0x4c0 fs/namespace.c:1318
+ task_work_run+0x1d4/0x260 kernel/task_work.c:233
+ resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
+ __exit_to_user_mode_loop kernel/entry/common.c:44 [inline]
+ exit_to_user_mode_loop+0xff/0x4f0 kernel/entry/common.c:75
+ __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
+ syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [in=
+line]
+ syscall_exit_to_user_mode_work include/linux/entry-common.h:159 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:194 [inline]
+ do_syscall_64+0x2e3/0xf80 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f3b71f90af7
+Code: a8 ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 0f 1f 44 00 00 31 f6 e9 09 =
+00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 <48> 3d 00 f0 ff f=
+f 77 01 c3 48 c7 c2 a8 ff ff ff f7 d8 64 89 02 b8
+RSP: 002b:00007ffd2077f3b8 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
+RAX: 0000000000000000 RBX: 00007f3b71fee72f RCX: 00007f3b71f90af7
+RDX: 0000000000000000 RSI: 0000000000000009 RDI: 00007ffd2077f470
+RBP: 00007ffd2077f470 R08: 0000000000000000 R09: 0000000000000000
+R10: 00000000ffffffff R11: 0000000000000246 R12: 00007ffd20780500
+R13: 00007f3b71fee72f R14: 000000000000f9eb R15: 00007ffd20780540
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:timer_is_static_object+0x26/0x80 kernel/time/timer.c:691
+Code: 90 90 90 90 f3 0f 1e fa 41 57 41 56 53 48 89 fb 49 bf 00 00 00 00 00 =
+fc ff df e8 95 e8 12 00 4c 8d 73 08 4c 89 f0 48 c1 e8 03 <42> 80 3c 38 00 7=
+4 08 4c 89 f7 e8 8b e0 78 00 49 83 3e 00 74 09 e8
+RSP: 0018:ffffc900044279a8 EFLAGS: 00010006
+RAX: 0000000000000048 RBX: 0000000000000238 RCX: ffff88817417d7c0
+RDX: 0000000000000000 RSI: 0000000000000004 RDI: 0000000000000238
+RBP: ffffffff99a2bcc0 R08: 0000000000000003 R09: 0000000000000004
+R10: dffffc0000000000 R11: ffffffff81ae62d0 R12: ffffffff8b6d2550
+R13: fffffffffffffffe R14: 0000000000000240 R15: dffffc0000000000
+FS:  000055555c51f500(0000) GS:ffff8882a9e8e000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffd2077ec08 CR3: 00000001138de000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	90                   	nop
+   1:	90                   	nop
+   2:	90                   	nop
+   3:	90                   	nop
+   4:	f3 0f 1e fa          	endbr64
+   8:	41 57                	push   %r15
+   a:	41 56                	push   %r14
+   c:	53                   	push   %rbx
+   d:	48 89 fb             	mov    %rdi,%rbx
+  10:	49 bf 00 00 00 00 00 	movabs $0xdffffc0000000000,%r15
+  17:	fc ff df
+  1a:	e8 95 e8 12 00       	call   0x12e8b4
+  1f:	4c 8d 73 08          	lea    0x8(%rbx),%r14
+  23:	4c 89 f0             	mov    %r14,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 80 3c 38 00       	cmpb   $0x0,(%rax,%r15,1) <-- trapping instruct=
+ion
+  2f:	74 08                	je     0x39
+  31:	4c 89 f7             	mov    %r14,%rdi
+  34:	e8 8b e0 78 00       	call   0x78e0c4
+  39:	49 83 3e 00          	cmpq   $0x0,(%r14)
+  3d:	74 09                	je     0x48
+  3f:	e8                   	.byte 0xe8
+
+
+***
+
+general protection fault in hfsplus_sync_fs
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      2061f18ad76ecaddf8ed17df81b8611ea88dbddd
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/591f3943-d010-4b2d-a026-67cc7580237=
+6/config
+C repro:   https://ci.syzbot.org/findings/990368ba-5843-438f-bf7c-132c134aa=
+1f3/c_repro
+syz repro: https://ci.syzbot.org/findings/990368ba-5843-438f-bf7c-132c134aa=
+1f3/syz_repro
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc=
+0000000005: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+CPU: 0 UID: 0 PID: 5946 Comm: syz-executor Not tainted syzkaller #0 PREEMPT=
+(full)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:hfsplus_sync_fs+0x70/0x3d0 fs/hfsplus/super.c:255
+Code: 31 ff 89 ee e8 31 a9 24 ff 85 ed 0f 84 71 01 00 00 4c 89 24 24 0f 1f =
+44 00 00 e8 db a4 24 ff 4d 8d 7e 28 4c 89 f8 48 c1 e8 03 <80> 3c 18 00 74 0=
+8 4c 89 ff e8 d2 9c 8a ff 4d 8b 3f 49 83 c7 08 4c
+RSP: 0018:ffffc900036e7a48 EFLAGS: 00010206
+RAX: 0000000000000005 RBX: dffffc0000000000 RCX: ffff88810bbc57c0
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: 0000000000000001 R08: ffffc900036e78a7 R09: 1ffff920006dcf14
+R10: dffffc0000000000 R11: ffffffff829ca640 R12: ffff88811624e000
+R13: ffff88811624e158 R14: 0000000000000000 R15: 0000000000000028
+FS:  0000555564915500(0000) GS:ffff88818ea8e000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000c00003e720 CR3: 0000000011796000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ sync_filesystem+0x1cf/0x230 fs/sync.c:66
+ generic_shutdown_super+0x6f/0x2c0 fs/super.c:622
+ kill_block_super+0x44/0x90 fs/super.c:1730
+ deactivate_locked_super+0xbc/0x130 fs/super.c:474
+ cleanup_mnt+0x425/0x4c0 fs/namespace.c:1318
+ task_work_run+0x1d4/0x260 kernel/task_work.c:233
+ get_signal+0x11ec/0x1340 kernel/signal.c:2807
+ arch_do_signal_or_restart+0x9a/0x7a0 arch/x86/kernel/signal.c:337
+ __exit_to_user_mode_loop kernel/entry/common.c:41 [inline]
+ exit_to_user_mode_loop+0x87/0x4f0 kernel/entry/common.c:75
+ __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
+ syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [in=
+line]
+ syscall_exit_to_user_mode_work include/linux/entry-common.h:159 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:194 [inline]
+ do_syscall_64+0x2e3/0xf80 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fdd6ef90af7
+Code: a8 ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 0f 1f 44 00 00 31 f6 e9 09 =
+00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 <48> 3d 00 f0 ff f=
+f 77 01 c3 48 c7 c2 a8 ff ff ff f7 d8 64 89 02 b8
+RSP: 002b:00007ffd2aacb428 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
+RAX: 0000000000000000 RBX: 00007fdd6efee72f RCX: 00007fdd6ef90af7
+RDX: 0000000000000000 RSI: 0000000000000009 RDI: 00007ffd2aacb4e0
+RBP: 00007ffd2aacb4e0 R08: 0000000000000000 R09: 0000000000000000
+R10: 00000000ffffffff R11: 0000000000000246 R12: 00007ffd2aacc570
+R13: 00007fdd6efee72f R14: 000000000000febb R15: 00007ffd2aacc5b0
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:hfsplus_sync_fs+0x70/0x3d0 fs/hfsplus/super.c:255
+Code: 31 ff 89 ee e8 31 a9 24 ff 85 ed 0f 84 71 01 00 00 4c 89 24 24 0f 1f =
+44 00 00 e8 db a4 24 ff 4d 8d 7e 28 4c 89 f8 48 c1 e8 03 <80> 3c 18 00 74 0=
+8 4c 89 ff e8 d2 9c 8a ff 4d 8b 3f 49 83 c7 08 4c
+RSP: 0018:ffffc900036e7a48 EFLAGS: 00010206
+RAX: 0000000000000005 RBX: dffffc0000000000 RCX: ffff88810bbc57c0
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: 0000000000000001 R08: ffffc900036e78a7 R09: 1ffff920006dcf14
+R10: dffffc0000000000 R11: ffffffff829ca640 R12: ffff88811624e000
+R13: ffff88811624e158 R14: 0000000000000000 R15: 0000000000000028
+FS:  0000555564915500(0000) GS:ffff8882a9e8e000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055ccfe37e9e0 CR3: 0000000011796000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	31 ff                	xor    %edi,%edi
+   2:	89 ee                	mov    %ebp,%esi
+   4:	e8 31 a9 24 ff       	call   0xff24a93a
+   9:	85 ed                	test   %ebp,%ebp
+   b:	0f 84 71 01 00 00    	je     0x182
+  11:	4c 89 24 24          	mov    %r12,(%rsp)
+  15:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+  1a:	e8 db a4 24 ff       	call   0xff24a4fa
+  1f:	4d 8d 7e 28          	lea    0x28(%r14),%r15
+  23:	4c 89 f8             	mov    %r15,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	80 3c 18 00          	cmpb   $0x0,(%rax,%rbx,1) <-- trapping instruct=
+ion
+  2e:	74 08                	je     0x38
+  30:	4c 89 ff             	mov    %r15,%rdi
+  33:	e8 d2 9c 8a ff       	call   0xff8a9d0a
+  38:	4d 8b 3f             	mov    (%r15),%r15
+  3b:	49 83 c7 08          	add    $0x8,%r15
+  3f:	4c                   	rex.WR
+
 
 ***
 
@@ -108,11 +418,10 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[akpm@linux-foundation.org bhe@redhat.com corbet@lwn.net david@kernel.org h=
-annes@cmpxchg.org kas@kernel.org kernel-team@meta.com linux-doc@vger.kernel=
-.org linux-kernel@vger.kernel.org linux-mm@kvack.org lorenzo.stoakes@oracle=
-.com mhocko@suse.com muchun.song@linux.dev osalvador@suse.de rppt@kernel.or=
-g usamaarif642@gmail.com vbabka@suse.cz willy@infradead.org ziy@nvidia.com]
+[david.hunter.linux@gmail.com frank.li@vivo.com glaubitz@physik.fu-berlin.d=
+e linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org skhan@linuxfou=
+ndation.org slava@dubeyko.com swarajgaikwad1925@gmail.com syzbot@syzkaller.=
+appspotmail.com syzkaller-bugs@googlegroups.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
