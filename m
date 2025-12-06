@@ -1,50 +1,50 @@
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1EBD450FE
-	for <syzbot@lists.linux.dev>; Sat,  6 Dec 2025 19:28:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 090622236F2
+	for <syzbot@lists.linux.dev>; Sat,  6 Dec 2025 19:31:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765049308; cv=none; b=S91eiIoWl/I1jZXcqpZZCSR7zw1V9Q6AMOn9xHGe00l0s/UfAlk3LOt50f8E4lcU6m2i/hkF/wCqvn8HxCW5EkyYTdCW6yn3V8fnhnT2fbgsgJnb5Ox7O6UiVu9M1+qycYZDxSFA9YtbOLwJlSzYbeyiQjrA4juVLuEXEfQDsr8=
+	t=1765049488; cv=none; b=pt6UI5t19p0C3qip5469UdtOLHv2yvut0OY+5CLm8WPwP9hHBUKf1uAOQRoQUr7Ai4pioVPSlrUKfKrGuuGoyc1UuGQh6/1Eu5Xi4avcKXwjdzG6McQJXvjxVvEZq+V/YILgivmM/O1Amjflo54g2uhgt/nG67CWJWtl3pLFQuw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765049308; c=relaxed/simple;
-	bh=CiJm1tgGCd75N+LMsCp1OLVQe1nu515t0zvFu4olpb4=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=awMFJkobb6Lj0JeM+RPCUicEnUGhonCFPKUH/bqJxQ9nhTWeNIs6ejnMiAodGd7REQ6zCtJUIPQ251GETOwVSpFCamFxdUiTuvzA6dY6RaPlIX2EJHxupgTqmd0PRwVWgpAK+vLX/4wDmYHL/bptl5Ia9SZyycsh8C5/In4+c+k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
+	s=arc-20240116; t=1765049488; c=relaxed/simple;
+	bh=S0nJESfb5pcXLBkfvllV3nUpLyum7ybgCk8fXZ/rw90=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=e1gGalWSj5YGyC+OqKvhext6BX05PDVp7QB5+GsMGmcNwUzYpbEtKjqQuSOcmat+GGY+eQMyaw0ViZq9sQT2Xehujw64RrBPZMJ8fSxaUlbsNi0V0oyeU5YlzgJVDTqo0fOhhcEOLbr/6q6GENkTWJzYD846gqp9y31yVY35SPg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7c702347c6eso3282725a34.1
-        for <syzbot@lists.linux.dev>; Sat, 06 Dec 2025 11:28:26 -0800 (PST)
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-65997ee5622so1532242eaf.1
+        for <syzbot@lists.linux.dev>; Sat, 06 Dec 2025 11:31:26 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765049305; x=1765654105;
+        d=1e100.net; s=20230601; t=1765049486; x=1765654286;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=E8SfCp5J9KkVjrX86iygi/NEg1bBcxLyUb2Ntd6eNJ8=;
-        b=VvxOKjdx+LEMEy4i4gIVotKRZCypHBc66pC6/0wgvpuAUARXW3sMUGa9O+YKzGbvkv
-         cexgf5qyH/LDx+ypXJcUyW63OpDG+FsqpyaFvNGlYSjkyqpLFq7dHzYK1BdgN6HcPhKe
-         g5Bkz8GbL0gR9qrwypdCMtKOQQZ1pvbND3dfJTQfHcShMCXtBtMMbiU/r3mAvZvAhc+I
-         D2XNV7XgWw8VBABRqN9DjZYeQWAcqjFbWg6icrk2vspNdcYFpIkXu6B/8VuwA1aa+GnY
-         SODQ7o9Mukkaqyy8We9bFxwjcSwXZNtPV8aqn3JSmq6nF+WqG8NNW5w5moj+jBuJR+pl
-         6/gg==
-X-Gm-Message-State: AOJu0YzSMLQrGI6flmO25ef/jVxtkzUVAMsWujUofjbjA/qGtmtbyuHy
-	72Lma1Y+k7WTFnObB58TxvEJSHgcvT2pTdgB6qTf5+jsPcakPe64LLINUQ4QN/wF07DAICqoF24
-	hu6sKuFfaVrpIXpdsWpNOAm8qGnstYYMkFpRMfDEiDdgTO2SYR+CVPikxZk8=
-X-Google-Smtp-Source: AGHT+IGJiAwkTOO5KFWkcnVQVgCIdpMGhzEBXVS7QxfI+vlEpOfxwEQXa70K+5yPnIamOInYB2ItddnKsOGwM2xGnPm00TGJwmAB
+        bh=bOS9x5i7asNn9lemrd6E8okCe1RCDSGdDxw6q7jVDlk=;
+        b=LUcwGW+VrWEY6BG1KSnjJOFKSWBmvkneBUQlQGcdIOeK1Yr1hD7QUz08CyYWxzw4tJ
+         3jf1Ef4ywU83moVSZEf8ttZNwQYp74UCcdmkLPfyqJ49I4NuT4J6EIHUKBnZhcjg+H2A
+         RidBcutpXdvatPH9WU75kRf425wuLhJdM8GXq64+a6ui5vC7uBaYXyAoooTMIrUYK2Id
+         io/gOJ9IH/7wDAE7reGePvAdMRHT4/s/ARqxAlLtF/jPRpLl1h0MjFCUYc2kdwxcBNgx
+         UXWAgC1oiCYb2n/K/WgZ2cOhmtRebzwfZ5kwX2gQyTA965ltuiRFar6PXFljWRAXuyYh
+         x0vA==
+X-Gm-Message-State: AOJu0YwqeWKKxMaFkAx5g5TJi5G78Gc0PoUMnrQYkBH6JHGy5/sc/Efr
+	ClZUGivFhZDLMO4ydYvjaNxgbbcWc082RtN9KhRt2b3doypVoOYtOyTmRrzKum9xsx3Lvm5C6wT
+	BA0L2c6QZo4x1UwOxJpySEnQjrObs1RL6FmYKdRx6hVD4SDX60fA8ySsaF8o=
+X-Google-Smtp-Source: AGHT+IHSGVPf1S9SkCayj1eKII1rKZxjJfYJ2xdZQ5HTAawi94yXhuWagR/bUKwHLby1N/whjgOg3hqW+4HCLt2/yg7F6Ys6vppn
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a4a:ee0c:0:b0:659:9a49:8e41 with SMTP id
- 006d021491bc7-6599a8a1bc2mr1257353eaf.17.1765049305742; Sat, 06 Dec 2025
- 11:28:25 -0800 (PST)
-Date: Sat, 06 Dec 2025 11:28:25 -0800
+X-Received: by 2002:a05:6820:2219:b0:659:9a49:8ebf with SMTP id
+ 006d021491bc7-6599a966110mr1562134eaf.67.1765049486118; Sat, 06 Dec 2025
+ 11:31:26 -0800 (PST)
+Date: Sat, 06 Dec 2025 11:31:26 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <693483d9.a70a0220.38f243.0035.GAE@google.com>
+Message-ID: <6934848e.a70a0220.38f243.0036.GAE@google.com>
 Subject: [moderation/CI] Re: team: fix qom_list corruption by using list_del_init_rcu()
-From: syzbot ci <syzbot+ci3616386c79c0438a@syzkaller.appspotmail.com>
+From: syzbot ci <syzbot+ci731a80e9b9bf67db@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -52,14 +52,14 @@ Content-Type: text/plain; charset="UTF-8"
 syzbot ci has tested the following series
 
 [v1] team: fix qom_list corruption by using list_del_init_rcu()
-https://lore.kernel.org/all/20251206182557.10090-1-dharanitharan725@gmail.com
+https://lore.kernel.org/all/20251206183421.12039-1-dharanitharan725@gmail.com
 * [PATCH] team: fix qom_list corruption by using list_del_init_rcu()
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/99aefe79-7565-4798-b1a4-0f0ea7c4864a
+https://ci.syzbot.org/series/45c9873f-4ee6-4a3f-844e-485d806c218d
 
 ***
 
@@ -70,7 +70,7 @@ URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-n
 base:      0177f0f07886e54e12c6f18fa58f63e63ddd3c58
 arch:      amd64
 compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/b5333598-b1fc-4c35-8127-29becd807dac/config
+config:    https://ci.syzbot.org/builds/926f3939-8cc5-4289-824c-08ea836331b2/config
 
 drivers/net/team/team_core.c:827:2: error: call to undeclared function 'list_del_init_rcu'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 
@@ -85,7 +85,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[dharanitharan725@gmail.com linux-kernel@vger.kernel.org netdev@vger.kernel.org syzbot@syzkaller.appspotmail.com]
+[dharanitharan725@gmail.com netdev@vger.kernel.org syzbot@syzkaller.appspotmail.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
