@@ -1,88 +1,85 @@
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
+Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68B93246770
-	for <syzbot@lists.linux.dev>; Mon,  8 Dec 2025 08:51:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A17542ED871
+	for <syzbot@lists.linux.dev>; Tue,  9 Dec 2025 02:56:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765183918; cv=none; b=uB1AQxD9qOoMjWRN5D3gOFFhRub9TZQDQ16d3hW0cDHtTVjO15GvjjDnAdyp8bLFBf3ZrU1MIrKmDDJ4klcKqt55DhT40FXN1C8x0seEK4dHtvCNBSdDbStYEqm29Va8N7mmu8ewWzn/FTZKPp3gPPVcyPH6FHBcytMFpxMxyZU=
+	t=1765249009; cv=none; b=mLLHTNvOobmjAMx87tr/Ov0zWG+e7CqmVLFZRHtjgdVdt2Am68DKaGaWlrz7TyD4EGIcmAhidvgeDfS4Vo9Dh6h9Bus/nuBEiOBl4bI0HYLGYVMfuB/TXgS1hZ2PbPe9qVfQbEp7jZpKunNr3CaGmlyHN6fepCm0hony45mDMuU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765183918; c=relaxed/simple;
-	bh=Bb+6tPUKLuYUwn4BUlMQN1rXj8R6TkBMACwDha5cPP4=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=bs6sofom7q0N+xh09NSeJQ9Z6Y2ln4VcfOWAg4nkgn2DWAKBmyP1oLTfhVepP6Wh1E/PQqpQzisZf5CZe0ozAD7TNpf9ZPoy8RUofbnC+cXGW+10ZndR17bxjDvQX6wUfqLoXCohiYTpGmdGjYnC9n7QVppR++b9uqF+IqbW7z8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-656cc4098f3so5600715eaf.2
-        for <syzbot@lists.linux.dev>; Mon, 08 Dec 2025 00:51:57 -0800 (PST)
+	s=arc-20240116; t=1765249009; c=relaxed/simple;
+	bh=3I5nGggm3x3yWKIbR239dsxXAbPDTOoj5moA0+uZd9g=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=GowKTlv6y13R9C4KgwXkCQb4oAHJJyfPFeU+OOA2hI6QygojDhvhtfCVfqQ0e3hUh25d+91R3r54X0lr1PsT8nQtis04ssVNNNK7+u1wznBoN974U83f6Jx3r+CbFfUcEtDZC1amsl1XkSg4F9LmdqSoX5AJIC8pxLhos0oTuXs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--jackmanb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=U9Z5jzmY; arc=none smtp.client-ip=209.85.128.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--jackmanb.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="U9Z5jzmY"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-47904cdb9bbso44174935e9.1
+        for <syzbot@lists.linux.dev>; Mon, 08 Dec 2025 18:56:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1765249006; x=1765853806; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Q7EaRFbH/Lf9R0V6I929pmeRztGDYkW9+BODBzkEPjs=;
+        b=U9Z5jzmY+1uRxUbgaFtYIlHr0z3Al/hb6iICrmCO4l0LtnXiS752Q/UdBSkhQzqlQb
+         zp1kRj0ifsDUjOTxNmOH0YjbXguk/3XRcSNtgibxBMuUUg+WHSF0kCy7Jbf+mZ4FnITN
+         uqvgQNfqYL3OE+m7cAWIW1RAPHkg5G1YC/BUD7krAqm3J4SrK4nWhnsM4fgaU4/lzceP
+         7JACVukN8fAOKW1RuIPa8s4QSiISjvjirSzM5rmV/oc+slYubz7M9AKOOvGb2UILovAa
+         npYpJKeTJ7HH8GRyXvu+KbgwT/+HkWbCpjGQdBsLZ0FdBb79VlCJoO4GJz+E8WBQ/WKY
+         ZCXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765183916; x=1765788716;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sDe0xeAjgzNdxwDHvW7PBua6ENMGHlC7KWZQ6HmwjCc=;
-        b=soxBX7r4Hj7Hta1TGI7A9OoLcG0Th7fmVYIFuCssZqnFIMy+85lPgGnj0uDmNZYdzl
-         Acyuz6ECKZUhELbeNvg5XYeO6lUfgnkMUeqhIzh4+G8epdwc0x5Cf6f7YjX1r0+uHSY1
-         ZgGvsv08NjzQTzFqKoKTZj2gHkRdVFOSGp1zjMyTOhPN6jNMfqc/5uUUHSpuyF9hJdwm
-         IVKkssxdmFsNfi9yjKmW1MWyJtD0qC9g1krf7NNSrQNIwoz7MWHfmW4D4XuIjl0B2nfC
-         i10Oox76RKxdF6mnuP9J5RzDXAnBZ58h9y5TCXTc5xLDM4sd84mlEgYgxxvS4nWjyNJL
-         0R6w==
-X-Gm-Message-State: AOJu0YzquC0e6KtOzQze/s7wptkaqDbDkYtQfF2ODxABW1QgiR8Nvx8F
-	dOtxLijWJSx79sfCKe4wc71AnPs2z7l62ILTfMe0qqCbXtQ4mgrIQ6RD/wKLDKBIMeI7rU/9XLn
-	P3D/s8phcFfqbdcfdgQyN7VsrXrXcvQ/HKDKx2AAXYuobe34zxsTS6r36z3M=
-X-Google-Smtp-Source: AGHT+IGtvwHrx/AkNqeaV2m0nK1GvmPORsu2iOrdNfP1gsPjaxV0kpRKM/+woqeIgtcQqJxd9o9HWJOWGRoxEocNzE2nSi5KErBo
+        d=1e100.net; s=20230601; t=1765249006; x=1765853806;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Q7EaRFbH/Lf9R0V6I929pmeRztGDYkW9+BODBzkEPjs=;
+        b=IsQSfiRRK3Dusi/XodrKDqHOxPTnfE8a3DRBFLbDo0G0vhcXUbDiZiTYd9QeXPoz0r
+         WgQmZ03CVNl96EMsK9U4bSXFttfJp1MGfcdK0xJgNweaT11YhrIzWSVoC4xOergAbTGf
+         1dzDuzhim04mCTO1tCWfYXc1QzlTqaD5CRlOp7n6/X8+q+5h5fuBY2f2ENvZwoGyROYO
+         sJOI5eQo3z8Hft2IsYO40gOA8vAcYHwcykYgG3vlf8ajned8PMk4LqtTqRA9TzhO3QJ9
+         VrVGzCUmaWapWRkoYMoUXZiTqMvyeA/I4UZxZF+lbE6HLSkXC3V29dg+3IVcfP5Cr1+0
+         ykXw==
+X-Gm-Message-State: AOJu0YzOAinvRVIGsrtDG+PMnzKmV6ZiYm9H4n+F6o6KXX80oOo5jXFM
+	LR826fGj0C0Xd65tL89b1Jnxbd13cMPKhzvRRTjKLJ/W0nLmcIWmuHGch1fuWJFdNpJizLnvnS+
+	d1zBnfk6VtggmZA==
+X-Google-Smtp-Source: AGHT+IFm5Kmha7smcDj9tIB+hArhWUM5gz1offBTp6XSE0T88cKajhMxGRylJyGmYxNi+7S5qT5lVih1B/u4Zw==
+X-Received: from wmsm2.prod.google.com ([2002:a05:600c:3b02:b0:477:3d56:ac34])
+ (user=jackmanb job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:600d:844f:10b0:477:9d88:2da6 with SMTP id 5b1f17b1804b1-47a7f987e56mr294705e9.0.1765249005956;
+ Mon, 08 Dec 2025 18:56:45 -0800 (PST)
+Date: Tue, 09 Dec 2025 02:56:45 +0000
+In-Reply-To: <693691ac.a70a0220.38f243.009a.GAE@google.com>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-Received: by 2002:a05:6820:2293:b0:657:7272:e011 with SMTP id
- 006d021491bc7-6599a8c40cemr3736380eaf.5.1765183916719; Mon, 08 Dec 2025
- 00:51:56 -0800 (PST)
-Date: Mon, 08 Dec 2025 00:51:56 -0800
-In-Reply-To: <20251208-b4-vmalloc-might_alloc-v1-1-94a9bb8ecb08@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <693691ac.a70a0220.38f243.009a.GAE@google.com>
-Subject: [syzbot ci] Re: mm/vmalloc: clarify why vmap_range_noflush() might sleep
-From: syzbot ci <syzbot+cie262549d3c7e101a@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, jackmanb@google.com, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, urezki@gmail.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Mime-Version: 1.0
+References: <20251208-b4-vmalloc-might_alloc-v1-1-94a9bb8ecb08@google.com> <693691ac.a70a0220.38f243.009a.GAE@google.com>
+X-Mailer: aerc 0.21.0
+Message-ID: <DETCJPVHXE8O.2A2XQ73M2QOGK@google.com>
+Subject: Re: [syzbot ci] Re: mm/vmalloc: clarify why vmap_range_noflush()
+ might sleep
+From: Brendan Jackman <jackmanb@google.com>
+To: syzbot ci <syzbot+cie262549d3c7e101a@syzkaller.appspotmail.com>, 
+	<akpm@linux-foundation.org>, <jackmanb@google.com>, 
+	<linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>, <urezki@gmail.com>
+Cc: <syzbot@lists.linux.dev>, <syzkaller-bugs@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 
-syzbot ci has tested the following series
+On Mon Dec 8, 2025 at 8:51 AM UTC, syzbot ci wrote:
+> kernel build error
+>
+> tree:      mm-new
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
+> base:      3f43be96f919cc611dcb2a4e38dd464831f4513e
+> arch:      amd64
 
-[v1] mm/vmalloc: clarify why vmap_range_noflush() might sleep
-https://lore.kernel.org/all/20251208-b4-vmalloc-might_alloc-v1-1-94a9bb8ecb08@google.com
-* [PATCH] mm/vmalloc: clarify why vmap_range_noflush() might sleep
+Um, so apparently I didn't even compile this code for x86? Sorry about
+this.
 
-and found the following issue:
-kernel build error
+FWIW, I do test my patches [0]! Apparently in this case I just decided
+to post it without actually checking the results.
 
-Full report is available here:
-https://ci.syzbot.org/series/ca5fb0b1-49a4-4066-b78d-d144e56e0d2b
-
-***
-
-kernel build error
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      3f43be96f919cc611dcb2a4e38dd464831f4513e
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/1d630f58-694e-4568-8ac0-62e02ea8a59d/config
-
-mm/vmalloc.c:308:14: error: use of undeclared identifier 'GFP_PGTABLE_KERNEL'
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+[0] https://github.com/bjackman/limmat-kernel-nix
