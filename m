@@ -1,51 +1,51 @@
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32F01322DCA
-	for <syzbot@lists.linux.dev>; Tue,  9 Dec 2025 12:28:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 007C919005E
+	for <syzbot@lists.linux.dev>; Tue,  9 Dec 2025 13:15:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765283345; cv=none; b=HtywnVeGd5H4tLaD3FdJlaVyo1G4uqtAL486l8BGiECf91PFwTICL/sAL4Ns+FQDEyf4sn6MwsXUc/dm0rsWLKFPXgPbI7jlH9LAq1Wd5sjhFJRookyyguh+Nhx9mtpJT4O+r5AhM1/MZ2jrGHHlTcsQ3o1uMtvEaGIvZbDRqmM=
+	t=1765286148; cv=none; b=aR/Y60ZHrTFTa+ftsg73Hci+cl0VmvfFOjhmkUjt4LAvo+vXscyUm6FzCS3GeSFH2YnNMKFqWy68KiLD1ticRxEYN04oXA9SbfrnvLBzHMDk1djA6epTI+Ax9+nretZlBizcpDbUN+TDSuJxqXJadhFfZkbbbpZ9uhHMJaja0Jo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765283345; c=relaxed/simple;
-	bh=ofQ7/KcmxQx+8et4AcFlChrPBD3wEY/Tnc4z5rADVoc=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=GFI8u8XoUlhZDMTCXQ3XW3rvH2LHfVSU6uG6riLflR9w8wU1Iz8TtwUcOMsG6ZmYRgzRmjhtX9Dhw6qT0o8mENzss4jFzh3TNwm7vJdiXx99kJZihRD4iIcwrxNx8+QakvI8QxqAvla7DiqeVcIulQlMS/NgeWeApBb+1B/bdxo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
+	s=arc-20240116; t=1765286148; c=relaxed/simple;
+	bh=a7dZmt0lzt3CWto9tkEaYYzLrCeTFx2sscDPBrRiJm0=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=iCf2KWTREqC8xFTczxjg1YQbyICDcLYtkPl+AzUCAcs0yHnPNfmQS2zAXCH1snqKt6dF8CW+qNldPdz5L66ouYgQj9pIBY3Kp5J8qg1HjbaqVwRiM24MaalYXtbFCgfrs+aJqnTu6JVaqsU97MJDx+DRZDFQowsyy7zYynk8yXc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-65716511512so7016436eaf.1
-        for <syzbot@lists.linux.dev>; Tue, 09 Dec 2025 04:28:51 -0800 (PST)
+Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7c7593b5c93so9531254a34.3
+        for <syzbot@lists.linux.dev>; Tue, 09 Dec 2025 05:15:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765283324; x=1765888124;
+        d=1e100.net; s=20230601; t=1765286146; x=1765890946;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=A+8Az7gObFcomcPcWK8zdMlM5oPcab4S3+ji/3nc8cc=;
-        b=rGRgwkzRLx29g+Kt11H886ZptxZuhqPmscPRtrX85eeRs2GHoluLXh8MT7Ix17qtgf
-         USmQ0iehD0waIUIiQlJDqvIJV2XHpWL/nbvc5Z4Eqs3A9owgDarQ9Dc5esd3blg778oc
-         IMhG1twj4MQKUZvmfIHBhBscR7DP8/d7jqT0hghP9ca/XhlqmE/m6YgMWvcxkA0HeE5Z
-         WedX1yNr8yQd4XGmgCeLn5P6GgpSm+bTUu7tMSbge+qMRdR4D97WDXl9wt2mZ0HQZdGi
-         POPLqfem2LUSj4uEAw+N2si9Dx2PBjO0UixmcCS5Pl+PMeiEjusuzwwTj+hc+B91c32/
-         Qqqw==
-X-Gm-Message-State: AOJu0YzPgP5NdCJiSiQQqJm5fOiox7nwkmVEEJR9IKzBJOOqW68giE7I
-	1fcC978afqWAIiDy3P9okd5m3yiHNgnMkELDYGb6thIblP3qBsYCDqKRkY8BXx/OgxLiJMvfiqE
-	7Yi6UI5VUgHSZDbGL5+DHWTEdMEHRFMtG7w8UjGVhCVFJ5D17+aR7314ov4k=
-X-Google-Smtp-Source: AGHT+IH1DsyN2yyFG6zR72o1ZE0EdV3FiFtXsZVQJGMd/zi3Wq1ZSyb/90aFX05+k+zl8YlV+smPg1uJXUhib8NQwj+toTkP385X
+        bh=UL35a1F24/7X5Ujb2pjxH+DJPEtx7RvBAfhboOQqXCM=;
+        b=C19JMp8hYifTcj89UOkQ2OdDkHK7yAT4TDR+VmuBH69/TxGWQ+q2vw4AXp8oiyWJAg
+         432N7V0XUQHgZoo7if5t642SAiUexkBWSLtiGV9LZqKRAXym9vSVnmupTNkJhf6M+lPE
+         LZp4DfsIlt5+0SZSRf711PMkegW0vKhAvXKg3XT9l9IVyNm9E18K/kbM4F5V+fzs8BOE
+         HpvUWKzn0ScihYCOpszIYpVIw9bOhjV3gPVatleEWukDyBITbOBEA7MS6wm0U12uFPP8
+         py25iIeIuFR55ufis55PbybDN5brO/e7AEQGv2NACRRpbbOLbJDhgCnVPNKqKx8Rdr/b
+         8WJQ==
+X-Gm-Message-State: AOJu0Yxv70eHT+USIfMJtnXd8VdsCTKzNJQfVsyzo6OtdcxuQIJa8SKc
+	IivZvtAiTJkYvtk2PjMstCwk5xzfVW6Ozes6Dy8qDqUAcx7IRZDpMM1X98RnCvjlvcLTUBISmT1
+	v6u2XBxUWax6pqqfee9IouMiWQTRJ7u4Pp1T6XqReHu928BkTZRJ3EZJXbXE=
+X-Google-Smtp-Source: AGHT+IGT63Cb9pkhU/tj/PFksV791QidNoYZaf+TZGItTpyqBy1qwrLbg7djvMyhcctQv8FgPyUyYw2xiGesvUtEbuGoqhQ4fGcX
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1885:b0:659:9a49:9081 with SMTP id
- 006d021491bc7-6599a995cecmr4032318eaf.76.1765283324404; Tue, 09 Dec 2025
- 04:28:44 -0800 (PST)
-Date: Tue, 09 Dec 2025 04:28:44 -0800
+X-Received: by 2002:a05:6820:2219:b0:659:9a49:8f63 with SMTP id
+ 006d021491bc7-6599a962247mr4482265eaf.40.1765286146089; Tue, 09 Dec 2025
+ 05:15:46 -0800 (PST)
+Date: Tue, 09 Dec 2025 05:15:46 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <693815fc.050a0220.4004e.000d.GAE@google.com>
-Subject: [moderation/CI] Re: net/handshake: Fix null-ptr-deref in handshake_complete()
-From: syzbot ci <syzbot+ci1969116f2ce3ca74@syzkaller.appspotmail.com>
+Message-ID: <69382102.a70a0220.104cf0.0003.GAE@google.com>
+Subject: [moderation/CI] Re: xsk: introduce pre-allocated memory per xsk CQ
+From: syzbot ci <syzbot+ci21d32389dddeb9e2@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -53,36 +53,110 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] net/handshake: Fix null-ptr-deref in handshake_complete()
-https://lore.kernel.org/all/20251209115852.3827876-1-wangliang74@huawei.com
-* [PATCH net] net/handshake: Fix null-ptr-deref in handshake_complete()
+[v1] xsk: introduce pre-allocated memory per xsk CQ
+https://lore.kernel.org/all/20251209085950.96231-1-kerneljasonxing@gmail.co=
+m
+* [PATCH bpf-next v1 1/2] xsk: introduce local_cq for each af_xdp socket
+* [PATCH bpf-next v1 2/2] xsk: introduce a dedicated local completion queue=
+ for each xsk
 
 and found the following issue:
-kernel build error
+WARNING in vfree
 
 Full report is available here:
-https://ci.syzbot.org/series/e63d7ca3-926c-4a4a-822d-6240f25d9f98
+https://ci.syzbot.org/series/5df45d2b-41d6-4675-b3ad-4503516a9ae1
 
 ***
 
-kernel build error
+WARNING in vfree
 
-tree:      net
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net.git
-base:      8f7aa3d3c7323f4ca2768a9e74ebbe359c4f8f88
+tree:      bpf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
+-next.git
+base:      835a50753579aa8368a08fca307e638723207768
 arch:      amd64
 compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
 1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/59c3acc9-b321-4046-b43e-06ad739aed7=
-b/config
+config:    https://ci.syzbot.org/builds/726617c2-a613-4879-9987-91e65545dba=
+1/config
+C repro:   https://ci.syzbot.org/findings/0c82a0b1-8cb3-49ae-9fbe-fa3bd02c2=
+ba0/c_repro
+syz repro: https://ci.syzbot.org/findings/0c82a0b1-8cb3-49ae-9fbe-fa3bd02c2=
+ba0/syz_repro
 
-net/handshake/netlink.c:110:3: error: cannot jump from this goto statement =
-to its label
-net/handshake/netlink.c:104:3: error: cannot jump from this goto statement =
-to its label
-net/handshake/netlink.c:100:3: error: cannot jump from this goto statement =
-to its label
+------------[ cut here ]------------
+Trying to vfree() nonexistent vm area (ffffc900034e6000)
+WARNING: mm/vmalloc.c:3423 at 0x0, CPU#0: syz.0.19/5983
+Modules linked in:
+CPU: 0 UID: 0 PID: 5983 Comm: syz.0.19 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:vfree+0x393/0x400 mm/vmalloc.c:3422
+Code: e8 72 1d ab ff 4c 89 f7 48 83 c4 18 5b 41 5c 41 5d 41 5e 41 5f 5d e9 =
+0c fa ff ff e8 57 1d ab ff 48 8d 3d 10 fc 6e 0d 4c 89 f6 <67> 48 0f b9 3a e=
+9 fd fd ff ff e8 3e 1d ab ff 4c 89 e7 e8 66 00 00
+RSP: 0018:ffffc90004e37c40 EFLAGS: 00010293
+RAX: ffffffff82162d09 RBX: 0000000000000000 RCX: ffff88816c66d7c0
+RDX: 0000000000000000 RSI: ffffc900034e6000 RDI: ffffffff8f852920
+RBP: 1ffff1102289d8bf R08: ffff88810005f1bb R09: 1ffff1102000be37
+R10: dffffc0000000000 R11: ffffed102000be38 R12: ffff88801eed1818
+R13: dffffc0000000000 R14: ffffc900034e6000 R15: ffff8881144ec608
+FS:  0000555574db2500(0000) GS:ffff88818eab1000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00002000000000c0 CR3: 0000000112a48000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ xsk_clear_local_cq net/xdp/xsk.c:1188 [inline]
+ xsk_release+0x6b3/0x880 net/xdp/xsk.c:1220
+ __sock_release net/socket.c:653 [inline]
+ sock_close+0xc3/0x240 net/socket.c:1446
+ __fput+0x44c/0xa70 fs/file_table.c:468
+ task_work_run+0x1d4/0x260 kernel/task_work.c:233
+ resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
+ __exit_to_user_mode_loop kernel/entry/common.c:44 [inline]
+ exit_to_user_mode_loop+0xff/0x4f0 kernel/entry/common.c:75
+ __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
+ syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [in=
+line]
+ syscall_exit_to_user_mode_work include/linux/entry-common.h:159 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:194 [inline]
+ do_syscall_64+0x2e3/0xf80 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7eff8518f7c9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffd6ca61b78 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
+RAX: 0000000000000000 RBX: 000000000001253b RCX: 00007eff8518f7c9
+RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000001 R09: 000000086ca61e6f
+R10: 0000001b2f920000 R11: 0000000000000246 R12: 00007eff853e5fac
+R13: 00007eff853e5fa0 R14: ffffffffffffffff R15: 0000000000000003
+ </TASK>
+----------------
+Code disassembly (best guess):
+   0:	e8 72 1d ab ff       	call   0xffab1d77
+   5:	4c 89 f7             	mov    %r14,%rdi
+   8:	48 83 c4 18          	add    $0x18,%rsp
+   c:	5b                   	pop    %rbx
+   d:	41 5c                	pop    %r12
+   f:	41 5d                	pop    %r13
+  11:	41 5e                	pop    %r14
+  13:	41 5f                	pop    %r15
+  15:	5d                   	pop    %rbp
+  16:	e9 0c fa ff ff       	jmp    0xfffffa27
+  1b:	e8 57 1d ab ff       	call   0xffab1d77
+  20:	48 8d 3d 10 fc 6e 0d 	lea    0xd6efc10(%rip),%rdi        # 0xd6efc37
+  27:	4c 89 f6             	mov    %r14,%rsi
+* 2a:	67 48 0f b9 3a       	ud1    (%edx),%rdi <-- trapping instruction
+  2f:	e9 fd fd ff ff       	jmp    0xfffffe31
+  34:	e8 3e 1d ab ff       	call   0xffab1d77
+  39:	4c 89 e7             	mov    %r12,%rdi
+  3c:	e8                   	.byte 0xe8
+  3d:	66 00 00             	data16 add %al,(%rax)
+
 
 ***
 
@@ -95,10 +169,11 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[brauner@kernel.org chuck.lever@oracle.com davem@davemloft.net edumazet@goo=
-gle.com horms@kernel.org kernel-tls-handshake@lists.linux.dev kuba@kernel.o=
-rg linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com wa=
-ngliang74@huawei.com yuehaibing@huawei.com zhangchangzhong@huawei.com]
+[ast@kernel.org bjorn@kernel.org bpf@vger.kernel.org daniel@iogearbox.net d=
+avem@davemloft.net edumazet@google.com hawk@kernel.org john.fastabend@gmail=
+.com jonathan.lemon@gmail.com kerneljasonxing@gmail.com kernelxing@tencent.=
+com kuba@kernel.org maciej.fijalkowski@intel.com magnus.karlsson@intel.com =
+netdev@vger.kernel.org pabeni@redhat.com sdf@fomichev.me]
 
 If the report looks fine to you, reply with:
 #syz upstream
