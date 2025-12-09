@@ -1,85 +1,210 @@
-Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A17542ED871
-	for <syzbot@lists.linux.dev>; Tue,  9 Dec 2025 02:56:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B488221554
+	for <syzbot@lists.linux.dev>; Tue,  9 Dec 2025 07:21:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765249009; cv=none; b=mLLHTNvOobmjAMx87tr/Ov0zWG+e7CqmVLFZRHtjgdVdt2Am68DKaGaWlrz7TyD4EGIcmAhidvgeDfS4Vo9Dh6h9Bus/nuBEiOBl4bI0HYLGYVMfuB/TXgS1hZ2PbPe9qVfQbEp7jZpKunNr3CaGmlyHN6fepCm0hony45mDMuU=
+	t=1765264898; cv=none; b=MeKy1//IEyKSQuTiAtY5jUuDEiDvxXXikN+nxrNCabGdblfl6xkcTKqj3oSbPXGhjEq2z7Mk6uqYeLHd3xlp9m+IC4ZbldkGQE5RRe8a14C3JeLOVnqK1Dik9cSJjcwvAXsxIdRK+zenYy3mxJnTTn1hiBghh5AT5pVPsTpkSbk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765249009; c=relaxed/simple;
-	bh=3I5nGggm3x3yWKIbR239dsxXAbPDTOoj5moA0+uZd9g=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=GowKTlv6y13R9C4KgwXkCQb4oAHJJyfPFeU+OOA2hI6QygojDhvhtfCVfqQ0e3hUh25d+91R3r54X0lr1PsT8nQtis04ssVNNNK7+u1wznBoN974U83f6Jx3r+CbFfUcEtDZC1amsl1XkSg4F9LmdqSoX5AJIC8pxLhos0oTuXs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--jackmanb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=U9Z5jzmY; arc=none smtp.client-ip=209.85.128.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--jackmanb.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="U9Z5jzmY"
-Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-47904cdb9bbso44174935e9.1
-        for <syzbot@lists.linux.dev>; Mon, 08 Dec 2025 18:56:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1765249006; x=1765853806; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Q7EaRFbH/Lf9R0V6I929pmeRztGDYkW9+BODBzkEPjs=;
-        b=U9Z5jzmY+1uRxUbgaFtYIlHr0z3Al/hb6iICrmCO4l0LtnXiS752Q/UdBSkhQzqlQb
-         zp1kRj0ifsDUjOTxNmOH0YjbXguk/3XRcSNtgibxBMuUUg+WHSF0kCy7Jbf+mZ4FnITN
-         uqvgQNfqYL3OE+m7cAWIW1RAPHkg5G1YC/BUD7krAqm3J4SrK4nWhnsM4fgaU4/lzceP
-         7JACVukN8fAOKW1RuIPa8s4QSiISjvjirSzM5rmV/oc+slYubz7M9AKOOvGb2UILovAa
-         npYpJKeTJ7HH8GRyXvu+KbgwT/+HkWbCpjGQdBsLZ0FdBb79VlCJoO4GJz+E8WBQ/WKY
-         ZCXQ==
+	s=arc-20240116; t=1765264898; c=relaxed/simple;
+	bh=AzlcO84KOPmvoL8wN8DqLzxM7JpJMkykaeEKW7GstAk=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=FCCJgaAIcnotZJTmw7WEU/aMnTfjJe/d6UjaLWcFkUzJsmInWLI9eDqW40stsL5PiqkwmzpYa/Curo+MAJLylOOXYEByJa7x/nyf3aym107qaYG+gQhsExaVAl7a3rUUE5J5Lh+gj0tt6NAIXNKT5QO70n9g7l3uajrRCHMv4Pg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7c7032a5b40so5190021a34.1
+        for <syzbot@lists.linux.dev>; Mon, 08 Dec 2025 23:21:36 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765249006; x=1765853806;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Q7EaRFbH/Lf9R0V6I929pmeRztGDYkW9+BODBzkEPjs=;
-        b=IsQSfiRRK3Dusi/XodrKDqHOxPTnfE8a3DRBFLbDo0G0vhcXUbDiZiTYd9QeXPoz0r
-         WgQmZ03CVNl96EMsK9U4bSXFttfJp1MGfcdK0xJgNweaT11YhrIzWSVoC4xOergAbTGf
-         1dzDuzhim04mCTO1tCWfYXc1QzlTqaD5CRlOp7n6/X8+q+5h5fuBY2f2ENvZwoGyROYO
-         sJOI5eQo3z8Hft2IsYO40gOA8vAcYHwcykYgG3vlf8ajned8PMk4LqtTqRA9TzhO3QJ9
-         VrVGzCUmaWapWRkoYMoUXZiTqMvyeA/I4UZxZF+lbE6HLSkXC3V29dg+3IVcfP5Cr1+0
-         ykXw==
-X-Gm-Message-State: AOJu0YzOAinvRVIGsrtDG+PMnzKmV6ZiYm9H4n+F6o6KXX80oOo5jXFM
-	LR826fGj0C0Xd65tL89b1Jnxbd13cMPKhzvRRTjKLJ/W0nLmcIWmuHGch1fuWJFdNpJizLnvnS+
-	d1zBnfk6VtggmZA==
-X-Google-Smtp-Source: AGHT+IFm5Kmha7smcDj9tIB+hArhWUM5gz1offBTp6XSE0T88cKajhMxGRylJyGmYxNi+7S5qT5lVih1B/u4Zw==
-X-Received: from wmsm2.prod.google.com ([2002:a05:600c:3b02:b0:477:3d56:ac34])
- (user=jackmanb job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600d:844f:10b0:477:9d88:2da6 with SMTP id 5b1f17b1804b1-47a7f987e56mr294705e9.0.1765249005956;
- Mon, 08 Dec 2025 18:56:45 -0800 (PST)
-Date: Tue, 09 Dec 2025 02:56:45 +0000
-In-Reply-To: <693691ac.a70a0220.38f243.009a.GAE@google.com>
+        d=1e100.net; s=20230601; t=1765264895; x=1765869695;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4IPdZSPqJr0DLi3kOAtqh0ruchPNbsbQpmPhL8OMW10=;
+        b=ZdxnPTy3/dj+lSuXKtzpDLtiCRkqWZ3igYnMQK8e3O4xIGaLd+S2V26EuU/MAeAex4
+         8Pvm+dPCgIZlnPfUxNLGEVCuftx4Cr9mIx2FRjvv1S4rJzuziySQUR1CWBSJwHjnDdi7
+         h4v8dkCTw5l0c+CRg23dPM/ouQhVN7Pk5p62m5EJsocGT+IeuOxg90k18gQz0/z7BiBe
+         NtSqv8eJzJgY/K1dgLTrQcOrKcVLIoF0SQ2G9FQ4CDkezRuYM7Vg0pGZlkpzlu6bdJ9Y
+         Jc/1nSQjFgOfGZJZb7lwDdX3bbFsjriNOAYkSUySGlhsFYZuAF8EgG5Z4LL0eLayRWHo
+         b3Xw==
+X-Gm-Message-State: AOJu0YzzLVIp5tDyCcHuGfBjL9YFqwhhYGK2mX4ATrrMXhjHR4m6OB5r
+	eZ7y9X1UUYv0PLeZzqHl2juakI/YApm2Rxv4keyoK3xvVtb98D6v+LRuMsdULPcfjHz7YLyPiCA
+	tqVhmpAE5vmtm8h3VNP8SKwp7ZLqX3iNBTRhDWxn9e301qasG6pdeGrv/kVg=
+X-Google-Smtp-Source: AGHT+IErHz2jS33/dU7K1p/fckqiLpHneEkaNJbUjVvOI+EgLmPWIRf6CIDFBdDFKYoLoheGfdicSfeuv6//29J3HihsOSxJgmKB
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20251208-b4-vmalloc-might_alloc-v1-1-94a9bb8ecb08@google.com> <693691ac.a70a0220.38f243.009a.GAE@google.com>
-X-Mailer: aerc 0.21.0
-Message-ID: <DETCJPVHXE8O.2A2XQ73M2QOGK@google.com>
-Subject: Re: [syzbot ci] Re: mm/vmalloc: clarify why vmap_range_noflush()
- might sleep
-From: Brendan Jackman <jackmanb@google.com>
-To: syzbot ci <syzbot+cie262549d3c7e101a@syzkaller.appspotmail.com>, 
-	<akpm@linux-foundation.org>, <jackmanb@google.com>, 
-	<linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>, <urezki@gmail.com>
-Cc: <syzbot@lists.linux.dev>, <syzkaller-bugs@googlegroups.com>
+MIME-Version: 1.0
+X-Received: by 2002:a05:6820:2903:b0:659:9a49:8df6 with SMTP id
+ 006d021491bc7-6599a96b9c7mr4316618eaf.56.1765264895574; Mon, 08 Dec 2025
+ 23:21:35 -0800 (PST)
+Date: Mon, 08 Dec 2025 23:21:35 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6937cdff.a70a0220.38f243.00c7.GAE@google.com>
+Subject: [moderation/CI] Re: xsk: move cq_cached_prod_lock to avoid touching a
+ cacheline in sending path
+From: syzbot ci <syzbot+ci71a98442f168165b@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon Dec 8, 2025 at 8:51 AM UTC, syzbot ci wrote:
-> kernel build error
->
-> tree:      mm-new
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-> base:      3f43be96f919cc611dcb2a4e38dd464831f4513e
-> arch:      amd64
+syzbot ci has tested the following series
 
-Um, so apparently I didn't even compile this code for x86? Sorry about
-this.
+[v4] xsk: move cq_cached_prod_lock to avoid touching a cacheline in sending=
+ path
+https://lore.kernel.org/all/20251209031628.28429-1-kerneljasonxing@gmail.co=
+m
+* [PATCH RFC net-next v4] xsk: move cq_cached_prod_lock to avoid touching a=
+ cacheline in sending path
 
-FWIW, I do test my patches [0]! Apparently in this case I just decided
-to post it without actually checking the results.
+and found the following issue:
+BUG: unable to handle kernel NULL pointer dereference in xp_create_and_assi=
+gn_umem
 
-[0] https://github.com/bjackman/limmat-kernel-nix
+Full report is available here:
+https://ci.syzbot.org/series/d7e166a7-a880-4ea1-9707-8889afd4ebe8
+
+***
+
+BUG: unable to handle kernel NULL pointer dereference in xp_create_and_assi=
+gn_umem
+
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net-next.git
+base:      0177f0f07886e54e12c6f18fa58f63e63ddd3c58
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/d327cc4b-7471-413b-b244-519c6d16d43=
+b/config
+C repro:   https://ci.syzbot.org/findings/c8f7aeaf-0e2e-43dd-ae9c-ea2dd8db8=
+d34/c_repro
+syz repro: https://ci.syzbot.org/findings/c8f7aeaf-0e2e-43dd-ae9c-ea2dd8db8=
+d34/syz_repro
+
+UDPLite6: UDP-Lite is deprecated and scheduled to be removed in 2025, pleas=
+e contact the netdev mailing list
+BUG: kernel NULL pointer dereference, address: 0000000000000058
+#PF: supervisor write access in kernel mode
+#PF: error_code(0x0002) - not-present page
+PGD 80000001b2496067 P4D 80000001b2496067 PUD 0=20
+Oops: Oops: 0002 [#1] SMP KASAN PTI
+CPU: 1 UID: 0 PID: 5973 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:lockdep_init_map_type+0x1e/0x380 kernel/locking/lockdep.c:4944
+Code: 90 90 90 90 90 90 90 90 90 90 90 90 f3 0f 1e fa 55 41 56 53 48 83 ec =
+10 89 cd 48 89 fb 65 48 8b 05 67 af d1 10 48 89 44 24 08 <48> c7 47 10 00 0=
+0 00 00 48 c7 47 08 00 00 00 00 8b 05 8c f2 dc 17
+RSP: 0018:ffffc90003c07bb8 EFLAGS: 00010286
+RAX: ec490cf5c114aa00 RBX: 0000000000000048 RCX: 0000000000000000
+RDX: ffffffff99d16120 RSI: ffffffff8c92a180 RDI: 0000000000000048
+RBP: 0000000000000000 R08: 0000000000000003 R09: 0000000000000000
+R10: ffffed102e5d7800 R11: fffffbfff1efa3cf R12: dffffc0000000000
+R13: ffff8881bdeb3000 R14: ffffffff99d16120 R15: ffffffff8c92a180
+FS:  00005555729bd500(0000) GS:ffff8882a9f31000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000058 CR3: 0000000172faa000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ lockdep_init_map_waits include/linux/lockdep.h:135 [inline]
+ lockdep_init_map_wait include/linux/lockdep.h:142 [inline]
+ __raw_spin_lock_init+0x45/0x100 kernel/locking/spinlock_debug.c:25
+ xp_create_and_assign_umem+0x648/0xd40 net/xdp/xsk_buff_pool.c:94
+ xsk_bind+0x95a/0xf90 net/xdp/xsk.c:1355
+ __sys_bind_socket net/socket.c:1874 [inline]
+ __sys_bind+0x2c6/0x3e0 net/socket.c:1905
+ __do_sys_bind net/socket.c:1910 [inline]
+ __se_sys_bind net/socket.c:1908 [inline]
+ __x64_sys_bind+0x7a/0x90 net/socket.c:1908
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0xfa0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f591eb8f7c9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffce6fcef48 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
+RAX: ffffffffffffffda RBX: 00007f591ede5fa0 RCX: 00007f591eb8f7c9
+RDX: 0000000000000010 RSI: 0000200000000240 RDI: 0000000000000003
+RBP: 00007f591ebf297f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f591ede5fa0 R14: 00007f591ede5fa0 R15: 0000000000000003
+ </TASK>
+Modules linked in:
+CR2: 0000000000000058
+---[ end trace 0000000000000000 ]---
+RIP: 0010:lockdep_init_map_type+0x1e/0x380 kernel/locking/lockdep.c:4944
+Code: 90 90 90 90 90 90 90 90 90 90 90 90 f3 0f 1e fa 55 41 56 53 48 83 ec =
+10 89 cd 48 89 fb 65 48 8b 05 67 af d1 10 48 89 44 24 08 <48> c7 47 10 00 0=
+0 00 00 48 c7 47 08 00 00 00 00 8b 05 8c f2 dc 17
+RSP: 0018:ffffc90003c07bb8 EFLAGS: 00010286
+RAX: ec490cf5c114aa00 RBX: 0000000000000048 RCX: 0000000000000000
+RDX: ffffffff99d16120 RSI: ffffffff8c92a180 RDI: 0000000000000048
+RBP: 0000000000000000 R08: 0000000000000003 R09: 0000000000000000
+R10: ffffed102e5d7800 R11: fffffbfff1efa3cf R12: dffffc0000000000
+R13: ffff8881bdeb3000 R14: ffffffff99d16120 R15: ffffffff8c92a180
+FS:  00005555729bd500(0000) GS:ffff8882a9f31000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000058 CR3: 0000000172faa000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	90                   	nop
+   1:	90                   	nop
+   2:	90                   	nop
+   3:	90                   	nop
+   4:	90                   	nop
+   5:	90                   	nop
+   6:	90                   	nop
+   7:	90                   	nop
+   8:	90                   	nop
+   9:	90                   	nop
+   a:	90                   	nop
+   b:	90                   	nop
+   c:	f3 0f 1e fa          	endbr64
+  10:	55                   	push   %rbp
+  11:	41 56                	push   %r14
+  13:	53                   	push   %rbx
+  14:	48 83 ec 10          	sub    $0x10,%rsp
+  18:	89 cd                	mov    %ecx,%ebp
+  1a:	48 89 fb             	mov    %rdi,%rbx
+  1d:	65 48 8b 05 67 af d1 	mov    %gs:0x10d1af67(%rip),%rax        # 0x10d=
+1af8c
+  24:	10
+  25:	48 89 44 24 08       	mov    %rax,0x8(%rsp)
+* 2a:	48 c7 47 10 00 00 00 	movq   $0x0,0x10(%rdi) <-- trapping instruction
+  31:	00
+  32:	48 c7 47 08 00 00 00 	movq   $0x0,0x8(%rdi)
+  39:	00
+  3a:	8b 05 8c f2 dc 17    	mov    0x17dcf28c(%rip),%eax        # 0x17dcf2c=
+c
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[ast@kernel.org bjorn@kernel.org bpf@vger.kernel.org daniel@iogearbox.net d=
+avem@davemloft.net edumazet@google.com hawk@kernel.org john.fastabend@gmail=
+.com jonathan.lemon@gmail.com kerneljasonxing@gmail.com kernelxing@tencent.=
+com kuba@kernel.org maciej.fijalkowski@intel.com magnus.karlsson@intel.com =
+netdev@vger.kernel.org pabeni@redhat.com sdf@fomichev.me]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
