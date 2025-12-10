@@ -1,92 +1,150 @@
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45A431AC44D
-	for <syzbot@lists.linux.dev>; Wed, 10 Dec 2025 06:25:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A14C31F3FE9;
+	Wed, 10 Dec 2025 08:31:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765347916; cv=none; b=CdfGlSkemSmxr3F2Q/4syNeKIvBwI+RVF8hDTzokBpJbe0IRytFuR+H3dXkce7tbSwjmOyuf36uLqvueRZ3YVE1YbcfPOCBAR/NFwku/b8G9DAZpMHVw3qHJbIU5AFvTio/hkuMZxyM70kiMy/uMKHINUWrHBcEVRLMWY+eQOcU=
+	t=1765355491; cv=none; b=HmMkVrGojpdDrnyHqj5hhcj769m0hPou+0Hxb8hBV2xrG2sF8Jil+P76ftsC00q3h0y3GKQWtOICFF289cEnN94a62F1a9cHP4PkM29j2IKu+KUT5ejnH4xLwHEQXMMTpIK9uiGcWGJwiLgCr4YOfymss260PrRjfh3oXw8geMs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765347916; c=relaxed/simple;
-	bh=rO/4WqgOm+xNnCYs3SvS8fTa45ZlSHweuHhlQEOdA+E=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=P5J0DFFrWWW2pFSK83qHNecGUUp2jeX3l+suaTz2/6SBdxe6bB3iKKPGRWPuN4j/c5R+D6dkonlJpaV4FagAfx5ird8TiLuubfUM9aeA3IYg6td60agVvKBWk5p1gERrfS807VVdmYZamVR3Uoc7sONUkdpjy8SVVAST0pk9boE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.70
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-7c6c91ba9caso10439153a34.0
-        for <syzbot@lists.linux.dev>; Tue, 09 Dec 2025 22:25:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765347914; x=1765952714;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=LuY3pz40rjvhKrO3nDHFm/NGztQvV6Wa/PGBbrvlD6s=;
-        b=sJDUwsPXFA7MBHg7jubFUpcK7tVuWhYFx42VvjZ2F19B2Xd5CuBqyiDw4vri5wjoNC
-         +Fd/abvrTtBWcNn5S9BlukJuDp3vmWis0pF1etvfKjEXdP8gH1YOISJxJQ2ty+ZKT9o5
-         xULlWPuDGTdE9QByLN8mjb3UBzugDT9GLhWFu26GmWvk+1Dd6zldfKLmJ7w1GHoDbc3Q
-         ZLK2hbZliYRy3O3EauSuVjm0KSKQLmDLiuDbUG62rBWEIrWvxvQn2Picz/tKsnJFwzCw
-         jP/+dgJA9/DPfJx6dYieYE6aa+l6GeTGWMT4kBtsaqe4+1lix6xzO0yzgfiK/bzjorqx
-         f68A==
-X-Gm-Message-State: AOJu0YyTZejXOF8Bbw9g+yd7W0tpP+aLY32q0odh8Lc48Z4dGgTksOu9
-	GW+7HRgT//hnTEwGwjtLgIzb8AaWrw9CDj91vXbXbbo5qol7Cn9Fyx5ZHI8sglUEuGd5SuAdeie
-	PMhbrWqnxFVWW8CgGHIU55klyzNWoYeYfXqHzgFSUWWOKMR0vUtSJvRj15JE=
-X-Google-Smtp-Source: AGHT+IF3oCL8ugcYljWNsJdCbKeyL/LBeYrTuGoqz9dAisC7AMrL1V07WEymO2GYoyc2G6N7kKuZqLD6XeJfz6Wa9kph19EKrNGc
+	s=arc-20240116; t=1765355491; c=relaxed/simple;
+	bh=n7nCUlTV4fyFUAsZSXKYvC743HHeyUkFmbdCcDsWo+M=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=C+7dfwcDwUy/3V9k2FtU/ucJshDWx8Ltf7NOZiR3GoGj+GSvvkXVXFAxwtD/nPrp0WRst3OIaJ3DKxmUyK4lAW/KEC8+PzdA6q0NhrCbJl0IVofPoN3kIeZK/05aU9z1GhaS4k26GvnuBu5dFDj12tR5kmTFptJW82ZkJhoklbA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ghM+4o8r; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ghM+4o8r"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96596C4CEF1;
+	Wed, 10 Dec 2025 08:31:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1765355491;
+	bh=n7nCUlTV4fyFUAsZSXKYvC743HHeyUkFmbdCcDsWo+M=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=ghM+4o8rF/F5mw+FOs2evBq07uS5QT/UaWbrA7+lu1nYQkS5toqOZTcnqNon7wus7
+	 cOZaVW7XoNseG15YkvjZ/xlc0GXNUFMmgGzb7pOAXQ3ll/nqMbPeVkg3jB2/N4SN0K
+	 a3AEA7zme/jWHTUguYbNpeKwQ1oo3Q+RXqJh7R4aoh8LDdiApAA7dUNoIdEmq2ETNj
+	 Ql1U/X/DTdeyAm8HcITheEW0pZaeRnG4u4S8RYGhatSD4Jr30Mu2c8rPD+fgCNaJqS
+	 pH2Ivxkdj4Db9Fn8nYf2I9fBDZytufzrx+nVoaXDRXLi3OwqkejLArsrq7HituzOG3
+	 ndBKO/RRsHI4w==
+Date: Wed, 10 Dec 2025 17:31:25 +0900
+From: Jakub Kicinski <kuba@kernel.org>
+To: Edward Adam Davis <eadavis@qq.com>
+Cc: davem@davemloft.net, edumazet@google.com, eperezma@redhat.com,
+ horms@kernel.org, jasowang@redhat.com, kvm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, mst@redhat.com, netdev@vger.kernel.org,
+ pabeni@redhat.com, sgarzare@redhat.com, stefanha@redhat.com,
+ syzbot+ci3edb9412aeb2e703@syzkaller.appspotmail.com,
+ syzbot@lists.linux.dev, syzbot@syzkaller.appspotmail.com,
+ syzkaller-bugs@googlegroups.com, virtualization@lists.linux.dev,
+ xuanzhuo@linux.alibaba.com, will@kernel.org
+Subject: Re: [PATCH net-next V3] net: restore the iterator to its original
+ state when an error occurs
+Message-ID: <20251210173125.281dc808@kernel.org>
+In-Reply-To: <tencent_3C86DFD37A0374496263BE24483777D76305@qq.com>
+References: <tencent_3C86DFD37A0374496263BE24483777D76305@qq.com>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:2902:b0:659:9a49:8f32 with SMTP id
- 006d021491bc7-65b2ad7640fmr1031038eaf.67.1765347914330; Tue, 09 Dec 2025
- 22:25:14 -0800 (PST)
-Date: Tue, 09 Dec 2025 22:25:14 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6939124a.050a0220.4004e.00d7.GAE@google.com>
-Subject: [moderation/CI] Re: team: fix qom_list corruption by using list_del_init_rcu()
-From: syzbot ci <syzbot+cic08732f02328d8d9@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-syzbot ci has tested the following series
+CC: Will, as this looks like ZC side of 7fb1291257ea1e27
 
-[v2] team: fix qom_list corruption by using list_del_init_rcu()
-https://lore.kernel.org/all/20251210053104.23608-2-dharanitharan725@gmail.com
-* [PATCH net v2] team: fix qom_list corruption by using list_del_init_rcu()
+On Thu,  4 Dec 2025 00:03:39 +0800 Edward Adam Davis wrote:
+> In zerocopy_fill_skb_from_iter(), if two copy operations are performed
+> and the first one succeeds while the second one fails, it returns a
+> failure but the count in iterator has already been decremented due to
+> the first successful copy. This ultimately affects the local variable
+> rest_len in virtio_transport_send_pkt_info(), causing the remaining
+> count in rest_len to be greater than the actual iterator count. As a
+> result, packet sending operations continue even when the iterator count
+> is zero, which further leads to skb->len being 0 and triggers the warning
+> reported by syzbot [1].
+> 
+> Therefore, if the zerocopy operation fails, we should revert the iterator
+> to its original state.
+> 
+> The iov_iter_revert() in skb_zerocopy_iter_stream() is no longer needed
+> and has been removed.
+> 
+> [1]
+> 'send_pkt()' returns 0, but 4096 expected
+> WARNING: net/vmw_vsock/virtio_transport_common.c:430 at virtio_transport_send_pkt_info+0xd1e/0xef0 net/vmw_vsock/virtio_transport_common.c:428, CPU#1: syz.0.17/5986
+> Call Trace:
+>  virtio_transport_stream_enqueue net/vmw_vsock/virtio_transport_common.c:1113 [inline]
+>  virtio_transport_seqpacket_enqueue+0x143/0x1c0 net/vmw_vsock/virtio_transport_common.c:841
+>  vsock_connectible_sendmsg+0xabf/0x1040 net/vmw_vsock/af_vsock.c:2158
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg+0x21c/0x270 net/socket.c:746
+> 
+> Reported-by: syzbot+28e5f3d207b14bae122a@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=28e5f3d207b14bae122a
+> Signed-off-by: Edward Adam Davis <eadavis@qq.com>
+> ---
+> v3:
+>   - fix test tcp_zerocopy_maxfrags timeout
+> v2: https://lore.kernel.org/all/tencent_BA768766163C533724966E36344AAE754709@qq.com/
+>   - Remove iov_iter_revert() in skb_zerocopy_iter_stream()
+> v1: https://lore.kernel.org/all/tencent_387517772566B03DBD365896C036264AA809@qq.com/
 
-and found the following issue:
-kernel build error
+Have you investigated the other callers? Given problems with previous
+version of this patch I'm worried you have not. If you did please extend
+the commit message with the appropriate explanation.
 
-Full report is available here:
-https://ci.syzbot.org/series/5d396f89-9a4e-4a2a-8410-9b5b74e29ae2
+Alternative would be to add a _full() flavor of this API, but not sure
+if other callers actually care.
 
-***
+> diff --git a/net/core/datagram.c b/net/core/datagram.c
+> index c285c6465923..3a612ebbbe80 100644
+> --- a/net/core/datagram.c
+> +++ b/net/core/datagram.c
+> @@ -748,9 +748,13 @@ int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
+>  			    size_t length,
+>  			    struct net_devmem_dmabuf_binding *binding)
+>  {
+> +	struct iov_iter_state state;
 
-kernel build error
+nit: if you respin move this one line down
 
-tree:      net
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
-base:      8f7aa3d3c7323f4ca2768a9e74ebbe359c4f8f88
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/270bd92d-4899-44f0-833d-2211f4161c31/config
+>  	unsigned long orig_size = skb->truesize;
+>  	unsigned long truesize;
+> -	int ret;
+> +	int ret, orig_len;
+> +
+> +	iov_iter_save_state(from, &state);
+> +	orig_len = skb->len;
+>  
+>  	if (msg && msg->msg_ubuf && msg->sg_from_iter)
+>  		ret = msg->sg_from_iter(skb, from, length);
+> @@ -759,6 +763,9 @@ int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
+>  	else
+>  		ret = zerocopy_fill_skb_from_iter(skb, from, length);
+>  
+> +	if (ret == -EFAULT || (ret == -EMSGSIZE && skb->len == orig_len))
 
-drivers/net/team/team_core.c:827:2: error: call to undeclared function 'list_del_init_rcu'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+I'd think that for the purpose of reverting iter the second part of
+this condition is completely moot. If skb len didn't change there should
+be nothing to revert?
 
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-The email will later be sent to:
-[dharanitharan725@gmail.com linux-kernel@vger.kernel.org netdev@vger.kernel.org syzbot@syzkaller.appspotmail.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
+> +		iov_iter_restore(from, &state);
+> +
+>  	truesize = skb->truesize - orig_size;
+>  	if (sk && sk->sk_type == SOCK_STREAM) {
+>  		sk_wmem_queued_add(sk, truesize);
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index a00808f7be6a..7b8836f668b7 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -1908,7 +1908,6 @@ int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
+>  		struct sock *save_sk = skb->sk;
+>  
+>  		/* Streams do not free skb on error. Reset to prev state. */
+> -		iov_iter_revert(&msg->msg_iter, skb->len - orig_len);
+>  		skb->sk = sk;
+>  		___pskb_trim(skb, orig_len);
+>  		skb->sk = save_sk;
+-- 
+pw-bot: cr
