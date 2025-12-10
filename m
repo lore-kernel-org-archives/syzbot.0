@@ -1,184 +1,105 @@
-Received: from out162-62-57-137.mail.qq.com (out162-62-57-137.mail.qq.com [162.62.57.137])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C541C26E6F2;
-	Wed, 10 Dec 2025 10:03:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.57.137
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06C3D32692C
+	for <syzbot@lists.linux.dev>; Wed, 10 Dec 2025 13:56:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765361013; cv=none; b=C9M5JzWzZvxRO+tw9KSXD/GZr/shJPW2byOuRX2RVwZrgsuU72sbHezmIHN/TAzKbDip7olI8qOo0N3HYbAjLZhLxjh9jrkXL6SRBXPVn7OtgxwPz/nEy63eFfEXqdpHHIL9P0tIIEWAoG+WGxdmBMvvmYQickunCeFjMS0KiV8=
+	t=1765375018; cv=none; b=BUrW4MLc0rZddj7ovS3ni1c7Sji6chT4jPlZ/HSOv6DJY46IUIJXLRsNbcZd0f4O8Vdn458n7GaGaOQ5u3IMoasZrwYLBtEmUUS3UqmpL0tU+M7kSMryenEDvq40d7ONz1RwODqfpNy1emlkgeNwDFMaAE0lw2WhCOYKb6HxcZI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765361013; c=relaxed/simple;
-	bh=hHOb0pHbFva4I+x4uijiSBLjhyKbHSkdIbKpygCjPME=;
-	h=Message-ID:From:To:Cc:Subject:Date:In-Reply-To:References:
-	 MIME-Version; b=c1BfRI0NuLDzrgD0toksRoCwvPsdJ3RwxdZITxb3cFK9+02Wl0KPx3SK1oAOfRUnbdGJf0/FYaLANYsAfx06HP2OrreLvlqGcu1ra4wEgcLLh1xhZ9LYSVuiOfzqSnboVeoOgm69lL/GaEqrFPzL/QM0BYJ5F5U5mavh2Co4w/o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=w/stcOv+; arc=none smtp.client-ip=162.62.57.137
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="w/stcOv+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1765360999; bh=LCRtxAYuGByxDxvJWLaU+fHIdMnrtqotoYo1riQtsVw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=w/stcOv+VCZFf0VoGyvbE4xfFHIbVoSiBb3jpRZvI2Jl1EC4w7/FCDLza/JsW+AGg
-	 cxDG31FOHpf5PgQSYANXo+QJPKMOePnyuwFhQYEdMsd7MGhW33NrPs1l71wweS4r8k
-	 fPUQtExAnIHoqNTb3gjZYWP4Q4NYxfO5PIb4TWzg=
-Received: from lxu-ped-host.. ([111.201.7.117])
-	by newxmesmtplogicsvrszc43-0.qq.com (NewEsmtp) with SMTP
-	id CE284EB; Wed, 10 Dec 2025 18:03:14 +0800
-X-QQ-mid: xmsmtpt1765360994tuh3ingl1
-Message-ID: <tencent_000364896CA3A544481764D76486C0336005@qq.com>
-X-QQ-XMAILINFO: NG7xP+P+sy64CnCglhF8tEcniZRxm7yXDuURLY0ray/GevzC90bYklIf9MmRup
-	 BLdRdJc6yKh36B1G2hH/bHie7vYrQFzuGGknaFfDhvQRah0bsy/13BD7KlTx5vMHUAp+Iav32BLi
-	 xqR1t+q+9SKJwyqhGLxLlccpnG9UrpHF62cskwzppKj2z2iM8GJdvunHg03HD+kIH3Zklw0Gmpre
-	 G9gd0gEdE21bKcpK/UJG6IOtuYUKdxpUPEHgTkYmjWg2aLcrI2uGtwv1M9tqYyjxzyOpdkFrpaPR
-	 CGPHnjbxyW+002Ap9x+j4w5IWrElDTEJSC1OzUv6vLERvzpgUdgniZdRP6OX82ijSBe6UllvAfzs
-	 YbjvCz0cVF6OFP2WiAlFWk9Hbxlokh+wswdG3hHTKvj+qXQUth6Vv6QyhVIAiQ+3DeGdS1UfmLlC
-	 j5M/QO9ixMkMbC0GPNzhnxRn/W0/yEg5gXf/TeywWx13YjQLJNQS3lY3kgdOXd5dE2d/g8KDEK7G
-	 bJ5Bv2MqScnyLPojGcbQ1UAxZR6Rvfb/MmLKkmzJZ3E1Jl+sYf5f9uyZrsTA1JLIjliuxWIzRW6M
-	 DWaRA6tOBaPk+djoW+rwG9R/AHkLKgNFp55psSUb6Ujqijijix6tPaNQ/Se6myuklUvsV9WNYtOj
-	 F59LIDwGqKMNDJxhb5mAIGJhxn+bIpNkE3eC4ifGoKu2xOTnKA6qWhav9Hd2+0qqzZL6XSUkueoN
-	 b6WPpkZ+OCB3Ioez++tiAhgJV6AEaNiWv+YN9miqXFILwBORD99fCTQF9LiOSR+yjSpkvLvVwe7e
-	 MXHF/bDMy50svkjeS1baGbOP893XxmRaqd1qShZBqTMLkhvmhgfC0J8Q3OW3q666xVVu6ji3LfCI
-	 WJJ9yBclTRzfTH4DvrWTssN/E6CH/jFQmiz93PHGRr5glboEbo7G3pG9jg53IBXkSGIlLWJf15d5
-	 ZuG2ALFCmwZxp5E3QvRU72LHPu6pLpHIoQJU2JkOG0aqgyDqYoIVgMiFxJ9lSM7ZY/3X/I/PDyOx
-	 iOXwLmB1oq8Y/gGVsUFe/ggRFAiPfhKFEn4yu1kBUnhQUuNfw7MZ7+h9HGiTOMH33pFBsIz2aQoP
-	 pNWnIc27aLaVm0VWY=
-X-QQ-XMRINFO: OWPUhxQsoeAVDbp3OJHYyFg=
-From: Edward Adam Davis <eadavis@qq.com>
-To: kuba@kernel.org
-Cc: davem@davemloft.net,
-	eadavis@qq.com,
-	edumazet@google.com,
-	eperezma@redhat.com,
-	horms@kernel.org,
-	jasowang@redhat.com,
-	kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	mst@redhat.com,
-	netdev@vger.kernel.org,
-	pabeni@redhat.com,
-	sgarzare@redhat.com,
-	stefanha@redhat.com,
-	syzbot+ci3edb9412aeb2e703@syzkaller.appspotmail.com,
-	syzbot@lists.linux.dev,
-	syzbot@syzkaller.appspotmail.com,
-	syzkaller-bugs@googlegroups.com,
-	virtualization@lists.linux.dev,
-	xuanzhuo@linux.alibaba.com
-Subject: Re: [PATCH net-next V3] net: restore the iterator to its original state when an error occurs
-Date: Wed, 10 Dec 2025 18:03:14 +0800
-X-OQ-MSGID: <20251210100313.12457-2-eadavis@qq.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20251210173125.281dc808@kernel.org>
-References: <20251210173125.281dc808@kernel.org>
+	s=arc-20240116; t=1765375018; c=relaxed/simple;
+	bh=htWONrxR7vImhRzyIdgJUJIzdvKIlyWy5H2JyYQ1v5Q=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=kED9UaWi6e+DByEtO/bUGm3SXjFx4u1o6Y/wbZnjgWOm+Y3NPlBcqrzfvwq2AfUweiw5hRocGaNsIX0cufhcDAlGBBHutBD2BQEl0X3rb2HC3sz7msFbm/qUfa8ahQIfd1rDpMENIUkYbC+VDGf5UHpCdMU2hYWDfPb4bUw89ho=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-7c7562d889cso1523195a34.1
+        for <syzbot@lists.linux.dev>; Wed, 10 Dec 2025 05:56:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765375016; x=1765979816;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=cMMv5x2fBHVI8YEw22JMzWP2+XGkCqJgSU4eCjTVhs4=;
+        b=o9XyhbGDUFwUQKOvDX5TsZaAW2xZavMPl8cbklxwda5reUMg5Wh8kM/Lp2+iCF7cUe
+         GzKiGZhdGM1SMVlzp+vvIsJBfzlmMtxbkXCWTksMtfrpNTIcIzMDhZHSq8P48SyZVrfA
+         LApcvWwEXOBE+p60N/CYSWVUXFcxcWo6yV2NBAA67uzPPJ1lV6kc8YA6VDXoMXPOCVSX
+         Qba0uoDM4sJSrsEohQYL3c9G4E8n2IK/0+rAiE6ud/7zwdd6E6w7Ev2h+tjrpifuZbNU
+         BfWeetHGOMM+0jBkNqZK8D/WwoI99uAZXEy11gLrbx/sKu8YztDJuqKVLTlHzUA3TOCu
+         GXHw==
+X-Gm-Message-State: AOJu0YyTjHrZJQn/ejMleEa1rMF7Ukg3XmS3UDUa5EdNJx5KKJ6HESAG
+	n+g3vDqpXPzWdLcuX7HrjjQkVMWr4DHuDOSVPLgnIEaxFDllKskPHX93UT0r4518vfzGokDii+y
+	6cc1qfd1zXrxeAI2rZ+BSPzXzbi8xOqzF+KWOnDdUNX2w1uRlO+CyfGuQ+Tk=
+X-Google-Smtp-Source: AGHT+IGQkxyPPZ8Ze2st+IAkFXRnNizKJ+kph16L1uysGjGiGZXf7UzStDyfszhB8khhrB2rnMjdbEIsqffHxKAhI+4drX4PSqWt
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6820:2291:b0:659:9a49:8e26 with SMTP id
+ 006d021491bc7-65b2353b404mr2858749eaf.24.1765375016087; Wed, 10 Dec 2025
+ 05:56:56 -0800 (PST)
+Date: Wed, 10 Dec 2025 05:56:56 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69397c28.a70a0220.33cd7b.000f.GAE@google.com>
+Subject: [moderation/CI] Re: bpf: Disable -Wsuggest-attribute=format
+From: syzbot ci <syzbot+cie6250052fccd5b63@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 10 Dec 2025 17:31:25 +0900, Jakub Kicinski wrote:
-> > In zerocopy_fill_skb_from_iter(), if two copy operations are performed
-> > and the first one succeeds while the second one fails, it returns a
-> > failure but the count in iterator has already been decremented due to
-> > the first successful copy. This ultimately affects the local variable
-> > rest_len in virtio_transport_send_pkt_info(), causing the remaining
-> > count in rest_len to be greater than the actual iterator count. As a
-> > result, packet sending operations continue even when the iterator count
-> > is zero, which further leads to skb->len being 0 and triggers the warning
-> > reported by syzbot [1].
-> >
-> > Therefore, if the zerocopy operation fails, we should revert the iterator
-> > to its original state.
-> >
-> > The iov_iter_revert() in skb_zerocopy_iter_stream() is no longer needed
-> > and has been removed.
-> >
-> > [1]
-> > 'send_pkt()' returns 0, but 4096 expected
-> > WARNING: net/vmw_vsock/virtio_transport_common.c:430 at virtio_transport_send_pkt_info+0xd1e/0xef0 net/vmw_vsock/virtio_transport_common.c:428, CPU#1: syz.0.17/5986
-> > Call Trace:
-> >  virtio_transport_stream_enqueue net/vmw_vsock/virtio_transport_common.c:1113 [inline]
-> >  virtio_transport_seqpacket_enqueue+0x143/0x1c0 net/vmw_vsock/virtio_transport_common.c:841
-> >  vsock_connectible_sendmsg+0xabf/0x1040 net/vmw_vsock/af_vsock.c:2158
-> >  sock_sendmsg_nosec net/socket.c:727 [inline]
-> >  __sock_sendmsg+0x21c/0x270 net/socket.c:746
-> >
-> > Reported-by: syzbot+28e5f3d207b14bae122a@syzkaller.appspotmail.com
-> > Closes: https://syzkaller.appspot.com/bug?extid=28e5f3d207b14bae122a
-> > Signed-off-by: Edward Adam Davis <eadavis@qq.com>
-> > ---
-> > v3:
-> >   - fix test tcp_zerocopy_maxfrags timeout
-> > v2: https://lore.kernel.org/all/tencent_BA768766163C533724966E36344AAE754709@qq.com/
-> >   - Remove iov_iter_revert() in skb_zerocopy_iter_stream()
-> > v1: https://lore.kernel.org/all/tencent_387517772566B03DBD365896C036264AA809@qq.com/
-> 
-> Have you investigated the other callers? Given problems with previous
-> version of this patch I'm worried you have not. If you did please extend
-> the commit message with the appropriate explanation.
-Are you asking if I investigated other zerocopy tests? NO.
-The test results [T2] for this version of the patch do not show any
-failures related to zerocopy.
+syzbot ci has tested the following series
 
-[T2] https://patchwork.kernel.org/project/netdevbpf/patch/tencent_3C86DFD37A0374496263BE24483777D76305@qq.com
-> 
-> Alternative would be to add a _full() flavor of this API, but not sure
-> if other callers actually care.
-> 
-> > diff --git a/net/core/datagram.c b/net/core/datagram.c
-> > index c285c6465923..3a612ebbbe80 100644
-> > --- a/net/core/datagram.c
-> > +++ b/net/core/datagram.c
-> > @@ -748,9 +748,13 @@ int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
-> >  			    size_t length,
-> >  			    struct net_devmem_dmabuf_binding *binding)
-> >  {
-> > +	struct iov_iter_state state;
-> 
-> nit: if you respin move this one line down
-OK.
-> 
-> >  	unsigned long orig_size = skb->truesize;
-> >  	unsigned long truesize;
-> > -	int ret;
-> > +	int ret, orig_len;
-> > +
-> > +	iov_iter_save_state(from, &state);
-> > +	orig_len = skb->len;
-> >
-> >  	if (msg && msg->msg_ubuf && msg->sg_from_iter)
-> >  		ret = msg->sg_from_iter(skb, from, length);
-> > @@ -759,6 +763,9 @@ int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
-> >  	else
-> >  		ret = zerocopy_fill_skb_from_iter(skb, from, length);
-> >
-> > +	if (ret == -EFAULT || (ret == -EMSGSIZE && skb->len == orig_len))
-> 
-> I'd think that for the purpose of reverting iter the second part of
-> this condition is completely moot. If skb len didn't change there should
-> be nothing to revert?
-Regarding the second judgment condition, I aligned it with the condition
-in skb_zerocopy_iter_stream(). During my testing, I only encountered
--EFAULT failures, not -EMSGSIZE.
-> 
-> > +		iov_iter_restore(from, &state);
-> > +
-> >  	truesize = skb->truesize - orig_size;
-> >  	if (sk && sk->sk_type == SOCK_STREAM) {
-> >  		sk_wmem_queued_add(sk, truesize);
-> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > index a00808f7be6a..7b8836f668b7 100644
-> > --- a/net/core/skbuff.c
-> > +++ b/net/core/skbuff.c
-> > @@ -1908,7 +1908,6 @@ int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
-> >  		struct sock *save_sk = skb->sk;
-> >
-> >  		/* Streams do not free skb on error. Reset to prev state. */
-> > -		iov_iter_revert(&msg->msg_iter, skb->len - orig_len);
-> >  		skb->sk = sk;
-> >  		___pskb_trim(skb, orig_len);
-> >  		skb->sk = save_sk;
+[v1] bpf: Disable -Wsuggest-attribute=3Dformat
+https://lore.kernel.org/all/20251210131234.3185985-1-andriy.shevchenko@linu=
+x.intel.com
+* [PATCH v1 1/1] bpf: Disable -Wsuggest-attribute=3Dformat
+
+and found the following issue:
+kernel build error
+
+Full report is available here:
+https://ci.syzbot.org/series/e97ff1aa-cdf5-4fdb-bd30-5024c91c79fc
+
+***
+
+kernel build error
+
+tree:      bpf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
+-next.git
+base:      835a50753579aa8368a08fca307e638723207768
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/1778ff9d-2e94-4e44-ae3b-24ac79e0fb3=
+a/config
+
+failed to run ["make" "KERNELVERSION=3Dsyzkaller" "KERNELRELEASE=3Dsyzkalle=
+r" "LOCALVERSION=3D-syzkaller" "-j" "48" "ARCH=3Dx86_64" "LLVM=3D1" "bzImag=
+e"]: exit status 2
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[andrii@kernel.org andriy.shevchenko@linux.intel.com ast@kernel.org bpf@vge=
+r.kernel.org daniel@iogearbox.net eddyz87@gmail.com haoluo@google.com john.=
+fastabend@gmail.com jolsa@kernel.org kpsingh@kernel.org linux-kernel@vger.k=
+ernel.org linux-trace-kernel@vger.kernel.org lkp@intel.com martin.lau@linux=
+.dev mathieu.desnoyers@efficios.com mhiramat@kernel.org rostedt@goodmis.org=
+ sdf@fomichev.me song@kernel.org yonghong.song@linux.dev]
+
+If the report looks fine to you, reply with:
+#syz upstream
 
