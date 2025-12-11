@@ -1,166 +1,146 @@
-Received: from out203-205-221-192.mail.qq.com (out203-205-221-192.mail.qq.com [203.205.221.192])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 118252BE630;
-	Thu, 11 Dec 2025 06:57:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.192
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA98D3148DA
+	for <syzbot@lists.linux.dev>; Thu, 11 Dec 2025 16:42:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765436237; cv=none; b=L/Nmuj80ttfkXAESeDmPTB2DOz8Z2/LF6Zx0XqHZXfq1S5d/TetJnu+AwDyNbvI0GTH7pTPphmJqYZE33x1DT5ojJtyPFZvyT5RP4tEhXLwqJ8UJOLk3n6oKGK9YLYvDo3VzWbNUlUZ+0Ie0dj3fScNK+5YVlCln170YphaF048=
+	t=1765471363; cv=none; b=Z23m9E2KafNgFnh5ejWHyQHBFjP7qxU1NayMwVM844uYkQ2e+cN6xHQJvgnmabvI/2R40ejkTJ1RP5vJCkMDaLybme1nnWgTlTahC4O/IqEZSyR3Nc6FEO8npLpPZMe3aKfo8J8PB67hWDTpR4aAWp107si7C7LxgYU8/ki6Rvo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765436237; c=relaxed/simple;
-	bh=0e6USttijmO2horzqXfsOf7139B23IPXLpWfygiqSkY=;
-	h=Message-ID:From:To:Cc:Subject:Date:MIME-Version; b=WWRrW5HH35gdnsT/FL/7KWcIDYwkehZ/IhRDjmxVwu/6/oAhgjsUumktDQxkjMejzf4l/Ah3HyHt5P6x4dv/3Hqn6B9rnLkeqsz7uzy8ZXNdIQAWkkd3EIypcnjwgLudB075zXuvwceVjp5+99CzkP2F9fQNOVsXEv0SiT6xbT4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=j4D4Y3B3; arc=none smtp.client-ip=203.205.221.192
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="j4D4Y3B3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1765436232; bh=qym9jNqiA34VWvBCsaKdelhcoyWyxbkXaH8MkVv3VIc=;
-	h=From:To:Cc:Subject:Date;
-	b=j4D4Y3B3GOKpX++BLFKzmptMUWIALMD5kwkizBTJc6lzaF2+VTb99DAaGTHzGHgOz
-	 vNZdadXksi2Kd6Qte3mbRyfp73+gfGMz+VJLQ1SjZa3TDSbxaDQ9W/pKPYBzzuGrPG
-	 Beupbv4q7t84dmA9AZlS39FA1bU2CqJVpWrRH6po=
-Received: from lxu-ped-host.. ([111.201.7.117])
-	by newxmesmtplogicsvrszb51-1.qq.com (NewEsmtp) with SMTP
-	id E479A21A; Thu, 11 Dec 2025 14:57:07 +0800
-X-QQ-mid: xmsmtpt1765436227tzkqso0y1
-Message-ID: <tencent_D6C4465761B77986C7B36FA368E97E23A805@qq.com>
-X-QQ-XMAILINFO: NEuWzguPBXIKkFBhIjI0JCppC3ptFbk1lS7fUYCDHnLMDVAZiSQNyi1Khk2LWl
-	 CSu8h7sQXRKu5RTicGmT+1fW434/kXK58/SnFBhZNOD5M2ETOHuot9Lw4u4Gi8QTk3eNVGGtHSwu
-	 FakhnYZL0OH+EAGwr1YRMvOk6UY1KNDRDDp01cWJN+8N9o14yNHy1z5HrtgnzO0+SbCK6CZu17vg
-	 mcd1M0KFDQL3MFyZhq+ojo1Hj3IJXiKuPiwKM+IO3KzdknT6CqElbYWIWhb3tTw5jfvZOkk85HmC
-	 a/TMeuhcs44k5eoRXH3guSDd4RIm1SWMihWM0fG1muWvbiBq2oLjEW7UoLXR3affsVry2AKKyktV
-	 yGcNO8rcT7y5dBO9jEfWcH/uAB77On6neRGRK45wnz/AF3LyPKfyCCtwfhf5a59hTCJakPyNi9Ve
-	 60DSNfdVM56HC4aweqZfT9H0WnpyI/iZuB8fecumFudoxSG/D/u0CMr2xEDV92kIc8pPWPlTOL40
-	 HVjoL8V0m766fNvDQFWHjlSEXA7ftbikSsEYHcqHzS/2zGXGbEmQakd5khum5DhhtkmnhRdDBKzR
-	 BGJwPUJdGcX/FdulraopUZO6m3BV9UP33ABDvdJW1raeCJq/Jpn0/FldsSQFhzbTYk6JRHDLeDns
-	 UGTaFlwPll/FZEbj+Zp0ZqRei1JJALNuEApD5dAiE3cNvPI2MzwFK2P83+XbbIt1Nt0KzA7/7HvW
-	 qmpVCfnndYbsZtCvON5zxxYZgiMN3h9VY6nSQUwRZumM4mgl5tW6WnWTEvfD4pKAzIH5VqZqcIlj
-	 ZJRYlVKLDjZ8pUxqt4cYF7J7PMG+Bt+gPeaxgQ7YiYRPe8CrLNj5+kv58ymu+YHQ+ojaYK9e3g9M
-	 w7AEz2GIRRRA/u4+VaZgmeNdzQlxsy8Oc8LkV8r153oiq62svKXo+J817DcT8avAIEQh7+LaUWN6
-	 4iGGKRE4GBwW5oMHwltCH879+YngKVNRKEiZt9543eYdXeO4C3OG4Cr4/NQznqwH6bmXtNkfoJ0/
-	 L3RfYt7DmsNL+7huFmhC9V80Wk8ZWn5D+++grxW80ApCOBsq+MADOaqWLWQkCg9G0ESUKGO6vziE
-	 nzFtDL
-X-QQ-XMRINFO: NS+P29fieYNw95Bth2bWPxk=
-From: Edward Adam Davis <eadavis@qq.com>
-To: kuba@kernel.org
-Cc: davem@davemloft.net,
-	eadavis@qq.com,
-	edumazet@google.com,
-	eperezma@redhat.com,
-	horms@kernel.org,
-	jasowang@redhat.com,
-	kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	mst@redhat.com,
-	netdev@vger.kernel.org,
-	pabeni@redhat.com,
-	sgarzare@redhat.com,
-	stefanha@redhat.com,
-	syzbot+ci3edb9412aeb2e703@syzkaller.appspotmail.com,
-	syzbot@lists.linux.dev,
-	syzbot@syzkaller.appspotmail.com,
-	syzkaller-bugs@googlegroups.com,
-	virtualization@lists.linux.dev,
-	xuanzhuo@linux.alibaba.com
-Subject: [PATCH net-next v4] net: restore the iterator to its original state when an error occurs
-Date: Thu, 11 Dec 2025 14:57:08 +0800
-X-OQ-MSGID: <20251211065707.41148-2-eadavis@qq.com>
-X-Mailer: git-send-email 2.43.0
+	s=arc-20240116; t=1765471363; c=relaxed/simple;
+	bh=C2Irb+AOliXJZV5eDYLr03TD4kWKwAB7GTo+cJWOyaw=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=HcXNKgrbHT6nfP33c/YcOmSPZ5GqOu9oOAUpB3von6XV/7f7S+XGYZHd4jCsaMwr90PHCwNnyk6znbPoCBaCqKbU+pIYqNBDF4APluCHew+uEX3EzUW7KSmoEt5ByLNBntJ7gNZhY28jsIyAo/QAqKyhGZGLgqrYXupzqoUSLnk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-65b355a1abbso276250eaf.2
+        for <syzbot@lists.linux.dev>; Thu, 11 Dec 2025 08:42:41 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765471361; x=1766076161;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Oyy7jzxXZJoOjRQdIK8t8j16EGWe4YjdH0GeMLVpgUU=;
+        b=YyLvAEdfdwKLjBpopwyRwwirUvBsJzhrixyJCvfLPp7a82R7lfE+K8SDmY4c8yha3t
+         Bgq3FJX8XodQIFfBDSquw2EjmljL770ZjnIaCSSy+VZLgsgD5wRavp4uYaCLaRu06jJh
+         t8sN4sTR404nnuSSk2mpDI3rzh9QZG7DSaTEvQx2JKeatLhR8ce8AwYY2GijKancy5sr
+         YjvswYyFxSDChG5WBqZqQ34WLGqVTs46B59vsJlJ9nxr1U60okGG1FBzePQrMmEZBl2N
+         4FCivNG1jr//9wkbTn240nr3L4pltQwFyQFBp6iogSx4v7ovuvrz1d65Joq6/WzK5Py/
+         VIfw==
+X-Gm-Message-State: AOJu0Yz0pfYp6OBm1OXer6ba9DZQvC7hqChCZn+7cF58viirDhxZ20tV
+	DU+a32zBOWFVGcDNp7UFEYkFFUyiSuLJQBK9+SESZ1+YU20N7L69lEsPOnetlEU8dH/7fQ9UodJ
+	YxTX1C+UXwTRrxUNTK48X3+2yTcASZJTeeyf1dwXgwo+O6syH7XAiPvIqftE=
+X-Google-Smtp-Source: AGHT+IG8tBd07/z2sgb6yN+vj0oUgpchchG7IZtQ8ND5HPb3rolr71t15P0VgdNrt489V98PSs7pK5KzT9tVWhB6UJNPYYM43JLY
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6820:1f08:b0:65b:3641:bf72 with SMTP id
+ 006d021491bc7-65b3641c46amr1432202eaf.68.1765471360872; Thu, 11 Dec 2025
+ 08:42:40 -0800 (PST)
+Date: Thu, 11 Dec 2025 08:42:40 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <693af480.050a0220.4004e.03c5.GAE@google.com>
+Subject: [moderation/CI] Re: netfilter: nf_tables: avoid chain re-validation
+ if possible
+From: syzbot ci <syzbot+ci3c6f9b9cf7ea73f4@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-In zerocopy_fill_skb_from_iter(), if two copy operations are performed
-and the first one succeeds while the second one fails, it returns a
-failure but the count in iterator has already been decremented due to
-the first successful copy. This ultimately affects the local variable
-rest_len in virtio_transport_send_pkt_info(), causing the remaining
-count in rest_len to be greater than the actual iterator count. As a
-result, packet sending operations continue even when the iterator count
-is zero, which further leads to skb->len being 0 and triggers the warning
-reported by syzbot [1].
+syzbot ci has tested the following series
 
-Therefore, if the zerocopy operation fails, we should revert the iterator
-to its original state.
+[v3] netfilter: nf_tables: avoid chain re-validation if possible
+https://lore.kernel.org/all/20251211123038.1175-1-fw@strlen.de
+* [PATCH nf v3] netfilter: nf_tables: avoid chain re-validation if possible
 
-The iov_iter_revert() in skb_zerocopy_iter_stream() is no longer needed
-and has been removed.
+and found the following issue:
+WARNING in nft_chain_validate
 
-Regarding the judgment condition, I aligned it with the condition in
-skb_zerocopy_iter_stream().
+Full report is available here:
+https://ci.syzbot.org/series/498345c4-bb9b-4e13-9cd1-42a483844f55
 
-[1]
-'send_pkt()' returns 0, but 4096 expected
-WARNING: net/vmw_vsock/virtio_transport_common.c:430 at virtio_transport_send_pkt_info+0xd1e/0xef0 net/vmw_vsock/virtio_transport_common.c:428, CPU#1: syz.0.17/5986
+***
+
+WARNING in nft_chain_validate
+
+tree:      nf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf.git
+base:      6a107cfe9c99a079e578a4c5eb70038101a3599f
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/e56f0271-a9ee-403c-ad73-fe3d0fb22785/config
+C repro:   https://ci.syzbot.org/findings/c4c03a63-b1c1-4815-b601-f7c763a99b6c/c_repro
+syz repro: https://ci.syzbot.org/findings/c4c03a63-b1c1-4815-b601-f7c763a99b6c/syz_repro
+
+------------[ cut here ]------------
+WARNING: net/netfilter/nf_tables_api.c:4112 at nft_chain_vstate_update net/netfilter/nf_tables_api.c:4112 [inline], CPU#1: syz.0.17/5982
+WARNING: net/netfilter/nf_tables_api.c:4112 at nft_chain_validate+0x6b0/0x8c0 net/netfilter/nf_tables_api.c:4176, CPU#1: syz.0.17/5982
+Modules linked in:
+CPU: 1 UID: 0 PID: 5982 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:nft_chain_vstate_update net/netfilter/nf_tables_api.c:4112 [inline]
+RIP: 0010:nft_chain_validate+0x6b0/0x8c0 net/netfilter/nf_tables_api.c:4176
+Code: 31 db 89 d8 48 83 c4 50 5b 41 5c 41 5d 41 5e 41 5f 5d c3 cc cc cc cc cc e8 2d 32 42 f8 bb fc ff ff ff eb de e8 21 32 42 f8 90 <0f> 0b 90 49 83 c5 78 ba 04 00 00 00 4c 89 ef 31 f6 e8 ea 18 a8 f8
+RSP: 0018:ffffc90003df6fe0 EFLAGS: 00010293
+RAX: ffffffff897f183f RBX: 0000000000000000 RCX: ffff888102f93a80
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000040 R08: ffff888102f93a80 R09: 0000000000000002
+R10: 0000000000000010 R11: 0000000000000000 R12: ffff88816a79c510
+R13: ffff88816a79c500 R14: ffff88816a79c500 R15: dffffc0000000000
+FS:  000055555e417500(0000) GS:ffff8882a9eb1000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000200000005000 CR3: 000000017531c000 CR4: 00000000000006f0
 Call Trace:
- virtio_transport_stream_enqueue net/vmw_vsock/virtio_transport_common.c:1113 [inline]
- virtio_transport_seqpacket_enqueue+0x143/0x1c0 net/vmw_vsock/virtio_transport_common.c:841
- vsock_connectible_sendmsg+0xabf/0x1040 net/vmw_vsock/af_vsock.c:2158
- sock_sendmsg_nosec net/socket.c:727 [inline]
- __sock_sendmsg+0x21c/0x270 net/socket.c:746
+ <TASK>
+ nft_validate_register_store+0xf6/0x1d0 net/netfilter/nf_tables_api.c:11750
+ nft_parse_register_store+0x225/0x2c0 net/netfilter/nf_tables_api.c:11787
+ nft_immediate_init+0x1cf/0x390 net/netfilter/nft_immediate.c:67
+ nf_tables_newexpr net/netfilter/nf_tables_api.c:3550 [inline]
+ nf_tables_newrule+0x1794/0x28a0 net/netfilter/nf_tables_api.c:4419
+ nfnetlink_rcv_batch net/netfilter/nfnetlink.c:526 [inline]
+ nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:649 [inline]
+ nfnetlink_rcv+0x11d9/0x2590 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
+ netlink_unicast+0x82f/0x9e0 net/netlink/af_netlink.c:1344
+ netlink_sendmsg+0x805/0xb30 net/netlink/af_netlink.c:1894
+ sock_sendmsg_nosec net/socket.c:718 [inline]
+ __sock_sendmsg+0x21c/0x270 net/socket.c:733
+ ____sys_sendmsg+0x505/0x820 net/socket.c:2608
+ ___sys_sendmsg+0x21f/0x2a0 net/socket.c:2662
+ __sys_sendmsg net/socket.c:2694 [inline]
+ __do_sys_sendmsg net/socket.c:2699 [inline]
+ __se_sys_sendmsg net/socket.c:2697 [inline]
+ __x64_sys_sendmsg+0x19b/0x260 net/socket.c:2697
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f577a58f7c9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffe377887c8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f577a7e5fa0 RCX: 00007f577a58f7c9
+RDX: 0000000000000000 RSI: 00002000000000c0 RDI: 0000000000000003
+RBP: 00007f577a5f297f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f577a7e5fa0 R14: 00007f577a7e5fa0 R15: 0000000000000003
+ </TASK>
 
-Reported-by: syzbot+28e5f3d207b14bae122a@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=28e5f3d207b14bae122a
-Signed-off-by: Edward Adam Davis <eadavis@qq.com>
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
 ---
-v4:
-  - add comments for new condition
-v3: https://lore.kernel.org/all/tencent_3C86DFD37A0374496263BE24483777D76305@qq.com/
-  - fix test tcp_zerocopy_maxfrags timeout
-v2: https://lore.kernel.org/all/tencent_BA768766163C533724966E36344AAE754709@qq.com/
-  - Remove iov_iter_revert() in skb_zerocopy_iter_stream()
-v1: https://lore.kernel.org/all/tencent_387517772566B03DBD365896C036264AA809@qq.com/
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
- net/core/datagram.c | 9 ++++++++-
- net/core/skbuff.c   | 1 -
- 2 files changed, 8 insertions(+), 2 deletions(-)
+The email will later be sent to:
+[fw@strlen.de hamzamahfooz@linux.microsoft.com netfilter-devel@vger.kernel.org]
 
-diff --git a/net/core/datagram.c b/net/core/datagram.c
-index c285c6465923..c5f2f1b8786b 100644
---- a/net/core/datagram.c
-+++ b/net/core/datagram.c
-@@ -749,8 +749,12 @@ int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
- 			    struct net_devmem_dmabuf_binding *binding)
- {
- 	unsigned long orig_size = skb->truesize;
-+	struct iov_iter_state state;
- 	unsigned long truesize;
--	int ret;
-+	int ret, orig_len;
-+
-+	iov_iter_save_state(from, &state);
-+	orig_len = skb->len;
- 
- 	if (msg && msg->msg_ubuf && msg->sg_from_iter)
- 		ret = msg->sg_from_iter(skb, from, length);
-@@ -759,6 +763,9 @@ int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
- 	else
- 		ret = zerocopy_fill_skb_from_iter(skb, from, length);
- 
-+	if (ret == -EFAULT || (ret == -EMSGSIZE && skb->len == orig_len))
-+		iov_iter_restore(from, &state);
-+
- 	truesize = skb->truesize - orig_size;
- 	if (sk && sk->sk_type == SOCK_STREAM) {
- 		sk_wmem_queued_add(sk, truesize);
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index a00808f7be6a..7b8836f668b7 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -1908,7 +1908,6 @@ int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
- 		struct sock *save_sk = skb->sk;
- 
- 		/* Streams do not free skb on error. Reset to prev state. */
--		iov_iter_revert(&msg->msg_iter, skb->len - orig_len);
- 		skb->sk = sk;
- 		___pskb_trim(skb, orig_len);
- 		skb->sk = save_sk;
--- 
-2.43.0
+If the report looks fine to you, reply with:
+#syz upstream
 
