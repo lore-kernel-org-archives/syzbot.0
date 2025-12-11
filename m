@@ -1,153 +1,65 @@
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7525223185E
-	for <syzbot@lists.linux.dev>; Thu, 11 Dec 2025 01:45:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A81729B79B;
+	Thu, 11 Dec 2025 05:21:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765417518; cv=none; b=QJPhJSTkBd91McuOxOrYzpgIlHM93F+pE5cwByq4FEMckp4Q1YcOV1LxAqWUVbEZOya+cTShYz6teqrB21NVrkrtwmbxajOQuEyfHcmnkCcwWbfIjmquhxnQ1cmZlB7DIm9ujXqbKsCtbVxHXMRPUp+WvbbR8T3KQw2VbKHOMmY=
+	t=1765430509; cv=none; b=um2DfD2yGGXu9X1Khu7LH/SyO2qIJ7tur22cmdxP+dSybcOqpyw86ijl7mLMfeHg7dsKI/8u62e9VWFd+Imh0X+xpUjbtUUfpG0Oe7zEisPLVyxsrjh+FJjs1pLOrjoAnEWxk6wO13VxTWPGM3t+hJkV6f5n9V9MH46+ablU8HU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765417518; c=relaxed/simple;
-	bh=sFfevH47nAA3uNZoIIinb48dl3PbNcWJRW/nIrNz2iQ=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=Mzx9WvsSer3n1P9znNx+F973NB+fGM2r5coqYLDW0IEMlFZ/MkdttWU0m7J9gCBG6hPLvkuj+BJnZXEqW2/MrRpWuHgTYqtLmEGMQqKyYlaywKFLtsAWEPaOQusz3JoMK3o1GeNDaFDMnnEgbSYg2K1Epe6b4FdXCp5/SpIUxu0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-65b26eca9c7so719976eaf.0
-        for <syzbot@lists.linux.dev>; Wed, 10 Dec 2025 17:45:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765417515; x=1766022315;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=twbHvsNIdd4vriB4dwGKg2ADXOEGZn75T8QacUdy8c8=;
-        b=QvEoeHeuKykV+jeBzg2tsiFC2I0//u1LPidEtdM+hYBCJ5PK/c63odr7LF870n3Rcj
-         kePGJE9N6aY+wJCO5Af1kCC1hSDF05KZbnuZ2ZcncoRaCdxkBMfnnWXHBqLPEGK2Sypz
-         bEO38oQy8VKeqYAW3qPxvfaIx7aVz7qNBqozUegbOVecxCOo5NyZKx0FXRhIJHZUNelk
-         RI4a3seO49sQ9hN6D/YFVxcFamo3yyfk4PC4mjOtCvtVL9tmwiWg72UQP0dTNDqmH5zK
-         tEwcKi3qBV1Y/LEWe6t6awP03N/fgXdr3WqP815xsFUSeDm0Vz1sQZRKbD9mdTlvAQX8
-         vKEg==
-X-Gm-Message-State: AOJu0Yy/mHlm9P3qFGCc27MPq0GplRp0NsIDVK+Kx7rX7LCIy4uYfH1F
-	wrwBKg4+n0SKebr+LRSlOUtfHNQZnpPigSutR1ioep/nAeV0qKmswLEpteZ6yUTDEMk1HnxflnQ
-	5+XsZT4CtbVm1vO0/Ayn4Pz/VK4us8/qDKo92cgf7z6fSQLwnDkPW3hS0zKs=
-X-Google-Smtp-Source: AGHT+IGjvE+c5ibRffIRusCy9NOq+64mwwxJRF0VY89Rmte288kQPNDMvUJK6pewgKDocYDifGSDr2Szn6PT+/Dt973O0vQ0c8Zb
+	s=arc-20240116; t=1765430509; c=relaxed/simple;
+	bh=OMWsm1iBM7byGpIJdrYg85fUijHjOw33YpJot5aABSc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=EFvTugDry2vfqcgnaeM9toG3c+cdxDtslNCGhwSJZGd0/44kGhFKHLYuSpBHt+j0mP5P3HuOE/WqiVTDrAHuK+gTbHFLqVhHMS/1mi2tVxNH7AF6dXZmZA6oeQF8lWmZt1Qy7kBaZTPXlE+l5N6YQ1A2hJpi7EYuUoYy2VL4Hxw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aF20OH89; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aF20OH89"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 933F0C4CEFB;
+	Thu, 11 Dec 2025 05:21:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1765430508;
+	bh=OMWsm1iBM7byGpIJdrYg85fUijHjOw33YpJot5aABSc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=aF20OH89Ffbbj7fjscKp8MVFjvoDVbV4Gbz/uHfJ20fwrtG3I1W/yQ0yHzUGmkE5/
+	 8sxUFAaYGBUllnti4MugpG5bLPk46TLiyU6YBwqZY3PMZYkDAZXOjsNUhrZMX5ktes
+	 uBoZFyWbX/HfYk2nuqAiwBXkDhnACArodGys9LDivdWq9YpMEP9ubdawH8E85pKJyc
+	 jJeB6Z3KRywtRYtcJvDrKUZd4Lp9wbiXfSW7Bys7iapkANCYDo/nlYFAMgD2p913IA
+	 23vPklcn7anqmZnH/1zJFj16oLsBZ8SN22nlyCFN5XODQLYhXxMWZAZliXWLhbggK2
+	 7BBfji3AVMW/g==
+Date: Thu, 11 Dec 2025 14:21:42 +0900
+From: Jakub Kicinski <kuba@kernel.org>
+To: Edward Adam Davis <eadavis@qq.com>
+Cc: davem@davemloft.net, edumazet@google.com, eperezma@redhat.com,
+ horms@kernel.org, jasowang@redhat.com, kvm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, mst@redhat.com, netdev@vger.kernel.org,
+ pabeni@redhat.com, sgarzare@redhat.com, stefanha@redhat.com,
+ syzbot+ci3edb9412aeb2e703@syzkaller.appspotmail.com,
+ syzbot@lists.linux.dev, syzbot@syzkaller.appspotmail.com,
+ syzkaller-bugs@googlegroups.com, virtualization@lists.linux.dev,
+ xuanzhuo@linux.alibaba.com
+Subject: Re: [PATCH net-next V3] net: restore the iterator to its original
+ state when an error occurs
+Message-ID: <20251211142142.18a4a0b2@kernel.org>
+In-Reply-To: <tencent_000364896CA3A544481764D76486C0336005@qq.com>
+References: <20251210173125.281dc808@kernel.org>
+	<tencent_000364896CA3A544481764D76486C0336005@qq.com>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:5056:b0:65b:33a3:7c8 with SMTP id
- 006d021491bc7-65b33a3095cmr844677eaf.30.1765417515744; Wed, 10 Dec 2025
- 17:45:15 -0800 (PST)
-Date: Wed, 10 Dec 2025 17:45:15 -0800
-In-Reply-To: <20251210134303.1310039-1-mjguzik@gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <693a222b.a70a0220.33cd7b.0020.GAE@google.com>
-Subject: [syzbot ci] Re: fs: warn on dirty inode in writeback paired with I_WILL_FREE
-From: syzbot ci <syzbot+ci622fcbc9c29bc2f6@syzkaller.appspotmail.com>
-To: brauner@kernel.org, jack@suse.cz, linux-fsdevel@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, mjguzik@gmail.com, viro@zeniv.linux.org.uk
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-syzbot ci has tested the following series
+On Wed, 10 Dec 2025 18:03:14 +0800 Edward Adam Davis wrote:
+> > Have you investigated the other callers? Given problems with previous
+> > version of this patch I'm worried you have not. If you did please extend
+> > the commit message with the appropriate explanation.  
+> Are you asking if I investigated other zerocopy tests? NO.
 
-[v1] fs: warn on dirty inode in writeback paired with I_WILL_FREE
-https://lore.kernel.org/all/20251210134303.1310039-1-mjguzik@gmail.com
-* [PATCH] fs: warn on dirty inode in writeback paired with I_WILL_FREE
+I said callers. You're changing behavior of a function, is it going 
+to break any of the callers.
 
-and found the following issues:
-* SYZFAIL: failed to recv rpc
-* WARNING in writeback_single_inode
-
-Full report is available here:
-https://ci.syzbot.org/series/c3a011ac-952a-4fbf-867d-b7f98dcaaf3a
-
-***
-
-SYZFAIL: failed to recv rpc
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      67a454e6b1c604555c04501c77b7fedc5d98a779
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/5b151469-2ba7-47b6-bf4b-00ea2f6df1d8/config
-C repro:   https://ci.syzbot.org/findings/9adaaed3-7016-4f9d-9b65-1a4aa9a7a127/c_repro
-syz repro: https://ci.syzbot.org/findings/9adaaed3-7016-4f9d-9b65-1a4aa9a7a127/syz_repro
-
-SYZFAIL: failed to recv rpc
-
-
-***
-
-WARNING in writeback_single_inode
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      67a454e6b1c604555c04501c77b7fedc5d98a779
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/5b151469-2ba7-47b6-bf4b-00ea2f6df1d8/config
-C repro:   https://ci.syzbot.org/findings/6a7382a1-4230-4aa8-8594-a23b2365ee14/c_repro
-syz repro: https://ci.syzbot.org/findings/6a7382a1-4230-4aa8-8594-a23b2365ee14/syz_repro
-
-EXT4-fs error (device loop0): ext4_clear_blocks:876: inode #13: comm syz.0.17: attempt to clear invalid blocks 2 len 1
-EXT4-fs (loop0): Remounting filesystem read-only
-------------[ cut here ]------------
-WARNING: fs/fs-writeback.c:1870 at writeback_single_inode+0xa39/0xe40 fs/fs-writeback.c:1870, CPU#1: syz.0.17/5986
-Modules linked in:
-CPU: 1 UID: 0 PID: 5986 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:writeback_single_inode+0xa39/0xe40 fs/fs-writeback.c:1870
-Code: 0f 0b 90 e9 25 f7 ff ff e8 64 8d 79 ff 90 0f 0b 90 e9 9c fb ff ff e8 56 8d 79 ff 90 0f 0b 90 e9 c1 fc ff ff e8 48 8d 79 ff 90 <0f> 0b 90 e9 54 fc ff ff e8 3a 8d 79 ff 90 0f 0b 90 e9 47 fd ff ff
-RSP: 0018:ffffc900037c7558 EFLAGS: 00010293
-RAX: ffffffff824823a8 RBX: dffffc0000000000 RCX: ffff8881113657c0
-RDX: 0000000000000000 RSI: 0000000000000040 RDI: 0000000000000000
-RBP: ffff888108eb4068 R08: 0000000000000003 R09: 0000000000000004
-R10: dffffc0000000000 R11: fffff520006f8e9c R12: ffff8881b1810d08
-R13: 0000000000000040 R14: ffff8881b1810c38 R15: 1ffff110363021a1
-FS:  00005555567e1500(0000) GS:ffff8882a9e44000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f67c0f73ea0 CR3: 000000017655e000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- write_inode_now+0x160/0x1d0 fs/fs-writeback.c:2926
- iput_final fs/inode.c:1941 [inline]
- iput+0xa77/0x1030 fs/inode.c:2003
- ext4_orphan_cleanup+0xc20/0x1460 fs/ext4/orphan.c:472
- __ext4_fill_super fs/ext4/super.c:5658 [inline]
- ext4_fill_super+0x58a1/0x6160 fs/ext4/super.c:5777
- get_tree_bdev_flags+0x40e/0x4d0 fs/super.c:1691
- vfs_get_tree+0x92/0x2a0 fs/super.c:1751
- fc_mount fs/namespace.c:1199 [inline]
- do_new_mount_fc fs/namespace.c:3636 [inline]
- do_new_mount+0x302/0xa10 fs/namespace.c:3712
- do_mount fs/namespace.c:4035 [inline]
- __do_sys_mount fs/namespace.c:4224 [inline]
- __se_sys_mount+0x313/0x410 fs/namespace.c:4201
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xfa/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f67c0f90f6a
-Code: d8 64 89 02 48 c7 c0 ff ff ff ff eb a6 e8 de 1a 00 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffc812989c8 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 00007ffc81298a50 RCX: 00007f67c0f90f6a
-RDX: 0000200000000440 RSI: 0000200000000040 RDI: 00007ffc81298a10
-RBP: 0000200000000440 R08: 00007ffc81298a50 R09: 0000000000000001
-R10: 0000000000000001 R11: 0000000000000246 R12: 0000200000000040
-R13: 00007ffc81298a10 R14: 0000000000000450 R15: 000000000000002c
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+> The test results [T2] for this version of the patch do not show any
+> failures related to zerocopy.
