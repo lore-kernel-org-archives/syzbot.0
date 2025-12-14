@@ -1,69 +1,103 @@
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [91.216.245.30])
+Received: from out203-205-221-242.mail.qq.com (out203-205-221-242.mail.qq.com [203.205.221.242])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E85A61B425C
-	for <syzbot@lists.linux.dev>; Sat, 13 Dec 2025 22:37:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.216.245.30
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E34D11FF5F9;
+	Sun, 14 Dec 2025 02:49:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.242
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765665457; cv=none; b=Fd9VJLHzUxWYARnA7vvzk6QJRXbSDDYA/5qKqYCc8LE2/7mJcTcATO/QBnKoUT2X+c7NFgaqCIbo6846Zy5bgyt34XkfPXfKgZXtGTobjc2BWXMTKz9+EuPTHQIXjQVrde4yoZ+sOCIZ3ePGKkj7z5tFek5aM3OaDbSTvUVtQLE=
+	t=1765680588; cv=none; b=uyS5WXC7euxtnP/7tVWw3cWr6TFol5WWqqutNCM/E9NbZZjDJrEYCFbMxJE93zVWGj9wb+epnIrFEy9/YlA2oSBcGHmUAXAOlL6qJhkS0TqxNtmFwa8+m4H9bQf2AhZBePIt6LRfMlJKUMR0C+LZSCyLbCcxTD95vrPlcqbH1Ow=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765665457; c=relaxed/simple;
-	bh=0AKelx5YvD4ih/r164r9R4oF8i6pVFx8tyUStcoSlbs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UI+Lq/ARI0yc3INf68O7vQ5wwpElphxiJ+kaadEG/ImmE2a29MHezHfPgyqELRj4nYVRnsPDFsSHc7EuD0/ACjmYetnWqlqbshF/Uanl36L2b4WfWeGaSs9uLQdLCNr1s4LZ3YCd+lRAGRk3IS1NTFf35S+iDhvsdS3gu2Lya48=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=strlen.de; spf=pass smtp.mailfrom=strlen.de; arc=none smtp.client-ip=91.216.245.30
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=strlen.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=strlen.de
-Received: by Chamillionaire.breakpoint.cc (Postfix, from userid 1003)
-	id 7491960366; Sat, 13 Dec 2025 23:37:32 +0100 (CET)
-Date: Sat, 13 Dec 2025 23:37:28 +0100
-From: Florian Westphal <fw@strlen.de>
-To: syzbot ci <syzbot+ci135094d4d47126eb@syzkaller.appspotmail.com>
-Cc: netfilter-devel@vger.kernel.org, syzbot@lists.linux.dev,
-	syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot ci] Re: netfilter: nf_tables: avoid chain re-validation
- if possible
-Message-ID: <aT3qqBIme8LO6VqB@strlen.de>
-References: <20251211123038.1175-1-fw@strlen.de>
- <693b5756.050a0220.1ff09b.0012.GAE@google.com>
+	s=arc-20240116; t=1765680588; c=relaxed/simple;
+	bh=nN7B3Qdh5Nc5GqxXdyl95sJL9td2JS18OMmoBxYKWTM=;
+	h=Message-ID:From:To:Cc:Subject:Date:In-Reply-To:References:
+	 MIME-Version; b=SXV0Np1I59Epz786FhdPRWQGUgQ1uWuPxPyvu3ZL5/+ODoKRidBvumjc1iLCJBzpuGsfDbLntpAkoKI0naWw2dTRwkin6xTdBvjYB1yf61NQFlarq07u6w5AxZwm7ZkTHjO/Zfyay6kaFeTTHDa6wjeb3XZjm3wN/brTX62sKPs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=BWLcDRD+; arc=none smtp.client-ip=203.205.221.242
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="BWLcDRD+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
+	t=1765680580; bh=K2OZpHYHYZfWcCHPoZC/EThAw3ioCUEy54sUZxS6dz8=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=BWLcDRD+7A9911K+fi2EdNHjWakBalYHdcptpok25Gsth4EaXC5WrqSCb5W8vgtjs
+	 aHTCtlpfWkfLy1jeIIFmF2RVI3Pd9061XawYGBRk/78KPVnOEbvfdxGZHJI6bHCbgb
+	 lmoujIUpf0vZkgrwycD7NPwdk3HInnzxtA/MeFfI=
+Received: from lxu-ped-host.. ([111.201.7.117])
+	by newxmesmtplogicsvrsza56-0.qq.com (NewEsmtp) with SMTP
+	id C62A4629; Sun, 14 Dec 2025 10:49:34 +0800
+X-QQ-mid: xmsmtpt1765680574tmqa0m9qx
+Message-ID: <tencent_922CC96DE097F8E8EAECA6CED47BCA6C840A@qq.com>
+X-QQ-XMAILINFO: NQp/UN4soYLTE6XaGnoCUWXJp5y/lq1f7iO2t7sZtSbsh4Qdr/QfObtsCXPKAy
+	 73IUanxQx0OLkY2WTV931kJDMcjliNFTQdvhiKGPrbFC2Bq04eC821g1s9FjwndJd4Cl6dqEnQYG
+	 5u0hoX8lHX1/DHMUguz5i6Q4d+gRyNIhxPrTxFePG2SAWXEY2YWRXhGRuJABh66NbGFQsMniDRrG
+	 U2PRsZhGnH4cL4ojz6o/zsJX5hZWdrwyWlWLUmtqkvdOvCM9hal3v9uLkE3qCeDCJLR8rEorg0tK
+	 e64pG9C5HzgK7UgbIBI7eUWg4uN5nI8kU9XPVHJVG0ksiSZtZ4jHdLbTDzquVtcucHBqJNCphbDD
+	 Xq4UAF5Gn7ky6IJKgJX8n5s/d04MNDG86vj+IrR+NxpLx3Z3/k5SlpnKqiD6ZDpVFRJpspbQboIB
+	 BOYgbO21S0BFaJLH5XeGLEdjWNKTo2dyB1ob4VzLQ7U3v3Q1lf1/DMuRcfZpMQcrWzKm0HdWou4x
+	 +JG8Pr30gnJJKnygzlkt+FVEWdGwxJWyu9Fa2MEwXkoSE2rO0pKa0jXy77wcHLnV8+cr4G83bJGt
+	 Opf+S1B08M5kU4pDLMcfr7b1K+j41B9pmvU/DJJ04KLH9zyRw0YmHdGfdD6sI0riSz0wpLqYu9f6
+	 8wTP4IZiuMBxQYJS7PGFeayPCDAXXn4IZKXZtQFN2RQxDduNnFZ0r71l+30OYMFI/t/xAbDEUTwQ
+	 7bOJCnMOW0GRStWNhvlDcq8zXXhsl1W3cRZapET80HUlFlWrgD2PVUemiwnxrC9LAQ2m/fZqptVv
+	 QVzcEHKyL+PaBiXCAtpeVMVj+YilSISVmXjIzn8t+Qrih2CR/xUw+Lb3hA1uXfjKvSdVxfe14ZVb
+	 Uu4XD0YQkklEE9hVfXJB/YdNh4qc+wY4UvoDFN/aPxnxiXEHdJIPd63V8h8unLVW893FlxXAdVXh
+	 GdR1bt1+b7GnLjU943u4mk0Pvz+kcHMQlkG4zB41Q2u34jE+IRY/fimGF4c+Npm0/7AIkh68momw
+	 +ZyRLvPxf+LB0fjjqcARM/wZE0gze4jpD8spHj3XkFOPoTAzZX
+X-QQ-XMRINFO: MSVp+SPm3vtS1Vd6Y4Mggwc=
+From: Edward Adam Davis <eadavis@qq.com>
+To: kuba@kernel.org
+Cc: davem@davemloft.net,
+	eadavis@qq.com,
+	edumazet@google.com,
+	eperezma@redhat.com,
+	horms@kernel.org,
+	jasowang@redhat.com,
+	kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	mst@redhat.com,
+	netdev@vger.kernel.org,
+	pabeni@redhat.com,
+	sgarzare@redhat.com,
+	stefanha@redhat.com,
+	syzbot+ci3edb9412aeb2e703@syzkaller.appspotmail.com,
+	syzbot@lists.linux.dev,
+	syzbot@syzkaller.appspotmail.com,
+	syzkaller-bugs@googlegroups.com,
+	virtualization@lists.linux.dev,
+	xuanzhuo@linux.alibaba.com
+Subject: Re: [PATCH net-next v4] net: restore the iterator to its original state when an error occurs
+Date: Sun, 14 Dec 2025 10:49:34 +0800
+X-OQ-MSGID: <20251214024933.62895-2-eadavis@qq.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20251213083717.44fb78c4@kernel.org>
+References: <20251213083717.44fb78c4@kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <693b5756.050a0220.1ff09b.0012.GAE@google.com>
+Content-Transfer-Encoding: 8bit
 
-syzbot ci <syzbot+ci135094d4d47126eb@syzkaller.appspotmail.com> wrote:
- ------------[ cut here ]------------
-> WARNING: net/netfilter/nf_tables_api.c:4112 at nft_chain_vstate_update net/netfilter/nf_tables_api.c:4112 [inline], CPU#1: syz.0.17/5982
-> WARNING: net/netfilter/nf_tables_api.c:4112 at nft_chain_validate+0x6b0/0x8c0 net/netfilter/nf_tables_api.c:4176, CPU#1: syz.0.17/5982
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 5982 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> RIP: 0010:nft_chain_vstate_update net/netfilter/nf_tables_api.c:4112 [inline]
-> RIP: 0010:nft_chain_validate+0x6b0/0x8c0 net/netfilter/nf_tables_api.c:4176
-> Code: 31 db 89 d8 48 83 c4 50 5b 41 5c 41 5d 41 5e 41 5f 5d c3 cc cc cc cc cc e8 2d 32 42 f8 bb fc ff ff ff eb de e8 21 32 42 f8 90 <0f> 0b 90 49 83 c5 78 ba 04 00 00 00 4c 89 ef 31 f6 e8 ea 18 a8 f8
-> RSP: 0018:ffffc90003df6fe0 EFLAGS: 00010293
-> RAX: ffffffff897f183f RBX: 0000000000000000 RCX: ffff888102f93a80
-> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-> RBP: 0000000000000040 R08: ffff888102f93a80 R09: 0000000000000002
-> R10: 0000000000000010 R11: 0000000000000000 R12: ffff88816a79c510
-> R13: ffff88816a79c500 R14: ffff88816a79c500 R15: dffffc0000000000
-> FS:  000055555e417500(0000) GS:ffff8882a9eb1000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000200000005000 CR3: 000000017531c000 CR4: 00000000000006f0
-> Call Trace:
->  <TASK>
->  nft_validate_register_store+0xf6/0x1d0 net/netfilter/nf_tables_api.c:11750
->  nft_parse_register_store+0x225/0x2c0 net/netfilter/nf_tables_api.c:11787
->  nft_immediate_init+0x1cf/0x390 net/netfilter/nft_immediate.c:67
->  nf_tables_newexpr net/netfilter/nf_tables_api.c:3550 [inline]
->  nf_tables_newrule+0x1794/0x28a0 net/netfilter/nf_tables_api.c:4419
+On Sat, 13 Dec 2025 08:37:17 +0900, Jakub Kicinski wrote:
+> > In zerocopy_fill_skb_from_iter(), if two copy operations are performed
+> > and the first one succeeds while the second one fails, it returns a
+> > failure but the count in iterator has already been decremented due to
+> > the first successful copy. This ultimately affects the local variable
+> > rest_len in virtio_transport_send_pkt_info(), causing the remaining
+> > count in rest_len to be greater than the actual iterator count. As a
+> > result, packet sending operations continue even when the iterator count
+> > is zero, which further leads to skb->len being 0 and triggers the warning
+> > reported by syzbot [1].
+> 
+> Please address the feedback from previous revision and when you repost
+> use net as the subject tag.
+I have added the following explanation in the comments:
+Regarding the judgment condition, I aligned it with the condition in
+skb_zerocopy_iter_stream().
 
-Righ, this patch depends on the already pending patch
-"netfilter: nf_tables: remove redundant chain validation on register store",
-which removes the only case where the function is called with ctx->chain
-not set to a base chain.
+syzbot reported the issue in the linux-next repository, and I also
+tested and created the patch using the linux-next source code repository.
+Therefore, I added the subject net-next tag.
+If you think adding the net subject tag directly is acceptable, I will
+adjust it in the next version of the patch.
+
