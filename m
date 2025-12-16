@@ -1,65 +1,65 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2E3C35965
-	for <syzbot@lists.linux.dev>; Tue, 16 Dec 2025 00:12:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63E0C2264C8
+	for <syzbot@lists.linux.dev>; Tue, 16 Dec 2025 00:23:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765843945; cv=none; b=IEGPLyTz6jKvLwFjLqHnQQzLXaHWHoV/zDRmyJ1du/Jxo9GTMPp0Q+YOyi4BJrT+/dIOwekF/la3Uyp6cC6PkYNV4WCnLXM1e2PuQETQwHBsP5BR2k3CEMTMIEuEsjnn1XKip07Ues2Aql+dpXR3b0Q0fET2w3OiY0SbHFepsZw=
+	t=1765844605; cv=none; b=iybi2RGw92Lyl9RCctdlR9lafIaPoQjV7ODd/QnXxnB3l5ZUOx4s1qMY4ic525bTjOXjXj3HTZblqCbDJ26mTS6utw5IRdtXPwmaIYEJC2ut/mEMYfDiRZKhgv2bafHeLq705kmEPIUpC9IrbrS8rlfz0y0Ibccc1wN0Bmj0ynI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765843945; c=relaxed/simple;
-	bh=sqyeCvLckvUf0xCEYaQPVZ8MS4WKn4suJYILGBbGgfw=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=SHoVD1uDvIDsVArEDY1LQE1zW2HVt9xpY4OlOswTM53Q4+cc+qKktCUokNQ1YZ9cfuBSFug1Cqa6lMWLo8KD+D97CXitfCNbG3ZKMdvcsfQzygzxKRSBDCy88RobaibBq9Z8tcJ3fyCHKcfks4jp8VI1SWAv/zoulpsEbJ8PxZQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+	s=arc-20240116; t=1765844605; c=relaxed/simple;
+	bh=SYim9b6QQ44nK18od28Y5g4nbRR+WWT/pCIY9LbWcnA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Oc/4U8RqRfFoXremCWIwBefbvKBLE+vguEN3BPa5sFnLetrutZY1DurCnUc48p6rqx2CXnDUAcAaKJbwhK6qNYBd1wq+QxYvrnQUF2NhyR4Fj08QPgTSBCjJAIP5arYZkIogqs4mT4bJbm5bVlflYY1hVUbFV0omo+iH+niXviU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-657486eb435so5836621eaf.1
-        for <syzbot@lists.linux.dev>; Mon, 15 Dec 2025 16:12:23 -0800 (PST)
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-65997ee5622so5839362eaf.1
+        for <syzbot@lists.linux.dev>; Mon, 15 Dec 2025 16:23:24 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765843943; x=1766448743;
+        d=1e100.net; s=20230601; t=1765844603; x=1766449403;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=GzfgNYmO1csRq/zyCRZo+UOvqnAovKw12yPZVpWGe6U=;
-        b=HTrkWquP1dg7rD0bnqx0N3CRup+nkvQ1Iwxci44/ueoMntcfC5+ObgpxAKf77FhfVm
-         Li/vZRhn8GWX5Lgs7vzuVMAMwMCdLGyWcfMh5sCP2R+9WYg/QZpXqifiEL6Q7EDWUCRz
-         gIbsYnTxxZFYhBiVwk0lMvQGIQF+XAcE/RMipWpbDaccgHKcyKXvNbZ3edWoP2JqB2mS
-         rJlJSHKcXyPRT2eY55mfF9KscRUCGI7TKVRFmi5QFlRlm6SmmqhJNwoDKdILImoRklja
-         Oi0Qh0IyQtHSizBn4vpt/9b5qRk18l7VqL5BtzFfXbuAX+kXus/Wtbp+SfGRc+vQ6U0O
-         1fsA==
-X-Gm-Message-State: AOJu0Yy+VjCvES3VKB5fyCAPRac6qByJ+nkTvEkUrUlIZNi8E+MziVw+
-	5iFEA88eibs4VaBI3fv9NS+E7h5saFggBQwYL+CyxQzCQvbg55Bz9xPBZR9fdCU/9LgszCYWchl
-	WlLKMW6JZm9OQP4hSKuE/OZLQ0Gd53xlePHYG2nasEkmXb9KqZnVZsD/pWWI=
-X-Google-Smtp-Source: AGHT+IFa0CajHdljUwHCK5KgFF9eOHRMkRYpk1ze+gEqP7UJWliRXPa9TntW4PX77t8RowRCSxLdo185KHZe9LgTzU6DWkpwrQVe
+        bh=a4srq+5uKxMmUqDovtP4uOTFl4vIsi4gd5nuPdMgyd0=;
+        b=wVPe6/sPqtCL0ZsewkLpCRPlah2r3tzIS/z/yNokv3VWTy3MO0Gasm07fqO02+8XF1
+         eipoMfe8l0ISCAEJMXPqiD+Fha3izeICYejlqlDFSL8RJGsgBu8Qc7uXNW5p89uDsGUU
+         BW4gwz2H3xIM4MWkjw/D0Ay8BOneUxzIES2+9QF+e1GDcxXY9Jo/wWwL5pcrwWGD0Y4g
+         RHuXwOy09t5uDoYznvZK/fFIdomDHIvuvY+mZMnE/LOJ5pygbPOaaCjZnhPxyCeUbUuI
+         96Xfn/8BkDM/EOsFL92Q4yapBQwczRps8QTZc6fBWc/xGOyE7CG54/PzUcCjPqq9asvX
+         3Jww==
+X-Gm-Message-State: AOJu0YzDybOxSvS8aUkzWUYLcTe2/v6Guc7obgAuS31q1UBvDrF9G5Lz
+	cfWN2wNZw0ePch5TU+o3hzPNkYLdmH7/M5X4K33sT3e2m9/+CmZnE/+fIKMJ8J63clfd84RnA3X
+	CMKw9QmixMl1vIZuJms8gJHybMIALr2LyJBSed5O0P4f1wAbWW2aEAx26+wQ=
+X-Google-Smtp-Source: AGHT+IEIkKvN6m/OVRLaFJSx4OC3j/rLpIcFbz8h0Snn2PRlNEglp2D1X17NTXCpiBaU3z6lbvuM+cOhjJ7uTwJjuP10/mvPKaRX
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:982:b0:65b:34ea:583c with SMTP id
- 006d021491bc7-65b451feaedmr5522513eaf.39.1765843942788; Mon, 15 Dec 2025
- 16:12:22 -0800 (PST)
-Date: Mon, 15 Dec 2025 16:12:22 -0800
+X-Received: by 2002:a05:6820:150c:b0:659:9a49:8eca with SMTP id
+ 006d021491bc7-65b45299adamr6236706eaf.78.1765844603401; Mon, 15 Dec 2025
+ 16:23:23 -0800 (PST)
+Date: Mon, 15 Dec 2025 16:23:23 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6940a3e6.a70a0220.104cf0.0341.GAE@google.com>
+Message-ID: <6940a67b.a70a0220.33cd7b.0129.GAE@google.com>
 Subject: [moderation/CI] Re: net: skbuff: add usercopy region to skbuff_fclone_cache
-From: syzbot ci <syzbot+ci7e9fc087e5c822f6@syzkaller.appspotmail.com>
+From: syzbot ci <syzbot+cia2e023cbf1eff4f3@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v2] net: skbuff: add usercopy region to skbuff_fclone_cache
-https://lore.kernel.org/all/20251215180903.954968-2-bestswngs@gmail.com
-* [PATCH v2] net: skbuff: add usercopy region to skbuff_fclone_cache
+[v3] net: skbuff: add usercopy region to skbuff_fclone_cache
+https://lore.kernel.org/all/20251215182913.955478-2-bestswngs@gmail.com
+* [PATCH v3] net: skbuff: add usercopy region to skbuff_fclone_cache
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/d34ce34d-2982-4719-9962-fa00e018cfa8
+https://ci.syzbot.org/series/e7dd84ff-c380-4f76-b674-a1dc6c9699f5
 
 ***
 
@@ -70,7 +70,7 @@ URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-n
 base:      0177f0f07886e54e12c6f18fa58f63e63ddd3c58
 arch:      amd64
 compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/c729d225-e2f7-45fd-a8d0-078efc237cd0/config
+config:    https://ci.syzbot.org/builds/d4d1df13-1330-41c4-ad51-967725acb110/config
 
 net/core/skbuff.c:5164:11: error: too few arguments to function call, expected 7, have 5
 
@@ -85,7 +85,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[bestswngs@gmail.com davem@davemloft.net edumazet@google.com horms@kernel.org kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com xmei5@asu.edu]
+[bestswngs@gmail.com davem@davemloft.net edumazet@google.com horms@kernel.org kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com security@kernel.org xmei5@asu.edu]
 
 If the report looks fine to you, reply with:
 #syz upstream
