@@ -1,185 +1,123 @@
-Received: from out162-62-58-211.mail.qq.com (out162-62-58-211.mail.qq.com [162.62.58.211])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67FE43A1E87
-	for <syzbot@lists.linux.dev>; Tue, 16 Dec 2025 13:57:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.58.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4F17346FA9
+	for <syzbot@lists.linux.dev>; Tue, 16 Dec 2025 18:05:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765893485; cv=none; b=c/a1ho68rGwhQHOqPB+CcNYX94gxE6B5OUzqh+vZ69E6/Uh71Knypc67fmajoR1nTkONNOCb1GBlPKZIMIOx7CjsFp9+qfwATwiF6KmGmOsxafPQ4OYYa2iS2qmC8/3R5JEYJaX0b2atCQO8uOrJnkPuLY27EYUvBrBysBp4COo=
+	t=1765908362; cv=none; b=eP5IZ7x3gT+O9TcJisl4xz8RiF67RgThpSz1xGGci7EnzQXLgpgPfXhAYZ55Q6ZLUwOhj+AqOcPGc/elNHoMWTweGYovG520xNYXPZEDw+WAqF3120NCmRfy8lbcU8Iv6zbsYmGwl+VdfiNBURvIlU3DWQtxrg09lX65QBWmG9k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765893485; c=relaxed/simple;
-	bh=v0gRJ/iUcaG+NjAQDBjqxyhU2MisJyjS27UBw8VmtYw=;
-	h=Message-ID:From:To:Cc:Subject:Date:In-Reply-To:References:
-	 MIME-Version; b=WG/2uATW3ab7gQIzxTMEtbwHiqjaZMU72pWLCdKN6vByTmzo4Ce2MBXry4/NGL9Okd0NdyeOBCBWdTTWxKs/ivQfvpYgNmCqxCgDEd4xhx0ejnlI/K0I9IUMUM6nLNMRBy3Py5cMNYnIl4Ecwd5VuDv8P/iD9a+aHuA0+XqUUtA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=EbsJs+3Z; arc=none smtp.client-ip=162.62.58.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="EbsJs+3Z"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1765893474; bh=iXRrlaHLTWoP05X1daQo0hZEfeEwAupxcEuPUUwBHLw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=EbsJs+3ZoFfr9lr7AkVODaWpboi7RYfxBfhwXSclB68vE9+cErzLr7hHDYF0yV48F
-	 1wCTBaKq+jytXtVVTwvkGyORAUdjowXGe0oB8111uzGb2WF521Y+ehtcjsqTdXYhiY
-	 ALSug+ey3HJM9xRXDRLor0TNXQxDuk/i1+9KyKcc=
-Received: from lxu-ped-host.. ([111.201.7.117])
-	by newxmesmtplogicsvrszb51-1.qq.com (NewEsmtp) with SMTP
-	id E73A50AF; Tue, 16 Dec 2025 21:57:51 +0800
-X-QQ-mid: xmsmtpt1765893471twc5zwyl8
-Message-ID: <tencent_48DDBA00BB1033889E551BDE4B721B042508@qq.com>
-X-QQ-XMAILINFO: ODukwAJJE14znYh97sEsMeLf2aaOGGvmrn9g4Q1/VvW+aczWl0WSo7QIcoXLoT
-	 bHLhGYQ+8Q48ULFs4I6hk7o70NErDuuwjaGjEexyufP/9UOBTkE8eIq1E8UozR9e13VaxFNn9HNy
-	 z7qcAoyj281e+QZsiounnur7FIQWYdzsAy+M66ukaZPDMFbuAapYvaAZcqGZPjvvjUkyKaBo8I5J
-	 17atyTCeUUJQ5SDhS9jy4/W4c7oDxbJbvkT4NJD7BY9P3XS2Pz48v5ZahHAbVm2y36C0OdfQG7Cj
-	 CaG4WYllIm/wqJo5TJxwYaKFYEItx513EcVekjFhc1Yj1WAb7w4DNw6RmruL52gtNicNRHmLRORW
-	 FJUaF/kdrBtwBxuHVqL+m7PIRfjOZTGFb7IpRkZV9HR9cVhKeTVd/xxwCl3OJWClNaNBmV3N96Oj
-	 c/7gXmmwEo4V6UyGY01e04Nf7kw2ubROia6+zDIydJPbnlqVmUKyCci9KCp8bAIgUFzIZ6F3uPvj
-	 feSxXTGV3no79A/O7lv4B+IdS64KD5uIA8oh2f2C8IodeSvkFif7w8cby5TqlP1131C8bOX3iD6/
-	 U8gaA6yIQiIjhYdnCxQ5RVBQp0jMCKnFPQ4Nxvb4HsJxG/kjcNGOQsi57QmGLceQ28OIZqnMoiKI
-	 XKiid9VBpZLUcmVNIdmXpjHh5sMKP0o0z079hsaaVg0SPxknXdvXv0mbuaAAMsHZrtrk+a9koRHp
-	 UYYm676ScyqT1fs7utDcWdZd7qnA/4fCMqsDRycoGX+jz0bLZEOQ0T7Kk6Z1VfYsyniLL9IbIuG1
-	 OuJcp9wuW56B3vRjyHrnI1B9BoZwXD6f1wgyE5A/su8aftmdHa8IjUCeBsYwSWsBk2dl3rpejOvN
-	 VZ0mS8hOfma31hAojgiMY5YjLoeFavWtJ1cEs61voDknohZM4M8DKtbYiFEnsrm8E0ctlxfJLe6O
-	 6+kkBO+0QEt1mW5e7aIDurnW0s79oVO09TYUJLxYysUZeh6dfue3wcEkCE5uFnFRxKnw4QGzwql6
-	 hLxvBHiCmOl1TqQtBMs0OpA/F/xC4=
-X-QQ-XMRINFO: MPJ6Tf5t3I/ycC2BItcBVIA=
-From: Edward Adam Davis <eadavis@qq.com>
-To: syzbot+ci1f1a4e9c887bc6ea@syzkaller.appspotmail.com
-Cc: axboe@kernel.dk,
-	eadavis@qq.com,
-	jfs-discussion@lists.sourceforge.net,
-	linux-block@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	shaggy@kernel.org,
-	syzbot@lists.linux.dev,
-	syzbot@syzkaller.appspotmail.com,
-	syzkaller-bugs@googlegroups.com
-Subject: [PATCH v2] jfs: Extend the done of the window period
-Date: Tue, 16 Dec 2025 21:57:51 +0800
-X-OQ-MSGID: <20251216135750.31446-2-eadavis@qq.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <69415e37.050a0220.1ff09b.001d.GAE@google.com>
-References: <69415e37.050a0220.1ff09b.001d.GAE@google.com>
+	s=arc-20240116; t=1765908362; c=relaxed/simple;
+	bh=F1c0Ap8V5tpnMRKaiJeBosTE8sXZYky96tPQHfBCQ+Q=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=U9c9q4vDE2hVcYs1wc5KMCm3pk720guMXi+k1qqNihOgkmsQnRSGLxWKmbnzZ/Ivpz3SgWYh2k3kxo8TyZXYEmm1qIlg/uo3+tYLNTOlZavuZBTR6YBmaSahOQDuhwjztTCvB3M/hzR77B6v3VH9zGE4fFxPMDiuD4weqWxkVbI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7c75663feaeso5659138a34.3
+        for <syzbot@lists.linux.dev>; Tue, 16 Dec 2025 10:05:59 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765908358; x=1766513158;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1T5AFOkrw0NUbv7qVUNKuZ9/imBB5Qe0F/eREoQ+V4A=;
+        b=HKTxS6qNaeimmYR9PsY8ycc1R20UwgAZbefoDYm6d9e2TFwtmVuu0AeVd7lPGHyZiB
+         Sd0tMPZNn4eSr7BV1NHKRN3S8rmeqCG7CwsMCeSlWvJkiOttg3f1iUj8pYBbczgqjzmJ
+         Ug0yPDWw/9IXcBd4fh3JpmdJBxNKCkoBsSldthaKBSnQkaH3n0Nj75Yq3zIKRQD+/MrE
+         vIJXngyNUwppBs2kyKIgU9tICbYem31iyEfKAryVdg+Ukl6GNz/SQ8BnhnOCnbhzXheD
+         El1iD1LMsd8beymPLFX9xuqv759c1xGOs1mGiWAGeh9E+qLswEr3WZgyUsMon8fJeM0y
+         AuHw==
+X-Gm-Message-State: AOJu0YzZgLwhRS7LOh3Nv8TBi8sn2cDSyBCpNzCL04nM2FxulUxofOTc
+	V45SPwd4fmCq6KjDFDEntXANLN7ZNUnNIF6nT2QeCeHJ+GWlv/H1Eu7uBO2uDN5Z8s4yOtOT07C
+	ASW/Tmc7pLXOubjhNfU8aebktkjF6Ika0B+duvR7L9xFOVL5Cj7XnVTl+6KM=
+X-Google-Smtp-Source: AGHT+IEgyAay3sIgxVV9zAboLADR5m8b5QYQCBuxnybCa7v5W3IL3HXplfLml4BNUzadiwkIxD64ve3QPZy/d74ivttxW/am+GOb
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6820:820:b0:65b:3376:a89c with SMTP id
+ 006d021491bc7-65b4520c4b4mr7476243eaf.67.1765908358602; Tue, 16 Dec 2025
+ 10:05:58 -0800 (PST)
+Date: Tue, 16 Dec 2025 10:05:58 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69419f86.a70a0220.25eec0.0004.GAE@google.com>
+Subject: [moderation/CI] Re: tweaks for costly order __GFP_NORETRY reclaim
+From: syzbot ci <syzbot+ci8566aa695dc7efec@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-In lbmRead(), the I/O event waited for by wait_event() finishes before
-it goes to sleep, and the lbmIODone() prematurely sets the flag to
-lbmDONE, thus ending the wait. This causes wait_event() to return before
-lbmREAD is cleared (because lbmDONE was set first), the premature return
-of wait_event() leads to the release of lbuf before lbmIODone() returns,
-thus triggering the use-after-free vulnerability reported in [1].
+syzbot ci has tested the following series
 
-Moving the operation of setting the lbmDONE flag to after clearing lbmREAD
-in lbmIODone() avoids the use-after-free vulnerability reported in [1].
+[v1] tweaks for costly order __GFP_NORETRY reclaim
+https://lore.kernel.org/all/20251216-thp-thisnode-tweak-v1-0-0e499d13d2eb@s=
+use.cz
+* [PATCH RFC 1/2] mm, page_alloc, thp: prevent reclaim for __GFP_THISNODE T=
+HP allocations
+* [PATCH RFC 2/2] mm, page_alloc: fail costly __GFP_NORETRY allocations fas=
+ter
 
-[1]
-BUG: KASAN: slab-use-after-free in rt_spin_lock+0x88/0x3e0 kernel/locking/spinlock_rt.c:56
-Call Trace:
- blk_update_request+0x57e/0xe60 block/blk-mq.c:1007
- blk_mq_end_request+0x3e/0x70 block/blk-mq.c:1169
- blk_complete_reqs block/blk-mq.c:1244 [inline]
- blk_done_softirq+0x10a/0x160 block/blk-mq.c:1249
+and found the following issue:
+kernel build error
 
-Allocated by task 6101:
- lbmLogInit fs/jfs/jfs_logmgr.c:1821 [inline]
- lmLogInit+0x3d0/0x19e0 fs/jfs/jfs_logmgr.c:1269
- open_inline_log fs/jfs/jfs_logmgr.c:1175 [inline]
- lmLogOpen+0x4e1/0xfa0 fs/jfs/jfs_logmgr.c:1069
- jfs_mount_rw+0xe9/0x670 fs/jfs/jfs_mount.c:257
- jfs_fill_super+0x754/0xd80 fs/jfs/super.c:532
+Full report is available here:
+https://ci.syzbot.org/series/d26c9b4f-cf40-46e9-a5a8-388488c71904
 
-Freed by task 6101:
- kfree+0x1bd/0x900 mm/slub.c:6876
- lbmLogShutdown fs/jfs/jfs_logmgr.c:1864 [inline]
- lmLogInit+0x1137/0x19e0 fs/jfs/jfs_logmgr.c:1415
- open_inline_log fs/jfs/jfs_logmgr.c:1175 [inline]
- lmLogOpen+0x4e1/0xfa0 fs/jfs/jfs_logmgr.c:1069
- jfs_mount_rw+0xe9/0x670 fs/jfs/jfs_mount.c:257
- jfs_fill_super+0x754/0xd80 fs/jfs/super.c:532
+***
 
-Reported-by: syzbot+1d38eedcb25a3b5686a7@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=1d38eedcb25a3b5686a7
-Signed-off-by: Edward Adam Davis <eadavis@qq.com>
+kernel build error
+
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
+.git
+base:      c642ecda5b136882e518d8303863473c0d21ab2f
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/6cf2accb-ad00-42a0-a354-545bfd39b6c=
+b/config
+
+mm/page_alloc.c:4936:1: error: function definition is not allowed here
+mm/page_alloc.c:5004:1: error: function definition is not allowed here
+mm/page_alloc.c:5152:1: error: function definition is not allowed here
+mm/page_alloc.c:5217:1: error: function definition is not allowed here
+mm/page_alloc.c:5229:1: error: function definition is not allowed here
+mm/page_alloc.c:5242:1: error: function definition is not allowed here
+mm/page_alloc.c:5253:1: error: function definition is not allowed here
+mm/page_alloc.c:5260:1: error: function definition is not allowed here
+mm/page_alloc.c:5304:1: error: function definition is not allowed here
+mm/page_alloc.c:5314:1: error: function definition is not allowed here
+mm/page_alloc.c:5328:1: error: function definition is not allowed here
+mm/page_alloc.c:5339:1: error: function definition is not allowed here
+mm/page_alloc.c:5374:1: error: function definition is not allowed here
+mm/page_alloc.c:5399:1: error: function definition is not allowed here
+mm/page_alloc.c:5420:1: error: function definition is not allowed here
+mm/page_alloc.c:5444:1: error: function definition is not allowed here
+mm/page_alloc.c:5473:1: error: function definition is not allowed here
+mm/page_alloc.c:5479:1: error: function definition is not allowed here
+mm/page_alloc.c:5490:1: error: function definition is not allowed here
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
 ---
-v1 -> v2: fix potential deadlock
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
- fs/jfs/jfs_logmgr.c | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+The email will later be sent to:
+[akpm@linux-foundation.org david@kernel.org hannes@cmpxchg.org jackmanb@goo=
+gle.com joshua.hahnjy@gmail.com liam.howlett@oracle.com linux-kernel@vger.k=
+ernel.org linux-mm@kvack.org lorenzo.stoakes@oracle.com mhocko@suse.com pfa=
+lcato@suse.de rientjes@google.com rppt@kernel.org surenb@google.com vbabka@=
+suse.cz ziy@nvidia.com]
 
-diff --git a/fs/jfs/jfs_logmgr.c b/fs/jfs/jfs_logmgr.c
-index b343c5ea1159..0db4bc9f2d6c 100644
---- a/fs/jfs/jfs_logmgr.c
-+++ b/fs/jfs/jfs_logmgr.c
-@@ -2180,8 +2180,6 @@ static void lbmIODone(struct bio *bio)
- 
- 	LCACHE_LOCK(flags);		/* disable+lock */
- 
--	bp->l_flag |= lbmDONE;
--
- 	if (bio->bi_status) {
- 		bp->l_flag |= lbmERROR;
- 
-@@ -2196,12 +2194,10 @@ static void lbmIODone(struct bio *bio)
- 	if (bp->l_flag & lbmREAD) {
- 		bp->l_flag &= ~lbmREAD;
- 
--		LCACHE_UNLOCK(flags);	/* unlock+enable */
--
- 		/* wakeup I/O initiator */
- 		LCACHE_WAKEUP(&bp->l_ioevent);
- 
--		return;
-+		goto out;
- 	}
- 
- 	/*
-@@ -2225,8 +2221,7 @@ static void lbmIODone(struct bio *bio)
- 
- 	if (bp->l_flag & lbmDIRECT) {
- 		LCACHE_WAKEUP(&bp->l_ioevent);
--		LCACHE_UNLOCK(flags);
--		return;
-+		goto out;
- 	}
- 
- 	tail = log->wqueue;
-@@ -2278,8 +2273,6 @@ static void lbmIODone(struct bio *bio)
- 	 * leave buffer for i/o initiator to dispose
- 	 */
- 	if (bp->l_flag & lbmSYNC) {
--		LCACHE_UNLOCK(flags);	/* unlock+enable */
--
- 		/* wakeup I/O initiator */
- 		LCACHE_WAKEUP(&bp->l_ioevent);
- 	}
-@@ -2290,6 +2283,7 @@ static void lbmIODone(struct bio *bio)
- 	else if (bp->l_flag & lbmGC) {
- 		LCACHE_UNLOCK(flags);
- 		lmPostGC(bp);
-+		LCACHE_LOCK(flags);		/* disable+lock */
- 	}
- 
- 	/*
-@@ -2302,9 +2296,11 @@ static void lbmIODone(struct bio *bio)
- 		assert(bp->l_flag & lbmRELEASE);
- 		assert(bp->l_flag & lbmFREE);
- 		lbmfree(bp);
--
--		LCACHE_UNLOCK(flags);	/* unlock+enable */
- 	}
-+
-+out:
-+	bp->l_flag |= lbmDONE;
-+	LCACHE_UNLOCK(flags);
- }
- 
- int jfsIOWait(void *arg)
--- 
-2.43.0
+If the report looks fine to you, reply with:
+#syz upstream
 
