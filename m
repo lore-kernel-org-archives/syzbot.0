@@ -1,326 +1,419 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAF771D90DF
-	for <syzbot@lists.linux.dev>; Thu, 18 Dec 2025 01:24:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 333AA2153E7
+	for <syzbot@lists.linux.dev>; Thu, 18 Dec 2025 06:59:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766021095; cv=none; b=tWDT5Tsj05bzaLI5evnsHmGU3NNG5wciDvIDxd7oVW7miVcuDfM13kFaollU006Cre+3JNtdLexAC95+LofyqZRUayYNLustNXNWsVk7ypgKKOYX+2vTMr4oIORfGXa5s6zl72Sx3vzQYCbwprDCzmn0aNZ6jT0LmZ1nODxtgp8=
+	t=1766041172; cv=none; b=uj/pPk6zMrDDZRdVMrW/IFInhQajPYTH1vDbCBrIJDN2kRnM8eQqA5+BLW7BPtfo/fAXRGLo3Iwb4tvJQzaxB2OmNQT3LTzgUUzGaIae9GHvriwMA9IuYF6r8HjqiYREDvDjuzuQuFCq5/ubLZYjX3EGFZibWMGwbgLcFJPFvNo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766021095; c=relaxed/simple;
-	bh=DWooMH5C1QDB5vQy0GKXpx3583jw/ecEO7bU5boe5a8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=p5s5zYZYJ4I1c1SOQqBK7klxNgwQmS1qOWispWIpP4+3/UDQIui3acViH2r5wnMMDC0mRk2RxvR7rXjBxDHvK8SJvVzgA27znZZSyyUXi8u+Poac32MC/1uGERl8gdNIVedr/nF7JkgA0vrevVr5t8gxzmmjG7ISR5iPajAfFPI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=purestorage.com; spf=fail smtp.mailfrom=purestorage.com; dkim=pass (2048-bit key) header.d=purestorage.com header.i=@purestorage.com header.b=YlJu63mc; arc=none smtp.client-ip=209.85.214.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=purestorage.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=purestorage.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=purestorage.com header.i=@purestorage.com header.b="YlJu63mc"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-29e346af955so172065ad.0
-        for <syzbot@lists.linux.dev>; Wed, 17 Dec 2025 17:24:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=purestorage.com; s=google2022; t=1766021092; x=1766625892; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7Sd9BeJ5hbUGRVg31mFOBPsK2RhgFXD696VkWVSI5rU=;
-        b=YlJu63mcHU7QsMJqK/lLRuS23EDB4lQqeDAereWNpu62ipyRh7Ywwfq+D9MDI9dz0K
-         bWyHJfbf4mumnpB2dGI/TIQbu+Bkqhio53slE3u+A0RDZrqLYFa/Ddp8dZwEs7dJMjQY
-         AWrvwuKU+jpsSZZMj/s03ytqKWYeGDEecP0KJPc/a7SCwSfv+XSwlP0i9s3ailuh+xF9
-         6aGZZjG82U77qMR3Av4PPN4dcQaEG4iWBiB7D4BPgIyWYn0aWbgChGulZx8f08kvtN8l
-         bp2AvtEAz0b+NOmWOXqZis7JJRs+n19M32QpPrOMMXN9QB1a9HBrvgnp4gZJ2y9KKII2
-         v7jQ==
+	s=arc-20240116; t=1766041172; c=relaxed/simple;
+	bh=HVNFdIhv7N4/E6IYX207DiGEidPmfYMXAzpafBZaB0U=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=a7RrdWO9mwkjnk5v2PsaxQWeSBcuMwtHUeJmYJH5O2YwCkduSo5QS3ahgluWra9G0ZOZI0DT/uxhZC+8Y7AGViDuBMxh6x/eFz0qkp2/N0ohWr5ZotL7YZCpx5dZ5PRjGja6Pn5wtXBoqupM9I2H9hDJqPbBmwoM7Up6BaM2xbg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7c6d329f19cso540077a34.1
+        for <syzbot@lists.linux.dev>; Wed, 17 Dec 2025 22:59:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766021092; x=1766625892;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=7Sd9BeJ5hbUGRVg31mFOBPsK2RhgFXD696VkWVSI5rU=;
-        b=xUs48P1Eve39TBgPIRg0mCRTdjktCNTOMuD8rslj5FcW4Ni/Mf07WCCWoKRWqyIpXR
-         usRYLTpySTXcS43LblOOknWPXlkwZwlpvdJEFupm4qZl0EhNmy7VOZ+OSTd0xtSiCjeH
-         MCxbkHHYfTyXVQJMCMd1gKGJXkk6JYniK7va3SQPpwgz73Y7rM0Cc0wwy0Ak288+Lhka
-         gY+9FlITjB7RJLI+ndasx7jRD8JTYgFcY2XaZZqYaIccfJ57UdaV4qpzn1daCmbTgJQ0
-         y3m7ql96RmkiQpMhMXgyZnjBXZNqGN3D+EqGaO2VH7jzEkh0vlS2+bA4wkAAzt3KunrN
-         k9KA==
-X-Forwarded-Encrypted: i=1; AJvYcCUQ384R90n49vYLGyZvvRhiJ6NerdmcGjzSJRT8PdK/5W5TUHHWEBz9SP2OLPg3lLzS0UpsZXE=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxsuj1goX3gLvrjEFiRbR9iCDsD6D5YMdWgYhqvmMNHES8QTRbd
-	PB0OYQvexXJX+zrqIf9yOfqhHYZ2U/8mHyS2xM8LVBN+1a6ZKbifRuh2aA+fF1Pessu1rDfIJWx
-	kvwD6aVasbEeKZVYVKSqxYAMB41Fo32oXOFQaYAtZLQ==
-X-Gm-Gg: AY/fxX4WeNPhdLHV1cJzJbPa64r99lAP5b1xDYZ5dq5wumxQ951i/I+tyx0mygbvXZo
-	zvyesD27GMHJHrAqx4x/seYTuU4BZ2AeW1GYHx/jLYfg8ACvaOHgHmElaRCYqdaJCnIcV/l4IO0
-	yDfYTSbu7SLe7IZx53Q+j9o/6UvKYeqAJ/rQgebZCmdsGZSKTQW9EQZbtiqCutFsprgEbrBd6vv
-	6OTFQLjUOmmXX8gAozpoVG8V+kwMY7BpzUsH2KXlSO33YvTnDvTJ8rUxVhxUJG6RYSkiJFh
-X-Google-Smtp-Source: AGHT+IEldu5a8bLUUL/puyRgVgme/7sqkOv5mdPu2AP3HZ3baRe2cSd+p4yT5nxhPfFsBAVv3y5itQx8+Aw57x5IhrQ=
-X-Received: by 2002:a05:7022:f406:b0:119:e56b:46b6 with SMTP id
- a92af1059eb24-120627a03femr326089c88.0.1766021091662; Wed, 17 Dec 2025
- 17:24:51 -0800 (PST)
+        d=1e100.net; s=20230601; t=1766041169; x=1766645969;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=J8Gxy+doCJqASuoYx4tZimJ7ZM0lw0Y18SKq8iRPqI4=;
+        b=DiRmn/d2hk+GZiAPJR5tYU/hRMwPmG/h1Bg3C5w8xIoeDIjz3gWsJfDAtZV+I3GvEK
+         8INFGIz7UHJdKNgZoMRzoT0+Cfjx8nkHdl/bETfNDyvqZM1I3ycUPhUPqqAOIVsDc5lm
+         L32qPgYkpdJoupJ6hGpxy8VCZpf0YbsPSGstvn3hrF/6XKJXsbOS0IrTq6HsdhC+/ird
+         gvSdYT7fXVnNjBdOjnu2ZAqwQi5mH/v7XN5vKFTjOG6oUjHMzz/um1yzfdLoAuy6zRLC
+         hvG9NcIi7U1goV1ir3m9vvM+1jaKdJdoXoNE3cr5vGhnbiX+VLAkRZSzHfBRbNiBpE+r
+         TqLQ==
+X-Gm-Message-State: AOJu0YxgUhO2vXcys5NGCjnyS7g+yaPcH1X7lMo/LniEQ0dyDbLSDvFG
+	7vq2GTAWXeLE8N7a5SYeejVu+DXuNRrl7s/fnpGekpuYPMFt8exZ67IZHEfnLnilN4R/SGKK+Uy
+	yzUmUILpCcm5/DxkXDC6pv8Zc/T6MASJxirj8SQCWcNA7Nwt/qgOlL6bmoMg=
+X-Google-Smtp-Source: AGHT+IGUSe4+sRTJfAeuGRMpNSaDL/hUk36JFJbqsZNr00FdxXopSLO1Jlkam9kAPwM+IRLCAYJG/M2qFwFZihgvqC+ltyFs2GAw
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20251215200909.3505001-1-csander@purestorage.com> <6940ec5c.a70a0220.104cf0.0346.GAE@google.com>
-In-Reply-To: <6940ec5c.a70a0220.104cf0.0346.GAE@google.com>
-From: Caleb Sander Mateos <csander@purestorage.com>
-Date: Wed, 17 Dec 2025 17:24:40 -0800
-X-Gm-Features: AQt7F2qLIdTS0N46_a0qJKru-s2JGrOMAQCIoqtDoWm7qEPjWvjTtqyEnFqhjjE
-Message-ID: <CADUfDZpmBzNF-+EW3vDmiz4ur7X93WJ5PoK86pveEjgqzK5pcw@mail.gmail.com>
-Subject: Re: [syzbot ci] Re: io_uring: avoid uring_lock for IORING_SETUP_SINGLE_ISSUER
-To: syzbot ci <syzbot+ci3ff889516a0b26a2@syzkaller.appspotmail.com>
-Cc: axboe@kernel.dk, io-uring@vger.kernel.org, joannelkoong@gmail.com, 
-	linux-kernel@vger.kernel.org, oliver.sang@intel.com, 
-	syzbot@syzkaller.appspotmail.com, syzbot@lists.linux.dev, 
-	syzkaller-bugs@googlegroups.com
+X-Received: by 2002:a05:6820:f00d:b0:659:9a49:8fef with SMTP id
+ 006d021491bc7-65b451b3524mr8770262eaf.28.1766041169165; Wed, 17 Dec 2025
+ 22:59:29 -0800 (PST)
+Date: Wed, 17 Dec 2025 22:59:29 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6943a651.a70a0220.207337.00d3.GAE@google.com>
+Subject: [moderation/CI] Re: io_uring: avoid uring_lock for IORING_SETUP_SINGLE_ISSUER
+From: syzbot ci <syzbot+cib322172d013bde2d@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Dec 15, 2025 at 9:21=E2=80=AFPM syzbot ci
-<syzbot+ci3ff889516a0b26a2@syzkaller.appspotmail.com> wrote:
->
-> syzbot ci has tested the following series
->
-> [v5] io_uring: avoid uring_lock for IORING_SETUP_SINGLE_ISSUER
-> https://lore.kernel.org/all/20251215200909.3505001-1-csander@purestorage.=
-com
-> * [PATCH v5 1/6] io_uring: use release-acquire ordering for IORING_SETUP_=
-R_DISABLED
-> * [PATCH v5 2/6] io_uring: clear IORING_SETUP_SINGLE_ISSUER for IORING_SE=
-TUP_SQPOLL
-> * [PATCH v5 3/6] io_uring: ensure io_uring_create() initializes submitter=
-_task
-> * [PATCH v5 4/6] io_uring: use io_ring_submit_lock() in io_iopoll_req_iss=
-ued()
-> * [PATCH v5 5/6] io_uring: factor out uring_lock helpers
-> * [PATCH v5 6/6] io_uring: avoid uring_lock for IORING_SETUP_SINGLE_ISSUE=
-R
->
-> and found the following issue:
-> KASAN: slab-use-after-free Read in task_work_add
->
-> Full report is available here:
-> https://ci.syzbot.org/series/bce89909-ebf2-45f6-be49-bbd46e33e966
->
-> ***
->
-> KASAN: slab-use-after-free Read in task_work_add
->
-> tree:      torvalds
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torva=
-lds/linux
-> base:      d358e5254674b70f34c847715ca509e46eb81e6f
-> arch:      amd64
-> compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~e=
-xp1~20250708183702.136), Debian LLD 20.1.8
-> config:    https://ci.syzbot.org/builds/db5ac991-f49c-460f-80e4-2a33be76f=
-e7c/config
-> syz repro: https://ci.syzbot.org/findings/ddbf1feb-6618-4c0f-9a16-15b856f=
-20d71/syz_repro
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> BUG: KASAN: slab-use-after-free in task_work_add+0xd7/0x440 kernel/task_w=
-ork.c:73
-> Read of size 8 at addr ffff88816a8826f8 by task kworker/u9:2/54
->
-> CPU: 0 UID: 0 PID: 54 Comm: kworker/u9:2 Not tainted syzkaller #0 PREEMPT=
-(full)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Workqueue: iou_exit io_ring_exit_work
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
->  print_address_description mm/kasan/report.c:378 [inline]
->  print_report+0xca/0x240 mm/kasan/report.c:482
->  kasan_report+0x118/0x150 mm/kasan/report.c:595
->  task_work_add+0xd7/0x440 kernel/task_work.c:73
->  io_ring_ctx_lock_nested io_uring/io_uring.h:271 [inline]
->  io_ring_ctx_lock io_uring/io_uring.h:282 [inline]
->  io_req_caches_free+0x342/0x3e0 io_uring/io_uring.c:2869
->  io_ring_ctx_free+0x56a/0x8e0 io_uring/io_uring.c:2908
+syzbot ci has tested the following series
 
-The call to io_req_caches_free() comes after the
-put_task_struct(ctx->submitter_task) call in io_ring_ctx_free(), so I
-guess the task_struct may have already been freed when
-io_ring_ctx_lock() is called. Should be simple enough to fix by just
-moving the put_task_struct() call to the end of io_ring_ctx_free().
+[v6] io_uring: avoid uring_lock for IORING_SETUP_SINGLE_ISSUER
+https://lore.kernel.org/all/20251218024459.1083572-1-csander@purestorage.com
+* [PATCH v6 1/6] io_uring: use release-acquire ordering for IORING_SETUP_R_DISABLED
+* [PATCH v6 2/6] io_uring: clear IORING_SETUP_SINGLE_ISSUER for IORING_SETUP_SQPOLL
+* [PATCH v6 3/6] io_uring: ensure submitter_task is valid for io_ring_ctx's lifetime
+* [PATCH v6 4/6] io_uring: use io_ring_submit_lock() in io_iopoll_req_issued()
+* [PATCH v6 5/6] io_uring: factor out uring_lock helpers
+* [PATCH v6 6/6] io_uring: avoid uring_lock for IORING_SETUP_SINGLE_ISSUER
 
-Looking at this made me realize one other small bug, it's incorrect to
-assume that if task_work_add() fails because the submitter_task has
-exited, the uring lock has been acquired successfully. Even though
-submitter_task will no longer be using the uring lock, other tasks
-could. So this path needs to acquire the uring_lock mutex, similar to
-the IORING_SETUP_SINGLE_ISSUER && IORING_SETUP_R_DISABLED case.
+and found the following issue:
+INFO: task hung in io_wq_put_and_exit
 
-Thanks,
-Caleb
+Full report is available here:
+https://ci.syzbot.org/series/21eac721-670b-4f34-9696-66f9b28233ac
 
->  io_ring_exit_work+0xff9/0x1220 io_uring/io_uring.c:3113
->  process_one_work kernel/workqueue.c:3257 [inline]
->  process_scheduled_works+0xad1/0x1770 kernel/workqueue.c:3340
->  worker_thread+0x8a0/0xda0 kernel/workqueue.c:3421
->  kthread+0x711/0x8a0 kernel/kthread.c:463
->  ret_from_fork+0x599/0xb30 arch/x86/kernel/process.c:158
->  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
->  </TASK>
->
-> Allocated by task 7671:
->  kasan_save_stack mm/kasan/common.c:56 [inline]
->  kasan_save_track+0x3e/0x80 mm/kasan/common.c:77
->  unpoison_slab_object mm/kasan/common.c:339 [inline]
->  __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:365
->  kasan_slab_alloc include/linux/kasan.h:252 [inline]
->  slab_post_alloc_hook mm/slub.c:4953 [inline]
->  slab_alloc_node mm/slub.c:5263 [inline]
->  kmem_cache_alloc_node_noprof+0x43c/0x720 mm/slub.c:5315
->  alloc_task_struct_node kernel/fork.c:184 [inline]
->  dup_task_struct+0x57/0x9a0 kernel/fork.c:915
->  copy_process+0x4ea/0x3950 kernel/fork.c:2052
->  kernel_clone+0x21e/0x820 kernel/fork.c:2651
->  __do_sys_clone3 kernel/fork.c:2953 [inline]
->  __se_sys_clone3+0x256/0x2d0 kernel/fork.c:2932
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0xfa/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->
-> Freed by task 6024:
->  kasan_save_stack mm/kasan/common.c:56 [inline]
->  kasan_save_track+0x3e/0x80 mm/kasan/common.c:77
->  kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:584
->  poison_slab_object mm/kasan/common.c:252 [inline]
->  __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:284
->  kasan_slab_free include/linux/kasan.h:234 [inline]
->  slab_free_hook mm/slub.c:2540 [inline]
->  slab_free mm/slub.c:6668 [inline]
->  kmem_cache_free+0x197/0x620 mm/slub.c:6779
->  rcu_do_batch kernel/rcu/tree.c:2605 [inline]
->  rcu_core+0xd70/0x1870 kernel/rcu/tree.c:2857
->  handle_softirqs+0x27d/0x850 kernel/softirq.c:622
->  __do_softirq kernel/softirq.c:656 [inline]
->  invoke_softirq kernel/softirq.c:496 [inline]
->  __irq_exit_rcu+0xca/0x1f0 kernel/softirq.c:723
->  irq_exit_rcu+0x9/0x30 kernel/softirq.c:739
->  instr_sysvec_call_function_single arch/x86/kernel/smp.c:266 [inline]
->  sysvec_call_function_single+0xa3/0xc0 arch/x86/kernel/smp.c:266
->  asm_sysvec_call_function_single+0x1a/0x20 arch/x86/include/asm/idtentry.=
-h:704
->
-> Last potentially related work creation:
->  kasan_save_stack+0x3e/0x60 mm/kasan/common.c:56
->  kasan_record_aux_stack+0xbd/0xd0 mm/kasan/generic.c:556
->  __call_rcu_common kernel/rcu/tree.c:3119 [inline]
->  call_rcu+0x157/0x9c0 kernel/rcu/tree.c:3239
->  rcu_do_batch kernel/rcu/tree.c:2605 [inline]
->  rcu_core+0xd70/0x1870 kernel/rcu/tree.c:2857
->  handle_softirqs+0x27d/0x850 kernel/softirq.c:622
->  run_ksoftirqd+0x9b/0x100 kernel/softirq.c:1063
->  smpboot_thread_fn+0x542/0xa60 kernel/smpboot.c:160
->  kthread+0x711/0x8a0 kernel/kthread.c:463
->  ret_from_fork+0x599/0xb30 arch/x86/kernel/process.c:158
->  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
->
-> Second to last potentially related work creation:
->  kasan_save_stack+0x3e/0x60 mm/kasan/common.c:56
->  kasan_record_aux_stack+0xbd/0xd0 mm/kasan/generic.c:556
->  __call_rcu_common kernel/rcu/tree.c:3119 [inline]
->  call_rcu+0x157/0x9c0 kernel/rcu/tree.c:3239
->  context_switch kernel/sched/core.c:5259 [inline]
->  __schedule+0x14c4/0x5000 kernel/sched/core.c:6863
->  preempt_schedule_irq+0xb5/0x150 kernel/sched/core.c:7190
->  irqentry_exit+0x5d8/0x660 kernel/entry/common.c:216
->  asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.=
-h:697
->
-> The buggy address belongs to the object at ffff88816a881d40
->  which belongs to the cache task_struct of size 7232
-> The buggy address is located 2488 bytes inside of
->  freed 7232-byte region [ffff88816a881d40, ffff88816a883980)
->
-> The buggy address belongs to the physical page:
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x16a8=
-80
-> head: order:3 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
-> memcg:ffff8881726b0441
-> anon flags: 0x57ff00000000040(head|node=3D1|zone=3D2|lastcpupid=3D0x7ff)
-> page_type: f5(slab)
-> raw: 057ff00000000040 ffff88816040a500 0000000000000000 0000000000000001
-> raw: 0000000000000000 0000000080040004 00000000f5000000 ffff8881726b0441
-> head: 057ff00000000040 ffff88816040a500 0000000000000000 0000000000000001
-> head: 0000000000000000 0000000080040004 00000000f5000000 ffff8881726b0441
-> head: 057ff00000000003 ffffea0005aa2001 00000000ffffffff 00000000ffffffff
-> head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000008
-> page dumped because: kasan: bad access detected
-> page_owner tracks the page as allocated
-> page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(=
-__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), =
-pid 7291, tgid 7291 (syz.2.649), ts 88142964676, free_ts 88127352940
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x234/0x290 mm/page_alloc.c:1846
->  prep_new_page mm/page_alloc.c:1854 [inline]
->  get_page_from_freelist+0x2365/0x2440 mm/page_alloc.c:3915
->  __alloc_frozen_pages_noprof+0x181/0x370 mm/page_alloc.c:5210
->  alloc_pages_mpol+0x232/0x4a0 mm/mempolicy.c:2486
->  alloc_slab_page mm/slub.c:3075 [inline]
->  allocate_slab+0x86/0x3b0 mm/slub.c:3248
->  new_slab mm/slub.c:3302 [inline]
->  ___slab_alloc+0xf2b/0x1960 mm/slub.c:4656
->  __slab_alloc+0x65/0x100 mm/slub.c:4779
->  __slab_alloc_node mm/slub.c:4855 [inline]
->  slab_alloc_node mm/slub.c:5251 [inline]
->  kmem_cache_alloc_node_noprof+0x4ce/0x720 mm/slub.c:5315
->  alloc_task_struct_node kernel/fork.c:184 [inline]
->  dup_task_struct+0x57/0x9a0 kernel/fork.c:915
->  copy_process+0x4ea/0x3950 kernel/fork.c:2052
->  kernel_clone+0x21e/0x820 kernel/fork.c:2651
->  __do_sys_clone3 kernel/fork.c:2953 [inline]
->  __se_sys_clone3+0x256/0x2d0 kernel/fork.c:2932
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0xfa/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> page last free pid 5275 tgid 5275 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  free_pages_prepare mm/page_alloc.c:1395 [inline]
->  __free_frozen_pages+0xbc8/0xd30 mm/page_alloc.c:2943
->  __slab_free+0x21b/0x2a0 mm/slub.c:6004
->  qlink_free mm/kasan/quarantine.c:163 [inline]
->  qlist_free_all+0x97/0x100 mm/kasan/quarantine.c:179
->  kasan_quarantine_reduce+0x148/0x160 mm/kasan/quarantine.c:286
->  __kasan_slab_alloc+0x22/0x80 mm/kasan/common.c:349
->  kasan_slab_alloc include/linux/kasan.h:252 [inline]
->  slab_post_alloc_hook mm/slub.c:4953 [inline]
->  slab_alloc_node mm/slub.c:5263 [inline]
->  kmem_cache_alloc_noprof+0x37d/0x710 mm/slub.c:5270
->  getname_flags+0xb8/0x540 fs/namei.c:146
->  getname include/linux/fs.h:2498 [inline]
->  do_sys_openat2+0xbc/0x200 fs/open.c:1426
->  do_sys_open fs/open.c:1436 [inline]
->  __do_sys_openat fs/open.c:1452 [inline]
->  __se_sys_openat fs/open.c:1447 [inline]
->  __x64_sys_openat+0x138/0x170 fs/open.c:1447
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0xfa/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->
-> Memory state around the buggy address:
->  ffff88816a882580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->  ffff88816a882600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> >ffff88816a882680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->                                                                 ^
->  ffff88816a882700: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->  ffff88816a882780: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->
->
-> ***
->
-> If these findings have caused you to resend the series or submit a
-> separate fix, please add the following tag to your commit message:
->   Tested-by: syzbot@syzkaller.appspotmail.com
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+***
+
+INFO: task hung in io_wq_put_and_exit
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      d358e5254674b70f34c847715ca509e46eb81e6f
+arch:      amd64
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/1710cffe-7d78-4489-9aa1-823b8c2532ed/config
+syz repro: https://ci.syzbot.org/findings/74ae8703-9484-4d82-aa78-84cc37dcb1ef/syz_repro
+
+INFO: task syz.1.18:6046 blocked for more than 143 seconds.
+      Not tainted syzkaller #0
+      Blocked by coredump.
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz.1.18        state:D stack:25672 pid:6046  tgid:6045  ppid:5971   task_flags:0x400548 flags:0x00080004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5256 [inline]
+ __schedule+0x14bc/0x5000 kernel/sched/core.c:6863
+ __schedule_loop kernel/sched/core.c:6945 [inline]
+ schedule+0x165/0x360 kernel/sched/core.c:6960
+ schedule_timeout+0x9a/0x270 kernel/time/sleep_timeout.c:75
+ do_wait_for_common kernel/sched/completion.c:100 [inline]
+ __wait_for_common kernel/sched/completion.c:121 [inline]
+ wait_for_common kernel/sched/completion.c:132 [inline]
+ wait_for_completion+0x2bf/0x5d0 kernel/sched/completion.c:153
+ io_wq_exit_workers io_uring/io-wq.c:1328 [inline]
+ io_wq_put_and_exit+0x316/0x650 io_uring/io-wq.c:1356
+ io_uring_clean_tctx+0x11f/0x1a0 io_uring/tctx.c:207
+ io_uring_cancel_generic+0x6ca/0x7d0 io_uring/cancel.c:652
+ io_uring_files_cancel include/linux/io_uring.h:19 [inline]
+ do_exit+0x345/0x2310 kernel/exit.c:911
+ do_group_exit+0x21c/0x2d0 kernel/exit.c:1112
+ get_signal+0x1285/0x1340 kernel/signal.c:3034
+ arch_do_signal_or_restart+0x9a/0x7a0 arch/x86/kernel/signal.c:337
+ __exit_to_user_mode_loop kernel/entry/common.c:41 [inline]
+ exit_to_user_mode_loop+0x87/0x4f0 kernel/entry/common.c:75
+ __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
+ syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [inline]
+ syscall_exit_to_user_mode_work include/linux/entry-common.h:159 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:194 [inline]
+ do_syscall_64+0x2e3/0xf80 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f6a8b58f7c9
+RSP: 002b:00007f6a8c4a00e8 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
+RAX: 0000000000000001 RBX: 00007f6a8b7e5fa8 RCX: 00007f6a8b58f7c9
+RDX: 00000000000f4240 RSI: 0000000000000081 RDI: 00007f6a8b7e5fac
+RBP: 00007f6a8b7e5fa0 R08: 3fffffffffffffff R09: 0000000000000000
+R10: 0000000000000800 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f6a8b7e6038 R14: 00007ffcac96d220 R15: 00007ffcac96d308
+ </TASK>
+INFO: task iou-wrk-6046:6047 blocked for more than 143 seconds.
+      Not tainted syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:iou-wrk-6046    state:D stack:27760 pid:6047  tgid:6045  ppid:5971   task_flags:0x404050 flags:0x00080002
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5256 [inline]
+ __schedule+0x14bc/0x5000 kernel/sched/core.c:6863
+ __schedule_loop kernel/sched/core.c:6945 [inline]
+ schedule+0x165/0x360 kernel/sched/core.c:6960
+ schedule_timeout+0x9a/0x270 kernel/time/sleep_timeout.c:75
+ do_wait_for_common kernel/sched/completion.c:100 [inline]
+ __wait_for_common kernel/sched/completion.c:121 [inline]
+ wait_for_common kernel/sched/completion.c:132 [inline]
+ wait_for_completion+0x2bf/0x5d0 kernel/sched/completion.c:153
+ io_ring_ctx_lock_nested+0x2b3/0x380 io_uring/io_uring.h:283
+ io_ring_ctx_lock io_uring/io_uring.h:290 [inline]
+ io_ring_submit_lock io_uring/io_uring.h:554 [inline]
+ io_files_update+0x677/0x7f0 io_uring/rsrc.c:504
+ __io_issue_sqe+0x181/0x4b0 io_uring/io_uring.c:1818
+ io_issue_sqe+0x1de/0x1190 io_uring/io_uring.c:1841
+ io_wq_submit_work+0x6e9/0xb90 io_uring/io_uring.c:1953
+ io_worker_handle_work+0x7cd/0x1180 io_uring/io-wq.c:650
+ io_wq_worker+0x42f/0xeb0 io_uring/io-wq.c:704
+ ret_from_fork+0x599/0xb30 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
+ </TASK>
+INFO: task syz.0.17:6049 blocked for more than 143 seconds.
+      Not tainted syzkaller #0
+      Blocked by coredump.
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz.0.17        state:D stack:25592 pid:6049  tgid:6048  ppid:5967   task_flags:0x400548 flags:0x00080004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5256 [inline]
+ __schedule+0x14bc/0x5000 kernel/sched/core.c:6863
+ __schedule_loop kernel/sched/core.c:6945 [inline]
+ schedule+0x165/0x360 kernel/sched/core.c:6960
+ schedule_timeout+0x9a/0x270 kernel/time/sleep_timeout.c:75
+ do_wait_for_common kernel/sched/completion.c:100 [inline]
+ __wait_for_common kernel/sched/completion.c:121 [inline]
+ wait_for_common kernel/sched/completion.c:132 [inline]
+ wait_for_completion+0x2bf/0x5d0 kernel/sched/completion.c:153
+ io_wq_exit_workers io_uring/io-wq.c:1328 [inline]
+ io_wq_put_and_exit+0x316/0x650 io_uring/io-wq.c:1356
+ io_uring_clean_tctx+0x11f/0x1a0 io_uring/tctx.c:207
+ io_uring_cancel_generic+0x6ca/0x7d0 io_uring/cancel.c:652
+ io_uring_files_cancel include/linux/io_uring.h:19 [inline]
+ do_exit+0x345/0x2310 kernel/exit.c:911
+ do_group_exit+0x21c/0x2d0 kernel/exit.c:1112
+ get_signal+0x1285/0x1340 kernel/signal.c:3034
+ arch_do_signal_or_restart+0x9a/0x7a0 arch/x86/kernel/signal.c:337
+ __exit_to_user_mode_loop kernel/entry/common.c:41 [inline]
+ exit_to_user_mode_loop+0x87/0x4f0 kernel/entry/common.c:75
+ __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
+ syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [inline]
+ syscall_exit_to_user_mode_work include/linux/entry-common.h:159 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:194 [inline]
+ do_syscall_64+0x2e3/0xf80 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fa96a98f7c9
+RSP: 002b:00007fa96b7430e8 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
+RAX: 0000000000000001 RBX: 00007fa96abe5fa8 RCX: 00007fa96a98f7c9
+RDX: 00000000000f4240 RSI: 0000000000000081 RDI: 00007fa96abe5fac
+RBP: 00007fa96abe5fa0 R08: 3fffffffffffffff R09: 0000000000000000
+R10: 0000000000000800 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fa96abe6038 R14: 00007ffd9fcc00d0 R15: 00007ffd9fcc01b8
+ </TASK>
+INFO: task iou-wrk-6049:6050 blocked for more than 143 seconds.
+      Not tainted syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:iou-wrk-6049    state:D stack:27760 pid:6050  tgid:6048  ppid:5967   task_flags:0x404050 flags:0x00080002
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5256 [inline]
+ __schedule+0x14bc/0x5000 kernel/sched/core.c:6863
+ __schedule_loop kernel/sched/core.c:6945 [inline]
+ schedule+0x165/0x360 kernel/sched/core.c:6960
+ schedule_timeout+0x9a/0x270 kernel/time/sleep_timeout.c:75
+ do_wait_for_common kernel/sched/completion.c:100 [inline]
+ __wait_for_common kernel/sched/completion.c:121 [inline]
+ wait_for_common kernel/sched/completion.c:132 [inline]
+ wait_for_completion+0x2bf/0x5d0 kernel/sched/completion.c:153
+ io_ring_ctx_lock_nested+0x2b3/0x380 io_uring/io_uring.h:283
+ io_ring_ctx_lock io_uring/io_uring.h:290 [inline]
+ io_ring_submit_lock io_uring/io_uring.h:554 [inline]
+ io_files_update+0x677/0x7f0 io_uring/rsrc.c:504
+ __io_issue_sqe+0x181/0x4b0 io_uring/io_uring.c:1818
+ io_issue_sqe+0x1de/0x1190 io_uring/io_uring.c:1841
+ io_wq_submit_work+0x6e9/0xb90 io_uring/io_uring.c:1953
+ io_worker_handle_work+0x7cd/0x1180 io_uring/io-wq.c:650
+ io_wq_worker+0x42f/0xeb0 io_uring/io-wq.c:704
+ ret_from_fork+0x599/0xb30 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
+ </TASK>
+INFO: task syz.2.19:6052 blocked for more than 144 seconds.
+      Not tainted syzkaller #0
+      Blocked by coredump.
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz.2.19        state:D stack:26208 pid:6052  tgid:6051  ppid:5972   task_flags:0x400548 flags:0x00080004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5256 [inline]
+ __schedule+0x14bc/0x5000 kernel/sched/core.c:6863
+ __schedule_loop kernel/sched/core.c:6945 [inline]
+ schedule+0x165/0x360 kernel/sched/core.c:6960
+ schedule_timeout+0x9a/0x270 kernel/time/sleep_timeout.c:75
+ do_wait_for_common kernel/sched/completion.c:100 [inline]
+ __wait_for_common kernel/sched/completion.c:121 [inline]
+ wait_for_common kernel/sched/completion.c:132 [inline]
+ wait_for_completion+0x2bf/0x5d0 kernel/sched/completion.c:153
+ io_wq_exit_workers io_uring/io-wq.c:1328 [inline]
+ io_wq_put_and_exit+0x316/0x650 io_uring/io-wq.c:1356
+ io_uring_clean_tctx+0x11f/0x1a0 io_uring/tctx.c:207
+ io_uring_cancel_generic+0x6ca/0x7d0 io_uring/cancel.c:652
+ io_uring_files_cancel include/linux/io_uring.h:19 [inline]
+ do_exit+0x345/0x2310 kernel/exit.c:911
+ do_group_exit+0x21c/0x2d0 kernel/exit.c:1112
+ get_signal+0x1285/0x1340 kernel/signal.c:3034
+ arch_do_signal_or_restart+0x9a/0x7a0 arch/x86/kernel/signal.c:337
+ __exit_to_user_mode_loop kernel/entry/common.c:41 [inline]
+ exit_to_user_mode_loop+0x87/0x4f0 kernel/entry/common.c:75
+ __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
+ syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [inline]
+ syscall_exit_to_user_mode_work include/linux/entry-common.h:159 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:194 [inline]
+ do_syscall_64+0x2e3/0xf80 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f4b5cb8f7c9
+RSP: 002b:00007f4b5d9a80e8 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
+RAX: 0000000000000001 RBX: 00007f4b5cde5fa8 RCX: 00007f4b5cb8f7c9
+RDX: 00000000000f4240 RSI: 0000000000000081 RDI: 00007f4b5cde5fac
+RBP: 00007f4b5cde5fa0 R08: 3fffffffffffffff R09: 0000000000000000
+R10: 0000000000000800 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f4b5cde6038 R14: 00007ffcdd64aed0 R15: 00007ffcdd64afb8
+ </TASK>
+INFO: task iou-wrk-6052:6053 blocked for more than 144 seconds.
+      Not tainted syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:iou-wrk-6052    state:D stack:27760 pid:6053  tgid:6051  ppid:5972   task_flags:0x404050 flags:0x00080006
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5256 [inline]
+ __schedule+0x14bc/0x5000 kernel/sched/core.c:6863
+ __schedule_loop kernel/sched/core.c:6945 [inline]
+ schedule+0x165/0x360 kernel/sched/core.c:6960
+ schedule_timeout+0x9a/0x270 kernel/time/sleep_timeout.c:75
+ do_wait_for_common kernel/sched/completion.c:100 [inline]
+ __wait_for_common kernel/sched/completion.c:121 [inline]
+ wait_for_common kernel/sched/completion.c:132 [inline]
+ wait_for_completion+0x2bf/0x5d0 kernel/sched/completion.c:153
+ io_ring_ctx_lock_nested+0x2b3/0x380 io_uring/io_uring.h:283
+ io_ring_ctx_lock io_uring/io_uring.h:290 [inline]
+ io_ring_submit_lock io_uring/io_uring.h:554 [inline]
+ io_files_update+0x677/0x7f0 io_uring/rsrc.c:504
+ __io_issue_sqe+0x181/0x4b0 io_uring/io_uring.c:1818
+ io_issue_sqe+0x1de/0x1190 io_uring/io_uring.c:1841
+ io_wq_submit_work+0x6e9/0xb90 io_uring/io_uring.c:1953
+ io_worker_handle_work+0x7cd/0x1180 io_uring/io-wq.c:650
+ io_wq_worker+0x42f/0xeb0 io_uring/io-wq.c:704
+ ret_from_fork+0x599/0xb30 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
+ </TASK>
+
+Showing all locks held in the system:
+1 lock held by khungtaskd/35:
+ #0: ffffffff8df419e0 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:331 [inline]
+ #0: ffffffff8df419e0 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:867 [inline]
+ #0: ffffffff8df419e0 (rcu_read_lock){....}-{1:3}, at: debug_show_all_locks+0x2e/0x180 kernel/locking/lockdep.c:6775
+5 locks held by kworker/u10:8/1120:
+ #0: ffff88823c63a918 (&rq->__lock){-.-.}-{2:2}, at: raw_spin_rq_lock_nested+0x2a/0x140 kernel/sched/core.c:639
+ #1: ffff88823c624588 (psi_seq){-.-.}-{0:0}, at: psi_task_switch+0x53/0x880 kernel/sched/psi.c:933
+ #2: ffff88810ac50788 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: class_wiphy_constructor include/net/cfg80211.h:6363 [inline]
+ #2: ffff88810ac50788 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: cfg80211_wiphy_work+0xb4/0x450 net/wireless/core.c:424
+ #3: ffffffff8df419e0 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:331 [inline]
+ #3: ffffffff8df419e0 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:867 [inline]
+ #3: ffffffff8df419e0 (rcu_read_lock){....}-{1:3}, at: ieee80211_sta_active_ibss+0xc3/0x330 net/mac80211/ibss.c:635
+ #4: ffffffff8df419e0 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:331 [inline]
+ #4: ffffffff8df419e0 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:867 [inline]
+ #4: ffffffff8df419e0 (rcu_read_lock){....}-{1:3}, at: class_rcu_constructor include/linux/rcupdate.h:1195 [inline]
+ #4: ffffffff8df419e0 (rcu_read_lock){....}-{1:3}, at: unwind_next_frame+0xa5/0x2390 arch/x86/kernel/unwind_orc.c:479
+2 locks held by getty/5656:
+ #0: ffff8881133040a0 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x25/0x70 drivers/tty/tty_ldisc.c:243
+ #1: ffffc900035732f0 (&ldata->atomic_read_lock){+.+.}-{4:4}, at: n_tty_read+0x449/0x1460 drivers/tty/n_tty.c:2211
+3 locks held by kworker/0:9/6480:
+ #0: ffff888100075948 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3232 [inline]
+ #0: ffff888100075948 ((wq_completion)events){+.+.}-{0:0}, at: process_scheduled_works+0x9b4/0x1770 kernel/workqueue.c:3340
+ #1: ffffc9000546fb80 (deferred_process_work){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3233 [inline]
+ #1: ffffc9000546fb80 (deferred_process_work){+.+.}-{0:0}, at: process_scheduled_works+0x9ef/0x1770 kernel/workqueue.c:3340
+ #2: ffffffff8f30ffc8 (rtnl_mutex){+.+.}-{4:4}, at: switchdev_deferred_process_work+0xe/0x20 net/switchdev/switchdev.c:104
+1 lock held by syz-executor/6649:
+ #0: ffffffff8f30ffc8 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_lock net/core/rtnetlink.c:80 [inline]
+ #0: ffffffff8f30ffc8 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_nets_lock net/core/rtnetlink.c:341 [inline]
+ #0: ffffffff8f30ffc8 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_newlink+0x8ec/0x1c90 net/core/rtnetlink.c:4071
+2 locks held by syz-executor/6651:
+ #0: ffffffff8f30ffc8 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_lock net/core/rtnetlink.c:80 [inline]
+ #0: ffffffff8f30ffc8 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_nets_lock net/core/rtnetlink.c:341 [inline]
+ #0: ffffffff8f30ffc8 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_newlink+0x8ec/0x1c90 net/core/rtnetlink.c:4071
+ #1: ffff88823c63a918 (&rq->__lock){-.-.}-{2:2}, at: raw_spin_rq_lock_nested+0x2a/0x140 kernel/sched/core.c:639
+4 locks held by syz-executor/6653:
+
+=============================================
+
+NMI backtrace for cpu 0
+CPU: 0 UID: 0 PID: 35 Comm: khungtaskd Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
+ nmi_cpu_backtrace+0x39e/0x3d0 lib/nmi_backtrace.c:113
+ nmi_trigger_cpumask_backtrace+0x17a/0x300 lib/nmi_backtrace.c:62
+ trigger_all_cpu_backtrace include/linux/nmi.h:160 [inline]
+ __sys_info lib/sys_info.c:157 [inline]
+ sys_info+0x135/0x170 lib/sys_info.c:165
+ check_hung_uninterruptible_tasks kernel/hung_task.c:346 [inline]
+ watchdog+0xf95/0xfe0 kernel/hung_task.c:515
+ kthread+0x711/0x8a0 kernel/kthread.c:463
+ ret_from_fork+0x599/0xb30 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
+ </TASK>
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1
+CPU: 1 UID: 0 PID: 6653 Comm: syz-executor Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:io_serial_out+0x7c/0xc0 drivers/tty/serial/8250/8250_port.c:407
+Code: 3f a6 fc 44 89 f9 d3 e5 49 83 c6 40 4c 89 f0 48 c1 e8 03 42 80 3c 20 00 74 08 4c 89 f7 e8 ec 91 0c fd 41 03 2e 89 d8 89 ea ee <5b> 41 5c 41 5e 41 5f 5d c3 cc cc cc cc cc 44 89 f9 80 e1 07 38 c1
+RSP: 0018:ffffc90008156590 EFLAGS: 00000002
+RAX: 000000000000005b RBX: 000000000000005b RCX: 0000000000000000
+RDX: 00000000000003f8 RSI: 0000000000000000 RDI: 0000000000000020
+RBP: 00000000000003f8 R08: ffff888102f08237 R09: 1ffff110205e1046
+R10: dffffc0000000000 R11: ffffffff851b9060 R12: dffffc0000000000
+R13: ffffffff998dd9e1 R14: ffffffff99bf2420 R15: 0000000000000000
+FS:  0000555595186500(0000) GS:ffff8882a9e37000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055599f9c9018 CR3: 0000000112ed8000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ serial_port_out include/linux/serial_core.h:811 [inline]
+ serial8250_console_putchar drivers/tty/serial/8250/8250_port.c:3192 [inline]
+ serial8250_console_fifo_write drivers/tty/serial/8250/8250_port.c:-1 [inline]
+ serial8250_console_write+0x1410/0x1ba0 drivers/tty/serial/8250/8250_port.c:3342
+ console_emit_next_record kernel/printk/printk.c:3129 [inline]
+ console_flush_one_record kernel/printk/printk.c:3215 [inline]
+ console_flush_all+0x745/0xb60 kernel/printk/printk.c:3289
+ __console_flush_and_unlock kernel/printk/printk.c:3319 [inline]
+ console_unlock+0xbb/0x190 kernel/printk/printk.c:3359
+ vprintk_emit+0x4f8/0x5f0 kernel/printk/printk.c:2426
+ _printk+0xcf/0x120 kernel/printk/printk.c:2451
+ br_set_state+0x475/0x710 net/bridge/br_stp.c:57
+ br_init_port+0x99/0x200 net/bridge/br_stp_if.c:39
+ new_nbp+0x2f9/0x440 net/bridge/br_if.c:443
+ br_add_if+0x283/0xeb0 net/bridge/br_if.c:586
+ do_set_master+0x533/0x6d0 net/core/rtnetlink.c:2963
+ do_setlink+0xcf0/0x41c0 net/core/rtnetlink.c:3165
+ rtnl_changelink net/core/rtnetlink.c:3776 [inline]
+ __rtnl_newlink net/core/rtnetlink.c:3935 [inline]
+ rtnl_newlink+0x161c/0x1c90 net/core/rtnetlink.c:4072
+ rtnetlink_rcv_msg+0x7cf/0xb70 net/core/rtnetlink.c:6958
+ netlink_rcv_skb+0x208/0x470 net/netlink/af_netlink.c:2550
+ netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
+ netlink_unicast+0x82f/0x9e0 net/netlink/af_netlink.c:1344
+ netlink_sendmsg+0x805/0xb30 net/netlink/af_netlink.c:1894
+ sock_sendmsg_nosec net/socket.c:727 [inline]
+ __sock_sendmsg+0x21c/0x270 net/socket.c:742
+ __sys_sendto+0x3bd/0x520 net/socket.c:2206
+ __do_sys_sendto net/socket.c:2213 [inline]
+ __se_sys_sendto net/socket.c:2209 [inline]
+ __x64_sys_sendto+0xde/0x100 net/socket.c:2209
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f780c39165c
+Code: 2a 5f 02 00 44 8b 4c 24 2c 4c 8b 44 24 20 89 c5 44 8b 54 24 28 48 8b 54 24 18 b8 2c 00 00 00 48 8b 74 24 10 8b 7c 24 08 0f 05 <48> 3d 00 f0 ff ff 77 34 89 ef 48 89 44 24 08 e8 70 5f 02 00 48 8b
+RSP: 002b:00007ffcecb618b0 EFLAGS: 00000293 ORIG_RAX: 000000000000002c
+RAX: ffffffffffffffda RBX: 00007f780d114620 RCX: 00007f780c39165c
+RDX: 0000000000000028 RSI: 00007f780d114670 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 00007ffcecb61904 R09: 000000000000000c
+R10: 0000000000000000 R11: 0000000000000293 R12: 0000000000000003
+R13: 0000000000000000 R14: 00007f780d114670 R15: 0000000000000000
+ </TASK>
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[axboe@kernel.dk csander@purestorage.com io-uring@vger.kernel.org joannelkoong@gmail.com linux-kernel@vger.kernel.org oliver.sang@intel.com syzbot@syzkaller.appspotmail.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
