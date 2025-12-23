@@ -1,165 +1,217 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33D22347FD2
-	for <syzbot@lists.linux.dev>; Tue, 23 Dec 2025 17:47:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E97F34F46A
+	for <syzbot@lists.linux.dev>; Tue, 23 Dec 2025 17:48:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766512022; cv=none; b=WRYXv7zNf+LI4RFGTCzKanwq2vZKpr9pkL0zPz28XoZNyAsaA+yiWQXIPZ5Y3BLd6ktKBD+TIXMAOS5KbVy46H0sCj083NRX3UXpdOC/yJjMjZeLni1DsXtwmIgwY377F2IY52JyBLbKsBylZyteAcsqTezKzqE81KE2NF94gEE=
+	t=1766512102; cv=none; b=i1YfiHN+jMXWXo3sXTTx1UFh1IhbSoh/VKrqKjduTlu4Oehtu+kDuvA9zFg7PKNdnj6AdEun0XPZfvoJ0rsy7SM+co38XddIo8TVTlVpyfpFDUvv8HmoQTaHQkYBU8ZWUeWEoQHVorzesvGS4aNq4TllEy5uussyzuhlCW1I+kg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766512022; c=relaxed/simple;
-	bh=XlPzG42srC8UNGssLCPJU3ppN1rvUXtFkLgyMxG8m48=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=iTfSQTKZo/uXmfpO7g1n3furP5CVGs81W88gtA+JUpCJJE0pStylKdOXR6i9r/f20uSNwrUgde5L3BoUdVTS3ys/NRe0EF1Ngp2yJ9KQuKS3bDIOwe9PyBt0oz23RQdHvi3Kc49bjH0CAB3Bp0cp/6Rbi2+Y6v2e3wR5aX7Kmd4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-657490e060dso6602071eaf.3
-        for <syzbot@lists.linux.dev>; Tue, 23 Dec 2025 09:47:00 -0800 (PST)
+	s=arc-20240116; t=1766512102; c=relaxed/simple;
+	bh=97sQB2h2COoJjhRrbPYfNCv0d8yFtg5xWhP40lrewKo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=CQvbLZEL09Tvcu3H9JcnkIji775D/D/AV1s/ug4c72exaI/GGIBcEklQip+SGb6dS4+k19ZJ66DF6GVVA3LT9LoSNmJLoooM9gglJUuAECW6qi/Nr7rxf17jni/J291lzniQqXLaogjnAgoB/CpBxK1elVJaiqjf+SRJiZ7n1m0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=3YtvA0sN; arc=none smtp.client-ip=209.85.161.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="3YtvA0sN"
+Received: by mail-oo1-f44.google.com with SMTP id 006d021491bc7-657509d761dso2812378eaf.0
+        for <syzbot@lists.linux.dev>; Tue, 23 Dec 2025 09:48:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1766512099; x=1767116899; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dYE4GacP+yXHxnvt8f0NA+8EQVMTnXXu1WfUAops08M=;
+        b=3YtvA0sNpVcIfFR9H0rkGZuqKPtFWaeAABMvLSwe4fvQpSQE4a/vBGaAEuIey9EeOp
+         /jz/VXnpaKjPNXuCWTVaJVluh7nqByWhh1weKjzXd3U2AJuZQvWfP1pwfh+DcEXDcxyg
+         wqLuk1bskekF2Rwtm9DSV0UxRASr8lyBgBB+AZSAgCi4BR+cLntDFx60rrm7hnskTtjD
+         y5q4HnUfauxZ4oULw9OUOYjYJX6Q1JQDeJaY+aI4rrVgNOwhfAiFays8g6o7Ozx3CkHr
+         eo7Lb+H3ubQ2/fXNMf+cZhRnzPa44iAXCzwP616FYGFDG6mD+DxLAtw96/j4R1QqSRvg
+         p/lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766512019; x=1767116819;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+hBk4iaPspfRfvqQEzn6T9NmRJB56To3aNFXWiUGJUo=;
-        b=iMqyayGKCKUsxP9rYI/X6dMYWHLf3AmCwVwhAHo12ch/dVfS6uV3TsqB7VOf343l80
-         Qrd2h/rFr4WGqepclJd5kwXimxmp0cTm/Xhbw9k6gOADCWwEZhgoU7y3G/IEn71phG+Q
-         vWeasI5S7U5QnOipYoud3EiarbqTdH9iKD+TH5Am+W41QX2v4vqx316O2S1iu+lOOwDX
-         ZysPuzrIslLm09Xg4CubzPXrE+6JjhufDw/bqJh/PsMmOD1egAnv9rCl7sAj41cXHbml
-         /FNRC34MPdm72uqShLUSRRmbW0zkBjytLdYeMkyhJPNmUhFgfEdSfVOFRfouXyUgjk70
-         Jr5A==
-X-Gm-Message-State: AOJu0YzWX8z7adgkmagz5b1KeVXtOjl7zK1DSQ2HXj3NiQsLAgufRZGQ
-	bZAzWEe4pA3UMc5CnjkzTniL2F6O59hjFbeeFnJ6rPo4cIB6nMuJUiHiMQazQxIG7VDa5iyRKW7
-	iTImv235BPXUQ6vYEyow19+t350Y84dbVV2EoCDoDbybgCWvk0MgS+zXvat0=
-X-Google-Smtp-Source: AGHT+IFR7CgjvJHnZYoJTKyatw+9aGBWpdHNb75GdoRVddD+n2lpbn92mYhfanXRPSOawIpSQIRFPHePtnIAuXCYRzy3pGzvHrUN
+        d=1e100.net; s=20230601; t=1766512099; x=1767116899;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=dYE4GacP+yXHxnvt8f0NA+8EQVMTnXXu1WfUAops08M=;
+        b=CVL8l4l44TZPfOwIUZnjP2A2NEX8sf4uwfK6Y1fZ7BFOGsk6qsVqah7U0TyZkHsw5b
+         Zl8wTzwlCUGCyUHiv7eJOMWjRp6Dt9GRurGOkJSghgsfwvYBNfcWZgfcsutGH9SyLnS7
+         CCsbVCCCIWcENXgzxjW3oTOdxtaSQYJpP/qjOagOPJErtEnr7U369AAb+qslX8w82TVt
+         qxPEjV8NUVzr1Mefe0rKg5rSZ4slkofZJBCsLKVqbaoBDMwHriFhLRDhrKtOx+pQeWEs
+         zT65fswn7/a3SmJidTLm4dMYRW/lZrkjm6iGCLCUuwo+EYU4UuwsNFcaI1Xq8dOct04j
+         QQ6Q==
+X-Forwarded-Encrypted: i=1; AJvYcCV6bHAb8hDzx9GnP/OdxAL3SFW84zbJUDuushkLgkDv6c7ezWt2yUtwN8Xln/r4qRjsbw+1/fs=@lists.linux.dev
+X-Gm-Message-State: AOJu0YxO+by7Mpu4BHuCpE0lsc2qRP/oFz6utDr0w6bEMcd5kxhZ1zs2
+	+m40xVKYKkW3CFz68a+sKj85S6dmhxKEJSbCHb+DGaYLA5IVmTQATTWhBMV9yqFVAjKuqTW9Hf3
+	7R+Ph1ajJIHBEswdy04UmTX4mKbVknxLUkv+25G/f
+X-Gm-Gg: AY/fxX4ldcsIOjnxMSBYsDdnrmVg+7TjRAlUwUfbUmj6RSUFG66mCCBhfRGdQalSVyY
+	EzzoyMy841aV8SZE8unh77onaTkSQohJ1Vzmoct4ejgWChtASUldI7M2f4bmmKW94qzWH8wCaoP
+	VkcNd2DnMaHwr47ns8CwtLQOnzRUiFyaUy1fM8U0+sux2ZgZ8XyrwD0F2iNpXSZT4moj5Tv2/1l
+	BmbPukaKxOk0NOsvSWzKHYfiNa75EtMzyc/9TtrjGHcr+rrQKSKTuWv5oiqDYUTxofvQ+yXTvDX
+	3Hc2c+dgguDoj24cC+mJS2NzUBN4C6g6geKzTUSL3JB1nBDLygo4/i3FcQ2ksgsWyQoVl04=
+X-Google-Smtp-Source: AGHT+IECLS3UXUjDikFsrj8nLFAhM5AehrrS+QytyPgSPXj8VJSDorOqRNHMOihLq0WgxKp+j+EnlCP/3WzUqa5lMxI=
+X-Received: by 2002:a05:6820:850d:b0:65d:5e1:ecfc with SMTP id
+ 006d021491bc7-65d0ea71be5mr3744532eaf.32.1766512094096; Tue, 23 Dec 2025
+ 09:48:14 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:2c93:b0:65c:f046:bb6f with SMTP id
- 006d021491bc7-65d0eae70dfmr4794995eaf.68.1766512019078; Tue, 23 Dec 2025
- 09:46:59 -0800 (PST)
-Date: Tue, 23 Dec 2025 09:46:59 -0800
-In-Reply-To: <20251223-fuse-compounds-upstream-v1-0-7bade663947b@ddn.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <694ad593.050a0220.35954c.0003.GAE@google.com>
-Subject: [syzbot ci] Re: fuse: compound commands
-From: syzbot ci <syzbot+cid3a9cf23e911d362@syzkaller.appspotmail.com>
-To: bschubert@ddn.com, hbirthelmer@ddn.com, hbirthelmer@googlemail.com, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	miklos@szeredi.hu
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <694ac438.050a0220.35954c.0000.GAE@google.com>
+In-Reply-To: <694ac438.050a0220.35954c.0000.GAE@google.com>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Tue, 23 Dec 2025 18:48:03 +0100
+X-Gm-Features: AQt7F2rTMStgfiACpuYXjkUmKMEWO6SyVan28mRycZ6wRVOgVu_TF1QocSsm-T4
+Message-ID: <CANp29Y6+MzpYq4ZMSCpe-DWDQD1sU_9bTsnvGBM-Pmm_C4PRsw@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: mm/huge_memory: consolidate order-related
+ checks into folio_check_splittable()
+To: syzbot ci <syzbot+cicb26c25da0c5aac9@syzkaller.appspotmail.com>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
+#syz upstream
 
-[v1] fuse: compound commands
-https://lore.kernel.org/all/20251223-fuse-compounds-upstream-v1-0-7bade663947b@ddn.com
-* [PATCH RFC 1/2] fuse: add compound command to combine multiple requests
-* [PATCH RFC 2/2] fuse: add an implementation of open+getattr
-
-and found the following issue:
-general protection fault in fuse_dir_open
-
-Full report is available here:
-https://ci.syzbot.org/series/11a1edb1-479b-4bb9-a173-a5aef4cc9455
-
-***
-
-general protection fault in fuse_dir_open
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      9094662f6707d1d4b53d18baba459604e8bb0783
-arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/0d046766-2385-4f04-bae0-5a8d6df01c3a/config
-C repro:   https://ci.syzbot.org/findings/027737d8-b067-4bd4-90f6-5b236fb8420b/c_repro
-syz repro: https://ci.syzbot.org/findings/027737d8-b067-4bd4-90f6-5b236fb8420b/syz_repro
-
-Oops: general protection fault, probably for non-canonical address 0xdffffc000000000b: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000058-0x000000000000005f]
-CPU: 1 UID: 0 PID: 5985 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:fuse_dir_open+0x14e/0x220 fs/fuse/dir.c:1900
-Code: eb a7 4d 8d 7e 58 4c 89 f8 48 c1 e8 03 42 80 3c 28 00 74 08 4c 89 ff e8 e0 77 f3 fe 4d 8b 3f 49 83 c7 2c 4d 89 fc 49 c1 ec 03 <43> 0f b6 04 2c 84 c0 0f 85 82 00 00 00 41 8b 2f 89 ee 83 e6 14 31
-RSP: 0018:ffffc90003907860 EFLAGS: 00010203
-RAX: 1ffff11022f0688b RBX: ffff8881b9320000 RCX: 0000000000000000
-RDX: ffff88810afbba80 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000000 R08: ffffffff8f822b77 R09: 1ffffffff1f0456e
-R10: dffffc0000000000 R11: fffffbfff1f0456f R12: 000000000000000b
-R13: dffffc0000000000 R14: ffff888117834400 R15: 000000000000005c
-FS:  00007fa1fc9506c0(0000) GS:ffff8882a9e1f000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fa1fb1fdfc8 CR3: 000000016abde000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- do_dentry_open+0x7ce/0x1420 fs/open.c:962
- vfs_open+0x3b/0x340 fs/open.c:1094
- do_open fs/namei.c:4628 [inline]
- path_openat+0x340e/0x3dd0 fs/namei.c:4787
- do_filp_open+0x1fa/0x410 fs/namei.c:4814
- do_sys_openat2+0x121/0x200 fs/open.c:1430
- do_sys_open fs/open.c:1436 [inline]
- __do_sys_openat fs/open.c:1452 [inline]
- __se_sys_openat fs/open.c:1447 [inline]
- __x64_sys_openat+0x138/0x170 fs/open.c:1447
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xec/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fa1fbb8e010
-Code: 48 89 44 24 20 75 93 44 89 54 24 0c e8 69 95 02 00 44 8b 54 24 0c 89 da 48 89 ee 41 89 c0 bf 9c ff ff ff b8 01 01 00 00 0f 05 <48> 3d 00 f0 ff ff 77 38 44 89 c7 89 44 24 0c e8 bc 95 02 00 8b 44
-RSP: 002b:00007fa1fc94fdf0 EFLAGS: 00000293 ORIG_RAX: 0000000000000101
-RAX: ffffffffffffffda RBX: 0000000000010000 RCX: 00007fa1fbb8e010
-RDX: 0000000000010000 RSI: 00002000000000c0 RDI: 00000000ffffff9c
-RBP: 00002000000000c0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000293 R12: 00002000000000c0
-R13: 00007fa1fc94feb0 R14: 0000000000000000 R15: 0000200000002280
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:fuse_dir_open+0x14e/0x220 fs/fuse/dir.c:1900
-Code: eb a7 4d 8d 7e 58 4c 89 f8 48 c1 e8 03 42 80 3c 28 00 74 08 4c 89 ff e8 e0 77 f3 fe 4d 8b 3f 49 83 c7 2c 4d 89 fc 49 c1 ec 03 <43> 0f b6 04 2c 84 c0 0f 85 82 00 00 00 41 8b 2f 89 ee 83 e6 14 31
-RSP: 0018:ffffc90003907860 EFLAGS: 00010203
-RAX: 1ffff11022f0688b RBX: ffff8881b9320000 RCX: 0000000000000000
-RDX: ffff88810afbba80 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000000 R08: ffffffff8f822b77 R09: 1ffffffff1f0456e
-R10: dffffc0000000000 R11: fffffbfff1f0456f R12: 000000000000000b
-R13: dffffc0000000000 R14: ffff888117834400 R15: 000000000000005c
-FS:  00007fa1fc9506c0(0000) GS:ffff8882a9e1f000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fa1fb1fdfc8 CR3: 000000016abde000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess):
-   0:	eb a7                	jmp    0xffffffa9
-   2:	4d 8d 7e 58          	lea    0x58(%r14),%r15
-   6:	4c 89 f8             	mov    %r15,%rax
-   9:	48 c1 e8 03          	shr    $0x3,%rax
-   d:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1)
-  12:	74 08                	je     0x1c
-  14:	4c 89 ff             	mov    %r15,%rdi
-  17:	e8 e0 77 f3 fe       	call   0xfef377fc
-  1c:	4d 8b 3f             	mov    (%r15),%r15
-  1f:	49 83 c7 2c          	add    $0x2c,%r15
-  23:	4d 89 fc             	mov    %r15,%r12
-  26:	49 c1 ec 03          	shr    $0x3,%r12
-* 2a:	43 0f b6 04 2c       	movzbl (%r12,%r13,1),%eax <-- trapping instruction
-  2f:	84 c0                	test   %al,%al
-  31:	0f 85 82 00 00 00    	jne    0xb9
-  37:	41 8b 2f             	mov    (%r15),%ebp
-  3a:	89 ee                	mov    %ebp,%esi
-  3c:	83 e6 14             	and    $0x14,%esi
-  3f:	31                   	.byte 0x31
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+On Tue, Dec 23, 2025 at 5:32=E2=80=AFPM syzbot ci
+<syzbot+cicb26c25da0c5aac9@syzkaller.appspotmail.com> wrote:
+>
+> syzbot ci has tested the following series
+>
+> [v2] mm/huge_memory: consolidate order-related checks into folio_check_sp=
+littable()
+> https://lore.kernel.org/all/20251223122539.10726-1-richard.weiyang@gmail.=
+com
+> * [Patch v2] mm/huge_memory: consolidate order-related checks into folio_=
+check_splittable()
+>
+> and found the following issue:
+> WARNING in __folio_split
+>
+> Full report is available here:
+> https://ci.syzbot.org/series/7e34013d-ed08-40e1-99b7-8fd118dce84f
+>
+> ***
+>
+> WARNING in __folio_split
+>
+> tree:      mm-new
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/=
+mm.git
+> base:      c642ecda5b136882e518d8303863473c0d21ab2f
+> arch:      amd64
+> compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~e=
+xp1~20250708183702.136), Debian LLD 20.1.8
+> config:    https://ci.syzbot.org/builds/2edb2dc5-42c6-4557-a194-921c57fd9=
+eb1/config
+> C repro:   https://ci.syzbot.org/findings/8349b674-5790-4507-97cd-03697ec=
+93cb0/c_repro
+> syz repro: https://ci.syzbot.org/findings/8349b674-5790-4507-97cd-03697ec=
+93cb0/syz_repro
+>
+> ------------[ cut here ]------------
+> Tried to split an unsplittable folio
+> WARNING: mm/huge_memory.c:3970 at __folio_split+0xfe7/0x1370 mm/huge_memo=
+ry.c:3970, CPU#1: syz.0.17/5997
+> Modules linked in:
+> CPU: 1 UID: 0 PID: 5997 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> RIP: 0010:__folio_split+0xfe7/0x1370 mm/huge_memory.c:3970
+> Code: fe c6 05 a5 f8 3e 0d 01 90 0f 0b 90 e9 0d f4 ff ff e8 4d 78 94 ff 4=
+9 ff cd e9 d1 f4 ff ff e8 40 78 94 ff 48 8d 3d 69 47 5a 0d <67> 48 0f b9 3a=
+ 41 bd ea ff ff ff e9 7c fe ff ff 44 89 7c 24 34 44
+> RSP: 0018:ffffc900036d6d60 EFLAGS: 00010293
+> RAX: ffffffff822d4360 RBX: ffffea0005a4b008 RCX: ffff8881047fd7c0
+> RDX: 0000000000000000 RSI: ffffffff8e06e540 RDI: ffffffff8f878ad0
+> RBP: ffffc900036d6ef0 R08: ffff8881047fd7c0 R09: 0000000000000002
+> R10: 00000000ffffffea R11: 0000000000000000 R12: 0000000000000004
+> R13: 00000000ffffffea R14: ffffea0005a4b000 R15: 1ffffd4000b49603
+> FS:  0000555591a60500(0000) GS:ffff8882a9e32000(0000) knlGS:0000000000000=
+000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000001b30d63fff CR3: 0000000100f30000 CR4: 00000000000006f0
+> Call Trace:
+>  <TASK>
+>  madvise_cold_or_pageout_pte_range+0xbf3/0x1ce0 mm/madvise.c:503
+>  walk_pmd_range mm/pagewalk.c:130 [inline]
+>  walk_pud_range mm/pagewalk.c:224 [inline]
+>  walk_p4d_range mm/pagewalk.c:262 [inline]
+>  walk_pgd_range+0x1037/0x1d30 mm/pagewalk.c:303
+>  __walk_page_range+0x14c/0x710 mm/pagewalk.c:410
+>  walk_page_range_vma_unsafe+0x34c/0x400 mm/pagewalk.c:714
+>  madvise_pageout_page_range mm/madvise.c:622 [inline]
+>  madvise_pageout mm/madvise.c:647 [inline]
+>  madvise_vma_behavior+0x30c7/0x4420 mm/madvise.c:1366
+>  madvise_walk_vmas+0x575/0xaf0 mm/madvise.c:1721
+>  madvise_do_behavior+0x38e/0x550 mm/madvise.c:1937
+>  do_madvise+0x1bc/0x270 mm/madvise.c:2030
+>  __do_sys_madvise mm/madvise.c:2039 [inline]
+>  __se_sys_madvise mm/madvise.c:2037 [inline]
+>  __x64_sys_madvise+0xa7/0xc0 mm/madvise.c:2037
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0xfa/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7ff69838f7c9
+> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007fff82001dd8 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+> RAX: ffffffffffffffda RBX: 00007ff6985e5fa0 RCX: 00007ff69838f7c9
+> RDX: 0000000000000015 RSI: 0000000000600000 RDI: 0000200000000000
+> RBP: 00007ff6983f297f R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007ff6985e5fa0 R14: 00007ff6985e5fa0 R15: 0000000000000003
+>  </TASK>
+> ----------------
+> Code disassembly (best guess), 1 bytes skipped:
+>    0:   c6 05 a5 f8 3e 0d 01    movb   $0x1,0xd3ef8a5(%rip)        # 0xd3=
+ef8ac
+>    7:   90                      nop
+>    8:   0f 0b                   ud2
+>    a:   90                      nop
+>    b:   e9 0d f4 ff ff          jmp    0xfffff41d
+>   10:   e8 4d 78 94 ff          call   0xff947862
+>   15:   49 ff cd                dec    %r13
+>   18:   e9 d1 f4 ff ff          jmp    0xfffff4ee
+>   1d:   e8 40 78 94 ff          call   0xff947862
+>   22:   48 8d 3d 69 47 5a 0d    lea    0xd5a4769(%rip),%rdi        # 0xd5=
+a4792
+> * 29:   67 48 0f b9 3a          ud1    (%edx),%rdi <-- trapping instructi=
+on
+>   2e:   41 bd ea ff ff ff       mov    $0xffffffea,%r13d
+>   34:   e9 7c fe ff ff          jmp    0xfffffeb5
+>   39:   44 89 7c 24 34          mov    %r15d,0x34(%rsp)
+>   3e:   44                      rex.R
+>
+>
+> ***
+>
+> If these findings have caused you to resend the series or submit a
+> separate fix, please add the following tag to your commit message:
+>   Tested-by: syzbot@syzkaller.appspotmail.com
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+>
+> The email will later be sent to:
+> [akpm@linux-foundation.org baohua@kernel.org baolin.wang@linux.alibaba.co=
+m david@kernel.org dev.jain@arm.com lance.yang@linux.dev liam.howlett@oracl=
+e.com linux-mm@kvack.org lorenzo.stoakes@oracle.com npache@redhat.com richa=
+rd.weiyang@gmail.com ryan.roberts@arm.com ziy@nvidia.com]
+>
+> If the report looks fine to you, reply with:
+> #syz upstream
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/694ac438.050a0220.35954c.0000.GAE%40google.com.
