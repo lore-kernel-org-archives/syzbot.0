@@ -1,150 +1,92 @@
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8607D350A34
-	for <syzbot@lists.linux.dev>; Tue, 23 Dec 2025 17:51:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFD88221FCF
+	for <syzbot@lists.linux.dev>; Mon, 29 Dec 2025 08:16:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766512262; cv=none; b=c2R7RG/VMY0fl/TYm0jpGTxfXqbUxDSFC16pY81DAYQXd3MOvfQYj96ryd8kilwacgBoY1iqD9fJo/AWoGUB2cCWjCdWJB+fbjJoVosl9M51YEbk5vqhhCjByHyens2Fqqu9a3x5jKp/hlaRAkodtuAjEV2UQng4jetowpamWE8=
+	t=1766996174; cv=none; b=YETeD1HYtaXnCWoCDY7kZNGIHsx0dWJiBbJwDVhyKWF9eBE3YQzFCOobFCW0QfbYaXlATqax/ysdftpoW8T7TwJ35ayhqr0ZPuFD4vaQ0dAhbWrza3yp7mW0BHfZdLPNp3MOOXD6dbDkHhQ5fscU4XlWSxuIe3nlmxiqBe5ljeQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766512262; c=relaxed/simple;
-	bh=nBggAJxaIEl4ctgqycSwc1UBredPNlx3Pt/PMdFl3fY=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=i6LAEsFIj4lirYNryAPI9ByGz3BPTX+rvq8DrgOEEbiy394XurfsDZmrDFeDs6bz2MEe+gCrx5yocMLJIdxrU7CFHAi7sFy2Swh1a15VtPs8j2XFMiDsgjxCF0h/Xwi+6XZ4WkJ/ffU9y6OH4acQan/trrZBJgmKBfhnA9lBpH0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
+	s=arc-20240116; t=1766996174; c=relaxed/simple;
+	bh=fM0A5CphGyqi3TxNfuPCo+8miCTnm2/KAxfxyyWSKK8=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=PQEDhMrWjONpCgssruPe2dYJmbfS4wJbm3UfLzzgyAtDhuzgczbnvvb9XlmxgzlSIsPRbmc8RbAbH09IZPNSWWHa81QkWtH3uex4W1PqOWXynKGuNwCGPsuM2xtWbnjEO4WCWpnRck8Bkg6WLfCGwuQpoWA3Ox1UbBB5wZ3pYXk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7c75b4d04acso11786124a34.2
-        for <syzbot@lists.linux.dev>; Tue, 23 Dec 2025 09:51:00 -0800 (PST)
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-656b2edce07so15872277eaf.0
+        for <syzbot@lists.linux.dev>; Mon, 29 Dec 2025 00:16:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766512259; x=1767117059;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mwW/6sJQ0iBm/W5F2BR0R56wsyjr5B9PRL23bKwGSP0=;
-        b=YlTtUNYmikpnsheJILP8RSZEyCg8DqlyYSQmeNp15jL4fOUBlwWP0UMfyKIlRsijpU
-         n+Q0LFHowpRYS3yvwP46Djte3fVIbmT54Ref8eg6GQoTVHY2c2GHPc/Pczg/+TqYDvaV
-         7odxqXaXq7DYGbJxoMENP/LQGNHs6X96iV0KnuXGtsIO8J3cHwKN9xPeyZMl2jQGM8rU
-         7FmgCLPgPSTr9vYXFwucbwAjvdMSIz4I5QO177aWPFpO315xK4Dmra7x/ceMW+8sqm6b
-         6vcze5O68aWwOnYYqX50gC1p7tvBiP0m6KUjSNzvdckErwrlhQD4TUBRdTFOSbs/Qg+S
-         pWTA==
-X-Gm-Message-State: AOJu0Yzt6nnKNGJVuVcAu6hS2o0AlHHrHSDGnmjndgWECPccKBx564X2
-	y1yXdfSINLkU6pFjH5Q7dae/QSHvV5X392l6+cMHO+vO0WrnDxDX9eCPFqJ2feiPTggl8iZOXlX
-	0z3oT3X5k6yB4+66OR4a35FDIgap0CiSkIO7UNm//yRo1WqoGbM/E1fyhifg=
-X-Google-Smtp-Source: AGHT+IEaUWdkY2pa1Ziiq7hjGtHuN4V6dROmOIZErMnnE/rfQXtpgkNktKXLyHDpXp1cJFT7ib6EUG/QWK5m8Xb04QmhAXoKAz/k
+        d=1e100.net; s=20230601; t=1766996168; x=1767600968;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kwW+DWhJjtes0IzqhyPEXa7oiGdoG2mBRHBApr5aMDc=;
+        b=Q9tNeHjOFZxpzOXEynBbFHoufn67CecHpb0y4Nr9JxZG7USWmG/GAOoL2doSch91GT
+         aB+mfxdnhf04Y7UHlheOQseA/gGInhAHTkCXO/qcYim/Mzk534hE60R7GDlrC2Z5Xwjn
+         nUeYgUjW+msaO4mD7hMGP67K+fSTP8PmdPUoTV7ooI98xEGIGV5okgDttxuWyxePRLVK
+         VXZrxmJbbL6tkbxoBhc4IF9tYEixFlv++pjFSEq6//kp4OrE521b1TUoodJ5tN/vJmQt
+         pmjEfSUPPrmlXfZpm5ZC/kD6n5b6C4wC7SQHuRY0mH5pAmkB6D3MQVYnPJBPEOjydach
+         87yw==
+X-Gm-Message-State: AOJu0Yz3PITuUMaIb/YZ/mE3mFkCV54nkMpNgqTJlQxWbPXlx1bxsx6o
+	2SuzUlWZGZVPzNQBPWIbqoEaW9gh37+yUM+R4obn7V3MrYi1T3frFMj0QrNb8+hBDtqLXGdgGE5
+	1bMZkXhYLSEEL7ytVXmdScoHCtRsDv0dPFA1xqmFwZQjN2V9WQ+2pf4pU558=
+X-Google-Smtp-Source: AGHT+IGy8JzbjpDukX8A02f+jeZrpjccgMYdnxQrNaoJsNCPeV3Mt5Fvnd1ypMlYV/XyPjfNB/DsbQQv6UvApUlCdbC26qIQktw9
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a4a:bd0e:0:b0:65b:33ec:1bb3 with SMTP id
- 006d021491bc7-65d0ec33893mr4579322eaf.80.1766512259503; Tue, 23 Dec 2025
- 09:50:59 -0800 (PST)
-Date: Tue, 23 Dec 2025 09:50:59 -0800
-In-Reply-To: <20251223122539.10726-1-richard.weiyang@gmail.com>
+X-Received: by 2002:a05:6820:1c89:b0:65d:1bf8:bb74 with SMTP id
+ 006d021491bc7-65d1bf8bdd5mr11281517eaf.61.1766996168549; Mon, 29 Dec 2025
+ 00:16:08 -0800 (PST)
+Date: Mon, 29 Dec 2025 00:16:08 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <694ad683.050a0220.35954c.0004.GAE@google.com>
-Subject: [syzbot ci] Re: mm/huge_memory: consolidate order-related checks into folio_check_splittable()
-From: syzbot ci <syzbot+ci4ae4a31c44c6107f@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, baohua@kernel.org, 
-	baolin.wang@linux.alibaba.com, david@kernel.org, dev.jain@arm.com, 
-	lance.yang@linux.dev, liam.howlett@oracle.com, linux-mm@kvack.org, 
-	lorenzo.stoakes@oracle.com, npache@redhat.com, richard.weiyang@gmail.com, 
-	ryan.roberts@arm.com, ziy@nvidia.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <695238c8.a70a0220.90d62.0031.GAE@google.com>
+Subject: [moderation/CI] Re: fs: remove stale and duplicate forward declarations
+From: syzbot ci <syzbot+ci69006877028fe598@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v2] mm/huge_memory: consolidate order-related checks into folio_check_splittable()
-https://lore.kernel.org/all/20251223122539.10726-1-richard.weiyang@gmail.com
-* [Patch v2] mm/huge_memory: consolidate order-related checks into folio_check_splittable()
+[v1] fs: remove stale and duplicate forward declarations
+https://lore.kernel.org/all/20251229071401.98146-1-ytohnuki@amazon.com
+* [PATCH] fs: remove stale and duplicate forward declarations
 
 and found the following issue:
-WARNING in __folio_split
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/7e34013d-ed08-40e1-99b7-8fd118dce84f
+https://ci.syzbot.org/series/ad51ab29-ea25-4a27-9aa2-d6f51fbde5cd
 
 ***
 
-WARNING in __folio_split
+kernel build error
 
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      c642ecda5b136882e518d8303863473c0d21ab2f
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      f8f9c1f4d0c7a64600e2ca312dec824a0bc2f1da
 arch:      amd64
-compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-config:    https://ci.syzbot.org/builds/2edb2dc5-42c6-4557-a194-921c57fd9eb1/config
-C repro:   https://ci.syzbot.org/findings/8349b674-5790-4507-97cd-03697ec93cb0/c_repro
-syz repro: https://ci.syzbot.org/findings/8349b674-5790-4507-97cd-03697ec93cb0/syz_repro
+compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp=
+1~20250708183702.136), Debian LLD 20.1.8
+config:    https://ci.syzbot.org/builds/e0921965-abbe-44c3-86e3-54af83a1ad1=
+1/config
 
-------------[ cut here ]------------
-Tried to split an unsplittable folio
-WARNING: mm/huge_memory.c:3970 at __folio_split+0xfe7/0x1370 mm/huge_memory.c:3970, CPU#1: syz.0.17/5997
-Modules linked in:
-CPU: 1 UID: 0 PID: 5997 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__folio_split+0xfe7/0x1370 mm/huge_memory.c:3970
-Code: fe c6 05 a5 f8 3e 0d 01 90 0f 0b 90 e9 0d f4 ff ff e8 4d 78 94 ff 49 ff cd e9 d1 f4 ff ff e8 40 78 94 ff 48 8d 3d 69 47 5a 0d <67> 48 0f b9 3a 41 bd ea ff ff ff e9 7c fe ff ff 44 89 7c 24 34 44
-RSP: 0018:ffffc900036d6d60 EFLAGS: 00010293
-RAX: ffffffff822d4360 RBX: ffffea0005a4b008 RCX: ffff8881047fd7c0
-RDX: 0000000000000000 RSI: ffffffff8e06e540 RDI: ffffffff8f878ad0
-RBP: ffffc900036d6ef0 R08: ffff8881047fd7c0 R09: 0000000000000002
-R10: 00000000ffffffea R11: 0000000000000000 R12: 0000000000000004
-R13: 00000000ffffffea R14: ffffea0005a4b000 R15: 1ffffd4000b49603
-FS:  0000555591a60500(0000) GS:ffff8882a9e32000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b30d63fff CR3: 0000000100f30000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- madvise_cold_or_pageout_pte_range+0xbf3/0x1ce0 mm/madvise.c:503
- walk_pmd_range mm/pagewalk.c:130 [inline]
- walk_pud_range mm/pagewalk.c:224 [inline]
- walk_p4d_range mm/pagewalk.c:262 [inline]
- walk_pgd_range+0x1037/0x1d30 mm/pagewalk.c:303
- __walk_page_range+0x14c/0x710 mm/pagewalk.c:410
- walk_page_range_vma_unsafe+0x34c/0x400 mm/pagewalk.c:714
- madvise_pageout_page_range mm/madvise.c:622 [inline]
- madvise_pageout mm/madvise.c:647 [inline]
- madvise_vma_behavior+0x30c7/0x4420 mm/madvise.c:1366
- madvise_walk_vmas+0x575/0xaf0 mm/madvise.c:1721
- madvise_do_behavior+0x38e/0x550 mm/madvise.c:1937
- do_madvise+0x1bc/0x270 mm/madvise.c:2030
- __do_sys_madvise mm/madvise.c:2039 [inline]
- __se_sys_madvise mm/madvise.c:2037 [inline]
- __x64_sys_madvise+0xa7/0xc0 mm/madvise.c:2037
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xfa/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7ff69838f7c9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fff82001dd8 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
-RAX: ffffffffffffffda RBX: 00007ff6985e5fa0 RCX: 00007ff69838f7c9
-RDX: 0000000000000015 RSI: 0000000000600000 RDI: 0000200000000000
-RBP: 00007ff6983f297f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ff6985e5fa0 R14: 00007ff6985e5fa0 R15: 0000000000000003
- </TASK>
-----------------
-Code disassembly (best guess), 1 bytes skipped:
-   0:	c6 05 a5 f8 3e 0d 01 	movb   $0x1,0xd3ef8a5(%rip)        # 0xd3ef8ac
-   7:	90                   	nop
-   8:	0f 0b                	ud2
-   a:	90                   	nop
-   b:	e9 0d f4 ff ff       	jmp    0xfffff41d
-  10:	e8 4d 78 94 ff       	call   0xff947862
-  15:	49 ff cd             	dec    %r13
-  18:	e9 d1 f4 ff ff       	jmp    0xfffff4ee
-  1d:	e8 40 78 94 ff       	call   0xff947862
-  22:	48 8d 3d 69 47 5a 0d 	lea    0xd5a4769(%rip),%rdi        # 0xd5a4792
-* 29:	67 48 0f b9 3a       	ud1    (%edx),%rdi <-- trapping instruction
-  2e:	41 bd ea ff ff ff    	mov    $0xffffffea,%r13d
-  34:	e9 7c fe ff ff       	jmp    0xfffffeb5
-  39:	44 89 7c 24 34       	mov    %r15d,0x34(%rsp)
-  3e:	44                   	rex.R
-
+block/ioctl.c:565:33: error: incompatible pointer types passing 'struct hd_=
+geometry *' to parameter of type 'struct hd_geometry *' [-Werror,-Wincompat=
+ible-pointer-types]
+block/ioctl.c:599:33: error: incompatible pointer types passing 'struct hd_=
+geometry *' to parameter of type 'struct hd_geometry *' [-Werror,-Wincompat=
+ible-pointer-types]
+drivers/block/rnbd/rnbd-clt.c:965:13: error: incompatible function pointer =
+types initializing 'int (*)(struct gendisk *, struct hd_geometry *)' with a=
+n expression of type 'int (struct gendisk *, struct hd_geometry *)' [-Winco=
+mpatible-function-pointer-types]
 
 ***
 
@@ -155,3 +97,11 @@ separate fix, please add the following tag to your commit message:
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[brauner@kernel.org jack@suse.cz linux-fsdevel@vger.kernel.org linux-kernel=
+@vger.kernel.org viro@zeniv.linux.org.uk ytohnuki@amazon.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
