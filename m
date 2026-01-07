@@ -1,93 +1,152 @@
 Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F0C51E5201
-	for <syzbot@lists.linux.dev>; Wed,  7 Jan 2026 22:14:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA1301E511
+	for <syzbot@lists.linux.dev>; Wed,  7 Jan 2026 22:16:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767824081; cv=none; b=d/Z9OQc50aGx+w7hIUfKh2BrmBSzJOb8q9enjuBINDZ4qvZgN/7oZ56xeDCZQYxs3nRlaQAvdTDd6FAAxTZ9TMNX8xLCuswe3SbyhNrQDlfjJFRspHXLymmo9jwAPPwrDy0mNzSPUSUVMaNlvUBnNajr/eFolPDHFsMRx7cpVqA=
+	t=1767824201; cv=none; b=Bwknsam/49y/09ELkQZ2+bZDoBgGtyH6W1xf77KqvFeuHap2WcT05ST90QYNK7s1b4jfhJFb8knqAbQ0nnlyoaB9nMAYwody445E+ABaBnVlB+eYQtz5+RvjCKkhvjGnWsGbw4cNSh9b0YUaUjGUed3acUbuwjn/a7wmzoSyhak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767824081; c=relaxed/simple;
-	bh=EtqN4d+Ct5bcpCJa0gxYDJ+Yjo0CtUeqmc52ezkOQ5c=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=HyKeNnbWNzx86hy7BUBETWh6lah/GwMZUKARlQX8tZKaYUreXeuWt1DQty6giN09oV7OOrl4rbqWk1f55oDerAfPf423jpCj+XkO0h0eIItuHx7zBuZ56NWoMd5XwHe6UqmgeJhDi0tOmT92e3QLLPisGsJQHXQ5f4WCCNSs2eo=
+	s=arc-20240116; t=1767824201; c=relaxed/simple;
+	bh=LSXOQDqd+anurNcC1BucnmYhaPcvXL2t/Wh5DmCI200=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Vo968U47IvbCa+oriez1lI6vZ3wm8+CtSURZFraQyPMmRJgZm7WIONzhooB96h6LWhwwFez7cY3oO9gcGda7cG/2r6ku3XsX4RaNgWsfz7WSFhL5yfYPfi0UU/OLYTLfeKSnz8pvr6qsGLXzp1DUz+bc/M+gt45fQwjxdPe2VH4=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-65eccb3f95cso4253602eaf.3
-        for <syzbot@lists.linux.dev>; Wed, 07 Jan 2026 14:14:39 -0800 (PST)
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-6574a047ec5so3477276eaf.3
+        for <syzbot@lists.linux.dev>; Wed, 07 Jan 2026 14:16:39 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767824078; x=1768428878;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vzrFwvRz40ECKFeo7YU9ntuy5esmoM+rm5Tbn9lmCRg=;
-        b=etUd76MLv/RnxZbm/I+3suL1hXjQhNmCZo0Tn7EX9ZDmPpKL5/A7P+8CkZprYQWKHL
-         DdT0w6ZiHvhS+O/PwrcYld6XHHK8QyOcpH1NwbI7FhasuWz5PbGOBZJqV7t8NyZuwnuT
-         vZu8rn9HyPLSKkehWVFWsYq3VQ2x/bKjUOmnIkzx4ZhpcVVw293A92cVAhe9Pnc2ei9u
-         +SfH+Hd1uJ2ZY35R8GLiWVRBQkJdCXj4N1jKvnFRhJF/sKpOxZ103mneF0xTTaF6JUNA
-         UylMomVxGqh7QPpmxoiPEKopSMoFdNUpUxPW0h8YwaHYCeJs5PpdZDAM70uplSI7H7Ru
-         skAA==
-X-Gm-Message-State: AOJu0YxQhBNhDwim5Wj0UhjTnJUsQ6JkmbOVDwvsbBP6qw5j+Xj6m38j
-	xvlYglDG4OubFH5FqV29n3V79SLiz/1It6sAZtb0F0bN+ZkmWjkdZDuA/XWna4pCNxjfNLRn0ds
-	eBqaKpNxDONlszo9XJnBfq2oQFqGALBJUneeXCX2jceJO9T+oTTmGFsVkZpo=
-X-Google-Smtp-Source: AGHT+IF08IrRpNar7ldAYfGvMPBpyNA1YXLXQPC8WJrNKt+6i7VI5fGivM9a1uE6WOvOL4jrT8Rzd4krMtniKCkVTkKCLTz2TAP/
+        d=1e100.net; s=20230601; t=1767824199; x=1768428999;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=awZErXYoqo5s21e6THLDPT/48BY9O/Epr4yw1dfkDTU=;
+        b=DCmaV8bUUlnqpF9MfkYaXqWKzik9C5AHryCpF3+UyR3cWP2Ar30eQbANKmDOJ7azrT
+         a5virjuaxP76tIfkPi4eZBXfUTKmw3A7H9luudALRd04DaCUW3fjmE6OMuQUDaVSLx1f
+         PX+54aYrgLdvFYn7R6IMMYpxx6aSAcExTlx+cJPTL9xSyDT04nX5Op00XqdI4mX0W7AW
+         jdqFbyZKLcI2v8lCyYoKIocASxCvRadkN44RqB/cYMvU8Y7Ua8d87MB4ckp56lbxZUul
+         CJ+XOu4X3St3L94H7vYP4R/ixhPvulNgW3hQzHw12Iue3XzgfQgb4SUD7wHGWabpkWbr
+         EInw==
+X-Gm-Message-State: AOJu0YzMAw284YAIP+nt+IJnItX2oFREWwRXgmSgHPjYb9ofYAMMPRPW
+	ZIWQurAlRjsCwAfIvHLYFTf/hpqKhLt/F3CnRXi7iA9q0ChndGXvRbIGI3tPrRLpCzKtpMV5jxO
+	tq4cvhOrPhPa2RedTC/0SYvE+n6BbR/mwq63D5DTXhf6AEglCMsBZEuLZwZo=
+X-Google-Smtp-Source: AGHT+IHX2XrsdVTzvyFP20PvB4GQ2IGGBKNtJ6qUg7rnTYlbpekc6n/bd6f56MCD20ZisBfXbyvMKq5q2Zaq+WOXCM8xrQdIruOj
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a4a:be8c:0:b0:659:9a49:8fd9 with SMTP id
- 006d021491bc7-65f550a8a81mr1054420eaf.82.1767824078333; Wed, 07 Jan 2026
- 14:14:38 -0800 (PST)
-Date: Wed, 07 Jan 2026 14:14:38 -0800
+X-Received: by 2002:a05:6820:4ecf:b0:65b:3907:b360 with SMTP id
+ 006d021491bc7-65f54f71ae0mr1263478eaf.62.1767824198775; Wed, 07 Jan 2026
+ 14:16:38 -0800 (PST)
+Date: Wed, 07 Jan 2026 14:16:38 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <695edace.050a0220.1c677c.0381.GAE@google.com>
-Subject: [moderation/CI] Re: bpf: lru: Fix unintended eviction when updating
- lru hash maps
-From: syzbot ci <syzbot+ci5443f6aaadd2fbf0@syzkaller.appspotmail.com>
+Message-ID: <695edb46.050a0220.1c677c.0382.GAE@google.com>
+Subject: [moderation/CI] Re: wifi: cfg80211/nl80211: Add NAN Data Path support
+From: syzbot ci <syzbot+cid3aa03d338736052@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v3] bpf: lru: Fix unintended eviction when updating lru hash maps
-https://lore.kernel.org/all/20260107151456.72539-1-leon.hwang@linux.dev
-* [PATCH bpf-next v3 1/5] bpf: lru: Tidy hash handling in LRU code
-* [PATCH bpf-next v3 2/5] bpf: lru: Factor out bpf_lru_node_reset_state hel=
-per
-* [PATCH bpf-next v3 3/5] bpf: lru: Factor out bpf_lru_move_next_inactive_r=
-otation helper
-* [PATCH bpf-next v3 4/5] bpf: lru: Fix unintended eviction when updating l=
-ru hash maps
-* [PATCH bpf-next v3 5/5] selftests/bpf: Add tests to verify no unintended =
-eviction when updating lru_[percpu_,]hash maps
+[v1] wifi: cfg80211/nl80211: Add NAN Data Path support
+https://lore.kernel.org/all/20260107132003.2291979-1-miriam.rachel.korenblit@intel.com
+* [PATCH wireless-next 01/15] wifi: nl80211: refactor nl80211_parse_chandef
+* [PATCH wireless-next 02/15] wifi: nl80211/cfg80211: support stations of non-netdev interfaces
+* [PATCH wireless-next 03/15] wifi: cfg80211: refactor wiphy_suspend
+* [PATCH wireless-next 04/15] wifi: nl80211: don't allow DFS channels for NAN
+* [PATCH wireless-next 05/15] wifi: cfg80211: Add an API to configure local NAN schedule
+* [PATCH wireless-next 06/15] wifi: cfg80211: store the chandefs used for NAN
+* [PATCH wireless-next 07/15] wifi: cfg80211: make sure NAN chandefs are valid
+* [PATCH wireless-next 08/15] wifi: cfg80211: add support for NAN data interface
+* [PATCH wireless-next 09/15] wifi: cfg80211: separately store HT, VHT and HE capabilities for NAN
+* [PATCH wireless-next 10/15] wifi: nl80211: add support for NAN stations
+* [PATCH wireless-next 11/15] wifi: nl80211: define an API for configuring the NAN peer's schedule
+* [PATCH wireless-next 12/15] wifi: cfg80211: allow ToDS=0/FromDS=0 data frames on NAN data interfaces
+* [PATCH wireless-next 13/15] wifi: nl80211: allow reporting spurious NAN Data frames
+* [PATCH wireless-next 14/15] wifi: cfg80211: support key installation on non-netdev wdevs
+* [PATCH wireless-next 15/15] wifi: cfg80211: allow protected action frame TX for NAN
 
 and found the following issue:
-kernel build error
+possible deadlock in cfg80211_leave
 
 Full report is available here:
-https://ci.syzbot.org/series/887ab165-3ba2-4319-a149-b620e5250ed5
+https://ci.syzbot.org/series/233ae6b9-f1a6-42ee-a9ad-23778617ac45
 
 ***
 
-kernel build error
+possible deadlock in cfg80211_leave
 
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
--next.git
-base:      a069190b590e108223cd841a1c2d0bfb92230ecc
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      805f9a061372164d43ddef771d7cd63e3ba6d845
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251202083448+f68f64eb8130-1~exp=
-1~20251202083504.46), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/55140e3d-5909-40ea-81ee-75ba1f1d215=
-d/config
+compiler:  Debian clang version 21.1.8 (++20251202083448+f68f64eb8130-1~exp1~20251202083504.46), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/ef828e0d-7b43-4e85-a3b3-c8a39bcbb3c9/config
+C repro:   https://ci.syzbot.org/findings/f7def9d9-24af-4952-b991-2e6c88f8fb50/c_repro
+syz repro: https://ci.syzbot.org/findings/f7def9d9-24af-4952-b991-2e6c88f8fb50/syz_repro
 
-kernel/bpf/hashtab.c:1230:24: error: too many arguments to function call, e=
-xpected 4, have 5
+============================================
+WARNING: possible recursive locking detected
+syzkaller #0 Not tainted
+--------------------------------------------
+kworker/1:3/1286 is trying to acquire lock:
+ffff888113640788 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: class_wiphy_constructor include/net/cfg80211.h:6552 [inline]
+ffff888113640788 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: cfg80211_leave+0x17e/0x240 net/wireless/core.c:1507
+
+but task is already holding lock:
+ffff888113640788 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: class_wiphy_constructor include/net/cfg80211.h:6552 [inline]
+ffff888113640788 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: cfg80211_destroy_ifaces+0x128/0x1e0 net/wireless/core.c:394
+
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(&rdev->wiphy.mtx);
+  lock(&rdev->wiphy.mtx);
+
+ *** DEADLOCK ***
+
+ May be due to missing lock nesting notation
+
+4 locks held by kworker/1:3/1286:
+ #0: ffff888100075948 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3232 [inline]
+ #0: ffff888100075948 ((wq_completion)events){+.+.}-{0:0}, at: process_scheduled_works+0x9d4/0x17a0 kernel/workqueue.c:3340
+ #1: ffffc90008c3fbc0 ((work_completion)(&rdev->destroy_work)){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3233 [inline]
+ #1: ffffc90008c3fbc0 ((work_completion)(&rdev->destroy_work)){+.+.}-{0:0}, at: process_scheduled_works+0xa0f/0x17a0 kernel/workqueue.c:3340
+ #2: ffffffff8f714e88 (rtnl_mutex){+.+.}-{4:4}, at: cfg80211_destroy_iface_wk+0x19/0x30 net/wireless/core.c:424
+ #3: ffff888113640788 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: class_wiphy_constructor include/net/cfg80211.h:6552 [inline]
+ #3: ffff888113640788 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: cfg80211_destroy_ifaces+0x128/0x1e0 net/wireless/core.c:394
+
+stack backtrace:
+CPU: 1 UID: 0 PID: 1286 Comm: kworker/1:3 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Workqueue: events cfg80211_destroy_iface_wk
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_deadlock_bug+0x279/0x290 kernel/locking/lockdep.c:3041
+ check_deadlock kernel/locking/lockdep.c:3093 [inline]
+ validate_chain kernel/locking/lockdep.c:3895 [inline]
+ __lock_acquire+0x253f/0x2cf0 kernel/locking/lockdep.c:5237
+ lock_acquire+0x106/0x330 kernel/locking/lockdep.c:5868
+ __mutex_lock_common kernel/locking/mutex.c:614 [inline]
+ __mutex_lock+0x19f/0x1340 kernel/locking/mutex.c:776
+ class_wiphy_constructor include/net/cfg80211.h:6552 [inline]
+ cfg80211_leave+0x17e/0x240 net/wireless/core.c:1507
+ cfg80211_destroy_ifaces+0x137/0x1e0 net/wireless/core.c:396
+ cfg80211_destroy_iface_wk+0x21/0x30 net/wireless/core.c:425
+ process_one_work kernel/workqueue.c:3257 [inline]
+ process_scheduled_works+0xaec/0x17a0 kernel/workqueue.c:3340
+ worker_thread+0x89f/0xd90 kernel/workqueue.c:3421
+ kthread+0x726/0x8b0 kernel/kthread.c:463
+ ret_from_fork+0x51b/0xa40 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
+ </TASK>
+
 
 ***
 
@@ -100,12 +159,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[andrii@kernel.org ast@kernel.org bpf@vger.kernel.org daniel@iogearbox.net =
-davem@davemloft.net eddyz87@gmail.com haoluo@google.com john.fastabend@gmai=
-l.com jolsa@kernel.org kernel-patches-bot@fb.com kpsingh@kernel.org leon.hw=
-ang@linux.dev linux-kernel@vger.kernel.org linux-kselftest@vger.kernel.org =
-martin.lau@linux.dev sdf@fomichev.me shuah@kernel.org skb99@linux.ibm.com s=
-ong@kernel.org yonghong.song@linux.dev]
+[avraham.stern@intel.com daniel.gabay@intel.com johannes.berg@intel.com linux-wireless@vger.kernel.org miriam.rachel.korenblit@intel.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
