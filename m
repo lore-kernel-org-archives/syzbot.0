@@ -1,162 +1,113 @@
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42AEA318EFB
-	for <syzbot@lists.linux.dev>; Thu,  8 Jan 2026 07:35:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40C054366F2
+	for <syzbot@lists.linux.dev>; Thu,  8 Jan 2026 09:23:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767857759; cv=none; b=XsZCqYN6C9vEjE9LDRcQSa9Q6wG7uaw7JqxIbNBS+oMFoINTd/1Sw+D6sZsfLkvMCb9r0iKpIt6ci90oZIyekZ2jkW63yK2vtwKd3L0GhOuJMu8iM0pV2ViRh5WtJ2t5nC2o4nDOfwIXOUEEcJJz9iUaFwDuAJA5ZpewM8QsneM=
+	t=1767864199; cv=none; b=MGK6r1X4MdIGdFszQqY1fOlVM/I17j+rT4rPh2Y5HGXdrF3jn3mXl8wCVEaThnTDyLRCnuTXlw0XtRZHIarDPEdftuBXjvSN4tlf3c+IQP7qOnl53GOabnzl44arAJsYCtuj+MQv3SBZm2adTCD0RWBgY5EWyP0Dkx/7E1teMws=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767857759; c=relaxed/simple;
-	bh=DAUXvUTl2cPOHv+5VsYC6sBQzoCO/auAZ3uaklAgoF0=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=OOXqZ5L5awy3iwJGuflfiZBrE72n09urykIcI6Ps4AAp1zaMm4Y9eX9PGM2plEdC88kHFPUKHKbfNw/6By8Cz+O1Nu61qI0VCZWw1yFbY6OYwelsDYX+ffDLY8382KvIv/mIi59LD7BaYjfOWogPte7or83H7gRU9d/5hAEI4as=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-65f0fe5372aso4135266eaf.0
-        for <syzbot@lists.linux.dev>; Wed, 07 Jan 2026 23:35:57 -0800 (PST)
+	s=arc-20240116; t=1767864199; c=relaxed/simple;
+	bh=pfSA6BFLcq+T+Czfs8ZmyisuGlZDzt+vthInVmHVXG0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=HUFOke7XCNYHdFL3NJ3dV7CZp1ow9ZL/FeXeqN5btb2MPTPAvLpQz59alLRZJEbyUW8zNAA05PgALrTgaBDfTAH6lTcnlBFmL9f9+EBer0ui+0obReQ2txwD8L7tt2Q6lWkUUOP1yWP72Vbus6K3dmZnJmHnFy3FqwLTDHfvcak=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=B6lfS84f; arc=none smtp.client-ip=209.85.219.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="B6lfS84f"
+Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-88a3d2f3299so32750676d6.2
+        for <syzbot@lists.linux.dev>; Thu, 08 Jan 2026 01:23:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1767864186; x=1768468986; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gioCXq6nTAkg2YLHxtZAgY/YHH9fRIxqTnJ/8upycr8=;
+        b=B6lfS84fWUliLGCu40c/2GCk3EzBihsyXSEofveS7gRt0aEbrYVZidEuYB0cQTz7dk
+         oXWYzkCv7qoufSMbyyaUlqrhqeuZO0anem4owTzOHRUQ3eAHZNOxRd3IdUKWkh4G7/Xs
+         1HPH30W/umxFLME6ykC0W05VnT3CrV9EoE38fWl364V0i5lDU6KjRD08j0IjjucfH60c
+         KxPK8p+fm5JLHVJLdThaNBeNNiPDQG7UDVH14nzWa1I1IdM5kAwBS+YioC65D8OF8nwe
+         RseuKXjIUW+dsoXbPklEjwQzgRT6MVl5JotzTIKa/TAa9aqoNtsowyHSdceesPbUz8bp
+         a55Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767857756; x=1768462556;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SMY8b+FLXF2bIQ1s69KWFvtBYKUqbRD9eqKqFADp9fs=;
-        b=Zyk4vh3rte4INo3lBSu3yTrU0msGDeCfrXgPG8NSrsPfTC8uUu+7Rnl5trRMiuyUcV
-         RTyrkxTJAQwJmF6uCVs8sOiym4/58RI4/vgUyVBzM/uvRIXHJuw1MHK4MkDJj6AKfkeb
-         mgAL54YdMA7KsKmxm19ehgjnok2oiyz0nNHaqoyFAPqO2h4qaEpwCUoUcMitTK5lJa8E
-         dYfwbUA5fReTH7elCWoCAVgutAPcABp6kVZnHAt+DfSnkCveIY0XISiDOWMN8OhsD6HL
-         e0cvwPLAmQVJxEJ7T/fBTZaOAG3e7CU5QbBywH2KTgi71fvTcmNHZLdnzC4tG8wzvZgj
-         0TwA==
-X-Gm-Message-State: AOJu0Yw28An7jZr5UkxOCBV1aV/u7fXbZWs47zil+04CHO9iCExkWh2H
-	KA4eOWcTq1Mv7D+K0akXneflWd2Q9kN/1SOKn5D8QOnyrdMsz3NYJLtF0trjiVsGRyKWjfY2NOB
-	5+7hLFc1uBM4GsUshPS9wkNgz7kACiixLEN57aQYMW1JuXYRO1qF0IACGvxo=
-X-Google-Smtp-Source: AGHT+IGXCguhbKytUq6HKF+AtjURXUOprlcQ8WgE/CV6dBtLwGyhoqVGvGHE4uQ555KQvGVGysd2xT5YqJIErSfrq1mw0nSAYnfz
+        d=1e100.net; s=20230601; t=1767864186; x=1768468986;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=gioCXq6nTAkg2YLHxtZAgY/YHH9fRIxqTnJ/8upycr8=;
+        b=dCiby8o369SnG3JBOCLQwJoa/k1r7k3F7YuGhUa1KwuQn9HO06m5DO/7PYgS9ugUBr
+         6VTWyt7wUWhN8F4bQYyQT/hs8+XnMWiIueR1NTImnptMw1L7Py5RUzKA4iW+/l7EF8sR
+         CEzP0mB/+L/+wgU3zjFztpFUCQqPGgyJW2Z+p+FFBuSedhMRMefqCRfCnrOqlMruTN87
+         +D9HSMZzDDP48VZyJCXaxhGhESkR/rLGPLB5DBAdZtPIZEukkLSuhbyI4AB8ZDat3RTj
+         RqoH50U2RHOY8fJ6v1Y4jLuuR5MLQRsdPN4o8OGyrKgCtt/XLDp4sHmrqvpO0w+oS1C2
+         zdTw==
+X-Forwarded-Encrypted: i=1; AJvYcCV0KeKlRjl+FbLSgdah3Gj+NyhramK0fLPz/06r3wG5ZPjU3UUw/gYym50wSmWTDSOMzuH2Bjo=@lists.linux.dev
+X-Gm-Message-State: AOJu0YyvxzsnHB7y/4wGkj+9uYOHZ/cFTsXZlock3/ukGtAevOPNlHM4
+	0PJiHvU6C+D94sljOb+iRGBDW8mYrFsBh+Xvv5WU8rWxDcx801IMTsrXy7O78bobo9cqKDt0JnO
+	21s21iEp1EYVonLW1e5K++g1FnTElz0vVcJRytb44
+X-Gm-Gg: AY/fxX6QxXNdPwleaN9bWOQuPRR36qgoM1YpmfT3seU+wwokq6mA5iph2pFfRm2H0PK
+	IEGJ2sEPGN9dKL+UB21pLAv2/hMako086mos1GO8ZSrC6a7hEDnYvvwZc1c8TNq+6i7BFiunNUS
+	Fq3rpYjcPtSVES7tnsBDwRcgX4FfUyAfz2BkJFg6CqLfIhiWf+KG7PAFDSEXop0POddvhkSKQ8O
+	KXTObphK98zBdBqNDti4ZIm9zxjZ2R4XTRO0bg3jF5LuClMoUzFmP6YEoS/R+MMgYl11Q==
+X-Google-Smtp-Source: AGHT+IGZX/gylyILRvYSQ0dm8ryNutv8QBrmfiAv3BMoc3OEcbsbCfeav9AV9q+DZxg3mXV6vgEHhKixrPWBHdVB6ao=
+X-Received: by 2002:ad4:5cab:0:b0:88a:4391:59cc with SMTP id
+ 6a1803df08f44-890842710a6mr71766116d6.50.1767864186233; Thu, 08 Jan 2026
+ 01:23:06 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:6005:b0:65f:6038:e84b with SMTP id
- 006d021491bc7-65f6038ee11mr210087eaf.26.1767857756162; Wed, 07 Jan 2026
- 23:35:56 -0800 (PST)
-Date: Wed, 07 Jan 2026 23:35:56 -0800
-In-Reply-To: <20260107132003.2291979-1-miriam.rachel.korenblit@intel.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <695f5e5c.050a0220.1c677c.038b.GAE@google.com>
-Subject: [syzbot ci] Re: wifi: cfg80211/nl80211: Add NAN Data Path support
-From: syzbot ci <syzbot+cib67e7c99902d09fe@syzkaller.appspotmail.com>
-To: avraham.stern@intel.com, daniel.gabay@intel.com, johannes.berg@intel.com, 
-	linux-wireless@vger.kernel.org, miriam.rachel.korenblit@intel.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <20260107125423.4031241-1-edumazet@google.com> <695f50c2.050a0220.1c677c.038a.GAE@google.com>
+In-Reply-To: <695f50c2.050a0220.1c677c.038a.GAE@google.com>
+From: Eric Dumazet <edumazet@google.com>
+Date: Thu, 8 Jan 2026 10:22:55 +0100
+X-Gm-Features: AQt7F2oZg3GBnUBPbwDdGZXDIWMS1CdfEALaFbRmvnvamEMsnCsdn0bQH2w6kC8
+Message-ID: <CANn89i+Z3ELnxMJdRqsUy-afppMot7Otezu3BiheH+wtOvgscg@mail.gmail.com>
+Subject: Re: [syzbot ci] Re: net: update netdev_lock_{type,name}
+To: syzbot ci <syzbot+ci131adae482253910@syzkaller.appspotmail.com>
+Cc: davem@davemloft.net, eric.dumazet@gmail.com, horms@kernel.org, 
+	kuba@kernel.org, netdev@vger.kernel.org, pabeni@redhat.com, 
+	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
+On Thu, Jan 8, 2026 at 7:37=E2=80=AFAM syzbot ci
+<syzbot+ci131adae482253910@syzkaller.appspotmail.com> wrote:
+>
+> syzbot ci has tested the following series
+>
+> [v2] net: update netdev_lock_{type,name}
+> https://lore.kernel.org/all/20260107125423.4031241-1-edumazet@google.com
+> * [PATCH v2 net] net: update netdev_lock_{type,name}
+>
+> and found the following issue:
+> WARNING in register_netdevice
+>
+> Full report is available here:
+> https://ci.syzbot.org/series/07a2abd3-8dbc-43d0-a5d9-cdbb1a35d769
+>
+> ***
+>
+> WARNING in register_netdevice
+>
+> tree:      net
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netde=
+v/net.git
+> base:      1806d210e5a8f431ad4711766ae4a333d407d972
+> arch:      amd64
+> compiler:  Debian clang version 21.1.8 (++20251202083448+f68f64eb8130-1~e=
+xp1~20251202083504.46), Debian LLD 21.1.8
+> config:    https://ci.syzbot.org/builds/f4fb7576-ea1f-485d-9ef1-c3270f156=
+0d9/config
+> C repro:   https://ci.syzbot.org/findings/e4767ea9-6be5-4bce-9523-40ab12d=
+29b67/c_repro
+> syz repro: https://ci.syzbot.org/findings/e4767ea9-6be5-4bce-9523-40ab12d=
+29b67/syz_repro
+>
+> ------------[ cut here ]------------
+> netdev_lock_pos() could not find dev_type=3D805
 
-[v1] wifi: cfg80211/nl80211: Add NAN Data Path support
-https://lore.kernel.org/all/20260107132003.2291979-1-miriam.rachel.korenblit@intel.com
-* [PATCH wireless-next 01/15] wifi: nl80211: refactor nl80211_parse_chandef
-* [PATCH wireless-next 02/15] wifi: nl80211/cfg80211: support stations of non-netdev interfaces
-* [PATCH wireless-next 03/15] wifi: cfg80211: refactor wiphy_suspend
-* [PATCH wireless-next 04/15] wifi: nl80211: don't allow DFS channels for NAN
-* [PATCH wireless-next 05/15] wifi: cfg80211: Add an API to configure local NAN schedule
-* [PATCH wireless-next 06/15] wifi: cfg80211: store the chandefs used for NAN
-* [PATCH wireless-next 07/15] wifi: cfg80211: make sure NAN chandefs are valid
-* [PATCH wireless-next 08/15] wifi: cfg80211: add support for NAN data interface
-* [PATCH wireless-next 09/15] wifi: cfg80211: separately store HT, VHT and HE capabilities for NAN
-* [PATCH wireless-next 10/15] wifi: nl80211: add support for NAN stations
-* [PATCH wireless-next 11/15] wifi: nl80211: define an API for configuring the NAN peer's schedule
-* [PATCH wireless-next 12/15] wifi: cfg80211: allow ToDS=0/FromDS=0 data frames on NAN data interfaces
-* [PATCH wireless-next 13/15] wifi: nl80211: allow reporting spurious NAN Data frames
-* [PATCH wireless-next 14/15] wifi: cfg80211: support key installation on non-netdev wdevs
-* [PATCH wireless-next 15/15] wifi: cfg80211: allow protected action frame TX for NAN
-
-and found the following issue:
-possible deadlock in cfg80211_leave
-
-Full report is available here:
-https://ci.syzbot.org/series/233ae6b9-f1a6-42ee-a9ad-23778617ac45
-
-***
-
-possible deadlock in cfg80211_leave
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      805f9a061372164d43ddef771d7cd63e3ba6d845
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251202083448+f68f64eb8130-1~exp1~20251202083504.46), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/ef828e0d-7b43-4e85-a3b3-c8a39bcbb3c9/config
-C repro:   https://ci.syzbot.org/findings/f7def9d9-24af-4952-b991-2e6c88f8fb50/c_repro
-syz repro: https://ci.syzbot.org/findings/f7def9d9-24af-4952-b991-2e6c88f8fb50/syz_repro
-
-============================================
-WARNING: possible recursive locking detected
-syzkaller #0 Not tainted
---------------------------------------------
-kworker/1:3/1286 is trying to acquire lock:
-ffff888113640788 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: class_wiphy_constructor include/net/cfg80211.h:6552 [inline]
-ffff888113640788 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: cfg80211_leave+0x17e/0x240 net/wireless/core.c:1507
-
-but task is already holding lock:
-ffff888113640788 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: class_wiphy_constructor include/net/cfg80211.h:6552 [inline]
-ffff888113640788 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: cfg80211_destroy_ifaces+0x128/0x1e0 net/wireless/core.c:394
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&rdev->wiphy.mtx);
-  lock(&rdev->wiphy.mtx);
-
- *** DEADLOCK ***
-
- May be due to missing lock nesting notation
-
-4 locks held by kworker/1:3/1286:
- #0: ffff888100075948 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3232 [inline]
- #0: ffff888100075948 ((wq_completion)events){+.+.}-{0:0}, at: process_scheduled_works+0x9d4/0x17a0 kernel/workqueue.c:3340
- #1: ffffc90008c3fbc0 ((work_completion)(&rdev->destroy_work)){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3233 [inline]
- #1: ffffc90008c3fbc0 ((work_completion)(&rdev->destroy_work)){+.+.}-{0:0}, at: process_scheduled_works+0xa0f/0x17a0 kernel/workqueue.c:3340
- #2: ffffffff8f714e88 (rtnl_mutex){+.+.}-{4:4}, at: cfg80211_destroy_iface_wk+0x19/0x30 net/wireless/core.c:424
- #3: ffff888113640788 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: class_wiphy_constructor include/net/cfg80211.h:6552 [inline]
- #3: ffff888113640788 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: cfg80211_destroy_ifaces+0x128/0x1e0 net/wireless/core.c:394
-
-stack backtrace:
-CPU: 1 UID: 0 PID: 1286 Comm: kworker/1:3 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: events cfg80211_destroy_iface_wk
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_deadlock_bug+0x279/0x290 kernel/locking/lockdep.c:3041
- check_deadlock kernel/locking/lockdep.c:3093 [inline]
- validate_chain kernel/locking/lockdep.c:3895 [inline]
- __lock_acquire+0x253f/0x2cf0 kernel/locking/lockdep.c:5237
- lock_acquire+0x106/0x330 kernel/locking/lockdep.c:5868
- __mutex_lock_common kernel/locking/mutex.c:614 [inline]
- __mutex_lock+0x19f/0x1340 kernel/locking/mutex.c:776
- class_wiphy_constructor include/net/cfg80211.h:6552 [inline]
- cfg80211_leave+0x17e/0x240 net/wireless/core.c:1507
- cfg80211_destroy_ifaces+0x137/0x1e0 net/wireless/core.c:396
- cfg80211_destroy_iface_wk+0x21/0x30 net/wireless/core.c:425
- process_one_work kernel/workqueue.c:3257 [inline]
- process_scheduled_works+0xaec/0x17a0 kernel/workqueue.c:3340
- worker_thread+0x89f/0xd90 kernel/workqueue.c:3421
- kthread+0x726/0x8b0 kernel/kthread.c:463
- ret_from_fork+0x51b/0xa40 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+OK, 805 is ARPHRD_IEEE802154_MONITOR, I am adding it to V3
