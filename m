@@ -1,113 +1,138 @@
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40C054366F2
-	for <syzbot@lists.linux.dev>; Thu,  8 Jan 2026 09:23:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97354217F27
+	for <syzbot@lists.linux.dev>; Mon, 12 Jan 2026 22:14:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767864199; cv=none; b=MGK6r1X4MdIGdFszQqY1fOlVM/I17j+rT4rPh2Y5HGXdrF3jn3mXl8wCVEaThnTDyLRCnuTXlw0XtRZHIarDPEdftuBXjvSN4tlf3c+IQP7qOnl53GOabnzl44arAJsYCtuj+MQv3SBZm2adTCD0RWBgY5EWyP0Dkx/7E1teMws=
+	t=1768256058; cv=none; b=KqzSDxbSUikqOQz3SSPPmQUYEq9LJBsuJNZAOLU/y7ZYmV1vmVxvVmCGif6/sjSnM/JOBU177n8j4nPSw6zY/lKqA1jm9DAv35P2qN8SxCfku3lILY5wxwbUyZnr7QP2xtDaFE35Oy5yhbz3jr1uiZduX7efa5w8kwiuu801GMk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767864199; c=relaxed/simple;
-	bh=pfSA6BFLcq+T+Czfs8ZmyisuGlZDzt+vthInVmHVXG0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=HUFOke7XCNYHdFL3NJ3dV7CZp1ow9ZL/FeXeqN5btb2MPTPAvLpQz59alLRZJEbyUW8zNAA05PgALrTgaBDfTAH6lTcnlBFmL9f9+EBer0ui+0obReQ2txwD8L7tt2Q6lWkUUOP1yWP72Vbus6K3dmZnJmHnFy3FqwLTDHfvcak=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=B6lfS84f; arc=none smtp.client-ip=209.85.219.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="B6lfS84f"
-Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-88a3d2f3299so32750676d6.2
-        for <syzbot@lists.linux.dev>; Thu, 08 Jan 2026 01:23:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1767864186; x=1768468986; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gioCXq6nTAkg2YLHxtZAgY/YHH9fRIxqTnJ/8upycr8=;
-        b=B6lfS84fWUliLGCu40c/2GCk3EzBihsyXSEofveS7gRt0aEbrYVZidEuYB0cQTz7dk
-         oXWYzkCv7qoufSMbyyaUlqrhqeuZO0anem4owTzOHRUQ3eAHZNOxRd3IdUKWkh4G7/Xs
-         1HPH30W/umxFLME6ykC0W05VnT3CrV9EoE38fWl364V0i5lDU6KjRD08j0IjjucfH60c
-         KxPK8p+fm5JLHVJLdThaNBeNNiPDQG7UDVH14nzWa1I1IdM5kAwBS+YioC65D8OF8nwe
-         RseuKXjIUW+dsoXbPklEjwQzgRT6MVl5JotzTIKa/TAa9aqoNtsowyHSdceesPbUz8bp
-         a55Q==
+	s=arc-20240116; t=1768256058; c=relaxed/simple;
+	bh=Y9scepsmFplLkNUlSJ1uaZhCHrckXuruZATVngC1gZM=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Mdh9Ho5so0WDoe5pubmI+Os6yEXMDDHE9qGc0c/BFHSuVzHMuGId7mCmPYYkElWtlsIoFFbjjtujDEIN7lNCwYGVqsoNFeqTYiZQhijSXgKmyEJh5L76bgsoBN1huPiJA1VI8a3FLPeQHXN8Cp4rklKiFVlXlKNXdoaLpdm6qBo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-450be8a012cso13883738b6e.0
+        for <syzbot@lists.linux.dev>; Mon, 12 Jan 2026 14:14:16 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767864186; x=1768468986;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=gioCXq6nTAkg2YLHxtZAgY/YHH9fRIxqTnJ/8upycr8=;
-        b=dCiby8o369SnG3JBOCLQwJoa/k1r7k3F7YuGhUa1KwuQn9HO06m5DO/7PYgS9ugUBr
-         6VTWyt7wUWhN8F4bQYyQT/hs8+XnMWiIueR1NTImnptMw1L7Py5RUzKA4iW+/l7EF8sR
-         CEzP0mB/+L/+wgU3zjFztpFUCQqPGgyJW2Z+p+FFBuSedhMRMefqCRfCnrOqlMruTN87
-         +D9HSMZzDDP48VZyJCXaxhGhESkR/rLGPLB5DBAdZtPIZEukkLSuhbyI4AB8ZDat3RTj
-         RqoH50U2RHOY8fJ6v1Y4jLuuR5MLQRsdPN4o8OGyrKgCtt/XLDp4sHmrqvpO0w+oS1C2
-         zdTw==
-X-Forwarded-Encrypted: i=1; AJvYcCV0KeKlRjl+FbLSgdah3Gj+NyhramK0fLPz/06r3wG5ZPjU3UUw/gYym50wSmWTDSOMzuH2Bjo=@lists.linux.dev
-X-Gm-Message-State: AOJu0YyvxzsnHB7y/4wGkj+9uYOHZ/cFTsXZlock3/ukGtAevOPNlHM4
-	0PJiHvU6C+D94sljOb+iRGBDW8mYrFsBh+Xvv5WU8rWxDcx801IMTsrXy7O78bobo9cqKDt0JnO
-	21s21iEp1EYVonLW1e5K++g1FnTElz0vVcJRytb44
-X-Gm-Gg: AY/fxX6QxXNdPwleaN9bWOQuPRR36qgoM1YpmfT3seU+wwokq6mA5iph2pFfRm2H0PK
-	IEGJ2sEPGN9dKL+UB21pLAv2/hMako086mos1GO8ZSrC6a7hEDnYvvwZc1c8TNq+6i7BFiunNUS
-	Fq3rpYjcPtSVES7tnsBDwRcgX4FfUyAfz2BkJFg6CqLfIhiWf+KG7PAFDSEXop0POddvhkSKQ8O
-	KXTObphK98zBdBqNDti4ZIm9zxjZ2R4XTRO0bg3jF5LuClMoUzFmP6YEoS/R+MMgYl11Q==
-X-Google-Smtp-Source: AGHT+IGZX/gylyILRvYSQ0dm8ryNutv8QBrmfiAv3BMoc3OEcbsbCfeav9AV9q+DZxg3mXV6vgEHhKixrPWBHdVB6ao=
-X-Received: by 2002:ad4:5cab:0:b0:88a:4391:59cc with SMTP id
- 6a1803df08f44-890842710a6mr71766116d6.50.1767864186233; Thu, 08 Jan 2026
- 01:23:06 -0800 (PST)
+        d=1e100.net; s=20230601; t=1768256055; x=1768860855;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=XLkwqThjx4AkStKsHa9d1/rBkHvnRZcj9pWf+JO56oc=;
+        b=rCU3kim0QxLZBM9/rAdLijEEr4R4sWNbyImX1C3HytyKgtRicndKlOexWEYpH4jskg
+         vu7AhFJUG9L0s5T7rc7AKHZV/bCVRHJdTDdqllm31LYULk4I0nxB+WyUXGU7ARYJlu0N
+         iz4DLgvv8t+W3T35h1u3DdIEYYsoQN2M/LOCYe1dMOaWvVsYlfTj7yfrKokbkW7/idLH
+         ja9vHHobFzmo+/biilNXgbkC6NTRto8ZMgOm1IWX4wmkZKKm3c6M68uzreDDZoJLavom
+         CREyWPi420eHeILWPSDfuZDqlWL4RPFPyB+ettqXa8xohFo+YSWrGnNRHXCLlESyDrmx
+         dWqw==
+X-Gm-Message-State: AOJu0YxFGUc4WHK1j2puLahjgwR7OvNZatB86Zc9RxOW1KyvHfypRq4M
+	JU4LnDeM5rOnNACX7uHFQFdNyleyQORWt4AOalfSllJCz0XcSkBB73h+6FXwoXPZw6Ev9c/uYmx
+	neOkQQLyqFkqznBiDj2bdIktLfFMC8tit/llzgJHxglS7FaWId3x6Pju9CJA=
+X-Google-Smtp-Source: AGHT+IFl/3M50Hu08XFcODcX80O3rnnTI24tsqKCTNLIbxpSTUsYUI3E/7iF1kA3OiyCIKAtX8q49w2mcd/4ptCz1XOvq/gcDhqW
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260107125423.4031241-1-edumazet@google.com> <695f50c2.050a0220.1c677c.038a.GAE@google.com>
-In-Reply-To: <695f50c2.050a0220.1c677c.038a.GAE@google.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Thu, 8 Jan 2026 10:22:55 +0100
-X-Gm-Features: AQt7F2oZg3GBnUBPbwDdGZXDIWMS1CdfEALaFbRmvnvamEMsnCsdn0bQH2w6kC8
-Message-ID: <CANn89i+Z3ELnxMJdRqsUy-afppMot7Otezu3BiheH+wtOvgscg@mail.gmail.com>
-Subject: Re: [syzbot ci] Re: net: update netdev_lock_{type,name}
-To: syzbot ci <syzbot+ci131adae482253910@syzkaller.appspotmail.com>
-Cc: davem@davemloft.net, eric.dumazet@gmail.com, horms@kernel.org, 
-	kuba@kernel.org, netdev@vger.kernel.org, pabeni@redhat.com, 
-	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+X-Received: by 2002:a05:6820:1c9f:b0:660:e444:1055 with SMTP id
+ 006d021491bc7-660e4441a5bmr2020416eaf.59.1768256055501; Mon, 12 Jan 2026
+ 14:14:15 -0800 (PST)
+Date: Mon, 12 Jan 2026 14:14:15 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69657237.050a0220.3be5c5.0006.GAE@google.com>
+Subject: [moderation/CI] Re: Exposing case folding behavior
+From: syzbot ci <syzbot+ci813d9da582e3e948@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jan 8, 2026 at 7:37=E2=80=AFAM syzbot ci
-<syzbot+ci131adae482253910@syzkaller.appspotmail.com> wrote:
->
-> syzbot ci has tested the following series
->
-> [v2] net: update netdev_lock_{type,name}
-> https://lore.kernel.org/all/20260107125423.4031241-1-edumazet@google.com
-> * [PATCH v2 net] net: update netdev_lock_{type,name}
->
-> and found the following issue:
-> WARNING in register_netdevice
->
-> Full report is available here:
-> https://ci.syzbot.org/series/07a2abd3-8dbc-43d0-a5d9-cdbb1a35d769
->
-> ***
->
-> WARNING in register_netdevice
->
-> tree:      net
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netde=
-v/net.git
-> base:      1806d210e5a8f431ad4711766ae4a333d407d972
-> arch:      amd64
-> compiler:  Debian clang version 21.1.8 (++20251202083448+f68f64eb8130-1~e=
-xp1~20251202083504.46), Debian LLD 21.1.8
-> config:    https://ci.syzbot.org/builds/f4fb7576-ea1f-485d-9ef1-c3270f156=
-0d9/config
-> C repro:   https://ci.syzbot.org/findings/e4767ea9-6be5-4bce-9523-40ab12d=
-29b67/c_repro
-> syz repro: https://ci.syzbot.org/findings/e4767ea9-6be5-4bce-9523-40ab12d=
-29b67/syz_repro
->
-> ------------[ cut here ]------------
-> netdev_lock_pos() could not find dev_type=3D805
+syzbot ci has tested the following series
 
-OK, 805 is ARPHRD_IEEE802154_MONITOR, I am adding it to V3
+[v3] Exposing case folding behavior
+https://lore.kernel.org/all/20260112174629.3729358-1-cel@kernel.org
+* [PATCH v3 01/16] fs: Add case sensitivity info to file_kattr
+* [PATCH v3 02/16] fat: Implement fileattr_get for case sensitivity
+* [PATCH v3 03/16] exfat: Implement fileattr_get for case sensitivity
+* [PATCH v3 04/16] ntfs3: Implement fileattr_get for case sensitivity
+* [PATCH v3 05/16] hfs: Implement fileattr_get for case sensitivity
+* [PATCH v3 06/16] hfsplus: Report case sensitivity in fileattr_get
+* [PATCH v3 07/16] ext4: Report case sensitivity in fileattr_get
+* [PATCH v3 08/16] xfs: Report case sensitivity in fileattr_get
+* [PATCH v3 09/16] cifs: Implement fileattr_get for case sensitivity
+* [PATCH v3 10/16] nfs: Implement fileattr_get for case sensitivity
+* [PATCH v3 11/16] f2fs: Add case sensitivity reporting to fileattr_get
+* [PATCH v3 12/16] vboxsf: Implement fileattr_get for case sensitivity
+* [PATCH v3 13/16] isofs: Implement fileattr_get for case sensitivity
+* [PATCH v3 14/16] nfsd: Report export case-folding via NFSv3 PATHCONF
+* [PATCH v3 15/16] nfsd: Implement NFSv4 FATTR4_CASE_INSENSITIVE and FATTR4=
+_CASE_PRESERVING
+* [PATCH v3 16/16] ksmbd: Report filesystem case sensitivity via FS_ATTRIBU=
+TE_INFORMATION
+
+and found the following issue:
+kernel build error
+
+Full report is available here:
+https://ci.syzbot.org/series/389a66d5-7460-40b3-9f6b-1cfae867c1c3
+
+***
+
+kernel build error
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      0f61b1860cc3f52aef9036d7235ed1f017632193
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251202083448+f68f64eb8130-1~exp=
+1~20251202083504.46), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/5eaf1d58-f83f-46bc-a58a-4fd05cfab46=
+1/config
+
+./include/linux/fileattr.h:74:23: error: use of undeclared identifier 'FS_X=
+FLAG_SYNC'
+./include/linux/fileattr.h:74:23: error: use of undeclared identifier 'FS_X=
+FLAG_IMMUTABLE'
+./include/linux/fileattr.h:74:23: error: use of undeclared identifier 'FS_X=
+FLAG_APPEND'
+./include/linux/fileattr.h:74:23: error: use of undeclared identifier 'FS_X=
+FLAG_NODUMP'
+./include/linux/fileattr.h:74:23: error: use of undeclared identifier 'FS_X=
+FLAG_NOATIME'
+./include/linux/fileattr.h:74:23: error: use of undeclared identifier 'FS_X=
+FLAG_DAX'
+./include/linux/fileattr.h:74:23: error: use of undeclared identifier 'FS_X=
+FLAG_PROJINHERIT'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[adilger.kernel@dilger.ca almaz.alexandrovich@paragon-software.com anna@ker=
+nel.org cel@kernel.org cem@kernel.org chao@kernel.org chuck.lever@oracle.co=
+m frank.li@vivo.com glaubitz@physik.fu-berlin.de hansg@kernel.org hirofumi@=
+mail.parknet.co.jp jaegeuk@kernel.org linkinjeon@kernel.org linux-cifs@vger=
+.kernel.org linux-ext4@vger.kernel.org linux-f2fs-devel@lists.sourceforge.n=
+et linux-fsdevel@vger.kernel.org linux-nfs@vger.kernel.org linux-xfs@vger.k=
+ernel.org pc@manguebit.org ronniesahlberg@gmail.com senozhatsky@chromium.or=
+g sfrench@samba.org sj1557.seo@samsung.com slava@dubeyko.com sprasad@micros=
+oft.com trondmy@kernel.org tytso@mit.edu yuezhang.mo@sony.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
