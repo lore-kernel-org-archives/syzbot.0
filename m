@@ -1,50 +1,50 @@
-Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com [209.85.160.70])
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 924AB30EF63
-	for <syzbot@lists.linux.dev>; Wed, 14 Jan 2026 16:00:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 686EF2D6E6C
+	for <syzbot@lists.linux.dev>; Wed, 14 Jan 2026 17:00:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768406405; cv=none; b=EwyogfU1MKniBsHpSgxBuFOYYw68/GghnjMYQYiSJ0EDQRkS5t0iZDyxTiflKqWwi2v5yobnEmpavQln/QxpUCze0aIwTruoNBDsdZKun6JQZ2qclpSL/wJH4iuE3GqoT0Zb08l6eFVJpgglgA+AeZfE+1F9qnafLNfsUZ+Wlfs=
+	t=1768410006; cv=none; b=gz8NV7BlED4Cd4WgsA9OcFzLXqKuTmQ2tPAhjg8RcSatARVe+mvC2Ek8tjFSESU6qZ/yVbOXX3ymPrAXDJBfeI6PxtORh2NFD77J9bYjhvqg+mLxGZrey3mansQDzS9XrHgBjilOf7KTG5S3cjqjx7Yq6B69hU5hh0iskkFmPL8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768406405; c=relaxed/simple;
-	bh=lwnNWp015N7ligxYfbiU3FFJcH1h6UF4I3aicvjroGg=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ZDhPgHGVophQz1yNtOQodx2SQmbTY1KiZSgjJqC7Aa6+pvBID7kLiVYVlI0vnNprQKkIvBi5ADRPJKpZjntvUlYCzZWnY+hqmB8tcPwbVe3rzou41ekZHlNgs5RbNgJH2RKxRIcIzEWC8Z2ofjlAGPBK9DG3XwwRO0Q5mh9Vf+E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.70
+	s=arc-20240116; t=1768410006; c=relaxed/simple;
+	bh=qMD097rL4v/47Cf7YdJxoq2t3jBjjVKPIxhNDUZFZmE=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=CENcB3L8bxCdifsz2SArkpYIgc8iEsRo5GDOOM9uh/pNLLr5Jd8klq+CK0B/CLyQtEAMVv9eQiaDXAfSAblWI9kMapK32UKzNis1lb3XdW18rgO9YRyA3f4XP26Mz+sOW6LLvKi5bStw7WmoLLgGc0oahfhdZMV67zgfau/Zwwk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-3f9b001f317so17212785fac.0
-        for <syzbot@lists.linux.dev>; Wed, 14 Jan 2026 08:00:02 -0800 (PST)
+Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7cfd10872d7so19877a34.3
+        for <syzbot@lists.linux.dev>; Wed, 14 Jan 2026 09:00:05 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768406401; x=1769011201;
+        d=1e100.net; s=20230601; t=1768410004; x=1769014804;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=G9h1zkYpO4FhqMF2/H8qdx68T0JbxFbMo6i8L5KIKbs=;
-        b=XrVcx+7OUBoqX2CdlFYTADlMPkn1ldPmu8w5cYv1lWhesZ9Bf4rQmRiZ0/9MktK9C4
-         Bfw9PvUse+bbV7q1l/ijrk7rjxggjp3/8vDxpqXvzwrFwuSQsg2J8dKaPdYHjoCUAmj8
-         7LA9zy2KmGGH4XtNOpK8zed1eGt448vRxnPxDU9Y113fG9rifcMTRwnRjrDvGcaDkZTO
-         8DBqqjY5Qt5IaLUgtbjhvvJqvuR6jGQeofSGhExRDnavcmGgFaWbmgZUw4BHNVWzfGFO
-         4So+05oMlrV/iLIEg9JAH/ymKmQZ28r7+d4Afj0xXjN1YHGVMbOwRWWkJaFVGm0a350K
-         97Lw==
-X-Gm-Message-State: AOJu0Yx02GIYJpQHWRR2Blkyl28VkmK581wI1W96Z0NzyqmIvhuy5nqm
-	KAuynD0vH5SVtkbiLgm5QxYJJO7xV8ZF8k4tvprghg8V+lhFOY+KgA9dnW2+8MEP7X57LauBzGM
-	VqL31wV/mt6ejgYWmO+mTmUSPMmDs3pEHl0DMokrhEtE7yDADWYinPHj0MIA=
+        bh=chCaX2qaXrNjllSZ7eN4H2hoAp+FRlPGK5B6xrxAEdU=;
+        b=kMRnd8J/dytI8MZh8ZWC6KuPsimaI6a4vP1/58z+s2s7LzSZ7JOcZuR27d38Dxt1NZ
+         DrpxSan0HGu/uvknGjKUDNxTCWt/ieYuSboq8TSDaFSogJ8qHUa0GwCMkD4rODumjwVN
+         1k94gG1KgogZ7MBg5EgjdqNKXDjPL7J08LT7ETpnGVn3pdLAY0LQj4F/thme8svol4G0
+         mghWciZl4DvcGxlkB6XYKdFfNH+5vDKMcli7Ji3BjvFpbVq7Iv1dZMbDv0ncs/oZihzC
+         E5Gk6ChpetK6UmzcEdO25j9VyUmWOsucqQ446iGi8sWmfns06E4MoT4G69mgJ3gFWnrN
+         8q8g==
+X-Gm-Message-State: AOJu0Yxn7lVih56XHGgySwfd39yEjuVQrUOEfIPTcxKjujruCH/fXh1z
+	/CPNJyZXRhBepqI9CP/gEumDZc7Yf9S5M8fueIrZet/0Z71JrlkqVVHuJWeA9dTFkfHNxQlfbzw
+	eOws7cU3BhAYOE7b+wAs4Om0FM0LeWXy+3Ebz6PHUbZYZbPebgVekjNUstYI=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:f024:b0:65f:7009:d713 with SMTP id
- 006d021491bc7-6610060f3femr2212455eaf.3.1768406401237; Wed, 14 Jan 2026
- 08:00:01 -0800 (PST)
-Date: Wed, 14 Jan 2026 08:00:01 -0800
+X-Received: by 2002:a05:6820:4489:b0:65b:35fe:4323 with SMTP id
+ 006d021491bc7-66100706702mr2167709eaf.67.1768410004183; Wed, 14 Jan 2026
+ 09:00:04 -0800 (PST)
+Date: Wed, 14 Jan 2026 09:00:04 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6967bd81.050a0220.150504.0005.GAE@google.com>
-Subject: [moderation/CI] Re: Eliminate Dying Memory Cgroup
-From: syzbot ci <syzbot+cic3e68dffbdbd9f58@syzkaller.appspotmail.com>
+Message-ID: <6967cb94.050a0220.58bed.0000.GAE@google.com>
+Subject: [moderation/CI] Re: Exposing case folding behavior
+From: syzbot ci <syzbot+cifc59c55d505d973a@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -52,139 +52,61 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v3] Eliminate Dying Memory Cgroup
-https://lore.kernel.org/all/cover.1768389889.git.zhengqi.arch@bytedance.com
-* [PATCH v3 01/30] mm: memcontrol: remove dead code of checking parent memo=
-ry cgroup
-* [PATCH v3 02/30] mm: workingset: use folio_lruvec() in workingset_refault=
-()
-* [PATCH v3 03/30] mm: rename unlock_page_lruvec_irq and its variants
-* [PATCH v3 04/30] mm: vmscan: prepare for the refactoring the move_folios_=
-to_lru()
-* [PATCH v3 05/30] mm: vmscan: refactor move_folios_to_lru()
-* [PATCH v3 06/30] mm: memcontrol: allocate object cgroup for non-kmem case
-* [PATCH v3 07/30] mm: memcontrol: return root object cgroup for root memor=
-y cgroup
-* [PATCH v3 08/30] mm: memcontrol: prevent memory cgroup release in get_mem=
-_cgroup_from_folio()
-* [PATCH v3 09/30] buffer: prevent memory cgroup release in folio_alloc_buf=
-fers()
-* [PATCH v3 10/30] writeback: prevent memory cgroup release in writeback mo=
-dule
-* [PATCH v3 11/30] mm: memcontrol: prevent memory cgroup release in count_m=
-emcg_folio_events()
-* [PATCH v3 12/30] mm: page_io: prevent memory cgroup release in page_io mo=
-dule
-* [PATCH v3 13/30] mm: migrate: prevent memory cgroup release in folio_migr=
-ate_mapping()
-* [PATCH v3 14/30] mm: mglru: prevent memory cgroup release in mglru
-* [PATCH v3 15/30] mm: memcontrol: prevent memory cgroup release in mem_cgr=
-oup_swap_full()
-* [PATCH v3 16/30] mm: workingset: prevent memory cgroup release in lru_gen=
-_eviction()
-* [PATCH v3 17/30] mm: thp: prevent memory cgroup release in folio_split_qu=
-eue_lock{_irqsave}()
-* [PATCH v3 18/30] mm: zswap: prevent memory cgroup release in zswap_compre=
-ss()
-* [PATCH v3 19/30] mm: workingset: prevent lruvec release in workingset_ref=
-ault()
-* [PATCH v3 20/30] mm: zswap: prevent lruvec release in zswap_folio_swapin(=
-)
-* [PATCH v3 21/30] mm: swap: prevent lruvec release in lru_gen_clear_refs()
-* [PATCH v3 22/30] mm: workingset: prevent lruvec release in workingset_act=
-ivation()
-* [PATCH v3 23/30] mm: do not open-code lruvec lock
-* [PATCH v3 24/30] mm: memcontrol: prepare for reparenting LRU pages for lr=
-uvec lock
-* [PATCH v3 25/30] mm: vmscan: prepare for reparenting traditional LRU foli=
-os
-* [PATCH v3 26/30] mm: vmscan: prepare for reparenting MGLRU folios
-* [PATCH v3 27/30] mm: memcontrol: refactor memcg_reparent_objcgs()
-* [PATCH v3 28/30] mm: memcontrol: prepare for reparenting state_local
-* [PATCH v3 29/30] mm: memcontrol: eliminate the problem of dying memory cg=
-roup for LRU folios
-* [PATCH v3 30/30] mm: lru: add VM_WARN_ON_ONCE_FOLIO to lru maintenance he=
-lpers
+[v4] Exposing case folding behavior
+https://lore.kernel.org/all/20260114142900.3945054-1-cel@kernel.org
+* [PATCH v4 01/16] fs: Add case sensitivity info to file_kattr
+* [PATCH v4 02/16] fat: Implement fileattr_get for case sensitivity
+* [PATCH v4 03/16] exfat: Implement fileattr_get for case sensitivity
+* [PATCH v4 04/16] ntfs3: Implement fileattr_get for case sensitivity
+* [PATCH v4 05/16] hfs: Implement fileattr_get for case sensitivity
+* [PATCH v4 06/16] hfsplus: Report case sensitivity in fileattr_get
+* [PATCH v4 07/16] ext4: Report case sensitivity in fileattr_get
+* [PATCH v4 08/16] xfs: Report case sensitivity in fileattr_get
+* [PATCH v4 09/16] cifs: Implement fileattr_get for case sensitivity
+* [PATCH v4 10/16] nfs: Implement fileattr_get for case sensitivity
+* [PATCH v4 11/16] f2fs: Add case sensitivity reporting to fileattr_get
+* [PATCH v4 12/16] vboxsf: Implement fileattr_get for case sensitivity
+* [PATCH v4 13/16] isofs: Implement fileattr_get for case sensitivity
+* [PATCH v4 14/16] nfsd: Report export case-folding via NFSv3 PATHCONF
+* [PATCH v4 15/16] nfsd: Implement NFSv4 FATTR4_CASE_INSENSITIVE and FATTR4=
+_CASE_PRESERVING
+* [PATCH v4 16/16] ksmbd: Report filesystem case sensitivity via FS_ATTRIBU=
+TE_INFORMATION
 
 and found the following issue:
-UBSAN: array-index-out-of-bounds in reparent_memcg_lruvec_state_local
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/45c0b58d-255a-4579-9880-497bdbd4fb99
+https://ci.syzbot.org/series/34455388-b093-447c-8b60-7680968a516c
 
 ***
 
-UBSAN: array-index-out-of-bounds in reparent_memcg_lruvec_state_local
+kernel build error
 
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
-nux-next
-base:      b775e489bec70895b7ef6b66927886bbac79598f
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      c537e12daeecaecdcd322c56a5f70659d2de7bde
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
 1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/4d8819ab-0f94-42e8-bd70-87c7e83c37d=
-2/config
-syz repro: https://ci.syzbot.org/findings/7850f5dd-4ac7-4b74-85ff-a75ddddeb=
-bee/syz_repro
+config:    https://ci.syzbot.org/builds/2a1b505a-38bd-4edf-97f7-7e8f187fa6f=
+3/config
 
-------------[ cut here ]------------
-UBSAN: array-index-out-of-bounds in mm/memcontrol.c:530:3
-index 33 is out of range for type 'long[33]'
-CPU: 1 UID: 0 PID: 31 Comm: kworker/1:1 Not tainted syzkaller #0 PREEMPT(fu=
-ll)=20
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
-.2-1 04/01/2014
-Workqueue: cgroup_offline css_killed_work_fn
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
- __ubsan_handle_out_of_bounds+0xe8/0xf0 lib/ubsan.c:455
- reparent_memcg_lruvec_state_local+0x34f/0x460 mm/memcontrol.c:530
- reparent_memcg1_lruvec_state_local+0xa7/0xc0 mm/memcontrol-v1.c:1917
- reparent_state_local mm/memcontrol.c:242 [inline]
- memcg_reparent_objcgs mm/memcontrol.c:299 [inline]
- mem_cgroup_css_offline+0xc7c/0xc90 mm/memcontrol.c:4054
- offline_css kernel/cgroup/cgroup.c:5760 [inline]
- css_killed_work_fn+0x12f/0x570 kernel/cgroup/cgroup.c:6055
- process_one_work+0x949/0x15a0 kernel/workqueue.c:3279
- process_scheduled_works kernel/workqueue.c:3362 [inline]
- worker_thread+0x9af/0xee0 kernel/workqueue.c:3443
- kthread+0x388/0x470 kernel/kthread.c:467
- ret_from_fork+0x51b/0xa40 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
- </TASK>
----[ end trace ]---
-Kernel panic - not syncing: UBSAN: panic_on_warn set ...
-CPU: 1 UID: 0 PID: 31 Comm: kworker/1:1 Not tainted syzkaller #0 PREEMPT(fu=
-ll)=20
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
-.2-1 04/01/2014
-Workqueue: cgroup_offline css_killed_work_fn
-Call Trace:
- <TASK>
- vpanic+0x1e0/0x670 kernel/panic.c:490
- panic+0xc5/0xd0 kernel/panic.c:627
- check_panic_on_warn+0x89/0xb0 kernel/panic.c:377
- __ubsan_handle_out_of_bounds+0xe8/0xf0 lib/ubsan.c:455
- reparent_memcg_lruvec_state_local+0x34f/0x460 mm/memcontrol.c:530
- reparent_memcg1_lruvec_state_local+0xa7/0xc0 mm/memcontrol-v1.c:1917
- reparent_state_local mm/memcontrol.c:242 [inline]
- memcg_reparent_objcgs mm/memcontrol.c:299 [inline]
- mem_cgroup_css_offline+0xc7c/0xc90 mm/memcontrol.c:4054
- offline_css kernel/cgroup/cgroup.c:5760 [inline]
- css_killed_work_fn+0x12f/0x570 kernel/cgroup/cgroup.c:6055
- process_one_work+0x949/0x15a0 kernel/workqueue.c:3279
- process_scheduled_works kernel/workqueue.c:3362 [inline]
- worker_thread+0x9af/0xee0 kernel/workqueue.c:3443
- kthread+0x388/0x470 kernel/kthread.c:467
- ret_from_fork+0x51b/0xa40 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
- </TASK>
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
+./include/linux/fileattr.h:74:23: error: use of undeclared identifier 'FS_X=
+FLAG_SYNC'
+./include/linux/fileattr.h:74:23: error: use of undeclared identifier 'FS_X=
+FLAG_IMMUTABLE'
+./include/linux/fileattr.h:74:23: error: use of undeclared identifier 'FS_X=
+FLAG_APPEND'
+./include/linux/fileattr.h:74:23: error: use of undeclared identifier 'FS_X=
+FLAG_NODUMP'
+./include/linux/fileattr.h:74:23: error: use of undeclared identifier 'FS_X=
+FLAG_NOATIME'
+./include/linux/fileattr.h:74:23: error: use of undeclared identifier 'FS_X=
+FLAG_DAX'
+./include/linux/fileattr.h:74:23: error: use of undeclared identifier 'FS_X=
+FLAG_PROJINHERIT'
 
 ***
 
@@ -197,16 +119,16 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[akpm@linux-foundation.org apais@linux.microsoft.com axelrasmussen@google.c=
-om cgroups@vger.kernel.org chengming.zhou@linux.dev chenridong@huawei.com c=
-henridong@huaweicloud.com david@kernel.org hamzamahfooz@linux.microsoft.com=
- hannes@cmpxchg.org harry.yoo@oracle.com hughd@google.com imran.f.khan@orac=
-le.com kamalesh.babulal@oracle.com lance.yang@linux.dev linux-kernel@vger.k=
-ernel.org linux-mm@kvack.org lorenzo.stoakes@oracle.com mhocko@suse.com mko=
-utny@suse.com muchun.song@linux.dev nphamcs@gmail.com qi.zheng@linux.dev ro=
-man.gushchin@linux.dev shakeel.butt@linux.dev songmuchun@bytedance.com weix=
-ugc@google.com yosry.ahmed@linux.dev yuanchu@google.com zhengqi.arch@byteda=
-nce.com ziy@nvidia.com]
+[adilger.kernel@dilger.ca almaz.alexandrovich@paragon-software.com anna@ker=
+nel.org cel@kernel.org cem@kernel.org chao@kernel.org chuck.lever@oracle.co=
+m djwong@kernel.org frank.li@vivo.com glaubitz@physik.fu-berlin.de hansg@ke=
+rnel.org hirofumi@mail.parknet.co.jp jaegeuk@kernel.org linkinjeon@kernel.o=
+rg linux-cifs@vger.kernel.org linux-ext4@vger.kernel.org linux-f2fs-devel@l=
+ists.sourceforge.net linux-fsdevel@vger.kernel.org linux-nfs@vger.kernel.or=
+g linux-xfs@vger.kernel.org pc@manguebit.org ronniesahlberg@gmail.com senoz=
+hatsky@chromium.org sfrench@samba.org sj1557.seo@samsung.com slava@dubeyko.=
+com sprasad@microsoft.com trondmy@kernel.org tytso@mit.edu yuezhang.mo@sony=
+.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
