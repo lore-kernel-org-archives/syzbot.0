@@ -1,156 +1,112 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C39733986E
-	for <syzbot@lists.linux.dev>; Fri, 16 Jan 2026 16:13:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB759155757
+	for <syzbot@lists.linux.dev>; Fri, 16 Jan 2026 17:24:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768580020; cv=none; b=Hc5eX0rNgQuYzWVCwQowxKw++pHQdwj8/6YNVJxgZntbl6pvBhgR1UDH90+UGLU7f0CdUKC5C8ZOWqAQ2kzuTpHRWjdM9r/n2VAX0r0ndwvMNhDcTmd3hO4j4UJHNAGHU86kEl035F+gEUgxyKaoFiw9Oh7ofOinOQC2pPGxKU4=
+	t=1768584253; cv=none; b=LT9jzj/s7gpgBoI13joVD4NbvVdTek8eXZuAkMAv3qzT3iLgZeonlteYEweGpqnQxpbDMxbVMVkTcmUQ9AZfHkVZmgHcf6taSfESt6joyEDv6a+KnrsEDkiIbsN5ERkogcw2L5ZsNHO1jjcocotyDDSKJ5fht7RwYZxuonwRe7g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768580020; c=relaxed/simple;
-	bh=r3jjAh3mh60Ib3C96zJOKvhDAFHJMf1YaqAAQNpFF9o=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=K8gDnYRa9FiqnnDinGn4vqgwr8Rb/dutOcF4p5ILeEivY7VsgnbzNfOdFvMd5zrfAPpLtPPICPenkk+HYm/XWyKGesxgv4CjZMUb7c/0V82yqxr78lDtRN5HelT2G0liu2yZ8XJmFYykmcdtqSUFi2DPPUyhXU61Am49oHbsMWo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+	s=arc-20240116; t=1768584253; c=relaxed/simple;
+	bh=eaUWx5a17+WlY7sVsrTG564/uSOkWvKgew6Wa/5VwQU=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=a5yaSawoWy3CG9dErHL4G5IAtaxQPjmJ7pGj0NbYPsx8aZptS+vFhOyEucp6WKilYDOSq8zWJrPXy6E7MXh5/AH4TEARXF0ldf3u/HZj6oxI9WJmnPLiBTf0MAPJn/5wNZr409+M9JRsvOj0S/dVN5ks64LoohrafpRPbnGjjMs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-66113da9a75so4344998eaf.3
-        for <syzbot@lists.linux.dev>; Fri, 16 Jan 2026 08:13:38 -0800 (PST)
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-65f6e15ad5bso5918595eaf.1
+        for <syzbot@lists.linux.dev>; Fri, 16 Jan 2026 09:24:11 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768580017; x=1769184817;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GW18BJd0jSvNLSBLK+5GeIvUMjj5PFq3we5kfaKyLBY=;
-        b=nBtX/mjNQvXUpB+Jf9zCPmyuTMh9O+PbO0ljU0H6PM51pDPNQSaOAIRZBV9j6JKCni
-         Gk/gGcSvfvA2hSjbP7nhBWt28+sKF7b9z0ubPxfTuOIKTlt1diMM8ejafc9mHcSrLNZP
-         pTfHWBvFMVBCm8616wwjAmd6G4nhO3HPiMYaTk97nTSlHMOevkpj0uvM5HY48LXAZdeK
-         d90rLyDnsZkOZlyoB9sZXNxiPccofyM9DZ0dBj2pWH59Vd32Eed9LEMYKo5nmzt69/GC
-         QeqwCOfLuYl3ngDDgl8BxjRoY4CKCmnfoj92qnf4idX8hHjGZDmtS8qQMzlBZ9vLVQKj
-         XmOA==
-X-Gm-Message-State: AOJu0Yx0+7fTQN1DFb4TBK2xJ6E783piMNpifmEk3oc7zhPfHaOxRCgY
-	jeM2WqsdIRA1UYRRGM7kyrbFnpFGYYs5blBeL9jJqxtjt94YDXGg/p1pCbsG/dRguF0YX1UiT3J
-	SKHwKKfIs74LVCzi/CUiiLQvNMd2kf7cv0gvRJpQfPbnx3k6vNvZKf5sFyMY=
+        d=1e100.net; s=20230601; t=1768584251; x=1769189051;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=YNe+S83duNDP96HRfgv68+YPmahu3nLB2ZxrKF8/Nho=;
+        b=YqKlt2ff5/3HqD96TQ4U14O8vm68PIA6yUIXypdtiurv7AXLHl2zXW1jmxSEb3OZto
+         u7iTQrYlpHccAnriLZzmpAjI6NaSU1na9JYYa0ZUaftxcTSa7FnXhBlCfn0fcuvOIUL5
+         MtXC1iNayCnwLrpR+qLtwr/U+E9j7KyoSfPCimKMoHXO5him17HbcybxxlpvD5JNDJzb
+         DTP/mqOdehp6UPAfG4MVq2b1W3H3lNtryXUwAZLami6oSQtOAVUoICItetTrfeKR6tle
+         b8VKXzB2xThM3ZY5D+dYxOtZqY8oPBSncstg/igqTRnv9Ifkd+6yGvS/ilIK8iD8dMjh
+         qO6g==
+X-Gm-Message-State: AOJu0Yy1SCtTuNBM4tZJa2OxgMIAxLyZytF6bax7J35BYOmYcezSaJQ7
+	RCf+u44wqDcVS6CaDAOmHpbdgnm+kkpXjZHEWPywjBpeQ9IQlfQiPp8PxGtevR23eTtawUq81A7
+	oRCtxaxkll+UpPGrFfs1VKGE4a7Hrf24MDrkSy8zMmKdPRfR4WjFm6r8Txvs=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:498e:b0:65b:2935:f935 with SMTP id
- 006d021491bc7-661179c2396mr1433844eaf.44.1768580017428; Fri, 16 Jan 2026
- 08:13:37 -0800 (PST)
-Date: Fri, 16 Jan 2026 08:13:37 -0800
-In-Reply-To: <20260116100818.7576-1-kundan.kumar@samsung.com>
+X-Received: by 2002:a05:6820:4dfc:b0:65e:f5db:f478 with SMTP id
+ 006d021491bc7-6611796e728mr1410405eaf.22.1768584250853; Fri, 16 Jan 2026
+ 09:24:10 -0800 (PST)
+Date: Fri, 16 Jan 2026 09:24:10 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <696a63b1.050a0220.58bed.006b.GAE@google.com>
-Subject: [syzbot ci] Re: AG aware parallel writeback for XFS
-From: syzbot ci <syzbot+ci4e530c88485a9c60@syzkaller.appspotmail.com>
-To: amir73il@gmail.com, anuj20.g@samsung.com, axboe@kernel.dk, 
-	brauner@kernel.org, cem@kernel.org, clm@meta.com, dave@stgolabs.net, 
-	david@fromorbit.com, djwong@kernel.org, gost.dev@samsung.com, hch@lst.de, 
-	jack@suse.cz, joshi.k@samsung.com, kundan.kumar@samsung.com, 
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, linux-xfs@vger.kernel.org, 
-	mcgrof@kernel.org, ritesh.list@gmail.com, viro@zeniv.linux.org.uk, 
-	vishak.g@samsung.com, wangyufei@vivo.com, willy@infradead.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <696a743a.a70a0220.31956c.0019.GAE@google.com>
+Subject: [moderation/CI] Re: Exposing case folding behavior
+From: syzbot ci <syzbot+ci65852280ef93a8af@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v3] AG aware parallel writeback for XFS
-https://lore.kernel.org/all/20260116100818.7576-1-kundan.kumar@samsung.com
-* [PATCH v3 1/6] iomap: add write ops hook to attach metadata to folios
-* [PATCH v3 2/6] xfs: add helpers to pack AG prediction info for per-folio tracking
-* [PATCH v3 3/6] xfs: add per-inode AG prediction map and dirty-AG bitmap
-* [PATCH v3 4/6] xfs: tag folios with AG number during buffered write via iomap attach hook
-* [PATCH v3 5/6] xfs: add per-AG writeback workqueue infrastructure
-* [PATCH v3 6/6] xfs: offload writeback by AG using per-inode dirty bitmap and per-AG workers
+[v5] Exposing case folding behavior
+https://lore.kernel.org/all/20260116144616.2098618-1-cel@kernel.org
+* [PATCH v5 01/16] fs: Add case sensitivity info to file_kattr
+* [PATCH v5 02/16] fat: Implement fileattr_get for case sensitivity
+* [PATCH v5 03/16] exfat: Implement fileattr_get for case sensitivity
+* [PATCH v5 04/16] ntfs3: Implement fileattr_get for case sensitivity
+* [PATCH v5 05/16] hfs: Implement fileattr_get for case sensitivity
+* [PATCH v5 06/16] hfsplus: Report case sensitivity in fileattr_get
+* [PATCH v5 07/16] ext4: Report case sensitivity in fileattr_get
+* [PATCH v5 08/16] xfs: Report case sensitivity in fileattr_get
+* [PATCH v5 09/16] cifs: Implement fileattr_get for case sensitivity
+* [PATCH v5 10/16] nfs: Implement fileattr_get for case sensitivity
+* [PATCH v5 11/16] f2fs: Add case sensitivity reporting to fileattr_get
+* [PATCH v5 12/16] vboxsf: Implement fileattr_get for case sensitivity
+* [PATCH v5 13/16] isofs: Implement fileattr_get for case sensitivity
+* [PATCH v5 14/16] nfsd: Report export case-folding via NFSv3 PATHCONF
+* [PATCH v5 15/16] nfsd: Implement NFSv4 FATTR4_CASE_INSENSITIVE and FATTR4=
+_CASE_PRESERVING
+* [PATCH v5 16/16] ksmbd: Report filesystem case sensitivity via FS_ATTRIBU=
+TE_INFORMATION
 
 and found the following issue:
-WARNING in xfs_init_ag_writeback
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/0e34236b-3594-400f-b9cd-6f59b196014f
+https://ci.syzbot.org/series/d2ea26bb-bf32-425f-9fcf-cf458006a00a
 
 ***
 
-WARNING in xfs_init_ag_writeback
+kernel build error
 
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      eeb33083cc4749bdb61582eaeb5c200702607703
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      623fb9912f6af600cda3b6bd166ac738c1115ef4
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/f21aae46-4d21-4410-9132-190ad8ae3994/config
-C repro:   https://ci.syzbot.org/findings/24ec6312-5e15-4750-aa2a-08d381daca26/c_repro
-syz repro: https://ci.syzbot.org/findings/24ec6312-5e15-4750-aa2a-08d381daca26/syz_repro
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/80203eeb-b91e-47ef-a88b-7b916a9b702=
+4/config
 
-loop2: detected capacity change from 0 to 32768
-------------[ cut here ]------------
-kmem_cache of name 'xfs_ag_wb_task' already exists
-WARNING: mm/slab_common.c:110 at kmem_cache_sanity_check mm/slab_common.c:109 [inline], CPU#1: syz.2.19/6098
-WARNING: mm/slab_common.c:110 at __kmem_cache_create_args+0x99/0x310 mm/slab_common.c:310, CPU#1: syz.2.19/6098
-Modules linked in:
-CPU: 1 UID: 0 PID: 6098 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:kmem_cache_sanity_check mm/slab_common.c:109 [inline]
-RIP: 0010:__kmem_cache_create_args+0x9c/0x310 mm/slab_common.c:310
-Code: 43 8e 4d 8b 24 24 49 81 fc b8 78 43 8e 74 20 49 8b 7c 24 f8 48 89 de e8 f2 c0 67 09 85 c0 75 e2 48 8d 3d f7 ca bc 0d 48 89 de <67> 48 0f b9 3a 48 89 df be 20 00 00 00 e8 92 c2 67 09 48 85 c0 0f
-RSP: 0018:ffffc90003817a08 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: ffffffff8bc734a0 RCX: 0000000000000007
-RDX: 000000008bc73406 RSI: ffffffff8bc734a0 RDI: ffffffff8fc6ee40
-RBP: 0000000000080000 R08: ffffffff8fc26e77 R09: 1ffffffff1f84dce
-R10: dffffc0000000000 R11: fffffbfff1f84dcf R12: ffff88810b7a7300
-R13: ffff888115440000 R14: ffffc90003817aa0 R15: 0000000000000190
-FS:  0000555567cf7500(0000) GS:ffff8882a9a05000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f049ffff000 CR3: 00000001b9726000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- __kmem_cache_create include/linux/slab.h:384 [inline]
- xfs_init_ag_writeback+0x41b/0x570 fs/xfs/xfs_aops.c:890
- xfs_fs_fill_super+0x7e3/0x1640 fs/xfs/xfs_super.c:1759
- get_tree_bdev_flags+0x431/0x4f0 fs/super.c:1691
- vfs_get_tree+0x92/0x2a0 fs/super.c:1751
- fc_mount fs/namespace.c:1199 [inline]
- do_new_mount_fc fs/namespace.c:3636 [inline]
- do_new_mount+0x329/0xa50 fs/namespace.c:3712
- do_mount fs/namespace.c:4035 [inline]
- __do_sys_mount fs/namespace.c:4224 [inline]
- __se_sys_mount+0x31d/0x420 fs/namespace.c:4201
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xe2/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f32c139bf4a
-Code: 48 c7 c2 e8 ff ff ff f7 d8 64 89 02 b8 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffd30494b68 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 00007ffd30494bf0 RCX: 00007f32c139bf4a
-RDX: 0000200000009740 RSI: 0000200000009780 RDI: 00007ffd30494bb0
-RBP: 0000200000009740 R08: 00007ffd30494bf0 R09: 0000000000004010
-R10: 0000000000004010 R11: 0000000000000246 R12: 0000200000009780
-R13: 00007ffd30494bb0 R14: 0000000000009768 R15: 0000200000000300
- </TASK>
-----------------
-Code disassembly (best guess):
-   0:	43 8e 4d 8b          	rex.XB mov -0x75(%r13),%cs
-   4:	24 24                	and    $0x24,%al
-   6:	49 81 fc b8 78 43 8e 	cmp    $0xffffffff8e4378b8,%r12
-   d:	74 20                	je     0x2f
-   f:	49 8b 7c 24 f8       	mov    -0x8(%r12),%rdi
-  14:	48 89 de             	mov    %rbx,%rsi
-  17:	e8 f2 c0 67 09       	call   0x967c10e
-  1c:	85 c0                	test   %eax,%eax
-  1e:	75 e2                	jne    0x2
-  20:	48 8d 3d f7 ca bc 0d 	lea    0xdbccaf7(%rip),%rdi        # 0xdbccb1e
-  27:	48 89 de             	mov    %rbx,%rsi
-* 2a:	67 48 0f b9 3a       	ud1    (%edx),%rdi <-- trapping instruction
-  2f:	48 89 df             	mov    %rbx,%rdi
-  32:	be 20 00 00 00       	mov    $0x20,%esi
-  37:	e8 92 c2 67 09       	call   0x967c2ce
-  3c:	48 85 c0             	test   %rax,%rax
-  3f:	0f                   	.byte 0xf
-
+./include/linux/fileattr.h:75:23: error: use of undeclared identifier 'FS_X=
+FLAG_SYNC'
+./include/linux/fileattr.h:75:23: error: use of undeclared identifier 'FS_X=
+FLAG_IMMUTABLE'
+./include/linux/fileattr.h:75:23: error: use of undeclared identifier 'FS_X=
+FLAG_APPEND'
+./include/linux/fileattr.h:75:23: error: use of undeclared identifier 'FS_X=
+FLAG_NODUMP'
+./include/linux/fileattr.h:75:23: error: use of undeclared identifier 'FS_X=
+FLAG_NOATIME'
+./include/linux/fileattr.h:75:23: error: use of undeclared identifier 'FS_X=
+FLAG_DAX'
+./include/linux/fileattr.h:75:23: error: use of undeclared identifier 'FS_X=
+FLAG_PROJINHERIT'
 
 ***
 
@@ -161,3 +117,22 @@ separate fix, please add the following tag to your commit message:
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[adilger.kernel@dilger.ca almaz.alexandrovich@paragon-software.com anna@ker=
+nel.org brauner@kernel.org cel@kernel.org cem@kernel.org chao@kernel.org ch=
+uck.lever@oracle.com djwong@kernel.org frank.li@vivo.com glaubitz@physik.fu=
+-berlin.de hansg@kernel.org hirofumi@mail.parknet.co.jp jack@suse.cz jaegeu=
+k@kernel.org linkinjeon@kernel.org linux-cifs@vger.kernel.org linux-ext4@vg=
+er.kernel.org linux-f2fs-devel@lists.sourceforge.net linux-fsdevel@vger.ker=
+nel.org linux-nfs@vger.kernel.org linux-xfs@vger.kernel.org pc@manguebit.or=
+g ronniesahlberg@gmail.com senozhatsky@chromium.org sfrench@samba.org sj155=
+7.seo@samsung.com slava@dubeyko.com sprasad@microsoft.com trondmy@kernel.or=
+g tytso@mit.edu viro@zeniv.linux.org.uk yuezhang.mo@sony.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
