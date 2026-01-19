@@ -1,212 +1,117 @@
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2070424169D
-	for <syzbot@lists.linux.dev>; Sun, 18 Jan 2026 18:34:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 235422571B0
+	for <syzbot@lists.linux.dev>; Mon, 19 Jan 2026 07:36:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768761261; cv=none; b=QAqdgHda+L3c77A2yzvYoepovOu64hNqpU5KISSRq14PUluBmBai7r33q3DQ3TalkuHn6bcPCK5z3IlMy6n4IX0z7EQDUVCLOuYods0VRRaWS/TzwjUIRwm3SiqXHOEfZroDZYXnlS3rknhMHDUWmHBUiVECnSdmzoDz4dn2xHg=
+	t=1768808214; cv=none; b=Rgr//LyHEKaPmIXnBINodXIEYvs0vFS0pbttD+TjQMJW+u0DA8PNR/4sIyK6043+CQKrvY9v94boqD6qqihE7c4ROH+epVYwV2CG9Ilc0IsEjBJp9EJALAVChtgSu8Lg8fNWuCIEmXXsjf0wUQJ7o2B/NGQ1GDFpXUwDMswm/Wk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768761261; c=relaxed/simple;
-	bh=7VzH9QxivanZ6xHeBb5w168MeRZC4wO2YabBx4KvkT4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=eK0sB+nym1vMHI5WEoztvckk+eRck9MbT//Uymf0XFKsZVWAJ7p/kBqck3M5nz4IlXG+Rki3EdUXDGTWopssVBIx0H6bEHCQJJBIyN0xwgck2z7ZiWSX2vJ/hQ0xFYZTzIVvHmfhWbBNWTqCMsB2e+nMK6hIURk4AxBCMGCfPIs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk; spf=pass smtp.mailfrom=kernel.dk; dkim=pass (2048-bit key) header.d=kernel-dk.20230601.gappssmtp.com header.i=@kernel-dk.20230601.gappssmtp.com header.b=FYWl8vWD; arc=none smtp.client-ip=209.85.167.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel.dk
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel-dk.20230601.gappssmtp.com header.i=@kernel-dk.20230601.gappssmtp.com header.b="FYWl8vWD"
-Received: by mail-oi1-f170.google.com with SMTP id 5614622812f47-45ca17ef16eso648059b6e.0
-        for <syzbot@lists.linux.dev>; Sun, 18 Jan 2026 10:34:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20230601.gappssmtp.com; s=20230601; t=1768761258; x=1769366058; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=0Ie+iFhhS0RrxSDCWeTpUtOBozZzsQPu+fSbKnddFRE=;
-        b=FYWl8vWDopT90hGYk1JDJljmnjD4P2noDdT+yGxFG7IRD17+lxgF+t7GD7kEDZGt6L
-         iM+DK48Js84YC/U9//4i2G0cP0ppiuTcSBxezneNbCKA3waodRvKI+0QEkoTFhEDnzWF
-         8Q2iCTngKab5bxkACNiAQXiOSnZB59U4gLMBeTQo3Nt253le4bO1A8Nw84MjxQETZOub
-         LOwrmXFeFd3ij1tDteY52YBjU/pjinOVA70cMc84EOjEb+roHd83K554VSps5ZE7PtCt
-         fe3Y71uLF5GYirDGaEy2jJIZtojeq50cVulxi498lb2DBHryoFFG8KHxam3icSJHZJfM
-         wVfA==
+	s=arc-20240116; t=1768808214; c=relaxed/simple;
+	bh=HuUrOh/aZlJmGbsPUWkGbSeJNG0jkOM9n10Ak0nVLy4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=D7CJQTQfLgNooSy3/RP9dZV4Zi3dhq/4keoaJ/mpf8eLxToMimj2sjBK93Z8//ycG3vgV0WVZFo2NHR4LWlgP9r4oewTSOeH6n1V0nBI7RC2BvOubL5ShfLKc48zMWXxdseSkya4EpDvCQsZRW0fK3fgHdpzeY5h3eX4YSC6zp8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7cfcc64fb5aso3525090a34.3
+        for <syzbot@lists.linux.dev>; Sun, 18 Jan 2026 23:36:52 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768761258; x=1769366058;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20230601; t=1768808212; x=1769413012;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=0Ie+iFhhS0RrxSDCWeTpUtOBozZzsQPu+fSbKnddFRE=;
-        b=UiNJKZtTcgp0c1OApmdDyBY9TM/lkCC4Hp83FwWcaKudu2+F2H5Sdc+P0/GKQD+Cc6
-         5s3jls2/iU3zxgYNusMXB2DHJTAqL/vEumK6cYN0+A3jSWCoPzlAwJ3TBNTK44Abgats
-         pyxlMduRRwd4ESbHBtgzYs9e3mlN2Ld9DRUlNvT2WKEJb8XvECLoazB93SKYiy9+GEWm
-         2LiynTNuOg/l9lbNcKbxk3U7Cstv4ZPGzkYkXt2fMcUDPiIwwRcAIvkhegso7DCXIh7l
-         k35EL1mABPlX+zU7V10qUtchAlIFCMuscgtMh/9zB2XtfL7e303km71sQkzwzoEztMGn
-         TWrA==
-X-Forwarded-Encrypted: i=1; AJvYcCXO1iY+iqoIJf4aPMef/4/KgwjvSOT5BJTKN2IVXr3RvzP1VwYkDVOj3EpCMHVwSgeKGXLaJA8=@lists.linux.dev
-X-Gm-Message-State: AOJu0YwzNdxQl4AodC6gGo6bC8X6PpxayAi27Txdh1cScxXCgG8hkkBe
-	6h0Ln8u8xPKja8px/tT1QxILxZMzoEVeLd5CjqMe2yJaG5963X02/j78sFBUAL9SNr8=
-X-Gm-Gg: AY/fxX7QYkNnulHc5r0mR+yXGI8u26TOSMhPPs+5Dg9ZSkPsDIX9Y1xwI77brUeeV6d
-	iIxZ81SMB/qUDg6QMMMiBSFmu9MNMTfZ9JHufBrWKK4Hh82RWqfxjeOsHgR6vRGjhKSlv6ApR4l
-	Gqq6SRNRZKzban8rcEsRykRuX8hrEwx5UQkiutXICznTrCxX/pyim3jIfw50tpgzD1aW1tCWkpH
-	UwEjnMrrm6JmFdbQavJFtc/hX4dKbBZzGYZUKCeZHzk9CkO4h0vMiFhpFuXtq+cWhloi/Dzy8Wy
-	wSUQXLSFrKg2JHdyRZZpF+OQ9PaLY0ytK84w7IGeEpaqZ8TZHF1im1LtI4crQljWJX1jbPIyUwd
-	5bCnaGdCartLE8G7XjTTDex7zllFrLDXnhXONOapQmBjXlmPWAnz/ZjncUTu4WvusFvJhSCuCyk
-	sNtvp7m3AezfkQZiicG+v1FoFRb3XP6ogb0gJEgkxg78YVA2uVD6R6S7RmyySQafNWfHnkpw==
-X-Received: by 2002:a05:6808:244e:b0:45a:9eff:8322 with SMTP id 5614622812f47-45c9d8a6d79mr3574014b6e.58.1768761257989;
-        Sun, 18 Jan 2026 10:34:17 -0800 (PST)
-Received: from [192.168.1.150] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-45c9df08545sm4403291b6e.8.2026.01.18.10.34.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Jan 2026 10:34:17 -0800 (PST)
-Message-ID: <0bc36797-fe4e-46ba-933d-0b3d508ed0dd@kernel.dk>
-Date: Sun, 18 Jan 2026 11:34:15 -0700
+        bh=58ugz7mDp3C1DxMVLVk5JvVtFXwk0YGsy5qOwlBysWs=;
+        b=VRTzEstNHdv2IBYODTzjlb0PZmXddoEROhTW9eCJwXfD0rSkkC8GiW7nBQXd5ZLyom
+         02UwIiMxt64L96NFsRHTdkFjuBSRXmkMj/RhcNrC7zwOo9H/Jg9wR1WQncZjwl3vWItd
+         t0xkTpRT6F+YB9ZFS0YDQvtK5t8lfOF5xMedBREiwk/s7hNn3R16U/c/WGlm+tCNY5yp
+         KPwJZRYR17BkG3ZfAbTl7cSBuI5V4VyxDSEVeD0g2NQtIajLn1GExb0XjRvFkmGtv97q
+         fDK+sqpESu9ZbbhoiohDwOk54AHOApmPAhByeh+CVd4/2bUPVlQIKDf1al+e0iDwFLSn
+         DTPg==
+X-Gm-Message-State: AOJu0YzBSXe/M6D/IWICPMqc77ko6IPgbi69JeuKHfyPEbRA+ygkQ2oH
+	ieQHpqWaCI2P6Bt9AyYQYGUu1oqlF6iBHk53uuU47oWRo0DOOoG1dfgM5+qjVEIAXPJ7qhvRCjJ
+	OTRAYpU4Z/tHA0df1+AO4RdP4dmjrZLRpIAkPOxWnq9Q1hxWf++iE6l8eb6Q=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [syzbot ci] Re: io_uring: avoid uring_lock for
- IORING_SETUP_SINGLE_ISSUER
-To: Caleb Sander Mateos <csander@purestorage.com>,
- syzbot ci <syzbot+ci6d21afd0455de45a@syzkaller.appspotmail.com>
-Cc: io-uring@vger.kernel.org, joannelkoong@gmail.com,
- linux-kernel@vger.kernel.org, oliver.sang@intel.com,
- syzbot@syzkaller.appspotmail.com, syzbot@lists.linux.dev,
- syzkaller-bugs@googlegroups.com
-References: <20251218024459.1083572-1-csander@purestorage.com>
- <6943b4db.a70a0220.25eec0.0028.GAE@google.com>
- <CADUfDZq7MK3r6c05CohT0hMowq-gqffGid-eC1cDGKy+4aaS=A@mail.gmail.com>
-Content-Language: en-US
-From: Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <CADUfDZq7MK3r6c05CohT0hMowq-gqffGid-eC1cDGKy+4aaS=A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6820:627:b0:65e:f0f9:aa5f with SMTP id
+ 006d021491bc7-66117a11c24mr4723901eaf.68.1768808211770; Sun, 18 Jan 2026
+ 23:36:51 -0800 (PST)
+Date: Sun, 18 Jan 2026 23:36:51 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <696ddf13.a70a0220.34546f.0421.GAE@google.com>
+Subject: [moderation/CI] Re: mm/readahead: batch folio insertion to improve performance
+From: syzbot ci <syzbot+ci6f93ead4dbeb73e2@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 12/22/25 1:19 PM, Caleb Sander Mateos wrote:
-> On Thu, Dec 18, 2025 at 3:01?AM syzbot ci
-> <syzbot+ci6d21afd0455de45a@syzkaller.appspotmail.com> wrote:
->>
->> syzbot ci has tested the following series
->>
->> [v6] io_uring: avoid uring_lock for IORING_SETUP_SINGLE_ISSUER
->> https://lore.kernel.org/all/20251218024459.1083572-1-csander@purestorage.com
->> * [PATCH v6 1/6] io_uring: use release-acquire ordering for IORING_SETUP_R_DISABLED
->> * [PATCH v6 2/6] io_uring: clear IORING_SETUP_SINGLE_ISSUER for IORING_SETUP_SQPOLL
->> * [PATCH v6 3/6] io_uring: ensure submitter_task is valid for io_ring_ctx's lifetime
->> * [PATCH v6 4/6] io_uring: use io_ring_submit_lock() in io_iopoll_req_issued()
->> * [PATCH v6 5/6] io_uring: factor out uring_lock helpers
->> * [PATCH v6 6/6] io_uring: avoid uring_lock for IORING_SETUP_SINGLE_ISSUER
->>
->> and found the following issue:
->> INFO: task hung in io_wq_put_and_exit
->>
->> Full report is available here:
->> https://ci.syzbot.org/series/21eac721-670b-4f34-9696-66f9b28233ac
->>
->> ***
->>
->> INFO: task hung in io_wq_put_and_exit
->>
->> tree:      torvalds
->> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
->> base:      d358e5254674b70f34c847715ca509e46eb81e6f
->> arch:      amd64
->> compiler:  Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
->> config:    https://ci.syzbot.org/builds/1710cffe-7d78-4489-9aa1-823b8c2532ed/config
->> syz repro: https://ci.syzbot.org/findings/74ae8703-9484-4d82-aa78-84cc37dcb1ef/syz_repro
->>
->> INFO: task syz.1.18:6046 blocked for more than 143 seconds.
->>       Not tainted syzkaller #0
->>       Blocked by coredump.
->> "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
->> task:syz.1.18        state:D stack:25672 pid:6046  tgid:6045  ppid:5971   task_flags:0x400548 flags:0x00080004
->> Call Trace:
->>  <TASK>
->>  context_switch kernel/sched/core.c:5256 [inline]
->>  __schedule+0x14bc/0x5000 kernel/sched/core.c:6863
->>  __schedule_loop kernel/sched/core.c:6945 [inline]
->>  schedule+0x165/0x360 kernel/sched/core.c:6960
->>  schedule_timeout+0x9a/0x270 kernel/time/sleep_timeout.c:75
->>  do_wait_for_common kernel/sched/completion.c:100 [inline]
->>  __wait_for_common kernel/sched/completion.c:121 [inline]
->>  wait_for_common kernel/sched/completion.c:132 [inline]
->>  wait_for_completion+0x2bf/0x5d0 kernel/sched/completion.c:153
->>  io_wq_exit_workers io_uring/io-wq.c:1328 [inline]
->>  io_wq_put_and_exit+0x316/0x650 io_uring/io-wq.c:1356
->>  io_uring_clean_tctx+0x11f/0x1a0 io_uring/tctx.c:207
->>  io_uring_cancel_generic+0x6ca/0x7d0 io_uring/cancel.c:652
->>  io_uring_files_cancel include/linux/io_uring.h:19 [inline]
->>  do_exit+0x345/0x2310 kernel/exit.c:911
->>  do_group_exit+0x21c/0x2d0 kernel/exit.c:1112
->>  get_signal+0x1285/0x1340 kernel/signal.c:3034
->>  arch_do_signal_or_restart+0x9a/0x7a0 arch/x86/kernel/signal.c:337
->>  __exit_to_user_mode_loop kernel/entry/common.c:41 [inline]
->>  exit_to_user_mode_loop+0x87/0x4f0 kernel/entry/common.c:75
->>  __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
->>  syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [inline]
->>  syscall_exit_to_user_mode_work include/linux/entry-common.h:159 [inline]
->>  syscall_exit_to_user_mode include/linux/entry-common.h:194 [inline]
->>  do_syscall_64+0x2e3/0xf80 arch/x86/entry/syscall_64.c:100
->>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->> RIP: 0033:0x7f6a8b58f7c9
->> RSP: 002b:00007f6a8c4a00e8 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
->> RAX: 0000000000000001 RBX: 00007f6a8b7e5fa8 RCX: 00007f6a8b58f7c9
->> RDX: 00000000000f4240 RSI: 0000000000000081 RDI: 00007f6a8b7e5fac
->> RBP: 00007f6a8b7e5fa0 R08: 3fffffffffffffff R09: 0000000000000000
->> R10: 0000000000000800 R11: 0000000000000246 R12: 0000000000000000
->> R13: 00007f6a8b7e6038 R14: 00007ffcac96d220 R15: 00007ffcac96d308
->>  </TASK>
->> INFO: task iou-wrk-6046:6047 blocked for more than 143 seconds.
->>       Not tainted syzkaller #0
->> "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
->> task:iou-wrk-6046    state:D stack:27760 pid:6047  tgid:6045  ppid:5971   task_flags:0x404050 flags:0x00080002
->> Call Trace:
->>  <TASK>
->>  context_switch kernel/sched/core.c:5256 [inline]
->>  __schedule+0x14bc/0x5000 kernel/sched/core.c:6863
->>  __schedule_loop kernel/sched/core.c:6945 [inline]
->>  schedule+0x165/0x360 kernel/sched/core.c:6960
->>  schedule_timeout+0x9a/0x270 kernel/time/sleep_timeout.c:75
->>  do_wait_for_common kernel/sched/completion.c:100 [inline]
->>  __wait_for_common kernel/sched/completion.c:121 [inline]
->>  wait_for_common kernel/sched/completion.c:132 [inline]
->>  wait_for_completion+0x2bf/0x5d0 kernel/sched/completion.c:153
->>  io_ring_ctx_lock_nested+0x2b3/0x380 io_uring/io_uring.h:283
->>  io_ring_ctx_lock io_uring/io_uring.h:290 [inline]
->>  io_ring_submit_lock io_uring/io_uring.h:554 [inline]
->>  io_files_update+0x677/0x7f0 io_uring/rsrc.c:504
->>  __io_issue_sqe+0x181/0x4b0 io_uring/io_uring.c:1818
->>  io_issue_sqe+0x1de/0x1190 io_uring/io_uring.c:1841
->>  io_wq_submit_work+0x6e9/0xb90 io_uring/io_uring.c:1953
->>  io_worker_handle_work+0x7cd/0x1180 io_uring/io-wq.c:650
->>  io_wq_worker+0x42f/0xeb0 io_uring/io-wq.c:704
->>  ret_from_fork+0x599/0xb30 arch/x86/kernel/process.c:158
->>  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
->>  </TASK>
-> 
-> Interesting, a deadlock between io_wq_exit_workers() on submitter_task
-> (which is exiting) and io_ring_ctx_lock() on an io_uring worker
-> thread. io_ring_ctx_lock() is blocked until submitter_task runs task
-> work, but that will never happen because it's waiting on the
-> completion. Not sure what the best approach is here. Maybe have the
-> submitter_task alternate between running task work and waiting on the
-> completion? Or have some way for submitter_task to indicate that it's
-> exiting and disable the IORING_SETUP_SINGLE_ISSUER optimization in
-> io_ring_ctx_lock()?
+syzbot ci has tested the following series
 
-Finally got around to taking a look at this patchset today, and it does
-look sound to me. For cases that have zero expected io-wq activity, then
-it seems like a no-brainer. For cases that have a lot of expected io-wq
-activity, which are basically only things like fs/storage workloads on
-suboptimal configurations, the then the suspend/resume mechanism may be
-troublesome. But not quite sure what to do about that, or if it's evne
-noticable?
+[v1] mm/readahead: batch folio insertion to improve performance
+https://lore.kernel.org/all/20260119065027.918085-1-zhiguo.zhou@intel.com
+* [PATCH 1/2] mm/filemap: refactor __filemap_add_folio to separate critical=
+ section
+* [PATCH 2/2] mm/readahead: batch folio insertion to improve performance
 
-For the case in question, yes I think we'll need the completion wait
-cases to break for running task_work.
+and found the following issue:
+kernel build error
 
--- 
-Jens Axboe
+Full report is available here:
+https://ci.syzbot.org/series/18c2323b-a79e-49af-b87d-c7efb03f88c2
+
+***
+
+kernel build error
+
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
+.git
+base:      ab43a28fc5b9faf53aa9e3210dcc0b5a0842e241
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/4578b5ab-2df7-4d96-b41a-c357791c029=
+f/config
+
+mm/filemap.c:861:2: error: member reference type 'spinlock_t' (aka 'struct =
+spinlock') is not a pointer; did you mean to use '.'?
+mm/filemap.c:861:2: error: cannot take the address of an rvalue of type 'st=
+ruct lockdep_map'
+mm/filemap.c:941:3: error: member reference type 'spinlock_t' (aka 'struct =
+spinlock') is not a pointer; did you mean to use '.'?
+mm/filemap.c:941:3: error: cannot take the address of an rvalue of type 'st=
+ruct lockdep_map'
+mm/filemap.c:944:3: error: member reference type 'spinlock_t' (aka 'struct =
+spinlock') is not a pointer; did you mean to use '.'?
+mm/filemap.c:944:3: error: cannot take the address of an rvalue of type 'st=
+ruct lockdep_map'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[akpm@linux-foundation.org david@kernel.org gang.deng@intel.com liam.howlet=
+t@oracle.com linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org lin=
+ux-mm@kvack.org lorenzo.stoakes@oracle.com mhocko@suse.com muchun.song@linu=
+x.dev osalvador@suse.de rppt@kernel.org surenb@google.com tianyou.li@intel.=
+com tim.c.chen@linux.intel.com vbabka@suse.cz willy@infradead.org zhiguo.zh=
+ou@intel.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
