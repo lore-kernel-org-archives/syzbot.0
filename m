@@ -1,94 +1,78 @@
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
+Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com [209.85.160.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DD34274B40
-	for <syzbot@lists.linux.dev>; Mon,  2 Feb 2026 19:50:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41D5A14884C
+	for <syzbot@lists.linux.dev>; Mon,  2 Feb 2026 21:17:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770061833; cv=none; b=FMSYmtlMgzeSdR5D2mS8Tj89xIs2WgUNINUqkuckrUxVhxts3DISzNjUlIKqo9Qm13P1a9Us8kScF09ShflOItlQNN777+isHG14XYC6vGA1HC0Tn45xUtg7BzvYMUmRkGLxEpmvtnNaktTmlA1cZff+TK7fPYcLPk5wYep7nck=
+	t=1770067054; cv=none; b=aNVdSJ9vGiMg7HpskFvscvjhAmsN8feiZJVIecAJv1F7xuNKIbP3y3oqZbOr27uYGP53626zQD4WEVBmabz8przTUE3GuacoXLqeUvpaiBzn/gDrD5KiHjVuZS9y9hT0va/Tc5j7yKmSFsYi+0NaxoUIYP7K7KRYlxRNpFxgEcY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770061833; c=relaxed/simple;
-	bh=GfX8yBGqeWmz3tBIRn4TwYvuvCj4nlwz+ZnoqoF6QiM=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=PIas2366DnIyyLN028ufzQod7vC7/YHGkScZN1Ijm6iAqdWSXKj4UIWlpGVdks+RDW5c684vrinutzUMfsSWhjHvM20MWsx2mc5cuu4susUP6RanXMF5yb8Urz2nMh/ykOtPGhY3nado76Mdg4GFI99PvZ+g/am0viNgvd53SXk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
+	s=arc-20240116; t=1770067054; c=relaxed/simple;
+	bh=8OlD1WqsaMz5hGTnjxfMnPH7IcDuv7bXZwU6faLyWM0=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=euipi89dPYj+xkjdKW3aXr4YggZVbA7soESb2mu0fRD1R4mUnekpfTIcBttAZkXIZRMTCVUNp+dP8rmha45qeCQI3gGdNrMPkQUyiSeL7yOJP2wBr3qrncqkUbDLlUzaUqfmw7GjKvmMJVC4qm0nxKvzZjtf1uZHiEWHJfwbwek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-662f738c3bfso18668567eaf.0
-        for <syzbot@lists.linux.dev>; Mon, 02 Feb 2026 11:50:29 -0800 (PST)
+Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-40450320b4fso10693088fac.0
+        for <syzbot@lists.linux.dev>; Mon, 02 Feb 2026 13:17:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770061828; x=1770666628;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wu30YakWnY6j6/qFXe6YMLVJvnoh85p5uAefyF3O/xQ=;
-        b=gynH72BqMCRD5du2id/XVXOnk+UjeW7Prl3Rrf9b3birLwRetqHQUFdEQF7YVcYXmK
-         x9E19qVzZQdRtwJTdvfE8oLRaF9pRF9Qmmjdoo1a/DsV125y9fuCVizOqOrJ7u+gjxCT
-         u+gWrqPJ11QDYTpyUmtek3FXTj5aD/AsXLUdNsyRDBrWA6bZx03xW0mZBSfqyVb+gA5I
-         uF3+x6NjgIR9GGlr/Qoi8B9qMAbFkZRzw+d6AGs0Jo4xaCSnu9195OS3S+As5Qp9B1Kr
-         HrDOAQ0+NHdBWUxuV61eRKBKYlzAbcyMvZjHuDZSu9lpP+xa2F1k0bTGaCQENXTQw0TX
-         hQCw==
-X-Gm-Message-State: AOJu0YxM1uolT1gU1N8l9omt1+kB5bAme9/i6EuiU2YnFu6S6R9T0sQS
-	BqpTdZfwS6l4i7tzRusytQ4cOsZ/BOd2lazsIkbxvqyBGgTMiUW5IpkfcrFUpjOYvMmhaBNxrHV
-	QNbm0rSyM8l1eT2T2Rw7JyDEbiIrViS8nsAN2tbeTQ0fdXjk6uTkLfM05e+Y=
+        d=1e100.net; s=20230601; t=1770067052; x=1770671852;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=EWh/FBuHoVqs395IgmY1H4qXVIfK0yRdqJ+nsPL3Fis=;
+        b=W5RFVCiPD7TKpfVQSxXCFN0Hx8gHZf8IwlL8UbsUjnsW9XbVhO0ry2AhGoi6ZGFfbr
+         QJWhLZjKy38LIXZOcjJJK1bl8dBK5cNbmyyeTJh9dro+o2E22Z6QwFJtplt7WDX+Ye79
+         5mhSl3c10W5SbwS+I0A5NZqA4yU3Vlzpym82tD2AaBqpEPuY1WggKIs4nZTY7xaEj/20
+         oWZWCfbyCDpdl8KxDDEYYY+3ixgHQxDeZJlTPGmXZ9qH1IEKiWVJ145vAN+uO/7F1Mh/
+         uTNirQCHNo0bF4MXSJQm7wCYye2vguRzkL2z/vt5+TsHtxZxwJGdCauRlVWyY//zVPzZ
+         nxzQ==
+X-Gm-Message-State: AOJu0YxvGsriJ28uggvtWdYKrLYskhz+TDLcu5lrI+BhJulVHxgA1ZTM
+	gY55pLXO7ryvQyugZQIhujnLtQ3xmOS3WOoAuF4RtZqYOwcFMpAZIwqbUq0cmAPw8dHa07CC0Hr
+	98gPanr3FgwqGtfC4MwX386D+Yx4r5DlbFFzXwOamxDDtWSnoyRlw9gyMagY=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1a08:b0:661:ae2:95fb with SMTP id
- 006d021491bc7-6630f3b82abmr5382180eaf.75.1770061828117; Mon, 02 Feb 2026
- 11:50:28 -0800 (PST)
-Date: Mon, 02 Feb 2026 11:50:28 -0800
+X-Received: by 2002:a4a:ee0d:0:b0:662:f764:9050 with SMTP id
+ 006d021491bc7-6630f35804fmr5677965eaf.41.1770067052057; Mon, 02 Feb 2026
+ 13:17:32 -0800 (PST)
+Date: Mon, 02 Feb 2026 13:17:32 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69810004.050a0220.1d0a41.002c.GAE@google.com>
-Subject: [moderation/CI] Re: dpll: Core improvements and ice E825-C SyncE support
-From: syzbot ci <syzbot+ci68b7621f6fabdcd1@syzkaller.appspotmail.com>
+Message-ID: <6981146c.a00a0220.488d7.0023.GAE@google.com>
+Subject: [moderation/CI] Re: net: ifb: record drop reason when redirect device
+ is missing
+From: syzbot ci <syzbot+ci2dfc187b5c11efa5@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v4] dpll: Core improvements and ice E825-C SyncE support
-https://lore.kernel.org/all/20260202171638.17427-1-ivecera@redhat.com
-* [PATCH net-next v4 1/9] dpll: Allow associating dpll pin with a firmware =
-node
-* [PATCH net-next v4 2/9] dpll: zl3073x: Associate pin with fwnode handle
-* [PATCH net-next v4 3/9] dpll: Add notifier chain for dpll events
-* [PATCH net-next v4 4/9] dpll: Support dynamic pin index allocation
-* [PATCH net-next v4 5/9] dpll: zl3073x: Add support for mux pin type
-* [PATCH net-next v4 6/9] dpll: Enhance and consolidate reference counting =
-logic
-* [PATCH net-next v4 7/9] dpll: Add reference count tracking support
-* [PATCH net-next v4 8/9] drivers: Add support for DPLL reference count tra=
-cking
-* [PATCH net-next v4 9/9] ice: dpll: Support E825-C SyncE and dynamic pin d=
-iscovery
+[v1] net: ifb: record drop reason when redirect device is missing
+https://lore.kernel.org/all/20260202191135.7668-1-murariprasadsamal57@gmail.com
+* [PATCH] net: ifb: record drop reason when redirect device is missing
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/6e56fe77-3149-48fd-a446-971924fed7c5
+https://ci.syzbot.org/series/d7d816eb-4146-4491-81b2-e48b630b1f8d
 
 ***
 
 kernel build error
 
 tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net-next.git
-base:      a22f57757f7e88c890499265c383ecb32900b645
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      40cb4cb77ea26d65156f0442c846d5f7ff497839
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/067661f9-73a6-46e9-bc30-e091796a524=
-d/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/1f29e847-a783-455b-a6aa-476a9e74ca65/config
 
-./include/linux/dpll.h:235:1: error: expected identifier or '('
+drivers/net/ifb.c:118:26: error: use of undeclared identifier 'SKB_DROP_REASON_NO_DEV'; did you mean 'SKB_DROP_REASON_NOMEM'?
 
 ***
 
@@ -101,15 +85,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[aleksander.lobakin@intel.com aleksandr.loktionov@intel.com andrew@lunn.ch =
-anthony.l.nguyen@intel.com arkadiusz.kubalewski@intel.com davem@davemloft.n=
-et edumazet@google.com grzegorz.nitka@intel.com intel-wired-lan@lists.osuos=
-l.org ivecera@redhat.com jiri@resnulli.us jonathan.lemon@gmail.com kuba@ker=
-nel.org leon@kernel.org linux-kernel@vger.kernel.org linux-rdma@vger.kernel=
-.org mbloch@nvidia.com netdev@vger.kernel.org pabeni@redhat.com poros@redha=
-t.com prathosh.satish@microchip.com przemyslaw.kitszel@intel.com richardcoc=
-hran@gmail.com saeedm@nvidia.com tariqt@nvidia.com vadim.fedorenko@linux.de=
-v]
+[andrew@lunn.ch davem@davemloft.net edumazet@google.com kuba@kernel.org murariprasadsamal57@gmail.com netdev@vger.kernel.org pabeni@redhat.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
