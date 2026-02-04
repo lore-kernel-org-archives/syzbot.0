@@ -1,39 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45DFB38F229
-	for <syzbot@lists.linux.dev>; Wed,  4 Feb 2026 09:04:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07A6A23EA8B
+	for <syzbot@lists.linux.dev>; Wed,  4 Feb 2026 09:23:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770195860; cv=none; b=ga1EUaPMU4MIt3MiY/LbS3NOgk2XUzhegp7OVQQkbx8E4wTXP7D7vz5sjj5MYMHnImjJWjYM8smJerF5F2fgWA51TR8c53F+GAVixihJuyo4L0Mgh9hWwqV3NZ/OFBvaL1KmehqipxQW7+6LeIWm2VCd/5vMlOgvEq3j4SdwS/4=
+	t=1770196981; cv=none; b=O0SXN2PcL0ArWG2LIjuQoLxjCpwhAHL4wAEX/igXceAkK5/WlGJDlLtz53CJUO/7JVTEcTPVlzrUR7jRadSbIZSiKJadYCu0xmed9l5XXd6/DmD/IRc2LNCsgiSO6bLr/NdPzWnI95UU8df4i8rfaOOLxvxj92eM7dEbod/NjOw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770195860; c=relaxed/simple;
-	bh=T7F6fR0n0pL7rDUr70MN2AiuRO8sSUHn8dTQD2c6ck8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=WjXPaf4Qn+ZofWt0dzK/LiAgWLQqbEb7Xegk5uY5pDqYKUNbscLrs6QfQz/asgsZv6kmj0ndAKyqDh1xOHu05vDBBv43T42TLiN4/CfYuKgvs1RfNLcg9Cx45RX6M2udNuXWDGs35gvljfa0YIz3HfCFpT0di1F7uznEU3nFIlE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z1fPe6k0; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770196981; c=relaxed/simple;
+	bh=xpBNHLw1ybQAm9G2QR0TrOLsIa2kQxFTbxJgZSQ8QvI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=iO8ghjqJpm2XgYySSRJ7xua8vqmLjaTn3cA/hiyutJ5U3eGvJrwhUXZLQzbH1Y9tarnVjb7QvOjntgTJyRt6mTqzmlyUR1/zm/gZSruW340YSeyIGNfpsB0OuoJfmdgnLBgSbyzcwGZ+qVOi3fjM+eR2dyCK3J2qNKq+7uGOPUg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c6mgO+17; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z1fPe6k0"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c6mgO+17"
 Received: by smtp.kernel.org (Postfix)
-	id EA66BC16AAE; Wed,  4 Feb 2026 09:04:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFEA9C4CEF7;
-	Wed,  4 Feb 2026 09:04:18 +0000 (UTC)
+	id A2611C16AAE; Wed,  4 Feb 2026 09:23:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A0CEC4CEF7;
+	Wed,  4 Feb 2026 09:22:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770195859;
-	bh=T7F6fR0n0pL7rDUr70MN2AiuRO8sSUHn8dTQD2c6ck8=;
+	s=k20201202; t=1770196980;
+	bh=xpBNHLw1ybQAm9G2QR0TrOLsIa2kQxFTbxJgZSQ8QvI=;
 	h=From:To:Cc:Subject:Date:From;
-	b=Z1fPe6k03FlLPTV16oQBeNz8zXMufD+lKl9gbVjCOtNO68bzd8sRtDqxU+3BdzvRF
-	 EXeq9R3M1W4hytvKGYl1exkwQIjEOZZOdwRoY12+zkuGGXH+k50SwkE1d79zgZ7+Zf
-	 wu18WGS9mBUkr0czwk1j+z6xs5ieN+bwIG0+m2i0fqnlYGTjG+iavIzx2YMhWi7jrW
-	 BePgp9jmPtIak//xsdKvUp1ypanXWn2Ug3jcf2w5p39cB5s+OzGRgEJqClek+uFsbZ
-	 fpoVWJ5EzrhgDXOv23mrmEyafZGxOzX6/DiefE1r9ijfmioD27NdolHy5fyD6gkP/L
-	 gqoqm3ZRKZ7AA==
+	b=c6mgO+179ipCFsaJ3+MxLIojtjIeuMwGB9/lhzbLg2stnjYZ5nSM9o+NAy7A+gjdq
+	 2qkudYPJEngZSWNlzsFI2m+qhiPL/l9/Ihei+igdFS2AUPsDRCeMXu4VSwGIVu7rSQ
+	 6M0hc6zBDp2v7k4MCzpGpTFWKE9LU0WGjm1Feq2oCyjKtAfHIxoDXuzu0tjqfcaqD0
+	 bCpK6eey8PVoZAJ5PSbbnSwY3MMQay3TOjP382smn4mI+nx8cu1VIjbGLbtC3pilD+
+	 ej3jLhObd/3JLwEqBNdJFCOCFcparqdF98hv85zYTR06iiR9Fc/p3j4KYoj90AXgk4
+	 qo/1kKWe2Kg+Q==
 From: syzbot <syzbot@kernel.org>
-To: dvyukov@google.com
+To: jfs-discussion@lists.sourceforge.net,
+	shaggy@kernel.org,
+	ghandatmanas@gmail.com
 Cc: syzbot <syzbot@kernel.org>,
-	syzkaller-upstream-moderation@googlegroups.com
+	Dmitry Vyukov <dvyukov@google.com>,
+	syzbot+1afe7ef2d0062e19eeb3@syzkaller.appspotmail.com,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
 Subject: [PATCH] jfs: fix array-index-out-of-bounds in dbFindLeaf
-Date: Wed,  4 Feb 2026 10:03:51 +0100
-Message-ID: <20260204090351.2534592-1-syzbot@kernel.org>
+Date: Wed,  4 Feb 2026 10:22:30 +0100
+Message-ID: <20260204092230.2540042-1-syzbot@kernel.org>
 X-Mailer: git-send-email 2.53.0.rc2.204.g2597b5adb4-goog
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
@@ -76,8 +81,12 @@ equal to or greater than the array size.
 Signed-off-by: syzbot@kernel.org
 Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
 Fixes: 22cad8bc1d36 ("jfs: fix array-index-out-of-bounds in dbFindLeaf")
-To: <syzkaller-upstream-moderation@googlegroups.com>
-Cc: <syzkaller-upstream-moderation@googlegroups.com>
+Reported-by: syzbot+1afe7ef2d0062e19eeb3@syzkaller.appspotmail.com
+To: <jfs-discussion@lists.sourceforge.net>
+To: "Dave Kleikamp" <shaggy@kernel.org>
+To: "Manas Ghandat" <ghandatmanas@gmail.com>
+Cc: <linux-kernel@vger.kernel.org>
+Cc: <stable@vger.kernel.org>
 ---
 This patch was generated by Google Gemini LLM model.
 It was pre-reviewed and Signed-off-by a human, but please review carefully.
