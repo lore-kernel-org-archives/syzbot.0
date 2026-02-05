@@ -1,50 +1,50 @@
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F89E33A036
-	for <syzbot@lists.linux.dev>; Thu,  5 Feb 2026 06:10:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EEDA3B8D5C
+	for <syzbot@lists.linux.dev>; Thu,  5 Feb 2026 12:42:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770271844; cv=none; b=HPRmlPCyUQC228BeRdrplUYXkLhPArwZUYInslI9O6j6DsRFy+QryDEe5LCnNh8FcPe4U7HiqMHiBE8eZVulz2wLkG1Q9kkIOcr3dtgLJdEtJr9juDC0Y12y63OuYccg76aCmLQmzskcZZxGOiQDj7dXETM3vpUadaHuZL12BJk=
+	t=1770295378; cv=none; b=Y9uXaBalQmjBuu26E4gxG5CXFElNxhd2hHuWycj8PkcJ+F+htsekoCxQEUHUyufj4UEYbUggc4aPFBF4Hi+r0Oypw7O7b3gcHQCjQYJnc3u6LUiKZhqufk+W6BnIBkq5tvySpG0akyMzMrr9e0R07vfwWLpE35SFhDRAe0NFtXw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770271844; c=relaxed/simple;
-	bh=2ziJc7cI/uyrs7Juk6JuEis7CRg9VsH66Cj99UmTTvI=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=XJFILzZDP860kUqpNJRKH+cSu4RY4FXqQihKtt/jSuRxaa1QDgovwS9Wh3TSsK+CSsxALvBy0RnQ44ImsDNlPc2EeP6zJCh5sb2f0sa3WHeUEgvdgwViWPieWOGWivfnkhDgPOar27ma17JtygNWX4AybMliEnQqT8bTWRyulsc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.70
+	s=arc-20240116; t=1770295378; c=relaxed/simple;
+	bh=HbQ685NjOyyGti7IP1lteBCtEhzoOORBpXuNvNjdyQw=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=NjN0+FngOKzWcGYLqZgtrxpQ4QqPJMm88f07I6TIuOkkkTQlaB5X6O5JYRVXp3Nm62sONMf5RbaKS8nXbC4efo0ApFEYcyq90CihLqVO1Pvfk4X923qSCjcVrUKd/u+eg7Hg+9J+4osSIdwREPDjuBiLCvGPa4QtpI4i17RNSl4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-7d1936b8a7cso1999713a34.3
-        for <syzbot@lists.linux.dev>; Wed, 04 Feb 2026 22:10:43 -0800 (PST)
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-66ad005c9dfso4134301eaf.1
+        for <syzbot@lists.linux.dev>; Thu, 05 Feb 2026 04:42:58 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770271843; x=1770876643;
+        d=1e100.net; s=20230601; t=1770295377; x=1770900177;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=OEy15XFvZI8rtJdzmih8MrgyxTy/0auvPGDXVOh8Qtg=;
-        b=UucpjFi8z5WH9XB5FFOF4bCCkKxgAlQt33oO2KzcYgfLkqzfaj0mGLBSjSf2pWVW+G
-         XI3dJDWZJ6McLMdCswSHVXKiO629MLGqPTjQxz5ftPlytLgfNINMGwjfV5GvznRNKbcE
-         SuZC9ADbV+Ys17GFH8x+X1mnv2mmpQWDWLqPHpPNt1jRUNgF0mVetdXA5co9ujpNS/nK
-         tX57XSaPbT1DAv+dpT0oowTjh4SPCHlsYq4jhFjKZBM8FHp0LeNXEy16rN6jwkx/zDj5
-         EOmTEAzVjIE2IYt6gyrLmClYyZM+wihrkwwJLrXi8q1ITyWxFqJJW46/7uGXuOIZbHND
-         A4Dw==
-X-Gm-Message-State: AOJu0YwDnH1C36nwMRo30ZgcUh8zBcVR9vW6BlyKmDkrcQTGC/Q2M4Kf
-	h9YQ3xSn7Y3dQ3xyqfT9UjnG5WdaRaPSXtS/m8xTNTur1irxizsQG+2XKTeNbXyFW+cdgha5+0s
-	V503KJvfuRapWcNWDTPZZi5WFe8Nl/KnofULTLWF7iIR1F5kew2ACXDbWr3c=
+        bh=oGIiOVJIvLm6mfZsGmtPkshZZ7lLtzFCudQqRPTeTUU=;
+        b=AQrpCZDYQ+Dvum0XXzxLiSE8uy9o/4QM3vjMMcwvgpvEddwoGxZZcAHgUJsDQ4R4s/
+         bE+vEEEtokFPzwbP+8aqIph2oCu9YBkH9fYNdE4G+EoGako6xHvkAEdtxa1HAQPnD6c9
+         oCZapHR5P8XZfQqb/LW/kNUjvXSlUsQoJSenOb/jh7EaepTgU87y3JuAFt29cVJGiSf2
+         QZkjsPCsHs4eDVUkuWE1/7Ij/E9PkDUhOSnj4iVJSIJH8OUJXdHmJV+HB6tRfcAWB8wB
+         gg0YrzsH1uJ1meb1FBPGVUPBCRKnOW23oiOxdd6AT7nQqtxroK4YTLwg1bZcx1S2vCAM
+         RE0Q==
+X-Gm-Message-State: AOJu0YzVOjxdrg9qPkVeT4YWGH7UTN7jR/RjYq7CrTvlhGZCI0Wj5Udt
+	2yF2Lv7XXh6JKHSO00/yvcLtLDw6aIwqI98RKWp+p5nTBaO1CDuULoUWhAbyUL5PBlYf3TTWSGZ
+	LHf0gBywGzAnAQ5lloRaxMtX0xv43nIIYCkUeCmAwPheP/nhFSo94PQc+JDk=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:81ca:b0:663:1239:9ece with SMTP id
- 006d021491bc7-66a20c6c8f6mr2549300eaf.26.1770271843052; Wed, 04 Feb 2026
- 22:10:43 -0800 (PST)
-Date: Wed, 04 Feb 2026 22:10:43 -0800
+X-Received: by 2002:a05:6820:198b:b0:661:1c57:1b3f with SMTP id
+ 006d021491bc7-66a22c6042cmr3004894eaf.46.1770295377098; Thu, 05 Feb 2026
+ 04:42:57 -0800 (PST)
+Date: Thu, 05 Feb 2026 04:42:57 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69843463.050a0220.3b3015.0019.GAE@google.com>
-Subject: [moderation/CI] Re: x86/fred: Fix early boot failures on SEV-ES/SNP guests
-From: syzbot ci <syzbot+ci4cf204126508c574@syzkaller.appspotmail.com>
+Message-ID: <69849051.050a0220.3b3015.0022.GAE@google.com>
+Subject: [moderation/CI] Re: bpf: use FS_USERNS_DELEGATABLE for bpffs
+From: syzbot ci <syzbot+ciea58ef5573e565e8@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -52,40 +52,32 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] x86/fred: Fix early boot failures on SEV-ES/SNP guests
-https://lore.kernel.org/all/20260205051030.1225975-1-nikunj@amd.com
-* [PATCH] x86/fred: Fix early boot failures on SEV-ES/SNP guests
+[v1] bpf: use FS_USERNS_DELEGATABLE for bpffs
+https://lore.kernel.org/all/20260205104541.171034-1-alexander@mihalicyn.com
+* [PATCH] bpf: use FS_USERNS_DELEGATABLE for bpffs
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/4b020042-5efd-47f8-a065-ef24bf5af659
+https://ci.syzbot.org/series/fa1376aa-51e2-422a-8bce-4632918e10eb
 
 ***
 
 kernel build error
 
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
-nux-next
-base:      0f8a890c4524d6e4013ff225e70de2aed7e6d726
+tree:      bpf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
+-next.git
+base:      dc893cfa390aa9d5fc83c908ea5e37a36e531892
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
 1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/af53275e-610d-499c-8272-fb848e13a00=
-c/config
+config:    https://ci.syzbot.org/builds/a6a3d264-9ba1-44de-9c0d-5d2caeeb224=
+4/config
 
-arch/x86/entry/entry_fred.c:213:11: error: call to undeclared function 'use=
-r_exc_vmm_communication'; ISO C99 and later do not support implicit functio=
-n declarations [-Wimplicit-function-declaration]
-arch/x86/entry/entry_fred.c:213:4: error: void function 'fred_hwexc' should=
- not return a value [-Wreturn-mismatch]
-arch/x86/entry/entry_fred.c:215:11: error: call to undeclared function 'ker=
-nel_exc_vmm_communication'; ISO C99 and later do not support implicit funct=
-ion declarations [-Wimplicit-function-declaration]
-arch/x86/entry/entry_fred.c:215:4: error: void function 'fred_hwexc' should=
- not return a value [-Wreturn-mismatch]
+kernel/bpf/inode.c:1084:14: error: use of undeclared identifier 'FS_USERNS_=
+DELEGATABLE'; did you mean 'CFTYPE_NS_DELEGATABLE'?
 
 ***
 
@@ -98,10 +90,12 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[bp@alien8.de dave.hansen@linux.intel.com hpa@zytor.com jon.grimm@amd.com k=
-vm@vger.kernel.org linux-kernel@vger.kernel.org mingo@redhat.com nikunj@amd=
-.com pbonzini@redhat.com seanjc@google.com stable@vger.kernel.org tglx@kern=
-el.org thomas.lendacky@amd.com x86@kernel.org xin@zytor.com]
+[aleksandr.mikhalitsyn@futurfusion.io alexander@mihalicyn.com andrii@kernel=
+.org ast@kernel.org bpf@vger.kernel.org brauner@kernel.org daniel@iogearbox=
+.net eddyz87@gmail.com haoluo@google.com jlayton@kernel.org john.fastabend@=
+gmail.com jolsa@kernel.org kpsingh@kernel.org linux-fsdevel@vger.kernel.org=
+ linux-kernel@vger.kernel.org martin.lau@linux.dev sdf@fomichev.me song@ker=
+nel.org yonghong.song@linux.dev]
 
 If the report looks fine to you, reply with:
 #syz upstream
