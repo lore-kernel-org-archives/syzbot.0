@@ -1,151 +1,79 @@
-Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com [209.85.160.70])
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDA193EBF07
-	for <syzbot@lists.linux.dev>; Fri,  6 Feb 2026 01:33:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C4BC330B19
+	for <syzbot@lists.linux.dev>; Fri,  6 Feb 2026 04:07:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770341608; cv=none; b=FV+qL+BIB3Al8GALujHyw1OthFGQ+g9QqgYB+9OQxmX0v/MrzY4qCMg1DaV7/RPSCoRfH5ITBl+dVcvncbmyKzPcBzUXU6iAUJJLwVorYIE3yvBQ3wyXc/IWNJxgcL77PwFalKELzQoCBHHqhFZrhCcd66GW0YzKem6peTd+58o=
+	t=1770350854; cv=none; b=UIj3hVoALD73yX1zbFFNpNeNt2V1GlmPjpJOpLgg/0q5IQupk/YILOBXrvvY142bXoSRjLIPamysCRXFpCP3JOMQi1kJojISUGRAhugDdSsQJlzheMi+BXxDhV4ohz/4sABYp6zwPyjjPRsbIIUVct6JJcUmiSQKw2J6CDHyDBc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770341608; c=relaxed/simple;
-	bh=RtSwTwcYm6WJXgbeMnIDLb3TkeyShJ1WeO8RTqvOoPY=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=m7aZUrxiXSW7qHKCR4zAlqEuZYfNLtk50U4xK6dxvdkrfZHkKggpQxZRULR3q46tWUPUm5YvvLFkiOkZvsIu6SEkwc4o0ZyPfGyYVTkLmvdUS6ZXWR7sLluTSV3ePksEbeS0K3Mj8ABWZwtCxRkB5Bye55fU/bGHqnv2bpj3+a8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.70
+	s=arc-20240116; t=1770350854; c=relaxed/simple;
+	bh=BwtpJYxdAQZyj8Cm8Lk6deMEVoHaQXbbvG5OOzjvlgA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Nd0qaJeqp1KrVdgRLG4QewnVmeqSyT00xMVmJttXnEJ9206wKUc3PKa2r50dUwvcpFYjPoV/v/2cT4TQX/Y36819JeDzdpm2ltsfEvPKS1uL4AxZ8PKn/ocUUoyawhIidRq3Ypgkh5U84PIcD9HxOU9w/j/PyGGb9tCjdt+FB0M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-409496a48c3so273632fac.2
-        for <syzbot@lists.linux.dev>; Thu, 05 Feb 2026 17:33:27 -0800 (PST)
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-6640dc1ca05so6744091eaf.1
+        for <syzbot@lists.linux.dev>; Thu, 05 Feb 2026 20:07:34 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770341607; x=1770946407;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=MVMEnujqy/ZkmG/ATxuOpx4wEyxf3Ol4GE7m2QmoTOg=;
-        b=qpKbFEd0kBfwplgaL88YGC/VGEfBVaIoSr9IUu8pTHCz5Ep8Brvn41Np6QPc3vSuRJ
-         UtUdMWbplol3ByyQabZWdhTvVZd6TYyIhTydbR42bol81jDtwqqH1ruOeG5nCF1XjOQN
-         OxqBwjSA0MFbOnFYe62ecb1mzujolYIG8omElMaeMrKJXM+Sv+1RMcXfYrgwy/dzibOr
-         UYbfhFJSX2yOunr6x4NGL6GRIxyDmYxqLaEJ8RC7kU3MWNFKGB73wkphLps4IPjPI3Pn
-         VSArEvqlh7g2yZ3deSrHUqpRHLVhf2i4BDseOOdw/KwJ+w+Cd4qgJa4lzSkiYiXcvnRP
-         ZLlA==
-X-Gm-Message-State: AOJu0YyCOTgTZsOFxzYX1zDsmpYVvyCXWK1Cy5rmJaU8pSS5FWgQeBMG
-	03pTyfW9x4099FWG2kilPrFGJ4UCOJib59A+HNxayQHYnfJQpG7HuUtUvAWcQuzk30CybkUMqVw
-	RQjL2c2RyujNUb3uxxfI9GzF+uBEItXX8hjHwQVvgFe0TKzkox9XoyuI0qnM=
+        d=1e100.net; s=20230601; t=1770350853; x=1770955653;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=LSw7pMEYdv0ynCEH9gXAntptgbUUBUtn+Opejlunc0U=;
+        b=sVoKpI/XdhLSDsxoZQYi+gZN1En+AriKjlwrcFQIGL4697vC393VUPuUAlssbrgB6o
+         PuS5aAFVx96dKwWmLISukHPks9cVhlJQTpZcVw4Oc3aCMZiD/alWqTifZ/UJM6Km2j7K
+         LOJ23Gx6AyETRvnBauVNjGTXtiHUcg5cSi28xht4YHyC3Ftbg7Hfu9UbmidTf1vx7xxp
+         HEz6pyCz/Vk2UeJNp9SWpmieG+E1OJnoCasvZ/M2H2SA8VGcQCeaA3vK69zhtEHNnY72
+         k5DmGrw1t/1DtEWmrtxKmdK+2tRZSQ82bvhuqzFS+XCiKjLMbjZV2Mlp+EP4FqWTKmyu
+         qOBg==
+X-Gm-Message-State: AOJu0YwPoHx5wanPL9rlvktApZOZzGf5FYnUVBcQvLJLHFy4w1rO6ipP
+	obwilw5FeuyLPkzGqUuiBZlsnM8kQqk0t9UBJkVXLKSLBJoL8xMA+ifoflKxLPOxi/QpIIiDg0S
+	OKMUMvZ4y7Pwp5elNnVWtyLpidVFP47LC15EGuA8iheSrm650UCOmH9VDkxk=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4a8e:b0:662:ff03:c218 with SMTP id
- 006d021491bc7-66d0a56ddedmr468277eaf.33.1770341606871; Thu, 05 Feb 2026
- 17:33:26 -0800 (PST)
-Date: Thu, 05 Feb 2026 17:33:26 -0800
+X-Received: by 2002:a05:6820:220b:b0:664:86ce:df3f with SMTP id
+ 006d021491bc7-66d0bea8a2fmr953691eaf.51.1770350853551; Thu, 05 Feb 2026
+ 20:07:33 -0800 (PST)
+Date: Thu, 05 Feb 2026 20:07:33 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <698544e6.a00a0220.34fa92.0020.GAE@google.com>
-Subject: [moderation/CI] Re: net: sched: refactor qdisc drop reasons into
- dedicated tracepoint
-From: syzbot ci <syzbot+cib1b7e8a709c48e1b@syzkaller.appspotmail.com>
+Message-ID: <69856905.050a0220.3b3015.002a.GAE@google.com>
+Subject: [moderation/CI] Re: net: ti: icssg-prueth: Add optional dependency on HSR
+From: syzbot ci <syzbot+cie68e6fee163a4177@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v2] net: sched: refactor qdisc drop reasons into dedicated tracepoint
-https://lore.kernel.org/all/177032644012.1975497.16411100029657607833.stgit=
-@firesoul
-* [PATCH net-next v2 1/6] net: sched: introduce qdisc-specific drop reason =
-tracing
-* [PATCH net-next v2 2/6] net: sched: sfq: convert to qdisc drop reasons
-* [PATCH net-next v2 3/6] net: sched: sch_cake: use enum qdisc_drop_reason =
-for cobalt_should_drop
-* [PATCH net-next v2 4/6] net: sched: rename QDISC_DROP_CAKE_FLOOD to QDISC=
-_DROP_FLOOD_PROTECTION
-* [PATCH net-next v2 5/6] net: sched: rename QDISC_DROP_FQ_* to generic nam=
-es
-* [PATCH net-next v2 6/6] net: sched: sch_dualpi2: use qdisc_dequeue_drop()=
- for dequeue drops
+[v2] net: ti: icssg-prueth: Add optional dependency on HSR
+https://lore.kernel.org/all/20260206-icssg-dep-v2-1-9dae19b19e6d@gmail.com
+* [PATCH net v2] net: ti: icssg-prueth: Add optional dependency on HSR
 
 and found the following issue:
-WARNING in __dev_queue_xmit
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/51381d54-6fc9-4542-a8cd-eac656a11965
+https://ci.syzbot.org/series/f34a789d-1141-4f75-87da-4c7162b5f4d3
 
 ***
 
-WARNING in __dev_queue_xmit
+kernel build error
 
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net-next.git
-base:      7a4cd71fa4514cd85df39b3cf99da8142660cdcd
+tree:      net
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
+base:      c89477ad79446867394360b29bb801010fc3ff22
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/17bc5e9e-8ccc-4afb-a291-312bbc43df2=
-0/config
-C repro:   https://ci.syzbot.org/findings/20939160-05e8-4589-a6d5-6a253d5e3=
-9b0/c_repro
-syz repro: https://ci.syzbot.org/findings/20939160-05e8-4589-a6d5-6a253d5e3=
-9b0/syz_repro
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50)
+config:    https://ci.syzbot.org/builds/ae4b1c59-482e-4b9f-92b4-114d46b3474b/config
 
-syzkaller0: entered promiscuous mode
-syzkaller0: entered allmulticast mode
-------------[ cut here ]------------
-reason && reason < __QDISC_DROP_REASON
-WARNING: net/sched/sch_generic.c:50 at tcf_kfree_skb_list+0xd6/0x100 net/sc=
-hed/sch_generic.c:50, CPU#0: syz.0.17/5949
-Modules linked in:
-CPU: 0 UID: 0 PID: 5949 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(ful=
-l)=20
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
-.2-1 04/01/2014
-RIP: 0010:tcf_kfree_skb_list+0xd6/0x100 net/sched/sch_generic.c:50
-Code: 89 e8 e8 5d 00 00 00 31 ff 4c 89 e6 ba 40 00 00 00 e8 be e6 d6 ff 4c =
-8b 24 24 4d 85 e4 74 27 e9 6e ff ff ff e8 1b f3 50 f8 90 <0f> 0b 90 eb c4 4=
-4 89 e9 80 e1 07 80 c1 03 38 c1 7c 96 4c 89 ef e8
-RSP: 0018:ffffc90003e67360 EFLAGS: 00010293
-RAX: ffffffff89718645 RBX: ffff8881133cc000 RCX: ffff8881738b9d40
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: 000000000002ffff
-RBP: 0000000000000001 R08: ffff88811571195b R09: 1ffff11022ae232b
-R10: dffffc0000000000 R11: ffffed1022ae232c R12: ffff88810a9bca80
-R13: 0000000000000002 R14: ffff888109569400 R15: ffff888115711800
-FS:  000055558d217500(0000) GS:ffff88818e31a000(0000) knlGS:000000000000000=
-0
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000200000001410 CR3: 0000000166b9c000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- __dev_xmit_skb net/core/dev.c:4272 [inline]
- __dev_queue_xmit+0x18e5/0x3180 net/core/dev.c:4797
- packet_snd net/packet/af_packet.c:3077 [inline]
- packet_sendmsg+0x3eb6/0x50f0 net/packet/af_packet.c:3109
- sock_sendmsg_nosec net/socket.c:727 [inline]
- __sock_sendmsg+0x21c/0x270 net/socket.c:742
- ____sys_sendmsg+0x4d7/0x810 net/socket.c:2592
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
- __sys_sendmsg net/socket.c:2678 [inline]
- __do_sys_sendmsg net/socket.c:2683 [inline]
- __se_sys_sendmsg net/socket.c:2681 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xe2/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f6544b9acb9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
-f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffc871586c8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f6544e15fa0 RCX: 00007f6544b9acb9
-RDX: 0000000000000004 RSI: 00002000000000c0 RDI: 0000000000000008
-RBP: 00007f6544c08bf7 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f6544e15fac R14: 00007f6544e15fa0 R15: 00007f6544e15fa0
- </TASK>
-
+drivers/net/ethernet/ti/Kconfig:195: syntax error
+drivers/net/ethernet/ti/Kconfig:195: invalid statement
+drivers/net/ethernet/ti/Kconfig:196: invalid statement
 
 ***
 
@@ -158,11 +86,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[atenart@redhat.com bpf@vger.kernel.org carges@cloudflare.com davem@davemlo=
-ft.net edumazet@google.com eric.dumazet@gmail.com hawk@kernel.org horms@ker=
-nel.org jhs@mojatatu.com jiri@resnulli.us kernel-team@cloudflare.com kuba@k=
-ernel.org netdev@vger.kernel.org pabeni@redhat.com toke@toke.dk xiyou.wangc=
-ong@gmail.com]
+[andrew@lunn.ch arnd@arndb.de danishanwar@ti.com davem@davemloft.net edumazet@google.com haokexin@gmail.com kuba@kernel.org netdev@vger.kernel.org pabeni@redhat.com pmohan@couthit.com rogerq@ti.com s.hauer@pengutronix.de stable@vger.kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
