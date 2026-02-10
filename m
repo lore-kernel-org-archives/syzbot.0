@@ -1,49 +1,49 @@
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F5C8425CC6
-	for <syzbot@lists.linux.dev>; Mon,  9 Feb 2026 19:33:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BEC32652B0
+	for <syzbot@lists.linux.dev>; Tue, 10 Feb 2026 00:59:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770665583; cv=none; b=FclW+8UzWRS9LXND1VXb3YFZGhBEhJ5A2BBKsjN9jMrctZEWBD9dIDk+znFpprOy9frz3+wpxW8mbQqoPBXxqt/82VuY9FrtmzMZdYDoVnK3sbj21nVK4+k/ZJGzlDRzIz8Rih3xqIoSxWhZqeTP5D8O9+q77CBECeUNgDHPrJ8=
+	t=1770685186; cv=none; b=mncWmhZ867x2qWialPC/pVMMJg6UCnWpi8BHOazFFaVIOdRwdKLUTKGOQ2NhAQblopIXm0MQWMwOgSDiX6ZfJ6DzJa4dX+YVFUdE4Pfuw0rPHf+yI2ZDkVXHw4Skj6IfGHEhfqvxXRbnfhes8SZCrbZvHRpr4VH298EX0jEn140=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770665583; c=relaxed/simple;
-	bh=IR/Db2LVT/W/yHwaLeYbEYY2AmwOGNjlYlK4ydrY+CY=;
+	s=arc-20240116; t=1770685186; c=relaxed/simple;
+	bh=FXVK2sc58kPmlkJdDqZHgno5SMenpAg8VschYPNdzoc=;
 	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=ZpbI+DxqlHq8TiUNYyBXes8nr30R6os69VllzMPaAWg0f8Hwg/tYXYhufE/Wnfa4evcIy5XdOLi5CJ6e9flQMHN2EUBEy9vR3xvXiyoBELWbdtEHHTtkFDr/+3/BJz8mBCqrlQfB2OYfqdufyrIDAZ7NruSxnWS5Z8aNgxhp9HU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
+	 Content-Type; b=KssAlVpK7PcQjFGtW5m27jq6ws14o6cTexp4SBliDKu3nTVVPvpmRiFX390VxKbv+qHrKKwDBqnp1qksIRGobZKtCZzuNET6Bz6GmkpUM7nCcZoh2jDXBgrTtmU3bIMMATtvT2fsgc3HZFU4QWEC/ZxxFPx6UCJrnmPKMwJHObE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-662ca3cb667so6072931eaf.2
-        for <syzbot@lists.linux.dev>; Mon, 09 Feb 2026 11:33:03 -0800 (PST)
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-6630d58662aso1856508eaf.0
+        for <syzbot@lists.linux.dev>; Mon, 09 Feb 2026 16:59:44 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770665582; x=1771270382;
+        d=1e100.net; s=20230601; t=1770685184; x=1771289984;
         h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=C8hr6XpMGsH8Noj3IYBAsvoEB7mPfqPZuRaafP+LPK4=;
-        b=o1ESi0sR4ZLd3wXZnqxY2BBRzm0+4yKT6tGQGRw/lSGLs6Q8IDJ3gWVKCarXb8aEY+
-         WV1ZFODyt/ezMW8zmA9sw49tel5AfEwuiWKJ1nsFj2x++xvL8u50fO1ZPb1BOwKKvMXo
-         sOhpOz3E40XCycSdkEChWztnVdo/xbcTLWVnvTS3cgHggeRjh7iAvK8egiuT6pixhC27
-         JUzkkQavZhvmIfQI1/h9U/ZOH8iPODobbnBh/hbUWjXWpLg1fd8uQg36jPsXRdJW/zbW
-         E7w7++xYuBDZ5PxP06SrQBenNI7sUzk04KfwNzvATVmKcS70F4i/gZWeSAcFONbWUxK3
-         8DqA==
-X-Gm-Message-State: AOJu0YzIYiE7O2CKBwv8l5rsRbYidTUgeqVoD8o6XZfHBrKJhJYOQfdW
-	hvNilB86NukG7vKJLvKeklY+ettmY9h+Wt2O1NT5V68WOqseLQ+19CZQVbld2Me1qGJ0ZG5JdwE
-	Ym6m0OTyKnz/g5rniu5he9Io5G3RbBhYNQkaVy3spJacUl2kng7GpfSznNFA=
+        bh=dRcnEG0YKr6Z/6lsoZpFGk/XtcWB1aASZHR4ECk4hPs=;
+        b=PLHUyRySAsaVIC2kBYA96VZvfT+Ym0Wyr81K2bdhNg9ojfalgYcVqbPbRC9x0tlW/t
+         7OF9wguAYEsIjLI2oh1s/4qCsxvBhAJicHpVeujb2g3lZeQt5wQmxUrrAv23FFGelfdi
+         ZWbiKJPvSXeimE6BMH6YpcI7oNhL6Lg0JDlKJEmLB3A/yOjgC0XuO37J2Li31s8P46ru
+         Qx1qlABPfLDVyAI1LLe5FmejxQ4q4e031zopFbmrRoV+oU6GupqybsTjP6HIKFwsKNxj
+         N9HL8DAlHt3jiU+Kd8/ga0gzP8dVz7sYJPrSMLvj/kJLbe4bch5y6QpHAu/9O6aCrfeb
+         s0dQ==
+X-Gm-Message-State: AOJu0YyI4b41fLRLV6tWj8oDaK2mxsTsuIGEnGP1g2Fe3XIEnGI0qoZW
+	bOBwt5alVQsQKlOqQdaXx9j/yAj39mbHG1NtZ+wwcGnla3Jxyxiyj9nJClGvZqXzgYdComeS4ax
+	Sh0JB9rxx0wRvLFm65NtRJmo1DrDGbH7bnI5BFDBrKBFaqgIFrWXEWUFaOLc=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4b15:b0:663:40d:48a3 with SMTP id
- 006d021491bc7-66d09ac1eccmr5308318eaf.8.1770665582278; Mon, 09 Feb 2026
- 11:33:02 -0800 (PST)
-Date: Mon, 09 Feb 2026 11:33:02 -0800
-In-Reply-To: <aYo2a1wkGW2V3yUo@iyamahat-desk>
+X-Received: by 2002:a05:6820:1896:b0:662:b892:40c1 with SMTP id
+ 006d021491bc7-66d0bcb980bmr5261489eaf.52.1770685184139; Mon, 09 Feb 2026
+ 16:59:44 -0800 (PST)
+Date: Mon, 09 Feb 2026 16:59:44 -0800
+In-Reply-To: <aYqC_Aj2Ee4UiSZX@iyamahat-desk>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <698a366e.a00a0220.34fa92.004b.GAE@google.com>
+Message-ID: <698a8300.050a0220.1ad825.0031.GAE@google.com>
 Subject: Forwarded: Re: [syzbot ci] Re: KVM: VMX APIC timer virtualization support
 From: syzbot <syzbot@syzkaller.appspotmail.com>
 To: syzbot@lists.linux.dev
@@ -59,7 +59,7 @@ syzbot@lists.linux.dev.
 Subject: Re: [syzbot ci] Re: KVM: VMX APIC timer virtualization support
 Author: isaku.yamahata@intel.com
 
-#syz test: https://github.com/yamahata/linux.git apic_timer-virt-6.19-rc7-fix-0
+#syz test: git://github.com/yamahata/linux.git apic_timer-virt-6.19-rc7-fix-1
 
 On Tue, Feb 03, 2026 at 11:46:26PM -0800,
 syzbot ci <syzbot+ci66a37fb2e2f8de71@syzkaller.appspotmail.com> wrote:
