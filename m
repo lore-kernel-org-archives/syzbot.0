@@ -1,148 +1,156 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68EDF33120D
-	for <syzbot@lists.linux.dev>; Wed, 11 Feb 2026 09:22:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D84382EA151
+	for <syzbot@lists.linux.dev>; Wed, 11 Feb 2026 19:35:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770801721; cv=none; b=Zlq++pgGOh2Uf4hhwqpkGcn1Hx9nfKgthZKaDaY5MqXVEs5jzf6wt9PfMWI84mXn8e/aXgZ3zuxrlzAe2W5VS2gESM1lK+eIWv0qpibUW/7EJdvVCZVJhouQbGuuPLFESTkoCAY1Kx1HD/4/kxs4WUSh3NdRSqilqIimzOFGMxY=
+	t=1770838555; cv=none; b=i5sl9TSZitLI3yjmL7HLDMeS6UCndgD3gw1JO770fW6DOruNNm3771QSCgFISMyBBkYs/BmvNcFLSJw9vL2nQjNtdEAe240OW18wOcyhMxLy9tFqbMAVCS9KYas7Q5NxHQo2YvEjcNiw2cPQZbrMbf6KgX+SvrxlippmqIUX7Ts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770801721; c=relaxed/simple;
-	bh=MSqL1ZyaIykl9zpKptOa2oOvMZPan/dlvNlJqzDlQ5o=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=rD18TkntIb/+AZ47OqMSA2nblD0YEZZI2QVsF4wGxZ+mZvE09VQCr3/xvYnhT8LMWGKgLoIjnUVTYU/qqmcy04kkfxVYPy/tWJrMnj8gPAQzGZwxapvQKBOsuAPN2mX8HpEkBJZP9ONZDoemHHZ17vrIJEtYVadfzrsvQxsWGwY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+	s=arc-20240116; t=1770838555; c=relaxed/simple;
+	bh=teGeJDggDpHHWTeGigDVL+qiXZdQw9j3RnmLoIjv2PQ=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=posWK/TE4zb6pILLcPtO1vFtSu3hQABw6mKSl39PUJoyZrzrV3bS5+hDeXCJgbbjKpJPLkAFmXSeQ85/QzcxJIorycuI4PSBbhtTvqSjVHEpOMDhm24innlzorzc4nndfDm5JnNVQIQ2gz6WELJTi+U+6NkX7MAa+hnqzbJXTBQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-66b47c7a795so17406258eaf.2
-        for <syzbot@lists.linux.dev>; Wed, 11 Feb 2026 01:22:00 -0800 (PST)
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-6751c78b651so4125100eaf.3
+        for <syzbot@lists.linux.dev>; Wed, 11 Feb 2026 11:35:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770801719; x=1771406519;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6AJjhKGhhW4FdBTgRWWtAXXQ/PC3aGbikg+UWIUmUtA=;
-        b=u+uYtZionvbcFjzdVqpGl/l6uQMaejbZA470ybBAWMuw0TZ6o9b8UWEeVjU37H158J
-         1d+3ziRROtxAUzOruh/xxmeU+K4N/53Ddp1G/od2WZINFuDrrnEvxK5tBg7XO4yMXgUp
-         Wqc9iKj2JhMJqTqjin99dy+oliLxj56McnCtidvvcWzLlTZOIEjmoH09RKK8y8f7HzcS
-         fAoRdv4SDjEn7oLTZ5NybBWWVyXDJaJSVS0HbSovMjp8eYxpmyKXGXvv0E7suhoEkk15
-         WYAdgJdCPdN5bSQfum0ixYchFl+Nf1Aghy2vC25FpVlM4Zuw36/id3mDskBXJzsuVm0i
-         K+iQ==
-X-Gm-Message-State: AOJu0YxgHiKBEv5L4F04kbcP6JD2SvxXfJQQ5a4dDKRoYcbps0iVx9NK
-	ZJLsaJzMAbHyU6gmj+HwZuAr5IUR09fSS28YwpPO5TTVrU/TvLWPGR0NsWLaTgxbS5GfevS7wcd
-	GgQfWzqCL0WdNTwrtm4FjvNuFFpcWqSiJ0fb/bclu3fzM5EPiPK8XZDsBnjY=
+        d=1e100.net; s=20230601; t=1770838552; x=1771443352;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=5Q9gjSLIM+0N0t/hdX5CngwZ7n5mxa5WEj12PyZvtcI=;
+        b=BoD19deRD0vVXfCGxju3l8PrfpOtxwEUyFN2GeovZu2UwAHqBz3ln/XH5agR6gpaK6
+         SFjO4TDf62ZeVXYk15gfVTbTitmeMqp5UKv8JIWGJkLRzavJVvZypRuZcyFMV7cpx3BF
+         6mFJuXC2IYv9wgFAbSuz/a9oTbWPehjbhDLVdo6QvqSZfWS5MGFec4BEPjf8B+b614to
+         FAgyBUmfB8oqWtD4iiluGTFFuhaR3zpZQyHfgM7/jJAovk+0i71QnY06OxpWT9PGhBwU
+         ozTEkYTwkute9vOAtTv2igMTkPwU48Wiwff+x10qRTzwgVKW6oifbG7o8plqlkNFiGE8
+         DAKQ==
+X-Gm-Message-State: AOJu0YwJIqMMzPotpCQ6PKAh0CiD7DUJGi7snMXqoJgPf0V/chEPONNp
+	YsNGMhP+eNYdltVz5qCig+XmMPKDOgJQmrSQzpxApXD8KU1WJeOxDtlvq713m/JMohdMr5ldIAQ
+	tur1uDGNWEZREahI+pEiDRYSDYUpR6tq7kniJASjarcASP6K0Zi5OGAJd8vI=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:99b:b0:663:5b9:a586 with SMTP id
- 006d021491bc7-674852c3877mr546315eaf.72.1770801719382; Wed, 11 Feb 2026
- 01:21:59 -0800 (PST)
-Date: Wed, 11 Feb 2026 01:21:59 -0800
-In-Reply-To: <20260210222310.357755-1-ethan.ferguson@zetier.com>
+X-Received: by 2002:a05:6820:80c5:b0:674:52d9:b25f with SMTP id
+ 006d021491bc7-6759affdf24mr128189eaf.44.1770838552688; Wed, 11 Feb 2026
+ 11:35:52 -0800 (PST)
+Date: Wed, 11 Feb 2026 11:35:52 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <698c4a37.050a0220.2eeac1.0097.GAE@google.com>
-Subject: [syzbot ci] Re: fat: Add FS_IOC_GETFSLABEL / FS_IOC_SETFSLABEL ioctls
-From: syzbot ci <syzbot+cie82dc2645e529670@syzkaller.appspotmail.com>
-To: ethan.ferguson@zetier.com, hirofumi@mail.parknet.co.jp, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <698cda18.a70a0220.2c38d7.0088.GAE@google.com>
+Subject: [moderation/CI] Re: mm: zone lock tracepoint instrumentation
+From: syzbot ci <syzbot+ci84c74045278606f6@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] fat: Add FS_IOC_GETFSLABEL / FS_IOC_SETFSLABEL ioctls
-https://lore.kernel.org/all/20260210222310.357755-1-ethan.ferguson@zetier.com
-* [PATCH 1/2] fat: Add FS_IOC_GETFSLABEL ioctl
-* [PATCH 2/2] fat: Add FS_IOC_SETFSLABEL ioctl
+[v1] mm: zone lock tracepoint instrumentation
+https://lore.kernel.org/all/cover.1770821420.git.d@ilvokhin.com
+* [PATCH 1/4] mm: introduce zone lock wrappers
+* [PATCH 2/4] mm: convert zone lock users to wrappers
+* [PATCH 3/4] mm: convert compaction to zone lock wrappers
+* [PATCH 4/4] mm: add tracepoints for zone lock
 
 and found the following issue:
-WARNING in __brelse
+stack segment fault in dbUpdatePMap
 
 Full report is available here:
-https://ci.syzbot.org/series/2497ea10-8eee-4346-a692-2f79990b4572
+https://ci.syzbot.org/series/43cf8aeb-42ac-4698-aa54-c296a912448f
 
 ***
 
-WARNING in __brelse
+stack segment fault in dbUpdatePMap
 
-tree:      bpf
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf.git
-base:      9f2693489ef8558240d9e80bfad103650daed0af
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
+.git
+base:      af41d136f7932e545ba8b068fa5d352304b65078
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/1d8ee174-a672-4f80-98f2-369e5475eb4f/config
-C repro:   https://ci.syzbot.org/findings/4c8d33e8-6c68-4ab8-ab0c-7be7952f7dcf/c_repro
-syz repro: https://ci.syzbot.org/findings/4c8d33e8-6c68-4ab8-ab0c-7be7952f7dcf/syz_repro
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/9cea4e2f-a652-4347-a169-f8ad5ebd228=
+4/config
+syz repro: https://ci.syzbot.org/findings/edbdba1b-7fc9-4625-b875-9a2af033c=
+b21/syz_repro
 
-loop0: detected capacity change from 0 to 8192
-------------[ cut here ]------------
-VFS: brelse: Trying to free free buffer
-WARNING: fs/buffer.c:1237 at __brelse+0x6a/0x90 fs/buffer.c:1237, CPU#1: syz.0.17/5957
-Modules linked in:
-CPU: 1 UID: 0 PID: 5957 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__brelse+0x6a/0x90 fs/buffer.c:1237
-Code: 75 72 ff 85 ed 74 17 e8 c4 70 72 ff 48 89 df be 04 00 00 00 e8 27 c3 da ff f0 ff 0b eb 11 e8 ad 70 72 ff 48 8d 3d d6 ff a2 0d <67> 48 0f b9 3a 5b 5d c3 cc cc cc cc cc 89 d9 80 e1 07 80 c1 03 38
-RSP: 0018:ffffc90003f07b48 EFLAGS: 00010293
-RAX: ffffffff825206a3 RBX: ffff8881b6fd5d10 RCX: ffff888177b557c0
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffff8ff50680
-RBP: 0000000000000000 R08: ffff8881b6fd5d13 R09: 1ffff11036dfaba2
-R10: dffffc0000000000 R11: ffffed1036dfaba3 R12: ffffc90003f07b78
-R13: ffffc90003f07b70 R14: ffff8881bba28db0 R15: ffffc90003f07b68
-FS:  0000555560eae500(0000) GS:ffff8882a96f5000(0000) knlGS:0000000000000000
+Oops: stack segment: 0000 [#1] SMP KASAN PTI
+CPU: 0 UID: 0 PID: 117 Comm: jfsCommit Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:__list_add_valid_or_report+0x3e/0x130 lib/list_debug.c:29
+Code: 00 00 00 48 89 d3 48 85 d2 0f 84 93 00 00 00 49 89 f6 49 89 ff 49 bd =
+00 00 00 00 00 fc ff df 4c 8d 63 08 4c 89 e5 48 c1 ed 03 <42> 80 7c 2d 00 0=
+0 74 08 4c 89 e7 e8 b2 f6 81 fd 4d 39 34 24 75 71
+RSP: 0018:ffffc90003137a40 EFLAGS: 00010806
+RAX: 0000000000000000 RBX: dead000000000100 RCX: 0000000000000000
+RDX: dead000000000100 RSI: ffffc90002a79120 RDI: ffff88811d809ca8
+RBP: 1bd5a00000000021 R08: 0000000000000003 R09: 0000000000000004
+R10: dffffc0000000000 R11: fffff52000626f3c R12: dead000000000108
+R13: dffffc0000000000 R14: ffffc90002a79120 R15: ffff88811d809ca8
+FS:  0000000000000000(0000) GS:ffff88818e0f1000(0000) knlGS:000000000000000=
+0
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000200000000080 CR3: 000000010b660000 CR4: 00000000000006f0
+CR2: 000055555c51ca28 CR3: 000000011316a000 CR4: 00000000000006f0
 Call Trace:
  <TASK>
- brelse include/linux/buffer_head.h:324 [inline]
- fat_rename_volume_label_dentry+0x11f/0x1c0 fs/fat/dir.c:1444
- fat_ioctl_set_volume_label fs/fat/file.c:174 [inline]
- fat_generic_ioctl+0x751/0xfe0 fs/fat/file.c:195
- fat_dir_ioctl+0x166/0x320 fs/fat/dir.c:816
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xe2/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fce15b9bf79
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffe48117898 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007fce15e15fa0 RCX: 00007fce15b9bf79
-RDX: 00002000000004c0 RSI: 0000000041009432 RDI: 0000000000000004
-RBP: 00007fce15c327e0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fce15e15fac R14: 00007fce15e15fa0 R15: 00007fce15e15fa0
+ __list_add_valid include/linux/list.h:96 [inline]
+ __list_add include/linux/list.h:158 [inline]
+ list_add include/linux/list.h:177 [inline]
+ dbUpdatePMap+0x7ec/0xed0 fs/jfs/jfs_dmap.c:577
+ txAllocPMap+0x57d/0x6b0 fs/jfs/jfs_txnmgr.c:2426
+ txUpdateMap+0x81e/0x9c0 fs/jfs/jfs_txnmgr.c:2364
+ txLazyCommit fs/jfs/jfs_txnmgr.c:2665 [inline]
+ jfs_lazycommit+0x43d/0xaa0 fs/jfs/jfs_txnmgr.c:2734
+ kthread+0x726/0x8b0 kernel/kthread.c:463
+ ret_from_fork+0x51b/0xa40 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
  </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__list_add_valid_or_report+0x3e/0x130 lib/list_debug.c:29
+Code: 00 00 00 48 89 d3 48 85 d2 0f 84 93 00 00 00 49 89 f6 49 89 ff 49 bd =
+00 00 00 00 00 fc ff df 4c 8d 63 08 4c 89 e5 48 c1 ed 03 <42> 80 7c 2d 00 0=
+0 74 08 4c 89 e7 e8 b2 f6 81 fd 4d 39 34 24 75 71
+RSP: 0018:ffffc90003137a40 EFLAGS: 00010806
+RAX: 0000000000000000 RBX: dead000000000100 RCX: 0000000000000000
+RDX: dead000000000100 RSI: ffffc90002a79120 RDI: ffff88811d809ca8
+RBP: 1bd5a00000000021 R08: 0000000000000003 R09: 0000000000000004
+R10: dffffc0000000000 R11: fffff52000626f3c R12: dead000000000108
+R13: dffffc0000000000 R14: ffffc90002a79120 R15: ffff88811d809ca8
+FS:  0000000000000000(0000) GS:ffff88818e0f1000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055555c51ca28 CR3: 000000011316a000 CR4: 00000000000006f0
 ----------------
-Code disassembly (best guess), 1 bytes skipped:
-   0:	72 ff                	jb     0x1
-   2:	85 ed                	test   %ebp,%ebp
-   4:	74 17                	je     0x1d
-   6:	e8 c4 70 72 ff       	call   0xff7270cf
-   b:	48 89 df             	mov    %rbx,%rdi
-   e:	be 04 00 00 00       	mov    $0x4,%esi
-  13:	e8 27 c3 da ff       	call   0xffdac33f
-  18:	f0 ff 0b             	lock decl (%rbx)
-  1b:	eb 11                	jmp    0x2e
-  1d:	e8 ad 70 72 ff       	call   0xff7270cf
-  22:	48 8d 3d d6 ff a2 0d 	lea    0xda2ffd6(%rip),%rdi        # 0xda2ffff
-* 29:	67 48 0f b9 3a       	ud1    (%edx),%rdi <-- trapping instruction
-  2e:	5b                   	pop    %rbx
-  2f:	5d                   	pop    %rbp
-  30:	c3                   	ret
-  31:	cc                   	int3
-  32:	cc                   	int3
-  33:	cc                   	int3
-  34:	cc                   	int3
-  35:	cc                   	int3
-  36:	89 d9                	mov    %ebx,%ecx
-  38:	80 e1 07             	and    $0x7,%cl
-  3b:	80 c1 03             	add    $0x3,%cl
-  3e:	38                   	.byte 0x38
+Code disassembly (best guess):
+   0:	00 00                	add    %al,(%rax)
+   2:	00 48 89             	add    %cl,-0x77(%rax)
+   5:	d3 48 85             	rorl   %cl,-0x7b(%rax)
+   8:	d2 0f                	rorb   %cl,(%rdi)
+   a:	84 93 00 00 00 49    	test   %dl,0x49000000(%rbx)
+  10:	89 f6                	mov    %esi,%esi
+  12:	49 89 ff             	mov    %rdi,%r15
+  15:	49 bd 00 00 00 00 00 	movabs $0xdffffc0000000000,%r13
+  1c:	fc ff df
+  1f:	4c 8d 63 08          	lea    0x8(%rbx),%r12
+  23:	4c 89 e5             	mov    %r12,%rbp
+  26:	48 c1 ed 03          	shr    $0x3,%rbp
+* 2a:	42 80 7c 2d 00 00    	cmpb   $0x0,0x0(%rbp,%r13,1) <-- trapping instr=
+uction
+  30:	74 08                	je     0x3a
+  32:	4c 89 e7             	mov    %r12,%rdi
+  35:	e8 b2 f6 81 fd       	call   0xfd81f6ec
+  3a:	4d 39 34 24          	cmp    %r14,(%r12)
+  3e:	75 71                	jne    0xb1
 
 
 ***
@@ -154,3 +162,20 @@ separate fix, please add the following tag to your commit message:
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[akpm@linux-foundation.org axelrasmussen@google.com d@ilvokhin.com david@ke=
+rnel.org hannes@cmpxchg.org jackmanb@google.com kernel-team@meta.com liam.h=
+owlett@oracle.com linux-cxl@vger.kernel.org linux-kernel@vger.kernel.org li=
+nux-mm@kvack.org linux-trace-kernel@vger.kernel.org lorenzo.stoakes@oracle.=
+com mathieu.desnoyers@efficios.com mhiramat@kernel.org mhocko@suse.com osal=
+vador@suse.de rostedt@goodmis.org rppt@kernel.org shakeel.butt@linux.dev su=
+renb@google.com vbabka@suse.cz weixugc@google.com yuanchu@google.com zhengq=
+i.arch@bytedance.com ziy@nvidia.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
