@@ -1,123 +1,115 @@
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F7BE20299B
-	for <syzbot@lists.linux.dev>; Thu, 12 Feb 2026 18:08:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B225A2749E6
+	for <syzbot@lists.linux.dev>; Thu, 12 Feb 2026 21:21:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770919714; cv=none; b=lUVSnF+5jDrtxORFMiVcHYYnfJ/K8wM4H6zm5HzT41RLiqUn0JehXbX2mVOtLnEpAon/Ru4gkuFgItEzK6aAMM7Mwd7rVt48hjcWh8Ju8slizBcwCHc/H1yCKI1mimPQpL7dvL0b1QcEp7KzyHoQ8YGp8XvmPpdciwbw0Pa85tk=
+	t=1770931272; cv=none; b=WW+v3J1WJ690bclfpGOOAEjIBjyjhoBSDJ5IrJWyGkDnaKOS72zrDFIQ4SptFIPbI+zaRSXjjkTjty1oriHX6joipEi2icBvxwGHOGG8/I36xFwPnnPEjx9J87UZvvAfXPm8v+LZDLM2Hmsb+17CAwnnMNatGzQOfacYzE2tH98=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770919714; c=relaxed/simple;
-	bh=HImPkHp9naq2C+tRBNg/2m46FyeyuAohNvDbp2boAm8=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=ZXMo5JUvpn/b5uns4zumhdScgGbwPeNe1J9nDiTWpvsVDbOY+tOt8kIUSI7d7wGefZIZa1ANQdwvt8eQ0oFiFYpFaapv1FTf47MABWa/j4QPi/eItO8MB+Wk++2hhAaSDkkmWd/d7+oZF7XthIF2HzCh1sY6Kwqp4MdxPJA2SIk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.70
+	s=arc-20240116; t=1770931272; c=relaxed/simple;
+	bh=vgaKw7ZRaBqWI9OfqqFwlVA2v+wq2YsKCfdhvcIVApY=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=qI16Qo8zozxQnz/H/l6hqBqfeOtNAN0tPNh+GQORmac3NdN2VfsFSGGVFlaBKKAAyHb8Nr8+DnCOKnIZMQRUQl9wXR4bDS/aADIQrLZq4d1yi2fmCWLaUx3mZSCw4lo7fL5qv1mb+UHSdKyvzOmBZtZlEvDq10Dw9BVCK6zMGo8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-7d4bd83e456so342207a34.2
-        for <syzbot@lists.linux.dev>; Thu, 12 Feb 2026 10:08:33 -0800 (PST)
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-66304fd6389so1886077eaf.1
+        for <syzbot@lists.linux.dev>; Thu, 12 Feb 2026 13:21:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770919712; x=1771524512;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Yvycq04pVPWUL32pOjxUaG+/MLmhhHqjiM5kRuuTJYM=;
-        b=HpnmtFDaLkgOPOxJHg0t+wYnVJ7k0oJzutyIrymaCFyNZd5x9lmFy/L5j3cHRgA2/F
-         uI97Yo3px0IfZ3dqKYWaMllI7PrmGNgE3h3ET3VC+FzLGcaniSDzMUvlR1Jrs0HljBN0
-         jXjvXfxs14C3aB2YlhTQtkOvmWp2pVpaAhYWxywHKQA/Q5CCwDzdRdKGiArqpo4mOUL7
-         ezxlc0IqYPsUb08DaVJE21kuoslhFJdUJ2ewVzvNjGk6Tr9JSySpWVHSu0KV6ipI+N3T
-         RWlYICmn7LYHOWHV7d3W+xzL9L+z2iqNXDCUikxW12obTpqMX6tlSHjNORgEB9PkNx51
-         Yueg==
-X-Gm-Message-State: AOJu0Yz3qeTa7EVdpgHezYIOjNwE10eoUk2e6MvE6Q0Zz5WAPnFkqUaW
-	brhPx36RWJNPPv062k28l7ztEbPMIFvIMSeShzswjvl1W5vg7h3LJsGcyMnTDBWDiwXCJq/5irP
-	uyaBOnT+LOYXMQZ2PHFDvVlJoFMq6d9C9ziNdLh7ifbcdtm8qyxjYEKPg2oI=
+        d=1e100.net; s=20230601; t=1770931269; x=1771536069;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=B4/9Jxys972LYWTFxjfnrhdmuoziRLGf7VehmUb/tNE=;
+        b=TwWqwYLauvlAb/AUoVRir+/yvol8lREOnroA5hGsarIqMTULgV0CF1Sr0v9vtS+QhG
+         0f3y/OJxUMJEZO+j/E6f8e1HZnxQIFTsiIkIgdAFP6WvGPz8miTSnDpto8P/BL45cJmJ
+         /dojf0xu1Hm2QNJVpgtmf3WvF3h7eVqgCI0CfBf9wzsO5UHJ8jz+w1KW76Kor8SdkoR5
+         WUFXQYR/Z2+Fv3iHQfzzDQW6i82oxpiChURyOz2dldnfUsjM6YrKSKOSMt0OvjrPXlft
+         aXpVwLqsfEHtUFduY3JkXxh87S13+OVbJkWcoPuQFJYFQWqZUe+qQ8rFEpdAc4TMuEn9
+         0RcQ==
+X-Gm-Message-State: AOJu0Yyf2XCCpYs2Oth52llV6Ijm/7BA9jsg4EtXclPFMo3AgxhP9jZ4
+	+iCLIrCurO1b4JcbNkjV1kORpNbmI6ra5/nSxeX6Wi+Pme2wZ6zv8EjD/dyri3E7912E4SMgG+O
+	uGSjfQTCm1iYlfvHKNo+7FxMhWU84jOXgROJ2NlH0D1uqySoJtfBjaBntpfY=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:198d:b0:65d:3c7:b57 with SMTP id
- 006d021491bc7-676ee27c2f4mr142899eaf.34.1770919712604; Thu, 12 Feb 2026
- 10:08:32 -0800 (PST)
-Date: Thu, 12 Feb 2026 10:08:32 -0800
-In-Reply-To: <20260212045109.255391-1-inwardvessel@gmail.com>
+X-Received: by 2002:a05:6820:98e:b0:663:bad:9727 with SMTP id
+ 006d021491bc7-67723af5bbdmr98414eaf.78.1770931269528; Thu, 12 Feb 2026
+ 13:21:09 -0800 (PST)
+Date: Thu, 12 Feb 2026 13:21:09 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <698e1720.a70a0220.2c38d7.009c.GAE@google.com>
-Subject: [syzbot ci] Re: improve per-node allocation and reclaim visibility
-From: syzbot ci <syzbot+ciaf452181ab05b97e@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, apopple@nvidia.com, axelrasmussen@google.com, 
-	byungchul@sk.com, cgroups@vger.kernel.org, david@kernel.org, 
-	eperezma@redhat.com, gourry@gourry.net, hannes@cmpxchg.org, 
-	inwardvessel@gmail.com, jasowang@redhat.com, joshua.hahnjy@gmail.com, 
-	kernel-team@meta.com, liam.howlett@oracle.com, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, lorenzo.stoakes@oracle.com, matthew.brost@intel.com, 
-	mhocko@suse.com, mst@redhat.com, muchun.song@linux.dev, rakie.kim@sk.com, 
-	roman.gushchin@linux.dev, rppt@kernel.org, shakeel.butt@linux.dev, 
-	surenb@google.com, vbabka@suse.cz, virtualization@lists.linux.dev, 
-	weixugc@google.com, xuanzhuo@linux.alibaba.com, ying.huang@linux.alibaba.com, 
-	yuanchu@google.com, zhengqi.arch@bytedance.com, ziy@nvidia.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <698e4445.a70a0220.2c38d7.00a3.GAE@google.com>
+Subject: [moderation/CI] Re: fs/ntfs3: add delayed-allocation (delalloc) support
+From: syzbot ci <syzbot+ci03b327bb4b4298d4@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] improve per-node allocation and reclaim visibility
-https://lore.kernel.org/all/20260212045109.255391-1-inwardvessel@gmail.com
-* [PATCH 1/2] mm/mempolicy: track page allocations per mempolicy
-* [PATCH 2/2] mm: move pgscan and pgsteal to node stats
+[v1] fs/ntfs3: add delayed-allocation (delalloc) support
+https://lore.kernel.org/all/20260212170849.12455-1-almaz.alexandrovich@paragon-software.com
+* [PATCH] fs/ntfs3: add delayed-allocation (delalloc) support
 
 and found the following issue:
-WARNING in __mod_node_page_state
+WARNING in ntfs_extend_initialized_size
 
 Full report is available here:
-https://ci.syzbot.org/series/4ec12ede-3298-43a3-ab6b-79d47759672e
+https://ci.syzbot.org/series/13e78e99-d298-48f9-b81b-be0931799244
 
 ***
 
-WARNING in __mod_node_page_state
+WARNING in ntfs_extend_initialized_size
 
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      72a46cdd4ef13690beb8c5a2f6a2023fd7ef2eb4
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
+base:      9152bc8cebcb14dc16b03ec81f2377ee8ce12268
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/0f678e4c-a4ba-4f17-8ed7-8ae99e56a463/config
+config:    https://ci.syzbot.org/builds/b551b487-d04a-4a8a-89aa-575a75c69c23/config
+C repro:   https://ci.syzbot.org/findings/c8966f1e-fd77-42d2-8f24-1e7b54ac54dd/c_repro
+syz repro: https://ci.syzbot.org/findings/c8966f1e-fd77-42d2-8f24-1e7b54ac54dd/syz_repro
 
+loop0: detected capacity change from 0 to 4096
 ------------[ cut here ]------------
-IS_ENABLED(CONFIG_PREEMPT_COUNT) && __lockdep_enabled && (preempt_count() == 0 && this_cpu_read(hardirqs_enabled))
-WARNING: mm/vmstat.c:396 at __mod_node_page_state+0x126/0x170, CPU#0: kthreadd/2
+is_compressed(ni)
+WARNING: fs/ntfs3/file.c:236 at ntfs_extend_initialized_size+0x1dc/0x210 fs/ntfs3/file.c:236, CPU#1: syz.0.17/5975
 Modules linked in:
-CPU: 0 UID: 0 PID: 2 Comm: kthreadd Not tainted syzkaller #0 PREEMPT(full) 
+CPU: 1 UID: 0 PID: 5975 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__mod_node_page_state+0x126/0x170
-Code: 5c 41 5d 41 5e 41 5f 5d c3 cc cc cc cc cc 48 89 df 4c 89 e6 44 89 fa e8 68 00 00 00 31 db eb cc 90 0f 0b 90 e9 3e ff ff ff 90 <0f> 0b 90 eb 80 48 c7 c7 e0 c6 64 8e 4c 89 f6 e8 66 3c d3 02 e9 28
-RSP: 0000:ffffc900000773d0 EFLAGS: 00010202
-RAX: 0000000000000001 RBX: 0000000000000001 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: 000000000000003d RDI: ffff88815fffb380
-RBP: dffffc0000000000 R08: ffffffff8fef2977 R09: 1ffffffff1fde52e
-R10: dffffc0000000000 R11: fffffbfff1fde52f R12: ffff88815fffb380
-R13: ffffffff92f50f00 R14: 000000000000003d R15: 000000000000003d
-FS:  0000000000000000(0000) GS:ffff88818e0f0000(0000) knlGS:0000000000000000
+RIP: 0010:ntfs_extend_initialized_size+0x1dc/0x210 fs/ntfs3/file.c:236
+Code: 0d ff 4c 89 33 31 ed eb 05 e8 70 8b a3 fe 89 e8 48 83 c4 18 5b 41 5c 41 5d 41 5e 41 5f 5d e9 9b a6 8e 08 cc e8 55 8b a3 fe 90 <0f> 0b 90 e9 31 ff ff ff 89 d1 80 e1 07 80 c1 03 38 c1 0f 8c e1 fe
+RSP: 0018:ffffc90004547c30 EFLAGS: 00010293
+RAX: ffffffff8322128b RBX: ffff8881a8229670 RCX: ffff88810ba49d00
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000800 R08: ffff8881a8229737 R09: 1ffff110350452e6
+R10: dffffc0000000000 R11: ffffed10350452e7 R12: 0000000000000110
+R13: 0000000000000ef0 R14: 1ffff110350452ce R15: 0000000000000000
+FS:  000055555ee59500(0000) GS:ffff8882a9460000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffff88823ffff000 CR3: 000000000e346000 CR4: 00000000000006f0
+CR2: 00007f811e871980 CR3: 000000010f87c000 CR4: 00000000000006f0
 Call Trace:
  <TASK>
- alloc_pages_mpol+0x407/0x740
- alloc_pages_noprof+0xa8/0x190
- get_free_pages_noprof+0xf/0x80
- __kasan_populate_vmalloc+0x38/0x1d0
- alloc_vmap_area+0xd21/0x1460
- __get_vm_area_node+0x1f8/0x300
- __vmalloc_node_range_noprof+0x372/0x1730
- __vmalloc_node_noprof+0xc2/0x100
- dup_task_struct+0x228/0x9a0
- copy_process+0x508/0x3980
- kernel_clone+0x248/0x870
- kernel_thread+0x13f/0x1b0
- kthreadd+0x4f9/0x6f0
- ret_from_fork+0x51b/0xa40
- ret_from_fork_asm+0x1a/0x30
+ ntfs_fallocate+0xf21/0x1220 fs/ntfs3/file.c:670
+ vfs_fallocate+0x669/0x7e0 fs/open.c:340
+ ksys_fallocate fs/open.c:364 [inline]
+ __do_sys_fallocate fs/open.c:369 [inline]
+ __se_sys_fallocate fs/open.c:367 [inline]
+ __x64_sys_fallocate+0xc0/0x110 fs/open.c:367
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f811e99bf79
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffecc78b558 EFLAGS: 00000246 ORIG_RAX: 000000000000011d
+RAX: ffffffffffffffda RBX: 00007f811ec15fa0 RCX: 00007f811e99bf79
+RDX: 0000000000000003 RSI: 0000000000000000 RDI: 0000000000000005
+RBP: 00007f811ea327e0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000006 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f811ec15fac R14: 00007f811ec15fa0 R15: 00007f811ec15fa0
  </TASK>
 
 
@@ -130,3 +122,13 @@ separate fix, please add the following tag to your commit message:
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[almaz.alexandrovich@paragon-software.com linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org ntfs3@lists.linux.dev]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
