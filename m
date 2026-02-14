@@ -1,65 +1,65 @@
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05E7623C8A0
-	for <syzbot@lists.linux.dev>; Sat, 14 Feb 2026 21:31:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D5A918024
+	for <syzbot@lists.linux.dev>; Sat, 14 Feb 2026 22:17:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771104684; cv=none; b=QXEDNkRnxJG+prxnItEke2XH5C2PXlI6OdMwi4ieimHRHpeA3jzh9TzWUk9AMK9rw1v1UVaFpbuH3wadwQOfj+rR5h1L5j1PSBnGDRCn4m9j4ZdlTMTbsrJdtPfv1S1E3iUhlXZZsb9zLx9c/4GceCtRFcuBk1EyiFB8gZAgJrs=
+	t=1771107446; cv=none; b=myUoQ5nGpEixkweGKk0TafUROPX6WM+8NsNYsVtPAJXGFwVOTSMe6T6+vakxc1UKKwdmhJVxQy46o89dw/sWEMq3k3GU6O1VqocrX6NGdkGbrNVmmIcEhvO70/ZYKhbixevxdZu057HOqUy3AX1hr3R+veGiNWqOSVGDz6WeNfs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771104684; c=relaxed/simple;
-	bh=1QM6CCWwLLa7NN+PXGf//pTZPjrd/WwdGzrS/Al+qsQ=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=qYwk3Jdctg9nLP8kXlvmZEci6Tnl+L185Lb9dVr9W4LcU9djAZiKptjQS2YPdOmIN1J4qvwUIha7vJOcgm3RwCuyM8kOssUtRP8IYDWx9FXaTBkJNmQOLHaM2kS4/zkyDTnl8aSzasJwrtJHHhsKYvqHSsKihI+FMUxaEFBeKo4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
+	s=arc-20240116; t=1771107446; c=relaxed/simple;
+	bh=FLHOXJk69EOXCBYbckbgUPz59FlAVPA4y4wkyQNQvEU=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=lA04tQtXCCGL1krVi5Dq1n4jg7zdVN6gUfZ+fdZr48Pw/HdjrvHHQa2eUV2tVPTfJ9nvWZVO3eNHTtvdoC9AlUDtWVSKeqqHLA1r68Fy5cd/IHfJNz6LF+5hbQyNp29aoNxADjiAJODCRLNUMpRWFrMQOlCO6cRibfYGfXG8I80=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-662b9af3988so14040827eaf.1
-        for <syzbot@lists.linux.dev>; Sat, 14 Feb 2026 13:31:22 -0800 (PST)
+Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7d1902109a9so13711063a34.2
+        for <syzbot@lists.linux.dev>; Sat, 14 Feb 2026 14:17:24 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771104682; x=1771709482;
+        d=1e100.net; s=20230601; t=1771107444; x=1771712244;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=QL5WhlAXeo7+vdKgXbulq9kob/gP2ZtBuAiTybRDW4o=;
-        b=ktH5jhHLWpWRDgzTvbQ3SBxCX5K9UVjB01idxbEeKy70GLmaCczHiwERynQ7WrHL8n
-         lQ/YlLFL1rqYIvzzW6hWzlOZqquy0Z7AS+HhvjsPql0Uto9fGdQWj9gRqwScZHoe3k+4
-         M7Bivayxl9rqptqIDMBFqDVhvyfPeVF7ZaYl0cg5e6667xPkpM3qioyuWH9o3wxwNb/X
-         +XWkDvRJu0swP7mS8xYjkqDTnZyxjp+WsS6h1A08/rKHJmFE0A5POF5x/DhRGGOs9kuu
-         d1ZDbMkIssXzt7tp4z2RtKQgaxPofXy8+5mNawu/sDYXwiVgApgfJFk+15u2DKd/uqsP
-         Jqxw==
-X-Gm-Message-State: AOJu0YzoDnkRgOvYlzyTvE2C0dfHbr1LMER+ntDFdmPZMrWxBupBqOJm
-	LWkmsYIhNNf+GCLW4+ZmnY0hrT9N0+eSMmSWgX1+Asg8eJOffuVY6dm0xBl5jMijrVMB5m07dxZ
-	lqr6moFTzBcASnOfV63Ds+eOtAke/XoGgUJxzYJQzpKlemSfuIVMGX5zIMO8=
+        bh=S7J+YCRJ+i9AHHHWEYwKZC7lsBxthWct9fjz5tLTQl4=;
+        b=CcCP0VZu7KJF/iMZA3UZ++853yaaDVVcxjBlPZAZrUvSMVSaeSQFVYBGzZ7HJ5B031
+         qYNuAJ8i8tYoSmSawwVdWPwyGrq0DNun00cnVN84xkVHqm1QZ/jJ/e75SkEisZ8YdhYZ
+         Un8b/2SKyYz/l9G6+za5+jww7+n+sbbY5EGsC+4j5NpdV8ad4JOmV8IZPRN2UMVdSZ0h
+         XBNC9z6odxsCLIphsNIg4/zGqDXfko+bCGcFdAALLfB4a4Eb96pF4oKkcwh+8wW0tWyx
+         Y6dn6FRQ3ga0gQNW0yyHnZjB+YrNseKSLax27EFuPKkLUTQj1LE3H7dNftWIaPpwwpze
+         fUiQ==
+X-Gm-Message-State: AOJu0YyJgMGpsRJ3ErH5bK4lHXdLX+vf7RRzLuqhaHf0eQpH9y6UbQdx
+	QUKG9eLNg8Cme2RgBIFtJvLNsJ/jWmjISdlitOcRK0fkFn8nc4bVxXbBu8wckFabBHwn2FG7b6o
+	UpOjfywg10uXr1kHYbrKm0amzZSsUnq4x5o/9WKJOiGM/xVB/D7TTcbzkQfA=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4dfc:b0:678:f8f3:d6cb with SMTP id
- 006d021491bc7-678f8f3db68mr1160848eaf.6.1771104681977; Sat, 14 Feb 2026
- 13:31:21 -0800 (PST)
-Date: Sat, 14 Feb 2026 13:31:21 -0800
+X-Received: by 2002:a05:6820:4d0c:b0:663:1239:9eae with SMTP id
+ 006d021491bc7-67768ccad6fmr2925114eaf.54.1771107443902; Sat, 14 Feb 2026
+ 14:17:23 -0800 (PST)
+Date: Sat, 14 Feb 2026 14:17:23 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6990e9a9.050a0220.3a4a67.017e.GAE@google.com>
+Message-ID: <6990f473.a70a0220.2c38d7.00d4.GAE@google.com>
 Subject: [moderation/CI] Re: fsverity: remove fsverity_verify_page()
-From: syzbot ci <syzbot+ci51c8c6ec516e9ebb@syzkaller.appspotmail.com>
+From: syzbot ci <syzbot+cidfe59638e5e455f7@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] fsverity: remove fsverity_verify_page()
-https://lore.kernel.org/all/20260214203311.9759-1-ebiggers@kernel.org
-* [PATCH 1/2] f2fs: use fsverity_verify_blocks() instead of fsverity_verify_page()
-* [PATCH 2/2] fsverity: remove fsverity_verify_page()
+[v2] fsverity: remove fsverity_verify_page()
+https://lore.kernel.org/all/20260214211830.15437-1-ebiggers@kernel.org
+* [PATCH v2 1/2] f2fs: use fsverity_verify_blocks() instead of fsverity_verify_page()
+* [PATCH v2 2/2] fsverity: remove fsverity_verify_page()
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/b80e1fbe-dc81-4090-957c-40b082b4000d
+https://ci.syzbot.org/series/28027876-2735-41e1-a7cf-6859b87589b7
 
 ***
 
@@ -70,7 +70,7 @@ URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/lin
 base:      770aaedb461a055f79b971d538678942b6607894
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/30218013-dbfa-4f67-8072-57a115ff824a/config
+config:    https://ci.syzbot.org/builds/46e7c354-aa5d-433d-bcb4-757e795a9361/config
 
 fs/f2fs/data.c:192:9: error: call to undeclared function 'fsverity_verify_page'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 
