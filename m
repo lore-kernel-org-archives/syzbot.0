@@ -1,78 +1,77 @@
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D5A918024
-	for <syzbot@lists.linux.dev>; Sat, 14 Feb 2026 22:17:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D0333164D9
+	for <syzbot@lists.linux.dev>; Sat, 14 Feb 2026 22:31:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771107446; cv=none; b=myUoQ5nGpEixkweGKk0TafUROPX6WM+8NsNYsVtPAJXGFwVOTSMe6T6+vakxc1UKKwdmhJVxQy46o89dw/sWEMq3k3GU6O1VqocrX6NGdkGbrNVmmIcEhvO70/ZYKhbixevxdZu057HOqUy3AX1hr3R+veGiNWqOSVGDz6WeNfs=
+	t=1771108287; cv=none; b=UizFnYnf7ucgOPxfbVlJxs1AqfQO3qB5oj/bMnCl2W1Trf6SJmaJo5b/2VVezz8cftWB6tjo++FNTp2Z57lGbn0Mfvg9WXDbDwfwAVvQ9MqOqwE7bFGyKmFTLHkJhHYTr9h+H7l5rv8sh0rxOS84PoimFjiConb1xg7/8spkfFg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771107446; c=relaxed/simple;
-	bh=FLHOXJk69EOXCBYbckbgUPz59FlAVPA4y4wkyQNQvEU=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=lA04tQtXCCGL1krVi5Dq1n4jg7zdVN6gUfZ+fdZr48Pw/HdjrvHHQa2eUV2tVPTfJ9nvWZVO3eNHTtvdoC9AlUDtWVSKeqqHLA1r68Fy5cd/IHfJNz6LF+5hbQyNp29aoNxADjiAJODCRLNUMpRWFrMQOlCO6cRibfYGfXG8I80=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
+	s=arc-20240116; t=1771108287; c=relaxed/simple;
+	bh=jXSFyj+AYdypjf4x6h/YudOkuMt2AeAqQYQxlBvd9Es=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ut2UI+c2aZZVnjXgPliZJaxo6rfAqeWDPjxiRaEuTJ2KMLfWmDPcaxOkVee9RtGmGZB34zoPZRIgM1GGwLiiAG0xdeXyxwu68FYhUxN/SY+B6Uzd6SG03nI2eKDq/UOvRIwRl5i/nZSqeBEQC1sCIm8GPmKkybFZE+6MVlK6H2w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7d1902109a9so13711063a34.2
-        for <syzbot@lists.linux.dev>; Sat, 14 Feb 2026 14:17:24 -0800 (PST)
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7d4cb985fa3so5373626a34.2
+        for <syzbot@lists.linux.dev>; Sat, 14 Feb 2026 14:31:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771107444; x=1771712244;
+        d=1e100.net; s=20230601; t=1771108285; x=1771713085;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=S7J+YCRJ+i9AHHHWEYwKZC7lsBxthWct9fjz5tLTQl4=;
-        b=CcCP0VZu7KJF/iMZA3UZ++853yaaDVVcxjBlPZAZrUvSMVSaeSQFVYBGzZ7HJ5B031
-         qYNuAJ8i8tYoSmSawwVdWPwyGrq0DNun00cnVN84xkVHqm1QZ/jJ/e75SkEisZ8YdhYZ
-         Un8b/2SKyYz/l9G6+za5+jww7+n+sbbY5EGsC+4j5NpdV8ad4JOmV8IZPRN2UMVdSZ0h
-         XBNC9z6odxsCLIphsNIg4/zGqDXfko+bCGcFdAALLfB4a4Eb96pF4oKkcwh+8wW0tWyx
-         Y6dn6FRQ3ga0gQNW0yyHnZjB+YrNseKSLax27EFuPKkLUTQj1LE3H7dNftWIaPpwwpze
-         fUiQ==
-X-Gm-Message-State: AOJu0YyJgMGpsRJ3ErH5bK4lHXdLX+vf7RRzLuqhaHf0eQpH9y6UbQdx
-	QUKG9eLNg8Cme2RgBIFtJvLNsJ/jWmjISdlitOcRK0fkFn8nc4bVxXbBu8wckFabBHwn2FG7b6o
-	UpOjfywg10uXr1kHYbrKm0amzZSsUnq4x5o/9WKJOiGM/xVB/D7TTcbzkQfA=
+        bh=x6KQHu7FWZAChpiR4SuGL3VmvQma67dLZxZvBBEXSEk=;
+        b=ZDyDj48HpmmOgvDRzAnN7pBtd/Kxrdi0jcpqE5CixklGHGRom6R+/G7Oncxw7+u25M
+         bqyPDWph4dyvWtPWCBFwYwgiqu+LSOmQpFiZiflj1ryUEYLzrxgtMP0Pna18wFMoZUGY
+         ewRRrS89BQeG437EJ+OKxf050YMRVOfeKQcnIsyPuQn8/f3kpW4aSMQihpGSPn1IJcAl
+         DCZo02s8EwymAY4vP8PZPPSaAMNzFrxYUe5Ro7iBE8RxPq+9w83QiPKWgpFn6tU2pjkC
+         lwd+Wu0CLuej1I/whBo5ogGDMiCBzF+qhVuSem+w1iV4XSHx1zv2x6DrWz45Ian60KVw
+         hqRg==
+X-Gm-Message-State: AOJu0Yz11g0wn3q0AMgeBsLTjke5pNK4lRsSNj4ly8yRL+lJb7MsDSKg
+	FhHAehx2Mdz5WJGSxjCyXn4SBKGU3pXeqYHnW07orJG81w8DC8iFncUoW0K/iM9p5yEj+ZQQ6xn
+	O+XtfhtdRB9aRHVLPNU3N0Ug6uZ7gCgjPneucMdODlH1Rh8BF9LZ5y7odSlA=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4d0c:b0:663:1239:9eae with SMTP id
- 006d021491bc7-67768ccad6fmr2925114eaf.54.1771107443902; Sat, 14 Feb 2026
- 14:17:23 -0800 (PST)
-Date: Sat, 14 Feb 2026 14:17:23 -0800
+X-Received: by 2002:a4a:a64a:0:b0:678:1970:b69e with SMTP id
+ 006d021491bc7-6781970bd45mr1910212eaf.69.1771108285042; Sat, 14 Feb 2026
+ 14:31:25 -0800 (PST)
+Date: Sat, 14 Feb 2026 14:31:25 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6990f473.a70a0220.2c38d7.00d4.GAE@google.com>
-Subject: [moderation/CI] Re: fsverity: remove fsverity_verify_page()
-From: syzbot ci <syzbot+cidfe59638e5e455f7@syzkaller.appspotmail.com>
+Message-ID: <6990f7bd.a70a0220.2c38d7.00d5.GAE@google.com>
+Subject: [moderation/CI] Re: mm/damon/core: disallow non-power of two min_region_sz
+From: syzbot ci <syzbot+cib8a7a5e44224b0bc@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v2] fsverity: remove fsverity_verify_page()
-https://lore.kernel.org/all/20260214211830.15437-1-ebiggers@kernel.org
-* [PATCH v2 1/2] f2fs: use fsverity_verify_blocks() instead of fsverity_verify_page()
-* [PATCH v2 2/2] fsverity: remove fsverity_verify_page()
+[v1] mm/damon/core: disallow non-power of two min_region_sz
+https://lore.kernel.org/all/20260214214124.87689-1-sj@kernel.org
+* [PATCH] mm/damon/core: disallow non-power of two min_region_sz
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/28027876-2735-41e1-a7cf-6859b87589b7
+https://ci.syzbot.org/series/6ea70089-ad75-4376-a5f6-4a95801d67d6
 
 ***
 
 kernel build error
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      770aaedb461a055f79b971d538678942b6607894
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
+base:      6c8dd4f02805de481c200636e567a871f25399a2
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/46e7c354-aa5d-433d-bcb4-757e795a9361/config
+config:    https://ci.syzbot.org/builds/dfa45b8f-8a0a-4983-9174-eef52a898c45/config
 
-fs/f2fs/data.c:192:9: error: call to undeclared function 'fsverity_verify_page'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+mm/damon/core.c:1244:26: error: no member named 'min_region_sz' in 'struct damon_ctx'
 
 ***
 
@@ -85,7 +84,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[chao@kernel.org ebiggers@kernel.org fsverity@lists.linux.dev jaegeuk@kernel.org linux-f2fs-devel@lists.sourceforge.net linux-fsdevel@vger.kernel.org torvalds@linux-foundation.org]
+[akpm@linux-foundation.org damon@lists.linux.dev linux-kernel@vger.kernel.org linux-mm@kvack.org sj@kernel.org stable@vger.kernel.org yanquanmin1@huawei.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
