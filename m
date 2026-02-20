@@ -1,168 +1,243 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com [209.85.160.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26FD52F5A09
-	for <syzbot@lists.linux.dev>; Wed, 18 Feb 2026 08:47:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 919C415ADB4
+	for <syzbot@lists.linux.dev>; Fri, 20 Feb 2026 10:05:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771404428; cv=none; b=DaSOy8UfaIP9IMcVRNAinTaSSVq0elzRi9z0F/r68FP8YAg43wR3qc4fnPkWrfnR6dFgtXJtBoqzIuaDQAnXKANqj9yxWutOb8QaaoU2qMZ/LIpJSCRvhrCPcraO1PS72/BddVTLukYpPw5Jb5pMk4lqK12EF4qRjcHLouIpRYw=
+	t=1771581953; cv=none; b=URUjBqoeFaI7N6Nlwo3yNyyHncb1ojaLs8cIm0eywOU4bnHox31gKv042N4mDdp/8hI8R8pI+PlmE8GiGmw3z5TtFSuWd2y+tKDGOWzTfVeO+0KVe2Dz+UbNrNR//TPllfVMUgxJJs7boqRQfJ+9nEysldHh+7fPqEqIkOEy22c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771404428; c=relaxed/simple;
-	bh=Esdzk9VSfB+lTanDTVJE2rQhGfxzfyI1dUMsdig+Em8=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=CZ3fTSUuolpJxmXMbSSPjqgcxwkEPMJfwqLIO1SbXg0hSBifGPsMEgP/do1LW/rEMjK3uLG2ATiU9JeRi0UUHa7EYYmJ1dj88KIBo7CA+jlq8lVCaOqgI8WHRM8uEHCt9ibulTHxKxni6MLLJvGlJ4NK0pKZ/Q1FojSttmUSZ5k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+	s=arc-20240116; t=1771581953; c=relaxed/simple;
+	bh=WLwcoGygLxnPePnMZJazTYkt+U7e8CY7j2Z/ydxHXK4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=qV3YQ0VJdXBJemogZvRvosSmSA/Xzd5vbZ6FW91h08tPpq7sZsYCQYbgDyVhqGDagDkzcy201B6Ti8i1HlDGRU8/X1YIRbuMFIDg0SsZO9k+yrpWRSMEY25PKR9xBWQ5ErfaCk8ZBAKvCWgSp/Uqrc1lJ5e1OI7EWpEBpsYAzY8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-67994ff710eso9448214eaf.0
-        for <syzbot@lists.linux.dev>; Wed, 18 Feb 2026 00:47:07 -0800 (PST)
+Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-40ef793e45eso6506020fac.3
+        for <syzbot@lists.linux.dev>; Fri, 20 Feb 2026 02:05:51 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771404426; x=1772009226;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZU0dvQSdrNuSDHm9APNyMRdxU4fTzW2ZD/3ePa8/37w=;
-        b=dkn9Ypp68izy9PdFve/NEd/XhUg1p2njtO2x7dWLeQcqJ8dlZyYYgQtEIrWjwez9VL
-         vg/6fj7gDtJ7wXPm2/w40Ybbo4d9UYUmcR6YLx7Gt7ApTaWg59t/gZEB3nViHVu/covK
-         rEqlcl+E2B/lJfn3i0RwK9W5WALEFsPHXBJcxo7Jbc6KlzMzqbNs/hrKSMuRGE8Ooapy
-         fQuE/Ms54OncmSCs2Bab7Z6L829gn++Rjuo8e5cV6qAII1BhnFTh/lo+Nt7zPzgc+Dhi
-         nJzbbwMnUwZCc9IDiLjy9RUQ6jl4eB82ufcJkPTST3E73wuDghoS5+t5oRWKCvHbzbQq
-         mqTg==
-X-Gm-Message-State: AOJu0YyfJzsatL9lRwgZDRhvI9k2e8Ja10AdoFkDxgELnsp6fy/pb5jm
-	2ft/8Hp71i8ErUAXhv51VGtb9TQ1OX8jw0ce9n42E+lrVWvMMybuJk02SKN3sDuatowm1L1MHow
-	x9LXz7uAn8CwiZ4G1KN9aLECUe0M/K9QOAlNKGRguu9+m4DXtNW7iROB+F1w=
+        d=1e100.net; s=20230601; t=1771581950; x=1772186750;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Ry76COMPisXUsXrBkAOxqlG0FjmJ4fGAiR2issk/ynw=;
+        b=i9fHDwqz7mDkrlR22ZMukwgQoOnd08+mu6ykDwHT9piygSeZALX7CTeuIIZd2IaqJ5
+         YDVdCBpKMElt2a5xYu/ct25wmoY9R7XgaXRECp1bp4HSMi7gJVXyPkY6Z0KJ5BbOq/hT
+         zm33VYRgGcqv8Lxb84Bp3SjInRL2zCOJ9owhydgvIUf+W3yFQcREALRvIOJFY0WHvC0a
+         R1rV2t14ImjcHtl1SnipQPjxkJq9TeOHp6Olc8ipLrD2/p6Hk4WtbIkWcNfU8eixr5bZ
+         /NEYWAsbzh8rQPGqZ2JDBHp2SN+ufnWObV2zJa3UTWKn+xEe9/yziGYD3y3IQJE8UQ2g
+         9m1Q==
+X-Gm-Message-State: AOJu0YwVD0vmcU5AR76exK7/fULX9WWch/XnzqOyCFBIuO2ka0mTws/l
+	xIDeEAc8mTxQS6YS73P/NpBOnzLp1NGQO4QfagCqXGNjTlhwAfWVH0oLbnXnVzw91ZXRK+Qjdbl
+	4L5rhsafiXCzfFKnqfYqQ+3XRwRY7Xmhwhjsnmd6wKiDvF12FgV21dF8GL0U=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:2907:b0:679:a650:cc20 with SMTP id
- 006d021491bc7-679a650d096mr1037503eaf.80.1771404426124; Wed, 18 Feb 2026
- 00:47:06 -0800 (PST)
-Date: Wed, 18 Feb 2026 00:47:06 -0800
-In-Reply-To: <20260218025207.1425553-1-joannelkoong@gmail.com>
+X-Received: by 2002:a05:6820:6ac4:b0:679:8b1d:ba00 with SMTP id
+ 006d021491bc7-679bd316100mr711828eaf.55.1771581950374; Fri, 20 Feb 2026
+ 02:05:50 -0800 (PST)
+Date: Fri, 20 Feb 2026 02:05:50 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69957c8a.a70a0220.2c38d7.011b.GAE@google.com>
-Subject: [syzbot ci] Re: io_uring: add kernel-managed buffer rings
-From: syzbot ci <syzbot+ci872ea55a8e111acc@syzkaller.appspotmail.com>
-To: asml.silence@gmail.com, axboe@kernel.dk, bernd@bsbernd.com, 
-	csander@purestorage.com, hch@infradead.org, io-uring@vger.kernel.org, 
-	joannelkoong@gmail.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <699831fe.a70a0220.2c38d7.013c.GAE@google.com>
+Subject: [moderation/CI] Re: kernfs: Add inotify IN_DELETE_SELF, IN_IGNORED support
+From: syzbot ci <syzbot+cid929a1b2d88b7512@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v2] io_uring: add kernel-managed buffer rings
-https://lore.kernel.org/all/20260218025207.1425553-1-joannelkoong@gmail.com
-* [PATCH v2 1/9] io_uring/memmap: chunk allocations in io_region_allocate_pages()
-* [PATCH v2 2/9] io_uring/kbuf: add support for kernel-managed buffer rings
-* [PATCH v2 3/9] io_uring/kbuf: support kernel-managed buffer rings in buffer selection
-* [PATCH v2 4/9] io_uring/kbuf: add buffer ring pinning/unpinning
-* [PATCH v2 5/9] io_uring/kbuf: return buffer id in buffer selection
-* [PATCH v2 6/9] io_uring/kbuf: add recycling for kernel managed buffer rings
-* [PATCH v2 7/9] io_uring/kbuf: add io_uring_is_kmbuf_ring()
-* [PATCH v2 8/9] io_uring/kbuf: export io_ring_buffer_select()
-* [PATCH v2 9/9] io_uring/cmd: set selected buffer index in __io_uring_cmd_done()
+[v4] kernfs: Add inotify IN_DELETE_SELF, IN_IGNORED support
+https://lore.kernel.org/all/20260220055449.3073-1-tjmercier@google.com
+* [PATCH v4 1/3] kernfs: Don't set_nlink for directories being removed
+* [PATCH v4 2/3] kernfs: Send IN_DELETE_SELF and IN_IGNORED
+* [PATCH v4 3/3] selftests: memcg: Add tests for IN_DELETE_SELF and IN_IGNORED
 
 and found the following issue:
-general protection fault in io_remove_buffers_legacy
+possible deadlock in __kernfs_remove
 
 Full report is available here:
-https://ci.syzbot.org/series/ddeaf464-c69b-4166-b0cf-53c9d51e4820
+https://ci.syzbot.org/series/4b44d5c2-c2eb-4425-a19a-f9963b64f74f
 
 ***
 
-general protection fault in io_remove_buffers_legacy
+possible deadlock in __kernfs_remove
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      2961f841b025fb234860bac26dfb7fa7cb0fb122
+tree:      bpf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf-next.git
+base:      ba268514ea14b44570030e8ed2aef92a38679e85
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/ab5ad5aa-2757-4d66-a2c5-391a8417535d/config
-C repro:   https://ci.syzbot.org/findings/061747e2-36f1-499b-ac34-38cefffbce63/c_repro
-syz repro: https://ci.syzbot.org/findings/061747e2-36f1-499b-ac34-38cefffbce63/syz_repro
+config:    https://ci.syzbot.org/builds/45ab774f-e8d7-4def-8279-888a5cb2d01e/config
+syz repro: https://ci.syzbot.org/findings/b74cbc6a-1cef-4ae9-be46-dd9e8b29b648/syz_repro
 
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 1 UID: 0 PID: 5967 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+======================================================
+WARNING: possible circular locking dependency detected
+syzkaller #0 Not tainted
+------------------------------------------------------
+kworker/u8:1/13 is trying to acquire lock:
+ffff88816ef2b878 (kn->active#5){++++}-{0:0}, at: __kernfs_remove+0x47e/0x8c0 fs/kernfs/dir.c:1533
+
+but task is already holding lock:
+ffff8881012e8ab8 (&root->kernfs_supers_rwsem){++++}-{4:4}, at: kernfs_remove_by_name_ns+0x3f/0x140 fs/kernfs/dir.c:1745
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #2 (&root->kernfs_supers_rwsem){++++}-{4:4}:
+       down_read+0x47/0x2e0 kernel/locking/rwsem.c:1537
+       kernfs_remove_by_name_ns+0x3f/0x140 fs/kernfs/dir.c:1745
+       acpi_unbind_one+0x2d8/0x3b0 drivers/acpi/glue.c:337
+       device_platform_notify_remove drivers/base/core.c:2386 [inline]
+       device_del+0x547/0x8f0 drivers/base/core.c:3881
+       serdev_controller_add+0x46f/0x640 drivers/tty/serdev/core.c:785
+       serdev_tty_port_register+0x159/0x260 drivers/tty/serdev/serdev-ttyport.c:291
+       tty_port_register_device_attr_serdev+0xe7/0x170 drivers/tty/tty_port.c:187
+       serial_core_add_one_port drivers/tty/serial/serial_core.c:3107 [inline]
+       serial_core_register_port+0x103a/0x28b0 drivers/tty/serial/serial_core.c:3305
+       serial8250_register_8250_port+0x1658/0x1fd0 drivers/tty/serial/8250/8250_core.c:822
+       serial_pnp_probe+0x568/0x7f0 drivers/tty/serial/8250/8250_pnp.c:480
+       pnp_device_probe+0x30b/0x4c0 drivers/pnp/driver.c:111
+       call_driver_probe drivers/base/dd.c:-1 [inline]
+       really_probe+0x267/0xaf0 drivers/base/dd.c:661
+       __driver_probe_device+0x18c/0x320 drivers/base/dd.c:803
+       driver_probe_device+0x4f/0x240 drivers/base/dd.c:833
+       __driver_attach+0x3e7/0x710 drivers/base/dd.c:1227
+       bus_for_each_dev+0x23b/0x2c0 drivers/base/bus.c:383
+       bus_add_driver+0x345/0x670 drivers/base/bus.c:715
+       driver_register+0x23a/0x320 drivers/base/driver.c:249
+       serial8250_init+0x8f/0x160 drivers/tty/serial/8250/8250_platform.c:317
+       do_one_initcall+0x250/0x840 init/main.c:1378
+       do_initcall_level+0x104/0x190 init/main.c:1440
+       do_initcalls+0x59/0xa0 init/main.c:1456
+       kernel_init_freeable+0x2a6/0x3d0 init/main.c:1688
+       kernel_init+0x1d/0x1d0 init/main.c:1578
+       ret_from_fork+0x51b/0xa40 arch/x86/kernel/process.c:158
+       ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
+
+-> #1 (&device->physical_node_lock){+.+.}-{4:4}:
+       __mutex_lock_common kernel/locking/mutex.c:614 [inline]
+       __mutex_lock+0x19f/0x1300 kernel/locking/mutex.c:776
+       acpi_get_first_physical_node drivers/acpi/bus.c:691 [inline]
+       acpi_primary_dev_companion drivers/acpi/bus.c:710 [inline]
+       acpi_companion_match+0x8a/0x120 drivers/acpi/bus.c:764
+       acpi_device_uevent_modalias+0x1a/0x30 drivers/acpi/device_sysfs.c:280
+       platform_uevent+0x3c/0xb0 drivers/base/platform.c:1411
+       dev_uevent+0x446/0x8a0 drivers/base/core.c:2692
+       kobject_uevent_env+0x477/0x9e0 lib/kobject_uevent.c:573
+       kobject_synth_uevent+0x585/0xbd0 lib/kobject_uevent.c:207
+       uevent_store+0x26/0x70 drivers/base/core.c:2773
+       kernfs_fop_write_iter+0x3af/0x540 fs/kernfs/file.c:352
+       new_sync_write fs/read_write.c:593 [inline]
+       vfs_write+0x61d/0xb90 fs/read_write.c:686
+       ksys_write+0x150/0x270 fs/read_write.c:738
+       do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+       do_syscall_64+0xe2/0xf80 arch/x86/entry/syscall_64.c:94
+       entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+-> #0 (kn->active#5){++++}-{0:0}:
+       check_prev_add kernel/locking/lockdep.c:3165 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3284 [inline]
+       validate_chain kernel/locking/lockdep.c:3908 [inline]
+       __lock_acquire+0x15a5/0x2cf0 kernel/locking/lockdep.c:5237
+       lock_acquire+0x106/0x330 kernel/locking/lockdep.c:5868
+       kernfs_drain+0x27c/0x5f0 fs/kernfs/dir.c:511
+       __kernfs_remove+0x47e/0x8c0 fs/kernfs/dir.c:1533
+       kernfs_remove_by_name_ns+0xc0/0x140 fs/kernfs/dir.c:1751
+       sysfs_remove_file include/linux/sysfs.h:780 [inline]
+       device_remove_file drivers/base/core.c:3071 [inline]
+       device_del+0x506/0x8f0 drivers/base/core.c:3876
+       device_unregister+0x21/0xf0 drivers/base/core.c:3919
+       mac80211_hwsim_del_radio+0x2dc/0x490 drivers/net/wireless/virtual/mac80211_hwsim.c:5918
+       hwsim_exit_net+0xede/0xfa0 drivers/net/wireless/virtual/mac80211_hwsim.c:6807
+       ops_exit_list net/core/net_namespace.c:199 [inline]
+       ops_undo_list+0x49f/0x940 net/core/net_namespace.c:252
+       cleanup_net+0x4df/0x7b0 net/core/net_namespace.c:696
+       process_one_work kernel/workqueue.c:3257 [inline]
+       process_scheduled_works+0xaec/0x17a0 kernel/workqueue.c:3340
+       worker_thread+0xda6/0x1360 kernel/workqueue.c:3421
+       kthread+0x726/0x8b0 kernel/kthread.c:463
+       ret_from_fork+0x51b/0xa40 arch/x86/kernel/process.c:158
+       ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
+
+other info that might help us debug this:
+
+Chain exists of:
+  kn->active#5 --> &device->physical_node_lock --> &root->kernfs_supers_rwsem
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  rlock(&root->kernfs_supers_rwsem);
+                               lock(&device->physical_node_lock);
+                               lock(&root->kernfs_supers_rwsem);
+  lock(kn->active#5);
+
+ *** DEADLOCK ***
+
+4 locks held by kworker/u8:1/13:
+ #0: ffff888100ef7948 ((wq_completion)netns){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3232 [inline]
+ #0: ffff888100ef7948 ((wq_completion)netns){+.+.}-{0:0}, at: process_scheduled_works+0x9d4/0x17a0 kernel/workqueue.c:3340
+ #1: ffffc90000127bc0 (net_cleanup_work){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3233 [inline]
+ #1: ffffc90000127bc0 (net_cleanup_work){+.+.}-{0:0}, at: process_scheduled_works+0xa0f/0x17a0 kernel/workqueue.c:3340
+ #2: ffffffff8f99d2d0 (pernet_ops_rwsem){++++}-{4:4}, at: cleanup_net+0xfe/0x7b0 net/core/net_namespace.c:670
+ #3: ffff8881012e8ab8 (&root->kernfs_supers_rwsem){++++}-{4:4}, at: kernfs_remove_by_name_ns+0x3f/0x140 fs/kernfs/dir.c:1745
+
+stack backtrace:
+CPU: 0 UID: 0 PID: 13 Comm: kworker/u8:1 Not tainted syzkaller #0 PREEMPT(full) 
 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__list_del_entry_valid_or_report+0x25/0x190 lib/list_debug.c:49
-Code: 90 90 90 90 90 f3 0f 1e fa 41 57 41 56 41 55 41 54 53 48 89 fb 49 bd 00 00 00 00 00 fc ff df 48 83 c7 08 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 74 05 e8 df 8c 77 fd 4c 8b 7b 08 48 89 d8 48 c1 e8
-RSP: 0018:ffffc900040a7b68 EFLAGS: 00010202
-RAX: 0000000000000001 RBX: 0000000000000000 RCX: 1ffff11035ee2732
-RDX: 1ffff11035ee2730 RSI: 00000000ffffffff RDI: 0000000000000008
-RBP: dffffc0000000000 R08: ffff8881af7139b7 R09: 0000000000000000
-R10: ffff8881af7139a0 R11: ffffed1035ee2737 R12: ffff8881af713980
-R13: dffffc0000000000 R14: 00000000ffffffff R15: 0000000000000000
-FS:  0000555560587500(0000) GS:ffff8882a9466000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000200000001000 CR3: 0000000175cd2000 CR4: 00000000000006f0
+Workqueue: netns cleanup_net
 Call Trace:
  <TASK>
- __list_del_entry_valid include/linux/list.h:132 [inline]
- __list_del_entry include/linux/list.h:223 [inline]
- list_del include/linux/list.h:237 [inline]
- io_remove_buffers_legacy+0x139/0x310 io_uring/kbuf.c:533
- io_put_bl+0x62/0x120 io_uring/kbuf.c:548
- io_register_pbuf_ring+0x6c0/0x7d0 io_uring/kbuf.c:855
- __io_uring_register io_uring/register.c:838 [inline]
- __do_sys_io_uring_register io_uring/register.c:1024 [inline]
- __se_sys_io_uring_register+0xc3e/0x19a0 io_uring/register.c:1001
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f056859bf79
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fffd8dcfaf8 EFLAGS: 00000246 ORIG_RAX: 00000000000001ab
-RAX: ffffffffffffffda RBX: 00007f0568815fa0 RCX: 00007f056859bf79
-RDX: 0000200000000040 RSI: 0000000000000016 RDI: 0000000000000004
-RBP: 00007f05686327e0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f0568815fac R14: 00007f0568815fa0 R15: 00007f0568815fa0
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_circular_bug+0x2e1/0x300 kernel/locking/lockdep.c:2043
+ check_noncircular+0x12e/0x150 kernel/locking/lockdep.c:2175
+ check_prev_add kernel/locking/lockdep.c:3165 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3284 [inline]
+ validate_chain kernel/locking/lockdep.c:3908 [inline]
+ __lock_acquire+0x15a5/0x2cf0 kernel/locking/lockdep.c:5237
+ lock_acquire+0x106/0x330 kernel/locking/lockdep.c:5868
+ kernfs_drain+0x27c/0x5f0 fs/kernfs/dir.c:511
+ __kernfs_remove+0x47e/0x8c0 fs/kernfs/dir.c:1533
+ kernfs_remove_by_name_ns+0xc0/0x140 fs/kernfs/dir.c:1751
+ sysfs_remove_file include/linux/sysfs.h:780 [inline]
+ device_remove_file drivers/base/core.c:3071 [inline]
+ device_del+0x506/0x8f0 drivers/base/core.c:3876
+ device_unregister+0x21/0xf0 drivers/base/core.c:3919
+ mac80211_hwsim_del_radio+0x2dc/0x490 drivers/net/wireless/virtual/mac80211_hwsim.c:5918
+ hwsim_exit_net+0xede/0xfa0 drivers/net/wireless/virtual/mac80211_hwsim.c:6807
+ ops_exit_list net/core/net_namespace.c:199 [inline]
+ ops_undo_list+0x49f/0x940 net/core/net_namespace.c:252
+ cleanup_net+0x4df/0x7b0 net/core/net_namespace.c:696
+ process_one_work kernel/workqueue.c:3257 [inline]
+ process_scheduled_works+0xaec/0x17a0 kernel/workqueue.c:3340
+ worker_thread+0xda6/0x1360 kernel/workqueue.c:3421
+ kthread+0x726/0x8b0 kernel/kthread.c:463
+ ret_from_fork+0x51b/0xa40 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:246
  </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:__list_del_entry_valid_or_report+0x25/0x190 lib/list_debug.c:49
-Code: 90 90 90 90 90 f3 0f 1e fa 41 57 41 56 41 55 41 54 53 48 89 fb 49 bd 00 00 00 00 00 fc ff df 48 83 c7 08 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 74 05 e8 df 8c 77 fd 4c 8b 7b 08 48 89 d8 48 c1 e8
-RSP: 0018:ffffc900040a7b68 EFLAGS: 00010202
-RAX: 0000000000000001 RBX: 0000000000000000 RCX: 1ffff11035ee2732
-RDX: 1ffff11035ee2730 RSI: 00000000ffffffff RDI: 0000000000000008
-RBP: dffffc0000000000 R08: ffff8881af7139b7 R09: 0000000000000000
-R10: ffff8881af7139a0 R11: ffffed1035ee2737 R12: ffff8881af713980
-R13: dffffc0000000000 R14: 00000000ffffffff R15: 0000000000000000
-FS:  0000555560587500(0000) GS:ffff8882a9466000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f25f1e17095 CR3: 0000000175cd2000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess):
-   0:	90                   	nop
-   1:	90                   	nop
-   2:	90                   	nop
-   3:	90                   	nop
-   4:	90                   	nop
-   5:	f3 0f 1e fa          	endbr64
-   9:	41 57                	push   %r15
-   b:	41 56                	push   %r14
-   d:	41 55                	push   %r13
-   f:	41 54                	push   %r12
-  11:	53                   	push   %rbx
-  12:	48 89 fb             	mov    %rdi,%rbx
-  15:	49 bd 00 00 00 00 00 	movabs $0xdffffc0000000000,%r13
-  1c:	fc ff df
-  1f:	48 83 c7 08          	add    $0x8,%rdi
-  23:	48 89 f8             	mov    %rdi,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1) <-- trapping instruction
-  2f:	74 05                	je     0x36
-  31:	e8 df 8c 77 fd       	call   0xfd778d15
-  36:	4c 8b 7b 08          	mov    0x8(%rbx),%r15
-  3a:	48 89 d8             	mov    %rbx,%rax
-  3d:	48                   	rex.W
-  3e:	c1                   	.byte 0xc1
-  3f:	e8                   	.byte 0xe8
+hsr_slave_0: left promiscuous mode
+hsr_slave_1: left promiscuous mode
+batman_adv: batadv0: Interface deactivated: batadv_slave_0
+batman_adv: batadv0: Removing interface: batadv_slave_0
+batman_adv: batadv0: Interface deactivated: batadv_slave_1
+batman_adv: batadv0: Removing interface: batadv_slave_1
+veth1_macvtap: left promiscuous mode
+veth0_macvtap: left promiscuous mode
+veth1_vlan: left promiscuous mode
+veth0_vlan: left promiscuous mode
+team0 (unregistering): Port device team_slave_1 removed
+team0 (unregistering): Port device team_slave_0 removed
+netdevsim netdevsim2 netdevsim0: set [1, 0] type 2 family 0 port 6081 - 0
+netdevsim netdevsim2 netdevsim1: set [1, 0] type 2 family 0 port 6081 - 0
+netdevsim netdevsim2 netdevsim2: set [1, 0] type 2 family 0 port 6081 - 0
+netdevsim netdevsim2 netdevsim3: set [1, 0] type 2 family 0 port 6081 - 0
 
 
 ***
@@ -174,3 +249,13 @@ separate fix, please add the following tag to your commit message:
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[amir73il@gmail.com cgroups@vger.kernel.org driver-core@lists.linux.dev gregkh@linuxfoundation.org jack@suse.cz linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org linux-kselftest@vger.kernel.org shuah@kernel.org tj@kernel.org tjmercier@google.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
