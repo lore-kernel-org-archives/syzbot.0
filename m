@@ -1,191 +1,174 @@
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABFCF34D901
-	for <syzbot@lists.linux.dev>; Mon, 23 Feb 2026 08:40:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771836011; cv=none; b=WGW1RwiasaRAcPOL+CVwNncpQ/mL93gmf5B3acQppB/sqiL5pJvcfs1I6SDDD+kYE9Hb/PlL55I0SBcJfPuX45b97/QBDfPopJ1xMYNDT76wUflZjT1k6nRdbJIV5clSoTt4bqFVdzagqFaFtnXJr2ly6dwlhyYCiEzxNDPKkbg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771836011; c=relaxed/simple;
-	bh=oWuwcr7ja5w/HVpeRJvLAO6z0vTcP0hTgDysdzqBFYs=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=Q3uiR93eLH39n72feFr3GWng5IjAhf+qua2aCs/ivgFfeJwJXYcnPMIhnZsaSwWMltIas44xgwbo6nmS9+WELL3iRMBHLxZEfL697VnkqLMJyVjuqYf6MXvoR7bYOioKHzs5oKfQnp9Ri1x1SHsGdFcp94iOHxpgMYxMWvezPuc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-679c44ae7abso41465387eaf.1
-        for <syzbot@lists.linux.dev>; Mon, 23 Feb 2026 00:40:09 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6B1F29AB07
+	for <syzbot@lists.linux.dev>; Mon, 23 Feb 2026 14:36:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=10.30.226.201
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771857405; cv=pass; b=l7W1GkS3m/cBfs353Ol7lHRYknNrh4ZcgyFwY0FnDxq6F+xlIK7yEDa1sVdEjDf66pvvZtZIsb13xu5EEOYH3txdVeOE3dwMGc0zz3j2g2cYDYaAvqQFPw+apCL7ZlNI4lx07IgyJaLC7UUTLUZt88a0SI7kFA7UMeqgAraoiYI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771857405; c=relaxed/simple;
+	bh=j88nzqxGDcpi5krckH7OxT+BN89QRDXkSXwvN5oduIc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=uB6uoHtUB7lAb43CWOYUiBjy6B02P3V/l0nmZeGPfl/phDga/3CUBglpiuX2zIAPSLUX5cZ5f17yJCPBSa24zbV7B+YSaQjUGghoDiZ2zVFF6qtbXEYTZA/7Kq0DwSYGEFWY6PpWe2xuuGmGfaf4RWgPaZUFfGrYXwPfBMJSjRI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=jtydElNq; arc=pass smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="jtydElNq"
+Received: by smtp.kernel.org (Postfix)
+	id A0369C19423; Mon, 23 Feb 2026 14:36:44 +0000 (UTC)
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id B8F3DC116C6
+	for <syzbot@kernel.org>; Mon, 23 Feb 2026 14:36:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.kernel.org B8F3DC116C6
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=google.com
+Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-386b4c28ad6so38301211fa.0
+        for <syzbot@kernel.org>; Mon, 23 Feb 2026 06:36:43 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1771857401; cv=none;
+        d=google.com; s=arc-20240605;
+        b=IEsxdCLBKVlSpSPbXV1DtrlBIzZTwnjEt4HQJ3PMdKzJl5PwaXujrn6al39jT/fqMj
+         LAgwsrI/lZaGGZlhC4kedZEy0p37U2wAOBmUrbu8WfnCQHMC12C/rTxKi9g3zNd60seC
+         1dxS7s0gM/mKeJMXHy/5O2LbBxkhQDEGscYoyoaqlchivadv1XefrYSpslApRQSRiliP
+         yD/KrgE7E8Sae+xgChhyIzN+fejFdZiTFnWM+E33xbHly9Zk5lQNuSdPfE4YKBW5dBWh
+         YUiwzXUJEf0wc4/zdmOu/+BTu8WQFICsSb0RWnIUDlwGhjSAl9jTW7FFeqT9aD4FsfMs
+         YWBA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=MM3aKteGZmW/7GayY7dRMfYL0Xw/N+1zNqCVx7UjMoM=;
+        fh=SHofx2R2YiD89hIR0fQNBeGZagudU1wZX4M9z2QENdA=;
+        b=ZMfQzD+FZbCSbrOjVVUT72YlKcKZZeNrCmkQwxdVUdTCl9/JfZROxxQSNe6rcjFSMp
+         HEnNrc4tveb/z2bowZ5PIsfEs3n6UnthAFExReQOVi2tCz/L9RkgtXuuFSRN/2DsqW1Q
+         kxNmyS1Yvt9ddM70hBVJ725oUFTQUKHxFcSQ2Q9h6ONvXvmfdJiNtqG7REpfNjZuafWD
+         PoSEUShYZ2ojtnXSKeicH7s0kAQx4m+MTp9BKM1oreBNSDjlkJ9hR7ztRdpWg2emIAuW
+         NV0WKZ2aifxrNmyZtI7sdZdMbap18vt2uBsmXGwJub9S0XleEPoxwOKrDCRanjg0AEy3
+         RbSQ==;
+        darn=kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1771857401; x=1772462201; darn=kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=MM3aKteGZmW/7GayY7dRMfYL0Xw/N+1zNqCVx7UjMoM=;
+        b=jtydElNqSwgzdGnRl+n2Uvfg1z/51Wfx7h9qoHG5z9d6NhJr7YxGO4cS4wqzP+YgpC
+         8xBypGrVvnu2XDKhSwaI70m35ZPbtBSkkdg9RXwR6xTXhe8mVzF4OA/W7NzxicAlt/Dq
+         raF8i0DVWmrjyHW1aKq5Vm740aIxKAux5AC4Zb6Zg8Dc+XGZ+pslgI5lRxDdPRBD0+a6
+         EuDVWXjG8FYfIP8cg69N5at1/wSAIJ3lQN4cRe0o+Zhnrh6C/xsI++S1thbRLEujocVh
+         FJBxCg/99fEh41ZSAO7KE34pBIv4qWrAQE5Yt81y9ZkBH3vrvP+bTSDl2aZ7y5/QQ/ia
+         iMxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771836008; x=1772440808;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nUp2sLsTQG2be743RxBuEK2iTbA/TXBt6KIKc8LeryU=;
-        b=Vx9czmbVhLmENvJO2QY6/YMLYzY4EKbUETYYbCguELlpRDgzUcWgYHmqR7wMR0eDrU
-         41Sr5UP9Iy8UKKLJKCo7WzwxXORIHvn++gIt+OFPSRSiIHwqbDOS15dvTiKCW9/IlJ/0
-         rfzdVvLu34/1UQHCM+Ye1p4budviz2MVXnKxE8BVLsKl453t27FrrPdB/X5glrqU6gMV
-         cGbvti06QnsfQqY8IhinbtGVNk37mNYSfFhhthd8WyNgByXaQesPlyEMCwUzBNEpZ9wB
-         RE4bIiiTf9m02veWQet7UvZSw5Jpc827onvhFWYXYwDWxSZaF2yKAoG4owxcP0uCL77k
-         y9Hg==
-X-Gm-Message-State: AOJu0Yw+hQsOmCnrQZeDlv4mEhjODTjJIc8K6MoYdAOKRrN+IN9FTHJQ
-	FHpgZ3EjgflKhPUpXCeb6CEKZE4UPNU17k/pVg5CUpLI2glCaoj60+YVMOfXQQFAmv5HT3ooOf0
-	g1Z0YuqBPygq5xsMqXX5UlyiyWrO66aIZ6GKwAdVmJYzYV1iUQig1pcan2EU=
+        d=1e100.net; s=20230601; t=1771857401; x=1772462201;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MM3aKteGZmW/7GayY7dRMfYL0Xw/N+1zNqCVx7UjMoM=;
+        b=YuaKsFtgUL9vjMXWfATTyflNiEN4TDeLl7lXO3Z+JEz0OuJF4Ht21P5neZDWd+Fwlb
+         3nMp07lgmmpwzEuZT1tPaYMoiTctzWLCcZBag7ukUvnrkZW0X4W9V8mboOlbzzbmHG8+
+         jvc0Pf0JWvhblqH4kgoRr26IjgTxC9GcaSNn3dYBR209rnaQVyJDc0W/fJYfn74Hl+vP
+         85Joy5Gf3L/1Kf8LKdGWDY67I91YRQTotoLfBm6aWxFIIrszPXuNfL1WmfAx5wErkTgr
+         3vvscPZdws3ihY732F4ml1XeFJTB50uOM89h7r64+3CW6rXSe5VKqa/sNSWEsAPTC5nf
+         OMKg==
+X-Gm-Message-State: AOJu0Yz2ZSs2+TbXFPjgkGU0La5BBvmAir32nEehLLPENN3+osWVmfCf
+	om68t26aJtbFcKgozM8q74to5UmiY51YUQn4IJNMQUYOMVGRaEVS1Ukl3vKlVeqZbcGlNPHe8x3
+	w2oj+ycoljwCO0+wMt6CKXG1ccqJmc0Bw4YFv7/BlwzCN5z+gwWHZkrS53cg=
+X-Gm-Gg: AZuq6aJeUj+sdncLROdcQKOpEu4AwF9gh5ZoeyMqPmcgY9KyvIiWM5SjG9KW8AaqyMm
+	OXzEoML1PI34fnZZxg1hldYZlcKmqWDJqU1+XkpcxRdvEDqbOlEBpnP5lR5CkfNx2dsbDV8oWxo
+	nWbl9Q0d6URBR3YS/pE7xG8eTTGEA+2LC2MbwIdKcYyjjOR9gN+eKi1NZhd21v2iSBmbeSxYte9
+	GpM8ZzhNDh0HZ15aTVdv3AZEuVqmzV1oo3oKE0fAbOPxtn6EUpDm6GSW8hgb74XNMbh3fJSn9X9
+	XfeXwYJTnmFuO0glR0CqehjTV/SzL8c7/g6jDw==
+X-Received: by 2002:a05:651c:31ce:b0:386:fd3e:bff0 with SMTP id
+ 38308e7fff4ca-389a5e94213mr23326701fa.39.1771857401229; Mon, 23 Feb 2026
+ 06:36:41 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:468c:b0:679:c41f:edf with SMTP id
- 006d021491bc7-679c41f0fcdmr3630394eaf.29.1771836008198; Mon, 23 Feb 2026
- 00:40:08 -0800 (PST)
-Date: Mon, 23 Feb 2026 00:40:08 -0800
-In-Reply-To: <20260223032641.1859381-1-ziy@nvidia.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <699c1268.050a0220.340abe.0d38.GAE@google.com>
-Subject: [syzbot ci] Re: Zero page->private when freeing pages
-From: syzbot ci <syzbot+cid1b0d4bbb448f87c@syzkaller.appspotmail.com>
-To: airlied@gmail.com, akpm@linux-foundation.org, aliceryhl@google.com, 
-	arve@android.com, axboe@kernel.dk, baohua@kernel.org, 
-	baolin.wang@linux.alibaba.com, brauner@kernel.org, christian.koenig@amd.com, 
-	cl@gentwo.org, cmllamas@google.com, dave@stgolabs.net, david@kernel.org, 
-	dennis@kernel.org, dev.jain@arm.com, dhavale@google.com, dlemoal@kernel.org, 
-	dri-devel@lists.freedesktop.org, gregkh@linuxfoundation.org, 
-	guochunhai@vivo.com, hannes@cmpxchg.org, harry.yoo@oracle.com, 
-	jackmanb@google.com, jefflexu@linux.alibaba.com, johannes.thumshirn@wdc.com, 
-	katrinzhou@tencent.com, kernelxing@tencent.com, kprateek.nayak@amd.com, 
-	lance.yang@linux.dev, liam.howlett@oracle.com, lihongbo22@huawei.com, 
-	linux-block@vger.kernel.org, linux-erofs@lists.ozlabs.org, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, lorenzo.stoakes@oracle.com, 
-	maarten.lankhorst@linux.intel.com, matthew.auld@intel.com, 
-	matthew.brost@intel.com, mhiramat@kernel.org, mhocko@suse.com, 
-	mripard@kernel.org, npache@redhat.com, ray.huang@amd.com, rientjes@google.com, 
-	roman.gushchin@linux.dev, ryan.roberts@arm.com, sandeen@redhat.com, 
-	simona@ffwll.ch, surenb@google.com, tj@kernel.org, tkjos@android.com, 
-	tzimmermann@suse.de, vbabka@kernel.org, xiang@kernel.org, zbestahu@gmail.com, 
-	ziy@nvidia.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <20260204092230.2540042-1-syzbot@kernel.org>
+In-Reply-To: <20260204092230.2540042-1-syzbot@kernel.org>
+From: Dmitry Vyukov <dvyukov@google.com>
+Date: Mon, 23 Feb 2026 15:36:29 +0100
+X-Gm-Features: AaiRm51tCsRBB7oayfu63tMMIZDAgJ7xHZQrvew4IJNGGTC0wVblcq8ltf71rm0
+Message-ID: <CACT4Y+YVb8+XkEg2ucfYKjw-J7uy2Om19kzrGkXvkyxa9XTzvQ@mail.gmail.com>
+Subject: Re: [PATCH] jfs: fix array-index-out-of-bounds in dbFindLeaf
+To: syzbot <syzbot@kernel.org>
+Cc: jfs-discussion@lists.sourceforge.net, shaggy@kernel.org, 
+	ghandatmanas@gmail.com, syzbot+1afe7ef2d0062e19eeb3@syzkaller.appspotmail.com, 
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-syzbot ci has tested the following series
+On Wed, 4 Feb 2026 at 10:23, syzbot <syzbot@kernel.org> wrote:
+>
+> UBSAN reported an array-index-out-of-bounds issue in dbFindLeaf:
+>
+>   index 1365 is out of range for type 's8[1365]' (aka 'signed char[1365]')
+>   CPU: 0 UID: 0 PID: 6287 Comm: syz-executor268 Not tainted ...
+>   Call Trace:
+>    ...
+>    __ubsan_handle_out_of_bounds+0x115/0x140 lib/ubsan.c:455
+>    dbFindLeaf+0x308/0x520 fs/jfs/jfs_dmap.c:2976
+>    dbFindCtl+0x267/0x520 fs/jfs/jfs_dmap.c:1717
+>    ...
+>
+> The issue is caused by an off-by-one error in the bounds check within
+> dbFindLeaf. The function traverses the dmap tree to find free blocks.
+> It uses a loop to iterate through the levels of the tree, calculating
+> the index `x + n` to access the `tp->dmt_stree` array. The variable
+> `max_size` represents the size of this array (CTLTREESIZE (1365) for
+> dmapctl or TREESIZE (341) for dmaptree).
+>
+> The bounds check `if (x + n > max_size)` allows `x + n` to be equal to
+> `max_size`. However, since the array size is `max_size`, the valid
+> indices are `0` to `max_size - 1`. Accessing `tp->dmt_stree[max_size]`
+> results in an array-index-out-of-bounds access.
+>
+> This can occur when the `dmt_height` field in the on-disk structure is
+> corrupted or fuzzed to be larger than the fixed height supported by the
+> `dmt_stree` array.
+>
+> Fix this by changing the condition to `>=` to correctly reject indices
+> equal to or greater than the array size.
+>
+> Signed-off-by: syzbot@kernel.org
+> Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
+> Fixes: 22cad8bc1d36 ("jfs: fix array-index-out-of-bounds in dbFindLeaf")
+> Reported-by: syzbot+1afe7ef2d0062e19eeb3@syzkaller.appspotmail.com
+> To: <jfs-discussion@lists.sourceforge.net>
+> To: "Dave Kleikamp" <shaggy@kernel.org>
+> To: "Manas Ghandat" <ghandatmanas@gmail.com>
+> Cc: <linux-kernel@vger.kernel.org>
+> Cc: <stable@vger.kernel.org>
+> ---
+> This patch was generated by Google Gemini LLM model.
+> It was pre-reviewed and Signed-off-by a human, but please review carefully.
+>
+> Gerrit code review with full side-by-side diffs:
+> https://linux-review.git.corp.google.com/c/linux/kernel/git/torvalds/linux/+/26122
+>
+> Change-Id: I92f694e86518349eafa132b2ba314d8dfff6c86e
+> ---
+>
+> diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
+> index cdfa699..18a7dc5 100644
+> --- a/fs/jfs/jfs_dmap.c
+> +++ b/fs/jfs/jfs_dmap.c
+> @@ -2971,7 +2971,7 @@ static int dbFindLeaf(dmtree_t *tp, int l2nb, int *leafidx, bool is_ctl)
+>                         /* sufficient free space found.  move to the next
+>                          * level (or quit if this is the last level).
+>                          */
+> -                       if (x + n > max_size)
+> +                       if (x + n >= max_size)
+>                                 return -ENOSPC;
+>                         if (l2nb <= tp->dmt_stree[x + n])
+>                                 break;
+>
+> base-commit: 63804fed149a6750ffd28610c5c1c98cce6bd377
 
-[v1] Zero page->private when freeing pages
-https://lore.kernel.org/all/20260223032641.1859381-1-ziy@nvidia.com
-* [PATCH v1 01/11] relay: zero page->private when freeing pages
-* [PATCH v1 02/11] mm/slub: zero page->private when freeing pages
-* [PATCH v1 03/11] drm/ttm: zero page->private when freeing pages
-* [PATCH v1 04/11] blk-mq: zero page->private when freeing pages
-* [PATCH v1 05/11] watch_queue: zero page->private when freeing pages
-* [PATCH v1 06/11] binder: zero page->private when freeing pages
-* [PATCH v1 07/11] null_blk: zero page->private when freeing pages
-* [PATCH v1 08/11] percpu: zero page->private when freeing pages
-* [PATCH v1 09/11] erofs: zero page->private when freeing pages
-* [PATCH v1 10/11] mm/huge_memory: add page->private check back in __split_folio_to_order()
-* [PATCH v1 11/11] mm/page_alloc: check page->private upon page free
+Hello jfs maintainers,
 
-and found the following issue:
-WARNING in __free_frozen_pages
-
-Full report is available here:
-https://ci.syzbot.org/series/10f470ac-46ac-4e38-902d-dc86ae743494
-
-***
-
-WARNING in __free_frozen_pages
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      a6fdc327de4678e54b5122441c970371014117b0
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/0586347c-8ef1-427f-8a9c-7f6c08b616a9/config
-
-Bluetooth: RFCOMM ver 1.11
-Bluetooth: BNEP (Ethernet Emulation) ver 1.3
-Bluetooth: BNEP filters: protocol multicast
-Bluetooth: BNEP socket layer initialized
-Bluetooth: HIDP (Human Interface Emulation) ver 1.2
-Bluetooth: HIDP socket layer initialized
-NET: Registered PF_RXRPC protocol family
-Key type rxrpc registered
-Key type rxrpc_s registered
-NET: Registered PF_KCM protocol family
-lec:lane_module_init: lec.c: initialized
-mpoa:atm_mpoa_init: mpc.c: initialized
-l2tp_core: L2TP core driver, V2.0
-l2tp_ppp: PPPoL2TP kernel driver, V2.0
-l2tp_ip: L2TP IP encapsulation support (L2TPv3)
-l2tp_netlink: L2TP netlink interface
-l2tp_eth: L2TP ethernet pseudowire support (L2TPv3)
-l2tp_ip6: L2TP IP encapsulation support for IPv6 (L2TPv3)
-NET: Registered PF_PHONET protocol family
-8021q: 802.1Q VLAN Support v1.8
-sctp: Hash tables configured (bind 32/56)
-NET: Registered PF_RDS protocol family
-Registered RDS/infiniband transport
-Registered RDS/tcp transport
-tipc: Activated (version 2.0.0)
-NET: Registered PF_TIPC protocol family
-tipc: Started in single node mode
-smc: adding smcd device lo without pnetid
-NET: Registered PF_SMC protocol family
-9pnet: Installing 9P2000 support
-NET: Registered PF_CAIF protocol family
-NET: Registered PF_IEEE802154 protocol family
-Key type dns_resolver registered
-Key type ceph registered
-libceph: loaded (mon/osd proto 15/24)
-batman_adv: B.A.T.M.A.N. advanced 2025.5 (compatibility version 15) loaded
-openvswitch: Open vSwitch switching datapath
-NET: Registered PF_VSOCK protocol family
-mpls_gso: MPLS GSO support
-IPI shorthand broadcast: enabled
-sched_clock: Marking stable (19970046340, 93374727)->(20073238384, -9817317)
-registered taskstats version 1
-Loading compiled-in X.509 certificates
-Loaded X.509 cert 'Build time autogenerated kernel key: 98092a222e11368da223b039d625e21c3e2e069c'
-zswap: loaded using pool 842
-Demotion targets for Node 0: null
-Demotion targets for Node 1: null
-debug_vm_pgtable: [debug_vm_pgtable         ]: Validating architecture page table helpers
-------------[ cut here ]------------
-page->private
-WARNING: mm/page_alloc.c:1433 at __free_frozen_pages+0x78e/0xe10, CPU#0: swapper/0/1
-Modules linked in:
-CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__free_frozen_pages+0x78e/0xe10
-Code: 5f 5d e9 05 1e 00 00 48 b8 00 00 00 00 00 fc ff df 0f b6 44 05 00 84 c0 0f 85 d7 02 00 00 c7 03 ff ff ff ff e9 22 fc ff ff 90 <0f> 0b 90 e9 8d fc ff ff bd 01 00 00 00 83 f8 05 0f 85 bb fe ff ff
-RSP: 0000:ffffc900000676e0 EFLAGS: 00010282
-RAX: 1ffffd4000bad935 RBX: ffffea0005d6c9a8 RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: 0000000000000004 RDI: ffffea0005d6c9b4
-RBP: ffffea0005d6c9b8 R08: ffffea0005d6c9b7 R09: 1ffffd4000bad936
-R10: dffffc0000000000 R11: fffff94000bad937 R12: ffffea0005d6c980
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff88818de64000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffff88823ffff000 CR3: 000000000e54c000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- destroy_args+0x15d/0x570
- debug_vm_pgtable+0x3f8/0x410
- do_one_initcall+0x250/0x8d0
- do_initcall_level+0x104/0x190
- do_initcalls+0x59/0xa0
- kernel_init_freeable+0x2a6/0x3e0
- kernel_init+0x1d/0x1d0
- ret_from_fork+0x51e/0xb90
- ret_from_fork_asm+0x1a/0x30
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+Is this patch on anybody radaras? Please merge the fix.
+Or should JFS patches now be sent to a generic FS tree for merging?
