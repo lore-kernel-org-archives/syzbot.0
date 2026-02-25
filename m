@@ -1,78 +1,80 @@
 Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 725712765C4
-	for <syzbot@lists.linux.dev>; Tue, 24 Feb 2026 22:01:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44D923EBF24
+	for <syzbot@lists.linux.dev>; Wed, 25 Feb 2026 00:06:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771970496; cv=none; b=eYzp2owLteaigA7nqdKuatmbz+rqwnwiQykoHH7uv+72RbT/Vz6gUmUnN9JuB+it/MDvTcd4N4gUqnE/2bBXZfKrPrNxcvYpunLOcJiEGjqxgwc9IVypUViDaBm+HXTHhX9j2XQgzMu7ob/49sQ6qPF+oagzs1i2XYyr45g1nUU=
+	t=1771978001; cv=none; b=MRHABctS/aVhsEmj1hoFIbAkWEmUxJFwPs+Kog9Pkvb18sCMd+wV9qcOqQSgP+LTVQ/ghefoJF05Jn15hqK6j+f8L3xMf/iDvrVfNpo/XrrrkdVZCBZjtqf8jhWa3xuPAgIcss2hi/wPk0jmaz0Ope2c7X1m2nO4OrmzEMFN2tM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771970496; c=relaxed/simple;
-	bh=+OwRBB8W1PvXkWxY9Hky4xQTLFsIFsnfQpgbfHVSMR0=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=G+S2a+CiWQNorrzozqKXmiwgAdz0MNVeHEZohv17ao42z+FbwwQluyySaOV//WfLkNIOBKIG+woEzjOY4uL+hZb7cdwnU5epBgMbwIoRBo/ScyYtmUUaq4Y2P57QV+SQiihLOhZnjoGdi3qvL9QSSGsMSYxiFL3ZsXVPIcbtxpw=
+	s=arc-20240116; t=1771978001; c=relaxed/simple;
+	bh=G8J/dznhWmaEncIyOvPzmRG5T0aZudWfZpjRYNrvDV0=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=VFNlxVvdJakZztM462g4kx/xD5BNuAT9NValkTggZEujSiTvjqrN+cT8hxaAfXbUzyIPzqRpnRxf2TF12yqRzpyUjMZq1TCRVPH9S0v8LJNuIAVeXmKpZ/zdkvrUaYEKHp5eJpsSIehdy9+SQ9xMlQRE/Pk+WXM1PBewDIGPEI0=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-679c6ef1538so50803078eaf.3
-        for <syzbot@lists.linux.dev>; Tue, 24 Feb 2026 14:01:35 -0800 (PST)
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-679943693c0so94488436eaf.3
+        for <syzbot@lists.linux.dev>; Tue, 24 Feb 2026 16:06:40 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771970494; x=1772575294;
+        d=1e100.net; s=20230601; t=1771977999; x=1772582799;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=HypUG+ceSXU/A8BBu4P8SgJgYREWniLh14R2cZwmwl8=;
-        b=VBAxVl6KXYgToqnCOStqgpxXvoYwZY5XCqA5R8PjB2BzE3Bzs5OUb0ljZCbb2mXtA4
-         NwETVZ1i0miYUQwa3I7YL4EDrmO0HJzo/Jtm+GZUC9yY6sSH2ReZOcQzOqvEePd2RpMg
-         R/yd+tWDUubVhSbSzAQpjkl8S6wmArzfINFKTsMFIF3bW500NaEBLIxxhiW5uHe0n8fi
-         wzWu63b+CUURbZq+pKkB5A4HPoqBQfjNCSgeZOjbxaIjXBsI1cRIukbD3yBgQbOXoGMT
-         oKYTBAJlY3fenDVr7/nQ7aXJE4k4hXiy2fZ4kEyxwCXWJmVL8ildUllwWIlqBbfV/JAj
-         9Mmg==
-X-Gm-Message-State: AOJu0YxbCtiFx2DVi3kFv0GW4CpfqAHRg4HqrFnv40QpJEenRy59/ijk
-	lvIZhknBoz+ulLnWeYc5RG9ijQQfM03eATvylcYC+npqnBZgMY9InHz8Rylh+3/1YHAeshX4kjV
-	ifmBELT0gk3yzBpRclMeP/qvcrGv4osoAgNOno2zN3/cpx5nTe5HgIb4kqPk=
+        bh=3LEDG8cKcI7Z35Pv87cbp4B4O+rL3pZPbPFnyAG2qHg=;
+        b=jAEjJ1+NXxloOU1sPrkYA/fKeow/MILPSuCgzuf8gQdPwM88UW2OiNmmB5KmdD96w8
+         9K9H5FxfdTpvm3IoqrufnPwqJByH82VDq7U7m/AJpcIQkhw64DVFNKnVn21B40KyV4c+
+         UsYTt1ypaM+mIqn+Ozm7XvXXX9qDsWNnb85lMD2Gzn5o9+RYdTqjLlo1hTevfddz5vtN
+         1sH0Xn6N2KeqK3jMkF4p5sHsNePU10KegBV6T7T4/v0/nM7/3XPRHkPfi/xnqDhA7DoP
+         sWtIF9fUEc8PhVFhqhhFZac4+3MMdruOH5OLYb1lq7AUbTQIyDJTKgl6RcGujS4KdJPM
+         fBxQ==
+X-Gm-Message-State: AOJu0Yxt4XcDwNqDBX2rP+Me8lBRB66YKkh/XTXxjAaUChpmCG0tt77U
+	Z5X+dGJ4yvu1Y3y+S2K5B9zvCsKx6bgdzeH3KjnGbdbOrnJXq+KS4QOHmbR3NoU6O/48LH9QF7k
+	2pZ2p479SZjEjPZC89wKx7sfgGf0mpIFo+Ipi445pbnwOKdB14ZWtOblApyo=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a4a:de84:0:b0:679:e617:e835 with SMTP id
- 006d021491bc7-679e617f188mr595885eaf.46.1771970494418; Tue, 24 Feb 2026
- 14:01:34 -0800 (PST)
-Date: Tue, 24 Feb 2026 14:01:34 -0800
+X-Received: by 2002:a05:6820:60a:b0:679:975b:f21d with SMTP id
+ 006d021491bc7-679c424e558mr7355640eaf.11.1771977999337; Tue, 24 Feb 2026
+ 16:06:39 -0800 (PST)
+Date: Tue, 24 Feb 2026 16:06:39 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <699e1fbe.a00a0220.32abbc.0213.GAE@google.com>
-Subject: [moderation/CI] Re: mm/slab: mark alloc tags empty for sheafs
- allocated with __GFP_NO_OBJ_EXT
-From: syzbot ci <syzbot+ciff443e73dc5d069c@syzkaller.appspotmail.com>
+Message-ID: <699e3d0f.a00a0220.21906d.0000.GAE@google.com>
+Subject: [moderation/CI] Re: kNFSD Signed Filehandles
+From: syzbot ci <syzbot+ci5cc2011ded9b4d74@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] mm/slab: mark alloc tags empty for sheafs allocated with __GFP_NO_OBJ_EXT
-https://lore.kernel.org/all/20260224165250.1322946-1-surenb@google.com
-* [PATCH 1/1] mm/slab: mark alloc tags empty for sheafs allocated with __GFP_NO_OBJ_EXT
+[v7] kNFSD Signed Filehandles
+https://lore.kernel.org/all/cover.1771961922.git.bcodding@hammerspace.com
+* [PATCH v7 1/3] NFSD: Add a key for signing filehandles
+* [PATCH v7 2/3] NFSD/export: Add sign_fh export option
+* [PATCH v7 3/3] NFSD: Sign filehandles
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/4dcc0e7e-2248-495a-8098-7296b41b37bd
+https://ci.syzbot.org/series/6f7fbcf9-bd00-4b5e-b15c-5eb49fdc6255
 
 ***
 
 kernel build error
 
-tree:      bpf
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf.git
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
 base:      7dff99b354601dd01829e1511711846e04340a69
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/3c0ba432-938b-4b2e-9c1e-26f43fb0b029/config
+config:    https://ci.syzbot.org/builds/dafdda14-c64a-42e4-b492-e96c8c81adca/config
 
-mm/slub.c:2787:22: error: incompatible pointer types passing 'struct slab_sheaf *' to parameter of type 'struct slabobj_ext *' [-Werror,-Wincompatible-pointer-types]
+fs/nfsd/nfsfh.c:196:13: error: redefinition of 'fh_append_mac'
+fs/nfsd/nfsfh.c:228:13: error: redefinition of 'fh_verify_mac'
 
 ***
 
@@ -85,7 +87,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[00107082@163.com akpm@linux-foundation.org cl@gentwo.org harry.yoo@oracle.com linux-kernel@vger.kernel.org linux-mm@kvack.org rientjes@google.com roman.gushchin@linux.dev surenb@google.com vbabka@suse.cz]
+[anna@kernel.org bcodding@hammerspace.com chuck.lever@oracle.com ebiggers@kernel.org jlayton@kernel.org linux-crypto@vger.kernel.org linux-fsdevel@vger.kernel.org linux-nfs@vger.kernel.org neil@brown.name rick.macklem@gmail.com trondmy@kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
