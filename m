@@ -1,446 +1,59 @@
-Received: from mail-ot1-f65.google.com (mail-ot1-f65.google.com [209.85.210.65])
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B81E3D3CEB
-	for <syzbot@lists.linux.dev>; Thu, 26 Feb 2026 18:28:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD6203B52EF
+	for <syzbot@lists.linux.dev>; Thu, 26 Feb 2026 18:30:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772130520; cv=none; b=fsIB4HIvix32jZVbpah6JcxFy04aL2+21eD7qJAJzoK8TjeifI3EIcOdWSIvH1/x3Mo4W0rfzj//TG37WvXJPFWjdGVT77FinQIIQcJthxl3BObEJfBURhcxzYAMBIt2JicU86npi6zh7AdR0zrR0JPgi6aymxKJNxieibNMAFA=
+	t=1772130619; cv=none; b=PUctNyIbFGteIpLtGUz2ZQm1QgnBobDD7yv8qMjd/02C7p8GheaWpyPKALb/xgueTxZNEl6g6vpepFcAAFwZcllqeBXX5j1lhUwBc3qd7ZLaUkGdJYcMGSrVqhR40Q9lD+zdMLF60N/n3RlJlh4mHl9RCtyNTpp1tUzu04s5oFw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772130520; c=relaxed/simple;
-	bh=QYDLkInPaOcYdAtacg/WegSi4gSEJGz39eDF9qSdIN8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=oDoJj4SGbrx8iVxRfOa6+457MVPdaBJSAON8SrTVJ9XK5OU0CDnHgwud0NXaJnXLM8XAWFSG43D8aLeyAlIdczW2/f6KpznyUP4Y7rbUzgtZZgX9HUsGtk6fsKKClt250Ctn+NotipClubA0USc50m4eQVQD75Rwlx14vq3QcSI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GApWYJ8G; arc=none smtp.client-ip=209.85.210.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GApWYJ8G"
-Received: by mail-ot1-f65.google.com with SMTP id 46e09a7af769-7d4c383f2fcso1058183a34.0
-        for <syzbot@lists.linux.dev>; Thu, 26 Feb 2026 10:28:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772130517; x=1772735317; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LKYTSFmtw80wTVsBpOFN5+4IrXmRYVRJssazrTN3ByY=;
-        b=GApWYJ8GYpb8D3m5i6ard3aMe3+FnhdXCsxCVrJMZgPgwJclLQUmjV1TbjQvNnGPb3
-         MRoTR/gaXGhrALj8/lCcTAEGevmf5pZzB3bcDukEvkcBiD+tsRE+mWVlSK4MJ45kFg1F
-         ml5bzoyMF8L7tVOeUE2QBeRSKQWKpQ86YDrHf8kuwLlEyifWqv3l6NmAwMxgrw4CDybR
-         EY7uQ4LTJJxwS0RFPmafy9jCRi70WPtZjTfqtcN1o6SaorDwDcIeAZM0ijVIhjtdPmi1
-         41t4ISLiDYF6yemPD2Co1Xd8q3494GhBeKDqSwW6VuhIVWop6f/BbQwkdOwmdlet1TYL
-         9KSA==
+	s=arc-20240116; t=1772130619; c=relaxed/simple;
+	bh=DjcBVY8mJqbGJnCRObWENCx0c6xRt7QNzm9li1dg71c=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=RovLTC4uuT3A5wZP1z36l7J/4nAEbItliKMy1Fk9PlnM/waeyhY6qj4tIoQ9NJd398gIiHVzDv1IbvaxweCLHK6OBvCLo8jB1ixjfmflLcY00TvgfgBcL+h9ORUPjt210zgbPNF2f+37SVSSrHSMJVKYvqR3syo5vmWg14X/r3Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-7d195fe3eb4so22581907a34.3
+        for <syzbot@lists.linux.dev>; Thu, 26 Feb 2026 10:30:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772130517; x=1772735317;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=LKYTSFmtw80wTVsBpOFN5+4IrXmRYVRJssazrTN3ByY=;
-        b=mXVFUnsjVyKOsNSQcR542OeWwzMJ3TT6kc4KQ4lJIrR2KjuGnQ0tP0d6T6DJ+vPdQr
-         Ll/sSZJVkQ5eeIWiD/zmjVXZXO0ul7EwEixLjLaHx+MplisO+KocEJ3/AjT11Vp8uD8s
-         quQ76BfCEYqEiD9grFCNfA7mrPcB3kpopsNSp+/2kfz6XfxSjnA+OVNYBQ7Gkkgb3Jq2
-         LMafKQ/ZV9xvqy9vvec0rlBMAHIDQ1emEuHb9QwvxdH0LNKq8f7+OoaTnI5fo2Xsly5X
-         jxM4HlXvZC1y4nktbbMk0bJgF0as8UgH9KiQrcenvnXrpiWZIvyaeYVPB8+FHF9nztob
-         giRg==
-X-Forwarded-Encrypted: i=1; AJvYcCU2fBAdDulwXeVfO75UbeLLiwq/A4UaakPeRm/TwtUV5Q0qeXlk2LbD0Utr6KLcINoYKl3+NnU=@lists.linux.dev
-X-Gm-Message-State: AOJu0YyINaQTgMLhQV56Hl8Yb2u1sJFKCKPUGtogHcHj9NUrfcy38f98
-	Uys9l5YBTyQO8DHeqpBTd8105qLogMQ9SGGqan7jLaeRKKMWjLMVDLWz
-X-Gm-Gg: ATEYQzwwD5EAsNIHeAUmzCqzRCqvUj6/kcyGqVL4+Tgm7iFIwtn0WQ52u7MB1lZ/Vy7
-	beJIQisgDBlcHoERW42UaIwzepXMk/qVmP/veZC2BiiYPZP8tSiZnW7fsNC8qU+QmdpmgZPnduc
-	qUjv6sd6vc9o4V684NJCwpJII/bUuOZ72E738S3/k7zrMKjuZoyFnxWSoIypeKrGt+jo6slgQln
-	zU8RjB5wekzg2njcqLtFwgGo1cF/ftitKn4B3hPpnpkM8lxVXVgd1VEAthIOALq0XaNO57NFvIo
-	QOKGNjIP+FypsgPIT9Waa/PkPxpqNCqCv8lowj1teEgoBBvHQrhTvchR+kXmiCGszHug9DqgOPE
-	DIo9QtqKuBAQp7WSp9ZE+gQvjUO+4yInDoiP7DLHYNzI7qf/hOVNC6If4EtNBi06C8NYwXNWre0
-	opsgbEZ6mbLpjS3XbrtSiggQhPHX6nKbx7mIE8vCL6ZY8X
-X-Received: by 2002:a05:6871:7424:b0:409:71aa:aa90 with SMTP id 586e51a60fabf-41626b17ae9mr122501fac.0.1772130516945;
-        Thu, 26 Feb 2026 10:28:36 -0800 (PST)
-Received: from localhost ([2a03:2880:10ff:51::])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4160d26d45fsm2692339fac.14.2026.02.26.10.28.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Feb 2026 10:28:36 -0800 (PST)
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To: syzbot+ci3826af8b4f91bf97@syzkaller.appspotmail.com
-Cc: andrii@kernel.org,
-	ast@kernel.org,
-	bpf@vger.kernel.org,
-	daniel@iogearbox.net,
-	eddyz87@gmail.com,
-	kernel-team@meta.com,
-	kkd@meta.com,
-	martin.lau@kernel.org,
-	memxor@gmail.com,
-	paulmck@kernel.org,
-	syzbot@lists.linux.dev,
-	syzkaller-bugs@googlegroups.com,
-	yatsenko@meta.com
-Subject: [syzbot ci] Re: Close race in freeing special fields and map value
-Date: Thu, 26 Feb 2026 10:28:22 -0800
-Message-ID: <20260226182822.1734308-1-memxor@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <69a01309.050a0220.2fcbed.0007.GAE@google.com>
-References: <69a01309.050a0220.2fcbed.0007.GAE@google.com>
+        d=1e100.net; s=20230601; t=1772130617; x=1772735417;
+        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=DjcBVY8mJqbGJnCRObWENCx0c6xRt7QNzm9li1dg71c=;
+        b=jf62QPXnNOq3y9RxjcB4I+gQDF5Luuz4Jg47+K/7RMf19mzwEiHCyxSw/s3aGcjejc
+         PJIaDlEIp0fET705+aQCv5pmlXspKYZYl+iwqd3alZC75FdxI+ICqcWRiL6OK3ot263g
+         rxieebryHPURH8CA9fItjlIUPAJSOQJ89kCH11AqRLjMxifIddiBwlrDlJEu95D4/uSX
+         Se1mT20QABVf4B0ybHy12carTQEq7mOaC+d84Q5nRTFBRk4FpLiFZhTSvUQSGO8uRxvB
+         KQpdkngaWzI6hntDcQEQkCXEYOZGYTmzh/q95RKgWjXiJ0w0lFtMAUWU5NOdOVxQ7s81
+         v8Ig==
+X-Forwarded-Encrypted: i=1; AJvYcCXm0OFpvp5FpkBB6juCn2RCK4V9m4/HjbE1aSOIoHM3EJXDKsY7gqJVHjexZDUtGZcoXsxbt7w=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx88yIynN01aiGh/dhO5rtGUT8h712RmnXi9NrPD/FNAn3LGDZc
+	EUAFInx9jcbBsShkFKBhbElrEuUGzH3xAqg54vJ4m8QBfNz7d67bqtzp1rS2x+kKDQb7hk1qXBI
+	dONENRWTbd1yojX9Knnq0CZVxA+P8C7ZrRpM7HrdQOgQTFAD3pDbO0OTGoL0=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6820:3105:b0:662:ef26:1505 with SMTP id
+ 006d021491bc7-679faefbbe0mr174206eaf.46.1772130616866; Thu, 26 Feb 2026
+ 10:30:16 -0800 (PST)
+Date: Thu, 26 Feb 2026 10:30:16 -0800
+In-Reply-To: <20260226182822.1734308-1-memxor@gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69a09138.050a0220.3a55be.0007.GAE@google.com>
+Subject: Re: [syzbot ci] Re: Close race in freeing special fields and map value
+From: syzbot ci <syzbot@syzkaller.appspotmail.com>
+To: memxor@gmail.com
+Cc: andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org, 
+	daniel@iogearbox.net, eddyz87@gmail.com, kernel-team@meta.com, kkd@meta.com, 
+	martin.lau@kernel.org, memxor@gmail.com, paulmck@kernel.org, 
+	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com, yatsenko@meta.com
+Content-Type: text/plain; charset="UTF-8"
 
-#syz test:
 
-diff --git a/include/linux/bpf_mem_alloc.h b/include/linux/bpf_mem_alloc.h
-index 7517eaf94ac9..4ce0d27f8ea2 100644
---- a/include/linux/bpf_mem_alloc.h
-+++ b/include/linux/bpf_mem_alloc.h
-@@ -14,7 +14,7 @@ struct bpf_mem_alloc {
- 	struct obj_cgroup *objcg;
- 	bool percpu;
- 	struct work_struct work;
--	void (*dtor)(void *obj, void *ctx);
-+	void (*dtor_ctx_free)(void *ctx);
- 	void *dtor_ctx;
- };
+Unknown command
 
-@@ -35,7 +35,9 @@ int bpf_mem_alloc_percpu_init(struct bpf_mem_alloc *ma, struct obj_cgroup *objcg
- int bpf_mem_alloc_percpu_unit_init(struct bpf_mem_alloc *ma, int size);
- void bpf_mem_alloc_destroy(struct bpf_mem_alloc *ma);
- void bpf_mem_alloc_set_dtor(struct bpf_mem_alloc *ma,
--			    void (*dtor)(void *obj, void *ctx), void *ctx);
-+			    void (*dtor)(void *obj, void *ctx),
-+			    void (*dtor_ctx_free)(void *ctx),
-+			    void *ctx);
-
- /* Check the allocation size for kmalloc equivalent allocator */
- int bpf_mem_alloc_check_size(bool percpu, size_t size);
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index 74f7a6f44c50..582f0192b7e1 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -125,6 +125,11 @@ struct htab_elem {
- 	char key[] __aligned(8);
- };
-
-+struct htab_btf_record {
-+	struct btf_record *record;
-+	u32 key_size;
-+};
-+
- static inline bool htab_is_prealloc(const struct bpf_htab *htab)
- {
- 	return !(htab->map.map_flags & BPF_F_NO_PREALLOC);
-@@ -459,28 +464,80 @@ static int htab_map_alloc_check(union bpf_attr *attr)
-
- static void htab_mem_dtor(void *obj, void *ctx)
- {
--	struct bpf_htab *htab = ctx;
-+	struct htab_btf_record *hrec = ctx;
- 	struct htab_elem *elem = obj;
- 	void *map_value;
-
--	if (IS_ERR_OR_NULL(htab->map.record))
-+	if (IS_ERR_OR_NULL(hrec->record))
- 		return;
-
--	map_value = htab_elem_value(elem, htab->map.key_size);
--	bpf_obj_free_fields(htab->map.record, map_value);
-+	map_value = htab_elem_value(elem, hrec->key_size);
-+	bpf_obj_free_fields(hrec->record, map_value);
- }
-
- static void htab_pcpu_mem_dtor(void *obj, void *ctx)
- {
--	struct bpf_htab *htab = ctx;
- 	void __percpu *pptr = *(void __percpu **)obj;
-+	struct htab_btf_record *hrec = ctx;
- 	int cpu;
-
--	if (IS_ERR_OR_NULL(htab->map.record))
-+	if (IS_ERR_OR_NULL(hrec->record))
- 		return;
-
- 	for_each_possible_cpu(cpu)
--		bpf_obj_free_fields(htab->map.record, per_cpu_ptr(pptr, cpu));
-+		bpf_obj_free_fields(hrec->record, per_cpu_ptr(pptr, cpu));
-+}
-+
-+static void htab_dtor_ctx_free(void *ctx)
-+{
-+	struct htab_btf_record *hrec = ctx;
-+
-+	btf_record_free(hrec->record);
-+	kfree(ctx);
-+}
-+
-+static int htab_set_dtor(const struct bpf_htab *htab, void (*dtor)(void *, void *))
-+{
-+	u32 key_size = htab->map.key_size;
-+	const struct bpf_mem_alloc *ma;
-+	struct htab_btf_record *hrec;
-+	int err;
-+
-+	/* No need for dtors. */
-+	if (IS_ERR_OR_NULL(htab->map.record))
-+		return 0;
-+
-+	hrec = kzalloc(sizeof(*hrec), GFP_KERNEL);
-+	if (!hrec)
-+		return -ENOMEM;
-+	hrec->key_size = key_size;
-+	hrec->record = btf_record_dup(htab->map.record);
-+	if (IS_ERR(hrec->record)) {
-+		err = PTR_ERR(hrec->record);
-+		kfree(hrec);
-+		return err;
-+	}
-+	ma = htab_is_percpu(htab) ? &htab->pcpu_ma : &htab->ma;
-+	/* Kinda sad, but cast away const-ness since we change ma->dtor. */
-+	bpf_mem_alloc_set_dtor((struct bpf_mem_alloc *)ma, dtor, htab_dtor_ctx_free, hrec);
-+	return 0;
-+}
-+
-+static int htab_map_check_btf(const struct bpf_map *map, const struct btf *btf,
-+			      const struct btf_type *key_type, const struct btf_type *value_type)
-+{
-+	struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
-+
-+	if (htab_is_prealloc(htab))
-+		return 0;
-+	/*
-+	 * We must set the dtor using this callback, as map's BTF record is not
-+	 * populated in htab_map_alloc(), so it will always appear as NULL.
-+	 */
-+	if (htab_is_percpu(htab))
-+		return htab_set_dtor(htab, htab_pcpu_mem_dtor);
-+	else
-+		return htab_set_dtor(htab, htab_mem_dtor);
- }
-
- static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
-@@ -595,17 +652,6 @@ static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
- 						 round_up(htab->map.value_size, 8), true);
- 			if (err)
- 				goto free_map_locked;
--			/* See comment below */
--			bpf_mem_alloc_set_dtor(&htab->pcpu_ma, htab_pcpu_mem_dtor, htab);
--		} else {
--			/*
--			 * Register the dtor unconditionally.  map->record is
--			 * set by map_create() after map_alloc() returns, so it
--			 * is always NULL at this point.  The dtor checks
--			 * IS_ERR_OR_NULL(htab->map.record) and becomes a no-op
--			 * for maps without special fields.
--			 */
--			bpf_mem_alloc_set_dtor(&htab->ma, htab_mem_dtor, htab);
- 		}
- 	}
-
-@@ -2318,6 +2364,7 @@ const struct bpf_map_ops htab_map_ops = {
- 	.map_seq_show_elem = htab_map_seq_show_elem,
- 	.map_set_for_each_callback_args = map_set_for_each_callback_args,
- 	.map_for_each_callback = bpf_for_each_hash_elem,
-+	.map_check_btf = htab_map_check_btf,
- 	.map_mem_usage = htab_map_mem_usage,
- 	BATCH_OPS(htab),
- 	.map_btf_id = &htab_map_btf_ids[0],
-@@ -2340,6 +2387,7 @@ const struct bpf_map_ops htab_lru_map_ops = {
- 	.map_seq_show_elem = htab_map_seq_show_elem,
- 	.map_set_for_each_callback_args = map_set_for_each_callback_args,
- 	.map_for_each_callback = bpf_for_each_hash_elem,
-+	.map_check_btf = htab_map_check_btf,
- 	.map_mem_usage = htab_map_mem_usage,
- 	BATCH_OPS(htab_lru),
- 	.map_btf_id = &htab_map_btf_ids[0],
-@@ -2519,6 +2567,7 @@ const struct bpf_map_ops htab_percpu_map_ops = {
- 	.map_seq_show_elem = htab_percpu_map_seq_show_elem,
- 	.map_set_for_each_callback_args = map_set_for_each_callback_args,
- 	.map_for_each_callback = bpf_for_each_hash_elem,
-+	.map_check_btf = htab_map_check_btf,
- 	.map_mem_usage = htab_map_mem_usage,
- 	BATCH_OPS(htab_percpu),
- 	.map_btf_id = &htab_map_btf_ids[0],
-@@ -2539,6 +2588,7 @@ const struct bpf_map_ops htab_lru_percpu_map_ops = {
- 	.map_seq_show_elem = htab_percpu_map_seq_show_elem,
- 	.map_set_for_each_callback_args = map_set_for_each_callback_args,
- 	.map_for_each_callback = bpf_for_each_hash_elem,
-+	.map_check_btf = htab_map_check_btf,
- 	.map_mem_usage = htab_map_mem_usage,
- 	BATCH_OPS(htab_lru_percpu),
- 	.map_btf_id = &htab_map_btf_ids[0],
-diff --git a/kernel/bpf/memalloc.c b/kernel/bpf/memalloc.c
-index 137e855c718b..682a9f34214b 100644
---- a/kernel/bpf/memalloc.c
-+++ b/kernel/bpf/memalloc.c
-@@ -102,7 +102,8 @@ struct bpf_mem_cache {
- 	int percpu_size;
- 	bool draining;
- 	struct bpf_mem_cache *tgt;
--	struct bpf_mem_alloc *ma;
-+	void (*dtor)(void *obj, void *ctx);
-+	void *dtor_ctx;
-
- 	/* list of objects to be freed after RCU GP */
- 	struct llist_head free_by_rcu;
-@@ -261,15 +262,14 @@ static void free_one(void *obj, bool percpu)
- 	kfree(obj);
- }
-
--static int free_all(struct llist_node *llnode, bool percpu,
--		    struct bpf_mem_alloc *ma)
-+static int free_all(struct bpf_mem_cache *c, struct llist_node *llnode, bool percpu)
- {
- 	struct llist_node *pos, *t;
- 	int cnt = 0;
-
- 	llist_for_each_safe(pos, t, llnode) {
--		if (ma->dtor)
--			ma->dtor((void *)pos + LLIST_NODE_SZ, ma->dtor_ctx);
-+		if (c->dtor)
-+			c->dtor((void *)pos + LLIST_NODE_SZ, c->dtor_ctx);
- 		free_one(pos, percpu);
- 		cnt++;
- 	}
-@@ -280,7 +280,7 @@ static void __free_rcu(struct rcu_head *head)
- {
- 	struct bpf_mem_cache *c = container_of(head, struct bpf_mem_cache, rcu_ttrace);
-
--	free_all(llist_del_all(&c->waiting_for_gp_ttrace), !!c->percpu_size, c->ma);
-+	free_all(c, llist_del_all(&c->waiting_for_gp_ttrace), !!c->percpu_size);
- 	atomic_set(&c->call_rcu_ttrace_in_progress, 0);
- }
-
-@@ -312,7 +312,7 @@ static void do_call_rcu_ttrace(struct bpf_mem_cache *c)
- 	if (atomic_xchg(&c->call_rcu_ttrace_in_progress, 1)) {
- 		if (unlikely(READ_ONCE(c->draining))) {
- 			llnode = llist_del_all(&c->free_by_rcu_ttrace);
--			free_all(llnode, !!c->percpu_size, c->ma);
-+			free_all(c, llnode, !!c->percpu_size);
- 		}
- 		return;
- 	}
-@@ -421,7 +421,7 @@ static void check_free_by_rcu(struct bpf_mem_cache *c)
- 	dec_active(c, &flags);
-
- 	if (unlikely(READ_ONCE(c->draining))) {
--		free_all(llist_del_all(&c->waiting_for_gp), !!c->percpu_size, c->ma);
-+		free_all(c, llist_del_all(&c->waiting_for_gp), !!c->percpu_size);
- 		atomic_set(&c->call_rcu_in_progress, 0);
- 	} else {
- 		call_rcu_hurry(&c->rcu, __free_by_rcu);
-@@ -546,7 +546,6 @@ int bpf_mem_alloc_init(struct bpf_mem_alloc *ma, int size, bool percpu)
- 			c->objcg = objcg;
- 			c->percpu_size = percpu_size;
- 			c->tgt = c;
--			c->ma = ma;
- 			init_refill_work(c);
- 			prefill_mem_cache(c, cpu);
- 		}
-@@ -569,7 +568,6 @@ int bpf_mem_alloc_init(struct bpf_mem_alloc *ma, int size, bool percpu)
- 			c->objcg = objcg;
- 			c->percpu_size = percpu_size;
- 			c->tgt = c;
--			c->ma = ma;
-
- 			init_refill_work(c);
- 			prefill_mem_cache(c, cpu);
-@@ -622,7 +620,6 @@ int bpf_mem_alloc_percpu_unit_init(struct bpf_mem_alloc *ma, int size)
- 		c->objcg = objcg;
- 		c->percpu_size = percpu_size;
- 		c->tgt = c;
--		c->ma = ma;
-
- 		init_refill_work(c);
- 		prefill_mem_cache(c, cpu);
-@@ -631,7 +628,7 @@ int bpf_mem_alloc_percpu_unit_init(struct bpf_mem_alloc *ma, int size)
- 	return 0;
- }
-
--static void drain_mem_cache(struct bpf_mem_cache *c, struct bpf_mem_alloc *ma)
-+static void drain_mem_cache(struct bpf_mem_cache *c)
- {
- 	bool percpu = !!c->percpu_size;
-
-@@ -642,13 +639,13 @@ static void drain_mem_cache(struct bpf_mem_cache *c, struct bpf_mem_alloc *ma)
- 	 * Except for waiting_for_gp_ttrace list, there are no concurrent operations
- 	 * on these lists, so it is safe to use __llist_del_all().
- 	 */
--	free_all(llist_del_all(&c->free_by_rcu_ttrace), percpu, ma);
--	free_all(llist_del_all(&c->waiting_for_gp_ttrace), percpu, ma);
--	free_all(__llist_del_all(&c->free_llist), percpu, ma);
--	free_all(__llist_del_all(&c->free_llist_extra), percpu, ma);
--	free_all(__llist_del_all(&c->free_by_rcu), percpu, ma);
--	free_all(__llist_del_all(&c->free_llist_extra_rcu), percpu, ma);
--	free_all(llist_del_all(&c->waiting_for_gp), percpu, ma);
-+	free_all(c, llist_del_all(&c->free_by_rcu_ttrace), percpu);
-+	free_all(c, llist_del_all(&c->waiting_for_gp_ttrace), percpu);
-+	free_all(c, __llist_del_all(&c->free_llist), percpu);
-+	free_all(c, __llist_del_all(&c->free_llist_extra), percpu);
-+	free_all(c, __llist_del_all(&c->free_by_rcu), percpu);
-+	free_all(c, __llist_del_all(&c->free_llist_extra_rcu), percpu);
-+	free_all(c, llist_del_all(&c->waiting_for_gp), percpu);
- }
-
- static void check_mem_cache(struct bpf_mem_cache *c)
-@@ -687,6 +684,9 @@ static void check_leaked_objs(struct bpf_mem_alloc *ma)
-
- static void free_mem_alloc_no_barrier(struct bpf_mem_alloc *ma)
- {
-+	/* We can free dtor ctx only once all callbacks are done using it. */
-+	if (ma->dtor_ctx_free)
-+		ma->dtor_ctx_free(ma->dtor_ctx);
- 	check_leaked_objs(ma);
- 	free_percpu(ma->cache);
- 	free_percpu(ma->caches);
-@@ -758,7 +758,7 @@ void bpf_mem_alloc_destroy(struct bpf_mem_alloc *ma)
- 			c = per_cpu_ptr(ma->cache, cpu);
- 			WRITE_ONCE(c->draining, true);
- 			irq_work_sync(&c->refill_work);
--			drain_mem_cache(c, ma);
-+			drain_mem_cache(c);
- 			rcu_in_progress += atomic_read(&c->call_rcu_ttrace_in_progress);
- 			rcu_in_progress += atomic_read(&c->call_rcu_in_progress);
- 		}
-@@ -773,7 +773,7 @@ void bpf_mem_alloc_destroy(struct bpf_mem_alloc *ma)
- 				c = &cc->cache[i];
- 				WRITE_ONCE(c->draining, true);
- 				irq_work_sync(&c->refill_work);
--				drain_mem_cache(c, ma);
-+				drain_mem_cache(c);
- 				rcu_in_progress += atomic_read(&c->call_rcu_ttrace_in_progress);
- 				rcu_in_progress += atomic_read(&c->call_rcu_in_progress);
- 			}
-@@ -1022,9 +1022,31 @@ int bpf_mem_alloc_check_size(bool percpu, size_t size)
- 	return 0;
- }
-
--void bpf_mem_alloc_set_dtor(struct bpf_mem_alloc *ma,
--			    void (*dtor)(void *obj, void *ctx), void *ctx)
-+void bpf_mem_alloc_set_dtor(struct bpf_mem_alloc *ma, void (*dtor)(void *obj, void *ctx),
-+			    void (*dtor_ctx_free)(void *ctx), void *ctx)
- {
--	ma->dtor = dtor;
-+	struct bpf_mem_caches *cc;
-+	struct bpf_mem_cache *c;
-+	int cpu, i;
-+
-+	ma->dtor_ctx_free = dtor_ctx_free;
- 	ma->dtor_ctx = ctx;
-+
-+	if (ma->cache) {
-+		for_each_possible_cpu(cpu) {
-+			c = per_cpu_ptr(ma->cache, cpu);
-+			c->dtor = dtor;
-+			c->dtor_ctx = ctx;
-+		}
-+	}
-+	if (ma->caches) {
-+		for_each_possible_cpu(cpu) {
-+			cc = per_cpu_ptr(ma->caches, cpu);
-+			for (i = 0; i < NUM_CACHES; i++) {
-+				c = &cc->cache[i];
-+				c->dtor = dtor;
-+				c->dtor_ctx = ctx;
-+			}
-+		}
-+	}
- }
