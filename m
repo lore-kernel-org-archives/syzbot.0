@@ -1,125 +1,84 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9862A1A9FB0
-	for <syzbot@lists.linux.dev>; Fri, 27 Feb 2026 04:25:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F1F7314A67
+	for <syzbot@lists.linux.dev>; Fri, 27 Feb 2026 06:28:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772166341; cv=none; b=QRNjGTGycxwN4RE00IiExWJD7Yk7aAm2LIxAWpVN1yVoyYI4GysPFqAAIR65VKFG3Yc5cuBuXBe+MLzv+p2kPj5LwrmqVD4JuHKwKbGZzPQiRsx3+nu33uEBQH0XdY8c6Rz2vVEgReWWG91oBSTL75cL1V2r4ndoS0mZg8XH0pg=
+	t=1772173697; cv=none; b=tx9rR2Nh6dhx2SiNy8eTosJ4uyHR7S/3nIZWBZqTyD5gG1/dJ8bkX+A0U6htYX1cT3N1vHm3MO9zs0b7Cun1UCeXl1co82LDmi53rfHVqs55QWnnE/++F40kF7zyDRLh+Tz8JWlBvy2pmj27Ifx1n7l0NWyqzw+WRJAZ9WwDASA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772166341; c=relaxed/simple;
-	bh=o8Nm9VZOlIMjelQjk9MSsIdo2vw4EI0gF5oSYFezFs4=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=jpSSeTjljKrGaQLLymOcp57Zrx3wfwUNRijqghf1WafznQy0VnnlkBbX7N5LEYqxF9xtVHDU5hGT7BXi4S8bITKPctqk1NkEHI2YmTkcMBU3j8uIlk5djYwoOmHn+Zd7eso+2bY9e+gLW/WKlk43aNdKkeZzzgNDDrdNYIz9whA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+	s=arc-20240116; t=1772173697; c=relaxed/simple;
+	bh=nDZbJjn37ZU0QxErwl2GjMZ2Nd91n/GbvLQPfqQp1ls=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=cPSqPSX4V5FZogxGMOvRvGTCIz/Q0EkUSfQdRR71YwgjfQCyDivgYPHg3ewVeTSvebLuqiyzrAa3um/6oCv3C9RyrVNFZyn1/PrKtsxQXYhjCJ9ByqPOGbFWNXywTcyMcbX8Y7H3bkyP3CKuzS08FcB1BDWdYZRHJKfN3d4b59Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-679c978c609so13909662eaf.0
-        for <syzbot@lists.linux.dev>; Thu, 26 Feb 2026 20:25:39 -0800 (PST)
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-679deba5e9fso19508814eaf.0
+        for <syzbot@lists.linux.dev>; Thu, 26 Feb 2026 22:28:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772166338; x=1772771138;
+        d=1e100.net; s=20230601; t=1772173694; x=1772778494;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=Z1JVKXD7PSldVfvc/ST792/SqdpUJL5NGUPJOdDyx8k=;
-        b=mhxRbEgjBwGAEact8SQv99RXPyCVPqbAZ3XjNnOA8a623XC0Ng/gnFAiNKtHPI9xrc
-         5uhopiwXxTB4TwsT8VmB2P+FSfhe8JHPYX+MDlc3b9h0vwwAoLY4b/qG+fk6Gq35SqJB
-         iIkTPjfQC8BAslHwVofOC/EyJkcPy54vGLDc8ZHY6SHRJO5dswlCbXBwXWFdU4V0pxTY
-         ZHHCT53vNTeOZwp1guSmvj7yjxXw8Q0+mmFhoIKGHydVGEbA/jEJr8wXq74B2yoKjRmt
-         ZyGtttwFl/5xXyQiQJehpdDBaNKMKbIDGqLTh/W+MIWIJmOrfMm8Io54gSf9hCicJmab
-         pa3A==
-X-Gm-Message-State: AOJu0Yx0OoxEjPHMM8Z3e7QNvvK0ibK9DtXqV/kQEcSi8oaCw3Wc5RK8
-	BgDrSN6N3AmdBKHHi15p8QkfBjMuAlRd2y74Lar6bf5Kx1pdZB4hu6SotaZyOIJwzIpzfSoEHe1
-	1jqCRbBEnjicaSrDAYzng8cwprKU0mP/WTtXFLH/7nS3MXiwTdanWNYlWeTc=
+        bh=HRTVfDeIVVWOo6rTncvpshM9TyHdDmTFTx/IG6V9ycw=;
+        b=VmL+CW4hjRa5BU3kSBbFKP1C/nCJMwtJeaIhR8f94m8fw2JGrlpKv8wBxZDm8cUYLY
+         L+YZfD1q9bxLGa3sqHk2eWp3aJeqWC8ARkMI2T0uWSXGswKqs+Pm9jkzTG5GAZqDOzXn
+         iJHL1jugcWzjQHjMNiptTupZFbgdtoZd30yh+Dvt7oc3cRxY5fTtUdalo+P91Wm9uO9n
+         vuBwuE0I8gcNhKYwFiGrPga5LlNIlUXP+nTgbq7fkgj/6mJeWZyH5i57TOc4Unc4o9Ve
+         OcNmpXwMNDpN0zWnlL5RTqCwNagPFYrkwoT8jUfoJFjLEcmunNuwoOlYlm4AuF+xGU9w
+         0ogw==
+X-Gm-Message-State: AOJu0YzT1AoJEbfTDGHebdlhs7EXg/j19NYLBzexsTpAkjyRDBr5za7d
+	mkBDiM2Y2JCgNuGpgFNqCmOO+BIAD19TRAj2ExfOB3XHDDT4dPcVFJlAHf+duvwWzZUa/Vs3EG5
+	I7tXj+fHzGQ+/sGVJs8awBsjvCQ7ESe5+ft18m2bElTP56q7tKBT41axUKpE=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4b0e:b0:679:ef25:338b with SMTP id
- 006d021491bc7-679fadbf42dmr1002946eaf.4.1772166338630; Thu, 26 Feb 2026
- 20:25:38 -0800 (PST)
-Date: Thu, 26 Feb 2026 20:25:38 -0800
+X-Received: by 2002:a05:6820:2913:b0:679:e7b2:9fb8 with SMTP id
+ 006d021491bc7-679fadb8af6mr1338283eaf.14.1772173694146; Thu, 26 Feb 2026
+ 22:28:14 -0800 (PST)
+Date: Thu, 26 Feb 2026 22:28:14 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69a11cc2.050a0220.3a55be.0010.GAE@google.com>
-Subject: [moderation/CI] Re: ext4: test if inode's all dirty pages are
- submitted to disk
-From: syzbot ci <syzbot+ci92a34e6b917e60e2@syzkaller.appspotmail.com>
+Message-ID: <69a1397e.050a0220.305b49.009b.GAE@google.com>
+Subject: [moderation/CI] Re: KVM: pfncache: Add guest_memfd support to pfncache
+From: syzbot ci <syzbot+ci3927569010008011@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] ext4: test if inode's all dirty pages are submitted to disk
-https://lore.kernel.org/all/20260226110718.1904825-1-yebin@huaweicloud.com
-* [PATCH] ext4: test if inode's all dirty pages are submitted to disk
+[v2] KVM: pfncache: Add guest_memfd support to pfncache
+https://lore.kernel.org/all/20260226135309.29493-1-itazur@amazon.com
+* [RFC PATCH v2 1/7] KVM: x86: Avoid silent kvm-clock activation failures
+* [RFC PATCH v2 2/7] KVM: pfncache: Resolve PFNs via kvm_gmem_get_pfn() for gmem-backed GPAs
+* [RFC PATCH v2 3/7] KVM: pfncache: Obtain KHVA via vmap() for gmem with NO_DIRECT_MAP
+* [RFC PATCH v2 4/7] KVM: Rename invalidate_begin to invalidate_start for consistency
+* [RFC PATCH v2 5/7] KVM: pfncache: Rename invalidate_start() helper
+* [RFC PATCH v2 6/7] KVM: Rename mn_* invalidate-related fields to generic ones
+* [RFC PATCH v2 7/7] KVM: pfncache: Invalidate on gmem invalidation and memattr updates
 
 and found the following issue:
-WARNING in ext4_evict_inode
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/8f9434e5-a73c-4b31-be9f-e9b76f1c2596
+https://ci.syzbot.org/series/56b5d8d0-838b-4843-928c-57e1b9b92df5
 
 ***
 
-WARNING in ext4_evict_inode
+kernel build error
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      f4d0ec0aa20d49f09dc01d82894ce80d72de0560
+tree:      kvm-next
+URL:       https://kernel.googlesource.com/pub/scm/virt/kvm/kvm/
+base:      e89f0e9a0a007e8c3afb8ecd739c0b3255422b00
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/7053c6f2-2ee6-4a1d-9f74-d2f56facd9f9/config
-C repro:   https://ci.syzbot.org/findings/4f7c2b91-8121-443d-9a4f-991feda8057c/c_repro
-syz repro: https://ci.syzbot.org/findings/4f7c2b91-8121-443d-9a4f-991feda8057c/syz_repro
+config:    https://ci.syzbot.org/builds/d1858f86-fac5-4d85-97c0-6aea927508ab/config
 
-------------[ cut here ]------------
-mapping_tagged(&inode->i_data, PAGECACHE_TAG_DIRTY)
-WARNING: fs/ext4/inode.c:191 at ext4_evict_inode+0xbdc/0xf10 fs/ext4/inode.c:191, CPU#1: syz-executor/5915
-Modules linked in:
-CPU: 1 UID: 0 PID: 5915 Comm: syz-executor Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:ext4_evict_inode+0xbdc/0xf10 fs/ext4/inode.c:191
-Code: ba 2c 02 00 48 8b bc 24 a0 00 00 00 e8 bd 49 14 00 e9 71 fe ff ff e8 43 63 40 ff 90 0f 0b 90 e9 e6 f4 ff ff e8 35 63 40 ff 90 <0f> 0b 90 e9 f2 f5 ff ff e8 27 63 40 ff 48 8d 3d 50 df 92 0d 67 48
-RSP: 0018:ffffc900048b79a0 EFLAGS: 00010293
-RAX: ffffffff8285287b RBX: ffff88811d980298 RCX: ffff8881027d8000
-RDX: 0000000000000000 RSI: 0000000004000000 RDI: 0000000000000000
-RBP: ffffc900048b7ab0 R08: ffffffff901181b7 R09: 1ffffffff2023036
-R10: dffffc0000000000 R11: fffffbfff2023037 R12: 1ffff92000916f44
-R13: dffffc0000000000 R14: ffff88811d9804b8 R15: 0000000004000000
-FS:  000055557d541500(0000) GS:ffff8882a9464000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000c00003e720 CR3: 000000010f9d2000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- evict+0x61e/0xb10 fs/inode.c:846
- dispose_list fs/inode.c:888 [inline]
- evict_inodes+0x75a/0x7f0 fs/inode.c:942
- generic_shutdown_super+0xaa/0x2d0 fs/super.c:632
- kill_block_super+0x44/0x90 fs/super.c:1725
- ext4_kill_sb+0x68/0xb0 fs/ext4/super.c:7459
- deactivate_locked_super+0xbc/0x130 fs/super.c:476
- cleanup_mnt+0x437/0x4d0 fs/namespace.c:1312
- task_work_run+0x1d9/0x270 kernel/task_work.c:233
- resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
- __exit_to_user_mode_loop kernel/entry/common.c:67 [inline]
- exit_to_user_mode_loop+0xed/0x480 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:325 [inline]
- do_syscall_64+0x32d/0xf80 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fcf3c79d897
-Code: a2 c7 05 5c ee 24 00 00 00 00 00 eb 96 e8 e1 12 00 00 90 31 f6 e9 09 00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 01 c3 48 c7 c2 e8 ff ff ff f7 d8 64 89 02 b8
-RSP: 002b:00007ffe2362cef8 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
-RAX: 0000000000000000 RBX: 00007fcf3c831ef0 RCX: 00007fcf3c79d897
-RDX: 0000000000000000 RSI: 0000000000000009 RDI: 00007ffe2362cfb0
-RBP: 00007ffe2362cfb0 R08: 00007ffe2362dfb0 R09: 00000000ffffffff
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffe2362e040
-R13: 00007fcf3c831ef0 R14: 000000000000f11c R15: 00007ffe2362e080
- </TASK>
-
+arch/x86/kvm/../../../virt/kvm/kvm_main.c:2624:34: error: too few arguments provided to function-like macro invocation
+arch/x86/kvm/../../../virt/kvm/kvm_main.c:2624:2: error: use of undeclared identifier 'kvm_for_each_memslot'
 
 ***
 
@@ -132,7 +91,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[adilger.kernel@dilger.ca jack@suse.cz linux-ext4@vger.kernel.org tytso@mit.edu yebin@huaweicloud.com]
+[david@kernel.org dwmw2@infradead.org itazur@amazon.com jackmanb@google.com kalyazin@amazon.com kvm@vger.kernel.org patrick.roy@campus.lmu.de pbonzini@redhat.com pdurrant@amazon.com seanjc@google.com tabba@google.com vkuznets@redhat.com zulinx86@gmail.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
