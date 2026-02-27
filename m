@@ -1,147 +1,142 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ED5844CF34
-	for <syzbot@lists.linux.dev>; Thu, 26 Feb 2026 19:15:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9862A1A9FB0
+	for <syzbot@lists.linux.dev>; Fri, 27 Feb 2026 04:25:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772133322; cv=none; b=Lh42RO18jbJh3nw+qf+YxiOuvh5xOXJ2A2keSWdCO7YqgW72qeEat+PKSZixwN86nWlHnsXcdLrftFOC6lEKqPtk35glyA00Ag6h4sgiA9FCUsCxfak6BHbHcGJVU8ZSZQXvIFR42X+FsbVX+hgoUu42nibTONLHIP53OANDfwY=
+	t=1772166341; cv=none; b=QRNjGTGycxwN4RE00IiExWJD7Yk7aAm2LIxAWpVN1yVoyYI4GysPFqAAIR65VKFG3Yc5cuBuXBe+MLzv+p2kPj5LwrmqVD4JuHKwKbGZzPQiRsx3+nu33uEBQH0XdY8c6Rz2vVEgReWWG91oBSTL75cL1V2r4ndoS0mZg8XH0pg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772133322; c=relaxed/simple;
-	bh=0WaVqEgcJlDY02tN0zXYGgU0sjaZ14hTVaCR4FdDCXE=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=dwN7BBEhXVAhxXWrMifAK87o3p9F3cUVAl3FgHTuPG+2tCPXBMEqRkHxPYfZXnP2lHmZT+KfMuh4+8XBxGRPlqWvwOM37vtzFz5VQ4e8ErwyDDpo0Ki+j58urQ7Rt8O72w82ezS9dhqLYacXTfwMA2jo9TxupoG3WpMHVg90iKE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--kuniyu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=sWD7BXik; arc=none smtp.client-ip=209.85.214.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--kuniyu.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="sWD7BXik"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2aad6045810so11295295ad.3
-        for <syzbot@lists.linux.dev>; Thu, 26 Feb 2026 11:15:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1772133317; x=1772738117; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5kvTHTqe9ndDnP2daAlPvuqmWQOnnNZG2WdCPppQRAU=;
-        b=sWD7BXikstpedfAj/OAnXYHUqCYptGndwRMZiCwtEb9YpK199zwGKHLILsBWC0ENeP
-         +KABK+800WhjxdCzGzhrJ35j5+7ZQmU7miFC65eBtO7tC/e1uEmdH5JQm04PDlOLAioP
-         tdtD+kfnHfGsb3kTE8iiMM4+7N0dPDURCwfFkbfddTX+/tIk45TnjnaoxWA5mZnLumXZ
-         GFEhZ+kDxpdFEQicFxlhWtiWpKqiuZvHerqLZzudiqPjioYiAIHB7EdJqItMBXxiGXFl
-         FlbJRkk71d+HMiwop8VkDI0RzvwMzHDqzQiHfM95kwx8uk0iiK4FOST9eb1G/rG+wLWT
-         tuLw==
+	s=arc-20240116; t=1772166341; c=relaxed/simple;
+	bh=o8Nm9VZOlIMjelQjk9MSsIdo2vw4EI0gF5oSYFezFs4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=jpSSeTjljKrGaQLLymOcp57Zrx3wfwUNRijqghf1WafznQy0VnnlkBbX7N5LEYqxF9xtVHDU5hGT7BXi4S8bITKPctqk1NkEHI2YmTkcMBU3j8uIlk5djYwoOmHn+Zd7eso+2bY9e+gLW/WKlk43aNdKkeZzzgNDDrdNYIz9whA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-679c978c609so13909662eaf.0
+        for <syzbot@lists.linux.dev>; Thu, 26 Feb 2026 20:25:39 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772133317; x=1772738117;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5kvTHTqe9ndDnP2daAlPvuqmWQOnnNZG2WdCPppQRAU=;
-        b=vjVp8YsKM5xSSJJYhJdctyGbhYFEkjB/I5u7djd+Bg5KvGP8GgB6nsjVXqR22Y+v24
-         019VMNYXSiQhSI5a79SYJCWUVE2czRlf0yPl+aNpOS7HhcX+PxqA1Hsl43QwzGvMMAqZ
-         PFEomEakAUWjaW0IOAoUxkMbKube9SM+09AT6AJHjFEHeqOgCEiu/UsxG8dPbzP4l8Kl
-         TLl1IaW+NtXKBGeb7J0J6F6FWjupfehJkZFAhcN77K6njoRXSrWKzOIzQAoNKufmaV1P
-         wJFXxlFi7F+eQv/RT+Pj9vj68ynMimzfexjZnOd6sWMyX8puH8S+EfFvESkP1EOs/UCX
-         UlFw==
-X-Forwarded-Encrypted: i=1; AJvYcCW2w4sdWAAbxRfaEaAo1DGgf7597H7afQYxSB/3M5n8D0pXshda19YxpxF0TDuWhAKi0xHuq2k=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw3KAnEgUdA/chAHM7KJ7Fv0ZHuMzRObsB97fyrIhw5+e2Bud9e
-	ezpbyMD/AwE2vZPbBJsEO5oatlE82KydvMBjoRAsPTWyRSF5QDacgvkZNid9syz39NcEacY5yez
-	Rt4sqPA==
-X-Received: from plgz12.prod.google.com ([2002:a17:903:18c:b0:298:465f:129])
- (user=kuniyu job=prod-delivery.src-stubby-dispatcher) by 2002:a17:903:2283:b0:2aa:f07f:a776
- with SMTP id d9443c01a7336-2ae2e4b5727mr86095ad.43.1772133317292; Thu, 26 Feb
- 2026 11:15:17 -0800 (PST)
-Date: Thu, 26 Feb 2026 19:14:14 +0000
-In-Reply-To: <69a07c1b.050a0220.16c224.0006.GAE@google.com>
+        d=1e100.net; s=20230601; t=1772166338; x=1772771138;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Z1JVKXD7PSldVfvc/ST792/SqdpUJL5NGUPJOdDyx8k=;
+        b=mhxRbEgjBwGAEact8SQv99RXPyCVPqbAZ3XjNnOA8a623XC0Ng/gnFAiNKtHPI9xrc
+         5uhopiwXxTB4TwsT8VmB2P+FSfhe8JHPYX+MDlc3b9h0vwwAoLY4b/qG+fk6Gq35SqJB
+         iIkTPjfQC8BAslHwVofOC/EyJkcPy54vGLDc8ZHY6SHRJO5dswlCbXBwXWFdU4V0pxTY
+         ZHHCT53vNTeOZwp1guSmvj7yjxXw8Q0+mmFhoIKGHydVGEbA/jEJr8wXq74B2yoKjRmt
+         ZyGtttwFl/5xXyQiQJehpdDBaNKMKbIDGqLTh/W+MIWIJmOrfMm8Io54gSf9hCicJmab
+         pa3A==
+X-Gm-Message-State: AOJu0Yx0OoxEjPHMM8Z3e7QNvvK0ibK9DtXqV/kQEcSi8oaCw3Wc5RK8
+	BgDrSN6N3AmdBKHHi15p8QkfBjMuAlRd2y74Lar6bf5Kx1pdZB4hu6SotaZyOIJwzIpzfSoEHe1
+	1jqCRbBEnjicaSrDAYzng8cwprKU0mP/WTtXFLH/7nS3MXiwTdanWNYlWeTc=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <69a07c1b.050a0220.16c224.0006.GAE@google.com>
-X-Mailer: git-send-email 2.53.0.473.g4a7958ca14-goog
-Message-ID: <20260226191515.2953716-1-kuniyu@google.com>
-Subject: Re: [syzbot ci] Re: ipmr: No RTNL for RTNL_FAMILY_IPMR rtnetlink.
-From: Kuniyuki Iwashima <kuniyu@google.com>
-To: syzbot+ci7bfbcdccdcddd61f@syzkaller.appspotmail.com
-Cc: davem@davemloft.net, dsahern@kernel.org, edumazet@google.com, 
-	horms@kernel.org, kuba@kernel.org, kuni1840@gmail.com, kuniyu@google.com, 
-	netdev@vger.kernel.org, pabeni@redhat.com, syzbot@lists.linux.dev, 
-	syzkaller-bugs@googlegroups.com
+MIME-Version: 1.0
+X-Received: by 2002:a05:6820:4b0e:b0:679:ef25:338b with SMTP id
+ 006d021491bc7-679fadbf42dmr1002946eaf.4.1772166338630; Thu, 26 Feb 2026
+ 20:25:38 -0800 (PST)
+Date: Thu, 26 Feb 2026 20:25:38 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69a11cc2.050a0220.3a55be.0010.GAE@google.com>
+Subject: [moderation/CI] Re: ext4: test if inode's all dirty pages are
+ submitted to disk
+From: syzbot ci <syzbot+ci92a34e6b917e60e2@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
-From: syzbot ci <syzbot+ci7bfbcdccdcddd61f@syzkaller.appspotmail.com>
-Date: Thu, 26 Feb 2026 09:00:11 -0800
-> syzbot ci has tested the following series
-> 
-> [v1] ipmr: No RTNL for RTNL_FAMILY_IPMR rtnetlink.
-> https://lore.kernel.org/all/20260226023637.1335854-1-kuniyu@google.com
-> * [PATCH v1 net-next 01/15] selftest: net: Add basic functionality tests for ipmr.
-> * [PATCH v1 net-next 02/15] ipmr: Annotate access to mrt->mroute_do_{pim,assert,wrvifwhole}.
-> * [PATCH v1 net-next 03/15] ipmr: Convert ipmr_rtm_dumplink() to RCU.
-> * [PATCH v1 net-next 04/15] ipmr: Use MAXVIFS in mroute_msgsize().
-> * [PATCH v1 net-next 05/15] ipmr: Convert ipmr_rtm_getroute() to RCU.
-> * [PATCH v1 net-next 06/15] ipmr: Convert ipmr_rtm_dumproute() to RCU.
-> * [PATCH v1 net-next 07/15] ipmr: Move unregister_netdevice_many() out of mroute_clean_tables().
-> * [PATCH v1 net-next 08/15] ipmr: Move unregister_netdevice_many() out of ipmr_free_table().
-> * [PATCH v1 net-next 09/15] ipmr: Convert ipmr_net_exit_batch() to ->exit_rtnl().
-> * [PATCH v1 net-next 10/15] ipmr: Remove RTNL in ipmr_rules_init() and ipmr_net_init().
-> * [PATCH v1 net-next 11/15] ipmr: Call fib_rules_unregister() without RTNL.
-> * [PATCH v1 net-next 12/15] ipmr: Define net->ipv4.{ipmr_notifier_ops,ipmr_seq} under CONFIG_IP_MROUTE.
-> * [PATCH v1 net-next 13/15] ipmr/ip6mr: Convert net->ipv[46].ipmr_seq to atomic_t.
-> * [PATCH v1 net-next 14/15] ipmr: Add dedicated mutex for mrt->{mfc_hash,mfc_cache_list}.
-> * [PATCH v1 net-next 15/15] ipmr: Don't hold RTNL for ipmr_rtm_route().
-> 
-> and found the following issue:
-> WARNING in ipmr_free_table
-> 
-> Full report is available here:
-> https://ci.syzbot.org/series/d7068eba-72b1-4110-aeb0-d4528e03fd24
-> 
-> ***
-> 
-> WARNING in ipmr_free_table
-> 
-> tree:      net-next
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
-> base:      c7f5c6fb0f2b1a44490a36582a251f0a304d6b0c
-> arch:      amd64
-> compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-> config:    https://ci.syzbot.org/builds/0afa280b-14ff-4aec-8a20-7f8507025dd8/config
-> C repro:   https://ci.syzbot.org/findings/e38687c7-5a8b-4c68-909c-a0ffdd17a674/c_repro
-> syz repro: https://ci.syzbot.org/findings/e38687c7-5a8b-4c68-909c-a0ffdd17a674/syz_repro
-> 
-> ------------[ cut here ]------------
-> !net_initialized(net) && !list_empty(dev_kill_list)
-> WARNING: net/ipv4/ipmr.c:450 at ipmr_free_table+0x150/0x180 net/ipv4/ipmr.c:450, CPU#1: syz.1.18/6004
+syzbot ci has tested the following series
 
-I forgot dev_kill_list could have some devices collected
-from _other_ ->rtnl_exit() _after_ successful ipmr init.
+[v1] ext4: test if inode's all dirty pages are submitted to disk
+https://lore.kernel.org/all/20260226110718.1904825-1-yebin@huaweicloud.com
+* [PATCH] ext4: test if inode's all dirty pages are submitted to disk
 
-My assumption in patch 10 is still correct, and I'll squash
-this in v2.
+and found the following issue:
+WARNING in ext4_evict_inode
 
-diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-index 4e645a87dc6c..89e151121cea 100644
---- a/net/ipv4/ipmr.c
-+++ b/net/ipv4/ipmr.c
-@@ -437,17 +437,19 @@ static struct mr_table *ipmr_new_table(struct net *net, u32 id)
- static void ipmr_free_table(struct mr_table *mrt, struct list_head *dev_kill_list)
- {
- 	struct net *net = read_pnet(&mrt->net);
-+	LIST_HEAD(ipmr_dev_kill_list);
- 
- 	WARN_ON_ONCE(!mr_can_free_table(net));
- 
- 	timer_shutdown_sync(&mrt->ipmr_expire_timer);
- 	mroute_clean_tables(mrt, MRT_FLUSH_VIFS | MRT_FLUSH_VIFS_STATIC |
- 			    MRT_FLUSH_MFC | MRT_FLUSH_MFC_STATIC,
--			    dev_kill_list);
-+			    &ipmr_dev_kill_list);
- 	rhltable_destroy(&mrt->mfc_hash);
- 	kfree(mrt);
- 
--	WARN_ON_ONCE(!net_initialized(net) && !list_empty(dev_kill_list));
-+	WARN_ON_ONCE(!net_initialized(net) && !list_empty(&ipmr_dev_kill_list));
-+	list_splice(&ipmr_dev_kill_list, dev_kill_list);
- }
- 
- /* Service routines creating virtual interfaces: DVMRP tunnels and PIMREG */
+Full report is available here:
+https://ci.syzbot.org/series/8f9434e5-a73c-4b31-be9f-e9b76f1c2596
+
+***
+
+WARNING in ext4_evict_inode
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      f4d0ec0aa20d49f09dc01d82894ce80d72de0560
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/7053c6f2-2ee6-4a1d-9f74-d2f56facd9f9/config
+C repro:   https://ci.syzbot.org/findings/4f7c2b91-8121-443d-9a4f-991feda8057c/c_repro
+syz repro: https://ci.syzbot.org/findings/4f7c2b91-8121-443d-9a4f-991feda8057c/syz_repro
+
+------------[ cut here ]------------
+mapping_tagged(&inode->i_data, PAGECACHE_TAG_DIRTY)
+WARNING: fs/ext4/inode.c:191 at ext4_evict_inode+0xbdc/0xf10 fs/ext4/inode.c:191, CPU#1: syz-executor/5915
+Modules linked in:
+CPU: 1 UID: 0 PID: 5915 Comm: syz-executor Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:ext4_evict_inode+0xbdc/0xf10 fs/ext4/inode.c:191
+Code: ba 2c 02 00 48 8b bc 24 a0 00 00 00 e8 bd 49 14 00 e9 71 fe ff ff e8 43 63 40 ff 90 0f 0b 90 e9 e6 f4 ff ff e8 35 63 40 ff 90 <0f> 0b 90 e9 f2 f5 ff ff e8 27 63 40 ff 48 8d 3d 50 df 92 0d 67 48
+RSP: 0018:ffffc900048b79a0 EFLAGS: 00010293
+RAX: ffffffff8285287b RBX: ffff88811d980298 RCX: ffff8881027d8000
+RDX: 0000000000000000 RSI: 0000000004000000 RDI: 0000000000000000
+RBP: ffffc900048b7ab0 R08: ffffffff901181b7 R09: 1ffffffff2023036
+R10: dffffc0000000000 R11: fffffbfff2023037 R12: 1ffff92000916f44
+R13: dffffc0000000000 R14: ffff88811d9804b8 R15: 0000000004000000
+FS:  000055557d541500(0000) GS:ffff8882a9464000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000c00003e720 CR3: 000000010f9d2000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ evict+0x61e/0xb10 fs/inode.c:846
+ dispose_list fs/inode.c:888 [inline]
+ evict_inodes+0x75a/0x7f0 fs/inode.c:942
+ generic_shutdown_super+0xaa/0x2d0 fs/super.c:632
+ kill_block_super+0x44/0x90 fs/super.c:1725
+ ext4_kill_sb+0x68/0xb0 fs/ext4/super.c:7459
+ deactivate_locked_super+0xbc/0x130 fs/super.c:476
+ cleanup_mnt+0x437/0x4d0 fs/namespace.c:1312
+ task_work_run+0x1d9/0x270 kernel/task_work.c:233
+ resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
+ __exit_to_user_mode_loop kernel/entry/common.c:67 [inline]
+ exit_to_user_mode_loop+0xed/0x480 kernel/entry/common.c:98
+ __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
+ syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:325 [inline]
+ do_syscall_64+0x32d/0xf80 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fcf3c79d897
+Code: a2 c7 05 5c ee 24 00 00 00 00 00 eb 96 e8 e1 12 00 00 90 31 f6 e9 09 00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 01 c3 48 c7 c2 e8 ff ff ff f7 d8 64 89 02 b8
+RSP: 002b:00007ffe2362cef8 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
+RAX: 0000000000000000 RBX: 00007fcf3c831ef0 RCX: 00007fcf3c79d897
+RDX: 0000000000000000 RSI: 0000000000000009 RDI: 00007ffe2362cfb0
+RBP: 00007ffe2362cfb0 R08: 00007ffe2362dfb0 R09: 00000000ffffffff
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffe2362e040
+R13: 00007fcf3c831ef0 R14: 000000000000f11c R15: 00007ffe2362e080
+ </TASK>
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[adilger.kernel@dilger.ca jack@suse.cz linux-ext4@vger.kernel.org tytso@mit.edu yebin@huaweicloud.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
