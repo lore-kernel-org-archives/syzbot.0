@@ -1,153 +1,194 @@
-Received: from canpmsgout08.his.huawei.com (canpmsgout08.his.huawei.com [113.46.200.223])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A9D41E9919
-	for <syzbot@lists.linux.dev>; Sat, 28 Feb 2026 01:14:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.223
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5E26244684
+	for <syzbot@lists.linux.dev>; Sat, 28 Feb 2026 06:23:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772241275; cv=none; b=QE/w8PVuBNtDxqSUyk8cDbC6j5yQalqZ74V5mmbth7OvRtlG3yCapw3MmYBDYU8ZcNvqtuBZNs/cr5m6OI4nfYrPxGjpfp//6WVyzJaw9ybK/9M2z9QFwnE4j2mZRQlfZeqeUccKfsEhBhOXxstStSDnLOm3P8h4h4LZWdzIBxo=
+	t=1772259840; cv=none; b=l9stmY3KgSZGN4ixaWO7a5TYiqhlHfMleldQUTF/agJh80GRflv7zUPdRHYe70l8pLRa/A9fTp9MdG8M1y4j3ijp0P5k6i9SaL2v8fR6c8/eVAd2tUDukjKvNzI25bmNqVIATkqByHl9DNZ/LIDm/UaYNs1EJy4GLmkvNCSP60U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772241275; c=relaxed/simple;
-	bh=FJmdl2It3tg59G3h/TZNJbRDCjpIAKda3HUvq9PyF20=;
-	h=Subject:To:References:CC:From:Message-ID:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=WjWGPqJBG4C+UGbQe4eyazhrMeL5dtbd+WaGDE6T1YzyzGc0be0+bAXEGlaWwXs4DRY7Z9gbu2kPJ5UUb7pbyZ9Gq7r9Xi4bMCYyv7bn7/IfSCaFqfA7GR8ptZRqLKNPjCEnBJ2+uHDsTbaKReFivB1VzAF7xypGlc5Euk27M1I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=D5hNe9Ek; arc=none smtp.client-ip=113.46.200.223
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="D5hNe9Ek"
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=asFSWCBnA7kO4j2SuCj7NWD6TCyWM5Yh7Y+k2kZ1Mh8=;
-	b=D5hNe9EkdFuixPk5/jBgPHdg9dlqx32RdbAlrNYmdT6KTHb0DeRrXesLSKugkIaEzBlmetEqp
-	45ZnvQE7uaQibxPTlWWZ6BN/sT7WJqpZmajWRt98rIe0rYpvpeq7pIrmN/uI93Yw/YmvvQglrIS
-	SvUHxITW92Qn16YP1iPzwrk=
-Received: from mail.maildlp.com (unknown [172.19.163.163])
-	by canpmsgout08.his.huawei.com (SkyGuard) with ESMTPS id 4fN6YJ28wQzmVXR;
-	Sat, 28 Feb 2026 09:09:40 +0800 (CST)
-Received: from dggemv705-chm.china.huawei.com (unknown [10.3.19.32])
-	by mail.maildlp.com (Postfix) with ESMTPS id B36A04048B;
-	Sat, 28 Feb 2026 09:14:29 +0800 (CST)
-Received: from kwepemq500016.china.huawei.com (7.202.194.202) by
- dggemv705-chm.china.huawei.com (10.3.19.32) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Sat, 28 Feb 2026 09:14:29 +0800
-Received: from [10.174.178.185] (10.174.178.185) by
- kwepemq500016.china.huawei.com (7.202.194.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Sat, 28 Feb 2026 09:14:28 +0800
-Subject: Re: [syzbot ci] Re: ext4: test if inode's all dirty pages are
- submitted to disk
-To: syzbot ci <syzbot+cif302214182590c61@syzkaller.appspotmail.com>,
-	<adilger.kernel@dilger.ca>, <jack@suse.cz>, <linux-ext4@vger.kernel.org>,
-	<tytso@mit.edu>, <yebin@huaweicloud.com>
-References: <69a14d31.050a0220.305b49.00aa.GAE@google.com>
-CC: <syzbot@lists.linux.dev>, <syzkaller-bugs@googlegroups.com>
-From: "yebin (H)" <yebin10@huawei.com>
-Message-ID: <69A24174.2080805@huawei.com>
-Date: Sat, 28 Feb 2026 09:14:28 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:38.0) Gecko/20100101
- Thunderbird/38.1.0
+	s=arc-20240116; t=1772259840; c=relaxed/simple;
+	bh=I7+q/KclTcjuaJF06BdGD0Z91hMH13ZJTUJKTxFu7fs=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=DCTR5QVVXiWkow0HGigfUIYspomavs0a9QjH6WSaUnoXu52+we3tA/X6A65wrBCXrQj40poYZXS7oN4OiazBUdx4g+rPF5bMDmeTtpl+KUwskEmQcCs4Ko5nZrO6kdeRyh/gHyFIng/zREo5EyUszvRSK/WWkC5yAUN0H+f6IHg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-67999893008so24024950eaf.2
+        for <syzbot@lists.linux.dev>; Fri, 27 Feb 2026 22:23:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772259837; x=1772864637;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6ooJkXaQgh/01U1BhJlknohCl4N/QfwC3+uR7ln0Ctg=;
+        b=ddUQOOmgp3x6Gm/yBJcbqRHR6gWzIueHljNrkDOAtfR1wYf2gtSiFlfyHDNVIo3Wwv
+         W4yuWvq4XSpceU5W7IGTsCA4vWRNIZvGbKJa1ZYtEHqhKLa4PWnBlz32/+dceiB3BGMh
+         09E8TBjfQU4AQskTmXqOytJH9yel7ei5gK5+hhMzfZti9mkPtiQaLXM0Xky8hpxgsT3G
+         49LFaNQt/uA9lym3MeH1ZmfOzZahyULM6THCFjpCcFqxA104aKaq/Ms4avl3P60LyVSj
+         XpErUPuAj4Kahh0Db/G1cC/mikre5eIC4m/sx8hatcihvzgJ53MGcyHYAO1ZCZSukbL8
+         +m6Q==
+X-Gm-Message-State: AOJu0Yyv6Rzvo7INPhdfSqszrTLDtnghKrkINIjq1hr8LD2QS1j9fvt6
+	Jymu6Pg4ggSVwEu62ciihf7J4vupGXGNemeoihaqfw8Z84FKDM802xqRu2/rV2Dx5k7uP+KsdFN
+	wAsZgt7GDvowlniIzuDh7+/TKimKPQw15U2LKBAgJquHXSMJDfir1IW9ENII=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <69a14d31.050a0220.305b49.00aa.GAE@google.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: kwepems200001.china.huawei.com (7.221.188.67) To
- kwepemq500016.china.huawei.com (7.202.194.202)
+X-Received: by 2002:a05:6820:4df2:b0:66a:ebc4:66d7 with SMTP id
+ 006d021491bc7-679faf8fd9emr3178459eaf.70.1772259837683; Fri, 27 Feb 2026
+ 22:23:57 -0800 (PST)
+Date: Fri, 27 Feb 2026 22:23:57 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69a289fd.050a0220.3a55be.0030.GAE@google.com>
+Subject: [moderation/CI] Re: mm: bail out when the PMD has been set in bloom filter
+From: syzbot ci <syzbot+ci44b390629650bdfd@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-This is my oversight. If the file system has already become read-only
-and dirty pages cannot be flushed back, no warning should be generated
-at this time.
+syzbot ci has tested the following series
 
-On 2026/2/27 15:52, syzbot ci wrote:
-> syzbot ci has tested the following series
->
-> [v1] ext4: test if inode's all dirty pages are submitted to disk
-> https://lore.kernel.org/all/20260226110718.1904825-1-yebin@huaweicloud.com
-> * [PATCH] ext4: test if inode's all dirty pages are submitted to disk
->
-> and found the following issue:
-> WARNING in ext4_evict_inode
->
-> Full report is available here:
-> https://ci.syzbot.org/series/8f9434e5-a73c-4b31-be9f-e9b76f1c2596
->
-> ***
->
-> WARNING in ext4_evict_inode
->
-> tree:      torvalds
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-> base:      f4d0ec0aa20d49f09dc01d82894ce80d72de0560
-> arch:      amd64
-> compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-> config:    https://ci.syzbot.org/builds/7053c6f2-2ee6-4a1d-9f74-d2f56facd9f9/config
-> C repro:   https://ci.syzbot.org/findings/4f7c2b91-8121-443d-9a4f-991feda8057c/c_repro
-> syz repro: https://ci.syzbot.org/findings/4f7c2b91-8121-443d-9a4f-991feda8057c/syz_repro
->
-> ------------[ cut here ]------------
-> mapping_tagged(&inode->i_data, PAGECACHE_TAG_DIRTY)
-> WARNING: fs/ext4/inode.c:191 at ext4_evict_inode+0xbdc/0xf10 fs/ext4/inode.c:191, CPU#1: syz-executor/5915
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 5915 Comm: syz-executor Not tainted syzkaller #0 PREEMPT(full)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> RIP: 0010:ext4_evict_inode+0xbdc/0xf10 fs/ext4/inode.c:191
-> Code: ba 2c 02 00 48 8b bc 24 a0 00 00 00 e8 bd 49 14 00 e9 71 fe ff ff e8 43 63 40 ff 90 0f 0b 90 e9 e6 f4 ff ff e8 35 63 40 ff 90 <0f> 0b 90 e9 f2 f5 ff ff e8 27 63 40 ff 48 8d 3d 50 df 92 0d 67 48
-> RSP: 0018:ffffc900048b79a0 EFLAGS: 00010293
-> RAX: ffffffff8285287b RBX: ffff88811d980298 RCX: ffff8881027d8000
-> RDX: 0000000000000000 RSI: 0000000004000000 RDI: 0000000000000000
-> RBP: ffffc900048b7ab0 R08: ffffffff901181b7 R09: 1ffffffff2023036
-> R10: dffffc0000000000 R11: fffffbfff2023037 R12: 1ffff92000916f44
-> R13: dffffc0000000000 R14: ffff88811d9804b8 R15: 0000000004000000
-> FS:  000055557d541500(0000) GS:ffff8882a9464000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 000000c00003e720 CR3: 000000010f9d2000 CR4: 00000000000006f0
-> Call Trace:
->   <TASK>
->   evict+0x61e/0xb10 fs/inode.c:846
->   dispose_list fs/inode.c:888 [inline]
->   evict_inodes+0x75a/0x7f0 fs/inode.c:942
->   generic_shutdown_super+0xaa/0x2d0 fs/super.c:632
->   kill_block_super+0x44/0x90 fs/super.c:1725
->   ext4_kill_sb+0x68/0xb0 fs/ext4/super.c:7459
->   deactivate_locked_super+0xbc/0x130 fs/super.c:476
->   cleanup_mnt+0x437/0x4d0 fs/namespace.c:1312
->   task_work_run+0x1d9/0x270 kernel/task_work.c:233
->   resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
->   __exit_to_user_mode_loop kernel/entry/common.c:67 [inline]
->   exit_to_user_mode_loop+0xed/0x480 kernel/entry/common.c:98
->   __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
->   syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [inline]
->   syscall_exit_to_user_mode include/linux/entry-common.h:325 [inline]
->   do_syscall_64+0x32d/0xf80 arch/x86/entry/syscall_64.c:100
->   entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7fcf3c79d897
-> Code: a2 c7 05 5c ee 24 00 00 00 00 00 eb 96 e8 e1 12 00 00 90 31 f6 e9 09 00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 01 c3 48 c7 c2 e8 ff ff ff f7 d8 64 89 02 b8
-> RSP: 002b:00007ffe2362cef8 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
-> RAX: 0000000000000000 RBX: 00007fcf3c831ef0 RCX: 00007fcf3c79d897
-> RDX: 0000000000000000 RSI: 0000000000000009 RDI: 00007ffe2362cfb0
-> RBP: 00007ffe2362cfb0 R08: 00007ffe2362dfb0 R09: 00000000ffffffff
-> R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffe2362e040
-> R13: 00007fcf3c831ef0 R14: 000000000000f11c R15: 00007ffe2362e080
->   </TASK>
->
->
-> ***
->
-> If these findings have caused you to resend the series or submit a
-> separate fix, please add the following tag to your commit message:
->    Tested-by: syzbot@syzkaller.appspotmail.com
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
->
->
-> .
->
+[v1] mm: bail out when the PMD has been set in bloom filter
+https://lore.kernel.org/all/20260227075250.1128175-1-zhaoyang.huang@unisoc.com
+* [PATCH] mm: bail out when the PMD has been set in bloom filter
+
+and found the following issue:
+general protection fault in lru_gen_look_around
+
+Full report is available here:
+https://ci.syzbot.org/series/78ce04ff-c36e-4bcc-a097-f457e3ed9e5e
+
+***
+
+general protection fault in lru_gen_look_around
+
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
+base:      8982358e1c87e3e1dc0aad37f4f93efe9c1cfe03
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/e976d408-587c-416f-85ab-a60940674f35/config
+C repro:   https://ci.syzbot.org/findings/ea92e1a7-69bd-4608-bc2c-2ff4ca118f9c/c_repro
+syz repro: https://ci.syzbot.org/findings/ea92e1a7-69bd-4608-bc2c-2ff4ca118f9c/syz_repro
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc0000000003: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000018-0x000000000000001f]
+CPU: 1 UID: 0 PID: 5967 Comm: syz.0.18 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:test_bloom_filter mm/vmscan.c:2785 [inline]
+RIP: 0010:lru_gen_look_around+0x45c/0xd20 mm/vmscan.c:4206
+Code: 22 be ff 48 c7 44 24 48 00 00 00 00 48 83 c3 28 48 89 dd 48 c1 ed 03 42 80 7c 25 00 00 74 08 48 89 df e8 97 b5 28 00 4c 8b 3b <41> 80 7c 24 03 00 74 0a bf 18 00 00 00 e8 82 b5 28 00 4c 8b 24 25
+RSP: 0018:ffffc900046e5c90 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: ffffc900046e5e68 RCX: ffff8881100b1d00
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 1ffff920008dcbcd R08: ffff88811008fcc3 R09: 1ffff11022011f98
+R10: dffffc0000000000 R11: ffffed1022011f99 R12: dffffc0000000000
+R13: 0000555585af4000 R14: ffffea0006a69fc0 R15: ffff888114457168
+FS:  0000555585ad9500(0000) GS:ffff8882a9461000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f4753817dac CR3: 00000001b9a5e000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ folio_referenced_one+0x724/0x1360 mm/rmap.c:962
+ rmap_walk_anon+0x5cb/0x7c0 mm/rmap.c:2973
+ rmap_walk mm/rmap.c:3078 [inline]
+ folio_referenced+0x3c0/0x5f0 mm/rmap.c:1081
+ folio_check_references mm/vmscan.c:870 [inline]
+ shrink_folio_list+0x1008/0x5240 mm/vmscan.c:1237
+ evict_folios+0x3f82/0x5090 mm/vmscan.c:4853
+ try_to_shrink_lruvec+0xb62/0xfa0 mm/vmscan.c:5008
+ lru_gen_shrink_lruvec mm/vmscan.c:5157 [inline]
+ shrink_lruvec+0x54e/0x2b30 mm/vmscan.c:5911
+ shrink_node_memcgs mm/vmscan.c:6147 [inline]
+ shrink_node+0xa41/0x3a90 mm/vmscan.c:6188
+ shrink_zones mm/vmscan.c:6427 [inline]
+ do_try_to_free_pages+0x6a2/0x1980 mm/vmscan.c:6489
+ try_to_free_mem_cgroup_pages+0x2ff/0x870 mm/vmscan.c:6811
+ try_charge_memcg+0x827/0x1560 mm/memcontrol.c:2642
+ obj_cgroup_charge_pages mm/memcontrol.c:3084 [inline]
+ __memcg_kmem_charge_page+0x32a/0x530 mm/memcontrol.c:3128
+ __alloc_frozen_pages_noprof+0x1c1/0x380 mm/page_alloc.c:5271
+ __alloc_pages_noprof mm/page_alloc.c:5288 [inline]
+ alloc_pages_bulk_noprof+0x569/0x710 mm/page_alloc.c:5208
+ alloc_pages_bulk_mempolicy_noprof+0x34e/0x1680 mm/mempolicy.c:2792
+ vm_area_alloc_pages mm/vmalloc.c:3700 [inline]
+ __vmalloc_area_node mm/vmalloc.c:3875 [inline]
+ __vmalloc_node_range_noprof+0xbd9/0x1a80 mm/vmalloc.c:4058
+ __bpf_map_area_alloc kernel/bpf/syscall.c:404 [inline]
+ bpf_map_area_alloc+0x12d/0x170 kernel/bpf/syscall.c:411
+ bloom_map_alloc+0x22f/0x470 kernel/bpf/bloom_filter.c:146
+ map_create+0xafd/0x16a0 kernel/bpf/syscall.c:1507
+ __sys_bpf+0x6e1/0x950 kernel/bpf/syscall.c:6210
+ __do_sys_bpf kernel/bpf/syscall.c:6341 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:6339 [inline]
+ __x64_sys_bpf+0x7c/0x90 kernel/bpf/syscall.c:6339
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f475359c799
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fff2e480d98 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 00007f4753815fa0 RCX: 00007f475359c799
+RDX: 0000000000000050 RSI: 0000200000000dc0 RDI: 0000000000000000
+RBP: 00007f4753632bd9 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f4753815fac R14: 00007f4753815fa0 R15: 00007f4753815fa0
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:test_bloom_filter mm/vmscan.c:2785 [inline]
+RIP: 0010:lru_gen_look_around+0x45c/0xd20 mm/vmscan.c:4206
+Code: 22 be ff 48 c7 44 24 48 00 00 00 00 48 83 c3 28 48 89 dd 48 c1 ed 03 42 80 7c 25 00 00 74 08 48 89 df e8 97 b5 28 00 4c 8b 3b <41> 80 7c 24 03 00 74 0a bf 18 00 00 00 e8 82 b5 28 00 4c 8b 24 25
+RSP: 0018:ffffc900046e5c90 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: ffffc900046e5e68 RCX: ffff8881100b1d00
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 1ffff920008dcbcd R08: ffff88811008fcc3 R09: 1ffff11022011f98
+R10: dffffc0000000000 R11: ffffed1022011f99 R12: dffffc0000000000
+R13: 0000555585af4000 R14: ffffea0006a69fc0 R15: ffff888114457168
+FS:  0000555585ad9500(0000) GS:ffff8882a9461000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f4753817dac CR3: 00000001b9a5e000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	22 be ff 48 c7 44    	and    0x44c748ff(%rsi),%bh
+   6:	24 48                	and    $0x48,%al
+   8:	00 00                	add    %al,(%rax)
+   a:	00 00                	add    %al,(%rax)
+   c:	48 83 c3 28          	add    $0x28,%rbx
+  10:	48 89 dd             	mov    %rbx,%rbp
+  13:	48 c1 ed 03          	shr    $0x3,%rbp
+  17:	42 80 7c 25 00 00    	cmpb   $0x0,0x0(%rbp,%r12,1)
+  1d:	74 08                	je     0x27
+  1f:	48 89 df             	mov    %rbx,%rdi
+  22:	e8 97 b5 28 00       	call   0x28b5be
+  27:	4c 8b 3b             	mov    (%rbx),%r15
+* 2a:	41 80 7c 24 03 00    	cmpb   $0x0,0x3(%r12) <-- trapping instruction
+  30:	74 0a                	je     0x3c
+  32:	bf 18 00 00 00       	mov    $0x18,%edi
+  37:	e8 82 b5 28 00       	call   0x28b5be
+  3c:	4c                   	rex.WR
+  3d:	8b                   	.byte 0x8b
+  3e:	24 25                	and    $0x25,%al
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[akpm@linux-foundation.org huangzhaoyang@gmail.com linux-kernel@vger.kernel.org linux-mm@kvack.org steve.kang@unisoc.com yuzhao@google.com zhaoyang.huang@unisoc.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
