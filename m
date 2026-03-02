@@ -1,165 +1,94 @@
-Received: from out162-62-57-210.mail.qq.com (out162-62-57-210.mail.qq.com [162.62.57.210])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E87D3AE70B
-	for <syzbot@lists.linux.dev>; Mon,  2 Mar 2026 12:52:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.57.210
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4915C3630BD
+	for <syzbot@lists.linux.dev>; Mon,  2 Mar 2026 13:18:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772455971; cv=none; b=S9yjf/0BaVhRKx8Rq7w+K+TWensIaeMVHj0aq1PtHJuibnbUcFMrFdwgG81ABtTaMSHZzR1dNuNBi4Ru7XOSSpFgEpMa0S3BM4mb0jqLHnpamOLoydrpq/B5BLgR1YuVQb40tngYXOLET7PdIG+QxzdFpEpPsRsL776UNDwcNqY=
+	t=1772457493; cv=none; b=g5C/vI6n3gG+G0AJWL5qx7S697Ket707AF7CFMcWK1CVGqF3tAWfoICfKgz0NpzF9KLoE78BYhZcp2D6Ugvwyk2Pqhqs+6UBDviflRuno6AcKm8BMFF1IsKjVkW1Er/wRai5jvlVXfehZ6W7rpPdtdP9zx1PX3CRBLJ+QMpbzVM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772455971; c=relaxed/simple;
-	bh=K1Jc76yBOdiCZOrE3NEBAzT9ZvTZAZqaMZg2bmP72dw=;
-	h=Message-ID:From:To:Cc:Subject:Date:In-Reply-To:References:
-	 MIME-Version; b=UbGURabr0eCM378we2c7nPV9cf+wMXDy+fbp8R0+3O1tA9V9uLIEwwingNM//SpuxyAmrt1ckIVNpSMGNY1hAeQ3Hod8uLiU6WCsEXZVlzOE7il4XEFL4QSRZr2owU6vMTFnNie28jmIlhubh/A8C09u9CH1oY32DPLWwWjYXV4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=PeoRTdI7; arc=none smtp.client-ip=162.62.57.210
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="PeoRTdI7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1772455964; bh=35TKkxftZA66OCmA/rR9k9ldi2Fyql3rrrUYj6gwYw4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=PeoRTdI7gXSMkV7u/iCdMMZqJwUBONEUtPB2UZlyu0IzGO0jxgOxNivVCaQaoO8vw
-	 OFoy39bbbF9kbskMnoJDJl8m+Zgk8qFwFykmkD0MgsA3Yjm0lRjUOzy/nuYZ8ds4RL
-	 4qeRsZxcHDpBqLwWBNfJw4XzHJaw4FofIvZwvQUk=
-Received: from lxu-ped-host.. ([114.244.57.237])
-	by newxmesmtplogicsvrszc41-0.qq.com (NewEsmtp) with SMTP
-	id CD40C2C8; Mon, 02 Mar 2026 20:51:20 +0800
-X-QQ-mid: xmsmtpt1772455880tp6j0zsna
-Message-ID: <tencent_13E236704A527419766767443D6736EE9609@qq.com>
-X-QQ-XMAILINFO: MyIXMys/8kCtCp4bty5WLlyBVFn0IiXDDRbLGqBeKwDsq++0NgJ58DAF/DgpuP
-	 BkKbL3NrZtCiUR/vJVx6zWCfYyuFPrlqtFmhqzGgMMDJjsipdrXHik+v9o3c0205EiyNo50z287D
-	 Ndu+b2X+NgjR+fiEcIm+oyyVhNz6oWHxODhjBM6wGOBEgXNn2oaKJJ0MUqUYsPUk90qoXQmVDqo7
-	 GJ6mn0nCebM80rNS/qF78btCbsPoFzMDRqCMEdoPwfo6ia293nXJIcTQikI50jm6611ckNNJ/fiN
-	 wtM/+OU6Ae9L4D9sLl3uEsmLWwcvcFOw5tzWVDAuBHK1CY6+jpOc72kyCpaBKQPMhHw2IbZBhTdp
-	 Kt47+pcIXULJVnwdYOC45NP0OULyEaM/3KPkS+SDwHRbFZOpZt7a/0ZM5rVymwcoGiO2Im0qobEw
-	 hXbpSBgCxPcXBn9fWAD1Z3hCZSexb3gdc/FfBLv7LeZxzqQyOJYDkkc9KRo9J0QRpW6CacrkTGv4
-	 i93OiWE/bO2LDi8fzXLC1ULAjrO5iCf4PVYNvwgtRu8+3HYKN159kpBxbU2J0ICAtEk/lhTYzIpY
-	 KJLrdcRxqUZ/c2xBC4R6wuMEt8y4qyW0UbEemIOOYn9Uh9qb+4it2L6KLe/DVs0a5OCqq0ZNvCXE
-	 45LLojF2fkXVF79hssMpY4HisWS3COe2bfL9+lRIorsZE+7J5XYkdc3YbClTt68nBUGPUQMJeged
-	 EBA9iX9RwVoY3wyxGC3rlmuXXohSwMU7c6nzPgU9y1M/mB/VrZa8eZuroqBT4QbyJwdRln6JdJlf
-	 F6QKqQ2TINYLzkNHarA7ZIJ5nixBuqSR7Or0d4ztyLXJxfAMFFK5Rg4dDPCf1XmF9i7Z09v5gBl5
-	 sKoKUiKRRQ1y/s262/DQsclNPgHcuxxIKZpwP+XkuGOOOj6HRiIrMi3E03z6uxmSoP4TNsYP/GmA
-	 8h4Dlk23hNhaANQQ2jNY28zPCsxYomocgBU2nzHIrVIR79zGBpNE7whZ6Ld8ztD/2H6PoUDAn5U3
-	 jh86AQQPh3FvE7Z6/M9riut5nUG1FcRLQwtYLo6qLSf07ZR7K17t+IEPhNyw20iPHrHZA7DEo1yo
-	 IO/YgWWnm6zhVy+4A=
-X-QQ-XMRINFO: NyFYKkN4Ny6FuXrnB5Ye7Aabb3ujjtK+gg==
-From: Edward Adam Davis <eadavis@qq.com>
-To: syzbot+ci4ea9e91a328607dd@syzkaller.appspotmail.com
-Cc: brauner@kernel.org,
-	eadavis@qq.com,
-	jack@suse.cz,
-	linux-ext4@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	syzbot@lists.linux.dev,
-	syzbot@syzkaller.appspotmail.com,
-	syzkaller-bugs@googlegroups.com,
-	viro@zeniv.linux.org.uk
-Subject: [PATCH v2] ext4: avoid infinite loops caused by data conflicts
-Date: Mon,  2 Mar 2026 20:51:20 +0800
-X-OQ-MSGID: <20260302125119.282902-2-eadavis@qq.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <69a56bf2.050a0220.3a55be.0074.GAE@google.com>
-References: <69a56bf2.050a0220.3a55be.0074.GAE@google.com>
+	s=arc-20240116; t=1772457493; c=relaxed/simple;
+	bh=qOAffTVhyqyVA1IJq9sh7filP8YkH/Cv+TSup5Mjv74=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=YJ3tcS5kGiPn2bmipvYzfQDelk101+0KikEuqbeGxFDcrsTiJntYez2WUxI/vO5MMN8h0lXsGgAnUlKIC1rrorq8YuRc43aABrhlJEgkQDQNyrt+tfVhVobqBJQpGi5lVX5bu3b0coU76iAP9jytVAQYdEa1oJ3D3+Q4jYYUJTo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-679c5ed0942so65397443eaf.1
+        for <syzbot@lists.linux.dev>; Mon, 02 Mar 2026 05:18:11 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772457491; x=1773062291;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=7PTfxAuKbFnMfJYWzYZoiwdY4Mj+lIzEaRtZ3DneEwI=;
+        b=IXZF1/Kwc0br7B/xwT9v0aFngqQ3s4zfMwJqVGPj+mGeNOuyRzOwhCWAOszSVMNAnX
+         8/OLfAm4BEHRc50Pj+ZmpD6jVSYpmMmvb5fbrHNQ8XVKqvSlIzCvD9IBpfRrS2FlUUw7
+         Z8qfLch3pFee+o3mbutlZnaaLdn4V5xm6KEIXndLM8M/T31gsCIXZG6CBScVekLtIlKT
+         mORuPaQ2XckXdi6usdp+swsGZXxTFCjF4mpCjR7aaCs0x18xLdUXSI8A+Ic0Qcq/HoT5
+         F0VHPrx7DMGE5eUjcoR+8cyCGwGJHfw4QCu9B6VaQodvYBkkWm1KIC0OaRvNzcx7O2Rq
+         bi8g==
+X-Gm-Message-State: AOJu0Yyz52MgNOb4kM+XyfOGap5+elVnDjquZD1C0jqURSU43zxs0TLR
+	RM//cXfEuqNucxIUnFa+lvEb2EKIc99BBlHLuq8cMEBJc1bMzMGWrqzmMvsFvFeXxzG9KYvoAO1
+	b9Ts8z1zGdkAswsBu4ygQfIwFIkDTCMNeEd/uz4Vj+pX2MtMONk/wBSu7NSY=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6820:213:b0:679:8861:f58c with SMTP id
+ 006d021491bc7-679faf0c321mr6826641eaf.39.1772457491250; Mon, 02 Mar 2026
+ 05:18:11 -0800 (PST)
+Date: Mon, 02 Mar 2026 05:18:11 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69a58e13.050a0220.1b9591.0006.GAE@google.com>
+Subject: [moderation/CI] Re: vsock: Enable H2G override
+From: syzbot ci <syzbot+ciaa50c5d9a3159f04@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-In the execution paths of mkdir and openat, there are two different
-structures, struct ext4_xattr_header and struct ext4_dir_entry_2,
-that both reference the same buffer head.
+syzbot ci has tested the following series
 
-In the mkdir path, ext4_add_entry() first sets the rec_len member of
-the struct ext4_dir_entry_2 to 2048, and then sets the file_type value
-to 2 in add_dirent_to_buf()->ext4_insert_dentry()->ext4_set_de_type().
+[v1] vsock: Enable H2G override
+https://lore.kernel.org/all/20260302104138.77555-1-graf@amazon.com
+* [PATCH] vsock: Enable H2G override
 
-This causes the h_refcount value in the other struct ext4_xattr_header,
-which references the same buffer head, to be too large in the openat
-path.
+and found the following issue:
+kernel build error
 
-The above causes ext4_xattr_block_set() to enter an infinite loop about
-"inserted" and cannot release the inode lock, ultimately leading to the
-143s blocking problem mentioned in [1].
+Full report is available here:
+https://ci.syzbot.org/series/cf002b07-c4e6-4ce9-b7f9-ee489501fc8d
 
-When accessing the ext4_xattr_header structure in xattr, the accessed
-buffer head data is placed after ext4_dir_entry_2 to prevent data
-collisions caused by data overlap.
+***
 
-[1]
-INFO: task syz.0.17:5995 blocked for more than 143 seconds.
-Call Trace:
- inode_lock_nested include/linux/fs.h:1073 [inline]
- __start_dirop fs/namei.c:2923 [inline]
- start_dirop fs/namei.c:2934 [inline]
+kernel build error
 
-Reported-by: syzbot+512459401510e2a9a39f@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=1659aaaaa8d9d11265d7
-Tested-by: syzbot+1659aaaaa8d9d11265d7@syzkaller.appspotmail.com
-Reported-by: syzbot+1659aaaaa8d9d11265d7@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=512459401510e2a9a39f
-Tested-by: syzbot+1659aaaaa8d9d11265d7@syzkaller.appspotmail.com
-Signed-off-by: Edward Adam Davis <eadavis@qq.com>
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      01857fc712f6469cab9cc578120cdc80f1c2a634
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/23d0b7a3-0889-49ec-935c-51e4d89ef3c1/config
+
+drivers/vhost/vsock.c:99:29: error: too few arguments to function call, expected 2, have 1
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
 ---
-v1 -> v2: fix ci reported issues
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
- fs/ext4/ext4.h  | 2 ++
- fs/ext4/xattr.c | 3 ++-
- fs/ext4/xattr.h | 3 ++-
- 3 files changed, 6 insertions(+), 2 deletions(-)
+The email will later be sent to:
+[eperezma@redhat.com graf@amazon.com jasowang@redhat.com kvm@vger.kernel.org linux-kernel@vger.kernel.org mst@redhat.com netdev@vger.kernel.org nh-open-source@amazon.com sgarzare@redhat.com stefanha@redhat.com virtualization@lists.linux.dev]
 
-diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
-index 293f698b7042..4b72da4d646f 100644
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -2425,6 +2425,8 @@ struct ext4_dir_entry_2 {
- 	char	name[EXT4_NAME_LEN];	/* File name */
- };
- 
-+#define DIFF_AREA_DE_XH sizeof(struct ext4_dir_entry_2)
-+
- /*
-  * Access the hashes at the end of ext4_dir_entry_2
-  */
-diff --git a/fs/ext4/xattr.c b/fs/ext4/xattr.c
-index 7bf9ba19a89d..b7bdf8ae2b4f 100644
---- a/fs/ext4/xattr.c
-+++ b/fs/ext4/xattr.c
-@@ -2160,7 +2160,8 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
- 				error = -EIO;
- 				goto getblk_failed;
- 			}
--			memcpy(new_bh->b_data, s->base, new_bh->b_size);
-+			memcpy(new_bh->b_data + DIFF_AREA_DE_XH, s->base,
-+			       new_bh->b_size - DIFF_AREA_DE_XH);
- 			ext4_xattr_block_csum_set(inode, new_bh);
- 			set_buffer_uptodate(new_bh);
- 			unlock_buffer(new_bh);
-diff --git a/fs/ext4/xattr.h b/fs/ext4/xattr.h
-index 1fedf44d4fb6..4a28023c72e8 100644
---- a/fs/ext4/xattr.h
-+++ b/fs/ext4/xattr.h
-@@ -8,6 +8,7 @@
- */
- 
- #include <linux/xattr.h>
-+#include "ext4.h"
- 
- /* Magic value in attribute blocks */
- #define EXT4_XATTR_MAGIC		0xEA020000
-@@ -90,7 +91,7 @@ struct ext4_xattr_entry {
- #define EXT4_XATTR_MIN_LARGE_EA_SIZE(b)					\
- 	((b) - EXT4_XATTR_LEN(3) - sizeof(struct ext4_xattr_header) - 4)
- 
--#define BHDR(bh) ((struct ext4_xattr_header *)((bh)->b_data))
-+#define BHDR(bh) ((struct ext4_xattr_header *)((bh)->b_data + DIFF_AREA_DE_XH))
- #define ENTRY(ptr) ((struct ext4_xattr_entry *)(ptr))
- #define BFIRST(bh) ENTRY(BHDR(bh)+1)
- #define IS_LAST_ENTRY(entry) (*(__u32 *)(entry) == 0)
--- 
-2.43.0
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
 
