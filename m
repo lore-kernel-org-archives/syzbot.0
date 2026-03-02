@@ -1,273 +1,911 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4CCE19E819
-	for <syzbot@lists.linux.dev>; Mon,  2 Mar 2026 17:50:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=10.30.226.201
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772473854; cv=fail; b=ebfdMiajRl9gEDxEo/FhMSriw/XPf0W7JZb2Rveq0knOpD45jQJi1CvlvtTqjqo5Q0gqQxv+M5+8kFzNu06qrOHlA3RhGDu0JPfKMaupiz8Xov2XUCARAO/1YSkcDuByyMMT5uJ5iJRKD85EXXrGrwyYvOumqGW5ZOuAysFhK1k=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772473854; c=relaxed/simple;
-	bh=Uu6FvY3JbhBukW98WSMS9KNspM8pxaEZ8PA7YnvvNyQ=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=VokKJGQA/A0QxbYm5q5JDml8TV/BFY1qvD/TavselVGeCoeJ97i6zt4HOWqGzIPhQ3220TOpfmZHzP4+B6dL7Yr2e4ppPIuzIXGF6p1QMhtepc5jb0Jx4KcWqCAg+Kj5SEnaPjtHjsazGEfCyLRuvhfPaELxlDUFDQlLD8sOKvg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=KAH4LQVS; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=HvhbB2ei; arc=fail smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="KAH4LQVS";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="HvhbB2ei"
-Received: by smtp.kernel.org (Postfix)
-	id 94C36C2BC9E; Mon,  2 Mar 2026 17:50:54 +0000 (UTC)
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 76891C19423;
-	Mon,  2 Mar 2026 17:50:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.kernel.org 76891C19423
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=oracle.com
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 622HWBJp2606701;
-	Mon, 2 Mar 2026 17:50:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=
-	corp-2025-04-25; bh=EQjBSduz3jHE0D/jpnmtIyVj1XIhsMm0eGDjcJ/phBE=; b=
-	KAH4LQVSINbL067ieVd74xZTjb9/j5gafg4ROjPwUCcMFWulkz3jPtLTUPbJUMod
-	zYOyKimpku3ml1xPbS5wdOOpA5BJ5gMfAp5LeZaIik1xbUXDQwnZJ9NOuvD7Mng5
-	+EeEp7s+15AnzrDktLCpI1V6Pndt3J8lTqYnh3HAfzyiQhZAoBNclaDB6nsSemkw
-	gWuQNLRUSlKCJrQVVjDrGEEEMRzgPR6XKy5qhTpU1P6L/vkgom4RvnJeb4cZewyV
-	jDh73VgizEji0wB7O9zW4sU67UJsVi1wEr+RaJ49qdEu7mW2FgMwhX7UmQmtHsfc
-	tMbTHLLJemx0he6oJIYEQA==
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4cnf1m81du-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 02 Mar 2026 17:50:50 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 622Gxbaw037847;
-	Mon, 2 Mar 2026 17:50:49 GMT
-Received: from ph7pr06cu001.outbound.protection.outlook.com (mail-westus3azon11010062.outbound.protection.outlook.com [52.101.201.62])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 4ckptdhjj9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 02 Mar 2026 17:50:49 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=SRGPoanXVkGxnGkNf1G3YIQx9qARt7XLY9VzzjcYdodh8IMytNByXPF2iMMEgjk3YsygqnqdjWIRfPSS5zFm6GSd59MRgLg1540WWHHdoxQerXlnjVjSwT1veAWGhQU6NupZ4s+VifN+8yjIK9DYaEvRZ8+8BSLewZx3otR1txdhsGMW3m2bzuKwnHftfPPRRAk9snnseQAsBjXGdAcppz/xw1yHrQNqPjhCwtR2Q0L78ts3a5DX9uEeto6MAJek6OkbLyq/n6WPdMgqAFBVnFqlAI4MKPleXFFn7JeSf6q2sCSNK2Avkfet95tuBuHZsf19eMMTLU43buj7VEgs/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EQjBSduz3jHE0D/jpnmtIyVj1XIhsMm0eGDjcJ/phBE=;
- b=r9r0ZIVFPcat4KFpTfLcPcmjzN2PjC0tNIfBOc9zsDoWyITuiTGLuq82ImX5cmZLrrD1g4tidfCePSjbXJMThscUEMckPc1pJ6mkallAcwYwyIf6vNLcVz10pUEZTC/DeoYp8af1f6VlZSP9lvQwxGDRtzXAAdaBQT2/HNC3ExCpnzmErlPPj8BedyTu2HAYQz/GarxEp0xnk/HJpQg+YjjDp41G7jgY2zyNUdGfCitIAHExDA959x8F6fdKwcIx9BPexSa1ouTDo/RUDRnIvi/Gf/itDN/EzPkng1k8TGJsGij8cE228FpPLVlafNCNVKoq+aw7bFNO7BLbgRKVGQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EQjBSduz3jHE0D/jpnmtIyVj1XIhsMm0eGDjcJ/phBE=;
- b=HvhbB2eiSEYPq4aIfaR65XcJ7N2GVeEW4W4xXG3gxYw/iTegU29YkcqK2hRnvtPR7ui54+KBIS+fh1lvYOLBkfCD0cB4P9TSjX4CsY8ZGcbdOkfLAOi/9cF7TRnDGGsUvKWPgvi/rDQ7sNUFjOaroYr2U5A5716H2sWjBWVHPhs=
-Received: from IA1PR10MB8212.namprd10.prod.outlook.com (2603:10b6:208:463::20)
- by IA3PR10MB8467.namprd10.prod.outlook.com (2603:10b6:208:582::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.14; Mon, 2 Mar
- 2026 17:50:44 +0000
-Received: from IA1PR10MB8212.namprd10.prod.outlook.com
- ([fe80::ee8a:bd21:f1cb:c79a]) by IA1PR10MB8212.namprd10.prod.outlook.com
- ([fe80::ee8a:bd21:f1cb:c79a%2]) with mapi id 15.20.9654.007; Mon, 2 Mar 2026
- 17:50:44 +0000
-Message-ID: <e51284f7-8368-4a2d-ae81-d86ae62837d2@oracle.com>
-Date: Mon, 2 Mar 2026 11:50:43 -0600
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] jfs: fix array-index-out-of-bounds in dbFindLeaf
-To: Dmitry Vyukov <dvyukov@google.com>, syzbot <syzbot@kernel.org>
-Cc: jfs-discussion@lists.sourceforge.net, shaggy@kernel.org,
-        ghandatmanas@gmail.com,
-        syzbot+1afe7ef2d0062e19eeb3@syzkaller.appspotmail.com,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20260204092230.2540042-1-syzbot@kernel.org>
- <CACT4Y+YVb8+XkEg2ucfYKjw-J7uy2Om19kzrGkXvkyxa9XTzvQ@mail.gmail.com>
-Content-Language: en-US
-From: Dave Kleikamp <dave.kleikamp@oracle.com>
-In-Reply-To: <CACT4Y+YVb8+XkEg2ucfYKjw-J7uy2Om19kzrGkXvkyxa9XTzvQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH3P221CA0023.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:610:1e7::23) To IA1PR10MB8212.namprd10.prod.outlook.com
- (2603:10b6:208:463::20)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A4933112BA
+	for <syzbot@lists.linux.dev>; Mon,  2 Mar 2026 19:01:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772478093; cv=none; b=qiAAvh/fhk3gG9imuPCV13sO4AakZVVqQbqr+EXGVYtw3TDzGrcqTlHtIYbzQWnlWN0RPla6qCy+kOWmknG1/Tku1qJD9Q6FCmGFIA80o1s+7DdDNlQbbhUPXy9P9XELrEF1GSvhxo3REtN0o3kclINc+zpnW+X0LVtgJ8NxoPs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772478093; c=relaxed/simple;
+	bh=DWy9WxvFXYpSr9HdvjQMqMAoaQmaeQWXz3X2KtvEowc=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=pCCGRVa4qXzPKHOROxyY2+DIBs5ZHqDNPUS1CrjPgH1bL5uUvH0PML3VVNDw45E6UCCslNXMIiayjOPIVFe4qrLAwXofsnWwyJh0ZKaZLUZpy12CZgL+LrpX6r4xEYRCVLyAVn+AC/nWXkIDxQgsLi5U75rQf5e6TFmqXJF2ocs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7d4cb5810a0so35201650a34.1
+        for <syzbot@lists.linux.dev>; Mon, 02 Mar 2026 11:01:27 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772478086; x=1773082886;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SmXufVkoRg3HBuC+lTVFnXTvL2TM4bMuA4TGA58BeqM=;
+        b=TR4Gd4QZCuk/kIW85aj2GVJh1563nsim6rZZ18//asxzcC5tLxRhisyr3zXTQxoRhR
+         Ua0dt9wAQck08QTL6L7Kv11+eHECxl4cUnwBNskBOO9P1gOzcaIb1ZeOwF36Fmpw6w2E
+         9k0wX1EIrLUs72NKRnIQbwtv/x+7/bFqE/nj6w/s9psx0GEVarzIKyU4KiFw2O5yBtn7
+         TAqCTlb+QAQhqqRRd83xoESJOYjLh5PflhYh2cNjPOV5GNIVSmavDlblMPF0bFBsEQO8
+         5es1DRi6NYCNH0c1013r9JackELtt+wm43swnBbGdNkih6Ly5ciCqykJhkjou5tMB8Wt
+         zIrg==
+X-Gm-Message-State: AOJu0YyQsHrBjVkb4OZ6x8qcjIoPSw1ZJVzGOouX0vyGFlkgV/d129Lo
+	CP9Agr9PM+D+mpFQbaYXHJCax0OJeS/2FOTyBLEg/2RGN9UUG1SD7U5t/26tX3/2UKqx3aZS0yp
+	K66hwn8Fkj6RkqFpwsuA8pDDtm8YHzyetGju2GVZyFAla0twpA21nphi7MNY=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA1PR10MB8212:EE_|IA3PR10MB8467:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3d1357a3-4de7-4cfd-6283-08de78843a6c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	wu6+Bbsd+s38q+RXnSn1J6b8c3fhict4wzit59c+vDmGYLCJdcl7czd5RpWiArz68OVnu163tx1Wdq1Gkhd5M36lyIkQaHHhhAFD1HZOQdKdPsOMg8FCpf31lg+1bUwkWi+juRdde/Ur4GPsNOTfge45ahI10xmFkk73fjEfGJkKbmGTxCCyPe0ChLOzSALp6nzZtqa//SjC+0EJGmJQHF96AAELZ4MhPJJ/AtOScNiFDqN7yXTxs7k5ReDZVDANq5NSWKxxUcBX70zKdsQYkLoaaYJ8QMisWVx1CY8L2V9XIVVY7mtntQ2Rrutd2liMRv2sFBdXBtphBY7cIFgvmxi3hdTiRlrq1RcbFylPyfD9gWKHhmYQgDtwsGavZ14JuQB75DBRGpWw1ZW911SVcxNuNORMxHJ2zL1aJxiq+S2K8EMgaQUlqmM3/UAXjcFt5Lq+pCXy2Y7qyTYeL8vCPJUt/WUFBlciWf584rrliw4ETzM3/EvaPGBXb65hRO1G4+s1sYp7lXR1oAkSriUnFJImfcJG9qm7ffgqI3dRkMhhUWxT8osQsBMm4yF1NcnD4iCfTEeT7EacLc8kjrpoBnlfn6QA45CP6zwF5bOJj9d6cnWMnb4hes00O4hwHqbc8VJHXqXdL/6tphNBrvrGgPLvHU/ZiBrJxmXHd5zOXn+D4rN11M7xXNcGeXWrvKsS
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR10MB8212.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SlZqemR4TWpJNGVFTmFrc0FYaTB2THovUHYzZ1RCOWNCZTgxaVNBV0tiQ2Rr?=
- =?utf-8?B?eis3VjZnN0JJNzhsemtTOUNJbFAwRlNwb3JVaDRva2pXM0p6Zm93Qnh2ckFI?=
- =?utf-8?B?WGpQZ2U2SEc2YXREZlh3M0crOTEwR1hZRDdabWJCcVA4dk9HWFQ0Z0JSeGxG?=
- =?utf-8?B?M0drSkJIZ1RkUVdQdTVzVGNtNE5zU2RiN2xSSmIxaFZRRGZmd3MvUDIvM3p2?=
- =?utf-8?B?Wm9WdkZFUklBUGxQVVpsMzV6WDFGNDg0QnIydU1USUF6ckJSME8zRUFucFU2?=
- =?utf-8?B?TkYrK1haLzJDQVJKZnhvZnRwMmg0V0lnNHRRaEJGTlBPaGxrRk5Ca0dPR0Nw?=
- =?utf-8?B?ZVZFblE0Wk9Kd0lYMFJTZjhXZlRPVnlDcDE3MTk0Z296VVNPOGs1Nk5YWTdy?=
- =?utf-8?B?eGRpcVBnZDNnQ2o0aDhyY25uaFN4VHNBa3RDUm96em5YRndmTzExR3FJTC9W?=
- =?utf-8?B?V1BZTGRKbnRQTVNmbDVlcWI5ektOLzloc1ByOHhDcVdEVlVnMVUvZnhqc3Rl?=
- =?utf-8?B?MUdjaHhyM0ZFc2xiV2VvRk9iU1BCcU5oTWYrd1lzWDgwMWdqa1JKM21KVVlW?=
- =?utf-8?B?UUk1Q2xWZ1gzYnhyZEFhdXFKNXEyczZNYUV2UGJQb0dIZHRPQnBsVHZleXJr?=
- =?utf-8?B?REtBWkhRT1NmZkZaUU40ZTh2Qis1N1FaMmNZck0vUEZhZHhMS3p5Z1dKcGZD?=
- =?utf-8?B?SDdVeFJGYWV4b0NyZi9NNk5EM2tnMEd6NmVncTZEY2h0cTFCZTEvOFdlSjVy?=
- =?utf-8?B?Wkh4N3ZRZ2EyT0pDVDkySFVwSDVLaURkWEFmZ2Izaktmb1NyZUpCaXFnUVU5?=
- =?utf-8?B?bEhsSEM3czE4bzJwZFB6Q2s0ajR0cGFDTnVDT1NmTkRzcjFwWDNGaFRUVUhG?=
- =?utf-8?B?cytSS0RYVlVlOEtkSzdDUXhZbjJGdUhnQU1icmJRSmN1NllhRXNUOWZCUjRt?=
- =?utf-8?B?YWZzY1Fnb0kxbzVuQVB1OVhHQUtCZU1IOVZHZW1HL1ZmQldYeDRJSzRhaXdU?=
- =?utf-8?B?dlNBRFJGSEV4TGRmNERxZDhDZVpDWUFLa04wT0Zyb3g4VW5MUGdMTCt2cFpN?=
- =?utf-8?B?dUpJd01WZmlDRmFYeEZiSGNFTGlxV0NNMUpJVHdNdWZWbnZCTldJclZVNFhv?=
- =?utf-8?B?cXMzMGxidW5YVnFRc0hwRmlxb1RLQURrcUlFUUpDNUZ6NmJZVmpyUW9sejI3?=
- =?utf-8?B?ZTk0RkZkQUl1ZXh1Nm5iRFI5SDlkVVJ6ZFIrd3o3djRuU0NQMldTcnhIKzAy?=
- =?utf-8?B?c2FhWXd5bXI1UWpRQzhuMlVRQndYZW84MitRZFd4enl1UlIzMVp2UmVxR2Rk?=
- =?utf-8?B?RTJob3V3bmk3L0NJeGM0RzJFditlY0llbmh5MjBtL3MzZmdocnNWMFNGYVEz?=
- =?utf-8?B?eFBnck1vSzRkbTBidU9FOHRxZTFheVpvMjZSOUNyS01NemZQTk9CeEZYZDFT?=
- =?utf-8?B?dlZHQVlKaUV2K0prWFVJTDRqM0lWL09WUnNUL3BtTXp2MHJ6bXpaZjZJY0I1?=
- =?utf-8?B?Z1VOMnRySDFQbGlrOE5JRW5NZUt3NmI2YTJUSXRvOXNpaXNyMjZxMUdIQzZT?=
- =?utf-8?B?NnIveElqUWJNbWg2dVBnL2Y4OGJvWG1FQUUxWFdUQnkralpZbW1CRUkyMHZ6?=
- =?utf-8?B?dXphdmxISEFsR3o2REtFVGV3aFVqUnBickJ5ZXNtVHN2VUxyNjl1RGpDUGtZ?=
- =?utf-8?B?YndxS0MvMmxaVlpwRlFJb0dvTDdLSHdraGxaRzBhY0JFM2l6cWRmQ1dWLzhM?=
- =?utf-8?B?WmNvY1NZUUQ2ZmJRSmx5OHVYTUh0eXpoYlVxMVY3aDNaMEF2VkVsWklybW5Z?=
- =?utf-8?B?UlZjMVdja3pNQ3cvMHFDYVhqRksyR01qY2JiQTlBOUtyenNUYzBHcDEvYk0x?=
- =?utf-8?B?VlVoWnJGK3lIMHUzOVpVWjJrZG5RSDh3YlhKOE05V0RJSERKYUt0VXpsZ0NP?=
- =?utf-8?B?bEZPbDNpL0pkU2hDRnpVU3RMNmlwbllIVGk3dzRIelRKb3lpQnRLeFhMemVw?=
- =?utf-8?B?cHpPRklZR05KZDlMN2tZM3YrSFArcm5XRmxOS3BONmJ6aUlac004VVJzOSs1?=
- =?utf-8?B?RnVQVWFubHZTTHhOU0puc1I2bUxVMjNSODhseitjWWVqRmQyWWdBNnhDZCtx?=
- =?utf-8?B?T3ptUnBUODlaOFRBUy9wK2Z6M29CQTlUbCtZYVVITmsrbE5TYjU1bTloZ1l3?=
- =?utf-8?B?cUdGWkI4bGVRcmNHRUl6OXF6VWUxeW5uWWU1UFRTSldhNnJUbzdtQUNlc0x0?=
- =?utf-8?B?Z3hDOFBBYmtMcitxZkZXVmFwS3dHOFdaWlZTeE1HRUxRR0QwVlNUbHExRzRP?=
- =?utf-8?B?R0lqRGNhTFRJR09wTjA3OUNOMDlESHpyYVpZT1haZ1Nicmh2UzhrRHFZNEF0?=
- =?utf-8?Q?ofTgp4yJyFl9xjKM=3D?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	VsA2ztgW6HuUdBU+nihxBgmhzcvIK70eT9NOAx1POnxQypGVjjvzrptFdSGWeHgIgi9SNpMuaZ7e60B/RdkOj6a2Wy8Z/U/H9GI16yv8t9Cm6EPeRIBPGQKJaW6cj8ITBZUuqZWm3Z/P0fO6mvbxoiaIJy4G9yYtAJZB4zcB4Kf0tLRSKh9wEMiX3WRO9co3rrb6gpfDGydVcHyOIlZEf9SUe+94vkOlqKjkn1RpxBT30VQUR5l/FsTrhRqQCTR3XceJYvizh/hF3iVi5N0QIS48PY9HJmFGLtxBMakA44eSg2eNVCTMogMkfxeiYozVyALIUPmaFouztmF2RJ0np1oh/+OiuCuvdhskFIMMcgZkw5Ahi6ywKqZ+WXzAT/qLB0wFdUwGLLes/ptfxxEkz3Q/Xs/3w26z/c45i8F2uzNV8ZOPkABt7cC5ddGSQAONtjawodXu33xJFC4STXn7z2zUL4/jComji4e5qcg1kW2ZOXshcH4ojEaPOKQs6M4W2nWXrqgorAXwRYPUQnmDFfYhfVEgZV304ynqUGLX0ExcLDVQdlDGdIfEmsDmiDaeyfAy+o0jdtu9epfAX1YyADjWNJTvzOUT4obGFmekecE=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3d1357a3-4de7-4cfd-6283-08de78843a6c
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR10MB8212.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2026 17:50:44.7301
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: snPd3qAkc4YURS0vw80YW9xp6LqNSOGVnfkGVRaOVd5lmtVw6VAfZvbU5I/6B/ZmZm2gVZSEiOZin8PBv3bcFP6fsDuUCqPwIsYM2jZ2r3o=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA3PR10MB8467
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-02_04,2026-03-02_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 phishscore=0
- spamscore=0 mlxscore=0 mlxlogscore=999 suspectscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2602130000
- definitions=main-2603020143
-X-Proofpoint-GUID: aNUDikvOU9qikEC75vPCKs9iruODlV1x
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzAyMDE0MyBTYWx0ZWRfX8EYq08BhQXK6
- FkCFgL3qVv5rgw2egXG/6X1OVODCjjclDGxCEZt45iy7mtHgisErd724sFVRUnAe+FxteVv2v45
- CujKYo+lZKoRB/2omuPgSdaZyulAZM1N9WUvpGBvJ+SI3KA8parxcCGf1apGIeP4g4iIkT3duEN
- Ba+C/35twsFzHmgIorY5RpoJAa83uipZSz9KGLw44vAuw8zAUzeuVTcieGVEpZNfmKNb5pIVuaC
- rij6QbL3NMh6wWO6vh0rZaqIGsbqeMylbpmnRnJq++1Z4QVaYzHgYwLGeg2/q3p8PtpIYARGwdZ
- yKopyCOwOis00oRxHp9HMu1WpkwsiQd4ziWTFF3M7c9TwHXcN5l+5Xh4UlJrQ4TUV8yVamV99cf
- 6ukEXSr3p5+CYUJcUpMysXGIw5+WlNScypICJHGcuH8YWow1pnl7zbh/5bjN7P8lXu7CgOxiRgk
- qoxeGn5gOfD63BIJM1jKzEN9ccbE99vY7Mv0fivA=
-X-Authority-Analysis: v=2.4 cv=KvxAGGWN c=1 sm=1 tr=0 ts=69a5cdfa b=1 cx=c_pps
- a=e1sVV491RgrpLwSTMOnk8w==:117 a=e1sVV491RgrpLwSTMOnk8w==:17
- a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
- a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
- a=Yq5XynenixoA:10 a=GoEa3M9JfhUA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=jiCTI4zE5U7BLdzWsZGv:22 a=x4eqshVgHu-cdnggieHk:22 a=1XWaLZrsAAAA:8
- a=VwQbUJbxAAAA:8 a=hSkVLCK3AAAA:8 a=FP58Ms26AAAA:8 a=pGLkceISAAAA:8
- a=bzXT2nkUuvVJspcVRCcA:9 a=QEXdDO2ut3YA:10 a=cQPPKAXgyycSBL8etih5:22 cc=ntf
- awl=host:13810
-X-Proofpoint-ORIG-GUID: aNUDikvOU9qikEC75vPCKs9iruODlV1x
+X-Received: by 2002:a05:6820:54d0:b0:67a:405:7ff7 with SMTP id
+ 006d021491bc7-67a040580cemr3666237eaf.7.1772478085268; Mon, 02 Mar 2026
+ 11:01:25 -0800 (PST)
+Date: Mon, 02 Mar 2026 11:01:25 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69a5de85.a70a0220.b118c.0002.GAE@google.com>
+Subject: [moderation/CI] Re: ext4: avoid infinite loops caused by data conflicts
+From: syzbot ci <syzbot+ciab2b683878a46188@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On 2/23/26 8:36AM, Dmitry Vyukov wrote:
-> On Wed, 4 Feb 2026 at 10:23, syzbot <syzbot@kernel.org> wrote:
->>
->> UBSAN reported an array-index-out-of-bounds issue in dbFindLeaf:
->>
->>    index 1365 is out of range for type 's8[1365]' (aka 'signed char[1365]')
->>    CPU: 0 UID: 0 PID: 6287 Comm: syz-executor268 Not tainted ...
->>    Call Trace:
->>     ...
->>     __ubsan_handle_out_of_bounds+0x115/0x140 lib/ubsan.c:455
->>     dbFindLeaf+0x308/0x520 fs/jfs/jfs_dmap.c:2976
->>     dbFindCtl+0x267/0x520 fs/jfs/jfs_dmap.c:1717
->>     ...
->>
->> The issue is caused by an off-by-one error in the bounds check within
->> dbFindLeaf. The function traverses the dmap tree to find free blocks.
->> It uses a loop to iterate through the levels of the tree, calculating
->> the index `x + n` to access the `tp->dmt_stree` array. The variable
->> `max_size` represents the size of this array (CTLTREESIZE (1365) for
->> dmapctl or TREESIZE (341) for dmaptree).
->>
->> The bounds check `if (x + n > max_size)` allows `x + n` to be equal to
->> `max_size`. However, since the array size is `max_size`, the valid
->> indices are `0` to `max_size - 1`. Accessing `tp->dmt_stree[max_size]`
->> results in an array-index-out-of-bounds access.
->>
->> This can occur when the `dmt_height` field in the on-disk structure is
->> corrupted or fuzzed to be larger than the fixed height supported by the
->> `dmt_stree` array.
->>
->> Fix this by changing the condition to `>=` to correctly reject indices
->> equal to or greater than the array size.
->>
->> Signed-off-by: syzbot@kernel.org
->> Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
->> Fixes: 22cad8bc1d36 ("jfs: fix array-index-out-of-bounds in dbFindLeaf")
->> Reported-by: syzbot+1afe7ef2d0062e19eeb3@syzkaller.appspotmail.com
->> To: <jfs-discussion@lists.sourceforge.net>
->> To: "Dave Kleikamp" <shaggy@kernel.org>
->> To: "Manas Ghandat" <ghandatmanas@gmail.com>
->> Cc: <linux-kernel@vger.kernel.org>
->> Cc: <stable@vger.kernel.org>
->> ---
->> This patch was generated by Google Gemini LLM model.
->> It was pre-reviewed and Signed-off-by a human, but please review carefully.
->>
->> Gerrit code review with full side-by-side diffs:
->> https://linux-review.git.corp.google.com/c/linux/kernel/git/torvalds/linux/+/26122
->>
->> Change-Id: I92f694e86518349eafa132b2ba314d8dfff6c86e
->> ---
->>
->> diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
->> index cdfa699..18a7dc5 100644
->> --- a/fs/jfs/jfs_dmap.c
->> +++ b/fs/jfs/jfs_dmap.c
->> @@ -2971,7 +2971,7 @@ static int dbFindLeaf(dmtree_t *tp, int l2nb, int *leafidx, bool is_ctl)
->>                          /* sufficient free space found.  move to the next
->>                           * level (or quit if this is the last level).
->>                           */
->> -                       if (x + n > max_size)
->> +                       if (x + n >= max_size)
->>                                  return -ENOSPC;
->>                          if (l2nb <= tp->dmt_stree[x + n])
->>                                  break;
->>
->> base-commit: 63804fed149a6750ffd28610c5c1c98cce6bd377
-> 
-> Hello jfs maintainers,
-> 
-> Is this patch on anybody radaras? Please merge the fix.
-> Or should JFS patches now be sent to a generic FS tree for merging?
+syzbot ci has tested the following series
 
-I'm way behind on JFS maintenance, but working to catch up. My problem 
-with this patch is that the author is a bot. I want it to be from a real 
-person, as well as any s-o-b's. Otherwise the patch looks good.
+[v2] ext4: avoid infinite loops caused by data conflicts
+https://lore.kernel.org/all/tencent_13E236704A527419766767443D6736EE9609@qq.com
+* [PATCH v2] ext4: avoid infinite loops caused by data conflicts
 
-Shaggy
+and found the following issues:
+* KASAN: slab-out-of-bounds Read in ext4_xattr_block_csum_set
+* KASAN: slab-use-after-free Read in ext4_xattr_block_csum_set
+* KASAN: slab-use-after-free Read in ext4_xattr_set_entry
+* KASAN: use-after-free Read in ext4_xattr_block_csum_set
+* KASAN: use-after-free Read in ext4_xattr_set_entry
+
+Full report is available here:
+https://ci.syzbot.org/series/ccbb03e4-9312-48f0-808d-923f86d83f2f
+
+***
+
+KASAN: slab-out-of-bounds Read in ext4_xattr_block_csum_set
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      11439c4635edd669ae435eec308f4ab8a0804808
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/330c6289-adc9-452b-b12f-000d32045593/config
+syz repro: https://ci.syzbot.org/findings/ddaf8105-c8d7-4a57-87ef-ee750875c5c7/syz_repro
+
+fscrypt: AES-256-CBC-CTS using implementation "cts(cbc(ecb(aes-lib)))"
+==================================================================
+BUG: KASAN: slab-out-of-bounds in crc32c_base lib/crc/crc32-main.c:54 [inline]
+BUG: KASAN: slab-out-of-bounds in crc32c_arch lib/crc/x86/crc32.h:44 [inline]
+BUG: KASAN: slab-out-of-bounds in crc32c+0x3cc/0x470 lib/crc/crc32-main.c:86
+Read of size 1 at addr ffff88816a0ea0b0 by task syz.0.17/6006
+
+CPU: 1 UID: 0 PID: 6006 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description mm/kasan/report.c:378 [inline]
+ print_report+0xba/0x230 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ crc32c_base lib/crc/crc32-main.c:54 [inline]
+ crc32c_arch lib/crc/x86/crc32.h:44 [inline]
+ crc32c+0x3cc/0x470 lib/crc/crc32-main.c:86
+ ext4_chksum fs/ext4/ext4.h:2553 [inline]
+ ext4_xattr_block_csum fs/ext4/xattr.c:147 [inline]
+ ext4_xattr_block_csum_set+0x241/0x330 fs/ext4/xattr.c:172
+ ext4_xattr_block_set+0x2494/0x2b00 fs/ext4/xattr.c:2165
+ ext4_xattr_set_handle+0xe37/0x14d0 fs/ext4/xattr.c:2458
+ ext4_set_context+0x233/0x560 fs/ext4/crypto.c:166
+ fscrypt_set_context+0x397/0x460 fs/crypto/policy.c:791
+ __ext4_new_inode+0x3158/0x3d20 fs/ext4/ialloc.c:1314
+ ext4_mkdir+0x3da/0xbf0 fs/ext4/namei.c:3005
+ vfs_mkdir+0x413/0x630 fs/namei.c:5233
+ filename_mkdirat+0x285/0x510 fs/namei.c:5266
+ __do_sys_mkdirat fs/namei.c:5287 [inline]
+ __se_sys_mkdirat+0x35/0x150 fs/namei.c:5284
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fb60ad9c799
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fb60bd17028 EFLAGS: 00000246 ORIG_RAX: 0000000000000102
+RAX: ffffffffffffffda RBX: 00007fb60b015fa0 RCX: 00007fb60ad9c799
+RDX: 00000000000001c0 RSI: 0000200000000180 RDI: ffffffffffffff9c
+RBP: 00007fb60ae32bd9 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fb60b016038 R14: 00007fb60b015fa0 R15: 00007fff4bbf7228
+ </TASK>
+
+Allocated by task 1:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ unpoison_slab_object mm/kasan/common.c:340 [inline]
+ __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:366
+ kasan_slab_alloc include/linux/kasan.h:253 [inline]
+ slab_post_alloc_hook mm/slub.c:4515 [inline]
+ slab_alloc_node mm/slub.c:4844 [inline]
+ kmem_cache_alloc_noprof+0x2bc/0x650 mm/slub.c:4851
+ __kernfs_new_node+0xe9/0x8e0 fs/kernfs/dir.c:637
+ kernfs_new_node+0x102/0x210 fs/kernfs/dir.c:718
+ __kernfs_create_file+0x4b/0x2e0 fs/kernfs/file.c:1057
+ sysfs_add_file_mode_ns+0x238/0x300 fs/sysfs/file.c:313
+ create_files fs/sysfs/group.c:82 [inline]
+ internal_create_group+0x673/0x1180 fs/sysfs/group.c:189
+ internal_create_groups fs/sysfs/group.c:229 [inline]
+ sysfs_create_groups+0x59/0x120 fs/sysfs/group.c:255
+ device_add_groups drivers/base/core.c:2836 [inline]
+ device_add_attrs+0xdd/0x5b0 drivers/base/core.c:2900
+ device_add+0x496/0xb70 drivers/base/core.c:3643
+ __video_register_device+0x3e40/0x4d20 drivers/media/v4l2-core/v4l2-dev.c:1076
+ video_register_device include/media/v4l2-dev.h:390 [inline]
+ vivid_create_devnodes+0xc5e/0x2bf0 drivers/media/test-drivers/vivid/vivid-core.c:1471
+ vivid_create_instance drivers/media/test-drivers/vivid/vivid-core.c:2042 [inline]
+ vivid_probe+0x510d/0x72b0 drivers/media/test-drivers/vivid/vivid-core.c:2095
+ platform_probe+0xf9/0x190 drivers/base/platform.c:1446
+ call_driver_probe drivers/base/dd.c:-1 [inline]
+ really_probe+0x267/0xaf0 drivers/base/dd.c:661
+ __driver_probe_device+0x18c/0x320 drivers/base/dd.c:803
+ driver_probe_device+0x4f/0x240 drivers/base/dd.c:833
+ __driver_attach+0x3e7/0x710 drivers/base/dd.c:1227
+ bus_for_each_dev+0x23b/0x2c0 drivers/base/bus.c:383
+ bus_add_driver+0x345/0x670 drivers/base/bus.c:715
+ driver_register+0x23a/0x320 drivers/base/driver.c:249
+ vivid_init+0x561/0x5f0 drivers/media/test-drivers/vivid/vivid-core.c:2294
+ do_one_initcall+0x250/0x8d0 init/main.c:1382
+ do_initcall_level+0x104/0x190 init/main.c:1444
+ do_initcalls+0x59/0xa0 init/main.c:1460
+ kernel_init_freeable+0x2a6/0x3e0 init/main.c:1692
+ kernel_init+0x1d/0x1d0 init/main.c:1582
+ ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+The buggy address belongs to the object at ffff88816a0ea000
+ which belongs to the cache kernfs_node_cache of size 176
+The buggy address is located 0 bytes to the right of
+ allocated 176-byte region [ffff88816a0ea000, ffff88816a0ea0b0)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x16a0ea
+flags: 0x57ff00000000000(node=1|zone=2|lastcpupid=0x7ff)
+page_type: f5(slab)
+raw: 057ff00000000000 ffff8881012d3dc0 dead000000000122 0000000000000000
+raw: 0000000000000000 0000000800110011 00000000f5000000 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 1, tgid 1 (swapper/0), ts 19200276917, free_ts 4632825873
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x231/0x280 mm/page_alloc.c:1889
+ prep_new_page mm/page_alloc.c:1897 [inline]
+ get_page_from_freelist+0x24dc/0x2580 mm/page_alloc.c:3962
+ __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5250
+ alloc_slab_page mm/slub.c:3269 [inline]
+ allocate_slab+0x77/0x660 mm/slub.c:3458
+ new_slab mm/slub.c:3516 [inline]
+ refill_objects+0x331/0x3c0 mm/slub.c:7153
+ refill_sheaf mm/slub.c:2818 [inline]
+ __pcs_replace_empty_main+0x2b9/0x620 mm/slub.c:4592
+ alloc_from_pcs mm/slub.c:4695 [inline]
+ slab_alloc_node mm/slub.c:4829 [inline]
+ kmem_cache_alloc_noprof+0x37d/0x650 mm/slub.c:4851
+ __kernfs_new_node+0xe9/0x8e0 fs/kernfs/dir.c:637
+ kernfs_new_node+0x102/0x210 fs/kernfs/dir.c:718
+ kernfs_create_link+0xa7/0x200 fs/kernfs/symlink.c:39
+ sysfs_do_create_link_sd+0x83/0x110 fs/sysfs/symlink.c:44
+ device_create_sys_dev_entry+0x122/0x190 drivers/base/core.c:3515
+ device_add+0x733/0xb70 drivers/base/core.c:3659
+ cdev_device_add+0x1d6/0x390 fs/char_dev.c:553
+ media_devnode_register+0x287/0x420 drivers/media/mc/mc-devnode.c:247
+ __media_device_register+0x15c/0x3c0 drivers/media/mc/mc-device.c:753
+page last free pid 10 tgid 10 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ __free_pages_prepare mm/page_alloc.c:1433 [inline]
+ __free_frozen_pages+0xc2b/0xdb0 mm/page_alloc.c:2978
+ vfree+0x25a/0x400 mm/vmalloc.c:3479
+ delayed_vfree_work+0x55/0x80 mm/vmalloc.c:3398
+ process_one_work kernel/workqueue.c:3275 [inline]
+ process_scheduled_works+0xb02/0x1830 kernel/workqueue.c:3358
+ worker_thread+0xa50/0xfc0 kernel/workqueue.c:3439
+ kthread+0x388/0x470 kernel/kthread.c:467
+ ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+Memory state around the buggy address:
+ ffff88816a0e9f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88816a0ea000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff88816a0ea080: 00 00 00 00 00 00 fc fc fc fc fc fc fc fc 00 00
+                                     ^
+ ffff88816a0ea100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88816a0ea180: 00 00 00 00 fc fc fc fc fc fc fc fc 00 00 00 00
+==================================================================
+
+
+***
+
+KASAN: slab-use-after-free Read in ext4_xattr_block_csum_set
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      11439c4635edd669ae435eec308f4ab8a0804808
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/330c6289-adc9-452b-b12f-000d32045593/config
+C repro:   https://ci.syzbot.org/findings/bee8f041-a020-4e43-a068-e014486583d9/c_repro
+syz repro: https://ci.syzbot.org/findings/bee8f041-a020-4e43-a068-e014486583d9/syz_repro
+
+ext4 filesystem being mounted at /0/file0 supports timestamps until 2038-01-19 (0x7fffffff)
+fscrypt: AES-256-CBC-CTS using implementation "cts(cbc(ecb(aes-lib)))"
+==================================================================
+BUG: KASAN: slab-use-after-free in crc32c_base lib/crc/crc32-main.c:54 [inline]
+BUG: KASAN: slab-use-after-free in crc32c_arch lib/crc/x86/crc32.h:44 [inline]
+BUG: KASAN: slab-use-after-free in crc32c+0x3cc/0x470 lib/crc/crc32-main.c:86
+Read of size 1 at addr ffff88816c2f9000 by task syz.0.17/5966
+
+CPU: 0 UID: 0 PID: 5966 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description mm/kasan/report.c:378 [inline]
+ print_report+0xba/0x230 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ crc32c_base lib/crc/crc32-main.c:54 [inline]
+ crc32c_arch lib/crc/x86/crc32.h:44 [inline]
+ crc32c+0x3cc/0x470 lib/crc/crc32-main.c:86
+ ext4_chksum fs/ext4/ext4.h:2553 [inline]
+ ext4_xattr_block_csum fs/ext4/xattr.c:147 [inline]
+ ext4_xattr_block_csum_set+0x241/0x330 fs/ext4/xattr.c:172
+ ext4_xattr_block_set+0x2494/0x2b00 fs/ext4/xattr.c:2165
+ ext4_xattr_set_handle+0xe37/0x14d0 fs/ext4/xattr.c:2458
+ ext4_set_context+0x233/0x560 fs/ext4/crypto.c:166
+ fscrypt_set_context+0x397/0x460 fs/crypto/policy.c:791
+ __ext4_new_inode+0x3158/0x3d20 fs/ext4/ialloc.c:1314
+ ext4_mkdir+0x3da/0xbf0 fs/ext4/namei.c:3005
+ vfs_mkdir+0x413/0x630 fs/namei.c:5233
+ filename_mkdirat+0x285/0x510 fs/namei.c:5266
+ __do_sys_mkdir fs/namei.c:5293 [inline]
+ __se_sys_mkdir+0x34/0x150 fs/namei.c:5290
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fb91ff9c799
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffe3b8b33f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000053
+RAX: ffffffffffffffda RBX: 00007fb920215fa0 RCX: 00007fb91ff9c799
+RDX: 0000000000000000 RSI: 0000000000000142 RDI: 0000200000000300
+RBP: 00007fb920032bd9 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fb920215fac R14: 00007fb920215fa0 R15: 00007fb920215fa0
+ </TASK>
+
+Allocated by task 5807:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ poison_kmalloc_redzone mm/kasan/common.c:398 [inline]
+ __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
+ kasan_kmalloc include/linux/kasan.h:263 [inline]
+ __kmalloc_cache_noprof+0x31c/0x660 mm/slub.c:5358
+ kmalloc_noprof include/linux/slab.h:950 [inline]
+ slab_free_hook mm/slub.c:2644 [inline]
+ slab_free mm/slub.c:6143 [inline]
+ kmem_cache_free+0x15b/0x630 mm/slub.c:6273
+ anon_vma_free mm/rmap.c:137 [inline]
+ __put_anon_vma+0x12b/0x2d0 mm/rmap.c:2889
+ put_anon_vma mm/internal.h:215 [inline]
+ unlink_anon_vmas+0x58b/0x730 mm/rmap.c:529
+ free_pgtables+0x663/0xb70 mm/memory.c:414
+ exit_mmap+0x490/0xa10 mm/mmap.c:1314
+ __mmput+0x118/0x430 kernel/fork.c:1174
+ exec_mmap+0x3b4/0x440 fs/exec.c:893
+ begin_new_exec+0x134a/0x24a0 fs/exec.c:1148
+ load_elf_binary+0xa47/0x2980 fs/binfmt_elf.c:1011
+ search_binary_handler fs/exec.c:1664 [inline]
+ exec_binprm fs/exec.c:1696 [inline]
+ bprm_execve+0x93d/0x1460 fs/exec.c:1748
+ do_execveat_common+0x50d/0x690 fs/exec.c:1846
+ __do_sys_execve fs/exec.c:1930 [inline]
+ __se_sys_execve fs/exec.c:1924 [inline]
+ __x64_sys_execve+0x97/0xc0 fs/exec.c:1924
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Freed by task 5807:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:584
+ poison_slab_object mm/kasan/common.c:253 [inline]
+ __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+ kasan_slab_free include/linux/kasan.h:235 [inline]
+ slab_free_hook mm/slub.c:2692 [inline]
+ slab_free mm/slub.c:6143 [inline]
+ kfree+0x1c1/0x630 mm/slub.c:6461
+ slab_free_after_rcu_debug+0x5e/0x220 mm/slub.c:6195
+ rcu_do_batch kernel/rcu/tree.c:2617 [inline]
+ rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
+ handle_softirqs+0x22a/0x870 kernel/softirq.c:622
+ __do_softirq kernel/softirq.c:656 [inline]
+ invoke_softirq kernel/softirq.c:496 [inline]
+ __irq_exit_rcu+0x5f/0x150 kernel/softirq.c:723
+ irq_exit_rcu+0x9/0x30 kernel/softirq.c:739
+ instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1056 [inline]
+ sysvec_apic_timer_interrupt+0xa6/0xc0 arch/x86/kernel/apic/apic.c:1056
+ asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.h:697
+
+Last potentially related work creation:
+ kasan_save_stack+0x3e/0x60 mm/kasan/common.c:57
+ kasan_record_aux_stack+0xbd/0xd0 mm/kasan/generic.c:556
+ __call_rcu_common kernel/rcu/tree.c:3131 [inline]
+ call_rcu+0xee/0x890 kernel/rcu/tree.c:3251
+ slab_free_hook mm/slub.c:2656 [inline]
+ slab_free mm/slub.c:6143 [inline]
+ kmem_cache_free+0x439/0x630 mm/slub.c:6273
+ anon_vma_free mm/rmap.c:137 [inline]
+ __put_anon_vma+0x12b/0x2d0 mm/rmap.c:2889
+ put_anon_vma mm/internal.h:215 [inline]
+ unlink_anon_vmas+0x58b/0x730 mm/rmap.c:529
+ free_pgtables+0x663/0xb70 mm/memory.c:414
+ exit_mmap+0x490/0xa10 mm/mmap.c:1314
+ __mmput+0x118/0x430 kernel/fork.c:1174
+ exec_mmap+0x3b4/0x440 fs/exec.c:893
+ begin_new_exec+0x134a/0x24a0 fs/exec.c:1148
+ load_elf_binary+0xa47/0x2980 fs/binfmt_elf.c:1011
+ search_binary_handler fs/exec.c:1664 [inline]
+ exec_binprm fs/exec.c:1696 [inline]
+ bprm_execve+0x93d/0x1460 fs/exec.c:1748
+ do_execveat_common+0x50d/0x690 fs/exec.c:1846
+ __do_sys_execve fs/exec.c:1930 [inline]
+ __se_sys_execve fs/exec.c:1924 [inline]
+ __x64_sys_execve+0x97/0xc0 fs/exec.c:1924
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+The buggy address belongs to the object at ffff88816c2f9000
+ which belongs to the cache kmalloc-32 of size 32
+The buggy address is located 0 bytes inside of
+ freed 32-byte region [ffff88816c2f9000, ffff88816c2f9020)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x16c2f9
+flags: 0x57ff00000000000(node=1|zone=2|lastcpupid=0x7ff)
+page_type: f5(slab)
+raw: 057ff00000000000 ffff888100041780 dead000000000100 dead000000000122
+raw: 0000000000000000 0000000800400040 00000000f5000000 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5807, tgid 5807 (sshd), ts 57508476883, free_ts 57508008939
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x231/0x280 mm/page_alloc.c:1889
+ prep_new_page mm/page_alloc.c:1897 [inline]
+ get_page_from_freelist+0x24dc/0x2580 mm/page_alloc.c:3962
+ __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5250
+ alloc_slab_page mm/slub.c:3269 [inline]
+ allocate_slab+0x77/0x660 mm/slub.c:3458
+ new_slab mm/slub.c:3516 [inline]
+ refill_objects+0x331/0x3c0 mm/slub.c:7153
+ refill_sheaf mm/slub.c:2818 [inline]
+ __pcs_replace_empty_main+0x2b9/0x620 mm/slub.c:4592
+ alloc_from_pcs mm/slub.c:4695 [inline]
+ slab_alloc_node mm/slub.c:4829 [inline]
+ __do_kmalloc_node mm/slub.c:5237 [inline]
+ __kvmalloc_node_noprof+0x657/0x8a0 mm/slub.c:6730
+ proc_sys_call_handler+0x3d1/0x830 fs/proc/proc_sysctl.c:583
+ new_sync_read fs/read_write.c:493 [inline]
+ vfs_read+0x582/0xa70 fs/read_write.c:574
+ ksys_read+0x150/0x270 fs/read_write.c:717
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+page last free pid 5807 tgid 5807 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ __free_pages_prepare mm/page_alloc.c:1433 [inline]
+ __free_frozen_pages+0xc2b/0xdb0 mm/page_alloc.c:2978
+ tlb_batch_list_free mm/mmu_gather.c:161 [inline]
+ tlb_finish_mmu+0x144/0x230 mm/mmu_gather.c:533
+ unmap_region+0x2a5/0x330 mm/vma.c:488
+ vms_clear_ptes mm/vma.c:1284 [inline]
+ vms_complete_munmap_vmas+0x493/0xc60 mm/vma.c:1326
+ do_vmi_align_munmap+0x3b7/0x4b0 mm/vma.c:1585
+ do_vmi_munmap+0x252/0x2d0 mm/vma.c:1633
+ __vm_munmap+0x22c/0x3d0 mm/vma.c:3254
+ __do_sys_munmap mm/mmap.c:1078 [inline]
+ __se_sys_munmap mm/mmap.c:1075 [inline]
+ __x64_sys_munmap+0x60/0x70 mm/mmap.c:1075
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Memory state around the buggy address:
+ ffff88816c2f8f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88816c2f8f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff88816c2f9000: fa fb fb fb fc fc fc fc fa fb fb fb fc fc fc fc
+                   ^
+ ffff88816c2f9080: fa fb fb fb fc fc fc fc fa fb fb fb fc fc fc fc
+ ffff88816c2f9100: fa fb fb fb fc fc fc fc fa fb fb fb fc fc fc fc
+==================================================================
+
+
+***
+
+KASAN: slab-use-after-free Read in ext4_xattr_set_entry
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      11439c4635edd669ae435eec308f4ab8a0804808
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/330c6289-adc9-452b-b12f-000d32045593/config
+syz repro: https://ci.syzbot.org/findings/703aaa0c-3de2-4301-b1d3-6310fbf18b70/syz_repro
+
+==================================================================
+BUG: KASAN: slab-use-after-free in ext4_xattr_set_entry+0x179e/0x1e20 fs/ext4/xattr.c:1740
+Read of size 260 at addr ffff88811a37e000 by task syz.2.19/5991
+
+CPU: 0 UID: 0 PID: 5991 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description mm/kasan/report.c:378 [inline]
+ print_report+0xba/0x230 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ check_region_inline mm/kasan/generic.c:-1 [inline]
+ kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
+ __asan_memmove+0x29/0x70 mm/kasan/shadow.c:94
+ ext4_xattr_set_entry+0x179e/0x1e20 fs/ext4/xattr.c:1740
+ ext4_xattr_block_set+0x636/0x2b00 fs/ext4/xattr.c:1961
+ ext4_xattr_set_handle+0xdc2/0x14d0 fs/ext4/xattr.c:2432
+ ext4_xattr_set+0x255/0x340 fs/ext4/xattr.c:2560
+ __vfs_removexattr+0x431/0x470 fs/xattr.c:518
+ __vfs_removexattr_locked+0xe2/0x280 fs/xattr.c:553
+ vfs_removexattr+0x7f/0x230 fs/xattr.c:575
+ ovl_do_removexattr fs/overlayfs/overlayfs.h:335 [inline]
+ ovl_removexattr fs/overlayfs/overlayfs.h:343 [inline]
+ ovl_make_workdir fs/overlayfs/super.c:760 [inline]
+ ovl_get_workdir fs/overlayfs/super.c:840 [inline]
+ ovl_fill_super_creds fs/overlayfs/super.c:1453 [inline]
+ ovl_fill_super+0x4c09/0x5e00 fs/overlayfs/super.c:1564
+ vfs_get_super fs/super.c:1327 [inline]
+ get_tree_nodev+0xbb/0x150 fs/super.c:1346
+ vfs_get_tree+0x92/0x2a0 fs/super.c:1754
+ fc_mount fs/namespace.c:1193 [inline]
+ do_new_mount_fc fs/namespace.c:3763 [inline]
+ do_new_mount+0x341/0xd30 fs/namespace.c:3839
+ do_mount fs/namespace.c:4172 [inline]
+ __do_sys_mount fs/namespace.c:4361 [inline]
+ __se_sys_mount+0x31d/0x420 fs/namespace.c:4338
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7facfdf9c799
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007facfd5fe028 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 00007facfe215fa0 RCX: 00007facfdf9c799
+RDX: 0000200000000440 RSI: 0000200000000100 RDI: 0000000000000000
+RBP: 00007facfe032bd9 R08: 0000200000000280 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007facfe216038 R14: 00007facfe215fa0 R15: 00007ffdb6825fe8
+ </TASK>
+
+Allocated by task 5825:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ unpoison_slab_object mm/kasan/common.c:340 [inline]
+ __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:366
+ kasan_slab_alloc include/linux/kasan.h:253 [inline]
+ slab_post_alloc_hook mm/slub.c:4515 [inline]
+ slab_alloc_node mm/slub.c:4844 [inline]
+ kmem_cache_alloc_noprof+0x2bc/0x650 mm/slub.c:4851
+ __kernfs_new_node+0xe9/0x8e0 fs/kernfs/dir.c:637
+ kernfs_new_node+0x102/0x210 fs/kernfs/dir.c:718
+ __kernfs_create_file+0x4b/0x2e0 fs/kernfs/file.c:1057
+ sysfs_add_file_mode_ns+0x238/0x300 fs/sysfs/file.c:313
+ create_files fs/sysfs/group.c:82 [inline]
+ internal_create_group+0x673/0x1180 fs/sysfs/group.c:189
+ internal_create_groups fs/sysfs/group.c:229 [inline]
+ sysfs_create_groups+0x59/0x120 fs/sysfs/group.c:255
+ device_add_groups drivers/base/core.c:2836 [inline]
+ device_add_attrs+0xdd/0x5b0 drivers/base/core.c:2900
+ device_add+0x496/0xb70 drivers/base/core.c:3643
+ netdev_register_kobject+0x178/0x310 net/core/net-sysfs.c:2358
+ register_netdevice+0x12c0/0x1cf0 net/core/dev.c:11422
+ __ip_tunnel_create+0x3e8/0x560 net/ipv4/ip_tunnel.c:268
+ ip_tunnel_init_net+0x2e7/0x840 net/ipv4/ip_tunnel.c:1147
+ ops_init+0x35c/0x5c0 net/core/net_namespace.c:137
+ setup_net+0x118/0x340 net/core/net_namespace.c:446
+ copy_net_ns+0x50e/0x730 net/core/net_namespace.c:581
+ create_new_namespaces+0x3e7/0x6a0 kernel/nsproxy.c:130
+ unshare_nsproxy_namespaces+0x11a/0x160 kernel/nsproxy.c:226
+ ksys_unshare+0x51d/0x930 kernel/fork.c:3174
+ __do_sys_unshare kernel/fork.c:3245 [inline]
+ __se_sys_unshare kernel/fork.c:3243 [inline]
+ __x64_sys_unshare+0x38/0x50 kernel/fork.c:3243
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Freed by task 15:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:584
+ poison_slab_object mm/kasan/common.c:253 [inline]
+ __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+ kasan_slab_free include/linux/kasan.h:235 [inline]
+ slab_free_hook mm/slub.c:2692 [inline]
+ slab_free mm/slub.c:6143 [inline]
+ kmem_cache_free+0x187/0x630 mm/slub.c:6273
+ rcu_do_batch kernel/rcu/tree.c:2617 [inline]
+ rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
+ handle_softirqs+0x22a/0x870 kernel/softirq.c:622
+ run_ksoftirqd+0x36/0x60 kernel/softirq.c:1063
+ smpboot_thread_fn+0x541/0xa50 kernel/smpboot.c:160
+ kthread+0x388/0x470 kernel/kthread.c:467
+ ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+Last potentially related work creation:
+ kasan_save_stack+0x3e/0x60 mm/kasan/common.c:57
+ kasan_record_aux_stack+0xbd/0xd0 mm/kasan/generic.c:556
+ __call_rcu_common kernel/rcu/tree.c:3131 [inline]
+ call_rcu+0xee/0x890 kernel/rcu/tree.c:3251
+ kernfs_put+0x18e/0x470 fs/kernfs/dir.c:591
+ kernfs_remove_by_name_ns+0xb7/0x130 fs/kernfs/dir.c:1723
+ kernfs_remove_by_name include/linux/kernfs.h:633 [inline]
+ remove_files fs/sysfs/group.c:28 [inline]
+ sysfs_remove_group+0xfc/0x2e0 fs/sysfs/group.c:328
+ sysfs_remove_groups+0x54/0xb0 fs/sysfs/group.c:352
+ device_remove_groups drivers/base/core.c:2843 [inline]
+ device_remove_attrs+0x229/0x280 drivers/base/core.c:2979
+ device_del+0x51f/0x8f0 drivers/base/core.c:3877
+ unregister_netdevice_many_notify+0x1e0e/0x2370 net/core/dev.c:12447
+ ops_exit_rtnl_list net/core/net_namespace.c:187 [inline]
+ ops_undo_list+0x3d3/0x940 net/core/net_namespace.c:248
+ cleanup_net+0x56b/0x800 net/core/net_namespace.c:704
+ process_one_work kernel/workqueue.c:3275 [inline]
+ process_scheduled_works+0xb02/0x1830 kernel/workqueue.c:3358
+ worker_thread+0xa50/0xfc0 kernel/workqueue.c:3439
+ kthread+0x388/0x470 kernel/kthread.c:467
+ ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+The buggy address belongs to the object at ffff88811a37e000
+ which belongs to the cache kernfs_node_cache of size 176
+The buggy address is located 0 bytes inside of
+ freed 176-byte region [ffff88811a37e000, ffff88811a37e0b0)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0xffff88811a37ee10 pfn:0x11a37e
+flags: 0x17ff00000000200(workingset|node=0|zone=2|lastcpupid=0x7ff)
+page_type: f5(slab)
+raw: 017ff00000000200 ffff8881012d3dc0 ffffea000468fed0 ffffea000468df10
+raw: ffff88811a37ee10 000000080011000a 00000000f5000000 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5822, tgid 5822 (syz-executor), ts 67128981798, free_ts 62919905097
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x231/0x280 mm/page_alloc.c:1889
+ prep_new_page mm/page_alloc.c:1897 [inline]
+ get_page_from_freelist+0x24dc/0x2580 mm/page_alloc.c:3962
+ __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5250
+ alloc_slab_page mm/slub.c:3269 [inline]
+ allocate_slab+0x77/0x660 mm/slub.c:3458
+ new_slab mm/slub.c:3516 [inline]
+ refill_objects+0x331/0x3c0 mm/slub.c:7153
+ refill_sheaf mm/slub.c:2818 [inline]
+ __pcs_replace_empty_main+0x2b9/0x620 mm/slub.c:4592
+ alloc_from_pcs mm/slub.c:4695 [inline]
+ slab_alloc_node mm/slub.c:4829 [inline]
+ kmem_cache_alloc_noprof+0x37d/0x650 mm/slub.c:4851
+ __kernfs_new_node+0xe9/0x8e0 fs/kernfs/dir.c:637
+ kernfs_new_node+0x102/0x210 fs/kernfs/dir.c:718
+ __kernfs_create_file+0x4b/0x2e0 fs/kernfs/file.c:1057
+ sysfs_add_file_mode_ns+0x238/0x300 fs/sysfs/file.c:313
+ create_files fs/sysfs/group.c:82 [inline]
+ internal_create_group+0x673/0x1180 fs/sysfs/group.c:189
+ internal_create_groups fs/sysfs/group.c:229 [inline]
+ sysfs_create_groups+0x59/0x120 fs/sysfs/group.c:255
+ device_add_groups drivers/base/core.c:2836 [inline]
+ device_add_attrs+0x1bf/0x5b0 drivers/base/core.c:2911
+ device_add+0x496/0xb70 drivers/base/core.c:3643
+ netdev_register_kobject+0x178/0x310 net/core/net-sysfs.c:2358
+page last free pid 5809 tgid 5809 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ __free_pages_prepare mm/page_alloc.c:1433 [inline]
+ __free_frozen_pages+0xc2b/0xdb0 mm/page_alloc.c:2978
+ vfree+0x25a/0x400 mm/vmalloc.c:3479
+ kcov_put kernel/kcov.c:442 [inline]
+ kcov_close+0x28/0x50 kernel/kcov.c:543
+ __fput+0x44f/0xa70 fs/file_table.c:469
+ fput_close_sync+0x11f/0x240 fs/file_table.c:574
+ __do_sys_close fs/open.c:1509 [inline]
+ __se_sys_close fs/open.c:1494 [inline]
+ __x64_sys_close+0x7e/0x110 fs/open.c:1494
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Memory state around the buggy address:
+ ffff88811a37df00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88811a37df80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff88811a37e000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                   ^
+ ffff88811a37e080: fb fb fb fb fb fb fc fc fc fc fc fc fc fc fa fb
+ ffff88811a37e100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+
+
+***
+
+KASAN: use-after-free Read in ext4_xattr_block_csum_set
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      11439c4635edd669ae435eec308f4ab8a0804808
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/330c6289-adc9-452b-b12f-000d32045593/config
+C repro:   https://ci.syzbot.org/findings/e7360798-7b84-42ba-9afb-319d10454142/c_repro
+syz repro: https://ci.syzbot.org/findings/e7360798-7b84-42ba-9afb-319d10454142/syz_repro
+
+fscrypt: AES-256-CBC-CTS using implementation "cts(cbc(ecb(aes-lib)))"
+fscrypt: AES-256-XTS using implementation "xts(ecb(aes-lib))"
+==================================================================
+BUG: KASAN: use-after-free in crc32c_base lib/crc/crc32-main.c:54 [inline]
+BUG: KASAN: use-after-free in crc32c_arch lib/crc/x86/crc32.h:44 [inline]
+BUG: KASAN: use-after-free in crc32c+0x3cc/0x470 lib/crc/crc32-main.c:86
+Read of size 1 at addr ffff88811f068000 by task syz.0.17/5956
+
+CPU: 0 UID: 0 PID: 5956 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description mm/kasan/report.c:378 [inline]
+ print_report+0xba/0x230 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ crc32c_base lib/crc/crc32-main.c:54 [inline]
+ crc32c_arch lib/crc/x86/crc32.h:44 [inline]
+ crc32c+0x3cc/0x470 lib/crc/crc32-main.c:86
+ ext4_chksum fs/ext4/ext4.h:2553 [inline]
+ ext4_xattr_block_csum fs/ext4/xattr.c:147 [inline]
+ ext4_xattr_block_csum_set+0x241/0x330 fs/ext4/xattr.c:172
+ ext4_xattr_block_set+0x2494/0x2b00 fs/ext4/xattr.c:2165
+ ext4_xattr_set_handle+0xe37/0x14d0 fs/ext4/xattr.c:2458
+ ext4_set_context+0x233/0x560 fs/ext4/crypto.c:166
+ fscrypt_set_context+0x397/0x460 fs/crypto/policy.c:791
+ __ext4_new_inode+0x3158/0x3d20 fs/ext4/ialloc.c:1314
+ ext4_create+0x233/0x470 fs/ext4/namei.c:2820
+ lookup_open fs/namei.c:4483 [inline]
+ open_last_lookups fs/namei.c:4583 [inline]
+ path_openat+0x1395/0x3860 fs/namei.c:4827
+ do_file_open+0x23e/0x4a0 fs/namei.c:4859
+ do_sys_openat2+0x113/0x200 fs/open.c:1366
+ do_sys_open fs/open.c:1372 [inline]
+ __do_sys_openat fs/open.c:1388 [inline]
+ __se_sys_openat fs/open.c:1383 [inline]
+ __x64_sys_openat+0x138/0x170 fs/open.c:1383
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fb6f179c799
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fb6f26cf028 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+RAX: ffffffffffffffda RBX: 00007fb6f1a15fa0 RCX: 00007fb6f179c799
+RDX: 0000000000101042 RSI: 00002000000002c0 RDI: ffffffffffffff9c
+RBP: 00007fb6f1832bd9 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000040 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fb6f1a16038 R14: 00007fb6f1a15fa0 R15: 00007ffe4cb28f88
+ </TASK>
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0xc1 pfn:0x11f068
+flags: 0x17ff00000000000(node=0|zone=2|lastcpupid=0x7ff)
+raw: 017ff00000000000 ffffea00047c0f08 ffffea00047c1648 0000000000000000
+raw: 00000000000000c1 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as freed
+page last allocated via order 0, migratetype Movable, gfp_mask 0x140cca(GFP_HIGHUSER_MOVABLE|__GFP_COMP), pid 5966, tgid 5966 (modprobe), ts 74332946165, free_ts 74344928310
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x231/0x280 mm/page_alloc.c:1889
+ prep_new_page mm/page_alloc.c:1897 [inline]
+ get_page_from_freelist+0x24dc/0x2580 mm/page_alloc.c:3962
+ __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5250
+ alloc_pages_mpol+0x232/0x4a0 mm/mempolicy.c:2484
+ folio_alloc_mpol_noprof mm/mempolicy.c:2503 [inline]
+ vma_alloc_folio_noprof+0xea/0x210 mm/mempolicy.c:2538
+ folio_prealloc mm/memory.c:-1 [inline]
+ do_cow_fault mm/memory.c:5822 [inline]
+ do_fault mm/memory.c:5934 [inline]
+ do_pte_missing+0x4ea/0x3750 mm/memory.c:4477
+ handle_pte_fault mm/memory.c:6316 [inline]
+ __handle_mm_fault mm/memory.c:6454 [inline]
+ handle_mm_fault+0x1bec/0x3310 mm/memory.c:6623
+ do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
+ handle_page_fault arch/x86/mm/fault.c:1474 [inline]
+ exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
+ asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
+page last free pid 5966 tgid 5966 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ __free_pages_prepare mm/page_alloc.c:1433 [inline]
+ free_unref_folios+0xed5/0x16d0 mm/page_alloc.c:3040
+ folios_put_refs+0x789/0x8d0 mm/swap.c:1002
+ free_pages_and_swap_cache+0x2e7/0x5b0 mm/swap_state.c:423
+ __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
+ tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
+ tlb_flush_mmu_free mm/mmu_gather.c:398 [inline]
+ tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:405
+ tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:530
+ exit_mmap+0x498/0xa10 mm/mmap.c:1315
+ __mmput+0x118/0x430 kernel/fork.c:1174
+ exit_mm+0x168/0x220 kernel/exit.c:581
+ do_exit+0x62e/0x2320 kernel/exit.c:959
+ do_group_exit+0x21b/0x2d0 kernel/exit.c:1112
+ __do_sys_exit_group kernel/exit.c:1123 [inline]
+ __se_sys_exit_group kernel/exit.c:1121 [inline]
+ __x64_sys_exit_group+0x3f/0x40 kernel/exit.c:1121
+ x64_sys_call+0x221a/0x2240 arch/x86/include/generated/asm/syscalls_64.h:232
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Memory state around the buggy address:
+ ffff88811f067f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88811f067f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff88811f068000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                   ^
+ ffff88811f068080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88811f068100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
+
+
+***
+
+KASAN: use-after-free Read in ext4_xattr_set_entry
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      11439c4635edd669ae435eec308f4ab8a0804808
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/330c6289-adc9-452b-b12f-000d32045593/config
+C repro:   https://ci.syzbot.org/findings/f2e1c927-88dd-48df-af44-6348bc760ced/c_repro
+syz repro: https://ci.syzbot.org/findings/f2e1c927-88dd-48df-af44-6348bc760ced/syz_repro
+
+EXT4-fs (loop0): mounted filesystem 00000000-0000-0000-0000-000000000000 r/w without journal. Quota mode: none.
+ext4 filesystem being mounted at /0/file0 supports timestamps until 2038-01-19 (0x7fffffff)
+==================================================================
+BUG: KASAN: use-after-free in ext4_xattr_set_entry+0x179e/0x1e20 fs/ext4/xattr.c:1740
+Read of size 260 at addr ffff88811cde4000 by task syz.0.17/5956
+
+CPU: 0 UID: 0 PID: 5956 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description mm/kasan/report.c:378 [inline]
+ print_report+0xba/0x230 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ check_region_inline mm/kasan/generic.c:-1 [inline]
+ kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
+ __asan_memmove+0x29/0x70 mm/kasan/shadow.c:94
+ ext4_xattr_set_entry+0x179e/0x1e20 fs/ext4/xattr.c:1740
+ ext4_xattr_block_set+0x636/0x2b00 fs/ext4/xattr.c:1961
+ ext4_xattr_set_handle+0xdc2/0x14d0 fs/ext4/xattr.c:2432
+ ext4_xattr_set+0x255/0x340 fs/ext4/xattr.c:2560
+ __vfs_removexattr+0x431/0x470 fs/xattr.c:518
+ __vfs_removexattr_locked+0xe2/0x280 fs/xattr.c:553
+ vfs_removexattr+0x7f/0x230 fs/xattr.c:575
+ ovl_do_removexattr fs/overlayfs/overlayfs.h:335 [inline]
+ ovl_removexattr fs/overlayfs/overlayfs.h:343 [inline]
+ ovl_make_workdir fs/overlayfs/super.c:760 [inline]
+ ovl_get_workdir fs/overlayfs/super.c:840 [inline]
+ ovl_fill_super_creds fs/overlayfs/super.c:1453 [inline]
+ ovl_fill_super+0x4c09/0x5e00 fs/overlayfs/super.c:1564
+ vfs_get_super fs/super.c:1327 [inline]
+ get_tree_nodev+0xbb/0x150 fs/super.c:1346
+ vfs_get_tree+0x92/0x2a0 fs/super.c:1754
+ fc_mount fs/namespace.c:1193 [inline]
+ do_new_mount_fc fs/namespace.c:3763 [inline]
+ do_new_mount+0x341/0xd30 fs/namespace.c:3839
+ do_mount fs/namespace.c:4172 [inline]
+ __do_sys_mount fs/namespace.c:4361 [inline]
+ __se_sys_mount+0x31d/0x420 fs/namespace.c:4338
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f60b0d9c799
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffcaa4270a8 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 00007f60b1015fa0 RCX: 00007f60b0d9c799
+RDX: 0000200000000b80 RSI: 0000200000000000 RDI: 0000000000000000
+RBP: 00007f60b0e32bd9 R08: 0000200000000100 R09: 0000000000000000
+R10: 0000000000000804 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f60b1015fac R14: 00007f60b1015fa0 R15: 00007f60b1015fa0
+ </TASK>
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x39c pfn:0x11cde4
+flags: 0x17ff00000000000(node=0|zone=2|lastcpupid=0x7ff)
+raw: 017ff00000000000 ffffea0004737948 ffff888121040d70 0000000000000000
+raw: 000000000000039c 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as freed
+page last allocated via order 0, migratetype Movable, gfp_mask 0x140cca(GFP_HIGHUSER_MOVABLE|__GFP_COMP), pid 5919, tgid 5919 (syz-executor), ts 71335198059, free_ts 71626869117
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x231/0x280 mm/page_alloc.c:1889
+ prep_new_page mm/page_alloc.c:1897 [inline]
+ get_page_from_freelist+0x24dc/0x2580 mm/page_alloc.c:3962
+ __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5250
+ alloc_pages_mpol+0x232/0x4a0 mm/mempolicy.c:2484
+ folio_alloc_mpol_noprof mm/mempolicy.c:2503 [inline]
+ vma_alloc_folio_noprof+0xea/0x210 mm/mempolicy.c:2538
+ folio_prealloc mm/memory.c:-1 [inline]
+ do_cow_fault mm/memory.c:5822 [inline]
+ do_fault mm/memory.c:5934 [inline]
+ do_pte_missing+0x4ea/0x3750 mm/memory.c:4477
+ handle_pte_fault mm/memory.c:6316 [inline]
+ __handle_mm_fault mm/memory.c:6454 [inline]
+ handle_mm_fault+0x1bec/0x3310 mm/memory.c:6623
+ do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
+ handle_page_fault arch/x86/mm/fault.c:1474 [inline]
+ exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
+ asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
+page last free pid 5920 tgid 5920 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ __free_pages_prepare mm/page_alloc.c:1433 [inline]
+ free_unref_folios+0xed5/0x16d0 mm/page_alloc.c:3040
+ folios_put_refs+0x789/0x8d0 mm/swap.c:1002
+ free_pages_and_swap_cache+0x537/0x5b0 mm/swap_state.c:426
+ __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
+ tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
+ tlb_flush_mmu_free mm/mmu_gather.c:398 [inline]
+ tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:405
+ tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:530
+ exit_mmap+0x498/0xa10 mm/mmap.c:1315
+ __mmput+0x118/0x430 kernel/fork.c:1174
+ exit_mm+0x168/0x220 kernel/exit.c:581
+ do_exit+0x62e/0x2320 kernel/exit.c:959
+ do_group_exit+0x21b/0x2d0 kernel/exit.c:1112
+ get_signal+0x1284/0x1330 kernel/signal.c:3034
+ arch_do_signal_or_restart+0xbc/0x830 arch/x86/kernel/signal.c:337
+ __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
+ exit_to_user_mode_loop+0x86/0x480 kernel/entry/common.c:98
+ __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
+ syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:325 [inline]
+ do_syscall_64+0x32d/0xf80 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Memory state around the buggy address:
+ ffff88811cde3f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88811cde3f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff88811cde4000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                   ^
+ ffff88811cde4080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88811cde4100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[brauner@kernel.org eadavis@qq.com jack@suse.cz linux-ext4@vger.kernel.org linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org syzbot@lists.linux.dev syzbot@syzkaller.appspotmail.com syzkaller-bugs@googlegroups.com viro@zeniv.linux.org.uk]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
 
