@@ -1,50 +1,50 @@
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51EBF37F00A
-	for <syzbot@lists.linux.dev>; Wed,  4 Mar 2026 19:23:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A3A419C54E
+	for <syzbot@lists.linux.dev>; Thu,  5 Mar 2026 00:38:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772652192; cv=none; b=kep7l0dzMK85uXzJQF5fPWAX+LeA7PYd3Py63/ed4E/4KG8j+b5hbvEav3m092x9rOKBmp38EtKjfYBOx0p25QvYIn1M6xWJFkUmAMyGC06jUcwJQX0mlYeA4lu5n4OBc09bves6o4de78c7iDAECLIblCJuSckkeaGhHx5eCg4=
+	t=1772671104; cv=none; b=oBNn2xbdjFC+P8psA55Qrdmvtzoayvd8Te6Dl6OpktXFw0085bB7noQ5pfRPu8UHUczR/gLOBeH3hIgaqtovrIz6rl2jLn+Iuew9I34u3N/f7+WAUDCMIo0Lmke8Uep6p9imX13cyx9WNXdOGTnxvpxc437pu/wmlCoudPMF0T0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772652192; c=relaxed/simple;
-	bh=uw2ZfvYd9UTve2fLxsxIEDP9tL+uYfjM0ZILCJS117U=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=EGGwlLf75K691xiJ4SFAdzkfl6RCR3prvndyn93/2dpnwBsjLYBOkmrxRXm1Q+GMDHwcIdsNxodEizxFHLbpNwOkrGY1naoWIWx766/9T2vjK/ostGH+7yAybLXCuwstklkNbWeVM4HihJqMUpIDKKIEj2zFQVBjyO4cqPO6idc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
+	s=arc-20240116; t=1772671104; c=relaxed/simple;
+	bh=oNnVWXWB3k+WvHyyYB0Wh8c3fKKfSeePLLsWw7IQhPc=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=n7zqtmtn8jSlGnKuCPBq8ZRwXIEv0oahK+j3ZY2Wi1lWpa3IJmm9iZGC4DY/1TipGGm4eSEu+EMcWoD5jcby3tSz99Xmm7TX/c++jxSXCdg2ZtzRqBWczIi5iM0WaN1Q1rtrxa83Pv9TDtLSueqFO0cX4nVAql6VkFLY/TcjveI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-67999892f00so135754703eaf.3
-        for <syzbot@lists.linux.dev>; Wed, 04 Mar 2026 11:23:11 -0800 (PST)
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-679943693c0so125311432eaf.3
+        for <syzbot@lists.linux.dev>; Wed, 04 Mar 2026 16:38:22 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772652190; x=1773256990;
+        d=1e100.net; s=20230601; t=1772671102; x=1773275902;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=RVmkNWY/GErE81425qm6yyYKGTIGYDBIggXiWt57c14=;
-        b=jnMIXmHMHk5LC2cUy5kYLR4bz8l8KJspXN0UkExY8VA/h6V60al4xiosw2XRrUtRoi
-         PnXrOY+e23pIr+AH0y0gaUewrTFAkmQy6+V20TvlCvd1dyEtBOb2gTiwfvLp59KTKneI
-         rVVm9U0wGY0RVcPgghfxU1xByY1HIqVhh+aTPFPAarJ5E9IE78rEc9yktz3GAN/4I+Kn
-         qBov1Kra/PunVEJAVHju+LILWjtXmcuoaAoR/KIZnoA2QewxyNTr3o8/Lt9Sb+9hySxn
-         aJu6spYKpHPOkjv/eSIweTLu/lKk3jhqqFpbG0U0dOBrN7wkSTrzFZV9OB6v6lYBqyZ+
-         XXcg==
-X-Gm-Message-State: AOJu0Yxojx0GKzMEly57H6sRqYPBd2lFSjI/Ft4Q3V2lIuDfgBmxp/p3
-	aVKbiq3KqKfJIpc+PnMfH33/zbuWOa6Rff2H4HNLvrTRa3OqGBIV88FKyiI/gBRSkDHKGIs3DD/
-	riIcH+nZ6HTDRjknNNC20Ge4pYcWu4EFLr219UDEP7Ao2VzFt3Jt6wtyc0uk=
+        bh=mCvwUHxIqY3csfT08M8lxXcHT8accZOdR5vy1WvsW8I=;
+        b=qDYrwD8b1OnvXsialkGwSaMQlLDgNztH2iMgrTSndH0xcA5bvlyarhCGHadvQCktLQ
+         /PI0uB+lz8HOWPqveXND4T9PMUzAR/QTxLaE17l72Lt3EmOAJlFFUkoRCla/anuDlics
+         0wB40NzLsr7/wqJgpVkKjfWWMov3RJ5PnHc+48F1DVlYjrdTi9ooQV4qCjL/kWANtf/f
+         NAm+xJlbCfT9/JxgmnkUnn6bKkccyZfuR3c+MxM3uJhrGsYCSNPKk63RRY1fFEVPhV7c
+         AnQA8RPRIitt0tAci2CwtwSvP8r4MFRMAPPrxvy7RAlDqDlW2B/FncrOCu/nLyIN/Nyk
+         sA8g==
+X-Gm-Message-State: AOJu0Yy2pCqGcFWQkr1K5xhutOg9zjLm5ZqSSOyi0dJIglHhX2y0aNbf
+	9cKbv8Ra2KzQfmRASiBy6XqoAWjEizdY/p/UbZhS54Jhp2WxjlNsbXAnkg04E5UTCbqhrUIAj/6
+	mvWoG0jLPldMs374kuIuN4zd/45EINFaxqogiuNKX45WSM+K7YvMW4WnXKJk=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4a8e:b0:66a:1886:e4bf with SMTP id
- 006d021491bc7-67b17703546mr1382969eaf.22.1772652190364; Wed, 04 Mar 2026
- 11:23:10 -0800 (PST)
-Date: Wed, 04 Mar 2026 11:23:10 -0800
+X-Received: by 2002:a05:6820:f06b:b0:67b:92be:ef8d with SMTP id
+ 006d021491bc7-67b92bef052mr796031eaf.1.1772671102194; Wed, 04 Mar 2026
+ 16:38:22 -0800 (PST)
+Date: Wed, 04 Mar 2026 16:38:22 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69a8869e.050a0220.21ae90.001a.GAE@google.com>
-Subject: [moderation/CI] Re: nvme-tcp: Support receiving KeyUpdate requests
-From: syzbot ci <syzbot+ci3c02e9f7322a9ff3@syzkaller.appspotmail.com>
+Message-ID: <69a8d07e.a70a0220.135158.0013.GAE@google.com>
+Subject: [moderation/CI] Re: bsg: add io_uring command support for SCSI passthrough
+From: syzbot ci <syzbot+cif6582a959155eabe@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -52,37 +52,45 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v7] nvme-tcp: Support receiving KeyUpdate requests
-https://lore.kernel.org/all/20260304053500.590630-1-alistair.francis@wdc.co=
-m
-* [PATCH v7 1/5] net/handshake: Store the key serial number on completion
-* [PATCH v7 2/5] net/handshake: Define handshake_req_keyupdate
-* [PATCH v7 3/5] net/handshake: Support KeyUpdate message types
-* [PATCH v7 4/5] nvme-tcp: Support KeyUpdate
-* [PATCH v7 5/5] nvmet-tcp: Support KeyUpdate
+[v5] bsg: add io_uring command support for SCSI passthrough
+https://lore.kernel.org/all/20260304080313.675768-1-yangxiuwei@kylinos.cn
+* [PATCH v5 1/3] bsg: add bsg_uring_cmd uapi structure
+* [PATCH v5 2/3] bsg: add io_uring command support to generic layer
+* [PATCH v5 3/3] scsi: bsg: add io_uring passthrough handler
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/ea1ac81d-ad9c-4af0-a8dc-9f48ff663c44
+https://ci.syzbot.org/series/d10fb67c-0756-49f2-a7fd-bfade2305b9a
 
 ***
 
 kernel build error
 
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net-next.git
-base:      4ff5801f45b494ad8251a16ec06c9f303ed3b9a0
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      ecc64d2dc9ff9738d2a896beb68e02c2feaf9a02
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
 1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/cafaf057-8306-41c8-9ed4-ebfd3bc0323=
-a/config
+config:    https://ci.syzbot.org/builds/8abf8676-4535-40d8-b35f-6f8ab7e8bbe=
+e/config
 
-drivers/nvme/host/tcp.c:1429:24: error: no member named 'read_sock_cmsg' in=
- 'struct proto_ops'
+drivers/scsi/scsi_bsg.c:111:64: error: too few arguments provided to functi=
+on-like macro invocation
+drivers/scsi/scsi_bsg.c:111:36: error: use of undeclared identifier 'io_uri=
+ng_sqe_cmd'
+drivers/scsi/scsi_bsg.c:137:64: error: too few arguments provided to functi=
+on-like macro invocation
+drivers/scsi/scsi_bsg.c:137:36: error: use of undeclared identifier 'io_uri=
+ng_sqe_cmd'
+drivers/scsi/scsi_bsg.c:203:14: error: incompatible function pointer types =
+assigning to 'rq_end_io_fn *' (aka 'enum rq_end_io_ret (*)(struct request *=
+, unsigned char, const struct io_comp_batch *)') from 'enum rq_end_io_ret (=
+struct request *, blk_status_t)' (aka 'enum rq_end_io_ret (struct request *=
+, unsigned char)') [-Wincompatible-function-pointer-types]
 
 ***
 
@@ -95,11 +103,10 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[alistair.francis@wdc.com alistair23@gmail.com axboe@kernel.dk chuck.lever@=
-oracle.com hare@kernel.org hare@suse.de hch@lst.de kbusch@kernel.org kch@nv=
-idia.com kernel-tls-handshake@lists.linux.dev linux-doc@vger.kernel.org lin=
-ux-kernel@vger.kernel.org linux-nfs@vger.kernel.org linux-nvme@lists.infrad=
-ead.org netdev@vger.kernel.org sagi@grimberg.me]
+[axboe@kernel.dk bvanassche@acm.org fujita.tomonori@lab.ntt.co.jp io-uring@=
+vger.kernel.org james.bottomley@hansenpartnership.com linux-block@vger.kern=
+el.org linux-kernel@vger.kernel.org linux-scsi@vger.kernel.org martin.peter=
+sen@oracle.com yangxiuwei@kylinos.cn]
 
 If the report looks fine to you, reply with:
 #syz upstream
