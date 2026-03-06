@@ -1,51 +1,50 @@
 Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFC672868B4
-	for <syzbot@lists.linux.dev>; Thu,  5 Mar 2026 09:00:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 551FA32ABCA
+	for <syzbot@lists.linux.dev>; Fri,  6 Mar 2026 22:49:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772701242; cv=none; b=l8uKUzcVEyx6N2tZG5Fvi+dx4y6KZnyEPvzDWVK0oXYjUZ/VBtecaYMW8PnhYu/D46Br4Ty0LP0cvdEQfb64Onr5ylC+KxxsKP18U48W3Je9xJAwiYo/gStkPk5ya2WexZ63a6xU+0/60zC5TA5A1UTu/HR0lpy7mz4Le5IqThE=
+	t=1772837400; cv=none; b=UfnSZUl0na31ofxhn3WDvgffowVJMbsC3JNAW37OebDJAQKg23Y0TlxA9MDnXNdUk98UGm7Nw98nyqYazAAm+QhF8tLCuY3aM01g5XyvxzNxd8CsQmS+Ed+3vHaWUY6YDji8w1oUAGLnB+p23JdVdr2nDzdCdrz88vj+hSjIq1g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772701242; c=relaxed/simple;
-	bh=vtM0OZFx+A0wIV0RWr2pzdb5hwvTkVA4d4i73bOzE8I=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=emwzLckRDIz1133KOmOJwfiyig7na/KmAn9QtyvQEx2OtX0Bx+JkoGnT2pn0kmejSLJpjnLmlcuXCBJRBT6ARYn/x+xxqX1WePid+05awqHBNlOx5HFNEX8pIjIL0/iupjbRtPcYdPJMlsjnlNYkYeZ+M5mopLtVE7M1aKK2JNQ=
+	s=arc-20240116; t=1772837400; c=relaxed/simple;
+	bh=54B18YmyntzpYxvBaC84e4iHqLAAW/sJkzq3ydsy9MY=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=PIm3bKb4MKxPtqN1E3RGCipawWOHjD3EQWPrcswLMCflrTQcU9TxtdOKqjl05BXMtd3zyuzxa9i2BIsGxkzGN4dAFUKmnYeuxH32KzM4aQnFJLLacfbq+CywEP2Ml4Q92dd2bV0TY4GZY9deg9OYxzoFKgl10LkBDhedahw7naI=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-679caf7ec07so135483454eaf.1
-        for <syzbot@lists.linux.dev>; Thu, 05 Mar 2026 01:00:40 -0800 (PST)
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-672c40f3873so155606698eaf.2
+        for <syzbot@lists.linux.dev>; Fri, 06 Mar 2026 14:49:59 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772701239; x=1773306039;
+        d=1e100.net; s=20230601; t=1772837398; x=1773442198;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=JfVwjKGcoDvifgzXjqiQFl4iiHWSBwv8d9akSTOX1yM=;
-        b=J8Jq/s8HvxLMk1UYgRgsSkSKRtBXnPJVD+Vcxy0pcC+eROKLuK+KpohRE+Iijk/XBD
-         N7aDVD1xcXwZ2bXuDAtSjXuYmm8Ls76wWsaM89CSk6zUr+gsWVfSsLmKS0+i0QNLzXBv
-         bWGFe5tbSUCUycemnZuVMCWS8xdrOuwHhElLZgZnHBBD/0vZItQX1CsjOYIhBIDEUSNC
-         Q7QyJaZWPd8wGMps4sSClCFEyvxov+Jh06i557AzM13vKdWorBVRX+MEXy+4U2l4ma9U
-         AnroxRDBHOBxy9se5cDx+Ply7FB+Y9K6BACR1HgqIJu2e8b33t+qPfHLvhE0GhNX/Xe9
-         JWDg==
-X-Gm-Message-State: AOJu0Yxj/WvINctRh0tIrMkUBGVAMQLL/4XOvpegLhID4Pc0W7EZpbl5
-	yXlOY+H1vymSnj97WOPMDSUhyJyXvvWylnlU8tN4QlfJ4vq/8mMnUrpaXJGUMrZtHCLePzu96gT
-	syQ9sTOgd7UVV0a3hGucLGubrT+x4aUN0wGZAoFwq+KYbrli3eb8cQQpHf7s=
+        bh=SQxSMtcn5Q1anvHD4noxVq7j65wjOlDAUUTAGsu43D0=;
+        b=nxceVHro+Q1UrwXrwWtLSJWWszf7WiPMKEszTK2lAfioV//grmLXln2k10eCkQhnNN
+         k9zEbZNGAXzbAU1ibVzNqbGHx/ugUk031osNQVauuk1GRGgfO7dfiqtFjwzK7CT6cTls
+         5S3bBCShXKNLmjBLS+G4pmTB0yjTbOOr4NFHZFfUmD82pOCiCXnuCCLTREeb4/bCWUxM
+         ViOmXzHz/H96mt7/PjBhI1r9sYI6chCPCPzaex3hgY3g6fpT+NbSK3XEIovEVHQdFSs1
+         6ih61xJV7NwNYELYM2Eneckj8AjWGEqLaSqGS0uN37woHTxjnnosfcerK7oKks6a0cR8
+         qong==
+X-Gm-Message-State: AOJu0YxwgIsp/X3VX3B3UyEh6OiR4YSK5AP9LgdFZjEQhwOlFwbrSFDn
+	s2zTiN84oCZoIkk2jihjLil6fb7PN8tWN5vQN1maXegi+M95S1glCOBhipmJnTSgo/oP6Fz/qdI
+	kNq9qwu9rdsLOW/7X9/GW4nPQOj4Ty00NS0TnvR2J0zHfztgcuLq2g9WPoWg=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1b05:b0:65f:1012:69c5 with SMTP id
- 006d021491bc7-67b1e924142mr2734012eaf.76.1772701239592; Thu, 05 Mar 2026
- 01:00:39 -0800 (PST)
-Date: Thu, 05 Mar 2026 01:00:39 -0800
+X-Received: by 2002:a05:6820:1c9b:b0:679:97d5:dd25 with SMTP id
+ 006d021491bc7-67b9bd50018mr2314483eaf.56.1772837398345; Fri, 06 Mar 2026
+ 14:49:58 -0800 (PST)
+Date: Fri, 06 Mar 2026 14:49:58 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69a94637.a70a0220.2f119.0005.GAE@google.com>
-Subject: [moderation/CI] Re: netfs: [WIP] Keep track of folios in a segmented
- bio_vec[] chain
-From: syzbot ci <syzbot+ci9c12c63dd6fe3f46@syzkaller.appspotmail.com>
+Message-ID: <69ab5a16.050a0220.13f275.002d.GAE@google.com>
+Subject: [moderation/CI] Re: KVM: Change [g|h]va_t as u64
+From: syzbot ci <syzbot+ci56069e20f01c594c@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -53,55 +52,52 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] netfs: [WIP] Keep track of folios in a segmented bio_vec[] chain
-https://lore.kernel.org/all/20260304140328.112636-1-dhowells@redhat.com
-* [RFC PATCH 01/17] netfs: Fix unbuffered/DIO writes to dispatch subrequest=
-s in strict sequence
-* [RFC PATCH 02/17] vfs: Implement a FIEMAP callback
-* [RFC PATCH 03/17] iov_iter: Add a segmented queue of bio_vec[]
-* [RFC PATCH 04/17] Add a function to kmap one page of a multipage bio_vec
-* [RFC PATCH 05/17] netfs: Add some tools for managing bvecq chains
-* [RFC PATCH 06/17] afs: Use a bvecq to hold dir content rather than folioq
-* [RFC PATCH 07/17] netfs: Add a function to extract from an iter into a bv=
-ecq
-* [RFC PATCH 08/17] cifs: Use a bvecq for buffering instead of a folioq
-* [RFC PATCH 09/17] cifs: Support ITER_BVECQ in smb_extract_iter_to_rdma()
-* [RFC PATCH 10/17] netfs: Switch to using bvecq rather than folio_queue an=
-d rolling_buffer
-* [RFC PATCH 11/17] cifs: Remove support for ITER_KVEC/BVEC/FOLIOQ from smb=
-_extract_iter_to_rdma()
-* [RFC PATCH 12/17] netfs: Remove netfs_alloc/free_folioq_buffer()
-* [RFC PATCH 13/17] netfs: Remove netfs_extract_user_iter()
-* [RFC PATCH 14/17] iov_iter: Remove ITER_FOLIOQ
-* [RFC PATCH 15/17] netfs: Remove folio_queue and rolling_buffer
-* [RFC PATCH 16/17] netfs: Check for too much data being read
-* [RFC PATCH 17/17] netfs: Combine prepare and issue ops and grab the buffe=
-rs on request
+[v1] KVM: Change [g|h]va_t as u64
+https://lore.kernel.org/all/20260306041125.45643-1-anshuman.khandual@arm.co=
+m
+* [PATCH] KVM: Change [g|h]va_t as u64
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/34bae306-6b8c-4cb3-9042-755ab205d7ae
+https://ci.syzbot.org/series/e04b964e-423e-4ce1-b23b-a651a9975809
 
 ***
 
 kernel build error
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
-s/linux
-base:      24d87712727a5017ad142d63940589a36cd25647
+tree:      kvm-next
+URL:       https://kernel.googlesource.com/pub/scm/virt/kvm/kvm/
+base:      e89f0e9a0a007e8c3afb8ecd739c0b3255422b00
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
 1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/d4138731-3994-4f14-bc07-1d9fd838655=
-9/config
+config:    https://ci.syzbot.org/builds/b576e88e-e388-49ca-b4ca-3999c747bc0=
+0/config
 
-fs/nfs/fscache.c:275:12: error: use of undeclared identifier 'NETFS_RREQ_US=
-E_PGPRIV2'
-fs/nfs/fscache.c:276:22: error: no member named 'sreq_max_len' in 'struct n=
-etfs_io_stream'
+arch/x86/kvm/x86.c:8869:25: error: incompatible function pointer types init=
+ializing 'int (*)(struct x86_emulate_ctxt *, unsigned long, void *, unsigne=
+d int, struct x86_exception *, bool)' (aka 'int (*)(struct x86_emulate_ctxt=
+ *, unsigned long, void *, unsigned int, struct x86_exception *, _Bool)') w=
+ith an expression of type 'int (struct x86_emulate_ctxt *, gva_t, void *, u=
+nsigned int, struct x86_exception *, bool)' (aka 'int (struct x86_emulate_c=
+txt *, unsigned long long, void *, unsigned int, struct x86_exception *, _B=
+ool)') [-Wincompatible-function-pointer-types]
+arch/x86/kvm/x86.c:8870:25: error: incompatible function pointer types init=
+ializing 'int (*)(struct x86_emulate_ctxt *, unsigned long, void *, unsigne=
+d int, struct x86_exception *, bool)' (aka 'int (*)(struct x86_emulate_ctxt=
+ *, unsigned long, void *, unsigned int, struct x86_exception *, _Bool)') w=
+ith an expression of type 'int (struct x86_emulate_ctxt *, gva_t, void *, u=
+nsigned int, struct x86_exception *, bool)' (aka 'int (struct x86_emulate_c=
+txt *, unsigned long long, void *, unsigned int, struct x86_exception *, _B=
+ool)') [-Wincompatible-function-pointer-types]
+arch/x86/kvm/x86.c:8871:25: error: incompatible function pointer types init=
+ializing 'int (*)(struct x86_emulate_ctxt *, unsigned long, void *, unsigne=
+d int, struct x86_exception *)' with an expression of type 'int (struct x86=
+_emulate_ctxt *, gva_t, void *, unsigned int, struct x86_exception *)' (aka=
+ 'int (struct x86_emulate_ctxt *, unsigned long long, void *, unsigned int,=
+ struct x86_exception *)') [-Wincompatible-function-pointer-types]
 
 ***
 
@@ -114,13 +110,8 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[axboe@kernel.dk ceph-devel@vger.kernel.org christian@brauner.io chuck.leve=
-r@oracle.com dhowells@redhat.com hch@infradead.org leon@kernel.org linkinje=
-on@kernel.org linux-afs@lists.infradead.org linux-block@vger.kernel.org lin=
-ux-cifs@vger.kernel.org linux-fsdevel@vger.kernel.org linux-kernel@vger.ker=
-nel.org linux-nfs@vger.kernel.org marc.dionne@auristor.com netfs@lists.linu=
-x.dev pc@manguebit.com pc@manguebit.org sfrench@samba.org sprasad@microsoft=
-.com tom@talpey.com v9fs@lists.linux.dev willy@infradead.org]
+[anshuman.khandual@arm.com kvm@vger.kernel.org linux-kernel@vger.kernel.org=
+ pbonzini@redhat.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
