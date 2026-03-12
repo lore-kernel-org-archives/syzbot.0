@@ -1,154 +1,81 @@
-Received: from fhigh-b6-smtp.messagingengine.com (fhigh-b6-smtp.messagingengine.com [202.12.124.157])
+Received: from sipsolutions.net (s3.sipsolutions.net [168.119.38.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B7E33C73DD;
-	Thu, 12 Mar 2026 17:07:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.157
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E21D2390C94;
+	Thu, 12 Mar 2026 17:44:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=168.119.38.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773335285; cv=none; b=qiSed4iC+OvXfsPDSKAnuYv6P+cIqyhjUHbPW/IHKGXrTIXlrWidMeVD/03iET9bmgBJUdg9NjRsUIde9OI1W/sp1g/QQu3HTAcPlqQ2DbhT3j9PBdteBug418GkcnSYrUZzlkQLjMKVXgtlILIF+YRSO2l6goUVxVNS3aYNBkg=
+	t=1773337448; cv=none; b=hdTibXkz51khJIhgMNWKHnck0dxkwqyPXkTTPtTx33woh4FdRtzRGWvsHzyaD+wnerJMqz63fasZVM3+F6G9m7lp01bR1sJXX+YLtfEXbRcVMnSE3mXr/JajPKUf/Ci3Nzr/azJ+BJleMpNr3/qjznDF0a7VwJU/pl7sthlYtC4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773335285; c=relaxed/simple;
-	bh=9GUkX1UymzuCmF+KVbUDSfJHfjasrgyAK24MrqryyCI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MaU4j+T5n65BE3TWySb56pocWWAQ9ZJdInRL293bcJw7OCNMz1zVNYAkRxcrdxmSlYfUl5aMLbP2UXtKtJ9DA79vJT1n83qTNn88itQo2vYoLT1AR5iR2eDJumhLh03t2mS31bKwPyVts4HnaJ5CUzYtQVw5SuB0Sfx5848aSq0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=queasysnail.net; spf=pass smtp.mailfrom=queasysnail.net; dkim=pass (2048-bit key) header.d=queasysnail.net header.i=@queasysnail.net header.b=bpoPhnD1; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=tZGbEI2U; arc=none smtp.client-ip=202.12.124.157
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=queasysnail.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=queasysnail.net
+	s=arc-20240116; t=1773337448; c=relaxed/simple;
+	bh=+wTst7GwwIZgLldUwvGmR8J7bKS0OJjukGseSnExEsE=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=L0xqJf8oTwv1q1Fhou2cmJiTLDYVSDN4Huasqq7YGCkoLzZJawWFWcnxusfoRf/eQtbT500IVk71ja28qFdcMfCFFO2YUwFudS9bkX3NQzt04fEhKrfBZfPxZHJp+lsDW9Bfx2OuXxDPx68Hp/0ReWAtBp2bwwUIoGpSUOtQxOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sipsolutions.net; spf=pass smtp.mailfrom=sipsolutions.net; dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b=X5k9pPli; arc=none smtp.client-ip=168.119.38.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sipsolutions.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sipsolutions.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=queasysnail.net header.i=@queasysnail.net header.b="bpoPhnD1";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="tZGbEI2U"
-Received: from phl-compute-06.internal (phl-compute-06.internal [10.202.2.46])
-	by mailfhigh.stl.internal (Postfix) with ESMTP id 67AFA7A0188;
-	Thu, 12 Mar 2026 13:07:55 -0400 (EDT)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-06.internal (MEProxy); Thu, 12 Mar 2026 13:07:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=queasysnail.net;
-	 h=cc:cc:content-type:content-type:date:date:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm2; t=1773335275; x=
-	1773421675; bh=IoHMK1Z5v/Far6DHpNRk4L2RknvP1nvllRWb9YRM5ro=; b=b
-	poPhnD19l6zP3OhPXXt7rqc0r7xNFyQDJpertDLSn6S797mUwW3BYmGSGR2+RzbQ
-	T6E3gs8Aepw2O0NkMySke902zenrCaSTzbJHt3TK6XDpJGfx68PA7+imBkCp33xu
-	yuBaSOY2D2qlfzsHokLy1XoZDgHBhSMFLu3dfxGQoSRaX32fJjqZbDBEheCFuWQ2
-	IfSnC4Car5NHtLTEkGcihx2mrkW/Pjxu3GciPeoW/nR4fHie6rf0dH4X1ZqkqB39
-	vAb+tJdtkuK7Id+qXxlXyosVyx6/h1KhFGw123ffYz4X4fblYLAD8XcHpA0csmQk
-	nfIx2Gh5yPOHXdlvxDAjA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-	1773335275; x=1773421675; bh=IoHMK1Z5v/Far6DHpNRk4L2RknvP1nvllRW
-	b9YRM5ro=; b=tZGbEI2U8nOqovnVql7AVObILEhslHJFP5BnxjbqUbCGeVPe12a
-	5K7RBtn+llzttiM4YH2cw6VJtQRrrJE5UHF+ZlYD5z8PJCfLrxBUqYqwJZyWO/+Z
-	tc6AHE/2DUnn5xyir1Np95LN5/iEOj1F3NXkZfKqRJM6OhwD7KcAdln0wbeb/4Vs
-	2qNOc0R7o2i2NKZzQM1aP3IcS854qrP26qzrQm1xCmhafzmeYZpr3vYT+5+QOW9a
-	PvFvEC9qEbRdWTQmFtpdoxIgjZasTzHvAAEQpMAS7tvTCYbzTO+VmBe71k/hhEeN
-	qgj2FUXBDZB7WSVNAD9zASxqIhPONBV3GLg==
-X-ME-Sender: <xms:6vKyabQs5P9vaG1ziPRYpzX31kJ3SGSPwC8lpi9LRwq9SD5rtEIpGw>
-    <xme:6vKyaeJXW6Q6lEOQEN_0DYIcKKb_795Fk-F8SIg_1a8_ZNbRcM2k-lQqg1YN9bZtl
-    JCw2L1Dgs9V2UgQov19_Fk8N3Q6bhk2HfifWGMX0ICsrur5gFskemU>
-X-ME-Received: <xmr:6vKyaaE26KepPkc5aKpgH0sSbkzyESmDfsJBx50hpwkWfccUv15n6JEvqVfZ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddvkeejfeegucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
-    gurhepfffhvfevuffkfhggtggujgesthdtredttddtjeenucfhrhhomhepufgrsghrihhn
-    rgcuffhusghrohgtrgcuoehsugesqhhuvggrshihshhnrghilhdrnhgvtheqnecuggftrf
-    grthhtvghrnhepuefhhfffgfffhfefueeiudegtdefhfekgeetheegheeifffguedvueff
-    fefgudffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epshgusehquhgvrghshihsnhgrihhlrdhnvghtpdhnsggprhgtphhtthhopedukedpmhho
-    uggvpehsmhhtphhouhhtpdhrtghpthhtohepphgrsggvnhhisehrvgguhhgrthdrtghomh
-    dprhgtphhtthhopehlihhuhhgrnhhgsghinhesghhmrghilhdrtghomhdprhgtphhtthho
-    pehshiiisghothdotghitdelkehfrgejtgdujeelhegvtggvrggtsehshiiikhgrlhhlvg
-    hrrdgrphhpshhpohhtmhgrihhlrdgtohhmpdhrtghpthhtoheprghnughrvgifsehluhhn
-    nhdrtghhpdhrtghpthhtohepsghrihgughgvsehlihhsthhsrdhlihhnuhigrdguvghvpd
-    hrtghpthhtohepuggrvhgvmhesuggrvhgvmhhlohhfthdrnhgvthdprhgtphhtthhopegv
-    ughumhgriigvthesghhoohhglhgvrdgtohhmpdhrtghpthhtohephhhorhhmsheskhgvrh
-    hnvghlrdhorhhgpdhrtghpthhtohepihguohhstghhsehnvhhiughirgdrtghomh
-X-ME-Proxy: <xmx:6vKyaTSfVh1FJzPyOUGL7DhbTwDn-Yp2V5srIUhMolYZADoMz53vjg>
-    <xmx:6vKyabWKgELkT5Y-lS2bhMwf1MJ-i6hQwewQQ54T8c-AgozTwoQZCA>
-    <xmx:6vKyaagKGbcFb7ArRNNCo5UZ-iOz1l7ZQhhDgDeg8ZmY-aB_1A5rtg>
-    <xmx:6vKyacfLC6q9OM5IgI9MOYrtNGt_zgZ_4st5VI9l1njoK4qVM3DFNA>
-    <xmx:6_KyacB1FvP7GYWqNBuuNTjbi9Dh11w-wtP0EsDuHahZ5x-ObUBSyHgD>
-Feedback-ID: i934648bf:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 12 Mar 2026 13:07:53 -0400 (EDT)
-Date: Thu, 12 Mar 2026 18:07:51 +0100
-From: Sabrina Dubroca <sd@queasysnail.net>
-To: Paolo Abeni <pabeni@redhat.com>
-Cc: Hangbin Liu <liuhangbin@gmail.com>,
-	syzbot ci <syzbot+ci098fa7c1795eceac@syzkaller.appspotmail.com>,
-	andrew@lunn.ch, bridge@lists.linux.dev, davem@davemloft.net,
-	edumazet@google.com, horms@kernel.org, idosch@nvidia.com,
-	jiri@resnulli.us, jv@jvosburgh.net, kuba@kernel.org,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-	razor@blackwall.org, sridhar.samudrala@intel.com,
-	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot ci] Re: net: move netdev_compute_master_upper_features
- to ndo_set_features
-Message-ID: <abLy56AN2BgUI1nG@krikkit>
-References: <20260310-offload_compute-v1-0-3df79c09ea65@gmail.com>
- <69b04e91.a70a0220.51e36.0000.GAE@google.com>
- <abBuLV3P6aTzUg3W@krikkit>
- <abC7rdjxv9ENw-tA@fedora>
- <abHcP3GTO29rfKML@krikkit>
- <bcc536ac-dde1-4b63-8fed-70850818472b@redhat.com>
- <abKf8Fg865Fhipwk@krikkit>
- <abLPBEg_-j5rp4IM@fedora>
- <abLivB2KPK0JcTFR@krikkit>
- <2d1e0acc-efad-4166-b738-721d88d533ca@redhat.com>
+	dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b="X5k9pPli"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+	Resent-Cc:Resent-Message-ID; bh=EcHHqkSA7adMOLwG2Zw8JayfUW+5mWxn4kV/u34Uhuc=;
+	t=1773337447; x=1774547047; b=X5k9pPliiqVD0jDZXBmqA8D+7rGRgJvknFO3cWPFRRMJGNO
+	BBANIM+9ozBOk9KSMsO/Sh5wSwueADbCgASOo1jv5NEFmVsLyknFRCVXW/T5PTvAbf8rIztkchH5B
+	wMXYLLscMz5a7KCQlu6iXhXeAkudnl29wPdY+IiLaVyDZLex/imcU668W6BJPJrHcHqntLCauNXpX
+	HG7x8ch5viRRm3IZXNl/RnT5fZSfdCCojpMnFScJy8dtUKXAScXCkEi/OqUMcBnRfqIqzUmzQhJwd
+	7ohrC96EJ9ouhrXNN7OUFbNCEclZP/fAT2pvmmdgUL9M/Z3NBH+LMQXFKeRZ5tCQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.98.2)
+	(envelope-from <johannes@sipsolutions.net>)
+	id 1w0k4n-0000000G08R-0Q8q;
+	Thu, 12 Mar 2026 18:44:01 +0100
+Message-ID: <c6aec6f5dfc420faf56185684a61b200fe37a6cd.camel@sipsolutions.net>
+Subject: Re: [syzbot ci] Re: iwlwifi + mac80211 stability
+From: Johannes Berg <johannes@sipsolutions.net>
+To: Ben Greear <greearb@candelatech.com>, syzbot ci
+	 <syzbot+cibf86f11719f1261d@syzkaller.appspotmail.com>, 
+	linux-wireless@vger.kernel.org
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Date: Thu, 12 Mar 2026 18:44:00 +0100
+In-Reply-To: <1e6b8cbb-0f89-6b9b-b2cf-d21ca80dd7a2@candelatech.com>
+References: <69b2ccdb.a00a0220.707e5.0016.GAE@google.com>
+	 <1e6b8cbb-0f89-6b9b-b2cf-d21ca80dd7a2@candelatech.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.3 (3.58.3-1.fc43) 
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <2d1e0acc-efad-4166-b738-721d88d533ca@redhat.com>
+X-malware-bazaar: not-scanned
 
-2026-03-12, 17:47:45 +0100, Paolo Abeni wrote:
-> 
-> 
-> On 3/12/26 4:58 PM, Sabrina Dubroca wrote:
-> > 2026-03-12, 14:34:44 +0000, Hangbin Liu wrote:
-> >> On Thu, Mar 12, 2026 at 12:13:52PM +0100, Sabrina Dubroca wrote:
-> >>> Proper fix (so that the notification we're sending during
-> >>> upper_dev_link has full linkinfo) would be to move
-> >>> netdev_upper_dev_link() to after macsec_changelink_common() and fix up
-> >>> the error handling. I don't see anything in macsec_add_dev or
-> >>> macsec_changelink_common that needs the device to be linked. But
-> >>
-> >> If we move the netdev_upper_dev_link() after macsec_changelink_common(),
-> >> we will not goto nla_put_failure via default, right?
-> > 
-> > Yes.
-> > 
-> >>> anyway it doesn't make sense for macsec_fill_info to return -EMSGSIZE
-> >>> on invalid data, so the "bandaid" should be included as well.
-> >>>
-> >>> Should this be part of this series (either just the "bandaid" or the
-> >>> "proper fix"+bandaid), since we never saw a problem before?
-> >>
-> >> Since macsec need the "bandaid" fix either way. How about you post the
-> >> "bandaid" fix to net. And I include the "proper fix" in this series for
-> >> net-next?
-> > 
-> > But I don't think it's needed in net. Am I missing a codepath (before
-> > your series) where macsec_fill_info could be called for the new device
-> > before macsec_newlink returns? If not, it doesn't really qualify as a
-> > fix, that's why I was asking Paolo.
-> 
-> FWIW, I don't see a codepath calling into rtmsg_ifinfo_build_skb()
-> before device initialization, so I would be fine targeting net-next with
-> the EMSGSIZE-related change.
-> 
-> Side note, it looks like that the WARN() in the rnnetlink code here
-> helped identifying a real problem and correctly returning 0 when the
-> key_len is not yet initialized will silence it forever, what about
-> preserving a warning for this kind of race? something alike:
+On Thu, 2026-03-12 at 08:25 -0700, Ben Greear wrote:
+> Which would be triggered by this from patch 0004, I guess.   The phyd
+> pointer appears to be an error code -13 instead of clean NULL, so I guess=
+ I
+> need to add checks for where that is created as well.
 
-Right, I was thinking about putting a DEBUG_NET_WARN_ON_ONCE there.
+No ...
 
--- 
-Sabrina
+> --- a/net/mac80211/debugfs.c
+> +++ b/net/mac80211/debugfs.c
+> @@ -680,6 +680,12 @@ void debugfs_hw_add(struct ieee80211_local *local)
+>   		return;
+>=20
+>   	local->debugfs.keys =3D debugfs_create_dir("keys", phyd);
+> +	if (IS_ERR(local->debugfs.keys)) {
+> +		pr_err("Failed to create local keys debugfs dir, rv: %ld phyd: 0x%px\n=
+",
+> +		       (long)(local->debugfs.keys), phyd);
+> +		local->debugfs.keys =3D NULL;
+> +		return;
+> +	}
+
+That's just never going to get applied anyway, so what you _really_ need
+to do is stop sending this crap.
+
+johannes
