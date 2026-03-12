@@ -1,154 +1,154 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from fhigh-b6-smtp.messagingengine.com (fhigh-b6-smtp.messagingengine.com [202.12.124.157])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB0833FB7E4
-	for <syzbot@lists.linux.dev>; Thu, 12 Mar 2026 16:47:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B7E33C73DD;
+	Thu, 12 Mar 2026 17:07:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.157
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773334081; cv=none; b=Alru3m+3g3YLn2zU0d4u0Iu3otDZy+e7wXi0ukso+bz0OAJyQHnpjzct6q0sdY7C5iZtigE1SFJ06VkhxPU0hd2CPBra/HyCmiJGA43trCRVcs+THWYXXSkQV9Q5qkRgugn5P5CQ0cRy3rUI0SyWgzQOj3x19V4c53CdTPx7VgY=
+	t=1773335285; cv=none; b=qiSed4iC+OvXfsPDSKAnuYv6P+cIqyhjUHbPW/IHKGXrTIXlrWidMeVD/03iET9bmgBJUdg9NjRsUIde9OI1W/sp1g/QQu3HTAcPlqQ2DbhT3j9PBdteBug418GkcnSYrUZzlkQLjMKVXgtlILIF+YRSO2l6goUVxVNS3aYNBkg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773334081; c=relaxed/simple;
-	bh=IIb3lnFy9ZZgffcMQ1sb/OxpBNFDfrikKLoctgY2LdE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Gm2tBJK4J7C+Fah4b0gZAAeKxuhmfY6LeDw7XHB9AN8ACHwF7lnr3hdJytxwVHaPhbwMG078vMe1VXKdAl6kxLychoU3WXJC15aFkJcrwAIdKcrPGg1cISrHuti+gPaq8gH6kdQEKIunW90E1r/Zb2PEhpJMV7dqcKT2wn2we50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=VokwVflU; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1773335285; c=relaxed/simple;
+	bh=9GUkX1UymzuCmF+KVbUDSfJHfjasrgyAK24MrqryyCI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MaU4j+T5n65BE3TWySb56pocWWAQ9ZJdInRL293bcJw7OCNMz1zVNYAkRxcrdxmSlYfUl5aMLbP2UXtKtJ9DA79vJT1n83qTNn88itQo2vYoLT1AR5iR2eDJumhLh03t2mS31bKwPyVts4HnaJ5CUzYtQVw5SuB0Sfx5848aSq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=queasysnail.net; spf=pass smtp.mailfrom=queasysnail.net; dkim=pass (2048-bit key) header.d=queasysnail.net header.i=@queasysnail.net header.b=bpoPhnD1; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=tZGbEI2U; arc=none smtp.client-ip=202.12.124.157
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=queasysnail.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=queasysnail.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="VokwVflU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1773334073;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=QopztaDQaDXdF0WurIHvj6v5UeE/ENNGQg9kHKBDRS8=;
-	b=VokwVflUg0tbr7t/+tXumVBDbLtqhAS6vUo9J4TWYSscqC7we77dwfqOmy4OPPdKVkUx8l
-	PDT3jPnJqlnBzdDzMXD+2H9CD2N3upMY4jYUlQslWnuVcz5TtdPowHu0VY1NlM16TKw4f7
-	CXvzIh778HeFAitwExBz4SAQmzJKkYI=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-74-bvYCC4kpOIG3OTfvD9F70A-1; Thu, 12 Mar 2026 12:47:52 -0400
-X-MC-Unique: bvYCC4kpOIG3OTfvD9F70A-1
-X-Mimecast-MFC-AGG-ID: bvYCC4kpOIG3OTfvD9F70A_1773334071
-Received: by mail-lf1-f72.google.com with SMTP id 2adb3069b0e04-5a1324aeb32so885610e87.3
-        for <syzbot@lists.linux.dev>; Thu, 12 Mar 2026 09:47:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773334070; x=1773938870;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QopztaDQaDXdF0WurIHvj6v5UeE/ENNGQg9kHKBDRS8=;
-        b=jaqiLlJys3aKgroTOR4LKA0PJ41i5ij+6s5ywei/TqlB6/Qoizm5ibpmvoW7YR6d0m
-         snLZPdEuCFNfblBlol4SeOgWpIX3vpDZ+ryZM3Q4/AZO3m4ylCuxyNNb4zlvHy+QeTqE
-         tLU6pNUqS4ZHr6ccVMGAJKE0TVXmWPV9nhVAxpxjoaIB6WgqN2XqQPwSU/mI8OWm5hXS
-         SMVS9PihUH2K3NuaScOejWoQP5YKRMMGYxWjLSSvTeZjE1+StLFH5pv4CauUqYtK0e9Z
-         2ouwhUXqLsF/eO7mmotYI6gS8aYEnV572wbkI6ZmPyNdE2Ty8hi5AijoSQROGvkY3DXR
-         Eftw==
-X-Forwarded-Encrypted: i=1; AJvYcCUZolI7ToFXA2/Ug/Pl9kXlw71bRNfh/f4qwypriQDbIrH5NogjrmdbavAXODny+ox6XuRL3Bs=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzZgu88+EXjzhMX0BIv23EzaKQexDNEPaO3Sr4stty4DERleZ79
-	7l0sOz3nsv4fMSGuhxr3gJSbIbcs8L7hyyqOkjT1ieSZo+t9Mtmt7pkYBPVb+Yw+tpvpe7RYwFs
-	ZvI3xjpGjhnYnL9Mtu0PBB8+G04JD+mPZ/JExLBbRbcFHk7IjvaA/uleZYg==
-X-Gm-Gg: ATEYQzzEGWcz7xj3nf+NkJ8EMpGapdsCRJR1QYLNR06PxB3nmDNoq1non0OEE+zu7Iz
-	DNZP/byrIajfjfy7/lb9ZJay2LLbvP/4W9Wk6RB6mIIamL4G18CAMZ3wUi2gjBnEMSQnbIeboJV
-	U5cOJ7D3lRA4l60zFlAjFjzeFEW2/XXdrrFLl1zj/B3QPb5bSUhWwyXo8hUUb4VnarnOnulmU4b
-	892ppXA/BnHSEH6PLVbC/7e5jBJk0iMtwJSII78pQELHC0N+DeTQWJkwb2tbzyweEr9ql6n5Yq8
-	iqpMRv9DjkaabX8qcF8eGlpVvge9Pt7OL80/OAP8oVSdsIGlMlZR05PRLuMSlvp2ZUPOX/+S5/6
-	kIMl1HqA065jl7q2N4au/dCBR12ebkibd+qjYIW7q/Ex3aOl3tpUQLHQ=
-X-Received: by 2002:ac2:4ed9:0:b0:5a0:ff97:4374 with SMTP id 2adb3069b0e04-5a162703bebmr82072e87.7.1773334070515;
-        Thu, 12 Mar 2026 09:47:50 -0700 (PDT)
-X-Received: by 2002:ac2:4ed9:0:b0:5a0:ff97:4374 with SMTP id 2adb3069b0e04-5a162703bebmr82051e87.7.1773334070004;
-        Thu, 12 Mar 2026 09:47:50 -0700 (PDT)
-Received: from [192.168.88.32] ([216.128.11.95])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a156366b22sm1021366e87.77.2026.03.12.09.47.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Mar 2026 09:47:49 -0700 (PDT)
-Message-ID: <2d1e0acc-efad-4166-b738-721d88d533ca@redhat.com>
-Date: Thu, 12 Mar 2026 17:47:45 +0100
+	dkim=pass (2048-bit key) header.d=queasysnail.net header.i=@queasysnail.net header.b="bpoPhnD1";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="tZGbEI2U"
+Received: from phl-compute-06.internal (phl-compute-06.internal [10.202.2.46])
+	by mailfhigh.stl.internal (Postfix) with ESMTP id 67AFA7A0188;
+	Thu, 12 Mar 2026 13:07:55 -0400 (EDT)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-06.internal (MEProxy); Thu, 12 Mar 2026 13:07:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=queasysnail.net;
+	 h=cc:cc:content-type:content-type:date:date:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:subject:subject:to:to; s=fm2; t=1773335275; x=
+	1773421675; bh=IoHMK1Z5v/Far6DHpNRk4L2RknvP1nvllRWb9YRM5ro=; b=b
+	poPhnD19l6zP3OhPXXt7rqc0r7xNFyQDJpertDLSn6S797mUwW3BYmGSGR2+RzbQ
+	T6E3gs8Aepw2O0NkMySke902zenrCaSTzbJHt3TK6XDpJGfx68PA7+imBkCp33xu
+	yuBaSOY2D2qlfzsHokLy1XoZDgHBhSMFLu3dfxGQoSRaX32fJjqZbDBEheCFuWQ2
+	IfSnC4Car5NHtLTEkGcihx2mrkW/Pjxu3GciPeoW/nR4fHie6rf0dH4X1ZqkqB39
+	vAb+tJdtkuK7Id+qXxlXyosVyx6/h1KhFGw123ffYz4X4fblYLAD8XcHpA0csmQk
+	nfIx2Gh5yPOHXdlvxDAjA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+	1773335275; x=1773421675; bh=IoHMK1Z5v/Far6DHpNRk4L2RknvP1nvllRW
+	b9YRM5ro=; b=tZGbEI2U8nOqovnVql7AVObILEhslHJFP5BnxjbqUbCGeVPe12a
+	5K7RBtn+llzttiM4YH2cw6VJtQRrrJE5UHF+ZlYD5z8PJCfLrxBUqYqwJZyWO/+Z
+	tc6AHE/2DUnn5xyir1Np95LN5/iEOj1F3NXkZfKqRJM6OhwD7KcAdln0wbeb/4Vs
+	2qNOc0R7o2i2NKZzQM1aP3IcS854qrP26qzrQm1xCmhafzmeYZpr3vYT+5+QOW9a
+	PvFvEC9qEbRdWTQmFtpdoxIgjZasTzHvAAEQpMAS7tvTCYbzTO+VmBe71k/hhEeN
+	qgj2FUXBDZB7WSVNAD9zASxqIhPONBV3GLg==
+X-ME-Sender: <xms:6vKyabQs5P9vaG1ziPRYpzX31kJ3SGSPwC8lpi9LRwq9SD5rtEIpGw>
+    <xme:6vKyaeJXW6Q6lEOQEN_0DYIcKKb_795Fk-F8SIg_1a8_ZNbRcM2k-lQqg1YN9bZtl
+    JCw2L1Dgs9V2UgQov19_Fk8N3Q6bhk2HfifWGMX0ICsrur5gFskemU>
+X-ME-Received: <xmr:6vKyaaE26KepPkc5aKpgH0sSbkzyESmDfsJBx50hpwkWfccUv15n6JEvqVfZ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddvkeejfeegucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
+    gurhepfffhvfevuffkfhggtggujgesthdtredttddtjeenucfhrhhomhepufgrsghrihhn
+    rgcuffhusghrohgtrgcuoehsugesqhhuvggrshihshhnrghilhdrnhgvtheqnecuggftrf
+    grthhtvghrnhepuefhhfffgfffhfefueeiudegtdefhfekgeetheegheeifffguedvueff
+    fefgudffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    epshgusehquhgvrghshihsnhgrihhlrdhnvghtpdhnsggprhgtphhtthhopedukedpmhho
+    uggvpehsmhhtphhouhhtpdhrtghpthhtohepphgrsggvnhhisehrvgguhhgrthdrtghomh
+    dprhgtphhtthhopehlihhuhhgrnhhgsghinhesghhmrghilhdrtghomhdprhgtphhtthho
+    pehshiiisghothdotghitdelkehfrgejtgdujeelhegvtggvrggtsehshiiikhgrlhhlvg
+    hrrdgrphhpshhpohhtmhgrihhlrdgtohhmpdhrtghpthhtoheprghnughrvgifsehluhhn
+    nhdrtghhpdhrtghpthhtohepsghrihgughgvsehlihhsthhsrdhlihhnuhigrdguvghvpd
+    hrtghpthhtohepuggrvhgvmhesuggrvhgvmhhlohhfthdrnhgvthdprhgtphhtthhopegv
+    ughumhgriigvthesghhoohhglhgvrdgtohhmpdhrtghpthhtohephhhorhhmsheskhgvrh
+    hnvghlrdhorhhgpdhrtghpthhtohepihguohhstghhsehnvhhiughirgdrtghomh
+X-ME-Proxy: <xmx:6vKyaTSfVh1FJzPyOUGL7DhbTwDn-Yp2V5srIUhMolYZADoMz53vjg>
+    <xmx:6vKyabWKgELkT5Y-lS2bhMwf1MJ-i6hQwewQQ54T8c-AgozTwoQZCA>
+    <xmx:6vKyaagKGbcFb7ArRNNCo5UZ-iOz1l7ZQhhDgDeg8ZmY-aB_1A5rtg>
+    <xmx:6vKyacfLC6q9OM5IgI9MOYrtNGt_zgZ_4st5VI9l1njoK4qVM3DFNA>
+    <xmx:6_KyacB1FvP7GYWqNBuuNTjbi9Dh11w-wtP0EsDuHahZ5x-ObUBSyHgD>
+Feedback-ID: i934648bf:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 12 Mar 2026 13:07:53 -0400 (EDT)
+Date: Thu, 12 Mar 2026 18:07:51 +0100
+From: Sabrina Dubroca <sd@queasysnail.net>
+To: Paolo Abeni <pabeni@redhat.com>
+Cc: Hangbin Liu <liuhangbin@gmail.com>,
+	syzbot ci <syzbot+ci098fa7c1795eceac@syzkaller.appspotmail.com>,
+	andrew@lunn.ch, bridge@lists.linux.dev, davem@davemloft.net,
+	edumazet@google.com, horms@kernel.org, idosch@nvidia.com,
+	jiri@resnulli.us, jv@jvosburgh.net, kuba@kernel.org,
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+	razor@blackwall.org, sridhar.samudrala@intel.com,
+	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot ci] Re: net: move netdev_compute_master_upper_features
+ to ndo_set_features
+Message-ID: <abLy56AN2BgUI1nG@krikkit>
+References: <20260310-offload_compute-v1-0-3df79c09ea65@gmail.com>
+ <69b04e91.a70a0220.51e36.0000.GAE@google.com>
+ <abBuLV3P6aTzUg3W@krikkit>
+ <abC7rdjxv9ENw-tA@fedora>
+ <abHcP3GTO29rfKML@krikkit>
+ <bcc536ac-dde1-4b63-8fed-70850818472b@redhat.com>
+ <abKf8Fg865Fhipwk@krikkit>
+ <abLPBEg_-j5rp4IM@fedora>
+ <abLivB2KPK0JcTFR@krikkit>
+ <2d1e0acc-efad-4166-b738-721d88d533ca@redhat.com>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [syzbot ci] Re: net: move netdev_compute_master_upper_features to
- ndo_set_features
-To: Sabrina Dubroca <sd@queasysnail.net>, Hangbin Liu <liuhangbin@gmail.com>
-Cc: syzbot ci <syzbot+ci098fa7c1795eceac@syzkaller.appspotmail.com>,
- andrew@lunn.ch, bridge@lists.linux.dev, davem@davemloft.net,
- edumazet@google.com, horms@kernel.org, idosch@nvidia.com, jiri@resnulli.us,
- jv@jvosburgh.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org, razor@blackwall.org, sridhar.samudrala@intel.com,
- syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-References: <20260310-offload_compute-v1-0-3df79c09ea65@gmail.com>
- <69b04e91.a70a0220.51e36.0000.GAE@google.com> <abBuLV3P6aTzUg3W@krikkit>
- <abC7rdjxv9ENw-tA@fedora> <abHcP3GTO29rfKML@krikkit>
- <bcc536ac-dde1-4b63-8fed-70850818472b@redhat.com> <abKf8Fg865Fhipwk@krikkit>
- <abLPBEg_-j5rp4IM@fedora> <abLivB2KPK0JcTFR@krikkit>
-From: Paolo Abeni <pabeni@redhat.com>
-In-Reply-To: <abLivB2KPK0JcTFR@krikkit>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: rJRC5-9SUGDAR6t63eAZlbDdzeN4SNHQF6_NoONHswA_1773334071
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <2d1e0acc-efad-4166-b738-721d88d533ca@redhat.com>
 
-
-
-On 3/12/26 4:58 PM, Sabrina Dubroca wrote:
-> 2026-03-12, 14:34:44 +0000, Hangbin Liu wrote:
->> On Thu, Mar 12, 2026 at 12:13:52PM +0100, Sabrina Dubroca wrote:
->>> Proper fix (so that the notification we're sending during
->>> upper_dev_link has full linkinfo) would be to move
->>> netdev_upper_dev_link() to after macsec_changelink_common() and fix up
->>> the error handling. I don't see anything in macsec_add_dev or
->>> macsec_changelink_common that needs the device to be linked. But
->>
->> If we move the netdev_upper_dev_link() after macsec_changelink_common(),
->> we will not goto nla_put_failure via default, right?
+2026-03-12, 17:47:45 +0100, Paolo Abeni wrote:
 > 
-> Yes.
 > 
->>> anyway it doesn't make sense for macsec_fill_info to return -EMSGSIZE
->>> on invalid data, so the "bandaid" should be included as well.
->>>
->>> Should this be part of this series (either just the "bandaid" or the
->>> "proper fix"+bandaid), since we never saw a problem before?
->>
->> Since macsec need the "bandaid" fix either way. How about you post the
->> "bandaid" fix to net. And I include the "proper fix" in this series for
->> net-next?
+> On 3/12/26 4:58 PM, Sabrina Dubroca wrote:
+> > 2026-03-12, 14:34:44 +0000, Hangbin Liu wrote:
+> >> On Thu, Mar 12, 2026 at 12:13:52PM +0100, Sabrina Dubroca wrote:
+> >>> Proper fix (so that the notification we're sending during
+> >>> upper_dev_link has full linkinfo) would be to move
+> >>> netdev_upper_dev_link() to after macsec_changelink_common() and fix up
+> >>> the error handling. I don't see anything in macsec_add_dev or
+> >>> macsec_changelink_common that needs the device to be linked. But
+> >>
+> >> If we move the netdev_upper_dev_link() after macsec_changelink_common(),
+> >> we will not goto nla_put_failure via default, right?
+> > 
+> > Yes.
+> > 
+> >>> anyway it doesn't make sense for macsec_fill_info to return -EMSGSIZE
+> >>> on invalid data, so the "bandaid" should be included as well.
+> >>>
+> >>> Should this be part of this series (either just the "bandaid" or the
+> >>> "proper fix"+bandaid), since we never saw a problem before?
+> >>
+> >> Since macsec need the "bandaid" fix either way. How about you post the
+> >> "bandaid" fix to net. And I include the "proper fix" in this series for
+> >> net-next?
+> > 
+> > But I don't think it's needed in net. Am I missing a codepath (before
+> > your series) where macsec_fill_info could be called for the new device
+> > before macsec_newlink returns? If not, it doesn't really qualify as a
+> > fix, that's why I was asking Paolo.
 > 
-> But I don't think it's needed in net. Am I missing a codepath (before
-> your series) where macsec_fill_info could be called for the new device
-> before macsec_newlink returns? If not, it doesn't really qualify as a
-> fix, that's why I was asking Paolo.
+> FWIW, I don't see a codepath calling into rtmsg_ifinfo_build_skb()
+> before device initialization, so I would be fine targeting net-next with
+> the EMSGSIZE-related change.
+> 
+> Side note, it looks like that the WARN() in the rnnetlink code here
+> helped identifying a real problem and correctly returning 0 when the
+> key_len is not yet initialized will silence it forever, what about
+> preserving a warning for this kind of race? something alike:
 
-FWIW, I don't see a codepath calling into rtmsg_ifinfo_build_skb()
-before device initialization, so I would be fine targeting net-next with
-the EMSGSIZE-related change.
+Right, I was thinking about putting a DEBUG_NET_WARN_ON_ONCE there.
 
-Side note, it looks like that the WARN() in the rnnetlink code here
-helped identifying a real problem and correctly returning 0 when the
-key_len is not yet initialized will silence it forever, what about
-preserving a warning for this kind of race? something alike:
-
----
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index f6cad0746a02..82974d4fa3f6 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -4337,7 +4337,8 @@ static int macsec_fill_info(struct sk_buff *skb,
- 		csid = secy->xpn ? MACSEC_CIPHER_ID_GCM_AES_XPN_256 :
-MACSEC_CIPHER_ID_GCM_AES_256;
- 		break;
- 	default:
--		goto nla_put_failure;
-+		WARN_ON_ONCE(1);
-+		return 0;
- 	}
-
+-- 
+Sabrina
