@@ -1,185 +1,169 @@
-Received: from fhigh-a1-smtp.messagingengine.com (fhigh-a1-smtp.messagingengine.com [103.168.172.152])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA0CE39C00E;
-	Thu, 12 Mar 2026 11:13:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.152
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AFB7361DBA
+	for <syzbot@lists.linux.dev>; Thu, 12 Mar 2026 14:18:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773314039; cv=none; b=cPjO6xm/UO2efiW6mFokzTr4noufEhcBgJba9FgbYkG8zLfYXRZxLvAbOMd0qZcaa88VS+7KrE3gXTHr/t75edI9KxFiPJITUpPkK9Jhe/je7aO167UpSC2LEWeTw5fZxnurLheQMtObgq6bGxZWvbKByo6v4+fmcvoyclC/KCY=
+	t=1773325083; cv=none; b=dYmnK/e7pqc12ccaLHR7yK4NCgRgyRGDIz+Vyk4x7jk5+vj4rK7HxGC1HXBWIlwz8i/An13urAwywTYsIJIqlg9zwR/CM0FX9DEkqop2LdChRnDGZ8U7TGOV2DQNQbxcbNq9u6mv4+GX/OYOMSJtBoLUR3J4yndDzqn2BqDU2K8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773314039; c=relaxed/simple;
-	bh=0XdpQrXhtnWbL+mwUEXr2gN7/lR78+TTds+tdxJxm3Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VBAFpb5KK7yn2nvH67yBloXTef9Ye2koNURcg2RxMwva7cDv82pmCQ/tD8TQqRc2W/CjSj6VO6Ln0e6b+fS1JUzYY8VFh+eaAxi5h3nTYQ5OkavH8Kn49gHA2QgB67WG8+5kHBoNPObPFbP0KNnbAKuUD5c1YxEFed/p1ncIVKs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=queasysnail.net; spf=pass smtp.mailfrom=queasysnail.net; dkim=pass (2048-bit key) header.d=queasysnail.net header.i=@queasysnail.net header.b=id1Z/3dT; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=HdI7izUU; arc=none smtp.client-ip=103.168.172.152
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=queasysnail.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=queasysnail.net
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=queasysnail.net header.i=@queasysnail.net header.b="id1Z/3dT";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="HdI7izUU"
-Received: from phl-compute-08.internal (phl-compute-08.internal [10.202.2.48])
-	by mailfhigh.phl.internal (Postfix) with ESMTP id E06721400269;
-	Thu, 12 Mar 2026 07:13:55 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-08.internal (MEProxy); Thu, 12 Mar 2026 07:13:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=queasysnail.net;
-	 h=cc:cc:content-type:content-type:date:date:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm2; t=1773314035; x=
-	1773400435; bh=ILkp3krwCY9KceXPRK4lYO0lmYmanAidcUSQL9jXG7U=; b=i
-	d1Z/3dTqWMGyau8nmqmsftQJZDVXI7t63cG6Z9sSUCqJVSIBp24HZN9FlfnppTA/
-	Deh0R7w/ABjjJ7XFxa85y1Nj1un1qOCItNLkIW4W1PivZztwBun5rw0OEKYhh1x/
-	03Lcy0NlcUVVMIFYtF5oH46B+dNchQvKHKSKjq8Z4/TQ9A+0g+Hyid8XM+7P3Ulo
-	gG/g3Lemkvo5RkbWnK72KO+Ll2r6b8Za+W6QM1orLSYJHgkLMYRPPlqVlMCp4gi0
-	blZiCLrWqJvniyMOPI8rO841l4XJQe/+NpfyJ2PJI9vIZ0ivK0imtrOCnmy/0MIt
-	yeBFZsnNeO5l9VhkJVHJA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-	1773314035; x=1773400435; bh=ILkp3krwCY9KceXPRK4lYO0lmYmanAidcUS
-	QL9jXG7U=; b=HdI7izUUduXL6/7i3635HLgpPKhN26c7qgpfxf1SlxjLAuKHjS1
-	mq2fSL85jAjSVXg0W4h5Zx0w75IX3MQl6OxchzIVz6XcsxE6buWaEjPZ2tlWjbxq
-	qizRiINI1Pib7pY99H7zOORWnbWoNGz7oG/WRUPJU3e8TjGtUhSXtLf+YtEjJRqg
-	fuKeFXnorNtpQPv4o0h9G7ucALFjGEjGLoKYoQn42eYo44kYPBz5l7DOQVg9ABoA
-	WSxKNlb6bmWAJ96vcoZ+fNMHx9BTnlOaQOcw9mqD05i8Mn7HSXRBHvOOjqEUlcbh
-	h5kSA3FAp0zydzGFad2anhonERiOGO0gtvQ==
-X-ME-Sender: <xms:8p-yaZIJJ1K7KEtlbo6lPyFZfiULC3MuTDyhOkKzO-viOp0ftkEQAA>
-    <xme:8p-yaWjW6t2u-mSPMEMnWXUzHZLlVeZA_KJKjVFVnh87aGSw3JjcmebOTnPEpUrwu
-    NWFBFyBAx2QdgXoge2wRCIIU_R_gphA17YSHl_GLwpHRR3e55w5Yho>
-X-ME-Received: <xmr:8p-yaa95Ne0-fZ39-nY5gRAHRe4_Bo2L_ai-RdCzoim0-0cczE4NsObasjy9>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddvkeeiieefucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
-    gurhepfffhvfevuffkfhggtggujgesthdtredttddtjeenucfhrhhomhepufgrsghrihhn
-    rgcuffhusghrohgtrgcuoehsugesqhhuvggrshihshhnrghilhdrnhgvtheqnecuggftrf
-    grthhtvghrnhepteffveefhfeuieekjeegiefftedufeevgfduueejveehudeuhfehfeet
-    ieekfeetnecuffhomhgrihhnpehlihhnuhigrdguvghvnecuvehluhhsthgvrhfuihiivg
-    eptdenucfrrghrrghmpehmrghilhhfrhhomhepshgusehquhgvrghshihsnhgrihhlrdhn
-    vghtpdhnsggprhgtphhtthhopedukedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtoh
-    epphgrsggvnhhisehrvgguhhgrthdrtghomhdprhgtphhtthhopehlihhuhhgrnhhgsghi
-    nhesghhmrghilhdrtghomhdprhgtphhtthhopehshiiisghothdotghitdelkehfrgejtg
-    dujeelhegvtggvrggtsehshiiikhgrlhhlvghrrdgrphhpshhpohhtmhgrihhlrdgtohhm
-    pdhrtghpthhtoheprghnughrvgifsehluhhnnhdrtghhpdhrtghpthhtohepsghrihgugh
-    gvsehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepuggrvhgvmhesuggrvhgv
-    mhhlohhfthdrnhgvthdprhgtphhtthhopegvughumhgriigvthesghhoohhglhgvrdgtoh
-    hmpdhrtghpthhtohephhhorhhmsheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepihgu
-    ohhstghhsehnvhhiughirgdrtghomh
-X-ME-Proxy: <xmx:8p-yaSrAYv7m8WytVD9YXVJfQaRRG11l3LhEpuOcWLyfzgfjm7Jgug>
-    <xmx:8p-yaXOXD7GzBDRPe19zAtgLfXFeYo0bZbJ_JnBJyWBQHXUchVY5lg>
-    <xmx:8p-yaY4rnNJd1e5whNllIoLjLEQk5IdDdjEhTFnZ6K1alrghU-KSPg>
-    <xmx:8p-yabVxd_hP_tGifezo462NUvpAutdA-6frR4pLfp_PQITn-fLZZg>
-    <xmx:85-yaT7UUdllFlfKkwP3vKZ2eDD4Ca1xhk0FhQ-SnePGxKZ-PyS8bRgu>
-Feedback-ID: i934648bf:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 12 Mar 2026 07:13:53 -0400 (EDT)
-Date: Thu, 12 Mar 2026 12:13:52 +0100
-From: Sabrina Dubroca <sd@queasysnail.net>
-To: Paolo Abeni <pabeni@redhat.com>
-Cc: Hangbin Liu <liuhangbin@gmail.com>,
-	syzbot ci <syzbot+ci098fa7c1795eceac@syzkaller.appspotmail.com>,
-	andrew@lunn.ch, bridge@lists.linux.dev, davem@davemloft.net,
-	edumazet@google.com, horms@kernel.org, idosch@nvidia.com,
-	jiri@resnulli.us, jv@jvosburgh.net, kuba@kernel.org,
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-	razor@blackwall.org, sridhar.samudrala@intel.com,
-	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot ci] Re: net: move netdev_compute_master_upper_features
- to ndo_set_features
-Message-ID: <abKf8Fg865Fhipwk@krikkit>
-References: <20260310-offload_compute-v1-0-3df79c09ea65@gmail.com>
- <69b04e91.a70a0220.51e36.0000.GAE@google.com>
- <abBuLV3P6aTzUg3W@krikkit>
- <abC7rdjxv9ENw-tA@fedora>
- <abHcP3GTO29rfKML@krikkit>
- <bcc536ac-dde1-4b63-8fed-70850818472b@redhat.com>
+	s=arc-20240116; t=1773325083; c=relaxed/simple;
+	bh=7ZGIO5Uk4Jkmi2tnai/jwYz4qldgdx4bRMrg+MO5gjc=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=nZkf6LvVsx20MDM3YLp2qrNtqtYBiRf0t91CLxBNbU0LN9/bPrMrdb3nWN8PM8Rj3auJhdBsmQsXpKtRi0G+HlAA3zAi8YHcyQya3NkZcLslwpYDenyTZ+ttRqZEbgwpp+0sE9vGLcGKCQVdjTcfaJ4FqEU74iTA6eYZluwf3aY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-67bcaf9a123so17632925eaf.0
+        for <syzbot@lists.linux.dev>; Thu, 12 Mar 2026 07:18:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773325081; x=1773929881;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=XSWfCS/wVBf1gnp7AVbzay+VONU+HPkWytBU8rL1pBk=;
+        b=vNGdG4cAcbkNSGys0Vf91vVTs3ODfWqWo9244zjpuvxneuRoFxZsFiOf2G9J3wtzIr
+         uHAu2XrIRJL0maqMTGWkoDR0MDv2HKQ9WqIGq0QOZlI4dr+N/ptZIsePfKqFUSFSNmoa
+         Yaj/e7rPxnkutsU5cOVBpdYl2a/kRS476/xzPkw5EUHqhFcFYFfvufcfVulNMxysPjl4
+         Cew5rzlOGZIiy9VZ4XQ7n5AQF26IKR5WJ3q1wraQAl8OvAj8Xrsy00TekH5IaWl0p2/a
+         eqzu4kMt7Mr9wkgqyainZmFs81/tdxYugD18dNxV3YhVyX/5PzHr7BSvrDMBLtMxyMGx
+         xEIw==
+X-Gm-Message-State: AOJu0Yxs1mqh/CZqZ5gX8w2AQXZZH/3s17hl12Xlqrr+Ew3QoMqJzymp
+	W9zaCrS/46pNc4EZKod8syzVGNaMiPFhYlj+9nxRrZU78lAbXCSvASCdXi3XmIglz9RoCghKrhn
+	Q/crxu3BQzVO1Lcrj8E266Lp0RhSEcpEbsQ3AdnnC4JMgnx5v5DeKe1XRA/M=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <bcc536ac-dde1-4b63-8fed-70850818472b@redhat.com>
+X-Received: by 2002:a05:6820:460c:b0:67b:af16:4865 with SMTP id
+ 006d021491bc7-67bc898d16cmr3228925eaf.44.1773325081017; Thu, 12 Mar 2026
+ 07:18:01 -0700 (PDT)
+Date: Thu, 12 Mar 2026 07:18:00 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69b2cb18.a00a0220.707e5.0015.GAE@google.com>
+Subject: [moderation/CI] Re: iwlwifi + mac80211 stability
+From: syzbot ci <syzbot+cia673a663f1f428f2@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-2026-03-12, 10:40:43 +0100, Paolo Abeni wrote:
-> On 3/11/26 10:18 PM, Sabrina Dubroca wrote:
-> > 2026-03-11, 00:47:41 +0000, Hangbin Liu wrote:
-> >> On Tue, Mar 10, 2026 at 08:17:01PM +0100, Sabrina Dubroca wrote:
-> >>> 2026-03-10, 10:02:09 -0700, syzbot ci wrote:
-> >>>> batman_adv: batadv0: Not using interface batadv_slave_1 (retrying later): interface not active
-> >>>> hsr_slave_0: entered promiscuous mode
-> >>>> hsr_slave_1: entered promiscuous mode
-> >>>> ------------[ cut here ]------------
-> >>>> err == -EMSGSIZE
-> >>>> WARNING: net/core/rtnetlink.c:4421 at rtmsg_ifinfo_build_skb+0x218/0x260, CPU#0: syz-executor/6496
-> >>>
-> >>> I'm not sure this one is caused by this series, but either way,
-> >>
-> >>
-> >>  rtnetlink_event+0x1b7/0x270
-> >>  notifier_call_chain+0x1be/0x400
-> >>  netdev_change_features+0x95/0xe0
-> >>  __netdev_upper_dev_link+0xb20/0xc80
-> >>  netdev_upper_dev_link+0xb0/0x100
-> >>
-> >>
-> >> This patch calls netdev_change_features() after __netdev_upper_dev_link(),
-> >> Which trigger a NETDEV_FEAT_CHANGE notify and calls rtmsg_ifinfo_event()
-> >> to fill the new link info. Maybe the event is a bit early and macsec has
-> >> data not ready?
-> > 
-> > But this would still mean that there's a mismatch between
-> > if_nlmsg_size() and rtnl_fill_ifinfo(), and your patch is only
-> > revealing it.
-> > 
-> > I'll send fixes for the stuff I mentioned, no idea if that's what
-> > syzbot saw since we don't have a repro.
-> 
-> It looks like even the nipa CI is reproducing the issue, i.e.:
-> 
-> https://netdev-ctrl.bots.linux.dev/logs/vmksft/net-dbg/results/554921/17-rtnetlink-sh/
-> 
-> more failures here:
-> 
-> https://netdev.bots.linux.dev/contest.html?pw-n=0&branch=net-next-2026-03-12--06-00&pw-n=0&pass=0
-> 
-> the fail in mascsec-offload looks quite deterministic, could you please
-> have a look?
+syzbot ci has tested the following series
 
-Ah crap, sorry Hangbin, you were right.  macsec_fill_info() returns
--EMSGSIZE when the key length is unexpected, and at this point we
-haven't set it to its proper value yet.
+[v1] iwlwifi + mac80211 stability
+https://lore.kernel.org/all/20260311230730.163348-1-greearb@candelatech.com
+* [PATCH wireless-next 01/28] wifi: iwlwifi: mld:  Check for NULL before lookup.
+* [PATCH wireless-next 02/28] wifi: iwlwifi: mld: Fix un-set return value in error case.
+* [PATCH wireless-next 03/28] wifi: iwlwifi: mld: Add check for null vif in stats callback.
+* [PATCH wireless-next 04/28] wifi: mac80211:  Check debugfs creation return values.
+* [PATCH wireless-next 05/28] wifi: mac80211: do not fail taking sta to lower state.
+* [PATCH wireless-next 06/28] wifi: mac80211: Mark sta as uploaded if single transition succeeds.
+* [PATCH wireless-next 07/28] wifi: mac80211:  Fix use-after-free of debugfs inodes.
+* [PATCH wireless-next 08/28] wifi: mac80211: Debugfs safety checks.
+* [PATCH wireless-next 09/28] wifi: mac80211: Use warn-on-once in drv_remove_chanctxt
+* [PATCH wireless-next 10/28] wifi: mac80211: Ensure sta debugfs is not double-freed.
+* [PATCH wireless-next 11/28] wifi: iwlwifi: mld: Fix stale reference in fw_id_to_link_sta
+* [PATCH wireless-next 12/28] wifi: iwlwifi: mld:  Improve logging in error cases.
+* [PATCH wireless-next 13/28] wifi: iwlwifi: mld: Remove warning about BAID.
+* [PATCH wireless-next 14/28] wifi: mac80211: Add dmesg log regarding warn-on in drv-stop.
+* [PATCH wireless-next 15/28] wifi: iwlwifi: mld: Fix use-after-free of bss_conf
+* [PATCH wireless-next 16/28] wifi: iwlwifi: mld: Check for null in iwl_mld_wait_sta_txqs_empty
+* [PATCH wireless-next 17/28] wifi: iwlwifi: mld: use warn-on-once in error path.
+* [PATCH wireless-next 18/28] wifi: iwlwifi: mld: Use warn-on-once in emlsr exit logic.
+* [PATCH wireless-next 19/28] wifi: iwlwifi: mld: Improve error message in rx path.
+* [PATCH wireless-next 20/28] wifi: iwlwifi: mld: Improve logging message.
+* [PATCH wireless-next 21/28] wifi: iwlwifi: mld: Protect from null mld_sta
+* [PATCH wireless-next 22/28] wifi: mac80211: Add force-cleanup call to driver.
+* [PATCH wireless-next 23/28] wifi: iwlwifi: mld: Support force-cleanup op
+* [PATCH wireless-next 24/28] wifi: iwlwifi: mld: Fix NPE in flush logic.
+* [PATCH wireless-next 25/28] wifi: iwlwifi: mld: Fix bad return address in tx code.
+* [PATCH wireless-next 26/28] wifi: mac80211: Ensure link work-items are only initialized once.
+* [PATCH wireless-next 27/28] wifi: iwlwifi: mld: Convert to WARN_ONCE in link removal path.
+* [PATCH wireless-next 28/28] wifi: mac80211: Decrease WARN spam.
 
-Bandaid solution would be:
+and found the following issue:
+WARNING in drv_add_interface
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index f6cad0746a02..0f7ef7bfbdde 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -4337,7 +4337,7 @@ static int macsec_fill_info(struct sk_buff *skb,
-                csid = secy->xpn ? MACSEC_CIPHER_ID_GCM_AES_XPN_256 : MACSEC_CIPHER_ID_GCM_AES_256;
-                break;
-        default:
--               goto nla_put_failure;
-+               return 0;
-        }
- 
-        if (nla_put_sci(skb, IFLA_MACSEC_SCI, secy->sci,
+Full report is available here:
+https://ci.syzbot.org/series/d3986751-1907-410b-b80c-976f38583b8c
+
+***
+
+WARNING in drv_add_interface
+
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
+base:      97492c019da4b62df83255e968b23b81c0315530
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/acf234a5-5041-402a-ace9-5766b71cadb4/config
+C repro:   https://ci.syzbot.org/findings/1533841d-c00d-4811-84c1-419f7bccc86a/c_repro
+syz repro: https://ci.syzbot.org/findings/1533841d-c00d-4811-84c1-419f7bccc86a/syz_repro
+
+------------[ cut here ]------------
+!sdata->vif.debugfs_dir
+WARNING: net/mac80211/driver-ops.h:510 at drv_vif_add_debugfs net/mac80211/driver-ops.h:510 [inline], CPU#1: dhcpcd/5553
+WARNING: net/mac80211/driver-ops.h:510 at drv_add_interface+0x5e5/0x910 net/mac80211/driver-ops.c:84, CPU#1: dhcpcd/5553
+Modules linked in:
+CPU: 1 UID: 0 PID: 5553 Comm: dhcpcd Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:drv_vif_add_debugfs net/mac80211/driver-ops.h:510 [inline]
+RIP: 0010:drv_add_interface+0x5e5/0x910 net/mac80211/driver-ops.c:84
+Code: f3 fa ff ff e8 9c 22 ae f6 48 8d 3d 85 f2 0a 05 67 48 0f b9 3a e9 c1 fc ff ff e8 86 22 ae f6 e9 19 fb ff ff e8 7c 22 ae f6 90 <0f> 0b 90 eb 94 e8 71 22 ae f6 4c 8d 35 7a f2 0a 05 49 8d bf 28 0a
+RSP: 0018:ffffc90003b57678 EFLAGS: 00010293
+RAX: ffffffff8b1776f4 RBX: ffff888172594dc0 RCX: ffff8881165657c0
+RDX: 0000000000000000 RSI: 0000000000000002 RDI: 0000000000000006
+RBP: 0000000000000000 R08: ffffffff901146b7 R09: 1ffffffff20228d6
+R10: dffffc0000000000 R11: fffffbfff20228d7 R12: dffffc0000000000
+R13: ffff888172597028 R14: ffff8881725957f8 R15: 0000000000000002
+FS:  00007ff45a6f6740(0000) GS:ffff8882a9465000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055d00b0c3161 CR3: 000000010017c000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ ieee80211_do_open+0x929/0x2490 net/mac80211/iface.c:1466
+ ieee80211_open+0x15b/0x200 net/mac80211/iface.c:472
+ __dev_open+0x44d/0x830 net/core/dev.c:1702
+ __dev_change_flags+0x1f7/0x690 net/core/dev.c:9778
+ netif_change_flags+0x88/0x1a0 net/core/dev.c:9841
+ dev_change_flags+0x130/0x260 net/core/dev_api.c:68
+ devinet_ioctl+0x9f2/0x1b30 net/ipv4/devinet.c:1199
+ inet_ioctl+0x42a/0x560 net/ipv4/af_inet.c:1004
+ sock_do_ioctl+0x101/0x320 net/socket.c:1253
+ sock_ioctl+0x5c6/0x7f0 net/socket.c:1374
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:597 [inline]
+ __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7ff45a7c4d49
+Code: 5c c3 48 8d 44 24 08 48 89 54 24 e0 48 89 44 24 c0 48 8d 44 24 d0 48 89 44 24 c8 b8 10 00 00 00 c7 44 24 b8 10 00 00 00 0f 05 <41> 89 c0 3d 00 f0 ff ff 76 10 48 8b 15 ae 60 0d 00 f7 d8 41 83 c8
+RSP: 002b:00007ffff8603cd8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007ff45a6f66c0 RCX: 00007ff45a7c4d49
+RDX: 00007ffff8613ec8 RSI: 0000000000008914 RDI: 0000000000000011
+RBP: 00007ffff8624088 R08: 00007ffff8613e88 R09: 00007ffff8613e38
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffff8613ec8 R14: 0000000000000028 R15: 0000000000008914
+ </TASK>
 
 
-Proper fix (so that the notification we're sending during
-upper_dev_link has full linkinfo) would be to move
-netdev_upper_dev_link() to after macsec_changelink_common() and fix up
-the error handling. I don't see anything in macsec_add_dev or
-macsec_changelink_common that needs the device to be linked. But
-anyway it doesn't make sense for macsec_fill_info to return -EMSGSIZE
-on invalid data, so the "bandaid" should be included as well.
+***
 
-Should this be part of this series (either just the "bandaid" or the
-"proper fix"+bandaid), since we never saw a problem before?
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
--- 
-Sabrina
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[greearb@candelatech.com linux-wireless@vger.kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
