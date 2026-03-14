@@ -1,632 +1,199 @@
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A508A54768
-	for <syzbot@lists.linux.dev>; Sat, 14 Mar 2026 09:25:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 179BD4400
+	for <syzbot@lists.linux.dev>; Sat, 14 Mar 2026 13:35:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773480347; cv=none; b=MWCPtbB/LvjrL4axxP2WJPTqE34xswwAi0+s/j1RoTe8NJJDGGeYHSWwmkFQ3wbkZGXvC/mv8Xotq4z1+Abtdgs8EZ1Q2l3mccvPLBByKf6Ofw+Q2NPF0ruj9HWVXSi3JlQAMwG7/KRAKfUzSzB2MTvuopV3Sz3nBqQh07Z+8jI=
+	t=1773495356; cv=none; b=InQc3mUKsysg3KTrUDI0hrbdrpYTgOo/VW4lmdxPAB/BP6VKtHWEqQ324r5qjbkoSSmySt3v81SgmLNpgPGGmjxx/ArllFGv7w6j9kYIadUmy5FTNpiF84uvIqsu/CQXYJdbIMtHVU2r5/UILV/UDuBPGQchiV43RBUb0JsZxPg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773480347; c=relaxed/simple;
-	bh=5qRT4ZZBnzUsaT7vZmQDUl+QJd3zdSp3gZAzIZAUfns=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ERRfxlvhMzn60YLwb6Y8bbY5IKRyLTrWrGwyf6XLsZE7Y/KqF4Bjj1UqrN/aXzpheIDdW2YrhUZYseQNORWgM6y7ukETkucw38VR5RgnZcBeBOz/Hl4qx2308RX2RE2bbzgkDtHGqxO89qzOT5yK/h+GK5O86QnBS/8yZxnwKI0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
+	s=arc-20240116; t=1773495356; c=relaxed/simple;
+	bh=/tAeK60Sod6t4l7SkyjC2HyR+ATym2crc/kudl6SxYU=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=s8qL5Xs6PCEM65fnEXTIwvPvnGIkcVl1Lbcz42XFvgAemF+r23MQnV1CIY6Gi3pGvR9AWYnRyMw+KA97JG7vvFGkGmZkaSoxJXkkATzl5UPukUeTEEeDjzvE+1nhoNqsNed4xK7K5BjetEr1I9df685lu5gXDorw5LpcsSurjn0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-67bb3853058so12052970eaf.3
-        for <syzbot@lists.linux.dev>; Sat, 14 Mar 2026 02:25:45 -0700 (PDT)
+Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-7d74b41d74dso14387382a34.2
+        for <syzbot@lists.linux.dev>; Sat, 14 Mar 2026 06:35:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773480344; x=1774085144;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=EV0HGJuIuzSGPMMS1Zb1yERK65tcNSQw+jcUWiDUvv0=;
-        b=elqebqjPUdh4X+fxKYZJHG6RpEOK7jI1tDPr2mvqWLSANOYQo9KaadLME5DGZr5DcP
-         Kdvwd8LxNRu7A6LlyuYt2ldiAsHIcSTqoTOeAmUCjdlsfnA/3LRGgU8P9t6K7QVBjFTc
-         /p++MT32DntoDAB5otBnNC6aXWBQlXVa5iBdSJ09+4EGzIRy84Hl3bQaMXV0yiY/Pqwr
-         JWP8t9zmd+GqDtgXYrKWhtjEejNH8mP4qbSXKZneSii1mU/SLhFY6dYLD0VXvSR4eSnI
-         a3du97+noV4frf5D1SM6CmgWt58HepZMQQXTl18N/ahernBgxhEIUiUNyd4Vqmu8X64U
-         syLg==
-X-Gm-Message-State: AOJu0YwvUC6v4438Sf5V4SMiunLvYbAs5kZW4ffddCijVFNs3VzGPUhf
-	cDlDpu+i0SaavmensF+UmdihhoaXlVcYxs8ExvCtET/n/gSN7zXLECdyQrZPmTZUvMrcyi1lnMl
-	y4ZER1AJder5NbWs8jauKkyIUA0KrD6cMoYrgX99eDJ2hk2Wju/lFiu5Xauk=
+        d=1e100.net; s=20251104; t=1773495354; x=1774100154;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1zytHuDe3e0TuuA3BVm+/azBXcNl1zpiYLV3y0pxAYg=;
+        b=N5KimE7doc/HiAQJEEzGWFgmlrazfU18KUtXFS8ZD8Cl4I5cAdYkghQ3QUobtUPGjq
+         ZTBsEZYZ8wSgQteCbiUJi1fqcfKlDwlFUIeUylf/zzy2uGOIHz6MfM0OX9DqQ60l6Rc1
+         t+ZXogxge/a5MWoC2gxdHO7JYGt2SSyv0ht//it2Wv42RLMQCIBZ3EqckQ3tqzPPJnLS
+         xFyHfZ94qnIml4f0joOm9puTM6AIChiiS+3HaFyPvnpi2OZsyd9PCdefYlgdKILk9eOM
+         5vRS3abJYiqWtdCatIOWH99c11DAUoKSZohEKvAeJgKT+qptFJy/lo7MMYtB8Gt38RU9
+         U4JQ==
+X-Gm-Message-State: AOJu0YwU/zXya/Jmes5eqWin3EylT+QkpzobAvlGMCiVSKQtz4kGmbm7
+	cVMG+ZqkAogwmoO4opObg1Y/XJ9VMQjqeAuJbHLM7uyhHthOT3zv4awel087kV35vdPJEwIoedd
+	mlgJOCM3LmDkph4yI2nFdtV7iJ8zOLD6UEJa4LjmHRib9U55h96dS97bOQ28=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4588:b0:67b:c122:d29f with SMTP id
- 006d021491bc7-67bdaa39c3dmr2883283eaf.37.1773480344621; Sat, 14 Mar 2026
- 02:25:44 -0700 (PDT)
-Date: Sat, 14 Mar 2026 02:25:44 -0700
+X-Received: by 2002:a05:6820:c0c7:20b0:67b:dce8:55b8 with SMTP id
+ 006d021491bc7-67bdce85a82mr2884712eaf.11.1773495353953; Sat, 14 Mar 2026
+ 06:35:53 -0700 (PDT)
+Date: Sat, 14 Mar 2026 06:35:53 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69b52998.a00a0220.3b25d1.0012.GAE@google.com>
-Subject: [moderation/CI] Re: net: sleepable ndo_set_rx_mode
-From: syzbot ci <syzbot+ci07ec1701c5cf77f8@syzkaller.appspotmail.com>
+Message-ID: <69b56439.a00a0220.3b25d1.0014.GAE@google.com>
+Subject: [moderation/CI] Re: net: openvswitch: decouple flow_table from ovs_mutex
+From: syzbot ci <syzbot+cia149d3444aa2b948@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] net: sleepable ndo_set_rx_mode
-https://lore.kernel.org/all/20260313145113.1424442-1-sdf@fomichev.me
-* [PATCH net-next 01/11] net: add address list snapshot and reconciliation =
-infrastructure
-* [PATCH net-next 02/11] net: introduce ndo_set_rx_mode_async and dev_rx_mo=
-de_work
-* [PATCH net-next 03/11] net: move promiscuity handling into dev_rx_mode_wo=
-rk
-* [PATCH net-next 04/11] fbnic: convert to ndo_set_rx_mode_async
-* [PATCH net-next 05/11] mlx5: convert to ndo_set_rx_mode_async
-* [PATCH net-next 06/11] bnxt: convert to ndo_set_rx_mode_async
-* [PATCH net-next 07/11] iavf: convert to ndo_set_rx_mode_async
-* [PATCH net-next 08/11] netdevsim: convert to ndo_set_rx_mode_async
-* [PATCH net-next 09/11] dummy: convert to ndo_set_rx_mode_async
-* [PATCH net-next 10/11] net: warn ops-locked drivers still using ndo_set_r=
-x_mode
-* [PATCH net-next 11/11] selftests: net: add team_bridge_macvlan rx_mode te=
-st
+[v1] net: openvswitch: decouple flow_table from ovs_mutex
+https://lore.kernel.org/all/20260313173114.1220551-1-amorenoz@redhat.com
+* [PATCH net-next v1] net: openvswitch: decouple flow_table from ovs_mutex
 
 and found the following issue:
-INFO: task hung in cfg80211_wiphy_work
+BUG: sleeping function called from invalid context in __alloc_skb
 
 Full report is available here:
-https://ci.syzbot.org/series/2082d932-a52b-452f-8578-cff71ac48dba
+https://ci.syzbot.org/series/dad18167-5b3c-4436-a026-ab60850e4342
 
 ***
 
-INFO: task hung in cfg80211_wiphy_work
+BUG: sleeping function called from invalid context in __alloc_skb
 
 tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net-next.git
-base:      8f921f61005450589c0bc1a941a5ddde21d9aed9
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      ce8ee8583ed83122405eabaa8fb351be4d9dc65c
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/2b308211-99ab-473d-bc06-5fbd9675960=
-b/config
-syz repro: https://ci.syzbot.org/findings/2364ee6f-c520-43b4-a8cf-9e3bb0e1e=
-e31/syz_repro
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/2b4330f1-9bd1-42b5-8e81-a127a9bf1b82/config
+C repro:   https://ci.syzbot.org/findings/8259a139-586c-46ee-8e3e-4ed8801b7533/c_repro
+syz repro: https://ci.syzbot.org/findings/8259a139-586c-46ee-8e3e-4ed8801b7533/syz_repro
 
-INFO: task kworker/u10:0:27 blocked for more than 143 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:kworker/u10:0   state:D stack:25256 pid:27    tgid:27    ppid:2      t=
-ask_flags:0x4208060 flags:0x00080000
-Workqueue: events_unbound cfg80211_wiphy_work
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5295 [inline]
- __schedule+0x15dd/0x52d0 kernel/sched/core.c:6908
- __schedule_loop kernel/sched/core.c:6990 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7005
- schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7062
- __mutex_lock_common kernel/locking/mutex.c:692 [inline]
- __mutex_lock+0x7fe/0x1300 kernel/locking/mutex.c:776
- class_wiphy_constructor include/net/cfg80211.h:6443 [inline]
- cfg80211_wiphy_work+0xb4/0x4a0 net/wireless/core.c:425
- process_one_work kernel/workqueue.c:3275 [inline]
- process_scheduled_works+0xb02/0x1830 kernel/workqueue.c:3358
- worker_thread+0xa50/0xfc0 kernel/workqueue.c:3439
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-INFO: task kworker/1:2:868 blocked for more than 143 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:kworker/1:2     state:D stack:25504 pid:868   tgid:868   ppid:2      t=
-ask_flags:0x4208060 flags:0x00080000
-Workqueue: events request_firmware_work_func
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5295 [inline]
- __schedule+0x15dd/0x52d0 kernel/sched/core.c:6908
- __schedule_loop kernel/sched/core.c:6990 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7005
- schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7062
- __mutex_lock_common kernel/locking/mutex.c:692 [inline]
- __mutex_lock+0x7fe/0x1300 kernel/locking/mutex.c:776
- regdb_fw_cb+0x7d/0x1c0 net/wireless/reg.c:1016
- request_firmware_work_func+0x105/0x1c0 drivers/base/firmware_loader/main.c=
-:1152
- process_one_work kernel/workqueue.c:3275 [inline]
- process_scheduled_works+0xb02/0x1830 kernel/workqueue.c:3358
- worker_thread+0xa50/0xfc0 kernel/workqueue.c:3439
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-INFO: task kworker/u9:5:1092 blocked for more than 143 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:kworker/u9:5    state:D stack:24320 pid:1092  tgid:1092  ppid:2      t=
-ask_flags:0x4208060 flags:0x00080000
-Workqueue: events_unbound linkwatch_event
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5295 [inline]
- __schedule+0x15dd/0x52d0 kernel/sched/core.c:6908
- __schedule_loop kernel/sched/core.c:6990 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7005
- schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7062
- __mutex_lock_common kernel/locking/mutex.c:692 [inline]
- __mutex_lock+0x7fe/0x1300 kernel/locking/mutex.c:776
- linkwatch_event+0xe/0x60 net/core/link_watch.c:313
- process_one_work kernel/workqueue.c:3275 [inline]
- process_scheduled_works+0xb02/0x1830 kernel/workqueue.c:3358
- worker_thread+0xa50/0xfc0 kernel/workqueue.c:3439
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-INFO: task dhcpcd:5549 blocked for more than 143 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:dhcpcd          state:D stack:25720 pid:5549  tgid:5549  ppid:1      t=
-ask_flags:0x400140 flags:0x00080000
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5295 [inline]
- __schedule+0x15dd/0x52d0 kernel/sched/core.c:6908
- __schedule_loop kernel/sched/core.c:6990 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7005
- schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7062
- __mutex_lock_common kernel/locking/mutex.c:692 [inline]
- __mutex_lock+0x7fe/0x1300 kernel/locking/mutex.c:776
- vlan_ioctl_handler+0xf0/0x630 net/8021q/vlan.c:579
- sock_ioctl+0x668/0x7f0 net/socket.c:1332
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f4686473d49
-RSP: 002b:00007fff8730a6f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000557cb913f4d0 RCX: 00007f4686473d49
-RDX: 00007fff8730a700 RSI: 0000000000008982 RDI: 0000000000000011
-RBP: 0000000000000002 R08: 0000000000000008 R09: 0000000000000000
-R10: 00007fff8731ad80 R11: 0000000000000246 R12: 00007fff8730a700
-R13: 00007fff8730a7c0 R14: 0000557cb913f4d0 R15: 0000557cb91a6f10
- </TASK>
-INFO: task kworker/u8:2:5621 blocked for more than 143 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:kworker/u8:2    state:D stack:25176 pid:5621  tgid:5621  ppid:2      t=
-ask_flags:0x4208060 flags:0x00080000
-Workqueue: netns cleanup_net
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5295 [inline]
- __schedule+0x15dd/0x52d0 kernel/sched/core.c:6908
- __schedule_loop kernel/sched/core.c:6990 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7005
- schedule_timeout+0xc3/0x2c0 kernel/time/sleep_timeout.c:75
- do_wait_for_common kernel/sched/completion.c:100 [inline]
- __wait_for_common kernel/sched/completion.c:121 [inline]
- wait_for_common kernel/sched/completion.c:132 [inline]
- wait_for_completion+0x2cc/0x5e0 kernel/sched/completion.c:153
- __flush_work+0xa17/0xc50 kernel/workqueue.c:4327
- __cancel_work_sync+0xbe/0x110 kernel/workqueue.c:4447
- free_netdev+0x26c/0x6e0 net/core/dev.c:12310
- netdev_run_todo+0xc88/0xe10 net/core/dev.c:11847
- ops_exit_rtnl_list net/core/net_namespace.c:189 [inline]
- ops_undo_list+0x3d8/0x940 net/core/net_namespace.c:248
- cleanup_net+0x56b/0x800 net/core/net_namespace.c:704
- process_one_work kernel/workqueue.c:3275 [inline]
- process_scheduled_works+0xb02/0x1830 kernel/workqueue.c:3358
- worker_thread+0xa50/0xfc0 kernel/workqueue.c:3439
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-INFO: task kworker/u8:3:5896 blocked for more than 143 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:kworker/u8:3    state:D stack:23624 pid:5896  tgid:5896  ppid:2      t=
-ask_flags:0x4208060 flags:0x00080000
-Workqueue: rx_mode_wq dev_rx_mode_work
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5295 [inline]
- __schedule+0x15dd/0x52d0 kernel/sched/core.c:6908
- __schedule_loop kernel/sched/core.c:6990 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7005
- schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7062
- __mutex_lock_common kernel/locking/mutex.c:692 [inline]
- __mutex_lock+0x7fe/0x1300 kernel/locking/mutex.c:776
- dev_rx_mode_work+0x170/0xc90 net/core/dev.c:9700
- process_one_work kernel/workqueue.c:3275 [inline]
- process_scheduled_works+0xb02/0x1830 kernel/workqueue.c:3358
- worker_thread+0xa50/0xfc0 kernel/workqueue.c:3439
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-INFO: task kworker/1:4:5906 blocked for more than 143 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:kworker/1:4     state:D stack:23752 pid:5906  tgid:5906  ppid:2      t=
-ask_flags:0x4208060 flags:0x00080000
-Workqueue: events switchdev_deferred_process_work
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5295 [inline]
- __schedule+0x15dd/0x52d0 kernel/sched/core.c:6908
- __schedule_loop kernel/sched/core.c:6990 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7005
- schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7062
- __mutex_lock_common kernel/locking/mutex.c:692 [inline]
- __mutex_lock+0x7fe/0x1300 kernel/locking/mutex.c:776
- switchdev_deferred_process_work+0xe/0x20 net/switchdev/switchdev.c:104
- process_one_work kernel/workqueue.c:3275 [inline]
- process_scheduled_works+0xb02/0x1830 kernel/workqueue.c:3358
- worker_thread+0xa50/0xfc0 kernel/workqueue.c:3439
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-INFO: task syz-executor:10842 blocked for more than 144 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor    state:D stack:22520 pid:10842 tgid:10842 ppid:1      t=
-ask_flags:0x480140 flags:0x00080002
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5295 [inline]
- __schedule+0x15dd/0x52d0 kernel/sched/core.c:6908
- __schedule_loop kernel/sched/core.c:6990 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7005
- schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7062
- __mutex_lock_common kernel/locking/mutex.c:692 [inline]
- __mutex_lock+0x7fe/0x1300 kernel/locking/mutex.c:776
- rtnl_net_lock include/linux/rtnetlink.h:130 [inline]
- rtnl_net_dev_lock+0x257/0x2f0 net/core/dev.c:2163
- unregister_netdevice_notifier_dev_net+0x96/0x440 net/core/dev.c:2208
- nsim_destroy+0xd9/0x680 drivers/net/netdevsim/netdev.c:1174
- __nsim_dev_port_del+0x14d/0x1b0 drivers/net/netdevsim/dev.c:1528
- nsim_dev_port_del_all drivers/net/netdevsim/dev.c:1540 [inline]
- nsim_dev_reload_destroy+0x288/0x490 drivers/net/netdevsim/dev.c:1764
- nsim_drv_remove+0x58/0x170 drivers/net/netdevsim/dev.c:1779
- device_remove drivers/base/dd.c:571 [inline]
- __device_release_driver drivers/base/dd.c:1284 [inline]
- device_release_driver_internal+0x46f/0x860 drivers/base/dd.c:1307
- bus_remove_device+0x34d/0x440 drivers/base/bus.c:616
- device_del+0x527/0x8f0 drivers/base/core.c:3878
- device_unregister+0x21/0xf0 drivers/base/core.c:3919
- nsim_bus_dev_del drivers/net/netdevsim/bus.c:491 [inline]
- del_device_store+0x2b0/0x370 drivers/net/netdevsim/bus.c:244
- kernfs_fop_write_iter+0x3af/0x540 fs/kernfs/file.c:352
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_write+0x150/0x270 fs/read_write.c:740
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f458055cfce
-RSP: 002b:00007fff68821b08 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 0000555580081500 RCX: 00007f458055cfce
-RDX: 0000000000000001 RSI: 00007fff68821b90 RDI: 0000000000000005
-RBP: 00007f458063351c R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
-R13: 00007fff68821b90 R14: 00007f4581344620 R15: 0000000000000003
- </TASK>
-INFO: task syz.0.1807:10948 blocked for more than 144 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz.0.1807      state:D stack:26656 pid:10948 tgid:10947 ppid:5918   t=
-ask_flags:0x400140 flags:0x00080002
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5295 [inline]
- __schedule+0x15dd/0x52d0 kernel/sched/core.c:6908
- __schedule_loop kernel/sched/core.c:6990 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7005
- schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7062
- __mutex_lock_common kernel/locking/mutex.c:692 [inline]
- __mutex_lock+0x7fe/0x1300 kernel/locking/mutex.c:776
- nl80211_pre_doit+0x5f/0x930 net/wireless/nl80211.c:18117
- genl_family_rcv_msg_doit+0x1d7/0x330 net/netlink/genetlink.c:1109
- genl_family_rcv_msg net/netlink/genetlink.c:1194 [inline]
- genl_rcv_msg+0x61c/0x7a0 net/netlink/genetlink.c:1209
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- genl_rcv+0x28/0x40 net/netlink/genetlink.c:1218
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
- __sys_sendmsg net/socket.c:2671 [inline]
- __do_sys_sendmsg net/socket.c:2676 [inline]
- __se_sys_sendmsg net/socket.c:2674 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fc97739c799
-RSP: 002b:00007fc97825a028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fc977615fa0 RCX: 00007fc97739c799
-RDX: 0000000000000000 RSI: 0000200000000180 RDI: 0000000000000003
-RBP: 00007fc977432c99 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fc977616038 R14: 00007fc977615fa0 R15: 00007ffd2003aab8
- </TASK>
-INFO: task syz.0.1807:10952 blocked for more than 144 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz.0.1807      state:D stack:26536 pid:10952 tgid:10947 ppid:5918   t=
-ask_flags:0x400140 flags:0x00080002
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5295 [inline]
- __schedule+0x15dd/0x52d0 kernel/sched/core.c:6908
- __schedule_loop kernel/sched/core.c:6990 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7005
- schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7062
- __mutex_lock_common kernel/locking/mutex.c:692 [inline]
- __mutex_lock+0x7fe/0x1300 kernel/locking/mutex.c:776
- nl80211_pre_doit+0x5f/0x930 net/wireless/nl80211.c:18117
- genl_family_rcv_msg_doit+0x1d7/0x330 net/netlink/genetlink.c:1109
- genl_family_rcv_msg net/netlink/genetlink.c:1194 [inline]
- genl_rcv_msg+0x61c/0x7a0 net/netlink/genetlink.c:1209
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- genl_rcv+0x28/0x40 net/netlink/genetlink.c:1218
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
- __sys_sendmsg net/socket.c:2671 [inline]
- __do_sys_sendmsg net/socket.c:2676 [inline]
- __se_sys_sendmsg net/socket.c:2674 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fc97739c799
-RSP: 002b:00007fc978239028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fc977616090 RCX: 00007fc97739c799
-RDX: 0000000000000000 RSI: 0000200000000180 RDI: 0000000000000003
-RBP: 00007fc977432c99 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fc977616128 R14: 00007fc977616090 R15: 00007ffd2003aab8
- </TASK>
-Future hung task reports are suppressed, see sysctl kernel.hung_task_warnin=
-gs
-INFO: task syz.2.1808:10950 blocked for more than 144 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz.2.1808      state:D stack:26520 pid:10950 tgid:10949 ppid:5922   t=
-ask_flags:0x400140 flags:0x00080002
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5295 [inline]
- __schedule+0x15dd/0x52d0 kernel/sched/core.c:6908
- __schedule_loop kernel/sched/core.c:6990 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7005
- schedule_timeout+0xc3/0x2c0 kernel/time/sleep_timeout.c:75
- do_wait_for_common kernel/sched/completion.c:100 [inline]
- __wait_for_common kernel/sched/completion.c:121 [inline]
- wait_for_common kernel/sched/completion.c:132 [inline]
- wait_for_completion+0x2cc/0x5e0 kernel/sched/completion.c:153
- __flush_workqueue+0x6f6/0x14f0 kernel/workqueue.c:4083
- netdev_run_todo+0x2fc/0xe10 net/core/dev.c:11812
- nl80211_pre_doit+0x4f1/0x930 net/wireless/nl80211.c:-1
- genl_family_rcv_msg_doit+0x1d7/0x330 net/netlink/genetlink.c:1109
- genl_family_rcv_msg net/netlink/genetlink.c:1194 [inline]
- genl_rcv_msg+0x61c/0x7a0 net/netlink/genetlink.c:1209
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- genl_rcv+0x28/0x40 net/netlink/genetlink.c:1218
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
- __sys_sendmsg net/socket.c:2671 [inline]
- __do_sys_sendmsg net/socket.c:2676 [inline]
- __se_sys_sendmsg net/socket.c:2674 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f634299c799
-RSP: 002b:00007f6343865028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f6342c15fa0 RCX: 00007f634299c799
-RDX: 0000000000000000 RSI: 0000200000000180 RDI: 0000000000000003
-RBP: 00007f6342a32c99 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f6342c16038 R14: 00007f6342c15fa0 R15: 00007ffcaed4e308
- </TASK>
-Future hung task reports are suppressed, see sysctl kernel.hung_task_warnin=
-gs
-INFO: task syz.2.1808:10951 blocked for more than 144 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz.2.1808      state:D stack:26088 pid:10951 tgid:10949 ppid:5922   t=
-ask_flags:0x400140 flags:0x00080002
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5295 [inline]
- __schedule+0x15dd/0x52d0 kernel/sched/core.c:6908
- __schedule_loop kernel/sched/core.c:6990 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7005
- schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7062
- __mutex_lock_common kernel/locking/mutex.c:692 [inline]
- __mutex_lock+0x7fe/0x1300 kernel/locking/mutex.c:776
- wiphy_lock include/net/cfg80211.h:6428 [inline]
- nl80211_pre_doit+0x281/0x930 net/wireless/nl80211.c:18190
- genl_family_rcv_msg_doit+0x1d7/0x330 net/netlink/genetlink.c:1109
- genl_family_rcv_msg net/netlink/genetlink.c:1194 [inline]
- genl_rcv_msg+0x61c/0x7a0 net/netlink/genetlink.c:1209
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- genl_rcv+0x28/0x40 net/netlink/genetlink.c:1218
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
- __sys_sendmsg net/socket.c:2671 [inline]
- __do_sys_sendmsg net/socket.c:2676 [inline]
- __se_sys_sendmsg net/socket.c:2674 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f634299c799
-RSP: 002b:00007f6343844028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f6342c16090 RCX: 00007f634299c799
-RDX: 0000000000000000 RSI: 0000200000000180 RDI: 0000000000000003
-RBP: 00007f6342a32c99 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f6342c16128 R14: 00007f6342c16090 R15: 00007ffcaed4e308
- </TASK>
-Future hung task reports are suppressed, see sysctl kernel.hung_task_warnin=
-gs
-INFO: task syz-executor:10957 blocked for more than 144 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor    state:D stack:25464 pid:10957 tgid:10957 ppid:1      t=
-ask_flags:0x400140 flags:0x00080002
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5295 [inline]
- __schedule+0x15dd/0x52d0 kernel/sched/core.c:6908
- __schedule_loop kernel/sched/core.c:6990 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7005
- schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7062
- __mutex_lock_common kernel/locking/mutex.c:692 [inline]
- __mutex_lock+0x7fe/0x1300 kernel/locking/mutex.c:776
- rtnl_net_lock include/linux/rtnetlink.h:130 [inline]
- inet_rtm_newaddr+0x404/0x1ad0 net/ipv4/devinet.c:978
- rtnetlink_rcv_msg+0x7d5/0xbe0 net/core/rtnetlink.c:6958
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- __sys_sendto+0x672/0x710 net/socket.c:2199
- __do_sys_sendto net/socket.c:2206 [inline]
- __se_sys_sendto net/socket.c:2202 [inline]
- __x64_sys_sendto+0xde/0x100 net/socket.c:2202
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fbe5e55cfce
-RSP: 002b:00007ffc1795c728 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 0000555555a84500 RCX: 00007fbe5e55cfce
-RDX: 0000000000000028 RSI: 00007fbe5f344670 RDI: 0000000000000003
-RBP: 0000000000000001 R08: 00007ffc1795c7a4 R09: 000000000000000c
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
-R13: 0000000000000000 R14: 00007fbe5f344670 R15: 0000000000000000
- </TASK>
-Future hung task reports are suppressed, see sysctl kernel.hung_task_warnin=
-gs
-INFO: task syz-executor:10958 blocked for more than 144 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor    state:D stack:25112 pid:10958 tgid:10958 ppid:1      t=
-ask_flags:0x400140 flags:0x00080002
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5295 [inline]
- __schedule+0x15dd/0x52d0 kernel/sched/core.c:6908
- __schedule_loop kernel/sched/core.c:6990 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7005
- schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7062
- __mutex_lock_common kernel/locking/mutex.c:692 [inline]
- __mutex_lock+0x7fe/0x1300 kernel/locking/mutex.c:776
- rtnl_net_lock include/linux/rtnetlink.h:130 [inline]
- inet_rtm_newaddr+0x404/0x1ad0 net/ipv4/devinet.c:978
- rtnetlink_rcv_msg+0x7d5/0xbe0 net/core/rtnetlink.c:6958
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- __sys_sendto+0x672/0x710 net/socket.c:2199
- __do_sys_sendto net/socket.c:2206 [inline]
- __se_sys_sendto net/socket.c:2202 [inline]
- __x64_sys_sendto+0xde/0x100 net/socket.c:2202
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f2853d5cfce
-RSP: 002b:00007ffdddce0d58 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 0000555567dbb500 RCX: 00007f2853d5cfce
-RDX: 0000000000000028 RSI: 00007f2854b44670 RDI: 0000000000000003
-RBP: 0000000000000001 R08: 00007ffdddce0dd4 R09: 000000000000000c
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
-R13: 0000000000000000 R14: 00007f2854b44670 R15: 0000000000000000
- </TASK>
-Future hung task reports are suppressed, see sysctl kernel.hung_task_warnin=
-gs
-INFO: lockdep is turned off.
-NMI backtrace for cpu 0
-CPU: 0 UID: 0 PID: 34 Comm: khungtaskd Not tainted syzkaller #0 PREEMPT(ful=
-l)=20
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
-.2-1 04/01/2014
+BUG: sleeping function called from invalid context at ./include/linux/sched/mm.h:323
+in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 5961, name: syz.0.17
+preempt_count: 0, expected: 0
+RCU nest depth: 1, expected: 0
+2 locks held by syz.0.17/5961:
+ #0: ffffffff8fc3a570 (cb_lock){++++}-{4:4}, at: genl_rcv+0x19/0x40 net/netlink/genetlink.c:1218
+ #1: ffffffff8e7602e0 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:312 [inline]
+ #1: ffffffff8e7602e0 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:850 [inline]
+ #1: ffffffff8e7602e0 (rcu_read_lock){....}-{1:3}, at: ovs_flow_cmd_set+0x3c5/0xd60 net/openvswitch/datapath.c:1320
+CPU: 0 UID: 0 PID: 5961 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
 Call Trace:
  <TASK>
  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- nmi_cpu_backtrace+0x274/0x2d0 lib/nmi_backtrace.c:113
- nmi_trigger_cpumask_backtrace+0x17a/0x300 lib/nmi_backtrace.c:62
- trigger_all_cpu_backtrace include/linux/nmi.h:161 [inline]
- __sys_info lib/sys_info.c:157 [inline]
- sys_info+0x135/0x170 lib/sys_info.c:165
- check_hung_uninterruptible_tasks kernel/hung_task.c:346 [inline]
- watchdog+0xfd9/0x1030 kernel/hung_task.c:515
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ __might_resched+0x378/0x4d0 kernel/sched/core.c:8884
+ might_alloc include/linux/sched/mm.h:323 [inline]
+ slab_pre_alloc_hook mm/slub.c:4452 [inline]
+ slab_alloc_node mm/slub.c:4807 [inline]
+ kmem_cache_alloc_node_noprof+0x7f/0x690 mm/slub.c:4882
+ __alloc_skb+0x1d0/0x7d0 net/core/skbuff.c:702
+ alloc_skb include/linux/skbuff.h:1383 [inline]
+ nlmsg_new include/net/netlink.h:1055 [inline]
+ netlink_ack+0x146/0xa50 net/netlink/af_netlink.c:2487
+ netlink_rcv_skb+0x2b6/0x4b0 net/netlink/af_netlink.c:2556
+ genl_rcv+0x28/0x40 net/netlink/genetlink.c:1219
+ netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
+ netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
+ sock_sendmsg_nosec net/socket.c:727 [inline]
+ __sock_sendmsg net/socket.c:742 [inline]
+ ____sys_sendmsg+0xa68/0xad0 net/socket.c:2592
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
+ __sys_sendmsg net/socket.c:2678 [inline]
+ __do_sys_sendmsg net/socket.c:2683 [inline]
+ __se_sys_sendmsg net/socket.c:2681 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f4c60b9c799
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc44689868 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f4c60e15fa0 RCX: 00007f4c60b9c799
+RDX: 000000000000c000 RSI: 0000200000000000 RDI: 0000000000000003
+RBP: 00007f4c60c32c99 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f4c60e15fac R14: 00007f4c60e15fa0 R15: 00007f4c60e15fa0
  </TASK>
-Sending NMI from CPU 0 to CPUs 1:
-NMI backtrace for cpu 1
-CPU: 1 UID: 0 PID: 0 Comm: swapper/1 Not tainted syzkaller #0 PREEMPT(full)=
-=20
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
-.2-1 04/01/2014
-RIP: 0010:pv_native_safe_halt+0xf/0x20 arch/x86/kernel/paravirt.c:63
-Code: 1e 6c 02 c3 cc cc cc cc cc cc cc 90 90 90 90 90 90 90 90 90 90 90 90 =
-90 90 90 90 f3 0f 1e fa eb 07 0f 00 2d 43 42 1a 00 fb f4 <e9> fc e9 02 00 c=
-c cc cc cc cc cc cc cc cc cc cc cc 90 90 90 90 90
-RSP: 0018:ffffc90000197e20 EFLAGS: 00000246
-RAX: ffff8882a9464000 RBX: ffffffff819a8c8d RCX: 0000000080000001
-RDX: 0000000000000001 RSI: ffffffff8c27b4e0 RDI: ffffffff819a8c8d
-RBP: ffffc90000197f10 R08: ffff88823c63395b R09: 1ffff110478c672b
-R10: dffffc0000000000 R11: ffffed10478c672c R12: ffffffff901140b0
-R13: 1ffff1102c095000 R14: 0000000000000001 R15: 0000000000000001
-FS:  0000000000000000(0000) GS:ffff8882a9464000(0000) knlGS:000000000000000=
-0
+
+================================================
+WARNING: lock held when returning to user space!
+syzkaller #0 Tainted: G        W          
+------------------------------------------------
+syz.0.17/5961 is leaving the kernel with locks still held!
+1 lock held by syz.0.17/5961:
+ #0: ffffffff8e7602e0 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:312 [inline]
+ #0: ffffffff8e7602e0 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:850 [inline]
+ #0: ffffffff8e7602e0 (rcu_read_lock){....}-{1:3}, at: ovs_flow_cmd_set+0x3c5/0xd60 net/openvswitch/datapath.c:1320
+------------[ cut here ]------------
+Voluntary context switch within RCU read-side critical section!
+WARNING: kernel/rcu/tree_plugin.h:332 at rcu_note_context_switch+0xcac/0xf40 kernel/rcu/tree_plugin.h:332, CPU#1: syz.0.17/5961
+Modules linked in:
+CPU: 1 UID: 0 PID: 5961 Comm: syz.0.17 Tainted: G        W           syzkaller #0 PREEMPT(full) 
+Tainted: [W]=WARN
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:rcu_note_context_switch+0xcac/0xf40 kernel/rcu/tree_plugin.h:332
+Code: 00 41 c6 45 00 00 48 8b 3d b1 e5 65 0e 48 81 c4 b8 00 00 00 5b 41 5c 41 5d 41 5e 41 5f 5d e9 4b 63 ff ff 48 8d 3d 14 c3 69 0e <67> 48 0f b9 3a e9 1b f4 ff ff 90 0f 0b 90 45 84 e4 0f 84 ea f3 ff
+RSP: 0000:ffffc900061dfbb0 EFLAGS: 00010002
+RAX: 0000000000000000 RBX: ffff8881626b3a00 RCX: 0000000080000002
+RDX: 0000000000000000 RSI: ffffffff8c27a4e0 RDI: ffffffff90150f10
+RBP: dffffc0000000000 R08: ffffffff901183b7 R09: 1ffffffff2023076
+R10: dffffc0000000000 R11: fffffbfff2023077 R12: 0000000000000000
+R13: 0000000000000000 R14: ffff88823c63bd40 R15: ffff8881626b3e84
+FS:  000055556739f500(0000) GS:ffff8882a9464000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffd37a2e068 CR3: 00000001156b2000 CR4: 00000000000006f0
+CR2: 00007ffc9debcf78 CR3: 000000016d29c000 CR4: 00000000000006f0
 Call Trace:
  <TASK>
- arch_safe_halt arch/x86/kernel/process.c:766 [inline]
- default_idle+0x9/0x20 arch/x86/kernel/process.c:767
- default_idle_call+0x72/0xb0 kernel/sched/idle.c:122
- cpuidle_idle_call kernel/sched/idle.c:191 [inline]
- do_idle+0x1bd/0x500 kernel/sched/idle.c:332
- cpu_startup_entry+0x43/0x60 kernel/sched/idle.c:430
- start_secondary+0x101/0x110 arch/x86/kernel/smpboot.c:312
- common_startup_64+0x13e/0x147
+ __schedule+0x2ff/0x5340 kernel/sched/core.c:6791
+ __schedule_loop kernel/sched/core.c:6989 [inline]
+ schedule+0x164/0x360 kernel/sched/core.c:7004
+ __exit_to_user_mode_loop kernel/entry/common.c:54 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:98 [inline]
+ __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
+ irqentry_exit_to_user_mode_prepare include/linux/irq-entry-common.h:270 [inline]
+ irqentry_exit_to_user_mode include/linux/irq-entry-common.h:339 [inline]
+ irqentry_exit+0x155/0x620 kernel/entry/common.c:219
+ asm_sysvec_call_function_single+0x1a/0x20 arch/x86/include/asm/idtentry.h:704
+RIP: 0033:0x7f4c60b9c799
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc44689868 EFLAGS: 00000246
+RAX: 0000000000000020 RBX: 00007f4c60e15fa0 RCX: 00007f4c60b9c799
+RDX: 000000000000c000 RSI: 0000200000000000 RDI: 0000000000000003
+RBP: 00007f4c60c32c99 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f4c60e15fac R14: 00007f4c60e15fa0 R15: 00007f4c60e15fa0
  </TASK>
+----------------
+Code disassembly (best guess):
+   0:	00 41 c6             	add    %al,-0x3a(%rcx)
+   3:	45 00 00             	add    %r8b,(%r8)
+   6:	48 8b 3d b1 e5 65 0e 	mov    0xe65e5b1(%rip),%rdi        # 0xe65e5be
+   d:	48 81 c4 b8 00 00 00 	add    $0xb8,%rsp
+  14:	5b                   	pop    %rbx
+  15:	41 5c                	pop    %r12
+  17:	41 5d                	pop    %r13
+  19:	41 5e                	pop    %r14
+  1b:	41 5f                	pop    %r15
+  1d:	5d                   	pop    %rbp
+  1e:	e9 4b 63 ff ff       	jmp    0xffff636e
+  23:	48 8d 3d 14 c3 69 0e 	lea    0xe69c314(%rip),%rdi        # 0xe69c33e
+* 2a:	67 48 0f b9 3a       	ud1    (%edx),%rdi <-- trapping instruction
+  2f:	e9 1b f4 ff ff       	jmp    0xfffff44f
+  34:	90                   	nop
+  35:	0f 0b                	ud2
+  37:	90                   	nop
+  38:	45 84 e4             	test   %r12b,%r12b
+  3b:	0f                   	.byte 0xf
+  3c:	84 ea                	test   %ch,%dl
+  3e:	f3                   	repz
+  3f:	ff                   	.byte 0xff
 
 
 ***
@@ -640,11 +207,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[alexanderduyck@fb.com anthony.l.nguyen@intel.com cratiu@nvidia.com davem@d=
-avemloft.net edumazet@google.com kernel-team@meta.com kuba@kernel.org micha=
-el.chan@broadcom.com netdev@vger.kernel.org pabeni@redhat.com pavan.chebbi@=
-broadcom.com przemyslaw.kitszel@intel.com saeedm@nvidia.com sdf@fomichev.me=
- tariqt@nvidia.com]
+[aconole@redhat.com amorenoz@redhat.com davem@davemloft.net dev@openvswitch.org echaudro@redhat.com edumazet@google.com horms@kernel.org i.maximets@ovn.org kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
