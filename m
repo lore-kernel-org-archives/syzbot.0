@@ -1,101 +1,60 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8061B34DB72
-	for <syzbot@lists.linux.dev>; Sun, 15 Mar 2026 12:30:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C91C325A655;
+	Sun, 15 Mar 2026 17:02:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773577818; cv=none; b=NBfVfq3/rxJf1eM3yFm9ysuRUIEqql8qnanL1HOwPRD+PGOEstmLLbglYW+aFuIR0v8I2JL/6AVm3E+Jap9NLNFmVaTbZeF53KiRFsJUCkOVp21ZGdwLVZcRXGp+9JKkwWvEbyBWACou1I4634EeuT5apDvD6mIksy6lyR+N27k=
+	t=1773594170; cv=none; b=d/eVlz1o4wQbe9LaUVNC/KgX2eMNiw70AGFnNPOmo/J7vLCwEz19yb8ZN/S9piBPY0sc56hI0xoqQSdx0cyKzCSXcSPAVxGZRaxOLRrMIRrCfhN1+Kj39PEJogqEYa0GUi1duQFJvHhGuwcCVu4dhHqkHajfxU1iSToux+PZDmc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773577818; c=relaxed/simple;
-	bh=dAF6EzhmfYjPCbJTGwcPxZtm0/JEAGDbN+Fj66nWJ/4=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=ChN3nkECcFdSH7R4YYSMVxQCxMHDXXXVquVc9oxHCmYsLrEv654iP7dW9xL29NiWD2jseTKIHZ46u57hTS0dD8ae3ABSfb4TEpqYB+3MTYIHPwgT4iIPqdfCQ/NCWPgB/R9xOkOYoi+1j6mxL3h2jPqV76koLhdrtaV9fw0mcyg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-67bf3e1051bso16798118eaf.3
-        for <syzbot@lists.linux.dev>; Sun, 15 Mar 2026 05:30:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773577816; x=1774182616;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=I3L9arFEoq9A4E17prvbQNB9j3C1EDeY250Imyq4MNI=;
-        b=DT6lum6hgg83ywhbOUsdpLu5n0oHlVbPzIgTdyYqBKLO5ZnEEEX64kQm8ORJp6qvoP
-         kYqx01rEB1KpWuQliKEIuLJA651NlGva/jBPlSq2nijqxRk5/OJ8JZbMDE4datWsCeuN
-         fDwZnG2jSyLV7JAA9VnMy1GecHy6O+1/cCquMv+/O5DxBritR8qkewd8//seUYRFgoVS
-         f9FXK1mbK/kGWOa+olz25Eh8Ko4AMeES9lUcEYGUlkYWBKXF9QGvR60Bsf5KfQA2quvQ
-         ltrPetNgYhNfYjqHhxTo/niwGzeZGtnRCVog7BIkFNssY/qzrG8ADsrJG5h423i1msLH
-         MLKw==
-X-Gm-Message-State: AOJu0YwvOxuio3g8bt67FakKhGMTR9UhyJ+YB/lZdp6zYCQGUfi/JWE4
-	L2uQHxAz/crS4gnWJ4h3RCSqCk/gLjzY8Dqh4+aIv7xLC6N0NkycngJnbE3oyxGsg7M3w/bHn72
-	Kcy/MwrmBSZdrrb3YFqfwtZq9Y8CqvACyEUSO0Vt+84JxQ31JQJpQBMn9Iqs=
+	s=arc-20240116; t=1773594170; c=relaxed/simple;
+	bh=zy2/z1sXTGswAXzUUoF4kMirR7eYtWRiusezRTgh5s4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=g1sudbhwf7tQ2iBV4a1+Aauoo5k7dpAiz5WlO4s1yy/4EAAi3xvrpujY25ITsAp4Mp0jtfbR2IUNpaYp8EuYCUweepxorQB7okgZzSForY7NC45eGKDGovzE7kjyPyjdKZ3C/XirFMgy1pNTnZ/z7RWG6mCbiW2GgBDIxUHHCXM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=t0+gkML2; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="t0+gkML2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94CA3C4CEF7;
+	Sun, 15 Mar 2026 17:02:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773594170;
+	bh=zy2/z1sXTGswAXzUUoF4kMirR7eYtWRiusezRTgh5s4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=t0+gkML2+e2/jn6cN+bhDFGyl71Mf4TLa+A9Hizu8tFguiNo8kOnCQ+ThblMFynni
+	 4YZbzWigvSOeYm3oDFgm+H9faSPqmNcZfZCsgqlaMuorLTCg/TRBHZkOFbEzOuB0xh
+	 5FKBxdaz/Qy2mETzaTMqr9twXgFKV2CHpvnoUqq9VTg8Z69YsGyOjax+WIvXaVfj3S
+	 6BjePrMdxtuluW4chV5n6Xg815EpQ7AeONQaRgP3R4YwRax3n+ZyCIuONdEqMl2pKW
+	 fP+I399isEdR55o6GGs5jAsqCnai6A5gKDHX6/hnW9jtyYAhF/3mslcIiNwOam1KmF
+	 hImyGahvDUnWw==
+Date: Sun, 15 Mar 2026 10:02:47 -0700
+From: Eric Biggers <ebiggers@kernel.org>
+To: syzbot ci <syzbot+ci46064f472908848f@syzkaller.appspotmail.com>
+Cc: andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+	daniel@iogearbox.net, eddyz87@gmail.com, haoluo@google.com,
+	john.fastabend@gmail.com, jolsa@kernel.org, kpsingh@kernel.org,
+	linux-kernel@vger.kernel.org, martin.lau@linux.dev, sdf@fomichev.me,
+	song@kernel.org, yonghong.song@linux.dev, syzbot@lists.linux.dev,
+	syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot ci] Re: bpf: Remove inclusions of crypto/sha1.h
+Message-ID: <20260315170247.GA23968@quark>
+References: <20260314210810.67348-1-ebiggers@kernel.org>
+ <69b69e5e.050a0220.248e02.00f9.GAE@google.com>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:610:b0:67b:b2a0:6955 with SMTP id
- 006d021491bc7-67bdaa3213cmr6843122eaf.48.1773577816607; Sun, 15 Mar 2026
- 05:30:16 -0700 (PDT)
-Date: Sun, 15 Mar 2026 05:30:16 -0700
-In-Reply-To: <9b8b9c7f7d533c96c0c1abe5b4aecb7dc19e2abf.1773306879.git.chleroy@kernel.org>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69b6a658.050a0220.12d28.0153.GAE@google.com>
-Subject: [syzbot ci] Re: fs: Replace user_access_{begin/end} by scoped user access
-From: syzbot ci <syzbot+cid75770a461d6c546@syzkaller.appspotmail.com>
-To: brauner@kernel.org, chleroy@kernel.org, david.laight.linux@gmail.com, 
-	jack@suse.cz, linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	tglx@linutronix.de, torvalds@linux-foundation.org, viro@zeniv.linux.org.uk
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <69b69e5e.050a0220.248e02.00f9.GAE@google.com>
 
-syzbot ci has tested the following series
+On Sun, Mar 15, 2026 at 04:56:14AM -0700, syzbot ci wrote:
+> net/ipv6/addrconf.c:3341:25: error: variable has incomplete type 'struct sha1_ctx'
+> net/ipv6/addrconf.c:3344:13: error: use of undeclared identifier 'SHA1_BLOCK_SIZE'
+> net/ipv6/addrconf.c:3369:2: error: call to undeclared function 'sha1_init'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+> net/ipv6/addrconf.c:3378:2: error: call to undeclared function 'sha1_update'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 
-[v2] fs: Replace user_access_{begin/end} by scoped user access
-https://lore.kernel.org/all/9b8b9c7f7d533c96c0c1abe5b4aecb7dc19e2abf.1773306879.git.chleroy@kernel.org
-* [PATCH v2] fs: Replace user_access_{begin/end} by scoped user access
+Thanks.  The BPF CI caught this first, and this was already fixed in v3.
 
-and found the following issue:
-kernel build error
-
-Full report is available here:
-https://ci.syzbot.org/series/a2ff6791-00cd-4a47-8c1b-9224abc65d04
-
-***
-
-kernel build error
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      0257f64bdac7fdca30fa3cae0df8b9ecbec7733a
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/ab2718fa-ea35-4282-a430-1ceab5b149aa/config
-
-fs/readdir.c:530:60: error: use of undeclared label 'efault'
-fs/readdir.c:538:2: error: unknown type name 'buf'
-fs/readdir.c:538:5: error: expected identifier or '('
-fs/readdir.c:539:2: error: unknown type name 'buf'
-fs/readdir.c:539:5: error: expected identifier or '('
-fs/readdir.c:540:2: error: unknown type name 'ctx'
-fs/readdir.c:540:5: error: expected identifier or '('
-fs/readdir.c:541:2: error: expected identifier or '('
-fs/readdir.c:542:1: error: type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
-fs/readdir.c:542:7: error: expected ';' after top level declarator
-fs/readdir.c:543:2: error: unknown type name 'buf'
-fs/readdir.c:543:5: error: expected identifier or '('
-fs/readdir.c:544:2: error: expected identifier or '('
-fs/readdir.c:545:1: error: extraneous closing brace ('}')
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+- Eric
