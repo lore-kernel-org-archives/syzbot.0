@@ -1,60 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C91C325A655;
-	Sun, 15 Mar 2026 17:02:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43810290DBB
+	for <syzbot@lists.linux.dev>; Mon, 16 Mar 2026 15:16:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773594170; cv=none; b=d/eVlz1o4wQbe9LaUVNC/KgX2eMNiw70AGFnNPOmo/J7vLCwEz19yb8ZN/S9piBPY0sc56hI0xoqQSdx0cyKzCSXcSPAVxGZRaxOLRrMIRrCfhN1+Kj39PEJogqEYa0GUi1duQFJvHhGuwcCVu4dhHqkHajfxU1iSToux+PZDmc=
+	t=1773674204; cv=none; b=hlbEnY4hvYobm8RifT/yiEO7DqmQwjGNHfAbW0mor6TJWAC1mo46+B6Y78rtL6DiSh+rVcI60I2XC7VqAqB6tqwQDnY74tWeB6D1wBkFQN0zMsj+j4AgYqhc5KM2MSpw5/4r6HzLI0WmxjMHB+/x537mgDfjcVyoeJ0rPX6pbEs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773594170; c=relaxed/simple;
-	bh=zy2/z1sXTGswAXzUUoF4kMirR7eYtWRiusezRTgh5s4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=g1sudbhwf7tQ2iBV4a1+Aauoo5k7dpAiz5WlO4s1yy/4EAAi3xvrpujY25ITsAp4Mp0jtfbR2IUNpaYp8EuYCUweepxorQB7okgZzSForY7NC45eGKDGovzE7kjyPyjdKZ3C/XirFMgy1pNTnZ/z7RWG6mCbiW2GgBDIxUHHCXM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=t0+gkML2; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="t0+gkML2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94CA3C4CEF7;
-	Sun, 15 Mar 2026 17:02:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773594170;
-	bh=zy2/z1sXTGswAXzUUoF4kMirR7eYtWRiusezRTgh5s4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=t0+gkML2+e2/jn6cN+bhDFGyl71Mf4TLa+A9Hizu8tFguiNo8kOnCQ+ThblMFynni
-	 4YZbzWigvSOeYm3oDFgm+H9faSPqmNcZfZCsgqlaMuorLTCg/TRBHZkOFbEzOuB0xh
-	 5FKBxdaz/Qy2mETzaTMqr9twXgFKV2CHpvnoUqq9VTg8Z69YsGyOjax+WIvXaVfj3S
-	 6BjePrMdxtuluW4chV5n6Xg815EpQ7AeONQaRgP3R4YwRax3n+ZyCIuONdEqMl2pKW
-	 fP+I399isEdR55o6GGs5jAsqCnai6A5gKDHX6/hnW9jtyYAhF/3mslcIiNwOam1KmF
-	 hImyGahvDUnWw==
-Date: Sun, 15 Mar 2026 10:02:47 -0700
-From: Eric Biggers <ebiggers@kernel.org>
-To: syzbot ci <syzbot+ci46064f472908848f@syzkaller.appspotmail.com>
-Cc: andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-	daniel@iogearbox.net, eddyz87@gmail.com, haoluo@google.com,
-	john.fastabend@gmail.com, jolsa@kernel.org, kpsingh@kernel.org,
-	linux-kernel@vger.kernel.org, martin.lau@linux.dev, sdf@fomichev.me,
-	song@kernel.org, yonghong.song@linux.dev, syzbot@lists.linux.dev,
-	syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot ci] Re: bpf: Remove inclusions of crypto/sha1.h
-Message-ID: <20260315170247.GA23968@quark>
-References: <20260314210810.67348-1-ebiggers@kernel.org>
- <69b69e5e.050a0220.248e02.00f9.GAE@google.com>
+	s=arc-20240116; t=1773674204; c=relaxed/simple;
+	bh=3EC3r9LUIld1pC0ORzJyq7rt1oIL3Qj3QoPvW5lCmJE=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=q2MdQttpw/4hNQ4L1Co5de5zR8zg0rOHltvkjnf07lFovaR4QA1hTSe/lK02esVq3XWDLGr5+Jw4wPlh0Jdm7bEDdQ8wlYMv5/jUR5RtaaO1ldHm6wWH/sdcdYZB8CnDdc8SUlybRxtXAXDQicq66hH+hNMARUm5NA2mZTtjxdQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-67bbb4e5f24so41770130eaf.0
+        for <syzbot@lists.linux.dev>; Mon, 16 Mar 2026 08:16:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773674202; x=1774279002;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Bb6LXmm9hjJoilXhnKhBpoQja7ncxOWMVzHr6SOcaqU=;
+        b=IWRt8furthm0vLr/Si7O1b4kMsOHili8n5xGCLOrUPApu5bLhhHGTL6klFQGF5zZQp
+         eWqO+oZsGvXBvTQcjevj9Axdd404YukEga2EprjukaYhgLpGkbRkMh00vXcSuggQuHZd
+         sCAYY3mYnNoBXhXkoYlVTSIDodEdPafZbE3yUyBBq4LvjykPDppt1M3ibxH67fAfjXSw
+         TIzTSAXPAAuI2jdOO2O9fER7Jj5PsljtCi7I5ofBSfbK9EKyion110gjKUao1y5MVz1+
+         krfVI3FAMV9xtu/Egj651AE4DHOmmi/s3e2udPxHmVq9DfGBWrh/rq9Jw8pR5u3SMB0F
+         znEw==
+X-Gm-Message-State: AOJu0Yz8zHKHpOcvj9XeFVoPWZeWE0vRjNLcgjyWu2oQcH17CMx97dSu
+	JYL4taL1gIV2FvRvQ/FvEZF+gDznSh4S0u1ztr+eyZXBPlOVVHTn8HF/HL9bnwy3JMAscWL4FrI
+	cz0aj/j6ymVqeLiX9vZQzPZqUjYifXlQzA4dUMhkdjL4bMYzdb79zqidisk4=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <69b69e5e.050a0220.248e02.00f9.GAE@google.com>
+X-Received: by 2002:a05:6820:60e:b0:67b:c844:59e with SMTP id
+ 006d021491bc7-67bdaa4c4b6mr8722379eaf.48.1773674202253; Mon, 16 Mar 2026
+ 08:16:42 -0700 (PDT)
+Date: Mon, 16 Mar 2026 08:16:42 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69b81eda.050a0220.12d28.0163.GAE@google.com>
+Subject: [moderation/CI] Re: mm: Free contiguous order-0 pages efficiently
+From: syzbot ci <syzbot+ci85facbaec5ac98a8@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Mar 15, 2026 at 04:56:14AM -0700, syzbot ci wrote:
-> net/ipv6/addrconf.c:3341:25: error: variable has incomplete type 'struct sha1_ctx'
-> net/ipv6/addrconf.c:3344:13: error: use of undeclared identifier 'SHA1_BLOCK_SIZE'
-> net/ipv6/addrconf.c:3369:2: error: call to undeclared function 'sha1_init'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-> net/ipv6/addrconf.c:3378:2: error: call to undeclared function 'sha1_update'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+syzbot ci has tested the following series
 
-Thanks.  The BPF CI caught this first, and this was already fixed in v3.
+[v2] mm: Free contiguous order-0 pages efficiently
+https://lore.kernel.org/all/20260316113209.945853-1-usama.anjum@arm.com
+* [PATCH v2 1/3] mm/page_alloc: Optimize free_contig_range()
+* [PATCH v2 2/3] vmalloc: Optimize vfree
+* [PATCH v2 3/3] mm/page_alloc: Optimize __free_contig_frozen_range()
 
-- Eric
+and found the following issue:
+kernel build error
+
+Full report is available here:
+https://ci.syzbot.org/series/3821b2d3-8f85-4386-ad92-522a3f20be8a
+
+***
+
+kernel build error
+
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
+.git
+base:      c5a81ff6071bcf42531426e6336b5cc424df6e3d
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/e21a9615-d268-47cb-9b35-9882a0513fe=
+d/config
+
+mm/page_alloc.c:6810:11: error: call to '__compiletime_assert_1660' declare=
+d with 'error' attribute: min(order, ( __builtin_constant_p(nr_pages) ? ((n=
+r_pages) < 2 ? 0 : 63 - __builtin_clzll(nr_pages)) : (sizeof(nr_pages) <=3D=
+ 4) ? __ilog2_u32(nr_pages) : __ilog2_u64(nr_pages) )) signedness error
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[akpm@linux-foundation.org bpf@vger.kernel.org david.hildenbrand@arm.com da=
+vid@kernel.org dsterba@suse.com hannes@cmpxchg.org jackmanb@google.com liam=
+.howlett@oracle.com linux-kernel@vger.kernel.org linux-mm@kvack.org ljs@ker=
+nel.org mhocko@suse.com rppt@kernel.org ryan.roberts@arm.com surenb@google.=
+com terrelln@fb.com urezki@gmail.com usama.anjum@arm.com vbabka@kernel.org =
+vishal.moola@gmail.com ziy@nvidia.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
