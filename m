@@ -1,82 +1,87 @@
 Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB43D28A1E6
-	for <syzbot@lists.linux.dev>; Tue, 17 Mar 2026 09:26:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1936219A7A
+	for <syzbot@lists.linux.dev>; Tue, 17 Mar 2026 22:22:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773739582; cv=none; b=NIfIlcEWJgcnWYpCdp01G7qkcHvFlXA5Neu7lD4vTg9D3mcNYZETXWCjc+8/WgkZIkk2c7rOtTFsOYihmT8Caq8K+f4+nV8E8v76zl53fU0w5sgQ2yVy+PvxEBll/0ZIpip8OWBAuglw0cOpPFWO2OslsPHdhv/4RxxjRX0HpYw=
+	t=1773786174; cv=none; b=nidqwUuNRjIGOhD8OjlFwMeecyGEfO2wI16IoQAcWi9/jVWePSKkPpms4RHghEYLmt3xFrZW82adZxnMg+v4o89pq05ScWMn3cztl747LCdxLqFDlc+k5z+j1gqhk2t+E22mCK1sfGJ6UDCb7CKMO/sd3HrkguUyo1e/CH8TvTg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773739582; c=relaxed/simple;
-	bh=6AqAftLzLzPEThDUUEuVTiDFdQGvkLbKk6cHjParUrY=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=owM5lKDdmcORBWGfP0iHISHXgbFMChnjPSX/YPJNZ/apFl7BBX34BzJIPCJ6vZYCvwp+L5vKu200uA3tbaD2E+jfRkNqYsvXhiS6bF9mMGNTTVwA63U+JkMnoBmNvm8MbcvCuZMuSYrRGYq8XsVhqQLCo1I3TTG+aK3G+HopzlY=
+	s=arc-20240116; t=1773786174; c=relaxed/simple;
+	bh=MQPfou9DLLeB8fusu7+95Kubtmjisno3fRrfMObEJFA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=MOMxH1BtAYhRxPp1H2zlTNtuol7lIVJjgyOgwV8mHBCGcEcr1wlOFJw2xCdIroo4fxaRwkypXsf/GeORB0HvHcUEyXpzhmgrunu6hI+ZrJsBHc2Q5qPxbxEQeiS7bYKnP6laseL+3cTAcVHFgDTnzFsRPbhtAKg0DHF/FkoPnJ0=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-67bb7ed941fso92511343eaf.0
-        for <syzbot@lists.linux.dev>; Tue, 17 Mar 2026 02:26:20 -0700 (PDT)
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-67ba64650d9so1497813eaf.3
+        for <syzbot@lists.linux.dev>; Tue, 17 Mar 2026 15:22:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773739580; x=1774344380;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=CZIIAsudB2S1gCSRgOnWGwnsaKUzMw42RPVg1oUqlV8=;
-        b=nUUMJ7ybzj0hNhBJMI9pPo3bSS4GYYE9UAWeYBTjQUtlh9WpZVhIPRd6XY1nP6QhD6
-         UQjBL+R3opNCNY/NEyJiIeBE16jsZn/ycdbXwG0mnkwiNpDSk84VJpIW+JT4EKExmkDa
-         GlRVDi2OSqM1mFkVfTnJUK4r+3jZEr3SN69YEW/z8IPG5hkJ1cNCvxrFcwigImYieELY
-         UFGDEtI5ZhlMo8mG+ymiBbLUEBcu1paFhlrFub0Og7gNfm7foNA+oCzsCx97bgemzk1N
-         FAHYjl4vPEntTkmmJBKHNUr+rmX67Imb4GfNnlR+IAGqSYoVOdte6h4ZHhHYFTbU6UVU
-         O2Wg==
-X-Gm-Message-State: AOJu0YwXJPjFUItjHoGr9g6nJAyKNJAAfVZCY/xivX5y4mmM5JRXMaYD
-	SgL5pCbxiXX2Gro6EOvipIMNGBotx6+WzI2Z8RzZug6b7K4n/5+VO1pbEQ1KdoRs/RuY/zyo441
-	C6bH1rk7BKSa5KxCvDnHUKePbwuAr0oZztcko7DHHYV0/3ZfNsjVW+jZsEik=
+        d=1e100.net; s=20251104; t=1773786171; x=1774390971;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1XavjEwh8y2AcJUCy+bvteTjG/0n4XXSGSsd5CCtHhk=;
+        b=tHJiI8meduvA9AoGPdjlaCASEewRpjW5OZDj46q1BZT3CoTcgOc1yhavMIkKNUfIQF
+         2FYO+7/BUhfkka8C0+v82iF11K3xhRS+8a2vWibmSS3LoGbcKNLBjtCrRpFo5lfM5cAU
+         /B/+Q99raHvamYRQqxtAxvG07Va10rAoFF1+/xClQAC7cDOClgrHUeWaGsqO5ewFkZPa
+         edFV7p+GF0lMcb60WFRRGVSnLVkN+QGJADwTH8m4JqFCM5uubhI9xFJrT+VA5aKzR48o
+         77xZWSjaX2jagQ0n17BRdZcV5yOxAim7T3uT+xJsfPeHBQRj6MbO1GKyxdLnV86pEsOL
+         ynjg==
+X-Gm-Message-State: AOJu0YyKwpjoEw1eIcO2QeQHrMCGbuNODTe+p1IdvO2xYPtpVo30h/IE
+	TBZdGYwEbNy29Iot112OzJIdNY5+E7VOMgAoewF9uAVDiZOiCC1gjpVoWQOmoLEdnVr6zkfUWwR
+	WcCYGrvBiFZk7NhkFcT3IhbMRXOy8PmQGCvEkMr2GlPzf7Vrg0+5Y5/NKMBs=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1c82:b0:67b:b01c:589f with SMTP id
- 006d021491bc7-67bda9b4068mr10790931eaf.16.1773739579978; Tue, 17 Mar 2026
- 02:26:19 -0700 (PDT)
-Date: Tue, 17 Mar 2026 02:26:19 -0700
+X-Received: by 2002:a05:6820:458d:b0:679:e7b2:9fc6 with SMTP id
+ 006d021491bc7-67c0da721c8mr587898eaf.3.1773786171488; Tue, 17 Mar 2026
+ 15:22:51 -0700 (PDT)
+Date: Tue, 17 Mar 2026 15:22:51 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69b91e3b.050a0220.12d28.0170.GAE@google.com>
-Subject: [moderation/CI] Re: liveupdate: Fix module unloading and unregister API
-From: syzbot ci <syzbot+cicd7dafd458bde5a9@syzkaller.appspotmail.com>
+Message-ID: <69b9d43b.050a0220.248e02.015b.GAE@google.com>
+Subject: [moderation/CI] Re: ipvs: Move defense_work to system_dfl_long_wq
+From: syzbot ci <syzbot+ci8804f03b7e65350e@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] liveupdate: Fix module unloading and unregister API
-https://lore.kernel.org/all/20260317025049.494931-1-pasha.tatashin@soleen.com
-* [PATCH 1/6] liveupdate: Protect file handler list with rwsem
-* [PATCH 2/6] liveupdate: Protect FLB lists with rwsem
-* [PATCH 3/6] liveupdate: Defer file handler module refcounting to active sessions
-* [PATCH 4/6] liveupdate: Defer FLB module refcounting to active sessions
-* [PATCH 5/6] liveupdate: Make unregister functions return void
-* [PATCH 6/6] liveupdate: Remove luo_session_quiesce()
+[v1] ipvs: Move defense_work to system_dfl_long_wq
+https://lore.kernel.org/all/20260317140100.24993-2-iluceno@suse.de
+* [PATCH] ipvs: Move defense_work to system_dfl_long_wq
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/d7e6bc05-8c90-4673-83a6-8b219ebef008
+https://ci.syzbot.org/series/e585d6a4-60a0-4e53-bb7f-02b004020645
 
 ***
 
 kernel build error
 
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      7d47a508dfdc335c107fb00b4d9ef46488281a52
+tree:      nf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilt=
+er/nf-next.git
+base:      2c7e63d702f6c4209c5af833308e7fcbc7d4ab17
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/2e1e2480-6166-4271-982a-ce86ecfcf493/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/7a5718c9-01b3-46a2-aaa2-4dd1412f64c=
+b/config
 
-./include/linux/liveupdate.h:274:2: error: void function 'liveupdate_unregister_flb' should not return a value [-Wreturn-mismatch]
+net/netfilter/ipvs/ip_vs_ctl.c:237:21: error: use of undeclared identifier =
+'system_dfl_long_wq'; did you mean 'system_long_wq'?
+net/netfilter/ipvs/ip_vs_ctl.c:276:22: error: use of undeclared identifier =
+'system_dfl_long_wq'; did you mean 'system_long_wq'?
+net/netfilter/ipvs/ip_vs_ctl.c:4380:21: error: use of undeclared identifier=
+ 'system_dfl_long_wq'; did you mean 'system_long_wq'?
 
 ***
 
@@ -89,7 +94,15 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[akpm@linux-foundation.org dmatlack@google.com linux-kernel@vger.kernel.org linux-mm@kvack.org pasha.tatashin@soleen.com pratyush@kernel.org rppt@kernel.org]
+[andreas.taschner@suse.com brad.bendily@suse.com brendon.caligari@suse.com =
+cfamullaconrad@suse.com coreteam@netfilter.org davem@davemloft.net edumazet=
+@google.com federico.pinca@suse.com firo.yang@suse.com fw@strlen.de gabriel=
+.bertazi@suse.com horms@kernel.org horms@verge.net.au hvdheuvel@suse.com il=
+uceno@suse.de ja@ssi.bg jdelvare@suse.com kuba@kernel.org linux-kernel@vger=
+.kernel.org lvs-devel@vger.kernel.org marco.crivellari@suse.com mhocko@suse=
+.com mkoutny@suse.com netdev@vger.kernel.org netfilter-devel@vger.kernel.or=
+g pabeni@redhat.com pablo@netfilter.org phil@nwl.cc pmladek@suse.com ptesar=
+ik@suse.com richard.thompson@suse.com wpreston@suse.com yu.xu@suse.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
