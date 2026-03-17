@@ -1,91 +1,82 @@
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 447D0379975
-	for <syzbot@lists.linux.dev>; Tue, 17 Mar 2026 04:48:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB43D28A1E6
+	for <syzbot@lists.linux.dev>; Tue, 17 Mar 2026 09:26:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773722892; cv=none; b=XTtDG5leX9Lj2/Il4J8XuY9+q2fL4P94U0ya23ZJTLqfCLkDzrWI/lBWIAt/B6xPpE5Yi2csqEH7ML0U3Nz+nyYrTuKe8TGsMLcPWykIMTDSQYT96jZNQioN5h00v5lqLwbsmf+jk3dmz4baF2AoHwprvhaeothLrj/HNf6WX7s=
+	t=1773739582; cv=none; b=NIfIlcEWJgcnWYpCdp01G7qkcHvFlXA5Neu7lD4vTg9D3mcNYZETXWCjc+8/WgkZIkk2c7rOtTFsOYihmT8Caq8K+f4+nV8E8v76zl53fU0w5sgQ2yVy+PvxEBll/0ZIpip8OWBAuglw0cOpPFWO2OslsPHdhv/4RxxjRX0HpYw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773722892; c=relaxed/simple;
-	bh=vjXpq51466/MwfsRlII1enerQ7fzE+I5m0PhAY9UK9I=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=rI+Rn2vEcsd58LWFlE3Sy5AhSel6EKzhMHvfhyqnVf6PX1BVt5r7fYUGA16L6wsisC4yitQSjmPHhFDYmgEq/ZQGzGtRDUW7opsKEZHc/vwHg+ki2EWqomrCvfftyjV+Y/zPuWhMdsd+62D6XaTw0tAq28aQ19e4/nCgrhC/Y7w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
+	s=arc-20240116; t=1773739582; c=relaxed/simple;
+	bh=6AqAftLzLzPEThDUUEuVTiDFdQGvkLbKk6cHjParUrY=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=owM5lKDdmcORBWGfP0iHISHXgbFMChnjPSX/YPJNZ/apFl7BBX34BzJIPCJ6vZYCvwp+L5vKu200uA3tbaD2E+jfRkNqYsvXhiS6bF9mMGNTTVwA63U+JkMnoBmNvm8MbcvCuZMuSYrRGYq8XsVhqQLCo1I3TTG+aK3G+HopzlY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7d740d7e5a3so48166748a34.2
-        for <syzbot@lists.linux.dev>; Mon, 16 Mar 2026 21:48:08 -0700 (PDT)
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-67bb7ed941fso92511343eaf.0
+        for <syzbot@lists.linux.dev>; Tue, 17 Mar 2026 02:26:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773722888; x=1774327688;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GoPEEx393sXx6VlljxwvF2f5//xu/ysF9eQEPRJfxac=;
-        b=g//YjgNenTqy+NJF1/mFVssk+OqpLTP8d/+xFPS19GtGZmQMEjHvLxl0JEiSoQAXPq
-         PWLH+xLzLCNl47pj7gPXfTeODQ8QyRdmxp+DJiaTYNrl4yyFuSekFS9XSomRj+p+3bcu
-         6hqoeq9q9tasY92lwSYPbb7gnerbI+RyMXAmDz7R/sjOslaz1YTZT/nE7+EKJTOwEbxM
-         kjptY/ZaPGbfC1Bj6G6SeWCB/yf7qW3qrpFq2Zkh7TIq8gHlDzwRZmVgtGncs9MEmnuu
-         F0oN/A6NYCmWX4HNB8R+LM8S4t25psyDlIbIWqzPor06b/dSkMtVXKMjQxvg8NhiV232
-         mx6g==
-X-Gm-Message-State: AOJu0YzDH/sIivRToIPmMMVlMC84CghXufG+m2WlWCZ+XzEhAN1i9B3T
-	qGHYvG6JGopUOfHjPUIRHQU+KZG4jro/hMD4PGgl1tIfHfhiBpet4O8ZAIPngvq33H1uPCevuCy
-	30SWE181qqCbAKR0EEY9Wz48GXG4Jh8YP4kwX3iJQ1/AWEU/ICSziEkWi9Tc=
+        d=1e100.net; s=20251104; t=1773739580; x=1774344380;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=CZIIAsudB2S1gCSRgOnWGwnsaKUzMw42RPVg1oUqlV8=;
+        b=nUUMJ7ybzj0hNhBJMI9pPo3bSS4GYYE9UAWeYBTjQUtlh9WpZVhIPRd6XY1nP6QhD6
+         UQjBL+R3opNCNY/NEyJiIeBE16jsZn/ycdbXwG0mnkwiNpDSk84VJpIW+JT4EKExmkDa
+         GlRVDi2OSqM1mFkVfTnJUK4r+3jZEr3SN69YEW/z8IPG5hkJ1cNCvxrFcwigImYieELY
+         UFGDEtI5ZhlMo8mG+ymiBbLUEBcu1paFhlrFub0Og7gNfm7foNA+oCzsCx97bgemzk1N
+         FAHYjl4vPEntTkmmJBKHNUr+rmX67Imb4GfNnlR+IAGqSYoVOdte6h4ZHhHYFTbU6UVU
+         O2Wg==
+X-Gm-Message-State: AOJu0YwXJPjFUItjHoGr9g6nJAyKNJAAfVZCY/xivX5y4mmM5JRXMaYD
+	SgL5pCbxiXX2Gro6EOvipIMNGBotx6+WzI2Z8RzZug6b7K4n/5+VO1pbEQ1KdoRs/RuY/zyo441
+	C6bH1rk7BKSa5KxCvDnHUKePbwuAr0oZztcko7DHHYV0/3ZfNsjVW+jZsEik=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:c86:b0:67b:b8e5:e456 with SMTP id
- 006d021491bc7-67bdaa9ccb2mr11540303eaf.70.1773722888017; Mon, 16 Mar 2026
- 21:48:08 -0700 (PDT)
-Date: Mon, 16 Mar 2026 21:48:08 -0700
+X-Received: by 2002:a05:6820:1c82:b0:67b:b01c:589f with SMTP id
+ 006d021491bc7-67bda9b4068mr10790931eaf.16.1773739579978; Tue, 17 Mar 2026
+ 02:26:19 -0700 (PDT)
+Date: Tue, 17 Mar 2026 02:26:19 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69b8dd08.050a0220.12d28.016a.GAE@google.com>
-Subject: [moderation/CI] Re: net: devmem: support devmem with netkit devices
-From: syzbot ci <syzbot+ci951a3f613d1ab765@syzkaller.appspotmail.com>
+Message-ID: <69b91e3b.050a0220.12d28.0170.GAE@google.com>
+Subject: [moderation/CI] Re: liveupdate: Fix module unloading and unregister API
+From: syzbot ci <syzbot+cicd7dafd458bde5a9@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] net: devmem: support devmem with netkit devices
-https://lore.kernel.org/all/20260316-scratch-bobbyeshleman-tcp-dm-netkit5-v=
-1-0-b53c8cd72b23@meta.com
-* [PATCH net-next 1/6] net: devmem: support TX through netkit leased queues
-* [PATCH net-next 2/6] selftests: drv-net: extract _find_bss_map_id helper =
-in NetDrvContEnv
-* [PATCH net-next 3/6] selftests: drv-net: add skip-config flag to ncdevmem
-* [PATCH net-next 4/6] selftests: drv-net: add primary RX redirect support =
-to NetDrvContEnv
-* [PATCH net-next 5/6] selftests: drv-net: add netkit devmem RX test
-* [PATCH net-next 6/6] selftests: drv-net: add netkit devmem TX test
+[v1] liveupdate: Fix module unloading and unregister API
+https://lore.kernel.org/all/20260317025049.494931-1-pasha.tatashin@soleen.com
+* [PATCH 1/6] liveupdate: Protect file handler list with rwsem
+* [PATCH 2/6] liveupdate: Protect FLB lists with rwsem
+* [PATCH 3/6] liveupdate: Defer file handler module refcounting to active sessions
+* [PATCH 4/6] liveupdate: Defer FLB module refcounting to active sessions
+* [PATCH 5/6] liveupdate: Make unregister functions return void
+* [PATCH 6/6] liveupdate: Remove luo_session_quiesce()
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/e4c5419d-2378-4270-8913-bc133f1504a9
+https://ci.syzbot.org/series/d7e6bc05-8c90-4673-83a6-8b219ebef008
 
 ***
 
 kernel build error
 
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net-next.git
-base:      5446b8691eb8278f10deca92048fad84ffd1e4d5
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
+base:      7d47a508dfdc335c107fb00b4d9ef46488281a52
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/fe1afa06-5895-437c-b959-86c0087a6d5=
-b/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/2e1e2480-6166-4271-982a-ce86ecfcf493/config
 
-net/core/netdev-genl.c:1095:58: error: no member named 'lease' in 'struct n=
-etdev_rx_queue'
+./include/linux/liveupdate.h:274:2: error: void function 'liveupdate_unregister_flb' should not return a value [-Wreturn-mismatch]
 
 ***
 
@@ -98,11 +89,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[almasrymina@google.com andrew@lunn.ch bobbyeshleman@gmail.com bobbyeshlema=
-n@meta.com bpf@vger.kernel.org davem@davemloft.net dw@davidwei.uk edumazet@=
-google.com horms@kernel.org kuba@kernel.org linux-kernel@vger.kernel.org li=
-nux-kselftest@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com sdf@=
-fomichev.me shuah@kernel.org weibunny@fb.com]
+[akpm@linux-foundation.org dmatlack@google.com linux-kernel@vger.kernel.org linux-mm@kvack.org pasha.tatashin@soleen.com pratyush@kernel.org rppt@kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
