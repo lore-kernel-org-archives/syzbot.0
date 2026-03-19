@@ -1,50 +1,50 @@
 Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1936219A7A
-	for <syzbot@lists.linux.dev>; Tue, 17 Mar 2026 22:22:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D13F1C549F
+	for <syzbot@lists.linux.dev>; Thu, 19 Mar 2026 12:21:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773786174; cv=none; b=nidqwUuNRjIGOhD8OjlFwMeecyGEfO2wI16IoQAcWi9/jVWePSKkPpms4RHghEYLmt3xFrZW82adZxnMg+v4o89pq05ScWMn3cztl747LCdxLqFDlc+k5z+j1gqhk2t+E22mCK1sfGJ6UDCb7CKMO/sd3HrkguUyo1e/CH8TvTg=
+	t=1773922877; cv=none; b=GrBkh7CF6rHTrBe9LeMkY2QWwEi/qz5aUIdsHShFFABTl8K8o0+3Z+N3Bp3UN7LFexAzJEIeQDD6iaR5u8S+2MsSlcida77YP+/8X2DBY5LElvuaHOydG93bQa3zG5coYtH64VCKtzRRJ86PRtwwd9xYufyzKHh6VmofhCxnyT4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773786174; c=relaxed/simple;
-	bh=MQPfou9DLLeB8fusu7+95Kubtmjisno3fRrfMObEJFA=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=MOMxH1BtAYhRxPp1H2zlTNtuol7lIVJjgyOgwV8mHBCGcEcr1wlOFJw2xCdIroo4fxaRwkypXsf/GeORB0HvHcUEyXpzhmgrunu6hI+ZrJsBHc2Q5qPxbxEQeiS7bYKnP6laseL+3cTAcVHFgDTnzFsRPbhtAKg0DHF/FkoPnJ0=
+	s=arc-20240116; t=1773922877; c=relaxed/simple;
+	bh=YhxONHSaNbgSviDsDrU9XQtIi2yR4jc+AUFEDnPb710=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=leT7kkAamKaEquRRi0iKDPtJrE0zwY5/9ndonBbi/mnKEqomgv1VZ56pjopXN7QjcHtrWvQfZN7flEJxvrWI8ko8FE++0+PSZtKKi5iEy6zhW67LL1xwBuleyHEIHntkZbptPnBzpInYCXnWBEKh1oe187TROLKfV73gGafpj+g=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-67ba64650d9so1497813eaf.3
-        for <syzbot@lists.linux.dev>; Tue, 17 Mar 2026 15:22:52 -0700 (PDT)
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-67ba8269efaso7746252eaf.1
+        for <syzbot@lists.linux.dev>; Thu, 19 Mar 2026 05:21:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773786171; x=1774390971;
+        d=1e100.net; s=20251104; t=1773922874; x=1774527674;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=1XavjEwh8y2AcJUCy+bvteTjG/0n4XXSGSsd5CCtHhk=;
-        b=tHJiI8meduvA9AoGPdjlaCASEewRpjW5OZDj46q1BZT3CoTcgOc1yhavMIkKNUfIQF
-         2FYO+7/BUhfkka8C0+v82iF11K3xhRS+8a2vWibmSS3LoGbcKNLBjtCrRpFo5lfM5cAU
-         /B/+Q99raHvamYRQqxtAxvG07Va10rAoFF1+/xClQAC7cDOClgrHUeWaGsqO5ewFkZPa
-         edFV7p+GF0lMcb60WFRRGVSnLVkN+QGJADwTH8m4JqFCM5uubhI9xFJrT+VA5aKzR48o
-         77xZWSjaX2jagQ0n17BRdZcV5yOxAim7T3uT+xJsfPeHBQRj6MbO1GKyxdLnV86pEsOL
-         ynjg==
-X-Gm-Message-State: AOJu0YyKwpjoEw1eIcO2QeQHrMCGbuNODTe+p1IdvO2xYPtpVo30h/IE
-	TBZdGYwEbNy29Iot112OzJIdNY5+E7VOMgAoewF9uAVDiZOiCC1gjpVoWQOmoLEdnVr6zkfUWwR
-	WcCYGrvBiFZk7NhkFcT3IhbMRXOy8PmQGCvEkMr2GlPzf7Vrg0+5Y5/NKMBs=
+        bh=6Vfo4DtnRCfrgnKcKlhWsgWwhWnk9HSvHhhbuFrcQBg=;
+        b=UJgrZP4wkjINlFxMIV4D48h55T9uEhGC+RtX3YVzHwL13yzSHGLftsso6FR2feNgzs
+         yeIXDVvwF+bSBn7tEscTai2S547F1+Ktkq91im8eLKSPJnyJzn5KDlETvZt8fge+mqVc
+         4xgtMcDzlO2qQeNge8exoMuRsVQftvOZPa5xHBwioFrj2JbzZlWj5k6MrHQPyV9RQz5U
+         QgBfO8IqPyocwNlJhqSZl4xUndj+4/yg5qDfiEgisR/zUj7vXrOq0r5Y8NzF7vGqffXc
+         It7EcB159aevJrQUAdqLpqSv8v9YfqkthL3orFyZkEslEXe7bpWtfAz1oVhBaFfjGOCT
+         HNLg==
+X-Gm-Message-State: AOJu0YzEMW9cuM8QTowOkpeY2vceOqPMpN9DiB7Lnou9mumrUNG+VNLz
+	R8thzzdXWzjzeKbCGxREaYEcuGK9Da5YZLwybtClPAEXr4iQksqMiqrWCKKXMF5OwKYbo4f3/hb
+	CE6Eo6glRyigdM3lgLh6ENyIVyjls/5nmTfwQNwX3RYIZDx2q//nZnsv9Qew=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:458d:b0:679:e7b2:9fc6 with SMTP id
- 006d021491bc7-67c0da721c8mr587898eaf.3.1773786171488; Tue, 17 Mar 2026
- 15:22:51 -0700 (PDT)
-Date: Tue, 17 Mar 2026 15:22:51 -0700
+X-Received: by 2002:a05:6820:8107:b0:67b:e4a1:9e55 with SMTP id
+ 006d021491bc7-67c0db0d2e6mr4139829eaf.42.1773922874631; Thu, 19 Mar 2026
+ 05:21:14 -0700 (PDT)
+Date: Thu, 19 Mar 2026 05:21:14 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69b9d43b.050a0220.248e02.015b.GAE@google.com>
-Subject: [moderation/CI] Re: ipvs: Move defense_work to system_dfl_long_wq
-From: syzbot ci <syzbot+ci8804f03b7e65350e@syzkaller.appspotmail.com>
+Message-ID: <69bbea3a.050a0220.3a088d.0012.GAE@google.com>
+Subject: [moderation/CI] Re: locking: contended_release tracepoint instrumentation
+From: syzbot ci <syzbot+cib64ad39f77b6c92e@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -52,36 +52,36 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] ipvs: Move defense_work to system_dfl_long_wq
-https://lore.kernel.org/all/20260317140100.24993-2-iluceno@suse.de
-* [PATCH] ipvs: Move defense_work to system_dfl_long_wq
+[v3] locking: contended_release tracepoint instrumentation
+https://lore.kernel.org/all/cover.1773858853.git.d@ilvokhin.com
+* [PATCH v3 1/4] tracing/lock: Remove unnecessary linux/sched.h include
+* [PATCH v3 2/4] locking/percpu-rwsem: Extract __percpu_up_read()
+* [PATCH v3 3/4] locking: Add contended_release tracepoint to sleepable loc=
+ks
+* [RFC PATCH v3 4/4] locking: Add contended_release tracepoint to spinning =
+locks
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/e585d6a4-60a0-4e53-bb7f-02b004020645
+https://ci.syzbot.org/series/76d0e02e-59d8-4b47-9e05-ac2b9870fb24
 
 ***
 
 kernel build error
 
-tree:      nf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilt=
-er/nf-next.git
-base:      2c7e63d702f6c4209c5af833308e7fcbc7d4ab17
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
+.git
+base:      39849a55738542a4cdef8394095ccfa98530e250
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
 1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/7a5718c9-01b3-46a2-aaa2-4dd1412f64c=
-b/config
+config:    https://ci.syzbot.org/builds/a74474c1-b3a4-4247-a0b6-cf264610d3d=
+7/config
 
-net/netfilter/ipvs/ip_vs_ctl.c:237:21: error: use of undeclared identifier =
-'system_dfl_long_wq'; did you mean 'system_long_wq'?
-net/netfilter/ipvs/ip_vs_ctl.c:276:22: error: use of undeclared identifier =
-'system_dfl_long_wq'; did you mean 'system_long_wq'?
-net/netfilter/ipvs/ip_vs_ctl.c:4380:21: error: use of undeclared identifier=
- 'system_dfl_long_wq'; did you mean 'system_long_wq'?
+kernel/locking/mutex.c:978:43: error: use of undeclared identifier 'waiter'
 
 ***
 
@@ -94,15 +94,12 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[andreas.taschner@suse.com brad.bendily@suse.com brendon.caligari@suse.com =
-cfamullaconrad@suse.com coreteam@netfilter.org davem@davemloft.net edumazet=
-@google.com federico.pinca@suse.com firo.yang@suse.com fw@strlen.de gabriel=
-.bertazi@suse.com horms@kernel.org horms@verge.net.au hvdheuvel@suse.com il=
-uceno@suse.de ja@ssi.bg jdelvare@suse.com kuba@kernel.org linux-kernel@vger=
-.kernel.org lvs-devel@vger.kernel.org marco.crivellari@suse.com mhocko@suse=
-.com mkoutny@suse.com netdev@vger.kernel.org netfilter-devel@vger.kernel.or=
-g pabeni@redhat.com pablo@netfilter.org phil@nwl.cc pmladek@suse.com ptesar=
-ik@suse.com richard.thompson@suse.com wpreston@suse.com yu.xu@suse.com]
+[arnd@arndb.de boqun@kernel.org cl@gentwo.org d@ilvokhin.com dennis@kernel.=
+org kernel-team@meta.com linux-arch@vger.kernel.org linux-kernel@vger.kerne=
+l.org linux-mm@kvack.org linux-trace-kernel@vger.kernel.org longman@redhat.=
+com mathieu.desnoyers@efficios.com mhiramat@kernel.org mingo@redhat.com pet=
+erz@infradead.org rostedt@goodmis.org tj@kernel.org usama.arif@linux.dev wi=
+ll@kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
