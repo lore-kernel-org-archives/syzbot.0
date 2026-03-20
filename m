@@ -1,135 +1,98 @@
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2DEB283FE3
-	for <syzbot@lists.linux.dev>; Fri, 20 Mar 2026 10:27:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14B7A3B2FD8
+	for <syzbot@lists.linux.dev>; Fri, 20 Mar 2026 13:20:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774002446; cv=none; b=nYdRPXkoZonCVjl387emD8M5lHc03r341cme+YYK8BIjLVPaxmxLm4XIzRPOC3rmFng0eLqxEvxEAxlzAK632vq4J5WKwxGKEQtNI6ojje3e67sJZQwK0C/OfgR2/UHdJSwztb6RkrzMk8uLxFVuT6jdqQsZjrXRIwzIr6Wx6fA=
+	t=1774012835; cv=none; b=be3JnEM1pcUQGXEKoloTHG3T+HChO/j6Wl7NG1t2N8AlkiqMgXKtGeoSWbwuEESkA/BNYS2VTmp+luPjZBxoyhlTBS/InMjlZp7vDZ51ppjgMvsUaPwAX6xwjGmsO8QROCVh5Kif+6Wo2yZaDRSSnTqzytzLufP/BJWwYJzMD1Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774002446; c=relaxed/simple;
-	bh=imOwnv2Cbz22Ws/05tLd2xt72S1UsRmM78MAIuAH+Vw=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=jD87526EcUr2AuWexeamm+tgm4YVvqxmXA1k1IW7P3kx/LP99xTc4+3CN2uVKDXl9ZyOoB18SADVEtNiNPwEFnQpELYtfq0qoKe7zxGBu/+Tt6/HxoaXuayYGcab5DxbjQrbBJIxSUn5p7W3cZLKv8U96ttWig52WMNuYPqOPTY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
+	s=arc-20240116; t=1774012835; c=relaxed/simple;
+	bh=v2wT9KQYq9cz+qomMBWdqzlxSP3+nrghPBTB29nx1Ag=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=skF2LuiMGbq9Uhi01x1rUTy9Sisa1huN7E5/G2ZH5rr2ohp/iTrbroscova0N8XxEdMWhB3jyupctA6zbPOWiPj0SQXoP1uLuKvbUq/9A5u5VlKidt8mW5z+1BGn4T1nr18Jc1L6t0xdJbP4h0bV2stM3iEJWiPgLHwZjuXNhFg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-67bf3e1051bso32318844eaf.3
-        for <syzbot@lists.linux.dev>; Fri, 20 Mar 2026 03:27:24 -0700 (PDT)
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-467f7743d64so1052458b6e.2
+        for <syzbot@lists.linux.dev>; Fri, 20 Mar 2026 06:20:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774002444; x=1774607244;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=v2LdeuSx+OigkkOPyuviLWPLZ0CDnj0BK3QxBJMRGfU=;
-        b=gkzAQGgzoQHw18cYehtLBmuINfxv07sfuQA/j0gGUURVia/18fJFbTQDDtKuZp+VDA
-         c6nJO/0iMjB2sFYtt3dY2u7UEn1kI+YJaZBsg2VJ1poLaZBlifxROsf+zUC/mCCLkAWk
-         GZgfRalXj/NbUx5aok3UWpSvjnnzXivvd9pSCgVbFl1VDlFnBGZMsYirC/0MbT6SfQZY
-         6rlEEvUGGAjskSvHYAar3FVh8Z1q7mnWF0W3E/bg/+u8n27IrreZWWpEK/8uTItAYb7N
-         WdYVwchXYuQF2hJJiwdmhFAchEExYt/Gl7uuItI14Ct9sPNIoy9eIHg40Yuwx3tbdUQM
-         VUzA==
-X-Gm-Message-State: AOJu0Yz4gtjMJhaOJgY9pgzoMdHa4DvAE0ZW2s3udOhtBueMQyVf/lxh
-	+LM5RRRktQJItSZYfRbDViAKMq81DW88cY3/2N44XLe+gCO63Tq2UgMCtr3yMe0Wds5K0SvFSxz
-	Nhq8ArsBpXAqzwZuGHr17ei6JFFvPDuQvVNb5yywtBR6kSFzOVpXSoUx6eio=
+        d=1e100.net; s=20251104; t=1774012832; x=1774617632;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ENx0zWJUlMurY6Zrmx+cdyvTuD71/oqFHKTNUFC8UTI=;
+        b=YGzgbSodVhxhEL11FqC+KbQZ/cNAc1A/rBvURwwd+CDa/V8q1LpAg0N3F1nt4A3UjM
+         N7vQlgkDpSrm3AVHTblyRTadj1gUh3GUJDMK+6BR5lkiVk7NqVakVnyc2MxXTYRvfbtp
+         Aa8olJSKaIKYKoda/4JY+kfLzDMXtY44FhpOHM70jac48S65m8rCw49isVroyryb1Rok
+         6U/JIvGYpv7OOVPPWrxD04x/xc8zpUlLmk46Vz5D3fynOHxZy80OSR9V0fwuxl+TCBnd
+         xK07o5cYI/UpKos7wn2Ay4wiuOx2snaPD5qCyYEhYlKAaxmTTfp0zcz4q7tVYjO2Efhi
+         Dvvw==
+X-Gm-Message-State: AOJu0YwsLL6sCN+ytk+AO5TlUUf41ncPqA7E27JIUDJAFf59GepRYV1A
+	x8CEUiAUtFDymdGAL5pbvvD2F1oy4nc8XGXyxKQIEJKZzAU/trrJxiKkgJ3Uha5/sbWdotPZtQi
+	bE6yU2IXYc6i3WFQrzLMSPIwod81HSEiD0mlkhZJfRemrD36rPTksaGDt1a8=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:2d4a:b0:67c:1d0b:d64f with SMTP id
- 006d021491bc7-67c22f743d1mr1763235eaf.37.1774002443879; Fri, 20 Mar 2026
- 03:27:23 -0700 (PDT)
-Date: Fri, 20 Mar 2026 03:27:23 -0700
-In-Reply-To: <20260319073651.79209-1-jiayuan.chen@linux.dev>
+X-Received: by 2002:a05:6808:181c:b0:45e:bfe0:21f2 with SMTP id
+ 5614622812f47-467e5d57d8emr1511857b6e.10.1774012831791; Fri, 20 Mar 2026
+ 06:20:31 -0700 (PDT)
+Date: Fri, 20 Mar 2026 06:20:31 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69bd210b.050a0220.3bf4de.001a.GAE@google.com>
-Subject: [syzbot ci] Re: ext4: fix use-after-free in update_super_work when
- racing with umount
-From: syzbot ci <syzbot+cid9716702bbf43cf2@syzkaller.appspotmail.com>
-To: adilger.kernel@dilger.ca, jack@suse.cz, jiayuan.chen@linux.dev, 
-	jiayuan.chen@shopee.com, linux-ext4@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, riteshh@linux.ibm.com, tytso@mit.edu, 
-	yebin10@huawei.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <69bd499f.050a0220.3bf4de.0023.GAE@google.com>
+Subject: [moderation/CI] Re: mm/huge_memory: refactor zap_huge_pmd()
+From: syzbot ci <syzbot+cie486b10a0a53fc6c@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v2] ext4: fix use-after-free in update_super_work when racing with umount
-https://lore.kernel.org/all/20260319073651.79209-1-jiayuan.chen@linux.dev
-* [PATCH v2] ext4: fix use-after-free in update_super_work when racing with umount
+[v2] mm/huge_memory: refactor zap_huge_pmd()
+https://lore.kernel.org/all/cover.1773924928.git.ljs@kernel.org
+* [PATCH v2 1/9] mm/huge_memory: simplify vma_is_specal_huge()
+* [PATCH v2 2/9] mm/huge: avoid big else branch in zap_huge_pmd()
+* [PATCH v2 3/9] mm/huge_memory: have zap_huge_pmd return a boolean, add kd=
+oc
+* [PATCH v2 4/9] mm/huge_memory: handle buggy PMD entry in zap_huge_pmd()
+* [PATCH v2 5/9] mm/huge_memory: add a common exit path to zap_huge_pmd()
+* [PATCH v2 6/9] mm/huge_memory: remove unnecessary VM_BUG_ON_PAGE()
+* [PATCH v2 7/9] mm/huge_memory: deduplicate zap deposited table call
+* [PATCH v2 8/9] mm/huge_memory: deduplicate zap_huge_pmd() further by trac=
+king state
+* [PATCH v2 9/9] mm/huge_memory: have zap_huge_pmd() use vm_normal_folio_pm=
+d()
 
 and found the following issue:
-WARNING in ext4_notify_error_sysfs
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/3b258c63-ea54-492a-ab47-c09e62612658
+https://ci.syzbot.org/series/fc789267-30ea-4c5c-8e1f-623cee399460
 
 ***
 
-WARNING in ext4_notify_error_sysfs
+kernel build error
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      0e4f8f1a3d081e834be5fd0a62bdb2554fadd307
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
+.git
+base:      aa0a550d268b3075b67568d915b7093aabbb0772
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/8149e3c8-4cb9-4fa0-9bf5-3d6deda6899d/config
-C repro:   https://ci.syzbot.org/findings/6f6eafc6-a231-4909-9025-539fa10ffcfd/c_repro
-syz repro: https://ci.syzbot.org/findings/6f6eafc6-a231-4909-9025-539fa10ffcfd/syz_repro
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/b61f81fb-cab5-4257-8eaf-4693791b0a7=
+a/config
 
-------------[ cut here ]------------
-DEBUG_LOCKS_WARN_ON(lock->magic != lock)
-WARNING: kernel/locking/mutex.c:593 at __mutex_lock_common kernel/locking/mutex.c:593 [inline], CPU#1: kworker/1:4/5883
-WARNING: kernel/locking/mutex.c:593 at __mutex_lock+0x10a4/0x1300 kernel/locking/mutex.c:776, CPU#1: kworker/1:4/5883
-Modules linked in:
-CPU: 1 UID: 0 PID: 5883 Comm: kworker/1:4 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: events update_super_work
-
-RIP: 0010:__mutex_lock_common kernel/locking/mutex.c:593 [inline]
-RIP: 0010:__mutex_lock+0x10ab/0x1300 kernel/locking/mutex.c:776
-Code: 11 90 48 c1 e8 03 42 0f b6 04 28 84 c0 0f 85 33 02 00 00 83 3d d9 e1 61 04 00 75 13 48 8d 3d 1c f7 64 04 48 c7 c6 c0 e0 cc 8b <67> 48 0f b9 3a 90 e9 ac f0 ff ff 90 0f 0b 90 e9 73 f4 ff ff 90 0f
-RSP: 0018:ffffc90004dcf900 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 1ffff920009b9f38 RCX: ffff888172d3d7c0
-RDX: 0000000000000000 RSI: ffffffff8bcce0c0 RDI: ffffffff9014ec10
-RBP: ffffc90004dcfaa8 R08: ffffffff9011d6c3 R09: 1ffffffff2023ad8
-R10: dffffc0000000000 R11: fffffbfff2023ad9 R12: ffff888172218368
-R13: dffffc0000000000 R14: 0000000000000000 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8882a945d000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000562af42c7d40 CR3: 0000000111346000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- ext4_notify_error_sysfs+0x23/0xa0 fs/ext4/sysfs.c:600
- process_one_work kernel/workqueue.c:3276 [inline]
- process_scheduled_works+0xb6e/0x18c0 kernel/workqueue.c:3359
- worker_thread+0xa53/0xfc0 kernel/workqueue.c:3440
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-----------------
-Code disassembly (best guess):
-   0:	11 90 48 c1 e8 03    	adc    %edx,0x3e8c148(%rax)
-   6:	42 0f b6 04 28       	movzbl (%rax,%r13,1),%eax
-   b:	84 c0                	test   %al,%al
-   d:	0f 85 33 02 00 00    	jne    0x246
-  13:	83 3d d9 e1 61 04 00 	cmpl   $0x0,0x461e1d9(%rip)        # 0x461e1f3
-  1a:	75 13                	jne    0x2f
-  1c:	48 8d 3d 1c f7 64 04 	lea    0x464f71c(%rip),%rdi        # 0x464f73f
-  23:	48 c7 c6 c0 e0 cc 8b 	mov    $0xffffffff8bcce0c0,%rsi
-* 2a:	67 48 0f b9 3a       	ud1    (%edx),%rdi <-- trapping instruction
-  2f:	90                   	nop
-  30:	e9 ac f0 ff ff       	jmp    0xfffff0e1
-  35:	90                   	nop
-  36:	0f 0b                	ud2
-  38:	90                   	nop
-  39:	e9 73 f4 ff ff       	jmp    0xfffff4b1
-  3e:	90                   	nop
-  3f:	0f                   	.byte 0xf
-
+mm/huge_memory.c:108:9: error: call to undeclared function 'vma_test_any'; =
+ISO C99 and later do not support implicit function declarations [-Wimplicit=
+-function-declaration]
+mm/huge_memory.c:4596:6: error: call to undeclared function 'vma_test'; ISO=
+ C99 and later do not support implicit function declarations [-Wimplicit-fu=
+nction-declaration]
 
 ***
 
@@ -140,3 +103,17 @@ separate fix, please add the following tag to your commit message:
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[akpm@linux-foundation.org baohua@kernel.org baolin.wang@linux.alibaba.com =
+david@kernel.org dev.jain@arm.com lance.yang@linux.dev liam.howlett@oracle.=
+com linux-kernel@vger.kernel.org linux-mm@kvack.org ljs@kernel.org mhocko@s=
+use.com npache@redhat.com rppt@kernel.org ryan.roberts@arm.com surenb@googl=
+e.com vbabka@kernel.org ziy@nvidia.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
