@@ -1,58 +1,158 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF28D212542
-	for <syzbot@lists.linux.dev>; Sun, 22 Mar 2026 12:38:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20ECF1A680B
+	for <syzbot@lists.linux.dev>; Mon, 23 Mar 2026 14:21:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774183135; cv=none; b=sRyuw3txUhwsapmga8wichO4Th3bbctReOFpJqZMReKmC5N05jxhbMnLnfGsWxUFjgfjGc1knKfslegVvDGfOxL733sdZEOLbhqxhT9xc81O/ib2wn73GFlntxJAPx5en8mVguAqA3PGAwwoHuGNMVvGRG1lbSF/rU3xA+VcG5Q=
+	t=1774275683; cv=none; b=Q+wc/JvnX3Ry3jfIf1/OmWDLQ3ZL1NFA60r89rETKcfDBalbiCdPyQwmdIS4TQHH+u3yWik0pONDlq10YxylzawCodWLzvF6nRacIbPJRTje1pnWojBUjrho9MdZluw+gRI7Qk1gPK8UX1TahtjcYfH+Njk5aNrvtfQ8y5UbWYU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774183135; c=relaxed/simple;
-	bh=satYM5fGm5NxtEO7gQHzgrdT13jAV7/jwxl6N8n0VR0=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=eoq9oPZZnp2ELJMXc0I5D/aO3aqcxKf4fZdb6KvXZ+RUIJaBSeeFP8tl3rO6+x3ZScR9NfVl/E2+IzMVjga51/EONTGRv/WQXk20gIJGhMuCPYdWbwcMnIsR58ouCSz6vjKn/PnSVqWKUBvO8u+y7V+lmJjy85dJ2jBRHcRxWx8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+	s=arc-20240116; t=1774275683; c=relaxed/simple;
+	bh=2+miP6mqSGpC0/vktBgh5ZOnbj58rUksVFL85nsC4Vc=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=iCZOs+VcoyxY7Yqo4Incc1hALg9GDSyjmUM/1GtZd2AvgrZU1pwzxCpyLw6iC3sEZ1v+pxp/t6Jc1nQYSVKrca+j6a4oBNffotyjZU8uBuH69TCcockNLwnadBkdxoQGWeUJ6N4qQVHUzR8I4alf7+HCG6DCN2xwbMKBftx0rLw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-679c5ed0942so40013366eaf.1
-        for <syzbot@lists.linux.dev>; Sun, 22 Mar 2026 05:38:53 -0700 (PDT)
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-67df00643eeso8177544eaf.1
+        for <syzbot@lists.linux.dev>; Mon, 23 Mar 2026 07:21:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774183133; x=1774787933;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=satYM5fGm5NxtEO7gQHzgrdT13jAV7/jwxl6N8n0VR0=;
-        b=SQRmkqLCc48EyepPa6+rvHBiZ27b4ghk3G24SdpzJ5YtvwbOWaGjL9Y/O6Y/gVLqoK
-         lx2558iACH5D4lsUfkE0v3xhO5DGh1L4ZP4RpFRNWmuHet/Tw8wG9vk82IYsjFCf8GaV
-         ecFE8GmaAVsZT26O5QO2lC0JBVnzDrhJqM2MLNLxohrozysCxZxImrJrvY9RTo1NiJdB
-         uuE+KPAcwvlx7KvbfOEnFSff4W5RtVSFBULzN0NYfbie5B07Jg4Jr1eFB6iddw/48I2C
-         kPD/5oTvVlg7SL8Pfc1rjnxsrcha3LNWMnx3gPhINvN8umaRWNSAatsr4s9H5dQ4tsYb
-         cuAQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUlYfKB++P4RDyhQLIfuJDySVUHesVM+cgKMi+fyeVT/i47Ady0N8c5KnVnSpNSxYGLXWPozeU=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzP88qopyrcdR+Tme+2u6I63wtp7u3eRHC5iuHsmynuDc1dtves
-	NqrJem4AQ3o91CY6qaU1RAnrAPRf2iezUJZJEsPuK2nlVcmQsDsyW/MWOvBa8uxbxId8x5G9KhC
-	sakBupfDS43flXtdcCFuWTuTOAEJG/54OZNuyP9vm25jnRfSgmPzncIkychE=
+        d=1e100.net; s=20251104; t=1774275681; x=1774880481;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hjOMCHvrF+cxNJccmRKYKpNllXGGc78NAFJ2AdN8TLg=;
+        b=k6ePdO+k7qf/gWBmMNvGdJ8IcynOtKjZ+XdQW7EdvfjUjD0/uMpJIsHkD9Wl962WZs
+         8ME5zxBugG1GSWicYpK48rYOPLzR3tlByG0UQT6YrMrP3Bb4b9j5BzITGrDgbaiGdtxY
+         udcZ4eak18CYmtXAkU+RIkE6WWqUZdlGG/BFnJ87b1iRi2psVLP0//w5lXnFoj1vh2sb
+         +WH/74AJEWHAbUUmXZPcCg1PX7QKSMhG1pakdH/gaqIH+m0BkUzWc6lUm/mYszRhycqa
+         6f4paYdmg56hW2iRg6Y8pmviFiJYTkWvE11gJ2hwBNhrvPc1aOzQFPNTBQJRqrYneeYM
+         ArYA==
+X-Gm-Message-State: AOJu0Yw2S2ZN1KSMtEtIZLF8cXoeLC/PdJs6P68nfbvcxRinwROj2vf/
+	kk/gYxRyiWJbnZb71NKxkbvNTVaP9O+D9vibwya4xoJWhjwxFZRNtzD/8AkAycpSW2bDkAIUm5u
+	+S1yFgW08zST0M/5pcZimvE0ETq8AHEAm1xXTrikk0IYezbYj9gCcZzyLAGc=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4b94:b0:67b:aac6:640b with SMTP id
- 006d021491bc7-67c22ee4831mr6499198eaf.26.1774183132930; Sun, 22 Mar 2026
- 05:38:52 -0700 (PDT)
-Date: Sun, 22 Mar 2026 05:38:52 -0700
-In-Reply-To: <20260322123545.39132-1-dxdt@dev.snart.me>
+X-Received: by 2002:a05:6820:2227:b0:67d:95bf:b534 with SMTP id
+ 006d021491bc7-67d95bfb825mr5193931eaf.31.1774275681102; Mon, 23 Mar 2026
+ 07:21:21 -0700 (PDT)
+Date: Mon, 23 Mar 2026 07:21:21 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69bfe2dc.050a0220.3bf4de.007e.GAE@google.com>
-Subject: Re: RE: [syzbot ci] Re: exfat: add limited FALLOC_FL_ZERO_RANGE support
-From: syzbot ci <syzbot@syzkaller.appspotmail.com>
-To: dxdt@dev.snart.me
-Cc: dxdt@dev.snart.me, linkinjeon@kernel.org, linux-fsdevel@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, sj1557.seo@samsung.com, syzbot@lists.linux.dev, 
-	syzkaller-bugs@googlegroups.com, yuezhang.mo@sony.com
+Message-ID: <69c14c61.050a0220.3bf4de.009e.GAE@google.com>
+Subject: [moderation/CI] Re: mm/fault, arch: faulthandler_disabled() also
+ check irqs_disabled()
+From: syzbot ci <syzbot+ci03e14d76ec964a34@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
+syzbot ci has tested the following series
 
-syzbot-ci does not support `test` command
+[v1] mm/fault, arch: faulthandler_disabled() also check irqs_disabled()
+https://lore.kernel.org/all/20260323100100.1031582-1-jackzxcui1989@163.com
+* [PATCH] mm/fault, arch: faulthandler_disabled() also check irqs_disabled()
+
+and found the following issue:
+kernel panic: No working init found. Try passing init= option to kernel. See Linux Documentation/admin-guide/init.rst f
+
+Full report is available here:
+https://ci.syzbot.org/series/588d04e2-f5a7-4066-aba9-cf490c8f5274
+
+***
+
+kernel panic: No working init found. Try passing init= option to kernel. See Linux Documentation/admin-guide/init.rst f
+
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
+base:      e716edafedad4952fe3a4a273d2e039a84e8681a
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/8bd3f249-2a4a-447d-b51f-1302d33e5e95/config
+
+Loading compiled-in module X.509 certificates
+Loaded X.509 cert 'Build time autogenerated kernel key: d8474fe105c77daf2f25eec890f96ef8092086e8'
+ima: Allocated hash algorithm: sha256
+ima: No architecture policies found
+evm: Initialising EVM extended attributes:
+evm: security.selinux (disabled)
+evm: security.SMACK64 (disabled)
+evm: security.SMACK64EXEC (disabled)
+evm: security.SMACK64TRANSMUTE (disabled)
+evm: security.SMACK64MMAP (disabled)
+evm: security.apparmor
+evm: security.ima
+evm: security.capability
+evm: HMAC attrs: 0x1
+PM:   Magic number: 2:810:182
+tty ttyr8: hash matches
+netconsole: network logging started
+gtp: GTP module loaded (pdp ctx size 128 bytes)
+rdma_rxe: loaded
+cfg80211: Loading compiled-in X.509 certificates for regulatory database
+Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
+clk: Disabling unused clocks
+ALSA device list:
+  #0: Dummy 1
+  #1: Loopback 1
+  #2: Virtual MIDI Card 1
+md: Waiting for all devices to be available before autodetect
+md: If you don't use raid, use raid=noautodetect
+md: Autodetecting RAID arrays.
+md: autorun ...
+md: ... autorun DONE.
+EXT4-fs (sda1): mounted filesystem b4773fba-1738-4da0-8a90-0fe043d0a496 ro with ordered data mode. Quota mode: none.
+VFS: Mounted root (ext4 filesystem) readonly on device 8:1.
+devtmpfs: mounted
+VFS: Pivoted into new rootfs
+Freeing unused kernel image (initmem) memory: 26516K
+Write protecting the kernel read-only data: 217088k
+Freeing unused kernel image (text/rodata gap) memory: 1744K
+Freeing unused kernel image (rodata/data gap) memory: 484K
+x86/mm: Checked W+X mappings: passed, no W+X pages found.
+x86/mm: Checking user space page tables
+x86/mm: Checked W+X mappings: passed, no W+X pages found.
+Failed to set sysctl parameter 'max_rcu_stall_to_panic=1': parameter not found
+Run /sbin/init as init process
+Starting init: /sbin/init exists but couldn't execute it (error -14)
+Run /etc/init as init process
+Run /bin/init as init process
+Run /bin/sh as init process
+Starting init: /bin/sh exists but couldn't execute it (error -14)
+Kernel panic - not syncing: No working init found.  Try passing init= option to kernel. See Linux Documentation/admin-guide/init.rst for guidance.
+CPU: 1 UID: 0 PID: 1 Comm: sh Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ vpanic+0x56c/0xa60
+ panic+0xc5/0xd0
+ kernel_init+0x1c6/0x1d0
+ ret_from_fork+0x51e/0xb90
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+The email will later be sent to:
+[akpm@linux-foundation.org bigeasy@linutronix.de jackzxcui1989@163.com kuba@kernel.org linux-kernel@vger.kernel.org linux-mm@kvack.org peterz@infradead.org tglx@linutronix.de]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
 
