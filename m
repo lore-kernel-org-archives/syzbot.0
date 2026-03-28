@@ -1,98 +1,80 @@
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E81E9347516
-	for <syzbot@lists.linux.dev>; Thu, 26 Mar 2026 15:23:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE95D33EAE6
+	for <syzbot@lists.linux.dev>; Sat, 28 Mar 2026 09:08:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774538610; cv=none; b=a72FNi/wacJCXAe31K1ZMdQLoTAwcOmRY9LcFQGXQ/uokdaa+VSrguPTV5MwFw+Sd3/GiyaTHD3Qwqg/g/aYEWJ5+eVIQqgFULfWc/+QDmd0VnFJ3oaCxTdkdtCWNL7kU5RTn4qfHGES61ox9xd9nV0LhAmNqvX62miY+vxtzsk=
+	t=1774688928; cv=none; b=JJtviCGbGtM/Vqd10sWEve5FlkQTlVe5fOpNwOeqDRIb+hMZTXeVmeFzkISwBBhkGQhEtvf4MaxYuDpiXN8QllWU6lCBcRaSty/R2c1Ga6gED8S7RXtUDLA83/8pCrgpDGg9vWOgLQxFwCw5t9Wf1bL2dh+2VCYNUAsxRc443q8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774538610; c=relaxed/simple;
-	bh=sDDfySfLcHe2nLaoIFcdW4HtLYNKc5HimJiR7ovAM+U=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=GKFzg3AIz+vD7cUpAV6gg48GzmONwWayBxJGX3s6qq8ZxSflTe0kdxSUvvEjU5HPJj3cNqi2neAQdDpGqRPnNuTIeJyqh69dY07a+44+NbfQPMUiPGATQVw4jDx5x/Qzueqn+O81yAdpPtfU7xl9wKLzhUzxVEAnZN7JBRd6kRw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
+	s=arc-20240116; t=1774688928; c=relaxed/simple;
+	bh=l5drVp6HhZs48w/aWKmj5KvXCsNoY4NsjopF4M+NYf0=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=hL976A+355ErJiIbCpcHzbgwOMlF/HCjbHiZC/C630HQwj6izpW4hQcsW6a0ZAC8L3FdLigRSZ4eqINO3rcBsIbWJVpn/yk6wQKcVC9jMJvMMUGAHa4Ao4r836x9faYoPtWrHA1qOuBElMoF3rqXpVJZpSGnmAWKbMtJDdYDx4c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-67de71f3e6cso1458407eaf.3
-        for <syzbot@lists.linux.dev>; Thu, 26 Mar 2026 08:23:28 -0700 (PDT)
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-4171fdb5a67so5850032fac.0
+        for <syzbot@lists.linux.dev>; Sat, 28 Mar 2026 02:08:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774538608; x=1775143408;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=53IfQtEpVkpTUwHImzhZGyxhROt3Hf1C3WSLREzFHoE=;
-        b=LoTfvoFowjHpXryObkNfJUG0lEhMyui/UUqaZIHaZ2Le+/GX1nNfDCUrulaQURydZy
-         K+OmTu21Ttlr/M+E9jCUhiIoylwrxcVWfkkTI3SZSgZy0nVQXrf3quQaLV2urOMFwWCS
-         LGOg3TL4dkON+CFvFdJRCtRQkopueLXAou5Z+o8Xkm7ISWyDIG7gRq4fqLDDtVQE1cWV
-         3130evOmbn4GfG14sJAui6u2+7eZwr8yvoUbqJE07bAyFitTxmHC3a9ghngJFqA629ps
-         VZTMGe1z2bfYiPTQgKHYj0LawTPTxWSMn6t72+eSVuyD0SD+afYByOCCa3y5KyiKNrsV
-         dd1w==
-X-Gm-Message-State: AOJu0YwJ6jVqSqzNpeJo63J5asY0Rp0VyJ5nqhv/uCWosGYOiiWdP6zV
-	WJqoNLD32KfDauYuCNUJQHFIqKGmtYW59qacG+1UGZXeaH7Q1z6Jae0mrzJ2sSuIKuXjNHxmS9m
-	MoYGzV1RwrGNbLpbMdAnBtpZoB09pKh8InEDoF8W/YI1n+FyE6HKLkUOXPNI=
+        d=1e100.net; s=20251104; t=1774688925; x=1775293725;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+F+ZUd4bs3rIGbr6aOegg3Z0vi0nurUe9eXzzA7prSQ=;
+        b=EV6JhMzHytABbfu+B5OWIWUIIubfXftsq6/JwbDACuh/3yzfMURhnO+8jYUFBMZzce
+         EhFTtHvZy7auhehPn3bcrBBysDunhvYSwGFNBtkpYW+An/b/7dxy5n0ZuMnxS7x37uvE
+         u8IWHlvMTO6+Cf0iQE4JtNxD/L7p6u9JGKOW2Zc4H8+VjmGXYVzBn6S+VC7j3dOnTZDf
+         thk8/8Vb8yJ9Xd8Xj6xOXbhu9ZTi4Gpteul7yc3kg3gWo+NU+tT8dr2WbqDlYg5XVrZ/
+         Y0Lz58q9sjYnFIrlRRT+Wb9u/K4r52A68sOVNYRJ5j5ZwUiqbkEy+I3Lg47SSKWadrbG
+         i9fQ==
+X-Gm-Message-State: AOJu0YwP0xJ9z2ZkyqbRFCPhOuWTk6BPo8fXa/8oCe0l0DTOKc8AQXNJ
+	hiqQy3gzq3Z16vNAfb77acnd5i6gWsdSx84m4Gx0C8wLnP/6EMiUiwkr/AEHRm47MPgA+FXlPhu
+	ePf2wlExmvSgRZx57s/oXSQkinmksIhYcsoVq8qAAxwEuCIWqv5Cv1HfIQeQ=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1746:b0:67c:9f59:23ee with SMTP id
- 006d021491bc7-67dff3d0cddmr4018234eaf.14.1774538607889; Thu, 26 Mar 2026
- 08:23:27 -0700 (PDT)
-Date: Thu, 26 Mar 2026 08:23:27 -0700
+X-Received: by 2002:a05:6820:8c1:b0:67e:160c:36c1 with SMTP id
+ 006d021491bc7-67e187057famr3016164eaf.43.1774688925680; Sat, 28 Mar 2026
+ 02:08:45 -0700 (PDT)
+Date: Sat, 28 Mar 2026 02:08:45 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69c54f6f.050a0220.330c49.0005.GAE@google.com>
-Subject: [moderation/CI] Re: rxrpc: Miscellaneous fixes
-From: syzbot ci <syzbot+cic2af1ade41d8728d@syzkaller.appspotmail.com>
+Message-ID: <69c79a9d.a70a0220.128fd0.0022.GAE@google.com>
+Subject: [moderation/CI] Re: mm/swap: use swap_ops to register swap device's methods
+From: syzbot ci <syzbot+cic8a0690463dd402d@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v3] rxrpc: Miscellaneous fixes
-https://lore.kernel.org/all/20260326131838.634095-1-dhowells@redhat.com
-* [PATCH net v3 01/11] rxrpc: Fix key quota calculation for multitoken keys
-* [PATCH net v3 02/11] rxrpc: Fix key parsing memleak
-* [PATCH net v3 03/11] rxrpc: Fix anonymous key handling
-* [PATCH net v3 04/11] list: Move on_list_rcu() to list.h and add on_list()=
- also
-* [PATCH net v3 05/11] rxrpc: Fix call removal to use RCU safe deletion
-* [PATCH net v3 06/11] rxrpc: Fix RxGK token loading to check bounds
-* [PATCH net v3 07/11] rxrpc: Fix use of wrong skb when comparing queued RE=
-SP challenge serial
-* [PATCH net v3 08/11] rxrpc: Fix rack timer warning to report unexpected m=
-ode
-* [PATCH net v3 09/11] rxrpc: Fix keyring reference count leak in rxrpc_set=
-sockopt()
-* [PATCH net v3 10/11] rxrpc: Fix key reference count leak from call->key
-* [PATCH net v3 11/11] rxrpc: Fix to request an ack if window is limited
+[v2] mm/swap: use swap_ops to register swap device's methods
+https://lore.kernel.org/all/20260328075812.11060-1-21cnbao@gmail.com
+* [PATCH v2 1/3] mm/swap: rename mm/page_io.c to mm/swap_io.c
+* [PATCH v2 2/3] mm/swap: use swap_ops to register swap device's methods
+* [PATCH v2 3/3] mm/swap_io.c: rename swap_writepage_* to swap_write_folio_*
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/d0886195-b303-4030-a0d4-bfb5b219c6a2
+https://ci.syzbot.org/series/23dccdde-60f2-440f-89e6-48f95e5d6901
 
 ***
 
 kernel build error
 
-tree:      net
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net.git
-base:      c4ea7d8907cf72b259bf70bd8c2e791e1c4ff70f
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
+base:      f46991f1780ef97efff3b668627b763581032067
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/ae589f6b-a0f1-44d0-ab85-ab14cf20847=
-2/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/b11bba51-0720-43ff-a406-eb63b35516b9/config
 
-fs/jffs2/nodemgmt.c:572:19: error: conflicting types for 'on_list'
-fs/jffs2/nodemgmt.c:660:28: error: too many arguments to function call, exp=
-ected single argument 'entry', have 2 arguments
+mm/zswap.c:1057:19: error: use of undeclared identifier 'sis'; did you mean 'si'?
+mm/zswap.c:1057:32: error: use of undeclared identifier 'sis'; did you mean 'si'?
 
 ***
 
@@ -105,13 +87,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[alok.a.tiwari@oracle.com anderson@allelesecurity.com apparmor@lists.ubuntu=
-.com davem@davemloft.net dhowells@redhat.com edumazet@google.com hminas@syn=
-opsys.com horms@kernel.org jaltman@auristor.com john.johansen@canonical.com=
- kuba@kernel.org linux-afs@lists.infradead.org linux-kernel@vger.kernel.org=
- linux-usb@vger.kernel.org marc.c.dionne@gmail.com marc.dionne@auristor.com=
- mathieu.desnoyers@efficios.com netdev@vger.kernel.org pabeni@redhat.com se=
-curity@1seal.org stable@kernel.org]
+[21cnbao@gmail.com akpm@linux-foundation.org baohua@kernel.org bhe@redhat.com chrisl@kernel.org kasong@tencent.com linux-kernel@vger.kernel.org linux-mm@kvack.org nphamcs@gmail.com shikemeng@huaweicloud.com youngjun.park@lge.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
