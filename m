@@ -1,86 +1,137 @@
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF8AB2E8B71
-	for <syzbot@lists.linux.dev>; Mon, 30 Mar 2026 09:48:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBA2E3B6BE8
+	for <syzbot@lists.linux.dev>; Mon, 30 Mar 2026 23:59:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774864101; cv=none; b=OHhRVjeDj0XrK0d0x/cX8+eJWKhosEK8a/8BoYa1LSDLYs268kn04yQCq9wg1zR/q4wkollqJ+EmL2noqkVJhksw8TEG7Yd9RMiIQ6nIv4rrm45Igp0AIh6uFaBodakg9XKKwwxdPT35u8kDJkjnI+X5fJ++3mw1n6FkIPtqsmE=
+	t=1774915184; cv=none; b=ATmlMbDhnBMalevVT3xBmh3RTNdnnL5xi84xN+CUbIOIeYbTe4W2dePQ7TAZ9RHLBV4bKbeLXT2O78y3/1WK8cBa35s2U+4IXsi/wbgraDi9iirJVi12YjET7VRySiosvleumVcq248BcWMsdfLwfll9j+Y0Afhm1Lp4fc7G/bE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774864101; c=relaxed/simple;
-	bh=gma+iqP46iO1p+b9Tsfr2wEDqO33DO8h/IDBUicqoW0=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=sQnai+k7gaefv3CH71Drce4+xcseiIIwMXiE9iWCvV8xlQrbdIcjuxx/M7y03ilYcuVnSvRz7jpyMt2Ho2d1Wpo0YWBIF4oRreQF+UKxPSmnNE1bOj7gpWnJq2QwFg1vBZA57apweH7JB9gskp5XYsLS1UMtZ/8R4idKJVGqG0w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.70
+	s=arc-20240116; t=1774915184; c=relaxed/simple;
+	bh=Bt2gmuNgK6g/lld4WAzNXAOU863+LQgLelCqPIBT4Nk=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=YKkaeXWCETjXUpzyTxXGQryX65Iov/VX0c9aUCWZQtM6XsgV9Cmf4KCDR1Zo6/9pF36owXS7v3KB2ckfQMSxhWsuZLkzwUmE6+EjISSHfRscStMj8IRqsUejdMdnGsz7b3qUYgXHk8w/nih4laVUBdeUx6q9BuELV5/HgwQnPvo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-7d7e2c62d70so11108501a34.2
-        for <syzbot@lists.linux.dev>; Mon, 30 Mar 2026 02:48:19 -0700 (PDT)
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-66b612efb4aso14375152eaf.0
+        for <syzbot@lists.linux.dev>; Mon, 30 Mar 2026 16:59:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774864099; x=1775468899;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=LJ0+FwySATWWzWVmN6b8rxq0mHf0wf+pAPhPMQasXd4=;
-        b=MWBk+onfkACVNGWXTs7+Aij7vDBQZVKrbh67Ixovx+xinY46ERkVydO5iCrG0zjyLZ
-         NvizStIvvHRMgJC6I2/VPHTQX8A9fQG3gYOB8Yb4SWVBanQ3mMZ7amWThacm7sSUhMU1
-         hjNTjpaylZISF0nCjl4nocg+zyz6+rHtqqYf0XM5Lf5delERjvjUKyWer7qcUMdZ+8uc
-         JgdBxUtNyqODYgaw6SfMfii+C1Cb+u77x4P5MsunZXwsIJSI47sDBbLKFEjfz4Jf6lFj
-         duIr1mXOf9JSG3TYVdpLLfaXGV1UypjQJYSuDnTxx1PdnNd0fM/+zHkA1ghx7iW5pQO3
-         EHWA==
-X-Gm-Message-State: AOJu0YxwYtMYDYJi/lvtPuKOkahXd2wIP7SgF9X8450wjfwSSOHMCxuB
-	1n3Hzpg4HQKIxY+HzAE2zTz53YOeMJ7z0JCUsJinfC4IvliJfT80yNjFVWV/zvnT49dK7ZsKJaN
-	2T6uop7vD/ccLpwAB8Wyttog4ONN7Rk9faYXGMHyFe2/DA5NIefPv68zJ9NM=
+        d=1e100.net; s=20251104; t=1774915182; x=1775519982;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=fMedVuh7DmfOI3ivPUqbwpjWbcUy4VcPUqaAmQJADbI=;
+        b=PXYsaPD8LXRU/WEbjcPBbcbnTshqyzQxZ8fzGOIwWx1/YwNnqFc4JfiOr0N6c3XGjJ
+         4kgJoQIwod9A1UWMkYFlEdiDQyyEAb+/INKPMQhr3tFmMikUOX7AlAuOpq0VDD5REE9W
+         iNGNKt04ZQ3bh4PsdZVYNJNwJ2VGy+Ik1GV7TZFi6ZL7WQVFtOGQ4ww6TnFifMOJ9kZ0
+         47iIfvYcgAoHyoYm408kbShp5G/W2W99ojANqbxxXrEdUge34iX96xb9CLTLqby88BK7
+         GFtIW23K5WX4tvaHRzY7tQRVzgQxIhP1O4d0CgWWLr51Z19RaUBY6hAISxLt6EbVT3xU
+         Ox4w==
+X-Gm-Message-State: AOJu0Yw33Io3u/lIONMfu76kTV/llTwOgR70N9LKQIE9KYpD8HvzWA+f
+	J3GWpDYmVzWHoPvProCq6fdSWdfWCOLUeO3bw+h2j54sLz076gy0elRT2HmG/WCqSLILXHI6I9o
+	CieJLi6EHHhDrXb4OQzrvLYiZDW21n+5xh8jepX3dAcf7rqidavwLdnEQF24=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1687:b0:67e:2d6d:139a with SMTP id
- 006d021491bc7-67e2d6d63f1mr2575601eaf.35.1774864098883; Mon, 30 Mar 2026
- 02:48:18 -0700 (PDT)
-Date: Mon, 30 Mar 2026 02:48:18 -0700
+X-Received: by 2002:a05:6820:1897:b0:67e:17fc:787d with SMTP id
+ 006d021491bc7-67e3d8e399fmr1072793eaf.18.1774915181936; Mon, 30 Mar 2026
+ 16:59:41 -0700 (PDT)
+Date: Mon, 30 Mar 2026 16:59:41 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69ca46e2.050a0220.183828.0018.GAE@google.com>
-Subject: [moderation/CI] Re: mm, KMSAN: Add missing shadow memory
- initialization in special allocation paths
-From: syzbot ci <syzbot+ci4bd68a8c659226a4@syzkaller.appspotmail.com>
+Message-ID: <69cb0e6d.050a0220.183828.001d.GAE@google.com>
+Subject: [moderation/CI] Re: mm/vmalloc: Use dedicated unbound workqueue for
+ vmap purge/drain
+From: syzbot ci <syzbot+cif00a2aa5a854ea21@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] mm, KMSAN: Add missing shadow memory initialization in special allocat=
-ion paths
-https://lore.kernel.org/all/20260330-fix-kmsan-v1-1-e9c672a4b9eb@gmail.com
-* [PATCH] mm, KMSAN: Add missing shadow memory initialization in special al=
-location paths
+[v2] mm/vmalloc: Use dedicated unbound workqueue for vmap purge/drain
+https://lore.kernel.org/all/20260330175824.2777270-1-urezki@gmail.com
+* [PATCH v2] mm/vmalloc: Use dedicated unbound workqueue for vmap purge/drain
 
 and found the following issue:
-kernel build error
+possible deadlock in touch_wq_lockdep_map
 
 Full report is available here:
-https://ci.syzbot.org/series/01b23d95-95d3-4352-a7f4-9df80f1c0dd8
+https://ci.syzbot.org/series/4a8f638e-3a3f-4346-8189-2b5a0eb9ceaf
 
 ***
 
-kernel build error
+possible deadlock in touch_wq_lockdep_map
 
-tree:      drm-next
-URL:       https://gitlab.freedesktop.org/drm/kernel.git
-base:      bbeb83d3182abe0d245318e274e8531e5dd7a948
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
+base:      af42d6d3650b95295a3f08fc35189998bc26c2e1
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/592f437a-4b31-47b4-8094-de233e42cd7=
-2/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/d94b1f61-6a69-4415-b385-b3c99018e8c2/config
+syz repro: https://ci.syzbot.org/findings/01e4d436-e924-4ce6-8902-78c6000bf34e/syz_repro
 
-mm/page_alloc.c:7131:23: error: use of undeclared identifier 'page'
-mm/page_alloc.c:7131:72: error: use of undeclared identifier 'page'
-mm/page_alloc.c:7132:20: error: use of undeclared identifier 'page'
+============================================
+WARNING: possible recursive locking detected
+syzkaller #0 Not tainted
+--------------------------------------------
+kworker/u9:1/33 is trying to acquire lock:
+ffff88810168e948 ((wq_completion)vmap_drain){+.+.}-{0:0}, at: touch_wq_lockdep_map+0xb5/0x180 kernel/workqueue.c:3991
+
+but task is already holding lock:
+ffff88810168e948 ((wq_completion)vmap_drain){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3251 [inline]
+ffff88810168e948 ((wq_completion)vmap_drain){+.+.}-{0:0}, at: process_scheduled_works+0xa52/0x18c0 kernel/workqueue.c:3359
+
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock((wq_completion)vmap_drain);
+  lock((wq_completion)vmap_drain);
+
+ *** DEADLOCK ***
+
+ May be due to missing lock nesting notation
+
+4 locks held by kworker/u9:1/33:
+ #0: ffff88810168e948 ((wq_completion)vmap_drain){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3251 [inline]
+ #0: ffff88810168e948 ((wq_completion)vmap_drain){+.+.}-{0:0}, at: process_scheduled_works+0xa52/0x18c0 kernel/workqueue.c:3359
+ #1: ffffc90000a97c40 (drain_vmap_work){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3252 [inline]
+ #1: ffffc90000a97c40 (drain_vmap_work){+.+.}-{0:0}, at: process_scheduled_works+0xa8d/0x18c0 kernel/workqueue.c:3359
+ #2: ffffffff8e87ed68 (vmap_purge_lock){+.+.}-{4:4}, at: drain_vmap_area_work+0x17/0x40 mm/vmalloc.c:2443
+ #3: ffffffff8e75e5e0 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:312 [inline]
+ #3: ffffffff8e75e5e0 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:850 [inline]
+ #3: ffffffff8e75e5e0 (rcu_read_lock){....}-{1:3}, at: start_flush_work kernel/workqueue.c:4234 [inline]
+ #3: ffffffff8e75e5e0 (rcu_read_lock){....}-{1:3}, at: __flush_work+0x100/0xc50 kernel/workqueue.c:4292
+
+stack backtrace:
+CPU: 1 UID: 0 PID: 33 Comm: kworker/u9:1 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Workqueue: vmap_drain drain_vmap_area_work
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_deadlock_bug+0x279/0x290 kernel/locking/lockdep.c:3041
+ check_deadlock kernel/locking/lockdep.c:3093 [inline]
+ validate_chain kernel/locking/lockdep.c:3895 [inline]
+ __lock_acquire+0x253f/0x2cf0 kernel/locking/lockdep.c:5237
+ lock_acquire+0xf0/0x2e0 kernel/locking/lockdep.c:5868
+ touch_wq_lockdep_map+0xcb/0x180 kernel/workqueue.c:3991
+ start_flush_work kernel/workqueue.c:4272 [inline]
+ __flush_work+0x87c/0xc50 kernel/workqueue.c:4292
+ __purge_vmap_area_lazy+0x7db/0xab0 mm/vmalloc.c:2419
+ drain_vmap_area_work+0x27/0x40 mm/vmalloc.c:2444
+ process_one_work kernel/workqueue.c:3276 [inline]
+ process_scheduled_works+0xb6e/0x18c0 kernel/workqueue.c:3359
+ worker_thread+0xa53/0xfc0 kernel/workqueue.c:3440
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
+
 
 ***
 
@@ -92,11 +143,14 @@ separate fix, please add the following tag to your commit message:
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
 The email will later be sent to:
-[akpm@linux-foundation.org hannes@cmpxchg.org jackmanb@google.com jhubbard@=
-nvidia.com ke.zhao.kernel@gmail.com linux-kernel@vger.kernel.org linux-mm@k=
-vack.org mhocko@suse.com surenb@google.com syzbot@syzkaller.appspotmail.com=
- vbabka@kernel.org ziy@nvidia.com]
+[akpm@linux-foundation.org bhe@redhat.com linux-kernel@vger.kernel.org linux-mm@kvack.org lirongqing@baidu.com urezki@gmail.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
