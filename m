@@ -1,87 +1,157 @@
 Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE90B40DFCA
-	for <syzbot@lists.linux.dev>; Thu,  2 Apr 2026 05:01:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F275A3B9DA9
+	for <syzbot@lists.linux.dev>; Thu,  2 Apr 2026 12:38:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775106097; cv=none; b=otNntzXf8I3JXSr7bEJ6p/tIYhONZfAX9ktDFjWpeOP6VrK3dO2Hx+Y3sMZ1uaf1xwCM41yRiDKaiCz0PkGpnTHFw3ddsvYuFf5qQiIbcboVJgAym7FBAbQLpmwo7gLC4jl+2FMvINv2LH57rELrSILHH5/kZPyvfJucwX1RlYw=
+	t=1775133537; cv=none; b=cw0k7f1jag45OcjDcRvOsO0FG4QLZRwVkH6+8zAXug8Ezg6pmwYcm4fv6guX4YomydryCQsyLNyEosRCXw0meL8IhQLijBGHlyGdcFgAqu3Wa1Rkw3l8w55BvGkO+lGWcChwu684OiYM12AoB3KdflyNsDbfrF9pbvwNWqDwKQo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775106097; c=relaxed/simple;
-	bh=j/hoE33G1zQJRQJm66FntCfoeDjNiu82XcwL8Z5/Oic=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=EadfnulAN5xEs2Bles2krVboN1HHboICsI5Dg5Fje6M5j0qc18RWRX4KRBE4c/pw8LG6R3e8Hzkm2j5Lj/epvdMh0UNGyVxrXBr1EA1XKM/dNHHVHD2VEZ6Zc9YIwaOCAaBR1xGfIaQ4+RRSFzlxaJKME5PkhGbFvHGx3dvWD2A=
+	s=arc-20240116; t=1775133537; c=relaxed/simple;
+	bh=F4ArsEPrRxwKUCf+zYjRrxJRS4rdRKuB8z9iMxCYjDM=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=XDsDBYPlUms5BHsjrmsYmAfxOqv4a0e1c6WnoAGyZVIWoZ/HR5PpP7S9LD3AG0Vpih+TIkxJuc6+8HU6XOP6x8bDBwQy8I3vwG/EwK4QCnIYjimCXTVtlf2oGNEzCdzcnWfjbC8l0SS2C9js/mKWtAAT1v4QPN4NKT2ft/zoE/s=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-67a1e063795so4891158eaf.1
-        for <syzbot@lists.linux.dev>; Wed, 01 Apr 2026 22:01:35 -0700 (PDT)
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-680b7befb84so1352724eaf.3
+        for <syzbot@lists.linux.dev>; Thu, 02 Apr 2026 05:38:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775106095; x=1775710895;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=EXaczEiiA0iV3b3RTWIXZ0bj040SVrvqju7acjlc6Og=;
-        b=j8Gjmnieg8QT1lpPqj6QKtJCMeCd/uL00CECLP94ULmYeWlfZLMju7/UMdSXra8dk0
-         //cUugS3P4TciyGhEYeJ0LGiu+yz1qfX2HiIzJqrgcvhHx0bSJ6FhmUfCysaQkldSjYb
-         YSI+6aDKuwvdowh//q2tgNNf27WsrJmf6UGTbYTRXTVGDKtT0XaCagoI3xDhNgy7k/Zw
-         d1WIqRvidxn+iTwzxdmbvKm1ScoR0vpV5H7NsGLATwLxongqGY/WmdMGPC2UCLHXrHnM
-         +JApF8CqarQgqpe8lP2v7eyrOZgJOxW/VLgP2xGftaKN7aUt19H3kEMYQQTBD+IsCYlU
-         pa2A==
-X-Gm-Message-State: AOJu0YzEPzvyQs795Y6u1DcF2IBZfylJdkSg2qXICCXh/SpHFfEZ05Ap
-	s5dcRYYoMWHk1JNNo1dROpHMWgU8XCzbs1/EY5mfjuVw0Otmm7mJyH1zJHIqkaXW1tpAECPPG+R
-	4mG5WEHLq0tiUrTgBPjF1le4Q3fdZ8dXrDdT1N+dlZAX9+5Dqu5qTOqFVqWU=
+        d=1e100.net; s=20251104; t=1775133525; x=1775738325;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zGNjx7ia+JUspmbhZv7UBV0Q3SHnF725vJzfbtvG3dQ=;
+        b=O7vshlemmT4xh4VfiUspB3n2zEyXVe+QtfrvRiR/ReP5JqnW0547U5xO+ZewArUVNy
+         WR3dKDnSilwHEwWxz9HyzA2Q6irJFjI+DTacaTPHBQaSP6oLsRiaxjyEMwsmWLJ1rWBb
+         xlX2bQf71Op1kiyPoiM7gfNsC5JlNoe88RPG2b2nAgoEogFRSMjL5h/CdY9m43L3JfH1
+         MzzmlyjHK5RnEo9IGii8C5vm7mXo6+KgqZssKUGY6vPNrt6uaeM+X2mKhnqAFiVYDs0V
+         1xiaco0fAz7pAcGY/UNKSKl9SN91cuYRhmu/14Ju5R01anxqr/wVuwjL+6jqNmm+vVap
+         +M0w==
+X-Gm-Message-State: AOJu0Yx7SmHTC/BXSbPKL8UM+UqSVr4WMQB2g10zSld5os/P7fzAsz2S
+	7wLDWLm4vqvGAmkpy5Ukggy3MeolR7edBsUPze/ZKmEvHQlqEyifExSDdaBY1LoO75XyiBfOefa
+	ePhBxT6snO81Diknu2lWfxLNcDpiUMrOxbLgC28oPlJl6tlX259pxonQmmJ0=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a4a:bb07:0:b0:67d:e657:605c with SMTP id
- 006d021491bc7-680f87708ddmr457465eaf.17.1775106095010; Wed, 01 Apr 2026
- 22:01:35 -0700 (PDT)
-Date: Wed, 01 Apr 2026 22:01:34 -0700
+X-Received: by 2002:a05:6820:997:b0:67b:ba67:733e with SMTP id
+ 006d021491bc7-680a796f18amr2018089eaf.33.1775133525235; Thu, 02 Apr 2026
+ 05:38:45 -0700 (PDT)
+Date: Thu, 02 Apr 2026 05:38:45 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69cdf82e.050a0220.fcd29.0000.GAE@google.com>
-Subject: [moderation/CI] Re: mm: improve write performance with RWF_DONTCACHE
-From: syzbot ci <syzbot+ci3566e8df2fb29fc1@syzkaller.appspotmail.com>
+Message-ID: <69ce6355.050a0220.182279.0004.GAE@google.com>
+Subject: [moderation/CI] Re: bpf: Prep patches for static stack liveness.
+From: syzbot ci <syzbot+cic39b201f25563d8b@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] mm: improve write performance with RWF_DONTCACHE
-https://lore.kernel.org/all/20260401-dontcache-v1-0-1f5746fab47a@kernel.org
-* [PATCH 1/4] mm: fix IOCB_DONTCACHE write performance with rate-limited wr=
-iteback
-* [PATCH 2/4] mm: add atomic flush guard for IOCB_DONTCACHE writeback
-* [PATCH 3/4] testing: add nfsd-io-bench NFS server benchmark suite
-* [PATCH 4/4] testing: add dontcache-bench local filesystem benchmark suite
+[v2] bpf: Prep patches for static stack liveness.
+https://lore.kernel.org/all/20260402061744.10885-1-alexei.starovoitov@gmail.com
+* [PATCH v2 bpf-next 1/6] bpf: Do register range validation early
+* [PATCH v2 bpf-next 2/6] bpf: Sort subprogs in topological order after check_cfg()
+* [PATCH v2 bpf-next 3/6] selftests/bpf: Add tests for subprog topological ordering
+* [PATCH v2 bpf-next 4/6] bpf: Add bpf_compute_const_regs() and bpf_prune_dead_branches() passes
+* [PATCH v2 bpf-next 5/6] bpf: Move verifier helpers to header
+* [PATCH v2 bpf-next 6/6] bpf: Add helper and kfunc stack access size resolution
 
 and found the following issue:
-kernel build error
+UBSAN: array-index-out-of-bounds in do_check
 
 Full report is available here:
-https://ci.syzbot.org/series/396c3465-92e3-4ff8-a5e9-66d94e62ecc5
+https://ci.syzbot.org/series/472db170-a3e5-4e2f-992a-f066f3ec68a0
 
 ***
 
-kernel build error
+UBSAN: array-index-out-of-bounds in do_check
 
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
-nux-next
-base:      9147566d801602c9e7fc7f85e989735735bf38ba
+tree:      bpf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf-next.git
+base:      0eeb0094ba0321f0927806857b5f01c1577bc245
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/8b297e42-3cc8-4d9c-80b6-5a95cd2044e=
-f/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/35679c0d-9085-497b-89c5-d447be366fc7/config
 
-mm/filemap.c:485:4: error: too many arguments to function call, expected 5,=
- have 6
+can: raw protocol
+can: broadcast manager protocol
+can: netlink gateway - max_hops=1
+can: SAE J1939
+can: isotp protocol (max_pdu_size 8300)
+Bluetooth: RFCOMM TTY layer initialized
+Bluetooth: RFCOMM socket layer initialized
+Bluetooth: RFCOMM ver 1.11
+Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+Bluetooth: BNEP filters: protocol multicast
+Bluetooth: BNEP socket layer initialized
+Bluetooth: HIDP (Human Interface Emulation) ver 1.2
+Bluetooth: HIDP socket layer initialized
+NET: Registered PF_RXRPC protocol family
+Key type rxrpc registered
+Key type rxrpc_s registered
+NET: Registered PF_KCM protocol family
+lec:lane_module_init: lec.c: initialized
+mpoa:atm_mpoa_init: mpc.c: initialized
+l2tp_core: L2TP core driver, V2.0
+l2tp_ppp: PPPoL2TP kernel driver, V2.0
+l2tp_ip: L2TP IP encapsulation support (L2TPv3)
+l2tp_netlink: L2TP netlink interface
+l2tp_eth: L2TP ethernet pseudowire support (L2TPv3)
+l2tp_ip6: L2TP IP encapsulation support for IPv6 (L2TPv3)
+NET: Registered PF_PHONET protocol family
+8021q: 802.1Q VLAN Support v1.8
+sctp: Hash tables configured (bind 32/56)
+NET: Registered PF_RDS protocol family
+Registered RDS/infiniband transport
+Registered RDS/tcp transport
+tipc: Activated (version 2.0.0)
+NET: Registered PF_TIPC protocol family
+tipc: Started in single node mode
+smc: adding smcd device lo without pnetid
+NET: Registered PF_SMC protocol family
+9pnet: Installing 9P2000 support
+NET: Registered PF_CAIF protocol family
+NET: Registered PF_IEEE802154 protocol family
+Key type dns_resolver registered
+Key type ceph registered
+libceph: loaded (mon/osd proto 15/24)
+batman_adv: B.A.T.M.A.N. advanced 2025.5 (compatibility version 15) loaded
+openvswitch: Open vSwitch switching datapath
+NET: Registered PF_VSOCK protocol family
+mpls_gso: MPLS GSO support
+IPI shorthand broadcast: enabled
+sched_clock: Marking stable (24350040289, 119535998)->(24496627492, -27051205)
+registered taskstats version 1
+------------[ cut here ]------------
+UBSAN: array-index-out-of-bounds in kernel/bpf/verifier.c:21711:16
+index 10 is out of range for type 'u32[10]' (aka 'unsigned int[10]')
+CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150
+ ubsan_epilogue+0xa/0x30
+ __ubsan_handle_out_of_bounds+0xe8/0xf0
+ do_check+0x77a1/0x11d50
+ do_check_common+0x21ea/0x2dc0
+ bpf_check+0x242f/0x1cd90
+ bpf_prog_load+0x1484/0x1ae0
+ __sys_bpf+0x618/0x950
+ kern_sys_bpf+0x185/0x700
+ load+0x488/0xad0
+ do_one_initcall+0x250/0x8d0
+ do_initcall_level+0x104/0x190
+ do_initcalls+0x59/0xa0
+ kernel_init_freeable+0x2a6/0x3e0
+ kernel_init+0x1d/0x1d0
+ ret_from_fork+0x51e/0xb90
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
+---[ end trace ]---
+
 
 ***
 
@@ -100,12 +170,7 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[akpm@linux-foundation.org brauner@kernel.org chuck.lever@oracle.com david@=
-kernel.org jack@suse.cz jlayton@kernel.org liam.howlett@oracle.com linux-fs=
-devel@vger.kernel.org linux-kernel@vger.kernel.org linux-mm@kvack.org linux=
--nfs@vger.kernel.org ljs@kernel.org mhocko@suse.com msnitzer@kernel.org rpp=
-t@kernel.org surenb@google.com vbabka@kernel.org viro@zeniv.linux.org.uk wi=
-lly@infradead.org]
+[alexei.starovoitov@gmail.com andrii@kernel.org bpf@vger.kernel.org daniel@iogearbox.net eddyz87@gmail.com martin.lau@kernel.org memxor@gmail.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
