@@ -1,174 +1,110 @@
-Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com [209.85.160.71])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D450D32E141
-	for <syzbot@lists.linux.dev>; Thu,  2 Apr 2026 12:53:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.71
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775134432; cv=none; b=uL4FkmNVkTC9bg9FQsGXDSn0+mWYZxqoC5QpHjA7g0weKI/q+TvIc/YmZj2p1Vu6nMRV2XOoZ1KtlL+u6MmlLvEZMMA+m9ABPSySEvXd326YkDwHmA7P7575UK82PZLTtEl+K4oJAV4QDdi4U2G0V3rABk+bzNFE3g/Ilwz8EVo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775134432; c=relaxed/simple;
-	bh=ciCWzp4i7M0EEgSvwJCN8MhlVMDFmp8QKXPKVV7o0eA=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=cBrslOwSOLaIFJst+VAYjfZ3kc2ObL6dneQvRkX6NMkZYD7bXGUY8++IOGw+byFzrFccPS0+uSBveYg+tXYk54G07F8LcFD9cHdu9N8ohkQjgFcJtWh9p7Cgc8ZBPsVuAe1yOoRPxZHB1Kkm3mxyvNleaUbvTYWZGxLBHLXhuKM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-41702ea8343so1233463fac.0
-        for <syzbot@lists.linux.dev>; Thu, 02 Apr 2026 05:53:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A80733E95A4
+	for <syzbot@lists.linux.dev>; Thu,  2 Apr 2026 14:56:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775141797; cv=pass; b=HLYPQJpaF9MHyXeONe3vzAQ+UcE/g/OeOkFFYjqp6jLzJoeH2C8ZxOhapKCg4/xehXLQt0/5ZslaBFCOkrOPRZV38oTbe7iakza2VeqobBqb9lahZ5KSr8/qqsYAZR4Kh7dD0ca+cpx5WtmDM5AQcpFtPkqFT+fFxTKhlUsWCxo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775141797; c=relaxed/simple;
+	bh=uAxS5YiO1+amAvCpAqHLE6/1cSDNss5no4TdlFmkOU8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=K5yo4oBGcninZItua7nWsHmKqjdoCdgKgKCKhRAEoHB4373MhbIo88KZ/j9TNs5TgYWdFtYOmluiAiC7wbE7Jppdzp2DgSSNkq7pcNd2NaDZIuB/lK4FiVsSs0ZpN3xukOPzUNXTXEb1IwKgIGMQROaBFM69ZUNvoIBDurE2b6k=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IZPjZaqo; arc=pass smtp.client-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IZPjZaqo"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-43cfd1f9fd1so633598f8f.3
+        for <syzbot@lists.linux.dev>; Thu, 02 Apr 2026 07:56:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775141794; cv=none;
+        d=google.com; s=arc-20240605;
+        b=BWaN6N/qjf0pjqK0A5gV15ZIFO3sQW9qOUuTW0zSkoa1ac1ZIbmKGzjH9aIKWsNio4
+         xqT3U/k1U1s2gp7K8vhq1BJ/3zZvh8uUDs0WNKWfY8ph87u/msKh8tIwgp5g9j5ztGLG
+         v0f0yYalJ2xMrlWzYewpOAg5v1clDxbyRusjczsI1ibzOc+qGAUacvqIWDIGHyDIk/XC
+         g2vsmtnaTPpBeh8x9q2sD0GscJvanDwmFZK+ULp9qkf0WDnSa8OILByLkoN+WUvE3ERE
+         lD55GS/WjULVOW+Bbe2MMx/Q2Ak6QrRdUSN5zpClz4UayjplZTKcOSOgpCq6s2Fj4wM1
+         tuEQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=uAxS5YiO1+amAvCpAqHLE6/1cSDNss5no4TdlFmkOU8=;
+        fh=wTboCPe6ZXqMowt0lZbeEM58+knEHHaw3/lA9828oVs=;
+        b=Uoe7QUr8RhaHpYDdKxW1qhyv+s8RN/g9jHrCd7JOTlRXzD5DkyHhntEiLsvDFFnyGd
+         hE4mgea4cUweX7ZVxHFKqfWv1VD5MsuSOtMGY2Q3GTxJZFgemSGnxnGzY8xPCfhsqm67
+         t89Rb91z9ApaYx/Urj8iBaJQwsEqKp/4nzcuah4HKnvaq5JaoMR1DrS4tM3h5oXmGFZK
+         DcxJKwXmHekz09skDJpGsBeT8YhCtbm0nnaqz0U5WgbT6DBxyPsspWevipv2qJJ6cDSB
+         1YR82o3GN7CqEMgOzOBxUxTDc/MiTb3rBwrBuPb6ajO4Fxqbbr5h7MRXjvcgFL41o9Uc
+         p7Dg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1775141794; x=1775746594; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uAxS5YiO1+amAvCpAqHLE6/1cSDNss5no4TdlFmkOU8=;
+        b=IZPjZaqo8X/DQcU0RuiKOqQedaaSc3rHjjEFSdO4kQFbca8Qy3HESCoRmiNCmQQ+1m
+         DxJal1O6uKGFmR8IjPJlZLy/h60uRGoglsUFDM11/TQZRL769ATKKp2WinKnU+j92bYR
+         /1zgW3/dRyifGfojqupQQL/DyHAlu44tNoF0I3hC5qzYW1JklVO/JoScBj0UoIBQ9myQ
+         YvHWL/MlDRtLwCiRFsLlYmGGF41VRRs/JM8cxmlAYlp0/d7wakjeAEi/w2v6En0kcgql
+         yRoPOoBXSJ4d1t1oZnt/Kz4NY2eaTCLuyt+arZKGRMHzeK+A9Nl7BFkEO6l8t6oACQRw
+         L7uQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775134426; x=1775739226;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QBgPDXy0CDc09Df8kPHI5V1lc4XrhEWV+2zpnUUOEFk=;
-        b=l1RUer6KfDJpF/FoRYr925zXCN/D1iHFcT+OsU2em0dQx/i8PDpXHaGu/bQpk6o7ma
-         z3bVQjO6EsKF/lrIAhP1cYDuxCx/7vB3hM5QzX6HPJEgo2Bj/N7suPPw0Rc3rWFoGPid
-         4w8i3WgzkOg78nf8+c85z8XzuJfbKHsACoSWgMA4x/YVv4FM/oRhtuCIXxo/iq5mlwzk
-         s7OmJH0NoazFVztbIfIDfbFclwWLdUjRsvKm7TeQlGop44KF5qozBFhzHxiYxgbFQv1E
-         DzcUmofSq1l7JmCW6dL/CW7CstZAn/WBZDclBou+gG8lq9vlbpvfZHqUly195muaRcNj
-         nJgg==
-X-Gm-Message-State: AOJu0YxTT3EVbYHegU5Ms28Bhxdty1iPxPm1C+Ht1li/jtcuYdnOAKfo
-	zKeFzd7K1dOyKn8jcLRtyrsAEcvfa4R8S3hoIfy/uiVT6nBEbgoG5fqj/hAiwu4U9rOB92xzjxc
-	hO15lP9qipeV+8xxildt99SDikLDJox/WXrjDBWV3bqUoepEUoUesK5AxYLg=
+        d=1e100.net; s=20251104; t=1775141794; x=1775746594;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=uAxS5YiO1+amAvCpAqHLE6/1cSDNss5no4TdlFmkOU8=;
+        b=TXD/RTLASNHLIYqgljUTedvKmWs9tvbXduaMg8s/hbsrNpPISufWs/gK1RtX5NA7dd
+         +5ftoJr9H/EyAVJIqTww1VsIuGKi+TtP94OG/3+uRSlELRsoB5ycaBuPRwxkpHtF03iD
+         kdCCgA6sTFZKli2rm84Q+KW4SyR8INVuESj0oFRhTTfwy8rKbIFfalT2L+sDyrI9zmd3
+         qu1bgq8xkLXBsrw3ks/tyJupgjWCdE7WDrUGUrC7gos5mEjNXEO7FsD02/qar2cNroOk
+         GCHU1B/X+Ri3nnNUMgUkhfFVx5Yg7FhJ+Ayl2Q90EfDYEvk5ZVbr3VcuJWBSI4GOupyo
+         Fc6A==
+X-Forwarded-Encrypted: i=1; AJvYcCWciwOteQsUjvQPmRZW0OMT8UmvsvNsJ/fmA4ESy4GnitF0YCVs1bpMBvZcBi7+UZZqU/bkXP4=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzgPq5syNracG1aZPVw3/ACQynpSv8C6bGaHNV/tWN6ls9W6fT0
+	zSIb5Qvjo8JbjgtsVDnVmxIC0gz0la8i5+iHvBehTF1yf42MkvJmPNrzdbpVKYu4O30i1/coz7k
+	Dvej8ltLgDVGmi9DAiV15SWShJcd8mdI=
+X-Gm-Gg: AeBDietDrBM6FbaovBVnuuMj2cZwG9wOIWtnQxqLJDScxRZDzz7xSwpQuX1D+XRPWqL
+	Uyn5jZB3E7vZ/sbEIdRY7jV+w2Dh/ftlV5BX+oLpYFNxA7vw5pUHVxef5spv+IgkMBF4NdDKlLZ
+	0ofOpTuFjBjxLgF7h6ryJlKCu8cn0/Mhp8TC8AUpJjyrkG0jjzg9g4jrVAQuXSaaiyedNcl+bsc
+	HI6UY6a/xfpB7PznsG2s53/vXdtH468mZGGP7Ie3qb6E2KaPmwLMivFZK9TnGugNiggBlIpz6ue
+	J+0GJ2YK35miL4N0fSa1+TOOfbj9h9kTa6Cy3LwE8ThWRXLclBi0pB9m4r0CFuLthfxUrDj0Erw
+	O1Ma+LIDPtDGk7EWAsLh81HUEOw==
+X-Received: by 2002:a05:6000:178d:b0:43d:4ee:c25a with SMTP id
+ ffacd0b85a97d-43d150e3bd6mr13872675f8f.48.1775141793883; Thu, 02 Apr 2026
+ 07:56:33 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1809:b0:67e:3e13:3315 with SMTP id
- 006d021491bc7-67fabca40d9mr3488597eaf.34.1775134426172; Thu, 02 Apr 2026
- 05:53:46 -0700 (PDT)
-Date: Thu, 02 Apr 2026 05:53:46 -0700
-In-Reply-To: <20260402061744.10885-1-alexei.starovoitov@gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69ce66da.050a0220.2dbe29.0005.GAE@google.com>
-Subject: [syzbot ci] Re: bpf: Prep patches for static stack liveness.
-From: syzbot ci <syzbot+ci5d1af9c009034c4e@syzkaller.appspotmail.com>
-To: alexei.starovoitov@gmail.com, andrii@kernel.org, bpf@vger.kernel.org, 
-	daniel@iogearbox.net, eddyz87@gmail.com, martin.lau@kernel.org, 
-	memxor@gmail.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <20260402061744.10885-1-alexei.starovoitov@gmail.com> <69ce66da.050a0220.2dbe29.0005.GAE@google.com>
+In-Reply-To: <69ce66da.050a0220.2dbe29.0005.GAE@google.com>
+From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date: Thu, 2 Apr 2026 07:56:21 -0700
+X-Gm-Features: AQROBzCTm63wE0_zWPbun-baJuzBXrmRm165qIp6TtIjqCRaUBlXsXPm7P0F0D0
+Message-ID: <CAADnVQKzKhHFO+JBRmF7QyH3C9p3Uu+MuJdK-tuiqnt-BGU6Zg@mail.gmail.com>
+Subject: Re: [syzbot ci] Re: bpf: Prep patches for static stack liveness.
+To: syzbot ci <syzbot+ci5d1af9c009034c4e@syzkaller.appspotmail.com>
+Cc: Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>, 
+	Daniel Borkmann <daniel@iogearbox.net>, Eduard <eddyz87@gmail.com>, 
+	Martin KaFai Lau <martin.lau@kernel.org>, Kumar Kartikeya Dwivedi <memxor@gmail.com>, syzbot@lists.linux.dev, 
+	syzkaller-bugs <syzkaller-bugs@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
+On Thu, Apr 2, 2026 at 5:53=E2=80=AFAM syzbot ci
+<syzbot+ci5d1af9c009034c4e@syzkaller.appspotmail.com> wrote:
+>
+> ------------[ cut here ]------------
+> UBSAN: array-index-out-of-bounds in kernel/bpf/verifier.c:21711:16
+> index 10 is out of range for type 'u32[10]' (aka 'unsigned int[10]')
 
-[v2] bpf: Prep patches for static stack liveness.
-https://lore.kernel.org/all/20260402061744.10885-1-alexei.starovoitov@gmail.com
-* [PATCH v2 bpf-next 1/6] bpf: Do register range validation early
-* [PATCH v2 bpf-next 2/6] bpf: Sort subprogs in topological order after check_cfg()
-* [PATCH v2 bpf-next 3/6] selftests/bpf: Add tests for subprog topological ordering
-* [PATCH v2 bpf-next 4/6] bpf: Add bpf_compute_const_regs() and bpf_prune_dead_branches() passes
-* [PATCH v2 bpf-next 5/6] bpf: Move verifier helpers to header
-* [PATCH v2 bpf-next 6/6] bpf: Add helper and kfunc stack access size resolution
+Yes, it's speculative out of bounds. r10 will not appear as const,
+since loop that populates it goes to ARRAY_SIZE(aux->const_reg_vals);.
 
-and found the following issue:
-UBSAN: array-index-out-of-bounds in do_check
-
-Full report is available here:
-https://ci.syzbot.org/series/472db170-a3e5-4e2f-992a-f066f3ec68a0
-
-***
-
-UBSAN: array-index-out-of-bounds in do_check
-
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf-next.git
-base:      0eeb0094ba0321f0927806857b5f01c1577bc245
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/35679c0d-9085-497b-89c5-d447be366fc7/config
-
-can: raw protocol
-can: broadcast manager protocol
-can: netlink gateway - max_hops=1
-can: SAE J1939
-can: isotp protocol (max_pdu_size 8300)
-Bluetooth: RFCOMM TTY layer initialized
-Bluetooth: RFCOMM socket layer initialized
-Bluetooth: RFCOMM ver 1.11
-Bluetooth: BNEP (Ethernet Emulation) ver 1.3
-Bluetooth: BNEP filters: protocol multicast
-Bluetooth: BNEP socket layer initialized
-Bluetooth: HIDP (Human Interface Emulation) ver 1.2
-Bluetooth: HIDP socket layer initialized
-NET: Registered PF_RXRPC protocol family
-Key type rxrpc registered
-Key type rxrpc_s registered
-NET: Registered PF_KCM protocol family
-lec:lane_module_init: lec.c: initialized
-mpoa:atm_mpoa_init: mpc.c: initialized
-l2tp_core: L2TP core driver, V2.0
-l2tp_ppp: PPPoL2TP kernel driver, V2.0
-l2tp_ip: L2TP IP encapsulation support (L2TPv3)
-l2tp_netlink: L2TP netlink interface
-l2tp_eth: L2TP ethernet pseudowire support (L2TPv3)
-l2tp_ip6: L2TP IP encapsulation support for IPv6 (L2TPv3)
-NET: Registered PF_PHONET protocol family
-8021q: 802.1Q VLAN Support v1.8
-sctp: Hash tables configured (bind 32/56)
-NET: Registered PF_RDS protocol family
-Registered RDS/infiniband transport
-Registered RDS/tcp transport
-tipc: Activated (version 2.0.0)
-NET: Registered PF_TIPC protocol family
-tipc: Started in single node mode
-smc: adding smcd device lo without pnetid
-NET: Registered PF_SMC protocol family
-9pnet: Installing 9P2000 support
-NET: Registered PF_CAIF protocol family
-NET: Registered PF_IEEE802154 protocol family
-Key type dns_resolver registered
-Key type ceph registered
-libceph: loaded (mon/osd proto 15/24)
-batman_adv: B.A.T.M.A.N. advanced 2025.5 (compatibility version 15) loaded
-openvswitch: Open vSwitch switching datapath
-NET: Registered PF_VSOCK protocol family
-mpls_gso: MPLS GSO support
-IPI shorthand broadcast: enabled
-sched_clock: Marking stable (24350040289, 119535998)->(24496627492, -27051205)
-registered taskstats version 1
-------------[ cut here ]------------
-UBSAN: array-index-out-of-bounds in kernel/bpf/verifier.c:21711:16
-index 10 is out of range for type 'u32[10]' (aka 'unsigned int[10]')
-CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150
- ubsan_epilogue+0xa/0x30
- __ubsan_handle_out_of_bounds+0xe8/0xf0
- do_check+0x77a1/0x11d50
- do_check_common+0x21ea/0x2dc0
- bpf_check+0x242f/0x1cd90
- bpf_prog_load+0x1484/0x1ae0
- __sys_bpf+0x618/0x950
- kern_sys_bpf+0x185/0x700
- load+0x488/0xad0
- do_one_initcall+0x250/0x8d0
- do_initcall_level+0x104/0x190
- do_initcalls+0x59/0xa0
- kernel_init_freeable+0x2a6/0x3e0
- kernel_init+0x1d/0x1d0
- ret_from_fork+0x51e/0xb90
- ret_from_fork_asm+0x1a/0x30
- </TASK>
----[ end trace ]---
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+If that's the only thing I'll fix it up while applying.
