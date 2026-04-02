@@ -1,110 +1,114 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A80733E95A4
-	for <syzbot@lists.linux.dev>; Thu,  2 Apr 2026 14:56:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775141797; cv=pass; b=HLYPQJpaF9MHyXeONe3vzAQ+UcE/g/OeOkFFYjqp6jLzJoeH2C8ZxOhapKCg4/xehXLQt0/5ZslaBFCOkrOPRZV38oTbe7iakza2VeqobBqb9lahZ5KSr8/qqsYAZR4Kh7dD0ca+cpx5WtmDM5AQcpFtPkqFT+fFxTKhlUsWCxo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775141797; c=relaxed/simple;
-	bh=uAxS5YiO1+amAvCpAqHLE6/1cSDNss5no4TdlFmkOU8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=K5yo4oBGcninZItua7nWsHmKqjdoCdgKgKCKhRAEoHB4373MhbIo88KZ/j9TNs5TgYWdFtYOmluiAiC7wbE7Jppdzp2DgSSNkq7pcNd2NaDZIuB/lK4FiVsSs0ZpN3xukOPzUNXTXEb1IwKgIGMQROaBFM69ZUNvoIBDurE2b6k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IZPjZaqo; arc=pass smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IZPjZaqo"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-43cfd1f9fd1so633598f8f.3
-        for <syzbot@lists.linux.dev>; Thu, 02 Apr 2026 07:56:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1775141794; cv=none;
-        d=google.com; s=arc-20240605;
-        b=BWaN6N/qjf0pjqK0A5gV15ZIFO3sQW9qOUuTW0zSkoa1ac1ZIbmKGzjH9aIKWsNio4
-         xqT3U/k1U1s2gp7K8vhq1BJ/3zZvh8uUDs0WNKWfY8ph87u/msKh8tIwgp5g9j5ztGLG
-         v0f0yYalJ2xMrlWzYewpOAg5v1clDxbyRusjczsI1ibzOc+qGAUacvqIWDIGHyDIk/XC
-         g2vsmtnaTPpBeh8x9q2sD0GscJvanDwmFZK+ULp9qkf0WDnSa8OILByLkoN+WUvE3ERE
-         lD55GS/WjULVOW+Bbe2MMx/Q2Ak6QrRdUSN5zpClz4UayjplZTKcOSOgpCq6s2Fj4wM1
-         tuEQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=uAxS5YiO1+amAvCpAqHLE6/1cSDNss5no4TdlFmkOU8=;
-        fh=wTboCPe6ZXqMowt0lZbeEM58+knEHHaw3/lA9828oVs=;
-        b=Uoe7QUr8RhaHpYDdKxW1qhyv+s8RN/g9jHrCd7JOTlRXzD5DkyHhntEiLsvDFFnyGd
-         hE4mgea4cUweX7ZVxHFKqfWv1VD5MsuSOtMGY2Q3GTxJZFgemSGnxnGzY8xPCfhsqm67
-         t89Rb91z9ApaYx/Urj8iBaJQwsEqKp/4nzcuah4HKnvaq5JaoMR1DrS4tM3h5oXmGFZK
-         DcxJKwXmHekz09skDJpGsBeT8YhCtbm0nnaqz0U5WgbT6DBxyPsspWevipv2qJJ6cDSB
-         1YR82o3GN7CqEMgOzOBxUxTDc/MiTb3rBwrBuPb6ajO4Fxqbbr5h7MRXjvcgFL41o9Uc
-         p7Dg==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775141794; x=1775746594; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uAxS5YiO1+amAvCpAqHLE6/1cSDNss5no4TdlFmkOU8=;
-        b=IZPjZaqo8X/DQcU0RuiKOqQedaaSc3rHjjEFSdO4kQFbca8Qy3HESCoRmiNCmQQ+1m
-         DxJal1O6uKGFmR8IjPJlZLy/h60uRGoglsUFDM11/TQZRL769ATKKp2WinKnU+j92bYR
-         /1zgW3/dRyifGfojqupQQL/DyHAlu44tNoF0I3hC5qzYW1JklVO/JoScBj0UoIBQ9myQ
-         YvHWL/MlDRtLwCiRFsLlYmGGF41VRRs/JM8cxmlAYlp0/d7wakjeAEi/w2v6En0kcgql
-         yRoPOoBXSJ4d1t1oZnt/Kz4NY2eaTCLuyt+arZKGRMHzeK+A9Nl7BFkEO6l8t6oACQRw
-         L7uQ==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0957363C47
+	for <syzbot@lists.linux.dev>; Thu,  2 Apr 2026 18:26:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775154364; cv=none; b=fvk9NNFQTl3J+XIQEGIxuyVectJMqOCtl3CkJynH2K0Lpuh5ip1s0IljibYijvFFvsmjrdbSZA5iKlKlBu7MRCAcjy8xXakAt/v5/1iNlQjmAEoo/LUhFQP0LSVAJ8RYmVrgozTyPmrVZ7bwZVSWLIMy3ytKO/2upqMIHGoQrJU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775154364; c=relaxed/simple;
+	bh=YQfIkGZ4l937F0IIYbQ8hqzPMX3Ue/WjrvnAtfyPaUA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ChHSyFlUWmRVdMPja5q25OwhxIxy3o+Hm/u2YQAmPTPwllwRyEaBVQIXQevcdOpanTtZPyQslWJsG5WbTee0R1cpDgozMSA78GyXP8ADQ4Oieewu2wevU0Q1zcHaqRk8jcbAQ3AzJM5VDU2cv8tJa5R2xnjhwGSCqoQqZtIfn6E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-67e0d20af55so1789629eaf.2
+        for <syzbot@lists.linux.dev>; Thu, 02 Apr 2026 11:26:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775141794; x=1775746594;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=uAxS5YiO1+amAvCpAqHLE6/1cSDNss5no4TdlFmkOU8=;
-        b=TXD/RTLASNHLIYqgljUTedvKmWs9tvbXduaMg8s/hbsrNpPISufWs/gK1RtX5NA7dd
-         +5ftoJr9H/EyAVJIqTww1VsIuGKi+TtP94OG/3+uRSlELRsoB5ycaBuPRwxkpHtF03iD
-         kdCCgA6sTFZKli2rm84Q+KW4SyR8INVuESj0oFRhTTfwy8rKbIFfalT2L+sDyrI9zmd3
-         qu1bgq8xkLXBsrw3ks/tyJupgjWCdE7WDrUGUrC7gos5mEjNXEO7FsD02/qar2cNroOk
-         GCHU1B/X+Ri3nnNUMgUkhfFVx5Yg7FhJ+Ayl2Q90EfDYEvk5ZVbr3VcuJWBSI4GOupyo
-         Fc6A==
-X-Forwarded-Encrypted: i=1; AJvYcCWciwOteQsUjvQPmRZW0OMT8UmvsvNsJ/fmA4ESy4GnitF0YCVs1bpMBvZcBi7+UZZqU/bkXP4=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzgPq5syNracG1aZPVw3/ACQynpSv8C6bGaHNV/tWN6ls9W6fT0
-	zSIb5Qvjo8JbjgtsVDnVmxIC0gz0la8i5+iHvBehTF1yf42MkvJmPNrzdbpVKYu4O30i1/coz7k
-	Dvej8ltLgDVGmi9DAiV15SWShJcd8mdI=
-X-Gm-Gg: AeBDietDrBM6FbaovBVnuuMj2cZwG9wOIWtnQxqLJDScxRZDzz7xSwpQuX1D+XRPWqL
-	Uyn5jZB3E7vZ/sbEIdRY7jV+w2Dh/ftlV5BX+oLpYFNxA7vw5pUHVxef5spv+IgkMBF4NdDKlLZ
-	0ofOpTuFjBjxLgF7h6ryJlKCu8cn0/Mhp8TC8AUpJjyrkG0jjzg9g4jrVAQuXSaaiyedNcl+bsc
-	HI6UY6a/xfpB7PznsG2s53/vXdtH468mZGGP7Ie3qb6E2KaPmwLMivFZK9TnGugNiggBlIpz6ue
-	J+0GJ2YK35miL4N0fSa1+TOOfbj9h9kTa6Cy3LwE8ThWRXLclBi0pB9m4r0CFuLthfxUrDj0Erw
-	O1Ma+LIDPtDGk7EWAsLh81HUEOw==
-X-Received: by 2002:a05:6000:178d:b0:43d:4ee:c25a with SMTP id
- ffacd0b85a97d-43d150e3bd6mr13872675f8f.48.1775141793883; Thu, 02 Apr 2026
- 07:56:33 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1775154362; x=1775759162;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=EXe5TPaoxWnhlnLMl7UPmGdNB6TCXs8rx0LSSiDN06E=;
+        b=VmcVxn6+I8C0EQQIY4vInSuU9YvA7NKAPBqwxThE5mtJphSpaG8qddoX5RH97B8P0z
+         Ug1nOe9wDNs7MXA9dcXhvQhb9EL4R+6Wg/JXVyKddJcmZ9wd4NIqUiXnBmXoMQFIXWqw
+         mkUPOQPKeJKtR0e83pdV7yo/Va5R+ZUufF89T+QLK772k325Scjff94Fhjd6Vcyo/sZL
+         OnqSF8WIX2cEy0F7h+mKM7ts1QY6tBFAM7rKISmLJxQlDKObhjUBpL38RFFTjQwPxVWr
+         JkM8d346o2SUIybbBCjA5BvS4Uk/hXV7svGSbh1yerSra3QI5d7RV3+h2B6WZ/iGCcID
+         C06A==
+X-Gm-Message-State: AOJu0YwvqHkSrqp/USXE5S8csmA6TkE7q3fOVQwlD18xHq16/U4RDlNJ
+	MI+2DgF/HnRqCDB0sVgJSpRopI24xF8130NpQ2zzQoG8DXPQ/5XQy4VHc4BslcUOOYcdpNH8gOL
+	qpYqlSI6Nxz7z9QJXmx83PNayP6WLrzvd5E/wPvZsOebRm+iQ/e2OOU7mmd0=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260402061744.10885-1-alexei.starovoitov@gmail.com> <69ce66da.050a0220.2dbe29.0005.GAE@google.com>
-In-Reply-To: <69ce66da.050a0220.2dbe29.0005.GAE@google.com>
-From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date: Thu, 2 Apr 2026 07:56:21 -0700
-X-Gm-Features: AQROBzCTm63wE0_zWPbun-baJuzBXrmRm165qIp6TtIjqCRaUBlXsXPm7P0F0D0
-Message-ID: <CAADnVQKzKhHFO+JBRmF7QyH3C9p3Uu+MuJdK-tuiqnt-BGU6Zg@mail.gmail.com>
-Subject: Re: [syzbot ci] Re: bpf: Prep patches for static stack liveness.
-To: syzbot ci <syzbot+ci5d1af9c009034c4e@syzkaller.appspotmail.com>
-Cc: Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>, 
-	Daniel Borkmann <daniel@iogearbox.net>, Eduard <eddyz87@gmail.com>, 
-	Martin KaFai Lau <martin.lau@kernel.org>, Kumar Kartikeya Dwivedi <memxor@gmail.com>, syzbot@lists.linux.dev, 
-	syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+X-Received: by 2002:a05:6820:3096:b0:67c:2bab:bf54 with SMTP id
+ 006d021491bc7-682220f7561mr95578eaf.62.1775154361820; Thu, 02 Apr 2026
+ 11:26:01 -0700 (PDT)
+Date: Thu, 02 Apr 2026 11:26:01 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69ceb4b9.050a0220.2dbe29.0006.GAE@google.com>
+Subject: [moderation/CI] Re: ipvs: fix MTU check for GSO packets in tunnel mode
+From: syzbot ci <syzbot+ci5cb6cb9b76c3e21a@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Apr 2, 2026 at 5:53=E2=80=AFAM syzbot ci
-<syzbot+ci5d1af9c009034c4e@syzkaller.appspotmail.com> wrote:
->
-> ------------[ cut here ]------------
-> UBSAN: array-index-out-of-bounds in kernel/bpf/verifier.c:21711:16
-> index 10 is out of range for type 'u32[10]' (aka 'unsigned int[10]')
+syzbot ci has tested the following series
 
-Yes, it's speculative out of bounds. r10 will not appear as const,
-since loop that populates it goes to ARRAY_SIZE(aux->const_reg_vals);.
+[v2] ipvs: fix MTU check for GSO packets in tunnel mode
+https://lore.kernel.org/all/tencent_CA2C1C219C99D315086BE55E8654AF7E6009@qq=
+.com
+* [PATCH net v2] ipvs: fix MTU check for GSO packets in tunnel mode
 
-If that's the only thing I'll fix it up while applying.
+and found the following issue:
+kernel build error
+
+Full report is available here:
+https://ci.syzbot.org/series/8a36afb1-bf26-43a7-abda-0fe36dac52b1
+
+***
+
+kernel build error
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      9147566d801602c9e7fc7f85e989735735bf38ba
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/795d9703-7617-4fa5-8839-73099ccf6fc=
+6/config
+
+net/netfilter/ipvs/ip_vs_xmit.c:115:2: error: non-void function does not re=
+turn a value in all control paths [-Werror,-Wreturn-type]
+net/netfilter/ipvs/ip_vs_xmit.c:115:4: error: expected identifier or '('
+net/netfilter/ipvs/ip_vs_xmit.c:119:2: error: expected identifier or '('
+net/netfilter/ipvs/ip_vs_xmit.c:120:1: error: extraneous closing brace ('}'=
+)
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[342144303@qq.com coreteam@netfilter.org davem@davemloft.net edumazet@googl=
+e.com fw@strlen.de horms@verge.net.au ja@ssi.bg kuba@kernel.org linux-kerne=
+l@vger.kernel.org lvs-devel@vger.kernel.org netdev@vger.kernel.org netfilte=
+r-devel@vger.kernel.org pabeni@redhat.com pablo@netfilter.org phil@nwl.cc]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
