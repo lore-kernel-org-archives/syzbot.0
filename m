@@ -1,50 +1,50 @@
-Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com [209.85.160.70])
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCBE22C0296
-	for <syzbot@lists.linux.dev>; Wed,  1 Apr 2026 14:27:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE90B40DFCA
+	for <syzbot@lists.linux.dev>; Thu,  2 Apr 2026 05:01:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775053668; cv=none; b=e9WuwR+QXhenQOSwDiDncKjVT7Trsp+3Q5tdOn0gYquaq4uw8ZxrZOPHAejCv/dJB9Sbqa+EsRDk7HAHeOuPyOzbAf+fPxgOYxL2PzHxgCQr7FG8z0c6uLxOubuV+lpn7AZb157yB1s1RsC2J2RBYo9RXz8XZooG/wBC9n2sb5Y=
+	t=1775106097; cv=none; b=otNntzXf8I3JXSr7bEJ6p/tIYhONZfAX9ktDFjWpeOP6VrK3dO2Hx+Y3sMZ1uaf1xwCM41yRiDKaiCz0PkGpnTHFw3ddsvYuFf5qQiIbcboVJgAym7FBAbQLpmwo7gLC4jl+2FMvINv2LH57rELrSILHH5/kZPyvfJucwX1RlYw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775053668; c=relaxed/simple;
-	bh=0PTO7N62VxEbW/jN6C3qrF0c4GVjxE0TGVbWczuYRXM=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ueDAzVclflTSRswF/nvH2lUXhmcgXuMsXOJpEHoJwH2piCNIJKJDR88RzXpuaSBUlvXYyu9VAHvBHvGMu3Y91utUeqOCNizhj6y9+dawIU7io/4FpkVRfOLfBTbzRETs9uj/olyOhPyYrH/1yWNyrlJeJ9SZbaltp7HeLo6gyr0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.70
+	s=arc-20240116; t=1775106097; c=relaxed/simple;
+	bh=j/hoE33G1zQJRQJm66FntCfoeDjNiu82XcwL8Z5/Oic=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=EadfnulAN5xEs2Bles2krVboN1HHboICsI5Dg5Fje6M5j0qc18RWRX4KRBE4c/pw8LG6R3e8Hzkm2j5Lj/epvdMh0UNGyVxrXBr1EA1XKM/dNHHVHD2VEZ6Zc9YIwaOCAaBR1xGfIaQ4+RRSFzlxaJKME5PkhGbFvHGx3dvWD2A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-41c4709dd9dso23197965fac.3
-        for <syzbot@lists.linux.dev>; Wed, 01 Apr 2026 07:27:44 -0700 (PDT)
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-67a1e063795so4891158eaf.1
+        for <syzbot@lists.linux.dev>; Wed, 01 Apr 2026 22:01:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775053664; x=1775658464;
+        d=1e100.net; s=20251104; t=1775106095; x=1775710895;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=/PcrkTyphloJHdZaVMIoDn3DHkCLB+XgtoMQTrnABZ4=;
-        b=EPmhcZzq/pIFZcCV7qKcRGYxUPp4HF72Rv6sQqngfkigFicZyqTIePF8umbrcR/TbS
-         xQ5UoBZgNtFpOhErwIkxDzoKN7896HSLM1hDdLS5Itr7dKVg4eQGFCE8kC7zb7h7BxT/
-         V9uL4/a6c3e3Lo6x5ZZ3CXXn4ScdTEgwAx/7jiaI6ObVprxvhcVfBexROoVRsS9QN2mW
-         ++UiBOaaGFOlqB0AAeUQLU8ZtLjIiVxntSxCpN9n5Ky2PuNjbexwjic5hWppqhIBZjku
-         CYnkk+ua0VLP6XI4Tv7wrY22FMdUtlgFUgKMlXpufKXi21VDMpKUm2tBmwp9yvSuQhhS
-         LWOg==
-X-Gm-Message-State: AOJu0YzBQJMV2bO2Zdtb1m9DlFrM8J6mLqRev+1mkNc/iK6PNOecZ15k
-	uhHFa6efPz7RMKBi46tGRGMd31mfr+LFya1Hl+M3d/Cbj5Fj32XoIHdR6BVu3vs/R2YgUIEDokU
-	SocpzymmJu1FIfqXLW1FAmJ6foUvReKMTy7nAuwm08f/lMbZ3PfmnJmzBP8g=
+        bh=EXaczEiiA0iV3b3RTWIXZ0bj040SVrvqju7acjlc6Og=;
+        b=j8Gjmnieg8QT1lpPqj6QKtJCMeCd/uL00CECLP94ULmYeWlfZLMju7/UMdSXra8dk0
+         //cUugS3P4TciyGhEYeJ0LGiu+yz1qfX2HiIzJqrgcvhHx0bSJ6FhmUfCysaQkldSjYb
+         YSI+6aDKuwvdowh//q2tgNNf27WsrJmf6UGTbYTRXTVGDKtT0XaCagoI3xDhNgy7k/Zw
+         d1WIqRvidxn+iTwzxdmbvKm1ScoR0vpV5H7NsGLATwLxongqGY/WmdMGPC2UCLHXrHnM
+         +JApF8CqarQgqpe8lP2v7eyrOZgJOxW/VLgP2xGftaKN7aUt19H3kEMYQQTBD+IsCYlU
+         pa2A==
+X-Gm-Message-State: AOJu0YzEPzvyQs795Y6u1DcF2IBZfylJdkSg2qXICCXh/SpHFfEZ05Ap
+	s5dcRYYoMWHk1JNNo1dROpHMWgU8XCzbs1/EY5mfjuVw0Otmm7mJyH1zJHIqkaXW1tpAECPPG+R
+	4mG5WEHLq0tiUrTgBPjF1le4Q3fdZ8dXrDdT1N+dlZAX9+5Dqu5qTOqFVqWU=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1997:b0:67e:3267:f02f with SMTP id
- 006d021491bc7-67fabcc9de3mr2108410eaf.38.1775053663794; Wed, 01 Apr 2026
- 07:27:43 -0700 (PDT)
-Date: Wed, 01 Apr 2026 07:27:43 -0700
+X-Received: by 2002:a4a:bb07:0:b0:67d:e657:605c with SMTP id
+ 006d021491bc7-680f87708ddmr457465eaf.17.1775106095010; Wed, 01 Apr 2026
+ 22:01:35 -0700 (PDT)
+Date: Wed, 01 Apr 2026 22:01:34 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69cd2b5f.050a0220.25c253.0476.GAE@google.com>
-Subject: [moderation/CI] Re: Deprecate Legacy IP
-From: syzbot ci <syzbot+cif3c0eb132e9fb2a6@syzkaller.appspotmail.com>
+Message-ID: <69cdf82e.050a0220.fcd29.0000.GAE@google.com>
+Subject: [moderation/CI] Re: mm: improve write performance with RWF_DONTCACHE
+From: syzbot ci <syzbot+ci3566e8df2fb29fc1@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -52,37 +52,36 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] Deprecate Legacy IP
-https://lore.kernel.org/all/20260401074509.1897527-1-dwmw2@infradead.org
-* [PATCH 1/6] net: Simplify tautological CONFIG_INET/CONFIG_IPV6 guards
-* [PATCH 2/6] net: Add CONFIG_LEGACY_IP option
-* [PATCH 3/6] net: Guard Legacy IP entry points with CONFIG_LEGACY_IP
-* [PATCH 4/6] net: Make IPv4-only Kconfig options depend on LEGACY_IP
-* [PATCH 5/6] net: Change CONFIG_INET to CONFIG_LEGACY_IP for IPv4-only cod=
-e
-* [PATCH 6/6] net: Warn when processes listen on AF_INET sockets
+[v1] mm: improve write performance with RWF_DONTCACHE
+https://lore.kernel.org/all/20260401-dontcache-v1-0-1f5746fab47a@kernel.org
+* [PATCH 1/4] mm: fix IOCB_DONTCACHE write performance with rate-limited wr=
+iteback
+* [PATCH 2/4] mm: add atomic flush guard for IOCB_DONTCACHE writeback
+* [PATCH 3/4] testing: add nfsd-io-bench NFS server benchmark suite
+* [PATCH 4/4] testing: add dontcache-bench local filesystem benchmark suite
 
 and found the following issue:
-SYZFATAL: image testing failed w/o kernel bug
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/b4aa6e49-79ea-440f-b64a-304320faf474
+https://ci.syzbot.org/series/396c3465-92e3-4ff8-a5e9-66d94e62ecc5
 
 ***
 
-SYZFATAL: image testing failed w/o kernel bug
+kernel build error
 
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
--next.git
-base:      0eeb0094ba0321f0927806857b5f01c1577bc245
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
+nux-next
+base:      9147566d801602c9e7fc7f85e989735735bf38ba
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
 1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/49e58d6b-bfbd-4e6f-a974-079ccb12b0c=
-e/config
+config:    https://ci.syzbot.org/builds/8b297e42-3cc8-4d9c-80b6-5a95cd2044e=
+f/config
 
-
+mm/filemap.c:485:4: error: too many arguments to function call, expected 5,=
+ have 6
 
 ***
 
@@ -101,20 +100,12 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[alazar@nvidia.com andrew@lunn.ch andrii@kernel.org ast@kernel.org bpf@vger=
-.kernel.org bridge@lists.linux.dev coreteam@netfilter.org daniel@iogearbox.=
-net davem@davemloft.net dsahern@kernel.org dwmw2@infradead.org dwmw@amazon.=
-co.uk eddyz87@gmail.com edumazet@google.com fw@strlen.de gal@nvidia.com gna=
-ult@redhat.com haoluo@google.com horms@kernel.org idosch@nvidia.com johanne=
-s@sipsolutions.net john.fastabend@gmail.com jolsa@kernel.org jon.maddog.hal=
-l@gmail.com kees@kernel.org kpsingh@kernel.org kuba@kernel.org kuniyu@googl=
-e.com leon@kernel.org linux-kernel@vger.kernel.org linux-rdma@vger.kernel.o=
-rg linux-wireless@vger.kernel.org martin.lau@linux.dev mbloch@nvidia.com nc=
-ardwell@google.com netdev@vger.kernel.org netfilter-devel@vger.kernel.org o=
-ss-drivers@corigine.com pabeni@redhat.com pablo@netfilter.org paul@paul-moo=
-re.com phil@nwl.cc razor@blackwall.org saeedm@nvidia.com sdf@fomichev.me so=
-ng@kernel.org tariqt@nvidia.com torvalds@linux-foundation.org willemb@googl=
-e.com yonghong.song@linux.dev]
+[akpm@linux-foundation.org brauner@kernel.org chuck.lever@oracle.com david@=
+kernel.org jack@suse.cz jlayton@kernel.org liam.howlett@oracle.com linux-fs=
+devel@vger.kernel.org linux-kernel@vger.kernel.org linux-mm@kvack.org linux=
+-nfs@vger.kernel.org ljs@kernel.org mhocko@suse.com msnitzer@kernel.org rpp=
+t@kernel.org surenb@google.com vbabka@kernel.org viro@zeniv.linux.org.uk wi=
+lly@infradead.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
