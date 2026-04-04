@@ -1,88 +1,78 @@
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0957363C47
-	for <syzbot@lists.linux.dev>; Thu,  2 Apr 2026 18:26:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA3CF35893
+	for <syzbot@lists.linux.dev>; Sat,  4 Apr 2026 02:19:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775154364; cv=none; b=fvk9NNFQTl3J+XIQEGIxuyVectJMqOCtl3CkJynH2K0Lpuh5ip1s0IljibYijvFFvsmjrdbSZA5iKlKlBu7MRCAcjy8xXakAt/v5/1iNlQjmAEoo/LUhFQP0LSVAJ8RYmVrgozTyPmrVZ7bwZVSWLIMy3ytKO/2upqMIHGoQrJU=
+	t=1775269163; cv=none; b=Qnfbs9dSCxrGnqE/06ce9D5e5efOKeyCEENx7iaBd6B/RrhgypETWv0I/N2aUbCoissm6YfP0yk72on4pZhHADX3fQI63LkCzaT04PBmlPNU/ZvuwncdjE9s2JG5Zf1rEv4GvH+MlIPG+b1Ow2+vqQ+J9qLyTQikE7pvbSNFB/I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775154364; c=relaxed/simple;
-	bh=YQfIkGZ4l937F0IIYbQ8hqzPMX3Ue/WjrvnAtfyPaUA=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ChHSyFlUWmRVdMPja5q25OwhxIxy3o+Hm/u2YQAmPTPwllwRyEaBVQIXQevcdOpanTtZPyQslWJsG5WbTee0R1cpDgozMSA78GyXP8ADQ4Oieewu2wevU0Q1zcHaqRk8jcbAQ3AzJM5VDU2cv8tJa5R2xnjhwGSCqoQqZtIfn6E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
+	s=arc-20240116; t=1775269163; c=relaxed/simple;
+	bh=IKXLq/LSC3YS39LKQH6/1r+aZsYlAtMWb2COWuwTdoI=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=bw5VpwQUYz2EY6+HNBJjlHkTfvh+1JQheUHGx4Pg16XZkL+iOPZGJxBv5H780s5s6ZSjV8utkiwbFgImAryiufD8sjwBTedbPzF7qBu+9ns+3xpyTldtoR6TzLoPJ2BFFbe6H3Gnx85/RJCLncjM6s3SEsOjdCveEaQQUQrOAJg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-67e0d20af55so1789629eaf.2
-        for <syzbot@lists.linux.dev>; Thu, 02 Apr 2026 11:26:02 -0700 (PDT)
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-68347833f02so1829400eaf.1
+        for <syzbot@lists.linux.dev>; Fri, 03 Apr 2026 19:19:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775154362; x=1775759162;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=EXe5TPaoxWnhlnLMl7UPmGdNB6TCXs8rx0LSSiDN06E=;
-        b=VmcVxn6+I8C0EQQIY4vInSuU9YvA7NKAPBqwxThE5mtJphSpaG8qddoX5RH97B8P0z
-         Ug1nOe9wDNs7MXA9dcXhvQhb9EL4R+6Wg/JXVyKddJcmZ9wd4NIqUiXnBmXoMQFIXWqw
-         mkUPOQPKeJKtR0e83pdV7yo/Va5R+ZUufF89T+QLK772k325Scjff94Fhjd6Vcyo/sZL
-         OnqSF8WIX2cEy0F7h+mKM7ts1QY6tBFAM7rKISmLJxQlDKObhjUBpL38RFFTjQwPxVWr
-         JkM8d346o2SUIybbBCjA5BvS4Uk/hXV7svGSbh1yerSra3QI5d7RV3+h2B6WZ/iGCcID
-         C06A==
-X-Gm-Message-State: AOJu0YwvqHkSrqp/USXE5S8csmA6TkE7q3fOVQwlD18xHq16/U4RDlNJ
-	MI+2DgF/HnRqCDB0sVgJSpRopI24xF8130NpQ2zzQoG8DXPQ/5XQy4VHc4BslcUOOYcdpNH8gOL
-	qpYqlSI6Nxz7z9QJXmx83PNayP6WLrzvd5E/wPvZsOebRm+iQ/e2OOU7mmd0=
+        d=1e100.net; s=20251104; t=1775269160; x=1775873960;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=QaOw0DiMk79/mtA6T71R4AWCkrLDoiEnikAAhYfEi3I=;
+        b=DJnWTd/G1oSNZGfZI9plFb1tBTKxhycuAKMZ1BPxxu5DSObRE/9Wy7LtzVU3Abxl95
+         CkFXrU+aY9Xb0YFu0Hm9IipO34BYFl6oP6qnaaixo+LYg14JtGmNfx4aFdkMNeBRECt8
+         45gTX90ZctYJV27/aK0Ubp8W/FNVnwvgyrtjwp9kG22qmF5nQYomt16yBH2Klp/hkisI
+         MmccPLjwjUoRvaU/PmPmnBJ3xfmnnxdjJnJad6DqywRQ7X/9xFTzz2+BSFva06GY8Roz
+         ur9SQZXLlKqlESJbEnPtuKy1/Ut6Dle2QZk0UHZHj0tiXOZAji1L8irETXvVmYj/oqzD
+         I12g==
+X-Gm-Message-State: AOJu0Ywbcrm3KcOGIb3sq66pkTfHuOiwXPwk9f6nnYMCABtONSG1o+5N
+	ykNv5SQdoOhffRGtPIKd0640zcbJNz5+GVjNkiaZs9abqVnJFhD0cqA+JYgimpbKYWnl/UPEGdM
+	JJwrcK97J9fTArF8iHLFf4n+EGfvwNdT3Oa0g84QB3Osaga+qwK4QJOUlzP8=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:3096:b0:67c:2bab:bf54 with SMTP id
- 006d021491bc7-682220f7561mr95578eaf.62.1775154361820; Thu, 02 Apr 2026
- 11:26:01 -0700 (PDT)
-Date: Thu, 02 Apr 2026 11:26:01 -0700
+X-Received: by 2002:a05:6820:2006:b0:67e:1657:c48d with SMTP id
+ 006d021491bc7-6821d652b86mr2878354eaf.17.1775269160728; Fri, 03 Apr 2026
+ 19:19:20 -0700 (PDT)
+Date: Fri, 03 Apr 2026 19:19:20 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69ceb4b9.050a0220.2dbe29.0006.GAE@google.com>
-Subject: [moderation/CI] Re: ipvs: fix MTU check for GSO packets in tunnel mode
-From: syzbot ci <syzbot+ci5cb6cb9b76c3e21a@syzkaller.appspotmail.com>
+Message-ID: <69d07528.050a0220.2dbe29.0017.GAE@google.com>
+Subject: [moderation/CI] Re: netfilter: xt_HL: add pr_fmt, default case and
+ NULL checks
+From: syzbot ci <syzbot+cic1b094455ef60122@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v2] ipvs: fix MTU check for GSO packets in tunnel mode
-https://lore.kernel.org/all/tencent_CA2C1C219C99D315086BE55E8654AF7E6009@qq=
-.com
-* [PATCH net v2] ipvs: fix MTU check for GSO packets in tunnel mode
+[v1] netfilter: xt_HL: add pr_fmt, default case and NULL checks
+https://lore.kernel.org/all/20260403193929.89449-1-marino.dzalto@gmail.com
+* [PATCH] netfilter: xt_HL: add pr_fmt, default case and NULL checks
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/8a36afb1-bf26-43a7-abda-0fe36dac52b1
+https://ci.syzbot.org/series/338b4ecb-c89d-4531-940e-5aca50a88ed0
 
 ***
 
 kernel build error
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
-s/linux
-base:      9147566d801602c9e7fc7f85e989735735bf38ba
+tree:      nf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
+base:      31342f64072e7c3fbe2e87d6f025edcf9d34b288
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/795d9703-7617-4fa5-8839-73099ccf6fc=
-6/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/4e8df0a3-b817-4072-aa8a-592172bdc8f8/config
 
-net/netfilter/ipvs/ip_vs_xmit.c:115:2: error: non-void function does not re=
-turn a value in all control paths [-Werror,-Wreturn-type]
-net/netfilter/ipvs/ip_vs_xmit.c:115:4: error: expected identifier or '('
-net/netfilter/ipvs/ip_vs_xmit.c:119:2: error: expected identifier or '('
-net/netfilter/ipvs/ip_vs_xmit.c:120:1: error: extraneous closing brace ('}'=
-)
+net/netfilter/xt_hl.c:34:6: error: cannot assign to variable 'ttl' with const-qualified type 'const u8' (aka 'const unsigned char')
 
 ***
 
@@ -101,10 +91,7 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[342144303@qq.com coreteam@netfilter.org davem@davemloft.net edumazet@googl=
-e.com fw@strlen.de horms@verge.net.au ja@ssi.bg kuba@kernel.org linux-kerne=
-l@vger.kernel.org lvs-devel@vger.kernel.org netdev@vger.kernel.org netfilte=
-r-devel@vger.kernel.org pabeni@redhat.com pablo@netfilter.org phil@nwl.cc]
+[coreteam@netfilter.org fw@strlen.de linux-kernel@vger.kernel.org marino.dzalto@gmail.com netdev@vger.kernel.org netfilter-devel@vger.kernel.org pablo@netfilter.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
