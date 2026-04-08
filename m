@@ -1,856 +1,529 @@
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
+Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com [209.85.161.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CF5127CB02
-	for <syzbot@lists.linux.dev>; Wed,  8 Apr 2026 12:35:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775651707; cv=none; b=S+iP79Jez2DiFae5NgW9JdITXkzst/OhhWWmSK7xDf8Y2iIecha577YYKolVBV3DM0/JmEPryDYATWvj5La/GFuvoPWxInTJJiF6o63p4g3P+Bcn83+VEvDWU8Dlzr+w5NGik1ucqaRlc02ddPQFgJUnOKXcbt+z5rTLQK9fTug=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775651707; c=relaxed/simple;
-	bh=doSUHs5wFxaJTxHdOMQOMWdO/MiEGGRBMVEpjwhZsxQ=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=aPKFBAsGdgWxTuEg1DABOJm2zROb9VrziARJHz2JNt+q6YfiLrr4cOv1RJ0B1D/kS2omi2kwffw2qydYcM1qHg/5cKqsMSDUtX9QROl1S5LCRGviMAbWcjdRm+7qaMNVBEDEJ1wqdMNSZnQcUfbA4NCclRvPds7V/9lD3arvNOs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7dbc48dd44eso1653014a34.1
-        for <syzbot@lists.linux.dev>; Wed, 08 Apr 2026 05:35:02 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0D35342519
+	for <syzbot@lists.linux.dev>; Wed,  8 Apr 2026 20:13:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.53
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775679208; cv=pass; b=pwwRXSXZZMvi3uOz1h9PCBUXWo6egUlhzFK/FmmK5TI/nJghI4KQ+MigDnzmb4Oi4ZQ1+DFuRTPhmqyBE7LUeQuOsrWfhw8jBk6i6CUP6I1Ng1jAB9xrnuONgPfPoRBQKK7Y96QGWKz9hEPJ6eUYVD3x9fRaQqdM9mh6mMbvShs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775679208; c=relaxed/simple;
+	bh=scllXX/kH8TXqyvdDepJsPod8oVjqU3oowRm0CfnD54=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=g4oYhtdIW4/IRZT/lp0T+P+IFOEqT4A3yN/xfXmOHgvWS4z5GUfhP/77bOc+KcGIFoUtAQki+lYRj6aktZ89afTT2EJReex7OjEOeBkV0rXrnsXm0nejDuDUEz/rltATAxayrTi7nWo8SuC2Pptyg9pnyjvynrSvpNUfLs/hxXs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=dGbBrZfb; arc=pass smtp.client-ip=209.85.161.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dGbBrZfb"
+Received: by mail-oo1-f53.google.com with SMTP id 006d021491bc7-68a1a4692e8so102548eaf.3
+        for <syzbot@lists.linux.dev>; Wed, 08 Apr 2026 13:13:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775679206; cv=none;
+        d=google.com; s=arc-20240605;
+        b=UEzI85cS2UNfeq/knWyQuyZpXevOL6WQK7n5z88QUdnF+t4vlHZKu1e4zrR7YaWS7X
+         XqI8fxoz1adJC1k4b/J2h4PtFdO2e7v5P6rHTbvOt8KIRNJovBpUxC2vJ3PcP6Q9UhoG
+         1C1lrWtA7MPg6AZnR3ze2BoBIPW9i26+G9w+0MxPJLIopY1e3x6VYIuZqWSjEQLUhDlA
+         lXHlB2BKK6dPqTkLZ5uYB/XD64U3x+NDrxJln5KGLeNrBpt8ZlWh00YYNazuuqItccKH
+         BztPd6maDhVGhe/r3wSzIwoz7vIsysU4AAqoQ+Cl6pNQoh8qkbTZKcfGsd60AXQ4z3wl
+         nmzQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=dsBVYGA8CS+ZA1ce3F2EDlCexpTPxWPoyvxp03FgbtI=;
+        fh=n3mA0vhKnMKm9WfQjQ6EKgPBEb7vhHVzBqSfJKs+dAs=;
+        b=dIV9qui1ciAKCanpdtpIaycHAg7B3KYulMyUAG09efKdKCOCrB/mcQqg/11TOpax2H
+         nNRLSegrhwJAEn8tlmG8oPp307oX2ASg4T8z7q6agW/ViYUoXwccjj0ASJ55pky9aBrA
+         NQOVKjFUtPBWzZoXCFt8aupCMWsRujhdLNvO95TAKwCCToywQpnhmofQsCs3D/o5f7NC
+         d2DqOtUg4fSH99gZAnl72vzQ8NmdJMdPfDHWWepveWEozGRSpl0X3MosY1+5/1DprVX2
+         5Bdjtn6p6rkp2L0PWiXpOBWFShh0/96xnONXi7ehYo1EK/oI6BcZZXkVMH6yBufda3KU
+         jSaQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1775679206; x=1776284006; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dsBVYGA8CS+ZA1ce3F2EDlCexpTPxWPoyvxp03FgbtI=;
+        b=dGbBrZfb10CHY5NU5wcLNDppnPOLWSJs/MpvUgAwyZxSoyX1Ccv7z3hBBt0pbEuO7H
+         YhaQo+qoW8QAqZVz0K9ikhOZWs7FR4tIn8KDhC3TWFnEqx8e8H3vgjYmrcLATvZTJMoN
+         o3GUMDnRub1xbQAVg+i9R3JD8bu5zNdWFqMuxfEgWpZgJt4rC1zbGXVyqfrkWTVPlhzs
+         4xK+Q1tMHzLw3FCrQ6uXKxZ90axUaoHzCiCJzDRrfLGHkLSItxrLGn4gdlc3FULIG/bS
+         4HWxGMLiQ6QGSmvrn2Ja+1uFBr3f86RC47W3manLzOL5p6AwFU6JzpXKRZEjXnk6wqht
+         QFwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775651701; x=1776256501;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nYJT/yqpaxYXUm863ql7d5vQNk6qddXJNOsakoes2/c=;
-        b=YltHMMUDGKZ80bSzwJedxbB+O6GfbPhUHwUFdGnhLj9SIcBEuuA26j88+gc8doW9Xl
-         mQZlUO1DoLeGg88oXPAzOPp0Ts91OrHL/JNjj87LboSDRWH76lY3h0Tj7C+TH50lFUiO
-         O1HPvRipciQpxkZVOm0txxnkhFm+Qeo37tG69PajpK805h0kh5ERu03kLC8T6kJ2t7eA
-         K4y5q9DGa8zsdK46/cHDoJgXvMghLHObEkcNwf3TGlfkxRjKT+5zLuguZfjUyPF5TXyd
-         lMe40peX2gO2HtAy1tet4hstEavsAK++aT7Y9noooeTOLaNJrhlhnzgZKy133SSvcUEW
-         aSJw==
-X-Gm-Message-State: AOJu0YyrN0MpWP3DFqa+6heGN0jdDGhuBcEyLBLMAnTkj/BOLhIqpn1R
-	LI8z5GDLVPcT9MuiiIRKMYT5d+JD9TtjCRDxTcMLXWaZ2DJU49ZFwS/aEIA2IBVTppK9wjJVkIY
-	ADbIUU0Vdb6hMx3kG3/hNEuLsQV3GKe6uiQKT+UmR9FYu5Hz4pVDWL7HKJqg=
+        d=1e100.net; s=20251104; t=1775679206; x=1776284006;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=dsBVYGA8CS+ZA1ce3F2EDlCexpTPxWPoyvxp03FgbtI=;
+        b=mxmka9LBJZbJIr4qnCMBzh4WC6/8cfVewQ17Oco25+ujWUvIeRAbZvRN8A8kcdgTDi
+         Hhl+sYxV/DIqmBAZNw+v0N85qqVx7LzqenWKKonTIVRWT7CJdjcYcwPMF+KuUIJB605h
+         Yb17I5hC0H9Rnx09jOImZ1J156PO74Fx5Garg1yZQC1Ms7ihXkWZVKllyqdltIgzqVUE
+         JdknAgE48wPt6qN9BZ396YcMpZX85nj41aIL/los6Jux48eae0SRnQ6DeT8B0ArnIKQZ
+         mSR3Lqg1v60yOhWSVrr2IsT2u+CRImjVNVDp01qqshOcJ9P1EEnU1TYzgG/mAQFx8Ytb
+         tz8Q==
+X-Forwarded-Encrypted: i=1; AJvYcCUwlY9KlQf5VH3pPafpXho/smY2B1tY6TkstopAj/qv8VK9gk9Yeansm/swrZigqyZh1EARiac=@lists.linux.dev
+X-Gm-Message-State: AOJu0YwPa8dkvjsLMfWWmBoKRBwywPJdUF9DkP2ZuSrx3LGddJ7QqSZr
+	azcgSopMy/DfIorEl318LKZrpF9+tzg+OaM55Ul7xTnhuwbZvg3ZaPSXg+uu8BUePQpkNG8qknk
+	ZvsJ3a8F2iYoSgF5jyonKE4uNvQjBeVV655hRqvuwAKpv4UHulke1lvJ2
+X-Gm-Gg: AeBDieupnp4S+AJg6ZCBDVcFaGlSvx5dme5pUQIGs2NK84ndmVZGDKCOKyMuiDobw4J
+	tO/DHd2L7Upc661K1pHN1hyGym2P01lsEt7ZfcGOirk5XW8iGfAssu61Usrn/ejpa8FT88vWfPS
+	R+XerRQ+8l7mjeMcKA4Ng/nMbTdYt89aU3eLVLnENgTrIjaE878462vqELG7TdhMeruOpQX4NrL
+	2s/v437wWl8YM0Tkh3hqcG4ouyRTGCC3dHOixJ7BEnBcSAoaCjxxKPdUr4WUTuMftcq7WLMZkC8
+	8aciT+ANiGxRk2xVtTYqRS779PjLgYtRF8r/dLZ/oQhrH/CC3G5UxQqvwWGFo81+/nHGkQ==
+X-Received: by 2002:a05:6820:4b84:b0:67c:27a7:8c45 with SMTP id
+ 006d021491bc7-68220f40764mr13471268eaf.57.1775679205141; Wed, 08 Apr 2026
+ 13:13:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:7045:b0:687:6c5f:1331 with SMTP id
- 006d021491bc7-6876c5f1433mr3402166eaf.34.1775651700985; Wed, 08 Apr 2026
- 05:35:00 -0700 (PDT)
-Date: Wed, 08 Apr 2026 05:35:00 -0700
-In-Reply-To: <20260408070257.2437291-1-kadlec@netfilter.org>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69d64b74.050a0220.adfb3.0003.GAE@google.com>
-Subject: [syzbot ci] Re: netfilter: ipset: concurrent add and dump fixes
-From: syzbot ci <syzbot+cidea2d6bafc0138d9@syzkaller.appspotmail.com>
-To: fw@strlen.de, kadlec@netfilter.org, netfilter-devel@vger.kernel.org, 
-	pablo@netfilter.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <69d6b5f9.050a0220.d95e.0002.GAE@google.com>
+In-Reply-To: <69d6b5f9.050a0220.d95e.0002.GAE@google.com>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Wed, 8 Apr 2026 22:13:12 +0200
+X-Gm-Features: AQROBzBdMR3V-9MgU06Zd0IYQI25kn3boxbE4JOG2rXHbg_KWQ_hANVr48bgXqY
+Message-ID: <CANp29Y5gZZVOr9z50SwL9_Q=yjG5WHEBVOUYBbpbeFC88NJJTg@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: net/sched: no longer acquire RTNL in qdisc dumps
+To: syzbot ci <syzbot+cicb5229b7652215a9@syzkaller.appspotmail.com>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
+#syz upstream
 
-[v1] netfilter: ipset: concurrent add and dump fixes
-https://lore.kernel.org/all/20260408070257.2437291-1-kadlec@netfilter.org
-* [PATCH 1/2] netfilter: ipset: Fix data race between add and list header in all hash types
-* [PATCH 2/2] netfilter: ipset: Fix data race between add and dump in all hash types
-
-and found the following issues:
-* KASAN: slab-out-of-bounds Write in hash_ip4_add
-* KASAN: slab-out-of-bounds Write in hash_ipport4_add
-* KASAN: slab-out-of-bounds Write in hash_ipport6_add
-* KASAN: slab-out-of-bounds Write in hash_ipportnet6_add
-* KASAN: slab-out-of-bounds Write in hash_netnet4_add
-
-Full report is available here:
-https://ci.syzbot.org/series/05533f07-931b-4bbe-886e-737c3dded97b
-
-***
-
-KASAN: slab-out-of-bounds Write in hash_ip4_add
-
-tree:      nf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
-base:      47117877d5707b32773bb3d5fd8f1f9aaf8f1f3b
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/8ee93551-dc97-4078-8c85-f884da5dc0bf/config
-syz repro: https://ci.syzbot.org/findings/09c3128d-24de-48b4-9d49-798ba00bda6e/syz_repro
-
-==================================================================
-BUG: KASAN: slab-out-of-bounds in hash_ip4_add+0x1063/0x1f20 net/netfilter/ipset/ip_set_hash_gen.h:974
-Write of size 4 at addr ffff8881a844a680 by task syz.2.19/5958
-
-CPU: 1 UID: 0 PID: 5958 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_address_description mm/kasan/report.c:378 [inline]
- print_report+0xba/0x230 mm/kasan/report.c:482
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- check_region_inline mm/kasan/generic.c:-1 [inline]
- kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
- __asan_memcpy+0x40/0x70 mm/kasan/shadow.c:106
- hash_ip4_add+0x1063/0x1f20 net/netfilter/ipset/ip_set_hash_gen.h:974
- hash_ip4_uadt+0x664/0x860 net/netfilter/ipset/ip_set_hash_ip.c:160
- call_ad+0x18d/0xb60 net/netfilter/ipset/ip_set_core.c:1751
- ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1841
- nfnetlink_rcv_msg+0xc00/0x12c0 net/netfilter/nfnetlink.c:300
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
- __sys_sendmsg net/socket.c:2671 [inline]
- __do_sys_sendmsg net/socket.c:2676 [inline]
- __se_sys_sendmsg net/socket.c:2674 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fc54039c819
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fc53f9fe028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fc540615fa0 RCX: 00007fc54039c819
-RDX: 0000000004000084 RSI: 0000200000000000 RDI: 0000000000000004
-RBP: 00007fc540432c91 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fc540616038 R14: 00007fc540615fa0 R15: 00007ffe3b0d6a38
- </TASK>
-
-Allocated by task 5958:
- kasan_save_stack mm/kasan/common.c:57 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
- poison_kmalloc_redzone mm/kasan/common.c:398 [inline]
- __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
- kasan_kmalloc include/linux/kasan.h:263 [inline]
- __do_kmalloc_node mm/slub.c:5260 [inline]
- __kmalloc_noprof+0x35c/0x760 mm/slub.c:5272
- kmalloc_noprof include/linux/slab.h:954 [inline]
- kzalloc_noprof include/linux/slab.h:1188 [inline]
- hash_ip4_add+0xc85/0x1f20 net/netfilter/ipset/ip_set_hash_gen.h:881
- hash_ip4_uadt+0x664/0x860 net/netfilter/ipset/ip_set_hash_ip.c:160
- call_ad+0x18d/0xb60 net/netfilter/ipset/ip_set_core.c:1751
- ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1841
- nfnetlink_rcv_msg+0xc00/0x12c0 net/netfilter/nfnetlink.c:300
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
- __sys_sendmsg net/socket.c:2671 [inline]
- __do_sys_sendmsg net/socket.c:2676 [inline]
- __se_sys_sendmsg net/socket.c:2674 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-The buggy address belongs to the object at ffff8881a844a600
- which belongs to the cache kmalloc-128 of size 128
-The buggy address is located 0 bytes to the right of
- allocated 128-byte region [ffff8881a844a600, ffff8881a844a680)
-
-The buggy address belongs to the physical page:
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1a844a
-flags: 0x57ff00000000000(node=1|zone=2|lastcpupid=0x7ff)
-page_type: f5(slab)
-raw: 057ff00000000000 ffff888100041a00 dead000000000100 dead000000000122
-raw: 0000000000000000 0000000800100010 00000000f5000000 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2820(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5958, tgid 5957 (syz.2.19), ts 61144574473, free_ts 60982422209
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x231/0x280 mm/page_alloc.c:1889
- prep_new_page mm/page_alloc.c:1897 [inline]
- get_page_from_freelist+0x24dc/0x2580 mm/page_alloc.c:3962
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5250
- alloc_slab_page mm/slub.c:3292 [inline]
- allocate_slab+0x77/0x660 mm/slub.c:3481
- new_slab mm/slub.c:3539 [inline]
- refill_objects+0x331/0x3c0 mm/slub.c:7175
- refill_sheaf mm/slub.c:2812 [inline]
- __pcs_replace_empty_main+0x2e6/0x730 mm/slub.c:4615
- alloc_from_pcs mm/slub.c:4717 [inline]
- slab_alloc_node mm/slub.c:4851 [inline]
- __do_kmalloc_node mm/slub.c:5259 [inline]
- __kmalloc_noprof+0x474/0x760 mm/slub.c:5272
- kmalloc_noprof include/linux/slab.h:954 [inline]
- kzalloc_noprof include/linux/slab.h:1188 [inline]
- hash_ip4_add+0xc85/0x1f20 net/netfilter/ipset/ip_set_hash_gen.h:881
- hash_ip4_uadt+0x664/0x860 net/netfilter/ipset/ip_set_hash_ip.c:160
- call_ad+0x18d/0xb60 net/netfilter/ipset/ip_set_core.c:1751
- ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1841
- nfnetlink_rcv_msg+0xc00/0x12c0 net/netfilter/nfnetlink.c:300
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
-page last free pid 23 tgid 23 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1433 [inline]
- __free_frozen_pages+0xc2b/0xdb0 mm/page_alloc.c:2978
- __tlb_remove_table_free mm/mmu_gather.c:228 [inline]
- tlb_remove_table_rcu+0x85/0x100 mm/mmu_gather.c:291
- rcu_do_batch kernel/rcu/tree.c:2617 [inline]
- rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
- handle_softirqs+0x22a/0x870 kernel/softirq.c:622
- run_ksoftirqd+0x36/0x60 kernel/softirq.c:1063
- smpboot_thread_fn+0x541/0xa50 kernel/smpboot.c:160
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
-
-Memory state around the buggy address:
- ffff8881a844a580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff8881a844a600: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff8881a844a680: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                   ^
- ffff8881a844a700: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8881a844a780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-==================================================================
-
-
-***
-
-KASAN: slab-out-of-bounds Write in hash_ipport4_add
-
-tree:      nf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
-base:      47117877d5707b32773bb3d5fd8f1f9aaf8f1f3b
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/8ee93551-dc97-4078-8c85-f884da5dc0bf/config
-syz repro: https://ci.syzbot.org/findings/d9446937-fb89-49b6-8e0d-0765ed1dc490/syz_repro
-
-==================================================================
-BUG: KASAN: slab-out-of-bounds in hash_ipport4_add+0x1218/0x22a0 net/netfilter/ipset/ip_set_hash_gen.h:974
-Write of size 8 at addr ffff88810c5a8bb0 by task syz.1.18/5959
-
-CPU: 0 UID: 0 PID: 5959 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_address_description mm/kasan/report.c:378 [inline]
- print_report+0xba/0x230 mm/kasan/report.c:482
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- check_region_inline mm/kasan/generic.c:-1 [inline]
- kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
- __asan_memcpy+0x40/0x70 mm/kasan/shadow.c:106
- hash_ipport4_add+0x1218/0x22a0 net/netfilter/ipset/ip_set_hash_gen.h:974
- hash_ipport4_uadt+0xaaf/0xde0 net/netfilter/ipset/ip_set_hash_ipport.c:199
- call_ad+0x18d/0xb60 net/netfilter/ipset/ip_set_core.c:1751
- ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1841
- nfnetlink_rcv_msg+0xc00/0x12c0 net/netfilter/nfnetlink.c:300
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
- __sys_sendmsg net/socket.c:2671 [inline]
- __do_sys_sendmsg net/socket.c:2676 [inline]
- __se_sys_sendmsg net/socket.c:2674 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f73b079c819
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f73b1662028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f73b0a15fa0 RCX: 00007f73b079c819
-RDX: 0000000000000090 RSI: 00002000000002c0 RDI: 0000000000000004
-RBP: 00007f73b0832c91 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f73b0a16038 R14: 00007f73b0a15fa0 R15: 00007fffcac649b8
- </TASK>
-
-Allocated by task 5959:
- kasan_save_stack mm/kasan/common.c:57 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
- poison_kmalloc_redzone mm/kasan/common.c:398 [inline]
- __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
- kasan_kmalloc include/linux/kasan.h:263 [inline]
- __do_kmalloc_node mm/slub.c:5260 [inline]
- __kmalloc_noprof+0x35c/0x760 mm/slub.c:5272
- kmalloc_noprof include/linux/slab.h:954 [inline]
- kzalloc_noprof include/linux/slab.h:1188 [inline]
- hash_ipport4_add+0xec2/0x22a0 net/netfilter/ipset/ip_set_hash_gen.h:881
- hash_ipport4_uadt+0xaaf/0xde0 net/netfilter/ipset/ip_set_hash_ipport.c:199
- call_ad+0x18d/0xb60 net/netfilter/ipset/ip_set_core.c:1751
- ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1841
- nfnetlink_rcv_msg+0xc00/0x12c0 net/netfilter/nfnetlink.c:300
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
- __sys_sendmsg net/socket.c:2671 [inline]
- __do_sys_sendmsg net/socket.c:2676 [inline]
- __se_sys_sendmsg net/socket.c:2674 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-The buggy address belongs to the object at ffff88810c5a8b80
- which belongs to the cache kmalloc-64 of size 64
-The buggy address is located 0 bytes to the right of
- allocated 48-byte region [ffff88810c5a8b80, ffff88810c5a8bb0)
-
-The buggy address belongs to the physical page:
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x10c5a8
-flags: 0x17ff00000000000(node=0|zone=2|lastcpupid=0x7ff)
-page_type: f5(slab)
-raw: 017ff00000000000 ffff8881000418c0 dead000000000100 dead000000000122
-raw: 0000000000000000 0000000800200020 00000000f5000000 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 28, tgid 28 (kworker/u9:1), ts 11978057194, free_ts 0
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x231/0x280 mm/page_alloc.c:1889
- prep_new_page mm/page_alloc.c:1897 [inline]
- get_page_from_freelist+0x24dc/0x2580 mm/page_alloc.c:3962
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5250
- alloc_slab_page mm/slub.c:3292 [inline]
- allocate_slab+0x77/0x660 mm/slub.c:3481
- new_slab mm/slub.c:3539 [inline]
- refill_objects+0x331/0x3c0 mm/slub.c:7175
- refill_sheaf mm/slub.c:2812 [inline]
- __pcs_replace_empty_main+0x2e6/0x730 mm/slub.c:4615
- alloc_from_pcs mm/slub.c:4717 [inline]
- slab_alloc_node mm/slub.c:4851 [inline]
- __do_kmalloc_node mm/slub.c:5259 [inline]
- __kmalloc_node_noprof+0x577/0x7c0 mm/slub.c:5266
- kmalloc_node_noprof include/linux/slab.h:1081 [inline]
- __vmalloc_area_node mm/vmalloc.c:3855 [inline]
- __vmalloc_node_range_noprof+0x5d5/0x1730 mm/vmalloc.c:4064
- __vmalloc_node_noprof+0xc2/0x100 mm/vmalloc.c:4124
- alloc_thread_stack_node kernel/fork.c:355 [inline]
- dup_task_struct+0x275/0x9a0 kernel/fork.c:924
- copy_process+0x508/0x3cd0 kernel/fork.c:2050
- kernel_clone+0x248/0x8e0 kernel/fork.c:2653
- user_mode_thread+0x110/0x180 kernel/fork.c:2729
- call_usermodehelper_exec_work+0x5c/0x230 kernel/umh.c:171
- process_one_work kernel/workqueue.c:3276 [inline]
- process_scheduled_works+0xb6e/0x18c0 kernel/workqueue.c:3359
- worker_thread+0xa53/0xfc0 kernel/workqueue.c:3440
-page_owner free stack trace missing
-
-Memory state around the buggy address:
- ffff88810c5a8a80: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
- ffff88810c5a8b00: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
->ffff88810c5a8b80: 00 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc
-                                     ^
- ffff88810c5a8c00: 00 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc
- ffff88810c5a8c80: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-==================================================================
-
-
-***
-
-KASAN: slab-out-of-bounds Write in hash_ipport6_add
-
-tree:      nf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
-base:      47117877d5707b32773bb3d5fd8f1f9aaf8f1f3b
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/8ee93551-dc97-4078-8c85-f884da5dc0bf/config
-syz repro: https://ci.syzbot.org/findings/5fc445de-91e9-4261-89a2-d6004861bc11/syz_repro
-
-==================================================================
-BUG: KASAN: slab-out-of-bounds in hash_ipport6_add+0x12fd/0x2260 net/netfilter/ipset/ip_set_hash_gen.h:974
-Write of size 20 at addr ffff888110798c48 by task syz.2.19/6005
-
-CPU: 0 UID: 0 PID: 6005 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_address_description mm/kasan/report.c:378 [inline]
- print_report+0xba/0x230 mm/kasan/report.c:482
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- check_region_inline mm/kasan/generic.c:-1 [inline]
- kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
- __asan_memcpy+0x40/0x70 mm/kasan/shadow.c:106
- hash_ipport6_add+0x12fd/0x2260 net/netfilter/ipset/ip_set_hash_gen.h:974
- hash_ipport6_uadt+0x85d/0xb20 net/netfilter/ipset/ip_set_hash_ipport.c:351
- call_ad+0x18d/0xb60 net/netfilter/ipset/ip_set_core.c:1751
- ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1841
- nfnetlink_rcv_msg+0xc00/0x12c0 net/netfilter/nfnetlink.c:300
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
- __sys_sendmsg net/socket.c:2671 [inline]
- __do_sys_sendmsg net/socket.c:2676 [inline]
- __se_sys_sendmsg net/socket.c:2674 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f1edcf9c819
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f1eddde0028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f1edd215fa0 RCX: 00007f1edcf9c819
-RDX: 0000000000000090 RSI: 00002000000002c0 RDI: 0000000000000004
-RBP: 00007f1edd032c91 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f1edd216038 R14: 00007f1edd215fa0 R15: 00007ffd74c43f58
- </TASK>
-
-Allocated by task 6005:
- kasan_save_stack mm/kasan/common.c:57 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
- poison_kmalloc_redzone mm/kasan/common.c:398 [inline]
- __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
- kasan_kmalloc include/linux/kasan.h:263 [inline]
- __do_kmalloc_node mm/slub.c:5260 [inline]
- __kmalloc_noprof+0x35c/0x760 mm/slub.c:5272
- kmalloc_noprof include/linux/slab.h:954 [inline]
- kzalloc_noprof include/linux/slab.h:1188 [inline]
- hash_ipport6_add+0xfb6/0x2260 net/netfilter/ipset/ip_set_hash_gen.h:881
- hash_ipport6_uadt+0x85d/0xb20 net/netfilter/ipset/ip_set_hash_ipport.c:351
- call_ad+0x18d/0xb60 net/netfilter/ipset/ip_set_core.c:1751
- ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1841
- nfnetlink_rcv_msg+0xc00/0x12c0 net/netfilter/nfnetlink.c:300
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
- __sys_sendmsg net/socket.c:2671 [inline]
- __do_sys_sendmsg net/socket.c:2676 [inline]
- __se_sys_sendmsg net/socket.c:2674 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-The buggy address belongs to the object at ffff888110798c00
- which belongs to the cache kmalloc-96 of size 96
-The buggy address is located 0 bytes to the right of
- allocated 72-byte region [ffff888110798c00, ffff888110798c48)
-
-The buggy address belongs to the physical page:
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x110798
-flags: 0x17ff00000000000(node=0|zone=2|lastcpupid=0x7ff)
-page_type: f5(slab)
-raw: 017ff00000000000 ffff888100041280 dead000000000100 dead000000000122
-raw: 0000000000000000 0000000800200020 00000000f5000000 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 1094, tgid 1094 (kworker/u9:3), ts 19156789334, free_ts 19155777767
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x231/0x280 mm/page_alloc.c:1889
- prep_new_page mm/page_alloc.c:1897 [inline]
- get_page_from_freelist+0x24dc/0x2580 mm/page_alloc.c:3962
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5250
- alloc_slab_page mm/slub.c:3292 [inline]
- allocate_slab+0x77/0x660 mm/slub.c:3481
- new_slab mm/slub.c:3539 [inline]
- refill_objects+0x331/0x3c0 mm/slub.c:7175
- refill_sheaf mm/slub.c:2812 [inline]
- __pcs_replace_empty_main+0x2e6/0x730 mm/slub.c:4615
- alloc_from_pcs mm/slub.c:4717 [inline]
- slab_alloc_node mm/slub.c:4851 [inline]
- __kmalloc_cache_node_noprof+0x465/0x6b0 mm/slub.c:5388
- kmalloc_node_noprof include/linux/slab.h:1077 [inline]
- __get_vm_area_node+0x13f/0x300 mm/vmalloc.c:3221
- __vmalloc_node_range_noprof+0x372/0x1730 mm/vmalloc.c:4024
- __vmalloc_node_noprof+0xc2/0x100 mm/vmalloc.c:4124
- alloc_thread_stack_node kernel/fork.c:355 [inline]
- dup_task_struct+0x275/0x9a0 kernel/fork.c:924
- copy_process+0x508/0x3cd0 kernel/fork.c:2050
- kernel_clone+0x248/0x8e0 kernel/fork.c:2653
- user_mode_thread+0x110/0x180 kernel/fork.c:2729
- call_usermodehelper_exec_work+0x5c/0x230 kernel/umh.c:171
- process_one_work kernel/workqueue.c:3276 [inline]
- process_scheduled_works+0xb6e/0x18c0 kernel/workqueue.c:3359
-page last free pid 1094 tgid 1094 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1433 [inline]
- __free_frozen_pages+0xc2b/0xdb0 mm/page_alloc.c:2978
- __kasan_populate_vmalloc_do mm/kasan/shadow.c:393 [inline]
- __kasan_populate_vmalloc+0x1b2/0x1d0 mm/kasan/shadow.c:424
- kasan_populate_vmalloc include/linux/kasan.h:580 [inline]
- alloc_vmap_area+0xd73/0x14b0 mm/vmalloc.c:2129
- __get_vm_area_node+0x1f8/0x300 mm/vmalloc.c:3232
- __vmalloc_node_range_noprof+0x372/0x1730 mm/vmalloc.c:4024
- __vmalloc_node_noprof+0xc2/0x100 mm/vmalloc.c:4124
- alloc_thread_stack_node kernel/fork.c:355 [inline]
- dup_task_struct+0x275/0x9a0 kernel/fork.c:924
- copy_process+0x508/0x3cd0 kernel/fork.c:2050
- kernel_clone+0x248/0x8e0 kernel/fork.c:2653
- user_mode_thread+0x110/0x180 kernel/fork.c:2729
- call_usermodehelper_exec_work+0x5c/0x230 kernel/umh.c:171
- process_one_work kernel/workqueue.c:3276 [inline]
- process_scheduled_works+0xb6e/0x18c0 kernel/workqueue.c:3359
- worker_thread+0xa53/0xfc0 kernel/workqueue.c:3440
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
-
-Memory state around the buggy address:
- ffff888110798b00: 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc
- ffff888110798b80: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
->ffff888110798c00: 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc
-                                              ^
- ffff888110798c80: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
- ffff888110798d00: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
-==================================================================
-
-
-***
-
-KASAN: slab-out-of-bounds Write in hash_ipportnet6_add
-
-tree:      nf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
-base:      47117877d5707b32773bb3d5fd8f1f9aaf8f1f3b
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/8ee93551-dc97-4078-8c85-f884da5dc0bf/config
-syz repro: https://ci.syzbot.org/findings/9a835a65-c731-420b-98c9-76cbdfe4d5e7/syz_repro
-
-==================================================================
-BUG: KASAN: slab-out-of-bounds in hash_ipportnet6_add+0x1eab/0x2ef0 net/netfilter/ipset/ip_set_hash_gen.h:974
-Write of size 36 at addr ffff88812055d068 by task syz.0.17/5970
-
-CPU: 0 UID: 0 PID: 5970 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_address_description mm/kasan/report.c:378 [inline]
- print_report+0xba/0x230 mm/kasan/report.c:482
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- check_region_inline mm/kasan/generic.c:-1 [inline]
- kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
- __asan_memcpy+0x40/0x70 mm/kasan/shadow.c:106
- hash_ipportnet6_add+0x1eab/0x2ef0 net/netfilter/ipset/ip_set_hash_gen.h:974
- hash_ipportnet6_uadt+0xa88/0xe00 net/netfilter/ipset/ip_set_hash_ipportnet.c:504
- call_ad+0x18d/0xb60 net/netfilter/ipset/ip_set_core.c:1751
- ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1841
- nfnetlink_rcv_msg+0xc00/0x12c0 net/netfilter/nfnetlink.c:300
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
- __sys_sendmsg net/socket.c:2671 [inline]
- __do_sys_sendmsg net/socket.c:2676 [inline]
- __se_sys_sendmsg net/socket.c:2674 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fbe1ad9c819
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fbe1bccc028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fbe1b015fa0 RCX: 00007fbe1ad9c819
-RDX: 0000000000000000 RSI: 00002000000002c0 RDI: 0000000000000004
-RBP: 00007fbe1ae32c91 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fbe1b016038 R14: 00007fbe1b015fa0 R15: 00007ffe829d96c8
- </TASK>
-
-Allocated by task 5970:
- kasan_save_stack mm/kasan/common.c:57 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
- poison_kmalloc_redzone mm/kasan/common.c:398 [inline]
- __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
- kasan_kmalloc include/linux/kasan.h:263 [inline]
- __do_kmalloc_node mm/slub.c:5260 [inline]
- __kmalloc_noprof+0x35c/0x760 mm/slub.c:5272
- kmalloc_noprof include/linux/slab.h:954 [inline]
- kzalloc_noprof include/linux/slab.h:1188 [inline]
- hash_ipportnet6_add+0x11fe/0x2ef0 net/netfilter/ipset/ip_set_hash_gen.h:881
- hash_ipportnet6_uadt+0xa88/0xe00 net/netfilter/ipset/ip_set_hash_ipportnet.c:504
- call_ad+0x18d/0xb60 net/netfilter/ipset/ip_set_core.c:1751
- ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1841
- nfnetlink_rcv_msg+0xc00/0x12c0 net/netfilter/nfnetlink.c:300
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
- __sys_sendmsg net/socket.c:2671 [inline]
- __do_sys_sendmsg net/socket.c:2676 [inline]
- __se_sys_sendmsg net/socket.c:2674 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-The buggy address belongs to the object at ffff88812055d000
- which belongs to the cache kmalloc-128 of size 128
-The buggy address is located 0 bytes to the right of
- allocated 104-byte region [ffff88812055d000, ffff88812055d068)
-
-The buggy address belongs to the physical page:
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x12055d
-flags: 0x17ff00000000000(node=0|zone=2|lastcpupid=0x7ff)
-page_type: f5(slab)
-raw: 017ff00000000000 ffff888100041a00 dead000000000122 0000000000000000
-raw: 0000000000000000 0000000800100010 00000000f5000000 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2820(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5970, tgid 5969 (syz.0.17), ts 62254504797, free_ts 59906136451
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x231/0x280 mm/page_alloc.c:1889
- prep_new_page mm/page_alloc.c:1897 [inline]
- get_page_from_freelist+0x24dc/0x2580 mm/page_alloc.c:3962
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5250
- alloc_slab_page mm/slub.c:3292 [inline]
- allocate_slab+0x77/0x660 mm/slub.c:3481
- new_slab mm/slub.c:3539 [inline]
- refill_objects+0x331/0x3c0 mm/slub.c:7175
- refill_sheaf mm/slub.c:2812 [inline]
- __pcs_replace_empty_main+0x2e6/0x730 mm/slub.c:4615
- alloc_from_pcs mm/slub.c:4717 [inline]
- slab_alloc_node mm/slub.c:4851 [inline]
- __do_kmalloc_node mm/slub.c:5259 [inline]
- __kmalloc_noprof+0x474/0x760 mm/slub.c:5272
- kmalloc_noprof include/linux/slab.h:954 [inline]
- kzalloc_noprof include/linux/slab.h:1188 [inline]
- hash_ipportnet6_add+0x11fe/0x2ef0 net/netfilter/ipset/ip_set_hash_gen.h:881
- hash_ipportnet6_uadt+0xa88/0xe00 net/netfilter/ipset/ip_set_hash_ipportnet.c:504
- call_ad+0x18d/0xb60 net/netfilter/ipset/ip_set_core.c:1751
- ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1841
- nfnetlink_rcv_msg+0xc00/0x12c0 net/netfilter/nfnetlink.c:300
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
-page last free pid 5885 tgid 5885 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1433 [inline]
- __free_frozen_pages+0xc2b/0xdb0 mm/page_alloc.c:2978
- vfree+0x25a/0x400 mm/vmalloc.c:3479
- kcov_put kernel/kcov.c:442 [inline]
- kcov_close+0x28/0x50 kernel/kcov.c:543
- __fput+0x44f/0xa70 fs/file_table.c:469
- task_work_run+0x1d9/0x270 kernel/task_work.c:233
- exit_task_work include/linux/task_work.h:40 [inline]
- do_exit+0x70f/0x23c0 kernel/exit.c:976
- do_group_exit+0x21b/0x2d0 kernel/exit.c:1118
- get_signal+0x1284/0x1330 kernel/signal.c:3034
- arch_do_signal_or_restart+0xbc/0x830 arch/x86/kernel/signal.c:337
- __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
- exit_to_user_mode_loop+0x86/0x480 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:325 [inline]
- do_syscall_64+0x32d/0xf80 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-Memory state around the buggy address:
- ffff88812055cf00: 00 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc
- ffff88812055cf80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff88812055d000: 00 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc
-                                                          ^
- ffff88812055d080: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88812055d100: 00 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc
-==================================================================
-
-
-***
-
-KASAN: slab-out-of-bounds Write in hash_netnet4_add
-
-tree:      nf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
-base:      47117877d5707b32773bb3d5fd8f1f9aaf8f1f3b
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/8ee93551-dc97-4078-8c85-f884da5dc0bf/config
-syz repro: https://ci.syzbot.org/findings/72f192ce-33b7-4dd0-b1e5-1666100981b0/syz_repro
-
-==================================================================
-BUG: KASAN: slab-out-of-bounds in hash_netnet4_add+0x1852/0x27d0 net/netfilter/ipset/ip_set_hash_gen.h:974
-Write of size 16 at addr ffff8881125a9f40 by task syz.1.18/5970
-
-CPU: 0 UID: 0 PID: 5970 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_address_description mm/kasan/report.c:378 [inline]
- print_report+0xba/0x230 mm/kasan/report.c:482
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- check_region_inline mm/kasan/generic.c:-1 [inline]
- kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
- __asan_memcpy+0x40/0x70 mm/kasan/shadow.c:106
- hash_netnet4_add+0x1852/0x27d0 net/netfilter/ipset/ip_set_hash_gen.h:974
- hash_netnet4_uadt+0xc06/0xf20 net/netfilter/ipset/ip_set_hash_netnet.c:269
- call_ad+0x18d/0xb60 net/netfilter/ipset/ip_set_core.c:1751
- ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1841
- nfnetlink_rcv_msg+0xc00/0x12c0 net/netfilter/nfnetlink.c:300
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
- __sys_sendmsg net/socket.c:2671 [inline]
- __do_sys_sendmsg net/socket.c:2676 [inline]
- __se_sys_sendmsg net/socket.c:2674 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f23ac39c819
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f23ad2b1028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f23ac615fa0 RCX: 00007f23ac39c819
-RDX: 0000000000000004 RSI: 00002000000000c0 RDI: 0000000000000003
-RBP: 00007f23ac432c91 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f23ac616038 R14: 00007f23ac615fa0 R15: 00007fff91226648
- </TASK>
-
-Allocated by task 5970:
- kasan_save_stack mm/kasan/common.c:57 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
- poison_kmalloc_redzone mm/kasan/common.c:398 [inline]
- __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
- kasan_kmalloc include/linux/kasan.h:263 [inline]
- __do_kmalloc_node mm/slub.c:5260 [inline]
- __kmalloc_noprof+0x35c/0x760 mm/slub.c:5272
- kmalloc_noprof include/linux/slab.h:954 [inline]
- kzalloc_noprof include/linux/slab.h:1188 [inline]
- hash_netnet4_add+0xe44/0x27d0 net/netfilter/ipset/ip_set_hash_gen.h:881
- hash_netnet4_uadt+0xc06/0xf20 net/netfilter/ipset/ip_set_hash_netnet.c:269
- call_ad+0x18d/0xb60 net/netfilter/ipset/ip_set_core.c:1751
- ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1841
- nfnetlink_rcv_msg+0xc00/0x12c0 net/netfilter/nfnetlink.c:300
- netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
- nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
- netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
- netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
- sock_sendmsg_nosec net/socket.c:721 [inline]
- __sock_sendmsg net/socket.c:736 [inline]
- ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
- __sys_sendmsg net/socket.c:2671 [inline]
- __do_sys_sendmsg net/socket.c:2676 [inline]
- __se_sys_sendmsg net/socket.c:2674 [inline]
- __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-The buggy address belongs to the object at ffff8881125a9f00
- which belongs to the cache kmalloc-64 of size 64
-The buggy address is located 0 bytes to the right of
- allocated 64-byte region [ffff8881125a9f00, ffff8881125a9f40)
-
-The buggy address belongs to the physical page:
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1125a9
-flags: 0x17ff00000000000(node=0|zone=2|lastcpupid=0x7ff)
-page_type: f5(slab)
-raw: 017ff00000000000 ffff8881000418c0 dead000000000100 dead000000000122
-raw: 0000000000000000 0000000800200020 00000000f5000000 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 55, tgid 55 (kworker/u9:2), ts 19909977372, free_ts 0
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x231/0x280 mm/page_alloc.c:1889
- prep_new_page mm/page_alloc.c:1897 [inline]
- get_page_from_freelist+0x24dc/0x2580 mm/page_alloc.c:3962
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5250
- alloc_slab_page mm/slub.c:3292 [inline]
- allocate_slab+0x77/0x660 mm/slub.c:3481
- new_slab mm/slub.c:3539 [inline]
- refill_objects+0x331/0x3c0 mm/slub.c:7175
- refill_sheaf mm/slub.c:2812 [inline]
- __pcs_replace_empty_main+0x2e6/0x730 mm/slub.c:4615
- alloc_from_pcs mm/slub.c:4717 [inline]
- slab_alloc_node mm/slub.c:4851 [inline]
- __do_kmalloc_node mm/slub.c:5259 [inline]
- __kmalloc_node_noprof+0x577/0x7c0 mm/slub.c:5266
- kmalloc_node_noprof include/linux/slab.h:1081 [inline]
- __vmalloc_area_node mm/vmalloc.c:3855 [inline]
- __vmalloc_node_range_noprof+0x5d5/0x1730 mm/vmalloc.c:4064
- __vmalloc_node_noprof+0xc2/0x100 mm/vmalloc.c:4124
- alloc_thread_stack_node kernel/fork.c:355 [inline]
- dup_task_struct+0x275/0x9a0 kernel/fork.c:924
- copy_process+0x508/0x3cd0 kernel/fork.c:2050
- kernel_clone+0x248/0x8e0 kernel/fork.c:2653
- user_mode_thread+0x110/0x180 kernel/fork.c:2729
- call_usermodehelper_exec_work+0x5c/0x230 kernel/umh.c:171
- process_one_work kernel/workqueue.c:3276 [inline]
- process_scheduled_works+0xb6e/0x18c0 kernel/workqueue.c:3359
- worker_thread+0xa53/0xfc0 kernel/workqueue.c:3440
-page_owner free stack trace missing
-
-Memory state around the buggy address:
- ffff8881125a9e00: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
- ffff8881125a9e80: 00 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc
->ffff8881125a9f00: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
-                                           ^
- ffff8881125a9f80: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
- ffff8881125aa000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+On Wed, Apr 8, 2026 at 10:09=E2=80=AFPM syzbot ci
+<syzbot+cicb5229b7652215a9@syzkaller.appspotmail.com> wrote:
+>
+> syzbot ci has tested the following series
+>
+> [v1] net/sched: no longer acquire RTNL in qdisc dumps
+> https://lore.kernel.org/all/20260408125611.3592751-1-edumazet@google.com
+> * [PATCH net-next 01/15] net/sched: rename qstats_overlimit_inc() to qsta=
+ts_cpu_overlimit_inc()
+> * [PATCH net-next 02/15] net/sched: add qstats_cpu_drop_inc() helper
+> * [PATCH net-next 03/15] net/sched: add READ_ONCE() in gnet_stats_add_que=
+ue[_cpu]
+> * [PATCH net-next 04/15] net/sched: add qdisc_qlen_inc() and qdisc_qlen_d=
+ec()
+> * [PATCH net-next 05/15] net/sched: annotate data-races around sch->qstat=
+s.backlog
+> * [PATCH net-next 06/15] net/sched: sch_sfb: annotate data-races in sfb_d=
+ump_stats()
+> * [PATCH net-next 07/15] net/sched: sch_red: annotate data-races in red_d=
+ump_stats()
+> * [PATCH net-next 08/15] net/sched: sch_fq_codel: remove data-races from =
+fq_codel_dump_stats()
+> * [PATCH net-next 09/15] net/sched: sch_pie: annotate data-races in pie_d=
+ump_stats()
+> * [PATCH net-next 10/15] net/sched: sch_fq_pie: annotate data-races in fq=
+_pie_dump_stats()
+> * [PATCH net-next 11/15] net_sched: sch_hhf: annotate data-races in hhf_d=
+ump_stats()
+> * [PATCH net-next 12/15] net/sched: sch_choke: annotate data-races in cho=
+ke_dump_stats()
+> * [PATCH net-next 13/15] net/sched: sch_cake: annotate data-races in cake=
+_dump_stats()
+> * [PATCH net-next 14/15] net/sched: mq: no longer acquire qdisc spinlocks=
+ in dump operations
+> * [PATCH net-next 15/15] net/sched: convert tc_dump_qdisc() to RCU
+>
+> and found the following issues:
+> * WARNING: suspicious RCU usage in mq_dump_common
+> * WARNING: suspicious RCU usage in mqprio_dump
+> * WARNING: suspicious RCU usage in tc_fill_qdisc
+>
+> Full report is available here:
+> https://ci.syzbot.org/series/a6ab0157-80eb-4d29-ab75-31a471a9070e
+>
+> ***
+>
+> WARNING: suspicious RCU usage in mq_dump_common
+>
+> tree:      net-next
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netde=
+v/net-next.git
+> base:      b3e69fc3196fc421e26196e7792f17b0463edc6f
+> arch:      amd64
+> compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~e=
+xp1~20251221153213.50), Debian LLD 21.1.8
+> config:    https://ci.syzbot.org/builds/f4a44029-347c-4dad-b84f-81c322454=
+de4/config
+> syz repro: https://ci.syzbot.org/findings/d5d8c727-6baf-4738-bc33-e8a42f5=
+39e21/syz_repro
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D
+> WARNING: suspicious RCU usage
+> syzkaller #0 Not tainted
+> -----------------------------
+> net/sched/sch_mq.c:158 suspicious rcu_dereference_check() usage!
+>
+> other info that might help us debug this:
+>
+>
+> rcu_scheduler_active =3D 2, debug_locks =3D 1
+> 1 lock held by syz.1.18/6007:
+>  #0: ffffffff8fbca4c8 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_lock net/core/rt=
+netlink.c:80 [inline]
+>  #0: ffffffff8fbca4c8 (rtnl_mutex){+.+.}-{4:4}, at: rtnetlink_rcv_msg+0x7=
+22/0xbe0 net/core/rtnetlink.c:6986
+>
+> stack backtrace:
+> CPU: 1 UID: 0 PID: 6007 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  lockdep_rcu_suspicious+0x13f/0x1d0 kernel/locking/lockdep.c:6876
+>  mq_dump_common+0x2fa/0x5e0 net/sched/sch_mq.c:158
+>  mq_dump+0x7e/0x150 net/sched/sch_mq.c:181
+>  tc_fill_qdisc+0x663/0x11c0 net/sched/sch_api.c:937
+>  qdisc_notify+0x1cf/0x440 net/sched/sch_api.c:1033
+>  notify_and_destroy net/sched/sch_api.c:1058 [inline]
+>  qdisc_graft+0x114a/0x15b0 net/sched/sch_api.c:1158
+>  __tc_modify_qdisc net/sched/sch_api.c:1760 [inline]
+>  tc_modify_qdisc+0x18a4/0x2290 net/sched/sch_api.c:1816
+>  rtnetlink_rcv_msg+0x77e/0xbe0 net/core/rtnetlink.c:6989
+>  netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
+>  netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
+>  sock_sendmsg_nosec net/socket.c:721 [inline]
+>  __sock_sendmsg net/socket.c:736 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
+>  __sys_sendmsg net/socket.c:2671 [inline]
+>  __do_sys_sendmsg net/socket.c:2676 [inline]
+>  __se_sys_sendmsg net/socket.c:2674 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7f1d3839c819
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f1d392c4028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007f1d38615fa0 RCX: 00007f1d3839c819
+> RDX: 0000000000044080 RSI: 0000200000000040 RDI: 0000000000000003
+> RBP: 00007f1d38432c91 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007f1d38616038 R14: 00007f1d38615fa0 R15: 00007fff29960058
+>  </TASK>
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D
+> WARNING: suspicious RCU usage
+> syzkaller #0 Not tainted
+> -----------------------------
+> net/sched/sch_api.c:943 suspicious rcu_dereference_check() usage!
+>
+> other info that might help us debug this:
+>
+>
+> rcu_scheduler_active =3D 2, debug_locks =3D 1
+> 1 lock held by syz.1.18/6007:
+>  #0: ffffffff8fbca4c8 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_lock net/core/rt=
+netlink.c:80 [inline]
+>  #0: ffffffff8fbca4c8 (rtnl_mutex){+.+.}-{4:4}, at: rtnetlink_rcv_msg+0x7=
+22/0xbe0 net/core/rtnetlink.c:6986
+>
+> stack backtrace:
+> CPU: 0 UID: 0 PID: 6007 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  lockdep_rcu_suspicious+0x13f/0x1d0 kernel/locking/lockdep.c:6876
+>  tc_fill_qdisc+0xd90/0x11c0 net/sched/sch_api.c:943
+>  qdisc_notify+0x1cf/0x440 net/sched/sch_api.c:1033
+>  notify_and_destroy net/sched/sch_api.c:1058 [inline]
+>  qdisc_graft+0x114a/0x15b0 net/sched/sch_api.c:1158
+>  __tc_modify_qdisc net/sched/sch_api.c:1760 [inline]
+>  tc_modify_qdisc+0x18a4/0x2290 net/sched/sch_api.c:1816
+>  rtnetlink_rcv_msg+0x77e/0xbe0 net/core/rtnetlink.c:6989
+>  netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
+>  netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
+>  sock_sendmsg_nosec net/socket.c:721 [inline]
+>  __sock_sendmsg net/socket.c:736 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
+>  __sys_sendmsg net/socket.c:2671 [inline]
+>  __do_sys_sendmsg net/socket.c:2676 [inline]
+>  __se_sys_sendmsg net/socket.c:2674 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7f1d3839c819
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f1d392c4028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007f1d38615fa0 RCX: 00007f1d3839c819
+> RDX: 0000000000044080 RSI: 0000200000000040 RDI: 0000000000000003
+> RBP: 00007f1d38432c91 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007f1d38616038 R14: 00007f1d38615fa0 R15: 00007fff29960058
+>  </TASK>
+>
+>
+> ***
+>
+> WARNING: suspicious RCU usage in mqprio_dump
+>
+> tree:      net-next
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netde=
+v/net-next.git
+> base:      b3e69fc3196fc421e26196e7792f17b0463edc6f
+> arch:      amd64
+> compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~e=
+xp1~20251221153213.50), Debian LLD 21.1.8
+> config:    https://ci.syzbot.org/builds/f4a44029-347c-4dad-b84f-81c322454=
+de4/config
+> syz repro: https://ci.syzbot.org/findings/159b3573-da89-4289-89cf-85c39c6=
+2db59/syz_repro
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D
+> WARNING: suspicious RCU usage
+> syzkaller #0 Not tainted
+> -----------------------------
+> net/sched/sch_mqprio.c:570 suspicious rcu_dereference_check() usage!
+>
+> other info that might help us debug this:
+>
+>
+> rcu_scheduler_active =3D 2, debug_locks =3D 1
+> 1 lock held by syz.1.18/5958:
+>  #0: ffffffff8fbca4c8 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_lock net/core/rt=
+netlink.c:80 [inline]
+>  #0: ffffffff8fbca4c8 (rtnl_mutex){+.+.}-{4:4}, at: rtnetlink_rcv_msg+0x7=
+22/0xbe0 net/core/rtnetlink.c:6986
+>
+> stack backtrace:
+> CPU: 1 UID: 0 PID: 5958 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  lockdep_rcu_suspicious+0x13f/0x1d0 kernel/locking/lockdep.c:6876
+>  mqprio_dump+0x3db/0x1370 net/sched/sch_mqprio.c:570
+>  tc_fill_qdisc+0x663/0x11c0 net/sched/sch_api.c:937
+>  qdisc_notify+0x28c/0x440 net/sched/sch_api.c:1038
+>  notify_and_destroy net/sched/sch_api.c:1058 [inline]
+>  qdisc_graft+0x114a/0x15b0 net/sched/sch_api.c:1158
+>  __tc_modify_qdisc net/sched/sch_api.c:1760 [inline]
+>  tc_modify_qdisc+0x18a4/0x2290 net/sched/sch_api.c:1816
+>  rtnetlink_rcv_msg+0x77e/0xbe0 net/core/rtnetlink.c:6989
+>  netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
+>  netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
+>  sock_sendmsg_nosec net/socket.c:721 [inline]
+>  __sock_sendmsg net/socket.c:736 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
+>  __sys_sendmsg net/socket.c:2671 [inline]
+>  __do_sys_sendmsg net/socket.c:2676 [inline]
+>  __se_sys_sendmsg net/socket.c:2674 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7ff019b9c819
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007ff01ab3e028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007ff019e15fa0 RCX: 00007ff019b9c819
+> RDX: 0000000020000000 RSI: 0000200000000200 RDI: 0000000000000005
+> RBP: 00007ff019c32c91 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007ff019e16038 R14: 00007ff019e15fa0 R15: 00007ffc53020ce8
+>  </TASK>
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D
+> WARNING: suspicious RCU usage
+> syzkaller #0 Not tainted
+> -----------------------------
+> net/sched/sch_api.c:943 suspicious rcu_dereference_check() usage!
+>
+> other info that might help us debug this:
+>
+>
+> rcu_scheduler_active =3D 2, debug_locks =3D 1
+> 1 lock held by syz.1.18/5958:
+>  #0: ffffffff8fbca4c8 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_lock net/core/rt=
+netlink.c:80 [inline]
+>  #0: ffffffff8fbca4c8 (rtnl_mutex){+.+.}-{4:4}, at: rtnetlink_rcv_msg+0x7=
+22/0xbe0 net/core/rtnetlink.c:6986
+>
+> stack backtrace:
+> CPU: 1 UID: 0 PID: 5958 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  lockdep_rcu_suspicious+0x13f/0x1d0 kernel/locking/lockdep.c:6876
+>  tc_fill_qdisc+0xd90/0x11c0 net/sched/sch_api.c:943
+>  qdisc_notify+0x28c/0x440 net/sched/sch_api.c:1038
+>  notify_and_destroy net/sched/sch_api.c:1058 [inline]
+>  qdisc_graft+0x114a/0x15b0 net/sched/sch_api.c:1158
+>  __tc_modify_qdisc net/sched/sch_api.c:1760 [inline]
+>  tc_modify_qdisc+0x18a4/0x2290 net/sched/sch_api.c:1816
+>  rtnetlink_rcv_msg+0x77e/0xbe0 net/core/rtnetlink.c:6989
+>  netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
+>  netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
+>  sock_sendmsg_nosec net/socket.c:721 [inline]
+>  __sock_sendmsg net/socket.c:736 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
+>  __sys_sendmsg net/socket.c:2671 [inline]
+>  __do_sys_sendmsg net/socket.c:2676 [inline]
+>  __se_sys_sendmsg net/socket.c:2674 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7ff019b9c819
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007ff01ab3e028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007ff019e15fa0 RCX: 00007ff019b9c819
+> RDX: 0000000020000000 RSI: 0000200000000200 RDI: 0000000000000005
+> RBP: 00007ff019c32c91 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007ff019e16038 R14: 00007ff019e15fa0 R15: 00007ffc53020ce8
+>  </TASK>
+>
+>
+> ***
+>
+> WARNING: suspicious RCU usage in tc_fill_qdisc
+>
+> tree:      net-next
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netde=
+v/net-next.git
+> base:      b3e69fc3196fc421e26196e7792f17b0463edc6f
+> arch:      amd64
+> compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~e=
+xp1~20251221153213.50), Debian LLD 21.1.8
+> config:    https://ci.syzbot.org/builds/f4a44029-347c-4dad-b84f-81c322454=
+de4/config
+> syz repro: https://ci.syzbot.org/findings/0dada8ec-a4b6-42a1-8516-d70ce8c=
+cccc7/syz_repro
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D
+> WARNING: suspicious RCU usage
+> syzkaller #0 Not tainted
+> -----------------------------
+> net/sched/sch_api.c:943 suspicious rcu_dereference_check() usage!
+>
+> other info that might help us debug this:
+>
+>
+> rcu_scheduler_active =3D 2, debug_locks =3D 1
+> 1 lock held by syz.0.17/5963:
+>  #0: ffffffff8fbca4c8 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_lock net/core/rt=
+netlink.c:80 [inline]
+>  #0: ffffffff8fbca4c8 (rtnl_mutex){+.+.}-{4:4}, at: rtnetlink_rcv_msg+0x7=
+22/0xbe0 net/core/rtnetlink.c:6986
+>
+> stack backtrace:
+> CPU: 0 UID: 0 PID: 5963 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  lockdep_rcu_suspicious+0x13f/0x1d0 kernel/locking/lockdep.c:6876
+>  tc_fill_qdisc+0xd90/0x11c0 net/sched/sch_api.c:943
+>  qdisc_notify+0x1cf/0x440 net/sched/sch_api.c:1033
+>  notify_and_destroy net/sched/sch_api.c:1058 [inline]
+>  qdisc_graft+0x114a/0x15b0 net/sched/sch_api.c:1158
+>  __tc_modify_qdisc net/sched/sch_api.c:1760 [inline]
+>  tc_modify_qdisc+0x18a4/0x2290 net/sched/sch_api.c:1816
+>  rtnetlink_rcv_msg+0x77e/0xbe0 net/core/rtnetlink.c:6989
+>  netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
+>  netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1344
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
+>  sock_sendmsg_nosec net/socket.c:721 [inline]
+>  __sock_sendmsg net/socket.c:736 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2585
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2639
+>  __sys_sendmsg net/socket.c:2671 [inline]
+>  __do_sys_sendmsg net/socket.c:2676 [inline]
+>  __se_sys_sendmsg net/socket.c:2674 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2674
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7f9e5e39c819
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f9e5f2d6028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007f9e5e615fa0 RCX: 00007f9e5e39c819
+> RDX: 0000000000000000 RSI: 00002000000007c0 RDI: 0000000000000003
+> RBP: 00007f9e5e432c91 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007f9e5e616038 R14: 00007f9e5e615fa0 R15: 00007ffc6a25e4e8
+>  </TASK>
+>
+>
+> ***
+>
+> If these findings have caused you to resend the series or submit a
+> separate fix, please add the following tag to your commit message:
+>   Tested-by: syzbot@syzkaller.appspotmail.com
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+>
+> To test a patch for this bug, please reply with `#syz test`
+> (should be on a separate line).
+>
+> The patch should be attached to the email.
+> Note: arguments like custom git repos and branches are not supported.
+>
+> The email will later be sent to:
+> [davem@davemloft.net edumazet@google.com eric.dumazet@gmail.com horms@ker=
+nel.org jhs@mojatatu.com jiri@resnulli.us kuba@kernel.org kuniyu@google.com=
+ netdev@vger.kernel.org pabeni@redhat.com sdf@fomichev.me toke@toke.dk]
+>
+> If the report looks fine to you, reply with:
+> #syz upstream
+>
+> If the report is a false positive, reply with
+> #syz invalid
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/69d6b5f9.050a0220.d95e.0002.GAE%40google.com.
