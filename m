@@ -1,56 +1,51 @@
-Received: from mail-vk1-f199.google.com (mail-vk1-f199.google.com [209.85.221.199])
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com [209.85.219.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EDE43DB629
-	for <syzbot@lists.linux.dev>; Wed,  8 Apr 2026 20:41:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DAD7339B3D
+	for <syzbot@lists.linux.dev>; Wed,  8 Apr 2026 21:04:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775680911; cv=none; b=RLiMXRmUqsb78WrkPYIYA+/FlTFcBuBORbIu5aXWxVSNNEYx2TF40lQVIbAnQXEttrASIF467VBKBp3atm6Rx6HhdJi545hauQTMxFF4Re9PIpWLXK8X5+FMrfYu29xw/VCXgbTHKrRTVnGNrVoK2bk54ddUwOKzDe/1To/ChKs=
+	t=1775682272; cv=none; b=ZTx/Jyyz05ig4ndanaAsLp/c3n7YSFSqfczCOge4cHRN1HqnCKXyYfttPDerRRZu7ijeQOqvOIwfQNPtOhs5XJhZBJqmK7fBmUNPhYdwqvb6EVgH2LQphyMQExuNxtGaoKzj8JbItjtb4MMQZVycih1bW7N8oQmBlq5F59hNpRo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775680911; c=relaxed/simple;
-	bh=6YQ0JH+ppPNdBJgrvxOdc8Znzvxw/WPnk/nMwdmkod4=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=r6FpJSLkiOYHJMgOdPkfpPekl4lv2TeRGLVGKkwH4lbTS93ErbaiJRpyQLX+DV9kwlbv882qQmiF5JXzkL0JYvKnBuYBJOiFXyN5+zlj4ox3GmTVC2ZcV0TpmXxF06E85styU0/AA0XySur4Qf5hTREfoCreSlHFtSo4YNjwsJU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.221.199
+	s=arc-20240116; t=1775682272; c=relaxed/simple;
+	bh=JaR5XRbc8LRBmPVHPzzAqptV2g2dZkHEQqUsxeqt0X8=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=eI+hVldJmNg+xsCwYqjPxKQqp4fEzJvC+B5Z7g1n894mAO+8KsLRMapbYFg9bPE1KBzIpsWTdd9pweNjoUBK5dqzByKUz9dg3Q005Lgc0hPePLIljp+JDN8jTF1M6KsEUDNCVPhM2StI2zOOx66yVOahlfM0NQrRxQteI2dpeOk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.219.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-vk1-f199.google.com with SMTP id 71dfb90a1353d-56ee7e6ce4bso493389e0c.0
-        for <syzbot@lists.linux.dev>; Wed, 08 Apr 2026 13:41:49 -0700 (PDT)
+Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-89cd4f56e89so6649976d6.1
+        for <syzbot@lists.linux.dev>; Wed, 08 Apr 2026 14:04:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775680908; x=1776285708;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SxaZ0G6ZIGuezWqdjpsYNlMnLQDl2Sl11e/LwXAUHmM=;
-        b=U9qmiaY4eCBSoZw0AAKoC9ZAqui3iTYFOLP1oft3dL/HFDVG/eG8aHlQH1LGVkxKcE
-         Wb+e3A3QK3gr5U+Wkgn4n8CGXklK4DyaQHvBU10ef4IRh+PdHaRcBGaQNbUOFk/ZOg3F
-         j/IKALTKcYjrJK0mSW5GfnSIxJ28ac9j6WxJWRdpHiA3mA9Mqf7GvLHjcVLigSKIUfsZ
-         iA65MmdT4IFHvYTp2AOJp9U5tTLm7fmPLymTAEd/TSqBvgxOoVR+H1w7nxKQUM7zvP1B
-         6s5xH0rrnl9k+vLfPC3+Qdprm7rOUU74M0gQtZ7qsr93i2IjCGiNPN0n+Z6kxilfdl9P
-         QdIg==
-X-Gm-Message-State: AOJu0Yz5m85scZO8C0LedEC3kAHhvjs2QobI1WPvO6nQwID9VY3t+Xvo
-	q+ZHtztaJhHiz0Z0S29xz1gVBUcqp3mPucmmUhMZFmPZhZxaH91mmbG7LgPtSTvYczzeTZTmD+1
-	nLPsP7PkaizEZr5lGxbf7w8fkTjOjSfIO88UDJW7O8KE9bZoLijVDh9nyCnA=
+        d=1e100.net; s=20251104; t=1775682269; x=1776287069;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VLXx/H3nYFUFXBO+o45uOuIEWCOWHKLF3QfPg1TAMkY=;
+        b=GiJMEp0FXfw+k1L1b5F2HcvYpik5RYqQAnRV6F11XTBpQGPr+8G16yN8wdTb3EMRhx
+         D2Kz9JS5yi+iyG7ydmfCBMe4f9qs86J1CHA+ncXc2XukobBQEIcrbO66lGmslnN1b5Ga
+         HsLiFv8egBjqeQxteAgaGn+5iqXiH46AULRLc3iXI9IVnmJBOAD+bM81yVbJC2Lx+0NT
+         Eqx6q7pKg2ESfgcIzY2yRLCfJqdd8GmoYAvipHIfznaCncpJRQcVl9TQb4aHiSteWq4F
+         hgc3Vth+Ay1mt76kekBQDFmmGcIM1NrOVUaXaBUIKwEQ4XqRQhxFhnLyYdlWCEsZOGKR
+         9e8g==
+X-Gm-Message-State: AOJu0YyB5VjFRZOD9TJUV7r+5se9XbGoQ/dIfaEPWZ9Jc7Fhub/bVH6g
+	N2W84YHcp7EyJSrQciHiWFN3A1oFibOYH3D4OM0/IKwE/zDjIUDZoT7VSTpKdQKM9cZdPCheeVo
+	kpSL6sHrbDM/f5N6yN2VMS5aVU5wuAGhRtiWn9aUf78RBw3kGTrIoukq4KMk=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:7513:b0:682:47e0:5d4e with SMTP id
- 006d021491bc7-68a68d5f842mr325617eaf.14.1775679299916; Wed, 08 Apr 2026
- 13:14:59 -0700 (PDT)
-Date: Wed, 08 Apr 2026 13:14:59 -0700
-In-Reply-To: <20260408125611.3592751-1-edumazet@google.com>
+X-Received: by 2002:a4a:e90e:0:b0:689:613a:f2fe with SMTP id
+ 006d021491bc7-689613af4e2mr2054307eaf.36.1775678969175; Wed, 08 Apr 2026
+ 13:09:29 -0700 (PDT)
+Date: Wed, 08 Apr 2026 13:09:29 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69d6b743.050a0220.d95e.0003.GAE@google.com>
-Subject: [syzbot ci] Re: net/sched: no longer acquire RTNL in qdisc dumps
-From: syzbot ci <syzbot+ci60965c6d6fd3c464@syzkaller.appspotmail.com>
-To: davem@davemloft.net, edumazet@google.com, eric.dumazet@gmail.com, 
-	horms@kernel.org, jhs@mojatatu.com, jiri@resnulli.us, kuba@kernel.org, 
-	kuniyu@google.com, netdev@vger.kernel.org, pabeni@redhat.com, sdf@fomichev.me, 
-	toke@toke.dk
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <69d6b5f9.050a0220.d95e.0002.GAE@google.com>
+Subject: [moderation/CI] Re: net/sched: no longer acquire RTNL in qdisc dumps
+From: syzbot ci <syzbot+cicb5229b7652215a9@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
@@ -403,3 +398,13 @@ To test a patch for this bug, please reply with `#syz test`
 
 The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[davem@davemloft.net edumazet@google.com eric.dumazet@gmail.com horms@kernel.org jhs@mojatatu.com jiri@resnulli.us kuba@kernel.org kuniyu@google.com netdev@vger.kernel.org pabeni@redhat.com sdf@fomichev.me toke@toke.dk]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
