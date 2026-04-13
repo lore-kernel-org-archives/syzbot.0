@@ -1,259 +1,79 @@
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A40F39524D
-	for <syzbot@lists.linux.dev>; Mon, 13 Apr 2026 07:38:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3201318EDA
+	for <syzbot@lists.linux.dev>; Mon, 13 Apr 2026 11:00:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776065924; cv=none; b=LZCf/I1KtsBtJ83qI2C6t5OySAZtlDK1c1UezOu/ov+amuBsrtvvItRA4mq1DTVUJjxw33yRi6I+UGMCagCRGrwaWHfXH3Y4XurAjVSgGR7VcAg52/9hpSuaQD/yb8u7EB3kltX9MvaVIzUWrGojiTJF9h9gtI1ixiXF7drfEIM=
+	t=1776078024; cv=none; b=qp2QtgkKqkjvVuUVE/hgPj8enMBPKhl2jBSL2OPt9KyG203Ku0jufC7Qq51ZZafHHZhctZ+mjqBjNcoIcF22rQy7XNGkzUZ+Ms9Sc+lsUnfsJ5mxlGyTdeR1N57GmnJfGxjvuG7xHIliXyZ8gxcWVOjezzIZgkZoov3RBVS0PLA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776065924; c=relaxed/simple;
-	bh=F9u2byUiSK5hZfK9rysfXwl4agDrHcUZQjsXKCf05G4=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=sSMyXwzrUAqkvRfOVr4DdOGZKKQF0kHChEIeljJj5EMR/g+vDOfmSRg3l/hfr+IStbdcnNmuMTgJCArHKv64Fkhl82hzMxUsmND0hqA7r1R8IhGtv6M9Q0AIlAG6PxHVvC8kXz/mJI7wxHD6aE4BJySO6hQud2ZWYgaTMYEWe/0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
+	s=arc-20240116; t=1776078024; c=relaxed/simple;
+	bh=48TpP2uZ36lTFs3xGa6uIcgJH0yP5xK/lArDANaordM=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=aF0VyR++vymJMaREHjP5W2FMRIM05pV2eT57Kqqj8a2gi//ekD6ez1R3b/QKgKTqcarTE2ogXhFTsXscrMVoJPR9CkA0+CSBWMbmgpUXg8ARxEZ3gN0fH01zEAS2Rj2a4X7RSawVyLXtIhi5T5l5c3FjFEZQTz5bS/aqfW1nmHo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7dbd1866b66so9060186a34.1
-        for <syzbot@lists.linux.dev>; Mon, 13 Apr 2026 00:38:42 -0700 (PDT)
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-423306870bdso6526199fac.3
+        for <syzbot@lists.linux.dev>; Mon, 13 Apr 2026 04:00:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776065921; x=1776670721;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=to68LlIkxkw+05Fou43elQ/Y+Uv6KL/gY+hMLBJGpG0=;
-        b=cwX+PpIkqKsTjC4sPzbbZXagOL+7KSSKfaUv30g2BoN0D7blCsQhnjaaChFMsx3WVs
-         Slg5jofiOLJckHHjVaerxzRnpEMyu61Y4VjdrVmBHPKGdqbrjbyrVp6MIUDZKs7lz2n9
-         0LYu4BkGwYhO6t6AFl90J5BJgS7exMQ5pTehbgJIJe+QdqcxS6f7m/f7y47Sd4dHWviU
-         s6XsyZF97/Af88s3hZUmFKhxuDMPmxsESQWocfHUOV+RJgtfIEXpNNCMeCgw5CiIwaT8
-         x0067XmL48HNL9iDSocw9hiWynBAq4rRgzF//R7NIUMrmwph9u6Zq9t70UBFFx2rKtRh
-         ny4A==
-X-Gm-Message-State: AOJu0Yx4ZixIs6QR2I9X45oxw7Kb0h3dSx8XJscyM9WLapX2hdH6Ungz
-	7QqbUM8UL+3NtIVARjURAwnWQ43qOQo6DdZOgpaMAgYTEl3p5IF4uYywxQ0vdQFNfNvZth8Pb7v
-	thjfBTZKNb6kKJ9PhId0pKLvGlodvJSgD3ci3oF6hq5BjULjlAoKbEmgAEqE=
+        d=1e100.net; s=20251104; t=1776078021; x=1776682821;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=TKkHRbqk0x8GeBOARLtH3laR5cUMwHUc+umFiCvr7K4=;
+        b=etEspVUTBEi6oZuPHWw9/mQ0PEt9V6l9ELLDLZb2fds6cJhmcP4M1HsSoHc7LpIsDm
+         WE7++fAGtdJBFwLXkGzRS2KW19XShm88Qfm1vAZRQac15sKRAnOWIjP2JuQIF9SCBOEM
+         qvlSP1hY1DnKJX3Ah+usb8CFcLrlVHo65d/1/0py8xiyzuS3N3CzZgYHTepSBxZln8HR
+         2caEzC3Ejb0H0E8E1OVbLkWOAS/sSkobKgbE+N6K1OD9noTdqmfqW7bJ5SNOOqZx6oNc
+         7fzJQg6CBVEcFGS1DN5VExYyoHqok3gBh+66x/Tr8CvzlBcn7ISMywVEx9NdnTK2rZ1s
+         TRkw==
+X-Gm-Message-State: AOJu0YyAmew3KUSBxHAKy7vefBvLRfwoPmRiGIDG/DNc//Q27V2QtT8j
+	534FdR6zX3PhqHqQonoJzcrgJ34fNW451eevRQ8FG55rvf63R1zG9Du400K7BNR/2JB1a+Sb3R0
+	ZYkGmxaRtTbSWxCkOGxorCzn39DAWt8ivrUpPfiAgm8udG6N+1HrH0Kcbjlw=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4c14:b0:689:da1a:3ac5 with SMTP id
- 006d021491bc7-68be86e4616mr6161594eaf.42.1776065921546; Mon, 13 Apr 2026
- 00:38:41 -0700 (PDT)
-Date: Mon, 13 Apr 2026 00:38:41 -0700
-In-Reply-To: <20260412174244.133715-1-osalvador@suse.de>
+X-Received: by 2002:a05:6820:822:b0:68d:d2e3:2912 with SMTP id
+ 006d021491bc7-68dd2e32ad3mr3783226eaf.42.1776078021585; Mon, 13 Apr 2026
+ 04:00:21 -0700 (PDT)
+Date: Mon, 13 Apr 2026 04:00:21 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69dc9d81.050a0220.3030df.0047.GAE@google.com>
-Subject: [syzbot ci] Re: Implement a new generic pagewalk API
-From: syzbot ci <syzbot+ci8e8b776487075354@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, david@kernel.org, david@redhat.com, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, lorenzo.stoakes@oracle.com, 
-	mhocko@suse.com, muchun.song@linux.dev, osalvador@suse.de, vbabka@kernel.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <69dcccc5.a00a0220.468cb.0045.GAE@google.com>
+Subject: [moderation/CI] Re: vsock/virtio: fix accept queue count leak on
+ transport mismatch in recv_listen
+From: syzbot ci <syzbot+ci626063cba9f23b64@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] Implement a new generic pagewalk API
-https://lore.kernel.org/all/20260412174244.133715-1-osalvador@suse.de
-* [RFC PATCH 1/7] mm: Add softleaf_from_pud
-* [RFC PATCH 2/7] mm: Add {pmd,pud}_huge_lock helper
-* [RFC PATCH 3/7] mm: Implement folio_pmd_batch
-* [RFC PATCH 4/7] mm: Implement pt_range_walk
-* [RFC PATCH 5/7] mm: Make /proc/pid/smaps use the new generic pagewalk API
-* [RFC PATCH 6/7] mm: Make /proc/pid/numa_maps use the new generic pagewalk API
-* [RFC PATCH 7/7] mm: Make /proc/pid/pagemap use the new generic pagewalk API
+[v1] vsock/virtio: fix accept queue count leak on transport mismatch in recv_listen
+https://lore.kernel.org/all/20260413085243.73200-1-phx0fer@gmail.com
+* [PATCH] vsock/virtio: fix accept queue count leak on transport mismatch in recv_listen
 
-and found the following issues:
-* KASAN: slab-out-of-bounds Write in pagemap_read
-* WARNING in pt_range_walk
+and found the following issue:
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/1f85248a-1ac0-48e8-8ce3-edb89a6b9ee5
+https://ci.syzbot.org/series/4a69d8ad-177b-41c6-b720-ae224d592fb3
 
 ***
 
-KASAN: slab-out-of-bounds Write in pagemap_read
+kernel build error
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      857fa8f2a5b184c206c703a3d9ce05cea683cfed
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      5758be283ff8b37beed49e270b908a251d5ca2d7
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/932ed80d-9fb1-4c99-8096-4b7a9324bb7c/config
-syz repro: https://ci.syzbot.org/findings/1083a63d-0470-4ce7-8943-0a60046b9269/syz_repro
+config:    https://ci.syzbot.org/builds/a8f5e3a5-21b0-45df-937f-4580396e0566/config
 
-==================================================================
-BUG: KASAN: slab-out-of-bounds in add_to_pagemap fs/proc/task_mmu.c:1740 [inline]
-BUG: KASAN: slab-out-of-bounds in pagemap_read_walk_range fs/proc/task_mmu.c:2736 [inline]
-BUG: KASAN: slab-out-of-bounds in pagemap_read+0x19bc/0x21a0 fs/proc/task_mmu.c:2829
-Write of size 8 at addr ffff88816d32b000 by task syz.0.17/5958
-
-CPU: 0 UID: 0 PID: 5958 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_address_description mm/kasan/report.c:378 [inline]
- print_report+0xba/0x230 mm/kasan/report.c:482
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- add_to_pagemap fs/proc/task_mmu.c:1740 [inline]
- pagemap_read_walk_range fs/proc/task_mmu.c:2736 [inline]
- pagemap_read+0x19bc/0x21a0 fs/proc/task_mmu.c:2829
- vfs_read+0x20c/0xa70 fs/read_write.c:572
- ksys_pread64 fs/read_write.c:765 [inline]
- __do_sys_pread64 fs/read_write.c:773 [inline]
- __se_sys_pread64 fs/read_write.c:770 [inline]
- __x64_sys_pread64+0x199/0x230 fs/read_write.c:770
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fd47239c819
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fd473284028 EFLAGS: 00000246 ORIG_RAX: 0000000000000011
-RAX: ffffffffffffffda RBX: 00007fd472615fa0 RCX: 00007fd47239c819
-RDX: 0000000000019000 RSI: 0000200000000200 RDI: 0000000000000003
-RBP: 00007fd472432c91 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000001000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fd472616038 R14: 00007fd472615fa0 R15: 00007ffe3c81aa88
- </TASK>
-
-Allocated by task 5958:
- kasan_save_stack mm/kasan/common.c:57 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
- poison_kmalloc_redzone mm/kasan/common.c:398 [inline]
- __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
- kasan_kmalloc include/linux/kasan.h:263 [inline]
- __kmalloc_cache_noprof+0x31c/0x660 mm/slub.c:5339
- kmalloc_noprof include/linux/slab.h:962 [inline]
- kmalloc_array_noprof include/linux/slab.h:1109 [inline]
- pagemap_read+0x287/0x21a0 fs/proc/task_mmu.c:2781
- vfs_read+0x20c/0xa70 fs/read_write.c:572
- ksys_pread64 fs/read_write.c:765 [inline]
- __do_sys_pread64 fs/read_write.c:773 [inline]
- __se_sys_pread64 fs/read_write.c:770 [inline]
- __x64_sys_pread64+0x199/0x230 fs/read_write.c:770
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-The buggy address belongs to the object at ffff88816d32a000
- which belongs to the cache kmalloc-4k of size 4096
-The buggy address is located 0 bytes to the right of
- allocated 4096-byte region [ffff88816d32a000, ffff88816d32b000)
-
-The buggy address belongs to the physical page:
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x16d328
-head: order:3 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
-flags: 0x57ff00000000040(head|node=1|zone=2|lastcpupid=0x7ff)
-page_type: f5(slab)
-raw: 057ff00000000040 ffff888100042140 dead000000000100 dead000000000122
-raw: 0000000000000000 0000000000040004 00000000f5000000 0000000000000000
-head: 057ff00000000040 ffff888100042140 dead000000000100 dead000000000122
-head: 0000000000000000 0000000000040004 00000000f5000000 0000000000000000
-head: 057ff00000000003 ffffea0005b4ca01 00000000ffffffff 00000000ffffffff
-head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000008
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 1, tgid 1 (swapper/0), ts 20801987900, free_ts 13278585415
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x231/0x280 mm/page_alloc.c:1889
- prep_new_page mm/page_alloc.c:1897 [inline]
- get_page_from_freelist+0x24dc/0x2580 mm/page_alloc.c:3962
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5250
- alloc_slab_page mm/slub.c:3255 [inline]
- allocate_slab+0x77/0x660 mm/slub.c:3444
- new_slab mm/slub.c:3502 [inline]
- refill_objects+0x331/0x3c0 mm/slub.c:7134
- refill_sheaf mm/slub.c:2804 [inline]
- __pcs_replace_empty_main+0x2b9/0x620 mm/slub.c:4578
- alloc_from_pcs mm/slub.c:4681 [inline]
- slab_alloc_node mm/slub.c:4815 [inline]
- __kmalloc_cache_noprof+0x392/0x660 mm/slub.c:5334
- kmalloc_noprof include/linux/slab.h:962 [inline]
- kzalloc_noprof include/linux/slab.h:1200 [inline]
- kobject_uevent_env+0x28c/0x9e0 lib/kobject_uevent.c:540
- driver_register+0x2d4/0x320 drivers/base/driver.c:257
- usb_register_driver+0x1e4/0x390 drivers/usb/core/driver.c:1078
- hid_init+0x39/0x70 drivers/hid/usbhid/hid-core.c:1710
- do_one_initcall+0x250/0x8d0 init/main.c:1382
- do_initcall_level+0x104/0x190 init/main.c:1444
- do_initcalls+0x59/0xa0 init/main.c:1460
- kernel_init_freeable+0x2a6/0x3e0 init/main.c:1692
- kernel_init+0x1d/0x1d0 init/main.c:1582
-page last free pid 10 tgid 10 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1433 [inline]
- __free_frozen_pages+0xc2b/0xdb0 mm/page_alloc.c:2978
- vfree+0x25a/0x400 mm/vmalloc.c:3479
- delayed_vfree_work+0x55/0x80 mm/vmalloc.c:3398
- process_one_work kernel/workqueue.c:3275 [inline]
- process_scheduled_works+0xb02/0x1830 kernel/workqueue.c:3358
- worker_thread+0xa50/0xfc0 kernel/workqueue.c:3439
- kthread+0x388/0x470 kernel/kthread.c:467
- ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
-
-Memory state around the buggy address:
- ffff88816d32af00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff88816d32af80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff88816d32b000: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                   ^
- ffff88816d32b080: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88816d32b100: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-==================================================================
-
-
-***
-
-WARNING in pt_range_walk
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      857fa8f2a5b184c206c703a3d9ce05cea683cfed
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/932ed80d-9fb1-4c99-8096-4b7a9324bb7c/config
-syz repro: https://ci.syzbot.org/findings/e7c203a3-133f-4435-b9ed-ee292b6685fe/syz_repro
-
-------------[ cut here ]------------
-next_addr < vma->vm_start || next_addr >= vma->vm_end
-WARNING: mm/pagewalk.c:1052 at pt_range_walk+0x145/0x35f0 mm/pagewalk.c:1052, CPU#1: syz.1.18/6005
-Modules linked in:
-CPU: 1 UID: 0 PID: 6005 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:pt_range_walk+0x145/0x35f0 mm/pagewalk.c:1052
-Code: df e8 9f 1a 15 00 49 89 dc 48 8b 1b 4c 89 ff 48 89 de e8 7e a5 aa ff 49 39 df 4c 89 b4 24 38 01 00 00 73 14 e8 0c a3 aa ff 90 <0f> 0b 90 41 be 01 00 00 00 e9 e5 21 00 00 49 8d 5c 24 08 48 89 d8
-RSP: 0018:ffffc90003a279a0 EFLAGS: 00010293
-RAX: ffffffff821b140c RBX: 0000200001000000 RCX: ffff8881027a5700
-RDX: 0000000000000000 RSI: 0000200001000000 RDI: 0000200001000000
-RBP: ffffc90003a27bb0 R08: 00000000000000ff R09: 0000000000000003
-R10: 0000000000000002 R11: 0000000000000000 R12: ffff888105317380
-R13: dffffc0000000000 R14: 1ffff92000744f60 R15: 0000200001000000
-FS:  00007f0ccbd736c0(0000) GS:ffff8882a9467000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f0ccb04edd5 CR3: 0000000115dba000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- pagemap_scan_walk fs/proc/task_mmu.c:2479 [inline]
- do_pagemap_scan fs/proc/task_mmu.c:2573 [inline]
- do_pagemap_cmd+0xfd5/0x2600 fs/proc/task_mmu.c:2869
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f0ccaf9c819
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f0ccbd73028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f0ccb215fa0 RCX: 00007f0ccaf9c819
-RDX: 0000200000000100 RSI: 00000000c0606610 RDI: 0000000000000003
-RBP: 00007f0ccb032c91 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f0ccb216038 R14: 00007f0ccb215fa0 R15: 00007ffd9c7ebb48
- </TASK>
-
+net/vmw_vsock/virtio_transport_common.c:1:2: error: type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+net/vmw_vsock/virtio_transport_common.c:1:19: error: a parameter list without types is only allowed in a function definition
 
 ***
 
@@ -270,3 +90,13 @@ To test a patch for this bug, please reply with `#syz test`
 
 The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[jasowang@redhat.com mst@redhat.com netdev@vger.kernel.org phx0fer@gmail.com sgarzare@redhat.com stefanha@redhat.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
