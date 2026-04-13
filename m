@@ -1,65 +1,64 @@
-Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3201318EDA
-	for <syzbot@lists.linux.dev>; Mon, 13 Apr 2026 11:00:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E1E03161BA
+	for <syzbot@lists.linux.dev>; Mon, 13 Apr 2026 12:18:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776078024; cv=none; b=qp2QtgkKqkjvVuUVE/hgPj8enMBPKhl2jBSL2OPt9KyG203Ku0jufC7Qq51ZZafHHZhctZ+mjqBjNcoIcF22rQy7XNGkzUZ+Ms9Sc+lsUnfsJ5mxlGyTdeR1N57GmnJfGxjvuG7xHIliXyZ8gxcWVOjezzIZgkZoov3RBVS0PLA=
+	t=1776082708; cv=none; b=OC2j+WE/zQKOaapIRQU8DPG8Z567RlBTCpLf6IuzTylnVIpGQAUGVGfxYUZ2AWxBpKiTa8Z26UpGHNso6N57QGVsQEqNOrmJRDKh7flI9rK7rRwVlQtiTMBprbwDX42LPNLjuc6oIkNpqoSbaZQ/p2fTQU9Esmhs/yjiYPwGtIM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776078024; c=relaxed/simple;
-	bh=48TpP2uZ36lTFs3xGa6uIcgJH0yP5xK/lArDANaordM=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=aF0VyR++vymJMaREHjP5W2FMRIM05pV2eT57Kqqj8a2gi//ekD6ez1R3b/QKgKTqcarTE2ogXhFTsXscrMVoJPR9CkA0+CSBWMbmgpUXg8ARxEZ3gN0fH01zEAS2Rj2a4X7RSawVyLXtIhi5T5l5c3FjFEZQTz5bS/aqfW1nmHo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
+	s=arc-20240116; t=1776082708; c=relaxed/simple;
+	bh=t1D5KVEfjbIBkXNKC8hSeWw/BF7yPZDKfCRprqyHdgs=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Cj+w+naA123XdYFFasqxQ/LUAfir6MKErdLnH7Q4bCfi5CLRbqrxuDBaES9Dt3A0XUz3nlkdWS0ZiAzqpWecR5IEnNdCuImAYlc/alU538utLuI7kN/W+fz/66JUzNO0Ek9NqulGmYurqYhALTrFIvF8WDROvjw6H46H5FVZ9iQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-423306870bdso6526199fac.3
-        for <syzbot@lists.linux.dev>; Mon, 13 Apr 2026 04:00:22 -0700 (PDT)
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7dbb5fbf183so8915291a34.1
+        for <syzbot@lists.linux.dev>; Mon, 13 Apr 2026 05:18:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776078021; x=1776682821;
+        d=1e100.net; s=20251104; t=1776082706; x=1776687506;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=TKkHRbqk0x8GeBOARLtH3laR5cUMwHUc+umFiCvr7K4=;
-        b=etEspVUTBEi6oZuPHWw9/mQ0PEt9V6l9ELLDLZb2fds6cJhmcP4M1HsSoHc7LpIsDm
-         WE7++fAGtdJBFwLXkGzRS2KW19XShm88Qfm1vAZRQac15sKRAnOWIjP2JuQIF9SCBOEM
-         qvlSP1hY1DnKJX3Ah+usb8CFcLrlVHo65d/1/0py8xiyzuS3N3CzZgYHTepSBxZln8HR
-         2caEzC3Ejb0H0E8E1OVbLkWOAS/sSkobKgbE+N6K1OD9noTdqmfqW7bJ5SNOOqZx6oNc
-         7fzJQg6CBVEcFGS1DN5VExYyoHqok3gBh+66x/Tr8CvzlBcn7ISMywVEx9NdnTK2rZ1s
-         TRkw==
-X-Gm-Message-State: AOJu0YyAmew3KUSBxHAKy7vefBvLRfwoPmRiGIDG/DNc//Q27V2QtT8j
-	534FdR6zX3PhqHqQonoJzcrgJ34fNW451eevRQ8FG55rvf63R1zG9Du400K7BNR/2JB1a+Sb3R0
-	ZYkGmxaRtTbSWxCkOGxorCzn39DAWt8ivrUpPfiAgm8udG6N+1HrH0Kcbjlw=
+        bh=oZONcJdhAmKtSyupQOZ8pBsP7u3n4Vu0E3hax11L8xM=;
+        b=io4pBFFQBveBDlUnDvQoTBgUYUufooG6UzHoS5S5/IS5EeN25GgC+CZB1lZ2ye98BC
+         ZUp0+km7rpsphR2z8Y/VKzt/o2J2mLU0IHEtOIa4CI52tXFpPdqNCaWPsxHG7XvDEvRB
+         EXzQUmQp2D0JLaaXvW70h/cS4oeTR9E0qcuahyRcw5TOHrG5gYyORtD4frBh4sBZOF4r
+         1pZBeNUAWNwnhl9cTxGYnFtJa61X4t4ad/00/o8lJpCuJDkn20E5zJVdRA4OogqQ0l2j
+         gnQnXrlkYxh5UqD0+/R6E/pDP5rZbquulVDINo1ejcZfgpbX8gaflKChGzxnE5DxC5ED
+         POcA==
+X-Gm-Message-State: AOJu0Yx+Z5jWKhQU70F6iPqk75/La06oN/CMCosrza58fWU7Cp1Sxwyo
+	QIakcwRUNuDZJP1HSPNjOOKq0bpTeOfUWo6n4torjYG6oCOYMFNzWRbhQIexzhvOCjzaj/KHZ7x
+	oDkOtVvVD8utZe4M/BfX3d5RdF83Ds3G6FnC9aGUza4CsFpG4M4l2FwbywGM=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:822:b0:68d:d2e3:2912 with SMTP id
- 006d021491bc7-68dd2e32ad3mr3783226eaf.42.1776078021585; Mon, 13 Apr 2026
- 04:00:21 -0700 (PDT)
-Date: Mon, 13 Apr 2026 04:00:21 -0700
+X-Received: by 2002:a05:6820:168b:b0:68a:24af:ac51 with SMTP id
+ 006d021491bc7-68be8be1d25mr5562034eaf.55.1776082706417; Mon, 13 Apr 2026
+ 05:18:26 -0700 (PDT)
+Date: Mon, 13 Apr 2026 05:18:26 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69dcccc5.a00a0220.468cb.0045.GAE@google.com>
-Subject: [moderation/CI] Re: vsock/virtio: fix accept queue count leak on
- transport mismatch in recv_listen
-From: syzbot ci <syzbot+ci626063cba9f23b64@syzkaller.appspotmail.com>
+Message-ID: <69dcdf12.a00a0220.475f0.0023.GAE@google.com>
+Subject: [moderation/CI] Re: rose: Fix rose_find_socket() returning without sock_hold()
+From: syzbot ci <syzbot+cie8f22b5eae3c91bb@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] vsock/virtio: fix accept queue count leak on transport mismatch in recv_listen
-https://lore.kernel.org/all/20260413085243.73200-1-phx0fer@gmail.com
-* [PATCH] vsock/virtio: fix accept queue count leak on transport mismatch in recv_listen
+[v1] rose: Fix rose_find_socket() returning without sock_hold()
+https://lore.kernel.org/all/20260413090420.79932-1-phx0fer@gmail.com
+* [PATCH] rose: Fix rose_find_socket() returning without sock_hold()
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/4a69d8ad-177b-41c6-b720-ae224d592fb3
+https://ci.syzbot.org/series/fa267d6b-d2d6-45ea-b56e-5454b3cc896b
 
 ***
 
@@ -67,13 +66,12 @@ kernel build error
 
 tree:      net-next
 URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
-base:      5758be283ff8b37beed49e270b908a251d5ca2d7
+base:      8806d502e0a7e7d895b74afbd24e8550a65a2b17
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/a8f5e3a5-21b0-45df-937f-4580396e0566/config
+config:    https://ci.syzbot.org/builds/65d0571d-2f4e-4997-9567-691e8c32ffda/config
 
-net/vmw_vsock/virtio_transport_common.c:1:2: error: type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
-net/vmw_vsock/virtio_transport_common.c:1:19: error: a parameter list without types is only allowed in a function definition
+net/rose/af_rose.c:1:2: error: expected identifier or '('
 
 ***
 
@@ -92,7 +90,7 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[jasowang@redhat.com mst@redhat.com netdev@vger.kernel.org phx0fer@gmail.com sgarzare@redhat.com stefanha@redhat.com]
+[davem@davemloft.net edumazet@google.com kuba@kernel.org netdev@vger.kernel.org pabeni@redhat.com phx0fer@gmail.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
