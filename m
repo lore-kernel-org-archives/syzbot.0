@@ -1,83 +1,92 @@
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F14239B49A
-	for <syzbot@lists.linux.dev>; Tue, 14 Apr 2026 11:15:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B2C3320CBE
+	for <syzbot@lists.linux.dev>; Tue, 14 Apr 2026 15:46:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776165336; cv=none; b=Hfh9J/cKReq3q8zeU/fZbTlly83syXZON+cRvDpmVVpOs/GzOlnLk23fZqXmBjHhUjTC1II0MCy4xD0e9nshitFC5apAAEeLcKmDIiv9kf+jM2nvAKZaC1BgtDxAmGUf3Cx+UaeWj7Ic3IuzpsF7keq9nj6UkxHwVDXHtLpNCEo=
+	t=1776181606; cv=none; b=TsJH4Pmn1vTuodkG0H+8myR8xTYAEPBnra+g3zanFx1ra/+Dn538VpAV7TFOHUJq38ZVuVt67Is4zb4zUcwID6xOMnTO4SzJt6fThkiw0Hk5bfRfffQzwKsfUbdvLZ6HFa2dDEmQWtQyfJq+6K+LIm6TS+iNJ5jpeGH8I/wL+xU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776165336; c=relaxed/simple;
-	bh=iVczHDa0yb7kMde1Z9ZjgM/q1S2ZDptpwNRDbynkDUY=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=gCmJdjb4BWvL+BBkqU6YOwOoUNbQF9F2/24guf8fEhbsDZWBN+3HJTS3goNY9Udw9lbYygNoLGJA2/yvrHVagJ106MG28mdWvoIv9rEXLXzRbV4lMTjXLZUaazU6EDNERzz0U2/FZqMEG3lnwEc8onBkfCvmTXhLm32JuAurno4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
+	s=arc-20240116; t=1776181606; c=relaxed/simple;
+	bh=lSu6Fko8+/Um4dW1hybcuw19dplLT36VU/USc4D97nA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=QQP5DhYfFaKh537wDZ0cnkpxMMMNeZdKm5RwQxbbLlN9fdF87LmEJazNZsBWyrMB7NhyK5VTfg7z7ooITcRR4CQPy8gg0IMD7BTBlzkCgU8QzVc5iRCoWV38UQWZuVLZRZnPmjgv8juhfJJ+iQn0ccSYIZDc/FqLrlaFwHjUKHI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-679c51b2d6cso9115278eaf.2
-        for <syzbot@lists.linux.dev>; Tue, 14 Apr 2026 04:15:32 -0700 (PDT)
+Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7dbb6b95836so14282619a34.3
+        for <syzbot@lists.linux.dev>; Tue, 14 Apr 2026 08:46:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776165332; x=1776770132;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=NflrQLJ7yA3YY84tTlkreZ0rX13IAYTISZPKgi+CHsY=;
-        b=BV1VYxJWu9ZZlNKuNA7Qvrcvkx69oX+pv9IaeIB1bAcEQnDd6IRw4/qpqdOEtxUyTX
-         zDPno4v7xszhSOXEdO6+FA0s8aaxRdeNraTTrQswaNaH0+PLcGs3iMUN5cxMr5qqFXd3
-         5cyxuQ7m5ckuoaTVpwIMl5H9/13d4bPv/ms9UA6kIaurfalY4VNTjV1JSzSWan49Rdxt
-         yDBXdXHQuDvXNH0tNv9o8M2wPppVpjoIsW9GU0K3R1JovHxbdx1Dcnf4bbK1+Jd5Ro0/
-         Gh+VZXUlgBbKfLPs3Wrvm+aWSgenh/kVqa5Eqd8CZiL2nodpaig84fHgScsLjbgjwP6u
-         y2sQ==
-X-Gm-Message-State: AOJu0YydFokJHqv9pcFL63KzB7Gzfzm1I2GC0+zh1528oy/wFnZBtbMt
-	oi5Uls6m+FxSzogy7Mo3U0BgxuCyN4Nd/PRCz3lNSVg/POmuvzGJZzOctEjZvDz/WBBjiNA3RHQ
-	nv4EWkvRFkSbKo9K9tVwjnNItF4zZFeTk1pTQCaEhR8ZOp+e+Lh3uC73zW9A=
+        d=1e100.net; s=20251104; t=1776181604; x=1776786404;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=JYpVB9HArn+ebfzBzZZ7SygAmLWTrfL4bR8pDGhXKAo=;
+        b=bunjLqag95wVHZ59sMr8GzFUyyc6aJUTBCLunk2tXK1xp/hZDgLmxDLZrRr9mM5eg/
+         ZLQxY+umXc8DJMZoAO93vilufw6cyhumyAn+JUPr8JpuNhAdMD+mJLzQTBfKxJtIKPGU
+         bXgTl35XscW8iI0Vq/ussN41XuBehZ4xhTVBSd3HDtvfgaSJuwvl9JBLRZgvd5pOgTv1
+         +4J2OJcDCV6O3UAVmCjt3ZO3wgPVFAZpN0qynHzk3lu2SX25tM8VzZL6TQ29nf42i3WI
+         /v+jPg802vqTE6rJfmIy2iGT0ZLsZ6YOUc/veaeKhpYpJnIb4UPyIVdJY9v4PK6mR7jn
+         hieg==
+X-Gm-Message-State: AOJu0YzVtTU3SDSR+NEao0xbdxPCuRrC98UoOcTB1t2RYMlwZc1ILhSH
+	Uq0TVClIwvb0Qfq85B5EyqstMdHuheO+A1SaLUblaR1DMFIF0pdVWUPsFDZjL5QpbRlPVpkBjAB
+	57KbAFMsgPHt7P+TtzAC0qwxnzCbqnIl/kMAoPlDBGG5zWedtqVuZ0/EZdeg=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1f05:b0:67e:f8c:6bdb with SMTP id
- 006d021491bc7-68be681bc69mr7888827eaf.24.1776165331946; Tue, 14 Apr 2026
- 04:15:31 -0700 (PDT)
-Date: Tue, 14 Apr 2026 04:15:31 -0700
+X-Received: by 2002:a05:6820:2908:b0:67e:1be4:d8c6 with SMTP id
+ 006d021491bc7-68be8ed06f2mr8947723eaf.58.1776181604318; Tue, 14 Apr 2026
+ 08:46:44 -0700 (PDT)
+Date: Tue, 14 Apr 2026 08:46:44 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69de21d3.a00a0220.468cb.005e.GAE@google.com>
-Subject: [moderation/CI] Re: EML Capabilities compliance changes
-From: syzbot ci <syzbot+ci33b6c2303971f18f@syzkaller.appspotmail.com>
+Message-ID: <69de6164.a00a0220.475f0.0044.GAE@google.com>
+Subject: [moderation/CI] Re: improve hw flow offload byte accounting
+From: syzbot ci <syzbot+ci952bfe6f8f5a382d@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v2] EML Capabilities compliance changes
-https://lore.kernel.org/all/20260409135035.4018725-1-pmartin-gomez@freebox.fr
-* [PATCH v2 1/4]  wifi: Remove invalid 128TU transition timeout constant
-* [PATCH v2 2/4] wifi: Remove EMLMR Delay subfield definitions
-* [PATCH v2 3/4] wifi: Rename EMLSR delay constants and add EMLMR helpers and definitions
-* [PATCH v2 4/4] wifi: Update EML function documentation to remove EMLSR-specific references
+[v1] improve hw flow offload byte accounting
+https://lore.kernel.org/all/cover.1775739840.git.daniel@makrotopia.org
+* [PATCH RFC net-next 1/4] net: flow_offload: let drivers report byte count=
+er semantics
+* [PATCH RFC net-next 2/4] nf_flow_table: track sub-interface and bridge if=
+index in flow tuple
+* [PATCH RFC net-next 3/4] nf_flow_table: convert hw byte counts and update=
+ sub-interface stats
+* [PATCH RFC net-next 4/4] net: ethernet: mtk_eth_soc: report INGRESS_L2 by=
+te_type in flow stats
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/967a3c8a-f52b-456f-ba2d-fc09cb006ba9
+https://ci.syzbot.org/series/899f81ea-a8f0-43e8-8f6c-33af90f00034
 
 ***
 
 kernel build error
 
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-base:      709503c4a2102b32de4b4e64687df86503c74eba
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net-next.git
+base:      34e1a98ff2a87cf4b8de3ccebe9d45273f014aeb
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/0de3eafc-c510-49f5-b272-35bc499d3d4f/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/b380356e-e6d3-4c03-b57c-ca9a68acd04=
+3/config
 
-./include/linux/ieee80211-eht.h:1138:18: error: use of undeclared identifier 'IEEE80211_EML_CAP_EMLSR_PADDING_DELAY_256US'
-./include/linux/ieee80211-eht.h:1188:25: error: use of undeclared identifier 'IEEE80211_EML_CAP_EMLMR_SUPP'
-./include/linux/ieee80211-eht.h:1200:18: error: use of undeclared identifier 'IEEE80211_EML_CAP_EMLMR_PADDING_DELAY_256US'
-./include/linux/ieee80211-eht.h:1218:25: error: use of undeclared identifier 'IEEE80211_EML_CAP_EMLMR_SUPP'
+net/netfilter/nf_flow_table_offload.c:1080:38: error: passing 'possible_net=
+_t' to parameter of incompatible type 'const struct net_device *'
+net/netfilter/nf_flow_table_offload.c:1095:38: error: passing 'possible_net=
+_t' to parameter of incompatible type 'const struct net_device *'
 
 ***
 
@@ -96,7 +105,13 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[johannes@sipsolutions.net linux-wireless@vger.kernel.org pmartin-gomez@freebox.fr]
+[andrew@lunn.ch angelogioacchino.delregno@collabora.com coreteam@netfilter.=
+org daniel@makrotopia.org davem@davemloft.net edumazet@google.com fw@strlen=
+.de horms@kernel.org john@phrozen.org kuba@kernel.org linux-arm-kernel@list=
+s.infradead.org linux-kernel@vger.kernel.org linux-mediatek@lists.infradead=
+.org lorenzo@kernel.org matthias.bgg@gmail.com nbd@nbd.name netdev@vger.ker=
+nel.org netfilter-devel@vger.kernel.org pabeni@redhat.com pablo@netfilter.o=
+rg phil@nwl.cc]
 
 If the report looks fine to you, reply with:
 #syz upstream
