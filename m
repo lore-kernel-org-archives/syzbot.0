@@ -1,63 +1,72 @@
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
+Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 244553A545A
-	for <syzbot@lists.linux.dev>; Tue, 14 Apr 2026 08:23:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 620593B19AF
+	for <syzbot@lists.linux.dev>; Tue, 14 Apr 2026 08:33:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776155021; cv=none; b=obw+Mjk6VEaX5vPxnEbh3y44/opigsLoYS3xWsqS7rIJfDmEG8ytt8n3u4Zrl+hEKPvgUQ+7FVLZD3JLq5nxFTFWpzfaHuVAxau/sh5BXqcQxlVpLajUbcbyfVax14/C3S0fjy051khB+9XOsFvlMl2kAZ80Cs4t91mquqOniVc=
+	t=1776155603; cv=none; b=hOvRLn9lvqnbnqYTGt1Xcv4PQpWxVQIm7zqpHOO+mhszyj2PG6jsAjetIanN/ZSDOXh3Ox+DLwWEXYSoURvVcezRV32gKScwBUmeyUv7MLvaavZGEUCKq55wLYzwWYVLLJ+PxtRL9kQlrajmZbz8B2eAOyiH/X0YJT8cS6SqYVg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776155021; c=relaxed/simple;
-	bh=Fw+1wPOPV2ITfvOLj7hGAekW4EetWYP+mF6tA3N0TDw=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=u9RZCkHMjprb+e1LtMZoFRAH1VoiT3mL1rIeQRFQFkQT/UUPUjpVZuPUuA5WlR/K902OYlc3zuMqX0rgRtQRqeL2gv8/BZG+F+12KLgQ1yC+y/UyWV9PoWylTolFwW6FLZtU7+y0l56p5f//ZE1dYklJ9B5ZGYdzxFFkwBD8OMU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7dbbef3ff5cso6243256a34.0
-        for <syzbot@lists.linux.dev>; Tue, 14 Apr 2026 01:23:39 -0700 (PDT)
+	s=arc-20240116; t=1776155603; c=relaxed/simple;
+	bh=ZhWN6SxhuWfyxgKUhrRsIRlcqgS38A0PyUD34h0n8W8=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=QM07nHB9uu0GuLPH22OKe19j651U1XejGc0h1v+DS9rsUJzPxw/q1/F+BL7/UvcUlY4iRmVcAceoQKwVSKDHeoURqRlMQ60bYIGx0wquXzRiIpTSyxfI1TT+LEI1zinwWkku5+DpVWoVn7VW1xUwzI3CKDjeTDaZUZI2mF/yOYI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--nogikh.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MO/jpoF8; arc=none smtp.client-ip=209.85.128.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--nogikh.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MO/jpoF8"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-488d2cd2674so38012505e9.0
+        for <syzbot@lists.linux.dev>; Tue, 14 Apr 2026 01:33:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1776155599; x=1776760399; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=9yv6nANFBDeTvP7QOj+b+BGfj5pgYEttgQLR0Ky5nKk=;
+        b=MO/jpoF8Zv+JNULKPIKXz6wRBcxmwaykMMPLku4inPRhtxTqzogzKkrdwq9KkcNpNN
+         T68DDAcc56pd7lRvMXWuRHAc3i5fxqKvvRqfNTKxbYaAE+/xxrAwu3AEuTgYW4OhBc2n
+         mhpTL3d/Qr7212v5N+8B2xRo01XuU4u5nXVrpU3G/IWkSVPs98u2nhsnTteIqQaxEspp
+         pUL/h5uTjVwSAjsRV4rw5c4nf3QZQeN1fazt906rONseIcUQULbufmiixsNw8bqzGo2b
+         +7dj886ep+xdvY5I5fWwxYVB42prHxIxFkx8kNHzuguAF0q0L/K30tXQeq/lW5zr4JIV
+         t30g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776155019; x=1776759819;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1PMByDDAznehAx4DTq4epwxKUynhUt4hAecE70ebkhA=;
-        b=fv6x+jUncCnF9FhaPQJSE6B7eFw4CQpy7fHT15LHlgvYv1dElR0h+WlH1PMnkgemCT
-         yoIIigSmdviM9rd8uq2RwfWkHCvkTFXpNBmsbSGqyj6OnM5xkUIEdId3kH+RPl2BfkgX
-         a8dSVcQ+iM2EzUdV+y8gglChAWALFX8PrkL2iEpdGAGVxnf07kgi5aPcyiLrePYVKAzt
-         I4mGcEYAxcs9vUSPDDBXX5EtFv1q+Air+bPyQm9pVl4GIsKks60zvnLGHWuHtjUq1i18
-         f+nut2f8PyqSEgmvds2bbgswzea3NJGErkSP0n42pIII0nqf6gZSIJ+ucjW8MveaiqbE
-         r9Ww==
-X-Gm-Message-State: AOJu0YyD8hbuWiztoW7mhRVKve0XVuxuCiMdr8/IuH2pv1z/OALaAEqh
-	Cf0XPEjcgQBSCuKdJPA9QdGTkU/IvDkrhWcIFKbpneO3ZShXBXHUnnSdFJUVvwUr9rNS3ZeqzeO
-	//0DdtaFbvTy6RKqktC8ugTSLRP8Vr07emUDGohfEDNRhcTde0KQIw+0Selg=
+        d=1e100.net; s=20251104; t=1776155599; x=1776760399;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9yv6nANFBDeTvP7QOj+b+BGfj5pgYEttgQLR0Ky5nKk=;
+        b=GO3AU1qbjdPxFdOSVDF4zCyFR7Nbn2CXXsnKdN9YPyje3ZI6gow2cX+Wi7rIntga//
+         D9fba2C2MCNCsQU8RTnhUKLVYSJ11papWcsUv5vC7BpWWFS8WX9Zt2XCKrAvl3I8/P+M
+         xSFu8VUHu1Yc3B/C3dOrdvS5rIpIMhzAZl2wC6hX0Rj4PTGNMKF8t7NcLdgfxH+QW1+x
+         TOD9cHN+NvDZA1sI77SUc+6mlKJ2Xy/R70QKfkhBe/9QMkebHjdEkOhLTmr8WenWBCHD
+         j/+p5wpZEbU9Aij3C2zyF7jbE6KMtMTH2FUJhJkmALXnm83b+ZJcp6iKbck4rplcPM9N
+         VudQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8rgfNROGG31fdRGtUW1aNquLF/berFpuw/bKQxUpbCfuTav26H6sn634yhhyz8WHsCwORmdDQ=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzYFaGnQgxiYqrm0AVIz04tnJOKEQlRmH50wpFKkoYgyMbZhPgd
+	ywijLiQiNuwK9W7/J34gdrCs3SFHJTjp8mSlfRZXbUepmC51jJyzmbHX2UTodA+l7qWpJdCzloz
+	k0AqN6w==
+X-Received: from wmgg21.prod.google.com ([2002:a05:600d:15:b0:488:7af2:fae7])
+ (user=nogikh job=prod-delivery.src-stubby-dispatcher) by 2002:a05:600c:3149:b0:488:ab26:8fe0
+ with SMTP id 5b1f17b1804b1-488d68432f2mr230761425e9.15.1776155598632; Tue, 14
+ Apr 2026 01:33:18 -0700 (PDT)
+Date: Tue, 14 Apr 2026 10:33:16 +0200
+In-Reply-To: <69dd48c2.a00a0220.468cb.004e.GAE@google.com>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-Received: by 2002:a05:6820:3092:b0:67e:33d5:76f8 with SMTP id
- 006d021491bc7-68be8fce5e9mr8865807eaf.61.1776155019234; Tue, 14 Apr 2026
- 01:23:39 -0700 (PDT)
-Date: Tue, 14 Apr 2026 01:23:39 -0700
-In-Reply-To: <20260414081746.17392-1-nogikh@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69ddf98b.a00a0220.475f0.003a.GAE@google.com>
-Subject: Forwarded: Re: [syzbot ci] Re: veth: add Byte Queue Limits (BQL) support
-From: syzbot <syzbot@syzkaller.appspotmail.com>
-To: syzbot@lists.linux.dev
-Cc: syzbot <syzbot+cib904ea9ebb647254@syzkaller.appspotmail.com>, nogikh@google.com
+Mime-Version: 1.0
+References: <69dd48c2.a00a0220.468cb.004e.GAE@google.com>
+X-Mailer: git-send-email 2.54.0.rc0.605.g598a273b03-goog
+Message-ID: <20260414083316.19864-1-nogikh@google.com>
+Subject: Re: [syzbot ci] Re: veth: add Byte Queue Limits (BQL) support
+From: Aleksandr Nogikh <nogikh@google.com>
+To: syzbot+cib904ea9ebb647254@syzkaller.appspotmail.com, hawk@kernel.org
+Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	syzkaller-bugs@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
-For archival purposes, forwarding an incoming command email to
-syzbot@lists.linux.dev.
-
-***
-
-Subject: Re: [syzbot ci] Re: veth: add Byte Queue Limits (BQL) support
-Author: nogikh@google.com
-
+(forgotten to Cc the right list)
 
 Hmm, just fixed a problem that may have affected `syz test` processing,
 let's try again:
@@ -84,5 +93,4 @@ index 911e7e36e166..9d7b085c9548 100644
 +               for (i = start; i < peer_end; i++)
                         netdev_tx_reset_queue(netdev_get_tx_queue(peer, i));
         }
-
 
