@@ -1,96 +1,106 @@
-Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 620593B19AF
-	for <syzbot@lists.linux.dev>; Tue, 14 Apr 2026 08:33:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F14239B49A
+	for <syzbot@lists.linux.dev>; Tue, 14 Apr 2026 11:15:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776155603; cv=none; b=hOvRLn9lvqnbnqYTGt1Xcv4PQpWxVQIm7zqpHOO+mhszyj2PG6jsAjetIanN/ZSDOXh3Ox+DLwWEXYSoURvVcezRV32gKScwBUmeyUv7MLvaavZGEUCKq55wLYzwWYVLLJ+PxtRL9kQlrajmZbz8B2eAOyiH/X0YJT8cS6SqYVg=
+	t=1776165336; cv=none; b=Hfh9J/cKReq3q8zeU/fZbTlly83syXZON+cRvDpmVVpOs/GzOlnLk23fZqXmBjHhUjTC1II0MCy4xD0e9nshitFC5apAAEeLcKmDIiv9kf+jM2nvAKZaC1BgtDxAmGUf3Cx+UaeWj7Ic3IuzpsF7keq9nj6UkxHwVDXHtLpNCEo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776155603; c=relaxed/simple;
-	bh=ZhWN6SxhuWfyxgKUhrRsIRlcqgS38A0PyUD34h0n8W8=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=QM07nHB9uu0GuLPH22OKe19j651U1XejGc0h1v+DS9rsUJzPxw/q1/F+BL7/UvcUlY4iRmVcAceoQKwVSKDHeoURqRlMQ60bYIGx0wquXzRiIpTSyxfI1TT+LEI1zinwWkku5+DpVWoVn7VW1xUwzI3CKDjeTDaZUZI2mF/yOYI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--nogikh.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MO/jpoF8; arc=none smtp.client-ip=209.85.128.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--nogikh.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MO/jpoF8"
-Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-488d2cd2674so38012505e9.0
-        for <syzbot@lists.linux.dev>; Tue, 14 Apr 2026 01:33:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1776155599; x=1776760399; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9yv6nANFBDeTvP7QOj+b+BGfj5pgYEttgQLR0Ky5nKk=;
-        b=MO/jpoF8Zv+JNULKPIKXz6wRBcxmwaykMMPLku4inPRhtxTqzogzKkrdwq9KkcNpNN
-         T68DDAcc56pd7lRvMXWuRHAc3i5fxqKvvRqfNTKxbYaAE+/xxrAwu3AEuTgYW4OhBc2n
-         mhpTL3d/Qr7212v5N+8B2xRo01XuU4u5nXVrpU3G/IWkSVPs98u2nhsnTteIqQaxEspp
-         pUL/h5uTjVwSAjsRV4rw5c4nf3QZQeN1fazt906rONseIcUQULbufmiixsNw8bqzGo2b
-         +7dj886ep+xdvY5I5fWwxYVB42prHxIxFkx8kNHzuguAF0q0L/K30tXQeq/lW5zr4JIV
-         t30g==
+	s=arc-20240116; t=1776165336; c=relaxed/simple;
+	bh=iVczHDa0yb7kMde1Z9ZjgM/q1S2ZDptpwNRDbynkDUY=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=gCmJdjb4BWvL+BBkqU6YOwOoUNbQF9F2/24guf8fEhbsDZWBN+3HJTS3goNY9Udw9lbYygNoLGJA2/yvrHVagJ106MG28mdWvoIv9rEXLXzRbV4lMTjXLZUaazU6EDNERzz0U2/FZqMEG3lnwEc8onBkfCvmTXhLm32JuAurno4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-679c51b2d6cso9115278eaf.2
+        for <syzbot@lists.linux.dev>; Tue, 14 Apr 2026 04:15:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776155599; x=1776760399;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9yv6nANFBDeTvP7QOj+b+BGfj5pgYEttgQLR0Ky5nKk=;
-        b=GO3AU1qbjdPxFdOSVDF4zCyFR7Nbn2CXXsnKdN9YPyje3ZI6gow2cX+Wi7rIntga//
-         D9fba2C2MCNCsQU8RTnhUKLVYSJ11papWcsUv5vC7BpWWFS8WX9Zt2XCKrAvl3I8/P+M
-         xSFu8VUHu1Yc3B/C3dOrdvS5rIpIMhzAZl2wC6hX0Rj4PTGNMKF8t7NcLdgfxH+QW1+x
-         TOD9cHN+NvDZA1sI77SUc+6mlKJ2Xy/R70QKfkhBe/9QMkebHjdEkOhLTmr8WenWBCHD
-         j/+p5wpZEbU9Aij3C2zyF7jbE6KMtMTH2FUJhJkmALXnm83b+ZJcp6iKbck4rplcPM9N
-         VudQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8rgfNROGG31fdRGtUW1aNquLF/berFpuw/bKQxUpbCfuTav26H6sn634yhhyz8WHsCwORmdDQ=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzYFaGnQgxiYqrm0AVIz04tnJOKEQlRmH50wpFKkoYgyMbZhPgd
-	ywijLiQiNuwK9W7/J34gdrCs3SFHJTjp8mSlfRZXbUepmC51jJyzmbHX2UTodA+l7qWpJdCzloz
-	k0AqN6w==
-X-Received: from wmgg21.prod.google.com ([2002:a05:600d:15:b0:488:7af2:fae7])
- (user=nogikh job=prod-delivery.src-stubby-dispatcher) by 2002:a05:600c:3149:b0:488:ab26:8fe0
- with SMTP id 5b1f17b1804b1-488d68432f2mr230761425e9.15.1776155598632; Tue, 14
- Apr 2026 01:33:18 -0700 (PDT)
-Date: Tue, 14 Apr 2026 10:33:16 +0200
-In-Reply-To: <69dd48c2.a00a0220.468cb.004e.GAE@google.com>
+        d=1e100.net; s=20251104; t=1776165332; x=1776770132;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=NflrQLJ7yA3YY84tTlkreZ0rX13IAYTISZPKgi+CHsY=;
+        b=BV1VYxJWu9ZZlNKuNA7Qvrcvkx69oX+pv9IaeIB1bAcEQnDd6IRw4/qpqdOEtxUyTX
+         zDPno4v7xszhSOXEdO6+FA0s8aaxRdeNraTTrQswaNaH0+PLcGs3iMUN5cxMr5qqFXd3
+         5cyxuQ7m5ckuoaTVpwIMl5H9/13d4bPv/ms9UA6kIaurfalY4VNTjV1JSzSWan49Rdxt
+         yDBXdXHQuDvXNH0tNv9o8M2wPppVpjoIsW9GU0K3R1JovHxbdx1Dcnf4bbK1+Jd5Ro0/
+         Gh+VZXUlgBbKfLPs3Wrvm+aWSgenh/kVqa5Eqd8CZiL2nodpaig84fHgScsLjbgjwP6u
+         y2sQ==
+X-Gm-Message-State: AOJu0YydFokJHqv9pcFL63KzB7Gzfzm1I2GC0+zh1528oy/wFnZBtbMt
+	oi5Uls6m+FxSzogy7Mo3U0BgxuCyN4Nd/PRCz3lNSVg/POmuvzGJZzOctEjZvDz/WBBjiNA3RHQ
+	nv4EWkvRFkSbKo9K9tVwjnNItF4zZFeTk1pTQCaEhR8ZOp+e+Lh3uC73zW9A=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <69dd48c2.a00a0220.468cb.004e.GAE@google.com>
-X-Mailer: git-send-email 2.54.0.rc0.605.g598a273b03-goog
-Message-ID: <20260414083316.19864-1-nogikh@google.com>
-Subject: Re: [syzbot ci] Re: veth: add Byte Queue Limits (BQL) support
-From: Aleksandr Nogikh <nogikh@google.com>
-To: syzbot+cib904ea9ebb647254@syzkaller.appspotmail.com, hawk@kernel.org
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	syzkaller-bugs@googlegroups.com, syzbot@lists.linux.dev
+MIME-Version: 1.0
+X-Received: by 2002:a05:6820:1f05:b0:67e:f8c:6bdb with SMTP id
+ 006d021491bc7-68be681bc69mr7888827eaf.24.1776165331946; Tue, 14 Apr 2026
+ 04:15:31 -0700 (PDT)
+Date: Tue, 14 Apr 2026 04:15:31 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69de21d3.a00a0220.468cb.005e.GAE@google.com>
+Subject: [moderation/CI] Re: EML Capabilities compliance changes
+From: syzbot ci <syzbot+ci33b6c2303971f18f@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
-(forgotten to Cc the right list)
+syzbot ci has tested the following series
 
-Hmm, just fixed a problem that may have affected `syz test` processing,
-let's try again:
+[v2] EML Capabilities compliance changes
+https://lore.kernel.org/all/20260409135035.4018725-1-pmartin-gomez@freebox.fr
+* [PATCH v2 1/4]  wifi: Remove invalid 128TU transition timeout constant
+* [PATCH v2 2/4] wifi: Remove EMLMR Delay subfield definitions
+* [PATCH v2 3/4] wifi: Rename EMLSR delay constants and add EMLMR helpers and definitions
+* [PATCH v2 4/4] wifi: Update EML function documentation to remove EMLSR-specific references
 
+and found the following issue:
+kernel build error
 
-#syz test
+Full report is available here:
+https://ci.syzbot.org/series/967a3c8a-f52b-456f-ba2d-fc09cb006ba9
+
+***
+
+kernel build error
+
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
+base:      709503c4a2102b32de4b4e64687df86503c74eba
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/0de3eafc-c510-49f5-b272-35bc499d3d4f/config
+
+./include/linux/ieee80211-eht.h:1138:18: error: use of undeclared identifier 'IEEE80211_EML_CAP_EMLSR_PADDING_DELAY_256US'
+./include/linux/ieee80211-eht.h:1188:25: error: use of undeclared identifier 'IEEE80211_EML_CAP_EMLMR_SUPP'
+./include/linux/ieee80211-eht.h:1200:18: error: use of undeclared identifier 'IEEE80211_EML_CAP_EMLMR_PADDING_DELAY_256US'
+./include/linux/ieee80211-eht.h:1218:25: error: use of undeclared identifier 'IEEE80211_EML_CAP_EMLMR_SUPP'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-  drivers/net/veth.c | 4 +++-
-  1 file changed, 3 insertions(+), 1 deletion(-)
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 911e7e36e166..9d7b085c9548 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -1138,7 +1138,9 @@ static void veth_napi_del_range(struct net_device
-*dev, int start, int end)
-         */
-        peer = rtnl_dereference(priv->peer);
-        if (peer) {
--               for (i = start; i < end; i++)
-+               int peer_end = min(end, (int)peer->real_num_tx_queues);
-+
-+               for (i = start; i < peer_end; i++)
-                        netdev_tx_reset_queue(netdev_get_tx_queue(peer, i));
-        }
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[johannes@sipsolutions.net linux-wireless@vger.kernel.org pmartin-gomez@freebox.fr]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
 
