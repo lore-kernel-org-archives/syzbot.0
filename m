@@ -1,78 +1,113 @@
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61D703A3E9C
-	for <syzbot@lists.linux.dev>; Mon, 20 Apr 2026 13:21:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96A273A5E73
+	for <syzbot@lists.linux.dev>; Mon, 20 Apr 2026 17:19:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776691315; cv=none; b=gH7z5XV7WCPH9KeySaXpvQpEBK60kBkjXMbOsHYwFpigzhp3JTnnC83iv3nr7t8l1oNJ/L0KZNwVEvgRZoxNjaMOzfV5fq+Pts7ct9OcAE59T8x4qMwe2OQCmSdlw2LyYzaeh0z/i+GZJUjlH723PUcfMKt8G698dISqoMHq1z4=
+	t=1776705548; cv=none; b=Rcc+ayzX253PuH/jRXBflkvC1V19NYqiwcsCHOw4IBugUsYC6sqwPm7MyqNzDa1FZjNLF7yw92CH+/0+7GSeUzWeyga1FZYTsRYTiiIDRepMpYUYyDF6tQ6FhmIix1wrX0unJUJBf2Bf4k1L5kfVG/pSx+HWKNTluQpp+1lwUNI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776691315; c=relaxed/simple;
-	bh=wiply+2rM/RuN/py8Z9atYEesIGd22oqoTFY+NQwIi4=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=oNSzVxcqK7dBCrkc8urs8FoxAfFzUl82+A/+w4WFOmPWZ/VR0U9uo55IKuVq5BHYStE2p5FzxsR7AyjmpcMgY8Yt8f358Cvvuxoz+0spn6sC2O0KUTNyGRCSSPg8sdTRnxR0CO3Xar/1LlYGrcO8SAphQARkW3Ak/VM60ZQxcMA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
+	s=arc-20240116; t=1776705548; c=relaxed/simple;
+	bh=P8ZwCJT9ldHX+S+wwpjO5Y41gvWlwKGGPHnzdEWzWuA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=cnlOYKERePr9rSxRhQOYqrWiQg/A3UOMBACHW9vQj9AeFEoNctIG8lfsJfr50aBPGNmfsxqK/hS+unqhAfRDqu/uadTB3SGdpC+UuMCi7uDshyky4tj5dYYRtBuVaXtkIxDpnIUdkV5T/AtR/WlJpI17dfrQC3Y1wM4H9hHaPLU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7dbe11b1f03so5743261a34.0
-        for <syzbot@lists.linux.dev>; Mon, 20 Apr 2026 06:21:54 -0700 (PDT)
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-463a075e177so2104718b6e.2
+        for <syzbot@lists.linux.dev>; Mon, 20 Apr 2026 10:19:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776691313; x=1777296113;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wiply+2rM/RuN/py8Z9atYEesIGd22oqoTFY+NQwIi4=;
-        b=SV4eh6/PnWucUrduAdaOOCVmK1dPr5DIYNvqQ5yuiq4HXQ3D6sCjD/PZddXklGYeIL
-         PEYKCf/EEac1gxryau05+1q/m18beLuCOTZvnZf4KzNumSB3BlGsHdS0v3Q6FvBJpZ5M
-         RN+RlspplPGAZYlObRUY1OaR4l77nsG96HIjpWCu8z8VxYjAA/BaIr6KcF+YLC6XELY0
-         WSssXFuch/oiZYSMQc2WR5V4+s4lP8GjTA3QXaheQRDmd5UgNJURFgIH0NRYi89VmIMz
-         rxwvj3eOSxYy6zxWUeb/Tg/4K91DVJFAUITUdXckzRUHZIQn8taNQPjtz1+9TT0ASYWb
-         o3kQ==
-X-Gm-Message-State: AOJu0Ywgr35B+TtslPnGi1PPniV3vQm+yfLvGNK51eKvgPeWzQiAPo4n
-	nFh47UHmPZWZ5w78w5+3N3uWLFGlSdVqsPvAaSbbWi+VNbc9+3hnEXqHRB69u6QpqBFsDcLf1/p
-	4PuzFmGZY6zv9w3+vy4H1Sex/vI6rRt2E1EFyc+REXyAF8DWbd9Qp2cntugc=
+        d=1e100.net; s=20251104; t=1776705544; x=1777310344;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Dz8fAnkahSphbJEK3FmTAfWACibmWuI8P6/iiCJoQ7o=;
+        b=J8mfQ3CQKxOS0+AL60/1dmGz2oOziEB9X4hxnNK7+lPb+kP6TsMp7sf66dor7wsAuU
+         pZ/ZJ1Z8NATwS9XrjvXQ2TW+ThyjxDatuLTwujCDiCon6hXi0MAT+pV+s+beUgFuypzP
+         WEHozwKRsmACYtyaYCp8ENj4hxcLxDoi2wLBbzRwbK+wF/gKCoJIZPwi0Uk0bkXRHPzO
+         /tF8a6cBMxagncw1/qzLWgMh9fiA5rR6sK5Yi7ib4f4vh4wLyUS6mAb9hwWywOLPcFYb
+         nT1CbSR3oBHYcbvDUlIbzeLo5JPOQl/9aLDrAaiLjHBwsiYG4V0ZSkKKpLaKEFrC6Auj
+         6H4Q==
+X-Gm-Message-State: AOJu0YwZ6c5RLlI20l4VtjnC6RkSrx8OQO7bapbjwROlxYVjVotmtQ/b
+	1D4IDhF4IOSgPkREXaUa70y6Y3wb1UCmZwbvYjRNwUOQSWOS59Pn7/PFLev+/WlKHFS2505dlxz
+	ysRBNHD1ftYlnjEKbeQ7I3vtywOTnFZTFPk8Yo7XglMpA/AOmezPwMp/OABM=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4cc7:b0:67e:16b4:aa13 with SMTP id
- 006d021491bc7-69462f2ee3cmr7688964eaf.58.1776691313329; Mon, 20 Apr 2026
- 06:21:53 -0700 (PDT)
-Date: Mon, 20 Apr 2026 06:21:53 -0700
-In-Reply-To: <111dabd0-56ed-4a55-bdd5-fd1ed035bc5b@h-partners.com>
+X-Received: by 2002:a05:6820:c2cc:10b0:689:dfc8:5e3c with SMTP id
+ 006d021491bc7-69462e21091mr5042367eaf.3.1776705544383; Mon, 20 Apr 2026
+ 10:19:04 -0700 (PDT)
+Date: Mon, 20 Apr 2026 10:19:04 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69e62871.a00a0220.17a17.0004.GAE@google.com>
-Subject: [syzbot ci] Re: mm: improve folio refcount scalability
-From: syzbot ci <syzbot+cice493d3fc69ae0f8@syzkaller.appspotmail.com>
-To: gorbunov.ivan@h-partners.com, akpm@linux-foundation.org, 
-	apopple@nvidia.com, artem.kuzin@huawei.com, baolin.wang@linux.alibaba.com, 
-	david@kernel.org, gladyshev.ilya1@h-partners.com, harry.yoo@oracle.com, 
-	kirill@shutemov.name, liam.howlett@oracle.com, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, lorenzo.stoakes@oracle.com, mhocko@suse.com, 
-	muchun.song@linux.dev, rppt@kernel.org, surenb@google.com, 
-	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com, 
-	torvalds@linuxfoundation.org, vbabka@suse.cz, willy@infradead.org, 
-	yuzhao@google.com, ziy@nvidia.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <69e66008.050a0220.24bfd3.0026.GAE@google.com>
+Subject: [moderation/CI] Re: rxrpc: Miscellaneous fixes
+From: syzbot ci <syzbot+ciede86d426d08742b@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the suggested fix patch on top of the following series:
+syzbot ci has tested the following series
 
-[v2] mm: improve folio refcount scalability
-https://lore.kernel.org/all/cover.1776350895.git.gorbunov.ivan@h-partners.com
+[v1] rxrpc: Miscellaneous fixes
+https://lore.kernel.org/all/20260420145900.1223732-1-dhowells@redhat.com
+* [PATCH net 1/4] rxrpc: Fix memory leaks in rxkad_verify_response()
+* [PATCH net 2/4] rxrpc: Fix conn-level packet handling to unshare RESPONSE=
+ packets
+* [PATCH net 3/4] rxgk: Fix potential integer overflow in length check
+* [PATCH net 4/4] rxrpc: Fix rxkad crypto unalignment handling
 
-Patch: https://ci.syzbot.org/jobs/1f75dd6a-7a6f-4420-ae4b-67a071622e07/patch
-
-The patch testing request could not be completed:
-Testing failed due to an infrastructure error.
-Testing results:
-* [build 0] Build Patched: error
+and found the following issue:
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/session/0e12b11a-0902-43fb-b549-6c0cc5ae45eb
+https://ci.syzbot.org/series/63d49527-25f9-4906-be84-5e4627045955
+
+***
+
+kernel build error
+
+tree:      net
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net.git
+base:      0cf004ffb61cd32d140531c3a84afe975f9fc7ea
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/e9d6cb44-e357-4a27-9cc4-bb8fc0b6439=
+d/config
+
+net/rxrpc/rxkad.c:1170:3: error: cannot jump from this goto statement to it=
+s label
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[davem@davemloft.net dhowells@redhat.com edumazet@google.com horms@kernel.o=
+rg jaltman@auristor.com kuba@kernel.org linux-afs@lists.infradead.org linux=
+-kernel@vger.kernel.org marc.dionne@auristor.com netdev@vger.kernel.org pab=
+eni@redhat.com stable@kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
