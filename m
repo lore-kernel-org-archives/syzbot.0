@@ -1,50 +1,50 @@
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 382263B8D7E
-	for <syzbot@lists.linux.dev>; Mon, 20 Apr 2026 19:24:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59C6F29AB02
+	for <syzbot@lists.linux.dev>; Tue, 21 Apr 2026 15:34:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776713060; cv=none; b=HLs8c0F15HQu9OpEcCnrD4Y1iGTcFNzL3IlXMk94Kc8uPxiCQ89lCtSOrw3J60zL+4ua5ATDQz9wsCDTqfcXscJrUxT7bSaTVwbfQwpEHvmTPGc47N8b0P7hV36oRm8MbD4UbSAUdHAWNH8XuKSsj5G4gQ//vpDFAxBWorNoupk=
+	t=1776785699; cv=none; b=LST8CjiIEpKV9uAl/DBf5fxnRhxZqZSI0nGkJ4mnvHVZmUvn7F+4nRTDGV+5LZKiDzregm+KqxlSVYCMUlX5vH+figKE5yxiPiLf2AcO8jCUkfOXowOw95daJ0GQlbsYb2j6pZDEH2ebB3c2H2z2uV5xDphkTFZzzKqvFkW00R4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776713060; c=relaxed/simple;
-	bh=jLWs1puAisXajQ1AFq0LXvcQE94K1IaJNntsCIxGjWw=;
+	s=arc-20240116; t=1776785699; c=relaxed/simple;
+	bh=Ndok3dpgeDC/XoGrSSbvM/hXkAbDqQlhfGZpr7UNrbg=;
 	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=bybPgIvQpqCWw7VBHW1M4NOdPAlYBxX0GB8KEq0deeYZX0IBU1Fmr0SBqZHTS0/FVsQtRqUT3d8952xYV34Rv1hva+nkF0rgXuA1Qijbcyd1T9Ygs+6eX3i+4pEV5IOch14FNKVQld6t1TohbowR52ka44l7OE03cRcLtk1lOaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
+	 Content-Type; b=mySYcngZqaVgeOHWkx0UFQ/VWQIU6gB2mVEN/GgSpf+SJytznCZBKMq9koygwfBndBnAj9Mv4dF1IGVUVkoPVIgO+GHwWtdrUHhiizteXFfWeT2e6s6zJ4z5AYNYrxhvYl3UmOKkISbtYQ9qdfbVAdHVfHMbIoXT8D956fhf5pY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-6946e873672so3604757eaf.0
-        for <syzbot@lists.linux.dev>; Mon, 20 Apr 2026 12:24:17 -0700 (PDT)
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-6949ebccfcdso519456eaf.2
+        for <syzbot@lists.linux.dev>; Tue, 21 Apr 2026 08:34:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776713056; x=1777317856;
+        d=1e100.net; s=20251104; t=1776785696; x=1777390496;
         h=content-transfer-encoding:cc:to:from:subject:message-id:in-reply-to
          :date:mime-version:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SGKbb8THp45Gh4MaPsZKghl9BaIa+RFGHYe3YsqSn0w=;
-        b=ETCwxWopZr6iryNMD7+7nzwuX8QVrBJD6Z91b4/uYog1m43X5a+iTBnMREoVcg3iZl
-         qb11m6Hy/5181XeZ4pAB30rs34UHfCUzU57XpGpzPyp1KOzUjSF1dG/HicweDFDUEX3U
-         BmGe+ETjzyO46smXckpZy+/vHrFlbNsYr65YyNQlZSPqCDK2jtpZPb0h0pVI3crmYt00
-         CgW0HZZMjr0x899oMYeu9bB7PsZKSdQGnIkT5KPVjmAwd8pSB8FglN8xHYiJeYhhwBdJ
-         Z38Jawkt/zd0UtUkOgBoxq2H4G6PolgF9Lo6aomGKpxafU8d0jLnpt/Bq2QtlF6R3vCO
-         giyg==
-X-Gm-Message-State: AOJu0Yy+ap3VZh0/zY61SGUOw6B/CxUj/m149JFTTixAtITJBDQFGgyr
-	DcwuQsW3AB8q8DNfwKM3EIJWdcDoEEpmg96tIaR+8yA/cDhyGQsQYF8OuBjy/KuhnGwZcs74RgB
-	L1/RnFkgi2UYP9qX4q1rLwnJ4wTzk1qwxTe0x9s6hy6wvAzstH7R6/YrQCMg=
+        bh=iiRfTa/IWAxwJnkNdoGpM7YvW045Oj0zqnkKf6e0X/8=;
+        b=NJWUD6P6Vceb9qh4mnhIm7OOBfx3lWyEpBJUrYyoeRnb+b0PRtJpDN+EGrwa46tlmF
+         sTyMsvlB1urMT3yIdpYhu2BifjBce6wN4BtkGdlHrKe2v5r0yVsObzBP2JYAZ2soO82d
+         pIaP6jxnLnseHcsMAqO42YaFyeHqvFz2xAg1ySBdebl1kcolLBFiEsEm2oBuf64kMiLo
+         IUXag8lCye5XDeHIMYiMq1EnlVa03Lq/P5icX2szStFaRRX0de++pv/xnZaaujQT+pvY
+         +vf3Qp0+g5BNN8Gh1AIsB5QLSdLtepX3Ftxxv9kkAvx2G2zURRU1IxdJgpJWagy7flVu
+         RL/g==
+X-Gm-Message-State: AOJu0YyGDKMAhCIuJY9h4v8EFerSJXYHTQxNfFq1JaaqbRfXyZbIi8WC
+	oowCqSWEwXZtcH5T889qqa9zFwIt8l+ME+aiOFWrI7k9mNGWaVDSltWpszcp3pzpN+vuZ6gUsaD
+	GHcxpMqP7Dlz8YeZi+AnxmTWQ4Z+f508SPmbX1N011oFdaFEgnJrQkE4bD6A=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:7082:20b0:68b:ce98:b71d with SMTP id
- 006d021491bc7-69462e3392cmr5584264eaf.22.1776713056196; Mon, 20 Apr 2026
- 12:24:16 -0700 (PDT)
-Date: Mon, 20 Apr 2026 12:24:16 -0700
-In-Reply-To: <GV2P190MB2754AFC6D63527654D7109F7AB2F2@GV2P190MB2754.EURP190.PROD.OUTLOOK.COM>
+X-Received: by 2002:a05:6820:150b:b0:689:8024:5628 with SMTP id
+ 006d021491bc7-69462e48f2emr10274425eaf.13.1776785696411; Tue, 21 Apr 2026
+ 08:34:56 -0700 (PDT)
+Date: Tue, 21 Apr 2026 08:34:56 -0700
+In-Reply-To: <GV2P190MB275489843E69A73C24B2A913AB2C2@GV2P190MB2754.EURP190.PROD.OUTLOOK.COM>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69e67d60.a00a0220.9259.0008.GAE@google.com>
+Message-ID: <69e79920.a00a0220.17a17.0018.GAE@google.com>
 Subject: Forwarded: Re: [syzbot ci] Re: Data in direntry (dirdata) feature
 From: syzbot <syzbot@syzkaller.appspotmail.com>
 To: syzbot@lists.linux.dev
@@ -61,7 +61,8 @@ syzbot@lists.linux.dev.
 Subject: Re: [syzbot ci] Re: Data in direntry (dirdata) feature
 Author: artem.blagodarenko@gmail.com
 
-#syz test: git://github.com/TheLustreCollective/linux.git syzbot
+#syz test
+
 
 From: syzbot ci <syzbot+ci6167b51351f50705@syzkaller.appspotmail.com>
 Date: Saturday, 18 April 2026 at 07:47
