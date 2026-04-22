@@ -1,765 +1,636 @@
-Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC93A34750E
-	for <syzbot@lists.linux.dev>; Wed, 22 Apr 2026 15:39:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.48
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776872385; cv=pass; b=VMbEzHuWWlDjWwO3Jq/aDs1GPysceSmQTfRaW0XCUrfk0njf5uJVhBxVYqkeyBPm2KChm49vAYQVjKHfz1xhB/Z7sZONvthF8I8qIheGgiBls5gvgU90sL4iqQB+jxvBdQWCTBbmHs2//n7NehUHIhCyRGbTpgDV4X3nMvxF2es=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776872385; c=relaxed/simple;
-	bh=xsUgVERzOGtQcHjr4hpacrqKM5/RAhS7yZvYY/zGTVs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fPHE+ShHc2v2EqpMQCfDF+2j10VDs+JYq+TsNRqRCB/RbyT+6yGZUjmroi5QxkkENxvj2O72Hdg+N2DZ33IhBYyL97LCx8tu4Q+mu+NU+64LQmXITUxSLa2h/X1X/A6ehwiSto+a42LsFcjX+z1Xeghdp+ufUuAuK9/6x+xiba8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=rVZQHjqB; arc=pass smtp.client-ip=209.85.161.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rVZQHjqB"
-Received: by mail-oo1-f48.google.com with SMTP id 006d021491bc7-691de293326so3129156eaf.3
-        for <syzbot@lists.linux.dev>; Wed, 22 Apr 2026 08:39:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1776872381; cv=none;
-        d=google.com; s=arc-20240605;
-        b=S2LpJ6BQ2tF+0zHDB286ri9FMUA0GIzujSJ6drZ+aSj3b1vDPqECL64LZrbgfaxPNU
-         XGBLANafOJR8+VBWw1f359JPcOTGh79cifunU87BP0VRd4IGUSaw0iL/r8UIMKBhaQhk
-         ppXyPmz/Oj0fYKvsOw+tln87xZPHfzziQKEL0CCSg52QJnqoAsw0nz+w2yM8ZQFHtaPp
-         vM+fcAoRPHLfE/2TnO9Kh1/M/VDQq8mpCg3pf5ZScZymNydUhXIzd2G6Y42yyciB/+nt
-         42TFijoEnWior7REjEoSqFY2S8sb5X0nTNjt9g6HhUVuHgAxxnHKabJ8Um9P1NA6AbIf
-         eZOQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=61mUgbp+bsu1cdUWQxZ7WlDFmSpUePFk9B9LGftOktc=;
-        fh=QbyIHqw1xqd3q1RHIW4jMzjNo4WmIuHJZd3F9HN41x4=;
-        b=lMgJTOWgwK1vYYI3HZfX2dDYWI0s8YHbjZ2/jnpn9GvQbR3PC91Xb2XyWFVbhNwfVh
-         AKSHcvmKT1ZM3/lwSR51EGOBvHrdfqw6C5AbNdlOK++wGv6X0CDXW4SHPx0sEPS6Ic+h
-         wqZxzaymzvMvnm1Z8UlE1sTfS2JFUXXME4xo1FS3Zdeje558tz3qRMvMWI77gYv28JIk
-         T51eeH+2dpe30fuUceWbuyZIeHrBCx2kTOUhauYbVnc8qzu5vOo8TAPkhdeJ+KrKkqtE
-         IxPjwHUWaCn7rf9farfaBGLx//mzbRjcc7etzvCUh9GJGtgy3gwGTrsbay8N1kZYugkw
-         MEGA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1776872381; x=1777477181; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=61mUgbp+bsu1cdUWQxZ7WlDFmSpUePFk9B9LGftOktc=;
-        b=rVZQHjqBjmfOMcVxFAKAneAQ72JSWFA9vTnDtwS3Y+wPkBajf389KtZb050N7TpMdy
-         9Ium4GFqTYaJCsrXNWcdhKtx9r8HKHHuwI02gaz0zh73rMHyXaGJloDj9QxNmAT85Ac+
-         qVQsIcXI6QEU7fumfqw/tJL6YoZbyXFz2r6X+UMIJ04qntPDc4SweBKx2lX4Xxu2epPK
-         4KILEKySqpRTybz48q1p5gsVXp510ZmO6hL+ylM2EkCAtDrEyen9K7xrzVoly6PnLprh
-         RAsVxvyLAhpL4DzHkP9z2rQBfiOxOHPNEhzNL8/jmJTr543v+5BARtrb+mLoEB81FxmY
-         sZQg==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B40D3537EF
+	for <syzbot@lists.linux.dev>; Wed, 22 Apr 2026 15:41:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776872488; cv=none; b=iDju3c67yrJuPvFuOB6Ha+r/M4nlYPjxFZFzXGCZ8hvQEBxAp7dDuoH5bH2zhDWrh2Qn/ySle3Y3KhJeBm+jJBFBD0hK+7Ydxl9SZx5bQGFA668Tjwyi6HiVShkH4fkanG6mEH4GW29+CFFOut3532ogFYc3L/O6QKHKflq32K0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776872488; c=relaxed/simple;
+	bh=FuHqeMPBugO7e7mKSgYSMiUtp5emEUTvVHMCGNrZXUw=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=ezbJIP/UfmoXJnm1PcOsf1ZiQkBIBlKQJhKiTYU2rZktyqd0m0WhBMvYUdfcflzGQzg2ASRXetdDxZ+N3HdReOa68LiBm4O46gKdwciR+c2LaizN6hsojc2frGDp7I5UhGCe1lLsQNgbrLrzx/hb+daV1BKIMU7mNvx2tZPks1E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-694885643e1so6319724eaf.3
+        for <syzbot@lists.linux.dev>; Wed, 22 Apr 2026 08:41:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776872381; x=1777477181;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=61mUgbp+bsu1cdUWQxZ7WlDFmSpUePFk9B9LGftOktc=;
-        b=UqDoLfhgYW8xvrMJB3WL+Df6K9ki7ZaRHKdQzh7jK5fq8Jm/YrxMcBnVDhgkeXb6ei
-         q6Pt52etnoZ6wkdezZoM9eI9hdWAhb3SqhMos0lYN63eSAlLo26OHjfyK8w5RX6CmWcN
-         dgPwjGK2wSsBKbLe1oK6tM6RE6HsuiQR9vczU+tx/dObHzH+MxFdXCe+ziCyrXFqrZK6
-         QPVIhQC428Zfujl7YoKidfOPhSXWu1mb6eXHAQ+jiSdaxTQW2px3eHnPhGRpU8UUe/nM
-         FIMShpE9b5bntFWm6N6DTfyIEofwfoLru9zYNaGvlOJNSyi0glj8vN6i1AlRRNw47Vrd
-         g3VQ==
-X-Forwarded-Encrypted: i=1; AFNElJ92423fNv0qFwFenvy6v9yz0qyH352ealJ1wwxpu5wn730Kg1myhhDyJBJ9TjByTeahhV5LTB8=@lists.linux.dev
-X-Gm-Message-State: AOJu0YxgF1b5HF948lXwASBAEBZ9rsU9YVTCXVHn+QSelN8YRF28HO6Q
-	zOQFyCrADugc9Wu4J60Ykmk2suClXTuh3ncHED/oGWjW9CRI4hwWRZ6ofMxKj8GLSqWwuHHkr2E
-	BGJXMTOtnSptLhk1HzSEovth441Ek64S8mO5ooW7K
-X-Gm-Gg: AeBDievAcUw6H1F2gbAAKm5jlsowLmpg8iGqfYAmbEWbxwq7/zWesQ3UzEqSU2OZyuP
-	0jH5Av7StDRdW5UsWkmSU3n7GMwsBXx+bk+k5K3pRzA4OFQfCOIODrSlJU9NTDhbHlZADDiUVq/
-	YV7qjjnIWHg9TyfF8sIQ+2thC69tq/1ahKDIg39sh2oLYAe8rRLnr5bE3odRsyOAJnhtEgWjW+D
-	V+JVuGsd0V79+sfKzsHKpUztRNrEvquQWebxBgAfNAmHUz8858A1MIaMC0m8BGQM8Zbjm57Ucne
-	yY0Bh3DJkmWqMSux52KkgwEV+VVvbnhxw4Pcan82ST7ELNXnMjO7J5ywbfgTnd2Q/sAVfyy4YnD
-	vbjzdMRlNqcXOX8M=
-X-Received: by 2002:a05:6820:1891:b0:694:9fa0:aa4a with SMTP id
- 006d021491bc7-6949fa0bc40mr3214993eaf.44.1776872380850; Wed, 22 Apr 2026
- 08:39:40 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1776872483; x=1777477283;
+        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=TvOIbCOlcKLF/q9h5ZsMWZD9fBBrRQBXetA4KmJXLV0=;
+        b=jWcNTdgQoC0icEMKn9v2a43ItE7OmXPBSa/egs8BJfnmV/aYoCOWsc+d72GmmcDDQj
+         ctiHfWyXHpMdKRoQqegSRyWyC4h8tdKsXPYN/Pq662yCCFWhAaaNw8Vluas5qC7yDkMA
+         XKXiA8Jrr/TmYlI5QMik3lA1jqLV0zMwwo/3L96/NYIk9W0DgbTdfdFHpSAdUL53tuuI
+         FJVHsqtbXXC9ji2tWumeHt9BIdjdJQiWh5vUbtmU6t0K5X2E9O1dhtUhOuWXQBMM05c3
+         PfRRZweKUkKym/dN553bqC5WfqqGdFMEgTAIqQePyCXOb8L/0t3w5LkMxQsxTrqylwRm
+         cUGA==
+X-Gm-Message-State: AOJu0YzFFjbnHj27Ry7g3HFtomcbjYX5fhG9JqkTTpl77gDSs3IpT2OO
+	chB6lJqvYFsRQUzM7a5wq7nSGdRqQCaQKR9R0Q1ct2Unj/Klr/znaD9R8HbrAOd5eG3N1vGH8Wo
+	51U39sjquPV6+GyxkdFbDr8D2yder0TNF4mOHPtO6+a96e//RGxqwWqOz3wM=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <69e8eb6e.a00a0220.17a17.002c.GAE@google.com>
-In-Reply-To: <69e8eb6e.a00a0220.17a17.002c.GAE@google.com>
-From: Aleksandr Nogikh <nogikh@google.com>
-Date: Wed, 22 Apr 2026 17:39:28 +0200
-X-Gm-Features: AQROBzDqfAo8uIW8Rl-9yieGZkW6h0Q5_MfFZiGvnct-vT9bS1mz-mBgWfCPN1w
-Message-ID: <CANp29Y5jyBYcX2X7ZVTUVE1d70X9mipOwwmuxfWd3PhkPRdC0w@mail.gmail.com>
-Subject: Re: [moderation/CI] Re: ipv6: udp: fix memory leak in udpv6_sendmsg
- error path
-To: syzbot ci <syzbot+cic20b8f6dc3590902@syzkaller.appspotmail.com>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+X-Received: by 2002:a05:6820:a28b:20b0:694:9c29:c288 with SMTP id
+ 006d021491bc7-6949c29d69bmr2859833eaf.40.1776872483244; Wed, 22 Apr 2026
+ 08:41:23 -0700 (PDT)
+Date: Wed, 22 Apr 2026 08:41:23 -0700
+In-Reply-To: <20260422105802.486216-1-25181214217@stu.xidian.edu.cn>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69e8ec23.a00a0220.9259.001f.GAE@google.com>
+Subject: [syzbot ci] Re: ipv6: udp: fix memory leak in udpv6_sendmsg error path
+From: syzbot ci <syzbot+ci226b639d4356c37f@syzkaller.appspotmail.com>
+To: 25181214217@stu.xidian.edu.cn, davem@davemloft.net, dsahern@kernel.org, 
+	edumazet@google.com, horms@kernel.org, kuba@kernel.org, 
+	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, pabeni@redhat.com, 
+	willemdebruijn.kernel@gmail.com
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-#syz upstream
+syzbot ci has tested the following series
 
-On Wed, Apr 22, 2026 at 5:38=E2=80=AFPM syzbot ci
-<syzbot+cic20b8f6dc3590902@syzkaller.appspotmail.com> wrote:
->
-> syzbot ci has tested the following series
->
-> [v1] ipv6: udp: fix memory leak in udpv6_sendmsg error path
-> https://lore.kernel.org/all/20260422105802.486216-1-25181214217@stu.xidia=
-n.edu.cn
-> * [PATCH] ipv6: udp: fix memory leak in udpv6_sendmsg error path
->
-> and found the following issues:
-> * KASAN: slab-use-after-free Read in ip6_pol_route
-> * KASAN: slab-use-after-free Write in rcuref_put
-> * WARNING in rcuref_put_slowpath
->
-> Full report is available here:
-> https://ci.syzbot.org/series/2abb21f1-6f46-4f6f-a074-0051111986db
->
-> ***
->
-> KASAN: slab-use-after-free Read in ip6_pol_route
->
-> tree:      torvalds
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torva=
-lds/linux
-> base:      6596a02b207886e9e00bb0161c7fd59fea53c081
-> arch:      amd64
-> compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~e=
-xp1~20251221153213.50), Debian LLD 21.1.8
-> config:    https://ci.syzbot.org/builds/ad85c1df-394a-471c-b2ea-0e168bab3=
-b26/config
-> syz repro: https://ci.syzbot.org/findings/66d12b42-aa7a-4da1-b456-d18de1a=
-54007/syz_repro
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> BUG: KASAN: slab-use-after-free in rt6_get_pcpu_route net/ipv6/route.c:14=
-46 [inline]
-> BUG: KASAN: slab-use-after-free in ip6_pol_route+0x12b5/0x13d0 net/ipv6/r=
-oute.c:2316
-> Read of size 4 at addr ffff88810e948518 by task syz.0.26/6002
->
-> CPU: 0 UID: 0 PID: 6002 Comm: syz.0.26 Not tainted syzkaller #0 PREEMPT(f=
-ull)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  print_address_description+0x55/0x1e0 mm/kasan/report.c:378
->  print_report+0x58/0x70 mm/kasan/report.c:482
->  kasan_report+0x117/0x150 mm/kasan/report.c:595
->  rt6_get_pcpu_route net/ipv6/route.c:1446 [inline]
->  ip6_pol_route+0x12b5/0x13d0 net/ipv6/route.c:2316
->  pol_lookup_func include/net/ip6_fib.h:667 [inline]
->  fib6_rule_lookup+0x222/0x730 net/ipv6/fib6_rules.c:123
->  ip6_route_output_flags_noref net/ipv6/route.c:2699 [inline]
->  ip6_route_output_flags+0x364/0x5d0 net/ipv6/route.c:2711
->  ip6_route_output include/net/ip6_route.h:100 [inline]
->  ip6_dst_lookup_tail+0x1c3/0x15a0 net/ipv6/ip6_output.c:1155
->  ip6_dst_lookup_flow+0x89/0x150 net/ipv6/ip6_output.c:1288
->  ip6_datagram_dst_update+0x73a/0xd20 net/ipv6/datagram.c:97
->  __ip6_datagram_connect+0xbd1/0x1150 net/ipv6/datagram.c:256
->  udpv6_connect+0x36/0x240 net/ipv6/udp.c:1297
->  __sys_connect_file net/socket.c:2148 [inline]
->  __sys_connect+0x312/0x450 net/socket.c:2167
->  __do_sys_connect net/socket.c:2173 [inline]
->  __se_sys_connect net/socket.c:2170 [inline]
->  __x64_sys_connect+0x7a/0x90 net/socket.c:2170
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7f999eb9c819
-> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
-7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
- ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f999fa0a028 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
-> RAX: ffffffffffffffda RBX: 00007f999ee15fa0 RCX: 00007f999eb9c819
-> RDX: 000000000000001c RSI: 00002000000002c0 RDI: 0000000000000003
-> RBP: 00007f999ec32c91 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007f999ee16038 R14: 00007f999ee15fa0 R15: 00007fff22f1ff88
->  </TASK>
->
-> Allocated by task 30:
->  kasan_save_stack mm/kasan/common.c:57 [inline]
->  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
->  unpoison_slab_object mm/kasan/common.c:340 [inline]
->  __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:366
->  kasan_slab_alloc include/linux/kasan.h:253 [inline]
->  slab_post_alloc_hook mm/slub.c:4569 [inline]
->  slab_alloc_node mm/slub.c:4898 [inline]
->  kmem_cache_alloc_noprof+0x2bc/0x650 mm/slub.c:4905
->  dst_alloc+0x105/0x170 net/core/dst.c:90
->  ip6_dst_alloc net/ipv6/route.c:342 [inline]
->  ip6_rt_pcpu_alloc net/ipv6/route.c:1419 [inline]
->  rt6_make_pcpu_route net/ipv6/route.c:1468 [inline]
->  ip6_pol_route+0xafb/0x13d0 net/ipv6/route.c:2319
->  pol_lookup_func include/net/ip6_fib.h:667 [inline]
->  fib6_rule_lookup+0x222/0x730 net/ipv6/fib6_rules.c:123
->  ip6_route_output_flags_noref net/ipv6/route.c:2699 [inline]
->  ip6_route_output_flags+0x364/0x5d0 net/ipv6/route.c:2711
->  ip6_route_output include/net/ip6_route.h:100 [inline]
->  ip6_dst_lookup_tail+0x1c3/0x15a0 net/ipv6/ip6_output.c:1155
->  ip6_dst_lookup_flow+0x89/0x150 net/ipv6/ip6_output.c:1288
->  send6+0x4dc/0x910 drivers/net/wireguard/socket.c:139
->  wg_socket_send_skb_to_peer+0x111/0x1d0 drivers/net/wireguard/socket.c:17=
-7
->  wg_packet_send_handshake_initiation drivers/net/wireguard/send.c:40 [inl=
-ine]
->  wg_packet_handshake_send_worker+0x203/0x350 drivers/net/wireguard/send.c=
-:51
->  process_one_work kernel/workqueue.c:3302 [inline]
->  process_scheduled_works+0xb5d/0x1860 kernel/workqueue.c:3385
->  worker_thread+0xa53/0xfc0 kernel/workqueue.c:3466
->  kthread+0x388/0x470 kernel/kthread.c:436
->  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
->  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
->
-> Freed by task 23:
->  kasan_save_stack mm/kasan/common.c:57 [inline]
->  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
->  kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:584
->  poison_slab_object mm/kasan/common.c:253 [inline]
->  __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
->  kasan_slab_free include/linux/kasan.h:235 [inline]
->  slab_free_hook mm/slub.c:2689 [inline]
->  slab_free mm/slub.c:6246 [inline]
->  kmem_cache_free+0x182/0x650 mm/slub.c:6373
->  dst_destroy+0x235/0x350 net/core/dst.c:122
->  rcu_do_batch kernel/rcu/tree.c:2617 [inline]
->  rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
->  handle_softirqs+0x22a/0x840 kernel/softirq.c:622
->  run_ksoftirqd+0x36/0x60 kernel/softirq.c:1076
->  smpboot_thread_fn+0x541/0xa50 kernel/smpboot.c:160
->  kthread+0x388/0x470 kernel/kthread.c:436
->  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
->  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
->
-> Last potentially related work creation:
->  kasan_save_stack+0x3e/0x60 mm/kasan/common.c:57
->  kasan_record_aux_stack+0xbd/0xd0 mm/kasan/generic.c:556
->  __call_rcu_common kernel/rcu/tree.c:3131 [inline]
->  call_rcu+0xee/0x890 kernel/rcu/tree.c:3251
->  inet_sock_destruct+0x564/0x740 net/ipv4/af_inet.c:165
->  __sk_destruct+0x8d/0x9d0 net/core/sock.c:2352
->  rcu_do_batch kernel/rcu/tree.c:2617 [inline]
->  rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
->  handle_softirqs+0x22a/0x840 kernel/softirq.c:622
->  run_ksoftirqd+0x36/0x60 kernel/softirq.c:1076
->  smpboot_thread_fn+0x541/0xa50 kernel/smpboot.c:160
->  kthread+0x388/0x470 kernel/kthread.c:436
->  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
->  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
->
-> The buggy address belongs to the object at ffff88810e948480
->  which belongs to the cache ip6_dst_cache of size 232
-> The buggy address is located 152 bytes inside of
->  freed 232-byte region [ffff88810e948480, ffff88810e948568)
->
-> The buggy address belongs to the physical page:
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x10e9=
-48
-> head: order:1 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
-> memcg:ffff88810e9480f9
-> flags: 0x17ff00000000040(head|node=3D0|zone=3D2|lastcpupid=3D0x7ff)
-> page_type: f5(slab)
-> raw: 017ff00000000040 ffff8881772f6c80 dead000000000100 dead000000000122
-> raw: 0000000000000000 0000018000150015 00000000f5000000 ffff88810e9480f9
-> head: 017ff00000000040 ffff8881772f6c80 dead000000000100 dead000000000122
-> head: 0000000000000000 0000018000150015 00000000f5000000 ffff88810e9480f9
-> head: 017ff00000000001 ffffffffffffff81 00000000ffffffff 00000000ffffffff
-> head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000002
-> page dumped because: kasan: bad access detected
-> page_owner tracks the page as allocated
-> page last allocated via order 1, migratetype Unmovable, gfp_mask 0xd2820(=
-GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 587=
-1, tgid 5871 (kworker/0:3), ts 86853962004, free_ts 86835725693
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x231/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_slab_page mm/slub.c:3278 [inline]
->  allocate_slab+0x77/0x660 mm/slub.c:3467
->  new_slab mm/slub.c:3525 [inline]
->  refill_objects+0x339/0x3d0 mm/slub.c:7251
->  refill_sheaf mm/slub.c:2816 [inline]
->  __pcs_replace_empty_main+0x321/0x720 mm/slub.c:4651
->  alloc_from_pcs mm/slub.c:4749 [inline]
->  slab_alloc_node mm/slub.c:4883 [inline]
->  kmem_cache_alloc_noprof+0x37d/0x650 mm/slub.c:4905
->  dst_alloc+0x105/0x170 net/core/dst.c:90
->  ip6_dst_alloc net/ipv6/route.c:342 [inline]
->  ip6_rt_pcpu_alloc net/ipv6/route.c:1419 [inline]
->  rt6_make_pcpu_route net/ipv6/route.c:1468 [inline]
->  ip6_pol_route+0xafb/0x13d0 net/ipv6/route.c:2319
->  pol_lookup_func include/net/ip6_fib.h:667 [inline]
->  fib6_rule_lookup+0x556/0x730 net/ipv6/fib6_rules.c:123
->  ip6_route_input_lookup net/ipv6/route.c:2352 [inline]
->  ip6_route_input+0x730/0xad0 net/ipv6/route.c:2655
->  ip6_rcv_finish+0x141/0x280 net/ipv6/ip6_input.c:117
->  NF_HOOK+0x336/0x3c0 include/linux/netfilter.h:318
->  __netif_receive_skb_one_core net/core/dev.c:6209 [inline]
->  __netif_receive_skb net/core/dev.c:6322 [inline]
->  process_backlog+0x7dd/0x1950 net/core/dev.c:6673
->  __napi_poll+0xae/0x340 net/core/dev.c:7737
->  napi_poll net/core/dev.c:7800 [inline]
->  net_rx_action+0x627/0xf70 net/core/dev.c:7957
-> page last free pid 5871 tgid 5871 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  __free_frozen_pages+0xbc7/0xd30 mm/page_alloc.c:2943
->  rcu_do_batch kernel/rcu/tree.c:2617 [inline]
->  rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
->  handle_softirqs+0x22a/0x840 kernel/softirq.c:622
->  do_softirq+0x76/0xd0 kernel/softirq.c:523
->  __local_bh_enable_ip+0xf8/0x130 kernel/softirq.c:450
->  local_bh_enable include/linux/bottom_half.h:33 [inline]
->  __alloc_skb+0x1aa/0x7d0 net/core/skbuff.c:697
->  alloc_skb include/linux/skbuff.h:1383 [inline]
->  mld_newpack+0x14c/0xc90 net/ipv6/mcast.c:1775
->  add_grhead+0x5a/0x2a0 net/ipv6/mcast.c:1886
->  add_grec+0x1452/0x1740 net/ipv6/mcast.c:2025
->  mld_send_cr net/ipv6/mcast.c:2148 [inline]
->  mld_ifc_work+0x6e6/0xe70 net/ipv6/mcast.c:2693
->  process_one_work kernel/workqueue.c:3302 [inline]
->  process_scheduled_works+0xb5d/0x1860 kernel/workqueue.c:3385
->  worker_thread+0xa53/0xfc0 kernel/workqueue.c:3466
->  kthread+0x388/0x470 kernel/kthread.c:436
->  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
->  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
->
-> Memory state around the buggy address:
->  ffff88810e948400: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->  ffff88810e948480: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> >ffff88810e948500: fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc
->                             ^
->  ffff88810e948580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->  ffff88810e948600: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->
->
-> ***
->
-> KASAN: slab-use-after-free Write in rcuref_put
->
-> tree:      torvalds
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torva=
-lds/linux
-> base:      6596a02b207886e9e00bb0161c7fd59fea53c081
-> arch:      amd64
-> compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~e=
-xp1~20251221153213.50), Debian LLD 21.1.8
-> config:    https://ci.syzbot.org/builds/ad85c1df-394a-471c-b2ea-0e168bab3=
-b26/config
-> syz repro: https://ci.syzbot.org/findings/3d5ef30a-8158-4bce-901b-48b8fcc=
-50925/syz_repro
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> BUG: KASAN: slab-use-after-free in instrument_atomic_read_write include/l=
-inux/instrumented.h:112 [inline]
-> BUG: KASAN: slab-use-after-free in atomic_sub_return_release include/linu=
-x/atomic/atomic-instrumented.h:326 [inline]
-> BUG: KASAN: slab-use-after-free in __rcuref_put include/linux/rcuref.h:10=
-9 [inline]
-> BUG: KASAN: slab-use-after-free in rcuref_put+0xf7/0x170 include/linux/rc=
-uref.h:173
-> Write of size 4 at addr ffff8881130ec940 by task klogd/5265
->
-> CPU: 0 UID: 0 PID: 5265 Comm: klogd Not tainted syzkaller #0 PREEMPT(full=
-)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <IRQ>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  print_address_description+0x55/0x1e0 mm/kasan/report.c:378
->  print_report+0x58/0x70 mm/kasan/report.c:482
->  kasan_report+0x117/0x150 mm/kasan/report.c:595
->  check_region_inline mm/kasan/generic.c:-1 [inline]
->  kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
->  instrument_atomic_read_write include/linux/instrumented.h:112 [inline]
->  atomic_sub_return_release include/linux/atomic/atomic-instrumented.h:326=
- [inline]
->  __rcuref_put include/linux/rcuref.h:109 [inline]
->  rcuref_put+0xf7/0x170 include/linux/rcuref.h:173
->  dst_release+0x24/0x1b0 net/core/dst.c:168
->  inet_sock_destruct+0x564/0x740 net/ipv4/af_inet.c:165
->  __sk_destruct+0x8d/0x9d0 net/core/sock.c:2352
->  rcu_do_batch kernel/rcu/tree.c:2617 [inline]
->  rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
->  handle_softirqs+0x22a/0x840 kernel/softirq.c:622
->  do_softirq+0x76/0xd0 kernel/softirq.c:523
->  </IRQ>
->  <TASK>
->  __local_bh_enable_ip+0xf8/0x130 kernel/softirq.c:450
->  local_bh_enable include/linux/bottom_half.h:33 [inline]
->  __alloc_skb+0x1aa/0x7d0 net/core/skbuff.c:697
->  alloc_skb include/linux/skbuff.h:1383 [inline]
->  alloc_skb_with_frags+0xc8/0x760 net/core/skbuff.c:6734
->  sock_alloc_send_pskb+0x878/0x990 net/core/sock.c:2998
->  unix_dgram_sendmsg+0x460/0x18d0 net/unix/af_unix.c:2131
->  sock_sendmsg_nosec net/socket.c:787 [inline]
->  __sock_sendmsg net/socket.c:802 [inline]
->  __sys_sendto+0x672/0x710 net/socket.c:2265
->  __do_sys_sendto net/socket.c:2272 [inline]
->  __se_sys_sendto net/socket.c:2268 [inline]
->  __x64_sys_sendto+0xde/0x100 net/socket.c:2268
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7f2da31309b5
-> Code: 8b 44 24 08 48 83 c4 28 48 98 c3 48 98 c3 41 89 ca 64 8b 04 25 18 0=
-0 00 00 85 c0 75 26 45 31 c9 45 31 c0 b8 2c 00 00 00 0f 05 <48> 3d 00 f0 ff=
- ff 76 7a 48 8b 15 44 c4 0c 00 f7 d8 64 89 02 48 83
-> RSP: 002b:00007fffcd483948 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-> RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f2da31309b5
-> RDX: 0000000000000071 RSI: 000055812f074f90 RDI: 0000000000000003
-> RBP: 000055812f070910 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000004000 R11: 0000000000000246 R12: 0000000000000013
-> R13: 00007f2da32be212 R14: 00007fffcd483a48 R15: 0000000000000000
->  </TASK>
->
-> Allocated by task 3571:
->  kasan_save_stack mm/kasan/common.c:57 [inline]
->  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
->  unpoison_slab_object mm/kasan/common.c:340 [inline]
->  __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:366
->  kasan_slab_alloc include/linux/kasan.h:253 [inline]
->  slab_post_alloc_hook mm/slub.c:4569 [inline]
->  slab_alloc_node mm/slub.c:4898 [inline]
->  kmem_cache_alloc_noprof+0x2bc/0x650 mm/slub.c:4905
->  dst_alloc+0x105/0x170 net/core/dst.c:90
->  ip6_dst_alloc net/ipv6/route.c:342 [inline]
->  ip6_rt_pcpu_alloc net/ipv6/route.c:1419 [inline]
->  rt6_make_pcpu_route net/ipv6/route.c:1468 [inline]
->  ip6_pol_route+0xafb/0x13d0 net/ipv6/route.c:2319
->  pol_lookup_func include/net/ip6_fib.h:667 [inline]
->  fib6_rule_lookup+0x222/0x730 net/ipv6/fib6_rules.c:123
->  ip6_route_output_flags_noref net/ipv6/route.c:2699 [inline]
->  ip6_route_output_flags+0x364/0x5d0 net/ipv6/route.c:2711
->  ip6_route_output include/net/ip6_route.h:100 [inline]
->  ip6_dst_lookup_tail+0x1c3/0x15a0 net/ipv6/ip6_output.c:1155
->  ip6_dst_lookup_flow+0x89/0x150 net/ipv6/ip6_output.c:1288
->  send6+0x4dc/0x910 drivers/net/wireguard/socket.c:139
->  wg_socket_send_skb_to_peer+0x111/0x1d0 drivers/net/wireguard/socket.c:17=
-7
->  wg_packet_send_handshake_initiation drivers/net/wireguard/send.c:40 [inl=
-ine]
->  wg_packet_handshake_send_worker+0x203/0x350 drivers/net/wireguard/send.c=
-:51
->  process_one_work kernel/workqueue.c:3302 [inline]
->  process_scheduled_works+0xb5d/0x1860 kernel/workqueue.c:3385
->  worker_thread+0xa53/0xfc0 kernel/workqueue.c:3466
->  kthread+0x388/0x470 kernel/kthread.c:436
->  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
->  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
->
-> Freed by task 5265:
->  kasan_save_stack mm/kasan/common.c:57 [inline]
->  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
->  kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:584
->  poison_slab_object mm/kasan/common.c:253 [inline]
->  __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
->  kasan_slab_free include/linux/kasan.h:235 [inline]
->  slab_free_hook mm/slub.c:2689 [inline]
->  slab_free mm/slub.c:6246 [inline]
->  kmem_cache_free+0x182/0x650 mm/slub.c:6373
->  dst_destroy+0x235/0x350 net/core/dst.c:122
->  rcu_do_batch kernel/rcu/tree.c:2617 [inline]
->  rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
->  handle_softirqs+0x22a/0x840 kernel/softirq.c:622
->  do_softirq+0x76/0xd0 kernel/softirq.c:523
->  __local_bh_enable_ip+0xf8/0x130 kernel/softirq.c:450
->  local_bh_enable include/linux/bottom_half.h:33 [inline]
->  __alloc_skb+0x1aa/0x7d0 net/core/skbuff.c:697
->  alloc_skb include/linux/skbuff.h:1383 [inline]
->  alloc_skb_with_frags+0xc8/0x760 net/core/skbuff.c:6734
->  sock_alloc_send_pskb+0x878/0x990 net/core/sock.c:2998
->  unix_dgram_sendmsg+0x460/0x18d0 net/unix/af_unix.c:2131
->  sock_sendmsg_nosec net/socket.c:787 [inline]
->  __sock_sendmsg net/socket.c:802 [inline]
->  __sys_sendto+0x672/0x710 net/socket.c:2265
->  __do_sys_sendto net/socket.c:2272 [inline]
->  __se_sys_sendto net/socket.c:2268 [inline]
->  __x64_sys_sendto+0xde/0x100 net/socket.c:2268
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->
-> Last potentially related work creation:
->  kasan_save_stack+0x3e/0x60 mm/kasan/common.c:57
->  kasan_record_aux_stack+0xbd/0xd0 mm/kasan/generic.c:556
->  __call_rcu_common kernel/rcu/tree.c:3131 [inline]
->  call_rcu+0xee/0x890 kernel/rcu/tree.c:3251
->  udpv6_sendmsg+0x1e9c/0x2690 net/ipv6/udp.c:1712
->  sock_sendmsg_nosec net/socket.c:787 [inline]
->  __sock_sendmsg net/socket.c:802 [inline]
->  ____sys_sendmsg+0x5c7/0x9f0 net/socket.c:2698
->  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
->  __sys_sendmmsg+0x27c/0x4e0 net/socket.c:2841
->  __do_sys_sendmmsg net/socket.c:2868 [inline]
->  __se_sys_sendmmsg net/socket.c:2865 [inline]
->  __x64_sys_sendmmsg+0xa0/0xc0 net/socket.c:2865
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->
-> The buggy address belongs to the object at ffff8881130ec900
->  which belongs to the cache ip6_dst_cache of size 232
-> The buggy address is located 64 bytes inside of
->  freed 232-byte region [ffff8881130ec900, ffff8881130ec9e8)
->
-> The buggy address belongs to the physical page:
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1130=
-ec
-> head: order:1 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
-> memcg:ffff8881130ec0f9
-> flags: 0x17ff00000000040(head|node=3D0|zone=3D2|lastcpupid=3D0x7ff)
-> page_type: f5(slab)
-> raw: 017ff00000000040 ffff888103f2c500 dead000000000100 dead000000000122
-> raw: 0000000000000000 0000018000150015 00000000f5000000 ffff8881130ec0f9
-> head: 017ff00000000040 ffff888103f2c500 dead000000000100 dead000000000122
-> head: 0000000000000000 0000018000150015 00000000f5000000 ffff8881130ec0f9
-> head: 017ff00000000001 ffffffffffffff81 00000000ffffffff 00000000ffffffff
-> head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000002
-> page dumped because: kasan: bad access detected
-> page_owner tracks the page as allocated
-> page last allocated via order 1, migratetype Unmovable, gfp_mask 0xd2820(=
-GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 13,=
- tgid 13 (kworker/u8:1), ts 74988667148, free_ts 74987085458
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x231/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_slab_page mm/slub.c:3278 [inline]
->  allocate_slab+0x77/0x660 mm/slub.c:3467
->  new_slab mm/slub.c:3525 [inline]
->  refill_objects+0x339/0x3d0 mm/slub.c:7251
->  refill_sheaf mm/slub.c:2816 [inline]
->  __pcs_replace_empty_main+0x321/0x720 mm/slub.c:4651
->  alloc_from_pcs mm/slub.c:4749 [inline]
->  slab_alloc_node mm/slub.c:4883 [inline]
->  kmem_cache_alloc_noprof+0x37d/0x650 mm/slub.c:4905
->  dst_alloc+0x105/0x170 net/core/dst.c:90
->  ip6_dst_alloc net/ipv6/route.c:342 [inline]
->  icmp6_dst_alloc+0x75/0x440 net/ipv6/route.c:3337
->  ndisc_send_skb+0x44a/0x1670 net/ipv6/ndisc.c:491
->  ndisc_send_ns+0xd7/0x160 net/ipv6/ndisc.c:671
->  addrconf_dad_work+0xac4/0x14c0 net/ipv6/addrconf.c:4294
->  process_one_work kernel/workqueue.c:3302 [inline]
->  process_scheduled_works+0xb5d/0x1860 kernel/workqueue.c:3385
->  worker_thread+0xa53/0xfc0 kernel/workqueue.c:3466
->  kthread+0x388/0x470 kernel/kthread.c:436
->  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
-> page last free pid 5952 tgid 5952 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  __free_frozen_pages+0xbc7/0xd30 mm/page_alloc.c:2943
->  __slab_free+0x274/0x2c0 mm/slub.c:5608
->  qlink_free mm/kasan/quarantine.c:163 [inline]
->  qlist_free_all+0x99/0x100 mm/kasan/quarantine.c:179
->  kasan_quarantine_reduce+0x148/0x160 mm/kasan/quarantine.c:286
->  __kasan_slab_alloc+0x22/0x80 mm/kasan/common.c:350
->  kasan_slab_alloc include/linux/kasan.h:253 [inline]
->  slab_post_alloc_hook mm/slub.c:4569 [inline]
->  slab_alloc_node mm/slub.c:4898 [inline]
->  kmem_cache_alloc_noprof+0x2bc/0x650 mm/slub.c:4905
->  alloc_empty_file+0x5b/0x1d0 fs/file_table.c:262
->  alloc_file fs/file_table.c:396 [inline]
->  alloc_file_pseudo+0x155/0x240 fs/file_table.c:425
->  sock_alloc_file+0xb8/0x2e0 net/socket.c:543
->  sock_map_fd net/socket.c:573 [inline]
->  __sys_socket+0x13c/0x1b0 net/socket.c:1815
->  __do_sys_socket net/socket.c:1820 [inline]
->  __se_sys_socket net/socket.c:1818 [inline]
->  __x64_sys_socket+0x7a/0x90 net/socket.c:1818
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->
-> Memory state around the buggy address:
->  ffff8881130ec800: fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc
->  ffff8881130ec880: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-> >ffff8881130ec900: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->                                            ^
->  ffff8881130ec980: fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc
->  ffff8881130eca00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->
->
-> ***
->
-> WARNING in rcuref_put_slowpath
->
-> tree:      torvalds
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torva=
-lds/linux
-> base:      6596a02b207886e9e00bb0161c7fd59fea53c081
-> arch:      amd64
-> compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~e=
-xp1~20251221153213.50), Debian LLD 21.1.8
-> config:    https://ci.syzbot.org/builds/ad85c1df-394a-471c-b2ea-0e168bab3=
-b26/config
-> syz repro: https://ci.syzbot.org/findings/e5d6936b-9f45-45fd-88ab-8e917a8=
-18ac4/syz_repro
->
-> ------------[ cut here ]------------
-> rcuref - imbalanced put()
-> WARNING: lib/rcuref.c:266 at rcuref_put_slowpath+0x16e/0x1d0 lib/rcuref.c=
-:266, CPU#0: udevd/5862
-> Modules linked in:
-> CPU: 0 UID: 0 PID: 5862 Comm: udevd Not tainted syzkaller #0 PREEMPT(full=
-)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> RIP: 0010:rcuref_put_slowpath+0x16e/0x1d0 lib/rcuref.c:266
-> Code: c1 e8 03 42 0f b6 04 38 84 c0 75 48 c7 03 00 00 00 a0 31 c0 e9 6d f=
-f ff ff e8 9e ef 06 07 e8 99 1c 14 fd 48 8d 3d 02 a8 8c 0b <67> 48 0f b9 3a=
- 48 89 df be 04 00 00 00 e8 50 5a 7f fd 48 89 d8 48
-> RSP: 0018:ffffc90000007c20 EFLAGS: 00010246
-> RAX: ffffffff84b1b457 RBX: ffff88811617cac0 RCX: ffff8881706f1d80
-> RDX: 0000000000000100 RSI: 00000000dfffffff RDI: ffffffff903e5c60
-> RBP: ffffc90000007cb8 R08: ffff88811617cac3 R09: 1ffff11022c2f958
-> R10: dffffc0000000000 R11: ffffed1022c2f959 R12: 1ffff92000000f84
-> R13: ffff888116047a08 R14: 00000000dfffffff R15: dffffc0000000000
-> FS:  00007f0704ed8c80(0000) GS:ffff88818dc14000(0000) knlGS:0000000000000=
-000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f58f0b456b8 CR3: 000000016883c000 CR4: 00000000000006f0
-> Call Trace:
->  <IRQ>
->  __rcuref_put include/linux/rcuref.h:117 [inline]
->  rcuref_put+0x15b/0x170 include/linux/rcuref.h:173
->  dst_release+0x24/0x1b0 net/core/dst.c:168
->  inet_sock_destruct+0x564/0x740 net/ipv4/af_inet.c:165
->  __sk_destruct+0x8d/0x9d0 net/core/sock.c:2352
->  rcu_do_batch kernel/rcu/tree.c:2617 [inline]
->  rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
->  handle_softirqs+0x22a/0x840 kernel/softirq.c:622
->  __do_softirq kernel/softirq.c:656 [inline]
->  invoke_softirq kernel/softirq.c:496 [inline]
->  __irq_exit_rcu+0xca/0x220 kernel/softirq.c:735
->  irq_exit_rcu+0x9/0x30 kernel/softirq.c:752
->  instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1061 [inli=
-ne]
->  sysvec_apic_timer_interrupt+0xa6/0xc0 arch/x86/kernel/apic/apic.c:1061
->  </IRQ>
->  <TASK>
->  asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.=
-h:697
-> RIP: 0010:lock_acquire+0x221/0x350 kernel/locking/lockdep.c:5872
-> Code: ff ff ff e8 a1 d7 16 0a f7 44 24 08 00 02 00 00 0f 84 3a ff ff ff 6=
-5 48 8b 05 8b f2 9e 11 48 3b 44 24 58 75 33 fb 48 83 c4 60 <5b> 41 5c 41 5d=
- 41 5e 41 5f 5d c3 cc cc cc cc cc 48 8d 3d 58 0a 95
-> RSP: 0018:ffffc900032075b0 EFLAGS: 00000282
-> RAX: 5df8ffef7d258800 RBX: 0000000000000000 RCX: 0000000000000046
-> RDX: 00000000c1e3b5cc RSI: ffffffff8e24e50c RDI: ffffffff8c289ee0
-> RBP: ffffffff81d5c3d6 R08: ffffffff81d5c3d6 R09: ffffffff8e95cce0
-> R10: ffffc900032076d8 R11: ffffffff81b105c0 R12: 0000000000000002
-> R13: ffffffff8e95cce0 R14: 0000000000000000 R15: 0000000000000246
->  rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
->  rcu_read_lock include/linux/rcupdate.h:838 [inline]
->  is_bpf_text_address+0x47/0x2b0 kernel/bpf/core.c:747
->  kernel_text_address+0xa5/0xe0 kernel/extable.c:125
->  __kernel_text_address+0xd/0x30 kernel/extable.c:79
->  unwind_get_return_address+0x4d/0x90 arch/x86/kernel/unwind_orc.c:385
->  arch_stack_walk+0xfb/0x150 arch/x86/kernel/stacktrace.c:26
->  stack_trace_save+0xa9/0x100 kernel/stacktrace.c:122
->  kasan_save_stack mm/kasan/common.c:57 [inline]
->  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
->  kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:584
->  poison_slab_object mm/kasan/common.c:253 [inline]
->  __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
->  kasan_slab_free include/linux/kasan.h:235 [inline]
->  slab_free_hook mm/slub.c:2689 [inline]
->  slab_free mm/slub.c:6246 [inline]
->  kfree+0x1c5/0x640 mm/slub.c:6561
->  tomoyo_path_perm+0x403/0x560 security/tomoyo/file.c:847
->  security_inode_getattr+0x12b/0x310 security/security.c:1895
->  vfs_getattr fs/stat.c:259 [inline]
->  vfs_fstat fs/stat.c:281 [inline]
->  vfs_fstatat+0xb4/0x170 fs/stat.c:371
->  __do_sys_newfstatat fs/stat.c:538 [inline]
->  __se_sys_newfstatat fs/stat.c:532 [inline]
->  __x64_sys_newfstatat+0x151/0x200 fs/stat.c:532
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7f0704b165f4
-> Code: 64 c7 00 09 00 00 00 83 c8 ff c3 48 89 f2 b9 00 01 00 00 48 89 fe b=
-f 9c ff ff ff e9 00 00 00 00 41 89 ca b8 06 01 00 00 0f 05 <45> 31 c0 3d 00=
- f0 ff ff 76 10 48 8b 15 03 a8 0d 00 f7 d8 41 83 c8
-> RSP: 002b:00007ffff3316628 EFLAGS: 00000206 ORIG_RAX: 0000000000000106
-> RAX: ffffffffffffffda RBX: 00007f0704bee460 RCX: 00007f0704b165f4
-> RDX: 00007ffff3316630 RSI: 00007f0704bb3130 RDI: 0000000000000009
-> RBP: 0000563dde263be0 R08: 0000000000000000 R09: 0000000000000001
-> R10: 0000000000001000 R11: 0000000000000206 R12: 0000000000000002
-> R13: 0000000000000002 R14: 0000563dde263be0 R15: 0000563db7af4ea6
->  </TASK>
-> ----------------
-> Code disassembly (best guess):
->    0:   c1 e8 03                shr    $0x3,%eax
->    3:   42 0f b6 04 38          movzbl (%rax,%r15,1),%eax
->    8:   84 c0                   test   %al,%al
->    a:   75 48                   jne    0x54
->    c:   c7 03 00 00 00 a0       movl   $0xa0000000,(%rbx)
->   12:   31 c0                   xor    %eax,%eax
->   14:   e9 6d ff ff ff          jmp    0xffffff86
->   19:   e8 9e ef 06 07          call   0x706efbc
->   1e:   e8 99 1c 14 fd          call   0xfd141cbc
->   23:   48 8d 3d 02 a8 8c 0b    lea    0xb8ca802(%rip),%rdi        # 0xb8=
-ca82c
-> * 2a:   67 48 0f b9 3a          ud1    (%edx),%rdi <-- trapping instructi=
-on
->   2f:   48 89 df                mov    %rbx,%rdi
->   32:   be 04 00 00 00          mov    $0x4,%esi
->   37:   e8 50 5a 7f fd          call   0xfd7f5a8c
->   3c:   48 89 d8                mov    %rbx,%rax
->   3f:   48                      rex.W
->
->
-> ***
->
-> If these findings have caused you to resend the series or submit a
-> separate fix, please add the following tag to your commit message:
->   Tested-by: syzbot@syzkaller.appspotmail.com
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
->
-> To test a patch for this bug, please reply with `#syz test`
-> (should be on a separate line).
->
-> The patch should be attached to the email.
-> Note: arguments like custom git repos and branches are not supported.
->
-> The email will later be sent to:
-> [25181214217@stu.xidian.edu.cn davem@davemloft.net dsahern@kernel.org edu=
-mazet@google.com horms@kernel.org kuba@kernel.org linux-kernel@vger.kernel.=
-org netdev@vger.kernel.org pabeni@redhat.com willemdebruijn.kernel@gmail.co=
-m]
->
-> If the report looks fine to you, reply with:
-> #syz upstream
->
-> If the report is a false positive, reply with
-> #syz invalid
->
-> --
-> You received this message because you are subscribed to the Google Groups=
- "syzkaller-upstream-moderation" group.
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/69e8eb6e.a00a0220.17a17.002c.GAE%40google.com.
+[v1] ipv6: udp: fix memory leak in udpv6_sendmsg error path
+https://lore.kernel.org/all/20260422105802.486216-1-25181214217@stu.xidian.edu.cn
+* [PATCH] ipv6: udp: fix memory leak in udpv6_sendmsg error path
+
+and found the following issues:
+* KASAN: slab-use-after-free Read in ip6_pol_route
+* KASAN: slab-use-after-free Write in rcuref_put
+* WARNING in rcuref_put_slowpath
+
+Full report is available here:
+https://ci.syzbot.org/series/2abb21f1-6f46-4f6f-a074-0051111986db
+
+***
+
+KASAN: slab-use-after-free Read in ip6_pol_route
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      6596a02b207886e9e00bb0161c7fd59fea53c081
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/ad85c1df-394a-471c-b2ea-0e168bab3b26/config
+syz repro: https://ci.syzbot.org/findings/66d12b42-aa7a-4da1-b456-d18de1a54007/syz_repro
+
+==================================================================
+BUG: KASAN: slab-use-after-free in rt6_get_pcpu_route net/ipv6/route.c:1446 [inline]
+BUG: KASAN: slab-use-after-free in ip6_pol_route+0x12b5/0x13d0 net/ipv6/route.c:2316
+Read of size 4 at addr ffff88810e948518 by task syz.0.26/6002
+
+CPU: 0 UID: 0 PID: 6002 Comm: syz.0.26 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+ print_report+0x58/0x70 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ rt6_get_pcpu_route net/ipv6/route.c:1446 [inline]
+ ip6_pol_route+0x12b5/0x13d0 net/ipv6/route.c:2316
+ pol_lookup_func include/net/ip6_fib.h:667 [inline]
+ fib6_rule_lookup+0x222/0x730 net/ipv6/fib6_rules.c:123
+ ip6_route_output_flags_noref net/ipv6/route.c:2699 [inline]
+ ip6_route_output_flags+0x364/0x5d0 net/ipv6/route.c:2711
+ ip6_route_output include/net/ip6_route.h:100 [inline]
+ ip6_dst_lookup_tail+0x1c3/0x15a0 net/ipv6/ip6_output.c:1155
+ ip6_dst_lookup_flow+0x89/0x150 net/ipv6/ip6_output.c:1288
+ ip6_datagram_dst_update+0x73a/0xd20 net/ipv6/datagram.c:97
+ __ip6_datagram_connect+0xbd1/0x1150 net/ipv6/datagram.c:256
+ udpv6_connect+0x36/0x240 net/ipv6/udp.c:1297
+ __sys_connect_file net/socket.c:2148 [inline]
+ __sys_connect+0x312/0x450 net/socket.c:2167
+ __do_sys_connect net/socket.c:2173 [inline]
+ __se_sys_connect net/socket.c:2170 [inline]
+ __x64_sys_connect+0x7a/0x90 net/socket.c:2170
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f999eb9c819
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f999fa0a028 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
+RAX: ffffffffffffffda RBX: 00007f999ee15fa0 RCX: 00007f999eb9c819
+RDX: 000000000000001c RSI: 00002000000002c0 RDI: 0000000000000003
+RBP: 00007f999ec32c91 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f999ee16038 R14: 00007f999ee15fa0 R15: 00007fff22f1ff88
+ </TASK>
+
+Allocated by task 30:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ unpoison_slab_object mm/kasan/common.c:340 [inline]
+ __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:366
+ kasan_slab_alloc include/linux/kasan.h:253 [inline]
+ slab_post_alloc_hook mm/slub.c:4569 [inline]
+ slab_alloc_node mm/slub.c:4898 [inline]
+ kmem_cache_alloc_noprof+0x2bc/0x650 mm/slub.c:4905
+ dst_alloc+0x105/0x170 net/core/dst.c:90
+ ip6_dst_alloc net/ipv6/route.c:342 [inline]
+ ip6_rt_pcpu_alloc net/ipv6/route.c:1419 [inline]
+ rt6_make_pcpu_route net/ipv6/route.c:1468 [inline]
+ ip6_pol_route+0xafb/0x13d0 net/ipv6/route.c:2319
+ pol_lookup_func include/net/ip6_fib.h:667 [inline]
+ fib6_rule_lookup+0x222/0x730 net/ipv6/fib6_rules.c:123
+ ip6_route_output_flags_noref net/ipv6/route.c:2699 [inline]
+ ip6_route_output_flags+0x364/0x5d0 net/ipv6/route.c:2711
+ ip6_route_output include/net/ip6_route.h:100 [inline]
+ ip6_dst_lookup_tail+0x1c3/0x15a0 net/ipv6/ip6_output.c:1155
+ ip6_dst_lookup_flow+0x89/0x150 net/ipv6/ip6_output.c:1288
+ send6+0x4dc/0x910 drivers/net/wireguard/socket.c:139
+ wg_socket_send_skb_to_peer+0x111/0x1d0 drivers/net/wireguard/socket.c:177
+ wg_packet_send_handshake_initiation drivers/net/wireguard/send.c:40 [inline]
+ wg_packet_handshake_send_worker+0x203/0x350 drivers/net/wireguard/send.c:51
+ process_one_work kernel/workqueue.c:3302 [inline]
+ process_scheduled_works+0xb5d/0x1860 kernel/workqueue.c:3385
+ worker_thread+0xa53/0xfc0 kernel/workqueue.c:3466
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+Freed by task 23:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:584
+ poison_slab_object mm/kasan/common.c:253 [inline]
+ __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+ kasan_slab_free include/linux/kasan.h:235 [inline]
+ slab_free_hook mm/slub.c:2689 [inline]
+ slab_free mm/slub.c:6246 [inline]
+ kmem_cache_free+0x182/0x650 mm/slub.c:6373
+ dst_destroy+0x235/0x350 net/core/dst.c:122
+ rcu_do_batch kernel/rcu/tree.c:2617 [inline]
+ rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
+ handle_softirqs+0x22a/0x840 kernel/softirq.c:622
+ run_ksoftirqd+0x36/0x60 kernel/softirq.c:1076
+ smpboot_thread_fn+0x541/0xa50 kernel/smpboot.c:160
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+Last potentially related work creation:
+ kasan_save_stack+0x3e/0x60 mm/kasan/common.c:57
+ kasan_record_aux_stack+0xbd/0xd0 mm/kasan/generic.c:556
+ __call_rcu_common kernel/rcu/tree.c:3131 [inline]
+ call_rcu+0xee/0x890 kernel/rcu/tree.c:3251
+ inet_sock_destruct+0x564/0x740 net/ipv4/af_inet.c:165
+ __sk_destruct+0x8d/0x9d0 net/core/sock.c:2352
+ rcu_do_batch kernel/rcu/tree.c:2617 [inline]
+ rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
+ handle_softirqs+0x22a/0x840 kernel/softirq.c:622
+ run_ksoftirqd+0x36/0x60 kernel/softirq.c:1076
+ smpboot_thread_fn+0x541/0xa50 kernel/smpboot.c:160
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+The buggy address belongs to the object at ffff88810e948480
+ which belongs to the cache ip6_dst_cache of size 232
+The buggy address is located 152 bytes inside of
+ freed 232-byte region [ffff88810e948480, ffff88810e948568)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x10e948
+head: order:1 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+memcg:ffff88810e9480f9
+flags: 0x17ff00000000040(head|node=0|zone=2|lastcpupid=0x7ff)
+page_type: f5(slab)
+raw: 017ff00000000040 ffff8881772f6c80 dead000000000100 dead000000000122
+raw: 0000000000000000 0000018000150015 00000000f5000000 ffff88810e9480f9
+head: 017ff00000000040 ffff8881772f6c80 dead000000000100 dead000000000122
+head: 0000000000000000 0000018000150015 00000000f5000000 ffff88810e9480f9
+head: 017ff00000000001 ffffffffffffff81 00000000ffffffff 00000000ffffffff
+head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000002
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 1, migratetype Unmovable, gfp_mask 0xd2820(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5871, tgid 5871 (kworker/0:3), ts 86853962004, free_ts 86835725693
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x231/0x280 mm/page_alloc.c:1858
+ prep_new_page mm/page_alloc.c:1866 [inline]
+ get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
+ __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
+ alloc_slab_page mm/slub.c:3278 [inline]
+ allocate_slab+0x77/0x660 mm/slub.c:3467
+ new_slab mm/slub.c:3525 [inline]
+ refill_objects+0x339/0x3d0 mm/slub.c:7251
+ refill_sheaf mm/slub.c:2816 [inline]
+ __pcs_replace_empty_main+0x321/0x720 mm/slub.c:4651
+ alloc_from_pcs mm/slub.c:4749 [inline]
+ slab_alloc_node mm/slub.c:4883 [inline]
+ kmem_cache_alloc_noprof+0x37d/0x650 mm/slub.c:4905
+ dst_alloc+0x105/0x170 net/core/dst.c:90
+ ip6_dst_alloc net/ipv6/route.c:342 [inline]
+ ip6_rt_pcpu_alloc net/ipv6/route.c:1419 [inline]
+ rt6_make_pcpu_route net/ipv6/route.c:1468 [inline]
+ ip6_pol_route+0xafb/0x13d0 net/ipv6/route.c:2319
+ pol_lookup_func include/net/ip6_fib.h:667 [inline]
+ fib6_rule_lookup+0x556/0x730 net/ipv6/fib6_rules.c:123
+ ip6_route_input_lookup net/ipv6/route.c:2352 [inline]
+ ip6_route_input+0x730/0xad0 net/ipv6/route.c:2655
+ ip6_rcv_finish+0x141/0x280 net/ipv6/ip6_input.c:117
+ NF_HOOK+0x336/0x3c0 include/linux/netfilter.h:318
+ __netif_receive_skb_one_core net/core/dev.c:6209 [inline]
+ __netif_receive_skb net/core/dev.c:6322 [inline]
+ process_backlog+0x7dd/0x1950 net/core/dev.c:6673
+ __napi_poll+0xae/0x340 net/core/dev.c:7737
+ napi_poll net/core/dev.c:7800 [inline]
+ net_rx_action+0x627/0xf70 net/core/dev.c:7957
+page last free pid 5871 tgid 5871 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ __free_pages_prepare mm/page_alloc.c:1402 [inline]
+ __free_frozen_pages+0xbc7/0xd30 mm/page_alloc.c:2943
+ rcu_do_batch kernel/rcu/tree.c:2617 [inline]
+ rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
+ handle_softirqs+0x22a/0x840 kernel/softirq.c:622
+ do_softirq+0x76/0xd0 kernel/softirq.c:523
+ __local_bh_enable_ip+0xf8/0x130 kernel/softirq.c:450
+ local_bh_enable include/linux/bottom_half.h:33 [inline]
+ __alloc_skb+0x1aa/0x7d0 net/core/skbuff.c:697
+ alloc_skb include/linux/skbuff.h:1383 [inline]
+ mld_newpack+0x14c/0xc90 net/ipv6/mcast.c:1775
+ add_grhead+0x5a/0x2a0 net/ipv6/mcast.c:1886
+ add_grec+0x1452/0x1740 net/ipv6/mcast.c:2025
+ mld_send_cr net/ipv6/mcast.c:2148 [inline]
+ mld_ifc_work+0x6e6/0xe70 net/ipv6/mcast.c:2693
+ process_one_work kernel/workqueue.c:3302 [inline]
+ process_scheduled_works+0xb5d/0x1860 kernel/workqueue.c:3385
+ worker_thread+0xa53/0xfc0 kernel/workqueue.c:3466
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+Memory state around the buggy address:
+ ffff88810e948400: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88810e948480: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff88810e948500: fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc
+                            ^
+ ffff88810e948580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88810e948600: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+
+
+***
+
+KASAN: slab-use-after-free Write in rcuref_put
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      6596a02b207886e9e00bb0161c7fd59fea53c081
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/ad85c1df-394a-471c-b2ea-0e168bab3b26/config
+syz repro: https://ci.syzbot.org/findings/3d5ef30a-8158-4bce-901b-48b8fcc50925/syz_repro
+
+==================================================================
+BUG: KASAN: slab-use-after-free in instrument_atomic_read_write include/linux/instrumented.h:112 [inline]
+BUG: KASAN: slab-use-after-free in atomic_sub_return_release include/linux/atomic/atomic-instrumented.h:326 [inline]
+BUG: KASAN: slab-use-after-free in __rcuref_put include/linux/rcuref.h:109 [inline]
+BUG: KASAN: slab-use-after-free in rcuref_put+0xf7/0x170 include/linux/rcuref.h:173
+Write of size 4 at addr ffff8881130ec940 by task klogd/5265
+
+CPU: 0 UID: 0 PID: 5265 Comm: klogd Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <IRQ>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+ print_report+0x58/0x70 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ check_region_inline mm/kasan/generic.c:-1 [inline]
+ kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
+ instrument_atomic_read_write include/linux/instrumented.h:112 [inline]
+ atomic_sub_return_release include/linux/atomic/atomic-instrumented.h:326 [inline]
+ __rcuref_put include/linux/rcuref.h:109 [inline]
+ rcuref_put+0xf7/0x170 include/linux/rcuref.h:173
+ dst_release+0x24/0x1b0 net/core/dst.c:168
+ inet_sock_destruct+0x564/0x740 net/ipv4/af_inet.c:165
+ __sk_destruct+0x8d/0x9d0 net/core/sock.c:2352
+ rcu_do_batch kernel/rcu/tree.c:2617 [inline]
+ rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
+ handle_softirqs+0x22a/0x840 kernel/softirq.c:622
+ do_softirq+0x76/0xd0 kernel/softirq.c:523
+ </IRQ>
+ <TASK>
+ __local_bh_enable_ip+0xf8/0x130 kernel/softirq.c:450
+ local_bh_enable include/linux/bottom_half.h:33 [inline]
+ __alloc_skb+0x1aa/0x7d0 net/core/skbuff.c:697
+ alloc_skb include/linux/skbuff.h:1383 [inline]
+ alloc_skb_with_frags+0xc8/0x760 net/core/skbuff.c:6734
+ sock_alloc_send_pskb+0x878/0x990 net/core/sock.c:2998
+ unix_dgram_sendmsg+0x460/0x18d0 net/unix/af_unix.c:2131
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ __sys_sendto+0x672/0x710 net/socket.c:2265
+ __do_sys_sendto net/socket.c:2272 [inline]
+ __se_sys_sendto net/socket.c:2268 [inline]
+ __x64_sys_sendto+0xde/0x100 net/socket.c:2268
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f2da31309b5
+Code: 8b 44 24 08 48 83 c4 28 48 98 c3 48 98 c3 41 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 26 45 31 c9 45 31 c0 b8 2c 00 00 00 0f 05 <48> 3d 00 f0 ff ff 76 7a 48 8b 15 44 c4 0c 00 f7 d8 64 89 02 48 83
+RSP: 002b:00007fffcd483948 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f2da31309b5
+RDX: 0000000000000071 RSI: 000055812f074f90 RDI: 0000000000000003
+RBP: 000055812f070910 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000004000 R11: 0000000000000246 R12: 0000000000000013
+R13: 00007f2da32be212 R14: 00007fffcd483a48 R15: 0000000000000000
+ </TASK>
+
+Allocated by task 3571:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ unpoison_slab_object mm/kasan/common.c:340 [inline]
+ __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:366
+ kasan_slab_alloc include/linux/kasan.h:253 [inline]
+ slab_post_alloc_hook mm/slub.c:4569 [inline]
+ slab_alloc_node mm/slub.c:4898 [inline]
+ kmem_cache_alloc_noprof+0x2bc/0x650 mm/slub.c:4905
+ dst_alloc+0x105/0x170 net/core/dst.c:90
+ ip6_dst_alloc net/ipv6/route.c:342 [inline]
+ ip6_rt_pcpu_alloc net/ipv6/route.c:1419 [inline]
+ rt6_make_pcpu_route net/ipv6/route.c:1468 [inline]
+ ip6_pol_route+0xafb/0x13d0 net/ipv6/route.c:2319
+ pol_lookup_func include/net/ip6_fib.h:667 [inline]
+ fib6_rule_lookup+0x222/0x730 net/ipv6/fib6_rules.c:123
+ ip6_route_output_flags_noref net/ipv6/route.c:2699 [inline]
+ ip6_route_output_flags+0x364/0x5d0 net/ipv6/route.c:2711
+ ip6_route_output include/net/ip6_route.h:100 [inline]
+ ip6_dst_lookup_tail+0x1c3/0x15a0 net/ipv6/ip6_output.c:1155
+ ip6_dst_lookup_flow+0x89/0x150 net/ipv6/ip6_output.c:1288
+ send6+0x4dc/0x910 drivers/net/wireguard/socket.c:139
+ wg_socket_send_skb_to_peer+0x111/0x1d0 drivers/net/wireguard/socket.c:177
+ wg_packet_send_handshake_initiation drivers/net/wireguard/send.c:40 [inline]
+ wg_packet_handshake_send_worker+0x203/0x350 drivers/net/wireguard/send.c:51
+ process_one_work kernel/workqueue.c:3302 [inline]
+ process_scheduled_works+0xb5d/0x1860 kernel/workqueue.c:3385
+ worker_thread+0xa53/0xfc0 kernel/workqueue.c:3466
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+Freed by task 5265:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:584
+ poison_slab_object mm/kasan/common.c:253 [inline]
+ __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+ kasan_slab_free include/linux/kasan.h:235 [inline]
+ slab_free_hook mm/slub.c:2689 [inline]
+ slab_free mm/slub.c:6246 [inline]
+ kmem_cache_free+0x182/0x650 mm/slub.c:6373
+ dst_destroy+0x235/0x350 net/core/dst.c:122
+ rcu_do_batch kernel/rcu/tree.c:2617 [inline]
+ rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
+ handle_softirqs+0x22a/0x840 kernel/softirq.c:622
+ do_softirq+0x76/0xd0 kernel/softirq.c:523
+ __local_bh_enable_ip+0xf8/0x130 kernel/softirq.c:450
+ local_bh_enable include/linux/bottom_half.h:33 [inline]
+ __alloc_skb+0x1aa/0x7d0 net/core/skbuff.c:697
+ alloc_skb include/linux/skbuff.h:1383 [inline]
+ alloc_skb_with_frags+0xc8/0x760 net/core/skbuff.c:6734
+ sock_alloc_send_pskb+0x878/0x990 net/core/sock.c:2998
+ unix_dgram_sendmsg+0x460/0x18d0 net/unix/af_unix.c:2131
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ __sys_sendto+0x672/0x710 net/socket.c:2265
+ __do_sys_sendto net/socket.c:2272 [inline]
+ __se_sys_sendto net/socket.c:2268 [inline]
+ __x64_sys_sendto+0xde/0x100 net/socket.c:2268
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Last potentially related work creation:
+ kasan_save_stack+0x3e/0x60 mm/kasan/common.c:57
+ kasan_record_aux_stack+0xbd/0xd0 mm/kasan/generic.c:556
+ __call_rcu_common kernel/rcu/tree.c:3131 [inline]
+ call_rcu+0xee/0x890 kernel/rcu/tree.c:3251
+ udpv6_sendmsg+0x1e9c/0x2690 net/ipv6/udp.c:1712
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x5c7/0x9f0 net/socket.c:2698
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
+ __sys_sendmmsg+0x27c/0x4e0 net/socket.c:2841
+ __do_sys_sendmmsg net/socket.c:2868 [inline]
+ __se_sys_sendmmsg net/socket.c:2865 [inline]
+ __x64_sys_sendmmsg+0xa0/0xc0 net/socket.c:2865
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+The buggy address belongs to the object at ffff8881130ec900
+ which belongs to the cache ip6_dst_cache of size 232
+The buggy address is located 64 bytes inside of
+ freed 232-byte region [ffff8881130ec900, ffff8881130ec9e8)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1130ec
+head: order:1 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+memcg:ffff8881130ec0f9
+flags: 0x17ff00000000040(head|node=0|zone=2|lastcpupid=0x7ff)
+page_type: f5(slab)
+raw: 017ff00000000040 ffff888103f2c500 dead000000000100 dead000000000122
+raw: 0000000000000000 0000018000150015 00000000f5000000 ffff8881130ec0f9
+head: 017ff00000000040 ffff888103f2c500 dead000000000100 dead000000000122
+head: 0000000000000000 0000018000150015 00000000f5000000 ffff8881130ec0f9
+head: 017ff00000000001 ffffffffffffff81 00000000ffffffff 00000000ffffffff
+head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000002
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 1, migratetype Unmovable, gfp_mask 0xd2820(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 13, tgid 13 (kworker/u8:1), ts 74988667148, free_ts 74987085458
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x231/0x280 mm/page_alloc.c:1858
+ prep_new_page mm/page_alloc.c:1866 [inline]
+ get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
+ __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
+ alloc_slab_page mm/slub.c:3278 [inline]
+ allocate_slab+0x77/0x660 mm/slub.c:3467
+ new_slab mm/slub.c:3525 [inline]
+ refill_objects+0x339/0x3d0 mm/slub.c:7251
+ refill_sheaf mm/slub.c:2816 [inline]
+ __pcs_replace_empty_main+0x321/0x720 mm/slub.c:4651
+ alloc_from_pcs mm/slub.c:4749 [inline]
+ slab_alloc_node mm/slub.c:4883 [inline]
+ kmem_cache_alloc_noprof+0x37d/0x650 mm/slub.c:4905
+ dst_alloc+0x105/0x170 net/core/dst.c:90
+ ip6_dst_alloc net/ipv6/route.c:342 [inline]
+ icmp6_dst_alloc+0x75/0x440 net/ipv6/route.c:3337
+ ndisc_send_skb+0x44a/0x1670 net/ipv6/ndisc.c:491
+ ndisc_send_ns+0xd7/0x160 net/ipv6/ndisc.c:671
+ addrconf_dad_work+0xac4/0x14c0 net/ipv6/addrconf.c:4294
+ process_one_work kernel/workqueue.c:3302 [inline]
+ process_scheduled_works+0xb5d/0x1860 kernel/workqueue.c:3385
+ worker_thread+0xa53/0xfc0 kernel/workqueue.c:3466
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+page last free pid 5952 tgid 5952 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ __free_pages_prepare mm/page_alloc.c:1402 [inline]
+ __free_frozen_pages+0xbc7/0xd30 mm/page_alloc.c:2943
+ __slab_free+0x274/0x2c0 mm/slub.c:5608
+ qlink_free mm/kasan/quarantine.c:163 [inline]
+ qlist_free_all+0x99/0x100 mm/kasan/quarantine.c:179
+ kasan_quarantine_reduce+0x148/0x160 mm/kasan/quarantine.c:286
+ __kasan_slab_alloc+0x22/0x80 mm/kasan/common.c:350
+ kasan_slab_alloc include/linux/kasan.h:253 [inline]
+ slab_post_alloc_hook mm/slub.c:4569 [inline]
+ slab_alloc_node mm/slub.c:4898 [inline]
+ kmem_cache_alloc_noprof+0x2bc/0x650 mm/slub.c:4905
+ alloc_empty_file+0x5b/0x1d0 fs/file_table.c:262
+ alloc_file fs/file_table.c:396 [inline]
+ alloc_file_pseudo+0x155/0x240 fs/file_table.c:425
+ sock_alloc_file+0xb8/0x2e0 net/socket.c:543
+ sock_map_fd net/socket.c:573 [inline]
+ __sys_socket+0x13c/0x1b0 net/socket.c:1815
+ __do_sys_socket net/socket.c:1820 [inline]
+ __se_sys_socket net/socket.c:1818 [inline]
+ __x64_sys_socket+0x7a/0x90 net/socket.c:1818
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Memory state around the buggy address:
+ ffff8881130ec800: fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc
+ ffff8881130ec880: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff8881130ec900: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                           ^
+ ffff8881130ec980: fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc
+ ffff8881130eca00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
+
+
+***
+
+WARNING in rcuref_put_slowpath
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      6596a02b207886e9e00bb0161c7fd59fea53c081
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/ad85c1df-394a-471c-b2ea-0e168bab3b26/config
+syz repro: https://ci.syzbot.org/findings/e5d6936b-9f45-45fd-88ab-8e917a818ac4/syz_repro
+
+------------[ cut here ]------------
+rcuref - imbalanced put()
+WARNING: lib/rcuref.c:266 at rcuref_put_slowpath+0x16e/0x1d0 lib/rcuref.c:266, CPU#0: udevd/5862
+Modules linked in:
+CPU: 0 UID: 0 PID: 5862 Comm: udevd Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:rcuref_put_slowpath+0x16e/0x1d0 lib/rcuref.c:266
+Code: c1 e8 03 42 0f b6 04 38 84 c0 75 48 c7 03 00 00 00 a0 31 c0 e9 6d ff ff ff e8 9e ef 06 07 e8 99 1c 14 fd 48 8d 3d 02 a8 8c 0b <67> 48 0f b9 3a 48 89 df be 04 00 00 00 e8 50 5a 7f fd 48 89 d8 48
+RSP: 0018:ffffc90000007c20 EFLAGS: 00010246
+RAX: ffffffff84b1b457 RBX: ffff88811617cac0 RCX: ffff8881706f1d80
+RDX: 0000000000000100 RSI: 00000000dfffffff RDI: ffffffff903e5c60
+RBP: ffffc90000007cb8 R08: ffff88811617cac3 R09: 1ffff11022c2f958
+R10: dffffc0000000000 R11: ffffed1022c2f959 R12: 1ffff92000000f84
+R13: ffff888116047a08 R14: 00000000dfffffff R15: dffffc0000000000
+FS:  00007f0704ed8c80(0000) GS:ffff88818dc14000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f58f0b456b8 CR3: 000000016883c000 CR4: 00000000000006f0
+Call Trace:
+ <IRQ>
+ __rcuref_put include/linux/rcuref.h:117 [inline]
+ rcuref_put+0x15b/0x170 include/linux/rcuref.h:173
+ dst_release+0x24/0x1b0 net/core/dst.c:168
+ inet_sock_destruct+0x564/0x740 net/ipv4/af_inet.c:165
+ __sk_destruct+0x8d/0x9d0 net/core/sock.c:2352
+ rcu_do_batch kernel/rcu/tree.c:2617 [inline]
+ rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
+ handle_softirqs+0x22a/0x840 kernel/softirq.c:622
+ __do_softirq kernel/softirq.c:656 [inline]
+ invoke_softirq kernel/softirq.c:496 [inline]
+ __irq_exit_rcu+0xca/0x220 kernel/softirq.c:735
+ irq_exit_rcu+0x9/0x30 kernel/softirq.c:752
+ instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1061 [inline]
+ sysvec_apic_timer_interrupt+0xa6/0xc0 arch/x86/kernel/apic/apic.c:1061
+ </IRQ>
+ <TASK>
+ asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.h:697
+RIP: 0010:lock_acquire+0x221/0x350 kernel/locking/lockdep.c:5872
+Code: ff ff ff e8 a1 d7 16 0a f7 44 24 08 00 02 00 00 0f 84 3a ff ff ff 65 48 8b 05 8b f2 9e 11 48 3b 44 24 58 75 33 fb 48 83 c4 60 <5b> 41 5c 41 5d 41 5e 41 5f 5d c3 cc cc cc cc cc 48 8d 3d 58 0a 95
+RSP: 0018:ffffc900032075b0 EFLAGS: 00000282
+RAX: 5df8ffef7d258800 RBX: 0000000000000000 RCX: 0000000000000046
+RDX: 00000000c1e3b5cc RSI: ffffffff8e24e50c RDI: ffffffff8c289ee0
+RBP: ffffffff81d5c3d6 R08: ffffffff81d5c3d6 R09: ffffffff8e95cce0
+R10: ffffc900032076d8 R11: ffffffff81b105c0 R12: 0000000000000002
+R13: ffffffff8e95cce0 R14: 0000000000000000 R15: 0000000000000246
+ rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
+ rcu_read_lock include/linux/rcupdate.h:838 [inline]
+ is_bpf_text_address+0x47/0x2b0 kernel/bpf/core.c:747
+ kernel_text_address+0xa5/0xe0 kernel/extable.c:125
+ __kernel_text_address+0xd/0x30 kernel/extable.c:79
+ unwind_get_return_address+0x4d/0x90 arch/x86/kernel/unwind_orc.c:385
+ arch_stack_walk+0xfb/0x150 arch/x86/kernel/stacktrace.c:26
+ stack_trace_save+0xa9/0x100 kernel/stacktrace.c:122
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:584
+ poison_slab_object mm/kasan/common.c:253 [inline]
+ __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+ kasan_slab_free include/linux/kasan.h:235 [inline]
+ slab_free_hook mm/slub.c:2689 [inline]
+ slab_free mm/slub.c:6246 [inline]
+ kfree+0x1c5/0x640 mm/slub.c:6561
+ tomoyo_path_perm+0x403/0x560 security/tomoyo/file.c:847
+ security_inode_getattr+0x12b/0x310 security/security.c:1895
+ vfs_getattr fs/stat.c:259 [inline]
+ vfs_fstat fs/stat.c:281 [inline]
+ vfs_fstatat+0xb4/0x170 fs/stat.c:371
+ __do_sys_newfstatat fs/stat.c:538 [inline]
+ __se_sys_newfstatat fs/stat.c:532 [inline]
+ __x64_sys_newfstatat+0x151/0x200 fs/stat.c:532
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f0704b165f4
+Code: 64 c7 00 09 00 00 00 83 c8 ff c3 48 89 f2 b9 00 01 00 00 48 89 fe bf 9c ff ff ff e9 00 00 00 00 41 89 ca b8 06 01 00 00 0f 05 <45> 31 c0 3d 00 f0 ff ff 76 10 48 8b 15 03 a8 0d 00 f7 d8 41 83 c8
+RSP: 002b:00007ffff3316628 EFLAGS: 00000206 ORIG_RAX: 0000000000000106
+RAX: ffffffffffffffda RBX: 00007f0704bee460 RCX: 00007f0704b165f4
+RDX: 00007ffff3316630 RSI: 00007f0704bb3130 RDI: 0000000000000009
+RBP: 0000563dde263be0 R08: 0000000000000000 R09: 0000000000000001
+R10: 0000000000001000 R11: 0000000000000206 R12: 0000000000000002
+R13: 0000000000000002 R14: 0000563dde263be0 R15: 0000563db7af4ea6
+ </TASK>
+----------------
+Code disassembly (best guess):
+   0:	c1 e8 03             	shr    $0x3,%eax
+   3:	42 0f b6 04 38       	movzbl (%rax,%r15,1),%eax
+   8:	84 c0                	test   %al,%al
+   a:	75 48                	jne    0x54
+   c:	c7 03 00 00 00 a0    	movl   $0xa0000000,(%rbx)
+  12:	31 c0                	xor    %eax,%eax
+  14:	e9 6d ff ff ff       	jmp    0xffffff86
+  19:	e8 9e ef 06 07       	call   0x706efbc
+  1e:	e8 99 1c 14 fd       	call   0xfd141cbc
+  23:	48 8d 3d 02 a8 8c 0b 	lea    0xb8ca802(%rip),%rdi        # 0xb8ca82c
+* 2a:	67 48 0f b9 3a       	ud1    (%edx),%rdi <-- trapping instruction
+  2f:	48 89 df             	mov    %rbx,%rdi
+  32:	be 04 00 00 00       	mov    $0x4,%esi
+  37:	e8 50 5a 7f fd       	call   0xfd7f5a8c
+  3c:	48 89 d8             	mov    %rbx,%rax
+  3f:	48                   	rex.W
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
