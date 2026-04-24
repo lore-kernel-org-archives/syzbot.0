@@ -1,1455 +1,1150 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40CD954763
-	for <syzbot@lists.linux.dev>; Fri, 24 Apr 2026 07:34:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2A3C3033FC
+	for <syzbot@lists.linux.dev>; Fri, 24 Apr 2026 07:34:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.41
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777016092; cv=pass; b=KMI+BjU/SVPNTRrpxMdQYMY67wQZTb8Xxg4JP38w7ESlFQjASyy56c9+7F5Cq3ZJ0NXCccKa9FbLSnfTJ7NgOJxnaOPU8QNgbiaYE/z7hb2b2GKtAy6H+2I9bP7aLzfs+x5TRG+osllAK7iDY928qgcq6YShP7HsrDCvA7CEyhk=
+	t=1777016103; cv=pass; b=ZIO3X1nyB1BJk6yz9/m7MZDnjJi6JPcoi1z1/90RtRcBDnJK9DaRPhtNO7eCGjUCfQJtVsbzM2SANNlKISGb3u+pieiedWjzmk2yI9Fq8c6OX/9ASTdgcF4DHteoA+CPfil9Gn2sIRmreEdTETa30ly+7Uu9ttMip25RJoqnSw0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777016092; c=relaxed/simple;
-	bh=hdwfK76/oO6g1cojw+jl7wo71uBQzHT0RABelIupwow=;
+	s=arc-20240116; t=1777016103; c=relaxed/simple;
+	bh=u97oxT+rYwOAYFcqHhmExtQJ52juIJ7Oc/+ImH19yvI=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=IQRTyTlLnW6fSgxqqjtskz51UmnH8ow02AT1bavjzjgAunFesJGYxBRm3CMQ3Q8rxLFpTZkRPMT8f9R6ZeDhjFMbBpc/VVPFlMDLP3DHdj7yDUly+6N//CfWlySH+KKGuIZe9UKDWvVzjEdMjaKzCuZvrSzrbEEZ6twdjCT/+S8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=U9k7g/3x; arc=pass smtp.client-ip=209.85.128.49
+	 To:Cc:Content-Type; b=rC0yZpcJ/E/Hc4qfJVTBnaQW3sIZXgLrydYSVWOFZZPCu33iD8TSVuPjnmJ2SFwil4c84/VjmyAFyxh9GzEUdldnKuBy5cmxr1dGQTPnIOGcbHFshaOQFpuY9rlSR5AhGe8n9ASEwuKEau5arGKUGBLijLaDDrUpL0cunOEQs+8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=an6rs7Yh; arc=pass smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="U9k7g/3x"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4891c00e7aeso50170875e9.2
-        for <syzbot@lists.linux.dev>; Fri, 24 Apr 2026 00:34:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777016087; cv=none;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="an6rs7Yh"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4852a9c6309so69066665e9.0
+        for <syzbot@lists.linux.dev>; Fri, 24 Apr 2026 00:34:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777016098; cv=none;
         d=google.com; s=arc-20240605;
-        b=jKONJWB7waTndzzQBJeKd+th1pOMGPstgkHcWVEyycmslKniFA7qI3eDR9l6E/DaKA
-         k4i7ckUJN79Z0IUxdMIAGGukwsJd00e0G+FCAbbiGbINl4L0PNMlctvpi4WvdAfAm4D0
-         rPFObwPW9rT4pKXOVRwdTU4Jx4cOBhS87Q4BRFU6h8Tmo4DwgeaBZKRXVdHlkVl+DObb
-         qROSkR30EeLkSC+OZQVE6j2IIQESnzk+dHffflsYD5EqT+CV6IVg36HBRUv7rSiVhcme
-         YjrBUcbfVmGGHesu9uZ/BBINAUbV/lhlSf/xdS3d38niwDQlH5/UQgFdgT8mc9MRJtOD
-         lOEg==
+        b=CDw7/l6OzIl+VQH9EX5JlVEb/P+BapktF9m1FJagzMqVU/1bGM2oetacG425FyUHaJ
+         iNnJ7N9oPHkaOztVadvHCUHMgcU8P3JQf3LwsdKJth4WWz5nuyH4fdfDNrZTdAzfaTWZ
+         NMegQs87OpzfxLfGwRLCwxzxzGtQAwWZcL0SNyMkfeS8DK+YYQCbdLYazV31NAVou6Wn
+         OrxraM5MmYsWOmQMI3/o7wnUT5yHAs8Ezu6CaTE+16QDZI1m+1IzbBTVJHdefgKpPItg
+         NIxRjCr/JJnD4RM+Y5hr740W7AyToJVATjkw6Ec7jVX678TM9ZCvViNJ3Cpvovv8/P30
+         3Ccg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=93Wb+UeDqWywMklXRzyfpy+JySoundWjI2o9h95io58=;
-        fh=zT3ddqbErFQy15d8vuu+2QaDwmDcJ3Hqih2Cth7PedY=;
-        b=ZKR119kyPZ7Zi1HEJTYcBBRlL94Es7C83+7AiMlwV3O0O/gOjoHt1KxhNrA2DYIFZq
-         vWztqzXXCRE9pg8ehf/OIf4oCEH6OgEs9xvN6wfzWG/0ZSCIgAueqIxfH/9kJC2WLeAG
-         d5rbpENNO8fjZSPHXmKHGo2rKlJg+MLPNdG1zXCPFaQ2Lun0nGr/EAsGyBOoGdKjHGRA
-         pHW5XEj6AVF1C7sK9LPCzCs1XtVZVTaf4g1wT0MDh4DTU1DiIDaRz5cnGMCGfeP/+Xjy
-         PAfTkrtDVFadSuT8rn7HwgJwzukb3NH1njhGkPbeRSjpYMKvjEOEMBlE5dE6oNmEcbxl
-         YrHQ==;
+        bh=Cfj3JihknUa9zZ0xMqG0zQvvrTN6sV8rTQJNsj5kfk0=;
+        fh=8Iq8hnpcLK+gA+kJWKGK72ffEU+M5tqX1EP93bYFUkc=;
+        b=lqikJpL5oXfNdYlqaFH2stQ1eZOZSkiRDBvebwBox7eQWR+17Y7u8LF2c0vGwiWm7n
+         0OS7nQq2A0OIh2jJZ8V7a5Zib0BmlM14YasXWpvGz6/liIf1+kKPfsbQFTCTSWX9XE01
+         on2ptMjAuBhp3gBVBYQxXLgS28jjmYjCjYDxVbV2Gm+fs2XedHTx6OwwtHoj9OmgQr7I
+         xgF4ruoYo38l7PRvgDO2GfnZXDlhBhT4O9cyAUtiRwAD7B2kopCxImFiX/uOeXFkH1m8
+         94jvzXDeKyUVxj8PBOJsp6Wm6FmVfZ7tAUcNKkhrCs7BGUVAcSzAP8OgMO5Q5BTUdbFl
+         EqGw==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1777016087; x=1777620887; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1777016098; x=1777620898; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=93Wb+UeDqWywMklXRzyfpy+JySoundWjI2o9h95io58=;
-        b=U9k7g/3xhrXbt/dh7A22v7rR9QlcG594l9E/lzWeLlVInRy+kk19b/FwUgJWk1lrMN
-         XVQDoiDtfBFd9fcwbpi/LZfYbm57gJiv73eGv6qe7So8Rt0qB8oUJHRJEVpOl7Z7I83C
-         pm0bXN5qhlMOMGVi1XVv64CeSGmWnzO9/7Ue4+YxK58uxcCXoRpkzevDty4QAn7jhylI
-         uIXqovIay1wZtRMYHORhxYo94UXjMxrWqfok+VJPPMo0bDhDPvWppzGHSW1ch5M48LHr
-         yg8PVmQ+4kkwHdTzl6T+pgYP2azgP4wAVhAPBd0zqCQGvLL3OQKLTDPRqOhKIaw3sx5K
-         Dwhg==
+        bh=Cfj3JihknUa9zZ0xMqG0zQvvrTN6sV8rTQJNsj5kfk0=;
+        b=an6rs7YhF5A08DQkjfVNtTbiEBP9KxzEP4gIHka5V79apEYtE2WchvkBoh2QsdB1iV
+         T7JtzCuKTydGLlxspcP5/zNsfGctxnXoawLHguT6kLeFF1IW3JNHiPrnze+8ynplx5KT
+         9C/CKQgmEsKuYrVbL7t0GMgLX7QtnpYrXNZFYkEDIt16O9EmjKQBHUSU1POXLXJJhw7f
+         M8VFxfaDiwJ2cppD7NVSo9ZOs7kJJ4lTrZHOeyWIgMAR2NTMWrZrRQsMByV77tAJhdtk
+         sS7L0RwUSBiozjWzIF+vG4kiixbzxXHC0PCyi4XVxUF29dTcOpX8epbU804CaORJygT5
+         BcKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777016087; x=1777620887;
+        d=1e100.net; s=20251104; t=1777016098; x=1777620898;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=93Wb+UeDqWywMklXRzyfpy+JySoundWjI2o9h95io58=;
-        b=T3X/2KQQSHJElFGR0Dd9wMygma5APqPOVdZA5BaL6a5ibQ2l+itmHSf3PqzeUP2Aik
-         9uaURnYDNOc9ydQmZU8j91hDiuNmuRXTDrFsQYk+zNmAFhVpnjtpET2RwicHpcdz6/kg
-         VFIf4EG7WjA1LM7cu5CfDysTRvP9JrsfWTtDpY7wOmHOllfQlCQ7Ci/3Yc2U5HFwmFun
-         YpAZHy0DWCJXY/rTYGiYVwyjbdU6i0D1T15K2idp2wOu9JDE75M0uJu9rWpY7srnJk5i
-         zdhNTKLNVallqHbrwMmKFlXOenRNc4lUIYwYqzNzG+S3Pg70nzBdE55GuHpSFZvBQwwV
-         K7RQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+bl5rKSKjU7AgVSWc4g/mn/21P9YuNuG0MsrR1ZhBCxhaDCudrEcz7alsNgFgpdTLcZznxLl4=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz3ByR8z8B4axmDTMVhz+sHO3uISzZSVzD8dZNosJIe0INTV2s2
-	0ohWr6dtda3b34ihhvKvm0MzfnP4qJFK4uhpyyEYy6Csj48Ic8AqcHYBu8zNzafRYSwGfxg7kiu
-	SyMDV+2rHFQ5DP9GX28tnjMmq6vfS4hvZSSE1r+6q
-X-Gm-Gg: AeBDieuVL89sxtJTEwNZIOdkUpu1y9DfWnMbFrgIZldUPS/M1+2LtHQP8D81iOEZftT
-	m2/7PpGEipyRMNKhwJGN1uap46tbzFxwlHJiBg0RtWkxpHlbJlUDaqwWk12S/mGxsCGcwwI+ZM1
-	dx23jjMPcAN4ZhFz4Gt1pQacE/0yoNsjxQhQTmh1GEsRGsJAH/dgqYEJrW0HppAEenl2lC6Orb6
-	Z6eDRSFe6r3O1c0/6/zy/SkSXn5L8AuFe+oXxE13SYOqcq7zkTwnsKUvvMFxTWCb5wHqFYB8Vli
-	63V8+7XjVjERc4skcrO2ua8NTdg3Qvpm8HLSU80Xj8v2obDM7AltlTFyKi4yfnRekAA/XTaXYo3
-	h/PpMqO4zlTl2tpSmFQ==
-X-Received: by 2002:a05:600c:3006:b0:487:1108:48b8 with SMTP id
- 5b1f17b1804b1-488fb739f86mr238087675e9.2.1777016085661; Fri, 24 Apr 2026
- 00:34:45 -0700 (PDT)
+        bh=Cfj3JihknUa9zZ0xMqG0zQvvrTN6sV8rTQJNsj5kfk0=;
+        b=QimgQqkWQ/jqu00ds201tyYYXAEZLSL0Bj6HKXsFaP5O2CwCkjR6h3+IMDZIWOb9Q4
+         S5mQ7FZIDUB7B1yYeoZGcP2X4rhUL45LRDhDJ18KkPw1wNhXW88EUKxpMyDLMy0m5WTT
+         wE98hV2KTDueK4ZNV9YgoWMJxP0SWm+llX6b9tYXc5A53ph2qY22oX5UrMX4VxX68T+m
+         HTMTCh4CCdT5F/pxg3h5tvAV6pULXQR1f3QqWFtUjX/5vBQ5psGAWfyUq4UZJVEZ8Vaq
+         sxVdDxXq5YjhJpAFtG7kQdgmim9PjPeWoT7HHZuyQ9tVy/KT2rGIIOhFCF8ixBXXUCyp
+         I33w==
+X-Forwarded-Encrypted: i=1; AFNElJ++Noh04IP84h4mXsdumR086jcxdwo1vC48zaefYcU8yj+j75oPzLXiBmH4qGEefFCbZkUSy2o=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzwuhqxJ9VQlZyVGvzAoROt5iwcdUhPOeWSAqrToOwqmkv9m3T8
+	4LysPbTXVO/LTLOHEIY0lWaTN9RKg8v9QMrVkeqODtq7GfQCHKjBE6/LoaSHe2UnCuGdDbdez22
+	cfPqOS9Forkypcz4UKaCK9JrUtjRpCpD3po2/FInm
+X-Gm-Gg: AeBDiesm1n0eC0KAVe6e9SpYqh/dxaSs0xwIsXh6ddkpgy41LlKI8WoBLGMfqhOAdTp
+	Ijq9kfvkyFuKJb0kzpyudBUpzquEifjSZvg13kwANl3HP+cnz81H+qW+qhD5vzDP6ivkT/Xt0PX
+	ULeBe9zF+jy5ZadgSvQWfuCicklRzawFkkl0IxwfWGYC8qcDcyXVHvVGPhbIF3TJSIZHk6rL8lE
+	zsHy55Qjlq2FxXTCSXFMqR/piT/Xtr8HKyPlm3VesdYiosvbugELDtPjcJIKGVfKf+HUXNFbavY
+	UeyrWm2yKZ7u0tlFBbmPRuoPN5fdYJ6McRzR4YHK+HemVqpqNaec9sS+k4gZKKRpBvms8s0E+Pu
+	SseoMi4voD2cTaaq2rg==
+X-Received: by 2002:a05:600c:890c:b0:485:3ff1:d5ed with SMTP id
+ 5b1f17b1804b1-488fb739cd9mr362582995e9.1.1777016097310; Fri, 24 Apr 2026
+ 00:34:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <69ea9513.a00a0220.9259.002d.GAE@google.com>
-In-Reply-To: <69ea9513.a00a0220.9259.002d.GAE@google.com>
+References: <69eacf03.a00a0220.17a17.004c.GAE@google.com>
+In-Reply-To: <69eacf03.a00a0220.17a17.004c.GAE@google.com>
 From: Pimyn Girgis <pimyn@google.com>
-Date: Fri, 24 Apr 2026 09:34:34 +0200
-X-Gm-Features: AQROBzCCrgKewyKOQEMQGgiB3TcKPO5-g1A-F0DSD57tjWOOndnoF8bE5iP2x3s
-Message-ID: <CAJWNTGyPhS+pvhyKCikRzLF9HC9tF7Sxk6OxiSx3a=4E2ROm3g@mail.gmail.com>
-Subject: Re: [moderation/CI] Re: mm/lruvec: preemptively free dead folios
- during lru_add drain
-To: syzbot ci <syzbot+cif1732913c6ecf512@syzkaller.appspotmail.com>
+Date: Fri, 24 Apr 2026 09:34:45 +0200
+X-Gm-Features: AQROBzArU_UPVqNTredOPhzvEx_7jEFX1mP4Hmvsvasds71mDrWyQzhD_B8q0Gs
+Message-ID: <CAJWNTGyCpQ6SW=UGbiyDN+XGQ6X8jizGoFP-og0K__9jT-kfsw@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: netlink: clean up failed initial dump-start state
+To: syzbot ci <syzbot+ci8e383eae6e0116dc@syzkaller.appspotmail.com>
 Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 #syz upstream
 
-On Thu, Apr 23, 2026 at 11:54=E2=80=AFPM syzbot ci
-<syzbot+cif1732913c6ecf512@syzkaller.appspotmail.com> wrote:
+On Fri, Apr 24, 2026 at 4:01=E2=80=AFAM syzbot ci
+<syzbot+ci8e383eae6e0116dc@syzkaller.appspotmail.com> wrote:
 >
 > syzbot ci has tested the following series
 >
-> [v1] mm/lruvec: preemptively free dead folios during lru_add drain
-> https://lore.kernel.org/all/20260423164307.29805-1-jp.kobryn@linux.dev
-> * [PATCH] mm/lruvec: preemptively free dead folios during lru_add drain
+> [v2] netlink: clean up failed initial dump-start state
+> https://lore.kernel.org/all/20260423212827.1177552-1-michael.bommarito@gm=
+ail.com
+> * [PATCH net-next v2] netlink: clean up failed initial dump-start state
 >
 > and found the following issues:
-> * BUG: Bad page state in do_pte_missing
-> * BUG: Bad page state in do_wp_page
+> * KASAN: slab-use-after-free Read in inet_diag_dump_done
+> * KASAN: slab-use-after-free Read in netlink_dump_done
+> * KASAN: slab-use-after-free Read in netlink_rcv_skb
+> * KASAN: slab-use-after-free Read in rdma_nl_rcv
+> * KASAN: slab-use-after-free Write in genl_done
 >
 > Full report is available here:
-> https://ci.syzbot.org/series/d16e663b-bcf5-49dd-937d-24a22e0c8d6a
+> https://ci.syzbot.org/series/d76773fc-9b84-4669-b27e-791385b0b902
 >
 > ***
 >
-> BUG: Bad page state in do_pte_missing
+> KASAN: slab-use-after-free Read in inet_diag_dump_done
 >
-> tree:      mm-new
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/=
-mm.git
-> base:      c9183ec6e2e3bd26a017392d6c3eaa40c580f153
+> tree:      torvalds
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torva=
+lds/linux
+> base:      0b5e8d7999076ac3c490fc18376a404e2626abff
 > arch:      amd64
 > compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~e=
 xp1~20251221153213.50), Debian LLD 21.1.8
-> config:    https://ci.syzbot.org/builds/4d1a53f4-f506-4ba9-a8c2-a48196f95=
-abc/config
-> syz repro: https://ci.syzbot.org/findings/19ba977e-39f2-4f40-b936-a8642aa=
-ab537/syz_repro
+> config:    https://ci.syzbot.org/builds/cb46a152-33c1-4b5e-bb75-bab2ecb45=
+113/config
+> syz repro: https://ci.syzbot.org/findings/546e718b-5aa2-4705-85d2-51b88eb=
+73b34/syz_repro
 >
-> BUG: Bad page state: 15292 messages suppressed
-> BUG: Bad page state in process syz.2.1435  pfn:1af40e
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x7f14c9e16 pf=
-n:0x1af40e
-> flags: 0x57ff00000020908(uptodate|active|owner_2|swapbacked|node=3D1|zone=
-=3D2|lastcpupid=3D0x7ff)
-> raw: 057ff00000020908 0000000000000000 dead000000000122 0000000000000000
-> raw: 00000007f14c9e16 0000000000000000 00000000ffffffff 0000000000000000
-> page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Movable, gfp_mask 0x140dca(G=
-FP_HIGHUSER_MOVABLE|__GFP_ZERO|__GFP_COMP), pid 8846, tgid 8846 (syz.0.1431=
-), ts 86965635591, free_ts 69887114766
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
->  folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
->  vma_alloc_folio_noprof+0xe1/0x1e0 mm/mempolicy.c:2544
->  folio_prealloc mm/memory.c:-1 [inline]
->  alloc_anon_folio mm/memory.c:5282 [inline]
->  do_anonymous_page mm/memory.c:5376 [inline]
->  do_pte_missing+0x159d/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> page last free pid 5831 tgid 5831 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  free_unref_folios+0xcec/0x1480 mm/page_alloc.c:3004
->  folios_put_refs+0xa3d/0xb80 mm/swap.c:1042
->  free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
->  __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
->  tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
->  tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
->  tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
->  tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
->  unmap_region+0x2a5/0x330 mm/vma.c:491
->  vms_clear_ptes mm/vma.c:1303 [inline]
->  vms_complete_munmap_vmas+0x493/0xc60 mm/vma.c:1345
->  do_vmi_align_munmap+0x3b7/0x4b0 mm/vma.c:1604
->  do_vmi_munmap+0x252/0x2d0 mm/vma.c:1652
->  __vm_munmap+0x22c/0x3d0 mm/vma.c:3285
->  __do_sys_munmap mm/mmap.c:1079 [inline]
->  __se_sys_munmap mm/mmap.c:1076 [inline]
->  __x64_sys_munmap+0x60/0x70 mm/mmap.c:1076
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 8855 Comm: syz.2.1435 Tainted: G    B               sy=
-zkaller #0 PREEMPT(full)
-> Tainted: [B]=3DBAD_PAGE
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  bad_page+0x17f/0x1c0 mm/page_alloc.c:632
->  free_page_is_bad mm/page_alloc.c:1073 [inline]
->  __free_pages_prepare mm/page_alloc.c:1393 [inline]
->  free_unref_folios+0xdcc/0x1480 mm/page_alloc.c:3004
->  folio_batch_move_lru+0x816/0x9e0 mm/swap.c:206
->  __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:226
->  folio_add_lru_vma+0x196/0x210 mm/swap.c:566
->  map_anon_folio_pte_nopf+0x2ee/0x5e0 mm/memory.c:5301
->  map_anon_folio_pte_pf+0xbe/0x260 mm/memory.c:5311
->  do_anonymous_page mm/memory.c:5413 [inline]
->  do_pte_missing+0x2d48/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> RIP: 0033:0x7fca082696d2
-> Code: 48 89 ca 48 c1 e2 04 48 29 ca 48 8d 0d 5f c9 3a 00 48 c1 e2 04 48 0=
-1 c2 8b 44 24 1c c6 42 20 01 89 42 24 8b 44 24 24 89 6a 28 <89> 42 78 0f b6=
- 44 24 43 89 72 2c 88 44 19 04 8b 44 24 20 31 c9 89
-> RSP: 002b:00007ffc5adb04c0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fca08616018
-> RDX: 00007fca08615fa0 RSI: 0000000000000003 RDI: 0000000000000000
-> RBP: 0000000000001cd6 R08: 00007fca08615fa0 R09: 00007ffc5adb0357
-> R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fca08615fac R14: 00007fca08615fa8 R15: 00007fca08615fa0
->  </TASK>
-> BUG: Bad page state in process syz.2.1435  pfn:1af40f
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x7f14c9e17 pf=
-n:0x1af40f
-> flags: 0x57ff00000020908(uptodate|active|owner_2|swapbacked|node=3D1|zone=
-=3D2|lastcpupid=3D0x7ff)
-> raw: 057ff00000020908 0000000000000000 dead000000000122 0000000000000000
-> raw: 00000007f14c9e17 0000000000000000 00000000ffffffff 0000000000000000
-> page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Movable, gfp_mask 0x140cca(G=
-FP_HIGHUSER_MOVABLE|__GFP_COMP), pid 8846, tgid 8846 (syz.0.1431), ts 86965=
-651367, free_ts 69887118923
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
->  folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
->  vma_alloc_folio_noprof+0xe1/0x1e0 mm/mempolicy.c:2544
->  folio_prealloc mm/memory.c:-1 [inline]
->  wp_page_copy mm/memory.c:3859 [inline]
->  do_wp_page+0x118a/0x4cc0 mm/memory.c:4320
->  handle_pte_fault mm/memory.c:6427 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x151d/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> page last free pid 5831 tgid 5831 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  free_unref_folios+0xcec/0x1480 mm/page_alloc.c:3004
->  folios_put_refs+0xa3d/0xb80 mm/swap.c:1042
->  free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
->  __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
->  tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
->  tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
->  tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
->  tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
->  unmap_region+0x2a5/0x330 mm/vma.c:491
->  vms_clear_ptes mm/vma.c:1303 [inline]
->  vms_complete_munmap_vmas+0x493/0xc60 mm/vma.c:1345
->  do_vmi_align_munmap+0x3b7/0x4b0 mm/vma.c:1604
->  do_vmi_munmap+0x252/0x2d0 mm/vma.c:1652
->  __vm_munmap+0x22c/0x3d0 mm/vma.c:3285
->  __do_sys_munmap mm/mmap.c:1079 [inline]
->  __se_sys_munmap mm/mmap.c:1076 [inline]
->  __x64_sys_munmap+0x60/0x70 mm/mmap.c:1076
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 8855 Comm: syz.2.1435 Tainted: G    B               sy=
-zkaller #0 PREEMPT(full)
-> Tainted: [B]=3DBAD_PAGE
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  bad_page+0x17f/0x1c0 mm/page_alloc.c:632
->  free_page_is_bad mm/page_alloc.c:1073 [inline]
->  __free_pages_prepare mm/page_alloc.c:1393 [inline]
->  free_unref_folios+0xdcc/0x1480 mm/page_alloc.c:3004
->  folio_batch_move_lru+0x816/0x9e0 mm/swap.c:206
->  __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:226
->  folio_add_lru_vma+0x196/0x210 mm/swap.c:566
->  map_anon_folio_pte_nopf+0x2ee/0x5e0 mm/memory.c:5301
->  map_anon_folio_pte_pf+0xbe/0x260 mm/memory.c:5311
->  do_anonymous_page mm/memory.c:5413 [inline]
->  do_pte_missing+0x2d48/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> RIP: 0033:0x7fca082696d2
-> Code: 48 89 ca 48 c1 e2 04 48 29 ca 48 8d 0d 5f c9 3a 00 48 c1 e2 04 48 0=
-1 c2 8b 44 24 1c c6 42 20 01 89 42 24 8b 44 24 24 89 6a 28 <89> 42 78 0f b6=
- 44 24 43 89 72 2c 88 44 19 04 8b 44 24 20 31 c9 89
-> RSP: 002b:00007ffc5adb04c0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fca08616018
-> RDX: 00007fca08615fa0 RSI: 0000000000000003 RDI: 0000000000000000
-> RBP: 0000000000001cd6 R08: 00007fca08615fa0 R09: 00007ffc5adb0357
-> R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fca08615fac R14: 00007fca08615fa8 R15: 00007fca08615fa0
->  </TASK>
-> BUG: Bad page state in process syz.2.1435  pfn:1af410
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x7f14c91fd pf=
-n:0x1af410
-> flags: 0x57ff00000020908(uptodate|active|owner_2|swapbacked|node=3D1|zone=
-=3D2|lastcpupid=3D0x7ff)
-> raw: 057ff00000020908 0000000000000000 dead000000000122 0000000000000000
-> raw: 00000007f14c91fd 0000000000000000 00000000ffffffff 0000000000000000
-> page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Movable, gfp_mask 0x140dca(G=
-FP_HIGHUSER_MOVABLE|__GFP_ZERO|__GFP_COMP), pid 8849, tgid 8846 (syz.0.1431=
-), ts 86965683544, free_ts 69887122392
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
->  folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
->  vma_alloc_folio_noprof+0xe1/0x1e0 mm/mempolicy.c:2544
->  folio_prealloc mm/memory.c:-1 [inline]
->  alloc_anon_folio mm/memory.c:5282 [inline]
->  do_anonymous_page mm/memory.c:5376 [inline]
->  do_pte_missing+0x159d/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> page last free pid 5831 tgid 5831 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  free_unref_folios+0xcec/0x1480 mm/page_alloc.c:3004
->  folios_put_refs+0xa3d/0xb80 mm/swap.c:1042
->  free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
->  __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
->  tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
->  tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
->  tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
->  tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
->  unmap_region+0x2a5/0x330 mm/vma.c:491
->  vms_clear_ptes mm/vma.c:1303 [inline]
->  vms_complete_munmap_vmas+0x493/0xc60 mm/vma.c:1345
->  do_vmi_align_munmap+0x3b7/0x4b0 mm/vma.c:1604
->  do_vmi_munmap+0x252/0x2d0 mm/vma.c:1652
->  __vm_munmap+0x22c/0x3d0 mm/vma.c:3285
->  __do_sys_munmap mm/mmap.c:1079 [inline]
->  __se_sys_munmap mm/mmap.c:1076 [inline]
->  __x64_sys_munmap+0x60/0x70 mm/mmap.c:1076
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 8855 Comm: syz.2.1435 Tainted: G    B               sy=
-zkaller #0 PREEMPT(full)
-> Tainted: [B]=3DBAD_PAGE
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  bad_page+0x17f/0x1c0 mm/page_alloc.c:632
->  free_page_is_bad mm/page_alloc.c:1073 [inline]
->  __free_pages_prepare mm/page_alloc.c:1393 [inline]
->  free_unref_folios+0xdcc/0x1480 mm/page_alloc.c:3004
->  folio_batch_move_lru+0x816/0x9e0 mm/swap.c:206
->  __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:226
->  folio_add_lru_vma+0x196/0x210 mm/swap.c:566
->  map_anon_folio_pte_nopf+0x2ee/0x5e0 mm/memory.c:5301
->  map_anon_folio_pte_pf+0xbe/0x260 mm/memory.c:5311
->  do_anonymous_page mm/memory.c:5413 [inline]
->  do_pte_missing+0x2d48/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> RIP: 0033:0x7fca082696d2
-> Code: 48 89 ca 48 c1 e2 04 48 29 ca 48 8d 0d 5f c9 3a 00 48 c1 e2 04 48 0=
-1 c2 8b 44 24 1c c6 42 20 01 89 42 24 8b 44 24 24 89 6a 28 <89> 42 78 0f b6=
- 44 24 43 89 72 2c 88 44 19 04 8b 44 24 20 31 c9 89
-> RSP: 002b:00007ffc5adb04c0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fca08616018
-> RDX: 00007fca08615fa0 RSI: 0000000000000003 RDI: 0000000000000000
-> RBP: 0000000000001cd6 R08: 00007fca08615fa0 R09: 00007ffc5adb0357
-> R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fca08615fac R14: 00007fca08615fa8 R15: 00007fca08615fa0
->  </TASK>
-> BUG: Bad page state in process syz.2.1435  pfn:1af411
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x7f14c9e12 pf=
-n:0x1af411
-> flags: 0x57ff00000020908(uptodate|active|owner_2|swapbacked|node=3D1|zone=
-=3D2|lastcpupid=3D0x7ff)
-> raw: 057ff00000020908 0000000000000000 dead000000000122 0000000000000000
-> raw: 00000007f14c9e12 0000000000000000 00000000ffffffff 0000000000000000
-> page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Movable, gfp_mask 0x140cca(G=
-FP_HIGHUSER_MOVABLE|__GFP_COMP), pid 8846, tgid 8846 (syz.0.1431), ts 86965=
-789200, free_ts 69887126279
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
->  folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
->  vma_alloc_folio_noprof+0xe1/0x1e0 mm/mempolicy.c:2544
->  folio_prealloc mm/memory.c:-1 [inline]
->  wp_page_copy mm/memory.c:3859 [inline]
->  do_wp_page+0x118a/0x4cc0 mm/memory.c:4320
->  handle_pte_fault mm/memory.c:6427 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x151d/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> page last free pid 5831 tgid 5831 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  free_unref_folios+0xcec/0x1480 mm/page_alloc.c:3004
->  folios_put_refs+0xa3d/0xb80 mm/swap.c:1042
->  free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
->  __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
->  tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
->  tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
->  tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
->  tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
->  unmap_region+0x2a5/0x330 mm/vma.c:491
->  vms_clear_ptes mm/vma.c:1303 [inline]
->  vms_complete_munmap_vmas+0x493/0xc60 mm/vma.c:1345
->  do_vmi_align_munmap+0x3b7/0x4b0 mm/vma.c:1604
->  do_vmi_munmap+0x252/0x2d0 mm/vma.c:1652
->  __vm_munmap+0x22c/0x3d0 mm/vma.c:3285
->  __do_sys_munmap mm/mmap.c:1079 [inline]
->  __se_sys_munmap mm/mmap.c:1076 [inline]
->  __x64_sys_munmap+0x60/0x70 mm/mmap.c:1076
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 8855 Comm: syz.2.1435 Tainted: G    B               sy=
-zkaller #0 PREEMPT(full)
-> Tainted: [B]=3DBAD_PAGE
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  bad_page+0x17f/0x1c0 mm/page_alloc.c:632
->  free_page_is_bad mm/page_alloc.c:1073 [inline]
->  __free_pages_prepare mm/page_alloc.c:1393 [inline]
->  free_unref_folios+0xdcc/0x1480 mm/page_alloc.c:3004
->  folio_batch_move_lru+0x816/0x9e0 mm/swap.c:206
->  __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:226
->  folio_add_lru_vma+0x196/0x210 mm/swap.c:566
->  map_anon_folio_pte_nopf+0x2ee/0x5e0 mm/memory.c:5301
->  map_anon_folio_pte_pf+0xbe/0x260 mm/memory.c:5311
->  do_anonymous_page mm/memory.c:5413 [inline]
->  do_pte_missing+0x2d48/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> RIP: 0033:0x7fca082696d2
-> Code: 48 89 ca 48 c1 e2 04 48 29 ca 48 8d 0d 5f c9 3a 00 48 c1 e2 04 48 0=
-1 c2 8b 44 24 1c c6 42 20 01 89 42 24 8b 44 24 24 89 6a 28 <89> 42 78 0f b6=
- 44 24 43 89 72 2c 88 44 19 04 8b 44 24 20 31 c9 89
-> RSP: 002b:00007ffc5adb04c0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fca08616018
-> RDX: 00007fca08615fa0 RSI: 0000000000000003 RDI: 0000000000000000
-> RBP: 0000000000001cd6 R08: 00007fca08615fa0 R09: 00007ffc5adb0357
-> R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fca08615fac R14: 00007fca08615fa8 R15: 00007fca08615fa0
->  </TASK>
-> BUG: Bad page state in process syz.2.1435  pfn:1af40b
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x555573b0d pf=
-n:0x1af40b
-> flags: 0x57ff0000002090c(referenced|uptodate|active|owner_2|swapbacked|no=
-de=3D1|zone=3D2|lastcpupid=3D0x7ff)
-> raw: 057ff0000002090c 0000000000000000 dead000000000122 0000000000000000
-> raw: 0000000555573b0d 0000000000000000 00000000ffffffff 0000000000000000
-> page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Movable, gfp_mask 0x140cca(G=
-FP_HIGHUSER_MOVABLE|__GFP_COMP), pid 8851, tgid 8851 (syz-executor), ts 869=
-75719417, free_ts 86967133373
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
->  folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
->  vma_alloc_folio_noprof+0xe1/0x1e0 mm/mempolicy.c:2544
->  folio_prealloc mm/memory.c:-1 [inline]
->  wp_page_copy mm/memory.c:3859 [inline]
->  do_wp_page+0x118a/0x4cc0 mm/memory.c:4320
->  handle_pte_fault mm/memory.c:6427 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x151d/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0x75b/0x1340 arch/x86/mm/fault.c:1385
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> page last free pid 8849 tgid 8846 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  free_unref_folios+0xcec/0x1480 mm/page_alloc.c:3004
->  folios_put_refs+0xa3d/0xb80 mm/swap.c:1042
->  free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
->  __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
->  tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
->  tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
->  tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
->  tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
->  exit_mmap+0x498/0x9e0 mm/mmap.c:1313
->  __mmput+0x118/0x430 kernel/fork.c:1178
->  exit_mm+0x18e/0x250 kernel/exit.c:581
->  do_exit+0x6a2/0x22c0 kernel/exit.c:963
->  do_group_exit+0x21b/0x2d0 kernel/exit.c:1117
->  get_signal+0x1284/0x1330 kernel/signal.c:3037
->  arch_do_signal_or_restart+0xbc/0x830 arch/x86/kernel/signal.c:337
->  __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
->  exit_to_user_mode_loop+0x86/0x480 kernel/entry/common.c:98
->  __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline=
-]
->  syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:238 [=
-inline]
->  syscall_exit_to_user_mode include/linux/entry-common.h:328 [inline]
->  do_syscall_64+0x33e/0xf80 arch/x86/entry/syscall_64.c:100
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> Modules linked in:
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> BUG: KASAN: slab-use-after-free in inet_diag_dump_done+0x54/0x90 net/ipv4=
+/inet_diag.c:893
+> Read of size 8 at addr ffff888110c9a1a0 by task syz.1.18/6001
 >
-> CPU: 1 UID: 0 PID: 8855 Comm: syz.2.1435 Tainted: G    B               sy=
-zkaller #0 PREEMPT(full)
-> Tainted: [B]=3DBAD_PAGE
+> CPU: 0 UID: 0 PID: 6001 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(f=
+ull)
 > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
 16.2-1 04/01/2014
 > Call Trace:
 >  <TASK>
 >  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  bad_page+0x17f/0x1c0 mm/page_alloc.c:632
->  free_page_is_bad mm/page_alloc.c:1073 [inline]
->  __free_pages_prepare mm/page_alloc.c:1393 [inline]
->  free_unref_folios+0xdcc/0x1480 mm/page_alloc.c:3004
->  folio_batch_move_lru+0x816/0x9e0 mm/swap.c:206
->  __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:226
->  folio_add_lru_vma+0x196/0x210 mm/swap.c:566
->  map_anon_folio_pte_nopf+0x2ee/0x5e0 mm/memory.c:5301
->  map_anon_folio_pte_pf+0xbe/0x260 mm/memory.c:5311
->  do_anonymous_page mm/memory.c:5413 [inline]
->  do_pte_missing+0x2d48/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> RIP: 0033:0x7fca082696d2
-> Code: 48 89 ca 48 c1 e2 04 48 29 ca 48 8d 0d 5f c9 3a 00 48 c1 e2 04 48 0=
-1 c2 8b 44 24 1c c6 42 20 01 89 42 24 8b 44 24 24 89 6a 28 <89> 42 78 0f b6=
- 44 24 43 89 72 2c 88 44 19 04 8b 44 24 20 31 c9 89
-> RSP: 002b:00007ffc5adb04c0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fca08616018
-> RDX: 00007fca08615fa0 RSI: 0000000000000003 RDI: 0000000000000000
-> RBP: 0000000000001cd6 R08: 00007fca08615fa0 R09: 00007ffc5adb0357
-> R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fca08615fac R14: 00007fca08615fa8 R15: 00007fca08615fa0
->  </TASK>
-> BUG: Bad page state in process syz.2.1435  pfn:1af409
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x3ec pfn:0x1a=
-f409
-> flags: 0x57ff00000020908(uptodate|active|owner_2|swapbacked|node=3D1|zone=
-=3D2|lastcpupid=3D0x7ff)
-> raw: 057ff00000020908 0000000000000000 dead000000000122 0000000000000000
-> raw: 00000000000003ec 0000000000000000 00000000ffffffff 0000000000000000
-> page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Movable, gfp_mask 0x140cca(G=
-FP_HIGHUSER_MOVABLE|__GFP_COMP), pid 8851, tgid 8851 (syz-executor), ts 869=
-76014509, free_ts 86967128194
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
->  folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
->  vma_alloc_folio_noprof+0xe1/0x1e0 mm/mempolicy.c:2544
->  folio_prealloc mm/memory.c:-1 [inline]
->  wp_page_copy mm/memory.c:3859 [inline]
->  do_wp_page+0x118a/0x4cc0 mm/memory.c:4320
->  handle_pte_fault mm/memory.c:6427 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x151d/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> page last free pid 8849 tgid 8846 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  free_unref_folios+0xcec/0x1480 mm/page_alloc.c:3004
->  folios_put_refs+0xa3d/0xb80 mm/swap.c:1042
->  free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
->  __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
->  tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
->  tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
->  tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
->  tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
->  exit_mmap+0x498/0x9e0 mm/mmap.c:1313
->  __mmput+0x118/0x430 kernel/fork.c:1178
->  exit_mm+0x18e/0x250 kernel/exit.c:581
->  do_exit+0x6a2/0x22c0 kernel/exit.c:963
->  do_group_exit+0x21b/0x2d0 kernel/exit.c:1117
->  get_signal+0x1284/0x1330 kernel/signal.c:3037
->  arch_do_signal_or_restart+0xbc/0x830 arch/x86/kernel/signal.c:337
->  __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
->  exit_to_user_mode_loop+0x86/0x480 kernel/entry/common.c:98
->  __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline=
-]
->  syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:238 [=
-inline]
->  syscall_exit_to_user_mode include/linux/entry-common.h:328 [inline]
->  do_syscall_64+0x33e/0xf80 arch/x86/entry/syscall_64.c:100
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> Modules linked in:
->
-> CPU: 1 UID: 0 PID: 8855 Comm: syz.2.1435 Tainted: G    B               sy=
-zkaller #0 PREEMPT(full)
-> Tainted: [B]=3DBAD_PAGE
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  bad_page+0x17f/0x1c0 mm/page_alloc.c:632
->  free_page_is_bad mm/page_alloc.c:1073 [inline]
->  __free_pages_prepare mm/page_alloc.c:1393 [inline]
->  free_unref_folios+0xdcc/0x1480 mm/page_alloc.c:3004
->  folio_batch_move_lru+0x816/0x9e0 mm/swap.c:206
->  __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:226
->  folio_add_lru_vma+0x196/0x210 mm/swap.c:566
->  map_anon_folio_pte_nopf+0x2ee/0x5e0 mm/memory.c:5301
->  map_anon_folio_pte_pf+0xbe/0x260 mm/memory.c:5311
->  do_anonymous_page mm/memory.c:5413 [inline]
->  do_pte_missing+0x2d48/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> RIP: 0033:0x7fca082696d2
-> Code: 48 89 ca 48 c1 e2 04 48 29 ca 48 8d 0d 5f c9 3a 00 48 c1 e2 04 48 0=
-1 c2 8b 44 24 1c c6 42 20 01 89 42 24 8b 44 24 24 89 6a 28 <89> 42 78 0f b6=
- 44 24 43 89 72 2c 88 44 19 04 8b 44 24 20 31 c9 89
-> RSP: 002b:00007ffc5adb04c0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fca08616018
-> RDX: 00007fca08615fa0 RSI: 0000000000000003 RDI: 0000000000000000
-> RBP: 0000000000001cd6 R08: 00007fca08615fa0 R09: 00007ffc5adb0357
-> R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fca08615fac R14: 00007fca08615fa8 R15: 00007fca08615fa0
->  </TASK>
-> BUG: Bad page state in process syz.2.1435  pfn:1af571
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x7f14ca945 pf=
-n:0x1af571
-> flags: 0x57ff00000020908(uptodate|active|owner_2|swapbacked|node=3D1|zone=
-=3D2|lastcpupid=3D0x7ff)
-> raw: 057ff00000020908 0000000000000000 dead000000000122 0000000000000000
-> raw: 00000007f14ca945 0000000000000000 00000000ffffffff 0000000000000000
-> page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Movable, gfp_mask 0x140cca(G=
-FP_HIGHUSER_MOVABLE|__GFP_COMP), pid 8851, tgid 8851 (syz-executor), ts 869=
-78306736, free_ts 86967122819
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
->  folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
->  vma_alloc_folio_noprof+0xe1/0x1e0 mm/mempolicy.c:2544
->  folio_prealloc mm/memory.c:-1 [inline]
->  wp_page_copy mm/memory.c:3859 [inline]
->  do_wp_page+0x118a/0x4cc0 mm/memory.c:4320
->  handle_pte_fault mm/memory.c:6427 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x151d/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> page last free pid 8849 tgid 8846 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  free_unref_folios+0xcec/0x1480 mm/page_alloc.c:3004
->  folios_put_refs+0xa3d/0xb80 mm/swap.c:1042
->  free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
->  __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
->  tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
->  tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
->  tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
->  tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
->  exit_mmap+0x498/0x9e0 mm/mmap.c:1313
->  __mmput+0x118/0x430 kernel/fork.c:1178
->  exit_mm+0x18e/0x250 kernel/exit.c:581
->  do_exit+0x6a2/0x22c0 kernel/exit.c:963
->  do_group_exit+0x21b/0x2d0 kernel/exit.c:1117
->  get_signal+0x1284/0x1330 kernel/signal.c:3037
->  arch_do_signal_or_restart+0xbc/0x830 arch/x86/kernel/signal.c:337
->  __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
->  exit_to_user_mode_loop+0x86/0x480 kernel/entry/common.c:98
->  __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline=
-]
->  syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:238 [=
-inline]
->  syscall_exit_to_user_mode include/linux/entry-common.h:328 [inline]
->  do_syscall_64+0x33e/0xf80 arch/x86/entry/syscall_64.c:100
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> Modules linked in:
->
-> CPU: 1 UID: 0 PID: 8855 Comm: syz.2.1435 Tainted: G    B               sy=
-zkaller #0 PREEMPT(full)
-> Tainted: [B]=3DBAD_PAGE
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  bad_page+0x17f/0x1c0 mm/page_alloc.c:632
->  free_page_is_bad mm/page_alloc.c:1073 [inline]
->  __free_pages_prepare mm/page_alloc.c:1393 [inline]
->  free_unref_folios+0xdcc/0x1480 mm/page_alloc.c:3004
->  folio_batch_move_lru+0x816/0x9e0 mm/swap.c:206
->  __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:226
->  folio_add_lru_vma+0x196/0x210 mm/swap.c:566
->  map_anon_folio_pte_nopf+0x2ee/0x5e0 mm/memory.c:5301
->  map_anon_folio_pte_pf+0xbe/0x260 mm/memory.c:5311
->  do_anonymous_page mm/memory.c:5413 [inline]
->  do_pte_missing+0x2d48/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> RIP: 0033:0x7fca082696d2
-> Code: 48 89 ca 48 c1 e2 04 48 29 ca 48 8d 0d 5f c9 3a 00 48 c1 e2 04 48 0=
-1 c2 8b 44 24 1c c6 42 20 01 89 42 24 8b 44 24 24 89 6a 28 <89> 42 78 0f b6=
- 44 24 43 89 72 2c 88 44 19 04 8b 44 24 20 31 c9 89
-> RSP: 002b:00007ffc5adb04c0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fca08616018
-> RDX: 00007fca08615fa0 RSI: 0000000000000003 RDI: 0000000000000000
-> RBP: 0000000000001cd6 R08: 00007fca08615fa0 R09: 00007ffc5adb0357
-> R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fca08615fac R14: 00007fca08615fa8 R15: 00007fca08615fa0
->  </TASK>
-> BUG: Bad page state in process syz.2.1435  pfn:1af40c
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x7f14c9e15 pf=
-n:0x1af40c
-> flags: 0x57ff00000020908(uptodate|active|owner_2|swapbacked|node=3D1|zone=
-=3D2|lastcpupid=3D0x7ff)
-> raw: 057ff00000020908 0000000000000000 dead000000000122 0000000000000000
-> raw: 00000007f14c9e15 0000000000000000 00000000ffffffff 0000000000000000
-> page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Movable, gfp_mask 0x140dca(G=
-FP_HIGHUSER_MOVABLE|__GFP_ZERO|__GFP_COMP), pid 8851, tgid 8851 (syz.0.1434=
-), ts 86978464147, free_ts 86967036690
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
->  folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
->  vma_alloc_folio_noprof+0xe1/0x1e0 mm/mempolicy.c:2544
->  folio_prealloc mm/memory.c:-1 [inline]
->  wp_page_copy mm/memory.c:3859 [inline]
->  do_wp_page+0x118a/0x4cc0 mm/memory.c:4320
->  handle_pte_fault mm/memory.c:6427 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x151d/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> page last free pid 8849 tgid 8846 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  free_unref_folios+0xcec/0x1480 mm/page_alloc.c:3004
->  folios_put_refs+0xa3d/0xb80 mm/swap.c:1042
->  free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
->  __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
->  tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
->  tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
->  tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
->  tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
->  exit_mmap+0x498/0x9e0 mm/mmap.c:1313
->  __mmput+0x118/0x430 kernel/fork.c:1178
->  exit_mm+0x18e/0x250 kernel/exit.c:581
->  do_exit+0x6a2/0x22c0 kernel/exit.c:963
->  do_group_exit+0x21b/0x2d0 kernel/exit.c:1117
->  get_signal+0x1284/0x1330 kernel/signal.c:3037
->  arch_do_signal_or_restart+0xbc/0x830 arch/x86/kernel/signal.c:337
->  __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
->  exit_to_user_mode_loop+0x86/0x480 kernel/entry/common.c:98
->  __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline=
-]
->  syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:238 [=
-inline]
->  syscall_exit_to_user_mode include/linux/entry-common.h:328 [inline]
->  do_syscall_64+0x33e/0xf80 arch/x86/entry/syscall_64.c:100
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 8855 Comm: syz.2.1435 Tainted: G    B               sy=
-zkaller #0 PREEMPT(full)
-> Tainted: [B]=3DBAD_PAGE
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  bad_page+0x17f/0x1c0 mm/page_alloc.c:632
->  free_page_is_bad mm/page_alloc.c:1073 [inline]
->  __free_pages_prepare mm/page_alloc.c:1393 [inline]
->  free_unref_folios+0xdcc/0x1480 mm/page_alloc.c:3004
->  folio_batch_move_lru+0x816/0x9e0 mm/swap.c:206
->  __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:226
->  folio_add_lru_vma+0x196/0x210 mm/swap.c:566
->  map_anon_folio_pte_nopf+0x2ee/0x5e0 mm/memory.c:5301
->  map_anon_folio_pte_pf+0xbe/0x260 mm/memory.c:5311
->  do_anonymous_page mm/memory.c:5413 [inline]
->  do_pte_missing+0x2d48/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> RIP: 0033:0x7fca082696d2
-> Code: 48 89 ca 48 c1 e2 04 48 29 ca 48 8d 0d 5f c9 3a 00 48 c1 e2 04 48 0=
-1 c2 8b 44 24 1c c6 42 20 01 89 42 24 8b 44 24 24 89 6a 28 <89> 42 78 0f b6=
- 44 24 43 89 72 2c 88 44 19 04 8b 44 24 20 31 c9 89
-> RSP: 002b:00007ffc5adb04c0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fca08616018
-> RDX: 00007fca08615fa0 RSI: 0000000000000003 RDI: 0000000000000000
-> RBP: 0000000000001cd6 R08: 00007fca08615fa0 R09: 00007ffc5adb0357
-> R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fca08615fac R14: 00007fca08615fa8 R15: 00007fca08615fa0
->  </TASK>
-> BUG: Bad page state in process syz.2.1435  pfn:1af40d
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x7f14c91fe pf=
-n:0x1af40d
-> flags: 0x57ff00000020908(uptodate|active|owner_2|swapbacked|node=3D1|zone=
-=3D2|lastcpupid=3D0x7ff)
-> raw: 057ff00000020908 0000000000000000 dead000000000122 0000000000000000
-> raw: 00000007f14c91fe 0000000000000000 00000000ffffffff 0000000000000000
-> page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Movable, gfp_mask 0x140dca(G=
-FP_HIGHUSER_MOVABLE|__GFP_ZERO|__GFP_COMP), pid 8851, tgid 8851 (syz.0.1434=
-), ts 86979644815, free_ts 86967032365
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
->  folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
->  vma_alloc_folio_noprof+0xe1/0x1e0 mm/mempolicy.c:2544
->  folio_prealloc mm/memory.c:-1 [inline]
->  alloc_anon_folio mm/memory.c:5282 [inline]
->  do_anonymous_page mm/memory.c:5376 [inline]
->  do_pte_missing+0x159d/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> page last free pid 8849 tgid 8846 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  free_unref_folios+0xcec/0x1480 mm/page_alloc.c:3004
->  folios_put_refs+0xa3d/0xb80 mm/swap.c:1042
->  free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
->  __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
->  tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
->  tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
->  tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
->  tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
->  exit_mmap+0x498/0x9e0 mm/mmap.c:1313
->  __mmput+0x118/0x430 kernel/fork.c:1178
->  exit_mm+0x18e/0x250 kernel/exit.c:581
->  do_exit+0x6a2/0x22c0 kernel/exit.c:963
->  do_group_exit+0x21b/0x2d0 kernel/exit.c:1117
->  get_signal+0x1284/0x1330 kernel/signal.c:3037
->  arch_do_signal_or_restart+0xbc/0x830 arch/x86/kernel/signal.c:337
->  __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
->  exit_to_user_mode_loop+0x86/0x480 kernel/entry/common.c:98
->  __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline=
-]
->  syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:238 [=
-inline]
->  syscall_exit_to_user_mode include/linux/entry-common.h:328 [inline]
->  do_syscall_64+0x33e/0xf80 arch/x86/entry/syscall_64.c:100
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 8855 Comm: syz.2.1435 Tainted: G    B               sy=
-zkaller #0 PREEMPT(full)
-> Tainted: [B]=3DBAD_PAGE
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  bad_page+0x17f/0x1c0 mm/page_alloc.c:632
->  free_page_is_bad mm/page_alloc.c:1073 [inline]
->  __free_pages_prepare mm/page_alloc.c:1393 [inline]
->  free_unref_folios+0xdcc/0x1480 mm/page_alloc.c:3004
->  folio_batch_move_lru+0x816/0x9e0 mm/swap.c:206
->  __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:226
->  folio_add_lru_vma+0x196/0x210 mm/swap.c:566
->  map_anon_folio_pte_nopf+0x2ee/0x5e0 mm/memory.c:5301
->  map_anon_folio_pte_pf+0xbe/0x260 mm/memory.c:5311
->  do_anonymous_page mm/memory.c:5413 [inline]
->  do_pte_missing+0x2d48/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> RIP: 0033:0x7fca082696d2
-> Code: 48 89 ca 48 c1 e2 04 48 29 ca 48 8d 0d 5f c9 3a 00 48 c1 e2 04 48 0=
-1 c2 8b 44 24 1c c6 42 20 01 89 42 24 8b 44 24 24 89 6a 28 <89> 42 78 0f b6=
- 44 24 43 89 72 2c 88 44 19 04 8b 44 24 20 31 c9 89
-> RSP: 002b:00007ffc5adb04c0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fca08616018
-> RDX: 00007fca08615fa0 RSI: 0000000000000003 RDI: 0000000000000000
-> RBP: 0000000000001cd6 R08: 00007fca08615fa0 R09: 00007ffc5adb0357
-> R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fca08615fac R14: 00007fca08615fa8 R15: 00007fca08615fa0
->  </TASK>
-> BUG: Bad page state in process syz.2.1435  pfn:1af408
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x555573b20 pf=
-n:0x1af408
-> flags: 0x57ff00000020908(uptodate|active|owner_2|swapbacked|node=3D1|zone=
-=3D2|lastcpupid=3D0x7ff)
-> raw: 057ff00000020908 0000000000000000 dead000000000122 0000000000000000
-> raw: 0000000555573b20 0000000000000000 00000000ffffffff 0000000000000000
-> page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Movable, gfp_mask 0x140cca(G=
-FP_HIGHUSER_MOVABLE|__GFP_COMP), pid 8851, tgid 8851 (syz.0.1434), ts 86979=
-662330, free_ts 86967025854
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
->  folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
->  vma_alloc_folio_noprof+0xe1/0x1e0 mm/mempolicy.c:2544
->  folio_prealloc mm/memory.c:-1 [inline]
->  wp_page_copy mm/memory.c:3859 [inline]
->  do_wp_page+0x118a/0x4cc0 mm/memory.c:4320
->  handle_pte_fault mm/memory.c:6427 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x151d/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> page last free pid 8849 tgid 8846 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  free_unref_folios+0xcec/0x1480 mm/page_alloc.c:3004
->  folios_put_refs+0xa3d/0xb80 mm/swap.c:1042
->  free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
->  __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
->  tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
->  tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
->  tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
->  tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
->  exit_mmap+0x498/0x9e0 mm/mmap.c:1313
->  __mmput+0x118/0x430 kernel/fork.c:1178
->  exit_mm+0x18e/0x250 kernel/exit.c:581
->  do_exit+0x6a2/0x22c0 kernel/exit.c:963
->  do_group_exit+0x21b/0x2d0 kernel/exit.c:1117
->  get_signal+0x1284/0x1330 kernel/signal.c:3037
->  arch_do_signal_or_restart+0xbc/0x830 arch/x86/kernel/signal.c:337
->  __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
->  exit_to_user_mode_loop+0x86/0x480 kernel/entry/common.c:98
->  __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline=
-]
->  syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:238 [=
-inline]
->  syscall_exit_to_user_mode include/linux/entry-common.h:328 [inline]
->  do_syscall_64+0x33e/0xf80 arch/x86/entry/syscall_64.c:100
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 8855 Comm: syz.2.1435 Tainted: G    B               sy=
-zkaller #0 PREEMPT(full)
-> Tainted: [B]=3DBAD_PAGE
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  bad_page+0x17f/0x1c0 mm/page_alloc.c:632
->  free_page_is_bad mm/page_alloc.c:1073 [inline]
->  __free_pages_prepare mm/page_alloc.c:1393 [inline]
->  free_unref_folios+0xdcc/0x1480 mm/page_alloc.c:3004
->  folio_batch_move_lru+0x816/0x9e0 mm/swap.c:206
->  __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:226
->  folio_add_lru_vma+0x196/0x210 mm/swap.c:566
->  map_anon_folio_pte_nopf+0x2ee/0x5e0 mm/memory.c:5301
->  map_anon_folio_pte_pf+0xbe/0x260 mm/memory.c:5311
->  do_anonymous_page mm/memory.c:5413 [inline]
->  do_pte_missing+0x2d48/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> RIP: 0033:0x7fca082696d2
-> Code: 48 89 ca 48 c1 e2 04 48 29 ca 48 8d 0d 5f c9 3a 00 48 c1 e2 04 48 0=
-1 c2 8b 44 24 1c c6 42 20 01 89 42 24 8b 44 24 24 89 6a 28 <89> 42 78 0f b6=
- 44 24 43 89 72 2c 88 44 19 04 8b 44 24 20 31 c9 89
-> RSP: 002b:00007ffc5adb04c0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fca08616018
-> RDX: 00007fca08615fa0 RSI: 0000000000000003 RDI: 0000000000000000
-> RBP: 0000000000001cd6 R08: 00007fca08615fa0 R09: 00007ffc5adb0357
-> R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fca08615fac R14: 00007fca08615fa8 R15: 00007fca08615fa0
->  </TASK>
-> BUG: Bad page state in process syz.2.1435  pfn:1af412
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x7f14c9e16 pf=
-n:0x1af412
-> flags: 0x57ff00000020908(uptodate|active|owner_2|swapbacked|node=3D1|zone=
-=3D2|lastcpupid=3D0x7ff)
-> raw: 057ff00000020908 0000000000000000 dead000000000122 0000000000000000
-> raw: 00000007f14c9e16 0000000000000000 00000000ffffffff 0000000000000000
-> page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Movable, gfp_mask 0x140dca(G=
-FP_HIGHUSER_MOVABLE|__GFP_ZERO|__GFP_COMP), pid 8851, tgid 8851 (syz.0.1434=
-), ts 86981021345, free_ts 69887129694
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
->  folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
->  vma_alloc_folio_noprof+0xe1/0x1e0 mm/mempolicy.c:2544
->  folio_prealloc mm/memory.c:-1 [inline]
->  alloc_anon_folio mm/memory.c:5282 [inline]
->  do_anonymous_page mm/memory.c:5376 [inline]
->  do_pte_missing+0x159d/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> page last free pid 5831 tgid 5831 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  free_unref_folios+0xcec/0x1480 mm/page_alloc.c:3004
->  folios_put_refs+0xa3d/0xb80 mm/swap.c:1042
->  free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
->  __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
->  tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
->  tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
->  tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
->  tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
->  unmap_region+0x2a5/0x330 mm/vma.c:491
->  vms_clear_ptes mm/vma.c:1303 [inline]
->  vms_complete_munmap_vmas+0x493/0xc60 mm/vma.c:1345
->  do_vmi_align_munmap+0x3b7/0x4b0 mm/vma.c:1604
->  do_vmi_munmap+0x252/0x2d0 mm/vma.c:1652
->  __vm_munmap+0x22c/0x3d0 mm/vma.c:3285
->  __do_sys_munmap mm/mmap.c:1079 [inline]
->  __se_sys_munmap mm/mmap.c:1076 [inline]
->  __x64_sys_munmap+0x60/0x70 mm/mmap.c:1076
+>  print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+>  print_report+0x58/0x70 mm/kasan/report.c:482
+>  kasan_report+0x117/0x150 mm/kasan/report.c:595
+>  inet_diag_dump_done+0x54/0x90 net/ipv4/inet_diag.c:893
+>  netlink_dump_cleanup+0x99/0x120 net/netlink/af_netlink.c:2259
+>  netlink_dump+0xbe9/0xf40 net/netlink/af_netlink.c:2385
+>  __netlink_dump_start+0x5cb/0x7e0 net/netlink/af_netlink.c:2455
+>  netlink_dump_start include/linux/netlink.h:341 [inline]
+>  inet_diag_handler_cmd+0x1e0/0x2c0 net/ipv4/inet_diag.c:978
+>  sock_diag_rcv_msg+0x4cc/0x600 net/core/sock_diag.c:-1
+>  netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2565
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>  netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1340
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1890
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2592
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
+>  __sys_sendmsg net/socket.c:2678 [inline]
+>  __do_sys_sendmsg net/socket.c:2683 [inline]
+>  __se_sys_sendmsg net/socket.c:2681 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
 >  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
 >  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 8855 Comm: syz.2.1435 Tainted: G    B               sy=
-zkaller #0 PREEMPT(full)
-> Tainted: [B]=3DBAD_PAGE
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  bad_page+0x17f/0x1c0 mm/page_alloc.c:632
->  free_page_is_bad mm/page_alloc.c:1073 [inline]
->  __free_pages_prepare mm/page_alloc.c:1393 [inline]
->  free_unref_folios+0xdcc/0x1480 mm/page_alloc.c:3004
->  folio_batch_move_lru+0x816/0x9e0 mm/swap.c:206
->  __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:226
->  folio_add_lru_vma+0x196/0x210 mm/swap.c:566
->  map_anon_folio_pte_nopf+0x2ee/0x5e0 mm/memory.c:5301
->  map_anon_folio_pte_pf+0xbe/0x260 mm/memory.c:5311
->  do_anonymous_page mm/memory.c:5413 [inline]
->  do_pte_missing+0x2d48/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> RIP: 0033:0x7fca082696d2
-> Code: 48 89 ca 48 c1 e2 04 48 29 ca 48 8d 0d 5f c9 3a 00 48 c1 e2 04 48 0=
-1 c2 8b 44 24 1c c6 42 20 01 89 42 24 8b 44 24 24 89 6a 28 <89> 42 78 0f b6=
- 44 24 43 89 72 2c 88 44 19 04 8b 44 24 20 31 c9 89
-> RSP: 002b:00007ffc5adb04c0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fca08616018
-> RDX: 00007fca08615fa0 RSI: 0000000000000003 RDI: 0000000000000000
-> RBP: 0000000000001cd6 R08: 00007fca08615fa0 R09: 00007ffc5adb0357
-> R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fca08615fac R14: 00007fca08615fa8 R15: 00007fca08615fa0
+> RIP: 0033:0x7fe80d39c819
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007fe80e220028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007fe80d616090 RCX: 00007fe80d39c819
+> RDX: 0000000000000000 RSI: 0000200000000200 RDI: 0000000000000003
+> RBP: 00007fe80d432c91 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007fe80d616128 R14: 00007fe80d616090 R15: 00007ffc5edf12b8
 >  </TASK>
-> BUG: Bad page state in process syz.2.1435  pfn:1af413
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x7f14c9e17 pf=
-n:0x1af413
-> flags: 0x57ff00000020908(uptodate|active|owner_2|swapbacked|node=3D1|zone=
-=3D2|lastcpupid=3D0x7ff)
-> raw: 057ff00000020908 0000000000000000 dead000000000122 0000000000000000
-> raw: 00000007f14c9e17 0000000000000000 00000000ffffffff 0000000000000000
-> page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Movable, gfp_mask 0x140cca(G=
-FP_HIGHUSER_MOVABLE|__GFP_COMP), pid 8851, tgid 8851 (syz.0.1434), ts 86981=
-071632, free_ts 69887133292
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
->  folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
->  vma_alloc_folio_noprof+0xe1/0x1e0 mm/mempolicy.c:2544
->  folio_prealloc mm/memory.c:-1 [inline]
->  wp_page_copy mm/memory.c:3859 [inline]
->  do_wp_page+0x118a/0x4cc0 mm/memory.c:4320
->  handle_pte_fault mm/memory.c:6427 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x151d/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> page last free pid 5831 tgid 5831 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  free_unref_folios+0xcec/0x1480 mm/page_alloc.c:3004
->  folios_put_refs+0xa3d/0xb80 mm/swap.c:1042
->  free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
->  __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
->  tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
->  tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
->  tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
->  tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
->  unmap_region+0x2a5/0x330 mm/vma.c:491
->  vms_clear_ptes mm/vma.c:1303 [inline]
->  vms_complete_munmap_vmas+0x493/0xc60 mm/vma.c:1345
->  do_vmi_align_munmap+0x3b7/0x4b0 mm/vma.c:1604
->  do_vmi_munmap+0x252/0x2d0 mm/vma.c:1652
->  __vm_munmap+0x22c/0x3d0 mm/vma.c:3285
->  __do_sys_munmap mm/mmap.c:1079 [inline]
->  __se_sys_munmap mm/mmap.c:1076 [inline]
->  __x64_sys_munmap+0x60/0x70 mm/mmap.c:1076
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 8855 Comm: syz.2.1435 Tainted: G    B               sy=
-zkaller #0 PREEMPT(full)
-> Tainted: [B]=3DBAD_PAGE
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  bad_page+0x17f/0x1c0 mm/page_alloc.c:632
->  free_page_is_bad mm/page_alloc.c:1073 [inline]
->  __free_pages_prepare mm/page_alloc.c:1393 [inline]
->  free_unref_folios+0xdcc/0x1480 mm/page_alloc.c:3004
->  folio_batch_move_lru+0x816/0x9e0 mm/swap.c:206
->  __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:226
->  folio_add_lru_vma+0x196/0x210 mm/swap.c:566
->  map_anon_folio_pte_nopf+0x2ee/0x5e0 mm/memory.c:5301
->  map_anon_folio_pte_pf+0xbe/0x260 mm/memory.c:5311
->  do_anonymous_page mm/memory.c:5413 [inline]
->  do_pte_missing+0x2d48/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> RIP: 0033:0x7fca082696d2
-> Code: 48 89 ca 48 c1 e2 04 48 29 ca 48 8d 0d 5f c9 3a 00 48 c1 e2 04 48 0=
-1 c2 8b 44 24 1c c6 42 20 01 89 42 24 8b 44 24 24 89 6a 28 <89> 42 78 0f b6=
- 44 24 43 89 72 2c 88 44 19 04 8b 44 24 20 31 c9 89
-> RSP: 002b:00007ffc5adb04c0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fca08616018
-> RDX: 00007fca08615fa0 RSI: 0000000000000003 RDI: 0000000000000000
-> RBP: 0000000000001cd6 R08: 00007fca08615fa0 R09: 00007ffc5adb0357
-> R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fca08615fac R14: 00007fca08615fa8 R15: 00007fca08615fa0
->  </TASK>
-> BUG: Bad page state in process syz.2.1435  pfn:1af414
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x7f14c9e12 pf=
-n:0x1af414
-> flags: 0x57ff00000020908(uptodate|active|owner_2|swapbacked|node=3D1|zone=
-=3D2|lastcpupid=3D0x7ff)
-> raw: 057ff00000020908 0000000000000000 dead000000000122 0000000000000000
-> raw: 00000007f14c9e12 0000000000000000 00000000ffffffff 0000000000000000
-> page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Movable, gfp_mask 0x140cca(G=
-FP_HIGHUSER_MOVABLE|__GFP_COMP), pid 8851, tgid 8851 (syz.0.1434), ts 86982=
-688821, free_ts 69887137521
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
->  folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
->  vma_alloc_folio_noprof+0xe1/0x1e0 mm/mempolicy.c:2544
->  folio_prealloc mm/memory.c:-1 [inline]
->  wp_page_copy mm/memory.c:3859 [inline]
->  do_wp_page+0x118a/0x4cc0 mm/memory.c:4320
->  handle_pte_fault mm/memory.c:6427 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x151d/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> page last free pid 5831 tgid 5831 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  free_unref_folios+0xcec/0x1480 mm/page_alloc.c:3004
->  folios_put_refs+0xa3d/0xb80 mm/swap.c:1042
->  free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
->  __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
->  tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
->  tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
->  tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
->  tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
->  unmap_region+0x2a5/0x330 mm/vma.c:491
->  vms_clear_ptes mm/vma.c:1303 [inline]
->  vms_complete_munmap_vmas+0x493/0xc60 mm/vma.c:1345
->  do_vmi_align_munmap+0x3b7/0x4b0 mm/vma.c:1604
->  do_vmi_munmap+0x252/0x2d0 mm/vma.c:1652
->  __vm_munmap+0x22c/0x3d0 mm/vma.c:3285
->  __do_sys_munmap mm/mmap.c:1079 [inline]
->  __se_sys_munmap mm/mmap.c:1076 [inline]
->  __x64_sys_munmap+0x60/0x70 mm/mmap.c:1076
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> Modules linked in:
 >
-> CPU: 1 UID: 0 PID: 8855 Comm: syz.2.1435 Tainted: G    B               sy=
-zkaller #0 PREEMPT(full)
-> Tainted: [B]=3DBAD_PAGE
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  bad_page+0x17f/0x1c0 mm/page_alloc.c:632
->  free_page_is_bad mm/page_alloc.c:1073 [inline]
->  __free_pages_prepare mm/page_alloc.c:1393 [inline]
->  free_unref_folios+0xdcc/0x1480 mm/page_alloc.c:3004
->  folio_batch_move_lru+0x816/0x9e0 mm/swap.c:206
->  __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:226
->  folio_add_lru_vma+0x196/0x210 mm/swap.c:566
->  map_anon_folio_pte_nopf+0x2ee/0x5e0 mm/memory.c:5301
->  map_anon_folio_pte_pf+0xbe/0x260 mm/memory.c:5311
->  do_anonymous_page mm/memory.c:5413 [inline]
->  do_pte_missing+0x2d48/0x33f0 mm/memory.c:4548
->  handle_pte_fault mm/memory.c:6411 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x1bd7/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> RIP: 0033:0x7fca082696d2
-> Code: 48 89 ca 48 c1 e2 04 48 29 ca 48 8d 0d 5f c9 3a 00 48 c1 e2 04 48 0=
-1 c2 8b 44 24 1c c6 42 20 01 89 42 24 8b 44 24 24 89 6a 28 <89> 42 78 0f b6=
- 44 24 43 89 72 2c 88 44 19 04 8b 44 24 20 31 c9 89
-> RSP: 002b:00007ffc5adb04c0 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fca08616018
-> RDX: 00007fca08615fa0 RSI: 0000000000000003 RDI: 0000000000000000
-> RBP: 0000000000001cd6 R08: 00007fca08615fa0 R09: 00007ffc5adb0357
-> R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fca08615fac R14: 00007fca08615fa8 R15: 00007fca08615fa0
->  </TASK>
+> Allocated by task 6001:
+>  kasan_save_stack mm/kasan/common.c:57 [inline]
+>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+>  poison_kmalloc_redzone mm/kasan/common.c:398 [inline]
+>  __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
+>  kasan_kmalloc include/linux/kasan.h:263 [inline]
+>  __kmalloc_cache_noprof+0x31c/0x660 mm/slub.c:5380
+>  kmalloc_noprof include/linux/slab.h:950 [inline]
+>  kzalloc_noprof include/linux/slab.h:1188 [inline]
+>  __inet_diag_dump_start+0x8b/0xbf0 net/ipv4/inet_diag.c:848
+>  __netlink_dump_start+0x469/0x7e0 net/netlink/af_netlink.c:2446
+>  netlink_dump_start include/linux/netlink.h:341 [inline]
+>  inet_diag_handler_cmd+0x1e0/0x2c0 net/ipv4/inet_diag.c:978
+>  sock_diag_rcv_msg+0x4cc/0x600 net/core/sock_diag.c:-1
+>  netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2565
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>  netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1340
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1890
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2592
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
+>  __sys_sendmsg net/socket.c:2678 [inline]
+>  __do_sys_sendmsg net/socket.c:2683 [inline]
+>  __se_sys_sendmsg net/socket.c:2681 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> Freed by task 5995:
+>  kasan_save_stack mm/kasan/common.c:57 [inline]
+>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+>  kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:584
+>  poison_slab_object mm/kasan/common.c:253 [inline]
+>  __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+>  kasan_slab_free include/linux/kasan.h:235 [inline]
+>  slab_free_hook mm/slub.c:2685 [inline]
+>  slab_free mm/slub.c:6165 [inline]
+>  kfree+0x1c5/0x640 mm/slub.c:6483
+>  inet_diag_dump_done+0x73/0x90 net/ipv4/inet_diag.c:894
+>  netlink_dump_cleanup+0x99/0x120 net/netlink/af_netlink.c:2259
+>  netlink_dump+0xbe9/0xf40 net/netlink/af_netlink.c:2385
+>  netlink_recvmsg+0x690/0xa50 net/netlink/af_netlink.c:1972
+>  sock_recvmsg_nosec net/socket.c:1078 [inline]
+>  sock_recvmsg+0x172/0x1b0 net/socket.c:1100
+>  ____sys_recvmsg+0x1e6/0x4a0 net/socket.c:2812
+>  ___sys_recvmsg+0x215/0x590 net/socket.c:2854
+>  __sys_recvmsg net/socket.c:2887 [inline]
+>  __do_sys_recvmsg net/socket.c:2893 [inline]
+>  __se_sys_recvmsg net/socket.c:2890 [inline]
+>  __x64_sys_recvmsg+0x1ba/0x2a0 net/socket.c:2890
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> The buggy address belongs to the object at ffff888110c9a180
+>  which belongs to the cache kmalloc-64 of size 64
+> The buggy address is located 32 bytes inside of
+>  freed 64-byte region [ffff888110c9a180, ffff888110c9a1c0)
+>
+> The buggy address belongs to the physical page:
+> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x110c=
+9a
+> flags: 0x17ff00000000000(node=3D0|zone=3D2|lastcpupid=3D0x7ff)
+> page_type: f5(slab)
+> raw: 017ff00000000000 ffff8881000418c0 dead000000000100 dead000000000122
+> raw: 0000000000000000 0000000800200020 00000000f5000000 0000000000000000
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2cc0(=
+GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 26,=
+ tgid 26 (kworker/u9:0), ts 20518825132, free_ts 20518815181
+>  set_page_owner include/linux/page_owner.h:32 [inline]
+>  post_alloc_hook+0x231/0x280 mm/page_alloc.c:1868
+>  prep_new_page mm/page_alloc.c:1876 [inline]
+>  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3956
+>  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5236
+>  alloc_slab_page mm/slub.c:3292 [inline]
+>  allocate_slab+0x77/0x660 mm/slub.c:3481
+>  new_slab mm/slub.c:3539 [inline]
+>  refill_objects+0x331/0x3c0 mm/slub.c:7175
+>  refill_sheaf mm/slub.c:2812 [inline]
+>  __pcs_replace_empty_main+0x2e6/0x730 mm/slub.c:4615
+>  alloc_from_pcs mm/slub.c:4717 [inline]
+>  slab_alloc_node mm/slub.c:4851 [inline]
+>  __do_kmalloc_node mm/slub.c:5259 [inline]
+>  __kmalloc_node_noprof+0x577/0x7c0 mm/slub.c:5266
+>  kmalloc_node_noprof include/linux/slab.h:1081 [inline]
+>  __vmalloc_area_node mm/vmalloc.c:3857 [inline]
+>  __vmalloc_node_range_noprof+0x5ef/0x1750 mm/vmalloc.c:4064
+>  __vmalloc_node_noprof+0xc2/0x100 mm/vmalloc.c:4124
+>  alloc_thread_stack_node kernel/fork.c:355 [inline]
+>  dup_task_struct+0x27b/0x800 kernel/fork.c:924
+>  copy_process+0x508/0x3cd0 kernel/fork.c:2050
+>  kernel_clone+0x248/0x8e0 kernel/fork.c:2653
+>  user_mode_thread+0x110/0x180 kernel/fork.c:2729
+>  call_usermodehelper_exec_work+0x5c/0x230 kernel/umh.c:171
+>  process_one_work kernel/workqueue.c:3276 [inline]
+>  process_scheduled_works+0xb6e/0x18c0 kernel/workqueue.c:3359
+>  worker_thread+0xa53/0xfc0 kernel/workqueue.c:3440
+> page last free pid 26 tgid 26 stack trace:
+>  reset_page_owner include/linux/page_owner.h:25 [inline]
+>  __free_pages_prepare mm/page_alloc.c:1412 [inline]
+>  __free_frozen_pages+0xbc7/0xd30 mm/page_alloc.c:2953
+>  __kasan_populate_vmalloc_do mm/kasan/shadow.c:393 [inline]
+>  __kasan_populate_vmalloc+0x1b2/0x1d0 mm/kasan/shadow.c:424
+>  kasan_populate_vmalloc include/linux/kasan.h:580 [inline]
+>  alloc_vmap_area+0xd73/0x14b0 mm/vmalloc.c:2123
+>  __get_vm_area_node+0x1f8/0x300 mm/vmalloc.c:3226
+>  __vmalloc_node_range_noprof+0x36a/0x1750 mm/vmalloc.c:4024
+>  __vmalloc_node_noprof+0xc2/0x100 mm/vmalloc.c:4124
+>  alloc_thread_stack_node kernel/fork.c:355 [inline]
+>  dup_task_struct+0x27b/0x800 kernel/fork.c:924
+>  copy_process+0x508/0x3cd0 kernel/fork.c:2050
+>  kernel_clone+0x248/0x8e0 kernel/fork.c:2653
+>  user_mode_thread+0x110/0x180 kernel/fork.c:2729
+>  call_usermodehelper_exec_work+0x5c/0x230 kernel/umh.c:171
+>  process_one_work kernel/workqueue.c:3276 [inline]
+>  process_scheduled_works+0xb6e/0x18c0 kernel/workqueue.c:3359
+>  worker_thread+0xa53/0xfc0 kernel/workqueue.c:3440
+>  kthread+0x388/0x470 kernel/kthread.c:436
+>  ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
+>  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+>
+> Memory state around the buggy address:
+>  ffff888110c9a080: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+>  ffff888110c9a100: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
+> >ffff888110c9a180: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+>                                ^
+>  ffff888110c9a200: 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc fc
+>  ffff888110c9a280: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 >
 >
 > ***
 >
-> BUG: Bad page state in do_wp_page
+> KASAN: slab-use-after-free Read in netlink_dump_done
 >
-> tree:      mm-new
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/=
-mm.git
-> base:      c9183ec6e2e3bd26a017392d6c3eaa40c580f153
+> tree:      torvalds
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torva=
+lds/linux
+> base:      0b5e8d7999076ac3c490fc18376a404e2626abff
 > arch:      amd64
 > compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~e=
 xp1~20251221153213.50), Debian LLD 21.1.8
-> config:    https://ci.syzbot.org/builds/4d1a53f4-f506-4ba9-a8c2-a48196f95=
-abc/config
-> syz repro: https://ci.syzbot.org/findings/5db96cfa-fea0-4d9d-9b97-6924026=
-375b7/syz_repro
+> config:    https://ci.syzbot.org/builds/cb46a152-33c1-4b5e-bb75-bab2ecb45=
+113/config
+> syz repro: https://ci.syzbot.org/findings/86101c1f-0d2b-420f-a6bb-cd0260a=
+6b2f5/syz_repro
 >
-> BUG: Bad page state: 5753 messages suppressed
-> BUG: Bad page state in process syz-executor  pfn:11e4a5
-> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x7f4658e12 pf=
-n:0x11e4a5
-> flags: 0x17ff00000020908(uptodate|active|owner_2|swapbacked|node=3D0|zone=
-=3D2|lastcpupid=3D0x7ff)
-> raw: 017ff00000020908 0000000000000000 dead000000000122 0000000000000000
-> raw: 00000007f4658e12 0000000000000000 00000000ffffffff 0000000000000000
-> page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Movable, gfp_mask 0x140cca(G=
-FP_HIGHUSER_MOVABLE|__GFP_COMP), pid 6083, tgid 6083 (syz.1.50), ts 8621470=
-2085, free_ts 66376409073
->  set_page_owner include/linux/page_owner.h:32 [inline]
->  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->  prep_new_page mm/page_alloc.c:1866 [inline]
->  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3946
->  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5226
->  alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
->  folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
->  vma_alloc_folio_noprof+0xe1/0x1e0 mm/mempolicy.c:2544
->  folio_prealloc mm/memory.c:-1 [inline]
->  wp_page_copy mm/memory.c:3859 [inline]
->  do_wp_page+0x118a/0x4cc0 mm/memory.c:4320
->  handle_pte_fault mm/memory.c:6427 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x151d/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> page last free pid 5817 tgid 5790 stack trace:
->  reset_page_owner include/linux/page_owner.h:25 [inline]
->  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->  __free_frozen_pages+0xbc7/0xd30 mm/page_alloc.c:2943
->  __folio_put+0x4a2/0x580 mm/swap.c:112
->  folio_put include/linux/mm.h:2090 [inline]
->  migrate_folio_done mm/migrate.c:1201 [inline]
->  migrate_folio_move mm/migrate.c:1432 [inline]
->  migrate_folios_move mm/migrate.c:1740 [inline]
->  migrate_pages_batch+0x3dac/0x4ca0 mm/migrate.c:1996
->  migrate_pages+0x1e02/0x2a10 mm/migrate.c:2130
->  migrate_misplaced_folio+0x273/0x720 mm/migrate.c:2751
->  do_numa_page mm/memory.c:6199 [inline]
->  handle_pte_fault mm/memory.c:6417 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x20ea/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0x75b/0x1340 arch/x86/mm/fault.c:1385
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> Modules linked in:
-> CPU: 0 UID: 0 PID: 6089 Comm: syz-executor Tainted: G    B               =
-syzkaller #0 PREEMPT(full)
-> Tainted: [B]=3DBAD_PAGE
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> BUG: KASAN: slab-use-after-free in nlmsg_put_answer include/net/netlink.h=
+:1041 [inline]
+> BUG: KASAN: slab-use-after-free in netlink_dump_done+0x54d/0x890 net/netl=
+ink/af_netlink.c:2228
+> Read of size 4 at addr ffff8881bb35b9b4 by task syz.0.279/6738
+>
+> CPU: 0 UID: 0 PID: 6738 Comm: syz.0.279 Not tainted syzkaller #0 PREEMPT(=
+full)
 > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
 16.2-1 04/01/2014
 > Call Trace:
 >  <TASK>
 >  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  bad_page+0x17f/0x1c0 mm/page_alloc.c:632
->  free_page_is_bad mm/page_alloc.c:1073 [inline]
->  __free_pages_prepare mm/page_alloc.c:1393 [inline]
->  free_unref_folios+0xdcc/0x1480 mm/page_alloc.c:3004
->  folio_batch_move_lru+0x816/0x9e0 mm/swap.c:206
->  __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:226
->  folio_add_lru_vma+0x196/0x210 mm/swap.c:566
->  wp_page_copy mm/memory.c:3927 [inline]
->  do_wp_page+0x3deb/0x4cc0 mm/memory.c:4320
->  handle_pte_fault mm/memory.c:6427 [inline]
->  __handle_mm_fault mm/memory.c:6549 [inline]
->  handle_mm_fault+0x151d/0x3170 mm/memory.c:6718
->  do_user_addr_fault+0xa73/0x1340 arch/x86/mm/fault.c:1334
->  handle_page_fault arch/x86/mm/fault.c:1474 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1527
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:618
-> RIP: 0033:0x7f4658b61da7
-> Code: 00 00 00 80 3d 51 aa de 00 00 0f 84 b4 00 00 00 48 c7 c0 e0 ff ff f=
-f c7 05 4a aa de 00 00 00 00 00 64 48 8b 08 48 85 c9 74 0b <48> c7 81 80 08=
- 00 00 01 00 00 00 48 c7 05 23 aa de 00 00 00 00 00
-> RSP: 002b:00007ffc5850f508 EFLAGS: 00010202
-> RAX: ffffffffffffffe0 RBX: 0000000000000000 RCX: 00007f4658dece20
-> RDX: 0000000000000000 RSI: 00007f4658c52ee0 RDI: 00007f4659948060
-> RBP: 00007ffc5850f66c R08: 00007f4659948060 R09: 0000000000000000
-> R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000001
-> R13: 00000000000927c0 R14: 0000000000015068 R15: 00007ffc5850f6c0
+>  print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+>  print_report+0x58/0x70 mm/kasan/report.c:482
+>  kasan_report+0x117/0x150 mm/kasan/report.c:595
+>  nlmsg_put_answer include/net/netlink.h:1041 [inline]
+>  netlink_dump_done+0x54d/0x890 net/netlink/af_netlink.c:2228
+>  netlink_dump+0xacb/0xf40 net/netlink/af_netlink.c:2365
+>  netlink_recvmsg+0x690/0xa50 net/netlink/af_netlink.c:1972
+>  sock_recvmsg_nosec net/socket.c:1078 [inline]
+>  sock_recvmsg+0x172/0x1b0 net/socket.c:1100
+>  sock_read_iter+0x251/0x320 net/socket.c:1170
+>  new_sync_read fs/read_write.c:493 [inline]
+>  vfs_read+0x582/0xa70 fs/read_write.c:574
+>  ksys_read+0x150/0x270 fs/read_write.c:717
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7fb5eaf9c819
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007fb5ebe08028 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+> RAX: ffffffffffffffda RBX: 00007fb5eb215fa0 RCX: 00007fb5eaf9c819
+> RDX: 000000000000009b RSI: 00002000000003c0 RDI: 0000000000000004
+> RBP: 00007fb5eb032c91 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007fb5eb216038 R14: 00007fb5eb215fa0 R15: 00007ffc181c9c68
 >  </TASK>
+>
+> Allocated by task 6739:
+>  kasan_save_stack mm/kasan/common.c:57 [inline]
+>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+>  unpoison_slab_object mm/kasan/common.c:340 [inline]
+>  __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:366
+>  kasan_slab_alloc include/linux/kasan.h:253 [inline]
+>  slab_post_alloc_hook mm/slub.c:4538 [inline]
+>  slab_alloc_node mm/slub.c:4866 [inline]
+>  kmem_cache_alloc_node_noprof+0x384/0x690 mm/slub.c:4918
+>  __alloc_skb+0x1d0/0x7d0 net/core/skbuff.c:702
+>  netlink_sendmsg+0x5d4/0xb40 net/netlink/af_netlink.c:1865
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2592
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
+>  __sys_sendmsg net/socket.c:2678 [inline]
+>  __do_sys_sendmsg net/socket.c:2683 [inline]
+>  __se_sys_sendmsg net/socket.c:2681 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> Freed by task 6739:
+>  kasan_save_stack mm/kasan/common.c:57 [inline]
+>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+>  kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:584
+>  poison_slab_object mm/kasan/common.c:253 [inline]
+>  __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+>  kasan_slab_free include/linux/kasan.h:235 [inline]
+>  slab_free_hook mm/slub.c:2685 [inline]
+>  slab_free mm/slub.c:6165 [inline]
+>  kmem_cache_free+0x189/0x630 mm/slub.c:6295
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1315 [inline]
+>  netlink_unicast+0x817/0x9b0 net/netlink/af_netlink.c:1340
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1890
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2592
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
+>  __sys_sendmsg net/socket.c:2678 [inline]
+>  __do_sys_sendmsg net/socket.c:2683 [inline]
+>  __se_sys_sendmsg net/socket.c:2681 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> The buggy address belongs to the object at ffff8881bb35b980
+>  which belongs to the cache skbuff_head_cache of size 240
+> The buggy address is located 52 bytes inside of
+>  freed 240-byte region [ffff8881bb35b980, ffff8881bb35ba70)
+>
+> The buggy address belongs to the physical page:
+> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0xffff8881bb35=
+b200 pfn:0x1bb35a
+> head: order:1 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+> flags: 0x57ff00000000240(workingset|head|node=3D1|zone=3D2|lastcpupid=3D0=
+x7ff)
+> page_type: f5(slab)
+> raw: 057ff00000000240 ffff888160417a00 ffff88816041db88 ffffea0005cae210
+> raw: ffff8881bb35b200 000000080015000f 00000000f5000000 0000000000000000
+> head: 057ff00000000240 ffff888160417a00 ffff88816041db88 ffffea0005cae210
+> head: ffff8881bb35b200 000000080015000f 00000000f5000000 0000000000000000
+> head: 057ff00000000001 ffffffffffffff81 00000000ffffffff 00000000ffffffff
+> head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000002
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 1, migratetype Unmovable, gfp_mask 0xd20c0(=
+__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), =
+pid 5552, tgid 5552 (dhcpcd), ts 37959428622, free_ts 37819349212
+>  set_page_owner include/linux/page_owner.h:32 [inline]
+>  post_alloc_hook+0x231/0x280 mm/page_alloc.c:1868
+>  prep_new_page mm/page_alloc.c:1876 [inline]
+>  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3956
+>  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5236
+>  alloc_slab_page mm/slub.c:3292 [inline]
+>  allocate_slab+0x77/0x660 mm/slub.c:3481
+>  new_slab mm/slub.c:3539 [inline]
+>  refill_objects+0x331/0x3c0 mm/slub.c:7175
+>  refill_sheaf mm/slub.c:2812 [inline]
+>  __pcs_replace_empty_main+0x2e6/0x730 mm/slub.c:4615
+>  alloc_from_pcs mm/slub.c:4717 [inline]
+>  slab_alloc_node mm/slub.c:4851 [inline]
+>  kmem_cache_alloc_node_noprof+0x441/0x690 mm/slub.c:4918
+>  __alloc_skb+0x1d0/0x7d0 net/core/skbuff.c:702
+>  alloc_skb include/linux/skbuff.h:1383 [inline]
+>  alloc_skb_with_frags+0xc8/0x760 net/core/skbuff.c:6763
+>  sock_alloc_send_pskb+0x878/0x990 net/core/sock.c:2995
+>  unix_dgram_sendmsg+0x460/0x18e0 net/unix/af_unix.c:2127
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  sock_write_iter+0x49b/0x4f0 net/socket.c:1195
+>  do_iter_readv_writev+0x619/0x8c0 fs/read_write.c:-1
+>  vfs_writev+0x33c/0x990 fs/read_write.c:1059
+>  do_writev+0x154/0x2e0 fs/read_write.c:1105
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+> page last free pid 5552 tgid 5552 stack trace:
+>  reset_page_owner include/linux/page_owner.h:25 [inline]
+>  __free_pages_prepare mm/page_alloc.c:1412 [inline]
+>  __free_frozen_pages+0xbc7/0xd30 mm/page_alloc.c:2953
+>  mm_free_pgd kernel/fork.c:585 [inline]
+>  __mmdrop+0xb5/0x750 kernel/fork.c:727
+>  mmdrop include/linux/sched/mm.h:55 [inline]
+>  mmdrop_sched include/linux/sched/mm.h:83 [inline]
+>  mmdrop_lazy_tlb_sched include/linux/sched/mm.h:110 [inline]
+>  finish_task_switch+0x449/0x920 kernel/sched/core.c:5180
+>  context_switch kernel/sched/core.c:5301 [inline]
+>  __schedule+0x15e5/0x52d0 kernel/sched/core.c:6911
+>  __schedule_loop kernel/sched/core.c:6993 [inline]
+>  schedule+0x164/0x360 kernel/sched/core.c:7008
+>  schedule_hrtimeout_range_clock+0x1e7/0x320 kernel/time/sleep_timeout.c:2=
+07
+>  poll_schedule_timeout+0xd0/0x1a0 fs/select.c:241
+>  do_poll fs/select.c:954 [inline]
+>  do_sys_poll+0x7e8/0x1120 fs/select.c:1004
+>  __do_sys_ppoll fs/select.c:1106 [inline]
+>  __se_sys_ppoll+0x209/0x2b0 fs/select.c:1086
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> Memory state around the buggy address:
+>  ffff8881bb35b880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc
+>  ffff8881bb35b900: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+> >ffff8881bb35b980: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>                                      ^
+>  ffff8881bb35ba00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc
+>  ffff8881bb35ba80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+>
+> ***
+>
+> KASAN: slab-use-after-free Read in netlink_rcv_skb
+>
+> tree:      torvalds
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torva=
+lds/linux
+> base:      0b5e8d7999076ac3c490fc18376a404e2626abff
+> arch:      amd64
+> compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~e=
+xp1~20251221153213.50), Debian LLD 21.1.8
+> config:    https://ci.syzbot.org/builds/cb46a152-33c1-4b5e-bb75-bab2ecb45=
+113/config
+> syz repro: https://ci.syzbot.org/findings/584da8f1-c227-495f-aa8f-564d0bc=
+c212f/syz_repro
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> BUG: KASAN: slab-use-after-free in netlink_rcv_skb+0x395/0x4b0 net/netlin=
+k/af_netlink.c:2574
+> Read of size 4 at addr ffff8881753dc700 by task syz.2.60/6106
+>
+> CPU: 1 UID: 0 PID: 6106 Comm: syz.2.60 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+>  print_report+0x58/0x70 mm/kasan/report.c:482
+>  kasan_report+0x117/0x150 mm/kasan/report.c:595
+>  netlink_rcv_skb+0x395/0x4b0 net/netlink/af_netlink.c:2574
+>  nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:669
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>  netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1340
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1890
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2592
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
+>  __sys_sendmsg net/socket.c:2678 [inline]
+>  __do_sys_sendmsg net/socket.c:2683 [inline]
+>  __se_sys_sendmsg net/socket.c:2681 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7f4d3a59c819
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f4d3b3b8028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007f4d3a816090 RCX: 00007f4d3a59c819
+> RDX: 0000000000000080 RSI: 0000200000000100 RDI: 0000000000000003
+> RBP: 00007f4d3a632c91 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007f4d3a816128 R14: 00007f4d3a816090 R15: 00007ffd69453fe8
+>  </TASK>
+>
+> Allocated by task 6106:
+>  kasan_save_stack mm/kasan/common.c:57 [inline]
+>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+>  unpoison_slab_object mm/kasan/common.c:340 [inline]
+>  __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:366
+>  kasan_slab_alloc include/linux/kasan.h:253 [inline]
+>  slab_post_alloc_hook mm/slub.c:4538 [inline]
+>  slab_alloc_node mm/slub.c:4866 [inline]
+>  kmem_cache_alloc_node_noprof+0x384/0x690 mm/slub.c:4918
+>  kmalloc_reserve net/core/skbuff.c:613 [inline]
+>  __alloc_skb+0x27d/0x7d0 net/core/skbuff.c:713
+>  netlink_sendmsg+0x5d4/0xb40 net/netlink/af_netlink.c:1865
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2592
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
+>  __sys_sendmsg net/socket.c:2678 [inline]
+>  __do_sys_sendmsg net/socket.c:2683 [inline]
+>  __se_sys_sendmsg net/socket.c:2681 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> Freed by task 6106:
+>  kasan_save_stack mm/kasan/common.c:57 [inline]
+>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+>  kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:584
+>  poison_slab_object mm/kasan/common.c:253 [inline]
+>  __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+>  kasan_slab_free include/linux/kasan.h:235 [inline]
+>  slab_free_hook mm/slub.c:2685 [inline]
+>  slab_free mm/slub.c:6165 [inline]
+>  kmem_cache_free+0x189/0x630 mm/slub.c:6295
+>  skb_kfree_head net/core/skbuff.c:1087 [inline]
+>  skb_free_head net/core/skbuff.c:1101 [inline]
+>  skb_release_data+0x81c/0xa80 net/core/skbuff.c:1128
+>  skb_release_all net/core/skbuff.c:1203 [inline]
+>  __kfree_skb+0x5d/0x210 net/core/skbuff.c:1217
+>  netlink_dump+0xbe9/0xf40 net/netlink/af_netlink.c:2385
+>  __netlink_dump_start+0x5cb/0x7e0 net/netlink/af_netlink.c:2455
+>  netlink_dump_start include/linux/netlink.h:341 [inline]
+>  ip_set_dump+0x15b/0x1f0 net/netfilter/ipset/ip_set_core.c:1717
+>  nfnetlink_rcv_msg+0xc00/0x12c0 net/netfilter/nfnetlink.c:302
+>  netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2565
+>  nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:669
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>  netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1340
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1890
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2592
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
+>  __sys_sendmsg net/socket.c:2678 [inline]
+>  __do_sys_sendmsg net/socket.c:2683 [inline]
+>  __se_sys_sendmsg net/socket.c:2681 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> The buggy address belongs to the object at ffff8881753dc700
+>  which belongs to the cache skbuff_small_head of size 704
+> The buggy address is located 0 bytes inside of
+>  freed 704-byte region [ffff8881753dc700, ffff8881753dc9c0)
+>
+> The buggy address belongs to the physical page:
+> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0xffff8881753d=
+fb80 pfn:0x1753dc
+> head: order:2 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+> flags: 0x57ff00000000240(workingset|head|node=3D1|zone=3D2|lastcpupid=3D0=
+x7ff)
+> page_type: f5(slab)
+> raw: 057ff00000000240 ffff888160419140 ffffea0005d40010 ffffea0006e4bb10
+> raw: ffff8881753dfb80 000000080012000f 00000000f5000000 0000000000000000
+> head: 057ff00000000240 ffff888160419140 ffffea0005d40010 ffffea0006e4bb10
+> head: ffff8881753dfb80 000000080012000f 00000000f5000000 0000000000000000
+> head: 057ff00000000002 ffffffffffffff01 00000000ffffffff 00000000ffffffff
+> head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000004
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 2, migratetype Unmovable, gfp_mask 0xd20c0(=
+__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), =
+pid 5839, tgid 5839 (syz-executor), ts 58323168360, free_ts 35463810625
+>  set_page_owner include/linux/page_owner.h:32 [inline]
+>  post_alloc_hook+0x231/0x280 mm/page_alloc.c:1868
+>  prep_new_page mm/page_alloc.c:1876 [inline]
+>  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3956
+>  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5236
+>  alloc_slab_page mm/slub.c:3292 [inline]
+>  allocate_slab+0x77/0x660 mm/slub.c:3481
+>  new_slab mm/slub.c:3539 [inline]
+>  refill_objects+0x331/0x3c0 mm/slub.c:7175
+>  refill_sheaf mm/slub.c:2812 [inline]
+>  __pcs_replace_empty_main+0x2e6/0x730 mm/slub.c:4615
+>  alloc_from_pcs mm/slub.c:4717 [inline]
+>  slab_alloc_node mm/slub.c:4851 [inline]
+>  kmem_cache_alloc_node_noprof+0x441/0x690 mm/slub.c:4918
+>  kmalloc_reserve net/core/skbuff.c:613 [inline]
+>  __alloc_skb+0x27d/0x7d0 net/core/skbuff.c:713
+>  alloc_skb include/linux/skbuff.h:1383 [inline]
+>  nlmsg_new include/net/netlink.h:1055 [inline]
+>  inet6_netconf_notify_devconf+0x10f/0x1d0 net/ipv6/addrconf.c:592
+>  __addrconf_sysctl_register+0x45a/0x4d0 net/ipv6/addrconf.c:7338
+>  addrconf_sysctl_register+0x168/0x1c0 net/ipv6/addrconf.c:7375
+>  ipv6_add_dev+0xd26/0x13a0 net/ipv6/addrconf.c:459
+>  addrconf_notify+0x771/0x1050 net/ipv6/addrconf.c:3654
+>  notifier_call_chain+0x1be/0x400 kernel/notifier.c:85
+>  call_netdevice_notifiers_extack net/core/dev.c:2287 [inline]
+>  call_netdevice_notifiers net/core/dev.c:2301 [inline]
+>  register_netdevice+0x173a/0x1cf0 net/core/dev.c:11462
+>  register_netdev+0x40/0x60 net/core/dev.c:11540
+> page last free pid 5256 tgid 5256 stack trace:
+>  reset_page_owner include/linux/page_owner.h:25 [inline]
+>  __free_pages_prepare mm/page_alloc.c:1412 [inline]
+>  __free_frozen_pages+0xbc7/0xd30 mm/page_alloc.c:2953
+>  __slab_free+0x263/0x2b0 mm/slub.c:5573
+>  qlink_free mm/kasan/quarantine.c:163 [inline]
+>  qlist_free_all+0x99/0x100 mm/kasan/quarantine.c:179
+>  kasan_quarantine_reduce+0x148/0x160 mm/kasan/quarantine.c:286
+>  __kasan_slab_alloc+0x22/0x80 mm/kasan/common.c:350
+>  kasan_slab_alloc include/linux/kasan.h:253 [inline]
+>  slab_post_alloc_hook mm/slub.c:4538 [inline]
+>  slab_alloc_node mm/slub.c:4866 [inline]
+>  kmem_cache_alloc_node_noprof+0x384/0x690 mm/slub.c:4918
+>  __alloc_skb+0x1d0/0x7d0 net/core/skbuff.c:702
+>  netlink_sendmsg+0x5d4/0xb40 net/netlink/af_netlink.c:1865
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2592
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
+>  __sys_sendmsg net/socket.c:2678 [inline]
+>  __do_sys_sendmsg net/socket.c:2683 [inline]
+>  __se_sys_sendmsg net/socket.c:2681 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> Memory state around the buggy address:
+>  ffff8881753dc600: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+>  ffff8881753dc680: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+> >ffff8881753dc700: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>                    ^
+>  ffff8881753dc780: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>  ffff8881753dc800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+>
+> ***
+>
+> KASAN: slab-use-after-free Read in rdma_nl_rcv
+>
+> tree:      torvalds
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torva=
+lds/linux
+> base:      0b5e8d7999076ac3c490fc18376a404e2626abff
+> arch:      amd64
+> compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~e=
+xp1~20251221153213.50), Debian LLD 21.1.8
+> config:    https://ci.syzbot.org/builds/cb46a152-33c1-4b5e-bb75-bab2ecb45=
+113/config
+> syz repro: https://ci.syzbot.org/findings/5022ea7e-727a-4c37-8ae5-0c7f5d4=
+3822c/syz_repro
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> BUG: KASAN: slab-use-after-free in rdma_nl_rcv_skb drivers/infiniband/cor=
+e/netlink.c:248 [inline]
+> BUG: KASAN: slab-use-after-free in rdma_nl_rcv+0x867/0xa10 drivers/infini=
+band/core/netlink.c:259
+> Read of size 4 at addr ffff8881a4036a00 by task syz.1.18/5983
+>
+> CPU: 1 UID: 0 PID: 5983 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+>  print_report+0x58/0x70 mm/kasan/report.c:482
+>  kasan_report+0x117/0x150 mm/kasan/report.c:595
+>  rdma_nl_rcv_skb drivers/infiniband/core/netlink.c:248 [inline]
+>  rdma_nl_rcv+0x867/0xa10 drivers/infiniband/core/netlink.c:259
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>  netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1340
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1890
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2592
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
+>  __sys_sendmsg net/socket.c:2678 [inline]
+>  __do_sys_sendmsg net/socket.c:2683 [inline]
+>  __se_sys_sendmsg net/socket.c:2681 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7f737179c819
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f73725f1028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007f7371a16090 RCX: 00007f737179c819
+> RDX: 0000000020008000 RSI: 0000200000000000 RDI: 0000000000000003
+> RBP: 00007f7371832c91 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007f7371a16128 R14: 00007f7371a16090 R15: 00007ffeff477318
+>  </TASK>
+>
+> Allocated by task 5983:
+>  kasan_save_stack mm/kasan/common.c:57 [inline]
+>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+>  unpoison_slab_object mm/kasan/common.c:340 [inline]
+>  __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:366
+>  kasan_slab_alloc include/linux/kasan.h:253 [inline]
+>  slab_post_alloc_hook mm/slub.c:4538 [inline]
+>  slab_alloc_node mm/slub.c:4866 [inline]
+>  kmem_cache_alloc_node_noprof+0x384/0x690 mm/slub.c:4918
+>  kmalloc_reserve net/core/skbuff.c:613 [inline]
+>  __alloc_skb+0x27d/0x7d0 net/core/skbuff.c:713
+>  netlink_sendmsg+0x5d4/0xb40 net/netlink/af_netlink.c:1865
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2592
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
+>  __sys_sendmsg net/socket.c:2678 [inline]
+>  __do_sys_sendmsg net/socket.c:2683 [inline]
+>  __se_sys_sendmsg net/socket.c:2681 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> Freed by task 5983:
+>  kasan_save_stack mm/kasan/common.c:57 [inline]
+>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+>  kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:584
+>  poison_slab_object mm/kasan/common.c:253 [inline]
+>  __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+>  kasan_slab_free include/linux/kasan.h:235 [inline]
+>  slab_free_hook mm/slub.c:2685 [inline]
+>  slab_free mm/slub.c:6165 [inline]
+>  kmem_cache_free+0x189/0x630 mm/slub.c:6295
+>  skb_kfree_head net/core/skbuff.c:1087 [inline]
+>  skb_free_head net/core/skbuff.c:1101 [inline]
+>  skb_release_data+0x81c/0xa80 net/core/skbuff.c:1128
+>  skb_release_all net/core/skbuff.c:1203 [inline]
+>  __kfree_skb+0x5d/0x210 net/core/skbuff.c:1217
+>  netlink_dump+0xbe9/0xf40 net/netlink/af_netlink.c:2385
+>  __netlink_dump_start+0x5cb/0x7e0 net/netlink/af_netlink.c:2455
+>  netlink_dump_start include/linux/netlink.h:341 [inline]
+>  rdma_nl_rcv_msg drivers/infiniband/core/netlink.c:190 [inline]
+>  rdma_nl_rcv_skb drivers/infiniband/core/netlink.c:239 [inline]
+>  rdma_nl_rcv+0x78b/0xa10 drivers/infiniband/core/netlink.c:259
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>  netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1340
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1890
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2592
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
+>  __sys_sendmsg net/socket.c:2678 [inline]
+>  __do_sys_sendmsg net/socket.c:2683 [inline]
+>  __se_sys_sendmsg net/socket.c:2681 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> The buggy address belongs to the object at ffff8881a4036a00
+>  which belongs to the cache skbuff_small_head of size 704
+> The buggy address is located 0 bytes inside of
+>  freed 704-byte region [ffff8881a4036a00, ffff8881a4036cc0)
+>
+> The buggy address belongs to the physical page:
+> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1a40=
+34
+> head: order:2 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+> flags: 0x57ff00000000040(head|node=3D1|zone=3D2|lastcpupid=3D0x7ff)
+> page_type: f5(slab)
+> raw: 057ff00000000040 ffff888160416c80 dead000000000100 dead000000000122
+> raw: 0000000000000000 0000000800120012 00000000f5000000 0000000000000000
+> head: 057ff00000000040 ffff888160416c80 dead000000000100 dead000000000122
+> head: 0000000000000000 0000000800120012 00000000f5000000 0000000000000000
+> head: 057ff00000000002 ffffffffffffff01 00000000ffffffff 00000000ffffffff
+> head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000004
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 2, migratetype Unmovable, gfp_mask 0xd20c0(=
+__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), =
+pid 5931, tgid 5931 (syz-executor), ts 61730251789, free_ts 58082311635
+>  set_page_owner include/linux/page_owner.h:32 [inline]
+>  post_alloc_hook+0x231/0x280 mm/page_alloc.c:1868
+>  prep_new_page mm/page_alloc.c:1876 [inline]
+>  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3956
+>  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5236
+>  alloc_slab_page mm/slub.c:3292 [inline]
+>  allocate_slab+0x77/0x660 mm/slub.c:3481
+>  new_slab mm/slub.c:3539 [inline]
+>  refill_objects+0x331/0x3c0 mm/slub.c:7175
+>  refill_sheaf mm/slub.c:2812 [inline]
+>  __pcs_replace_empty_main+0x2e6/0x730 mm/slub.c:4615
+>  alloc_from_pcs mm/slub.c:4717 [inline]
+>  slab_alloc_node mm/slub.c:4851 [inline]
+>  kmem_cache_alloc_node_noprof+0x441/0x690 mm/slub.c:4918
+>  kmalloc_reserve net/core/skbuff.c:613 [inline]
+>  __alloc_skb+0x27d/0x7d0 net/core/skbuff.c:713
+>  alloc_skb include/linux/skbuff.h:1383 [inline]
+>  nlmsg_new include/net/netlink.h:1055 [inline]
+>  netlink_ack+0x146/0xa50 net/netlink/af_netlink.c:2502
+>  netlink_rcv_skb+0x2b6/0x4b0 net/netlink/af_netlink.c:2571
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>  netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1340
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1890
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  __sys_sendto+0x672/0x710 net/socket.c:2206
+>  __do_sys_sendto net/socket.c:2213 [inline]
+>  __se_sys_sendto net/socket.c:2209 [inline]
+>  __x64_sys_sendto+0xde/0x100 net/socket.c:2209
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> page last free pid 5865 tgid 5865 stack trace:
+>  reset_page_owner include/linux/page_owner.h:25 [inline]
+>  __free_pages_prepare mm/page_alloc.c:1412 [inline]
+>  __free_frozen_pages+0xbc7/0xd30 mm/page_alloc.c:2953
+>  vfree+0x1d1/0x2f0 mm/vmalloc.c:3472
+>  kcov_put kernel/kcov.c:442 [inline]
+>  kcov_close+0x28/0x50 kernel/kcov.c:543
+>  __fput+0x44f/0xa70 fs/file_table.c:469
+>  task_work_run+0x1d9/0x270 kernel/task_work.c:233
+>  exit_task_work include/linux/task_work.h:40 [inline]
+>  do_exit+0x70f/0x22c0 kernel/exit.c:976
+>  do_group_exit+0x21b/0x2d0 kernel/exit.c:1118
+>  get_signal+0x1284/0x1330 kernel/signal.c:3034
+>  arch_do_signal_or_restart+0xbc/0x830 arch/x86/kernel/signal.c:337
+>  __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
+>  exit_to_user_mode_loop+0x86/0x480 kernel/entry/common.c:98
+>  __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline=
+]
+>  syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [=
+inline]
+>  syscall_exit_to_user_mode include/linux/entry-common.h:325 [inline]
+>  do_syscall_64+0x32d/0xf80 arch/x86/entry/syscall_64.c:100
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> Memory state around the buggy address:
+>  ffff8881a4036900: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>  ffff8881a4036980: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+> >ffff8881a4036a00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>                    ^
+>  ffff8881a4036a80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>  ffff8881a4036b00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+>
+> ***
+>
+> KASAN: slab-use-after-free Write in genl_done
+>
+> tree:      torvalds
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torva=
+lds/linux
+> base:      0b5e8d7999076ac3c490fc18376a404e2626abff
+> arch:      amd64
+> compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~e=
+xp1~20251221153213.50), Debian LLD 21.1.8
+> config:    https://ci.syzbot.org/builds/cb46a152-33c1-4b5e-bb75-bab2ecb45=
+113/config
+> syz repro: https://ci.syzbot.org/findings/5600aed0-e730-40d2-943c-84f525e=
+427c6/syz_repro
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> BUG: KASAN: slab-use-after-free in genl_done+0x76/0x220 net/netlink/genet=
+link.c:1038
+> Write of size 8 at addr ffff88811b796788 by task syz.0.34/6007
+>
+> CPU: 0 UID: 0 PID: 6007 Comm: syz.0.34 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+>  print_report+0x58/0x70 mm/kasan/report.c:482
+>  kasan_report+0x117/0x150 mm/kasan/report.c:595
+>  genl_done+0x76/0x220 net/netlink/genetlink.c:1038
+>  netlink_dump_cleanup+0x99/0x120 net/netlink/af_netlink.c:2259
+>  netlink_dump+0xbe9/0xf40 net/netlink/af_netlink.c:2385
+>  __netlink_dump_start+0x5cb/0x7e0 net/netlink/af_netlink.c:2455
+>  genl_family_rcv_msg_dumpit+0x213/0x310 net/netlink/genetlink.c:1075
+>  genl_family_rcv_msg net/netlink/genetlink.c:1191 [inline]
+>  genl_rcv_msg+0x5e8/0x7a0 net/netlink/genetlink.c:1209
+>  netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2565
+>  genl_rcv+0x28/0x40 net/netlink/genetlink.c:1218
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>  netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1340
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1890
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2592
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
+>  __sys_sendmsg net/socket.c:2678 [inline]
+>  __do_sys_sendmsg net/socket.c:2683 [inline]
+>  __se_sys_sendmsg net/socket.c:2681 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7fe33999c819
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007fe33a8da028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007fe339c16090 RCX: 00007fe33999c819
+> RDX: 0000000000000000 RSI: 0000200000000040 RDI: 0000000000000004
+> RBP: 00007fe339a32c91 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007fe339c16128 R14: 00007fe339c16090 R15: 00007ffe15e728b8
+>  </TASK>
+>
+> Allocated by task 6007:
+>  kasan_save_stack mm/kasan/common.c:57 [inline]
+>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+>  poison_kmalloc_redzone mm/kasan/common.c:398 [inline]
+>  __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
+>  kasan_kmalloc include/linux/kasan.h:263 [inline]
+>  __kmalloc_cache_noprof+0x31c/0x660 mm/slub.c:5380
+>  kmalloc_noprof include/linux/slab.h:950 [inline]
+>  genl_dumpit_info_alloc net/netlink/genetlink.c:915 [inline]
+>  genl_start+0x1c9/0x6c0 net/netlink/genetlink.c:985
+>  __netlink_dump_start+0x469/0x7e0 net/netlink/af_netlink.c:2446
+>  genl_family_rcv_msg_dumpit+0x213/0x310 net/netlink/genetlink.c:1075
+>  genl_family_rcv_msg net/netlink/genetlink.c:1191 [inline]
+>  genl_rcv_msg+0x5e8/0x7a0 net/netlink/genetlink.c:1209
+>  netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2565
+>  genl_rcv+0x28/0x40 net/netlink/genetlink.c:1218
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>  netlink_unicast+0x80f/0x9b0 net/netlink/af_netlink.c:1340
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1890
+>  sock_sendmsg_nosec net/socket.c:727 [inline]
+>  __sock_sendmsg net/socket.c:742 [inline]
+>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2592
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2646
+>  __sys_sendmsg net/socket.c:2678 [inline]
+>  __do_sys_sendmsg net/socket.c:2683 [inline]
+>  __se_sys_sendmsg net/socket.c:2681 [inline]
+>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2681
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> Freed by task 6006:
+>  kasan_save_stack mm/kasan/common.c:57 [inline]
+>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+>  kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:584
+>  poison_slab_object mm/kasan/common.c:253 [inline]
+>  __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+>  kasan_slab_free include/linux/kasan.h:235 [inline]
+>  slab_free_hook mm/slub.c:2685 [inline]
+>  slab_free mm/slub.c:6165 [inline]
+>  kfree+0x1c5/0x640 mm/slub.c:6483
+>  genl_dumpit_info_free net/netlink/genetlink.c:920 [inline]
+>  genl_done+0x1c8/0x220 net/netlink/genetlink.c:1046
+>  netlink_dump_cleanup+0x99/0x120 net/netlink/af_netlink.c:2259
+>  netlink_dump+0xbe9/0xf40 net/netlink/af_netlink.c:2385
+>  netlink_recvmsg+0x690/0xa50 net/netlink/af_netlink.c:1972
+>  sock_recvmsg_nosec net/socket.c:1078 [inline]
+>  sock_recvmsg+0x172/0x1b0 net/socket.c:1100
+>  sock_read_iter+0x251/0x320 net/socket.c:1170
+>  new_sync_read fs/read_write.c:493 [inline]
+>  vfs_read+0x582/0xa70 fs/read_write.c:574
+>  ksys_read+0x150/0x270 fs/read_write.c:717
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> The buggy address belongs to the object at ffff88811b796700
+>  which belongs to the cache kmalloc-192 of size 192
+> The buggy address is located 136 bytes inside of
+>  freed 192-byte region [ffff88811b796700, ffff88811b7967c0)
+>
+> The buggy address belongs to the physical page:
+> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x11b7=
+96
+> flags: 0x17ff00000000000(node=3D0|zone=3D2|lastcpupid=3D0x7ff)
+> page_type: f5(slab)
+> raw: 017ff00000000000 ffff8881000413c0 dead000000000100 dead000000000122
+> raw: 0000000000000000 0000000800100010 00000000f5000000 0000000000000000
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2cc0(=
+GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 592=
+2, tgid 5922 (syz-executor), ts 64892204905, free_ts 61400269257
+>  set_page_owner include/linux/page_owner.h:32 [inline]
+>  post_alloc_hook+0x231/0x280 mm/page_alloc.c:1868
+>  prep_new_page mm/page_alloc.c:1876 [inline]
+>  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c:3956
+>  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5236
+>  alloc_slab_page mm/slub.c:3292 [inline]
+>  allocate_slab+0x77/0x660 mm/slub.c:3481
+>  new_slab mm/slub.c:3539 [inline]
+>  refill_objects+0x331/0x3c0 mm/slub.c:7175
+>  refill_sheaf mm/slub.c:2812 [inline]
+>  __pcs_replace_empty_main+0x2e6/0x730 mm/slub.c:4615
+>  alloc_from_pcs mm/slub.c:4717 [inline]
+>  slab_alloc_node mm/slub.c:4851 [inline]
+>  __do_kmalloc_node mm/slub.c:5259 [inline]
+>  __kmalloc_node_noprof+0x577/0x7c0 mm/slub.c:5266
+>  kmalloc_node_noprof include/linux/slab.h:1081 [inline]
+>  alloc_slab_obj_exts+0xbf/0x250 mm/slub.c:2167
+>  __memcg_slab_post_alloc_hook+0x5c4/0xe80 mm/memcontrol.c:3466
+>  memcg_slab_post_alloc_hook mm/slub.c:2457 [inline]
+>  slab_post_alloc_hook mm/slub.c:4549 [inline]
+>  slab_alloc_node mm/slub.c:4866 [inline]
+>  kmem_cache_alloc_noprof+0x347/0x650 mm/slub.c:4873
+>  vm_area_dup+0x2b/0x680 mm/vma_init.c:123
+>  dup_mmap+0x8b1/0x1d90 mm/mmap.c:1786
+>  dup_mm kernel/fork.c:1531 [inline]
+>  copy_mm+0x13b/0x4a0 kernel/fork.c:1583
+>  copy_process+0x18b6/0x3cd0 kernel/fork.c:2223
+>  kernel_clone+0x248/0x8e0 kernel/fork.c:2653
+>  __do_sys_clone kernel/fork.c:2794 [inline]
+>  __se_sys_clone kernel/fork.c:2778 [inline]
+>  __x64_sys_clone+0x1b6/0x230 kernel/fork.c:2778
+> page last free pid 10 tgid 10 stack trace:
+>  reset_page_owner include/linux/page_owner.h:25 [inline]
+>  __free_pages_prepare mm/page_alloc.c:1412 [inline]
+>  __free_frozen_pages+0xbc7/0xd30 mm/page_alloc.c:2953
+>  kasan_depopulate_vmalloc_pte+0x6d/0x90 mm/kasan/shadow.c:484
+>  apply_to_pte_range mm/memory.c:3322 [inline]
+>  apply_to_pmd_range mm/memory.c:3366 [inline]
+>  apply_to_pud_range mm/memory.c:3402 [inline]
+>  apply_to_p4d_range mm/memory.c:3438 [inline]
+>  __apply_to_page_range+0xbdc/0x1420 mm/memory.c:3474
+>  __kasan_release_vmalloc+0xa2/0xd0 mm/kasan/shadow.c:602
+>  kasan_release_vmalloc include/linux/kasan.h:593 [inline]
+>  kasan_release_vmalloc_node mm/vmalloc.c:2284 [inline]
+>  purge_vmap_node+0x220/0x960 mm/vmalloc.c:2306
+>  __purge_vmap_area_lazy+0x779/0xb70 mm/vmalloc.c:2396
+>  drain_vmap_area_work+0x27/0x40 mm/vmalloc.c:2430
+>  process_one_work kernel/workqueue.c:3276 [inline]
+>  process_scheduled_works+0xb6e/0x18c0 kernel/workqueue.c:3359
+>  worker_thread+0xa53/0xfc0 kernel/workqueue.c:3440
+>  kthread+0x388/0x470 kernel/kthread.c:436
+>  ret_from_fork+0x51e/0xb90 arch/x86/kernel/process.c:158
+>  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+>
+> Memory state around the buggy address:
+>  ffff88811b796680: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>  ffff88811b796700: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> >ffff88811b796780: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+>                       ^
+>  ffff88811b796800: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>  ffff88811b796880: 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc fc
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 >
 >
 > ***
@@ -1469,12 +1164,10 @@ f c7 05 4a aa de 00 00 00 00 00 64 48 8b 08 48 85 c9 74 0b <48> c7 81 80 08=
 > Note: arguments like custom git repos and branches are not supported.
 >
 > The email will later be sent to:
-> [akpm@linux-foundation.org axelrasmussen@google.com baohua@kernel.org bhe=
-@redhat.com chrisl@kernel.org hannes@cmpxchg.org jp.kobryn@linux.dev kasong=
-@tencent.com kernel-team@meta.com linux-kernel@vger.kernel.org linux-mm@kva=
-ck.org mhocko@suse.com nphamcs@gmail.com qi.zheng@linux.dev riel@surriel.co=
-m shakeel.butt@linux.dev shikemeng@huaweicloud.com vbabka@kernel.org weixug=
-c@google.com willy@infradead.org youngjun.park@lge.com yuanchu@google.com]
+> [davem@davemloft.net edumazet@google.com horms@kernel.org kees@kernel.org=
+ kuba@kernel.org kuniyu@google.com linux-kernel@vger.kernel.org michael.bom=
+marito@gmail.com netdev@vger.kernel.org pabeni@redhat.com yangfeng@kylinos.=
+cn]
 >
 > If the report looks fine to you, reply with:
 > #syz upstream
@@ -1488,4 +1181,4 @@ c@google.com willy@infradead.org youngjun.park@lge.com yuanchu@google.com]
 > To unsubscribe from this group and stop receiving emails from it, send an=
  email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
 > To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/69ea9513.a00a0220.9259.002d.GAE%40google.com.
+-upstream-moderation/69eacf03.a00a0220.17a17.004c.GAE%40google.com.
