@@ -1,77 +1,79 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB2E01DD889
-	for <syzbot@lists.linux.dev>; Sat, 25 Apr 2026 00:58:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA874346E56
+	for <syzbot@lists.linux.dev>; Sat, 25 Apr 2026 08:11:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777078722; cv=none; b=ei83OcF16vKPECJizAgbS2SEJLBiLNcRcnH9CEBHTVn44VmQCda/sdpG8ct02sEq54BXiSAUEt2N4bFV0CkV+1Il/9MzKPtrre2qiEKGqTWaC5tiNqS4KvZwaz3rIXfNFqCiB5S9eqNdmUH8IuWZBSt5HFsW9wcFT0DayQ6a/vk=
+	t=1777104668; cv=none; b=D1JbIZ8JiDy7UiUMU6xIh5eK0g+rXIQTsWQ1zZztzWwQ1zhEEE0aT3Z6rMSU8ul9mseHEyUT8yLayXtzQqNbT877sQXF/iGXRsUK5CltP07JfPPHAKq8V+S2mqPNxwm9IpPlmkr7PieuqO7jx8U7ac8S6ErozGYfFEfXJdDQq/M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777078722; c=relaxed/simple;
-	bh=syeJE10a8alisPhktu4ax3HPs0B/T3a6qXMk83gAlJM=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=rx9Ahd+voqDFAPEEghf4qKzvcPcS38elSYEQpjQ5FL69SFkpzWKYuS4+GZz/QtBZpGiEPXlxsmaVRxJXNVHFSYZWZaAL+I9vykAJdP/CtWtpU6l0M3vCxlrZ7kGG9S8tl77TysGA7VrCk9d5Ppg3kUxSR+LNtjTZw4WJIXC8rjI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+	s=arc-20240116; t=1777104668; c=relaxed/simple;
+	bh=VORPrB44T1ngZRqRUd7E5oNBNO5X7vmAU39kAu0cKOc=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=k2+r4rmqw7mAV4QfVjFBlQEgMDzoPHFcmEF1c2JpdyOstzm6Vf7ze34LRb0PZ1GaRdC1xKzWUHLzJh7NWGbc0gZsbd8P0njXT9xRkEyN91PRbhaB5+qFr35QpUyY3cG2F6Y8nDAE6wjfNxHVqpHEBF4DnzIkr71tcSk9HAu7oyE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-69629bd56c3so1857879eaf.3
-        for <syzbot@lists.linux.dev>; Fri, 24 Apr 2026 17:58:40 -0700 (PDT)
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-6948df7c598so13841941eaf.1
+        for <syzbot@lists.linux.dev>; Sat, 25 Apr 2026 01:11:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777078720; x=1777683520;
+        d=1e100.net; s=20251104; t=1777104666; x=1777709466;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=rpRfMnBIqrk+h4M6BRMkvgHZRwYlPJQp2lFCcAiF2mc=;
-        b=YAFFKFxZqZ/e5CaUIGSP4PDUFFxaIzWHRTVFLkldfsNam59gNqg/DIsWY6HZ+Cow+9
-         vXqcDGpi4mIClozyxA9SXw3uxJOM/QhPKaudqK2Dwf/z6GXmZkbRuSJhOGRme/L3izn3
-         0Rm7mdU6P8kVtvESKN7oFnNiJJTSt5F/BxDZHFxNpludMSsIpwhOutisFj915dTFROTB
-         x714/CQmb6r7MdzSV5iSDjqzGE5R10/pSaaiqgQM+cTSwNnisWnZSgxKvLNuoupGHKPh
-         v4PWpU/7BjxAkycXO9y1AfyCg+MiJV9OUMdHewnU7fDGXyh9iWZwBFmqucMQuWdnnEK8
-         crag==
-X-Gm-Message-State: AOJu0YxwGR+y2gvkG+FH0mKhc13YE3kcEXW0jYeoBfMkUTT8YVDBbNOE
-	cyE6XQNZHwZAe9hYwm3459hlBW5Y9BK1652NyjqWkSiFeg2Th5TaZLDyR/kOKerYO8YgqpYz8HJ
-	WH1zpp2r1H6YNo9L26zrcneJnJpDVVUEi+X8I7YgteytcfZrSSKf6gTYndQI=
+        bh=wyHLyYHHEdatvPRrCoDM7zYzLPxZPw8N9SeGymYkm9Y=;
+        b=rF/5PAQH4KjuYv+MP8qDJRhpga8xsp/DyK/tx3z7DE8eaWXQFFKkp002P9M1bhzBpu
+         y2GKHxeMAJS+eKwuhFJrR9Fu6OAKGV58PTMv8y1X+glO/u4EtimqV8pKkZkpx/oz5DXN
+         /tEpThxLjzRqMGkGMnNygkxQrRgCx4iSebkIEkgID6qxxDH9QPBfCLsgDQy4FxVULJpz
+         ziiU5ijGoy3Dtl6dvFQD6XyFiB1T7Voi6Uf3GYlTuEZxXJ+eX5tVR5cJLj/yuluCL946
+         oVhk1SxeNtkp9AMB+NCKF/6ulp8MdcfVLz1EVUEdCHhcZ3BmeZsowOVxBNBjg9Os8/Rx
+         lnGg==
+X-Gm-Message-State: AOJu0Yxm7cKhiHIBOM1YB+QgSKfwhifuzAsYpivCMuLh/DPtYK1ECsnA
+	HcE4OwHc2iWimD6JUvVDXzuFdi8Q4H3NW6nkYuKLksTB0Y4GpX7Muq3eluh5YrWRi1xG5+DJxvd
+	J4DH6HbCPtZUKpLnP2qgnuo7kbe0hLKSkQ/tT9I0+G3NGWllbJNSC8RmVLqw=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:180c:b0:694:8e6f:17a with SMTP id
- 006d021491bc7-6948e6f0567mr12190554eaf.23.1777078719853; Fri, 24 Apr 2026
- 17:58:39 -0700 (PDT)
-Date: Fri, 24 Apr 2026 17:58:39 -0700
+X-Received: by 2002:a4a:b30b:0:b0:693:7a6f:b311 with SMTP id
+ 006d021491bc7-694637d78e7mr12678950eaf.22.1777104665842; Sat, 25 Apr 2026
+ 01:11:05 -0700 (PDT)
+Date: Sat, 25 Apr 2026 01:11:05 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69ec11bf.a00a0220.7773.000b.GAE@google.com>
-Subject: [moderation/CI] Re: bpf: Free reuseport cBPF prog after RCU grace period.
-From: syzbot ci <syzbot+ci762e1dc0ae0495a6@syzkaller.appspotmail.com>
+Message-ID: <69ec7719.a00a0220.7773.0011.GAE@google.com>
+Subject: [moderation/CI] Re: mm/hugetlb: fix resv_map memory leak in
+ __mmap_region error path
+From: syzbot ci <syzbot+cifd696a6f8ad82c74@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] bpf: Free reuseport cBPF prog after RCU grace period.
-https://lore.kernel.org/all/20260424235247.1990272-1-kuniyu@google.com
-* [PATCH v1 bpf] bpf: Free reuseport cBPF prog after RCU grace period.
+[v1] mm/hugetlb: fix resv_map memory leak in __mmap_region error path
+https://lore.kernel.org/all/20260425070700.562229-1-25181214217@stu.xidian.edu.cn
+* [RFC PATCH] mm/hugetlb: fix resv_map memory leak in __mmap_region error path
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/0342d7b3-0567-44fe-9632-d69d34f62abc
+https://ci.syzbot.org/series/266de6ea-d980-4f3a-a2fc-436d995c94df
 
 ***
 
 kernel build error
 
-tree:      bpf
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf.git
-base:      1081de1accb2b224516cca7071122c59532d0b22
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
+base:      f47fc45d9080d6a06fe1001a5e9798bb4c9c2361
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/866b4dee-c822-4572-b8bd-2c1ea8e00b9a/config
+config:    https://ci.syzbot.org/builds/4a6ae9e2-abb3-4759-ae76-1f73f316196f/config
 
-net/core/filter.c:1666:6: error: conflicting types for 'sk_reuseport_prog_free'
+mm/vma.c:2804:26: error: incompatible pointer types passing 'struct vm_area_desc *' to parameter of type 'struct vm_area_desc *' [-Werror,-Wincompatible-pointer-types]
+fs/hugetlbfs/inode.c:183:27: error: incompatible function pointer types assigning to 'void (*)(struct vm_area_desc *)' from 'void (struct vm_area_desc *)' [-Wincompatible-function-pointer-types]
 
 ***
 
@@ -90,7 +92,7 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[andrii@kernel.org ast@kernel.org bpf@vger.kernel.org daniel@iogearbox.net eddyz87@gmail.com eulgyukim@snu.ac.kr kuni1840@gmail.com kuniyu@google.com martin.lau@linux.dev memxor@gmail.com netdev@vger.kernel.org]
+[25181214217@stu.xidian.edu.cn akpm@linux-foundation.org liam.howlett@oracle.com linux-kernel@vger.kernel.org linux-mm@kvack.org muchun.song@linux.dev]
 
 If the report looks fine to you, reply with:
 #syz upstream
