@@ -1,141 +1,77 @@
 Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4343537CD30
-	for <syzbot@lists.linux.dev>; Fri, 24 Apr 2026 20:17:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB2E01DD889
+	for <syzbot@lists.linux.dev>; Sat, 25 Apr 2026 00:58:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777061871; cv=none; b=WXrPJnPBdsmt5hJ3/8KW/Xu2RdzKGnP3CaUhcfYZYGXw00bzZ+1k8KNNzhwam2qV93ui8KDgLfzOTf3L5nqKUDYVOq4LEKVU7LurTofuplHgo8F9bXklMCc02gbAjNK2YBSbzOMfT7Som79NwV/UAqJhM518b19tn9uaZEsr/kw=
+	t=1777078722; cv=none; b=ei83OcF16vKPECJizAgbS2SEJLBiLNcRcnH9CEBHTVn44VmQCda/sdpG8ct02sEq54BXiSAUEt2N4bFV0CkV+1Il/9MzKPtrre2qiEKGqTWaC5tiNqS4KvZwaz3rIXfNFqCiB5S9eqNdmUH8IuWZBSt5HFsW9wcFT0DayQ6a/vk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777061871; c=relaxed/simple;
-	bh=qQxl11pEiuSHAksUCACQvi1ky2YjfwOu6r0yo/RCIFg=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=H4sfRJNAqEodja+SGJxaQzRKMtgycAgibKUsg+drK8HKQCjp8JdVT0SVM6BdoWI/XnYZrI7dgZHZzaOJdPUzrgZnHbd0RruhJOadjyD/BjqAP69gzC4tyhp1opVOByKJaVEUTVTv4RxLp/MhzcgMI0angsNYFM/PoAdlydre3s0=
+	s=arc-20240116; t=1777078722; c=relaxed/simple;
+	bh=syeJE10a8alisPhktu4ax3HPs0B/T3a6qXMk83gAlJM=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=rx9Ahd+voqDFAPEEghf4qKzvcPcS38elSYEQpjQ5FL69SFkpzWKYuS4+GZz/QtBZpGiEPXlxsmaVRxJXNVHFSYZWZaAL+I9vykAJdP/CtWtpU6l0M3vCxlrZ7kGG9S8tl77TysGA7VrCk9d5Ppg3kUxSR+LNtjTZw4WJIXC8rjI=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-672c40f3873so17350161eaf.2
-        for <syzbot@lists.linux.dev>; Fri, 24 Apr 2026 13:17:49 -0700 (PDT)
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-69629bd56c3so1857879eaf.3
+        for <syzbot@lists.linux.dev>; Fri, 24 Apr 2026 17:58:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777061868; x=1777666668;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FtDPKkTm6UEDeYWPpWSRzW9tqH24Rk9NxnYdpKkM4Nc=;
-        b=XI5wcODX572IjYEePCqEZ0DE7wQEJ19WSHNafu74c0LxTTM2DEf6/YWO/nVZKX5qbP
-         vp/fzzICnJ8ch9ddi7GV9PXiCjR4n+0F7TljtdQU71Iw3Rc/tsZC/BmQFd2jQArccKdj
-         D3qKMkrQQe6Do7csbqvQhEga/oFon8cL9i8ycf+zjfAsdL8FWFIvIDv1pY5cgaufqlw5
-         ZvxhYlUZuEMnPWAHE3g5Wc06lreBnPYCTtIpFLmZmIbA1d0h8Md0leA+lQ+dvxXQf93+
-         dB06z6USmk0UrIkHIJQSWgyFHYbmorYD74bCZqaDIP09cQHGhHNHeMiGSrI8KKoZShmD
-         qRuQ==
-X-Gm-Message-State: AOJu0YyGzYc5VIUWcXvCm1namNULq1WSoU1eMVFvqZJ9uH9ClIQNv33A
-	7C/+J6oH4tlfmVhEZ+odqUV4PD1RoGewm9Fa5LovUsODBI5uMmRG3wD8HySo1Tt9msa3bHC+u0I
-	UsAwXcR+ZOlfXi/+iAuJp+foq9gSirdmDJhmHJpAaDnTARW3C77aAh66QLho=
+        d=1e100.net; s=20251104; t=1777078720; x=1777683520;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=rpRfMnBIqrk+h4M6BRMkvgHZRwYlPJQp2lFCcAiF2mc=;
+        b=YAFFKFxZqZ/e5CaUIGSP4PDUFFxaIzWHRTVFLkldfsNam59gNqg/DIsWY6HZ+Cow+9
+         vXqcDGpi4mIClozyxA9SXw3uxJOM/QhPKaudqK2Dwf/z6GXmZkbRuSJhOGRme/L3izn3
+         0Rm7mdU6P8kVtvESKN7oFnNiJJTSt5F/BxDZHFxNpludMSsIpwhOutisFj915dTFROTB
+         x714/CQmb6r7MdzSV5iSDjqzGE5R10/pSaaiqgQM+cTSwNnisWnZSgxKvLNuoupGHKPh
+         v4PWpU/7BjxAkycXO9y1AfyCg+MiJV9OUMdHewnU7fDGXyh9iWZwBFmqucMQuWdnnEK8
+         crag==
+X-Gm-Message-State: AOJu0YxwGR+y2gvkG+FH0mKhc13YE3kcEXW0jYeoBfMkUTT8YVDBbNOE
+	cyE6XQNZHwZAe9hYwm3459hlBW5Y9BK1652NyjqWkSiFeg2Th5TaZLDyR/kOKerYO8YgqpYz8HJ
+	WH1zpp2r1H6YNo9L26zrcneJnJpDVVUEi+X8I7YgteytcfZrSSKf6gTYndQI=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:6ad0:b0:696:29be:abd9 with SMTP id
- 006d021491bc7-69629beb9d6mr1743278eaf.22.1777061868159; Fri, 24 Apr 2026
- 13:17:48 -0700 (PDT)
-Date: Fri, 24 Apr 2026 13:17:48 -0700
-In-Reply-To: <20260424150310.57228-1-kartikey406@gmail.com>
+X-Received: by 2002:a05:6820:180c:b0:694:8e6f:17a with SMTP id
+ 006d021491bc7-6948e6f0567mr12190554eaf.23.1777078719853; Fri, 24 Apr 2026
+ 17:58:39 -0700 (PDT)
+Date: Fri, 24 Apr 2026 17:58:39 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69ebcfec.a00a0220.7773.0006.GAE@google.com>
-Subject: [syzbot ci] Re: vsock/virtio: fix memory leak in virtio_transport_recv_listen()
-From: syzbot ci <syzbot+ciff083ac8f264c29f@syzkaller.appspotmail.com>
-To: davem@davemloft.net, edumazet@google.com, eperezma@redhat.com, 
-	horms@kernel.org, jasowang@redhat.com, kartikey406@gmail.com, kuba@kernel.org, 
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org, mst@redhat.com, 
-	netdev@vger.kernel.org, pabeni@redhat.com, sgarzare@redhat.com, 
-	stefanha@redhat.com, syzbot@syzkaller.appspotmail.com, 
-	virtualization@lists.linux.dev, xuanzhuo@linux.alibaba.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <69ec11bf.a00a0220.7773.000b.GAE@google.com>
+Subject: [moderation/CI] Re: bpf: Free reuseport cBPF prog after RCU grace period.
+From: syzbot ci <syzbot+ci762e1dc0ae0495a6@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] vsock/virtio: fix memory leak in virtio_transport_recv_listen()
-https://lore.kernel.org/all/20260424150310.57228-1-kartikey406@gmail.com
-* [PATCH] vsock/virtio: fix memory leak in virtio_transport_recv_listen()
+[v1] bpf: Free reuseport cBPF prog after RCU grace period.
+https://lore.kernel.org/all/20260424235247.1990272-1-kuniyu@google.com
+* [PATCH v1 bpf] bpf: Free reuseport cBPF prog after RCU grace period.
 
 and found the following issue:
-possible deadlock in virtio_transport_recv_listen
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/e5f3f5f1-8e83-492f-833b-dc526b61d0ef
+https://ci.syzbot.org/series/0342d7b3-0567-44fe-9632-d69d34f62abc
 
 ***
 
-possible deadlock in virtio_transport_recv_listen
+kernel build error
 
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
-base:      e728258debd553c95d2e70f9cd97c9fde27c7130
+tree:      bpf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf.git
+base:      1081de1accb2b224516cca7071122c59532d0b22
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/bcc67f3f-b441-4d11-8573-f26ca268da65/config
-syz repro: https://ci.syzbot.org/findings/fce9fa9b-692a-420c-956f-12c7e6d75e2e/syz_repro
+config:    https://ci.syzbot.org/builds/866b4dee-c822-4572-b8bd-2c1ea8e00b9a/config
 
-============================================
-WARNING: possible recursive locking detected
-syzkaller #0 Not tainted
---------------------------------------------
-kworker/1:5/6007 is trying to acquire lock:
-ffff88817492e2a0 (sk_lock-AF_VSOCK){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1713 [inline]
-ffff88817492e2a0 (sk_lock-AF_VSOCK){+.+.}-{0:0}, at: virtio_transport_recv_listen+0x13a5/0x2230 net/vmw_vsock/virtio_transport_common.c:1593
-
-but task is already holding lock:
-ffff88817492e2a0 (sk_lock-AF_VSOCK){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1713 [inline]
-ffff88817492e2a0 (sk_lock-AF_VSOCK){+.+.}-{0:0}, at: virtio_transport_recv_pkt+0xfde/0x2bb0 net/vmw_vsock/virtio_transport_common.c:1671
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(sk_lock-AF_VSOCK);
-  lock(sk_lock-AF_VSOCK);
-
- *** DEADLOCK ***
-
- May be due to missing lock nesting notation
-
-3 locks held by kworker/1:5/6007:
- #0: ffff888112391940 ((wq_completion)vsock-loopback){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3277 [inline]
- #0: ffff888112391940 ((wq_completion)vsock-loopback){+.+.}-{0:0}, at: process_scheduled_works+0xa35/0x1860 kernel/workqueue.c:3385
- #1: ffffc900030dfc40 ((work_completion)(&vsock->pkt_work)){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3278 [inline]
- #1: ffffc900030dfc40 ((work_completion)(&vsock->pkt_work)){+.+.}-{0:0}, at: process_scheduled_works+0xa70/0x1860 kernel/workqueue.c:3385
- #2: ffff88817492e2a0 (sk_lock-AF_VSOCK){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1713 [inline]
- #2: ffff88817492e2a0 (sk_lock-AF_VSOCK){+.+.}-{0:0}, at: virtio_transport_recv_pkt+0xfde/0x2bb0 net/vmw_vsock/virtio_transport_common.c:1671
-
-stack backtrace:
-CPU: 1 UID: 0 PID: 6007 Comm: kworker/1:5 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: vsock-loopback vsock_loopback_work
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_deadlock_bug+0x279/0x290 kernel/locking/lockdep.c:3041
- check_deadlock kernel/locking/lockdep.c:3093 [inline]
- validate_chain kernel/locking/lockdep.c:3895 [inline]
- __lock_acquire+0x253f/0x2cf0 kernel/locking/lockdep.c:5237
- lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5868
- lock_sock_nested+0x41/0x100 net/core/sock.c:3783
- lock_sock include/net/sock.h:1713 [inline]
- virtio_transport_recv_listen+0x13a5/0x2230 net/vmw_vsock/virtio_transport_common.c:1593
- virtio_transport_recv_pkt+0x174b/0x2bb0 net/vmw_vsock/virtio_transport_common.c:1695
- vsock_loopback_work+0x32c/0x3f0 net/vmw_vsock/vsock_loopback.c:142
- process_one_work kernel/workqueue.c:3302 [inline]
- process_scheduled_works+0xb5d/0x1860 kernel/workqueue.c:3385
- worker_thread+0xa53/0xfc0 kernel/workqueue.c:3466
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-
+net/core/filter.c:1666:6: error: conflicting types for 'sk_reuseport_prog_free'
 
 ***
 
@@ -152,3 +88,13 @@ To test a patch for this bug, please reply with `#syz test`
 
 The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[andrii@kernel.org ast@kernel.org bpf@vger.kernel.org daniel@iogearbox.net eddyz87@gmail.com eulgyukim@snu.ac.kr kuni1840@gmail.com kuniyu@google.com martin.lau@linux.dev memxor@gmail.com netdev@vger.kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
