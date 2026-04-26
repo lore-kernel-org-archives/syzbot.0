@@ -1,390 +1,168 @@
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CBDC1DF25C
-	for <syzbot@lists.linux.dev>; Sun, 26 Apr 2026 19:01:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25B792580CF
+	for <syzbot@lists.linux.dev>; Sun, 26 Apr 2026 19:02:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777230116; cv=none; b=N97ZoasEJI91ukJlMeOng58wYb4TAFzzEhfoq79NLWLoEynxDUvvFSSshnYOUTzBI4eBDWIjjc+PKj/iT9aiRh5ojnH52fkpTH53Kl9UWp0WEY1k9XQWyPRXUSNHD2qrdlemYbRVTCQDSt/V1RU001oBSUpZX6WuYhJRwHFm+2I=
+	t=1777230146; cv=none; b=YxbnYZntASYE4WsqdBJHc/z0Gp5OTRLGm4ZaXcfqAVUIcbgiOiYZHG4G9jMvWhdtO+ZIFkW9WcU3BLZhuIxj63zkfVd95Hc0IZHROB69KenLDAfvPshpo12ZS4tMnslHk0JDI780PtZgfeMP9OmK/xJqGXisJgF019wmrfzuMg4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777230116; c=relaxed/simple;
-	bh=uB/tS6CiTcUwBMPwbQPw0iXHbgrEZO4/HI7KSZHEnNQ=;
+	s=arc-20240116; t=1777230146; c=relaxed/simple;
+	bh=nsnS5kVmgUe4N7BhSfgQjH9V+srJSYQH6F2ZnVDLXqk=;
 	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=rml2+mks6jra7UKIIgLarDrBIlP2NsvwrfGy2eaJ4vLlmiZ22iQBB2FymRwGZjc1mEE450ble9UdkzFHo4BNPUwqmvVfVepbgtQhfHeFtI3zdiF+P0E/8wue71hZDjX61jWfCJiFTYKJ2j3lhXJPd0l9A6VCXlmWFphv6es+bio=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
+	 Content-Type; b=nEwKwrz0a3/kE2LYq2IVCx+sMckPeMOuOOUELV+2AbfnfrrYRsXGoIz0Z+eLcD+6xHefetAnWS2gM/sybCgFDMx2Hz/2EmZGlNvXBvnv5MSQCR5IgFkcOGFsFisMBmWCJAWmz6mhA2fLE7pAVusE9Qh7UDWcKux3bgEc7Avvek0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-69634bfdfebso1823615eaf.0
-        for <syzbot@lists.linux.dev>; Sun, 26 Apr 2026 12:01:54 -0700 (PDT)
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-694885643e1so13085461eaf.3
+        for <syzbot@lists.linux.dev>; Sun, 26 Apr 2026 12:02:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777230113; x=1777834913;
+        d=1e100.net; s=20251104; t=1777230144; x=1777834944;
         h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=uIpHQ00KRisBd10MQGygJ2CgQh8Ls6b/N523GUy25pc=;
-        b=SVs5s74ZYsN9nV4GAL8nQT2Lg/DwGIooVxBifZHlLfoZmZUmC3xmnP29X2tXygqOqF
-         20x+w4Nl/VgurcVUj3Hh3B1VWNZJEhqtACZcnDTL6So7dL/mZPurVrdBanAXxQkPMJRY
-         k2a2GBUIyjGcuvqEf/exReJQf40qkm+ZzqXJwu4RfTdDnnjmfi7AzruDWBTJc+AJYgsu
-         gq3lYZOECZXD77DIqaqpj5Y19p9L7u5cgMQMTvEzZxtUEH7BfOj7EdZXeoTb2xu9wKK7
-         BV6do/3Ll9wxGIWHLsJqrTVEKG3/4BZY5AiRMnpchRB3s1Q36Qa8AaItSMtNCdO4XyYX
-         U9hQ==
-X-Gm-Message-State: AOJu0YwLKbaxIrsu+4d9+Pdj54+gSPIWid7frw9rmwSjUd250dJDWaOK
-	1vrcX/wSGvvaHopgkgjWuybNjFiAAsVquNjTQv8UtkBtF4j4wYOjYR1xZH2GjD1gtBWOo3ks/qo
-	Vw8CDAPl9jiFx83uUj6Y2Pja9U+YIrpDNfACKscsKM62I1V8EQG1A2fOgTzo=
+        bh=2ApE86KdB73UZze872ESq1+IlKWsMYblfjrS0boasGw=;
+        b=Q5ETT1hM9yPesu60s+rXZDZ+wpyQpnw4vnqynuMQajEOJonVGUe2X437ia4igD55Zm
+         WyV4CSrEkqWZ2O2aVcqTJ4dxhI2eWkSZiMha54Eixdcod/BQ10UdWw+0kn6qQ9myNAFU
+         OAyr5vTjpK5LpkIgqAqW7svjaSsiVK4Ol78EKFQK7GeKjI42milZjuKRwjS5Hxoh5MBu
+         pkO3+fZ2q90TsJ9Jge/y8R7oyNUGWvPW+S75f1/HSHHNhVKQPUz+RgG7Ju796YUVMqw3
+         WuAf3YedA5LzhYc3rfj9gDoL6MUFMWLlcgd/GbC9tP1H/upnZfyDWTkok19rxOVzYsll
+         /Rsg==
+X-Gm-Message-State: AOJu0YyQ7gPUDYIuWd6xUisqqYbqIWyzP9jcOfizb3IBh3RA0zfXHCmh
+	GE8BYPUe5pQawvG8HemkK9u6M+Eud7XpbLRmkrGeJQ1Z/alb50BWi8BQX2GckMHh8UZ+NY/ctul
+	d74NLZOqPg7jAAj5/vQ0eb/CpXpBeqyp0I5y+cmgo6GLFyIBC1exWpJc4Q4Q=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:55cf:b0:696:2b58:4ac0 with SMTP id
- 006d021491bc7-6962b58521emr2864608eaf.35.1777230113545; Sun, 26 Apr 2026
- 12:01:53 -0700 (PDT)
-Date: Sun, 26 Apr 2026 12:01:53 -0700
-In-Reply-To: <20260426125719.24698-1-osalvador@suse.de>
+X-Received: by 2002:a05:6820:620:b0:694:a362:4b86 with SMTP id
+ 006d021491bc7-694a3624ce5mr11481191eaf.22.1777230144106; Sun, 26 Apr 2026
+ 12:02:24 -0700 (PDT)
+Date: Sun, 26 Apr 2026 12:02:24 -0700
+In-Reply-To: <20260426-dontcache-v3-0-79eb37da9547@kernel.org>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69ee6121.170a0220.11de9.0010.GAE@google.com>
-Subject: [syzbot ci] Re: Implement a new generic pagewalk API
-From: syzbot ci <syzbot+cic0b10fee257fdf9e@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, david@kernel.org, david@redhat.com, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, lorenzo.stoakes@oracle.com, 
-	mhocko@suse.com, muchun.song@linux.dev, osalvador@suse.de, vbabka@kernel.org
+Message-ID: <69ee6140.170a0220.11de9.0011.GAE@google.com>
+Subject: [syzbot ci] Re: mm: improve write performance with RWF_DONTCACHE
+From: syzbot ci <syzbot+ciecac32dcb1f4d0d7@syzkaller.appspotmail.com>
+To: akpm@linux-foundation.org, axboe@kernel.dk, axelrasmussen@google.com, 
+	baohua@kernel.org, brauner@kernel.org, chuck.lever@oracle.com, 
+	david@kernel.org, hch@infradead.org, jack@suse.cz, jlayton@kernel.org, 
+	kasong@tencent.com, liam.howlett@oracle.com, linux-fsdevel@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-nfs@vger.kernel.org, 
+	linux-trace-kernel@vger.kernel.org, ljs@kernel.org, 
+	mathieu.desnoyers@efficios.com, mhiramat@kernel.org, mhocko@suse.com, 
+	qi.zheng@linux.dev, ritesh.list@gmail.com, rostedt@goodmis.org, 
+	rppt@kernel.org, shakeel.butt@linux.dev, snitzer@kernel.org, 
+	surenb@google.com, vbabka@kernel.org, viro@zeniv.linux.org.uk, 
+	weixugc@google.com, willy@infradead.org, yuanchu@google.com
 Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v2] Implement a new generic pagewalk API
-https://lore.kernel.org/all/20260426125719.24698-1-osalvador@suse.de
-* [RFC PATCH v2 1/7] mm: Add softleaf_from_pud
-* [RFC PATCH v2 2/7] mm: Add {pmd,pud}_huge_lock helper
-* [RFC PATCH v2 3/7] mm: Implement folio_pmd_batch
-* [RFC PATCH v2 4/7] mm: Implement pt_range_walk
-* [RFC PATCH v2 5/7] mm: Make /proc/pid/smaps use the new generic pagewalk API
-* [RFC PATCH v2 6/7] mm: Make /proc/pid/numa_maps use the new generic pagewalk API
-* [RFC PATCH v2 7/7] mm: Make /proc/pid/pagemap use the new generic pagewalk API
+[v3] mm: improve write performance with RWF_DONTCACHE
+https://lore.kernel.org/all/20260426-dontcache-v3-0-79eb37da9547@kernel.org
+* [PATCH v3 1/4] mm: add NR_DONTCACHE_DIRTY node page counter
+* [PATCH v3 2/4] mm: kick writeback flusher for IOCB_DONTCACHE with targeted dirty tracking
+* [PATCH v3 3/4] testing: add nfsd-io-bench NFS server benchmark suite
+* [PATCH v3 4/4] testing: add dontcache-bench local filesystem benchmark suite
 
-and found the following issues:
-* KASAN: slab-out-of-bounds Write in pagemap_read
-* WARNING in __page_table_check_pmds_set
-* WARNING in pt_range_walk
-* WARNING: bad unlock balance in pt_range_walk
+and found the following issue:
+WARNING in __mod_memcg_lruvec_state
 
 Full report is available here:
-https://ci.syzbot.org/series/409219de-ca42-45a5-9204-0b315095160c
+https://ci.syzbot.org/series/e53aef43-ac7a-4cb7-8714-bb927aaee659
 
 ***
 
-KASAN: slab-out-of-bounds Write in pagemap_read
+WARNING in __mod_memcg_lruvec_state
 
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      819bd270abf9de3b7f306e233054b85a07c47820
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      27d128c1cff64c3b8012cc56dd5a1391bb4f1821
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/0361816f-57b2-43e4-aef2-186d8d35fdc9/config
-syz repro: https://ci.syzbot.org/findings/7f740037-7398-46f2-aa01-a57caa186d06/syz_repro
-
-==================================================================
-BUG: KASAN: slab-out-of-bounds in add_to_pagemap fs/proc/task_mmu.c:1776 [inline]
-BUG: KASAN: slab-out-of-bounds in pagemap_read_walk_range fs/proc/task_mmu.c:2949 [inline]
-BUG: KASAN: slab-out-of-bounds in pagemap_read+0x1d60/0x2810 fs/proc/task_mmu.c:3092
-Write of size 8 at addr ffff88816f1bd000 by task syz.1.18/5957
-
-CPU: 1 UID: 0 PID: 5957 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_address_description mm/kasan/report.c:378 [inline]
- print_report+0xba/0x230 mm/kasan/report.c:482
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- add_to_pagemap fs/proc/task_mmu.c:1776 [inline]
- pagemap_read_walk_range fs/proc/task_mmu.c:2949 [inline]
- pagemap_read+0x1d60/0x2810 fs/proc/task_mmu.c:3092
- vfs_read+0x20c/0xa70 fs/read_write.c:572
- ksys_pread64 fs/read_write.c:765 [inline]
- __do_sys_pread64 fs/read_write.c:773 [inline]
- __se_sys_pread64 fs/read_write.c:770 [inline]
- __x64_sys_pread64+0x199/0x230 fs/read_write.c:770
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f340679cdd9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f34075d2028 EFLAGS: 00000246 ORIG_RAX: 0000000000000011
-RAX: ffffffffffffffda RBX: 00007f3406a15fa0 RCX: 00007f340679cdd9
-RDX: 0000000000019020 RSI: 0000200000000200 RDI: 0000000000000003
-RBP: 00007f3406832d69 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000001000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f3406a16038 R14: 00007f3406a15fa0 R15: 00007ffdb721f7e8
- </TASK>
-
-Allocated by task 5957:
- kasan_save_stack mm/kasan/common.c:57 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
- poison_kmalloc_redzone mm/kasan/common.c:398 [inline]
- __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
- kasan_kmalloc include/linux/kasan.h:263 [inline]
- __kmalloc_cache_noprof+0x31c/0x660 mm/slub.c:5339
- kmalloc_noprof include/linux/slab.h:962 [inline]
- kmalloc_array_noprof include/linux/slab.h:1109 [inline]
- pagemap_read+0x27d/0x2810 fs/proc/task_mmu.c:3033
- vfs_read+0x20c/0xa70 fs/read_write.c:572
- ksys_pread64 fs/read_write.c:765 [inline]
- __do_sys_pread64 fs/read_write.c:773 [inline]
- __se_sys_pread64 fs/read_write.c:770 [inline]
- __x64_sys_pread64+0x199/0x230 fs/read_write.c:770
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-The buggy address belongs to the object at ffff88816f1bc000
- which belongs to the cache kmalloc-4k of size 4096
-The buggy address is located 0 bytes to the right of
- allocated 4096-byte region [ffff88816f1bc000, ffff88816f1bd000)
-
-The buggy address belongs to the physical page:
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0xffff88816f1b8000 pfn:0x16f1b8
-head: order:3 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
-flags: 0x57ff00000000240(workingset|head|node=1|zone=2|lastcpupid=0x7ff)
-page_type: f5(slab)
-raw: 057ff00000000240 ffff888100042140 ffff888160400a08 ffffea0005c6fe10
-raw: ffff88816f1b8000 0000000000040003 00000000f5000000 0000000000000000
-head: 057ff00000000240 ffff888100042140 ffff888160400a08 ffffea0005c6fe10
-head: ffff88816f1b8000 0000000000040003 00000000f5000000 0000000000000000
-head: 057ff00000000003 ffffea0005bc6e01 00000000ffffffff 00000000ffffffff
-head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000008
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd2040(__GFP_IO|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5715, tgid 5715 (rm), ts 50636400155, free_ts 46909302793
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x231/0x280 mm/page_alloc.c:1889
- prep_new_page mm/page_alloc.c:1897 [inline]
- get_page_from_freelist+0x24dc/0x2580 mm/page_alloc.c:3962
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5250
- alloc_slab_page mm/slub.c:3255 [inline]
- allocate_slab+0x77/0x660 mm/slub.c:3444
- new_slab mm/slub.c:3502 [inline]
- refill_objects+0x331/0x3c0 mm/slub.c:7134
- refill_sheaf mm/slub.c:2804 [inline]
- __pcs_replace_empty_main+0x2b9/0x620 mm/slub.c:4578
- alloc_from_pcs mm/slub.c:4681 [inline]
- slab_alloc_node mm/slub.c:4815 [inline]
- __do_kmalloc_node mm/slub.c:5218 [inline]
- __kmalloc_noprof+0x474/0x760 mm/slub.c:5231
- kmalloc_noprof include/linux/slab.h:966 [inline]
- tomoyo_realpath_from_path+0xe3/0x5d0 security/tomoyo/realpath.c:251
- tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
- tomoyo_path_perm+0x283/0x560 security/tomoyo/file.c:827
- tomoyo_path_unlink+0xaa/0xf0 security/tomoyo/tomoyo.c:162
- security_path_unlink+0x15f/0x330 security/security.c:1457
- filename_unlinkat+0x349/0x610 fs/namei.c:5537
- __do_sys_unlink fs/namei.c:5575 [inline]
- __se_sys_unlink+0x2e/0x140 fs/namei.c:5572
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-page last free pid 5257 tgid 5257 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1433 [inline]
- __free_frozen_pages+0xc2b/0xdb0 mm/page_alloc.c:2978
- __slab_free+0x263/0x2b0 mm/slub.c:5532
- qlink_free mm/kasan/quarantine.c:163 [inline]
- qlist_free_all+0x97/0x100 mm/kasan/quarantine.c:179
- kasan_quarantine_reduce+0x148/0x160 mm/kasan/quarantine.c:286
- __kasan_slab_alloc+0x22/0x80 mm/kasan/common.c:350
- kasan_slab_alloc include/linux/kasan.h:253 [inline]
- slab_post_alloc_hook mm/slub.c:4501 [inline]
- slab_alloc_node mm/slub.c:4830 [inline]
- kmem_cache_alloc_noprof+0x2bc/0x650 mm/slub.c:4837
- alloc_filename fs/namei.c:142 [inline]
- do_getname+0x2e/0x250 fs/namei.c:182
- getname_flags fs/namei.c:225 [inline]
- getname include/linux/fs.h:2512 [inline]
- class_filename_constructor include/linux/fs.h:2539 [inline]
- __do_sys_unlink fs/namei.c:5574 [inline]
- __se_sys_unlink+0x1e/0x140 fs/namei.c:5572
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-Memory state around the buggy address:
- ffff88816f1bcf00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff88816f1bcf80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff88816f1bd000: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                   ^
- ffff88816f1bd080: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88816f1bd100: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-==================================================================
-
-
-***
-
-WARNING in __page_table_check_pmds_set
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      819bd270abf9de3b7f306e233054b85a07c47820
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/0361816f-57b2-43e4-aef2-186d8d35fdc9/config
-syz repro: https://ci.syzbot.org/findings/f8fe52b4-cef7-4d25-8e60-cbbb1a4f4df5/syz_repro
+config:    https://ci.syzbot.org/builds/c10ddd10-bb16-48c2-90fb-3625d3b258aa/config
+syz repro: https://ci.syzbot.org/findings/1e8993c1-818b-4ddf-b90b-30f051b3a9d6/syz_repro
 
 ------------[ cut here ]------------
-softleaf_cached_writable(entry)
-WARNING: mm/page_table_check.c:227 at page_table_check_pmd_flags mm/page_table_check.c:227 [inline], CPU#1: syz.0.17/6022
-WARNING: mm/page_table_check.c:227 at __page_table_check_pmds_set+0x18e/0x340 mm/page_table_check.c:240, CPU#1: syz.0.17/6022
+__mod_memcg_lruvec_state: missing stat item 21
+WARNING: mm/memcontrol.c:911 at __mod_memcg_lruvec_state+0x1f3/0x360 mm/memcontrol.c:911, CPU#0: syz.0.17/5831
 Modules linked in:
-CPU: 1 UID: 0 PID: 6022 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+CPU: 0 UID: 0 PID: 5831 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:page_table_check_pmd_flags mm/page_table_check.c:227 [inline]
-RIP: 0010:__page_table_check_pmds_set+0x18e/0x340 mm/page_table_check.c:240
-Code: 89 fe e8 85 44 89 ff 48 b8 00 00 00 00 00 00 00 94 4c 01 f8 48 c1 e8 3b 0f 94 c0 4d 39 e5 76 0f 84 c0 74 0b e8 83 3f 89 ff 90 <0f> 0b 90 eb 05 e8 78 3f 89 ff 31 ff 89 ee e8 af 43 89 ff 41 89 ef
-RSP: 0018:ffffc90003ce7af8 EFLAGS: 00010293
-RAX: ffffffff823c4d7d RBX: ffff888111416001 RCX: ffff88816cbd1d00
-RDX: 0000000000000000 RSI: 6c00000000000000 RDI: 6c00000000000000
-RBP: 0000000000000001 R08: 0000000000000001 R09: 0000000000000003
-R10: 0000000000000002 R11: 0000000000000000 R12: c7fffffffffffffe
-R13: dfffffffdc9bfe06 R14: ffff888111416008 R15: 6c00000000000000
-FS:  00007ff0386af6c0(0000) GS:ffff8882a9466000(0000) knlGS:0000000000000000
+RIP: 0010:__mod_memcg_lruvec_state+0x1fc/0x360 mm/memcontrol.c:911
+Code: 00 11 85 c0 74 31 48 83 c4 08 5b 41 5c 41 5d 41 5e 41 5f 5d e9 95 2e 72 09 cc 48 8d 3d 7d c4 fd 0d 48 c7 c6 5d b4 f5 8d 89 da <67> 48 0f b9 3a eb d5 90 0f 0b 90 eb 90 e8 02 22 fb fe eb c8 48 8d
+RSP: 0018:ffffc900039e7520 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: 0000000000000015 RCX: dffffc0000000000
+RDX: 0000000000000015 RSI: ffffffff8df5b45d RDI: ffffffff90363d90
+RBP: 0000000000000001 R08: ffffffff82388833 R09: ffffffff8e95cd60
+R10: dffffc0000000000 R11: fffff940008c3f49 R12: ffff8881026eee80
+R13: 00000000000000ff R14: 0000000000000001 R15: ffff888173a80e00
+FS:  00007f5f76bca6c0(0000) GS:ffff88818dc95000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000555574a1a9e8 CR3: 00000001063c6000 CR4: 00000000000006f0
+CR2: 000055d77c624128 CR3: 0000000171fde000 CR4: 00000000000006f0
 Call Trace:
  <TASK>
- page_table_check_pmds_set include/linux/page_table_check.h:92 [inline]
- set_pmd_at arch/x86/include/asm/pgtable.h:1234 [inline]
- make_uffd_wp_pmd fs/proc/task_mmu.c:1903 [inline]
- pagemap_scan_walk fs/proc/task_mmu.c:2631 [inline]
- do_pagemap_scan fs/proc/task_mmu.c:2785 [inline]
- do_pagemap_cmd+0x3bd8/0x4310 fs/proc/task_mmu.c:3131
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+ mod_memcg_lruvec_state+0xa7/0x220 mm/memcontrol.c:941
+ mod_lruvec_state mm/memcontrol.c:964 [inline]
+ lruvec_stat_mod_folio+0x239/0x3e0 mm/memcontrol.c:984
+ folio_account_dirtied mm/page-writeback.c:2634 [inline]
+ __folio_mark_dirty+0x633/0xec0 mm/page-writeback.c:2692
+ mark_buffer_dirty+0x261/0x410 fs/buffer.c:1110
+ block_commit_write+0x15d/0x270 fs/buffer.c:2115
+ block_write_end+0x6e/0xb0 fs/buffer.c:2191
+ ext4_write_end+0x27d/0xa30 fs/ext4/inode.c:1458
+ ext4_da_write_end+0x86/0xcb0 fs/ext4/inode.c:3296
+ generic_perform_write+0x620/0x8f0 mm/filemap.c:4350
+ ext4_buffered_write_iter+0xcb/0x370 fs/ext4/file.c:316
+ ext4_file_write_iter+0x298/0x1bd0 fs/ext4/file.c:-1
+ do_iter_readv_writev+0x619/0x8c0 fs/read_write.c:-1
+ vfs_writev+0x33c/0x990 fs/read_write.c:1059
+ do_pwritev fs/read_write.c:1155 [inline]
+ __do_sys_pwritev2 fs/read_write.c:1213 [inline]
+ __se_sys_pwritev2+0x184/0x2a0 fs/read_write.c:1204
  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
+ do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7ff03779cdd9
+RIP: 0033:0x7f5f75d9cdd9
 Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ff0386af028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007ff037a16090 RCX: 00007ff03779cdd9
-RDX: 00002000000001c0 RSI: 00000000c0606610 RDI: 0000000000000003
-RBP: 00007ff037832d69 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ff037a16128 R14: 00007ff037a16090 R15: 00007ffd47ec5488
+RSP: 002b:00007f5f76bca028 EFLAGS: 00000246 ORIG_RAX: 0000000000000148
+RAX: ffffffffffffffda RBX: 00007f5f76015fa0 RCX: 00007f5f75d9cdd9
+RDX: 0000000000000001 RSI: 00002000000001c0 RDI: 0000000000000004
+RBP: 00007f5f75e32d69 R08: 0000000000000001 R09: 0000000000000081
+R10: 0000000000000003 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f5f76016038 R14: 00007f5f76015fa0 R15: 00007fffe7503ad8
  </TASK>
-
-
-***
-
-WARNING in pt_range_walk
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      819bd270abf9de3b7f306e233054b85a07c47820
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/0361816f-57b2-43e4-aef2-186d8d35fdc9/config
-syz repro: https://ci.syzbot.org/findings/02bfe437-a81f-4510-9fff-4b769eb9a0a4/syz_repro
-
-------------[ cut here ]------------
-next_addr < vma->vm_start || next_addr >= vma->vm_end
-WARNING: mm/pagewalk.c:1052 at pt_range_walk+0x14e/0x35a0 mm/pagewalk.c:1052, CPU#1: syz.2.19/6013
-Modules linked in:
-CPU: 1 UID: 0 PID: 6013 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:pt_range_walk+0x14e/0x35a0 mm/pagewalk.c:1052
-Code: 74 08 48 89 df e8 12 1a 15 00 49 89 de 48 8b 1b 48 8b 7c 24 10 48 89 de e8 6f a5 aa ff 48 39 5c 24 10 73 13 e8 03 a3 aa ff 90 <0f> 0b 90 b8 01 00 00 00 e9 88 2b 00 00 49 8d 5e 08 48 89 d8 48 c1
-RSP: 0018:ffffc90003d37920 EFLAGS: 00010293
-RAX: ffffffff821b11f0 RBX: 0000200000800000 RCX: ffff8881134f5700
-RDX: 0000000000000000 RSI: 0000200000800000 RDI: 0000200000800000
-RBP: ffffc90003d37b30 R08: 00000000000000ff R09: 1ffff1102dc8b830
-R10: dffffc0000000000 R11: ffffed102dc8b831 R12: ffff8881709b1800
-R13: dffffc0000000000 R14: ffff8881709b1800 R15: 0000200000800000
-FS:  00007f33141ff6c0(0000) GS:ffff8882a9466000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f331344f0d1 CR3: 000000017150e000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- pagemap_scan_walk fs/proc/task_mmu.c:2463 [inline]
- do_pagemap_scan fs/proc/task_mmu.c:2785 [inline]
- do_pagemap_cmd+0x3924/0x4310 fs/proc/task_mmu.c:3131
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f331339cdd9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f33141ff028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f3313615fa0 RCX: 00007f331339cdd9
-RDX: 0000200000000140 RSI: 00000000c0606610 RDI: 0000000000000003
-RBP: 00007f3313432d69 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f3313616038 R14: 00007f3313615fa0 R15: 00007fff980e14d8
- </TASK>
-
-
-***
-
-WARNING: bad unlock balance in pt_range_walk
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      819bd270abf9de3b7f306e233054b85a07c47820
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/0361816f-57b2-43e4-aef2-186d8d35fdc9/config
-syz repro: https://ci.syzbot.org/findings/1e53935d-6673-468b-905d-88da8f1e39f3/syz_repro
-
-loop1: detected capacity change from 0 to 4096
-=====================================
-WARNING: bad unlock balance detected!
-syzkaller #0 Not tainted
--------------------------------------
-syz.1.18/5968 is trying to release lock (ptlock_ptr(ptdesc)) at:
-[<ffffffff821aeb0a>] spin_unlock include/linux/spinlock.h:389 [inline]
-[<ffffffff821aeb0a>] pt_range_walk+0x25a/0x35a0 mm/pagewalk.c:1058
-but there are no more locks to release!
-
-other info that might help us debug this:
-1 lock held by syz.1.18/5968:
- #0: ffff8881626b0340 (&mm->mmap_lock){++++}-{4:4}, at: mmap_read_lock_killable include/linux/mmap_lock.h:601 [inline]
- #0: ffff8881626b0340 (&mm->mmap_lock){++++}-{4:4}, at: do_pagemap_scan fs/proc/task_mmu.c:2746 [inline]
- #0: ffff8881626b0340 (&mm->mmap_lock){++++}-{4:4}, at: do_pagemap_cmd+0x618/0x4310 fs/proc/task_mmu.c:3131
-
-stack backtrace:
-CPU: 1 UID: 0 PID: 5968 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_unlock_imbalance_bug+0xdc/0xf0 kernel/locking/lockdep.c:5298
- __lock_release kernel/locking/lockdep.c:5537 [inline]
- lock_release+0x248/0x3d0 kernel/locking/lockdep.c:5889
- __raw_spin_unlock include/linux/spinlock_api_smp.h:167 [inline]
- _raw_spin_unlock+0x16/0x50 kernel/locking/spinlock.c:186
- spin_unlock include/linux/spinlock.h:389 [inline]
- pt_range_walk+0x25a/0x35a0 mm/pagewalk.c:1058
- pagemap_scan_walk fs/proc/task_mmu.c:2463 [inline]
- do_pagemap_scan fs/proc/task_mmu.c:2785 [inline]
- do_pagemap_cmd+0x3924/0x4310 fs/proc/task_mmu.c:3131
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x14d/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f0ce439cdd9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f0ce5214028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f0ce4615fa0 RCX: 00007f0ce439cdd9
-RDX: 0000200000000140 RSI: 00000000c0606610 RDI: 0000000000000004
-RBP: 00007f0ce4432d69 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f0ce4616038 R14: 00007f0ce4615fa0 R15: 00007fffbeb73768
- </TASK>
+----------------
+Code disassembly (best guess):
+   0:	00 11                	add    %dl,(%rcx)
+   2:	85 c0                	test   %eax,%eax
+   4:	74 31                	je     0x37
+   6:	48 83 c4 08          	add    $0x8,%rsp
+   a:	5b                   	pop    %rbx
+   b:	41 5c                	pop    %r12
+   d:	41 5d                	pop    %r13
+   f:	41 5e                	pop    %r14
+  11:	41 5f                	pop    %r15
+  13:	5d                   	pop    %rbp
+  14:	e9 95 2e 72 09       	jmp    0x9722eae
+  19:	cc                   	int3
+  1a:	48 8d 3d 7d c4 fd 0d 	lea    0xdfdc47d(%rip),%rdi        # 0xdfdc49e
+  21:	48 c7 c6 5d b4 f5 8d 	mov    $0xffffffff8df5b45d,%rsi
+  28:	89 da                	mov    %ebx,%edx
+* 2a:	67 48 0f b9 3a       	ud1    (%edx),%rdi <-- trapping instruction
+  2f:	eb d5                	jmp    0x6
+  31:	90                   	nop
+  32:	0f 0b                	ud2
+  34:	90                   	nop
+  35:	eb 90                	jmp    0xffffffc7
+  37:	e8 02 22 fb fe       	call   0xfefb223e
+  3c:	eb c8                	jmp    0x6
+  3e:	48                   	rex.W
+  3f:	8d                   	.byte 0x8d
 
 
 ***
