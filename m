@@ -1,169 +1,84 @@
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25B792580CF
-	for <syzbot@lists.linux.dev>; Sun, 26 Apr 2026 19:02:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC77E351C31
+	for <syzbot@lists.linux.dev>; Mon, 27 Apr 2026 03:04:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777230146; cv=none; b=YxbnYZntASYE4WsqdBJHc/z0Gp5OTRLGm4ZaXcfqAVUIcbgiOiYZHG4G9jMvWhdtO+ZIFkW9WcU3BLZhuIxj63zkfVd95Hc0IZHROB69KenLDAfvPshpo12ZS4tMnslHk0JDI780PtZgfeMP9OmK/xJqGXisJgF019wmrfzuMg4=
+	t=1777259099; cv=none; b=emyn3/aQK/rMFrPpOaMBzDv/kUBHkX84SEFIkMWy++xvcceQuJepDZcEieon0Cu8Mob9t9ugdXbHAvqxKhUibiEbdD2W2OKEtdLu8W0cAu4Y5pCQgjorkZLuoKGzz8JfIHWrkq/t0LBx1UaoR2ZjrlIo9X0JNhsWpzjfHOFYF28=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777230146; c=relaxed/simple;
-	bh=nsnS5kVmgUe4N7BhSfgQjH9V+srJSYQH6F2ZnVDLXqk=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=nEwKwrz0a3/kE2LYq2IVCx+sMckPeMOuOOUELV+2AbfnfrrYRsXGoIz0Z+eLcD+6xHefetAnWS2gM/sybCgFDMx2Hz/2EmZGlNvXBvnv5MSQCR5IgFkcOGFsFisMBmWCJAWmz6mhA2fLE7pAVusE9Qh7UDWcKux3bgEc7Avvek0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
+	s=arc-20240116; t=1777259099; c=relaxed/simple;
+	bh=XGJ16g9vYaasAtzzJCPWb4ALKeGzr6+4qm273/LDPw8=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=F7QOeCiIrk3T4qyHxH3irJPxUC4zS+/8FVuT4hNLdg6rVhDITNehtI0RN9iA4UKl5Ypzp+HbDXNpeXwqqHpdtNqykF/n/0HVDIKLK+w/s1BG9bQnb/9/J7ldmOEysFkx0lfpnaAKw/3hCj65vNpAv3E9tCcLLsva1BwKmFvWqxE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-694885643e1so13085461eaf.3
-        for <syzbot@lists.linux.dev>; Sun, 26 Apr 2026 12:02:24 -0700 (PDT)
+Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7d4c7afa9e0so16112235a34.0
+        for <syzbot@lists.linux.dev>; Sun, 26 Apr 2026 20:04:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777230144; x=1777834944;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2ApE86KdB73UZze872ESq1+IlKWsMYblfjrS0boasGw=;
-        b=Q5ETT1hM9yPesu60s+rXZDZ+wpyQpnw4vnqynuMQajEOJonVGUe2X437ia4igD55Zm
-         WyV4CSrEkqWZ2O2aVcqTJ4dxhI2eWkSZiMha54Eixdcod/BQ10UdWw+0kn6qQ9myNAFU
-         OAyr5vTjpK5LpkIgqAqW7svjaSsiVK4Ol78EKFQK7GeKjI42milZjuKRwjS5Hxoh5MBu
-         pkO3+fZ2q90TsJ9Jge/y8R7oyNUGWvPW+S75f1/HSHHNhVKQPUz+RgG7Ju796YUVMqw3
-         WuAf3YedA5LzhYc3rfj9gDoL6MUFMWLlcgd/GbC9tP1H/upnZfyDWTkok19rxOVzYsll
-         /Rsg==
-X-Gm-Message-State: AOJu0YyQ7gPUDYIuWd6xUisqqYbqIWyzP9jcOfizb3IBh3RA0zfXHCmh
-	GE8BYPUe5pQawvG8HemkK9u6M+Eud7XpbLRmkrGeJQ1Z/alb50BWi8BQX2GckMHh8UZ+NY/ctul
-	d74NLZOqPg7jAAj5/vQ0eb/CpXpBeqyp0I5y+cmgo6GLFyIBC1exWpJc4Q4Q=
+        d=1e100.net; s=20251104; t=1777259097; x=1777863897;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=YueYbvV+84TbEYpyC4NjXFnrwagRDglaR80lioHHU8c=;
+        b=amXcbCZknLSktAP6W9EVkI0JOIB1zOfMqWu4c1FtOidBbluhJvm/XyFYgU0mjmrqMa
+         9A6gjcxvqZbPs1IhulpLCb/uAMfuoEqPeh1rtp1obaH0czl7+JtKUNVxZndptLoo3Gee
+         SUquusvJ9ImDA8tJhU8tttfiHx7fRuSw/yW7DG0gTlIk0jjTayROGSidXM33NzSbQcCA
+         wJlp2cD3a/AcHVvaSLJYdFIyG1WXiwDW6JtF4zvQS3MKzMo2XSwsQAmtP0V02f0yKQOq
+         4duKWOQBODPTG2BDmHQAQLRgKyJ4rxzotaQgkNQ+9cehhLSRRGeq3GsT8SPoRAjE2zx0
+         N82A==
+X-Gm-Message-State: AOJu0YyBaw01VIZCOGAeTlsRey5PQeWeVgvV40ss1u+EeCYRCN9hlgnr
+	XiSySTwA103Vhq4sOLOtgwgBK/yglnVEohjpv7QZz97+4QTt+7oVStJQy1hzKcoAzcEMuQfbgGs
+	2OMtWXtezPXkiIic5i4r7GjZhSexLfUGSjwr0J5x+1NmAtn1XXrx1eFbYfO0=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:620:b0:694:a362:4b86 with SMTP id
- 006d021491bc7-694a3624ce5mr11481191eaf.22.1777230144106; Sun, 26 Apr 2026
- 12:02:24 -0700 (PDT)
-Date: Sun, 26 Apr 2026 12:02:24 -0700
-In-Reply-To: <20260426-dontcache-v3-0-79eb37da9547@kernel.org>
+X-Received: by 2002:a05:6820:3105:b0:696:14c0:3f9f with SMTP id
+ 006d021491bc7-69614c04d48mr11044833eaf.11.1777259096895; Sun, 26 Apr 2026
+ 20:04:56 -0700 (PDT)
+Date: Sun, 26 Apr 2026 20:04:56 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69ee6140.170a0220.11de9.0011.GAE@google.com>
-Subject: [syzbot ci] Re: mm: improve write performance with RWF_DONTCACHE
-From: syzbot ci <syzbot+ciecac32dcb1f4d0d7@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, axboe@kernel.dk, axelrasmussen@google.com, 
-	baohua@kernel.org, brauner@kernel.org, chuck.lever@oracle.com, 
-	david@kernel.org, hch@infradead.org, jack@suse.cz, jlayton@kernel.org, 
-	kasong@tencent.com, liam.howlett@oracle.com, linux-fsdevel@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-nfs@vger.kernel.org, 
-	linux-trace-kernel@vger.kernel.org, ljs@kernel.org, 
-	mathieu.desnoyers@efficios.com, mhiramat@kernel.org, mhocko@suse.com, 
-	qi.zheng@linux.dev, ritesh.list@gmail.com, rostedt@goodmis.org, 
-	rppt@kernel.org, shakeel.butt@linux.dev, snitzer@kernel.org, 
-	surenb@google.com, vbabka@kernel.org, viro@zeniv.linux.org.uk, 
-	weixugc@google.com, willy@infradead.org, yuanchu@google.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <69eed258.a00a0220.316485.0009.GAE@google.com>
+Subject: [moderation/CI] Re: blk-mq: introduce tag starvation observability
+From: syzbot ci <syzbot+cibc55fb3ec3acb54a@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v3] mm: improve write performance with RWF_DONTCACHE
-https://lore.kernel.org/all/20260426-dontcache-v3-0-79eb37da9547@kernel.org
-* [PATCH v3 1/4] mm: add NR_DONTCACHE_DIRTY node page counter
-* [PATCH v3 2/4] mm: kick writeback flusher for IOCB_DONTCACHE with targeted dirty tracking
-* [PATCH v3 3/4] testing: add nfsd-io-bench NFS server benchmark suite
-* [PATCH v3 4/4] testing: add dontcache-bench local filesystem benchmark suite
+[v5] blk-mq: introduce tag starvation observability
+https://lore.kernel.org/all/20260427020142.358912-1-atomlin@atomlin.com
+* [PATCH v5 1/2] blk-mq: add tracepoint block_rq_tag_wait
+* [PATCH v5 2/2] blk-mq: expose tag starvation counts via debugfs
 
 and found the following issue:
-WARNING in __mod_memcg_lruvec_state
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/e53aef43-ac7a-4cb7-8714-bb927aaee659
+https://ci.syzbot.org/series/a89f6838-ed18-45c4-b84b-10212694dab8
 
 ***
 
-WARNING in __mod_memcg_lruvec_state
+kernel build error
 
 tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      27d128c1cff64c3b8012cc56dd5a1391bb4f1821
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      254f49634ee16a731174d2ae34bc50bd5f45e731
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/c10ddd10-bb16-48c2-90fb-3625d3b258aa/config
-syz repro: https://ci.syzbot.org/findings/1e8993c1-818b-4ddf-b90b-30f051b3a9d6/syz_repro
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/d82c63ad-342e-4e86-80c2-ea391ab0342=
+0/config
 
-------------[ cut here ]------------
-__mod_memcg_lruvec_state: missing stat item 21
-WARNING: mm/memcontrol.c:911 at __mod_memcg_lruvec_state+0x1f3/0x360 mm/memcontrol.c:911, CPU#0: syz.0.17/5831
-Modules linked in:
-CPU: 0 UID: 0 PID: 5831 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__mod_memcg_lruvec_state+0x1fc/0x360 mm/memcontrol.c:911
-Code: 00 11 85 c0 74 31 48 83 c4 08 5b 41 5c 41 5d 41 5e 41 5f 5d e9 95 2e 72 09 cc 48 8d 3d 7d c4 fd 0d 48 c7 c6 5d b4 f5 8d 89 da <67> 48 0f b9 3a eb d5 90 0f 0b 90 eb 90 e8 02 22 fb fe eb c8 48 8d
-RSP: 0018:ffffc900039e7520 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: 0000000000000015 RCX: dffffc0000000000
-RDX: 0000000000000015 RSI: ffffffff8df5b45d RDI: ffffffff90363d90
-RBP: 0000000000000001 R08: ffffffff82388833 R09: ffffffff8e95cd60
-R10: dffffc0000000000 R11: fffff940008c3f49 R12: ffff8881026eee80
-R13: 00000000000000ff R14: 0000000000000001 R15: ffff888173a80e00
-FS:  00007f5f76bca6c0(0000) GS:ffff88818dc95000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055d77c624128 CR3: 0000000171fde000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- mod_memcg_lruvec_state+0xa7/0x220 mm/memcontrol.c:941
- mod_lruvec_state mm/memcontrol.c:964 [inline]
- lruvec_stat_mod_folio+0x239/0x3e0 mm/memcontrol.c:984
- folio_account_dirtied mm/page-writeback.c:2634 [inline]
- __folio_mark_dirty+0x633/0xec0 mm/page-writeback.c:2692
- mark_buffer_dirty+0x261/0x410 fs/buffer.c:1110
- block_commit_write+0x15d/0x270 fs/buffer.c:2115
- block_write_end+0x6e/0xb0 fs/buffer.c:2191
- ext4_write_end+0x27d/0xa30 fs/ext4/inode.c:1458
- ext4_da_write_end+0x86/0xcb0 fs/ext4/inode.c:3296
- generic_perform_write+0x620/0x8f0 mm/filemap.c:4350
- ext4_buffered_write_iter+0xcb/0x370 fs/ext4/file.c:316
- ext4_file_write_iter+0x298/0x1bd0 fs/ext4/file.c:-1
- do_iter_readv_writev+0x619/0x8c0 fs/read_write.c:-1
- vfs_writev+0x33c/0x990 fs/read_write.c:1059
- do_pwritev fs/read_write.c:1155 [inline]
- __do_sys_pwritev2 fs/read_write.c:1213 [inline]
- __se_sys_pwritev2+0x184/0x2a0 fs/read_write.c:1204
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f5f75d9cdd9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f5f76bca028 EFLAGS: 00000246 ORIG_RAX: 0000000000000148
-RAX: ffffffffffffffda RBX: 00007f5f76015fa0 RCX: 00007f5f75d9cdd9
-RDX: 0000000000000001 RSI: 00002000000001c0 RDI: 0000000000000004
-RBP: 00007f5f75e32d69 R08: 0000000000000001 R09: 0000000000000081
-R10: 0000000000000003 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f5f76016038 R14: 00007f5f76015fa0 R15: 00007fffe7503ad8
- </TASK>
-----------------
-Code disassembly (best guess):
-   0:	00 11                	add    %dl,(%rcx)
-   2:	85 c0                	test   %eax,%eax
-   4:	74 31                	je     0x37
-   6:	48 83 c4 08          	add    $0x8,%rsp
-   a:	5b                   	pop    %rbx
-   b:	41 5c                	pop    %r12
-   d:	41 5d                	pop    %r13
-   f:	41 5e                	pop    %r14
-  11:	41 5f                	pop    %r15
-  13:	5d                   	pop    %rbp
-  14:	e9 95 2e 72 09       	jmp    0x9722eae
-  19:	cc                   	int3
-  1a:	48 8d 3d 7d c4 fd 0d 	lea    0xdfdc47d(%rip),%rdi        # 0xdfdc49e
-  21:	48 c7 c6 5d b4 f5 8d 	mov    $0xffffffff8df5b45d,%rsi
-  28:	89 da                	mov    %ebx,%edx
-* 2a:	67 48 0f b9 3a       	ud1    (%edx),%rdi <-- trapping instruction
-  2f:	eb d5                	jmp    0x6
-  31:	90                   	nop
-  32:	0f 0b                	ud2
-  34:	90                   	nop
-  35:	eb 90                	jmp    0xffffffc7
-  37:	e8 02 22 fb fe       	call   0xfefb223e
-  3c:	eb c8                	jmp    0x6
-  3e:	48                   	rex.W
-  3f:	8d                   	.byte 0x8d
-
+./include/trace/events/block.h:255:47: error: expected ':'
+./include/trace/events/block.h:255:47: error: expected expression
 
 ***
 
@@ -180,3 +95,18 @@ To test a patch for this bug, please reply with `#syz test`
 
 The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[atomlin@atomlin.com axboe@kernel.dk bvanassche@acm.org chjohnst@gmail.com =
+dlemoal@kernel.org johannes.thumshirn@wdc.com kch@nvidia.com linux-block@vg=
+er.kernel.org linux-kernel@vger.kernel.org linux-trace-kernel@vger.kernel.o=
+rg loberman@redhat.com mathieu.desnoyers@efficios.com mhiramat@kernel.org m=
+proche@gmail.com neelx@suse.com ritesh.list@gmail.com rostedt@goodmis.org s=
+ean@ashe.io]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
