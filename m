@@ -1,89 +1,98 @@
-Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com [209.85.160.69])
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AED2C3C07A
-	for <syzbot@lists.linux.dev>; Wed, 29 Apr 2026 21:45:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A902175A68
+	for <syzbot@lists.linux.dev>; Thu, 30 Apr 2026 01:55:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777499125; cv=none; b=mCI1JGE05jX6/ZKRE6CqxABzCfMSBKCNfmlHvUyBjQXWCxVTrU6LhBjs90Vf/CKVP1iOLSioFrpD+O2LF5zf5Fd2kwgDgNx7/LHMg1zp1DSZnjsqrC+dcio51AmqB/5zQq/t4JA2qg1XAoT7VLzD0jiNkdthwkf/tbxVPd9uHC0=
+	t=1777514136; cv=none; b=UvgG3E/hwjbyctqcSP3inUlk1D/5Q5TKkj+5mfLMMXZ3RtbR9hLoiTxzbfdFPrgMo9cqIzWbswnaRxnfKKQl60oADR1OEyQfjrSIABPyQaoqtLLiAwOMjfBALngaGHV5NeLd6c5htCGsy8R20qa00dPBVUZfpM9Y5RN7tmGjXOk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777499125; c=relaxed/simple;
-	bh=59zPyxL0lJf1hAvb2aBUAh0qnkS8Wo8YjVdJ722HJ8c=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=XHztPu0vBFwMWPatS6w08We+9LnFJO7q3lc218LjU08XJNHPdCuxjbgLeOXwAxtz1dQc6EL35UihBLZmGbj4c0h44IUw1EhWXYHpz2zVpanaFnT/rdPyh69OAfLxer5KrUlJeFSvSxF9N79rlw+H+C+bEmgaMn+H3s7oldG4CWs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.69
+	s=arc-20240116; t=1777514136; c=relaxed/simple;
+	bh=4lftk16KYhw+aVeAER8Zq2mBgEJf5z8VXBvHkxh3Fe4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=EmHb2bC8+CqFYDUeDpKpShX+VeDoTKgINDyMzvkDFybBz3wzyop6WoLGxGQ/91FfsWVHxp9VukaWzOcRwl9RBLu6sqkq3mgRY4J10xYsKj9I8gXkKImm2qVByqZb/jXQQTEmw2+DAeEUY4rB5vOnozdjLzlk6ZQBCKXi7g5Ns7U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-40ef793e45eso252399fac.3
-        for <syzbot@lists.linux.dev>; Wed, 29 Apr 2026 14:45:23 -0700 (PDT)
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-6961e8fa90bso959604eaf.0
+        for <syzbot@lists.linux.dev>; Wed, 29 Apr 2026 18:55:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777499122; x=1778103922;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=vNCT7ACWd4AnxSRjc1soR7ou6CeT/o6lApDSLv0qIJs=;
-        b=M0X8LDjmXREXZap4htz25eBOPhem1PvUR+Hz9sDRfP3EYqLQFW8wVSuAIc9Xbb4WdB
-         ZjLkC/dfG+POV/cBTmHn3DvstHFgggdJ3gnV2w1fiOCLitzc9WCwvPdeGbEGPoPZR7pW
-         DXlq+ERYSItzv08xFpMBZJyn3wbvAXWVUBmAJC2HXek/h8LmpcHghOEeKcpR1Y6X/WJu
-         RQK498prkpKuN1aUgyI01p0s05gqBIu9ROjisdXInmJmwR+ofSrd+bYgQBdAfxeoelkM
-         XDSibqVk0HKwkKMwLpEAdILDNiyr0fkCHMulpOp5y9smxSxlNw3+1cYqqDlTF+bGOmC5
-         z2YA==
-X-Gm-Message-State: AOJu0Ywzhs5RCJXXDorwvhMgCU1/Eomr/IIyLtTVWGHtk8J6ghDdjKm0
-	yKZa/1U4WpiNr7J4GWmtNjnZaUrPqwJSqWNW6ufVodLRX2C3x69UcBSaGv6mPfMDMU+zJogGf/L
-	NItF65i2Xlp1rkTOPAgpezq+5YNs6ZfAJdtrhlENNL2pOdbIo7gVdZmJyvlQ=
+        d=1e100.net; s=20251104; t=1777514134; x=1778118934;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fR+S9RO1SNNYiWaLMXSwt+W6CSvQYQ6AaQ8PGGasH+Y=;
+        b=YKFpfqXaByoeTol7K5cOi/4PUvdo0h2QEKqgH6x5i4Uq4y9DoIXlm4Ef4YDHA5GAn8
+         q+kDG78VraLdu49cwZX3mgAFburDjVPtEaBgOsWcDJ/DQQgh2QzkuggIsWEb599Fvsu4
+         uQ5QXQkKNWSOKTrDWp3404hMUU+nPU/hxF0mW3bHxCssc94IRVBQ6pdOHXctwmiamIbl
+         w6cP4BdjStR4mvGfkqRvN11jV59mJCXX8ejkluEyNY+efjEQZioyew+puU6/QgFpgzS9
+         OY52aPvEWUcACsxgJE9+Q/TSrFpxQgaBfpCjXzrqxB9cE4t9j3RbnH4/hKum7t50ZxrI
+         /nSQ==
+X-Gm-Message-State: AOJu0YzGqVgD4pTG6w9NaUNVnWrCeDBDeYJPjWZ0rcrXsqqDEM/uuz2k
+	CHcY+GWgeDfz6l1paBb3V2RUjinPsboKKXAsU/oLfC7rOnOlrVEOvqjObW+W/dzq+0b9KkaFIhY
+	mGJ5W4USaIFOaYDXGbw7OCLSlzaPvsZ+wnuMY/G2gMzIsyfRFplBQ3KJmgBk=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:3096:b0:694:921b:b1b3 with SMTP id
- 006d021491bc7-6967a5181edmr211508eaf.26.1777499122651; Wed, 29 Apr 2026
- 14:45:22 -0700 (PDT)
-Date: Wed, 29 Apr 2026 14:45:22 -0700
+X-Received: by 2002:a05:6820:2016:b0:694:6d72:9fd0 with SMTP id
+ 006d021491bc7-6967a56709fmr538191eaf.16.1777514134085; Wed, 29 Apr 2026
+ 18:55:34 -0700 (PDT)
+Date: Wed, 29 Apr 2026 18:55:34 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69f27bf2.050a0220.11c491.0004.GAE@google.com>
-Subject: [moderation/CI] Re: kho: make boot time huge page allocation work
- nicely with KHO
-From: syzbot ci <syzbot+ci0e20c63d08d09d13@syzkaller.appspotmail.com>
+Message-ID: <69f2b696.050a0220.11c491.0007.GAE@google.com>
+Subject: [moderation/CI] Re: Optimize this_cpu_*() ops for non-x86 (ARM64 for
+ this series)
+From: syzbot ci <syzbot+cic1fbba0efd11a7fa@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] kho: make boot time huge page allocation work nicely with KHO
-https://lore.kernel.org/all/20260429133928.850721-1-pratyush@kernel.org
-* [PATCH 01/12] kho: generalize radix tree APIs
-* [PATCH 02/12] kho: store incoming radix tree in kho_in
-* [PATCH 03/12] kho: add a struct for radix callbacks
-* [PATCH 04/12] kho: add callback for table pages
-* [PATCH 05/12] kho: add data argument to radix walk callback
-* [PATCH 06/12] kho: allow early-boot usage of the KHO radix tree
-* [PATCH 07/12] kho: allow destroying KHO radix tree
-* [PATCH 08/12] kho: add kho_radix_init_tree()
-* [PATCH 09/12] memblock: introduce MEMBLOCK_KHO_SCRATCH_EXT
-* [PATCH 10/12] kho: extended scratch
-* [PATCH 11/12] kho: return virtual address of mem_map
-* [PATCH 12/12] mm/hugetlb: make bootmem allocation work with KHO
+[v1] Optimize this_cpu_*() ops for non-x86 (ARM64 for this series)
+https://lore.kernel.org/all/20260429170758.3018959-1-yang@os.amperecomputin=
+g.com
+* [PATCH 01/11] arm64: mm: enable percpu kernel page table
+* [PATCH 02/11] arm64: mm: define percpu virtual space area
+* [PATCH 03/11] arm64: smp: define setup_per_cpu_areas()
+* [PATCH 04/11] mm: percpu: prepare to use dedicated percpu area
+* [PATCH 05/11] arm64: mm: map local percpu first chunk
+* [PATCH 06/11] mm: percpu: set up first chunk and reserve chunk
+* [PATCH 07/11] arm64: mm: introduce __per_cpu_local_off
+* [PATCH 08/11] vmalloc: pass in pgd pointer for vmap{__vunmap}_range_noflu=
+sh()
+* [PATCH 09/11] mm: percpu: allocate and free local percpu vm area
+* [PATCH 10/11] arm64: kconfig: select HAVE_LOCAL_PER_CPU_MAP
+* [PATCH 11/11] arm64: percpu: use local percpu for this_cpu_*() APIs
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/c7dbc3fb-1241-4c20-9d8f-45044f883fc1
+https://ci.syzbot.org/series/56a62ce3-67e8-406b-a1b8-9466bcf47f99
 
 ***
 
 kernel build error
 
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-base:      eee13213401bafb7ffe3b447adffb1f570b9d813
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
+.git
+base:      254f49634ee16a731174d2ae34bc50bd5f45e731
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/f6197347-999f-421f-b3e4-88104c1fa324/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/b8a79ddf-dd8d-479d-96f7-cf60aed2e82=
+2/config
 
-mm/mm_init.c:2691:2: error: call to undeclared function 'kho_extend_scratch'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+mm/percpu-vm.c:190:28: error: use of undeclared identifier 'percpu_pgd'
+mm/percpu-vm.c:283:32: error: use of undeclared identifier 'percpu_pgd'
+mm/percpu-vm.c:299:28: error: use of undeclared identifier 'percpu_pgd'
+mm/percpu.c:3292:32: error: use of undeclared identifier 'percpu_pgd'
 
 ***
 
@@ -102,7 +111,11 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[akpm@linux-foundation.org david@kernel.org graf@amazon.com jasonmiu@google.com kexec@lists.infradead.org linux-kernel@vger.kernel.org linux-mm@kvack.org muchun.song@linux.dev osalvador@suse.de pasha.tatashin@soleen.com pratyush@kernel.org rppt@kernel.org]
+[agordeev@linux.ibm.com akpm@linux-foundation.org catalin.marinas@arm.com c=
+l@gentwo.org david@kernel.org dennis@kernel.org gor@linux.ibm.com hca@linux=
+.ibm.com linux-arm-kernel@lists.infradead.org linux-kernel@vger.kernel.org =
+linux-mm@kvack.org ryan.roberts@arm.com tj@kernel.org urezki@gmail.com will=
+@kernel.org yang@os.amperecomputing.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
