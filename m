@@ -1,90 +1,116 @@
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5138537B41F
-	for <syzbot@lists.linux.dev>; Mon,  4 May 2026 22:13:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40D8947CC8E
+	for <syzbot@lists.linux.dev>; Tue,  5 May 2026 12:18:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777932841; cv=none; b=YG38VQP0XLw+D+x5Ud9Jyiabyiarw+VWWNPI8m3dVFWFBZAHTbHH11A5Xs2Xl+AdE39svAhaTRMPRFE90O0RlX/NwHclYarlqTP8216NU/Y7sq3F75Rp0uWVqkK3RdHAl/v3PWO6aXZ8SvvEEObcrcdLFByKFof+MMEhf1Ii7k4=
+	t=1777983511; cv=none; b=KVz5KrxxGdwXf1k1290xHOinfvvvhSv7hJg9/FQrSjnNSSHRVNMVkT6/a2ePy/YpvIEsgArhZwRrsk9rf48yXkqcEvwHCZLeoARXySgP+HUc0YYQloB+AH0+x9nCMNWbfDPkUcCVQJbpkidoDYHAsCA/O/MZqXmTlD/UvwBd26w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777932841; c=relaxed/simple;
-	bh=JoUokRH01gcvVryF8eDp7xWwW20EcrDPQhoh9NB+ULU=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=VDTCywBaV+ht795/YjYCynan0ThvovP5G43KhagPWEsbnYYG5Q2vqb38cxyWQfFd1RtZG3TJpKBQdhvLWgqh9cXXPQF32YjHDCPJEbTLttUXEil0OiAReUXPY0UwpIaBl/+uly/2NIex+uTLBDkjKa4l+SOOFaNkLGm0F2B2Nrc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
+	s=arc-20240116; t=1777983511; c=relaxed/simple;
+	bh=lQvwsYPaCBor1jaspTavY8XVopIOA+2xPwafHXvLdN8=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=NLb5A7dAGd2rxgyNqL4hFFiUwl231YMRcEkj4IkMytnjyT/Pcgfh10A7FnJTGc9Bk+3Gp1H8zjvgIgCpjFLJ6PnRMVl8eYr22vM0d6i4xFU8YGmkpbA+1q/4Pn04uT+eZJGn0XLWoIUQgZx5CLUtHGIhQSzrCBsJrLWl49MQrOk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-68e924f632bso9192890eaf.0
-        for <syzbot@lists.linux.dev>; Mon, 04 May 2026 15:13:59 -0700 (PDT)
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6948eac3522so8126728eaf.3
+        for <syzbot@lists.linux.dev>; Tue, 05 May 2026 05:18:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777932838; x=1778537638;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=mLBN9o077Ldikd6PkwIy4yApGcOIgb8bbwoiZsTfQYw=;
-        b=NT3NFGkVpvwLA2GZ4i09xmceVuMLrEf7pwlMO0EMvp3VsscYeEIkavkiYB0blcZjJB
-         UVDQr6BCrg3AXUh/ji+mxEJbjLNEZjLOyltHEOzkv9uvKyHkjT6nf9Ebdb6tBDkXOr4S
-         IGJV1tqan2UXVOQ7GT/mv9nnXHcKS1NzyXFe1uElMVb8Z4UGF/CfCji7Anz9FyLE6BN4
-         eHDIeN2Ie7CpaTYWZKay/CWO0sysjE6L0iXBybTIITWKsoyiVdPI7hcE2sBtLm4ByPAd
-         2UC0YpNFGpvSFAMY9dGG3SeN7HSIadl9NkWwoi6HmhAQq0+EApEpqN+oiOhnfXV3sIXm
-         VrlA==
-X-Gm-Message-State: AOJu0Ywe/ExgAV8L6Zjd3jzw2oV/0qRuyzmNHyml69w9fMApJFe7RfSn
-	FtsZgWvZM+SFlLBsq+MxvauKOhc0xB+NBvolF39RzR0CcXJQXgdDe5fuXD64ftao6F/4bi/xYyI
-	+Ysg6BXR30/CGXmveNOkSfL0Fd0rIsWQjoNGvWsENT4XHp333d14hVB5qU/0=
+        d=1e100.net; s=20251104; t=1777983508; x=1778588308;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=WX8kUZjRFTQWBfvqKBGVuwj9lBs5GLi6RJSOak4GN/4=;
+        b=oxkneF2i8Bie4bOa7+g0L012ELnh/F3WUkynaLEa5YTA3sYGlvjZVhnZQ4PQ8Tj1ru
+         r1EwHDL28ADPcJc/0WCSlErdazSkcACtVz/lq5fpWTstcQUPCgjydEN+TxA9D/g862uF
+         y1ya5MM0KhcIVRRt60S2oQmtbHJZBoCrP30u69tQJlrZ14r/WWAbP3SmGtBuNgnFkvjQ
+         sxpuAxBctuRBbaWbzjroGn4VZaytxh5A4NeEK+uLPVnqt93b5A7njAprH2Jpgkh8oViM
+         hj3Y5+QQ5Ff6v80KsUqZmDiRZlFsCc0evh6IPPoTBOe3LIvUO67ScO2aAvUIxpkkUqgn
+         FUmQ==
+X-Gm-Message-State: AOJu0YwiTeCrhKC1OPwYjzkXY1hrjFkYCjCEx1+YJid/vfjEMWYbrN4B
+	y4+51Z6uR43WQ1gWm+qkdljmIHTfLAItIxf4GMCXtSw6QcmaUUv33MPOJM9Cb271bNPxFOpQkI5
+	oACTv895YyCanM8fBWLjBaFPUsFdiTKxFPqY/edd51XDZxkc0jlb3kf3SqdA=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a4a:ec46:0:b0:694:a362:e3ab with SMTP id
- 006d021491bc7-69697df7335mr5922490eaf.55.1777932838421; Mon, 04 May 2026
- 15:13:58 -0700 (PDT)
-Date: Mon, 04 May 2026 15:13:58 -0700
+X-Received: by 2002:a05:6820:80f:b0:696:6e0c:85de with SMTP id
+ 006d021491bc7-69697c407eamr6721001eaf.39.1777983508145; Tue, 05 May 2026
+ 05:18:28 -0700 (PDT)
+Date: Tue, 05 May 2026 05:18:28 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69f91a26.050a0220.892e9.00da.GAE@google.com>
-Subject: [moderation/CI] Re: batman-adv: use neigh_node's orig_node only as id
-From: syzbot ci <syzbot+ci03da7a54cc6d1041@syzkaller.appspotmail.com>
+Message-ID: <69f9e014.170a0220.59368.000f.GAE@google.com>
+Subject: [moderation/CI] Re: io_uring/rsrc: remove registered buffer 1GB limit
+From: syzbot ci <syzbot+ciac921838cf7775c4@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] batman-adv: use neigh_node's orig_node only as id
-https://lore.kernel.org/all/20260504-neigh_node-no-orig_node-v1-1-33b282272=
-711@narfation.org
-* [PATCH batadv-next] batman-adv: use neigh_node's orig_node only as id
+[v1] io_uring/rsrc: remove registered buffer 1GB limit
+https://lore.kernel.org/all/6de5d329-9162-4992-85cb-f946f2d5c0b1@kernel.dk
+* [PATCH] io_uring/rsrc: remove registered buffer 1GB limit
 
 and found the following issue:
-kernel build error
+WARNING in io_pin_pages
 
 Full report is available here:
-https://ci.syzbot.org/series/544b4a3b-4abc-44f9-ad92-7f08624a2cf7
+https://ci.syzbot.org/series/576c7f20-d7fb-471a-a534-f8f67489e049
 
 ***
 
-kernel build error
+WARNING in io_pin_pages
 
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
--next.git
-base:      1f5ffc672165ff851063a5fd044b727ab2517ae3
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      c7e4e4d5f7dc2daa439303d1b5bf6bdfaa249f49
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/f4c3a9b9-a9f0-48b5-9136-49c963cda40=
-8/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/287c9ce7-c085-4a41-9f94-756762f8dacf/config
+syz repro: https://ci.syzbot.org/findings/63ff94b0-aced-41c6-83fc-a917c57ad624/syz_repro
 
-net/batman-adv/bat_iv_ogm.c:186:14: error: no member named 'orig_node' in '=
-struct batadv_neigh_node'
-net/batman-adv/bat_iv_ogm.c:1040:48: error: no member named 'orig_node' in =
-'struct batadv_neigh_node'
-net/batman-adv/bat_iv_ogm.c:1042:53: error: no member named 'orig_node' in =
-'struct batadv_neigh_node'
-net/batman-adv/bat_iv_ogm.c:1375:50: error: no member named 'orig_node' in =
-'struct batadv_neigh_node'
+------------[ cut here ]------------
+!(flags & __GFP_NOWARN)
+WARNING: mm/slub.c:6840 at __kvmalloc_node_noprof+0x7be/0x8a0 mm/slub.c:6840, CPU#1: syz.1.18/5830
+Modules linked in:
+CPU: 1 UID: 0 PID: 5830 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:__kvmalloc_node_noprof+0x7be/0x8a0 mm/slub.c:6840
+Code: ff 48 c7 c7 d0 bd a8 8e 48 89 de e8 dc 48 c9 02 e9 49 fc ff ff 48 c7 c7 10 be a8 8e 48 89 de e8 c8 48 c9 02 e9 7e fc ff ff 90 <0f> 0b 90 45 31 e4 e9 f8 fd ff ff 90 0f 0b 90 e9 52 ff ff ff 49 83
+RSP: 0018:ffffc90003a37928 EFLAGS: 00010246
+RAX: 0000000000000004 RBX: 0000000201000008 RCX: 0000000080000001
+RDX: 0000000201000008 RSI: ffffffff8c28ac40 RDI: ffffffff8c28ac00
+RBP: ffffc90003a37b70 R08: 00000000004028c0 R09: 00000000ffffffff
+R10: 0000000000000006 R11: 0000000000000000 R12: 0000000000000000
+R13: 00000000004028c0 R14: 0000000000000016 R15: 00000000ffffffff
+FS:  00007fb3823ec6c0(0000) GS:ffff8882a9290000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffcca0efe68 CR3: 000000017064e000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ io_pin_pages+0xac/0x1a0 io_uring/memmap.c:59
+ io_sqe_buffer_register+0x228/0x1860 io_uring/rsrc.c:801
+ io_sqe_buffers_register+0x2f9/0x7e0 io_uring/rsrc.c:913
+ io_register_rsrc+0x24d/0x280 io_uring/rsrc.c:414
+ __io_uring_register io_uring/register.c:843 [inline]
+ __do_sys_io_uring_register io_uring/register.c:1029 [inline]
+ __se_sys_io_uring_register+0xc5d/0x1ac0 io_uring/register.c:1006
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fb38159cdd9
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fb3823ec028 EFLAGS: 00000246 ORIG_RAX: 00000000000001ab
+RAX: ffffffffffffffda RBX: 00007fb381815fa0 RCX: 00007fb38159cdd9
+RDX: 0000200000002700 RSI: 000000000000000f RDI: 0000000000000003
+RBP: 00007fb381632d69 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000020 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fb381816038 R14: 00007fb381815fa0 R15: 00007fffdb4e7d78
+ </TASK>
+
 
 ***
 
@@ -103,12 +129,7 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[antonio@mandelbit.com b.a.t.m.a.n@lists.open-mesh.org bird@lzu.edu.cn dave=
-m@davemloft.net edumazet@google.com horms@kernel.org kuba@kernel.org linux-=
-kernel@vger.kernel.org marek.lindner@mailbox.org n05ec@lzu.edu.cn netdev@vg=
-er.kernel.org pabeni@redhat.com sven@narfation.org sw@simonwunderlich.de to=
-mapufckgml@gmail.com wangjiexun2025@gmail.com yifanwucs@gmail.com yuantan09=
-8@gmail.com]
+[andres@anarazel.de axboe@kernel.dk io-uring@vger.kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
