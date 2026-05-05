@@ -1,118 +1,114 @@
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B981D43C07F
-	for <syzbot@lists.linux.dev>; Tue,  5 May 2026 13:08:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F9EA48A2B1
+	for <syzbot@lists.linux.dev>; Tue,  5 May 2026 21:14:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777986513; cv=none; b=IkA2tsasvsdyEJSJclmVNlVkO1BsVNHOUaF426PI+YX9cJa1Iq2OX3f5/OmHoAq9uP3CQ25Hxgqw6ezwh27XpI9XaeEnjBmd2MHmMcSx1kwWK4yJAt1xVpuO8BcclwdGnW28WeLrUtcyahNYkpR1fZoYoXnNMGqt8jG33BsPOLg=
+	t=1778015699; cv=none; b=Zsjns77rMj6EN0HAwkqzxfTKrdOdIT8IR7VjQLUnaRcaipZGUHx4SKMFAgm/Aj3N+RkcMksSOEgd/5qzkILhFoSrfRXnAix/JJPj0+WgNx19UgrYSTfclQTwhSNLS6nZP93N32eHijGEPZk9J7KQPb1x8I4OJhPrUnIMbTO1K7s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777986513; c=relaxed/simple;
-	bh=sFevfuThPnK9sIPvedInedMJ5eGsSSn0G/pa7IgRNzY=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=Jnm0oBqXWO46zLbtLVgxEjdZ8l3NiHyojx0XVnKRIBjID3A4RI8Jad/ydxQBhgGQdRLUdhs6wnMotd86hCLNkKmmbZ/wv20rMoS/iNU9fNyKy3q78bjCK0HippUpA1saQYNS9upypjj3FHcBRkKotH7JvgE52somMUe6Vdb12RU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
+	s=arc-20240116; t=1778015699; c=relaxed/simple;
+	bh=CkaR9S4nTgFMgV7L00QBjzeUbzLOqnryP/JlJw3/mxg=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=JrVQjEfJ3MBTBjxbwAIR9nJJwYgeQJlSe2cOR5ozSOQuoZFtHdF4n/p33zf0yPkGOnOWLfSv9wL8BzcA0Bvx7KpyTGQvlV7ONzfs4iI3RC8p42a6AgfMBGPUzkNhycYBfHhzLgyqztmpdf5DPPnl/2cK5EmcraT32xCYzdw4Vzs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-6966f1f4490so10730447eaf.1
-        for <syzbot@lists.linux.dev>; Tue, 05 May 2026 06:08:31 -0700 (PDT)
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-40ea48ccbd2so4469947fac.3
+        for <syzbot@lists.linux.dev>; Tue, 05 May 2026 14:14:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777986511; x=1778591311;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LTYFpGF2sAJ08QtA3xEO+n4nsS4Uz+UMNVOp/UWwx7k=;
-        b=iTkQQr0og0aUAgho6mvI4bdmWwRXd6gZDimdliwODmHHfXxK4/1E2jhz64LSAFv0at
-         b3xX/rrY2+3+1MWEquOjZiC5JY8NZAyQesUx1goK4QawttG8dECXlXAZhVJnqvfhH3Xn
-         Murkcix655xxRRG4PT4/yxjdr9qbMe6oW+SfMkSu2xJgJR8fwZ5Le30FRVww7RTIg5vw
-         cPOt0vpYyAKs/a1vhHcMnk6tTKFsDb+MTLxg3Jwy2tPUiF13ieYkSd0BTJDO7vgeQN+6
-         usAnrzghQMh2K8e//FksbDd6qhNAq5sM2r/ympar4MvdZUKMG9yRwVX/z2bWN39T1EHp
-         kPDw==
-X-Gm-Message-State: AOJu0YzJ0eLx0mPXXsrCPY2tFi2xDTY4baKiIsA2c922zn/6fdZLJBiC
-	pT6K0L2J+8KMBfcCqu90bV4ChfIsXg7E0zd4bbiPF62tYeGgIzhi/JP7Tqa4qwqOxxuF3h0aHLT
-	1AYgnHw8FEFX59/E/Ci75AP/CCfUQWMmwKw42DHscJGW62XaSsE1m00h8qgM=
+        d=1e100.net; s=20251104; t=1778015697; x=1778620497;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=St8cP/HhAKASWrR3UGaSIRrzUdsRyynOzisFj4yQn9k=;
+        b=QxxmP3k6Huy6L9eIOHzpyOCAjNi6eCurDhlGvD/oNS0GBoif8VrQ3/dZVuUWwyoqxO
+         mjqLPtV9eoPBgHo/VQZOGF933LC4TXZcGJvom5T59EINEU2/pqYsLLugODtbD3UH4sV3
+         7HHy1rRvNCHOERL3Jb2FuC8Y7LP3mSaGuhc1HTsyrA8zEMVX+OeY01kilkA/cSEilbJP
+         0lw3cD7Lzd6GzgwenGCH6e1ACWOFglEA201DRQ6IoJt64OnYJrVZAX61hrchwArMIRYY
+         VKlP8m7fu2Vr+rxyVr6wZRiBmqxh+kkH4SYJy2tdnFreeANUwYy1gjGVyMU8/ApXCO6a
+         8N/w==
+X-Gm-Message-State: AOJu0YxNG52VoZi+7euAlHxgRgM5XmFUrVm6IYhSKMFx92qZGtumlWWU
+	8+oKbLe4RceW6ZBGAOxoN0SeNzZO5feMmNAohEwb2mjFeAJN1UVG3yle6MgOd/dts31D61m3Z0B
+	QBzpPjIYNbagqH/qzaMpNtjJtsL4Mk03B5l3MfCrCfJPUJ6sAOJEonCUjoO4=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:e16:b0:694:857a:5a78 with SMTP id
- 006d021491bc7-698876f07f9mr1294157eaf.8.1777986510804; Tue, 05 May 2026
- 06:08:30 -0700 (PDT)
-Date: Tue, 05 May 2026 06:08:30 -0700
-In-Reply-To: <6de5d329-9162-4992-85cb-f946f2d5c0b1@kernel.dk>
+X-Received: by 2002:a05:6820:4cc4:b0:696:2674:8a1e with SMTP id
+ 006d021491bc7-69998d14887mr306105eaf.35.1778015697354; Tue, 05 May 2026
+ 14:14:57 -0700 (PDT)
+Date: Tue, 05 May 2026 14:14:57 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69f9ebce.170a0220.59368.0011.GAE@google.com>
-Subject: [syzbot ci] Re: io_uring/rsrc: remove registered buffer 1GB limit
-From: syzbot ci <syzbot+ci5f475aa1640b4177@syzkaller.appspotmail.com>
-To: andres@anarazel.de, axboe@kernel.dk, io-uring@vger.kernel.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <69fa5dd1.050a0220.e8b39.0007.GAE@google.com>
+Subject: [moderation/CI] Re: pkeys-based page table hardening
+From: syzbot ci <syzbot+ci2c6d6df1dbf2aff7@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] io_uring/rsrc: remove registered buffer 1GB limit
-https://lore.kernel.org/all/6de5d329-9162-4992-85cb-f946f2d5c0b1@kernel.dk
-* [PATCH] io_uring/rsrc: remove registered buffer 1GB limit
+[v7] pkeys-based page table hardening
+https://lore.kernel.org/all/20260505-kpkeys-v7-0-20c0bdd97197@arm.com
+* [PATCH RFC v7 01/24] mm: Introduce kpkeys
+* [PATCH RFC v7 02/24] set_memory: Introduce set_memory_pkey() stub
+* [PATCH RFC v7 03/24] arm64: mm: Enable overlays for all EL1 indirect perm=
+issions
+* [PATCH RFC v7 04/24] arm64: Introduce por_elx_set_pkey_perms() helper
+* [PATCH RFC v7 05/24] arm64: Implement asm/kpkeys.h using POE
+* [PATCH RFC v7 06/24] arm64: set_memory: Implement set_memory_pkey()
+* [PATCH RFC v7 07/24] arm64: Context-switch POR_EL1
+* [PATCH RFC v7 08/24] arm64: Initialize POR_EL1 register on cpu_resume()
+* [PATCH RFC v7 09/24] arm64: Enable kpkeys
+* [PATCH RFC v7 10/24] memblock: Move INIT_MEMBLOCK_* macros to header
+* [PATCH RFC v7 11/24] mm: kpkeys: Introduce kpkeys_hardened_pgtables featu=
+re
+* [PATCH RFC v7 12/24] mm: kpkeys: Protect regular page tables
+* [PATCH RFC v7 13/24] mm: kpkeys: Introduce early page table allocator
+* [PATCH RFC v7 14/24] mm: kpkeys: Protect vmemmap page tables
+* [PATCH RFC v7 15/24] mm: kpkeys: Introduce hook for protecting static pag=
+e tables
+* [PATCH RFC v7 16/24] arm64: kpkeys: Implement arch_supports_kpkeys_early(=
+)
+* [PATCH RFC v7 17/24] arm64: kpkeys: Support KPKEYS_CTX_PGTABLES
+* [PATCH RFC v7 18/24] arm64: kpkeys: Ensure the linear map can be modified
+* [PATCH RFC v7 19/24] arm64: kpkeys: Protect early page tables
+* [PATCH RFC v7 20/24] arm64: kpkeys: Protect init_pg_dir
+* [PATCH RFC v7 21/24] arm64: kpkeys: Guard page table writes
+* [PATCH RFC v7 22/24] arm64: kpkeys: Batch KPKEYS_CTX_PGTABLES switches
+* [PATCH RFC v7 23/24] arm64: kpkeys: Enable kpkeys_hardened_pgtables suppo=
+rt
+* [PATCH RFC v7 24/24] mm: Add basic tests for kpkeys_hardened_pgtables
 
 and found the following issue:
-WARNING in io_pin_pages
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/576c7f20-d7fb-471a-a534-f8f67489e049
+https://ci.syzbot.org/series/d1382384-550b-4bd0-9715-eced9c72e692
 
 ***
 
-WARNING in io_pin_pages
+kernel build error
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      c7e4e4d5f7dc2daa439303d1b5bf6bdfaa249f49
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
+nux-next
+base:      7fd2df204f342fc17d1a0bfcd474b24232fb0f32
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/287c9ce7-c085-4a41-9f94-756762f8dacf/config
-syz repro: https://ci.syzbot.org/findings/63ff94b0-aced-41c6-83fc-a917c57ad624/syz_repro
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/bbc99857-87e1-40e9-b472-24edca24e66=
+3/config
 
-------------[ cut here ]------------
-!(flags & __GFP_NOWARN)
-WARNING: mm/slub.c:6840 at __kvmalloc_node_noprof+0x7be/0x8a0 mm/slub.c:6840, CPU#1: syz.1.18/5830
-Modules linked in:
-CPU: 1 UID: 0 PID: 5830 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__kvmalloc_node_noprof+0x7be/0x8a0 mm/slub.c:6840
-Code: ff 48 c7 c7 d0 bd a8 8e 48 89 de e8 dc 48 c9 02 e9 49 fc ff ff 48 c7 c7 10 be a8 8e 48 89 de e8 c8 48 c9 02 e9 7e fc ff ff 90 <0f> 0b 90 45 31 e4 e9 f8 fd ff ff 90 0f 0b 90 e9 52 ff ff ff 49 83
-RSP: 0018:ffffc90003a37928 EFLAGS: 00010246
-RAX: 0000000000000004 RBX: 0000000201000008 RCX: 0000000080000001
-RDX: 0000000201000008 RSI: ffffffff8c28ac40 RDI: ffffffff8c28ac00
-RBP: ffffc90003a37b70 R08: 00000000004028c0 R09: 00000000ffffffff
-R10: 0000000000000006 R11: 0000000000000000 R12: 0000000000000000
-R13: 00000000004028c0 R14: 0000000000000016 R15: 00000000ffffffff
-FS:  00007fb3823ec6c0(0000) GS:ffff8882a9290000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffcca0efe68 CR3: 000000017064e000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- io_pin_pages+0xac/0x1a0 io_uring/memmap.c:59
- io_sqe_buffer_register+0x228/0x1860 io_uring/rsrc.c:801
- io_sqe_buffers_register+0x2f9/0x7e0 io_uring/rsrc.c:913
- io_register_rsrc+0x24d/0x280 io_uring/rsrc.c:414
- __io_uring_register io_uring/register.c:843 [inline]
- __do_sys_io_uring_register io_uring/register.c:1029 [inline]
- __se_sys_io_uring_register+0xc5d/0x1ac0 io_uring/register.c:1006
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fb38159cdd9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fb3823ec028 EFLAGS: 00000246 ORIG_RAX: 00000000000001ab
-RAX: ffffffffffffffda RBX: 00007fb381815fa0 RCX: 00007fb38159cdd9
-RDX: 0000200000002700 RSI: 000000000000000f RDI: 0000000000000003
-RBP: 00007fb381632d69 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000020 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fb381816038 R14: 00007fb381815fa0 R15: 00007fffdb4e7d78
- </TASK>
-
+mm/sparse-vmemmap.c:369:6: error: call to undeclared function 'vmemmap_allo=
+c_block_zero'; ISO C99 and later do not support implicit function declarati=
+ons [-Wimplicit-function-declaration]
+mm/sparse-vmemmap.c:369:4: error: incompatible integer to pointer conversio=
+n assigning to 'struct page *' from 'int' [-Wint-conversion]
 
 ***
 
@@ -129,3 +125,21 @@ To test a patch for this bug, please reply with `#syz test`
 
 The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[akpm@linux-foundation.org broonie@kernel.org catalin.marinas@arm.com dave.=
+hansen@linux.intel.com david@kernel.org ira.weiny@intel.com jannh@google.co=
+m jeffxu@chromium.org joey.gouly@arm.com kees@kernel.org kevin.brodsky@arm.=
+com linusw@kernel.org linux-arm-kernel@lists.infradead.org linux-hardening@=
+vger.kernel.org linux-mm@kvack.org ljs@kernel.org luto@kernel.org maz@kerne=
+l.org mbland@motorola.com peterz@infradead.org pierre.langlois@arm.com qper=
+ret@google.com rick.p.edgecombe@intel.com rppt@kernel.org ryan.roberts@arm.=
+com tglx@kernel.org vbabka@kernel.org will@kernel.org willy@infradead.org x=
+86@kernel.org yang@os.amperecomputing.com yeoreum.yun@arm.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
