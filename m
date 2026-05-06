@@ -1,78 +1,91 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE3FD211A14
-	for <syzbot@lists.linux.dev>; Wed,  6 May 2026 01:44:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 217D925776
+	for <syzbot@lists.linux.dev>; Wed,  6 May 2026 05:20:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778031852; cv=none; b=N1HT3qoT4rgOMjV4jHLJSAaUH2JeGG12BZfhI6Oi4NVBc1VNqC/fceDOeV7dWSD8gyg1wHGVnZqljb30890Yl5FtlOZJgYpU0NcTFZtB0/oLAe9BDbqsA1gxP6lvb6/XDkyGXuALj/JsAF881z161MQrVoHYclXAI9Oa1HhjT+4=
+	t=1778044822; cv=none; b=DFasQlfLKG3JVOmg4MC03jMRxiNFywfm51alaoZ18Ub/3Czcn0TZPjqRZu8XsNHa+/azA71cz8xwSHgyE5Q6aTJq/tvLGKt95gP/yVLbApYJgJEJKcUjSI/dixfk7k5VxYMo9cDYPve7J9WT/PDvHfOCbNiyJBHU0jdHmcyy2rA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778031852; c=relaxed/simple;
-	bh=Tf1b3yuk2/iDVHEwQSuWtzZL8W6gWWxYeKDxwYqs0ZY=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=FlI4nCIrMH1/redZDxmU8/GOHWfbaaWQvmfgQVbYDCQR9o/Cd9soT6rPoPax93Bv3pVTYYmddQlJNYMh+RabUMGVqPO5uwuo6N2UQ3wXQ1UFJ5vW3z+fVTD6bO/8OuAAfjtaYVOG4n3dfEjKXKwKLXj6hR5C8I10SoHAjXJyhJw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+	s=arc-20240116; t=1778044822; c=relaxed/simple;
+	bh=jH7a7iTVnpNE4I58lcySwpPdyELxOSPe/XxUkPn/V7s=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=CAr4We/BUpbBiC81qDa9oEBx5p3VRmuBGOIsqrhI7LxA1qQm+np4+G2IohGVNRt66/QIG0V6drXc3P9tVg+iR6I9RNIxwvkOeg0GmIVuQQMCyq9pnV0VUMnpJN2XLC5mmdHY91dO4Lt3OnzUc70ufBcbbLdAhZBKhc1OtKK4itg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6961bdde2a1so13092944eaf.2
-        for <syzbot@lists.linux.dev>; Tue, 05 May 2026 18:44:10 -0700 (PDT)
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-696266291d6so7172702eaf.1
+        for <syzbot@lists.linux.dev>; Tue, 05 May 2026 22:20:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778031849; x=1778636649;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QnzjILn4fp5U2ZWSTPdKrefxjnineunjWgsefplAjPg=;
-        b=WDGLp/By3HXGzzpUuwOnE7HXZ39bL5U7fzypP2y7sw6lv8XJBml5ifGTFTxJQQnCkg
-         00DBDzhHG01A88nP4m0ATSwM7aHo00Ch80XV74hof090SCVH9TL/Alx73HYb4bZ3O7pF
-         baX51fkvSauLw7Yw0xVitFPRtvY326ymAcAlta4UgqKGa0ntCynlGV1X7/GwoCOtBk5/
-         xIshMDxMUjdBpeWSLwhlYdfDa9ofHBrD3H8yGZXuW3lszlFvZVMT5zin0aeNJohXToSs
-         253m4QrlYRLrYnp3LmjTo5g4wJXsPCZeGqb9L5ng2k7iax6nU56Nd9b9+3XXtVMoMIBy
-         6YQQ==
-X-Gm-Message-State: AOJu0YyNl2ZWuGSvrFFHUMTmgr6CmxVVSz7o2YJY+nnxuA7FYEDVtsMH
-	9Y3XWc5lMBTD2DADdX/lLkP63S4QcwxhXDg+qr7LBlx0k9I+5Lhhcr0EL80dJ1qIj2/x1K9HNiv
-	QocAfRwlsZtPhZqsQULFN+jI1NI5hw/u1UgByvMS+0NttuL4BZHbxuqVN19s=
+        d=1e100.net; s=20251104; t=1778044820; x=1778649620;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=d7XXIlZe0j2ygLsD62z2z+WrG7nCu4D95HYv8spqVX4=;
+        b=rlL6lTKlh/VJeoHsocoaxRyQJ4csNWX46N8MZs+9M7oMDe5CC4nLKtTBw2gu6AcUsf
+         r2AQiNr+d9B3s0/yf0RFv2av/b69LiWp6ozoxE1futrYebLFKQHokX+XtZbmzh3BOykK
+         9WWvTwnFYAVgzNfd9R0tKHs1nlCAsnNIuX5ruH735KxoToGlhMm6xkkqA7oOEsC/filD
+         Lc3LmHXAn7FRoy3uVXn4VicVPZ0lLuJlOEmIBTu3nckJm7A2xpecixO7CN3DxHCS0CH1
+         mpcZb2wXLptffTvqCnd/meU3++0VIG+JahRfhBQlOH0skgrc4aVnaNYhlhj7GOsclxLP
+         tjgA==
+X-Gm-Message-State: AOJu0YxPAHhW6zBiz6R6Q9Jw1mVfV0aRrNouuBdNWlXgbgTe1MIwmcPC
+	MyISdeYnOoI20BxgtWl89dTiM151xL+mZXoEIh0Jsnf2K/goV6mo5BP1CNDPv4JEOOTQfjNC+ig
+	2l52IcM/r/uAYrhZV9RrQAeItPmdFCHlQVi6ReXPM1y7Z4f1f7ABeIH2Ocm4=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1c86:b0:696:2674:8a18 with SMTP id
- 006d021491bc7-69998d0dbd8mr692021eaf.35.1778031849688; Tue, 05 May 2026
- 18:44:09 -0700 (PDT)
-Date: Tue, 05 May 2026 18:44:09 -0700
+X-Received: by 2002:a4a:ee0e:0:b0:696:8098:b0e5 with SMTP id
+ 006d021491bc7-69998d69ed4mr897049eaf.55.1778044820045; Tue, 05 May 2026
+ 22:20:20 -0700 (PDT)
+Date: Tue, 05 May 2026 22:20:20 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69fa9ce9.050a0220.e8b39.000a.GAE@google.com>
-Subject: [moderation/CI] Re: llc: fix coding style and memory barrier documentation
-From: syzbot ci <syzbot+ci5d668a5f5ece28e3@syzkaller.appspotmail.com>
+Message-ID: <69facf94.170a0220.59368.001e.GAE@google.com>
+Subject: [moderation/CI] Re: block/blk-iolatency: Add the processing flow of
+ the chained bio in the QoS and define the related types to solve the problem
+ of incorrect inflight processing in the QoS. The usage of the done_split_bio
+ abstract function in the blk-iolatency project.
+From: syzbot ci <syzbot+ci15f3f34c3c0a728c@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] llc: fix coding style and memory barrier documentation
-https://lore.kernel.org/all/20260505192549.74382-1-lucasp.linux@gmail.com
-* [PATCH] llc: fix coding style and memory barrier documentation
+[v2] block/blk-iolatency: Add the processing flow of the chained bio in the=
+ QoS and define the related types to solve the problem of incorrect infligh=
+t processing in the QoS. The usage of the done_split_bio abstract function =
+in the blk-iolatency project.
+https://lore.kernel.org/all/20260506024244.2741-1-likunyu10@163.com
+* [PATCH v2] block/blk-iolatency: Add the processing flow of the chained bi=
+o in the QoS and define the related types to solve the problem of incorrect=
+ inflight processing in the QoS. The usage of the done_split_bio abstract f=
+unction in the blk-iolatency project.
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/02bb68e8-d7e3-4638-ba21-ed0ef78f1014
+https://ci.syzbot.org/series/dd20f82c-9bc0-4af9-9acc-d222d1be5cb1
 
 ***
 
 kernel build error
 
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
-base:      8c699be3dad7bba87cdda485dc099226cfc2f706
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      74fe02ce122a6103f207d29fafc8b3a53de6abaf
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/f9f25481-c8d1-4533-8ac8-653b634ca44d/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/cfc259c8-5ebb-4fa1-b483-33227b86ae5=
+e/config
 
-net/llc/llc_input.c:181:3: error: call to undeclared function 'dprintk'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-net/llc/llc_input.c:194:3: error: call to undeclared function 'dprintk'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+ld.lld: error: undefined symbol: __rq_qos_done_split_bio
 
 ***
 
@@ -91,7 +104,8 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[davem@davemloft.net edumazet@google.com horms@kernel.org kuba@kernel.org linux-kernel@vger.kernel.org lucasp.linux@gmail.com netdev@vger.kernel.org pabeni@redhat.com]
+[axboe@kernel.dk josef@toxicpanda.com likunyu10@163.com linux-block@vger.ke=
+rnel.org linux-kernel@vger.kernel.org tj@kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
