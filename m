@@ -1,64 +1,67 @@
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95784346E63
-	for <syzbot@lists.linux.dev>; Wed,  6 May 2026 10:41:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DEBC48C3FA
+	for <syzbot@lists.linux.dev>; Wed,  6 May 2026 18:28:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778064102; cv=none; b=swHiuZL9mRZBh4i9V7012LIgH4FaX/tsC1toMmuJNTuGmVjpuEUeHeDj2aaGQsscOiDRjmZtvxkET37QqqDQuBL/uOTmSmzpyfltivqzCMFvtzOfaCU7lmpWIE+eQrOiaP0dKGURXffb6NYmlICB3OmmQNly+2AWIxgdRnUkFYk=
+	t=1778092120; cv=none; b=lAwa+ttaI22c9y979DhpUtLHQgPHJY+vi0m8uehcYrzY9+I+9tVhMpWjb+Da13oSji9EFao1ZBBXgLktxbEgD+VSBxNCWOAottfcQgBNzKltnj5FHg5JjTGtd7Lo9G0LPdTp9ppPg7CWhHE3MjvXqp4bkHaEAsPxTEHOBM2eCZ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778064102; c=relaxed/simple;
-	bh=TZ2hw8zvfFP3w20cqPtZu96JDg/i7rLtDJ1dSusSKYM=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=VKucyISn3rhak6IbFMNtOzpjgAoLA7S7aHv556NfQcxxpeLmUQQ9pp6T6h4IM1RA3nN022jQswU/yEMEbMuJ3vzbRCDyrWdoKuMLOItargHbMQN/rAobjvCgayQ2wxk9Fp/5F1bx+aIL6J0kMz0wA6XiqodeolJc4DHQg6aMPv8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
+	s=arc-20240116; t=1778092120; c=relaxed/simple;
+	bh=1Y8cbJIlvq7plVYwJb1ZaSAjCovQkoD46XZJ/9g5zP4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=cSbCqKGdQbdPgnVDHXIigYu4279ce6IQnTPar7MAaTViveRQleG3WwyWPrbD49T5VNLrHMD2ZbJ9Uk8m/a9rtXUyvm1e6nw6auBCA6vVhwJ4IMMX2LUR/i0ENiSY/Adz+t3Lj5+6bTH8g0TIKplwW8FOcMlvctD2Kx8345Ld5ns=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-69996a2944dso2297662eaf.1
-        for <syzbot@lists.linux.dev>; Wed, 06 May 2026 03:41:40 -0700 (PDT)
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-42393e9b4aeso7965223fac.0
+        for <syzbot@lists.linux.dev>; Wed, 06 May 2026 11:28:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778064099; x=1778668899;
+        d=1e100.net; s=20251104; t=1778092115; x=1778696915;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=Aht1avJcMwg97O40gCsjFIcaw20j3H21JqcqfMsvFlM=;
-        b=Pjp/vtHYAjnnzSGYEz8Z5pNJcU78PeRRymb4UaX0J9UQTWMbxGZP/P7wa9IxbzqbMG
-         s+hSdesp8yaM32UpDKWV2Pb8PEfdcvAd3l6tRQfGI+/ajRNtsSpaaFns51TSOGCFmpH+
-         vF5KyJCPYO2+d2zhCpNYD69FIc7p2v48ikTll81PMIXniCUKKhsBUtSZ3uoN5TE1JKBb
-         HLCGZrCZCQfl71T8PgV60opmOKCVOvxfk7EelYbGN21Ml8IVYxI25OHjFgMv01jQID/C
-         PoRdn4UQ1GKAukGg1ZnnweYx8pD3b5S5h4ge0L9OfF3vHwo6yWTYn70CysPnPD8j5gmy
-         4mBg==
-X-Gm-Message-State: AOJu0YwraHo5DE2Q4fFoTox/6xnccgf8TE8kjF9C6ZCXC/RDFqrYLdY2
-	xbiAbXIiL1r3WTrB+IkjO3gvp38llYTQhzPpoBXrH/yhvlUYPSWt92TYn546hVZDxJE9bHEPUZi
-	hPuzL7GCMllFME8+9ymd22Lc/l2UV44qUnHuwIBIby+GcthY9X3duZifwHL4=
+        bh=oND8qLqNNVkOQ1l27oRDwFwD/5PgmYhFGWCPkZpT79k=;
+        b=VjPTG2lQWq/GF7Mhd0888o4mT/x8wP2DmWpGsSN7mCHJAVDGWn2aCkAgeJmF5HAypI
+         Szp8g1DpHX5/tIdNppFRSMQTlD7rt7m39PaW8B+NYxxQAm9RSo9XjVWgkbYiGFdUYKcd
+         kOgdSQDYEOQ5yNTxUJyJ9o1YvUwc0sf8+vysEb6Zki2WfqHSH9Kt5bchS0sW1hdAVIbJ
+         2Zx/QDhzJFWTMK/YH0Z0XZ5nJ0Td1XS28ovCl+IFVAjSPOsraxc0CYy5a0xgndiOTQqq
+         qFDv4RwdMQP9vLLj0iwEBTmeOcx/gX9CyecIqGohHUvNiufcS2vhdiL+lPeV/uiyK4Sd
+         LEWw==
+X-Gm-Message-State: AOJu0YyfzC6cLeXaSLCTjh4Xn61REkRlU8AtplQR0sgqP+yylRKaXOOd
+	faI50b6sD/lSO4yceXKnk92JD6+b9AdXiG6O4jlmiCoFWtXDTkAecCC+XTCd+mlHaTpdY0+Nbt1
+	W3b0St2/D8RRgeLp4bQZQACW4ak34bX4LSFP9CVrwez5UUFri14a8OF55O6o=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1897:b0:694:9071:b60d with SMTP id
- 006d021491bc7-69998d428f6mr1282830eaf.44.1778064099659; Wed, 06 May 2026
- 03:41:39 -0700 (PDT)
-Date: Wed, 06 May 2026 03:41:39 -0700
+X-Received: by 2002:a05:6820:198e:b0:684:743e:86a6 with SMTP id
+ 006d021491bc7-69998cc6383mr2490918eaf.20.1778092115141; Wed, 06 May 2026
+ 11:28:35 -0700 (PDT)
+Date: Wed, 06 May 2026 11:28:35 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69fb1ae3.170a0220.59368.0027.GAE@google.com>
-Subject: [moderation/CI] Re: mm: vmscan: rework lru_shrink and write_folio tracepoints
-From: syzbot ci <syzbot+ci09d22cfd34361b02@syzkaller.appspotmail.com>
+Message-ID: <69fb8853.170a0220.2b035b.0234.GAE@google.com>
+Subject: [moderation/CI] Re: percpu: Fix wrong chunk hints update
+From: syzbot ci <syzbot+ciaf83c72f61fdd7d8@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v2] mm: vmscan: rework lru_shrink and write_folio tracepoints
-https://lore.kernel.org/all/20260506083652.100160-1-qiwu.chen@transsion.com
-* [PATCH v2] mm: vmscan: rework lru_shrink and write_folio tracepoints
+[v4] percpu: Fix wrong chunk hints update
+https://lore.kernel.org/all/20260506142100.1289509-1-joonwonkang@google.com
+* [PATCH v4 1/4] percpu: Fix wrong chunk hints update
+* [PATCH v4 2/4] percpu: Do not trust hint starts when they are not set
+* [PATCH v4 3/4] percpu: Introduce struct pcpu_region
+* [PATCH v4 4/4] percpu: Fix hint invariant breakage
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/7f694a7f-0262-4841-bca6-943e141d4d81
+https://ci.syzbot.org/series/42088278-0ad6-4071-85eb-fabf87f12f64
 
 ***
 
@@ -66,12 +69,12 @@ kernel build error
 
 tree:      mm-new
 URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      e0562b36961f263b41a6057bb57139172e456dc6
+base:      41fa04327384148b0e2e828c9be9862c5240e9fa
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/936889a0-7604-4d7c-97c0-63937eafe6d6/config
+config:    https://ci.syzbot.org/builds/fc9747c2-decd-49d9-babe-383ee990a283/config
 
-./include/trace/events/vmscan.h:354:18: error: incompatible pointer to integer conversion assigning to 'unsigned long' from 'struct folio *' [-Wint-conversion]
+mm/percpu-stats.c:125:20: error: operand of type 'struct pcpu_region' where arithmetic or pointer type is required
 
 ***
 
@@ -90,7 +93,7 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[akpm@linux-foundation.org david@kernel.org hannes@cmpxchg.org linux-mm@kvack.org linux-trace-kernel@vger.kernel.org mhiramat@kernel.org mhocko@kernel.org qiwu.chen@transsion.com qiwuchen55@gmail.com rostedt@goodmis.org willy@infradead.org]
+[akpm@linux-foundation.org cl@gentwo.org dennis@kernel.org dodam@google.com joonwonkang@google.com linux-kernel@vger.kernel.org linux-mm@kvack.org tj@kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
