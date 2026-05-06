@@ -1,114 +1,78 @@
-Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F9EA48A2B1
-	for <syzbot@lists.linux.dev>; Tue,  5 May 2026 21:14:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE3FD211A14
+	for <syzbot@lists.linux.dev>; Wed,  6 May 2026 01:44:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778015699; cv=none; b=Zsjns77rMj6EN0HAwkqzxfTKrdOdIT8IR7VjQLUnaRcaipZGUHx4SKMFAgm/Aj3N+RkcMksSOEgd/5qzkILhFoSrfRXnAix/JJPj0+WgNx19UgrYSTfclQTwhSNLS6nZP93N32eHijGEPZk9J7KQPb1x8I4OJhPrUnIMbTO1K7s=
+	t=1778031852; cv=none; b=N1HT3qoT4rgOMjV4jHLJSAaUH2JeGG12BZfhI6Oi4NVBc1VNqC/fceDOeV7dWSD8gyg1wHGVnZqljb30890Yl5FtlOZJgYpU0NcTFZtB0/oLAe9BDbqsA1gxP6lvb6/XDkyGXuALj/JsAF881z161MQrVoHYclXAI9Oa1HhjT+4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778015699; c=relaxed/simple;
-	bh=CkaR9S4nTgFMgV7L00QBjzeUbzLOqnryP/JlJw3/mxg=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=JrVQjEfJ3MBTBjxbwAIR9nJJwYgeQJlSe2cOR5ozSOQuoZFtHdF4n/p33zf0yPkGOnOWLfSv9wL8BzcA0Bvx7KpyTGQvlV7ONzfs4iI3RC8p42a6AgfMBGPUzkNhycYBfHhzLgyqztmpdf5DPPnl/2cK5EmcraT32xCYzdw4Vzs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
+	s=arc-20240116; t=1778031852; c=relaxed/simple;
+	bh=Tf1b3yuk2/iDVHEwQSuWtzZL8W6gWWxYeKDxwYqs0ZY=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=FlI4nCIrMH1/redZDxmU8/GOHWfbaaWQvmfgQVbYDCQR9o/Cd9soT6rPoPax93Bv3pVTYYmddQlJNYMh+RabUMGVqPO5uwuo6N2UQ3wXQ1UFJ5vW3z+fVTD6bO/8OuAAfjtaYVOG4n3dfEjKXKwKLXj6hR5C8I10SoHAjXJyhJw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-40ea48ccbd2so4469947fac.3
-        for <syzbot@lists.linux.dev>; Tue, 05 May 2026 14:14:58 -0700 (PDT)
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6961bdde2a1so13092944eaf.2
+        for <syzbot@lists.linux.dev>; Tue, 05 May 2026 18:44:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778015697; x=1778620497;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=St8cP/HhAKASWrR3UGaSIRrzUdsRyynOzisFj4yQn9k=;
-        b=QxxmP3k6Huy6L9eIOHzpyOCAjNi6eCurDhlGvD/oNS0GBoif8VrQ3/dZVuUWwyoqxO
-         mjqLPtV9eoPBgHo/VQZOGF933LC4TXZcGJvom5T59EINEU2/pqYsLLugODtbD3UH4sV3
-         7HHy1rRvNCHOERL3Jb2FuC8Y7LP3mSaGuhc1HTsyrA8zEMVX+OeY01kilkA/cSEilbJP
-         0lw3cD7Lzd6GzgwenGCH6e1ACWOFglEA201DRQ6IoJt64OnYJrVZAX61hrchwArMIRYY
-         VKlP8m7fu2Vr+rxyVr6wZRiBmqxh+kkH4SYJy2tdnFreeANUwYy1gjGVyMU8/ApXCO6a
-         8N/w==
-X-Gm-Message-State: AOJu0YxNG52VoZi+7euAlHxgRgM5XmFUrVm6IYhSKMFx92qZGtumlWWU
-	8+oKbLe4RceW6ZBGAOxoN0SeNzZO5feMmNAohEwb2mjFeAJN1UVG3yle6MgOd/dts31D61m3Z0B
-	QBzpPjIYNbagqH/qzaMpNtjJtsL4Mk03B5l3MfCrCfJPUJ6sAOJEonCUjoO4=
+        d=1e100.net; s=20251104; t=1778031849; x=1778636649;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=QnzjILn4fp5U2ZWSTPdKrefxjnineunjWgsefplAjPg=;
+        b=WDGLp/By3HXGzzpUuwOnE7HXZ39bL5U7fzypP2y7sw6lv8XJBml5ifGTFTxJQQnCkg
+         00DBDzhHG01A88nP4m0ATSwM7aHo00Ch80XV74hof090SCVH9TL/Alx73HYb4bZ3O7pF
+         baX51fkvSauLw7Yw0xVitFPRtvY326ymAcAlta4UgqKGa0ntCynlGV1X7/GwoCOtBk5/
+         xIshMDxMUjdBpeWSLwhlYdfDa9ofHBrD3H8yGZXuW3lszlFvZVMT5zin0aeNJohXToSs
+         253m4QrlYRLrYnp3LmjTo5g4wJXsPCZeGqb9L5ng2k7iax6nU56Nd9b9+3XXtVMoMIBy
+         6YQQ==
+X-Gm-Message-State: AOJu0YyNl2ZWuGSvrFFHUMTmgr6CmxVVSz7o2YJY+nnxuA7FYEDVtsMH
+	9Y3XWc5lMBTD2DADdX/lLkP63S4QcwxhXDg+qr7LBlx0k9I+5Lhhcr0EL80dJ1qIj2/x1K9HNiv
+	QocAfRwlsZtPhZqsQULFN+jI1NI5hw/u1UgByvMS+0NttuL4BZHbxuqVN19s=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4cc4:b0:696:2674:8a1e with SMTP id
- 006d021491bc7-69998d14887mr306105eaf.35.1778015697354; Tue, 05 May 2026
- 14:14:57 -0700 (PDT)
-Date: Tue, 05 May 2026 14:14:57 -0700
+X-Received: by 2002:a05:6820:1c86:b0:696:2674:8a18 with SMTP id
+ 006d021491bc7-69998d0dbd8mr692021eaf.35.1778031849688; Tue, 05 May 2026
+ 18:44:09 -0700 (PDT)
+Date: Tue, 05 May 2026 18:44:09 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69fa5dd1.050a0220.e8b39.0007.GAE@google.com>
-Subject: [moderation/CI] Re: pkeys-based page table hardening
-From: syzbot ci <syzbot+ci2c6d6df1dbf2aff7@syzkaller.appspotmail.com>
+Message-ID: <69fa9ce9.050a0220.e8b39.000a.GAE@google.com>
+Subject: [moderation/CI] Re: llc: fix coding style and memory barrier documentation
+From: syzbot ci <syzbot+ci5d668a5f5ece28e3@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v7] pkeys-based page table hardening
-https://lore.kernel.org/all/20260505-kpkeys-v7-0-20c0bdd97197@arm.com
-* [PATCH RFC v7 01/24] mm: Introduce kpkeys
-* [PATCH RFC v7 02/24] set_memory: Introduce set_memory_pkey() stub
-* [PATCH RFC v7 03/24] arm64: mm: Enable overlays for all EL1 indirect perm=
-issions
-* [PATCH RFC v7 04/24] arm64: Introduce por_elx_set_pkey_perms() helper
-* [PATCH RFC v7 05/24] arm64: Implement asm/kpkeys.h using POE
-* [PATCH RFC v7 06/24] arm64: set_memory: Implement set_memory_pkey()
-* [PATCH RFC v7 07/24] arm64: Context-switch POR_EL1
-* [PATCH RFC v7 08/24] arm64: Initialize POR_EL1 register on cpu_resume()
-* [PATCH RFC v7 09/24] arm64: Enable kpkeys
-* [PATCH RFC v7 10/24] memblock: Move INIT_MEMBLOCK_* macros to header
-* [PATCH RFC v7 11/24] mm: kpkeys: Introduce kpkeys_hardened_pgtables featu=
-re
-* [PATCH RFC v7 12/24] mm: kpkeys: Protect regular page tables
-* [PATCH RFC v7 13/24] mm: kpkeys: Introduce early page table allocator
-* [PATCH RFC v7 14/24] mm: kpkeys: Protect vmemmap page tables
-* [PATCH RFC v7 15/24] mm: kpkeys: Introduce hook for protecting static pag=
-e tables
-* [PATCH RFC v7 16/24] arm64: kpkeys: Implement arch_supports_kpkeys_early(=
-)
-* [PATCH RFC v7 17/24] arm64: kpkeys: Support KPKEYS_CTX_PGTABLES
-* [PATCH RFC v7 18/24] arm64: kpkeys: Ensure the linear map can be modified
-* [PATCH RFC v7 19/24] arm64: kpkeys: Protect early page tables
-* [PATCH RFC v7 20/24] arm64: kpkeys: Protect init_pg_dir
-* [PATCH RFC v7 21/24] arm64: kpkeys: Guard page table writes
-* [PATCH RFC v7 22/24] arm64: kpkeys: Batch KPKEYS_CTX_PGTABLES switches
-* [PATCH RFC v7 23/24] arm64: kpkeys: Enable kpkeys_hardened_pgtables suppo=
-rt
-* [PATCH RFC v7 24/24] mm: Add basic tests for kpkeys_hardened_pgtables
+[v1] llc: fix coding style and memory barrier documentation
+https://lore.kernel.org/all/20260505192549.74382-1-lucasp.linux@gmail.com
+* [PATCH] llc: fix coding style and memory barrier documentation
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/d1382384-550b-4bd0-9715-eced9c72e692
+https://ci.syzbot.org/series/02bb68e8-d7e3-4638-ba21-ed0ef78f1014
 
 ***
 
 kernel build error
 
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
-nux-next
-base:      7fd2df204f342fc17d1a0bfcd474b24232fb0f32
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      8c699be3dad7bba87cdda485dc099226cfc2f706
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/bbc99857-87e1-40e9-b472-24edca24e66=
-3/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/f9f25481-c8d1-4533-8ac8-653b634ca44d/config
 
-mm/sparse-vmemmap.c:369:6: error: call to undeclared function 'vmemmap_allo=
-c_block_zero'; ISO C99 and later do not support implicit function declarati=
-ons [-Wimplicit-function-declaration]
-mm/sparse-vmemmap.c:369:4: error: incompatible integer to pointer conversio=
-n assigning to 'struct page *' from 'int' [-Wint-conversion]
+net/llc/llc_input.c:181:3: error: call to undeclared function 'dprintk'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+net/llc/llc_input.c:194:3: error: call to undeclared function 'dprintk'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 
 ***
 
@@ -127,15 +91,7 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[akpm@linux-foundation.org broonie@kernel.org catalin.marinas@arm.com dave.=
-hansen@linux.intel.com david@kernel.org ira.weiny@intel.com jannh@google.co=
-m jeffxu@chromium.org joey.gouly@arm.com kees@kernel.org kevin.brodsky@arm.=
-com linusw@kernel.org linux-arm-kernel@lists.infradead.org linux-hardening@=
-vger.kernel.org linux-mm@kvack.org ljs@kernel.org luto@kernel.org maz@kerne=
-l.org mbland@motorola.com peterz@infradead.org pierre.langlois@arm.com qper=
-ret@google.com rick.p.edgecombe@intel.com rppt@kernel.org ryan.roberts@arm.=
-com tglx@kernel.org vbabka@kernel.org will@kernel.org willy@infradead.org x=
-86@kernel.org yang@os.amperecomputing.com yeoreum.yun@arm.com]
+[davem@davemloft.net edumazet@google.com horms@kernel.org kuba@kernel.org linux-kernel@vger.kernel.org lucasp.linux@gmail.com netdev@vger.kernel.org pabeni@redhat.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
