@@ -1,80 +1,78 @@
-Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DEBC48C3FA
-	for <syzbot@lists.linux.dev>; Wed,  6 May 2026 18:28:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30668379974
+	for <syzbot@lists.linux.dev>; Thu,  7 May 2026 09:08:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778092120; cv=none; b=lAwa+ttaI22c9y979DhpUtLHQgPHJY+vi0m8uehcYrzY9+I+9tVhMpWjb+Da13oSji9EFao1ZBBXgLktxbEgD+VSBxNCWOAottfcQgBNzKltnj5FHg5JjTGtd7Lo9G0LPdTp9ppPg7CWhHE3MjvXqp4bkHaEAsPxTEHOBM2eCZ4=
+	t=1778144942; cv=none; b=qF5HacYfbHbEEUDPq5l5y7Mq0AKirFrIkbtueDGui0UkmpnhDaypxQo11a7bThzFzcQIhILsddx3O8PAU3ChTKdoC7TyUKC/oVElEkC8K/rqeleYmYfsDxSQ0bi6L+7pDzeGyGTtCMy7S5wa/OP9zq/ZZWvVZ9K7r1UyX0HXL7A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778092120; c=relaxed/simple;
-	bh=1Y8cbJIlvq7plVYwJb1ZaSAjCovQkoD46XZJ/9g5zP4=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=cSbCqKGdQbdPgnVDHXIigYu4279ce6IQnTPar7MAaTViveRQleG3WwyWPrbD49T5VNLrHMD2ZbJ9Uk8m/a9rtXUyvm1e6nw6auBCA6vVhwJ4IMMX2LUR/i0ENiSY/Adz+t3Lj5+6bTH8g0TIKplwW8FOcMlvctD2Kx8345Ld5ns=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
+	s=arc-20240116; t=1778144942; c=relaxed/simple;
+	bh=9chmsw1BAvzFwHVySdWj0kRVtdFSnzmFkau9s7GDSnY=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=QynHQTzdfdqQQ84i6zTkcGN6Lkr/q9sSgORhDl+9MciBTOZrWF/yzc8aNWRmuoH9DE0fO9/CCiK4GqrSD0jli4kgED4LBtrPS4PCYYAp+mpDWD66lrRV5bicKFj7NopyfF2p7Egoh+egFC7MlfIrr5ATsjWJBsN4ZDObzB5TiVk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-42393e9b4aeso7965223fac.0
-        for <syzbot@lists.linux.dev>; Wed, 06 May 2026 11:28:35 -0700 (PDT)
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7dcdeac07b1so1443277a34.3
+        for <syzbot@lists.linux.dev>; Thu, 07 May 2026 02:08:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778092115; x=1778696915;
+        d=1e100.net; s=20251104; t=1778144933; x=1778749733;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=oND8qLqNNVkOQ1l27oRDwFwD/5PgmYhFGWCPkZpT79k=;
-        b=VjPTG2lQWq/GF7Mhd0888o4mT/x8wP2DmWpGsSN7mCHJAVDGWn2aCkAgeJmF5HAypI
-         Szp8g1DpHX5/tIdNppFRSMQTlD7rt7m39PaW8B+NYxxQAm9RSo9XjVWgkbYiGFdUYKcd
-         kOgdSQDYEOQ5yNTxUJyJ9o1YvUwc0sf8+vysEb6Zki2WfqHSH9Kt5bchS0sW1hdAVIbJ
-         2Zx/QDhzJFWTMK/YH0Z0XZ5nJ0Td1XS28ovCl+IFVAjSPOsraxc0CYy5a0xgndiOTQqq
-         qFDv4RwdMQP9vLLj0iwEBTmeOcx/gX9CyecIqGohHUvNiufcS2vhdiL+lPeV/uiyK4Sd
-         LEWw==
-X-Gm-Message-State: AOJu0YyfzC6cLeXaSLCTjh4Xn61REkRlU8AtplQR0sgqP+yylRKaXOOd
-	faI50b6sD/lSO4yceXKnk92JD6+b9AdXiG6O4jlmiCoFWtXDTkAecCC+XTCd+mlHaTpdY0+Nbt1
-	W3b0St2/D8RRgeLp4bQZQACW4ak34bX4LSFP9CVrwez5UUFri14a8OF55O6o=
+        bh=WGmkNnFGWchUQ6fQ8S6+FVtFx+GDfnTdkw+EYKaCQh0=;
+        b=AUOlS8b2uMOqxHfqEPwfrj53Zc+SPZkYvQDmbD6nWaPgiGDV4DKlKf7bxy1ni6Rz5o
+         87/0Ebw6aMq2XLw5Hoo5tsHlD3Q8Z4Ipjsmr5FF8ActB62t9n2NY1mT5wfPe7q7kdI+v
+         xrgr6kX/NxZmQkoOILDvSUVRI5C+sA84WRuZsaTV7whnZtk+Bk+/x8/VCyn+eRPS4QsC
+         dS8+LxnA/5G4LgIZ67kp3ZA6qSbatrS8dK65mEZrOeqnRimuOPEdromU3tl1dIWRx69s
+         O6VKJgVLX9a+ncxsgsL0vesDCD2+C4TA6a5/IKqntvrSjHXpM4boJUVenPOteNuYlYty
+         t9fg==
+X-Gm-Message-State: AOJu0YwJBmSillvtZ/rZjaRTPh8RWjKdBjbosp/YzVE6Xj5yLNvuZ+7e
+	wF3Kc6ktTpqg1tXte8sWJ+X3aN7WUko9yGQ8o2O4bga4S9JgHHQvxE1/q270dcSgAelbzGFEdUa
+	a09a6rtC1W0tJbwkjHYsYdsXlh/cJPA+PNMXhl2QVf9YubXOjplAis6jgg8Y=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:198e:b0:684:743e:86a6 with SMTP id
- 006d021491bc7-69998cc6383mr2490918eaf.20.1778092115141; Wed, 06 May 2026
- 11:28:35 -0700 (PDT)
-Date: Wed, 06 May 2026 11:28:35 -0700
+X-Received: by 2002:a4a:e914:0:b0:696:1291:fb29 with SMTP id
+ 006d021491bc7-69998cbe145mr3779999eaf.24.1778144933443; Thu, 07 May 2026
+ 02:08:53 -0700 (PDT)
+Date: Thu, 07 May 2026 02:08:53 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69fb8853.170a0220.2b035b.0234.GAE@google.com>
-Subject: [moderation/CI] Re: percpu: Fix wrong chunk hints update
-From: syzbot ci <syzbot+ciaf83c72f61fdd7d8@syzkaller.appspotmail.com>
+Message-ID: <69fc56a5.170a0220.2b035b.0238.GAE@google.com>
+Subject: [moderation/CI] Re: net: net_failover: Fix the deadlock in slave register
+From: syzbot ci <syzbot+ci775710f4eddab7da@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v4] percpu: Fix wrong chunk hints update
-https://lore.kernel.org/all/20260506142100.1289509-1-joonwonkang@google.com
-* [PATCH v4 1/4] percpu: Fix wrong chunk hints update
-* [PATCH v4 2/4] percpu: Do not trust hint starts when they are not set
-* [PATCH v4 3/4] percpu: Introduce struct pcpu_region
-* [PATCH v4 4/4] percpu: Fix hint invariant breakage
+[v3] net: net_failover: Fix the deadlock in slave register
+https://lore.kernel.org/all/20260507074332.2543229-1-faicker.mo@gmail.com
+* [PATCH v3] net: net_failover: Fix the deadlock in slave register
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/42088278-0ad6-4071-85eb-fabf87f12f64
+https://ci.syzbot.org/series/995ee4ea-683a-4e2c-ad36-2e9874495350
 
 ***
 
 kernel build error
 
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      41fa04327384148b0e2e828c9be9862c5240e9fa
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      2281958e60079e063bd6e9e5e46e8786a9853ea8
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/fc9747c2-decd-49d9-babe-383ee990a283/config
+config:    https://ci.syzbot.org/builds/fc5e5a24-ecbb-4b8e-8675-dcdd19932b90/config
 
-mm/percpu-stats.c:125:20: error: operand of type 'struct pcpu_region' where arithmetic or pointer type is required
+net/core/failover.c:225:4: error: call to undeclared function 'netdev_lock_ops'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+net/core/failover.c:227:4: error: call to undeclared function 'netdev_unlock_ops'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 
 ***
 
@@ -93,7 +91,7 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[akpm@linux-foundation.org cl@gentwo.org dennis@kernel.org dodam@google.com joonwonkang@google.com linux-kernel@vger.kernel.org linux-mm@kvack.org tj@kernel.org]
+[andrew@lunn.ch davem@davemloft.net edumazet@google.com faicker.mo@gmail.com horms@kernel.org kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com sdf@fomichev.me sridhar.samudrala@intel.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
