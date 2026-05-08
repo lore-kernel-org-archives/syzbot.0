@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1431F2F8EB8
-	for <syzbot@lists.linux.dev>; Fri,  8 May 2026 19:16:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 373732F8E8A
+	for <syzbot@lists.linux.dev>; Fri,  8 May 2026 22:07:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778267768; cv=none; b=JKdRzzQLIlTWmWK9/nttdCOf/einAoszw62L0MqEDe708Wuh+FE4AMnN26WMj6FC9pmPF5TGym6MV0FVjpt4pENseUadpaUyZPil4G5baCMx/EE/Kn2fofzh3+oFkjHzVzl7Bz26XAaOmMEGbPH9MdNez8GI6KZZLS2lJvqdNcc=
+	t=1778278028; cv=none; b=IS64DFHxrfrgBRf56JKxOGZvb3hhYb9hBA767Gu8BxZmaWznGSoSbZsYNys8XMbO+iFgiGa7HuODqvtpXf6lM8U0P1v6ZRHxkOPQWcMBxvj/OKs1Ydk+caNfrSaEIoRbYZgAxVpHqyX9OCCG1mqFVN6CkJd+UrWoYdUOkifgxrM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778267768; c=relaxed/simple;
-	bh=amRjUOdbE7c5Abs7odHg7jmxqzBxQzuMagElI1jmrrU=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=u8okKuurZ4HvNTXkX1RecWrHZOwKFh6t0WFFVvZVjSerwHvlvqo2tXuPk/Y6xAxC83vVUmJfpDkvMtV3EPv7nsB87dsqGsVW8eAdKwGqcaOm7ciJTNf3cChegguwZnLr9tA1nj9PvFtLDIhBEgHuSXMaMRS9HFf1vrCOg4CFkqc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jm1CSUIe; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778278028; c=relaxed/simple;
+	bh=zjVcuYiLPRTPLWq+n9RAApTSWqcR30R8ErEHn9Ulrm8=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=kNIQQx0PVhOmTBRdSzPLwzjl1O3lNNtcKR8XsZaQT1YsymmiMPbf8RouqBM/rmjn+SEy9iMwlovTOO4RIM83RSahn77t6EgrkI0tFQ4KcEMmfJ+QyS3qxtJsnh1RhvjGoNLCtZf4g/HsiL3jK24GyFGd7/JMAokA963uEwcE1YE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KHvEWwkl; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jm1CSUIe"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB669C2BCB0;
-	Fri,  8 May 2026 19:16:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KHvEWwkl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF338C2BCB0;
+	Fri,  8 May 2026 22:07:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778267768;
-	bh=amRjUOdbE7c5Abs7odHg7jmxqzBxQzuMagElI1jmrrU=;
+	s=k20201202; t=1778278027;
+	bh=zjVcuYiLPRTPLWq+n9RAApTSWqcR30R8ErEHn9Ulrm8=;
 	h=From:To:Cc:Subject:Date:From;
-	b=jm1CSUIeZRUIHfo1PwWdL1N4bR7f6DlwovjFtcanxqj34Wt/bVRCVKVBZS7GM3P21
-	 a97WZUUny3e8KyT/FMbFhrXOrHUhlx3XFsArq7p43yfQAERCCv0tnm/5N4IB9t33ZT
-	 nXzXi7/D7eZfTpCB55VDhKApzqfOxXwS83okuaDdcKaISmiSGWrp/mTBZ4H+UWdGq/
-	 INMFQl/eoVYO03BdoyiAz0OwwY3ennAoVyvDBOvjpCgqFa8IfbfEXvr55hlOHUNj0V
-	 tg9VtX45m6liqGoQSJ1pMVGiU0LSUgxpn+OBVaREmyGtgq5fVZOADwVMlBoVX+MOkJ
-	 DGI2LaC1wDfQA==
+	b=KHvEWwklaYZEUajyJG66m8K7FanvYNVlpoGjxOsARo8rs+25xXnVVIQv5/CbHF90f
+	 aTnlXzcJhEL6+ymfcMpOrYs0Ksvs63sPiE3BAKTleebY1kXxxHLNBipRZx5J2zi/iC
+	 yKP4ztrMPPhgxlJDaNtbpzSbSaw1pbZrrV0HjIQJxSxzvaApbOLzAG2bcxBE0iFaqX
+	 UY2xOp+sGlIImgE9ZAxXSuxVKSiAGhEU4UMTGYy5G0dNjVlERtzeGM7A0b5Xcap7MW
+	 zEl3fjrMMDmU3xccRO61QiUy6z0aRBsNZZEZQdX2iIjcOoTnTV3GeAFe28lj5uxIqu
+	 0JzEFChjXn8pg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] jbd2: fix null-ptr-deref in jbd2_journal_dirty_metadata()
-Message-ID: <784d7c31-66f4-4f22-8115-2888a33b5260@mail.kernel.org>
+Subject: [PATCH RFC] udf: Replace WARN_ON with error handling in __udf_add_aext()
+Message-ID: <cc1b2586-5c5b-45f1-ba7e-e6ca8265ab95@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,82 +38,85 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri,  8 May 2026 19:16:07 +0000 (UTC)
+Date: Fri,  8 May 2026 22:07:07 +0000 (UTC)
 
-jbd2: fix null-ptr-deref in jbd2_journal_dirty_metadata()
+udf: Replace WARN_ON with error handling in __udf_add_aext()
 
-The syzkaller reproducer triggers a null-pointer dereference in
-jbd2_journal_dirty_metadata().
+syzbot reported a crash triggered by a WARN_ON() assertion in
+__udf_add_aext(). The assertion fails because a maliciously crafted UDF
+image can contain a 0-length extent (which acts as an EOF marker) before
+the end of the space declared by lengthAllocDescs. When udf_next_aext()
+stops at this 0-length extent, epos->offset is left pointing to it,
+which is strictly less than the end of lengthAllocDescs, triggering the
+WARN_ON().
 
-The root cause is that jbd2_journal_dirty_metadata() unconditionally
-dereferences handle->h_transaction->t_journal at the very beginning of
-the function. If handle->h_transaction is NULL, this causes a kernel
-panic.
+WARN_ON() must not be used for conditions that can legitimately happen
+due to corrupted filesystem images, as it can panic the kernel if
+panic_on_warn is set. Instead, log the inconsistency using pr_err() and
+fix the corruption by recalculating and setting i_lenAlloc and
+lengthAllocDescs to the correct length based on epos->offset. This
+effectively truncates any garbage data after the 0-length extent and
+restores the filesystem to a consistent state.
 
-This can happen when a journal is aborted. For example, ocfs2_xa_set()
-calls ocfs2_xa_prepare_entry(), which attempts to allocate clusters for
-a large xattr and calls ocfs2_extend_trans() to extend the transaction.
-ocfs2_extend_trans() calls jbd2_journal_restart() to restart the
-transaction. In jbd2_journal_restart(), the handle is first detached
-from the current transaction (handle->h_transaction = NULL), and then
-start_this_handle() is called to start a new transaction. Because the
-journal is aborted, start_this_handle() fails and returns -EROFS.
-jbd2_journal_restart() returns this error, leaving handle->h_transaction
-as NULL.
+Fixing lengthAllocDescs before calling udf_write_aext() is crucial.
+udf_write_aext() calls udf_update_tag(), which calculates a CRC over
+the length specified by lengthAllocDescs. If we blindly add adsize to a
+corrupted (artificially large) length, udf_update_tag() will read out
+of bounds, causing a buffer overflow. By fixing the length first, we
+ensure the CRC is calculated over the correct bounds.
 
-The -EROFS error propagates back up to ocfs2_xa_set(). ocfs2_xa_set()
-catches the error and jumps to the out_dirty label. By design, it tries
-to dirty the buffer to leave the xattr header in a sane state despite
-the error, so it calls ocfs2_xa_journal_dirty().
-ocfs2_xa_journal_dirty() calls jbd2_journal_dirty_metadata() with the
-detached handle.
+Finally, replace the WARN_ON(epos->offset + adsize >
+inode->i_sb->s_blocksize)
+with an error return. If this condition is met, continuing execution
+will result in udf_write_aext() writing past the end of the block
+buffer. Instead of just warning, log the error and return -EFSCORRUPTED
+to safely abort the operation.
 
-In jbd2_journal_dirty_metadata(), the local variable journal is
-initialized with transaction->t_journal at the declaration block. Since
-transaction (handle->h_transaction) is NULL, dereferencing it causes the
-KASAN null-ptr-deref crash.
-
-This bug was made more prominent by commit 4a734f0869f9 ("jbd2: fix
-assertion 'jh->b_frozen_data == NULL' failure when journal aborted"),
-which removed the early is_handle_aborted(handle) check in
-jbd2_journal_dirty_metadata(). However, even before that commit, the
-variable journal was initialized at declaration, so the NULL pointer
-dereference technically existed but was less obvious.
-
-To fix this, add an early check for is_handle_aborted(handle) (which
-safely handles !handle->h_transaction by short-circuiting) before
-dereferencing transaction->t_journal. The existing
-is_handle_aborted(handle) check inside the jh->b_state_lock is kept to
-prevent the race condition that commit 4a734f0869f9 originally fixed.
-
-Assisted-by: Gemini:gemini-3.1-pro-preview
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
+To: <jack@suse.com>
 To: <linux-kernel@vger.kernel.org>
-Cc: <jack@suse.com>
-Cc: <linux-ext4@vger.kernel.org>
-Cc: <tytso@mit.edu>
 
 ---
-diff --git a/fs/jbd2/transaction.c b/fs/jbd2/transaction.c
-index 4885903bb..183688035 100644
---- a/fs/jbd2/transaction.c
-+++ b/fs/jbd2/transaction.c
-@@ -1517,10 +1517,15 @@ void jbd2_buffer_abort_trigger(struct journal_head *jh,
- int jbd2_journal_dirty_metadata(handle_t *handle, struct buffer_head *bh)
- {
- 	transaction_t *transaction = handle->h_transaction;
--	journal_t *journal = transaction->t_journal;
-+	journal_t *journal;
- 	struct journal_head *jh;
- 	int ret = 0;
+diff --git a/fs/udf/inode.c b/fs/udf/inode.c
+index 67bcf8375..f7266551e 100644
+--- a/fs/udf/inode.c
++++ b/fs/udf/inode.c
+@@ -2078,13 +2078,30 @@ int __udf_add_aext(struct inode *inode, struct extent_position *epos,
+ 		return -EIO;
  
-+	if (is_handle_aborted(handle))
-+		return -EROFS;
-+
-+	journal = transaction->t_journal;
-+
- 	if (!buffer_jbd(bh))
- 		return -EUCLEAN;
+ 	if (!epos->bh) {
+-		WARN_ON(iinfo->i_lenAlloc !=
+-			epos->offset - udf_file_entry_alloc_offset(inode));
++		if (iinfo->i_lenAlloc !=
++		    epos->offset - udf_file_entry_alloc_offset(inode)) {
++			pr_err("udf: alloc length %u != offset %u\n",
++			       iinfo->i_lenAlloc,
++			       epos->offset -
++				       (uint32_t)udf_file_entry_alloc_offset(
++					       inode));
++			iinfo->i_lenAlloc = epos->offset -
++					    udf_file_entry_alloc_offset(inode);
++		}
+ 	} else {
+ 		aed = (struct allocExtDesc *)epos->bh->b_data;
+-		WARN_ON(le32_to_cpu(aed->lengthAllocDescs) !=
+-			epos->offset - sizeof(struct allocExtDesc));
+-		WARN_ON(epos->offset + adsize > inode->i_sb->s_blocksize);
++		if (le32_to_cpu(aed->lengthAllocDescs) !=
++		    epos->offset - sizeof(struct allocExtDesc)) {
++			pr_err("udf: alloc length %u != offset %zu\n",
++			       le32_to_cpu(aed->lengthAllocDescs),
++			       epos->offset - sizeof(struct allocExtDesc));
++			aed->lengthAllocDescs = cpu_to_le32(
++				epos->offset - sizeof(struct allocExtDesc));
++		}
++		if (epos->offset + adsize > inode->i_sb->s_blocksize) {
++			pr_err("udf: no space left in block\n");
++			return -EFSCORRUPTED;
++		}
+ 	}
  
+ 	udf_write_aext(inode, epos, eloc, elen, inc);
 
 
 base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
