@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 373732F8E8A
-	for <syzbot@lists.linux.dev>; Fri,  8 May 2026 22:07:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 720142BD5B9
+	for <syzbot@lists.linux.dev>; Sat,  9 May 2026 05:50:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778278028; cv=none; b=IS64DFHxrfrgBRf56JKxOGZvb3hhYb9hBA767Gu8BxZmaWznGSoSbZsYNys8XMbO+iFgiGa7HuODqvtpXf6lM8U0P1v6ZRHxkOPQWcMBxvj/OKs1Ydk+caNfrSaEIoRbYZgAxVpHqyX9OCCG1mqFVN6CkJd+UrWoYdUOkifgxrM=
+	t=1778305838; cv=none; b=C0D9/nkklhMcst2YeUVNWSfzX5SdotOVBw7UEprUNRSiWqUhA9O2L/mi2ntJB2+G7c5ZIDEY6DL4ih10BAOxKo5nLRBVdVmIbQA3+TgE1RBYPeBiYBU6Ux7wo1+/Ow5cDLndGo3iH3/QQukXsl3jPnt4AvgjfMVrEm+wlRa+6lY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778278028; c=relaxed/simple;
-	bh=zjVcuYiLPRTPLWq+n9RAApTSWqcR30R8ErEHn9Ulrm8=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=kNIQQx0PVhOmTBRdSzPLwzjl1O3lNNtcKR8XsZaQT1YsymmiMPbf8RouqBM/rmjn+SEy9iMwlovTOO4RIM83RSahn77t6EgrkI0tFQ4KcEMmfJ+QyS3qxtJsnh1RhvjGoNLCtZf4g/HsiL3jK24GyFGd7/JMAokA963uEwcE1YE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KHvEWwkl; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778305838; c=relaxed/simple;
+	bh=ugoy4SsTMgCG8cY/O6NaN0jrYmXdLhXdBBwwNGfF4Gk=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=pRmmSacLpHOA5I68nAi34ZTb4IiRnxKRYNbtioGtFQ8/pVWh6WIXb2ELaqzgIEP9bbxbCGbuIKUTo4qSj/TSGGk4a3GrtNIKex61pQapfBUx7IEwzrH9QNKf6Ib/tfzsw3xuJMS/sRITsA87vyYfRALcwUH9nT6IuY/s612ikLM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TYKPNT1v; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KHvEWwkl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF338C2BCB0;
-	Fri,  8 May 2026 22:07:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TYKPNT1v"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8627C2BCB2;
+	Sat,  9 May 2026 05:50:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778278027;
-	bh=zjVcuYiLPRTPLWq+n9RAApTSWqcR30R8ErEHn9Ulrm8=;
+	s=k20201202; t=1778305837;
+	bh=ugoy4SsTMgCG8cY/O6NaN0jrYmXdLhXdBBwwNGfF4Gk=;
 	h=From:To:Cc:Subject:Date:From;
-	b=KHvEWwklaYZEUajyJG66m8K7FanvYNVlpoGjxOsARo8rs+25xXnVVIQv5/CbHF90f
-	 aTnlXzcJhEL6+ymfcMpOrYs0Ksvs63sPiE3BAKTleebY1kXxxHLNBipRZx5J2zi/iC
-	 yKP4ztrMPPhgxlJDaNtbpzSbSaw1pbZrrV0HjIQJxSxzvaApbOLzAG2bcxBE0iFaqX
-	 UY2xOp+sGlIImgE9ZAxXSuxVKSiAGhEU4UMTGYy5G0dNjVlERtzeGM7A0b5Xcap7MW
-	 zEl3fjrMMDmU3xccRO61QiUy6z0aRBsNZZEZQdX2iIjcOoTnTV3GeAFe28lj5uxIqu
-	 0JzEFChjXn8pg==
+	b=TYKPNT1v8gqlYgH8Z0+xZy7o8M7rkUkci4YpSds6P+rBNFVbVlA8psFxHSHjYERJs
+	 NbDUIAh5miP2z6URhkwB3W9EFuH3/r6v0I1s65+mGkpV69i7GOzYUzxU2alel/f9s9
+	 BWRq5V5aDhUobJtCPLoRUJqgLSMrk/8esPIIrXPHYdStxkZ6RlpdqKRxRdFrFPK2vw
+	 yh7jpVLWCkO1KSVBFV6vbDBpD47bMPLNNXT8KhlCC7HzG/XztwkeUVylHzzOCn5Iov
+	 yh1aK37rOj5D6QIJ3GrAPxt0u+r2PmkYDjG3el/7ScajhaZ8JN6rH/52BNMxlN4bOt
+	 uLozRKPsMkQ4Q==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] udf: Replace WARN_ON with error handling in __udf_add_aext()
-Message-ID: <cc1b2586-5c5b-45f1-ba7e-e6ca8265ab95@mail.kernel.org>
+Subject: [PATCH RFC] hfs/hfsplus: fix lockdep false positive for extents_lock
+Message-ID: <0bbb511f-6f0a-48b1-b3a4-e55eb907a1b4@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,85 +38,184 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri,  8 May 2026 22:07:07 +0000 (UTC)
+Date: Sat,  9 May 2026 05:50:37 +0000 (UTC)
 
-udf: Replace WARN_ON with error handling in __udf_add_aext()
+hfs/hfsplus: fix lockdep false positive for extents_lock
 
-syzbot reported a crash triggered by a WARN_ON() assertion in
-__udf_add_aext(). The assertion fails because a maliciously crafted UDF
-image can contain a 0-length extent (which acts as an EOF marker) before
-the end of the space declared by lengthAllocDescs. When udf_next_aext()
-stops at this 0-length extent, epos->offset is left pointing to it,
-which is strictly less than the end of lengthAllocDescs, triggering the
-WARN_ON().
+syzkaller reported a possible recursive locking deadlock on
+&HFSPLUS_I(inode)->extents_lock. This is a lockdep false positive.
 
-WARN_ON() must not be used for conditions that can legitimately happen
-due to corrupted filesystem images, as it can panic the kernel if
-panic_on_warn is set. Instead, log the inconsistency using pr_err() and
-fix the corruption by recalculating and setting i_lenAlloc and
-lengthAllocDescs to the correct length based on epos->offset. This
-effectively truncates any garbage data after the 0-length extent and
-restores the filesystem to a consistent state.
+In HFS and HFS+, extents_lock is used to protect the extent allocation
+information of an inode. The problem arises because the lock is
+initialized uniformly for all inodes, including both regular files and
+special internal system files (like the Allocation file, Extents file,
+Catalog file, etc.). Because of this, lockdep assigns the exact same
+lock class to the extents_lock of all inodes.
 
-Fixing lengthAllocDescs before calling udf_write_aext() is crucial.
-udf_write_aext() calls udf_update_tag(), which calculates a CRC over
-the length specified by lengthAllocDescs. If we blindly add adsize to a
-corrupted (artificially large) length, udf_update_tag() will read out
-of bounds, causing a buffer overflow. By fixing the length first, we
-ensure the CRC is calculated over the correct bounds.
+When a regular file is truncated or extended, its extents_lock is
+acquired. During this process, the filesystem might need to allocate or
+free blocks, which requires reading or updating the Allocation file (or
+other system files). This triggers a read on the Allocation file's
+mapping, which in turn acquires the Allocation file's extents_lock.
+Lockdep sees the same lock class being acquired twice in a nested
+fashion and flags it as a recursive locking deadlock.
 
-Finally, replace the WARN_ON(epos->offset + adsize >
-inode->i_sb->s_blocksize)
-with an error return. If this condition is met, continuing execution
-will result in udf_write_aext() writing past the end of the block
-buffer. Instead of just warning, log the error and return -EFSCORRUPTED
-to safely abort the operation.
+The exact same issue also exists in the older HFS filesystem (fs/hfs/),
+where operations on a regular file can trigger updates to the Extents
+or Catalog B-trees, leading to a similar nested acquisition of
+extents_lock.
 
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-To: <jack@suse.com>
-To: <linux-kernel@vger.kernel.org>
+To fix this false positive, assign distinct lock classes to the
+extents_lock of special system files using lockdep_set_class().
+For HFS+, add lock class keys for the Extents, Catalog, Allocation,
+Attributes, and Startup files, and apply them in hfsplus_iget().
+For HFS, add lock class keys for the Extents and Catalog B-tree files,
+and apply them in hfs_btree_open().
+
+Assisted-by: Gemini:gemini-3.1-pro-preview
+To: <frank.li@vivo.com>
+To: <glaubitz@physik.fu-berlin.de>
+To: <linux-fsdevel@vger.kernel.org>
+To: <slava@dubeyko.com>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/fs/udf/inode.c b/fs/udf/inode.c
-index 67bcf8375..f7266551e 100644
---- a/fs/udf/inode.c
-+++ b/fs/udf/inode.c
-@@ -2078,13 +2078,30 @@ int __udf_add_aext(struct inode *inode, struct extent_position *epos,
- 		return -EIO;
+diff --git a/fs/hfs/btree.c b/fs/hfs/btree.c
+index 2eb37a2f6..fc262d703 100644
+--- a/fs/hfs/btree.c
++++ b/fs/hfs/btree.c
+@@ -12,9 +12,17 @@
+ #include <linux/pagemap.h>
+ #include <linux/slab.h>
+ #include <linux/log2.h>
++#include <linux/lockdep.h>
  
- 	if (!epos->bh) {
--		WARN_ON(iinfo->i_lenAlloc !=
--			epos->offset - udf_file_entry_alloc_offset(inode));
-+		if (iinfo->i_lenAlloc !=
-+		    epos->offset - udf_file_entry_alloc_offset(inode)) {
-+			pr_err("udf: alloc length %u != offset %u\n",
-+			       iinfo->i_lenAlloc,
-+			       epos->offset -
-+				       (uint32_t)udf_file_entry_alloc_offset(
-+					       inode));
-+			iinfo->i_lenAlloc = epos->offset -
-+					    udf_file_entry_alloc_offset(inode);
-+		}
- 	} else {
- 		aed = (struct allocExtDesc *)epos->bh->b_data;
--		WARN_ON(le32_to_cpu(aed->lengthAllocDescs) !=
--			epos->offset - sizeof(struct allocExtDesc));
--		WARN_ON(epos->offset + adsize > inode->i_sb->s_blocksize);
-+		if (le32_to_cpu(aed->lengthAllocDescs) !=
-+		    epos->offset - sizeof(struct allocExtDesc)) {
-+			pr_err("udf: alloc length %u != offset %zu\n",
-+			       le32_to_cpu(aed->lengthAllocDescs),
-+			       epos->offset - sizeof(struct allocExtDesc));
-+			aed->lengthAllocDescs = cpu_to_le32(
-+				epos->offset - sizeof(struct allocExtDesc));
-+		}
-+		if (epos->offset + adsize > inode->i_sb->s_blocksize) {
-+			pr_err("udf: no space left in block\n");
-+			return -EFSCORRUPTED;
-+		}
- 	}
++#include <linux/lockdep.h>
+ #include "btree.h"
  
- 	udf_write_aext(inode, epos, eloc, elen, inc);
++static struct lock_class_key hfs_ext_extents_key;
++static struct lock_class_key hfs_cat_extents_key;
++
++static struct lock_class_key hfs_ext_extents_key;
++static struct lock_class_key hfs_cat_extents_key;
++
+ /* Get a reference to a B*Tree and do some initial checks */
+ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp keycmp)
+ {
+@@ -49,6 +57,10 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
+ 	mutex_init(&HFS_I(tree->inode)->extents_lock);
+ 	switch (id) {
+ 	case HFS_EXT_CNID:
++		lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
++				  &hfs_ext_extents_key);
++		lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
++				  &hfs_ext_extents_key);
+ 		hfs_inode_read_fork(tree->inode, mdb->drXTExtRec, mdb->drXTFlSize,
+ 				    mdb->drXTFlSize, be32_to_cpu(mdb->drXTClpSiz));
+ 		if (HFS_I(tree->inode)->alloc_blocks >
+@@ -61,6 +73,10 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
+ 		tree->inode->i_mapping->a_ops = &hfs_btree_aops;
+ 		break;
+ 	case HFS_CAT_CNID:
++		lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
++				  &hfs_cat_extents_key);
++		lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
++				  &hfs_cat_extents_key);
+ 		hfs_inode_read_fork(tree->inode, mdb->drCTExtRec, mdb->drCTFlSize,
+ 				    mdb->drCTFlSize, be32_to_cpu(mdb->drCTClpSiz));
+ 
+diff --git a/fs/hfsplus/super.c b/fs/hfsplus/super.c
+index 40a0feda7..e1345a6fe 100644
+--- a/fs/hfsplus/super.c
++++ b/fs/hfsplus/super.c
+@@ -18,13 +18,35 @@
+ #include <linux/slab.h>
+ #include <linux/vfs.h>
+ #include <linux/nls.h>
++#include <linux/lockdep.h>
+ 
+ static struct inode *hfsplus_alloc_inode(struct super_block *sb);
+ static void hfsplus_free_inode(struct inode *inode);
+ 
++#include <linux/lockdep.h>
++
++#include <linux/lockdep.h>
+ #include "hfsplus_fs.h"
++
++static struct lock_class_key hfsplus_ext_extents_key;
++static struct lock_class_key hfsplus_cat_extents_key;
++static struct lock_class_key hfsplus_alloc_extents_key;
++static struct lock_class_key hfsplus_attr_extents_key;
++static struct lock_class_key hfsplus_start_extents_key;
+ #include "xattr.h"
+ 
++static struct lock_class_key hfsplus_ext_extents_key;
++static struct lock_class_key hfsplus_cat_extents_key;
++static struct lock_class_key hfsplus_alloc_extents_key;
++static struct lock_class_key hfsplus_attr_extents_key;
++static struct lock_class_key hfsplus_start_extents_key;
++
++static struct lock_class_key hfsplus_ext_extents_key;
++static struct lock_class_key hfsplus_cat_extents_key;
++static struct lock_class_key hfsplus_alloc_extents_key;
++static struct lock_class_key hfsplus_attr_extents_key;
++static struct lock_class_key hfsplus_start_extents_key;
++
+ static int hfsplus_system_read_inode(struct inode *inode)
+ {
+ 	struct hfsplus_vh *vhdr = HFSPLUS_SB(inode->i_sb)->s_vhdr;
+@@ -84,6 +106,51 @@ struct inode *hfsplus_iget(struct super_block *sb, unsigned long ino)
+ 	memset(HFSPLUS_I(inode)->cached_extents, 0, sizeof(hfsplus_extent_rec));
+ 	HFSPLUS_I(inode)->extent_state = 0;
+ 	mutex_init(&HFSPLUS_I(inode)->extents_lock);
++	switch (ino) {
++	case HFSPLUS_EXT_CNID:
++		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
++				  &hfsplus_ext_extents_key);
++		break;
++	case HFSPLUS_CAT_CNID:
++		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
++				  &hfsplus_cat_extents_key);
++		break;
++	case HFSPLUS_ALLOC_CNID:
++		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
++				  &hfsplus_alloc_extents_key);
++		break;
++	case HFSPLUS_ATTR_CNID:
++		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
++				  &hfsplus_attr_extents_key);
++		break;
++	case HFSPLUS_START_CNID:
++		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
++				  &hfsplus_start_extents_key);
++		break;
++	}
++	/* Set lockdep classes for system files to avoid false positives */
++	switch (ino) {
++	case HFSPLUS_EXT_CNID:
++		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
++				  &hfsplus_ext_extents_key);
++		break;
++	case HFSPLUS_CAT_CNID:
++		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
++				  &hfsplus_cat_extents_key);
++		break;
++	case HFSPLUS_ALLOC_CNID:
++		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
++				  &hfsplus_alloc_extents_key);
++		break;
++	case HFSPLUS_ATTR_CNID:
++		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
++				  &hfsplus_attr_extents_key);
++		break;
++	case HFSPLUS_START_CNID:
++		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
++				  &hfsplus_start_extents_key);
++		break;
++	}
+ 	HFSPLUS_I(inode)->rsrc_inode = NULL;
+ 	HFSPLUS_I(inode)->create_date = 0;
+ 	HFSPLUS_I(inode)->linkid = 0;
 
 
 base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
