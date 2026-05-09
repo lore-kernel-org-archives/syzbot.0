@@ -1,102 +1,258 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 703A532B99F
-	for <syzbot@lists.linux.dev>; Sat,  9 May 2026 10:43:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4822936E460
+	for <syzbot@lists.linux.dev>; Sat,  9 May 2026 22:59:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778323429; cv=none; b=OxbQ7Y3XtVHRL4FTpIWFltIo/Xo0P0uOtAml8DJt/RzKqLsE6YUtsP6/LYIntPAZWjT8JIouG5fzE5Gw8ODKvkDbqiXABxjlKqlkga08bs/JEWuTHHIbEC3drvQP/P9gtGE178VurnhA7hmkxK3Xd+UTf5iJLTqwHW6/rx57DfQ=
+	t=1778367578; cv=none; b=aaXXqovcw13I1xbZ9lQxVJbQOXpDBprPwOatX3ueMIyrFxFPuYtGRWkGesrYY6NgLOBZi64+lqnit0KwBM1Iev19JGXc6/7o56dnVuDDJSxtkPYbDJMfomHeH76lu7zQYXwndMRKX5Dfn4GNTONhxqE8NgeeJ8zbtkzd/B87PF0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778323429; c=relaxed/simple;
-	bh=oUs7ZmXRePQe6vX6sYZuY/eQ6NW+ign/pb+6PryhVFA=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ex/BoOV5ZjybEQnUX71syqE4rE6SWskRINNU9BSbAIsCTVOd0bsf/XvPxS2xWnVdkve1KU/B30U5BdT3yfwnnLVGq+I50uZhIGRz0BjvaMgR7crlMITWon4jPajadBXxhFVS2XrQM3ei48sklH+lSZMiJMDlrTrl+MfbSUJs7S0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6948d83a5c0so6591936eaf.1
-        for <syzbot@lists.linux.dev>; Sat, 09 May 2026 03:43:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778323426; x=1778928226;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=nclf34MKqRdOZ4LJttV/WTdlg/20Nc3CCIlATqejH50=;
-        b=o7MjqIfEjAcAz/ihedoadyX7nfZXQ2+ahjZfuuusYhC3K25K240dXMahf098RBzRLc
-         zTYKRYnhAT557thNoj/wzB+KgA7EuseJsbyRy1wHjj4ttLCCoAGvt38mnORDpn7unYrm
-         jb2MDx3XNJGmruhzJqHmzHe0VRy1IFIVqbYD26eARw34nryuL+dZWKbbymptO8TdcXE0
-         9653KlicFU+U7hweX4NAqGwMJwKpIwd+rG/W+n+WHWdSIsL9VZWggMoucbM85taEDOxi
-         jvmpUnNcel7RlcwyCGJ2GKO2DtwBFmmhiyfgaeJw9tG6mPiTLWOUD0iG9jmhENGIgIrZ
-         fElw==
-X-Gm-Message-State: AOJu0YxZ37EzOun88H2btgvH0Q7QBJM5j7hJ2tHG7Cy1bCjxh+q+1aFO
-	nmV3ddTfPfTlLktO2SWtHcGQ98r2EZFrCJSn2yYwJKHtwEXEbmm5z+70ytil0P6ZwVKMkx2afHv
-	CrpA31HJMClq//i8gPyP/utQs0eV4JG8HYvHRLCE7/bnEv3n5pO3afv56OpQ=
+	s=arc-20240116; t=1778367578; c=relaxed/simple;
+	bh=s60MKX14dhDHuuuoL8ILo8ieVRCjDeA9SY5I6rzjcNY=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=lHLcXx4D5QSIC+yZs4lXyjU6PxohGfgT6CUU5R0LxxUKNIM6nSgZyQFtV4DZonWR01EfRekJdBvDRweTqo9WSIxglPnEj6orOAbDub17IqszlSGtAFacfip6y1SiGoDKThSO8JvoB5VLBR8zmNyXEUumm+GYJZ0xI4B6Bg/xM7M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aBN7aAug; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aBN7aAug"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF265C2BCB2;
+	Sat,  9 May 2026 22:59:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778367577;
+	bh=s60MKX14dhDHuuuoL8ILo8ieVRCjDeA9SY5I6rzjcNY=;
+	h=From:To:Cc:Subject:Date:From;
+	b=aBN7aAugtnXUa1mGsky1X1qFzdAqlEoJRvYrvYEqWXJPm1L5FFVYvJbl/3mklBMQv
+	 kh8Tl7f5C9YvdqOr5cPW1R8eYYTWyKpm1ufDXx+GMWQk9WtbetTDAbcqCf16HE4o7B
+	 HhQVglRLPR/QK0Mix+X9WYl9wnkzWQXY9bYJwPz6igs+r8A9NT90Rlzy0PDfp5/jhe
+	 TdgvgdjwC7L1k/JUJPpZYvMDZgdYo4Dkz3VK1mGIncEwORpfcemmid5OjdLOOSIu4j
+	 FXwEwMkAY98IoVY6LZfVgtiv1W/sxNb69jzdFT1JwY32JkKVQWxeZNLmxDAWt/t2Wn
+	 vldKLos1ugPgA==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] misc/vmw_vmci: fix recursive locking deadlock in queue pair broker
+Message-ID: <aec7cb16-64c4-4e01-a974-a6c1a51a046e@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1529:b0:694:21fa:4ef5 with SMTP id
- 006d021491bc7-69b36a302dfmr994556eaf.5.1778323426008; Sat, 09 May 2026
- 03:43:46 -0700 (PDT)
-Date: Sat, 09 May 2026 03:43:45 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69ff0fe1.170a0220.1c0296.020d.GAE@google.com>
-Subject: [moderation/CI] Re: netdevsim: Fix task hung by releasing bus lock
- before device ops
-From: syzbot ci <syzbot+ci3c0828650e63f3bd@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Sat,  9 May 2026 22:59:37 +0000 (UTC)
 
-syzbot ci has tested the following series
+misc/vmw_vmci: fix recursive locking deadlock in queue pair broker
 
-[v1] netdevsim: Fix task hung by releasing bus lock before device ops
-https://lore.kernel.org/all/20260509092837.3432281-1-xujiakai24@mails.ucas.ac.cn
-* [PATCH] netdevsim: Fix task hung by releasing bus lock before device ops
+A recursive locking deadlock can occur involving `qp_broker_list.mutex`
+in the VMCI queue pair broker.
 
-and found the following issue:
-kernel build error
+When a queue pair is detached, `vmci_qp_broker_detach()` acquires
+`qp_broker_list.mutex` and, if there are still other endpoints attached,
+it calls `qp_notify_peer()` to send a notification datagram to the peer
+context.
 
-Full report is available here:
-https://ci.syzbot.org/series/8033a745-648c-476e-90f6-28ef2a0b8b0f
+The deadlock occurs because `qp_notify_peer()` indirectly calls
+`vmci_ctx_put()` on the peer's context, which can drop the reference
+count to 0 if the peer context is concurrently being destroyed. When the
+reference count reaches 0, `vmci_ctx_put()` synchronously calls
+`ctx_free_ctx()`. This cleanup function iterates over all queue pairs
+attached to the dying context and calls `vmci_qp_broker_detach()` for
+each of them, which attempts to acquire `qp_broker_list.mutex` again,
+resulting in a deadlock.
 
-***
+This issue is not isolated to `vmci_qp_broker_detach()`. There are other
+places in `drivers/misc/vmw_vmci/vmci_queue_pair.c` where
+`qp_notify_peer()` or `vmci_ctx_put()` are called while holding
+`qp_broker_list.mutex`, such as `qp_broker_attach()` and
+`vmci_qp_broker_set_page_store()`.
 
-kernel build error
+To fix this, defer the calls to `qp_notify_peer()` and `vmci_ctx_put()`
+until after `qp_broker_list.mutex` is safely released. This ensures that
+the mutex is never held when these functions are executed, completely
+eliminating the recursive locking deadlock while preserving the correct
+logic and behavior of the VMCI queue pair broker.
 
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
-base:      8b2feced65cd3aa0597d596ed5733a1abd4c4d78
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/7deaab21-f3c3-4142-afee-11526881734f/config
-
-drivers/net/netdevsim/bus.c:192:3: error: call to undeclared function 'nsim_bus_dev_del'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-drivers/net/netdevsim/bus.c:206:13: error: conflicting types for 'nsim_bus_dev_del'
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Assisted-by: Gemini:gemini-3.1-pro-preview
+To: <arnd@arndb.de>
+To: <bryan-bt.tan@broadcom.com>
+To: <gregkh@linuxfoundation.org>
+To: <linux-kernel@vger.kernel.org>
+To: <vishnu.dasa@broadcom.com>
+Cc: <bcm-kernel-feedback-list@broadcom.com>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/drivers/misc/vmw_vmci/vmci_queue_pair.c b/drivers/misc/vmw_vmci/vmci_queue_pair.c
+index b777bc3fd..3d61d5bf2 100644
+--- a/drivers/misc/vmw_vmci/vmci_queue_pair.c
++++ b/drivers/misc/vmw_vmci/vmci_queue_pair.c
+@@ -1508,17 +1508,13 @@ static int qp_notify_peer(bool attach,
+  * VMCIQPB_ATTACHED_MEM state, and for older VMX callers, it will be
+  * moved to the VMCOQPB_ATTACHED_NO_MEM state.
+  */
+-static int qp_broker_attach(struct qp_broker_entry *entry,
+-			    u32 peer,
+-			    u32 flags,
+-			    u32 priv_flags,
+-			    u64 produce_size,
+-			    u64 consume_size,
++static int qp_broker_attach(struct qp_broker_entry *entry, u32 peer, u32 flags,
++			    u32 priv_flags, u64 produce_size, u64 consume_size,
+ 			    struct vmci_qp_page_store *page_store,
+ 			    struct vmci_ctx *context,
+-			    vmci_event_release_cb wakeup_cb,
+-			    void *client_data,
+-			    struct qp_broker_entry **ent)
++			    vmci_event_release_cb wakeup_cb, void *client_data,
++			    struct qp_broker_entry **ent, bool *do_notify,
++			    u32 *notify_peer_id, struct vmci_ctx **out_ctx)
+ {
+ 	const u32 context_id = vmci_ctx_get_id(context);
+ 	bool is_local = flags & VMCI_QPFLAG_LOCAL;
+@@ -1585,7 +1581,7 @@ static int qp_broker_attach(struct qp_broker_entry *entry,
+ 
+ 		create_context = vmci_ctx_get(entry->create_id);
+ 		supports_host_qp = vmci_ctx_supports_host_qp(create_context);
+-		vmci_ctx_put(create_context);
++		*out_ctx = create_context;
+ 
+ 		if (!supports_host_qp)
+ 			return VMCI_ERROR_INVALID_RESOURCE;
+@@ -1660,13 +1656,8 @@ static int qp_broker_attach(struct qp_broker_entry *entry,
+ 	}
+ 
+ 	if (entry->state == VMCIQPB_ATTACHED_MEM) {
+-		result =
+-		    qp_notify_peer(true, entry->qp.handle, context_id,
+-				   entry->create_id);
+-		if (result < VMCI_SUCCESS)
+-			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
+-				entry->create_id, entry->qp.handle.context,
+-				entry->qp.handle.resource);
++		*do_notify = true;
++		*notify_peer_id = entry->create_id;
+ 	}
+ 
+ 	entry->attach_id = context_id;
+@@ -1711,6 +1702,9 @@ static int qp_broker_alloc(struct vmci_handle handle,
+ 	struct qp_broker_entry *entry = NULL;
+ 	bool is_local = flags & VMCI_QPFLAG_LOCAL;
+ 	int result;
++	bool do_notify = false;
++	u32 notify_peer_id = VMCI_INVALID_ID;
++	struct vmci_ctx *out_ctx = NULL;
+ 
+ 	if (vmci_handle_is_invalid(handle) ||
+ 	    (flags & ~VMCI_QP_ALL_FLAGS) || is_local ||
+@@ -1748,14 +1742,29 @@ static int qp_broker_alloc(struct vmci_handle handle,
+ 				     context, wakeup_cb, client_data, ent);
+ 	} else {
+ 		create = false;
+-		result =
+-		    qp_broker_attach(entry, peer, flags, priv_flags,
+-				     produce_size, consume_size, page_store,
+-				     context, wakeup_cb, client_data, ent);
++		result = qp_broker_attach(entry, peer, flags, priv_flags,
++					  produce_size, consume_size,
++					  page_store, context, wakeup_cb,
++					  client_data, ent, &do_notify,
++					  &notify_peer_id, &out_ctx);
+ 	}
+ 
+ 	mutex_unlock(&qp_broker_list.mutex);
+ 
++	if (out_ctx)
++		vmci_ctx_put(out_ctx);
++
++	if (do_notify) {
++		int notify_result;
++
++		notify_result = qp_notify_peer(true, handle, context_id,
++					       notify_peer_id);
++		if (notify_result < VMCI_SUCCESS)
++			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
++				notify_peer_id, handle.context,
++				handle.resource);
++	}
++
+ 	if (swap)
+ 		*swap = (context_id == VMCI_HOST_CONTEXT_ID) &&
+ 		    !(create && is_local);
+@@ -1968,6 +1977,8 @@ int vmci_qp_broker_set_page_store(struct vmci_handle handle,
+ 	struct qp_broker_entry *entry;
+ 	int result;
+ 	const u32 context_id = vmci_ctx_get_id(context);
++	bool do_notify = false;
++	u32 notify_peer_id;
+ 
+ 	if (vmci_handle_is_invalid(handle) || !context ||
+ 	    context_id == VMCI_INVALID_ID)
+@@ -2035,18 +2046,26 @@ int vmci_qp_broker_set_page_store(struct vmci_handle handle,
+ 	entry->vmci_page_files = true;
+ 
+ 	if (entry->state == VMCIQPB_ATTACHED_MEM) {
+-		result =
+-		    qp_notify_peer(true, handle, context_id, entry->create_id);
+-		if (result < VMCI_SUCCESS) {
+-			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
+-				entry->create_id, entry->qp.handle.context,
+-				entry->qp.handle.resource);
+-		}
++		do_notify = true;
++		notify_peer_id = entry->create_id;
+ 	}
+ 
+ 	result = VMCI_SUCCESS;
+  out:
+ 	mutex_unlock(&qp_broker_list.mutex);
++
++	if (do_notify) {
++		int notify_result;
++
++		notify_result = qp_notify_peer(true, handle, context_id,
++					       notify_peer_id);
++		if (notify_result < VMCI_SUCCESS) {
++			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
++				notify_peer_id, handle.context,
++				handle.resource);
++		}
++	}
++
+ 	return result;
+ }
+ 
+@@ -2086,6 +2105,7 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
+ 	u32 peer_id;
+ 	bool is_local = false;
+ 	int result;
++	bool do_notify = false;
+ 
+ 	if (vmci_handle_is_invalid(handle) || !context ||
+ 	    context_id == VMCI_INVALID_ID) {
+@@ -2185,7 +2205,7 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
+ 
+ 		vmci_ctx_qp_destroy(context, handle);
+ 	} else {
+-		qp_notify_peer(false, handle, context_id, peer_id);
++		do_notify = true;
+ 		if (context_id == VMCI_HOST_CONTEXT_ID &&
+ 		    QPBROKERSTATE_HAS_MEM(entry)) {
+ 			entry->state = VMCIQPB_SHUTDOWN_MEM;
+@@ -2200,6 +2220,10 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
+ 	result = VMCI_SUCCESS;
+  out:
+ 	mutex_unlock(&qp_broker_list.mutex);
++
++	if (do_notify)
++		qp_notify_peer(false, handle, context_id, peer_id);
++
+ 	return result;
+ }
+ 
 
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
 
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to send it to the mailing list.
+Reply with '#syz reject' to reject it.
 
-The email will later be sent to:
-[davem@davemloft.net edumazet@google.com kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com xujiakai24@mails.ucas.ac.cn]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+See  for more information.
