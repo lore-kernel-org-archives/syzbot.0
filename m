@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 720142BD5B9
-	for <syzbot@lists.linux.dev>; Sat,  9 May 2026 05:50:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E01632D9EED
+	for <syzbot@lists.linux.dev>; Sat,  9 May 2026 07:22:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778305838; cv=none; b=C0D9/nkklhMcst2YeUVNWSfzX5SdotOVBw7UEprUNRSiWqUhA9O2L/mi2ntJB2+G7c5ZIDEY6DL4ih10BAOxKo5nLRBVdVmIbQA3+TgE1RBYPeBiYBU6Ux7wo1+/Ow5cDLndGo3iH3/QQukXsl3jPnt4AvgjfMVrEm+wlRa+6lY=
+	t=1778311328; cv=none; b=QkQzcW6d6n59WFlIZIJsYxzeLp4YSuVJMnQup6bBKCcydWCQ9Y5bhDFS5j3ue9fQjrmjHFgMDLokS+f6CZHKQr27qRFSmoVhGjUF0jln35PVwQPkRCiYu9Zg5qZ9uMl7AX1DbR9nT32gmWPHV5u5RD5FftzOYoLyiSc6MBLvrhM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778305838; c=relaxed/simple;
-	bh=ugoy4SsTMgCG8cY/O6NaN0jrYmXdLhXdBBwwNGfF4Gk=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=pRmmSacLpHOA5I68nAi34ZTb4IiRnxKRYNbtioGtFQ8/pVWh6WIXb2ELaqzgIEP9bbxbCGbuIKUTo4qSj/TSGGk4a3GrtNIKex61pQapfBUx7IEwzrH9QNKf6Ib/tfzsw3xuJMS/sRITsA87vyYfRALcwUH9nT6IuY/s612ikLM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TYKPNT1v; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778311328; c=relaxed/simple;
+	bh=ucuaynA2NdHDDB92N1WATNM+w2AQUbve5HCkZHekwTc=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Ub4jKExoyt5jIOF3OtgWN8MEf7hTB4Swtlts1yZCmAdwFdGFf90PNFtjdB36mGsGCHEodXJ/QuRXHvv8o7ErASGbkq9fyva2N5T0GX1Mp7kOS4MU67yerKOepoOOY8wgFtl+nBqbmbuUBzCrxPP96kiRG1c98U23J+NDUeEl6ec=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ltZJ55Fd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TYKPNT1v"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8627C2BCB2;
-	Sat,  9 May 2026 05:50:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ltZJ55Fd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B57EC2BCB2;
+	Sat,  9 May 2026 07:22:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778305837;
-	bh=ugoy4SsTMgCG8cY/O6NaN0jrYmXdLhXdBBwwNGfF4Gk=;
+	s=k20201202; t=1778311328;
+	bh=ucuaynA2NdHDDB92N1WATNM+w2AQUbve5HCkZHekwTc=;
 	h=From:To:Cc:Subject:Date:From;
-	b=TYKPNT1v8gqlYgH8Z0+xZy7o8M7rkUkci4YpSds6P+rBNFVbVlA8psFxHSHjYERJs
-	 NbDUIAh5miP2z6URhkwB3W9EFuH3/r6v0I1s65+mGkpV69i7GOzYUzxU2alel/f9s9
-	 BWRq5V5aDhUobJtCPLoRUJqgLSMrk/8esPIIrXPHYdStxkZ6RlpdqKRxRdFrFPK2vw
-	 yh7jpVLWCkO1KSVBFV6vbDBpD47bMPLNNXT8KhlCC7HzG/XztwkeUVylHzzOCn5Iov
-	 yh1aK37rOj5D6QIJ3GrAPxt0u+r2PmkYDjG3el/7ScajhaZ8JN6rH/52BNMxlN4bOt
-	 uLozRKPsMkQ4Q==
+	b=ltZJ55FdTrMTrohyRDe2GB7nYwU4fXCikkG2N1FRJzTegE9WU3mQtjnqpyp+hSuIu
+	 on2yDBc0AgoLtm3EK11lvUx/moEsvT4eStPHtz+4cVxVmyBRPiCVQGzY6h1CAzr/RQ
+	 QStyzeq8iGjZq80YDS0Fs472J6iOZE97OyjEWl9qeTdXeELcvNkh48gE0HOXDK1/N0
+	 pTT3PIWZguZz1JyYLKsu6Ckf+yAS8W1eEAtux+hTqKBKGIuSaDiuMbYPntLyEWkguT
+	 Dyg7Cf2blas93VDnrEtKCcqIBk/e61wd5tZHv+7tORR007mlqLz7uzuYEG4pkZjctu
+	 RoH2stLz75FgQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] hfs/hfsplus: fix lockdep false positive for extents_lock
-Message-ID: <0bbb511f-6f0a-48b1-b3a4-e55eb907a1b4@mail.kernel.org>
+Subject: [PATCH RFC] Bluetooth: L2CAP: Fix use-after-free in l2cap_chan_timeout
+Message-ID: <a7fed23b-9c2f-43b0-923b-667cafca7092@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,184 +38,105 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Sat,  9 May 2026 05:50:37 +0000 (UTC)
+Date: Sat,  9 May 2026 07:22:08 +0000 (UTC)
 
-hfs/hfsplus: fix lockdep false positive for extents_lock
+Bluetooth: L2CAP: Fix use-after-free in l2cap_chan_timeout
 
-syzkaller reported a possible recursive locking deadlock on
-&HFSPLUS_I(inode)->extents_lock. This is a lockdep false positive.
+There is a race condition between the delayed work l2cap_chan_timeout()
+and the connection teardown routine l2cap_conn_del(), which leads to a
+use-after-free of the struct l2cap_conn object.
 
-In HFS and HFS+, extents_lock is used to protect the extent allocation
-information of an inode. The problem arises because the lock is
-initialized uniformly for all inodes, including both regular files and
-special internal system files (like the Allocation file, Extents file,
-Catalog file, etc.). Because of this, lockdep assigns the exact same
-lock class to the extents_lock of all inodes.
+In l2cap_chan_timeout(), chan->conn is read without holding chan->lock.
+If l2cap_conn_del() runs concurrently, it can set chan->conn to NULL
+and free the conn object. When l2cap_chan_timeout() subsequently
+attempts to acquire conn->lock, it triggers a KASAN slab-use-after-free.
 
-When a regular file is truncated or extended, its extents_lock is
-acquired. During this process, the filesystem might need to allocate or
-free blocks, which requires reading or updating the Allocation file (or
-other system files). This triggers a read on the Allocation file's
-mapping, which in turn acquires the Allocation file's extents_lock.
-Lockdep sees the same lock class being acquired twice in a nested
-fashion and flags it as a recursive locking deadlock.
+Additionally, if l2cap_chan_timeout() reads chan->conn as NULL, it
+returns early without calling l2cap_chan_put(chan), leaking the channel
+reference held by __set_chan_timer().
 
-The exact same issue also exists in the older HFS filesystem (fs/hfs/),
-where operations on a regular file can trigger updates to the Extents
-or Catalog B-trees, leading to a similar nested acquisition of
-extents_lock.
+To fix this, safely obtain a reference to conn using l2cap_conn_get()
+while holding chan->lock. After acquiring conn->lock and re-acquiring
+chan->lock, verify that chan->conn still matches conn to ensure the
+channel is still associated with the connection. Finally, ensure
+l2cap_chan_put(chan) is called on the early return path to prevent the
+reference leak.
 
-To fix this false positive, assign distinct lock classes to the
-extents_lock of special system files using lockdep_set_class().
-For HFS+, add lock class keys for the Extents, Catalog, Allocation,
-Attributes, and Startup files, and apply them in hfsplus_iget().
-For HFS, add lock class keys for the Extents and Catalog B-tree files,
-and apply them in hfs_btree_open().
+While at it, add a missing !chan->conn check under chan->lock in
+l2cap_ack_timeout() to prevent a potential NULL pointer dereference
+if l2cap_chan_del() runs concurrently.
 
-Assisted-by: Gemini:gemini-3.1-pro-preview
-To: <frank.li@vivo.com>
-To: <glaubitz@physik.fu-berlin.de>
-To: <linux-fsdevel@vger.kernel.org>
-To: <slava@dubeyko.com>
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
+To: <linux-bluetooth@vger.kernel.org>
+To: <luiz.dentz@gmail.com>
+To: <marcel@holtmann.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/fs/hfs/btree.c b/fs/hfs/btree.c
-index 2eb37a2f6..fc262d703 100644
---- a/fs/hfs/btree.c
-+++ b/fs/hfs/btree.c
-@@ -12,9 +12,17 @@
- #include <linux/pagemap.h>
- #include <linux/slab.h>
- #include <linux/log2.h>
-+#include <linux/lockdep.h>
- 
-+#include <linux/lockdep.h>
- #include "btree.h"
- 
-+static struct lock_class_key hfs_ext_extents_key;
-+static struct lock_class_key hfs_cat_extents_key;
-+
-+static struct lock_class_key hfs_ext_extents_key;
-+static struct lock_class_key hfs_cat_extents_key;
-+
- /* Get a reference to a B*Tree and do some initial checks */
- struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp keycmp)
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 77dec104a..ca2cfb6b7 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -406,13 +406,21 @@ static void l2cap_chan_timeout(struct work_struct *work)
  {
-@@ -49,6 +57,10 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
- 	mutex_init(&HFS_I(tree->inode)->extents_lock);
- 	switch (id) {
- 	case HFS_EXT_CNID:
-+		lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
-+				  &hfs_ext_extents_key);
-+		lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
-+				  &hfs_ext_extents_key);
- 		hfs_inode_read_fork(tree->inode, mdb->drXTExtRec, mdb->drXTFlSize,
- 				    mdb->drXTFlSize, be32_to_cpu(mdb->drXTClpSiz));
- 		if (HFS_I(tree->inode)->alloc_blocks >
-@@ -61,6 +73,10 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
- 		tree->inode->i_mapping->a_ops = &hfs_btree_aops;
- 		break;
- 	case HFS_CAT_CNID:
-+		lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
-+				  &hfs_cat_extents_key);
-+		lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
-+				  &hfs_cat_extents_key);
- 		hfs_inode_read_fork(tree->inode, mdb->drCTExtRec, mdb->drCTFlSize,
- 				    mdb->drCTFlSize, be32_to_cpu(mdb->drCTClpSiz));
+ 	struct l2cap_chan *chan = container_of(work, struct l2cap_chan,
+ 					       chan_timer.work);
+-	struct l2cap_conn *conn = chan->conn;
++	struct l2cap_conn *conn;
+ 	int reason;
  
-diff --git a/fs/hfsplus/super.c b/fs/hfsplus/super.c
-index 40a0feda7..e1345a6fe 100644
---- a/fs/hfsplus/super.c
-+++ b/fs/hfsplus/super.c
-@@ -18,13 +18,35 @@
- #include <linux/slab.h>
- #include <linux/vfs.h>
- #include <linux/nls.h>
-+#include <linux/lockdep.h>
+ 	BT_DBG("chan %p state %s", chan, state_to_string(chan->state));
  
- static struct inode *hfsplus_alloc_inode(struct super_block *sb);
- static void hfsplus_free_inode(struct inode *inode);
- 
-+#include <linux/lockdep.h>
+-	if (!conn)
++	l2cap_chan_lock(chan);
++	conn = chan->conn;
++	if (conn)
++		l2cap_conn_get(conn);
++	l2cap_chan_unlock(chan);
 +
-+#include <linux/lockdep.h>
- #include "hfsplus_fs.h"
-+
-+static struct lock_class_key hfsplus_ext_extents_key;
-+static struct lock_class_key hfsplus_cat_extents_key;
-+static struct lock_class_key hfsplus_alloc_extents_key;
-+static struct lock_class_key hfsplus_attr_extents_key;
-+static struct lock_class_key hfsplus_start_extents_key;
- #include "xattr.h"
- 
-+static struct lock_class_key hfsplus_ext_extents_key;
-+static struct lock_class_key hfsplus_cat_extents_key;
-+static struct lock_class_key hfsplus_alloc_extents_key;
-+static struct lock_class_key hfsplus_attr_extents_key;
-+static struct lock_class_key hfsplus_start_extents_key;
-+
-+static struct lock_class_key hfsplus_ext_extents_key;
-+static struct lock_class_key hfsplus_cat_extents_key;
-+static struct lock_class_key hfsplus_alloc_extents_key;
-+static struct lock_class_key hfsplus_attr_extents_key;
-+static struct lock_class_key hfsplus_start_extents_key;
-+
- static int hfsplus_system_read_inode(struct inode *inode)
- {
- 	struct hfsplus_vh *vhdr = HFSPLUS_SB(inode->i_sb)->s_vhdr;
-@@ -84,6 +106,51 @@ struct inode *hfsplus_iget(struct super_block *sb, unsigned long ino)
- 	memset(HFSPLUS_I(inode)->cached_extents, 0, sizeof(hfsplus_extent_rec));
- 	HFSPLUS_I(inode)->extent_state = 0;
- 	mutex_init(&HFSPLUS_I(inode)->extents_lock);
-+	switch (ino) {
-+	case HFSPLUS_EXT_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_ext_extents_key);
-+		break;
-+	case HFSPLUS_CAT_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_cat_extents_key);
-+		break;
-+	case HFSPLUS_ALLOC_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_alloc_extents_key);
-+		break;
-+	case HFSPLUS_ATTR_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_attr_extents_key);
-+		break;
-+	case HFSPLUS_START_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_start_extents_key);
-+		break;
++	if (!conn) {
++		l2cap_chan_put(chan);
+ 		return;
 +	}
-+	/* Set lockdep classes for system files to avoid false positives */
-+	switch (ino) {
-+	case HFSPLUS_EXT_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_ext_extents_key);
-+		break;
-+	case HFSPLUS_CAT_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_cat_extents_key);
-+		break;
-+	case HFSPLUS_ALLOC_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_alloc_extents_key);
-+		break;
-+	case HFSPLUS_ATTR_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_attr_extents_key);
-+		break;
-+	case HFSPLUS_START_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_start_extents_key);
-+		break;
+ 
+ 	mutex_lock(&conn->lock);
+ 	/* __set_chan_timer() calls l2cap_chan_hold(chan) while scheduling
+@@ -420,6 +428,14 @@ static void l2cap_chan_timeout(struct work_struct *work)
+ 	 */
+ 	l2cap_chan_lock(chan);
+ 
++	if (chan->conn != conn) {
++		l2cap_chan_unlock(chan);
++		mutex_unlock(&conn->lock);
++		l2cap_conn_put(conn);
++		l2cap_chan_put(chan);
++		return;
 +	}
- 	HFSPLUS_I(inode)->rsrc_inode = NULL;
- 	HFSPLUS_I(inode)->create_date = 0;
- 	HFSPLUS_I(inode)->linkid = 0;
++
+ 	if (chan->state == BT_CONNECTED || chan->state == BT_CONFIG)
+ 		reason = ECONNREFUSED;
+ 	else if (chan->state == BT_CONNECT &&
+@@ -436,6 +452,7 @@ static void l2cap_chan_timeout(struct work_struct *work)
+ 	l2cap_chan_put(chan);
+ 
+ 	mutex_unlock(&conn->lock);
++	l2cap_conn_put(conn);
+ }
+ 
+ struct l2cap_chan *l2cap_chan_create(void)
+@@ -3158,6 +3175,12 @@ static void l2cap_ack_timeout(struct work_struct *work)
+ 
+ 	l2cap_chan_lock(chan);
+ 
++	if (!chan->conn) {
++		l2cap_chan_unlock(chan);
++		l2cap_chan_put(chan);
++		return;
++	}
++
+ 	frames_to_ack = __seq_offset(chan, chan->buffer_seq,
+ 				     chan->last_acked_seq);
+ 
 
 
 base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
