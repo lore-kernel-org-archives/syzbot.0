@@ -1,122 +1,102 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AA0129CB57
-	for <syzbot@lists.linux.dev>; Sat,  9 May 2026 07:33:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 703A532B99F
+	for <syzbot@lists.linux.dev>; Sat,  9 May 2026 10:43:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778312018; cv=none; b=hMDKEl4E8N/krgwE/MOqw6qpphGcRnma18faPH/QPyqaG8qm/ezOhGhpH/YbTPcNec9sQTr7J6SscNgpyNmg/09H9jQhjXBlRyWV1b3RexZg6QnUSeRTGcMOF6n8km8mPnkBIU6NXLaCE1XVfV3LKNZ5MrXhyxsdsGolz4cr22k=
+	t=1778323429; cv=none; b=OxbQ7Y3XtVHRL4FTpIWFltIo/Xo0P0uOtAml8DJt/RzKqLsE6YUtsP6/LYIntPAZWjT8JIouG5fzE5Gw8ODKvkDbqiXABxjlKqlkga08bs/JEWuTHHIbEC3drvQP/P9gtGE178VurnhA7hmkxK3Xd+UTf5iJLTqwHW6/rx57DfQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778312018; c=relaxed/simple;
-	bh=+FBZH0jhbKXJBnWnNNf+2COvvpXWKcE1gBvjEYn8LoI=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=fEj+MpI+ErLXA0Z5VSg0slGuY8rG/xEMySJarXXjfGCuijXlUR5PpfSGwfqB3OF43pJaxaw+P++vsWbgU3cyGLI2BDvMIY75YCpy66871qVKUB0YS5RfB3/0xOFryIHhaYVFJMmiR/C4YtBubd0zc3UD67WnbRw2b+CDvg/2yPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MdcmuyNQ; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MdcmuyNQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0F9EC2BCB2;
-	Sat,  9 May 2026 07:33:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778312018;
-	bh=+FBZH0jhbKXJBnWnNNf+2COvvpXWKcE1gBvjEYn8LoI=;
-	h=From:To:Cc:Subject:Date:From;
-	b=MdcmuyNQmZQ3SCIIDArKDaWmWJxA9pCaQd64JpCzk2hheGmbBY13tQ2/ZM//zWmJC
-	 j+CgxILd4q90/fql9NQO8w1zNr7wDvIBlzxzQ7t6noNKNyorTQ/guDhvPnJpCvRdN6
-	 r/nX+gUnEsptDktV+zzVkl7VUUm/SgLSQU0FGzCVZ4SIU5aSfMsCRFpguiWSoczx7X
-	 +cSHRp+x1SBGor0AdbK1C8ARczXmRKthdr9wHbJrepMPQaB/wQX00IiLmXZefWusFo
-	 ivX4MtpjdtuCJulf3tuC4GZiEgN1m3or4Ry74EleDQxEl5vY9eiIe7zyoQBKUqL5Xi
-	 EQuF2imUPoBDw==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation+final@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH] udf: Replace WARN_ON with error handling in __udf_add_aext()
-Message-ID: <daff2ef6-01f6-4112-8f2d-8bc3d507d979@mail.kernel.org>
+	s=arc-20240116; t=1778323429; c=relaxed/simple;
+	bh=oUs7ZmXRePQe6vX6sYZuY/eQ6NW+ign/pb+6PryhVFA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ex/BoOV5ZjybEQnUX71syqE4rE6SWskRINNU9BSbAIsCTVOd0bsf/XvPxS2xWnVdkve1KU/B30U5BdT3yfwnnLVGq+I50uZhIGRz0BjvaMgR7crlMITWon4jPajadBXxhFVS2XrQM3ei48sklH+lSZMiJMDlrTrl+MfbSUJs7S0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6948d83a5c0so6591936eaf.1
+        for <syzbot@lists.linux.dev>; Sat, 09 May 2026 03:43:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778323426; x=1778928226;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=nclf34MKqRdOZ4LJttV/WTdlg/20Nc3CCIlATqejH50=;
+        b=o7MjqIfEjAcAz/ihedoadyX7nfZXQ2+ahjZfuuusYhC3K25K240dXMahf098RBzRLc
+         zTYKRYnhAT557thNoj/wzB+KgA7EuseJsbyRy1wHjj4ttLCCoAGvt38mnORDpn7unYrm
+         jb2MDx3XNJGmruhzJqHmzHe0VRy1IFIVqbYD26eARw34nryuL+dZWKbbymptO8TdcXE0
+         9653KlicFU+U7hweX4NAqGwMJwKpIwd+rG/W+n+WHWdSIsL9VZWggMoucbM85taEDOxi
+         jvmpUnNcel7RlcwyCGJ2GKO2DtwBFmmhiyfgaeJw9tG6mPiTLWOUD0iG9jmhENGIgIrZ
+         fElw==
+X-Gm-Message-State: AOJu0YxZ37EzOun88H2btgvH0Q7QBJM5j7hJ2tHG7Cy1bCjxh+q+1aFO
+	nmV3ddTfPfTlLktO2SWtHcGQ98r2EZFrCJSn2yYwJKHtwEXEbmm5z+70ytil0P6ZwVKMkx2afHv
+	CrpA31HJMClq//i8gPyP/utQs0eV4JG8HYvHRLCE7/bnEv3n5pO3afv56OpQ=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Sat,  9 May 2026 07:33:37 +0000 (UTC)
+X-Received: by 2002:a05:6820:1529:b0:694:21fa:4ef5 with SMTP id
+ 006d021491bc7-69b36a302dfmr994556eaf.5.1778323426008; Sat, 09 May 2026
+ 03:43:46 -0700 (PDT)
+Date: Sat, 09 May 2026 03:43:45 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69ff0fe1.170a0220.1c0296.020d.GAE@google.com>
+Subject: [moderation/CI] Re: netdevsim: Fix task hung by releasing bus lock
+ before device ops
+From: syzbot ci <syzbot+ci3c0828650e63f3bd@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-udf: Replace WARN_ON with error handling in __udf_add_aext()
+syzbot ci has tested the following series
 
-syzbot reported a crash triggered by a WARN_ON() assertion in
-__udf_add_aext(). The assertion fails because a maliciously crafted UDF
-image can contain a 0-length extent (which acts as an EOF marker) before
-the end of the space declared by lengthAllocDescs. When udf_next_aext()
-stops at this 0-length extent, epos->offset is left pointing to it,
-which is strictly less than the end of lengthAllocDescs, triggering the
-WARN_ON().
+[v1] netdevsim: Fix task hung by releasing bus lock before device ops
+https://lore.kernel.org/all/20260509092837.3432281-1-xujiakai24@mails.ucas.ac.cn
+* [PATCH] netdevsim: Fix task hung by releasing bus lock before device ops
 
-WARN_ON() must not be used for conditions that can legitimately happen
-due to corrupted filesystem images, as it can panic the kernel if
-panic_on_warn is set. Instead, log the inconsistency using pr_err() and
-fix the corruption by recalculating and setting i_lenAlloc and
-lengthAllocDescs to the correct length based on epos->offset. This
-effectively truncates any garbage data after the 0-length extent and
-restores the filesystem to a consistent state.
+and found the following issue:
+kernel build error
 
-Fixing lengthAllocDescs before calling udf_write_aext() is crucial.
-udf_write_aext() calls udf_update_tag(), which calculates a CRC over
-the length specified by lengthAllocDescs. If we blindly add adsize to a
-corrupted (artificially large) length, udf_update_tag() will read out
-of bounds, causing a buffer overflow. By fixing the length first, we
-ensure the CRC is calculated over the correct bounds.
+Full report is available here:
+https://ci.syzbot.org/series/8033a745-648c-476e-90f6-28ef2a0b8b0f
 
-Finally, replace the WARN_ON(epos->offset + adsize >
-inode->i_sb->s_blocksize)
-with an error return. If this condition is met, continuing execution
-will result in udf_write_aext() writing past the end of the block
-buffer. Instead of just warning, log the error and return -EFSCORRUPTED
-to safely abort the operation.
+***
 
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
+kernel build error
+
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      8b2feced65cd3aa0597d596ed5733a1abd4c4d78
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/7deaab21-f3c3-4142-afee-11526881734f/config
+
+drivers/net/netdevsim/bus.c:192:3: error: call to undeclared function 'nsim_bus_dev_del'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+drivers/net/netdevsim/bus.c:206:13: error: conflicting types for 'nsim_bus_dev_del'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/fs/udf/inode.c b/fs/udf/inode.c
-index 67bcf8375..f7266551e 100644
---- a/fs/udf/inode.c
-+++ b/fs/udf/inode.c
-@@ -2078,13 +2078,30 @@ int __udf_add_aext(struct inode *inode, struct extent_position *epos,
- 		return -EIO;
- 
- 	if (!epos->bh) {
--		WARN_ON(iinfo->i_lenAlloc !=
--			epos->offset - udf_file_entry_alloc_offset(inode));
-+		if (iinfo->i_lenAlloc !=
-+		    epos->offset - udf_file_entry_alloc_offset(inode)) {
-+			pr_err("udf: alloc length %u != offset %u\n",
-+			       iinfo->i_lenAlloc,
-+			       epos->offset -
-+				       (uint32_t)udf_file_entry_alloc_offset(
-+					       inode));
-+			iinfo->i_lenAlloc = epos->offset -
-+					    udf_file_entry_alloc_offset(inode);
-+		}
- 	} else {
- 		aed = (struct allocExtDesc *)epos->bh->b_data;
--		WARN_ON(le32_to_cpu(aed->lengthAllocDescs) !=
--			epos->offset - sizeof(struct allocExtDesc));
--		WARN_ON(epos->offset + adsize > inode->i_sb->s_blocksize);
-+		if (le32_to_cpu(aed->lengthAllocDescs) !=
-+		    epos->offset - sizeof(struct allocExtDesc)) {
-+			pr_err("udf: alloc length %u != offset %zu\n",
-+			       le32_to_cpu(aed->lengthAllocDescs),
-+			       epos->offset - sizeof(struct allocExtDesc));
-+			aed->lengthAllocDescs = cpu_to_le32(
-+				epos->offset - sizeof(struct allocExtDesc));
-+		}
-+		if (epos->offset + adsize > inode->i_sb->s_blocksize) {
-+			pr_err("udf: no space left in block\n");
-+			return -EFSCORRUPTED;
-+		}
- 	}
- 
- 	udf_write_aext(inode, epos, eloc, elen, inc);
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
-base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
--- 
-See  for more information.
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[davem@davemloft.net edumazet@google.com kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com xujiakai24@mails.ucas.ac.cn]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
