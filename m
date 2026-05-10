@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4822936E460
-	for <syzbot@lists.linux.dev>; Sat,  9 May 2026 22:59:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C12C71DF751
+	for <syzbot@lists.linux.dev>; Sun, 10 May 2026 01:38:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778367578; cv=none; b=aaXXqovcw13I1xbZ9lQxVJbQOXpDBprPwOatX3ueMIyrFxFPuYtGRWkGesrYY6NgLOBZi64+lqnit0KwBM1Iev19JGXc6/7o56dnVuDDJSxtkPYbDJMfomHeH76lu7zQYXwndMRKX5Dfn4GNTONhxqE8NgeeJ8zbtkzd/B87PF0=
+	t=1778377088; cv=none; b=eg17Jzf5WIqpA0uWzUFrBmA/E98xGIrMn3yVyIiEh9HA2El3BRrxe0dtGnRhDAkid3gKLq8M72SC9Kz9Fikr8BRI/GJmHKt3ZYV8bFt+dEa0BwqfqfDxfOeya8pvGt45KQt520spvLu8+ezPxHTOir+mqXUjWSvPeLBoRGXGXss=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778367578; c=relaxed/simple;
-	bh=s60MKX14dhDHuuuoL8ILo8ieVRCjDeA9SY5I6rzjcNY=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=lHLcXx4D5QSIC+yZs4lXyjU6PxohGfgT6CUU5R0LxxUKNIM6nSgZyQFtV4DZonWR01EfRekJdBvDRweTqo9WSIxglPnEj6orOAbDub17IqszlSGtAFacfip6y1SiGoDKThSO8JvoB5VLBR8zmNyXEUumm+GYJZ0xI4B6Bg/xM7M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aBN7aAug; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778377088; c=relaxed/simple;
+	bh=LBm7u4itRtfwC5esM/zbu0IHccr37C1H/0m11VDY0Rw=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Oh69o3dSaXKJqDJPPL2YMbnbfFeYxuHVAVkC23mk4UOgRYm3NX0Z6sREXPyOvffqD1glBeyoyOEyHYbPp/s6FoVj2OjEjDvHmGGvZ5q06Fq/FhsmKeKj8oTfRegJWNgmPObA/vsEx/KBeF2kPA9Qsnj9ZVlMaDyXfxAbx08jk80=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CrYaGALK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aBN7aAug"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF265C2BCB2;
-	Sat,  9 May 2026 22:59:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CrYaGALK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B7E8C2BCB2;
+	Sun, 10 May 2026 01:38:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778367577;
-	bh=s60MKX14dhDHuuuoL8ILo8ieVRCjDeA9SY5I6rzjcNY=;
+	s=k20201202; t=1778377088;
+	bh=LBm7u4itRtfwC5esM/zbu0IHccr37C1H/0m11VDY0Rw=;
 	h=From:To:Cc:Subject:Date:From;
-	b=aBN7aAugtnXUa1mGsky1X1qFzdAqlEoJRvYrvYEqWXJPm1L5FFVYvJbl/3mklBMQv
-	 kh8Tl7f5C9YvdqOr5cPW1R8eYYTWyKpm1ufDXx+GMWQk9WtbetTDAbcqCf16HE4o7B
-	 HhQVglRLPR/QK0Mix+X9WYl9wnkzWQXY9bYJwPz6igs+r8A9NT90Rlzy0PDfp5/jhe
-	 TdgvgdjwC7L1k/JUJPpZYvMDZgdYo4Dkz3VK1mGIncEwORpfcemmid5OjdLOOSIu4j
-	 FXwEwMkAY98IoVY6LZfVgtiv1W/sxNb69jzdFT1JwY32JkKVQWxeZNLmxDAWt/t2Wn
-	 vldKLos1ugPgA==
+	b=CrYaGALKv/ZaZZMGu3aSH9iVM9+1vqaUQHZVBDKHWoE/WB/qdD+QaFYBND77gwZ7W
+	 NohPTzZOtMK4EMMemeebzoBYtYjWkkp0IQIUVYYLmnyGuDb8yfzOE6iUziMna4Iebi
+	 FBFG5HfJ/3JS7YsUmnEZrlLPHK7lt323Rni1OG+HKPNx53wFyNtgCjiZQQAdYF62pN
+	 yZNTyCZmaTRAy+wtfCSwn911UZ/GTmISvbOt+w9WbHZqznq0inxBulYizzRZ3NaSAe
+	 kclX1i7YTYXzkd8/KYl1EhCQWJOIqIwmAoRLRPeyn4JdLQQXn/weCxytzHVyUmBi6P
+	 KvWGfZcJu4VWw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] misc/vmw_vmci: fix recursive locking deadlock in queue pair broker
-Message-ID: <aec7cb16-64c4-4e01-a974-a6c1a51a046e@mail.kernel.org>
+Subject: [PATCH RFC] mtd: block2mtd: fix circular locking dependency in block2mtd_setup
+Message-ID: <9ceb3eb3-40e2-497b-8d68-257fd88a3946@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,215 +38,157 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Sat,  9 May 2026 22:59:37 +0000 (UTC)
+Date: Sun, 10 May 2026 01:38:08 +0000 (UTC)
 
-misc/vmw_vmci: fix recursive locking deadlock in queue pair broker
+mtd: block2mtd: fix circular locking dependency in block2mtd_setup
 
-A recursive locking deadlock can occur involving `qp_broker_list.mutex`
-in the VMCI queue pair broker.
+syzkaller reported a circular locking dependency involving the global
+param_lock and VFS locks (i_rwsem). The block2mtd driver performs a
+synchronous VFS path lookup (kern_path via bdev_file_open_by_path)
+inside its module parameter set callback (block2mtd_setup). This
+callback is invoked by the sysfs core with param_lock held.
 
-When a queue pair is detached, `vmci_qp_broker_detach()` acquires
-`qp_broker_list.mutex` and, if there are still other endpoints attached,
-it calls `qp_notify_peer()` to send a notification datagram to the peer
-context.
+The dependency chain is:
+1. i_rwsem -> cgroup_mutex (via cgroup_rmdir)
+2. cgroup_mutex -> rtnl_mutex (via cgroup_mkdir -> cgrp_css_online)
+3. rtnl_mutex -> param_lock (via mac80211_hwsim_new_radio ->
+   ieee80211_rate_control_ops_get)
+4. param_lock -> i_rwsem (via block2mtd_setup -> kern_path)
 
-The deadlock occurs because `qp_notify_peer()` indirectly calls
-`vmci_ctx_put()` on the peer's context, which can drop the reference
-count to 0 if the peer context is concurrently being destroyed. When the
-reference count reaches 0, `vmci_ctx_put()` synchronously calls
-`ctx_free_ctx()`. This cleanup function iterates over all queue pairs
-attached to the dying context and calls `vmci_qp_broker_detach()` for
-each of them, which attempts to acquire `qp_broker_list.mutex` again,
-resulting in a deadlock.
+To fix this without breaking existing userspace scripts that expect
+synchronous device creation, temporarily drop the param_lock during
+the device creation process. This breaks the circular locking
+dependency while preserving the synchronous nature of the operation.
 
-This issue is not isolated to `vmci_qp_broker_detach()`. There are other
-places in `drivers/misc/vmw_vmci/vmci_queue_pair.c` where
-`qp_notify_peer()` or `vmci_ctx_put()` are called while holding
-`qp_broker_list.mutex`, such as `qp_broker_attach()` and
-`vmci_qp_broker_set_page_store()`.
+To implement this safely, introduce a local mutex (block2mtd_mutex)
+to protect the module's internal state (blkmtd_device_list,
+block2mtd_paramline, and block2mtd_init_called) from concurrent sysfs
+writes, since param_lock will no longer provide this protection during
+the critical section.
 
-To fix this, defer the calls to `qp_notify_peer()` and `vmci_ctx_put()`
-until after `qp_broker_list.mutex` is safely released. This ensures that
-the mutex is never held when these functions are executed, completely
-eliminating the recursive locking deadlock while preserving the correct
-logic and behavior of the VMCI queue pair broker.
+Summary of changes:
+1. Introduce block2mtd_mutex to protect the global blkmtd_device_list
+   and early-boot state variables.
+2. Drop param_lock in block2mtd_setup using kernel_param_unlock(kp->mod)
+   and kernel_param_lock(kp->mod). For built-in modules, kp->mod is
+   NULL,
+   and these functions correctly unlock/lock the global param_lock.
+3. Protect block2mtd_setup with block2mtd_mutex to ensure that
+concurrent
+   sysfs writes are serialized and the device list is safely updated.
+4. Protect block2mtd_init and block2mtd_exit with block2mtd_mutex to
+   ensure safe access to blkmtd_device_list and block2mtd_paramline.
 
-Assisted-by: Gemini:gemini-3.1-pro-preview
-To: <arnd@arndb.de>
-To: <bryan-bt.tan@broadcom.com>
-To: <gregkh@linuxfoundation.org>
-To: <linux-kernel@vger.kernel.org>
-To: <vishnu.dasa@broadcom.com>
-Cc: <bcm-kernel-feedback-list@broadcom.com>
+The lock ordering is now block2mtd_mutex -> VFS locks (i_rwsem) ->
+mtd_table_mutex, which is strictly hierarchical and free of circular
+dependencies.
+
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
+To: <joern@lazybastard.org>
+To: <linux-mtd@lists.infradead.org>
+Cc: <linux-kernel@vger.kernel.org>
+Cc: <miquel.raynal@bootlin.com>
+Cc: <richard@nod.at>
+Cc: <vigneshr@ti.com>
 
 ---
-diff --git a/drivers/misc/vmw_vmci/vmci_queue_pair.c b/drivers/misc/vmw_vmci/vmci_queue_pair.c
-index b777bc3fd..3d61d5bf2 100644
---- a/drivers/misc/vmw_vmci/vmci_queue_pair.c
-+++ b/drivers/misc/vmw_vmci/vmci_queue_pair.c
-@@ -1508,17 +1508,13 @@ static int qp_notify_peer(bool attach,
-  * VMCIQPB_ATTACHED_MEM state, and for older VMX callers, it will be
-  * moved to the VMCOQPB_ATTACHED_NO_MEM state.
-  */
--static int qp_broker_attach(struct qp_broker_entry *entry,
--			    u32 peer,
--			    u32 flags,
--			    u32 priv_flags,
--			    u64 produce_size,
--			    u64 consume_size,
-+static int qp_broker_attach(struct qp_broker_entry *entry, u32 peer, u32 flags,
-+			    u32 priv_flags, u64 produce_size, u64 consume_size,
- 			    struct vmci_qp_page_store *page_store,
- 			    struct vmci_ctx *context,
--			    vmci_event_release_cb wakeup_cb,
--			    void *client_data,
--			    struct qp_broker_entry **ent)
-+			    vmci_event_release_cb wakeup_cb, void *client_data,
-+			    struct qp_broker_entry **ent, bool *do_notify,
-+			    u32 *notify_peer_id, struct vmci_ctx **out_ctx)
+diff --git a/drivers/mtd/devices/block2mtd.c b/drivers/mtd/devices/block2mtd.c
+index 03e80b2c4..f813272da 100644
+--- a/drivers/mtd/devices/block2mtd.c
++++ b/drivers/mtd/devices/block2mtd.c
+@@ -45,7 +45,7 @@ struct block2mtd_dev {
+ 
+ /* Static info about the MTD, used in cleanup_module */
+ static LIST_HEAD(blkmtd_device_list);
+-
++static DEFINE_MUTEX(block2mtd_mutex);
+ 
+ static struct page *page_read(struct address_space *mapping, pgoff_t index)
  {
- 	const u32 context_id = vmci_ctx_get_id(context);
- 	bool is_local = flags & VMCI_QPFLAG_LOCAL;
-@@ -1585,7 +1581,7 @@ static int qp_broker_attach(struct qp_broker_entry *entry,
+@@ -464,28 +464,43 @@ static int block2mtd_setup2(const char *val)
  
- 		create_context = vmci_ctx_get(entry->create_id);
- 		supports_host_qp = vmci_ctx_supports_host_qp(create_context);
--		vmci_ctx_put(create_context);
-+		*out_ctx = create_context;
- 
- 		if (!supports_host_qp)
- 			return VMCI_ERROR_INVALID_RESOURCE;
-@@ -1660,13 +1656,8 @@ static int qp_broker_attach(struct qp_broker_entry *entry,
- 	}
- 
- 	if (entry->state == VMCIQPB_ATTACHED_MEM) {
--		result =
--		    qp_notify_peer(true, entry->qp.handle, context_id,
--				   entry->create_id);
--		if (result < VMCI_SUCCESS)
--			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
--				entry->create_id, entry->qp.handle.context,
--				entry->qp.handle.resource);
-+		*do_notify = true;
-+		*notify_peer_id = entry->create_id;
- 	}
- 
- 	entry->attach_id = context_id;
-@@ -1711,6 +1702,9 @@ static int qp_broker_alloc(struct vmci_handle handle,
- 	struct qp_broker_entry *entry = NULL;
- 	bool is_local = flags & VMCI_QPFLAG_LOCAL;
- 	int result;
-+	bool do_notify = false;
-+	u32 notify_peer_id = VMCI_INVALID_ID;
-+	struct vmci_ctx *out_ctx = NULL;
- 
- 	if (vmci_handle_is_invalid(handle) ||
- 	    (flags & ~VMCI_QP_ALL_FLAGS) || is_local ||
-@@ -1748,14 +1742,29 @@ static int qp_broker_alloc(struct vmci_handle handle,
- 				     context, wakeup_cb, client_data, ent);
- 	} else {
- 		create = false;
--		result =
--		    qp_broker_attach(entry, peer, flags, priv_flags,
--				     produce_size, consume_size, page_store,
--				     context, wakeup_cb, client_data, ent);
-+		result = qp_broker_attach(entry, peer, flags, priv_flags,
-+					  produce_size, consume_size,
-+					  page_store, context, wakeup_cb,
-+					  client_data, ent, &do_notify,
-+					  &notify_peer_id, &out_ctx);
- 	}
- 
- 	mutex_unlock(&qp_broker_list.mutex);
- 
-+	if (out_ctx)
-+		vmci_ctx_put(out_ctx);
+ static int block2mtd_setup(const char *val, const struct kernel_param *kp)
+ {
++	int ret = 0;
 +
-+	if (do_notify) {
-+		int notify_result;
++	/*
++	 * Drop the param_lock to avoid circular locking dependency
++	 * with VFS locks during device lookup.
++	 */
++	kernel_param_unlock(kp->mod);
 +
-+		notify_result = qp_notify_peer(true, handle, context_id,
-+					       notify_peer_id);
-+		if (notify_result < VMCI_SUCCESS)
-+			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
-+				notify_peer_id, handle.context,
-+				handle.resource);
++	mutex_lock(&block2mtd_mutex);
++
+ #ifdef MODULE
+-	return block2mtd_setup2(val);
++	ret = block2mtd_setup2(val);
+ #else
+ 	/* If more parameters are later passed in via
+ 	   /sys/module/block2mtd/parameters/block2mtd
+ 	   and block2mtd_init() has already been called,
+ 	   we can parse the argument now. */
+ 
+-	if (block2mtd_init_called)
+-		return block2mtd_setup2(val);
++	if (block2mtd_init_called) {
++		ret = block2mtd_setup2(val);
++	} else {
++		/* During early boot stage, we only save the parameters
++		   here. We must parse them later: if the param passed
++		   from kernel boot command line, block2mtd_setup() is
++		   called so early that it is not possible to resolve
++		   the device (even kmalloc() fails). Deter that work to
++		   block2mtd_setup2(). */
++
++		strscpy(block2mtd_paramline, val, sizeof(block2mtd_paramline));
 +	}
-+
- 	if (swap)
- 		*swap = (context_id == VMCI_HOST_CONTEXT_ID) &&
- 		    !(create && is_local);
-@@ -1968,6 +1977,8 @@ int vmci_qp_broker_set_page_store(struct vmci_handle handle,
- 	struct qp_broker_entry *entry;
- 	int result;
- 	const u32 context_id = vmci_ctx_get_id(context);
-+	bool do_notify = false;
-+	u32 notify_peer_id;
++#endif
  
- 	if (vmci_handle_is_invalid(handle) || !context ||
- 	    context_id == VMCI_INVALID_ID)
-@@ -2035,18 +2046,26 @@ int vmci_qp_broker_set_page_store(struct vmci_handle handle,
- 	entry->vmci_page_files = true;
+-	/* During early boot stage, we only save the parameters
+-	   here. We must parse them later: if the param passed
+-	   from kernel boot command line, block2mtd_setup() is
+-	   called so early that it is not possible to resolve
+-	   the device (even kmalloc() fails). Deter that work to
+-	   block2mtd_setup2(). */
++	mutex_unlock(&block2mtd_mutex);
  
- 	if (entry->state == VMCIQPB_ATTACHED_MEM) {
--		result =
--		    qp_notify_peer(true, handle, context_id, entry->create_id);
--		if (result < VMCI_SUCCESS) {
--			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
--				entry->create_id, entry->qp.handle.context,
--				entry->qp.handle.resource);
--		}
-+		do_notify = true;
-+		notify_peer_id = entry->create_id;
- 	}
+-	strscpy(block2mtd_paramline, val, sizeof(block2mtd_paramline));
++	kernel_param_lock(kp->mod);
  
- 	result = VMCI_SUCCESS;
-  out:
- 	mutex_unlock(&qp_broker_list.mutex);
-+
-+	if (do_notify) {
-+		int notify_result;
-+
-+		notify_result = qp_notify_peer(true, handle, context_id,
-+					       notify_peer_id);
-+		if (notify_result < VMCI_SUCCESS) {
-+			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
-+				notify_peer_id, handle.context,
-+				handle.resource);
-+		}
-+	}
-+
- 	return result;
+-	return 0;
+-#endif
++	return ret;
  }
  
-@@ -2086,6 +2105,7 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
- 	u32 peer_id;
- 	bool is_local = false;
- 	int result;
-+	bool do_notify = false;
  
- 	if (vmci_handle_is_invalid(handle) || !context ||
- 	    context_id == VMCI_INVALID_ID) {
-@@ -2185,7 +2205,7 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
+@@ -497,9 +512,11 @@ static int __init block2mtd_init(void)
+ 	int ret = 0;
  
- 		vmci_ctx_qp_destroy(context, handle);
- 	} else {
--		qp_notify_peer(false, handle, context_id, peer_id);
-+		do_notify = true;
- 		if (context_id == VMCI_HOST_CONTEXT_ID &&
- 		    QPBROKERSTATE_HAS_MEM(entry)) {
- 			entry->state = VMCIQPB_SHUTDOWN_MEM;
-@@ -2200,6 +2220,10 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
- 	result = VMCI_SUCCESS;
-  out:
- 	mutex_unlock(&qp_broker_list.mutex);
-+
-+	if (do_notify)
-+		qp_notify_peer(false, handle, context_id, peer_id);
-+
- 	return result;
+ #ifndef MODULE
++	mutex_lock(&block2mtd_mutex);
+ 	if (strlen(block2mtd_paramline))
+ 		ret = block2mtd_setup2(block2mtd_paramline);
+ 	block2mtd_init_called = 1;
++	mutex_unlock(&block2mtd_mutex);
+ #endif
+ 
+ 	return ret;
+@@ -511,6 +528,7 @@ static void block2mtd_exit(void)
+ 	struct list_head *pos, *next;
+ 
+ 	/* Remove the MTD devices */
++	mutex_lock(&block2mtd_mutex);
+ 	list_for_each_safe(pos, next, &blkmtd_device_list) {
+ 		struct block2mtd_dev *dev = list_entry(pos, typeof(*dev), list);
+ 		block2mtd_sync(&dev->mtd);
+@@ -522,6 +540,7 @@ static void block2mtd_exit(void)
+ 		list_del(&dev->list);
+ 		block2mtd_free_device(dev);
+ 	}
++	mutex_unlock(&block2mtd_mutex);
  }
  
+ late_initcall(block2mtd_init);
 
 
 base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
