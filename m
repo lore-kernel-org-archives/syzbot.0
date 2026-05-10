@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E94DDDCD
-	for <syzbot@lists.linux.dev>; Sun, 10 May 2026 13:05:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CB9425A642
+	for <syzbot@lists.linux.dev>; Sun, 10 May 2026 20:39:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778418338; cv=none; b=HeVzrhdArEpMKq8rSF/viBzCkXmCjxPcRsCaCoDvD7Hzpv1MuKyV7Huo0FxXLfDx73TGh2KdP1V10x5LJv7kVIY3RnNRxSR/oWiQ7mzOaJ95BC5gF+O4v0deQ7VVv5Sp05WcssmC4mjlvEXXpOkskWwjVZ83uZK55kJOHb6wxrU=
+	t=1778445578; cv=none; b=rP9JBabycGYzYZakEQaX5sUdrys/y8/u8lqQlwJIzSoJItWVSL7Ng96wofb2Cw+Qlzg2sUYG8zZ7eQme8WeH8+Jcbvto1mHL6115RxYehCji6xH/J1pKmVT6a/nEkzYyeEqXTMdai/7p6oEwHEqf25xuKw+G8zfsJvS9JaosGgM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778418338; c=relaxed/simple;
-	bh=/Prm7pQ+X/kmYfwDxkM7gykr6oWZM1B1XmGRybs5MpQ=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=LQWVEw24w9YKIqHY8Tpqrh/X60uMIpOKJdBLO4vbF54Dh2V8QirZ1EM815QmZgL+xAGWbjQeEaME7+ZZBxMrxtkEzUjeagyB/R5QTF6u5RPgVesZIukfgEhFS9w/hpWzJG+5YvKz23qXur4Slk2kUi7LV90FD6YvpNnTqu1R+kQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WIQDvGkW; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778445578; c=relaxed/simple;
+	bh=duvjasXOg09ntwFVHXd4PKzpRh6RvcZLP+rB0vmmcGI=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=XPK+L2CyC6+dvoqjFn9jN9uMfpPkUMZ2iY+QvrBPkp0r1GMESoMj1G5vRFKnVyIJXk0PEDZ0kwArp9Tna4SdTjjCRjbaTqV3/z6gj2op8RZ6RWNPmfWpLRdE1T6jVTgVqRA1Z+IucoZestzFOAbuL6g1uGGh3pxS32PFEqLEdtE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SnW+Xmri; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WIQDvGkW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06FCEC2BCB8;
-	Sun, 10 May 2026 13:05:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SnW+Xmri"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1031C2BCB8;
+	Sun, 10 May 2026 20:39:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778418338;
-	bh=/Prm7pQ+X/kmYfwDxkM7gykr6oWZM1B1XmGRybs5MpQ=;
+	s=k20201202; t=1778445577;
+	bh=duvjasXOg09ntwFVHXd4PKzpRh6RvcZLP+rB0vmmcGI=;
 	h=From:To:Cc:Subject:Date:From;
-	b=WIQDvGkWlxJ+4h2JAVy65FljG9ezXDTtdtwk+HaHMP4sugn2vByDjyoM7B2EAnJQU
-	 tWeHqST/U+Nn/UOieQ23ennDWvpqO/0r9VIusFDx+2uL0m3n/PGJrf4smdf69noD47
-	 PtW5co+WXhQ12YtuMX/wGqOz32zj4FRIgL7eVUnuoPRtX0FQObHSGNg/uV7PU3PbhO
-	 FRwL/usdmWv1MJJUqgrLXV8FhEVEoACfCHmPYEf1RO+4qOzBWd2a+7YcTWG9jn5FYB
-	 qua+P/yvY0ffDaEd9J3NBuuSEmMmFwzib6PRf8Gd8nVDgrq3aOIfW9Rl5C8kdcEriY
-	 5swxl0s+krnjg==
+	b=SnW+XmrigZxk1F13gXifR+fmPvsBlnT2hUpu29yeUHWcrB9/Fir3kDgVrQSXYviS4
+	 QxuT7Da0onmA3swFy6n46LXPbXiAwgzVXh7mg2HvpITKSpjAj/I47tjWpUDRXy0ZK2
+	 SyMcOgvRftnG+OVImAGcOKIe+6vuOblCF4hry4BY4Ijh9cZDr9cWj1eegk+yQimWbi
+	 8Lo2DI9e61oGvp1Cy58qTz4HTFTXGAdkcHE70aKHGssqhvsWOqUmQ9Dc/mWLBh3PS/
+	 Dgf8YTxZUBZImilybYpWe8bHctlMz8qR3W9mzIvMYoSVzWdeQQXXLaaLbIcyRe0WfE
+	 2bGm9OHnBAXGw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] firmware_loader: Fix recursive lock in device_cache_fw_images()
-Message-ID: <7b8b3fbf-950b-4418-8cf1-772a4d639b14@mail.kernel.org>
+Subject: [PATCH RFC] Input: cm109 - prevent concurrent control URB submissions
+Message-ID: <cac82e3e-7e75-4dc6-b83b-5b54a3e692e7@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,63 +38,95 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Sun, 10 May 2026 13:05:37 +0000 (UTC)
+Date: Sun, 10 May 2026 20:39:37 +0000 (UTC)
 
-firmware_loader: Fix recursive lock in device_cache_fw_images()
+Input: cm109 - prevent concurrent control URB submissions
 
-A recursive locking deadlock can occur in the firmware loader's power
-management notification handler.
+The cm109 driver uses two URBs to communicate with the device: urb_ctl
+(Control OUT) and urb_irq (Interrupt IN). These URBs are designed to run
+in a continuous, strictly alternating loop.
 
-During system suspend or hibernation preparation, fw_pm_notify() calls
-device_cache_fw_images(). This function acquires fw_lock to set the
-firmware cache state to FW_LOADER_START_CACHE and then iterates over
-all devices using dpm_for_each_dev() while still holding the lock.
+However, the driver also supports sound events to toggle the buzzer.
+When a sound event is received, cm109_toggle_buzzer_async() is called.
+If urb_ctl is not currently pending, it immediately submits urb_ctl
+out-of-band to update the buzzer state. This breaks the strict
+alternation and causes both urb_irq and urb_ctl to be active
+concurrently.
 
-For each device, dev_cache_fw_image() schedules asynchronous work to
-cache the firmware. If memory allocation for the async work entry fails
-(e.g., in out-of-memory conditions), async_schedule_node_domain()
-falls back to executing the work function synchronously in the current
-thread.
+When urb_irq subsequently completes, cm109_urb_irq_callback() calls
+cm109_submit_ctl(). cm109_submit_ctl() blindly assumes urb_ctl is idle,
+updates the DMA buffer, and calls usb_submit_urb(dev->urb_ctl). Since
+urb_ctl is already active, the USB core catches it and triggers the
+"URB submitted while active" warning.
 
-The synchronous execution path (__async_dev_cache_fw_image() ->
-cache_firmware() -> request_firmware() -> assign_fw()) attempts
-to acquire fw_lock again. Since the current thread already holds
-fw_lock, this results in a recursive locking deadlock.
+To fix this, check if dev->ctl_urb_pending is already set in
+cm109_submit_ctl(). If it is, defer the submission by setting
+dev->buzzer_pending = 1 and return immediately.
 
-Fix this by releasing fw_lock immediately after updating the cache
-state and before calling dpm_for_each_dev(). The lock is only needed
-to protect the state update. Concurrent firmware requests will correctly
-see the FW_LOADER_START_CACHE state and use the piggyback mechanism,
-which is independently protected by its own fwc->name_lock.
+Additionally, update cm109_submit_buzz_toggle() to also copy the latest
+dev->keybit to HID_OR1 and HID_OR2, ensuring that the deferred key
+matrix column update is not lost. Since cm109_submit_ctl() and
+cm109_submit_buzz_toggle() now prepare the exact same data for urb_ctl,
+refactor cm109_submit_ctl() to simply call cm109_submit_buzz_toggle()
+after checking and updating the pending flags.
 
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-To: <gregkh@linuxfoundation.org>
+Assisted-by: Gemini:gemini-3.1-pro-preview
 To: <linux-kernel@vger.kernel.org>
-To: <rafael@kernel.org>
-Cc: <dakr@kernel.org>
-Cc: <driver-core@lists.linux.dev>
-Cc: <mcgrof@kernel.org>
-Cc: <russ.weight@linux.dev>
+Cc: <dmitry.torokhov@gmail.com>
+Cc: <linux-input@vger.kernel.org>
 
 ---
-diff --git a/drivers/base/firmware_loader/main.c b/drivers/base/firmware_loader/main.c
-index a11b30dda..68d5d30aa 100644
---- a/drivers/base/firmware_loader/main.c
-+++ b/drivers/base/firmware_loader/main.c
-@@ -1503,10 +1503,11 @@ static void device_cache_fw_images(void)
+diff --git a/drivers/input/misc/cm109.c b/drivers/input/misc/cm109.c
+index 353d3c1d3..0114d7293 100644
+--- a/drivers/input/misc/cm109.c
++++ b/drivers/input/misc/cm109.c
+@@ -348,6 +348,9 @@ static void cm109_submit_buzz_toggle(struct cm109_dev *dev)
+ 	else
+ 		dev->ctl_data->byte[HID_OR0] &= ~BUZZER_ON;
  
- 	mutex_lock(&fw_lock);
- 	fwc->state = FW_LOADER_START_CACHE;
--	dpm_for_each_dev(NULL, dev_cache_fw_image);
- 	mutex_unlock(&fw_lock);
- 
--	/* wait for completion of caching firmware for all devices */
-+	dpm_for_each_dev(NULL, dev_cache_fw_image); /*
++	dev->ctl_data->byte[HID_OR1] = dev->keybit;
++	dev->ctl_data->byte[HID_OR2] = dev->keybit;
 +
-+*/	/* wait for completion of caching firmware for all devices */
- 	async_synchronize_full_domain(&fw_cache_domain);
+ 	error = usb_submit_urb(dev->urb_ctl, GFP_ATOMIC);
+ 	if (error)
+ 		dev_err(&dev->intf->dev,
+@@ -357,8 +360,6 @@ static void cm109_submit_buzz_toggle(struct cm109_dev *dev)
  
- 	fw_fallback_set_default_timeout();
+ static void cm109_submit_ctl(struct cm109_dev *dev)
+ {
+-	int error;
+-
+ 	guard(spinlock_irqsave)(&dev->ctl_submit_lock);
+ 
+ 	dev->irq_urb_pending = 0;
+@@ -366,22 +367,15 @@ static void cm109_submit_ctl(struct cm109_dev *dev)
+ 	if (unlikely(dev->shutdown))
+ 		return;
+ 
+-	if (dev->buzzer_state)
+-		dev->ctl_data->byte[HID_OR0] |= BUZZER_ON;
+-	else
+-		dev->ctl_data->byte[HID_OR0] &= ~BUZZER_ON;
+-
+-	dev->ctl_data->byte[HID_OR1] = dev->keybit;
+-	dev->ctl_data->byte[HID_OR2] = dev->keybit;
++	if (dev->ctl_urb_pending) {
++		dev->buzzer_pending = 1;
++		return;
++	}
+ 
+ 	dev->buzzer_pending = 0;
+ 	dev->ctl_urb_pending = 1;
+ 
+-	error = usb_submit_urb(dev->urb_ctl, GFP_ATOMIC);
+-	if (error)
+-		dev_err(&dev->intf->dev,
+-			"%s: usb_submit_urb (urb_ctl) failed %d\n",
+-			__func__, error);
++	cm109_submit_buzz_toggle(dev);
+ }
+ 
+ /*
 
 
 base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
