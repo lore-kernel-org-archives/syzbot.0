@@ -1,221 +1,218 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 379191E5702
-	for <syzbot@lists.linux.dev>; Sun, 10 May 2026 07:02:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=10.30.226.201
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778396578; cv=pass; b=kjPNeJjZRacS16imbNZdMi6PwHsTO8eDoUtvo2l9gPoaC5DFwQQV1S56W9FhSGb9/f+3U7FzSWNViFMKd8KispCM4B2aJFIAlxY2Si/2aw7P0se3kQe5fKGZxurLP0RI3spHFqSOJO+Qm0WY6BmmYV1SEdwYIE4tXjxVmM27+ks=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778396578; c=relaxed/simple;
-	bh=B8bxjfwhyT9wuO8Zjt29zpVT3CH3/ldIAkPhLQOTPjM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=VabWaAa1/buLpi1HP/dTXcI121q05NvUoU8JTUQ/rIzWpJL7IUl2pDa04kq9MTTKTIWWHyORZdNo2cNWQDzSve8ldS9kB8oPkz4l4tbXJsYusXlR6pAbb8jJ/yPwsAuNU++mEEPzmz/vr4zFGEZ2dxSbLsQi2Pmv15LQfV/PunM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Sng8WE3k; arc=pass smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Sng8WE3k"
-Received: by smtp.kernel.org (Postfix)
-	id E0F43C2BCF7; Sun, 10 May 2026 07:02:57 +0000 (UTC)
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id EDB28C2BCB8
-	for <syzbot@kernel.org>; Sun, 10 May 2026 07:02:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.kernel.org EDB28C2BCB8
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=google.com
-Received: by mail-oi1-f170.google.com with SMTP id 5614622812f47-463f00cda04so1817975b6e.2
-        for <syzbot@kernel.org>; Sun, 10 May 2026 00:02:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778396576; cv=none;
-        d=google.com; s=arc-20240605;
-        b=MGbo27/2TlYB7puu6rdxhozrCz8JOxv8I2S2qz4IQz+5jkgQXD82bwrUfK9/MCuGP7
-         9pWxuHQuHqmfoqq68eUpy93dPJMqpb9xXXU/te8fUixPPODd9okhH9LVQmK2w0xs23Xf
-         dUx7GUixnBe4JOn83ERgoy2BPgIt48RDIvh06P3wcnqlhnVEn5DKt03VVg1yxui+GoMl
-         UphfYvbZsiMikVMpo2DZyErkdUGzrlU9Lq1Rr3dN3NYSO7dw0d7oslYHcT2lhHO9Ukx0
-         gJYOGsJu+QZdkEeHRnRy61eh8wwCMBMm65DyO1rYxC7RgqpZ3Q8gVZEWlwCcfmDHOR7d
-         tAtA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=1oeS3OgYc2teKSYgpoVrfEAHSNhP/3JjevrqVXCzcdQ=;
-        fh=wDINbZTynOzHKZZdfYzTv1C5XrcPd39poBV3E5XRpBc=;
-        b=XsVqXnNRuINyb/7VULckJBI4KXp7xmH/l/s4qRSdGiEpzND37+3ZxSipsVRmji/iWx
-         7jupCgFT4+xQJQx6uh28g1EzO/rnfc+uyFV7hpL/JVWy/8qmAhLz5jD50SGBwsqojqzq
-         Yohcr9TDxoAwSMWei44noWfUjH9fz37DlClhlRxufH+r/73a50IXp7sfb1/YosJnwmbd
-         32HoDP4owNp7FEXoXzvSAYNSog/SkaFiKtqisIiCMy+YTMtzV9DXXd/dxwBhF6HgMaY+
-         MTKkiaDQUOfLBgni97gNXK/WDAIy4zxo0RB0Zg8kO3GIQJZtxqCWjm24tcRPuskTVk5S
-         BmaQ==;
-        darn=kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778396576; x=1779001376; darn=kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1oeS3OgYc2teKSYgpoVrfEAHSNhP/3JjevrqVXCzcdQ=;
-        b=Sng8WE3kVof5eGwrbId8K9veOvsHn1LrGzbAzsA1ml4yaQmy4J8t0ez1izygvZDj2L
-         lDUV58ConHtPz4j+GZ8sbZOXHQshLXHQI9XOy4bctJ9CsQ3Fi2d0FwSwa6SaM4728FHl
-         IMrS7R4ImeBGs4TXGT6EZ0Xg9YvlAJLSxE26lfD2Y3oJbjQLAgmoxpwUbW1ysZyK3ij/
-         WFuT0C/GTaKEDzVvUhBl0zUbrnjZ92fhxUr4Vi7BwoonoWWjnCyINtAbkiHzEIdmtEpn
-         IOXSZXS/4YqBakWgSh1fwKk2LDElX7wQov+rHpPz/HcDx+rh9rpy4nUGOCvrEhFBf0C/
-         mykg==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B6AF35F603
+	for <syzbot@lists.linux.dev>; Sun, 10 May 2026 11:16:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778411780; cv=none; b=XKeSvjlCa7RCmTjEKn7TAXIrrm/oYYMYgu/iHVyAyIcP57DbFm6Wsm5GlYzpv6symyxqmDa+ePsDg/BKYOEsc3EarTiet3KkRkAWH7FZwAfXKbhRrXcrYaQQceFVkUqGIMFyS532ADjEjnzlcbot/r9htbSUXj0pfYJVc2ZoTVU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778411780; c=relaxed/simple;
+	bh=1dTAoWCopqdqcnSOLpSopoM+rQhkoDyX2MmH8j0+0Nc=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=GMtoEhWMRrjBYuEYuy/SbM4xwryiA/JqTK4qo+HbcQcPGibP8Xg8UPGJc084vhLr4RT065mAQ0/F/WAdRcvUgDgw3+QgHt7aHvx9myMzc0eIy8WS3FVsaHxSH3/Pm+tn9yGoKiBgUKzR6U8xnApKujPyK2qONiGT8f3xwFRH9VM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6948d83a548so7900503eaf.0
+        for <syzbot@lists.linux.dev>; Sun, 10 May 2026 04:16:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778396576; x=1779001376;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=1oeS3OgYc2teKSYgpoVrfEAHSNhP/3JjevrqVXCzcdQ=;
-        b=Y2kdLPKXGpCwnkwJMZxDICIFirNYZKFbQW6tVo3XG7VSTM+yvj67vloa34AMmd/jjt
-         o1b5ZFMVbT/SqUWALJovhvZSczQ7tv7/ymkuy5VIG0OfxfCuAnhJaUs/MSWcvbxL8nto
-         Wmtke5nhc+H6IAHCNE2hou2leWKiYCs615PppJBqo9szlLWjkA3EtBMETq1ldvQzVU+E
-         KA0Lq87TIvuHZEVGU1kC/f+3ljWyMqIvityeFsiKBSNIJGSgMUbSFpIbcyhMsh5sf3Sp
-         vCXxKdznWDfhiM+OdDBT2w9IlGhW7l2rMUTCJZlWaM6q4lmJPSIppXsn8MKTzfJnjjit
-         j1gg==
-X-Gm-Message-State: AOJu0YzNts1DvHfmXUIIWStMElco2IrCaZppZAn20IpaMkEin8qRLeqo
-	3/dgEosZjQo3bA4JFtzNLgVXoTJ0HY3Eg8uZu/a+HMNl2UkHg8Vt8fgzkxkGbwjJOybS3yWu/yT
-	fDd/u7171Sw6PoXcU3AkMphBkkyHI6MTQ7i9F7CvB
-X-Gm-Gg: Acq92OEhX+51hvUuFXj7ERjhl3OviGm8jinukwM9w3+qazD09Dq58jGMrwUEQmCRKy5
-	Myw5821GgSjmbpcT+y0KrQGSRVozKVuBXd967QhSCtL+jFNCEi/YnYcQYGy2EYQmnsGHCTSUzpA
-	tl428V+TSYVvz0yssKs3FrUGFcea2QLUk4cS0qRechzTTd6vOx4K6fxSE0OD8cR/TkxRR5cQrgD
-	L/uTH7zvdk7bWdYBSr+/1De1yVJ0nS18NoVCU4FeN6VaDH5u1aJAeCJcWlmctQYEtHYGAG1cxEI
-	ddDL97p8XkyI47EIw8uMqKMf0u1n3Rc/oxCljoQgfGtSxKs2HSulnwMHWko3JKMyI2jJZ6GtSBW
-	rbA7Z3P7iJGq1Wnqc5Q==
-X-Received: by 2002:a05:6808:1688:b0:46e:df55:2403 with SMTP id
- 5614622812f47-480421e6728mr11897610b6e.18.1778396575315; Sun, 10 May 2026
- 00:02:55 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778411777; x=1779016577;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=YtCC6/fHIJOE1y+yrZvbN0biyiwZxG6Wcb/ejUoPZyc=;
+        b=bMO48WNOuzbEZYODAikWYAv7tFF7vgf/Fc2WEbBSpiG2i1GCfJABZmyO+8TUU6IgzJ
+         T0cD0yFhBVG+PRhAL6jHdKJ7PVn6Q9dkzzD7NinEaKGBzp7dQ5ymUg72+QDu9KS3IlfB
+         Mn2xoFkoN6UjZcYVYO2d8DuRx7Liou4DY5oxUMRKFxvod+2704BLvz/KZIMYIk/XbKXy
+         F3uRVQNARce7iBykjMt2pxMog3238zp0rZRpCJWLLRxAsk22e3RWsOEKWvNfDJmc4hAs
+         2wXobTwYHfvzszv56VDKzyRSjhryzYJY3TjtTe6iwta5xTfQxxTNaLKago6Do3DfsYZL
+         X1mA==
+X-Gm-Message-State: AOJu0YzcAbzyn+WCbJJuobkmMwx4cx1FuELns362dtCwnipzi2ROlUrf
+	X1GqpU2clmsPuXM1lLFaB8iFxsJexaEeIazC3INFznX0YWUp2xp9fYvCdy593ni5sy5lLaElSnW
+	ikex/x06wy3GTXgcTlBtwIY9oDn1vMIyjOSQt2wLeF5FYQ0gwMMTAOBuaF1k=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <784d7c31-66f4-4f22-8115-2888a33b5260@mail.kernel.org> <CACT4Y+bwhBQ7iFEJaV4Q-V=6CGrfNArrkqf+Gb7E36XDHkrT1Q@mail.gmail.com>
-In-Reply-To: <CACT4Y+bwhBQ7iFEJaV4Q-V=6CGrfNArrkqf+Gb7E36XDHkrT1Q@mail.gmail.com>
-From: Aleksandr Nogikh <nogikh@google.com>
-Date: Sun, 10 May 2026 09:02:44 +0200
-X-Gm-Features: AVHnY4K7-g0diFVWc6EKyqRtwjXctKbK8DgW1Su2_r0IlkYiqknIrKMbQducrGY
-Message-ID: <CANp29Y7u3VJ_70+Y_v_WWXnxD3JCDA_vSt=AxJn11VUwYRHnMw@mail.gmail.com>
-Subject: Re: [PATCH RFC] jbd2: fix null-ptr-deref in jbd2_journal_dirty_metadata()
-To: Dmitry Vyukov <dvyukov@google.com>
-Cc: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com, 
-	syzbot@lists.linux.dev
+X-Received: by 2002:a05:6820:178a:b0:696:982b:1c24 with SMTP id
+ 006d021491bc7-69998d56a5cmr11024579eaf.57.1778411776975; Sun, 10 May 2026
+ 04:16:16 -0700 (PDT)
+Date: Sun, 10 May 2026 04:16:16 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a006900.a00a0220.1c3806.000e.GAE@google.com>
+Subject: [moderation/CI] Re: net: nsh: limit recursive GSO redispatch
+From: syzbot ci <syzbot+ci94e59e751f750531@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Sat, May 9, 2026 at 9:24=E2=80=AFAM 'Dmitry Vyukov' via
-syzkaller-upstream-moderation
-<syzkaller-upstream-moderation@googlegroups.com> wrote:
->
-> On Fri, 8 May 2026 at 21:16, 'syzbot' via
-> syzkaller-upstream-moderation
-> <syzkaller-upstream-moderation@googlegroups.com> wrote:
-> >
-> > jbd2: fix null-ptr-deref in jbd2_journal_dirty_metadata()
-> >
-> > The syzkaller reproducer triggers a null-pointer dereference in
-> > jbd2_journal_dirty_metadata().
-> >
-> > The root cause is that jbd2_journal_dirty_metadata() unconditionally
-> > dereferences handle->h_transaction->t_journal at the very beginning of
-> > the function. If handle->h_transaction is NULL, this causes a kernel
-> > panic.
-> >
-> > This can happen when a journal is aborted. For example, ocfs2_xa_set()
-> > calls ocfs2_xa_prepare_entry(), which attempts to allocate clusters for
-> > a large xattr and calls ocfs2_extend_trans() to extend the transaction.
-> > ocfs2_extend_trans() calls jbd2_journal_restart() to restart the
-> > transaction. In jbd2_journal_restart(), the handle is first detached
-> > from the current transaction (handle->h_transaction =3D NULL), and then
-> > start_this_handle() is called to start a new transaction. Because the
-> > journal is aborted, start_this_handle() fails and returns -EROFS.
-> > jbd2_journal_restart() returns this error, leaving handle->h_transactio=
-n
-> > as NULL.
-> >
-> > The -EROFS error propagates back up to ocfs2_xa_set(). ocfs2_xa_set()
-> > catches the error and jumps to the out_dirty label. By design, it tries
-> > to dirty the buffer to leave the xattr header in a sane state despite
-> > the error, so it calls ocfs2_xa_journal_dirty().
-> > ocfs2_xa_journal_dirty() calls jbd2_journal_dirty_metadata() with the
-> > detached handle.
-> >
-> > In jbd2_journal_dirty_metadata(), the local variable journal is
-> > initialized with transaction->t_journal at the declaration block. Since
-> > transaction (handle->h_transaction) is NULL, dereferencing it causes th=
-e
-> > KASAN null-ptr-deref crash.
-> >
-> > This bug was made more prominent by commit 4a734f0869f9 ("jbd2: fix
-> > assertion 'jh->b_frozen_data =3D=3D NULL' failure when journal aborted"=
-),
-> > which removed the early is_handle_aborted(handle) check in
-> > jbd2_journal_dirty_metadata(). However, even before that commit, the
-> > variable journal was initialized at declaration, so the NULL pointer
-> > dereference technically existed but was less obvious.
-> >
-> > To fix this, add an early check for is_handle_aborted(handle) (which
-> > safely handles !handle->h_transaction by short-circuiting) before
-> > dereferencing transaction->t_journal. The existing
-> > is_handle_aborted(handle) check inside the jh->b_state_lock is kept to
-> > prevent the race condition that commit 4a734f0869f9 originally fixed.
-> >
-> > Assisted-by: Gemini:gemini-3.1-pro-preview
-> > To: <linux-kernel@vger.kernel.org>
-> > Cc: <jack@suse.com>
-> > Cc: <linux-ext4@vger.kernel.org>
-> > Cc: <tytso@mit.edu>
->
-> Add Fixes tag:
->
-> Fixes: 4a734f0869f9 ("jbd2: fix assertion 'jh->b_frozen_data =3D=3D NULL'
-> failure when journal aborted")
+syzbot ci has tested the following series
 
-FYI it won't work yet - the patch-iteration workflow doesn't have any
-way to modifiy the tags at the moment.
+[v2] net: nsh: limit recursive GSO redispatch
+https://lore.kernel.org/all/67e8340baa2c2772def267a801c8d5b201444d49.1778382236.git.caoruide123@gmail.com
+* [PATCH net v2 1/1] net: nsh: limit recursive GSO redispatch
 
->
->
-> > ---
-> > diff --git a/fs/jbd2/transaction.c b/fs/jbd2/transaction.c
-> > index 4885903bb..183688035 100644
-> > --- a/fs/jbd2/transaction.c
-> > +++ b/fs/jbd2/transaction.c
-> > @@ -1517,10 +1517,15 @@ void jbd2_buffer_abort_trigger(struct journal_h=
-ead *jh,
-> >  int jbd2_journal_dirty_metadata(handle_t *handle, struct buffer_head *=
-bh)
-> >  {
-> >         transaction_t *transaction =3D handle->h_transaction;
-> > -       journal_t *journal =3D transaction->t_journal;
-> > +       journal_t *journal;
-> >         struct journal_head *jh;
-> >         int ret =3D 0;
-> >
-> > +       if (is_handle_aborted(handle))
-> > +               return -EROFS;
-> > +
-> > +       journal =3D transaction->t_journal;
-> > +
-> >         if (!buffer_jbd(bh))
-> >                 return -EUCLEAN;
-> >
-> >
-> >
-> > base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
-> > --
-> > This is an AI-generated patch subject to moderation.
-> > Reply with '#syz upstream' to send it to the mailing list.
-> > Reply with '#syz reject' to reject it.
-> >
-> > See  for more information.
-> >
-> > --
-> > You received this message because you are subscribed to the Google Grou=
-ps "syzkaller-upstream-moderation" group.
-> > To unsubscribe from this group and stop receiving emails from it, send =
-an email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> > To view this discussion visit https://groups.google.com/d/msgid/syzkall=
-er-upstream-moderation/784d7c31-66f4-4f22-8115-2888a33b5260%40mail.kernel.o=
-rg.
->
+and found the following issue:
+BUG: using __this_cpu_read() in preemptible code in nsh_gso_segment
+
+Full report is available here:
+https://ci.syzbot.org/series/cb23e640-2f7a-42e1-8bad-7249684b1cd5
+
+***
+
+BUG: using __this_cpu_read() in preemptible code in nsh_gso_segment
+
+tree:      net
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
+base:      496c0c4c53bbe1bad97e82cd12103df61a6e459d
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/a7e3d1e1-97c4-4876-99c8-658c4cef49c5/config
+syz repro: https://ci.syzbot.org/findings/62ca20c2-7c78-4820-b695-f63b15eaf738/syz_repro
+
+BUG: using __this_cpu_read() in preemptible [00000000] code: syz.1.18/5860
+caller is dev_xmit_recursion include/linux/netdevice.h:3625 [inline]
+caller is nsh_gso_segment+0x535/0xed0 net/nsh/nsh.c:110
+CPU: 0 UID: 0 PID: 5860 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ check_preemption_disabled+0xd3/0xe0 lib/smp_processor_id.c:47
+ dev_xmit_recursion include/linux/netdevice.h:3625 [inline]
+ nsh_gso_segment+0x535/0xed0 net/nsh/nsh.c:110
+ skb_mac_gso_segment+0x31c/0x690 net/core/gso.c:53
+ __skb_gso_segment+0x376/0x540 net/core/gso.c:124
+ skb_gso_segment include/net/gso.h:83 [inline]
+ validate_xmit_skb+0xa21/0x14a0 net/core/dev.c:4039
+ validate_xmit_skb_list net/core/dev.c:4089 [inline]
+ __dev_direct_xmit+0x1b4/0x750 net/core/dev.c:4922
+ dev_direct_xmit include/linux/netdevice.h:3431 [inline]
+ packet_xmit+0x1b4/0x320 net/packet/af_packet.c:285
+ packet_snd net/packet/af_packet.c:3082 [inline]
+ packet_sendmsg+0x3c81/0x4fb0 net/packet/af_packet.c:3114
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ __sys_sendto+0x672/0x710 net/socket.c:2265
+ __do_sys_sendto net/socket.c:2272 [inline]
+ __se_sys_sendto net/socket.c:2268 [inline]
+ __x64_sys_sendto+0xde/0x100 net/socket.c:2268
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fcd6a99cdd9
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fcd6b903028 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+RAX: ffffffffffffffda RBX: 00007fcd6ac15fa0 RCX: 00007fcd6a99cdd9
+RDX: 00000000000100a6 RSI: 0000200000000180 RDI: 0000000000000005
+RBP: 00007fcd6aa32d69 R08: 0000200000000140 R09: 0000000000000014
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fcd6ac16038 R14: 00007fcd6ac15fa0 R15: 00007fff57a83608
+ </TASK>
+BUG: using __this_cpu_add() in preemptible [00000000] code: syz.1.18/5860
+caller is dev_xmit_recursion_inc include/linux/netdevice.h:3631 [inline]
+caller is nsh_gso_segment+0x57d/0xed0 net/nsh/nsh.c:113
+CPU: 0 UID: 0 PID: 5860 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ check_preemption_disabled+0xd3/0xe0 lib/smp_processor_id.c:47
+ dev_xmit_recursion_inc include/linux/netdevice.h:3631 [inline]
+ nsh_gso_segment+0x57d/0xed0 net/nsh/nsh.c:113
+ skb_mac_gso_segment+0x31c/0x690 net/core/gso.c:53
+ __skb_gso_segment+0x376/0x540 net/core/gso.c:124
+ skb_gso_segment include/net/gso.h:83 [inline]
+ validate_xmit_skb+0xa21/0x14a0 net/core/dev.c:4039
+ validate_xmit_skb_list net/core/dev.c:4089 [inline]
+ __dev_direct_xmit+0x1b4/0x750 net/core/dev.c:4922
+ dev_direct_xmit include/linux/netdevice.h:3431 [inline]
+ packet_xmit+0x1b4/0x320 net/packet/af_packet.c:285
+ packet_snd net/packet/af_packet.c:3082 [inline]
+ packet_sendmsg+0x3c81/0x4fb0 net/packet/af_packet.c:3114
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ __sys_sendto+0x672/0x710 net/socket.c:2265
+ __do_sys_sendto net/socket.c:2272 [inline]
+ __se_sys_sendto net/socket.c:2268 [inline]
+ __x64_sys_sendto+0xde/0x100 net/socket.c:2268
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fcd6a99cdd9
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fcd6b903028 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+RAX: ffffffffffffffda RBX: 00007fcd6ac15fa0 RCX: 00007fcd6a99cdd9
+RDX: 00000000000100a6 RSI: 0000200000000180 RDI: 0000000000000005
+RBP: 00007fcd6aa32d69 R08: 0000200000000140 R09: 0000000000000014
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fcd6ac16038 R14: 00007fcd6ac15fa0 R15: 00007fff57a83608
+ </TASK>
+BUG: using __this_cpu_add() in preemptible [00000000] code: syz.1.18/5860
+caller is dev_xmit_recursion_dec include/linux/netdevice.h:3636 [inline]
+caller is nsh_gso_segment+0x59f/0xed0 net/nsh/nsh.c:115
+CPU: 0 UID: 0 PID: 5860 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ check_preemption_disabled+0xd3/0xe0 lib/smp_processor_id.c:47
+ dev_xmit_recursion_dec include/linux/netdevice.h:3636 [inline]
+ nsh_gso_segment+0x59f/0xed0 net/nsh/nsh.c:115
+ skb_mac_gso_segment+0x31c/0x690 net/core/gso.c:53
+ __skb_gso_segment+0x376/0x540 net/core/gso.c:124
+ skb_gso_segment include/net/gso.h:83 [inline]
+ validate_xmit_skb+0xa21/0x14a0 net/core/dev.c:4039
+ validate_xmit_skb_list net/core/dev.c:4089 [inline]
+ __dev_direct_xmit+0x1b4/0x750 net/core/dev.c:4922
+ dev_direct_xmit include/linux/netdevice.h:3431 [inline]
+ packet_xmit+0x1b4/0x320 net/packet/af_packet.c:285
+ packet_snd net/packet/af_packet.c:3082 [inline]
+ packet_sendmsg+0x3c81/0x4fb0 net/packet/af_packet.c:3114
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ __sys_sendto+0x672/0x710 net/socket.c:2265
+ __do_sys_sendto net/socket.c:2272 [inline]
+ __se_sys_sendto net/socket.c:2268 [inline]
+ __x64_sys_sendto+0xde/0x100 net/socket.c:2268
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fcd6a99cdd9
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fcd6b903028 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+RAX: ffffffffffffffda RBX: 00007fcd6ac15fa0 RCX: 00007fcd6a99cdd9
+RDX: 00000000000100a6 RSI: 0000200000000180 RDI: 0000000000000005
+RBP: 00007fcd6aa32d69 R08: 0000200000000140 R09: 0000000000000014
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fcd6ac16038 R14: 00007fcd6ac15fa0 R15: 00007fff57a83608
+ </TASK>
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[bird@lzu.edu.cn caoruide123@gmail.com davem@davemloft.net jbenc@redhat.com lkp@intel.com lx24@stu.ynu.edu.cn matttbe@kernel.org n05ec@lzu.edu.cn netdev@vger.kernel.org tomapufckgml@gmail.com yifanwucs@gmail.com yuantan098@gmail.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
