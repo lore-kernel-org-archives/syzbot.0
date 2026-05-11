@@ -1,155 +1,306 @@
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 585F53AE199
-	for <syzbot@lists.linux.dev>; Mon, 11 May 2026 20:49:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778532558; cv=none; b=svwYoCC2AFIylpyzVpRwMvlpEdZhl+k+b/YQzlo4SUC14afd7+YrGN773Tz9GJxwK9ZNUG29daHNnPc/J4XJdxfoKoyXg0gss6JxO91UssyjTcx5Ogd+7zfkHwlkPUvSSKTmy7UrcTAIfKD3N7JU4wLtl4ACNsQjx94iRvVCl2Q=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778532558; c=relaxed/simple;
-	bh=SoPmw+VXUfhLjD5912x7QQY0x76p4tblSzGvtnUg72g=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=typRXvjd7clRewkwmobauZV+oP2gNWbpSnuSrR7k6czW9DVuUwmQzbk3D50sze5OxefMiqSzv+W1e/GVpWProqmyhCu0/92nQ+hdvYkt2wXoCZYQKhtJhRNHbnJVIV7pJJ8urbIwxuzaqczg9gGyvN4xxMuSluhSLMoEeArygWc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7de4be150b9so9227378a34.1
-        for <syzbot@lists.linux.dev>; Mon, 11 May 2026 13:49:17 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42B56370D4D
+	for <syzbot@lists.linux.dev>; Mon, 11 May 2026 21:32:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.49
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778535157; cv=pass; b=NbOimh3RLMlNhSDrtBFUNrx/FHSv2Ar18kFl2rgUtqDoKPHReRlIfOkuXO98tt2i8yGEJnlDMS9Not6ENUp9ezyGBWrbPbu3tVvVsDyv71roQA5kv2jLGwNinJPxDre6AqPGeSvAef9mLGcIrJDaKBUEjUdRvOAQxMsw7U1s040=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778535157; c=relaxed/simple;
+	bh=aSQm8tTS06gfBHOF5YVv5dgpPF+Vieky0lEGOSxrBQ4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=H2sRRyowHoia4MDIkkn5av/Y5M9TDcVHHtwM10aKxK+LxANgvvNgRIOO83PSBNOgfviba+MuABRVzU3/QyCd74OPAO8h9pvCQmZ0JNfH4ZPu2IsUdFVWGrIVi0Z/z8zJXeaVVm9KVnbUtjrMyS45Us+IPkoOdrx++EzHMPEbxSE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mLcxv/4h; arc=pass smtp.client-ip=209.85.161.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mLcxv/4h"
+Received: by mail-oo1-f49.google.com with SMTP id 006d021491bc7-69489b43d66so1339401eaf.2
+        for <syzbot@lists.linux.dev>; Mon, 11 May 2026 14:32:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778535155; cv=none;
+        d=google.com; s=arc-20240605;
+        b=aPZcEODkrtPVVfmV7TgcgahlYROqC9wdh8MRjOppqKrL+AzmPOumjAhqe3urrxuQF+
+         TM87DiFybCTuYMi7Gq01b7nXRVtaPEnQlejeQA8y5m8kriyrxE1QFTao7IeViCAqsHtr
+         SvpyRqfiL1a/b6rrpktOMz0S+xASjooebGihMHPCAyt6aigvISXx2oq/YCWBbXYX9Wql
+         Gt5lnNCqqVcbh/bgg1en7q9ATIuFfwrKP/vCjw1eZNpU3jBlKRjVTxubJ+lbRlUgqGCu
+         uTJSZexwAtwX3FpleX+yxmCPjKAoAVHJaxFKiL7PksHKundjYXBr/MqlLynr9HHOZ+KN
+         QIog==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=UaIC9t1fQgpAXaTFFpFO+vfONy666zV+8kTTlKbrVM4=;
+        fh=Pa9zWoZJRcFfwSvyJHrJ0/50rqhEewhwv1xp2L+URCg=;
+        b=Au/1NBgRuSEMq2mp00C2vQvO/l3mmr+TKhJJLC2q7981ihs0cHTfU/hRtXU0TPtmxC
+         K9CVHG+2lyeIiNN51dzGK0USUXtFtjqQZRXRma03YEU2csa25F3EVUep29HKl6fcblnQ
+         jmrvfEF2DXfxpfWMiRg0K9vYO5j/HUXdoAc9oHcXQcfb1Z1bnSF/B0DfCSE3A9+UoMMw
+         MahEzmphmcK7NK5vZ73LcAMAcPbXwcABx26JVJ3UB5IwBTLmtjrvmTogHqlu1mkHjO2X
+         QAFQEUZHELBHRZspRyWcI8nEsBJvamky2EuC0XG6gdiqvKmB+PFiws/tSM9vWM0un/yp
+         IDEA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1778535155; x=1779139955; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UaIC9t1fQgpAXaTFFpFO+vfONy666zV+8kTTlKbrVM4=;
+        b=mLcxv/4hwsg09WhAgOpyeIno+DVIhpyatSYFKhu5R86BhYc4JmmVU7jwrjQ55UExLT
+         zu0/sp0NOnrLO48VP5DIN/CsurESGkBusKakubHr5N7CS1bAaTqKzcCSqbdsT+xv5lME
+         ujZYXGvQq+CO/VVCxO9XiHbWN8IYZkqmpHfKlm4y567bfveQb4F7j81Hka232GcrB6VP
+         FvaT61hL+hrKj4P/pP/OAAUeG/+ilbQ5Bh8r9/t/UgNT59L9EeJaZTdF1wQOmvUHRhRi
+         Hy4Ld5AvgNyyXljDmxMy8BD3YU+mVnSs1gapby2ujEMxHt2nOdIAwXlQMPILpgSLEP7/
+         g4bA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778532556; x=1779137356;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=99nJ+y4hv8yCMmT45OGJ+EZML6MewLrbPCDP+fhWm10=;
-        b=EYzwtzDACetmF1RkJ96uE2SU8zq1xo2ZSw5175w6OR3bjkLPaZY5P0z7ulD2sNyFiR
-         l9TQDb1J22+D5NDZCaPrjPoXRReZbjISPnegwY5f3DZuoZQC+eLZ5n7crEt1XXbAtWjb
-         hRzQ+lsRhHVaU9b3fh6WMOaaA7Xmqp7uPRPfFIprpcup5G0jdg8g/hOZ6cXWmySQGc5B
-         xXIK+bo4RPtvBVuDYb9fjFjigk/ir96MtkJUrqIclAEP78fuOk6ovut1wrYaa10WPLRs
-         c6DMFeD9rUQMjXgLsLg1RUnsHpdzUbH/iPEVcvmV2XdSrRJPx9al4hdT3m5Ir+nTyG4N
-         RRqg==
-X-Gm-Message-State: AOJu0YxFnDx88mesoMqZia6RECK4O4uDuXQAe+OlG14uOT7RqBwFuvAa
-	T8D7CSqAyn0J1pWVFq2UpQlXRJ8AvCTaYkWlBFGHuPCjEkF+Zb7S7dxA/zlQ7V1dVKXBZXNYblz
-	9SUdhW8MBtPxJzgornsLLUD6yDzAw6c1GASBHLalm0dBD383E1ozI7DptNXY=
+        d=1e100.net; s=20251104; t=1778535155; x=1779139955;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=UaIC9t1fQgpAXaTFFpFO+vfONy666zV+8kTTlKbrVM4=;
+        b=K0RqFElNNJkKs+J00+lqfKWk4vuc7RPZh8Q3aPIWT6iIawFyWpaQBKdgmyfP9LTeJ/
+         TRw0zy4D7iitAOuL9UZ+c/Bypj/xz6q//d05rMdx8bPyCd7TWYgi9mpwyEjjyQtpHtiO
+         E1bRkAZNlUl1oiqQc66yqk6Xp+DJj5P1awkf25emINMZMSgwpHthzPU6EE8tE5v1IOXi
+         L76t1IEEHTC+wtGtNkSO7cFiBgsScVUKKtzU3VWAmXYfQnoegYvQSwq3VogqIfzuwNIl
+         NMrAydLXnEs6Lq6HmOToy6t/6QMleHvodMdGDRNbJVO+9TauyyDudS/SxdckQqI+DX8N
+         tRGA==
+X-Forwarded-Encrypted: i=1; AFNElJ8n7t20x46BsHWxj23tXVmEtuN87GQkIwDPF/qlQ/0mN4V3v7x90rxHLUmysnDI1WiMzJskIk0=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzbdBJB2G9BkAHNsigxp57RC2V6yDYrp58WLruDIkoCWfo5IOK3
+	xzjrJja7UdVDM6DeC0QWWkAaUKDmRgIpmLUnT++2hhFYefbREuQQF7gnRD0V7+oLrK82MBUu+ap
+	algjYmVjHCn5qJLHIR6nFDQaOhB79hfMMC55MhHgqd7ZjhIFO9T5j7H0R
+X-Gm-Gg: Acq92OF9g7lGjwcFQp7V1MuXKePHF6pVkcBQYqoiqac4b1Gpc4/b02vkkl75jWkJkE/
+	3H4mb4Ff5iyJ5npqhouEHrcRSu5HR+nCuGBXSQkGY+Ds2muxgkxqY3+mo2nz+2kb7Ea6pUVZO49
+	3y3IUojKOyxKyQ9jHpwi1MHSDs8nIEPLjJ29r1coBF/bqIFLXys2xonA4wdaMyjwWe944GsCjAe
+	rT5YTDXVKEVbv2k8RtMJfPmiZb2kEA8UI/ot/MNLtokKiw63WI/bMl4FpSWhe/UmvVoRA+rBmsd
+	DcALSpJV7QDYoHQon2bt+Id2L6+26EqM/MjqVI5ekMbKN/auaxhEKxILCVMQStFU3ZgOjZ6cl3r
+	UEoiypVc=
+X-Received: by 2002:a05:6820:180a:b0:69b:4186:164 with SMTP id
+ 006d021491bc7-69b69f4308bmr90278eaf.59.1778535154757; Mon, 11 May 2026
+ 14:32:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:208e:b0:695:818c:e56a with SMTP id
- 006d021491bc7-69b69e5a828mr17611eaf.27.1778532556361; Mon, 11 May 2026
- 13:49:16 -0700 (PDT)
-Date: Mon, 11 May 2026 13:49:16 -0700
-In-Reply-To: <20260511115725.28441-1-jack@suse.cz>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a0240cc.170a0220.7f9b3.0002.GAE@google.com>
-Subject: [syzbot ci] Re: fs: Fix missed inode write during fsync
-From: syzbot ci <syzbot+ci10e571aa5fa42db7@syzkaller.appspotmail.com>
-To: aivazian.tigran@gmail.com, brauner@kernel.org, dsterba@suse.com, 
-	hirofumi@mail.parknet.co.jp, jack@suse.cz, linux-ext4@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, tytso@mit.edu
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <0bbb511f-6f0a-48b1-b3a4-e55eb907a1b4@mail.kernel.org>
+In-Reply-To: <0bbb511f-6f0a-48b1-b3a4-e55eb907a1b4@mail.kernel.org>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Mon, 11 May 2026 23:32:23 +0200
+X-Gm-Features: AVHnY4KSBr3y_qye0eHIDJLmjxzVxW1ajxt-awz-iaXLBmCNYa6yOYNEjoZsXTw
+Message-ID: <CANp29Y6J7Lw3UX43NKS=ae9nJTcjk=WVwM4qmff8=PuDD7uPUA@mail.gmail.com>
+Subject: Re: [PATCH RFC] hfs/hfsplus: fix lockdep false positive for extents_lock
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
+Note the duplicate lines in the patch.
 
-[v1] fs: Fix missed inode write during fsync
-https://lore.kernel.org/all/20260511115725.28441-1-jack@suse.cz
-* [PATCH 1/9] affs: Drop support for metadata bh tracking
-* [PATCH 2/9] ext4: Allocate mapping_metadata_bhs struct on demand
-* [PATCH 3/9] fs: Writeout inode buffer from mmb_sync()
-* [PATCH 4/9] ext2: Fix possibly missing inode write on fsync(2)
-* [PATCH 5/9] udf: Fix possibly missing inode write on fsync(2)
-* [PATCH 6/9] fat: Fix possibly missing inode write on fsync(2)
-* [PATCH 7/9] minix: Fix possibly missing inode write on fsync(2)
-* [PATCH 8/9] bfs: Fix possibly missing inode write on fsync(2)
-* [PATCH 9/9] ext4: Use mmb infrastructure for inode buffer writeout
-
-and found the following issue:
-KASAN: null-ptr-deref Write in write_dirty_buffer
-
-Full report is available here:
-https://ci.syzbot.org/series/d987d2d8-3775-4aa9-959f-8a045778888c
-
-***
-
-KASAN: null-ptr-deref Write in write_dirty_buffer
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      5d6919055dec134de3c40167a490f33c74c12581
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/567d596c-ca65-43c9-bd7d-1e60cfe9da2a/config
-syz repro: https://ci.syzbot.org/findings/1bc13af8-2d91-4fbd-b43e-fbe72f29ca41/syz_repro
-
-EXT4-fs (loop2): unmounting filesystem 00000000-0000-0000-0000-000000000000.
-==================================================================
-BUG: KASAN: null-ptr-deref in instrument_atomic_read_write include/linux/instrumented.h:112 [inline]
-BUG: KASAN: null-ptr-deref in test_and_set_bit_lock include/asm-generic/bitops/instrumented-lock.h:57 [inline]
-BUG: KASAN: null-ptr-deref in trylock_buffer include/linux/buffer_head.h:425 [inline]
-BUG: KASAN: null-ptr-deref in lock_buffer include/linux/buffer_head.h:431 [inline]
-BUG: KASAN: null-ptr-deref in write_dirty_buffer+0x37/0x190 fs/buffer.c:2760
-Write of size 8 at addr 0000000000000000 by task syz-executor/5742
-
-CPU: 1 UID: 0 PID: 5742 Comm: syz-executor Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- check_region_inline mm/kasan/generic.c:-1 [inline]
- kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
- instrument_atomic_read_write include/linux/instrumented.h:112 [inline]
- test_and_set_bit_lock include/asm-generic/bitops/instrumented-lock.h:57 [inline]
- trylock_buffer include/linux/buffer_head.h:425 [inline]
- lock_buffer include/linux/buffer_head.h:431 [inline]
- write_dirty_buffer+0x37/0x190 fs/buffer.c:2760
- mmb_sync+0x74c/0xed0 fs/buffer.c:603
- ext4_evict_inode+0x2fa/0x1040 fs/ext4/inode.c:199
- evict+0x61e/0xb10 fs/inode.c:841
- ext4_quota_off+0x470/0x580 fs/ext4/super.c:7326
- ext4_quotas_off fs/ext4/super.c:1195 [inline]
- ext4_put_super+0xdf/0xd80 fs/ext4/super.c:1306
- generic_shutdown_super+0x13d/0x2d0 fs/super.c:646
- kill_block_super+0x44/0x90 fs/super.c:1725
- ext4_kill_sb+0x68/0xb0 fs/ext4/super.c:7494
- deactivate_locked_super+0xbc/0x130 fs/super.c:476
- cleanup_mnt+0x437/0x4d0 fs/namespace.c:1312
- task_work_run+0x1d9/0x270 kernel/task_work.c:233
- resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
- __exit_to_user_mode_loop kernel/entry/common.c:67 [inline]
- exit_to_user_mode_loop+0xf3/0x4d0 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:238 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
- do_syscall_64+0x33e/0xf80 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fd8d1b9e017
-Code: a2 c7 05 dc 06 25 00 00 00 00 00 eb 96 e8 e1 12 00 00 90 31 f6 e9 09 00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 01 c3 48 c7 c2 e8 ff ff ff f7 d8 64 89 02 b8
-RSP: 002b:00007ffef04ebf88 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
-RAX: 0000000000000000 RBX: 00007fd8d1c32120 RCX: 00007fd8d1b9e017
-RDX: 0000000000000000 RSI: 0000000000000009 RDI: 00007ffef04ec040
-RBP: 00007ffef04ec040 R08: 00007ffef04ed040 R09: 00000000ffffffff
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffef04ed0d0
-R13: 00007fd8d1c32120 R14: 0000000000014595 R15: 00007ffef04ed110
- </TASK>
-==================================================================
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+On Sat, May 9, 2026 at 7:50=E2=80=AFAM 'syzbot' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
+>
+> hfs/hfsplus: fix lockdep false positive for extents_lock
+>
+> syzkaller reported a possible recursive locking deadlock on
+> &HFSPLUS_I(inode)->extents_lock. This is a lockdep false positive.
+>
+> In HFS and HFS+, extents_lock is used to protect the extent allocation
+> information of an inode. The problem arises because the lock is
+> initialized uniformly for all inodes, including both regular files and
+> special internal system files (like the Allocation file, Extents file,
+> Catalog file, etc.). Because of this, lockdep assigns the exact same
+> lock class to the extents_lock of all inodes.
+>
+> When a regular file is truncated or extended, its extents_lock is
+> acquired. During this process, the filesystem might need to allocate or
+> free blocks, which requires reading or updating the Allocation file (or
+> other system files). This triggers a read on the Allocation file's
+> mapping, which in turn acquires the Allocation file's extents_lock.
+> Lockdep sees the same lock class being acquired twice in a nested
+> fashion and flags it as a recursive locking deadlock.
+>
+> The exact same issue also exists in the older HFS filesystem (fs/hfs/),
+> where operations on a regular file can trigger updates to the Extents
+> or Catalog B-trees, leading to a similar nested acquisition of
+> extents_lock.
+>
+> To fix this false positive, assign distinct lock classes to the
+> extents_lock of special system files using lockdep_set_class().
+> For HFS+, add lock class keys for the Extents, Catalog, Allocation,
+> Attributes, and Startup files, and apply them in hfsplus_iget().
+> For HFS, add lock class keys for the Extents and Catalog B-tree files,
+> and apply them in hfs_btree_open().
+>
+> Assisted-by: Gemini:gemini-3.1-pro-preview
+> To: <frank.li@vivo.com>
+> To: <glaubitz@physik.fu-berlin.de>
+> To: <linux-fsdevel@vger.kernel.org>
+> To: <slava@dubeyko.com>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> ---
+> diff --git a/fs/hfs/btree.c b/fs/hfs/btree.c
+> index 2eb37a2f6..fc262d703 100644
+> --- a/fs/hfs/btree.c
+> +++ b/fs/hfs/btree.c
+> @@ -12,9 +12,17 @@
+>  #include <linux/pagemap.h>
+>  #include <linux/slab.h>
+>  #include <linux/log2.h>
+> +#include <linux/lockdep.h>
+>
+> +#include <linux/lockdep.h>
+>  #include "btree.h"
+>
+> +static struct lock_class_key hfs_ext_extents_key;
+> +static struct lock_class_key hfs_cat_extents_key;
+> +
+> +static struct lock_class_key hfs_ext_extents_key;
+> +static struct lock_class_key hfs_cat_extents_key;
+> +
+>  /* Get a reference to a B*Tree and do some initial checks */
+>  struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_k=
+eycmp keycmp)
+>  {
+> @@ -49,6 +57,10 @@ struct hfs_btree *hfs_btree_open(struct super_block *s=
+b, u32 id, btree_keycmp ke
+>         mutex_init(&HFS_I(tree->inode)->extents_lock);
+>         switch (id) {
+>         case HFS_EXT_CNID:
+> +               lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
+> +                                 &hfs_ext_extents_key);
+> +               lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
+> +                                 &hfs_ext_extents_key);
+>                 hfs_inode_read_fork(tree->inode, mdb->drXTExtRec, mdb->dr=
+XTFlSize,
+>                                     mdb->drXTFlSize, be32_to_cpu(mdb->drX=
+TClpSiz));
+>                 if (HFS_I(tree->inode)->alloc_blocks >
+> @@ -61,6 +73,10 @@ struct hfs_btree *hfs_btree_open(struct super_block *s=
+b, u32 id, btree_keycmp ke
+>                 tree->inode->i_mapping->a_ops =3D &hfs_btree_aops;
+>                 break;
+>         case HFS_CAT_CNID:
+> +               lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
+> +                                 &hfs_cat_extents_key);
+> +               lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
+> +                                 &hfs_cat_extents_key);
+>                 hfs_inode_read_fork(tree->inode, mdb->drCTExtRec, mdb->dr=
+CTFlSize,
+>                                     mdb->drCTFlSize, be32_to_cpu(mdb->drC=
+TClpSiz));
+>
+> diff --git a/fs/hfsplus/super.c b/fs/hfsplus/super.c
+> index 40a0feda7..e1345a6fe 100644
+> --- a/fs/hfsplus/super.c
+> +++ b/fs/hfsplus/super.c
+> @@ -18,13 +18,35 @@
+>  #include <linux/slab.h>
+>  #include <linux/vfs.h>
+>  #include <linux/nls.h>
+> +#include <linux/lockdep.h>
+>
+>  static struct inode *hfsplus_alloc_inode(struct super_block *sb);
+>  static void hfsplus_free_inode(struct inode *inode);
+>
+> +#include <linux/lockdep.h>
+> +
+> +#include <linux/lockdep.h>
+>  #include "hfsplus_fs.h"
+> +
+> +static struct lock_class_key hfsplus_ext_extents_key;
+> +static struct lock_class_key hfsplus_cat_extents_key;
+> +static struct lock_class_key hfsplus_alloc_extents_key;
+> +static struct lock_class_key hfsplus_attr_extents_key;
+> +static struct lock_class_key hfsplus_start_extents_key;
+>  #include "xattr.h"
+>
+> +static struct lock_class_key hfsplus_ext_extents_key;
+> +static struct lock_class_key hfsplus_cat_extents_key;
+> +static struct lock_class_key hfsplus_alloc_extents_key;
+> +static struct lock_class_key hfsplus_attr_extents_key;
+> +static struct lock_class_key hfsplus_start_extents_key;
+> +
+> +static struct lock_class_key hfsplus_ext_extents_key;
+> +static struct lock_class_key hfsplus_cat_extents_key;
+> +static struct lock_class_key hfsplus_alloc_extents_key;
+> +static struct lock_class_key hfsplus_attr_extents_key;
+> +static struct lock_class_key hfsplus_start_extents_key;
+> +
+>  static int hfsplus_system_read_inode(struct inode *inode)
+>  {
+>         struct hfsplus_vh *vhdr =3D HFSPLUS_SB(inode->i_sb)->s_vhdr;
+> @@ -84,6 +106,51 @@ struct inode *hfsplus_iget(struct super_block *sb, un=
+signed long ino)
+>         memset(HFSPLUS_I(inode)->cached_extents, 0, sizeof(hfsplus_extent=
+_rec));
+>         HFSPLUS_I(inode)->extent_state =3D 0;
+>         mutex_init(&HFSPLUS_I(inode)->extents_lock);
+> +       switch (ino) {
+> +       case HFSPLUS_EXT_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_ext_extents_key);
+> +               break;
+> +       case HFSPLUS_CAT_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_cat_extents_key);
+> +               break;
+> +       case HFSPLUS_ALLOC_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_alloc_extents_key);
+> +               break;
+> +       case HFSPLUS_ATTR_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_attr_extents_key);
+> +               break;
+> +       case HFSPLUS_START_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_start_extents_key);
+> +               break;
+> +       }
+> +       /* Set lockdep classes for system files to avoid false positives =
+*/
+> +       switch (ino) {
+> +       case HFSPLUS_EXT_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_ext_extents_key);
+> +               break;
+> +       case HFSPLUS_CAT_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_cat_extents_key);
+> +               break;
+> +       case HFSPLUS_ALLOC_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_alloc_extents_key);
+> +               break;
+> +       case HFSPLUS_ATTR_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_attr_extents_key);
+> +               break;
+> +       case HFSPLUS_START_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_start_extents_key);
+> +               break;
+> +       }
+>         HFSPLUS_I(inode)->rsrc_inode =3D NULL;
+>         HFSPLUS_I(inode)->create_date =3D 0;
+>         HFSPLUS_I(inode)->linkid =3D 0;
+>
+>
+> base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to send it to the mailing list.
+> Reply with '#syz reject' to reject it.
+>
+> See  for more information.
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/0bbb511f-6f0a-48b1-b3a4-e55eb907a1b4%40mail.kernel.org=
+.
