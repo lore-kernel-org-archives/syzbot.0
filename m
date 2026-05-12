@@ -1,306 +1,200 @@
-Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42B56370D4D
-	for <syzbot@lists.linux.dev>; Mon, 11 May 2026 21:32:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.49
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778535157; cv=pass; b=NbOimh3RLMlNhSDrtBFUNrx/FHSv2Ar18kFl2rgUtqDoKPHReRlIfOkuXO98tt2i8yGEJnlDMS9Not6ENUp9ezyGBWrbPbu3tVvVsDyv71roQA5kv2jLGwNinJPxDre6AqPGeSvAef9mLGcIrJDaKBUEjUdRvOAQxMsw7U1s040=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778535157; c=relaxed/simple;
-	bh=aSQm8tTS06gfBHOF5YVv5dgpPF+Vieky0lEGOSxrBQ4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=H2sRRyowHoia4MDIkkn5av/Y5M9TDcVHHtwM10aKxK+LxANgvvNgRIOO83PSBNOgfviba+MuABRVzU3/QyCd74OPAO8h9pvCQmZ0JNfH4ZPu2IsUdFVWGrIVi0Z/z8zJXeaVVm9KVnbUtjrMyS45Us+IPkoOdrx++EzHMPEbxSE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mLcxv/4h; arc=pass smtp.client-ip=209.85.161.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mLcxv/4h"
-Received: by mail-oo1-f49.google.com with SMTP id 006d021491bc7-69489b43d66so1339401eaf.2
-        for <syzbot@lists.linux.dev>; Mon, 11 May 2026 14:32:36 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778535155; cv=none;
-        d=google.com; s=arc-20240605;
-        b=aPZcEODkrtPVVfmV7TgcgahlYROqC9wdh8MRjOppqKrL+AzmPOumjAhqe3urrxuQF+
-         TM87DiFybCTuYMi7Gq01b7nXRVtaPEnQlejeQA8y5m8kriyrxE1QFTao7IeViCAqsHtr
-         SvpyRqfiL1a/b6rrpktOMz0S+xASjooebGihMHPCAyt6aigvISXx2oq/YCWBbXYX9Wql
-         Gt5lnNCqqVcbh/bgg1en7q9ATIuFfwrKP/vCjw1eZNpU3jBlKRjVTxubJ+lbRlUgqGCu
-         uTJSZexwAtwX3FpleX+yxmCPjKAoAVHJaxFKiL7PksHKundjYXBr/MqlLynr9HHOZ+KN
-         QIog==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=UaIC9t1fQgpAXaTFFpFO+vfONy666zV+8kTTlKbrVM4=;
-        fh=Pa9zWoZJRcFfwSvyJHrJ0/50rqhEewhwv1xp2L+URCg=;
-        b=Au/1NBgRuSEMq2mp00C2vQvO/l3mmr+TKhJJLC2q7981ihs0cHTfU/hRtXU0TPtmxC
-         K9CVHG+2lyeIiNN51dzGK0USUXtFtjqQZRXRma03YEU2csa25F3EVUep29HKl6fcblnQ
-         jmrvfEF2DXfxpfWMiRg0K9vYO5j/HUXdoAc9oHcXQcfb1Z1bnSF/B0DfCSE3A9+UoMMw
-         MahEzmphmcK7NK5vZ73LcAMAcPbXwcABx26JVJ3UB5IwBTLmtjrvmTogHqlu1mkHjO2X
-         QAFQEUZHELBHRZspRyWcI8nEsBJvamky2EuC0XG6gdiqvKmB+PFiws/tSM9vWM0un/yp
-         IDEA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778535155; x=1779139955; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UaIC9t1fQgpAXaTFFpFO+vfONy666zV+8kTTlKbrVM4=;
-        b=mLcxv/4hwsg09WhAgOpyeIno+DVIhpyatSYFKhu5R86BhYc4JmmVU7jwrjQ55UExLT
-         zu0/sp0NOnrLO48VP5DIN/CsurESGkBusKakubHr5N7CS1bAaTqKzcCSqbdsT+xv5lME
-         ujZYXGvQq+CO/VVCxO9XiHbWN8IYZkqmpHfKlm4y567bfveQb4F7j81Hka232GcrB6VP
-         FvaT61hL+hrKj4P/pP/OAAUeG/+ilbQ5Bh8r9/t/UgNT59L9EeJaZTdF1wQOmvUHRhRi
-         Hy4Ld5AvgNyyXljDmxMy8BD3YU+mVnSs1gapby2ujEMxHt2nOdIAwXlQMPILpgSLEP7/
-         g4bA==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7697A24E4A8
+	for <syzbot@lists.linux.dev>; Tue, 12 May 2026 01:35:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778549732; cv=none; b=q85FQKkoxajyfqnP5TZDeSRaHm+3h+8RMPGFh+/uRBYAHrLKxJ4MHZsjkkz9X3LXhwzYInFVdPItnwAF5AWICs/fR5POLZk5FH+fcCMIU/xG7tWoQ2aQtjz1w/4x+C+4I7RNjQA9gXyHQmivzNls3a0pUuVzQHslf8ZwO77NvIU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778549732; c=relaxed/simple;
+	bh=S5CiyDXWf6X5z61rNOKGDeWtbE5lUyS7kIq6IyWVFIk=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=rDWs4+NRz8CtsuUD0+JekHz34m9F/wvbEEIhquc9OyTzYFCcg0BzWg2kIHBhN8QSBhtHzuozAcZfZQzsK1PGvArZtgawJlCzH6TEA+EthhbguWnQsSzcM8h0EptJU4p4gxGzvGTIzrBabL/zkeRz4mLcU0QulxIeXuqgfqCQI80=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-479d900d222so8149100b6e.2
+        for <syzbot@lists.linux.dev>; Mon, 11 May 2026 18:35:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778535155; x=1779139955;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=UaIC9t1fQgpAXaTFFpFO+vfONy666zV+8kTTlKbrVM4=;
-        b=K0RqFElNNJkKs+J00+lqfKWk4vuc7RPZh8Q3aPIWT6iIawFyWpaQBKdgmyfP9LTeJ/
-         TRw0zy4D7iitAOuL9UZ+c/Bypj/xz6q//d05rMdx8bPyCd7TWYgi9mpwyEjjyQtpHtiO
-         E1bRkAZNlUl1oiqQc66yqk6Xp+DJj5P1awkf25emINMZMSgwpHthzPU6EE8tE5v1IOXi
-         L76t1IEEHTC+wtGtNkSO7cFiBgsScVUKKtzU3VWAmXYfQnoegYvQSwq3VogqIfzuwNIl
-         NMrAydLXnEs6Lq6HmOToy6t/6QMleHvodMdGDRNbJVO+9TauyyDudS/SxdckQqI+DX8N
-         tRGA==
-X-Forwarded-Encrypted: i=1; AFNElJ8n7t20x46BsHWxj23tXVmEtuN87GQkIwDPF/qlQ/0mN4V3v7x90rxHLUmysnDI1WiMzJskIk0=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzbdBJB2G9BkAHNsigxp57RC2V6yDYrp58WLruDIkoCWfo5IOK3
-	xzjrJja7UdVDM6DeC0QWWkAaUKDmRgIpmLUnT++2hhFYefbREuQQF7gnRD0V7+oLrK82MBUu+ap
-	algjYmVjHCn5qJLHIR6nFDQaOhB79hfMMC55MhHgqd7ZjhIFO9T5j7H0R
-X-Gm-Gg: Acq92OF9g7lGjwcFQp7V1MuXKePHF6pVkcBQYqoiqac4b1Gpc4/b02vkkl75jWkJkE/
-	3H4mb4Ff5iyJ5npqhouEHrcRSu5HR+nCuGBXSQkGY+Ds2muxgkxqY3+mo2nz+2kb7Ea6pUVZO49
-	3y3IUojKOyxKyQ9jHpwi1MHSDs8nIEPLjJ29r1coBF/bqIFLXys2xonA4wdaMyjwWe944GsCjAe
-	rT5YTDXVKEVbv2k8RtMJfPmiZb2kEA8UI/ot/MNLtokKiw63WI/bMl4FpSWhe/UmvVoRA+rBmsd
-	DcALSpJV7QDYoHQon2bt+Id2L6+26EqM/MjqVI5ekMbKN/auaxhEKxILCVMQStFU3ZgOjZ6cl3r
-	UEoiypVc=
-X-Received: by 2002:a05:6820:180a:b0:69b:4186:164 with SMTP id
- 006d021491bc7-69b69f4308bmr90278eaf.59.1778535154757; Mon, 11 May 2026
- 14:32:34 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778549729; x=1779154529;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=A4SjzNrrjzKDz4a8nXRuztpUXLLVt03rHC9YlHXRN4c=;
+        b=Km/VLbVjEz/tmNpdeoM0zNW2MtFzJcyys9+vfHDxC8LRf4srfMVjYRCtsD6kxG2JKh
+         tCBi9YNDYak408zCXVkne+w5Bjcu695hOew/khM470PJdtGBS/bBE/UxP8NlBBAmb4k4
+         IhKTsBNwvEMC9UwvsBwqKEykGJBEWwJLUAdu6xoj58j43Bp7q/U+9r1aBL9B3WSvbO11
+         PVmQKfYulvJ4ZOu25vxWCm/StASE2CnQErCaiiPxqluIz6E1XL5dbz4+9oO6IOqvqq57
+         yVgz+z8Br0rbiIMJkDMyS1xNn4jNbsuoG0DO2ZWiEfILtoZeyND6uE1bk4t5rOMNI9K+
+         zoFg==
+X-Gm-Message-State: AOJu0YxrYfT9ZbUThtRmO/UfSx3j90CIaz3BY9leTvftfruEJtKvJ1r3
+	tBVYZNxcf5jb48lLy0iYd9IYNLY+IrL71E1hlk6vVoPs5SmWKLTZOzTK2/f3oVU+2LlKRg16pF0
+	hPycxmqnQAtAR5/+4g9k+6lYC7Y3yxVDSl1P8FxA9O9a/HltEein3YsLYDHE=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0bbb511f-6f0a-48b1-b3a4-e55eb907a1b4@mail.kernel.org>
-In-Reply-To: <0bbb511f-6f0a-48b1-b3a4-e55eb907a1b4@mail.kernel.org>
-From: Aleksandr Nogikh <nogikh@google.com>
-Date: Mon, 11 May 2026 23:32:23 +0200
-X-Gm-Features: AVHnY4KSBr3y_qye0eHIDJLmjxzVxW1ajxt-awz-iaXLBmCNYa6yOYNEjoZsXTw
-Message-ID: <CANp29Y6J7Lw3UX43NKS=ae9nJTcjk=WVwM4qmff8=PuDD7uPUA@mail.gmail.com>
-Subject: Re: [PATCH RFC] hfs/hfsplus: fix lockdep false positive for extents_lock
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+X-Received: by 2002:a05:6820:80f:b0:694:95cb:4367 with SMTP id
+ 006d021491bc7-69b69efab01mr519037eaf.47.1778549729241; Mon, 11 May 2026
+ 18:35:29 -0700 (PDT)
+Date: Mon, 11 May 2026 18:35:29 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a0283e1.170a0220.7f9b3.0007.GAE@google.com>
+Subject: [moderation/CI] Re: tcp: fix stale per-CPU tcp_tw_isn leak enabling
+ ISN prediction
+From: syzbot ci <syzbot+ciee63f726d92f39f7@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-Note the duplicate lines in the patch.
+syzbot ci has tested the following series
 
-On Sat, May 9, 2026 at 7:50=E2=80=AFAM 'syzbot' via
-syzkaller-upstream-moderation
-<syzkaller-upstream-moderation@googlegroups.com> wrote:
->
-> hfs/hfsplus: fix lockdep false positive for extents_lock
->
-> syzkaller reported a possible recursive locking deadlock on
-> &HFSPLUS_I(inode)->extents_lock. This is a lockdep false positive.
->
-> In HFS and HFS+, extents_lock is used to protect the extent allocation
-> information of an inode. The problem arises because the lock is
-> initialized uniformly for all inodes, including both regular files and
-> special internal system files (like the Allocation file, Extents file,
-> Catalog file, etc.). Because of this, lockdep assigns the exact same
-> lock class to the extents_lock of all inodes.
->
-> When a regular file is truncated or extended, its extents_lock is
-> acquired. During this process, the filesystem might need to allocate or
-> free blocks, which requires reading or updating the Allocation file (or
-> other system files). This triggers a read on the Allocation file's
-> mapping, which in turn acquires the Allocation file's extents_lock.
-> Lockdep sees the same lock class being acquired twice in a nested
-> fashion and flags it as a recursive locking deadlock.
->
-> The exact same issue also exists in the older HFS filesystem (fs/hfs/),
-> where operations on a regular file can trigger updates to the Extents
-> or Catalog B-trees, leading to a similar nested acquisition of
-> extents_lock.
->
-> To fix this false positive, assign distinct lock classes to the
-> extents_lock of special system files using lockdep_set_class().
-> For HFS+, add lock class keys for the Extents, Catalog, Allocation,
-> Attributes, and Startup files, and apply them in hfsplus_iget().
-> For HFS, add lock class keys for the Extents and Catalog B-tree files,
-> and apply them in hfs_btree_open().
->
-> Assisted-by: Gemini:gemini-3.1-pro-preview
-> To: <frank.li@vivo.com>
-> To: <glaubitz@physik.fu-berlin.de>
-> To: <linux-fsdevel@vger.kernel.org>
-> To: <slava@dubeyko.com>
-> Cc: <linux-kernel@vger.kernel.org>
->
-> ---
-> diff --git a/fs/hfs/btree.c b/fs/hfs/btree.c
-> index 2eb37a2f6..fc262d703 100644
-> --- a/fs/hfs/btree.c
-> +++ b/fs/hfs/btree.c
-> @@ -12,9 +12,17 @@
->  #include <linux/pagemap.h>
->  #include <linux/slab.h>
->  #include <linux/log2.h>
-> +#include <linux/lockdep.h>
->
-> +#include <linux/lockdep.h>
->  #include "btree.h"
->
-> +static struct lock_class_key hfs_ext_extents_key;
-> +static struct lock_class_key hfs_cat_extents_key;
-> +
-> +static struct lock_class_key hfs_ext_extents_key;
-> +static struct lock_class_key hfs_cat_extents_key;
-> +
->  /* Get a reference to a B*Tree and do some initial checks */
->  struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_k=
-eycmp keycmp)
->  {
-> @@ -49,6 +57,10 @@ struct hfs_btree *hfs_btree_open(struct super_block *s=
-b, u32 id, btree_keycmp ke
->         mutex_init(&HFS_I(tree->inode)->extents_lock);
->         switch (id) {
->         case HFS_EXT_CNID:
-> +               lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
-> +                                 &hfs_ext_extents_key);
-> +               lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
-> +                                 &hfs_ext_extents_key);
->                 hfs_inode_read_fork(tree->inode, mdb->drXTExtRec, mdb->dr=
-XTFlSize,
->                                     mdb->drXTFlSize, be32_to_cpu(mdb->drX=
-TClpSiz));
->                 if (HFS_I(tree->inode)->alloc_blocks >
-> @@ -61,6 +73,10 @@ struct hfs_btree *hfs_btree_open(struct super_block *s=
-b, u32 id, btree_keycmp ke
->                 tree->inode->i_mapping->a_ops =3D &hfs_btree_aops;
->                 break;
->         case HFS_CAT_CNID:
-> +               lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
-> +                                 &hfs_cat_extents_key);
-> +               lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
-> +                                 &hfs_cat_extents_key);
->                 hfs_inode_read_fork(tree->inode, mdb->drCTExtRec, mdb->dr=
-CTFlSize,
->                                     mdb->drCTFlSize, be32_to_cpu(mdb->drC=
-TClpSiz));
->
-> diff --git a/fs/hfsplus/super.c b/fs/hfsplus/super.c
-> index 40a0feda7..e1345a6fe 100644
-> --- a/fs/hfsplus/super.c
-> +++ b/fs/hfsplus/super.c
-> @@ -18,13 +18,35 @@
->  #include <linux/slab.h>
->  #include <linux/vfs.h>
->  #include <linux/nls.h>
-> +#include <linux/lockdep.h>
->
->  static struct inode *hfsplus_alloc_inode(struct super_block *sb);
->  static void hfsplus_free_inode(struct inode *inode);
->
-> +#include <linux/lockdep.h>
-> +
-> +#include <linux/lockdep.h>
->  #include "hfsplus_fs.h"
-> +
-> +static struct lock_class_key hfsplus_ext_extents_key;
-> +static struct lock_class_key hfsplus_cat_extents_key;
-> +static struct lock_class_key hfsplus_alloc_extents_key;
-> +static struct lock_class_key hfsplus_attr_extents_key;
-> +static struct lock_class_key hfsplus_start_extents_key;
->  #include "xattr.h"
->
-> +static struct lock_class_key hfsplus_ext_extents_key;
-> +static struct lock_class_key hfsplus_cat_extents_key;
-> +static struct lock_class_key hfsplus_alloc_extents_key;
-> +static struct lock_class_key hfsplus_attr_extents_key;
-> +static struct lock_class_key hfsplus_start_extents_key;
-> +
-> +static struct lock_class_key hfsplus_ext_extents_key;
-> +static struct lock_class_key hfsplus_cat_extents_key;
-> +static struct lock_class_key hfsplus_alloc_extents_key;
-> +static struct lock_class_key hfsplus_attr_extents_key;
-> +static struct lock_class_key hfsplus_start_extents_key;
-> +
->  static int hfsplus_system_read_inode(struct inode *inode)
->  {
->         struct hfsplus_vh *vhdr =3D HFSPLUS_SB(inode->i_sb)->s_vhdr;
-> @@ -84,6 +106,51 @@ struct inode *hfsplus_iget(struct super_block *sb, un=
-signed long ino)
->         memset(HFSPLUS_I(inode)->cached_extents, 0, sizeof(hfsplus_extent=
-_rec));
->         HFSPLUS_I(inode)->extent_state =3D 0;
->         mutex_init(&HFSPLUS_I(inode)->extents_lock);
-> +       switch (ino) {
-> +       case HFSPLUS_EXT_CNID:
-> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-> +                                 &hfsplus_ext_extents_key);
-> +               break;
-> +       case HFSPLUS_CAT_CNID:
-> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-> +                                 &hfsplus_cat_extents_key);
-> +               break;
-> +       case HFSPLUS_ALLOC_CNID:
-> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-> +                                 &hfsplus_alloc_extents_key);
-> +               break;
-> +       case HFSPLUS_ATTR_CNID:
-> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-> +                                 &hfsplus_attr_extents_key);
-> +               break;
-> +       case HFSPLUS_START_CNID:
-> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-> +                                 &hfsplus_start_extents_key);
-> +               break;
-> +       }
-> +       /* Set lockdep classes for system files to avoid false positives =
-*/
-> +       switch (ino) {
-> +       case HFSPLUS_EXT_CNID:
-> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-> +                                 &hfsplus_ext_extents_key);
-> +               break;
-> +       case HFSPLUS_CAT_CNID:
-> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-> +                                 &hfsplus_cat_extents_key);
-> +               break;
-> +       case HFSPLUS_ALLOC_CNID:
-> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-> +                                 &hfsplus_alloc_extents_key);
-> +               break;
-> +       case HFSPLUS_ATTR_CNID:
-> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-> +                                 &hfsplus_attr_extents_key);
-> +               break;
-> +       case HFSPLUS_START_CNID:
-> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-> +                                 &hfsplus_start_extents_key);
-> +               break;
-> +       }
->         HFSPLUS_I(inode)->rsrc_inode =3D NULL;
->         HFSPLUS_I(inode)->create_date =3D 0;
->         HFSPLUS_I(inode)->linkid =3D 0;
->
->
-> base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
-> --
-> This is an AI-generated patch subject to moderation.
-> Reply with '#syz upstream' to send it to the mailing list.
-> Reply with '#syz reject' to reject it.
->
-> See  for more information.
->
-> --
-> You received this message because you are subscribed to the Google Groups=
- "syzkaller-upstream-moderation" group.
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/0bbb511f-6f0a-48b1-b3a4-e55eb907a1b4%40mail.kernel.org=
-.
+[v1] tcp: fix stale per-CPU tcp_tw_isn leak enabling ISN prediction
+https://lore.kernel.org/all/20260511151559.1916614-1-edumazet@google.com
+* [PATCH net] tcp: fix stale per-CPU tcp_tw_isn leak enabling ISN prediction
+
+and found the following issues:
+* BUG: using __this_cpu_write() in preemptible code in tcp_v4_do_rcv
+* BUG: using __this_cpu_write() in preemptible code in tcp_v6_do_rcv
+
+Full report is available here:
+https://ci.syzbot.org/series/45073ca6-4b5b-4cbd-83bf-ae30c470d334
+
+***
+
+BUG: using __this_cpu_write() in preemptible code in tcp_v4_do_rcv
+
+tree:      net
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
+base:      a450063ef86b9967234ca1f896c0d77400c74f11
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/d6bfac50-400c-447d-b4f2-f5caa36c16ac/config
+syz repro: https://ci.syzbot.org/findings/95b64202-6cf3-4356-94bc-753dbd8443c4/syz_repro
+
+BUG: using __this_cpu_write() in preemptible [00000000] code: syz.0.17/5875
+caller is tcp_v4_do_rcv+0xb4a/0x13e0 net/ipv4/tcp_ipv4.c:1881
+CPU: 0 UID: 0 PID: 5875 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ check_preemption_disabled+0xd3/0xe0 lib/smp_processor_id.c:47
+ tcp_v4_do_rcv+0xb4a/0x13e0 net/ipv4/tcp_ipv4.c:1881
+ sk_backlog_rcv include/net/sock.h:1190 [inline]
+ __release_sock+0x265/0x3a0 net/core/sock.c:3216
+ release_sock+0x190/0x260 net/core/sock.c:3815
+ mptcp_pm_rm_addr_or_subflow+0x472/0x9d0 net/mptcp/pm.c:789
+ mptcp_nl_remove_id_zero_address net/mptcp/pm_kernel.c:1140 [inline]
+ mptcp_pm_nl_del_addr_doit+0x503/0x1430 net/mptcp/pm_kernel.c:1176
+ genl_family_rcv_msg_doit+0x22a/0x330 net/netlink/genetlink.c:1114
+ genl_family_rcv_msg net/netlink/genetlink.c:1194 [inline]
+ genl_rcv_msg+0x61c/0x7a0 net/netlink/genetlink.c:1209
+ netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2550
+ genl_rcv+0x28/0x40 net/netlink/genetlink.c:1218
+ netlink_unicast_kernel net/netlink/af_netlink.c:1318 [inline]
+ netlink_unicast+0x75c/0x8e0 net/netlink/af_netlink.c:1344
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1894
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
+ __sys_sendmsg net/socket.c:2784 [inline]
+ __do_sys_sendmsg net/socket.c:2789 [inline]
+ __se_sys_sendmsg net/socket.c:2787 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f6847f9cdd9
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f6848e95028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f6848215fa0 RCX: 00007f6847f9cdd9
+RDX: 0000000024000800 RSI: 0000200000000140 RDI: 0000000000000004
+RBP: 00007f6848032d69 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f6848216038 R14: 00007f6848215fa0 R15: 00007ffe50763178
+ </TASK>
+
+
+***
+
+BUG: using __this_cpu_write() in preemptible code in tcp_v6_do_rcv
+
+tree:      net
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
+base:      a450063ef86b9967234ca1f896c0d77400c74f11
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/d6bfac50-400c-447d-b4f2-f5caa36c16ac/config
+syz repro: https://ci.syzbot.org/findings/f5960777-902c-46ad-b811-9dff0f17d320/syz_repro
+
+BUG: using __this_cpu_write() in preemptible [00000000] code: syz.0.173/6173
+caller is tcp_v6_do_rcv+0x10c2/0x1ca0 net/ipv6/tcp_ipv6.c:1644
+CPU: 0 UID: 0 PID: 6173 Comm: syz.0.173 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ check_preemption_disabled+0xd3/0xe0 lib/smp_processor_id.c:47
+ tcp_v6_do_rcv+0x10c2/0x1ca0 net/ipv6/tcp_ipv6.c:1644
+ sk_backlog_rcv include/net/sock.h:1190 [inline]
+ __release_sock+0x1b8/0x3a0 net/core/sock.c:3216
+ __tcp_close+0x832/0xfe0 net/ipv4/tcp.c:3238
+ __mptcp_close_ssk+0x52d/0x1180 net/mptcp/protocol.c:2604
+ mptcp_destroy_common+0x15c/0x330 net/mptcp/protocol.c:3408
+ mptcp_destroy+0x82/0x120 net/mptcp/protocol.c:3616
+ __mptcp_destroy_sock+0x156/0x370 net/mptcp/protocol.c:3250
+ __mptcp_close+0x8f6/0xd10 net/mptcp/protocol.c:3352
+ mptcp_close+0x28/0x1a0 net/mptcp/protocol.c:3367
+ inet_release+0x143/0x190 net/ipv4/af_inet.c:442
+ __sock_release net/socket.c:722 [inline]
+ sock_close+0xc3/0x240 net/socket.c:1514
+ __fput+0x44f/0xa60 fs/file_table.c:510
+ task_work_run+0x1d9/0x270 kernel/task_work.c:233
+ resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
+ __exit_to_user_mode_loop kernel/entry/common.c:67 [inline]
+ exit_to_user_mode_loop+0xed/0x480 kernel/entry/common.c:98
+ __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
+ syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:238 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
+ do_syscall_64+0x33e/0xf80 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f69be79cdd9
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc7668ad18 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
+RAX: 0000000000000000 RBX: 00007ffc7668ae00 RCX: 00007f69be79cdd9
+RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000000000000003
+RBP: 0000000000012dd1 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000001b32b20000 R11: 0000000000000246 R12: 00007ffc7668ae40
+R13: 00007f69bea15fac R14: 0000000000012e0a R15: 00007f69bea15fa0
+ </TASK>
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[davem@davemloft.net edumazet@google.com eric.dumazet@gmail.com horms@kernel.org kuba@kernel.org kuniyu@google.com ncardwell@google.com netdev@vger.kernel.org pabeni@redhat.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
