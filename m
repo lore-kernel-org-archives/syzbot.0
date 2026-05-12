@@ -1,186 +1,280 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5B46395AC5
-	for <syzbot@lists.linux.dev>; Tue, 12 May 2026 10:19:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=10.30.226.201
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778581172; cv=pass; b=usL1O30ljt3xQoG+bA4zVFurAYuQ+72fPq/eZYdVIe3MJBQVt5IDirZQCEI5EKVd/Ir15tSGtERHXJv9kKqVJOArhUDZ8nET/Q+pJYh//wdHIRxqph9H8GFgJV49cdCxS2ncmUws3FISCRCTRG4fa+q00fpIhk7Okf5pm1MjOIQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778581172; c=relaxed/simple;
-	bh=twRHwlYWmjcSM5grYSbqQaA61F8nfu1fdZyxhIS7KEc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KyGrUNYJNi4s0pIFYmkElMQmkHj918tF0qmXuvj+zqVvknmzQ0K7Ee+Gzmz/bUhvYHVG24lB8kfirR7HSw4DSKtxxCJPznJ3tPRaAuchdTm8cdKIqA7PuEGWBKGcHyhcEyhSSOzj2/5WD+QV3bjh6m1o0aRqGjQWEMUwikNprFg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Iv7qXwgn; arc=pass smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4E183839B9
+	for <syzbot@lists.linux.dev>; Tue, 12 May 2026 10:34:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778582069; cv=none; b=DfPHCX/LVEZBa39Y19aWqhAJyb4fhZxScjN3yrXziAvSxvcYUhV9hJDbADXqTV55NN1m+JkLprJY4a6+2u8zRyzab1hhC7ZPekneFxl2rSo7lUG/paXpCRN0lwMxBp5Ms7IMB8667w91aMp/7E7r2UWSxqOKsm0D3S+IGJdPu/s=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778582069; c=relaxed/simple;
+	bh=4HB1q8kq1izWyumokhLTOTLBdNThpJdXvhJJVNO7N5E=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=B6gf/CAldf996nJe+BP+3mbNMo2AyjKgIOHw2ode3NU+4lMDfD3ZBit1JbVLZiYZkRCRGvFDS7rzDmWq82ssSg2dqxlO21EbzC2e6k7xjRbtsr0qLud4pMrzwlRpq+AvaePzvxZzLAQi0t2v5LmUT1gSkn09CdPpzwm8r0C87yg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sAp6LsTh; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Iv7qXwgn"
-Received: by smtp.kernel.org (Postfix)
-	id A06A2C2BCF6; Tue, 12 May 2026 10:19:31 +0000 (UTC)
-Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id BD32FC2BCB0
-	for <syzbot@kernel.org>; Tue, 12 May 2026 10:19:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.kernel.org BD32FC2BCB0
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=google.com
-Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-40974bf7781so5102610fac.0
-        for <syzbot@kernel.org>; Tue, 12 May 2026 03:19:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778581169; cv=none;
-        d=google.com; s=arc-20240605;
-        b=SwRny2nYYF6imPnxNMA9ZRV3SWUm5DayYO7nyCCZwct8N0bx1pDQ4cRFt3tdGjp34c
-         wVOuat87DnNxNQ+XgsSJGBVdD/B6hinQrdCAZvpPfzry+yh/MZtqTbt3SNmA3oxaDqUR
-         VSjwKHnFKcYHRDRemcZq8nxmhwGWhxdXhFsEoZUdggb03+W805t5+4XUBJGvGznlltWa
-         R2oWJz5ndyFyyyzORlamtekSTyr0LkWssyWZ202krlUukymdutPlZGzMedzP8+3YT0lw
-         bVrYU6+3XHNh11VGF9PY7A/B5ImzpQehJwMfPQynKxYNhkE28Kab7WB3RKKv1UhKaHHS
-         uqfw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=V0FHgZHcxf0Nn1z25I8HI7FxlKr1gQwhnP+QXJFI4cY=;
-        fh=2Ld/g5BVZzBadtquf8mrXl84q+iOtbUed/2ECOFnmmI=;
-        b=SMjBhM/gdy14ExQvVbKVwKkKp704JDA8fexejAZ2qRwpy8K1yi5ShMcMsQ69+tvIpB
-         jHuHmXMmhCg7DhcFfvELxDmManTdsA4ppx41ra48b251MSaeqh5gWhBc2hzxT5BgqQIi
-         z1GF13y0CZyhR/8G5du16i1Rzo9XHtcPYAv/1V+1jcXnohGh4/sXzTwWcsmJe7J/NkiK
-         hNg3yigOFsqJasnwGd+qV6FIrXaAgXSIZMbMnTuN3PuaaK5wZOcyCzYUzyY7EoEAhr72
-         p4gky3yks2RANOc4hfZvh85s43Q2OvpMkfV5ytQQmk7aQPwJYJ/Rddl0QnAiZ6TCHzkH
-         TRRw==;
-        darn=kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778581169; x=1779185969; darn=kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=V0FHgZHcxf0Nn1z25I8HI7FxlKr1gQwhnP+QXJFI4cY=;
-        b=Iv7qXwgnRODZl7dMwQkPlA7oTrb6dGnKwlpY/h2pN3vAa5JYbJ14VR2nQVCqtoD/53
-         66Gi+40BHVwWeDQ19IdXYva6bRvBf7JVGkf7YtFk60duT5/zVUPSWuaPRHQIjknZ47ma
-         Wl9Gwz9Baa2UIaRtoSL57g4WoRB3hhcLrAn5B8hYHTSKU6SGYHp1QKpA+iHn2Q38Ce85
-         uj7cYD9UeagWnLRCTobi2fS5ujD2HJMfYxefxuxy54Pp2kx6fmiHSuiPY+mH7yARrO+I
-         iqtAjrOXvru/mxPTduF4reM4Ak2XJaCcJRjf1Z9karAu24gB48K85Z9RSFOhDVeoSmBk
-         pkLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778581169; x=1779185969;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=V0FHgZHcxf0Nn1z25I8HI7FxlKr1gQwhnP+QXJFI4cY=;
-        b=ezDg1r3f0zXVqr4oVSJ5I5jy8SCdu6PvdYJS6+xqTUexe5bvH3zAXDosw5bz03Nh2N
-         qc8tR/c7AkvauO3EZ9fy8KKvgTErT9tt84q8uJ56ueA9dtkhvq6iGV3c8iInlHnGB01k
-         +tt9AOtY+YDw4HTM7Dl0hYdg1mlS/2cXhqrhFfoyW83P0zm0keajtRgELHsxAhPZ4Kts
-         qP80x3rkxSqt6701yjqyNGYbFE41QVxTibxV7LP3Bt1Pffi3/rSjqvJXSNb8J78sCybf
-         CL3tr226H4dL1m8sjvvS7a3dEpbBP/FYDnXZRmJcxK/t7Ruh4EI12R/uDySutXALetyl
-         gL1A==
-X-Gm-Message-State: AOJu0YyAuu263D2Vw25AG5FRPW3QFFQukMfQrhNyenhr7gCalVUHF1c0
-	QAu3Js4ZZbvxijDUD0pFovQnmQlVZN0aE5OnddMU3vKswYDQEE7A9rqifQjCjMbcmznhT2gB/2b
-	dvJX7wLUemf1Hr/bMImrKshKXRSdC+VTyMeUQGUuz7QAyP4B0p+f+HhUg
-X-Gm-Gg: Acq92OFsLOsKMEbTF5B6g1YgiQqfQL5tOZW9c280Plpt4hG0dGAO41MpeB6zVLmqnEK
-	We7nY5JKGKelVv2ICIhFC6vae6tEP5+EzVmmsd1sVK3FvU+mp1pHWHySEUbHdaWFLdk8OVxLL36
-	E0khgIhraF0GbRSPlUYW063n66RXwTfRd7AA/dGOrgvDeqVRYX51c7XQrZi0LDMfLW+18booUdc
-	F4ONk1QTjK3J3i1vY2qk4PBiitR47I/mv6psCHe49NFKIOmcKrm13v15gm0Kc8Jk2bqX9OsKsIZ
-	uarMlZ4AW0GITUC+ZOVtIsdYGAWq50Q8P/dirMXB1+CNq5a9uGfTt+B1zzMeMUYlYlHXlmW6A1T
-	pRX9w
-X-Received: by 2002:a05:6870:2c98:b0:41c:4fa4:b568 with SMTP id
- 586e51a60fabf-4399b5f37femr1739313fac.12.1778581169011; Tue, 12 May 2026
- 03:19:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sAp6LsTh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 111D9C2BCF6;
+	Tue, 12 May 2026 10:34:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778582068;
+	bh=4HB1q8kq1izWyumokhLTOTLBdNThpJdXvhJJVNO7N5E=;
+	h=From:To:Cc:Subject:Date:From;
+	b=sAp6LsThEl6QzAuL92drHE89xXiRiV0DKeDWw9TujKAKxZ9+e8Vg9GKJ1WYbxp7nF
+	 Ohg9NDstFBWL4heX7erXvjkuBPboq5ObyZuYyqhEDz13eyl+XGR9bMgHotHFWvpVuM
+	 y+Sbpn2dqcW+RK3mq31mGUa/992jXCrTN8pG/fNgLiCnSrIhjhO9i+/Mul9cYfN5dI
+	 IyC1TDyIs/G6gaq9Okcf2z6bd+ZZ5/YDuoBw8Ylyg+d8I1NWhaWjPgXm98qZptX/Fl
+	 4qIeXoCQwRJk09zt3yA3t+pvPZqWVira+kWjw/T/iTEFFMrX+KjizltdW6WGY6hhTM
+	 2wof0iBy/wmcw==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC v2] misc/vmw_vmci: fix recursive locking deadlock in queue pair broker
+Message-ID: <5749a52e-a4b2-4c05-8877-ba1aa2b5f5d0@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <8cbeab5b-2812-4567-845f-9baee48062fb@mail.kernel.org>
-In-Reply-To: <8cbeab5b-2812-4567-845f-9baee48062fb@mail.kernel.org>
-From: Aleksandr Nogikh <nogikh@google.com>
-Date: Tue, 12 May 2026 12:19:16 +0200
-X-Gm-Features: AVHnY4JkXTNV_Y3tWOYbkhgsYNlULBgkkMUrlQktnDTfnkDjSmRmVKctPL9RINI
-Message-ID: <CANp29Y5CKaDdn=9y=yGG-_aSki5uVoEeZcyT=CBvS41yMEEKEw@mail.gmail.com>
-Subject: Re: [PATCH RFC] media: pvrusb2: fix missing cleanup in pvr2_send_request_ex
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Tue, 12 May 2026 10:34:28 +0000 (UTC)
 
-Why was it correct to replace return with goto done?
+misc/vmw_vmci: fix recursive locking deadlock in queue pair broker
 
-On Sun, May 10, 2026 at 4:30=E2=80=AFAM 'syzbot' via
-syzkaller-upstream-moderation
-<syzkaller-upstream-moderation@googlegroups.com> wrote:
->
-> media: pvrusb2: fix missing cleanup in pvr2_send_request_ex
->
-> In pvr2_send_request_ex(), if usb_urb_ep_type_check() fails on the read
-> or write URB, the function returns directly without proper cleanup. This
-> skips the timer_destroy_on_stack() call, leaking a timer debug object if
-> CONFIG_DEBUG_OBJECTS_TIMERS is enabled.
->
-> Additionally, if the write URB was already submitted and the read URB
-> check fails, returning directly leaves the write URB active. The next
-> time pvr2_send_request_ex() is called, it attempts to reuse the active
-> write URB, triggering a "URB submitted while active" warning in
-> usb_submit_urb().
->
-> Fix this by replacing the direct returns with `goto done` and the
-> appropriate cleanup logic, matching the rest of the error handling in
-> the function.
->
-> Assisted-by: Gemini:gemini-3.1-pro-preview
-> To: <isely@pobox.com>
-> To: <linux-media@vger.kernel.org>
-> Cc: <linux-kernel@vger.kernel.org>
-> Cc: <mchehab@kernel.org>
->
-> ---
-> diff --git a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c b/drivers/media/usb/=
-pvrusb2/pvrusb2-hdw.c
-> index 3c270ef00..dd504b1c4 100644
-> --- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-> +++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-> @@ -3669,7 +3669,9 @@ static int pvr2_send_request_ex(struct pvr2_hdw *hd=
-w,
->                         pvr2_trace(
->                                 PVR2_TRACE_ERROR_LEGS,
->                                 "Invalid write control endpoint");
-> -                       return -EINVAL;
-> +                       hdw->ctl_write_pend_flag =3D 0;
-> +                       status =3D -EINVAL;
-> +                       goto done;
->                 }
->                 status =3D usb_submit_urb(hdw->ctl_write_urb,GFP_KERNEL);
->                 if (status < 0) {
-> @@ -3699,7 +3701,14 @@ status);
->                         pvr2_trace(
->                                 PVR2_TRACE_ERROR_LEGS,
->                                 "Invalid read control endpoint");
-> -                       return -EINVAL;
-> +                       hdw->ctl_read_pend_flag =3D 0;
-> +                       status =3D -EINVAL;
-> +                       if (hdw->ctl_write_pend_flag) {
-> +                               usb_unlink_urb(hdw->ctl_write_urb);
-> +                               while (hdw->ctl_write_pend_flag)
-> +                                       wait_for_completion(&hdw->ctl_don=
-e);
-> +                       }
-> +                       goto done;
->                 }
->                 status =3D usb_submit_urb(hdw->ctl_read_urb,GFP_KERNEL);
->                 if (status < 0) {
->
->
-> base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
-> --
-> This is an AI-generated patch subject to moderation.
-> Reply with '#syz upstream' to send it to the mailing list.
-> Reply with '#syz reject' to reject it.
->
-> See  for more information.
->
-> --
-> You received this message because you are subscribed to the Google Groups=
- "syzkaller-upstream-moderation" group.
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/8cbeab5b-2812-4567-845f-9baee48062fb%40mail.kernel.org=
-.
+A recursive locking deadlock can occur involving `qp_broker_list.mutex`
+in the VMCI queue pair broker.
+
+When a queue pair is detached, `vmci_qp_broker_detach()` acquires
+`qp_broker_list.mutex` and, if there are still other endpoints attached,
+it calls `qp_notify_peer()` to send a notification datagram to the peer
+context.
+
+The deadlock occurs because `qp_notify_peer()` indirectly calls
+`vmci_ctx_put()` on the peer's context, which can drop the reference
+count to 0 if the peer context is concurrently being destroyed. When the
+reference count reaches 0, `vmci_ctx_put()` synchronously calls
+`ctx_free_ctx()`. This cleanup function iterates over all queue pairs
+attached to the dying context and calls `vmci_qp_broker_detach()` for
+each of them, which attempts to acquire `qp_broker_list.mutex` again,
+resulting in a deadlock.
+
+This issue is not isolated to `vmci_qp_broker_detach()`. There are other
+places in `drivers/misc/vmw_vmci/vmci_queue_pair.c` where
+`qp_notify_peer()` or `vmci_ctx_put()` are called while holding
+`qp_broker_list.mutex`, such as `qp_broker_attach()` and
+`vmci_qp_broker_set_page_store()`.
+
+To fix this, defer the calls to `qp_notify_peer()` and `vmci_ctx_put()`
+until after `qp_broker_list.mutex` is safely released. This ensures that
+the mutex is never held when these functions are executed, completely
+eliminating the recursive locking deadlock while preserving the correct
+logic and behavior of the VMCI queue pair broker.
+
+Fixes: 06164d2b72aa752ce4633184b3e0d97601017135 ("VMCI: queue pairs implementation.")
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
+Reported-by: syzbot+44e40ac2cfe68e8ce207@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=44e40ac2cfe68e8ce207
+Link: https://syzkaller.appspot.com/ai_job?id=e9b15cfb-e71a-4f95-a66b-628f0a2deaac
+To: <arnd@arndb.de>
+To: <bryan-bt.tan@broadcom.com>
+To: <gregkh@linuxfoundation.org>
+To: <linux-kernel@vger.kernel.org>
+To: <vishnu.dasa@broadcom.com>
+Cc: <bcm-kernel-feedback-list@broadcom.com>
+
+---
+v2:
+- Moved the host queue pair support check and `vmci_ctx_put()` call from `qp_broker_attach()` to `qp_broker_alloc()`.
+- Avoided modifying the signature of `qp_broker_attach()` to return notification parameters, handling them in the caller instead.
+- Reduced the overall diff size as requested by reviewers.
+
+v1:
+https://lore.kernel.org/all/aec7cb16-64c4-4e01-a974-a6c1a51a046e@mail.kernel.org/T/
+---
+diff --git a/drivers/misc/vmw_vmci/vmci_queue_pair.c b/drivers/misc/vmw_vmci/vmci_queue_pair.c
+index b777bc3fd..7552a5ae4 100644
+--- a/drivers/misc/vmw_vmci/vmci_queue_pair.c
++++ b/drivers/misc/vmw_vmci/vmci_queue_pair.c
+@@ -1044,7 +1044,7 @@ static int qp_detatch_guest_work(struct vmci_handle handle)
+ 			 * because we can't allocate.  We still want
+ 			 * to release the entry if that happens, so
+ 			 * don't bail out yet.
+-			 */
++		 */
+ 		}
+ 	} else {
+ 		result = qp_detatch_hypercall(handle);
+@@ -1575,20 +1575,11 @@ static int qp_broker_attach(struct qp_broker_entry *entry,
+ 			return VMCI_ERROR_INVALID_RESOURCE;
+ 
+ 	} else if (context_id == VMCI_HOST_CONTEXT_ID) {
+-		struct vmci_ctx *create_context;
+-		bool supports_host_qp;
+-
+ 		/*
+ 		 * Do not attach a host to a user created queue pair if that
+ 		 * user doesn't support host queue pair end points.
++		 * This check is performed in the caller.
+ 		 */
+-
+-		create_context = vmci_ctx_get(entry->create_id);
+-		supports_host_qp = vmci_ctx_supports_host_qp(create_context);
+-		vmci_ctx_put(create_context);
+-
+-		if (!supports_host_qp)
+-			return VMCI_ERROR_INVALID_RESOURCE;
+ 	}
+ 
+ 	if ((entry->qp.flags & ~VMCI_QP_ASYMM) != (flags & ~VMCI_QP_ASYMM_PEER))
+@@ -1659,15 +1650,6 @@ static int qp_broker_attach(struct qp_broker_entry *entry,
+ 		entry->state = VMCIQPB_ATTACHED_MEM;
+ 	}
+ 
+-	if (entry->state == VMCIQPB_ATTACHED_MEM) {
+-		result =
+-		    qp_notify_peer(true, entry->qp.handle, context_id,
+-				   entry->create_id);
+-		if (result < VMCI_SUCCESS)
+-			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
+-				entry->create_id, entry->qp.handle.context,
+-				entry->qp.handle.resource);
+-	}
+ 
+ 	entry->attach_id = context_id;
+ 	entry->qp.ref_count++;
+@@ -1711,6 +1693,9 @@ static int qp_broker_alloc(struct vmci_handle handle,
+ 	struct qp_broker_entry *entry = NULL;
+ 	bool is_local = flags & VMCI_QPFLAG_LOCAL;
+ 	int result;
++	bool do_notify = false;
++	u32 notify_peer_id = VMCI_INVALID_ID;
++	struct vmci_ctx *out_ctx = NULL;
+ 
+ 	if (vmci_handle_is_invalid(handle) ||
+ 	    (flags & ~VMCI_QP_ALL_FLAGS) || is_local ||
+@@ -1748,14 +1733,44 @@ static int qp_broker_alloc(struct vmci_handle handle,
+ 				     context, wakeup_cb, client_data, ent);
+ 	} else {
+ 		create = false;
++
++		if (context_id == VMCI_HOST_CONTEXT_ID) {
++			out_ctx = vmci_ctx_get(entry->create_id);
++			if (!vmci_ctx_supports_host_qp(out_ctx)) {
++				result = VMCI_ERROR_INVALID_RESOURCE;
++				goto out;
++			}
++		}
++
+ 		result =
+ 		    qp_broker_attach(entry, peer, flags, priv_flags,
+ 				     produce_size, consume_size, page_store,
+ 				     context, wakeup_cb, client_data, ent);
++
++		if (result == VMCI_SUCCESS &&
++		    entry->state == VMCIQPB_ATTACHED_MEM) {
++			do_notify = true;
++			notify_peer_id = entry->create_id;
++		}
+ 	}
+ 
++out:
+ 	mutex_unlock(&qp_broker_list.mutex);
+ 
++	if (out_ctx)
++		vmci_ctx_put(out_ctx);
++
++	if (do_notify) {
++		int notify_result;
++
++		notify_result = qp_notify_peer(true, handle, context_id,
++					       notify_peer_id);
++		if (notify_result < VMCI_SUCCESS)
++			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
++				notify_peer_id, handle.context,
++				handle.resource);
++	}
++
+ 	if (swap)
+ 		*swap = (context_id == VMCI_HOST_CONTEXT_ID) &&
+ 		    !(create && is_local);
+@@ -1968,6 +1983,8 @@ int vmci_qp_broker_set_page_store(struct vmci_handle handle,
+ 	struct qp_broker_entry *entry;
+ 	int result;
+ 	const u32 context_id = vmci_ctx_get_id(context);
++	bool do_notify = false;
++	u32 notify_peer_id;
+ 
+ 	if (vmci_handle_is_invalid(handle) || !context ||
+ 	    context_id == VMCI_INVALID_ID)
+@@ -2035,18 +2052,26 @@ int vmci_qp_broker_set_page_store(struct vmci_handle handle,
+ 	entry->vmci_page_files = true;
+ 
+ 	if (entry->state == VMCIQPB_ATTACHED_MEM) {
+-		result =
+-		    qp_notify_peer(true, handle, context_id, entry->create_id);
+-		if (result < VMCI_SUCCESS) {
+-			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
+-				entry->create_id, entry->qp.handle.context,
+-				entry->qp.handle.resource);
+-		}
++		do_notify = true;
++		notify_peer_id = entry->create_id;
+ 	}
+ 
+ 	result = VMCI_SUCCESS;
+  out:
+ 	mutex_unlock(&qp_broker_list.mutex);
++
++	if (do_notify) {
++		int notify_result;
++
++		notify_result = qp_notify_peer(true, handle, context_id,
++					       notify_peer_id);
++		if (notify_result < VMCI_SUCCESS) {
++			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
++				notify_peer_id, handle.context,
++				handle.resource);
++		}
++	}
++
+ 	return result;
+ }
+ 
+@@ -2086,6 +2111,7 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
+ 	u32 peer_id;
+ 	bool is_local = false;
+ 	int result;
++	bool do_notify = false;
+ 
+ 	if (vmci_handle_is_invalid(handle) || !context ||
+ 	    context_id == VMCI_INVALID_ID) {
+@@ -2185,7 +2211,7 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
+ 
+ 		vmci_ctx_qp_destroy(context, handle);
+ 	} else {
+-		qp_notify_peer(false, handle, context_id, peer_id);
++		do_notify = true;
+ 		if (context_id == VMCI_HOST_CONTEXT_ID &&
+ 		    QPBROKERSTATE_HAS_MEM(entry)) {
+ 			entry->state = VMCIQPB_SHUTDOWN_MEM;
+@@ -2200,6 +2226,10 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
+ 	result = VMCI_SUCCESS;
+  out:
+ 	mutex_unlock(&qp_broker_list.mutex);
++
++	if (do_notify)
++		qp_notify_peer(false, handle, context_id, peer_id);
++
+ 	return result;
+ }
+ 
+
+
+base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to send it to the mailing list.
+Reply with '#syz reject' to reject it.
+
+See  for more information.
