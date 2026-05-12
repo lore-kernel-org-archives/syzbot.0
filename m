@@ -1,280 +1,283 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4E183839B9
-	for <syzbot@lists.linux.dev>; Tue, 12 May 2026 10:34:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778582069; cv=none; b=DfPHCX/LVEZBa39Y19aWqhAJyb4fhZxScjN3yrXziAvSxvcYUhV9hJDbADXqTV55NN1m+JkLprJY4a6+2u8zRyzab1hhC7ZPekneFxl2rSo7lUG/paXpCRN0lwMxBp5Ms7IMB8667w91aMp/7E7r2UWSxqOKsm0D3S+IGJdPu/s=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778582069; c=relaxed/simple;
-	bh=4HB1q8kq1izWyumokhLTOTLBdNThpJdXvhJJVNO7N5E=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=B6gf/CAldf996nJe+BP+3mbNMo2AyjKgIOHw2ode3NU+4lMDfD3ZBit1JbVLZiYZkRCRGvFDS7rzDmWq82ssSg2dqxlO21EbzC2e6k7xjRbtsr0qLud4pMrzwlRpq+AvaePzvxZzLAQi0t2v5LmUT1gSkn09CdPpzwm8r0C87yg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sAp6LsTh; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70A9C395AE4
+	for <syzbot@lists.linux.dev>; Tue, 12 May 2026 10:48:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=10.30.226.201
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778582908; cv=pass; b=tM0nnFXO3JS60BLvatkgOt0YepiwhGvcrmCzietpzw3pW7sp+gE4v1TGz1MAV49vXPkmJ7LSEagHW2bXWDewQDlPIg4+afCGo6OX3ete3aGvpcTPzoXrocFZcU8H9nkB+rYNxgqGVyCCMgAt4xstZDJFAiix+y08h6TA8SUFLlc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778582908; c=relaxed/simple;
+	bh=ZSPTbJrAbnmy3mYMT0Q3w2uQ+ylP+i8TQpQDgaxjAog=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ULfQWE+AZ6d4onTu8NKUPqbCu/Dy51Sy8ZCyOIS9jjshhoP1J6spFiwy35+hGkZ0FVta87B+jhDDW1sLiTtdkvObLVAEHb5W+QilMBXqB58xyeH+3C0ysPAEFxFS85M8cCgY19jTwvTkNdaNjTvg//QrHRFKe6Xzf532j60/FCQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HhnMto6y; arc=pass smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sAp6LsTh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 111D9C2BCF6;
-	Tue, 12 May 2026 10:34:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778582068;
-	bh=4HB1q8kq1izWyumokhLTOTLBdNThpJdXvhJJVNO7N5E=;
-	h=From:To:Cc:Subject:Date:From;
-	b=sAp6LsThEl6QzAuL92drHE89xXiRiV0DKeDWw9TujKAKxZ9+e8Vg9GKJ1WYbxp7nF
-	 Ohg9NDstFBWL4heX7erXvjkuBPboq5ObyZuYyqhEDz13eyl+XGR9bMgHotHFWvpVuM
-	 y+Sbpn2dqcW+RK3mq31mGUa/992jXCrTN8pG/fNgLiCnSrIhjhO9i+/Mul9cYfN5dI
-	 IyC1TDyIs/G6gaq9Okcf2z6bd+ZZ5/YDuoBw8Ylyg+d8I1NWhaWjPgXm98qZptX/Fl
-	 4qIeXoCQwRJk09zt3yA3t+pvPZqWVira+kWjw/T/iTEFFMrX+KjizltdW6WGY6hhTM
-	 2wof0iBy/wmcw==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] misc/vmw_vmci: fix recursive locking deadlock in queue pair broker
-Message-ID: <5749a52e-a4b2-4c05-8877-ba1aa2b5f5d0@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HhnMto6y"
+Received: by smtp.kernel.org (Postfix)
+	id 2CF36C2BCF6; Tue, 12 May 2026 10:48:28 +0000 (UTC)
+Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id F3082C2BCB0
+	for <syzbot@kernel.org>; Tue, 12 May 2026 10:48:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.kernel.org F3082C2BCB0
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=google.com
+Received: by mail-oo1-f46.google.com with SMTP id 006d021491bc7-691de293326so3180253eaf.3
+        for <syzbot@kernel.org>; Tue, 12 May 2026 03:48:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778582906; cv=none;
+        d=google.com; s=arc-20240605;
+        b=jxCnHWCX3BlUdfnCpxPCMjyW9XpZVrjMXCUcnpJU0aVpWA9qC3XFiVYRmygflmEkcs
+         1JLTxtfsgjRUabWE0e4MMOYfGP/l7FOT64EvD1wD6ElBceUdB1jFiHD6FNiTspwDlfBw
+         G7hf91IAzrpP3I9VReYHjgXnnQYGMePPOTda2XEYHqMU9I9r0Q9gsUIQt3CQTl9Kqurx
+         t82gDvGUwoC9LAPdIUjnhIVVuKP0bBEF/Y+AOtuQGyyEXb69LHzugCfw+iQF9cDPPnLC
+         6L7Lg/qbN3K51D/OGO7tUem4NnVB3GPUjWu3DSWlVjj8ADbFv237aMU87uBnCyoIy3pc
+         Q6JQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=JuUqFBPtKbvIZrmvrRNu78YQ9tWn/FI2hnG4mHcDw9k=;
+        fh=2Ld/g5BVZzBadtquf8mrXl84q+iOtbUed/2ECOFnmmI=;
+        b=WntGJY6YpKN5PFFpNtX+yS2oq/OF5vv3um6MrIN3ow/cphM6LzMXomv1yPDGb6os7j
+         dKiihwnP2ICLVqfYdhyikYFTkCEmS0dt30FH9MkmTuAKMgRKRy79n4juzsX6nhW5q8Sx
+         MjNt2rBWMLBgur7TZsev5M6QRW/w6Y88DArrqBQOts8Y7uWfqsb9rmP5rhtnPynitBur
+         fE0hs7BjIu4kYRR6uujHoIkqkdSeu9NVjwWMOZ7T1U1+sr5D/0mJU8jkesbvnNoEg0H8
+         bybn8mqY4m6sxZjAYWux3QUFp1SPpaL5HcrK75yhBZKpRvvYkATv9AcphkDyRhwttgdi
+         Hgjg==;
+        darn=kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1778582906; x=1779187706; darn=kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JuUqFBPtKbvIZrmvrRNu78YQ9tWn/FI2hnG4mHcDw9k=;
+        b=HhnMto6yMExkr/7oj1DfjweHdgL13pFBfLnDCgCf703i0lZ+JVk9aL2hOWPXVtAO6G
+         yyym08KWIxT5QzMVVlmtoFBQAaLAYgEZ7/7qG9wXc9S7xf0pi4ojHn3ecIiO+omD9rIS
+         zGORZyKjXuGK21M5SxR44jdiYPUdz7IhbQHZzY4X/ugXqwVC27H3vTEm7kVam0FGwSAq
+         YVOom/BJzsuKQVPgOhr/Hb8mibdrAh+7VuNlDuEenktA2gBXbqwhlfjBNK0xSfCT8lK+
+         fsdaeZwq53KxGCjg2b7D7pV7nKXnXOBDhc8iSPyuIPs9HA/THcdTtlS4J2fBtJ4AOn9I
+         i+Og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778582906; x=1779187706;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=JuUqFBPtKbvIZrmvrRNu78YQ9tWn/FI2hnG4mHcDw9k=;
+        b=HGy2GTkjWfLqJHWicF+z+OBLZNZzjRyc0Kv05LFEiyYh5GW0S4UNm4sFO8PzAwQ+M0
+         hPW9TPVdagFVBDyF+a6dXu/1i5pfmi3SS5dGzEmndVF/W1zq+WMWYDy0OJ+1miXeOXNd
+         acCVeJFu4lGAoz7DoNBoakKmCN3O2eoi0skIqYcHGpj5wrZuhREbdP7lbjkdNUyCAWg4
+         dTwkvN+3iuotB2R9j2AxPir1fk+EESsWrnR7c13sGEHRIZyHZMVlejr/HZaYzuobaRqH
+         O5az1qfpWagBEC5d8I0YKpM+uAbfPiIJN5LoZubH1FISmcZX5LxJViTi8Dh8RVJP182m
+         dMBA==
+X-Gm-Message-State: AOJu0YzDDDPAfham8tWjrWeu0R9kc6H4J1hpN+sVI+gW7yZskqO6CqUO
+	msSTmOirTANN1nKniXQ6HFdiNlT/xgdkeQrh9LSKeKS9XOnhWMNNYNY8UvINlfx7g+2GI1bGF05
+	0KjczJAKP6L5vpUYD8bn4vBrJLGiGlvUlTpcXUyMgb9F7Zy2IvZlTVhNe
+X-Gm-Gg: Acq92OFRgrNF9tpaKjj70eoRXYbTvhVIX/kqG/pSHEjloFxdfJPDUOkeZXoRET0SjtS
+	8HkWVKHYZynomWwuVyNP/oIxEyEU+0TF/+CI9S1/xsBSnx0Iky3S/FleeHr8kD+Poz8fmnjjYU5
+	kUSSn4vy4d0v2LLrypdkKVrMiTe8QIRYavcOP5ytJxa72Jzvv2h4szNmlHr8axh4TdeRSffWYBz
+	piKD8cGyUtVze6Swigfx4ybmgt5ubbAReSmGrl/sPgNV0nEipbSC/Dl8ZKvavyrVLxhnVEEh+81
+	Z78PiAKh6UHiln/wMjWFal4HWRr5OJ7C1DO8lchK0cR3563h+yfXpCyx329lh7VIhQGslwMrcBo
+	AoNyD
+X-Received: by 2002:a05:6820:4df4:b0:696:806e:fd6 with SMTP id
+ 006d021491bc7-69998d299cemr16483838eaf.40.1778582905300; Tue, 12 May 2026
+ 03:48:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Tue, 12 May 2026 10:34:28 +0000 (UTC)
+References: <c672c95e-82f0-4c76-9ba0-09e5133639cc@mail.kernel.org>
+In-Reply-To: <c672c95e-82f0-4c76-9ba0-09e5133639cc@mail.kernel.org>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Tue, 12 May 2026 12:48:12 +0200
+X-Gm-Features: AVHnY4Jjko-TwFJxGLIAgSonPQRSc4NyZRuZJhQjdnnykL4PVteFHCjhpBciEbA
+Message-ID: <CANp29Y6f4sQZJFZ=8fbETYSDUiMNTRa4J+Zv6s_OzLFbNY8q1g@mail.gmail.com>
+Subject: Re: [PATCH RFC v2] hfs/hfsplus: fix lockdep false positive for extents_lock
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-misc/vmw_vmci: fix recursive locking deadlock in queue pair broker
+Have a look if you can further minimize the patch.
 
-A recursive locking deadlock can occur involving `qp_broker_list.mutex`
-in the VMCI queue pair broker.
-
-When a queue pair is detached, `vmci_qp_broker_detach()` acquires
-`qp_broker_list.mutex` and, if there are still other endpoints attached,
-it calls `qp_notify_peer()` to send a notification datagram to the peer
-context.
-
-The deadlock occurs because `qp_notify_peer()` indirectly calls
-`vmci_ctx_put()` on the peer's context, which can drop the reference
-count to 0 if the peer context is concurrently being destroyed. When the
-reference count reaches 0, `vmci_ctx_put()` synchronously calls
-`ctx_free_ctx()`. This cleanup function iterates over all queue pairs
-attached to the dying context and calls `vmci_qp_broker_detach()` for
-each of them, which attempts to acquire `qp_broker_list.mutex` again,
-resulting in a deadlock.
-
-This issue is not isolated to `vmci_qp_broker_detach()`. There are other
-places in `drivers/misc/vmw_vmci/vmci_queue_pair.c` where
-`qp_notify_peer()` or `vmci_ctx_put()` are called while holding
-`qp_broker_list.mutex`, such as `qp_broker_attach()` and
-`vmci_qp_broker_set_page_store()`.
-
-To fix this, defer the calls to `qp_notify_peer()` and `vmci_ctx_put()`
-until after `qp_broker_list.mutex` is safely released. This ensures that
-the mutex is never held when these functions are executed, completely
-eliminating the recursive locking deadlock while preserving the correct
-logic and behavior of the VMCI queue pair broker.
-
-Fixes: 06164d2b72aa752ce4633184b3e0d97601017135 ("VMCI: queue pairs implementation.")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+44e40ac2cfe68e8ce207@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=44e40ac2cfe68e8ce207
-Link: https://syzkaller.appspot.com/ai_job?id=e9b15cfb-e71a-4f95-a66b-628f0a2deaac
-To: <arnd@arndb.de>
-To: <bryan-bt.tan@broadcom.com>
-To: <gregkh@linuxfoundation.org>
-To: <linux-kernel@vger.kernel.org>
-To: <vishnu.dasa@broadcom.com>
-Cc: <bcm-kernel-feedback-list@broadcom.com>
-
----
-v2:
-- Moved the host queue pair support check and `vmci_ctx_put()` call from `qp_broker_attach()` to `qp_broker_alloc()`.
-- Avoided modifying the signature of `qp_broker_attach()` to return notification parameters, handling them in the caller instead.
-- Reduced the overall diff size as requested by reviewers.
-
-v1:
-https://lore.kernel.org/all/aec7cb16-64c4-4e01-a974-a6c1a51a046e@mail.kernel.org/T/
----
-diff --git a/drivers/misc/vmw_vmci/vmci_queue_pair.c b/drivers/misc/vmw_vmci/vmci_queue_pair.c
-index b777bc3fd..7552a5ae4 100644
---- a/drivers/misc/vmw_vmci/vmci_queue_pair.c
-+++ b/drivers/misc/vmw_vmci/vmci_queue_pair.c
-@@ -1044,7 +1044,7 @@ static int qp_detatch_guest_work(struct vmci_handle handle)
- 			 * because we can't allocate.  We still want
- 			 * to release the entry if that happens, so
- 			 * don't bail out yet.
--			 */
-+		 */
- 		}
- 	} else {
- 		result = qp_detatch_hypercall(handle);
-@@ -1575,20 +1575,11 @@ static int qp_broker_attach(struct qp_broker_entry *entry,
- 			return VMCI_ERROR_INVALID_RESOURCE;
- 
- 	} else if (context_id == VMCI_HOST_CONTEXT_ID) {
--		struct vmci_ctx *create_context;
--		bool supports_host_qp;
--
- 		/*
- 		 * Do not attach a host to a user created queue pair if that
- 		 * user doesn't support host queue pair end points.
-+		 * This check is performed in the caller.
- 		 */
--
--		create_context = vmci_ctx_get(entry->create_id);
--		supports_host_qp = vmci_ctx_supports_host_qp(create_context);
--		vmci_ctx_put(create_context);
--
--		if (!supports_host_qp)
--			return VMCI_ERROR_INVALID_RESOURCE;
- 	}
- 
- 	if ((entry->qp.flags & ~VMCI_QP_ASYMM) != (flags & ~VMCI_QP_ASYMM_PEER))
-@@ -1659,15 +1650,6 @@ static int qp_broker_attach(struct qp_broker_entry *entry,
- 		entry->state = VMCIQPB_ATTACHED_MEM;
- 	}
- 
--	if (entry->state == VMCIQPB_ATTACHED_MEM) {
--		result =
--		    qp_notify_peer(true, entry->qp.handle, context_id,
--				   entry->create_id);
--		if (result < VMCI_SUCCESS)
--			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
--				entry->create_id, entry->qp.handle.context,
--				entry->qp.handle.resource);
--	}
- 
- 	entry->attach_id = context_id;
- 	entry->qp.ref_count++;
-@@ -1711,6 +1693,9 @@ static int qp_broker_alloc(struct vmci_handle handle,
- 	struct qp_broker_entry *entry = NULL;
- 	bool is_local = flags & VMCI_QPFLAG_LOCAL;
- 	int result;
-+	bool do_notify = false;
-+	u32 notify_peer_id = VMCI_INVALID_ID;
-+	struct vmci_ctx *out_ctx = NULL;
- 
- 	if (vmci_handle_is_invalid(handle) ||
- 	    (flags & ~VMCI_QP_ALL_FLAGS) || is_local ||
-@@ -1748,14 +1733,44 @@ static int qp_broker_alloc(struct vmci_handle handle,
- 				     context, wakeup_cb, client_data, ent);
- 	} else {
- 		create = false;
-+
-+		if (context_id == VMCI_HOST_CONTEXT_ID) {
-+			out_ctx = vmci_ctx_get(entry->create_id);
-+			if (!vmci_ctx_supports_host_qp(out_ctx)) {
-+				result = VMCI_ERROR_INVALID_RESOURCE;
-+				goto out;
-+			}
-+		}
-+
- 		result =
- 		    qp_broker_attach(entry, peer, flags, priv_flags,
- 				     produce_size, consume_size, page_store,
- 				     context, wakeup_cb, client_data, ent);
-+
-+		if (result == VMCI_SUCCESS &&
-+		    entry->state == VMCIQPB_ATTACHED_MEM) {
-+			do_notify = true;
-+			notify_peer_id = entry->create_id;
-+		}
- 	}
- 
-+out:
- 	mutex_unlock(&qp_broker_list.mutex);
- 
-+	if (out_ctx)
-+		vmci_ctx_put(out_ctx);
-+
-+	if (do_notify) {
-+		int notify_result;
-+
-+		notify_result = qp_notify_peer(true, handle, context_id,
-+					       notify_peer_id);
-+		if (notify_result < VMCI_SUCCESS)
-+			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
-+				notify_peer_id, handle.context,
-+				handle.resource);
-+	}
-+
- 	if (swap)
- 		*swap = (context_id == VMCI_HOST_CONTEXT_ID) &&
- 		    !(create && is_local);
-@@ -1968,6 +1983,8 @@ int vmci_qp_broker_set_page_store(struct vmci_handle handle,
- 	struct qp_broker_entry *entry;
- 	int result;
- 	const u32 context_id = vmci_ctx_get_id(context);
-+	bool do_notify = false;
-+	u32 notify_peer_id;
- 
- 	if (vmci_handle_is_invalid(handle) || !context ||
- 	    context_id == VMCI_INVALID_ID)
-@@ -2035,18 +2052,26 @@ int vmci_qp_broker_set_page_store(struct vmci_handle handle,
- 	entry->vmci_page_files = true;
- 
- 	if (entry->state == VMCIQPB_ATTACHED_MEM) {
--		result =
--		    qp_notify_peer(true, handle, context_id, entry->create_id);
--		if (result < VMCI_SUCCESS) {
--			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
--				entry->create_id, entry->qp.handle.context,
--				entry->qp.handle.resource);
--		}
-+		do_notify = true;
-+		notify_peer_id = entry->create_id;
- 	}
- 
- 	result = VMCI_SUCCESS;
-  out:
- 	mutex_unlock(&qp_broker_list.mutex);
-+
-+	if (do_notify) {
-+		int notify_result;
-+
-+		notify_result = qp_notify_peer(true, handle, context_id,
-+					       notify_peer_id);
-+		if (notify_result < VMCI_SUCCESS) {
-+			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
-+				notify_peer_id, handle.context,
-+				handle.resource);
-+		}
-+	}
-+
- 	return result;
- }
- 
-@@ -2086,6 +2111,7 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
- 	u32 peer_id;
- 	bool is_local = false;
- 	int result;
-+	bool do_notify = false;
- 
- 	if (vmci_handle_is_invalid(handle) || !context ||
- 	    context_id == VMCI_INVALID_ID) {
-@@ -2185,7 +2211,7 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
- 
- 		vmci_ctx_qp_destroy(context, handle);
- 	} else {
--		qp_notify_peer(false, handle, context_id, peer_id);
-+		do_notify = true;
- 		if (context_id == VMCI_HOST_CONTEXT_ID &&
- 		    QPBROKERSTATE_HAS_MEM(entry)) {
- 			entry->state = VMCIQPB_SHUTDOWN_MEM;
-@@ -2200,6 +2226,10 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
- 	result = VMCI_SUCCESS;
-  out:
- 	mutex_unlock(&qp_broker_list.mutex);
-+
-+	if (do_notify)
-+		qp_notify_peer(false, handle, context_id, peer_id);
-+
- 	return result;
- }
- 
-
-
-base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to send it to the mailing list.
-Reply with '#syz reject' to reject it.
-
-See  for more information.
+On Tue, May 12, 2026 at 11:19=E2=80=AFAM 'syzbot' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
+>
+> hfs/hfsplus: fix lockdep false positive for extents_lock
+>
+> syzkaller reported a possible recursive locking deadlock on
+> &HFSPLUS_I(inode)->extents_lock. This is a lockdep false positive.
+>
+> In HFS and HFS+, extents_lock is used to protect the extent allocation
+> information of an inode. The problem arises because the lock is
+> initialized uniformly for all inodes, including both regular files and
+> special internal system files (like the Allocation file, Extents file,
+> Catalog file, etc.). Because of this, lockdep assigns the exact same
+> lock class to the extents_lock of all inodes.
+>
+> When a regular file is truncated or extended, its extents_lock is
+> acquired. During this process, the filesystem might need to allocate or
+> free blocks, which requires reading or updating the Allocation file (or
+> other system files). This triggers a read on the Allocation file's
+> mapping, which in turn acquires the Allocation file's extents_lock.
+> Lockdep sees the same lock class being acquired twice in a nested
+> fashion and flags it as a recursive locking deadlock.
+>
+> The exact same issue also exists in the older HFS filesystem (fs/hfs/),
+> where operations on a regular file can trigger updates to the Extents
+> or Catalog B-trees, leading to a similar nested acquisition of
+> extents_lock.
+>
+> To fix this false positive, assign distinct lock classes to the
+> extents_lock of special system files using lockdep_set_class().
+> For HFS+, add lock class keys for the Extents, Catalog, Allocation,
+> Attributes, and Startup files, and apply them in hfsplus_iget().
+> For HFS, add lock class keys for the Extents and Catalog B-tree files,
+> and apply them in hfs_btree_open().
+>
+> Fixes: 895c23f8c39c0c8d7b536bb2566d4aa968d78be2 ("hfsplus: convert the ex=
+tents_lock in a mutex")
+> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
+> Reported-by: syzbot+b7ef7c0c8d8098686ae2@syzkaller.appspotmail.com
+> Link: https://syzkaller.appspot.com/bug?extid=3Db7ef7c0c8d8098686ae2
+> Link: https://syzkaller.appspot.com/ai_job?id=3D8c05b019-0a6c-4a92-8e06-c=
+7a648023928
+> To: <frank.li@vivo.com>
+> To: <glaubitz@physik.fu-berlin.de>
+> To: <linux-fsdevel@vger.kernel.org>
+> To: <slava@dubeyko.com>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> ---
+> v2:
+> - Removed duplicate lines (includes, lock class key declarations, and swi=
+tch statements).
+>
+> v1:
+> https://lore.kernel.org/all/0bbb511f-6f0a-48b1-b3a4-e55eb907a1b4@mail.ker=
+nel.org/T/
+> ---
+> diff --git a/fs/hfs/btree.c b/fs/hfs/btree.c
+> index 2eb37a2f6..9182ca939 100644
+> --- a/fs/hfs/btree.c
+> +++ b/fs/hfs/btree.c
+> @@ -12,9 +12,13 @@
+>  #include <linux/pagemap.h>
+>  #include <linux/slab.h>
+>  #include <linux/log2.h>
+> +#include <linux/lockdep.h>
+>
+>  #include "btree.h"
+>
+> +static struct lock_class_key hfs_ext_extents_key;
+> +static struct lock_class_key hfs_cat_extents_key;
+> +
+>  /* Get a reference to a B*Tree and do some initial checks */
+>  struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_k=
+eycmp keycmp)
+>  {
+> @@ -49,6 +53,8 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb=
+, u32 id, btree_keycmp ke
+>         mutex_init(&HFS_I(tree->inode)->extents_lock);
+>         switch (id) {
+>         case HFS_EXT_CNID:
+> +               lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
+> +                                 &hfs_ext_extents_key);
+>                 hfs_inode_read_fork(tree->inode, mdb->drXTExtRec, mdb->dr=
+XTFlSize,
+>                                     mdb->drXTFlSize, be32_to_cpu(mdb->drX=
+TClpSiz));
+>                 if (HFS_I(tree->inode)->alloc_blocks >
+> @@ -61,6 +67,8 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb=
+, u32 id, btree_keycmp ke
+>                 tree->inode->i_mapping->a_ops =3D &hfs_btree_aops;
+>                 break;
+>         case HFS_CAT_CNID:
+> +               lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
+> +                                 &hfs_cat_extents_key);
+>                 hfs_inode_read_fork(tree->inode, mdb->drCTExtRec, mdb->dr=
+CTFlSize,
+>                                     mdb->drCTFlSize, be32_to_cpu(mdb->drC=
+TClpSiz));
+>
+> diff --git a/fs/hfsplus/super.c b/fs/hfsplus/super.c
+> index 40a0feda7..17147d5f5 100644
+> --- a/fs/hfsplus/super.c
+> +++ b/fs/hfsplus/super.c
+> @@ -18,6 +18,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/vfs.h>
+>  #include <linux/nls.h>
+> +#include <linux/lockdep.h>
+>
+>  static struct inode *hfsplus_alloc_inode(struct super_block *sb);
+>  static void hfsplus_free_inode(struct inode *inode);
+> @@ -25,6 +26,12 @@ static void hfsplus_free_inode(struct inode *inode);
+>  #include "hfsplus_fs.h"
+>  #include "xattr.h"
+>
+> +static struct lock_class_key hfsplus_ext_extents_key;
+> +static struct lock_class_key hfsplus_cat_extents_key;
+> +static struct lock_class_key hfsplus_alloc_extents_key;
+> +static struct lock_class_key hfsplus_attr_extents_key;
+> +static struct lock_class_key hfsplus_start_extents_key;
+> +
+>  static int hfsplus_system_read_inode(struct inode *inode)
+>  {
+>         struct hfsplus_vh *vhdr =3D HFSPLUS_SB(inode->i_sb)->s_vhdr;
+> @@ -84,6 +91,29 @@ struct inode *hfsplus_iget(struct super_block *sb, uns=
+igned long ino)
+>         memset(HFSPLUS_I(inode)->cached_extents, 0, sizeof(hfsplus_extent=
+_rec));
+>         HFSPLUS_I(inode)->extent_state =3D 0;
+>         mutex_init(&HFSPLUS_I(inode)->extents_lock);
+> +       /* Set lockdep classes for system files to avoid false positives =
+*/
+> +       switch (ino) {
+> +       case HFSPLUS_EXT_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_ext_extents_key);
+> +               break;
+> +       case HFSPLUS_CAT_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_cat_extents_key);
+> +               break;
+> +       case HFSPLUS_ALLOC_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_alloc_extents_key);
+> +               break;
+> +       case HFSPLUS_ATTR_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_attr_extents_key);
+> +               break;
+> +       case HFSPLUS_START_CNID:
+> +               lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
+> +                                 &hfsplus_start_extents_key);
+> +               break;
+> +       }
+>         HFSPLUS_I(inode)->rsrc_inode =3D NULL;
+>         HFSPLUS_I(inode)->create_date =3D 0;
+>         HFSPLUS_I(inode)->linkid =3D 0;
+>
+>
+> base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to send it to the mailing list.
+> Reply with '#syz reject' to reject it.
+>
+> See  for more information.
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/c672c95e-82f0-4c76-9ba0-09e5133639cc%40mail.kernel.org=
+.
