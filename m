@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49E4F39FCD7
-	for <syzbot@lists.linux.dev>; Tue, 12 May 2026 09:19:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA83C3ACA5C
+	for <syzbot@lists.linux.dev>; Tue, 12 May 2026 09:20:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778577598; cv=none; b=Ohdm1rkeyQSDrxeldYuOI3yk1HC1L8oFuAx2YCRDm6XBm4Jt24R0ZA4Wxxl7rGbnEAXuNTuk5MvZPPNtzNNbkVKu0qTegR079r3RwgsPy6eAKHVw7GN+IO1BUFD1n+H+PaqLDO33KKsP7eM3WxsDGMjWF3W5S4kEY5nBdUJ7nSY=
+	t=1778577628; cv=none; b=stEw+Q1uoHoCvX7wnnNOMeBJ4IZ+Y5BvHh+FDz8O6ZP+B9aedUSrKq6yF7XIwqbJWnh8Wy1GX4SmsmS+vzdED5xoZRrK4DSfirpymEHlDzD+sN0/7G4rU7CNvr81dNYJD1i4UsSUESDpFLV0/e2hJdGKkvu08uJyDGJHe+E6ZMc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778577598; c=relaxed/simple;
-	bh=Fy8VLmJhhlDFk3MGXVWcL95dWMZyWIQQD7km2kpTJgk=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=S80dBLik+FnB9BONa5JwHyvhNRQs8XJ0d1xjKtdIgcqgQx2gnre0JrtGdxh5Eelqf2FEGA76J4E1foLzwTBn0R/J4wCg+Byp/6yjGxlsm54oKiJ4QBEIaztLGaeOsCLWgYWP8qsaPOq0cZXIhd9WyBIgJxBRROYVqjP37tyhYJk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mxh/LSW9; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778577628; c=relaxed/simple;
+	bh=tqoMxSMnuYMnQseLMpdnCjuGTLE7WlN1ChFq6+mKAUY=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=KYhSneG7BmzNh7KjEEkqzbXyBotLXq1kKWJBlBnRyz2Gc/WMPrKFjx1wd/UgPZLlxKQbLC2CBUqshhChbmipDMfaZhmmbReifmZTBjx7KwKDrRc/0mPYqoDyPzkU6ZpzhANyW7KCJzSQiaKq+rhnJTLa/5sod4n0hoFniRAx4yY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lo+KUkcy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mxh/LSW9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC373C2BCF5;
-	Tue, 12 May 2026 09:19:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lo+KUkcy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3A80C2BCB0;
+	Tue, 12 May 2026 09:20:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778577597;
-	bh=Fy8VLmJhhlDFk3MGXVWcL95dWMZyWIQQD7km2kpTJgk=;
+	s=k20201202; t=1778577627;
+	bh=tqoMxSMnuYMnQseLMpdnCjuGTLE7WlN1ChFq6+mKAUY=;
 	h=From:To:Cc:Subject:Date:From;
-	b=mxh/LSW9voVeGmFkSE7ECQfDrkUDFHojwxqAfS5HlEepbREu0HouyLeSf7OJFUz6B
-	 4uaHd77C96sNQEHrEg2+4VV4WUuBHJ/qF7x+a4dNXqkXVfvijgtyMo4h1z9BbH/EJR
-	 x7bZ+fiR8oEwdyRFcZErVuQnrnCezfyWGqMb9dVC0bprNpUa/F4Z6BpCd+nc+0eAFk
-	 wwqFSJd8VdorhzVIfJe0htxoNgh9ScebC5+SixA3rhM8CZ72ASLmImmcKJ0BC7G/B4
-	 StgbplLjFNxAvuQiUMv9cgfTPO9Segjpyhtqz+b/Vi5fjvF/fVaqnd1r1vUbr4RKzD
-	 nVRAwKm2fLSeg==
+	b=lo+KUkcyTXxrBGZtgYKXdIwjweSmA87FUX7k6vZlcb+seZftgyjJTR7kS+dSZ3hdn
+	 PbOeGtEGlBzXl9f5FBV3M+u3T3SJjFk/cjmZ8jJEhhOr6VYeLN757PGpkhccxPrdCH
+	 LjGMindbD+rqPzemz9a/Y5gIvaCncRekfy1JsZjSDR2RuqvSZRo17YYv9pdaNgqdfW
+	 U/hqLdYtv5EW1CuVzTFvMH5cVQsL6sRV1P1+mupfGGb8BSfCPAX5VHIfqmK7/Quyyg
+	 rQagEawJGXYwo7bb/NkfGo+akOqxJAVWPkDwVlXwDX/AxaCnt2giVsnjsdiE4TOCyZ
+	 TA1D21uLNSqbA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] jfs: fix use-after-free in lbmIODone and double bio submission
-Message-ID: <f755a426-7bd5-49df-a141-93f77550143b@mail.kernel.org>
+Subject: [PATCH RFC] jfs: fix use-after-free in jfs_lazycommit during unmount
+Message-ID: <0bcfec6b-ff6f-4d60-aa4d-61fd9a5631ed@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,148 +38,154 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue, 12 May 2026 09:19:57 +0000 (UTC)
+Date: Tue, 12 May 2026 09:20:27 +0000 (UTC)
 
-jfs: fix use-after-free in lbmIODone and double bio submission
+jfs: fix use-after-free in jfs_lazycommit during unmount
 
-A KASAN use-after-free crash can occur in the JFS log manager due to a
-race condition that results in submitting concurrent bios for the same
-log buffer and prematurely freeing the buffer's page while the second
-bio is still in flight. When a partial page write is initiated by
-`lmGCwrite()`, a bio is submitted but the buffer remains on the write
-queue. If a concurrent full page write is then triggered by
-`lmNextPage()`, `lbmWrite()` blindly overwrites the buffer's flags and
-submits a second bio for the same buffer. Upon completion of the first
-bio, `lbmIODone()` reads the overwritten flags, assumes the buffer is
-fully processed, and frees it, leaving the second bio to operate on
-freed memory. Furthermore, `lbmIODone()` had a pre-existing
-use-after-free vulnerability where it accessed the buffer to set the
-`lbmDONE` flag after potentially freeing it via `lbmfree()` or
-`lmPostGC()`.
+An analysis of a KASAN slab-use-after-free crash reveals a race
+condition during the unmounting of a JFS filesystem. When a JFS
+filesystem is unmounted, jfs_umount() calls jfs_flush_journal() to flush
+all outstanding transactions to disk. jfs_flush_journal() waits until
+the commit queue and the sync list are empty, but it does not wait for
+the unlock queue to be processed by the jfs_lazycommit background
+thread.
 
-This patch fixes both issues. First, `lbmWrite()` is updated to check if
-the buffer is already under I/O; if so, it simply ORs the new flags and
-returns, preventing the double bio submission. Second, `lbmIODone()` is
-refactored to avoid accessing the buffer after it might have been freed.
-The `lbmDONE` flag is now set before calling `lbmfree()` or waking up
-waiters, and the function returns immediately. In the `lbmGC` branch,
-the buffer's flags are saved before calling `lmPostGC()` and evaluated
-afterwards to correctly handle sequential bios without triggering a
-use-after-free.
+Because jfs_flush_journal() only waits for the commit queue to drain, it
+can return while transactions are still sitting in the unlock queue or
+are actively being processed by jfs_lazycommit. After
+jfs_flush_journal() returns, jfs_umount() proceeds to tear down the
+filesystem, freeing the allocation maps and the jfs_log structure.
+Meanwhile, the jfs_lazycommit thread wakes up, pops the transaction from
+the unlock queue, and accesses the now-freed allocation maps and log
+structure, eventually causing a use-after-free crash in lmLogSync().
+
+To fix this, introduce txLazyCommitWait() to ensure that jfs_lazycommit
+has completely finished processing all transactions for the unmounting
+superblock before jfs_umount() proceeds to free the filesystem
+structures. This function synchronizes with lmPostGC() to ensure all
+transactions removed from the commit queue have been added to the unlock
+queue, and then waits until the unlock queue is empty and the lazycommit
+thread is no longer active for the given superblock. Invoke this wait
+function immediately after jfs_flush_journal() in both jfs_umount() and
+jfs_umount_rw().
 
 Fixes: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 ("Linux-2.6.12-rc2")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+f5a5b157b7336d1fda1d@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=f5a5b157b7336d1fda1d
-Link: https://syzkaller.appspot.com/ai_job?id=af144476-5512-4b41-bd21-48f1f6bdd669
+Assisted-by: Gemini:gemini-3.1-pro-preview
+Reported-by: syzbot+c732e285f8fc38d15916@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=c732e285f8fc38d15916
+Link: https://syzkaller.appspot.com/ai_job?id=c822c3b0-8887-45ea-b1af-e9a7ef8a3b72
 To: <jfs-discussion@lists.sourceforge.net>
 To: <shaggy@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/fs/jfs/jfs_logmgr.c b/fs/jfs/jfs_logmgr.c
-index 306165e61..d7d60fa7d 100644
---- a/fs/jfs/jfs_logmgr.c
-+++ b/fs/jfs/jfs_logmgr.c
-@@ -2019,6 +2019,16 @@ static void lbmWrite(struct jfs_log * log, struct lbuf * bp, int flag,
- 
- 	LCACHE_LOCK(flags);		/* disable+lock */
- 
-+	/*
-+	 * If the buffer is already under I/O, we should not submit it again.
-+	 * Just OR the flags so that lbmIODone can handle the new state.
-+	 */
-+	if (bp->l_wqnext != NULL && (bp->l_flag & lbmWRITE)) {
-+		bp->l_flag |= flag;
-+		LCACHE_UNLOCK(flags);
-+		return;
-+	}
-+
- 	/*
- 	 * initialize buffer for device driver
- 	 */
-@@ -2191,11 +2201,13 @@ static void lbmIODone(struct bio *bio)
- 	 */
- 	if (bp->l_flag & lbmREAD) {
- 		bp->l_flag &= ~lbmREAD;
-+		bp->l_flag |= lbmDONE;
- 
- 		/* wakeup I/O initiator */
- 		LCACHE_WAKEUP(&bp->l_ioevent);
- 
--		goto out;
-+		LCACHE_UNLOCK(flags);
-+		return;
- 	}
- 
- 	/*
-@@ -2218,8 +2230,10 @@ static void lbmIODone(struct bio *bio)
- 	log->clsn = (bp->l_pn << L2LOGPSIZE) + bp->l_ceor;
- 
- 	if (bp->l_flag & lbmDIRECT) {
-+		bp->l_flag |= lbmDONE;
- 		LCACHE_WAKEUP(&bp->l_ioevent);
--		goto out;
-+		LCACHE_UNLOCK(flags);
-+		return;
- 	}
- 
- 	tail = log->wqueue;
-@@ -2271,17 +2285,38 @@ static void lbmIODone(struct bio *bio)
- 	 * leave buffer for i/o initiator to dispose
- 	 */
- 	if (bp->l_flag & lbmSYNC) {
-+		bp->l_flag |= lbmDONE;
- 		/* wakeup I/O initiator */
- 		LCACHE_WAKEUP(&bp->l_ioevent);
-+		LCACHE_UNLOCK(flags);
-+		return;
- 	}
- 
- 	/*
- 	 *	Group Commit pageout:
- 	 */
- 	else if (bp->l_flag & lbmGC) {
-+		int flags_before = bp->l_flag;
- 		LCACHE_UNLOCK(flags);
- 		lmPostGC(bp);
- 		LCACHE_LOCK(flags);		/* disable+lock */
-+
-+		if (flags_before & lbmFREE) {
-+			LCACHE_UNLOCK(flags);
-+			lbmWrite(log, bp, lbmWRITE | lbmRELEASE | lbmFREE, 1);
-+			return;
-+		}
-+		if (flags_before & lbmRELEASE) {
-+			LCACHE_UNLOCK(flags);
-+			return;
-+		}
-+		if (bp->l_flag & lbmWRITE) {
-+			LCACHE_UNLOCK(flags);
-+			return;
-+		}
-+		bp->l_flag |= lbmDONE;
-+		LCACHE_UNLOCK(flags);
-+		return;
- 	}
- 
- 	/*
-@@ -2293,12 +2328,11 @@ static void lbmIODone(struct bio *bio)
- 	else {
- 		assert(bp->l_flag & lbmRELEASE);
- 		assert(bp->l_flag & lbmFREE);
-+		bp->l_flag |= lbmDONE;
- 		lbmfree(bp);
-+		LCACHE_UNLOCK(flags);
-+		return;
- 	}
--
--out:
--	bp->l_flag |= lbmDONE;
--	LCACHE_UNLOCK(flags);
+diff --git a/fs/jfs/jfs_txnmgr.c b/fs/jfs/jfs_txnmgr.c
+index 083dbbb0c..823250c3c 100644
+--- a/fs/jfs/jfs_txnmgr.c
++++ b/fs/jfs/jfs_txnmgr.c
+@@ -37,6 +37,7 @@
+ #include <linux/moduleparam.h>
+ #include <linux/kthread.h>
+ #include <linux/seq_file.h>
++#include <linux/delay.h>
+ #include "jfs_incore.h"
+ #include "jfs_inode.h"
+ #include "jfs_filsys.h"
+@@ -2772,6 +2773,49 @@ int jfs_lazycommit(void *arg)
+ 	return 0;
  }
  
- int jfsIOWait(void *arg)
++/*
++ * Wait for lazycommit thread to finish processing all transactions
++ * for the given superblock.
++ */
++void txLazyCommitWait(struct super_block *sb)
++{
++	struct jfs_sb_info *sbi = JFS_SBI(sb);
++	struct jfs_log *log = sbi->log;
++	unsigned long flags;
++	struct tblock *tblk;
++	int found;
++
++	if (!log)
++		return;
++
++	/*
++	 * Synchronize with lmPostGC to ensure that all transactions
++	 * removed from cqueue have been added to unlock_queue.
++	 */
++	spin_lock_irqsave(&log->gclock, flags);
++	spin_unlock_irqrestore(&log->gclock, flags);
++
++	do {
++		found = 0;
++		LAZY_LOCK(flags);
++		if (sbi->commit_state & IN_LAZYCOMMIT)
++			found = 1;
++		else {
++			list_for_each_entry(tblk, &TxAnchor.unlock_queue,
++					    cqueue) {
++				if (tblk->sb == sb) {
++					found = 1;
++					break;
++				}
++			}
++		}
++		LAZY_UNLOCK(flags);
++
++		if (found)
++			msleep(10);
++	} while (found);
++}
++
+ void txLazyUnlock(struct tblock * tblk)
+ {
+ 	unsigned long flags;
+diff --git a/fs/jfs/jfs_txnmgr.h b/fs/jfs/jfs_txnmgr.h
+index ba71eb5ce..3b3272ded 100644
+--- a/fs/jfs/jfs_txnmgr.h
++++ b/fs/jfs/jfs_txnmgr.h
+@@ -295,4 +295,5 @@ extern void txResume(struct super_block *);
+ extern void txLazyUnlock(struct tblock *);
+ extern int jfs_lazycommit(void *);
+ extern int jfs_sync(void *);
++extern void txLazyCommitWait(struct super_block *sb);
+ #endif				/* _H_JFS_TXNMGR */
+diff --git a/fs/jfs/jfs_umount.c b/fs/jfs/jfs_umount.c
+index 18569f1ea..1aca20b1d 100644
+--- a/fs/jfs/jfs_umount.c
++++ b/fs/jfs/jfs_umount.c
+@@ -21,6 +21,7 @@
+ #include "jfs_dmap.h"
+ #include "jfs_imap.h"
+ #include "jfs_logmgr.h"
++#include "jfs_txnmgr.h"
+ #include "jfs_metapage.h"
+ #include "jfs_debug.h"
+ 
+@@ -52,11 +53,13 @@ int jfs_umount(struct super_block *sb)
+ 	 *
+ 	 * if mounted read-write and log based recovery was enabled
+ 	 */
+-	if ((log = sbi->log))
++	if ((log = sbi->log)) {
+ 		/*
+ 		 * Wait for outstanding transactions to be written to log:
+ 		 */
+ 		jfs_flush_journal(log, 2);
++		txLazyCommitWait(sb);
++	}
+ 
+ 	/*
+ 	 * Hold log lock so write_special_inodes (lmLogSync) cannot see
+@@ -142,6 +145,7 @@ int jfs_umount_rw(struct super_block *sb)
+ 	 * remove file system from log active file system list.
+ 	 */
+ 	jfs_flush_journal(log, 2);
++	txLazyCommitWait(sb);
+ 
+ 	/*
+ 	 * Make sure all metadata makes it to disk
 
 
 base-commit: 5d6919055dec134de3c40167a490f33c74c12581
