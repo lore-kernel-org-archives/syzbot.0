@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0A9C2DA775
-	for <syzbot@lists.linux.dev>; Tue, 12 May 2026 22:03:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34CC639B964
+	for <syzbot@lists.linux.dev>; Tue, 12 May 2026 22:34:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778623403; cv=none; b=bH9A86PDDvwP/sTQ/zc/f4Uckb7XdbJXE77cpCt0T+lOgb3JVqBIrL0iccNzkySgKmDHv8wGj+Wq/iHEeH7tClXd56Omx6akFnIysOz+b5xgyPFDK72aHRNntrgLq27suMJnyWKo8Fqe+9BUstYsoexTDt4zg7NZ61YlZ/qhn90=
+	t=1778625263; cv=none; b=DD1lYMVb/I8mjFOS5dOZFRLTcUrTzRFE4BQ2n7uVHWR+Js/4JzcYKem5zGu+DxrV3N2+mhhwymeTr1FEYvcO/fc2wJnZgHFQ2EX1xQXvaW/ZLgzVXB8KB9kJpFIlFOytC2kxNPossMkOwBDzW5p4svpO9uETa6Ir0PV4w9Hur60=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778623403; c=relaxed/simple;
-	bh=NhyKtFWSPQQWF5KfTamdcLUzm19Bl2+oyEH+ufAHTCw=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=OIQN3jFahChn/P4LTF5htJXTT7pWczrnop2j5wzoYw09In0OLsvLhDTvvnyH4E8O9FXblmyb7pHf8c0Tw/8LBgshIQpJjRHtByfXS4m03zuynWiW1hhLfM+4ylmEKMbU8rhdH+WCmgDqz8CqKttRvytJ1NJHV8bamdulkmqd4Vo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oMaju+ss; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778625263; c=relaxed/simple;
+	bh=u77K1qGPTLfRARU+xrR0DDscqJDrKXwSK0j70NGs9eI=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=kZTVqRHtYpl4kcoYkzZEl6ZLW6TCuKdkhgNhaQ5SNyDGizgeqXj0KJbH2Wx88wf0JjWmb5c5iHenM26RBv3o2mOh6QUEgoM+kueYTMoK+4oQSEDEEevmUi1OyJhUNLDO9KJR5YGo4P3z1HwKMwRWn6jYPw8I9wKMwbqAlKYk1HU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oWUMfiIZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oMaju+ss"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B60B4C2BCB8;
-	Tue, 12 May 2026 22:03:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oWUMfiIZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B22ACC2BCB0;
+	Tue, 12 May 2026 22:34:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778623402;
-	bh=NhyKtFWSPQQWF5KfTamdcLUzm19Bl2+oyEH+ufAHTCw=;
+	s=k20201202; t=1778625262;
+	bh=u77K1qGPTLfRARU+xrR0DDscqJDrKXwSK0j70NGs9eI=;
 	h=From:To:Cc:Subject:Date:From;
-	b=oMaju+ssRiNrJHY0veSjEXKCOHtT74jnxNh2gvVrmNwP1q+88agbmVuWuEa4aU3Bz
-	 Nnqw9Lguq2EJTnVFQMOiDXX/yotk29EIb1bvCXuE11iVAgWE7jhdjlmDiaiuEMoGDe
-	 wCOsbggsIVk9x6PworNgnhjCileQGjFSNZ8+gPhURdSlWHBqYh1ONI1g3ImWXVy5mz
-	 6dfOIoN/yPuWZLwM97aaPGD4wUNIHjP34N5JpP3QyW0dLd7REMBg8tl/3o8JRcKzjA
-	 Kk/cGo5MOpbHDGdwS611YPSWTtykxHFgmTPFAGmrfUC/iPdQ1JoI/2EleJJpipdWWN
-	 0P5TrGIb9VMbg==
+	b=oWUMfiIZFd3oiusERqq3jJlwMnyRdDe3ehgrqLtdHDlEmK3IxxoamfcCpgLqgE3gL
+	 jpcEaPhn2Se1dK/RFadigEdyPTT0bP+IJIkjIFyax9ZW+Z5uWWnkcj+1IF3NCOOFcl
+	 4YdIyEvXmvE4uDSDn/lyVDZKxhyGuEG7r/2G3+917UK+IMHKf0Ln5gWrU8zatAvEYm
+	 Y4a3izfdWeaWVc5JBR1iE7lE/HCVn/52fUYCm/RU7KCKg0xg6Ia9n5/sduo8Y6Shxy
+	 GkInxFoiPEyIrkSOV6lVI0q5qAEhlCgILHWM9Lnk8YT+UFKlXB9EJmP5MQHM7mUZ3f
+	 GSzsUupjpC66w==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] jfs: fix invalid pointer dereference and use-after-free bugs
-Message-ID: <938f325a-46c6-4ade-8a21-b3271963810c@mail.kernel.org>
+Subject: [PATCH RFC v3] hfs/hfsplus: fix lockdep false positive for extents_lock
+Message-ID: <3d5c2bce-281a-49bc-8269-6bd86f0b6817@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,197 +38,117 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue, 12 May 2026 22:03:22 +0000 (UTC)
+Date: Tue, 12 May 2026 22:34:22 +0000 (UTC)
 
-This patch addresses multiple issues in JFS, including an invalid
-pointer dereference in release_metapage() and use-after-free bugs in the
-transaction manager and log manager.
+syzkaller reported a possible recursive locking deadlock on
+&HFSPLUS_I(inode)->extents_lock. This is a lockdep false positive.
 
-First, in JFS, the root node of an inode's extent tree (xtree) is
-embedded within the inode, and a pseudo-metapage is used when the root
-page is requested. During truncation, xtTruncate() relies on the on-disk
-BT_ROOT flag to identify the root page. If this flag is corrupted and
-cleared, the root page is treated as a regular leaf page and passed to
-discard_metapage(), which calls release_metapage() and eventually
-folio_lock() on a garbage pointer, causing a crash. This is fixed by
-replacing the on-disk flag check (p->header.flag & BT_ROOT) with the
-robust in-memory BT_IS_ROOT() macro across all relevant locations in
-fs/jfs/jfs_xtree.c. This change also fixes a use-after-free in
-xtTruncate_pmap() by checking BT_IS_ROOT() before XT_PUTPAGE().
+In HFS and HFS+, extents_lock is used to protect the extent allocation
+information of an inode. The problem arises because the lock is
+initialized uniformly for all inodes, including both regular files and
+special internal system files (like the Allocation file, Extents file,
+Catalog file, etc.). Because of this, lockdep assigns the exact same
+lock class to the extents_lock of all inodes.
 
-Second, a slab-use-after-free occurs in jfs_lazycommit() because it
-clears the IN_LAZYCOMMIT flag from sbi->commit_state after
-txLazyCommit() returns. Inside txLazyCommit(), the transaction is marked
-as committed and waiters are woken up. If the filesystem is being
-unmounted, jfs_flush_journal() wakes up and allows the unmount process
-to proceed, freeing the jfs_sb_info (sbi) structure. When txLazyCommit()
-returns, jfs_lazycommit() attempts to clear the flag on the freed sbi.
-This is fixed by moving the clearing of IN_LAZYCOMMIT into
-txLazyCommit() right before wake_up_all(&tblk->gcwait). At this point,
-the transaction's map updates are already complete, so it is safe for
-another thread to pick up the next transaction for the same superblock.
-Furthermore, because log->gclock is held while clearing the flag and
-waking up waiters, jfs_flush_journal() cannot return until
-txLazyCommit() releases the lock, ensuring that sbi remains valid
-throughout the critical section.
+When a regular file is truncated or extended, its extents_lock is
+acquired. During this process, the filesystem might need to allocate or
+free blocks, which requires reading or updating the Allocation file (or
+other system files). This triggers a read on the Allocation file's
+mapping, which in turn acquires the Allocation file's extents_lock.
+Lockdep sees the same lock class being acquired twice in a nested
+fashion and flags it as a recursive locking deadlock.
 
-Finally, lbmIODone() is modified to set bp->l_flag |= lbmDONE before the
-buffer is potentially freed or waiters are woken up, preventing a
-use-after-free.
+The exact same issue also exists in the older HFS filesystem (fs/hfs/),
+where operations on a regular file can trigger updates to the Extents or
+Catalog B-trees, leading to a similar nested acquisition of
+extents_lock.
 
-Fixes: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 ("Linux-2.6.12-rc2")
+To fix this false positive, assign distinct lock classes to the
+extents_lock of special system files using lockdep_set_class(). For
+HFS+, add an array of lock class keys for system files, and apply them
+in hfsplus_system_read_inode(). For HFS, add an array of lock class keys
+for B-tree files, and apply them in hfs_btree_open().
+
+Fixes: 895c23f8c39c0c8d7b536bb2566d4aa968d78be2 ("hfsplus: convert the extents_lock in a mutex")
 Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+43706fd1eb4c8dccdfe6@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=43706fd1eb4c8dccdfe6
-Link: https://syzkaller.appspot.com/ai_job?id=65b961d2-1f93-43e7-a428-83fd01b84838
-To: <jfs-discussion@lists.sourceforge.net>
-To: <shaggy@kernel.org>
+Reported-by: syzbot+b7ef7c0c8d8098686ae2@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=b7ef7c0c8d8098686ae2
+Link: https://syzkaller.appspot.com/ai_job?id=05a9fad5-be33-46b2-888a-68617780e581
+To: <frank.li@vivo.com>
+To: <glaubitz@physik.fu-berlin.de>
+To: <linux-fsdevel@vger.kernel.org>
+To: <slava@dubeyko.com>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/fs/jfs/jfs_logmgr.c b/fs/jfs/jfs_logmgr.c
-index 306165e61..99c054e77 100644
---- a/fs/jfs/jfs_logmgr.c
-+++ b/fs/jfs/jfs_logmgr.c
-@@ -2191,6 +2191,7 @@ static void lbmIODone(struct bio *bio)
- 	 */
- 	if (bp->l_flag & lbmREAD) {
- 		bp->l_flag &= ~lbmREAD;
-+		bp->l_flag |= lbmDONE;
+v3:
+- Minimized the patch by using arrays of lock class keys indexed by inode ID instead of individual variables and switch statements.
+- Moved the lockdep_set_class() call for HFS+ from hfsplus_iget() to hfsplus_system_read_inode().
+
+v2:
+- Removed duplicate lines (includes, lock class key declarations, and switch statements).
+https://lore.kernel.org/all/c672c95e-82f0-4c76-9ba0-09e5133639cc@mail.kernel.org/T/
+
+v1:
+https://lore.kernel.org/all/0bbb511f-6f0a-48b1-b3a4-e55eb907a1b4@mail.kernel.org/T/
+---
+diff --git a/fs/hfs/btree.c b/fs/hfs/btree.c
+index 2eb37a2f6..34d582a3e 100644
+--- a/fs/hfs/btree.c
++++ b/fs/hfs/btree.c
+@@ -12,9 +12,12 @@
+ #include <linux/pagemap.h>
+ #include <linux/slab.h>
+ #include <linux/log2.h>
++#include <linux/lockdep.h>
  
- 		/* wakeup I/O initiator */
- 		LCACHE_WAKEUP(&bp->l_ioevent);
-@@ -2218,6 +2219,7 @@ static void lbmIODone(struct bio *bio)
- 	log->clsn = (bp->l_pn << L2LOGPSIZE) + bp->l_ceor;
+ #include "btree.h"
  
- 	if (bp->l_flag & lbmDIRECT) {
-+		bp->l_flag |= lbmDONE;
- 		LCACHE_WAKEUP(&bp->l_ioevent);
- 		goto out;
- 	}
-@@ -2263,6 +2265,8 @@ static void lbmIODone(struct bio *bio)
- 		}
- 	}
- 
-+	bp->l_flag |= lbmDONE;
++static struct lock_class_key hfs_btree_extents_key[HFS_FIRSTUSER_CNID];
 +
- 	/*
- 	 *	synchronous pageout:
- 	 *
-@@ -2297,7 +2301,6 @@ static void lbmIODone(struct bio *bio)
- 	}
- 
- out:
--	bp->l_flag |= lbmDONE;
- 	LCACHE_UNLOCK(flags);
- }
- 
-diff --git a/fs/jfs/jfs_txnmgr.c b/fs/jfs/jfs_txnmgr.c
-index 083dbbb0c..0161c2c22 100644
---- a/fs/jfs/jfs_txnmgr.c
-+++ b/fs/jfs/jfs_txnmgr.c
-@@ -2652,6 +2652,7 @@ void txAbort(tid_t tid, int dirty)
- static void txLazyCommit(struct tblock * tblk)
+ /* Get a reference to a B*Tree and do some initial checks */
+ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp keycmp)
  {
- 	struct jfs_log *log;
-+	unsigned long flags;
+@@ -47,6 +50,8 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
+ 	struct hfs_mdb *mdb = HFS_SB(sb)->mdb;
+ 	HFS_I(tree->inode)->flags = 0;
+ 	mutex_init(&HFS_I(tree->inode)->extents_lock);
++	lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
++			  &hfs_btree_extents_key[id]);
+ 	switch (id) {
+ 	case HFS_EXT_CNID:
+ 		hfs_inode_read_fork(tree->inode, mdb->drXTExtRec, mdb->drXTFlSize,
+diff --git a/fs/hfsplus/super.c b/fs/hfsplus/super.c
+index 40a0feda7..7be84552a 100644
+--- a/fs/hfsplus/super.c
++++ b/fs/hfsplus/super.c
+@@ -18,6 +18,7 @@
+ #include <linux/slab.h>
+ #include <linux/vfs.h>
+ #include <linux/nls.h>
++#include <linux/lockdep.h>
  
- 	while (((tblk->flag & tblkGC_READY) == 0) &&
- 	       ((tblk->flag & tblkGC_UNLOCKED) == 0)) {
-@@ -2674,6 +2675,10 @@ static void txLazyCommit(struct tblock * tblk)
- 	if (tblk->flag & tblkGC_READY)
- 		log->gcrtc--;
+ static struct inode *hfsplus_alloc_inode(struct super_block *sb);
+ static void hfsplus_free_inode(struct inode *inode);
+@@ -25,10 +26,15 @@ static void hfsplus_free_inode(struct inode *inode);
+ #include "hfsplus_fs.h"
+ #include "xattr.h"
  
-+	LAZY_LOCK(flags);
-+	JFS_SBI(tblk->sb)->commit_state &= ~IN_LAZYCOMMIT;
-+	LAZY_UNLOCK(flags);
++static struct lock_class_key hfsplus_sys_extents_key[HFSPLUS_FIRSTUSER_CNID];
 +
- 	wake_up_all(&tblk->gcwait);	// LOGGC_WAKEUP
+ static int hfsplus_system_read_inode(struct inode *inode)
+ {
+ 	struct hfsplus_vh *vhdr = HFSPLUS_SB(inode->i_sb)->s_vhdr;
  
- 	/*
-@@ -2735,7 +2740,6 @@ int jfs_lazycommit(void *arg)
- 				txLazyCommit(tblk);
- 				LAZY_LOCK(flags);
- 
--				sbi->commit_state &= ~IN_LAZYCOMMIT;
- 				/*
- 				 * Don't continue in the for loop.  (We can't
- 				 * anyway, it's unsafe!)  We want to go back to
-diff --git a/fs/jfs/jfs_xtree.c b/fs/jfs/jfs_xtree.c
-index 28c3cf960..6eab0441f 100644
---- a/fs/jfs/jfs_xtree.c
-+++ b/fs/jfs/jfs_xtree.c
-@@ -703,7 +703,7 @@ xtSplitUp(tid_t tid,
- 	sp = XT_PAGE(ip, smp);
- 
- 	/* is inode xtree root extension/inline EA area free ? */
--	if ((sp->header.flag & BT_ROOT) && (!S_ISDIR(ip->i_mode)) &&
-+	if (BT_IS_ROOT(smp) && (!S_ISDIR(ip->i_mode)) &&
- 	    (le16_to_cpu(sp->header.maxentry) < XTROOTMAXSLOT) &&
- 	    (JFS_IP(ip)->mode2 & INLINEEA)) {
- 		sp->header.maxentry = cpu_to_le16(XTROOTMAXSLOT);
-@@ -781,9 +781,8 @@ xtSplitUp(tid_t tid,
- 	 * and acquire txLock as appropriate.
- 	 * return <rp> pinned and its block number <rpbn>.
- 	 */
--	rc = (sp->header.flag & BT_ROOT) ?
--	    xtSplitRoot(tid, ip, split, &rmp) :
--	    xtSplitPage(tid, ip, split, &rmp, &rbn);
-+	rc = BT_IS_ROOT(smp) ? xtSplitRoot(tid, ip, split, &rmp) :
-+			       xtSplitPage(tid, ip, split, &rmp, &rbn);
- 
- 	XT_PUTPAGE(smp);
- 
-@@ -857,9 +856,9 @@ xtSplitUp(tid_t tid,
- 			 * and acquire txLock as appropriate.
- 			 * return <rp> pinned and its block number <rpbn>.
- 			 */
--			rc = (sp->header.flag & BT_ROOT) ?
--			    xtSplitRoot(tid, ip, split, &rmp) :
--			    xtSplitPage(tid, ip, split, &rmp, &rbn);
-+			rc = BT_IS_ROOT(smp) ?
-+				     xtSplitRoot(tid, ip, split, &rmp) :
-+				     xtSplitPage(tid, ip, split, &rmp, &rbn);
- 			if (rc) {
- 				XT_PUTPAGE(smp);
- 				return rc;
-@@ -2481,7 +2480,7 @@ s64 xtTruncate(tid_t tid, struct inode *ip, s64 newsize, int flag)
- 		txFreeMap(ip, (struct maplock *) & xadlock, NULL, COMMIT_WMAP);
- 	}
- 
--	if (p->header.flag & BT_ROOT) {
-+	if (BT_IS_ROOT(mp)) {
- 		p->header.flag &= ~BT_INTERNAL;
- 		p->header.flag |= BT_LEAF;
- 		p->header.nextindex = cpu_to_le16(XTENTRYSTART);
-@@ -2630,7 +2629,7 @@ s64 xtTruncate(tid_t tid, struct inode *ip, s64 newsize, int flag)
- 		}
- 		BT_MARK_DIRTY(mp, ip);
- 
--		if (p->header.flag & BT_ROOT) {
-+		if (BT_IS_ROOT(mp)) {
- 			p->header.flag &= ~BT_INTERNAL;
- 			p->header.flag |= BT_LEAF;
- 			p->header.nextindex = cpu_to_le16(XTENTRYSTART);
-@@ -2869,12 +2868,11 @@ s64 xtTruncate_pmap(tid_t tid, struct inode *ip, s64 committed_size)
- 		xtlck->hwm.offset = le16_to_cpu(p->header.nextindex) - 1;
- 		tlck->type = tlckXTREE | tlckFREE;
- 
--		XT_PUTPAGE(mp);
--
--		if (p->header.flag & BT_ROOT) {
--
-+		if (BT_IS_ROOT(mp)) {
-+			XT_PUTPAGE(mp);
- 			goto out;
- 		} else {
-+			XT_PUTPAGE(mp);
- 			goto getParent;
- 		}
- 	}
++	lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
++			  &hfsplus_sys_extents_key[inode->i_ino]);
++
+ 	switch (inode->i_ino) {
+ 	case HFSPLUS_EXT_CNID:
+ 		hfsplus_inode_read_fork(inode, &vhdr->ext_file);
 
 
-base-commit: 5d6919055dec134de3c40167a490f33c74c12581
+base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to send it to the mailing list.
