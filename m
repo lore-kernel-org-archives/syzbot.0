@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD7D23C3C00
-	for <syzbot@lists.linux.dev>; Tue, 12 May 2026 09:19:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49E4F39FCD7
+	for <syzbot@lists.linux.dev>; Tue, 12 May 2026 09:19:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778577568; cv=none; b=DE4crcdZVgavQI0pttsdkRTgpM43gABGO1FJo4uW0V/lgLhJA8njCSruButoPHLWx8+irJ/O9TPXuBAZZk5czIKejdI/mD8hsXiH+SBIwJpOWv8wpn2lHluG9D4OIreBr4YiIm2jy3q8UHrwImTQIPWXmZLZsHkH1USvCS86uCw=
+	t=1778577598; cv=none; b=Ohdm1rkeyQSDrxeldYuOI3yk1HC1L8oFuAx2YCRDm6XBm4Jt24R0ZA4Wxxl7rGbnEAXuNTuk5MvZPPNtzNNbkVKu0qTegR079r3RwgsPy6eAKHVw7GN+IO1BUFD1n+H+PaqLDO33KKsP7eM3WxsDGMjWF3W5S4kEY5nBdUJ7nSY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778577568; c=relaxed/simple;
-	bh=Sot99xhnvCcFTU+svpxaq8/Jk0zrJjrYPPi4kvz7is4=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=mwTQp8RP9BweEXwfv7l5wV5UzrnqcSFTIn3Iya7fdybTmmjpNhzpjPqIq0iMafzlFmrBl81nRA9IotvDG2A1d+wVTPua2O8bwaym9Ckbch7yqKRFdFyJxNArpPaOuaCXDG/zxGn14uvNNaq9wJVBW96PlOS6/NGQysd6msST9QE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S6eUGvVr; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778577598; c=relaxed/simple;
+	bh=Fy8VLmJhhlDFk3MGXVWcL95dWMZyWIQQD7km2kpTJgk=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=S80dBLik+FnB9BONa5JwHyvhNRQs8XJ0d1xjKtdIgcqgQx2gnre0JrtGdxh5Eelqf2FEGA76J4E1foLzwTBn0R/J4wCg+Byp/6yjGxlsm54oKiJ4QBEIaztLGaeOsCLWgYWP8qsaPOq0cZXIhd9WyBIgJxBRROYVqjP37tyhYJk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mxh/LSW9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S6eUGvVr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5991C2BCB0;
-	Tue, 12 May 2026 09:19:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mxh/LSW9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC373C2BCF5;
+	Tue, 12 May 2026 09:19:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778577568;
-	bh=Sot99xhnvCcFTU+svpxaq8/Jk0zrJjrYPPi4kvz7is4=;
+	s=k20201202; t=1778577597;
+	bh=Fy8VLmJhhlDFk3MGXVWcL95dWMZyWIQQD7km2kpTJgk=;
 	h=From:To:Cc:Subject:Date:From;
-	b=S6eUGvVrxYYnAwA1epZU5uAMJi9TW3/psjEDDebc31dmdG121/j7M5Xza+TY+eVKM
-	 34Gj5lBfcJB25m1Jz40I6jncK0rzDKyxe/dUMgKoy2dAsgIgOKRuMYr49RgCG9yWrG
-	 hl2uCikm9q7Ker4brN7+wFM6vJCpP9+lfoJNISTAlJvUcB3N9c0ShhrSVsw46MHCvY
-	 w3NQVChoG/X3yXlUKGHdxe0SbFPZNTFyOi8wqHNR9+IfxsopJ17XDtyDvgXcsoE4jA
-	 PtoesDXpbe5bRCtb4W8COUKaP1DfXTDfJ/3tikkcHILbEGFigdDEop7SEvaZSjMxeS
-	 F/VerZwrY9/kw==
+	b=mxh/LSW9voVeGmFkSE7ECQfDrkUDFHojwxqAfS5HlEepbREu0HouyLeSf7OJFUz6B
+	 4uaHd77C96sNQEHrEg2+4VV4WUuBHJ/qF7x+a4dNXqkXVfvijgtyMo4h1z9BbH/EJR
+	 x7bZ+fiR8oEwdyRFcZErVuQnrnCezfyWGqMb9dVC0bprNpUa/F4Z6BpCd+nc+0eAFk
+	 wwqFSJd8VdorhzVIfJe0htxoNgh9ScebC5+SixA3rhM8CZ72ASLmImmcKJ0BC7G/B4
+	 StgbplLjFNxAvuQiUMv9cgfTPO9Segjpyhtqz+b/Vi5fjvF/fVaqnd1r1vUbr4RKzD
+	 nVRAwKm2fLSeg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] hfs/hfsplus: fix lockdep false positive for extents_lock
-Message-ID: <c672c95e-82f0-4c76-9ba0-09e5133639cc@mail.kernel.org>
+Subject: [PATCH RFC] jfs: fix use-after-free in lbmIODone and double bio submission
+Message-ID: <f755a426-7bd5-49df-a141-93f77550143b@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,152 +38,151 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue, 12 May 2026 09:19:27 +0000 (UTC)
+Date: Tue, 12 May 2026 09:19:57 +0000 (UTC)
 
-hfs/hfsplus: fix lockdep false positive for extents_lock
+jfs: fix use-after-free in lbmIODone and double bio submission
 
-syzkaller reported a possible recursive locking deadlock on
-&HFSPLUS_I(inode)->extents_lock. This is a lockdep false positive.
+A KASAN use-after-free crash can occur in the JFS log manager due to a
+race condition that results in submitting concurrent bios for the same
+log buffer and prematurely freeing the buffer's page while the second
+bio is still in flight. When a partial page write is initiated by
+`lmGCwrite()`, a bio is submitted but the buffer remains on the write
+queue. If a concurrent full page write is then triggered by
+`lmNextPage()`, `lbmWrite()` blindly overwrites the buffer's flags and
+submits a second bio for the same buffer. Upon completion of the first
+bio, `lbmIODone()` reads the overwritten flags, assumes the buffer is
+fully processed, and frees it, leaving the second bio to operate on
+freed memory. Furthermore, `lbmIODone()` had a pre-existing
+use-after-free vulnerability where it accessed the buffer to set the
+`lbmDONE` flag after potentially freeing it via `lbmfree()` or
+`lmPostGC()`.
 
-In HFS and HFS+, extents_lock is used to protect the extent allocation
-information of an inode. The problem arises because the lock is
-initialized uniformly for all inodes, including both regular files and
-special internal system files (like the Allocation file, Extents file,
-Catalog file, etc.). Because of this, lockdep assigns the exact same
-lock class to the extents_lock of all inodes.
+This patch fixes both issues. First, `lbmWrite()` is updated to check if
+the buffer is already under I/O; if so, it simply ORs the new flags and
+returns, preventing the double bio submission. Second, `lbmIODone()` is
+refactored to avoid accessing the buffer after it might have been freed.
+The `lbmDONE` flag is now set before calling `lbmfree()` or waking up
+waiters, and the function returns immediately. In the `lbmGC` branch,
+the buffer's flags are saved before calling `lmPostGC()` and evaluated
+afterwards to correctly handle sequential bios without triggering a
+use-after-free.
 
-When a regular file is truncated or extended, its extents_lock is
-acquired. During this process, the filesystem might need to allocate or
-free blocks, which requires reading or updating the Allocation file (or
-other system files). This triggers a read on the Allocation file's
-mapping, which in turn acquires the Allocation file's extents_lock.
-Lockdep sees the same lock class being acquired twice in a nested
-fashion and flags it as a recursive locking deadlock.
-
-The exact same issue also exists in the older HFS filesystem (fs/hfs/),
-where operations on a regular file can trigger updates to the Extents
-or Catalog B-trees, leading to a similar nested acquisition of
-extents_lock.
-
-To fix this false positive, assign distinct lock classes to the
-extents_lock of special system files using lockdep_set_class().
-For HFS+, add lock class keys for the Extents, Catalog, Allocation,
-Attributes, and Startup files, and apply them in hfsplus_iget().
-For HFS, add lock class keys for the Extents and Catalog B-tree files,
-and apply them in hfs_btree_open().
-
-Fixes: 895c23f8c39c0c8d7b536bb2566d4aa968d78be2 ("hfsplus: convert the extents_lock in a mutex")
+Fixes: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 ("Linux-2.6.12-rc2")
 Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+b7ef7c0c8d8098686ae2@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=b7ef7c0c8d8098686ae2
-Link: https://syzkaller.appspot.com/ai_job?id=8c05b019-0a6c-4a92-8e06-c7a648023928
-To: <frank.li@vivo.com>
-To: <glaubitz@physik.fu-berlin.de>
-To: <linux-fsdevel@vger.kernel.org>
-To: <slava@dubeyko.com>
+Reported-by: syzbot+f5a5b157b7336d1fda1d@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=f5a5b157b7336d1fda1d
+Link: https://syzkaller.appspot.com/ai_job?id=af144476-5512-4b41-bd21-48f1f6bdd669
+To: <jfs-discussion@lists.sourceforge.net>
+To: <shaggy@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-v2:
-- Removed duplicate lines (includes, lock class key declarations, and switch statements).
-
-v1:
-https://lore.kernel.org/all/0bbb511f-6f0a-48b1-b3a4-e55eb907a1b4@mail.kernel.org/T/
----
-diff --git a/fs/hfs/btree.c b/fs/hfs/btree.c
-index 2eb37a2f6..9182ca939 100644
---- a/fs/hfs/btree.c
-+++ b/fs/hfs/btree.c
-@@ -12,9 +12,13 @@
- #include <linux/pagemap.h>
- #include <linux/slab.h>
- #include <linux/log2.h>
-+#include <linux/lockdep.h>
+diff --git a/fs/jfs/jfs_logmgr.c b/fs/jfs/jfs_logmgr.c
+index 306165e61..d7d60fa7d 100644
+--- a/fs/jfs/jfs_logmgr.c
++++ b/fs/jfs/jfs_logmgr.c
+@@ -2019,6 +2019,16 @@ static void lbmWrite(struct jfs_log * log, struct lbuf * bp, int flag,
  
- #include "btree.h"
+ 	LCACHE_LOCK(flags);		/* disable+lock */
  
-+static struct lock_class_key hfs_ext_extents_key;
-+static struct lock_class_key hfs_cat_extents_key;
-+
- /* Get a reference to a B*Tree and do some initial checks */
- struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp keycmp)
- {
-@@ -49,6 +53,8 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
- 	mutex_init(&HFS_I(tree->inode)->extents_lock);
- 	switch (id) {
- 	case HFS_EXT_CNID:
-+		lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
-+				  &hfs_ext_extents_key);
- 		hfs_inode_read_fork(tree->inode, mdb->drXTExtRec, mdb->drXTFlSize,
- 				    mdb->drXTFlSize, be32_to_cpu(mdb->drXTClpSiz));
- 		if (HFS_I(tree->inode)->alloc_blocks >
-@@ -61,6 +67,8 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
- 		tree->inode->i_mapping->a_ops = &hfs_btree_aops;
- 		break;
- 	case HFS_CAT_CNID:
-+		lockdep_set_class(&HFS_I(tree->inode)->extents_lock,
-+				  &hfs_cat_extents_key);
- 		hfs_inode_read_fork(tree->inode, mdb->drCTExtRec, mdb->drCTFlSize,
- 				    mdb->drCTFlSize, be32_to_cpu(mdb->drCTClpSiz));
- 
-diff --git a/fs/hfsplus/super.c b/fs/hfsplus/super.c
-index 40a0feda7..17147d5f5 100644
---- a/fs/hfsplus/super.c
-+++ b/fs/hfsplus/super.c
-@@ -18,6 +18,7 @@
- #include <linux/slab.h>
- #include <linux/vfs.h>
- #include <linux/nls.h>
-+#include <linux/lockdep.h>
- 
- static struct inode *hfsplus_alloc_inode(struct super_block *sb);
- static void hfsplus_free_inode(struct inode *inode);
-@@ -25,6 +26,12 @@ static void hfsplus_free_inode(struct inode *inode);
- #include "hfsplus_fs.h"
- #include "xattr.h"
- 
-+static struct lock_class_key hfsplus_ext_extents_key;
-+static struct lock_class_key hfsplus_cat_extents_key;
-+static struct lock_class_key hfsplus_alloc_extents_key;
-+static struct lock_class_key hfsplus_attr_extents_key;
-+static struct lock_class_key hfsplus_start_extents_key;
-+
- static int hfsplus_system_read_inode(struct inode *inode)
- {
- 	struct hfsplus_vh *vhdr = HFSPLUS_SB(inode->i_sb)->s_vhdr;
-@@ -84,6 +91,29 @@ struct inode *hfsplus_iget(struct super_block *sb, unsigned long ino)
- 	memset(HFSPLUS_I(inode)->cached_extents, 0, sizeof(hfsplus_extent_rec));
- 	HFSPLUS_I(inode)->extent_state = 0;
- 	mutex_init(&HFSPLUS_I(inode)->extents_lock);
-+	/* Set lockdep classes for system files to avoid false positives */
-+	switch (ino) {
-+	case HFSPLUS_EXT_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_ext_extents_key);
-+		break;
-+	case HFSPLUS_CAT_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_cat_extents_key);
-+		break;
-+	case HFSPLUS_ALLOC_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_alloc_extents_key);
-+		break;
-+	case HFSPLUS_ATTR_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_attr_extents_key);
-+		break;
-+	case HFSPLUS_START_CNID:
-+		lockdep_set_class(&HFSPLUS_I(inode)->extents_lock,
-+				  &hfsplus_start_extents_key);
-+		break;
++	/*
++	 * If the buffer is already under I/O, we should not submit it again.
++	 * Just OR the flags so that lbmIODone can handle the new state.
++	 */
++	if (bp->l_wqnext != NULL && (bp->l_flag & lbmWRITE)) {
++		bp->l_flag |= flag;
++		LCACHE_UNLOCK(flags);
++		return;
 +	}
- 	HFSPLUS_I(inode)->rsrc_inode = NULL;
- 	HFSPLUS_I(inode)->create_date = 0;
- 	HFSPLUS_I(inode)->linkid = 0;
++
+ 	/*
+ 	 * initialize buffer for device driver
+ 	 */
+@@ -2191,11 +2201,13 @@ static void lbmIODone(struct bio *bio)
+ 	 */
+ 	if (bp->l_flag & lbmREAD) {
+ 		bp->l_flag &= ~lbmREAD;
++		bp->l_flag |= lbmDONE;
+ 
+ 		/* wakeup I/O initiator */
+ 		LCACHE_WAKEUP(&bp->l_ioevent);
+ 
+-		goto out;
++		LCACHE_UNLOCK(flags);
++		return;
+ 	}
+ 
+ 	/*
+@@ -2218,8 +2230,10 @@ static void lbmIODone(struct bio *bio)
+ 	log->clsn = (bp->l_pn << L2LOGPSIZE) + bp->l_ceor;
+ 
+ 	if (bp->l_flag & lbmDIRECT) {
++		bp->l_flag |= lbmDONE;
+ 		LCACHE_WAKEUP(&bp->l_ioevent);
+-		goto out;
++		LCACHE_UNLOCK(flags);
++		return;
+ 	}
+ 
+ 	tail = log->wqueue;
+@@ -2271,17 +2285,38 @@ static void lbmIODone(struct bio *bio)
+ 	 * leave buffer for i/o initiator to dispose
+ 	 */
+ 	if (bp->l_flag & lbmSYNC) {
++		bp->l_flag |= lbmDONE;
+ 		/* wakeup I/O initiator */
+ 		LCACHE_WAKEUP(&bp->l_ioevent);
++		LCACHE_UNLOCK(flags);
++		return;
+ 	}
+ 
+ 	/*
+ 	 *	Group Commit pageout:
+ 	 */
+ 	else if (bp->l_flag & lbmGC) {
++		int flags_before = bp->l_flag;
+ 		LCACHE_UNLOCK(flags);
+ 		lmPostGC(bp);
+ 		LCACHE_LOCK(flags);		/* disable+lock */
++
++		if (flags_before & lbmFREE) {
++			LCACHE_UNLOCK(flags);
++			lbmWrite(log, bp, lbmWRITE | lbmRELEASE | lbmFREE, 1);
++			return;
++		}
++		if (flags_before & lbmRELEASE) {
++			LCACHE_UNLOCK(flags);
++			return;
++		}
++		if (bp->l_flag & lbmWRITE) {
++			LCACHE_UNLOCK(flags);
++			return;
++		}
++		bp->l_flag |= lbmDONE;
++		LCACHE_UNLOCK(flags);
++		return;
+ 	}
+ 
+ 	/*
+@@ -2293,12 +2328,11 @@ static void lbmIODone(struct bio *bio)
+ 	else {
+ 		assert(bp->l_flag & lbmRELEASE);
+ 		assert(bp->l_flag & lbmFREE);
++		bp->l_flag |= lbmDONE;
+ 		lbmfree(bp);
++		LCACHE_UNLOCK(flags);
++		return;
+ 	}
+-
+-out:
+-	bp->l_flag |= lbmDONE;
+-	LCACHE_UNLOCK(flags);
+ }
+ 
+ int jfsIOWait(void *arg)
 
 
-base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
+base-commit: 5d6919055dec134de3c40167a490f33c74c12581
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to send it to the mailing list.
