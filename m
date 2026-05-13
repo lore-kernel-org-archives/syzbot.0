@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AF9A3B0AD0
-	for <syzbot@lists.linux.dev>; Wed, 13 May 2026 19:34:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E394534F24A
+	for <syzbot@lists.linux.dev>; Wed, 13 May 2026 19:53:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778700880; cv=none; b=H7rEBeUkR7UwQg1c79/yx0NZSV2mB1vVlRrGEFdmpzabyxGWLvZkRyhmtJjgCmGja4KlgnwTGVLWqVbBpGk+beddQYFsmBc6Y5lfu313IpCJjhlLZBT3P4+K2Yt1xRDaoHHXvD/fp4qr5ihRHH/EkfB59DHeafAMUlKfGKDQvCM=
+	t=1778701990; cv=none; b=qx0BqeB4pcBuSXEFFoyOUScNgFmoONU9m+RoItiO60j0OxktZJI2/c642D8LRVu/6zEKWkxjhtdhukKJ1yc9POdAKTG3gEdSz/DHc+OwYkLtpGHmtWDQHRqn7jwNPya9F0PBJZFkA+PzOns9IHXG8bcMdW69jKqrth7oKH+a6j0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778700880; c=relaxed/simple;
-	bh=OTugY+A5oUiZ5f3cAYiMEoUZLGwwpDUzE19iD9ZTBr8=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=cqHXaGw/mQGvypvw/EOejKAnM9wO2bgG5st8Mz1Rr2IpU0/6ovdeH67o9PHYEQaMxkA/WZual87PDMtK0QMCZ1/kCTfHA7iUAUyH1Gq2XpEnvBFePPJoic3e41VtuAzsuukuqsFca/OlkkJtqzLzfu7S+qM/RKvn5qP+CitlgQo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lYkmG+ty; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778701990; c=relaxed/simple;
+	bh=pMShIKgLLIrgDDk1D8HnHcgit4owowEyVf/ooaPBjyo=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=dcKzxifPpxdmIzjHuwrO46tVBdfqOP8bebsxtmoM9QLFfMAQ4fXtzU/hoYDp7RV7HKGpRLcDSRw3em/mjsWswEFpqPjo+vNtvhuMv6lbTasdmehOaWJ9ZloROzX87UecEeOy6buH6wNHmOhVTabrKS1ay0MsVi4qQ+/pmIXnhcs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G3hPtxez; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lYkmG+ty"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B85F9C19425;
-	Wed, 13 May 2026 19:34:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G3hPtxez"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B59D9C19425;
+	Wed, 13 May 2026 19:53:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778700879;
-	bh=OTugY+A5oUiZ5f3cAYiMEoUZLGwwpDUzE19iD9ZTBr8=;
+	s=k20201202; t=1778701989;
+	bh=pMShIKgLLIrgDDk1D8HnHcgit4owowEyVf/ooaPBjyo=;
 	h=From:To:Cc:Subject:Date:From;
-	b=lYkmG+ty15d11BO8cRd7iHzoWt+RJnaW2DjwA3RtyS487XjRI++H4LDbQsHQBxQbj
-	 pIvCaKb13MeZMyPb50W5JWhOI3RH1diLeRog+J3DpNpw4LlD5fvhFABCgpmetF18bn
-	 LNWvPoDzPwJUCbpeBI+TcP4tzTQxT3nuQ3w0fYbvNQfXZd/B9VgkoLjsvxPAYOQHdE
-	 rExWste7Gcgi6KURIU2E786ucf8NJcv27XzBkLx+LFecVjyFUHCwaJbY0AODoBk5F6
-	 /Ev3WZ/E9uho5I78eXtZ6kdomFqOhmEuAsNmnqBHUmirdJ12QMHMmRlLlLSD0ZYURm
-	 lC9HtHmLZLVvg==
+	b=G3hPtxezak6LgfS86qCf8GNY0M+qe95AtBid1Uz2ElQy025UmXzJarGfgdSL8A4UQ
+	 epiMD/bDFUq1RBTDJYvwtE94ASE1L4o9vVTkkAB14XSZ60Me2bWAiRj5mXVnHiRqCe
+	 01RmjmgsinjjHG263EGzvIAkIv8Xlpc0s2cE6w6Cew73Ryj7YOYdBCNjSul6ciEZz8
+	 cg2RqrYMJalMhaU3DAqltvxgWSwpsa6zpX9JQdBXIa4EbZc/x5tU0OWDqMBTJihJPR
+	 7OodngmzqfcJbJSg9rdHkK5ggNQcB8hm1NsXM4uHc/rNe+1l0vk0Nai9AmJWCrcHVy
+	 yxqWbvrWbvxFg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] wifi: mac80211: remove broken reset debugfs interface
-Message-ID: <4c7d0e03-ed9c-4c92-ab8c-7f9346ab3bb9@mail.kernel.org>
+Subject: [PATCH RFC] Bluetooth: L2CAP: Fix use-after-free in l2cap_conn_ready
+Message-ID: <80b4403f-02ff-4ff9-8209-80d0059665dc@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,83 +38,158 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 13 May 2026 19:34:39 +0000 (UTC)
+Date: Wed, 13 May 2026 19:53:09 +0000 (UTC)
 
-The `reset` debugfs entry was originally introduced as a hack to test
-the suspend/resume code paths without requiring a full system suspend.
-However, since the generic suspend/resume procedures were cleaned up in
-2013, the responsibility for tearing down interfaces and releasing
-channel contexts before a suspend was delegated to the `cfg80211` layer.
+An analysis of the crash report and the kernel source code reveals a
+race condition leading to a use-after-free bug in the Bluetooth L2CAP
+core.
 
-The `reset_write()` function bypassed this `cfg80211` teardown phase,
-directly calling `__ieee80211_suspend()`. As a result, if there were any
-active interfaces, their channel contexts were never released, leading
-to a `WARN_ON(!list_empty(&local->chanctx_list))` assertion failure in
-`__ieee80211_suspend()`.
+The crash occurs in l2cap_conn_ready() when it iterates over the
+conn->chan_l list. This list is protected by conn->lock, and
+l2cap_conn_ready() correctly acquires mutex_lock(&conn->lock) before
+iterating over it using list_for_each_entry().
 
-Because the `reset` debugfs entry can no longer accurately simulate a
-real suspend/resume cycle and has been fundamentally broken for over a
-decade when active interfaces are present, remove it entirely to prevent
-the crash.
+However, a concurrent thread can close the listening socket, which
+triggers l2cap_sock_release() -> l2cap_sock_cleanup_listen().
+l2cap_sock_cleanup_listen() iterates over the unaccepted sockets in the
+accept queue, dequeues them, and calls l2cap_chan_close(chan,
+ECONNRESET).
 
-Fixes: 12e7f517029dad819c45eca9ca01fdb9ba57616b ("mac80211: cleanup generic suspend/resume procedures")
+For a channel that has already been associated with a connection,
+chan->conn is set and the channel is linked into conn->chan_l. When
+l2cap_chan_close() is called for such a channel, it eventually calls
+l2cap_chan_del(). l2cap_chan_del() removes the channel from the
+connection's list using list_del(&chan->list) and drops the connection's
+reference to the channel using l2cap_chan_put(chan).
+
+The bug is that l2cap_sock_cleanup_listen() does not acquire conn->lock
+before calling l2cap_chan_close(). Consequently, list_del(&chan->list)
+modifies conn->chan_l concurrently while l2cap_conn_ready() is iterating
+over it. This corrupts the list and leads to a use-after-free when
+l2cap_conn_ready() attempts to access the next pointer of the freed chan
+object.
+
+A similar missing conn->lock issue also exists in
+net/bluetooth/6lowpan.c within bt_6lowpan_disconnect() and
+disconnect_all_peers(), where l2cap_chan_close() is also called without
+holding the connection lock.
+
+To fix this, l2cap_sock_cleanup_listen() must acquire conn->lock before
+calling l2cap_chan_close(). This is the exact same pattern already used
+safely in l2cap_sock_shutdown() within the same file. We use
+l2cap_conn_hold_unless_zero() to safely get a reference to the
+connection, lock it, close the channel, and then unlock and put the
+connection.
+
+The same fix was applied to bt_6lowpan_disconnect() and
+disconnect_all_peers() in net/bluetooth/6lowpan.c. Since 6lowpan.c can
+be built as a separate kernel module, l2cap_conn_hold_unless_zero() was
+exported using EXPORT_SYMBOL().
+
+Fixes: 3df91ea20e744344100b10ae69a17211fcf5b207 ("Bluetooth: Revert to mutexes from RCU list")
 Assisted-by: Gemini:gemini-3.1-pro-preview
-Reported-by: syzbot+56a1a45a9a2c04d425ff@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=56a1a45a9a2c04d425ff
-Link: https://syzkaller.appspot.com/ai_job?id=42504dac-87d9-412c-b393-0d219ade8e49
-To: <johannes@sipsolutions.net>
-To: <linux-wireless@vger.kernel.org>
+Reported-by: syzbot+0e4ebcc970728e056324@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=0e4ebcc970728e056324
+Link: https://syzkaller.appspot.com/ai_job?id=7caab47a-b544-46b3-a699-3cc71c4b2494
+To: <linux-bluetooth@vger.kernel.org>
+To: <luiz.dentz@gmail.com>
+To: <marcel@holtmann.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/net/mac80211/debugfs.c b/net/mac80211/debugfs.c
-index 5a1831b08..46630d997 100644
---- a/net/mac80211/debugfs.c
-+++ b/net/mac80211/debugfs.c
-@@ -400,33 +400,6 @@ static const struct debugfs_short_fops force_tx_status_ops = {
- 	.llseek = default_llseek,
- };
+diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
+index 2f03b780b..566f75612 100644
+--- a/net/bluetooth/6lowpan.c
++++ b/net/bluetooth/6lowpan.c
+@@ -927,9 +927,11 @@ static int bt_6lowpan_disconnect(struct l2cap_conn *conn, u8 dst_type)
  
--#ifdef CONFIG_PM
--static ssize_t reset_write(struct file *file, const char __user *user_buf,
--			   size_t count, loff_t *ppos)
--{
--	struct ieee80211_local *local = file->private_data;
--	int ret;
--
--	rtnl_lock();
--	wiphy_lock(local->hw.wiphy);
--	__ieee80211_suspend(&local->hw, NULL);
--	ret = __ieee80211_resume(&local->hw);
--	wiphy_unlock(local->hw.wiphy);
--
--	if (ret)
--		cfg80211_shutdown_all_interfaces(local->hw.wiphy);
--
--	rtnl_unlock();
--
--	return count;
--}
--
--static const struct debugfs_short_fops reset_ops = {
--	.write = reset_write,
--	.llseek = noop_llseek,
--};
--#endif
--
- static const char *hw_flag_names[] = {
- #define FLAG(F)	[IEEE80211_HW_##F] = #F
- 	FLAG(HAS_RATE_CONTROL),
-@@ -682,9 +655,6 @@ void debugfs_hw_add(struct ieee80211_local *local)
- 	DEBUGFS_ADD(rate_ctrl_alg);
- 	DEBUGFS_ADD(queues);
- 	DEBUGFS_ADD(misc);
--#ifdef CONFIG_PM
--	DEBUGFS_ADD_MODE(reset, 0200);
--#endif
- 	DEBUGFS_ADD_MODE(hwflags, 0600);
- 	DEBUGFS_ADD(user_power);
- 	DEBUGFS_ADD(power);
+ 	BT_DBG("peer %p chan %p", peer, peer->chan);
+ 
++	mutex_lock(&conn->lock);
+ 	l2cap_chan_lock(peer->chan);
+ 	l2cap_chan_close(peer->chan, ENOENT);
+ 	l2cap_chan_unlock(peer->chan);
++	mutex_unlock(&conn->lock);
+ 
+ 	return 0;
+ }
+@@ -1063,9 +1065,24 @@ static void disconnect_all_peers(void)
+ 		spin_unlock(&devices_lock);
+ 
+ 		for (i = 0; i < nchans; ++i) {
++			struct l2cap_conn *conn;
++
++			l2cap_chan_lock(chans[i]);
++			conn = l2cap_conn_hold_unless_zero(chans[i]->conn);
++			l2cap_chan_unlock(chans[i]);
++
++			if (conn)
++				mutex_lock(&conn->lock);
++
+ 			l2cap_chan_lock(chans[i]);
+ 			l2cap_chan_close(chans[i], ENOENT);
+ 			l2cap_chan_unlock(chans[i]);
++
++			if (conn) {
++				mutex_unlock(&conn->lock);
++				l2cap_conn_put(conn);
++			}
++
+ 			l2cap_chan_put(chans[i]);
+ 		}
+ 	} while (nchans);
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 7701528f1..d3b012feb 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -7623,6 +7623,7 @@ struct l2cap_conn *l2cap_conn_hold_unless_zero(struct l2cap_conn *c)
+ 
+ 	return c;
+ }
++EXPORT_SYMBOL(l2cap_conn_hold_unless_zero);
+ 
+ int l2cap_recv_acldata(struct hci_dev *hdev, u16 handle,
+ 		       struct sk_buff *skb, u16 flags)
+diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
+index cf590a67d..b0f25503f 100644
+--- a/net/bluetooth/l2cap_sock.c
++++ b/net/bluetooth/l2cap_sock.c
+@@ -1478,6 +1478,7 @@ static void l2cap_sock_cleanup_listen(struct sock *parent)
+ 	/* Close not yet accepted channels */
+ 	while ((sk = bt_accept_dequeue(parent, NULL))) {
+ 		struct l2cap_chan *chan = l2cap_pi(sk)->chan;
++		struct l2cap_conn *conn;
+ 
+ 		BT_DBG("child chan %p state %s", chan,
+ 		       state_to_string(chan->state));
+@@ -1485,11 +1486,27 @@ static void l2cap_sock_cleanup_listen(struct sock *parent)
+ 		l2cap_chan_hold(chan);
+ 		l2cap_chan_lock(chan);
+ 
++		/* prevent conn structure from being freed */
++		conn = l2cap_conn_hold_unless_zero(chan->conn);
++		l2cap_chan_unlock(chan);
++
++		if (conn)
++			/* mutex lock must be taken before l2cap_chan_lock() */
++			mutex_lock(&conn->lock);
++
++		l2cap_chan_lock(chan);
++
+ 		__clear_chan_timer(chan);
+ 		l2cap_chan_close(chan, ECONNRESET);
+ 		l2cap_sock_kill(sk);
+ 
+ 		l2cap_chan_unlock(chan);
++
++		if (conn) {
++			mutex_unlock(&conn->lock);
++			l2cap_conn_put(conn);
++		}
++
+ 		l2cap_chan_put(chan);
+ 	}
+ }
 
 
 base-commit: 5d6919055dec134de3c40167a490f33c74c12581
