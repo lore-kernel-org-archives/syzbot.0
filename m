@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FA8E3ADB99
-	for <syzbot@lists.linux.dev>; Wed, 13 May 2026 21:51:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50D42391517
+	for <syzbot@lists.linux.dev>; Wed, 13 May 2026 22:26:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778709070; cv=none; b=EzSmn0eoGMHzlk2cT+1tsShA4W2URTqCdRJmAkFWx8OOm6ITFYgbTYqT2SX4nSfrTw9BadKynpim+pkYsRajVNXDLr2cGn8Qvtc4P1sNzhCWzhiGZvptGNmQipbbpSpea2sBTx5+vsfPc8elLFWBxXl6j6tI+g7o+xGHSxs6jrA=
+	t=1778711200; cv=none; b=aUe3cJzOmPbUxlkqFymybjhIK2zReX22QcZS2IAf3QYPSPccIFkFzbYGUZOHLbqZvZLN6ySyYNd2IYKAGlvWPcklJQQD1MCXqipFsOB2kEfs5/q1/JNL9YCbREm5D54tgZP3A+paD7Io+iizn5Tgj2Z/jLjvqs3UN1Ez9YkQqeU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778709070; c=relaxed/simple;
-	bh=x1STcVzKPSp5NuY8qtVR2pjHX4WVJhtV8Z/WPtKIsX0=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=X5fg2GhxQz4z2FUf50oSNLneBAC3fVYGDvVPpYBCSymauvp5Bwkpay41nkSGR+zPQen6wAtHdYRg176e3DWvvLqbM5bNwbRqxTENLlA0rhkAs09GHpR/j7waVAabplJJy2S2YFnpTpxVAW6jnF3jx015WIXUD45pLqUhXB0ernc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qJoiQAwj; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778711200; c=relaxed/simple;
+	bh=4JSAtZnhCUd7kGqZyYE8fY4VAh1xC/LFgW7XrM+R8cs=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=g+0ejg6g1U26r2RSi5i8joVSPeMCX4z2tR0b6IPdnEbquQU94HtpPeqXXmPqynFsJ8wqv7oQrdFUVDPvZE98s9Y2Ffh6/W7sQQ8WbXeq7rQcyY5pT5DDE5H1vArEwKfFdGnpCs1sDbZpBtxAyR8DrlXObrUPnV1D4vvldy0irOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TC11CS0Y; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qJoiQAwj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0593C19425;
-	Wed, 13 May 2026 21:51:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TC11CS0Y"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA110C19425;
+	Wed, 13 May 2026 22:26:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778709069;
-	bh=x1STcVzKPSp5NuY8qtVR2pjHX4WVJhtV8Z/WPtKIsX0=;
+	s=k20201202; t=1778711200;
+	bh=4JSAtZnhCUd7kGqZyYE8fY4VAh1xC/LFgW7XrM+R8cs=;
 	h=From:To:Cc:Subject:Date:From;
-	b=qJoiQAwjpZ9S9Wk2XYDOvjTd6VxGQo4Ro4oLjwV0VHFramXv/3Qa4lDxo0DocLJua
-	 uXo6B5HoxxycxaA/M+0DnN/CL2svkx6ZZs/aa5XfRhXC+fKU8pmiC6i/82AujkM1J0
-	 sJ3Z7kTwZ1TbPl/9EyezPg/WnpIN5czBgrffbEJf4LNM4HjVoSzTGhj90BL6YfURyh
-	 TE9U+tnXgQdHID94vc13mdIfgqnEYqjyRNUph+me5ZwgUl4OGMvjvZxQ//53hoiO9L
-	 AeBZqxwyng2G80lYBMWyDTSaChjUWb0tX75rctE8h1dRCSo97rK/QCHFQGGYdg9Pah
-	 f6au2O893tJRw==
+	b=TC11CS0YAQlmEENc6MXWYd1X5usIP/ozQByi6Pn9twTeh/idsfVpF0LutafaiL9Lh
+	 t5Pc52NBoywzLUo1MtLj5mKafa59q+faNgEBreD+HlCbzQHUbFTadvHJIY/DKPuoFV
+	 jICSSDP4V/7UzKE5njklQXMnrLm3a1/PTQPTNI3EMB7KdZUNEePn18wDvnYAEsC9Ez
+	 JfQuMvMdZ0HtFHuL6Z7L5X3mufGOx5FZNx9CrDbXiW6SEK3yyRA2ACbSexndxp0dBI
+	 xWaN0cjo8qj10X/rO6jzMb1coCzykH6ioHhSlCUjmsGoREmTGVh7OOXEVK8ymNEkyG
+	 Pr+XONghIjzPQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] wifi: cfg80211: replace WARN_ON() with pr_err() in netns switch
-Message-ID: <7d949fbc-9781-4428-bfac-e51501b18bf7@mail.kernel.org>
+Subject: [PATCH RFC] drm/lease: Fix warning on large user-controlled allocations
+Message-ID: <9cbc091e-97f8-41a3-97eb-c1f2137ccc53@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,119 +38,79 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 13 May 2026 21:51:09 +0000 (UTC)
+Date: Wed, 13 May 2026 22:26:39 +0000 (UTC)
 
-The syzkaller reported a kernel panic in cfg802154_switch_netns() when
-device_rename() fails with -ENOMEM. The crash occurs because WARN_ON()
-is used to handle the memory allocation failure, which escalates into a
-kernel panic when panic_on_warn is enabled.
+In drm_mode_create_lease_ioctl(), a user-provided object_count is used
+to allocate memory for object_ids and objects. When a user requests a
+massive number of objects, the allocation size can exceed the maximum
+contiguous physical memory limit (MAX_PAGE_ORDER). Since kzalloc_objs()
+defaults to GFP_KERNEL without __GFP_NOWARN, this triggers a
+WARN_ON_ONCE_GFP in the page allocator.
 
-Memory allocation failures are expected runtime events under memory
-pressure and should be handled gracefully. The WARN_ON() macro must not
-be used for conditions that can legitimately happen. Failing to rename
-the device or change the network namespace is not a fatal system error.
+To fix this, replace kzalloc_objs() with kvzalloc_objs() in
+fill_object_idr() and memdup_array_user() with vmemdup_array_user() in
+drm_mode_create_lease_ioctl(). This allows the allocations to gracefully
+fall back to virtually contiguous memory (vmalloc) if the requested size
+is too large or physical memory is fragmented, preventing the warning
+and allowing large lease requests to succeed or fail gracefully with
+-ENOMEM. Update the corresponding kfree() calls to kvfree() accordingly.
 
-Replace the WARN_ON() calls with pr_err() in both
-cfg802154_switch_netns() and cfg80211_switch_netns(), as well as in
-their respective pernet exit handlers (cfg802154_pernet_exit() and
-cfg80211_pernet_exit()). This ensures that memory allocation failures
-under pressure are handled gracefully, logging the error for debugging
-purposes without bringing down the entire system.
-
-Fixes: 66e5c2672cd11b9310008099faf6a4ffb9dfb6d0 ("ieee802154: add netns support")
-Assisted-by: Gemini:gemini-3.1-pro-preview
-Reported-by: syzbot+bd5829ba3619f08e2341@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=bd5829ba3619f08e2341
-Link: https://syzkaller.appspot.com/ai_job?id=46668339-436e-4563-9254-73690dc813fe
-To: <alex.aring@gmail.com>
-To: <davem@davemloft.net>
-To: <edumazet@google.com>
-To: <kuba@kernel.org>
-To: <linux-wpan@vger.kernel.org>
-To: <miquel.raynal@bootlin.com>
-To: <netdev@vger.kernel.org>
-To: <pabeni@redhat.com>
-To: <stefan@datenfreihafen.org>
-Cc: <horms@kernel.org>
-Cc: <johannes@sipsolutions.net>
+Fixes: 62884cd386b876638720ef88374b31a84ca7ee5f ("drm: Add four ioctls for managing drm mode object leases [v7]")
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
+Reported-by: syzbot+03fb58296859d8dbab4d@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=03fb58296859d8dbab4d
+Link: https://syzkaller.appspot.com/ai_job?id=d9152b5a-380f-4c4e-af5b-1890078e5d46
+To: <airlied@gmail.com>
+To: <dri-devel@lists.freedesktop.org>
+To: <maarten.lankhorst@linux.intel.com>
+To: <mripard@kernel.org>
+To: <simona@ffwll.ch>
+To: <tzimmermann@suse.de>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: <linux-wireless@vger.kernel.org>
 
 ---
-diff --git a/net/ieee802154/core.c b/net/ieee802154/core.c
-index 89b671b12..98c498e3e 100644
---- a/net/ieee802154/core.c
-+++ b/net/ieee802154/core.c
-@@ -245,7 +245,8 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
- 			wpan_dev->netdev->netns_immutable = false;
- 			err = dev_change_net_namespace(wpan_dev->netdev, net,
- 						       "wpan%d");
--			WARN_ON(err);
-+			if (err)
-+				pr_err("failed to change netns: %d\n", err);
- 			wpan_dev->netdev->netns_immutable = true;
- 		}
+diff --git a/drivers/gpu/drm/drm_lease.c b/drivers/gpu/drm/drm_lease.c
+index 5d2cf724c..9ccfa4712 100644
+--- a/drivers/gpu/drm/drm_lease.c
++++ b/drivers/gpu/drm/drm_lease.c
+@@ -386,7 +386,7 @@ static int fill_object_idr(struct drm_device *dev,
+ 	int ret;
+ 	bool universal_planes = READ_ONCE(lessor_priv->universal_planes);
  
-@@ -255,7 +256,8 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
- 	wpan_phy_net_set(&rdev->wpan_phy, net);
+-	objects = kzalloc_objs(struct drm_mode_object *, object_count);
++	objects = kvzalloc_objs(struct drm_mode_object *, object_count);
+ 	if (!objects)
+ 		return -ENOMEM;
  
- 	err = device_rename(&rdev->wpan_phy.dev, dev_name(&rdev->wpan_phy.dev));
--	WARN_ON(err);
-+	if (err)
-+		pr_err("failed to rename device: %d\n", err);
- 
- 	return 0;
- }
-@@ -350,8 +352,10 @@ static void __net_exit cfg802154_pernet_exit(struct net *net)
- 
- 	rtnl_lock();
- 	list_for_each_entry(rdev, &cfg802154_rdev_list, list) {
--		if (net_eq(wpan_phy_net(&rdev->wpan_phy), net))
--			WARN_ON(cfg802154_switch_netns(rdev, &init_net));
-+		if (net_eq(wpan_phy_net(&rdev->wpan_phy), net)) {
-+			if (cfg802154_switch_netns(rdev, &init_net))
-+				pr_err("failed to switch netns on exit\n");
-+		}
+@@ -462,7 +462,7 @@ static int fill_object_idr(struct drm_device *dev,
+ 		if (objects[o])
+ 			drm_mode_object_put(objects[o]);
  	}
- 	rtnl_unlock();
+-	kfree(objects);
++	kvfree(objects);
+ 	return ret;
  }
-diff --git a/net/wireless/core.c b/net/wireless/core.c
-index 6783e0672..ed5eac41f 100644
---- a/net/wireless/core.c
-+++ b/net/wireless/core.c
-@@ -184,7 +184,8 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
- 			wdev->netdev->netns_immutable = false;
- 			err = dev_change_net_namespace(wdev->netdev, net,
- 							"wlan%d");
--			WARN_ON(err);
-+			if (err)
-+				pr_err("failed to change netns: %d\n", err);
- 			wdev->netdev->netns_immutable = true;
- 		}
  
-@@ -204,7 +205,8 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
- 	wiphy_net_set(&rdev->wiphy, net);
- 
- 	err = device_rename(&rdev->wiphy.dev, dev_name(&rdev->wiphy.dev));
--	WARN_ON(err);
-+	if (err)
-+		pr_err("failed to rename device: %d\n", err);
- 
- 	nl80211_notify_wiphy(rdev, NL80211_CMD_NEW_WIPHY);
- 
-@@ -1809,8 +1811,10 @@ static void __net_exit cfg80211_pernet_exit(struct net *net)
- 
- 	rtnl_lock();
- 	for_each_rdev(rdev) {
--		if (net_eq(wiphy_net(&rdev->wiphy), net))
--			WARN_ON(cfg80211_switch_netns(rdev, &init_net));
-+		if (net_eq(wiphy_net(&rdev->wiphy), net)) {
-+			if (cfg80211_switch_netns(rdev, &init_net))
-+				pr_err("failed to switch netns on exit\n");
-+		}
- 	}
- 	rtnl_unlock();
- }
+@@ -509,8 +509,8 @@ int drm_mode_create_lease_ioctl(struct drm_device *dev,
+ 	/* Handle leased objects, if any */
+ 	idr_init(&leases);
+ 	if (object_count != 0) {
+-		object_ids = memdup_array_user(u64_to_user_ptr(cl->object_ids),
+-					       object_count, sizeof(__u32));
++		object_ids = vmemdup_array_user(u64_to_user_ptr(cl->object_ids),
++						object_count, sizeof(__u32));
+ 		if (IS_ERR(object_ids)) {
+ 			ret = PTR_ERR(object_ids);
+ 			idr_destroy(&leases);
+@@ -520,7 +520,7 @@ int drm_mode_create_lease_ioctl(struct drm_device *dev,
+ 		/* fill and validate the object idr */
+ 		ret = fill_object_idr(dev, lessor_priv, &leases,
+ 				      object_count, object_ids);
+-		kfree(object_ids);
++		kvfree(object_ids);
+ 		if (ret) {
+ 			drm_dbg_lease(dev, "lease object lookup failed: %i\n", ret);
+ 			idr_destroy(&leases);
 
 
 base-commit: 5d6919055dec134de3c40167a490f33c74c12581
