@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65DD716A395
-	for <syzbot@lists.linux.dev>; Wed, 13 May 2026 21:16:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FA8E3ADB99
+	for <syzbot@lists.linux.dev>; Wed, 13 May 2026 21:51:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778706970; cv=none; b=OLdg2t/KlyUBHXDpTXSc5e8e5985L4IHEHMKRD5Q4DMktHzRJLknDDnhNqUjeCE5gkX703qDZpJNVFmj73VMIKmM8GF8Dcz06SFyWKq/cSAFEfXocT3tSO4lbOn3qcsjOyyxSVGk+mNNXgCI0ZKnQ3dh3jF7cHEyvw+3budj+So=
+	t=1778709070; cv=none; b=EzSmn0eoGMHzlk2cT+1tsShA4W2URTqCdRJmAkFWx8OOm6ITFYgbTYqT2SX4nSfrTw9BadKynpim+pkYsRajVNXDLr2cGn8Qvtc4P1sNzhCWzhiGZvptGNmQipbbpSpea2sBTx5+vsfPc8elLFWBxXl6j6tI+g7o+xGHSxs6jrA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778706970; c=relaxed/simple;
-	bh=2tUGaPRX7o/OMLeGefJD9NWjH+USpyaYSdGeHZP/1Eo=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=uaUy1MNOje007iz+HisoTTzgxTWVGjdQzbwzK+CGOfgH0WZofmYRtHbYdAj+FUAqTAD17d4vAPtRyNxMdmed6hI4qyuEon60xGvsP+yhhPGX9uJMn7TW2N4IHS8OlFOut/SwZiaXZTpwAvyLKrclzxWtwVk4PLjWbpuDjY23VJo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JQnxqvZJ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778709070; c=relaxed/simple;
+	bh=x1STcVzKPSp5NuY8qtVR2pjHX4WVJhtV8Z/WPtKIsX0=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=X5fg2GhxQz4z2FUf50oSNLneBAC3fVYGDvVPpYBCSymauvp5Bwkpay41nkSGR+zPQen6wAtHdYRg176e3DWvvLqbM5bNwbRqxTENLlA0rhkAs09GHpR/j7waVAabplJJy2S2YFnpTpxVAW6jnF3jx015WIXUD45pLqUhXB0ernc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qJoiQAwj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JQnxqvZJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5CDCC19425;
-	Wed, 13 May 2026 21:16:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qJoiQAwj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0593C19425;
+	Wed, 13 May 2026 21:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778706970;
-	bh=2tUGaPRX7o/OMLeGefJD9NWjH+USpyaYSdGeHZP/1Eo=;
+	s=k20201202; t=1778709069;
+	bh=x1STcVzKPSp5NuY8qtVR2pjHX4WVJhtV8Z/WPtKIsX0=;
 	h=From:To:Cc:Subject:Date:From;
-	b=JQnxqvZJrFWX/I5zVGV7RiLZ5ggnz3txTuzrimgVA5iREy4Yt92/eXlvY16JpU9W5
-	 8+kMhGw1BWF5we/7uXWG51cXTRffMho9A7dZaGI1b4JEpa2Yh+tOrnN6vu9BB04Kt1
-	 RLJneWiObdJQLDald795z5xOWVuSQhjPjzTlOXo3XcrEq1ky5ZR6ah/yuGJeFih7nK
-	 w7XEXnpkF1asGX3cttI2DaVgl2CPEPMYXjRYZKN9vTPJsfX5NuMY6eXVh+O/XCuGur
-	 mVJe2rsa9hnUuZjHE08VKJ7FOqPYfkL20l7YC6Wswh0QTD0GOU3Wq3FOnsv0SVyTc4
-	 M3URYdHwBPUQA==
+	b=qJoiQAwjpZ9S9Wk2XYDOvjTd6VxGQo4Ro4oLjwV0VHFramXv/3Qa4lDxo0DocLJua
+	 uXo6B5HoxxycxaA/M+0DnN/CL2svkx6ZZs/aa5XfRhXC+fKU8pmiC6i/82AujkM1J0
+	 sJ3Z7kTwZ1TbPl/9EyezPg/WnpIN5czBgrffbEJf4LNM4HjVoSzTGhj90BL6YfURyh
+	 TE9U+tnXgQdHID94vc13mdIfgqnEYqjyRNUph+me5ZwgUl4OGMvjvZxQ//53hoiO9L
+	 AeBZqxwyng2G80lYBMWyDTSaChjUWb0tX75rctE8h1dRCSo97rK/QCHFQGGYdg9Pah
+	 f6au2O893tJRw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] net/sched: fix watchdog timer teardown race
-Message-ID: <07235ee0-41fb-43e2-8391-d1e398576250@mail.kernel.org>
+Subject: [PATCH RFC] wifi: cfg80211: replace WARN_ON() with pr_err() in netns switch
+Message-ID: <7d949fbc-9781-4428-bfac-e51501b18bf7@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,61 +38,119 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 13 May 2026 21:16:09 +0000 (UTC)
+Date: Wed, 13 May 2026 21:51:09 +0000 (UTC)
 
-A race condition exists between network device unregistration and
-concurrent link state change events (e.g., usbnet_deferred_kevent).
-During device unregistration, __dev_close_many() clears
-__LINK_STATE_START and calls netdev_watchdog_down() to delete the
-watchdog timer. However, a concurrent link state change can call
-netif_carrier_on(), which checks netif_running(dev). If this check
-happens before __LINK_STATE_START is cleared, it proceeds to call
-netdev_watchdog_up(). If netdev_watchdog_up() is delayed and executes
-after netdev_watchdog_down() has deleted the timer, it will re-arm the
-timer. This leaves the timer armed during the final teardown phase,
-eventually triggering the WARN_ON(timer_pending(&dev->watchdog_timer))
-in dev_shutdown().
+The syzkaller reported a kernel panic in cfg802154_switch_netns() when
+device_rename() fails with -ENOMEM. The crash occurs because WARN_ON()
+is used to handle the memory allocation failure, which escalates into a
+kernel panic when panic_on_warn is enabled.
 
-Attempting to fix this by adding a lock-free double-check in
-netdev_watchdog_up() introduces a subtle refcount underflow bug.
-Instead, the most robust approach is to ensure the timer is completely
-dead during the final teardown phase. Since dev_shutdown() is called
-from process context under the rtnl_lock(), it is safe to sleep and
-block. We can use timer_delete_sync() in dev_shutdown() to deactivate
-the timer and wait for any concurrently running callbacks to finish. If
-the timer was left armed, timer_delete_sync() returns 1, allowing us to
-safely call netdev_put() to balance the refcount. This guarantees that
-the timer is definitively dead before the WARN_ON check.
+Memory allocation failures are expected runtime events under memory
+pressure and should be handled gracefully. The WARN_ON() macro must not
+be used for conditions that can legitimately happen. Failing to rename
+the device or change the network namespace is not a fatal system error.
 
-Fixes: d7811e623dd4be3e3bdba2d6330f7f15541ee45f ("[NET]: Drop tx lock in dev_watchdog_up")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+c9ecf60a8adb7629821e@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=c9ecf60a8adb7629821e
-Link: https://syzkaller.appspot.com/ai_job?id=2f0da36f-92ca-4f82-a3f9-92648d57a2ae
+Replace the WARN_ON() calls with pr_err() in both
+cfg802154_switch_netns() and cfg80211_switch_netns(), as well as in
+their respective pernet exit handlers (cfg802154_pernet_exit() and
+cfg80211_pernet_exit()). This ensures that memory allocation failures
+under pressure are handled gracefully, logging the error for debugging
+purposes without bringing down the entire system.
+
+Fixes: 66e5c2672cd11b9310008099faf6a4ffb9dfb6d0 ("ieee802154: add netns support")
+Assisted-by: Gemini:gemini-3.1-pro-preview
+Reported-by: syzbot+bd5829ba3619f08e2341@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=bd5829ba3619f08e2341
+Link: https://syzkaller.appspot.com/ai_job?id=46668339-436e-4563-9254-73690dc813fe
+To: <alex.aring@gmail.com>
 To: <davem@davemloft.net>
 To: <edumazet@google.com>
-To: <jhs@mojatatu.com>
-To: <jiri@resnulli.us>
 To: <kuba@kernel.org>
+To: <linux-wpan@vger.kernel.org>
+To: <miquel.raynal@bootlin.com>
 To: <netdev@vger.kernel.org>
 To: <pabeni@redhat.com>
+To: <stefan@datenfreihafen.org>
 Cc: <horms@kernel.org>
+Cc: <johannes@sipsolutions.net>
 Cc: <linux-kernel@vger.kernel.org>
+Cc: <linux-wireless@vger.kernel.org>
 
 ---
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index a93321db8..e4e72077b 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -1493,6 +1493,8 @@ void dev_shutdown(struct net_device *dev)
- 	qdisc_put(rtnl_dereference(dev->qdisc));
- 	rcu_assign_pointer(dev->qdisc, &noop_qdisc);
+diff --git a/net/ieee802154/core.c b/net/ieee802154/core.c
+index 89b671b12..98c498e3e 100644
+--- a/net/ieee802154/core.c
++++ b/net/ieee802154/core.c
+@@ -245,7 +245,8 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
+ 			wpan_dev->netdev->netns_immutable = false;
+ 			err = dev_change_net_namespace(wpan_dev->netdev, net,
+ 						       "wpan%d");
+-			WARN_ON(err);
++			if (err)
++				pr_err("failed to change netns: %d\n", err);
+ 			wpan_dev->netdev->netns_immutable = true;
+ 		}
  
-+	if (timer_delete_sync(&dev->watchdog_timer))
-+		netdev_put(dev, &dev->watchdog_dev_tracker);
- 	WARN_ON(timer_pending(&dev->watchdog_timer));
+@@ -255,7 +256,8 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
+ 	wpan_phy_net_set(&rdev->wpan_phy, net);
+ 
+ 	err = device_rename(&rdev->wpan_phy.dev, dev_name(&rdev->wpan_phy.dev));
+-	WARN_ON(err);
++	if (err)
++		pr_err("failed to rename device: %d\n", err);
+ 
+ 	return 0;
  }
+@@ -350,8 +352,10 @@ static void __net_exit cfg802154_pernet_exit(struct net *net)
  
+ 	rtnl_lock();
+ 	list_for_each_entry(rdev, &cfg802154_rdev_list, list) {
+-		if (net_eq(wpan_phy_net(&rdev->wpan_phy), net))
+-			WARN_ON(cfg802154_switch_netns(rdev, &init_net));
++		if (net_eq(wpan_phy_net(&rdev->wpan_phy), net)) {
++			if (cfg802154_switch_netns(rdev, &init_net))
++				pr_err("failed to switch netns on exit\n");
++		}
+ 	}
+ 	rtnl_unlock();
+ }
+diff --git a/net/wireless/core.c b/net/wireless/core.c
+index 6783e0672..ed5eac41f 100644
+--- a/net/wireless/core.c
++++ b/net/wireless/core.c
+@@ -184,7 +184,8 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
+ 			wdev->netdev->netns_immutable = false;
+ 			err = dev_change_net_namespace(wdev->netdev, net,
+ 							"wlan%d");
+-			WARN_ON(err);
++			if (err)
++				pr_err("failed to change netns: %d\n", err);
+ 			wdev->netdev->netns_immutable = true;
+ 		}
+ 
+@@ -204,7 +205,8 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
+ 	wiphy_net_set(&rdev->wiphy, net);
+ 
+ 	err = device_rename(&rdev->wiphy.dev, dev_name(&rdev->wiphy.dev));
+-	WARN_ON(err);
++	if (err)
++		pr_err("failed to rename device: %d\n", err);
+ 
+ 	nl80211_notify_wiphy(rdev, NL80211_CMD_NEW_WIPHY);
+ 
+@@ -1809,8 +1811,10 @@ static void __net_exit cfg80211_pernet_exit(struct net *net)
+ 
+ 	rtnl_lock();
+ 	for_each_rdev(rdev) {
+-		if (net_eq(wiphy_net(&rdev->wiphy), net))
+-			WARN_ON(cfg80211_switch_netns(rdev, &init_net));
++		if (net_eq(wiphy_net(&rdev->wiphy), net)) {
++			if (cfg80211_switch_netns(rdev, &init_net))
++				pr_err("failed to switch netns on exit\n");
++		}
+ 	}
+ 	rtnl_unlock();
+ }
 
 
 base-commit: 5d6919055dec134de3c40167a490f33c74c12581
