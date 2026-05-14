@@ -1,53 +1,51 @@
-Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com [209.85.160.69])
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com [209.85.219.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D602344DB1
-	for <syzbot@lists.linux.dev>; Thu, 14 May 2026 16:34:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA2E533E344
+	for <syzbot@lists.linux.dev>; Thu, 14 May 2026 16:37:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778776470; cv=none; b=N6lpFpIyvQxzYY8tXrk2VqVN+CqqjRMaJlURLk55TO82JQ/uNxSjY5rRMdjIehUeyuWjmaEtIsOD+420UChMbF/iDyjLq8pzqHazhYffA1xcr7EZsXJYgfSB9ra1IXH+pjId3Ta57B6apm0oFOPsjj3F9v+EJc/pJuPgtbJCpJw=
+	t=1778776629; cv=none; b=TtOt6NXRd4ks/dQeINUCZPQtYsPOg9PXu/FcmXy4Ged+T+1U/Px0FUz2lrMinfoRNgJ54S+rCuY1aLgTRf9MAq5/D5HhPDrKAiRg8zmbUzalE/k5aNmtIAWvlM3+OjXd+WU2drdwQqAGKGNnaFQeNtY+3vEE14SA0GbOw7JmcMI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778776470; c=relaxed/simple;
-	bh=s9WqfUe/I0S41Q9BlF08S3u9oKLv345fEJvHfkv1JVk=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=aj58bIrohPkn/1Qpn70h0NZiaXb245IxYIJYvrgil9Z5znGB5nhvrQofaF5pI253C/9I0ja416YepFd8+duP2MBOHYUBdWt3DeDmJSI5c4ApRIJODPE9FEv2x5Bkl/0bSOenTt4ouzo2kQJt0w6ag4hrNoEJ0kKH1DLn34ggj6M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.69
+	s=arc-20240116; t=1778776629; c=relaxed/simple;
+	bh=YNGM6B6NuwFx70ASStbseMDe6V9yQOe06GFioVm+jH8=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=qvVk9OMo97Xi1PdszFaUbOZ/psln0V5wtvZ0aTs1QySBWBc00x7rYZPUgYYvF3VqrqXna7vE1qFiYQn9cohI3alAtuae22qWHQ2hdAj/1L3SEpBj4UEw6c+R4VUKvRG32Dd8AEJqcbceYvKXH0r90jRuCRuTapLunbUzqRZvzK4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.219.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-439a7f1b8abso15949fac.1
-        for <syzbot@lists.linux.dev>; Thu, 14 May 2026 09:34:28 -0700 (PDT)
+Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-8b49424ad88so210407106d6.1
+        for <syzbot@lists.linux.dev>; Thu, 14 May 2026 09:37:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778776468; x=1779381268;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HkjpdhLiWB5I2rLRD4MdRI5PQkqqDL2A2izym/35ph0=;
-        b=lULQ5lWnTM3epkom7KblLivH5U80jitFerCgdvJW+3rq8ocxD+Mz8UiA6q9b48bxIp
-         PoWIbxJFxMnKTPeYIwhGP2KIeyCIFhRqrelZBDMfJ57uqZCUBTpnt/1nQ6wxqj32LsJy
-         5MN6DtcX9BqairHdwJzryEpqG874ZKt7EfyNjiJDIdhSm6BqfZfIkNxhazNafZBol+GR
-         ZaoxyrI5u4Uo+imvFslYnIDHf/vqpDS8ku1i6dSgC5JGnGMHaf0SVfOvMwhKQTqvcAvW
-         9DoSFt88MWTS+uFfNCMUjqGyeZkabuIJVGt38/4YDDUlCuLkRcUShz3O43pcr56EtsNr
-         mEkQ==
-X-Gm-Message-State: AOJu0Yxm49VxLUa1OXUFDT8xjfR+uY3LftCr2EhVtwzmn8SG6J3n6fYv
-	AE8XmTrqeSovsat85EZPTSN31OpMXwdB++Z4lO83fQAFcShy+yZDKRVLt7I4EHrU/e2EfeOQL6P
-	eBByYIZx7ztlMeMVo7CxkEJe9hFIdctri21NX4f4/+BN14BO/6vrdP5BV4kE=
+        d=1e100.net; s=20251104; t=1778776627; x=1779381427;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VDQsdqQBIUw/EpMNiy59PlV7tPclXN2XRm53rnAIj8U=;
+        b=kvdMksWkw0yWJBuIpbcg8S1BtkypbrAaJOrOqRFWYmg7JCaO20YozjkekZtgjRf/rV
+         eHmp9Zf81kQVurN7NvlgUkjTjcLttOxkzKL+nvimlvLldl2agbs2PypmnXc8DBLAXesK
+         hkfbVJ8/XE4f96WoRd48NjlLT8wYqupokI7abiLIxaSSKz4d0NkonMg6eXDvHJ13kwck
+         VlB0J7YZu4A9QRWiQzOe1faeHsb2p8tOYJWZIjQjvV3vZdRRtdTcVpJvWC2ZSJjFsmL6
+         qrWsVic+bbXD1KsPJyF1Kmn6qcEmfmu1YnjMmVwo1NTGGZcm+qwOyjTLV922li3hVsGA
+         WjjA==
+X-Gm-Message-State: AOJu0Yw9tMB7kOQZ+eqTcvA+lstboiyIsQaFPz3sRoFUFpFZvqqAjCmR
+	nl83hyzbQF+ZCvK2Z4d/rk5EfhBDnp9P7sAmixrEGgt24FMRtkjb2XOyKFv3AFoAFykcwWxhY42
+	cry+QKFLDBz6UKmFf9tzU8ofBq/CLyEsamSiLWxPhjbi3Y72Qj4Jl3tycRg0=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:338f:20b0:69b:8beb:9465 with SMTP id
- 006d021491bc7-69b8beb952amr1165163eaf.18.1778776468098; Thu, 14 May 2026
- 09:34:28 -0700 (PDT)
-Date: Thu, 14 May 2026 09:34:28 -0700
-In-Reply-To: <20260514085519.12729-1-kadlec@netfilter.org>
+X-Received: by 2002:a05:6820:2206:b0:696:637e:4831 with SMTP id
+ 006d021491bc7-69c94315b9emr90246eaf.25.1778776167207; Thu, 14 May 2026
+ 09:29:27 -0700 (PDT)
+Date: Thu, 14 May 2026 09:29:27 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a05f994.170a0220.196691.0006.GAE@google.com>
-Subject: [syzbot ci] Re: netfilter: ipset fixes
-From: syzbot ci <syzbot+cif45441a773eda6a8@syzkaller.appspotmail.com>
-To: kadlec@netfilter.org, netfilter-devel@vger.kernel.org, pablo@netfilter.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <6a05f867.170a0220.290639.01cd.GAE@google.com>
+Subject: [moderation/CI] Re: netfilter: ipset fixes
+From: syzbot ci <syzbot+ci61c2ab2f25f83aed@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
@@ -226,3 +224,13 @@ To test a patch for this bug, please reply with `#syz test`
 
 The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[kadlec@netfilter.org netfilter-devel@vger.kernel.org pablo@netfilter.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
