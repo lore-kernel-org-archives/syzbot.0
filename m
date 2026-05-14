@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 190AB221DB6
-	for <syzbot@lists.linux.dev>; Wed, 13 May 2026 22:38:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3683A2BB1D
+	for <syzbot@lists.linux.dev>; Thu, 14 May 2026 00:05:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778711890; cv=none; b=KQGC441Kiw9w1ePoo5o8Cm/Pk3GrvS92Nb4HnvyW2AyzHIYscOQGcDuo2lJHPoTHITxrG4zqu8RAVxAsIsBdeoFF54M97lhLQoUFY2CilFg8tgVaTKkVKOSzPM+B9qOHvOwmCo6apgECpjhJETxsnLnjy/1StEJXCwDgn86BFk8=
+	t=1778717110; cv=none; b=Ix//G7yiN7xZITWIYYmq/aEUc+tPCFUA2yGCdA1X1ljvnFboC+Aboo0lkqKxbGGx/ydXrcOTUzp2CSU2by9vzvq3ukmpitrnGDAhngkgN9/0nOJ6QhdMNMabIFZWH0DLOg4fNLPf8ZTK1fmdpdrLoKvdVfPH7GxV5jjVzJSICEo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778711890; c=relaxed/simple;
-	bh=JLgGwkX8Wve3SB4NXSsv7YDKs/IhJZcrN1jRqJMESCo=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=sZ89fNzStpSRbx7BxzQH74RmNwkU2JaSzthuLFpXZ3j+3h/QDovudf3ioA8B/QvAgwDNb+JOC2OTIoXYzOtBZXipns1ECKr33XaZ7xH6UK4ONLAtxR4Ig4j/+CxCe6MQZfA5jfavbdcTgGpiAL3nt2FUzY/mwMziRdHxzvSyHdg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AmHovzIU; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778717110; c=relaxed/simple;
+	bh=j2N3L13PpIxZVYn/FnSjJe1ysplVQeOCP5HX9JZVvo8=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=l1mgHiy/VwK9sdlV2+/YtQ/vFYo9EkSkkAsXkCYPkTR3uUJ4Ur13tdy3kbgYHfo1OuS+3mXDj8FihlmCSzCauCLHU5w6CRkpp+xduhVBP90XypKLYfEHvjHf67aLHYVdjrqe38nYUcrpwpsiQl+0ca1DJGoCO0wULxqqMEFtQvk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UsC0JcYw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AmHovzIU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE13AC19425;
-	Wed, 13 May 2026 22:38:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UsC0JcYw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC4EBC32786;
+	Thu, 14 May 2026 00:05:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778711889;
-	bh=JLgGwkX8Wve3SB4NXSsv7YDKs/IhJZcrN1jRqJMESCo=;
+	s=k20201202; t=1778717110;
+	bh=j2N3L13PpIxZVYn/FnSjJe1ysplVQeOCP5HX9JZVvo8=;
 	h=From:To:Cc:Subject:Date:From;
-	b=AmHovzIUHu4hZGqtB6tkX3Z9o9jlsQTChiyeAwqKbHhIknt1Fcez+B0fXpoliIe7w
-	 DWT0UvGVBzWMhtEsSRp8e5aqWo/5AOWP/oFISPPRw6LiKIea50fCNU6ZmPN88wuy84
-	 T4ekPfhdiX744jACHDY38YAGZzoKF6T/U1fFLlTgL4XnQFr16kw0+1tWLembfT8Z/J
-	 hNcqh+XLbYJbRpfpk2tlwFI99hfit5F5GCo7br2ypDrKkjJpmTDv38f0kokZsoXvPx
-	 UFVrmtLV4KNr3e9paNw1nDrnWgG62+RaUcCQaG9IzDqt8uKEIriu/hAMzUpnJysECd
-	 fe4jRGwkZurMA==
+	b=UsC0JcYw9Xj5m8TBv5QL8Rd0PkAzCyDiYdrPAPSSOOPE77SZFLIeoRr7707yUX4ba
+	 loQWbIZJPkRrri2RTUK5zv58q85NAN3AT/lEYH8Batj0IelU9ORR/ePlScjoJ+/JW7
+	 dCRbp7cPb6T/gqBQ/vPYybRWHVGeFXK1odMeABqDc3BfIMJdPjYfPAJxoW33gokdpu
+	 tnnnXX6PFtXNUey9omVZl7dPof2Eo1eFGsZbSKA8eI/j/Px+PSkDyXfobZJ30Zs2T1
+	 G3tV479xemUsHI1CG+gQAA7xQGMCwYSJowuA0cWi0Z/MQbz0ULV+DyoEKAAsdez2q+
+	 /Ep8ffhSo3j2g==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] bpf: lru: Use resilient spinlocks to prevent NMI deadlocks
-Message-ID: <dcebc4bd-5cc1-4dc9-b82b-6cca0fad128b@mail.kernel.org>
+Subject: [PATCH RFC] bpf: Fix null-ptr-deref in bpf_get_local_storage() on link update
+Message-ID: <6c0af3f2-ec3b-4331-a453-970522943a07@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,38 +38,41 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 13 May 2026 22:38:09 +0000 (UTC)
+Date: Thu, 14 May 2026 00:05:09 +0000 (UTC)
 
-BPF LRU maps currently use standard `raw_spinlock_t` for their local and
-global list locks, which are not NMI-safe. If an NMI (such as a perf
-event hardware breakpoint) interrupts a normal context that is holding
-an LRU list lock, and a BPF program executed in the NMI context attempts
-to acquire the exact same lock (e.g., via `bpf_map_delete_elem`), it
-will spin forever waiting for the lock to be released. This results in a
-hard deadlock because the context holding the lock has been preempted by
-the NMI itself. Lockdep correctly detects this unsafe `{INITIAL USE} ->
-{IN-NMI}` transition and emits an inconsistent lock state warning.
+The syzkaller reported a KASAN null-ptr-deref in
+bpf_get_local_storage(). This occurs when a BPF program tries to access
+its cgroup storage, but the storage pointer in the effective program
+array is NULL.
 
-To resolve this, update the LRU list implementation to use resilient
-queued spinlocks (`rqspinlock_t`), similar to how bucket locks in
-standard BPF hash maps were previously converted. Resilient spinlocks
-are NMI-safe because they detect deadlocks (such as re-entrancy on the
-same CPU) and return an error instead of hanging. Replace all standard
-spinlock operations with their resilient counterparts in
-`bpf_lru_list.c`. Since resilient spinlock acquisitions can fail, update
-the LRU functions to handle these failures gracefully. For pop
-functions, return `NULL` when the lock cannot be acquired, which callers
-already handle by propagating an `-ENOMEM` error. When stealing nodes
-from remote CPUs, safely skip the CPU if its lock cannot be acquired.
-For push and flush functions, abort and return early if the lock fails,
-effectively leaking the LRU node, which is an acceptable trade-off to
-prevent a hard system deadlock in NMI context.
+The root cause is a bug in __cgroup_bpf_replace() which handles
+BPF_LINK_UPDATE for cgroup links. When replacing a program that does not
+use cgroup storage with one that does, __cgroup_bpf_replace() fails to
+allocate the new cgroup storage. Furthermore, it uses
+replace_effective_prog() which only updates the program pointer in the
+effective array and ignores the cgroup_storage array. This leaves the
+storage pointers as NULL, leading to a crash when the new program
+executes and calls bpf_get_local_storage().
 
-Fixes: 3a08c2fd763450a927d1130de078d6f9e74944fb ("bpf: LRU List")
+To fix this, rewrite __cgroup_bpf_replace() to properly allocate the new
+cgroup storage, update the storage pointers, and rebuild the effective
+arrays using update_effective_progs(). This ensures safe, RCU-protected
+swapping of both the program and its storage. The
+replace_effective_prog() function is fundamentally unsafe when cgroup
+storage is involved and is removed entirely.
+
+Additionally, fix a similar rollback bug in __cgroup_bpf_attach(). When
+replacing an existing program (BPF_F_REPLACE), if
+update_effective_progs() fails, the code restores the old program but
+fails to restore the old storage pointers, leaving dangling pointers
+after the new storage is freed. Save and restore the old storage
+pointers to prevent a potential use-after-free.
+
+Fixes: 0c991ebc8c69d29b7fc44db17075c5aa5253e2ab ("bpf: Implement bpf_prog replacement for an active bpf_cgroup_link")
 Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+c69a0a2c816716f1e0d5@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=c69a0a2c816716f1e0d5
-Link: https://syzkaller.appspot.com/ai_job?id=10f0c342-88ea-4f57-a31f-48eff83eae85
+Reported-by: syzbot+4fe468a3f7fac86ea2c9@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=4fe468a3f7fac86ea2c9
+Link: https://syzkaller.appspot.com/ai_job?id=8b1e4143-642b-4b3e-8be9-194c7a66e24a
 To: <bpf@vger.kernel.org>
 To: <martin.lau@linux.dev>
 Cc: <andrii@kernel.org>
@@ -83,195 +86,130 @@ Cc: <song@kernel.org>
 Cc: <yonghong.song@linux.dev>
 
 ---
-diff --git a/kernel/bpf/bpf_lru_list.c b/kernel/bpf/bpf_lru_list.c
-index e7a2fc605..d02c37ca9 100644
---- a/kernel/bpf/bpf_lru_list.c
-+++ b/kernel/bpf/bpf_lru_list.c
-@@ -307,9 +307,10 @@ static void bpf_lru_list_push_free(struct bpf_lru_list *l,
- 	if (WARN_ON_ONCE(IS_LOCAL_LIST_TYPE(node->type)))
- 		return;
+diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+index 876f6a81a..625140a6e 100644
+--- a/kernel/bpf/cgroup.c
++++ b/kernel/bpf/cgroup.c
+@@ -792,6 +792,7 @@ static int __cgroup_bpf_attach(struct cgroup *cgrp,
+ 	struct bpf_prog *old_prog = NULL;
+ 	struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE] = {};
+ 	struct bpf_cgroup_storage *new_storage[MAX_BPF_CGROUP_STORAGE_TYPE] = {};
++	struct bpf_cgroup_storage *save_storage[MAX_BPF_CGROUP_STORAGE_TYPE];
+ 	struct bpf_prog *new_prog = prog ? : link->link.prog;
+ 	enum cgroup_bpf_attach_type atype;
+ 	struct bpf_prog_list *pl;
+@@ -844,6 +845,7 @@ static int __cgroup_bpf_attach(struct cgroup *cgrp,
  
--	raw_spin_lock_irqsave(&l->lock, flags);
-+	if (raw_res_spin_lock_irqsave(&l->lock, flags))
-+		return;
- 	__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
--	raw_spin_unlock_irqrestore(&l->lock, flags);
-+	raw_res_spin_unlock_irqrestore(&l->lock, flags);
- }
- 
- static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
-@@ -319,7 +320,8 @@ static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
- 	struct bpf_lru_node *node, *tmp_node;
- 	unsigned int nfree = 0;
- 
--	raw_spin_lock(&l->lock);
-+	if (raw_res_spin_lock(&l->lock))
-+		return;
- 
- 	__local_list_flush(l, loc_l);
- 
-@@ -338,7 +340,7 @@ static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
- 				      local_free_list(loc_l),
- 				      BPF_LRU_LOCAL_LIST_T_FREE);
- 
--	raw_spin_unlock(&l->lock);
-+	raw_res_spin_unlock(&l->lock);
- }
- 
- static void __local_list_add_pending(struct bpf_lru *lru,
-@@ -404,7 +406,8 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free(struct bpf_lru *lru,
- 
- 	l = per_cpu_ptr(lru->percpu_lru, cpu);
- 
--	raw_spin_lock_irqsave(&l->lock, flags);
-+	if (raw_res_spin_lock_irqsave(&l->lock, flags))
-+		return NULL;
- 
- 	__bpf_lru_list_rotate(lru, l);
- 
-@@ -420,7 +423,7 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free(struct bpf_lru *lru,
- 		__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_INACTIVE);
+ 	if (pl) {
+ 		old_prog = pl->prog;
++		bpf_cgroup_storages_assign(save_storage, pl->storage);
+ 	} else {
+ 		pl = kmalloc_obj(*pl);
+ 		if (!pl) {
+@@ -894,6 +896,7 @@ static int __cgroup_bpf_attach(struct cgroup *cgrp,
+ 	if (old_prog) {
+ 		pl->prog = old_prog;
+ 		pl->link = NULL;
++		bpf_cgroup_storages_assign(pl->storage, save_storage);
  	}
- 
--	raw_spin_unlock_irqrestore(&l->lock, flags);
-+	raw_res_spin_unlock_irqrestore(&l->lock, flags);
- 
- 	return node;
- }
-@@ -437,7 +440,8 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
- 
- 	loc_l = per_cpu_ptr(clru->local_list, cpu);
- 
--	raw_spin_lock_irqsave(&loc_l->lock, flags);
-+	if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
-+		return NULL;
- 
- 	node = __local_list_pop_free(loc_l);
- 	if (!node) {
-@@ -448,7 +452,7 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
- 	if (node)
- 		__local_list_add_pending(lru, loc_l, cpu, node, hash);
- 
--	raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-+	raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
- 
- 	if (node)
- 		return node;
-@@ -466,23 +470,26 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
- 	do {
- 		steal_loc_l = per_cpu_ptr(clru->local_list, steal);
- 
--		raw_spin_lock_irqsave(&steal_loc_l->lock, flags);
-+		if (raw_res_spin_lock_irqsave(&steal_loc_l->lock, flags))
-+			goto next_steal;
- 
- 		node = __local_list_pop_free(steal_loc_l);
- 		if (!node)
- 			node = __local_list_pop_pending(lru, steal_loc_l);
- 
--		raw_spin_unlock_irqrestore(&steal_loc_l->lock, flags);
-+		raw_res_spin_unlock_irqrestore(&steal_loc_l->lock, flags);
- 
-+next_steal:
- 		steal = cpumask_next_wrap(steal, cpu_possible_mask);
- 	} while (!node && steal != first_steal);
- 
- 	loc_l->next_steal = steal;
- 
- 	if (node) {
--		raw_spin_lock_irqsave(&loc_l->lock, flags);
-+		if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
-+			return NULL;
- 		__local_list_add_pending(lru, loc_l, cpu, node, hash);
--		raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-+		raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
- 	}
- 
- 	return node;
-@@ -511,10 +518,11 @@ static void bpf_common_lru_push_free(struct bpf_lru *lru,
- 
- 		loc_l = per_cpu_ptr(lru->common_lru.local_list, node->cpu);
- 
--		raw_spin_lock_irqsave(&loc_l->lock, flags);
-+		if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
-+			return;
- 
- 		if (unlikely(node->type != BPF_LRU_LOCAL_LIST_T_PENDING)) {
--			raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-+			raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
- 			goto check_lru_list;
- 		}
- 
-@@ -522,7 +530,7 @@ static void bpf_common_lru_push_free(struct bpf_lru *lru,
- 		bpf_lru_node_clear_ref(node);
- 		list_move(&node->list, local_free_list(loc_l));
- 
--		raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-+		raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
- 		return;
- 	}
- 
-@@ -538,11 +546,12 @@ static void bpf_percpu_lru_push_free(struct bpf_lru *lru,
- 
- 	l = per_cpu_ptr(lru->percpu_lru, node->cpu);
- 
--	raw_spin_lock_irqsave(&l->lock, flags);
-+	if (raw_res_spin_lock_irqsave(&l->lock, flags))
-+		return;
- 
- 	__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
- 
--	raw_spin_unlock_irqrestore(&l->lock, flags);
-+	raw_res_spin_unlock_irqrestore(&l->lock, flags);
+ 	bpf_cgroup_storages_free(new_storage);
+ 	if (!old_prog) {
+@@ -918,51 +921,6 @@ static int cgroup_bpf_attach(struct cgroup *cgrp,
+ 	return ret;
  }
  
- void bpf_lru_push_free(struct bpf_lru *lru, struct bpf_lru_node *node)
-@@ -625,7 +634,7 @@ static void bpf_lru_locallist_init(struct bpf_lru_locallist *loc_l, int cpu)
+-/* Swap updated BPF program for given link in effective program arrays across
+- * all descendant cgroups. This function is guaranteed to succeed.
+- */
+-static void replace_effective_prog(struct cgroup *cgrp,
+-				   enum cgroup_bpf_attach_type atype,
+-				   struct bpf_cgroup_link *link)
+-{
+-	struct bpf_prog_array_item *item;
+-	struct cgroup_subsys_state *css;
+-	struct bpf_prog_array *progs;
+-	struct bpf_prog_list *pl;
+-	struct hlist_head *head;
+-	struct cgroup *cg;
+-	int pos;
+-
+-	css_for_each_descendant_pre(css, &cgrp->self) {
+-		struct cgroup *desc = container_of(css, struct cgroup, self);
+-
+-		if (percpu_ref_is_zero(&desc->bpf.refcnt))
+-			continue;
+-
+-		/* find position of link in effective progs array */
+-		for (pos = 0, cg = desc; cg; cg = cgroup_parent(cg)) {
+-			if (pos && !(cg->bpf.flags[atype] & BPF_F_ALLOW_MULTI))
+-				continue;
+-
+-			head = &cg->bpf.progs[atype];
+-			hlist_for_each_entry(pl, head, node) {
+-				if (!prog_list_prog(pl))
+-					continue;
+-				if (pl->link == link)
+-					goto found;
+-				pos++;
+-			}
+-		}
+-found:
+-		BUG_ON(!cg);
+-		progs = rcu_dereference_protected(
+-				desc->bpf.effective[atype],
+-				lockdep_is_held(&cgroup_mutex));
+-		item = &progs->items[pos];
+-		WRITE_ONCE(item->prog, link->link.prog);
+-	}
+-}
+-
+ /**
+  * __cgroup_bpf_replace() - Replace link's program and propagate the change
+  *                          to descendants
+@@ -978,10 +936,14 @@ static int __cgroup_bpf_replace(struct cgroup *cgrp,
+ 				struct bpf_prog *new_prog)
+ {
+ 	enum cgroup_bpf_attach_type atype;
++	struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE] = {};
++	struct bpf_cgroup_storage *new_storage[MAX_BPF_CGROUP_STORAGE_TYPE] = {};
++	struct bpf_cgroup_storage *save_storage[MAX_BPF_CGROUP_STORAGE_TYPE];
+ 	struct bpf_prog *old_prog;
+ 	struct bpf_prog_list *pl;
+ 	struct hlist_head *progs;
+ 	bool found = false;
++	int err;
  
- 	loc_l->next_steal = cpu;
+ 	atype = bpf_cgroup_atype_find(link->link.attach_type, new_prog->aux->attach_btf_id);
+ 	if (atype < 0)
+@@ -1001,9 +963,27 @@ static int __cgroup_bpf_replace(struct cgroup *cgrp,
+ 	if (!found)
+ 		return -ENOENT;
  
--	raw_spin_lock_init(&loc_l->lock);
-+	raw_res_spin_lock_init(&loc_l->lock);
++	err = bpf_cgroup_storages_alloc(storage, new_storage,
++					link->link.attach_type, new_prog, cgrp);
++	if (err)
++		return err;
++
++	bpf_cgroup_storages_assign(save_storage, pl->storage);
++	bpf_cgroup_storages_assign(pl->storage, storage);
+ 	cgrp->bpf.revisions[atype] += 1;
++
+ 	old_prog = xchg(&link->link.prog, new_prog);
+-	replace_effective_prog(cgrp, atype, link);
++
++	err = update_effective_progs(cgrp, atype);
++	if (err) {
++		xchg(&link->link.prog, old_prog);
++		cgrp->bpf.revisions[atype] -= 1;
++		bpf_cgroup_storages_assign(pl->storage, save_storage);
++		bpf_cgroup_storages_free(new_storage);
++		return err;
++	}
++
++	bpf_cgroup_storages_link(new_storage, cgrp, link->link.attach_type);
+ 	bpf_prog_put(old_prog);
+ 	return 0;
  }
- 
- static void bpf_lru_list_init(struct bpf_lru_list *l)
-@@ -640,7 +649,7 @@ static void bpf_lru_list_init(struct bpf_lru_list *l)
- 
- 	l->next_inactive_rotation = &l->lists[BPF_LRU_LIST_T_INACTIVE];
- 
--	raw_spin_lock_init(&l->lock);
-+	raw_res_spin_lock_init(&l->lock);
- }
- 
- int bpf_lru_init(struct bpf_lru *lru, bool percpu, u32 hash_offset,
-diff --git a/kernel/bpf/bpf_lru_list.h b/kernel/bpf/bpf_lru_list.h
-index fe2661a58..ecd93c77a 100644
---- a/kernel/bpf/bpf_lru_list.h
-+++ b/kernel/bpf/bpf_lru_list.h
-@@ -7,6 +7,7 @@
- #include <linux/cache.h>
- #include <linux/list.h>
- #include <linux/spinlock_types.h>
-+#include <asm/rqspinlock.h>
- 
- #define NR_BPF_LRU_LIST_T	(3)
- #define NR_BPF_LRU_LIST_COUNT	(2)
-@@ -34,13 +35,13 @@ struct bpf_lru_list {
- 	/* The next inactive list rotation starts from here */
- 	struct list_head *next_inactive_rotation;
- 
--	raw_spinlock_t lock ____cacheline_aligned_in_smp;
-+	rqspinlock_t lock ____cacheline_aligned_in_smp;
- };
- 
- struct bpf_lru_locallist {
- 	struct list_head lists[NR_BPF_LRU_LOCAL_LIST_T];
- 	u16 next_steal;
--	raw_spinlock_t lock;
-+	rqspinlock_t lock;
- };
- 
- struct bpf_common_lru {
 
 
 base-commit: 5d6919055dec134de3c40167a490f33c74c12581
