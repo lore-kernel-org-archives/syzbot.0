@@ -1,101 +1,53 @@
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91BD01B4224
-	for <syzbot@lists.linux.dev>; Fri, 15 May 2026 03:32:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0ABD42EEA8
+	for <syzbot@lists.linux.dev>; Fri, 15 May 2026 09:31:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778815929; cv=none; b=EMmkSR60y8F6kG5LVWpviMDOx/NfJkqNkbvs/C7ieHpblMs16dcMvwollDLDerr9p+SHEz0PkOJwRWlXyrpH44IuC2j5hYJHnT7xs2k4vJtNVFPgu/xTHLySCHGQlIkoezv88e7r3xggSf+CO6jgAYrgpVXHS9sZk5hcHJZB/zo=
+	t=1778837496; cv=none; b=kyEkjTvbd04j/DcQAmZztO1oqIM75hxrqQw5LFMGvKwrmThtRRYOmYnflztoqfdO7zsFGnt0G5XzNftT0NWlbrgRY60ZboNeSKhT15H550gme2g1NfufZQ3tJHwBcyhSO6NgzVAaTHDph9GVS+ZKuNEDtoQ8+TnwmXhE7YEb0x8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778815929; c=relaxed/simple;
-	bh=49g3u0AKNbu8cZr8vDsmTVqNJhQjQy5gVCL8pftwFkA=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=jeMDwT/YTRCy4rxkfqqb9LotTNGeHuC+rvk2ox8e4B8sx6FQq2LBTKFleZGAl2xX4E8Frj++FY0JmTpMC472vBhlfqx+cht2JRwP5c+Xg8A3xnBT6kKqbh0jjyBfxx21pTBjTvbS05MufY5eFbYRS/ogq+4BT51xj8kCmqNycA8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7dbd4fe0e15so21049612a34.3
-        for <syzbot@lists.linux.dev>; Thu, 14 May 2026 20:32:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778815927; x=1779420727;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=IIrLUJk5bFGLx1yfOxxEQgdCxMT1YvCgyaLR8p8fqVw=;
-        b=lwioXOr9xjzUI+mr9Q6hjYS8qcTmIq/KVr4n83N3vaJLcb+2GtQvt7jJddzVYZ54Ij
-         PbkU7wZmR+UWgMf1jdO9YU5RSm4OTyMj5rqv0DzphPaVHlSxQEFaIF2RcnchyDwsyyml
-         Qgoh9xjawn2M6R69gDGYl4HEfHohkvYtmjYPWY9Y+a3K+AoXg481WK+OYjyF+Kybreby
-         8dorPfEex84psFkeA5iJggbJ5D8+dGnvvcWNGw8BSmxgAncc2R9hcRYOgAJePO0++ptc
-         RwClBKvU4dItNZTs/hAOQglo5vtSAg3IC1EwJ/JcXll+oJ9dISSOk8Rpfx5ctYd1rDGq
-         xQFg==
-X-Gm-Message-State: AOJu0YwSrjJwfp9syaFeCzq7UTY4piMIxaSiUORLn1qZ0jre9aJjhlg/
-	xhpgJR4Hzyz0oXx3i0lvVZ6Lx5yxZ3zPmSApVkTc6AWrrT53rZ4OWEoyukfvNzCNHJK0NNPBah6
-	P3/ocAkCEb7+39Rn2W9IAiKgGHJhFWUOdWQppDSY1RqB86IIdto/nC9fYjO4=
+	s=arc-20240116; t=1778837496; c=relaxed/simple;
+	bh=i4tL24G7Iv8J9NEwtffZudcUCudGlqfonknmON34gY4=;
+	h=From:To:Cc:Subject:In-Reply-To:Message-ID:MIME-Version:
+	 Content-Type:Date; b=falTxJ5Cd66NBGlu5yEmnqSRtx4cvP0dwNVmyeTK+l5W+BHWDxXs59cPae3mbxFmGyXRClYp6pbjfOzznM6yzoVf9c7QN7791NoisslU7IbIbqMOWULNTGFYmLemwntBU0WTAVvRSSAU7QD9vKPpu/CzpDKCwURrnafV2rXYTN0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=r7gysFlV; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="r7gysFlV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B5D3C2BCB0;
+	Fri, 15 May 2026 09:31:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778837495;
+	bh=i4tL24G7Iv8J9NEwtffZudcUCudGlqfonknmON34gY4=;
+	h=From:To:Cc:Subject:In-Reply-To:Date:From;
+	b=r7gysFlV6amPLu2m7Zjd3C/cCPaH5zOqVTUE1h3YFwxNkBh3lyEaQ5Izny8gwIKnc
+	 me2B0P1AEERYCRV+w29t95x3+gJVnxhFBfApMrxp+4Mnndb2lOuQd8LPAlB/Pfms8K
+	 vt20LZuqOY28ezHrGqVTkv3oTvcHa575p4sIJ6oxAr3NXvb49279zCpEeSQyPPKZZe
+	 nUaZvDna5st4IS/c4c+S48WUdb3mAg+HpPszq9PtO71pH/VyAUpnZOn0WvtxsIf0Yj
+	 aYzJ731fhAm/41Y8Z7yIu6BLOsDTPUiH71SRs/nKS/+GrfPmaJ3GtVFWJqfFb1LmsH
+	 3G+d8Icu9Q6Hg==
+From: "syzbot" <syzbot@kernel.org>
+To: nogikh@google.com, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC] ocfs2: fix circular locking dependency in ocfs2_dio_end_io_write
+In-Reply-To: <CANp29Y6Y5e0oYJJ9C6kXvGxfsiA84qehTRdXwK1sfL=wPMxHqQ@mail.gmail.com>
+Message-ID: <d31a328d-a810-4a70-9e14-b53e6144860a@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4dfa:b0:69b:57f0:70cb with SMTP id
- 006d021491bc7-69c94370248mr1380338eaf.37.1778815927539; Thu, 14 May 2026
- 20:32:07 -0700 (PDT)
-Date: Thu, 14 May 2026 20:32:07 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a0693b7.050a0220.2921a.0005.GAE@google.com>
-Subject: [moderation/CI] Re: exec: mirror set_dumpable() to thread-group
- siblings' user_dumpable
-From: syzbot ci <syzbot+ci2e24a2a93e729161@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Fri, 15 May 2026 09:31:35 +0000 (UTC)
 
-syzbot ci has tested the following series
+> What is the difference between meta_ac and data_ac?
+In OCFS2, `meta_ac` is the allocation context used for allocating
+metadata blocks (such as extent tree nodes), while `data_ac` is the
+allocation context used for allocating actual data clusters for the
+file.
 
-[v2] exec: mirror set_dumpable() to thread-group siblings' user_dumpable
-https://lore.kernel.org/all/agZ_Ug3EzCYn-Jkg@v4bel
-* [PATCH v2] exec: mirror set_dumpable() to thread-group siblings' user_dumpable
-
-and found the following issue:
-kernel build error
-
-Full report is available here:
-https://ci.syzbot.org/series/0cd30096-9a44-4af7-99b6-6a212630ed25
-
-***
-
-kernel build error
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      0cec77cfd5314c0b3b03530abe1a4b32e991f639
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/4a2503fd-2c63-411c-82cd-feb9d6e904b2/config
-
-fs/exec.c:1929:6: error: no member named 'user_dumpable' in 'struct task_struct'
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[imv4bel@gmail.com juri.lelli@redhat.com kees@kernel.org linux-kernel@vger.kernel.org linux-mm@kvack.org mingo@redhat.com oleg@redhat.com peterz@infradead.org qsa@qualys.com torvalds@linux-foundation.org vincent.guittot@linaro.org]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+-- 
+This reply was generated by an AI model.
+See  for more information.
