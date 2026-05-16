@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE8D937BE8E
-	for <syzbot@lists.linux.dev>; Sat, 16 May 2026 12:26:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3AC1224F3
+	for <syzbot@lists.linux.dev>; Sat, 16 May 2026 14:34:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778934361; cv=none; b=sE+xWv2/IV+iGktTv55/0Ug+5lgPEopn/MdSPys10hm/O+ztGW2Mhy0hHyhP9xZZ9pgxDBxtaK8uNbMNOxeKYI6gsJX/nTU+L0eK1NC+HSJfTJwItS1Ms5m7V1KGwtrd2uE4zNc52cmZjQnvlRPnFoALXagsYpK3zN4ePpAa1Mw=
+	t=1778942071; cv=none; b=QQOvMrYBHznl/jRXZscivEW1Umbcob+9caPNkccYT3Q0GQgrPXwovD1CpuOwgbNcQ7MYf8Vr+vpaTA9CG0Eh/+orpXaoRis0Wkxbh4c5U/+aGakQS9gx4fE/wal2hLUhDPxkZutBTiCu6XKM8VsUfLHbYPfsPy8orh/yib3RF0U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778934361; c=relaxed/simple;
-	bh=6inoyGeSh18m0UsYrNPMOONxR2O7aI5V1G6yGrPMJQY=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=OB12SUig7Yn3gsDxsCpb1pPa5lnGYNso5bYD+kWTY3a1BTlZLNcxIVowzVPlYWhDq8XV8CU9WGKANFikQ15L+eGe2+UrFpokE27lXefMFqD1dEFxkb3FAvSP2RvJ1/TfLTp68bL4fUTr+DRPkIjyzhku+r8tM1DWLThm0nwFkMk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M0CyL5y/; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778942071; c=relaxed/simple;
+	bh=yLbTr3JTtT+v2TkUD3ARWFZ/aGtbFzRnoImGmSSX7/s=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=oaD7snZ1E2N7AVvUUxacmfdFa6H4yQSL4CVQyhgUT4hiUQIJxOU+QjgntADz9UlxzhohNf41MTd9Sd4oEFAkOYsp4rbHY6WuOIy6VpAYFGFnvBBGFTaFvSYR/CQYUAXkhXNVLkygebPsby+yJCWAI6CpyTTJHhF8SPA8l9LFG4A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F8VaQVYM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M0CyL5y/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48FB3C19425;
-	Sat, 16 May 2026 12:26:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F8VaQVYM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 373C9C19425;
+	Sat, 16 May 2026 14:34:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778934361;
-	bh=6inoyGeSh18m0UsYrNPMOONxR2O7aI5V1G6yGrPMJQY=;
+	s=k20201202; t=1778942071;
+	bh=yLbTr3JTtT+v2TkUD3ARWFZ/aGtbFzRnoImGmSSX7/s=;
 	h=From:To:Cc:Subject:Date:From;
-	b=M0CyL5y//mnlcBTd1pwZ2y/FfOvYgZOHNM1Hb+mn0MgwM/p+ppRvFgrmNYkX8QxGw
-	 WOZQptSUv6CzefGPVwUDMchs2EmfJNoqdVqDW11WJUrGYlS/Z4DqR3sh6fO3ZzUhfV
-	 ncHK6snXtPFCDos8CgwYZRzy8z6JAQHU3cbox9PU+9QDXL3cDQmPIiKhp/zGzrV1x5
-	 2Itug9wvD5tcR/QZsFyJv1/JXrgXjIFAsdoDOjL29CCG6w5plQILJZWmwi0tPsniYb
-	 xMUrt7tAONF/4TTZbN84/VoyuRTPMkG2fSzieI5+6b2Ma+T/lceri1nPXPXQTrP+qu
-	 I3zE9Yns/YuQw==
+	b=F8VaQVYM8Xz7syxN4ebw3Iu0mrIbeKT7yjLQpQtKCqV0bvkjqnQngGvgArHpjgrAH
+	 ByLNgEJV+po3E1LuEQm8CHE3y7UmQMotM6EIhlAJyHpr7dcYZqrPAiUqfZWD6IraPe
+	 e9EKwr8BgMIQeEZneAk4YbtMPY6hCojqYxj9fVACi1EelrsRRdagJOctkUfIUtROmi
+	 9Ej4e37adEC5ajSXy71n+Cdk16REmsshImog1u/XMrLMEo5R70IgZIOKYc+u/ARTrs
+	 jgxbUH2qlnFhRlcdcM6tnLIAGz83vzts+PtLbJA4Mp3Xjfk0sicxaQs757roCSmXHF
+	 pkzlYB55DWXMw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] firmware_loader: Fix recursive lock in device_cache_fw_images()
-Message-ID: <83f1cd4e-d372-4be8-8ce6-32cbd7195ab1@mail.kernel.org>
+Subject: [PATCH RFC] usb: cdc-wdm: close race between workqueue and release
+Message-ID: <97986988-6374-4e40-aa96-662939fabe88@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,72 +38,65 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Sat, 16 May 2026 12:26:01 +0000 (UTC)
+Date: Sat, 16 May 2026 14:34:31 +0000 (UTC)
 
-A recursive locking deadlock can occur in the firmware loader's power
-management notification handler.
+The crash "URB submitted while active" occurs because the
+`desc->response` URB is submitted by `wdm_rxwork` when it is already in
+an active state. This happens because `wdm_release` fails to cancel
+pending workqueue items (`desc->rxwork` and `desc->service_outs_intr`)
+during its cleanup phase. When the character device is closed and there
+are no other openers, `wdm_release` calls `poison_urbs()` to kill active
+URBs, clears the `WDM_RESPONDING` flag, and calls `unpoison_urbs()`.
+Because `wdm_release` does not call `cancel_work_sync()` for the work
+items, they can run concurrently with the cleanup process. If a work
+item executes after the URBs are unpoisoned, it can successfully submit
+the URB. If another work item then runs, it will see the
+`WDM_RESPONDING` flag as cleared, set it, and attempt to submit the URB
+again, leading to the crash.
 
-During system suspend or hibernation preparation, fw_pm_notify() calls
-device_cache_fw_images(). This function acquires fw_lock to set the
-firmware cache state to FW_LOADER_START_CACHE and then iterates over
-all devices using dpm_for_each_dev() while still holding the lock.
+To fix this, cancel the pending workqueue items after poisoning the URBs
+and before clearing the `WDM_RESPONDING` flag or unpoisoning the URBs.
+This ensures that any running work item will either fail to submit the
+URB (because it is poisoned) or finish executing before the cleanup
+proceeds. The same omission is present in `wdm_wwan_port_stop`, so apply
+the same fix there to prevent data leaks or crashes across WWAN
+sessions.
 
-For each device, dev_cache_fw_image() schedules asynchronous work to
-cache the firmware. If memory allocation for the async work entry fails
-(e.g., in out-of-memory conditions), async_schedule_node_domain()
-falls back to executing the work function synchronously in the current
-thread.
-
-The synchronous execution path (__async_dev_cache_fw_image() ->
-cache_firmware() -> request_firmware() -> assign_fw()) attempts
-to acquire fw_lock again. Since the current thread already holds
-fw_lock, this results in a recursive locking deadlock.
-
-Fix this by releasing fw_lock immediately after updating the cache
-state and before calling dpm_for_each_dev(). The lock is only needed
-to protect the state update. Concurrent firmware requests will correctly
-see the FW_LOADER_START_CACHE state and use the piggyback mechanism,
-which is independently protected by its own fwc->name_lock.
-
-Fixes: ac39b3ea73aacde876d1d5ee1ca3e2719f771482 ("firmware loader: let caching firmware piggyback on loading firmware")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+e70e4c6f6eee43357ba7@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=e70e4c6f6eee43357ba7
-Link: https://syzkaller.appspot.com/ai_job?id=8cbf9f7d-812d-4db3-89fa-0aaef3ce3a2f
+Fixes: 01e01f5c89773c600a9f0b32c888de0146066c3a ("usb: cdc-wdm: fix reading stuck on device close")
+Assisted-by: Gemini:gemini-3.1-pro-preview
+Reported-by: syzbot+c6a1953c27ace6cc34e5@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=c6a1953c27ace6cc34e5
+Link: https://syzkaller.appspot.com/ai_job?id=99107a5d-cc34-46f2-a7ce-bb797b331fd3
 To: <gregkh@linuxfoundation.org>
-To: <linux-kernel@vger.kernel.org>
-To: <rafael@kernel.org>
-Cc: <dakr@kernel.org>
-Cc: <driver-core@lists.linux.dev>
-Cc: <mcgrof@kernel.org>
-Cc: <russ.weight@linux.dev>
+To: <linux-usb@vger.kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-v2:
-- Removed the empty comment after dpm_for_each_dev().
-
-v1:
-https://lore.kernel.org/all/7b8b3fbf-950b-4418-8cf1-772a4d639b14@mail.kernel.org/T/
----
-diff --git a/drivers/base/firmware_loader/main.c b/drivers/base/firmware_loader/main.c
-index a11b30dda..c96312ac2 100644
---- a/drivers/base/firmware_loader/main.c
-+++ b/drivers/base/firmware_loader/main.c
-@@ -1503,9 +1503,10 @@ static void device_cache_fw_images(void)
+diff --git a/drivers/usb/class/cdc-wdm.c b/drivers/usb/class/cdc-wdm.c
+index 7556c0dac..d4318395d 100644
+--- a/drivers/usb/class/cdc-wdm.c
++++ b/drivers/usb/class/cdc-wdm.c
+@@ -769,6 +769,8 @@ static int wdm_release(struct inode *inode, struct file *file)
+ 		if (!test_bit(WDM_DISCONNECTING, &desc->flags)) {
+ 			dev_dbg(&desc->intf->dev, "wdm_release: cleanup\n");
+ 			poison_urbs(desc);
++			cancel_work_sync(&desc->rxwork);
++			cancel_work_sync(&desc->service_outs_intr);
+ 			spin_lock_irq(&desc->iuspin);
+ 			desc->resp_count = 0;
+ 			clear_bit(WDM_RESPONDING, &desc->flags);
+@@ -863,6 +865,8 @@ static void wdm_wwan_port_stop(struct wwan_port *port)
  
- 	mutex_lock(&fw_lock);
- 	fwc->state = FW_LOADER_START_CACHE;
--	dpm_for_each_dev(NULL, dev_cache_fw_image);
- 	mutex_unlock(&fw_lock);
- 
-+	dpm_for_each_dev(NULL, dev_cache_fw_image);
-+
- 	/* wait for completion of caching firmware for all devices */
- 	async_synchronize_full_domain(&fw_cache_domain);
- 
+ 	/* Stop all transfers and disable WWAN mode */
+ 	poison_urbs(desc);
++	cancel_work_sync(&desc->rxwork);
++	cancel_work_sync(&desc->service_outs_intr);
+ 	desc->manage_power(desc->intf, 0);
+ 	clear_bit(WDM_READ, &desc->flags);
+ 	unpoison_urbs(desc);
 
 
-base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
+base-commit: 5d6919055dec134de3c40167a490f33c74c12581
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to send it to the mailing list.
