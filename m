@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 012133E2AD8
-	for <syzbot@lists.linux.dev>; Sat, 16 May 2026 15:41:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB39126ED59
+	for <syzbot@lists.linux.dev>; Sat, 16 May 2026 17:17:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778946062; cv=none; b=fZmevp6f2lhuo0rAli9AJwn/hiH7BrnAQibYkDvCqcQzhSAZ0MycuCQGjLUv/6/mH6aO0n9uG+0FRU+Cplx+KebmFKmZS+/AN+crfjipw/cmOtj/C69eh472USxTKrc8NaSbG+tdQDQ7ei3LXAz+EoeGO3QM7qEMExOwkZ3MSGQ=
+	t=1778951821; cv=none; b=PH2r4teQc2sV7CyYvh5cj7j+Je27g1BA0z4wzybXsWmP8SUGOt7ortimk4qILBYGhKIduahD4nUJr+OvBbac5J2Db5rscFWxc0KYl3YfXHMfn+GMFznzmymFBPcW4MycSJh0lDzAegrgs9+tI2Ni3NptpFcqDglOsLkER9A5KTc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778946062; c=relaxed/simple;
-	bh=OjI6WW9nDxbCVu3Lnys8hkHAVD16QIkVwcQ5ztXDyJk=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=a2gif7KFRGmXOoVOho87GO0T6bh0R1gbjknwKmjJXgi6rJcm5Ec/LI0EsyFc0jg/Prb3TiyCJ6vz5rDDhbRPOlqK6G1RNdDL3FdJyoPaMPPUQVgyxeX92YI3q+nj1f8vMPH/BPuGvYCi974b1QE5ysRf8cg+r9hww+d2HZMbW70=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kfrLFi0F; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778951821; c=relaxed/simple;
+	bh=Mk3IYgh+T/+/sS11kOtwBtnB/zoJVbc0jB+sZlVjZh4=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=f5zYEoqHvMwCEQ3g1AoINUJGaHGJP1Y3UOrQsmaFIt+aeJ2v4g2RH4wsjzwLjY7woSa46IWKwUL1fwC1VvOQ1udYraLxweRjstquOEROSjk6fNB5UZ1sNzkhw69CyxLYZ4/T0WTET86m0RmaJA24LbN3eYEdP8/YNsbDcbLni1w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XuorkAGd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kfrLFi0F"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DD50C19425;
-	Sat, 16 May 2026 15:41:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XuorkAGd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44D40C19425;
+	Sat, 16 May 2026 17:17:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778946061;
-	bh=OjI6WW9nDxbCVu3Lnys8hkHAVD16QIkVwcQ5ztXDyJk=;
+	s=k20201202; t=1778951821;
+	bh=Mk3IYgh+T/+/sS11kOtwBtnB/zoJVbc0jB+sZlVjZh4=;
 	h=From:To:Cc:Subject:Date:From;
-	b=kfrLFi0FIG+sTd2vZAsJiYSSXcCAh010rWrGEnIkY+1YWxhvyisZrbiU0arlumiKO
-	 0NC9n5Z52Jgw817W8c8SYgi6z0ADIij8Cxh7sQbJZnT9ddlk6qsUJUseJ1n32bN67h
-	 WqNCbfExCx17Ve3cq6MOfn+292O8fAWzWzql8XL5u47FLb4dg2DZp3WE+oD3DrY871
-	 J3OK46sgAHshpmG6o6XbqGWfxsEQhti9E9BA46hYSeA7apOtUOBypyCiK3WKxEQqO/
-	 B5iLn46Nsfw5983V0+d5uxxMWVCjhBBs+MSh7czcm1xqp5Rm4KmogAypPKK6P/7q6g
-	 536avZiejczEg==
+	b=XuorkAGdcde/SIFuI0paLoQyvPVAJ5e1mgAyszKC2gXYGikIzkNE+O552Ovjgx7U3
+	 Vo+XeoW6nVcYF8eAjZCJ4G16t4BiVb+M2ZwP+1ishWUkiZ/IEbja8RtHp6t8e/YKIY
+	 TgCFcb8ePu3yJ0zLIo5KIu+ldE3/puwFEBroS8tTKmmVMf1c63MyPoXlXwFgQW2lbA
+	 1UPfXAK+lcc5MedxqldBFnEhiE2B71tnQy7vRkiPaGo5H237upo94OY9lUam/BFiT4
+	 tNEJJ3eybe5LLCcoBnKPnDgI353rWTkRQSdGDV9IlLweS5ESHXU+fw2DW9VdH0ABHZ
+	 +k8jh8en0vEpw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] mtd: block2mtd: fix circular locking dependency in block2mtd_setup
-Message-ID: <a9d448c8-44ac-4c8c-a391-aad1478a7eb1@mail.kernel.org>
+Subject: [PATCH RFC v2] bpf: lru: Use resilient spinlocks to prevent NMI deadlocks
+Message-ID: <471284ae-0b11-43ca-ad34-e497fe2ee24e@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,176 +38,257 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Sat, 16 May 2026 15:41:01 +0000 (UTC)
+Date: Sat, 16 May 2026 17:17:01 +0000 (UTC)
 
-syzkaller reported a circular locking dependency involving the global
-param_lock and VFS locks (i_rwsem). The block2mtd driver performs a
-synchronous VFS path lookup (kern_path via bdev_file_open_by_path)
-inside its module parameter set callback (block2mtd_setup). This
-callback is invoked by the sysfs core with param_lock held.
+BPF LRU maps currently use standard `raw_spinlock_t` for their local and
+global list locks, which are not NMI-safe. If an NMI (such as a perf
+event hardware breakpoint) interrupts a normal context that is holding
+an LRU list lock, and a BPF program executed in the NMI context attempts
+to acquire the exact same lock (e.g., via `bpf_map_delete_elem`), it
+will spin forever waiting for the lock to be released. This results in a
+hard deadlock because the context holding the lock has been preempted by
+the NMI itself. Lockdep correctly detects this unsafe `{INITIAL USE} ->
+{IN-NMI}` transition and emits an inconsistent lock state warning.
 
-The dependency chain is:
-1. i_rwsem -> cgroup_mutex (via cgroup_rmdir)
-2. cgroup_mutex -> rtnl_mutex (via cgroup_mkdir -> cgrp_css_online)
-3. rtnl_mutex -> param_lock (via mac80211_hwsim_new_radio ->
-   ieee80211_rate_control_ops_get)
-4. param_lock -> i_rwsem (via block2mtd_setup -> kern_path)
+To resolve this, update the LRU list implementation to use resilient
+queued spinlocks (`rqspinlock_t`), similar to how bucket locks in
+standard BPF hash maps were previously converted. Resilient spinlocks
+are NMI-safe because they detect deadlocks (such as re-entrancy on the
+same CPU) and return an error instead of hanging. Replace all standard
+spinlock operations with their resilient counterparts in
+`bpf_lru_list.c`. Since resilient spinlock acquisitions can fail, update
+the LRU functions to handle these failures gracefully. For pop
+functions, return `NULL` when the lock cannot be acquired, which callers
+already handle by propagating an `-ENOMEM` error. When stealing nodes
+from remote CPUs, safely skip the CPU if its lock cannot be acquired.
+For push and flush functions, abort and return early if the lock fails,
+effectively leaking the LRU node, which is an acceptable trade-off to
+prevent a hard system deadlock in NMI context.
 
-To fix this without breaking existing userspace scripts that expect
-synchronous device creation, temporarily drop the param_lock during
-the device creation process. This breaks the circular locking
-dependency while preserving the synchronous nature of the operation.
-
-To implement this safely, introduce a local mutex (block2mtd_mutex)
-to protect the module's internal state (blkmtd_device_list,
-block2mtd_paramline, and block2mtd_init_called) from concurrent sysfs
-writes, since param_lock will no longer provide this protection during
-the critical section.
-
-Summary of changes:
-1. Introduce block2mtd_mutex to protect the global blkmtd_device_list
-   and early-boot state variables.
-2. Drop param_lock in block2mtd_setup using kernel_param_unlock(kp->mod)
-   and kernel_param_lock(kp->mod). For built-in modules, kp->mod is
-   NULL,
-   and these functions correctly unlock/lock the global param_lock.
-3. Protect block2mtd_setup with block2mtd_mutex to ensure that
-concurrent
-   sysfs writes are serialized and the device list is safely updated.
-4. Protect block2mtd_init and block2mtd_exit with block2mtd_mutex to
-   ensure safe access to blkmtd_device_list and block2mtd_paramline.
-
-The lock ordering is now block2mtd_mutex -> VFS locks (i_rwsem) ->
-mtd_table_mutex, which is strictly hierarchical and free of circular
-dependencies.
-
-Fixes: f9d8c3c4236ef2a1c15b01200b9d164e2c5a54c7 ("block2mtd: port device access to files")
+Fixes: 3a08c2fd763450a927d1130de078d6f9e74944fb ("bpf: LRU List")
 Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+65459fd3b61877d717a3@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=65459fd3b61877d717a3
-Link: https://syzkaller.appspot.com/ai_job?id=c3c46711-9492-41e5-bcb4-4fb68a746c23
-To: <joern@lazybastard.org>
-To: <linux-mtd@lists.infradead.org>
+Reported-by: syzbot+c69a0a2c816716f1e0d5@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=c69a0a2c816716f1e0d5
+Link: https://syzkaller.appspot.com/ai_job?id=5256e80f-91f9-40da-865e-578a2aee46ad
+To: <bpf@vger.kernel.org>
+To: <martin.lau@linux.dev>
+Cc: <andrii@kernel.org>
+Cc: <ast@kernel.org>
+Cc: <daniel@iogearbox.net>
+Cc: <eddyz87@gmail.com>
+Cc: <jolsa@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: <miquel.raynal@bootlin.com>
-Cc: <richard@nod.at>
-Cc: <vigneshr@ti.com>
+Cc: <memxor@gmail.com>
+Cc: <song@kernel.org>
+Cc: <yonghong.song@linux.dev>
 
 ---
 v2:
-- Added comments in block2mtd_init() and block2mtd_exit() explaining the need for block2mtd_mutex to protect against concurrent sysfs writes.
+- Added missing `<asm/rqspinlock.h>` include in `kernel/bpf/bpf_lru_list.c`.
 
 v1:
-https://lore.kernel.org/all/9ceb3eb3-40e2-497b-8d68-257fd88a3946@mail.kernel.org/T/
+https://lore.kernel.org/all/dcebc4bd-5cc1-4dc9-b82b-6cca0fad128b@mail.kernel.org/T/
 ---
-diff --git a/drivers/mtd/devices/block2mtd.c b/drivers/mtd/devices/block2mtd.c
-index 03e80b2c4..42da6b9a5 100644
---- a/drivers/mtd/devices/block2mtd.c
-+++ b/drivers/mtd/devices/block2mtd.c
-@@ -45,7 +45,7 @@ struct block2mtd_dev {
+diff --git a/kernel/bpf/bpf_lru_list.c b/kernel/bpf/bpf_lru_list.c
+index e7a2fc605..3d6613378 100644
+--- a/kernel/bpf/bpf_lru_list.c
++++ b/kernel/bpf/bpf_lru_list.c
+@@ -4,6 +4,7 @@
+ #include <linux/cpumask.h>
+ #include <linux/spinlock.h>
+ #include <linux/percpu.h>
++#include <asm/rqspinlock.h>
  
- /* Static info about the MTD, used in cleanup_module */
- static LIST_HEAD(blkmtd_device_list);
--
-+static DEFINE_MUTEX(block2mtd_mutex);
+ #include "bpf_lru_list.h"
  
- static struct page *page_read(struct address_space *mapping, pgoff_t index)
- {
-@@ -464,28 +464,43 @@ static int block2mtd_setup2(const char *val)
+@@ -307,9 +308,10 @@ static void bpf_lru_list_push_free(struct bpf_lru_list *l,
+ 	if (WARN_ON_ONCE(IS_LOCAL_LIST_TYPE(node->type)))
+ 		return;
  
- static int block2mtd_setup(const char *val, const struct kernel_param *kp)
- {
-+	int ret = 0;
-+
-+	/*
-+	 * Drop the param_lock to avoid circular locking dependency
-+	 * with VFS locks during device lookup.
-+	 */
-+	kernel_param_unlock(kp->mod);
-+
-+	mutex_lock(&block2mtd_mutex);
-+
- #ifdef MODULE
--	return block2mtd_setup2(val);
-+	ret = block2mtd_setup2(val);
- #else
- 	/* If more parameters are later passed in via
- 	   /sys/module/block2mtd/parameters/block2mtd
- 	   and block2mtd_init() has already been called,
- 	   we can parse the argument now. */
- 
--	if (block2mtd_init_called)
--		return block2mtd_setup2(val);
-+	if (block2mtd_init_called) {
-+		ret = block2mtd_setup2(val);
-+	} else {
-+		/* During early boot stage, we only save the parameters
-+		   here. We must parse them later: if the param passed
-+		   from kernel boot command line, block2mtd_setup() is
-+		   called so early that it is not possible to resolve
-+		   the device (even kmalloc() fails). Deter that work to
-+		   block2mtd_setup2(). */
-+
-+		strscpy(block2mtd_paramline, val, sizeof(block2mtd_paramline));
-+	}
-+#endif
- 
--	/* During early boot stage, we only save the parameters
--	   here. We must parse them later: if the param passed
--	   from kernel boot command line, block2mtd_setup() is
--	   called so early that it is not possible to resolve
--	   the device (even kmalloc() fails). Deter that work to
--	   block2mtd_setup2(). */
-+	mutex_unlock(&block2mtd_mutex);
- 
--	strscpy(block2mtd_paramline, val, sizeof(block2mtd_paramline));
-+	kernel_param_lock(kp->mod);
- 
--	return 0;
--#endif
-+	return ret;
+-	raw_spin_lock_irqsave(&l->lock, flags);
++	if (raw_res_spin_lock_irqsave(&l->lock, flags))
++		return;
+ 	__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
+-	raw_spin_unlock_irqrestore(&l->lock, flags);
++	raw_res_spin_unlock_irqrestore(&l->lock, flags);
  }
  
+ static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
+@@ -319,7 +321,8 @@ static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
+ 	struct bpf_lru_node *node, *tmp_node;
+ 	unsigned int nfree = 0;
  
-@@ -497,9 +512,15 @@ static int __init block2mtd_init(void)
- 	int ret = 0;
+-	raw_spin_lock(&l->lock);
++	if (raw_res_spin_lock(&l->lock))
++		return;
  
- #ifndef MODULE
-+	/*
-+	 * block2mtd_mutex protects block2mtd_init_called and
-+	 * block2mtd_paramline against concurrent sysfs writes.
-+	 */
-+	mutex_lock(&block2mtd_mutex);
- 	if (strlen(block2mtd_paramline))
- 		ret = block2mtd_setup2(block2mtd_paramline);
- 	block2mtd_init_called = 1;
-+	mutex_unlock(&block2mtd_mutex);
- #endif
+ 	__local_list_flush(l, loc_l);
  
- 	return ret;
-@@ -511,6 +532,11 @@ static void block2mtd_exit(void)
- 	struct list_head *pos, *next;
+@@ -338,7 +341,7 @@ static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
+ 				      local_free_list(loc_l),
+ 				      BPF_LRU_LOCAL_LIST_T_FREE);
  
- 	/* Remove the MTD devices */
-+	/*
-+	 * block2mtd_mutex protects blkmtd_device_list against
-+	 * concurrent sysfs writes.
-+	 */
-+	mutex_lock(&block2mtd_mutex);
- 	list_for_each_safe(pos, next, &blkmtd_device_list) {
- 		struct block2mtd_dev *dev = list_entry(pos, typeof(*dev), list);
- 		block2mtd_sync(&dev->mtd);
-@@ -522,6 +548,7 @@ static void block2mtd_exit(void)
- 		list_del(&dev->list);
- 		block2mtd_free_device(dev);
+-	raw_spin_unlock(&l->lock);
++	raw_res_spin_unlock(&l->lock);
+ }
+ 
+ static void __local_list_add_pending(struct bpf_lru *lru,
+@@ -404,7 +407,8 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free(struct bpf_lru *lru,
+ 
+ 	l = per_cpu_ptr(lru->percpu_lru, cpu);
+ 
+-	raw_spin_lock_irqsave(&l->lock, flags);
++	if (raw_res_spin_lock_irqsave(&l->lock, flags))
++		return NULL;
+ 
+ 	__bpf_lru_list_rotate(lru, l);
+ 
+@@ -420,7 +424,7 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free(struct bpf_lru *lru,
+ 		__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_INACTIVE);
  	}
-+	mutex_unlock(&block2mtd_mutex);
+ 
+-	raw_spin_unlock_irqrestore(&l->lock, flags);
++	raw_res_spin_unlock_irqrestore(&l->lock, flags);
+ 
+ 	return node;
+ }
+@@ -437,7 +441,8 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
+ 
+ 	loc_l = per_cpu_ptr(clru->local_list, cpu);
+ 
+-	raw_spin_lock_irqsave(&loc_l->lock, flags);
++	if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
++		return NULL;
+ 
+ 	node = __local_list_pop_free(loc_l);
+ 	if (!node) {
+@@ -448,7 +453,7 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
+ 	if (node)
+ 		__local_list_add_pending(lru, loc_l, cpu, node, hash);
+ 
+-	raw_spin_unlock_irqrestore(&loc_l->lock, flags);
++	raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
+ 
+ 	if (node)
+ 		return node;
+@@ -466,23 +471,26 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
+ 	do {
+ 		steal_loc_l = per_cpu_ptr(clru->local_list, steal);
+ 
+-		raw_spin_lock_irqsave(&steal_loc_l->lock, flags);
++		if (raw_res_spin_lock_irqsave(&steal_loc_l->lock, flags))
++			goto next_steal;
+ 
+ 		node = __local_list_pop_free(steal_loc_l);
+ 		if (!node)
+ 			node = __local_list_pop_pending(lru, steal_loc_l);
+ 
+-		raw_spin_unlock_irqrestore(&steal_loc_l->lock, flags);
++		raw_res_spin_unlock_irqrestore(&steal_loc_l->lock, flags);
+ 
++next_steal:
+ 		steal = cpumask_next_wrap(steal, cpu_possible_mask);
+ 	} while (!node && steal != first_steal);
+ 
+ 	loc_l->next_steal = steal;
+ 
+ 	if (node) {
+-		raw_spin_lock_irqsave(&loc_l->lock, flags);
++		if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
++			return NULL;
+ 		__local_list_add_pending(lru, loc_l, cpu, node, hash);
+-		raw_spin_unlock_irqrestore(&loc_l->lock, flags);
++		raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
+ 	}
+ 
+ 	return node;
+@@ -511,10 +519,11 @@ static void bpf_common_lru_push_free(struct bpf_lru *lru,
+ 
+ 		loc_l = per_cpu_ptr(lru->common_lru.local_list, node->cpu);
+ 
+-		raw_spin_lock_irqsave(&loc_l->lock, flags);
++		if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
++			return;
+ 
+ 		if (unlikely(node->type != BPF_LRU_LOCAL_LIST_T_PENDING)) {
+-			raw_spin_unlock_irqrestore(&loc_l->lock, flags);
++			raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
+ 			goto check_lru_list;
+ 		}
+ 
+@@ -522,7 +531,7 @@ static void bpf_common_lru_push_free(struct bpf_lru *lru,
+ 		bpf_lru_node_clear_ref(node);
+ 		list_move(&node->list, local_free_list(loc_l));
+ 
+-		raw_spin_unlock_irqrestore(&loc_l->lock, flags);
++		raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
+ 		return;
+ 	}
+ 
+@@ -538,11 +547,12 @@ static void bpf_percpu_lru_push_free(struct bpf_lru *lru,
+ 
+ 	l = per_cpu_ptr(lru->percpu_lru, node->cpu);
+ 
+-	raw_spin_lock_irqsave(&l->lock, flags);
++	if (raw_res_spin_lock_irqsave(&l->lock, flags))
++		return;
+ 
+ 	__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
+ 
+-	raw_spin_unlock_irqrestore(&l->lock, flags);
++	raw_res_spin_unlock_irqrestore(&l->lock, flags);
  }
  
- late_initcall(block2mtd_init);
+ void bpf_lru_push_free(struct bpf_lru *lru, struct bpf_lru_node *node)
+@@ -625,7 +635,7 @@ static void bpf_lru_locallist_init(struct bpf_lru_locallist *loc_l, int cpu)
+ 
+ 	loc_l->next_steal = cpu;
+ 
+-	raw_spin_lock_init(&loc_l->lock);
++	raw_res_spin_lock_init(&loc_l->lock);
+ }
+ 
+ static void bpf_lru_list_init(struct bpf_lru_list *l)
+@@ -640,7 +650,7 @@ static void bpf_lru_list_init(struct bpf_lru_list *l)
+ 
+ 	l->next_inactive_rotation = &l->lists[BPF_LRU_LIST_T_INACTIVE];
+ 
+-	raw_spin_lock_init(&l->lock);
++	raw_res_spin_lock_init(&l->lock);
+ }
+ 
+ int bpf_lru_init(struct bpf_lru *lru, bool percpu, u32 hash_offset,
+diff --git a/kernel/bpf/bpf_lru_list.h b/kernel/bpf/bpf_lru_list.h
+index fe2661a58..ecd93c77a 100644
+--- a/kernel/bpf/bpf_lru_list.h
++++ b/kernel/bpf/bpf_lru_list.h
+@@ -7,6 +7,7 @@
+ #include <linux/cache.h>
+ #include <linux/list.h>
+ #include <linux/spinlock_types.h>
++#include <asm/rqspinlock.h>
+ 
+ #define NR_BPF_LRU_LIST_T	(3)
+ #define NR_BPF_LRU_LIST_COUNT	(2)
+@@ -34,13 +35,13 @@ struct bpf_lru_list {
+ 	/* The next inactive list rotation starts from here */
+ 	struct list_head *next_inactive_rotation;
+ 
+-	raw_spinlock_t lock ____cacheline_aligned_in_smp;
++	rqspinlock_t lock ____cacheline_aligned_in_smp;
+ };
+ 
+ struct bpf_lru_locallist {
+ 	struct list_head lists[NR_BPF_LRU_LOCAL_LIST_T];
+ 	u16 next_steal;
+-	raw_spinlock_t lock;
++	rqspinlock_t lock;
+ };
+ 
+ struct bpf_common_lru {
 
 
-base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
+base-commit: 5d6919055dec134de3c40167a490f33c74c12581
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to send it to the mailing list.
