@@ -1,209 +1,217 @@
-Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBF66280CF6
-	for <syzbot@lists.linux.dev>; Sat, 16 May 2026 05:37:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAD0C2556E
+	for <syzbot@lists.linux.dev>; Sat, 16 May 2026 06:57:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.45
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778909829; cv=pass; b=Zt8PNXq62hiKufC0NspPAvFMN4AF6sG9eFuAFwjgEuET1nQ2YqN3lwFTZpsKujrag4+I1Z9YVzhWUfDWD7U/Ux3MFhS371Ww7FcE1eutRDBazVxCmfMD9FNT4Mn37n+8LT7JG0H+VN725yHFPCtdb5oMMBkrclsu/34WeuNTOLw=
+	t=1778914652; cv=pass; b=ZV+MqvTKlS7O/gdvqmIm56PNCLs+2CAiYOZW4djauJDF/zTWCKzCbQr7iLQCgeekrGGLm2irPwwddsKVzFXy0220H35r5xHnvX3h2LbFJKf6W6aj1TXMsz6pk55WlHX9UDfhNfiSu7BZq5yOd93aipTjYGVZBXGdnBH0UkbWAuk=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778909829; c=relaxed/simple;
-	bh=xDFFrfH04SW56wfyCI91yEMphOP47TYuQiTHVR96chY=;
+	s=arc-20240116; t=1778914652; c=relaxed/simple;
+	bh=Fz3DN3QYGeZIsSyKzSCpPzGF0z8u0PwZ96g4M21Zrcc=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=mwV1rfweEmeULlRroILls5s7yWURsNLVZYzeXo3jm/CqzRnaZNhKIyhPcD8LBIT+74O3f6Y+p7Od+YxMoFrLO+LgQuEUgifgNspjoOfQCYAPGtjRqpYDsExG+zQPr9G3uDMuJk6K/UrdDZiBi8CruoEFUC5aZdYByMQoNRjUZ3k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=chOVqPNu; arc=pass smtp.client-ip=209.85.208.180
+	 To:Cc:Content-Type; b=sHy5/AjwOui0oPKjjk1CAopL4JipLdC96wDaHsX6lQDV24oJXmyftTJr+/fVesf0tZgdQKqaiZEPOY3LXH6+cWeOymxYFqPJQiOllx24HvBmKGygfRuQ6OtMDV/cfhhjYh80VDBq8lAsFAAmeutWKqgW011WMBSK9149pvrSxgs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=q0vckYC/; arc=pass smtp.client-ip=209.85.160.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="chOVqPNu"
-Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-393c93a01abso6910381fa.1
-        for <syzbot@lists.linux.dev>; Fri, 15 May 2026 22:37:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778909826; cv=none;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="q0vckYC/"
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-408778a8ec4so448579fac.0
+        for <syzbot@lists.linux.dev>; Fri, 15 May 2026 23:57:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778914650; cv=none;
         d=google.com; s=arc-20240605;
-        b=D6pJ/S4r+dO+MbvDaaFVBulAtF1McUdDNJB+2QNPvnrSrU9BSTXssgmr8dj1r6BEdQ
-         42Kp+pI9EJTjT+oG4CQIfDUlKanYRBqAFo3i6a6QlxcBjuy7BD2Gu/DDSibWirJMCFqQ
-         V2QSL+/uVRaLYHrekSEseYOb6CuH/iVCsWQy8QRh2jMDz33DcUJPJsmDCQZPW/LAoH8s
-         7jRJEUi1Pp4Gt71Gmzc32BxPsU5ExCwO5//riFVnUfEo9wt5VmpJjTGoe5aBpxdCJAKe
-         9M3BnyvpzXllwlzRPzCGMKYkTtWOexFAKy8/8mzE9eLlqrg86cxOlvOOE++TeKt/ICQn
-         sD6w==
+        b=Bc29KpJd/jPIwLRG6+TxpYuq3ggnFkwDAFDh61Lgit13mz4S+boi5TyhlkbsaOZac/
+         zSRAxv50/ik0dgd49PK/Y7xw//GVZ/AFDkOwhrQ4Cs3b1LMcxItRuvkawTGqoO5pbnIK
+         ENf/XG8Ldloq6YzChFAfiodotkYsosIvQ4qWPVBuMQLKzu4s30zWy4kYaaVAffs6icOg
+         Pn9NppQZhUp3s0GB4+JBBzi2NHlqrUQo1vZkko8HvkurbfqauWGQiJj4GIx6dBK/DBdL
+         QDIX1h6m7LAOSLCh0gMr/5edgHwxxgUkz/S2Dpzi6+7yTyWeh+KI7ALpnuZxEOliNw+q
+         xcpw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=A19/adej43L9FNJw/iBy3hGfz1wvpNOu/jtIHrEiu6M=;
-        fh=fCmk2QinozzSnRwNWiLEczoKAfRYwkdcMAgUF3L1y8M=;
-        b=jzVvleKTT1f4sAooB5wMB2K2694LEbUrLOvyftKkzm+I1Jnjk+l+iY13rhnUPcLYBc
-         JNy/Jfp2yA/Htj51ZISW6324W9ujELDMJ3Djm9aojUWUtrv9Dc7ULCMDdNUnvnXUV5En
-         JyMNJEdSR0SRsGsKRXNcT0eMiu/kMcEKnhtr5Y3ryFmlytvOquwn9j+hdnW1ZpObxz0P
-         qRPAAFS8TYgZqtFpD2maUk6BoEoRaa5tL8QpDA9bo5vh5CtyUmXWfuXUTtd8FyNABm+S
-         nrR/tthpsPzKIrlQk3cP+5rENTAlBmR5L1mHc0V2wvTdtz4HBPFi+3Fk54H3uUX/pvOS
-         5B/Q==;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=rRtuAC6bhn9rFECS8GIfhAfyf8NSGxiOeElkaL/ryGg=;
+        fh=hG6Ax72c8JI+8a980PPYluZV8nY0nQKx15sZIYHYTAQ=;
+        b=h9fIsB35KsGwU1lQcKarYM5ykPq+x155twMUUM8qlP1QYO6vH0e/TKH+uDmLrVnyXA
+         GLg1MSQK1FlCBkEMumauy2BEmB6zU70o7KfSOFwgFO0+ApDcdPk2Dqn80/1+v/3X2BG4
+         XoEcp6bKB9wlKkyf+pyHOQ/3yOEzF74X0Tz+ZKw2CGZR5iWr1RkwcESq6ldC22ED+XzZ
+         SU3RXr5RfMwRWZvzgHrtj+/xVNLWEQZJCKr6sZIvbYawQahfswDO0xZeAa01UJow3Rto
+         3k2NKAcgeMNXX94yEe2Zs0KzZ61YUzNcaTZBfakUOIPtntDxePZpGOn/rLXLdr940Wst
+         hBhQ==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778909826; x=1779514626; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=A19/adej43L9FNJw/iBy3hGfz1wvpNOu/jtIHrEiu6M=;
-        b=chOVqPNuX/cjIIctd96/0FlCSJm5c5lkI6jENH4MkBDqv8OZzWLhXuHdmLEStcAAQV
-         EbaZyG8mxWUErzZXiCl5zBXmU86nr8drq/SAEEEAqGy0jcixuZWGe5T9qimYyXr7J77v
-         3IK09OyuIHsFpnnnsOrpM2I7gn6sGRfVaUqsKbdGBXw55OSqmEPjvUv02eq7KlqoK8Or
-         E8cjbSQyUP6z0VHcBAttalQSfAJtQe0s+qm0BvqGko5wqXudZP8AeWhBUZzPzh7xnqEd
-         +GxaQohLVioNWBuWKMaeg+HZHZ9IHC+gOXYJLsKV/QQ1jH1pWvDKnh9OeTq+G+Oi9e3m
-         LK9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778909826; x=1779514626;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=google.com; s=20251104; t=1778914650; x=1779519450; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=A19/adej43L9FNJw/iBy3hGfz1wvpNOu/jtIHrEiu6M=;
-        b=i4FBHOnfsTFsOk45+A0EAZU3Ft9yu5M2VejwATMOhChC/hyrTTalAh2M3CXevPd++S
-         ehJdCOMWUuKLv2g4G67s4yIDFdiLjfm0ume60W8SJSSY7nG4ZUNk3swJSrL/2QqQkNJP
-         Z3uOaUVIKEHM2aG7IW3AspSNJs0q3iuBOODf37couNAnn2ZgAI7vbMafqjgG6qCVBiJh
-         PXMyiWku27Wbeqr/fMwgGOCNIyNMP6wUXxcQ8nlrsBhZnWDCnl7IS5lYp4EhEmTACIvK
-         4UGy9V/IMm+r17UqCyQXHbbKP8O8/iCfLgGX+Wo3K+3wACYbTHY/nXQ1cOy0VQed0pXa
-         Guvw==
-X-Forwarded-Encrypted: i=1; AFNElJ8GXp2eSCIC4OFOhlC0o7idrbSb0yEjhCx05S0GnzeAO4UfJNhcv4/zL0qJr20B35EVMcjCP84=@lists.linux.dev
-X-Gm-Message-State: AOJu0YxWc/hmobQCMbbVnkqDk4egCJErC5iJwtc0iEUpvz/xJdw639Ve
-	EMUEYGoRUTBwfSXCjdFe4Ex3CXM91v2/N7mIPEwLnKx9LIc92Z1ycg1onYitXQEoy34VESvV52F
-	9H5BGhatGhN4iBSFw/DTJGF3pYGQLP7h3GU5deBBxUSc+bnWpDMSIfC3Urd8=
-X-Gm-Gg: Acq92OF4c8Rb5mkMi8U8pV9pv/fXCEw2ed+80p1o9MgXXwkO1lLtTOCm1XoXEEn4YF7
-	gvD+LHuLOlgWEXJaW6P7hbEO+Eq0sC2WCuQqtENk7EtdUeQurrcAdqYUC0KZBi7qxJaj0INDPki
-	fHRduFS1bumUA6fI8OlBBuTIJV33rBv/pYmfLfa2bOxEV00Gc1n9/3r8TeIt0kklcUZs0t4s1Rn
-	mG3yDDIb7paDERbUCVID03JrKJin5R37Uq3JjPWbfHBmRp7WDJu2Ug4PBo3pss4GIy8qyDhpVjP
-	MMxo1hL+UVls3kZgVOPQxGGRoMzoxXlBycRzJ1c1lAhcNU7Waco37LKifh26Z+YfAEEcq8xDl/e
-	mLZVkYqY=
-X-Received: by 2002:a05:651c:b0a:b0:38e:9eb1:693b with SMTP id
- 38308e7fff4ca-39561d56230mr25438161fa.3.1778909825575; Fri, 15 May 2026
- 22:37:05 -0700 (PDT)
+        bh=rRtuAC6bhn9rFECS8GIfhAfyf8NSGxiOeElkaL/ryGg=;
+        b=q0vckYC/9QV5v0w1pv3jpOmuS3zL0BWZ0BlSYrWKB/MOXuwByXV/7sxTW8AAMiMJTR
+         iwKEApQmhAXJnF8eAgi/OP/FiBCsBhM+vUDTF8yMU+a8vW0E7xCmvnNmAnkzOjZBJYCB
+         UrlhdHb62n58bMkJ0W1URPiHhdXSh7PBe5PRpTQvR50+zYq310+fBvfimGdctLod9kUo
+         Jw9uFugr1tII058JDIp5Ja4bQrQgoom0M53B/DoMh39/ccGPxabQfk7wnJAftF/bWnIh
+         xjrVAw+3vyS1mZtOKWMx4Z05Bm8VPw8qPIcD7qw5GR5IBJesVfh42vBfc9bwDybqjT3q
+         RQcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778914650; x=1779519450;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=rRtuAC6bhn9rFECS8GIfhAfyf8NSGxiOeElkaL/ryGg=;
+        b=JFs8hX5oLjb7X9vvDv8Mh9caYEubF28apcnDdbMzWqSeM5b7xjLRou2Z2oJ7FrFYJB
+         UsleZF3jcWewTHmCHdRJboYq55zvoXW/yEMM3yFQAR0kKhvx6rMMqlh06bwc2awyQ2Ue
+         365IpFwQ1KuLQjR+32fmlEv5jjvLaLw5YcOQwGSftwocohZHpV1tZqkxTwvGoUDQ0g0x
+         n/eeFeRUMbgE07r7Q5nJoeE5zbLscKQjN3U31HE0ElfDm+c72+6UuCDVLOFnmUdHj2UZ
+         2SkXRDEjnciwPxqv0qm+7BnoSa0n3OLtXy3QSAH2CctrSyhxAVedGTFVHZ+JhNHUHEFJ
+         Zeqg==
+X-Forwarded-Encrypted: i=1; AFNElJ/xjKZXVeolcXEOOQ83XV8pwxBFsp5vw3c9qG1N38T/hxxIBigVQin3Gvk7aao3Ntyrpr+l57s=@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywlpdg9xITn4XW6QnFWWHIKioRx/L2ASSRCbRSxFMT8yYgbK8Pv
+	RIpdzDeNEX6zEq8CbPPOO3skxFcEAwJ7fpl7yVNbgDkEV6v5puyvkcq0RjWJpkkGb00FbomezG6
+	tIVf/H7Si6d1uny8mysM2tHg5Lo5aWq+z37MfijzJ
+X-Gm-Gg: Acq92OHaInm29pxhUZJwwhX0bksVzyuEQ0gphDlctg47kYboym5YMdPGHia7x4IpMFz
+	1AR9sQKxnhlhBafpDBaC1a8XARcVHsK+3abNkeJDXwzx7wiLElMjU46WLMCViq+/c5+WKpDCrbn
+	uN8fZgOn/coExk4jxrQUbU+tyl3XncbwKNuoOdFYEw5yTHebr6wp7qXwYpD6fYntZE08GpZWOD2
+	uJGCW3NyqubL5rcFqqtwVhdbNWL/TXECzibZaUvbjEcTaA7iDQO82tFxHihZGp+OcWrUeg9it0u
+	gDqtXhOPAMQBQk/4zIi752NKZ6Q4jAwJPXjqtYh0LVB38D/NkrnBQbiWqsy21sqG3tPwhh4VVkA
+	FEhSp5WQ=
+X-Received: by 2002:a05:6870:15ce:b0:42f:f1e8:76eb with SMTP id
+ 586e51a60fabf-43a2de0ba42mr4802848fac.32.1778914649407; Fri, 15 May 2026
+ 23:57:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cac82e3e-7e75-4dc6-b83b-5b54a3e692e7@mail.kernel.org>
-In-Reply-To: <cac82e3e-7e75-4dc6-b83b-5b54a3e692e7@mail.kernel.org>
-From: Dmitry Vyukov <dvyukov@google.com>
-Date: Sat, 16 May 2026 07:36:54 +0200
-X-Gm-Features: AVHnY4LrKNFGJrLnJELsDyHSHfvXcmuC-36Ci2KM88tLNJa-3JJiKpukc55onGc
-Message-ID: <CACT4Y+b2BQdv_5Zv1Yvn9_LurOzj2kw-OKucjQKEoSvMtFCETw@mail.gmail.com>
-Subject: Re: [PATCH RFC] Input: cm109 - prevent concurrent control URB submissions
-To: syzbot <syzbot@kernel.org>
+References: <6a079b08.a00a0220.300e5b.0000.GAE@google.com>
+In-Reply-To: <6a079b08.a00a0220.300e5b.0000.GAE@google.com>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Sat, 16 May 2026 08:57:16 +0200
+X-Gm-Features: AVHnY4LOMU3IQAdfDYyt3CrUBlOSkebjhb1ZlV_H7N2dXVIGODoyYTDz_s_ERRQ
+Message-ID: <CANp29Y77jjVQRaObba4z-hiQi-5k=cMmXC8-_Uab2nqYNPQ9=A@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: memcg: cache obj_stock by memcg, not by objcg pointer
+To: syzbot ci <syzbot+ci0963b9a1e1f05606@syzkaller.appspotmail.com>
 Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The fix is likely correct based on the old patch submitted in 2021
-(which slipped through the cracks).
-https://lore.kernel.org/all/20210804145801.2762-1-paskripkin@gmail.com/T/#maf0ce09938d2e5042b9c277819c9fece7cfcbabe
+#syz upstream
 
-But need to double-check the logic, it's very complex. And check
-commit description before submitting for real.
-
-The Fixes commit it found is correct, it was just not included in the
-formatted patch.
-
-On Sun, 10 May 2026 at 22:39, 'syzbot' via
-syzkaller-upstream-moderation
-<syzkaller-upstream-moderation@googlegroups.com> wrote:
+On Sat, May 16, 2026 at 12:15=E2=80=AFAM syzbot ci
+<syzbot+ci0963b9a1e1f05606@syzkaller.appspotmail.com> wrote:
 >
-> Input: cm109 - prevent concurrent control URB submissions
+> syzbot ci has tested the following series
 >
-> The cm109 driver uses two URBs to communicate with the device: urb_ctl
-> (Control OUT) and urb_irq (Interrupt IN). These URBs are designed to run
-> in a continuous, strictly alternating loop.
+> [v1] memcg: cache obj_stock by memcg, not by objcg pointer
+> https://lore.kernel.org/all/20260515171953.2224503-1-shakeel.butt@linux.d=
+ev
+> * [PATCH] memcg: cache obj_stock by memcg, not by objcg pointer
 >
-> However, the driver also supports sound events to toggle the buzzer.
-> When a sound event is received, cm109_toggle_buzzer_async() is called.
-> If urb_ctl is not currently pending, it immediately submits urb_ctl
-> out-of-band to update the buzzer state. This breaks the strict
-> alternation and causes both urb_irq and urb_ctl to be active
-> concurrently.
+> and found the following issue:
+> WARNING in __refill_obj_stock
 >
-> When urb_irq subsequently completes, cm109_urb_irq_callback() calls
-> cm109_submit_ctl(). cm109_submit_ctl() blindly assumes urb_ctl is idle,
-> updates the DMA buffer, and calls usb_submit_urb(dev->urb_ctl). Since
-> urb_ctl is already active, the USB core catches it and triggers the
-> "URB submitted while active" warning.
+> Full report is available here:
+> https://ci.syzbot.org/series/8efc6e46-4b2e-43ab-90a0-62552bdc14a6
 >
-> To fix this, check if dev->ctl_urb_pending is already set in
-> cm109_submit_ctl(). If it is, defer the submission by setting
-> dev->buzzer_pending = 1 and return immediately.
+> ***
 >
-> Additionally, update cm109_submit_buzz_toggle() to also copy the latest
-> dev->keybit to HID_OR1 and HID_OR2, ensuring that the deferred key
-> matrix column update is not lost. Since cm109_submit_ctl() and
-> cm109_submit_buzz_toggle() now prepare the exact same data for urb_ctl,
-> refactor cm109_submit_ctl() to simply call cm109_submit_buzz_toggle()
-> after checking and updating the pending flags.
+> WARNING in __refill_obj_stock
 >
-> Assisted-by: Gemini:gemini-3.1-pro-preview
-> To: <linux-kernel@vger.kernel.org>
-> Cc: <dmitry.torokhov@gmail.com>
-> Cc: <linux-input@vger.kernel.org>
+> tree:      mm-new
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/=
+mm.git
+> base:      0cec77cfd5314c0b3b03530abe1a4b32e991f639
+> arch:      amd64
+> compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~e=
+xp1~20251221153213.50), Debian LLD 21.1.8
+> config:    https://ci.syzbot.org/builds/fda0a69d-af56-4b9f-8b30-b63ea4756=
+923/config
+>
+> ------------[ cut here ]------------
+> debug_locks && !(rcu_read_lock_held() || lock_is_held(&(&cgroup_mutex)->d=
+ep_map))
+> WARNING: ./include/linux/memcontrol.h:380 at __refill_obj_stock+0x4fd/0x6=
+10, CPU#0: syz.1.48/5712
+> Modules linked in:
+>
+> CPU: 0 UID: 0 PID: 5712 Comm: syz.1.48 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> RIP: 0010:__refill_obj_stock+0x4fd/0x610
+> Code: 89 e7 48 83 c4 18 5b 41 5c 41 5d 41 5e 41 5f 5d e9 d8 ba 00 00 48 8=
+3 c4 18 5b 41 5c 41 5d 41 5e 41 5f 5d c3 cc cc cc cc cc 90 <0f> 0b 90 e9 a8=
+ fb ff ff 44 89 f9 80 e1 07 80 c1 03 38 c1 0f 8c 60
+> RSP: 0018:ffffc9000483f4b0 EFLAGS: 00010246
+> RAX: 0000000000000000 RBX: ffff88810beb0f80 RCX: 0000000080000001
+> RDX: 0000000000000110 RSI: ffffffff8e21e93e RDI: ffffffff8c28b8e0
+> RBP: 0000000000000001 R08: ffffffff8239a83c R09: ffff88812103c600
+> R10: dffffc0000000000 R11: ffffed102d89bae9 R12: 1ffff110242078c8
+> R13: ffff88810beb0d80 R14: dffffc0000000000 R15: ffff88812103c600
+> FS:  0000000000000000(0000) GS:ffff88818dc89000(0000) knlGS:0000000000000=
+000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007f80ad948060 CR3: 000000000e74a000 CR4: 00000000000006f0
+> Call Trace:
+>  <TASK>
+>  __memcg_slab_free_hook+0x2ed/0x4b0
+>  kmem_cache_free+0x381/0x650
+>  __put_anon_vma+0x12b/0x2d0
+>  unlink_anon_vmas+0x58b/0x730
+>  free_pgtables+0x802/0xb40
+>  exit_mmap+0x490/0x9e0
+>  __mmput+0x118/0x430
+>  exit_mm+0x18e/0x250
+>  do_exit+0x6a2/0x22c0
+>  do_group_exit+0x21b/0x2d0
+>  get_signal+0x1284/0x1330
+>  arch_do_signal_or_restart+0xbc/0x840
+>  exit_to_user_mode_loop+0x8c/0x4d0
+>  do_syscall_64+0x33e/0xf80
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7f6eea99ce59
+> Code: Unable to access opcode bytes at 0x7f6eea99ce2f.
+> RSP: 002b:00007f6eeb8240e8 EFLAGS: 00000246
+>  ORIG_RAX: 00000000000000ca
+> RAX: 0000000000000001 RBX: 00007f6eeac15fa8 RCX: 00007f6eea99ce59
+> RDX: 00000000000f4240 RSI: 0000000000000081 RDI: 00007f6eeac15fac
+> RBP: 00007f6eeac15fa0 R08: 3fffffffffffffff R09: 0000000000000000
+> R10: 0000200001000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007f6eeac16038 R14: 00007fffdc60cea0 R15: 00007fffdc60cf88
+>  </TASK>
+>
+>
+> ***
+>
+> If these findings have caused you to resend the series or submit a
+> separate fix, please add the following tag to your commit message:
+>   Tested-by: syzbot@syzkaller.appspotmail.com
 >
 > ---
-> diff --git a/drivers/input/misc/cm109.c b/drivers/input/misc/cm109.c
-> index 353d3c1d3..0114d7293 100644
-> --- a/drivers/input/misc/cm109.c
-> +++ b/drivers/input/misc/cm109.c
-> @@ -348,6 +348,9 @@ static void cm109_submit_buzz_toggle(struct cm109_dev *dev)
->         else
->                 dev->ctl_data->byte[HID_OR0] &= ~BUZZER_ON;
+> This report is generated by a bot. It may contain errors.
+> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 >
-> +       dev->ctl_data->byte[HID_OR1] = dev->keybit;
-> +       dev->ctl_data->byte[HID_OR2] = dev->keybit;
-> +
->         error = usb_submit_urb(dev->urb_ctl, GFP_ATOMIC);
->         if (error)
->                 dev_err(&dev->intf->dev,
-> @@ -357,8 +360,6 @@ static void cm109_submit_buzz_toggle(struct cm109_dev *dev)
+> To test a patch for this bug, please reply with `#syz test`
+> (should be on a separate line).
 >
->  static void cm109_submit_ctl(struct cm109_dev *dev)
->  {
-> -       int error;
-> -
->         guard(spinlock_irqsave)(&dev->ctl_submit_lock);
+> The patch should be attached to the email.
+> Note: arguments like custom git repos and branches are not supported.
 >
->         dev->irq_urb_pending = 0;
-> @@ -366,22 +367,15 @@ static void cm109_submit_ctl(struct cm109_dev *dev)
->         if (unlikely(dev->shutdown))
->                 return;
+> The email will later be sent to:
+> [akpm@linux-foundation.org cgroups@vger.kernel.org hannes@cmpxchg.org ker=
+nel-team@meta.com linux-kernel@vger.kernel.org linux-mm@kvack.org mhocko@ke=
+rnel.org muchun.song@linux.dev oliver.sang@intel.com qi.zheng@linux.dev rom=
+an.gushchin@linux.dev shakeel.butt@linux.dev]
 >
-> -       if (dev->buzzer_state)
-> -               dev->ctl_data->byte[HID_OR0] |= BUZZER_ON;
-> -       else
-> -               dev->ctl_data->byte[HID_OR0] &= ~BUZZER_ON;
-> -
-> -       dev->ctl_data->byte[HID_OR1] = dev->keybit;
-> -       dev->ctl_data->byte[HID_OR2] = dev->keybit;
-> +       if (dev->ctl_urb_pending) {
-> +               dev->buzzer_pending = 1;
-> +               return;
-> +       }
+> If the report looks fine to you, reply with:
+> #syz upstream
 >
->         dev->buzzer_pending = 0;
->         dev->ctl_urb_pending = 1;
->
-> -       error = usb_submit_urb(dev->urb_ctl, GFP_ATOMIC);
-> -       if (error)
-> -               dev_err(&dev->intf->dev,
-> -                       "%s: usb_submit_urb (urb_ctl) failed %d\n",
-> -                       __func__, error);
-> +       cm109_submit_buzz_toggle(dev);
->  }
->
->  /*
->
->
-> base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
-> --
-> This is an AI-generated patch subject to moderation.
-> Reply with '#syz upstream' to send it to the mailing list.
-> Reply with '#syz reject' to reject it.
->
-> See  for more information.
+> If the report is a false positive, reply with
+> #syz invalid
 >
 > --
-> You received this message because you are subscribed to the Google Groups "syzkaller-upstream-moderation" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> To view this discussion visit https://groups.google.com/d/msgid/syzkaller-upstream-moderation/cac82e3e-7e75-4dc6-b83b-5b54a3e692e7%40mail.kernel.org.
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/6a079b08.a00a0220.300e5b.0000.GAE%40google.com.
