@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA98D23ABBF
-	for <syzbot@lists.linux.dev>; Sat, 16 May 2026 15:03:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 012133E2AD8
+	for <syzbot@lists.linux.dev>; Sat, 16 May 2026 15:41:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778943811; cv=none; b=TrRZ+zvlWjExttt+xkAlY2KN1czB0uBOsr3sfsBxa4PrJlK8hOJLzeoDiUCqggR0IyBFF9o0D/rAJQXTDcfIgSdZaYwA84UtL4Os03dIywp3DGIZncuXTj55Mn9lHQ946MBLWSDkpgdCfHHGfCgers+d2HmHcsNBj7MPyL3bFlY=
+	t=1778946062; cv=none; b=fZmevp6f2lhuo0rAli9AJwn/hiH7BrnAQibYkDvCqcQzhSAZ0MycuCQGjLUv/6/mH6aO0n9uG+0FRU+Cplx+KebmFKmZS+/AN+crfjipw/cmOtj/C69eh472USxTKrc8NaSbG+tdQDQ7ei3LXAz+EoeGO3QM7qEMExOwkZ3MSGQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778943811; c=relaxed/simple;
-	bh=yY/XvdeJJNrL6DwOynXeU6uzz8pvQ6MMn6ieQNbeqb0=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ZpIj7E3NmflspZDV0KJyYnUA+Frv4ffUammW5wwgKp2Ps4FW6k3ZGn73fS+r2YUg0LknIa4ipyAhTjW0wXTpcB1bk/KYay5Ory6lpzgiVm8sWUWno99SXmkrMz4PUIUjoSkLSizj2lCdMIbWX7PfKIKYFKnezybn+kA2jyHDmLI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fsI31tkW; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778946062; c=relaxed/simple;
+	bh=OjI6WW9nDxbCVu3Lnys8hkHAVD16QIkVwcQ5ztXDyJk=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=a2gif7KFRGmXOoVOho87GO0T6bh0R1gbjknwKmjJXgi6rJcm5Ec/LI0EsyFc0jg/Prb3TiyCJ6vz5rDDhbRPOlqK6G1RNdDL3FdJyoPaMPPUQVgyxeX92YI3q+nj1f8vMPH/BPuGvYCi974b1QE5ysRf8cg+r9hww+d2HZMbW70=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kfrLFi0F; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fsI31tkW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A69C19425;
-	Sat, 16 May 2026 15:03:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kfrLFi0F"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DD50C19425;
+	Sat, 16 May 2026 15:41:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778943811;
-	bh=yY/XvdeJJNrL6DwOynXeU6uzz8pvQ6MMn6ieQNbeqb0=;
+	s=k20201202; t=1778946061;
+	bh=OjI6WW9nDxbCVu3Lnys8hkHAVD16QIkVwcQ5ztXDyJk=;
 	h=From:To:Cc:Subject:Date:From;
-	b=fsI31tkWBf33C4bBgfN7EXtzuiyY2H9KV0y4TgYXlRdsMcLmo6ES0/wxDgsZsi51Y
-	 64RrID1mHQ40YT7GbGa5gGbJVbxXfpu6n5y4sEpmJRmhWibOQV2j1PDhHcJANtJFUP
-	 VxeBjoulN/yjsxe7adh+wqYJq7xDTIJQzYWijxHveDDSD39SjN2XKDJ8nqXnwFLhhI
-	 5MvPBu4Bs6WE3dzslyFy+pVhAV4c/7pQ7o489BhVYgkOzm9MIKsY9KLfx444+TLBZ4
-	 W2IYd71Ikz2Sxxyy//4MA3B9EpkoHi5L6teebTOsRXOMpXuFdUhPpl35DYn5G4Jxkd
-	 OQ7J7SgDnB78A==
+	b=kfrLFi0FIG+sTd2vZAsJiYSSXcCAh010rWrGEnIkY+1YWxhvyisZrbiU0arlumiKO
+	 0NC9n5Z52Jgw817W8c8SYgi6z0ADIij8Cxh7sQbJZnT9ddlk6qsUJUseJ1n32bN67h
+	 WqNCbfExCx17Ve3cq6MOfn+292O8fAWzWzql8XL5u47FLb4dg2DZp3WE+oD3DrY871
+	 J3OK46sgAHshpmG6o6XbqGWfxsEQhti9E9BA46hYSeA7apOtUOBypyCiK3WKxEQqO/
+	 B5iLn46Nsfw5983V0+d5uxxMWVCjhBBs+MSh7czcm1xqp5Rm4KmogAypPKK6P/7q6g
+	 536avZiejczEg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] Input: cm109 - fix double URB submission race conditions
-Message-ID: <d5bb60c3-5026-495c-9b21-0e40cd3cc1a7@mail.kernel.org>
+Subject: [PATCH RFC v2] mtd: block2mtd: fix circular locking dependency in block2mtd_setup
+Message-ID: <a9d448c8-44ac-4c8c-a391-aad1478a7eb1@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,129 +38,176 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Sat, 16 May 2026 15:03:31 +0000 (UTC)
+Date: Sat, 16 May 2026 15:41:01 +0000 (UTC)
 
-An analysis of a kernel crash reveals a race condition in the cm109
-input driver that leads to a double-add bug in the USB core's URB
-enqueueing mechanism. The crash `list_add double add` occurs in
-`usb_hcd_link_urb_to_ep()` when an URB is submitted while it is already
-on the endpoint's queue.
+syzkaller reported a circular locking dependency involving the global
+param_lock and VFS locks (i_rwsem). The block2mtd driver performs a
+synchronous VFS path lookup (kern_path via bdev_file_open_by_path)
+inside its module parameter set callback (block2mtd_setup). This
+callback is invoked by the sysfs core with param_lock held.
 
-In `drivers/input/misc/cm109.c`, the control URB (`dev->urb_ctl`) is
-submitted in several places: `cm109_input_open()`,
-`cm109_toggle_buzzer_async()`, and `cm109_submit_ctl()`.
+The dependency chain is:
+1. i_rwsem -> cgroup_mutex (via cgroup_rmdir)
+2. cgroup_mutex -> rtnl_mutex (via cgroup_mkdir -> cgrp_css_online)
+3. rtnl_mutex -> param_lock (via mac80211_hwsim_new_radio ->
+   ieee80211_rate_control_ops_get)
+4. param_lock -> i_rwsem (via block2mtd_setup -> kern_path)
 
-There are two distinct race conditions that can lead to a double submit.
-First, a race between `cm109_input_open()` and
-`cm109_toggle_buzzer_async()`: because `cm109_input_ev()` does not check
-if the device is actually open (`dev->open`), and `cm109_input_open()`
-does not hold the `dev->ctl_submit_lock` when submitting the URB, these
-two functions can race and call `usb_submit_urb(dev->urb_ctl)`
-concurrently. Second, a race between `cm109_submit_ctl()` and
-`cm109_toggle_buzzer_async()`: if `cm109_toggle_buzzer_async()` is
-called while `dev->urb_irq` is in flight, it sees `dev->ctl_urb_pending
-== 0`, sets it to 1, and submits `dev->urb_ctl`. When `dev->urb_irq`
-completes, it calls `cm109_submit_ctl()`. However, `cm109_submit_ctl()`
-does not check `dev->ctl_urb_pending` before submitting `dev->urb_ctl`,
-leading to a double submit if the URB is already in flight.
+To fix this without breaking existing userspace scripts that expect
+synchronous device creation, temporarily drop the param_lock during
+the device creation process. This breaks the circular locking
+dependency while preserving the synchronous nature of the operation.
 
-To fix these bugs, we properly serialize URB submissions and state
-changes using `dev->ctl_submit_lock`. We serialize URB submission in
-`cm109_input_open()` by acquiring `dev->ctl_submit_lock` before
-submitting the URB, and changing the memory allocation flag for
-`usb_submit_urb()` from `GFP_KERNEL` to `GFP_ATOMIC`. We check
-`dev->open` in `cm109_toggle_buzzer_async()` to prevent the event
-handler from submitting URBs and restarting the polling loop when the
-device is closed. We safely update the `dev->open` flag under the
-`dev->ctl_submit_lock` in both `cm109_input_open()` and
-`cm109_input_close()` to ensure perfect synchronization with the event
-handler. Finally, we check `dev->ctl_urb_pending` in
-`cm109_submit_ctl()` so that if `dev->ctl_urb_pending` is already 1,
-`cm109_submit_ctl()` returns immediately to prevent a double submit and
-to avoid modifying the transfer buffer (`dev->ctl_data`) while the URB
-is in flight.
+To implement this safely, introduce a local mutex (block2mtd_mutex)
+to protect the module's internal state (blkmtd_device_list,
+block2mtd_paramline, and block2mtd_init_called) from concurrent sysfs
+writes, since param_lock will no longer provide this protection during
+the critical section.
 
-Fixes: c04148f915e5ba7947752e6348e0da4cdab1329e ("Input: add driver for USB VoIP phones with CM109 chipset")
-Assisted-by: Gemini:gemini-3.1-pro-preview
-Reported-by: syzbot+ac0f9c4cc1e034160492@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=ac0f9c4cc1e034160492
-Link: https://syzkaller.appspot.com/ai_job?id=503e373b-527a-46df-8186-d6e665f95ffa
-To: <linux-kernel@vger.kernel.org>
-Cc: <dmitry.torokhov@gmail.com>
-Cc: <linux-input@vger.kernel.org>
+Summary of changes:
+1. Introduce block2mtd_mutex to protect the global blkmtd_device_list
+   and early-boot state variables.
+2. Drop param_lock in block2mtd_setup using kernel_param_unlock(kp->mod)
+   and kernel_param_lock(kp->mod). For built-in modules, kp->mod is
+   NULL,
+   and these functions correctly unlock/lock the global param_lock.
+3. Protect block2mtd_setup with block2mtd_mutex to ensure that
+concurrent
+   sysfs writes are serialized and the device list is safely updated.
+4. Protect block2mtd_init and block2mtd_exit with block2mtd_mutex to
+   ensure safe access to blkmtd_device_list and block2mtd_paramline.
+
+The lock ordering is now block2mtd_mutex -> VFS locks (i_rwsem) ->
+mtd_table_mutex, which is strictly hierarchical and free of circular
+dependencies.
+
+Fixes: f9d8c3c4236ef2a1c15b01200b9d164e2c5a54c7 ("block2mtd: port device access to files")
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
+Reported-by: syzbot+65459fd3b61877d717a3@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=65459fd3b61877d717a3
+Link: https://syzkaller.appspot.com/ai_job?id=c3c46711-9492-41e5-bcb4-4fb68a746c23
+To: <joern@lazybastard.org>
+To: <linux-mtd@lists.infradead.org>
+Cc: <linux-kernel@vger.kernel.org>
+Cc: <miquel.raynal@bootlin.com>
+Cc: <richard@nod.at>
+Cc: <vigneshr@ti.com>
 
 ---
-diff --git a/drivers/input/misc/cm109.c b/drivers/input/misc/cm109.c
-index 353d3c1d3..4479233d0 100644
---- a/drivers/input/misc/cm109.c
-+++ b/drivers/input/misc/cm109.c
-@@ -366,6 +366,9 @@ static void cm109_submit_ctl(struct cm109_dev *dev)
- 	if (unlikely(dev->shutdown))
- 		return;
+v2:
+- Added comments in block2mtd_init() and block2mtd_exit() explaining the need for block2mtd_mutex to protect against concurrent sysfs writes.
+
+v1:
+https://lore.kernel.org/all/9ceb3eb3-40e2-497b-8d68-257fd88a3946@mail.kernel.org/T/
+---
+diff --git a/drivers/mtd/devices/block2mtd.c b/drivers/mtd/devices/block2mtd.c
+index 03e80b2c4..42da6b9a5 100644
+--- a/drivers/mtd/devices/block2mtd.c
++++ b/drivers/mtd/devices/block2mtd.c
+@@ -45,7 +45,7 @@ struct block2mtd_dev {
  
-+	if (dev->ctl_urb_pending)
-+		return;
-+
- 	if (dev->buzzer_state)
- 		dev->ctl_data->byte[HID_OR0] |= BUZZER_ON;
- 	else
-@@ -476,6 +479,9 @@ static void cm109_toggle_buzzer_async(struct cm109_dev *dev)
+ /* Static info about the MTD, used in cleanup_module */
+ static LIST_HEAD(blkmtd_device_list);
+-
++static DEFINE_MUTEX(block2mtd_mutex);
+ 
+ static struct page *page_read(struct address_space *mapping, pgoff_t index)
  {
- 	guard(spinlock_irqsave)(&dev->ctl_submit_lock);
+@@ -464,28 +464,43 @@ static int block2mtd_setup2(const char *val)
  
-+	if (!dev->open)
-+		return;
+ static int block2mtd_setup(const char *val, const struct kernel_param *kp)
+ {
++	int ret = 0;
 +
- 	if (dev->ctl_urb_pending) {
- 		/* URB completion will resubmit */
- 		dev->buzzer_pending = 1;
-@@ -562,15 +568,19 @@ static int cm109_input_open(struct input_dev *idev)
- 		dev->ctl_data->byte[HID_OR2] = dev->keybit;
- 		dev->ctl_data->byte[HID_OR3] = 0x00;
++	/*
++	 * Drop the param_lock to avoid circular locking dependency
++	 * with VFS locks during device lookup.
++	 */
++	kernel_param_unlock(kp->mod);
++
++	mutex_lock(&block2mtd_mutex);
++
+ #ifdef MODULE
+-	return block2mtd_setup2(val);
++	ret = block2mtd_setup2(val);
+ #else
+ 	/* If more parameters are later passed in via
+ 	   /sys/module/block2mtd/parameters/block2mtd
+ 	   and block2mtd_init() has already been called,
+ 	   we can parse the argument now. */
  
-+		spin_lock_irq(&dev->ctl_submit_lock);
-+		dev->open = 1;
- 		dev->ctl_urb_pending = 1;
--		error = usb_submit_urb(dev->urb_ctl, GFP_KERNEL);
--		if (!error) {
--			dev->open = 1;
--			return 0;
-+		error = usb_submit_urb(dev->urb_ctl, GFP_ATOMIC);
-+		if (error) {
-+			dev->ctl_urb_pending = 0;
-+			dev->open = 0;
- 		}
--	}
-+		spin_unlock_irq(&dev->ctl_submit_lock);
- 
--	dev->ctl_urb_pending = 0;
-+		if (!error)
-+			return 0;
+-	if (block2mtd_init_called)
+-		return block2mtd_setup2(val);
++	if (block2mtd_init_called) {
++		ret = block2mtd_setup2(val);
++	} else {
++		/* During early boot stage, we only save the parameters
++		   here. We must parse them later: if the param passed
++		   from kernel boot command line, block2mtd_setup() is
++		   called so early that it is not possible to resolve
++		   the device (even kmalloc() fails). Deter that work to
++		   block2mtd_setup2(). */
++
++		strscpy(block2mtd_paramline, val, sizeof(block2mtd_paramline));
 +	}
- 	usb_autopm_put_interface(dev->intf);
++#endif
  
- 	dev_err(&dev->intf->dev, "%s: usb_submit_urb (urb_ctl) failed %d\n",
-@@ -584,13 +594,16 @@ static void cm109_input_close(struct input_dev *idev)
- 	struct cm109_dev *dev = input_get_drvdata(idev);
+-	/* During early boot stage, we only save the parameters
+-	   here. We must parse them later: if the param passed
+-	   from kernel boot command line, block2mtd_setup() is
+-	   called so early that it is not possible to resolve
+-	   the device (even kmalloc() fails). Deter that work to
+-	   block2mtd_setup2(). */
++	mutex_unlock(&block2mtd_mutex);
  
- 	scoped_guard(mutex, &dev->pm_mutex) {
-+		spin_lock_irq(&dev->ctl_submit_lock);
-+		dev->open = 0;
-+		spin_unlock_irq(&dev->ctl_submit_lock);
-+
- 		/*
- 		 * Once we are here event delivery is stopped so we
- 		 * don't need to worry about someone starting buzzer
- 		 * again
- 		 */
- 		cm109_stop_traffic(dev);
--		dev->open = 0;
+-	strscpy(block2mtd_paramline, val, sizeof(block2mtd_paramline));
++	kernel_param_lock(kp->mod);
+ 
+-	return 0;
+-#endif
++	return ret;
+ }
+ 
+ 
+@@ -497,9 +512,15 @@ static int __init block2mtd_init(void)
+ 	int ret = 0;
+ 
+ #ifndef MODULE
++	/*
++	 * block2mtd_mutex protects block2mtd_init_called and
++	 * block2mtd_paramline against concurrent sysfs writes.
++	 */
++	mutex_lock(&block2mtd_mutex);
+ 	if (strlen(block2mtd_paramline))
+ 		ret = block2mtd_setup2(block2mtd_paramline);
+ 	block2mtd_init_called = 1;
++	mutex_unlock(&block2mtd_mutex);
+ #endif
+ 
+ 	return ret;
+@@ -511,6 +532,11 @@ static void block2mtd_exit(void)
+ 	struct list_head *pos, *next;
+ 
+ 	/* Remove the MTD devices */
++	/*
++	 * block2mtd_mutex protects blkmtd_device_list against
++	 * concurrent sysfs writes.
++	 */
++	mutex_lock(&block2mtd_mutex);
+ 	list_for_each_safe(pos, next, &blkmtd_device_list) {
+ 		struct block2mtd_dev *dev = list_entry(pos, typeof(*dev), list);
+ 		block2mtd_sync(&dev->mtd);
+@@ -522,6 +548,7 @@ static void block2mtd_exit(void)
+ 		list_del(&dev->list);
+ 		block2mtd_free_device(dev);
  	}
++	mutex_unlock(&block2mtd_mutex);
+ }
  
- 	usb_autopm_put_interface(dev->intf);
+ late_initcall(block2mtd_init);
 
 
-base-commit: 5d6919055dec134de3c40167a490f33c74c12581
+base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to send it to the mailing list.
