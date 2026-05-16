@@ -1,168 +1,253 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B79D2F7EF7
-	for <syzbot@lists.linux.dev>; Sat, 16 May 2026 09:17:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40F6339A045
+	for <syzbot@lists.linux.dev>; Sat, 16 May 2026 10:09:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.47
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778923067; cv=pass; b=VV3+2gdwMACXL/rwiHaaVEWl12FaO+d0XKnm66iZ38mp6Ksr4XY9EK7yrFViUVtVzT52Yo6DCIv0arK4/Ipjx3hDyH/10znAqu7TohBT7eofoRCdgTVwU64NBl7GZKF9+LyxcP+MTIIMiMOe1Z2K4lJuBog3HpyhEovVA8du3Sc=
+	t=1778926145; cv=pass; b=hCVzBVP5b/00RtZsP5+RytvEpQH5JtHlJkG9qlfjJxu3BBtVY2zaDoNc4l/9TqjoSzgQpM81NA1d/PESe+psqVklSnU0jydKWOKwTRHq2Ol6qP5ZS707dHUFMbEglYw1N3iELsAr2G5u/vnXU07u68tg0Tta0i8hfLI039718Ks=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778923067; c=relaxed/simple;
-	bh=N5UCEk7Kcn1fvkX5Ux7Pr8yJPSIOxqoV8Zkrh/yvw9U=;
+	s=arc-20240116; t=1778926145; c=relaxed/simple;
+	bh=doGxpP21D2lQj0ocvyHIDsvMPWF3RI4aqrEk/f2zrpE=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=TiWiLCRYDvvCVzlggU+1uOHkM8g9fxMoSJonz0ux3X8mLrsPklGfm1ArFMIOpMWvvRLRE4GINr4jqjOak8n9IExSTx3d30FM8gtjtYPWY7piR278NmSkWSscEnAjlC/2mfHtp9gKbNYBnLD7QE0SLmYQF9RAtk7GgaASRh87wIg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fhJUOPBQ; arc=pass smtp.client-ip=10.30.226.201
+	 To:Cc:Content-Type; b=iXN3PI+wPx7FP8+J8Qt4WLPSXq/dv/Si62va+AmiORL9pj4gmx5HEsRMK6LcH9ijNZPcFMlzb/9dr9cOAZoX5zI7RCpbo4GGVjxyCBh2b6yXfM6jLZrVFgfFfrEjn1OoXpY1QC90oAMq7MlviIWH8w3AmIhHLKDbsQbo+GIXzpo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=vbHra6O3; arc=pass smtp.client-ip=209.85.167.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fhJUOPBQ"
-Received: by smtp.kernel.org (Postfix)
-	id 28FD0C2BCB7; Sat, 16 May 2026 09:17:47 +0000 (UTC)
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 3FD47C19425
-	for <syzbot@kernel.org>; Sat, 16 May 2026 09:17:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.kernel.org 3FD47C19425
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=google.com
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-3938cc204a7so6486421fa.1
-        for <syzbot@kernel.org>; Sat, 16 May 2026 02:17:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778923064; cv=none;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="vbHra6O3"
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-5a995ab70d1so1078525e87.3
+        for <syzbot@lists.linux.dev>; Sat, 16 May 2026 03:09:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778926141; cv=none;
         d=google.com; s=arc-20240605;
-        b=WABwRBw3RyJl+HanSnMxyq9dsBnr1r1LELzsGSVobCC0+uspFmodqfZnIKgNaesDIZ
-         KTEsD96AKw0UwmnCJpxvbblWd5Xb0kKt/I0p3Ik/kk3FJqxk0QkbMerBZj8UGwLswwJq
-         cWddsj4gGOk+ANtZeOtXWyzQwJW1m66cmUKOoY0bUcrhpymI2MUlqfLdjODCpnYTDWFH
-         mct04Bwum6h0rxl6uQJE5TUpu0bITrHd/vSO0CfcHdRWOU6+SMYkNupbx155WJVDVtXa
-         aM4BXdAXGaGh1jtrqazlIU/JnzNgnqSq79gb9SHdELFNwzYcA9SeIspGAXFDEdx8T1DO
-         D/oA==
+        b=aYJ+p1CLgQYvqYtjPaW+IIVDLTBptvNSOpUDFVNbS4mpAa6a01evMEcRfimCXNicMb
+         PPnbkP3kuMtXEzW4bv19p1iZsIDFCHre4TNXepR6jSSWq+tmQLdHTtvEuuBd5GdwTavA
+         i+x4M5JqjpaXDkmU+PI2Ge7vxb8FMq1t569Fcuv1osDjI4pK+aqln0XnfcUSrvzaiUB/
+         LJYPu639oQLhdSIFnsq5BdynLDai6jtpTmUwXmrGoCDT1kaVKhb3YK4aIBIoLIif3GvY
+         lQQvgCUNJi+agDspdzCCj27SxC8xdaIFWr0bu6cS3cPTNtv/6A5yC4QvE5oAmJPeiOPQ
+         3GHw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:dkim-signature;
-        bh=J7sfAFjc6pqkBS64D1tAEBTQXyapsBonKM0zUXiqcgE=;
-        fh=2Ld/g5BVZzBadtquf8mrXl84q+iOtbUed/2ECOFnmmI=;
-        b=a9lWOF5AqB+6vaihgzTrr++LNcPIu4JVtoreRUyPnaN4mF+J+hgBW67cakzSWp6qsY
-         RYUIb+oioYwnkIFvntmldlVoj3ET4klNm6CZjmZV6TqV68NlxkS/F+EMXJbItXrzLsTY
-         1u+l07WkXUFddpebg2nncsY7u0RG/lqHTdqQdbBqma5dDbNlwdckhlaG48OSpJokpryG
-         73d/CjH+lkBzvbDAp95eUN2PF7OmrEUs1aoDzx2R/BjlmrLMc/W5BGpyp5yWOZfUSlvw
-         Ue7WqatSiASdXeS/rRFzSUYhfBapl7/ruvqZvALsrGajl1NTxUUxjgdluS50BIey7kfL
-         FWZQ==;
-        darn=kernel.org
+        bh=BXuzz2FPwv09GcEqY45HY9Atu3wxH9wRjJKKUZ85g38=;
+        fh=iWWG2A6e5GRFBX5jdTlSR86Y1KqzihWVRmJprOMoPs4=;
+        b=H43ZQZoyG3jYEEjB/3iXtRoeWVUfyN5wZp4cCGRNHO27a9aRvWazO6Y4CBQLSN7V7m
+         ils8wNN3Vh/o5CVp6erH4Zw4u3ccScfqUfntaVingwsWvNaD23EoaK6mUqR3c0Bdlt0L
+         Q9Fz6HwiKNg/aLmGAbD9GhepEl968B/q3BRXafV0aN8CU8zBm5LhV2HnV0x0MAtfIoGD
+         +CFNFuOnUdIvdO3pgR12oRf6fHZmg+dqnEU3nqd41XN98WYR7De0xjpIKiQSS1WZwmsy
+         5zEg60xPIIpmD/ow1NQFXYtQrecYXSZNzmqSmBHoTNMHkexrgtQH15l3+ezs/GkTi1N9
+         RcjA==;
+        darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778923064; x=1779527864; darn=kernel.org;
+        d=google.com; s=20251104; t=1778926141; x=1779530941; darn=lists.linux.dev;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=J7sfAFjc6pqkBS64D1tAEBTQXyapsBonKM0zUXiqcgE=;
-        b=fhJUOPBQyv5eX38FWy3KYGWhuFCnOUhSPw1LtR34J8wWsYq4kqAiihRR7GlWbgMpon
-         uNNzk3/YYIXKgZW5vcSHGGvFiROlWvrvKLgw1aXZH22OjxzJ7SO3P9Tlp+Z2rN7kFtmU
-         NHWdGGrMFJT/T9MHyph/RgzOj4VsG0Wt8OblGKMmf7oss82Sdfw3T0Nrr0aJYHT7ytgb
-         M2CW4fpzqUcwsRkDjkqmlP7QvZJ53zrZPu+ScM9fzDxLODOXuNJkzF7KSZcm03YP29c9
-         WqrbGdnSRhSS/DhgasUGBmIh3b+g2oQApZSj036da51kNMQFgJHnFnO3uwkyaKambL3U
-         VGnQ==
+        bh=BXuzz2FPwv09GcEqY45HY9Atu3wxH9wRjJKKUZ85g38=;
+        b=vbHra6O3C3Zcvd3qcQGW7wuGP97TBSvhmSF+Q2KzJP9QBS9y2ADHD/4by7aVnbMxUt
+         Zsrg/JmkZ0XXXFxgu2f7OHitLqWAZnsswEs/f8PfITKyeWJZgJXp85OPVZjGWnqhZiOJ
+         unqq5UG3xm8Ii8v9lcZf/CXjDau/eM0BH5tXbhsV3sRlQ+08dUB6FgUWDHRfpZItnJxn
+         C0/wdvvMyWq9KsuqSrtfh+dStq1Oz3FLt+n1zESGDO9/lraN+w9CGH29BN1KTV4silwL
+         JktP82bvCt+QB04/RXfxKWEFFLYD7qS43gcCVMCsa8ZOfX2Il9P47z1bNtNqy5G8XOgs
+         wy0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778923064; x=1779527864;
+        d=1e100.net; s=20251104; t=1778926141; x=1779530941;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=J7sfAFjc6pqkBS64D1tAEBTQXyapsBonKM0zUXiqcgE=;
-        b=nNwVHjoq2iX/oW88D9VmnTtPeZZ4xS5mHR2ifVjINHo0GIhcXCmo6u6RzFCKJsfSwA
-         S3AlQSNp0ldOdebJjnGs2DhSIOEz8Y0D0LY/cnrQkLLMj6BzLcXx+ICrq/AVILLJXX+l
-         3DMSb8fwpVvnWFoz/f3mhYE/HTqf5yMHlJ602ugH9rhAnWcsr1JPxCw0AiYlJXJw+pbt
-         7mRI8gp/FMk+W+EvwT/zQRAW98/NQT5VZxwMD9datiaQel4OWgMPXFxLUmUMUhAp8Q/+
-         ETO2cqkJUKEincMrvKuuAXKlszuKGNdw8drFfdy2GKQCoE32iPUVH7qUFx+9Zh/2GSnQ
-         mSoA==
-X-Gm-Message-State: AOJu0YzL68hg7njC5P1f8djJYLYYqmJbai/NbbCwSRQwkEWzWZkSjv/s
-	IwD7+rvGZ/AnLIbXpA2Otgy38XQmOP3vkmBK6b/gN7ailejC8YN6k5Oeuo5JxfR/2ULVrt5Iuie
-	9N8BO1aeHGqPfITJHleYVoUHvu1hW+TPqFzqJX7b0IalauzuBFZPma30oAZ4=
-X-Gm-Gg: Acq92OFQlxdh2T7xUf6WJhyDAkRfHm9Swg0cZ8Wdr8vIfFhVNvsPoyvH06Zt4CSIoUE
-	0aHi2hbXFTs+rKyFq+x+Ra+/OthF2ww2H/zoje4F6g6ao34A+ASkBS8MdWYo6d639lGcC99SyTG
-	NSgnYdgn2eo+pKKRMf3q7hwPdjyk2vaMva/Vgw0XbVLznL9gDzmx23HrZO1MO75nvwO76t/tuGw
-	2uhV8n+VCXJQBKcAlIc0TXWCjsmcXr0uckcV6ooZf2GFYFbCtQFa9KGcN4Y9L7JxbK3wp7jSf5N
-	7SS+DxmgsuX/W57GT0E0J2kbw5JBsx7N8O+iRz0zhno/7iLygprq
-X-Received: by 2002:a05:651c:1543:b0:38e:a883:6303 with SMTP id
- 38308e7fff4ca-39561ce5852mr23295341fa.9.1778923063832; Sat, 16 May 2026
- 02:17:43 -0700 (PDT)
+        bh=BXuzz2FPwv09GcEqY45HY9Atu3wxH9wRjJKKUZ85g38=;
+        b=Z3oIS3PV1shXJz+FShRwVo74zSA9YQ0YAnCTqcP8IhlpGaZxj7eZrN4ILzcz+E0WHO
+         qoIJiFicyOpt8fQ6ZUVVDeUyh1lBpU4ZB5aCfQ9KlZ7kT1SkbOPnUTDWPcqxIPLK4jFB
+         Lr3aId+vE2nxxswmDZu7spwObN6YJN7ohMkl+Bvc0GpN+7oM62P//nPpJmNM6f2/MhaB
+         5bPpYqJXPP2khwB0FxyrDE+SkmfCxT5xVEkZvmGkQ/QM8puXSyDdkvN8eNKgImCOfn4l
+         nJMLtbYz7LVoaplHvarw7UhIeTi2tObR4edxXfIBcB/EyZt/o6DUfgNHSOPiareYm72o
+         btlg==
+X-Forwarded-Encrypted: i=1; AFNElJ9Juvpq4reAjh8c8ElL+18OWxedWLGC2wauogaIElNhD4TySZYTksR4sC3MCbzYBsZ7xRIKcr0=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy6PQRo92jU9lEudJ7DjNNYSrBOK2YBsDa1NMxUgq8xfCYwcOTs
+	tP+avm3sna/ch1iITW4oaVIADlHvV5kvrg74UGRt9q7m0B0UTpx2CDNACZDAo+u633LVY07spJw
+	qMPqHjbRjff5fbb1D4gkkMTi47jPOMXO5JERY34+2
+X-Gm-Gg: Acq92OGwqtaUJelNpZvNEauaahPOwtdQ7CNGJ+Hvu/oQQhsErlVe1Mi3KS3H4yRwonc
+	XgsVv9qrIIFGAXerHGEvQbaNw0xzSTJKT5qSIrquIvekd4yX/GgzSFQjdC4sZo/6IJIiHWSNnko
+	v9S8YnynPfit2hRf/ysO43Yd/OCDDT9cwW4ECpC4fY244xJSzGfenQOSjqdjB8h66MV3ufSYgaS
+	8e7fUpi3yHEj8/aG+S66yz3hOQ86DukX8x14q5IngbWCeaAKfPs3+i+Km+MLyLnzXjJWQo2JwcE
+	XRESPODFSssvD+CzfffaG46ov6yp8hoaVsXsqaptdK5oxXXLRrXMrS8nkdg3HQ0=
+X-Received: by 2002:a05:6512:2384:b0:5a2:c4f1:2635 with SMTP id
+ 2adb3069b0e04-5aa0e74e119mr1898088e87.41.1778926140775; Sat, 16 May 2026
+ 03:09:00 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <7b8b3fbf-950b-4418-8cf1-772a4d639b14@mail.kernel.org>
-In-Reply-To: <7b8b3fbf-950b-4418-8cf1-772a4d639b14@mail.kernel.org>
+References: <9ceb3eb3-40e2-497b-8d68-257fd88a3946@mail.kernel.org>
+In-Reply-To: <9ceb3eb3-40e2-497b-8d68-257fd88a3946@mail.kernel.org>
 From: Dmitry Vyukov <dvyukov@google.com>
-Date: Sat, 16 May 2026 11:17:32 +0200
-X-Gm-Features: AVHnY4IXibQBY4pvDNGPIMiWnin26izOo7ulJv0MGP0KYsAEE1oMb9vMQeoLT2U
-Message-ID: <CACT4Y+agnpe-0ewcwB7QfuesOqZQApTr4GRFdvCGS7LmvMGzLQ@mail.gmail.com>
-Subject: Re: [PATCH RFC] firmware_loader: Fix recursive lock in device_cache_fw_images()
+Date: Sat, 16 May 2026 12:08:49 +0200
+X-Gm-Features: AVHnY4K90GNAwfEtB-MwexstASGXo3Un-dER1xxoUBo5OySCt700J97AQXS6zM8
+Message-ID: <CACT4Y+aZZJHB7CJLSNGKDkyb-TxfAaCbp1Sf8QKnwhuCviDkaQ@mail.gmail.com>
+Subject: Re: [PATCH RFC] mtd: block2mtd: fix circular locking dependency in block2mtd_setup
 To: syzbot <syzbot@kernel.org>
 Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
-Looks leigt to me.
-
-On Sun, 10 May 2026 at 15:05, 'syzbot' via
+On Sun, 10 May 2026 at 03:38, 'syzbot' via
 syzkaller-upstream-moderation
 <syzkaller-upstream-moderation@googlegroups.com> wrote:
 >
-> firmware_loader: Fix recursive lock in device_cache_fw_images()
+> mtd: block2mtd: fix circular locking dependency in block2mtd_setup
 >
-> A recursive locking deadlock can occur in the firmware loader's power
-> management notification handler.
+> syzkaller reported a circular locking dependency involving the global
+> param_lock and VFS locks (i_rwsem). The block2mtd driver performs a
+> synchronous VFS path lookup (kern_path via bdev_file_open_by_path)
+> inside its module parameter set callback (block2mtd_setup). This
+> callback is invoked by the sysfs core with param_lock held.
 >
-> During system suspend or hibernation preparation, fw_pm_notify() calls
-> device_cache_fw_images(). This function acquires fw_lock to set the
-> firmware cache state to FW_LOADER_START_CACHE and then iterates over
-> all devices using dpm_for_each_dev() while still holding the lock.
+> The dependency chain is:
+> 1. i_rwsem -> cgroup_mutex (via cgroup_rmdir)
+> 2. cgroup_mutex -> rtnl_mutex (via cgroup_mkdir -> cgrp_css_online)
+> 3. rtnl_mutex -> param_lock (via mac80211_hwsim_new_radio ->
+>    ieee80211_rate_control_ops_get)
+> 4. param_lock -> i_rwsem (via block2mtd_setup -> kern_path)
 >
-> For each device, dev_cache_fw_image() schedules asynchronous work to
-> cache the firmware. If memory allocation for the async work entry fails
-> (e.g., in out-of-memory conditions), async_schedule_node_domain()
-> falls back to executing the work function synchronously in the current
-> thread.
+> To fix this without breaking existing userspace scripts that expect
+> synchronous device creation, temporarily drop the param_lock during
+> the device creation process. This breaks the circular locking
+> dependency while preserving the synchronous nature of the operation.
 >
-> The synchronous execution path (__async_dev_cache_fw_image() ->
-> cache_firmware() -> request_firmware() -> assign_fw()) attempts
-> to acquire fw_lock again. Since the current thread already holds
-> fw_lock, this results in a recursive locking deadlock.
+> To implement this safely, introduce a local mutex (block2mtd_mutex)
+> to protect the module's internal state (blkmtd_device_list,
+> block2mtd_paramline, and block2mtd_init_called) from concurrent sysfs
+> writes, since param_lock will no longer provide this protection during
+> the critical section.
 >
-> Fix this by releasing fw_lock immediately after updating the cache
-> state and before calling dpm_for_each_dev(). The lock is only needed
-> to protect the state update. Concurrent firmware requests will correctly
-> see the FW_LOADER_START_CACHE state and use the piggyback mechanism,
-> which is independently protected by its own fwc->name_lock.
+> Summary of changes:
+> 1. Introduce block2mtd_mutex to protect the global blkmtd_device_list
+>    and early-boot state variables.
+> 2. Drop param_lock in block2mtd_setup using kernel_param_unlock(kp->mod)
+>    and kernel_param_lock(kp->mod). For built-in modules, kp->mod is
+>    NULL,
+>    and these functions correctly unlock/lock the global param_lock.
+> 3. Protect block2mtd_setup with block2mtd_mutex to ensure that
+> concurrent
+>    sysfs writes are serialized and the device list is safely updated.
+> 4. Protect block2mtd_init and block2mtd_exit with block2mtd_mutex to
+>    ensure safe access to blkmtd_device_list and block2mtd_paramline.
+>
+> The lock ordering is now block2mtd_mutex -> VFS locks (i_rwsem) ->
+> mtd_table_mutex, which is strictly hierarchical and free of circular
+> dependencies.
 >
 > Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-> To: <gregkh@linuxfoundation.org>
-> To: <linux-kernel@vger.kernel.org>
-> To: <rafael@kernel.org>
-> Cc: <dakr@kernel.org>
-> Cc: <driver-core@lists.linux.dev>
-> Cc: <mcgrof@kernel.org>
-> Cc: <russ.weight@linux.dev>
+> To: <joern@lazybastard.org>
+> To: <linux-mtd@lists.infradead.org>
+> Cc: <linux-kernel@vger.kernel.org>
+> Cc: <miquel.raynal@bootlin.com>
+> Cc: <richard@nod.at>
+> Cc: <vigneshr@ti.com>
 >
 > ---
-> diff --git a/drivers/base/firmware_loader/main.c b/drivers/base/firmware_loader/main.c
-> index a11b30dda..68d5d30aa 100644
-> --- a/drivers/base/firmware_loader/main.c
-> +++ b/drivers/base/firmware_loader/main.c
-> @@ -1503,10 +1503,11 @@ static void device_cache_fw_images(void)
+> diff --git a/drivers/mtd/devices/block2mtd.c b/drivers/mtd/devices/block2mtd.c
+> index 03e80b2c4..f813272da 100644
+> --- a/drivers/mtd/devices/block2mtd.c
+> +++ b/drivers/mtd/devices/block2mtd.c
+> @@ -45,7 +45,7 @@ struct block2mtd_dev {
 >
->         mutex_lock(&fw_lock);
->         fwc->state = FW_LOADER_START_CACHE;
-> -       dpm_for_each_dev(NULL, dev_cache_fw_image);
->         mutex_unlock(&fw_lock);
+>  /* Static info about the MTD, used in cleanup_module */
+>  static LIST_HEAD(blkmtd_device_list);
+> -
+> +static DEFINE_MUTEX(block2mtd_mutex);
 >
-> -       /* wait for completion of caching firmware for all devices */
-> +       dpm_for_each_dev(NULL, dev_cache_fw_image); /*
+>  static struct page *page_read(struct address_space *mapping, pgoff_t index)
+>  {
+> @@ -464,28 +464,43 @@ static int block2mtd_setup2(const char *val)
+>
+>  static int block2mtd_setup(const char *val, const struct kernel_param *kp)
+>  {
+> +       int ret = 0;
 > +
-> +*/     /* wait for completion of caching firmware for all devices */
-
-Remove the empty comment after dpm_for_each_dev.
-
->         async_synchronize_full_domain(&fw_cache_domain);
+> +       /*
+> +        * Drop the param_lock to avoid circular locking dependency
+> +        * with VFS locks during device lookup.
+> +        */
+> +       kernel_param_unlock(kp->mod);
+> +
+> +       mutex_lock(&block2mtd_mutex);
+> +
+>  #ifdef MODULE
+> -       return block2mtd_setup2(val);
+> +       ret = block2mtd_setup2(val);
+>  #else
+>         /* If more parameters are later passed in via
+>            /sys/module/block2mtd/parameters/block2mtd
+>            and block2mtd_init() has already been called,
+>            we can parse the argument now. */
 >
->         fw_fallback_set_default_timeout();
+> -       if (block2mtd_init_called)
+> -               return block2mtd_setup2(val);
+> +       if (block2mtd_init_called) {
+> +               ret = block2mtd_setup2(val);
+> +       } else {
+> +               /* During early boot stage, we only save the parameters
+> +                  here. We must parse them later: if the param passed
+> +                  from kernel boot command line, block2mtd_setup() is
+> +                  called so early that it is not possible to resolve
+> +                  the device (even kmalloc() fails). Deter that work to
+> +                  block2mtd_setup2(). */
+> +
+> +               strscpy(block2mtd_paramline, val, sizeof(block2mtd_paramline));
+> +       }
+> +#endif
+>
+> -       /* During early boot stage, we only save the parameters
+> -          here. We must parse them later: if the param passed
+> -          from kernel boot command line, block2mtd_setup() is
+> -          called so early that it is not possible to resolve
+> -          the device (even kmalloc() fails). Deter that work to
+> -          block2mtd_setup2(). */
+> +       mutex_unlock(&block2mtd_mutex);
+>
+> -       strscpy(block2mtd_paramline, val, sizeof(block2mtd_paramline));
+> +       kernel_param_lock(kp->mod);
+>
+> -       return 0;
+> -#endif
+> +       return ret;
+>  }
+>
+>
+> @@ -497,9 +512,11 @@ static int __init block2mtd_init(void)
+>         int ret = 0;
+>
+>  #ifndef MODULE
+> +       mutex_lock(&block2mtd_mutex);
+
+Why do we need to hold block2mtd_mutex here and in block2mtd_exit?
+What possible executions does this prevent?
+
+>         if (strlen(block2mtd_paramline))
+>                 ret = block2mtd_setup2(block2mtd_paramline);
+>         block2mtd_init_called = 1;
+> +       mutex_unlock(&block2mtd_mutex);
+>  #endif
+>
+>         return ret;
+> @@ -511,6 +528,7 @@ static void block2mtd_exit(void)
+>         struct list_head *pos, *next;
+>
+>         /* Remove the MTD devices */
+> +       mutex_lock(&block2mtd_mutex);
+>         list_for_each_safe(pos, next, &blkmtd_device_list) {
+>                 struct block2mtd_dev *dev = list_entry(pos, typeof(*dev), list);
+>                 block2mtd_sync(&dev->mtd);
+> @@ -522,6 +540,7 @@ static void block2mtd_exit(void)
+>                 list_del(&dev->list);
+>                 block2mtd_free_device(dev);
+>         }
+> +       mutex_unlock(&block2mtd_mutex);
+>  }
+>
+>  late_initcall(block2mtd_init);
 >
 >
 > base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
@@ -176,4 +261,4 @@ Remove the empty comment after dpm_for_each_dev.
 > --
 > You received this message because you are subscribed to the Google Groups "syzkaller-upstream-moderation" group.
 > To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> To view this discussion visit https://groups.google.com/d/msgid/syzkaller-upstream-moderation/7b8b3fbf-950b-4418-8cf1-772a4d639b14%40mail.kernel.org.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller-upstream-moderation/9ceb3eb3-40e2-497b-8d68-257fd88a3946%40mail.kernel.org.
