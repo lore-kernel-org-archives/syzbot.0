@@ -1,140 +1,411 @@
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCC3926ED40
-	for <syzbot@lists.linux.dev>; Sat, 16 May 2026 06:58:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778914716; cv=none; b=e82Hx7ZuDY38CznJku6wrpCHZHGeXjnyjAf+ttMLyQnYbEQYTmJghEQODADTsREf095dhM46sFMNzBS6/6Nq4GqRrCWvXRjblb+kvTrm5sSeYB8a5qJrPlkivwzUG1+YEZMos6lDqr3USAXFXljq6JsyIb0ZvBLuslnx8QMBsIw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778914716; c=relaxed/simple;
-	bh=SnPn74b/33tT3dWdo4L6P/haSV8WjrzDDwDyO/dAMgs=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=m7/cwWKzdGZCF8HBV4G2vpi3hGq62ZXlKEYaw00KyobOHxPbZVrkOwMFV6wSZiOC8BQxl8qBZCbN+SR5cygx5321BkbVPvRizyIFtZAxGeTbPBn+UGY+MrsTT3+hT9kdcAMLQ+ilpxyiA+JyDKLQvYeDvcUd6+ujEAXhPwKuJ6o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-6853c2438b9so736096eaf.3
-        for <syzbot@lists.linux.dev>; Fri, 15 May 2026 23:58:34 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C209242D6B
+	for <syzbot@lists.linux.dev>; Sat, 16 May 2026 08:02:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=10.30.226.201
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778918543; cv=pass; b=FR+SG79a+1LW+6Kw6MaEdK/b5lKnHxqQEvGOEY5ggmDfi/y9ZGFtab3q2Qw80ee/T/a1Nmo8nP4YyQ0YsuVHLnYtuvpcz8uBnDEdpa5OwcqM7e2p5jPZmeSHY/uXhkrKYvqXKKbaUNQ8Ja7B0+L5mTKDANZeo6h4JNtWdpIp+IE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778918543; c=relaxed/simple;
+	bh=eZl4hOVQGE3eXd4gPdEdU9K8AKrJcQTMN6gFBMhpJLg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=dxFACqo49hviV2R4O0s4w+jAkiUZxtRzE+nd2zp63YCconEU0EWc26S0ghoOPNyKEwLEpEB7Hi92q7di12SjY+4MWrYGkVG3KZaMZrCrJ0ixQtSHkXnTd64Y9gP3ayEwble5Shh2i0zgPw8Twl3htgIMXQXx/311B2SaFNILlFU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=P0f5P/hS; arc=pass smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="P0f5P/hS"
+Received: by smtp.kernel.org (Postfix)
+	id F2454C2BCB7; Sat, 16 May 2026 08:02:22 +0000 (UTC)
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id AA67CC19425
+	for <syzbot@kernel.org>; Sat, 16 May 2026 08:02:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.kernel.org AA67CC19425
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=google.com
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-404254ffe8aso536601fac.0
+        for <syzbot@kernel.org>; Sat, 16 May 2026 01:02:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778918540; cv=none;
+        d=google.com; s=arc-20240605;
+        b=WqljzyAbclslt+7vSYDgeW1j3qp6oMSd1Z4mQJrfERrUVvCt6qS2fefc+pVFwmGpWC
+         1CR8U9h3Fl7z4spxhZqXw65OIC2LdQPkYGJC+Ut5lcvWRYBgp0xg1PX+ABGnddvl0a/i
+         DTrnqkmh+qnib0tqahSzkD/e+mpghTMjdCVQ2lSQavcbvKG14fGBl+i4Hu94hD4EPhTS
+         svoKRCgGu6EsCesUj0NLk/yQJKqKr87kuYc5fdRrypbt6Z9Q3rdXm+DtiIFOwpQD01Pm
+         /vh85x6d6hbKu+YxbLK8qUvECEXxVA87iR/p2i4Fe8j/56KnFuUsCr/VscEIZ1bGbW/q
+         Qbhg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=h1VSERmK0osTjSj0poYvPuAzYqyOFiP5kuXeoRou3DY=;
+        fh=wDINbZTynOzHKZZdfYzTv1C5XrcPd39poBV3E5XRpBc=;
+        b=gkouW4AGRW4J2vwzKSDs5orV/WQkThtPIg4d5MD0fSiqhr/PGWW7heoBM1mpmONOXY
+         EOhKb/65vcmVZbGZSReX56ik4g+efp57r6RsqwJ8b9nrdwryHaPpzXh5Iio1dGSdtzi3
+         cXU+fFt3SPiO4UxzwNZsLzHtY2ux0GqiTmYbz3NZClZFFQnHAQVLmvHDjCishrKyKVHM
+         VYOP5287pkuxn/uaSZxNZo2pQqHFImP4vwUvVgQG9DBSMXd1BAzR2AcwI16hppdL2lmC
+         TJSDaamKI2WXBP+6tVFgYRxAQY5+TDPNMpgeSiFd5LF6r1OgbXeFZpjtNTa5WjJKmCen
+         mlwA==;
+        darn=kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1778918540; x=1779523340; darn=kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=h1VSERmK0osTjSj0poYvPuAzYqyOFiP5kuXeoRou3DY=;
+        b=P0f5P/hSkbqjCNZdL1MsSMrlZwmPHx8PNEb7OWYJwfLotNIi5GVHoeDi3owXisIAX6
+         /NaeKJQMP1z+y9PdTAjh6v+mkzvDVUnVpPCGuTFuZV39qpU7N134EtUPD0XWvroQ2PxO
+         ZoWlQOzNwjW96FtbeDUIPxnN6oRjot1jRcDTlim1I+1iYZMqq0NRrtKTDOr3p/NewcTK
+         Qs/ph7GBzQe3eHK+F3i9GzDTJ1y2nQSl/R6OgE5bqzeQOPJe3HPOn7VCe4OVbTcQpaxr
+         YXPP69GJO/cHR6SywJc/75n9tSAiZe0QtZh6ANrryFDYkZ7eQ9Q38zOBeoPU0FIUWggR
+         ZVQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778914714; x=1779519514;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lwSP8NA9NX4+ziNnxsMZYgv7MI6qgmjM/3UjebHnW6A=;
-        b=sQT16AyTSQ1s/85ANxvOM6EbRcnzpMady6sGhK/jLGdbroVxPwS56iYc64VBpw+MjB
-         PYg6F7PA9pnsfTNpRBwL8B8EO7jNmUmXIBp1qnAtk66bFg8a540bH8YiGYm8nb9wYJVJ
-         cSpv+W9lPiMLDLAnL8Kzqlxa8ZR1FXLqAEc2HlJ6g1L6pZg4rGQBTq1Qw8IcGiPAvRD7
-         fy7PesBuWbqybrQAelR8GUjRV15TlILI+6bzNeXXTSbJUFEITeUzypTpncvlprrPJWOp
-         M0L/sfBHk63hvPvBkVKIPQwWjors5mwA1sj+8TaR1yvBK8yqTu1Ak76SH3yKHSN1IMMu
-         Fniw==
-X-Gm-Message-State: AOJu0YycZ3xKy6EgGN7dwhlPgxabEa7MKL0Xs46/7f9ULwkJp7mHVY68
-	RkcPuNqwwtSqNMDwU9yjsN20o5ey21uogxoWeINBaMPrVkLoUYATqdMCKey+mEVuApsMVWYtORV
-	JvwgJETbRKV9arZTKhJGckm39PDvSpu1wnCe0kBbIn9VQwDD+3lo/85F+8AY=
+        d=1e100.net; s=20251104; t=1778918540; x=1779523340;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=h1VSERmK0osTjSj0poYvPuAzYqyOFiP5kuXeoRou3DY=;
+        b=Nwk04CL9NTcOgkYAsaJ1aOFHpZm4TAR/P2jcIiVEVQIlzHQ76d+3mJkKZn0eimDETv
+         3U57T86svip1vhaGvev7F4BLFpczD2pEbx/affBpsRez7EE6cbgdnyZ31dXYYVTlqyYz
+         sntFFPEmTCdx9mIJzRYVYeaBuiAT6gzj7k2hzOFYI4ecZPe7dAs2V9hf5h1Iokr1PDTE
+         cBrZ4gL9V1j6TB9t89rMx0hO4yoEtFR6lYP/eFv52HIgX7eYmpgRN+75dDZTCc98TOKh
+         eFM7SsdPgm3eqhY8HMvRm0YdfKhHWicnQ6y7ZymUUsQD/3WkGi67Y8vMTSHfGpUot0xn
+         zNeA==
+X-Gm-Message-State: AOJu0YxSMwOhh3hzreG2AqV5H5DvrjpaYm3pafrafTOAMOAkPnypuLI/
+	9fLYRDSjA0aME7tx2jsuNeDCMtZScj2u8UaisaccyBescGQs8jLxgFtGr8FpgMUbn1SG6ZKCJQL
+	pCubRFzGG8Z1JnZoizcg13cUYE/CMXS0JSRc3Pqn+
+X-Gm-Gg: Acq92OExaGgN/1GqauUxEYJLS+BVea1XiH/Ey9ZnyizI0CDw3wId+DqqlD2RGLRkkJb
+	2ZkNGBinBOd2wz3RgkxZ4InZl3bEVwuti9f1WFapWKdIfx6n/n++nlmWnaQXDumt+BYUWCKYO7u
+	qkwhnD7OoVxtMD3Nwwo6fulbUPHdHikwADjyllCoWpYKovCZtM0JmwliS213l3SC3VJCQBvtZ08
+	a7IZllLQtc4g4rc8WC44eRTbhqNwmA0H5fTjw6J2oIuq1KztA+YLJjb7aCZXA0/X/WS1ucjgFNm
+	2EUJ0/jwJxtTmEkmusjMb3yFqxIQ6FFUNDcK1lhn8CbNDF0czC+Q4MmcSrYvV30/4BkN08hDYkC
+	bwRNGDck=
+X-Received: by 2002:a05:6870:ec9f:b0:435:25c8:1833 with SMTP id
+ 586e51a60fabf-439f94bfe2emr6357882fac.17.1778918540125; Sat, 16 May 2026
+ 01:02:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:f005:b0:696:8c3f:d7d8 with SMTP id
- 006d021491bc7-69c9437be21mr4084981eaf.37.1778914713816; Fri, 15 May 2026
- 23:58:33 -0700 (PDT)
-Date: Fri, 15 May 2026 23:58:33 -0700
-In-Reply-To: <20260515171953.2224503-1-shakeel.butt@linux.dev>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a081599.170a0220.4530d.0003.GAE@google.com>
-Subject: [syzbot ci] Re: memcg: cache obj_stock by memcg, not by objcg pointer
-From: syzbot ci <syzbot+cid9f726b45197a5e5@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, cgroups@vger.kernel.org, hannes@cmpxchg.org, 
-	kernel-team@meta.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
-	mhocko@kernel.org, muchun.song@linux.dev, oliver.sang@intel.com, 
-	qi.zheng@linux.dev, roman.gushchin@linux.dev, shakeel.butt@linux.dev
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <dcebc4bd-5cc1-4dc9-b82b-6cca0fad128b@mail.kernel.org> <CACT4Y+bG9MvoSJb8G4XOquvcb+aQDXkF4XM=-zAEJcNFXcg4cA@mail.gmail.com>
+In-Reply-To: <CACT4Y+bG9MvoSJb8G4XOquvcb+aQDXkF4XM=-zAEJcNFXcg4cA@mail.gmail.com>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Sat, 16 May 2026 10:02:07 +0200
+X-Gm-Features: AVHnY4IGxAqTE7ZKTUI7O3o3kWWMccuG4306fF6IoCepEtNDot9GuWDGcHLSkXQ
+Message-ID: <CANp29Y4S2QH81tgkhrNnh6b90wUhVYBsjPtXHxQhdpqM=DBrUg@mail.gmail.com>
+Subject: Re: [PATCH RFC] bpf: lru: Use resilient spinlocks to prevent NMI deadlocks
+To: Dmitry Vyukov <dvyukov@google.com>
+Cc: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com, 
+	syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
+On Sat, May 16, 2026 at 6:59=E2=80=AFAM 'Dmitry Vyukov' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
+>
+> A very similar patch was tested for this bug, which confirms the patch
+> is correct.
 
-[v1] memcg: cache obj_stock by memcg, not by objcg pointer
-https://lore.kernel.org/all/20260515171953.2224503-1-shakeel.butt@linux.dev
-* [PATCH] memcg: cache obj_stock by memcg, not by objcg pointer
+.. or that fix was also AI-generated :)
 
-and found the following issue:
-WARNING in __refill_obj_stock
-
-Full report is available here:
-https://ci.syzbot.org/series/8efc6e46-4b2e-43ab-90a0-62552bdc14a6
-
-***
-
-WARNING in __refill_obj_stock
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      0cec77cfd5314c0b3b03530abe1a4b32e991f639
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/fda0a69d-af56-4b9f-8b30-b63ea4756923/config
-
-------------[ cut here ]------------
-debug_locks && !(rcu_read_lock_held() || lock_is_held(&(&cgroup_mutex)->dep_map))
-WARNING: ./include/linux/memcontrol.h:380 at __refill_obj_stock+0x4fd/0x610, CPU#0: syz.1.48/5712
-Modules linked in:
-
-CPU: 0 UID: 0 PID: 5712 Comm: syz.1.48 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__refill_obj_stock+0x4fd/0x610
-Code: 89 e7 48 83 c4 18 5b 41 5c 41 5d 41 5e 41 5f 5d e9 d8 ba 00 00 48 83 c4 18 5b 41 5c 41 5d 41 5e 41 5f 5d c3 cc cc cc cc cc 90 <0f> 0b 90 e9 a8 fb ff ff 44 89 f9 80 e1 07 80 c1 03 38 c1 0f 8c 60
-RSP: 0018:ffffc9000483f4b0 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: ffff88810beb0f80 RCX: 0000000080000001
-RDX: 0000000000000110 RSI: ffffffff8e21e93e RDI: ffffffff8c28b8e0
-RBP: 0000000000000001 R08: ffffffff8239a83c R09: ffff88812103c600
-R10: dffffc0000000000 R11: ffffed102d89bae9 R12: 1ffff110242078c8
-R13: ffff88810beb0d80 R14: dffffc0000000000 R15: ffff88812103c600
-FS:  0000000000000000(0000) GS:ffff88818dc89000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f80ad948060 CR3: 000000000e74a000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- __memcg_slab_free_hook+0x2ed/0x4b0
- kmem_cache_free+0x381/0x650
- __put_anon_vma+0x12b/0x2d0
- unlink_anon_vmas+0x58b/0x730
- free_pgtables+0x802/0xb40
- exit_mmap+0x490/0x9e0
- __mmput+0x118/0x430
- exit_mm+0x18e/0x250
- do_exit+0x6a2/0x22c0
- do_group_exit+0x21b/0x2d0
- get_signal+0x1284/0x1330
- arch_do_signal_or_restart+0xbc/0x840
- exit_to_user_mode_loop+0x8c/0x4d0
- do_syscall_64+0x33e/0xf80
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f6eea99ce59
-Code: Unable to access opcode bytes at 0x7f6eea99ce2f.
-RSP: 002b:00007f6eeb8240e8 EFLAGS: 00000246
- ORIG_RAX: 00000000000000ca
-RAX: 0000000000000001 RBX: 00007f6eeac15fa8 RCX: 00007f6eea99ce59
-RDX: 00000000000f4240 RSI: 0000000000000081 RDI: 00007f6eeac15fac
-RBP: 00007f6eeac15fa0 R08: 3fffffffffffffff R09: 0000000000000000
-R10: 0000200001000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f6eeac16038 R14: 00007fffdc60cea0 R15: 00007fffdc60cf88
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+>
+>
+> On Thu, 14 May 2026 at 00:38, 'syzbot' via
+> syzkaller-upstream-moderation
+> <syzkaller-upstream-moderation@googlegroups.com> wrote:
+> >
+> > BPF LRU maps currently use standard `raw_spinlock_t` for their local an=
+d
+> > global list locks, which are not NMI-safe. If an NMI (such as a perf
+> > event hardware breakpoint) interrupts a normal context that is holding
+> > an LRU list lock, and a BPF program executed in the NMI context attempt=
+s
+> > to acquire the exact same lock (e.g., via `bpf_map_delete_elem`), it
+> > will spin forever waiting for the lock to be released. This results in =
+a
+> > hard deadlock because the context holding the lock has been preempted b=
+y
+> > the NMI itself. Lockdep correctly detects this unsafe `{INITIAL USE} ->
+> > {IN-NMI}` transition and emits an inconsistent lock state warning.
+> >
+> > To resolve this, update the LRU list implementation to use resilient
+> > queued spinlocks (`rqspinlock_t`), similar to how bucket locks in
+> > standard BPF hash maps were previously converted. Resilient spinlocks
+> > are NMI-safe because they detect deadlocks (such as re-entrancy on the
+> > same CPU) and return an error instead of hanging. Replace all standard
+> > spinlock operations with their resilient counterparts in
+> > `bpf_lru_list.c`. Since resilient spinlock acquisitions can fail, updat=
+e
+> > the LRU functions to handle these failures gracefully. For pop
+> > functions, return `NULL` when the lock cannot be acquired, which caller=
+s
+> > already handle by propagating an `-ENOMEM` error. When stealing nodes
+> > from remote CPUs, safely skip the CPU if its lock cannot be acquired.
+> > For push and flush functions, abort and return early if the lock fails,
+> > effectively leaking the LRU node, which is an acceptable trade-off to
+> > prevent a hard system deadlock in NMI context.
+> >
+> > Fixes: 3a08c2fd763450a927d1130de078d6f9e74944fb ("bpf: LRU List")
+> > Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-previe=
+w
+> > Reported-by: syzbot+c69a0a2c816716f1e0d5@syzkaller.appspotmail.com
+> > Link: https://syzkaller.appspot.com/bug?extid=3Dc69a0a2c816716f1e0d5
+> > Link: https://syzkaller.appspot.com/ai_job?id=3D10f0c342-88ea-4f57-a31f=
+-48eff83eae85
+> > To: <bpf@vger.kernel.org>
+> > To: <martin.lau@linux.dev>
+> > Cc: <andrii@kernel.org>
+> > Cc: <ast@kernel.org>
+> > Cc: <daniel@iogearbox.net>
+> > Cc: <eddyz87@gmail.com>
+> > Cc: <jolsa@kernel.org>
+> > Cc: <linux-kernel@vger.kernel.org>
+> > Cc: <memxor@gmail.com>
+> > Cc: <song@kernel.org>
+> > Cc: <yonghong.song@linux.dev>
+> >
+> > ---
+> > diff --git a/kernel/bpf/bpf_lru_list.c b/kernel/bpf/bpf_lru_list.c
+> > index e7a2fc605..d02c37ca9 100644
+> > --- a/kernel/bpf/bpf_lru_list.c
+> > +++ b/kernel/bpf/bpf_lru_list.c
+>
+> Add <asm/rqspinlock.h> include in this file too.
+>
+> > @@ -307,9 +307,10 @@ static void bpf_lru_list_push_free(struct bpf_lru_=
+list *l,
+> >         if (WARN_ON_ONCE(IS_LOCAL_LIST_TYPE(node->type)))
+> >                 return;
+> >
+> > -       raw_spin_lock_irqsave(&l->lock, flags);
+> > +       if (raw_res_spin_lock_irqsave(&l->lock, flags))
+> > +               return;
+> >         __bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
+> > -       raw_spin_unlock_irqrestore(&l->lock, flags);
+> > +       raw_res_spin_unlock_irqrestore(&l->lock, flags);
+> >  }
+> >
+> >  static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
+> > @@ -319,7 +320,8 @@ static void bpf_lru_list_pop_free_to_local(struct b=
+pf_lru *lru,
+> >         struct bpf_lru_node *node, *tmp_node;
+> >         unsigned int nfree =3D 0;
+> >
+> > -       raw_spin_lock(&l->lock);
+> > +       if (raw_res_spin_lock(&l->lock))
+> > +               return;
+> >
+> >         __local_list_flush(l, loc_l);
+> >
+> > @@ -338,7 +340,7 @@ static void bpf_lru_list_pop_free_to_local(struct b=
+pf_lru *lru,
+> >                                       local_free_list(loc_l),
+> >                                       BPF_LRU_LOCAL_LIST_T_FREE);
+> >
+> > -       raw_spin_unlock(&l->lock);
+> > +       raw_res_spin_unlock(&l->lock);
+> >  }
+> >
+> >  static void __local_list_add_pending(struct bpf_lru *lru,
+> > @@ -404,7 +406,8 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free=
+(struct bpf_lru *lru,
+> >
+> >         l =3D per_cpu_ptr(lru->percpu_lru, cpu);
+> >
+> > -       raw_spin_lock_irqsave(&l->lock, flags);
+> > +       if (raw_res_spin_lock_irqsave(&l->lock, flags))
+> > +               return NULL;
+> >
+> >         __bpf_lru_list_rotate(lru, l);
+> >
+> > @@ -420,7 +423,7 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free=
+(struct bpf_lru *lru,
+> >                 __bpf_lru_node_move(l, node, BPF_LRU_LIST_T_INACTIVE);
+> >         }
+> >
+> > -       raw_spin_unlock_irqrestore(&l->lock, flags);
+> > +       raw_res_spin_unlock_irqrestore(&l->lock, flags);
+> >
+> >         return node;
+> >  }
+> > @@ -437,7 +440,8 @@ static struct bpf_lru_node *bpf_common_lru_pop_free=
+(struct bpf_lru *lru,
+> >
+> >         loc_l =3D per_cpu_ptr(clru->local_list, cpu);
+> >
+> > -       raw_spin_lock_irqsave(&loc_l->lock, flags);
+> > +       if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
+> > +               return NULL;
+> >
+> >         node =3D __local_list_pop_free(loc_l);
+> >         if (!node) {
+> > @@ -448,7 +452,7 @@ static struct bpf_lru_node *bpf_common_lru_pop_free=
+(struct bpf_lru *lru,
+> >         if (node)
+> >                 __local_list_add_pending(lru, loc_l, cpu, node, hash);
+> >
+> > -       raw_spin_unlock_irqrestore(&loc_l->lock, flags);
+> > +       raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
+> >
+> >         if (node)
+> >                 return node;
+> > @@ -466,23 +470,26 @@ static struct bpf_lru_node *bpf_common_lru_pop_fr=
+ee(struct bpf_lru *lru,
+> >         do {
+> >                 steal_loc_l =3D per_cpu_ptr(clru->local_list, steal);
+> >
+> > -               raw_spin_lock_irqsave(&steal_loc_l->lock, flags);
+> > +               if (raw_res_spin_lock_irqsave(&steal_loc_l->lock, flags=
+))
+> > +                       goto next_steal;
+> >
+> >                 node =3D __local_list_pop_free(steal_loc_l);
+> >                 if (!node)
+> >                         node =3D __local_list_pop_pending(lru, steal_lo=
+c_l);
+> >
+> > -               raw_spin_unlock_irqrestore(&steal_loc_l->lock, flags);
+> > +               raw_res_spin_unlock_irqrestore(&steal_loc_l->lock, flag=
+s);
+> >
+> > +next_steal:
+> >                 steal =3D cpumask_next_wrap(steal, cpu_possible_mask);
+> >         } while (!node && steal !=3D first_steal);
+> >
+> >         loc_l->next_steal =3D steal;
+> >
+> >         if (node) {
+> > -               raw_spin_lock_irqsave(&loc_l->lock, flags);
+> > +               if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
+> > +                       return NULL;
+> >                 __local_list_add_pending(lru, loc_l, cpu, node, hash);
+> > -               raw_spin_unlock_irqrestore(&loc_l->lock, flags);
+> > +               raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
+> >         }
+> >
+> >         return node;
+> > @@ -511,10 +518,11 @@ static void bpf_common_lru_push_free(struct bpf_l=
+ru *lru,
+> >
+> >                 loc_l =3D per_cpu_ptr(lru->common_lru.local_list, node-=
+>cpu);
+> >
+> > -               raw_spin_lock_irqsave(&loc_l->lock, flags);
+> > +               if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
+> > +                       return;
+> >
+> >                 if (unlikely(node->type !=3D BPF_LRU_LOCAL_LIST_T_PENDI=
+NG)) {
+> > -                       raw_spin_unlock_irqrestore(&loc_l->lock, flags)=
+;
+> > +                       raw_res_spin_unlock_irqrestore(&loc_l->lock, fl=
+ags);
+> >                         goto check_lru_list;
+> >                 }
+> >
+> > @@ -522,7 +530,7 @@ static void bpf_common_lru_push_free(struct bpf_lru=
+ *lru,
+> >                 bpf_lru_node_clear_ref(node);
+> >                 list_move(&node->list, local_free_list(loc_l));
+> >
+> > -               raw_spin_unlock_irqrestore(&loc_l->lock, flags);
+> > +               raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
+> >                 return;
+> >         }
+> >
+> > @@ -538,11 +546,12 @@ static void bpf_percpu_lru_push_free(struct bpf_l=
+ru *lru,
+> >
+> >         l =3D per_cpu_ptr(lru->percpu_lru, node->cpu);
+> >
+> > -       raw_spin_lock_irqsave(&l->lock, flags);
+> > +       if (raw_res_spin_lock_irqsave(&l->lock, flags))
+> > +               return;
+> >
+> >         __bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
+> >
+> > -       raw_spin_unlock_irqrestore(&l->lock, flags);
+> > +       raw_res_spin_unlock_irqrestore(&l->lock, flags);
+> >  }
+> >
+> >  void bpf_lru_push_free(struct bpf_lru *lru, struct bpf_lru_node *node)
+> > @@ -625,7 +634,7 @@ static void bpf_lru_locallist_init(struct bpf_lru_l=
+ocallist *loc_l, int cpu)
+> >
+> >         loc_l->next_steal =3D cpu;
+> >
+> > -       raw_spin_lock_init(&loc_l->lock);
+> > +       raw_res_spin_lock_init(&loc_l->lock);
+> >  }
+> >
+> >  static void bpf_lru_list_init(struct bpf_lru_list *l)
+> > @@ -640,7 +649,7 @@ static void bpf_lru_list_init(struct bpf_lru_list *=
+l)
+> >
+> >         l->next_inactive_rotation =3D &l->lists[BPF_LRU_LIST_T_INACTIVE=
+];
+> >
+> > -       raw_spin_lock_init(&l->lock);
+> > +       raw_res_spin_lock_init(&l->lock);
+> >  }
+> >
+> >  int bpf_lru_init(struct bpf_lru *lru, bool percpu, u32 hash_offset,
+> > diff --git a/kernel/bpf/bpf_lru_list.h b/kernel/bpf/bpf_lru_list.h
+> > index fe2661a58..ecd93c77a 100644
+> > --- a/kernel/bpf/bpf_lru_list.h
+> > +++ b/kernel/bpf/bpf_lru_list.h
+> > @@ -7,6 +7,7 @@
+> >  #include <linux/cache.h>
+> >  #include <linux/list.h>
+> >  #include <linux/spinlock_types.h>
+> > +#include <asm/rqspinlock.h>
+> >
+> >  #define NR_BPF_LRU_LIST_T      (3)
+> >  #define NR_BPF_LRU_LIST_COUNT  (2)
+> > @@ -34,13 +35,13 @@ struct bpf_lru_list {
+> >         /* The next inactive list rotation starts from here */
+> >         struct list_head *next_inactive_rotation;
+> >
+> > -       raw_spinlock_t lock ____cacheline_aligned_in_smp;
+> > +       rqspinlock_t lock ____cacheline_aligned_in_smp;
+> >  };
+> >
+> >  struct bpf_lru_locallist {
+> >         struct list_head lists[NR_BPF_LRU_LOCAL_LIST_T];
+> >         u16 next_steal;
+> > -       raw_spinlock_t lock;
+> > +       rqspinlock_t lock;
+> >  };
+> >
+> >  struct bpf_common_lru {
+> >
+> >
+> > base-commit: 5d6919055dec134de3c40167a490f33c74c12581
+> > --
+> > This is an AI-generated patch subject to moderation.
+> > Reply with '#syz upstream' to send it to the mailing list.
+> > Reply with '#syz reject' to reject it.
+> >
+> > See  for more information.
+> >
+> > --
+> > You received this message because you are subscribed to the Google Grou=
+ps "syzkaller-upstream-moderation" group.
+> > To unsubscribe from this group and stop receiving emails from it, send =
+an email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> > To view this discussion visit https://groups.google.com/d/msgid/syzkall=
+er-upstream-moderation/dcebc4bd-5cc1-4dc9-b82b-6cca0fad128b%40mail.kernel.o=
+rg.
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/CACT4Y%2BbG9MvoSJb8G4XOquvcb%2BaQDXkF4XM%3D-zAEJcNFXcg=
+4cA%40mail.gmail.com.
