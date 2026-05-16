@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3AC1224F3
-	for <syzbot@lists.linux.dev>; Sat, 16 May 2026 14:34:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA98D23ABBF
+	for <syzbot@lists.linux.dev>; Sat, 16 May 2026 15:03:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778942071; cv=none; b=QQOvMrYBHznl/jRXZscivEW1Umbcob+9caPNkccYT3Q0GQgrPXwovD1CpuOwgbNcQ7MYf8Vr+vpaTA9CG0Eh/+orpXaoRis0Wkxbh4c5U/+aGakQS9gx4fE/wal2hLUhDPxkZutBTiCu6XKM8VsUfLHbYPfsPy8orh/yib3RF0U=
+	t=1778943811; cv=none; b=TrRZ+zvlWjExttt+xkAlY2KN1czB0uBOsr3sfsBxa4PrJlK8hOJLzeoDiUCqggR0IyBFF9o0D/rAJQXTDcfIgSdZaYwA84UtL4Os03dIywp3DGIZncuXTj55Mn9lHQ946MBLWSDkpgdCfHHGfCgers+d2HmHcsNBj7MPyL3bFlY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778942071; c=relaxed/simple;
-	bh=yLbTr3JTtT+v2TkUD3ARWFZ/aGtbFzRnoImGmSSX7/s=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=oaD7snZ1E2N7AVvUUxacmfdFa6H4yQSL4CVQyhgUT4hiUQIJxOU+QjgntADz9UlxzhohNf41MTd9Sd4oEFAkOYsp4rbHY6WuOIy6VpAYFGFnvBBGFTaFvSYR/CQYUAXkhXNVLkygebPsby+yJCWAI6CpyTTJHhF8SPA8l9LFG4A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F8VaQVYM; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778943811; c=relaxed/simple;
+	bh=yY/XvdeJJNrL6DwOynXeU6uzz8pvQ6MMn6ieQNbeqb0=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ZpIj7E3NmflspZDV0KJyYnUA+Frv4ffUammW5wwgKp2Ps4FW6k3ZGn73fS+r2YUg0LknIa4ipyAhTjW0wXTpcB1bk/KYay5Ory6lpzgiVm8sWUWno99SXmkrMz4PUIUjoSkLSizj2lCdMIbWX7PfKIKYFKnezybn+kA2jyHDmLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fsI31tkW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F8VaQVYM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 373C9C19425;
-	Sat, 16 May 2026 14:34:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fsI31tkW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A69C19425;
+	Sat, 16 May 2026 15:03:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778942071;
-	bh=yLbTr3JTtT+v2TkUD3ARWFZ/aGtbFzRnoImGmSSX7/s=;
+	s=k20201202; t=1778943811;
+	bh=yY/XvdeJJNrL6DwOynXeU6uzz8pvQ6MMn6ieQNbeqb0=;
 	h=From:To:Cc:Subject:Date:From;
-	b=F8VaQVYM8Xz7syxN4ebw3Iu0mrIbeKT7yjLQpQtKCqV0bvkjqnQngGvgArHpjgrAH
-	 ByLNgEJV+po3E1LuEQm8CHE3y7UmQMotM6EIhlAJyHpr7dcYZqrPAiUqfZWD6IraPe
-	 e9EKwr8BgMIQeEZneAk4YbtMPY6hCojqYxj9fVACi1EelrsRRdagJOctkUfIUtROmi
-	 9Ej4e37adEC5ajSXy71n+Cdk16REmsshImog1u/XMrLMEo5R70IgZIOKYc+u/ARTrs
-	 jgxbUH2qlnFhRlcdcM6tnLIAGz83vzts+PtLbJA4Mp3Xjfk0sicxaQs757roCSmXHF
-	 pkzlYB55DWXMw==
+	b=fsI31tkWBf33C4bBgfN7EXtzuiyY2H9KV0y4TgYXlRdsMcLmo6ES0/wxDgsZsi51Y
+	 64RrID1mHQ40YT7GbGa5gGbJVbxXfpu6n5y4sEpmJRmhWibOQV2j1PDhHcJANtJFUP
+	 VxeBjoulN/yjsxe7adh+wqYJq7xDTIJQzYWijxHveDDSD39SjN2XKDJ8nqXnwFLhhI
+	 5MvPBu4Bs6WE3dzslyFy+pVhAV4c/7pQ7o489BhVYgkOzm9MIKsY9KLfx444+TLBZ4
+	 W2IYd71Ikz2Sxxyy//4MA3B9EpkoHi5L6teebTOsRXOMpXuFdUhPpl35DYn5G4Jxkd
+	 OQ7J7SgDnB78A==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: cdc-wdm: close race between workqueue and release
-Message-ID: <97986988-6374-4e40-aa96-662939fabe88@mail.kernel.org>
+Subject: [PATCH RFC] Input: cm109 - fix double URB submission race conditions
+Message-ID: <d5bb60c3-5026-495c-9b21-0e40cd3cc1a7@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,62 +38,126 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Sat, 16 May 2026 14:34:31 +0000 (UTC)
+Date: Sat, 16 May 2026 15:03:31 +0000 (UTC)
 
-The crash "URB submitted while active" occurs because the
-`desc->response` URB is submitted by `wdm_rxwork` when it is already in
-an active state. This happens because `wdm_release` fails to cancel
-pending workqueue items (`desc->rxwork` and `desc->service_outs_intr`)
-during its cleanup phase. When the character device is closed and there
-are no other openers, `wdm_release` calls `poison_urbs()` to kill active
-URBs, clears the `WDM_RESPONDING` flag, and calls `unpoison_urbs()`.
-Because `wdm_release` does not call `cancel_work_sync()` for the work
-items, they can run concurrently with the cleanup process. If a work
-item executes after the URBs are unpoisoned, it can successfully submit
-the URB. If another work item then runs, it will see the
-`WDM_RESPONDING` flag as cleared, set it, and attempt to submit the URB
-again, leading to the crash.
+An analysis of a kernel crash reveals a race condition in the cm109
+input driver that leads to a double-add bug in the USB core's URB
+enqueueing mechanism. The crash `list_add double add` occurs in
+`usb_hcd_link_urb_to_ep()` when an URB is submitted while it is already
+on the endpoint's queue.
 
-To fix this, cancel the pending workqueue items after poisoning the URBs
-and before clearing the `WDM_RESPONDING` flag or unpoisoning the URBs.
-This ensures that any running work item will either fail to submit the
-URB (because it is poisoned) or finish executing before the cleanup
-proceeds. The same omission is present in `wdm_wwan_port_stop`, so apply
-the same fix there to prevent data leaks or crashes across WWAN
-sessions.
+In `drivers/input/misc/cm109.c`, the control URB (`dev->urb_ctl`) is
+submitted in several places: `cm109_input_open()`,
+`cm109_toggle_buzzer_async()`, and `cm109_submit_ctl()`.
 
-Fixes: 01e01f5c89773c600a9f0b32c888de0146066c3a ("usb: cdc-wdm: fix reading stuck on device close")
+There are two distinct race conditions that can lead to a double submit.
+First, a race between `cm109_input_open()` and
+`cm109_toggle_buzzer_async()`: because `cm109_input_ev()` does not check
+if the device is actually open (`dev->open`), and `cm109_input_open()`
+does not hold the `dev->ctl_submit_lock` when submitting the URB, these
+two functions can race and call `usb_submit_urb(dev->urb_ctl)`
+concurrently. Second, a race between `cm109_submit_ctl()` and
+`cm109_toggle_buzzer_async()`: if `cm109_toggle_buzzer_async()` is
+called while `dev->urb_irq` is in flight, it sees `dev->ctl_urb_pending
+== 0`, sets it to 1, and submits `dev->urb_ctl`. When `dev->urb_irq`
+completes, it calls `cm109_submit_ctl()`. However, `cm109_submit_ctl()`
+does not check `dev->ctl_urb_pending` before submitting `dev->urb_ctl`,
+leading to a double submit if the URB is already in flight.
+
+To fix these bugs, we properly serialize URB submissions and state
+changes using `dev->ctl_submit_lock`. We serialize URB submission in
+`cm109_input_open()` by acquiring `dev->ctl_submit_lock` before
+submitting the URB, and changing the memory allocation flag for
+`usb_submit_urb()` from `GFP_KERNEL` to `GFP_ATOMIC`. We check
+`dev->open` in `cm109_toggle_buzzer_async()` to prevent the event
+handler from submitting URBs and restarting the polling loop when the
+device is closed. We safely update the `dev->open` flag under the
+`dev->ctl_submit_lock` in both `cm109_input_open()` and
+`cm109_input_close()` to ensure perfect synchronization with the event
+handler. Finally, we check `dev->ctl_urb_pending` in
+`cm109_submit_ctl()` so that if `dev->ctl_urb_pending` is already 1,
+`cm109_submit_ctl()` returns immediately to prevent a double submit and
+to avoid modifying the transfer buffer (`dev->ctl_data`) while the URB
+is in flight.
+
+Fixes: c04148f915e5ba7947752e6348e0da4cdab1329e ("Input: add driver for USB VoIP phones with CM109 chipset")
 Assisted-by: Gemini:gemini-3.1-pro-preview
-Reported-by: syzbot+c6a1953c27ace6cc34e5@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=c6a1953c27ace6cc34e5
-Link: https://syzkaller.appspot.com/ai_job?id=99107a5d-cc34-46f2-a7ce-bb797b331fd3
-To: <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+Reported-by: syzbot+ac0f9c4cc1e034160492@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=ac0f9c4cc1e034160492
+Link: https://syzkaller.appspot.com/ai_job?id=503e373b-527a-46df-8186-d6e665f95ffa
+To: <linux-kernel@vger.kernel.org>
+Cc: <dmitry.torokhov@gmail.com>
+Cc: <linux-input@vger.kernel.org>
 
 ---
-diff --git a/drivers/usb/class/cdc-wdm.c b/drivers/usb/class/cdc-wdm.c
-index 7556c0dac..d4318395d 100644
---- a/drivers/usb/class/cdc-wdm.c
-+++ b/drivers/usb/class/cdc-wdm.c
-@@ -769,6 +769,8 @@ static int wdm_release(struct inode *inode, struct file *file)
- 		if (!test_bit(WDM_DISCONNECTING, &desc->flags)) {
- 			dev_dbg(&desc->intf->dev, "wdm_release: cleanup\n");
- 			poison_urbs(desc);
-+			cancel_work_sync(&desc->rxwork);
-+			cancel_work_sync(&desc->service_outs_intr);
- 			spin_lock_irq(&desc->iuspin);
- 			desc->resp_count = 0;
- 			clear_bit(WDM_RESPONDING, &desc->flags);
-@@ -863,6 +865,8 @@ static void wdm_wwan_port_stop(struct wwan_port *port)
+diff --git a/drivers/input/misc/cm109.c b/drivers/input/misc/cm109.c
+index 353d3c1d3..4479233d0 100644
+--- a/drivers/input/misc/cm109.c
++++ b/drivers/input/misc/cm109.c
+@@ -366,6 +366,9 @@ static void cm109_submit_ctl(struct cm109_dev *dev)
+ 	if (unlikely(dev->shutdown))
+ 		return;
  
- 	/* Stop all transfers and disable WWAN mode */
- 	poison_urbs(desc);
-+	cancel_work_sync(&desc->rxwork);
-+	cancel_work_sync(&desc->service_outs_intr);
- 	desc->manage_power(desc->intf, 0);
- 	clear_bit(WDM_READ, &desc->flags);
- 	unpoison_urbs(desc);
++	if (dev->ctl_urb_pending)
++		return;
++
+ 	if (dev->buzzer_state)
+ 		dev->ctl_data->byte[HID_OR0] |= BUZZER_ON;
+ 	else
+@@ -476,6 +479,9 @@ static void cm109_toggle_buzzer_async(struct cm109_dev *dev)
+ {
+ 	guard(spinlock_irqsave)(&dev->ctl_submit_lock);
+ 
++	if (!dev->open)
++		return;
++
+ 	if (dev->ctl_urb_pending) {
+ 		/* URB completion will resubmit */
+ 		dev->buzzer_pending = 1;
+@@ -562,15 +568,19 @@ static int cm109_input_open(struct input_dev *idev)
+ 		dev->ctl_data->byte[HID_OR2] = dev->keybit;
+ 		dev->ctl_data->byte[HID_OR3] = 0x00;
+ 
++		spin_lock_irq(&dev->ctl_submit_lock);
++		dev->open = 1;
+ 		dev->ctl_urb_pending = 1;
+-		error = usb_submit_urb(dev->urb_ctl, GFP_KERNEL);
+-		if (!error) {
+-			dev->open = 1;
+-			return 0;
++		error = usb_submit_urb(dev->urb_ctl, GFP_ATOMIC);
++		if (error) {
++			dev->ctl_urb_pending = 0;
++			dev->open = 0;
+ 		}
+-	}
++		spin_unlock_irq(&dev->ctl_submit_lock);
+ 
+-	dev->ctl_urb_pending = 0;
++		if (!error)
++			return 0;
++	}
+ 	usb_autopm_put_interface(dev->intf);
+ 
+ 	dev_err(&dev->intf->dev, "%s: usb_submit_urb (urb_ctl) failed %d\n",
+@@ -584,13 +594,16 @@ static void cm109_input_close(struct input_dev *idev)
+ 	struct cm109_dev *dev = input_get_drvdata(idev);
+ 
+ 	scoped_guard(mutex, &dev->pm_mutex) {
++		spin_lock_irq(&dev->ctl_submit_lock);
++		dev->open = 0;
++		spin_unlock_irq(&dev->ctl_submit_lock);
++
+ 		/*
+ 		 * Once we are here event delivery is stopped so we
+ 		 * don't need to worry about someone starting buzzer
+ 		 * again
+ 		 */
+ 		cm109_stop_traffic(dev);
+-		dev->open = 0;
+ 	}
+ 
+ 	usb_autopm_put_interface(dev->intf);
 
 
 base-commit: 5d6919055dec134de3c40167a490f33c74c12581
