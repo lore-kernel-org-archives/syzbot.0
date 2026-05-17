@@ -1,321 +1,120 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95537280318
-	for <syzbot@lists.linux.dev>; Sun, 17 May 2026 09:32:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C24F4502F
+	for <syzbot@lists.linux.dev>; Sun, 17 May 2026 19:49:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779010321; cv=none; b=aHYMWpTycpooX151BXgoqZc/Z7psuHdr+yMGSgHP+4dVw/SbcqZljajum9U9+JHlHRt7dkV75yot/DZwn30Qx8WFLximwB5wJVCz3LqPV+1yq0PNiGCNVRTihDUjc+O0F1Z/MVWnC8IxEcaYxzspy5/hxwujo1WI893QvCU/25o=
+	t=1779047351; cv=none; b=NHyW2NTPrSSwUExOLKDMuPR0k38AhnGpCLV/fqk6ajbOr6GgtsUcxbXMmwM992pXO8R7OOikZDpvD18MBqLC+cdDu3HzRKCJDisJOB3P6Cfu4sTg0QuApikG12hak4rF3bH4cTpRnvMegRayxrz2rVddMEiK9QTFtrXX9Ex/Nz4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779010321; c=relaxed/simple;
-	bh=g0Z+xGRE0u/2qGIbFhmuURoQ9OJuoeNtO9P0vF7nZSY=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=nN22knIpe3dUIW7dNLkuQqqEc9LVL6bSDo9tSCNvrL72mPxlu4737bk3TevNtToj/6+rKbUH71BlF2Ne6O3e+r2jV9/RHXUmAqQ2HcJO8ntWvsitKn6rUs27c1tAi8Y0yBffHcW2c8gnlb5dhIcQwzyvqHoxkK8TylxLPCaVUWE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e4I+zQ49; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e4I+zQ49"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BFE1C2BCB0;
-	Sun, 17 May 2026 09:32:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779010321;
-	bh=g0Z+xGRE0u/2qGIbFhmuURoQ9OJuoeNtO9P0vF7nZSY=;
-	h=From:To:Cc:Subject:Date:From;
-	b=e4I+zQ49BKU7cz8eCsy1SAD+LY93pEkol4gpcN0d8Cy7sLU0q2w+ajUQjKUgG9KyJ
-	 xzPgI7oVN1TbiQQqrKtUtPlHs9iox/9ChHFvECNb6zctlHYRoRQ8pXx0ynHiB7vthK
-	 gJIYI+s2ES1JVv9mIgnzdimH8vfsA0RmZYjKFfGV/R7vZOBT+4N4A5jQO0sn1aE+Dc
-	 jm44Sz/0ielbQJ+K37hXShsDWyFpwXsUsK/qogyZz6NAKER1Ya1AUxcSfuZ7AOKFPK
-	 eBYh3ZA5C9d0XIwzgeslske5/t42XJrr+UVoADlDc4F1bWgrTTKHixeENub2k99A6p
-	 PWY2rUo/Aq9JA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v3] misc/vmw_vmci: fix recursive locking deadlock in queue pair broker
-Message-ID: <0c7c74c5-0445-48a4-8bf2-b5a5beb46f47@mail.kernel.org>
+	s=arc-20240116; t=1779047351; c=relaxed/simple;
+	bh=4m/3GRoml7BrxVTtZ0NW3oaO0GITfFCggpRW55Pabwk=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=UGzKQPdkx56LgdgqwezxYQ/xrX8Cr4DjDdcgHy3LomOLWrfQozPLcMD+Zf/ilRbps69tK5i1W4J8nF4fSK3wwlT7m7LgITHahH19OyZZBQIARjgv+wtl+51ZE9HC59WQ1Rdruumm96CTsgYpmdvDwLxMv7eKEDTxbqn43LUhdoI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-69b3a3c798dso1013932eaf.1
+        for <syzbot@lists.linux.dev>; Sun, 17 May 2026 12:49:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779047348; x=1779652148;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=SYiRxJDf62D2zexmentp9sueybrLT8jNeROSZwLbPuw=;
+        b=bOqBWr2Uau0isc/M9L9DFCRSMTNIPj3JCsQSl8tzBIPtH7PNf3nuPbeWyOo2ldhvk7
+         gOZR3Fo8JB+qOHGaRBCWUwfir7VfKbJpldDyQJDgFBCzV1I4RdrSriI/IZLzldu53Nqt
+         DxBr81GqB324o0fOFS2tqtIyoz/pytJX9cTEUJ7hKaz40v49ZGNYkuCcgRGDMarb+J4M
+         sjfbPCrJ0p+qM9Xx/S+Y9pOQgyj9uVSimUxhMV/4DolSUScqg5y2Mpz+nZ5VDT8lIrwV
+         YpAsoRUa4zQIDJ/EegqSEhct3OpssQAd3K0nYC28kubv2qNSxyHKw/AyQRnQRMpebjJY
+         4N1Q==
+X-Gm-Message-State: AOJu0YyoIZWTjkqKinwU/LEH5WVI+QuSD9rXVvAvnHiLq7AZIMuOwBJ4
+	tEotRiNSK0F4zxaxOGZTxw4uAMw32gutbuQ6z2IE7a2oKswn/rWSH3uehRh05YhBl0XzXxMqlnT
+	KSeINYSWB/I0+yZjmLwH+HWFCEEhdvaAV0+h5OObw3t4NKYNH7V8SI+VWrlY=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Sun, 17 May 2026 09:32:01 +0000 (UTC)
+X-Received: by 2002:a05:6820:4b8f:b0:696:97e3:1195 with SMTP id
+ 006d021491bc7-69c9bfb094cmr7455554eaf.49.1779047348593; Sun, 17 May 2026
+ 12:49:08 -0700 (PDT)
+Date: Sun, 17 May 2026 12:49:08 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a0a1bb4.a00a0220.300e5b.000b.GAE@google.com>
+Subject: [moderation/CI] Re: sched: Add support for long task name
+From: syzbot ci <syzbot+ci976947bc4b8c0f5f@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-A recursive locking deadlock can occur involving `qp_broker_list.mutex`
-in the VMCI queue pair broker.
+syzbot ci has tested the following series
 
-When a queue pair is detached, `vmci_qp_broker_detach()` acquires
-`qp_broker_list.mutex` and, if there are still other endpoints attached,
-it calls `qp_notify_peer()` to send a notification datagram to the peer
-context.
+[v1] sched: Add support for long task name
+https://lore.kernel.org/all/20260517-tonyk-long_name-v1-0-3c282eaa91e2@igal=
+ia.com
+* [PATCH 1/6] sched: Update get_task_comm() comment
+* [PATCH 2/6] treewide: Get rid of get_task_comm()
+* [PATCH 3/6] string: Introduce strtostr() for safe and performance string =
+copies
+* [PATCH 4/6] sched: Extend task command name to 64 bytes
+* [PATCH 5/6] prctl: Add support for long user thread names
+* [PATCH 6/6] selftests: prctl: Add test for long thread names
 
-The deadlock occurs because `qp_notify_peer()` indirectly calls
-`vmci_ctx_put()` on the peer's context, which can drop the reference
-count to 0 if the peer context is concurrently being destroyed. When the
-reference count reaches 0, `vmci_ctx_put()` synchronously calls
-`ctx_free_ctx()`. This cleanup function iterates over all queue pairs
-attached to the dying context and calls `vmci_qp_broker_detach()` for
-each of them, which attempts to acquire `qp_broker_list.mutex` again,
-resulting in a deadlock.
+and found the following issue:
+kernel build error
 
-This issue is not isolated to `vmci_qp_broker_detach()`. There are other
-places in `drivers/misc/vmw_vmci/vmci_queue_pair.c` where
-`qp_notify_peer()` or `vmci_ctx_put()` are called while holding
-`qp_broker_list.mutex`, such as `qp_broker_attach()` and
-`vmci_qp_broker_set_page_store()`.
+Full report is available here:
+https://ci.syzbot.org/series/ebe3a5a0-c138-4f99-ad22-8a880dc176ca
 
-To fix this, defer the calls to `qp_notify_peer()` and `vmci_ctx_put()`
-until after `qp_broker_list.mutex` is safely released. This ensures that
-the mutex is never held when these functions are executed, completely
-eliminating the recursive locking deadlock while preserving the correct
-logic and behavior of the VMCI queue pair broker.
+***
 
-Fixes: 06164d2b72aa752ce4633184b3e0d97601017135 ("VMCI: queue pairs implementation.")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+44e40ac2cfe68e8ce207@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=44e40ac2cfe68e8ce207
-Link: https://syzkaller.appspot.com/ai_job?id=59455e18-3bd0-4f40-9e0f-35dc95523adf
-To: <arnd@arndb.de>
-To: <bryan-bt.tan@broadcom.com>
-To: <gregkh@linuxfoundation.org>
-To: <linux-kernel@vger.kernel.org>
-To: <vishnu.dasa@broadcom.com>
-Cc: <bcm-kernel-feedback-list@broadcom.com>
+kernel build error
+
+tree:      bpf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
+.git
+base:      5d6919055dec134de3c40167a490f33c74c12581
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/108b7ff7-5ce1-4980-a6f7-e69a669ec7e=
+6/config
+
+net/netfilter/nf_tables_api.c:9714:46: error: incompatible integer to point=
+er conversion passing 'ssize_t' (aka 'long') to parameter of type 'const ch=
+ar *' [-Wint-conversion]
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v3:
-- Added `lockdep_assert_not_held(&qp_broker_list.mutex)` in `qp_notify_peer()` to prevent future regressions.
-- Reverted the move of the host queue pair support check to `qp_broker_alloc()`.
-- Modified `qp_broker_attach()` signature to return `do_notify` and `out_ctx` via pointer arguments to handle them outside the lock.
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v2:
-- Moved the host queue pair support check and `vmci_ctx_put()` call from `qp_broker_attach()` to `qp_broker_alloc()`.
-- Avoided modifying the signature of `qp_broker_attach()` to return notification parameters, handling them in the caller instead.
-- Reduced the overall diff size as requested by reviewers.
-https://lore.kernel.org/all/5749a52e-a4b2-4c05-8877-ba1aa2b5f5d0@mail.kernel.org/T/
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
-v1:
-https://lore.kernel.org/all/aec7cb16-64c4-4e01-a974-a6c1a51a046e@mail.kernel.org/T/
----
-diff --git a/drivers/misc/vmw_vmci/vmci_queue_pair.c b/drivers/misc/vmw_vmci/vmci_queue_pair.c
-index b777bc3fd..79fb82e1f 100644
---- a/drivers/misc/vmw_vmci/vmci_queue_pair.c
-+++ b/drivers/misc/vmw_vmci/vmci_queue_pair.c
-@@ -11,6 +11,7 @@
- #include <linux/kernel.h>
- #include <linux/mm.h>
- #include <linux/module.h>
-+#include <linux/lockdep.h>
- #include <linux/mutex.h>
- #include <linux/pagemap.h>
- #include <linux/pci.h>
-@@ -1044,7 +1045,7 @@ static int qp_detatch_guest_work(struct vmci_handle handle)
- 			 * because we can't allocate.  We still want
- 			 * to release the entry if that happens, so
- 			 * don't bail out yet.
--			 */
-+		 */
- 		}
- 	} else {
- 		result = qp_detatch_hypercall(handle);
-@@ -1456,6 +1457,8 @@ static int qp_notify_peer(bool attach,
- 	int rv;
- 	struct vmci_event_qp ev;
- 
-+	lockdep_assert_not_held(&qp_broker_list.mutex);
-+
- 	if (vmci_handle_is_invalid(handle) || my_id == VMCI_INVALID_ID ||
- 	    peer_id == VMCI_INVALID_ID)
- 		return VMCI_ERROR_INVALID_ARGS;
-@@ -1508,22 +1511,24 @@ static int qp_notify_peer(bool attach,
-  * VMCIQPB_ATTACHED_MEM state, and for older VMX callers, it will be
-  * moved to the VMCOQPB_ATTACHED_NO_MEM state.
-  */
--static int qp_broker_attach(struct qp_broker_entry *entry,
--			    u32 peer,
--			    u32 flags,
--			    u32 priv_flags,
--			    u64 produce_size,
--			    u64 consume_size,
-+static int qp_broker_attach(struct qp_broker_entry *entry, u32 peer, u32 flags,
-+			    u32 priv_flags, u64 produce_size, u64 consume_size,
- 			    struct vmci_qp_page_store *page_store,
- 			    struct vmci_ctx *context,
--			    vmci_event_release_cb wakeup_cb,
--			    void *client_data,
--			    struct qp_broker_entry **ent)
-+			    vmci_event_release_cb wakeup_cb, void *client_data,
-+			    struct qp_broker_entry **ent, bool *do_notify,
-+			    struct vmci_ctx **out_ctx)
- {
- 	const u32 context_id = vmci_ctx_get_id(context);
- 	bool is_local = flags & VMCI_QPFLAG_LOCAL;
- 	int result;
- 
-+	if (out_ctx)
-+		*out_ctx = NULL;
-+
-+	if (do_notify)
-+		*do_notify = false;
-+
- 	if (entry->state != VMCIQPB_CREATED_NO_MEM &&
- 	    entry->state != VMCIQPB_CREATED_MEM)
- 		return VMCI_ERROR_UNAVAILABLE;
-@@ -1585,7 +1590,11 @@ static int qp_broker_attach(struct qp_broker_entry *entry,
- 
- 		create_context = vmci_ctx_get(entry->create_id);
- 		supports_host_qp = vmci_ctx_supports_host_qp(create_context);
--		vmci_ctx_put(create_context);
-+
-+		if (out_ctx)
-+			*out_ctx = create_context;
-+		else
-+			vmci_ctx_put(create_context);
- 
- 		if (!supports_host_qp)
- 			return VMCI_ERROR_INVALID_RESOURCE;
-@@ -1659,15 +1668,8 @@ static int qp_broker_attach(struct qp_broker_entry *entry,
- 		entry->state = VMCIQPB_ATTACHED_MEM;
- 	}
- 
--	if (entry->state == VMCIQPB_ATTACHED_MEM) {
--		result =
--		    qp_notify_peer(true, entry->qp.handle, context_id,
--				   entry->create_id);
--		if (result < VMCI_SUCCESS)
--			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
--				entry->create_id, entry->qp.handle.context,
--				entry->qp.handle.resource);
--	}
-+	if (entry->state == VMCIQPB_ATTACHED_MEM && do_notify)
-+		*do_notify = true;
- 
- 	entry->attach_id = context_id;
- 	entry->qp.ref_count++;
-@@ -1711,6 +1713,9 @@ static int qp_broker_alloc(struct vmci_handle handle,
- 	struct qp_broker_entry *entry = NULL;
- 	bool is_local = flags & VMCI_QPFLAG_LOCAL;
- 	int result;
-+	bool do_notify = false;
-+	u32 notify_peer_id = VMCI_INVALID_ID;
-+	struct vmci_ctx *out_ctx = NULL;
- 
- 	if (vmci_handle_is_invalid(handle) ||
- 	    (flags & ~VMCI_QP_ALL_FLAGS) || is_local ||
-@@ -1748,14 +1753,33 @@ static int qp_broker_alloc(struct vmci_handle handle,
- 				     context, wakeup_cb, client_data, ent);
- 	} else {
- 		create = false;
--		result =
--		    qp_broker_attach(entry, peer, flags, priv_flags,
--				     produce_size, consume_size, page_store,
--				     context, wakeup_cb, client_data, ent);
-+
-+		result = qp_broker_attach(entry, peer, flags, priv_flags,
-+					  produce_size, consume_size,
-+					  page_store, context, wakeup_cb,
-+					  client_data, ent, &do_notify,
-+					  &out_ctx);
-+
-+		if (result == VMCI_SUCCESS && do_notify)
-+			notify_peer_id = entry->create_id;
- 	}
- 
- 	mutex_unlock(&qp_broker_list.mutex);
- 
-+	if (out_ctx)
-+		vmci_ctx_put(out_ctx);
-+
-+	if (do_notify) {
-+		int notify_result;
-+
-+		notify_result = qp_notify_peer(true, handle, context_id,
-+					       notify_peer_id);
-+		if (notify_result < VMCI_SUCCESS)
-+			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
-+				notify_peer_id, handle.context,
-+				handle.resource);
-+	}
-+
- 	if (swap)
- 		*swap = (context_id == VMCI_HOST_CONTEXT_ID) &&
- 		    !(create && is_local);
-@@ -1968,6 +1992,8 @@ int vmci_qp_broker_set_page_store(struct vmci_handle handle,
- 	struct qp_broker_entry *entry;
- 	int result;
- 	const u32 context_id = vmci_ctx_get_id(context);
-+	bool do_notify = false;
-+	u32 notify_peer_id;
- 
- 	if (vmci_handle_is_invalid(handle) || !context ||
- 	    context_id == VMCI_INVALID_ID)
-@@ -2035,18 +2061,26 @@ int vmci_qp_broker_set_page_store(struct vmci_handle handle,
- 	entry->vmci_page_files = true;
- 
- 	if (entry->state == VMCIQPB_ATTACHED_MEM) {
--		result =
--		    qp_notify_peer(true, handle, context_id, entry->create_id);
--		if (result < VMCI_SUCCESS) {
--			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
--				entry->create_id, entry->qp.handle.context,
--				entry->qp.handle.resource);
--		}
-+		do_notify = true;
-+		notify_peer_id = entry->create_id;
- 	}
- 
- 	result = VMCI_SUCCESS;
-  out:
- 	mutex_unlock(&qp_broker_list.mutex);
-+
-+	if (do_notify) {
-+		int notify_result;
-+
-+		notify_result = qp_notify_peer(true, handle, context_id,
-+					       notify_peer_id);
-+		if (notify_result < VMCI_SUCCESS) {
-+			pr_warn("Failed to notify peer (ID=0x%x) of attach to queue pair (handle=0x%x:0x%x)\n",
-+				notify_peer_id, handle.context,
-+				handle.resource);
-+		}
-+	}
-+
- 	return result;
- }
- 
-@@ -2086,6 +2120,7 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
- 	u32 peer_id;
- 	bool is_local = false;
- 	int result;
-+	bool do_notify = false;
- 
- 	if (vmci_handle_is_invalid(handle) || !context ||
- 	    context_id == VMCI_INVALID_ID) {
-@@ -2185,7 +2220,7 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
- 
- 		vmci_ctx_qp_destroy(context, handle);
- 	} else {
--		qp_notify_peer(false, handle, context_id, peer_id);
-+		do_notify = true;
- 		if (context_id == VMCI_HOST_CONTEXT_ID &&
- 		    QPBROKERSTATE_HAS_MEM(entry)) {
- 			entry->state = VMCIQPB_SHUTDOWN_MEM;
-@@ -2200,6 +2235,10 @@ int vmci_qp_broker_detach(struct vmci_handle handle, struct vmci_ctx *context)
- 	result = VMCI_SUCCESS;
-  out:
- 	mutex_unlock(&qp_broker_list.mutex);
-+
-+	if (do_notify)
-+		qp_notify_peer(false, handle, context_id, peer_id);
-+
- 	return result;
- }
- 
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
 
+The email will later be sent to:
+[akpm@linux-foundation.org andrealmeid@igalia.com andrii.nakryiko@gmail.com=
+ arnaldo.melo@gmail.com bhupesh@igalia.com brauner@kernel.org david.laight.=
+linux@gmail.com juri.lelli@redhat.com kees@kernel.org kernel-dev@igalia.com=
+ laoar.shao@gmail.com linux-api@vger.kernel.org linux-kernel@vger.kernel.or=
+g linux-mm@kvack.org mathieu.desnoyers@efficios.com peterz@infradead.org pm=
+ladek@suse.com rostedt@goodmis.org shuah@kernel.org torvalds@linux-foundati=
+on.org vincent.guittot@linaro.org willy@infradead.org]
 
-base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to send it to the mailing list.
-Reply with '#syz reject' to reject it.
+If the report looks fine to you, reply with:
+#syz upstream
 
-See  for more information.
+If the report is a false positive, reply with
+#syz invalid
+
