@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52C4E379979
-	for <syzbot@lists.linux.dev>; Mon, 18 May 2026 20:25:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07CF1393DC8
+	for <syzbot@lists.linux.dev>; Mon, 18 May 2026 21:05:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779135957; cv=none; b=UbnZyZ67jAH+2i9UrVjnQLI0hnCOzeqb7CFiOnWlF52TepqxDTMHia4+2LE0DroUDqMcpSyNauIffQ1JcDmrIs2JIJ4fXHLXTJOPpKBJpdMQiu/gB09DUw3qhjLkIMcRKCnuDWVpBRJQI1nqHR7NlaVwvto61Zgx1vajGPytH4I=
+	t=1779138328; cv=none; b=XlrniO3f7PlAUep605/YVQBDOpVIrHqq0v+xU/x6TZFPzXK1Jn6BT1g49ddj2OfrOUwXdZn55/Xl6ArjFhfdQyaVby5JtKHicnNWVHtOWDS8uiftZoXTKxb7y6ieQBPlr9Dy6O/l8krEXPyqUmP0VQ1EfMt3nCtUYQ1TBjNFg/Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779135957; c=relaxed/simple;
-	bh=syFpXqC+2VlTnOtb635bBhFmzGs3X5gZmRpUAVEQcBI=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ohEEl1gLBRJXPGGU65R4GZ6HTP4Xr5kehlvC7aC0baLxIPNYMxdonMOSQmIX89LQq052RCfw/CyS8ZNPDv+Ir8DtrzlV5qiwhkuLw8zwrhsWXGAtzHvCXsSVZ5IercnBaJS7xi5waDUr6qBxOKiBCimRxOBAqb58JIRjbOJsv5w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Zn9UCZj+; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779138328; c=relaxed/simple;
+	bh=Geewj8yhyMfi/COi+5lNdNm2aLKU+FOYAqjRQsEWlZg=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=QqtE9uzFZ2RrQuLSjKtYnMR9DdqmFu3byAc8dDzMuT1hgnu/OvlHWFdBUNkGmZZ6Yqj3S/uEhTshFwykfxhiUwBP9XnfcB72gfDgVLyb0++YF2RI+Mdv6yv8oofG+Vc5PVrp3y0L50kgw33j0o6FO5/ThZD6LhNKe7Y2ssDkhfk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FiMPauNV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zn9UCZj+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 299C4C2BCB7;
-	Mon, 18 May 2026 20:25:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FiMPauNV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 842CAC2BCB7;
+	Mon, 18 May 2026 21:05:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779135957;
-	bh=syFpXqC+2VlTnOtb635bBhFmzGs3X5gZmRpUAVEQcBI=;
+	s=k20201202; t=1779138327;
+	bh=Geewj8yhyMfi/COi+5lNdNm2aLKU+FOYAqjRQsEWlZg=;
 	h=From:To:Cc:Subject:Date:From;
-	b=Zn9UCZj+ywlTKT2RQDyR59FT5FW7eUK3NCN79s1kTeJqH/Jh5HGJ0irlz0CNxYBgG
-	 0tnCKIkJ6JvAVpBju61CuePknLzh7Cs81nXVj0Dm2yk90TXsxKvDrb8zCI+EX53dIj
-	 CbB4h7psMnEY5X789vN45ScMz34XsmNzDiOwFaW5FEXeHjiHs4o+Mw0Tzbupv/AZGJ
-	 xcbvnEVL4fP57Xe9NbySBw0HnU5eHdTQ41b5+siqvZ13IvKs2RmkCg4cW+2u+VsXK9
-	 qYdBu8Jgj1k2r4HEIMHauW4UWP3ll6Fj1FxV/gZlezIQL8SAlCZtB6+w/BVToFpgAA
-	 e5d/1VhmhrFhA==
+	b=FiMPauNV4q+aLlLXv0iT2aGmIFFsmsizmArnqovReTvOVf2THL7VbwvRaL+blR7Md
+	 eFvCevjX1hcHX7MX+t3K3e5WitLWlWDCP+v8ox10GpTr1lG4/mo5qRRRkBPdn3rZ3s
+	 ITNAfLplytjXZ1h+24X6Gw5TKMRBVBd4G2v8Y/zUeVx76rVxe5JQaN+hfFoYwwtwfs
+	 uK6mnIijLBWgtCRlh4r2ZCULycw0VZlKarHQaA2IRJ892nBRsdQ4HHU0pWkuj0BRuZ
+	 4uDpeJu06pGkzE+O0mbmO5MynMcBaXSsdPiFCyZsMcwstUAbZmK7K/DSTcvj1JjrNE
+	 JYnh/Z3RNFsWw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] media: em28xx: fix use-after-free in v4l2_open()
-Message-ID: <2c3bed16-1557-4b32-91d1-71a686ac7c6b@mail.kernel.org>
+Subject: [PATCH RFC] bpf: Fix out-of-bounds write in bpf_bprintf_prepare()
+Message-ID: <22954901-ef80-45be-8a06-9797118d2084@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,124 +38,144 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Mon, 18 May 2026 20:25:57 +0000 (UTC)
+Date: Mon, 18 May 2026 21:05:27 +0000 (UTC)
 
-The em28xx driver dynamically allocates struct em28xx_v4l2 (which embeds
-multiple struct video_device instances) but fails to properly tie its
-lifetime to the video_device refcounts. During initialization, if an
-error occurs after registering video devices, the error path calls
-video_unregister_device() and immediately frees struct em28xx_v4l2.
-However, if userspace has already opened the device node, v4l2_open()
-might be executing concurrently. It acquires a reference to the
-video_device, but since the driver uses video_device_release_empty as
-the .release callback, the V4L2 core does not notify the driver when the
-last reference is dropped. The driver frees the memory independently,
-leading to a KASAN use-after-free when v4l2_open() accesses the freed
-video_device.
+The `bpf_bprintf_prepare()` function formats arguments into a temporary
+512-byte buffer. There are two distinct bugs in this function that allow
+`tmp_buf` to advance past `tmp_buf_end`, bypassing bounds checks and
+causing out-of-bounds memory writes.
 
-Fix this by tying the lifetime of struct em28xx_v4l2 to the video_device
-refcounts. Add a custom .release callback (em28xx_vdev_release) that
-drops the kref reference to struct em28xx_v4l2, and replace
-video_device_release_empty with this new callback in the video and radio
-templates. Additionally, increment the kref before each
-video_register_device() call to account for the reference that will
-eventually be dropped by the .release callback, and manually drop the
-reference if registration fails, since the V4L2 core does not call the
-.release callback on registration failure.
+First, when handling the `%pB` and `%pI4`/`%pI6` format specifiers,
+`snprintf()` is used to format the string. `snprintf()` returns the
+number of characters that would have been written if the buffer was
+large enough. If the remaining buffer space is smaller than the
+formatted string, the return value will be greater than or equal to the
+remaining space. The code previously advanced `tmp_buf` by `err + 1`,
+which could push `tmp_buf` past `tmp_buf_end`.
 
-Fixes: d4352f3639d780f1727c26708cb511a3e3702226 ("[media] em28xx: embed video_device")
+Second, when handling standard format specifiers, the code aligns
+`tmp_buf` and checks if there is enough space using `tmp_buf_end -
+tmp_buf < sizeof_cur_arg`. Since `sizeof_cur_arg` is an unsigned
+`size_t`, the signed `ptrdiff_t` result of the pointer subtraction is
+implicitly cast to unsigned. If `tmp_buf` has already been advanced past
+`tmp_buf_end`, the negative difference becomes a huge positive number,
+bypassing the check and allowing further out-of-bounds writes.
+
+Fix these issues by checking the return value of `snprintf()` for `%pB`
+and `%pI4`/`%pI6`. If it indicates truncation or an error, return
+`-ENOSPC` or `-EINVAL` respectively, ensuring the buffer is not overrun
+and `bstr_printf()` does not read malformed data. Additionally, rewrite
+the bounds checks to use pointer addition (`tmp_buf + sizeof_cur_arg >
+tmp_buf_end`), which eliminates the integer signedness bypass, and
+harden equality checks for buffer fullness from `tmp_buf_end == tmp_buf`
+to `tmp_buf >= tmp_buf_end`.
+
+This prevents memory corruption that can lead to soft lockups and other
+crashes.
+
+Fixes: 48cac3f4a96ddf08df8e53809ed066de0dc93915 ("bpf: Implement formatted output helpers with bstr_printf")
 Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+b2391895514ed9ef4a8e@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=b2391895514ed9ef4a8e
-Link: https://syzkaller.appspot.com/ai_job?id=810055cd-6dee-4575-b8f1-77b005670c45
-To: <linux-media@vger.kernel.org>
-To: <mchehab@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+Reported-by: syzbot+d17177af4afd8c6f804c@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=d17177af4afd8c6f804c
+Link: https://syzkaller.appspot.com/ai_job?id=081c2505-21d7-4259-a6ab-cad80355a99b
+To: <linux-kernel@vger.kernel.org>
+Cc: <andrii@kernel.org>
+Cc: <ast@kernel.org>
+Cc: <bpf@vger.kernel.org>
+Cc: <daniel@iogearbox.net>
+Cc: <eddyz87@gmail.com>
+Cc: <jolsa@kernel.org>
+Cc: <martin.lau@linux.dev>
+Cc: <memxor@gmail.com>
+Cc: <song@kernel.org>
+Cc: <yonghong.song@linux.dev>
 
 ---
-diff --git a/drivers/media/usb/em28xx/em28xx-video.c b/drivers/media/usb/em28xx/em28xx-video.c
-index 4a0ce9c5e..3cf00f12a 100644
---- a/drivers/media/usb/em28xx/em28xx-video.c
-+++ b/drivers/media/usb/em28xx/em28xx-video.c
-@@ -2549,11 +2549,19 @@ static const struct v4l2_ioctl_ops video_ioctl_ops = {
- #endif
- };
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index 2bb60200c..0e3d3bddd 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -921,10 +921,22 @@ int bpf_bprintf_prepare(const char *fmt, u32 fmt_size, const u64 *raw_args,
  
-+static void em28xx_vdev_release(struct video_device *vdev)
-+{
-+	struct em28xx_v4l2 *v4l2 =
-+		container_of(vdev->v4l2_dev, struct em28xx_v4l2, v4l2_dev);
+ 			if (fmt[i + 1] == 'B') {
+ 				if (tmp_buf)  {
++					if (tmp_buf >= tmp_buf_end) {
++						err = -ENOSPC;
++						goto out;
++					}
+ 					err = snprintf(tmp_buf,
+ 						       (tmp_buf_end - tmp_buf),
+ 						       "%pB",
+ 						       (void *)(long)raw_args[num_spec]);
++					if (err < 0) {
++						err = -EINVAL;
++						goto out;
++					}
++					if (err >= tmp_buf_end - tmp_buf) {
++						err = -ENOSPC;
++						goto out;
++					}
+ 					tmp_buf += (err + 1);
+ 				}
+ 
+@@ -944,12 +956,13 @@ int bpf_bprintf_prepare(const char *fmt, u32 fmt_size, const u64 *raw_args,
+ 			if (!tmp_buf)
+ 				goto nocopy_fmt;
+ 
+-			sizeof_cur_ip = (fmt[i] == '4') ? 4 : 16;
+-			if (tmp_buf_end - tmp_buf < sizeof_cur_ip) {
++			if (tmp_buf >= tmp_buf_end) {
+ 				err = -ENOSPC;
+ 				goto out;
+ 			}
+ 
++			sizeof_cur_ip = (fmt[i] == '4') ? 4 : 16;
 +
-+	kref_put(&v4l2->ref, em28xx_free_v4l2);
-+}
-+
- static const struct video_device em28xx_video_template = {
--	.fops		= &em28xx_v4l_fops,
--	.ioctl_ops	= &video_ioctl_ops,
--	.release	= video_device_release_empty,
--	.tvnorms	= V4L2_STD_ALL,
-+	.fops = &em28xx_v4l_fops,
-+	.ioctl_ops = &video_ioctl_ops,
-+	.release = em28xx_vdev_release,
-+	.tvnorms = V4L2_STD_ALL,
- };
+ 			unsafe_ptr = (char *)(long)raw_args[num_spec];
+ 			err = copy_from_kernel_nofault(cur_ip, unsafe_ptr,
+ 						       sizeof_cur_ip);
+@@ -964,6 +977,14 @@ int bpf_bprintf_prepare(const char *fmt, u32 fmt_size, const u64 *raw_args,
+ 			ip_spec[3] = fmt[i];
+ 			err = snprintf(tmp_buf, tmp_buf_end - tmp_buf,
+ 				       ip_spec, &cur_ip);
++			if (err < 0) {
++				err = -EINVAL;
++				goto out;
++			}
++			if (err >= tmp_buf_end - tmp_buf) {
++				err = -ENOSPC;
++				goto out;
++			}
  
- static const struct v4l2_file_operations radio_fops = {
-@@ -2579,9 +2587,9 @@ static const struct v4l2_ioctl_ops radio_ioctl_ops = {
- };
+ 			tmp_buf += err + 1;
+ 			num_spec++;
+@@ -982,7 +1003,7 @@ int bpf_bprintf_prepare(const char *fmt, u32 fmt_size, const u64 *raw_args,
+ 			if (!tmp_buf)
+ 				goto nocopy_fmt;
  
- static struct video_device em28xx_radio_template = {
--	.fops		= &radio_fops,
--	.ioctl_ops	= &radio_ioctl_ops,
--	.release	= video_device_release_empty,
-+	.fops = &radio_fops,
-+	.ioctl_ops = &radio_ioctl_ops,
-+	.release = em28xx_vdev_release,
- };
+-			if (tmp_buf_end == tmp_buf) {
++			if (tmp_buf >= tmp_buf_end) {
+ 				err = -ENOSPC;
+ 				goto out;
+ 			}
+@@ -1004,7 +1025,7 @@ int bpf_bprintf_prepare(const char *fmt, u32 fmt_size, const u64 *raw_args,
+ 			if (!tmp_buf)
+ 				goto nocopy_fmt;
  
- /* I2C possible address to saa7115, tvp5150, msp3400, tvaudio */
-@@ -2956,11 +2964,13 @@ static int em28xx_v4l2_init(struct em28xx *dev)
- 		v4l2_disable_ioctl(&v4l2->vdev, VIDIOC_ENUM_FRAMESIZES);
- 
- 	/* register v4l2 video video_device */
-+	kref_get(&v4l2->ref);
- 	ret = video_register_device(&v4l2->vdev, VFL_TYPE_VIDEO,
- 				    video_nr[dev->devno]);
- 	if (ret) {
- 		dev_err(&dev->intf->dev,
- 			"unable to register video device (error=%i).\n", ret);
-+		kref_put(&v4l2->ref, em28xx_free_v4l2);
- 		goto unregister_dev;
- 	}
- 
-@@ -2990,11 +3000,13 @@ static int em28xx_v4l2_init(struct em28xx *dev)
- 		}
- 
- 		/* register v4l2 vbi video_device */
-+		kref_get(&v4l2->ref);
- 		ret = video_register_device(&v4l2->vbi_dev, VFL_TYPE_VBI,
- 					    vbi_nr[dev->devno]);
- 		if (ret < 0) {
- 			dev_err(&dev->intf->dev,
- 				"unable to register vbi device\n");
-+			kref_put(&v4l2->ref, em28xx_free_v4l2);
- 			goto unregister_dev;
- 		}
- 	}
-@@ -3003,11 +3015,13 @@ static int em28xx_v4l2_init(struct em28xx *dev)
- 		em28xx_vdev_init(dev, &v4l2->radio_dev, &em28xx_radio_template,
- 				 "radio");
- 		v4l2->radio_dev.device_caps = V4L2_CAP_RADIO | V4L2_CAP_TUNER;
-+		kref_get(&v4l2->ref);
- 		ret = video_register_device(&v4l2->radio_dev, VFL_TYPE_RADIO,
- 					    radio_nr[dev->devno]);
- 		if (ret < 0) {
- 			dev_err(&dev->intf->dev,
- 				"can't register radio device\n");
-+			kref_put(&v4l2->ref, em28xx_free_v4l2);
- 			goto unregister_dev;
- 		}
- 		dev_info(&dev->intf->dev,
+-			if (tmp_buf_end == tmp_buf) {
++			if (tmp_buf >= tmp_buf_end) {
+ 				err = -ENOSPC;
+ 				goto out;
+ 			}
+@@ -1038,7 +1059,7 @@ int bpf_bprintf_prepare(const char *fmt, u32 fmt_size, const u64 *raw_args,
+ nocopy_fmt:
+ 		if (tmp_buf) {
+ 			tmp_buf = PTR_ALIGN(tmp_buf, sizeof(u32));
+-			if (tmp_buf_end - tmp_buf < sizeof_cur_arg) {
++			if (tmp_buf + sizeof_cur_arg > tmp_buf_end) {
+ 				err = -ENOSPC;
+ 				goto out;
+ 			}
 
 
 base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
