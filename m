@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97F402ECEB9
-	for <syzbot@lists.linux.dev>; Mon, 18 May 2026 20:10:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52C4E379979
+	for <syzbot@lists.linux.dev>; Mon, 18 May 2026 20:25:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779135027; cv=none; b=ui08sZM5788Pl8gy8tsc+3arEWHFEKQyVVwjQxzgjGaCONKfCJNcv1nANABNnsre5yzURYGmgN6AQi9yK77Dysc5euGuB7SCkVXeQA6jABNd8+uk/S2kTiFs39T8hLs5vOcL1OTUEkSNT1uzvv8/fVBEg3kRIVUkXkXg6sXw+nU=
+	t=1779135957; cv=none; b=UbnZyZ67jAH+2i9UrVjnQLI0hnCOzeqb7CFiOnWlF52TepqxDTMHia4+2LE0DroUDqMcpSyNauIffQ1JcDmrIs2JIJ4fXHLXTJOPpKBJpdMQiu/gB09DUw3qhjLkIMcRKCnuDWVpBRJQI1nqHR7NlaVwvto61Zgx1vajGPytH4I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779135027; c=relaxed/simple;
-	bh=TSwDZ8YKdMvFQ9/nWd2PB72iNF87LRppKLgNScd68As=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=eWWl1FXF93glLkFaZPrMtaK0GN0Gv2GsPWedfsERPH7rUq8Z+zSINGLE3tHuDTylTF3UHvLumQz7sAgrVqd+DadARZu0Mf36WLRzcL8yk9PYr42jcEVe1nEOcW8ZP1MIZz4rFYDK88yp5GOxp/nKQrh+CVpDhOGaJ3jYvTVurfs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iiOvNzuV; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779135957; c=relaxed/simple;
+	bh=syFpXqC+2VlTnOtb635bBhFmzGs3X5gZmRpUAVEQcBI=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ohEEl1gLBRJXPGGU65R4GZ6HTP4Xr5kehlvC7aC0baLxIPNYMxdonMOSQmIX89LQq052RCfw/CyS8ZNPDv+Ir8DtrzlV5qiwhkuLw8zwrhsWXGAtzHvCXsSVZ5IercnBaJS7xi5waDUr6qBxOKiBCimRxOBAqb58JIRjbOJsv5w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Zn9UCZj+; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iiOvNzuV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26896C2BCB7;
-	Mon, 18 May 2026 20:10:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zn9UCZj+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 299C4C2BCB7;
+	Mon, 18 May 2026 20:25:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779135027;
-	bh=TSwDZ8YKdMvFQ9/nWd2PB72iNF87LRppKLgNScd68As=;
+	s=k20201202; t=1779135957;
+	bh=syFpXqC+2VlTnOtb635bBhFmzGs3X5gZmRpUAVEQcBI=;
 	h=From:To:Cc:Subject:Date:From;
-	b=iiOvNzuVR7MXiLJvaXXyseLfwgr+6WvBjFWjp4ySe/VOllYbz0GwviOD69sLxRzS2
-	 rRPs4jF56SDeMTx9FzRTcEdc7PY5oYjkI7hL0pf+Nqc5/G/AYtfzRZ3xuBbMsKLx6a
-	 ZsvMZdqC8v6nLHbZu8JD0z41BxYIMvWmnMULo35c5++Nw+MKlwxQB/StBxoWH2s71/
-	 PTYnrwswjCTtOLvPqcQoDARsytB1O04zru0UWP6imp+HomZOYgFIGb4W1fkL1QlxFS
-	 C633hkwolBtsWZPkdRrLScbOz/yknRNuF//8cKysH1vBiisqUGBoSwhE9UHTkH5CZZ
-	 7rCsPegeWig+w==
+	b=Zn9UCZj+ywlTKT2RQDyR59FT5FW7eUK3NCN79s1kTeJqH/Jh5HGJ0irlz0CNxYBgG
+	 0tnCKIkJ6JvAVpBju61CuePknLzh7Cs81nXVj0Dm2yk90TXsxKvDrb8zCI+EX53dIj
+	 CbB4h7psMnEY5X789vN45ScMz34XsmNzDiOwFaW5FEXeHjiHs4o+Mw0Tzbupv/AZGJ
+	 xcbvnEVL4fP57Xe9NbySBw0HnU5eHdTQ41b5+siqvZ13IvKs2RmkCg4cW+2u+VsXK9
+	 qYdBu8Jgj1k2r4HEIMHauW4UWP3ll6Fj1FxV/gZlezIQL8SAlCZtB6+w/BVToFpgAA
+	 e5d/1VhmhrFhA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] net/sched: taprio: fix RCU stall from hrtimer interrupt storm
-Message-ID: <87315a23-8bfb-496e-bbd6-aae43537b95f@mail.kernel.org>
+Subject: [PATCH RFC] media: em28xx: fix use-after-free in v4l2_open()
+Message-ID: <2c3bed16-1557-4b32-91d1-71a686ac7c6b@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,91 +38,124 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Mon, 18 May 2026 20:10:27 +0000 (UTC)
+Date: Mon, 18 May 2026 20:25:57 +0000 (UTC)
 
-The taprio qdisc uses an hrtimer (`q->advance_timer`) configured with
-`HRTIMER_MODE_ABS` to advance its schedule. In the timer callback
-`advance_sched()`, the next expiration time (`end_time`) is calculated
-by adding the next entry's interval to the current entry's `end_time`.
+The em28xx driver dynamically allocates struct em28xx_v4l2 (which embeds
+multiple struct video_device instances) but fails to properly tie its
+lifetime to the video_device refcounts. During initialization, if an
+error occurs after registering video devices, the error path calls
+video_unregister_device() and immediately frees struct em28xx_v4l2.
+However, if userspace has already opened the device node, v4l2_open()
+might be executing concurrently. It acquires a reference to the
+video_device, but since the driver uses video_device_release_empty as
+the .release callback, the V4L2 core does not notify the driver when the
+last reference is dropped. The driver frees the memory independently,
+leading to a KASAN use-after-free when v4l2_open() accesses the freed
+video_device.
 
-When the taprio qdisc is configured with a software schedule using
-`CLOCK_REALTIME`, a massive forward clock jump (e.g., via
-`clock_adjtime()`) can cause the calculated `end_time` to remain far in
-the past compared to the new current time. `advance_sched()` then
-returns `HRTIMER_RESTART`, causing the hrtimer subsystem to re-arm the
-timer with this past expiration time. Because the timer is armed in the
-past, it fires immediately upon returning from the interrupt handler.
-The CPU gets stuck in a tight loop of handling timer interrupts,
-advancing the schedule by a tiny amount each time, trying to catch up to
-the present time. This enormous number of iterations starves the CPU and
-triggers an `rcu_preempt` stall.
+Fix this by tying the lifetime of struct em28xx_v4l2 to the video_device
+refcounts. Add a custom .release callback (em28xx_vdev_release) that
+drops the kref reference to struct em28xx_v4l2, and replace
+video_device_release_empty with this new callback in the video and radio
+templates. Additionally, increment the kref before each
+video_register_device() call to account for the reference that will
+eventually be dropped by the .release callback, and manually drop the
+reference if registration fails, since the V4L2 core does not call the
+.release callback on registration failure.
 
-Fix this by detecting if `entry->end_time` is significantly in the past
-compared to the current time, and mathematically skipping the missed
-cycles instead of simulating them one by one. Since the schedule is
-periodic with `oper->cycle_time`, we can calculate the number of missed
-cycles `N = (now - entry->end_time) / oper->cycle_time`, and advance
-both `entry->end_time` and `oper->cycle_end_time` by `N *
-oper->cycle_time`. This preserves the alignment of the schedule and
-bounds the number of catch-up iterations to at most `num_entries`,
-completely eliminating the interrupt storm.
-
-Modifying `entry->end_time` in place is safe because `advance_sched()`
-holds the `q->current_entry_lock` spinlock, and `entry->end_time` is
-strictly private to `advance_sched()` and schedule initialization.
-`oper->cycle_time` is guaranteed to be strictly positive.
-
-Fixes: 5a781ccbd19e4664babcbe4b4ead7aa2b9283d22 ("tc: Add support for configuring the taprio scheduler")
-Assisted-by: Gemini:gemini-3.1-pro-preview
-Reported-by: syzbot+111bc509cd9740d7e4aa@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=111bc509cd9740d7e4aa
-Link: https://syzkaller.appspot.com/ai_job?id=fab5d00a-34aa-4aad-b618-10b0abf66721
-To: <davem@davemloft.net>
-To: <edumazet@google.com>
-To: <jhs@mojatatu.com>
-To: <jiri@resnulli.us>
-To: <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: <pabeni@redhat.com>
-To: <vinicius.gomes@intel.com>
-Cc: <horms@kernel.org>
+Fixes: d4352f3639d780f1727c26708cb511a3e3702226 ("[media] em28xx: embed video_device")
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
+Reported-by: syzbot+b2391895514ed9ef4a8e@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=b2391895514ed9ef4a8e
+Link: https://syzkaller.appspot.com/ai_job?id=810055cd-6dee-4575-b8f1-77b005670c45
+To: <linux-media@vger.kernel.org>
+To: <mchehab@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 45245157e..20f9e536f 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -924,7 +924,7 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
- 	int num_tc = netdev_get_num_tc(dev);
- 	struct sched_entry *entry, *next;
- 	struct Qdisc *sch = q->root;
--	ktime_t end_time;
-+	ktime_t end_time, now;
- 	int tc;
+diff --git a/drivers/media/usb/em28xx/em28xx-video.c b/drivers/media/usb/em28xx/em28xx-video.c
+index 4a0ce9c5e..3cf00f12a 100644
+--- a/drivers/media/usb/em28xx/em28xx-video.c
++++ b/drivers/media/usb/em28xx/em28xx-video.c
+@@ -2549,11 +2549,19 @@ static const struct v4l2_ioctl_ops video_ioctl_ops = {
+ #endif
+ };
  
- 	spin_lock(&q->current_entry_lock);
-@@ -960,6 +960,20 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
- 		next = list_next_entry(entry, list);
++static void em28xx_vdev_release(struct video_device *vdev)
++{
++	struct em28xx_v4l2 *v4l2 =
++		container_of(vdev->v4l2_dev, struct em28xx_v4l2, v4l2_dev);
++
++	kref_put(&v4l2->ref, em28xx_free_v4l2);
++}
++
+ static const struct video_device em28xx_video_template = {
+-	.fops		= &em28xx_v4l_fops,
+-	.ioctl_ops	= &video_ioctl_ops,
+-	.release	= video_device_release_empty,
+-	.tvnorms	= V4L2_STD_ALL,
++	.fops = &em28xx_v4l_fops,
++	.ioctl_ops = &video_ioctl_ops,
++	.release = em28xx_vdev_release,
++	.tvnorms = V4L2_STD_ALL,
+ };
+ 
+ static const struct v4l2_file_operations radio_fops = {
+@@ -2579,9 +2587,9 @@ static const struct v4l2_ioctl_ops radio_ioctl_ops = {
+ };
+ 
+ static struct video_device em28xx_radio_template = {
+-	.fops		= &radio_fops,
+-	.ioctl_ops	= &radio_ioctl_ops,
+-	.release	= video_device_release_empty,
++	.fops = &radio_fops,
++	.ioctl_ops = &radio_ioctl_ops,
++	.release = em28xx_vdev_release,
+ };
+ 
+ /* I2C possible address to saa7115, tvp5150, msp3400, tvaudio */
+@@ -2956,11 +2964,13 @@ static int em28xx_v4l2_init(struct em28xx *dev)
+ 		v4l2_disable_ioctl(&v4l2->vdev, VIDIOC_ENUM_FRAMESIZES);
+ 
+ 	/* register v4l2 video video_device */
++	kref_get(&v4l2->ref);
+ 	ret = video_register_device(&v4l2->vdev, VFL_TYPE_VIDEO,
+ 				    video_nr[dev->devno]);
+ 	if (ret) {
+ 		dev_err(&dev->intf->dev,
+ 			"unable to register video device (error=%i).\n", ret);
++		kref_put(&v4l2->ref, em28xx_free_v4l2);
+ 		goto unregister_dev;
  	}
  
-+	/* Catch up if the clock jumped forward */
-+	now = taprio_get_time(q);
-+	if (unlikely(ktime_before(entry->end_time, now))) {
-+		s64 n = div64_s64(ktime_sub(now, entry->end_time),
-+				  oper->cycle_time);
-+
-+		if (n > 0) {
-+			oper->cycle_end_time = ktime_add_ns(
-+				oper->cycle_end_time, n * oper->cycle_time);
-+			entry->end_time = ktime_add_ns(entry->end_time,
-+						       n * oper->cycle_time);
-+		}
-+	}
-+
- 	end_time = ktime_add_ns(entry->end_time, next->interval);
- 	end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
+@@ -2990,11 +3000,13 @@ static int em28xx_v4l2_init(struct em28xx *dev)
+ 		}
  
+ 		/* register v4l2 vbi video_device */
++		kref_get(&v4l2->ref);
+ 		ret = video_register_device(&v4l2->vbi_dev, VFL_TYPE_VBI,
+ 					    vbi_nr[dev->devno]);
+ 		if (ret < 0) {
+ 			dev_err(&dev->intf->dev,
+ 				"unable to register vbi device\n");
++			kref_put(&v4l2->ref, em28xx_free_v4l2);
+ 			goto unregister_dev;
+ 		}
+ 	}
+@@ -3003,11 +3015,13 @@ static int em28xx_v4l2_init(struct em28xx *dev)
+ 		em28xx_vdev_init(dev, &v4l2->radio_dev, &em28xx_radio_template,
+ 				 "radio");
+ 		v4l2->radio_dev.device_caps = V4L2_CAP_RADIO | V4L2_CAP_TUNER;
++		kref_get(&v4l2->ref);
+ 		ret = video_register_device(&v4l2->radio_dev, VFL_TYPE_RADIO,
+ 					    radio_nr[dev->devno]);
+ 		if (ret < 0) {
+ 			dev_err(&dev->intf->dev,
+ 				"can't register radio device\n");
++			kref_put(&v4l2->ref, em28xx_free_v4l2);
+ 			goto unregister_dev;
+ 		}
+ 		dev_info(&dev->intf->dev,
 
 
 base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
