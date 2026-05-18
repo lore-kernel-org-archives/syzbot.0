@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92FBC39BFE7
-	for <syzbot@lists.linux.dev>; Mon, 18 May 2026 22:07:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A6CC2882CD
+	for <syzbot@lists.linux.dev>; Mon, 18 May 2026 22:50:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779142077; cv=none; b=dqFaYSmAy0nbooyoZyO+JPVrynDZVyMs6ICngrYscG6rZ2Yfx9HbNiTlzrVcfYIXqok9cu/mf2c5sWRmC9VCSaybBdvsVcBphJ0mvfOrSWqnxwsDM1ISuXNKbAIg7WAcAS77hPS40f+srtCQitB1ZftTTZYcn2o1Yvou8kaBF6Y=
+	t=1779144657; cv=none; b=FJ3lzaSstz87Q7j17i83PaELP9onQTTZSmFWYjVm8h9VE8knQWFqU8RJDdivsQICJWjoX7vCQbhJt576Z7huF1Hz5eliy8docngEJgGKCOTMZdtXZ761fw56snhr4m5C6Nwpv0j+3xndWfLbX1TdWpU49sNdmTCw0MGQ6+ntF5o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779142077; c=relaxed/simple;
-	bh=REKDES0sXRwgVeO52Ru4tCQI4fkptdFeos/TKniNnms=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=LATZDioTApJH7k2D3TSRzcU7nbiHtZ8vLUsSdQWbPCheguCqLjCF4vEXwkWin7RjM9hBjOoXxv0qNsZ5SleYbkwWtEs4nbvueW55IqqKyOwhTbx/IfBvDlrilYCFudMebSdEQKFYD5tbdneiTfqyKtqyaYUMnRYhRCsxDQxT+Ls=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UZmJgbSb; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1779144657; c=relaxed/simple;
+	bh=EiQCvG4WcseavISCz6pgY+a2T3qP+ezzzXemgzdszKU=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=uAFGO50h508jxzrwmOBO01SXTBT9uBkqJGGDBztGx/HwbEFoSCGZqp89PAWAIaYU0IFXdTJczBa4dke485iM2lYD+WvbtikWbYUjUix9uYyiCVTC0S9ke6gtX4Z5bK6UlbYqg2fXLYE0/M7q3Wm//4wtTFvuQ7XKTTrg64kJXvs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sp3sbWjn; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UZmJgbSb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25815C2BCB7;
-	Mon, 18 May 2026 22:07:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sp3sbWjn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 127D1C2BCB7;
+	Mon, 18 May 2026 22:50:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779142077;
-	bh=REKDES0sXRwgVeO52Ru4tCQI4fkptdFeos/TKniNnms=;
+	s=k20201202; t=1779144657;
+	bh=EiQCvG4WcseavISCz6pgY+a2T3qP+ezzzXemgzdszKU=;
 	h=From:To:Cc:Subject:Date:From;
-	b=UZmJgbSb0nyK7K+rmZdRDvt7CDE47qqHBR9wIiFKsTH0s4CXdjTy23GvbI/lwQiIv
-	 5DI4VUzgSiUC3+l7Geb2LEdLRtNQf7M7OnlAtKtSOYcVjKumPuX/XIeoR9RuCMiMPM
-	 hixlTZ45fjx/AyKn4U8aN6EN+es7UIwiuB1VRhxaR8pg9+yUNNpbkJMtPyE2LXy5YQ
-	 mMu0p1A/GqMMDbQPWoxCV8XUMaH2Q+Gzxy86euJG6NlOMDGWXRu6/yRQ38g78Ww0vY
-	 HYt9+6DkPOBgSjVHbeWgMD9U1DtBwUJ9yBxK5OzBCgstS/ySlNcF8QBbawWkOztTJH
-	 296K/ccovc8HA==
+	b=sp3sbWjnhaiUa8fEor5oMmr1wcXmqEChlaUnR/PrN/bwhh4dnpY9BbYgUhd0xJVGQ
+	 lZJ2mk32+Ld91N9nhXS9pj3/ZoNHeyFJgIfApQwViSj9+ahMU4AMUbgNEKvrNP2b0k
+	 gLgfVARJca4MMnPhia2lQUZov8d/J3qA3I9SMl6Rnd1SY6r6YTGoXxbEZ1PIOzbKSH
+	 XLxoXx6yUvNpn2IeOmrlrWL3COuZO0Wi7HoKulkdFzACbuy2FklbJd11ohaR3Akwnk
+	 3RRcv+7HpfuQpjqy84DAi5j7rtOj0YX4SB1A0cYLAcnMVUVZhbBjYKF8+TSgBXzpp9
+	 Ve5siHBFFgtlQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] wifi: cfg80211: replace WARN_ON() with dev_err() in netns switch
-Message-ID: <4e2d36a7-9417-4c50-9ec1-3e82c7a670f3@mail.kernel.org>
+Subject: [PATCH RFC v2] usb: cdc-wdm: close race between workqueue and release
+Message-ID: <3bb247d6-e412-46be-973c-5d2f9945ebe5@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,130 +38,136 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Mon, 18 May 2026 22:07:57 +0000 (UTC)
+Date: Mon, 18 May 2026 22:50:57 +0000 (UTC)
 
-The syzkaller reported a kernel panic in cfg802154_switch_netns() when
-device_rename() fails with -ENOMEM. The crash occurs because WARN_ON()
-is used to handle the memory allocation failure, which escalates into a
-kernel panic when panic_on_warn is enabled.
+The crash "URB submitted while active" occurs because the
+`desc->response` URB is submitted by `wdm_rxwork` when it is already in
+an active state. This happens because `wdm_release` fails to cancel
+pending workqueue items (`desc->rxwork` and `desc->service_outs_intr`)
+during its cleanup phase. When the character device is closed and there
+are no other openers, `wdm_release` calls `poison_urbs()` to kill active
+URBs, clears the `WDM_RESPONDING` flag, and calls `unpoison_urbs()`.
+Because `wdm_release` does not call `cancel_work_sync()` for the work
+items, they can run concurrently with the cleanup process. If a work
+item executes after the URBs are unpoisoned, it can successfully submit
+the URB. If another work item then runs, it will see the
+`WDM_RESPONDING` flag as cleared, set it, and attempt to submit the URB
+again, leading to the crash.
 
-Memory allocation failures are expected runtime events under memory
-pressure and should be handled gracefully. The WARN_ON() macro must not
-be used for conditions that can legitimately happen. Failing to rename
-the device or change the network namespace is not a fatal system error.
+To fix this, cancel the pending workqueue items after poisoning the URBs
+and before clearing the `WDM_RESPONDING` flag or unpoisoning the URBs.
+This ensures that any running work item will either fail to submit the
+URB (because it is poisoned) or finish executing before the cleanup
+proceeds. The same omission is present in `wdm_wwan_port_stop`, so apply
+the same fix there to prevent data leaks or crashes across WWAN
+sessions.
 
-Replace the WARN_ON() calls with dev_err() in both
-cfg802154_switch_netns() and cfg80211_switch_netns(), as well as in
-their respective pernet exit handlers (cfg802154_pernet_exit() and
-cfg80211_pernet_exit()). This ensures that memory allocation failures
-under pressure are handled gracefully, logging the error for debugging
-purposes without bringing down the entire system.
+------------[ cut here ]------------
+URB ffff888052781d00 submitted while active
+WARNING: drivers/usb/core/urb.c:379 at usb_submit_urb+0x7b/0x18b0
+drivers/usb/core/urb.c:379, CPU#0: kworker/0:3/5726
+Modules linked in:
+CPU: 0 UID: 0 PID: 5726 Comm: kworker/0:3 Not tainted syzkaller #1
+PREEMPT(full)
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+1.16.3-debian-1.16.3-2 04/01/2014
+Workqueue: events wdm_rxwork
+RIP: 0010:usb_submit_urb+0x7e/0x18b0 drivers/usb/core/urb.c:379
+Code: 89 f0 48 c1 e8 03 42 80 3c 38 00 74 08 4c 89 f7 e8 57 eb 0c fb 49
+83 3e 00 74 40 e8 7c da a2 fa 48 8d 3d a5 09 d9 08 48 89 de <67> 48 0f
+b9 3a b8 f0 ff ff ff eb 11 e8 61 da a2 fa eb 05 e8 5a da
+RSP: 0018:ffffc90003427a10 EFLAGS: 00010293
+RAX: ffffffff8720dc64 RBX: ffff888052781d00 RCX: ffff88801fe48000
+RDX: 0000000000000000 RSI: ffff888052781d00 RDI: ffffffff8ff9e610
+RBP: 0000000000000001 R08: ffffffff8fecf1f7 R09: 1ffffffff1fd9e3e
+R10: dffffc0000000000 R11: fffffbfff1fd9e3f R12: 0000000000000cc0
+R13: 1ffff1100a555e12 R14: ffff888052781d08 R15: dffffc0000000000
+FS:  0000000000000000(0000) GS:ffff88809893a000(0000)
+knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f08959ea540 CR3: 000000001e4b2000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ wdm_rxwork+0x101/0x1e0 drivers/usb/class/cdc-wdm.c:997
+ process_one_work kernel/workqueue.c:3302 [inline]
+ process_scheduled_works+0xb5d/0x1860 kernel/workqueue.c:3385
+ worker_thread+0x8a2/0xda0 kernel/workqueue.c:3466
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
+----------------
 
-Fixes: 04600794958f1833f5571c6cde40f260ab557f55 ("cfg80211: support sysfs namespaces")
+Tested-by: nogikh@google.com
+
+Fixes: 01e01f5c89773c600a9f0b32c888de0146066c3a ("usb: cdc-wdm: fix reading stuck on device close")
 Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+bd5829ba3619f08e2341@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=bd5829ba3619f08e2341
-Link: https://syzkaller.appspot.com/ai_job?id=a1cfc84c-7c0f-4340-891d-885fcee80cad
-To: <alex.aring@gmail.com>
-To: <davem@davemloft.net>
-To: <edumazet@google.com>
-To: <kuba@kernel.org>
-To: <linux-wpan@vger.kernel.org>
-To: <miquel.raynal@bootlin.com>
-To: <netdev@vger.kernel.org>
-To: <pabeni@redhat.com>
-To: <stefan@datenfreihafen.org>
-Cc: <horms@kernel.org>
-Cc: <johannes@sipsolutions.net>
+Tested-by: Aleksandr Nogikh <nogikh@google.com>
+Reported-by: syzbot+c6a1953c27ace6cc34e5@syzkaller.appspotmail.com
+Reported-by: syzbot <syzbot+c6a1953c27ace6cc34e5@syzkaller.appspotmail.com>
+Link: https://syzkaller.appspot.com/bug?extid=c6a1953c27ace6cc34e5
+Link: https://syzkaller.appspot.com/ai_job?id=eb69973c-340c-4ffd-bfad-183f25211bed
+To: <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: <linux-wireless@vger.kernel.org>
 
 ---
 v2:
-- Replaced pr_err() with dev_err() to include device details in the error messages.
+- Added crash stacktrace to the commit description
+- Added Tested-by tag from nogikh@google.com
+- Cleared WDM_RESPONDING flag and resp_count under iuspin lock in wdm_wwan_port_stop, wdm_suspend, and wdm_pre_reset
 
 v1:
-https://lore.kernel.org/all/7d949fbc-9781-4428-bfac-e51501b18bf7@mail.kernel.org/T/
+https://lore.kernel.org/all/97986988-6374-4e40-aa96-662939fabe88@mail.kernel.org/T/
 ---
-diff --git a/net/ieee802154/core.c b/net/ieee802154/core.c
-index 89b671b12..07082857c 100644
---- a/net/ieee802154/core.c
-+++ b/net/ieee802154/core.c
-@@ -245,7 +245,9 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
- 			wpan_dev->netdev->netns_immutable = false;
- 			err = dev_change_net_namespace(wpan_dev->netdev, net,
- 						       "wpan%d");
--			WARN_ON(err);
-+			if (err)
-+				dev_err(&rdev->wpan_phy.dev,
-+					"failed to change netns: %d\n", err);
- 			wpan_dev->netdev->netns_immutable = true;
- 		}
+diff --git a/drivers/usb/class/cdc-wdm.c b/drivers/usb/class/cdc-wdm.c
+index 7556c0dac..ba5422d1d 100644
+--- a/drivers/usb/class/cdc-wdm.c
++++ b/drivers/usb/class/cdc-wdm.c
+@@ -769,6 +769,8 @@ static int wdm_release(struct inode *inode, struct file *file)
+ 		if (!test_bit(WDM_DISCONNECTING, &desc->flags)) {
+ 			dev_dbg(&desc->intf->dev, "wdm_release: cleanup\n");
+ 			poison_urbs(desc);
++			cancel_work_sync(&desc->rxwork);
++			cancel_work_sync(&desc->service_outs_intr);
+ 			spin_lock_irq(&desc->iuspin);
+ 			desc->resp_count = 0;
+ 			clear_bit(WDM_RESPONDING, &desc->flags);
+@@ -863,6 +865,12 @@ static void wdm_wwan_port_stop(struct wwan_port *port)
  
-@@ -255,7 +257,9 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
- 	wpan_phy_net_set(&rdev->wpan_phy, net);
- 
- 	err = device_rename(&rdev->wpan_phy.dev, dev_name(&rdev->wpan_phy.dev));
--	WARN_ON(err);
-+	if (err)
-+		dev_err(&rdev->wpan_phy.dev, "failed to rename device: %d\n",
-+			err);
- 
+ 	/* Stop all transfers and disable WWAN mode */
+ 	poison_urbs(desc);
++	cancel_work_sync(&desc->rxwork);
++	cancel_work_sync(&desc->service_outs_intr);
++	spin_lock_irq(&desc->iuspin);
++	desc->resp_count = 0;
++	clear_bit(WDM_RESPONDING, &desc->flags);
++	spin_unlock_irq(&desc->iuspin);
+ 	desc->manage_power(desc->intf, 0);
+ 	clear_bit(WDM_READ, &desc->flags);
+ 	unpoison_urbs(desc);
+@@ -1279,6 +1287,10 @@ static int wdm_suspend(struct usb_interface *intf, pm_message_t message)
+ 		poison_urbs(desc);
+ 		cancel_work_sync(&desc->rxwork);
+ 		cancel_work_sync(&desc->service_outs_intr);
++		spin_lock_irq(&desc->iuspin);
++		desc->resp_count = 0;
++		clear_bit(WDM_RESPONDING, &desc->flags);
++		spin_unlock_irq(&desc->iuspin);
+ 		unpoison_urbs(desc);
+ 	}
+ 	if (!PMSG_IS_AUTO(message)) {
+@@ -1340,6 +1352,10 @@ static int wdm_pre_reset(struct usb_interface *intf)
+ 	poison_urbs(desc);
+ 	cancel_work_sync(&desc->rxwork);
+ 	cancel_work_sync(&desc->service_outs_intr);
++	spin_lock_irq(&desc->iuspin);
++	desc->resp_count = 0;
++	clear_bit(WDM_RESPONDING, &desc->flags);
++	spin_unlock_irq(&desc->iuspin);
  	return 0;
  }
-@@ -350,8 +354,11 @@ static void __net_exit cfg802154_pernet_exit(struct net *net)
  
- 	rtnl_lock();
- 	list_for_each_entry(rdev, &cfg802154_rdev_list, list) {
--		if (net_eq(wpan_phy_net(&rdev->wpan_phy), net))
--			WARN_ON(cfg802154_switch_netns(rdev, &init_net));
-+		if (net_eq(wpan_phy_net(&rdev->wpan_phy), net)) {
-+			if (cfg802154_switch_netns(rdev, &init_net))
-+				dev_err(&rdev->wpan_phy.dev,
-+					"failed to switch netns on exit\n");
-+		}
- 	}
- 	rtnl_unlock();
- }
-diff --git a/net/wireless/core.c b/net/wireless/core.c
-index 6783e0672..6badcec46 100644
---- a/net/wireless/core.c
-+++ b/net/wireless/core.c
-@@ -184,7 +184,9 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
- 			wdev->netdev->netns_immutable = false;
- 			err = dev_change_net_namespace(wdev->netdev, net,
- 							"wlan%d");
--			WARN_ON(err);
-+			if (err)
-+				dev_err(&rdev->wiphy.dev,
-+					"failed to change netns: %d\n", err);
- 			wdev->netdev->netns_immutable = true;
- 		}
- 
-@@ -204,7 +206,8 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
- 	wiphy_net_set(&rdev->wiphy, net);
- 
- 	err = device_rename(&rdev->wiphy.dev, dev_name(&rdev->wiphy.dev));
--	WARN_ON(err);
-+	if (err)
-+		dev_err(&rdev->wiphy.dev, "failed to rename device: %d\n", err);
- 
- 	nl80211_notify_wiphy(rdev, NL80211_CMD_NEW_WIPHY);
- 
-@@ -1809,8 +1812,11 @@ static void __net_exit cfg80211_pernet_exit(struct net *net)
- 
- 	rtnl_lock();
- 	for_each_rdev(rdev) {
--		if (net_eq(wiphy_net(&rdev->wiphy), net))
--			WARN_ON(cfg80211_switch_netns(rdev, &init_net));
-+		if (net_eq(wiphy_net(&rdev->wiphy), net)) {
-+			if (cfg80211_switch_netns(rdev, &init_net))
-+				dev_err(&rdev->wiphy.dev,
-+					"failed to switch netns on exit\n");
-+		}
- 	}
- 	rtnl_unlock();
- }
 
 
 base-commit: 5d6919055dec134de3c40167a490f33c74c12581
