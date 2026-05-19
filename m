@@ -1,173 +1,201 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D56B47ECE7
-	for <syzbot@lists.linux.dev>; Tue, 19 May 2026 14:41:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 758CA3769FC
+	for <syzbot@lists.linux.dev>; Tue, 19 May 2026 14:45:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=10.30.226.201
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779201663; cv=pass; b=p+eE+G7yxs1r97/ynyeAOvhGu2S6yq6x0EJjpbkzinkvsrj7WPhk6IJON1/+Cu1kjCCbZQbcuevmIfuUeTGcN+C44v8lUfsMO2W7rUiimGbm35FO5dUofAv46/sompwDEyEecBMU7/qEnQ/YM6DDQxCPaVKFfPpaDgzCh4bLSmw=
+	t=1779201938; cv=pass; b=haHcdM3ElKGE6q8+JTQZTiGsChT/dm+xeSrwE934erImm78OTxGJWvmTb7Twf3CzueaN45xOzFKplU0Wd7CtZaBmJpmeNUNot8LvhYFpvhkGTshZHVLf6k04eMOw//DDgUdqq0D4m+pVGpgechJNlzttVXXK6p8qG28xO12fHSQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779201663; c=relaxed/simple;
-	bh=7arhaTjLECl4VAokmI0wAwOedMMKplP2ZRQGYMUBRIo=;
+	s=arc-20240116; t=1779201938; c=relaxed/simple;
+	bh=+QTVUAjQGcPBrl+S84eEbv98EekExcSBHjdKdVg2OXM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=r1T4OeSjQycOkUAOwsf958PV44YftXFMvOI1ZvoYtYqGX9vB15kOr2rgsQo2Ld0c09wdEFNw1bf3dqB5grxqOlw72PXP8dHriRcuI9OhuIIChxhKbAAITkslsi+1PFWgpvHomFdKwdsOKIzhdL3fqsywHpO1lnoSiTAkTve7rOA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=axThyOMn; arc=pass smtp.client-ip=10.30.226.201
+	 To:Cc:Content-Type; b=KebKtAYvHP66Mw08DEGrAluC56np5etpIC5lGMsLCsJS+cbvM+V9DGxhnGxLjTBokkXsmDLp3PKCzk9ASC9nlKKo7nar7IjyrgIG3y1TQBNIY2eK0ejEwsJ5PrEjKrvbyMqAoIn7FdFEJK8jAJUfxBjch9joOZdeG7Us8EOycU0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fIFw4G2q; arc=pass smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="axThyOMn"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fIFw4G2q"
 Received: by smtp.kernel.org (Postfix)
-	id C5B7FC2BCB8; Tue, 19 May 2026 14:41:02 +0000 (UTC)
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+	id 2890BC2BCB3; Tue, 19 May 2026 14:45:38 +0000 (UTC)
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id DA8EBC2BCB3
-	for <syzbot@kernel.org>; Tue, 19 May 2026 14:41:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.kernel.org DA8EBC2BCB3
+	by smtp.kernel.org (Postfix) with ESMTPS id 29035C2BCB8
+	for <syzbot@kernel.org>; Tue, 19 May 2026 14:45:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.kernel.org 29035C2BCB8
 Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=google.com
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-439bdb1d75bso2356948fac.1
-        for <syzbot@kernel.org>; Tue, 19 May 2026 07:41:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779201661; cv=none;
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-43a86d544c2so1654900fac.0
+        for <syzbot@kernel.org>; Tue, 19 May 2026 07:45:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779201936; cv=none;
         d=google.com; s=arc-20240605;
-        b=bygS+Ab9PR2jz1u89raiw/AtkcuYe5gepF8DRSTpZ3/KkT6t4HSaoXTXQMcYZB5PTB
-         hQbiF27shGzFU1LFXmsQD+XN4LMJFoFRpYOHQxmjiOGrUcO1Mx4V5pbmT2+IYbFLgkHY
-         zV/1469JDnLUS7kt8FZkHYyOet42abe6rXFiYfQKW2Y2LYaltdcR2jHhJfvJjcmN6qHl
-         NgtfHIKwYBstzSym+U0wJrI5QLjTTYpMAAiaKMCvDCSPIvKESdjmWFDcEGyp75aESAYS
-         QjAu/UtTmLsZCSefEKxoBeKKVPo++pvZp8jsVeL/A1HDfiQo4Jkw6yxXH3rlPLK0WoNj
-         pGxQ==
+        b=UCIXaD/mwbwF3lxqNE0Qy2PI8pXkl4BNAu6rIM9szEWxPOw6Ml1Xc/ZiwswPGwXTmv
+         kElzx4dXvIJ83IptS43zKqy2rK98NhiCEk+vmjRco5uQk+RYKczGR1QBK3nVirwRXFe8
+         8T69mRbm91KtkGQvuUc7n6ItkjlTxbO/wGpacdsYx1wZsakONGifoZ2KKQHVyEC8FIUB
+         Ex4SBabNdFHnRNoxBdkJ7lEbC9XqIRyKbGhQYYOeTLBmQ8waQMNjRSNnwT2XLT0LNA+W
+         G6K7itCjDEWSVxPUVpQ896J56dPcDZDnXO82YYpX9nTIj58DPuwuHwgjWZuqk79y/Kn5
+         7OAg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=dJxwDDgX1uOcnO6b3gPXFzOLYsj+FNocHTIQS11UDCk=;
+        bh=fn6GojOHYOwIw8CVgvVOVm29ZEtH1Pl1mlOpVogr1cc=;
         fh=2Ld/g5BVZzBadtquf8mrXl84q+iOtbUed/2ECOFnmmI=;
-        b=J+Nq+V9tOS3RU085L6VyvcMdXtf9ly/4U2tA3k1S3Pdw1CC4rAQW+EDhF/JBfoqc4l
-         Phtd5NsW4d0hQeUVelwLwLfyE3DWJ3e9n10YID2CgZrpf4LpO5X9c8PPDlE2zSouoSlB
-         PQxc1c6iD/6aUhLvtuuvErwE0JQ7FggY54aIrmmmuDNBofNN67m6ugHBiE/Y/DKM5kYP
-         C+n9HtbuoTC65QwY1g7fveS9CSyLT1omsJFQwD6LDS2z6p6mUJJzgcpVxvUbYsDGXyxL
-         gbMaqCov65EhK7uT9/TSoBmOTCJn1w15M8V9UlG8YpT/Q708DT23PG7uYEma7YsO85Qn
-         gHLg==;
+        b=ECqvYs8jPR/aKHQBui5fod8tF5RXU6v5rncNuXUzLIAP7kipYFnEEzisovwnDrfN4v
+         VQ2rkA1DD+SIq3Y1ubdE+/HGZRTBFPatD4e9IRa1/0t6Vraka14agrVNu8HXlGrgh0iU
+         p3IKWRaUanIjPxIOHFcgaAjz/dd0cd+uS95SWcWYe/2LFtdW53Ze8wcorW0cNf4K6VpF
+         Ree6ThJJSn1g2dOvukrVmLiOKRTD6M3a0MIhp0hmKULIA4XHeJ71XdAgB5YTCPo7+5ol
+         L3xqLWvVqXZdEPFSNy0zDu2JU5ve8dJbaHwWK6ua7ofwahp081NySIwcukQPAueObjay
+         Smbg==;
         darn=kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779201661; x=1779806461; darn=kernel.org;
+        d=google.com; s=20251104; t=1779201936; x=1779806736; darn=kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=dJxwDDgX1uOcnO6b3gPXFzOLYsj+FNocHTIQS11UDCk=;
-        b=axThyOMnDMJ7dh/l8mzmxSRmK22g98qVOz8PD3tQnSNxQ/8kAWCFBKBSOmlA75C5Ht
-         v7tFBEOdIIbXFw7LVoD8PpgSIWHXriFmRdjoW0d9jPO/360n7jpstSgC+bVajuRhalyW
-         P2KyuB+op1pdRcmcn5p/gZywvnQMxumy9PLEgg8us2UKXLOl8dfBEbzLTBnDXFEgkXV8
-         2Q06LdSPqyfqUi4z3DYEw97cC9Mp0SZcC87N7MsA7XHqi6bR8pwkseEp0pt+3KTI4Y8x
-         3ZV4qn06tIVgSYYFB1vgyZ59oj4mOKCWGktVBmcRg2zYCIQmF/kUp3XDjaNWFMPvB47C
-         FJvQ==
+        bh=fn6GojOHYOwIw8CVgvVOVm29ZEtH1Pl1mlOpVogr1cc=;
+        b=fIFw4G2qjhXSda8NmlRBy3jFAPKBLJnh7FbQF5jbIZWvvf1Zf+lb5weWj35JqrKfxH
+         6yEKJ49dA9EbezwEyArfVG0XMFmRnZcLrz8mZ7K+OAIo0pEfNVbliSpmaTCGJ/0oy6r0
+         EAdoOZGSLpEqLYM9yBYSSBb+cgz9WXzGXExgr2/BJxDBK5Whcz7fCPVtSgsUPuGr9nwd
+         1JZoBUb/kvyHwgq/2JV03M6AJgwoz8WwPchIXHdWXudQadESpfTM+/vAZaevzvlCWnSF
+         pDDIb+Q26ZZ7DGrOV8Q9wY/OjEaT8Po82Qg0IPyZQLHrkqtkagK7YdmXapyprNBRA+SJ
+         RbCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779201661; x=1779806461;
+        d=1e100.net; s=20251104; t=1779201936; x=1779806736;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=dJxwDDgX1uOcnO6b3gPXFzOLYsj+FNocHTIQS11UDCk=;
-        b=XfMZE8nKus/MtzmOPJEeh70Zyzl/XFempY/epOShsyEqA0w1t68N7gmX8jyuYjvsqc
-         KE76DyXCaB2DJIXO73Y3rgHqn65uVt1DsfbAAWHtHc/0AKhOUn9MtJ20g3T+bd+7hT8z
-         ztBhDWpLdcaKVNQgoh9Vu8kpim4UVzGwNbZyWSUdWv1wKEKwMM1s1ADJ5koZsblCWRXV
-         6+IdNFMJiTLOgxi9F1TVYF/hwYiAiC1WPUAvlN93yI9Se/WMdfUOR2jXLrkh/YecI3Jm
-         rlOMWzAOcS6hbMwNLpM24O+ly3QZK+gxRiyzeFxUxmcyZ7E5sBD21ZM8NUH+IOT6aIk2
-         10gg==
-X-Gm-Message-State: AOJu0YwhDjrMUkTHy8zA50PDT2yK30HWu6TJAHLWbqNh8sr1nk9xUEwL
-	xGsUvjw6wMgxE4oX4d1s4zhSPu1Fil8qSt5/xOPns1OSpJuEMcD4s6LKAzlCzbi4rY05ptGkaNV
-	EL9YDApkNGgnBAWQ9G/dy0WAUHvw3/6K7MfqjyPajHuj57Tgf1M3evBS5
-X-Gm-Gg: Acq92OEDi6SS62yVfmufcdAAMegpyRexeSQSuDQab/3iQqHJ0+E+Bso05VXy3gQxDGw
-	P21lvMNYX011qa979gbO2RHp4vrEYn3u+krco+Y4x3VEjQWoxQyoWWzbU4qqYc58RmG/lhD1S55
-	iWfMJMq11p7Dc6Ac1VWon3eFJCZVADWxOHJOSEvfo5Bu4D6+0byX1oNQJM3fmIMwGvnDjLEe9wt
-	f0qFrfkKIPc+mHv7r2aaxrCnbXOkmsFGWs++Z4doVz2GXE+tkCdJDLt+eQDwRMoTXRPlRIoalak
-	jbXL0F3ajMVvNJBJb1eoK6ehp3/di7+azavzs51EUuDZZJ8ZqNDsrv9Yz4YzDHi9ukT5tkNG9HT
-	HSKGKZu/VLGx2XQ==
-X-Received: by 2002:a05:6820:1746:b0:684:bf61:ed25 with SMTP id
- 006d021491bc7-69c942e1b26mr12664094eaf.19.1779201660359; Tue, 19 May 2026
- 07:41:00 -0700 (PDT)
+        bh=fn6GojOHYOwIw8CVgvVOVm29ZEtH1Pl1mlOpVogr1cc=;
+        b=lA0Cu/9WJdkbzVvSiKRNo3hWTbdnwjnas29VMs/uItBVq9ETNQcd5UrMJS4W7FdK8K
+         IqqpUGNQ/C5m7NSb9HihCMEqSgNERKqBU30Yo5VqWsISTG6Q8lD6XdfPflAQdKCxNLM0
+         Xyd5vnBLJlE+dPzHRmCb+gH0M3Fc9i8Tr6DHR5ROJWsdom/xs/S2WfbR2RoSaXfzSHVU
+         PfnpMpXiAG98ZKmk08qd+MR1upjJUrecPRCoiH/a5YrhzUztWV4Kq/4Piav7uCB5Fz3L
+         TCHuluuQpXz7PsYmM6s+4YNTZppBAgxkUOLM2whMHQhcKwP9Fxb4ZJqAW5913aum5kNB
+         SL2Q==
+X-Gm-Message-State: AOJu0YyTxUXH7DTWrhHDBpbyUd/KRm5Q9h3sM1Hn8iGyWEPtnfMC3Cs0
+	DmLpBIgPIn5A245qSiMlLyerisc5Yslhs0mmm0IPExfmpGtyC43aaiFjye/ZesbPwVJFGunCyIF
+	yIcrtImv044Hoq/+kX3vizq3r0VZFyvD6NvgEqw9Sp2IPhzqD6sszdq+P
+X-Gm-Gg: Acq92OE5S5rMUop2sEyL/EwvgyEY0AHlL6buF3Z27joYHXMTQa4TlsaU/bEW0PDIoTY
+	+noTg1vY5cTz5iv15ZIFoWm3XND0y9uaQbbag5n79XI1ypRi29u2lYiC32CGHYVLtUcbKnY7DY4
+	7A8UbOqQ9pWOocpHU0z54BbzhtZEIhQltemDkWrxvlh6k0wRZZ3DxREjagLty6UjwoUzTP9nq5Y
+	CW0+LpNTRjTbf5EFyAZ0tcLFrVwO0UFQC/j+f984ydTuM2j/2zkXRTkiOvRy1xroY2bsGJBzXXp
+	6SM1JT9PacwrCGvkg6GV8wjL7UHhc2dYa7iXPnNDldVrcMdeFt1YPU+kzU6wW7P1pSZM159skQ+
+	KOXE=
+X-Received: by 2002:a05:6870:91c9:b0:3d9:2fe2:f5c8 with SMTP id
+ 586e51a60fabf-43a2e0955bbmr12382798fac.32.1779201935503; Tue, 19 May 2026
+ 07:45:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <ea8bba94-ca4f-4a7b-9181-a858d92b6ca9@mail.kernel.org>
-In-Reply-To: <ea8bba94-ca4f-4a7b-9181-a858d92b6ca9@mail.kernel.org>
+References: <2cdda92f-08ad-4bc5-a2cb-b2bf9c8d222d@mail.kernel.org>
+In-Reply-To: <2cdda92f-08ad-4bc5-a2cb-b2bf9c8d222d@mail.kernel.org>
 From: Aleksandr Nogikh <nogikh@google.com>
-Date: Tue, 19 May 2026 16:40:48 +0200
-X-Gm-Features: AVHnY4LWPyQFPVR6X6YvMsbwYcj8kmOo8P49rQCFYQr8h75glkRc_NEE_-cd9z0
-Message-ID: <CANp29Y5AR7a+jhG5rUkkn8hopL1+MsOf+X+yjBtJ9r1a1B4jCA@mail.gmail.com>
-Subject: Re: [PATCH RFC] HID: mcp2221: fix OOB read in mcp2221_raw_event()
+Date: Tue, 19 May 2026 16:45:23 +0200
+X-Gm-Features: AVHnY4JRsHwcEHHV-O7_jYdqdT6Igc6as5BttOTHxWLD-nxj36S8Mr7dCcFPccE
+Message-ID: <CANp29Y7GgGK_H4O3Z6SXwebcOOoLjCbpd_CKXUXXQRdGB3gbTQ@mail.gmail.com>
+Subject: Re: [PATCH RFC] bpf: Fix uninitialized value in eth_type_trans()
 To: syzbot <syzbot@kernel.org>
 Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 19, 2026 at 1:39=E2=80=AFPM 'syzbot' via
+Include parts of the stack trace in the description.
+
+Also, regarding patch title: if it "fixes" the uninitialized value,
+I'd expect it to initialize it, but in this case it prevents
+uninitialized value access (which is good, but it's different). Please
+carefully look at how other similar KMSAN bugs were fixed in the
+kernel and what their commit descriptions were.
+
+On Tue, May 19, 2026 at 3:36=E2=80=AFPM 'syzbot' via
 syzkaller-upstream-moderation
 <syzkaller-upstream-moderation@googlegroups.com> wrote:
 >
-> syzbot reported a slab-out-of-bounds read in mcp2221_raw_event(). This
-> happens because the driver does not validate the size of the incoming
-> HID report and blindly processes it based on the command byte data[0],
-> without verifying if the report is actually a response to the command
-> the driver just sent.
+> syzkaller reported a KMSAN uninitialized value crash in
+> eth_type_trans().
 >
-> If the device sends an MCP2221_GPIO_SET (0x50) input report before any
-> GPIO operations are performed (or if a malicious device injects one),
-> mcp->gp_idx is still 0. The expression mcp->gp_idx - 1 results in -1,
-> causing the code to access data[-1], which reads out of the bounds of
-> the URB transfer buffer.
+> The root cause is a missing check in __bpf_redirect_common() and
+> __bpf_redirect_neigh() when an L3 BPF program redirects a packet to an
+> L2 device. For example, when bpf_prog_test_run_skb() runs an L3 BPF
+> program, it pulls the MAC header. If the BPF program then redirects the
+> packet to an L2 device without pushing the MAC header back (e.g.,
+> leaving skb->data pointing to the network header), the redirected packet
+> will have an invalid MAC header offset.
 >
-> To fix this, ensure that the report size is at least 64 bytes (the
-> expected report size for MCP2221). Also, verify that the incoming report
-> matches the currently pending command by checking data[0] !=3D
-> mcp->txbuf[0]. Since mcp->txbuf[0] and mcp->gp_idx are always set
-> together when sending GPIO commands, this check inherently guarantees
-> that mcp->gp_idx is valid and correctly initialized for the specific
-> command being processed, preventing the out-of-bounds access.
+> When the packet reaches eth_type_trans(), it assumes skb->data points to
+> a valid MAC header and attempts to read the protocol type. Since
+> skb->data actually points to the network header, this results in an
+> out-of-bounds read. If the skb head was previously reallocated (e.g.,
+> via pskb_expand_head() during bpf_clone_redirect()), this out-of-bounds
+> read accesses uninitialized memory, triggering the KMSAN bug.
 >
-> Fixes: 328de1c519c5 ("HID: mcp2221: add GPIO functionality support")
-> Assisted-by: Gemini:gemini-3.1-pro-preview
-> Reported-by: syzbot+1018672fe70298606e5f@syzkaller.appspotmail.com
-> Link: https://syzkaller.appspot.com/bug?extid=3D1018672fe70298606e5f
-> Link: https://syzkaller.appspot.com/ai_job?id=3D770c0407-c1fc-4070-a4e7-4=
-ccade9bc122
-> To: <bentiss@kernel.org>
-> To: <gupt21@gmail.com>
-> To: <jikos@kernel.org>
-> To: <linux-i2c@vger.kernel.org>
-> To: <linux-input@vger.kernel.org>
-> Cc: <linux-kernel@vger.kernel.org>
+> Fix this by adding a check for skb_mac_offset(skb) !=3D 0 in
+> __bpf_redirect_common() and __bpf_redirect_neigh(). This ensures that
+> skb->data points to the MAC header before forwarding the packet to an L2
+> device, dropping malformed packets early in the forwarding path.
+> Additionally, add a check for skb->len =3D=3D 0 in __bpf_redirect_neigh()=
+ to
+> align its validation logic with __bpf_redirect_common().
+>
+> Fixes: 3a0af8fd61f9 ("bpf: BPF for lightweight tunnel infrastructure")
+> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
+> Reported-by: syzbot+0901d0cc75c3d716a3a3@syzkaller.appspotmail.com
+> Link: https://syzkaller.appspot.com/bug?extid=3D0901d0cc75c3d716a3a3
+> Link: https://syzkaller.appspot.com/ai_job?id=3D4ec1a9c3-4883-4b6b-894d-8=
+937ab4afc45
+> To: <davem@davemloft.net>
+> To: <edumazet@google.com>
+> To: <kuba@kernel.org>
+> To: <linux-kernel@vger.kernel.org>
+> To: <pabeni@redhat.com>
+> Cc: <andrii@kernel.org>
+> Cc: <ast@kernel.org>
+> Cc: <bpf@vger.kernel.org>
+> Cc: <daniel@iogearbox.net>
+> Cc: <eddyz87@gmail.com>
+> Cc: <horms@kernel.org>
+> Cc: <john.fastabend@gmail.com>
+> Cc: <jolsa@kernel.org>
+> Cc: <martin.lau@linux.dev>
+> Cc: <memxor@gmail.com>
+> Cc: <netdev@vger.kernel.org>
+> Cc: <sdf@fomichev.me>
+> Cc: <song@kernel.org>
+> Cc: <yonghong.song@linux.dev>
 >
 > ---
-> diff --git a/drivers/hid/hid-mcp2221.c b/drivers/hid/hid-mcp2221.c
-> index e4ddd8e92..7f4f2110b 100644
-> --- a/drivers/hid/hid-mcp2221.c
-> +++ b/drivers/hid/hid-mcp2221.c
-> @@ -861,6 +861,12 @@ static int mcp2221_raw_event(struct hid_device *hdev=
-,
->         u8 *buf;
->         struct mcp2221 *mcp =3D hid_get_drvdata(hdev);
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 9590877b0..86eb2d5c3 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -2190,7 +2190,8 @@ static int __bpf_redirect_common(struct sk_buff *sk=
+b, struct net_device *dev,
+>                                  u32 flags)
+>  {
+>         /* Verify that a link layer header is carried */
+> -       if (unlikely(skb->mac_header >=3D skb->network_header || skb->len=
+ =3D=3D 0)) {
+> +       if (unlikely(skb->mac_header >=3D skb->network_header || skb->len=
+ =3D=3D 0 ||
+> +                    skb_mac_offset(skb) !=3D 0)) {
+>                 kfree_skb(skb);
+>                 return -ERANGE;
+>         }
+> @@ -2430,7 +2431,8 @@ static int __bpf_redirect_neigh(struct sk_buff *skb=
+, struct net_device *dev,
+>  {
+>         struct ethhdr *ethh =3D eth_hdr(skb);
 >
-> +       if (unlikely(size < 64))
-> +               return 1;
-
-But this size parameter is not used anywhere?
-Also, is there some const or maybe sizeof we can use instead of a raw
-numeric value?
-
-
-> +
-> +       if (data[0] !=3D mcp->txbuf[0])
-> +               return 1;
-> +
-
-Does this change contribute to fixing the problem?
-Is there any race scenario that can make these differ?
-
->         switch (data[0]) {
->
->         case MCP2221_I2C_WR_DATA:
+> -       if (unlikely(skb->mac_header >=3D skb->network_header))
+> +       if (unlikely(skb->mac_header >=3D skb->network_header || skb->len=
+ =3D=3D 0 ||
+> +                    skb_mac_offset(skb) !=3D 0))
+>                 goto out;
+>         bpf_push_mac_rcsum(skb);
+>         if (is_multicast_ether_addr(ethh->h_dest))
 >
 >
 > base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
@@ -185,5 +213,5 @@ s.md for more information.
 > To unsubscribe from this group and stop receiving emails from it, send an=
  email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
 > To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/ea8bba94-ca4f-4a7b-9181-a858d92b6ca9%40mail.kernel.org=
+-upstream-moderation/2cdda92f-08ad-4bc5-a2cb-b2bf9c8d222d%40mail.kernel.org=
 .
