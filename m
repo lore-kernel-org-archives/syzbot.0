@@ -1,119 +1,135 @@
-Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3923F343892
-	for <syzbot@lists.linux.dev>; Tue, 19 May 2026 19:05:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD7B93B27D8
+	for <syzbot@lists.linux.dev>; Tue, 19 May 2026 19:29:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779217517; cv=none; b=u9AwFwhTinx3EF4EeRzqAVqXhTjEYJQB6yr6zpxE2eL0vJCskFhi6AXGUuQe/Fww1CxqKKSjvTUd4EdiLThwoVHwRXwftTA4cpiQCyacWFs4Pfzn79oy+YupskWNped3TGsUoeo+7ivQZ4qn9cpNWEbiuD3Ua4MVt0gX01X9lsU=
+	t=1779218980; cv=none; b=O7yPBqen0Np5/2eNSwI1KAor9zd79TxiNfb6rRjhaLEjjmdpNgQtuNKerB5Jp+DeKckxB/qBEZxRQ8yZ6BCjUyajxkr4bz6563JJ+/wEyh1T6bAl0BK1KrzXIIDe9N8gW3JJ0fkG3wx7HuiGMe5gKcjzeMPr7c26dLey817PmNQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779217517; c=relaxed/simple;
-	bh=Ducp9V5dy5GDYxqBMlX3Dcn4P3x0psk58+D+7yg207s=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=uIK8oUNtZVOdeSV/PB8me+OEjPgoNF1Fio421P/EEcFpe6GxWZkmk4M3cyH67ICV4WZch1ZGmlm4gLassIr55P5WAvTjxdxgqhFbZHan07RwmVu1sJ6BHVFm2huwHfx6driJHY4NnqW+dsQFx3H5iUeCsCmuBP0ym8sQEUIEiUg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-43a3e6ebe0cso10036098fac.0
-        for <syzbot@lists.linux.dev>; Tue, 19 May 2026 12:05:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779217515; x=1779822315;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ReAem7h7y346RtXvc996VxNaVfFZ9vbk5MxlP99Ebmw=;
-        b=FQ8iiN6KeKS6MHfmUCkwGcKkDyGib1cUcA5P5lsOrbW8LlbfhQSpXVAflBOTpg8cpm
-         SS9ObPpzPyS06ESAk2sKJVIEs0YZDHIKaIR9YnkAYneKk1yi2y2on88A2pyBG9/uGm0F
-         YiQwt32AZ225RtngO3nN67ATM2AeXK1fEHPJKtqLTOwFBSBjHX07F363lktyoXc6vpxp
-         Q52PsdHfxS0pr3T2ahfZYXqw1A0ZNhLy70DE9+osutzfuO9yEN4CBG02Z+ZnmsYu2ZFW
-         d+7w3toY502uLtahdFp/W7lXBhsHv7hMwVVf2A8s7J1vDujjh/hfuiISsfeOvr3nD0pd
-         po2Q==
-X-Gm-Message-State: AOJu0Yw4bjw/V4yTAe32ImYLARtGDUS3TqcNCHsPeJqq1a5lBv0cHq1M
-	ElmwtjNqdZbe5lGyfI9kbcYjYL1BUa5dn6VthgfizFj/bAvP3Y26MERf3JkVbwWZsnpebtgnfKK
-	Q0X9VfbbjEXjrLtYPkGbsQ/iX52MWZl1UDrJ6Yily8dHrOqbBsk8bFtArboY=
+	s=arc-20240116; t=1779218980; c=relaxed/simple;
+	bh=e6+w9a3RtJxWwmGi4V0BGQetDWmXeVYKhK7SrYz3et8=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=HKvvVzKywKr/IqcTR5aQF2QEZZUzQcpEUWV13bi+nmBSsnxjsDumJ4duKjDSWRM/xWKUnlCJ/vohWwIyQqU24GbWZO74JYtlfUYS+ZZUxMHRKvgDqEKwT7sXB8LaoXy2ngI9V6K0XSEQ1AR1Dy4lLg6K385ekdY7g618SAkEmOc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QQlEk7vg; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QQlEk7vg"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A19F31F000E9;
+	Tue, 19 May 2026 19:29:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779218978;
+	bh=5ZNQ+B19UVIF7PvwidjDa4lDwnEVfWcxm17lx7WaF2g=;
+	h=From:To:Cc:Subject:Date;
+	b=QQlEk7vgP/sVfX1FjsjZrNynB87eCTUC2fcnK4UtoyPLulg+MAAThowN6k9ahEs19
+	 PfPenEnmvXis1f2XvxPcLCItnB2yJsSVkok3nyF98PzJ7V7Utv9xPI+F4PLzJS32XF
+	 AmOojh0TJynZPiXbJ6NeAt6sJU1CFQXBW5Rmimejik4IUOP5GJreZ67gVukeINqWxe
+	 vcFVTcVGzxCvBVvqnZ6ZZ4X+MqwBN0mR6/MfiVijB5ce7ZJw1VJRzi2fS1adj+KJFu
+	 CSg3HM8XtWe7fhj982VWqmkek2beuqipzorfoYpZT6GyH1SXYOnvDy4CQr4ZRJoI4C
+	 wdS5VbxOVCl8g==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC v2] HID: mcp2221: fix OOB read in mcp2221_raw_event()
+Message-ID: <c9c1296e-ea36-4b0c-9b2e-5fe1ea6f4328@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:2918:b0:696:248f:809e with SMTP id
- 006d021491bc7-69c9458ab1dmr12923873eaf.47.1779217515215; Tue, 19 May 2026
- 12:05:15 -0700 (PDT)
-Date: Tue, 19 May 2026 12:05:15 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a0cb46b.170a0220.1f6c2d.0002.GAE@google.com>
-Subject: [moderation/CI] Re: tracing/eprobes: Allow use of BTF names to
- dereference pointers
-From: syzbot ci <syzbot+ci13eeff92c06ff596@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Tue, 19 May 2026 19:29:38 +0000 (UTC)
 
-syzbot ci has tested the following series
+syzbot reported a slab-out-of-bounds read in mcp2221_raw_event(). This
+happens because the driver does not validate the size of the incoming
+HID report and blindly processes it based on the command byte data[0],
+without verifying if the report is actually a response to the command
+the driver just sent.
 
-[v5] tracing/eprobes: Allow use of BTF names to dereference pointers
-https://lore.kernel.org/all/20260519130144.40e71a00@fedora
-* [PATCH v5] tracing/eprobes: Allow use of BTF names to dereference pointer=
-s
+If the device sends an MCP2221_GPIO_SET (0x50) input report before any
+GPIO operations are performed (or if a malicious device injects one),
+mcp->gp_idx is still 0. The expression mcp->gp_idx - 1 results in -1,
+causing the code to access data[-1], which reads out of the bounds of
+the URB transfer buffer.
 
-and found the following issue:
-kernel build error
+To fix this, ensure that the report size is at least
+MCP2221_IN_REPORT_LEN (64 bytes). Also, explicitly validate mcp->gp_idx
+in the MCP2221_GPIO_GET and MCP2221_GPIO_SET handlers to ensure it is
+within valid bounds before using it as an array index, preventing the
+out-of-bounds access.
 
-Full report is available here:
-https://ci.syzbot.org/series/f81b9fe9-8c22-470c-b845-8bd6b44da760
-
-***
-
-kernel build error
-
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
--next.git
-base:      523d2f42b406f5be2989f436b03eacebf3679835
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/6f3b7bf4-5584-4add-ad1d-2881c45abb7=
-5/config
-
-kernel/trace/trace_probe.c:1035:7: error: call to undeclared function 'pars=
-e_trace_event'; ISO C99 and later do not support implicit function declarat=
-ions [-Wimplicit-function-declaration]
-kernel/trace/trace_probe.c:1803:20: error: call to undeclared function 'ctx=
-_btf'; ISO C99 and later do not support implicit function declarations [-Wi=
-mplicit-function-declaration]
-kernel/trace/trace_probe.c:1803:14: error: incompatible integer to pointer =
-conversion initializing 'struct btf *' with an expression of type 'int' [-W=
-int-conversion]
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: 328de1c519c5 ("HID: mcp2221: add GPIO functionality support")
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
+Reported-by: syzbot+1018672fe70298606e5f@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=1018672fe70298606e5f
+Link: https://syzkaller.appspot.com/ai_job?id=168a7ea8-8005-4cb7-971d-e14829cf3b9b
+To: <bentiss@kernel.org>
+To: <gupt21@gmail.com>
+To: <jikos@kernel.org>
+To: <linux-i2c@vger.kernel.org>
+To: <linux-input@vger.kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+v2:
+- Replaced the raw numeric value 64 with the MCP2221_IN_REPORT_LEN macro.
+- Removed the data[0] != mcp->txbuf[0] check.
+- Added explicit bounds checking for mcp->gp_idx in the MCP2221_GPIO_GET and MCP2221_GPIO_SET handlers.
 
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
+v1:
+https://lore.kernel.org/all/ea8bba94-ca4f-4a7b-9181-a858d92b6ca9@mail.kernel.org/T/
+---
+diff --git a/drivers/hid/hid-mcp2221.c b/drivers/hid/hid-mcp2221.c
+index e4ddd8e92..40d324990 100644
+--- a/drivers/hid/hid-mcp2221.c
++++ b/drivers/hid/hid-mcp2221.c
+@@ -80,6 +80,8 @@ enum {
+ 	MCP2221_SRAM_WR_GP3 = 11,
+ };
+ 
++#define MCP2221_IN_REPORT_LEN 64
++
+ #define MCP2221_SRAM_GP_DESIGN_MASK		0x07
+ #define MCP2221_SRAM_GP_DIRECTION_MASK		0x08
+ #define MCP2221_SRAM_GP_VALUE_MASK		0x10
+@@ -861,6 +863,9 @@ static int mcp2221_raw_event(struct hid_device *hdev,
+ 	u8 *buf;
+ 	struct mcp2221 *mcp = hid_get_drvdata(hdev);
+ 
++	if (unlikely(size < MCP2221_IN_REPORT_LEN))
++		return 1;
++
+ 	switch (data[0]) {
+ 
+ 	case MCP2221_I2C_WR_DATA:
+@@ -943,6 +948,10 @@ static int mcp2221_raw_event(struct hid_device *hdev,
+ 	case MCP2221_GPIO_GET:
+ 		switch (data[1]) {
+ 		case MCP2221_SUCCESS:
++			if (unlikely(mcp->gp_idx < 2)) {
++				mcp->status = -EIO;
++				break;
++			}
+ 			if ((data[mcp->gp_idx] == MCP2221_ALT_F_NOT_GPIOV) ||
+ 				(data[mcp->gp_idx + 1] == MCP2221_ALT_F_NOT_GPIOD)) {
+ 				mcp->status = -ENOENT;
+@@ -960,6 +969,10 @@ static int mcp2221_raw_event(struct hid_device *hdev,
+ 	case MCP2221_GPIO_SET:
+ 		switch (data[1]) {
+ 		case MCP2221_SUCCESS:
++			if (unlikely(mcp->gp_idx < 1)) {
++				mcp->status = -EIO;
++				break;
++			}
+ 			if ((data[mcp->gp_idx] == MCP2221_ALT_F_NOT_GPIOV) ||
+ 				(data[mcp->gp_idx - 1] == MCP2221_ALT_F_NOT_GPIOV)) {
+ 				mcp->status = -ENOENT;
 
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
 
-The email will later be sent to:
-[akpm@linux-foundation.org bpf@vger.kernel.org douglas.raillard@arm.com iro=
-gers@google.com linux-kernel@vger.kernel.org linux-trace-kernel@vger.kernel=
-.org mark.rutland@arm.com mathieu.desnoyers@efficios.com mhiramat@kernel.or=
-g namhyung@kernel.org olsajiri@gmail.com peterz@infradead.org rostedt@goodm=
-is.org takayas@google.com tglx@linutronix.de zanussi@kernel.org]
+base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to send it to the mailing list.
+Reply with '#syz reject' to reject it.
 
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+See https://github.com/google/syzkaller/blob/master/docs/syzbot_ai_patches.md for more information.
