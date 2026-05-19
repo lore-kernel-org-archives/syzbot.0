@@ -1,179 +1,219 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A6CC2882CD
-	for <syzbot@lists.linux.dev>; Mon, 18 May 2026 22:50:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ACB1405C55
+	for <syzbot@lists.linux.dev>; Tue, 19 May 2026 03:25:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779144657; cv=none; b=FJ3lzaSstz87Q7j17i83PaELP9onQTTZSmFWYjVm8h9VE8knQWFqU8RJDdivsQICJWjoX7vCQbhJt576Z7huF1Hz5eliy8docngEJgGKCOTMZdtXZ761fw56snhr4m5C6Nwpv0j+3xndWfLbX1TdWpU49sNdmTCw0MGQ6+ntF5o=
+	t=1779161158; cv=none; b=TlUUepBSyCllEX9ctwNsi2/5p6i8eORzFomFiXNSjTAE+2sR6sGFcRFPiclrex138WSxilAXrAGib78q0rU3MYo5hZIcy6f6lSH3l3xI993W+Jlr7Zu6GtQBl0bMBFWG7QYoe7DK/6pWPO8u2Mnl0AsW6SUNrsVVOoZpeNOEOgA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779144657; c=relaxed/simple;
-	bh=EiQCvG4WcseavISCz6pgY+a2T3qP+ezzzXemgzdszKU=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=uAFGO50h508jxzrwmOBO01SXTBT9uBkqJGGDBztGx/HwbEFoSCGZqp89PAWAIaYU0IFXdTJczBa4dke485iM2lYD+WvbtikWbYUjUix9uYyiCVTC0S9ke6gtX4Z5bK6UlbYqg2fXLYE0/M7q3Wm//4wtTFvuQ7XKTTrg64kJXvs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sp3sbWjn; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sp3sbWjn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 127D1C2BCB7;
-	Mon, 18 May 2026 22:50:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779144657;
-	bh=EiQCvG4WcseavISCz6pgY+a2T3qP+ezzzXemgzdszKU=;
-	h=From:To:Cc:Subject:Date:From;
-	b=sp3sbWjnhaiUa8fEor5oMmr1wcXmqEChlaUnR/PrN/bwhh4dnpY9BbYgUhd0xJVGQ
-	 lZJ2mk32+Ld91N9nhXS9pj3/ZoNHeyFJgIfApQwViSj9+ahMU4AMUbgNEKvrNP2b0k
-	 gLgfVARJca4MMnPhia2lQUZov8d/J3qA3I9SMl6Rnd1SY6r6YTGoXxbEZ1PIOzbKSH
-	 XLxoXx6yUvNpn2IeOmrlrWL3COuZO0Wi7HoKulkdFzACbuy2FklbJd11ohaR3Akwnk
-	 3RRcv+7HpfuQpjqy84DAi5j7rtOj0YX4SB1A0cYLAcnMVUVZhbBjYKF8+TSgBXzpp9
-	 Ve5siHBFFgtlQ==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] usb: cdc-wdm: close race between workqueue and release
-Message-ID: <3bb247d6-e412-46be-973c-5d2f9945ebe5@mail.kernel.org>
+	s=arc-20240116; t=1779161158; c=relaxed/simple;
+	bh=QafaRF5OGBZn+DK/ZtOrH7oDor70V5r9to+lG6tqBk4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=pbLOlYC/E7RkVXVmohN4+5uImNHoLd0jzcGJWMuEOVr7RUuSme/ffkx/QxcnCB9KFT1unqEO7mUR/FLqhI4YufhG432pNJVzV9cJGPCd2CJkbPLDtmooj+cl/vHmLcbG4mI6I6cMxhMwLRQqEnfBsJeXYAdOlDEpIAVmrb4DIqQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-696307c7ee0so2890860eaf.0
+        for <syzbot@lists.linux.dev>; Mon, 18 May 2026 20:25:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779161155; x=1779765955;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gcadxrXPb5g4Ua/ZnVInmxenp4pB0H5pmhrNPAuzLsc=;
+        b=RXAE1Nt5Ei2jHDw/IAeXgOO5Qafem10sP99zEy1msHNH6GTNcR2KF7TN2GM4fPtAWr
+         9Ty6vC+QI5xEdNO5TkzCm2xwvaEtI/hCLgPC6PVC2/wK13FAUfYbms7GEyreST6ZkqqO
+         OXHh2WvhTslzqUGhdezjZK4BFGqWWekIjGEWHIAJYitrcO1JDqCpfhXwqCMzOvmIUENV
+         UjyqPTmSHt6lYC73D38gV/q0G0sKGtYSxgzcAP5ptiQtnFnlMTgj6oiV9yjejuMrPsci
+         bqZhvkzbjNoBWf6DSrrZfhFGqAtnuCPFjwoL8GuQ1/6JzdvD0aZDWtUQUxB/3c+HWrBu
+         FSTg==
+X-Gm-Message-State: AOJu0YynmcwYv77zPyqUYdS6oaVRygTdD2GWoRNNAxbBvkY9oP5u5hT+
+	JDv2iD/kN8cGQvYZhZsWPIr06r2xgiRywBqPopftQ2c7EcHhPzgLPj+P00BTT0SFNnPSngvrIXZ
+	OENiqPEUSmGOryDKl5RHGGcH+8SyMZMHgmyXqmOd7kenpQLsQIAFSItnStvY=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Mon, 18 May 2026 22:50:57 +0000 (UTC)
+X-Received: by 2002:a05:6820:80c1:b0:699:a7d1:5fd5 with SMTP id
+ 006d021491bc7-69c9437cce9mr10326146eaf.39.1779161155369; Mon, 18 May 2026
+ 20:25:55 -0700 (PDT)
+Date: Mon, 18 May 2026 20:25:55 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a0bd843.170a0220.39a587.0002.GAE@google.com>
+Subject: [moderation/CI] Re: Introduce Per-CPU Work helpers (was QPW)
+From: syzbot ci <syzbot+ci19dafd1fc4b94b9e@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The crash "URB submitted while active" occurs because the
-`desc->response` URB is submitted by `wdm_rxwork` when it is already in
-an active state. This happens because `wdm_release` fails to cancel
-pending workqueue items (`desc->rxwork` and `desc->service_outs_intr`)
-during its cleanup phase. When the character device is closed and there
-are no other openers, `wdm_release` calls `poison_urbs()` to kill active
-URBs, clears the `WDM_RESPONDING` flag, and calls `unpoison_urbs()`.
-Because `wdm_release` does not call `cancel_work_sync()` for the work
-items, they can run concurrently with the cleanup process. If a work
-item executes after the URBs are unpoisoned, it can successfully submit
-the URB. If another work item then runs, it will see the
-`WDM_RESPONDING` flag as cleared, set it, and attempt to submit the URB
-again, leading to the crash.
+syzbot ci has tested the following series
 
-To fix this, cancel the pending workqueue items after poisoning the URBs
-and before clearing the `WDM_RESPONDING` flag or unpoisoning the URBs.
-This ensures that any running work item will either fail to submit the
-URB (because it is poisoned) or finish executing before the cleanup
-proceeds. The same omission is present in `wdm_wwan_port_stop`, so apply
-the same fix there to prevent data leaks or crashes across WWAN
-sessions.
+[v4] Introduce Per-CPU Work helpers (was QPW)
+https://lore.kernel.org/all/20260519012754.240804-1-leobras.c@gmail.com
+* [PATCH v4 1/4] Introducing pw_lock() and per-cpu queue & flush work
+* [PATCH v4 2/4] mm/swap: move bh draining into a separate workqueue
+* [PATCH v4 3/4] swap: apply new pw_queue_on() interface
+* [PATCH v4 4/4] slub: apply new pw_queue_on() interface
 
+and found the following issue:
+WARNING in __pcs_replace_empty_main
+
+Full report is available here:
+https://ci.syzbot.org/series/804f81bd-77b4-490e-bd57-6345ad2aa923
+
+***
+
+WARNING in __pcs_replace_empty_main
+
+tree:      drm-next
+URL:       https://gitlab.freedesktop.org/drm/kernel.git
+base:      5200f5f493f79f14bbdc349e402a40dfb32f23c8
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/3ea80958-13bd-49da-9c64-6deb788113f=
+8/config
+
+clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_=
+idle_ns: 19112604462750000 ns
+Zone ranges:
+  DMA      [mem 0x0000000000001000-0x0000000000ffffff]
+  DMA32    [mem 0x0000000001000000-0x00000000ffffffff]
+  Normal   [mem 0x0000000100000000-0x000000023fffffff]
+  Device   empty
+Movable zone start for each node
+Early memory node ranges
+  node   0: [mem 0x0000000000001000-0x000000000009efff]
+  node   0: [mem 0x0000000000100000-0x000000007ffdefff]
+  node   0: [mem 0x0000000100000000-0x0000000160000fff]
+  node   1: [mem 0x0000000160001000-0x000000023fffffff]
+Initmem setup node 0 [mem 0x0000000000001000-0x0000000160000fff]
+Initmem setup node 1 [mem 0x0000000160001000-0x000000023fffffff]
+On node 0, zone DMA: 1 pages in unavailable ranges
+On node 0, zone DMA: 97 pages in unavailable ranges
+On node 0, zone Normal: 33 pages in unavailable ranges
+setup_percpu: NR_CPUS:8 nr_cpumask_bits:2 nr_cpu_ids:2 nr_node_ids:2
+percpu: Embedded 71 pages/cpu s250632 r8192 d31992 u2097152
+kvm-guest: PV spinlocks disabled, no host support
+Kernel command line: earlyprintk=3Dserial net.ifnames=3D0 sysctl.kernel.hun=
+g_task_all_cpu_backtrace=3D1 ima_policy=3Dtcb nf-conntrack-ftp.ports=3D2000=
+0 nf-conntrack-tftp.ports=3D20000 nf-conntrack-sip.ports=3D20000 nf-conntra=
+ck-irc.ports=3D20000 nf-conntrack-sane.ports=3D20000 binder.debug_mask=3D0 =
+rcupdate.rcu_expedited=3D1 rcupdate.rcu_cpu_stall_cputime=3D1 no_hash_point=
+ers page_owner=3Don sysctl.vm.nr_hugepages=3D4 sysctl.vm.nr_overcommit_huge=
+pages=3D4 secretmem.enable=3D1 sysctl.max_rcu_stall_to_panic=3D1 msr.allow_=
+writes=3Doff coredump_filter=3D0xffff root=3D/dev/sda console=3DttyS0 vsysc=
+all=3Dnative numa=3Dfake=3D2 kvm-intel.nested=3D1 spec_store_bypass_disable=
+=3Dprctl nopcid vivid.n_devs=3D64 vivid.multiplanar=3D1,2,1,2,1,2,1,2,1,2,1=
+,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,=
+1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2 netrom.nr_ndevs=3D32 rose.rose_ndevs=3D32 s=
+mp.csd_lock_timeout=3D100000 watchdog_thresh=3D55 workqueue.watchdog_thresh=
+=3D140 sysctl.net.core.netdev_unregister_timeout_secs=3D140 dummy_hcd.num=
+=3D32 max_loop=3D32 nbds_max=3D32 \
+Kernel command line: comedi.comedi_num_legacy_minors=3D4 panic_on_warn=3D1 =
+root=3D/dev/sda console=3DttyS0 root=3D/dev/sda1
+Unknown kernel command line parameters "nbds_max=3D32", will be passed to u=
+ser space.
+printk: log buffer data + meta data: 262144 + 917504 =3D 1179648 bytes
+software IO TLB: area num 2.
+Fallback order for Node 0: 0 1=20
+Fallback order for Node 1: 1 0=20
+Built 2 zonelists, mobility grouping on.  Total pages: 1834877
+Policy zone: Normal
+mem auto-init: stack:all(zero), heap alloc:on, heap free:off
+stackdepot: allocating hash table via alloc_large_system_hash
+stackdepot hash table entries: 1048576 (order: 12, 16777216 bytes, linear)
+stackdepot: allocating space for 8192 stack pools via memblock
+**********************************************************
+**   NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   **
+**                                                      **
+** This system shows unhashed kernel memory addresses   **
+** via the console, logs, and other interfaces. This    **
+** might reduce the security of your system.            **
+**                                                      **
+** If you see this message and you are not debugging    **
+** the kernel, report this immediately to your system   **
+** administrator!                                       **
+**                                                      **
+** Use hash_pointers=3Dalways to force this mode off      **
+**                                                      **
+**   NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   **
+**********************************************************
 ------------[ cut here ]------------
-URB ffff888052781d00 submitted while active
-WARNING: drivers/usb/core/urb.c:379 at usb_submit_urb+0x7b/0x18b0
-drivers/usb/core/urb.c:379, CPU#0: kworker/0:3/5726
+debug_locks && !(lock_is_held(&(&s->cpu_sheaves->lock)->dep_map) !=3D 0)
+WARNING: mm/slub.c:4601 at __pcs_replace_empty_main+0x51b/0x6e0, CPU#0: swa=
+pper/0
 Modules linked in:
-CPU: 0 UID: 0 PID: 5726 Comm: kworker/0:3 Not tainted syzkaller #1
-PREEMPT(full)
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
-1.16.3-debian-1.16.3-2 04/01/2014
-Workqueue: events wdm_rxwork
-RIP: 0010:usb_submit_urb+0x7e/0x18b0 drivers/usb/core/urb.c:379
-Code: 89 f0 48 c1 e8 03 42 80 3c 38 00 74 08 4c 89 f7 e8 57 eb 0c fb 49
-83 3e 00 74 40 e8 7c da a2 fa 48 8d 3d a5 09 d9 08 48 89 de <67> 48 0f
-b9 3a b8 f0 ff ff ff eb 11 e8 61 da a2 fa eb 05 e8 5a da
-RSP: 0018:ffffc90003427a10 EFLAGS: 00010293
-RAX: ffffffff8720dc64 RBX: ffff888052781d00 RCX: ffff88801fe48000
-RDX: 0000000000000000 RSI: ffff888052781d00 RDI: ffffffff8ff9e610
-RBP: 0000000000000001 R08: ffffffff8fecf1f7 R09: 1ffffffff1fd9e3e
-R10: dffffc0000000000 R11: fffffbfff1fd9e3f R12: 0000000000000cc0
-R13: 1ffff1100a555e12 R14: ffff888052781d08 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff88809893a000(0000)
-knlGS:0000000000000000
+CPU: 0 UID: 0 PID: 0 Comm: swapper Not tainted syzkaller #0 PREEMPT(undef)=
+=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:__pcs_replace_empty_main+0x51b/0x6e0
+Code: 48 85 f6 74 15 4c 89 ff 48 89 c6 e8 af 5e ff ff 4d 89 74 24 38 e9 36 =
+fc ff ff 49 89 44 24 40 4d 89 74 24 38 e9 27 fc ff ff 90 <0f> 0b 90 83 7b 2=
+c 00 0f 85 23 fb ff ff 48 8b 1b e8 20 cd 82 09 41
+RSP: 0000:ffffffff8e607d58 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffffffff91bb8398 RCX: 0000000000000002
+RDX: 0000000000000cc0 RSI: ffffffff8e21ec94 RDI: ffffffff8c28b160
+RBP: 0000000000000cc0 R08: 0000000000005e00 R09: 00000000477ac845
+R10: 0000000047d13f7f R11: 000000002fa01ecd R12: ffff88812103f308
+R13: 0000000000000000 R14: ffffffff91bb8398 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff88818dc8a000(0000) knlGS:000000000000000=
+0
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f08959ea540 CR3: 000000001e4b2000 CR4: 00000000000006f0
+CR2: ffff88823ffff000 CR3: 000000000e74a000 CR4: 00000000000000b0
 Call Trace:
  <TASK>
- wdm_rxwork+0x101/0x1e0 drivers/usb/class/cdc-wdm.c:997
- process_one_work kernel/workqueue.c:3302 [inline]
- process_scheduled_works+0xb5d/0x1860 kernel/workqueue.c:3385
- worker_thread+0x8a2/0xda0 kernel/workqueue.c:3466
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ kmem_cache_alloc_node_noprof+0x441/0x690
+ do_kmem_cache_create+0x172/0x620
+ create_boot_cache+0xbf/0x120
+ kmem_cache_init+0x11a/0x1e0
+ mm_core_init+0x7e/0xb0
+ start_kernel+0x15a/0x3e0
+ x86_64_start_reservations+0x24/0x30
+ x86_64_start_kernel+0x143/0x1c0
+ common_startup_64+0x13e/0x147
  </TASK>
-----------------
 
-Tested-by: nogikh@google.com
 
-Fixes: 01e01f5c89773c600a9f0b32c888de0146066c3a ("usb: cdc-wdm: fix reading stuck on device close")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Tested-by: Aleksandr Nogikh <nogikh@google.com>
-Reported-by: syzbot+c6a1953c27ace6cc34e5@syzkaller.appspotmail.com
-Reported-by: syzbot <syzbot+c6a1953c27ace6cc34e5@syzkaller.appspotmail.com>
-Link: https://syzkaller.appspot.com/bug?extid=c6a1953c27ace6cc34e5
-Link: https://syzkaller.appspot.com/ai_job?id=eb69973c-340c-4ffd-bfad-183f25211bed
-To: <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v2:
-- Added crash stacktrace to the commit description
-- Added Tested-by tag from nogikh@google.com
-- Cleared WDM_RESPONDING flag and resp_count under iuspin lock in wdm_wwan_port_stop, wdm_suspend, and wdm_pre_reset
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v1:
-https://lore.kernel.org/all/97986988-6374-4e40-aa96-662939fabe88@mail.kernel.org/T/
----
-diff --git a/drivers/usb/class/cdc-wdm.c b/drivers/usb/class/cdc-wdm.c
-index 7556c0dac..ba5422d1d 100644
---- a/drivers/usb/class/cdc-wdm.c
-+++ b/drivers/usb/class/cdc-wdm.c
-@@ -769,6 +769,8 @@ static int wdm_release(struct inode *inode, struct file *file)
- 		if (!test_bit(WDM_DISCONNECTING, &desc->flags)) {
- 			dev_dbg(&desc->intf->dev, "wdm_release: cleanup\n");
- 			poison_urbs(desc);
-+			cancel_work_sync(&desc->rxwork);
-+			cancel_work_sync(&desc->service_outs_intr);
- 			spin_lock_irq(&desc->iuspin);
- 			desc->resp_count = 0;
- 			clear_bit(WDM_RESPONDING, &desc->flags);
-@@ -863,6 +865,12 @@ static void wdm_wwan_port_stop(struct wwan_port *port)
- 
- 	/* Stop all transfers and disable WWAN mode */
- 	poison_urbs(desc);
-+	cancel_work_sync(&desc->rxwork);
-+	cancel_work_sync(&desc->service_outs_intr);
-+	spin_lock_irq(&desc->iuspin);
-+	desc->resp_count = 0;
-+	clear_bit(WDM_RESPONDING, &desc->flags);
-+	spin_unlock_irq(&desc->iuspin);
- 	desc->manage_power(desc->intf, 0);
- 	clear_bit(WDM_READ, &desc->flags);
- 	unpoison_urbs(desc);
-@@ -1279,6 +1287,10 @@ static int wdm_suspend(struct usb_interface *intf, pm_message_t message)
- 		poison_urbs(desc);
- 		cancel_work_sync(&desc->rxwork);
- 		cancel_work_sync(&desc->service_outs_intr);
-+		spin_lock_irq(&desc->iuspin);
-+		desc->resp_count = 0;
-+		clear_bit(WDM_RESPONDING, &desc->flags);
-+		spin_unlock_irq(&desc->iuspin);
- 		unpoison_urbs(desc);
- 	}
- 	if (!PMSG_IS_AUTO(message)) {
-@@ -1340,6 +1352,10 @@ static int wdm_pre_reset(struct usb_interface *intf)
- 	poison_urbs(desc);
- 	cancel_work_sync(&desc->rxwork);
- 	cancel_work_sync(&desc->service_outs_intr);
-+	spin_lock_irq(&desc->iuspin);
-+	desc->resp_count = 0;
-+	clear_bit(WDM_RESPONDING, &desc->flags);
-+	spin_unlock_irq(&desc->iuspin);
- 	return 0;
- }
- 
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
 
-base-commit: 5d6919055dec134de3c40167a490f33c74c12581
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to send it to the mailing list.
-Reply with '#syz reject' to reject it.
+The email will later be sent to:
+[akpm@linux-foundation.org axelrasmussen@google.com baohua@kernel.org bhe@r=
+edhat.com boqun@kernel.org bp@alien8.de brauner@kernel.org chrisl@kernel.or=
+g cl@gentwo.org corbet@lwn.net coxu@redhat.com dapeng1.mi@linux.intel.com d=
+avid@kernel.org dianders@chromium.org ebiggers@kernel.org elver@google.com =
+feng.tang@linux.alibaba.com frederic@kernel.org gary@garyguo.net hannes@cmp=
+xchg.org hao.li@linux.dev harry@kernel.org jackmanb@google.com jannh@google=
+.com kasong@tencent.com kees@kernel.org kuba@kernel.org leobras.c@gmail.com=
+ liam@infradead.org linux-doc@vger.kernel.org linux-kernel@vger.kernel.org =
+linux-mm@kvack.org linux-rt-devel@lists.linux.dev lirongqing@baidu.com ljs@=
+kernel.org longman@redhat.com masahiroy@kernel.org mhocko@suse.com mingo@re=
+dhat.com mtosatti@redhat.com nathan@kernel.org nphamcs@gmail.com nsc@kernel=
+.org ojeda@kernel.org pasha.tatashin@soleen.com paulmck@kernel.org peterz@i=
+nfradead.org pfalcato@suse.de qi.zheng@linux.dev rdunlap@infradead.org]
 
-See  for more information.
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
