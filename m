@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C087723393E
-	for <syzbot@lists.linux.dev>; Tue, 19 May 2026 20:41:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9CCC1D5170
+	for <syzbot@lists.linux.dev>; Tue, 19 May 2026 21:36:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779223269; cv=none; b=DkWFr3moTl4uVXSI6xORnjcA2NovFHYVixs40QL2uXUdZaSOLRVrUW8IqmJBiJwuIXD7LLBbum+GeWBuxE1maJv9W7nekPu/LV4eO1mQcQTT0lGKSiYYx5zGS9VdUU06e2gT5N+TyI20vgkAr3+jZnSHHiZvYp4/+BlVpKd7/pQ=
+	t=1779226599; cv=none; b=g+s5PfO5Hm01m4eRJtruECs+0z1Wy8W3Hz+jnQkqTPZuxSxtl9dtqML4ey1PrR2Ej6wP/EKF2H8nUC9KDCNhNuFmgvUgDIXYzWN1FIbIS025pJxPQbnn7j/lLn5IcLA+f3TqgXguACAZgcPMj1Rs6eENyvsJyFgca1SCWBjN6jk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779223269; c=relaxed/simple;
-	bh=iKt/yfZYMQyDLNMxgm2GdT23H2CzmsUYFzbSJs1S+E8=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=QDWx6g/3U6wah9sCVPJCMH5mUvnDyyBe3acyEMcD59osicMraA6hGmc4gMfSFgatXA7qHbTGCJ7RTkmu2Wn4aXgH76jH6VhMopEHRZN9Lo62Z1m76pOG7xJ4UcTA8/sJAJD0+Q9OHIxluCY8zafA3Eq/1n95v2fWQbfeeMoovgU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NnIbUqOt; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779226599; c=relaxed/simple;
+	bh=LSr2PDWI5zVp5KtkZTDe21I4nRXASzFCPNDKJb8VuD4=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=a6g3N98LK20nPYBQC5a8P1Fal6eK8ymHkfllseKOifcEvP9xCbmxtL6ZQVF15dKXcMc0VmmOYNFBjWIC7IspNbx0dTB8n3URV6CG+hGY8ZUPE+sgxuoA3U8cOdkdACnM5NUC0yQ2VxjpL58i2luTTW+HF1F+9xXm1scFuuuV+dc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cCZcqCtn; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NnIbUqOt"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 4EE1E1F000E9;
-	Tue, 19 May 2026 20:41:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cCZcqCtn"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 4E0A51F000E9;
+	Tue, 19 May 2026 21:36:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779223268;
-	bh=HW1mnqsSnWAhtfs2j3EBZ0erYdoTG5B0Z3+gtM1tn+Y=;
+	s=k20260515; t=1779226598;
+	bh=/+h+pNKrYRdHv7eT8BoI0WG9q4LDZwp3aWRwwBiTv0M=;
 	h=From:To:Cc:Subject:Date;
-	b=NnIbUqOtpAi/oZad152DG28XwqX4fOX8wFsuvLB1SDtgskq4pPr0WJ0Y4SI1KuN9a
-	 bSYtnuY1H6BHhy1QRgJUHHH2TczNA/6oPmykc/nHET8nNTMtO9Glc1zz8o522177Ic
-	 RFAkrMohSlXYA9oJeGESvBx3Qxa2EovfvK+HfReeBIeIwhbV6obAM437bOqkmdOqsT
-	 TYopgOeb+p649bRiAEInWJW770crEdUmtmrWQFca/KNGw2abVBpDv6HIhJzOkmd98s
-	 4OVV79s7MVbNJlZ1OVJ0klhHBrSAhE9L+5kcwCzJm75vWsMhO3uzU04P1WnFxlWZpH
-	 SbnZGJjhUGKaA==
+	b=cCZcqCtnaWSM7tyE0K0rIaWshBzSU9XX0czKgkUPijNaUn4PC42Ypc3JWLvhHSxyK
+	 kUcbzSLLeWRFkkmdAredsOk5OkcG4dQJB4rbsl145CivXLXC/znwEGPICwqGJHQKLy
+	 7CXP6I9WGP9G00YVbLkpz4Jk+X9j8d0M7v2QJPJ0xMZ9iWan85M4nBN9VkxPO+nVpU
+	 eY7wm22NmJMZGD/IOZEe4GFjz9KzNy4RODYxfqqlpTNi9XQ4kepTok34Gw/oAbwZbp
+	 Xu2ik63L2zMkXUN9E6XF7+DaupYif7RIQScduhLACygpVeAM+eAnvTthoyc8WXv4N8
+	 8lCNoL+zr9URA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] bpf: Prevent uninitialized value access in eth_type_trans()
-Message-ID: <b64a1d16-5cb4-42cb-aef6-381d61279b83@mail.kernel.org>
+Subject: [PATCH RFC v2] jfs: fix slab-use-after-free in lbmIODone
+Message-ID: <6fef35ba-faae-40b7-9ec2-387ae5b24666@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,105 +38,78 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue, 19 May 2026 20:41:08 +0000 (UTC)
+Date: Tue, 19 May 2026 21:36:38 +0000 (UTC)
 
-syzkaller reported a KMSAN uninitialized value crash in
-eth_type_trans():
+A KASAN slab-use-after-free was reported in lbmIODone(). The root cause
+is a race condition between lbmRead() and the bio completion handler
+lbmIODone(). In lbmRead(), wait_event() is used to wait for the I/O
+completion locklessly. When the READ bio completes, lbmIODone() clears
+the lbmREAD flag and wakes up the waiter before setting the lbmDONE flag
+and releasing the LCACHE_LOCK. Because wait_event() evaluates its
+condition locklessly, lbmRead() can wake up and return immediately after
+the wakeup, before lbmIODone() has finished its execution.
 
-BUG: KMSAN: uninit-value in eth_type_trans+0x68f/0xae0
-net/ethernet/eth.c:176
- eth_type_trans+0x68f/0xae0 net/ethernet/eth.c:176
- __dev_forward_skb2+0x4b1/0x940 net/core/dev.c:2443
- dev_forward_skb_nomtu+0x3b/0xe0 net/core/dev.c:2482
- __bpf_rx_skb net/core/filter.c:2125 [inline]
- __bpf_redirect_common net/core/filter.c:2200 [inline]
- __bpf_redirect+0x14d7/0x1760 net/core/filter.c:2207
+The caller of lbmRead() (e.g., lmLogShutdown()) can then reuse the same
+buffer for a WRITE bio. Meanwhile, the original lbmIODone() resumes and
+erroneously sets the lbmDONE flag on the reused buffer. This causes a
+subsequent lbmIOWait() on the new WRITE bio to return early and free the
+buffer. When the WRITE bio actually completes, lbmIODone() accesses the
+freed buffer, triggering the use-after-free.
 
-The root cause is a missing check in __bpf_redirect_common() and
-__bpf_redirect_neigh() when an L3 BPF program redirects a packet to an
-L2 device. For example, when bpf_prog_test_run_skb() runs an L3 BPF
-program, it pulls the MAC header. If the BPF program then redirects the
-packet to an L2 device without pushing the MAC header back (e.g.,
-leaving skb->data pointing to the network header), the redirected packet
-will have an invalid MAC header offset.
+Fix this by replacing the lockless wait_event() in lbmRead() with
+lbmIOWait(bp, 0). lbmIOWait() properly synchronizes with lbmIODone() by
+acquiring LCACHE_LOCK before checking the condition, ensuring lbmRead()
+will block until lbmIODone() has completely finished. As an added
+benefit, lbmIOWait() correctly returns -EIO if the bio completes with an
+error, whereas the previous implementation unconditionally returned 0.
 
-When the packet reaches eth_type_trans(), it assumes skb->data points to
-a valid MAC header and attempts to read the protocol type. Since
-skb->data actually points to the network header, this results in an
-out-of-bounds read. If the skb head was previously reallocated (e.g.,
-via pskb_expand_head() during bpf_clone_redirect()), this out-of-bounds
-read accesses uninitialized memory, triggering the KMSAN bug.
-
-Fix this by adding a check for skb_mac_offset(skb) != 0 in
-__bpf_redirect_common() and __bpf_redirect_neigh(). This ensures that
-skb->data points to the MAC header before forwarding the packet to an L2
-device, dropping malformed packets early in the forwarding path.
-Additionally, ensure skb->len is large enough to cover the MAC header in
-__bpf_redirect_common() and __bpf_redirect_neigh().
-
-Fixes: 3a0af8fd61f9 ("bpf: BPF for lightweight tunnel infrastructure")
+Fixes: 22cad8bc1d36 ("jfs: fix array-index-out-of-bounds in dbFindLeaf")
 Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+0901d0cc75c3d716a3a3@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=0901d0cc75c3d716a3a3
-Link: https://syzkaller.appspot.com/ai_job?id=cddb4a7a-03e0-44a9-96e0-ebd8e8866f34
-To: <davem@davemloft.net>
-To: <edumazet@google.com>
-To: <kuba@kernel.org>
-To: <linux-kernel@vger.kernel.org>
-To: <pabeni@redhat.com>
-Cc: <andrii@kernel.org>
-Cc: <ast@kernel.org>
-Cc: <bpf@vger.kernel.org>
-Cc: <daniel@iogearbox.net>
-Cc: <eddyz87@gmail.com>
-Cc: <horms@kernel.org>
-Cc: <john.fastabend@gmail.com>
-Cc: <jolsa@kernel.org>
-Cc: <martin.lau@linux.dev>
-Cc: <memxor@gmail.com>
-Cc: <netdev@vger.kernel.org>
-Cc: <sdf@fomichev.me>
-Cc: <song@kernel.org>
-Cc: <yonghong.song@linux.dev>
+Reported-by: syzbot+1afe7ef2d0062e19eeb3@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=1afe7ef2d0062e19eeb3
+Link: https://syzkaller.appspot.com/ai_job?id=6a34b414-433f-4b06-ae87-9e8836b3b11b
+To: <jfs-discussion@lists.sourceforge.net>
+To: <shaggy@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
 v2:
-- Changed patch title to indicate prevention of uninitialized value access.
-- Included a portion of the KMSAN crash stack trace in the commit description.
-- Updated __bpf_redirect_common() to check skb->len < skb->network_header - skb->mac_header instead of skb->len == 0.
-- Updated __bpf_redirect_neigh() to check skb->len < sizeof(*ethh) instead of skb->len == 0.
+- Fixed an array-index-out-of-bounds in dbFindLeaf by correcting the boundary check
 
 v1:
-https://lore.kernel.org/all/2cdda92f-08ad-4bc5-a2cb-b2bf9c8d222d@mail.kernel.org/T/
+https://lore.kernel.org/all/b0890704-e83c-4e0f-a7f4-5fa40dfee9c8@mail.kernel.org/T/
 ---
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 9590877b0..dfa97d9a5 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2190,7 +2190,9 @@ static int __bpf_redirect_common(struct sk_buff *skb, struct net_device *dev,
- 				 u32 flags)
- {
- 	/* Verify that a link layer header is carried */
--	if (unlikely(skb->mac_header >= skb->network_header || skb->len == 0)) {
-+	if (unlikely(skb->mac_header >= skb->network_header ||
-+		     skb->len < skb->network_header - skb->mac_header ||
-+		     skb_mac_offset(skb) != 0)) {
- 		kfree_skb(skb);
- 		return -ERANGE;
+diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
+index a841cf21d..cbdcc8d05 100644
+--- a/fs/jfs/jfs_dmap.c
++++ b/fs/jfs/jfs_dmap.c
+@@ -3058,7 +3058,7 @@ static int dbFindLeaf(dmtree_t *tp, int l2nb, int *leafidx, bool is_ctl)
+ 			/* sufficient free space found.  move to the next
+ 			 * level (or quit if this is the last level).
+ 			 */
+-			if (x + n > max_size)
++			if (x + n >= max_size)
+ 				return -ENOSPC;
+ 			if (l2nb <= tp->dmt_stree[x + n])
+ 				break;
+diff --git a/fs/jfs/jfs_logmgr.c b/fs/jfs/jfs_logmgr.c
+index 306165e61..cf62a8564 100644
+--- a/fs/jfs/jfs_logmgr.c
++++ b/fs/jfs/jfs_logmgr.c
+@@ -1984,9 +1984,7 @@ static int lbmRead(struct jfs_log * log, int pn, struct lbuf ** bpp)
+ 		submit_bio(bio);
  	}
-@@ -2430,7 +2432,8 @@ static int __bpf_redirect_neigh(struct sk_buff *skb, struct net_device *dev,
- {
- 	struct ethhdr *ethh = eth_hdr(skb);
  
--	if (unlikely(skb->mac_header >= skb->network_header))
-+	if (unlikely(skb->mac_header >= skb->network_header ||
-+		     skb->len < sizeof(*ethh) || skb_mac_offset(skb) != 0))
- 		goto out;
- 	bpf_push_mac_rcsum(skb);
- 	if (is_multicast_ether_addr(ethh->h_dest))
+-	wait_event(bp->l_ioevent, (bp->l_flag != lbmREAD));
+-
+-	return 0;
++	return lbmIOWait(bp, 0);
+ }
+ 
+ 
 
 
-base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
+base-commit: 5d6919055dec134de3c40167a490f33c74c12581
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to send it to the mailing list.
