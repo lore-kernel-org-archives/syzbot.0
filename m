@@ -1,246 +1,560 @@
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB5943DFC70
-	for <syzbot@lists.linux.dev>; Tue, 19 May 2026 08:13:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDD753F6C4E
+	for <syzbot@lists.linux.dev>; Tue, 19 May 2026 09:00:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=10.30.226.201
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779178421; cv=pass; b=QUGr9JTM+PDDhxL2LDBibHcJPLnnqPaHpxzRud8c0oJhvS09iF6mAvwnGt4XIrnETVshssH7nKz9oxqoSpmGB10iJHdEqTu2WgA6sGcaQjuzvMCPmnjOkBgE0ON+zP+Ap36rkVAACro0JtBkKnlMuFXiDcQ9bb3orkWUlb9CLaY=
+	t=1779181243; cv=pass; b=pc/gaNs5mItpSONnzV+9ZEpamreOz+BFHbwqmpBRj+eUkqMmHXGiG1BMs5XhxdKV5tFCTbBfOcGqWdimjFzojyv5QJJjxiyJOWcGpYxuRxuaQlWZ+BpmC1Zv9rb7zjNWPbRsSsQTvYSTbPjIimEvf+7ZxFfjxRe3JA3mraulaKI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779178421; c=relaxed/simple;
-	bh=JoyKyclo3HiyeLkuQE996/3bHrLlMrqGkLdn/83tVbU=;
+	s=arc-20240116; t=1779181243; c=relaxed/simple;
+	bh=uiSC4WbQx9BGtRe37BuV15cBKEPu5/YBM94SjG0kLeM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qv9R8sYCiu3+b98Y25C+7kKXOovX6FijkWXgZRr0Qdf4oIrF4IksfQ0ZTWdmEvkwfT1Y60st7OTxxpZ1ywuu+k0OIgX/V8ycSsE+Kf9VKYDV3xUVg+fGBzhOPmZcWPD1oMM7B9U1AuRCiKJBFo8f0o0QkNyBGQzJkpjKHvhdgF0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GRWa1CMF; arc=pass smtp.client-ip=209.85.160.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 To:Cc:Content-Type; b=oaqh9xF81EaW7VrutpECJU2qTv45xSJ5JE0g2RlPFgqxt8dASWl82aQm1IpywPVXLdtfUwY6DkLPO73zPiU4Jna9hYEWky2FwFYd2Tgasb9xJhr/lJpe397jtwkDUo6TnNwLesQtPBAeWaqdh7pumhP1EKh5hGvI1oK5LQ6zZdo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=idDXFswh; arc=pass smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GRWa1CMF"
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-43a86d544c2so1438046fac.0
-        for <syzbot@lists.linux.dev>; Tue, 19 May 2026 01:13:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779178418; cv=none;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="idDXFswh"
+Received: by smtp.kernel.org (Postfix)
+	id C46DAC2BCB3; Tue, 19 May 2026 09:00:43 +0000 (UTC)
+Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 546D3C2BCC9
+	for <syzbot@kernel.org>; Tue, 19 May 2026 09:00:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.kernel.org 546D3C2BCC9
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=google.com
+Received: by mail-oo1-f50.google.com with SMTP id 006d021491bc7-6948fb494a0so1790766eaf.2
+        for <syzbot@kernel.org>; Tue, 19 May 2026 02:00:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779181241; cv=none;
         d=google.com; s=arc-20240605;
-        b=BnBTA/KQY18hiUfsBz/GuhM6PephiMy9c2HvvAB6Mi/d1Sdi3soEPbitlMIg2Sa/JE
-         Juqg4p/ztjLb/is+luReSyWelewCBKSFpIt5NbTggjKMlxHVtnRTYHn1wiNaoTOxyxuP
-         YLq2N57FsS7xu6hChcL/nIrfpxNiATmQF/tqMnteRz4fRutuNSvvGl0+BXu+JbJTMjmg
-         zlOo7YtwwhfK3ymatTSaJa6XDCfMSNiKKOtv+MNQnPVHBaqkGALrDMMtdy896jjyC8JR
-         QDQetzrQ0aJUFqb8s6c5V/8UB+03GJnE3cDfbTx+RaDwlEnAMMP7FX8BnkLhiM+8slc3
-         K8qg==
+        b=Hj1p6ra3g8b4+ridq95F5TvYX1UY/varsyGSCIJPHvqkZ8M5VPgbZw+JgRmn6ZgxHG
+         xstEy7DROPJ6eoZRjAUX4ccoukOjtOd/tS9gl94q8HY+KsipRJ/Ul04e1Bt+I6xffThd
+         cV3rT698B+rXeeoAQzBIIJtsmG/2gpu+6W6tI9fzeuZuDTzKHcPLsRM5i8szMrbXX97+
+         edufiUHn7tHtUEerqO00DO4I+GwMi+sXRnDRCR9HeIsMvpa/GgF97t7gPLSqhGoJJORZ
+         V6ROFk+idoxTeQm5JkpT1B3QKTGGtds/YbwNlkXFildUqX4hHJNHG1ko3QpbSx5ILlHS
+         YHVw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=Tay4PzBa/P2Jm9/JbwWU96JYaCIrFsqv5kafSGiUgO8=;
-        fh=oDHgYt7fmVCmGr3ZiwUb8jf9fYJAgUP0s4wxUOF1BGc=;
-        b=LyvZ9rqAZ1G1UKlDlLjYo+3Ud5atnZidQIAYq314mEKM+PRM2GCxDV17Axh+S4mEki
-         XsWsfmGuX0GvZfzSQyIvvunO/3ZukzJI3YANjJNdgvGiY5sQfrWx20OTrDNmKwBpgbk2
-         qVybgsE4HGKsX+DxdhYVjOGf1umr2ySRjFUtUWIzPw8WE1GY2DrlUS/r46WsXa4RWssF
-         B+zvllIsB/jdXG6dHjBIDNMnvu4jNR4XJLbGjLTiubGLusXtWXsyxIC3vzJi30dLiScd
-         HH/Uab51GunLFb9rBv+eHRx9dtirxLx4kYVuRV031/LbSqwLnkOvtcGum789FWbhhtYZ
-         ft9w==;
-        darn=lists.linux.dev
+        bh=V0S/AdSvKtL3ahAyhw36hFA+GFXjjDuXc9yBZ9vHmkk=;
+        fh=2Ld/g5BVZzBadtquf8mrXl84q+iOtbUed/2ECOFnmmI=;
+        b=Mf/eLSft7Wv8bFZZ2zCAaoNXR5lOXS3/fFtMUN4M+sJLssQJ3YYtcQO2ltc3U1OPzC
+         1NLRXKsc3OjObnxx1+lqfGV7iYNivNJ+YFNZLXKrahEOC8+Z3dCowOnilAkUymfH6JCQ
+         BeWJFGi9ZrIbIMoI6NDRICizEnV3t2qBYCmpBSGvywfB6F5LwANyzMe9jrZhkV6f97le
+         3cYkb+uGPxLeq2XfiE5bEOLBOYNFCD6OeZVVqWgrbPzxevKorT1MCtXh4i7/I1++LVI3
+         D+rlp9EZQAvhmejYRFBYj8y0q3DHJ6UZX8igxnu0VPJeb8a2eg17Zl3MVBCrjIIKgXjE
+         eUKA==;
+        darn=kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779178418; x=1779783218; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1779181241; x=1779786041; darn=kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Tay4PzBa/P2Jm9/JbwWU96JYaCIrFsqv5kafSGiUgO8=;
-        b=GRWa1CMFMsz0pDWFHJbq7+W7JsiNZzQWCThvIHV1i2J9l/t/caBnCwBgRt2Ia54DWc
-         R2+36tAje3d69QsH6xB93/okAqub4d1pgudn3/+Ihb1prG+mV0SE2jsV2tzveepE72ZC
-         1X/DCCW6tKFoVQLgU3XIDDN7vqz/lrs1AOnAgO1YXt8BgGX0kAu8ljl82Nu8TCOJYSSN
-         kbjRAGkZCCRElz95Qj9sL7JDuWpTl0PwDIAEOYoS7R0M0ytrC5QG4JYBB9mdK/d2DSgd
-         3AlC6ODae8e4+A0o5jMR/nckRzDpm3SKA3ebjiVVbX8txipFv1ARlz/cw6IlqoJtDtdQ
-         3baw==
+        bh=V0S/AdSvKtL3ahAyhw36hFA+GFXjjDuXc9yBZ9vHmkk=;
+        b=idDXFswhtV4gUSfVIiBceaTrOrmOb+x/iEahkYDmJWnMjt6+7cPn1ZBdGddcy48aT0
+         39eIgeApAU1GbhY3fvlJJIbKYojbEfZn5Fbl9MT7eoxpE2moPfbh/DE+83CtO4q4iHW5
+         2qJ+hh6KZlX6wQEI33OfycZpJfJVLdhy2e4jFUQ/rmvZIaHPiwUUpVpmu/B6onijmUkl
+         OI2KtTXAYwJfKOieC1IA+w/WVrS7vE5W+Hix9L7qNvhydHmw7RQ89YAmdRFnuMThyk42
+         06xeQrpcrmJfNf9U2KsP63Sz55csRqjMtxHdXaThqPBqcNoYUfIcgntdOAb9uHl5hSm5
+         LWOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779178418; x=1779783218;
+        d=1e100.net; s=20251104; t=1779181241; x=1779786041;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=Tay4PzBa/P2Jm9/JbwWU96JYaCIrFsqv5kafSGiUgO8=;
-        b=Dwv3UQlH2qeUOvzrpx7jKP8V58ebEE2eP6FCVMRY2YJgG4s/ehnsw9kRuhmWlo+sUW
-         ImPBJ5CSKsgJX1p4o/myW+jAVIJBl7GX6B1gCSCFt0FmE7o0gi+uO7RyfLBN0thKiIvV
-         7nwE3fNG54XGHXnx9Jg4fsOQTbs/sYq+hclnVSFQIIWIeBSVDlBBMJEKkmmdCLpu3bh4
-         o1+wAg0tCZOQOBV9Y1okDKRdMO/K0reanHeIHUrXB7oeF9LkhCPLsX3rPssPpprDnvdv
-         Ijr09JQThz4WhQLbXiuP2+U1BPTaAXOKGIGHx9WrjdfiFyiuYVG4pHVa0365xUfsGs+J
-         PhaQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/Gqi2PLRRyraKIi46XGvbjHPl1zMdou98H0JqCgx5p/VABWCrk86Yt06sPJo+w0u87gWBNcWM=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx67Rf4FM12Kd9gBoJDEjaK/AnGZDlLpKLgV3r8Jvt7AUmwc+LQ
-	pjJ2ggrgYGQSkwYGOjo/Nh+G5LXGKBx0ulUqZ0E4Vh42D0muCG/NGNXIrM17mcgW4eJxtvUjwQl
-	rHLYf4KCi2bIcw3ot63yDWh75GEJN8mICr8Vqswg8
-X-Gm-Gg: Acq92OEUKtMdr3d+JuigZ49yw9GR+rEqnPgBICRcKZhrPB63MVV87/3QxV+bcq28nDd
-	i2ZuDTi10PhAOwE3iejdNMA4ucTMQASZDoDy75MNM3h0q5x573EL4LBw+K127o42WikphT5qLH2
-	JqogULaMd6wqh58OMgx5o4sLT2CgooKKbZ9N/KtyTaUub0GixGNO4BRUu8PHoQ4CWIP+mcUYOZo
-	rTPt1MV45Y4XNyHz1Z9hdhyvsH6aJFfIHs2Utd3Cx4HDk/CSit3+pLaEEPfoc8aNP0r393PKJUX
-	qJjG6aXLv7eyuPKg5USjEreF5UUvHRJjaiGNGr9f3EUHAs3yFRRrp9X86jSOphp+TTABJeP6jgR
-	EnKzrqGjgNzJkg7Y=
-X-Received: by 2002:a05:6871:b0f:b0:434:e6e8:bb5e with SMTP id
- 586e51a60fabf-43a2dd512c8mr11838386fac.9.1779178418099; Tue, 19 May 2026
- 01:13:38 -0700 (PDT)
+        bh=V0S/AdSvKtL3ahAyhw36hFA+GFXjjDuXc9yBZ9vHmkk=;
+        b=pf95trZqku2xujcIqbSZpxXQkNrXXsXGoxtnXJkaze8Uh08fJl8uaQ0ZMWYfS0xGjV
+         6UUtDD89wUbZBvLph6z5SFRzDlXFUCgNJtOdS2yjW6uNSwiOHQ0LJt8Kh9moIfsqYoOz
+         1nGasXxcDyN0a3427Rua9UERbrhLRL+GnWUEV9OpgkZL6SakjmUKwowYuAsKzWGv1J+Q
+         alo50ReQY5e7/S046JHaG9yhhVJ/D2Rpxxn4CXT5ra2g3x7qyH/TtnTlUIwmUcnf+NNB
+         tiasrTwVDPhyDSsw53hDSnpWFEYOXT/Fcmlcg7j3wKOgK3K5Wb4olHxIkp9ZSJGCBdEN
+         cMAg==
+X-Gm-Message-State: AOJu0YyUkx+hFSELLdM/6dAbHgK5oFewhdxrTil0cwmvffinbrp93Y2c
+	jc14CpiMwDs7fnKVFdRzB/FzVo9CnqFp9J+bZdPYSf96ZOEPlkZucnrxCBrfj0T7EpcnPA80RYf
+	yxYAZ28fYe0A5Z/4lOlL+mxBzmQBsOFBDMgTS0mzyNGAmIA1ekLw4f2Rk
+X-Gm-Gg: Acq92OGQI3aJ3JN0sQkx7Ms0X2xguzEP55e9vvBcLUYm0E24sUQ+BcRX7v00AIXnNWs
+	TfPxaHk9BSJY5SAOYIjT8PK/u1SWpX2M06vY7HrDmAoiirpshA8+S3MS6/n2AOu0Yi1hi2Hs1ow
+	izXvDPyR7ha3ZU/7RH7N/5HILlxeelLLXe5/WMry8eQdTHSesUj9RdHOqSO0scedpqHrSg81S8k
+	ghBODXPhXMhtr0+p6Nc8FVPQhL4pdOH0xh0PLTD0qkbiTRNjRYbqknfmT3R7pmPlpIavJAuq5zs
+	bpPO0k6MwxBSamyEMyy3y55AF26lQ+vkSIX1LDxYYDHLhWZgcpM3lb270Agql0+IcHJ/OXa2ivv
+	BG7Z9
+X-Received: by 2002:a05:6820:8185:b0:685:7678:b53c with SMTP id
+ 006d021491bc7-69c9bfb085cmr10174956eaf.46.1779181240558; Tue, 19 May 2026
+ 02:00:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <3bb247d6-e412-46be-973c-5d2f9945ebe5@mail.kernel.org>
-In-Reply-To: <3bb247d6-e412-46be-973c-5d2f9945ebe5@mail.kernel.org>
+References: <d56161b7-1f00-4e88-94fe-9e6d4db29ae0@mail.kernel.org>
+In-Reply-To: <d56161b7-1f00-4e88-94fe-9e6d4db29ae0@mail.kernel.org>
 From: Aleksandr Nogikh <nogikh@google.com>
-Date: Tue, 19 May 2026 10:13:24 +0200
-X-Gm-Features: AVHnY4I7dzqvwb_2voBGGv4i0HXynINAPLGO876xbtMZESOb0A4fCPkXWz4rSgA
-Message-ID: <CANp29Y6xQkGZTWJg34Xj-ATO1cHu-rc-N36W+tQMEJ7g59FftQ@mail.gmail.com>
-Subject: Re: [PATCH RFC v2] usb: cdc-wdm: close race between workqueue and release
+Date: Tue, 19 May 2026 11:00:28 +0200
+X-Gm-Features: AVHnY4L__oGrg9vEHGBruWduKsGrVtLcvDZrqKjtndZlbUjwhI1KKsMbdVCwO7M
+Message-ID: <CANp29Y4f6VyeHoGyWhmmp+_CgqVWj4Lbif07goqkYb23H_j8EA@mail.gmail.com>
+Subject: Re: [PATCH RFC v3] btrfs: fix delayed transaction aborts
 To: syzbot <syzbot@kernel.org>
 Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Now please delete my Tested-by and send a new version.
+#syz reject
 
-On Tue, May 19, 2026 at 12:50=E2=80=AFAM 'syzbot' via
+On Sun, May 17, 2026 at 1:42=E2=80=AFAM 'syzbot' via
 syzkaller-upstream-moderation
 <syzkaller-upstream-moderation@googlegroups.com> wrote:
 >
-> The crash "URB submitted while active" occurs because the
-> `desc->response` URB is submitted by `wdm_rxwork` when it is already in
-> an active state. This happens because `wdm_release` fails to cancel
-> pending workqueue items (`desc->rxwork` and `desc->service_outs_intr`)
-> during its cleanup phase. When the character device is closed and there
-> are no other openers, `wdm_release` calls `poison_urbs()` to kill active
-> URBs, clears the `WDM_RESPONDING` flag, and calls `unpoison_urbs()`.
-> Because `wdm_release` does not call `cancel_work_sync()` for the work
-> items, they can run concurrently with the cleanup process. If a work
-> item executes after the URBs are unpoisoned, it can successfully submit
-> the URB. If another work item then runs, it will see the
-> `WDM_RESPONDING` flag as cleared, set it, and attempt to submit the URB
-> again, leading to the crash.
+> A transaction abort with error -28 (-ENOSPC) can trigger a WARN_ON in
+> cleanup_transaction(). The stack trace is somewhat misleading because
+> the transaction abort is delayed until the cleanup phase of
+> btrfs_commit_transaction(), hiding the actual function that ran out of
+> space.
 >
-> To fix this, cancel the pending workqueue items after poisoning the URBs
-> and before clearing the `WDM_RESPONDING` flag or unpoisoning the URBs.
-> This ensures that any running work item will either fail to submit the
-> URB (because it is poisoned) or finish executing before the cleanup
-> proceeds. The same omission is present in `wdm_wwan_port_stop`, so apply
-> the same fix there to prevent data leaks or crashes across WWAN
-> sessions.
+> When a highly crafted, extremely small BTRFS image is mounted and a
+> BTRFS_IOC_BALANCE_V2 ioctl is issued, the balance operation joins a
+> transaction and immediately commits it. During
+> btrfs_commit_transaction(), the filesystem needs to update various
+> trees. To update these trees, BTRFS must COW their root nodes, which
+> eventually calls btrfs_alloc_tree_block() to allocate a new physical
+> extent. Because the crafted image is tiny and has no free physical space
+> left, btrfs_reserve_extent() fails and returns -ENOSPC.
 >
-> ------------[ cut here ]------------
-> URB ffff888052781d00 submitted while active
-> WARNING: drivers/usb/core/urb.c:379 at usb_submit_urb+0x7b/0x18b0
-> drivers/usb/core/urb.c:379, CPU#0: kworker/0:3/5726
-> Modules linked in:
-> CPU: 0 UID: 0 PID: 5726 Comm: kworker/0:3 Not tainted syzkaller #1
-> PREEMPT(full)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
-> 1.16.3-debian-1.16.3-2 04/01/2014
-> Workqueue: events wdm_rxwork
-> RIP: 0010:usb_submit_urb+0x7e/0x18b0 drivers/usb/core/urb.c:379
-> Code: 89 f0 48 c1 e8 03 42 80 3c 38 00 74 08 4c 89 f7 e8 57 eb 0c fb 49
-> 83 3e 00 74 40 e8 7c da a2 fa 48 8d 3d a5 09 d9 08 48 89 de <67> 48 0f
-> b9 3a b8 f0 ff ff ff eb 11 e8 61 da a2 fa eb 05 e8 5a da
-> RSP: 0018:ffffc90003427a10 EFLAGS: 00010293
-> RAX: ffffffff8720dc64 RBX: ffff888052781d00 RCX: ffff88801fe48000
-> RDX: 0000000000000000 RSI: ffff888052781d00 RDI: ffffffff8ff9e610
-> RBP: 0000000000000001 R08: ffffffff8fecf1f7 R09: 1ffffffff1fd9e3e
-> R10: dffffc0000000000 R11: fffffbfff1fd9e3f R12: 0000000000000cc0
-> R13: 1ffff1100a555e12 R14: ffff888052781d08 R15: dffffc0000000000
-> FS:  0000000000000000(0000) GS:ffff88809893a000(0000)
-> knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f08959ea540 CR3: 000000001e4b2000 CR4: 00000000000006f0
-> Call Trace:
->  <TASK>
->  wdm_rxwork+0x101/0x1e0 drivers/usb/class/cdc-wdm.c:997
->  process_one_work kernel/workqueue.c:3302 [inline]
->  process_scheduled_works+0xb5d/0x1860 kernel/workqueue.c:3385
->  worker_thread+0x8a2/0xda0 kernel/workqueue.c:3466
->  kthread+0x388/0x470 kernel/kthread.c:436
->  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
->  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
->  </TASK>
-> ----------------
+> The -ENOSPC error propagates up the call stack to commit_cowonly_roots()
+> or commit_fs_roots(). Crucially, when these functions receive this
+> error, they simply return it to btrfs_commit_transaction() without
+> calling btrfs_abort_transaction() themselves. The error is caught in
+> btrfs_commit_transaction() and execution jumps to the cleanup labels.
+> Inside cleanup_transaction(), btrfs_abort_transaction() is finally
+> called. Because the failing functions neglected to abort the transaction
+> when the error actually occurred, this call inside cleanup_transaction()
+> is the first abort, completely hiding the true source of the -ENOSPC.
 >
-> Tested-by: nogikh@google.com
+> To fix this and ensure developers get accurate stack traces for
+> transaction aborts, explicitly call btrfs_abort_transaction() before
+> returning errors in functions that can fail with fatal errors during the
+> commit critical section (commit_cowonly_roots(), commit_fs_roots(), and
+> btrfs_qgroup_account_extents()).
 >
-> Fixes: 01e01f5c89773c600a9f0b32c888de0146066c3a ("usb: cdc-wdm: fix readi=
-ng stuck on device close")
+> Also, replace the WARN() macro in btrfs_abort_transaction() with
+> dump_stack() to prevent transaction aborts from triggering kernel
+> warnings, while still printing the stack trace.
+>
+> Additionally, use lockdep maps for workqueue allocations to address
+> lockdep key exhaustion.
+>
+> Fixes: 49b25e0540904be0bf558b84475c69d72e4de66e ("btrfs: enhance transact=
+ion abort infrastructure")
 > Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-> Tested-by: Aleksandr Nogikh <nogikh@google.com>
-> Reported-by: syzbot+c6a1953c27ace6cc34e5@syzkaller.appspotmail.com
-> Reported-by: syzbot <syzbot+c6a1953c27ace6cc34e5@syzkaller.appspotmail.co=
-m>
-> Link: https://syzkaller.appspot.com/bug?extid=3Dc6a1953c27ace6cc34e5
-> Link: https://syzkaller.appspot.com/ai_job?id=3Deb69973c-340c-4ffd-bfad-1=
-83f25211bed
-> To: <gregkh@linuxfoundation.org>
-> To: <linux-usb@vger.kernel.org>
+> Reported-by: syzbot+dafbca0e20fbc5946925@syzkaller.appspotmail.com
+> Link: https://syzkaller.appspot.com/bug?extid=3Ddafbca0e20fbc5946925
+> Link: https://syzkaller.appspot.com/ai_job?id=3D96c50581-2f5c-4140-ad4e-b=
+f2cccae111e
+> To: <clm@fb.com>
+> To: <dsterba@suse.com>
+> To: <linux-btrfs@vger.kernel.org>
 > Cc: <linux-kernel@vger.kernel.org>
 >
 > ---
+> v3:
+> - Dropped btrfs_abort_transaction() calls in create_pending_snapshot() to=
+ reduce patch size.
+> - Replaced WARN() with dump_stack() in btrfs_abort_transaction() instead =
+of adding -ENOSPC to btrfs_abort_should_print_stack().
+> - Restored workqueue changes addressing lockdep key exhaustion.
+> - Moved btrfs_abort_transaction() call in btrfs_qgroup_account_extents() =
+back to the error site.
+>
 > v2:
-> - Added crash stacktrace to the commit description
-> - Added Tested-by tag from nogikh@google.com
-> - Cleared WDM_RESPONDING flag and resp_count under iuspin lock in wdm_wwa=
-n_port_stop, wdm_suspend, and wdm_pre_reset
+> - Consolidated btrfs_abort_transaction() calls at the end of functions un=
+der cleanup/fail/out labels instead of calling them at each error site.
+> - Dropped unrelated workqueue and super.c changes addressing lockdep key =
+exhaustion.
+> https://lore.kernel.org/all/54bfa402-a284-4649-94d3-a25a88a6c475@mail.ker=
+nel.org/T/
 >
 > v1:
-> https://lore.kernel.org/all/97986988-6374-4e40-aa96-662939fabe88@mail.ker=
+> https://lore.kernel.org/all/f77b5e84-af17-41f8-9357-e8f4cd4b8438@mail.ker=
 nel.org/T/
 > ---
-> diff --git a/drivers/usb/class/cdc-wdm.c b/drivers/usb/class/cdc-wdm.c
-> index 7556c0dac..ba5422d1d 100644
-> --- a/drivers/usb/class/cdc-wdm.c
-> +++ b/drivers/usb/class/cdc-wdm.c
-> @@ -769,6 +769,8 @@ static int wdm_release(struct inode *inode, struct fi=
-le *file)
->                 if (!test_bit(WDM_DISCONNECTING, &desc->flags)) {
->                         dev_dbg(&desc->intf->dev, "wdm_release: cleanup\n=
-");
->                         poison_urbs(desc);
-> +                       cancel_work_sync(&desc->rxwork);
-> +                       cancel_work_sync(&desc->service_outs_intr);
->                         spin_lock_irq(&desc->iuspin);
->                         desc->resp_count =3D 0;
->                         clear_bit(WDM_RESPONDING, &desc->flags);
-> @@ -863,6 +865,12 @@ static void wdm_wwan_port_stop(struct wwan_port *por=
-t)
->
->         /* Stop all transfers and disable WWAN mode */
->         poison_urbs(desc);
-> +       cancel_work_sync(&desc->rxwork);
-> +       cancel_work_sync(&desc->service_outs_intr);
-> +       spin_lock_irq(&desc->iuspin);
-> +       desc->resp_count =3D 0;
-> +       clear_bit(WDM_RESPONDING, &desc->flags);
-> +       spin_unlock_irq(&desc->iuspin);
->         desc->manage_power(desc->intf, 0);
->         clear_bit(WDM_READ, &desc->flags);
->         unpoison_urbs(desc);
-> @@ -1279,6 +1287,10 @@ static int wdm_suspend(struct usb_interface *intf,=
- pm_message_t message)
->                 poison_urbs(desc);
->                 cancel_work_sync(&desc->rxwork);
->                 cancel_work_sync(&desc->service_outs_intr);
-> +               spin_lock_irq(&desc->iuspin);
-> +               desc->resp_count =3D 0;
-> +               clear_bit(WDM_RESPONDING, &desc->flags);
-> +               spin_unlock_irq(&desc->iuspin);
->                 unpoison_urbs(desc);
->         }
->         if (!PMSG_IS_AUTO(message)) {
-> @@ -1340,6 +1352,10 @@ static int wdm_pre_reset(struct usb_interface *int=
-f)
->         poison_urbs(desc);
->         cancel_work_sync(&desc->rxwork);
->         cancel_work_sync(&desc->service_outs_intr);
-> +       spin_lock_irq(&desc->iuspin);
-> +       desc->resp_count =3D 0;
-> +       clear_bit(WDM_RESPONDING, &desc->flags);
-> +       spin_unlock_irq(&desc->iuspin);
->         return 0;
+> diff --git a/fs/btrfs/async-thread.c b/fs/btrfs/async-thread.c
+> index e6f33d094..634b7b578 100644
+> --- a/fs/btrfs/async-thread.c
+> +++ b/fs/btrfs/async-thread.c
+> @@ -81,9 +81,10 @@ static void btrfs_init_workqueue(struct btrfs_workqueu=
+e *wq,
+>         spin_lock_init(&wq->thres_lock);
 >  }
 >
+> -struct btrfs_workqueue *btrfs_alloc_workqueue(struct btrfs_fs_info *fs_i=
+nfo,
+> -                                             const char *name, unsigned =
+int flags,
+> -                                             int limit_active, int thres=
+h)
+> +struct btrfs_workqueue *
+> +__btrfs_alloc_workqueue(struct btrfs_fs_info *fs_info, const char *name,
+> +                       unsigned int flags, int limit_active, int thresh,
+> +                       struct lock_class_key *key, struct lockdep_map *m=
+ap)
+>  {
+>         struct btrfs_workqueue *ret =3D kzalloc_obj(*ret);
+>
+> @@ -109,8 +110,14 @@ struct btrfs_workqueue *btrfs_alloc_workqueue(struct=
+ btrfs_fs_info *fs_info,
+>                 ret->thresh =3D thresh;
+>         }
+>
+> +#ifdef CONFIG_LOCKDEP
+> +       lockdep_init_map(map, name, key, 0);
+> +       ret->normal_wq =3D alloc_workqueue_lockdep_map(
+> +               "btrfs-%s", flags, ret->current_active, map, name);
+> +#else
+>         ret->normal_wq =3D alloc_workqueue("btrfs-%s", flags, ret->curren=
+t_active,
+>                                          name);
+> +#endif
+>         if (!ret->normal_wq) {
+>                 kfree(ret);
+>                 return NULL;
+> @@ -120,9 +127,10 @@ struct btrfs_workqueue *btrfs_alloc_workqueue(struct=
+ btrfs_fs_info *fs_info,
+>         return ret;
+>  }
+>
+> -struct btrfs_workqueue *btrfs_alloc_ordered_workqueue(
+> -                               struct btrfs_fs_info *fs_info, const char=
+ *name,
+> -                               unsigned int flags)
+> +struct btrfs_workqueue *
+> +__btrfs_alloc_ordered_workqueue(struct btrfs_fs_info *fs_info, const cha=
+r *name,
+> +                               unsigned int flags, struct lock_class_key=
+ *key,
+> +                               struct lockdep_map *map)
+>  {
+>         struct btrfs_workqueue *ret;
+>
+> @@ -137,7 +145,13 @@ struct btrfs_workqueue *btrfs_alloc_ordered_workqueu=
+e(
+>         ret->current_active =3D 1;
+>         ret->thresh =3D NO_THRESHOLD;
+>
+> +#ifdef CONFIG_LOCKDEP
+> +       lockdep_init_map(map, name, key, 0);
+> +       ret->normal_wq =3D alloc_ordered_workqueue_lockdep_map("btrfs-%s"=
+, flags,
+> +                                                            map, name);
+> +#else
+>         ret->normal_wq =3D alloc_ordered_workqueue("btrfs-%s", flags, nam=
+e);
+> +#endif
+>         if (!ret->normal_wq) {
+>                 kfree(ret);
+>                 return NULL;
+> diff --git a/fs/btrfs/async-thread.h b/fs/btrfs/async-thread.h
+> index 04c2f3175..f43f5feb9 100644
+> --- a/fs/btrfs/async-thread.h
+> +++ b/fs/btrfs/async-thread.h
+> @@ -29,14 +29,40 @@ struct btrfs_work {
+>         unsigned long flags;
+>  };
+>
+> -struct btrfs_workqueue *btrfs_alloc_workqueue(struct btrfs_fs_info *fs_i=
+nfo,
+> -                                             const char *name,
+> -                                             unsigned int flags,
+> -                                             int limit_active,
+> -                                             int thresh);
+> -struct btrfs_workqueue *btrfs_alloc_ordered_workqueue(
+> -                               struct btrfs_fs_info *fs_info, const char=
+ *name,
+> -                               unsigned int flags);
+> +struct btrfs_workqueue *
+> +__btrfs_alloc_workqueue(struct btrfs_fs_info *fs_info, const char *name,
+> +                       unsigned int flags, int limit_active, int thresh,
+> +                       struct lock_class_key *key, struct lockdep_map *m=
+ap);
+> +#ifdef CONFIG_LOCKDEP
+> +#define btrfs_alloc_workqueue(fs_info, name, flags, limit_active, thresh=
+)   \
+> +       ({                                                               =
+   \
+> +               static struct lock_class_key __key;                      =
+   \
+> +               static struct lockdep_map __map;                         =
+   \
+> +               __btrfs_alloc_workqueue(fs_info, name, flags, limit_activ=
+e, \
+> +                                       thresh, &__key, &__map);         =
+   \
+> +       })
+> +#else
+> +#define btrfs_alloc_workqueue(fs_info, name, flags, limit_active, thresh=
+)   \
+> +       __btrfs_alloc_workqueue(fs_info, name, flags, limit_active, thres=
+h, \
+> +                               NULL, NULL)
+> +#endif
+> +
+> +struct btrfs_workqueue *
+> +__btrfs_alloc_ordered_workqueue(struct btrfs_fs_info *fs_info, const cha=
+r *name,
+> +                               unsigned int flags, struct lock_class_key=
+ *key,
+> +                               struct lockdep_map *map);
+> +#ifdef CONFIG_LOCKDEP
+> +#define btrfs_alloc_ordered_workqueue(fs_info, name, flags)             =
+      \
+> +       ({                                                               =
+     \
+> +               static struct lock_class_key __key;                      =
+     \
+> +               static struct lockdep_map __map;                         =
+     \
+> +               __btrfs_alloc_ordered_workqueue(fs_info, name, flags, &__=
+key, \
+> +                                               &__map);                 =
+     \
+> +       })
+> +#else
+> +#define btrfs_alloc_ordered_workqueue(fs_info, name, flags) \
+> +       __btrfs_alloc_ordered_workqueue(fs_info, name, flags, NULL, NULL)
+> +#endif
+>  void btrfs_init_work(struct btrfs_work *work, btrfs_func_t func,
+>                      btrfs_ordered_func_t ordered_func);
+>  void btrfs_queue_work(struct btrfs_workqueue *wq,
+> diff --git a/fs/btrfs/qgroup.c b/fs/btrfs/qgroup.c
+> index cdf736d3a..f9acfab14 100644
+> --- a/fs/btrfs/qgroup.c
+> +++ b/fs/btrfs/qgroup.c
+> @@ -3076,6 +3076,10 @@ int btrfs_qgroup_account_extents(struct btrfs_tran=
+s_handle *trans)
+>                                                           record->num_byt=
+es,
+>                                                           record->old_roo=
+ts,
+>                                                           new_roots);
+> +                       if (ret < 0) {
+> +                               btrfs_abort_transaction(trans, ret);
+> +                               goto cleanup;
+> +                       }
+>                         record->old_roots =3D NULL;
+>                         new_roots =3D NULL;
+>                 }
+> diff --git a/fs/btrfs/transaction.c b/fs/btrfs/transaction.c
+> index 248adb785..aa0ce0c59 100644
+> --- a/fs/btrfs/transaction.c
+> +++ b/fs/btrfs/transaction.c
+> @@ -1372,21 +1372,23 @@ static noinline int commit_cowonly_roots(struct b=
+trfs_trans_handle *trans)
+>         free_extent_buffer(eb);
+>
+>         if (ret)
+> -               return ret;
+> +               goto out;
+>
+>         ret =3D btrfs_run_dev_stats(trans);
+>         if (ret)
+> -               return ret;
+> +               goto out;
+> +
+>         ret =3D btrfs_run_dev_replace(trans);
+>         if (ret)
+> -               return ret;
+> +               goto out;
+> +
+>         ret =3D btrfs_run_qgroups(trans);
+>         if (ret)
+> -               return ret;
+> +               goto out;
+>
+>         ret =3D btrfs_setup_space_cache(trans);
+>         if (ret)
+> -               return ret;
+> +               goto out;
+>
+>  again:
+>         while (!list_empty(&fs_info->dirty_cowonly_roots)) {
+> @@ -1400,18 +1402,18 @@ static noinline int commit_cowonly_roots(struct b=
+trfs_trans_handle *trans)
+>
+>                 ret =3D update_cowonly_root(trans, root);
+>                 if (ret)
+> -                       return ret;
+> +                       goto out;
+>         }
+>
+>         /* Now flush any delayed refs generated by updating all of the ro=
+ots */
+>         ret =3D btrfs_run_delayed_refs(trans, U64_MAX);
+>         if (ret)
+> -               return ret;
+> +               goto out;
+>
+>         while (!list_empty(dirty_bgs) || !list_empty(io_bgs)) {
+>                 ret =3D btrfs_write_dirty_block_groups(trans);
+>                 if (ret)
+> -                       return ret;
+> +                       goto out;
+>
+>                 /*
+>                  * We're writing the dirty block groups, which could gene=
+rate
+> @@ -1421,7 +1423,7 @@ static noinline int commit_cowonly_roots(struct btr=
+fs_trans_handle *trans)
+>                  */
+>                 ret =3D btrfs_run_delayed_refs(trans, U64_MAX);
+>                 if (ret)
+> -                       return ret;
+> +                       goto out;
+>         }
+>
+>         if (!list_empty(&fs_info->dirty_cowonly_roots))
+> @@ -1431,7 +1433,10 @@ static noinline int commit_cowonly_roots(struct bt=
+rfs_trans_handle *trans)
+>         fs_info->dev_replace.committed_cursor_left =3D
+>                 fs_info->dev_replace.cursor_left_last_write_of_item;
+>
+> -       return 0;
+> +out:
+> +       if (ret)
+> +               btrfs_abort_transaction(trans, ret);
+> +       return ret;
+>  }
+>
+>  /*
+> @@ -1492,6 +1497,7 @@ static noinline int commit_fs_roots(struct btrfs_tr=
+ans_handle *trans)
+>         struct btrfs_root *gang[8];
+>         int i;
+>         int ret;
+> +       int err =3D 0;
+>
+>         /*
+>          * At this point no one can be using this transaction to modify a=
+ny tree
+> @@ -1510,7 +1516,6 @@ static noinline int commit_fs_roots(struct btrfs_tr=
+ans_handle *trans)
+>                         break;
+>                 for (i =3D 0; i < ret; i++) {
+>                         struct btrfs_root *root =3D gang[i];
+> -                       int ret2;
+>
+>                         /*
+>                          * At this point we can neither have tasks loggin=
+g inodes
+> @@ -1533,9 +1538,9 @@ static noinline int commit_fs_roots(struct btrfs_tr=
+ans_handle *trans)
+>                         spin_unlock(&fs_info->fs_roots_radix_lock);
+>
+>                         btrfs_free_log(trans, root);
+> -                       ret2 =3D btrfs_update_reloc_root(trans, root);
+> -                       if (unlikely(ret2))
+> -                               return ret2;
+> +                       err =3D btrfs_update_reloc_root(trans, root);
+> +                       if (unlikely(err))
+> +                               goto out;
+>
+>                         /* see comments in should_cow_block() */
+>                         clear_bit(BTRFS_ROOT_FORCE_COW, &root->state);
+> @@ -1548,16 +1553,19 @@ static noinline int commit_fs_roots(struct btrfs_=
+trans_handle *trans)
+>                                                     root->node);
+>                         }
+>
+> -                       ret2 =3D btrfs_update_root(trans, fs_info->tree_r=
+oot,
+> +                       err =3D btrfs_update_root(trans, fs_info->tree_ro=
+ot,
+>                                                 &root->root_key,
+>                                                 &root->root_item);
+> -                       if (unlikely(ret2))
+> -                               return ret2;
+> +                       if (unlikely(err))
+> +                               goto out;
+>                         spin_lock(&fs_info->fs_roots_radix_lock);
+>                 }
+>         }
+>         spin_unlock(&fs_info->fs_roots_radix_lock);
+> -       return 0;
+> +out:
+> +       if (err)
+> +               btrfs_abort_transaction(trans, err);
+> +       return err;
+>  }
+>
+>  /*
+> diff --git a/fs/btrfs/transaction.h b/fs/btrfs/transaction.h
+> index 7d70fe486..f816e62f3 100644
+> --- a/fs/btrfs/transaction.h
+> +++ b/fs/btrfs/transaction.h
+> @@ -246,27 +246,21 @@ static inline bool btrfs_abort_should_print_stack(i=
+nt error)
+>   * Call btrfs_abort_transaction as early as possible when an error condi=
+tion is
+>   * detected, that way the exact stack trace is reported for some errors.
+>   */
+> -#define btrfs_abort_transaction(trans, error)          \
+> -do {                                                           \
+> -       bool __first =3D false;                                   \
+> -       /* Report first abort since mount */                    \
+> -       if (!test_and_set_bit(BTRFS_FS_STATE_TRANS_ABORTED,     \
+> -                       &((trans)->fs_info->fs_state))) {       \
+> -               __first =3D true;                                 \
+> -               if (WARN(btrfs_abort_should_print_stack(error), \
+> -                       KERN_ERR                                \
+> -                       "BTRFS: Transaction aborted (error %d)\n",      \
+> -                       (error))) {                                     \
+> -                       /* Stack trace printed. */                      \
+> -               } else {                                                \
+> -                       btrfs_err((trans)->fs_info,                     \
+> -                                 "Transaction aborted (error %d)",     \
+> -                                 (error));                     \
+> -               }                                               \
+> -       }                                                       \
+> -       __btrfs_abort_transaction((trans), __func__,            \
+> -                                 __LINE__, (error), __first);  \
+> -} while (0)
+> +#define btrfs_abort_transaction(trans, error)                           =
+      \
+> +       do {                                                             =
+     \
+> +               bool __first =3D false;                                  =
+       \
+> +               /* Report first abort since mount */                     =
+     \
+> +               if (!test_and_set_bit(BTRFS_FS_STATE_TRANS_ABORTED,      =
+     \
+> +                                     &((trans)->fs_info->fs_state))) {  =
+     \
+> +                       __first =3D true;                                =
+       \
+> +                       btrfs_err((trans)->fs_info,                      =
+     \
+> +                                 "Transaction aborted (error %d)", (erro=
+r)); \
+> +                       if (btrfs_abort_should_print_stack(error))       =
+     \
+> +                               dump_stack();                            =
+     \
+> +               }                                                        =
+     \
+> +               __btrfs_abort_transaction((trans), __func__, __LINE__,   =
+     \
+> +                                         (error), __first);             =
+     \
+> +       } while (0)
+>
+>  int btrfs_end_transaction(struct btrfs_trans_handle *trans);
+>  struct btrfs_trans_handle *btrfs_start_transaction(struct btrfs_root *ro=
+ot,
 >
 >
-> base-commit: 5d6919055dec134de3c40167a490f33c74c12581
+> base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
 > --
 > This is an AI-generated patch subject to moderation.
 > Reply with '#syz upstream' to send it to the mailing list.
@@ -248,3 +562,11 @@ f)
 >
 > See  for more information.
 >
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/d56161b7-1f00-4e88-94fe-9e6d4db29ae0%40mail.kernel.org=
+.
