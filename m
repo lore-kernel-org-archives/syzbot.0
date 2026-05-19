@@ -1,277 +1,250 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9780F3B5839
-	for <syzbot@lists.linux.dev>; Tue, 19 May 2026 07:10:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779174609; cv=none; b=mRlXouVk9d9bpqhLl7q7awSFg/UaD2CTNiQ+Hz+MH5Yc+aads3Jwf9cb9e517eQHspQNJrRVh4xAVaU+whrMI28EiTkCopHuMZ9Jy6X/lBO1i2Ag4MQDY0rsOt9hQqnv1IIvCdfobHzrN3SBSJ5Wu3P74krqcFIKuijNqtbwXAA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779174609; c=relaxed/simple;
-	bh=PNyzdZ7D7dAVWwdJFQSv28ZbIH1uxEbvpEBER/MNiZI=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ovAHrcpWOpaVjFvNI7zYY9g0TEinVEShBHQVLHTxNMYZherZGZfEm/wSo8cyIRpWighV4Ju4rHOxE2U+qe1mx6JumTML6w5VnCt8gyGJGWD/8UkiwUeywfborMI6hmUJ0BzD4ChnbogRprP5nB+pC4sXrhrJs3UbrhiZxL/YogM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Nco+i52f; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB5943DFC70
+	for <syzbot@lists.linux.dev>; Tue, 19 May 2026 08:13:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779178421; cv=pass; b=QUGr9JTM+PDDhxL2LDBibHcJPLnnqPaHpxzRud8c0oJhvS09iF6mAvwnGt4XIrnETVshssH7nKz9oxqoSpmGB10iJHdEqTu2WgA6sGcaQjuzvMCPmnjOkBgE0ON+zP+Ap36rkVAACro0JtBkKnlMuFXiDcQ9bb3orkWUlb9CLaY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779178421; c=relaxed/simple;
+	bh=JoyKyclo3HiyeLkuQE996/3bHrLlMrqGkLdn/83tVbU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=qv9R8sYCiu3+b98Y25C+7kKXOovX6FijkWXgZRr0Qdf4oIrF4IksfQ0ZTWdmEvkwfT1Y60st7OTxxpZ1ywuu+k0OIgX/V8ycSsE+Kf9VKYDV3xUVg+fGBzhOPmZcWPD1oMM7B9U1AuRCiKJBFo8f0o0QkNyBGQzJkpjKHvhdgF0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GRWa1CMF; arc=pass smtp.client-ip=209.85.160.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Nco+i52f"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6070C2BCB3;
-	Tue, 19 May 2026 07:10:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779174608;
-	bh=PNyzdZ7D7dAVWwdJFQSv28ZbIH1uxEbvpEBER/MNiZI=;
-	h=From:To:Cc:Subject:Date:From;
-	b=Nco+i52fRC6vYcuURZ5D1sZGqzDLbD0SjQ3xC/SP6K8TZ6nKsOE9uU3CV4p/nD4hO
-	 E3cUvhKWgAewIVAV+1XuIHudsEKkuJJwhbTczVc+J1Y++94K1j04X5PxBgP3wpQ24b
-	 ovw7CtbWC/G/9o7ZcyN/tDyhiOSg7zFq9wHUUWp8qSFP17zkri961wsKiGO2sPYkQG
-	 wL5i6CqFvPJw9IK9h3aWDNCvdCzhQpP88SqxJo9hpdI89NajJREhCfzqdNRZFssf1S
-	 DRRZWjcMoY8PB76Ij4fLhWhFg8PS4a4me1PkgdnPmmngOKyoSLRfPRZVUh11TZ59Op
-	 Ltv3ddjB+RX5g==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation+final@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH] bpf: lru: Use resilient spinlocks to prevent NMI deadlocks
-Message-ID: <13d16b15-8e25-40f2-afbd-eb9b486bf1d2@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GRWa1CMF"
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-43a86d544c2so1438046fac.0
+        for <syzbot@lists.linux.dev>; Tue, 19 May 2026 01:13:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779178418; cv=none;
+        d=google.com; s=arc-20240605;
+        b=BnBTA/KQY18hiUfsBz/GuhM6PephiMy9c2HvvAB6Mi/d1Sdi3soEPbitlMIg2Sa/JE
+         Juqg4p/ztjLb/is+luReSyWelewCBKSFpIt5NbTggjKMlxHVtnRTYHn1wiNaoTOxyxuP
+         YLq2N57FsS7xu6hChcL/nIrfpxNiATmQF/tqMnteRz4fRutuNSvvGl0+BXu+JbJTMjmg
+         zlOo7YtwwhfK3ymatTSaJa6XDCfMSNiKKOtv+MNQnPVHBaqkGALrDMMtdy896jjyC8JR
+         QDQetzrQ0aJUFqb8s6c5V/8UB+03GJnE3cDfbTx+RaDwlEnAMMP7FX8BnkLhiM+8slc3
+         K8qg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=Tay4PzBa/P2Jm9/JbwWU96JYaCIrFsqv5kafSGiUgO8=;
+        fh=oDHgYt7fmVCmGr3ZiwUb8jf9fYJAgUP0s4wxUOF1BGc=;
+        b=LyvZ9rqAZ1G1UKlDlLjYo+3Ud5atnZidQIAYq314mEKM+PRM2GCxDV17Axh+S4mEki
+         XsWsfmGuX0GvZfzSQyIvvunO/3ZukzJI3YANjJNdgvGiY5sQfrWx20OTrDNmKwBpgbk2
+         qVybgsE4HGKsX+DxdhYVjOGf1umr2ySRjFUtUWIzPw8WE1GY2DrlUS/r46WsXa4RWssF
+         B+zvllIsB/jdXG6dHjBIDNMnvu4jNR4XJLbGjLTiubGLusXtWXsyxIC3vzJi30dLiScd
+         HH/Uab51GunLFb9rBv+eHRx9dtirxLx4kYVuRV031/LbSqwLnkOvtcGum789FWbhhtYZ
+         ft9w==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1779178418; x=1779783218; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Tay4PzBa/P2Jm9/JbwWU96JYaCIrFsqv5kafSGiUgO8=;
+        b=GRWa1CMFMsz0pDWFHJbq7+W7JsiNZzQWCThvIHV1i2J9l/t/caBnCwBgRt2Ia54DWc
+         R2+36tAje3d69QsH6xB93/okAqub4d1pgudn3/+Ihb1prG+mV0SE2jsV2tzveepE72ZC
+         1X/DCCW6tKFoVQLgU3XIDDN7vqz/lrs1AOnAgO1YXt8BgGX0kAu8ljl82Nu8TCOJYSSN
+         kbjRAGkZCCRElz95Qj9sL7JDuWpTl0PwDIAEOYoS7R0M0ytrC5QG4JYBB9mdK/d2DSgd
+         3AlC6ODae8e4+A0o5jMR/nckRzDpm3SKA3ebjiVVbX8txipFv1ARlz/cw6IlqoJtDtdQ
+         3baw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779178418; x=1779783218;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=Tay4PzBa/P2Jm9/JbwWU96JYaCIrFsqv5kafSGiUgO8=;
+        b=Dwv3UQlH2qeUOvzrpx7jKP8V58ebEE2eP6FCVMRY2YJgG4s/ehnsw9kRuhmWlo+sUW
+         ImPBJ5CSKsgJX1p4o/myW+jAVIJBl7GX6B1gCSCFt0FmE7o0gi+uO7RyfLBN0thKiIvV
+         7nwE3fNG54XGHXnx9Jg4fsOQTbs/sYq+hclnVSFQIIWIeBSVDlBBMJEKkmmdCLpu3bh4
+         o1+wAg0tCZOQOBV9Y1okDKRdMO/K0reanHeIHUrXB7oeF9LkhCPLsX3rPssPpprDnvdv
+         Ijr09JQThz4WhQLbXiuP2+U1BPTaAXOKGIGHx9WrjdfiFyiuYVG4pHVa0365xUfsGs+J
+         PhaQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/Gqi2PLRRyraKIi46XGvbjHPl1zMdou98H0JqCgx5p/VABWCrk86Yt06sPJo+w0u87gWBNcWM=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx67Rf4FM12Kd9gBoJDEjaK/AnGZDlLpKLgV3r8Jvt7AUmwc+LQ
+	pjJ2ggrgYGQSkwYGOjo/Nh+G5LXGKBx0ulUqZ0E4Vh42D0muCG/NGNXIrM17mcgW4eJxtvUjwQl
+	rHLYf4KCi2bIcw3ot63yDWh75GEJN8mICr8Vqswg8
+X-Gm-Gg: Acq92OEUKtMdr3d+JuigZ49yw9GR+rEqnPgBICRcKZhrPB63MVV87/3QxV+bcq28nDd
+	i2ZuDTi10PhAOwE3iejdNMA4ucTMQASZDoDy75MNM3h0q5x573EL4LBw+K127o42WikphT5qLH2
+	JqogULaMd6wqh58OMgx5o4sLT2CgooKKbZ9N/KtyTaUub0GixGNO4BRUu8PHoQ4CWIP+mcUYOZo
+	rTPt1MV45Y4XNyHz1Z9hdhyvsH6aJFfIHs2Utd3Cx4HDk/CSit3+pLaEEPfoc8aNP0r393PKJUX
+	qJjG6aXLv7eyuPKg5USjEreF5UUvHRJjaiGNGr9f3EUHAs3yFRRrp9X86jSOphp+TTABJeP6jgR
+	EnKzrqGjgNzJkg7Y=
+X-Received: by 2002:a05:6871:b0f:b0:434:e6e8:bb5e with SMTP id
+ 586e51a60fabf-43a2dd512c8mr11838386fac.9.1779178418099; Tue, 19 May 2026
+ 01:13:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Tue, 19 May 2026 07:10:08 +0000 (UTC)
+References: <3bb247d6-e412-46be-973c-5d2f9945ebe5@mail.kernel.org>
+In-Reply-To: <3bb247d6-e412-46be-973c-5d2f9945ebe5@mail.kernel.org>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Tue, 19 May 2026 10:13:24 +0200
+X-Gm-Features: AVHnY4I7dzqvwb_2voBGGv4i0HXynINAPLGO876xbtMZESOb0A4fCPkXWz4rSgA
+Message-ID: <CANp29Y6xQkGZTWJg34Xj-ATO1cHu-rc-N36W+tQMEJ7g59FftQ@mail.gmail.com>
+Subject: Re: [PATCH RFC v2] usb: cdc-wdm: close race between workqueue and release
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-BPF LRU maps currently use standard `raw_spinlock_t` for their local and
-global list locks, which are not NMI-safe. If an NMI (such as a perf
-event hardware breakpoint) interrupts a normal context that is holding
-an LRU list lock, and a BPF program executed in the NMI context attempts
-to acquire the exact same lock (e.g., via `bpf_map_delete_elem`), it
-will spin forever waiting for the lock to be released. This results in a
-hard deadlock because the context holding the lock has been preempted by
-the NMI itself. Lockdep correctly detects this unsafe `{INITIAL USE} ->
-{IN-NMI}` transition and emits an inconsistent lock state warning.
+Now please delete my Tested-by and send a new version.
 
-To resolve this, update the LRU list implementation to use resilient
-queued spinlocks (`rqspinlock_t`), similar to how bucket locks in
-standard BPF hash maps were previously converted. Resilient spinlocks
-are NMI-safe because they detect deadlocks (such as re-entrancy on the
-same CPU) and return an error instead of hanging. Replace all standard
-spinlock operations with their resilient counterparts in
-`bpf_lru_list.c`. Since resilient spinlock acquisitions can fail, update
-the LRU functions to handle these failures gracefully. For pop
-functions, return `NULL` when the lock cannot be acquired, which callers
-already handle by propagating an `-ENOMEM` error. When stealing nodes
-from remote CPUs, safely skip the CPU if its lock cannot be acquired.
-For push and flush functions, abort and return early if the lock fails,
-effectively leaking the LRU node, which is an acceptable trade-off to
-prevent a hard system deadlock in NMI context.
-
-Fixes: 3a08c2fd763450a927d1130de078d6f9e74944fb ("bpf: LRU List")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+c69a0a2c816716f1e0d5@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=c69a0a2c816716f1e0d5
-Link: https://syzkaller.appspot.com/ai_job?id=5256e80f-91f9-40da-865e-578a2aee46ad
-Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
-
----
-diff --git a/kernel/bpf/bpf_lru_list.c b/kernel/bpf/bpf_lru_list.c
-index e7a2fc605..3d6613378 100644
---- a/kernel/bpf/bpf_lru_list.c
-+++ b/kernel/bpf/bpf_lru_list.c
-@@ -4,6 +4,7 @@
- #include <linux/cpumask.h>
- #include <linux/spinlock.h>
- #include <linux/percpu.h>
-+#include <asm/rqspinlock.h>
- 
- #include "bpf_lru_list.h"
- 
-@@ -307,9 +308,10 @@ static void bpf_lru_list_push_free(struct bpf_lru_list *l,
- 	if (WARN_ON_ONCE(IS_LOCAL_LIST_TYPE(node->type)))
- 		return;
- 
--	raw_spin_lock_irqsave(&l->lock, flags);
-+	if (raw_res_spin_lock_irqsave(&l->lock, flags))
-+		return;
- 	__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
--	raw_spin_unlock_irqrestore(&l->lock, flags);
-+	raw_res_spin_unlock_irqrestore(&l->lock, flags);
- }
- 
- static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
-@@ -319,7 +321,8 @@ static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
- 	struct bpf_lru_node *node, *tmp_node;
- 	unsigned int nfree = 0;
- 
--	raw_spin_lock(&l->lock);
-+	if (raw_res_spin_lock(&l->lock))
-+		return;
- 
- 	__local_list_flush(l, loc_l);
- 
-@@ -338,7 +341,7 @@ static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
- 				      local_free_list(loc_l),
- 				      BPF_LRU_LOCAL_LIST_T_FREE);
- 
--	raw_spin_unlock(&l->lock);
-+	raw_res_spin_unlock(&l->lock);
- }
- 
- static void __local_list_add_pending(struct bpf_lru *lru,
-@@ -404,7 +407,8 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free(struct bpf_lru *lru,
- 
- 	l = per_cpu_ptr(lru->percpu_lru, cpu);
- 
--	raw_spin_lock_irqsave(&l->lock, flags);
-+	if (raw_res_spin_lock_irqsave(&l->lock, flags))
-+		return NULL;
- 
- 	__bpf_lru_list_rotate(lru, l);
- 
-@@ -420,7 +424,7 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free(struct bpf_lru *lru,
- 		__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_INACTIVE);
- 	}
- 
--	raw_spin_unlock_irqrestore(&l->lock, flags);
-+	raw_res_spin_unlock_irqrestore(&l->lock, flags);
- 
- 	return node;
- }
-@@ -437,7 +441,8 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
- 
- 	loc_l = per_cpu_ptr(clru->local_list, cpu);
- 
--	raw_spin_lock_irqsave(&loc_l->lock, flags);
-+	if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
-+		return NULL;
- 
- 	node = __local_list_pop_free(loc_l);
- 	if (!node) {
-@@ -448,7 +453,7 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
- 	if (node)
- 		__local_list_add_pending(lru, loc_l, cpu, node, hash);
- 
--	raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-+	raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
- 
- 	if (node)
- 		return node;
-@@ -466,23 +471,26 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
- 	do {
- 		steal_loc_l = per_cpu_ptr(clru->local_list, steal);
- 
--		raw_spin_lock_irqsave(&steal_loc_l->lock, flags);
-+		if (raw_res_spin_lock_irqsave(&steal_loc_l->lock, flags))
-+			goto next_steal;
- 
- 		node = __local_list_pop_free(steal_loc_l);
- 		if (!node)
- 			node = __local_list_pop_pending(lru, steal_loc_l);
- 
--		raw_spin_unlock_irqrestore(&steal_loc_l->lock, flags);
-+		raw_res_spin_unlock_irqrestore(&steal_loc_l->lock, flags);
- 
-+next_steal:
- 		steal = cpumask_next_wrap(steal, cpu_possible_mask);
- 	} while (!node && steal != first_steal);
- 
- 	loc_l->next_steal = steal;
- 
- 	if (node) {
--		raw_spin_lock_irqsave(&loc_l->lock, flags);
-+		if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
-+			return NULL;
- 		__local_list_add_pending(lru, loc_l, cpu, node, hash);
--		raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-+		raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
- 	}
- 
- 	return node;
-@@ -511,10 +519,11 @@ static void bpf_common_lru_push_free(struct bpf_lru *lru,
- 
- 		loc_l = per_cpu_ptr(lru->common_lru.local_list, node->cpu);
- 
--		raw_spin_lock_irqsave(&loc_l->lock, flags);
-+		if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
-+			return;
- 
- 		if (unlikely(node->type != BPF_LRU_LOCAL_LIST_T_PENDING)) {
--			raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-+			raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
- 			goto check_lru_list;
- 		}
- 
-@@ -522,7 +531,7 @@ static void bpf_common_lru_push_free(struct bpf_lru *lru,
- 		bpf_lru_node_clear_ref(node);
- 		list_move(&node->list, local_free_list(loc_l));
- 
--		raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-+		raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
- 		return;
- 	}
- 
-@@ -538,11 +547,12 @@ static void bpf_percpu_lru_push_free(struct bpf_lru *lru,
- 
- 	l = per_cpu_ptr(lru->percpu_lru, node->cpu);
- 
--	raw_spin_lock_irqsave(&l->lock, flags);
-+	if (raw_res_spin_lock_irqsave(&l->lock, flags))
-+		return;
- 
- 	__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
- 
--	raw_spin_unlock_irqrestore(&l->lock, flags);
-+	raw_res_spin_unlock_irqrestore(&l->lock, flags);
- }
- 
- void bpf_lru_push_free(struct bpf_lru *lru, struct bpf_lru_node *node)
-@@ -625,7 +635,7 @@ static void bpf_lru_locallist_init(struct bpf_lru_locallist *loc_l, int cpu)
- 
- 	loc_l->next_steal = cpu;
- 
--	raw_spin_lock_init(&loc_l->lock);
-+	raw_res_spin_lock_init(&loc_l->lock);
- }
- 
- static void bpf_lru_list_init(struct bpf_lru_list *l)
-@@ -640,7 +650,7 @@ static void bpf_lru_list_init(struct bpf_lru_list *l)
- 
- 	l->next_inactive_rotation = &l->lists[BPF_LRU_LIST_T_INACTIVE];
- 
--	raw_spin_lock_init(&l->lock);
-+	raw_res_spin_lock_init(&l->lock);
- }
- 
- int bpf_lru_init(struct bpf_lru *lru, bool percpu, u32 hash_offset,
-diff --git a/kernel/bpf/bpf_lru_list.h b/kernel/bpf/bpf_lru_list.h
-index fe2661a58..ecd93c77a 100644
---- a/kernel/bpf/bpf_lru_list.h
-+++ b/kernel/bpf/bpf_lru_list.h
-@@ -7,6 +7,7 @@
- #include <linux/cache.h>
- #include <linux/list.h>
- #include <linux/spinlock_types.h>
-+#include <asm/rqspinlock.h>
- 
- #define NR_BPF_LRU_LIST_T	(3)
- #define NR_BPF_LRU_LIST_COUNT	(2)
-@@ -34,13 +35,13 @@ struct bpf_lru_list {
- 	/* The next inactive list rotation starts from here */
- 	struct list_head *next_inactive_rotation;
- 
--	raw_spinlock_t lock ____cacheline_aligned_in_smp;
-+	rqspinlock_t lock ____cacheline_aligned_in_smp;
- };
- 
- struct bpf_lru_locallist {
- 	struct list_head lists[NR_BPF_LRU_LOCAL_LIST_T];
- 	u16 next_steal;
--	raw_spinlock_t lock;
-+	rqspinlock_t lock;
- };
- 
- struct bpf_common_lru {
-
-
-base-commit: 5d6919055dec134de3c40167a490f33c74c12581
--- 
-See  for more information.
+On Tue, May 19, 2026 at 12:50=E2=80=AFAM 'syzbot' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
+>
+> The crash "URB submitted while active" occurs because the
+> `desc->response` URB is submitted by `wdm_rxwork` when it is already in
+> an active state. This happens because `wdm_release` fails to cancel
+> pending workqueue items (`desc->rxwork` and `desc->service_outs_intr`)
+> during its cleanup phase. When the character device is closed and there
+> are no other openers, `wdm_release` calls `poison_urbs()` to kill active
+> URBs, clears the `WDM_RESPONDING` flag, and calls `unpoison_urbs()`.
+> Because `wdm_release` does not call `cancel_work_sync()` for the work
+> items, they can run concurrently with the cleanup process. If a work
+> item executes after the URBs are unpoisoned, it can successfully submit
+> the URB. If another work item then runs, it will see the
+> `WDM_RESPONDING` flag as cleared, set it, and attempt to submit the URB
+> again, leading to the crash.
+>
+> To fix this, cancel the pending workqueue items after poisoning the URBs
+> and before clearing the `WDM_RESPONDING` flag or unpoisoning the URBs.
+> This ensures that any running work item will either fail to submit the
+> URB (because it is poisoned) or finish executing before the cleanup
+> proceeds. The same omission is present in `wdm_wwan_port_stop`, so apply
+> the same fix there to prevent data leaks or crashes across WWAN
+> sessions.
+>
+> ------------[ cut here ]------------
+> URB ffff888052781d00 submitted while active
+> WARNING: drivers/usb/core/urb.c:379 at usb_submit_urb+0x7b/0x18b0
+> drivers/usb/core/urb.c:379, CPU#0: kworker/0:3/5726
+> Modules linked in:
+> CPU: 0 UID: 0 PID: 5726 Comm: kworker/0:3 Not tainted syzkaller #1
+> PREEMPT(full)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+> 1.16.3-debian-1.16.3-2 04/01/2014
+> Workqueue: events wdm_rxwork
+> RIP: 0010:usb_submit_urb+0x7e/0x18b0 drivers/usb/core/urb.c:379
+> Code: 89 f0 48 c1 e8 03 42 80 3c 38 00 74 08 4c 89 f7 e8 57 eb 0c fb 49
+> 83 3e 00 74 40 e8 7c da a2 fa 48 8d 3d a5 09 d9 08 48 89 de <67> 48 0f
+> b9 3a b8 f0 ff ff ff eb 11 e8 61 da a2 fa eb 05 e8 5a da
+> RSP: 0018:ffffc90003427a10 EFLAGS: 00010293
+> RAX: ffffffff8720dc64 RBX: ffff888052781d00 RCX: ffff88801fe48000
+> RDX: 0000000000000000 RSI: ffff888052781d00 RDI: ffffffff8ff9e610
+> RBP: 0000000000000001 R08: ffffffff8fecf1f7 R09: 1ffffffff1fd9e3e
+> R10: dffffc0000000000 R11: fffffbfff1fd9e3f R12: 0000000000000cc0
+> R13: 1ffff1100a555e12 R14: ffff888052781d08 R15: dffffc0000000000
+> FS:  0000000000000000(0000) GS:ffff88809893a000(0000)
+> knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007f08959ea540 CR3: 000000001e4b2000 CR4: 00000000000006f0
+> Call Trace:
+>  <TASK>
+>  wdm_rxwork+0x101/0x1e0 drivers/usb/class/cdc-wdm.c:997
+>  process_one_work kernel/workqueue.c:3302 [inline]
+>  process_scheduled_works+0xb5d/0x1860 kernel/workqueue.c:3385
+>  worker_thread+0x8a2/0xda0 kernel/workqueue.c:3466
+>  kthread+0x388/0x470 kernel/kthread.c:436
+>  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+>  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+>  </TASK>
+> ----------------
+>
+> Tested-by: nogikh@google.com
+>
+> Fixes: 01e01f5c89773c600a9f0b32c888de0146066c3a ("usb: cdc-wdm: fix readi=
+ng stuck on device close")
+> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
+> Tested-by: Aleksandr Nogikh <nogikh@google.com>
+> Reported-by: syzbot+c6a1953c27ace6cc34e5@syzkaller.appspotmail.com
+> Reported-by: syzbot <syzbot+c6a1953c27ace6cc34e5@syzkaller.appspotmail.co=
+m>
+> Link: https://syzkaller.appspot.com/bug?extid=3Dc6a1953c27ace6cc34e5
+> Link: https://syzkaller.appspot.com/ai_job?id=3Deb69973c-340c-4ffd-bfad-1=
+83f25211bed
+> To: <gregkh@linuxfoundation.org>
+> To: <linux-usb@vger.kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> ---
+> v2:
+> - Added crash stacktrace to the commit description
+> - Added Tested-by tag from nogikh@google.com
+> - Cleared WDM_RESPONDING flag and resp_count under iuspin lock in wdm_wwa=
+n_port_stop, wdm_suspend, and wdm_pre_reset
+>
+> v1:
+> https://lore.kernel.org/all/97986988-6374-4e40-aa96-662939fabe88@mail.ker=
+nel.org/T/
+> ---
+> diff --git a/drivers/usb/class/cdc-wdm.c b/drivers/usb/class/cdc-wdm.c
+> index 7556c0dac..ba5422d1d 100644
+> --- a/drivers/usb/class/cdc-wdm.c
+> +++ b/drivers/usb/class/cdc-wdm.c
+> @@ -769,6 +769,8 @@ static int wdm_release(struct inode *inode, struct fi=
+le *file)
+>                 if (!test_bit(WDM_DISCONNECTING, &desc->flags)) {
+>                         dev_dbg(&desc->intf->dev, "wdm_release: cleanup\n=
+");
+>                         poison_urbs(desc);
+> +                       cancel_work_sync(&desc->rxwork);
+> +                       cancel_work_sync(&desc->service_outs_intr);
+>                         spin_lock_irq(&desc->iuspin);
+>                         desc->resp_count =3D 0;
+>                         clear_bit(WDM_RESPONDING, &desc->flags);
+> @@ -863,6 +865,12 @@ static void wdm_wwan_port_stop(struct wwan_port *por=
+t)
+>
+>         /* Stop all transfers and disable WWAN mode */
+>         poison_urbs(desc);
+> +       cancel_work_sync(&desc->rxwork);
+> +       cancel_work_sync(&desc->service_outs_intr);
+> +       spin_lock_irq(&desc->iuspin);
+> +       desc->resp_count =3D 0;
+> +       clear_bit(WDM_RESPONDING, &desc->flags);
+> +       spin_unlock_irq(&desc->iuspin);
+>         desc->manage_power(desc->intf, 0);
+>         clear_bit(WDM_READ, &desc->flags);
+>         unpoison_urbs(desc);
+> @@ -1279,6 +1287,10 @@ static int wdm_suspend(struct usb_interface *intf,=
+ pm_message_t message)
+>                 poison_urbs(desc);
+>                 cancel_work_sync(&desc->rxwork);
+>                 cancel_work_sync(&desc->service_outs_intr);
+> +               spin_lock_irq(&desc->iuspin);
+> +               desc->resp_count =3D 0;
+> +               clear_bit(WDM_RESPONDING, &desc->flags);
+> +               spin_unlock_irq(&desc->iuspin);
+>                 unpoison_urbs(desc);
+>         }
+>         if (!PMSG_IS_AUTO(message)) {
+> @@ -1340,6 +1352,10 @@ static int wdm_pre_reset(struct usb_interface *int=
+f)
+>         poison_urbs(desc);
+>         cancel_work_sync(&desc->rxwork);
+>         cancel_work_sync(&desc->service_outs_intr);
+> +       spin_lock_irq(&desc->iuspin);
+> +       desc->resp_count =3D 0;
+> +       clear_bit(WDM_RESPONDING, &desc->flags);
+> +       spin_unlock_irq(&desc->iuspin);
+>         return 0;
+>  }
+>
+>
+>
+> base-commit: 5d6919055dec134de3c40167a490f33c74c12581
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to send it to the mailing list.
+> Reply with '#syz reject' to reject it.
+>
+> See  for more information.
+>
