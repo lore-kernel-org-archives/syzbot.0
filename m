@@ -1,202 +1,119 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0253532AAC6
-	for <syzbot@lists.linux.dev>; Tue, 19 May 2026 18:37:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3923F343892
+	for <syzbot@lists.linux.dev>; Tue, 19 May 2026 19:05:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779215829; cv=none; b=sjLL4Jp5vqLSD/GtQB1Y8r21idQBb7KuWZ4BVeSst7DFwNuuiJ+8exvdnmJQQPM1rafZSjk6pMSBpLyrYgVZGTjtXjzC3WyD7bpJeytGkajr+vAgN/N/PgJ/0k4ROPGWBd7by9OxG8l2aWhx/wJgePS2iS8Pan48G+3vUl3K5L8=
+	t=1779217517; cv=none; b=u9AwFwhTinx3EF4EeRzqAVqXhTjEYJQB6yr6zpxE2eL0vJCskFhi6AXGUuQe/Fww1CxqKKSjvTUd4EdiLThwoVHwRXwftTA4cpiQCyacWFs4Pfzn79oy+YupskWNped3TGsUoeo+7ivQZ4qn9cpNWEbiuD3Ua4MVt0gX01X9lsU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779215829; c=relaxed/simple;
-	bh=pkAX6gNUM97P/eA/UylehRxcHkDvuKr5+0DeheEt33s=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=QUaOIXzeMVGu8FKpcqjwVUwEpiUHSTbdEI9HSJhbSO1d6Q4UlOR1t+ytuUESCCZjvFv0Ipa148JmJh87+rjo5BYq29m0dQJFMMgOq/f7lInuN1qW52HitHRwdOddwJdhb0f5oV3j1Ryzj1e64iz+OCUK5HG66XRudkaRAdbppEM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aPAMN8D0; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aPAMN8D0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C1F7C2BCB3;
-	Tue, 19 May 2026 18:37:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1779215828;
-	bh=pkAX6gNUM97P/eA/UylehRxcHkDvuKr5+0DeheEt33s=;
-	h=From:To:Cc:Subject:Date:From;
-	b=aPAMN8D0at1A7/gavHJGoBtx4RHVwcIeW0r8sPvAWmXVsdIqppxyrGU2KkAKx424O
-	 qwYiQvhoqxVPiOP+Njt83Y6KLOaeJovj4H9Qdz4x2Xdb0xmuy2/Mu9pOBFVupShjX3
-	 MnmCcWtUNa8hH52YMm7iuuCj4oMe7LbKppembJuP6U/zFL1WO5y+RkSb31n1N5B5TQ
-	 u34/4m2vvi+aNQpW+l3Szv4THzfPDLD9ZOV6S3XXjwFQhD7lzsqE0C67oI0hvvkazL
-	 JIQeCJVA58A3AoLomnjbEGaCRlJPUIyyQZD+yOGIxxN646nNjUtNepS3RQ1UsvFinL
-	 sndnd+bvYBVYw==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v3] wifi: cfg80211: replace WARN_ON() with pr_err() in netns switch
-Message-ID: <ba6abcc9-c09e-499a-92cf-3f59d45ef58a@mail.kernel.org>
+	s=arc-20240116; t=1779217517; c=relaxed/simple;
+	bh=Ducp9V5dy5GDYxqBMlX3Dcn4P3x0psk58+D+7yg207s=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=uIK8oUNtZVOdeSV/PB8me+OEjPgoNF1Fio421P/EEcFpe6GxWZkmk4M3cyH67ICV4WZch1ZGmlm4gLassIr55P5WAvTjxdxgqhFbZHan07RwmVu1sJ6BHVFm2huwHfx6driJHY4NnqW+dsQFx3H5iUeCsCmuBP0ym8sQEUIEiUg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-43a3e6ebe0cso10036098fac.0
+        for <syzbot@lists.linux.dev>; Tue, 19 May 2026 12:05:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779217515; x=1779822315;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ReAem7h7y346RtXvc996VxNaVfFZ9vbk5MxlP99Ebmw=;
+        b=FQ8iiN6KeKS6MHfmUCkwGcKkDyGib1cUcA5P5lsOrbW8LlbfhQSpXVAflBOTpg8cpm
+         SS9ObPpzPyS06ESAk2sKJVIEs0YZDHIKaIR9YnkAYneKk1yi2y2on88A2pyBG9/uGm0F
+         YiQwt32AZ225RtngO3nN67ATM2AeXK1fEHPJKtqLTOwFBSBjHX07F363lktyoXc6vpxp
+         Q52PsdHfxS0pr3T2ahfZYXqw1A0ZNhLy70DE9+osutzfuO9yEN4CBG02Z+ZnmsYu2ZFW
+         d+7w3toY502uLtahdFp/W7lXBhsHv7hMwVVf2A8s7J1vDujjh/hfuiISsfeOvr3nD0pd
+         po2Q==
+X-Gm-Message-State: AOJu0Yw4bjw/V4yTAe32ImYLARtGDUS3TqcNCHsPeJqq1a5lBv0cHq1M
+	ElmwtjNqdZbe5lGyfI9kbcYjYL1BUa5dn6VthgfizFj/bAvP3Y26MERf3JkVbwWZsnpebtgnfKK
+	Q0X9VfbbjEXjrLtYPkGbsQ/iX52MWZl1UDrJ6Yily8dHrOqbBsk8bFtArboY=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Tue, 19 May 2026 18:37:08 +0000 (UTC)
+X-Received: by 2002:a05:6820:2918:b0:696:248f:809e with SMTP id
+ 006d021491bc7-69c9458ab1dmr12923873eaf.47.1779217515215; Tue, 19 May 2026
+ 12:05:15 -0700 (PDT)
+Date: Tue, 19 May 2026 12:05:15 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a0cb46b.170a0220.1f6c2d.0002.GAE@google.com>
+Subject: [moderation/CI] Re: tracing/eprobes: Allow use of BTF names to
+ dereference pointers
+From: syzbot ci <syzbot+ci13eeff92c06ff596@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The syzkaller reported a kernel panic in cfg802154_switch_netns() when
-device_rename() fails with -ENOMEM. The crash occurs because WARN_ON()
-is used to handle the memory allocation failure, which escalates into a
-kernel panic when panic_on_warn is enabled.
+syzbot ci has tested the following series
 
-Memory allocation failures are expected runtime events under memory
-pressure and should be handled gracefully. The WARN_ON() macro must not
-be used for conditions that can legitimately happen. Failing to rename
-the device or change the network namespace is not a fatal system error.
+[v5] tracing/eprobes: Allow use of BTF names to dereference pointers
+https://lore.kernel.org/all/20260519130144.40e71a00@fedora
+* [PATCH v5] tracing/eprobes: Allow use of BTF names to dereference pointer=
+s
 
-Replace the WARN_ON() calls with pr_err() in both
-cfg802154_switch_netns() and cfg80211_switch_netns(), as well as in
-their respective pernet exit handlers (cfg802154_pernet_exit() and
-cfg80211_pernet_exit()). This ensures that memory allocation failures
-under pressure are handled gracefully, logging the error for debugging
-purposes without bringing down the entire system.
+and found the following issue:
+kernel build error
 
-Fixes: 66e5c2672cd1 ("ieee802154: add netns support")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+bd5829ba3619f08e2341@syzkaller.appspotmail.com
-Reported-by: syzbot <syzbot+bd5829ba3619f08e2341@syzkaller.appspotmail.com>
-Link: https://syzkaller.appspot.com/bug?extid=bd5829ba3619f08e2341
-Link: https://syzkaller.appspot.com/ai_job?id=c84689f4-6a93-47bf-80ca-3bc6137dce52
-To: <alex.aring@gmail.com>
-To: <davem@davemloft.net>
-To: <edumazet@google.com>
-To: <kuba@kernel.org>
-To: <linux-wpan@vger.kernel.org>
-To: <miquel.raynal@bootlin.com>
-To: <netdev@vger.kernel.org>
-To: <pabeni@redhat.com>
-To: <stefan@datenfreihafen.org>
-Cc: <horms@kernel.org>
-Cc: <johannes@sipsolutions.net>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: <linux-wireless@vger.kernel.org>
+Full report is available here:
+https://ci.syzbot.org/series/f81b9fe9-8c22-470c-b845-8bd6b44da760
+
+***
+
+kernel build error
+
+tree:      bpf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
+-next.git
+base:      523d2f42b406f5be2989f436b03eacebf3679835
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/6f3b7bf4-5584-4add-ad1d-2881c45abb7=
+5/config
+
+kernel/trace/trace_probe.c:1035:7: error: call to undeclared function 'pars=
+e_trace_event'; ISO C99 and later do not support implicit function declarat=
+ions [-Wimplicit-function-declaration]
+kernel/trace/trace_probe.c:1803:20: error: call to undeclared function 'ctx=
+_btf'; ISO C99 and later do not support implicit function declarations [-Wi=
+mplicit-function-declaration]
+kernel/trace/trace_probe.c:1803:14: error: incompatible integer to pointer =
+conversion initializing 'struct btf *' with an expression of type 'int' [-W=
+int-conversion]
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v3:
-- Replaced dev_err() with pr_err() for error logging.
-- Introduced revert_err variable to prevent overwriting the original error code during netns cleanup.
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v2:
-- Replaced pr_err() with dev_err() to include device details in the error messages.
-https://lore.kernel.org/all/4e2d36a7-9417-4c50-9ec1-3e82c7a670f3@mail.kernel.org/T/
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
-v1:
-https://lore.kernel.org/all/7d949fbc-9781-4428-bfac-e51501b18bf7@mail.kernel.org/T/
----
-diff --git a/net/ieee802154/core.c b/net/ieee802154/core.c
-index 89b671b12..dcf46b848 100644
---- a/net/ieee802154/core.c
-+++ b/net/ieee802154/core.c
-@@ -234,6 +234,8 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
- 	}
- 
- 	if (err) {
-+		int revert_err;
-+
- 		/* failed -- clean up to old netns */
- 		net = wpan_phy_net(&rdev->wpan_phy);
- 
-@@ -243,9 +245,11 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
- 			if (!wpan_dev->netdev)
- 				continue;
- 			wpan_dev->netdev->netns_immutable = false;
--			err = dev_change_net_namespace(wpan_dev->netdev, net,
--						       "wpan%d");
--			WARN_ON(err);
-+			revert_err = dev_change_net_namespace(wpan_dev->netdev,
-+							      net, "wpan%d");
-+			if (revert_err)
-+				pr_err("failed to revert netns: %d\n",
-+				       revert_err);
- 			wpan_dev->netdev->netns_immutable = true;
- 		}
- 
-@@ -255,7 +259,8 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
- 	wpan_phy_net_set(&rdev->wpan_phy, net);
- 
- 	err = device_rename(&rdev->wpan_phy.dev, dev_name(&rdev->wpan_phy.dev));
--	WARN_ON(err);
-+	if (err)
-+		pr_err("failed to rename device: %d\n", err);
- 
- 	return 0;
- }
-@@ -350,8 +355,10 @@ static void __net_exit cfg802154_pernet_exit(struct net *net)
- 
- 	rtnl_lock();
- 	list_for_each_entry(rdev, &cfg802154_rdev_list, list) {
--		if (net_eq(wpan_phy_net(&rdev->wpan_phy), net))
--			WARN_ON(cfg802154_switch_netns(rdev, &init_net));
-+		if (net_eq(wpan_phy_net(&rdev->wpan_phy), net)) {
-+			if (cfg802154_switch_netns(rdev, &init_net))
-+				pr_err("failed to switch netns on exit\n");
-+		}
- 	}
- 	rtnl_unlock();
- }
-diff --git a/net/wireless/core.c b/net/wireless/core.c
-index 6783e0672..674802d1c 100644
---- a/net/wireless/core.c
-+++ b/net/wireless/core.c
-@@ -173,6 +173,8 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
- 	}
- 
- 	if (err) {
-+		int revert_err;
-+
- 		/* failed -- clean up to old netns */
- 		net = wiphy_net(&rdev->wiphy);
- 
-@@ -182,9 +184,11 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
- 			if (!wdev->netdev)
- 				continue;
- 			wdev->netdev->netns_immutable = false;
--			err = dev_change_net_namespace(wdev->netdev, net,
--							"wlan%d");
--			WARN_ON(err);
-+			revert_err = dev_change_net_namespace(wdev->netdev, net,
-+							      "wlan%d");
-+			if (revert_err)
-+				pr_err("failed to revert netns: %d\n",
-+				       revert_err);
- 			wdev->netdev->netns_immutable = true;
- 		}
- 
-@@ -204,7 +208,8 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
- 	wiphy_net_set(&rdev->wiphy, net);
- 
- 	err = device_rename(&rdev->wiphy.dev, dev_name(&rdev->wiphy.dev));
--	WARN_ON(err);
-+	if (err)
-+		pr_err("failed to rename device: %d\n", err);
- 
- 	nl80211_notify_wiphy(rdev, NL80211_CMD_NEW_WIPHY);
- 
-@@ -1809,8 +1814,10 @@ static void __net_exit cfg80211_pernet_exit(struct net *net)
- 
- 	rtnl_lock();
- 	for_each_rdev(rdev) {
--		if (net_eq(wiphy_net(&rdev->wiphy), net))
--			WARN_ON(cfg80211_switch_netns(rdev, &init_net));
-+		if (net_eq(wiphy_net(&rdev->wiphy), net)) {
-+			if (cfg80211_switch_netns(rdev, &init_net))
-+				pr_err("failed to switch netns on exit\n");
-+		}
- 	}
- 	rtnl_unlock();
- }
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
 
+The email will later be sent to:
+[akpm@linux-foundation.org bpf@vger.kernel.org douglas.raillard@arm.com iro=
+gers@google.com linux-kernel@vger.kernel.org linux-trace-kernel@vger.kernel=
+.org mark.rutland@arm.com mathieu.desnoyers@efficios.com mhiramat@kernel.or=
+g namhyung@kernel.org olsajiri@gmail.com peterz@infradead.org rostedt@goodm=
+is.org takayas@google.com tglx@linutronix.de zanussi@kernel.org]
 
-base-commit: 5d6919055dec134de3c40167a490f33c74c12581
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to send it to the mailing list.
-Reply with '#syz reject' to reject it.
+If the report looks fine to you, reply with:
+#syz upstream
 
-See https://github.com/google/syzkaller/blob/master/docs/syzbot_ai_patches.md for more information.
+If the report is a false positive, reply with
+#syz invalid
+
