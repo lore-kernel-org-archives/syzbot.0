@@ -1,81 +1,79 @@
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
+Received: from mail-dl1-f45.google.com (mail-dl1-f45.google.com [74.125.82.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CD972C3251
-	for <syzbot@lists.linux.dev>; Wed, 20 May 2026 13:50:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3D212C3251
+	for <syzbot@lists.linux.dev>; Wed, 20 May 2026 13:50:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.45
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779285005; cv=pass; b=LPj2CK8LN5PoV/sCi05L/M39uHf+AINRGPBoBl+Xaa7iFoG34zyfu1DJYuV0Erdwwv2f4yJyFxbjmDZrKm0ssATazz/YpqfOidcjz0qo3sIXcs8dzoym2b0iPsqNA/Zxf/n744EbWzvUcn9mQQqzYN5jmUE4gJhr/GK5PZXJs4c=
+	t=1779285020; cv=pass; b=bUX+QDJv0G/EiEQDr9RHHL7VUtfLKpR/YKWMn1Ja79n7GKngBU/D8ARaiunnY2ogoh4jGFH4HWS2IOced8YDk/gNj4SRc1gxEEXqtosBVbQNY1JhDPUqHdXPeMuprMDY2vxL10AeerNYwSVkd+pcJkF1qsKtjSKshn5WSlhw/y4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779285005; c=relaxed/simple;
-	bh=XVUhZqMJ5SJrNSbG+QCHZ4+Y9PrG6i1xUKsTN6dNKe8=;
+	s=arc-20240116; t=1779285020; c=relaxed/simple;
+	bh=GOPalHIJ2v3kg8fJrBWOp2fWyxxXEl1WRvHWI2CmTfg=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cz1Mxg0kZt9fNOM0EZW5uaSqe86rE6jBaYhYTlKG0jjGm+DSVg3h3BVjt6CjqefxeNoUCqAJrwRuPeasciIKNSQ2eujb9xGwrqAule1xKLqpEXmIQrOFNCyN2aCvpUBO0pOusTepaa3f1APoBxLnSc1Su3Gl/S5amnhcWHJuHEo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GSVZiVlG; arc=pass smtp.client-ip=209.85.210.49
+	 To:Cc:Content-Type; b=iEU6HHnKnMs8cSpH480mf/8015yMAZuRnWq8kvGzMs1J3n24O3km/O3blgTNEWpAqGJ3iRv+d71Qlsk6J5xiUK3qkY1kmw4IYHl3OEK1nDSB8PzYPFUGBVsPA67p1qZWf4T29j3Rr3K8kH+hy29UT/l/tC7pYD4l8EdOkiOOXzw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Fdn6hcxr; arc=pass smtp.client-ip=74.125.82.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GSVZiVlG"
-Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-7dcdaf06498so3250160a34.2
-        for <syzbot@lists.linux.dev>; Wed, 20 May 2026 06:50:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779285002; cv=none;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Fdn6hcxr"
+Received: by mail-dl1-f45.google.com with SMTP id a92af1059eb24-1309f4ee97fso5467841c88.1
+        for <syzbot@lists.linux.dev>; Wed, 20 May 2026 06:50:18 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779285018; cv=none;
         d=google.com; s=arc-20240605;
-        b=bqDDnZ2wAu85e4Y1aWy85hEnuBKNWNKpzU1BIfPLTqCquJDj6M2zVdE7m3hv16C/Qf
-         pg8u21icW7zY+xZ27y3t/CnNCdy4RUeQDC7MTNEKc3NB1HrYMNhVqB+fgVsf72rzUZzV
-         /USlCw5LNzQ3W+MBFhKTFxmdbRLT3udeowvPFSr9KjieDTO+AGHw6j2mx2fTxWsFCbts
-         RFM9BerKKeuqiH/iLMrwHoC5gS6PFdt4M7axdQt1XYsJObJfZYDq3b3xfNbjAtsDl+JU
-         4U5rXMsnNZuMhdF14qdFkBDT6X+QrwBgd4nw4WOIki/3YQL0VIKG4GR/R15OFksTCtuw
-         tbew==
+        b=FHEWQOAzAkhnKc61CSSN7hOc1o++PtXOHAhpRiRbHUg9pLcF8fepfjJi4v9K3Cn43K
+         xDgzYVYdxiOLlxlrDX8vnfIiZjm8AECwbGcamMOJ6XtPsVrZLzGAJTTCafdHEbZKSt8D
+         h6le6QfH+O/+KvWgfgJvnHY4bIO9NJMM+1pd/Qtu64Xh4Y5OQrchTaIwQ8C+DQZOIRB8
+         4U2zcStekDOYi74JAdcFI3OxT9ol1q/yyFHSs8xeF8MsHsi3WT1C7FGCMSKZ4WJeUX3f
+         TeRQO84S7vTs8L+ZFEgTPgXS6W+sTE6OglMiTVeYO8DqozvDP6r1YUzCj9ovZAk6skvi
+         JeXg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=uwq7ma0VcZeQ0sbzdz6jsI7yCCEmy43AJ97SkFd1oFc=;
-        fh=5YblCD2yAxMeKgOHqCpDfLf0PYWG0Y8gacwGiv76Zko=;
-        b=YlGvHsyqL9y3Fhx7V/3FouXOgAfa8bXliyM2ghKtlRZLQX1yFESRHiQ+AbspyHzask
-         ZCeZf/DK3+8oS351sxrnLOFn2CaRrNH7/W8/tpbj2tGEHDbMvhwHDQYdpnRYllZ14Tkt
-         CF+QAPE8/Uj6E78AcEs3WImGDOq9j227q96IMnIBqGWmamC2JVvXJVFjfVONEc882IpQ
-         Hu+IGgGzVy2XeQF/dOhRaRGSNDCejbdhAMNNdB5rgL/1k0yzsElHkiPCDkEmrR/i4ObS
-         qEIIeMckK1qbW1uJNWRJ7b3YOEOVE70KnHe9PaVfyEajXLLTXpqgzgeABVL9bjsN6KTK
-         dbBQ==;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=Lxa/kc3ihht8eKSmSm4sC4+n5s5mY1kWZ0ImwtL3AS0=;
+        fh=naDHEm+wNRCjxaxjpoX+H9ePHloLVa/bRHlRyaaX4LA=;
+        b=j+XlGgjoi6GJTM0JwyWtDZfaBN/qHASQXo9HLmNvskg5O/WIw9HNMZOrqeamKvMQRO
+         ECg5HMgrHqBXBzStgDZyDM8wn6Wm4PoBgmfW4bTSjsW0WebcZFB7YKXCNo4OeHLJt/Gk
+         ocj7fZOHcTrCbPq8iKx3bMlYzC28GmO/TQPax3g2fKo7V0OjH3Clf1ge/T1B/YU/yuXM
+         algLg4r5dBzId6rvXT1G//ZWB0vxMioUg0Kqf5CI2PaJxvZxml6OCdmVSr7QUnE0xfEC
+         g6gRmXbI+xQxogaM7Iyltd52cEJf/yfe5VRLIYRNRPpMvqOgwx/FiGdzwamf9o/2U0/T
+         DzzQ==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779285002; x=1779889802; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uwq7ma0VcZeQ0sbzdz6jsI7yCCEmy43AJ97SkFd1oFc=;
-        b=GSVZiVlG6t5dhX65tDWw8oKZkxsDR48/U2941kpwzkvw9nt6S6FvPdB0ClXSZ/yXQq
-         XDLhSFf8f4TwWC1t9tyuQDKS7hyu7qFoEQr/YweqI5cXXiJNg2p/+2CJ1HNdynH88KQb
-         fxwsjtW38RuWNwhcbZdNA3ZQyuVN5XBsHBBRhoY9T+fCJAe3NezmmgAPWafIusVtDYNI
-         LvADftGS5KgTeZ8niDGzke7nH02nkqBLsQ6X2htg4AJyP1AsTQOShkSJak5v01Y8dxZ7
-         hq3TUF6qVKTwMjcdezAywnMIT0iwtX66fCa1+v/tLw9L3KBOcp5jppXZ+WMshK2YaIRU
-         +01A==
+        d=google.com; s=20251104; t=1779285018; x=1779889818; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Lxa/kc3ihht8eKSmSm4sC4+n5s5mY1kWZ0ImwtL3AS0=;
+        b=Fdn6hcxr4FR6lfMrtxEu28R5N0Ddm/ZnN/DUqOtEGu1aYwqVG9pF9Oja/gYVP15eIE
+         T/pwbf25ZuH38Je5KSKIJEyk4fZGfM6OFPlT3+EtwmYYyE2E1u15Dap4DQFqqo2eE9ch
+         7f7mhQnsIvVSNPkRbj9hRQ6rHWG15dlpslBSDSbBE/SRaa0UYTFkpC8k+S36t3GyfzXN
+         6W7W/mrJT9/BP+TDP1lOCPH4JccLbWxVmMkasvIvdGuEkOD3787SQ+GV1WgWbeIIlvBw
+         jz+CyX0cFGoy0JsOMfJ6PyocHy2S9cyIVv1Z+bkXPla1n3bd+W/DoSry0KkIeGydWx9z
+         Ww5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779285002; x=1779889802;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=uwq7ma0VcZeQ0sbzdz6jsI7yCCEmy43AJ97SkFd1oFc=;
-        b=ItfjVYR8XwaO5khkDoVHZ938tCUm4rYpv/FyULfUqAjlzGjDG8mVaaSL2IGQiCllpI
-         D74js5Sn82GRUes68er8eYVMOaTkKaoNqdaGRL9h4c9tPyuMRgPFY5LzQWal9eqN9iAV
-         VBDHH3bQ7FflSnYgo9rD7ZHenVbMxOiMYto3Y8dTKFyN2P9leBf5dMmc2BYMSMHXL8mr
-         pzTYruIMkHZJz5D1kt40xDwQkBHBXpfc3wYvbLl3YQE4O6XOZLFXJbr1SZt6BpPsJEmT
-         aeIj3/1imhEht/tO96QIKsrJGLWxhCg8PjzMdsmUVW9CsTBjiV84j3dESm+VgBBx2DX2
-         fOiw==
-X-Forwarded-Encrypted: i=1; AFNElJ8zjXdMVSRhW+y+A+KWlQd4u1GP5/IhGGyqRBTgPST07/FnocINZXgx+8/Z+i7I/uEelB7Vt5A=@lists.linux.dev
-X-Gm-Message-State: AOJu0YxznHzI88XB52H0nIrpUIZFsyw1wBFwdlBLBMdjAYK8ya0f8XfY
-	Ow+dDT5rEJlZtvnRu0Xl3nr29AGxMKTy19QjDJKCekAqnDREbsrmRpaQkze+qpK16jwPZjMjWla
-	jOGnLdHmRR2HCuufVoQ33Dl2BiHm8+RwoceT4jaIz
-X-Gm-Gg: Acq92OEt9IO/8ke2bSbUneMAwuor9lMqsJjBFWaWcFEJzUYhSizgB0XekSt1qwKzYkW
-	6fjPly9pzd3OPn2opFkxsxfKEHFMPHSbc+paJjg/ILp0v6hK89WaMyP4HPvzcVvbuBSTxYhWDBn
-	ui7IVlO5zoPZ9RS4C8RiCZNsYZeo1WhTP4MPuJiywfEBUk2p2fXMOOcIsp8yHVhalCl49fIxnnh
-	adh7Mm+d86oEgoLV6f1uSZifesCgGGWtos5ICCy29ObnJu89+toZPwVQNeoPQKo8J3hJRyMRiaD
-	2dzhQHSKGynalzC0oUUaRbZ9yNLpZUzwa3382bjornyiMmLalFd0+9U9LpEMaJa2H2KmkVMuh7m
-	XlggE
-X-Received: by 2002:a05:6820:16a6:b0:69b:544f:c172 with SMTP id
- 006d021491bc7-69c943714e6mr14677659eaf.25.1779285001760; Wed, 20 May 2026
- 06:50:01 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1779285018; x=1779889818;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Lxa/kc3ihht8eKSmSm4sC4+n5s5mY1kWZ0ImwtL3AS0=;
+        b=aIIvliYm+KbuOeyqIOFq9HJ+s26Blnej5VKg/1968trx/icyjSloUF5Rr9gC4f4pf0
+         Bj9S2zia1++f+tXhL5RD2vaFrABiXACbyrJM5P1fsMH4WBD8Vsljy3vwTNCx0lJt5mLU
+         YTeZGLt2m8CVeGZtTwxeg7menKwKpdfPrmyG0IFaQVISmTiWUWE4nvyuCViMhsjH+AJK
+         xd0Gyynd/jI7wKZBFZeAeVz3F3eC8GBEvO20SyCK9j0l67U6uLSXrKfeNg8y8b8D8zfW
+         HWs3rzToU+ETpoT/+jmuz8V3h0o/MjNXiU0PqwyRt8/0e9HmtgR9swub5PL7V8ydBLMX
+         CrfA==
+X-Forwarded-Encrypted: i=1; AFNElJ/AHlmHXhaMJvc5x5/od6CTtI59LbHJD6hLqw7k/iuEYYSEwvXKXzapAM0P8KAGkON7d+pUN9M=@lists.linux.dev
+X-Gm-Message-State: AOJu0YwP/X251FJ2XS9HOsvN9RogtAI8S0Ih9e8+4Pll1moDWPmF3Nq0
+	HeSpA3EqFvFNXwigqyg5kN49FYI4EVzUImOgVccQ/LuuRkshtTEvUhqLACMsuu70kJoa4npmzLR
+	F7a2P+1XIeb4qQkt8UKcdDOF3QAcZNsd6GiiuJZuK
+X-Gm-Gg: Acq92OGAsXTysDOdH2ymYTlU7W4xcvBPsO1rEJwAoIbBxZfXTDW160q2PQ6eb4fyGvP
+	BKf/BH2gXFAmjUhCAINhoXWylPYlZ/5tRbjL6SihZKcYD8gN4r84N1+YPbfVvBNL6xbC433qEPp
+	F3o8bsgNusfKczUFHKzJSHnAnPUodWwy3uQRKtXkjkPDOk2ezm2J+kDBneKGvFA+njh9ezoRlaE
+	fpVGIoi5j4D+JUz1xpbcyImXS/7v+uU59lVhPD+auRwepWNTlepQK+ZR9Q04nBvl2XGSyvStc5w
+	MQkOQeelSdxTQH/KBMXODaHroa2OXytOFgb6Dhzyzrjn6DyM0qNkwZ7k5w==
+X-Received: by 2002:a05:7022:f97:b0:12a:6fb7:87e7 with SMTP id
+ a92af1059eb24-13503cf183amr10267575c88.0.1779285017530; Wed, 20 May 2026
+ 06:50:17 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -84,22 +82,27 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <ba6abcc9-c09e-499a-92cf-3f59d45ef58a@mail.kernel.org>
 In-Reply-To: <ba6abcc9-c09e-499a-92cf-3f59d45ef58a@mail.kernel.org>
-From: Aleksandr Nogikh <nogikh@google.com>
-Date: Wed, 20 May 2026 15:49:49 +0200
-X-Gm-Features: AVHnY4IBU_J8_UAR_J4Yc03L1Bd_VodBI5bU-pIf2Kc8MsgsHUftwOTM6PuDp08
-Message-ID: <CANp29Y4PuhA3gZnHKpXnVyuHzCXk5Y4QJfM5-Uv0OrD6ZY2Msg@mail.gmail.com>
+From: Marco Elver <elver@google.com>
+Date: Wed, 20 May 2026 15:49:40 +0200
+X-Gm-Features: AVHnY4Ic2c9aj4V4C0TiWqIRKjYo4d9E-kzzAcJlCigFYQt8n3MwKo6SnP2SunM
+Message-ID: <CANpmjNNF=grZNpVq=SRyg2HVJuDegzWHQrHW6Rji9tJ3gc97ZQ@mail.gmail.com>
 Subject: Re: [PATCH RFC v3] wifi: cfg80211: replace WARN_ON() with pr_err() in
  netns switch
 To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev, 
+	Aleksandr Nogikh <nogikh@google.com>, Dmitry Vyukov <dvyukov@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 19, 2026 at 8:37=E2=80=AFPM 'syzbot' via
+#syz reject
+
+On Tue, 19 May 2026 at 20:37, 'syzbot' via
 syzkaller-upstream-moderation
 <syzkaller-upstream-moderation@googlegroups.com> wrote:
 >
 > The syzkaller reported a kernel panic in cfg802154_switch_netns() when
+
+"The syzkaller" is incorrect grammar. It's "syzkaller reported ...".
+
 > device_rename() fails with -ENOMEM. The crash occurs because WARN_ON()
 > is used to handle the memory allocation failure, which escalates into a
 > kernel panic when panic_on_warn is enabled.
@@ -119,11 +122,9 @@ syzkaller-upstream-moderation
 > Fixes: 66e5c2672cd1 ("ieee802154: add netns support")
 > Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
 > Reported-by: syzbot+bd5829ba3619f08e2341@syzkaller.appspotmail.com
-> Reported-by: syzbot <syzbot+bd5829ba3619f08e2341@syzkaller.appspotmail.co=
-m>
-> Link: https://syzkaller.appspot.com/bug?extid=3Dbd5829ba3619f08e2341
-> Link: https://syzkaller.appspot.com/ai_job?id=3Dc84689f4-6a93-47bf-80ca-3=
-bc6137dce52
+> Reported-by: syzbot <syzbot+bd5829ba3619f08e2341@syzkaller.appspotmail.com>
+> Link: https://syzkaller.appspot.com/bug?extid=bd5829ba3619f08e2341
+> Link: https://syzkaller.appspot.com/ai_job?id=c84689f4-6a93-47bf-80ca-3bc6137dce52
 > To: <alex.aring@gmail.com>
 > To: <davem@davemloft.net>
 > To: <edumazet@google.com>
@@ -141,82 +142,56 @@ bc6137dce52
 > ---
 > v3:
 > - Replaced dev_err() with pr_err() for error logging.
-> - Introduced revert_err variable to prevent overwriting the original erro=
-r code during netns cleanup.
-
-You have completely misunderstood Dmitry's comment on v2!
-Please revert the code changes to what they were in v2, and update the
-patch description.
-I'll repeat the comments re. description:
-
-
-1. Don't concentrate on the fact that syzkaller triggered it, this
-detail is irrelevant.
-
-2. Don't assume that panic_on_warn is set. It is usually not set on
-production systems, and it won't be fatal system error. Say just that
-WARN_ON is not a correct way to handle conditions that can happen.
-
-
-
+> - Introduced revert_err variable to prevent overwriting the original error code during netns cleanup.
 >
 > v2:
-> - Replaced pr_err() with dev_err() to include device details in the error=
- messages.
-> https://lore.kernel.org/all/4e2d36a7-9417-4c50-9ec1-3e82c7a670f3@mail.ker=
-nel.org/T/
+> - Replaced pr_err() with dev_err() to include device details in the error messages.
+> https://lore.kernel.org/all/4e2d36a7-9417-4c50-9ec1-3e82c7a670f3@mail.kernel.org/T/
 >
 > v1:
-> https://lore.kernel.org/all/7d949fbc-9781-4428-bfac-e51501b18bf7@mail.ker=
-nel.org/T/
+> https://lore.kernel.org/all/7d949fbc-9781-4428-bfac-e51501b18bf7@mail.kernel.org/T/
 > ---
 > diff --git a/net/ieee802154/core.c b/net/ieee802154/core.c
 > index 89b671b12..dcf46b848 100644
 > --- a/net/ieee802154/core.c
 > +++ b/net/ieee802154/core.c
-> @@ -234,6 +234,8 @@ int cfg802154_switch_netns(struct cfg802154_registere=
-d_device *rdev,
+> @@ -234,6 +234,8 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
 >         }
 >
 >         if (err) {
 > +               int revert_err;
 > +
 >                 /* failed -- clean up to old netns */
->                 net =3D wpan_phy_net(&rdev->wpan_phy);
+>                 net = wpan_phy_net(&rdev->wpan_phy);
 >
-> @@ -243,9 +245,11 @@ int cfg802154_switch_netns(struct cfg802154_register=
-ed_device *rdev,
+> @@ -243,9 +245,11 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
 >                         if (!wpan_dev->netdev)
 >                                 continue;
->                         wpan_dev->netdev->netns_immutable =3D false;
-> -                       err =3D dev_change_net_namespace(wpan_dev->netdev=
-, net,
+>                         wpan_dev->netdev->netns_immutable = false;
+> -                       err = dev_change_net_namespace(wpan_dev->netdev, net,
 > -                                                      "wpan%d");
 > -                       WARN_ON(err);
-> +                       revert_err =3D dev_change_net_namespace(wpan_dev-=
->netdev,
-> +                                                             net, "wpan%=
-d");
+> +                       revert_err = dev_change_net_namespace(wpan_dev->netdev,
+> +                                                             net, "wpan%d");
 > +                       if (revert_err)
 > +                               pr_err("failed to revert netns: %d\n",
 > +                                      revert_err);
->                         wpan_dev->netdev->netns_immutable =3D true;
+>                         wpan_dev->netdev->netns_immutable = true;
 >                 }
 >
-> @@ -255,7 +259,8 @@ int cfg802154_switch_netns(struct cfg802154_registere=
-d_device *rdev,
+> @@ -255,7 +259,8 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
 >         wpan_phy_net_set(&rdev->wpan_phy, net);
 >
->         err =3D device_rename(&rdev->wpan_phy.dev, dev_name(&rdev->wpan_p=
-hy.dev));
+>         err = device_rename(&rdev->wpan_phy.dev, dev_name(&rdev->wpan_phy.dev));
 > -       WARN_ON(err);
 > +       if (err)
 > +               pr_err("failed to rename device: %d\n", err);
->
+
+This will silently return 0 - shouldn't the caller be notified of the failure?
+
 >         return 0;
 >  }
-> @@ -350,8 +355,10 @@ static void __net_exit cfg802154_pernet_exit(struct =
-net *net)
+> @@ -350,8 +355,10 @@ static void __net_exit cfg802154_pernet_exit(struct net *net)
 >
 >         rtnl_lock();
 >         list_for_each_entry(rdev, &cfg802154_rdev_list, list) {
@@ -224,8 +199,7 @@ net *net)
 > -                       WARN_ON(cfg802154_switch_netns(rdev, &init_net));
 > +               if (net_eq(wpan_phy_net(&rdev->wpan_phy), net)) {
 > +                       if (cfg802154_switch_netns(rdev, &init_net))
-> +                               pr_err("failed to switch netns on exit\n"=
-);
+> +                               pr_err("failed to switch netns on exit\n");
 > +               }
 >         }
 >         rtnl_unlock();
@@ -234,48 +208,76 @@ net *net)
 > index 6783e0672..674802d1c 100644
 > --- a/net/wireless/core.c
 > +++ b/net/wireless/core.c
-> @@ -173,6 +173,8 @@ int cfg80211_switch_netns(struct cfg80211_registered_=
-device *rdev,
+> @@ -173,6 +173,8 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
 >         }
 >
 >         if (err) {
 > +               int revert_err;
 > +
 >                 /* failed -- clean up to old netns */
->                 net =3D wiphy_net(&rdev->wiphy);
+>                 net = wiphy_net(&rdev->wiphy);
 >
-> @@ -182,9 +184,11 @@ int cfg80211_switch_netns(struct cfg80211_registered=
-_device *rdev,
+> @@ -182,9 +184,11 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
 >                         if (!wdev->netdev)
 >                                 continue;
->                         wdev->netdev->netns_immutable =3D false;
-> -                       err =3D dev_change_net_namespace(wdev->netdev, ne=
-t,
+>                         wdev->netdev->netns_immutable = false;
+> -                       err = dev_change_net_namespace(wdev->netdev, net,
 > -                                                       "wlan%d");
 > -                       WARN_ON(err);
-> +                       revert_err =3D dev_change_net_namespace(wdev->net=
-dev, net,
+> +                       revert_err = dev_change_net_namespace(wdev->netdev, net,
 > +                                                             "wlan%d");
 > +                       if (revert_err)
 > +                               pr_err("failed to revert netns: %d\n",
 > +                                      revert_err);
->                         wdev->netdev->netns_immutable =3D true;
+
+In general this design is just suboptimal to begin with. The original
+author used WARN_ON, because it was assumed "this should never
+happen". Clearly, that assumption is wrong, but the fix is not to
+paper over the WARN_ON with pr_err.
+
+There's a real failure here; and that should either be handled by the
+caller, or be made impossible by design. I currently do not see how
+the caller can get us out of this bad state -- where we have e.g. half
+of netdevs in the previous and the other half in the new namespace.
+That just doesn't work.
+
+If you look at the definition of __dev_change_net_namespace itself, there's a:
+
+```
+/* Fixup kobjects */
+dev_set_uevent_suppress(&dev->dev, 1);
+err = device_rename(&dev->dev, dev->name);
+dev_set_uevent_suppress(&dev->dev, 0);
+WARN_ON(err);
+```
+
+So whatever we do in the callers of dev_change_net_namespace() is
+completely pointless, because we're still going to get a WARN_ON.
+
+This needs a different design that avoids the problem to begin with.
+As long as we allocate memory, this is not going to be easy. One idea
+is to keep the old name around, and only free once all operations
+completed. But unclear if there's a clean and surgical fix to do this
+without a broader refactor.
+
+This comment holds for all other callsites as well.
+
+Please double-check this explanation.
+
+>                         wdev->netdev->netns_immutable = true;
 >                 }
 >
-> @@ -204,7 +208,8 @@ int cfg80211_switch_netns(struct cfg80211_registered_=
-device *rdev,
+> @@ -204,7 +208,8 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
 >         wiphy_net_set(&rdev->wiphy, net);
 >
->         err =3D device_rename(&rdev->wiphy.dev, dev_name(&rdev->wiphy.dev=
-));
+>         err = device_rename(&rdev->wiphy.dev, dev_name(&rdev->wiphy.dev));
 > -       WARN_ON(err);
 > +       if (err)
 > +               pr_err("failed to rename device: %d\n", err);
 >
 >         nl80211_notify_wiphy(rdev, NL80211_CMD_NEW_WIPHY);
 >
-> @@ -1809,8 +1814,10 @@ static void __net_exit cfg80211_pernet_exit(struct=
- net *net)
+> @@ -1809,8 +1814,10 @@ static void __net_exit cfg80211_pernet_exit(struct net *net)
 >
 >         rtnl_lock();
 >         for_each_rdev(rdev) {
@@ -283,8 +285,7 @@ device *rdev,
 > -                       WARN_ON(cfg80211_switch_netns(rdev, &init_net));
 > +               if (net_eq(wiphy_net(&rdev->wiphy), net)) {
 > +                       if (cfg80211_switch_netns(rdev, &init_net))
-> +                               pr_err("failed to switch netns on exit\n"=
-);
+> +                               pr_err("failed to switch netns on exit\n");
 > +               }
 >         }
 >         rtnl_unlock();
@@ -297,14 +298,9 @@ device *rdev,
 > Reply with '#syz upstream' to send it to the mailing list.
 > Reply with '#syz reject' to reject it.
 >
-> See https://github.com/google/syzkaller/blob/master/docs/syzbot_ai_patche=
-s.md for more information.
+> See https://github.com/google/syzkaller/blob/master/docs/syzbot_ai_patches.md for more information.
 >
 > --
-> You received this message because you are subscribed to the Google Groups=
- "syzkaller-upstream-moderation" group.
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/ba6abcc9-c09e-499a-92cf-3f59d45ef58a%40mail.kernel.org=
-.
+> You received this message because you are subscribed to the Google Groups "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller-upstream-moderation/ba6abcc9-c09e-499a-92cf-3f59d45ef58a%40mail.kernel.org.
