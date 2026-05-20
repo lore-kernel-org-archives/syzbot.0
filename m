@@ -1,111 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com [209.85.221.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38F283DB961
-	for <syzbot@lists.linux.dev>; Wed, 20 May 2026 12:00:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779278452; cv=none; b=dMrFHqWcrEpqVck1RVzQ1wWrwDPVfrTboMNiCSw7Wwm1215NLq6g0PgMGPWrXj/BmvUrLnbOl6nKLLJitf550hnUx6x4nxBmQ0BVb+m/UPc4YLIagP0ELDtftj2nSsSgNoxhTPKybD8WncBGCF4V3Pd1SECA4Q5mQCMaYZEIe40=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779278452; c=relaxed/simple;
-	bh=3Tansk9OP3EqUVxhHnTpSvpDKQwVHqFXePkXlOppfmc=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=n5IIcJzIqFXQitgquR7N6XFWWAxuBob/OO3qpaZX7WYMM+ipIjobdR02gihBlePXaNdJX+nACZJuTfsA3RGZGkaL+vFuNHyU4q8Jc1TV60sLKoUuH95ECyRtiZny6tEgqUHlyN+VpDRZLJXiSdmhzZhW31aUKNEtIAe0JtCVSoQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WcyfKEnG; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D19DA3D7D82
+	for <syzbot@lists.linux.dev>; Wed, 20 May 2026 12:17:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.182
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779279454; cv=pass; b=h17sfrk7GWSxLBDwsKfJjswTJlJJj2oeEe1/OqSIO49MUJBKn4hbKlMvVnc5S3tbHRR2kdC59D9FkonxrM7mc00NeNjy4QR6xfFfGdT5OiiAR+29DL/Oa/AIJ6eszrpOP1rXDQajzJHZ1UQNpjS/QVAd58TVeL9tkqoc9saYJ7s=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779279454; c=relaxed/simple;
+	bh=tVRpAENu0j4udstoaGBAp7/JNWejoykhjzLo390RiZs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=f0LLPM0DOnB3TaTltBSB7u6GvVrc3XLgzrDVl2awHd0cRhv+8FmRLUK9KxH4+YakjwzAtjAXdUKmuhpAQX16xVRSi63OfYJenJy7fEvYD1I5qzAkO3P0Bpq3i/GrXGWpST7kaw+ZG1HvPVEczK8eD39amHOqvJb3G0XRUTxxZ8g=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=AjAicUnJ; arc=pass smtp.client-ip=209.85.221.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WcyfKEnG"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id D3F9E1F000E9;
-	Wed, 20 May 2026 12:00:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779278450;
-	bh=+rT5mbf/WCyb7Mp/wyEJFokOyMQY4Xa0JXVtcqhFAkQ=;
-	h=From:To:Cc:Subject:Date;
-	b=WcyfKEnGxZSm6XMmtAvvM0KwxjR/euUcKmRnpnOa3vDDqZ+eiNBre6E72BrSJN4FX
-	 3UdrohDlv681aF4ngGooKPMFe1svOFbtYjF8xgWfNLZGhmFjwogsA0bpBqSFE8rCuL
-	 Pt9QgWW+/KOa2OvTjqrlySLhcn/eLHvhpmzBaGkaSR8TBuAysDCRZLQ/eTjSn+bXjx
-	 xnwS4NgEQVuAwbN10op8962Y6jO1SCrmvqUyNPULvfvtNVNUzXSSh8xtVJQWlxZ6dB
-	 V3Ntj4Uk28TIAZyik2FJsvB1vodpZQK2Z+VUhHY4j97z6jEkpvkjKJdpyxhZYziAsl
-	 hQqXfz+G4/DZw==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] net/sched: fix watchdog timer teardown race
-Message-ID: <0218bc04-f3e4-492b-a6a8-ae0d487c487b@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="AjAicUnJ"
+Received: by mail-vk1-f182.google.com with SMTP id 71dfb90a1353d-57533363201so1397985e0c.0
+        for <syzbot@lists.linux.dev>; Wed, 20 May 2026 05:17:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779279452; cv=none;
+        d=google.com; s=arc-20240605;
+        b=RSqSIS2BXbN/dx6dSV3YSW+UaG8cOr3VZq/uwKNVsc7Jyy+yvPEl+RoD0VNm97SpOk
+         pfeAxpPM+IJwq2m6fuZuYZ+ivCNoWLzwWuV9xDe2CSb/e/RSQNdcbe2+oFIAcRp5/f+z
+         UztPkLyxY9Pdt3go7SasHskf82joQlfO1ixFielSHNzFLenz7xsDH78t9R8lHlxQYkzy
+         R8S81RzrIj5gWfjRFWCytVFdaStC/lhQmOULMoIJCO0gxg5OkWowebsLApKiMyIILQIr
+         dHGta1aP501jw7serFHbhv2gghydch3UY+3YGVigEFJaRHjTKepSx0ghqGJmSPqYUeLR
+         /FFA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=tVRpAENu0j4udstoaGBAp7/JNWejoykhjzLo390RiZs=;
+        fh=UskLtjCrUTpHxJK1jf57fjSaAxR3lDDzKLXFPWgsVWw=;
+        b=YxnkZvB1OPiu2znRH4q6AJ0ut5qbehw+x9nvuHTeBQbarFHv7KWiVUa9DXBnBHjPqn
+         jh4VVIXIkiB5BRv65pG7DSectyQpf/I9snlKkQpCuPFeHEw8nwtLGAVHh91Hz5pkxwC0
+         nenaznrWzy1CWleHFDIrEop2c4A1Ot7Sl13tTLrZfZbqGV61sI98A59RGr8/TzZe2tKc
+         0SgaiFGfYZyk3Hj2Kv4v+kNM4t5tvFJltIcmIs+7cGv6ggLK896Es6fBGghuZvbmg01K
+         7yYvbTL9B/Cl6BkW7hZa9UThDFoL4Pd3bjhQqA6R2XS9RDGioPCoFyDlNtXpOl0ZAKHe
+         9yEw==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1779279452; x=1779884252; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=tVRpAENu0j4udstoaGBAp7/JNWejoykhjzLo390RiZs=;
+        b=AjAicUnJLxJYRBjCuJtTOuEFVuLhHUxGRcr2D5MLWR+OLMtscS6gtVlBRe3qyrQbr3
+         ZmVCDjYV7MgUDhmY7GcPTbIIKqSV3SA7gurKRhgFhRaTNo3QomEUL9YmjI46pyTYmV63
+         xnuF3lYDV77NesMOccvJTF5lbM0XYCsqDahMkCTUiVQn2GOlIuJcGPMsCOv4AnfcsPG1
+         Gms4qPmMTML6pF5TkQdwJoTBJdxzi3/zgbZxHEoDyFFDrak4m1IaBTzPH6vKeto43W/S
+         QSjVD8MGOb8WW+OBrGg8H9EE4QitR1KdnGb20AU+ZVURYus0dyEgCa29cxAy/53QaNv1
+         poXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779279452; x=1779884252;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tVRpAENu0j4udstoaGBAp7/JNWejoykhjzLo390RiZs=;
+        b=AEmVSfWWwkZf4SOwcemx3RIsNtA5RFaJF3aFMTyeHt5sITzudtTtJZXzrChPLMskmH
+         zTO3XBFMlgn05I57CEd7XCInp6r1kDR37/KWDPs4fyLQWVZ4zoaY1YOyiXlzdTTIER2c
+         pNCscBIHtvCxOfEIioDEio1qPA7bUtHpzReWGXkHlBXxgkPH0Z1U0EiBQJ75ulDIzkoe
+         SQZNcYiZo7Yx2NrWdH3HOZjCyi6AB0R73KECv0xbuQ9HI1IFOwfhDGrMFUhWS60iIGe5
+         6/IP/mgtqy++MfqnP1+WWu/54nKFGWEdrXgaJzYUHXruUju0XDRL8XPPG7iErs7/2RLu
+         25qg==
+X-Forwarded-Encrypted: i=1; AFNElJ9w96Cp+2J3NEj7IPsJGf3mwqMoi1EvsYjN7oUo2jKen/Hxhf1PdIkAL9AK92K2yNEqzMo82pI=@lists.linux.dev
+X-Gm-Message-State: AOJu0YxNr98YVi+hQuWloN6jO9FWJ3d3kLEfUoHV5Z7zFnZfHPvERXiI
+	PyrdKIdZpnLgI6jjeNfT8aGAOvYsBUqDIWNR0Uu3azoowVjVwBAEC2Au3nRbChc4uNlKEqDXGol
+	MHwoSl5BQRYm8wJ2krWg4uW3VeCSyYpM4B8/aqmMrmhR1vgDCbxRjBVlhq4s=
+X-Gm-Gg: Acq92OF3Rs/MY9vq6PhDyAlxjAfRmBCUDd+eA4uJS47rOJ/focz3LvRjXpASECMt7hX
+	SsrvNsZ2h7c7qBmsY4ES2/ImANntsrSQxiCkkpe1hTTEtC3IVzZgx943NNDlwrG/aZ2DmvQjz0P
+	deb78rr/uXynqb5LsSAXausQIHkfQqUjsJXt3IMvv1ZHhGiEQPvryXYI5rNC65aQSfZC05tDw9i
+	mLgX95opWkr0sVy4iYGDcLD+pqXDzPcU+UDmmTFl8S8RUBUmNMHqD2dZh+QSrwNW96xInQtdgfg
+	Rc+doPxU9eqtuK+Xd52ZDeXWWdSlbpVGJmJBGUVDNfuF3iyH
+X-Received: by 2002:a05:6123:4202:20b0:576:c4b:460a with SMTP id
+ 71dfb90a1353d-5760c4b4e54mr7604588e0c.8.1779279451185; Wed, 20 May 2026
+ 05:17:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Wed, 20 May 2026 12:00:50 +0000 (UTC)
+References: <0218bc04-f3e4-492b-a6a8-ae0d487c487b@mail.kernel.org>
+In-Reply-To: <0218bc04-f3e4-492b-a6a8-ae0d487c487b@mail.kernel.org>
+From: Alexander Potapenko <glider@google.com>
+Date: Wed, 20 May 2026 14:16:53 +0200
+X-Gm-Features: AVHnY4K2L_Gg3kprENoJmD2H4Rl714iNxxmmcfq16OJufZAU2PhTQ9s9yKMZgI8
+Message-ID: <CAG_fn=XUif3iitq0eJxhsLU0CaoibGHgwM_7_VW1SwGOrbr2VQ@mail.gmail.com>
+Subject: Re: [PATCH RFC v2] net/sched: fix watchdog timer teardown race
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-A race condition exists between network device unregistration and
-concurrent link state change events (e.g., usbnet_deferred_kevent).
-During device unregistration, __dev_close_many() clears
-__LINK_STATE_START and calls netdev_watchdog_down() to delete the
-watchdog timer. However, a concurrent link state change can call
-netif_carrier_on(), which checks netif_running(dev). If this check
-happens before __LINK_STATE_START is cleared, it proceeds to call
-netdev_watchdog_up(). If netdev_watchdog_up() is delayed and executes
-after netdev_watchdog_down() has deleted the timer, it will re-arm the
-timer. This leaves the timer armed during the final teardown phase,
-eventually triggering the WARN_ON(timer_pending(&dev->watchdog_timer))
-in dev_shutdown().
+> safely call netdev_put() to balance the refcount. The WARN_ON is removed
+> as it must not be used for conditions that can legitimately happen.
 
-Attempting to fix this by adding a lock-free double-check in
-netdev_watchdog_up() introduces a subtle refcount underflow bug.
-Instead, the most robust approach is to ensure the timer is completely
-dead during the final teardown phase. Since dev_shutdown() is called
-from process context under the rtnl_lock(), it is safe to sleep and
-block. We can use timer_delete_sync() in dev_shutdown() to deactivate
-the timer and wait for any concurrently running callbacks to finish. If
-the timer was left armed, timer_delete_sync() returns 1, allowing us to
-safely call netdev_put() to balance the refcount. The WARN_ON is removed
-as it must not be used for conditions that can legitimately happen.
+This is not the reason why we remove it.
+As you mentioned in the previous patch version, "You're right, since
+`timer_delete_sync()` ensures the timer is deactivated and any running
+callbacks have finished, `timer_pending()` will always be false at
+this point. The `WARN_ON` is indeed redundant now."
 
-Fixes: d7811e623dd4 ("[NET]: Drop tx lock in dev_watchdog_up")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+c9ecf60a8adb7629821e@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=c9ecf60a8adb7629821e
-Link: https://syzkaller.appspot.com/ai_job?id=dfe990fd-fc25-4b79-960c-52708991b04c
-To: <davem@davemloft.net>
-To: <edumazet@google.com>
-To: <jhs@mojatatu.com>
-To: <jiri@resnulli.us>
-To: <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: <pabeni@redhat.com>
-Cc: <horms@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-
----
-v2:
-- Removed WARN_ON() in dev_shutdown() as it is no longer needed after timer_delete_sync().
-
-v1:
-https://lore.kernel.org/all/07235ee0-41fb-43e2-8391-d1e398576250@mail.kernel.org/T/
----
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index a93321db8..ad2ba1d89 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -1493,7 +1493,8 @@ void dev_shutdown(struct net_device *dev)
- 	qdisc_put(rtnl_dereference(dev->qdisc));
- 	rcu_assign_pointer(dev->qdisc, &noop_qdisc);
- 
--	WARN_ON(timer_pending(&dev->watchdog_timer));
-+	if (timer_delete_sync(&dev->watchdog_timer))
-+		netdev_put(dev, &dev->watchdog_dev_tracker);
- }
- 
- /**
-
-
-base-commit: 5d6919055dec134de3c40167a490f33c74c12581
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to send it to the mailing list.
-Reply with '#syz reject' to reject it.
-
-See https://github.com/google/syzkaller/blob/master/docs/syzbot_ai_patches.md for more information.
+So it's not that `timer_pending()=1` can legitimately happen now, but
+rather that `timer_pending()` is always 0.
