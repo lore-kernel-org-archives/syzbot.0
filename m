@@ -1,58 +1,50 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 661B439EF12
-	for <syzbot@lists.linux.dev>; Thu, 21 May 2026 12:22:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 236F63C9429
+	for <syzbot@lists.linux.dev>; Thu, 21 May 2026 12:40:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779366170; cv=none; b=eQTR1dc9MV7vsc8Cko+E26ktaSo2b6bAU+W0tpqJyfWr1QpGzJaai2LH+JKrg8ylG6mPceQGxRatrlWc6OH8tj38Cqq1PN0gvZg4iZxdwtEP1GCQTp7vup1ai7SGUTAW9GWK2vXWg3SHozi6nHxGsu/wyOoEgmPFavsWOdtn5is=
+	t=1779367235; cv=none; b=jMkai+N3Fbp/U31fZq8JpG4eD3FbTCtmh9sDHE/6C6ev41IrItg0GgTHpskQhrLh84meyM8t6EB+7BQxFnMSFC6qjCBePFtILMySmOfKRLoVFUWGud53opWu+OTp1MEdDUB8crfaEDl+q8MIQoTQD4UZ6Mumyk71f9wq+Ls7qoU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779366170; c=relaxed/simple;
-	bh=qtE6dn7DB3SkDZG8WfGYhQIM8a9pJGLfjA2I2J0yrnY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=hlqeWaDHrpiK51PcKUpg/bOWw3vFagwcvXS0ZOqoSsgsW0fuHvYzTRdf67bOaEdLMvQaJo2fEmt9inOQZriqiUVfy1qbqYvsI6O2bRpJKN2UwwkPdWzzvVnUwqOl67df6WNZbRa1aa23a1saPqIu5kstjxZyoYDNU1n/JmY2q3k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=H/pUqyfn; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1779367235; c=relaxed/simple;
+	bh=ca0rCXCVQF4XkvG5/JV3qZM6cQmKPlaW0vtfQB7+lso=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=bgGNGl1kQ3p58O/hbYB/PcgDwO2jKjCby7PAvzQGfys7U4JHCD8AqeZ3ucP2N0NC3DKy3CfQ+uxUrbrtENQ8f1jbQAJLDKKwWXWjhSWUZ5winf10SrZU5Y8ocrKntNTyUXmyezF6Qcaj//NOGqdwQkCTEnAfeRPkX+wbfR0NbJ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E0xM8H6h; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="H/pUqyfn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1779366168;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=pJBK5b8rPtk32hxx1WF3NYiRezqPxfYWou6O69RlNSM=;
-	b=H/pUqyfnfbGLfTKc0+lI/Qu1QrWBmSUf8nbualDpA1nYpuBAYWjlUcx+XWHUCkOFOuySPo
-	hAOqqlr4fTwbP2SkcI5s3oBD8fKV+Q9TbXHt3cPr6v4kB6zxrTuDnq9KzUvfmQxKQdKRaL
-	VGrQYW2Xcgabq2weyrEsFLnvBq3eXXE=
-Received: from mx-prod-mc-06.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-35-165-154-97.us-west-2.compute.amazonaws.com [35.165.154.97]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-662-xGFznZ_bPIqNGs1V7D5Oew-1; Thu,
- 21 May 2026 08:22:41 -0400
-X-MC-Unique: xGFznZ_bPIqNGs1V7D5Oew-1
-X-Mimecast-MFC-AGG-ID: xGFznZ_bPIqNGs1V7D5Oew_1779366158
-Received: from mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.111])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-06.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 5DF18180060D;
-	Thu, 21 May 2026 12:22:37 +0000 (UTC)
-Received: from fedora (unknown [10.44.48.45])
-	by mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with SMTP id 88F1B1800576;
-	Thu, 21 May 2026 12:22:33 +0000 (UTC)
-Received: by fedora (nbSMTP-1.00) for uid 1000
-	oleg@redhat.com; Thu, 21 May 2026 14:22:37 +0200 (CEST)
-Date: Thu, 21 May 2026 14:22:32 +0200
-From: Oleg Nesterov <oleg@redhat.com>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-bugs@googlegroups.com, linux-kernel@vger.kernel.org,
-	adrianhuang0701@gmail.com, akpm@linux-foundation.org,
-	brauner@kernel.org, kexinsun@smail.nju.edu.cn, peterz@infradead.org,
-	syzbot@lists.linux.dev, tglx@kernel.org
-Subject: Re: [PATCH] signal: clear JOBCTL_PENDING_MASK for caller in
- zap_other_threads()
-Message-ID: <ag75CP90p87ssRsI@redhat.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E0xM8H6h"
+Received: by smtp.kernel.org (Postfix)
+	id D10931F00A3C; Thu, 21 May 2026 12:40:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BE7F1F000E9;
+	Thu, 21 May 2026 12:40:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779367233;
+	bh=runKwkzf6NmsA6ICmTLGmbaDzOtOu2w+RHrsoXu/SlU=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=E0xM8H6hjjvJo/DNJfJlWC9WdevFFz/mrABvyVBgIPV0hvtv/KZ/PYDqzIGaHphpb
+	 LxXHHvtH+ApZlnedT5ydk8ek5WKoyAT9UDXkfjSvapTfCi7gY+FtiPmD5hne4dUhnK
+	 FTJvLALxDOViGYy0kEhqhPMhU3Uv8YZyT2H0Y9li/bLAwWVAtPRpukWtP45ZCpEP1h
+	 M0UHqEHzOlBUtHoouyuO4v/Fkr7CfwhDl/NxZzEaqJbMYOIY8PRyCJZzEHgjXjJV21
+	 13Osp0sQQLqbaL9CX8tf/ha1083HIfF1nl8jSr6LgcRpO7qhB1HGHlnOyaScT1V/t5
+	 lBeHV/VC31cMQ==
+From: Christian Brauner <brauner@kernel.org>
+To: syzkaller-bugs@googlegroups.com,
+	linux-kernel@vger.kernel.org,
+	syzbot <syzbot@kernel.org>
+Cc: Christian Brauner <brauner@kernel.org>,
+	adrianhuang0701@gmail.com,
+	akpm@linux-foundation.org,
+	kexinsun@smail.nju.edu.cn,
+	oleg@redhat.com,
+	peterz@infradead.org,
+	syzbot@lists.linux.dev,
+	tglx@kernel.org
+Subject: Re: [PATCH] signal: clear JOBCTL_PENDING_MASK for caller in zap_other_threads()
+Date: Thu, 21 May 2026 14:40:24 +0200
+Message-ID: <20260521-kultur-zahnpasta-f09198836179@brauner>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <36638f2b-6f91-4e33-b630-fd7045eebc84@mail.kernel.org>
 References: <36638f2b-6f91-4e33-b630-fd7045eebc84@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
@@ -60,15 +52,12 @@ List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <36638f2b-6f91-4e33-b630-fd7045eebc84@mail.kernel.org>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.111
-X-Mimecast-MFC-PROC-ID: JeQ0mzDgiz7ZDQ1pD22wr6TJFKugQuAqTB3NDja2LPs_1779366158
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1423; i=brauner@kernel.org; h=from:subject:message-id; bh=ca0rCXCVQF4XkvG5/JV3qZM6cQmKPlaW0vtfQB7+lso=; b=owGbwMvMwCU28Zj0gdSKO4sYT6slMWTx/bVS7FOv32Ex5WTwv2L1aU/KFT48s0jpFLspf0ZQK ETfJ2FDRykLgxgXg6yYIotDu0m43HKeis1GmRowc1iZQIYwcHEKwETYjBkZFkr+3eJyKv2MkKPj 5sSX05LeyUxvZDGUq1c4tjfu6Z+4nYwMfR6mrAc/zIhYv3C99bYHKYfsRYyXpu+2aLE5L1W1+VQ bKwA=
+X-Developer-Key: i=brauner@kernel.org; a=openpgp; fpr=4880B8C9BD0E5106FC070F4F7B3C391EFEA93624
+Content-Transfer-Encoding: 8bit
 
-On 05/21, syzbot wrote:
->
+On Thu, 21 May 2026 09:05:43 +0000, syzbot wrote:
 > When a multi-threaded process receives a stop signal (e.g., SIGSTOP),
 > do_signal_stop() sets JOBCTL_STOP_PENDING and JOBCTL_STOP_CONSUME on all
 > threads and sets signal->group_stop_count to the number of threads. If
@@ -77,29 +66,23 @@ On 05/21, syzbot wrote:
 > aborts the pending group stop by resetting signal->group_stop_count to 0
 > and clears the JOBCTL_PENDING_MASK for all other threads. However, it
 > fails to clear the job control flags for the calling thread.
+> 
+> [...]
 
-Yes...
+Applied to the vfs.fixes branch of the vfs/vfs.git tree.
+Patches in the vfs.fixes branch should appear in linux-next soon.
 
-> --- a/kernel/signal.c
-> +++ b/kernel/signal.c
-> @@ -1338,6 +1338,7 @@ int zap_other_threads(struct task_struct *p)
->  	int count = 0;
->
->  	p->signal->group_stop_count = 0;
-> +	task_clear_jobctl_pending(p, JOBCTL_PENDING_MASK);
+Please report any outstanding bugs that were missed during review in a
+new review to the original patch series allowing us to drop it.
 
-OK, fair enough...
+It's encouraged to provide Acked-bys and Reviewed-bys even though the
+patch has now been applied. If possible patch trailers will be updated.
 
-If we reset ->group_stop_count, we need to clear JOBCTL_PENDING_MASK for
-every thread.
+Note that commit hashes shown below are subject to change due to rebase,
+trailer updates or similar. If in doubt, please check the listed branch.
 
-Acked-by: Oleg Nesterov <oleg@redhat.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/vfs/vfs.git
+branch: vfs.fixes
 
-
-
------------------------------------------------------------------------
-But. It seems that we need more fixes (and more discussions) about the
-SIGSTOP with exec race...
-
-Oleg.
-
+[1/1] signal: clear JOBCTL_PENDING_MASK for caller in zap_other_threads()
+      https://git.kernel.org/vfs/vfs/c/71556f3d55ee
