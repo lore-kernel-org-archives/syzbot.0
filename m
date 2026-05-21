@@ -1,137 +1,142 @@
-Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D8883D7A05
-	for <syzbot@lists.linux.dev>; Thu, 21 May 2026 14:23:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779373395; cv=none; b=SrQSKlMVEL8w/S5glVEI5y9UmM7iOV8U3gP12Zm/5nsQaKMBWiOYXYSwNfe/ns1JpanE+QNksN1/pnden43vRvYiqsNnFS6va1eyt6sTq/ASRRfkfPe/7MobSRuBmRW9Ce0OZ1r5XbM/8Tl013Nv+5QXZBlD2Mu0O50EQCNG8oc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779373395; c=relaxed/simple;
-	bh=vkvxE28P0zrag41KylC50dr5R96zFtOXC1ohN2g7whA=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=QLPCXQ5pR0WUNfAa3AWhitE3uPyRgX2fj0TmW6nHyDzSQTd++Ftt3nD/1ZU0HzgWpZgNTTHW/6Tlrm0KPbdnFN/47cmmM6YGAkPDzlHMUzng40bA7qRSWlCdkhchJD7KP/MEVJ4xwb+XXFd1rBSGa36Xq2WwLggumZGya7HaAxg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--nogikh.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=OjCyiYiD; arc=none smtp.client-ip=209.85.128.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81AC33FC5B1
+	for <syzbot@lists.linux.dev>; Thu, 21 May 2026 14:30:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779373838; cv=pass; b=Pjq/TEimW2NpO2IeOuNzsRRXC7lWpfgBxsfuIkJV/dQXkUhKKwe0Tt1O0tlGRFCYX3q0Hxi7/QFTdXe5IS9t4ONGtG19AVeI9zD6dhbHxUh+JoSHgkplpEho9UPwDgkjCuqfPC4cH3nWJR+ah5O4KbseeFPlOZG/OeBOkGqxf3E=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779373838; c=relaxed/simple;
+	bh=bWmO9DpBwMqIRd/PI6paYvWCHyez1DaS/ETzLX6Lab4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=PcbLb26Nc/JqZrDLKQI0p9gvrjcWoEKSSirgHOmyF5qL7ijfuAal89z19+anXCZCxCyHxpqCIeatfcD0oLXBwlkZMIlQq8rv4q7ZuPnP09VpfvM99Y/xyq644JgGfdwa26/FW6JUMkExntCk5X4AQGF+24UTjFsqZacXHqrFKOQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=akhaiQ5d; arc=pass smtp.client-ip=209.85.210.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--nogikh.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="OjCyiYiD"
-Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-48fe44ce385so49783665e9.0
-        for <syzbot@lists.linux.dev>; Thu, 21 May 2026 07:23:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="akhaiQ5d"
+Received: by mail-ot1-f44.google.com with SMTP id 46e09a7af769-7dca00c1591so1760444a34.3
+        for <syzbot@lists.linux.dev>; Thu, 21 May 2026 07:30:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779373836; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Y97P6tlxl47zvpevG46/wd618Ak06V55luws3S9DVjDmmIFESFJx8MhRnhYfNExy8S
+         pt8Ks6gDMMzvUGPrsZJHWcc8sQiA98fhTxiLVyGYFgsICJiyz6vO9iXr1OMRuCCg1YSF
+         bRZ/WPBE5MuNABmKSJb8NoDNScBj7FKFg6Pg1nCYdtON+lqOUIPrGhNlP+YU+Wwag3vH
+         XFV7GVqjhsV0o6Wg9qkYXw30QXGf5cpZN7SfB6+9o02ML0R4MJ0DK7tIONWOe2joW3rG
+         yYal5TBXSwyJaqe5vJuNtcFCaX6J9v38u+mg839UjiNd38j7lDdNa7BA5BrWDEY4EO5b
+         D/9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=PgGLIiyJ8wE3DdIjs3jsiwgS9kBz5mfj7Sj7VdRRb1k=;
+        fh=eSPD2RPku7NW9Qd2WFmyKyhjwUsRC1fqwdA6w+yuBak=;
+        b=fQIUIEoxQioVLsm/POA5Juv4TELAjbs4temEWTe/LZZhMwdi/VNB2JmsiAV+yaqnRq
+         hRgKGGcAAZWIvQqBHNCpYfSGl74oLJp/lYom0/uv7LZTm/ll1NsQ2u/CI7cR1T785F7v
+         BOUj84m108V3INhWHf3g13EIpX0wXk/fj/hc2/X1GLXDsybRW6B+01DfoPD0CfIHXOYi
+         DKiBHiPv/TcrN0osTt7FyWGYkHfszZrAWtmFWaV3AFAj9qBjvGC0ou7FtoHo65Do7cXB
+         gEgb9JpngQyVXKD2jClWBBSaSUsb0BWefbBPocC8djBgA/RjO2v82NlL3k6BrR5lPemB
+         seyg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779373393; x=1779978193; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Lr8BKpOLWQtrvU98WKSsigNpDA+PKrjW2zdUyhAFbTw=;
-        b=OjCyiYiDyuC6+4tsCGLCMss9QSVb0+chJb1eO6sjnFcwRU/IQZb0AhOmn4reSksczb
-         hddpYnxAcL1sAKMCbYkvoxLty5jcIWCcjvzWNeWtGF4DohVNWfmlJ9Ul9vhRBTMh4Hxl
-         jvqSz0Ae+y2nGEKIfFAHwj79aHGdaALU6eiskETPeGT0DCuyobTj9tlPN1zfouuXTi1W
-         cW1myF1Pb0hFR11OpaTCfoaKXl8t5U9JU13iS2vTzunnoJC5u+5BTIhRpAJMM3Vc4A5X
-         PDDC1BnJiCEyCj2cqBeCJlHCoNvSod14RmylpQ3+De0wgt1M4Y6n+33M6BryYyE6rlj4
-         6G5w==
+        d=google.com; s=20251104; t=1779373836; x=1779978636; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PgGLIiyJ8wE3DdIjs3jsiwgS9kBz5mfj7Sj7VdRRb1k=;
+        b=akhaiQ5dI27uJd3I0W2yCuNZg69WvfsiVtwco+nX75VYkj2ocDd1lOPAS40oa+rfiP
+         zJY+z/U1dEVWllXPX1MHzSwMDsxEGZNU+cDrIVHVdYm6nL2h0m9namLWMEsznVDgBpC4
+         9YPd9810BA/+1cM8+WVec923tNmTgVOcgYjumt2vWP+bBpK+Qm314bbfXy2g7/lEj76l
+         BmevocZKfKFQHpU48Ry5dRvwmWwk5yFVPCdAImT/aE4qdH+CqLOz11+0q8rAZ6YtkmXf
+         lSEhdW6AYaofJ7LJll/AX7gYv0S7y7QC2OxE0itYhusSUSOFLPIo7z3/XGDCvjzNjrLJ
+         GKGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779373393; x=1779978193;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Lr8BKpOLWQtrvU98WKSsigNpDA+PKrjW2zdUyhAFbTw=;
-        b=SlJpXRDMOehaYWMxy3X+yw2MUohgFCdUjvZJCzAojjwnM4ALC2XpAe5TxMWZ/3Ix1u
-         Mb9UtTOR+E43YD/b/VN/fH93n3MrNkVLhGN+q5FZVbeZvKUvKr2PREoXuopbD/P/xEBP
-         QdaqK9YnsEaDuT0qnJEHEfSLvLBM0RzQSGSkmNqUwz2Wh7XlZabWgnRVqp0+SNirz7LE
-         G9+nYIgYc8lE1K/QB1itRb079RTZdAmtuD93XCd477aSq6WLIb/Y+pq98bX1LkwT5RS4
-         UDyHM0WiQue9V3c/aZd2SaOIDBfzuP6Utk3gQqAPb+wFzO/vLj/HjpKcT5OsYWZcI96K
-         1OKA==
-X-Forwarded-Encrypted: i=1; AFNElJ9Hl8jAG1nnPeVp1NCx+yo8o0bJXLnL5jhqhxBT1a8gmMUaMpop8tVlOFgAxXIpYo6L3SSNmd4=@lists.linux.dev
-X-Gm-Message-State: AOJu0YxUTiOORZUB73/L+kFLqz9cNMIKUuRm4FzZhCpWu0qrNtF4kzqU
-	K89f4pIQZDlbUCc5R4DsjIC+aacPI5ljeuvEWx+b9+d11nSz9roURpNIrxmajz1a2kX9PP38EKE
-	9qzzxiw==
-X-Received: from wmv6.prod.google.com ([2002:a05:600c:26c6:b0:485:3f38:3dd2])
- (user=nogikh job=prod-delivery.src-stubby-dispatcher) by 2002:a05:600c:4f08:b0:48f:99a9:bbd6
- with SMTP id 5b1f17b1804b1-490360bae19mr45875755e9.24.1779373392385; Thu, 21
- May 2026 07:23:12 -0700 (PDT)
-Date: Thu, 21 May 2026 16:22:40 +0200
+        d=1e100.net; s=20251104; t=1779373836; x=1779978636;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=PgGLIiyJ8wE3DdIjs3jsiwgS9kBz5mfj7Sj7VdRRb1k=;
+        b=rlHYDikVy0GR3wWsvC+GcKhZR6IKLB1k2GT1q0YGEUAAZ4QzPsN4yK+xrCiMHq0Xal
+         4o0p0bb/+anGveIlVyt0Y8iw94EmR54mw2oKwjvzTm6blrrotrvrAarcqVMyTbphyRIg
+         MgmU7ivrIVO7K7UtkzpQvpwWV5HSBAuux8xSELgoy2yPaePrdab6p2q3/kGdA18kkr8u
+         av2EXVtgbQajbrpDiykKlUmGVX8b7BvcfQtQ5u0d+eUolGftOcBFEF+3WdFPWH0mp7qP
+         rGWY7p7xMRYT2yVpZGG8pBh6xzWYf/keQKXXc0yJKlStWpBFc1n3Ei+Peo1ZS4GpaYya
+         ul5A==
+X-Forwarded-Encrypted: i=1; AFNElJ8TqRYDf0BtVonqHbSeIuk2Up+JOeLaDZ8ZQd/Id7Zyjsxz/d4OZyhqboPCxMXr8kHjLUgajS8=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzPrIj+4c4GHE8/m49pnyX4VbpoOg/lSu9nSJHdynVLMyuCViMr
+	6KyOT2bRGwetV7eEeo/PHbHQAXpmPUuQ8bIIxH1g9yfLO46/FdQl5tv/oLjYpYLt/sOiIo8fgkT
+	Vr3I5nDHMzR5jvBbvG+xdGcLFMnSU2SnfFOiE3BAF
+X-Gm-Gg: Acq92OGATr4iXsrNKTJuDp/S/bIAcOwsLr/XXHMMVNhusHyV00qjzd6aQsvRyP7/Cyu
+	WL+bnsvVe7OQI2wFLLdCDQpTvlt2iN+1mZX8YPysaE/tiUdyFQy79aXxW3mTGVUgWJnJvv0fbKM
+	qdwWGtbt+WRiPGe+JqXJiT0ngq1EdC/YAxzDqYh53qU9wOG4bFt4CUzXJSCWrETSH7V19l7ZNeD
+	TVnfSGJQIDGHTew7k5h1Kee7Hjo/HPXcMATGTW7ayKytFbFDzO87B8BCTUQUrF+jHWFR0zbaOwS
+	U8vKzBWNL94yVdxIdXnerff33NcmHo13EcurITp+gyxWu5mO+Iq8nGAG2SQ1i68xbx/dl1HOWi+
+	MQKOI
+X-Received: by 2002:a05:6820:f036:b0:69d:6696:846e with SMTP id
+ 006d021491bc7-69d6eed271bmr1224802eaf.29.1779373835978; Thu, 21 May 2026
+ 07:30:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.54.0.669.g59709faab0-goog
-Message-ID: <20260521142240.2973022-1-nogikh@google.com>
-Subject: [PATCH v2] signal: clear JOBCTL_PENDING_MASK for caller in zap_other_threads()
+MIME-Version: 1.0
+References: <36638f2b-6f91-4e33-b630-fd7045eebc84@mail.kernel.org>
+ <20260521-kultur-zahnpasta-f09198836179@brauner> <CANp29Y5Cjy6k2vLp2+2O9FXwRXAmNP_ja6seORVXVQnrdUwH3g@mail.gmail.com>
+ <2026052159-conductor-suffice-4c81@gregkh>
+In-Reply-To: <2026052159-conductor-suffice-4c81@gregkh>
 From: Aleksandr Nogikh <nogikh@google.com>
-To: syzkaller-bugs@googlegroups.com, linux-kernel@vger.kernel.org
-Cc: adrianhuang0701@gmail.com, akpm@linux-foundation.org, brauner@kernel.org, 
-	kexinsun@smail.nju.edu.cn, oleg@redhat.com, peterz@infradead.org, 
-	syzbot@lists.linux.dev, tglx@kernel.org, dvyukov@google.com, 
-	Aleksandr Nogikh <nogikh@google.com>, syzbot+b109633ea805cac54a61@syzkaller.appspotmail.com
+Date: Thu, 21 May 2026 16:30:24 +0200
+X-Gm-Features: AVHnY4L69FM7sqFXS0wtxo-zw9uwRckpjr5S38o0a71LtHBSi-Rm4Zdrfb_AQEc
+Message-ID: <CANp29Y4Pe5Skz9A21ksAymybgyVhHgpaQJ38UTX4=+YLvzoMgA@mail.gmail.com>
+Subject: Re: [PATCH] signal: clear JOBCTL_PENDING_MASK for caller in zap_other_threads()
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Christian Brauner <brauner@kernel.org>, syzkaller-bugs@googlegroups.com, 
+	linux-kernel@vger.kernel.org, syzbot <syzbot@kernel.org>, adrianhuang0701@gmail.com, 
+	akpm@linux-foundation.org, kexinsun@smail.nju.edu.cn, oleg@redhat.com, 
+	peterz@infradead.org, syzbot@lists.linux.dev, tglx@kernel.org, 
+	Dmitry Vyukov <dvyukov@google.com>, Marco Elver <elver@google.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-When a multi-threaded process receives a stop signal (e.g., SIGSTOP),
-do_signal_stop() sets JOBCTL_STOP_PENDING and JOBCTL_STOP_CONSUME on all
-threads and sets signal->group_stop_count to the number of threads. If
-one of the threads concurrently calls execve(), de_thread() invokes
-zap_other_threads() to kill all other threads. zap_other_threads()
-aborts the pending group stop by resetting signal->group_stop_count to 0
-and clears the JOBCTL_PENDING_MASK for all other threads. However, it
-fails to clear the job control flags for the calling thread.
+On Thu, May 21, 2026 at 4:17=E2=80=AFPM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Thu, May 21, 2026 at 03:03:35PM +0200, Aleksandr Nogikh wrote:
+> > (+Greg)
+> >
+> > Hi Christian and Oleg,
+> >
+> > Thanks for reviewing and accepting the patch!
+> >
+> > However, it seems that we first need to clarify how these types of
+> > patches should be submitted to ensure we don't violate the Linux
+> > kernel rules regarding AI-assisted contributions.
+>
+> The documentation is very clear on this, what is missing?
+>
+> > In a discussion under another patch by syzbot [1], Greg noted that
+> > syzbot cannot be listed as the author. The official documentation [2]
+> > isn't very specific about how to handle this exact scenario.
+>
+> A "tool" can not sign off on a patch.  That's always been the case, a
+> person has to take ownership and responsibility for it from a legal and
+> technical point of view.  Again, nothing new here, been this way for a
+> very long time.
 
-When execve() completes, the calling thread returns to user mode and
-checks for pending signals. Seeing the stale JOBCTL_STOP_PENDING flag,
-it calls do_signal_stop(), which invokes task_participate_group_stop().
-Since JOBCTL_STOP_CONSUME is still set, it attempts to decrement the
-already-zero signal->group_stop_count, triggering a warning:
+The documentation was very clear that the `Signed-off-by` tag must
+belong to a real person and these 2 patches actually did have such a
+Signed-off-by.
 
-sig->group_stop_count == 0
-WARNING: CPU: 1 PID: 6475 at kernel/signal.c:373
-task_participate_group_stop+0x215/0x2d0
-Call Trace:
- <TASK>
- do_signal_stop+0x3be/0x5c0 kernel/signal.c:2619
- get_signal+0xa8c/0x1330 kernel/signal.c:2884
- arch_do_signal_or_restart+0xbc/0x840 arch/x86/kernel/signal.c:337
- exit_to_user_mode_loop+0x8c/0x4d0 kernel/entry/common.c:98
- do_syscall_64+0x33e/0xf80 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
+We've just updated syzbot to also add a `From: ` tag with the
+name/email of the person who pre-reviewed the patch and approved
+sending it to LKML.
 
-Fix this race condition by clearing the JOBCTL_PENDING_MASK for the
-calling thread in zap_other_threads(), ensuring it does not retain any
-stale job control state after the thread group is destroyed. This aligns
-with other functions that tear down a thread group and abort group
-stops, such as zap_process() and complete_signal(), which correctly
-clear these flags for all threads including the current one.
+--=20
+Aleksandr
 
-Fixes: 39efa3ef3a37 ("signal: Use GROUP_STOP_PENDING to stop once for a single group stop")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+b109633ea805cac54a61@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=b109633ea805cac54a61
-Link: https://syzkaller.appspot.com/ai_job?id=d70208cc-862b-4fe3-bf02-3031e10cd0b3
-Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
----
-
-v2:
-Resending my from own name to comply with the rules.
-
-v1:
-https://lore.kernel.org/all/36638f2b-6f91-4e33-b630-fd7045eebc84@mail.kernel.org/
-
----
- kernel/signal.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/kernel/signal.c b/kernel/signal.c
-index 2d102e0258839..9c2b32c4d7553 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -1338,6 +1338,7 @@ int zap_other_threads(struct task_struct *p)
- 	int count = 0;
- 
- 	p->signal->group_stop_count = 0;
-+	task_clear_jobctl_pending(p, JOBCTL_PENDING_MASK);
- 
- 	for_other_threads(p, t) {
- 		task_clear_jobctl_pending(t, JOBCTL_PENDING_MASK);
-
-base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
--- 
-2.54.0.669.g59709faab0-goog
-
+>
+> thanks,
+>
+> greg k-h
