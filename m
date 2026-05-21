@@ -1,171 +1,186 @@
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A93BE39D3DA
-	for <syzbot@lists.linux.dev>; Thu, 21 May 2026 07:39:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779349162; cv=none; b=Ac3OL6EKiQRl0p/M4GYFSSsxM/cYGFlVZPgJ5z2k5HRGtuH7NAkU1O5sKCdG4dEI8cz4tUg0Z6wflIvaIDQYyfzZOa/pZSXOFpXmx33zDiL9NGLGinO7LrbXufEidpNmftU7EypyFnN5uwPIEmaB64W95Xlx6XSww5KHHtm7YmY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779349162; c=relaxed/simple;
-	bh=PrwDGX9XwNMQGWTQWwl8aSHX5AH5t6LcdhOrjL+I7yg=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=D+8edTwiauYlfQUxDE+rUK+It7ZuiqhrNR/iqo9m77m8oAQUpaFFRfE7Fg8wt3azadtdgP58BYjdOBM+x1ZhF0xu7yz5AmSPyi+0aQBYvtRuLgy0TYcg3YRqdZzIOPkVoc53DW29Q7bPML9Gj+I2yaUxEMDSZZF4G8juwMGSMlM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-69b91d4f9b1so13494586eaf.3
-        for <syzbot@lists.linux.dev>; Thu, 21 May 2026 00:39:17 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11189362137
+	for <syzbot@lists.linux.dev>; Thu, 21 May 2026 07:44:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.174
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779349454; cv=pass; b=rtJK7ujXc1rYp3iNCa6GdV4Q6ZAylxT8cv+Bdn65XB8Pc+/9lNchArluAk54Xk1JowBprcg7SrqjKKNqwrb96Z8tRH7ScjHfmkhj0IeSS3VrR6NO2ky2qp+Tf5yLnvgl18701hPcBeiLGSMm/prVTGZUcgM3tF1vcL0xgeVLE0w=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779349454; c=relaxed/simple;
+	bh=qk3xrGaFHkzYKKWsw9E5UnyeIMfYhOQa25NEY8N46pc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=b6mwAbgGePIcKkdwOezqBbF6ONZ2/EFLCQXvbRLyMq7acEdANu1Unoa4Oz63jtLLwIa1noxMzUGIkI+2hqtUcfTGXn5hJUtsBbuivuoatxeLscWRhHmi4Pu8i4r/71Nqd7gN7etVsFCNwGzvMbwy5HyihMe0287MfAwyg4Mmtjk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=TPLNd89K; arc=pass smtp.client-ip=209.85.167.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="TPLNd89K"
+Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-47c7b282d73so3814692b6e.3
+        for <syzbot@lists.linux.dev>; Thu, 21 May 2026 00:44:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779349451; cv=none;
+        d=google.com; s=arc-20240605;
+        b=lSWDMObnctn4p5JZog6Qa52qkcbIecIePkaL53yMHS0sA3wLNEd8wueQcQ6/DkNYG9
+         f4XUoi7OQFcBjDg34j5UHLv1bOD8ANy7mpzC/Sb7l2Lvdg2e6ZeFUNCHPTI4Ldk5vg7d
+         4ZRhqssaTwqPZj0RXiQAMY7ksIQxvqm4QJLloM/+w7BmXYDn6QILRfvVRuhdlPbVnuTT
+         QputzEH9rmOV5fIW5sPQjAUrlS98PM9SZ5oVlx67OnTimXEUChXxIaKOXBULbDQgX6XI
+         SnFWXoHw+3wzrzal/sd90FFsR1y8nJYfcKlKzV+t+JMxmisiXkMaqIidw9lBUqRNA2WX
+         LBRA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=Y/8wyR4E2hyn6DoucUgHWEiE9DF/3Q4khS1ROlq8xJw=;
+        fh=4iAUvEWNm2ZS+uj3iShr5sAspTcr7/V6H4QETyni61E=;
+        b=ks3i1c9wMN79SdGW5DOK8TYRtSB1vhTIrFjVjIKl8o+8/R3tq/M25psMupicjMBVgX
+         kqqfqjQnwtBuRceqxUWGrdalJYAEk3jIY++TCh5gYM/CW8+GACoDHQtsuS2yNVTGlMmB
+         TF5QPOaFYf+KCyMx1ghaGpSzZYvTnnIkqSvf+Cxd2rO2/hBHtpcgBxmFaGRuYe+r3/T7
+         /u7oZ6pS1i49rF9QvG72+r2hOtXjIv2C5IphYuSJcLVI1Z5BY2s0sXUuPOdLa6R8kVJx
+         bVjDRK31mqMXSSaDicXQThzpSuFhFZZV2obkHzG267CnpenJ21rVoPiTd2oGDmm91+9d
+         0mdg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1779349451; x=1779954251; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Y/8wyR4E2hyn6DoucUgHWEiE9DF/3Q4khS1ROlq8xJw=;
+        b=TPLNd89K7ylQwL5jue3SJgXOwdyHy7FynkrViA/loxfPMT3FZbZtOxo3pSFXk6QA3o
+         ny7Nu7k9LojsbrkDfNnAGTtTt/l5xgMFvUA66DhFT9dDD66HQtE8eSWtJOGpFm8rDhFV
+         17sQ7FEp370TQzIglNVf650YZNmMW89qNMbwb5jQdkJwPtPWdf+w8SETZukArU2dHk+L
+         A9ihwuo650FbPCXFratYCtvU8nUTcUoaph3I1fVfWM84qkgWDbiLY5tlrtYZUK4LS7WZ
+         W5IL6yocSmUUnrJWx5/wbRt8bftFC5rbw1VJ/xFoeMDF2p08mUkKiU4ZoYF5DjK/qhlB
+         j0EQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779349156; x=1779953956;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XWKRtXiZ3vPr/SWGzquOclNiqgxO1IwRNyvP9OlYuFI=;
-        b=fXDmXTbgkLcWxszaVQTJNIAlEvng1VfpeHDp1DlhihEV5wMUn0NID1keSA+oQF9VQs
-         HxKNMGuNgDMBu5H6FclLT59IUlFtfhfJGeq6AjZU2UpYuz60XBpzNjBSJr7ga9n0NSu4
-         8pETLUibO5UfXkNRoEUecUpCzOs3Yi9kfrdV5fynRpzMp3LsxRu/u7sIKBYly2jy2W6i
-         /QCtFdK4jaRZ3/1SPCMjtWn/GwqG4wWdiH9HLBSkxttH8Q/uUag/Ts2t1yQNufFYVvxq
-         zckUSN14dJux+pz1MHT4t+lcgmzheFYcvApyFpgooiMP+DeBexAGrpx59jXe3xsp61Jn
-         +yzA==
-X-Gm-Message-State: AOJu0YwssMCJZ3IJcj7WJY9Q821R+NXAXGE/N627l4onXCs7Pgp5Ax6f
-	nDDINmGYffYZrPR7wEwkDlGJ3IrCWxy15BxLh3CtsNUM/FYM1Pbk79w5H3SCWuajS2Co/kggpOc
-	xzbFANkAP4Jjmc6j1U3zCb29iEfFyFEXC3cLV3qlmFAAjh6G0q/mPP+vms8A=
+        d=1e100.net; s=20251104; t=1779349451; x=1779954251;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=Y/8wyR4E2hyn6DoucUgHWEiE9DF/3Q4khS1ROlq8xJw=;
+        b=ZHD+EGfaYjQg9t6bLfvIbXtSX6rKhFtDEwmla5KuDeIEUoYU3hY1MIPrYlODjGw4qu
+         f2j7TMvJcXUQpoO+gCaGL9ODJvhI+fu70FshAnFUKuzox8LUETnxHWn8lgKbDCpMB6DV
+         cTowNb/Puh9BLVNVkw3imynT75ERqtUsShcfjtldqybkJ1e7hl2wudEv6WNrrPSs8auS
+         ws6OjUeKaBFciYhOgATs2TRVB6jB4rYPlkEPugwrrBY6eykdYMN7pMEEY0Ekl2yKle/n
+         EPxk85oi/d/GziZqXCAUJYl3R/5FJ33rrXFljpMLh32mhnOp0a63BUK3X/8ksvUbMDPH
+         5ZoQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+TVPx/a50i49JkDqt7i+aaxZ/vBjzFWgUzSKsIu2rdQv4sEIxjZ/1PtlRWSALMNoSiGA1zJxM=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzFfeoL2L+klxl+c5LkrUTFLIsSWUfeEZOseMSVyeS92wI25jWL
+	OmKa5jW0gwZFP6ohMi/hEWmheqc07Xi8Htb8bhsBH89LreOZ8HS5b8w+UAZycTccRi/j9UlmkXr
+	URrxTd5LW8yel8JznU+Y+0cslX5K95FauXrtVnxMJ
+X-Gm-Gg: Acq92OHLTh/aM2FCREcR6yQdjJjKE23W58Ks0Tsa5IEf2zto555Ut3U0tROgIVYFiri
+	sHtp2sndtT73eI8Ki0XuxAXKrFvZiVRI7UhGXjY9fx/RovPFfj8QW253NZC6FshACnNdbJs88sY
+	GpO0FHQd52DHPAOqWlJDb9dWP1pB1fpkdNUw5sxiTY1tHZqy9F554FVU9k//mSLi/SXN3wMxkpz
+	XeaToi/HmZ162oO88sKR80JFdBzRWkcSP1kq1WAcJq/AAxbwYVzcm9iOa3K686H9FFcYa/utwRY
+	DmOLo7wngtqr8dWiTjEqYkjFrbeD/uAEKyMVW3CXkU+rMrXTOIVkR7Kz5c4rXIMfK378QUPMStK
+	tDq3J/4UhdB6QVYg=
+X-Received: by 2002:a05:6808:1211:b0:482:ab19:b1af with SMTP id
+ 5614622812f47-4852ec6ec75mr888441b6e.11.1779349450545; Thu, 21 May 2026
+ 00:44:10 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1f07:b0:696:72c4:5da3 with SMTP id
- 006d021491bc7-69d6ee129d0mr701634eaf.15.1779349156267; Thu, 21 May 2026
- 00:39:16 -0700 (PDT)
-Date: Thu, 21 May 2026 00:39:16 -0700
-In-Reply-To: <20260520150018.2491267-1-riel@surriel.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a0eb6a4.170a0220.55718.0291.GAE@google.com>
-Subject: [syzbot ci] Re: mm: reliable 1GB page allocation
-From: syzbot ci <syzbot+cib9dcfd931f19159c@syzkaller.appspotmail.com>
-To: boris@bur.io, clm@meta.com, david@kernel.org, dsterba@suse.com, 
-	fvdl@google.com, hannes@cmpxchg.org, hnaz@cmpxchg.org, kernel-team@meta.com, 
-	lenb@kernel.org, linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, linux-pm@vger.kernel.org, ljs@kernel.org, 
-	pavel@kernel.org, rafael@kernel.org, riel@surriel.com, surenb@google.com, 
-	usama.arif@linux.dev, willy@infradead.org, ziy@nvidia.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <b552544a-89cd-407a-845c-fbd83d6ba021@mail.kernel.org>
+In-Reply-To: <b552544a-89cd-407a-845c-fbd83d6ba021@mail.kernel.org>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Thu, 21 May 2026 09:43:58 +0200
+X-Gm-Features: AVHnY4KgcVoGi3LjpY6DnZOGyYiV65E392U6AhLsLhlbug7FjiZ6-R1tC99COqs
+Message-ID: <CANp29Y43Bk=mV09_QOZLr9EZcp-17FwcYscG5_tJkkBuJGnFBQ@mail.gmail.com>
+Subject: Re: [PATCH RFC] signal: explicitly unpoison sigqueue in sigqueue_alloc()
+To: syzbot <syzbot@kernel.org>, Alexander Potapenko <glider@google.com>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
+Alexander, could you please check if it's reasonable?
 
-[v1] mm: reliable 1GB page allocation
-https://lore.kernel.org/all/20260520150018.2491267-1-riel@surriel.com
-* [RFC PATCH 01/40] mm: page_alloc: replace pageblock_flags bitmap with struct pageblock_data
-* [RFC PATCH 02/40] mm: page_alloc: per-cpu pageblock buddy allocator
-* [RFC PATCH 03/40] mm: page_alloc: split-path PCP free with local-trylock + remote-llist
-* [RFC PATCH 04/40] mm: mm_init: fix zone assignment for pages in unavailable ranges
-* [RFC PATCH 05/40] mm: page_alloc: remove watermark boost mechanism
-* [RFC PATCH 06/40] mm: page_alloc: async evacuation of stolen movable pageblocks
-* [RFC PATCH 07/40] mm: page_alloc: track actual page contents in pageblock flags
-* [RFC PATCH 08/40] mm: page_alloc: superpageblock metadata for 1GB anti-fragmentation
-* [RFC PATCH 09/40] mm: page_alloc: support superpageblock resize for memory hotplug
-* [RFC PATCH 10/40] mm: page_alloc: add superpageblock fullness lists for allocation steering
-* [RFC PATCH 11/40] mm: page_alloc: steer pageblock stealing to tainted superpageblocks
-* [RFC PATCH 12/40] mm: page_alloc: steer movable allocations to fullest clean superpageblocks
-* [RFC PATCH 13/40] mm: page_alloc: extract claim_whole_block from try_to_claim_block
-* [RFC PATCH 14/40] mm: page_alloc: add per-superpageblock free lists
-* [RFC PATCH 15/40] mm: page_alloc: add background superpageblock defragmentation worker
-* [RFC PATCH 16/40] mm: compaction: walk per-superpageblock free lists for migration targets
-* [RFC PATCH 17/40] mm: page_alloc: superpageblock-aware contiguous and higher order allocation
-* [RFC PATCH 18/40] mm: page_alloc: prevent atomic allocations from tainting clean SPBs
-* [RFC PATCH 19/40] mm: page_alloc: aggressively pack non-movable allocs in tainted SPBs on large systems
-* [RFC PATCH 20/40] mm: page_alloc: prefer reclaim over tainting clean superpageblocks
-* [RFC PATCH 21/40] mm: page_alloc: adopt partial pageblocks from tainted superpageblocks
-* [RFC PATCH 22/40] mm: page_alloc: add CONFIG_DEBUG_VM sanity checks for SPB counters
-* [RFC PATCH 23/40] mm: page_alloc: targeted evacuation and dynamic reserves for tainted SPBs
-* [RFC PATCH 24/40] mm: page_alloc: prevent UNMOVABLE/RECLAIMABLE mixing in pageblocks
-* [RFC PATCH 25/40] mm: trigger deferred SPB evac when atomic allocs would taint a clean SPB
-* [RFC PATCH 26/40] mm: page_alloc: refuse fragmenting fallback for callers with cheap fallback
-* [RFC PATCH 27/40] mm: page_alloc: cross-migratetype buddy borrow within tainted SPBs
-* [RFC PATCH 28/40] mm: page_alloc: drive slab shrink from SPB anti-fragmentation pressure
-* [RFC PATCH 29/40] mm: page_reporting: walk per-superpageblock free lists
-* [RFC PATCH 30/40] mm: show_mem: collect migratetype letters from per-superpageblock lists
-* [RFC PATCH 31/40] mm: page_alloc: per-(zone, order, mt) PASS_1 hint cache
-* [RFC PATCH 32/40] mm: debug: prevent infinite recursion in dump_page() with CMA
-* [RFC PATCH 33/40] PM: hibernate: walk per-superpageblock free lists in mark_free_pages
-* [RFC PATCH 34/40] btrfs: allocate eb-attached btree pages as movable
-* [RFC PATCH 35/40] mm: page_alloc: refuse best-effort high-order allocs servable at lower orders
-* [RFC PATCH 36/40] mm: page_alloc: set ALLOC_NOFRAGMENT on alloc_frozen_pages_nolock_noprof
-* [RFC PATCH 37/40] mm: page_alloc: move spb_get_category and spb_tainted_reserve to mmzone.h
-* [RFC PATCH 38/40] mm: compaction: skip empty tainted superpageblocks as migration source
-* [RFC PATCH 39/40] mm: compaction: respect tainted SPB reserve in destination selection
-* [RFC PATCH 40/40] mm: page_alloc: SPB tracepoint instrumentation [DO-NOT-MERGE]
-
-and found the following issue:
-WARNING in preempt_count_sub
-
-Full report is available here:
-https://ci.syzbot.org/series/8eef71e1-708c-40d0-9f9d-3a1bd637fc80
-
-***
-
-WARNING in preempt_count_sub
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      4b83cbc4c15f09b000cc06f033f64b0824b6dc87
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/de024c89-d472-4f06-b5be-4f75f2acd1d9/config
-
-------------[ cut here ]------------
-DEBUG_LOCKS_WARN_ON(val > preempt_count())
-WARNING: kernel/sched/core.c:5883 at preempt_count_sub+0x9e/0x170, CPU#0: kworker/0:0/9
-Modules linked in:
-CPU: 0 UID: 0 PID: 9 Comm: kworker/0:0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: events drain_vmap_area_work
-RIP: 0010:preempt_count_sub+0xa5/0x170
-Code: 29 31 90 48 c1 e8 03 0f b6 04 18 84 c0 0f 85 88 00 00 00 83 3d ff 50 9d 0e 00 75 13 48 8d 3d 32 37 a0 0e 48 c7 c6 c0 f8 cb 8b <67> 48 0f b9 3a 90 eb b8 90 e8 ed d6 1d 03 85 c0 74 2f 48 c7 c0 c4
-RSP: 0000:ffffc900000e7590 EFLAGS: 00010246
-
-RAX: 0000000000000000 RBX: dffffc0000000000 RCX: ffff8881007d5880
-RDX: 0000000000000000 RSI: ffffffff8bcbf8c0 RDI: ffffffff90341000
-RBP: ffff888121042dc0 R08: ffffffff903129c3 R09: 1ffffffff2062538
-R10: dffffc0000000000 R11: fffffbfff2062539 R12: 0000000000000020
-R13: dffffc0000000000 R14: ffff888121042d80 R15: ffff88815fffbae8
-FS:  0000000000000000(0000) GS:ffff88818dc7e000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffff88823ffff000 CR3: 000000000e74a000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- free_frozen_page_commit+0x737/0x1290
- __free_frozen_pages+0x873/0x1070
- kasan_depopulate_vmalloc_pte+0x6d/0x90
- __apply_to_page_range+0xbdc/0x1420
- __kasan_release_vmalloc+0xa2/0xd0
- purge_vmap_node+0x220/0x960
- __purge_vmap_area_lazy+0x779/0xb40
- drain_vmap_area_work+0x27/0x40
- process_scheduled_works+0xb5d/0x1860
- worker_thread+0xa53/0xfc0
- kthread+0x388/0x470
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+On Thu, May 21, 2026 at 3:22=E2=80=AFAM 'syzbot' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
+>
+> A false positive KMSAN kernel-infoleak-after-free report can occur when
+> a BPF program executes while KMSAN is in its internal runtime state
+> (kmsan_in_runtime() =3D=3D true).
+>
+> When bpf_send_signal() is called from a BPF program, it allocates a new
+> sigqueue via sigqueue_alloc(). If this happens while KMSAN is in its
+> runtime state (for example, when a BPF program is attached to a
+> tracepoint triggered during KMSAN's internal operations), KMSAN ignores
+> all instrumentation to prevent deadlocks and infinite recursion. As a
+> result, the newly allocated sigqueue is not unpoisoned by
+> kmem_cache_alloc(), nor is it unpoisoned by subsequent initialization
+> like clear_siginfo().
+>
+> Later, when the signal is dequeued, the siginfo is copied to the local
+> stack, propagating the stale poison. This eventually leads to a false
+> positive kernel-infoleak-after-free report when the siginfo is copied to
+> user space.
+>
+> Fix this by explicitly unpoisoning the allocated sigqueue in
+> sigqueue_alloc() using kmsan_unpoison_memory(). Unlike standard KMSAN
+> instrumentation, kmsan_unpoison_memory() bypasses the kmsan_in_runtime()
+> check and safely unpoisons the memory. This is safe because q->info is
+> always fully initialized immediately after sigqueue_alloc() in
+> __send_signal_locked(). If copy_siginfo() is used and kmsan_in_runtime()
+> is false, memcpy() will still copy any uninitialized bytes from the
+> source info to q->info, ensuring that real bugs and infoleaks are still
+> caught.
+>
+> Fixes: f80be4571b19 ("kmsan: add KMSAN runtime core")
+> Assisted-by: Gemini:gemini-3.1-pro-preview
+> Reported-by: syzbot+cfc08744435c4cf94a40@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3Dcfc08744435c4cf94a40
+> Link: https://syzkaller.appspot.com/ai_job?id=3D2e44af35-fdc2-4fc3-90b2-1=
+d6176362a03
+> To: <linux-kernel@vger.kernel.org>
+> Cc: "Adrian Huang (Lenovo)" <adrianhuang0701@gmail.com>
+> Cc: "Andrew Morton" <akpm@linux-foundation.org>
+> Cc: "Christian Brauner" <brauner@kernel.org>
+> Cc: "Kexin Sun" <kexinsun@smail.nju.edu.cn>
+> Cc: "Oleg Nesterov" <oleg@redhat.com>
+> Cc: "Peter Zijlstra (Intel)" <peterz@infradead.org>
+> Cc: "Thomas Gleixner" <tglx@kernel.org>
+>
+> ---
+> diff --git a/kernel/signal.c b/kernel/signal.c
+> index 2d102e025..0ead5d607 100644
+> --- a/kernel/signal.c
+> +++ b/kernel/signal.c
+> @@ -48,6 +48,7 @@
+>  #include <linux/audit.h>
+>  #include <linux/sysctl.h>
+>  #include <uapi/linux/pidfd.h>
+> +#include <linux/kmsan-checks.h>
+>
+>  #define CREATE_TRACE_POINTS
+>  #include <trace/events/signal.h>
+> @@ -459,6 +460,7 @@ static struct sigqueue *sigqueue_alloc(int sig, struc=
+t task_struct *t, gfp_t gfp
+>         }
+>
+>         __sigqueue_init(q, ucounts, 0);
+> +       kmsan_unpoison_memory(q, sizeof(*q));
+>         return q;
+>  }
+>
+>
+>
+> base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to send it to the mailing list.
+> Reply with '#syz reject' to reject it.
+>
+> See https://github.com/google/syzkaller/blob/master/docs/syzbot_ai_patche=
+s.md for more information.
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/b552544a-89cd-407a-845c-fbd83d6ba021%40mail.kernel.org=
+.
