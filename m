@@ -1,169 +1,187 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9990536728D
-	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 18:53:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 118A43909B8
+	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 22:36:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779476013; cv=none; b=RtCbmQK7QIvFN5YUpaBfTG5ASam/+QQrE6/PV5D9JU+tZG8QeqPC4L+qIMlClDAMmZn80HmBjqfgSpStbvnY2uWIKGUONP0FPrCbqi3Kgw0yiJjI0GRYi5ezApIb/LC4xUatHbsRGpQ4GX53o/Ndf/syd9yY+IN6O33MdSXNe2Q=
+	t=1779489391; cv=none; b=IxnBL/h1Nn9HnTSelWJwUWxV0K/A3oAm4Ss7R4/FiXJZEAh1tRnrsmmvqcT6vH30Dsx9odRBBIi0wD/3B/ZqPZ4BALV7QJlQSnh4wyt+F1AhrE3kynuGMupScGD1VeUkoiLoPIs0T6hJxElLAPuc1Dq6S0iyTb+hfyyX4a5q5ec=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779476013; c=relaxed/simple;
-	bh=LempnC5ZFpZNSCocMBaBBMaWQ/Q+Zmb2bLrMU5BwLGQ=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=mJ62Ps36EKEABzRgUJoPXdnppKWv92XilWlQqjiutXERvyTs4liz6zqnhmBdmZg4ZQ+YqyZKdSpFFzTg4lVctstN4NXQq/YYBgs1f6awODRu9g1V2FVPv+3eoWkzlJCyUu0bEAArkwF7misgFawTD1E1EuTC4+YpZR2AucRFRl0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mT21ir4n; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mT21ir4n"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 3EA5F1F000E9;
-	Fri, 22 May 2026 18:53:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779476012;
-	bh=E+VL3dh8KKNSggNCQgvdOUAtLiC+RzSzTenLoGO4atI=;
-	h=From:To:Cc:Subject:Date;
-	b=mT21ir4nezH7gvtmro4Mi9iObyksr4LJUsSLP9YtGzHdR4sjfIKNO/FzdgXYdVGSg
-	 JxvNr7NQ7moP9KNw76yco3Aki+tVI9wD2uimp5+k3v9swudRP+DYwXL1d3m4e4D/wx
-	 1HQaFdVu/2+X+6yH8PTUt6enwWV+0Nt5y2GKCM4tdzDrkWv6JYKDPWIHI+QvHiJcZO
-	 F/tQDig4MmSt+17gNYt2JdleayxArWYmXjBy2vpH2D4ekh7Zy8HYpRKMR/QmpoMZrW
-	 S4EeUNTKJskUX9vv7OSGDPXsKcoH6Vg0ITlfKb7V/GblRR9sQNnv32+Nm1h73Azljg
-	 87PXmnNA5FxKA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] btrfs: fix double free of data space reservation on direct IO error
-Message-ID: <966ef17f-f80c-468a-b763-53470ff4cf1c@mail.kernel.org>
+	s=arc-20240116; t=1779489391; c=relaxed/simple;
+	bh=Js4+ZqqGKaA+ylTswIPE++azP9KQa8UPbBMm6W1QsgE=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Nz4fN+ePkG1i3Rn6w86KE+gQnSQ4mbnXv86X65U4JruxWhWR7/s9hW4aPNW/PWSAuyizYRaIQtE4JHhk+Zwnv4cdNngcz3e4qQRFsWXk2F6f+qA7lILifcKxniad0v1k0L4Dt3FeBdW3cFOfI97ubn/qf22vBoC7qKIgCs2Dhfw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-43b469c6e24so3644041fac.1
+        for <syzbot@lists.linux.dev>; Fri, 22 May 2026 15:36:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779489389; x=1780094189;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ztS3vKbpzyqP0R8T9str5BGlznxsW04H2RPAh8WRm7Q=;
+        b=njkgqSF7b5dTL9vOrq0zAaVZnn9k6r2/yhmlMa1t///hF/EVNxCaQqTd+F9ZhT19s1
+         8ynfPnioIJpQ9F3f8fMDEL5YbuRsZRvgBX/eNtHiA7lIfWNSWusuY7qAHeHoCcqPd8g5
+         M5J0JMccmDpCA8MzXgBEBHkyUvuyqtL0aSok9QpBAtk9DeVEu/1Ml7Ry1A4x7LKo37L9
+         PW0aQwmiYJOITNtD9rZCCFJ2hz3poxBYWk2qhiVr4BQCyiKKzUCDO3GSl9N/zFTtsebg
+         1YfElnw9ETOZyPei02DyGohX1v5X0pr8fWU+XkOhkfNDadDlIZS7wB8/4A71C+jt1weA
+         2Vwg==
+X-Gm-Message-State: AOJu0YzCybrxfxeR2rtydKCOm2gLo1MNQlWmL5dZvaX6HeYvFSO5/cHV
+	DgZBwDRGJ+zbyC6OQNMdB7xeXYRCIILIN9K55CkZbKj7Ns4mGNMyrJBWtt3TP8x+uhNdWXi45E+
+	rzBOebLNgqtG5KKrfIwl5DPBZYfiWWOLOV58wyepQeE2A4GDWwmi3hMITSzk=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri, 22 May 2026 18:53:32 +0000 (UTC)
+X-Received: by 2002:a05:6820:2004:b0:699:a77e:8783 with SMTP id
+ 006d021491bc7-69d7ec97a5amr2409008eaf.47.1779489389041; Fri, 22 May 2026
+ 15:36:29 -0700 (PDT)
+Date: Fri, 22 May 2026 15:36:29 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a10da6d.050a0220.3c3a9.0003.GAE@google.com>
+Subject: [moderation/CI] Re: rtnetlink: RTNL avoidance in rtnl_getlink() and rtnl_dump_ifinfo()
+From: syzbot ci <syzbot+cia53038b9c9ac18e9@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-When a Direct I/O write begins, btrfs_dio_iomap_begin() reserves
-data_alloc_len bytes of data space by calling
-btrfs_check_data_free_space(). This increments the bytes_may_use counter
-in the appropriate data space_info. Later,
-btrfs_get_blocks_direct_write() calls btrfs_new_extent_direct() to
-allocate an extent. Inside btrfs_new_extent_direct(),
-btrfs_reserve_extent() is called, which successfully allocates an extent
-of size ins.offset on disk and converts ins.offset bytes from
-bytes_may_use to bytes_reserved (via btrfs_add_reserved_bytes()). Next,
-btrfs_new_extent_direct() calls btrfs_create_dio_extent(). If this fails
-(e.g., due to memory allocation failure), btrfs_new_extent_direct()
-calls btrfs_free_reserved_extent() to free the allocated extent.
-btrfs_free_reserved_extent() decrements bytes_reserved by ins.offset,
-effectively freeing the space. However, it does not restore the
-ins.offset bytes back to bytes_may_use.
+syzbot ci has tested the following series
 
-The error propagates back to btrfs_dio_iomap_begin(), which jumps to the
-error handling path. Because dio_data->data_space_reserved is still
-true, it calls btrfs_free_reserved_data_space() for the entire
-data_alloc_len. This function blindly decrements bytes_may_use by
-data_alloc_len. Since ins.offset bytes were already converted to
-bytes_reserved and freed, decrementing bytes_may_use by the full
-data_alloc_len causes bytes_may_use to be decremented by ins.offset
-twice. This underflows the counter, triggering a warning in
-btrfs_space_info_update_bytes_may_use().
+[v4] rtnetlink: RTNL avoidance in rtnl_getlink() and rtnl_dump_ifinfo()
+https://lore.kernel.org/all/20260522173002.2181677-1-edumazet@google.com
+* [PATCH v4 net-next 1/5] rtnetlink: use nla_nest_end_safe() in rtnl_fill_prop_list()
+* [PATCH v4 net-next 2/5] net: defer netdev_name_node_alt_flush() call to netdev_run_todo()
+* [PATCH v4 net-next 3/5] rtnetlink: do not acquire RTNL in rtnl_getlink() with RTEXT_FILTER_NAME_ONLY
+* [PATCH v4 net-next 4/5] rtnetlink: do not assume RTNL is held in link_master_filtered()
+* [PATCH v4 net-next 5/5] rtnetlink: add RTEXT_FILTER_NAME_ONLY support to rtnl_dump_ifinfo()
 
-To fix this, btrfs_new_extent_direct() must restore the ins.offset bytes
-back to bytes_may_use when btrfs_create_dio_extent() fails. This ensures
-that when the error propagates up, btrfs_dio_iomap_begin() can safely
-free the entire data_alloc_len from bytes_may_use. Introduce a new
-helper function, btrfs_add_reserved_data_space_noquota(), which
-correctly uses data_sinfo_for_inode() to select the right space_info
-(handling zoned data relocation roots) and directly updates
-bytes_may_use without triggering unnecessary ticket granting. Call this
-new helper in the error path of btrfs_new_extent_direct().
+and found the following issue:
+WARNING in rtmsg_ifinfo_build_skb
 
-Fixes: 18513091af94 ("btrfs: update btrfs_space_info's bytes_may_use timely")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+9064acebb06685edb243@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=9064acebb06685edb243
-Link: https://syzkaller.appspot.com/ai_job?id=343be34d-df17-4e23-82ac-9918e4cd4783
-To: "Chris Mason" <clm@fb.com>
-To: "David Sterba" <dsterba@suse.com>
-To: <linux-btrfs@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+Full report is available here:
+https://ci.syzbot.org/series/583940d4-d5e9-48ca-a2e6-544edbb1d63c
+
+***
+
+WARNING in rtmsg_ifinfo_build_skb
+
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      1a1f055318d82e64485a6ff8420e5f70b4267998
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/513a249e-70b7-4622-8d72-6f62840955c7/config
+
+pci 0000:00:01.0: BAR 2 [mem 0xfebf0000-0xfebf0fff]
+pci 0000:00:01.0: ROM [mem 0xfebe0000-0xfebeffff pref]
+pci 0000:00:01.0: Video device with shadowed ROM at [mem 0x000c0000-0x000dffff]
+pci 0000:00:02.0: [1af4:1005] type 00 class 0x00ff00 conventional PCI endpoint
+pci 0000:00:02.0: BAR 0 [io  0xc080-0xc09f]
+pci 0000:00:02.0: BAR 1 [mem 0xfebf1000-0xfebf1fff]
+pci 0000:00:02.0: BAR 4 [mem 0xfe000000-0xfe003fff 64bit pref]
+pci 0000:00:03.0: [8086:100e] type 00 class 0x020000 conventional PCI endpoint
+pci 0000:00:03.0: BAR 0 [mem 0xfebc0000-0xfebdffff]
+pci 0000:00:03.0: BAR 1 [io  0xc000-0xc03f]
+pci 0000:00:03.0: ROM [mem 0xfeb80000-0xfebbffff pref]
+pci 0000:00:1f.0: [8086:2918] type 00 class 0x060100 conventional PCI endpoint
+pci 0000:00:1f.0: quirk: [io  0x0600-0x067f] claimed by ICH6 ACPI/GPIO/TCO
+pci 0000:00:1f.2: [8086:2922] type 00 class 0x010601 conventional PCI endpoint
+pci 0000:00:1f.2: BAR 4 [io  0xc0a0-0xc0bf]
+pci 0000:00:1f.2: BAR 5 [mem 0xfebf2000-0xfebf2fff]
+pci 0000:00:1f.3: [8086:2930] type 00 class 0x0c0500 conventional PCI endpoint
+pci 0000:00:1f.3: BAR 4 [io  0x0700-0x073f]
+ACPI: PCI: Interrupt link LNKA configured for IRQ 10
+ACPI: PCI: Interrupt link LNKB configured for IRQ 10
+ACPI: PCI: Interrupt link LNKC configured for IRQ 11
+ACPI: PCI: Interrupt link LNKD configured for IRQ 11
+ACPI: PCI: Interrupt link LNKE configured for IRQ 10
+ACPI: PCI: Interrupt link LNKF configured for IRQ 10
+ACPI: PCI: Interrupt link LNKG configured for IRQ 11
+ACPI: PCI: Interrupt link LNKH configured for IRQ 11
+ACPI: PCI: Interrupt link GSIA configured for IRQ 16
+ACPI: PCI: Interrupt link GSIB configured for IRQ 17
+ACPI: PCI: Interrupt link GSIC configured for IRQ 18
+ACPI: PCI: Interrupt link GSID configured for IRQ 19
+ACPI: PCI: Interrupt link GSIE configured for IRQ 20
+ACPI: PCI: Interrupt link GSIF configured for IRQ 21
+ACPI: PCI: Interrupt link GSIG configured for IRQ 22
+ACPI: PCI: Interrupt link GSIH configured for IRQ 23
+iommu: Default domain type: Translated
+iommu: DMA domain TLB invalidation policy: lazy mode
+SCSI subsystem initialized
+ACPI: bus type USB registered
+usbcore: registered new interface driver usbfs
+usbcore: registered new interface driver hub
+usbcore: registered new device driver usb
+mc: Linux media interface: v0.10
+videodev: Linux video capture interface: v2.00
+pps_core: LinuxPPS API ver. 1 registered
+pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+PTP clock support registered
+EDAC MC: Ver: 3.0.0
+Advanced Linux Sound Architecture Driver Initialized.
+------------[ cut here ]------------
+err == -EMSGSIZE
+WARNING: net/core/rtnetlink.c:4524 at rtmsg_ifinfo_build_skb+0x218/0x260, CPU#0: swapper/0/1
+Modules linked in:
+CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:rtmsg_ifinfo_build_skb+0x218/0x260
+Code: f6 ba 01 00 00 00 89 e9 e8 45 ac 3a 00 4c 89 f0 48 83 c4 30 5b 41 5c 41 5d 41 5e 41 5f 5d c3 cc cc cc cc cc e8 39 dc 40 f8 90 <0f> 0b 90 eb 90 89 d9 80 e1 07 fe c1 38 c1 0f 8c 95 fe ff ff 48 89
+RSP: 0000:ffffc90000067438 EFLAGS: 00010293
+RAX: ffffffff8984e887 RBX: 0000000000000000 RCX: ffff8881026f5880
+RDX: 0000000000000000 RSI: 00000000ffffffa6 RDI: 00000000ffffffa6
+RBP: 00000000ffffffa6 R08: ffffffff8984f746 R09: 0000000000000000
+R10: fffff5200000ce30 R11: ffffed1020c50405 R12: 1ffff11020c51c21
+R13: 0000000000000000 R14: ffff888103a82480 R15: ffff88810628e000
+FS:  0000000000000000(0000) GS:ffff88818dc76000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffff88823ffff000 CR3: 000000000e74a000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ rtmsg_ifinfo+0x8c/0x1a0
+ register_netdevice+0x1aca/0x1ec0
+ register_netdev+0x40/0x60
+ loopback_net_init+0x75/0x150
+ ops_init+0x35c/0x5c0
+ register_pernet_operations+0x343/0x830
+ register_pernet_device+0x2a/0x80
+ net_dev_init+0x973/0xa90
+ do_one_initcall+0x250/0x870
+ do_initcall_level+0x104/0x190
+ do_initcalls+0x59/0xa0
+ kernel_init_freeable+0x2a6/0x3e0
+ kernel_init+0x1d/0x1d0
+ ret_from_fork+0x514/0xb70
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v2:
-- Resending the patch as requested by the reviewer to test functionality.
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v1:
-https://lore.kernel.org/all/07963d2a-cd0f-4940-a5bc-33dd8f425781@mail.kernel.org/T/
----
-diff --git a/fs/btrfs/delalloc-space.c b/fs/btrfs/delalloc-space.c
-index 0970799d0..7cfb829a3 100644
---- a/fs/btrfs/delalloc-space.c
-+++ b/fs/btrfs/delalloc-space.c
-@@ -189,6 +189,24 @@ void btrfs_free_reserved_data_space_noquota(struct btrfs_inode *inode, u64 len)
- 	btrfs_space_info_free_bytes_may_use(data_sinfo_for_inode(inode), len);
- }
- 
-+/*
-+ * Restore a data reservation for this inode.
-+ * Normally called when a reservation was converted to bytes_reserved but the
-+ * subsequent operation failed, so the bytes need to be restored to bytes_may_use
-+ * so the caller can free them.
-+ */
-+void btrfs_add_reserved_data_space_noquota(struct btrfs_inode *inode, u64 len)
-+{
-+	struct btrfs_fs_info *fs_info = inode->root->fs_info;
-+	struct btrfs_space_info *sinfo = data_sinfo_for_inode(inode);
-+
-+	ASSERT(IS_ALIGNED(len, fs_info->sectorsize));
-+
-+	spin_lock(&sinfo->lock);
-+	btrfs_space_info_update_bytes_may_use(sinfo, len);
-+	spin_unlock(&sinfo->lock);
-+}
-+
- /*
-  * Called if we need to clear a data reservation for this inode
-  * Normally in a error case.
-diff --git a/fs/btrfs/delalloc-space.h b/fs/btrfs/delalloc-space.h
-index 6119c0d3f..58ecfad7b 100644
---- a/fs/btrfs/delalloc-space.h
-+++ b/fs/btrfs/delalloc-space.h
-@@ -19,6 +19,7 @@ void btrfs_delalloc_release_space(struct btrfs_inode *inode,
- 				  struct extent_changeset *reserved,
- 				  u64 start, u64 len, bool qgroup_free);
- void btrfs_free_reserved_data_space_noquota(struct btrfs_inode *inode, u64 len);
-+void btrfs_add_reserved_data_space_noquota(struct btrfs_inode *inode, u64 len);
- void btrfs_delalloc_release_metadata(struct btrfs_inode *inode, u64 num_bytes,
- 				     bool qgroup_free);
- int btrfs_delalloc_reserve_space(struct btrfs_inode *inode,
-diff --git a/fs/btrfs/direct-io.c b/fs/btrfs/direct-io.c
-index 57167d56d..04cdf11d8 100644
---- a/fs/btrfs/direct-io.c
-+++ b/fs/btrfs/direct-io.c
-@@ -205,8 +205,14 @@ static struct extent_map *btrfs_new_extent_direct(struct btrfs_inode *inode,
- 	em = btrfs_create_dio_extent(inode, dio_data, start, &file_extent,
- 				     BTRFS_ORDERED_REGULAR);
- 	btrfs_dec_block_group_reservations(fs_info, ins.objectid);
--	if (IS_ERR(em))
-+	if (IS_ERR(em)) {
- 		btrfs_free_reserved_extent(fs_info, ins.objectid, ins.offset, true);
-+		/*
-+		 * btrfs_reserve_extent() converted the bytes from bytes_may_use to
-+		 * bytes_reserved. We need to restore them so the caller can free them.
-+		 */
-+		btrfs_add_reserved_data_space_noquota(inode, ins.offset);
-+	}
- 
- 	return em;
- }
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
 
-base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+The email will later be sent to:
+[davem@davemloft.net edumazet@google.com eric.dumazet@gmail.com horms@kernel.org kuba@kernel.org kuniyu@google.com netdev@vger.kernel.org pabeni@redhat.com]
 
-See https://github.com/google/syzkaller/blob/master/docs/syzbot_ai_patches.md for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
