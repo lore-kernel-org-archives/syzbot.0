@@ -1,367 +1,232 @@
-Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92AC61A9B24
-	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 12:04:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 391DE393DEE
+	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 13:01:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.181
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779451492; cv=pass; b=U/1Xa3w/YgnyYTFcXQ8dy1qD9Coh3GojJJAujhKHyb+qhvlunNB660k0sBcCf9Em/EDBty6AXBm4SX9Dt0Q0uFl9ftJm5aLM+c6E6ph/KSv4M6wAYBFMkKw4ix48f15D2EXw5hKXEkY5/jWCBtSl9SeljmZ37MbAiOY0bJRgG4A=
+	t=1779454907; cv=pass; b=hZWhFOFCwDQE4As6CxwPXp3/psTWc0EwDJdS244gXvQ2HTdRpPBSskNPJCIeFouLrbXIlvyx2e7ljEmox/qTMxqtjT3XO15PXp6810GzA9oMSu6UUfVDStYwBpK7k28Kz/gZOnyaVrOCoZfzGIsKKFVN7xxepm6jCKXvlmk4K0M=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779451492; c=relaxed/simple;
-	bh=/vgncX3kY3VH4Vn/qtv+vbNTYylgm4yzom/Efqwqt/E=;
+	s=arc-20240116; t=1779454907; c=relaxed/simple;
+	bh=v9VeygxB8VRkxrsFSyD6qtbhU8qO7ihmxU7W4dMafCY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=PYPmJrUd0UVr6l2SyLi2cz5kHDwiDmMM7yEH1Sw7isRZldp9f1CLVyR0M3Yo6Y+xW+53KNYBT10cvZklCHIzYnfX8gHhHssRHfS3M7ngLbffTegsISFfyKmAhwCQCVH613frGKB/z7mfzC4qSeQxpCgar3/W6//Lu/xNhgptR58=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tVHCmFOC; arc=pass smtp.client-ip=209.85.161.48
+	 To:Cc:Content-Type; b=gI3Cdyh6LWGYDqQtXEsd9x2LkDjXsIZmD+9n4A5XhypfS+ln0z+4bJekRc3uFGTDnKqsxWyK94G+W4W5pVXu99UX+me/fX/HBSk1bwA6aEJN9Bdp0k8NHxolAgi3AJvOO0IDUWduaEBVfYi5GxyK4tmDCxTvUmCRFlXyM01wJ7c=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GuXHGdrX; arc=pass smtp.client-ip=209.85.167.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tVHCmFOC"
-Received: by mail-oo1-f48.google.com with SMTP id 006d021491bc7-69d7b0be378so530524eaf.0
-        for <syzbot@lists.linux.dev>; Fri, 22 May 2026 05:04:50 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779451489; cv=none;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GuXHGdrX"
+Received: by mail-oi1-f181.google.com with SMTP id 5614622812f47-479fc1fc048so5837340b6e.1
+        for <syzbot@lists.linux.dev>; Fri, 22 May 2026 06:01:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779454905; cv=none;
         d=google.com; s=arc-20240605;
-        b=A8/Dqm4JNaMjHnmeWDgUrY9wjwAswfWQOD1P5Yh+kdyWCIiVJFCInEYkBrww0NEXeQ
-         jiYh/cS6SZ5feLgAhQkJt8gFwAWfvojKdlk+LzG+tWn0m8qdfMkV/8dxliV8hsrL0ceL
-         HoFzKeYkKuJpHPxhc2fO/RmVx71h7hZsgKF4bNJHiGn5GmVRYss3q+W/t/SMjWNyAzhb
-         tACjdcN5TTH2qQeJvzYGMIimrdlM/aEekCKkDPFIItLceqx4Z/DJTlZHQtiOBIzn/VkQ
-         zq9cFnFXasEeaB1Ia5WnK9GOc9B/hPH4O3KVHz5anjOlBo/xDfIfOBmRJ47FqdP/jptR
-         wUww==
+        b=HTLP847HzN6D4WyBBINL1v4KEOzGo2vvT7JDKmHRKrzks/O3LVPLxqhO/HkShAstVd
+         0peO2lHzClGtu1WoRZzaZgqSS/y2DEeIb9fit26NdlsQCLLvL81iS6ntRUkZqX7TFHAv
+         h0pio1kDfZGPq+KnCBsJWjo/wu0KfIcuxjC4mJD0X158aCUsX5WLbPMaHnkVXQc+gLeW
+         pv/1nqbNWwonppWdRVeehu3pDpqUwqMtFpzL3BEjJcNDS2zO9UOhLEGo0t3+8LtmSERT
+         HZxyonehkyvL2c5biyYhTW8fL5Ae2H0mYBVr1Wdo8akaFruREmcVI0rPwRvGNCtHNUCh
+         8bhw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=3ljf/MJMu7l0s0DrZLAXDoY+8OpTO5QHZzGBC7mUf3w=;
-        fh=RyCYVzhptLSL5QCEZuXaaBEgqwxqj2bvtgDzGDvVAVs=;
-        b=KOkOP75IedxpVHaTCqBkXfCRT7tepSb1uULD/S2jMc3dbp9YXOKHy1Hu6kDiGCbADV
-         Pn+2r3sIBj79dsHzWcliXfXS9dsVWh7PDSCBVQAz6D+fWwJG7++Go16A63YZnCkNqToh
-         Sg2dRUPrGJRu8kroh48nEUwrAiOPs4TgjD3TDSjbKjLV4UzbZKamcm8mdRvHOgA4GZYD
-         UA6T+oPpWcXlfuta5d3k8EsSHECj5/ewXwArm9wl6qhLA9yICCvz1nIMIexz6yAyQ0aR
-         GFQ+ilB5cOUiwOpz7FsfVPmluspMIETHdrLFehTgfeNCZs5Np97oYM0ZoJ67/TLtWITY
-         edXg==;
+        bh=kwmG2Mfr3nd7uuJaYbkuHCDF16Kj5PNjjXSmMsBOpzE=;
+        fh=dI6d4fIqKm5Z4nIhHr87ryNxGlYcowY5D4vZtBjCwyU=;
+        b=VEXX52abVfg3YLpAckIZdvkCrInAnP5g1jwe0xKY5nwOZFiAuFN7lkvysOHNojzTKV
+         ocmg5CxM1e6cTpkWi6sOcLRFNMliJXoVWo92Jb4bBE7ypIIuBNeaaxmskZ89NpmUrVEP
+         c5YhRPyRqF2xZ0eJ0SYJsUbFsRnDMQk0h85//x5VzDncaFKeAK+d5wmUu4oqLaGOi+eX
+         7dOuG5bmpOr38mv+ZVy8law7QR4ys05ztFlb7XAILxJxc0mQQ1IXdUJ/x1hURKvjkqPq
+         1f/w0e2zWUwnrQd21k553HikQL5uoRduRyfxnpfKEnqri90r31sMsBujm/0UNRxAbwKm
+         fIUw==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779451489; x=1780056289; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1779454905; x=1780059705; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=3ljf/MJMu7l0s0DrZLAXDoY+8OpTO5QHZzGBC7mUf3w=;
-        b=tVHCmFOCmw/lXSR/A/BDd1QUO10ba6vujb12KpnlZJ7mjUj5liPeEHCNsv93Xe/6+l
-         Tr2OaEXBvcN+9VucTSe9U4ZmxRQGVv+PmRiOE9VHk1mamk62iZYzBmyWrTjXexIY5J3W
-         SC9ilTNLvZ5JFrIbfFEsqXF6vzrttlxhAeUw8enJH3kyGKhVYyPVzKt0jrTSzDY9WGwo
-         0IJFdFoDjTd09XElZGb/jHlC2pNy3ENjIcN1s54Qw3cJupUFV8eEsI6Sls6PT0pf8Y1O
-         N3F/5hXz5Zpa+WLCa32qCcqxaEmXvtCctbaJ0hPelcEHKW0A+G3hlsE88t14ybQPD/6O
-         usIg==
+        bh=kwmG2Mfr3nd7uuJaYbkuHCDF16Kj5PNjjXSmMsBOpzE=;
+        b=GuXHGdrXtCCR0K107yFgL0B9fghrG4rcZ+BrQxzEAtNq/CEpYQbDfgOAXXTR5Me8+A
+         x2xBSR1yZ3cx4T1dZ2AnkHKVWGj7yqMzdRJF7vGzbE14IJumHsfEy5nH+Qn6luPSbyrs
+         kwS4FwvAwm99ViXEtTc1Ld4BMcTbo24/Hj4XNn64s0TNfJcdY3wlLKWiLmuWXi7OxPwt
+         RlpGtoYQBBMT5yoXWi567ZAZ70y0Cv9BOHbvcXIedsX4lHwtqK+ZmsIh5Xo/PI1f8LaH
+         CEO2c8giHtUmqFPTEGVb5p3RyuDoK1rnWa0/NcyKXyW6Ssam72SOaQAfuuRQtYlMzfio
+         /i2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779451489; x=1780056289;
+        d=1e100.net; s=20251104; t=1779454905; x=1780059705;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=3ljf/MJMu7l0s0DrZLAXDoY+8OpTO5QHZzGBC7mUf3w=;
-        b=cjN947SfXJTznOG4tU+u9zcr3ItwzU+BbmYO07PImnqx+OkUk14IbUOkIEDnPUE/1q
-         ytW17CVb6BEModLsyHQtiO8DBNdka8xHOd4TcvFnPxMDX5WRwItWzahEUD2EpHl1Q8jJ
-         E4znL/aIDHqZ6xP78Y38ry8u48KkJhN8HHrEG477N1uyau8LZsE8HAOfkfv3lN/EBfhv
-         5MQEXQXJXT/Djmatm9n4GpTi6D+k52OVsCj5ozgqgo4JjAOmNmEPuk6r+lO0Cqan+AaI
-         yeBBvkzpG8B4BBlW48JVVleF776rnah/mMa8P18B+1nIUwKdiFxfpO4Bvm4RG/fDIc0Z
-         X7TA==
-X-Forwarded-Encrypted: i=1; AFNElJ/DyyZSyd1S2iRXo5IPRS8F42Boyf7PrB0HyVFizmuhWfyBMwpJ4Kc/iFw4ZnfOXQxc3ReqWqA=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzpzVBx9ZYXp21fAG4laAyiXA1xaXihtY5B7hDa058rBrGvLFPJ
-	LJVU+T0Pz819NA89njLxam5MFNnXaAK3bejs1RRIg6XD1Qz43+vWzIXWxEHpLpLmb1BdaRxINOY
-	/NUeuqjYQCGBghUMgBjEfH+Y3J90WV3I0wG2OPiDO
-X-Gm-Gg: Acq92OFrUQbls/5w1j+C9XYb5DBCEiPRnqOSwyloOJhG+VXQXeRBdhBUjnZPEbURp2i
-	9i+n+7F3Dqi2N/cJg5IT/d71AXcsJh1BplGbsfCBOhq+62UvEuNaR9Wu/TUvPK++Gz4cPt0P8/x
-	ew1/mJB/lcvh6TkJXxEvHvz6krcnxx38Mw5up92/zo+XXszhcyTj4mZNAiMimg5AzdUD1a5l0Ib
-	2+wrV+yh83qcTMRf0R+xkxTiUbzL5UVlhsevmAgtZXNgqSnHp54KYkMK115wpvrjVeISVBFBOmW
-	0gcdaTNczzXPWCPTltaRAUIjejC8pMuDikcJkdI1Gg06uzQcm21g97ROtO1TqcZ2vNE1mpelRu7
-	/P3l4
-X-Received: by 2002:a4a:edca:0:b0:696:63bb:f004 with SMTP id
- 006d021491bc7-69d7ebc5c9amr1637414eaf.27.1779451489033; Fri, 22 May 2026
- 05:04:49 -0700 (PDT)
+        bh=kwmG2Mfr3nd7uuJaYbkuHCDF16Kj5PNjjXSmMsBOpzE=;
+        b=SdjZCPGudFgHJLG1BgD5gBeU52D2WntYPFq2iQAzEeIfjMVNohFZnfNUZ3TF5L3X4F
+         jA7Zo2Gl5Jl9Nrx7GBDsPdcmoHqPEhVChKv2+/GyPbLYqSHhd2tB7x93fiY0v9s43OsJ
+         hqSajoEKuy2ZV5HJAdUHCZ0bp8pUkDSldHB6QKfuP9/3kIZuvvW0G81i2IeTqamXF2bF
+         ccYuBju9sDWxks7ilPNYVqt/hEbagQWKRkxsq3c1kDfJU6RheLX4XvmhooPgTwahtHEV
+         jvD6YRr/Ms68hcEvxLHqQ2rSXgZSyrSoS59W2kXSD7dFI7kP0TteUwrC423ddHLb03wk
+         FRcw==
+X-Forwarded-Encrypted: i=1; AFNElJ//vhXMvm9YZc66fMGzhNmvtjNVZJiuGYGiz5MrtzF4flcnAIL9lo/KvxjLxn4dCUv6Gq+3Wtk=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx7sY9Zj9fo6ajZmXsy0F3Sho4X47V7WR09cIXoQT4fRtU1IIBk
+	K6qmxDLtAlyFPTVVwkBGxxqJiuvy5mdUIn20Z4QfGgyV8mZ/UypAQ6TMhr+u0DOZK96XuYkm62s
+	YKcn3Vj+nmar116HBzcSCdgu2A3RGkP/Z17FNB/aN
+X-Gm-Gg: Acq92OGLFluYQ76UrScn6QSJfrUV8KirTIz1nY8cXVUlt1VD8mdHz5qfhY6ul/APVE9
+	BhtjxhhDRIGh3ZTjVNxCWFc3zIoLre0Aas7uATGZBVza5c05Ntza0Ec3uEe7Cwbw1ygZx7qmiK7
+	2UBh+g/9G5JKeGafDlURuxmvw8tV2Gu9NMA5ZLGT/nGXpq4VtIvzpa3L5rQgLnrBUNRsvQcyUwX
+	MVdvRErmBtOEMUwclwXvpZww6gpPtX0pPir/6fs1rzNuShNIFXMphj/Cz6YbMzsIqOIEaXJ4QCZ
+	caKq4ljsKhshr7PMnB1+ShUrh9mC+gazfUs0/WDx3GUdO+v5aHNSBPMjtFiJvY+VyW8VratUtEk
+	jpaYk
+X-Received: by 2002:a05:6808:4fe6:b0:485:29d7:70a8 with SMTP id
+ 5614622812f47-4854a3af9femr1940398b6e.41.1779454902419; Fri, 22 May 2026
+ 06:01:42 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <4c0d4f36-c99b-4235-801d-e9a27dfa6c8e@mail.kernel.org>
-In-Reply-To: <4c0d4f36-c99b-4235-801d-e9a27dfa6c8e@mail.kernel.org>
+References: <07963d2a-cd0f-4940-a5bc-33dd8f425781@mail.kernel.org>
+In-Reply-To: <07963d2a-cd0f-4940-a5bc-33dd8f425781@mail.kernel.org>
 From: Aleksandr Nogikh <nogikh@google.com>
-Date: Fri, 22 May 2026 14:04:37 +0200
-X-Gm-Features: AVHnY4KA8x72UecIp4R4aYeRB00uLCFrne0wbDMhzdTpPe7_cWiAyMf29ch3YVM
-Message-ID: <CANp29Y4Pmy36bSqNKD_vkDhWaMOtS8civnOa5b14MSC4Nsq4ow@mail.gmail.com>
-Subject: Re: [PATCH RFC] bpf: Convert bpf_lru_list locks to rqspinlock
+Date: Fri, 22 May 2026 15:01:30 +0200
+X-Gm-Features: AVHnY4K_BWv9TC01G8Ga_GYH8sigCIkX2i9ZXL-UgAs2ugXChlg7oNo8Gx8w4bQ
+Message-ID: <CANp29Y6bNWETgXP-Ecj-PEvqVdgjh29RqZ+DbX=RH_Et+Xi=PQ@mail.gmail.com>
+Subject: Re: [PATCH RFC] btrfs: fix double free of data space reservation on
+ direct IO error
 To: syzbot <syzbot@kernel.org>
 Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 22, 2026 at 12:08=E2=80=AFPM 'syzbot' via
+Please send this patch again without any changes, I want to test this
+functionality.
+
+On Fri, May 22, 2026 at 9:30=E2=80=AFAM 'syzbot' via
 syzkaller-upstream-moderation
 <syzkaller-upstream-moderation@googlegroups.com> wrote:
 >
-> Lockdep reports an inconsistent lock state ({INITIAL USE} -> {IN-NMI})
-> for the loc_l->lock in the BPF LRU list implementation. This occurs
-> because the lock is first acquired in a normal syscall context (e.g.,
-> during BPF_MAP_UPDATE_BATCH) and later attempted to be acquired in an
-> NMI context (e.g., when a hardware breakpoint triggers a perf event that
-> executes a BPF program).
+> When a Direct I/O write begins, btrfs_dio_iomap_begin() reserves
+> data_alloc_len bytes of data space by calling
+> btrfs_check_data_free_space(). This increments the bytes_may_use counter
+> in the appropriate data space_info. Later,
+> btrfs_get_blocks_direct_write() calls btrfs_new_extent_direct() to
+> allocate an extent. Inside btrfs_new_extent_direct(),
+> btrfs_reserve_extent() is called, which successfully allocates an extent
+> of size ins.offset on disk and converts ins.offset bytes from
+> bytes_may_use to bytes_reserved (via btrfs_add_reserved_bytes()). Next,
+> btrfs_new_extent_direct() calls btrfs_create_dio_extent(). If this fails
+> (e.g., due to memory allocation failure), btrfs_new_extent_direct()
+> calls btrfs_free_reserved_extent() to free the allocated extent.
+> btrfs_free_reserved_extent() decrements bytes_reserved by ins.offset,
+> effectively freeing the space. However, it does not restore the
+> ins.offset bytes back to bytes_may_use.
 >
-> While lockdep correctly identifies that raw_spinlock_t is not NMI-safe,
-> this specific deadlock is prevented in practice by the bpf_prog_active
-> counter. If an NMI interrupts a map operation, the NMI handler checks
-> bpf_prog_active and skips executing the BPF program, preventing it from
-> acquiring the already-held lock. However, lockdep is unaware of this
-> protection mechanism, leading to a false positive.
+> The error propagates back to btrfs_dio_iomap_begin(), which jumps to the
+> error handling path. Because dio_data->data_space_reserved is still
+> true, it calls btrfs_free_reserved_data_space() for the entire
+> data_alloc_len. This function blindly decrements bytes_may_use by
+> data_alloc_len. Since ins.offset bytes were already converted to
+> bytes_reserved and freed, decrementing bytes_may_use by the full
+> data_alloc_len causes bytes_may_use to be decremented by ins.offset
+> twice. This underflows the counter, triggering a warning in
+> btrfs_space_info_update_bytes_may_use().
 >
-> To resolve this false positive and provide robust deadlock prevention,
-> convert the raw_spinlock_t locks in bpf_lru_list to rqspinlock_t
-> (resilient queued spinlock), similar to the conversion previously done
-> for hashtab.c. The rqspinlock infrastructure is designed to return an
-> error instead of deadlocking and is invisible to lockdep.
+> To fix this, btrfs_new_extent_direct() must restore the ins.offset bytes
+> back to bytes_may_use when btrfs_create_dio_extent() fails. This ensures
+> that when the error propagates up, btrfs_dio_iomap_begin() can safely
+> free the entire data_alloc_len from bytes_may_use. Introduce a new
+> helper function, btrfs_add_reserved_data_space_noquota(), which
+> correctly uses data_sinfo_for_inode() to select the right space_info
+> (handling zoned data relocation roots) and directly updates
+> bytes_may_use without triggering unnecessary ticket granting. Call this
+> new helper in the error path of btrfs_new_extent_direct().
 >
-> With this conversion, raw_spin_lock_irqsave() is replaced with
-> raw_res_spin_lock_irqsave(). If the lock cannot be acquired during pop
-> operations, the functions gracefully return NULL, which propagates as
-> -ENOMEM to the BPF program. In push operations, the functions simply
-> return, effectively dropping the node, as leaking the preallocated
-> element is an acceptable trade-off to avoid a hard deadlock in NMI
-> context.
->
-> Fixes: 4fa8d68aa53e ("bpf: Convert hashtab.c to rqspinlock")
-> Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+c69a0a2c816716f1e0d5@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=3Dc69a0a2c816716f1e0d5
-> Link: https://syzkaller.appspot.com/ai_job?id=3D5c92fef7-50da-4f0f-9ce0-5=
-870752f09b4
-> To: "Andrii Nakryiko" <andrii@kernel.org>
-> To: "Alexei Starovoitov" <ast@kernel.org>
-> To: <bpf@vger.kernel.org>
-> To: "Daniel Borkmann" <daniel@iogearbox.net>
-> To: "Eduard Zingerman" <eddyz87@gmail.com>
-> To: "Martin KaFai Lau" <martin.lau@linux.dev>
-> To: "Kumar Kartikeya Dwivedi" <memxor@gmail.com>
-> Cc: "Jiri Olsa" <jolsa@kernel.org>
+> Fixes: 18513091af94 ("btrfs: update btrfs_space_info's bytes_may_use time=
+ly")
+> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview =
+syzbot
+> Reported-by: syzbot+9064acebb06685edb243@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3D9064acebb06685edb243
+> Link: https://syzkaller.appspot.com/ai_job?id=3D913538c5-7b36-4127-ab45-6=
+efa99a3628e
+> To: "Chris Mason" <clm@fb.com>
+> To: "David Sterba" <dsterba@suse.com>
+> To: <linux-btrfs@vger.kernel.org>
 > Cc: <linux-kernel@vger.kernel.org>
-> Cc: "Song Liu" <song@kernel.org>
-> Cc: "Yonghong Song" <yonghong.song@linux.dev>
 >
 > ---
-> diff --git a/kernel/bpf/bpf_lru_list.c b/kernel/bpf/bpf_lru_list.c
-> index e7a2fc605..722b4a009 100644
-> --- a/kernel/bpf/bpf_lru_list.c
-> +++ b/kernel/bpf/bpf_lru_list.c
-
-Please add a missing `<asm/rqspinlock.h>` include here.
-
-Add comments to the code about lock failure in stealing, push and
-flush operations as to what are the consequences, any why we prefer
-them over the deadlock.
-
-> @@ -307,9 +307,10 @@ static void bpf_lru_list_push_free(struct bpf_lru_li=
-st *l,
->         if (WARN_ON_ONCE(IS_LOCAL_LIST_TYPE(node->type)))
->                 return;
->
-> -       raw_spin_lock_irqsave(&l->lock, flags);
-> +       if (raw_res_spin_lock_irqsave(&l->lock, flags))
-> +               return;
->         __bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
-> -       raw_spin_unlock_irqrestore(&l->lock, flags);
-> +       raw_res_spin_unlock_irqrestore(&l->lock, flags);
+> diff --git a/fs/btrfs/delalloc-space.c b/fs/btrfs/delalloc-space.c
+> index 0970799d0..7cfb829a3 100644
+> --- a/fs/btrfs/delalloc-space.c
+> +++ b/fs/btrfs/delalloc-space.c
+> @@ -189,6 +189,24 @@ void btrfs_free_reserved_data_space_noquota(struct b=
+trfs_inode *inode, u64 len)
+>         btrfs_space_info_free_bytes_may_use(data_sinfo_for_inode(inode), =
+len);
 >  }
 >
->  static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
-> @@ -319,7 +320,8 @@ static void bpf_lru_list_pop_free_to_local(struct bpf=
-_lru *lru,
->         struct bpf_lru_node *node, *tmp_node;
->         unsigned int nfree =3D 0;
+> +/*
+> + * Restore a data reservation for this inode.
+> + * Normally called when a reservation was converted to bytes_reserved bu=
+t the
+> + * subsequent operation failed, so the bytes need to be restored to byte=
+s_may_use
+> + * so the caller can free them.
+> + */
+> +void btrfs_add_reserved_data_space_noquota(struct btrfs_inode *inode, u6=
+4 len)
+> +{
+> +       struct btrfs_fs_info *fs_info =3D inode->root->fs_info;
+> +       struct btrfs_space_info *sinfo =3D data_sinfo_for_inode(inode);
+> +
+> +       ASSERT(IS_ALIGNED(len, fs_info->sectorsize));
+> +
+> +       spin_lock(&sinfo->lock);
+> +       btrfs_space_info_update_bytes_may_use(sinfo, len);
+> +       spin_unlock(&sinfo->lock);
+> +}
+> +
+>  /*
+>   * Called if we need to clear a data reservation for this inode
+>   * Normally in a error case.
+> diff --git a/fs/btrfs/delalloc-space.h b/fs/btrfs/delalloc-space.h
+> index 6119c0d3f..58ecfad7b 100644
+> --- a/fs/btrfs/delalloc-space.h
+> +++ b/fs/btrfs/delalloc-space.h
+> @@ -19,6 +19,7 @@ void btrfs_delalloc_release_space(struct btrfs_inode *i=
+node,
+>                                   struct extent_changeset *reserved,
+>                                   u64 start, u64 len, bool qgroup_free);
+>  void btrfs_free_reserved_data_space_noquota(struct btrfs_inode *inode, u=
+64 len);
+> +void btrfs_add_reserved_data_space_noquota(struct btrfs_inode *inode, u6=
+4 len);
+>  void btrfs_delalloc_release_metadata(struct btrfs_inode *inode, u64 num_=
+bytes,
+>                                      bool qgroup_free);
+>  int btrfs_delalloc_reserve_space(struct btrfs_inode *inode,
+> diff --git a/fs/btrfs/direct-io.c b/fs/btrfs/direct-io.c
+> index 57167d56d..04cdf11d8 100644
+> --- a/fs/btrfs/direct-io.c
+> +++ b/fs/btrfs/direct-io.c
+> @@ -205,8 +205,14 @@ static struct extent_map *btrfs_new_extent_direct(st=
+ruct btrfs_inode *inode,
+>         em =3D btrfs_create_dio_extent(inode, dio_data, start, &file_exte=
+nt,
+>                                      BTRFS_ORDERED_REGULAR);
+>         btrfs_dec_block_group_reservations(fs_info, ins.objectid);
+> -       if (IS_ERR(em))
+> +       if (IS_ERR(em)) {
+>                 btrfs_free_reserved_extent(fs_info, ins.objectid, ins.off=
+set, true);
+> +               /*
+> +                * btrfs_reserve_extent() converted the bytes from bytes_=
+may_use to
+> +                * bytes_reserved. We need to restore them so the caller =
+can free them.
+> +                */
+> +               btrfs_add_reserved_data_space_noquota(inode, ins.offset);
+> +       }
 >
-> -       raw_spin_lock(&l->lock);
-> +       if (raw_res_spin_lock(&l->lock))
-> +               return;
->
->         __local_list_flush(l, loc_l);
->
-> @@ -338,7 +340,7 @@ static void bpf_lru_list_pop_free_to_local(struct bpf=
-_lru *lru,
->                                       local_free_list(loc_l),
->                                       BPF_LRU_LOCAL_LIST_T_FREE);
->
-> -       raw_spin_unlock(&l->lock);
-> +       raw_res_spin_unlock(&l->lock);
+>         return em;
 >  }
->
->  static void __local_list_add_pending(struct bpf_lru *lru,
-> @@ -404,7 +406,8 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free(s=
-truct bpf_lru *lru,
->
->         l =3D per_cpu_ptr(lru->percpu_lru, cpu);
->
-> -       raw_spin_lock_irqsave(&l->lock, flags);
-> +       if (raw_res_spin_lock_irqsave(&l->lock, flags))
-> +               return NULL;
->
->         __bpf_lru_list_rotate(lru, l);
->
-> @@ -420,7 +423,7 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free(s=
-truct bpf_lru *lru,
->                 __bpf_lru_node_move(l, node, BPF_LRU_LIST_T_INACTIVE);
->         }
->
-> -       raw_spin_unlock_irqrestore(&l->lock, flags);
-> +       raw_res_spin_unlock_irqrestore(&l->lock, flags);
->
->         return node;
->  }
-> @@ -437,7 +440,8 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(s=
-truct bpf_lru *lru,
->
->         loc_l =3D per_cpu_ptr(clru->local_list, cpu);
->
-> -       raw_spin_lock_irqsave(&loc_l->lock, flags);
-> +       if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
-> +               return NULL;
->
->         node =3D __local_list_pop_free(loc_l);
->         if (!node) {
-> @@ -448,7 +452,7 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(s=
-truct bpf_lru *lru,
->         if (node)
->                 __local_list_add_pending(lru, loc_l, cpu, node, hash);
->
-> -       raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-> +       raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
->
->         if (node)
->                 return node;
-> @@ -466,13 +470,16 @@ static struct bpf_lru_node *bpf_common_lru_pop_free=
-(struct bpf_lru *lru,
->         do {
->                 steal_loc_l =3D per_cpu_ptr(clru->local_list, steal);
->
-> -               raw_spin_lock_irqsave(&steal_loc_l->lock, flags);
-> +               if (raw_res_spin_lock_irqsave(&steal_loc_l->lock, flags))=
- {
-> +                       steal =3D cpumask_next_wrap(steal, cpu_possible_m=
-ask);
-> +                       continue;
-> +               }
->
->                 node =3D __local_list_pop_free(steal_loc_l);
->                 if (!node)
->                         node =3D __local_list_pop_pending(lru, steal_loc_=
-l);
->
-> -               raw_spin_unlock_irqrestore(&steal_loc_l->lock, flags);
-> +               raw_res_spin_unlock_irqrestore(&steal_loc_l->lock, flags)=
-;
->
->                 steal =3D cpumask_next_wrap(steal, cpu_possible_mask);
->         } while (!node && steal !=3D first_steal);
-> @@ -480,9 +487,10 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(=
-struct bpf_lru *lru,
->         loc_l->next_steal =3D steal;
->
->         if (node) {
-> -               raw_spin_lock_irqsave(&loc_l->lock, flags);
-> +               if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
-> +                       return NULL;
->                 __local_list_add_pending(lru, loc_l, cpu, node, hash);
-> -               raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-> +               raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
->         }
->
->         return node;
-> @@ -511,10 +519,11 @@ static void bpf_common_lru_push_free(struct bpf_lru=
- *lru,
->
->                 loc_l =3D per_cpu_ptr(lru->common_lru.local_list, node->c=
-pu);
->
-> -               raw_spin_lock_irqsave(&loc_l->lock, flags);
-> +               if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
-> +                       return;
->
->                 if (unlikely(node->type !=3D BPF_LRU_LOCAL_LIST_T_PENDING=
-)) {
-> -                       raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-> +                       raw_res_spin_unlock_irqrestore(&loc_l->lock, flag=
-s);
->                         goto check_lru_list;
->                 }
->
-> @@ -522,7 +531,7 @@ static void bpf_common_lru_push_free(struct bpf_lru *=
-lru,
->                 bpf_lru_node_clear_ref(node);
->                 list_move(&node->list, local_free_list(loc_l));
->
-> -               raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-> +               raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
->                 return;
->         }
->
-> @@ -538,11 +547,12 @@ static void bpf_percpu_lru_push_free(struct bpf_lru=
- *lru,
->
->         l =3D per_cpu_ptr(lru->percpu_lru, node->cpu);
->
-> -       raw_spin_lock_irqsave(&l->lock, flags);
-> +       if (raw_res_spin_lock_irqsave(&l->lock, flags))
-> +               return;
->
->         __bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
->
-> -       raw_spin_unlock_irqrestore(&l->lock, flags);
-> +       raw_res_spin_unlock_irqrestore(&l->lock, flags);
->  }
->
->  void bpf_lru_push_free(struct bpf_lru *lru, struct bpf_lru_node *node)
-> @@ -625,7 +635,7 @@ static void bpf_lru_locallist_init(struct bpf_lru_loc=
-allist *loc_l, int cpu)
->
->         loc_l->next_steal =3D cpu;
->
-> -       raw_spin_lock_init(&loc_l->lock);
-> +       raw_res_spin_lock_init(&loc_l->lock);
->  }
->
->  static void bpf_lru_list_init(struct bpf_lru_list *l)
-> @@ -640,7 +650,7 @@ static void bpf_lru_list_init(struct bpf_lru_list *l)
->
->         l->next_inactive_rotation =3D &l->lists[BPF_LRU_LIST_T_INACTIVE];
->
-> -       raw_spin_lock_init(&l->lock);
-> +       raw_res_spin_lock_init(&l->lock);
->  }
->
->  int bpf_lru_init(struct bpf_lru *lru, bool percpu, u32 hash_offset,
-> diff --git a/kernel/bpf/bpf_lru_list.h b/kernel/bpf/bpf_lru_list.h
-> index fe2661a58..ecd93c77a 100644
-> --- a/kernel/bpf/bpf_lru_list.h
-> +++ b/kernel/bpf/bpf_lru_list.h
-> @@ -7,6 +7,7 @@
->  #include <linux/cache.h>
->  #include <linux/list.h>
->  #include <linux/spinlock_types.h>
-> +#include <asm/rqspinlock.h>
->
->  #define NR_BPF_LRU_LIST_T      (3)
->  #define NR_BPF_LRU_LIST_COUNT  (2)
-> @@ -34,13 +35,13 @@ struct bpf_lru_list {
->         /* The next inactive list rotation starts from here */
->         struct list_head *next_inactive_rotation;
->
-> -       raw_spinlock_t lock ____cacheline_aligned_in_smp;
-> +       rqspinlock_t lock ____cacheline_aligned_in_smp;
->  };
->
->  struct bpf_lru_locallist {
->         struct list_head lists[NR_BPF_LRU_LOCAL_LIST_T];
->         u16 next_steal;
-> -       raw_spinlock_t lock;
-> +       rqspinlock_t lock;
->  };
->
->  struct bpf_common_lru {
 >
 >
 > base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
@@ -383,5 +248,5 @@ s.md for information about AI-generated patches.
 > To unsubscribe from this group and stop receiving emails from it, send an=
  email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
 > To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/4c0d4f36-c99b-4235-801d-e9a27dfa6c8e%40mail.kernel.org=
+-upstream-moderation/07963d2a-cd0f-4940-a5bc-33dd8f425781%40mail.kernel.org=
 .
