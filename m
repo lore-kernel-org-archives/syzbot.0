@@ -1,108 +1,130 @@
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3ACA3A5E75
-	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 05:54:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6AAF38D414
+	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 07:29:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779429287; cv=none; b=fz1+hsxkUwTeao6osIRcyTc6PkKyGxYCtojI3WkOcuYDbUF6tMyXgzKEdneP2eXYWQWsLD/VaOfgcQJWgjz7cOlUDXNjgx5OfaqMFpmN306TFGiwjt2uBMIPE1L2YcZm3qa5LE3R6xDYato0Z6mj25EA1zDhyJFEbNQ034P/PXM=
+	t=1779435001; cv=none; b=nYeoDguwchbJWW/hJCy97CkBQAXVOWxZhPBDX1nhKNYboX6nQYu4iTTLoDg/A9lYssuK/VhBH/oIDeHZ+UlRlswMAge895HBBBCoSjkTqJkhB8AjoQOtiHM8Fq6h0d4CBPNiZWeH42YIh/E3lpEphltms3nfvT95+S+TzR1S+q0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779429287; c=relaxed/simple;
-	bh=J5C3MckAuOrIQlL9VxyScTqSAdO4m0jepCApHJsmqPU=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=fmtufpXuAOs8qNNY3/skdD6Dq0ay/tm8ayC7X3CRu10XO8MLdFSczNYi5rDGaZXGGumr+0WwASauk7ZoJgZYDx4DANmV6FWnr/U1TyoSI+XVnj6zqU0VEWyO9ZEmVpc98ERl0p+ik29U2f52h1kYLUTzCu7MxIIKIAISwbn0yD0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-69d874805edso183510eaf.0
-        for <syzbot@lists.linux.dev>; Thu, 21 May 2026 22:54:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779429285; x=1780034085;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8pMtKxZ/J59Du1NZKBmcRrYVYpeQFwP4pRJEdGQyfmo=;
-        b=LwPYR+G02xsTLNyyduGEGX4ui3fQ4abyRI7khmn972EFfKWdyMKU/w636NQDa+qi3U
-         yUgAle6AQZOaI+wWfqc5WBahQQ1/XAUKSwk8Lx0pzys65lfLkX0muYL12OKfTf3kJVHv
-         v/t12DN8MIHfu3ElrFyjSrpdnpFprIyWWJqP+q+8K2skgrEN2nvMPpa6aRorWoEY7l7w
-         HsKPv1GF3wFiFckXcf+mKP5os7U1G96Few0/EkHWrocTiNQAO6kE4EVY6vG0CmEVTYZE
-         FTUCPNOhFfiQNNOiI8Y7gRaVtw1euqfGUtqfdoo3SLYnpAlynNrMYMMOW+zxjCOpCGjX
-         YNcg==
-X-Gm-Message-State: AOJu0Yy0AtsIMz0YO4FNyf8nMaFARaS0wPAeNJA7VY8z+IX++vD6r/oU
-	9svkzPNGGXp7TY/2lyaRk0zjMyeIZ+f1dsSJMuCO6hjLFZBd5jPJp3jhKoNeG+4S+Z0pN+lo3/x
-	Xm5Bd8vN+KP01NtsR199EdM6IFm6Kv2ZQYOQLHJEduDYEvzedSfbfbBFZnOA=
+	s=arc-20240116; t=1779435001; c=relaxed/simple;
+	bh=LhK6thYbjpRVCoMfS9+73pA2OEZrMDEepfjmd/awoiQ=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=IveDkZdNigq7EYQn9xgLXYm/xV6yatpDZdnBEp4G4Cq5RFX/NOddeh5XuKzuIy5paXR9jYSyDxtW5pC5Ps4sDR64RtWmpi9EU3J9uoKiywHhCIuzEIL7RWZsJ3hAxysKCXPVj9dyGjJ6P4x9esV6VEevgHJwqtTu5Uu75y0VjVM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kuK2bEuW; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kuK2bEuW"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 776361F00A3D;
+	Fri, 22 May 2026 07:29:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779434999;
+	bh=S/z3WlUAwC+Ob0qTIQuw4rSJp0sJPnYTA+F2bE50Vb4=;
+	h=From:To:Cc:Subject:Date;
+	b=kuK2bEuWci6OZ+Slcpzg6fnxpxsjufp52yNUyXfXf/8scJn/JeqzmjDXbihID+W3S
+	 1LNgvKCSET0VaKefzei9dn1lZNSPlh3qi9pJv8slpLRMj9/t2vRaGUBegf36QPDEgT
+	 MiEMLo9NcybWAHPYGt3tQ2WURvz84lN/OSf6y9Wp5z3d9pV3X6SAb6OfBxliqE46K1
+	 QS38xHGatGq2dpH2vpX4WiKqaVy0amARuGk78V6UGFx1beka1y9+r70mbxy2rkatcW
+	 NKfVytPYB4H378wy4o/UIp3Q9yzHxov3S6qMZz5x6BvIXHtSYD9K3S1axOdjtyhazq
+	 zy1NKYiKZ7Q5w==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] media: as102: fix uninitialized mutex and memory leak in probe
+Message-ID: <5b50e134-2304-45db-9a63-aeb6c38f27e6@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:151b:b0:69d:513e:1a6c with SMTP id
- 006d021491bc7-69d7ec9a333mr1265520eaf.50.1779429284826; Thu, 21 May 2026
- 22:54:44 -0700 (PDT)
-Date: Thu, 21 May 2026 22:54:44 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a0fefa4.170a0220.2e5ec6.0004.GAE@google.com>
-Subject: [moderation/CI] Re: netfilter: conntrack: remove some code
-From: syzbot ci <syzbot+ci6b62cc4ae8b262c5@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Fri, 22 May 2026 07:29:59 +0000 (UTC)
 
-syzbot ci has tested the following series
+During the initialization of the as102 driver, it registers its DVB
+demux and frontend device nodes and exposes them to userspace before
+initializing the mutexes (`as102_dev->sem` and
+`as102_dev->bus_adap.lock`) that are meant to protect them. If userspace
+quickly opens the device and issues an ioctl, the kernel attempts to
+lock an uninitialized mutex, triggering a warning.
 
-[v1] netfilter: conntrack: remove some code
-https://lore.kernel.org/all/20260522050140.4838-1-fw@strlen.de
-* [PATCH nf-next 1/5] netfilter: nf_conntrack_helper: do not hash by tuple
-* [PATCH nf-next 2/5] netfilter: conntrack: get rid of tuple in helper definitions
-* [PATCH nf-next 3/5] netfilter: nf_conntrack: switch to static registration
-* [PATCH nf-next 4/5] netfilter: remove obsolete nf_ct_helper_init api
-* [PATCH nf-next 5/5] netfilter: conntrack: add deprecation warnings for irc and pptp trackers
+To fix this race condition, move the mutex initialization to the very
+beginning of `as102_dvb_register()` to ensure the locks are ready before
+userspace can access the device.
 
-and found the following issue:
-kernel build error
+Additionally, fix a memory leak in the error handling path of
+`as102_usb_probe()`. If `as102_alloc_usb_stream_buffer()` or
+`as102_dvb_register()` fail, the driver jumps to the `failed_stream`
+label, which deregisters the USB device but does not free the allocated
+`as102_dev` structure or drop the `usb_dev` reference. Add a
+`kref_put(&as102_dev->kref, as102_usb_release)` call to the
+`failed_stream` error path to ensure the device structure is properly
+freed and the USB device reference is released.
 
-Full report is available here:
-https://ci.syzbot.org/series/6b7dd605-be91-42de-a939-b82234442904
-
-***
-
-kernel build error
-
-tree:      nf
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf.git
-base:      ab1513597c6cf17cd1ad2a21e3b045421b48e022
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/52edd1a1-56d7-4133-811a-d2be41816921/config
-
-net/netfilter/nf_conntrack_ovs.c:31:14: error: no member named 'tuple' in 'struct nf_conntrack_helper'
-net/netfilter/nf_conntrack_ovs.c:32:14: error: no member named 'tuple' in 'struct nf_conntrack_helper'
-net/netfilter/nf_conntrack_ovs.c:60:14: error: no member named 'tuple' in 'struct nf_conntrack_helper'
-net/sched/act_ct.c:1527:52: error: no member named 'tuple' in 'struct nf_conntrack_helper'
-net/sched/act_ct.c:1528:51: error: no member named 'tuple' in 'struct nf_conntrack_helper'
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: 41b44e041811 ("[media] staging: as102: Initial import from Abilis")
+Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+3825a6102073c418fe41@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=3825a6102073c418fe41
+Link: https://syzkaller.appspot.com/ai_job?id=5b12fff8-5443-4a77-9f17-ace968bd4f15
+To: <linux-media@vger.kernel.org>
+To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
+Cc: "Jeongjun Park" <aha310510@gmail.com>
+Cc: "Hans Verkuil" <hverkuil+cisco@kernel.org>
+Cc: "Kees Cook" <kees@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/drivers/media/usb/as102/as102_drv.c b/drivers/media/usb/as102/as102_drv.c
+index 6b1d3528a..a6dd67568 100644
+--- a/drivers/media/usb/as102/as102_drv.c
++++ b/drivers/media/usb/as102/as102_drv.c
+@@ -287,6 +287,12 @@ int as102_dvb_register(struct as102_dev_t *as102_dev)
+ 	struct device *dev = &as102_dev->bus_adap.usb_dev->dev;
+ 	int ret;
+ 
++	/* init bus mutex for token locking */
++	mutex_init(&as102_dev->bus_adap.lock);
++
++	/* init start / stop stream mutex */
++	mutex_init(&as102_dev->sem);
++
+ 	ret = dvb_register_adapter(&as102_dev->dvb_adap,
+ 			   as102_dev->name, THIS_MODULE,
+ 			   dev, adapter_nr);
+@@ -341,12 +347,6 @@ int as102_dvb_register(struct as102_dev_t *as102_dev)
+ 		goto efereg;
+ 	}
+ 
+-	/* init bus mutex for token locking */
+-	mutex_init(&as102_dev->bus_adap.lock);
+-
+-	/* init start / stop stream mutex */
+-	mutex_init(&as102_dev->sem);
+-
+ 	/*
+ 	 * try to load as102 firmware. If firmware upload failed, we'll be
+ 	 * able to upload it later.
+diff --git a/drivers/media/usb/as102/as102_usb_drv.c b/drivers/media/usb/as102/as102_usb_drv.c
+index a11024451..ad6c5837f 100644
+--- a/drivers/media/usb/as102/as102_usb_drv.c
++++ b/drivers/media/usb/as102/as102_usb_drv.c
+@@ -405,6 +405,7 @@ static int as102_usb_probe(struct usb_interface *intf,
+ failed_stream:
+ 	usb_set_intfdata(intf, NULL);
+ 	usb_deregister_dev(intf, &as102_usb_class_driver);
++	kref_put(&as102_dev->kref, as102_usb_release);
+ 	return ret;
+ failed:
+ 	usb_put_dev(as102_dev->bus_adap.usb_dev);
 
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
 
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
 
-The email will later be sent to:
-[fw@strlen.de netfilter-devel@vger.kernel.org]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+See https://github.com/google/syzkaller/blob/master/docs/syzbot_ai_patches.md for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
