@@ -1,165 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67B9C30E821
-	for <syzbot@lists.linux.dev>; Thu, 21 May 2026 16:04:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3ACA3A5E75
+	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 05:54:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779379485; cv=none; b=jTcLGJzFHRQaWGaQv0rMzeboGURzGD+ZZDXXmL7xonJVp3vGHHtmCVeKlPg4B3lAGng1Tmc6wmRzPTfDdhFugEOnA3hMNOxPDu0vte/0aHHK9FGXs+C1CheJXQGL3YqRYtafmKVAqKWA1Rwrolonro7kcJLsmx8IyUh/h9mRoys=
+	t=1779429287; cv=none; b=fz1+hsxkUwTeao6osIRcyTc6PkKyGxYCtojI3WkOcuYDbUF6tMyXgzKEdneP2eXYWQWsLD/VaOfgcQJWgjz7cOlUDXNjgx5OfaqMFpmN306TFGiwjt2uBMIPE1L2YcZm3qa5LE3R6xDYato0Z6mj25EA1zDhyJFEbNQ034P/PXM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779379485; c=relaxed/simple;
-	bh=WUdBJlMLANZRXCJwmpaT15G4cwJK5V09+U2l0obl79I=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=SVKAZm9HB3DmhUHSobeH7RDtMLApdTorp7ZO9eq5Htlyu/AL8j8fQrrc7Yr8uSx6ZUJC/Gk4uV+JXSytyJhJP4F75OOz4FPeBmTVZF6bSK49JPc1vz2y+gNwOfj79crv2Cvs6ofPBW3shTHdVVpHI/W+w8D6P4kMsh/bzuTFcCA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZDW7GgnM; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZDW7GgnM"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 327A71F000E9;
-	Thu, 21 May 2026 16:04:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779379484;
-	bh=thXmwKnGJPohbzV6eGTOXN+s2qyYI2jVEcmCNOdmzYs=;
-	h=From:To:Cc:Subject:Date;
-	b=ZDW7GgnMr1v85tjEAv2o0RMBisAHYYQrI7A9ifZ01ad2pM4t1jMTY7qkPkh6w/yVN
-	 Il8FldbqQMQ0Q+eHLIvwVbrV0spxWjiqurIo+Sx0ZZ6KqdZvcCGgu0UkK6e9Rh8K8b
-	 U/rfNy0JOWAyFxhafMie5Rhbp8qw1A+3RnjM6j4I5veNzLeUWVBYviFFkEaVk4uMId
-	 ktZe+4kxrBOIpRv8ik3orUWaq6Y8HIroAzMvidexXt7lM7x9mwkiOpleEJWzjkZHaV
-	 sR7Gn/DhG4RnD7dUrBLqdETy/KO7PN4D3I2Obwq2FCOY0lWA5Bc8PbFGxtq1dmhYGW
-	 kKwNVk+cvvvmg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v3] Input: cm109 - prevent concurrent control URB submissions
-Message-ID: <87447094-7113-47af-8b64-e30497fd5ba7@mail.kernel.org>
+	s=arc-20240116; t=1779429287; c=relaxed/simple;
+	bh=J5C3MckAuOrIQlL9VxyScTqSAdO4m0jepCApHJsmqPU=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=fmtufpXuAOs8qNNY3/skdD6Dq0ay/tm8ayC7X3CRu10XO8MLdFSczNYi5rDGaZXGGumr+0WwASauk7ZoJgZYDx4DANmV6FWnr/U1TyoSI+XVnj6zqU0VEWyO9ZEmVpc98ERl0p+ik29U2f52h1kYLUTzCu7MxIIKIAISwbn0yD0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-69d874805edso183510eaf.0
+        for <syzbot@lists.linux.dev>; Thu, 21 May 2026 22:54:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779429285; x=1780034085;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=8pMtKxZ/J59Du1NZKBmcRrYVYpeQFwP4pRJEdGQyfmo=;
+        b=LwPYR+G02xsTLNyyduGEGX4ui3fQ4abyRI7khmn972EFfKWdyMKU/w636NQDa+qi3U
+         yUgAle6AQZOaI+wWfqc5WBahQQ1/XAUKSwk8Lx0pzys65lfLkX0muYL12OKfTf3kJVHv
+         v/t12DN8MIHfu3ElrFyjSrpdnpFprIyWWJqP+q+8K2skgrEN2nvMPpa6aRorWoEY7l7w
+         HsKPv1GF3wFiFckXcf+mKP5os7U1G96Few0/EkHWrocTiNQAO6kE4EVY6vG0CmEVTYZE
+         FTUCPNOhFfiQNNOiI8Y7gRaVtw1euqfGUtqfdoo3SLYnpAlynNrMYMMOW+zxjCOpCGjX
+         YNcg==
+X-Gm-Message-State: AOJu0Yy0AtsIMz0YO4FNyf8nMaFARaS0wPAeNJA7VY8z+IX++vD6r/oU
+	9svkzPNGGXp7TY/2lyaRk0zjMyeIZ+f1dsSJMuCO6hjLFZBd5jPJp3jhKoNeG+4S+Z0pN+lo3/x
+	Xm5Bd8vN+KP01NtsR199EdM6IFm6Kv2ZQYOQLHJEduDYEvzedSfbfbBFZnOA=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Thu, 21 May 2026 16:04:44 +0000 (UTC)
+X-Received: by 2002:a05:6820:151b:b0:69d:513e:1a6c with SMTP id
+ 006d021491bc7-69d7ec9a333mr1265520eaf.50.1779429284826; Thu, 21 May 2026
+ 22:54:44 -0700 (PDT)
+Date: Thu, 21 May 2026 22:54:44 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a0fefa4.170a0220.2e5ec6.0004.GAE@google.com>
+Subject: [moderation/CI] Re: netfilter: conntrack: remove some code
+From: syzbot ci <syzbot+ci6b62cc4ae8b262c5@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-The cm109 driver uses two URBs to communicate with the device: urb_ctl
-(Control OUT) and urb_irq (Interrupt IN). These URBs are designed to run
-in a continuous, strictly alternating loop. However, the driver also
-supports sound events to toggle the buzzer via
-cm109_toggle_buzzer_async(), which can submit urb_ctl out-of-band. If
-this occurs while urb_irq is completing and triggering
-cm109_submit_ctl(), the USB core issues a warning because urb_ctl is
-already active.
+syzbot ci has tested the following series
 
-To fix this, check if dev->ctl_urb_pending is already set in
-cm109_submit_ctl(). If it is, defer the submission by setting
-dev->buzzer_pending = 1 and return immediately.
+[v1] netfilter: conntrack: remove some code
+https://lore.kernel.org/all/20260522050140.4838-1-fw@strlen.de
+* [PATCH nf-next 1/5] netfilter: nf_conntrack_helper: do not hash by tuple
+* [PATCH nf-next 2/5] netfilter: conntrack: get rid of tuple in helper definitions
+* [PATCH nf-next 3/5] netfilter: nf_conntrack: switch to static registration
+* [PATCH nf-next 4/5] netfilter: remove obsolete nf_ct_helper_init api
+* [PATCH nf-next 5/5] netfilter: conntrack: add deprecation warnings for irc and pptp trackers
 
-The cm109_submit_buzz_toggle() function is updated to also copy the
-latest dev->keybit to HID_OR1 and HID_OR2. This is correct for all
-callers because these bytes select the key matrix column; maintaining
-the current keybit ensures that key scanning is not interrupted or
-corrupted during a buzzer toggle. Since cm109_submit_ctl() and
-cm109_submit_buzz_toggle() now prepare the same data, cm109_submit_ctl()
-is refactored to call cm109_submit_buzz_toggle().
+and found the following issue:
+kernel build error
 
-If usb_submit_urb() fails in cm109_submit_buzz_toggle(),
-dev->ctl_urb_pending is now reset to 0. This is necessary because a
-failed submission means the URB is not active; failing to reset the flag
-would prevent any future control URB submissions, effectively
-deadlocking the control path.
+Full report is available here:
+https://ci.syzbot.org/series/6b7dd605-be91-42de-a939-b82234442904
 
-A simple check of dev->ctl_urb_pending in cm109_submit_ctl() would be
-insufficient on its own because it does not handle the synchronization
-of the buzzer state and key scanning matrix across different submission
-paths. Refactoring the data preparation ensures that the latest state is
-always used regardless of which path triggers the submission.
+***
 
-Fixes: d8a43a83633a ("Input: cm109 - use guard notation when acquiring mutex and spinlock")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview
-Reported-by: syzbot+2d6d691af5ab4b7e66df@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=2d6d691af5ab4b7e66df
-Link: https://syzkaller.appspot.com/ai_job?id=f1927a5a-2a76-4023-a76f-6461ce28d254
-To: "Dmitry Torokhov" <dmitry.torokhov@gmail.com>
-To: <linux-input@vger.kernel.org>
-Cc: "Kees Cook" <kees@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+kernel build error
+
+tree:      nf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf.git
+base:      ab1513597c6cf17cd1ad2a21e3b045421b48e022
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/52edd1a1-56d7-4133-811a-d2be41816921/config
+
+net/netfilter/nf_conntrack_ovs.c:31:14: error: no member named 'tuple' in 'struct nf_conntrack_helper'
+net/netfilter/nf_conntrack_ovs.c:32:14: error: no member named 'tuple' in 'struct nf_conntrack_helper'
+net/netfilter/nf_conntrack_ovs.c:60:14: error: no member named 'tuple' in 'struct nf_conntrack_helper'
+net/sched/act_ct.c:1527:52: error: no member named 'tuple' in 'struct nf_conntrack_helper'
+net/sched/act_ct.c:1528:51: error: no member named 'tuple' in 'struct nf_conntrack_helper'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v3:
-- Prevent concurrent control URB submissions by checking ctl_urb_pending in cm109_submit_ctl().
-- Defer buzzer updates if a control URB is already in flight.
-- Update cm109_submit_buzz_toggle() to include key matrix state (keybit) to ensure consistent key scanning.
-- Reset ctl_urb_pending on URB submission failure to avoid deadlocking the control path.
-- Refactor cm109_submit_ctl() to use the updated cm109_submit_buzz_toggle() for unified data preparation.
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v2:
-- Reset `dev->ctl_urb_pending` to 0 if `usb_submit_urb()` fails in `cm109_submit_buzz_toggle()`.
-https://lore.kernel.org/all/e6a66888-9f57-4c38-9732-2563acc3ed73@mail.kernel.org/T/
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
-v1:
-https://lore.kernel.org/all/cac82e3e-7e75-4dc6-b83b-5b54a3e692e7@mail.kernel.org/T/
----
-diff --git a/drivers/input/misc/cm109.c b/drivers/input/misc/cm109.c
-index 353d3c1d3..8e51ad58f 100644
---- a/drivers/input/misc/cm109.c
-+++ b/drivers/input/misc/cm109.c
-@@ -348,17 +348,20 @@ static void cm109_submit_buzz_toggle(struct cm109_dev *dev)
- 	else
- 		dev->ctl_data->byte[HID_OR0] &= ~BUZZER_ON;
- 
-+	dev->ctl_data->byte[HID_OR1] = dev->keybit;
-+	dev->ctl_data->byte[HID_OR2] = dev->keybit;
-+
- 	error = usb_submit_urb(dev->urb_ctl, GFP_ATOMIC);
--	if (error)
-+	if (error) {
- 		dev_err(&dev->intf->dev,
- 			"%s: usb_submit_urb (urb_ctl) failed %d\n",
- 			__func__, error);
-+		dev->ctl_urb_pending = 0;
-+	}
- }
- 
- static void cm109_submit_ctl(struct cm109_dev *dev)
- {
--	int error;
--
- 	guard(spinlock_irqsave)(&dev->ctl_submit_lock);
- 
- 	dev->irq_urb_pending = 0;
-@@ -366,22 +369,15 @@ static void cm109_submit_ctl(struct cm109_dev *dev)
- 	if (unlikely(dev->shutdown))
- 		return;
- 
--	if (dev->buzzer_state)
--		dev->ctl_data->byte[HID_OR0] |= BUZZER_ON;
--	else
--		dev->ctl_data->byte[HID_OR0] &= ~BUZZER_ON;
--
--	dev->ctl_data->byte[HID_OR1] = dev->keybit;
--	dev->ctl_data->byte[HID_OR2] = dev->keybit;
-+	if (dev->ctl_urb_pending) {
-+		dev->buzzer_pending = 1;
-+		return;
-+	}
- 
- 	dev->buzzer_pending = 0;
- 	dev->ctl_urb_pending = 1;
- 
--	error = usb_submit_urb(dev->urb_ctl, GFP_ATOMIC);
--	if (error)
--		dev_err(&dev->intf->dev,
--			"%s: usb_submit_urb (urb_ctl) failed %d\n",
--			__func__, error);
-+	cm109_submit_buzz_toggle(dev);
- }
- 
- /*
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
 
+The email will later be sent to:
+[fw@strlen.de netfilter-devel@vger.kernel.org]
 
-base-commit: 7fd2df204f342fc17d1a0bfcd474b24232fb0f32
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to send it to the mailing list.
-Reply with '#syz reject' to reject it (or '#syz unreject' to undo).
+If the report looks fine to you, reply with:
+#syz upstream
 
-See https://github.com/google/syzkaller/blob/master/docs/syzbot_ai_patches.md for more information.
+If the report is a false positive, reply with
+#syz invalid
+
