@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED4B43FF1
-	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 07:31:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE9FD3C769F
+	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 10:08:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779435091; cv=none; b=aXqo09/CE9xVVAHqzPEjHH6j4rmMn+s3656SzAGBvpPc4COOAlIc6qSj1JiZ+fogdFXvF33h2qrT28sZx5fMSIBCjfPD6a4h/I0GG4VcEdOoNzVSOaRJ9/1siMFnyHwGthSVpBLUlV/hi4QDp5+Lz0Taicd1+cBhhJ4HqsGE+lg=
+	t=1779444484; cv=none; b=udnl8TGdiUzw8sL0xjbTQgMbom9MUZkJasv1v4ki9c8kKHy+qw2GulRYGJzscq0or9ioEgCkXvhiauVKHxr8QnQxIaR62vTTuylfb9SS8mRsqbi8x948/mamQsX2HnR/9GBN/Si+C1odTKRNDtsCFVRz7UuemWepcYA1ZO18jGw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779435091; c=relaxed/simple;
-	bh=IF3vUSowAAD+OKaZ3Pl8jgui/j40Ag6EFEQ+sGREZh8=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ccIkVFPWd5fVWKFIWEg1+fEgIyYQYLGwcdFj4o8LYRthD2AB/eLqEsJA+EXL40Zmlp/zzsaRp4IFdsR0WGJYeV2f71+2c90NatUnMTk2t0EQ54WH9J34WE4DSpluEUGR7oqtuDDb78zVBl6eqw8Gu0P0JAokie5cTlFmiyUDG4k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H9zkK5bE; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779444484; c=relaxed/simple;
+	bh=JDnITGFCJxx5vFqzBdGYju80O/aXSjD0o3ghNLILrZo=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=X/HPWg/M7o77cNwLuSCsLjjDF6M+BfIJxWzKItM4QePpfn6/Ko86GB1SQGzqv8zqnWKYq6F/TNWFZVmovi/2vTL2INXB4Q0K8sybnCbwk/ebFteRLhoJhA8804MTH++cPLVfPhrPEJAHvlhxVyN7fKjDmDHxt10DyjBE/N05tcw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iOrmXq/m; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H9zkK5bE"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id B3FA61F000E9;
-	Fri, 22 May 2026 07:31:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iOrmXq/m"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 3E9F41F000E9;
+	Fri, 22 May 2026 10:08:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779435089;
-	bh=2hwWZXI2Ey94ij3BWeKjtS7wkD33yjBLAX/nrddLxFw=;
+	s=k20260515; t=1779444482;
+	bh=o0pSaiKnSJl/1tuRgP5d+qg5azQY01ZC+aR7R6TLf8Q=;
 	h=From:To:Cc:Subject:Date;
-	b=H9zkK5bEEu9wnTg7p7k1tLmRwwbhHA1i+GMke0GszqS7xRctyZaKOmgTahR2hDN7q
-	 uXQ499ybSmcmFQzqR0sd51OBwB33ZnFXkUdB/8Ge8IBoUb1UizS/fsGryiEuJs0qgC
-	 ki3uqqDi0HF5aiARysP9eiiEZDhLrD6LiI8EqQJt3zqQGcyNUYY5iWvShMsMlI0C3h
-	 rm0ejhawqCj/epW+Ykml4rqeRnxTj7jAPoYbRl2cSn6Cckw6fjEzjQD9DyNMauYs8E
-	 K7EgdghaV7JuUU/Ke7XRbb6HYA7euU6cW5F91nX6tDfi3hzf+/JjuNfQXuOAaqQP/A
-	 /y09mLKGM8XMQ==
+	b=iOrmXq/mCy1uiNTlyurkXWYWkOkKnN8QVyxXNCvCRItAXADPV9dkoKuF7RvgIDv62
+	 94G5M4GWta6O5UCpcxJrlqNki8XaamWfZ0Eoo9j14MYAQaZ/9FGd+fUrdIoGty89HC
+	 enOyiuQbeG70vp/MvLFuoEBdZk2RseAdf8G6qZvCzevxdtSbN1E8TGMovSDUoZp4vq
+	 JfiJfHTsnBP7gvjprToKQ87yXTQFul6VqLE8HMRys2YG6oJfYFepgTUxozuC7THVfv
+	 if/bsAxEZ8+Xkbr3jbFeS/L1usmbUZwMgfukMf422USJpqCEtA747ti3fi0MtFBZOs
+	 vOP7MfcM8Ig9A==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] ieee802154: fix kernel-infoleak in dgram_recvmsg()
-Message-ID: <3d57ee87-f29b-43a2-8e22-2ca4d86cb799@mail.kernel.org>
+Subject: [PATCH RFC] bpf: Convert bpf_lru_list locks to rqspinlock
+Message-ID: <4c0d4f36-c99b-4235-801d-e9a27dfa6c8e@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,66 +38,244 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri, 22 May 2026 07:31:29 +0000 (UTC)
+Date: Fri, 22 May 2026 10:08:02 +0000 (UTC)
 
-KMSAN reports a kernel-infoleak in dgram_recvmsg(). The issue occurs
-because the `pan_id` field of the IEEE 802.15.4 MAC header is
-unconditionally copied to a socket address structure and subsequently
-leaked to user space during a `recvmsg` syscall.
+Lockdep reports an inconsistent lock state ({INITIAL USE} -> {IN-NMI})
+for the loc_l->lock in the BPF LRU list implementation. This occurs
+because the lock is first acquired in a normal syscall context (e.g.,
+during BPF_MAP_UPDATE_BATCH) and later attempted to be acquired in an
+NMI context (e.g., when a hardware breakpoint triggers a perf event that
+executes a BPF program).
 
-In `dgram_recvmsg()`, the kernel zeroes out a `struct
-sockaddr_ieee802154` and then populates it using
-`ieee802154_addr_to_sa()`. Inside `ieee802154_addr_to_sa()`, the
-`pan_id` is unconditionally copied from the source address to the socket
-address.
+While lockdep correctly identifies that raw_spinlock_t is not NMI-safe,
+this specific deadlock is prevented in practice by the bpf_prog_active
+counter. If an NMI interrupts a map operation, the NMI handler checks
+bpf_prog_active and skips executing the BPF program, preventing it from
+acquiring the already-held lock. However, lockdep is unaware of this
+protection mechanism, leading to a false positive.
 
-The source of the uninitialized memory is a local, uninitialized `struct
-ieee802154_hdr hdr` variable in `__ieee802154_rx_handle_packet()`. The
-header is parsed by `ieee802154_parse_frame_start()`, which eventually
-calls `ieee802154_hdr_get_addr()` to extract the destination and source
-addresses. If the address mode is `IEEE802154_ADDR_NONE`, the function
-returns early and leaves `addr->pan_id` uninitialized (containing stack
-garbage).
+To resolve this false positive and provide robust deadlock prevention,
+convert the raw_spinlock_t locks in bpf_lru_list to rqspinlock_t
+(resilient queued spinlock), similar to the conversion previously done
+for hashtab.c. The rqspinlock infrastructure is designed to return an
+error instead of deadlocking and is invisible to lockdep.
 
-To fix this issue, explicitly initialize `addr->pan_id` to `0` when the
-address mode is `IEEE802154_ADDR_NONE` in `ieee802154_hdr_get_addr()`.
-This ensures that no uninitialized stack memory is ever propagated or
-copied to user space.
+With this conversion, raw_spin_lock_irqsave() is replaced with
+raw_res_spin_lock_irqsave(). If the lock cannot be acquired during pop
+operations, the functions gracefully return NULL, which propagates as
+-ENOMEM to the BPF program. In push operations, the functions simply
+return, effectively dropping the node, as leaking the preallocated
+element is an acceptable trade-off to avoid a hard deadlock in NMI
+context.
 
-Fixes: 94b4f6c21cf5 ("ieee802154: add header structs with endiannes and operations")
+Fixes: 4fa8d68aa53e ("bpf: Convert hashtab.c to rqspinlock")
 Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+346474e3bf0b26bd3090@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=346474e3bf0b26bd3090
-Link: https://syzkaller.appspot.com/ai_job?id=afe5d617-6767-4025-9746-41a5ff62a35f
-To: "Alexander Aring" <alex.aring@gmail.com>
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <linux-wpan@vger.kernel.org>
-To: "Miquel Raynal" <miquel.raynal@bootlin.com>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Stefan Schmidt" <stefan@datenfreihafen.org>
-Cc: "Simon Horman" <horms@kernel.org>
+Reported-by: syzbot+c69a0a2c816716f1e0d5@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=c69a0a2c816716f1e0d5
+Link: https://syzkaller.appspot.com/ai_job?id=5c92fef7-50da-4f0f-9ce0-5870752f09b4
+To: "Andrii Nakryiko" <andrii@kernel.org>
+To: "Alexei Starovoitov" <ast@kernel.org>
+To: <bpf@vger.kernel.org>
+To: "Daniel Borkmann" <daniel@iogearbox.net>
+To: "Eduard Zingerman" <eddyz87@gmail.com>
+To: "Martin KaFai Lau" <martin.lau@linux.dev>
+To: "Kumar Kartikeya Dwivedi" <memxor@gmail.com>
+Cc: "Jiri Olsa" <jolsa@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
+Cc: "Song Liu" <song@kernel.org>
+Cc: "Yonghong Song" <yonghong.song@linux.dev>
 
 ---
-diff --git a/net/ieee802154/header_ops.c b/net/ieee802154/header_ops.c
-index 41a556be1..8f2ec62de 100644
---- a/net/ieee802154/header_ops.c
-+++ b/net/ieee802154/header_ops.c
-@@ -175,8 +175,10 @@ ieee802154_hdr_get_addr(const u8 *buf, int mode, bool omit_pan,
+diff --git a/kernel/bpf/bpf_lru_list.c b/kernel/bpf/bpf_lru_list.c
+index e7a2fc605..722b4a009 100644
+--- a/kernel/bpf/bpf_lru_list.c
++++ b/kernel/bpf/bpf_lru_list.c
+@@ -307,9 +307,10 @@ static void bpf_lru_list_push_free(struct bpf_lru_list *l,
+ 	if (WARN_ON_ONCE(IS_LOCAL_LIST_TYPE(node->type)))
+ 		return;
  
- 	addr->mode = mode;
+-	raw_spin_lock_irqsave(&l->lock, flags);
++	if (raw_res_spin_lock_irqsave(&l->lock, flags))
++		return;
+ 	__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
+-	raw_spin_unlock_irqrestore(&l->lock, flags);
++	raw_res_spin_unlock_irqrestore(&l->lock, flags);
+ }
  
--	if (mode == IEEE802154_ADDR_NONE)
-+	if (mode == IEEE802154_ADDR_NONE) {
-+		addr->pan_id = 0;
- 		return 0;
-+	}
+ static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
+@@ -319,7 +320,8 @@ static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
+ 	struct bpf_lru_node *node, *tmp_node;
+ 	unsigned int nfree = 0;
  
- 	if (!omit_pan) {
- 		memcpy(&addr->pan_id, buf + pos, 2);
+-	raw_spin_lock(&l->lock);
++	if (raw_res_spin_lock(&l->lock))
++		return;
+ 
+ 	__local_list_flush(l, loc_l);
+ 
+@@ -338,7 +340,7 @@ static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
+ 				      local_free_list(loc_l),
+ 				      BPF_LRU_LOCAL_LIST_T_FREE);
+ 
+-	raw_spin_unlock(&l->lock);
++	raw_res_spin_unlock(&l->lock);
+ }
+ 
+ static void __local_list_add_pending(struct bpf_lru *lru,
+@@ -404,7 +406,8 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free(struct bpf_lru *lru,
+ 
+ 	l = per_cpu_ptr(lru->percpu_lru, cpu);
+ 
+-	raw_spin_lock_irqsave(&l->lock, flags);
++	if (raw_res_spin_lock_irqsave(&l->lock, flags))
++		return NULL;
+ 
+ 	__bpf_lru_list_rotate(lru, l);
+ 
+@@ -420,7 +423,7 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free(struct bpf_lru *lru,
+ 		__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_INACTIVE);
+ 	}
+ 
+-	raw_spin_unlock_irqrestore(&l->lock, flags);
++	raw_res_spin_unlock_irqrestore(&l->lock, flags);
+ 
+ 	return node;
+ }
+@@ -437,7 +440,8 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
+ 
+ 	loc_l = per_cpu_ptr(clru->local_list, cpu);
+ 
+-	raw_spin_lock_irqsave(&loc_l->lock, flags);
++	if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
++		return NULL;
+ 
+ 	node = __local_list_pop_free(loc_l);
+ 	if (!node) {
+@@ -448,7 +452,7 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
+ 	if (node)
+ 		__local_list_add_pending(lru, loc_l, cpu, node, hash);
+ 
+-	raw_spin_unlock_irqrestore(&loc_l->lock, flags);
++	raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
+ 
+ 	if (node)
+ 		return node;
+@@ -466,13 +470,16 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
+ 	do {
+ 		steal_loc_l = per_cpu_ptr(clru->local_list, steal);
+ 
+-		raw_spin_lock_irqsave(&steal_loc_l->lock, flags);
++		if (raw_res_spin_lock_irqsave(&steal_loc_l->lock, flags)) {
++			steal = cpumask_next_wrap(steal, cpu_possible_mask);
++			continue;
++		}
+ 
+ 		node = __local_list_pop_free(steal_loc_l);
+ 		if (!node)
+ 			node = __local_list_pop_pending(lru, steal_loc_l);
+ 
+-		raw_spin_unlock_irqrestore(&steal_loc_l->lock, flags);
++		raw_res_spin_unlock_irqrestore(&steal_loc_l->lock, flags);
+ 
+ 		steal = cpumask_next_wrap(steal, cpu_possible_mask);
+ 	} while (!node && steal != first_steal);
+@@ -480,9 +487,10 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
+ 	loc_l->next_steal = steal;
+ 
+ 	if (node) {
+-		raw_spin_lock_irqsave(&loc_l->lock, flags);
++		if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
++			return NULL;
+ 		__local_list_add_pending(lru, loc_l, cpu, node, hash);
+-		raw_spin_unlock_irqrestore(&loc_l->lock, flags);
++		raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
+ 	}
+ 
+ 	return node;
+@@ -511,10 +519,11 @@ static void bpf_common_lru_push_free(struct bpf_lru *lru,
+ 
+ 		loc_l = per_cpu_ptr(lru->common_lru.local_list, node->cpu);
+ 
+-		raw_spin_lock_irqsave(&loc_l->lock, flags);
++		if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
++			return;
+ 
+ 		if (unlikely(node->type != BPF_LRU_LOCAL_LIST_T_PENDING)) {
+-			raw_spin_unlock_irqrestore(&loc_l->lock, flags);
++			raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
+ 			goto check_lru_list;
+ 		}
+ 
+@@ -522,7 +531,7 @@ static void bpf_common_lru_push_free(struct bpf_lru *lru,
+ 		bpf_lru_node_clear_ref(node);
+ 		list_move(&node->list, local_free_list(loc_l));
+ 
+-		raw_spin_unlock_irqrestore(&loc_l->lock, flags);
++		raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
+ 		return;
+ 	}
+ 
+@@ -538,11 +547,12 @@ static void bpf_percpu_lru_push_free(struct bpf_lru *lru,
+ 
+ 	l = per_cpu_ptr(lru->percpu_lru, node->cpu);
+ 
+-	raw_spin_lock_irqsave(&l->lock, flags);
++	if (raw_res_spin_lock_irqsave(&l->lock, flags))
++		return;
+ 
+ 	__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
+ 
+-	raw_spin_unlock_irqrestore(&l->lock, flags);
++	raw_res_spin_unlock_irqrestore(&l->lock, flags);
+ }
+ 
+ void bpf_lru_push_free(struct bpf_lru *lru, struct bpf_lru_node *node)
+@@ -625,7 +635,7 @@ static void bpf_lru_locallist_init(struct bpf_lru_locallist *loc_l, int cpu)
+ 
+ 	loc_l->next_steal = cpu;
+ 
+-	raw_spin_lock_init(&loc_l->lock);
++	raw_res_spin_lock_init(&loc_l->lock);
+ }
+ 
+ static void bpf_lru_list_init(struct bpf_lru_list *l)
+@@ -640,7 +650,7 @@ static void bpf_lru_list_init(struct bpf_lru_list *l)
+ 
+ 	l->next_inactive_rotation = &l->lists[BPF_LRU_LIST_T_INACTIVE];
+ 
+-	raw_spin_lock_init(&l->lock);
++	raw_res_spin_lock_init(&l->lock);
+ }
+ 
+ int bpf_lru_init(struct bpf_lru *lru, bool percpu, u32 hash_offset,
+diff --git a/kernel/bpf/bpf_lru_list.h b/kernel/bpf/bpf_lru_list.h
+index fe2661a58..ecd93c77a 100644
+--- a/kernel/bpf/bpf_lru_list.h
++++ b/kernel/bpf/bpf_lru_list.h
+@@ -7,6 +7,7 @@
+ #include <linux/cache.h>
+ #include <linux/list.h>
+ #include <linux/spinlock_types.h>
++#include <asm/rqspinlock.h>
+ 
+ #define NR_BPF_LRU_LIST_T	(3)
+ #define NR_BPF_LRU_LIST_COUNT	(2)
+@@ -34,13 +35,13 @@ struct bpf_lru_list {
+ 	/* The next inactive list rotation starts from here */
+ 	struct list_head *next_inactive_rotation;
+ 
+-	raw_spinlock_t lock ____cacheline_aligned_in_smp;
++	rqspinlock_t lock ____cacheline_aligned_in_smp;
+ };
+ 
+ struct bpf_lru_locallist {
+ 	struct list_head lists[NR_BPF_LRU_LOCAL_LIST_T];
+ 	u16 next_steal;
+-	raw_spinlock_t lock;
++	rqspinlock_t lock;
+ };
+ 
+ struct bpf_common_lru {
 
 
 base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
