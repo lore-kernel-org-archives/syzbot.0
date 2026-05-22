@@ -1,88 +1,81 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE32A3A1A5B;
-	Fri, 22 May 2026 13:19:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 845C23D3332
+	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 15:19:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779455993; cv=none; b=JND06S0+rqzWsH95tRasx0z3BfLQMNA5fUIlii6ZwF4nrOAPkHWjK5Q+0JrhsL60xLnnHIFr8ettZZBNPAcz75IoSzBGyVvjTX56oyBrjwXsNMkMGRZ1nB41nWQudi/r+0Eg+9nh8PNZe4Tmf3SxegCjbvlLnzsV6h/LeU+RZX4=
+	t=1779463160; cv=none; b=XugNM6DU15NANygDlNudRAytv6HVCfZF6bJnDTcCoxnaI5ol0ddDzdVBp/djYvGVQj/Bqf6/q2y9PDy0YD7iCfH3bJyFwES/SN21k0zDRQq1lpwbMNTNehPal4RRbOmMoOzqdnNatLh2eQ6YMYDcdlIem1oIlLFEn27pNUbymJ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779455993; c=relaxed/simple;
-	bh=67Nw31SHx5f3pBj4MpklV3IIJP9hLe1nVmml2RZqyIY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bWi/CSHnGCX4r/q+eOvJ9QUIVpJSNmXZeEE5UOZ498D8CNpRwurXHd/IjQmcwgKH7AsnLMDrWcGAvOFqPJB/vd0wm1B473XS8SYnHhZIeW9PqZTSSv8qsSKDHCqf5MjK6ZID6QtBaxea3bZhE5R9GLfdFB805CvqwEU9q+b235I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Wl0mVc8N; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779463160; c=relaxed/simple;
+	bh=2foWLkrj8STor7c9+ss1DThiZVazCw8DTA7X3U3ximw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 In-Reply-To:Content-Type:Content-Disposition; b=Ay03CyC+xJS0R4XWJncp2STa/7MtGpp7HmzB8U1ZgXRmkwRX/xeqdvX8SD3tqk0O+rIwnJQ9mP6UgP2TrZBAzBfxC+BdAGt/qISW3fuS4ESD/pQFgujLw4vOzC+machZFNcpG/BZCOv5pJfqLDGsjDL0MrEnIy9BOwo4AdJxtjw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=H9FSDw6X; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Wl0mVc8N"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A9DB1F000E9;
-	Fri, 22 May 2026 13:19:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779455992;
-	bh=S7RoafszWP7asezUtxwq8wQdAcqcEhh8i70al/jw0kw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Wl0mVc8N+duyZp2xL5rH02hz4YZChNbNjnsRJwoPRxwl13odA3rJ1x7YjxGwkIV98
-	 jAsjGGv1lSw0TD3knfVer9Zi8zVG0am1SBxGBu5f2ZyE1ZRL2QVjV7WrTT9ddcl1dL
-	 3k+qwnbJSq6UNg1ssv4vj8f42m2R6P71QKNfQeQ0IP7EK7iLfAyZ7gYVAG/XX4jZG9
-	 s+uqIIGTfWfpUH/QGszD3uE772OEcjA8dm2LGTFaGMoZh08xVzJMFwseTP4Z+pwC/a
-	 dlIeStHg6bW9IQPXXm5/CmfleWchJ95/WZX6mDNvk16yuI3RH1DHa/KTvTdoIEC2KU
-	 HN04mf0Gqy0CQ==
-From: Christian Brauner <brauner@kernel.org>
-To: syzkaller-bugs@googlegroups.com,
-	linux-kernel@vger.kernel.org,
-	Aleksandr Nogikh <nogikh@google.com>
-Cc: Christian Brauner <brauner@kernel.org>,
-	adrianhuang0701@gmail.com,
-	akpm@linux-foundation.org,
-	kexinsun@smail.nju.edu.cn,
-	oleg@redhat.com,
-	peterz@infradead.org,
-	syzbot@lists.linux.dev,
-	tglx@kernel.org,
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="H9FSDw6X"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1779463154;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2foWLkrj8STor7c9+ss1DThiZVazCw8DTA7X3U3ximw=;
+	b=H9FSDw6XpYL2Xv4Yi1q7AsrAg+9PuicmKsn2ln4v69mV+dvyH2VukJNTIeuv+XEK6HgpPz
+	pmPfPnK9atTK+pGBWXA7rSob5G6Y7OPgRquxiPRpWIOGVXsNXs8D4DmVwx+FDv8TSTgXwH
+	vUiAedhQNyqRq/N4kcfzZ/VRhN1Md1o=
+Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-687-SPcr6a4JP_SepOAJet3SEQ-1; Fri,
+ 22 May 2026 11:19:09 -0400
+X-MC-Unique: SPcr6a4JP_SepOAJet3SEQ-1
+X-Mimecast-MFC-AGG-ID: SPcr6a4JP_SepOAJet3SEQ_1779463148
+Received: from mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.12])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 84CB81956046;
+	Fri, 22 May 2026 15:19:07 +0000 (UTC)
+Received: from fedora (unknown [10.44.48.45])
+	by mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with SMTP id DEADD19560A3;
+	Fri, 22 May 2026 15:19:02 +0000 (UTC)
+Received: by fedora (nbSMTP-1.00) for uid 1000
+	oleg@redhat.com; Fri, 22 May 2026 17:19:07 +0200 (CEST)
+Date: Fri, 22 May 2026 17:19:01 +0200
+From: Oleg Nesterov <oleg@redhat.com>
+To: Christian Brauner <brauner@kernel.org>
+Cc: syzkaller-bugs@googlegroups.com, linux-kernel@vger.kernel.org,
+	Aleksandr Nogikh <nogikh@google.com>, adrianhuang0701@gmail.com,
+	akpm@linux-foundation.org, kexinsun@smail.nju.edu.cn,
+	peterz@infradead.org, syzbot@lists.linux.dev, tglx@kernel.org,
 	dvyukov@google.com,
 	syzbot+b109633ea805cac54a61@syzkaller.appspotmail.com
-Subject: Re: [PATCH v2] signal: clear JOBCTL_PENDING_MASK for caller in zap_other_threads()
-Date: Fri, 22 May 2026 15:19:46 +0200
-Message-ID: <20260522-enthoben-planquadrat-tanzabend-5072faf6ae6b@brauner>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260521142240.2973022-1-nogikh@google.com>
+Subject: Re: [PATCH v2] signal: clear JOBCTL_PENDING_MASK for caller in
+ zap_other_threads()
+Message-ID: <ahBz5cBxfZiJSfqk@redhat.com>
 References: <20260521142240.2973022-1-nogikh@google.com>
+ <20260522-enthoben-planquadrat-tanzabend-5072faf6ae6b@brauner>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1433; i=brauner@kernel.org; h=from:subject:message-id; bh=67Nw31SHx5f3pBj4MpklV3IIJP9hLe1nVmml2RZqyIY=; b=owGbwMvMwCU28Zj0gdSKO4sYT6slMWQJhH+aG93LdyTy8qtmlSO3jxgGvZi0eAKL92m/HKUHd W/nnZiT0lHKwiDGxSArpsji0G4SLrecp2KzUaYGzBxWJpAhDFycAjCRp/GMDN3C1rNitvw6UBNS kKGjUXKh53rSrq/+jQ1xMx7N2ahrxcPwTyE5WFvQID84xNMzP/BsUMy0pScVJ4qb9krseadm6sn GBgA=
-X-Developer-Key: i=brauner@kernel.org; a=openpgp; fpr=4880B8C9BD0E5106FC070F4F7B3C391EFEA93624
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260522-enthoben-planquadrat-tanzabend-5072faf6ae6b@brauner>
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.12
+X-Mimecast-MFC-PROC-ID: dzu6CqBw64szB5eSMEbQ6zCExPo89D94rZHmA1Dk9G8_1779463148
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Thu, 21 May 2026 16:22:40 +0200, Aleksandr Nogikh wrote:
-> When a multi-threaded process receives a stop signal (e.g., SIGSTOP),
-> do_signal_stop() sets JOBCTL_STOP_PENDING and JOBCTL_STOP_CONSUME on all
-> threads and sets signal->group_stop_count to the number of threads. If
-> one of the threads concurrently calls execve(), de_thread() invokes
-> zap_other_threads() to kill all other threads. zap_other_threads()
-> aborts the pending group stop by resetting signal->group_stop_count to 0
-> and clears the JOBCTL_PENDING_MASK for all other threads. However, it
-> fails to clear the job control flags for the calling thread.
-> 
-> [...]
+On 05/22, Christian Brauner wrote:
+>
+> It's encouraged to provide Acked-bys and Reviewed-bys even though the
+> patch has now been applied. If possible patch trailers will be updated.
 
-Applied to the vfs.fixes branch of the vfs/vfs.git tree.
-Patches in the vfs.fixes branch should appear in linux-next soon.
+I have already acked V1, let me ack V2 as well.
 
-Please report any outstanding bugs that were missed during review in a
-new review to the original patch series allowing us to drop it.
+Acked-by: Oleg Nesterov <oleg@redhat.com>
 
-It's encouraged to provide Acked-bys and Reviewed-bys even though the
-patch has now been applied. If possible patch trailers will be updated.
-
-Note that commit hashes shown below are subject to change due to rebase,
-trailer updates or similar. If in doubt, please check the listed branch.
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/vfs/vfs.git
-branch: vfs.fixes
-
-[1/1] signal: clear JOBCTL_PENDING_MASK for caller in zap_other_threads()
-      https://git.kernel.org/vfs/vfs/c/90918794a4e2
