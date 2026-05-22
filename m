@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BF393939B2
-	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 07:30:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA6C03FF1
+	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 07:30:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779435033; cv=none; b=QilQvNyuPKUuLCxuwdSfMoCdmlPehVV1VFqBPjjpZ0UlZFyg1OObuZWTWpc89jBNllRmCq4ZkuYLOa11cDf258pFaanjn+muIMRPz47qXCmVSCG40j1SUgO9Q6ygLA2zpYx50QfmsCd7SVt/BgzW7Ez7oidZCZqjER+ikhdj0aA=
+	t=1779435061; cv=none; b=N5fqK1IzfEIRBxjz7kgYXouiQa58Ubx4yJdby2hjHoycteADn21e11hjmZKQHxTyR90laMm24xL5fMKWjRYGMddH9W8L7sfP8zWvNuJdlhABTOGDXrXQEGteNVUeK/vJrl1AJ0hEYSyxtzQdNNnmcPt8XnP97KIeILEzOgh65yI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779435033; c=relaxed/simple;
-	bh=Zw2LfystQ0ARHIm9mc4QE/GPC21oOXVyrcxKhapeVsY=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=t1u6RwgJyWKartE4tPewjbRmmUNAL1NAdrhncDWFOx1z42XaFjVudxm85YOD5XEaCkyGZxqJTcj5/0LaQp86E6ug6Gk61dvHVrdogmZqYilhFZhAMnfRODbZxHhs3QNCgdR5rO3xcCIJZtBXIk+yvhT9YrCgxSi4Og5p3Om8hec=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EuLqAM5B; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779435061; c=relaxed/simple;
+	bh=SpW8JNRb6InYM223sRNBW4JR5xesmj/1ORulRxjcZLw=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=CD6eAY1nx/8Njy9TkgbR9gFr5i8acVRIjNa0r/JD0LNJCYGaxBqicdXPzSbUVWe96EmPjHsqTLFVoZyvV7RNm7dg0riHN8l3eW4EhcJScHbAu+M2Tbdlt48CxRgkyknyOYQ2Fgeo7Xq4ezHMRBlsSTkoEIp2vCZZBWSa6s+oAoo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Yu6dAjcl; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EuLqAM5B"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id E946D1F000E9;
-	Fri, 22 May 2026 07:30:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Yu6dAjcl"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 542451F000E9;
+	Fri, 22 May 2026 07:30:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779435030;
-	bh=D5YX9CQiy3TH9orNjP1tiwd4S9MxGjqkN9Ge8OkmFOY=;
+	s=k20260515; t=1779435059;
+	bh=QZk83pToljXOfTQmpkZ3I0ix5YoBwKfs5FUxfMecRwo=;
 	h=From:To:Cc:Subject:Date;
-	b=EuLqAM5BhbIH4U2+S3lZOIn+wkqjpvMc5SkACtqM3H80Wcc+P38rMstDs79b9DRIM
-	 ADPMX0hK9iRgddaIqPMgrGpNSTXyiRsAu1Yfm5SgaVoA0hqWzEgvTNH86otmRkXKLv
-	 iY+6M81hH9K0Q2OHpdjiMgcT09lBRTT1TfIW/Fk/tgpjf0tr/wuGhbvRp3guLMCT26
-	 +s/sKyVGwKQBgtNGen1lzy7pc7axt+F8fsv/xBAo7NtvJ9qumLoqtEw0ntKaWCP3ZX
-	 g0nfuLd87x9xEixuJwEbEea37ZEwnA/CghQKPR6o70g4V2CHtfZoT4XdvlHcw5709Y
-	 0x43HqYreKAxw==
+	b=Yu6dAjclyAFXTN2tVC7pFp0aTF5brSGTTu0YT23FrjZYznE4tagnPFmF0EMcFyJng
+	 56Ix6ceEeoANmyKMTwIk/uSYzzmQ1Q6wWBfZAst0iYAPV6XvDNWYg0mv/J5Bkg3xcY
+	 lqqS5eUlqnX3on71qtjcLHKsmYdlGTF0tTYAPZqn1qExcT3hkIhBcZpWBMN0PnfpvR
+	 HEtszbscQbpsRBvQFRPqbgDhp7cWJ7f/7NEIvTbFQQnkHfnwitITy/4UC/dVhEzqGg
+	 +6Y7Rgh6bdrCyWnwYXZl0UsGJfwhdp1C2dYSio8vMbZCFx7G60VZBTkdx0hWAN6Ocd
+	 osUKg+lf7HV+w==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] btrfs: fix double free of data space reservation on direct IO error
-Message-ID: <07963d2a-cd0f-4940-a5bc-33dd8f425781@mail.kernel.org>
+Subject: [PATCH RFC] net/sched: taprio: fix RCU stall due to small schedule intervals
+Message-ID: <3e71ab96-4043-41af-856e-0c4c7373fb95@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,116 +38,149 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri, 22 May 2026 07:30:29 +0000 (UTC)
+Date: Fri, 22 May 2026 07:30:59 +0000 (UTC)
 
-When a Direct I/O write begins, btrfs_dio_iomap_begin() reserves
-data_alloc_len bytes of data space by calling
-btrfs_check_data_free_space(). This increments the bytes_may_use counter
-in the appropriate data space_info. Later,
-btrfs_get_blocks_direct_write() calls btrfs_new_extent_direct() to
-allocate an extent. Inside btrfs_new_extent_direct(),
-btrfs_reserve_extent() is called, which successfully allocates an extent
-of size ins.offset on disk and converts ins.offset bytes from
-bytes_may_use to bytes_reserved (via btrfs_add_reserved_bytes()). Next,
-btrfs_new_extent_direct() calls btrfs_create_dio_extent(). If this fails
-(e.g., due to memory allocation failure), btrfs_new_extent_direct()
-calls btrfs_free_reserved_extent() to free the allocated extent.
-btrfs_free_reserved_extent() decrements bytes_reserved by ins.offset,
-effectively freeing the space. However, it does not restore the
-ins.offset bytes back to bytes_may_use.
+The taprio qdisc allows configuring schedule intervals that are
+physically valid for high-speed links but are far too small for the
+software hrtimer subsystem to handle. For example, at 10 Gbps, the
+minimum duration for a 60-byte frame is 48 nanoseconds. If a user
+configures an interval of 255 nanoseconds, it passes the physical
+validation check.
 
-The error propagates back to btrfs_dio_iomap_begin(), which jumps to the
-error handling path. Because dio_data->data_space_reserved is still
-true, it calls btrfs_free_reserved_data_space() for the entire
-data_alloc_len. This function blindly decrements bytes_may_use by
-data_alloc_len. Since ins.offset bytes were already converted to
-bytes_reserved and freed, decrementing bytes_may_use by the full
-data_alloc_len causes bytes_may_use to be decremented by ins.offset
-twice. This underflows the counter, triggering a warning in
-btrfs_space_info_update_bytes_may_use().
+However, the execution overhead of the hrtimer interrupt itself is
+typically much larger than 255 nanoseconds. When the hrtimer fires,
+advance_sched() calculates the next end_time by adding the interval to
+the previous end_time. Because this advancement is smaller than the
+interrupt overhead, the newly calculated end_time is still in the past.
+When advance_sched() returns HRTIMER_RESTART, the hrtimer subsystem sees
+the timer is already expired and executes it again immediately. The
+timer never catches up to the current time, trapping the CPU in an
+infinite hrtimer interrupt loop and causing an RCU stall.
 
-To fix this, btrfs_new_extent_direct() must restore the ins.offset bytes
-back to bytes_may_use when btrfs_create_dio_extent() fails. This ensures
-that when the error propagates up, btrfs_dio_iomap_begin() can safely
-free the entire data_alloc_len from bytes_may_use. Introduce a new
-helper function, btrfs_add_reserved_data_space_noquota(), which
-correctly uses data_sinfo_for_inode() to select the right space_info
-(handling zoned data relocation roots) and directly updates
-bytes_may_use without triggering unnecessary ticket granting. Call this
-new helper in the error path of btrfs_new_extent_direct().
+Fix this by introducing a two-fold solution. First, in advance_sched(),
+introduce a loop to advance the schedule until the calculated end_time
+is strictly in the future. This ensures that if the hrtimer fires late,
+it will skip over schedule entries that are already in the past instead
+of blindly advancing by a single entry. Second, in fill_sched_entry(),
+enforce a minimum interval of 1 microsecond (NSEC_PER_USEC) when
+software scheduling is used. This prevents users from configuring
+schedules that the software cannot physically keep up with, avoiding
+excessive CPU time spent in the interrupt handler.
 
-Fixes: 18513091af94 ("btrfs: update btrfs_space_info's bytes_may_use timely")
+Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
 Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+9064acebb06685edb243@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=9064acebb06685edb243
-Link: https://syzkaller.appspot.com/ai_job?id=913538c5-7b36-4127-ab45-6efa99a3628e
-To: "Chris Mason" <clm@fb.com>
-To: "David Sterba" <dsterba@suse.com>
-To: <linux-btrfs@vger.kernel.org>
+Reported-by: syzbot+2e90866706ad999df132@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=2e90866706ad999df132
+Link: https://syzkaller.appspot.com/ai_job?id=a76df798-c9cc-4943-937d-81102e228a11
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jamal Hadi Salim" <jhs@mojatatu.com>
+To: "Jiri Pirko" <jiri@resnulli.us>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
+Cc: "Simon Horman" <horms@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/fs/btrfs/delalloc-space.c b/fs/btrfs/delalloc-space.c
-index 0970799d0..7cfb829a3 100644
---- a/fs/btrfs/delalloc-space.c
-+++ b/fs/btrfs/delalloc-space.c
-@@ -189,6 +189,24 @@ void btrfs_free_reserved_data_space_noquota(struct btrfs_inode *inode, u64 len)
- 	btrfs_space_info_free_bytes_may_use(data_sinfo_for_inode(inode), len);
- }
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 45245157e..9e298b0cf 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -925,6 +925,7 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 	struct sched_entry *entry, *next;
+ 	struct Qdisc *sch = q->root;
+ 	ktime_t end_time;
++	ktime_t now;
+ 	int tc;
  
-+/*
-+ * Restore a data reservation for this inode.
-+ * Normally called when a reservation was converted to bytes_reserved but the
-+ * subsequent operation failed, so the bytes need to be restored to bytes_may_use
-+ * so the caller can free them.
-+ */
-+void btrfs_add_reserved_data_space_noquota(struct btrfs_inode *inode, u64 len)
-+{
-+	struct btrfs_fs_info *fs_info = inode->root->fs_info;
-+	struct btrfs_space_info *sinfo = data_sinfo_for_inode(inode);
+ 	spin_lock(&q->current_entry_lock);
+@@ -951,36 +952,44 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 		goto first_run;
+ 	}
+ 
+-	if (should_restart_cycle(oper, entry)) {
+-		next = list_first_entry(&oper->entries, struct sched_entry,
+-					list);
+-		oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
+-						    oper->cycle_time);
+-	} else {
+-		next = list_next_entry(entry, list);
+-	}
++	now = taprio_get_time(q);
+ 
+-	end_time = ktime_add_ns(entry->end_time, next->interval);
+-	end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
++	do {
++		if (should_restart_cycle(oper, entry)) {
++			next = list_first_entry(&oper->entries,
++						struct sched_entry, list);
++			oper->cycle_end_time = ktime_add_ns(
++				oper->cycle_end_time, oper->cycle_time);
++		} else {
++			next = list_next_entry(entry, list);
++		}
+ 
+-	for (tc = 0; tc < num_tc; tc++) {
+-		if (next->gate_duration[tc] == oper->cycle_time)
+-			next->gate_close_time[tc] = KTIME_MAX;
+-		else
+-			next->gate_close_time[tc] = ktime_add_ns(entry->end_time,
+-								 next->gate_duration[tc]);
+-	}
++		end_time = ktime_add_ns(entry->end_time, next->interval);
++		end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
+ 
+-	if (should_change_schedules(admin, oper, end_time)) {
+-		switch_schedules(q, &admin, &oper);
+-		/* After changing schedules, the next entry is the first one
+-		 * in the new schedule, with a pre-calculated end_time.
+-		 */
+-		next = list_first_entry(&oper->entries, struct sched_entry, list);
+-		end_time = next->end_time;
+-	}
++		for (tc = 0; tc < num_tc; tc++) {
++			if (next->gate_duration[tc] == oper->cycle_time)
++				next->gate_close_time[tc] = KTIME_MAX;
++			else
++				next->gate_close_time[tc] =
++					ktime_add_ns(entry->end_time,
++						     next->gate_duration[tc]);
++		}
 +
-+	ASSERT(IS_ALIGNED(len, fs_info->sectorsize));
++		if (should_change_schedules(admin, oper, end_time)) {
++			switch_schedules(q, &admin, &oper);
++			/* After changing schedules, the next entry is the first one
++			 * in the new schedule, with a pre-calculated end_time.
++			 */
++			next = list_first_entry(&oper->entries,
++						struct sched_entry, list);
++			end_time = next->end_time;
++		}
 +
-+	spin_lock(&sinfo->lock);
-+	btrfs_space_info_update_bytes_may_use(sinfo, len);
-+	spin_unlock(&sinfo->lock);
-+}
-+
- /*
-  * Called if we need to clear a data reservation for this inode
-  * Normally in a error case.
-diff --git a/fs/btrfs/delalloc-space.h b/fs/btrfs/delalloc-space.h
-index 6119c0d3f..58ecfad7b 100644
---- a/fs/btrfs/delalloc-space.h
-+++ b/fs/btrfs/delalloc-space.h
-@@ -19,6 +19,7 @@ void btrfs_delalloc_release_space(struct btrfs_inode *inode,
- 				  struct extent_changeset *reserved,
- 				  u64 start, u64 len, bool qgroup_free);
- void btrfs_free_reserved_data_space_noquota(struct btrfs_inode *inode, u64 len);
-+void btrfs_add_reserved_data_space_noquota(struct btrfs_inode *inode, u64 len);
- void btrfs_delalloc_release_metadata(struct btrfs_inode *inode, u64 num_bytes,
- 				     bool qgroup_free);
- int btrfs_delalloc_reserve_space(struct btrfs_inode *inode,
-diff --git a/fs/btrfs/direct-io.c b/fs/btrfs/direct-io.c
-index 57167d56d..04cdf11d8 100644
---- a/fs/btrfs/direct-io.c
-+++ b/fs/btrfs/direct-io.c
-@@ -205,8 +205,14 @@ static struct extent_map *btrfs_new_extent_direct(struct btrfs_inode *inode,
- 	em = btrfs_create_dio_extent(inode, dio_data, start, &file_extent,
- 				     BTRFS_ORDERED_REGULAR);
- 	btrfs_dec_block_group_reservations(fs_info, ins.objectid);
--	if (IS_ERR(em))
-+	if (IS_ERR(em)) {
- 		btrfs_free_reserved_extent(fs_info, ins.objectid, ins.offset, true);
-+		/*
-+		 * btrfs_reserve_extent() converted the bytes from bytes_may_use to
-+		 * bytes_reserved. We need to restore them so the caller can free them.
-+		 */
-+		btrfs_add_reserved_data_space_noquota(inode, ins.offset);
++		next->end_time = end_time;
++		entry = next;
++	} while (unlikely(ktime_compare(end_time, now) <= 0));
+ 
+-	next->end_time = end_time;
+ 	taprio_set_budgets(q, oper, next);
+ 
+ first_run:
+@@ -1061,6 +1070,13 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
+ 		return -EINVAL;
+ 	}
+ 
++	/* hrtimers cannot keep up with very small intervals */
++	if (!FULL_OFFLOAD_IS_ENABLED(q->flags) && interval < NSEC_PER_USEC) {
++		NL_SET_ERR_MSG(extack,
++			       "Invalid interval for software schedule entry");
++		return -EINVAL;
 +	}
++
+ 	entry->interval = interval;
  
- 	return em;
- }
+ 	return 0;
 
 
 base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
