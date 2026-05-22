@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B62738C2A5
-	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 16:49:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9990536728D
+	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 18:53:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779468574; cv=none; b=SEI/HZo+fvdyc6UTUB5VSJOhyljPMmjhh0LsIuZ2FnHyLmZT0PGSh7AFW00C9chMS6QY2vov9V18Udc4OMxcBdy11og9xOUY5x2jyhaiIoNnFuKtZfam6aSVVqkVL58oLfm9laJPNrO00rLbpFU/NKQdzAq9UGbix/mZd5ULnmM=
+	t=1779476013; cv=none; b=RtCbmQK7QIvFN5YUpaBfTG5ASam/+QQrE6/PV5D9JU+tZG8QeqPC4L+qIMlClDAMmZn80HmBjqfgSpStbvnY2uWIKGUONP0FPrCbqi3Kgw0yiJjI0GRYi5ezApIb/LC4xUatHbsRGpQ4GX53o/Ndf/syd9yY+IN6O33MdSXNe2Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779468574; c=relaxed/simple;
-	bh=ehveq2SpDMYFqT8LIQF0FEFoVY8QG6ASkAt3k5I2NFo=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Gd7q4iHqme1ACaboZY/Z5vAcc3GYq4p3C1kINEE+lr4BSkg2gKcCDPETQFl4F8hFV8c1HyMdHUowOiUzxDOcpIce7IdpVFHoAaIERqnB5ocKKD9Yz8TlbgHX/m1ZpbyiKk1grqY8J1Yk+5tE4ZIlvpOB4SHU7iaAEC3gCWu+7DI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c6Afa1tM; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779476013; c=relaxed/simple;
+	bh=LempnC5ZFpZNSCocMBaBBMaWQ/Q+Zmb2bLrMU5BwLGQ=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=mJ62Ps36EKEABzRgUJoPXdnppKWv92XilWlQqjiutXERvyTs4liz6zqnhmBdmZg4ZQ+YqyZKdSpFFzTg4lVctstN4NXQq/YYBgs1f6awODRu9g1V2FVPv+3eoWkzlJCyUu0bEAArkwF7misgFawTD1E1EuTC4+YpZR2AucRFRl0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mT21ir4n; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c6Afa1tM"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 32F6D1F000E9;
-	Fri, 22 May 2026 16:49:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mT21ir4n"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 3EA5F1F000E9;
+	Fri, 22 May 2026 18:53:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779468572;
-	bh=PqA0hIh7u5zorA4ucISCaNVitxM8yQO5ZL6AlE2Zujo=;
+	s=k20260515; t=1779476012;
+	bh=E+VL3dh8KKNSggNCQgvdOUAtLiC+RzSzTenLoGO4atI=;
 	h=From:To:Cc:Subject:Date;
-	b=c6Afa1tMFhiCekY9svGaO/fNx38QLg61DVemMcmRQXTKBbuCkGaCA/yt1EFjWt7pD
-	 KCZp+CSbb7yVXTXfVtoS8HD/Uisr8TCKOP4GTp7sWZqEfY06x21Xm9SA2NqRnp2TK+
-	 mjwoxkvi8XgiYA1bmZtVtjPRY/se7egvQW3J0aHmOv9a9HpY7ZIJy2BpBB/fcY1Fc/
-	 y3v6P0aoCkp/HDfy8u2R5xhxylKyVNIOMlpL6GfPBXrwXOur6Ii15OiIQ5JpBkECC4
-	 trAg71NZnWLSr6ZxYEQNcN0QMk78nl4nv70GpfPHvE305PsQWmuQyYlPGJb4OL1Vnb
-	 5Osi9gOR0V82Q==
+	b=mT21ir4nezH7gvtmro4Mi9iObyksr4LJUsSLP9YtGzHdR4sjfIKNO/FzdgXYdVGSg
+	 JxvNr7NQ7moP9KNw76yco3Aki+tVI9wD2uimp5+k3v9swudRP+DYwXL1d3m4e4D/wx
+	 1HQaFdVu/2+X+6yH8PTUt6enwWV+0Nt5y2GKCM4tdzDrkWv6JYKDPWIHI+QvHiJcZO
+	 F/tQDig4MmSt+17gNYt2JdleayxArWYmXjBy2vpH2D4ekh7Zy8HYpRKMR/QmpoMZrW
+	 S4EeUNTKJskUX9vv7OSGDPXsKcoH6Vg0ITlfKb7V/GblRR9sQNnv32+Nm1h73Azljg
+	 87PXmnNA5FxKA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] bpf: Convert bpf_lru_list locks to rqspinlock
-Message-ID: <fb104cfc-a3b3-4cc6-819a-a5f09aa97ecd@mail.kernel.org>
+Subject: [PATCH RFC v2] btrfs: fix double free of data space reservation on direct IO error
+Message-ID: <966ef17f-f80c-468a-b763-53470ff4cf1c@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,319 +38,122 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri, 22 May 2026 16:49:32 +0000 (UTC)
+Date: Fri, 22 May 2026 18:53:32 +0000 (UTC)
 
-Lockdep reports an inconsistent lock state ({INITIAL USE} -> {IN-NMI})
-for the loc_l->lock in the BPF LRU list implementation. This occurs
-because the lock is first acquired in a normal syscall context (e.g.,
-during BPF_MAP_UPDATE_BATCH) and later attempted to be acquired in an
-NMI context (e.g., when a hardware breakpoint triggers a perf event that
-executes a BPF program).
+When a Direct I/O write begins, btrfs_dio_iomap_begin() reserves
+data_alloc_len bytes of data space by calling
+btrfs_check_data_free_space(). This increments the bytes_may_use counter
+in the appropriate data space_info. Later,
+btrfs_get_blocks_direct_write() calls btrfs_new_extent_direct() to
+allocate an extent. Inside btrfs_new_extent_direct(),
+btrfs_reserve_extent() is called, which successfully allocates an extent
+of size ins.offset on disk and converts ins.offset bytes from
+bytes_may_use to bytes_reserved (via btrfs_add_reserved_bytes()). Next,
+btrfs_new_extent_direct() calls btrfs_create_dio_extent(). If this fails
+(e.g., due to memory allocation failure), btrfs_new_extent_direct()
+calls btrfs_free_reserved_extent() to free the allocated extent.
+btrfs_free_reserved_extent() decrements bytes_reserved by ins.offset,
+effectively freeing the space. However, it does not restore the
+ins.offset bytes back to bytes_may_use.
 
-While lockdep correctly identifies that raw_spinlock_t is not NMI-safe,
-this specific deadlock is prevented in practice by the bpf_prog_active
-counter. If an NMI interrupts a map operation, the NMI handler checks
-bpf_prog_active and skips executing the BPF program, preventing it from
-acquiring the already-held lock. However, lockdep is unaware of this
-protection mechanism, leading to a false positive.
+The error propagates back to btrfs_dio_iomap_begin(), which jumps to the
+error handling path. Because dio_data->data_space_reserved is still
+true, it calls btrfs_free_reserved_data_space() for the entire
+data_alloc_len. This function blindly decrements bytes_may_use by
+data_alloc_len. Since ins.offset bytes were already converted to
+bytes_reserved and freed, decrementing bytes_may_use by the full
+data_alloc_len causes bytes_may_use to be decremented by ins.offset
+twice. This underflows the counter, triggering a warning in
+btrfs_space_info_update_bytes_may_use().
 
-To resolve this false positive and provide robust deadlock prevention,
-convert the raw_spinlock_t locks in bpf_lru_list to rqspinlock_t
-(resilient queued spinlock), similar to the conversion previously done
-for hashtab.c. The rqspinlock infrastructure is designed to return an
-error instead of deadlocking and is invisible to lockdep.
+To fix this, btrfs_new_extent_direct() must restore the ins.offset bytes
+back to bytes_may_use when btrfs_create_dio_extent() fails. This ensures
+that when the error propagates up, btrfs_dio_iomap_begin() can safely
+free the entire data_alloc_len from bytes_may_use. Introduce a new
+helper function, btrfs_add_reserved_data_space_noquota(), which
+correctly uses data_sinfo_for_inode() to select the right space_info
+(handling zoned data relocation roots) and directly updates
+bytes_may_use without triggering unnecessary ticket granting. Call this
+new helper in the error path of btrfs_new_extent_direct().
 
-With this conversion, raw_spin_lock_irqsave() is replaced with
-raw_res_spin_lock_irqsave(). If the lock cannot be acquired during pop
-operations, the functions gracefully return NULL, which propagates as
--ENOMEM to the BPF program. In push operations, the functions simply
-return, effectively dropping the node, as leaking the preallocated
-element is an acceptable trade-off to avoid a hard deadlock in NMI
-context.
-
-Fixes: 4fa8d68aa53e ("bpf: Convert hashtab.c to rqspinlock")
+Fixes: 18513091af94 ("btrfs: update btrfs_space_info's bytes_may_use timely")
 Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+c69a0a2c816716f1e0d5@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=c69a0a2c816716f1e0d5
-Link: https://syzkaller.appspot.com/ai_job?id=9f9ed48b-dcf3-4a02-bdec-27f50787f4e2
-To: "Andrii Nakryiko" <andrii@kernel.org>
-To: "Alexei Starovoitov" <ast@kernel.org>
-To: <bpf@vger.kernel.org>
-To: "Daniel Borkmann" <daniel@iogearbox.net>
-To: "Eduard Zingerman" <eddyz87@gmail.com>
-To: "Martin KaFai Lau" <martin.lau@linux.dev>
-To: "Kumar Kartikeya Dwivedi" <memxor@gmail.com>
-Cc: "Jiri Olsa" <jolsa@kernel.org>
+Reported-by: syzbot+9064acebb06685edb243@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=9064acebb06685edb243
+Link: https://syzkaller.appspot.com/ai_job?id=343be34d-df17-4e23-82ac-9918e4cd4783
+To: "Chris Mason" <clm@fb.com>
+To: "David Sterba" <dsterba@suse.com>
+To: <linux-btrfs@vger.kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Song Liu" <song@kernel.org>
-Cc: "Yonghong Song" <yonghong.song@linux.dev>
 
 ---
 v2:
-- Added comments explaining the failure paths when rqspinlock acquisition fails.
-- Added <asm/rqspinlock.h> include to bpf_lru_list.c.
+- Resending the patch as requested by the reviewer to test functionality.
 
 v1:
-https://lore.kernel.org/all/4c0d4f36-c99b-4235-801d-e9a27dfa6c8e@mail.kernel.org/T/
+https://lore.kernel.org/all/07963d2a-cd0f-4940-a5bc-33dd8f425781@mail.kernel.org/T/
 ---
-diff --git a/kernel/bpf/bpf_lru_list.c b/kernel/bpf/bpf_lru_list.c
-index e7a2fc605..49f4639db 100644
---- a/kernel/bpf/bpf_lru_list.c
-+++ b/kernel/bpf/bpf_lru_list.c
-@@ -4,6 +4,7 @@
- #include <linux/cpumask.h>
- #include <linux/spinlock.h>
- #include <linux/percpu.h>
-+#include <asm/rqspinlock.h>
- 
- #include "bpf_lru_list.h"
- 
-@@ -307,9 +308,18 @@ static void bpf_lru_list_push_free(struct bpf_lru_list *l,
- 	if (WARN_ON_ONCE(IS_LOCAL_LIST_TYPE(node->type)))
- 		return;
- 
--	raw_spin_lock_irqsave(&l->lock, flags);
-+	if (raw_res_spin_lock_irqsave(&l->lock, flags)) {
-+		/*
-+		 * If the lock is contended, it means we are in an NMI context
-+		 * and the lock is already held by the interrupted context.
-+		 * In this case, we prefer to leak the node rather than
-+		 * deadlocking the system. The node will be lost from the LRU
-+		 * list, but the memory is still in the map's preallocated array.
-+		 */
-+		return;
-+	}
- 	__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
--	raw_spin_unlock_irqrestore(&l->lock, flags);
-+	raw_res_spin_unlock_irqrestore(&l->lock, flags);
+diff --git a/fs/btrfs/delalloc-space.c b/fs/btrfs/delalloc-space.c
+index 0970799d0..7cfb829a3 100644
+--- a/fs/btrfs/delalloc-space.c
++++ b/fs/btrfs/delalloc-space.c
+@@ -189,6 +189,24 @@ void btrfs_free_reserved_data_space_noquota(struct btrfs_inode *inode, u64 len)
+ 	btrfs_space_info_free_bytes_may_use(data_sinfo_for_inode(inode), len);
  }
  
- static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
-@@ -319,7 +329,16 @@ static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
- 	struct bpf_lru_node *node, *tmp_node;
- 	unsigned int nfree = 0;
- 
--	raw_spin_lock(&l->lock);
-+	if (raw_res_spin_lock(&l->lock)) {
++/*
++ * Restore a data reservation for this inode.
++ * Normally called when a reservation was converted to bytes_reserved but the
++ * subsequent operation failed, so the bytes need to be restored to bytes_may_use
++ * so the caller can free them.
++ */
++void btrfs_add_reserved_data_space_noquota(struct btrfs_inode *inode, u64 len)
++{
++	struct btrfs_fs_info *fs_info = inode->root->fs_info;
++	struct btrfs_space_info *sinfo = data_sinfo_for_inode(inode);
++
++	ASSERT(IS_ALIGNED(len, fs_info->sectorsize));
++
++	spin_lock(&sinfo->lock);
++	btrfs_space_info_update_bytes_may_use(sinfo, len);
++	spin_unlock(&sinfo->lock);
++}
++
+ /*
+  * Called if we need to clear a data reservation for this inode
+  * Normally in a error case.
+diff --git a/fs/btrfs/delalloc-space.h b/fs/btrfs/delalloc-space.h
+index 6119c0d3f..58ecfad7b 100644
+--- a/fs/btrfs/delalloc-space.h
++++ b/fs/btrfs/delalloc-space.h
+@@ -19,6 +19,7 @@ void btrfs_delalloc_release_space(struct btrfs_inode *inode,
+ 				  struct extent_changeset *reserved,
+ 				  u64 start, u64 len, bool qgroup_free);
+ void btrfs_free_reserved_data_space_noquota(struct btrfs_inode *inode, u64 len);
++void btrfs_add_reserved_data_space_noquota(struct btrfs_inode *inode, u64 len);
+ void btrfs_delalloc_release_metadata(struct btrfs_inode *inode, u64 num_bytes,
+ 				     bool qgroup_free);
+ int btrfs_delalloc_reserve_space(struct btrfs_inode *inode,
+diff --git a/fs/btrfs/direct-io.c b/fs/btrfs/direct-io.c
+index 57167d56d..04cdf11d8 100644
+--- a/fs/btrfs/direct-io.c
++++ b/fs/btrfs/direct-io.c
+@@ -205,8 +205,14 @@ static struct extent_map *btrfs_new_extent_direct(struct btrfs_inode *inode,
+ 	em = btrfs_create_dio_extent(inode, dio_data, start, &file_extent,
+ 				     BTRFS_ORDERED_REGULAR);
+ 	btrfs_dec_block_group_reservations(fs_info, ins.objectid);
+-	if (IS_ERR(em))
++	if (IS_ERR(em)) {
+ 		btrfs_free_reserved_extent(fs_info, ins.objectid, ins.offset, true);
 +		/*
-+		 * If the lock is contended, it means we are in an NMI context
-+		 * and the lock is already held by the interrupted context.
-+		 * We prefer to fail the flush/pop operation rather than
-+		 * deadlocking. The caller will try to steal from other CPUs
-+		 * or return NULL, which will fail the map update.
++		 * btrfs_reserve_extent() converted the bytes from bytes_may_use to
++		 * bytes_reserved. We need to restore them so the caller can free them.
 +		 */
-+		return;
-+	}
- 
- 	__local_list_flush(l, loc_l);
- 
-@@ -338,7 +357,7 @@ static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
- 				      local_free_list(loc_l),
- 				      BPF_LRU_LOCAL_LIST_T_FREE);
- 
--	raw_spin_unlock(&l->lock);
-+	raw_res_spin_unlock(&l->lock);
- }
- 
- static void __local_list_add_pending(struct bpf_lru *lru,
-@@ -404,7 +423,15 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free(struct bpf_lru *lru,
- 
- 	l = per_cpu_ptr(lru->percpu_lru, cpu);
- 
--	raw_spin_lock_irqsave(&l->lock, flags);
-+	if (raw_res_spin_lock_irqsave(&l->lock, flags)) {
-+		/*
-+		 * If the lock is contended, it means we are in an NMI context
-+		 * and the lock is already held by the interrupted context.
-+		 * We prefer to fail the pop operation rather than deadlocking.
-+		 * Returning NULL will fail the map update.
-+		 */
-+		return NULL;
++		btrfs_add_reserved_data_space_noquota(inode, ins.offset);
 +	}
  
- 	__bpf_lru_list_rotate(lru, l);
- 
-@@ -420,7 +447,7 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free(struct bpf_lru *lru,
- 		__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_INACTIVE);
- 	}
- 
--	raw_spin_unlock_irqrestore(&l->lock, flags);
-+	raw_res_spin_unlock_irqrestore(&l->lock, flags);
- 
- 	return node;
+ 	return em;
  }
-@@ -437,7 +464,15 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
- 
- 	loc_l = per_cpu_ptr(clru->local_list, cpu);
- 
--	raw_spin_lock_irqsave(&loc_l->lock, flags);
-+	if (raw_res_spin_lock_irqsave(&loc_l->lock, flags)) {
-+		/*
-+		 * If the lock is contended, it means we are in an NMI context
-+		 * and the lock is already held by the interrupted context.
-+		 * We prefer to fail the pop operation rather than deadlocking.
-+		 * Returning NULL will fail the map update.
-+		 */
-+		return NULL;
-+	}
- 
- 	node = __local_list_pop_free(loc_l);
- 	if (!node) {
-@@ -448,7 +483,7 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
- 	if (node)
- 		__local_list_add_pending(lru, loc_l, cpu, node, hash);
- 
--	raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-+	raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
- 
- 	if (node)
- 		return node;
-@@ -466,13 +501,22 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
- 	do {
- 		steal_loc_l = per_cpu_ptr(clru->local_list, steal);
- 
--		raw_spin_lock_irqsave(&steal_loc_l->lock, flags);
-+		if (raw_res_spin_lock_irqsave(&steal_loc_l->lock, flags)) {
-+			/*
-+			 * If the lock is contended, it means we are in an NMI
-+			 * context and the lock is already held by the
-+			 * interrupted context. We prefer to skip this CPU
-+			 * and try the next one rather than deadlocking.
-+			 */
-+			steal = cpumask_next_wrap(steal, cpu_possible_mask);
-+			continue;
-+		}
- 
- 		node = __local_list_pop_free(steal_loc_l);
- 		if (!node)
- 			node = __local_list_pop_pending(lru, steal_loc_l);
- 
--		raw_spin_unlock_irqrestore(&steal_loc_l->lock, flags);
-+		raw_res_spin_unlock_irqrestore(&steal_loc_l->lock, flags);
- 
- 		steal = cpumask_next_wrap(steal, cpu_possible_mask);
- 	} while (!node && steal != first_steal);
-@@ -480,9 +524,17 @@ static struct bpf_lru_node *bpf_common_lru_pop_free(struct bpf_lru *lru,
- 	loc_l->next_steal = steal;
- 
- 	if (node) {
--		raw_spin_lock_irqsave(&loc_l->lock, flags);
-+		if (raw_res_spin_lock_irqsave(&loc_l->lock, flags)) {
-+			/*
-+			 * If the lock is contended, we prefer to leak the node
-+			 * rather than deadlocking. The node will be lost from
-+			 * the LRU list, but the memory is still in the map's
-+			 * preallocated array.
-+			 */
-+			return NULL;
-+		}
- 		__local_list_add_pending(lru, loc_l, cpu, node, hash);
--		raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-+		raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
- 	}
- 
- 	return node;
-@@ -511,10 +563,20 @@ static void bpf_common_lru_push_free(struct bpf_lru *lru,
- 
- 		loc_l = per_cpu_ptr(lru->common_lru.local_list, node->cpu);
- 
--		raw_spin_lock_irqsave(&loc_l->lock, flags);
-+		if (raw_res_spin_lock_irqsave(&loc_l->lock, flags)) {
-+			/*
-+			 * If the lock is contended, it means we are in an NMI
-+			 * context and the lock is already held by the
-+			 * interrupted context. We prefer to leak the node
-+			 * rather than deadlocking. The node will be lost from
-+			 * the LRU list, but the memory is still in the map's
-+			 * preallocated array.
-+			 */
-+			return;
-+		}
- 
- 		if (unlikely(node->type != BPF_LRU_LOCAL_LIST_T_PENDING)) {
--			raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-+			raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
- 			goto check_lru_list;
- 		}
- 
-@@ -522,7 +584,7 @@ static void bpf_common_lru_push_free(struct bpf_lru *lru,
- 		bpf_lru_node_clear_ref(node);
- 		list_move(&node->list, local_free_list(loc_l));
- 
--		raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-+		raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
- 		return;
- 	}
- 
-@@ -538,11 +600,20 @@ static void bpf_percpu_lru_push_free(struct bpf_lru *lru,
- 
- 	l = per_cpu_ptr(lru->percpu_lru, node->cpu);
- 
--	raw_spin_lock_irqsave(&l->lock, flags);
-+	if (raw_res_spin_lock_irqsave(&l->lock, flags)) {
-+		/*
-+		 * If the lock is contended, it means we are in an NMI context
-+		 * and the lock is already held by the interrupted context.
-+		 * We prefer to leak the node rather than deadlocking. The node
-+		 * will be lost from the LRU list, but the memory is still in
-+		 * the map's preallocated array.
-+		 */
-+		return;
-+	}
- 
- 	__bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
- 
--	raw_spin_unlock_irqrestore(&l->lock, flags);
-+	raw_res_spin_unlock_irqrestore(&l->lock, flags);
- }
- 
- void bpf_lru_push_free(struct bpf_lru *lru, struct bpf_lru_node *node)
-@@ -625,7 +696,7 @@ static void bpf_lru_locallist_init(struct bpf_lru_locallist *loc_l, int cpu)
- 
- 	loc_l->next_steal = cpu;
- 
--	raw_spin_lock_init(&loc_l->lock);
-+	raw_res_spin_lock_init(&loc_l->lock);
- }
- 
- static void bpf_lru_list_init(struct bpf_lru_list *l)
-@@ -640,7 +711,7 @@ static void bpf_lru_list_init(struct bpf_lru_list *l)
- 
- 	l->next_inactive_rotation = &l->lists[BPF_LRU_LIST_T_INACTIVE];
- 
--	raw_spin_lock_init(&l->lock);
-+	raw_res_spin_lock_init(&l->lock);
- }
- 
- int bpf_lru_init(struct bpf_lru *lru, bool percpu, u32 hash_offset,
-diff --git a/kernel/bpf/bpf_lru_list.h b/kernel/bpf/bpf_lru_list.h
-index fe2661a58..ecd93c77a 100644
---- a/kernel/bpf/bpf_lru_list.h
-+++ b/kernel/bpf/bpf_lru_list.h
-@@ -7,6 +7,7 @@
- #include <linux/cache.h>
- #include <linux/list.h>
- #include <linux/spinlock_types.h>
-+#include <asm/rqspinlock.h>
- 
- #define NR_BPF_LRU_LIST_T	(3)
- #define NR_BPF_LRU_LIST_COUNT	(2)
-@@ -34,13 +35,13 @@ struct bpf_lru_list {
- 	/* The next inactive list rotation starts from here */
- 	struct list_head *next_inactive_rotation;
- 
--	raw_spinlock_t lock ____cacheline_aligned_in_smp;
-+	rqspinlock_t lock ____cacheline_aligned_in_smp;
- };
- 
- struct bpf_lru_locallist {
- 	struct list_head lists[NR_BPF_LRU_LOCAL_LIST_T];
- 	u16 next_steal;
--	raw_spinlock_t lock;
-+	rqspinlock_t lock;
- };
- 
- struct bpf_common_lru {
 
 
 base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
