@@ -1,187 +1,140 @@
-Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 118A43909B8
-	for <syzbot@lists.linux.dev>; Fri, 22 May 2026 22:36:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEF9C201004
+	for <syzbot@lists.linux.dev>; Sat, 23 May 2026 03:49:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779489391; cv=none; b=IxnBL/h1Nn9HnTSelWJwUWxV0K/A3oAm4Ss7R4/FiXJZEAh1tRnrsmmvqcT6vH30Dsx9odRBBIi0wD/3B/ZqPZ4BALV7QJlQSnh4wyt+F1AhrE3kynuGMupScGD1VeUkoiLoPIs0T6hJxElLAPuc1Dq6S0iyTb+hfyyX4a5q5ec=
+	t=1779508173; cv=none; b=WB8NiwhXy9avelP2LT8RwRqlyBZS+6EA10X1iABuwhBl3GLmSRcNoH3DZbeuFAc3WojrAVC20Emlv2mja2r14FxPiyfJ4Mm3SradjiHgyQ/DO5W06E/1pA3O8j45vhreZXZBkdvC7Q9m1JoyJamkpYdjCDrd3rCl6Vj2wyZjAU4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779489391; c=relaxed/simple;
-	bh=Js4+ZqqGKaA+ylTswIPE++azP9KQa8UPbBMm6W1QsgE=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Nz4fN+ePkG1i3Rn6w86KE+gQnSQ4mbnXv86X65U4JruxWhWR7/s9hW4aPNW/PWSAuyizYRaIQtE4JHhk+Zwnv4cdNngcz3e4qQRFsWXk2F6f+qA7lILifcKxniad0v1k0L4Dt3FeBdW3cFOfI97ubn/qf22vBoC7qKIgCs2Dhfw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-43b469c6e24so3644041fac.1
-        for <syzbot@lists.linux.dev>; Fri, 22 May 2026 15:36:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779489389; x=1780094189;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ztS3vKbpzyqP0R8T9str5BGlznxsW04H2RPAh8WRm7Q=;
-        b=njkgqSF7b5dTL9vOrq0zAaVZnn9k6r2/yhmlMa1t///hF/EVNxCaQqTd+F9ZhT19s1
-         8ynfPnioIJpQ9F3f8fMDEL5YbuRsZRvgBX/eNtHiA7lIfWNSWusuY7qAHeHoCcqPd8g5
-         M5J0JMccmDpCA8MzXgBEBHkyUvuyqtL0aSok9QpBAtk9DeVEu/1Ml7Ry1A4x7LKo37L9
-         PW0aQwmiYJOITNtD9rZCCFJ2hz3poxBYWk2qhiVr4BQCyiKKzUCDO3GSl9N/zFTtsebg
-         1YfElnw9ETOZyPei02DyGohX1v5X0pr8fWU+XkOhkfNDadDlIZS7wB8/4A71C+jt1weA
-         2Vwg==
-X-Gm-Message-State: AOJu0YzCybrxfxeR2rtydKCOm2gLo1MNQlWmL5dZvaX6HeYvFSO5/cHV
-	DgZBwDRGJ+zbyC6OQNMdB7xeXYRCIILIN9K55CkZbKj7Ns4mGNMyrJBWtt3TP8x+uhNdWXi45E+
-	rzBOebLNgqtG5KKrfIwl5DPBZYfiWWOLOV58wyepQeE2A4GDWwmi3hMITSzk=
+	s=arc-20240116; t=1779508173; c=relaxed/simple;
+	bh=RVvghwjz2v9F9PoCQtV3EQLlIskD8Yf+jzQ198IkktY=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=fGYHvDUQp5i7nDnvpRw5QFnFj1MkRapztlZNVwFGGGc3z/9c8hcfp9vjMsvAdXxZAwERnAKz8+ktU3Z9Aa50jsWU3DxsxfO/sih5O/nz8WGVgiRu3UG5yZ8bd2ux6jsxev9nptAXNQtJ5oj8NB3YeiNvs1oUF6xu6PdCgOsuiks=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dtE1b5np; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dtE1b5np"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 2DC051F000E9;
+	Sat, 23 May 2026 03:49:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779508172;
+	bh=r+Mh+oSF+gjK8FZ0axyOXwR7mXc4DZyKz65TEV0Ju2w=;
+	h=From:To:Cc:Subject:Date;
+	b=dtE1b5np0TMzsZRgPVamLHJubsFNiZRPjbtzuuJWdfGZMDWIyvYNrXT68owPCL0cb
+	 ez7wI3F4ECrFSiB/yMHQOv2HwhZkEJpWnojl2TMklJkKuK0rOYgxUu6C+4kvWSxxLR
+	 6+9WIyhdSaCtwUZbzgNByAuFcjUwaN5WmAk6CaFOnd/NuysuWAB8vXicfaIqnt8Ymj
+	 NuwA152zL0NE8kwz647rIznU35dYZt8v0Ffiks467IAwauIn8qo2m0eQd/ggjVv++/
+	 N2NcXsHFVG3UolKzATbH1Rc9DdNYAb/op/DQNxCJ3o0JmrKWoIXB0sq95CNFVOsAGU
+	 KDvXHfKXDD8CQ==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC v2] ieee802154: fix kernel-infoleak in dgram_recvmsg()
+Message-ID: <127f2164-d295-47e9-95c4-31959dcc8460@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:2004:b0:699:a77e:8783 with SMTP id
- 006d021491bc7-69d7ec97a5amr2409008eaf.47.1779489389041; Fri, 22 May 2026
- 15:36:29 -0700 (PDT)
-Date: Fri, 22 May 2026 15:36:29 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a10da6d.050a0220.3c3a9.0003.GAE@google.com>
-Subject: [moderation/CI] Re: rtnetlink: RTNL avoidance in rtnl_getlink() and rtnl_dump_ifinfo()
-From: syzbot ci <syzbot+cia53038b9c9ac18e9@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Sat, 23 May 2026 03:49:32 +0000 (UTC)
 
-syzbot ci has tested the following series
+KMSAN reported a kernel-infoleak in move_addr_to_user():
 
-[v4] rtnetlink: RTNL avoidance in rtnl_getlink() and rtnl_dump_ifinfo()
-https://lore.kernel.org/all/20260522173002.2181677-1-edumazet@google.com
-* [PATCH v4 net-next 1/5] rtnetlink: use nla_nest_end_safe() in rtnl_fill_prop_list()
-* [PATCH v4 net-next 2/5] net: defer netdev_name_node_alt_flush() call to netdev_run_todo()
-* [PATCH v4 net-next 3/5] rtnetlink: do not acquire RTNL in rtnl_getlink() with RTEXT_FILTER_NAME_ONLY
-* [PATCH v4 net-next 4/5] rtnetlink: do not assume RTNL is held in link_master_filtered()
-* [PATCH v4 net-next 5/5] rtnetlink: add RTEXT_FILTER_NAME_ONLY support to rtnl_dump_ifinfo()
+BUG: KMSAN: kernel-infoleak in instrument_copy_to_user
+include/linux/instrumented.h:131 [inline]
+BUG: KMSAN: kernel-infoleak in _inline_copy_to_user
+include/linux/uaccess.h:205 [inline]
+BUG: KMSAN: kernel-infoleak in _copy_to_user+0xcc/0x120
+lib/usercopy.c:26
+ instrument_copy_to_user include/linux/instrumented.h:131 [inline]
+ _inline_copy_to_user include/linux/uaccess.h:205 [inline]
+ _copy_to_user+0xcc/0x120 lib/usercopy.c:26
+ copy_to_user include/linux/uaccess.h:236 [inline]
+ move_addr_to_user+0x2e7/0x440 net/socket.c:302
+ ____sys_recvmsg+0x232/0x610 net/socket.c:2925
+ ...
+ Uninit was stored to memory at:
+ ieee802154_addr_to_sa include/net/ieee802154_netdev.h:369 [inline]
+ dgram_recvmsg+0xa09/0xbe0 net/ieee802154/socket.c:739
 
-and found the following issue:
-WARNING in rtmsg_ifinfo_build_skb
+The issue occurs because the `pan_id` field of `struct ieee802154_addr`
+is left uninitialized when the address mode is `IEEE802154_ADDR_NONE`.
+The execution flow is as follows:
 
-Full report is available here:
-https://ci.syzbot.org/series/583940d4-d5e9-48ca-a2e6-544edbb1d63c
+1. `__ieee802154_rx_handle_packet()` declares a local `struct
+ieee802154_hdr hdr` on the stack.
+2. `ieee802154_hdr_pull()` calls `ieee802154_hdr_get_addr()` to parse
+the source and destination addresses into this structure.
+3. If the address mode is `IEEE802154_ADDR_NONE`,
+`ieee802154_hdr_get_addr()` previously only set the `mode` field,
+leaving the `pan_id` field containing uninitialized stack memory.
+4. This uninitialized `pan_id` is later copied into a `struct
+sockaddr_ieee802154` in `dgram_recvmsg()` via `ieee802154_addr_to_sa()`.
+5. Finally, `move_addr_to_user()` copies the socket address structure to
+user space, leaking the uninitialized bytes.
 
-***
+Fix this by using `memset` to zero out the address structure in
+`ieee802154_hdr_get_addr()` when the mode is `IEEE802154_ADDR_NONE`.
 
-WARNING in rtmsg_ifinfo_build_skb
-
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
-base:      1a1f055318d82e64485a6ff8420e5f70b4267998
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/513a249e-70b7-4622-8d72-6f62840955c7/config
-
-pci 0000:00:01.0: BAR 2 [mem 0xfebf0000-0xfebf0fff]
-pci 0000:00:01.0: ROM [mem 0xfebe0000-0xfebeffff pref]
-pci 0000:00:01.0: Video device with shadowed ROM at [mem 0x000c0000-0x000dffff]
-pci 0000:00:02.0: [1af4:1005] type 00 class 0x00ff00 conventional PCI endpoint
-pci 0000:00:02.0: BAR 0 [io  0xc080-0xc09f]
-pci 0000:00:02.0: BAR 1 [mem 0xfebf1000-0xfebf1fff]
-pci 0000:00:02.0: BAR 4 [mem 0xfe000000-0xfe003fff 64bit pref]
-pci 0000:00:03.0: [8086:100e] type 00 class 0x020000 conventional PCI endpoint
-pci 0000:00:03.0: BAR 0 [mem 0xfebc0000-0xfebdffff]
-pci 0000:00:03.0: BAR 1 [io  0xc000-0xc03f]
-pci 0000:00:03.0: ROM [mem 0xfeb80000-0xfebbffff pref]
-pci 0000:00:1f.0: [8086:2918] type 00 class 0x060100 conventional PCI endpoint
-pci 0000:00:1f.0: quirk: [io  0x0600-0x067f] claimed by ICH6 ACPI/GPIO/TCO
-pci 0000:00:1f.2: [8086:2922] type 00 class 0x010601 conventional PCI endpoint
-pci 0000:00:1f.2: BAR 4 [io  0xc0a0-0xc0bf]
-pci 0000:00:1f.2: BAR 5 [mem 0xfebf2000-0xfebf2fff]
-pci 0000:00:1f.3: [8086:2930] type 00 class 0x0c0500 conventional PCI endpoint
-pci 0000:00:1f.3: BAR 4 [io  0x0700-0x073f]
-ACPI: PCI: Interrupt link LNKA configured for IRQ 10
-ACPI: PCI: Interrupt link LNKB configured for IRQ 10
-ACPI: PCI: Interrupt link LNKC configured for IRQ 11
-ACPI: PCI: Interrupt link LNKD configured for IRQ 11
-ACPI: PCI: Interrupt link LNKE configured for IRQ 10
-ACPI: PCI: Interrupt link LNKF configured for IRQ 10
-ACPI: PCI: Interrupt link LNKG configured for IRQ 11
-ACPI: PCI: Interrupt link LNKH configured for IRQ 11
-ACPI: PCI: Interrupt link GSIA configured for IRQ 16
-ACPI: PCI: Interrupt link GSIB configured for IRQ 17
-ACPI: PCI: Interrupt link GSIC configured for IRQ 18
-ACPI: PCI: Interrupt link GSID configured for IRQ 19
-ACPI: PCI: Interrupt link GSIE configured for IRQ 20
-ACPI: PCI: Interrupt link GSIF configured for IRQ 21
-ACPI: PCI: Interrupt link GSIG configured for IRQ 22
-ACPI: PCI: Interrupt link GSIH configured for IRQ 23
-iommu: Default domain type: Translated
-iommu: DMA domain TLB invalidation policy: lazy mode
-SCSI subsystem initialized
-ACPI: bus type USB registered
-usbcore: registered new interface driver usbfs
-usbcore: registered new interface driver hub
-usbcore: registered new device driver usb
-mc: Linux media interface: v0.10
-videodev: Linux video capture interface: v2.00
-pps_core: LinuxPPS API ver. 1 registered
-pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
-PTP clock support registered
-EDAC MC: Ver: 3.0.0
-Advanced Linux Sound Architecture Driver Initialized.
-------------[ cut here ]------------
-err == -EMSGSIZE
-WARNING: net/core/rtnetlink.c:4524 at rtmsg_ifinfo_build_skb+0x218/0x260, CPU#0: swapper/0/1
-Modules linked in:
-CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:rtmsg_ifinfo_build_skb+0x218/0x260
-Code: f6 ba 01 00 00 00 89 e9 e8 45 ac 3a 00 4c 89 f0 48 83 c4 30 5b 41 5c 41 5d 41 5e 41 5f 5d c3 cc cc cc cc cc e8 39 dc 40 f8 90 <0f> 0b 90 eb 90 89 d9 80 e1 07 fe c1 38 c1 0f 8c 95 fe ff ff 48 89
-RSP: 0000:ffffc90000067438 EFLAGS: 00010293
-RAX: ffffffff8984e887 RBX: 0000000000000000 RCX: ffff8881026f5880
-RDX: 0000000000000000 RSI: 00000000ffffffa6 RDI: 00000000ffffffa6
-RBP: 00000000ffffffa6 R08: ffffffff8984f746 R09: 0000000000000000
-R10: fffff5200000ce30 R11: ffffed1020c50405 R12: 1ffff11020c51c21
-R13: 0000000000000000 R14: ffff888103a82480 R15: ffff88810628e000
-FS:  0000000000000000(0000) GS:ffff88818dc76000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffff88823ffff000 CR3: 000000000e74a000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- rtmsg_ifinfo+0x8c/0x1a0
- register_netdevice+0x1aca/0x1ec0
- register_netdev+0x40/0x60
- loopback_net_init+0x75/0x150
- ops_init+0x35c/0x5c0
- register_pernet_operations+0x343/0x830
- register_pernet_device+0x2a/0x80
- net_dev_init+0x973/0xa90
- do_one_initcall+0x250/0x870
- do_initcall_level+0x104/0x190
- do_initcalls+0x59/0xa0
- kernel_init_freeable+0x2a6/0x3e0
- kernel_init+0x1d/0x1d0
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: 94b4f6c21cf5 ("ieee802154: add header structs with endiannes and operations")
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
+Reported-by: syzbot+346474e3bf0b26bd3090@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=346474e3bf0b26bd3090
+Link: https://syzkaller.appspot.com/ai_job?id=a507a109-d683-4a2c-bc03-93394f491b17
+To: "Alexander Aring" <alex.aring@gmail.com>
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <linux-wpan@vger.kernel.org>
+To: "Miquel Raynal" <miquel.raynal@bootlin.com>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Stefan Schmidt" <stefan@datenfreihafen.org>
+Cc: "Simon Horman" <horms@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+v2:
+- Zero out the entire address structure using memset when the mode is IEEE802154_ADDR_NONE.
+- Include the KMSAN error report in the commit description.
+- Add a step-by-step explanation of how the uninitialized memory is propagated to user space.
 
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
+v1:
+https://lore.kernel.org/all/3d57ee87-f29b-43a2-8e22-2ca4d86cb799@mail.kernel.org/T/
+---
+diff --git a/net/ieee802154/header_ops.c b/net/ieee802154/header_ops.c
+index 41a556be1..a9f0c8df5 100644
+--- a/net/ieee802154/header_ops.c
++++ b/net/ieee802154/header_ops.c
+@@ -173,10 +173,13 @@ ieee802154_hdr_get_addr(const u8 *buf, int mode, bool omit_pan,
+ {
+ 	int pos = 0;
+ 
+-	addr->mode = mode;
+-
+-	if (mode == IEEE802154_ADDR_NONE)
++	if (mode == IEEE802154_ADDR_NONE) {
++		memset(addr, 0, sizeof(*addr));
++		addr->mode = IEEE802154_ADDR_NONE;
+ 		return 0;
++	}
++
++	addr->mode = mode;
+ 
+ 	if (!omit_pan) {
+ 		memcpy(&addr->pan_id, buf + pos, 2);
 
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
 
-The email will later be sent to:
-[davem@davemloft.net edumazet@google.com eric.dumazet@gmail.com horms@kernel.org kuba@kernel.org kuniyu@google.com netdev@vger.kernel.org pabeni@redhat.com]
+base-commit: 5200f5f493f79f14bbdc349e402a40dfb32f23c8
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
 
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+See https://github.com/google/syzkaller/blob/master/docs/syzbot_ai_patches.md for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
