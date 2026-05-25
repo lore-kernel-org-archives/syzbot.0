@@ -1,72 +1,100 @@
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 906B638398C
-	for <syzbot@lists.linux.dev>; Mon, 25 May 2026 11:39:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A194B22CBD9
+	for <syzbot@lists.linux.dev>; Mon, 25 May 2026 18:07:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779709168; cv=none; b=idTXPhJ/90MqEK7G/dzuBqGECMf89I1EemibBDuY5t6EkLpa0ortu1udYzpj/gXkc5VUSWAjL1skOd4tgYhFLg6tBdqXXYCyF1tvWj85fvccOFfNF7t3TDsjV2yhqCwPZnVxUHWD1Ne6BCcGo/I3284KRyFDKJiXkDOpz5pBakY=
+	t=1779732461; cv=none; b=sfJQNmhKdrkLUXOKUNqGIDG2UG8DDrKq0zcMnPS+bdwOE5gSAEfyMp/thuA9WUtCh4pS2+y0TVXi95HFfoiITZesmzDAUSR/YQayEbPOYMTlIwx3z8bEZg5ZFfbfHzuzmG9vuTDhIA9RRVDRqprJbexMx1DLCZX/T69fkB9or50=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779709168; c=relaxed/simple;
-	bh=R43x2cncw9TB3Pr4ZMguWzc5Iw8DvWXTeyvaOfnbky0=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=sqDsOohTZ7MWdTW5Pvnck20zEbfYDlX6yfHi+AYXpboPgbElJ7gE100gT+xziwp43lAaSHBPwRnZwgs5pw99gJ67DVg4KasfzVds63+o+0DuVlCzliqEbpTaMngkI+2mP0l5OCNR1MlsgEtYG4ysFAD68gNyo+1jtdXnLZHn7p8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
+	s=arc-20240116; t=1779732461; c=relaxed/simple;
+	bh=XKB192gId7sp7vAE0Cjiqnztww1cjAZCzDqvDeWMvrU=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=puk892tbG+UIKThUYVrKcVB87COBHgjtSnBQX4T4r82JJExzdwDTk+Aj/Ng1swNxVXA5xO9/VkJtMAQArmK/CDZT74xdvE3AyMZqhVNJrMlLvxDDlr2y7ni6DyjldC2PkHzve4/PL1aXAzFkjH5d/aC0+MViINa7eW0Z24NubXM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7dce437f1a1so1946846a34.3
-        for <syzbot@lists.linux.dev>; Mon, 25 May 2026 04:39:26 -0700 (PDT)
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-69d874805edso4405850eaf.0
+        for <syzbot@lists.linux.dev>; Mon, 25 May 2026 11:07:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779709165; x=1780313965;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=R43x2cncw9TB3Pr4ZMguWzc5Iw8DvWXTeyvaOfnbky0=;
-        b=j12TfFuVO/oBI3bttVpw/kSeWe6itGGWXnbGibwQxo2wmvhgooGaQmx0wVhA1pFUxx
-         1ri8uMMu9T7Ib7IJydgbcmpDSDuIvKejqnP57k13bTzY3dvGIA8Fx3JYTObvXRt9KwvT
-         zf3ok1m54Nf82fNWHTOwAgWBeZ2sZNjaemSpli+odCb4y20F0338McwwQhXwQPMPJ9Rk
-         9ga/npDuhvP868cw3b73KLzm38e97T2uoLdVRocyTPG6zxZwNDIR0cxv8wjpsVyjIFWF
-         MenRjyRh+nedF5bt3lAM9Mq2PcKXJaVemdHyPHP2o0+6MP0dAkOcZaKeR6gJXew/WEv+
-         4Mog==
-X-Gm-Message-State: AOJu0Yywgr+RfLnxBJRSOJutzyK0ByhJglbN2qOh33NXz4iNlViqOyY5
-	iPul9vGlcEmZCD72vHrNdFTQsMpYgeUG/1wpKIn6ViSD9izCYMQZvEEM9kaKWVE+WfRwpKcial8
-	6izYQfc0WMcG8NQ0EhlWryBLhpD/YOky9q+LI06rwIjIi88AJg0Ot+2gEpeo=
+        d=1e100.net; s=20251104; t=1779732458; x=1780337258;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=WmPR6IABPY/vM1xNhpc9+y/Z05rrjt0CQ52CdZ7Swkg=;
+        b=LXyBJIWn4gDdxMauoG9zsr/LdfMtDs8yQkrcDQHP2l0TPRxqDh2gAEs65bIzn8Hph1
+         ccGtLCgu2NCm80oWVQHLajONie2UI9IDtcyFl7zib582GgqY4KRe/ViK+DgyuSBoAkpb
+         ec415Fh5EfvnvdVO7oxyMNyAOo+oSlUI1QLmO5Ar+xUi4c4ELpVR5Hrs0XCghOjlUrpO
+         PLBYDq+T7DUhHP1crs76z/1K3rwP40XrFq5ONV1VWg5+IrcVSFE6SH7tXBTyt/7rIoVc
+         zYrvkFnzmtGYOoFaQcJ0NKB8r68qP1eiFbaPrdQ5/eBco+J8dc1f37+m5F7bz8rCv+n+
+         wyZw==
+X-Gm-Message-State: AOJu0YxM3FZlNx0smqNWBl5n8UkWmQEFeAgotwTNV6lgp2SPBkokyTPn
+	7QwYQPzRWegfqsFcBZBEXTBZdSScQNUi5qIIddTzfwW1PW+/cqmn+gzrFc7du4ZfmvEtFORiTIe
+	u9+9MkJB41Nr0wjJoVCcz/kLmBY9lUK+VIYYAc00sk2e+lnkl7cbJO7Gi9Uc=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:8186:b0:696:233b:2100 with SMTP id
- 006d021491bc7-69d7eb45135mr7059360eaf.15.1779709165623; Mon, 25 May 2026
- 04:39:25 -0700 (PDT)
-Date: Mon, 25 May 2026 04:39:25 -0700
-In-Reply-To: <1931576426.2416655.1779705327168@kpc.webmail.kpnmail.nl>
+X-Received: by 2002:a05:6820:2003:b0:69d:a0ea:2e2c with SMTP id
+ 006d021491bc7-69da0ea3752mr6441162eaf.56.1779732458696; Mon, 25 May 2026
+ 11:07:38 -0700 (PDT)
+Date: Mon, 25 May 2026 11:07:38 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a1434ed.170a0220.22ae77.0005.GAE@google.com>
-Subject: [syzbot ci] Re: vfs: add O_CREAT|O_DIRECTORY to open*(2)
-From: syzbot ci <syzbot+cifba781775c24e678@syzkaller.appspotmail.com>
-To: jkoolstra@xs4all.nl, linux-fsdevel@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev, 
-	syzkaller-bugs@googlegroups.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <6a148fea.050a0220.2385e8.0018.GAE@google.com>
+Subject: [moderation/CI] Re: blk-mq: reinsert cached request to the list
+From: syzbot ci <syzbot+ci26193c70a6205b8a@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
-syzbot ci has tested the suggested fix patch on top of the following series:
+syzbot ci has tested the following series
 
-[v4] vfs: add O_CREAT|O_DIRECTORY to open*(2)
-https://lore.kernel.org/all/20260518165237.2084042-1-jkoolstra@xs4all.nl
+[v1] blk-mq: reinsert cached request to the list
+https://lore.kernel.org/all/20260525160744.896047-1-kbusch@meta.com
+* [PATCH] blk-mq: reinsert cached request to the list
 
-Patch: https://ci.syzbot.org/jobs/3effa8d6-6f06-49b5-b228-7c7502ca630d/patch
-
-The patch testing request could not be completed:
-Testing failed due to an infrastructure error.
-Testing results:
-* [build 0] Build Patched: error
+and found the following issue:
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/session/e7a8e9a6-6522-439a-a09c-39da7d9d738b
+https://ci.syzbot.org/series/99e6afe9-0501-4d6a-8e72-25ea70b32a50
+
+***
+
+kernel build error
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      e7ae89a0c97ce2b68b0983cd01eda67cf373517d
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/eae7f028-4b11-4d4c-8d67-4845ea15d17f/config
+
+block/blk-mq.c:3249:3: error: call to undeclared function 'rq_list_push'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[axboe@kernel.dk hch@lst.de kbusch@kernel.org kbusch@meta.com linux-block@vger.kernel.org tom.leiming@gmail.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
