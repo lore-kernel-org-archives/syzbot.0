@@ -1,64 +1,64 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D2E9346AC0
-	for <syzbot@lists.linux.dev>; Tue, 26 May 2026 08:37:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33D213E51D7
+	for <syzbot@lists.linux.dev>; Tue, 26 May 2026 23:54:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779784629; cv=none; b=WhFpFAd+rxP/ENoepZAvv4QXDtF9Yszx3p4U7mJCjjKYoNzl//VdedYP3INyFA8QJf3JII+zKBtLCUdq2cvZWsAbQB94herPEIQMglVwp60cizmUxA0+IOBqQXIAAZnOWOiJA+ibaBFPqx51ivYv3y2uS7hSgLS71v1M/2WXCOM=
+	t=1779839704; cv=none; b=lMRzoM/vCZ0KVob57RtrNJZ+ATKpHms6ihJuFjM35TNut4jouy0jcb/ispEQPiyaBEPFtnZRgpv1zQZRYoceSPQFpPsPGX5nWUfgTVCDCf/pBfuJ8C7WvEng92UPHuw1kSjsY51R6eC1cv7TpSA7pzxpOpOjQs4EjZN3hF9oSs4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779784629; c=relaxed/simple;
-	bh=+F8YAM+PQCkbVrKmuTAPoA9WoPVJHVSXRaDTALG+gDo=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=qYUfrMJIs7It6odsSIzf0yoEyvVhpvXOfPOLIKAstdPOnDQzR6OKzBQENfLKbVrcDCj3ZD5NlwlNXyd3ejSoWHS+i6CcQL9onagIorCm7Qvar0TJnRuyvrYU+98ISn+kF/vsTFQZVwOHy/WOWx5lSRr8gOOELc17ELi8/QYBIME=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+	s=arc-20240116; t=1779839704; c=relaxed/simple;
+	bh=mMmTGGHPDa2aCRxmMsAZZKzjeItxbvThYyN8xADBhSs=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Fyhg4Dui1CgQoc5nf77zalhLfsc3grDz40LyPlXvmGPuhueiJyAcnaG6THawlTogCCBmxInpblmNTS+IWz0HFPyiW+MFfOtI76u4eo2dShDrpHWyn7EDPb/VvTCq2eQ9mazLwUeAnKqSE8UODWIsAw++jQQuclYWfXwPoG5boeE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-69d9ceb179fso3448257eaf.0
-        for <syzbot@lists.linux.dev>; Tue, 26 May 2026 01:37:07 -0700 (PDT)
+Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7e3a223b936so25105604a34.3
+        for <syzbot@lists.linux.dev>; Tue, 26 May 2026 16:54:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779784626; x=1780389426;
+        d=1e100.net; s=20251104; t=1779839687; x=1780444487;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=qmno1y4Va/jLRkBfB57lCXLd3B/9Yx3hX8Nq21wvMcg=;
-        b=lHGvpmjKpWb6Ebxb++Yq8Fe1DePWD1M4T+DcpwsEhE7J6E/imB5RswGK6Gn8+fV0P1
-         3qkdeLNQe1Pz/txRWh3RnUDybMmI+7sTVR0FUFxO+izEEYBTelHqaiNQA2CMOyL7T4Gj
-         Qby/ZC8b4Fc2zGBdZegOrUUT2+9AvzTHXYmAGWtuSnCui2jnzUfxGbxx8Yyx3+C0wUxy
-         5Bi8rt7ke5o/0JOHnTC/FYbYe+zaNF4aeQxHcFsi44EluMQHxeL/7R3swzuhY6+EL20E
-         fOs04bKpjmuELAeEc+kEv+mxFl3bG3aLbVDB9Q+nnLwYQqD9QciZAFXVGTfg18eZEFK9
-         Y6mw==
-X-Gm-Message-State: AOJu0YwT4o7C/K4+/CaU4ruADcim2wIeo4mDkfpjoJk9+waTGwGdidZu
-	tKqG15HVGWgte0oiMOf64vlFlcxc23UpMah7kXgh6pMgGSALitENUQ1eghnar2zBRAL9NmpNa9Z
-	U+ZckhglFSAZZHXdwd3IgAWc34v2SpuebvmMKzRqZrolF5IttdQ3L18MLYfc=
+        bh=FTCSHRlzO0ucQ4dDsVuFJG/GVuYxhcP4F8iXv4NVSyA=;
+        b=dMmqMmlB6ZzF35WNh/3iIiawUM3ot22PYtttbqSMJJk0V4LuIfBK1gMScZDzv3/zg5
+         s0Ve8EBG/OfR8EU5mhE00RiwbM7On/uOwRvPuZHROhHpaOhgKtkTfVK2sL5QtQotzxpX
+         9f0kWgCJeLPRQqyxkToJZl/bvwhI4dieu/oC1Y9f+4iyFoSgQE2ki7nxaY8n9NqTpM2x
+         NPS+pZK4QVMSqbmQan+B1wDrK6YLUMhzDeUQ303wSsCtAOrUZjIF9ENgrpI5XKY68jwe
+         5uQmL90ohY/qrxAi6lwc5CNDt/5CGrEIgSS2NC5UuuKGeqdkQO49ckT1H1eLPah6G8kt
+         jAiA==
+X-Gm-Message-State: AOJu0YztZALG9EtzEeb48GhSPytPqzU4ddwGtYJk5rBdXCdmYf25+Ond
+	RmNAeg48kZnpowpsMT+AKMxM7h6McgTUWGV1MsYJhGOOS7fRjmIgzM6GWxTe7n1FcswinMXrs1B
+	Uxz2Wa5jVIEYNZAGBSkvvDAZqKVCoH7dKQftk3mvME1BPR8Q0agr5eSKNTGg=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:290f:b0:69d:9198:227f with SMTP id
- 006d021491bc7-69d91982730mr6201262eaf.25.1779784626616; Tue, 26 May 2026
- 01:37:06 -0700 (PDT)
-Date: Tue, 26 May 2026 01:37:06 -0700
+X-Received: by 2002:a05:6820:1c83:b0:69b:8c27:8a2 with SMTP id
+ 006d021491bc7-69d7e83fc29mr11890423eaf.0.1779839687065; Tue, 26 May 2026
+ 16:54:47 -0700 (PDT)
+Date: Tue, 26 May 2026 16:54:47 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a155bb2.170a0220.22ae77.0014.GAE@google.com>
-Subject: [moderation/CI] Re: bvec: make the bvec_iter helpers inline functions
-From: syzbot ci <syzbot+ci1233de714ad28c34@syzkaller.appspotmail.com>
+Message-ID: <6a1632c7.698d7668.1c4399.0000.GAE@google.com>
+Subject: [moderation/CI] Re: io_uring: annotate remote tasks for kcoverage
+From: syzbot ci <syzbot+cic8bd0f78e9c839e0@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] bvec: make the bvec_iter helpers inline functions
-https://lore.kernel.org/all/20260526070042.1817997-1-hch@lst.de
-* [PATCH] bvec: make the bvec_iter helpers inline functions
+[v3] io_uring: annotate remote tasks for kcoverage
+https://lore.kernel.org/all/20260526164948.831543-2-robert@fmmr.tech
+* [PATCH v3] io_uring: annotate remote tasks for kcoverage
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/6a1e3a47-dbe0-48db-a50f-5c8e728a9b1a
+https://ci.syzbot.org/series/55ec7b1d-9082-4378-b185-b8047150c1dd
 
 ***
 
@@ -66,12 +66,12 @@ kernel build error
 
 tree:      torvalds
 URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      e8c2f9fdadee7cbc75134dc463c1e0d856d6e5c7
+base:      d60ec36cab338dfe2ae40d73e9c8d6c4af70d2b8
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/4a812ba1-6e65-4d6c-ac54-69ffadec7b18/config
+config:    https://ci.syzbot.org/builds/33e5a817-dd1b-472e-8dc1-cef5135e15c9/config
 
-drivers/block/loop.c:382:8: error: assigning to 'struct bio_vec *' from 'const struct bio_vec *' discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
+./include/linux/io_uring_types.h:508:31: error: field has incomplete type 'struct kcov_common_handle_id'
 
 ***
 
@@ -90,7 +90,7 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[axboe@kernel.dk hch@lst.de linux-block@vger.kernel.org]
+[andreyknvl@gmail.com axboe@kernel.dk dvyukov@google.com io-uring@vger.kernel.org kasan-dev@googlegroups.com robert@fmmr.tech]
 
 If the report looks fine to you, reply with:
 #syz upstream
