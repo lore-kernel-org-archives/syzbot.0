@@ -1,81 +1,134 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D637C350A10
-	for <syzbot@lists.linux.dev>; Wed, 27 May 2026 20:20:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14E052EA47C
+	for <syzbot@lists.linux.dev>; Wed, 27 May 2026 20:44:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779913240; cv=none; b=p+1JMsVnevJNHFJ86ZGaJeGPCC0f4qFyLUP9As3t4tHaTNaTxRPJvaTyfq9kW9CZHlzKluU1bnPccqiitGXoJ37SbhiiNFLx0xlA9DCXlhAAqQsQ4ZBd9GFGleY9//ewmGIoCEscVWg5CScl38Sc3hPpZRf0KyjTmWRgOhdsDwQ=
+	t=1779914647; cv=none; b=fJHsr2jUFrVPvi8mhOGj6O5xwIZx6eQ7SWzF3tzawzni4D7AAUZmIxUARlutPuN1f2akj+cjnStN/sn9fpSaLZFHOSxODcwllbb5tujP5ZFU9zeBdemH3uxggWrnQQyS79rectPv4HRXG6WBQlvjrg2TigJ2PmRczo3m2OQdzu8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779913240; c=relaxed/simple;
-	bh=Lz2Wk+9A+sgEW8C+KqJarswd/Pwh0Uc7JssVUpYsyJ4=;
-	h=Content-Type:MIME-Version:Subject:From:To:Cc:In-Reply-To:
-	 References:Message-Id:Date; b=PGOON885g2ZTcm0fIowsonwzo07U+mwLGBlHBw2OjQ7ziPkxdmYjQh/22QYqqS5v5CpDuhh302y8t5yDYPpqYr5OtZVX1mikLCPSG2b7icZub7jh7t+0nTbcYkaIwU45nrwm0qJheUUJHBhiBag4rH9aEKeNX9VX3dWWEi18UII=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=chatmhzJ; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="chatmhzJ"
-Received: by smtp.kernel.org (Postfix)
-	id A29601F00A3D; Wed, 27 May 2026 20:20:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74E5C1F000E9;
-	Wed, 27 May 2026 20:20:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779913238;
-	bh=MAi4fWZAa3fkgj3C6W/XoKSk0GCapnQpCMAt3Vb+n9A=;
-	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=chatmhzJm0rWmAnUaNICSsmVdgNOJccIEpmoTzOlfQn3hT5LC4fQF+0ifge19PASh
-	 IhuAkdsbh7/m6Y9vQfk5NKnwCbTgNDDkQEwzHXgbigKjZiVfTX0gH82Zn6kJT9VXyR
-	 m0X5d4Qg+h/Lr2t4Z2g3LeT7xkZeJnr0FNNjQvI8OnraF4toCwu5E5BWnpczlG+d3H
-	 Y2S0fGr0x5xP69V4ojFtu0zf4mYo/99OhOew5tQgr++j6t0m8AzOdqOsgcAkG6f54c
-	 WZ8Q0Tjf55xWtQKi2IuxYQAnj+2v9H/2+hvw1b8zOsZubTpEoy/SWAfdlsZPgYnfLf
-	 RtwVQKmdm9KfQ==
-Content-Type: text/plain; charset="us-ascii"
+	s=arc-20240116; t=1779914647; c=relaxed/simple;
+	bh=MsymBjKuNXd3/JVGastShKSSF363j515ZA6NBtuI5Ok=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ZKHll76KAcQ/uItNb7O98P7EmpUClcw8tTFTJSt5M7gjKhveo5zDz3liC9yLlDuS9mcjZM+NgkJxITI2xVmFMVFa1DSqyF6w/saWGByLZyJxDskBd/ptT0qSp3NeYCXz2XNv1tR3n/xjK+0dxr02lpO4u+7MzMOyclvdp0/Fo54=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7e61d8d99dfso7547934a34.2
+        for <syzbot@lists.linux.dev>; Wed, 27 May 2026 13:44:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779914645; x=1780519445;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gwkHraB6eOnoNn95bkNWzks4oVQG1GRt+iyXPDDv/0A=;
+        b=aDyH0wsbT3J8bt0rKS2IUCw3PC18aTrBm0g0hO68vMI2nqH2x7RFkg5cDWSpr1JiNp
+         xWerjoiAY2X0RXeGYD6rNGj0Cb8RoHxZCPZB4zPlbe4Gr1iWPDhroCASk1mO2iximmcb
+         yg44xGMax6vgln+oQdA/q6R22R5YlbnlowTfWR2xDs/rWXvPi6cLdkx5dbS8Ja7yhrSp
+         KelZGJcKs5OJojybIjzMNf01qiRofBEgHfqDC0qhx8kzIMa9qGdGMwJjsCCP97O6+33g
+         v+nVRaGcNpc2KSwJ73f/c3dY3OiMyPhIdG9mE2CzQ2IHCz5+gkS7WLk8MqhmOBRh/PUj
+         OyqA==
+X-Gm-Message-State: AOJu0Yyg7bUP9rDlCLA0eX4GxynIGYfZ0vaGXasP0PYdrw/OYuer20c7
+	cRnz+4sSAbkWrHkS3OtUbKggHMBW+qJ0AiuFSGO33RSwvt7y6aWlwWYVoJPkAJqQHWQAU2Iy0yI
+	Nnf8stkXBMMyyAwPwMHCqAKTb9PpwrfgOIYzFhxZK5/gnumqxQTJiewtCayM=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ieee802154: fix kernel-infoleak in dgram_recvmsg()
-From: netdev-bot@kernel.org
-To: syzbot <syzbot@kernel.org>
-Cc: kuba@kernel.org
-In-Reply-To: <62795fd9-fc0c-48eb-bb82-05ffc5a57104@mail.kernel.org>
-References: <62795fd9-fc0c-48eb-bb82-05ffc5a57104@mail.kernel.org>
-Message-Id: <20260527202038.74E5C1F000E9@smtp.kernel.org>
-Date: Wed, 27 May 2026 20:20:38 +0000 (UTC)
+X-Received: by 2002:a05:6820:983:b0:696:1cbd:27b2 with SMTP id
+ 006d021491bc7-69d7ec42e11mr11073862eaf.29.1779914645048; Wed, 27 May 2026
+ 13:44:05 -0700 (PDT)
+Date: Wed, 27 May 2026 13:44:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a175795.52c88913.99dcf.0000.GAE@google.com>
+Subject: [moderation/CI] Re: mm: introduce ANON_VMA_LAZY for deferred anon_vma creation
+From: syzbot ci <syzbot+ci96bfa5a8ff3778dd@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Welcome to the netdev mailing list!
+syzbot ci has tested the following series
 
-We noticed this may be one of your first submissions to netdev
-(at least with this email address).
+[v1] mm: introduce ANON_VMA_LAZY for deferred anon_vma creation
+https://lore.kernel.org/all/20260527110147.17815-1-tao.wangtao@honor.com
+* [PATCH 01/15] mm/rmap: introduce anon_rmap APIs for anonymous folios
+* [PATCH 02/15] mm: convert anon_vma rmap APIs to anon_rmap
+* [PATCH 03/15] mm: introduce anon_vma_tree_t for multiple anon_vma topolog=
+ies
+* [PATCH 04/15] mm: switch to anon_vma_tree_t APIs in preparation for ANON_=
+VMA_LAZY
+* [PATCH 05/15] mm: add CONFIG_ANON_VMA_LAZY and folio helpers
+* [PATCH 06/15] mm: add CONFIG_VMA_REF and VMA helpers
+* [PATCH 07/15] mm: replace direct FOLIO_MAPPING_ANON usage with helpers
+* [PATCH 08/15] mm: prepare rmap infrastructure for ANON_VMA_LAZY
+* [PATCH 09/15] mm: implement ANON_VMA_LAZY rmap semantics
+* [PATCH 10/15] mm: defer anon_vma creation with ANON_VMA_LAZY
+* [PATCH 11/15] mm: handle ANON_VMA_LAZY in huge page operations
+* [PATCH 12/15] mm: handle ANON_VMA_LAZY during migration
+* [PATCH 13/15] mm: support setup and upgrade of ANON_VMA_LAZY folios
+* [PATCH 14/15] mm: support merging of ANON_VMA_LAZY VMAs
+* [PATCH 15/15] mm: enable CONFIG_ANON_VMA_LAZY on arm64 and x86_64
 
-See https://www.kernel.org/doc/html/next/process/ for kernel
-process guidelines, and most importantly:
-https://www.kernel.org/doc/html/next/process/maintainer-netdev.html
-for netdev-specific guidelines.
+and found the following issue:
+SYZFATAL: image testing failed w/o kernel bug
 
-Here are a few ground rules which are frequently broken by newcomers:
+Full report is available here:
+https://ci.syzbot.org/series/c401d17b-0a67-4742-b7dc-c49a853a31dd
 
- - You must wait at least 24 hours before posting a new version to give
-   reviewers time to respond. This is a hard rule, no matter what your
-   reason to repost is.
+***
 
- - Each new version of your series should be a fresh / separate thread
-   Add a https://lore.kernel.org/.. link to the previous version to
-   the cover letter or changelog, instead of threading the submissions.
+SYZFATAL: image testing failed w/o kernel bug
 
- - Until you gain experience submit one of two patches at a time,
-   do not send multiple changes at once until some of your changes
-   were accepted. This avoids reviewers having to provide the same
-   feedback on multiple patches.
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
+.git
+base:      e8c2f9fdadee7cbc75134dc463c1e0d856d6e5c7
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/69c9ca24-ff3b-4eb2-92f8-347468dba38=
+2/config
 
- - Avoid changing the subject of the changes or cover letter unless
-   necessary, it breaks our patch tracking.
 
- - If you're submitting changes for issues discovered using automated
-   tools - commit message should explain the discovery and testing
-   process (for drivers explicitly mention that you don't have access
-   to the device, it's not a blocker).
 
-Happy hacking!
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[21cnbao@gmail.com akpm@linux-foundation.org apopple@nvidia.com baohua@kern=
+el.org baolin.wang@linux.alibaba.com bp@alien8.de byungchul@sk.com catalin.=
+marinas@arm.com chengming.zhou@linux.dev damon@lists.linux.dev dave.hansen@=
+linux.intel.com david@kernel.org dev.jain@arm.com dvander@google.com gourry=
+@gourry.net harry@kernel.org hpa@zytor.com jack@suse.cz jannh@google.com jg=
+g@ziepe.ca jhubbard@nvidia.com joshua.hahnjy@gmail.com jparsana@google.com =
+kas@kernel.org kees@kernel.org lance.yang@linux.dev liam@infradead.org linu=
+x-arm-kernel@lists.infradead.org linux-fsdevel@vger.kernel.org linux-kernel=
+@vger.kernel.org linux-mm@kvack.org ljs@kernel.org luizcap@redhat.com matth=
+ew.brost@intel.com mhocko@suse.com mingo@redhat.com nao.horiguchi@gmail.com=
+ npache@redhat.com peterx@redhat.com pfalcato@suse.de rakie.kim@sk.com riel=
+@surriel.com rppt@kernel.org ryan.roberts@arm.com ryncsn@gmail.com shakeel.=
+butt@linux.dev sj@kernel.org surenb@google.com tao.wangtao@honor.com tglx@k=
+ernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
