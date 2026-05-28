@@ -1,50 +1,50 @@
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14E052EA47C
-	for <syzbot@lists.linux.dev>; Wed, 27 May 2026 20:44:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E54592D3A7B
+	for <syzbot@lists.linux.dev>; Thu, 28 May 2026 06:00:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779914647; cv=none; b=fJHsr2jUFrVPvi8mhOGj6O5xwIZx6eQ7SWzF3tzawzni4D7AAUZmIxUARlutPuN1f2akj+cjnStN/sn9fpSaLZFHOSxODcwllbb5tujP5ZFU9zeBdemH3uxggWrnQQyS79rectPv4HRXG6WBQlvjrg2TigJ2PmRczo3m2OQdzu8=
+	t=1779948037; cv=none; b=RZgqaXZFrnZl1sxvAllMdf67cuX5qBE12nWmatvEsbIfox7v99SRwm0kSqCF6e8v2j9VUWwZ8Ldr1NpkAAGNL/6Q6hYM2v8WJyaJH38T42bRcoffSV4QxdbmvGxalhTZHNrBcnKpMpDaHfulWkEbSZPAnu1GhOcbY2REFX17VdY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779914647; c=relaxed/simple;
-	bh=MsymBjKuNXd3/JVGastShKSSF363j515ZA6NBtuI5Ok=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ZKHll76KAcQ/uItNb7O98P7EmpUClcw8tTFTJSt5M7gjKhveo5zDz3liC9yLlDuS9mcjZM+NgkJxITI2xVmFMVFa1DSqyF6w/saWGByLZyJxDskBd/ptT0qSp3NeYCXz2XNv1tR3n/xjK+0dxr02lpO4u+7MzMOyclvdp0/Fo54=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
+	s=arc-20240116; t=1779948037; c=relaxed/simple;
+	bh=Qo8+siPIPZX5h+CpY+gIBlRBkdx4bHqmyvPKHS1biEM=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=FbvmzmTF/Ac8rj5fD/Y3UROsznDq6OBt34V6T7/G1yYNvgxKOU/F/q+tVG+kJ/mYrcMcvTPvkrVYeQ2g5VyXvsvSDGIfLnze+S9/6TnAyqoGAS/QTcH4S6y876rRnoUADMaBd2L6jD4n2m445gjkrKBkk5TXi3JArDuRgCbOB7k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7e61d8d99dfso7547934a34.2
-        for <syzbot@lists.linux.dev>; Wed, 27 May 2026 13:44:05 -0700 (PDT)
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-69d86a152d6so6563100eaf.1
+        for <syzbot@lists.linux.dev>; Wed, 27 May 2026 23:00:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779914645; x=1780519445;
+        d=1e100.net; s=20251104; t=1779948035; x=1780552835;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=gwkHraB6eOnoNn95bkNWzks4oVQG1GRt+iyXPDDv/0A=;
-        b=aDyH0wsbT3J8bt0rKS2IUCw3PC18aTrBm0g0hO68vMI2nqH2x7RFkg5cDWSpr1JiNp
-         xWerjoiAY2X0RXeGYD6rNGj0Cb8RoHxZCPZB4zPlbe4Gr1iWPDhroCASk1mO2iximmcb
-         yg44xGMax6vgln+oQdA/q6R22R5YlbnlowTfWR2xDs/rWXvPi6cLdkx5dbS8Ja7yhrSp
-         KelZGJcKs5OJojybIjzMNf01qiRofBEgHfqDC0qhx8kzIMa9qGdGMwJjsCCP97O6+33g
-         v+nVRaGcNpc2KSwJ73f/c3dY3OiMyPhIdG9mE2CzQ2IHCz5+gkS7WLk8MqhmOBRh/PUj
-         OyqA==
-X-Gm-Message-State: AOJu0Yyg7bUP9rDlCLA0eX4GxynIGYfZ0vaGXasP0PYdrw/OYuer20c7
-	cRnz+4sSAbkWrHkS3OtUbKggHMBW+qJ0AiuFSGO33RSwvt7y6aWlwWYVoJPkAJqQHWQAU2Iy0yI
-	Nnf8stkXBMMyyAwPwMHCqAKTb9PpwrfgOIYzFhxZK5/gnumqxQTJiewtCayM=
+        bh=baLksnVAanA5SWwkLG3hsy/rKltiR203R1UfQgkjLak=;
+        b=RxsUWwRavyqD2b94RjcDDHHNehGZ/uPBO85b7YGTq7Himnz8ellYp9Y8ccYoQLYA8f
+         oH7Y3vdyrBBgSZdZ4Nx332SjYul2NqBl2y5eQYqFd3alDSoLBNJFS4F9pastCjc9Z0+D
+         T7ZA86d2UiNMMkXry0u25BsRuoGDhYJpMPKtTQKb2zceJUfds4Z9VJAnkRUnoRbJwlIP
+         pkeLM2vRQpk4q3lrRPgAoGD6ZmGriMlihmhjgmiggVPzzKHuzEWmkQETms6m/mhJ/wlk
+         1klp208Bd/sCuUJkxOiWPPd5ErAFH0uR2AgVyTVDNVGBGd+CGEMJ09d/7chxad3WVBny
+         Jzfg==
+X-Gm-Message-State: AOJu0YxiY3VGcfNYcQ/qI9k2g0L3HNU3aslHzx5pBFjoleavMm9uoVcg
+	h4ucq/TAesCdwjZk3Ul2ggc+fgzaZC5+tzKCe1VmeBZo7ukEfhyc85JmFYVVQi0jAv1XYnjaf2G
+	xOhgFl3C7jr97ZOaocJJWdcqMbeQe343sDiRts/7xttIlvSh0zwYwAgBKcXA=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:983:b0:696:1cbd:27b2 with SMTP id
- 006d021491bc7-69d7ec42e11mr11073862eaf.29.1779914645048; Wed, 27 May 2026
- 13:44:05 -0700 (PDT)
-Date: Wed, 27 May 2026 13:44:05 -0700
+X-Received: by 2002:a4a:ec4c:0:b0:69d:6bfd:5a3f with SMTP id
+ 006d021491bc7-69d7ece2eafmr14674415eaf.51.1779948034727; Wed, 27 May 2026
+ 23:00:34 -0700 (PDT)
+Date: Wed, 27 May 2026 23:00:34 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a175795.52c88913.99dcf.0000.GAE@google.com>
-Subject: [moderation/CI] Re: mm: introduce ANON_VMA_LAZY for deferred anon_vma creation
-From: syzbot ci <syzbot+ci96bfa5a8ff3778dd@syzkaller.appspotmail.com>
+Message-ID: <6a17da02.d07c18fe.1069e4.001a.GAE@google.com>
+Subject: [moderation/CI] Re: mshv: enable kexec with Hyper-V donated pages and partitions
+From: syzbot ci <syzbot+ci1e21bcc277045ad6@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -52,47 +52,57 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] mm: introduce ANON_VMA_LAZY for deferred anon_vma creation
-https://lore.kernel.org/all/20260527110147.17815-1-tao.wangtao@honor.com
-* [PATCH 01/15] mm/rmap: introduce anon_rmap APIs for anonymous folios
-* [PATCH 02/15] mm: convert anon_vma rmap APIs to anon_rmap
-* [PATCH 03/15] mm: introduce anon_vma_tree_t for multiple anon_vma topolog=
-ies
-* [PATCH 04/15] mm: switch to anon_vma_tree_t APIs in preparation for ANON_=
-VMA_LAZY
-* [PATCH 05/15] mm: add CONFIG_ANON_VMA_LAZY and folio helpers
-* [PATCH 06/15] mm: add CONFIG_VMA_REF and VMA helpers
-* [PATCH 07/15] mm: replace direct FOLIO_MAPPING_ANON usage with helpers
-* [PATCH 08/15] mm: prepare rmap infrastructure for ANON_VMA_LAZY
-* [PATCH 09/15] mm: implement ANON_VMA_LAZY rmap semantics
-* [PATCH 10/15] mm: defer anon_vma creation with ANON_VMA_LAZY
-* [PATCH 11/15] mm: handle ANON_VMA_LAZY in huge page operations
-* [PATCH 12/15] mm: handle ANON_VMA_LAZY during migration
-* [PATCH 13/15] mm: support setup and upgrade of ANON_VMA_LAZY folios
-* [PATCH 14/15] mm: support merging of ANON_VMA_LAZY VMAs
-* [PATCH 15/15] mm: enable CONFIG_ANON_VMA_LAZY on arm64 and x86_64
+[v1] mshv: enable kexec with Hyper-V donated pages and partitions
+https://lore.kernel.org/all/20260528004204.1484584-1-jloeser@linux.microsof=
+t.com
+* [RFC PATCH 01/20] kho: generalize radix tree APIs
+* [RFC PATCH 02/20] kho: store incoming radix tree in kho_in
+* [RFC PATCH 03/20] kho: add a struct for radix callbacks
+* [RFC PATCH 04/20] kho: add callback for table pages
+* [RFC PATCH 05/20] kho: add data argument to radix walk callback
+* [RFC PATCH 06/20] kho: allow early-boot usage of the KHO radix tree
+* [RFC PATCH 07/20] kho: allow destroying KHO radix tree
+* [RFC PATCH 08/20] kho: add kho_radix_init_tree()
+* [RFC PATCH 09/20] memblock: introduce MEMBLOCK_KHO_SCRATCH_EXT
+* [RFC PATCH 10/20] kho: extended scratch
+* [RFC PATCH 11/20] kho: return virtual address of mem_map
+* [RFC PATCH 12/20] mm/hugetlb: make bootmem allocation work with KHO
+* [RFC PATCH 13/20] kho: add radix tree freeze and del_key() error reportin=
+g
+* [RFC PATCH 14/20] kho: Add crash-kernel-safe radix tree presence check
+* [RFC PATCH 15/20] mshv: Use page tracker to manage MSHV-owned pages and p=
+reserve with KHO
+* [RFC PATCH 16/20] mshv: Add debugfs interface to page tracker
+* [RFC PATCH 17/20] hyperv: Reserve crash MSR P2 for page preservation root=
+ PA
+* [RFC PATCH 18/20] mshv: Exclude Hyper-V donated pages from crash dump col=
+lection
+* [RFC PATCH 19/20] kexec: export kexec_in_progress for modules
+* [RFC PATCH 20/20] mshv: freeze and vacuum partitions across kexec
 
 and found the following issue:
-SYZFATAL: image testing failed w/o kernel bug
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/c401d17b-0a67-4742-b7dc-c49a853a31dd
+https://ci.syzbot.org/series/3ae14a59-1f75-49c7-b968-ba5197b42ec3
 
 ***
 
-SYZFATAL: image testing failed w/o kernel bug
+kernel build error
 
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
-.git
-base:      e8c2f9fdadee7cbc75134dc463c1e0d856d6e5c7
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
+nux-next
+base:      e7d700e14934e68f86338c5610cf2ae76798b663
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
 1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/69c9ca24-ff3b-4eb2-92f8-347468dba38=
-2/config
+config:    https://ci.syzbot.org/builds/90866729-fbd8-4e80-afc5-b8813f0533f=
+a/config
 
-
+mm/mm_init.c:2705:2: error: call to undeclared function 'kho_extend_scratch=
+'; ISO C99 and later do not support implicit function declarations [-Wimpli=
+cit-function-declaration]
 
 ***
 
@@ -111,20 +121,17 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[21cnbao@gmail.com akpm@linux-foundation.org apopple@nvidia.com baohua@kern=
-el.org baolin.wang@linux.alibaba.com bp@alien8.de byungchul@sk.com catalin.=
-marinas@arm.com chengming.zhou@linux.dev damon@lists.linux.dev dave.hansen@=
-linux.intel.com david@kernel.org dev.jain@arm.com dvander@google.com gourry=
-@gourry.net harry@kernel.org hpa@zytor.com jack@suse.cz jannh@google.com jg=
-g@ziepe.ca jhubbard@nvidia.com joshua.hahnjy@gmail.com jparsana@google.com =
-kas@kernel.org kees@kernel.org lance.yang@linux.dev liam@infradead.org linu=
-x-arm-kernel@lists.infradead.org linux-fsdevel@vger.kernel.org linux-kernel=
-@vger.kernel.org linux-mm@kvack.org ljs@kernel.org luizcap@redhat.com matth=
-ew.brost@intel.com mhocko@suse.com mingo@redhat.com nao.horiguchi@gmail.com=
- npache@redhat.com peterx@redhat.com pfalcato@suse.de rakie.kim@sk.com riel=
-@surriel.com rppt@kernel.org ryan.roberts@arm.com ryncsn@gmail.com shakeel.=
-butt@linux.dev sj@kernel.org surenb@google.com tao.wangtao@honor.com tglx@k=
-ernel.org]
+[akpm@linux-foundation.org bhe@redhat.com bp@alien8.de catalin.marinas@arm.=
+com dave.hansen@linux.intel.com david@kernel.org decui@microsoft.com graf@a=
+mazon.com haiyangz@microsoft.com hpa@zytor.com jasonmiu@google.com jbouron@=
+amazon.com jloeser@linux.microsoft.com kees@kernel.org kexec@lists.infradea=
+d.org kys@microsoft.com linux-arm-kernel@lists.infradead.org linux-hyperv@v=
+ger.kernel.org linux-kernel@vger.kernel.org linux-mm@kvack.org longli@micro=
+soft.com mario.limonciello@amd.com mhklinux@outlook.com mingo@redhat.com mu=
+chun.song@linux.dev osalvador@suse.de pasha.tatashin@soleen.com piliu@redha=
+t.com pratyush@kernel.org rafael.j.wysocki@intel.com ran.xiaokai@zte.com.cn=
+ rppt@kernel.org sourabhjain@linux.ibm.com tglx@kernel.org wei.liu@kernel.o=
+rg will@kernel.org x86@kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
