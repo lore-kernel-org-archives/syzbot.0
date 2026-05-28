@@ -1,51 +1,51 @@
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com [209.85.160.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BC8F4D2EE9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA79E4D2EF5
 	for <syzbot@lists.linux.dev>; Thu, 28 May 2026 14:55:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.200
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779980108; cv=none; b=uKg0DVne2ytlxtG/JRVtp7Ug++mHdL5Sps67+jjnRkPqNrmoh6rfMhs9O9EtPTMc1lk5jYXbpiN94zit+GT72XW+roNdLHRW/SwZjqUtqjQDqo2dGzvPVvDFgm55Ur0bBJVVSfoYznJAtm8VLsAh3+tymn9UmCXQoQDpfg3S1D8=
+	t=1779980109; cv=none; b=QjpNXn0UEqOwuNtcDfsl8keBIT70213fQ9Udzs+A6UJhRM1f7R6L3tdUOGiFbgEgtQJ1Zcje1O6nrJSWJ3Im7q5z+JhsknyE0uy3bmaECALPvvHV+2OH2UEenNL5/qR6TY4f8/AI121+MK15TiXRNeKiDGriTWhOc8qnedRYYSU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779980108; c=relaxed/simple;
-	bh=1IcW4pmS3UxyMVsMDCbOkEJPuHj1jcHE0AGgzG9FWZk=;
+	s=arc-20240116; t=1779980109; c=relaxed/simple;
+	bh=84nA6w0XV9/qgasDg7Zf8eBR/XTtYwV1bODlW/UIoXU=;
 	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=OxJ4m/sl2iMBpbbbX3xzWGmhMVY2YYTmlh6iz8kj+MDA3sar6q5MDVKMGewMsaSu9xIt8K+Vmp949O5Qs+nWmzDLO4i7zOdAsjmHtqG+F6k+TZfDv8FB2gYVt7GFH24EHjbSqcHcRJhLDnonm28MXGFeyC3lb7GFjaaLOKg5rKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.200
+	 Content-Type; b=WOX1xyxnlSbq+5zGogWsiMiQrJZRaIqAAjhfvcu2MhZ7HXE18S5hqzoK/zLToqyHJKE+bRViJK+hIUXHsHAv0aVeByTEcyGbdZr5tpXQtfqs7zz1Em7d8z4kkoi09scpixiRsIOE6byyODjeZq+ZZOo39PcR2hn0JNJhvbM1+Mo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-50fb3403e99so89642661cf.2
+Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-516d4a9e852so118968481cf.0
         for <syzbot@lists.linux.dev>; Thu, 28 May 2026 07:55:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20251104; t=1779980106; x=1780584906;
         h=content-transfer-encoding:cc:to:from:subject:message-id:in-reply-to
          :date:mime-version:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=T3Hvlnl73K0HdtG0Rj8UQsXe8nj46nuuuEPW44bHRAk=;
-        b=fFpJ1u0MejuGmVpFJobi5zUKx7lrMjtr2++zcq22gtjblBx2eZFHGDhzG1wtGKCR0v
-         CoUUJP/AFYuTYvVPWHc6s9rCtThUHxTA8aY9warUJHlBdQ0W5OwTvs8LXgc48lNk0p3N
-         zgMdsFB54wYPhq4Vb0TniBi+g82H+UN5ifOwVFXIL85pL7LGgwISWgIAh+OvQHqRCGfw
-         89N5YpzJptx1pj8PLh2G1MdpxIczPyc+Ha24ZWzooJ+5FZRj5RGrj2K1TGHvLkx0RTnN
-         qKmUf6mWRNFZWKfj20MaKBPtA+FSQ9TykwlxGjh6pV17TXIGryunXDc+U6KfHpc3842o
-         CqlA==
-X-Forwarded-Encrypted: i=1; AFNElJ8Qf3yNaHwvcBZzF3hMqxcaBbEUioanRNGnJx6j+0jqKyF2HPygo2tavBZ18/fIrE0JkzetziY=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzVv7ZJ2YkKG4UH9d7okA7DeyAuTFjgRgaESh3aDiXRHFM2s7rN
-	iQl4XjgH50LGZfopcqH4PVvyQwCFzhgwlJGHYqHPawl4ZkaEXRMq1eSefRoASBZZk6zEkyRzHT7
-	mCr3gZ89saCoYKK5wFha3uoAQJDDj0+SuLtbOeqt+L4dU+1Wg1DRWYBQdjjc=
+        bh=6EiGxT4GCD89JwGS/McjAZZi6WrcB3cZgjUinN2daEk=;
+        b=bSQGRfVkW7Z6rWCaKGEd/vSgpbqnQ/MdA5llznDrRBU4MGVlKFZXUTR5u0qDoK3KRh
+         tq4AI0LpduXF2VRx3jiNDeg3Y9le3t3p9dZKSOJ8wAvFf7f2+IVlpdwE0oThCi2CY100
+         /Rwnca1wtAlNLV0LJB+MDuQSV9wyx2y29Fnlp22C1YKD235A1RXdKJaySKE24SEqjRw8
+         xNMupv+G0w9TiDX/GkBk9OMFvtO3wwgRm5sBAyP3xGk7xq9NXPXXahhB4jab7aRtqOJM
+         bOZoGD4jY65zNGc+WR/BJa4i3lsbv4Ml8Vw43AlOzF4F2SLVLpet7IKFVZNC5O+U1GUt
+         THbg==
+X-Forwarded-Encrypted: i=1; AFNElJ8Dzdx50OxxgSKC487RhQ32oWW4XdWVfQ+wDrnKff4+6u55E1ZZPD1R5b86qG4RL5E5d7W6HsE=@lists.linux.dev
+X-Gm-Message-State: AOJu0YymU6tNW1vr31O/wJ7OMxrkC1Vx8OYr0iDwPU14pRWkrgqrGnhv
+	gAYgqXmINRA6WU/vcz2h/m3zeuGDskPcGbN7kdUlnyb2osTMjr/WYSnfftxv+3dU773gM5URBJc
+	7kjZZZqm5lhA5suhiGbHJ5wbaHshU9yzujkg9LX7r6G4uH5FSchWgC+SJrJA=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1995:b0:69b:bf80:2db5 with SMTP id
- 006d021491bc7-69d7ecbfda4mr15734579eaf.52.1779979637094; Thu, 28 May 2026
- 07:47:17 -0700 (PDT)
-Date: Thu, 28 May 2026 07:47:17 -0700
-In-Reply-To: <6a185574.9efe2910.1869e6.01d2.GAE@google.com>
+X-Received: by 2002:a05:6820:1808:b0:69b:5800:62da with SMTP id
+ 006d021491bc7-69d7ec786dbmr13859806eaf.42.1779979660320; Thu, 28 May 2026
+ 07:47:40 -0700 (PDT)
+Date: Thu, 28 May 2026 07:47:40 -0700
+In-Reply-To: <6a18558b.586c836d.2e3ab2.06e5.GAE@google.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a185575.9efe2910.1869e6.01ee.GAE@google.com>
+Message-ID: <6a18558c.222db38e.c0a93.06b9.GAE@google.com>
 Subject: Re: Re: [moderation/CI] Re: netlink: fix skb refcount leak when dump
  start fails
 From: syzbot <syzbot@syzkaller.appspotmail.com>
@@ -55,851 +55,1467 @@ Cc: pimyn@google.com, syzbot@lists.linux.dev,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
->>>>>>>>>>>>>>>>>>>> #syz upstream
->>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>> Failed to process the command. Contact syzkaller@google=
-groups.com.
->>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> #syz upstream
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Failed to process the c=
+ommand. Contact syzkaller@googlegroups.com.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> On Thu, May 28, 2026 a=
+t 4:39=E2=80=AFPM syzbot ci
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> <syzbot+cidbb9f477452b=
+5813@syzkaller.appspotmail.com> wrote:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> syzbot ci has tested =
+the following series
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> [v1] netlink: fix skb=
+ refcount leak when dump start fails
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> https://lore.kernel.o=
+rg/all/20260528073614.1169858-1-vulab@iscas.ac.cn
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> * [PATCH] netlink: fi=
+x skb refcount leak when dump start fails
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> and found the followi=
+ng issues:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> * KASAN: slab-use-aft=
+er-free Read in nl80211_prepare_wdev_dump
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> * KASAN: slab-use-aft=
+er-free Read in xfrm_dump_sa_done
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> * KASAN: slab-use-aft=
+er-free Write in sk_skb_reason_drop
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Full report is availa=
+ble here:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> https://ci.syzbot.org=
+/series/8ed6f41d-0d02-4f1f-a7be-cc639c2b4cfd
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ***
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> KASAN: slab-use-after=
+-free Read in nl80211_prepare_wdev_dump
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> tree:      net
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> URL:       https://ke=
+rnel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> base:      18014147d3=
+ee7831dce53fe65d7fc8d428b02552
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> arch:      amd64
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> compiler:  Debian cla=
+ng version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50),=
+ Debian LLD 21.1.8
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> config:    https://ci=
+.syzbot.org/builds/90c5185d-0dad-4c34-a563-4253ebb12eb2/config
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> syz repro: https://ci=
+.syzbot.org/findings/0ad9835c-f631-4240-a3ad-2610bca3de33/syz_repro
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> =3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-=
+after-free in __nlmsg_parse include/net/netlink.h:784 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-=
+after-free in nlmsg_parse_deprecated include/net/netlink.h:830 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-=
+after-free in nl80211_prepare_wdev_dump+0x634/0x680 net/wireless/nl80211.c:=
+1245
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Read of size 4 at add=
+r ffff88816e172d80 by task syz.0.17/5814
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> CPU: 1 UID: 0 PID: 58=
+14 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full)
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Hardware name: QEMU S=
+tandard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Call Trace:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  <TASK>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  dump_stack_lvl+0xe8/=
+0x150 lib/dump_stack.c:120
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  print_address_descri=
+ption+0x55/0x1e0 mm/kasan/report.c:378
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  print_report+0x58/0x=
+70 mm/kasan/report.c:482
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_report+0x117/0=
+x150 mm/kasan/report.c:595
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __nlmsg_parse includ=
+e/net/netlink.h:784 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  nlmsg_parse_deprecat=
+ed include/net/netlink.h:830 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  nl80211_prepare_wdev=
+_dump+0x634/0x680 net/wireless/nl80211.c:1245
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  nl80211_dump_station=
++0x186/0xdb0 net/wireless/nl80211.c:8216
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  genl_dumpit+0x10b/0x=
+1b0 net/netlink/genetlink.c:1026
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_dump+0x702/0=
+xe10 net/netlink/af_netlink.c:2325
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_recvmsg+0x69=
+0/0xa50 net/netlink/af_netlink.c:1976
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_recvmsg_nosec n=
+et/socket.c:1137 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_recvmsg+0x172/0=
+x1b0 net/socket.c:1159
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sys_recvfrom+0x240=
+/0x3c0 net/socket.c:2315
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __do_sys_recvfrom ne=
+t/socket.c:2330 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __se_sys_recvfrom ne=
+t/socket.c:2326 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __x64_sys_recvfrom+0=
+xde/0x100 net/socket.c:2326
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/=
+x86/entry/syscall_64.c:63 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/=
+0xf80 arch/x86/entry/syscall_64.c:94
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_aft=
+er_hwframe+0x77/0x7f
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RIP: 0033:0x7fd64155d=
+68e
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Code: 08 0f 85 a5 a8 =
+ff ff 49 89 fb 48 89 f0 48 89 d7 48 89 ce 4c 89 c2 4d 89 ca 4c 8b 44 24 08 =
+4c 8b 4c 24 10 4c 89 5c 24 08 0f 05 <c3> 66 2e 0f 1f 84 00 00 00 00 00 0f 1=
+f 80 00 00 00 00 48 83 ec 08
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RSP: 002b:00007fd6424=
+b5e88 EFLAGS: 00000246 ORIG_RAX: 000000000000002d
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RAX: ffffffffffffffda=
+ RBX: 00007fd6424b76c0 RCX: 00007fd64155d68e
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RDX: 0000000000001000=
+ RSI: 00007fd6424b6000 RDI: 0000000000000003
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RBP: 0000000000000000=
+ R08: 0000000000000000 R09: 0000000000000000
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> R10: 0000000000000000=
+ R11: 0000000000000246 R12: 0000000000000003
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> R13: 00007fd6424b5f58=
+ R14: 00007fd6424b6000 R15: 0000000000000000
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  </TASK>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Allocated by task 581=
+3:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_stack mm/=
+kasan/common.c:57 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_track+0x3=
+e/0x80 mm/kasan/common.c:78
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  unpoison_slab_object=
+ mm/kasan/common.c:340 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __kasan_slab_alloc+0=
+x6c/0x80 mm/kasan/common.c:366
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_slab_alloc inc=
+lude/linux/kasan.h:253 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_post_alloc_hook=
+ mm/slub.c:4569 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_alloc_node mm/s=
+lub.c:4898 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kmem_cache_alloc_nod=
+e_noprof+0x384/0x690 mm/slub.c:4950
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kmalloc_reserve net/=
+core/skbuff.c:613 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __alloc_skb+0x27d/0x=
+7d0 net/core/skbuff.c:713
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_sendmsg+0x5d=
+4/0xb40 net/netlink/af_netlink.c:1869
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec n=
+et/socket.c:787 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/s=
+ocket.c:802 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ____sys_sendmsg+0x97=
+2/0x9f0 net/socket.c:2698
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ___sys_sendmsg+0x2a5=
+/0x360 net/socket.c:2752
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sys_sendmsg net/so=
+cket.c:2784 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __do_sys_sendmsg net=
+/socket.c:2789 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __se_sys_sendmsg net=
+/socket.c:2787 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendmsg+0x=
+1bd/0x2a0 net/socket.c:2787
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/=
+x86/entry/syscall_64.c:63 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/=
+0xf80 arch/x86/entry/syscall_64.c:94
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_aft=
+er_hwframe+0x77/0x7f
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Freed by task 5813:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_stack mm/=
+kasan/common.c:57 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_track+0x3=
+e/0x80 mm/kasan/common.c:78
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_free_info=
++0x46/0x50 mm/kasan/generic.c:584
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  poison_slab_object m=
+m/kasan/common.c:253 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __kasan_slab_free+0x=
+5c/0x80 mm/kasan/common.c:285
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_slab_free incl=
+ude/linux/kasan.h:235 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_free_hook mm/sl=
+ub.c:2689 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_free mm/slub.c:=
+6250 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kfree+0x1c5/0x640 mm=
+/slub.c:6565
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  skb_kfree_head net/c=
+ore/skbuff.c:1075 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  skb_free_head net/co=
+re/skbuff.c:1087 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  skb_release_data+0x8=
+28/0xa60 net/core/skbuff.c:1114
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  skb_release_all net/=
+core/skbuff.c:1189 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __kfree_skb+0x5d/0x2=
+10 net/core/skbuff.c:1203
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_unicast_kern=
+el net/netlink/af_netlink.c:1319 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_unicast+0x76=
+4/0x8e0 net/netlink/af_netlink.c:1344
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_sendmsg+0x81=
+3/0xb40 net/netlink/af_netlink.c:1894
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec n=
+et/socket.c:787 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/s=
+ocket.c:802 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ____sys_sendmsg+0x97=
+2/0x9f0 net/socket.c:2698
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ___sys_sendmsg+0x2a5=
+/0x360 net/socket.c:2752
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sys_sendmsg net/so=
+cket.c:2784 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __do_sys_sendmsg net=
+/socket.c:2789 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __se_sys_sendmsg net=
+/socket.c:2787 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendmsg+0x=
+1bd/0x2a0 net/socket.c:2787
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/=
+x86/entry/syscall_64.c:63 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/=
+0xf80 arch/x86/entry/syscall_64.c:94
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_aft=
+er_hwframe+0x77/0x7f
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The buggy address bel=
+ongs to the object at ffff88816e172d80
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  which belongs to the=
+ cache skbuff_small_head of size 704
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The buggy address is =
+located 0 bytes inside of
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  freed 704-byte regio=
+n [ffff88816e172d80, ffff88816e173040)
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The buggy address bel=
+ongs to the physical page:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page: refcount:0 mapc=
+ount:0 mapping:0000000000000000 index:0x0 pfn:0x16e170
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: order:2 mapcoun=
+t:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> flags: 0x57ff00000000=
+040(head|node=3D1|zone=3D2|lastcpupid=3D0x7ff)
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page_type: f5(slab)
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> raw: 057ff00000000040=
+ ffff888160415140 dead000000000100 dead000000000122
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> raw: 0000000000000000=
+ 0000000800120012 00000000f5000000 0000000000000000
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: 057ff0000000004=
+0 ffff888160415140 dead000000000100 dead000000000122
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: 000000000000000=
+0 0000000800120012 00000000f5000000 0000000000000000
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: 057ff0000000000=
+2 ffffffffffffff01 00000000ffffffff 00000000ffffffff
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: fffffffffffffff=
+f 0000000000000000 00000000ffffffff 0000000000000004
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page dumped because: =
+kasan: bad access detected
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page_owner tracks the=
+ page as allocated
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page last allocated v=
+ia order 2, migratetype Unmovable, gfp_mask 0xd2820(GFP_ATOMIC|__GFP_NOWARN=
+|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5530, tgid 5530 (sshd), ts=
+ 47735478218, free_ts 34702748767
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  set_page_owner inclu=
+de/linux/page_owner.h:32 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  post_alloc_hook+0x22=
+d/0x280 mm/page_alloc.c:1858
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  prep_new_page mm/pag=
+e_alloc.c:1866 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  get_page_from_freeli=
+st+0x24ba/0x2540 mm/page_alloc.c:3946
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __alloc_frozen_pages=
+_noprof+0x18d/0x380 mm/page_alloc.c:5226
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  alloc_slab_page mm/s=
+lub.c:3278 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  allocate_slab+0x77/0=
+x660 mm/slub.c:3467
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  new_slab mm/slub.c:3=
+525 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  refill_objects+0x339=
+/0x3d0 mm/slub.c:7271
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  refill_sheaf mm/slub=
+.c:2816 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __pcs_replace_empty_=
+main+0x321/0x720 mm/slub.c:4651
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  alloc_from_pcs mm/sl=
+ub.c:4749 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_alloc_node mm/s=
+lub.c:4883 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kmem_cache_alloc_nod=
+e_noprof+0x441/0x690 mm/slub.c:4950
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kmalloc_reserve net/=
+core/skbuff.c:613 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __alloc_skb+0x27d/0x=
+7d0 net/core/skbuff.c:713
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  alloc_skb include/li=
+nux/skbuff.h:1383 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __tcp_send_ack+0xae/=
+0x4f0 net/ipv4/tcp_output.c:4473
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  tcp_cleanup_rbuf net=
+/ipv4/tcp.c:1612 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  tcp_recvmsg_locked+0=
+x2dfa/0x3720 net/ipv4/tcp.c:2916
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  tcp_recvmsg+0x205/0x=
+7e0 net/ipv4/tcp.c:2945
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_recvmsg_nosec n=
+et/socket.c:1137 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_recvmsg+0x155/0=
+x1b0 net/socket.c:1159
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_read_iter+0x251=
+/0x320 net/socket.c:1229
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  new_sync_read fs/rea=
+d_write.c:493 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  vfs_read+0x582/0xa70=
+ fs/read_write.c:574
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ksys_read+0x150/0x27=
+0 fs/read_write.c:717
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/=
+x86/entry/syscall_64.c:63 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/=
+0xf80 arch/x86/entry/syscall_64.c:94
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page last free pid 50=
+59 tgid 5059 stack trace:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  reset_page_owner inc=
+lude/linux/page_owner.h:25 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __free_pages_prepare=
+ mm/page_alloc.c:1402 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __free_frozen_pages+=
+0xbc7/0xd30 mm/page_alloc.c:2943
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __slab_free+0x274/0x=
+2c0 mm/slub.c:5612
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  qlink_free mm/kasan/=
+quarantine.c:163 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  qlist_free_all+0x99/=
+0x100 mm/kasan/quarantine.c:179
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_quarantine_red=
+uce+0x148/0x160 mm/kasan/quarantine.c:286
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __kasan_slab_alloc+0=
+x22/0x80 mm/kasan/common.c:350
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_slab_alloc inc=
+lude/linux/kasan.h:253 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_post_alloc_hook=
+ mm/slub.c:4569 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_alloc_node mm/s=
+lub.c:4898 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __do_kmalloc_node mm=
+/slub.c:5294 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __kvmalloc_node_nopr=
+of+0x4d7/0x8a0 mm/slub.c:6832
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  seq_buf_alloc fs/seq=
+_file.c:39 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  seq_read_iter+0x202/=
+0xe10 fs/seq_file.c:211
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  new_sync_read fs/rea=
+d_write.c:493 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  vfs_read+0x582/0xa70=
+ fs/read_write.c:574
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ksys_read+0x150/0x27=
+0 fs/read_write.c:717
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/=
+x86/entry/syscall_64.c:63 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/=
+0xf80 arch/x86/entry/syscall_64.c:94
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_aft=
+er_hwframe+0x77/0x7f
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Memory state around t=
+he buggy address:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ffff88816e172c80: fb=
+ fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ffff88816e172d00: fc=
+ fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> >ffff88816e172d80: fa=
+ fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>                    ^
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ffff88816e172e00: fb=
+ fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ffff88816e172e80: fb=
+ fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> =3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ***
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> KASAN: slab-use-after=
+-free Read in xfrm_dump_sa_done
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> tree:      net
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> URL:       https://ke=
+rnel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> base:      18014147d3=
+ee7831dce53fe65d7fc8d428b02552
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> arch:      amd64
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> compiler:  Debian cla=
+ng version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50),=
+ Debian LLD 21.1.8
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> config:    https://ci=
+.syzbot.org/builds/90c5185d-0dad-4c34-a563-4253ebb12eb2/config
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> syz repro: https://ci=
+.syzbot.org/findings/53579ff8-1479-4e0c-ae08-2f1ea756ee1b/syz_repro
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> =3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-=
+after-free in xfrm_dump_sa_done+0x54/0xd0 net/xfrm/xfrm_user.c:1491
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Read of size 8 at add=
+r ffff888167305398 by task syz.0.17/5812
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> CPU: 1 UID: 0 PID: 58=
+12 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full)
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Hardware name: QEMU S=
+tandard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Call Trace:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  <TASK>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  dump_stack_lvl+0xe8/=
+0x150 lib/dump_stack.c:120
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  print_address_descri=
+ption+0x55/0x1e0 mm/kasan/report.c:378
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  print_report+0x58/0x=
+70 mm/kasan/report.c:482
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_report+0x117/0=
+x150 mm/kasan/report.c:595
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  xfrm_dump_sa_done+0x=
+54/0xd0 net/xfrm/xfrm_user.c:1491
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_release+0x12=
+c8/0x1ad0 net/netlink/af_netlink.c:768
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sock_release net/s=
+ocket.c:722 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_close+0xc3/0x24=
+0 net/socket.c:1514
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __fput+0x44f/0xa60 f=
+s/file_table.c:510
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  task_work_run+0x1d9/=
+0x270 kernel/task_work.c:233
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  resume_user_mode_wor=
+k include/linux/resume_user_mode.h:50 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __exit_to_user_mode_=
+loop kernel/entry/common.c:67 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  exit_to_user_mode_lo=
+op+0xf3/0x4d0 kernel/entry/common.c:98
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __exit_to_user_mode_=
+prepare include/linux/irq-entry-common.h:207 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  syscall_exit_to_user=
+_mode_prepare include/linux/irq-entry-common.h:230 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  syscall_exit_to_user=
+_mode include/linux/entry-common.h:318 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x33e/=
+0xf80 arch/x86/entry/syscall_64.c:100
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_aft=
+er_hwframe+0x77/0x7f
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RIP: 0033:0x7fe50bf9c=
+e59
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Code: ff c3 66 2e 0f =
+1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d =
+89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e=
+8 ff ff ff f7 d8 64 89 01 48
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RSP: 002b:00007fff8a0=
+2cc38 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RAX: 0000000000000000=
+ RBX: 00007fe50c217da0 RCX: 00007fe50bf9ce59
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RDX: 0000000000000000=
+ RSI: 000000000000001e RDI: 0000000000000003
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RBP: 00007fe50c217da0=
+ R08: 00007fe50c216038 R09: 0000000000000000
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> R10: 000000000003fdd4=
+ R11: 0000000000000246 R12: 0000000000010018
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> R13: 00007fe50c215fac=
+ R14: 00007fe50c215fa8 R15: 00007fe50c215fa0
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  </TASK>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Allocated by task 581=
+3:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_stack mm/=
+kasan/common.c:57 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_track+0x3=
+e/0x80 mm/kasan/common.c:78
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  unpoison_slab_object=
+ mm/kasan/common.c:340 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __kasan_slab_alloc+0=
+x6c/0x80 mm/kasan/common.c:366
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_slab_alloc inc=
+lude/linux/kasan.h:253 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_post_alloc_hook=
+ mm/slub.c:4569 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_alloc_node mm/s=
+lub.c:4898 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kmem_cache_alloc_nod=
+e_noprof+0x384/0x690 mm/slub.c:4950
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __alloc_skb+0x1d0/0x=
+7d0 net/core/skbuff.c:702
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_sendmsg+0x5d=
+4/0xb40 net/netlink/af_netlink.c:1869
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec n=
+et/socket.c:787 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/s=
+ocket.c:802 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ____sys_sendmsg+0x97=
+2/0x9f0 net/socket.c:2698
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ___sys_sendmsg+0x2a5=
+/0x360 net/socket.c:2752
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sys_sendmsg net/so=
+cket.c:2784 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __do_sys_sendmsg net=
+/socket.c:2789 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __se_sys_sendmsg net=
+/socket.c:2787 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendmsg+0x=
+1bd/0x2a0 net/socket.c:2787
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/=
+x86/entry/syscall_64.c:63 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/=
+0xf80 arch/x86/entry/syscall_64.c:94
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_aft=
+er_hwframe+0x77/0x7f
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Freed by task 5813:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_stack mm/=
+kasan/common.c:57 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_track+0x3=
+e/0x80 mm/kasan/common.c:78
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_free_info=
++0x46/0x50 mm/kasan/generic.c:584
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  poison_slab_object m=
+m/kasan/common.c:253 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __kasan_slab_free+0x=
+5c/0x80 mm/kasan/common.c:285
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_slab_free incl=
+ude/linux/kasan.h:235 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_free_hook mm/sl=
+ub.c:2689 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_free mm/slub.c:=
+6250 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kmem_cache_free+0x18=
+2/0x650 mm/slub.c:6377
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_unicast_kern=
+el net/netlink/af_netlink.c:1319 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_unicast+0x76=
+4/0x8e0 net/netlink/af_netlink.c:1344
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_sendmsg+0x81=
+3/0xb40 net/netlink/af_netlink.c:1894
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec n=
+et/socket.c:787 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/s=
+ocket.c:802 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ____sys_sendmsg+0x97=
+2/0x9f0 net/socket.c:2698
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ___sys_sendmsg+0x2a5=
+/0x360 net/socket.c:2752
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sys_sendmsg net/so=
+cket.c:2784 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __do_sys_sendmsg net=
+/socket.c:2789 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __se_sys_sendmsg net=
+/socket.c:2787 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendmsg+0x=
+1bd/0x2a0 net/socket.c:2787
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/=
+x86/entry/syscall_64.c:63 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/=
+0xf80 arch/x86/entry/syscall_64.c:94
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_aft=
+er_hwframe+0x77/0x7f
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The buggy address bel=
+ongs to the object at ffff888167305380
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  which belongs to the=
+ cache skbuff_head_cache of size 240
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The buggy address is =
+located 24 bytes inside of
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  freed 240-byte regio=
+n [ffff888167305380, ffff888167305470)
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The buggy address bel=
+ongs to the physical page:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page: refcount:0 mapc=
+ount:0 mapping:0000000000000000 index:0x0 pfn:0x167304
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: order:1 mapcoun=
+t:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> flags: 0x57ff00000000=
+040(head|node=3D1|zone=3D2|lastcpupid=3D0x7ff)
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page_type: f5(slab)
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> raw: 057ff00000000040=
+ ffff888160416dc0 dead000000000100 dead000000000122
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> raw: 0000000000000000=
+ 0000000800150015 00000000f5000000 0000000000000000
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: 057ff0000000004=
+0 ffff888160416dc0 dead000000000100 dead000000000122
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: 000000000000000=
+0 0000000800150015 00000000f5000000 0000000000000000
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: 057ff0000000000=
+1 ffffffffffffff81 00000000ffffffff 00000000ffffffff
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: fffffffffffffff=
+f 0000000000000000 00000000ffffffff 0000000000000002
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page dumped because: =
+kasan: bad access detected
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page_owner tracks the=
+ page as allocated
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page last allocated v=
+ia order 1, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP=
+_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5813, tgid 5812 (sy=
+z.0.17), ts 64859679564, free_ts 63312613640
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  set_page_owner inclu=
+de/linux/page_owner.h:32 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  post_alloc_hook+0x22=
+d/0x280 mm/page_alloc.c:1858
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  prep_new_page mm/pag=
+e_alloc.c:1866 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  get_page_from_freeli=
+st+0x24ba/0x2540 mm/page_alloc.c:3946
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __alloc_frozen_pages=
+_noprof+0x18d/0x380 mm/page_alloc.c:5226
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  alloc_slab_page mm/s=
+lub.c:3278 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  allocate_slab+0x77/0=
+x660 mm/slub.c:3467
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  new_slab mm/slub.c:3=
+525 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  refill_objects+0x339=
+/0x3d0 mm/slub.c:7271
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  refill_sheaf mm/slub=
+.c:2816 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __pcs_replace_empty_=
+main+0x321/0x720 mm/slub.c:4651
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  alloc_from_pcs mm/sl=
+ub.c:4749 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_alloc_node mm/s=
+lub.c:4883 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kmem_cache_alloc_nod=
+e_noprof+0x441/0x690 mm/slub.c:4950
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __alloc_skb+0x1d0/0x=
+7d0 net/core/skbuff.c:702
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_sendmsg+0x5d=
+4/0xb40 net/netlink/af_netlink.c:1869
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec n=
+et/socket.c:787 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/s=
+ocket.c:802 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ____sys_sendmsg+0x97=
+2/0x9f0 net/socket.c:2698
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ___sys_sendmsg+0x2a5=
+/0x360 net/socket.c:2752
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sys_sendmsg net/so=
+cket.c:2784 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __do_sys_sendmsg net=
+/socket.c:2789 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __se_sys_sendmsg net=
+/socket.c:2787 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendmsg+0x=
+1bd/0x2a0 net/socket.c:2787
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/=
+x86/entry/syscall_64.c:63 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/=
+0xf80 arch/x86/entry/syscall_64.c:94
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_aft=
+er_hwframe+0x77/0x7f
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page last free pid 15=
+ tgid 15 stack trace:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  reset_page_owner inc=
+lude/linux/page_owner.h:25 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __free_pages_prepare=
+ mm/page_alloc.c:1402 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __free_frozen_pages+=
+0xbc7/0xd30 mm/page_alloc.c:2943
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  rcu_do_batch kernel/=
+rcu/tree.c:2617 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  rcu_core+0x7cd/0x107=
+0 kernel/rcu/tree.c:2869
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  handle_softirqs+0x22=
+a/0x840 kernel/softirq.c:622
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  run_ksoftirqd+0x36/0=
+x60 kernel/softirq.c:1076
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  smpboot_thread_fn+0x=
+541/0xa50 kernel/smpboot.c:160
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kthread+0x389/0x470 =
+kernel/kthread.c:436
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ret_from_fork+0x514/=
+0xb70 arch/x86/kernel/process.c:158
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ret_from_fork_asm+0x=
+1a/0x30 arch/x86/entry/entry_64.S:245
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Memory state around t=
+he buggy address:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ffff888167305280: fb=
+ fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ffff888167305300: fc=
+ fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> >ffff888167305380: fa=
+ fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>                      =
+       ^
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ffff888167305400: fb=
+ fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ffff888167305480: fc=
+ fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> =3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ***
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> KASAN: slab-use-after=
+-free Write in sk_skb_reason_drop
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> tree:      net
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> URL:       https://ke=
+rnel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> base:      18014147d3=
+ee7831dce53fe65d7fc8d428b02552
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> arch:      amd64
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> compiler:  Debian cla=
+ng version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50),=
+ Debian LLD 21.1.8
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> config:    https://ci=
+.syzbot.org/builds/90c5185d-0dad-4c34-a563-4253ebb12eb2/config
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> syz repro: https://ci=
+.syzbot.org/findings/c87569e1-d26e-4670-a17b-9f2f64a5af67/syz_repro
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> =3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-=
+after-free in instrument_atomic_read_write include/linux/instrumented.h:112=
+ [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-=
+after-free in atomic_fetch_sub_release include/linux/atomic/atomic-instrume=
+nted.h:400 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-=
+after-free in __refcount_sub_and_test include/linux/refcount.h:389 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-=
+after-free in __refcount_dec_and_test include/linux/refcount.h:432 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-=
+after-free in refcount_dec_and_test include/linux/refcount.h:450 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-=
+after-free in skb_unref include/linux/skbuff.h:1292 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-=
+after-free in __sk_skb_reason_drop net/core/skbuff.c:1212 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-=
+after-free in sk_skb_reason_drop+0x37/0x110 net/core/skbuff.c:1240
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Write of size 4 at ad=
+dr ffff8881178efee4 by task syz.1.18/5873
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> CPU: 0 UID: 0 PID: 58=
+73 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full)
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Hardware name: QEMU S=
+tandard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Call Trace:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  <TASK>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  dump_stack_lvl+0xe8/=
+0x150 lib/dump_stack.c:120
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  print_address_descri=
+ption+0x55/0x1e0 mm/kasan/report.c:378
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  print_report+0x58/0x=
+70 mm/kasan/report.c:482
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_report+0x117/0=
+x150 mm/kasan/report.c:595
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  check_region_inline =
+mm/kasan/generic.c:-1 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_check_range+0x=
+264/0x2c0 mm/kasan/generic.c:200
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  instrument_atomic_re=
+ad_write include/linux/instrumented.h:112 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  atomic_fetch_sub_rel=
+ease include/linux/atomic/atomic-instrumented.h:400 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __refcount_sub_and_t=
+est include/linux/refcount.h:389 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __refcount_dec_and_t=
+est include/linux/refcount.h:432 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  refcount_dec_and_tes=
+t include/linux/refcount.h:450 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  skb_unref include/li=
+nux/skbuff.h:1292 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sk_skb_reason_drop=
+ net/core/skbuff.c:1212 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sk_skb_reason_drop+0=
+x37/0x110 net/core/skbuff.c:1240
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kfree_skb_reason inc=
+lude/linux/skbuff.h:1322 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kfree_skb include/li=
+nux/skbuff.h:1331 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_release+0x13=
+3a/0x1ad0 net/netlink/af_netlink.c:770
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sock_release net/s=
+ocket.c:722 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_close+0xc3/0x24=
+0 net/socket.c:1514
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __fput+0x44f/0xa60 f=
+s/file_table.c:510
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  task_work_run+0x1d9/=
+0x270 kernel/task_work.c:233
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  resume_user_mode_wor=
+k include/linux/resume_user_mode.h:50 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __exit_to_user_mode_=
+loop kernel/entry/common.c:67 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  exit_to_user_mode_lo=
+op+0xf3/0x4d0 kernel/entry/common.c:98
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __exit_to_user_mode_=
+prepare include/linux/irq-entry-common.h:207 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  syscall_exit_to_user=
+_mode_prepare include/linux/irq-entry-common.h:230 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  syscall_exit_to_user=
+_mode include/linux/entry-common.h:318 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x33e/=
+0xf80 arch/x86/entry/syscall_64.c:100
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_aft=
+er_hwframe+0x77/0x7f
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RIP: 0033:0x7fd4d139c=
+e59
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Code: ff c3 66 2e 0f =
+1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d =
+89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e=
+8 ff ff ff f7 d8 64 89 01 48
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RSP: 002b:00007fff722=
+ecbf8 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RAX: 0000000000000000=
+ RBX: 00007fff722ecce0 RCX: 00007fd4d139ce59
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RDX: 0000000000000000=
+ RSI: 000000000000001e RDI: 0000000000000003
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RBP: 0000000000012825=
+ R08: 0000000000000001 R09: 0000000000000000
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> R10: 0000001b32e20000=
+ R11: 0000000000000246 R12: 00007fff722ecd20
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> R13: 00007fd4d1615fac=
+ R14: 0000000000012859 R15: 00007fd4d1615fa0
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  </TASK>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Allocated by task 587=
+4:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_stack mm/=
+kasan/common.c:57 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_track+0x3=
+e/0x80 mm/kasan/common.c:78
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  unpoison_slab_object=
+ mm/kasan/common.c:340 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __kasan_mempool_unpo=
+ison_object+0xa3/0x130 mm/kasan/common.c:564
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_mempool_unpois=
+on_object include/linux/kasan.h:391 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  napi_skb_cache_get+0=
+x3c8/0x780 net/core/skbuff.c:306
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __alloc_skb+0x19a/0x=
+7d0 net/core/skbuff.c:696
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_sendmsg+0x5d=
+4/0xb40 net/netlink/af_netlink.c:1869
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec n=
+et/socket.c:787 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/s=
+ocket.c:802 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sys_sendto+0x672/0=
+x710 net/socket.c:2265
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __do_sys_sendto net/=
+socket.c:2272 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __se_sys_sendto net/=
+socket.c:2268 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendto+0xd=
+e/0x100 net/socket.c:2268
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/=
+x86/entry/syscall_64.c:63 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/=
+0xf80 arch/x86/entry/syscall_64.c:94
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_aft=
+er_hwframe+0x77/0x7f
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Freed by task 5874:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_stack mm/=
+kasan/common.c:57 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_track+0x3=
+e/0x80 mm/kasan/common.c:78
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_save_free_info=
++0x46/0x50 mm/kasan/generic.c:584
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  poison_slab_object m=
+m/kasan/common.c:253 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __kasan_slab_free+0x=
+5c/0x80 mm/kasan/common.c:285
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kasan_slab_free incl=
+ude/linux/kasan.h:235 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_free_hook mm/sl=
+ub.c:2689 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_free mm/slub.c:=
+6250 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kmem_cache_free+0x18=
+2/0x650 mm/slub.c:6377
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_unicast_kern=
+el net/netlink/af_netlink.c:1319 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_unicast+0x76=
+4/0x8e0 net/netlink/af_netlink.c:1344
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  netlink_sendmsg+0x81=
+3/0xb40 net/netlink/af_netlink.c:1894
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec n=
+et/socket.c:787 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/s=
+ocket.c:802 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sys_sendto+0x672/0=
+x710 net/socket.c:2265
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __do_sys_sendto net/=
+socket.c:2272 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __se_sys_sendto net/=
+socket.c:2268 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendto+0xd=
+e/0x100 net/socket.c:2268
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/=
+x86/entry/syscall_64.c:63 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/=
+0xf80 arch/x86/entry/syscall_64.c:94
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_aft=
+er_hwframe+0x77/0x7f
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The buggy address bel=
+ongs to the object at ffff8881178efe00
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  which belongs to the=
+ cache skbuff_head_cache of size 240
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The buggy address is =
+located 228 bytes inside of
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  freed 240-byte regio=
+n [ffff8881178efe00, ffff8881178efef0)
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The buggy address bel=
+ongs to the physical page:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page: refcount:0 mapc=
+ount:0 mapping:0000000000000000 index:0x0 pfn:0x1178ee
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: order:1 mapcoun=
+t:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> flags: 0x17ff00000000=
+040(head|node=3D0|zone=3D2|lastcpupid=3D0x7ff)
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page_type: f5(slab)
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> raw: 017ff00000000040=
+ ffff888160416c80 dead000000000122 0000000000000000
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> raw: 0000000000000000=
+ 0000000800150015 00000000f5000000 0000000000000000
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: 017ff0000000004=
+0 ffff888160416c80 dead000000000122 0000000000000000
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: 000000000000000=
+0 0000000800150015 00000000f5000000 0000000000000000
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: 017ff0000000000=
+1 ffffffffffffff81 00000000ffffffff 00000000ffffffff
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> head: fffffffffffffff=
+f 0000000000000000 00000000ffffffff 0000000000000002
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page dumped because: =
+kasan: bad access detected
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page_owner tracks the=
+ page as allocated
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page last allocated v=
+ia order 1, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP=
+_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5050, tgid 5050 (kl=
+ogd), ts 75887265953, free_ts 75876344896
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  set_page_owner inclu=
+de/linux/page_owner.h:32 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  post_alloc_hook+0x22=
+d/0x280 mm/page_alloc.c:1858
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  prep_new_page mm/pag=
+e_alloc.c:1866 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  get_page_from_freeli=
+st+0x24ba/0x2540 mm/page_alloc.c:3946
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __alloc_frozen_pages=
+_noprof+0x18d/0x380 mm/page_alloc.c:5226
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  alloc_slab_page mm/s=
+lub.c:3278 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  allocate_slab+0x77/0=
+x660 mm/slub.c:3467
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  new_slab mm/slub.c:3=
+525 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  refill_objects+0x339=
+/0x3d0 mm/slub.c:7271
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  refill_sheaf mm/slub=
+.c:2816 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __pcs_replace_empty_=
+main+0x321/0x720 mm/slub.c:4651
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  alloc_from_pcs mm/sl=
+ub.c:4749 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  slab_alloc_node mm/s=
+lub.c:4883 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  kmem_cache_alloc_nod=
+e_noprof+0x441/0x690 mm/slub.c:4950
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __alloc_skb+0x1d0/0x=
+7d0 net/core/skbuff.c:702
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  alloc_skb include/li=
+nux/skbuff.h:1383 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  alloc_skb_with_frags=
++0xc8/0x760 net/core/skbuff.c:6743
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_alloc_send_pskb=
++0x878/0x990 net/core/sock.c:2998
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  unix_dgram_sendmsg+0=
+x460/0x18d0 net/unix/af_unix.c:2141
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec n=
+et/socket.c:787 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/s=
+ocket.c:802 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __sys_sendto+0x672/0=
+x710 net/socket.c:2265
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __do_sys_sendto net/=
+socket.c:2272 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __se_sys_sendto net/=
+socket.c:2268 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendto+0xd=
+e/0x100 net/socket.c:2268
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/=
+x86/entry/syscall_64.c:63 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/=
+0xf80 arch/x86/entry/syscall_64.c:94
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_aft=
+er_hwframe+0x77/0x7f
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> page last free pid 0 =
+tgid 0 stack trace:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  reset_page_owner inc=
+lude/linux/page_owner.h:25 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __free_pages_prepare=
+ mm/page_alloc.c:1402 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __free_frozen_pages+=
+0xbc7/0xd30 mm/page_alloc.c:2943
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  rcu_do_batch kernel/=
+rcu/tree.c:2617 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  rcu_core+0x7cd/0x107=
+0 kernel/rcu/tree.c:2869
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  handle_softirqs+0x22=
+a/0x840 kernel/softirq.c:622
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __do_softirq kernel/=
+softirq.c:656 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  invoke_softirq kerne=
+l/softirq.c:496 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  __irq_exit_rcu+0xca/=
+0x220 kernel/softirq.c:735
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  irq_exit_rcu+0x9/0x3=
+0 kernel/softirq.c:752
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  instr_sysvec_apic_ti=
+mer_interrupt arch/x86/kernel/apic/apic.c:1061 [inline]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  sysvec_apic_timer_in=
+terrupt+0xa6/0xc0 arch/x86/kernel/apic/apic.c:1061
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  asm_sysvec_apic_time=
+r_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.h:697
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Memory state around t=
+he buggy address:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ffff8881178efd80: fc=
+ fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ffff8881178efe00: fa=
+ fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> >ffff8881178efe80: fb=
+ fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>                      =
+                                  ^
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ffff8881178eff00: fc=
+ fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  ffff8881178eff80: fc=
+ fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> =3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ***
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> If these findings hav=
+e caused you to resend the series or submit a
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> separate fix, please =
+add the following tag to your commit message:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   Tested-by: syzbot@s=
+yzkaller.appspotmail.com
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> This report is genera=
+ted by a bot. It may contain errors.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> syzbot ci engineers c=
+an be reached at syzkaller@googlegroups.com.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> To test a patch for t=
+his bug, please reply with `#syz test`
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> (should be on a separ=
+ate line).
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The patch should be a=
+ttached to the email.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Note: arguments like =
+custom git repos and branches are not supported.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email will later =
+be sent to:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> [davem@davemloft.net =
+edumazet@google.com horms@kernel.org kees@kernel.org kuba@kernel.org kuniyu=
+@google.com linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redh=
+at.com stable@vger.kernel.org vulab@iscas.ac.cn yangfeng@kylinos.cn]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> If the report looks f=
+ine to you, reply with:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> #syz upstream
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> If the report is a fa=
+lse positive, reply with
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> #syz invalid
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> --
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> You received this mes=
+sage because you are subscribed to the Google Groups "syzkaller-upstream-mo=
+deration" group.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> To unsubscribe from t=
+his group and stop receiving emails from it, send an email to syzkaller-ups=
+tream-moderation+unsubscribe@googlegroups.com.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> To view this discussi=
+on visit https://groups.google.com/d/msgid/syzkaller-upstream-moderation/6a=
+185386.99a1ea37.128423.0001.GAE%40google.com.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> --=20
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> You received this messa=
+ge because you are subscribed to the Google Groups "syzkaller-upstream-mode=
+ration" group.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> To unsubscribe from thi=
+s group and stop receiving emails from it, send an email to syzkaller-upstr=
+eam-moderation+unsubscribe@googlegroups.com.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> To view this discussion=
+ visit https://groups.google.com/d/msgid/syzkaller-upstream-moderation/6a18=
+555e.e783d627.6395.0001.GAE%40google.com.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but ca=
+n't find the corresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  sy=
+zbot+HASH@syzkaller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not co=
+rrespond to any known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the =
+address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can=
+'t find the corresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syz=
+bot+HASH@syzkaller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not cor=
+respond to any known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the a=
+ddress.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> --=20
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> You received this message=
+ because you are subscribed to the Google Groups "syzkaller-upstream-modera=
+tion" group.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> To unsubscribe from this =
+group and stop receiving emails from it, send an email to syzkaller-upstrea=
+m-moderation+unsubscribe@googlegroups.com.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> To view this discussion v=
+isit https://groups.google.com/d/msgid/syzkaller-upstream-moderation/6a1855=
+61.7f45b5d1.9d2a9.0005.GAE%40google.com.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can'=
+t find the corresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzb=
+ot+HASH@syzkaller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not corr=
+espond to any known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the ad=
+dress.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't=
+ find the corresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbo=
+t+HASH@syzkaller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not corre=
+spond to any known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the add=
+ress.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't =
+find the corresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot=
++HASH@syzkaller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not corres=
+pond to any known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the addr=
+ess.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't f=
+ind the corresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+=
+HASH@syzkaller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not corresp=
+ond to any known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the addre=
+ss.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't fi=
+nd the corresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+H=
+ASH@syzkaller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspo=
+nd to any known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the addres=
+s.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> --=20
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> You received this message beca=
+use you are subscribed to the Google Groups "syzkaller-upstream-moderation"=
+ group.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> To unsubscribe from this group=
+ and stop receiving emails from it, send an email to syzkaller-upstream-mod=
+eration+unsubscribe@googlegroups.com.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> To view this discussion visit =
+https://groups.google.com/d/msgid/syzkaller-upstream-moderation/6a185565.9e=
+fe2910.1869e6.0005.GAE%40google.com.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't fin=
+d the corresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HA=
+SH@syzkaller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspon=
+d to any known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address=
+.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> --=20
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> You received this message becau=
+se you are subscribed to the Google Groups "syzkaller-upstream-moderation" =
+group.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> To unsubscribe from this group =
+and stop receiving emails from it, send an email to syzkaller-upstream-mode=
+ration+unsubscribe@googlegroups.com.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> To view this discussion visit h=
+ttps://groups.google.com/d/msgid/syzkaller-upstream-moderation/6a185568.586=
+c836d.2e3ab2.0009.GAE%40google.com.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find=
+ the corresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HAS=
+H@syzkaller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond=
+ to any known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find =
+the corresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH=
+@syzkaller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond =
+to any known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find t=
+he corresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@=
+syzkaller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond t=
+o any known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> --=20
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> You received this message because =
+you are subscribed to the Google Groups "syzkaller-upstream-moderation" gro=
+up.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> To unsubscribe from this group and=
+ stop receiving emails from it, send an email to syzkaller-upstream-moderat=
+ion+unsubscribe@googlegroups.com.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> To view this discussion visit http=
+s://groups.google.com/d/msgid/syzkaller-upstream-moderation/6a18556b.b6d9d2=
+ce.2aaec5.0031.GAE%40google.com.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find th=
+e corresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@s=
+yzkaller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to=
+ any known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the=
+ corresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@sy=
+zkaller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to =
+any known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the =
+corresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syz=
+kaller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to a=
+ny known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the c=
+orresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzk=
+aller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to an=
+y known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the co=
+rresponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzka=
+ller.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any=
+ known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the cor=
+responding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkal=
+ler.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any =
+known bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the corr=
+esponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkall=
+er.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any k=
+nown bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the corre=
+sponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkalle=
+r.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any kn=
+own bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the corres=
+ponding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller=
+.appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any kno=
+wn bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the corresp=
+onding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.=
+appspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any know=
+n bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the correspo=
+nding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.a=
+ppspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any known=
+ bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the correspon=
+ding bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.ap=
+pspotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any known =
+bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the correspond=
+ing bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.app=
+spotmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any known b=
+ug.
+>>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the correspondi=
+ng bug.
+>>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.apps=
+potmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any known bu=
+g.
+>>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the correspondin=
+g bug.
+>>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.appsp=
+otmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any known bug=
+.
+>>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the corresponding=
+ bug.
+>>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.appspo=
+tmail.com address
+>>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any known bug.
+>>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the corresponding =
+bug.
+>>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.appspot=
+mail.com address
+>>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any known bug.
+>>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the corresponding b=
+ug.
+>>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.appspotm=
+ail.com address
+>>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any known bug.
+>>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>> I see the command but can't find the corresponding bu=
+g.
+>>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.appspotma=
+il.com address
+>>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any known bug.
+>>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>> On Thu, May 28, 2026 at 4:39=E2=80=AFPM syzbot ci
->>>>>>>>>>>>>>>>>>>> <syzbot+cidbb9f477452b5813@syzkaller.appspotmail.com> =
-wrote:
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> syzbot ci has tested the following series
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> [v1] netlink: fix skb refcount leak when dump start f=
-ails
->>>>>>>>>>>>>>>>>>>>> https://lore.kernel.org/all/20260528073614.1169858-1-=
-vulab@iscas.ac.cn
->>>>>>>>>>>>>>>>>>>>> * [PATCH] netlink: fix skb refcount leak when dump st=
-art fails
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> and found the following issues:
->>>>>>>>>>>>>>>>>>>>> * KASAN: slab-use-after-free Read in nl80211_prepare_=
-wdev_dump
->>>>>>>>>>>>>>>>>>>>> * KASAN: slab-use-after-free Read in xfrm_dump_sa_don=
-e
->>>>>>>>>>>>>>>>>>>>> * KASAN: slab-use-after-free Write in sk_skb_reason_d=
-rop
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> Full report is available here:
->>>>>>>>>>>>>>>>>>>>> https://ci.syzbot.org/series/8ed6f41d-0d02-4f1f-a7be-=
-cc639c2b4cfd
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> ***
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> KASAN: slab-use-after-free Read in nl80211_prepare_wd=
-ev_dump
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> tree:      net
->>>>>>>>>>>>>>>>>>>>> URL:       https://kernel.googlesource.com/pub/scm/li=
-nux/kernel/git/netdev/net.git
->>>>>>>>>>>>>>>>>>>>> base:      18014147d3ee7831dce53fe65d7fc8d428b02552
->>>>>>>>>>>>>>>>>>>>> arch:      amd64
->>>>>>>>>>>>>>>>>>>>> compiler:  Debian clang version 21.1.8 (++20251221033=
-036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
->>>>>>>>>>>>>>>>>>>>> config:    https://ci.syzbot.org/builds/90c5185d-0dad=
--4c34-a563-4253ebb12eb2/config
->>>>>>>>>>>>>>>>>>>>> syz repro: https://ci.syzbot.org/findings/0ad9835c-f6=
-31-4240-a3ad-2610bca3de33/syz_repro
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-after-free in __nlmsg_parse incl=
-ude/net/netlink.h:784 [inline]
->>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-after-free in nlmsg_parse_deprec=
-ated include/net/netlink.h:830 [inline]
->>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-after-free in nl80211_prepare_wd=
-ev_dump+0x634/0x680 net/wireless/nl80211.c:1245
->>>>>>>>>>>>>>>>>>>>> Read of size 4 at addr ffff88816e172d80 by task syz.0=
-.17/5814
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> CPU: 1 UID: 0 PID: 5814 Comm: syz.0.17 Not tainted sy=
-zkaller #0 PREEMPT(full)
->>>>>>>>>>>>>>>>>>>>> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), B=
-IOS 1.16.2-debian-1.16.2-1 04/01/2014
->>>>>>>>>>>>>>>>>>>>> Call Trace:
->>>>>>>>>>>>>>>>>>>>>  <TASK>
->>>>>>>>>>>>>>>>>>>>>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->>>>>>>>>>>>>>>>>>>>>  print_address_description+0x55/0x1e0 mm/kasan/report=
-.c:378
->>>>>>>>>>>>>>>>>>>>>  print_report+0x58/0x70 mm/kasan/report.c:482
->>>>>>>>>>>>>>>>>>>>>  kasan_report+0x117/0x150 mm/kasan/report.c:595
->>>>>>>>>>>>>>>>>>>>>  __nlmsg_parse include/net/netlink.h:784 [inline]
->>>>>>>>>>>>>>>>>>>>>  nlmsg_parse_deprecated include/net/netlink.h:830 [in=
-line]
->>>>>>>>>>>>>>>>>>>>>  nl80211_prepare_wdev_dump+0x634/0x680 net/wireless/n=
-l80211.c:1245
->>>>>>>>>>>>>>>>>>>>>  nl80211_dump_station+0x186/0xdb0 net/wireless/nl8021=
-1.c:8216
->>>>>>>>>>>>>>>>>>>>>  genl_dumpit+0x10b/0x1b0 net/netlink/genetlink.c:1026
->>>>>>>>>>>>>>>>>>>>>  netlink_dump+0x702/0xe10 net/netlink/af_netlink.c:23=
-25
->>>>>>>>>>>>>>>>>>>>>  netlink_recvmsg+0x690/0xa50 net/netlink/af_netlink.c=
-:1976
->>>>>>>>>>>>>>>>>>>>>  sock_recvmsg_nosec net/socket.c:1137 [inline]
->>>>>>>>>>>>>>>>>>>>>  sock_recvmsg+0x172/0x1b0 net/socket.c:1159
->>>>>>>>>>>>>>>>>>>>>  __sys_recvfrom+0x240/0x3c0 net/socket.c:2315
->>>>>>>>>>>>>>>>>>>>>  __do_sys_recvfrom net/socket.c:2330 [inline]
->>>>>>>>>>>>>>>>>>>>>  __se_sys_recvfrom net/socket.c:2326 [inline]
->>>>>>>>>>>>>>>>>>>>>  __x64_sys_recvfrom+0xde/0x100 net/socket.c:2326
->>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inlin=
-e]
->>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.=
-c:94
->>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->>>>>>>>>>>>>>>>>>>>> RIP: 0033:0x7fd64155d68e
->>>>>>>>>>>>>>>>>>>>> Code: 08 0f 85 a5 a8 ff ff 49 89 fb 48 89 f0 48 89 d7=
- 48 89 ce 4c 89 c2 4d 89 ca 4c 8b 44 24 08 4c 8b 4c 24 10 4c 89 5c 24 08 0f=
- 05 <c3> 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 80 00 00 00 00 48 83 ec 08
->>>>>>>>>>>>>>>>>>>>> RSP: 002b:00007fd6424b5e88 EFLAGS: 00000246 ORIG_RAX:=
- 000000000000002d
->>>>>>>>>>>>>>>>>>>>> RAX: ffffffffffffffda RBX: 00007fd6424b76c0 RCX: 0000=
-7fd64155d68e
->>>>>>>>>>>>>>>>>>>>> RDX: 0000000000001000 RSI: 00007fd6424b6000 RDI: 0000=
-000000000003
->>>>>>>>>>>>>>>>>>>>> RBP: 0000000000000000 R08: 0000000000000000 R09: 0000=
-000000000000
->>>>>>>>>>>>>>>>>>>>> R10: 0000000000000000 R11: 0000000000000246 R12: 0000=
-000000000003
->>>>>>>>>>>>>>>>>>>>> R13: 00007fd6424b5f58 R14: 00007fd6424b6000 R15: 0000=
-000000000000
->>>>>>>>>>>>>>>>>>>>>  </TASK>
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> Allocated by task 5813:
->>>>>>>>>>>>>>>>>>>>>  kasan_save_stack mm/kasan/common.c:57 [inline]
->>>>>>>>>>>>>>>>>>>>>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
->>>>>>>>>>>>>>>>>>>>>  unpoison_slab_object mm/kasan/common.c:340 [inline]
->>>>>>>>>>>>>>>>>>>>>  __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:366
->>>>>>>>>>>>>>>>>>>>>  kasan_slab_alloc include/linux/kasan.h:253 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_post_alloc_hook mm/slub.c:4569 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_alloc_node mm/slub.c:4898 [inline]
->>>>>>>>>>>>>>>>>>>>>  kmem_cache_alloc_node_noprof+0x384/0x690 mm/slub.c:4=
-950
->>>>>>>>>>>>>>>>>>>>>  kmalloc_reserve net/core/skbuff.c:613 [inline]
->>>>>>>>>>>>>>>>>>>>>  __alloc_skb+0x27d/0x7d0 net/core/skbuff.c:713
->>>>>>>>>>>>>>>>>>>>>  netlink_sendmsg+0x5d4/0xb40 net/netlink/af_netlink.c=
-:1869
->>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec net/socket.c:787 [inline]
->>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/socket.c:802 [inline]
->>>>>>>>>>>>>>>>>>>>>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
->>>>>>>>>>>>>>>>>>>>>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
->>>>>>>>>>>>>>>>>>>>>  __sys_sendmsg net/socket.c:2784 [inline]
->>>>>>>>>>>>>>>>>>>>>  __do_sys_sendmsg net/socket.c:2789 [inline]
->>>>>>>>>>>>>>>>>>>>>  __se_sys_sendmsg net/socket.c:2787 [inline]
->>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
->>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inlin=
-e]
->>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.=
-c:94
->>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> Freed by task 5813:
->>>>>>>>>>>>>>>>>>>>>  kasan_save_stack mm/kasan/common.c:57 [inline]
->>>>>>>>>>>>>>>>>>>>>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
->>>>>>>>>>>>>>>>>>>>>  kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:58=
-4
->>>>>>>>>>>>>>>>>>>>>  poison_slab_object mm/kasan/common.c:253 [inline]
->>>>>>>>>>>>>>>>>>>>>  __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
->>>>>>>>>>>>>>>>>>>>>  kasan_slab_free include/linux/kasan.h:235 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_free_hook mm/slub.c:2689 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_free mm/slub.c:6250 [inline]
->>>>>>>>>>>>>>>>>>>>>  kfree+0x1c5/0x640 mm/slub.c:6565
->>>>>>>>>>>>>>>>>>>>>  skb_kfree_head net/core/skbuff.c:1075 [inline]
->>>>>>>>>>>>>>>>>>>>>  skb_free_head net/core/skbuff.c:1087 [inline]
->>>>>>>>>>>>>>>>>>>>>  skb_release_data+0x828/0xa60 net/core/skbuff.c:1114
->>>>>>>>>>>>>>>>>>>>>  skb_release_all net/core/skbuff.c:1189 [inline]
->>>>>>>>>>>>>>>>>>>>>  __kfree_skb+0x5d/0x210 net/core/skbuff.c:1203
->>>>>>>>>>>>>>>>>>>>>  netlink_unicast_kernel net/netlink/af_netlink.c:1319=
- [inline]
->>>>>>>>>>>>>>>>>>>>>  netlink_unicast+0x764/0x8e0 net/netlink/af_netlink.c=
-:1344
->>>>>>>>>>>>>>>>>>>>>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c=
-:1894
->>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec net/socket.c:787 [inline]
->>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/socket.c:802 [inline]
->>>>>>>>>>>>>>>>>>>>>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
->>>>>>>>>>>>>>>>>>>>>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
->>>>>>>>>>>>>>>>>>>>>  __sys_sendmsg net/socket.c:2784 [inline]
->>>>>>>>>>>>>>>>>>>>>  __do_sys_sendmsg net/socket.c:2789 [inline]
->>>>>>>>>>>>>>>>>>>>>  __se_sys_sendmsg net/socket.c:2787 [inline]
->>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
->>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inlin=
-e]
->>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.=
-c:94
->>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> The buggy address belongs to the object at ffff88816e=
-172d80
->>>>>>>>>>>>>>>>>>>>>  which belongs to the cache skbuff_small_head of size=
- 704
->>>>>>>>>>>>>>>>>>>>> The buggy address is located 0 bytes inside of
->>>>>>>>>>>>>>>>>>>>>  freed 704-byte region [ffff88816e172d80, ffff88816e1=
-73040)
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> The buggy address belongs to the physical page:
->>>>>>>>>>>>>>>>>>>>> page: refcount:0 mapcount:0 mapping:0000000000000000 =
-index:0x0 pfn:0x16e170
->>>>>>>>>>>>>>>>>>>>> head: order:2 mapcount:0 entire_mapcount:0 nr_pages_m=
-apped:0 pincount:0
->>>>>>>>>>>>>>>>>>>>> flags: 0x57ff00000000040(head|node=3D1|zone=3D2|lastc=
-pupid=3D0x7ff)
->>>>>>>>>>>>>>>>>>>>> page_type: f5(slab)
->>>>>>>>>>>>>>>>>>>>> raw: 057ff00000000040 ffff888160415140 dead0000000001=
-00 dead000000000122
->>>>>>>>>>>>>>>>>>>>> raw: 0000000000000000 0000000800120012 00000000f50000=
-00 0000000000000000
->>>>>>>>>>>>>>>>>>>>> head: 057ff00000000040 ffff888160415140 dead000000000=
-100 dead000000000122
->>>>>>>>>>>>>>>>>>>>> head: 0000000000000000 0000000800120012 00000000f5000=
-000 0000000000000000
->>>>>>>>>>>>>>>>>>>>> head: 057ff00000000002 ffffffffffffff01 00000000fffff=
-fff 00000000ffffffff
->>>>>>>>>>>>>>>>>>>>> head: ffffffffffffffff 0000000000000000 00000000fffff=
-fff 0000000000000004
->>>>>>>>>>>>>>>>>>>>> page dumped because: kasan: bad access detected
->>>>>>>>>>>>>>>>>>>>> page_owner tracks the page as allocated
->>>>>>>>>>>>>>>>>>>>> page last allocated via order 2, migratetype Unmovabl=
-e, gfp_mask 0xd2820(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_=
-NOMEMALLOC), pid 5530, tgid 5530 (sshd), ts 47735478218, free_ts 3470274876=
-7
->>>>>>>>>>>>>>>>>>>>>  set_page_owner include/linux/page_owner.h:32 [inline=
-]
->>>>>>>>>>>>>>>>>>>>>  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->>>>>>>>>>>>>>>>>>>>>  prep_new_page mm/page_alloc.c:1866 [inline]
->>>>>>>>>>>>>>>>>>>>>  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c=
-:3946
->>>>>>>>>>>>>>>>>>>>>  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_allo=
-c.c:5226
->>>>>>>>>>>>>>>>>>>>>  alloc_slab_page mm/slub.c:3278 [inline]
->>>>>>>>>>>>>>>>>>>>>  allocate_slab+0x77/0x660 mm/slub.c:3467
->>>>>>>>>>>>>>>>>>>>>  new_slab mm/slub.c:3525 [inline]
->>>>>>>>>>>>>>>>>>>>>  refill_objects+0x339/0x3d0 mm/slub.c:7271
->>>>>>>>>>>>>>>>>>>>>  refill_sheaf mm/slub.c:2816 [inline]
->>>>>>>>>>>>>>>>>>>>>  __pcs_replace_empty_main+0x321/0x720 mm/slub.c:4651
->>>>>>>>>>>>>>>>>>>>>  alloc_from_pcs mm/slub.c:4749 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_alloc_node mm/slub.c:4883 [inline]
->>>>>>>>>>>>>>>>>>>>>  kmem_cache_alloc_node_noprof+0x441/0x690 mm/slub.c:4=
-950
->>>>>>>>>>>>>>>>>>>>>  kmalloc_reserve net/core/skbuff.c:613 [inline]
->>>>>>>>>>>>>>>>>>>>>  __alloc_skb+0x27d/0x7d0 net/core/skbuff.c:713
->>>>>>>>>>>>>>>>>>>>>  alloc_skb include/linux/skbuff.h:1383 [inline]
->>>>>>>>>>>>>>>>>>>>>  __tcp_send_ack+0xae/0x4f0 net/ipv4/tcp_output.c:4473
->>>>>>>>>>>>>>>>>>>>>  tcp_cleanup_rbuf net/ipv4/tcp.c:1612 [inline]
->>>>>>>>>>>>>>>>>>>>>  tcp_recvmsg_locked+0x2dfa/0x3720 net/ipv4/tcp.c:2916
->>>>>>>>>>>>>>>>>>>>>  tcp_recvmsg+0x205/0x7e0 net/ipv4/tcp.c:2945
->>>>>>>>>>>>>>>>>>>>>  sock_recvmsg_nosec net/socket.c:1137 [inline]
->>>>>>>>>>>>>>>>>>>>>  sock_recvmsg+0x155/0x1b0 net/socket.c:1159
->>>>>>>>>>>>>>>>>>>>>  sock_read_iter+0x251/0x320 net/socket.c:1229
->>>>>>>>>>>>>>>>>>>>>  new_sync_read fs/read_write.c:493 [inline]
->>>>>>>>>>>>>>>>>>>>>  vfs_read+0x582/0xa70 fs/read_write.c:574
->>>>>>>>>>>>>>>>>>>>>  ksys_read+0x150/0x270 fs/read_write.c:717
->>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inlin=
-e]
->>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.=
-c:94
->>>>>>>>>>>>>>>>>>>>> page last free pid 5059 tgid 5059 stack trace:
->>>>>>>>>>>>>>>>>>>>>  reset_page_owner include/linux/page_owner.h:25 [inli=
-ne]
->>>>>>>>>>>>>>>>>>>>>  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->>>>>>>>>>>>>>>>>>>>>  __free_frozen_pages+0xbc7/0xd30 mm/page_alloc.c:2943
->>>>>>>>>>>>>>>>>>>>>  __slab_free+0x274/0x2c0 mm/slub.c:5612
->>>>>>>>>>>>>>>>>>>>>  qlink_free mm/kasan/quarantine.c:163 [inline]
->>>>>>>>>>>>>>>>>>>>>  qlist_free_all+0x99/0x100 mm/kasan/quarantine.c:179
->>>>>>>>>>>>>>>>>>>>>  kasan_quarantine_reduce+0x148/0x160 mm/kasan/quarant=
-ine.c:286
->>>>>>>>>>>>>>>>>>>>>  __kasan_slab_alloc+0x22/0x80 mm/kasan/common.c:350
->>>>>>>>>>>>>>>>>>>>>  kasan_slab_alloc include/linux/kasan.h:253 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_post_alloc_hook mm/slub.c:4569 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_alloc_node mm/slub.c:4898 [inline]
->>>>>>>>>>>>>>>>>>>>>  __do_kmalloc_node mm/slub.c:5294 [inline]
->>>>>>>>>>>>>>>>>>>>>  __kvmalloc_node_noprof+0x4d7/0x8a0 mm/slub.c:6832
->>>>>>>>>>>>>>>>>>>>>  seq_buf_alloc fs/seq_file.c:39 [inline]
->>>>>>>>>>>>>>>>>>>>>  seq_read_iter+0x202/0xe10 fs/seq_file.c:211
->>>>>>>>>>>>>>>>>>>>>  new_sync_read fs/read_write.c:493 [inline]
->>>>>>>>>>>>>>>>>>>>>  vfs_read+0x582/0xa70 fs/read_write.c:574
->>>>>>>>>>>>>>>>>>>>>  ksys_read+0x150/0x270 fs/read_write.c:717
->>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inlin=
-e]
->>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.=
-c:94
->>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> Memory state around the buggy address:
->>>>>>>>>>>>>>>>>>>>>  ffff88816e172c80: fb fb fb fb fb fb fb fb fc fc fc f=
-c fc fc fc fc
->>>>>>>>>>>>>>>>>>>>>  ffff88816e172d00: fc fc fc fc fc fc fc fc fc fc fc f=
-c fc fc fc fc
->>>>>>>>>>>>>>>>>>>>> >ffff88816e172d80: fa fb fb fb fb fb fb fb fb fb fb f=
-b fb fb fb fb
->>>>>>>>>>>>>>>>>>>>>                    ^
->>>>>>>>>>>>>>>>>>>>>  ffff88816e172e00: fb fb fb fb fb fb fb fb fb fb fb f=
-b fb fb fb fb
->>>>>>>>>>>>>>>>>>>>>  ffff88816e172e80: fb fb fb fb fb fb fb fb fb fb fb f=
-b fb fb fb fb
->>>>>>>>>>>>>>>>>>>>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> ***
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> KASAN: slab-use-after-free Read in xfrm_dump_sa_done
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> tree:      net
->>>>>>>>>>>>>>>>>>>>> URL:       https://kernel.googlesource.com/pub/scm/li=
-nux/kernel/git/netdev/net.git
->>>>>>>>>>>>>>>>>>>>> base:      18014147d3ee7831dce53fe65d7fc8d428b02552
->>>>>>>>>>>>>>>>>>>>> arch:      amd64
->>>>>>>>>>>>>>>>>>>>> compiler:  Debian clang version 21.1.8 (++20251221033=
-036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
->>>>>>>>>>>>>>>>>>>>> config:    https://ci.syzbot.org/builds/90c5185d-0dad=
--4c34-a563-4253ebb12eb2/config
->>>>>>>>>>>>>>>>>>>>> syz repro: https://ci.syzbot.org/findings/53579ff8-14=
-79-4e0c-ae08-2f1ea756ee1b/syz_repro
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-after-free in xfrm_dump_sa_done+=
-0x54/0xd0 net/xfrm/xfrm_user.c:1491
->>>>>>>>>>>>>>>>>>>>> Read of size 8 at addr ffff888167305398 by task syz.0=
-.17/5812
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> CPU: 1 UID: 0 PID: 5812 Comm: syz.0.17 Not tainted sy=
-zkaller #0 PREEMPT(full)
->>>>>>>>>>>>>>>>>>>>> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), B=
-IOS 1.16.2-debian-1.16.2-1 04/01/2014
->>>>>>>>>>>>>>>>>>>>> Call Trace:
->>>>>>>>>>>>>>>>>>>>>  <TASK>
->>>>>>>>>>>>>>>>>>>>>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->>>>>>>>>>>>>>>>>>>>>  print_address_description+0x55/0x1e0 mm/kasan/report=
-.c:378
->>>>>>>>>>>>>>>>>>>>>  print_report+0x58/0x70 mm/kasan/report.c:482
->>>>>>>>>>>>>>>>>>>>>  kasan_report+0x117/0x150 mm/kasan/report.c:595
->>>>>>>>>>>>>>>>>>>>>  xfrm_dump_sa_done+0x54/0xd0 net/xfrm/xfrm_user.c:149=
-1
->>>>>>>>>>>>>>>>>>>>>  netlink_release+0x12c8/0x1ad0 net/netlink/af_netlink=
-.c:768
->>>>>>>>>>>>>>>>>>>>>  __sock_release net/socket.c:722 [inline]
->>>>>>>>>>>>>>>>>>>>>  sock_close+0xc3/0x240 net/socket.c:1514
->>>>>>>>>>>>>>>>>>>>>  __fput+0x44f/0xa60 fs/file_table.c:510
->>>>>>>>>>>>>>>>>>>>>  task_work_run+0x1d9/0x270 kernel/task_work.c:233
->>>>>>>>>>>>>>>>>>>>>  resume_user_mode_work include/linux/resume_user_mode=
-.h:50 [inline]
->>>>>>>>>>>>>>>>>>>>>  __exit_to_user_mode_loop kernel/entry/common.c:67 [i=
-nline]
->>>>>>>>>>>>>>>>>>>>>  exit_to_user_mode_loop+0xf3/0x4d0 kernel/entry/commo=
-n.c:98
->>>>>>>>>>>>>>>>>>>>>  __exit_to_user_mode_prepare include/linux/irq-entry-=
-common.h:207 [inline]
->>>>>>>>>>>>>>>>>>>>>  syscall_exit_to_user_mode_prepare include/linux/irq-=
-entry-common.h:230 [inline]
->>>>>>>>>>>>>>>>>>>>>  syscall_exit_to_user_mode include/linux/entry-common=
-.h:318 [inline]
->>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x33e/0xf80 arch/x86/entry/syscall_64.=
-c:100
->>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->>>>>>>>>>>>>>>>>>>>> RIP: 0033:0x7fe50bf9ce59
->>>>>>>>>>>>>>>>>>>>> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00=
- 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f=
- 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
->>>>>>>>>>>>>>>>>>>>> RSP: 002b:00007fff8a02cc38 EFLAGS: 00000246 ORIG_RAX:=
- 00000000000001b4
->>>>>>>>>>>>>>>>>>>>> RAX: 0000000000000000 RBX: 00007fe50c217da0 RCX: 0000=
-7fe50bf9ce59
->>>>>>>>>>>>>>>>>>>>> RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000=
-000000000003
->>>>>>>>>>>>>>>>>>>>> RBP: 00007fe50c217da0 R08: 00007fe50c216038 R09: 0000=
-000000000000
->>>>>>>>>>>>>>>>>>>>> R10: 000000000003fdd4 R11: 0000000000000246 R12: 0000=
-000000010018
->>>>>>>>>>>>>>>>>>>>> R13: 00007fe50c215fac R14: 00007fe50c215fa8 R15: 0000=
-7fe50c215fa0
->>>>>>>>>>>>>>>>>>>>>  </TASK>
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> Allocated by task 5813:
->>>>>>>>>>>>>>>>>>>>>  kasan_save_stack mm/kasan/common.c:57 [inline]
->>>>>>>>>>>>>>>>>>>>>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
->>>>>>>>>>>>>>>>>>>>>  unpoison_slab_object mm/kasan/common.c:340 [inline]
->>>>>>>>>>>>>>>>>>>>>  __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:366
->>>>>>>>>>>>>>>>>>>>>  kasan_slab_alloc include/linux/kasan.h:253 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_post_alloc_hook mm/slub.c:4569 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_alloc_node mm/slub.c:4898 [inline]
->>>>>>>>>>>>>>>>>>>>>  kmem_cache_alloc_node_noprof+0x384/0x690 mm/slub.c:4=
-950
->>>>>>>>>>>>>>>>>>>>>  __alloc_skb+0x1d0/0x7d0 net/core/skbuff.c:702
->>>>>>>>>>>>>>>>>>>>>  netlink_sendmsg+0x5d4/0xb40 net/netlink/af_netlink.c=
-:1869
->>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec net/socket.c:787 [inline]
->>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/socket.c:802 [inline]
->>>>>>>>>>>>>>>>>>>>>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
->>>>>>>>>>>>>>>>>>>>>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
->>>>>>>>>>>>>>>>>>>>>  __sys_sendmsg net/socket.c:2784 [inline]
->>>>>>>>>>>>>>>>>>>>>  __do_sys_sendmsg net/socket.c:2789 [inline]
->>>>>>>>>>>>>>>>>>>>>  __se_sys_sendmsg net/socket.c:2787 [inline]
->>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
->>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inlin=
-e]
->>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.=
-c:94
->>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> Freed by task 5813:
->>>>>>>>>>>>>>>>>>>>>  kasan_save_stack mm/kasan/common.c:57 [inline]
->>>>>>>>>>>>>>>>>>>>>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
->>>>>>>>>>>>>>>>>>>>>  kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:58=
-4
->>>>>>>>>>>>>>>>>>>>>  poison_slab_object mm/kasan/common.c:253 [inline]
->>>>>>>>>>>>>>>>>>>>>  __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
->>>>>>>>>>>>>>>>>>>>>  kasan_slab_free include/linux/kasan.h:235 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_free_hook mm/slub.c:2689 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_free mm/slub.c:6250 [inline]
->>>>>>>>>>>>>>>>>>>>>  kmem_cache_free+0x182/0x650 mm/slub.c:6377
->>>>>>>>>>>>>>>>>>>>>  netlink_unicast_kernel net/netlink/af_netlink.c:1319=
- [inline]
->>>>>>>>>>>>>>>>>>>>>  netlink_unicast+0x764/0x8e0 net/netlink/af_netlink.c=
-:1344
->>>>>>>>>>>>>>>>>>>>>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c=
-:1894
->>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec net/socket.c:787 [inline]
->>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/socket.c:802 [inline]
->>>>>>>>>>>>>>>>>>>>>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
->>>>>>>>>>>>>>>>>>>>>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
->>>>>>>>>>>>>>>>>>>>>  __sys_sendmsg net/socket.c:2784 [inline]
->>>>>>>>>>>>>>>>>>>>>  __do_sys_sendmsg net/socket.c:2789 [inline]
->>>>>>>>>>>>>>>>>>>>>  __se_sys_sendmsg net/socket.c:2787 [inline]
->>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
->>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inlin=
-e]
->>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.=
-c:94
->>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> The buggy address belongs to the object at ffff888167=
-305380
->>>>>>>>>>>>>>>>>>>>>  which belongs to the cache skbuff_head_cache of size=
- 240
->>>>>>>>>>>>>>>>>>>>> The buggy address is located 24 bytes inside of
->>>>>>>>>>>>>>>>>>>>>  freed 240-byte region [ffff888167305380, ffff8881673=
-05470)
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> The buggy address belongs to the physical page:
->>>>>>>>>>>>>>>>>>>>> page: refcount:0 mapcount:0 mapping:0000000000000000 =
-index:0x0 pfn:0x167304
->>>>>>>>>>>>>>>>>>>>> head: order:1 mapcount:0 entire_mapcount:0 nr_pages_m=
-apped:0 pincount:0
->>>>>>>>>>>>>>>>>>>>> flags: 0x57ff00000000040(head|node=3D1|zone=3D2|lastc=
-pupid=3D0x7ff)
->>>>>>>>>>>>>>>>>>>>> page_type: f5(slab)
->>>>>>>>>>>>>>>>>>>>> raw: 057ff00000000040 ffff888160416dc0 dead0000000001=
-00 dead000000000122
->>>>>>>>>>>>>>>>>>>>> raw: 0000000000000000 0000000800150015 00000000f50000=
-00 0000000000000000
->>>>>>>>>>>>>>>>>>>>> head: 057ff00000000040 ffff888160416dc0 dead000000000=
-100 dead000000000122
->>>>>>>>>>>>>>>>>>>>> head: 0000000000000000 0000000800150015 00000000f5000=
-000 0000000000000000
->>>>>>>>>>>>>>>>>>>>> head: 057ff00000000001 ffffffffffffff81 00000000fffff=
-fff 00000000ffffffff
->>>>>>>>>>>>>>>>>>>>> head: ffffffffffffffff 0000000000000000 00000000fffff=
-fff 0000000000000002
->>>>>>>>>>>>>>>>>>>>> page dumped because: kasan: bad access detected
->>>>>>>>>>>>>>>>>>>>> page_owner tracks the page as allocated
->>>>>>>>>>>>>>>>>>>>> page last allocated via order 1, migratetype Unmovabl=
-e, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP=
-|__GFP_NOMEMALLOC), pid 5813, tgid 5812 (syz.0.17), ts 64859679564, free_ts=
- 63312613640
->>>>>>>>>>>>>>>>>>>>>  set_page_owner include/linux/page_owner.h:32 [inline=
-]
->>>>>>>>>>>>>>>>>>>>>  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->>>>>>>>>>>>>>>>>>>>>  prep_new_page mm/page_alloc.c:1866 [inline]
->>>>>>>>>>>>>>>>>>>>>  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c=
-:3946
->>>>>>>>>>>>>>>>>>>>>  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_allo=
-c.c:5226
->>>>>>>>>>>>>>>>>>>>>  alloc_slab_page mm/slub.c:3278 [inline]
->>>>>>>>>>>>>>>>>>>>>  allocate_slab+0x77/0x660 mm/slub.c:3467
->>>>>>>>>>>>>>>>>>>>>  new_slab mm/slub.c:3525 [inline]
->>>>>>>>>>>>>>>>>>>>>  refill_objects+0x339/0x3d0 mm/slub.c:7271
->>>>>>>>>>>>>>>>>>>>>  refill_sheaf mm/slub.c:2816 [inline]
->>>>>>>>>>>>>>>>>>>>>  __pcs_replace_empty_main+0x321/0x720 mm/slub.c:4651
->>>>>>>>>>>>>>>>>>>>>  alloc_from_pcs mm/slub.c:4749 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_alloc_node mm/slub.c:4883 [inline]
->>>>>>>>>>>>>>>>>>>>>  kmem_cache_alloc_node_noprof+0x441/0x690 mm/slub.c:4=
-950
->>>>>>>>>>>>>>>>>>>>>  __alloc_skb+0x1d0/0x7d0 net/core/skbuff.c:702
->>>>>>>>>>>>>>>>>>>>>  netlink_sendmsg+0x5d4/0xb40 net/netlink/af_netlink.c=
-:1869
->>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec net/socket.c:787 [inline]
->>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/socket.c:802 [inline]
->>>>>>>>>>>>>>>>>>>>>  ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
->>>>>>>>>>>>>>>>>>>>>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
->>>>>>>>>>>>>>>>>>>>>  __sys_sendmsg net/socket.c:2784 [inline]
->>>>>>>>>>>>>>>>>>>>>  __do_sys_sendmsg net/socket.c:2789 [inline]
->>>>>>>>>>>>>>>>>>>>>  __se_sys_sendmsg net/socket.c:2787 [inline]
->>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
->>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inlin=
-e]
->>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.=
-c:94
->>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->>>>>>>>>>>>>>>>>>>>> page last free pid 15 tgid 15 stack trace:
->>>>>>>>>>>>>>>>>>>>>  reset_page_owner include/linux/page_owner.h:25 [inli=
-ne]
->>>>>>>>>>>>>>>>>>>>>  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->>>>>>>>>>>>>>>>>>>>>  __free_frozen_pages+0xbc7/0xd30 mm/page_alloc.c:2943
->>>>>>>>>>>>>>>>>>>>>  rcu_do_batch kernel/rcu/tree.c:2617 [inline]
->>>>>>>>>>>>>>>>>>>>>  rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
->>>>>>>>>>>>>>>>>>>>>  handle_softirqs+0x22a/0x840 kernel/softirq.c:622
->>>>>>>>>>>>>>>>>>>>>  run_ksoftirqd+0x36/0x60 kernel/softirq.c:1076
->>>>>>>>>>>>>>>>>>>>>  smpboot_thread_fn+0x541/0xa50 kernel/smpboot.c:160
->>>>>>>>>>>>>>>>>>>>>  kthread+0x389/0x470 kernel/kthread.c:436
->>>>>>>>>>>>>>>>>>>>>  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:=
-158
->>>>>>>>>>>>>>>>>>>>>  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.=
-S:245
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> Memory state around the buggy address:
->>>>>>>>>>>>>>>>>>>>>  ffff888167305280: fb fb fb fb fb fb fb fb fb fb fb f=
-b fb fb fc fc
->>>>>>>>>>>>>>>>>>>>>  ffff888167305300: fc fc fc fc fc fc fc fc fc fc fc f=
-c fc fc fc fc
->>>>>>>>>>>>>>>>>>>>> >ffff888167305380: fa fb fb fb fb fb fb fb fb fb fb f=
-b fb fb fb fb
->>>>>>>>>>>>>>>>>>>>>                             ^
->>>>>>>>>>>>>>>>>>>>>  ffff888167305400: fb fb fb fb fb fb fb fb fb fb fb f=
-b fb fb fc fc
->>>>>>>>>>>>>>>>>>>>>  ffff888167305480: fc fc fc fc fc fc fc fc fc fc fc f=
-c fc fc fc fc
->>>>>>>>>>>>>>>>>>>>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> ***
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> KASAN: slab-use-after-free Write in sk_skb_reason_dro=
-p
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> tree:      net
->>>>>>>>>>>>>>>>>>>>> URL:       https://kernel.googlesource.com/pub/scm/li=
-nux/kernel/git/netdev/net.git
->>>>>>>>>>>>>>>>>>>>> base:      18014147d3ee7831dce53fe65d7fc8d428b02552
->>>>>>>>>>>>>>>>>>>>> arch:      amd64
->>>>>>>>>>>>>>>>>>>>> compiler:  Debian clang version 21.1.8 (++20251221033=
-036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
->>>>>>>>>>>>>>>>>>>>> config:    https://ci.syzbot.org/builds/90c5185d-0dad=
--4c34-a563-4253ebb12eb2/config
->>>>>>>>>>>>>>>>>>>>> syz repro: https://ci.syzbot.org/findings/c87569e1-d2=
-6e-4670-a17b-9f2f64a5af67/syz_repro
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-after-free in instrument_atomic_=
-read_write include/linux/instrumented.h:112 [inline]
->>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-after-free in atomic_fetch_sub_r=
-elease include/linux/atomic/atomic-instrumented.h:400 [inline]
->>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-after-free in __refcount_sub_and=
-_test include/linux/refcount.h:389 [inline]
->>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-after-free in __refcount_dec_and=
-_test include/linux/refcount.h:432 [inline]
->>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-after-free in refcount_dec_and_t=
-est include/linux/refcount.h:450 [inline]
->>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-after-free in skb_unref include/=
-linux/skbuff.h:1292 [inline]
->>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-after-free in __sk_skb_reason_dr=
-op net/core/skbuff.c:1212 [inline]
->>>>>>>>>>>>>>>>>>>>> BUG: KASAN: slab-use-after-free in sk_skb_reason_drop=
-+0x37/0x110 net/core/skbuff.c:1240
->>>>>>>>>>>>>>>>>>>>> Write of size 4 at addr ffff8881178efee4 by task syz.=
-1.18/5873
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> CPU: 0 UID: 0 PID: 5873 Comm: syz.1.18 Not tainted sy=
-zkaller #0 PREEMPT(full)
->>>>>>>>>>>>>>>>>>>>> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), B=
-IOS 1.16.2-debian-1.16.2-1 04/01/2014
->>>>>>>>>>>>>>>>>>>>> Call Trace:
->>>>>>>>>>>>>>>>>>>>>  <TASK>
->>>>>>>>>>>>>>>>>>>>>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->>>>>>>>>>>>>>>>>>>>>  print_address_description+0x55/0x1e0 mm/kasan/report=
-.c:378
->>>>>>>>>>>>>>>>>>>>>  print_report+0x58/0x70 mm/kasan/report.c:482
->>>>>>>>>>>>>>>>>>>>>  kasan_report+0x117/0x150 mm/kasan/report.c:595
->>>>>>>>>>>>>>>>>>>>>  check_region_inline mm/kasan/generic.c:-1 [inline]
->>>>>>>>>>>>>>>>>>>>>  kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
->>>>>>>>>>>>>>>>>>>>>  instrument_atomic_read_write include/linux/instrumen=
-ted.h:112 [inline]
->>>>>>>>>>>>>>>>>>>>>  atomic_fetch_sub_release include/linux/atomic/atomic=
--instrumented.h:400 [inline]
->>>>>>>>>>>>>>>>>>>>>  __refcount_sub_and_test include/linux/refcount.h:389=
- [inline]
->>>>>>>>>>>>>>>>>>>>>  __refcount_dec_and_test include/linux/refcount.h:432=
- [inline]
->>>>>>>>>>>>>>>>>>>>>  refcount_dec_and_test include/linux/refcount.h:450 [=
-inline]
->>>>>>>>>>>>>>>>>>>>>  skb_unref include/linux/skbuff.h:1292 [inline]
->>>>>>>>>>>>>>>>>>>>>  __sk_skb_reason_drop net/core/skbuff.c:1212 [inline]
->>>>>>>>>>>>>>>>>>>>>  sk_skb_reason_drop+0x37/0x110 net/core/skbuff.c:1240
->>>>>>>>>>>>>>>>>>>>>  kfree_skb_reason include/linux/skbuff.h:1322 [inline=
-]
->>>>>>>>>>>>>>>>>>>>>  kfree_skb include/linux/skbuff.h:1331 [inline]
->>>>>>>>>>>>>>>>>>>>>  netlink_release+0x133a/0x1ad0 net/netlink/af_netlink=
-.c:770
->>>>>>>>>>>>>>>>>>>>>  __sock_release net/socket.c:722 [inline]
->>>>>>>>>>>>>>>>>>>>>  sock_close+0xc3/0x240 net/socket.c:1514
->>>>>>>>>>>>>>>>>>>>>  __fput+0x44f/0xa60 fs/file_table.c:510
->>>>>>>>>>>>>>>>>>>>>  task_work_run+0x1d9/0x270 kernel/task_work.c:233
->>>>>>>>>>>>>>>>>>>>>  resume_user_mode_work include/linux/resume_user_mode=
-.h:50 [inline]
->>>>>>>>>>>>>>>>>>>>>  __exit_to_user_mode_loop kernel/entry/common.c:67 [i=
-nline]
->>>>>>>>>>>>>>>>>>>>>  exit_to_user_mode_loop+0xf3/0x4d0 kernel/entry/commo=
-n.c:98
->>>>>>>>>>>>>>>>>>>>>  __exit_to_user_mode_prepare include/linux/irq-entry-=
-common.h:207 [inline]
->>>>>>>>>>>>>>>>>>>>>  syscall_exit_to_user_mode_prepare include/linux/irq-=
-entry-common.h:230 [inline]
->>>>>>>>>>>>>>>>>>>>>  syscall_exit_to_user_mode include/linux/entry-common=
-.h:318 [inline]
->>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x33e/0xf80 arch/x86/entry/syscall_64.=
-c:100
->>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->>>>>>>>>>>>>>>>>>>>> RIP: 0033:0x7fd4d139ce59
->>>>>>>>>>>>>>>>>>>>> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00=
- 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f=
- 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
->>>>>>>>>>>>>>>>>>>>> RSP: 002b:00007fff722ecbf8 EFLAGS: 00000246 ORIG_RAX:=
- 00000000000001b4
->>>>>>>>>>>>>>>>>>>>> RAX: 0000000000000000 RBX: 00007fff722ecce0 RCX: 0000=
-7fd4d139ce59
->>>>>>>>>>>>>>>>>>>>> RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000=
-000000000003
->>>>>>>>>>>>>>>>>>>>> RBP: 0000000000012825 R08: 0000000000000001 R09: 0000=
-000000000000
->>>>>>>>>>>>>>>>>>>>> R10: 0000001b32e20000 R11: 0000000000000246 R12: 0000=
-7fff722ecd20
->>>>>>>>>>>>>>>>>>>>> R13: 00007fd4d1615fac R14: 0000000000012859 R15: 0000=
-7fd4d1615fa0
->>>>>>>>>>>>>>>>>>>>>  </TASK>
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> Allocated by task 5874:
->>>>>>>>>>>>>>>>>>>>>  kasan_save_stack mm/kasan/common.c:57 [inline]
->>>>>>>>>>>>>>>>>>>>>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
->>>>>>>>>>>>>>>>>>>>>  unpoison_slab_object mm/kasan/common.c:340 [inline]
->>>>>>>>>>>>>>>>>>>>>  __kasan_mempool_unpoison_object+0xa3/0x130 mm/kasan/=
-common.c:564
->>>>>>>>>>>>>>>>>>>>>  kasan_mempool_unpoison_object include/linux/kasan.h:=
-391 [inline]
->>>>>>>>>>>>>>>>>>>>>  napi_skb_cache_get+0x3c8/0x780 net/core/skbuff.c:306
->>>>>>>>>>>>>>>>>>>>>  __alloc_skb+0x19a/0x7d0 net/core/skbuff.c:696
->>>>>>>>>>>>>>>>>>>>>  netlink_sendmsg+0x5d4/0xb40 net/netlink/af_netlink.c=
-:1869
->>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec net/socket.c:787 [inline]
->>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/socket.c:802 [inline]
->>>>>>>>>>>>>>>>>>>>>  __sys_sendto+0x672/0x710 net/socket.c:2265
->>>>>>>>>>>>>>>>>>>>>  __do_sys_sendto net/socket.c:2272 [inline]
->>>>>>>>>>>>>>>>>>>>>  __se_sys_sendto net/socket.c:2268 [inline]
->>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendto+0xde/0x100 net/socket.c:2268
->>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inlin=
-e]
->>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.=
-c:94
->>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> Freed by task 5874:
->>>>>>>>>>>>>>>>>>>>>  kasan_save_stack mm/kasan/common.c:57 [inline]
->>>>>>>>>>>>>>>>>>>>>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
->>>>>>>>>>>>>>>>>>>>>  kasan_save_free_info+0x46/0x50 mm/kasan/generic.c:58=
-4
->>>>>>>>>>>>>>>>>>>>>  poison_slab_object mm/kasan/common.c:253 [inline]
->>>>>>>>>>>>>>>>>>>>>  __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
->>>>>>>>>>>>>>>>>>>>>  kasan_slab_free include/linux/kasan.h:235 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_free_hook mm/slub.c:2689 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_free mm/slub.c:6250 [inline]
->>>>>>>>>>>>>>>>>>>>>  kmem_cache_free+0x182/0x650 mm/slub.c:6377
->>>>>>>>>>>>>>>>>>>>>  netlink_unicast_kernel net/netlink/af_netlink.c:1319=
- [inline]
->>>>>>>>>>>>>>>>>>>>>  netlink_unicast+0x764/0x8e0 net/netlink/af_netlink.c=
-:1344
->>>>>>>>>>>>>>>>>>>>>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c=
-:1894
->>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec net/socket.c:787 [inline]
->>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/socket.c:802 [inline]
->>>>>>>>>>>>>>>>>>>>>  __sys_sendto+0x672/0x710 net/socket.c:2265
->>>>>>>>>>>>>>>>>>>>>  __do_sys_sendto net/socket.c:2272 [inline]
->>>>>>>>>>>>>>>>>>>>>  __se_sys_sendto net/socket.c:2268 [inline]
->>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendto+0xde/0x100 net/socket.c:2268
->>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inlin=
-e]
->>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.=
-c:94
->>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> The buggy address belongs to the object at ffff888117=
-8efe00
->>>>>>>>>>>>>>>>>>>>>  which belongs to the cache skbuff_head_cache of size=
- 240
->>>>>>>>>>>>>>>>>>>>> The buggy address is located 228 bytes inside of
->>>>>>>>>>>>>>>>>>>>>  freed 240-byte region [ffff8881178efe00, ffff8881178=
-efef0)
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> The buggy address belongs to the physical page:
->>>>>>>>>>>>>>>>>>>>> page: refcount:0 mapcount:0 mapping:0000000000000000 =
-index:0x0 pfn:0x1178ee
->>>>>>>>>>>>>>>>>>>>> head: order:1 mapcount:0 entire_mapcount:0 nr_pages_m=
-apped:0 pincount:0
->>>>>>>>>>>>>>>>>>>>> flags: 0x17ff00000000040(head|node=3D0|zone=3D2|lastc=
-pupid=3D0x7ff)
->>>>>>>>>>>>>>>>>>>>> page_type: f5(slab)
->>>>>>>>>>>>>>>>>>>>> raw: 017ff00000000040 ffff888160416c80 dead0000000001=
-22 0000000000000000
->>>>>>>>>>>>>>>>>>>>> raw: 0000000000000000 0000000800150015 00000000f50000=
-00 0000000000000000
->>>>>>>>>>>>>>>>>>>>> head: 017ff00000000040 ffff888160416c80 dead000000000=
-122 0000000000000000
->>>>>>>>>>>>>>>>>>>>> head: 0000000000000000 0000000800150015 00000000f5000=
-000 0000000000000000
->>>>>>>>>>>>>>>>>>>>> head: 017ff00000000001 ffffffffffffff81 00000000fffff=
-fff 00000000ffffffff
->>>>>>>>>>>>>>>>>>>>> head: ffffffffffffffff 0000000000000000 00000000fffff=
-fff 0000000000000002
->>>>>>>>>>>>>>>>>>>>> page dumped because: kasan: bad access detected
->>>>>>>>>>>>>>>>>>>>> page_owner tracks the page as allocated
->>>>>>>>>>>>>>>>>>>>> page last allocated via order 1, migratetype Unmovabl=
-e, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP=
-|__GFP_NOMEMALLOC), pid 5050, tgid 5050 (klogd), ts 75887265953, free_ts 75=
-876344896
->>>>>>>>>>>>>>>>>>>>>  set_page_owner include/linux/page_owner.h:32 [inline=
-]
->>>>>>>>>>>>>>>>>>>>>  post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1858
->>>>>>>>>>>>>>>>>>>>>  prep_new_page mm/page_alloc.c:1866 [inline]
->>>>>>>>>>>>>>>>>>>>>  get_page_from_freelist+0x24ba/0x2540 mm/page_alloc.c=
-:3946
->>>>>>>>>>>>>>>>>>>>>  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_allo=
-c.c:5226
->>>>>>>>>>>>>>>>>>>>>  alloc_slab_page mm/slub.c:3278 [inline]
->>>>>>>>>>>>>>>>>>>>>  allocate_slab+0x77/0x660 mm/slub.c:3467
->>>>>>>>>>>>>>>>>>>>>  new_slab mm/slub.c:3525 [inline]
->>>>>>>>>>>>>>>>>>>>>  refill_objects+0x339/0x3d0 mm/slub.c:7271
->>>>>>>>>>>>>>>>>>>>>  refill_sheaf mm/slub.c:2816 [inline]
->>>>>>>>>>>>>>>>>>>>>  __pcs_replace_empty_main+0x321/0x720 mm/slub.c:4651
->>>>>>>>>>>>>>>>>>>>>  alloc_from_pcs mm/slub.c:4749 [inline]
->>>>>>>>>>>>>>>>>>>>>  slab_alloc_node mm/slub.c:4883 [inline]
->>>>>>>>>>>>>>>>>>>>>  kmem_cache_alloc_node_noprof+0x441/0x690 mm/slub.c:4=
-950
->>>>>>>>>>>>>>>>>>>>>  __alloc_skb+0x1d0/0x7d0 net/core/skbuff.c:702
->>>>>>>>>>>>>>>>>>>>>  alloc_skb include/linux/skbuff.h:1383 [inline]
->>>>>>>>>>>>>>>>>>>>>  alloc_skb_with_frags+0xc8/0x760 net/core/skbuff.c:67=
-43
->>>>>>>>>>>>>>>>>>>>>  sock_alloc_send_pskb+0x878/0x990 net/core/sock.c:299=
-8
->>>>>>>>>>>>>>>>>>>>>  unix_dgram_sendmsg+0x460/0x18d0 net/unix/af_unix.c:2=
-141
->>>>>>>>>>>>>>>>>>>>>  sock_sendmsg_nosec net/socket.c:787 [inline]
->>>>>>>>>>>>>>>>>>>>>  __sock_sendmsg net/socket.c:802 [inline]
->>>>>>>>>>>>>>>>>>>>>  __sys_sendto+0x672/0x710 net/socket.c:2265
->>>>>>>>>>>>>>>>>>>>>  __do_sys_sendto net/socket.c:2272 [inline]
->>>>>>>>>>>>>>>>>>>>>  __se_sys_sendto net/socket.c:2268 [inline]
->>>>>>>>>>>>>>>>>>>>>  __x64_sys_sendto+0xde/0x100 net/socket.c:2268
->>>>>>>>>>>>>>>>>>>>>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inlin=
-e]
->>>>>>>>>>>>>>>>>>>>>  do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.=
-c:94
->>>>>>>>>>>>>>>>>>>>>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->>>>>>>>>>>>>>>>>>>>> page last free pid 0 tgid 0 stack trace:
->>>>>>>>>>>>>>>>>>>>>  reset_page_owner include/linux/page_owner.h:25 [inli=
-ne]
->>>>>>>>>>>>>>>>>>>>>  __free_pages_prepare mm/page_alloc.c:1402 [inline]
->>>>>>>>>>>>>>>>>>>>>  __free_frozen_pages+0xbc7/0xd30 mm/page_alloc.c:2943
->>>>>>>>>>>>>>>>>>>>>  rcu_do_batch kernel/rcu/tree.c:2617 [inline]
->>>>>>>>>>>>>>>>>>>>>  rcu_core+0x7cd/0x1070 kernel/rcu/tree.c:2869
->>>>>>>>>>>>>>>>>>>>>  handle_softirqs+0x22a/0x840 kernel/softirq.c:622
->>>>>>>>>>>>>>>>>>>>>  __do_softirq kernel/softirq.c:656 [inline]
->>>>>>>>>>>>>>>>>>>>>  invoke_softirq kernel/softirq.c:496 [inline]
->>>>>>>>>>>>>>>>>>>>>  __irq_exit_rcu+0xca/0x220 kernel/softirq.c:735
->>>>>>>>>>>>>>>>>>>>>  irq_exit_rcu+0x9/0x30 kernel/softirq.c:752
->>>>>>>>>>>>>>>>>>>>>  instr_sysvec_apic_timer_interrupt arch/x86/kernel/ap=
-ic/apic.c:1061 [inline]
->>>>>>>>>>>>>>>>>>>>>  sysvec_apic_timer_interrupt+0xa6/0xc0 arch/x86/kerne=
-l/apic/apic.c:1061
->>>>>>>>>>>>>>>>>>>>>  asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/i=
-nclude/asm/idtentry.h:697
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> Memory state around the buggy address:
->>>>>>>>>>>>>>>>>>>>>  ffff8881178efd80: fc fc fc fc fc fc fc fc fc fc fc f=
-c fc fc fc fc
->>>>>>>>>>>>>>>>>>>>>  ffff8881178efe00: fa fb fb fb fb fb fb fb fb fb fb f=
-b fb fb fb fb
->>>>>>>>>>>>>>>>>>>>> >ffff8881178efe80: fb fb fb fb fb fb fb fb fb fb fb f=
-b fb fb fc fc
->>>>>>>>>>>>>>>>>>>>>                                                      =
-  ^
->>>>>>>>>>>>>>>>>>>>>  ffff8881178eff00: fc fc fc fc fc fc fc fc fc fc fc f=
-c fc fc fc fc
->>>>>>>>>>>>>>>>>>>>>  ffff8881178eff80: fc fc fc fc fc fc fc fc fc fc fc f=
-c fc fc fc fc
->>>>>>>>>>>>>>>>>>>>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> ***
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> If these findings have caused you to resend the serie=
-s or submit a
->>>>>>>>>>>>>>>>>>>>> separate fix, please add the following tag to your co=
-mmit message:
->>>>>>>>>>>>>>>>>>>>>   Tested-by: syzbot@syzkaller.appspotmail.com
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> ---
->>>>>>>>>>>>>>>>>>>>> This report is generated by a bot. It may contain err=
-ors.
->>>>>>>>>>>>>>>>>>>>> syzbot ci engineers can be reached at syzkaller@googl=
-egroups.com.
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> To test a patch for this bug, please reply with `#syz=
- test`
->>>>>>>>>>>>>>>>>>>>> (should be on a separate line).
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> The patch should be attached to the email.
->>>>>>>>>>>>>>>>>>>>> Note: arguments like custom git repos and branches ar=
-e not supported.
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> The email will later be sent to:
->>>>>>>>>>>>>>>>>>>>> [davem@davemloft.net edumazet@google.com horms@kernel=
-.org kees@kernel.org kuba@kernel.org kuniyu@google.com linux-kernel@vger.ke=
-rnel.org netdev@vger.kernel.org pabeni@redhat.com stable@vger.kernel.org vu=
-lab@iscas.ac.cn yangfeng@kylinos.cn]
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> If the report looks fine to you, reply with:
->>>>>>>>>>>>>>>>>>>>> #syz upstream
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> If the report is a false positive, reply with
->>>>>>>>>>>>>>>>>>>>> #syz invalid
->>>>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>>>> --
->>>>>>>>>>>>>>>>>>>>> You received this message because you are subscribed =
-to the Google Groups "syzkaller-upstream-moderation" group.
->>>>>>>>>>>>>>>>>>>>> To unsubscribe from this group and stop receiving ema=
-ils from it, send an email to syzkaller-upstream-moderation+unsubscribe@goo=
-glegroups.com.
->>>>>>>>>>>>>>>>>>>>> To view this discussion visit https://groups.google.c=
-om/d/msgid/syzkaller-upstream-moderation/6a185386.99a1ea37.128423.0001.GAE%=
-40google.com.
+>>>>>>>>>>>>>>>>>>>> I see the command but can't find the corresponding bug=
+.
+>>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.appspotmai=
+l.com address
+>>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any known bug.
+>>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>> --=20
->>>>>>>>>>>>>>>>>>> You received this message because you are subscribed to=
- the Google Groups "syzkaller-upstream-moderation" group.
->>>>>>>>>>>>>>>>>>> To unsubscribe from this group and stop receiving email=
-s from it, send an email to syzkaller-upstream-moderation+unsubscribe@googl=
-egroups.com.
->>>>>>>>>>>>>>>>>>> To view this discussion visit https://groups.google.com=
-/d/msgid/syzkaller-upstream-moderation/6a18555e.e783d627.6395.0001.GAE%40go=
-ogle.com.
+>>>>>>>>>>>>>>>>>>> I see the command but can't find the corresponding bug.
+>>>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.appspotmail=
+.com address
+>>>>>>>>>>>>>>>>>>> but the HASH does not correspond to any known bug.
+>>>>>>>>>>>>>>>>>>> Please double check the address.
+>>>>>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>>>> I see the command but can't find the corresponding bug.
 >>>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.appspotmail.=
@@ -907,15 +1523,6 @@ com address
 >>>>>>>>>>>>>>>>>> but the HASH does not correspond to any known bug.
 >>>>>>>>>>>>>>>>>> Please double check the address.
 >>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>> --=20
->>>>>>>>>>>>>>>>>> You received this message because you are subscribed to =
-the Google Groups "syzkaller-upstream-moderation" group.
->>>>>>>>>>>>>>>>>> To unsubscribe from this group and stop receiving emails=
- from it, send an email to syzkaller-upstream-moderation+unsubscribe@google=
-groups.com.
->>>>>>>>>>>>>>>>>> To view this discussion visit https://groups.google.com/=
-d/msgid/syzkaller-upstream-moderation/6a185560.7f45b5d1.9d2a9.0004.GAE%40go=
-ogle.com.
 >>>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>>> I see the command but can't find the corresponding bug.
 >>>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.appspotmail.c=
@@ -923,15 +1530,6 @@ om address
 >>>>>>>>>>>>>>>>> but the HASH does not correspond to any known bug.
 >>>>>>>>>>>>>>>>> Please double check the address.
 >>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>> --=20
->>>>>>>>>>>>>>>>> You received this message because you are subscribed to t=
-he Google Groups "syzkaller-upstream-moderation" group.
->>>>>>>>>>>>>>>>> To unsubscribe from this group and stop receiving emails =
-from it, send an email to syzkaller-upstream-moderation+unsubscribe@googleg=
-roups.com.
->>>>>>>>>>>>>>>>> To view this discussion visit https://groups.google.com/d=
-/msgid/syzkaller-upstream-moderation/6a185565.222db38e.c0a93.0002.GAE%40goo=
-gle.com.
 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> I see the command but can't find the corresponding bug.
 >>>>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.appspotmail.co=
@@ -946,15 +1544,6 @@ m address
 >>>>>>>>>>>>>>> but the HASH does not correspond to any known bug.
 >>>>>>>>>>>>>>> Please double check the address.
 >>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> --=20
->>>>>>>>>>>>>>> You received this message because you are subscribed to the=
- Google Groups "syzkaller-upstream-moderation" group.
->>>>>>>>>>>>>>> To unsubscribe from this group and stop receiving emails fr=
-om it, send an email to syzkaller-upstream-moderation+unsubscribe@googlegro=
-ups.com.
->>>>>>>>>>>>>>> To view this discussion visit https://groups.google.com/d/m=
-sgid/syzkaller-upstream-moderation/6a185568.b6d9d2ce.2aaec5.0014.GAE%40goog=
-le.com.
 >>>>>>>>>>>>>>
 >>>>>>>>>>>>>> I see the command but can't find the corresponding bug.
 >>>>>>>>>>>>>> The email is sent to  syzbot+HASH@syzkaller.appspotmail.com =
