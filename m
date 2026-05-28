@@ -1,394 +1,212 @@
-Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0476390C8C
-	for <syzbot@lists.linux.dev>; Thu, 28 May 2026 10:05:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.47
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779962704; cv=pass; b=utodbX1tF4F5n7lDR4nSzknAXPL7RB6m0SfHzDDjPoMWhp/ls+MJ2ndcOo13LJHzd5NgzP1BYcTwDoQDRl3Zix3kslJZavTnkE70hgeiccFtcolk2bo0kVlLbH3umFkcAePVoYt4vO2GnNe5nsacZYCMkDguXXfXJ2YvwLwDGPY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779962704; c=relaxed/simple;
-	bh=mZGTf8Uoq0+3RKvaRgNzaRTYJ9Qw+43aUbOtdASmpCc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=teTKbFLIkh+nIILrb2V760o7OanVnfq0OgAsxJ9qGd0u+HsBG+oKmR/2WlsgltPyS2eoPh5Eh9TbhpAZOm1lcR8C2vRJJYasEJSvGz6Mj3U9P/6ZmIbyul1u/o8QmdeGqUyz/Un2SxmvBOawe5ubuNiIiFcMj61Qli8eKnUOxuA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NhXT0C8Y; arc=pass smtp.client-ip=209.85.160.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NhXT0C8Y"
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-439a7e828b1so10281740fac.1
-        for <syzbot@lists.linux.dev>; Thu, 28 May 2026 03:05:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779962701; cv=none;
-        d=google.com; s=arc-20240605;
-        b=SHl1ffhoogYd0DB74SSwHuhwhgq/HD0m2qhOPzEhM5RYnfAffarESVGfx0paZy4040
-         yL9y94HHavbpsnTawH3M/TeYT3fj8/bDewLM1yHI3z52jOw7kAIYBi/wH+Q6HZ7hLEx7
-         aEBm/WVeHF1mfUCLB8J8TN1tg9nhvPy9i1rjz0sC2Fd6b4k5hrPfXYEUG3C0jqjyKPQp
-         xpAzC7GsAKk4w60VArTbfiBXH+IaO0tAWLAjNd9qR0K33BE2QhqNj9qgVhanDJw9s9H1
-         EzU2QJ+jGcGuLdL4oP79jkTqZC5ZxPIVduSOYNjtOBQ9bc3TyfmkEsj9h4ZShGOqG7CT
-         +uog==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=KpigqoGai3Ke9DoEhKm+gp22mb6OaHGNtw+4U0fuzA0=;
-        fh=KX3Pebhb43ASoUFs95lvIaGxcmMwRQLiABO4kHRqVMI=;
-        b=RyFfCYf4+knPVpuZnGgyeaKr1/Ynn/Nk1enrND7SJ2UbYW8SNGRYCeVxhPS7G0/C3Y
-         Xswz8qc2gqQkqEgukxlw1uWPMlnk6NQkp6li1+yKzaojaETn5asZ3cd2UpCJDSBIFUIE
-         yoQWmo+FJFaUyw9wjMKUksqnDBKa75PEnIfq0rBtAKsW2boBXya3wK3dumI4h+VU/cNo
-         JACn+yffLQ3e8CZOG7FezNcPJmmhh8HsWVnRHB+KdanPnkKSLmMc4pi4Jby3A6I+cNC4
-         M2MOhb8xZ5VaA49zkOyBFbq/QryOOL0qd4+AUIaf/rvIX0EiUvqYdc27In7dYoU/ZuQZ
-         LZbg==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1779962701; x=1780567501; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KpigqoGai3Ke9DoEhKm+gp22mb6OaHGNtw+4U0fuzA0=;
-        b=NhXT0C8YHav3ZroOi41YLwNo/O6I1MmDF9LJxHsP59nsE+XsPutZyaJiWaFbPBAcBI
-         wnuhuKMUoiSX4+1LIUUODvk/wCAaPuy/wUtsFUf8BXLNU4qU8DQrhzJFlWhVjPCVSdaX
-         k3gr6eP7wvhRM3RQvEq9XZFDGFYbLsLJNyQHwbThbF3g5GR1Gfq3GtT3Fkl4en2AqBgn
-         JIsczD8w8KrxI8CFv9dbBhpLCxTdVrxuRSg0RsyPiYZz9YaCj1f4+UoDjyTPam4XjJ5l
-         Ic+n7IyfhDQEfzQzgWrUBlMIHvIMzIgq18/XUibM3X5juJgQZimtCxwmPZLpF3CAZumc
-         Shnw==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53F2C2D7D47
+	for <syzbot@lists.linux.dev>; Thu, 28 May 2026 14:10:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.70
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779977403; cv=none; b=dfMd75tU+4SGDZzL+J2+zgsebu3tH6HgpY1bQU9rhOyNzvsBPKuSgU1CCY+wpjLSswlLNFEsaUoszfhBb9pTAFcCNZq2yJfTL/8Mx9E6ImvXVLZ6v1gRqsKt1vHBwTEGzAmSZXoBvrF9rhYdeq7wqpsZi3KB0jZq8LMc/K5mqnc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779977403; c=relaxed/simple;
+	bh=fVZJ0N1ISQnUzK49wPBWcBLaNPg0cx1toE1XTmhDMBY=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=HEu21YJJyGeXSi3emHsNGZI0b9kwTpanFex0TZhcWezCWeQPNp/dzKXVHEbHlw5b+AhcDfcOOPUvMnPy0Jwqw47MwCWGOpseEt/pDgKc0derJl9t13WY6hlrhKwLLHrSZUzKYJvt0xlK2SlMrU0yNe7CKgWo9v1PvmgxLf1WXFU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-7e60b15b7dbso10810665a34.1
+        for <syzbot@lists.linux.dev>; Thu, 28 May 2026 07:10:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779962701; x=1780567501;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=KpigqoGai3Ke9DoEhKm+gp22mb6OaHGNtw+4U0fuzA0=;
-        b=IB4zpN2o4WeS3JxuKOmmiTgpAtrQ2pMXHQubk+I6oxuU2THqo/1JClxxslZaSieCLr
-         CCYGUv0ghfIBLWfHcynmZy4xlAzkXRqj24H4buUpuP0KpJqOidk6Ci9X6IAs5nV3ILTD
-         Is/zqezLYuc3VrKvbC8NILvSsOQGwMtM+qdv6HgapCOUAETJdQ0q7CXZkhSmdLRZaY7y
-         hF5iCSDgBy9s/jsUNqpuGviRBwok/hvYLdrwgenFJbaa/wv7SML9urf2pXPhNaFD2ZGG
-         oUJ/uCa6oHtwxP7t669Vw9MN1klnBvjvrcvqzxR44zbXFG1yJP9tpLvuPnxZQd+oZqZF
-         uZlw==
-X-Forwarded-Encrypted: i=1; AFNElJ+6vkmIhZoUlVqfaInEmqbea9sqYGBC6xmNVnW+pe4qDq5AkP7IadrAAy8XXeHvinkpfiwrmtA=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz09ezQLqoxMJAFeaRBHC56IIQ5KNiSltSkUxhMObj6XzgVRNwM
-	B9OUxy0qBUW/8w6bgFCsJ6z2nXyM/55BHY/YLGanU91uMYuFlKlloyjzOzMPj0krme15VGzQJUM
-	qBnLVDkPPgYLw4uxbiabRqRFrpVnGGOsxDedRezyJaAJr71shOa+pQuXo
-X-Gm-Gg: Acq92OFF3+1rSQsvUDRJByom6jnEUYDlXuqlP1kDn6VovwbZOBXNE+SJzP4ttpx9B7x
-	VBUhKWU/SyBkLAD+LqNH+smI7pIWeTYPy5B2yPkqvSLQOnkI9PbTjJEH2HghD3q2/rYWnaT7bti
-	xNf6d4/UU2a58z7i0wvPJ2/Geuqmm7G1P488vt7RvTY+At+Dn0tbX7figArnN/cZxjS/IC20JFo
-	4QODe6rIFlFWaj1yLBDFet9vjz1knAt5tfmn8Onsx3klzG6GTCsBQN8mfH+aRY8kNpFeJ9rhSUo
-	LshwyeGncrWC4kuxKrKr+7fvWJ2C8HR86nAVUClbX048WwSMhM+/dL8UT0begnMuxx8HnwQ1TY3
-	U0JF+DI8mSdYSZe4=
-X-Received: by 2002:a05:6808:c182:b0:485:4202:eefc with SMTP id
- 5614622812f47-485d9517844mr291569b6e.3.1779962701023; Thu, 28 May 2026
- 03:05:01 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1779977400; x=1780582200;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ePIiiTudamSkuMnqsLJyTDFM0bqDhlMZYZv03hQ3ZL0=;
+        b=Ztpw2Kb6RcXe5iEPQ4twLyuytt703geBXXnFUipJ9tAXOZCmP8JFeYbhkD2/A4w/Ml
+         8Uo3bJR05So9GkJq/H/JibipJ92OL/lG6QerkQWObWyh0zdWb/fBkeA+yepL/ClrL7kF
+         YBIJ5hj960OC6lbXfd0SpSO+fl5pu4585SuUW06MWvGlSwH1CZM59pqJh84TxM4VtW9E
+         mrJ3GXD8H0UEwY7AukRGc52ktjaAtR0JdeIS6gyRqItg9oGA8Q6159PNqYLmPdMwVHKd
+         w1R3FsIi17muf3C4OueEOInicIh8nbFE+2EDyU4+jjuRX8ZA55YC9CGZADQU8VFaggxx
+         stZQ==
+X-Gm-Message-State: AOJu0YyhKrO0k70pb2mDhxUK5YQ5ETTVVebC6wRI82YATa0vx1FRg0t4
+	I4i1IU/FaIWs0TCn9zSyrpP5ijKhedfNYi4ZsDOyevYibe5K05Bwn6UYWV8Pr4d/ayxEv0l3K8U
+	G2ZUZfEU8DdvSsGJnGCtJdbnE7xjDtS/2dSUyjvnIn3Q++//mI7xgLk0R6Do=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <13d16b15-8e25-40f2-afbd-eb9b486bf1d2@mail.kernel.org> <CACT4Y+Y7pawESc96N6yHyZ-vyY3BEAmBWdcaMposffWsypMZ9A@mail.gmail.com>
-In-Reply-To: <CACT4Y+Y7pawESc96N6yHyZ-vyY3BEAmBWdcaMposffWsypMZ9A@mail.gmail.com>
-From: Aleksandr Nogikh <nogikh@google.com>
-Date: Thu, 28 May 2026 12:04:49 +0200
-X-Gm-Features: AVHnY4JEM1j4cEaUUBnvyKMCmlQIF9mz49WU1a4B6cAFkU1XVipbtDTqwKBQpNA
-Message-ID: <CANp29Y6U1Gn26_hnX6G94RO+OeU0VUu5qub-EmmAEVGN4cxXag@mail.gmail.com>
-Subject: Re: [PATCH] bpf: lru: Use resilient spinlocks to prevent NMI deadlocks
-To: Dmitry Vyukov <dvyukov@google.com>
-Cc: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation+final@googlegroups.com, 
-	syzbot@lists.linux.dev
+X-Received: by 2002:a05:6820:1611:b0:69d:e116:e2a3 with SMTP id
+ 006d021491bc7-69dfa684a68mr624612eaf.7.1779977400199; Thu, 28 May 2026
+ 07:10:00 -0700 (PDT)
+Date: Thu, 28 May 2026 07:10:00 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a184cb8.7f45b5d1.9d2a9.0002.GAE@google.com>
+Subject: [moderation/CI] Re: netfilter: ipvs: fix ct refcount leak when
+ template is invalid
+From: syzbot ci <syzbot+ci0617f739889e28a1@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-#syz reject
+syzbot ci has tested the following series
 
-On Thu, May 21, 2026 at 5:06=E2=80=AFPM 'Dmitry Vyukov' via
-syzkaller-upstream-moderation
-<syzkaller-upstream-moderation@googlegroups.com> wrote:
->
-> On Tue, 19 May 2026 at 09:10, 'syzbot' via
-> syzkaller-upstream-moderation
-> <syzkaller-upstream-moderation@googlegroups.com> wrote:
-> >
-> > BPF LRU maps currently use standard `raw_spinlock_t` for their local an=
-d
-> > global list locks, which are not NMI-safe. If an NMI (such as a perf
-> > event hardware breakpoint) interrupts a normal context that is holding
-> > an LRU list lock, and a BPF program executed in the NMI context attempt=
-s
-> > to acquire the exact same lock (e.g., via `bpf_map_delete_elem`), it
-> > will spin forever waiting for the lock to be released. This results in =
-a
-> > hard deadlock because the context holding the lock has been preempted b=
-y
-> > the NMI itself. Lockdep correctly detects this unsafe `{INITIAL USE} ->
-> > {IN-NMI}` transition and emits an inconsistent lock state warning.
-> >
-> > To resolve this, update the LRU list implementation to use resilient
-> > queued spinlocks (`rqspinlock_t`), similar to how bucket locks in
-> > standard BPF hash maps were previously converted. Resilient spinlocks
-> > are NMI-safe because they detect deadlocks (such as re-entrancy on the
-> > same CPU) and return an error instead of hanging. Replace all standard
-> > spinlock operations with their resilient counterparts in
-> > `bpf_lru_list.c`. Since resilient spinlock acquisitions can fail, updat=
-e
-> > the LRU functions to handle these failures gracefully. For pop
-> > functions, return `NULL` when the lock cannot be acquired, which caller=
-s
-> > already handle by propagating an `-ENOMEM` error. When stealing nodes
-> > from remote CPUs, safely skip the CPU if its lock cannot be acquired.
-> > For push and flush functions, abort and return early if the lock fails,
-> > effectively leaking the LRU node, which is an acceptable trade-off to
-> > prevent a hard system deadlock in NMI context.
->
-> Add comments to the code about lock failure in stealing, push and
-> flush operations as to what are the consequences, any why we prefer
-> them over the deadlock.
->
-> >
-> > Fixes: 3a08c2fd763450a927d1130de078d6f9e74944fb ("bpf: LRU List")
-> > Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-previe=
-w
-> > Reported-by: syzbot+c69a0a2c816716f1e0d5@syzkaller.appspotmail.com
-> > Link: https://syzkaller.appspot.com/bug?extid=3Dc69a0a2c816716f1e0d5
-> > Link: https://syzkaller.appspot.com/ai_job?id=3D5256e80f-91f9-40da-865e=
--578a2aee46ad
-> > Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
-> >
-> > ---
-> > diff --git a/kernel/bpf/bpf_lru_list.c b/kernel/bpf/bpf_lru_list.c
-> > index e7a2fc605..3d6613378 100644
-> > --- a/kernel/bpf/bpf_lru_list.c
-> > +++ b/kernel/bpf/bpf_lru_list.c
-> > @@ -4,6 +4,7 @@
-> >  #include <linux/cpumask.h>
-> >  #include <linux/spinlock.h>
-> >  #include <linux/percpu.h>
-> > +#include <asm/rqspinlock.h>
-> >
-> >  #include "bpf_lru_list.h"
-> >
-> > @@ -307,9 +308,10 @@ static void bpf_lru_list_push_free(struct bpf_lru_=
-list *l,
-> >         if (WARN_ON_ONCE(IS_LOCAL_LIST_TYPE(node->type)))
-> >                 return;
-> >
-> > -       raw_spin_lock_irqsave(&l->lock, flags);
-> > +       if (raw_res_spin_lock_irqsave(&l->lock, flags))
-> > +               return;
-> >         __bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
-> > -       raw_spin_unlock_irqrestore(&l->lock, flags);
-> > +       raw_res_spin_unlock_irqrestore(&l->lock, flags);
-> >  }
-> >
-> >  static void bpf_lru_list_pop_free_to_local(struct bpf_lru *lru,
-> > @@ -319,7 +321,8 @@ static void bpf_lru_list_pop_free_to_local(struct b=
-pf_lru *lru,
-> >         struct bpf_lru_node *node, *tmp_node;
-> >         unsigned int nfree =3D 0;
-> >
-> > -       raw_spin_lock(&l->lock);
-> > +       if (raw_res_spin_lock(&l->lock))
-> > +               return;
-> >
-> >         __local_list_flush(l, loc_l);
-> >
-> > @@ -338,7 +341,7 @@ static void bpf_lru_list_pop_free_to_local(struct b=
-pf_lru *lru,
-> >                                       local_free_list(loc_l),
-> >                                       BPF_LRU_LOCAL_LIST_T_FREE);
-> >
-> > -       raw_spin_unlock(&l->lock);
-> > +       raw_res_spin_unlock(&l->lock);
-> >  }
-> >
-> >  static void __local_list_add_pending(struct bpf_lru *lru,
-> > @@ -404,7 +407,8 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free=
-(struct bpf_lru *lru,
-> >
-> >         l =3D per_cpu_ptr(lru->percpu_lru, cpu);
-> >
-> > -       raw_spin_lock_irqsave(&l->lock, flags);
-> > +       if (raw_res_spin_lock_irqsave(&l->lock, flags))
-> > +               return NULL;
-> >
-> >         __bpf_lru_list_rotate(lru, l);
-> >
-> > @@ -420,7 +424,7 @@ static struct bpf_lru_node *bpf_percpu_lru_pop_free=
-(struct bpf_lru *lru,
-> >                 __bpf_lru_node_move(l, node, BPF_LRU_LIST_T_INACTIVE);
-> >         }
-> >
-> > -       raw_spin_unlock_irqrestore(&l->lock, flags);
-> > +       raw_res_spin_unlock_irqrestore(&l->lock, flags);
-> >
-> >         return node;
-> >  }
-> > @@ -437,7 +441,8 @@ static struct bpf_lru_node *bpf_common_lru_pop_free=
-(struct bpf_lru *lru,
-> >
-> >         loc_l =3D per_cpu_ptr(clru->local_list, cpu);
-> >
-> > -       raw_spin_lock_irqsave(&loc_l->lock, flags);
-> > +       if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
-> > +               return NULL;
-> >
-> >         node =3D __local_list_pop_free(loc_l);
-> >         if (!node) {
-> > @@ -448,7 +453,7 @@ static struct bpf_lru_node *bpf_common_lru_pop_free=
-(struct bpf_lru *lru,
-> >         if (node)
-> >                 __local_list_add_pending(lru, loc_l, cpu, node, hash);
-> >
-> > -       raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-> > +       raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
-> >
-> >         if (node)
-> >                 return node;
-> > @@ -466,23 +471,26 @@ static struct bpf_lru_node *bpf_common_lru_pop_fr=
-ee(struct bpf_lru *lru,
-> >         do {
-> >                 steal_loc_l =3D per_cpu_ptr(clru->local_list, steal);
-> >
-> > -               raw_spin_lock_irqsave(&steal_loc_l->lock, flags);
-> > +               if (raw_res_spin_lock_irqsave(&steal_loc_l->lock, flags=
-))
-> > +                       goto next_steal;
-> >
-> >                 node =3D __local_list_pop_free(steal_loc_l);
-> >                 if (!node)
-> >                         node =3D __local_list_pop_pending(lru, steal_lo=
-c_l);
-> >
-> > -               raw_spin_unlock_irqrestore(&steal_loc_l->lock, flags);
-> > +               raw_res_spin_unlock_irqrestore(&steal_loc_l->lock, flag=
-s);
-> >
-> > +next_steal:
-> >                 steal =3D cpumask_next_wrap(steal, cpu_possible_mask);
-> >         } while (!node && steal !=3D first_steal);
-> >
-> >         loc_l->next_steal =3D steal;
-> >
-> >         if (node) {
-> > -               raw_spin_lock_irqsave(&loc_l->lock, flags);
-> > +               if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
-> > +                       return NULL;
-> >                 __local_list_add_pending(lru, loc_l, cpu, node, hash);
-> > -               raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-> > +               raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
-> >         }
-> >
-> >         return node;
-> > @@ -511,10 +519,11 @@ static void bpf_common_lru_push_free(struct bpf_l=
-ru *lru,
-> >
-> >                 loc_l =3D per_cpu_ptr(lru->common_lru.local_list, node-=
->cpu);
-> >
-> > -               raw_spin_lock_irqsave(&loc_l->lock, flags);
-> > +               if (raw_res_spin_lock_irqsave(&loc_l->lock, flags))
-> > +                       return;
-> >
-> >                 if (unlikely(node->type !=3D BPF_LRU_LOCAL_LIST_T_PENDI=
-NG)) {
-> > -                       raw_spin_unlock_irqrestore(&loc_l->lock, flags)=
-;
-> > +                       raw_res_spin_unlock_irqrestore(&loc_l->lock, fl=
-ags);
-> >                         goto check_lru_list;
-> >                 }
-> >
-> > @@ -522,7 +531,7 @@ static void bpf_common_lru_push_free(struct bpf_lru=
- *lru,
-> >                 bpf_lru_node_clear_ref(node);
-> >                 list_move(&node->list, local_free_list(loc_l));
-> >
-> > -               raw_spin_unlock_irqrestore(&loc_l->lock, flags);
-> > +               raw_res_spin_unlock_irqrestore(&loc_l->lock, flags);
-> >                 return;
-> >         }
-> >
-> > @@ -538,11 +547,12 @@ static void bpf_percpu_lru_push_free(struct bpf_l=
-ru *lru,
-> >
-> >         l =3D per_cpu_ptr(lru->percpu_lru, node->cpu);
-> >
-> > -       raw_spin_lock_irqsave(&l->lock, flags);
-> > +       if (raw_res_spin_lock_irqsave(&l->lock, flags))
-> > +               return;
-> >
-> >         __bpf_lru_node_move(l, node, BPF_LRU_LIST_T_FREE);
-> >
-> > -       raw_spin_unlock_irqrestore(&l->lock, flags);
-> > +       raw_res_spin_unlock_irqrestore(&l->lock, flags);
-> >  }
-> >
-> >  void bpf_lru_push_free(struct bpf_lru *lru, struct bpf_lru_node *node)
-> > @@ -625,7 +635,7 @@ static void bpf_lru_locallist_init(struct bpf_lru_l=
-ocallist *loc_l, int cpu)
-> >
-> >         loc_l->next_steal =3D cpu;
-> >
-> > -       raw_spin_lock_init(&loc_l->lock);
-> > +       raw_res_spin_lock_init(&loc_l->lock);
-> >  }
-> >
-> >  static void bpf_lru_list_init(struct bpf_lru_list *l)
-> > @@ -640,7 +650,7 @@ static void bpf_lru_list_init(struct bpf_lru_list *=
-l)
-> >
-> >         l->next_inactive_rotation =3D &l->lists[BPF_LRU_LIST_T_INACTIVE=
-];
-> >
-> > -       raw_spin_lock_init(&l->lock);
-> > +       raw_res_spin_lock_init(&l->lock);
-> >  }
-> >
-> >  int bpf_lru_init(struct bpf_lru *lru, bool percpu, u32 hash_offset,
-> > diff --git a/kernel/bpf/bpf_lru_list.h b/kernel/bpf/bpf_lru_list.h
-> > index fe2661a58..ecd93c77a 100644
-> > --- a/kernel/bpf/bpf_lru_list.h
-> > +++ b/kernel/bpf/bpf_lru_list.h
-> > @@ -7,6 +7,7 @@
-> >  #include <linux/cache.h>
-> >  #include <linux/list.h>
-> >  #include <linux/spinlock_types.h>
-> > +#include <asm/rqspinlock.h>
-> >
-> >  #define NR_BPF_LRU_LIST_T      (3)
-> >  #define NR_BPF_LRU_LIST_COUNT  (2)
-> > @@ -34,13 +35,13 @@ struct bpf_lru_list {
-> >         /* The next inactive list rotation starts from here */
-> >         struct list_head *next_inactive_rotation;
-> >
-> > -       raw_spinlock_t lock ____cacheline_aligned_in_smp;
-> > +       rqspinlock_t lock ____cacheline_aligned_in_smp;
-> >  };
-> >
-> >  struct bpf_lru_locallist {
-> >         struct list_head lists[NR_BPF_LRU_LOCAL_LIST_T];
-> >         u16 next_steal;
-> > -       raw_spinlock_t lock;
-> > +       rqspinlock_t lock;
-> >  };
-> >
-> >  struct bpf_common_lru {
-> >
-> >
-> > base-commit: 5d6919055dec134de3c40167a490f33c74c12581
-> > --
-> > See  for more information.
-> >
-> > --
-> > You received this message because you are subscribed to the Google Grou=
-ps "syzkaller-upstream-moderation" group.
-> > To unsubscribe from this group and stop receiving emails from it, send =
-an email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> > To view this discussion visit https://groups.google.com/d/msgid/syzkall=
-er-upstream-moderation/13d16b15-8e25-40f2-afbd-eb9b486bf1d2%40mail.kernel.o=
-rg.
->
-> --
-> You received this message because you are subscribed to the Google Groups=
- "syzkaller-upstream-moderation" group.
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/CACT4Y%2BY7pawESc96N6yHyZ-vyY3BEAmBWdcaMposffWsypMZ9A%=
-40mail.gmail.com.
+[v1] netfilter: ipvs: fix ct refcount leak when template is invalid
+https://lore.kernel.org/all/20260528072100.1163109-1-vulab@iscas.ac.cn
+* [PATCH] netfilter: ipvs: fix ct refcount leak when template is invalid
+
+and found the following issue:
+general protection fault in ip_vs_conn_put
+
+Full report is available here:
+https://ci.syzbot.org/series/fb773743-f223-4965-9f38-e5ea600ee724
+
+***
+
+general protection fault in ip_vs_conn_put
+
+tree:      nf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilt=
+er/nf-next.git
+base:      aa064a614efcfa4c300609d1f01134e99a12ad10
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/3e6a154f-d578-4d43-94af-86e85170292=
+5/config
+syz repro: https://ci.syzbot.org/findings/518450a1-bd56-47bd-b214-be945f6ba=
+221/syz_repro
+
+IPVS: sed: FWM 3 0x00000003 - no destination available
+Oops: general protection fault, probably for non-canonical address 0xdffffc=
+0000000007: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000038-0x000000000000003f]
+CPU: 1 UID: 0 PID: 5812 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:ip_vs_conn_put+0x2b/0x240 net/netfilter/ipvs/ip_vs_conn.c:608
+Code: 0f 1e fa 55 41 57 41 56 41 55 41 54 53 48 89 fb 49 bc 00 00 00 00 00 =
+fc ff df e8 40 cb c1 f7 4c 8d 73 3c 4d 89 f5 49 c1 ed 03 <43> 0f b6 44 25 0=
+0 84 c0 0f 85 9f 01 00 00 41 8b 2e 89 ee 81 e6 00
+RSP: 0018:ffffc90003d4eba8 EFLAGS: 00010203
+RAX: ffffffff8a03f980 RBX: 0000000000000000 RCX: ffff888169370000
+RDX: 0000000000000000 RSI: ffffffff8c28b740 RDI: 0000000000000000
+RBP: ffffc90003d4ee30 R08: ffff88823c6247d3 R09: 1ffff110478c48fa
+R10: dffffc0000000000 R11: ffffed10478c48fb R12: dffffc0000000000
+R13: 0000000000000007 R14: 000000000000003c R15: 0000000000000000
+FS:  00007faa344d36c0(0000) GS:ffff8882a9276000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007faa33472780 CR3: 0000000169de6000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ ip_vs_sched_persist net/netfilter/ipvs/ip_vs_core.c:-1 [inline]
+ ip_vs_schedule+0x100f/0x1d90 net/netfilter/ipvs/ip_vs_core.c:688
+ udp_conn_schedule+0x391/0x7a0 net/netfilter/ipvs/ip_vs_proto_udp.c:78
+ ip_vs_try_to_schedule net/netfilter/ipvs/ip_vs_core.c:1659 [inline]
+ ip_vs_in_hook+0xc50/0x1bf0 net/netfilter/ipvs/ip_vs_core.c:2231
+ nf_hook_entry_hookfn include/linux/netfilter.h:158 [inline]
+ nf_hook_slow+0xc5/0x220 net/netfilter/core.c:619
+ nf_hook+0x22a/0x3a0 include/linux/netfilter.h:273
+ __ip_local_out+0x558/0x6a0 net/ipv4/ip_output.c:120
+ ip_local_out+0x2a/0x190 net/ipv4/ip_output.c:129
+ ip_send_skb+0x45/0xc0 net/ipv4/ip_output.c:1510
+ udp_send_skb+0x7e4/0xf70 net/ipv4/udp.c:1161
+ udp_sendmsg+0x1937/0x21a0 net/ipv4/udp.c:1443
+ udpv6_sendmsg+0x996/0x25c0 net/ipv6/udp.c:1523
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x5c7/0x9f0 net/socket.c:2698
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
+ __sys_sendmsg net/socket.c:2784 [inline]
+ __do_sys_sendmsg net/socket.c:2789 [inline]
+ __se_sys_sendmsg net/socket.c:2787 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7faa3359ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007faa344d3028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007faa33815fa0 RCX: 00007faa3359ce59
+RDX: 0000000000000000 RSI: 0000200000000400 RDI: 0000000000000004
+RBP: 00007faa33632d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007faa33816038 R14: 00007faa33815fa0 R15: 00007ffe8bd2ebb8
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:ip_vs_conn_put+0x2b/0x240 net/netfilter/ipvs/ip_vs_conn.c:608
+Code: 0f 1e fa 55 41 57 41 56 41 55 41 54 53 48 89 fb 49 bc 00 00 00 00 00 =
+fc ff df e8 40 cb c1 f7 4c 8d 73 3c 4d 89 f5 49 c1 ed 03 <43> 0f b6 44 25 0=
+0 84 c0 0f 85 9f 01 00 00 41 8b 2e 89 ee 81 e6 00
+RSP: 0018:ffffc90003d4eba8 EFLAGS: 00010203
+RAX: ffffffff8a03f980 RBX: 0000000000000000 RCX: ffff888169370000
+RDX: 0000000000000000 RSI: ffffffff8c28b740 RDI: 0000000000000000
+RBP: ffffc90003d4ee30 R08: ffff88823c6247d3 R09: 1ffff110478c48fa
+R10: dffffc0000000000 R11: ffffed10478c48fb R12: dffffc0000000000
+R13: 0000000000000007 R14: 000000000000003c R15: 0000000000000000
+FS:  00007faa344d36c0(0000) GS:ffff8882a9276000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007faa335ea540 CR3: 0000000169de6000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	0f 1e fa             	nop    %edx
+   3:	55                   	push   %rbp
+   4:	41 57                	push   %r15
+   6:	41 56                	push   %r14
+   8:	41 55                	push   %r13
+   a:	41 54                	push   %r12
+   c:	53                   	push   %rbx
+   d:	48 89 fb             	mov    %rdi,%rbx
+  10:	49 bc 00 00 00 00 00 	movabs $0xdffffc0000000000,%r12
+  17:	fc ff df
+  1a:	e8 40 cb c1 f7       	call   0xf7c1cb5f
+  1f:	4c 8d 73 3c          	lea    0x3c(%rbx),%r14
+  23:	4d 89 f5             	mov    %r14,%r13
+  26:	49 c1 ed 03          	shr    $0x3,%r13
+* 2a:	43 0f b6 44 25 00    	movzbl 0x0(%r13,%r12,1),%eax <-- trapping instr=
+uction
+  30:	84 c0                	test   %al,%al
+  32:	0f 85 9f 01 00 00    	jne    0x1d7
+  38:	41 8b 2e             	mov    (%r14),%ebp
+  3b:	89 ee                	mov    %ebp,%esi
+  3d:	81                   	.byte 0x81
+  3e:	e6 00                	out    %al,$0x0
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[coreteam@netfilter.org davem@davemloft.net edumazet@google.com fw@strlen.d=
+e horms@verge.net.au ja@ssi.bg kuba@kernel.org linux-kernel@vger.kernel.org=
+ lvs-devel@vger.kernel.org netdev@vger.kernel.org netfilter-devel@vger.kern=
+el.org pabeni@redhat.com pablo@netfilter.org phil@nwl.cc stable@vger.kernel=
+.org vulab@iscas.ac.cn]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
