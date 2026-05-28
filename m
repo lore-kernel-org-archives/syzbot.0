@@ -1,141 +1,85 @@
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpout-02.galae.net (smtpout-02.galae.net [185.246.84.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E54592D3A7B
-	for <syzbot@lists.linux.dev>; Thu, 28 May 2026 06:00:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43D4234EF11
+	for <syzbot@lists.linux.dev>; Thu, 28 May 2026 07:45:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.84.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779948037; cv=none; b=RZgqaXZFrnZl1sxvAllMdf67cuX5qBE12nWmatvEsbIfox7v99SRwm0kSqCF6e8v2j9VUWwZ8Ldr1NpkAAGNL/6Q6hYM2v8WJyaJH38T42bRcoffSV4QxdbmvGxalhTZHNrBcnKpMpDaHfulWkEbSZPAnu1GhOcbY2REFX17VdY=
+	t=1779954309; cv=none; b=pdMPwO18Li3j13zJZrU8UKi4EyOI0j/YdCTVppKRWgdvAPIO9pUe+dPLgKCb36e0eiUQmT936Hn900vLSH+VxlTNq9fU60kbX5Vnf9oNp9R4Y+m+hhLDOyMTUputi2SgQ2PXsdl9cFsb7V4SsrHVleU4IPqCXZXxQIXmgH41IwY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779948037; c=relaxed/simple;
-	bh=Qo8+siPIPZX5h+CpY+gIBlRBkdx4bHqmyvPKHS1biEM=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=FbvmzmTF/Ac8rj5fD/Y3UROsznDq6OBt34V6T7/G1yYNvgxKOU/F/q+tVG+kJ/mYrcMcvTPvkrVYeQ2g5VyXvsvSDGIfLnze+S9/6TnAyqoGAS/QTcH4S6y876rRnoUADMaBd2L6jD4n2m445gjkrKBkk5TXi3JArDuRgCbOB7k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-69d86a152d6so6563100eaf.1
-        for <syzbot@lists.linux.dev>; Wed, 27 May 2026 23:00:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779948035; x=1780552835;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=baLksnVAanA5SWwkLG3hsy/rKltiR203R1UfQgkjLak=;
-        b=RxsUWwRavyqD2b94RjcDDHHNehGZ/uPBO85b7YGTq7Himnz8ellYp9Y8ccYoQLYA8f
-         oH7Y3vdyrBBgSZdZ4Nx332SjYul2NqBl2y5eQYqFd3alDSoLBNJFS4F9pastCjc9Z0+D
-         T7ZA86d2UiNMMkXry0u25BsRuoGDhYJpMPKtTQKb2zceJUfds4Z9VJAnkRUnoRbJwlIP
-         pkeLM2vRQpk4q3lrRPgAoGD6ZmGriMlihmhjgmiggVPzzKHuzEWmkQETms6m/mhJ/wlk
-         1klp208Bd/sCuUJkxOiWPPd5ErAFH0uR2AgVyTVDNVGBGd+CGEMJ09d/7chxad3WVBny
-         Jzfg==
-X-Gm-Message-State: AOJu0YxiY3VGcfNYcQ/qI9k2g0L3HNU3aslHzx5pBFjoleavMm9uoVcg
-	h4ucq/TAesCdwjZk3Ul2ggc+fgzaZC5+tzKCe1VmeBZo7ukEfhyc85JmFYVVQi0jAv1XYnjaf2G
-	xOhgFl3C7jr97ZOaocJJWdcqMbeQe343sDiRts/7xttIlvSh0zwYwAgBKcXA=
+	s=arc-20240116; t=1779954309; c=relaxed/simple;
+	bh=EJub6JXBaWWgRu5cZ1gvCapF88tx4Za6Fv68dCVsrMI=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=t3HoagbadGlUgwi/tdZida4dg5XoPsupGgfLl6PwonhvwLMX53fDkoWStgdmsnlvB/5RGIzkzlGrLvcDiFdI2ZlQpqtYGte/7DSiYWuo2nGJrCP2zj+eXKAqdGGQgU/YbnZgoTqcM1D5BpRXeliJ3tbZA3r80i6oZ2e+8IRqFC8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=RRj0XWqY; arc=none smtp.client-ip=185.246.84.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="RRj0XWqY"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-02.galae.net (Postfix) with ESMTPS id E636E1A378E;
+	Thu, 28 May 2026 07:45:06 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id B8FE960495;
+	Thu, 28 May 2026 07:45:06 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 422B81088806E;
+	Thu, 28 May 2026 09:45:01 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1779954305; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:in-reply-to:references;
+	bh=o+jaleTw1PrS9lddrKqjpqnnZcDe+XAxXAP5SJyBXWo=;
+	b=RRj0XWqYSEpbhqlQ28lfttUnTJSiY064TTecno3eu5Mnxy4ThKtkOuZ0AeLc4x+SxANGyT
+	jWAyTaNwuwdW5uB6FfMIjfrMnKjA+qEdqzvJnq9a41EWCaEjbBjJP7gqvbeijwa1e8cfTB
+	uq8YXUjq+foDA41bcXMfmQsX7VParDd9bWIgDGoCcEADUpPUQLxUexMIYIDQdO2F5Qv/TA
+	Tp2a7oLhwDb9/HbhUi9swCax7Meznh/H43E/Cdx9i65klynIbufrqbrG1Ph/40h7+facKt
+	ZppX/0ttMwX0Klsgn0G6VvkU6HjTa+aX84Zvmtaql4ydmmgOI+KUX4fH/6MO3A==
+From: Miquel Raynal <miquel.raynal@bootlin.com>
+To: "syzbot" <syzbot@kernel.org>
+Cc: syzkaller-bugs@googlegroups.com,  "Alexander Aring"
+ <alex.aring@gmail.com>,  "David S. Miller" <davem@davemloft.net>,  "Eric
+ Dumazet" <edumazet@google.com>,  "Jakub Kicinski" <kuba@kernel.org>,
+  <linux-wpan@vger.kernel.org>,  <netdev@vger.kernel.org>,  "Paolo Abeni"
+ <pabeni@redhat.com>,  "Stefan Schmidt" <stefan@datenfreihafen.org>,
+  horms@kernel.org,  linux-kernel@vger.kernel.org,  syzbot@lists.linux.dev
+Subject: Re: [PATCH] ieee802154: fix kernel-infoleak in dgram_recvmsg()
+In-Reply-To: <62795fd9-fc0c-48eb-bb82-05ffc5a57104@mail.kernel.org>
+	(syzbot@kernel.org's message of "Wed, 27 May 2026 20:18:18 +0000
+	(UTC)")
+References: <62795fd9-fc0c-48eb-bb82-05ffc5a57104@mail.kernel.org>
+User-Agent: mu4e 1.12.7; emacs 30.2
+Date: Thu, 28 May 2026 09:45:00 +0200
+Message-ID: <878q94htab.fsf@bootlin.com>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a4a:ec4c:0:b0:69d:6bfd:5a3f with SMTP id
- 006d021491bc7-69d7ece2eafmr14674415eaf.51.1779948034727; Wed, 27 May 2026
- 23:00:34 -0700 (PDT)
-Date: Wed, 27 May 2026 23:00:34 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a17da02.d07c18fe.1069e4.001a.GAE@google.com>
-Subject: [moderation/CI] Re: mshv: enable kexec with Hyper-V donated pages and partitions
-From: syzbot ci <syzbot+ci1e21bcc277045ad6@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
+X-Last-TLS-Session-Version: TLSv1.3
 
-syzbot ci has tested the following series
+Hello,
 
-[v1] mshv: enable kexec with Hyper-V donated pages and partitions
-https://lore.kernel.org/all/20260528004204.1484584-1-jloeser@linux.microsof=
-t.com
-* [RFC PATCH 01/20] kho: generalize radix tree APIs
-* [RFC PATCH 02/20] kho: store incoming radix tree in kho_in
-* [RFC PATCH 03/20] kho: add a struct for radix callbacks
-* [RFC PATCH 04/20] kho: add callback for table pages
-* [RFC PATCH 05/20] kho: add data argument to radix walk callback
-* [RFC PATCH 06/20] kho: allow early-boot usage of the KHO radix tree
-* [RFC PATCH 07/20] kho: allow destroying KHO radix tree
-* [RFC PATCH 08/20] kho: add kho_radix_init_tree()
-* [RFC PATCH 09/20] memblock: introduce MEMBLOCK_KHO_SCRATCH_EXT
-* [RFC PATCH 10/20] kho: extended scratch
-* [RFC PATCH 11/20] kho: return virtual address of mem_map
-* [RFC PATCH 12/20] mm/hugetlb: make bootmem allocation work with KHO
-* [RFC PATCH 13/20] kho: add radix tree freeze and del_key() error reportin=
-g
-* [RFC PATCH 14/20] kho: Add crash-kernel-safe radix tree presence check
-* [RFC PATCH 15/20] mshv: Use page tracker to manage MSHV-owned pages and p=
-reserve with KHO
-* [RFC PATCH 16/20] mshv: Add debugfs interface to page tracker
-* [RFC PATCH 17/20] hyperv: Reserve crash MSR P2 for page preservation root=
- PA
-* [RFC PATCH 18/20] mshv: Exclude Hyper-V donated pages from crash dump col=
-lection
-* [RFC PATCH 19/20] kexec: export kexec_in_progress for modules
-* [RFC PATCH 20/20] mshv: freeze and vacuum partitions across kexec
+LGTM.
 
-and found the following issue:
-kernel build error
+> -	addr->mode =3D mode;
+> -
+> -	if (mode =3D=3D IEEE802154_ADDR_NONE)
+> +	if (mode =3D=3D IEEE802154_ADDR_NONE) {
+> +		memset(addr, 0, sizeof(*addr));
+> +		addr->mode =3D IEEE802154_ADDR_NONE;
+>  		return 0;
+> +	}
+> +
+> +	addr->mode =3D mode;
+>=20=20
+>  	if (!omit_pan) {
+>  		memcpy(&addr->pan_id, buf + pos, 2);
+>
+>
 
-Full report is available here:
-https://ci.syzbot.org/series/3ae14a59-1f75-49c7-b968-ba5197b42ec3
+Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
 
-***
-
-kernel build error
-
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
-nux-next
-base:      e7d700e14934e68f86338c5610cf2ae76798b663
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/90866729-fbd8-4e80-afc5-b8813f0533f=
-a/config
-
-mm/mm_init.c:2705:2: error: call to undeclared function 'kho_extend_scratch=
-'; ISO C99 and later do not support implicit function declarations [-Wimpli=
-cit-function-declaration]
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[akpm@linux-foundation.org bhe@redhat.com bp@alien8.de catalin.marinas@arm.=
-com dave.hansen@linux.intel.com david@kernel.org decui@microsoft.com graf@a=
-mazon.com haiyangz@microsoft.com hpa@zytor.com jasonmiu@google.com jbouron@=
-amazon.com jloeser@linux.microsoft.com kees@kernel.org kexec@lists.infradea=
-d.org kys@microsoft.com linux-arm-kernel@lists.infradead.org linux-hyperv@v=
-ger.kernel.org linux-kernel@vger.kernel.org linux-mm@kvack.org longli@micro=
-soft.com mario.limonciello@amd.com mhklinux@outlook.com mingo@redhat.com mu=
-chun.song@linux.dev osalvador@suse.de pasha.tatashin@soleen.com piliu@redha=
-t.com pratyush@kernel.org rafael.j.wysocki@intel.com ran.xiaokai@zte.com.cn=
- rppt@kernel.org sourabhjain@linux.ibm.com tglx@kernel.org wei.liu@kernel.o=
-rg will@kernel.org x86@kernel.org]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+Thanks,
+Miqu=C3=A8l
