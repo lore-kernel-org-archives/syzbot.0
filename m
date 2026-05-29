@@ -1,202 +1,340 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E88763C76BE
-	for <syzbot@lists.linux.dev>; Fri, 29 May 2026 14:02:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
-ARC-Seal:i=3; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780063369; cv=pass; b=hqbvdsOMhbDM/UjOrQv7YC5gcu2pptPajvnkvKhYEyxgYgjHbq3HTnsXGIdp2Qc+AfCFfaV50ndAVR6ucw+jV7D+zuAr5MFdPi6oTo5QGqNgjRLlwTtr9bWs/4IPofa8SAmCeTE2IQboEorcpDYnPCGzjYFQg1IaDBXyoIPSvbI=
-ARC-Message-Signature:i=3; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780063369; c=relaxed/simple;
-	bh=wn8x8yiu9TO/swWXe/i5hE/xXtMlHfa0T6i/P6LJ+fg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=g1C5E127V0IEZEsqWFV0QAbhmdMT9xCqaG7KPHx3PeJz/GG5NB3JKUS2pcodyKHT5fdYp7nGoTBJocbOj2G1UyXCm5gGtlVMEtx5kwlSTfOR+0luRRQ7udLpdUCCPk3dH0XqjZVLUVBNzBYCeV3pFcEZ0VRsGIRz/IuetI0OugM=
-ARC-Authentication-Results:i=3; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=s+oEvwbR; arc=pass smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B060D3A961A
+	for <syzbot@lists.linux.dev>; Fri, 29 May 2026 14:33:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780065188; cv=none; b=QKNyGrcKe7h+gtuWafm9HmMD5FwWTuzGYOf1LeBhzOSegey/UsWh93+JIL3xKJyvanlTkXc8g6Z8yOlLodpUKeuRLPANpl1CJeKF+uVobkq5hpHRR8vbltlnZBG8E+FkpVKLmXbSyuy+fG0Hx3mFndtBIzkAJrqABztXymgGVvM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780065188; c=relaxed/simple;
+	bh=VhEKhpYute6mZsQrjQoz1y9qtdNyMxzoamg2ZsUaaGU=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=X9iK4JUIxgS2iekOUtNDfmDpRRza1z8rQVwgfk2wDbeUPQBgEVfQ/Cqw6pGPTvIhJJtHm60vlqbxtkcppuP8w8uhzqWmzNAJ26gcXZRhzLR7Rb7VLhHTbNTrLIa/myXisFCYOPe8BdttUPJx3I1hxPlJpqe8KWs2muxjU65DDfw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AjMHUGCm; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="s+oEvwbR"
-Received: by smtp.kernel.org (Postfix)
-	id 5D03A1F00898; Fri, 29 May 2026 14:02:44 +0000 (UTC)
-Authentication-Results: smtp.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.210.46
-ARC-Seal: i=2; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=pass;
-	t=1780063364;
-	b=SGw42FnntF1+Wf8igvFlQf/Gp+qWqxeqtz6kq2lCOwlvcORjqUS1Xlnz7Fud4+hAQeu9
-	 PaSN0A1PzB9izCo0svwgrz5ggtI6511ZFQzg4JtPrgr1kkyh2lC/zrTpXA3EIw8eTllRU
-	 wNdNkgntra9rLYXVlaDF9QBptp41YLjdHVrZiWhUmVwKfY3cZYV6ql6n3cNgklnb1KDC7
-	 pIvN7gWsqAEXNGynWrlWviEdJI5uWQlRETsktY/xxh7S33YASedoe1p+E7lPaZ6nCuGqI
-	 96Pw3XsIkG9qbEEOuVdHfk2T6xnRi+DSBZQ3jDcQ67VmzMSd+6goyCk1Z0NjnsZiiDA==
-ARC-Message-Signature: i=2; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1780063364;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:References:
-	 In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=0OQF+30KxRu/3EL8/7FczUevTFhdt44HuBafeyC6noo=;
-	b=Nbc7QPXs+zNq6oEtUYm4oFK14fpBRVwWQ9Zj/nVhpIM5xIySHo4HfQzE9xjVISzETOYp
-	 mUwZGfygLYR2A+aDXlcJhtTI0jbvK9W7oeCPjcYCrwNUAJcO6b+1Wasrn8nUNuCaGpjdv
-	 QdS1ZbiyFedlD3sbIqQ6nLRMAjDatVlbdbVitiD+zQHQJsJ8Xq0u4Nf3/G82PNBJerIJ1
-	 YX3HWXJavplpRzHVJwOxEtffs1rGjallbDFOY3ZxdzwQuVmJpUsn9hCL4Z3hfX/oAI21L
-	 OWW2ux8CUK0x+wzDtZmgVsFF8dMG1ok9JRrpAmzOCgKJ1D4cIBLaCjybXTb3mio8RwA==
-ARC-Authentication-Results: i=2; smtp.kernel.org; dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=s+oEvwbR;
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.210.46
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id C54671F00893
-	for <syzbot@kernel.org>; Fri, 29 May 2026 14:02:43 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=s+oEvwbR
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org C54671F00893
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=google.com
-Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-7e61da76fd9so4756813a34.0
-        for <syzbot@kernel.org>; Fri, 29 May 2026 07:02:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780063363; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Z6HrhVBrAcjjbaFmUXdk1ulWRywdePx/c0d6NDCuH9V6Hxlz8p5h8zufWmZd/y8hDW
-         UQH+oQMqma6OSEfgcVmzta5fiXgKrbOvxEisFEVEuCZm3oJiy/F47mx2e2elkwWJ7Vwv
-         u7xKcS2yag8jAyPztqguAQIVAhR3VQkhWCeK68pNPLcaOJpM8FnVrhGFNfC4eKnzKSl/
-         QIsYssKu7RgM5uafyiPtzBG73ChJUW/FSinWw1kae8IWzfyQ06tmGgKSju/beI0+pZ1T
-         jurkNDnWNDxdIF+wTM0fRNl7Kn9kDZE+P+F57Ku86WXbPSvjo5tZ+XKqKiU6qE+BV1gg
-         +D0g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=0OQF+30KxRu/3EL8/7FczUevTFhdt44HuBafeyC6noo=;
-        fh=ZdIFEji1OgyuQXgcoEzcmXuEqszblyCHGIjqUFa2lsQ=;
-        b=K4FZxcvrJ+ehMzenoHsqKI92pep6DkOkJBMYpDDmBAIWU+YqCTbigJ8G2HIUScCeLP
-         tiAke3PVKe7lyhaUrDelzcgtFoh+e11a+3gTwKQ+DRw+YEsirK8VmXaD8v0Qufu6SD7L
-         xdVARPB05JgXSN94J4tVj/tIuePdNze0ABxcRq2HQUrVPeV27MdhE43Zt0EEOeRNvMUo
-         eM/qfzMFfAOrxWsG5EqcXbpPgIWFkcPUbam0KEbArLIiyy7eWfgFcjlMTa0+Ays6rwBj
-         I0LuWNwfy1fXJnD2l6sZsZf7u/6xwaFFDKrvYANWryynhbPwyTNeJ/bIvetpxTSGkd2w
-         K8rw==;
-        darn=kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1780063363; x=1780668163; darn=kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0OQF+30KxRu/3EL8/7FczUevTFhdt44HuBafeyC6noo=;
-        b=s+oEvwbRNg+5qN7mQ4tl1QLP+3YwS2BeklJHGeyeJlOg8dXcJR06lRQezUhwSiyQP8
-         Y1W9QDDAmZvAQ9xP6B4e1h5s8Xs7DVaVKB2fISZx6U0cIWYBYejA5CHzW52U1jsTXUdw
-         OgU9uD/2In2Or1tMKSvVqC92T5gKPeyVNo7w/bhksh9eqMMa0qf68WMEJt9ZnGO5AWqI
-         y7IhNbm29pJLsZAk1RVfPUkXfFDA5o7p+nNaYf1byOT4zw7D3RLT12jyErh/YoWmlPZS
-         NIY25vY2LSX8Cl/zHuX877FwP1DlwkptRN2H0ORoO6vQzaOZXH/O4GcOSC3+fVCVOQx6
-         fH8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780063363; x=1780668163;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=0OQF+30KxRu/3EL8/7FczUevTFhdt44HuBafeyC6noo=;
-        b=NXGNdsaU2gPQUJ6QrNvM1jEqrHaciI0GF90O6A7uqf0QSNPBEzmiQkqb1+8BiSChsf
-         rDqwzPuJxc5TrEe3VIF7C8Zr5pD4Pk7YR9vq7N5499u/IAsGOFBZJDb9Fzd6C3pwMetj
-         0Lt2wfoM2jwV+LXVdbKuKU/fwlJH3toTmme5rDnn2xveyhEwcZEQAq0UVNWkO0ZA837U
-         9RbbKzsvd1bFhDg9LGKUazE+pWEzSRCARLNVtRllisLsYQCMPyly+0hBVLlPJpRgnV/l
-         fK6OtJLXbW/LNSEoTvfSKBwtivQCia2ikNGzOXwUkTRI7EqIKvr86I5gQScPELPbSiQD
-         bk4A==
-X-Gm-Message-State: AOJu0YwNkd2h8MSoI8ZcRxbRW+ng+OWlZCA3aHeBipIJI4oc/EMtGaAK
-	S+2ndg65ajiS0IdNRRbAuC5IQc728q/T+XSn7KSGv5b/rU6IoqJQ/6s7lrMPeDU0ansHxUFpakr
-	/zCwBOKqGbOi1oJfQksJ0S+pOOAHY7Z46tMApu483DYySqL5tlDp+/Gbd
-X-Gm-Gg: Acq92OHLiszQpGuSB2kZdYZDmBeTTfT3vcelV+4oiEHNxIhB/dcHBCC1Skbya80RTqR
-	li9a5f2wKYngCrGOyjV/wXUECt/E01iGFShl/wnA+3RPkQOgt/o8UUYyDCYpI8ZlR1MDG8ZGFAk
-	d6Okt6vaP+SC37TniSCwDncGJOB+eDd6a32/lixEbKJ1r2DqYo1PLC+kLGBDDVGGorb0feW89GT
-	i/Xg/L5cNX8z99LxX0OKH9BkGkMEyp5PbZMiXb6YQpFmEsenO36dY3omnCuqdtVTzyXOpTaqmCF
-	kakSyq6cng8NKJgOOLUpGiPb5EZUDMwBXJDo75TCezE/VCH64Nn7cR8APBV4QtflEWYWGxtLKdm
-	tOv1X
-X-Received: by 2002:a05:6830:6b0d:b0:7e3:d199:3164 with SMTP id
- 46e09a7af769-7e694cca3f2mr2538621a34.11.1780063362380; Fri, 29 May 2026
- 07:02:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AjMHUGCm"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 468E21F00893;
+	Fri, 29 May 2026 14:33:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780065186;
+	bh=0ydLwschTydT+Z9zEt0l/6gL8DKTDDIoiKSseTpbZTc=;
+	h=From:To:Cc:Subject:Date;
+	b=AjMHUGCmEtJoIrhHXDMEiCplsATEaoq0kvsdSnH4xkM1ks70YiCeknOJbEAWPCwuE
+	 do53wQGVH0kj0USiG+BQRopOUGxWEhzjj6S2YVx1PR6iOTF1pn/cD9dQ4tgmyifoR+
+	 1VwzZUPXJHxCK/d4DHHi6jEvpjLKx6y6C/IKCGciEfVUdZGkoPwU7vCH1CTTHyL1EX
+	 PtgqyM7gugVJPfn9YtCJSLrhOtDRtmeM40nmXKoVNT5Y7f42b+HZqxxtTpXXBLA/Uz
+	 WTUAUj/HoC0dyTrSnUxMvPmQZz10HqVKm5yoHtUp4BR04I32YC6NKYwIktnWhslvZg
+	 yJLtJmBh1xugw==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] jfs: add dmap integrity check to prevent shift-out-of-bounds
+Message-ID: <852d12ec-ea2c-41ab-8c54-e162bc6e8a9b@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <dff1dcc7-59bd-40c7-981e-bd805ae6b3c1@mail.kernel.org> <CANp29Y7ja8YqZPQ2V5LEz3Lpgjpdo0b2BO3ghc1pwhSRBhe3cA@mail.gmail.com>
-In-Reply-To: <CANp29Y7ja8YqZPQ2V5LEz3Lpgjpdo0b2BO3ghc1pwhSRBhe3cA@mail.gmail.com>
-From: Aleksandr Nogikh <nogikh@google.com>
-Date: Fri, 29 May 2026 16:02:31 +0200
-X-Gm-Features: AVHnY4J9ZovMdNH2XHsqEplaeOJewAs9pq7oiOX6lq88zfgS50pTuJuQiN9IKH8
-Message-ID: <CANp29Y5=L7v0iHor=RsSURBuEv1B2oLN3pFuMkUdTXLNvo+_tA@mail.gmail.com>
-Subject: Re: [PATCH] firmware_loader: Fix recursive lock in device_cache_fw_images()
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-bugs@googlegroups.com, linux-kernel@vger.kernel.org, 
-	syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Fri, 29 May 2026 14:33:06 +0000 (UTC)
 
-Also don't reply to any comments. Just send the patch again.
+A missing integrity check for on-disk dmap pages allows a corrupted dmap
+tree to trick the allocator into performing an undefined 32-bit shift in
+dbFindBits().
 
-On Fri, May 29, 2026 at 3:55=E2=80=AFPM Aleksandr Nogikh <nogikh@google.com=
-> wrote:
->
-> Please send the patch again.
-> Don't change the description or the diff; in the change list note that
-> the patch is resent to follow the rules.
->
-> Now the sending mechanism will automatically set the right From: line.
->
->
-> On Thu, May 21, 2026 at 1:30=E2=80=AFPM 'syzbot' via syzkaller-bugs
-> <syzkaller-bugs@googlegroups.com> wrote:
-> >
-> > A recursive locking deadlock can occur in the firmware loader's power
-> > management notification handler.
-> >
-> > During system suspend or hibernation preparation, fw_pm_notify() calls
-> > device_cache_fw_images(). This function acquires fw_lock to set the
-> > firmware cache state to FW_LOADER_START_CACHE and then iterates over
-> > all devices using dpm_for_each_dev() while still holding the lock.
-> >
-> > For each device, dev_cache_fw_image() schedules asynchronous work to
-> > cache the firmware. If memory allocation for the async work entry fails
-> > (e.g., in out-of-memory conditions), async_schedule_node_domain()
-> > falls back to executing the work function synchronously in the current
-> > thread.
-> >
-> > The synchronous execution path (__async_dev_cache_fw_image() ->
-> > cache_firmware() -> request_firmware() -> assign_fw()) attempts
-> > to acquire fw_lock again. Since the current thread already holds
-> > fw_lock, this results in a recursive locking deadlock.
-> >
-> > Fix this by releasing fw_lock immediately after updating the cache
-> > state and before calling dpm_for_each_dev(). The lock is only needed
-> > to protect the state update. Concurrent firmware requests will correctl=
-y
-> > see the FW_LOADER_START_CACHE state and use the piggyback mechanism,
-> > which is independently protected by its own fwc->name_lock.
-> >
-> > Fixes: ac39b3ea73aa ("firmware loader: let caching firmware piggyback o=
-n loading firmware")
-> > Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-previe=
-w
-> > Reported-by: syzbot+e70e4c6f6eee43357ba7@syzkaller.appspotmail.com
-> > Closes: https://syzkaller.appspot.com/bug?extid=3De70e4c6f6eee43357ba7
-> > Link: https://syzkaller.appspot.com/ai_job?id=3D8cbf9f7d-812d-4db3-89fa=
--0aaef3ce3a2f
-> > Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
-> >
-> > ---
-> > diff --git a/drivers/base/firmware_loader/main.c b/drivers/base/firmwar=
-e_loader/main.c
-> > index a11b30dda..c96312ac2 100644
-> > --- a/drivers/base/firmware_loader/main.c
-> > +++ b/drivers/base/firmware_loader/main.c
-> > @@ -1503,9 +1503,10 @@ static void device_cache_fw_images(void)
-> >
-> >         mutex_lock(&fw_lock);
-> >         fwc->state =3D FW_LOADER_START_CACHE;
-> > -       dpm_for_each_dev(NULL, dev_cache_fw_image);
-> >         mutex_unlock(&fw_lock);
-> >
-> > +       dpm_for_each_dev(NULL, dev_cache_fw_image);
-> > +
-> >         /* wait for completion of caching firmware for all devices */
-> >         async_synchronize_full_domain(&fw_cache_domain);
-> >
-> >
-> >
+If a dmap page is corrupted such that dp->tree.leafidx is invalid (e.g., 0
+instead of LEAFIND), dbFindLeaf() calculates an incorrect relative leaf
+index. This leads to an out-of-bounds access in the stree array in
+dbAllocDmapLev(). The incorrect value tricks the allocator into assuming
+the word is partially allocated and calling dbFindBits() with l2nb = 5
+(allocating 32 blocks). dbFindBits() fails to find 32 free bits, continues
+the loop, and shifts a 32-bit mask by 32, triggering a UBSAN
+shift-out-of-bounds crash.
+
+Fix this by introducing a check_dmap() function to validate the integrity
+of dmap pages, similar to the existing check_dmapctl() function. This
+function ensures that fields like nleafs, l2nleafs, leafidx, height,
+budmin, and the values in the stree array are within valid ranges. Update
+all locations in fs/jfs/jfs_dmap.c where dmap pages are read from disk
+using read_metapage() to call this new validation function, preventing
+undefined behavior and crashes later in the allocation and deallocation
+paths.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
+Reported-by: syzbot+9e90a1c5eedb9dc4c6cc@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=9e90a1c5eedb9dc4c6cc
+Link: https://syzkaller.appspot.com/ai_job?id=665e737f-2256-468b-a1a9-fd1d4b2ebf38
+To: <jfs-discussion@lists.sourceforge.net>
+To: "Dave Kleikamp" <shaggy@kernel.org>
+Cc: "Arnaud Lecomte" <contact@arnaud-lcm.com>
+Cc: "Kees Cook" <kees@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+Cc: "Yun Zhou" <yun.zhou@windriver.com>
+Cc: "Zheng Yu" <zheng.yu@northwestern.edu>
+
+---
+diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
+index a841cf21d..e22735779 100644
+--- a/fs/jfs/jfs_dmap.c
++++ b/fs/jfs/jfs_dmap.c
+@@ -220,6 +220,73 @@ static bool check_dmapctl(struct dmapctl *dcp)
+ 	return true;
+ }
+ 
++/*
++ * check_dmap - Validate integrity of a dmap structure
++ * @dp: Pointer to the dmap structure to check
++ *
++ * Return: true if valid, false if corrupted
++ */
++static bool check_dmap(struct dmap *dp)
++{
++	u32 nleafs, l2nleafs, leafidx, height;
++	int i;
++
++	nleafs = le32_to_cpu(dp->tree.nleafs);
++	if (unlikely(nleafs > LPERDMAP)) {
++		jfs_err("dmap: invalid nleafs %u (max %u)", nleafs, LPERDMAP);
++		return false;
++	}
++
++	l2nleafs = le32_to_cpu(dp->tree.l2nleafs);
++	if (unlikely(l2nleafs > L2LPERDMAP)) {
++		jfs_err("dmap: invalid l2nleafs %u (max %u)", l2nleafs,
++			L2LPERDMAP);
++		return false;
++	}
++
++	if (unlikely((1U << l2nleafs) != nleafs)) {
++		jfs_err("dmap: nleafs %u != 2^%u", nleafs, l2nleafs);
++		return false;
++	}
++
++	leafidx = le32_to_cpu(dp->tree.leafidx);
++	if (unlikely(leafidx != LEAFIND)) {
++		jfs_err("dmap: invalid leafidx %u (expected %u)", leafidx,
++			LEAFIND);
++		return false;
++	}
++
++	height = le32_to_cpu(dp->tree.height);
++	if (unlikely(height > (L2LPERDMAP >> 1))) {
++		jfs_err("dmap: invalid height %u (max %u)", height,
++			L2LPERDMAP >> 1);
++		return false;
++	}
++
++	if (unlikely(dp->tree.budmin != BUDMIN)) {
++		jfs_err("dmap: invalid budmin %d (expected %d)",
++			dp->tree.budmin, BUDMIN);
++		return false;
++	}
++
++	if (unlikely(leafidx + nleafs > TREESIZE)) {
++		jfs_err("dmap: leaf range exceeds stree size (end %u > %u)",
++			leafidx + nleafs, TREESIZE);
++		return false;
++	}
++
++	for (i = leafidx; i < leafidx + nleafs; i++) {
++		s8 val = dp->tree.stree[i];
++		if (unlikely(val < NOFREE || val > 31)) {
++			jfs_err("dmap: invalid leaf value %d at index %d", val,
++				i);
++			return false;
++		}
++	}
++
++	return true;
++}
++
+ /*
+  * NAME:	dbMount()
+  *
+@@ -476,6 +543,13 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
+ 		}
+ 		dp = (struct dmap *) mp->data;
+ 
++		if (unlikely(!check_dmap(dp))) {
++			jfs_error(ip->i_sb, "Corrupt dmap page\n");
++			release_metapage(mp);
++			IREAD_UNLOCK(ipbmap);
++			return -EIO;
++		}
++
+ 		/* determine the number of blocks to be freed from
+ 		 * this dmap.
+ 		 */
+@@ -563,13 +637,18 @@ dbUpdatePMap(struct inode *ipbmap,
+ 				write_metapage(mp);
+ 			}
+ 
+-			mp = read_metapage(bmp->db_ipbmap, lblkno, PSIZE,
+-					   0);
++			mp = read_metapage(bmp->db_ipbmap, lblkno, PSIZE, 0);
+ 			if (mp == NULL)
+ 				return -EIO;
+ 			metapage_wait_for_io(mp);
+ 		}
+-		dp = (struct dmap *) mp->data;
++		dp = (struct dmap *)mp->data;
++
++		if (unlikely(!check_dmap(dp))) {
++			jfs_error(ipbmap->i_sb, "Corrupt dmap page\n");
++			release_metapage(mp);
++			return -EIO;
++		}
+ 
+ 		/* determine the bit number and word within the dmap of
+ 		 * the starting block.  also determine how many blocks
+@@ -886,6 +965,12 @@ int dbAlloc(struct inode *ip, s64 hint, s64 nblocks, s64 * results)
+ 
+ 		dp = (struct dmap *) mp->data;
+ 
++		if (unlikely(!check_dmap(dp))) {
++			jfs_error(ip->i_sb, "Corrupt dmap page\n");
++			release_metapage(mp);
++			goto read_unlock;
++		}
++
+ 		/* first, try to satisfy the allocation request with the
+ 		 * blocks beginning at the hint.
+ 		 */
+@@ -1118,6 +1203,13 @@ static int dbExtend(struct inode *ip, s64 blkno, s64 nblocks, s64 addnblocks)
+ 
+ 	dp = (struct dmap *) mp->data;
+ 
++	if (unlikely(!check_dmap(dp))) {
++		jfs_error(ip->i_sb, "Corrupt dmap page\n");
++		release_metapage(mp);
++		IREAD_UNLOCK(ipbmap);
++		return -EIO;
++	}
++
+ 	/* try to allocate the blocks immediately following the
+ 	 * current allocation.
+ 	 */
+@@ -1902,7 +1994,8 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
+ 			return -EIO;
+ 		dp = (struct dmap *) mp->data;
+ 
+-		if (dp->tree.budmin < 0) {
++		if (unlikely(!check_dmap(dp))) {
++			jfs_error(bmp->db_ipbmap->i_sb, "Corrupt dmap page\n");
+ 			release_metapage(mp);
+ 			return -EIO;
+ 		}
+@@ -1936,6 +2029,13 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
+ 		}
+ 		dp = (struct dmap *) mp->data;
+ 
++		if (unlikely(!check_dmap(dp))) {
++			jfs_error(bmp->db_ipbmap->i_sb, "Corrupt dmap page\n");
++			release_metapage(mp);
++			rc = -EIO;
++			goto backout;
++		}
++
+ 		/* the dmap better be all free.
+ 		 */
+ 		if (dp->tree.stree[ROOT] != L2BPERDMAP) {
+@@ -1993,6 +2093,12 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
+ 		}
+ 		dp = (struct dmap *) mp->data;
+ 
++		if (unlikely(!check_dmap(dp))) {
++			jfs_error(bmp->db_ipbmap->i_sb, "Corrupt dmap page\n");
++			release_metapage(mp);
++			continue;
++		}
++
+ 		/* free the blocks is this dmap.
+ 		 */
+ 		if (dbFreeDmap(bmp, dp, b, BPERDMAP)) {
+@@ -3308,6 +3414,13 @@ int dbAllocBottomUp(struct inode *ip, s64 blkno, s64 nblocks)
+ 		}
+ 		dp = (struct dmap *) mp->data;
+ 
++		if (unlikely(!check_dmap(dp))) {
++			jfs_error(ip->i_sb, "Corrupt dmap page\n");
++			release_metapage(mp);
++			IREAD_UNLOCK(ipbmap);
++			return -EIO;
++		}
++
+ 		/* determine the number of blocks to be allocated from
+ 		 * this dmap.
+ 		 */
+@@ -3638,27 +3751,38 @@ int dbExtendFS(struct inode *ipbmap, s64 blkno,	s64 nblocks)
+ 			 */
+ 			for (; i < LPERCTL; i++) {
+ 				/*
+-				 * reconstruct the dmap page, and
+-				 * initialize corresponding parent L0 leaf
+-				 */
+-				if ((n = blkno & (BPERDMAP - 1))) {
++					 * reconstruct the dmap page, and
++					 * initialize corresponding parent L0 leaf
++					 */
++				bool is_extending = (blkno & (BPERDMAP - 1)) !=
++						    0;
++
++				if (is_extending) {
+ 					/* read in dmap page: */
+-					mp = read_metapage(ipbmap, p,
+-							   PSIZE, 0);
++					mp = read_metapage(ipbmap, p, PSIZE, 0);
+ 					if (mp == NULL)
+ 						goto errout;
++					n = blkno & (BPERDMAP - 1);
+ 					n = min(nblocks, (s64)BPERDMAP - n);
+ 				} else {
+ 					/* assign/init dmap page */
+-					mp = read_metapage(ipbmap, p,
+-							   PSIZE, 0);
++					mp = read_metapage(ipbmap, p, PSIZE, 0);
+ 					if (mp == NULL)
+ 						goto errout;
+ 
+ 					n = min_t(s64, nblocks, BPERDMAP);
+ 				}
+ 
+-				dp = (struct dmap *) mp->data;
++				dp = (struct dmap *)mp->data;
++
++				if (is_extending && unlikely(!check_dmap(dp))) {
++					jfs_error(ipbmap->i_sb,
++						  "Corrupt dmap page\n");
++					release_metapage(mp);
++					mp = NULL;
++					goto errout;
++				}
++
+ 				*l0leaf = dbInitDmap(dp, blkno, n);
+ 
+ 				bmp->db_nfree += n;
+@@ -3674,7 +3798,7 @@ int dbExtendFS(struct inode *ipbmap, s64 blkno,	s64 nblocks)
+ 				nblocks -= n;
+ 				if (nblocks == 0)
+ 					break;
+-			}	/* for each dmap in a L0 */
++			} /* for each dmap in a L0 */
+ 
+ 			/*
+ 			 * build current L0 page from its leaves, and
+
+
+base-commit: e7ae89a0c97ce2b68b0983cd01eda67cf373517d
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
