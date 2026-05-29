@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74A73385D66
-	for <syzbot@lists.linux.dev>; Fri, 29 May 2026 17:31:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C31644D02B
+	for <syzbot@lists.linux.dev>; Fri, 29 May 2026 20:06:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780075867; cv=none; b=YwNFG1yPTNkV94yn7NXN5feJ4CliP604/HY9zI27Ww3Yw3pbr75ZtlEO7yFDKJl7MUY5cm7T/ZYRbQ+uC3KNZ6wZwTa3pQglpDD75JI7a2/vXpuM80ocs6hRzTVwOzXyZ95zdYi9DPwIXiVtOVyRdHFaCw9r+kSGnD3fQ27Z/KU=
+	t=1780085210; cv=none; b=NwanTJRDqWO7MzsBJXYBR7Om9Zd15+vlZ1/CEXgwsqJy4/g6TEwUZEDgDMHIqqEj7KiO0KmU8ggjqZUrPc75tyZ96iDClKgz3nD6NIJ+rllwCsYuvQlkRC3xI/Gi1u1Vkes4fzToSl5PybBtbU7+vH5I88LvrNoP6/azhHzgPHs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780075867; c=relaxed/simple;
-	bh=NQcl378Ms5FvY+xNb1YdZCbPLGnNkVZkQJLPERy779U=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ogr4XHxabwLyscZuDslD0pXq83oRsVK1VXZWHZgiwAbXu5QlAm89mZoMKlDUcqTdyuQUM7tyNBFkfpv5Brs3cvJOFdIhdM3QDzY+14AnqeSSIWQIpfXVcd/ol3I70fxde2DfImQ8SQygtp9CBS21WMsAQAhbmJlyK+g+HuHH278=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Johnxcod; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780085210; c=relaxed/simple;
+	bh=cWzhAldWygSon5RimXvXEFPj5ifKUkPElkCA3Oh1KCc=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=mv+00jL6WACStayRRbyi1NhVsAVR5Eu4WYxcj0A7hMXQUlWNL757ZMOoA0StLGrXCxqLmYu7F4hv44VPKFZ0vp+Stw4JGEqPR8BjSOvVSSyi3jQh2/bFKQqY8iCGDFu1rcCNQslaJQqmVhkXy7pttyMjWtTbLlfqHYTHui7E6RA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fkJY+76a; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Johnxcod"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 48A291F00893;
-	Fri, 29 May 2026 17:31:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fkJY+76a"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id BD5731F00893;
+	Fri, 29 May 2026 20:06:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780075866;
-	bh=0kwsBtpzNRTLrhBhsTWlOk3vetJD2sejMjV1om/SYnQ=;
+	s=k20260515; t=1780085208;
+	bh=f74nV8pYW4RGEuno+bfusoaG2ouyngjScgoMKN9weaY=;
 	h=From:To:Cc:Subject:Date;
-	b=JohnxcodYUzoTiw0Ev0zp6WupwsLNU+WW8AlLiEEri/PPM9/bAZeqAbdcGDNP48Am
-	 ZhwynXggI47q3OwJsd+m4Tu6PU4uEADxNilwLzSYZQ0KlPdwBcXXA5OhKqTkBGFM3Z
-	 zLIzrxnhtsBOebZt85R+qIzewYTYDbVLt9HaCmuoKbK93fwEGijw3SMqAH++hbPDAb
-	 DWNMWBGotCS5KfTMEIa1EGOSybWthAlhrjVfJeXtpJvAmyR7l9y36NotWsQMYsU6rj
-	 RXiiQnr4k5fiZWXmMHl+hokEafI9hnsY34YDlSpbUfxDOIG+Au97mcIKbBfebWatkx
-	 HZ/VqLWdYF0CA==
+	b=fkJY+76aD2vxsYXUqKL1hqCJMicobV1nMfeALemqV24qLSzbR5cpIjqlcecuOfq6d
+	 aE9a8vMA4AtAnXvhrLMX5bALNhbG+8OEWCf7fB0xpr4aV+cHIL5d1gRXaobQ2SPaEn
+	 RAV7Iu5FOA6FE6+JwerGcwLEpQptUw3qIeBPqwG7pMqleP2EqijM9my+736D+YDvc9
+	 IQ2MjtTK/tIuqsdtnNbNpc0sGpiRWoehW51sqPQ1/I3i2sCNioML26KYw1YNYs440G
+	 bhBsDM93JMfl/UnCIhEZ8WQnPWtho5npOGZ8uS7lPfUihsmYDrY+QhVCcD3+EMmUUB
+	 0TUmmiedhi6pQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] ocfs2: fix circular locking dependency in ocfs2_dio_end_io_write()
-Message-ID: <008b2675-2e48-4150-a1ec-e68026253bad@mail.kernel.org>
+Subject: [PATCH RFC] kobject_uevent: explicitly initialize creds in alloc_uevent_skb()
+Message-ID: <4c7a0e29-a57a-4e82-818f-3fdf0b348768@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,81 +38,52 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri, 29 May 2026 17:31:06 +0000 (UTC)
+Date: Fri, 29 May 2026 20:06:48 +0000 (UTC)
 
-A circular locking dependency can occur involving three OCFS2 system inode
-locks: INODE_ALLOC_SYSTEM_INODE, EXTENT_ALLOC_SYSTEM_INODE, and
-ORPHAN_DIR_SYSTEM_INODE.
+A KMSAN uninit-value warning in put_cmsg() is triggered when a userspace
+process receives a uevent with SO_PASSCRED enabled. The uninitialized data
+originates from the ucreds local variable in __scm_recv_common(), which is
+populated using scm->creds.pid. The scm cookie is initialized in
+netlink_recvmsg() by copying the credentials from the socket buffer's
+control block.
 
-The circular dependency is formed by three separate code paths. First, in
-ocfs2_mknod(), the code reserves an inode by acquiring the
-INODE_ALLOC_SYSTEM_INODE lock, and then reserves metadata blocks by
-acquiring the EXTENT_ALLOC_SYSTEM_INODE lock. Second, in
-ocfs2_dio_end_io_write(), the code allocates metadata blocks for unwritten
-extents, acquiring the EXTENT_ALLOC_SYSTEM_INODE lock. Later in the same
-function, if the inode was orphaned, it calls
-ocfs2_del_inode_from_orphan(), which acquires the ORPHAN_DIR_SYSTEM_INODE
-lock. The allocation context is only freed at the end of the function,
-meaning the EXTENT_ALLOC_SYSTEM_INODE lock is held while
-ORPHAN_DIR_SYSTEM_INODE is acquired. Third, in ocfs2_wipe_inode(), the
-ORPHAN_DIR_SYSTEM_INODE lock is acquired first to prevent races with
-recovery completion, and then it calls ocfs2_remove_inode(), which acquires
-the INODE_ALLOC_SYSTEM_INODE lock to free the inode.
+In alloc_uevent_skb(), the skb control block is populated, but only the uid
+and gid fields of the creds structure are explicitly set, omitting the pid
+field. Although __alloc_skb() internally zeroes the skb->cb array, KMSAN's
+shadow memory tracking does not consistently unpoison this memory when skbs
+are recycled from the NAPI cache. Consequently, the uninitialized state
+persists through the netlink transmission and triggers a KMSAN warning when
+put_cmsg() attempts to copy the pid to userspace.
 
-This patch breaks the cycle by addressing the dependency in
-ocfs2_dio_end_io_write(). The data_ac and meta_ac allocation contexts are
-only needed for the transaction that marks the extents as written. Once the
-transaction is committed and the allocation semaphore is released, these
-contexts are no longer needed. We can safely free them, which releases the
-EXTENT_ALLOC_SYSTEM_INODE lock, before calling
-ocfs2_del_inode_from_orphan(). This ensures that the
-EXTENT_ALLOC_SYSTEM_INODE lock is dropped before we attempt to acquire the
-ORPHAN_DIR_SYSTEM_INODE lock, successfully breaking the circular
-dependency.
+To fix this, explicitly zero the entire creds structure in
+alloc_uevent_skb() before setting the individual fields. This ensures that
+the pid field is properly tracked by KMSAN as initialized memory.
 
-Fixes: d647c5b2fbf8 ("ocfs2: split transactions in dio completion to avoid credit exhaustion")
-Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+b225d4dfce6219600c42@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=b225d4dfce6219600c42
-Link: https://syzkaller.appspot.com/ai_job?id=c86e9953-fff6-40ca-b2f0-eff12366a33a
-To: "Joel Becker" <jlbec@evilplan.org>
-To: "Joseph Qi" <joseph.qi@linux.alibaba.com>
-To: "Mark Fasheh" <mark@fasheh.com>
-To: <ocfs2-devel@lists.linux.dev>
+Fixes: 26045a7b14bc ("uevent: add alloc_uevent_skb() helper")
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
+Reported-by: syzbot+08b819a87faa6def6dfb@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=08b819a87faa6def6dfb
+Link: https://syzkaller.appspot.com/ai_job?id=4575cb01-d27e-485e-a646-6fb71c8694da
+To: "Andrew Morton" <akpm@linux-foundation.org>
+To: "Danilo Krummrich" <dakr@kernel.org>
+To: <driver-core@lists.linux.dev>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: "Rafael J. Wysocki" <rafael@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/fs/ocfs2/aops.c b/fs/ocfs2/aops.c
-index 6ec198bda..4acdbb708 100644
---- a/fs/ocfs2/aops.c
-+++ b/fs/ocfs2/aops.c
-@@ -2372,6 +2372,15 @@ static int ocfs2_dio_end_io_write(struct inode *inode,
- unlock:
- 	up_write(&oi->ip_alloc_sem);
+diff --git a/lib/kobject_uevent.c b/lib/kobject_uevent.c
+index ddbc4d748..9552aaa87 100644
+--- a/lib/kobject_uevent.c
++++ b/lib/kobject_uevent.c
+@@ -297,6 +297,7 @@ static struct sk_buff *alloc_uevent_skb(struct kobj_uevent_env *env,
+ 	skb_put_data(skb, env->buf, env->buflen);
  
-+	if (data_ac) {
-+		ocfs2_free_alloc_context(data_ac);
-+		data_ac = NULL;
-+	}
-+	if (meta_ac) {
-+		ocfs2_free_alloc_context(meta_ac);
-+		meta_ac = NULL;
-+	}
-+
- 	/* everything looks good, let's start the cleanup */
- 	if (!ret && dwc->dw_orphaned) {
- 		BUG_ON(dwc->dw_writer_pid != task_pid_nr(current));
-@@ -2383,10 +2392,6 @@ static int ocfs2_dio_end_io_write(struct inode *inode,
- 	ocfs2_inode_unlock(inode, 1);
- 	brelse(di_bh);
- out:
--	if (data_ac)
--		ocfs2_free_alloc_context(data_ac);
--	if (meta_ac)
--		ocfs2_free_alloc_context(meta_ac);
- 	ocfs2_run_deallocs(osb, &dealloc);
- 	ocfs2_dio_free_write_ctx(inode, dwc);
- 
+ 	parms = &NETLINK_CB(skb);
++	memset(&parms->creds, 0, sizeof(parms->creds));
+ 	parms->creds.uid = GLOBAL_ROOT_UID;
+ 	parms->creds.gid = GLOBAL_ROOT_GID;
+ 	parms->dst_group = 1;
 
 
 base-commit: e7ae89a0c97ce2b68b0983cd01eda67cf373517d
