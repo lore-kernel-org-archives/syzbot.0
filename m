@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E478037B41B
-	for <syzbot@lists.linux.dev>; Fri, 29 May 2026 17:17:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74A73385D66
+	for <syzbot@lists.linux.dev>; Fri, 29 May 2026 17:31:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780075058; cv=none; b=Oe0m2ivKioX6yd7htUQsXkeHdgL6BFRtGEOnVk8E69S5MS/tnY51gWYWpUp4LUzkwRt3e5MuaxMm32Lpty+K41Uvp2ibJUMFn510Rg24kpF0jRLsMGDU8hTIClvFN3NzfCF+KvMXSxGT2T159LiO3jssneGDvFR9oauAlcvgW9Q=
+	t=1780075867; cv=none; b=YwNFG1yPTNkV94yn7NXN5feJ4CliP604/HY9zI27Ww3Yw3pbr75ZtlEO7yFDKJl7MUY5cm7T/ZYRbQ+uC3KNZ6wZwTa3pQglpDD75JI7a2/vXpuM80ocs6hRzTVwOzXyZ95zdYi9DPwIXiVtOVyRdHFaCw9r+kSGnD3fQ27Z/KU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780075058; c=relaxed/simple;
-	bh=110SsqslFVCJfs9qVVF9PbJitNHa5Lf1z50N9PkC6cU=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=KZ0m8Sm/5Ry089P3EW9pCLgXkV5+sudaDqw8/PJBIoQSFjUlKJzYyrxaS6oDlxbeu0w/whdoudPcxFeuKgwfiRMlDKYoBn/UDY+qszVf40JheIUZI9udPOER2Wh66eJ9dX06A5gMCoNHXU0ZS9CLmLRTJs4PSI3e0UurFxzOMyY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AsloWxzu; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780075867; c=relaxed/simple;
+	bh=NQcl378Ms5FvY+xNb1YdZCbPLGnNkVZkQJLPERy779U=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ogr4XHxabwLyscZuDslD0pXq83oRsVK1VXZWHZgiwAbXu5QlAm89mZoMKlDUcqTdyuQUM7tyNBFkfpv5Brs3cvJOFdIhdM3QDzY+14AnqeSSIWQIpfXVcd/ol3I70fxde2DfImQ8SQygtp9CBS21WMsAQAhbmJlyK+g+HuHH278=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Johnxcod; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AsloWxzu"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 71EB81F00893;
-	Fri, 29 May 2026 17:17:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Johnxcod"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 48A291F00893;
+	Fri, 29 May 2026 17:31:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780075056;
-	bh=fyb0seLdOD5vZYwI6wEkrfBDO13PrIQ0YEbDck4HgX0=;
+	s=k20260515; t=1780075866;
+	bh=0kwsBtpzNRTLrhBhsTWlOk3vetJD2sejMjV1om/SYnQ=;
 	h=From:To:Cc:Subject:Date;
-	b=AsloWxzue/8fQ8S1z/41Mrh47NW6xoZQAjtctAFfRNpljHOG3D9o8O8vBlEvpCPDz
-	 XjzBG3uo9U6HMlAqNGpats6dcRUh51c+eYcxY0UVshg36SCv6mMf1aliXWaJmqzCPU
-	 Hzzl+7GT+q9BBgsHHu9MFJunXT3O43eJfusPP7kZQ3eiNKbNqvc2VSlyQ1PY1KBnqm
-	 xXZbQ3daLnYYuMA9l4f0VBYgJjb26RwXqICSjodCJi6L50mtBUNIl2Gxmzb9xM/gD5
-	 4Bm22pxAxeYP2m+tjwsXLVhRzq/FWut8rJw0EuK9IHcCxyVEKNqYMCfaq+6O8gX5MU
-	 tPPisyEWezWWg==
+	b=JohnxcodYUzoTiw0Ev0zp6WupwsLNU+WW8AlLiEEri/PPM9/bAZeqAbdcGDNP48Am
+	 ZhwynXggI47q3OwJsd+m4Tu6PU4uEADxNilwLzSYZQ0KlPdwBcXXA5OhKqTkBGFM3Z
+	 zLIzrxnhtsBOebZt85R+qIzewYTYDbVLt9HaCmuoKbK93fwEGijw3SMqAH++hbPDAb
+	 DWNMWBGotCS5KfTMEIa1EGOSybWthAlhrjVfJeXtpJvAmyR7l9y36NotWsQMYsU6rj
+	 RXiiQnr4k5fiZWXmMHl+hokEafI9hnsY34YDlSpbUfxDOIG+Au97mcIKbBfebWatkx
+	 HZ/VqLWdYF0CA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] jfs: fix null-ptr-deref and use-after-free during rw remount
-Message-ID: <80218035-7c1f-4784-93d1-c34d9ccc252a@mail.kernel.org>
+Subject: [PATCH RFC] ocfs2: fix circular locking dependency in ocfs2_dio_end_io_write()
+Message-ID: <008b2675-2e48-4150-a1ec-e68026253bad@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,147 +38,80 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri, 29 May 2026 17:17:36 +0000 (UTC)
+Date: Fri, 29 May 2026 17:31:06 +0000 (UTC)
 
-During a read-write remount of a JFS filesystem, jfs_mount_rw() destroys
-the old in-memory inode and block maps (imap and bmap) before attempting to
-read the new ones from disk. If dbMount() fails, the filesystem is left
-with a NULL sbi->bmap. Any subsequent operation that triggers a lookup will
-call diRead(), which dereferences sbi->bmap to access db_agl2size,
-resulting in a NULL pointer dereference.
+A circular locking dependency can occur involving three OCFS2 system inode
+locks: INODE_ALLOC_SYSTEM_INODE, EXTENT_ALLOC_SYSTEM_INODE, and
+ORPHAN_DIR_SYSTEM_INODE.
 
-To fix this, jfs_mount_rw() is modified to allocate and mount the new maps
-before freeing the old ones. If the new mount fails, the old maps are
-restored.
+The circular dependency is formed by three separate code paths. First, in
+ocfs2_mknod(), the code reserves an inode by acquiring the
+INODE_ALLOC_SYSTEM_INODE lock, and then reserves metadata blocks by
+acquiring the EXTENT_ALLOC_SYSTEM_INODE lock. Second, in
+ocfs2_dio_end_io_write(), the code allocates metadata blocks for unwritten
+extents, acquiring the EXTENT_ALLOC_SYSTEM_INODE lock. Later in the same
+function, if the inode was orphaned, it calls
+ocfs2_del_inode_from_orphan(), which acquires the ORPHAN_DIR_SYSTEM_INODE
+lock. The allocation context is only freed at the end of the function,
+meaning the EXTENT_ALLOC_SYSTEM_INODE lock is held while
+ORPHAN_DIR_SYSTEM_INODE is acquired. Third, in ocfs2_wipe_inode(), the
+ORPHAN_DIR_SYSTEM_INODE lock is acquired first to prevent races with
+recovery completion, and then it calls ocfs2_remove_inode(), which acquires
+the INODE_ALLOC_SYSTEM_INODE lock to free the inode.
 
-Additionally, concurrent read operations like diRead() and jfs_statfs()
-could access the old or new structures while they are being replaced,
-leading to a use-after-free. To prevent this, the IREAD_LOCK in diRead() is
-extended to protect the structures throughout their usage, and an
-IREAD_LOCK is added to jfs_statfs() to protect its lockless accesses.
-Furthermore, jfs_mount_rw() now holds the IWRITE_LOCK across the entire
-remount process to ensure mutual exclusion with concurrent readers.
+This patch breaks the cycle by addressing the dependency in
+ocfs2_dio_end_io_write(). The data_ac and meta_ac allocation contexts are
+only needed for the transaction that marks the extents as written. Once the
+transaction is committed and the allocation semaphore is released, these
+contexts are no longer needed. We can safely free them, which releases the
+EXTENT_ALLOC_SYSTEM_INODE lock, before calling
+ocfs2_del_inode_from_orphan(). This ensures that the
+EXTENT_ALLOC_SYSTEM_INODE lock is dropped before we attempt to acquire the
+ORPHAN_DIR_SYSTEM_INODE lock, successfully breaking the circular
+dependency.
 
-Fixes: a60dca73a1a8 ("jfs: makes diUnmount/diMount in jfs_mount_rw atomic")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+8f731999dc47797f064f@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=8f731999dc47797f064f
-Link: https://syzkaller.appspot.com/ai_job?id=4a947787-2a28-4919-858f-c3b11d2d0dbc
-To: <jfs-discussion@lists.sourceforge.net>
-To: "Dave Kleikamp" <shaggy@kernel.org>
-Cc: "Christian Brauner" <brauner@kernel.org>
-Cc: "Chuck Lever" <chuck.lever@oracle.com>
-Cc: "Jan Kara" <jack@suse.cz>
-Cc: "Jeff Layton" <jlayton@kernel.org>
-Cc: =?utf-8?q?Jo=C3=A3o_Paredes?= <joaommp@yahoo.com>
-Cc: "Kees Cook" <kees@kernel.org>
-Cc: "Liao Yuanhong" <liaoyuanhong@vivo.com>
+Fixes: d647c5b2fbf8 ("ocfs2: split transactions in dio completion to avoid credit exhaustion")
+Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+b225d4dfce6219600c42@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=b225d4dfce6219600c42
+Link: https://syzkaller.appspot.com/ai_job?id=c86e9953-fff6-40ca-b2f0-eff12366a33a
+To: "Joel Becker" <jlbec@evilplan.org>
+To: "Joseph Qi" <joseph.qi@linux.alibaba.com>
+To: "Mark Fasheh" <mark@fasheh.com>
+To: <ocfs2-devel@lists.linux.dev>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Al Viro" <viro@zeniv.linux.org.uk>
-Cc: "Yun Zhou" <yun.zhou@windriver.com>
 
 ---
-diff --git a/fs/jfs/jfs_imap.c b/fs/jfs/jfs_imap.c
-index b84ba4d7d..b0997e43f 100644
---- a/fs/jfs/jfs_imap.c
-+++ b/fs/jfs/jfs_imap.c
-@@ -314,8 +314,8 @@ int diRead(struct inode *ip)
- 	IREAD_LOCK(ipimap, RDWRLOCK_IMAP);
- 	imap = JFS_IP(ipimap)->i_imap;
- 	rc = diIAGRead(imap, iagno, &mp);
--	IREAD_UNLOCK(ipimap);
- 	if (rc) {
-+		IREAD_UNLOCK(ipimap);
- 		jfs_err("diRead: diIAGRead returned %d", rc);
- 		return (rc);
- 	}
-@@ -329,6 +329,7 @@ int diRead(struct inode *ip)
- 	if ((lengthPXD(&iagp->inoext[extno]) != imap->im_nbperiext) ||
- 	    (addressPXD(&iagp->inoext[extno]) == 0)) {
- 		release_metapage(mp);
-+		IREAD_UNLOCK(ipimap);
- 		return -ESTALE;
- 	}
+diff --git a/fs/ocfs2/aops.c b/fs/ocfs2/aops.c
+index 6ec198bda..4acdbb708 100644
+--- a/fs/ocfs2/aops.c
++++ b/fs/ocfs2/aops.c
+@@ -2372,6 +2372,15 @@ static int ocfs2_dio_end_io_write(struct inode *inode,
+ unlock:
+ 	up_write(&oi->ip_alloc_sem);
  
-@@ -341,6 +342,7 @@ int diRead(struct inode *ip)
- 	agstart = le64_to_cpu(iagp->agstart);
- 	agno = BLKTOAG(agstart, JFS_SBI(ip->i_sb));
- 
-+	IREAD_UNLOCK(ipimap);
- 	release_metapage(mp);
- 	if (agno >= MAXAG || agno < 0)
- 		return -EIO;
-diff --git a/fs/jfs/jfs_mount.c b/fs/jfs/jfs_mount.c
-index dac822f15..6229f50c0 100644
---- a/fs/jfs/jfs_mount.c
-+++ b/fs/jfs/jfs_mount.c
-@@ -229,26 +229,37 @@ int jfs_mount_rw(struct super_block *sb, int remount)
- 	 * them.
- 	 */
- 	if (remount) {
-+		struct bmap *old_bmap;
-+		struct inomap *old_imap;
++	if (data_ac) {
++		ocfs2_free_alloc_context(data_ac);
++		data_ac = NULL;
++	}
++	if (meta_ac) {
++		ocfs2_free_alloc_context(meta_ac);
++		meta_ac = NULL;
++	}
 +
- 		if (chkSuper(sb) || (sbi->state != FM_CLEAN))
- 			return -EINVAL;
- 
-+		old_bmap = sbi->bmap;
-+		old_imap = JFS_IP(sbi->ipimap)->i_imap;
-+
- 		truncate_inode_pages(sbi->ipimap->i_mapping, 0);
- 		truncate_inode_pages(sbi->ipbmap->i_mapping, 0);
- 
- 		IWRITE_LOCK(sbi->ipimap, RDWRLOCK_IMAP);
--		diUnmount(sbi->ipimap, 1);
- 		if ((rc = diMount(sbi->ipimap))) {
- 			IWRITE_UNLOCK(sbi->ipimap);
- 			jfs_err("jfs_mount_rw: diMount failed!");
- 			return rc;
- 		}
--		IWRITE_UNLOCK(sbi->ipimap);
- 
--		dbUnmount(sbi->ipbmap, 1);
- 		if ((rc = dbMount(sbi->ipbmap))) {
- 			jfs_err("jfs_mount_rw: dbMount failed!");
-+			/* restore old imap */
-+			kfree(JFS_IP(sbi->ipimap)->i_imap);
-+			JFS_IP(sbi->ipimap)->i_imap = old_imap;
-+			IWRITE_UNLOCK(sbi->ipimap);
- 			return rc;
- 		}
-+		IWRITE_UNLOCK(sbi->ipimap);
-+
-+		kfree(old_bmap);
-+		kfree(old_imap);
- 	}
- 
- 	/*
-diff --git a/fs/jfs/super.c b/fs/jfs/super.c
-index 61575f739..c65f68555 100644
---- a/fs/jfs/super.c
-+++ b/fs/jfs/super.c
-@@ -120,9 +120,13 @@ static int jfs_statfs(struct dentry *dentry, struct kstatfs *buf)
- {
- 	struct jfs_sb_info *sbi = JFS_SBI(dentry->d_sb);
- 	s64 maxinodes;
--	struct inomap *imap = JFS_IP(sbi->ipimap)->i_imap;
-+	struct inomap *imap;
- 
- 	jfs_info("In jfs_statfs");
-+
-+	IREAD_LOCK(sbi->ipimap, RDWRLOCK_IMAP);
-+	imap = JFS_IP(sbi->ipimap)->i_imap;
-+
- 	buf->f_type = JFS_SUPER_MAGIC;
- 	buf->f_bsize = sbi->bsize;
- 	buf->f_blocks = sbi->bmap->db_mapsize;
-@@ -150,6 +154,7 @@ static int jfs_statfs(struct dentry *dentry, struct kstatfs *buf)
- 				      sizeof(sbi->uuid)/2);
- 
- 	buf->f_namelen = JFS_NAME_MAX;
-+	IREAD_UNLOCK(sbi->ipimap);
- 	return 0;
- }
+ 	/* everything looks good, let's start the cleanup */
+ 	if (!ret && dwc->dw_orphaned) {
+ 		BUG_ON(dwc->dw_writer_pid != task_pid_nr(current));
+@@ -2383,10 +2392,6 @@ static int ocfs2_dio_end_io_write(struct inode *inode,
+ 	ocfs2_inode_unlock(inode, 1);
+ 	brelse(di_bh);
+ out:
+-	if (data_ac)
+-		ocfs2_free_alloc_context(data_ac);
+-	if (meta_ac)
+-		ocfs2_free_alloc_context(meta_ac);
+ 	ocfs2_run_deallocs(osb, &dealloc);
+ 	ocfs2_dio_free_write_ctx(inode, dwc);
  
 
 
