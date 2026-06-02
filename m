@@ -1,50 +1,50 @@
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A62A33D5C3E
-	for <syzbot@lists.linux.dev>; Tue,  2 Jun 2026 10:30:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 024223C9ECF
+	for <syzbot@lists.linux.dev>; Tue,  2 Jun 2026 11:27:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780396234; cv=none; b=OQkbVUXG9HwtQMnpsOW84u7JsePgLu6qK8a6efRBvkuHT/xhyi2uzWWzAO3V2v2RbQZSOOj5pBtQ2V1Fy7w3iP2bPBhgpOs8tyoPgdPmBxkQkr6vnAIT2HkiqfJQd0b5FLkkMYJN9eip3vavkPaEuem8or0t56bE0JBry+FaALU=
+	t=1780399656; cv=none; b=g6XlPNArSpeDwgwEXQ8m5RvWAR77Ixvl/rZEtcd8X+l0FqZN7tNk8VN4SwrXK5gFCZVwvcpxXnwEzs7mHwSwsgT7mvPqbAugJeBZTnJwAdOMb694VxcOAP8BYNGDVlRBFfv/KQUX3UQUK+tKLhQIGw6pmiSa+yeui2uusoWcE4A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780396234; c=relaxed/simple;
-	bh=MCFyDk7n39wVcofnuD0u5iw8y8kImozyHnAGwL85tCo=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=twVjlbSbjc7niLmmuG48JBDfapgU0uU0mnMR9fgda8iO+leRI9/2oSCXd7ST6SaowP/UWtx109kPlM29VYz5DDv1m2Xg8WPvS0cCbCdNyF3p3uTOhPbJ1GMjf1oX4oDSF7eyXgC6hWchywo6PwIkSG6o4WMVshvAA2cGVmGZbgc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+	s=arc-20240116; t=1780399656; c=relaxed/simple;
+	bh=INe2IwgK94drHIZM2c+2DDFLBna3IxHJuI/mHppk+Nw=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=qdfdrlls3rc9+WbjzpNQmyhZgY3vdMu0eoQ2fhE5zMd4AfS3h8nXnKUQSY2tp/hpG0BtqN9J1B6rJCYQVEEFV+mR/N1ecNC8585/N+eCbJqK9rqen0PMwCHGpo8HLxvX2r38Edxynn0BE+6wXVs0EDYZvOqbq0H8U7/uAvhKBTw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-4859b1525c7so9682650b6e.2
-        for <syzbot@lists.linux.dev>; Tue, 02 Jun 2026 03:30:32 -0700 (PDT)
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-69e365a9d0eso958497eaf.2
+        for <syzbot@lists.linux.dev>; Tue, 02 Jun 2026 04:27:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780396231; x=1781001031;
+        d=1e100.net; s=20251104; t=1780399654; x=1781004454;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=+vy8P2kqTQvil4OjiJksGvvyzHiAViEuSDuQRcyuJRE=;
-        b=e1hgJqTSJGN61vT4me9tyzONAvYj8Ub9+Ymv7Mo6Z8hG0JQl7+1SdTnjmBrOQqhg3m
-         KSrNpgKJRWvxwhmfg0AXeDmndcKThhk4jnluZRhgf+rRowGHUXhHYVSvDqIABvPNtvN+
-         qLhxC078gr1mZqZbRJhpRPd7JurXiJ91BVJmNXFNiI3adrQ39QICDfxXy2mAfVEIceR+
-         H6pemBfsSw7Q6fC1Y10kRO+7CwqptWhkb2DuzEsuB0nqU4scJxj11ow+44PnZ86Z7IkF
-         whYP2RsEhqqTvDFkg3iKWmpWyJXEsmYHewrAk4fTzqZt9ZrV3ZEuCF8Ij9d/C2JTDnp9
-         17/w==
-X-Gm-Message-State: AOJu0Yw8oLTI8jezCWwA2AfTkrPhujJzbKNX6vj82KpKlnGmL/ji68u4
-	yKCfnkt8h+2sTDil7JQA7BSbML2pj3fK8IPbEwxxbblb9T/b5XK/Pm1py+CSAQgytrpIpvch39z
-	zdIchs8JaAg/gtuCephQ4wmtPESrvpYx5oRAixgiuTQNL36rGr6UHkG+b8kU=
+        bh=nMyunZs63Ru4gtkJOKW+bV4MYD649XntnMz76j9xijY=;
+        b=lKfwA+1/1SOxFK82oh7gO3syWOKMKK2MWD2kJU5mUW2PmSlHFbtBVqjpKTYtz+blFZ
+         lQ6VxcwWFBDL2ryyr64FQIcL/O3PObUaaEKGUwdc6PPmiILA0hanXxBrR6CXK2A77WKs
+         LzmLbuWezwHsJuBZ2m6N86/YTRIhzdH3nCIjDAhM/6gJpqjKp5hUwMqE1s+km8b1LiA7
+         DNWlBdKAYkw3D7xsiHXgfqeiYI/RmHGIf5WxXBlKoPSWrtkNj8Hb6+BZNQnEz7ZQxiZu
+         tvSoxlScF+QF++TNXRiXnkXpGk9ByqNL1BGdqmL20KSOJ+kLrB5AhhkiFMdK2A8SzP/9
+         DqkQ==
+X-Gm-Message-State: AOJu0YwG53ezjiSYOncyq7GwkUpoDSujVqrk5qP7qCbvu7ogTDI1+hmo
+	W+mJ0KE/5C0eTvkdEWvXTmTXqZpI0gMivVPVMFKICtRnP6ZY46zk9Qk4YqhiwnsfGhgDGdAsPd3
+	yCo/DkTaH7GtkzyXcvVUUjIkveQXV1PM6wfbWys7BCeYTxHFVZlGo6X4em90=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:178e:b0:69d:9288:66c8 with SMTP id
- 006d021491bc7-69e10466df8mr7814371eaf.13.1780396231294; Tue, 02 Jun 2026
- 03:30:31 -0700 (PDT)
-Date: Tue, 02 Jun 2026 03:30:31 -0700
+X-Received: by 2002:a4a:e906:0:b0:69d:d78f:e3d0 with SMTP id
+ 006d021491bc7-69e103ca31cmr7602587eaf.44.1780399654002; Tue, 02 Jun 2026
+ 04:27:34 -0700 (PDT)
+Date: Tue, 02 Jun 2026 04:27:33 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a1eb0c7.24021899.37e0bb.0000.GAE@google.com>
+Message-ID: <6a1ebe25.3b158e77.2846f8.0846.GAE@google.com>
 Subject: [moderation/CI] Re: bpf: Fix kfunc implicit arg injection and add selftest
-From: syzbot ci <syzbot+ci7b539a9f9326812a@syzkaller.appspotmail.com>
+From: syzbot ci <syzbot+ci89cc221789585446@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -52,18 +52,18 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v3] bpf: Fix kfunc implicit arg injection and add selftest
-https://lore.kernel.org/all/20260602085827.2562222-1-chenyuan_fl@163.com
-* [PATCH bpf v3 1/2] bpf: Fix kfunc implicit arg inject type detection to p=
+[v4] bpf: Fix kfunc implicit arg injection and add selftest
+https://lore.kernel.org/all/20260602093836.2632714-1-chenyuan_fl@163.com
+* [PATCH bpf v4 1/2] bpf: Fix kfunc implicit arg inject type detection to p=
 revent invalid pointer deref
-* [PATCH bpf v3 2/2] selftests/bpf: Add regression test for kfunc implicit =
+* [PATCH bpf v4 2/2] selftests/bpf: Add regression test for kfunc implicit =
 arg injection
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/8f9114ef-e249-4d99-bb5d-57c09c8f64ae
+https://ci.syzbot.org/series/da317b20-d5f1-4464-90c4-ab7a549bb472
 
 ***
 
@@ -76,8 +76,8 @@ base:      e7ae89a0c97ce2b68b0983cd01eda67cf373517d
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
 1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/f2f8e91e-4b7c-4ef2-9dd1-1403e48aee8=
-c/config
+config:    https://ci.syzbot.org/builds/de9b7ed5-8aa7-41a5-9acf-b2e4827771f=
+5/config
 
 kernel/bpf/verifier.c:12097:5: error: call to undeclared function 'reg_arg_=
 name'; ISO C99 and later do not support implicit function declarations [-Wi=
