@@ -1,50 +1,51 @@
 Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 024223C9ECF
-	for <syzbot@lists.linux.dev>; Tue,  2 Jun 2026 11:27:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32DEB3E6DF4
+	for <syzbot@lists.linux.dev>; Tue,  2 Jun 2026 15:14:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780399656; cv=none; b=g6XlPNArSpeDwgwEXQ8m5RvWAR77Ixvl/rZEtcd8X+l0FqZN7tNk8VN4SwrXK5gFCZVwvcpxXnwEzs7mHwSwsgT7mvPqbAugJeBZTnJwAdOMb694VxcOAP8BYNGDVlRBFfv/KQUX3UQUK+tKLhQIGw6pmiSa+yeui2uusoWcE4A=
+	t=1780413289; cv=none; b=uRfFcmC8F4yCaoF12cXFsUZ+3ddrwQiWSUfmYo44mH3nNir61vN7XLWGcWmj+Jm14M1n2d4Yvim+pAW0n9KbGHV3uFa1TewQgpfG+hzUA4m0kRM/hoZ2D/DsxABwK1IuG3ZX2BlZhkBFnjCFVR+zy0eWQ6UypjNh30Pl2/WuvN4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780399656; c=relaxed/simple;
-	bh=INe2IwgK94drHIZM2c+2DDFLBna3IxHJuI/mHppk+Nw=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=qdfdrlls3rc9+WbjzpNQmyhZgY3vdMu0eoQ2fhE5zMd4AfS3h8nXnKUQSY2tp/hpG0BtqN9J1B6rJCYQVEEFV+mR/N1ecNC8585/N+eCbJqK9rqen0PMwCHGpo8HLxvX2r38Edxynn0BE+6wXVs0EDYZvOqbq0H8U7/uAvhKBTw=
+	s=arc-20240116; t=1780413289; c=relaxed/simple;
+	bh=bT+B9HMmDZk9hI743x3vRbhJjimRwcUHkRAl6e6JMn0=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=RYtW6mbAOr8puRybmulVXfOLUQoRoHcAH5sN+/vJ2AX3CULYglXd1MNHXXgrObViB403v/MDrjkttmoHHGB9OBBd1yFzDKXDE6WJLtiSzWRabP2Ie8MNuCDEURE0uTrA1yDWvPgVHvinTvkSMG2p74X//2lTy7JLpNaHlFQMg6s=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-69e365a9d0eso958497eaf.2
-        for <syzbot@lists.linux.dev>; Tue, 02 Jun 2026 04:27:34 -0700 (PDT)
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-69e2f0683adso2353148eaf.1
+        for <syzbot@lists.linux.dev>; Tue, 02 Jun 2026 08:14:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780399654; x=1781004454;
+        d=1e100.net; s=20251104; t=1780413287; x=1781018087;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=nMyunZs63Ru4gtkJOKW+bV4MYD649XntnMz76j9xijY=;
-        b=lKfwA+1/1SOxFK82oh7gO3syWOKMKK2MWD2kJU5mUW2PmSlHFbtBVqjpKTYtz+blFZ
-         lQ6VxcwWFBDL2ryyr64FQIcL/O3PObUaaEKGUwdc6PPmiILA0hanXxBrR6CXK2A77WKs
-         LzmLbuWezwHsJuBZ2m6N86/YTRIhzdH3nCIjDAhM/6gJpqjKp5hUwMqE1s+km8b1LiA7
-         DNWlBdKAYkw3D7xsiHXgfqeiYI/RmHGIf5WxXBlKoPSWrtkNj8Hb6+BZNQnEz7ZQxiZu
-         tvSoxlScF+QF++TNXRiXnkXpGk9ByqNL1BGdqmL20KSOJ+kLrB5AhhkiFMdK2A8SzP/9
-         DqkQ==
-X-Gm-Message-State: AOJu0YwG53ezjiSYOncyq7GwkUpoDSujVqrk5qP7qCbvu7ogTDI1+hmo
-	W+mJ0KE/5C0eTvkdEWvXTmTXqZpI0gMivVPVMFKICtRnP6ZY46zk9Qk4YqhiwnsfGhgDGdAsPd3
-	yCo/DkTaH7GtkzyXcvVUUjIkveQXV1PM6wfbWys7BCeYTxHFVZlGo6X4em90=
+        bh=NZkJSlWT4vdHTO83XIzFN8+RtTJuOvtIdkXcJl4onu8=;
+        b=JkOlvyx8GrX5+FwZvtBVlpysh6/+H8It+rdXPs/7cZ+jj/MY54o9uFkQlEGnb9VPNI
+         4PgbTzpBGJPGaXOwHTzz/kz74G0HXZx0bliNlvk6hMd5rt6nrfFR9v454FUUjiyKtQkI
+         GP2EGA6xpUmy4p6BvaT9OFJO8Eoknpufk9dOaj/MSRif+UHtBW8Db39S1p5OofX7wGQb
+         C43OfEPYNtEmsqylunpjrGUOvN5b+xJ6/X2/vayqZt6ZG/5nKW5TolXN95QGaaYEjPSd
+         HO5rDuPAGXYgZV71ypfgYkbuWWEcZiHashEqTiwQrdRSea8hLM7lf2IpmjBnV22kpkVI
+         W72Q==
+X-Gm-Message-State: AOJu0YyNBgri8JZ/IScpFkMCOH3RFAzw4FAo48kQoFbK9NBdbta7KB9g
+	Pg1Ou1kfk+5sUHiGDoTvEJ0NMqoCiKpVyRBZHZGLeVUysZQw7ayhcCmF9zsr0MzcxZutKTlzJcw
+	F0kIyprJzU9Zcl9rNKF7kDw/KAnwaFLRdmnrm4B+yWtBwXZEzs2WM02B5Rnk=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a4a:e906:0:b0:69d:d78f:e3d0 with SMTP id
- 006d021491bc7-69e103ca31cmr7602587eaf.44.1780399654002; Tue, 02 Jun 2026
- 04:27:34 -0700 (PDT)
-Date: Tue, 02 Jun 2026 04:27:33 -0700
+X-Received: by 2002:a05:6820:4dc9:b0:69d:e4c8:86f6 with SMTP id
+ 006d021491bc7-69e46951662mr46240eaf.15.1780413286971; Tue, 02 Jun 2026
+ 08:14:46 -0700 (PDT)
+Date: Tue, 02 Jun 2026 08:14:46 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a1ebe25.3b158e77.2846f8.0846.GAE@google.com>
-Subject: [moderation/CI] Re: bpf: Fix kfunc implicit arg injection and add selftest
-From: syzbot ci <syzbot+ci89cc221789585446@syzkaller.appspotmail.com>
+Message-ID: <6a1ef366.278b5b03.2bcf39.003f.GAE@google.com>
+Subject: [moderation/CI] Re: fs: support freeze/thaw/mark_dead/sync with
+ shared devices
+From: syzbot ci <syzbot+cib8131b460c09aa4c@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -52,37 +53,139 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v4] bpf: Fix kfunc implicit arg injection and add selftest
-https://lore.kernel.org/all/20260602093836.2632714-1-chenyuan_fl@163.com
-* [PATCH bpf v4 1/2] bpf: Fix kfunc implicit arg inject type detection to p=
-revent invalid pointer deref
-* [PATCH bpf v4 2/2] selftests/bpf: Add regression test for kfunc implicit =
-arg injection
+[v1] fs: support freeze/thaw/mark_dead/sync with shared devices
+https://lore.kernel.org/all/20260602-work-super-bdev_holder_global-v1-0-bb0=
+fd82f3861@kernel.org
+* [PATCH RFC 1/8] fs, block: move blk_mode_t and fop_flags_t into <linux/ty=
+pes.h>
+* [PATCH RFC 2/8] fs: add a global device to super block hash table
+* [PATCH RFC 3/8] fs: refuse to claim any frozen block device
+* [PATCH RFC 4/8] xfs: port to fs_bdev_file_open_by_path()
+* [PATCH RFC 5/8] btrfs: open via dedicated fs bdev helpers
+* [PATCH RFC 6/8] ext4: open via dedicated fs bdev helpers
+* [PATCH RFC 7/8] erofs: open via dedicated fs bdev helpers
+* [PATCH RFC 8/8] super: make fs_holder_ops private
 
 and found the following issue:
-kernel build error
+general protection fault in close_fs_devices
 
 Full report is available here:
-https://ci.syzbot.org/series/da317b20-d5f1-4464-90c4-ab7a549bb472
+https://ci.syzbot.org/series/9511f00a-a3c2-44ab-9a0b-2d65de5bbd49
 
 ***
 
-kernel build error
+general protection fault in close_fs_devices
 
-tree:      bpf
+tree:      bpf-next
 URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
-.git
-base:      e7ae89a0c97ce2b68b0983cd01eda67cf373517d
+-next.git
+base:      254f49634ee16a731174d2ae34bc50bd5f45e731
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
 1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/de9b7ed5-8aa7-41a5-9acf-b2e4827771f=
+config:    https://ci.syzbot.org/builds/4af26755-5773-453e-807d-ee451d2fdec=
 5/config
+syz repro: https://ci.syzbot.org/findings/2d8d96f7-d133-47dc-b4ca-5c0c65e1b=
+6c9/syz_repro
 
-kernel/bpf/verifier.c:12097:5: error: call to undeclared function 'reg_arg_=
-name'; ISO C99 and later do not support implicit function declarations [-Wi=
-mplicit-function-declaration]
-kernel/bpf/verifier.c:12097:23: error: use of undeclared identifier 'argno'
+btrfs: Deprecated parameter 'usebackuproot'
+BTRFS warning: 'usebackuproot' is deprecated, use 'rescue=3Dusebackuproot' =
+instead
+BTRFS: device fsid ed167579-eb65-4e76-9a50-61ac97e9b59d devid 1281 transid =
+8 /dev/loop1 (7:1) scanned by syz.1.18 (5863)
+Oops: general protection fault, probably for non-canonical address 0xdffffc=
+00000000f8: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x00000000000007c0-0x00000000000007c7]
+CPU: 1 UID: 0 PID: 5863 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:btrfs_close_bdev fs/btrfs/volumes.c:1140 [inline]
+RIP: 0010:btrfs_close_one_device fs/btrfs/volumes.c:1161 [inline]
+RIP: 0010:close_fs_devices+0x47c/0x860 fs/btrfs/volumes.c:1204
+Code: 3c 08 00 74 08 48 89 ef e8 b1 95 38 fe 48 8b 6d 00 b8 c0 07 00 00 48 =
+01 c5 48 89 e8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 0=
+8 48 89 ef e8 86 95 38 fe 48 8b 75 00 4c 89 ff e8
+RSP: 0018:ffffc90004007a48 EFLAGS: 00010202
+RAX: 00000000000000f8 RBX: 1ffff110368c440b RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 00000000000007c0 R08: ffff8881b462206f R09: 1ffff110368c440d
+R10: dffffc0000000000 R11: ffffed10368c440e R12: ffff8881b4622000
+R13: ffff8881b4622068 R14: ffff8881b4622058 R15: ffff8881707b7a00
+FS:  00007f849d6ce6c0(0000) GS:ffff8882a9292000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f849c786a00 CR3: 00000001bbbcc000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ btrfs_close_devices+0xcd/0x570 fs/btrfs/volumes.c:1219
+ btrfs_free_fs_info+0x4f/0x360 fs/btrfs/disk-io.c:1205
+ deactivate_locked_super+0xbc/0x130 fs/super.c:477
+ btrfs_get_tree_super fs/btrfs/super.c:-1 [inline]
+ btrfs_get_tree_subvol fs/btrfs/super.c:2087 [inline]
+ btrfs_get_tree+0xca6/0x1910 fs/btrfs/super.c:2121
+ vfs_get_tree+0x92/0x2a0 fs/super.c:1928
+ fc_mount fs/namespace.c:1193 [inline]
+ do_new_mount_fc fs/namespace.c:3758 [inline]
+ do_new_mount+0x341/0xd30 fs/namespace.c:3834
+ do_mount fs/namespace.c:4167 [inline]
+ __do_sys_mount fs/namespace.c:4383 [inline]
+ __se_sys_mount+0x31d/0x420 fs/namespace.c:4360
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f849c79e0ca
+Code: 48 c7 c2 e8 ff ff ff f7 d8 64 89 02 b8 ff ff ff ff c3 66 2e 0f 1f 84 =
+00 00 00 00 00 0f 1f 40 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f849d6cde58 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 00007f849d6cdee0 RCX: 00007f849c79e0ca
+RDX: 00002000000055c0 RSI: 0000200000000340 RDI: 00007f849d6cdea0
+RBP: 00002000000055c0 R08: 00007f849d6cdee0 R09: 0000000000000408
+R10: 0000000000000408 R11: 0000000000000246 R12: 0000200000000340
+R13: 00007f849d6cdea0 R14: 00000000000055f5 R15: 0000200000000380
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:btrfs_close_bdev fs/btrfs/volumes.c:1140 [inline]
+RIP: 0010:btrfs_close_one_device fs/btrfs/volumes.c:1161 [inline]
+RIP: 0010:close_fs_devices+0x47c/0x860 fs/btrfs/volumes.c:1204
+Code: 3c 08 00 74 08 48 89 ef e8 b1 95 38 fe 48 8b 6d 00 b8 c0 07 00 00 48 =
+01 c5 48 89 e8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 0=
+8 48 89 ef e8 86 95 38 fe 48 8b 75 00 4c 89 ff e8
+RSP: 0018:ffffc90004007a48 EFLAGS: 00010202
+
+RAX: 00000000000000f8 RBX: 1ffff110368c440b RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 00000000000007c0 R08: ffff8881b462206f R09: 1ffff110368c440d
+R10: dffffc0000000000 R11: ffffed10368c440e R12: ffff8881b4622000
+R13: ffff8881b4622068 R14: ffff8881b4622058 R15: ffff8881707b7a00
+FS:  00007f849d6ce6c0(0000) GS:ffff8882a9292000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000557941c2b058 CR3: 00000001bbbcc000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	3c 08                	cmp    $0x8,%al
+   2:	00 74 08 48          	add    %dh,0x48(%rax,%rcx,1)
+   6:	89 ef                	mov    %ebp,%edi
+   8:	e8 b1 95 38 fe       	call   0xfe3895be
+   d:	48 8b 6d 00          	mov    0x0(%rbp),%rbp
+  11:	b8 c0 07 00 00       	mov    $0x7c0,%eax
+  16:	48 01 c5             	add    %rax,%rbp
+  19:	48 89 e8             	mov    %rbp,%rax
+  1c:	48 c1 e8 03          	shr    $0x3,%rax
+  20:	48 b9 00 00 00 00 00 	movabs $0xdffffc0000000000,%rcx
+  27:	fc ff df
+* 2a:	80 3c 08 00          	cmpb   $0x0,(%rax,%rcx,1) <-- trapping instruct=
+ion
+  2e:	74 08                	je     0x38
+  30:	48 89 ef             	mov    %rbp,%rdi
+  33:	e8 86 95 38 fe       	call   0xfe3895be
+  38:	48 8b 75 00          	mov    0x0(%rbp),%rsi
+  3c:	4c 89 ff             	mov    %r15,%rdi
+  3f:	e8                   	.byte 0xe8
+
 
 ***
 
@@ -101,11 +204,11 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[andrii@kernel.org ast@kernel.org bot@kernel.org bpf@vger.kernel.org chenyu=
-an@kylinos.cn chenyuan_fl@163.com clm@meta.com daniel@iogearbox.net eddyz87=
-@gmail.com ihor.solodrai@linux.dev jolsa@kernel.org linux-kernel@vger.kerne=
-l.org martin.lau@kernel.org martin.lau@linux.dev memxor@gmail.com song@kern=
-el.org yonghong.song@linux.dev]
+[axboe@kernel.dk brauner@kernel.org cem@kernel.org clm@fb.com dsterba@suse.=
+com hch@lst.de jack@suse.cz linux-block@vger.kernel.org linux-btrfs@vger.ke=
+rnel.org linux-erofs@lists.ozlabs.org linux-ext4@vger.kernel.org linux-fsde=
+vel@vger.kernel.org linux-kernel@vger.kernel.org linux-xfs@vger.kernel.org =
+tytso@mit.edu viro@zeniv.linux.org.uk xiang@kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
