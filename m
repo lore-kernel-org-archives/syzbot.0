@@ -1,78 +1,90 @@
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67ABE2153D8
-	for <syzbot@lists.linux.dev>; Fri,  5 Jun 2026 00:41:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A314633F593
+	for <syzbot@lists.linux.dev>; Fri,  5 Jun 2026 14:29:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780620066; cv=none; b=mvduhyeMr061J/cH0X6uF5ehq/MLbNajtGCiNiQSf26Q7TE18O7ZGXk2POqo/0BlSCPS19+3u1MBJWIT6nKFTzLzOvv9lbF1t/M4xBh8IKuqcyi760zWVL+TNAEGYyHHnfDnp0nL3WG7wp7pOvD6zjWA7db7V6W4SdDGW8HkCFU=
+	t=1780669801; cv=none; b=Pm5VZPvQg0C23Ng3IffEzybwUuXLrZuXkQFocPWn6RijeT6YaxWmGNhYMLvyYnpD7gkOHeW/TNKJf4JzFqIP1MFi3/dldG+YTbR0s2RjLYVnqTiCwxO0VpUhB1x49yucV21RlD78V5mgbdowADgmH2BcPTcFZHCwgUOmAT+3qp4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780620066; c=relaxed/simple;
-	bh=jIFr80jfRhmqwf+RIKVNdJ050UB3pu6WTWIPbBO82Ro=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=oApPnOwIa+q0DTZgw/mOpKSOAuDTNFvTVdQjQ12R6t2g9TmjNylULDp2Xs+nGWfY+14OPfy04dloNtpV5exMNkuzRuPxjMIfhX9aS9O4QTApC4Vxm3dxoEpDF6+P0AiXgnIyNfYuXxJwDbVeaRgSbjTbX97YSA5kBGTuyzYUfzE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
+	s=arc-20240116; t=1780669801; c=relaxed/simple;
+	bh=xU0Ks4vWbcXhN8DRVKtmfcbzBtUnADFFm1HHg9groaU=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=AgZxkdxGfCRpbJH4wraLha1Fl7aRzh1jiswHEUCyhgNgaYoYHjjCvufsVnVzTdvKLqMmTMnMu4oz0wxjonSylpNYzqX0ynyT19JhCZd8mhW5udSyaE7fWIsCQJ90ZK4GmnBoLAb1p0gRW8pWAVz5P4HbSM+HsTlf0nyyj0Fzh5k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7e704fa3f07so1046906a34.3
-        for <syzbot@lists.linux.dev>; Thu, 04 Jun 2026 17:41:05 -0700 (PDT)
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-69e393262d6so2777466eaf.0
+        for <syzbot@lists.linux.dev>; Fri, 05 Jun 2026 07:29:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780620064; x=1781224864;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Oiv+0joML0sLd45ckqUIhaobt6jr7j5eOTLwGwFJSEI=;
-        b=cbK7vwQ1Fu4hwQRpjTpC0bopfyhs1A1ADRPzxUJERa6TXnidlAgFgK3VZeZcGwDm9z
-         ErG3NJA8Xpft+fTcs1DPlz9NDwrQqzExT+5Wim8j+hOvmImuIY7TzaeLjfSmdGqbKOMB
-         JeV6ZGRHJrBIf/jo18r9ORzI6I59sVITIHd9RkC+Gux3SgJ7eaaCMoehk21/A76P14Fl
-         guCHqJ+9mSPgzWwmghndMfEwYUvZFV0KuFjH+l2cIBCtKasm+H7pK/ChLPX6qX/JwIFA
-         tJMBFH3xKprDdLk3KMjzbwaoat4dZhx5o1Sh9efoSM8BBa3UBwQoxUUN39LmO9Md+0SZ
-         DMQg==
-X-Gm-Message-State: AOJu0YzfEtqKxEpXrYovlrokGbrepLjTkvTofEaYZ38mNgGru7t8AeUm
-	MQUzvTmL540gZjZgj2d0IykRE94fCxBRWpXBw0D0PqQ3mZWWd/rxf8gAyUwy/SrzUNzI+j1Wxkl
-	VxRvcghVf693FwVv3jypoGUobttyA9Fl0LfRI7sQZFsDPBkC4IdaVApmp/vg=
+        d=1e100.net; s=20251104; t=1780669798; x=1781274598;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8UIaAFFxx4AU5ClpwPXRkFtr5kIqHOhPYOf4e31b4NM=;
+        b=MtnDOa+bXs1u09RwA8LihQcLqs3jTHwPWpOhV+nnBUf3wyuX8U+yaqIJpJK3p0q7Of
+         C3qLewamqrIBkRL0HZEIZ27j8mJZGjOMBhQ34104cvjp/TUBPfQlQHYgu2Ij2WWSj+hb
+         XcymnJzFzMmIiMetpkdxonU3d8m6/EnSTgvMHuLGk+zTGqM4KiC7EeFmWlbR1VPKMgc+
+         cdawP8pnRPCR0zxzvepswqxby4LoVroYjIg6rtOkoHr2dhICbIUDzf7hd5aV1HXeK54n
+         MNUTCxm/FuPUMpB8aFH8M0h3LR5pcQH95Rr5nOYGGjJwSh6gId+HXFRp+uAGE2BMGaZi
+         uHTw==
+X-Gm-Message-State: AOJu0YzcN9n8QUboDKWFzcdK6ngjBaNdT2trJkKN5Fqygmf1PAD57S6P
+	cwaoc80/+pk2INRKTG6D5kS7cqbjkHC/JMsA8TUT7ZO7Zff0pmtMIHLK0WrF3TetLVpnqP02j41
+	7e79gdT5LJ9WzZRcpScBwTM15yr77dQvHZl6TZs5PSAwnMl3GbgMPwJ3VOuw=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1611:b0:69d:f5d7:8bee with SMTP id
- 006d021491bc7-69e68b4d997mr812900eaf.17.1780620064456; Thu, 04 Jun 2026
- 17:41:04 -0700 (PDT)
-Date: Thu, 04 Jun 2026 17:41:04 -0700
+X-Received: by 2002:a05:6820:f02b:b0:69e:5175:de0 with SMTP id
+ 006d021491bc7-69e68c5dc01mr2034242eaf.43.1780669798547; Fri, 05 Jun 2026
+ 07:29:58 -0700 (PDT)
+Date: Fri, 05 Jun 2026 07:29:58 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a221b20.a88f22c3.173579.001a.GAE@google.com>
-Subject: [moderation/CI] Re: wifi: nl80211: Increase ie_len size to prevent
- truncated IEs in new peer notifications
-From: syzbot ci <syzbot+ci80316e24a74ee106@syzkaller.appspotmail.com>
+Message-ID: <6a22dd66.39669fcc.2372e3.0000.GAE@google.com>
+Subject: [moderation/CI] Re: net/smc: convert getsockopt to getsockopt_iter
+From: syzbot ci <syzbot+ci40ac41761f3f241c@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] wifi: nl80211: Increase ie_len size to prevent truncated IEs in new peer notifications
-https://lore.kernel.org/all/20260604203027.406815-1-thiyagarajan@aerlync.com
-* [PATCH] wifi: nl80211: Increase ie_len size to prevent truncated IEs in new peer notifications
+[v1] net/smc: convert getsockopt to getsockopt_iter
+https://lore.kernel.org/all/20260605-getsockopt_smc-v1-0-65da62fa44c4@debia=
+n.org
+* [PATCH net-next 1/2] smc: convert to getsockopt_iter
+* [PATCH net-next 2/2] selftests: net: add SMC getsockopt_iter conversion t=
+est
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/62d8791c-5403-45fd-9fad-66b3adffa20d
+https://ci.syzbot.org/series/4ed2003b-e2aa-49b1-ae79-ee6e68a28a4e
 
 ***
 
 kernel build error
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      ba3e43a9e601636f5edb54e259a74f96ca3b8fd8
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net-next.git
+base:      6a5d837f0ce2486383259b13d3c9c294c87add3b
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/db5b38d8-48b6-4598-ae57-f7bd6995b7a8/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/db5460d6-f612-4fda-a6d1-380f920b4c2=
+9/config
 
-net/wireless/nl80211.c:20960:6: error: conflicting types for 'cfg80211_notify_new_peer_candidate'
+net/smc/af_smc.c:3186:45: error: no member named 'optlen_user' in 'struct s=
+ockopt'
+net/smc/af_smc.c:3201:34: error: no member named 'optlen_user' in 'struct s=
+ockopt'
+net/smc/af_smc.c:3207:33: error: no member named 'optlen_user' in 'struct s=
+ockopt'
 
 ***
 
@@ -91,7 +103,13 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[johannes@sipsolutions.net linux-kernel@vger.kernel.org linux-wireless@vger.kernel.org thiyagarajan@aerlync.com]
+[alibuda@linux.alibaba.com davem@davemloft.net dust.li@linux.alibaba.com ed=
+umazet@google.com guwen@linux.alibaba.com horms@kernel.org kernel-team@meta=
+.com kuba@kernel.org leitao@debian.org linux-kernel@vger.kernel.org linux-k=
+selftest@vger.kernel.org linux-rdma@vger.kernel.org linux-s390@vger.kernel.=
+org mjambigi@linux.ibm.com netdev@vger.kernel.org pabeni@redhat.com shuah@k=
+ernel.org sidraya@linux.ibm.com tonylu@linux.alibaba.com wenjia@linux.ibm.c=
+om]
 
 If the report looks fine to you, reply with:
 #syz upstream
