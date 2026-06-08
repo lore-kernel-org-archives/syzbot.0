@@ -1,110 +1,97 @@
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2578394EBD
-	for <syzbot@lists.linux.dev>; Mon,  8 Jun 2026 08:43:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9D5A33F8D6;
+	Mon,  8 Jun 2026 19:35:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780908195; cv=none; b=OXpjzXyMq0y7lJGGD+eRIDPN97XdM6g5gts2suKJGP1BcmLUlMnzs0EJuDikEJQVBE+1H1+injQLE1WQoNsVMCcPENUzM+LlyZLAuSj/E/WUQr9eD1ebPjJSqpAfY2hzuPP5tyENJMhy/tKjlfP7rUFposomI7aoT+CyssO8qWw=
+	t=1780947350; cv=none; b=jJ24lMQeleCmSW1vqzDIq7TFMpm1sycgEh22mAIpK42eTTHR296UZCcowws4lXssdR5RgtPX1SovTBLI345BugbMfzc1Vs51BvZRZzTVqzYIng4yZqtTNwHE2JLOI3aohpnUxU44+XAwBkIMHG+VKpfjBELQm0DVzOEt6UuEgGY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780908195; c=relaxed/simple;
-	bh=lriDk1zblAsrfwcxMPxc49b+VcC7xRdP+jwuNYvM384=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=S2jlqTdnbpgApYytt6dmpkUBtKyQRNytKxkVjQWpZziX9gbLqGjFzi8yHQ1lBXm8xKntUOmoQA68STInzQmG4Nm834lpSEfyflpknmbDG3KvFUrhy91z2EUQShKPfLuxwb8UVjdvrs1eKcN2WdVH+qljzJj2rw/7uTvzGgyfyzU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-69d8e718acbso6017034eaf.1
-        for <syzbot@lists.linux.dev>; Mon, 08 Jun 2026 01:43:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780908193; x=1781512993;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vkWmGPfkNUL1TE2YOhazuszl4wb1hhRFPgmLrazks1o=;
-        b=CmUYEJAhGUPrTYDoybxseno8VM9xUWj0+Z701lwYItjfD5HUH4NHTr+HaVIpkkPvDp
-         xo4YmmXHzZhiGEmWYETiQ4xTdWhaTuxEkkV72taNWkINj3aRdrcR6AsyY5XWv7AG5Ln0
-         3cIv/ctTavJ+LZrvz4/YAsF/v3Z/WO9jDDgGuObUnHOQ0zXwqypEgc2pFcHefNF/pKRR
-         7+ZG/m0fIRQ9jOC90sgzA49L49UQh6f2mg0xrg1JJVHGtbGPmuj4bYUIaZKC2Yveoxqk
-         0Zw5ZhP+VWfQh9AbuuYuzOAWnpxlNEuuFr5wjso6xyAbZ6cviNB0UvynSd+I+QCWLPGL
-         xm2Q==
-X-Gm-Message-State: AOJu0Yz8qyiugAaXwNBTXz8OtYe0A8B1OE2783rxM7CDKhziyitmvqgg
-	UdSkII15cc+bcx5pd0p+X2uXoR/s+23TqEruOCjZsc4ybIxvGP7BiJ3prKZEw2UzzSAdBhfK5i3
-	yuabXkTqXPUpDQ0kespleo0Oap+oS7VKoWOGGMvJk6GfpF7kFfVXjxo0qLv4=
+	s=arc-20240116; t=1780947350; c=relaxed/simple;
+	bh=/DBAYoClECj2dTRrZLgRx6NFxmOK6IygV3U020KZG3Q=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
+	 References:In-Reply-To; b=J+MVwkJ0pglFllqRQmzwm4W6ROy/UxvUT6G4hz0ss9XrNRLKef8C3by+XsMj9EaM2bl1jLoUMXEk7RCq/FXEFKB8OPH8XhX2/PpvzQzZTdBzD3AJJcLGBN+lpNsTC3of/bZPs6a95vozVkTggrVYbbRTs87BBKwnCkm2UpvU3nw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ElfYByMT; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ElfYByMT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D22861F00893;
+	Mon,  8 Jun 2026 19:35:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780947349;
+	bh=/DBAYoClECj2dTRrZLgRx6NFxmOK6IygV3U020KZG3Q=;
+	h=Date:Subject:Cc:To:From:References:In-Reply-To;
+	b=ElfYByMTHhnZIIapo9GpWKwSXWWIgQ1k0qNSuwIX7+AliqPTn9SLAsQk7n/cpVegp
+	 hC+MyODZWKbQiuEDnQVn8vRlWdmx6RtkBSzKmRx+3g1wCH+THBkvLyfah60i7LiCjM
+	 iskvEtbWEiAc8DK93E964H4fS/Z71Lr0lY/8XScgYtF0fiznRPkFXBUz9c7LXLWYfs
+	 wAL2HHZd60wDUoB8IipQpOAQ+zNPDQ7P3PPevUQMtU8Vxpl7iieGrj8+RzRRYOUusE
+	 6s59m4Vakskspoz+wlQIsgSrbedJVzijTSatX6ODwAxggIoOcqFTk5aixxAqFZOfBx
+	 JDB7SB9g/K/ow==
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-Received: by 2002:a05:6820:8108:b0:694:8c67:5cb6 with SMTP id
- 006d021491bc7-69e68c52cc3mr7784207eaf.41.1780908193018; Mon, 08 Jun 2026
- 01:43:13 -0700 (PDT)
-Date: Mon, 08 Jun 2026 01:43:13 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a2680a1.c25708ab.1b19ef.0011.GAE@google.com>
-Subject: [moderation/CI] Re: iomap: add simple read path for small direct I/O
-From: syzbot ci <syzbot+ciec78963a2a3f250b@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Mon, 08 Jun 2026 21:35:46 +0200
+Message-Id: <DJ3X585GG3FJ.2OS0MKDAZPK61@kernel.org>
+Subject: Re: [PATCH v2] firmware_loader: Fix recursive lock in
+ device_cache_fw_images()
+Cc: <syzkaller-bugs@googlegroups.com>, <driver-core@lists.linux.dev>, "Greg
+ Kroah-Hartman" <gregkh@linuxfoundation.org>, "Luis Chamberlain"
+ <mcgrof@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, "Russ Weight"
+ <russ.weight@linux.dev>, <linux-kernel@vger.kernel.org>,
+ <syzbot@lists.linux.dev>
+To: "syzbot" <syzbot@kernel.org>
+From: "Danilo Krummrich" <dakr@kernel.org>
+References: <48b092a5-f49d-48a4-95f4-f65bebfc6bc3@mail.kernel.org>
+In-Reply-To: <48b092a5-f49d-48a4-95f4-f65bebfc6bc3@mail.kernel.org>
 
-syzbot ci has tested the following series
+On Fri May 29, 2026 at 5:09 PM CEST, syzbot wrote:
+> From: Dmitry Vyukov <dvyukov@google.com>
+>
+> A recursive locking deadlock can occur in the firmware loader's power
+> management notification handler.
+>
+> During system suspend or hibernation preparation, fw_pm_notify() calls
+> device_cache_fw_images(). This function acquires fw_lock to set the
+> firmware cache state to FW_LOADER_START_CACHE and then iterates over all
+> devices using dpm_for_each_dev() while still holding the lock.
+>
+> For each device, dev_cache_fw_image() schedules asynchronous work to cach=
+e
+> the firmware. If memory allocation for the async work entry fails (e.g., =
+in
+> out-of-memory conditions), async_schedule_node_domain() falls back to
+> executing the work function synchronously in the current thread.
+>
+> The synchronous execution path (__async_dev_cache_fw_image() ->
+> cache_firmware() -> request_firmware() -> assign_fw()) attempts to acquir=
+e
+> fw_lock again. Since the current thread already holds fw_lock, this resul=
+ts
+> in a recursive locking deadlock.
+>
+> Fix this by releasing fw_lock immediately after updating the cache state
+> and before calling dpm_for_each_dev(). The lock is only needed to protect
+> the state update. Concurrent firmware requests will correctly see the
+> FW_LOADER_START_CACHE state and use the piggyback mechanism, which is
+> independently protected by its own fwc->name_lock.
+>
+> Fixes: ac39b3ea73aa ("firmware loader: let caching firmware piggyback on =
+loading firmware")
+> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview =
+syzbot
+> Reported-by: syzbot+e70e4c6f6eee43357ba7@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3De70e4c6f6eee43357ba7
+> Link: https://syzkaller.appspot.com/ai_job?id=3D8b4af9fd-24af-423f-8acb-1=
+159fd34c1a5
+> Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
 
-[v4] iomap: add simple read path for small direct I/O
-https://lore.kernel.org/all/20260608073134.95964-1-changfengnan@bytedance.c=
-om
-* [PATCH v4] iomap: add simple read path for small direct I/O
+I think Sashiko found an orthogonal issue that looks valid at a first glanc=
+e, in
+case you are interested to dig in further.
 
-and found the following issue:
-kernel build error
-
-Full report is available here:
-https://ci.syzbot.org/series/7a573d80-0820-4c9f-98bd-f69a85635cd8
-
-***
-
-kernel build error
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
-s/linux
-base:      c68691dc1dcacbdaaef04edcf7639ce68e3eb58c
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/cabbe355-6a7c-48c1-b56c-fc468b7273f=
-6/config
-
-fs/iomap/direct-io.c:1138:45: error: too few arguments to function call, ex=
-pected 4, have 3
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[brauner@kernel.org changfengnan@bytedance.com dgc@kernel.org djwong@kernel=
-.org hch@infradead.org lidiangang@bytedance.com linux-ext4@vger.kernel.org =
-linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org linux-xfs@vger.k=
-ernel.org ojaswin@linux.ibm.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+[1] https://sashiko.dev/#/patchset/48b092a5-f49d-48a4-95f4-f65bebfc6bc3%40m=
+ail.kernel.org
