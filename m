@@ -1,78 +1,84 @@
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E43B29B8CF
-	for <syzbot@lists.linux.dev>; Mon,  8 Jun 2026 01:10:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2578394EBD
+	for <syzbot@lists.linux.dev>; Mon,  8 Jun 2026 08:43:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780881052; cv=none; b=qtoP+aw0oPF5P7jrcbSrnJz1XQQ+gU0ahpgvtwgirsMnk3161FgZDhcYOQUN7C5g41l4JKgW2447kOoTYka5gvRpeMx0/T6bQ3Tk+7pfxPo3pdmumxocKouYB/Doc73RMaqrm2MedpvT9wAwLRZE5iJppUp7AXs0bZB4gfHVahg=
+	t=1780908195; cv=none; b=OXpjzXyMq0y7lJGGD+eRIDPN97XdM6g5gts2suKJGP1BcmLUlMnzs0EJuDikEJQVBE+1H1+injQLE1WQoNsVMCcPENUzM+LlyZLAuSj/E/WUQr9eD1ebPjJSqpAfY2hzuPP5tyENJMhy/tKjlfP7rUFposomI7aoT+CyssO8qWw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780881052; c=relaxed/simple;
-	bh=8/qV5KlpQ2EYPGcg+kzo5yS9rxQOiPHhpE1p5x2qJ5A=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=bVqxFXHuJtOCgNXYOnNQN4+wx/Sund/l+bMnyAmEns+A9oqx2jTFoUbe/zLsXuM3Q1tj7vClXM+Z/CZ16N3JuqwVUVgSbdcw+JpGQ8/PasxXG6Nx/8uhzrHAiu/gdA/DiU7P9JtgFvN9QAT1I8W3XV/rfuAw5QxEpc5lc8wysfM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
+	s=arc-20240116; t=1780908195; c=relaxed/simple;
+	bh=lriDk1zblAsrfwcxMPxc49b+VcC7xRdP+jwuNYvM384=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=S2jlqTdnbpgApYytt6dmpkUBtKyQRNytKxkVjQWpZziX9gbLqGjFzi8yHQ1lBXm8xKntUOmoQA68STInzQmG4Nm834lpSEfyflpknmbDG3KvFUrhy91z2EUQShKPfLuxwb8UVjdvrs1eKcN2WdVH+qljzJj2rw/7uTvzGgyfyzU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7e6ed99b9b4so8849143a34.3
-        for <syzbot@lists.linux.dev>; Sun, 07 Jun 2026 18:10:51 -0700 (PDT)
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-69d8e718acbso6017034eaf.1
+        for <syzbot@lists.linux.dev>; Mon, 08 Jun 2026 01:43:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780881050; x=1781485850;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=DCp/mgrptErfzpKZA184p1VpHkSqb+KHOHP3Y1BtAOY=;
-        b=INjdY2Wz3CQFg6pUzcZxUQmSvBmC7j89DhtdKQ9Vt+0Hz4ylaXZKMgm5NTme79p1Sr
-         yZ/anzquLA8RyzH6iEzuw+P1qOybxSX4gi8x+Z9kUc6QYIOlvDKPdOADH4tKlqcPz4Qj
-         C8O5UN+emcEED8q07heiighM/51LTpbtRGz+1ArY/mS3uRuil7acYmW8sX/f85WMYrYf
-         wf95B9NpW+VF4xC6yjbZq5R693pugWEgrw1p+/m+QGD7Oeap/s/WmGexQTxVqvK0oeoA
-         q5do9j6ES0pQWJDtzWl+0+rEC2zLpJlXiODKjbRYc/thR1nJNIIjTzSEDTvSDefdp52P
-         v/bg==
-X-Gm-Message-State: AOJu0YwspwZNFAYePud4n0dloOTHUEqFF2FkMv0KVlwUR5Exl2q8Xh1v
-	aTYP86T0yEuhJTODJwTeLEew5KTTPE3KRnmmKiPQ6Bpxcv0UI3Z6hUOuT8gitoJM7TKEE1Mqi4O
-	RyRa2tyr5bMNXieteAMSU7NStcbnnDi79UZufgEa7nqE/ibyleVIm/enrA+o=
+        d=1e100.net; s=20251104; t=1780908193; x=1781512993;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vkWmGPfkNUL1TE2YOhazuszl4wb1hhRFPgmLrazks1o=;
+        b=CmUYEJAhGUPrTYDoybxseno8VM9xUWj0+Z701lwYItjfD5HUH4NHTr+HaVIpkkPvDp
+         xo4YmmXHzZhiGEmWYETiQ4xTdWhaTuxEkkV72taNWkINj3aRdrcR6AsyY5XWv7AG5Ln0
+         3cIv/ctTavJ+LZrvz4/YAsF/v3Z/WO9jDDgGuObUnHOQ0zXwqypEgc2pFcHefNF/pKRR
+         7+ZG/m0fIRQ9jOC90sgzA49L49UQh6f2mg0xrg1JJVHGtbGPmuj4bYUIaZKC2Yveoxqk
+         0Zw5ZhP+VWfQh9AbuuYuzOAWnpxlNEuuFr5wjso6xyAbZ6cviNB0UvynSd+I+QCWLPGL
+         xm2Q==
+X-Gm-Message-State: AOJu0Yz8qyiugAaXwNBTXz8OtYe0A8B1OE2783rxM7CDKhziyitmvqgg
+	UdSkII15cc+bcx5pd0p+X2uXoR/s+23TqEruOCjZsc4ybIxvGP7BiJ3prKZEw2UzzSAdBhfK5i3
+	yuabXkTqXPUpDQ0kespleo0Oap+oS7VKoWOGGMvJk6GfpF7kFfVXjxo0qLv4=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a4a:d88f:0:b0:696:84a7:1c9e with SMTP id
- 006d021491bc7-69e68cbb2a5mr5984229eaf.54.1780881050589; Sun, 07 Jun 2026
- 18:10:50 -0700 (PDT)
-Date: Sun, 07 Jun 2026 18:10:50 -0700
+X-Received: by 2002:a05:6820:8108:b0:694:8c67:5cb6 with SMTP id
+ 006d021491bc7-69e68c52cc3mr7784207eaf.41.1780908193018; Mon, 08 Jun 2026
+ 01:43:13 -0700 (PDT)
+Date: Mon, 08 Jun 2026 01:43:13 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a26169a.39669fcc.33b062.0020.GAE@google.com>
-Subject: [moderation/CI] Re: mm/migrate: Add native folio functions
-From: syzbot ci <syzbot+ci651077f9f892ff0f@syzkaller.appspotmail.com>
+Message-ID: <6a2680a1.c25708ab.1b19ef.0011.GAE@google.com>
+Subject: [moderation/CI] Re: iomap: add simple read path for small direct I/O
+From: syzbot ci <syzbot+ciec78963a2a3f250b@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] mm/migrate: Add native folio functions
-https://lore.kernel.org/all/20260608001251.66847-1-yahia.a.abdrabou@gmail.com
-* [PATCH] mm/migrate: Add native folio functions
+[v4] iomap: add simple read path for small direct I/O
+https://lore.kernel.org/all/20260608073134.95964-1-changfengnan@bytedance.c=
+om
+* [PATCH v4] iomap: add simple read path for small direct I/O
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/35114164-2f65-46b4-bc51-c790f763b59e
+https://ci.syzbot.org/series/7a573d80-0820-4c9f-98bd-f69a85635cd8
 
 ***
 
 kernel build error
 
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      8348293eceda84931a196fff4a1c098406691c82
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      c68691dc1dcacbdaaef04edcf7639ce68e3eb58c
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/07ca20ea-7b34-46b8-85d8-b74aee9e19ef/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/cabbe355-6a7c-48c1-b56c-fc468b7273f=
+6/config
 
-./include/linux/page-flags.h:1113:1: error: use of undeclared identifier 'PG_MovableOpsIsolated'; did you mean 'PG_movable_ops_isolated'?
-./include/linux/page-flags.h:1113:37: error: use of undeclared identifier 'movable_ops_isolated'; did you mean 'PG_movable_ops_isolated'?
+fs/iomap/direct-io.c:1138:45: error: too few arguments to function call, ex=
+pected 4, have 3
 
 ***
 
@@ -91,7 +97,10 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[akpm@linux-foundation.org david@kernel.org linux-kernel@vger.kernel.org linux-mm@kvack.org yahia.a.abdrabou@gmail.com ziy@nvidia.com]
+[brauner@kernel.org changfengnan@bytedance.com dgc@kernel.org djwong@kernel=
+.org hch@infradead.org lidiangang@bytedance.com linux-ext4@vger.kernel.org =
+linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org linux-xfs@vger.k=
+ernel.org ojaswin@linux.ibm.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
