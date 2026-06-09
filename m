@@ -1,81 +1,634 @@
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A29CC349CEE
-	for <syzbot@lists.linux.dev>; Tue,  9 Jun 2026 16:05:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 497F8331EB8
+	for <syzbot@lists.linux.dev>; Tue,  9 Jun 2026 18:09:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781021134; cv=none; b=efl2O7uUXwECwCpDUvO6Ov7/iJ77TLcoXmSYwKsaB725KFgQnmMNGlSOzyku41A70HF1t12ipSDepVetKt+i5dAe7/l71Zf1lBJvG/gayvjYaN/DKnz8NVeQSYcbZrgCU3hS9YwAAhT+M7iBegFNFBpzHGFddI92Z1HycByFDrs=
+	t=1781028586; cv=none; b=s+FRbm1Pxi1q1IzxlN4VSkH38Qj2MOhHT3oOrO+lxK1oO7fQ8EjKgvsoXv6uwxfNbiXrRBoU56ekNCPluWhKckSAkWod4ZxCWNJ+tJuw/0IMzPiGleQM4/Bb6XkeBArU/914Um+LXPiyH8ae7LSyuaFDXgFkMyhyq84T0xGtEPU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781021134; c=relaxed/simple;
-	bh=N0RosUF/nFYtZoE3A/vak4dx7r2UazldOCljdFcezQs=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=C1L0xJWehRSate5+oV9LbwAex64XuYfP4CtYnzYUcnf5/yhtHscf/C81N1M+gGuU7zMx3Bf+oPJgb8Tskydp95fyhI949ORKSARAVgdRk9WGsee0yNTAp7L2P0SkA1hAbUkEyEhSYkpAiir7zbwgRNSQBjzny7ZZu9YeY4xTePA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.216.69
+	s=arc-20240116; t=1781028586; c=relaxed/simple;
+	bh=fMXjE58FWgK2CZPTU9+pTS6pnjggSl9vseyCnDQ/kN8=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=NaNTc33o04F8oGcmbMtsOYrlLCTIbFohhbWKgMf6Rt2pw5OOQc/5/PnVueMJTJtWKh2lhQwmeKTKn/Iwre9R13gI43qzCWgejZpuH5qBIU+FSNdX6Ua44VtYq6DIN5Qlf1UalMmSjT2tP+dzPG6bt2Qyh+xoq7l4b240PiomDrI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-36bc5e97950so6516821a91.1
-        for <syzbot@lists.linux.dev>; Tue, 09 Jun 2026 09:05:33 -0700 (PDT)
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-69e37cab8e0so7846696eaf.3
+        for <syzbot@lists.linux.dev>; Tue, 09 Jun 2026 11:09:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781021133; x=1781625933;
+        d=1e100.net; s=20251104; t=1781028583; x=1781633383;
         h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=1qkyzEohrXs5rIlLm4KlZgFBunUq7x6qLQwcFALYrRw=;
-        b=lct5O/y9YgjMu/PS9FkkkZbsdqpvRSr4H7nShEyX8EsKMqtOirOEWuK0zF3YAIjpKp
-         DDBIgNOzZazql9nKbj3n1R/cCU0Ssf2KsPYCY9CKB+fiZWS+Ws7dzdCZSPDfAWDLPl/y
-         jUkBU0AYV6ucbk4D0R7aIwxEmMw5Ka1Rjqefv4S/8Ewk4jqf0q3F1B0wRY96cT/7yq8D
-         /NQEN7+xWrFLGM/WRDVRaNvsJATdHgPA9mGnQxMJo9NL2QRJpUvQPDLJyjrWy5KFOCaF
-         3CHgthp8yNIzpWOWsaOiUVl7gGZM1Tnwf0PYjcJho7f+32W7TBMWSzDSCo4xf6N69rxr
-         insQ==
-X-Gm-Message-State: AOJu0YwTxdVVRqQ6KrgZ07sfrxYlmCvbvmrlichAvcmiqgu0H3aog4RS
-	0IEp4RMrMRl59QU1TXtDRh90qGqaijA42F4md3/vlDpuxhUNZBoqBDdUi6Z2kBpvK9dXoXo2QIZ
-	2KIk5qG1WNGwQu7slcEhYNEpT74eEk5jKRQWChzy8Ec8svyofH6wEBx33rME=
+        bh=sVU5ztU81Uda0STRgy8piteYMHPHzp+GMoJjXJI4xxI=;
+        b=rzeicadm8odjObXged3rP6fcrRDvoCML6YHhepTqJ2lXeWTDzEh+LXqtt0cMLmfLRR
+         /D7049VLKaIoD8DI+LZNt7kJgmPnVfvrSlWTegz3MClP/z+XrSN3ZQW7n9AxXi+bNSAm
+         Lm8+gaVS+BYFXsil6CrfDnyujDRNQZOTWHMXrdPRY5iCpTEl7splyp1veygryw2A+SBH
+         JOkwlxCwxmYEerhzYbK9MuErlSxlI/fH+WR5P84+NaoCyqgOHt2/DrO9Z3feLR6S/rf8
+         Ynr9EDybnyJCGaJE8ZjSE4G69nKgKSpPbOzj77vOEX4AUFWZ3aKik/XYMZ2iZJgMfRiG
+         0z4g==
+X-Gm-Message-State: AOJu0Yx21s5s90z3b15Yj265eh8/5UFJOC+87oFoYbahaMDFpmv2TIGn
+	n4m+iAVuhYqmFAgX2O/Fi+WtgYrM14NbYBWoKesrq2TfqflIG8DBotzOd0U4Z2zh2Y4SB30/tAL
+	LUYAz0DRr7Fj5E0QNSKWKEA/rGmoMByUhXGRfdvwKDkVDeChfF//jx1v7NH4=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a17:90b:394e:b0:36a:aeaf:ab2a with SMTP id
- 98e67ed59e1d1-370f0d4c33emr26493620a91.19.1781021132831; Tue, 09 Jun 2026
- 09:05:32 -0700 (PDT)
-Date: Tue, 09 Jun 2026 09:05:32 -0700
+X-Received: by 2002:a05:6820:1614:b0:69e:9a1b:5c26 with SMTP id
+ 006d021491bc7-69eaca48607mr2821004eaf.45.1781028583259; Tue, 09 Jun 2026
+ 11:09:43 -0700 (PDT)
+Date: Tue, 09 Jun 2026 11:09:43 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a2839cc.39669fcc.33b062.0098.GAE@google.com>
-Subject: [moderation/CI] Re: net: bridge: take care of p->flags accesses
-From: syzbot ci <syzbot+ci4a2a4cdfde16d4bb@syzkaller.appspotmail.com>
+Message-ID: <6a2856e7.39669fcc.33b062.009a.GAE@google.com>
+Subject: [moderation/CI] Re: netfilter: ipset fixes, second batch
+From: syzbot ci <syzbot+cibee19e18b81acfac@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] net: bridge: take care of p->flags accesses
-https://lore.kernel.org/all/20260609080839.2506801-1-edumazet@google.com
-* [PATCH net-next 1/5] bridge: use atomic ops to read/change p->flags in sysfs
-* [PATCH net-next 2/5] bridge: use atomic ops to read/change p->flags in br_netlink.c
-* [PATCH net-next 3/5] net: bridge: use atomic ops to read/change p->flags (I)
-* [PATCH net-next 4/5] net: bridge: use atomic ops to read/change p->flags (II)
-* [PATCH net-next 5/5] net: bridge: use atomic ops to read/change p->flags (III)
+[v2] netfilter: ipset fixes, second batch
+https://lore.kernel.org/all/20260609072750.318774-1-kadlec@netfilter.org
+* [PATCH v2 1/9] netfilter: ipset: Don't use test_bit() in lockless RCU readers in hash types
+* [PATCH v2 2/9] netfilter: ipset: Don't use test_bit() in lockless RCU readers in bitmap types
+* [PATCH v2 3/9] netfilter: ipset: fix order of kfree_rcu() and rcu_assign_pointer()
+* [PATCH v2 4/9] netfilter: ipset: Extend the rcu locked area properly
+* [PATCH v2 5/9] netfilter: ipset: exlude gc when resize is in progress
+* [PATCH v2 6/9] netfilter: ipset: fix potential double free at resize/del
+* [PATCH v2 7/9] netfilter: ipset: make sure gc is properly stopped
+* [PATCH v2 8/9] netfilter: ipset: fix potential torn read in reuse/forceadd cases
+* [PATCH v2 9/9] netfilter: ipset: rework cidr bookkeeping
 
-and found the following issue:
-kernel build error
+and found the following issues:
+* BUG: sleeping function called from invalid context in hash_ip4_resize
+* BUG: sleeping function called from invalid context in hash_ipmark4_resize
+* BUG: sleeping function called from invalid context in hash_ipport4_resize
+* BUG: sleeping function called from invalid context in hash_ipportnet6_resize
+* BUG: sleeping function called from invalid context in hash_net4_resize
 
 Full report is available here:
-https://ci.syzbot.org/series/af3c270e-aed1-483d-aca2-8e328e1d9aa9
+https://ci.syzbot.org/series/60ee40c9-c67a-4d2e-8c5c-7cbc4f2c35e3
 
 ***
 
-kernel build error
+BUG: sleeping function called from invalid context in hash_ip4_resize
 
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
-base:      67ad35a58a88c360136d893cbc4c7f5b14100bb9
+tree:      nf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
+base:      bfa3d89cc15c09f7d1581c834a5ed725189ec19f
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/866adee7-16cc-49c4-bfec-0fb43ebb02b2/config
+config:    https://ci.syzbot.org/builds/63302f1b-7561-4e38-b3bc-890b9b65c7c1/config
+syz repro: https://ci.syzbot.org/findings/3f7d3e03-c73e-47d2-a969-7c113b094a23/syz_repro
 
-net/bridge/br_mrp.c:1249:23: error: use of undeclared identifier 'BR_MRP_AWARE_BI'; did you mean 'BR_MRP_AWARE_BIT'?
+BUG: sleeping function called from invalid context at ./include/linux/sched/mm.h:323
+in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 5837, name: syz.0.17
+preempt_count: 201, expected: 0
+RCU nest depth: 0, expected: 0
+2 locks held by syz.0.17/5837:
+ #0: ffffffff9a952da0 (nfnl_subsys_ipset){+.+.}-{4:4}, at: nfnl_lock net/netfilter/nfnetlink.c:96 [inline]
+ #0: ffffffff9a952da0 (nfnl_subsys_ipset){+.+.}-{4:4}, at: nfnetlink_rcv_msg+0xa71/0x12c0 net/netfilter/nfnetlink.c:293
+ #1: ffff8881bbd48028 (&t->gc_lock){+...}-{3:3}, at: spin_lock_bh include/linux/spinlock.h:348 [inline]
+ #1: ffff8881bbd48028 (&t->gc_lock){+...}-{3:3}, at: hash_ip4_resize+0x149/0x1a80 net/netfilter/ipset/ip_set_hash_gen.h:667
+Preemption disabled at:
+[<0000000000000000>] 0x0
+CPU: 0 UID: 0 PID: 5837 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ __might_resched+0x378/0x4d0 kernel/sched/core.c:9163
+ might_alloc include/linux/sched/mm.h:323 [inline]
+ slab_pre_alloc_hook mm/slub.c:4521 [inline]
+ slab_alloc_node mm/slub.c:4876 [inline]
+ __do_kmalloc_node mm/slub.c:5295 [inline]
+ __kvmalloc_node_noprof+0x164/0x8a0 mm/slub.c:6833
+ hash_ip4_resize+0x278/0x1a80 net/netfilter/ipset/ip_set_hash_gen.h:682
+ call_ad+0x562/0xb60 net/netfilter/ipset/ip_set_core.c:1758
+ ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1842
+ nfnetlink_rcv_msg+0xc03/0x12c0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x75c/0x8e0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
+ __sys_sendmsg net/socket.c:2784 [inline]
+ __do_sys_sendmsg net/socket.c:2789 [inline]
+ __se_sys_sendmsg net/socket.c:2787 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fb3ded9ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fb3dfcee028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007fb3df015fa0 RCX: 00007fb3ded9ce59
+RDX: 00000000240008c4 RSI: 0000200000000000 RDI: 0000000000000004
+RBP: 00007fb3dee32d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fb3df016038 R14: 00007fb3df015fa0 R15: 00007ffd0454d2c8
+ </TASK>
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 0 UID: 0 PID: 5837 Comm: syz.0.17 Tainted: G        W           syzkaller #0 PREEMPT(full) 
+Tainted: [W]=WARN
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ assign_lock_key+0x133/0x150 kernel/locking/lockdep.c:984
+ register_lock_class+0xcc/0x2e0 kernel/locking/lockdep.c:1299
+ __lock_acquire+0xad/0x2cf0 kernel/locking/lockdep.c:5112
+ lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5868
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:150 [inline]
+ _raw_spin_lock_bh+0x36/0x50 kernel/locking/spinlock.c:182
+ spin_lock_bh include/linux/spinlock.h:348 [inline]
+ hash_ip4_resize+0x149/0x1a80 net/netfilter/ipset/ip_set_hash_gen.h:667
+ call_ad+0x463/0xb60 net/netfilter/ipset/ip_set_core.c:1758
+ ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1842
+ nfnetlink_rcv_msg+0xc03/0x12c0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x75c/0x8e0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
+ __sys_sendmsg net/socket.c:2784 [inline]
+ __do_sys_sendmsg net/socket.c:2789 [inline]
+ __se_sys_sendmsg net/socket.c:2787 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fb3ded9ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fb3dfcee028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007fb3df015fa0 RCX: 00007fb3ded9ce59
+RDX: 00000000240008c4 RSI: 0000200000000000 RDI: 0000000000000004
+RBP: 00007fb3dee32d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fb3df016038 R14: 00007fb3df015fa0 R15: 00007ffd0454d2c8
+ </TASK>
+Set syz1 is full, maxelem 65536 reached
+
+
+***
+
+BUG: sleeping function called from invalid context in hash_ipmark4_resize
+
+tree:      nf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
+base:      bfa3d89cc15c09f7d1581c834a5ed725189ec19f
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/63302f1b-7561-4e38-b3bc-890b9b65c7c1/config
+syz repro: https://ci.syzbot.org/findings/57335612-22e3-4e78-a4ec-3d06321de960/syz_repro
+
+BUG: sleeping function called from invalid context at ./include/linux/sched/mm.h:323
+in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 5839, name: syz.1.18
+preempt_count: 201, expected: 0
+RCU nest depth: 0, expected: 0
+2 locks held by syz.1.18/5839:
+ #0: ffffffff9a952da0 (nfnl_subsys_ipset){+.+.}-{4:4}, at: nfnl_lock net/netfilter/nfnetlink.c:96 [inline]
+ #0: ffffffff9a952da0 (nfnl_subsys_ipset){+.+.}-{4:4}, at: nfnetlink_rcv_msg+0xa71/0x12c0 net/netfilter/nfnetlink.c:293
+ #1: ffff888168150028 (&t->gc_lock){+...}-{3:3}, at: spin_lock_bh include/linux/spinlock.h:348 [inline]
+ #1: ffff888168150028 (&t->gc_lock){+...}-{3:3}, at: hash_ipmark4_resize+0x13f/0x1ae0 net/netfilter/ipset/ip_set_hash_gen.h:667
+Preemption disabled at:
+[<0000000000000000>] 0x0
+CPU: 1 UID: 0 PID: 5839 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ __might_resched+0x378/0x4d0 kernel/sched/core.c:9163
+ might_alloc include/linux/sched/mm.h:323 [inline]
+ slab_pre_alloc_hook mm/slub.c:4521 [inline]
+ slab_alloc_node mm/slub.c:4876 [inline]
+ __do_kmalloc_node mm/slub.c:5295 [inline]
+ __kvmalloc_node_noprof+0x164/0x8a0 mm/slub.c:6833
+ hash_ipmark4_resize+0x26f/0x1ae0 net/netfilter/ipset/ip_set_hash_gen.h:682
+ call_ad+0x562/0xb60 net/netfilter/ipset/ip_set_core.c:1758
+ ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1842
+ nfnetlink_rcv_msg+0xc03/0x12c0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x75c/0x8e0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
+ __sys_sendmsg net/socket.c:2784 [inline]
+ __do_sys_sendmsg net/socket.c:2789 [inline]
+ __se_sys_sendmsg net/socket.c:2787 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f37dad9ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f37dbd30028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f37db015fa0 RCX: 00007f37dad9ce59
+RDX: 00000000040c0080 RSI: 00002000000002c0 RDI: 0000000000000004
+RBP: 00007f37dae32d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f37db016038 R14: 00007f37db015fa0 R15: 00007fff6c4f3458
+ </TASK>
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 1 UID: 0 PID: 5839 Comm: syz.1.18 Tainted: G        W           syzkaller #0 PREEMPT(full) 
+Tainted: [W]=WARN
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ assign_lock_key+0x133/0x150 kernel/locking/lockdep.c:984
+ register_lock_class+0xcc/0x2e0 kernel/locking/lockdep.c:1299
+ __lock_acquire+0xad/0x2cf0 kernel/locking/lockdep.c:5112
+ lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5868
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:150 [inline]
+ _raw_spin_lock_bh+0x36/0x50 kernel/locking/spinlock.c:182
+ spin_lock_bh include/linux/spinlock.h:348 [inline]
+ hash_ipmark4_resize+0x13f/0x1ae0 net/netfilter/ipset/ip_set_hash_gen.h:667
+ call_ad+0x463/0xb60 net/netfilter/ipset/ip_set_core.c:1758
+ ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1842
+ nfnetlink_rcv_msg+0xc03/0x12c0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x75c/0x8e0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
+ __sys_sendmsg net/socket.c:2784 [inline]
+ __do_sys_sendmsg net/socket.c:2789 [inline]
+ __se_sys_sendmsg net/socket.c:2787 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f37dad9ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f37dbd30028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f37db015fa0 RCX: 00007f37dad9ce59
+RDX: 00000000040c0080 RSI: 00002000000002c0 RDI: 0000000000000004
+RBP: 00007f37dae32d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f37db016038 R14: 00007f37db015fa0 R15: 00007fff6c4f3458
+ </TASK>
+Set syz1 is full, maxelem 65536 reached
+
+
+***
+
+BUG: sleeping function called from invalid context in hash_ipport4_resize
+
+tree:      nf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
+base:      bfa3d89cc15c09f7d1581c834a5ed725189ec19f
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/63302f1b-7561-4e38-b3bc-890b9b65c7c1/config
+syz repro: https://ci.syzbot.org/findings/79e04816-4100-48fa-8d49-43c546bef2fa/syz_repro
+
+BUG: sleeping function called from invalid context at ./include/linux/sched/mm.h:323
+in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 5819, name: syz.2.19
+preempt_count: 201, expected: 0
+RCU nest depth: 0, expected: 0
+2 locks held by syz.2.19/5819:
+ #0: ffffffff9a952da0 (nfnl_subsys_ipset){+.+.}-{4:4}, at: nfnl_lock net/netfilter/nfnetlink.c:96 [inline]
+ #0: ffffffff9a952da0 (nfnl_subsys_ipset){+.+.}-{4:4}, at: nfnetlink_rcv_msg+0xa71/0x12c0 net/netfilter/nfnetlink.c:293
+ #1: ffff888116501828 (&t->gc_lock){+...}-{3:3}, at: spin_lock_bh include/linux/spinlock.h:348 [inline]
+ #1: ffff888116501828 (&t->gc_lock){+...}-{3:3}, at: hash_ipport4_resize+0x13f/0x1ae0 net/netfilter/ipset/ip_set_hash_gen.h:667
+Preemption disabled at:
+[<0000000000000000>] 0x0
+CPU: 0 UID: 0 PID: 5819 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ __might_resched+0x378/0x4d0 kernel/sched/core.c:9163
+ might_alloc include/linux/sched/mm.h:323 [inline]
+ slab_pre_alloc_hook mm/slub.c:4521 [inline]
+ slab_alloc_node mm/slub.c:4876 [inline]
+ __do_kmalloc_node mm/slub.c:5295 [inline]
+ __kvmalloc_node_noprof+0x164/0x8a0 mm/slub.c:6833
+ hash_ipport4_resize+0x219/0x1ae0 net/netfilter/ipset/ip_set_hash_gen.h:677
+ call_ad+0x562/0xb60 net/netfilter/ipset/ip_set_core.c:1758
+ ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1842
+ nfnetlink_rcv_msg+0xc03/0x12c0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x75c/0x8e0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
+ __sys_sendmsg net/socket.c:2784 [inline]
+ __do_sys_sendmsg net/socket.c:2789 [inline]
+ __se_sys_sendmsg net/socket.c:2787 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fe5c739ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fe5c8339028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007fe5c7615fa0 RCX: 00007fe5c739ce59
+RDX: 0000000000000090 RSI: 00002000000002c0 RDI: 0000000000000004
+RBP: 00007fe5c7432d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fe5c7616038 R14: 00007fe5c7615fa0 R15: 00007ffd329f2868
+ </TASK>
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 1 UID: 0 PID: 5819 Comm: syz.2.19 Tainted: G        W           syzkaller #0 PREEMPT(full) 
+Tainted: [W]=WARN
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ assign_lock_key+0x133/0x150 kernel/locking/lockdep.c:984
+ register_lock_class+0xcc/0x2e0 kernel/locking/lockdep.c:1299
+ __lock_acquire+0xad/0x2cf0 kernel/locking/lockdep.c:5112
+ lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5868
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:150 [inline]
+ _raw_spin_lock_bh+0x36/0x50 kernel/locking/spinlock.c:182
+ spin_lock_bh include/linux/spinlock.h:348 [inline]
+ hash_ipport4_resize+0x13f/0x1ae0 net/netfilter/ipset/ip_set_hash_gen.h:667
+ call_ad+0x463/0xb60 net/netfilter/ipset/ip_set_core.c:1758
+ ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1842
+ nfnetlink_rcv_msg+0xc03/0x12c0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x75c/0x8e0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
+ __sys_sendmsg net/socket.c:2784 [inline]
+ __do_sys_sendmsg net/socket.c:2789 [inline]
+ __se_sys_sendmsg net/socket.c:2787 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fe5c739ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fe5c8339028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007fe5c7615fa0 RCX: 00007fe5c739ce59
+RDX: 0000000000000090 RSI: 00002000000002c0 RDI: 0000000000000004
+RBP: 00007fe5c7432d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fe5c7616038 R14: 00007fe5c7615fa0 R15: 00007ffd329f2868
+ </TASK>
+
+
+***
+
+BUG: sleeping function called from invalid context in hash_ipportnet6_resize
+
+tree:      nf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
+base:      bfa3d89cc15c09f7d1581c834a5ed725189ec19f
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/63302f1b-7561-4e38-b3bc-890b9b65c7c1/config
+syz repro: https://ci.syzbot.org/findings/8502cd2b-1718-4dd7-8c57-c8f6d494a2b7/syz_repro
+
+BUG: sleeping function called from invalid context at ./include/linux/sched/mm.h:323
+in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 5835, name: syz.1.18
+preempt_count: 201, expected: 0
+RCU nest depth: 0, expected: 0
+2 locks held by syz.1.18/5835:
+ #0: ffffffff9a952da0 (nfnl_subsys_ipset){+.+.}-{4:4}, at: nfnl_lock net/netfilter/nfnetlink.c:96 [inline]
+ #0: ffffffff9a952da0 (nfnl_subsys_ipset){+.+.}-{4:4}, at: nfnetlink_rcv_msg+0xa71/0x12c0 net/netfilter/nfnetlink.c:293
+ #1: ffff8881114d0028 (&t->gc_lock){+...}-{3:3}, at: spin_lock_bh include/linux/spinlock.h:348 [inline]
+ #1: ffff8881114d0028 (&t->gc_lock){+...}-{3:3}, at: hash_ipportnet6_resize+0x170/0x1eb0 net/netfilter/ipset/ip_set_hash_gen.h:667
+Preemption disabled at:
+[<0000000000000000>] 0x0
+CPU: 0 UID: 0 PID: 5835 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ __might_resched+0x378/0x4d0 kernel/sched/core.c:9163
+ might_alloc include/linux/sched/mm.h:323 [inline]
+ slab_pre_alloc_hook mm/slub.c:4521 [inline]
+ slab_alloc_node mm/slub.c:4876 [inline]
+ __do_kmalloc_node mm/slub.c:5295 [inline]
+ __kvmalloc_node_noprof+0x164/0x8a0 mm/slub.c:6833
+ hash_ipportnet6_resize+0x31d/0x1eb0 net/netfilter/ipset/ip_set_hash_gen.h:682
+ call_ad+0x562/0xb60 net/netfilter/ipset/ip_set_core.c:1758
+ ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1842
+ nfnetlink_rcv_msg+0xc03/0x12c0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x75c/0x8e0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
+ __sys_sendmsg net/socket.c:2784 [inline]
+ __do_sys_sendmsg net/socket.c:2789 [inline]
+ __se_sys_sendmsg net/socket.c:2787 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f27c6b9ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f27c7a44028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f27c6e15fa0 RCX: 00007f27c6b9ce59
+RDX: 0000000000000000 RSI: 00002000000002c0 RDI: 0000000000000004
+RBP: 00007f27c6c32d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f27c6e16038 R14: 00007f27c6e15fa0 R15: 00007ffcb0b8a718
+ </TASK>
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 0 UID: 0 PID: 5835 Comm: syz.1.18 Tainted: G        W           syzkaller #0 PREEMPT(full) 
+Tainted: [W]=WARN
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ assign_lock_key+0x133/0x150 kernel/locking/lockdep.c:984
+ register_lock_class+0xcc/0x2e0 kernel/locking/lockdep.c:1299
+ __lock_acquire+0xad/0x2cf0 kernel/locking/lockdep.c:5112
+ lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5868
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:150 [inline]
+ _raw_spin_lock_bh+0x36/0x50 kernel/locking/spinlock.c:182
+ spin_lock_bh include/linux/spinlock.h:348 [inline]
+ hash_ipportnet6_resize+0x170/0x1eb0 net/netfilter/ipset/ip_set_hash_gen.h:667
+ call_ad+0x463/0xb60 net/netfilter/ipset/ip_set_core.c:1758
+ ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1842
+ nfnetlink_rcv_msg+0xc03/0x12c0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x75c/0x8e0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
+ __sys_sendmsg net/socket.c:2784 [inline]
+ __do_sys_sendmsg net/socket.c:2789 [inline]
+ __se_sys_sendmsg net/socket.c:2787 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f27c6b9ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f27c7a44028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f27c6e15fa0 RCX: 00007f27c6b9ce59
+RDX: 0000000000000000 RSI: 00002000000002c0 RDI: 0000000000000004
+RBP: 00007f27c6c32d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f27c6e16038 R14: 00007f27c6e15fa0 R15: 00007ffcb0b8a718
+ </TASK>
+
+
+***
+
+BUG: sleeping function called from invalid context in hash_net4_resize
+
+tree:      nf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
+base:      bfa3d89cc15c09f7d1581c834a5ed725189ec19f
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/63302f1b-7561-4e38-b3bc-890b9b65c7c1/config
+syz repro: https://ci.syzbot.org/findings/230cf2b1-2c8b-4558-b095-874702f9bc7d/syz_repro
+
+BUG: sleeping function called from invalid context at ./include/linux/sched/mm.h:323
+in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 5814, name: syz.1.18
+preempt_count: 201, expected: 0
+RCU nest depth: 0, expected: 0
+2 locks held by syz.1.18/5814:
+ #0: ffffffff9a952da0 (nfnl_subsys_ipset){+.+.}-{4:4}, at: nfnl_lock net/netfilter/nfnetlink.c:96 [inline]
+ #0: ffffffff9a952da0 (nfnl_subsys_ipset){+.+.}-{4:4}, at: nfnetlink_rcv_msg+0xa71/0x12c0 net/netfilter/nfnetlink.c:293
+ #1: ffff88816a8df028 (&t->gc_lock){+...}-{3:3}, at: spin_lock_bh include/linux/spinlock.h:348 [inline]
+ #1: ffff88816a8df028 (&t->gc_lock){+...}-{3:3}, at: hash_net4_resize+0x168/0x1bb0 net/netfilter/ipset/ip_set_hash_gen.h:667
+Preemption disabled at:
+[<0000000000000000>] 0x0
+CPU: 1 UID: 0 PID: 5814 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ __might_resched+0x378/0x4d0 kernel/sched/core.c:9163
+ might_alloc include/linux/sched/mm.h:323 [inline]
+ slab_pre_alloc_hook mm/slub.c:4521 [inline]
+ slab_alloc_node mm/slub.c:4876 [inline]
+ __do_kmalloc_node mm/slub.c:5295 [inline]
+ __kvmalloc_node_noprof+0x164/0x8a0 mm/slub.c:6833
+ hash_net4_resize+0x26e/0x1bb0 net/netfilter/ipset/ip_set_hash_gen.h:677
+ call_ad+0x562/0xb60 net/netfilter/ipset/ip_set_core.c:1758
+ ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1842
+ nfnetlink_rcv_msg+0xc03/0x12c0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x75c/0x8e0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
+ __sys_sendmsg net/socket.c:2784 [inline]
+ __do_sys_sendmsg net/socket.c:2789 [inline]
+ __se_sys_sendmsg net/socket.c:2787 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fe472d9ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fe473bc7028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007fe473015fa0 RCX: 00007fe472d9ce59
+RDX: 0000000004000050 RSI: 0000200000000000 RDI: 0000000000000003
+RBP: 00007fe472e32d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fe473016038 R14: 00007fe473015fa0 R15: 00007ffcba742758
+ </TASK>
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 1 UID: 0 PID: 5814 Comm: syz.1.18 Tainted: G        W           syzkaller #0 PREEMPT(full) 
+Tainted: [W]=WARN
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ assign_lock_key+0x133/0x150 kernel/locking/lockdep.c:984
+ register_lock_class+0xcc/0x2e0 kernel/locking/lockdep.c:1299
+ __lock_acquire+0xad/0x2cf0 kernel/locking/lockdep.c:5112
+ lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5868
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:150 [inline]
+ _raw_spin_lock_bh+0x36/0x50 kernel/locking/spinlock.c:182
+ spin_lock_bh include/linux/spinlock.h:348 [inline]
+ hash_net4_resize+0x168/0x1bb0 net/netfilter/ipset/ip_set_hash_gen.h:667
+ call_ad+0x463/0xb60 net/netfilter/ipset/ip_set_core.c:1758
+ ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1842
+ nfnetlink_rcv_msg+0xc03/0x12c0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x75c/0x8e0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x972/0x9f0 net/socket.c:2698
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
+ __sys_sendmsg net/socket.c:2784 [inline]
+ __do_sys_sendmsg net/socket.c:2789 [inline]
+ __se_sys_sendmsg net/socket.c:2787 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2787
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fe472d9ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fe473bc7028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007fe473015fa0 RCX: 00007fe472d9ce59
+RDX: 0000000004000050 RSI: 0000200000000000 RDI: 0000000000000003
+RBP: 00007fe472e32d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fe473016038 R14: 00007fe473015fa0 R15: 00007ffcba742758
+ </TASK>
+Set syz1 is full, maxelem 65536 reached
+
 
 ***
 
@@ -94,7 +647,7 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[davem@davemloft.net edumazet@google.com eric.dumazet@gmail.com horms@kernel.org idosch@nvidia.com kuba@kernel.org netdev@vger.kernel.org pabeni@redhat.com razor@blackwall.org]
+[kadlec@netfilter.org netfilter-devel@vger.kernel.org pablo@netfilter.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
