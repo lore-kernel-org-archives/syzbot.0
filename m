@@ -1,92 +1,140 @@
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B31463ED5CD
-	for <syzbot@lists.linux.dev>; Tue,  9 Jun 2026 22:00:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E571537104C
+	for <syzbot@lists.linux.dev>; Wed, 10 Jun 2026 07:32:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781042460; cv=none; b=hiJ0K8CEsWWpTHsgcc6jemnD6d9n+t62zHMkxZSERE7nGROsjoyt2fGbfTQQXlfXttmEaL4abmGtc41VLIwx5ZodzNGIevdX+5vNybKR7Pw9EFEbCONdaQM6T8KDbpEvRBRPwDgDQl6YTBcTj1YTbCoF3YHAxoaoXmZUaI51EeM=
+	t=1781076780; cv=none; b=sgaFjpZdO/NxmzzukxkGOM2h38jU8vBNXD7TLWp/HWXSwMozCihoanfKomyTaL6y7T78keh55HYDHtSb2dSH/5Br3bjJ51pCpce+3u4b0/yr3z/CWaAq1vJzXeIZiOOisjQlambaamZXK25k43oOM+WQaTLiLYvZYz5SfCsfJB4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781042460; c=relaxed/simple;
-	bh=gywX7BYpSKLg7gKTGA19iUfRsc2aJmdFafwnoLISue4=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=NSqpOxQOl85XIQ/Z7E2Zs8PXBc14NbJmuLacOaOuwF/Y2ZLTq0hN5cz/J3yumsDy74/RGY76jXqWdKsxtqyra1ZrD1nxWjUnu0jucY7arscYM2Ta4WGOWnb7YiHEqNBBGmF5k5Fv2NAwSEBGBMcObyKXmQNk3LOUiPEIhypQNAI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
+	s=arc-20240116; t=1781076780; c=relaxed/simple;
+	bh=XIdJj67dskaqrnVnVCRm2ZtVnDf3gF1++vmI4f+FCjk=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Jd9uK98RIgNE19UlRDvK34L7LueTL3+f8nPGAMy7tfjXWjXrjOYECPY8Nv+fLwNPlhElD9rJVB3WY3S0ahX5pBFsN5qkESds0U5euLCiOSM8GUYmcciC3suz4kLxmGCJAMaeESkWpOQUiqiUcxUmQ1XTneHby/kwjLMP0DmMvvE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-486cc29e03bso4229241b6e.3
-        for <syzbot@lists.linux.dev>; Tue, 09 Jun 2026 15:00:58 -0700 (PDT)
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-44124c420cfso7581618fac.1
+        for <syzbot@lists.linux.dev>; Wed, 10 Jun 2026 00:32:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781042458; x=1781647258;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=bUNf/J4bq5WouM+YsRdi/wXwHjEw809Iin1HBtJr4gY=;
-        b=rgm1iLfpwZSdOkIHzp+cXTqgh3nr7AybZXIbVcImCAm/O7sXItyWrvaUzFUZ052KXP
-         AlMzfq7HwhGIARVlkyQgB7aqavclalKIaEytHVQ2f5H6H5PEkRpn97URXbEsFpdJTDIU
-         oHs4BEe8cJ5QiuKOKBvC5zYtJk0eEt8g2FUoAkdrmmj962yqT1rcyye/jQAwew6E3o/P
-         X32+U1Zrc5kapbb2AhRPfto+62amKvfSOlura0IibUXpCzrNE3wfAs/Y6fYw1aFfmO4S
-         1LeZ8Om3UMicIZkfUpVB8sLfxAzSQfwTqB5jqcNqH590CpoRrTKWhc/Oxeg8trmQNWmL
-         QzMQ==
-X-Gm-Message-State: AOJu0YxCNN4gxM3DYOzyqbI21NoGvi08EojXMNb2E4a68cTPHEImLt+C
-	zhfPrO+drE2ti8xHppFIs+0ySrXXqyQyvP+GJLW7x0tAult8EZoUMxiWbcHUO1EBivNB+K2BnYb
-	JG/tiOiT8QsHzKVc6PVco2UYoW2sn77HghGlqWx6cwlbR0hvyulF/vZsMuE8=
+        d=1e100.net; s=20251104; t=1781076778; x=1781681578;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=lMd/hYSZHj/MIHAniV13VCiLs1UAQMeBq5g9oISUHBY=;
+        b=GIdZPARjMjeSsDl0HbcAYvyI0msv2tF6SBc/jt9vU+yRwJ7RESzJ6tLnRtWFEb4aI7
+         bTgYhydH6bUFmpnlALBbtzPfGLMZmpQ+CnNbtCsg+C37+fI3rnkzyvuX/61aL7nt/xk4
+         ZwpwkzoL2XHXooi+CRMOhc9meUN6RLS3a7PmetPFsg4OhdayiabrA3QCwsP9gbya5HEh
+         bZFtH/f8UJ3I4WgNyMwHScIqOyVU6pYAEvc5djonGqL9Th5F3kzWEc4TuDg+1lBuGW4o
+         BSfWNrKk9+UsZwazJO9ThLJo16QbGXn/IHYCaP3g4m1j1OZt3XsN5DMDZDn9KXKMU7Iq
+         wDaw==
+X-Gm-Message-State: AOJu0Yxi8FZngbzwEonJ8i1PcF5+s8dFd9RpUpnBzSfPmKDNPWews1WM
+	y5BxeOGPitLvneGowTv5LcVvqk81+OcmoXbzhCvbCEH+lRkd67O7rHb6+bZEqrxzScFNH8YC14S
+	JzWLdl52XDLmrqeszCMOZO19io45b4Eo5yicB1VxwccVfp6nlqGr4TO/P1OM=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:3442:b0:46a:869c:b576 with SMTP id
- 5614622812f47-4868dc82813mr13525233b6e.2.1781042457597; Tue, 09 Jun 2026
- 15:00:57 -0700 (PDT)
-Date: Tue, 09 Jun 2026 15:00:57 -0700
+X-Received: by 2002:a05:6820:4c0c:b0:69e:b7c6:6b58 with SMTP id
+ 006d021491bc7-69eb7c673bdmr2238913eaf.18.1781076777968; Wed, 10 Jun 2026
+ 00:32:57 -0700 (PDT)
+Date: Wed, 10 Jun 2026 00:32:57 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a288d19.39669fcc.33b062.00a6.GAE@google.com>
-Subject: [moderation/CI] Re: scsi/block: NUMA-local scan allocations,
- shared-tag path cleanup, and SCSI I/O counters
-From: syzbot ci <syzbot+cid87965fa0bcd0f6e@syzkaller.appspotmail.com>
+Message-ID: <6a291329.39669fcc.33b062.00b7.GAE@google.com>
+Subject: [moderation/CI] Re: ext4: move inline data cleanup to ext4_writepages
+ to fix deadlock
+From: syzbot ci <syzbot+ci721caf2cd61b2e01@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v3] scsi/block: NUMA-local scan allocations, shared-tag path cleanup, and =
-SCSI I/O counters
-https://lore.kernel.org/all/20260609121806.2121755-1-sumit.saxena@broadcom.=
-com
-* [PATCH v3 1/4] scsi: scan: allocate sdev and starget on the NUMA node of =
-the host adapter
-* [PATCH v3 2/4] scsi: host: allocate struct Scsi_Host on the NUMA node of =
-the host adapter
-* [PATCH v3 3/4] block: drop shared-tag fairness throttling
-* [PATCH v3 4/4] scsi: use percpu counters for iostat counters in struct sc=
-si_device
+[v1] ext4: move inline data cleanup to ext4_writepages to fix deadlock
+https://lore.kernel.org/all/20260609154505.2104659-1-yun.zhou@windriver.com
+* [PATCH] ext4: move inline data cleanup to ext4_writepages to fix deadlock
 
 and found the following issue:
-kernel build error
+kernel BUG in ext4_writepages
 
 Full report is available here:
-https://ci.syzbot.org/series/360774d1-fc19-4efa-ad7f-1b57f3911dc1
+https://ci.syzbot.org/series/1ede6029-df2a-4e08-bffc-05540c1f4934
 
 ***
 
-kernel build error
+kernel BUG in ext4_writepages
 
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
-nux-next
-base:      a87737435cfa134f9cdcc696ba3080759d04cf72
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      2d3090a8aeb596a26935db0955d46c9a5db5c6ce
 arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/3435ab05-0af5-4da8-9aea-dcf5f7401be=
-7/config
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/63ee0324-2d17-4b32-aca2-c6230ff64be6/config
+syz repro: https://ci.syzbot.org/findings/676a447c-ea73-43ea-9949-054dac1961e5/syz_repro
 
-drivers/ata/libata-scsi.c:4637:57: error: too few arguments to function cal=
-l, expected 3, have 2
+EXT4-fs warning (device loop2): ext4_expand_extra_isize_ea:2860: Unable to expand inode 15. Delete some EAs or run e2fsck.
+------------[ cut here ]------------
+kernel BUG at fs/ext4/inode.c:3047!
+Oops: invalid opcode: 0000 [#1] SMP KASAN PTI
+CPU: 1 UID: 0 PID: 5875 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:ext4_writepages+0x622/0x630 fs/ext4/inode.c:3046
+Code: ff e9 61 fc ff ff 44 89 f1 80 e1 07 80 c1 03 38 c1 0f 8c de fc ff ff 4c 89 f7 e8 f9 2f a8 ff e9 d1 fc ff ff e8 ef d7 3c ff 90 <0f> 0b 66 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90
+RSP: 0018:ffffc900034df2e0 EFLAGS: 00010293
+RAX: ffffffff8288dfb1 RBX: 1ffff9200069be60 RCX: ffff888110555940
+RDX: 0000000000000000 RSI: 0000004000000000 RDI: 0000000000000000
+RBP: ffffc900034df410 R08: ffff8881b48c2f0f R09: 1ffff110369185e1
+R10: dffffc0000000000 R11: ffffed10369185e2 R12: dffffc0000000000
+R13: 0000004000000000 R14: 0000004610000000 R15: 1ffff11020c6fcc5
+FS:  00007f033e9346c0(0000) GS:ffff8882a92a0000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005556842f3058 CR3: 000000016d5c0000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ do_writepages+0x32e/0x550 mm/page-writeback.c:2571
+ __writeback_single_inode+0x133/0x10e0 fs/fs-writeback.c:1764
+ writeback_single_inode+0x4ac/0xdc0 fs/fs-writeback.c:1883
+ write_inode_now+0x1c2/0x290 fs/fs-writeback.c:2974
+ iput_final fs/inode.c:1950 [inline]
+ iput+0x8c1/0xe80 fs/inode.c:2009
+ ext4_orphan_cleanup+0xc38/0x1470 fs/ext4/orphan.c:472
+ __ext4_fill_super fs/ext4/super.c:5701 [inline]
+ ext4_fill_super+0x5a19/0x6330 fs/ext4/super.c:5824
+ get_tree_bdev_flags+0x431/0x4f0 fs/super.c:1694
+ vfs_get_tree+0x92/0x2a0 fs/super.c:1754
+ fc_mount fs/namespace.c:1193 [inline]
+ do_new_mount_fc fs/namespace.c:3758 [inline]
+ do_new_mount+0x341/0xd30 fs/namespace.c:3834
+ do_mount fs/namespace.c:4167 [inline]
+ __do_sys_mount fs/namespace.c:4383 [inline]
+ __se_sys_mount+0x31d/0x420 fs/namespace.c:4360
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f033d99e0ca
+Code: 48 c7 c2 e8 ff ff ff f7 d8 64 89 02 b8 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f033e933e58 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 00007f033e933ee0 RCX: 00007f033d99e0ca
+RDX: 0000200000000040 RSI: 00002000000016c0 RDI: 00007f033e933ea0
+RBP: 0000200000000040 R08: 00007f033e933ee0 R09: 000000000000840e
+R10: 000000000000840e R11: 0000000000000246 R12: 00002000000016c0
+R13: 00007f033e933ea0 R14: 000000000000042f R15: 0000200000000080
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:ext4_writepages+0x622/0x630 fs/ext4/inode.c:3046
+Code: ff e9 61 fc ff ff 44 89 f1 80 e1 07 80 c1 03 38 c1 0f 8c de fc ff ff 4c 89 f7 e8 f9 2f a8 ff e9 d1 fc ff ff e8 ef d7 3c ff 90 <0f> 0b 66 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90
+RSP: 0018:ffffc900034df2e0 EFLAGS: 00010293
+RAX: ffffffff8288dfb1 RBX: 1ffff9200069be60 RCX: ffff888110555940
+RDX: 0000000000000000 RSI: 0000004000000000 RDI: 0000000000000000
+RBP: ffffc900034df410 R08: ffff8881b48c2f0f R09: 1ffff110369185e1
+R10: dffffc0000000000 R11: ffffed10369185e2 R12: dffffc0000000000
+R13: 0000004000000000 R14: 0000004610000000 R15: 1ffff11020c6fcc5
+FS:  00007f033e9346c0(0000) GS:ffff8882a92a0000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005556842f3058 CR3: 000000016d5c0000 CR4: 00000000000006f0
+
 
 ***
 
@@ -105,23 +153,7 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[aacraid@microsemi.com aliakc@web.de anil.gurumurthy@qlogic.com aradford@gm=
-ail.com axboe@kernel.dk bcm-kernel-feedback-list@broadcom.com brking@us.ibm=
-.com bvanassche@acm.org chandrakanth.patil@broadcom.com chleroy@kernel.org =
-cleech@redhat.com daniel@thingy.jp decui@microsoft.com don.brace@microchip.=
-com eperezma@redhat.com fischer@norbit.de fthain@linux-m68k.org geoff@infra=
-dead.org gotom@debian.or.jp gr-qlogic-storage-upstream@marvell.com haiyangz=
-@microsoft.com hare@suse.com james.bottomley@hansenpartnership.com james.ri=
-zzo@broadcom.com jasowang@redhat.com jgross@suse.com jinpu.wang@cloud.ionos=
-.com john.g.garry@oracle.com justin.tee@broadcom.com kartilak@cisco.com kas=
-hyap.desai@broadcom.com khalid@gonehiking.org kys@microsoft.com lduncan@sus=
-e.com lenehan@twibble.org linux-arm-kernel@lists.infradead.org linux-block@=
-vger.kernel.org linux-hyperv@vger.kernel.org linux-scsi@vger.kernel.org lin=
-ux@armlinux.org.uk linux@highpoint-tech.com linuxdrivers@attotech.com linux=
-ppc-dev@lists.ozlabs.org liyihang9@h-partners.com longli@microsoft.com madd=
-y@linux.ibm.com martin.petersen@oracle.com mdr@sgi.com megaraidlinux.pdl@br=
-oadcom.com michael.christie@oracle.com mpe@ellerman.id.au mpi3mr-linuxdrv.p=
-dl@broadcom.com]
+[adilger.kernel@dilger.ca daeho.jeong@samsung.com jack@suse.cz libaokun@linux.alibaba.com linux-ext4@vger.kernel.org linux-kernel@vger.kernel.org ojaswin@linux.ibm.com ritesh.list@gmail.com tytso@mit.edu yi.zhang@huawei.com yun.zhou@windriver.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
