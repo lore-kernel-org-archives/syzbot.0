@@ -1,113 +1,72 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECF3D1DEFE8;
-	Thu, 11 Jun 2026 13:52:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D92B35504D
+	for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 15:08:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781185945; cv=none; b=rqyl1LNzpflbrY8w71xneOttuMYQSGHMHUSFHbKN6DqeCYXMeudE49S/WYQKRnmTcTIBnmTeI5HKJrn7DeOle4pcK9rvcoR4ywCk9MTcWzsDj1CqGK/xXLQh+pPEMhkts/iNXlN6UFVkKVhps/GXzF7h/Is2xUlzAioApNtoAc0=
+	t=1781190500; cv=none; b=EQI6vWTt8qpNy+VlNPBcnrPL1Gkd/1KNoR/n5JoIw6SSijTg8tKHEUStLOmRHoef7Vytutvgxenty0b5pER+ZiwryKu0Yp1iKgXf34tq0zz1vEohdxZB+eQfnWWUX5H7AJhr9M2/douY2UWynnsm3guUFWIbV71USE9V4sxxlJU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781185945; c=relaxed/simple;
-	bh=tZZk3D6HLs4E6dfIRlQwYBIiHMyklj2a1B52R2Fq2mQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=K9Q6RyaSNYZoPhAKFTn9kAkJ5/U+Ji0Kj5riq5f5YTGPj2LR2nNItO9rGhy5cYHU5cU/R9lpieO/SKuKZDChX9w0LHed7E5Y55/cXX7OXtup6czY0JS+AjXUGgGk1X38cFJXuFPv4S1GK4bzq7CRoK1EKbSA3LzjBIrE3aJbiwQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dM73evRg; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dM73evRg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29BD21F00893;
-	Thu, 11 Jun 2026 13:52:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781185944;
-	bh=trCpG7OYfxnjH2p0gtbocSZgOkcD6A+aryRBCDUbrkc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=dM73evRgIH6Tc0t4MT6FmSArUfNHA6XbB0+n3hG2uul6GVQNExDXuAKD+omFLkxXq
-	 L9yih0T0Hr7pZ6W1rmjbx8is8+cgZ61chG+VdVg1KTOp4YrRQh+moiwslzeXmYib96
-	 QmwT2TabtDoEDkyjB4FOFb3PiWf8GGJsnyfiIPQ3HBvqYA/GJ/4oICjbiHK4Y6IvP0
-	 ByTLMlnoDUfkNRVHy70E/eju975PEOPc9zScG1x5FK/WI+wSaDk+lPtN16CeXoWvY/
-	 M7AgL7l2wUwgkuIvRl11zk630XGtsTT65nVCKpr81I4+fChK9tUw6vPaRXBYRlJxni
-	 8Joe3Q7i68zJA==
-Date: Thu, 11 Jun 2026 15:52:16 +0200
-From: "Oscar Salvador (SUSE)" <osalvador@kernel.org>
-To: syzbot ci <syzbot+ci07d784447d67ca63@syzkaller.appspotmail.com>
-Cc: akpm@linux-foundation.org, david@kernel.org, david@redhat.com,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-	lorenzo.stoakes@oracle.com, mhocko@suse.com, muchun.song@linux.dev,
-	osalvador@suse.de, vbabka@kernel.org, syzbot@lists.linux.dev,
-	syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot ci] Re: Implement a new generic pagewalk API
-Message-ID: <aiq9kD3loZWsfZTN@localhost.localdomain>
-References: <20260525165528.184397-1-osalvador@suse.de>
- <6a153468.050a0220.7dd1.0004.GAE@google.com>
+	s=arc-20240116; t=1781190500; c=relaxed/simple;
+	bh=e9BYqd/TiVfBDllfAFAo9UUiMBctmNP8GPj8BiGaOxg=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=YnGTZX/TZ1zImfYxHwIZo03WkCyg3i3WUkEx/dh8oRK1fzdeh3fRt7xiv8Re8gfVPwNUQm/Akfl8qzlWG6XBV29DPhN1vGNG6ToL/r42bU3TqfB0C63n5kauopzmNLM+xLx8DrZGQAyf/Cg9X9hjxfKlNbeOKN+2v8A5Vu9BE24=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-7e71e43e89bso7463010a34.3
+        for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 08:08:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781190498; x=1781795298;
+        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=e9BYqd/TiVfBDllfAFAo9UUiMBctmNP8GPj8BiGaOxg=;
+        b=gWdN3QP1OjYqs0wL/j2LckssTPTycUKuJizuU5LRQWCaNE19aWXvEcuzbzoWytvssw
+         kucDqDH9kyHjbEAj39HkYjPm5SLoMvSZon6vKP473N2TuTEYbiOrBLZNk0FWj3Vnkx6W
+         EzSec2gN7bG7PDN3HNQy0ReMf23g2rhepN5gFfymperXlsThWtRmjHfHavvDFqOT4WOc
+         hgDWZdzan6zqX2gpFz2qfOmEvy24gilnobuFXnYYOvZKWrkQkT7yo76np5ZZgd2EQZ1y
+         F4pqWXMnqNWUnxx1uE41M1mwwoha0OwMVlRLa54pHN3QZHZaG/oeANcXwA8gc5ANwRg3
+         Y5lA==
+X-Gm-Message-State: AOJu0YylS0B3/40DiWTs56meZCu7f9+lsfymyTxXq6A2Pi/Dbhiw5ieP
+	Y7aRWW+oJx9ZQxycoYO/xG6BTH3uMUiFmYEK37W7mQWT6hbxN8dvOSNC+fcaYms/Yhr1eSS4B8m
+	In72Dw2YRPCJOdrLu4exFGE2Gt5N1sPN5D2yTEINbYtc/q5JzBHo88bt8Nj4=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="HNkqtG5OHNgJiC2N"
-Content-Disposition: inline
-In-Reply-To: <6a153468.050a0220.7dd1.0004.GAE@google.com>
+X-Received: by 2002:a05:6830:4908:b0:7e6:f7fb:968b with SMTP id
+ 46e09a7af769-7e773359ed3mr2706887a34.2.1781190498286; Thu, 11 Jun 2026
+ 08:08:18 -0700 (PDT)
+Date: Thu, 11 Jun 2026 08:08:18 -0700
+In-Reply-To: <aiq9kD3loZWsfZTN@localhost.localdomain>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a2acf62.886d67d6.257b36.0006.GAE@google.com>
+Subject: [syzbot ci] Re: Implement a new generic pagewalk API
+From: syzbot ci <syzbot+cif8583cab9d33c85e@syzkaller.appspotmail.com>
+To: osalvador@kernel.org, akpm@linux-foundation.org, david@kernel.org, 
+	david@redhat.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
+	lorenzo.stoakes@oracle.com, mhocko@suse.com, muchun.song@linux.dev, 
+	osalvador@suse.de, syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com, 
+	vbabka@kernel.org
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
+syzbot ci has tested the suggested fix patch on top of the following series:
 
---HNkqtG5OHNgJiC2N
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+[v3] Implement a new generic pagewalk API
+https://lore.kernel.org/all/20260525165528.184397-1-osalvador@suse.de
 
-On Mon, May 25, 2026 at 10:49:28PM -0700, syzbot ci wrote:
-> syzbot ci has tested the following series
-> 
-> [v3] Implement a new generic pagewalk API
-> https://lore.kernel.org/all/20260525165528.184397-1-osalvador@suse.de
-> * [RFC PATCH v3 1/8] mm: Add softleaf_from_pud
-> * [RFC PATCH v3 2/8] mm: Add {pmd,pud}_huge_lock helper
-> * [RFC PATCH v3 3/8] mm: Implement folio_pmd_batch
-> * [RFC PATCH v3 4/8] mm: Implement pt_range_walk
-> * [RFC PATCH v3 5/8] mm: Make /proc/pid/smaps use the new generic pagewalk API
-> * [RFC PATCH v3 6/8] mm: Make /proc/pid/numa_maps use the new generic pagewalk API
-> * [RFC PATCH v3 7/8] mm: Make /proc/pid/pagemap use the new generic pagewalk API
-> * [RFC PATCH v3 8/8] mm: Make /proc/pid/clear_refs use the new generic pagewalk API
-> 
-> and found the following issue:
-> general protection fault in clear_refs_write
-> 
-> Full report is available here:
-> https://ci.syzbot.org/series/0beab2d0-9d88-4288-ac81-b294e51c057d
+Patch: https://ci.syzbot.org/jobs/73cb101f-23d1-4b01-a2fa-2bb80c75788a/patch
+Testing results:
+* [build 0] Build Patched: passed
+* [build 0] Boot test: Patched: passed
 
-#syz test
-
- 
-
--- 
-Oscar Salvador
-SUSE Labs
-
---HNkqtG5OHNgJiC2N
-Content-Type: text/x-patch; charset=us-ascii
-Content-Disposition: attachment; filename=0001-fix.patch
-
-From 59776435d1beca2bd9446050450afe04453a99e8 Mon Sep 17 00:00:00 2001
-From: Oscar Salvador <osalvador@suse.de>
-Date: Thu, 11 Jun 2026 13:58:44 +0200
-Subject: [PATCH] fix
+Full report is available here:
+https://ci.syzbot.org/session/98c0ca07-99bd-49e1-8b0d-a47659fee85b
 
 ---
- fs/proc/task_mmu.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
-index 1134dfb3dab0..fadc6356f84e 100644
---- a/fs/proc/task_mmu.c
-+++ b/fs/proc/task_mmu.c
-@@ -1710,6 +1710,7 @@ static ssize_t clear_refs_write(struct file *file, const char __user *buf,
- 			else if (ret < 0)
- 				break;
- 
-+			flags &= ~PT_TYPE_NONE;
- 			pt_type = pt_range_walk_start(&ptw, vma, vma->vm_start, vma->vm_end, flags);
- 			while (pt_type != PTW_DONE) {
- 
--- 
-2.35.3
-
-
---HNkqtG5OHNgJiC2N--
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
