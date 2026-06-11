@@ -1,136 +1,205 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com [209.85.160.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1E7F423161
-	for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 17:20:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B7CF4D90B1
+	for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 17:28:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781198458; cv=none; b=YycXtAjMSpislDXn0Iie1LsKLIuJJm+EyXVvMR+povrlv8fULSPvl34zNuKWBw68/qBwDvh9Dxbd1adEhnr/jR6vxY5tKG/358R5lTyyoTVFwlQPLw35n6ZjgEmlm4aP9l7ThIyE+Hq8Tn/sE1rTJkFGAaEP4eR5JD+qYnDYTLQ=
+	t=1781198884; cv=none; b=EGIBXh5EGzcuvAjdQJsTrTrCtO7r0BhspfmDdBY9CeHuhCS55oUBUKE2eYBRMNKj/lTdbzdzM1ymZ0J1duFU0nUZDNDGAHnuranNbki7Hu9WE+dBlOZrg0kAjAuUoP8C+4hTb72T9YpuOdhIRVBI5kIUXzdPauOM3cCx7NULcGk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781198458; c=relaxed/simple;
-	bh=Hot4UniHs4ligl/7ejYYsuex1217fakSzNm+wlM+65E=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=XijGanfgLPOb9dYWEKqwwtDCl7SalWnkExbnEhopiDsfYfvSj7QTjQPW3eGMrGSsLtRkjfyb+CZniDJbW5vRvZiexzlaM8kpdjKhkcr9y4+/trrpr9X+6IBtJYp24BVXNZAAHAbaZe7aK1tKP4hEv9i2PR5isDpI/SAvA8Y5CaM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=YmXjN+dW; arc=none smtp.client-ip=209.85.214.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="YmXjN+dW"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2c0c272e532so795075ad.1
-        for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 10:20:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781198455; x=1781803255; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9kKAnYeHG2u5wx8ciAL480Un709THxmEGRnj+zMfdq4=;
-        b=YmXjN+dWub9CM2IGDCOPmGFS5BDDdtC0u3hgXTV6+IpO+aYeiIeEqJCoBHeV8b0xXh
-         53O1ikptXgYF2eE8E0fCQTLPmoFuvIvAUg5SQOHyPXsk6zlVxZ03c4Rb0LpLPNf2pFuJ
-         FbLwH48lcBlpcXpFplzglAcCoYc3isSxPioKxyESK3H+QelHcL+GERJ8bAnLcp8Krvci
-         fT15xAczcovGUmYH103VcoDqXlv/GAxm7cxgRcrid7ljpbNx3i/AKB7czpbf1qEDRHXz
-         ZcJdbwzsgLpcdEndHD8b8MIxrva6bEeFmWiRLZ7dkRVSFrl7NeQYaiT9Nbd8RKfAWXh1
-         QQpw==
+	s=arc-20240116; t=1781198884; c=relaxed/simple;
+	bh=7nhY14QIGFbkZRhrWcz3qM8BTR11aGuHmv7DmLQQHiA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=nMmd0U2nFAhUFBaZjH9DFnXp8fB1LviBo0xbRkDBx9NdzQcV9gjS/ETQPiiZVwUxxoQcO/cLPZNsjsn4Jl0sQmfEJpB+1gsACRh8MiU/ec0V3LF3+2HkQe/d85sYSlzFL9OiYNiqtK7egL9+v1+m1OBFNqshDHmONPg7/wH60WU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-43d1fa463d0so153220fac.0
+        for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 10:28:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781198455; x=1781803255;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9kKAnYeHG2u5wx8ciAL480Un709THxmEGRnj+zMfdq4=;
-        b=cwhZiQpSq1Je/ULrhI0WVtV9NN8HNkEyT/90NwQoZGvd4p03k5aCJ+hXuaLVw4gYwV
-         NHdzuGtBNkf7Prb5730o8ae240nmmNvvxBmcJg/7/g+gB+X353fx4VWp0O2UTXxfhuwY
-         HMpOc9/nL1UWIKLQSbhsVPZ6QG6ekdLEJhMDpy83A/oUmvCfhvdRTddUKtZdNej3wZcb
-         yUfPb0HHHBz5At/tktau8EXt/wM0ywQ7NXMP10mZgBZ7y1ZiyLcSt59E1Elir5ksF+NH
-         NZpF6ddnBb+wpbOQw9Afl5FJqd8jD7qrsjTiCXiqaZejxHeeuiusZ/cni2t27bE3zVGi
-         6VXA==
-X-Forwarded-Encrypted: i=1; AFNElJ8DxKWbjunuK2jHdW3p6CNEfSp64oC5DdglFxxjma/SNu0dtvzl5RHausdCzjP93QuPyCbO8BQ=@lists.linux.dev
-X-Gm-Message-State: AOJu0YylzlMbyiIvC5AmFESbgVRtMsBMrJgSRp88eaO/HdQrI4ositrg
-	zaNc7nXdcLISgAYHQQ8inungCSR85hlXcAWLH35B+12uCPEY9LJNXQsxQpmFXPXI3ONZOXZ8AdP
-	LFVbWYw==
-X-Received: from pllh1.prod.google.com ([2002:a17:902:7481:b0:2b0:b22a:e6ef])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:fc8f:b0:2c0:bcb3:86f
- with SMTP id d9443c01a7336-2c2f18e2d19mr45384435ad.6.1781198454681; Thu, 11
- Jun 2026 10:20:54 -0700 (PDT)
-Date: Thu, 11 Jun 2026 10:20:53 -0700
-In-Reply-To: <6a2adf3b.3b0a2d4e.8c8d1.0012.GAE@google.com>
+        d=1e100.net; s=20251104; t=1781198879; x=1781803679;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Y0o/gyjXrdJtnEvNwIma4oUBAmPaV4O69fnl6xUKrL0=;
+        b=egGEo3JZtkOdP61o8RpRbizNydyivTL0UCUXTgzBBOXDbuTthjs5wB44aid2eW5jZF
+         5Km4Xy14uVI/mVR6aG3CUOUs3jdnyL5Wchq6Ep/DWpnvXuo+JUIjcC7/4mXSaTB2QA3g
+         8YxML34srxLYu4ZL+Qt0kqd94zrUjriMdfpJ2UnowzQFeszVDcMHLNaR+Dkg/rZ6HYRb
+         CQ55LSEiV7L6fHswBKoVWdlwgHzRTa9eTHOWmC4lrGrIBZlpJh2gysgGW2axNMUtUjAW
+         rwk5vm+FPFtV3IDWdjxHKO2KQ/YnlmfmaCrp1sYMVPHLOp6Ay5Gv58fuMKDZMJFz8/41
+         Gvyg==
+X-Gm-Message-State: AOJu0YxJIZGrZgEncyjpKU8GRNxPle/95DAeSoVE9rGJ2KWjjw+LJcRu
+	cZFqQ3cVA8/TCcppwX+g74cPYUPoby96H6XWeY0lVAZv+zTW6DRmv6NUyDcyIunyGrzezHfsAuQ
+	VxM2hnbSheMnYEXu99Zfv+/SCxlkBwKtqGKntqTVN16kiksg7mWByGESToBg=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260610214523.2905255-2-clopez@suse.de> <6a2adf3b.3b0a2d4e.8c8d1.0012.GAE@google.com>
-Message-ID: <airudX6N4oL5X_wE@google.com>
-Subject: Re: [syzbot ci] Re: KVM: x86: Unconditionally recompute CR8 intercept
- on PPR update
-From: Sean Christopherson <seanjc@google.com>
-To: syzbot ci <syzbot+ci493c6d734b63e050@syzkaller.appspotmail.com>
-Cc: bp@alien8.de, clopez@suse.de, dave.hansen@linux.intel.com, hpa@zytor.com, 
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org, mingo@redhat.com, 
-	osteffen@redhat.com, pbonzini@redhat.com, rkagan@virtuozzo.com, 
-	sgarzare@redhat.com, stable@vger.kernel.org, tglx@kernel.org, x86@kernel.org, 
-	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+X-Received: by 2002:a05:6820:178f:b0:69d:ecb9:52c with SMTP id
+ 006d021491bc7-69ecaeddbb3mr3142476eaf.32.1781198879215; Thu, 11 Jun 2026
+ 10:27:59 -0700 (PDT)
+Date: Thu, 11 Jun 2026 10:27:59 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a2af01f.44b6b70d.20d0cb.0006.GAE@google.com>
+Subject: [moderation/CI] Re: mm: Unconditional per-VMA locks and cleanups
+From: syzbot ci <syzbot+ci8568a23606d3eb4a@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 11, 2026, syzbot ci wrote:
-> syzbot ci has tested the following series
-> 
-> [v2] KVM: x86: Unconditionally recompute CR8 intercept on PPR update
-> https://lore.kernel.org/all/20260610214523.2905255-2-clopez@suse.de
-> * [PATCH v2] KVM: x86: Unconditionally recompute CR8 intercept on PPR update
-> 
-> and found the following issue:
-> WARNING in vmx_update_cr8_intercept
+syzbot ci has tested the following series
 
-...
+[v2] mm: Unconditional per-VMA locks and cleanups
+https://lore.kernel.org/all/20260610230409.A44D29FA@davehans-spike.ostc.int=
+el.com
+* [PATCH v2 1/5] mm: Make per-VMA locks available universally
+* [PATCH v2 2/5] binder: Make shrinker rely solely on per-VMA lock
+* [PATCH v2 3/5] mm: Add RCU-based VMA lookup helper that waits for writers
+* [PATCH v2 4/5] binder: Remove mmap_lock fallback
+* [PATCH v2 5/5] tcp: Remove mmap_lock fallback path
 
-> ------------[ cut here ]------------
-> debug_locks && !(lock_is_held(&(&vcpu->mutex)->dep_map) || !refcount_read(&vcpu->kvm->users_count))
-> WARNING: arch/x86/kvm/vmx/nested.h:61 at get_vmcs12 arch/x86/kvm/vmx/nested.h:60 [inline], CPU#0: syz.2.19/5879
-> WARNING: arch/x86/kvm/vmx/nested.h:61 at vmx_update_cr8_intercept+0x3de/0x4e0 arch/x86/kvm/vmx/vmx.c:6879, CPU#0: syz.2.19/5879
-> Modules linked in:
-> CPU: 0 UID: 0 PID: 5879 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> RIP: 0010:get_vmcs12 arch/x86/kvm/vmx/nested.h:60 [inline]
-> RIP: 0010:vmx_update_cr8_intercept+0x3de/0x4e0 arch/x86/kvm/vmx/vmx.c:6879
->  apic_update_ppr arch/x86/kvm/lapic.c:984 [inline]
->  kvm_lapic_reset+0x1c24/0x2980 arch/x86/kvm/lapic.c:3023
->  kvm_vcpu_reset+0x44c/0x1bf0 arch/x86/kvm/x86.c:12986
->  kvm_arch_vcpu_create+0x746/0x8b0 arch/x86/kvm/x86.c:12847
->  kvm_vm_ioctl_create_vcpu+0x428/0x930 virt/kvm/kvm_main.c:4201
->  kvm_vm_ioctl+0x893/0xd50 virt/kvm/kvm_main.c:5159
->  vfs_ioctl fs/ioctl.c:51 [inline]
->  __do_sys_ioctl fs/ioctl.c:597 [inline]
->  __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+and found the following issue:
+general protection fault in tcp_zerocopy_receive
 
-This is "fine", the assertion just wants to make sure KVM isn't access vmcs12
-without holding vcpu->mutex, otherwise any queries are inherently unstable.
-It's just that vCPU creation runs without taking vcpu->mutex, because the vCPU
-is otherwise unreachable.
+Full report is available here:
+https://ci.syzbot.org/series/3e6d125a-b2ae-49a4-b833-babfb8bc9150
 
-I'm pretty sure we can squash the WARN by grabbing vmcs12 if and only if the vCPU
-is actually in guest mode.
+***
 
-diff --git arch/x86/kvm/vmx/vmx.c arch/x86/kvm/vmx/vmx.c
-index c548f22375ad..332fbcd924f2 100644
---- arch/x86/kvm/vmx/vmx.c
-+++ arch/x86/kvm/vmx/vmx.c
-@@ -6876,11 +6876,10 @@ int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
- 
- void vmx_update_cr8_intercept(struct kvm_vcpu *vcpu, int tpr, int irr)
- {
--       struct vmcs12 *vmcs12 = get_vmcs12(vcpu);
-        int tpr_threshold;
- 
-        if (is_guest_mode(vcpu) &&
--               nested_cpu_has(vmcs12, CPU_BASED_TPR_SHADOW))
-+           nested_cpu_has(get_vmcs12(vcpu), CPU_BASED_TPR_SHADOW))
-                return;
- 
-        guard(vmx_vmcs01)(vcpu);
+general protection fault in tcp_zerocopy_receive
+
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net-next.git
+base:      c8459ee2fef502d6ef6c063751c33d9ac7943eab
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/e7d66981-7900-4c3d-b992-664ccd13a57=
+e/config
+syz repro: https://ci.syzbot.org/findings/59d09544-f280-48fe-8ca9-a2fd8225e=
+9df/syz_repro
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc=
+0000000002: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
+CPU: 0 UID: 0 PID: 5876 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:vma_start_read_locked_nested include/linux/mmap_lock.h:240 [inlin=
+e]
+RIP: 0010:vma_start_read_locked+0xa0/0x300 include/linux/mmap_lock.h:257
+Code: 28 84 c0 0f 85 2b 02 00 00 44 8b 35 ba 0d 1b 0e 31 ff 44 89 f6 e8 c0 =
+e2 af ff 45 85 f6 74 48 4c 8d 73 10 4c 89 f0 48 c1 e8 03 <42> 80 3c 28 00 7=
+4 08 4c 89 f7 e8 b1 37 1b 00 bf 38 03 00 00 49 03
+RSP: 0018:ffffc9000399f4a0 EFLAGS: 00010202
+RAX: 0000000000000002 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88816d558000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: ffffc9000399f538 R08: ffff8881076c64df R09: 1ffff11020ed8c9b
+R10: dffffc0000000000 R11: ffffed1020ed8c9c R12: 1ffff92000733e94
+R13: dffffc0000000000 R14: 0000000000000010 R15: 0000000000011000
+FS:  00007f4866b966c0(0000) GS:ffff88818dc86000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000200000011000 CR3: 0000000117c8a000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ vma_start_read_unlocked+0x3f/0x70 mm/mmap_lock.c:362
+ find_tcp_vma net/ipv4/tcp.c:2173 [inline]
+ tcp_zerocopy_receive+0x762/0x2200 net/ipv4/tcp.c:2227
+ do_tcp_getsockopt+0x2079/0x2940 net/ipv4/tcp.c:4758
+ tcp_getsockopt+0x83/0x130 net/ipv4/tcp.c:4856
+ do_sock_getsockopt+0x51d/0x7e0 net/socket.c:2487
+ __sys_getsockopt net/socket.c:2518 [inline]
+ __do_sys_getsockopt net/socket.c:2525 [inline]
+ __se_sys_getsockopt net/socket.c:2522 [inline]
+ __x64_sys_getsockopt+0x1a4/0x240 net/socket.c:2522
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f4865d9ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f4866b96028 EFLAGS: 00000246 ORIG_RAX: 0000000000000037
+RAX: ffffffffffffffda RBX: 00007f4866015fa0 RCX: 00007f4865d9ce59
+RDX: 0000000000000023 RSI: 0000000000000006 RDI: 0000000000000003
+RBP: 00007f4865e32d6f R08: 0000200000000380 R09: 0000000000000000
+R10: 0000200000000340 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f4866016038 R14: 00007f4866015fa0 R15: 00007ffc748de268
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:vma_start_read_locked_nested include/linux/mmap_lock.h:240 [inlin=
+e]
+RIP: 0010:vma_start_read_locked+0xa0/0x300 include/linux/mmap_lock.h:257
+Code: 28 84 c0 0f 85 2b 02 00 00 44 8b 35 ba 0d 1b 0e 31 ff 44 89 f6 e8 c0 =
+e2 af ff 45 85 f6 74 48 4c 8d 73 10 4c 89 f0 48 c1 e8 03 <42> 80 3c 28 00 7=
+4 08 4c 89 f7 e8 b1 37 1b 00 bf 38 03 00 00 49 03
+RSP: 0018:ffffc9000399f4a0 EFLAGS: 00010202
+RAX: 0000000000000002 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88816d558000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: ffffc9000399f538 R08: ffff8881076c64df R09: 1ffff11020ed8c9b
+R10: dffffc0000000000 R11: ffffed1020ed8c9c R12: 1ffff92000733e94
+R13: dffffc0000000000 R14: 0000000000000010 R15: 0000000000011000
+FS:  00007f4866b966c0(0000) GS:ffff88818dc86000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f4865dea540 CR3: 0000000117c8a000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	28 84 c0 0f 85 2b 02 	sub    %al,0x22b850f(%rax,%rax,8)
+   7:	00 00                	add    %al,(%rax)
+   9:	44 8b 35 ba 0d 1b 0e 	mov    0xe1b0dba(%rip),%r14d        # 0xe1b0dca
+  10:	31 ff                	xor    %edi,%edi
+  12:	44 89 f6             	mov    %r14d,%esi
+  15:	e8 c0 e2 af ff       	call   0xffafe2da
+  1a:	45 85 f6             	test   %r14d,%r14d
+  1d:	74 48                	je     0x67
+  1f:	4c 8d 73 10          	lea    0x10(%rbx),%r14
+  23:	4c 89 f0             	mov    %r14,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1) <-- trapping instruct=
+ion
+  2f:	74 08                	je     0x39
+  31:	4c 89 f7             	mov    %r14,%rdi
+  34:	e8 b1 37 1b 00       	call   0x1b37ea
+  39:	bf 38 03 00 00       	mov    $0x338,%edi
+  3e:	49                   	rex.WB
+  3f:	03                   	.byte 0x3
 
 
-Longer term, I'll work on figuring out how to handle this in get_vmcs12(), because
-to_hv_vcpu() has the solve the same fundamental problem:
+***
 
-https://lore.kernel.org/all/aeqRzanSaa9P_EPg@google.com
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[akpm@linux-foundation.org aliceryhl@google.com arve@android.com christian@=
+brauner.io cmllamas@google.com dave.hansen@linux.intel.com davem@davemloft.=
+net dsahern@kernel.org gregkh@linuxfoundation.org liam.howlett@oracle.com l=
+inux-kernel@vger.kernel.org linux-mm@kvack.org ljs@kernel.org netdev@vger.k=
+ernel.org shakeel.butt@linux.dev surenb@google.com tkjos@android.com vbabka=
+@kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
