@@ -1,1355 +1,212 @@
-Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com [209.85.160.69])
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B06131F9A3
-	for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 07:33:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.69
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781163238; cv=none; b=X2xo+s2JdYO3BXo8HIGn04YO6Ey00duyUymGy3c1ZTD5QYnPmN6had7iaxY5hDIWT9CH/PvWni3OmclgGcgIuRylAOKmLd0ABfZEPI6rh1BaVJaZntpJQvFo3c/q0q80BVmDwErLD69s2RWxho5RX/5NOVJpn8vDATQ8EABU1pM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781163238; c=relaxed/simple;
-	bh=3TDcsL/GAGZ7fNeuYSoXJ5zJbmDTTNtmXeoFtaRV/j8=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=J8Jh6SK45mDaudYvJewgikjMotjhSgU0wsDHJAgvSACljl46ht0FEbEo2CUKhdrLYzFUC+cc5lyfo4fhXazcryKwki23laNV/f4qEs4wrgLNlf6aVQjtzhMgzdw8wKhPKDiBLLdBj4fKP02F2OQvD18verfioApmRSkvW+X/dg4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-43d171066e5so11168256fac.3
-        for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 00:33:54 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5FF840D570
+	for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 10:16:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781173013; cv=pass; b=ULUYP0lTYAgqhZgOCP9cJCUmp9PuaFugTs1SYvuK1Oe/QvTBHBGJVMmNJas4uDXhQ7iuRh4iq4FbtrChW9WfxhddEz4ozpEvuqiG5H3RyATY/GnjW5AJ0QrWuRrNgj9Alrzl8t+/cp3Xy0aDgBzClsEPl20CACX3m/sy0kO2C1U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781173013; c=relaxed/simple;
+	bh=F019ol5Ffou9ln3Hz+38qDCSAaAIZNQhPC75Fww9bOc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ZI+b5NLwVCW/vII3WNdj5oNnuzaBYNgZTchMv75XrACYo4OZyPHph7mf0CmYURFHvLOLn0u7iOliPk+GzrurleUzDCUVAztKeU6lwoe/NtHufgJNHfCcgO3PXaHvjRp8/yqL2KTYsLp1vRXYOkdIj440i2DD4LegjnIrJ6fExbc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NjYgEKj2; arc=pass smtp.client-ip=209.85.160.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NjYgEKj2"
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-43bfe055ffbso5472693fac.1
+        for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 03:16:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1781173011; cv=none;
+        d=google.com; s=arc-20240605;
+        b=FItOOc97Gl7b9P24InyG53gfMnskoX2fCI/LyYmHUAepNccTRfIF64DQ9Gls3VAky2
+         1hrH7NCCVU+HwYj++6EiVlmrwpVfaSkqYG/XXBILYj8B1uaOEcfBy8IJNyv/aWBjKo1E
+         koTdFCD1znjf8h5SqRzsJCGsLLktfg9NPjer5ohdZOlpEP/NpCWucsZi1kjGF/+ObLFU
+         GFGxCtudPKXm1KyPl++hUjMn1lq+pQigR/UK+Ojg1HsYM7LClDNIFdet6My/vRI83Ytk
+         p+R4mPfor5MGJH2lEktLPw0k+oE2n+UTQqo8J4mlEaQmtT+w2Jsae2hNJFnjLijNKOry
+         mJ4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=j32jAfheTer6vyHMxSprTfnUi035niRTMuJnfRWSpNY=;
+        fh=xqyfGzgWt9x1YIDs32e8VUYE3VceJffe8IhUjqbWPuw=;
+        b=ax73rBPKrM1xSMc8W85LCyBOWaDRqx8qbEV7fT9uXoXLzqMLnnKGlwl7iIsvVr/+5X
+         2glRoU4mpVuIilv/OYgxZT0eqbDFqunn8VVRHndXDzJUObWZWWB0tqYiKjIXovE3v5y2
+         fDt7gX6uWTbt0RaoVqO7CnCpA5Fc9kmsjlNbU1C5wGhIwyMbDSeBLVyslwFTLtvrhC7g
+         I5qlO8OvjBCnl+vukdQRQSomDvOyCVIzD6cqO7fMwlstafdOvhw1Pk7lwKNUvgw79uLb
+         Q+YNbo/cIAa3wFry/wpEpvDx+lQ9gj0hjJs+X6D0i5SG8u11XBZbgqgilihEogVEf2nz
+         ModQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1781173011; x=1781777811; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=j32jAfheTer6vyHMxSprTfnUi035niRTMuJnfRWSpNY=;
+        b=NjYgEKj2bYEIfnIHVMzHAgbfOdKL2ey7czOcdy4iZDYfyR3NwBOA6szbdJZJ6XzdNU
+         AbRs6fP/F5a7mobirq+STkY8XJS/2Cc0wLwknlJz8e8GfK1t8VWzkS/0w4UF9kjGtD+h
+         z72oWWGA+jOGN/pIhAyDDwupKc82GFCO82e7B8l2YJfcxWcqdDK/+sfV6X28v8MR9w3d
+         wceSo35Ttz1dOgYj/hTKObEkgD98z4a3cGhw35WFXHs2EtBJvPrrx8buH2H62u7LFsIm
+         JT63FH0z0PGLB4LODHlms95ApkKxPTiH0Y7Y5fZgTd1edgvQPtUCLmKjbnkI+0C5C2zx
+         QChA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781163233; x=1781768033;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qnFCOWqJ7V06GBMSosa2TyfIIsy4UloRpLyigMOylD4=;
-        b=gxyq0l3bok6AgCOpvKbEftIkJ4C4W645KaSOzXFAi7qWttCY+6XaPm8+pmKXJW0kKs
-         M8U0OBY0YfiMNELuoMqGL4cLGu9Q9nUt4RqRAl5U/3nYf/H2+TbJXqX24lBlBLwXKxUH
-         p9Jh5+mVNKWALupitw2Pi/Vpq86Hy1/s0JjiDlQa60sos0EwxRo1I0/H/nAbhNp5X3ON
-         2XVMi+s81q7NovuajWAqVzv0fE5sjXDWDRAYQW31Lq0tEs+s88CM95cJ7JqoedJqnIup
-         jGhYTzSwYiUlvskGU0K7e60MU/ZPBEKj12n4c+oCuzQG7NI5NQGBWyTpTwLmXk+HFk/V
-         GHDw==
-X-Gm-Message-State: AOJu0Yy+ZqY7roaZi0pokrfv1y/KLfx9qp8iIUiRpaXURRVrLIIJ+SnC
-	bxWp3/9J73PF+MzFaT1qFMEDcvAu8hWNXJucwa2durZr1X84lAwPZkG8cg2GGOnXOGCa2MEI+T5
-	n+cyDxHSnEbY08ss+c8eXG0bM4hvRg3s0slQdLJ+y/yyA9Im3G/w84SvoQ20=
+        d=1e100.net; s=20251104; t=1781173011; x=1781777811;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=j32jAfheTer6vyHMxSprTfnUi035niRTMuJnfRWSpNY=;
+        b=WykTQH4Ma43MwbLFOPl86OWpWNUyAxFGzyy71JqlDX3jG7yzN6xuqg36DzjR0a68uN
+         87EZEwrelbn04cN8bfsEM7Je7PX7l/ZdOB0/jsSp0udfw2qAxTDi9TtyJimqA4kNWuv6
+         l2TOpxw29YI0pGwmmTWzOYEDKrBLM0dnqmuJhS6pavNyDB8rOVGXhoJTrtKw31vAZRBb
+         vxNJl1LRlvTIM445ZrkdLa7O7lROTl451pJIaYe4MG8shbQl4Gr5G0RS8X0eMsxJwVCd
+         eSh3FbXafLaA5vE7GVSUzhj/AipvCe/ButGi9ID1XZ4MQ8wiZKsWYdRSgM1dCHDkxZRt
+         e74g==
+X-Forwarded-Encrypted: i=1; AFNElJ+yZlXC8buH6oFOoY5dHcu5ExLNym14HqB3bRUKCkuywwfeJgiPkq3m3AX0BtI/Mr9cxxB2Uuw=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy+Uffknnc554qrxEnvD/3shL4d1SH57PyT/nJtBM1PT4uuEmn1
+	AB4TKvaa/OQVpUYuqvDlLS4cTuy6U7GFZ5ngi1ClXhYo2DVEnujcQNyd3N2/R1/78TNo/Daoof+
+	W6P8JahFQw5nck93nOFYo9AZdfeR2lb/Ck/MFOPeo
+X-Gm-Gg: Acq92OFfj0Bv8U10Wyh6uuAo/aoKIpQrf4ofrIEY7YcdoIES/lPnLuq223yLeyoFh1Z
+	mcUsERFqEyo0P/XmpYH89QdmDdYGfM2KfSrj2A5y5gbHjWCRDFnsy3qU42LeUThBLj9Y/xb1NhZ
+	hIvLHdke8FZWdeSOxYc6F7KeHleyMUdq4QojEKwpBj7QZ03pkhBOT16T5XVgrXpeLJEsxT5VFYJ
+	fqrB20xBLeMtG7rc0ZXoRu9xTBI80/L/uxaxFhRsKWBKabn2p/wMibtzAk2FYP6/JWnNW/w8r6F
+	Rmn9FH3XuEUKtHQltuyiQbvzAxqCBvzbaD4TGNCry69q0YP7SubwZFQNhYtzwzerxnf71iC0x3d
+	0c0BA
+X-Received: by 2002:a05:6870:569f:b0:423:b2de:3b45 with SMTP id
+ 586e51a60fabf-44241d9ece0mr1328517fac.28.1781173010212; Thu, 11 Jun 2026
+ 03:16:50 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:134a:b0:69e:3a55:a628 with SMTP id
- 006d021491bc7-69ecaf05dd4mr1266238eaf.44.1781163233618; Thu, 11 Jun 2026
- 00:33:53 -0700 (PDT)
-Date: Thu, 11 Jun 2026 00:33:53 -0700
-In-Reply-To: <20260610120535.2370844-1-zhaoyang.huang@unisoc.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a2a64e1.3b0a2d4e.8c8d1.000a.GAE@google.com>
-Subject: [syzbot ci] Re: mm/huge_memory: do not add dropped split tail folios
- to LRU
-From: syzbot ci <syzbot+ci670b013ea194fa03@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, baohua@kernel.org, 
-	baolin.wang@linux.alibaba.com, david@kernel.org, dev.jain@arm.com, 
-	huangzhaoyang@gmail.com, lance.yang@linux.dev, liam.howlett@oracle.com, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, lorenzo.stoakes@oracle.com, 
-	npache@redhat.com, ryan.roberts@arm.com, steve.kang@unisoc.com, 
-	zhaoyang.huang@unisoc.com, ziy@nvidia.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <008b2675-2e48-4150-a1ec-e68026253bad@mail.kernel.org>
+In-Reply-To: <008b2675-2e48-4150-a1ec-e68026253bad@mail.kernel.org>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Thu, 11 Jun 2026 12:16:38 +0200
+X-Gm-Features: AVVi8CcHo7mnVT74LZm6qds-ggo5-KWWmG1eyLfwoZGt9xezD3P1BE2FPHnJoeI
+Message-ID: <CANp29Y78NZkHVtj3ndD_0c-18_umDsWOWZEThTtMPaNocOCWUQ@mail.gmail.com>
+Subject: Re: [PATCH RFC] ocfs2: fix circular locking dependency in ocfs2_dio_end_io_write()
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
+On Fri, May 29, 2026 at 7:31=E2=80=AFPM 'syzbot' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
+>
+> A circular locking dependency can occur involving three OCFS2 system inod=
+e
+> locks: INODE_ALLOC_SYSTEM_INODE, EXTENT_ALLOC_SYSTEM_INODE, and
+> ORPHAN_DIR_SYSTEM_INODE.
+>
+> The circular dependency is formed by three separate code paths. First, in
+> ocfs2_mknod(), the code reserves an inode by acquiring the
+> INODE_ALLOC_SYSTEM_INODE lock, and then reserves metadata blocks by
+> acquiring the EXTENT_ALLOC_SYSTEM_INODE lock. Second, in
+> ocfs2_dio_end_io_write(), the code allocates metadata blocks for unwritte=
+n
+> extents, acquiring the EXTENT_ALLOC_SYSTEM_INODE lock. Later in the same
+> function, if the inode was orphaned, it calls
+> ocfs2_del_inode_from_orphan(), which acquires the ORPHAN_DIR_SYSTEM_INODE
+> lock. The allocation context is only freed at the end of the function,
+> meaning the EXTENT_ALLOC_SYSTEM_INODE lock is held while
+> ORPHAN_DIR_SYSTEM_INODE is acquired. Third, in ocfs2_wipe_inode(), the
+> ORPHAN_DIR_SYSTEM_INODE lock is acquired first to prevent races with
+> recovery completion, and then it calls ocfs2_remove_inode(), which acquir=
+es
+> the INODE_ALLOC_SYSTEM_INODE lock to free the inode.
+>
+> This patch breaks the cycle by addressing the dependency in
+> ocfs2_dio_end_io_write(). The data_ac and meta_ac allocation contexts are
+> only needed for the transaction that marks the extents as written. Once t=
+he
+> transaction is committed and the allocation semaphore is released, these
+> contexts are no longer needed. We can safely free them, which releases th=
+e
+> EXTENT_ALLOC_SYSTEM_INODE lock, before calling
+> ocfs2_del_inode_from_orphan(). This ensures that the
+> EXTENT_ALLOC_SYSTEM_INODE lock is dropped before we attempt to acquire th=
+e
+> ORPHAN_DIR_SYSTEM_INODE lock, successfully breaking the circular
+> dependency.
 
-[v1] mm/huge_memory: do not add dropped split tail folios to LRU
-https://lore.kernel.org/all/20260610120535.2370844-1-zhaoyang.huang@unisoc.com
-* [RFC PATCH] mm/huge_memory: do not add dropped split tail folios to LRU
+Let's rework the description a bit.
+Include the original bug report (drop the irrelevant parts) listing
+the stack traces of the circular lock chain parts. Still keep some
+explanations of the existing code, but make it a bit shorter then.
 
-and found the following issues:
-* BUG: Bad page state in ext4_write_begin
-* BUG: Bad page state in iomap_write_begin
-* BUG: Bad page state in shmem_get_folio_gfp
-
-Full report is available here:
-https://ci.syzbot.org/series/c3e122ba-1000-4581-ba3f-237f41482af8
-
-***
-
-BUG: Bad page state in ext4_write_begin
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      1ec3cca2d8b6b9ff6584ca626d4c8918bbf48d44
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/ffde37a3-aed0-4f49-bba1-ca31cd6a4b04/config
-syz repro: https://ci.syzbot.org/findings/07322c5f-4419-4281-bbd5-1b06eebe91f2/syz_repro
-
-ext2 filesystem being mounted at /0/file1 supports timestamps until 2038-01-19 (0x7fffffff)
-BUG: Bad page state in process syz.0.17  pfn:11e231
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x11e231
-flags: 0x17ff20000000000(node=0|zone=2|lastcpupid=0x7ff)
-raw: 017ff20000000000 0000000000000000 00000000ffffffff 0000000000000000
-raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Movable, gfp_mask 0x153cca(GFP_HIGHUSER_MOVABLE|__GFP_WRITE|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP), pid 5841, tgid 5840 (syz.0.17), ts 75851604747, free_ts 72751451789
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1853
- prep_new_page mm/page_alloc.c:1861 [inline]
- get_page_from_freelist+0x2593/0x2610 mm/page_alloc.c:3941
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5221
- alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
- alloc_frozen_pages_noprof mm/mempolicy.c:2561 [inline]
- alloc_pages_noprof+0xac/0x2a0 mm/mempolicy.c:2581
- folio_alloc_noprof+0x1e/0x30 mm/mempolicy.c:2591
- filemap_alloc_folio_noprof+0x111/0x470 mm/filemap.c:1014
- __filemap_get_folio_mpol+0x3fc/0xb00 mm/filemap.c:2012
- __filemap_get_folio include/linux/pagemap.h:763 [inline]
- write_begin_get_folio include/linux/pagemap.h:789 [inline]
- ext4_write_begin+0x4ad/0x1890 fs/ext4/inode.c:1331
- generic_perform_write+0x2e2/0x8f0 mm/filemap.c:4325
- ext4_buffered_write_iter+0xce/0x3a0 fs/ext4/file.c:316
- ext4_file_write_iter+0x298/0x1bf0 fs/ext4/file.c:-1
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-page last free pid 5718 tgid 5718 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1397 [inline]
- free_unref_folios+0xd9f/0x14c0 mm/page_alloc.c:2999
- folios_put_refs+0x9ff/0xb40 mm/swap.c:1008
- free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
- __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
- tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
- tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
- tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
- tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
- exit_mmap+0x498/0x9e0 mm/mmap.c:1313
- __mmput+0x118/0x430 kernel/fork.c:1178
- exit_mm+0x1f6/0x2d0 kernel/exit.c:582
- do_exit+0x6a2/0x22c0 kernel/exit.c:964
- do_group_exit+0x21b/0x2d0 kernel/exit.c:1119
- get_signal+0x1284/0x1330 kernel/signal.c:3037
- arch_do_signal_or_restart+0xbc/0x840 arch/x86/kernel/signal.c:337
- __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
- exit_to_user_mode_loop+0xa9/0x680 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
- do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-Modules linked in:
-CPU: 0 UID: 0 PID: 5841 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- bad_page+0x17f/0x1c0 mm/page_alloc.c:632
- free_page_is_bad mm/page_alloc.c:1076 [inline]
- __free_pages_prepare mm/page_alloc.c:1388 [inline]
- __free_frozen_pages+0xcd9/0xd30 mm/page_alloc.c:2938
- __folio_put+0x4a2/0x580 mm/swap.c:112
- __folio_split+0xffe/0x1570 mm/huge_memory.c:4199
- try_folio_split_to_order include/linux/huge_mm.h:411 [inline]
- try_folio_split_or_unmap+0x5b/0x1e0 mm/truncate.c:189
- truncate_inode_partial_folio+0x4ab/0x8e0 mm/truncate.c:255
- truncate_inode_pages_range+0x5f1/0xe30 mm/truncate.c:416
- ext4_truncate_failed_write fs/ext4/truncate.h:21 [inline]
- ext4_write_end+0x784/0xa30 fs/ext4/inode.c:1495
- generic_perform_write+0x620/0x8f0 mm/filemap.c:4346
- ext4_buffered_write_iter+0xce/0x3a0 fs/ext4/file.c:316
- ext4_file_write_iter+0x298/0x1bf0 fs/ext4/file.c:-1
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fb06359ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fb0643ff028 EFLAGS: 00000246 ORIG_RAX: 0000000000000012
-RAX: ffffffffffffffda RBX: 00007fb063815fa0 RCX: 00007fb06359ce59
-RDX: 000000000000fdef RSI: 0000200000000140 RDI: 0000000000000004
-RBP: 00007fb063632d6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000c00 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fb063816038 R14: 00007fb063815fa0 R15: 00007ffe99cbba98
- </TASK>
-BUG: Bad page state in process syz.0.17  pfn:11e232
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x2 pfn:0x11e232
-head: order:0 mapcount:0 entire_mapcount:1 nr_pages_mapped:0 pincount:0
-flags: 0x17ff20000000040(head|node=0|zone=2|lastcpupid=0x7ff)
-raw: 017ff20000000040 0000000000000000 ffffea0004788c90 0000000000000000
-raw: 0000000000000002 0000000000000000 00000000ffffffff 0000000000000000
-head: 017ff20000000040 0000000000000000 ffffea0004788c90 0000000000000000
-head: 0000000000000002 0000000000000000 00000000ffffffff 0000000000000000
-head: 017ff00000000000 0000000000000000 00000000ffffffff 0000000000000000
-head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-page_owner tracks the page as allocated
-page last allocated via order 1, migratetype Movable, gfp_mask 0x153cca(GFP_HIGHUSER_MOVABLE|__GFP_WRITE|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP), pid 5841, tgid 5840 (syz.0.17), ts 75851604747, free_ts 72751458324
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1853
- prep_new_page mm/page_alloc.c:1861 [inline]
- get_page_from_freelist+0x2593/0x2610 mm/page_alloc.c:3941
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5221
- alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
- alloc_frozen_pages_noprof mm/mempolicy.c:2561 [inline]
- alloc_pages_noprof+0xac/0x2a0 mm/mempolicy.c:2581
- folio_alloc_noprof+0x1e/0x30 mm/mempolicy.c:2591
- filemap_alloc_folio_noprof+0x111/0x470 mm/filemap.c:1014
- __filemap_get_folio_mpol+0x3fc/0xb00 mm/filemap.c:2012
- __filemap_get_folio include/linux/pagemap.h:763 [inline]
- write_begin_get_folio include/linux/pagemap.h:789 [inline]
- ext4_write_begin+0x4ad/0x1890 fs/ext4/inode.c:1331
- generic_perform_write+0x2e2/0x8f0 mm/filemap.c:4325
- ext4_buffered_write_iter+0xce/0x3a0 fs/ext4/file.c:316
- ext4_file_write_iter+0x298/0x1bf0 fs/ext4/file.c:-1
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-page last free pid 5718 tgid 5718 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1397 [inline]
- free_unref_folios+0xd9f/0x14c0 mm/page_alloc.c:2999
- folios_put_refs+0x9ff/0xb40 mm/swap.c:1008
- free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
- __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
- tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
- tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
- tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
- tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
- exit_mmap+0x498/0x9e0 mm/mmap.c:1313
- __mmput+0x118/0x430 kernel/fork.c:1178
- exit_mm+0x1f6/0x2d0 kernel/exit.c:582
- do_exit+0x6a2/0x22c0 kernel/exit.c:964
- do_group_exit+0x21b/0x2d0 kernel/exit.c:1119
- get_signal+0x1284/0x1330 kernel/signal.c:3037
- arch_do_signal_or_restart+0xbc/0x840 arch/x86/kernel/signal.c:337
- __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
- exit_to_user_mode_loop+0xa9/0x680 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
- do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-Modules linked in:
-
-CPU: 1 UID: 0 PID: 5841 Comm: syz.0.17 Tainted: G    B               syzkaller #0 PREEMPT(full) 
-Tainted: [B]=BAD_PAGE
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- bad_page+0x17f/0x1c0 mm/page_alloc.c:632
- free_page_is_bad mm/page_alloc.c:1076 [inline]
- __free_pages_prepare mm/page_alloc.c:1388 [inline]
- __free_frozen_pages+0xcd9/0xd30 mm/page_alloc.c:2938
- __folio_put+0x4a2/0x580 mm/swap.c:112
- __folio_split+0xffe/0x1570 mm/huge_memory.c:4199
- try_folio_split_to_order include/linux/huge_mm.h:411 [inline]
- try_folio_split_or_unmap+0x5b/0x1e0 mm/truncate.c:189
- truncate_inode_partial_folio+0x4ab/0x8e0 mm/truncate.c:255
- truncate_inode_pages_range+0x5f1/0xe30 mm/truncate.c:416
- ext4_truncate_failed_write fs/ext4/truncate.h:21 [inline]
- ext4_write_end+0x784/0xa30 fs/ext4/inode.c:1495
- generic_perform_write+0x620/0x8f0 mm/filemap.c:4346
- ext4_buffered_write_iter+0xce/0x3a0 fs/ext4/file.c:316
- ext4_file_write_iter+0x298/0x1bf0 fs/ext4/file.c:-1
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fb06359ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fb0643ff028 EFLAGS: 00000246 ORIG_RAX: 0000000000000012
-RAX: ffffffffffffffda RBX: 00007fb063815fa0 RCX: 00007fb06359ce59
-RDX: 000000000000fdef RSI: 0000200000000140 RDI: 0000000000000004
-RBP: 00007fb063632d6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000c00 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fb063816038 R14: 00007fb063815fa0 R15: 00007ffe99cbba98
- </TASK>
-BUG: Bad page state in process syz.0.17  pfn:11e234
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x4 pfn:0x11e234
-head: order:0 mapcount:0 entire_mapcount:1 nr_pages_mapped:0 pincount:0
-flags: 0x17ff20000000040(head|node=0|zone=2|lastcpupid=0x7ff)
-raw: 017ff20000000040 0000000000000000 dead000000000122 0000000000000000
-raw: 0000000000000004 0000000000000000 00000000ffffffff 0000000000000000
-head: 017ff20000000040 0000000000000000 dead000000000122 0000000000000000
-head: 0000000000000004 0000000000000000 00000000ffffffff 0000000000000000
-head: 017ff00000000000 0000000000000000 00000000ffffffff 0000000000000000
-head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-page_owner tracks the page as allocated
-page last allocated via order 2, migratetype Movable, gfp_mask 0x153cca(GFP_HIGHUSER_MOVABLE|__GFP_WRITE|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP), pid 5841, tgid 5840 (syz.0.17), ts 75851604747, free_ts 72751484534
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1853
- prep_new_page mm/page_alloc.c:1861 [inline]
- get_page_from_freelist+0x2593/0x2610 mm/page_alloc.c:3941
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5221
- alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
- alloc_frozen_pages_noprof mm/mempolicy.c:2561 [inline]
- alloc_pages_noprof+0xac/0x2a0 mm/mempolicy.c:2581
- folio_alloc_noprof+0x1e/0x30 mm/mempolicy.c:2591
- filemap_alloc_folio_noprof+0x111/0x470 mm/filemap.c:1014
- __filemap_get_folio_mpol+0x3fc/0xb00 mm/filemap.c:2012
- __filemap_get_folio include/linux/pagemap.h:763 [inline]
- write_begin_get_folio include/linux/pagemap.h:789 [inline]
- ext4_write_begin+0x4ad/0x1890 fs/ext4/inode.c:1331
- generic_perform_write+0x2e2/0x8f0 mm/filemap.c:4325
- ext4_buffered_write_iter+0xce/0x3a0 fs/ext4/file.c:316
- ext4_file_write_iter+0x298/0x1bf0 fs/ext4/file.c:-1
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-page last free pid 5718 tgid 5718 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1397 [inline]
- free_unref_folios+0xd9f/0x14c0 mm/page_alloc.c:2999
- folios_put_refs+0x9ff/0xb40 mm/swap.c:1008
- free_pages_and_swap_cache+0x41d/0x490 mm/swap_state.c:404
- __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
- tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
- tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
- tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
- tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
- exit_mmap+0x498/0x9e0 mm/mmap.c:1313
- __mmput+0x118/0x430 kernel/fork.c:1178
- exit_mm+0x1f6/0x2d0 kernel/exit.c:582
- do_exit+0x6a2/0x22c0 kernel/exit.c:964
- do_group_exit+0x21b/0x2d0 kernel/exit.c:1119
- get_signal+0x1284/0x1330 kernel/signal.c:3037
- arch_do_signal_or_restart+0xbc/0x840 arch/x86/kernel/signal.c:337
- __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
- exit_to_user_mode_loop+0xa9/0x680 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
- do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-Modules linked in:
-CPU: 1 UID: 0 PID: 5841 Comm: syz.0.17 Tainted: G    B               syzkaller #0 PREEMPT(full) 
-Tainted: [B]=BAD_PAGE
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- bad_page+0x17f/0x1c0 mm/page_alloc.c:632
- free_page_is_bad mm/page_alloc.c:1076 [inline]
- __free_pages_prepare mm/page_alloc.c:1388 [inline]
- __free_frozen_pages+0xcd9/0xd30 mm/page_alloc.c:2938
- __folio_put+0x4a2/0x580 mm/swap.c:112
- __folio_split+0xffe/0x1570 mm/huge_memory.c:4199
- try_folio_split_to_order include/linux/huge_mm.h:411 [inline]
- try_folio_split_or_unmap+0x5b/0x1e0 mm/truncate.c:189
- truncate_inode_partial_folio+0x4ab/0x8e0 mm/truncate.c:255
- truncate_inode_pages_range+0x5f1/0xe30 mm/truncate.c:416
- ext4_truncate_failed_write fs/ext4/truncate.h:21 [inline]
- ext4_write_end+0x784/0xa30 fs/ext4/inode.c:1495
- generic_perform_write+0x620/0x8f0 mm/filemap.c:4346
- ext4_buffered_write_iter+0xce/0x3a0 fs/ext4/file.c:316
- ext4_file_write_iter+0x298/0x1bf0 fs/ext4/file.c:-1
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fb06359ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fb0643ff028 EFLAGS: 00000246 ORIG_RAX: 0000000000000012
-RAX: ffffffffffffffda RBX: 00007fb063815fa0 RCX: 00007fb06359ce59
-RDX: 000000000000fdef RSI: 0000200000000140 RDI: 0000000000000004
-RBP: 00007fb063632d6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000c00 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fb063816038 R14: 00007fb063815fa0 R15: 00007ffe99cbba98
- </TASK>
-
-
-***
-
-BUG: Bad page state in iomap_write_begin
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      1ec3cca2d8b6b9ff6584ca626d4c8918bbf48d44
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/ffde37a3-aed0-4f49-bba1-ca31cd6a4b04/config
-syz repro: https://ci.syzbot.org/findings/8030d7fe-0d2e-4e47-ab50-b1211533d9c1/syz_repro
-
-XFS (loop0): Mounting V5 Filesystem d7dc424e-7990-42cb-9f91-9cb7200a101d
-XFS (loop0): Ending clean mount
-BUG: Bad page state in process syz.0.17  pfn:1a6481
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x8081 pfn:0x1a6481
-flags: 0x57ff20000000000(node=1|zone=2|lastcpupid=0x7ff)
-raw: 057ff20000000000 0000000000000000 00000000ffffffff 0000000000000000
-raw: 0000000000008081 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Movable, gfp_mask 0x153c4a(GFP_NOFS|__GFP_HIGHMEM|__GFP_MOVABLE|__GFP_WRITE|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_HARDWALL), pid 5877, tgid 5876 (syz.0.17), ts 79178255762, free_ts 72347127723
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1853
- prep_new_page mm/page_alloc.c:1861 [inline]
- get_page_from_freelist+0x2593/0x2610 mm/page_alloc.c:3941
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5221
- alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
- alloc_frozen_pages_noprof mm/mempolicy.c:2561 [inline]
- alloc_pages_noprof+0xac/0x2a0 mm/mempolicy.c:2581
- folio_alloc_noprof+0x1e/0x30 mm/mempolicy.c:2591
- filemap_alloc_folio_noprof+0x111/0x470 mm/filemap.c:1014
- __filemap_get_folio_mpol+0x3fc/0xb00 mm/filemap.c:2012
- __filemap_get_folio include/linux/pagemap.h:763 [inline]
- iomap_get_folio fs/iomap/buffered-io.c:725 [inline]
- __iomap_get_folio fs/iomap/buffered-io.c:896 [inline]
- iomap_write_begin+0x6d9/0x14f0 fs/iomap/buffered-io.c:960
- iomap_write_iter fs/iomap/buffered-io.c:1144 [inline]
- iomap_file_buffered_write+0x47a/0xb30 fs/iomap/buffered-io.c:1225
- xfs_file_buffered_write+0x212/0x8c0 fs/xfs/xfs_file.c:1056
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-page last free pid 5710 tgid 5710 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1397 [inline]
- free_unref_folios+0xd9f/0x14c0 mm/page_alloc.c:2999
- folios_put_refs+0x9ff/0xb40 mm/swap.c:1008
- free_pages_and_swap_cache+0x2b9/0x490 mm/swap_state.c:401
- __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
- tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
- tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
- tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
- tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
- exit_mmap+0x498/0x9e0 mm/mmap.c:1313
- __mmput+0x118/0x430 kernel/fork.c:1178
- exit_mm+0x1f6/0x2d0 kernel/exit.c:582
- do_exit+0x6a2/0x22c0 kernel/exit.c:964
- do_group_exit+0x21b/0x2d0 kernel/exit.c:1119
- get_signal+0x1284/0x1330 kernel/signal.c:3037
- arch_do_signal_or_restart+0xbc/0x840 arch/x86/kernel/signal.c:337
- __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
- exit_to_user_mode_loop+0xa9/0x680 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
- do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-Modules linked in:
-CPU: 1 UID: 0 PID: 5877 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- bad_page+0x17f/0x1c0 mm/page_alloc.c:632
- free_page_is_bad mm/page_alloc.c:1076 [inline]
- __free_pages_prepare mm/page_alloc.c:1388 [inline]
- __free_frozen_pages+0xcd9/0xd30 mm/page_alloc.c:2938
- __folio_put+0x4a2/0x580 mm/swap.c:112
- __folio_split+0xffe/0x1570 mm/huge_memory.c:4199
- try_folio_split_to_order include/linux/huge_mm.h:411 [inline]
- try_folio_split_or_unmap+0x5b/0x1e0 mm/truncate.c:189
- truncate_inode_partial_folio+0x4ab/0x8e0 mm/truncate.c:255
- truncate_inode_pages_range+0x5f1/0xe30 mm/truncate.c:416
- iomap_write_failed fs/iomap/buffered-io.c:785 [inline]
- iomap_write_iter fs/iomap/buffered-io.c:1187 [inline]
- iomap_file_buffered_write+0x788/0xb30 fs/iomap/buffered-io.c:1225
- xfs_file_buffered_write+0x212/0x8c0 fs/xfs/xfs_file.c:1056
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f3f0719ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f3f07ff7028 EFLAGS: 00000246 ORIG_RAX: 0000000000000012
-RAX: ffffffffffffffda RBX: 00007f3f07415fa0 RCX: 00007f3f0719ce59
-RDX: 00000000ffffffb7 RSI: 0000200000000040 RDI: 0000000000000004
-RBP: 00007f3f07232d6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000008080c61 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f3f07416038 R14: 00007f3f07415fa0 R15: 00007ffe415e9148
- </TASK>
-BUG: Bad page state in process syz.0.17  pfn:1a6482
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x8082 pfn:0x1a6482
-head: order:0 mapcount:0 entire_mapcount:1 nr_pages_mapped:0 pincount:0
-flags: 0x57ff20000000040(head|node=1|zone=2|lastcpupid=0x7ff)
-raw: 057ff20000000040 0000000000000000 ffffea0006992090 0000000000000000
-raw: 0000000000008082 0000000000000000 00000000ffffffff 0000000000000000
-head: 057ff20000000040 0000000000000000 ffffea0006992090 0000000000000000
-head: 0000000000008082 0000000000000000 00000000ffffffff 0000000000000000
-head: 057ff00000000000 0000000000000000 00000000ffffffff 0000000000000000
-head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-page_owner tracks the page as allocated
-page last allocated via order 1, migratetype Movable, gfp_mask 0x153c4a(GFP_NOFS|__GFP_HIGHMEM|__GFP_MOVABLE|__GFP_WRITE|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_HARDWALL), pid 5877, tgid 5876 (syz.0.17), ts 79178255762, free_ts 72347116236
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1853
- prep_new_page mm/page_alloc.c:1861 [inline]
- get_page_from_freelist+0x2593/0x2610 mm/page_alloc.c:3941
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5221
- alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
- alloc_frozen_pages_noprof mm/mempolicy.c:2561 [inline]
- alloc_pages_noprof+0xac/0x2a0 mm/mempolicy.c:2581
- folio_alloc_noprof+0x1e/0x30 mm/mempolicy.c:2591
- filemap_alloc_folio_noprof+0x111/0x470 mm/filemap.c:1014
- __filemap_get_folio_mpol+0x3fc/0xb00 mm/filemap.c:2012
- __filemap_get_folio include/linux/pagemap.h:763 [inline]
- iomap_get_folio fs/iomap/buffered-io.c:725 [inline]
- __iomap_get_folio fs/iomap/buffered-io.c:896 [inline]
- iomap_write_begin+0x6d9/0x14f0 fs/iomap/buffered-io.c:960
- iomap_write_iter fs/iomap/buffered-io.c:1144 [inline]
- iomap_file_buffered_write+0x47a/0xb30 fs/iomap/buffered-io.c:1225
- xfs_file_buffered_write+0x212/0x8c0 fs/xfs/xfs_file.c:1056
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-page last free pid 5710 tgid 5710 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1397 [inline]
- free_unref_folios+0xd9f/0x14c0 mm/page_alloc.c:2999
- folios_put_refs+0x9ff/0xb40 mm/swap.c:1008
- free_pages_and_swap_cache+0x2b9/0x490 mm/swap_state.c:401
- __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
- tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
- tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
- tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
- tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
- exit_mmap+0x498/0x9e0 mm/mmap.c:1313
- __mmput+0x118/0x430 kernel/fork.c:1178
- exit_mm+0x1f6/0x2d0 kernel/exit.c:582
- do_exit+0x6a2/0x22c0 kernel/exit.c:964
- do_group_exit+0x21b/0x2d0 kernel/exit.c:1119
- get_signal+0x1284/0x1330 kernel/signal.c:3037
- arch_do_signal_or_restart+0xbc/0x840 arch/x86/kernel/signal.c:337
- __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
- exit_to_user_mode_loop+0xa9/0x680 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
- do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-Modules linked in:
-CPU: 0 UID: 0 PID: 5877 Comm: syz.0.17 Tainted: G    B               syzkaller #0 PREEMPT(full) 
-Tainted: [B]=BAD_PAGE
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- bad_page+0x17f/0x1c0 mm/page_alloc.c:632
- free_page_is_bad mm/page_alloc.c:1076 [inline]
- __free_pages_prepare mm/page_alloc.c:1388 [inline]
- __free_frozen_pages+0xcd9/0xd30 mm/page_alloc.c:2938
- __folio_put+0x4a2/0x580 mm/swap.c:112
- __folio_split+0xffe/0x1570 mm/huge_memory.c:4199
- try_folio_split_to_order include/linux/huge_mm.h:411 [inline]
- try_folio_split_or_unmap+0x5b/0x1e0 mm/truncate.c:189
- truncate_inode_partial_folio+0x4ab/0x8e0 mm/truncate.c:255
- truncate_inode_pages_range+0x5f1/0xe30 mm/truncate.c:416
- iomap_write_failed fs/iomap/buffered-io.c:785 [inline]
- iomap_write_iter fs/iomap/buffered-io.c:1187 [inline]
- iomap_file_buffered_write+0x788/0xb30 fs/iomap/buffered-io.c:1225
- xfs_file_buffered_write+0x212/0x8c0 fs/xfs/xfs_file.c:1056
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f3f0719ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f3f07ff7028 EFLAGS: 00000246 ORIG_RAX: 0000000000000012
-RAX: ffffffffffffffda RBX: 00007f3f07415fa0 RCX: 00007f3f0719ce59
-RDX: 00000000ffffffb7 RSI: 0000200000000040 RDI: 0000000000000004
-RBP: 00007f3f07232d6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000008080c61 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f3f07416038 R14: 00007f3f07415fa0 R15: 00007ffe415e9148
- </TASK>
-BUG: Bad page state in process syz.0.17  pfn:1a6484
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x8084 pfn:0x1a6484
-head: order:0 mapcount:0 entire_mapcount:1 nr_pages_mapped:0 pincount:0
-flags: 0x57ff20000000040(head|node=1|zone=2|lastcpupid=0x7ff)
-raw: 057ff20000000040 0000000000000000 dead000000000122 0000000000000000
-raw: 0000000000008084 0000000000000000 00000000ffffffff 0000000000000000
-head: 057ff20000000040 0000000000000000 dead000000000122 0000000000000000
-head: 0000000000008084 0000000000000000 00000000ffffffff 0000000000000000
-head: 057ff00000000000 0000000000000000 00000000ffffffff 0000000000000000
-head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-page_owner tracks the page as allocated
-page last allocated via order 2, migratetype Movable, gfp_mask 0x153c4a(GFP_NOFS|__GFP_HIGHMEM|__GFP_MOVABLE|__GFP_WRITE|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_HARDWALL), pid 5877, tgid 5876 (syz.0.17), ts 79178255762, free_ts 72347038008
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1853
- prep_new_page mm/page_alloc.c:1861 [inline]
- get_page_from_freelist+0x2593/0x2610 mm/page_alloc.c:3941
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5221
- alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
- alloc_frozen_pages_noprof mm/mempolicy.c:2561 [inline]
- alloc_pages_noprof+0xac/0x2a0 mm/mempolicy.c:2581
- folio_alloc_noprof+0x1e/0x30 mm/mempolicy.c:2591
- filemap_alloc_folio_noprof+0x111/0x470 mm/filemap.c:1014
- __filemap_get_folio_mpol+0x3fc/0xb00 mm/filemap.c:2012
- __filemap_get_folio include/linux/pagemap.h:763 [inline]
- iomap_get_folio fs/iomap/buffered-io.c:725 [inline]
- __iomap_get_folio fs/iomap/buffered-io.c:896 [inline]
- iomap_write_begin+0x6d9/0x14f0 fs/iomap/buffered-io.c:960
- iomap_write_iter fs/iomap/buffered-io.c:1144 [inline]
- iomap_file_buffered_write+0x47a/0xb30 fs/iomap/buffered-io.c:1225
- xfs_file_buffered_write+0x212/0x8c0 fs/xfs/xfs_file.c:1056
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-page last free pid 5710 tgid 5710 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1397 [inline]
- free_unref_folios+0xd9f/0x14c0 mm/page_alloc.c:2999
- folios_put_refs+0x9ff/0xb40 mm/swap.c:1008
- free_pages_and_swap_cache+0x2b9/0x490 mm/swap_state.c:401
- __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
- tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
- tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
- tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
- tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
- exit_mmap+0x498/0x9e0 mm/mmap.c:1313
- __mmput+0x118/0x430 kernel/fork.c:1178
- exit_mm+0x1f6/0x2d0 kernel/exit.c:582
- do_exit+0x6a2/0x22c0 kernel/exit.c:964
- do_group_exit+0x21b/0x2d0 kernel/exit.c:1119
- get_signal+0x1284/0x1330 kernel/signal.c:3037
- arch_do_signal_or_restart+0xbc/0x840 arch/x86/kernel/signal.c:337
- __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
- exit_to_user_mode_loop+0xa9/0x680 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
- do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-Modules linked in:
-CPU: 0 UID: 0 PID: 5877 Comm: syz.0.17 Tainted: G    B               syzkaller #0 PREEMPT(full) 
-Tainted: [B]=BAD_PAGE
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- bad_page+0x17f/0x1c0 mm/page_alloc.c:632
- free_page_is_bad mm/page_alloc.c:1076 [inline]
- __free_pages_prepare mm/page_alloc.c:1388 [inline]
- __free_frozen_pages+0xcd9/0xd30 mm/page_alloc.c:2938
- __folio_put+0x4a2/0x580 mm/swap.c:112
- __folio_split+0xffe/0x1570 mm/huge_memory.c:4199
- try_folio_split_to_order include/linux/huge_mm.h:411 [inline]
- try_folio_split_or_unmap+0x5b/0x1e0 mm/truncate.c:189
- truncate_inode_partial_folio+0x4ab/0x8e0 mm/truncate.c:255
- truncate_inode_pages_range+0x5f1/0xe30 mm/truncate.c:416
- iomap_write_failed fs/iomap/buffered-io.c:785 [inline]
- iomap_write_iter fs/iomap/buffered-io.c:1187 [inline]
- iomap_file_buffered_write+0x788/0xb30 fs/iomap/buffered-io.c:1225
- xfs_file_buffered_write+0x212/0x8c0 fs/xfs/xfs_file.c:1056
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f3f0719ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f3f07ff7028 EFLAGS: 00000246 ORIG_RAX: 0000000000000012
-RAX: ffffffffffffffda RBX: 00007f3f07415fa0 RCX: 00007f3f0719ce59
-RDX: 00000000ffffffb7 RSI: 0000200000000040 RDI: 0000000000000004
-RBP: 00007f3f07232d6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000008080c61 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f3f07416038 R14: 00007f3f07415fa0 R15: 00007ffe415e9148
- </TASK>
-BUG: Bad page state in process syz.0.17  pfn:1a6488
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x8088 pfn:0x1a6488
-head: order:0 mapcount:0 entire_mapcount:1 nr_pages_mapped:0 pincount:0
-flags: 0x57ff20000000040(head|node=1|zone=2|lastcpupid=0x7ff)
-raw: 057ff20000000040 0000000000000000 dead000000000122 0000000000000000
-raw: 0000000000008088 0000000000000000 00000000ffffffff 0000000000000000
-head: 057ff20000000040 0000000000000000 dead000000000122 0000000000000000
-head: 0000000000008088 0000000000000000 00000000ffffffff 0000000000000000
-head: 057ff00000000000 0000000000000000 00000000ffffffff 0000000000000000
-head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-page_owner tracks the page as allocated
-page last allocated via order 3, migratetype Movable, gfp_mask 0x153c4a(GFP_NOFS|__GFP_HIGHMEM|__GFP_MOVABLE|__GFP_WRITE|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_HARDWALL), pid 5877, tgid 5876 (syz.0.17), ts 79178255762, free_ts 72346997158
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1853
- prep_new_page mm/page_alloc.c:1861 [inline]
- get_page_from_freelist+0x2593/0x2610 mm/page_alloc.c:3941
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5221
- alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
- alloc_frozen_pages_noprof mm/mempolicy.c:2561 [inline]
- alloc_pages_noprof+0xac/0x2a0 mm/mempolicy.c:2581
- folio_alloc_noprof+0x1e/0x30 mm/mempolicy.c:2591
- filemap_alloc_folio_noprof+0x111/0x470 mm/filemap.c:1014
- __filemap_get_folio_mpol+0x3fc/0xb00 mm/filemap.c:2012
- __filemap_get_folio include/linux/pagemap.h:763 [inline]
- iomap_get_folio fs/iomap/buffered-io.c:725 [inline]
- __iomap_get_folio fs/iomap/buffered-io.c:896 [inline]
- iomap_write_begin+0x6d9/0x14f0 fs/iomap/buffered-io.c:960
- iomap_write_iter fs/iomap/buffered-io.c:1144 [inline]
- iomap_file_buffered_write+0x47a/0xb30 fs/iomap/buffered-io.c:1225
- xfs_file_buffered_write+0x212/0x8c0 fs/xfs/xfs_file.c:1056
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-page last free pid 5710 tgid 5710 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1397 [inline]
- free_unref_folios+0xd9f/0x14c0 mm/page_alloc.c:2999
- folios_put_refs+0x9ff/0xb40 mm/swap.c:1008
- free_pages_and_swap_cache+0x2b9/0x490 mm/swap_state.c:401
- __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
- tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
- tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
- tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
- tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
- exit_mmap+0x498/0x9e0 mm/mmap.c:1313
- __mmput+0x118/0x430 kernel/fork.c:1178
- exit_mm+0x1f6/0x2d0 kernel/exit.c:582
- do_exit+0x6a2/0x22c0 kernel/exit.c:964
- do_group_exit+0x21b/0x2d0 kernel/exit.c:1119
- get_signal+0x1284/0x1330 kernel/signal.c:3037
- arch_do_signal_or_restart+0xbc/0x840 arch/x86/kernel/signal.c:337
- __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
- exit_to_user_mode_loop+0xa9/0x680 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
- do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-Modules linked in:
-
-CPU: 1 UID: 0 PID: 5877 Comm: syz.0.17 Tainted: G    B               syzkaller #0 PREEMPT(full) 
-Tainted: [B]=BAD_PAGE
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- bad_page+0x17f/0x1c0 mm/page_alloc.c:632
- free_page_is_bad mm/page_alloc.c:1076 [inline]
- __free_pages_prepare mm/page_alloc.c:1388 [inline]
- __free_frozen_pages+0xcd9/0xd30 mm/page_alloc.c:2938
- __folio_put+0x4a2/0x580 mm/swap.c:112
- __folio_split+0xffe/0x1570 mm/huge_memory.c:4199
- try_folio_split_to_order include/linux/huge_mm.h:411 [inline]
- try_folio_split_or_unmap+0x5b/0x1e0 mm/truncate.c:189
- truncate_inode_partial_folio+0x4ab/0x8e0 mm/truncate.c:255
- truncate_inode_pages_range+0x5f1/0xe30 mm/truncate.c:416
- iomap_write_failed fs/iomap/buffered-io.c:785 [inline]
- iomap_write_iter fs/iomap/buffered-io.c:1187 [inline]
- iomap_file_buffered_write+0x788/0xb30 fs/iomap/buffered-io.c:1225
- xfs_file_buffered_write+0x212/0x8c0 fs/xfs/xfs_file.c:1056
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f3f0719ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f3f07ff7028 EFLAGS: 00000246 ORIG_RAX: 0000000000000012
-RAX: ffffffffffffffda RBX: 00007f3f07415fa0 RCX: 00007f3f0719ce59
-RDX: 00000000ffffffb7 RSI: 0000200000000040 RDI: 0000000000000004
-RBP: 00007f3f07232d6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000008080c61 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f3f07416038 R14: 00007f3f07415fa0 R15: 00007ffe415e9148
- </TASK>
-BUG: Bad page state in process syz.0.17  pfn:1a6490
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x8090 pfn:0x1a6490
-head: order:0 mapcount:0 entire_mapcount:1 nr_pages_mapped:0 pincount:0
-flags: 0x57ff20000000040(head|node=1|zone=2|lastcpupid=0x7ff)
-raw: 057ff20000000040 0000000000000000 dead000000000122 0000000000000000
-raw: 0000000000008090 0000000000000000 00000000ffffffff 0000000000000000
-head: 057ff20000000040 0000000000000000 dead000000000122 0000000000000000
-head: 0000000000008090 0000000000000000 00000000ffffffff 0000000000000000
-head: 057ff00000000000 0000000000000000 00000000ffffffff 0000000000000000
-head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-page_owner tracks the page as allocated
-page last allocated via order 4, migratetype Movable, gfp_mask 0x153c4a(GFP_NOFS|__GFP_HIGHMEM|__GFP_MOVABLE|__GFP_WRITE|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_HARDWALL), pid 5877, tgid 5876 (syz.0.17), ts 79178255762, free_ts 72346919466
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1853
- prep_new_page mm/page_alloc.c:1861 [inline]
- get_page_from_freelist+0x2593/0x2610 mm/page_alloc.c:3941
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5221
- alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
- alloc_frozen_pages_noprof mm/mempolicy.c:2561 [inline]
- alloc_pages_noprof+0xac/0x2a0 mm/mempolicy.c:2581
- folio_alloc_noprof+0x1e/0x30 mm/mempolicy.c:2591
- filemap_alloc_folio_noprof+0x111/0x470 mm/filemap.c:1014
- __filemap_get_folio_mpol+0x3fc/0xb00 mm/filemap.c:2012
- __filemap_get_folio include/linux/pagemap.h:763 [inline]
- iomap_get_folio fs/iomap/buffered-io.c:725 [inline]
- __iomap_get_folio fs/iomap/buffered-io.c:896 [inline]
- iomap_write_begin+0x6d9/0x14f0 fs/iomap/buffered-io.c:960
- iomap_write_iter fs/iomap/buffered-io.c:1144 [inline]
- iomap_file_buffered_write+0x47a/0xb30 fs/iomap/buffered-io.c:1225
- xfs_file_buffered_write+0x212/0x8c0 fs/xfs/xfs_file.c:1056
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-page last free pid 5710 tgid 5710 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1397 [inline]
- free_unref_folios+0xd9f/0x14c0 mm/page_alloc.c:2999
- folios_put_refs+0x9ff/0xb40 mm/swap.c:1008
- free_pages_and_swap_cache+0x2b9/0x490 mm/swap_state.c:401
- __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
- tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
- tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
- tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
- tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
- exit_mmap+0x498/0x9e0 mm/mmap.c:1313
- __mmput+0x118/0x430 kernel/fork.c:1178
- exit_mm+0x1f6/0x2d0 kernel/exit.c:582
- do_exit+0x6a2/0x22c0 kernel/exit.c:964
- do_group_exit+0x21b/0x2d0 kernel/exit.c:1119
- get_signal+0x1284/0x1330 kernel/signal.c:3037
- arch_do_signal_or_restart+0xbc/0x840 arch/x86/kernel/signal.c:337
- __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
- exit_to_user_mode_loop+0xa9/0x680 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
- do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-Modules linked in:
-CPU: 1 UID: 0 PID: 5877 Comm: syz.0.17 Tainted: G    B               syzkaller #0 PREEMPT(full) 
-Tainted: [B]=BAD_PAGE
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- bad_page+0x17f/0x1c0 mm/page_alloc.c:632
- free_page_is_bad mm/page_alloc.c:1076 [inline]
- __free_pages_prepare mm/page_alloc.c:1388 [inline]
- __free_pages_ok+0xb8c/0xbd0 mm/page_alloc.c:1578
- __folio_put+0x4a2/0x580 mm/swap.c:112
- __folio_split+0xffe/0x1570 mm/huge_memory.c:4199
- try_folio_split_to_order include/linux/huge_mm.h:411 [inline]
- try_folio_split_or_unmap+0x5b/0x1e0 mm/truncate.c:189
- truncate_inode_partial_folio+0x4ab/0x8e0 mm/truncate.c:255
- truncate_inode_pages_range+0x5f1/0xe30 mm/truncate.c:416
- iomap_write_failed fs/iomap/buffered-io.c:785 [inline]
- iomap_write_iter fs/iomap/buffered-io.c:1187 [inline]
- iomap_file_buffered_write+0x788/0xb30 fs/iomap/buffered-io.c:1225
- xfs_file_buffered_write+0x212/0x8c0 fs/xfs/xfs_file.c:1056
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f3f0719ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f3f07ff7028 EFLAGS: 00000246 ORIG_RAX: 0000000000000012
-RAX: ffffffffffffffda RBX: 00007f3f07415fa0 RCX: 00007f3f0719ce59
-RDX: 00000000ffffffb7 RSI: 0000200000000040 RDI: 0000000000000004
-RBP: 00007f3f07232d6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000008080c61 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f3f07416038 R14: 00007f3f07415fa0 R15: 00007ffe415e9148
- </TASK>
-BUG: Bad page state in process syz.0.17  pfn:1a64a0
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x80a0 pfn:0x1a64a0
-head: order:0 mapcount:0 entire_mapcount:1 nr_pages_mapped:0 pincount:0
-flags: 0x57ff20000000040(head|node=1|zone=2|lastcpupid=0x7ff)
-raw: 057ff20000000040 0000000000000000 dead000000000122 0000000000000000
-raw: 00000000000080a0 0000000000000000 00000000ffffffff 0000000000000000
-head: 057ff20000000040 0000000000000000 dead000000000122 0000000000000000
-head: 00000000000080a0 0000000000000000 00000000ffffffff 0000000000000000
-head: 057ff00000000000 0000000000000000 00000000ffffffff 0000000000000000
-head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-page_owner tracks the page as allocated
-page last allocated via order 5, migratetype Movable, gfp_mask 0x153c4a(GFP_NOFS|__GFP_HIGHMEM|__GFP_MOVABLE|__GFP_WRITE|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_HARDWALL), pid 5877, tgid 5876 (syz.0.17), ts 79178255762, free_ts 72346647882
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1853
- prep_new_page mm/page_alloc.c:1861 [inline]
- get_page_from_freelist+0x2593/0x2610 mm/page_alloc.c:3941
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5221
- alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
- alloc_frozen_pages_noprof mm/mempolicy.c:2561 [inline]
- alloc_pages_noprof+0xac/0x2a0 mm/mempolicy.c:2581
- folio_alloc_noprof+0x1e/0x30 mm/mempolicy.c:2591
- filemap_alloc_folio_noprof+0x111/0x470 mm/filemap.c:1014
- __filemap_get_folio_mpol+0x3fc/0xb00 mm/filemap.c:2012
- __filemap_get_folio include/linux/pagemap.h:763 [inline]
- iomap_get_folio fs/iomap/buffered-io.c:725 [inline]
- __iomap_get_folio fs/iomap/buffered-io.c:896 [inline]
- iomap_write_begin+0x6d9/0x14f0 fs/iomap/buffered-io.c:960
- iomap_write_iter fs/iomap/buffered-io.c:1144 [inline]
- iomap_file_buffered_write+0x47a/0xb30 fs/iomap/buffered-io.c:1225
- xfs_file_buffered_write+0x212/0x8c0 fs/xfs/xfs_file.c:1056
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-page last free pid 5710 tgid 5710 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1397 [inline]
- free_unref_folios+0xd9f/0x14c0 mm/page_alloc.c:2999
- folios_put_refs+0x9ff/0xb40 mm/swap.c:1008
- free_pages_and_swap_cache+0x2b9/0x490 mm/swap_state.c:401
- __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
- tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
- tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
- tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
- tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
- exit_mmap+0x498/0x9e0 mm/mmap.c:1313
- __mmput+0x118/0x430 kernel/fork.c:1178
- exit_mm+0x1f6/0x2d0 kernel/exit.c:582
- do_exit+0x6a2/0x22c0 kernel/exit.c:964
- do_group_exit+0x21b/0x2d0 kernel/exit.c:1119
- get_signal+0x1284/0x1330 kernel/signal.c:3037
- arch_do_signal_or_restart+0xbc/0x840 arch/x86/kernel/signal.c:337
- __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
- exit_to_user_mode_loop+0xa9/0x680 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
- do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-Modules linked in:
-CPU: 0 UID: 0 PID: 5877 Comm: syz.0.17 Tainted: G    B               syzkaller #0 PREEMPT(full) 
-Tainted: [B]=BAD_PAGE
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- bad_page+0x17f/0x1c0 mm/page_alloc.c:632
- free_page_is_bad mm/page_alloc.c:1076 [inline]
- __free_pages_prepare mm/page_alloc.c:1388 [inline]
- __free_pages_ok+0xb8c/0xbd0 mm/page_alloc.c:1578
- __folio_put+0x4a2/0x580 mm/swap.c:112
- __folio_split+0xffe/0x1570 mm/huge_memory.c:4199
- try_folio_split_to_order include/linux/huge_mm.h:411 [inline]
- try_folio_split_or_unmap+0x5b/0x1e0 mm/truncate.c:189
- truncate_inode_partial_folio+0x4ab/0x8e0 mm/truncate.c:255
- truncate_inode_pages_range+0x5f1/0xe30 mm/truncate.c:416
- iomap_write_failed fs/iomap/buffered-io.c:785 [inline]
- iomap_write_iter fs/iomap/buffered-io.c:1187 [inline]
- iomap_file_buffered_write+0x788/0xb30 fs/iomap/buffered-io.c:1225
- xfs_file_buffered_write+0x212/0x8c0 fs/xfs/xfs_file.c:1056
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f3f0719ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f3f07ff7028 EFLAGS: 00000246 ORIG_RAX: 0000000000000012
-RAX: ffffffffffffffda RBX: 00007f3f07415fa0 RCX: 00007f3f0719ce59
-RDX: 00000000ffffffb7 RSI: 0000200000000040 RDI: 0000000000000004
-RBP: 00007f3f07232d6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000008080c61 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f3f07416038 R14: 00007f3f07415fa0 R15: 00007ffe415e9148
- </TASK>
-BUG: Bad page state in process syz.0.17  pfn:1a64c0
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x80c0 pfn:0x1a64c0
-head: order:0 mapcount:0 entire_mapcount:1 nr_pages_mapped:0 pincount:0
-flags: 0x57ff20000000040(head|node=1|zone=2|lastcpupid=0x7ff)
-raw: 057ff20000000040 0000000000000000 dead000000000122 0000000000000000
-raw: 00000000000080c0 0000000000000000 00000000ffffffff 0000000000000000
-head: 057ff20000000040 0000000000000000 dead000000000122 0000000000000000
-head: 00000000000080c0 0000000000000000 00000000ffffffff 0000000000000000
-head: 057ff00000000000 0000000000000000 00000000ffffffff 0000000000000000
-head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-page_owner tracks the page as allocated
-page last allocated via order 6, migratetype Movable, gfp_mask 0x153c4a(GFP_NOFS|__GFP_HIGHMEM|__GFP_MOVABLE|__GFP_WRITE|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_HARDWALL), pid 5877, tgid 5876 (syz.0.17), ts 79178255762, free_ts 72346190117
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1853
- prep_new_page mm/page_alloc.c:1861 [inline]
- get_page_from_freelist+0x2593/0x2610 mm/page_alloc.c:3941
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5221
- alloc_pages_mpol+0x235/0x490 mm/mempolicy.c:2490
- alloc_frozen_pages_noprof mm/mempolicy.c:2561 [inline]
- alloc_pages_noprof+0xac/0x2a0 mm/mempolicy.c:2581
- folio_alloc_noprof+0x1e/0x30 mm/mempolicy.c:2591
- filemap_alloc_folio_noprof+0x111/0x470 mm/filemap.c:1014
- __filemap_get_folio_mpol+0x3fc/0xb00 mm/filemap.c:2012
- __filemap_get_folio include/linux/pagemap.h:763 [inline]
- iomap_get_folio fs/iomap/buffered-io.c:725 [inline]
- __iomap_get_folio fs/iomap/buffered-io.c:896 [inline]
- iomap_write_begin+0x6d9/0x14f0 fs/iomap/buffered-io.c:960
- iomap_write_iter fs/iomap/buffered-io.c:1144 [inline]
- iomap_file_buffered_write+0x47a/0xb30 fs/iomap/buffered-io.c:1225
- xfs_file_buffered_write+0x212/0x8c0 fs/xfs/xfs_file.c:1056
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-page last free pid 5710 tgid 5710 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1397 [inline]
- free_unref_folios+0xd9f/0x14c0 mm/page_alloc.c:2999
- folios_put_refs+0x9ff/0xb40 mm/swap.c:1008
- free_pages_and_swap_cache+0x2b9/0x490 mm/swap_state.c:401
- __tlb_batch_free_encoded_pages mm/mmu_gather.c:138 [inline]
- tlb_batch_pages_flush mm/mmu_gather.c:151 [inline]
- tlb_flush_mmu_free mm/mmu_gather.c:417 [inline]
- tlb_flush_mmu+0x6d3/0xa30 mm/mmu_gather.c:424
- tlb_finish_mmu+0xf9/0x230 mm/mmu_gather.c:549
- exit_mmap+0x498/0x9e0 mm/mmap.c:1313
- __mmput+0x118/0x430 kernel/fork.c:1178
- exit_mm+0x1f6/0x2d0 kernel/exit.c:582
- do_exit+0x6a2/0x22c0 kernel/exit.c:964
- do_group_exit+0x21b/0x2d0 kernel/exit.c:1119
- get_signal+0x1284/0x1330 kernel/signal.c:3037
- arch_do_signal_or_restart+0xbc/0x840 arch/x86/kernel/signal.c:337
- __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
- exit_to_user_mode_loop+0xa9/0x680 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
- do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-Modules linked in:
-CPU: 0 UID: 0 PID: 5877 Comm: syz.0.17 Tainted: G    B               syzkaller #0 PREEMPT(full) 
-Tainted: [B]=BAD_PAGE
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- bad_page+0x17f/0x1c0 mm/page_alloc.c:632
- free_page_is_bad mm/page_alloc.c:1076 [inline]
- __free_pages_prepare mm/page_alloc.c:1388 [inline]
- __free_pages_ok+0xb8c/0xbd0 mm/page_alloc.c:1578
- __folio_put+0x4a2/0x580 mm/swap.c:112
- __folio_split+0xffe/0x1570 mm/huge_memory.c:4199
- try_folio_split_to_order include/linux/huge_mm.h:411 [inline]
- try_folio_split_or_unmap+0x5b/0x1e0 mm/truncate.c:189
- truncate_inode_partial_folio+0x4ab/0x8e0 mm/truncate.c:255
- truncate_inode_pages_range+0x5f1/0xe30 mm/truncate.c:416
- iomap_write_failed fs/iomap/buffered-io.c:785 [inline]
- iomap_write_iter fs/iomap/buffered-io.c:1187 [inline]
- iomap_file_buffered_write+0x788/0xb30 fs/iomap/buffered-io.c:1225
- xfs_file_buffered_write+0x212/0x8c0 fs/xfs/xfs_file.c:1056
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_pwrite64 fs/read_write.c:795 [inline]
- __do_sys_pwrite64 fs/read_write.c:803 [inline]
- __se_sys_pwrite64 fs/read_write.c:800 [inline]
- __x64_sys_pwrite64+0x199/0x230 fs/read_write.c:800
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f3f0719ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f3f07ff7028 EFLAGS: 00000246 ORIG_RAX: 0000000000000012
-RAX: ffffffffffffffda RBX: 00007f3f07415fa0 RCX: 00007f3f0719ce59
-RDX: 00000000ffffffb7 RSI: 0000200000000040 RDI: 0000000000000004
-RBP: 00007f3f07232d6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000008080c61 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f3f07416038 R14: 00007f3f07415fa0 R15: 00007ffe415e9148
- </TASK>
-
-
-***
-
-BUG: Bad page state in shmem_get_folio_gfp
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      1ec3cca2d8b6b9ff6584ca626d4c8918bbf48d44
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/ffde37a3-aed0-4f49-bba1-ca31cd6a4b04/config
-syz repro: https://ci.syzbot.org/findings/f40ca5d2-8fd7-4dbe-a861-a7c4a5f442dd/syz_repro
-
-BUG: Bad page state in process syz.0.53  pfn:11ea80
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x680 pfn:0x11ea80
-head: order:0 mapcount:0 entire_mapcount:1 nr_pages_mapped:0 pincount:0
-flags: 0x17ff7800002025c(referenced|uptodate|dirty|workingset|head|swapbacked|node=0|zone=2|lastcpupid=0x7ff)
-raw: 017ff7800002025c 0000000000000000 dead000000000122 0000000000000000
-raw: 0000000000000680 0000000000000000 00000000ffffffff 0000000000000000
-head: 017ff7800002025c 0000000000000000 dead000000000122 0000000000000000
-head: 0000000000000680 0000000000000000 00000000ffffffff 0000000000000000
-head: 017ff00000000000 0000000000000000 00000000ffffffff 0000000000000000
-head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-page_owner tracks the page as allocated
-page last allocated via order 7, migratetype Movable, gfp_mask 0x3d20ca(GFP_TRANSHUGE_LIGHT|__GFP_NORETRY|__GFP_THISNODE), pid 5990, tgid 5988 (syz.0.53), ts 80487329937, free_ts 80461370315
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1853
- prep_new_page mm/page_alloc.c:1861 [inline]
- get_page_from_freelist+0x2593/0x2610 mm/page_alloc.c:3941
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5221
- alloc_pages_mpol+0x1da/0x490 mm/mempolicy.c:2476
- folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
- shmem_alloc_folio+0xba/0x160 mm/shmem.c:1933
- shmem_alloc_and_add_folio+0x62f/0xf80 mm/shmem.c:1962
- shmem_get_folio_gfp+0x555/0x1670 mm/shmem.c:2552
- shmem_get_folio mm/shmem.c:2670 [inline]
- shmem_write_begin+0x16c/0x330 mm/shmem.c:3303
- generic_perform_write+0x2e2/0x8f0 mm/filemap.c:4325
- shmem_file_write_iter+0xf8/0x120 mm/shmem.c:3478
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_write+0x150/0x270 fs/read_write.c:740
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-page last free pid 5749 tgid 5749 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1397 [inline]
- free_unref_folios+0xd9f/0x14c0 mm/page_alloc.c:2999
- folios_put_refs+0x9ff/0xb40 mm/swap.c:1008
- folio_batch_release include/linux/folio_batch.h:101 [inline]
- shmem_undo_range+0x52c/0x1660 mm/shmem.c:1149
- shmem_truncate_range mm/shmem.c:1277 [inline]
- shmem_evict_inode+0x289/0xae0 mm/shmem.c:1407
- evict+0x61e/0xb10 fs/inode.c:841
- __dentry_kill+0x1a2/0x690 fs/dcache.c:718
- shrink_kill+0xa9/0x2c0 fs/dcache.c:1195
- shrink_dentry_list+0x2e0/0x5e0 fs/dcache.c:1222
- shrink_dcache_tree+0xe9/0x5d0 fs/dcache.c:-1
- do_one_tree fs/dcache.c:1721 [inline]
- shrink_dcache_for_umount+0xa8/0x1f0 fs/dcache.c:1738
- generic_shutdown_super+0x6f/0x2d0 fs/super.c:624
- kill_anon_super+0x3b/0x70 fs/super.c:1292
- deactivate_locked_super+0xbc/0x130 fs/super.c:476
- cleanup_mnt+0x437/0x4d0 fs/namespace.c:1312
- task_work_run+0x1d9/0x270 kernel/task_work.c:233
- resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
- __exit_to_user_mode_loop kernel/entry/common.c:67 [inline]
- exit_to_user_mode_loop+0x193/0x680 kernel/entry/common.c:98
-Modules linked in:
-CPU: 0 UID: 0 PID: 5990 Comm: syz.0.53 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- bad_page+0x17f/0x1c0 mm/page_alloc.c:632
- free_page_is_bad mm/page_alloc.c:1076 [inline]
- __free_pages_prepare mm/page_alloc.c:1388 [inline]
- __free_pages_ok+0xb8c/0xbd0 mm/page_alloc.c:1578
- __folio_put+0x4a2/0x580 mm/swap.c:112
- __folio_split+0xffe/0x1570 mm/huge_memory.c:4199
- try_folio_split_to_order include/linux/huge_mm.h:411 [inline]
- try_folio_split_or_unmap+0x5b/0x1e0 mm/truncate.c:189
- truncate_inode_partial_folio+0x4ab/0x8e0 mm/truncate.c:255
- shmem_undo_range+0x9a2/0x1660 mm/shmem.c:1181
- shmem_truncate_range mm/shmem.c:1277 [inline]
- shmem_fallocate+0x51c/0xec0 mm/shmem.c:3703
- vfs_fallocate+0x669/0x7e0 fs/open.c:338
- madvise_remove mm/madvise.c:1039 [inline]
- madvise_vma_behavior+0x2bc8/0x4300 mm/madvise.c:1352
- madvise_walk_vmas+0x573/0xae0 mm/madvise.c:1713
- madvise_do_behavior+0x386/0x540 mm/madvise.c:1929
- do_madvise+0x1fa/0x2e0 mm/madvise.c:2022
- __do_sys_madvise mm/madvise.c:2031 [inline]
- __se_sys_madvise mm/madvise.c:2029 [inline]
- __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2029
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fc37db9ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fc37ead0028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
-RAX: ffffffffffffffda RBX: 00007fc37de15fa0 RCX: 00007fc37db9ce59
-RDX: 0000000000000009 RSI: 0000000000600003 RDI: 0000200000000000
-RBP: 00007fc37dc32d6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fc37de16038 R14: 00007fc37de15fa0 R15: 00007fff07d58848
- </TASK>
-BUG: Bad page state in process syz.0.53  pfn:11eb00
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x700 pfn:0x11eb00
-head: order:0 mapcount:0 entire_mapcount:1 nr_pages_mapped:0 pincount:0
-flags: 0x17ff7800002025c(referenced|uptodate|dirty|workingset|head|swapbacked|node=0|zone=2|lastcpupid=0x7ff)
-raw: 017ff7800002025c 0000000000000000 dead000000000122 0000000000000000
-raw: 0000000000000700 0000000000000000 00000000ffffffff 0000000000000000
-head: 017ff7800002025c 0000000000000000 dead000000000122 0000000000000000
-head: 0000000000000700 0000000000000000 00000000ffffffff 0000000000000000
-head: 017ff00000000000 0000000000000000 00000000ffffffff 0000000000000000
-head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-page_owner tracks the page as allocated
-page last allocated via order 8, migratetype Movable, gfp_mask 0x3d20ca(GFP_TRANSHUGE_LIGHT|__GFP_NORETRY|__GFP_THISNODE), pid 5990, tgid 5988 (syz.0.53), ts 80487329937, free_ts 80461370315
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0x22d/0x280 mm/page_alloc.c:1853
- prep_new_page mm/page_alloc.c:1861 [inline]
- get_page_from_freelist+0x2593/0x2610 mm/page_alloc.c:3941
- __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5221
- alloc_pages_mpol+0x1da/0x490 mm/mempolicy.c:2476
- folio_alloc_mpol_noprof+0x39/0x160 mm/mempolicy.c:2509
- shmem_alloc_folio+0xba/0x160 mm/shmem.c:1933
- shmem_alloc_and_add_folio+0x62f/0xf80 mm/shmem.c:1962
- shmem_get_folio_gfp+0x555/0x1670 mm/shmem.c:2552
- shmem_get_folio mm/shmem.c:2670 [inline]
- shmem_write_begin+0x16c/0x330 mm/shmem.c:3303
- generic_perform_write+0x2e2/0x8f0 mm/filemap.c:4325
- shmem_file_write_iter+0xf8/0x120 mm/shmem.c:3478
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x61d/0xb90 fs/read_write.c:688
- ksys_write+0x150/0x270 fs/read_write.c:740
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-page last free pid 5749 tgid 5749 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1397 [inline]
- free_unref_folios+0xd9f/0x14c0 mm/page_alloc.c:2999
- folios_put_refs+0x9ff/0xb40 mm/swap.c:1008
- folio_batch_release include/linux/folio_batch.h:101 [inline]
- shmem_undo_range+0x52c/0x1660 mm/shmem.c:1149
- shmem_truncate_range mm/shmem.c:1277 [inline]
- shmem_evict_inode+0x289/0xae0 mm/shmem.c:1407
- evict+0x61e/0xb10 fs/inode.c:841
- __dentry_kill+0x1a2/0x690 fs/dcache.c:718
- shrink_kill+0xa9/0x2c0 fs/dcache.c:1195
- shrink_dentry_list+0x2e0/0x5e0 fs/dcache.c:1222
- shrink_dcache_tree+0xe9/0x5d0 fs/dcache.c:-1
- do_one_tree fs/dcache.c:1721 [inline]
- shrink_dcache_for_umount+0xa8/0x1f0 fs/dcache.c:1738
- generic_shutdown_super+0x6f/0x2d0 fs/super.c:624
- kill_anon_super+0x3b/0x70 fs/super.c:1292
- deactivate_locked_super+0xbc/0x130 fs/super.c:476
- cleanup_mnt+0x437/0x4d0 fs/namespace.c:1312
- task_work_run+0x1d9/0x270 kernel/task_work.c:233
- resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
- __exit_to_user_mode_loop kernel/entry/common.c:67 [inline]
- exit_to_user_mode_loop+0x193/0x680 kernel/entry/common.c:98
-Modules linked in:
-CPU: 0 UID: 0 PID: 5990 Comm: syz.0.53 Tainted: G    B               syzkaller #0 PREEMPT(full) 
-Tainted: [B]=BAD_PAGE
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- bad_page+0x17f/0x1c0 mm/page_alloc.c:632
- free_page_is_bad mm/page_alloc.c:1076 [inline]
- __free_pages_prepare mm/page_alloc.c:1388 [inline]
- __free_pages_ok+0xb8c/0xbd0 mm/page_alloc.c:1578
- __folio_put+0x4a2/0x580 mm/swap.c:112
- __folio_split+0xffe/0x1570 mm/huge_memory.c:4199
- try_folio_split_to_order include/linux/huge_mm.h:411 [inline]
- try_folio_split_or_unmap+0x5b/0x1e0 mm/truncate.c:189
- truncate_inode_partial_folio+0x4ab/0x8e0 mm/truncate.c:255
- shmem_undo_range+0x9a2/0x1660 mm/shmem.c:1181
- shmem_truncate_range mm/shmem.c:1277 [inline]
- shmem_fallocate+0x51c/0xec0 mm/shmem.c:3703
- vfs_fallocate+0x669/0x7e0 fs/open.c:338
- madvise_remove mm/madvise.c:1039 [inline]
- madvise_vma_behavior+0x2bc8/0x4300 mm/madvise.c:1352
- madvise_walk_vmas+0x573/0xae0 mm/madvise.c:1713
- madvise_do_behavior+0x386/0x540 mm/madvise.c:1929
- do_madvise+0x1fa/0x2e0 mm/madvise.c:2022
- __do_sys_madvise mm/madvise.c:2031 [inline]
- __se_sys_madvise mm/madvise.c:2029 [inline]
- __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2029
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fc37db9ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fc37ead0028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
-RAX: ffffffffffffffda RBX: 00007fc37de15fa0 RCX: 00007fc37db9ce59
-RDX: 0000000000000009 RSI: 0000000000600003 RDI: 0000200000000000
-RBP: 00007fc37dc32d6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fc37de16038 R14: 00007fc37de15fa0 R15: 00007fff07d58848
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+>
+> Fixes: d647c5b2fbf8 ("ocfs2: split transactions in dio completion to avoi=
+d credit exhaustion")
+> Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+b225d4dfce6219600c42@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3Db225d4dfce6219600c42
+> Link: https://syzkaller.appspot.com/ai_job?id=3Dc86e9953-fff6-40ca-b2f0-e=
+ff12366a33a
+> To: "Joel Becker" <jlbec@evilplan.org>
+> To: "Joseph Qi" <joseph.qi@linux.alibaba.com>
+> To: "Mark Fasheh" <mark@fasheh.com>
+> To: <ocfs2-devel@lists.linux.dev>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> ---
+> diff --git a/fs/ocfs2/aops.c b/fs/ocfs2/aops.c
+> index 6ec198bda..4acdbb708 100644
+> --- a/fs/ocfs2/aops.c
+> +++ b/fs/ocfs2/aops.c
+> @@ -2372,6 +2372,15 @@ static int ocfs2_dio_end_io_write(struct inode *in=
+ode,
+>  unlock:
+>         up_write(&oi->ip_alloc_sem);
+>
+> +       if (data_ac) {
+> +               ocfs2_free_alloc_context(data_ac);
+> +               data_ac =3D NULL;
+> +       }
+> +       if (meta_ac) {
+> +               ocfs2_free_alloc_context(meta_ac);
+> +               meta_ac =3D NULL;
+> +       }
+> +
+>         /* everything looks good, let's start the cleanup */
+>         if (!ret && dwc->dw_orphaned) {
+>                 BUG_ON(dwc->dw_writer_pid !=3D task_pid_nr(current));
+> @@ -2383,10 +2392,6 @@ static int ocfs2_dio_end_io_write(struct inode *in=
+ode,
+>         ocfs2_inode_unlock(inode, 1);
+>         brelse(di_bh);
+>  out:
+> -       if (data_ac)
+> -               ocfs2_free_alloc_context(data_ac);
+> -       if (meta_ac)
+> -               ocfs2_free_alloc_context(meta_ac);
+>         ocfs2_run_deallocs(osb, &dealloc);
+>         ocfs2_dio_free_write_ctx(inode, dwc);
+>
+>
+>
+> base-commit: e7ae89a0c97ce2b68b0983cd01eda67cf373517d
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+>
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated =
+patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/008b2675-2e48-4150-a1ec-e68026253bad%40mail.kernel.org=
+.
