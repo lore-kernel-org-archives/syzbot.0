@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7101A3D47A7
-	for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 12:08:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9C333EFD03
+	for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 12:29:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781179701; cv=none; b=lQaJXu+WD8DQz1lqI2+6b91kDMQOqUo5KL1DcARa5FPNvicvelCcvlhR3U7plNnuZIPeM/lKVFovxkdq7+/RGIrjHstsFxCdUm3QYC7wyawY8RuxUAKJrljYwmzmA/JgGPcmI6F5ZdcWObUKph3aCuF1BB+wDY06k5ozbr9f+3c=
+	t=1781180962; cv=none; b=Ct2gGMlfQPmIBgAlRlyreudXUtaxEvfFYNtCmroTetOUN2d+LHjQmqynlkLLya6cakPAfrPGoa8EVPr2DV/lwzgJoTxA9Q6ZZ63ytrhjClHrZ2lGhs+oM5br8yuizxARMNW46EI/iq060T4bKc9DZa2QQYjv6WZvo84wTRpTGzA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781179701; c=relaxed/simple;
-	bh=nTpGAk8WaFGlNDfWwgVJfDj2MLZFlF2JO5bqSk7mX+M=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=YuGTfCyLMxSaouVpyFOkkOeQK0YOxsUbKuRAXEVUNXIcS133yiXhhRFnK/mPjK5u5ySGenNLAvcQTLwhJov80o8iqEAO6vJp2SaXEzI1ZNiAPWJ7NgyDrjxHPzObdI1Ft7jivOIMku+ctZOpZjNBFWpuJyUyTDgpC5ZfuK42xdY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b0QRCPYM; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781180962; c=relaxed/simple;
+	bh=xSomEuoQxSPPGSQzhP7uW1MO5hsmLcXILG76DBnreeE=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=JetYZhJevZSU9f/MTtqbhCCw7HzX7A8IvSXaogt+E/w4WKxJrhj/NNO4M6gYSKPj/4KG9tqAVN2lnCd/H/GeIxqa+wM4ABif5qBJb4inPZeM6heAFZwcein1MNWX4M4VuCwy9P0OWNqNKZMqLxKeFJ6YE3D5fvZU5v0kHme5UX0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fi4Rp8U3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b0QRCPYM"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 131871F00893;
-	Thu, 11 Jun 2026 12:08:20 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fi4Rp8U3"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A67021F00893;
+	Thu, 11 Jun 2026 12:29:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781179700;
-	bh=g2w+/xoTzBMUO6U95E0s1k50m+CupO983YYNMw43aSU=;
+	s=k20260515; t=1781180960;
+	bh=fWS2EwFHNvNNfUZOFrY8MTBNLwlEYTcpwybldDGAyAY=;
 	h=From:To:Cc:Subject:Date;
-	b=b0QRCPYMJYjXE1OVGRG3Lg5LYjVxFuz5yWscV4EITjaXXx0hO/AprpklXS3/wc0hd
-	 XCCgmi9f4VGIwZJBiszDWHpfDSXffqv1ErRH8+ipqGVYPXIqVfaRyR/uwfOKFJkDHz
-	 71LtvdoCvOezwMrZ141XpL4v7RzQN/oRyDjmnkC9ELj76kHbMUp6zUxQlbmaDnPV2u
-	 3yv0V5hwCUm51Z+oonZV/ZBc00noL7sqRWDmvkBnsLU+NZTHfngUooFe5J6fHIWQHe
-	 GXHVHlloEBbaY07MstnfFjRH9IaCCYSFEfxdSBXo78mGrSpIo5dczgeekku8r9orRK
-	 QQl0C7TVxOPcQ==
+	b=fi4Rp8U3qpH5D3CpSt3piCZTN8uBKus34tnnxT41NBcXsWTxenabVYHH8SNDuP26Y
+	 S7W5MXYvbpeQRh94txDX5JCxsW6uzPjdhAQltRaiP1lHnAi/RBs0NKh7aWutXAvtzU
+	 SBS5yqsirz+9S1KH1UyMgBSnmCN/PHOaZTU3TNVJ6NpKU6KaEynM/Y4paPr65ldTWs
+	 WbAQ7tyuUIDko11JEVY+HFNK/uydgpLbsve7iJALCUvyLILxze/i0I3XNNHguA9hUu
+	 ScMHWqTRBWf/VZ/4B09fgCUVxwg4iUXz2CJlA/KQ5uGXTTxsMmvFzGUHeyzYDQkhg1
+	 mOvPzLfo8jEqQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] hfs/hfsplus: remove WARN_ON() and fix error handling in hfs_bnode_create
-Message-ID: <4822d036-ffeb-41e0-b202-02e203a6f5b4@mail.kernel.org>
+Subject: [PATCH RFC] super: prevent hung task in super_lock() and grab_super()
+Message-ID: <412aedfb-16f3-4fcf-935a-ceccc814d782@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,93 +38,97 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Thu, 11 Jun 2026 12:08:20 +0000 (UTC)
+Date: Thu, 11 Jun 2026 12:29:20 +0000 (UTC)
 
-When a new btree node needs to be allocated, the filesystem scans the
-allocation bitmap to find a free bit. If the filesystem image is corrupted,
-the bitmap might incorrectly indicate that an already-used node is free.
-This causes hfs_bnode_create() to find that the node is already present in
-the in-memory hash table. When this happens, it prints a critical message
-and hits a WARN_ON(1).
+A hung task panic can be triggered when quotactl() or sync() blocks
+indefinitely in TASK_UNINTERRUPTIBLE while waiting for a nascent superblock
+to finish mounting.
 
-A corrupted filesystem should fail gracefully with an error code. WARN_ON()
-must not be used for conditions that can legitimately happen due to
-corrupted images, and pr_err() should be used instead.
+This occurs when a filesystem's fill_super() or get_tree() method blocks
+indefinitely in a killable state (e.g., 9p waiting on a dead pipe). The
+mount task is in TASK_KILLABLE, which is ignored by the hung task detector.
+Meanwhile, quotactl() calls __iterate_supers() -> super_lock(), which uses
+wait_var_event() to wait for the superblock to become SB_BORN or SB_DYING.
+This wait is in TASK_UNINTERRUPTIBLE. Since the mount is stuck forever,
+quotactl() waits forever, eventually triggering a hung task panic:
 
-Recently, commit d8a73cc46c84 ("hfsplus: return error when node already
-exists in hfs_bnode_create") changed hfs_bnode_create() in
-fs/hfsplus/bnode.c to return ERR_PTR(-EEXIST) instead of returning the
-existing node, but left the WARN_ON(1) in place. Furthermore, the exact
-same bug exists in the older hfs filesystem (fs/hfs/bnode.c), which was not
-fixed by that commit. In fs/hfs/bnode.c, hfs_bnode_create() still triggers
-the WARN_ON(1) and returns the existing node without incrementing its
-refcount, which leads to a BUG_ON(!atomic_read(&node->refcnt)) in
-hfs_bnode_put() and corrupts the btree in memory.
-
-Fix this by removing the WARN_ON(1) in both fs/hfs/bnode.c and
-fs/hfsplus/bnode.c, downgrading the log message from pr_crit() to pr_err(),
-and changing the return value in fs/hfs/bnode.c to ERR_PTR(-EEXIST) to
-align with the hfsplus implementation.
-
-hfsplus: new node 0 already hashed?
-WARNING: fs/hfsplus/bnode.c:634 at hfsplus_bnode_create+0x45d/0x4f0
-fs/hfsplus/bnode.c:634
-...
+INFO: task blocked for more than 143 seconds.
 Call Trace:
  <TASK>
- hfs_bnode_split+0xd2/0x1090 fs/hfsplus/brec.c:248
- hfsplus_brec_insert+0x3bc/0xd70 fs/hfsplus/brec.c:100
- hfsplus_create_cat+0xa64/0x11f0 fs/hfsplus/catalog.c:308
- hfsplus_mknod+0x186/0x3f0 fs/hfsplus/dir.c:538
- hfsplus_mkdir+0x2c/0x40 fs/hfsplus/dir.c:579
- vfs_mkdir+0x40b/0x630 fs/namei.c:5271
- filename_mkdirat+0x289/0x520 fs/namei.c:5304
- __do_sys_mkdirat fs/namei.c:5325 [inline]
- __se_sys_mkdirat+0x35/0x150 fs/namei.c:5322
+ context_switch kernel/sched/core.c:5388 [inline]
+ __schedule+0x1821/0x5680 kernel/sched/core.c:7189
+ __schedule_loop kernel/sched/core.c:7268 [inline]
+ schedule+0x164/0x360 kernel/sched/core.c:7283
+ super_lock+0x1e0/0x3d0 fs/super.c:116
+ __iterate_supers+0x126/0x250 fs/super.c:926
+ quota_sync_all fs/quota/quota.c:69 [inline]
+ __do_sys_quotactl fs/quota/quota.c:938 [inline]
+ __se_sys_quotactl+0x3a7/0x9e0 fs/quota/quota.c:917
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
  </TASK>
 
-Fixes: d8a73cc46c84 ("hfsplus: return error when node already exists in hfs_bnode_create")
-Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+2bf21610eea63cb2ce93@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=2bf21610eea63cb2ce93
-Link: https://syzkaller.appspot.com/ai_job?id=7b105f12-f88e-46a6-9fc6-e0df3a1532e4
-To: "Yangtao Li" <frank.li@vivo.com>
-To: "John Paul Adrian Glaubitz" <glaubitz@physik.fu-berlin.de>
+To fix this without requiring massive VFS refactoring to make super_lock()
+killable (which would involve propagating errors through numerous callers),
+replace wait_var_event() with wait_var_event_timeout() in a loop.
+
+Using a 30-second timeout allows the task to periodically wake up,
+incrementing its voluntary context switch count and resetting the hung task
+detector's timer, while maintaining the exact same VFS semantics.
+
+The same issue exists in grab_super() when waiting for a dying superblock
+to become SB_DEAD, so apply the same timeout-and-loop pattern there as
+well.
+
+Fixes: 5e8749141521 ("super: wait for nascent superblocks")
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
+Reported-by: syzbot+f5d91b1897d5b094c6b4@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=f5d91b1897d5b094c6b4
+Link: https://syzkaller.appspot.com/ai_job?id=ef00f4bd-0b25-4782-94fb-daaf1c99b6ff
+To: "Christian Brauner" <brauner@kernel.org>
 To: <linux-fsdevel@vger.kernel.org>
-To: "Viacheslav Dubeyko" <slava@dubeyko.com>
+To: "Alexander Viro" <viro@zeniv.linux.org.uk>
+Cc: "Jan Kara" <jack@suse.cz>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/fs/hfs/bnode.c b/fs/hfs/bnode.c
-index 13d58c51f..3c49f6c64 100644
---- a/fs/hfs/bnode.c
-+++ b/fs/hfs/bnode.c
-@@ -516,9 +516,8 @@ struct hfs_bnode *hfs_bnode_create(struct hfs_btree *tree, u32 num)
- 	node = hfs_bnode_findhash(tree, num);
- 	spin_unlock(&tree->hash_lock);
- 	if (node) {
--		pr_crit("new node %u already hashed?\n", num);
--		WARN_ON(1);
--		return node;
-+		pr_err("new node %u already hashed?\n", num);
-+		return ERR_PTR(-EEXIST);
+diff --git a/fs/super.c b/fs/super.c
+index 378e81efe..5f4f59e84 100644
+--- a/fs/super.c
++++ b/fs/super.c
+@@ -112,13 +112,18 @@ static __must_check bool super_lock(struct super_block *sb, bool excl)
+ {
+ 	lockdep_assert_not_held(&sb->s_umount);
+ 
++relock:
+ 	/* wait until the superblock is ready or dying */
+-	wait_var_event(&sb->s_flags, super_flags(sb, SB_BORN | SB_DYING));
++	wait_var_event_timeout(&sb->s_flags,
++			       super_flags(sb, SB_BORN | SB_DYING), 30 * HZ);
+ 
+ 	/* Don't pointlessly acquire s_umount. */
+ 	if (super_flags(sb, SB_DYING))
+ 		return false;
+ 
++	if (!super_flags(sb, SB_BORN))
++		goto relock;
++
+ 	__super_lock(sb, excl);
+ 
+ 	/*
+@@ -538,7 +543,10 @@ static bool grab_super(struct super_block *sb)
+ 		}
+ 		super_unlock_excl(sb);
  	}
- 	node = __hfs_bnode_create(tree, num);
- 	if (!node)
-diff --git a/fs/hfsplus/bnode.c b/fs/hfsplus/bnode.c
-index f8b5a8ae5..2375b8f21 100644
---- a/fs/hfsplus/bnode.c
-+++ b/fs/hfsplus/bnode.c
-@@ -630,8 +630,7 @@ struct hfs_bnode *hfs_bnode_create(struct hfs_btree *tree, u32 num)
- 	node = hfs_bnode_findhash(tree, num);
- 	spin_unlock(&tree->hash_lock);
- 	if (node) {
--		pr_crit("new node %u already hashed?\n", num);
--		WARN_ON(1);
-+		pr_err("new node %u already hashed?\n", num);
- 		return ERR_PTR(-EEXIST);
- 	}
- 	node = __hfs_bnode_create(tree, num);
+-	wait_var_event(&sb->s_flags, super_flags(sb, SB_DEAD));
++wait_dead:
++	wait_var_event_timeout(&sb->s_flags, super_flags(sb, SB_DEAD), 30 * HZ);
++	if (!super_flags(sb, SB_DEAD))
++		goto wait_dead;
+ 	put_super(sb);
+ 	return false;
+ }
 
 
 base-commit: 4549871118cf616eecdd2d939f78e3b9e1dddc48
