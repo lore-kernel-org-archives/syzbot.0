@@ -1,144 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9C333EFD03
-	for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 12:29:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9857403EA3
+	for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 13:22:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781180962; cv=none; b=Ct2gGMlfQPmIBgAlRlyreudXUtaxEvfFYNtCmroTetOUN2d+LHjQmqynlkLLya6cakPAfrPGoa8EVPr2DV/lwzgJoTxA9Q6ZZ63ytrhjClHrZ2lGhs+oM5br8yuizxARMNW46EI/iq060T4bKc9DZa2QQYjv6WZvo84wTRpTGzA=
+	t=1781184136; cv=none; b=tCQMHBeBjjjbD5qluHrEB4VW1fIrPkBaXlI1n01IGglS5rURKSpD898t3EwF0j7kr4e5ozrmlxwwqt3IV4uzQYijBs60Lj8GLQcWU1xBWbhotUg1f4psBgGKMMOUuFomJ+CHXKNY+eS1AOt3ws/b3LloO1b6EKb2G+TeGxiQkiw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781180962; c=relaxed/simple;
-	bh=xSomEuoQxSPPGSQzhP7uW1MO5hsmLcXILG76DBnreeE=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=JetYZhJevZSU9f/MTtqbhCCw7HzX7A8IvSXaogt+E/w4WKxJrhj/NNO4M6gYSKPj/4KG9tqAVN2lnCd/H/GeIxqa+wM4ABif5qBJb4inPZeM6heAFZwcein1MNWX4M4VuCwy9P0OWNqNKZMqLxKeFJ6YE3D5fvZU5v0kHme5UX0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fi4Rp8U3; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fi4Rp8U3"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A67021F00893;
-	Thu, 11 Jun 2026 12:29:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781180960;
-	bh=fWS2EwFHNvNNfUZOFrY8MTBNLwlEYTcpwybldDGAyAY=;
-	h=From:To:Cc:Subject:Date;
-	b=fi4Rp8U3qpH5D3CpSt3piCZTN8uBKus34tnnxT41NBcXsWTxenabVYHH8SNDuP26Y
-	 S7W5MXYvbpeQRh94txDX5JCxsW6uzPjdhAQltRaiP1lHnAi/RBs0NKh7aWutXAvtzU
-	 SBS5yqsirz+9S1KH1UyMgBSnmCN/PHOaZTU3TNVJ6NpKU6KaEynM/Y4paPr65ldTWs
-	 WbAQ7tyuUIDko11JEVY+HFNK/uydgpLbsve7iJALCUvyLILxze/i0I3XNNHguA9hUu
-	 ScMHWqTRBWf/VZ/4B09fgCUVxwg4iUXz2CJlA/KQ5uGXTTxsMmvFzGUHeyzYDQkhg1
-	 mOvPzLfo8jEqQ==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] super: prevent hung task in super_lock() and grab_super()
-Message-ID: <412aedfb-16f3-4fcf-935a-ceccc814d782@mail.kernel.org>
+	s=arc-20240116; t=1781184136; c=relaxed/simple;
+	bh=U4HmrypWInHnulXD6vPEcqrKswf6sMHyeDo7iJbeb3c=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=B3dUOsU+t6RRRcPcyKR7mdY1EUASK5S6N9t+kOoImZJqEzitljmxuUhikH+5hIV37XiJhYh9UOEbn+4kLPnfkp7qDC0WzcVRsZtmcQlG5M3JyUqTUTDBclTUlZL4RNR+yyKmcYfGPfjPI0/GDEJgDWMD+9nnLGn/siFHYkGE3/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-69e89d83663so4818324eaf.2
+        for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 06:22:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781184132; x=1781788932;
+        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=i84R0YalEnzYEwHeGRYpdEjQGHZvkMpM/hRBWXDcl24=;
+        b=N8n7uQnzd5s9roJE1LNbF4qqFLcof6o4bHxwrEhFxBRPNEg+EVq7PmakmVNSdZhNgV
+         62gYVbeX0Admqfw8/SqpQibdA3P03Bpi1ExodDx/5x1mTJYzJxBS124BhqJokeHpRR/P
+         vctBrHh1qJtGlL89fVaQo8S43lHrqybmJuROuUK6mFHlDIMLWeR32KPzubLTw2V03ZYy
+         qGMZH0xf5aJei18mJJlvPYE5obfUKfKihdRbMilOKrxYR7C40gAtIEFjMPlt2WaT5T1O
+         3h2V0d/e+qX/SloZSB8dl/tzuEBiFKiXSduPnOovkfVTR+Oi9KfgWuOasCrHEsiYV03O
+         xrcQ==
+X-Gm-Message-State: AOJu0YwnLqcZPCKXkF54G72zuI4Fdkum6CMjm9QksrGysy9GuRWET2YE
+	L/6dodIpZ/BIdMcniplJIAt+WMJKeuxEh6kdd75c93Fm4VZxhEqcjfyYbLlQby+hatabWUPaUMk
+	PuL/fznsyvM92nyXuTvT5Pf0O9ZONoyGBiLvi9gCIS5RjIJuoEe5WF5+pNc8=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Thu, 11 Jun 2026 12:29:20 +0000 (UTC)
+X-Received: by 2002:a05:6820:824:b0:69e:3563:4424 with SMTP id
+ 006d021491bc7-69ecae66c19mr1786786eaf.24.1781184132771; Thu, 11 Jun 2026
+ 06:22:12 -0700 (PDT)
+Date: Thu, 11 Jun 2026 06:22:12 -0700
+In-Reply-To: <aiqjnj613Ut2bK1n@localhost.localdomain>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a2ab684.3b0a2d4e.8c8d1.0011.GAE@google.com>
+Subject: [syzbot ci] Re: Implement a new generic pagewalk API
+From: syzbot ci <syzbot+cie2febc77f154bb22@syzkaller.appspotmail.com>
+To: osalvador@kernel.org, akpm@linux-foundation.org, david@kernel.org, 
+	david@redhat.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
+	lorenzo.stoakes@oracle.com, mhocko@suse.com, muchun.song@linux.dev, 
+	osalvador@suse.de, syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com, 
+	vbabka@kernel.org
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-A hung task panic can be triggered when quotactl() or sync() blocks
-indefinitely in TASK_UNINTERRUPTIBLE while waiting for a nascent superblock
-to finish mounting.
+syzbot ci has tested the suggested fix patch on top of the following series:
 
-This occurs when a filesystem's fill_super() or get_tree() method blocks
-indefinitely in a killable state (e.g., 9p waiting on a dead pipe). The
-mount task is in TASK_KILLABLE, which is ignored by the hung task detector.
-Meanwhile, quotactl() calls __iterate_supers() -> super_lock(), which uses
-wait_var_event() to wait for the superblock to become SB_BORN or SB_DYING.
-This wait is in TASK_UNINTERRUPTIBLE. Since the mount is stuck forever,
-quotactl() waits forever, eventually triggering a hung task panic:
+[v3] Implement a new generic pagewalk API
+https://lore.kernel.org/all/20260525165528.184397-1-osalvador@suse.de
 
-INFO: task blocked for more than 143 seconds.
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5388 [inline]
- __schedule+0x1821/0x5680 kernel/sched/core.c:7189
- __schedule_loop kernel/sched/core.c:7268 [inline]
- schedule+0x164/0x360 kernel/sched/core.c:7283
- super_lock+0x1e0/0x3d0 fs/super.c:116
- __iterate_supers+0x126/0x250 fs/super.c:926
- quota_sync_all fs/quota/quota.c:69 [inline]
- __do_sys_quotactl fs/quota/quota.c:938 [inline]
- __se_sys_quotactl+0x3a7/0x9e0 fs/quota/quota.c:917
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
+Patch: https://ci.syzbot.org/jobs/ef5ed4ec-3733-48d9-af67-b53dff1c8b20/patch
+Testing results:
+* [build 0] Build Patched: failed
 
-To fix this without requiring massive VFS refactoring to make super_lock()
-killable (which would involve propagating errors through numerous callers),
-replace wait_var_event() with wait_var_event_timeout() in a loop.
+The following issues were found:
+* kernel build error
 
-Using a 30-second timeout allows the task to periodically wake up,
-incrementing its voluntary context switch count and resetting the hung task
-detector's timer, while maintaining the exact same VFS semantics.
+Full report is available here:
+https://ci.syzbot.org/session/90e7add4-2247-4f1b-9ca6-89dc339fdf98
 
-The same issue exists in grab_super() when waiting for a dying superblock
-to become SB_DEAD, so apply the same timeout-and-loop pattern there as
-well.
+***
 
-Fixes: 5e8749141521 ("super: wait for nascent superblocks")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+f5d91b1897d5b094c6b4@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=f5d91b1897d5b094c6b4
-Link: https://syzkaller.appspot.com/ai_job?id=ef00f4bd-0b25-4782-94fb-daaf1c99b6ff
-To: "Christian Brauner" <brauner@kernel.org>
-To: <linux-fsdevel@vger.kernel.org>
-To: "Alexander Viro" <viro@zeniv.linux.org.uk>
-Cc: "Jan Kara" <jack@suse.cz>
-Cc: <linux-kernel@vger.kernel.org>
+kernel build error
+
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
+base:      5200f5f493f79f14bbdc349e402a40dfb32f23c8
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/f29ebb48-eb43-476c-8d44-aa077ea8eca3/config
+
+fs/proc/task_mmu.c:1713:26: error: expected ';' after expression
 
 ---
-diff --git a/fs/super.c b/fs/super.c
-index 378e81efe..5f4f59e84 100644
---- a/fs/super.c
-+++ b/fs/super.c
-@@ -112,13 +112,18 @@ static __must_check bool super_lock(struct super_block *sb, bool excl)
- {
- 	lockdep_assert_not_held(&sb->s_umount);
- 
-+relock:
- 	/* wait until the superblock is ready or dying */
--	wait_var_event(&sb->s_flags, super_flags(sb, SB_BORN | SB_DYING));
-+	wait_var_event_timeout(&sb->s_flags,
-+			       super_flags(sb, SB_BORN | SB_DYING), 30 * HZ);
- 
- 	/* Don't pointlessly acquire s_umount. */
- 	if (super_flags(sb, SB_DYING))
- 		return false;
- 
-+	if (!super_flags(sb, SB_BORN))
-+		goto relock;
-+
- 	__super_lock(sb, excl);
- 
- 	/*
-@@ -538,7 +543,10 @@ static bool grab_super(struct super_block *sb)
- 		}
- 		super_unlock_excl(sb);
- 	}
--	wait_var_event(&sb->s_flags, super_flags(sb, SB_DEAD));
-+wait_dead:
-+	wait_var_event_timeout(&sb->s_flags, super_flags(sb, SB_DEAD), 30 * HZ);
-+	if (!super_flags(sb, SB_DEAD))
-+		goto wait_dead;
- 	put_super(sb);
- 	return false;
- }
-
-
-base-commit: 4549871118cf616eecdd2d939f78e3b9e1dddc48
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
