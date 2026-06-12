@@ -1,176 +1,222 @@
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
+Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3EA93A5E65
-	for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 20:24:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.70
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781209485; cv=none; b=hxIaAnbEe6/czVlz6z45/Zt4lXmSnEU1xmd2nTCxYVElvZN7cqNvDyUYR5llRlYDJaI7CIDidZx2hAFM+qQIBkFT9mb2EYvl+kotTIO26QqDjeNJ6Hnubrlwyoy9bkhPd3jX+Cy6/oONsyYDtK85Fx3svQWg11ei3+JcnLd6sJw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781209485; c=relaxed/simple;
-	bh=cwQp9RYZSVROTPNW2Mx1xJuRUo48ZQKS9/ilG+tlnMs=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=JITjF1F4yU57Fs5r21ZqoI0AELVnV01niCFDHlFfM4I9KwVO6jS37Pa08XQ+kw4x9A/JpJqZ1cwv4QRcPvktgUVPh7l1wV+xK/WDI5TkrLWy8mWt5TdFhoZ3ggAcgGBC9u9WK5yrB+ifARXfwZJ/TiA+n0B3GdmWRaQPytpgJO0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.70
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-7e6d439842bso508775a34.0
-        for <syzbot@lists.linux.dev>; Thu, 11 Jun 2026 13:24:40 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7748362152
+	for <syzbot@lists.linux.dev>; Fri, 12 Jun 2026 09:45:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781257559; cv=pass; b=Lln/U4AwYV3gBZTdFbWl32rnHiL504gEeOIRam5wEhF+s7bfrhqb7QjwWVd4j6Gdf/oUdx86zUVfIgHSt9+ifGYWQIZaps9filsbKP6VrFqmnXrztgc2auH3rV+X3Z8w9ik9wMohw4xz3UH1yR3P0UmBScA/hR1ghwSi6sV5j0o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781257559; c=relaxed/simple;
+	bh=LqrbKRl5tzzgX4v3/cZcAdBaM7lucmByH6TQ1YUylHU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ZkdKNYXeQncfWx9WiLygHp4x3IITW6am3vq0+nW9iZLa1lF/vEJK43OMdfAlL9tfnXbRyIWbI+tQBrQffXXVRYNWDrnNUmEbNovbwTDAb5ox1mrMFDlsBqk6kRXerLsBUqHVua9jw3/HtkkP7jQM3Q0L93v5Qyd7iAK6YAR9q/0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=JCxNbqNc; arc=pass smtp.client-ip=209.85.161.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="JCxNbqNc"
+Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-69e8d815c3dso374350eaf.1
+        for <syzbot@lists.linux.dev>; Fri, 12 Jun 2026 02:45:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1781257557; cv=none;
+        d=google.com; s=arc-20240605;
+        b=OVT7/aF9Iguh4Q51BRn6nYPvh7lbhqubkmxayJTJ1t+JbWSRL2B96ztrqyYHB3CYsi
+         4ebzdRcD/BW1UuFk4/S9cpqLtWLYVel5dXsbCI38FBJ6IoRtVWBFLG4NjqtiqiOMvMGG
+         7GYGx1iqZDBtlu0qJO/ggzJxgxmKAjF4D6BVpuqo1J0X1r7kvG6IKVxeGjW0Zxhzg2sM
+         EAx606IrRIoq6MbkejmBKQgs7M+60plpE7DYM/PRmJI3ZQLdOCitrAWenlLy02rYZXyW
+         rYRE4b8nd2DsxS5xbr8TGO8X4M6y2HbbyD8GL84s7L1RySzWmmh+/pIML6uzAMd3tMGa
+         d1ig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=QK3MWKdO66xa+KYJVEwgibkKCQYUGo49Z+TFe2RXCxk=;
+        fh=gZnazPvVnZMy7FKQs52CFVHDWtTRnuS56XEWs3wrbuo=;
+        b=d7mldcg26ztRGjOfDiBboV6IXFb0aZBsGjRpIKRmyQeysEZWgFCF4reJVlHnLpQaXx
+         FiEP0bq2bx0NorafD4DWKlf06GUs1OmabVvno5Fkp0WRozJStV51HD8fjbaRp7yiif/e
+         pDgrGOioyKEgvRYatsCPfNOew14OCAEM6LuWTLzl7wArnnzW+vXL6fwrKwOtvjGKaa7I
+         TzatvJL85nldswoZvU3ahsmxyIeGWsCSZVmyerXLU/JmYEyMEIk8M0O8o7pTLtMkEjlB
+         aFvTzFwgyiy5LkSHT/Mj4gg1gyAWFd9PFsP2507+Dht3i/3AAfRyqkcvGUangQ2Ccd6R
+         8fOw==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1781257557; x=1781862357; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QK3MWKdO66xa+KYJVEwgibkKCQYUGo49Z+TFe2RXCxk=;
+        b=JCxNbqNcIcQafnumqRmMGx0sgx1w8R+5vqagT5j5V1ctdmRhNWqc3T71+qyCIEQBzd
+         yYoAUv9g73W9DYYX8VhePQmN1jYvnJSlfTnY+QN9UGQ2ElTPO8zpV3e7dPfqlNULuF07
+         rrTw/z0hTVRZcu/GIasmctgl9m68/y8sQylp8bmQzMHVt2N+AcpSac9aRSTP7be9C2Ai
+         JrfwDbezE6wi/CM26ugX6f/dmL0tPmalhsJUoaOeaN4tINcToKcskd39+tie5b8dQz7G
+         JbOvukPeCtJ7JVBxyOmLLpHRTSOCjbh1L6AjnAAmjrdIlPw+O5M0xfBG3sJXUiVrAuK5
+         zOuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781209480; x=1781814280;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=aJ0XVG+J6ePfnG2Ysl3vzXgB33Kh11LqKEd4gUXQNEg=;
-        b=ZtNxY8GoEz2LBgrnnpIu6th575nkmEVUsU1IOkVBxyFZ2bPZsQ+ZOG0fEowQZD+m62
-         pAUCqfv2tbi2VXO2KUN5IxqEUfGKMKlLiDeyQDwBTlIXUGC65QXGyUFl0lIv5e362wUx
-         z0bfrPzJgJbLZrIN0L3iNL/z3xSDq8gtL3crzBkoBDRwxjoR4AVBHkXbKdxZj2v+LAi3
-         WSfotl7ZCN2EPnh9527M86ygCn4p1GsLraI18MS9Ql15r/Ppk05RhGCcwQQro1oz2LFf
-         AMTK7t18bRTwIl4Q+knD7LEyZN0J/p4o9xOhmv4HQNLiFMxcrNrlf5QG2kMM+Q/bL9sf
-         PXfA==
-X-Gm-Message-State: AOJu0YyrtzcaRQIc47jLJ1cStaVb854eQASLDU9qjMGgq23iN7hvHPSx
-	IDawlFui1cdad3oreEP9llNbSfZl/nvUS87IJ5P/FL5HJpzlF/K/FUhHpE8T2qO9R/YmQVV4Cz3
-	EBztuuT/yHFFLKbAw+1rbMttjgezoHUcOabQXEooHRQZN3aqBPBA8GJo1qcw=
+        d=1e100.net; s=20251104; t=1781257557; x=1781862357;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=QK3MWKdO66xa+KYJVEwgibkKCQYUGo49Z+TFe2RXCxk=;
+        b=ae0D3KfY03eEcN2Fx2tjmFr1GJpjny/OJEfptBwpsYcJWqGM/GY01yYCPgaxow5QmS
+         i/iU9PQuLNN9DpqFpsNrZ6S/azSwXd5KINiNOCAsRrRzOGBsmG70a5WmhqNorzbJmrrx
+         N1iEkIEjcdieBP4DyhogDfI3N2e74e/cNwFw3tHVLQK57cdasY2yNQf4vrnDaiF33TIu
+         +LwZ2rVdABd8y0gK3yaP3zhj7Tde9ngFvCLJtcvQvr7mdN7oSenpoShN3q0uW9sKTtWM
+         G79/C2SjfQbrp2lZjHC8crYM+ULrBLZY6++HFe8KkQHB1QcuGXphzdJa2NdByJxHvQ39
+         96pA==
+X-Forwarded-Encrypted: i=1; AFNElJ8tG+OK3rSwyWMX/kn/qZPpCUXcnm81gPqAAj2QT3LibfIEe/BuZ20XO/MVuLHg/aiQbh4Foi8=@lists.linux.dev
+X-Gm-Message-State: AOJu0YyBBVnnlY6QbEStKeQD9gJW0t78wfa/3q7aXt7u8+Y6lPhrT6w8
+	rQJFYvNHHlq1M2s1HxRUNGKSYokQO7kfe6Urn0BpW4vzL1rpHhQBvNVq1MWszfOd+jQ6tEqcMTl
+	8J2TAzEFON9cTWpZ4WCgx2DFlTLPpFwQn8pq0o0Ox
+X-Gm-Gg: Acq92OHohDwIEFOIZ8/p8X2iGm+vHu5pPqfZRxdmCJSCGiZRFnyfzmXL6ZbFSeHoXpv
+	JQ3vKFiS/cm1B4vIup4h6BbitlpfwPifNRwjoa7pKREnHQtxdqFwmhTYssNnEZsxdft/6AaCiL5
+	2a8SLEtSuo2tnNQEpDuvDq3y2Z2ZyOKsg2klTIEvcnqCXfvh6lTXtg0hp5g41BzI0euZIhNMkIN
+	zG3MMpaA5eXKqCt4JLzJ2foa1FcyWq7lLGY+eBGGPfnIKVsqoYdVBtbK995qwWwpDw0S4QxKwbM
+	1MvFmJo6jEBNfT4v/6sGP5kG3iin7/IIT6TVZXYwf1iKQd1Ix8K80/dtuGOgzpg41wJeNybv2Ig
+	4EKY=
+X-Received: by 2002:a05:6820:f0c:b0:69e:461a:d845 with SMTP id
+ 006d021491bc7-69edc639c8dmr1187155eaf.21.1781257556291; Fri, 12 Jun 2026
+ 02:45:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:608:b0:69e:390e:b98f with SMTP id
- 006d021491bc7-69ecade914cmr3250855eaf.4.1781209479754; Thu, 11 Jun 2026
- 13:24:39 -0700 (PDT)
-Date: Thu, 11 Jun 2026 13:24:39 -0700
-In-Reply-To: <20260610230409.A44D29FA@davehans-spike.ostc.intel.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a2b1987.99669fcc.12a77b.0000.GAE@google.com>
-Subject: [syzbot ci] Re: mm: Unconditional per-VMA locks and cleanups
-From: syzbot ci <syzbot+ci9dd46370954d5c77@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, aliceryhl@google.com, arve@android.com, 
-	christian@brauner.io, cmllamas@google.com, dave.hansen@linux.intel.com, 
-	davem@davemloft.net, dsahern@kernel.org, gregkh@linuxfoundation.org, 
-	liam.howlett@oracle.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
-	ljs@kernel.org, netdev@vger.kernel.org, shakeel.butt@linux.dev, 
-	surenb@google.com, tkjos@android.com, vbabka@kernel.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <008b2675-2e48-4150-a1ec-e68026253bad@mail.kernel.org> <CANp29Y78NZkHVtj3ndD_0c-18_umDsWOWZEThTtMPaNocOCWUQ@mail.gmail.com>
+In-Reply-To: <CANp29Y78NZkHVtj3ndD_0c-18_umDsWOWZEThTtMPaNocOCWUQ@mail.gmail.com>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Fri, 12 Jun 2026 11:45:44 +0200
+X-Gm-Features: AVVi8CfS-2AFjTxQyHcCJ7cqK4ieK4RhoMI6Ei_kq-ZVJLLdX4NygZPqb2Z9XrU
+Message-ID: <CANp29Y4cm-SfXgrijaR81sE9UGbEbVPUPALC2y0arWnvGbX71w@mail.gmail.com>
+Subject: Re: [PATCH RFC] ocfs2: fix circular locking dependency in ocfs2_dio_end_io_write()
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
+* A comment to just ping the comment processing code *
 
-[v2] mm: Unconditional per-VMA locks and cleanups
-https://lore.kernel.org/all/20260610230409.A44D29FA@davehans-spike.ostc.intel.com
-* [PATCH v2 1/5] mm: Make per-VMA locks available universally
-* [PATCH v2 2/5] binder: Make shrinker rely solely on per-VMA lock
-* [PATCH v2 3/5] mm: Add RCU-based VMA lookup helper that waits for writers
-* [PATCH v2 4/5] binder: Remove mmap_lock fallback
-* [PATCH v2 5/5] tcp: Remove mmap_lock fallback path
-
-and found the following issue:
-general protection fault in tcp_zerocopy_receive
-
-Full report is available here:
-https://ci.syzbot.org/series/3e6d125a-b2ae-49a4-b833-babfb8bc9150
-
-***
-
-general protection fault in tcp_zerocopy_receive
-
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
-base:      c8459ee2fef502d6ef6c063751c33d9ac7943eab
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/e7d66981-7900-4c3d-b992-664ccd13a57e/config
-syz repro: https://ci.syzbot.org/findings/59d09544-f280-48fe-8ca9-a2fd8225e9df/syz_repro
-
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000002: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
-CPU: 0 UID: 0 PID: 5876 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:vma_start_read_locked_nested include/linux/mmap_lock.h:240 [inline]
-RIP: 0010:vma_start_read_locked+0xa0/0x300 include/linux/mmap_lock.h:257
-Code: 28 84 c0 0f 85 2b 02 00 00 44 8b 35 ba 0d 1b 0e 31 ff 44 89 f6 e8 c0 e2 af ff 45 85 f6 74 48 4c 8d 73 10 4c 89 f0 48 c1 e8 03 <42> 80 3c 28 00 74 08 4c 89 f7 e8 b1 37 1b 00 bf 38 03 00 00 49 03
-RSP: 0018:ffffc9000399f4a0 EFLAGS: 00010202
-RAX: 0000000000000002 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff88816d558000 RSI: 0000000000000001 RDI: 0000000000000000
-RBP: ffffc9000399f538 R08: ffff8881076c64df R09: 1ffff11020ed8c9b
-R10: dffffc0000000000 R11: ffffed1020ed8c9c R12: 1ffff92000733e94
-R13: dffffc0000000000 R14: 0000000000000010 R15: 0000000000011000
-FS:  00007f4866b966c0(0000) GS:ffff88818dc86000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000200000011000 CR3: 0000000117c8a000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- vma_start_read_unlocked+0x3f/0x70 mm/mmap_lock.c:362
- find_tcp_vma net/ipv4/tcp.c:2173 [inline]
- tcp_zerocopy_receive+0x762/0x2200 net/ipv4/tcp.c:2227
- do_tcp_getsockopt+0x2079/0x2940 net/ipv4/tcp.c:4758
- tcp_getsockopt+0x83/0x130 net/ipv4/tcp.c:4856
- do_sock_getsockopt+0x51d/0x7e0 net/socket.c:2487
- __sys_getsockopt net/socket.c:2518 [inline]
- __do_sys_getsockopt net/socket.c:2525 [inline]
- __se_sys_getsockopt net/socket.c:2522 [inline]
- __x64_sys_getsockopt+0x1a4/0x240 net/socket.c:2522
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f4865d9ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f4866b96028 EFLAGS: 00000246 ORIG_RAX: 0000000000000037
-RAX: ffffffffffffffda RBX: 00007f4866015fa0 RCX: 00007f4865d9ce59
-RDX: 0000000000000023 RSI: 0000000000000006 RDI: 0000000000000003
-RBP: 00007f4865e32d6f R08: 0000200000000380 R09: 0000000000000000
-R10: 0000200000000340 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f4866016038 R14: 00007f4866015fa0 R15: 00007ffc748de268
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:vma_start_read_locked_nested include/linux/mmap_lock.h:240 [inline]
-RIP: 0010:vma_start_read_locked+0xa0/0x300 include/linux/mmap_lock.h:257
-Code: 28 84 c0 0f 85 2b 02 00 00 44 8b 35 ba 0d 1b 0e 31 ff 44 89 f6 e8 c0 e2 af ff 45 85 f6 74 48 4c 8d 73 10 4c 89 f0 48 c1 e8 03 <42> 80 3c 28 00 74 08 4c 89 f7 e8 b1 37 1b 00 bf 38 03 00 00 49 03
-RSP: 0018:ffffc9000399f4a0 EFLAGS: 00010202
-RAX: 0000000000000002 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff88816d558000 RSI: 0000000000000001 RDI: 0000000000000000
-RBP: ffffc9000399f538 R08: ffff8881076c64df R09: 1ffff11020ed8c9b
-R10: dffffc0000000000 R11: ffffed1020ed8c9c R12: 1ffff92000733e94
-R13: dffffc0000000000 R14: 0000000000000010 R15: 0000000000011000
-FS:  00007f4866b966c0(0000) GS:ffff88818dc86000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f4865dea540 CR3: 0000000117c8a000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess):
-   0:	28 84 c0 0f 85 2b 02 	sub    %al,0x22b850f(%rax,%rax,8)
-   7:	00 00                	add    %al,(%rax)
-   9:	44 8b 35 ba 0d 1b 0e 	mov    0xe1b0dba(%rip),%r14d        # 0xe1b0dca
-  10:	31 ff                	xor    %edi,%edi
-  12:	44 89 f6             	mov    %r14d,%esi
-  15:	e8 c0 e2 af ff       	call   0xffafe2da
-  1a:	45 85 f6             	test   %r14d,%r14d
-  1d:	74 48                	je     0x67
-  1f:	4c 8d 73 10          	lea    0x10(%rbx),%r14
-  23:	4c 89 f0             	mov    %r14,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1) <-- trapping instruction
-  2f:	74 08                	je     0x39
-  31:	4c 89 f7             	mov    %r14,%rdi
-  34:	e8 b1 37 1b 00       	call   0x1b37ea
-  39:	bf 38 03 00 00       	mov    $0x338,%edi
-  3e:	49                   	rex.WB
-  3f:	03                   	.byte 0x3
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+On Thu, Jun 11, 2026 at 12:16=E2=80=AFPM Aleksandr Nogikh <nogikh@google.co=
+m> wrote:
+>
+> On Fri, May 29, 2026 at 7:31=E2=80=AFPM 'syzbot' via
+> syzkaller-upstream-moderation
+> <syzkaller-upstream-moderation@googlegroups.com> wrote:
+> >
+> > A circular locking dependency can occur involving three OCFS2 system in=
+ode
+> > locks: INODE_ALLOC_SYSTEM_INODE, EXTENT_ALLOC_SYSTEM_INODE, and
+> > ORPHAN_DIR_SYSTEM_INODE.
+> >
+> > The circular dependency is formed by three separate code paths. First, =
+in
+> > ocfs2_mknod(), the code reserves an inode by acquiring the
+> > INODE_ALLOC_SYSTEM_INODE lock, and then reserves metadata blocks by
+> > acquiring the EXTENT_ALLOC_SYSTEM_INODE lock. Second, in
+> > ocfs2_dio_end_io_write(), the code allocates metadata blocks for unwrit=
+ten
+> > extents, acquiring the EXTENT_ALLOC_SYSTEM_INODE lock. Later in the sam=
+e
+> > function, if the inode was orphaned, it calls
+> > ocfs2_del_inode_from_orphan(), which acquires the ORPHAN_DIR_SYSTEM_INO=
+DE
+> > lock. The allocation context is only freed at the end of the function,
+> > meaning the EXTENT_ALLOC_SYSTEM_INODE lock is held while
+> > ORPHAN_DIR_SYSTEM_INODE is acquired. Third, in ocfs2_wipe_inode(), the
+> > ORPHAN_DIR_SYSTEM_INODE lock is acquired first to prevent races with
+> > recovery completion, and then it calls ocfs2_remove_inode(), which acqu=
+ires
+> > the INODE_ALLOC_SYSTEM_INODE lock to free the inode.
+> >
+> > This patch breaks the cycle by addressing the dependency in
+> > ocfs2_dio_end_io_write(). The data_ac and meta_ac allocation contexts a=
+re
+> > only needed for the transaction that marks the extents as written. Once=
+ the
+> > transaction is committed and the allocation semaphore is released, thes=
+e
+> > contexts are no longer needed. We can safely free them, which releases =
+the
+> > EXTENT_ALLOC_SYSTEM_INODE lock, before calling
+> > ocfs2_del_inode_from_orphan(). This ensures that the
+> > EXTENT_ALLOC_SYSTEM_INODE lock is dropped before we attempt to acquire =
+the
+> > ORPHAN_DIR_SYSTEM_INODE lock, successfully breaking the circular
+> > dependency.
+>
+> Let's rework the description a bit.
+> Include the original bug report (drop the irrelevant parts) listing
+> the stack traces of the circular lock chain parts. Still keep some
+> explanations of the existing code, but make it a bit shorter then.
+>
+> >
+> > Fixes: d647c5b2fbf8 ("ocfs2: split transactions in dio completion to av=
+oid credit exhaustion")
+> > Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
+> > Reported-by: syzbot+b225d4dfce6219600c42@syzkaller.appspotmail.com
+> > Closes: https://syzkaller.appspot.com/bug?extid=3Db225d4dfce6219600c42
+> > Link: https://syzkaller.appspot.com/ai_job?id=3Dc86e9953-fff6-40ca-b2f0=
+-eff12366a33a
+> > To: "Joel Becker" <jlbec@evilplan.org>
+> > To: "Joseph Qi" <joseph.qi@linux.alibaba.com>
+> > To: "Mark Fasheh" <mark@fasheh.com>
+> > To: <ocfs2-devel@lists.linux.dev>
+> > Cc: <linux-kernel@vger.kernel.org>
+> >
+> > ---
+> > diff --git a/fs/ocfs2/aops.c b/fs/ocfs2/aops.c
+> > index 6ec198bda..4acdbb708 100644
+> > --- a/fs/ocfs2/aops.c
+> > +++ b/fs/ocfs2/aops.c
+> > @@ -2372,6 +2372,15 @@ static int ocfs2_dio_end_io_write(struct inode *=
+inode,
+> >  unlock:
+> >         up_write(&oi->ip_alloc_sem);
+> >
+> > +       if (data_ac) {
+> > +               ocfs2_free_alloc_context(data_ac);
+> > +               data_ac =3D NULL;
+> > +       }
+> > +       if (meta_ac) {
+> > +               ocfs2_free_alloc_context(meta_ac);
+> > +               meta_ac =3D NULL;
+> > +       }
+> > +
+> >         /* everything looks good, let's start the cleanup */
+> >         if (!ret && dwc->dw_orphaned) {
+> >                 BUG_ON(dwc->dw_writer_pid !=3D task_pid_nr(current));
+> > @@ -2383,10 +2392,6 @@ static int ocfs2_dio_end_io_write(struct inode *=
+inode,
+> >         ocfs2_inode_unlock(inode, 1);
+> >         brelse(di_bh);
+> >  out:
+> > -       if (data_ac)
+> > -               ocfs2_free_alloc_context(data_ac);
+> > -       if (meta_ac)
+> > -               ocfs2_free_alloc_context(meta_ac);
+> >         ocfs2_run_deallocs(osb, &dealloc);
+> >         ocfs2_dio_free_write_ctx(inode, dwc);
+> >
+> >
+> >
+> > base-commit: e7ae89a0c97ce2b68b0983cd01eda67cf373517d
+> > --
+> > This is an AI-generated patch subject to moderation.
+> > Reply with '#syz upstream' to Sign-off the patch as a human author
+> > and send it to the upstream kernel mailing lists.
+> > Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+> >
+> > See https://goo.gle/syzbot-ai-patches for information about AI-generate=
+d patches.
+> > You can comment on the patch as usual, syzbot will try to address
+> > the comments and send a new version of the patch if necessary.
+> > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> >
+> > --
+> > You received this message because you are subscribed to the Google Grou=
+ps "syzkaller-upstream-moderation" group.
+> > To unsubscribe from this group and stop receiving emails from it, send =
+an email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> > To view this discussion visit https://groups.google.com/d/msgid/syzkall=
+er-upstream-moderation/008b2675-2e48-4150-a1ec-e68026253bad%40mail.kernel.o=
+rg.
