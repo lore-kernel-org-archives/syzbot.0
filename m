@@ -1,181 +1,124 @@
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA9BD39A06C
-	for <syzbot@lists.linux.dev>; Fri, 12 Jun 2026 22:10:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D298E34AB01
+	for <syzbot@lists.linux.dev>; Sat, 13 Jun 2026 20:32:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781302214; cv=none; b=oDeialLCxGr4FUX7sIITrqZTdaInxoZluL3JqWHiPX5tVO8T36cq38f79E29BKI4LnSEMDztHMFqOJK0R9TDStui7P/Jb+cW3VRqKv2ee4WQsDutjl5J6Sl+itEL9ccB4HY9H6aWn8ObUZmpLdWm+dRM+ZabcebcXUJPvMoCYfc=
+	t=1781382759; cv=none; b=d67VlvYtOu/JzwKOOampZ4cJJdXIYTY1uFKFou8tg7Kyw8HBO1ra7faJl+Qz0aw+bwUohZA0DKPR/2kleebeblzFSIGfurE5gwTsUHYnVwMXh8WbLKxK+OgIEtobd+ApMLgoc5Z3XYbiYj/JqBVjSuljQlxbOj9y5W0kQPLgJUs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781302214; c=relaxed/simple;
-	bh=ktDJ37hZzdDqYp2UKKDN3CY2hhJA5scnC2EENECQ8oU=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=KjIkKvdREUbSMAXlBFb94COEyWXCQoOqbAUfq0vJvhwZ/vkXTBqQdB0AcqasO3eGFsRITSjccwI5VaWv3m2SYJ/xjZSgUMkA6rZp+ILLyyGg9CR5fnhi2LCNKN0ZJm0HvGkei0ckmhfxxnqK9ZjVWMcUtVPrYrLFiViUBhXRIW0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
+	s=arc-20240116; t=1781382759; c=relaxed/simple;
+	bh=+dVcpXbd8gf1TBNURzrOL154s1ATfna+2GxfDAfIY/I=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Bbev6wBFt1twGfZsdNEt+NyDk6AsQagl/ZigIT/DMX6NWHPU28ZzAoW+qbWO2UXF81l2d5/N/OUe1/wa+A4c09w6CG/1YZ7ckCHqUtQmqr929MWiiravF9pyN/cQ+ybXOHbQgDNStqroDmkiADEeG/4jSUYfz35frA/MBORljl0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-48651d7d55fso1640022b6e.1
-        for <syzbot@lists.linux.dev>; Fri, 12 Jun 2026 15:10:12 -0700 (PDT)
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7e6daf5d8f3so2122145a34.2
+        for <syzbot@lists.linux.dev>; Sat, 13 Jun 2026 13:32:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781302212; x=1781907012;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=yOXfUgUCVkiAGlnZ3O8tZBJZjmy7q3zIDCpedOitVB4=;
-        b=cuzBMIJARwnBSRhgozrZHI+sJK1pMu0GT6n+6i9docAGHAmhqVTICsODBeC9x14Bag
-         vEXwlgkXxCAVnOuL7b7s0g4v7cdMCErYWxnDFDse75KEUmXZeBpAQAgPtRb0HjcDyiGG
-         adTjhbS1Et3L1F2cLUORP4wyV/Kalmukpzdui6X8tgFM3Fm/UqDyh9YGD58z5OnisOUL
-         XmSi31U5YPfvQYWE10fqmaYAWWLbARp4pZ5TUzbh6vYJsHNCpUItXU3+/bTjmbofAizL
-         MAVGZWIoTd/fPWq8myguRPieGu0NQuAOag8zLFAKI3/GrPMP9bKsDYqGO+HgdNHOWf/i
-         nVZw==
-X-Gm-Message-State: AOJu0YybqwW/RKvs3DQnq9whFl9l691H2YvEXP8oGoRoWwhNzdYR+zXO
-	GfCRQ8/j6HYWFJp4H1EnAw+Ym3kMW9YGkLFSDhUGYOlsCUILbZmiVBBjhoKuSea7IL9vjKoLwSC
-	6uOdZtDSsj9DyJsPmNxQFVheHSPH42r45sw3gxXOerSQgX6wI1id8qGKlZpk=
+        d=1e100.net; s=20251104; t=1781382755; x=1781987555;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4SL+aQgo8C4DrAS+19+Zb4rsI1JiO0HOPv7M9fFC17s=;
+        b=TlYkfnMooCToq8dm49hlGsb2ODxSedKZGP2CCSg0FT/+r20uuPRi1VW8obALvTUkRJ
+         K2AgnMuehvxQw2i3rcB8a8piyc47b58cOfCifF9XsiqiD62yM83lPRxiiA25hZY14zhF
+         LE724i7IJQKNSamfVgmDAHnc48okpoNGXnFRqyqkvJyKzlBQnTZTrw3glpd/cZPjocJG
+         6yJSrT5HQLoqKI6Nf4DTua9B9xhUmDHfdxKBf7mvQ9HeB4ILqGT2KD0ftq9HNgGOKtGh
+         meQelTzmRqPJR7OFVZ7+xj7FGNfqoOVlNQyajAG3VUZz3jK0tkmu1R/HRWLDlBQo61E2
+         UbCA==
+X-Gm-Message-State: AOJu0YzbFliVbY/DqgG4ZuPZdKYdPPmnCzixXlmjArC0pMV99tgJhOhv
+	rtod5J2GritpssRqApqPjNQaxbW3/7nFROAbDq51EtuARS88sOIDEos7xWrFAFsCMIJs7PfZiE1
+	zIAreWRqFuszqVmq9gqQ4noGf3QPZCN5MIDOaQMI3C3dtO+QPC/m7wO+5PGE=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:6f85:b0:479:faac:1fbf with SMTP id
- 5614622812f47-4872f2f6a43mr3621597b6e.2.1781302212004; Fri, 12 Jun 2026
- 15:10:12 -0700 (PDT)
-Date: Fri, 12 Jun 2026 15:10:11 -0700
-In-Reply-To: <20260612011452.134466-1-xiyou.wangcong@gmail.com>
+X-Received: by 2002:a05:6808:1816:b0:487:5d0c:67e4 with SMTP id
+ 5614622812f47-4875d0c6920mr202264b6e.0.1781382755760; Sat, 13 Jun 2026
+ 13:32:35 -0700 (PDT)
+Date: Sat, 13 Jun 2026 13:32:35 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a2c83c3.428ffe26.258b27.015f.GAE@google.com>
-Subject: [syzbot ci] Re: tcp: opportunistic loopback splice for BPF-paired sockets
-From: syzbot ci <syzbot+cibd4edd60e2329298@syzkaller.appspotmail.com>
-To: bpf@vger.kernel.org, cwang@multikernel.io, hemanthmalla@gmail.com, 
-	jakub@cloudflare.com, jiayuan.chen@linux.dev, john.fastabend@gmail.com, 
-	netdev@vger.kernel.org, xiyou.wangcong@gmail.com, zijianzhang@bytedance.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <6a2dbe63.8812e0fc.3c3fa4.0009.GAE@google.com>
+Subject: [moderation/CI] Re: KVM: x86/hyperv: Fix racy usage of vcpu->arch.hyperv
+From: syzbot ci <syzbot+cic0ede7696ff6a703@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] tcp: opportunistic loopback splice for BPF-paired sockets
-https://lore.kernel.org/all/20260612011452.134466-1-xiyou.wangcong@gmail.com
-* [RFC PATCH bpf-next 1/5] tcp_bpf: add bpf_sock_splice_pair kfunc for opportunistic loopback splice
-* [RFC PATCH bpf-next 2/5] tcp_bpf: busy-poll the splice ring before parking the receiver
-* [RFC PATCH bpf-next 3/5] selftests/bpf: add tcp_splice basic round-trip test
-* [RFC PATCH bpf-next 4/5] bpf: allow SO_BUSY_POLL in bpf_setsockopt()
-* [RFC PATCH bpf-next 5/5] selftests/bpf: set SO_BUSY_POLL from the tcp_splice sockops prog
+[v2] KVM: x86/hyperv: Fix racy usage of vcpu->arch.hyperv
+https://lore.kernel.org/all/20260612230622.687665-1-seanjc@google.com
+* [PATCH v2 1/8] KVM: x86/hyperv: Get target FIFO in hv_tlb_flush_enqueue(), not caller
+* [PATCH v2 2/8] KVM: x86/hyperv: Check for NULL vCPU Hyper-V object in kvm_hv_get_tlb_flush_fifo()
+* [PATCH v2 3/8] KVM: x86/hyperv: Ensure vCPU's Hyper-V object is initialized on cross-vCPU accesses
+* [PATCH v2 4/8] KVM: Initialize a vCPU's index to '-1' while it's being created
+* [PATCH v2 5/8] KVM: Move nVMX's lockdep logic for vcpu->mutex to a common helper
+* [PATCH v2 6/8] KVM: x86: Treat a vCPU as unreachable if its index is invalid
+* [PATCH v2 7/8] KVM: x86/hyperv: Assert vCPU's mutex is held in to_hv_vcpu()
+* [PATCH v2 8/8] KVM: x86/hyperv: Use {READ,WRITE}_ONCE for cross-task synic->active accesses
 
-and found the following issues:
-* WARNING: suspicious RCU usage in tcp_bpf_recvmsg
-* WARNING: suspicious RCU usage in tcp_bpf_splice_sendmsg
+and found the following issue:
+WARNING in kvm_hv_vcpu_uninit
 
 Full report is available here:
-https://ci.syzbot.org/series/7c43d5ae-cb19-4b2b-96ad-f7f0806ac63c
+https://ci.syzbot.org/series/674ef35a-9335-4710-8a6d-b18d01510cbb
 
 ***
 
-WARNING: suspicious RCU usage in tcp_bpf_recvmsg
+WARNING in kvm_hv_vcpu_uninit
 
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf-next.git
-base:      30dee2c176e7954f63d1fa3e52d172f30beb9bfb
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
+base:      c1f7303302927f9cbf4efedf70f0512cde168c65
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/09e43fc4-ebab-492e-b1de-15bb86aa4588/config
-syz repro: https://ci.syzbot.org/findings/79db1500-f71c-4550-8525-89bf06044d60/syz_repro
+config:    https://ci.syzbot.org/builds/20dd789e-0a89-4465-844c-9d91b5ce4a45/config
+syz repro: https://ci.syzbot.org/findings/eeefcfe6-b8e9-4c5b-900e-855d814f5d97/syz_repro
 
-=============================
-WARNING: suspicious RCU usage
-syzkaller #0 Not tainted
------------------------------
-net/ipv4/tcp_bpf.c:883 suspicious rcu_dereference_check() usage!
-
-other info that might help us debug this:
-
-
-rcu_scheduler_active = 2, debug_locks = 1
-no locks held by syz.0.17/5822.
-
-stack backtrace:
-CPU: 1 UID: 0 PID: 5822 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+------------[ cut here ]------------
+debug_locks && !(lock_is_held(&(&vcpu->mutex)->dep_map) || vcpu->vcpu_idx < 0 || !refcount_read(&vcpu->kvm->users_count))
+WARNING: ./include/linux/kvm_host.h:996 at kvm_lockdep_assert_vcpu_is_locked_or_unreachable include/linux/kvm_host.h:994 [inline], CPU#1: syz.1.25/5883
+WARNING: ./include/linux/kvm_host.h:996 at to_hv_vcpu arch/x86/kvm/hyperv.h:78 [inline], CPU#1: syz.1.25/5883
+WARNING: ./include/linux/kvm_host.h:996 at kvm_hv_vcpu_uninit+0x198/0x210 arch/x86/kvm/hyperv.c:906, CPU#1: syz.1.25/5883
+Modules linked in:
+CPU: 1 UID: 0 PID: 5883 Comm: syz.1.25 Not tainted syzkaller #0 PREEMPT(full) 
 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:kvm_lockdep_assert_vcpu_is_locked_or_unreachable include/linux/kvm_host.h:994 [inline]
+RIP: 0010:to_hv_vcpu arch/x86/kvm/hyperv.h:78 [inline]
+RIP: 0010:kvm_hv_vcpu_uninit+0x198/0x210 arch/x86/kvm/hyperv.c:906
+Code: 48 89 df e8 0a ba d8 00 48 c7 03 00 00 00 00 eb 05 e8 1c 63 6d 00 5b 41 5c 41 5e 41 5f 5d e9 8f f6 51 0a cc e8 09 63 6d 00 90 <0f> 0b 90 e9 65 ff ff ff 48 c7 c1 e0 5c 30 90 80 e1 07 80 c1 03 38
+RSP: 0018:ffffc900035ef940 EFLAGS: 00010293
+RAX: ffffffff8158f397 RBX: ffff88816987d400 RCX: ffff888110b20000
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: 0000000000000001 R08: ffff88810c5b9703 R09: 1ffff110218b72e0
+R10: dffffc0000000000 R11: ffffed10218b72e1 R12: 0000000000000000
+R13: 00000000fffffff8 R14: ffff88810c5b9700 R15: dffffc0000000000
+FS:  00007fbc073dc6c0(0000) GS:ffff8882a929a000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f451a40fff8 CR3: 000000010f703000 CR4: 0000000000352ef0
 Call Trace:
  <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- lockdep_rcu_suspicious+0x13f/0x1d0 kernel/locking/lockdep.c:6876
- sk_psock_is_spliced net/ipv4/tcp_bpf.c:883 [inline]
- tcp_bpf_recvmsg+0x1780/0x1980 net/ipv4/tcp_bpf.c:405
- sock_recvmsg_nosec+0xee/0x140 net/socket.c:1137
- ____sys_recvmsg+0x3e3/0x4a0 net/socket.c:2916
- ___sys_recvmsg+0x215/0x590 net/socket.c:2960
- do_recvmmsg+0x334/0x800 net/socket.c:3055
- __sys_recvmmsg net/socket.c:3129 [inline]
- __do_sys_recvmmsg net/socket.c:3152 [inline]
- __se_sys_recvmmsg net/socket.c:3145 [inline]
- __x64_sys_recvmmsg+0x198/0x250 net/socket.c:3145
+ kvm_arch_vcpu_destroy+0x1a9/0x380 arch/x86/kvm/x86.c:12905
+ kvm_vm_ioctl_create_vcpu+0x68b/0x940 virt/kvm/kvm_main.c:4262
+ kvm_vm_ioctl+0x893/0xd50 virt/kvm/kvm_main.c:5161
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:597 [inline]
+ __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f1af799ce59
+RIP: 0033:0x7fbc0659ce59
 Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f1af87bc028 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
-RAX: ffffffffffffffda RBX: 00007f1af7c15fa0 RCX: 00007f1af799ce59
-RDX: 0000000000000002 RSI: 0000200000000400 RDI: 0000000000000003
-RBP: 00007f1af7a32d6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000010051 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f1af7c16038 R14: 00007f1af7c15fa0 R15: 00007ffdef205588
- </TASK>
-
-
-***
-
-WARNING: suspicious RCU usage in tcp_bpf_splice_sendmsg
-
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf-next.git
-base:      30dee2c176e7954f63d1fa3e52d172f30beb9bfb
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/09e43fc4-ebab-492e-b1de-15bb86aa4588/config
-syz repro: https://ci.syzbot.org/findings/8144de7d-1a2e-454e-ab17-08d1c6586df2/syz_repro
-
-=============================
-WARNING: suspicious RCU usage
-syzkaller #0 Not tainted
------------------------------
-net/ipv4/tcp_bpf.c:883 suspicious rcu_dereference_check() usage!
-
-other info that might help us debug this:
-
-
-rcu_scheduler_active = 2, debug_locks = 1
-no locks held by syz.2.19/5817.
-
-stack backtrace:
-CPU: 0 UID: 0 PID: 5817 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- lockdep_rcu_suspicious+0x13f/0x1d0 kernel/locking/lockdep.c:6876
- sk_psock_is_spliced net/ipv4/tcp_bpf.c:883 [inline]
- tcp_bpf_splice_sendmsg+0x1165/0x1490 net/ipv4/tcp_bpf.c:897
- sock_sendmsg_nosec net/socket.c:787 [inline]
- __sock_sendmsg net/socket.c:802 [inline]
- ____sys_sendmsg+0x80a/0x9f0 net/socket.c:2698
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2752
- __sys_sendmmsg+0x27c/0x4e0 net/socket.c:2841
- __do_sys_sendmmsg net/socket.c:2868 [inline]
- __se_sys_sendmmsg net/socket.c:2865 [inline]
- __x64_sys_sendmmsg+0xa0/0xc0 net/socket.c:2865
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fd1c339ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fd1c42e3028 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-RAX: ffffffffffffffda RBX: 00007fd1c3615fa0 RCX: 00007fd1c339ce59
-RDX: 0000000000000001 RSI: 0000200000001000 RDI: 0000000000000003
-RBP: 00007fd1c3432d6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000004008005 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fd1c3616038 R14: 00007fd1c3615fa0 R15: 00007ffdcdbac378
+RSP: 002b:00007fbc073dc028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007fbc06815fa0 RCX: 00007fbc0659ce59
+RDX: 0000000000000001 RSI: 000000000000ae41 RDI: 00000000000000f7
+RBP: 00007fbc06632d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fbc06816038 R14: 00007fbc06815fa0 R15: 00007fffc5de9fc8
  </TASK>
 
 
@@ -194,3 +137,13 @@ To test a patch for this bug, please reply with `#syz test`
 
 The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[kvm@vger.kernel.org linux-kernel@vger.kernel.org pbonzini@redhat.com seanjc@google.com syzbot@syzkaller.appspotmail.com vkuznets@redhat.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
