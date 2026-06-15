@@ -1,145 +1,134 @@
-Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06FF53F54DB
-	for <syzbot@lists.linux.dev>; Mon, 15 Jun 2026 14:28:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0672E3D1A94
+	for <syzbot@lists.linux.dev>; Mon, 15 Jun 2026 15:35:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781533702; cv=none; b=NQc1INkDYmWqa213vmlowdRlIY0JSNhuMb4Ytfc7VdTQa1LRcfI8SeYW1pucitiqutETBFhRrxYkesv8FupHTdbizTpaJB7Sn34dae4ZOTHUSm7DCSmV+khimae2YckIRXcVMzwBlIfNbvm0caJtYGeE9WdMsVBlgHca6G/WYS0=
+	t=1781537707; cv=none; b=Sx55qp8KFHAgNmFjgulCGIBSR5g1yMyNDJPMEXufS1/14Py6aFOAeF5AA3ew6tRg0yGemrLNfD5nR21YKRnupeBXulHZBjKyYRLgspQJhyhbTlDxijwCNnn/rYDr74iBUO9xY4PWul65pA4I+oyvC8EkeWeDO3b7iw0ypYjWSvg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781533702; c=relaxed/simple;
-	bh=YCvn3MuvcZqxFkBqbGxbtqUHvt+AHBWc7vD8uqkOoT8=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=Nf1PuOwZH+LwN9t+MZowyqg7fY+SWrpA+AmwyLXz0EMqjGZQ7SFCmGANh1VdhbdqDLitfuuI3ntZk3grUdJ2y2vlQM7ykdEIpem+m6Q6XtehsdSnrgu0zqa0z4XG2AVHren2aBjb59y1w6Hm8Jt81lBsRgUOyj5lFWkJBykHw6g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BpCW5bSs; arc=none smtp.client-ip=209.85.215.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BpCW5bSs"
-Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-c85a2ed88c8so3368428a12.3
-        for <syzbot@lists.linux.dev>; Mon, 15 Jun 2026 07:28:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781533700; x=1782138500; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZrpWKke6dqJc8K8vGlvhm4qwRCykfjr0R61az/1r5wc=;
-        b=BpCW5bSsK5SfhMh/fwp1SwGDeu1HwHiJsZKBF0Q+/tKITyMb0WMY3Bxtn/9ZElTXTQ
-         XmfJVVArNzasxyHLiyBYtSehoYbmdSaiAX/Vd5d8a4scAaN1uIOFfAihvaFECc3aM9xx
-         fDCBMD71aOcnLwMaKEgE52/2MYzw7619bzZpNPU8yx3VjuPr+P/XG7C85LRUsx3Hzrda
-         cCXA0x+v92VnzSIExcCmDt/hpeY7t5PkCPBrtOM3T3vw3ZfqSJu4ZeEj09GemeXIYiSH
-         2vEXSF1KeoXoZhPzpYNVDDJB68iqXvcyl0xzwG9msK8YFd12wQlGvta2LmUD/U+gM8bb
-         u4+w==
+	s=arc-20240116; t=1781537707; c=relaxed/simple;
+	bh=ZjCMT9DqMhyvS/6r0XCwqQ4jD5y/URxCjdlErwxa+g4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=kSneM40RZ/kAthhNTZXvShPKapIy43hLHdAXgAEVg3wHkmsR2Sv0ChyarA4ciCMqMrP7bzqwMxYG9b0EHZEA45t3pR3CaER7qgtNYVOjWVoezp19pmKjljXBKAHVK0Tyl2M/21oYSeYe0wfhAFrV4TTYggwJLO+8pnjwnEJQUqE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-48651d7d505so5334625b6e.0
+        for <syzbot@lists.linux.dev>; Mon, 15 Jun 2026 08:35:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781533700; x=1782138500;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZrpWKke6dqJc8K8vGlvhm4qwRCykfjr0R61az/1r5wc=;
-        b=i9wZL5qMaIefZbn8HneiRcDXUE/LDRvIJbuBodiyM5lHqBZPNYJsm5QudTLdfTM1A4
-         WAxutIzQds+givaEj3F4rruroxATZlF0xvUKATMbBa2pv3tEXr4vQE0oDyVpXesuEPJf
-         VqzZU6o47t89JojJqTHz3fWdsJChJmlgoMBF1/Q2V/VLSWvciuMftraQOU6VEJm4YDkh
-         S4hqhsDxeXBRIRMRSAr6c1WeAn0FETJzSuXiDX5M+bwuuiAph6WR3t3eKWX+gX3STc1T
-         HEhb6hmJ2WeLFMYFtppTCN/uAO9sU4RzV1yQx21BgHJmZQbJycirYwSycD2lUu4C8NgT
-         nmoQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+PR64v7R450oeX+QlB4ihiyYIHz5G0gy/orMP+H5I1J/pvqOuYWJGqDzfgommVxoJjB0EUIKs=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy8NH9EM/Ld/o3+HDVxEPqAvYE4GiyzbpWuQyhbynOkEhI1z3cR
-	+eJFrWPKP5RRtwC39kg71waLck73JYNrJ/IJM6r5BeaE8ZWiLAOFupXHAasKCOQslhyetRRIHF5
-	ytiQJ8g==
-X-Received: from pglv29.prod.google.com ([2002:a63:151d:0:b0:c79:8d3a:7901])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6300:2285:b0:3b3:f46:1eea
- with SMTP id adf61e73a8af0-3b783c755d9mr16660238637.7.1781533700178; Mon, 15
- Jun 2026 07:28:20 -0700 (PDT)
-Date: Mon, 15 Jun 2026 07:28:19 -0700
-In-Reply-To: <6a2dbfcc.8812e0fc.3c3fa4.000a.GAE@google.com>
+        d=1e100.net; s=20251104; t=1781537705; x=1782142505;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tN2+W4otAgUkIiiyR6dUaHcYvM+2jtxFkXyT3fXNPxQ=;
+        b=NVmD0TjAu/wq4VRT27NRLWVNy4Dx8D7W4ClCE+9VTJ0f2pr9irenUxDIYHMDq1HatV
+         RywrIAbsFvJTmMIIRnsIC6oFCS/efl2vEMK+8BQzrEBt9UjoggDud3/VyM2LdKVB9aXy
+         buY1fK6reQDFKbmciyjcLUexDsCR5OFwrbhvwoMBXjmW1WnUDKyVJo7dcx148BYSUnIL
+         YQxbzFeUNQIl9ISVnupWqq5wUpufEzqBODHsTdL3gQ+uQXKsCMXs/q7lhXThSNo+5kkq
+         hCSNfwHFnU0S5ST1iyhiHz1NghNSx3sqdFnduRLTAVYky8TguzWT17qSq5Kug3TbaW6l
+         rmtg==
+X-Gm-Message-State: AOJu0Yxc79pbfmNJEKS3P4UMFkwrmnJrdISz7p6EdCMRsJGVtGJLSsS9
+	GhijKGZPSpxbW9LkfozxTEXhiHJ5PRc5iktMyJ7RwIXm/MR3B3A6yKbLahTshF/OBdd9TId9V1b
+	m6JWNdOXKiLepcmxD93kRCHvzP0PLDkU19xNXASpy2RDxe1t1yloncnR1KXI=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260612230622.687665-1-seanjc@google.com> <6a2dbfcc.8812e0fc.3c3fa4.000a.GAE@google.com>
-Message-ID: <ajAMA_cWeZon3SYs@google.com>
-Subject: Re: [syzbot ci] Re: KVM: x86/hyperv: Fix racy usage of vcpu->arch.hyperv
-From: Sean Christopherson <seanjc@google.com>
-To: syzbot ci <syzbot+ciaa819f991480b300@syzkaller.appspotmail.com>
-Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, pbonzini@redhat.com, 
-	syzbot@syzkaller.appspotmail.com, vkuznets@redhat.com, syzbot@lists.linux.dev, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+X-Received: by 2002:a05:6808:1454:b0:485:5982:4cfc with SMTP id
+ 5614622812f47-48741be6334mr7635702b6e.33.1781537705017; Mon, 15 Jun 2026
+ 08:35:05 -0700 (PDT)
+Date: Mon, 15 Jun 2026 08:35:04 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a301ba8.428ffe26.258b27.016d.GAE@google.com>
+Subject: [moderation/CI] Re: net: pcs: Introduce support for fwnode PCS
+From: syzbot ci <syzbot+ciac9eee7ac2b7e416@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, Jun 13, 2026, syzbot ci wrote:
-> Full report is available here:
-> https://ci.syzbot.org/series/674ef35a-9335-4710-8a6d-b18d01510cbb
-> 
-> ***
-> 
-> WARNING in kvm_hv_vcpu_uninit
-> 
-> tree:      linux-next
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-> base:      c1f7303302927f9cbf4efedf70f0512cde168c65
-> arch:      amd64
-> compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-> config:    https://ci.syzbot.org/builds/20dd789e-0a89-4465-844c-9d91b5ce4a45/config
-> syz repro: https://ci.syzbot.org/findings/eeefcfe6-b8e9-4c5b-900e-855d814f5d97/syz_repro
-> 
-> ------------[ cut here ]------------
-> debug_locks && !(lock_is_held(&(&vcpu->mutex)->dep_map) || vcpu->vcpu_idx < 0 || !refcount_read(&vcpu->kvm->users_count))
-> WARNING: ./include/linux/kvm_host.h:996 at kvm_lockdep_assert_vcpu_is_locked_or_unreachable include/linux/kvm_host.h:994 [inline], CPU#1: syz.1.25/5883
-> WARNING: ./include/linux/kvm_host.h:996 at to_hv_vcpu arch/x86/kvm/hyperv.h:78 [inline], CPU#1: syz.1.25/5883
-> WARNING: ./include/linux/kvm_host.h:996 at kvm_hv_vcpu_uninit+0x198/0x210 arch/x86/kvm/hyperv.c:906, CPU#1: syz.1.25/5883
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 5883 Comm: syz.1.25 Not tainted syzkaller #0 PREEMPT(full) 
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> RIP: 0010:kvm_lockdep_assert_vcpu_is_locked_or_unreachable include/linux/kvm_host.h:994 [inline]
-> RIP: 0010:to_hv_vcpu arch/x86/kvm/hyperv.h:78 [inline]
-> RIP: 0010:kvm_hv_vcpu_uninit+0x198/0x210 arch/x86/kvm/hyperv.c:906
-> Call Trace:
->  <TASK>
->  kvm_arch_vcpu_destroy+0x1a9/0x380 arch/x86/kvm/x86.c:12905
->  kvm_vm_ioctl_create_vcpu+0x68b/0x940 virt/kvm/kvm_main.c:4262
+syzbot ci has tested the following series
 
-Darn error injection.  xa_insert() can fail with -ENOMEM.  It's kinda ugly, but
-unwinding vcpu_idx on failure is a logically sound fix.  And a good excuse to
-document that the index needs to be set before adding it to the array, e.g.
+[v7] net: pcs: Introduce support for fwnode PCS
+https://lore.kernel.org/all/20260615122950.22281-1-ansuelsmth@gmail.com
+* [PATCH net-next v7 01/12] net: phylink: keep and use MAC supported_interf=
+aces in phylink struct
+* [PATCH net-next v7 02/12] net: phylink: introduce internal phylink PCS ha=
+ndling
+* [PATCH net-next v7 03/12] net: phylink: add phylink_release_pcs() to exte=
+rnally release a PCS
+* [PATCH net-next v7 04/12] net: pcs: implement Firmware node support for P=
+CS driver
+* [PATCH net-next v7 05/12] net: phylink: support late PCS provider attach
+* [PATCH net-next v7 06/12] net: Document PCS subsystem
+* [PATCH net-next v7 07/12] MAINTAINERS: add myself as PCS subsystem mainta=
+iner
+* [PATCH net-next v7 08/12] of: property: fw_devlink: Add support for "pcs-=
+handle"
+* [PATCH net-next v7 09/12] net: phylink: add .pcs_link_down PCS OP
+* [PATCH net-next v7 10/12] dt-bindings: net: pcs: Document support for Air=
+oha Ethernet PCS
+* [PATCH net-next v7 11/12] net: pcs: airoha: add PCS driver for Airoha AN7=
+581 SoC
+* [PATCH net-next v7 12/12] net: airoha: add phylink support
 
-diff --git virt/kvm/kvm_main.c virt/kvm/kvm_main.c
-index b3d2a678210c..98da4c889ffc 100644
---- virt/kvm/kvm_main.c
-+++ virt/kvm/kvm_main.c
-@@ -4218,11 +4218,18 @@ static int kvm_vm_ioctl_create_vcpu(struct kvm *kvm, unsigned long id)
-                goto unlock_vcpu_destroy;
-        }
- 
-+       /*
-+        * Set the vCPU's index *before* the vCPU is reachable by other tasks.
-+        * Unwind the index back to -1 on failure so that KVM can use the index
-+        * to detect that the vCPU is unreachable, e.g. for lockdep asserts.
-+        */
-        vcpu->vcpu_idx = atomic_read(&kvm->online_vcpus);
-        r = xa_insert(&kvm->vcpu_array, vcpu->vcpu_idx, vcpu, GFP_KERNEL_ACCOUNT);
-        WARN_ON_ONCE(r == -EBUSY);
--       if (r)
-+       if (r) {
-+               vcpu->vcpu_idx = -1;
-                goto unlock_vcpu_destroy;
-+       }
- 
-        /*
-         * Now it's all set up, let userspace reach it.  Grab the vCPU's mutex
+and found the following issue:
+kernel build error
 
->  kvm_vm_ioctl+0x893/0xd50 virt/kvm/kvm_main.c:5161
->  vfs_ioctl fs/ioctl.c:51 [inline]
->  __do_sys_ioctl fs/ioctl.c:597 [inline]
->  __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7fbc0659ce59
-> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007fbc073dc028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> RAX: ffffffffffffffda RBX: 00007fbc06815fa0 RCX: 00007fbc0659ce59
-> RDX: 0000000000000001 RSI: 000000000000ae41 RDI: 00000000000000f7
-> RBP: 00007fbc06632d6f R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fbc06816038 R14: 00007fbc06815fa0 R15: 00007fffc5de9fc8
->  </TASK>
+Full report is available here:
+https://ci.syzbot.org/series/8697e3f4-ead4-4d5d-9068-ed8aecbd0b54
+
+***
+
+kernel build error
+
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net-next.git
+base:      2319688890d97c63da423a3c57c23b4ab5952dfc
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
+1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/519594d7-0c1e-4dad-9a21-226aa905fde=
+c/config
+
+drivers/net/phy/phylink.c:2218:3: error: call to undeclared function 'unreg=
+ister_fwnode_pcs_notifier'; ISO C99 and later do not support implicit funct=
+ion declarations [-Wimplicit-function-declaration]
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[andrew@lunn.ch ansuelsmth@gmail.com conor@kernel.org corbet@lwn.net daniel=
+@makrotopia.org davem@davemloft.net devicetree@vger.kernel.org edumazet@goo=
+gle.com hkallweit1@gmail.com horms@kernel.org justinstitt@google.com krzk@k=
+ernel.org kuba@kernel.org linux-arm-kernel@lists.infradead.org linux-doc@vg=
+er.kernel.org linux-kernel@vger.kernel.org linux-mediatek@lists.infradead.o=
+rg linux@armlinux.org.uk llvm@lists.linux.dev lorenzo@kernel.org morbo@goog=
+le.com nathan@kernel.org netdev@vger.kernel.org nick.desaulniers@gmail.com =
+p.zabel@pengutronix.de pabeni@redhat.com robh@kernel.org saravanak@kernel.o=
+rg skhan@linuxfoundation.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
