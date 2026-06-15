@@ -1,134 +1,146 @@
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0672E3D1A94
-	for <syzbot@lists.linux.dev>; Mon, 15 Jun 2026 15:35:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9ADF73CD8AC
+	for <syzbot@lists.linux.dev>; Mon, 15 Jun 2026 16:39:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781537707; cv=none; b=Sx55qp8KFHAgNmFjgulCGIBSR5g1yMyNDJPMEXufS1/14Py6aFOAeF5AA3ew6tRg0yGemrLNfD5nR21YKRnupeBXulHZBjKyYRLgspQJhyhbTlDxijwCNnn/rYDr74iBUO9xY4PWul65pA4I+oyvC8EkeWeDO3b7iw0ypYjWSvg=
+	t=1781541589; cv=none; b=EXOzWazBqvJnCUb9vWr0VcMdglWX5SKkQ+UjxteJS62D0xXhAJkoEu9lvdKP5RJJw9dbF0F8F/1+ECLbK3EZp4muloq78wNKf8+jWhf8AGxqhPFS9ysgOwY5dMAe/K7FeeY7Cv/Qkuk31v/OxuS/FUJyTW+Ar9XVzUE8CFORIHk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781537707; c=relaxed/simple;
-	bh=ZjCMT9DqMhyvS/6r0XCwqQ4jD5y/URxCjdlErwxa+g4=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=kSneM40RZ/kAthhNTZXvShPKapIy43hLHdAXgAEVg3wHkmsR2Sv0ChyarA4ciCMqMrP7bzqwMxYG9b0EHZEA45t3pR3CaER7qgtNYVOjWVoezp19pmKjljXBKAHVK0Tyl2M/21oYSeYe0wfhAFrV4TTYggwJLO+8pnjwnEJQUqE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-48651d7d505so5334625b6e.0
-        for <syzbot@lists.linux.dev>; Mon, 15 Jun 2026 08:35:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781537705; x=1782142505;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tN2+W4otAgUkIiiyR6dUaHcYvM+2jtxFkXyT3fXNPxQ=;
-        b=NVmD0TjAu/wq4VRT27NRLWVNy4Dx8D7W4ClCE+9VTJ0f2pr9irenUxDIYHMDq1HatV
-         RywrIAbsFvJTmMIIRnsIC6oFCS/efl2vEMK+8BQzrEBt9UjoggDud3/VyM2LdKVB9aXy
-         buY1fK6reQDFKbmciyjcLUexDsCR5OFwrbhvwoMBXjmW1WnUDKyVJo7dcx148BYSUnIL
-         YQxbzFeUNQIl9ISVnupWqq5wUpufEzqBODHsTdL3gQ+uQXKsCMXs/q7lhXThSNo+5kkq
-         hCSNfwHFnU0S5ST1iyhiHz1NghNSx3sqdFnduRLTAVYky8TguzWT17qSq5Kug3TbaW6l
-         rmtg==
-X-Gm-Message-State: AOJu0Yxc79pbfmNJEKS3P4UMFkwrmnJrdISz7p6EdCMRsJGVtGJLSsS9
-	GhijKGZPSpxbW9LkfozxTEXhiHJ5PRc5iktMyJ7RwIXm/MR3B3A6yKbLahTshF/OBdd9TId9V1b
-	m6JWNdOXKiLepcmxD93kRCHvzP0PLDkU19xNXASpy2RDxe1t1yloncnR1KXI=
+	s=arc-20240116; t=1781541589; c=relaxed/simple;
+	bh=CR6hal2iD4vf/Ttiy2FuOT0DCkaM2XbbjFUl7FWbOpM=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=FxImPnWMWJwKZQN1t3cB8oh7O3hbDGXRjnzBpUd/GkHvDhDoRXIPVXek+kedEGbkBtwDi7T/e8krLcG4zivTLRNn7+C01zIu0e6J5jVXMW+f1TuxEpo2rNVsXPojR4RTgMlNmY9/QpiKR0vPxOD3bXIKOkD4aBaBXegh5nQ1RNI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Uz3sAhW7; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Uz3sAhW7"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 626D01F000E9;
+	Mon, 15 Jun 2026 16:39:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781541588;
+	bh=4y9jMZvObHm3KCzOxc0PgkYVDcUXx4tPpfk9AR0GbuE=;
+	h=From:To:Cc:Subject:Date;
+	b=Uz3sAhW717xgQ9xZ6x7Zk9oHtkxHGb97KJ9yJSnGSC8qd6artzal62an5Tg3QQEFz
+	 zW9SYUxQp6qjySjfGoBUkeSdnnMZmrdKYZeTmgAmbUs9flJfJ+TGP0nOEL4fVDyO4s
+	 rSQy/ImJ/A+IYuet6aAMzq4jcucbeKeK1BIrsH82Q70R9dUMzzdbVFmhyMvFqriv6b
+	 mwc70rUxuLnVckh95ytKCVKRCdNHtN4+TBkj/oN7xwvQRtClZu3rVU5z+HplKGO+W/
+	 xeSJ+igOXVlAKNntOFVnp3nZXC1usXTqdFIC4GVbkom2xFGTHHZ2eQrpqldpJ1H9XX
+	 ZXuQ7ecv21zUg==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] drm/lease: use kvmalloc for user-controlled allocations
+Message-ID: <46506931-ba8f-4048-ab27-9777411db2fe@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1454:b0:485:5982:4cfc with SMTP id
- 5614622812f47-48741be6334mr7635702b6e.33.1781537705017; Mon, 15 Jun 2026
- 08:35:05 -0700 (PDT)
-Date: Mon, 15 Jun 2026 08:35:04 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a301ba8.428ffe26.258b27.016d.GAE@google.com>
-Subject: [moderation/CI] Re: net: pcs: Introduce support for fwnode PCS
-From: syzbot ci <syzbot+ciac9eee7ac2b7e416@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Mon, 15 Jun 2026 16:39:48 +0000 (UTC)
 
-syzbot ci has tested the following series
+In drm_mode_create_lease_ioctl(), a user-controlled object_count is used to
+allocate memory for object_ids and objects. If a user provides a very large
+object_count (e.g., 1,000,000), the kernel attempts to allocate a
+contiguous memory chunk that exceeds the maximum allowed size by the slab
+allocator (KMALLOC_MAX_SIZE).
 
-[v7] net: pcs: Introduce support for fwnode PCS
-https://lore.kernel.org/all/20260615122950.22281-1-ansuelsmth@gmail.com
-* [PATCH net-next v7 01/12] net: phylink: keep and use MAC supported_interf=
-aces in phylink struct
-* [PATCH net-next v7 02/12] net: phylink: introduce internal phylink PCS ha=
-ndling
-* [PATCH net-next v7 03/12] net: phylink: add phylink_release_pcs() to exte=
-rnally release a PCS
-* [PATCH net-next v7 04/12] net: pcs: implement Firmware node support for P=
-CS driver
-* [PATCH net-next v7 05/12] net: phylink: support late PCS provider attach
-* [PATCH net-next v7 06/12] net: Document PCS subsystem
-* [PATCH net-next v7 07/12] MAINTAINERS: add myself as PCS subsystem mainta=
-iner
-* [PATCH net-next v7 08/12] of: property: fw_devlink: Add support for "pcs-=
-handle"
-* [PATCH net-next v7 09/12] net: phylink: add .pcs_link_down PCS OP
-* [PATCH net-next v7 10/12] dt-bindings: net: pcs: Document support for Air=
-oha Ethernet PCS
-* [PATCH net-next v7 11/12] net: pcs: airoha: add PCS driver for Airoha AN7=
-581 SoC
-* [PATCH net-next v7 12/12] net: airoha: add phylink support
+For the objects array, kzalloc_objs() is used, which expands to a standard
+kzalloc() call without the __GFP_NOWARN flag. When the requested size
+exceeds KMALLOC_MAX_SIZE, the SLUB allocator passes the request to the page
+allocator, which triggers a WARN_ON_ONCE_GFP because the required page
+order is greater than MAX_PAGE_ORDER:
 
-and found the following issue:
-kernel build error
+WARNING: mm/page_alloc.c:5197 at __alloc_frozen_pages_noprof+0x2ce/0x380
+mm/page_alloc.c:5197
+Call Trace:
+ <TASK>
+ alloc_pages_mpol+0x212/0x380 mm/mempolicy.c:2490
+ ___kmalloc_large_node+0x4c/0x120 mm/slub.c:5237
+ __kmalloc_large_node_noprof+0x18/0x90 mm/slub.c:5268
+ __do_kmalloc_node mm/slub.c:5284 [inline]
+ __kmalloc_noprof+0x3e4/0x750 mm/slub.c:5308
+ kmalloc_noprof include/linux/slab.h:954 [inline]
+ kzalloc_noprof include/linux/slab.h:1188 [inline]
+ fill_object_idr drivers/gpu/drm/drm_lease.c:389 [inline]
+ drm_mode_create_lease_ioctl+0x533/0x1ab0 drivers/gpu/drm/drm_lease.c:521
 
-Full report is available here:
-https://ci.syzbot.org/series/8697e3f4-ead4-4d5d-9068-ed8aecbd0b54
+To fix this, replace memdup_array_user() with vmemdup_array_user() and
+kzalloc_objs() with kvcalloc(), along with changing their respective
+kfree() calls to kvfree(). The kvmalloc family of functions attempts a
+kmalloc() first with __GFP_NOWARN applied internally, and gracefully falls
+back to vmalloc() for large allocations. This prevents the kernel warning
+and makes the allocations more robust against memory fragmentation,
+gracefully returning -ENOMEM if the system cannot satisfy the request.
 
-***
-
-kernel build error
-
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net-next.git
-base:      2319688890d97c63da423a3c57c23b4ab5952dfc
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
-1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/519594d7-0c1e-4dad-9a21-226aa905fde=
-c/config
-
-drivers/net/phy/phylink.c:2218:3: error: call to undeclared function 'unreg=
-ister_fwnode_pcs_notifier'; ISO C99 and later do not support implicit funct=
-ion declarations [-Wimplicit-function-declaration]
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: 62884cd386b8 ("drm: Add four ioctls for managing drm mode object leases [v7]")
+Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+03fb58296859d8dbab4d@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=03fb58296859d8dbab4d
+Link: https://syzkaller.appspot.com/ai_job?id=73f2715e-0f0e-4924-ad92-d4ef4f06a14f
+To: "David Airlie" <airlied@gmail.com>
+To: <dri-devel@lists.freedesktop.org>
+To: "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>
+To: "Maxime Ripard" <mripard@kernel.org>
+To: "Simona Vetter" <simona@ffwll.ch>
+To: "Thomas Zimmermann" <tzimmermann@suse.de>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/drivers/gpu/drm/drm_lease.c b/drivers/gpu/drm/drm_lease.c
+index 5d2cf724c..240e0ea6c 100644
+--- a/drivers/gpu/drm/drm_lease.c
++++ b/drivers/gpu/drm/drm_lease.c
+@@ -386,7 +386,8 @@ static int fill_object_idr(struct drm_device *dev,
+ 	int ret;
+ 	bool universal_planes = READ_ONCE(lessor_priv->universal_planes);
+ 
+-	objects = kzalloc_objs(struct drm_mode_object *, object_count);
++	objects = kvcalloc(object_count, sizeof(struct drm_mode_object *),
++			   GFP_KERNEL);
+ 	if (!objects)
+ 		return -ENOMEM;
+ 
+@@ -462,7 +463,7 @@ static int fill_object_idr(struct drm_device *dev,
+ 		if (objects[o])
+ 			drm_mode_object_put(objects[o]);
+ 	}
+-	kfree(objects);
++	kvfree(objects);
+ 	return ret;
+ }
+ 
+@@ -509,8 +510,8 @@ int drm_mode_create_lease_ioctl(struct drm_device *dev,
+ 	/* Handle leased objects, if any */
+ 	idr_init(&leases);
+ 	if (object_count != 0) {
+-		object_ids = memdup_array_user(u64_to_user_ptr(cl->object_ids),
+-					       object_count, sizeof(__u32));
++		object_ids = vmemdup_array_user(u64_to_user_ptr(cl->object_ids),
++						object_count, sizeof(__u32));
+ 		if (IS_ERR(object_ids)) {
+ 			ret = PTR_ERR(object_ids);
+ 			idr_destroy(&leases);
+@@ -520,7 +521,7 @@ int drm_mode_create_lease_ioctl(struct drm_device *dev,
+ 		/* fill and validate the object idr */
+ 		ret = fill_object_idr(dev, lessor_priv, &leases,
+ 				      object_count, object_ids);
+-		kfree(object_ids);
++		kvfree(object_ids);
+ 		if (ret) {
+ 			drm_dbg_lease(dev, "lease object lookup failed: %i\n", ret);
+ 			idr_destroy(&leases);
 
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
 
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
 
-The email will later be sent to:
-[andrew@lunn.ch ansuelsmth@gmail.com conor@kernel.org corbet@lwn.net daniel=
-@makrotopia.org davem@davemloft.net devicetree@vger.kernel.org edumazet@goo=
-gle.com hkallweit1@gmail.com horms@kernel.org justinstitt@google.com krzk@k=
-ernel.org kuba@kernel.org linux-arm-kernel@lists.infradead.org linux-doc@vg=
-er.kernel.org linux-kernel@vger.kernel.org linux-mediatek@lists.infradead.o=
-rg linux@armlinux.org.uk llvm@lists.linux.dev lorenzo@kernel.org morbo@goog=
-le.com nathan@kernel.org netdev@vger.kernel.org nick.desaulniers@gmail.com =
-p.zabel@pengutronix.de pabeni@redhat.com robh@kernel.org saravanak@kernel.o=
-rg skhan@linuxfoundation.org]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
