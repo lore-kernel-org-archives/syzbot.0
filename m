@@ -1,146 +1,155 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9ADF73CD8AC
-	for <syzbot@lists.linux.dev>; Mon, 15 Jun 2026 16:39:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4441131A56D
+	for <syzbot@lists.linux.dev>; Mon, 15 Jun 2026 18:37:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781541589; cv=none; b=EXOzWazBqvJnCUb9vWr0VcMdglWX5SKkQ+UjxteJS62D0xXhAJkoEu9lvdKP5RJJw9dbF0F8F/1+ECLbK3EZp4muloq78wNKf8+jWhf8AGxqhPFS9ysgOwY5dMAe/K7FeeY7Cv/Qkuk31v/OxuS/FUJyTW+Ar9XVzUE8CFORIHk=
+	t=1781548669; cv=none; b=nMt1umDEgsp7nzjGSkh+jlCMXHUt6mjOnIR/DCDI4/XZKpRzY3aqWMDYmVvo/GdyW6zK7fSjKsEn1MbTP4FYnHbhnXKuH9x8JsjVi7LljVoPjGnqWm1lJcg75+k/AvXMJbrERPEIVU+f7AzisL9TNDY2egoK+E2iXdrvnGlK97s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781541589; c=relaxed/simple;
-	bh=CR6hal2iD4vf/Ttiy2FuOT0DCkaM2XbbjFUl7FWbOpM=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=FxImPnWMWJwKZQN1t3cB8oh7O3hbDGXRjnzBpUd/GkHvDhDoRXIPVXek+kedEGbkBtwDi7T/e8krLcG4zivTLRNn7+C01zIu0e6J5jVXMW+f1TuxEpo2rNVsXPojR4RTgMlNmY9/QpiKR0vPxOD3bXIKOkD4aBaBXegh5nQ1RNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Uz3sAhW7; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781548669; c=relaxed/simple;
+	bh=xjBtda5yQylDR43xaldFv16csYNrCOOieWasSqFyZII=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=IglbwLAq67V+G82t5anqhNk9xvoEr7692XB2jmTGbFpn9PgNY6drge4orbuTCzNeoDVv7r4EDHPUF7gAOfXQZwO3PhgHVuq9rJYJ9P0yB9crXo04k84/4oAEkSK18+QnCOYE24mdFC4mqbk3LQKGgDPajuzAVQQi03l1zURTWj8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WCC4IFmZ; arc=none smtp.client-ip=209.85.215.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Uz3sAhW7"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 626D01F000E9;
-	Mon, 15 Jun 2026 16:39:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781541588;
-	bh=4y9jMZvObHm3KCzOxc0PgkYVDcUXx4tPpfk9AR0GbuE=;
-	h=From:To:Cc:Subject:Date;
-	b=Uz3sAhW717xgQ9xZ6x7Zk9oHtkxHGb97KJ9yJSnGSC8qd6artzal62an5Tg3QQEFz
-	 zW9SYUxQp6qjySjfGoBUkeSdnnMZmrdKYZeTmgAmbUs9flJfJ+TGP0nOEL4fVDyO4s
-	 rSQy/ImJ/A+IYuet6aAMzq4jcucbeKeK1BIrsH82Q70R9dUMzzdbVFmhyMvFqriv6b
-	 mwc70rUxuLnVckh95ytKCVKRCdNHtN4+TBkj/oN7xwvQRtClZu3rVU5z+HplKGO+W/
-	 xeSJ+igOXVlAKNntOFVnp3nZXC1usXTqdFIC4GVbkom2xFGTHHZ2eQrpqldpJ1H9XX
-	 ZXuQ7ecv21zUg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] drm/lease: use kvmalloc for user-controlled allocations
-Message-ID: <46506931-ba8f-4048-ab27-9777411db2fe@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WCC4IFmZ"
+Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-c85a2bf5388so1774115a12.1
+        for <syzbot@lists.linux.dev>; Mon, 15 Jun 2026 11:37:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1781548667; x=1782153467; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=CiMgdwm1uK8wMIHpR+UI3R9OpwIEA1Of5OYuzODRAHc=;
+        b=WCC4IFmZHAiuaCooYJBAUFk/8DFtRkBi7+1e8SVBeuMBdR6wT0IP65eyvnZ/QzOa+w
+         c7AMyYsDFNCvMgXM3/ycja+oyI+3gjpkzxf8puSHkhKmuMLD/j0gIAbAakOrlKWn4Y7R
+         Qv36dt+P0BjvHJsTILqU0OOVuKfI80bOMPL5Bm7A//Ggf7mjfDQRQsNoC19Hi4QTe7zZ
+         2SVDOyW4iRgVEC9mBiv0URxtcZnwQqpXEqBd9SHdQrnp36pGwuxVNOMg7YI+Rd8F0ng7
+         bivXrdeeZTx71kHh2A1lfKm/JVItW5VpfyUP0ev51KtHiWy2+8sO1C2avXw5PNN0N8bp
+         TH6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781548667; x=1782153467;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=CiMgdwm1uK8wMIHpR+UI3R9OpwIEA1Of5OYuzODRAHc=;
+        b=I5jTjd74llrusmYpjjBqbzsp8zw//LfU75rVz3vec3hop+DMPVQaIUDlrwJKLfAoSD
+         T81/nHzlXB4tk5azJM2O3G2oMAFz91K8bMC10oGTIIZhUJc5kFjs0zZeLDa/8vXmJEaD
+         vsh/2s87kj30rze4nyjuYh6ASh/hz3MZlpu3C1sp8C8MEfhem9NHMOQ6CH509JIH4bHa
+         XhVvGPiUo8UQKEcZt4JXEjZWMkSzjbmCMJVexF2Wq7b9LcOj7Fceq21t5qI0270VLofa
+         DBOfNUc795/FUtiYulCB1DwpWQuoDrisvCjOKlYdUXvnfHQ8N6HW5zUT/sNxSEX9EMpR
+         xDeg==
+X-Forwarded-Encrypted: i=1; AFNElJ/JT5J5p2W4kMlHTw3dIUPQQsy12Ummac5KjPVIrvwQdQdVSnwHJTDc5A4QM/rGmSbmnFK2EF4=@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywv3ChpbXbarg200uA9Cmr18t5vTmV+Y+OrL4ys3pDnJGiZr4WO
+	NQOxle7/RjW33FMhfmnbaumjSYBaH9PGkMItgoJD+CFrbdWqSbTXr3CO4VkgNws+TdfidH8RmjV
+	4Ur95/Q==
+X-Received: from pfbmc1.prod.google.com ([2002:a05:6a00:7681:b0:842:b0d3:e4d9])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a20:cc97:b0:39f:82bd:298
+ with SMTP id adf61e73a8af0-3b783587375mr16591062637.0.1781548666395; Mon, 15
+ Jun 2026 11:37:46 -0700 (PDT)
+Date: Mon, 15 Jun 2026 11:37:45 -0700
+In-Reply-To: <79c59d84-80bc-41f6-950f-41ff2e6b2b5b@suse.de>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Mon, 15 Jun 2026 16:39:48 +0000 (UTC)
+Mime-Version: 1.0
+References: <20260610214523.2905255-2-clopez@suse.de> <6a2adf3b.3b0a2d4e.8c8d1.0012.GAE@google.com>
+ <airudX6N4oL5X_wE@google.com> <79c59d84-80bc-41f6-950f-41ff2e6b2b5b@suse.de>
+Message-ID: <ajBGeUyhVM1-SI33@google.com>
+Subject: Re: [syzbot ci] Re: KVM: x86: Unconditionally recompute CR8 intercept
+ on PPR update
+From: Sean Christopherson <seanjc@google.com>
+To: "Carlos =?utf-8?B?TMOzcGV6?=" <clopez@suse.de>
+Cc: syzbot ci <syzbot+ci493c6d734b63e050@syzkaller.appspotmail.com>, bp@alien8.de, 
+	dave.hansen@linux.intel.com, hpa@zytor.com, kvm@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, mingo@redhat.com, osteffen@redhat.com, 
+	pbonzini@redhat.com, sgarzare@redhat.com, stable@vger.kernel.org, 
+	tglx@kernel.org, x86@kernel.org, syzbot@lists.linux.dev, 
+	syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-In drm_mode_create_lease_ioctl(), a user-controlled object_count is used to
-allocate memory for object_ids and objects. If a user provides a very large
-object_count (e.g., 1,000,000), the kernel attempts to allocate a
-contiguous memory chunk that exceeds the maximum allowed size by the slab
-allocator (KMALLOC_MAX_SIZE).
+On Mon, Jun 15, 2026, Carlos L=C3=B3pez wrote:
+> On 6/11/26 7:20 PM, Sean Christopherson wrote:
+> > On Thu, Jun 11, 2026, syzbot ci wrote:
+> >> ------------[ cut here ]------------
+> >> debug_locks && !(lock_is_held(&(&vcpu->mutex)->dep_map) || !refcount_r=
+ead(&vcpu->kvm->users_count))
+> >> WARNING: arch/x86/kvm/vmx/nested.h:61 at get_vmcs12 arch/x86/kvm/vmx/n=
+ested.h:60 [inline], CPU#0: syz.2.19/5879
+> >> WARNING: arch/x86/kvm/vmx/nested.h:61 at vmx_update_cr8_intercept+0x3d=
+e/0x4e0 arch/x86/kvm/vmx/vmx.c:6879, CPU#0: syz.2.19/5879
+> >> Modules linked in:
+> >> CPU: 0 UID: 0 PID: 5879 Comm: syz.2.19 Not tainted syzkaller #0 PREEMP=
+T(full)=20
+> >> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian=
+-1.16.2-1 04/01/2014
+> >> RIP: 0010:get_vmcs12 arch/x86/kvm/vmx/nested.h:60 [inline]
+> >> RIP: 0010:vmx_update_cr8_intercept+0x3de/0x4e0 arch/x86/kvm/vmx/vmx.c:=
+6879
+> >>  apic_update_ppr arch/x86/kvm/lapic.c:984 [inline]
+> >>  kvm_lapic_reset+0x1c24/0x2980 arch/x86/kvm/lapic.c:3023
+> >>  kvm_vcpu_reset+0x44c/0x1bf0 arch/x86/kvm/x86.c:12986
+> >>  kvm_arch_vcpu_create+0x746/0x8b0 arch/x86/kvm/x86.c:12847
+> >>  kvm_vm_ioctl_create_vcpu+0x428/0x930 virt/kvm/kvm_main.c:4201
+> >>  kvm_vm_ioctl+0x893/0xd50 virt/kvm/kvm_main.c:5159
+> >>  vfs_ioctl fs/ioctl.c:51 [inline]
+> >>  __do_sys_ioctl fs/ioctl.c:597 [inline]
+> >>  __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+> >>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+> >>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+> >>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> >=20
+> > This is "fine", the assertion just wants to make sure KVM isn't access =
+vmcs12
+> > without holding vcpu->mutex, otherwise any queries are inherently unsta=
+ble.
+> > It's just that vCPU creation runs without taking vcpu->mutex, because t=
+he vCPU
+> > is otherwise unreachable.
+> >=20
+> > I'm pretty sure we can squash the WARN by grabbing vmcs12 if and only i=
+f the vCPU
+> > is actually in guest mode.
+>=20
+> Will you add this on top or should I send a v3?
 
-For the objects array, kzalloc_objs() is used, which expands to a standard
-kzalloc() call without the __GFP_NOWARN flag. When the requested size
-exceeds KMALLOC_MAX_SIZE, the SLUB allocator passes the request to the page
-allocator, which triggers a WARN_ON_ONCE_GFP because the required page
-order is greater than MAX_PAGE_ORDER:
+Gah, I was going to say "I'll fixup when applying", but that leads to an un=
+wieldy
+changelog.  I'll send a v3 with this slotted in as a proper prep patch, mig=
+ht as
+well let syzbot have another go at it, to make sure there isn't another ass=
+ertion
+lurking.
 
-WARNING: mm/page_alloc.c:5197 at __alloc_frozen_pages_noprof+0x2ce/0x380
-mm/page_alloc.c:5197
-Call Trace:
- <TASK>
- alloc_pages_mpol+0x212/0x380 mm/mempolicy.c:2490
- ___kmalloc_large_node+0x4c/0x120 mm/slub.c:5237
- __kmalloc_large_node_noprof+0x18/0x90 mm/slub.c:5268
- __do_kmalloc_node mm/slub.c:5284 [inline]
- __kmalloc_noprof+0x3e4/0x750 mm/slub.c:5308
- kmalloc_noprof include/linux/slab.h:954 [inline]
- kzalloc_noprof include/linux/slab.h:1188 [inline]
- fill_object_idr drivers/gpu/drm/drm_lease.c:389 [inline]
- drm_mode_create_lease_ioctl+0x533/0x1ab0 drivers/gpu/drm/drm_lease.c:521
-
-To fix this, replace memdup_array_user() with vmemdup_array_user() and
-kzalloc_objs() with kvcalloc(), along with changing their respective
-kfree() calls to kvfree(). The kvmalloc family of functions attempts a
-kmalloc() first with __GFP_NOWARN applied internally, and gracefully falls
-back to vmalloc() for large allocations. This prevents the kernel warning
-and makes the allocations more robust against memory fragmentation,
-gracefully returning -ENOMEM if the system cannot satisfy the request.
-
-Fixes: 62884cd386b8 ("drm: Add four ioctls for managing drm mode object leases [v7]")
-Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+03fb58296859d8dbab4d@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=03fb58296859d8dbab4d
-Link: https://syzkaller.appspot.com/ai_job?id=73f2715e-0f0e-4924-ad92-d4ef4f06a14f
-To: "David Airlie" <airlied@gmail.com>
-To: <dri-devel@lists.freedesktop.org>
-To: "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>
-To: "Maxime Ripard" <mripard@kernel.org>
-To: "Simona Vetter" <simona@ffwll.ch>
-To: "Thomas Zimmermann" <tzimmermann@suse.de>
-Cc: <linux-kernel@vger.kernel.org>
-
----
-diff --git a/drivers/gpu/drm/drm_lease.c b/drivers/gpu/drm/drm_lease.c
-index 5d2cf724c..240e0ea6c 100644
---- a/drivers/gpu/drm/drm_lease.c
-+++ b/drivers/gpu/drm/drm_lease.c
-@@ -386,7 +386,8 @@ static int fill_object_idr(struct drm_device *dev,
- 	int ret;
- 	bool universal_planes = READ_ONCE(lessor_priv->universal_planes);
- 
--	objects = kzalloc_objs(struct drm_mode_object *, object_count);
-+	objects = kvcalloc(object_count, sizeof(struct drm_mode_object *),
-+			   GFP_KERNEL);
- 	if (!objects)
- 		return -ENOMEM;
- 
-@@ -462,7 +463,7 @@ static int fill_object_idr(struct drm_device *dev,
- 		if (objects[o])
- 			drm_mode_object_put(objects[o]);
- 	}
--	kfree(objects);
-+	kvfree(objects);
- 	return ret;
- }
- 
-@@ -509,8 +510,8 @@ int drm_mode_create_lease_ioctl(struct drm_device *dev,
- 	/* Handle leased objects, if any */
- 	idr_init(&leases);
- 	if (object_count != 0) {
--		object_ids = memdup_array_user(u64_to_user_ptr(cl->object_ids),
--					       object_count, sizeof(__u32));
-+		object_ids = vmemdup_array_user(u64_to_user_ptr(cl->object_ids),
-+						object_count, sizeof(__u32));
- 		if (IS_ERR(object_ids)) {
- 			ret = PTR_ERR(object_ids);
- 			idr_destroy(&leases);
-@@ -520,7 +521,7 @@ int drm_mode_create_lease_ioctl(struct drm_device *dev,
- 		/* fill and validate the object idr */
- 		ret = fill_object_idr(dev, lessor_priv, &leases,
- 				      object_count, object_ids);
--		kfree(object_ids);
-+		kvfree(object_ids);
- 		if (ret) {
- 			drm_dbg_lease(dev, "lease object lookup failed: %i\n", ret);
- 			idr_destroy(&leases);
-
-
-base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > diff --git arch/x86/kvm/vmx/vmx.c arch/x86/kvm/vmx/vmx.c
+> > index c548f22375ad..332fbcd924f2 100644
+> > --- arch/x86/kvm/vmx/vmx.c
+> > +++ arch/x86/kvm/vmx/vmx.c
+> > @@ -6876,11 +6876,10 @@ int vmx_handle_exit(struct kvm_vcpu *vcpu, fast=
+path_t exit_fastpath)
+> > =20
+> >  void vmx_update_cr8_intercept(struct kvm_vcpu *vcpu, int tpr, int irr)
+> >  {
+> > -       struct vmcs12 *vmcs12 =3D get_vmcs12(vcpu);
+> >         int tpr_threshold;
+> > =20
+> >         if (is_guest_mode(vcpu) &&
+> > -               nested_cpu_has(vmcs12, CPU_BASED_TPR_SHADOW))
+> > +           nested_cpu_has(get_vmcs12(vcpu), CPU_BASED_TPR_SHADOW))
+> >                 return;
+> > =20
+> >         guard(vmx_vmcs01)(vcpu);
+> >=20
+> >=20
+> > Longer term, I'll work on figuring out how to handle this in get_vmcs12=
+(), because
+> > to_hv_vcpu() has the solve the same fundamental problem:
+> >=20
+> > https://lore.kernel.org/all/aeqRzanSaa9P_EPg@google.com
+>=20
