@@ -1,193 +1,111 @@
-Received: from out30-112.freemail.mail.aliyun.com (out30-112.freemail.mail.aliyun.com [115.124.30.112])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C45F43D966F;
-	Tue, 16 Jun 2026 06:00:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.112
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39DBF27BF93
+	for <syzbot@lists.linux.dev>; Tue, 16 Jun 2026 11:53:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781589648; cv=none; b=SaGk0pxW4s3r1EWGWEJNoH06hJfqvdeeeEUohiHjbJnpI1OV6hmUP6lG/HfjsG/X6qwMtV2l5HH4gQebQVrxIsYpHmOUyXCeIdCiKHHnpv+mwxi40z7ysBBZK4O8/eUi891o1bn5+M54KMlzSZtTjq0QHxNYI+82shMRlsfy4BI=
+	t=1781610823; cv=none; b=IBvPuouQSNVWFQmxLlxPGdkafwKeSL+pTR/y254Zrw9UKG34QlOQrUvCaH/MCXip8BvhbWvcJ9jR+Duuh75nFDM1qfuP9UZYnoPCqb4fENcrbJeW8R2isRYJocRaGXal2Fg4WCucmcubkg/22a+qJ5c/SuyzB5bKHyvADPc+oYw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781589648; c=relaxed/simple;
-	bh=RHiDjfPGyjzwJA9XleoqFxc1SXobyVlg8CDllrM/GZo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mCMlmp5uc3uJozy5QA7LcXRx76iAjW+WZiK+JLpSnyukNxuqzHDNApjDY4m8SZnTXNYEqfLpiP2FJO0ls1g+mb2NhJiPqFj/H2cyoJToeyu/t4FjwPA4C1yy0CCzuA6lpdt0Bt35CJmZ9wLuVO6OVueYPlUXS0nmDOkSzIPYQpE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=HeF1/ZxA; arc=none smtp.client-ip=115.124.30.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="HeF1/ZxA"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1781589642; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=JHVdgI38vU8InSz4ekfmHoTl4B0c/zoZFuDfyGeoFak=;
-	b=HeF1/ZxAu5qub1qGceuK3lUP5xHMqKjAi4IbyXiWb1CQ9EGUDY2NmoPTFmoD7HsEzAFLEOwFx0YPiWmrWt43sr1+q4WG+YL9zkE1XgQzhzz/0yFCJ7VZM846McyTrqTa2j4Iow5HV28O9aLJofp85VN1RQ6UYA7WrzJm87pJI40=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=joseph.qi@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0X5-Edtn_1781589640;
-Received: from 30.221.145.41(mailfrom:joseph.qi@linux.alibaba.com fp:SMTPD_---0X5-Edtn_1781589640 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Tue, 16 Jun 2026 14:00:41 +0800
-Message-ID: <6f95cc40-3014-4628-9739-28f47bec825b@linux.alibaba.com>
-Date: Tue, 16 Jun 2026 14:00:40 +0800
+	s=arc-20240116; t=1781610823; c=relaxed/simple;
+	bh=T1xdfyK88eRzHw+caowhjr9Mmey0RrpBgpgXP2VVUN0=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=fxiNOeNk8sB4VinfFiyaRkFiEOMrPosRn2YH5aB+oW5FvT9PqJuWtzwj4KZwjJ3uxn78xUCdjojYv848NjVJoxB03qzTjWyPbKC63lgNV3RDQxbbJtbH89NyqCE4R8l9SKePBahpv4lMGgQ4IWa66EFjnkiQA4DiDL0AMChEo7k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7e713779405so8929004a34.3
+        for <syzbot@lists.linux.dev>; Tue, 16 Jun 2026 04:53:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781610821; x=1782215621;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=UHzBAtFaF/1CZamwDX3qqYVXAJuQr1iLhxzQAEZ4wK4=;
+        b=Fk24sN/1deG4vw+vYin9JbLVAVHmtD3Q2tdvr3l1AAeOpkLkiGR9SUWkeAC5Wa0VpZ
+         hs8qwKd6Fg1yTJnZnRRgn5Y1lL3gYHXt5GAv6e/+aXwVdI9OirOEEsP8HpX4geAHMzre
+         U9Ahb7zpvoGmsD8H7MtQFtSAkroApW1PZKtq+L8ydPkk8ZPF5WVPkqG11GTh9JiAQX+K
+         lhVRyB+IacojnAs1/1YdJPao97YdT1LQjKu64VCxX2dOAxSSIGk3YKer9wkpaZOQOdxc
+         AVcff5QX6nNNNKqqzSFASBYbzb9+I2hkaPK4dw0bzoqUg9QS4HHWIlKDK3NLZVPt6Un/
+         LV9w==
+X-Gm-Message-State: AOJu0YxVjg8Rn1XTwF1JhDnyWQtsxqIzx4Y7S95iFsl8q3+jF/GmcT0f
+	afcSEpEuNwdF32jpZ/iYvTFgMrAYHrEduigPQV8ux9OSz73+EB598oshyCYmPLBLBxp7BX95NCM
+	b4xKGJ8/rF1VhOMUA8Ow8QigKnmUCBzR8Z6fA3Ld6jF96V6FEaVWdg38fL6A=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] ocfs2: fix circular locking dependency in
- ocfs2_dio_end_io_write
-To: Heming Zhao <heming.zhao@suse.com>, syzbot <syzbot@kernel.org>,
- Aleksandr Nogikh <nogikh@google.com>
-Cc: syzkaller-bugs@googlegroups.com, Joel Becker <jlbec@evilplan.org>,
- Mark Fasheh <mark@fasheh.com>, ocfs2-devel@lists.linux.dev,
- linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-References: <97c902a6-3bcf-43ea-9b70-f1f136a6c3f2@mail.kernel.org>
- <ai-qJbXLuniGv-mr@p15>
-From: Joseph Qi <joseph.qi@linux.alibaba.com>
-In-Reply-To: <ai-qJbXLuniGv-mr@p15>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6808:6f82:b0:485:4601:9c84 with SMTP id
+ 5614622812f47-4884c1ff319mr2570439b6e.29.1781610821261; Tue, 16 Jun 2026
+ 04:53:41 -0700 (PDT)
+Date: Tue, 16 Jun 2026 04:53:41 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a313945.ba59a6c9.b6d35.0001.GAE@google.com>
+Subject: [moderation/CI] Re: vfio/pci: Add PCIe TPH support
+From: syzbot ci <syzbot+ci19edba934fc483be@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
+syzbot ci has tested the following series
 
+[v17] vfio/pci: Add PCIe TPH support
+https://lore.kernel.org/all/20260616104621.41915-1-fengchengwen@huawei.com
+* [PATCH v17 01/12] PCI/TPH: Fix pcie_tph_get_st_table_loc() field extraction
+* [PATCH v17 02/12] PCI/TPH: Fix tph_enabled concurrent update race by bitfield packing
+* [PATCH v17 03/12] PCI/TPH: Cache TPH requester capability at probe time
+* [PATCH v17 04/12] PCI/TPH: Refactor pcie_enable_tph & add explicit requester variant
+* [PATCH v17 05/12] PCI/TPH: Refactor pcie_tph_get_cpu_st & add explicit variant
+* [PATCH v17 06/12] PCI/TPH: Expose the enabled TPH requester type
+* [PATCH v17 07/12] PCI/TPH: Add pcie_tph_supported() helper to check TPH capability attributes
+* [PATCH v17 08/12] PCI/TPH: Add sysfs binary file to export CPU to steering-tag mapping
+* [PATCH v17 09/12] vfio/pci: Hide TPH capability when TPH is unsupported
+* [PATCH v17 10/12] vfio/pci: Add TPH_ENABLE feature skeleton and unsafe module parameter
+* [PATCH v17 11/12] vfio/pci: Add TPH_ST_CONFIG for PCIe TPH ST configuration
+* [PATCH v17 12/12] vfio/pci: Virtualize PCIe TPH capability registers
 
-On 6/15/26 3:32 PM, Heming Zhao wrote:
-> On Fri, Jun 12, 2026 at 11:50:20AM +0000, syzbot wrote:
->> From: Aleksandr Nogikh <nogikh@google.com>
->>
->> A circular locking dependency involves INODE_ALLOC_SYSTEM_INODE,
->> EXTENT_ALLOC_SYSTEM_INODE, and ORPHAN_DIR_SYSTEM_INODE.
->>
->> 1. ocfs2_mknod() acquires INODE_ALLOC then EXTENT_ALLOC.
->> 2. ocfs2_dio_end_io_write() acquires EXTENT_ALLOC for unwritten extents,
->> then ORPHAN_DIR via ocfs2_del_inode_from_orphan() while still holding
->> EXTENT_ALLOC.
->> 3. ocfs2_wipe_inode() acquires ORPHAN_DIR then INODE_ALLOC via
->> ocfs2_remove_inode.
->>
->> Break the cycle in ocfs2_dio_end_io_write() by freeing the allocation
->> contexts (releasing EXTENT_ALLOC) before acquiring ORPHAN_DIR.
->>
->> WARNING: possible circular locking dependency detected
->> ------------------------------------------------------
->> is trying to acquire lock:
->> ffff8881e78b33a0
->> (&ocfs2_sysfile_lock_key[INODE_ALLOC_SYSTEM_INODE]){+.+.}-{4:4}, at:
->> ocfs2_evict_inode+0x1539/0x43b0 fs/ocfs2/inode.c:1299
->>
->> but task is already holding lock:
->> ffff8881e78b4fa0
->> (&ocfs2_sysfile_lock_key[ORPHAN_DIR_SYSTEM_INODE]){+.+.}-{4:4}, at:
->> ocfs2_evict_inode+0xe97/0x43b0 fs/ocfs2/inode.c:1299
->>
->> the existing dependency chain (in reverse order) is:
->>
->> -> #2 (&ocfs2_sysfile_lock_key[ORPHAN_DIR_SYSTEM_INODE]){+.+.}-{4:4}:
->>        inode_lock include/linux/fs.h:1029 [inline]
->>        ocfs2_del_inode_from_orphan+0x12e/0x7a0 fs/ocfs2/namei.c:2728
->>        ocfs2_dio_end_io+0xf9c/0x1370 fs/ocfs2/aops.c:2418
->>        dio_complete+0x25b/0x790 fs/direct-io.c:281
->>
->> -> #1 (&ocfs2_sysfile_lock_key[EXTENT_ALLOC_SYSTEM_INODE]){+.+.}-{4:4}:
->>        inode_lock include/linux/fs.h:1029 [inline]
->>        ocfs2_reserve_suballoc_bits+0x16d/0x4840 fs/ocfs2/suballoc.c:882
->>        ocfs2_reserve_new_metadata_blocks+0x415/0x9a0
->>        fs/ocfs2/suballoc.c:1078
->>        ocfs2_mknod+0x10f3/0x2260 fs/ocfs2/namei.c:351
->>
->> -> #0 (&ocfs2_sysfile_lock_key[INODE_ALLOC_SYSTEM_INODE]){+.+.}-{4:4}:
->>        __lock_acquire+0x15a5/0x2cf0 kernel/locking/lockdep.c:5237
->>        lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5868
->>        down_write+0x96/0x200 kernel/locking/rwsem.c:1625
->>        inode_lock include/linux/fs.h:1029 [inline]
->>        ocfs2_remove_inode fs/ocfs2/inode.c:733 [inline]
->>        ocfs2_wipe_inode fs/ocfs2/inode.c:896 [inline]
->>        ocfs2_delete_inode fs/ocfs2/inode.c:1157 [inline]
->>        ocfs2_evict_inode+0x1539/0x43b0 fs/ocfs2/inode.c:1299
->>
->> Chain exists of:
->>   &ocfs2_sysfile_lock_key[INODE_ALLOC_SYSTEM_INODE] -->
->>   &ocfs2_sysfile_lock_key[EXTENT_ALLOC_SYSTEM_INODE] -->
->>   &ocfs2_sysfile_lock_key[ORPHAN_DIR_SYSTEM_INODE]
->>
->>  Possible unsafe locking scenario:
->>
->>        CPU0                    CPU1
->>        ----                    ----
->>   lock(&ocfs2_sysfile_lock_key[ORPHAN_DIR_SYSTEM_INODE]);
->>                                lock(&ocfs2_sysfile_lock_key[EXTENT_ALLOC_SYSTEM_INODE]);
->>                                lock(&ocfs2_sysfile_lock_key[ORPHAN_DIR_SYSTEM_INODE]);
->>   lock(&ocfs2_sysfile_lock_key[INODE_ALLOC_SYSTEM_INODE]);
->>
->>  *** DEADLOCK ***
->>
+and found the following issue:
+kernel build error
 
-Better to describe the solution here.
+Full report is available here:
+https://ci.syzbot.org/series/4edd0905-3fa4-4f51-8143-8ac8eb0bc5c8
 
->> Fixes: d647c5b2fbf8 ("ocfs2: split transactions in dio completion to avoid credit exhaustion")
->> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
->> Reported-by: syzbot+b225d4dfce6219600c42@syzkaller.appspotmail.com
->> Closes: https://syzkaller.appspot.com/bug?extid=b225d4dfce6219600c42
->> Link: https://syzkaller.appspot.com/ai_job?id=0b53ce1e-2972-4192-aa85-8097a702762c
->> Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
-> 
-> LGTM.
-> After d647c5b2fbf8, ocfs2_dio_end_io_write() spends a significant amount of time
-> looping through the unwritten extent list before it finally acquires the
-> ORPHAN_DIR lock. This gives other functions (such as ocfs2_wipe_inode() mentioned
-> in this patch) a chance to preemptively grab the ORPHAN_DIR lock, thereby
-> triggering the circular locking.
-> What d647c5b2fbf8 actually did was widen the race window, turning a pre-existing,
-> low-probability issue into an easily reproducible one.
-> 
+***
 
-Ummm... before d647c5b2fbf8, ocfs2_del_inode_from_orphan() is called
-before down_write(&ip_alloc_sem) and ocfs2_lock_allocators().
-So I think the 'Fixes' tag looks reasonable.
+kernel build error
 
-Thanks,
-Joseph
+tree:      kvm-next
+URL:       https://kernel.googlesource.com/pub/scm/virt/kvm/kvm/
+base:      9fb628b4cd3488a36e3fc9b22bb840048aa1a9d2
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/ee500939-0414-42ce-baca-4a9bc547021b/config
 
-> Reviewed-by: Heming Zhao <heming.zhao@suse.com>
->>
->> ---
->> diff --git a/fs/ocfs2/aops.c b/fs/ocfs2/aops.c
->> index 6ec198bda..4acdbb708 100644
->> --- a/fs/ocfs2/aops.c
->> +++ b/fs/ocfs2/aops.c
->> @@ -2372,6 +2372,15 @@ static int ocfs2_dio_end_io_write(struct inode *inode,
->>  unlock:
->>  	up_write(&oi->ip_alloc_sem);
->>  
->> +	if (data_ac) {
->> +		ocfs2_free_alloc_context(data_ac);
->> +		data_ac = NULL;
->> +	}
->> +	if (meta_ac) {
->> +		ocfs2_free_alloc_context(meta_ac);
->> +		meta_ac = NULL;
->> +	}
->> +
->>  	/* everything looks good, let's start the cleanup */
->>  	if (!ret && dwc->dw_orphaned) {
->>  		BUG_ON(dwc->dw_writer_pid != task_pid_nr(current));
->> @@ -2383,10 +2392,6 @@ static int ocfs2_dio_end_io_write(struct inode *inode,
->>  	ocfs2_inode_unlock(inode, 1);
->>  	brelse(di_bh);
->>  out:
->> -	if (data_ac)
->> -		ocfs2_free_alloc_context(data_ac);
->> -	if (meta_ac)
->> -		ocfs2_free_alloc_context(meta_ac);
->>  	ocfs2_run_deallocs(osb, &dealloc);
->>  	ocfs2_dio_free_write_ctx(inode, dwc);
->>  
->>
->>
->> base-commit: e7ae89a0c97ce2b68b0983cd01eda67cf373517d
->> -- 
->> See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
->> You can comment on the patch as usual, syzbot will try to address
->> the comments and send a new version of the patch if necessary.
->> syzbot engineers can be reached at syzkaller@googlegroups.com.
->>
+drivers/vfio/pci/vfio_pci_config.c:1175:9: error: call to undeclared function 'FIELD_GET'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[alex@shazbot.org fengchengwen@huawei.com helgaas@kernel.org jgg@ziepe.ca kvm@vger.kernel.org linux-pci@vger.kernel.org liuyonglong@huawei.com wangyushan12@huawei.com wangzhou1@hisilicon.com wathsala.vithanage@arm.com wei.huang2@amd.com zhipingz@meta.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
 
