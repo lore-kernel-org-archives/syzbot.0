@@ -1,174 +1,272 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB2FB3D0918
-	for <syzbot@lists.linux.dev>; Wed, 17 Jun 2026 09:31:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AE3E3BA24F
+	for <syzbot@lists.linux.dev>; Wed, 17 Jun 2026 13:22:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781688715; cv=none; b=t9sXYlELGCXBL24EesnOZKUhyLpTXf20Hoq7eDN9ylPGGRvCgc0wzxp4Lpgd/Z1GzcfUglJsYjSXuxhu3m52Twm0cXi8dPjc1zxU+qh9+iVctlSGjs9IabasydpxbppIDoJMQQsgHcoSAGmLrZ8SekXNgsgHKp6KVGWiAfhiuN8=
+	t=1781702577; cv=none; b=Y5X37Fsp3zLghHQ4cdlWNLY/hya4m5eSa54H52eOexH+n2NzcU5xUI36stsuVeV2lrv4oTMLt5TCt5SQMC3wjueNdFw6JT6uJ/vEaDBvY4YcNHuN4PcbI9Ah9ZnveGEu0Tn50xSnVD447layVpsDK9QCZHp4m3i5DNvEZMbXTd0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781688715; c=relaxed/simple;
-	bh=InkgWW+/VHDyhaoc+fT+csd/kvb5mastzqAMS5sVaxQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=birBuc/hXSy5i/tTaTKXM6a/udj4aF3HM3uU2X20Nd50QQlmlPbxmUwPzNJ8PBSZF4S/SvRZZHNgadN+ap33atvQXTyU60ZgpD6+5MMJTh8GeU+ZODxQlox6ONXOpJccDeli1GU4RxV7f8XXAmN9GehrA9hZ87Bq4ubLAQfpNTs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=MjZRZgFR; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="MjZRZgFR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1781688711;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=vjo/PuOgMPgrqc3EuUbFNwHzptbDO7oNZxgsy6X+RuE=;
-	b=MjZRZgFRnTZDjU10c/Bg6t2u8s67Ira4K6oPfxd12yBtCG7TVEH29XsNjpIdXUZ1BoE6IP
-	SQxRe2c7k3PH/JwUGMHSYqs38VzeqmRV/lJrVPU3yYrrMdt/2iszjbzJ16T0ksiBL0VKEb
-	wUeY8P+L9VfqyUhuB5dxHQP1jzcR+kc=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-410-fngUQ5PYNNa8Vdjd4O93Ng-1; Wed, 17 Jun 2026 05:31:50 -0400
-X-MC-Unique: fngUQ5PYNNa8Vdjd4O93Ng-1
-X-Mimecast-MFC-AGG-ID: fngUQ5PYNNa8Vdjd4O93Ng_1781688709
-Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-490b8adf8b8so51722335e9.0
-        for <syzbot@lists.linux.dev>; Wed, 17 Jun 2026 02:31:50 -0700 (PDT)
+	s=arc-20240116; t=1781702577; c=relaxed/simple;
+	bh=V0j9iMy5emSVP3p3RYBIpyQCRgPPjYHR7ai0iMh7KDY=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=FMYYaFqcSRz5OeE3jDL28hKt5Z7GHx3YLUa8aGPXcGB9vUd73faKE+BvVJjeQibInFo/SWnVBrXlFISmP5/a662EqMIR61ZCodxO72ztOfbmhsCuC03bYL2SlS/o18vZ5og9Q60JH63I+h/+VntNlqBcUqv3G5mGWBzlK9TkQC4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-48687df43c4so10555568b6e.0
+        for <syzbot@lists.linux.dev>; Wed, 17 Jun 2026 06:22:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781688709; x=1782293509;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vjo/PuOgMPgrqc3EuUbFNwHzptbDO7oNZxgsy6X+RuE=;
-        b=QgBGbCYB+5Jgs7dolhvDWQ8DS24YipyNTkBwlFkjKDkeMBJs5+PuoKZ8SS2eDjstlq
-         Or2DlWzSZ6dsPnYDfFfBeMAQGaQlsuvGZS+M6Pgg8sECZtiAKz08gnhxNPcv1aojHKd/
-         5bfiK9/XZw9MDiT+xflbrLgs4fj+ws99Ldu6ka011Me55T7g71H1CTmnqag4HyuuTJ4T
-         dbX+UZlFoDAMACXvob8G4YzPzMqx632j92kBJupox64mniS6BNu3rpSok1uzfvNU12q9
-         VznAfRY4nhP0K3tjZTuc1NnujIaqTbWcNYsiLgRwhOFk3xQUDLEPdCQ2FrLzPiAu8aKe
-         puKw==
-X-Forwarded-Encrypted: i=1; AFNElJ9uAKhzr3hx2aPkyeyWZu9BY8+EISan2yoQu5624i5sccMwOWUFzKMV6QIBlWT9Ojz3R/sBjiw=@lists.linux.dev
-X-Gm-Message-State: AOJu0YwVDBqr1TkQ3F/LR8rjB9Zw6MLM7hVkTYNHrzMZ7RFapdtAAT5D
-	aJ7m0L77xy02m+88WnYr1Ck2ZG7hrHVrNbBMusWUkl9ZIAg1GSK8vBZ1i+VXgMleig4WDyUClSX
-	dPSmUa1kOOD+ii5MtlmzsworjOet6413bSXj20XImZLP3ymBSjmXWDfg3aA==
-X-Gm-Gg: Acq92OHIPQ4M9B/JczvMvDqPlIV/Iw11bqml9bGg8K8GGRGB0gp/hUHv2k28HBroqik
-	eLxUdIFiWQSsEMUES8blcn7ZaxC1Lr9iVoWTawkjZmMHf/ZyazL3927b6f2ZB98K0wNA6xmPrjk
-	EiVKwNmdTHLD0TS5m5x8uqUck/vrC+Y7BIyxuzfIZ/kpSMcH03MwJ/IqyAi25cQVnDI6pY739P4
-	5O62Tqo7Kn8WciClZyLwFdWJtGbjtlv/v09Zft8bt0Pt3wo1GQ9sNdguPK3jm2IuyCewc5I+ETZ
-	F4NjNED5OZxmPOrQfN7rGMhWIHthhHLBAoeuxML/IIWbwkglk7CVDTONgfIVMAtMIghMf7tvlYd
-	X3/uGgzRD0oX7+vOEi37lk+Crf2obF8UFFujU4Ow5FzM+FzHHrtP64VndhsBd
-X-Received: by 2002:a05:600c:a142:b0:490:b8d3:5dcc with SMTP id 5b1f17b1804b1-492333ca3b7mr41077365e9.19.1781688709367;
-        Wed, 17 Jun 2026 02:31:49 -0700 (PDT)
-X-Received: by 2002:a05:600c:a142:b0:490:b8d3:5dcc with SMTP id 5b1f17b1804b1-492333ca3b7mr41076915e9.19.1781688708883;
-        Wed, 17 Jun 2026 02:31:48 -0700 (PDT)
-Received: from sgarzare-redhat (host-82-53-135-12.retail.telecomitalia.it. [82.53.135.12])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49233bf0881sm52263795e9.2.2026.06.17.02.31.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Jun 2026 02:31:48 -0700 (PDT)
-Date: Wed, 17 Jun 2026 11:31:42 +0200
-From: Stefano Garzarella <sgarzare@redhat.com>
-To: Sean Christopherson <seanjc@google.com>
-Cc: Carlos =?utf-8?B?TMOzcGV6?= <clopez@suse.de>, 
-	syzbot ci <syzbot+ci493c6d734b63e050@syzkaller.appspotmail.com>, bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com, 
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org, mingo@redhat.com, 
-	osteffen@redhat.com, pbonzini@redhat.com, stable@vger.kernel.org, tglx@kernel.org, 
-	x86@kernel.org, syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot ci] Re: KVM: x86: Unconditionally recompute CR8
- intercept on PPR update
-Message-ID: <ajJnb-Bzu4S0oOP5@sgarzare-redhat>
-References: <20260610214523.2905255-2-clopez@suse.de>
- <6a2adf3b.3b0a2d4e.8c8d1.0012.GAE@google.com>
- <airudX6N4oL5X_wE@google.com>
- <79c59d84-80bc-41f6-950f-41ff2e6b2b5b@suse.de>
- <ajBGeUyhVM1-SI33@google.com>
+        d=1e100.net; s=20251104; t=1781702574; x=1782307374;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=pPvbty/HcwHHG9SwA7eTFh0UeZlRS1SZT9l7Cwdw8jU=;
+        b=WiuQj4hx8Uike9JyubzwzW9YLBvVIO+kYUGaYXNfMfVVp3xCl8z/fDxzpUyQaK565x
+         D2HML14tV5qVHUEfVHEjMCB/aaN/XEiVPmEibrE90+8rThKSMTsHi7zJAEOdsxsaPl4P
+         Q4Be7uxRPMJhAurbFujCePPGB+hESYMC8ry26UCvgcABJn9wqhw7p+K94fFmtgIEyN0F
+         kCLh0JJCGoaSygQ4RkBj5acK4WOGlYDf/OuKQ5Dl+HpWXsWU3c6MQ7ZINk3jLaWc21g5
+         RBXzg9TZvC+5HEUzVIk2fxX2QXeXhR39miHnlI5dasWBUUE08MlJwfmoUCnZ72tKdpGi
+         qs2A==
+X-Gm-Message-State: AOJu0YweeRto+sfv/rFiG7r+d+4JizoZ2vJsnbDfNavjYl0/yUMUayIh
+	3+UhysZjqHt5vz4/U8OVyETk5wwbW36l5XFBu6VM6LNcpqTd8E11kKZJ6EYAtJvwHw6Haizq5m5
+	6uRlGEkGPyJbewNQ5+jOIf8eBV1oqV7vowmXxTO1ibWunQEKr4rX8pu6dvYI=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <ajBGeUyhVM1-SI33@google.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: bQbFi-YqP-j1qgkFqUWeA-KnImkcjcoe0DagmE8Q6u8_1781688709
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6808:190d:b0:486:7c50:6fa8 with SMTP id
+ 5614622812f47-48942b31fe1mr3249144b6e.24.1781702574670; Wed, 17 Jun 2026
+ 06:22:54 -0700 (PDT)
+Date: Wed, 17 Jun 2026 06:22:54 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a329fae.8c9cf54e.2a1067.0019.GAE@google.com>
+Subject: [moderation/CI] Re: netfilter: ipset fixes, second batch
+From: syzbot ci <syzbot+ci5897b296438f5356@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Jun 15, 2026 at 11:37:45AM -0700, Sean Christopherson wrote:
->On Mon, Jun 15, 2026, Carlos López wrote:
->> On 6/11/26 7:20 PM, Sean Christopherson wrote:
->> > On Thu, Jun 11, 2026, syzbot ci wrote:
->> >> ------------[ cut here ]------------
->> >> debug_locks && !(lock_is_held(&(&vcpu->mutex)->dep_map) || !refcount_read(&vcpu->kvm->users_count))
->> >> WARNING: arch/x86/kvm/vmx/nested.h:61 at get_vmcs12 arch/x86/kvm/vmx/nested.h:60 [inline], CPU#0: syz.2.19/5879
->> >> WARNING: arch/x86/kvm/vmx/nested.h:61 at vmx_update_cr8_intercept+0x3de/0x4e0 arch/x86/kvm/vmx/vmx.c:6879, CPU#0: syz.2.19/5879
->> >> Modules linked in:
->> >> CPU: 0 UID: 0 PID: 5879 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full)
->> >> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
->> >> RIP: 0010:get_vmcs12 arch/x86/kvm/vmx/nested.h:60 [inline]
->> >> RIP: 0010:vmx_update_cr8_intercept+0x3de/0x4e0 arch/x86/kvm/vmx/vmx.c:6879
->> >>  apic_update_ppr arch/x86/kvm/lapic.c:984 [inline]
->> >>  kvm_lapic_reset+0x1c24/0x2980 arch/x86/kvm/lapic.c:3023
->> >>  kvm_vcpu_reset+0x44c/0x1bf0 arch/x86/kvm/x86.c:12986
->> >>  kvm_arch_vcpu_create+0x746/0x8b0 arch/x86/kvm/x86.c:12847
->> >>  kvm_vm_ioctl_create_vcpu+0x428/0x930 virt/kvm/kvm_main.c:4201
->> >>  kvm_vm_ioctl+0x893/0xd50 virt/kvm/kvm_main.c:5159
->> >>  vfs_ioctl fs/ioctl.c:51 [inline]
->> >>  __do_sys_ioctl fs/ioctl.c:597 [inline]
->> >>  __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
->> >>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->> >>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
->> >>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->> >
->> > This is "fine", the assertion just wants to make sure KVM isn't access vmcs12
->> > without holding vcpu->mutex, otherwise any queries are inherently unstable.
->> > It's just that vCPU creation runs without taking vcpu->mutex, because the vCPU
->> > is otherwise unreachable.
->> >
->> > I'm pretty sure we can squash the WARN by grabbing vmcs12 if and only if the vCPU
->> > is actually in guest mode.
->>
->> Will you add this on top or should I send a v3?
->
->Gah, I was going to say "I'll fixup when applying", but that leads to an unwieldy
->changelog.  I'll send a v3 with this slotted in as a proper prep patch, might as
->well let syzbot have another go at it, to make sure there isn't another assertion
->lurking.
+syzbot ci has tested the following series
 
-I successfully tested Carlos's v2 plus this hunk with SVSM as mentioned 
-in the link in the description.
+[v3] netfilter: ipset fixes, second batch
+https://lore.kernel.org/all/20260617084128.6603-1-kadlec@netfilter.org
+* [PATCH v3 1/7] netfilter: ipset: Don't use test_bit() in lockless RCU readers in hash types
+* [PATCH v3 2/7] netfilter: ipset: Don't use test_bit() in lockless RCU readers in bitmap types
+* [PATCH v3 3/7] netfilter: ipset: fix order of kfree_rcu() and rcu_assign_pointer()
+* [PATCH v3 4/7] netfilter: ipset: exlude gc when resize is in progress
+* [PATCH v3 5/7] netfilter: ipset: make sure gc is properly stopped
+* [PATCH v3 6/7] netfilter: ipset: cleanup the add/del backlog when resize failed
+* [PATCH v3 7/7] netfilter: ipset: rework cidr bookkeeping
 
-So, feel free to carry my T-b in v3:
+and found the following issues:
+* INFO: trying to register non-static key in hash_ipportip6_resize
+* INFO: trying to register non-static key in hash_netport6_resize
+* INFO: trying to register non-static key in hash_netportnet6_resize
 
-Tested-by: Stefano Garzarella <sgarzare@redhat.com>
+Full report is available here:
+https://ci.syzbot.org/series/7264660b-3f58-4809-9af0-c77ead1aac16
 
-Thanks,
-Stefano
+***
 
->
->> > diff --git arch/x86/kvm/vmx/vmx.c arch/x86/kvm/vmx/vmx.c
->> > index c548f22375ad..332fbcd924f2 100644
->> > --- arch/x86/kvm/vmx/vmx.c
->> > +++ arch/x86/kvm/vmx/vmx.c
->> > @@ -6876,11 +6876,10 @@ int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
->> >
->> >  void vmx_update_cr8_intercept(struct kvm_vcpu *vcpu, int tpr, int irr)
->> >  {
->> > -       struct vmcs12 *vmcs12 = get_vmcs12(vcpu);
->> >         int tpr_threshold;
->> >
->> >         if (is_guest_mode(vcpu) &&
->> > -               nested_cpu_has(vmcs12, CPU_BASED_TPR_SHADOW))
->> > +           nested_cpu_has(get_vmcs12(vcpu), CPU_BASED_TPR_SHADOW))
->> >                 return;
->> >
->> >         guard(vmx_vmcs01)(vcpu);
->> >
->> >
->> > Longer term, I'll work on figuring out how to handle this in get_vmcs12(), because
->> > to_hv_vcpu() has the solve the same fundamental problem:
->> >
->> > https://lore.kernel.org/all/aeqRzanSaa9P_EPg@google.com
->>
->
+INFO: trying to register non-static key in hash_ipportip6_resize
+
+tree:      nf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
+base:      3b165c2a29cfb6453f26e1ac833ca6afd28d28cf
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/44611eeb-52b4-4b97-8744-2265cbb063fa/config
+syz repro: https://ci.syzbot.org/findings/c1aaddfd-5ff4-410d-85fa-3c212552d465/syz_repro
+
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 0 UID: 0 PID: 5810 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ assign_lock_key+0x133/0x150 kernel/locking/lockdep.c:984
+ register_lock_class+0xcc/0x2e0 kernel/locking/lockdep.c:1299
+ __lock_acquire+0xad/0x2cf0 kernel/locking/lockdep.c:5112
+ lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5868
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:150 [inline]
+ _raw_spin_lock_bh+0x36/0x50 kernel/locking/spinlock.c:182
+ spin_lock_bh include/linux/spinlock.h:348 [inline]
+ hash_ipportip6_resize+0x4d4/0x1dd0 net/netfilter/ipset/ip_set_hash_gen.h:699
+ call_ad+0x463/0xb60 net/netfilter/ipset/ip_set_core.c:1758
+ ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1842
+ nfnetlink_rcv_msg+0xc03/0x12c0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x75c/0x8e0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x972/0x9f0 net/socket.c:2699
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2753
+ __sys_sendmsg net/socket.c:2785 [inline]
+ __do_sys_sendmsg net/socket.c:2790 [inline]
+ __se_sys_sendmsg net/socket.c:2788 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2788
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f4ef2b9ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f4ef3b42028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f4ef2e15fa0 RCX: 00007f4ef2b9ce59
+RDX: 0000000000000000 RSI: 00002000000002c0 RDI: 0000000000000004
+RBP: 00007f4ef2c32d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f4ef2e16038 R14: 00007f4ef2e15fa0 R15: 00007ffd926dea58
+ </TASK>
+
+
+***
+
+INFO: trying to register non-static key in hash_netport6_resize
+
+tree:      nf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
+base:      3b165c2a29cfb6453f26e1ac833ca6afd28d28cf
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/44611eeb-52b4-4b97-8744-2265cbb063fa/config
+syz repro: https://ci.syzbot.org/findings/60d79dbd-6e73-4ee8-be39-8bea69cb5f52/syz_repro
+
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 0 UID: 0 PID: 5834 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ assign_lock_key+0x133/0x150 kernel/locking/lockdep.c:984
+ register_lock_class+0xcc/0x2e0 kernel/locking/lockdep.c:1299
+ __lock_acquire+0xad/0x2cf0 kernel/locking/lockdep.c:5112
+ lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5868
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:150 [inline]
+ _raw_spin_lock_bh+0x36/0x50 kernel/locking/spinlock.c:182
+ spin_lock_bh include/linux/spinlock.h:348 [inline]
+ hash_netport6_resize+0x548/0x1d30 net/netfilter/ipset/ip_set_hash_gen.h:699
+ call_ad+0x463/0xb60 net/netfilter/ipset/ip_set_core.c:1758
+ ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1842
+ nfnetlink_rcv_msg+0xc03/0x12c0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x75c/0x8e0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x972/0x9f0 net/socket.c:2699
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2753
+ __sys_sendmsg net/socket.c:2785 [inline]
+ __do_sys_sendmsg net/socket.c:2790 [inline]
+ __se_sys_sendmsg net/socket.c:2788 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2788
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f5c11d9ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f5c113dd028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f5c12016090 RCX: 00007f5c11d9ce59
+RDX: 0000000000000090 RSI: 00002000000002c0 RDI: 0000000000000004
+RBP: 00007f5c11e32d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f5c12016128 R14: 00007f5c12016090 R15: 00007ffd4124a0a8
+ </TASK>
+
+
+***
+
+INFO: trying to register non-static key in hash_netportnet6_resize
+
+tree:      nf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
+base:      3b165c2a29cfb6453f26e1ac833ca6afd28d28cf
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/44611eeb-52b4-4b97-8744-2265cbb063fa/config
+syz repro: https://ci.syzbot.org/findings/a0e027e2-8833-4fe6-8f75-2f388682c035/syz_repro
+
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 0 UID: 0 PID: 5880 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ assign_lock_key+0x133/0x150 kernel/locking/lockdep.c:984
+ register_lock_class+0xcc/0x2e0 kernel/locking/lockdep.c:1299
+ __lock_acquire+0xad/0x2cf0 kernel/locking/lockdep.c:5112
+ lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5868
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:150 [inline]
+ _raw_spin_lock_bh+0x36/0x50 kernel/locking/spinlock.c:182
+ spin_lock_bh include/linux/spinlock.h:348 [inline]
+ hash_netportnet6_resize+0x5aa/0x2040 net/netfilter/ipset/ip_set_hash_gen.h:699
+ call_ad+0x463/0xb60 net/netfilter/ipset/ip_set_core.c:1758
+ ip_set_ad+0x824/0x9d0 net/netfilter/ipset/ip_set_core.c:1842
+ nfnetlink_rcv_msg+0xc03/0x12c0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x232/0x4b0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2c0/0x27b0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x75c/0x8e0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec net/socket.c:787 [inline]
+ __sock_sendmsg net/socket.c:802 [inline]
+ ____sys_sendmsg+0x972/0x9f0 net/socket.c:2699
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2753
+ __sys_sendmsg net/socket.c:2785 [inline]
+ __do_sys_sendmsg net/socket.c:2790 [inline]
+ __se_sys_sendmsg net/socket.c:2788 [inline]
+ __x64_sys_sendmsg+0x1bd/0x2a0 net/socket.c:2788
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f9c00b9ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f9c01a82028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f9c00e15fa0 RCX: 00007f9c00b9ce59
+RDX: 0000000000000000 RSI: 00002000000002c0 RDI: 0000000000000004
+RBP: 00007f9c00c32d6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f9c00e16038 R14: 00007f9c00e15fa0 R15: 00007ffe8ca45b58
+ </TASK>
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[kadlec@netfilter.org netfilter-devel@vger.kernel.org pablo@netfilter.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
 
