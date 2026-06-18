@@ -1,51 +1,51 @@
 Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50B2E33F595
-	for <syzbot@lists.linux.dev>; Wed, 17 Jun 2026 21:39:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C2FC28504D
+	for <syzbot@lists.linux.dev>; Thu, 18 Jun 2026 04:29:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781732346; cv=none; b=fhENlcu0GqqVokCkTJWdoo2/zaAsouN63PwhUrycNcbp9Jkiz4eKx7sveODvcvpxOlPsL1+Y9n30mv8DzR0EApWyAZ59jRfMplPtE5TmlQ5VEXXjKENcBQHUTEgu9TRGVSmWTUYqISTecs+idYq6Fp7LN/6F8jTN7uEoX4cViaM=
+	t=1781756966; cv=none; b=quOMx+3GHbcop/Nxogcp3V9ufOuX0c8fEOgEARXJxfmg6E2f37mfOllOpEGIVR7+lyXBEaGnyyk4RrCyAxBefwTKtqgM/4g1N+LoJfxplce7hInDtl3AYrUXkM4NP2x7ebucA3ZX8jQSLcIA7YlUkk/z7X/TBXbRDJyXhqC33qQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781732346; c=relaxed/simple;
-	bh=+uOPT7KnIbvjifmL3K8R7COImYvGoOairnQGgui2V+Q=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=jDKMfz+lFaJfqOKD50t3mW1yot54yywW2Kf0mI9UjQTeqv1qsAcpzB+LZ50wGWOE28Ivr9raypy56ktbRfinK8kB0XFXiA4V7u9JQgV8hDor3+Xcsu/c6HsnSt5AHowaxfAMBzc0FUjM/D3QfTFj9zsq9aarQ3JcnFKie3MX1Is=
+	s=arc-20240116; t=1781756966; c=relaxed/simple;
+	bh=axwg19ZzNMylpdOeiPHgq3/za3tsxzcdHH+RHabryp0=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=oyK3YD7w+s7sVyrogD6sas0RvTevinwEUujApR8YTxwCBZEmAYu8tG9yevStFa/G7w5pY/GVHcTs4X1zZIksamLK47aOXXjwtbhrImbuYWW6+UOy8ekS72iv2z3wGAOJJaERC8JmSLtiurPjkz3CK04i+deosd/szWoSIfo2k60=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-48638b48315so729620b6e.0
-        for <syzbot@lists.linux.dev>; Wed, 17 Jun 2026 14:39:05 -0700 (PDT)
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-48651d7d505so953658b6e.0
+        for <syzbot@lists.linux.dev>; Wed, 17 Jun 2026 21:29:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781732344; x=1782337144;
+        d=1e100.net; s=20251104; t=1781756964; x=1782361764;
         h=content-transfer-encoding:cc:to:from:subject:message-id:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=AEZbGhyF5lvI27rJzh47ORLSiWQq6GMaKdYFlHQNHrA=;
-        b=WpwsmPLuoTJokEJdM7YmnvVJe6zRnZMsCTPNITodxa/cWcVZNYnfexBQey+4uFit+Z
-         S8Vz3SepBqpxdyn2tJJRpzlE+uIqsTlgw04pGSDzmsZETgmrY50Fft2uhfPRQkdyeJL0
-         ZBvrD5lofeS5ZAjcB8PXPq84b1cRZRykXlwAfn9wWccnd1Ze4qM6mCvX5k/MMfAhBJZy
-         eXHV8KZu9GLakgY9nG1Hq+6BSBjdZG1CZlXJMcqmUVJFHNW0HpdavQ+Ol0VGQ2o+5WU/
-         Oa5dxCzvHBed0l26IrlflVlDzrQc2VY4OoGSsZRyFLAck1J7OvOlK90DAvkUkc8gH2zR
-         Jdww==
-X-Gm-Message-State: AOJu0YykcAWYxgvZRlAPs7QAUD/C+geQrJmYAU1TjljvxLavI6H8XHEX
-	5Hau6w61s9TYTAoqjCOKjg2Gse+DgOgGC3oWaNjATxnu+NWp1BhGKF58Hxs4YQK+9Ic5zbsYhrI
-	2aHNeV2TQVUZDPaMULM/A2xQoxb38zCkBpbammrw90R3HkhOuXADT8+1YjU8=
+        bh=iycp/5R53CA+RTNQTjCuM1lm7hncSFSxoKTkHt5fQgo=;
+        b=RqSbhvqdlKsKtAIFV+LcNonFrNFJoUdSBDYvXmJke4h2ra9oFU4AdgUrgWBkarxzbP
+         b94oJK79t/QN5/3hiQvnTaf3OA2Xh0EZ10djQ6nv9l80txk/s8y3NKvjqVptQ8MEP8d2
+         olsz8vC3LP+eccut7z5rkjA7kgYXWDFQTSkvoIPE72oXWGbcmePnKYXtQAinI3tfF39v
+         05mlFg3eFKGfkFMpK1lHPVwRVsG59oSdg1Kri6Iv75m7LV9BYn++cWvSaY5M4rwsJyez
+         FqiUL6VUiCC0RlRTa+d9x97AGdnonIr0kTSuq9MMsz36eXdEPQsOR3gZW2W55rpoNTsB
+         8zjg==
+X-Gm-Message-State: AOJu0YwPOdc4mDdN57PZurcRP1k5AtVQErqrpZZ+mrcdOjAWoa+c+KpI
+	QxJT/SyqsWr3BV4GS9a5sxBjjhbJ72qZzQWV1t+Bj5vz6fr1rPb0q7Y/LzEbrrPMIT5fBA8krRT
+	XXzxglg+iHeQzcM/v4nH4yl/kvjdZzK1XEBnytJeY8h33XLRLaBh7pPBeV60=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:c413:b0:487:55b1:8aaa with SMTP id
- 5614622812f47-489560dd446mr1033720b6e.14.1781732344310; Wed, 17 Jun 2026
- 14:39:04 -0700 (PDT)
-Date: Wed, 17 Jun 2026 14:39:04 -0700
+X-Received: by 2002:a05:6809:3cd:20b0:489:5c86:ba96 with SMTP id
+ 5614622812f47-4895c86c844mr602500b6e.17.1781756964584; Wed, 17 Jun 2026
+ 21:29:24 -0700 (PDT)
+Date: Wed, 17 Jun 2026 21:29:24 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a3313f8.e0e229d8.1d3f3.0006.GAE@google.com>
-Subject: [moderation/CI] Re: hugetlb: Use PAGE granularity index in exported
- i/f and adopt the common read_iter
-From: syzbot ci <syzbot+ci553b06fbd2706fd7@syzkaller.appspotmail.com>
+Message-ID: <6a337424.6d5abbec.a50f.0024.GAE@google.com>
+Subject: [moderation/CI] Re: coredump/fcntl: Add FD_CLOBCOR flag to close fd
+ before dumping core
+From: syzbot ci <syzbot+ci5e0a64dea7cd43ee@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -53,49 +53,69 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v2] hugetlb: Use PAGE granularity index in exported i/f and adopt the comm=
-on read_iter
-https://lore.kernel.org/all/20260617172534.1740152-1-jane.chu@oracle.com
-* [PATCH v2 01/11] mm/memory-failure: make is_raw_hwpoison_page_in_hugepage=
-() general purpose
-* [PATCH v2 02/11] mm: factor out adjust_range_hwpoison() from hugetlbfs
-* [PATCH v2 03/11] mm/filemap: add hwpoison handling to filemap_read()
-* [PATCH v2 04/11] hugetlbfs,filemap: replace hugetlbfs_read_iter() with ge=
-neric_file_read_iter()
-* [PATCH v2 05/11] hugetlb: Convert the vmf->pgoff to PAGE_SIZE granularity
-* [PATCH v2 06/11] hugetlb: make hugetlb_fault_mutex_hash() to take PAGE_SI=
-ZE index
-* [PATCH v2 07/11] hugetlb: replace filemap_lock_hugetlb_folio with filemap=
-_lock_folio
-* [PATCH v2 08/11] hugetlb: make hugetlb_add_to_page_cache() to take PAGE_S=
-IZE granularity index
-* [PATCH v2 09/11] hugetlb: remove the hugetlb_linear_page_index() helper
-* [PATCH v2 10/11] hugetlb: drop vma_hugecache_offset() in favor of linear_=
-page_index()
-* [PATCH v2 11/11] hugetlb: make hugetlb_[un]reserve_pages() to take PAGE g=
-ranularity index
+[v1] coredump/fcntl: Add FD_CLOBCOR flag to close fd before dumping core
+https://lore.kernel.org/all/20260618030700.2511668-1-jackzxcui1989@163.com
+* [PATCH] coredump/fcntl: Add FD_CLOBCOR flag to close fd before dumping co=
+re
 
 and found the following issue:
-kernel build error
+WARNING: suspicious RCU usage in exit_files_before_core
 
 Full report is available here:
-https://ci.syzbot.org/series/46af513c-ee7e-4b9d-9710-b8534d0c03bc
+https://ci.syzbot.org/series/bda032a0-64d8-4226-8ad1-6a4c99514d61
 
 ***
 
-kernel build error
+WARNING: suspicious RCU usage in exit_files_before_core
 
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
-.git
-base:      f2737dc40d2ef3e9f3f9395d61f53f6668306a71
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      2a706d98d50a28dd635b3d028531d839c1f5f19a
 arch:      amd64
 compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp=
 1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/3c2981fa-3715-41da-8819-23a981a31c0=
+config:    https://ci.syzbot.org/builds/e0dd4cce-02a0-415c-9720-8816ca17346=
 d/config
 
-ld.lld: error: undefined symbol: is_raw_hwpoison_page_in_folio
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
+WARNING: suspicious RCU usage
+syzkaller #0 Not tainted
+-----------------------------
+./include/linux/fdtable.h:104 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active =3D 2, debug_locks =3D 1
+no locks held by syz.2.65/5687.
+
+stack backtrace:
+CPU: 0 UID: 0 PID: 5687 Comm: syz.2.65 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150
+ lockdep_rcu_suspicious+0x13f/0x1d0
+ exit_files_before_core+0x35a/0x410
+ vfs_coredump+0xa52/0x4550
+ get_signal+0x1107/0x1330
+ arch_do_signal_or_restart+0xbc/0x830
+ irqentry_exit+0x2a4/0x860
+ asm_exc_page_fault+0x26/0x30
+RIP: 0033:0x0
+Code: Unable to access opcode bytes at 0xffffffffffffffd6.
+RSP: 002b:0000200000000008 EFLAGS: 00010217
+RAX: 0000000000000000 RBX: 00007f3125415fa0 RCX: 00007f312519ce59
+RDX: 0000200000000000 RSI: 0000200000000000 RDI: 0000000000000000
+RBP: 00007f3125232d6f R08: 0000200000000000 R09: 0000000000000000
+R10: 0000200000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f3125415fac R14: 00007f3125415fa0 R15: 00007f3125415fa0
+ </TASK>
+
 
 ***
 
@@ -114,12 +134,11 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[akpm@linux-foundation.org baolin.wang@linux.alibaba.com brauner@kernel.org=
- corbet@lwn.net david@kernel.org hughd@google.com jack@suse.cz jane.chu@ora=
-cle.com linmiaohe@huawei.com linux-doc@vger.kernel.org linux-fsdevel@vger.k=
-ernel.org linux-kernel@vger.kernel.org linux-mm@kvack.org lorenzo@kernel.or=
-g muchun.song@linux.dev nao.horiguchi@gmail.com osalvador@suse.de peterx@re=
-dhat.com rppt@kernel.org viro@zeniv.linux.org.uk willy@infradead.org]
+[alex.aring@gmail.com allen.lkml@gmail.com arnd@arndb.de brauner@kernel.org=
+ chuck.lever@oracle.com ebiederm@xmission.com j.granados@samsung.com jack@s=
+use.cz jackzxcui1989@163.com jlayton@kernel.org keescook@chromium.org linux=
+-arch@vger.kernel.org linux-fsdevel@vger.kernel.org linux-kernel@vger.kerne=
+l.org mcgrof@kernel.org viro@zeniv.linux.org.uk]
 
 If the report looks fine to you, reply with:
 #syz upstream
