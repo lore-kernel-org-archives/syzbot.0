@@ -1,58 +1,70 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BE693932EF
-	for <syzbot@lists.linux.dev>; Fri, 19 Jun 2026 14:21:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79B843B19D6
+	for <syzbot@lists.linux.dev>; Fri, 19 Jun 2026 14:50:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781878900; cv=none; b=B38RLk41TOryb+RoU8Qdvjetk+VEDxrALFSrV3P3atSyIGWr32S8wCqak98PQo+Pk4Bs0g6ahxfi6BAPzdsbFitBXzXyb8F9ebwiK4ayvIepeqpA0q38TQRdtBvnJ0y0bpnZ5Hz0L8wIsW6HFzLOnn/CEdKSYEaUVsol6S+aQsg=
+	t=1781880649; cv=none; b=hmAes1yQIyTdy55kHBD9qfiGs06LBABIJkb46wbGPARu3CV6mJ1E3BxLzgPvbScFgfpeuz9mLbf4WZmGzkBzrx4CVJH2ad6m/HYGeBGhDamyTtVRxYnxp6tZ+pBUDXLi2TeV8/YiivnIizjJwVhVa55KMgCaNC1U4NHPKSsD6ak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781878900; c=relaxed/simple;
-	bh=EcdueHN20Zv0Fc5uwSTEYOZZVlhUK6UpI+jrLuvrTgI=;
-	h=From:To:Cc:Subject:In-Reply-To:Message-ID:MIME-Version:
-	 Content-Type:Date; b=lTE89sSrQsev/TjbfDv986/rqz3cBBUWIMZLv8QNWMRrkgd2BSkQ3HI96LppMYTRLkyj/nXCymFOcchRGSRLTZwlVZ0TulnzLzlIYLwBLmwGPGHhLW7M/KLX3ZNjOye+x/zRzqaFigq1VSq+g2OBSm72HmYwxtvj98HT4BzK2QE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Mr+hWuLH; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Mr+hWuLH"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id B73231F00A3D;
-	Fri, 19 Jun 2026 14:21:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781878897;
-	bh=6d1xJQEvjz+wg+1LbmeJ+aM3GYB66WvIYPLO6GyFeKU=;
-	h=From:To:Cc:Subject:In-Reply-To:Date;
-	b=Mr+hWuLHlMGlaB0mA5BgcGFI4KirbIIxOnC8dYPl/g54yVGX/1XNjmSn0mRByoOb1
-	 5bzNHHs+r0gE2nN1khYlxVqsFzRo1dgYee1ijZJmPfY1xS1haMiDHjJYNG7WhdV+uy
-	 q4s0B1hs9CRDlcUO1RtrCtAAAvDP6cae1p0cfas/s5686ro0mySMAoMn1MfBV4U0YM
-	 NU+V/B+7MBa3cgccdSe7ybcA2tZ8OIcAPFBtPjORpaT5GdjpMNCm6fTaEuZokBgu+2
-	 LLcRifOhCA8x4KEdtEDwkSO+awsq/zoyb65S9075Vr35dXHLtgbZ8bLxBRkvMLQWXt
-	 VWqnpkAjbddBQ==
-From: "syzbot" <syzbot@kernel.org>
-To: nogikh@google.com, syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC v2] netdevsim: fix UAF by explicitly cleaning up debugfs files
-In-Reply-To: <CANp29Y4dHrcS6TCKSJbDJDLHbXippnwxXSWEUX2bvs=mpd0zYw@mail.gmail.com>
-Message-ID: <536678a8-7162-4e58-9209-ded8094bce97@mail.kernel.org>
+	s=arc-20240116; t=1781880649; c=relaxed/simple;
+	bh=R9X3gHXTprUyA+JAsOCBMJ4RvcHLYU3GKGgO9F2ZrpU=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=qcbMKHoK1z73hRqwCHwinT71Y7eCJfjyRT2RRtSQn9UBNvuwdWyBdMxAU2PHW+Knjuhf7eosEryOZ/FaLYLL+MslHBXehyTxqa9EoVtd5jp+O2nTY11a37AFc5mL+fG/OUB2fcFZBomTNL9LLV6lzEEt8Ce4JUDcSAE67bDp9aM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7e93b5a2389so584613a34.1
+        for <syzbot@lists.linux.dev>; Fri, 19 Jun 2026 07:50:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781880645; x=1782485445;
+        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=R9X3gHXTprUyA+JAsOCBMJ4RvcHLYU3GKGgO9F2ZrpU=;
+        b=P+yQq+dYY9YGki0j9tuLoAMCqgaHSkkGXOJr4NgXhO3u92WLfLtM6SOq+wFi6V6qP0
+         TvLINQMDnG8Q+tY4NjMWJjpxJex8aAFWvnrHKp9QT40IBt+OfGsmm7l6FhqHdEQZELxp
+         7SukXvLdaWt9DuKsSue1/qPEKEa5KxnntzNxaRWlemaG6GnmvkGUVit9668+pmI+SpIE
+         ixHY9S+W60C0ISD3fGXJ0elMrPojbBRPFDizjIm5CtqmhFwEaUV+Mr0X1x6KUQWkMNOq
+         lERqBxGF7Nxo4xQDlWpK1/3q7Jz8Pl/SLboiawGiymMTx7G051EG5XP6wcXKJK4sR804
+         cQjg==
+X-Gm-Message-State: AOJu0YzLjafnWOYyPhzcKNnMSagGUkg1n7QSdiwlem5ZTcngiraerbKM
+	/nFkCAI6Wc2Lyc+3/MPGB2du/f1dL9fU7+P3idDU3ylrRAEgfFdAc3TgaCF9r92vDfXoZ7s1h19
+	qa7/zsxpF6CQ7309yjrS332RAU27V1tBx/f5eveiVAOKDhpSh54ar5wnsYZ8=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri, 19 Jun 2026 14:21:37 +0000 (UTC)
+X-Received: by 2002:a05:6808:67ca:b0:479:faf5:ef4c with SMTP id
+ 5614622812f47-489b0e8f994mr1995554b6e.32.1781880645572; Fri, 19 Jun 2026
+ 07:50:45 -0700 (PDT)
+Date: Fri, 19 Jun 2026 07:50:45 -0700
+In-Reply-To: <CA+rD4x_2wXOP=4RwPY-A2vJjK4Vv9hGUSVFzprCe1H+8MTOKhA@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a355745.d85dbdf7.1299fc.0013.GAE@google.com>
+Subject: [syzbot ci] Re: Data in direntry (dirdata) feature
+From: syzbot ci <syzbot+ci80d8b2f8c0fb9f0a@syzkaller.appspotmail.com>
+To: artem.blagodarenko@gmail.com, adilger@dilger.ca, 
+	linux-ext4@vger.kernel.org, pravin.shelar@sun.com, syzbot@lists.linux.dev, 
+	syzkaller-bugs@googlegroups.com
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-> Why `debugfs_lookup_and_remove("ethtool", ns->nsim_dev_port->ddir);`
-> was not enough?
-The BPF debugfs files are created directly in the port directory
-(`ns->nsim_dev_port->ddir`), rather than in a dedicated BPF
-subdirectory. Because the port directory itself isn't removed until
-later in `nsim_dev_port_debugfs_exit()`, we have to explicitly remove
-these individual BPF files here to close the use-after-free window.
-Removing the "ethtool" directory only cleans up the ethtool-related
-files, leaving the BPF files vulnerable.
+syzbot ci has tested the suggested fix patch on top of the following series:
 
--- 
-This reply was generated by an AI model.
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+[v2] Data in direntry (dirdata) feature
+https://lore.kernel.org/all/20260610152417.13576-1-ablagodarenko@thelustrecollective.com
+
+Patch: https://ci.syzbot.org/jobs/2471bcf5-fa8b-4932-846b-3db72cc2b56c/patch
+Testing results:
+* [build 0] Build Patched: passed
+* [build 0] Boot test: Patched: passed
+
+Full report is available here:
+https://ci.syzbot.org/session/08769134-a853-4686-a652-a4c24e8773d7
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
