@@ -1,57 +1,102 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 328672E06ED
-	for <syzbot@lists.linux.dev>; Thu, 18 Jun 2026 16:19:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99DC1126BF1
+	for <syzbot@lists.linux.dev>; Fri, 19 Jun 2026 00:27:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781799563; cv=none; b=I2oq4Y1sPF+ywarPS+EMLXzLzJ7NJV1xTPFPBy6T/6GPv1q9GZa9eiEvsAWLkeqJDZGEDb9qNXZRa5Bb9f3orXWhaVbVjOVHURG0foQnA2cue2zVJwLKd6VzWmF9KS/pdQvOd2jLckmEFldTKk3s84150ngKJ0OU28GLiTVQIzY=
+	t=1781828824; cv=none; b=XjFxSZms2WingQq49RoReOWnXmc80Q2rKN0EBba94qdeeVUCQoCkmD4Yjv5A4BthDPRz/RS3CH5qFRePQHKG481pCySQWI0Glk8D7ouGBAZTcDeI5IvKJ3tcBVIPPuXd+M5o5BUQEHLjpKPjFgqGCU5OfbwsrZz5Ej4bz8pMOYs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781799563; c=relaxed/simple;
-	bh=6c8XXOc/0SiPMSRHYQPsP/+d2RJ+R2He8WeEhPLAuMs=;
-	h=From:To:Cc:Subject:In-Reply-To:Message-ID:MIME-Version:
-	 Content-Type:Date; b=asuyW8ctKcUBnL02IAlDeaUBf5RXb0Whi5iPy46G2+hfXXyHgh+bWYonxhFWHrRGP8hp0zrS6qq+B0pNtH87ZA3HCdQr6m/8JAYsrkbwGToZ1S2xlpvR6HNK2iY0AOCiVTGvgNEAJHXSAE1W1a//c0EO9iBQq1+0kdy/TEz6cmM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VZaRQsNT; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VZaRQsNT"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id C059C1F000E9;
-	Thu, 18 Jun 2026 16:19:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781799561;
-	bh=02ISRRswgpCp0DJyRea0A+u+2Lf4FCyK0Y7TxKgHgbw=;
-	h=From:To:Cc:Subject:In-Reply-To:Date;
-	b=VZaRQsNTblkdeZutq1GHCJHnqkziPW22Getzj8T7BGQtnBIJXtDWFrEtq/VMzoDVV
-	 RmHifrvR3pjpOaoAoEEprAhdKpXhhh5zArUTGfwxhfcrbk5Ja8HNw+fpzZI0DXrNC3
-	 EqyObHdjw5TOUuiHjkUWtlNPnZ+Lg8abHhNxctkVLZh519n3vFbEudAb4wSFnUqT/I
-	 HCrQBi6dCyumSf7osdkvTA1cypmWXHk0drPymLcJcgBMw9fLXgpu8xqmB6rgaaX7fe
-	 cp5BIpi0e1TwX2nrhxQJ3lQdpiLg7WJ/1GimJe6tNYlLRwIY8fnczwrUjy6c9Kzkmx
-	 d+ecj6Lj1H71Q==
-From: "syzbot" <syzbot@kernel.org>
-To: nogikh@google.com, syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC] drm/lease: use kvmalloc for user-controlled allocations
-In-Reply-To: <CANp29Y6Tzp8DvhmZ7j1ccyYvsNic1mZ=Yp=Nd9vBnjjZ0zBjwQ@mail.gmail.com>
-Message-ID: <c4f3dfab-bb34-4a72-8453-100c3f5fa9ff@mail.kernel.org>
+	s=arc-20240116; t=1781828824; c=relaxed/simple;
+	bh=2xlFAVVnX5/KNMcYwKh2Jl7jSH61Qb1oxBFHUlbtQsA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=UTTuwB2phJgqHzgWC8AoNcZudOr7+fIENFbPAKszn15Y0Vd4G6aXn1CcxtQKK6wM89Upn6nwdrPSq81FvbvRVlR02ACEjyvw28MQXyNxjGFoDdW8q7XnDfnM7ropb+GPtn89+wStaNUqShZUHHhlUAru7XeQLWl5KeHyRMWGPDk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-489677a16bbso1051775b6e.0
+        for <syzbot@lists.linux.dev>; Thu, 18 Jun 2026 17:27:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781828822; x=1782433622;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=XZfGPlyzeZQ1CBRkfgCIj8VWWtxmi9ah7wD8W/UaXJs=;
+        b=tJhlJ+7HBx6kNnHtxTkq5hGjYf41gmaqem1EjsPsDJjeqjikfzVWUux9+210spdfZ5
+         eW2uGH9pyaN3m6Fo9oqxntK4J3VfhlrtTE97ASsWpI7iuaLmSPA4k7aPTFpK+kOmu/Yj
+         aRI2tSlZo1cYUgWea0M37szvk3xnJYscTBqMRSZHDq1A13xfGDh0UhO76kjARDuO4h8/
+         6yP1fbp1olINHZZHeyVMCjsqarlrIm3VYfp3L9fc9OcItP3yrOtPaoCcmRL3OM4SXVKg
+         zBJq794Ov0+nwsbselKkGnVyl2QtcVzxiKD7aX/C7l5hC4hzEX33VXd0BvHMcR8GRX+J
+         bwFg==
+X-Gm-Message-State: AOJu0Yy0U3hY1qnjzSMKBG2sahdAf1SZSEbPTvv1KA7Is//QURvx+i9o
+	w49L8KBLCgOV+JhWIr+PUHI2XuQColp0vFRAfGctJkPrVZs+4Q3fQB4dz9fsogFtuW6qRafwFl3
+	xEaiwwJft2BQXv7S3Vjc10YV73Oh+86n2U8cnnzTLbUrnoIrQoM02ozvYQ0w=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Thu, 18 Jun 2026 16:19:21 +0000 (UTC)
+X-Received: by 2002:a05:6808:2512:b0:479:dc74:3696 with SMTP id
+ 5614622812f47-4896a9b5141mr1531130b6e.7.1781828822685; Thu, 18 Jun 2026
+ 17:27:02 -0700 (PDT)
+Date: Thu, 18 Jun 2026 17:27:02 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a348cd6.d85dbdf7.1299fc.000c.GAE@google.com>
+Subject: [moderation/CI] Re: fscrypt: Remove FSCRYPT_MODE_MAX
+From: syzbot ci <syzbot+cicac5bcbb130791ad@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-> Wasn't drm allocating physically contigious memory blocks on purpose?
-> But in this patch you are trying to change it to virtual memory allocations.
-These specific allocations (`object_ids` and `objects`) are temporary
-arrays used within the ioctl to store object IDs and pointers. Since
-they are not used for DMA or hardware access, they do not need to be
-physically contiguous. Using the `kvmalloc` family of functions here is
-safe and prevents the warning when a user requests a very large number
-of objects.
+syzbot ci has tested the following series
 
--- 
-This reply was generated by an AI model.
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+[v1] fscrypt: Remove FSCRYPT_MODE_MAX
+https://lore.kernel.org/all/20260618231404.132829-1-ebiggers@kernel.org
+* [PATCH] fscrypt: Remove FSCRYPT_MODE_MAX
+
+and found the following issue:
+kernel build error
+
+Full report is available here:
+https://ci.syzbot.org/series/697a5bf7-8eeb-4ac3-9a44-8d3e149c87fa
+
+***
+
+kernel build error
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      9e7e6633458362db72427b48effad8d759131c35
+arch:      amd64
+compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+config:    https://ci.syzbot.org/builds/d827beb4-174a-4b17-8f2d-2cefbdee4dfc/config
+
+fs/crypto/fscrypt_private.h:635:45: error: use of undeclared identifier 'FSCRYPT_MODE_MAX'
+fs/crypto/fscrypt_private.h:636:53: error: use of undeclared identifier 'FSCRYPT_MODE_MAX'
+fs/crypto/fscrypt_private.h:637:53: error: use of undeclared identifier 'FSCRYPT_MODE_MAX'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[ebiggers@kernel.org linux-fscrypt@vger.kernel.org linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
