@@ -1,112 +1,156 @@
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 529CF40D598
-	for <syzbot@lists.linux.dev>; Fri, 19 Jun 2026 05:22:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.177
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781846553; cv=pass; b=IBf3GLAZPAE/1IXWsBBCERTo4gj0/Aanyd6IXRbN7Ng+yWM/TlBWGRNReW0yFsRtD2piVNeVyIBifYHsz5hl/BBS7B2mSJGn97foW2pDoMABGBs8WIOjG7aRwRtuBVXlgu9aXoYpa3ild3r/fD0QIHdRttlLlHcIfcAxY0p5XuE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781846553; c=relaxed/simple;
-	bh=LUREygInbxNF/CfyMG18wYfSO6qCtyw3BIUg3UEa4+A=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=q+cz0OJHYDN5q9LIwrbdVasLnOMvvp1dxTiPtMP8pF1s9yIexN+aIk7t7W8WCGTThJ243EHmNL/AN/yoIUgCmT0C+d7MAJNRL3EvpV/WADpYBrzZql7SSHh5HzQZ8FiExDdh10q8nb4Co3T6AuMqjDuKptKqOXnVTze4u9AtWP4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Bc3F9X2j; arc=pass smtp.client-ip=209.85.167.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09B0F35A3AF
+	for <syzbot@lists.linux.dev>; Fri, 19 Jun 2026 06:20:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781850055; cv=none; b=BjJEvGIaiuMQzWH7O9Oa4bUspxKd3Lku1+//3ji5Gx4w38jPBtKDnVve5CIEsY5D4dSW9/O/7wwySO/xICwuCsSSxJU6MRBu75YmJE7BNi/eh+9RFiV5cREJxsqJnod4tdItWXHb/zY4xWKAVXqyz0bSwVBrAkhC6RJ3khQ+Ctw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781850055; c=relaxed/simple;
+	bh=WXR68st4+FdYg1Mq6O6FKmrWiJZFOB7XHyJ2cyyELtE=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=bvdQr4nQI43nISuec4ofphv0wjQkxW9kdh/QOfhk3gTWM6Qwjplozb96U0Jkh3aYlWveS+CAka7OYfqAYHq9dMnLd8UAR66y7D3xxKvcX5/8fNCet2ghMu95NbvTAMjpagkqcpZr2pXrABOtM8be+Ou02twI758p8/MJxQ+HEV0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YKBxXiE3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Bc3F9X2j"
-Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-48650c78e09so650527b6e.2
-        for <syzbot@lists.linux.dev>; Thu, 18 Jun 2026 22:22:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1781846551; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Y2eEx5G3BKdnfBeoShbliyK2JMz8EVIZB1Pynp9gNXehUpmFcFHC5ID2PA31Lk6KqV
-         jsrY2fWp3Uy5qkZ17JnPmpzsCEY/p9oetjKGyfQMvEIQB1H5C+C9k3FR2gFYJu+gjatK
-         EvpQnb+VD8f9CSRK40Rf3mbJHa3dJHIZP6lwJoJH7OO2QncU/AWt3klvVYKHpmQ8FooW
-         +piMsQEY5HoYpg0CTmHNk2lUT0jBHWKSgYEP08AFfU/sEOczSEIj8uUBiLl/Yo++wGQT
-         LeaUGThBoW8zauwZaI9fST2YBKd/BuHOPqnnmIXkZuLsqshDQW1NLCKNUPFiBiJaUS8+
-         1arQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=LUREygInbxNF/CfyMG18wYfSO6qCtyw3BIUg3UEa4+A=;
-        fh=GHJB0y6juCQLp3oEj9jtRr/G5ox2c1/FHE1kQzGyev0=;
-        b=bnHw2OItOyb9CP3PIrHWF+6/5s6hEyWMQ17ujWP8E98zZxG+7+ULVHT0aNWUmgiMzL
-         3Sx2OLma1Sv/94oP4ulqnFLuhAb+2nEHxmxDOcjMWgEMxcVLsGQiT6tX64uOFvu3DiIh
-         ztwNsxBX+nf/J5qO/MxvlocWnmaOvH9TMFfDaTOeeON2I+yjdPxOPIqZVBiizT3+BcDG
-         UerjvfX9o80yZriIlA6861qEBbJzy8XwM/z8mQtUqnKDPbxB0AcuTLD3hoOLSPUZtoWF
-         6kcumvbxS0dB7hR9+OclsAyOY8Hl60WW5XW7pQ4ihHxCJsyFsmBi0V6UBTgL6wWHJdC1
-         JEog==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781846551; x=1782451351; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LUREygInbxNF/CfyMG18wYfSO6qCtyw3BIUg3UEa4+A=;
-        b=Bc3F9X2jRd5NUwrKql73Kijxwo51xjuqkFFYSWOrN7t2uvpGbLgQG6FMEuKFTgfh8Q
-         iquGynxyptKLRaJXvO0BuHTik5LsUjhIDY6UPlxWcN/nqaOTF2IzPPmkxel4v3pE0icw
-         WcFJbLecp1S8LGCbIJ7LA8YPXcEf7eOCOw1jizNWhtHOyuKnGwOMoC54OD9ISpX1qemC
-         dhHTW63EUD/MJ9fYtfBVvk6PymtQqKCMv7JDEmNJLPD7AXjFlsnSjvXfep4LqPABjgmH
-         r9efXRvq4O1e7uuE3Bw1Y0zlufZgwYckwBq3w54EMWOwIOLi0ujmgs6FLxhfoNq+4MDi
-         akUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781846551; x=1782451351;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=LUREygInbxNF/CfyMG18wYfSO6qCtyw3BIUg3UEa4+A=;
-        b=foXIZYAJWIzNEDjR4uzQyuakYkjhrRLSUVTynRcfCNb8FYhYnUIZaiavTsDEkNS6E9
-         9LM7nqxsURmuMW3v1lmbngq9yYapyOT/JWBmbJsu1c6TgocOR+LLo+dzhJDIianQJiAX
-         jDXxkzzxVxuIn0vjY7jzO31q7YJZeHYQhQgGRxGFMU0nCCMK3qaREsNZbZLpOgleNUmS
-         7JZsHrgBEmnOk+bPP5GTvc7Ld+Xc0v34WwuoBlE/8AsxcTNIco7shXaxeE4tLUQouT0V
-         2SlSKPvFHg9s+NzxlPza1LIdMbjNfmpJTz6fApXwH9rVJdjxCmtt//uGoWQ+x59R0QoR
-         AS/A==
-X-Forwarded-Encrypted: i=1; AFNElJ/oiY8fwmupy+4g7iyLAICF18nX/0EOJaZbtTj9CZI70+izrLSyeV91k6UysO6u7wUB1g4P2Zg=@lists.linux.dev
-X-Gm-Message-State: AOJu0YxMrJ5jUeKjx+k1prlLObt44l7zNOrUDBnPOGO5tBH/vwJevh+k
-	VngwMPufLuefJO80GI8fatTakj7iB3rsIDdL5UJQSYQfh6i5k/K/4A3VIQjm8WpjOGGU59HLRnF
-	2ePl1Fcv33by3nIqiNtuFz/153HT5NT96PDkaNsL+
-X-Gm-Gg: AfdE7ck3eb+oOiBFK+tsPS9KyMqf+WvQNrHmF7SXDapsJsrMhwg0/JDSgZ07+egGUrl
-	FRVbKwn+IgXjsfylxK61DlHZnRIqO1Zcdyj7rLu+OKMVEnrh8MMy4/Np9gLzBysG1p2x639yWTM
-	Aid052Uaqm4B+/UekLtrUaXRtspQuKofCwDZHghsRHkSf3acVBQBklunK/BRksfuJzUf1r/4oEa
-	yKWZsuXyXfr2rttUP5lQZoow/jrQ1Tq0oNEzHMCQJjrmVpFqEo4+8ftLKSqpgLX5Wko4njXRqvB
-	FWzq4njdi1Z0b6k+MeGPcFLDIYbBFUioi/pFNAVOrgxYk3F6+9+CmJFfTRJwMelJrno7DMyjSmB
-	AaM/brTaqwQ==
-X-Received: by 2002:a05:6808:10c8:b0:489:5cc2:59f8 with SMTP id
- 5614622812f47-4896a9edc91mr1996528b6e.10.1781846550704; Thu, 18 Jun 2026
- 22:22:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YKBxXiE3"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7E6FF1F000E9;
+	Fri, 19 Jun 2026 06:20:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781850052;
+	bh=XjcMqVyVcS4HXVSHvc05WVFtK1TSOUKYkMWivq/qrAs=;
+	h=From:To:Cc:Subject:Date;
+	b=YKBxXiE3Aj3vxGNLD1IlJvcn5IBpwKC3nmi/RI07hqW2g15jCyH9HQLpMgCVzIqyg
+	 ghvV+0ZoX4jrqyJI/BgmnBlw4SY/zvoO+NVRGY3WRpCPIV5HSHc6UVCt80EywHdASR
+	 RlMpT3OVu0+3YPmd70Bo37WtYImfNGVATQa3eG8pX9mRVphLrtehrlhY6aKbyLZuKT
+	 1QqBDEQ9rRqrb2fuj0Zqn8ZMbhXcrJw+ou1uQehjgFKb78tpr6AjshFU+c1hl+RK6p
+	 605JcMcvuZzL5Ww+j72DwIOrly8RIm3fJJniXdSpaRwX9l5SIMW2aGMdDLDJxBUSP5
+	 ZeHSk/XYOKcEw==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC v2] drm/lease: use kvmalloc for temporary ioctl arrays
+Message-ID: <3c78114e-ed6d-4b15-9d77-4f8ddd7f9cd8@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CANp29Y6Tzp8DvhmZ7j1ccyYvsNic1mZ=Yp=Nd9vBnjjZ0zBjwQ@mail.gmail.com>
- <c4f3dfab-bb34-4a72-8453-100c3f5fa9ff@mail.kernel.org>
-In-Reply-To: <c4f3dfab-bb34-4a72-8453-100c3f5fa9ff@mail.kernel.org>
-From: Aleksandr Nogikh <nogikh@google.com>
-Date: Fri, 19 Jun 2026 07:22:19 +0200
-X-Gm-Features: AVVi8Cdq1FYgF3rfcJt3emLPG3sgchktBYFKEtQlTw42jfFodKCbLsxM1TITcS0
-Message-ID: <CANp29Y7zwqYSEDSQaMq1g__FoPR+y9VA39Y3xsbBgNxzX2_qsQ@mail.gmail.com>
-Subject: Re: [PATCH RFC] drm/lease: use kvmalloc for user-controlled allocations
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Fri, 19 Jun 2026 06:20:52 +0000 (UTC)
 
-On Thu, Jun 18, 2026 at 6:19=E2=80=AFPM syzbot <syzbot@kernel.org> wrote:
->
-> > Wasn't drm allocating physically contigious memory blocks on purpose?
-> > But in this patch you are trying to change it to virtual memory allocat=
-ions.
-> These specific allocations (`object_ids` and `objects`) are temporary
-> arrays used within the ioctl to store object IDs and pointers. Since
-> they are not used for DMA or hardware access, they do not need to be
-> physically contiguous. Using the `kvmalloc` family of functions here is
-> safe and prevents the warning when a user requests a very large number
-> of objects.
->
+In drm_mode_create_lease_ioctl(), a user-controlled object_count is used to
+allocate memory for object_ids and objects. If a user provides a very large
+object_count, the kernel attempts to allocate a contiguous memory chunk
+that exceeds the maximum allowed size by the slab allocator
+(KMALLOC_MAX_SIZE).
+
+For the objects array, kzalloc_objs() is used, which expands to a standard
+kzalloc() call. When the requested size exceeds KMALLOC_MAX_SIZE, the SLUB
+allocator passes the request to the page allocator, which triggers a
+warning because the required page order is greater than MAX_PAGE_ORDER:
+
+WARNING: mm/page_alloc.c:5197 at __alloc_frozen_pages_noprof+0x2ce/0x380
+mm/page_alloc.c:5197
+Call Trace:
+ <TASK>
+ alloc_pages_mpol+0x212/0x380 mm/mempolicy.c:2490
+ ___kmalloc_large_node+0x4c/0x120 mm/slub.c:5237
+ __kmalloc_large_node_noprof+0x18/0x90 mm/slub.c:5268
+ __do_kmalloc_node mm/slub.c:5284 [inline]
+ __kmalloc_noprof+0x3e4/0x750 mm/slub.c:5308
+ kmalloc_noprof include/linux/slab.h:954 [inline]
+ kzalloc_noprof include/linux/slab.h:1188 [inline]
+ fill_object_idr drivers/gpu/drm/drm_lease.c:389 [inline]
+ drm_mode_create_lease_ioctl+0x533/0x1ab0 drivers/gpu/drm/drm_lease.c:521
+
+The object_ids and objects arrays are temporary buffers used within the
+ioctl to store object IDs and pointers during the lease creation process.
+Since these arrays are not used for DMA or hardware access, they do not
+require physically contiguous memory.
+
+To fix this, replace memdup_array_user() with vmemdup_array_user() and
+kzalloc_objs() with kvcalloc(), along with changing their respective
+kfree() calls to kvfree(). The kvmalloc family of functions attempts a
+kmalloc() first and gracefully falls back to vmalloc() for large
+allocations. This prevents the kernel warning and makes the allocations
+more robust against memory fragmentation, gracefully returning -ENOMEM if
+the system cannot satisfy the request.
+
+Fixes: 62884cd386b8 ("drm: Add four ioctls for managing drm mode object leases [v7]")
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
+Reported-by: syzbot+03fb58296859d8dbab4d@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=03fb58296859d8dbab4d
+Link: https://syzkaller.appspot.com/ai_job?id=22f7a1b3-b0e0-4e5d-abf2-e7119094823a
+To: "David Airlie" <airlied@gmail.com>
+To: <dri-devel@lists.freedesktop.org>
+To: "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>
+To: "Maxime Ripard" <mripard@kernel.org>
+To: "Simona Vetter" <simona@ffwll.ch>
+To: "Thomas Zimmermann" <tzimmermann@suse.de>
+Cc: <linux-kernel@vger.kernel.org>
+
+---
+v2:
+- Explicitly stated that the allocated arrays are temporary and do not require physical contiguity as they are not used for DMA or hardware access.
+
+v1:
+https://lore.kernel.org/all/46506931-ba8f-4048-ab27-9777411db2fe@mail.kernel.org/T/
+---
+diff --git a/drivers/gpu/drm/drm_lease.c b/drivers/gpu/drm/drm_lease.c
+index 5d2cf724c..240e0ea6c 100644
+--- a/drivers/gpu/drm/drm_lease.c
++++ b/drivers/gpu/drm/drm_lease.c
+@@ -386,7 +386,8 @@ static int fill_object_idr(struct drm_device *dev,
+ 	int ret;
+ 	bool universal_planes = READ_ONCE(lessor_priv->universal_planes);
+ 
+-	objects = kzalloc_objs(struct drm_mode_object *, object_count);
++	objects = kvcalloc(object_count, sizeof(struct drm_mode_object *),
++			   GFP_KERNEL);
+ 	if (!objects)
+ 		return -ENOMEM;
+ 
+@@ -462,7 +463,7 @@ static int fill_object_idr(struct drm_device *dev,
+ 		if (objects[o])
+ 			drm_mode_object_put(objects[o]);
+ 	}
+-	kfree(objects);
++	kvfree(objects);
+ 	return ret;
+ }
+ 
+@@ -509,8 +510,8 @@ int drm_mode_create_lease_ioctl(struct drm_device *dev,
+ 	/* Handle leased objects, if any */
+ 	idr_init(&leases);
+ 	if (object_count != 0) {
+-		object_ids = memdup_array_user(u64_to_user_ptr(cl->object_ids),
+-					       object_count, sizeof(__u32));
++		object_ids = vmemdup_array_user(u64_to_user_ptr(cl->object_ids),
++						object_count, sizeof(__u32));
+ 		if (IS_ERR(object_ids)) {
+ 			ret = PTR_ERR(object_ids);
+ 			idr_destroy(&leases);
+@@ -520,7 +521,7 @@ int drm_mode_create_lease_ioctl(struct drm_device *dev,
+ 		/* fill and validate the object idr */
+ 		ret = fill_object_idr(dev, lessor_priv, &leases,
+ 				      object_count, object_ids);
+-		kfree(object_ids);
++		kvfree(object_ids);
+ 		if (ret) {
+ 			drm_dbg_lease(dev, "lease object lookup failed: %i\n", ret);
+ 			idr_destroy(&leases);
 
 
-Then say it explicitly in the patch description.
+base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
