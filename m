@@ -1,102 +1,112 @@
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99DC1126BF1
-	for <syzbot@lists.linux.dev>; Fri, 19 Jun 2026 00:27:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781828824; cv=none; b=XjFxSZms2WingQq49RoReOWnXmc80Q2rKN0EBba94qdeeVUCQoCkmD4Yjv5A4BthDPRz/RS3CH5qFRePQHKG481pCySQWI0Glk8D7ouGBAZTcDeI5IvKJ3tcBVIPPuXd+M5o5BUQEHLjpKPjFgqGCU5OfbwsrZz5Ej4bz8pMOYs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781828824; c=relaxed/simple;
-	bh=2xlFAVVnX5/KNMcYwKh2Jl7jSH61Qb1oxBFHUlbtQsA=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=UTTuwB2phJgqHzgWC8AoNcZudOr7+fIENFbPAKszn15Y0Vd4G6aXn1CcxtQKK6wM89Upn6nwdrPSq81FvbvRVlR02ACEjyvw28MQXyNxjGFoDdW8q7XnDfnM7ropb+GPtn89+wStaNUqShZUHHhlUAru7XeQLWl5KeHyRMWGPDk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-489677a16bbso1051775b6e.0
-        for <syzbot@lists.linux.dev>; Thu, 18 Jun 2026 17:27:03 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 529CF40D598
+	for <syzbot@lists.linux.dev>; Fri, 19 Jun 2026 05:22:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.177
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781846553; cv=pass; b=IBf3GLAZPAE/1IXWsBBCERTo4gj0/Aanyd6IXRbN7Ng+yWM/TlBWGRNReW0yFsRtD2piVNeVyIBifYHsz5hl/BBS7B2mSJGn97foW2pDoMABGBs8WIOjG7aRwRtuBVXlgu9aXoYpa3ild3r/fD0QIHdRttlLlHcIfcAxY0p5XuE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781846553; c=relaxed/simple;
+	bh=LUREygInbxNF/CfyMG18wYfSO6qCtyw3BIUg3UEa4+A=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=q+cz0OJHYDN5q9LIwrbdVasLnOMvvp1dxTiPtMP8pF1s9yIexN+aIk7t7W8WCGTThJ243EHmNL/AN/yoIUgCmT0C+d7MAJNRL3EvpV/WADpYBrzZql7SSHh5HzQZ8FiExDdh10q8nb4Co3T6AuMqjDuKptKqOXnVTze4u9AtWP4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Bc3F9X2j; arc=pass smtp.client-ip=209.85.167.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Bc3F9X2j"
+Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-48650c78e09so650527b6e.2
+        for <syzbot@lists.linux.dev>; Thu, 18 Jun 2026 22:22:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1781846551; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Y2eEx5G3BKdnfBeoShbliyK2JMz8EVIZB1Pynp9gNXehUpmFcFHC5ID2PA31Lk6KqV
+         jsrY2fWp3Uy5qkZ17JnPmpzsCEY/p9oetjKGyfQMvEIQB1H5C+C9k3FR2gFYJu+gjatK
+         EvpQnb+VD8f9CSRK40Rf3mbJHa3dJHIZP6lwJoJH7OO2QncU/AWt3klvVYKHpmQ8FooW
+         +piMsQEY5HoYpg0CTmHNk2lUT0jBHWKSgYEP08AFfU/sEOczSEIj8uUBiLl/Yo++wGQT
+         LeaUGThBoW8zauwZaI9fST2YBKd/BuHOPqnnmIXkZuLsqshDQW1NLCKNUPFiBiJaUS8+
+         1arQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=LUREygInbxNF/CfyMG18wYfSO6qCtyw3BIUg3UEa4+A=;
+        fh=GHJB0y6juCQLp3oEj9jtRr/G5ox2c1/FHE1kQzGyev0=;
+        b=bnHw2OItOyb9CP3PIrHWF+6/5s6hEyWMQ17ujWP8E98zZxG+7+ULVHT0aNWUmgiMzL
+         3Sx2OLma1Sv/94oP4ulqnFLuhAb+2nEHxmxDOcjMWgEMxcVLsGQiT6tX64uOFvu3DiIh
+         ztwNsxBX+nf/J5qO/MxvlocWnmaOvH9TMFfDaTOeeON2I+yjdPxOPIqZVBiizT3+BcDG
+         UerjvfX9o80yZriIlA6861qEBbJzy8XwM/z8mQtUqnKDPbxB0AcuTLD3hoOLSPUZtoWF
+         6kcumvbxS0dB7hR9+OclsAyOY8Hl60WW5XW7pQ4ihHxCJsyFsmBi0V6UBTgL6wWHJdC1
+         JEog==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1781846551; x=1782451351; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LUREygInbxNF/CfyMG18wYfSO6qCtyw3BIUg3UEa4+A=;
+        b=Bc3F9X2jRd5NUwrKql73Kijxwo51xjuqkFFYSWOrN7t2uvpGbLgQG6FMEuKFTgfh8Q
+         iquGynxyptKLRaJXvO0BuHTik5LsUjhIDY6UPlxWcN/nqaOTF2IzPPmkxel4v3pE0icw
+         WcFJbLecp1S8LGCbIJ7LA8YPXcEf7eOCOw1jizNWhtHOyuKnGwOMoC54OD9ISpX1qemC
+         dhHTW63EUD/MJ9fYtfBVvk6PymtQqKCMv7JDEmNJLPD7AXjFlsnSjvXfep4LqPABjgmH
+         r9efXRvq4O1e7uuE3Bw1Y0zlufZgwYckwBq3w54EMWOwIOLi0ujmgs6FLxhfoNq+4MDi
+         akUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781828822; x=1782433622;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=XZfGPlyzeZQ1CBRkfgCIj8VWWtxmi9ah7wD8W/UaXJs=;
-        b=tJhlJ+7HBx6kNnHtxTkq5hGjYf41gmaqem1EjsPsDJjeqjikfzVWUux9+210spdfZ5
-         eW2uGH9pyaN3m6Fo9oqxntK4J3VfhlrtTE97ASsWpI7iuaLmSPA4k7aPTFpK+kOmu/Yj
-         aRI2tSlZo1cYUgWea0M37szvk3xnJYscTBqMRSZHDq1A13xfGDh0UhO76kjARDuO4h8/
-         6yP1fbp1olINHZZHeyVMCjsqarlrIm3VYfp3L9fc9OcItP3yrOtPaoCcmRL3OM4SXVKg
-         zBJq794Ov0+nwsbselKkGnVyl2QtcVzxiKD7aX/C7l5hC4hzEX33VXd0BvHMcR8GRX+J
-         bwFg==
-X-Gm-Message-State: AOJu0Yy0U3hY1qnjzSMKBG2sahdAf1SZSEbPTvv1KA7Is//QURvx+i9o
-	w49L8KBLCgOV+JhWIr+PUHI2XuQColp0vFRAfGctJkPrVZs+4Q3fQB4dz9fsogFtuW6qRafwFl3
-	xEaiwwJft2BQXv7S3Vjc10YV73Oh+86n2U8cnnzTLbUrnoIrQoM02ozvYQ0w=
+        d=1e100.net; s=20251104; t=1781846551; x=1782451351;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=LUREygInbxNF/CfyMG18wYfSO6qCtyw3BIUg3UEa4+A=;
+        b=foXIZYAJWIzNEDjR4uzQyuakYkjhrRLSUVTynRcfCNb8FYhYnUIZaiavTsDEkNS6E9
+         9LM7nqxsURmuMW3v1lmbngq9yYapyOT/JWBmbJsu1c6TgocOR+LLo+dzhJDIianQJiAX
+         jDXxkzzxVxuIn0vjY7jzO31q7YJZeHYQhQgGRxGFMU0nCCMK3qaREsNZbZLpOgleNUmS
+         7JZsHrgBEmnOk+bPP5GTvc7Ld+Xc0v34WwuoBlE/8AsxcTNIco7shXaxeE4tLUQouT0V
+         2SlSKPvFHg9s+NzxlPza1LIdMbjNfmpJTz6fApXwH9rVJdjxCmtt//uGoWQ+x59R0QoR
+         AS/A==
+X-Forwarded-Encrypted: i=1; AFNElJ/oiY8fwmupy+4g7iyLAICF18nX/0EOJaZbtTj9CZI70+izrLSyeV91k6UysO6u7wUB1g4P2Zg=@lists.linux.dev
+X-Gm-Message-State: AOJu0YxMrJ5jUeKjx+k1prlLObt44l7zNOrUDBnPOGO5tBH/vwJevh+k
+	VngwMPufLuefJO80GI8fatTakj7iB3rsIDdL5UJQSYQfh6i5k/K/4A3VIQjm8WpjOGGU59HLRnF
+	2ePl1Fcv33by3nIqiNtuFz/153HT5NT96PDkaNsL+
+X-Gm-Gg: AfdE7ck3eb+oOiBFK+tsPS9KyMqf+WvQNrHmF7SXDapsJsrMhwg0/JDSgZ07+egGUrl
+	FRVbKwn+IgXjsfylxK61DlHZnRIqO1Zcdyj7rLu+OKMVEnrh8MMy4/Np9gLzBysG1p2x639yWTM
+	Aid052Uaqm4B+/UekLtrUaXRtspQuKofCwDZHghsRHkSf3acVBQBklunK/BRksfuJzUf1r/4oEa
+	yKWZsuXyXfr2rttUP5lQZoow/jrQ1Tq0oNEzHMCQJjrmVpFqEo4+8ftLKSqpgLX5Wko4njXRqvB
+	FWzq4njdi1Z0b6k+MeGPcFLDIYbBFUioi/pFNAVOrgxYk3F6+9+CmJFfTRJwMelJrno7DMyjSmB
+	AaM/brTaqwQ==
+X-Received: by 2002:a05:6808:10c8:b0:489:5cc2:59f8 with SMTP id
+ 5614622812f47-4896a9edc91mr1996528b6e.10.1781846550704; Thu, 18 Jun 2026
+ 22:22:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:2512:b0:479:dc74:3696 with SMTP id
- 5614622812f47-4896a9b5141mr1531130b6e.7.1781828822685; Thu, 18 Jun 2026
- 17:27:02 -0700 (PDT)
-Date: Thu, 18 Jun 2026 17:27:02 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a348cd6.d85dbdf7.1299fc.000c.GAE@google.com>
-Subject: [moderation/CI] Re: fscrypt: Remove FSCRYPT_MODE_MAX
-From: syzbot ci <syzbot+cicac5bcbb130791ad@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
+References: <CANp29Y6Tzp8DvhmZ7j1ccyYvsNic1mZ=Yp=Nd9vBnjjZ0zBjwQ@mail.gmail.com>
+ <c4f3dfab-bb34-4a72-8453-100c3f5fa9ff@mail.kernel.org>
+In-Reply-To: <c4f3dfab-bb34-4a72-8453-100c3f5fa9ff@mail.kernel.org>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Fri, 19 Jun 2026 07:22:19 +0200
+X-Gm-Features: AVVi8Cdq1FYgF3rfcJt3emLPG3sgchktBYFKEtQlTw42jfFodKCbLsxM1TITcS0
+Message-ID: <CANp29Y7zwqYSEDSQaMq1g__FoPR+y9VA39Y3xsbBgNxzX2_qsQ@mail.gmail.com>
+Subject: Re: [PATCH RFC] drm/lease: use kvmalloc for user-controlled allocations
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
+On Thu, Jun 18, 2026 at 6:19=E2=80=AFPM syzbot <syzbot@kernel.org> wrote:
+>
+> > Wasn't drm allocating physically contigious memory blocks on purpose?
+> > But in this patch you are trying to change it to virtual memory allocat=
+ions.
+> These specific allocations (`object_ids` and `objects`) are temporary
+> arrays used within the ioctl to store object IDs and pointers. Since
+> they are not used for DMA or hardware access, they do not need to be
+> physically contiguous. Using the `kvmalloc` family of functions here is
+> safe and prevents the warning when a user requests a very large number
+> of objects.
+>
 
-[v1] fscrypt: Remove FSCRYPT_MODE_MAX
-https://lore.kernel.org/all/20260618231404.132829-1-ebiggers@kernel.org
-* [PATCH] fscrypt: Remove FSCRYPT_MODE_MAX
 
-and found the following issue:
-kernel build error
-
-Full report is available here:
-https://ci.syzbot.org/series/697a5bf7-8eeb-4ac3-9a44-8d3e149c87fa
-
-***
-
-kernel build error
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      9e7e6633458362db72427b48effad8d759131c35
-arch:      amd64
-compiler:  Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-config:    https://ci.syzbot.org/builds/d827beb4-174a-4b17-8f2d-2cefbdee4dfc/config
-
-fs/crypto/fscrypt_private.h:635:45: error: use of undeclared identifier 'FSCRYPT_MODE_MAX'
-fs/crypto/fscrypt_private.h:636:53: error: use of undeclared identifier 'FSCRYPT_MODE_MAX'
-fs/crypto/fscrypt_private.h:637:53: error: use of undeclared identifier 'FSCRYPT_MODE_MAX'
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[ebiggers@kernel.org linux-fscrypt@vger.kernel.org linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+Then say it explicitly in the patch description.
