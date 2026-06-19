@@ -1,118 +1,68 @@
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73F8A3B83FE
-	for <syzbot@lists.linux.dev>; Fri, 19 Jun 2026 16:50:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.51
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781887844; cv=pass; b=TtURZYTz9WBdphsilZfhvfGZoGwv9csg1uqEgeoDj6fXpvwPM52cNz8Ad++5Cov1JXH6NXJihTXQRi74x3ncXxJsLR9t96Rw4ffQ3okW6xUcnEEQ1lOuGsZmxIWA97TJS9WL7Rsdl6uqq0C0ySqDInol+rCL9CY4HH1G6OQ0REk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781887844; c=relaxed/simple;
-	bh=gma+cMEHLIYG4aYn9do4E31EErDpvgPp8AMrQk+wZ+w=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=JKq5rWblZhrEkJUYCwKjzmZcRDbxygCrtAyfneiXdukQ52dypD5EpamNwNb94CTC7cWipE7DspzQMHaLOO7gVX2g6BFZaoT4yV3Uub/JPDw+yEfxRZuIKkdPoPGg2RwB93Q5fHCadGB42RMiuof5dYDgD2kyOPeM72t30dkMYeE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HkHc6gQV; arc=pass smtp.client-ip=209.85.210.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HkHc6gQV"
-Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7e6e21c47e6so1393685a34.1
-        for <syzbot@lists.linux.dev>; Fri, 19 Jun 2026 09:50:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1781887842; cv=none;
-        d=google.com; s=arc-20240605;
-        b=eOgAOVJ1su4Yi6CvUM5eNu+hoSKWhPUsXhvr8wvhtHJgqGlQlr39y2PO7JZaT5yf4s
-         tbCmbqUN/el5EvpC2kEi30Z1VcIhqGHjNJVh745lHOL+VFTWC8xoHfzD8oL+u0NtZIJJ
-         C1bx+6GCb6YKR/BlstbDFh6XY4AmFNfLUqjWOmCtoezurzUT53tJakUimr2bYncM559C
-         P3QYqZQUkImrpTCkVmStS776GSPdu5tXay7+MbiQyNJDx76ZbdXtukRBI3xOsLYzcA5n
-         8xoI9fAUIMM7A1opG9woyi/k6WYS2ongcZoIAR6PPRcNib8xoZK9fKnWjpkJmQQIimwQ
-         g7/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=gma+cMEHLIYG4aYn9do4E31EErDpvgPp8AMrQk+wZ+w=;
-        fh=hz4WOqwAxbLGYmbUscDTQzKRFtfJIoUmZ3siel7Hm3o=;
-        b=THXjAlDWaWbsnCjfGveCq+dSGfJvfhHdgaBo4kiL06mSNmrrrtyeGgXB0i52L0H0BL
-         0ZLh7iwq52K4XFTT80p6DLTKLAfy31znp/Cza2ox+7I4Q4cUAA1fJl95MCzqsMnhP9/J
-         X0StErLf4See2PrvyZsxmnObsSmd80208KaDZgRP+SP8URIMNOgAyqsu+2hjRgCXstNP
-         H9f7po9ZG0cjm/fyCVb8M9un3o27lwrlEQOBIjL5w653hfnSJOhy+pCLGGr8XDAytvAE
-         1Z6mITPHeVnP3sasgILo4d3a5je+pQlCmqvPtVXg2yc1O+7AWo3n+hk4t7ZQFTlTDTOE
-         k8FA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781887842; x=1782492642; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gma+cMEHLIYG4aYn9do4E31EErDpvgPp8AMrQk+wZ+w=;
-        b=HkHc6gQVeCTEecckcVRDqReev/pPOTgeM8M6SCHGBA2/xW9N9gCShf4sAHrJ+KbtQt
-         AF5Q78rUkzHhPWJ6csfyGWtMmNWZMNMnSQNCvuwjQ8xlXHkzHwdlRJdsukjdS5NWWmQI
-         aMYWtw5EH0UTTSV/2NG5qDXks91hcFQkkuwJ7GOoZmZgbvWQbNCZrNemSac4zdBvfSiv
-         sJYA2F3c58zQ8gIiRxx3xHdAzOzDi4h9AHLplmLvjwsevRpZh8/D65k/+OJ691tSPM0B
-         tymCU1hubF71KOK/U4BPFZ55JRzmixjRLsMRAZD6Wnh5YZ9TN2uZYVDroU9KQcGMUzh1
-         V07Q==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F7D729B8E1
+	for <syzbot@lists.linux.dev>; Fri, 19 Jun 2026 17:39:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781890756; cv=none; b=Cs6v2LAdgSs1XNl6Eg2WM2V9MzvvhDqNVmj1hdgRNiB45TaeRaEaPZ7dm+/XTk12hfBmrZtKj3E2iDkezVg5cOMnyY3EM07B8FrS6K64Fyelsy42xS+O8ZtdyzKOsA8Jnu+j0hlC1gpAmsND0u3Kuwl3wZU2OCtY93g75muLp78=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781890756; c=relaxed/simple;
+	bh=g4eEJaeaD0YnXKcd2vnIKlSic/1OSmLSPmdO55MMLBs=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=qB1XBh89NtzxqVIXwR/mwpppHJEjpuVQI4Er5eWJC7FA0MmZJO670DXmWlohbS8e/T6F2CL9z3bSMZQKCeZcSMU69NOx510ygUUT7VCgnrXwV5iWytrWanKEVhhY8moeQsQIkzdxXbLzCi+BKUas+lB8y3bzKz6yqvo9oLZfXqQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-48576b535b6so2495412b6e.2
+        for <syzbot@lists.linux.dev>; Fri, 19 Jun 2026 10:39:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781887842; x=1782492642;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=gma+cMEHLIYG4aYn9do4E31EErDpvgPp8AMrQk+wZ+w=;
-        b=WwfQDvYr3U2X1iYc7gnplrYxuGgk5IUskgxHNh1UGDTWGsIex3ebHxY3aHH88xErhY
-         NmE1n81/HaTtip1/Ifakp6VgM7Uacst24QWP8WaF5fzobiUjDt1kH8XePofQfq6bcOSL
-         ZJ6dL9JElPLQQ/fOPJhSOXXTUpNPz+uMXTR/Mb/gUFMtCuTLAve6yQ1L4Ddrq9btlSl4
-         Si6Q9tMHAAIwv3OenlZTloDWcXmEKikdpm/jV1L5zbPXL9roYq5iPzM+tM/qf8WIStm+
-         vgCbR02vT5W3hPafYZeA2MCwXIa98QboVMbu/NjqanikWcuqzCJv+7YDvyIS0G6W+JAz
-         wsOg==
-X-Forwarded-Encrypted: i=1; AFNElJ86ZRQjuZhzMbu0AnbYP/3nKlYipAx6HV7McGdgmBfUvOfZtJPRpHggoUKvBNQEHgKPPGNRLhI=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy7uxIoz80xZd41BPhYAu+i5e3Wjn3ay7gmcKSOJ8xRa7FQ+yTr
-	kp47SsQ5bd1l7SUS79mXJzHu04mKE3lwdfjS/xPg2m13GqezMTl0wZyA9lBQsNrjnbr2nEbHzhh
-	0skucUZUIL6QKKbPzhJOcPpRXOlAzf+uH8QBWR45R
-X-Gm-Gg: AfdE7ckPN0F4A8vCBFGpNSvkEo32w8ZndmEg7zIqd+EIW9pLkLV5qC3zpn8Bjk/KVwf
-	c38ICfHYn5cJgegeGbeem635gqq2Bdf+B2TuInGlrnNviQ9hdjcppXYlYxcJp33R4foSPwLxedH
-	GFcNwhcLvpbLXj1tKIucq4KsHSGLyhO/2yRXkTFjCh8gQZHC6pY8TM/njAt5inU49Byjue8KMSU
-	vxQrF5uihqTmOTkuBY561Z1qh2H3JOp9fI8cO3STeP8e3Y6Fc4dulJgxHcnXOaSzlukkbCzocjY
-	ouUWsUFn6sjk1UO5OmD7C9/w7W79l4ZweNyFdpXmKK8F/QWcNDvI3trObv6tK4WxMWXu02HYnS1
-	iNxee+ES/RA==
-X-Received: by 2002:a05:6808:1a13:b0:485:467f:a307 with SMTP id
- 5614622812f47-4896ac96fcemr3348961b6e.42.1781887841709; Fri, 19 Jun 2026
- 09:50:41 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1781890754; x=1782495554;
+        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=g4eEJaeaD0YnXKcd2vnIKlSic/1OSmLSPmdO55MMLBs=;
+        b=SaDI47u6QlIiVgjnyIULxgSu0FEFWfUdKUcwglfB+o53aVqVAVldhJJfMmaVp0SR+5
+         jQ3PLk3RKbF5wM+6t5hHf9D5p9VTEc4rKoH6Nhwokn8VfW5p6xtRrFskjVwaLKC4izMC
+         Y6smMeUXDLanqAy4ceTiaxYHtp7BQ2od8Z7ihDnnRSSxSSkjLbk9x+5FqQiMuDAgnlwU
+         f5VjuUJYkTP97d4kP5921FnGcdVNVRoeT4zfUqPPq64gqvksvcdqOLAyeC+qUddm+SLz
+         7pyalpheUCvynR+4LerALQg2m1H1gBNbbEqpbj/KTW/wTvenXc0P4k1jsFO0sgi0vREJ
+         0FJw==
+X-Gm-Message-State: AOJu0YxBuCMC5bteVRlc2xMa+sUqGO59alq6PwBLxH3hwukKSiNE1Sko
+	XZKU+Slpy69Nkz+LGXOrKrfYD83w7c95RZ7bc0r8HGajmGKkAowD9UUFrJK+f/6IcR+ZIGvyj5i
+	RWqa8GKhwSLOaunlrRNDtRqkXHTfFBV9+CRER9iCj1sK+KH6k4Dv3RTRZLxc=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CANp29Y4dHrcS6TCKSJbDJDLHbXippnwxXSWEUX2bvs=mpd0zYw@mail.gmail.com>
- <536678a8-7162-4e58-9209-ded8094bce97@mail.kernel.org>
-In-Reply-To: <536678a8-7162-4e58-9209-ded8094bce97@mail.kernel.org>
-From: Aleksandr Nogikh <nogikh@google.com>
-Date: Fri, 19 Jun 2026 18:50:30 +0200
-X-Gm-Features: AVVi8CcS6HcpN0HdGqlmw_uc8oqQMLHTK1xS2ho9oSvje5YsC6cvFicHS0hix_U
-Message-ID: <CANp29Y6riOfNcg9g1+5MJA79EcvmWr7oO1QM6iXjNh6uJaVymQ@mail.gmail.com>
-Subject: Re: [PATCH RFC v2] netdevsim: fix UAF by explicitly cleaning up
- debugfs files
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+X-Received: by 2002:a05:6808:c1b3:b0:48a:3f80:ee5f with SMTP id
+ 5614622812f47-48a3f80fb22mr1702792b6e.29.1781890754716; Fri, 19 Jun 2026
+ 10:39:14 -0700 (PDT)
+Date: Fri, 19 Jun 2026 10:39:14 -0700
+In-Reply-To: <CA+rD4x-3PSjOiarAPPudT3b-3EQcdPzFxc28S_Bw5GqegWaWUw@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a357ec2.88ebb2b1.955d.001e.GAE@google.com>
+Subject: [syzbot ci] Re: Data in direntry (dirdata) feature
+From: syzbot ci <syzbot+ci1baf99f5904d34f2@syzkaller.appspotmail.com>
+To: artem.blagodarenko@gmail.com, syzbot@lists.linux.dev
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-Would swapping the teardown order (nsim_dev_port_debugfs_exit,
-nsim_destroy) help make the patch simpler?
+syzbot ci has tested the suggested fix patch on top of the following series:
 
-On Fri, Jun 19, 2026 at 4:21=E2=80=AFPM syzbot <syzbot@kernel.org> wrote:
->
-> > Why `debugfs_lookup_and_remove("ethtool", ns->nsim_dev_port->ddir);`
-> > was not enough?
-> The BPF debugfs files are created directly in the port directory
-> (`ns->nsim_dev_port->ddir`), rather than in a dedicated BPF
-> subdirectory. Because the port directory itself isn't removed until
-> later in `nsim_dev_port_debugfs_exit()`, we have to explicitly remove
-> these individual BPF files here to close the use-after-free window.
-> Removing the "ethtool" directory only cleans up the ethtool-related
-> files, leaving the BPF files vulnerable.
->
-> --
-> This reply was generated by an AI model.
-> See https://goo.gle/syzbot-ai-patches for information about AI-generated =
-patches.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
+[v2] Data in direntry (dirdata) feature
+https://lore.kernel.org/all/20260610152417.13576-1-ablagodarenko@thelustrecollective.com
+
+Patch: https://ci.syzbot.org/jobs/7b048bf9-1956-4726-960c-6439488b701f/patch
+Testing results:
+* [build 0] Build Patched: passed
+* [build 0] Boot test: Patched: passed
+
+Full report is available here:
+https://ci.syzbot.org/session/40a7ca8a-ac83-4f97-91a0-233437f73a40
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
