@@ -1,145 +1,211 @@
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A6DD385D88
-	for <syzbot@lists.linux.dev>; Tue, 23 Jun 2026 14:37:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC88318DB37
+	for <syzbot@lists.linux.dev>; Tue, 23 Jun 2026 15:32:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782225446; cv=none; b=PP+wCQ7YolM2QA/3pcXM3Xg9HuM7oB+cpdakc+jVPIb7H/sUPcVJ2D8oN+rthO/1bE9Hn0+kXPl89MiOfOZLhDJhMxsuIRi62tvCHwMMJpLK5UbVeWER6G8iXigXZxkV/LPFxoxPPQwmwl2fIxLcg/Ino+sPz+KR0sFjpmgmc0c=
+	t=1782228774; cv=none; b=DRKCjN4KNQgs7dg6HI1EjrOoQe4CtDi4BPbIMbrlVYPfUnxEFpTxBmo8MTTYd91mssJZ9XwV8UEPxD5nJfXqGW4hF4hX9Aw+BV9BUWGTRQvKtGDVrHporLKxxuIz8RZbP0Sfflh9UK3mBaWgRwsXjPRusOjEV6830vvsjnsdDc4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782225446; c=relaxed/simple;
-	bh=kG7WwYql12A3u53CMKE8vxiNlPK40OIiDoSe+WXllqI=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=G7V7Xiw15rNEMc+KvEydY82+gy3XvboqRYYmL7otSxGU5wB15tKJCqqE0RzIoPFCiN7y3PSli5RdNB9Eufs3JX+inYoM2ZKurQeoZBS6ImLkR9triP6/HqJaZfhQ/eDAnQTMYHJQ7gUL9EB01gfw4z3JKhYu/a2v2+j5xLOM+os=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-48687e7f161so10978070b6e.2
-        for <syzbot@lists.linux.dev>; Tue, 23 Jun 2026 07:37:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782225444; x=1782830244;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/BHZcvnSPzHj34ZJ/mcgVfc5dMIdapQHiQfyHhonThY=;
-        b=GS9RVBFyuRLErM5Sn9fEazwGBpsqSlqH6ltWOX9gUsLCMyCzni8QNeiyOpvpM9qQlb
-         BxUkvwq3OvD59aeA4axvs21NANxgHrOL7yYb5GSU8KHWD6O4vCYq6ZYYY5Uk/Ae0Hmkl
-         v0zbGjfRb/CU00h+WWg3VJuPbXlzJHCorR4Sh00XOtPZjWQre4sfIkolzn7wjTX+WgjT
-         eE2k4zzjIzgghhHmyXgVmvD6fg1o/9u3NKvKv76s4wOvOWMZrO4l0NXzbl8ktMJ0chD+
-         iu02g7I7IV3DaHeaVQcSmSwKXbmtorASb0CbeHmzUvCSGBarKh3I13RB0e4+hTYCVa39
-         CDJg==
-X-Gm-Message-State: AOJu0YyWDmvuoghf6KuGsAQOeIS0tbnB70iJAdz4/0hHLmemVoX52OlQ
-	DykpLn3IUfzp/qqMYG2DemRoCTrwmmbtQHgscrH303xqI3L1jGw5vRR9VPgCg/Z4f0pDiBns38/
-	AGufwcW1Tuy7w8wyDtKZOsDlJoaC1Fvx71nvj8M0nCzLkHAoM5odpfdWTmaU=
+	s=arc-20240116; t=1782228774; c=relaxed/simple;
+	bh=U871hlwsmP+7R6y4WrNTj8pdKR3i6EOE0OCBfn3DmOA=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=davFNEOXqAL2yZ/G0uRq5YwebpQrfkboi/jxWbkJLOxN2JcO2VIuCkybVbTHYGgaGx40mvRdSzS3qiMuScncytnngLrH/zmiJr5G0FN218DFYkWA9gRMin0ty0oGG7kt5f4fm0hOmVrby9yjGzT9w4H3IU+wnW5xJjeoE8ejtdw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H51qLuWk; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H51qLuWk"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6FAB01F00A3A;
+	Tue, 23 Jun 2026 15:32:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782228772;
+	bh=nbI7Yq5g6vpSv0Hi1swdOnTuHJsvPSGncjZMqNZy0NA=;
+	h=From:To:Cc:Subject:Date;
+	b=H51qLuWkW25Vg8A6TK5DxqBKA/wteVISXo0HEszZZGMoFWoOCNkZDTQgbwplSwFz8
+	 MNPt/F/in55Pj+8quKgRdqwIzk2C0xvPrHiujKp9xRoz2WCRLdIkz2df3mD7uhf2fb
+	 ASxszu3nciRuRkXm6GhlTmwrnY1JGimTxdawS01Colwqmgf7Vlnc2i96/FhgPseqMG
+	 gsphI9MDgEgLm0eKuHOr+sX6ySIPy+CsQbnZi/wi4vIZ84Iq54U4tj/YNWGswgxYKN
+	 UAVYWA4G2Row4cxuR5SVErfCJMUZRw/O0I9ypFd5G8ponVxGlUaHGkmQ/eueRaVfiT
+	 8Y40VPZF5/yJA==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] netfilter: nf_conntrack_bridge: handle vlan-tagged packets in refrag
+Message-ID: <87b2c45b-2000-485b-8d36-979202a7c365@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:3508:b0:48b:f341:113c with SMTP id
- 5614622812f47-48f62c2d046mr1564778b6e.37.1782225444266; Tue, 23 Jun 2026
- 07:37:24 -0700 (PDT)
-Date: Tue, 23 Jun 2026 07:37:24 -0700
-In-Reply-To: <20260623-configfs-ns-v3-0-841c100fd5dd@kernel.org>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a3a9a24.ac26f6c2.9a9c4.0005.GAE@google.com>
-Subject: [syzbot ci] Re: namespace-aware configfs
-From: syzbot ci <syzbot+ciba837a74ccbd374c@syzkaller.appspotmail.com>
-To: a.hindborg@kernel.org, brauner@kernel.org, hare@kernel.org, hch@lst.de, 
-	jack@suse.cz, kch@nvidia.com, leitao@debian.org, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-nvme@lists.infradead.org, sagi@grimberg.me, viro@zeniv.linux.org.uk
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Tue, 23 Jun 2026 15:32:52 +0000 (UTC)
 
-syzbot ci has tested the following series
+When a fragmented packet arrives at a bridge port with a hardware VLAN tag,
+the bridge's RX VLAN offload populates skb->vlan_tci and sets skb->protocol
+to the inner payload protocol (e.g., ETH_P_IP). If the packet is
+defragmented in the NF_BR_PRE_ROUTING hook, the maximum fragment size is
+recorded in the bridge control block.
 
-[v3] namespace-aware configfs
-https://lore.kernel.org/all/20260623-configfs-ns-v3-0-841c100fd5dd@kernel.org
-* [PATCH RFC v3 01/12] fs/configfs: rework configfs_is_root()
-* [PATCH RFC v3 02/12] fs/configfs: dynamically allocate super_info
-* [PATCH RFC v3 03/12] fs/configfs: separate out configfs_{link,unlink}_root()
-* [PATCH RFC v3 04/12] fs/configfs: add superblock as attribute to configfs_pin_fs()
-* [PATCH RFC v3 05/12] fs/configfs: add 'fill_subsystem' and 'clear_subsystem' callbacks
-* [PATCH RFC v3 06/12] fs/namespace: implement mnt_clone_direct()
-* [PATCH RFC v3 07/12] fs/configfs: switch to get_tree_keyed()
-* [PATCH RFC v3 08/12] fs/configfs: open-code simple_pin_fs()
-* [PATCH RFC v3 09/12] nvmet: make discovery subsystem dynamic
-* [PATCH RFC v3 10/12] nvmet: per net-namespace port list
-* [PATCH RFC v3 11/12] nvmet: make configfs setup namespace aware
-* [PATCH RFC v3 12/12] nvmet: enable transports for net namespaces
+Later, if the bridge's VLAN filtering logic detects a protocol mismatch
+(e.g., skb->vlan_proto differs from br->vlan_proto), it pushes the VLAN tag
+back into the packet payload using vlan_insert_tag_set_proto(). This
+changes skb->protocol to the VLAN protocol (e.g., ETH_P_8021AD).
 
-and found the following issue:
-BUG: sleeping function called from invalid context in configfs_get_super_info
+When the packet reaches the NF_BR_POST_ROUTING hook, nf_ct_bridge_post()
+determines that the packet needs to be refragmented and calls
+nf_ct_bridge_refrag(). However, nf_ct_bridge_refrag() expects skb->protocol
+to be IPv4 or IPv6. Since it is now a VLAN protocol, the switch statement
+hits the default case, triggering a WARN_ON_ONCE and dropping the packet:
 
-Full report is available here:
-https://ci.syzbot.org/series/f460be5a-d520-4bc1-9cfb-6492f841629b
-
-***
-
-BUG: sleeping function called from invalid context in configfs_get_super_info
-
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf-next.git
-base:      66affa37cfac0aec061cc4bcf4a065b0c52f7e19
-arch:      amd64
-compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/73803fa0-5ba4-4d03-976f-f9962ee982c8/config
-syz repro: https://ci.syzbot.org/findings/4102267c-e678-4ffc-9ac0-4fb2dcbe5c0d/syz_repro
-
-BUG: sleeping function called from invalid context at ./include/linux/sched/mm.h:323
-in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 5856, name: syz.0.17
-preempt_count: 1, expected: 0
-RCU nest depth: 0, expected: 0
-INFO: lockdep is turned off.
-Preemption disabled at:
-[<0000000000000000>] 0x0
-CPU: 0 UID: 0 PID: 5856 Comm: syz.0.17 Tainted: G        W           syzkaller #0 PREEMPT(full) 
-Tainted: [W]=WARN
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+WARNING: net/bridge/netfilter/nf_conntrack_bridge.c:356 at
+nf_ct_bridge_refrag
+...
 Call Trace:
  <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- __might_resched+0x378/0x4d0 kernel/sched/core.c:9193
- might_alloc include/linux/sched/mm.h:323 [inline]
- slab_pre_alloc_hook mm/slub.c:4559 [inline]
- slab_alloc_node mm/slub.c:4916 [inline]
- __kmalloc_cache_noprof+0x74/0x660 mm/slub.c:5446
- _kmalloc_noprof include/linux/slab.h:969 [inline]
- _kzalloc_noprof include/linux/slab.h:1286 [inline]
- configfs_get_super_info+0x218/0x5e0 fs/configfs/mount.c:91
- configfs_get_tree+0x41/0xd0 fs/configfs/mount.c:170
- vfs_get_tree+0x92/0x2a0 fs/super.c:1694
- vfs_cmd_create+0xa2/0x200 fs/fsopen.c:231
- __do_sys_fsconfig fs/fsopen.c:463 [inline]
- __se_sys_fsconfig+0x6b9/0x810 fs/fsopen.c:350
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f5c9db9ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f5c9ea71028 EFLAGS: 00000246 ORIG_RAX: 00000000000001af
-RAX: ffffffffffffffda RBX: 00007f5c9de15fa0 RCX: 00007f5c9db9ce59
-RDX: 0000000000000000 RSI: 0000000000000006 RDI: 0000000000000003
-RBP: 00007f5c9dc32e6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f5c9de16038 R14: 00007f5c9de15fa0 R15: 00007ffe63465d98
- </TASK>
+ nf_hook_entry_hookfn include/linux/netfilter.h:158 [inline]
+ nf_hook_slow+0xc5/0x220 net/netfilter/core.c:619
+ nf_hook include/linux/netfilter.h:273 [inline]
+ NF_HOOK+0x23e/0x3f0 include/linux/netfilter.h:316
+ br_forward_finish+0xd3/0x130 net/bridge/br_forward.c:66
+ NF_HOOK+0x360/0x3f0 include/linux/netfilter.h:318
+ __br_forward+0x397/0x540 net/bridge/br_forward.c:115
+ deliver_clone net/bridge/br_forward.c:131 [inline]
+ maybe_deliver+0xb5/0x160 net/bridge/br_forward.c:191
+ br_flood+0x316/0x690 net/bridge/br_forward.c:238
+ br_handle_frame_finish+0x10f8/0x1930 net/bridge/br_input.c:229
 
+To fix this, update nf_ct_bridge_refrag() to handle packets where the VLAN
+tag has been pushed into the payload. If the protocol is a VLAN protocol,
+use vlan_get_protocol_offset_inline() to extract the inner protocol and
+pull the VLAN tags so skb->data points directly to the IP header, as
+expected by the fragmentation routines.
 
-***
+Additionally, because the MAC header is no longer exactly ETH_HLEN bytes
+when VLAN tags are pushed into the payload, expand the mac array in struct
+nf_bridge_frag_data to 32 bytes and add a mac_len field to dynamically
+track the actual length. Update nf_ct_bridge_frag_save() and
+nf_ct_bridge_frag_restore() to save and restore the correct number of
+bytes, pushing any extra bytes beyond ETH_HLEN to ensure skb->data
+correctly points to the start of the MAC header before transmission.
 
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: 3c171f496ef5 ("netfilter: bridge: add connection tracking system")
+Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+a8ba738fe2db6b4bb27f@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=a8ba738fe2db6b4bb27f
+Link: https://syzkaller.appspot.com/ai_job?id=4867c9de-cc2a-406b-a01c-4321a64f38ec
+To: <bridge@lists.linux.dev>
+To: <coreteam@netfilter.org>
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Florian Westphal" <fw@strlen.de>
+To: "Ido Schimmel" <idosch@nvidia.com>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: <netfilter-devel@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Pablo Neira Ayuso" <pablo@netfilter.org>
+To: "Nikolay Aleksandrov" <razor@blackwall.org>
+Cc: "Simon Horman" <horms@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+Cc: "Phil Sutter" <phil@nwl.cc>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/include/linux/netfilter_bridge.h b/include/linux/netfilter_bridge.h
+index 743475ca7..4ff36e0f3 100644
+--- a/include/linux/netfilter_bridge.h
++++ b/include/linux/netfilter_bridge.h
+@@ -6,7 +6,8 @@
+ #include <linux/skbuff.h>
+ 
+ struct nf_bridge_frag_data {
+-	char    mac[ETH_HLEN];
++	char mac[32];
++	u8 mac_len;
+ 	bool    vlan_present;
+ 	u16     vlan_tci;
+ 	__be16  vlan_proto;
+diff --git a/net/bridge/netfilter/nf_conntrack_bridge.c b/net/bridge/netfilter/nf_conntrack_bridge.c
+index 58a33d038..a2a4b821a 100644
+--- a/net/bridge/netfilter/nf_conntrack_bridge.c
++++ b/net/bridge/netfilter/nf_conntrack_bridge.c
+@@ -330,7 +330,13 @@ static void nf_ct_bridge_frag_save(struct sk_buff *skb,
+ 	} else {
+ 		data->vlan_present = false;
+ 	}
+-	skb_copy_from_linear_data_offset(skb, -ETH_HLEN, data->mac, ETH_HLEN);
++	data->mac_len = skb->mac_len;
++	if (WARN_ON_ONCE(data->mac_len < ETH_HLEN))
++		data->mac_len = ETH_HLEN;
++	if (WARN_ON_ONCE(data->mac_len > sizeof(data->mac)))
++		data->mac_len = sizeof(data->mac);
++	skb_copy_from_linear_data_offset(skb, -data->mac_len, data->mac,
++					 data->mac_len);
+ }
+ 
+ static unsigned int
+@@ -340,10 +346,30 @@ nf_ct_bridge_refrag(struct sk_buff *skb, const struct nf_hook_state *state,
+ 				  struct sk_buff *))
+ {
+ 	struct nf_bridge_frag_data data;
++	__be16 inner_proto = skb->protocol;
++	int depth;
+ 
+ 	if (!BR_INPUT_SKB_CB(skb)->frag_max_size)
+ 		return NF_ACCEPT;
+ 
++	if (eth_type_vlan(inner_proto)) {
++		int pull_len;
++
++		inner_proto = vlan_get_protocol_offset_inline(
++			skb, inner_proto, skb_mac_offset(skb), &depth);
++		if (!inner_proto)
++			return NF_DROP;
++
++		pull_len = depth + skb_mac_offset(skb);
++		if (pull_len > 0) {
++			if (!pskb_may_pull(skb, pull_len))
++				return NF_DROP;
++
++			skb_pull(skb, pull_len);
++		}
++		skb->protocol = inner_proto;
++	}
++
+ 	nf_ct_bridge_frag_save(skb, &data);
+ 	switch (skb->protocol) {
+ 	case htons(ETH_P_IP):
+@@ -366,7 +392,7 @@ static int nf_ct_bridge_frag_restore(struct sk_buff *skb,
+ {
+ 	int err;
+ 
+-	err = skb_cow_head(skb, ETH_HLEN);
++	err = skb_cow_head(skb, data->mac_len);
+ 	if (err) {
+ 		kfree_skb(skb);
+ 		return -ENOMEM;
+@@ -376,8 +402,11 @@ static int nf_ct_bridge_frag_restore(struct sk_buff *skb,
+ 	else if (skb_vlan_tag_present(skb))
+ 		__vlan_hwaccel_clear_tag(skb);
+ 
+-	skb_copy_to_linear_data_offset(skb, -ETH_HLEN, data->mac, ETH_HLEN);
++	skb_copy_to_linear_data_offset(skb, -data->mac_len, data->mac,
++				       data->mac_len);
++	__skb_push(skb, data->mac_len - ETH_HLEN);
+ 	skb_reset_mac_header(skb);
++	skb->mac_header -= ETH_HLEN;
+ 
+ 	return 0;
+ }
 
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
 
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
