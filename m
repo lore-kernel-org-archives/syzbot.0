@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEB9F3845CF
-	for <syzbot@lists.linux.dev>; Tue, 23 Jun 2026 14:20:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0741E35AC33
+	for <syzbot@lists.linux.dev>; Tue, 23 Jun 2026 14:30:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782224424; cv=none; b=k0toaRKcEXhdtheq53r2u9vCvG89KwWbK67XxKFMf2ltQGdsk62kSud0Van4GYBCwyCBQcCJUHzZckdFaFKVA1aO2CZzbM5GlX9ktNW0Bra94hBUcV/JtUeZsj4nlNHSG4G/A/Ugee/ws9yc0TNx3WvXGY+unyBD6QQqRBlINYI=
+	t=1782225054; cv=none; b=Th0sXgWc0tCT3EIy8zFoNEVO85lEfzZmTr0iMr9YzT41badQXcfWBkFiFn+4z2SEDhz9ZVWZwHoVRpYfDwThuIWDA6tWsIFqoF+IMASpN7uNy686uJXvOX1vZNnmD1waa/b6rmW0vKVdzjme/p/fuls4ZJ95Euxk8Qhu5+B0HTc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782224424; c=relaxed/simple;
-	bh=9TDgYzdU47Bnhubn2vDpaR2Q5MG+dCzDk7yj4vPt668=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Ln0huwcLPfXrk7pS4GTM9jbBPGh2iN/J0He6sFuun5aSw5b+6bONLX9tYwz8mOm2wNB0HbJe37qfhIsdgjBb7Pf/z3IUFXi5b4z2q0jh0nWJdspaBDTYVKnazgZBg7GQpYIli+iROfg06/NKjLOGpfX96Hf0fbmz33u+kbOjBWA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kypWD5lf; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782225054; c=relaxed/simple;
+	bh=/eT+Yko1lcGLLzISjJQK+3vai6ul97TQMZT3Rckp4gM=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=tspROvZn8YEuDRlAX9T9NY+UZfUWc+Ry3knRjCeLBoQgGwuaePralH5wHYdC7bALRFwi6BJwoaaqIUTuWQnq+uNrl2fVKeo9qUVMfHNG9MZtv6/X/HKntc/IjiBTG3jG8fXwU4Z7pMuydz42psbrwpHtp+IoBdCR3eA2TCcaxBM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IfOkn2Bj; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kypWD5lf"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 869121F000E9;
-	Tue, 23 Jun 2026 14:20:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IfOkn2Bj"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 9BB5F1F000E9;
+	Tue, 23 Jun 2026 14:30:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782224422;
-	bh=icbZhN6BMotTVb2XmYbed9lzo296tp6qFVp22wl0Xl8=;
+	s=k20260515; t=1782225052;
+	bh=zi/gH51WhmbUF5O0BtoVBBJ8kz7Kk/TXkZOJ0nOTOu0=;
 	h=From:To:Cc:Subject:Date;
-	b=kypWD5lf61XVaZY4K4LR4VsdEVXfJ5fk0kxhDrUfDWMYvZ+RMaloyAywbaUjr6hR6
-	 el/ajLyI/t71GR+n5xEObmrjR3olY8s36zymvNxNZwdlShU6gBiKBzzz1Y2PO32Msn
-	 JoS11T/G5W3JcFJY4j+ah6Ee9MbO93lK2fEUUj6S1NOoJX74qj2e/dH9IJ9bg/y+Bj
-	 Ss3rbbNjiqwAsRKj1NS8cfhTINTRuqFSoxRGlTwcWzEytiWmtVMKsKFPcKr3MkQ5QF
-	 N5QT4EzImggERyUk34YWuw6rHVrgYe3R2Ed580QvGHWCDINUWgjjJKevXcwZOFy4sd
-	 K8GYcEh4SjSYg==
+	b=IfOkn2BjESiiTPSakVYGhY5PQPF56xeoyOhICU37MSDdMvJdotrtTk17OuL9CM7jX
+	 IOP0RZDTZEm8K9dQ2DxcQT7NjmnL3VDeSHtUYN0b2WtNMQhxZvXh9fMlHA2Ns9kgfx
+	 xE5I0JF3c05mDjgzMGLWsvZ3SkU+0CmNWl+VV4q1GYse0utu/afvrDp1VhqpmUF6Gw
+	 pkyjVDdbjFAiZZfn1DSYbKdgyM64rxAGmilHMqnVcVvMRiJpCRy68iYZdvq1R1H71x
+	 czwoxpx04cn+yruqO/bIV+L512onX1K+VPA0qN0oHsBLUsTptBfvAsDl9djptpI/L4
+	 Z+2DW2y8RlnVg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] jfs: add dmap integrity check to prevent out-of-bounds access
-Message-ID: <7f8f8a8c-bb2c-4b6d-b16e-238d656b8b35@mail.kernel.org>
+Subject: [PATCH RFC] netdevsim: remove debugfs files before freeing net_device
+Message-ID: <d0941a03-e111-4b0d-b50d-19352a8ef7e2@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,292 +38,137 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue, 23 Jun 2026 14:20:22 +0000 (UTC)
+Date: Tue, 23 Jun 2026 14:30:52 +0000 (UTC)
 
-The JFS filesystem reads struct dmap structures from disk without properly
-validating their integrity. If the dmap structure on disk is corrupted,
-fields like dp->tree.nleafs or dp->tree.leafidx can contain unexpectedly
-large or invalid values. This leads to out-of-bounds memory accesses in
-functions like dbAdjTree() when they attempt to process the corrupted tree
-structure, triggering warnings and potentially causing further memory
-corruption.
+A KASAN slab-use-after-free was detected in debugfs_u32_get() when reading
+a debugfs file associated with a netdevsim port.
 
-------------[ cut here ]------------
-lp >= size || lp < 0
-WARNING: fs/jfs/jfs_dmap.c:2962 at dbAdjTree fs/jfs/jfs_dmap.c:2962
-[inline], CPU#0: jfsCommit/127
-WARNING: fs/jfs/jfs_dmap.c:2962 at dbJoin+0xc33/0xd60
-fs/jfs/jfs_dmap.c:2930, CPU#0: jfsCommit/127
-Modules linked in:
-CPU: 0 UID: 0 PID: 127 Comm: jfsCommit Not tainted
-RIP: 0010:dbAdjTree fs/jfs/jfs_dmap.c:2962 [inline]
-RIP: 0010:dbJoin+0xc33/0xd60 fs/jfs/jfs_dmap.c:2930
-...
+BUG: KASAN: slab-use-after-free in debugfs_u32_get+0x6c/0x70
+Read of size 4 at addr ffff88810cd6db00
+
 Call Trace:
- <TASK>
- dbFreeBits+0x4a2/0xd70 fs/jfs/jfs_dmap.c:2427
- dbFreeDmap fs/jfs/jfs_dmap.c:2176 [inline]
- dbFree+0x324/0x650 fs/jfs/jfs_dmap.c:485
- txFreeMap+0x9e6/0xde0 fs/jfs/jfs_txnmgr.c:2517
- xtTruncate+0xd16/0x2eb0 fs/jfs/jfs_xtree.c:2481
- jfs_free_zero_link+0x35b/0x4c0 fs/jfs/namei.c:760
- jfs_evict_inode+0x356/0x430 fs/jfs/inode.c:159
- evict+0x624/0xb50 fs/inode.c:841
- txLazyCommit fs/jfs/jfs_txnmgr.c:2666 [inline]
- jfs_lazycommit+0x44c/0xac0 fs/jfs/jfs_txnmgr.c:2735
- kthread+0x389/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
+ debugfs_u32_get+0x6c/0x70
+ simple_attr_read+0x227/0x490
+ debugfs_attr_read+0x76/0x130
+ vfs_read+0x213/0xa80
 
-To fix this, introduce a check_dmap() function that validates the integrity
-of the struct dmap immediately after it is read from disk via
-read_metapage(). This follows the same pattern established by
-check_dmapctl(). The check_dmap() function verifies that nleafs, l2nleafs,
-leafidx, height, and budmin match their expected constant values for a
-dmap, and that the values in the stree array are within the valid range.
+The root cause is that the net_device (and its embedded netdevsim private
+data) is freed before its associated debugfs files are removed. When a user
+reads a debugfs file like rx_max_pending, debugfs_u32_get() dereferences a
+pointer to the freed memory. This happens because nsim_destroy() calls
+free_netdev() but does not remove the debugfs files created by
+nsim_ethtool_init() or nsim_bpf_init(). These files are only removed later
+when nsim_dev_port_debugfs_exit() is called. A similar issue exists in the
+error path of nsim_create().
 
-Calls to check_dmap() are inserted in all places where a dmap is read from
-disk. If check_dmap() detects corruption, it logs an error, releases the
-metapage, unlocks any held locks, and returns -EIO to gracefully abort the
-operation. Finally, since dbAlloc() and dbExtend() now fully validate the
-dmap immediately after reading it, the partial checks previously present in
-dbAllocNear() and dbAllocNext() are redundant and have been removed.
+To fix this, swap the teardown order in __nsim_dev_port_del() and the
+__nsim_dev_port_add() error path so that nsim_dev_port_debugfs_exit() is
+called before nsim_destroy(). This ensures the debugfs directory is
+recursively removed before the net_device is freed. Additionally, remove
+explicit debugfs_remove() calls from various subsystem teardown functions
+(like nsim_psp_uninit, nsim_ipsec_teardown, etc.) since the parent
+directory is now removed earlier, which would otherwise lead to a
+use-after-free of the dentry itself. Finally, ensure the debugfs directory
+is removed before free_netdev() is called in the nsim_create() error path.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: e05b2d141fef ("netdevsim: move netdev creation/destruction to dev probe")
 Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+a67911c5a11315aa55a8@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=a67911c5a11315aa55a8
-Link: https://syzkaller.appspot.com/ai_job?id=e2636ff7-bd70-4c1b-8aeb-5604f90d04f8
-To: <jfs-discussion@lists.sourceforge.net>
-To: "Dave Kleikamp" <shaggy@kernel.org>
-Cc: "Arnaud Lecomte" <contact@arnaud-lcm.com>
-Cc: "Kees Cook" <kees@kernel.org>
+Reported-by: syzbot+6c25f4750230faf70be9@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=6c25f4750230faf70be9
+Link: https://syzkaller.appspot.com/ai_job?id=84a7c962-d10e-424d-a37a-bf27d4830a40
+To: "Andrew Lunn" <andrew+netdev@lunn.ch>
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Yun Zhou" <yun.zhou@windriver.com>
-Cc: "Zheng Yu" <zheng.yu@northwestern.edu>
 
 ---
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index a841cf21d..37c597850 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -133,6 +133,71 @@ static const s8 budtab[256] = {
- 	2, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1
- };
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index f00fc2f9e..beecc0c6e 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -1524,7 +1524,9 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_typ
+ 	return 0;
  
-+/*
-+ * check_dmap - Validate integrity of a dmap structure
-+ * @dp: Pointer to the dmap structure to check
-+ *
-+ * Return: true if valid, false if corrupted
-+ */
-+static bool check_dmap(struct dmap *dp)
-+{
-+	struct dmaptree *dtp = &dp->tree;
-+	u32 nleafs, l2nleafs, leafidx, height;
-+	s8 budmin;
-+	int i;
-+
-+	nleafs = le32_to_cpu(dtp->nleafs);
-+	if (unlikely(nleafs != LPERDMAP)) {
-+		jfs_err("dmap: invalid nleafs %u (expected %u)", nleafs,
-+			LPERDMAP);
-+		return false;
-+	}
-+
-+	l2nleafs = le32_to_cpu(dtp->l2nleafs);
-+	if (unlikely(l2nleafs != L2LPERDMAP)) {
-+		jfs_err("dmap: invalid l2nleafs %u (expected %u)", l2nleafs,
-+			L2LPERDMAP);
-+		return false;
-+	}
-+
-+	leafidx = le32_to_cpu(dtp->leafidx);
-+	if (unlikely(leafidx != LEAFIND)) {
-+		jfs_err("dmap: invalid leafidx %u (expected %u)", leafidx,
-+			LEAFIND);
-+		return false;
-+	}
-+
-+	height = le32_to_cpu(dtp->height);
-+	if (unlikely(height != 4)) {
-+		jfs_err("dmap: invalid height %u (expected 4)", height);
-+		return false;
-+	}
-+
-+	budmin = dtp->budmin;
-+	if (unlikely(budmin != BUDMIN)) {
-+		jfs_err("dmap: invalid budmin %d (expected %d)", budmin,
-+			BUDMIN);
-+		return false;
-+	}
-+
-+	/* Check leaf nodes have valid values */
-+	for (i = leafidx; i < leafidx + nleafs; i++) {
-+		s8 val = dtp->stree[i];
-+
-+		if (unlikely(val < NOFREE)) {
-+			jfs_err("dmap: invalid leaf value %d at index %d", val,
-+				i);
-+			return false;
-+		} else if (unlikely(val > BUDMIN)) {
-+			jfs_err("dmap: leaf value %d too large at index %d",
-+				val, i);
-+			return false;
-+		}
-+	}
-+
-+	return true;
-+}
-+
- /*
-  * check_dmapctl - Validate integrity of a dmapctl structure
-  * @dcp: Pointer to the dmapctl structure to check
-@@ -475,6 +540,12 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
- 			return -EIO;
- 		}
- 		dp = (struct dmap *) mp->data;
-+		if (unlikely(!check_dmap(dp))) {
-+			jfs_error(ip->i_sb, "Corrupt dmap page\n");
-+			release_metapage(mp);
-+			IREAD_UNLOCK(ipbmap);
-+			return -EIO;
-+		}
+ err_nsim_destroy:
++	nsim_dev_port_debugfs_exit(nsim_dev_port);
+ 	nsim_destroy(nsim_dev_port->ns);
++	goto err_port_resource_unregister;
+ err_port_debugfs_exit:
+ 	nsim_dev_port_debugfs_exit(nsim_dev_port);
+ err_port_resource_unregister:
+@@ -1544,8 +1546,8 @@ static void __nsim_dev_port_del(struct nsim_dev_port *nsim_dev_port)
+ 	list_del(&nsim_dev_port->list);
+ 	if (nsim_dev_port_is_vf(nsim_dev_port))
+ 		devl_rate_leaf_destroy(&nsim_dev_port->devlink_port);
+-	nsim_destroy(nsim_dev_port->ns);
+ 	nsim_dev_port_debugfs_exit(nsim_dev_port);
++	nsim_destroy(nsim_dev_port->ns);
+ 	if (nsim_dev_port_is_pf(nsim_dev_port))
+ 		devl_port_resources_unregister(devlink_port);
+ 	devl_port_unregister(devlink_port);
+diff --git a/drivers/net/netdevsim/ipsec.c b/drivers/net/netdevsim/ipsec.c
+index 36a1be492..0bc9f42a5 100644
+--- a/drivers/net/netdevsim/ipsec.c
++++ b/drivers/net/netdevsim/ipsec.c
+@@ -292,5 +292,4 @@ void nsim_ipsec_teardown(struct netdevsim *ns)
+ 	if (ipsec->count)
+ 		netdev_err(ns->netdev, "tearing down IPsec offload with %d SAs left\n",
+ 			   ipsec->count);
+-	debugfs_remove_recursive(ipsec->pfile);
+ }
+diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
+index a75076891..6918679ca 100644
+--- a/drivers/net/netdevsim/netdev.c
++++ b/drivers/net/netdevsim/netdev.c
+@@ -1164,6 +1164,8 @@ struct netdevsim *nsim_create(struct nsim_dev *nsim_dev,
+ 	return ns;
  
- 		/* determine the number of blocks to be freed from
- 		 * this dmap.
-@@ -568,8 +639,16 @@ dbUpdatePMap(struct inode *ipbmap,
- 			if (mp == NULL)
- 				return -EIO;
- 			metapage_wait_for_io(mp);
-+
-+			dp = (struct dmap *)mp->data;
-+			if (unlikely(!check_dmap(dp))) {
-+				jfs_error(ipbmap->i_sb, "Corrupt dmap page\n");
-+				release_metapage(mp);
-+				return -EIO;
-+			}
-+		} else {
-+			dp = (struct dmap *)mp->data;
- 		}
--		dp = (struct dmap *) mp->data;
+ err_free_netdev:
++	debugfs_remove_recursive(nsim_dev_port->ddir);
++	nsim_dev_port->ddir = NULL;
+ 	free_netdev(dev);
+ 	return ERR_PTR(err);
+ }
+@@ -1174,10 +1176,6 @@ void nsim_destroy(struct netdevsim *ns)
+ 	struct netdevsim *peer;
+ 	u16 vid;
  
- 		/* determine the bit number and word within the dmap of
- 		 * the starting block.  also determine how many blocks
-@@ -885,6 +964,12 @@ int dbAlloc(struct inode *ip, s64 hint, s64 nblocks, s64 * results)
- 			goto read_unlock;
- 
- 		dp = (struct dmap *) mp->data;
-+		if (unlikely(!check_dmap(dp))) {
-+			jfs_error(ip->i_sb, "Corrupt dmap page\n");
-+			release_metapage(mp);
-+			rc = -EIO;
-+			goto read_unlock;
-+		}
- 
- 		/* first, try to satisfy the allocation request with the
- 		 * blocks beginning at the hint.
-@@ -1117,6 +1202,12 @@ static int dbExtend(struct inode *ip, s64 blkno, s64 nblocks, s64 addnblocks)
- 	}
- 
- 	dp = (struct dmap *) mp->data;
-+	if (unlikely(!check_dmap(dp))) {
-+		jfs_error(ip->i_sb, "Corrupt dmap page\n");
-+		release_metapage(mp);
-+		IREAD_UNLOCK(ipbmap);
-+		return -EIO;
-+	}
- 
- 	/* try to allocate the blocks immediately following the
- 	 * current allocation.
-@@ -1163,11 +1254,6 @@ static int dbAllocNext(struct bmap * bmp, struct dmap * dp, s64 blkno,
- 	s8 *leaf;
- 	u32 mask;
- 
--	if (dp->tree.leafidx != cpu_to_le32(LEAFIND)) {
--		jfs_error(bmp->db_ipbmap->i_sb, "Corrupt dmap page\n");
--		return -EIO;
--	}
+-	debugfs_remove(ns->vlan_dfs);
+-	debugfs_remove(ns->qr_dfs);
+-	debugfs_remove(ns->pp_dfs);
 -
- 	/* pick up a pointer to the leaves of the dmap tree.
- 	 */
- 	leaf = dp->tree.stree + le32_to_cpu(dp->tree.leafidx);
-@@ -1293,11 +1379,6 @@ dbAllocNear(struct bmap * bmp,
- 	int word, lword, rc;
- 	s8 *leaf;
+ 	if (ns->nb.notifier_call)
+ 		unregister_netdevice_notifier_dev_net(ns->netdev, &ns->nb,
+ 						      &ns->nn);
+diff --git a/drivers/net/netdevsim/psp.c b/drivers/net/netdevsim/psp.c
+index 6936ecb81..2f27a2114 100644
+--- a/drivers/net/netdevsim/psp.c
++++ b/drivers/net/netdevsim/psp.c
+@@ -227,7 +227,6 @@ static void __nsim_psp_uninit(struct netdevsim *ns, bool teardown)
  
--	if (dp->tree.leafidx != cpu_to_le32(LEAFIND)) {
--		jfs_error(bmp->db_ipbmap->i_sb, "Corrupt dmap page\n");
--		return -EIO;
--	}
+ void nsim_psp_uninit(struct netdevsim *ns)
+ {
+-	debugfs_remove(ns->psp.rereg);
+ 	mutex_destroy(&ns->psp.rereg_lock);
+ 	__nsim_psp_uninit(ns, true);
+ }
+diff --git a/drivers/net/netdevsim/udp_tunnels.c b/drivers/net/netdevsim/udp_tunnels.c
+index 89fff76e5..a69b15f12 100644
+--- a/drivers/net/netdevsim/udp_tunnels.c
++++ b/drivers/net/netdevsim/udp_tunnels.c
+@@ -188,9 +188,6 @@ int nsim_udp_tunnels_info_create(struct nsim_dev *nsim_dev,
+ 
+ void nsim_udp_tunnels_info_destroy(struct net_device *dev)
+ {
+-	struct netdevsim *ns = netdev_priv(dev);
 -
- 	leaf = dp->tree.stree + le32_to_cpu(dp->tree.leafidx);
- 
- 	/* determine the word within the dmap that holds the hint
-@@ -1901,6 +1982,11 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
- 		if (mp == NULL)
- 			return -EIO;
- 		dp = (struct dmap *) mp->data;
-+		if (unlikely(!check_dmap(dp))) {
-+			jfs_error(bmp->db_ipbmap->i_sb, "Corrupt dmap page\n");
-+			release_metapage(mp);
-+			return -EIO;
-+		}
- 
- 		if (dp->tree.budmin < 0) {
- 			release_metapage(mp);
-@@ -1935,6 +2021,12 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
- 			goto backout;
- 		}
- 		dp = (struct dmap *) mp->data;
-+		if (unlikely(!check_dmap(dp))) {
-+			jfs_error(bmp->db_ipbmap->i_sb, "Corrupt dmap page\n");
-+			release_metapage(mp);
-+			rc = -EIO;
-+			goto backout;
-+		}
- 
- 		/* the dmap better be all free.
- 		 */
-@@ -1992,6 +2084,11 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
- 			continue;
- 		}
- 		dp = (struct dmap *) mp->data;
-+		if (unlikely(!check_dmap(dp))) {
-+			jfs_error(bmp->db_ipbmap->i_sb, "Corrupt dmap page\n");
-+			release_metapage(mp);
-+			continue;
-+		}
- 
- 		/* free the blocks is this dmap.
- 		 */
-@@ -3307,6 +3404,12 @@ int dbAllocBottomUp(struct inode *ip, s64 blkno, s64 nblocks)
- 			return -EIO;
- 		}
- 		dp = (struct dmap *) mp->data;
-+		if (unlikely(!check_dmap(dp))) {
-+			jfs_error(ip->i_sb, "Corrupt dmap page\n");
-+			release_metapage(mp);
-+			IREAD_UNLOCK(ipbmap);
-+			return -EIO;
-+		}
- 
- 		/* determine the number of blocks to be allocated from
- 		 * this dmap.
-@@ -3659,6 +3762,12 @@ int dbExtendFS(struct inode *ipbmap, s64 blkno,	s64 nblocks)
- 				}
- 
- 				dp = (struct dmap *) mp->data;
-+				if ((blkno & (BPERDMAP - 1)) &&
-+				    unlikely(!check_dmap(dp))) {
-+					jfs_error(ipbmap->i_sb,
-+						  "Corrupt dmap page\n");
-+					goto errout;
-+				}
- 				*l0leaf = dbInitDmap(dp, blkno, n);
- 
- 				bmp->db_nfree += n;
+-	debugfs_remove_recursive(ns->udp_ports.ddir);
+ 	kfree(dev->udp_tunnel_nic_info);
+ 	dev->udp_tunnel_nic_info = NULL;
+ }
 
 
 base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
