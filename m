@@ -1,100 +1,128 @@
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 756C52D23A6
-	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 10:51:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F5391DDC35
+	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 11:32:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782298289; cv=none; b=kKniomUf49kSi8bBMWRG7GMWtKr8BbfKtrx9M4vLGuomijJLf6RbOeMieDKtc2iK3WG368v5VmFHaYjga/RATsWGYuNj/MCXJYhjfocdd1JmrcWoAehNxKqdhgIoJLFqo/w7rD6ERecedyPsFu3hs7gPaQlxHZoRdoNSmpmn5pU=
+	t=1782300736; cv=none; b=NmXp+efMDeuLdcfpcRQZdlIEVj1BHTKp3B0pOAZT7H4PNrIraYBVrUqqC4p0CitC4FQfGxliuhGEq1Cb3glUIm85WCM1m8NUaV66AgKgV4VdIdFy18aeqLfyj5TafrEKX18MKmNCzYnv1l0vuNSDA6SdKvE81hPC4u+Zjb7yRi8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782298289; c=relaxed/simple;
-	bh=GYW+L67vqtSKmsknaMSLvfrogMa5GCU/M7foClj+35E=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=UvS6Aku5E6ikI8Pfv2Su7E8ejoYpjP0x0dZ134RkmHtiKkia1PVQ45p6KO3kGaUWsQXU92e7qpYAl1epryJ6yLlEvGsAwmm8NSL27ZtoGKI9yyBTsAbEsSm+Q9NAy9wxJsuAnp9UE4U/rApPqcwhlfFxqJ9eJFU0bz3omc9AxCs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-48638da0e05so661171b6e.3
-        for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 03:51:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782298287; x=1782903087;
-        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=i1W3v59bGQqry/PautJz8LTYDyEO8RkEpD5tp/mJE6c=;
-        b=JYwLiN7iO46cwDAOmd5dr2GZOZvgWKiGTsYE8DT+2Xp5Ea/XU5iMa256+MPWxKN77x
-         ZOtFSeogLI8haybqqTHNNjZ4UErG9X/L/G1DeOuDrnAtAWo1ErxxPtxRkXxeEdmqGN9/
-         YiZPmWm7mvcVS7Jiuxiax4P21nutftv9ebr/2fWjZMiXmuK/XENbO52m47MtRCZvWqVk
-         MrNhmBKeeL5VECK8L3MiPjQMuZxmHpYvOjKWV5s1qCKPz8tpXlq140FXUehw4LWEXWZF
-         AJtCHB9LfgZSaZKi3PszgKR9itspdrvHV8l0X2plMEKIp0lU14w/biLG2PmOjrTSNI2k
-         JQ0w==
-X-Gm-Message-State: AOJu0Yxf9fklO+gvDXohQqUyFLKm0aK6jGMIJ6UVp+f0nK3xYvoHcssA
-	3qIipYJ2CmibcGC916vKW51BD3ft8LgL0E313QzaSbJF8gH33IqKU//QlsE94BHT85t5gOBmLN2
-	8pvYfv+v26uKar2NfclNeVz/3C6xq3MkVAz+2MpIo9bHwdfLn+MKObsZLqf4=
+	s=arc-20240116; t=1782300736; c=relaxed/simple;
+	bh=S8d3bxu4UZgbdnwLcW+Znj+vA9tBHSEVu77/9QNaVJk=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=bIpuXvibsiUvMdhJAoSmX8ZPDSWzohL0ZoQwwwB2QSTA0w5OWhqxcbv+IxCLeLpeSMSzhWYnmuhnUZkkduvKiwg/KlnHtJuUHCqKhwSBZW0xUdimiSn8e9YVPCHEFsNLiqZsdJ8EiLTuoQcS8ROvY5jtzV1rIhVrbz/45Q19t1I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KWsFKYVA; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KWsFKYVA"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id F07D21F000E9;
+	Wed, 24 Jun 2026 11:32:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782300735;
+	bh=wRCs+EDT7fB1fjxp50PpuEI2xnfsXIPuXaZLiM97b/w=;
+	h=From:To:Cc:Subject:Date;
+	b=KWsFKYVAAPGprqhXjsnkISCRDp3mbhVCw22bjlUiK9FpacWdT9a9wimYiiWT/YTtz
+	 xVar8kxrz9z2zYlHk0vkEJi/jfEL2c113FZebxZaD5kQvhdZeMZqxNOLSFzSx1kuKK
+	 /vdixNPkKWBXTyFEiUwTm+BlhoN6HwVDFRavU2SCnDD2s4ptggSuTkDx+EYyMmCYFF
+	 1AHdbvpqE/9N7RIDwJOvtLAugAT+gPWnXGJllZVR1YDKrFTH415HSVFvhQ1rZZiSsW
+	 J5RpPYRkkxBqI2J/Bnx07QdSGY3+zi5PDN8Yov5vLweyczQgJimF2ejhMMn0n9IfsB
+	 dgl6V/Pu6O5+w==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] udf: Replace WARN_ON with udf_warn in udf_truncate_extents()
+Message-ID: <d9f03dae-fb04-4714-bfd1-96a003a697b9@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:2204:b0:489:9724:1992 with SMTP id
- 5614622812f47-48f29db1067mr4429858b6e.30.1782298287558; Wed, 24 Jun 2026
- 03:51:27 -0700 (PDT)
-Date: Wed, 24 Jun 2026 03:51:27 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a3bb6af.ac26f6c2.9a9c4.0008.GAE@google.com>
-Subject: [moderation/CI] Re: mm: fix data-race in folio_batch_count()
-From: syzbot ci <syzbot+ci2b07f897379e39c9@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Wed, 24 Jun 2026 11:32:14 +0000 (UTC)
 
-syzbot ci has tested the following series
+A corrupted UDF image can present a file where the recorded i_size is
+larger than the total length of its extents. When attempting to write to a
+huge offset, the block allocation path tries to extend the file by adding
+new extents. However, if the filesystem runs out of space, the error
+cleanup path invokes udf_truncate_extents() to remove any partially added
+extents beyond the original i_size.
 
-[v1] mm: fix data-race in folio_batch_count()
-https://lore.kernel.org/all/20260624092606.1083449-1-wangxuewen@kylinos.cn
-* [PATCH v1] mm: fix data-race in folio_batch_count()
+Inside udf_truncate_extents(), inode_bmap() is called to find the extent
+containing i_size. Since the total extent length is already smaller than
+i_size, inode_bmap() reaches the end of the extents and returns 0. The code
+then calculates byte_offset (which is strictly positive) and hits the
+WARN_ON(byte_offset), producing the following trace:
 
-and found the following issue:
-kernel build error
+WARNING: fs/udf/truncate.c:224 at udf_truncate_extents+0xd79/0xef0
+fs/udf/truncate.c:224
+Call Trace:
+ <TASK>
+ udf_do_extend_file+0xdc2/0x11e0 fs/udf/inode.c:621
+ inode_getblk fs/udf/inode.c:842 [inline]
+ udf_map_block+0xfc6/0x4280 fs/udf/inode.c:453
+ __udf_get_block+0x52/0x250 fs/udf/inode.c:467
+ __block_write_begin_int+0x6c2/0x1930 fs/buffer.c:2042
+ block_write_begin+0x8d/0x120 fs/buffer.c:2153
+ udf_write_begin+0x11a/0x270 fs/udf/inode.c:261
+ generic_perform_write+0x2ad/0x8b0 mm/filemap.c:4325
+ udf_file_write_iter+0x2a6/0x650 fs/udf/file.c:112
+ new_sync_write fs/read_write.c:595 [inline]
+ vfs_write+0x61e/0xbb0 fs/read_write.c:688
+ ksys_write+0x156/0x270 fs/read_write.c:740
+ do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
+ </TASK>
 
-Full report is available here:
-https://ci.syzbot.org/series/ed6b734b-c3ae-4463-9230-f601222fb149
+The WARN_ON macro must not be used for conditions that can legitimately
+happen, such as encountering a corrupted filesystem. Hitting this state is
+a filesystem inconsistency, not a kernel bug. While panic_on_warn may be
+set in some environments, WARNINGs are generally not fatal on production
+systems, but they still incorrectly indicate a kernel bug. Therefore,
+pr_err() (or in this case, udf_warn()) should be used instead if necessary.
 
-***
+Replace the WARN_ON with a udf_warn() call to log the inconsistency
+gracefully. The function then safely returns 0, which is the correct
+behavior since there are no extents beyond i_size to free.
 
-kernel build error
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      189ce3c81f8188fb737d59a8a8784f074e830238
-arch:      amd64
-compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/a1b9eb26-f378-4384-b196-dfd2a07c3d25/config
-
-./include/linux/folio_batch.h:56:9: error: call to undeclared function 'READ_ONCE'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: 7e49b6f2480c ("udf: Convert UDF to new truncate calling sequence")
+Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+43fc5ba6dcb33e3261ca@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=43fc5ba6dcb33e3261ca
+Link: https://syzkaller.appspot.com/ai_job?id=bab17bf0-0c15-4575-b262-063dfb760277
+To: "Jan Kara" <jack@suse.com>
+To: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/fs/udf/truncate.c b/fs/udf/truncate.c
+index 41b2bfd30..ef4a8d876 100644
+--- a/fs/udf/truncate.c
++++ b/fs/udf/truncate.c
+@@ -220,8 +220,14 @@ int udf_truncate_extents(struct inode *inode)
+ 	byte_offset = (offset << sb->s_blocksize_bits) +
+ 		(inode->i_size & (sb->s_blocksize - 1));
+ 	if (ret == 0) {
+-		/* We should extend the file? */
+-		WARN_ON(byte_offset);
++		if (byte_offset) {
++			/*
++			 * Extents are shorter than i_size. This can happen for corrupted
++			 * files. There is nothing to truncate.
++			 */
++			udf_warn(sb, "Extent length is shorter than i_size. "
++				     "Filesystem might be corrupted.\n");
++		}
+ 		return 0;
+ 	}
+ 	epos.offset -= adsize;
 
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
 
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
 
-The email will later be sent to:
-[akpm@linux-foundation.org david@kernel.org liam@infradead.org linux-kernel@vger.kernel.org linux-mm@kvack.org ljs@kernel.org mhocko@suse.com rppt@kernel.org surenb@google.com vbabka@kernel.org wangxuewen@kylinos.cn]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
