@@ -1,140 +1,173 @@
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 646232D6409
-	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 12:14:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 585CD263F4A
+	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 12:37:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782303274; cv=none; b=PHEcki4d7MATUDD+t+M5pXfLQKwHyAx152CTAY+VKFxeTUIB+zN6XZp4YOOMcZTjI2l6RSwFhxRMl2xaxoJKWURglu/x/EJui0xESfkD6DnSJut/oUsuceuXk8dhwyNG6TAGAT9d/k2PTbiwW9RqXbtgGOW/iCZrM/46Po0NSWw=
+	t=1782304636; cv=none; b=jP+mU0Tsh5FvMI0xa7Rq3jCOsSGAiUyyeSv41C6/VBZHeVdU2MlpZmbtRvJ2hPkcOeaaq89ucblHt/xaI8ggCOQeiLQnJ7kONtQ2a4LrLp0+lyGQmkYXftONc9McZS549B0tc3BVmyX638ZIA/4EC1JoOwoLZVPmoUJNWdvZMkI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782303274; c=relaxed/simple;
-	bh=1VcIPUC/nBpYX8U3kB1v5nOwaGgdyAKzTTbUyoLIidY=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=sMIqmC85qU0uPCcA4WVcSHvAE1fsSqrIvRaKPhiWC/pOEVSTIfXjZRE43BZszzL2fNdf0bYr8LBVrPvlI0LUXtnarNzB/fa2dg/ijDRic/hZePcObak+M+EvGsJ1yugFeSGQAmvNSY8EQooZ8OXrx0aTs7fxdaRw2NXwcI3O7HI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-48b61eabb4cso1273691b6e.1
-        for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 05:14:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782303272; x=1782908072;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=B0/BKGHSgt7kkPjfopsHIa52lwo20kFyOlX7eKJo26Y=;
-        b=lPe8/3PxzP68o/oHEX7TIwh0Eztd95SXUdX5vDNgo0ghnteScQzbMJOdkPAh+IJqfu
-         sN5rwaiW9FYYJ/hTbGAwuLCUAoWtybxlJ+IBXvZpvD4Qa8NQ1Xu7bonTRGGDWnsqt4gh
-         Q2yLhCwjmuSgc1s1pOca+axkcuqLhjkIPJxBswoDR9xw+JrvPF9yhxdEpZ5nZ9lEjJqU
-         DtQRuP9gOrTYoYH5cS8aChXm4sU5DMO/tLjKx7ujB3aKNeKWuSkbf9OGNcwTXUosIWHD
-         u1KZ0SAEPvQUopa2jcGTD2NIVxnRPx06XWFEolbeJbIqteBRZ/ExR0AGuCR1tQTtoft3
-         6ixw==
-X-Gm-Message-State: AOJu0YxaIl21Cj+XatZRycHc9RcM2BXNv7F8mrih3n/zRZ+6mtc2yJNl
-	HEqhl1ZyhahBz2VQWk2H0brifJ5mP2QrOwM/inkDUFLaxWhYZWo2gp01FLSGtBvvw3DMQpx0hHV
-	quXrby30weDpEVdxGIMAEOkGMIk/BkcbTEui9NUN/anTw92ASVaWaiR9AurQ=
+	s=arc-20240116; t=1782304636; c=relaxed/simple;
+	bh=wWYNx3Q0y30P1Vc50fQyM9jo/s/sb1FZTjQCRMYv4/U=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=iCuvN/RxwBtHGfS7gceMj28kSpmJCYPtYDmtJJykO11vEsc9zTraZk84yWKeoaC0j9sLqRjtr5ncoYc/b/rBBLozxJQM0hiwZ1N7rZLG0QcIkunMWreM/3FFz7bYZxJb/Zn7464IMUjmIaUlMGbErCafCR9xwOlKVYfwxBVRrXE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kGQ75K2k; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kGQ75K2k"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id E995F1F000E9;
+	Wed, 24 Jun 2026 12:37:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782304635;
+	bh=YJFqMWQgCDlFZSB44flLCqabRzTkNaXSfIzunGZf85k=;
+	h=From:To:Cc:Subject:Date;
+	b=kGQ75K2kcTT0fjdqSTJMMTSs3w/IFaglT1nyg3Bseo6FH5vyF3igET85jzbNpTy69
+	 qxwg0i7MgU3oVcJkPh1bUaaMnem5GOJvOQq59CVaE9aJsaHKIb6hFU96LqHnCSaNCv
+	 O7N+i/OOjtNd2I6Y9OoZhfZ35evuaDXxcgit8MoQuNOVgHudE6+8y4fQSJj9LQzKjv
+	 13nLnWlHLKuOLm3fkZb+odTd36WCIwX7Z1REzBHQUg9Ui40VCD3JS2rBST8iyOkp9g
+	 5nCrCsOqtkbvnn+KU1hZk0ayDD//VJhZWqzaybrHjsjxhJs0UOGpIz6bOe+csC3qvU
+	 zp/bQ4xvsTCAA==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] wifi: mac80211: fix rate control warnings and out-of-bounds access
+Message-ID: <f0aae0a5-4ec9-46ac-bd7e-bfbf91c4e1af@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:6718:b0:485:5982:4cfc with SMTP id
- 5614622812f47-49079492366mr2337970b6e.33.1782303272549; Wed, 24 Jun 2026
- 05:14:32 -0700 (PDT)
-Date: Wed, 24 Jun 2026 05:14:32 -0700
-In-Reply-To: <20260624073209.3703492-1-edumazet@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a3bca28.92e8a34c.2b91f1.0008.GAE@google.com>
-Subject: [syzbot ci] Re: net: clear transport header during tunnel decapsulation
-From: syzbot ci <syzbot+ci7e1fc283906ef7ab@syzkaller.appspotmail.com>
-To: davem@davemloft.net, dsahern@kernel.org, edumazet@google.com, 
-	eric.dumazet@gmail.com, horms@kernel.org, idosch@nvidia.com, kuba@kernel.org, 
-	netdev@vger.kernel.org, pabeni@redhat.com, syzbot@syzkaller.appspotmail.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Wed, 24 Jun 2026 12:37:14 +0000 (UTC)
 
-syzbot ci has tested the following series
+A warning in __rate_control_send_low() can be triggered when no supported
+transmission rate is found for a frame. This condition is fully reachable
+from user space by providing conflicting configurations, such as requesting
+a non-CCK rate for a station that only supports CCK rates, or creating a
+station with no supported rates.
 
-[v1] net: clear transport header during tunnel decapsulation
-https://lore.kernel.org/all/20260624073209.3703492-1-edumazet@google.com
-* [PATCH net] net: clear transport header during tunnel decapsulation
-
-and found the following issue:
-WARNING in geneve_udp_encap_recv
-
-Full report is available here:
-https://ci.syzbot.org/series/1f6dc47e-354f-4904-bc18-c2b7ea4d79b2
-
-***
-
-WARNING in geneve_udp_encap_recv
-
-tree:      net
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
-base:      d87363b0edfc7504ff2b144fe4cdd8154f90f42e
-arch:      amd64
-compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/7bb83c16-d55d-4d99-8c2b-6050e0022ef6/config
-
-------------[ cut here ]------------
-!skb_transport_header_was_set(skb)
-WARNING: ./include/linux/skbuff.h:3094 at geneve_udp_encap_recv+0x26ed/0x4130, CPU#1: kworker/1:3/5072
-Modules linked in:
-CPU: 1 UID: 0 PID: 5072 Comm: kworker/1:3 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: mld mld_ifc_work
-RIP: 0010:geneve_udp_encap_recv+0x26ed/0x4130
-Code: c8 00 00 00 0f b6 04 01 84 c0 0f 85 f2 18 00 00 48 8b 7c 24 78 66 44 89 6f 0a e8 7e 9b 7a 03 e9 8c 00 00 00 e8 f4 fc 33 fb 90 <0f> 0b 90 e9 2e e3 ff ff 49 83 c6 06 4c 89 f0 48 c1 e8 03 48 b9 00
-RSP: 0018:ffffc90000a08620 EFLAGS: 00010246
-RAX: ffffffff8691f92c RBX: ffff8881bcc8b5d0 RCX: ffff88816a7abb80
-RDX: 0000000000000100 RSI: 000000000000ffff RDI: 000000000000ffff
-RBP: ffffc90000a08790 R08: ffffffff903114f7 R09: 1ffffffff206229e
-R10: dffffc0000000000 R11: fffffbfff206229f R12: ffff888109f6a108
-R13: 1ffff110213ed5df R14: 0000000000000010 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8882a927b000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f6956ea5440 CR3: 000000016f55c000 CR4: 00000000000006f0
+WARNING: net/mac80211/rate.c:406 at __rate_control_send_low+0x524/0x800
+net/mac80211/rate.c:401
+...
 Call Trace:
- <IRQ>
- udp_queue_rcv_one_skb+0xfc5/0x10e0
- udp_unicast_rcv_skb+0x21a/0x3a0
- udp_rcv+0xecb/0x1db0
- ip_protocol_deliver_rcu+0x27e/0x440
- ip_local_deliver_finish+0x3bb/0x6f0
- NF_HOOK+0x336/0x3c0
- NF_HOOK+0x336/0x3c0
- process_backlog+0xa34/0x1860
- __napi_poll+0xaa/0x330
- net_rx_action+0x61d/0xf50
- handle_softirqs+0x225/0x840
- do_softirq+0x76/0xd0
- </IRQ>
- <TASK>
- __local_bh_enable_ip+0xf8/0x130
- __dev_queue_xmit+0x1ed7/0x37f0
- ip6_output+0x337/0x540
- NF_HOOK+0x177/0x4f0
- mld_sendpack+0x890/0xe10
- mld_ifc_work+0x839/0xe70
- process_scheduled_works+0xa8e/0x14e0
- worker_thread+0xa47/0xfb0
- kthread+0x388/0x470
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
+ rate_control_send_low+0xf9/0x7b0 net/mac80211/rate.c:429
+ rate_control_get_rate+0x20b/0x5d0 net/mac80211/rate.c:943
+ ieee80211_tx_h_rate_ctrl+0xafa/0x1760 net/mac80211/tx.c:764
+ invoke_tx_handlers_late+0xb5/0x1830 net/mac80211/tx.c:1859
+ ieee80211_tx+0x2d7/0x4b0 net/mac80211/tx.c:1983
+ __ieee80211_tx_skb_tid_band+0x50f/0x680 net/mac80211/tx.c:6371
+ ieee80211_tx_skb_tid_band net/mac80211/ieee80211_i.h:2456 [inline]
+ ieee80211_send_scan_probe_req net/mac80211/scan.c:685 [inline]
+ ieee80211_scan_state_send_probe+0x5b3/0xa00 net/mac80211/scan.c:713
+ ieee80211_scan_work+0x488/0x1ab0 net/mac80211/scan.c:1174
 
+Since WARN_ONCE must not be used for conditions that can legitimately
+happen, and proper logging should be used instead, this is downgraded to a
+wiphy_dbg message. The code already safely falls back to the lowest rate.
 
-***
+While investigating, a secondary bug was found. If a driver calls
+ieee80211_get_tx_rates() with a custom dest array and dest[0].idx < 0,
+__rate_control_send_low() updates info->control.rates[0].idx but does not
+update dest[0].idx. Consequently, dest[0].idx remains < 0, leading to an
+out-of-bounds array access when rate_fixup_ratelist() is subsequently
+called. This is fixed by copying the updated rate back to dest if dest !=
+info->control.rates.
 
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Additionally, a WARN in ieee80211_tx_h_rate_ctrl() can be triggered when a
+frame is sent to an associated station while scanning, but the station has
+no usable bitrates on the current band. This is also user-triggerable by
+scanning on a band where the target station has no supported rates. This
+warning is similarly downgraded to a wiphy_dbg message, while keeping the
+existing behavior of dropping the frame.
+
+Fixes: 2103dec14792 ("mac80211: select and adjust bitrates according to channel mode")
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
+Reported-by: syzbot+34463a129786910405dd@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=34463a129786910405dd
+Link: https://syzkaller.appspot.com/ai_job?id=e8a36bfc-63cc-4c4b-922c-20a8151f983a
+To: "Johannes Berg" <johannes@sipsolutions.net>
+To: <linux-wireless@vger.kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/net/mac80211/rate.c b/net/mac80211/rate.c
+index 31af7dd6a..1a9f9b3a7 100644
+--- a/net/mac80211/rate.c
++++ b/net/mac80211/rate.c
+@@ -398,12 +398,13 @@ static void __rate_control_send_low(struct ieee80211_hw *hw,
+ 		info->control.rates[0].idx = i;
+ 		break;
+ 	}
+-	WARN_ONCE(i == sband->n_bitrates,
+-		  "no supported rates for sta %pM (0x%x, band %d) in rate_mask 0x%x with flags 0x%x\n",
+-		  sta ? sta->addr : NULL,
+-		  sta ? sta->deflink.supp_rates[sband->band] : -1,
+-		  sband->band,
+-		  rate_mask, rate_flags);
++	if (i == sband->n_bitrates)
++		wiphy_dbg(
++			hw->wiphy,
++			"no supported rates for sta %pM (0x%x, band %d) in rate_mask 0x%x with flags 0x%x\n",
++			sta ? sta->addr : NULL,
++			sta ? sta->deflink.supp_rates[sband->band] : -1,
++			sband->band, rate_mask, rate_flags);
+ 
+ 	info->control.rates[0].count =
+ 		(info->flags & IEEE80211_TX_CTL_NO_ACK) ?
+@@ -915,9 +916,12 @@ void ieee80211_get_tx_rates(struct ieee80211_vif *vif,
+ 	if (!(info->control.flags & IEEE80211_TX_CTRL_DONT_USE_RATE_MASK))
+ 		mask = sdata->rc_rateidx_mask[info->band];
+ 
+-	if (dest[0].idx < 0)
++	if (dest[0].idx < 0) {
+ 		__rate_control_send_low(&sdata->local->hw, sband, sta, info,
+ 					mask);
++		if (dest != info->control.rates)
++			dest[0] = info->control.rates[0];
++	}
+ 
+ 	if (sta)
+ 		rate_fixup_ratelist(vif, sband, info, dest, max_rates);
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index ea7f63e1f..1a0a9333a 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -747,15 +747,17 @@ ieee80211_tx_h_rate_ctrl(struct ieee80211_tx_data *tx)
+ 	 * Lets not bother rate control if we're associated and cannot
+ 	 * talk to the sta. This should not happen.
+ 	 */
+-	if (WARN(test_bit(SCAN_SW_SCANNING, &tx->local->scanning) && assoc &&
+-		 !rate_usable_index_exists(sband, &tx->sta->sta),
+-		 "%s: Dropped data frame as no usable bitrate found while "
+-		 "scanning and associated. Target station: "
+-		 "%pM on %d GHz band\n",
+-		 tx->sdata->name,
+-		 encap ? ((struct ethhdr *)hdr)->h_dest : hdr->addr1,
+-		 info->band ? 5 : 2))
++	if (unlikely(test_bit(SCAN_SW_SCANNING, &tx->local->scanning) &&
++		     assoc &&
++		     !rate_usable_index_exists(sband, &tx->sta->sta))) {
++		wiphy_dbg(
++			tx->local->hw.wiphy,
++			"%s: Dropped data frame as no usable bitrate found while scanning and associated. Target station: %pM on %d GHz band\n",
++			tx->sdata->name,
++			encap ? ((struct ethhdr *)hdr)->h_dest : hdr->addr1,
++			info->band ? 5 : 2);
+ 		return TX_DROP;
++	}
+ 
+ 	/*
+ 	 * If we're associated with the sta at this point we know we can at
 
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
 
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
