@@ -1,179 +1,401 @@
-Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 287DB21638D
-	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 14:00:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 837262F7F09
+	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 18:07:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782309622; cv=none; b=ptHEV9mWwVftgndRFC2djQJoOxmrtOVBxsMdJpaX8YpeLRecDRh7mAseS2XHQbxOKeZHKVsgUWi9pt/V320uX2CNbwMTuFJLr68LZt5wMpYF5SApcjIme62BwU2hynxjs+xjblmWci7GThI1oCcp1WIHaVZSGmvZYvG8y3AsY3w=
+	t=1782324445; cv=none; b=K4iVEjXwqYymmNkUhXNOvJkRnw0iYw2+x9maVaCKwrWd2JRBfC9dMmA+nkhlJjSLGCcrvJ2fv65bqDeM7HFDHrtGkrxaIbmvmbV7CeqrtWgy48QbBNlysG9fFPss8GD9xKjJ6XFOTkEzZEvxqMofXk/pNfYh0t0aftsiAKqxLqw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782309622; c=relaxed/simple;
-	bh=uWXrXU7zV0ucP6hOYN9p5hUEGvkRWkrjHTDBqRtNFQw=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=CM1Jjbl2wDObr4amzvh/2Q7Qt3u3yhWDW9fU04M6bj+K5zkMbp9AitCcSohS513S7sfYIWbZsPgXudylkOGfjjFr0ki5ZsA+oeetYGV0K2AvIj/CAR2MCsNrIV72wOXkZvWPBVwEs/q6IQ9uxbixX8PHAOkVL4JahaoiJAQ+khQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kxHOZAiv; arc=none smtp.client-ip=209.85.216.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kxHOZAiv"
-Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-36d992fa39eso1253824a91.3
-        for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 07:00:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1782309620; x=1782914420; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=j+GnaUB9qp/nLMoVt45YRZ3NA9SXGagN6God624kPSw=;
-        b=kxHOZAiv8UyG300Ch0OxfVBvVKcLUR4gocWEnV6byYM/WURtTLZXmJEDGPFE0Rvsgc
-         LGX1oQAgGb9tVZLTo4E+QRO7mx7tdSRCFC87KxMwhjAZtUMXc5f9qrdG7vHzUHB5ZG5W
-         D1U9CoN6i0+TC1yy87WypkaGuvimVv1ecX47Lw3i2rTlHY6cIfQPx0+c33UcuvmKUYMj
-         9Tt0FJ4DSZx3to020PNkq6HNl8jScjfYa00eBpWQ1bk9lim0yOKkPEGR96ADwdnFPfc4
-         /yxDI1SFO61VG1QURWe0gzPKU7mQefTYstghITMTkKDgau6XV3AUMwAlgRSSYLQ9zpJh
-         U+zg==
+	s=arc-20240116; t=1782324445; c=relaxed/simple;
+	bh=cd5u0nqKoTJIXD+Cch7sOCKhNjGc0jbKyZ+Px3LEmIM=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=qhHaqnct+MOROI7BVOgbHWJjIBCymJZZUsZ5g6HPOc6iysiFh0bF9Ym/GCatlj/twmLzy6mge/wey3878YVNHdVqcG0TLj4+A/7uqZt0g5TbA0i1efSJDaWbmHZzBY7Q/K9jTNIR/IlSP/GHSjxDqYn2xybYCNl50Ybjle9gY2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-489677a16bbso1192020b6e.0
+        for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 11:07:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782309620; x=1782914420;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=j+GnaUB9qp/nLMoVt45YRZ3NA9SXGagN6God624kPSw=;
-        b=CDNnPCozBhT5c7qMsBAMGNV/T67I6g25AL2+K1DWJscQTkQQO/hGVhfk18zCb07ldf
-         WI7rTpg4xs3ifP+512RYvGm4JMGWhhq2rrbkfPvf2p4fe3SEtmadASioxuHajPfcf1ZI
-         Llj1EDPEXR3Injc/CMdUPsy/7FCEohyVsihbdyKTiOXrTyOqE86/J9QYZJXpCWanCE8r
-         32OOcJARItQpXK0+r+HBZ/bjRKUAnCqAOkfKYVyXl9cUaqnpSQzIoqAqxviA2ZmXuEkR
-         XZV/0ney3fAAOeV8MA5j3U5RdIG7N5DYmtYF3EGfxJXWqUyRtCKImfhuCLavt95tBAcG
-         U1Iw==
-X-Forwarded-Encrypted: i=1; AHgh+RpaqpKAJoLV/QZkwzLsoXeedQ4zoXbu55JKaLEznp9+d7pANGuVJvtFb44rdPPgbKBgleBF+14=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx/QPw9e1nKUmvXfWDHCJ66UyLuAS2Ysmo6ydc0Tb0JyWKh7ShT
-	ngcy9jwB1MVqyt4hIeHqqwsVnu+sLvT7D4BwajKrs93vLGTi4ur+4/r17BERw6M7hj8rC+Oly4H
-	40X0D1w==
-X-Received: from plpa2.prod.google.com ([2002:a17:902:9002:b0:2bd:34d1:ea8])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:903:8cd:b0:2c7:9b3e:3987
- with SMTP id d9443c01a7336-2c7c76ce140mr81245405ad.25.1782309619894; Wed, 24
- Jun 2026 07:00:19 -0700 (PDT)
-Date: Wed, 24 Jun 2026 07:00:19 -0700
-In-Reply-To: <345e9d6c-d7d9-4bab-adb3-d6a7bd27599f@mail.kernel.org>
+        d=1e100.net; s=20251104; t=1782324442; x=1782929242;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=E1YTV/fgTM5hZFmVcD8AvXheD/CrYjKbo0Mm5cgJOBg=;
+        b=d8mITST3EfkwFLpvIxMMunhAJcI8UBEbB+YnLECEw1/j8Fzw/so3pc9DGo6Ks4kV+z
+         +WnbqoIgYJZJWUB3HeYBxgbYpS6qHM/Bmj/b/wo+ZqW/zMp4TwSC1dQNz32wWommeTes
+         EHgUmjA0BQGtbpUmISq7oLkFsDXJme1DVzIaBIVD1pmDK8tedvo8bHcXYVljgAC+HJJf
+         3XnasNE+b0AZs1qGrigE7fvp8NSSLREwk1YEFnWSSlf3/FLzS9um9czuJJmTAQMeVpFM
+         W5R7vVzEB/q7MoX+f9diaP/+en97BZYGApeT+g36EuAk2y9ZJ3N9qOPpM8+WPg7LDOyL
+         IRGA==
+X-Gm-Message-State: AOJu0YyQ940irWVRTdCQlBtpVj/8GGPeBWYStPKdB29lLB9vpH/Moa+T
+	8fqv5ILKfWqMI9lI6KoLKIB8HGcECM+YWnmD845dGnBuef1gs7O7c1937r7QqXOEg9aZvUpqY8J
+	e2SLzLkrK397N65Pw+4G4g/D0CbK8vNzoKgGruIZ2pwmbp5MvpLdzJLefTCk=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <345e9d6c-d7d9-4bab-adb3-d6a7bd27599f@mail.kernel.org>
-Message-ID: <ajvi89dlwvirl4BI@google.com>
-Subject: Re: [PATCH] KVM: x86: Drop WARN_ON_ONCE() for concurrently
- disappearing interrupts
-From: Sean Christopherson <seanjc@google.com>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-bugs@googlegroups.com, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, kvm@vger.kernel.org, 
-	Ingo Molnar <mingo@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, 
-	Thomas Gleixner <tglx@kernel.org>, x86@kernel.org, hpa@zytor.com, 
-	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+X-Received: by 2002:a05:6808:228f:b0:48a:3f80:ee5f with SMTP id
+ 5614622812f47-4907948fa5cmr3747073b6e.29.1782324442641; Wed, 24 Jun 2026
+ 11:07:22 -0700 (PDT)
+Date: Wed, 24 Jun 2026 11:07:22 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a3c1cda.bd346d9a.250aae.0005.GAE@google.com>
+Subject: [moderation/CI] Re: Data in direntry (dirdata) feature
+From: syzbot ci <syzbot+ci1e5a0e2f4d024743@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Jun 24, 2026, syzbot wrote:
-> From: Alexander Potapenko <glider@google.com>
-> 
-> A warning can be triggered in kvm_check_and_inject_events() when an
-> interrupt disappears between the time it is checked via
-> kvm_cpu_has_injectable_intr() and the time it is fetched via
-> kvm_cpu_get_interrupt(). This occurs because the warning incorrectly
-> assumes that if an interrupt is injectable, fetching it must always return
-> a valid interrupt vector (i.e., not -1).
-> 
-> However, this assumption is broken by level-triggered interrupts that are
-> deasserted concurrently by another thread. For example, if a misconfigured
-> PIT or a PCI device asserts and then immediately deasserts a
-> level-triggered interrupt, the VCPU thread might see the pending interrupt
-> during the check but find it gone during the fetch, resulting in
-> kvm_cpu_get_interrupt() returning -1.
+syzbot ci has tested the following series
 
-I think this the race is limited to the PIC case, no?  Because for all other
-cases, mucking with pending IRQs requires holding vcpu->mutex.
+[v4] Data in direntry (dirdata) feature
+https://lore.kernel.org/all/20260624133642.18438-1-ablagodarenko@thelustrecollective.com
+* [PATCH v4 01/11] ext4: validate count against limit in ext4_dx_csum_verify/_set
+* [PATCH v4 02/11] ext4: replace ext4_dir_entry with ext4_dir_entry_2
+* [PATCH v4 03/11] ext4: add ext4_dir_entry_is_tail()
+* [PATCH v4 04/11] ext4: refactor dx_root to support variable dirent sizes
+* [PATCH v4 05/11] ext4: add dirdata format definitions and access helpers
+* [PATCH v4 06/11] ext4: preserve dirdata bits in get_dtype()
+* [PATCH v4 07/11] ext4: add ext4_dir_entry_len() and harden dirdata parsing
+* [PATCH v4 08/11] ext4: rename ext4_dir_rec_len() and clarify dirdata usage
+* [PATCH v4 09/11] ext4: dirdata feature
+* [PATCH v4 10/11] ext4: add dirdata set/get helpers
+* [PATCH v4 11/11] ext4: Add EXT4_IOC_SET_LUFID ioctl for setting LUFID on directory entries
 
-So rather than removing the WARN entirely, can't we fix this by exempting the
-in-kernel PIC case?  Given that we're pushing hard to move to a split IRQCHIP
-model, this would preserve the WARN for the use case we care most about.
+and found the following issues:
+* KASAN: slab-use-after-free Read in ext4_inlinedir_to_tree
+* KASAN: use-after-free Read in ext4_inlinedir_to_tree
 
-diff --git arch/x86/kvm/x86.c arch/x86/kvm/x86.c
-index 3a2e4493516f..64f6592f5b23 100644
---- arch/x86/kvm/x86.c
-+++ arch/x86/kvm/x86.c
-@@ -7694,7 +7694,7 @@ static int kvm_check_and_inject_events(struct kvm_vcpu *vcpu,
-                if (r) {
-                        int irq = kvm_cpu_get_interrupt(vcpu);
- 
--                       if (!WARN_ON_ONCE(irq == -1)) {
-+                       if (!WARN_ON_ONCE(irq == -1 && !pic_in_kernel(vcpu->kvm))) {
-                                kvm_queue_interrupt(vcpu, irq, false);
-                                kvm_x86_call(inject_irq)(vcpu, false);
-                                WARN_ON(kvm_x86_call(interrupt_allowed)(vcpu, true) < 0);
+Full report is available here:
+https://ci.syzbot.org/series/7075f9f8-5dad-4e13-83ee-2f76e1e06dcf
 
-> The warning manifests as follows:
-> 
-> ------------[ cut here ]------------
-> irq == -1
-> WARNING: arch/x86/kvm/x86.c:10860 at kvm_check_and_inject_events
-> arch/x86/kvm/x86.c:10860 [inline]
-> WARNING: arch/x86/kvm/x86.c:10860 at vcpu_enter_guest
-> arch/x86/kvm/x86.c:11356 [inline]
-> WARNING: arch/x86/kvm/x86.c:10860 at vcpu_run+0x57ec/0x7950
-> arch/x86/kvm/x86.c:11770
-> RIP: 0010:kvm_check_and_inject_events arch/x86/kvm/x86.c:10860 [inline]
-> RIP: 0010:vcpu_enter_guest arch/x86/kvm/x86.c:11356 [inline]
-> RIP: 0010:vcpu_run+0x57ec/0x7950 arch/x86/kvm/x86.c:11770
-> Call Trace:
->  <TASK>
->  kvm_arch_vcpu_ioctl_run+0x1193/0x2070 arch/x86/kvm/x86.c:12125
->  kvm_vcpu_ioctl+0xa61/0xfd0 virt/kvm/kvm_main.c:4470
->  vfs_ioctl fs/ioctl.c:51 [inline]
->  __do_sys_ioctl fs/ioctl.c:597 [inline]
->  __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->  </TASK>
-> 
-> Since this is a legitimate Time-Of-Check to Time-Of-Use (TOCTOU) race
-> condition that can occur during normal operation, WARN_ON_ONCE() must not
-> be used for conditions that can legitimately happen. The patch removes the
-> WARN_ON_ONCE() in kvm_check_and_inject_events() and replaces it with a
-> pr_err_ratelimited() to log the event instead.
+***
 
-If we can't salvage the WARN, I don't want to log anything to dmesg.  The purpose
-of the WARN is to find KVM bugs.  A ratelimited printk isn't going to help on that
-front.
+KASAN: slab-use-after-free Read in ext4_inlinedir_to_tree
 
-> Fixes: bf672720e83c ("KVM: x86: check the kvm_cpu_get_interrupt result before using it")
-> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-> Reported-by: syzbot+dd769db18693736eee89@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=dd769db18693736eee89
-> Link: https://syzkaller.appspot.com/ai_job?id=35cad3cd-95fd-4c0d-8ca8-812f58d56e59
-> Signed-off-by: Alexander Potapenko <glider@google.com>
-> 
-> ---
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 0550359ed..c5b4cddd9 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -10857,10 +10857,13 @@ static int kvm_check_and_inject_events(struct kvm_vcpu *vcpu,
->  		if (r) {
->  			int irq = kvm_cpu_get_interrupt(vcpu);
->  
-> -			if (!WARN_ON_ONCE(irq == -1)) {
-> +			if (irq != -1) {
->  				kvm_queue_interrupt(vcpu, irq, false);
->  				kvm_x86_call(inject_irq)(vcpu, false);
->  				WARN_ON(kvm_x86_call(interrupt_allowed)(vcpu, true) < 0);
-> +			} else {
-> +				pr_err_ratelimited(
-> +					"KVM: interrupt disappeared between checking and fetching\n");
->  			}
->  		}
->  		if (kvm_cpu_has_injectable_intr(vcpu))
-> 
-> 
-> base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
-> -- 
-> See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-> You can comment on the patch as usual, syzbot will try to address
-> the comments and send a new version of the patch if necessary.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      840ef6c78e6a2f694b578ecb9063241c992aaa9e
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/c9c607fc-012f-4e4c-88e7-89d5bade9f75/config
+syz repro: https://ci.syzbot.org/findings/3badb95c-16ec-4f87-adf6-da2aca94c39c/syz_repro
+
+EXT4-fs (loop1): mounted filesystem 00000000-0000-0000-0000-000000000000 r/w without journal. Quota mode: none.
+==================================================================
+BUG: KASAN: slab-use-after-free in ext4_dirent_get_data_len fs/ext4/ext4.h:4156 [inline]
+BUG: KASAN: slab-use-after-free in ext4_dir_entry_len fs/ext4/ext4.h:4189 [inline]
+BUG: KASAN: slab-use-after-free in ext4_inlinedir_to_tree+0x864/0x1030 fs/ext4/inline.c:1339
+Read of size 1 at addr ffff888108ff7c19 by task syz.1.18/5891
+
+CPU: 0 UID: 0 PID: 5891 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+ print_report+0x58/0x70 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ ext4_dirent_get_data_len fs/ext4/ext4.h:4156 [inline]
+ ext4_dir_entry_len fs/ext4/ext4.h:4189 [inline]
+ ext4_inlinedir_to_tree+0x864/0x1030 fs/ext4/inline.c:1339
+ ext4_htree_fill_tree+0x4b9/0x2140 fs/ext4/namei.c:1206
+ ext4_dx_readdir fs/ext4/dir.c:600 [inline]
+ ext4_readdir+0x2e2a/0x3720 fs/ext4/dir.c:146
+ iterate_dir+0x2e2/0x4d0 fs/readdir.c:110
+ ovl_dir_read+0x141/0x4a0 fs/overlayfs/readdir.c:388
+ ovl_check_d_type_supported+0xc5/0x150 fs/overlayfs/readdir.c:1167
+ ovl_make_workdir fs/overlayfs/super.c:695 [inline]
+ ovl_get_workdir fs/overlayfs/super.c:836 [inline]
+ ovl_fill_super_creds fs/overlayfs/super.c:1449 [inline]
+ ovl_fill_super+0x3a43/0x5d40 fs/overlayfs/super.c:1560
+ vfs_get_super fs/super.c:1267 [inline]
+ get_tree_nodev+0xbb/0x150 fs/super.c:1286
+ vfs_get_tree+0x92/0x2a0 fs/super.c:1694
+ fc_mount fs/namespace.c:1198 [inline]
+ do_new_mount_fc fs/namespace.c:3765 [inline]
+ do_new_mount+0x319/0xdc0 fs/namespace.c:3841
+ do_mount fs/namespace.c:4174 [inline]
+ __do_sys_mount fs/namespace.c:4390 [inline]
+ __se_sys_mount+0x31d/0x420 fs/namespace.c:4367
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f09e159ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f09e24a9028 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 00007f09e1815fa0 RCX: 00007f09e159ce59
+RDX: 0000200000000000 RSI: 0000200000000100 RDI: 0000000000000000
+RBP: 00007f09e1632e6f R08: 00002000000000c0 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f09e1816038 R14: 00007f09e1815fa0 R15: 00007fff17222ac8
+ </TASK>
+
+Allocated by task 5642:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ poison_kmalloc_redzone mm/kasan/common.c:398 [inline]
+ __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
+ kasan_kmalloc include/linux/kasan.h:263 [inline]
+ __do_kmalloc_node mm/slub.c:5362 [inline]
+ __kmalloc_node_track_caller_noprof+0x4c3/0x730 mm/slub.c:5497
+ kmemdup_noprof+0x2b/0x70 mm/util.c:138
+ kmemdup_noprof include/linux/fortify-string.h:715 [inline]
+ xfrm6_net_sysctl_init net/ipv6/xfrm6_policy.c:206 [inline]
+ xfrm6_net_init+0x86/0x180 net/ipv6/xfrm6_policy.c:261
+ ops_init+0x35d/0x5d0 net/core/net_namespace.c:137
+ setup_net+0x118/0x350 net/core/net_namespace.c:446
+ copy_net_ns+0x4f9/0x720 net/core/net_namespace.c:579
+ create_new_namespaces+0x3f0/0x6b0 kernel/nsproxy.c:132
+ unshare_nsproxy_namespaces+0x149/0x190 kernel/nsproxy.c:234
+ ksys_unshare+0x57d/0xa00 kernel/fork.c:3267
+ __do_sys_unshare kernel/fork.c:3341 [inline]
+ __se_sys_unshare kernel/fork.c:3339 [inline]
+ __x64_sys_unshare+0x38/0x50 kernel/fork.c:3339
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Freed by task 12:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ kasan_save_free_info+0x40/0x50 mm/kasan/generic.c:584
+ poison_slab_object mm/kasan/common.c:253 [inline]
+ __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+ kasan_slab_free include/linux/kasan.h:235 [inline]
+ slab_free_hook mm/slub.c:2705 [inline]
+ slab_free mm/slub.c:6405 [inline]
+ kfree+0x1c5/0x640 mm/slub.c:6720
+ xfrm6_net_sysctl_exit net/ipv6/xfrm6_policy.c:238 [inline]
+ xfrm6_net_exit+0x79/0xa0 net/ipv6/xfrm6_policy.c:270
+ ops_exit_list net/core/net_namespace.c:199 [inline]
+ ops_undo_list+0x43d/0x8d0 net/core/net_namespace.c:252
+ cleanup_net+0x572/0x810 net/core/net_namespace.c:702
+ process_one_work kernel/workqueue.c:3322 [inline]
+ process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+The buggy address belongs to the object at ffff888108ff7c00
+ which belongs to the cache kmalloc-64 of size 64
+The buggy address is located 25 bytes inside of
+ freed 64-byte region [ffff888108ff7c00, ffff888108ff7c40)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x108ff7
+flags: 0x17ff00000000000(node=0|zone=2|lastcpupid=0x7ff)
+page_type: f5(slab)
+raw: 017ff00000000000 ffff8881000418c0 dead000000000100 dead000000000122
+raw: 0000000000000000 0000000800200020 00000000f5000000 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 1, tgid 1 (swapper/0), ts 14581267674, free_ts 0
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x1f9/0x250 mm/page_alloc.c:1859
+ prep_new_page mm/page_alloc.c:1867 [inline]
+ get_page_from_freelist+0x21fa/0x2270 mm/page_alloc.c:3946
+ __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5304
+ alloc_slab_page mm/slub.c:3294 [inline]
+ allocate_slab+0x79/0x5e0 mm/slub.c:3408
+ new_slab mm/slub.c:3454 [inline]
+ refill_objects+0x2d5/0x350 mm/slub.c:7338
+ refill_sheaf mm/slub.c:2832 [inline]
+ __pcs_replace_empty_main+0x2bf/0x6b0 mm/slub.c:4703
+ alloc_from_pcs mm/slub.c:4801 [inline]
+ slab_alloc_node mm/slub.c:4933 [inline]
+ __do_kmalloc_node mm/slub.c:5361 [inline]
+ __kmalloc_noprof+0x485/0x720 mm/slub.c:5387
+ _kmalloc_noprof include/linux/slab.h:973 [inline]
+ _kzalloc_noprof include/linux/slab.h:1290 [inline]
+ kobject_get_path+0xc5/0x2f0 lib/kobject.c:161
+ kobject_uevent_env+0x29e/0x9e0 lib/kobject_uevent.c:548
+ device_add+0x544/0xb80 drivers/base/core.c:3738
+ device_create_groups_vargs drivers/base/core.c:4454 [inline]
+ device_create+0x269/0x300 drivers/base/core.c:4493
+ mon_bin_add+0xb6/0x130 drivers/usb/mon/mon_bin.c:1371
+ mon_bus_init+0x162/0x2a0 drivers/usb/mon/mon_main.c:291
+ mon_bus_add drivers/usb/mon/mon_main.c:188 [inline]
+ mon_notify+0x10c/0x3f0 drivers/usb/mon/mon_main.c:219
+ notifier_call_chain+0x1a5/0x3d0 kernel/notifier.c:85
+ blocking_notifier_call_chain+0x6a/0x90 kernel/notifier.c:380
+page_owner free stack trace missing
+
+Memory state around the buggy address:
+ ffff888108ff7b00: 00 00 00 00 00 00 00 04 fc fc fc fc fc fc fc fc
+ ffff888108ff7b80: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+>ffff888108ff7c00: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+                            ^
+ ffff888108ff7c80: 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc fc
+ ffff888108ff7d00: 00 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc
+==================================================================
+
+
+***
+
+KASAN: use-after-free Read in ext4_inlinedir_to_tree
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      840ef6c78e6a2f694b578ecb9063241c992aaa9e
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/c9c607fc-012f-4e4c-88e7-89d5bade9f75/config
+syz repro: https://ci.syzbot.org/findings/560b0247-7e29-4a4c-91b8-c73d275cb34f/syz_repro
+
+loop0: lost filesystem error report for type 5 error -117
+EXT4-fs (loop0): mounted filesystem 00000000-0000-0000-0000-000000000000 r/w without journal. Quota mode: none.
+==================================================================
+BUG: KASAN: use-after-free in ext4_dirent_get_data_len fs/ext4/ext4.h:4156 [inline]
+BUG: KASAN: use-after-free in ext4_dir_entry_len fs/ext4/ext4.h:4189 [inline]
+BUG: KASAN: use-after-free in ext4_inlinedir_to_tree+0x864/0x1030 fs/ext4/inline.c:1339
+Read of size 1 at addr ffff888113752019 by task syz.0.17/5794
+
+CPU: 0 UID: 0 PID: 5794 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+ print_report+0x58/0x70 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ ext4_dirent_get_data_len fs/ext4/ext4.h:4156 [inline]
+ ext4_dir_entry_len fs/ext4/ext4.h:4189 [inline]
+ ext4_inlinedir_to_tree+0x864/0x1030 fs/ext4/inline.c:1339
+ ext4_htree_fill_tree+0x4b9/0x2140 fs/ext4/namei.c:1206
+ ext4_dx_readdir fs/ext4/dir.c:600 [inline]
+ ext4_readdir+0x2e2a/0x3720 fs/ext4/dir.c:146
+ iterate_dir+0x2e2/0x4d0 fs/readdir.c:110
+ ovl_dir_read+0x141/0x4a0 fs/overlayfs/readdir.c:388
+ ovl_check_d_type_supported+0xc5/0x150 fs/overlayfs/readdir.c:1167
+ ovl_make_workdir fs/overlayfs/super.c:695 [inline]
+ ovl_get_workdir fs/overlayfs/super.c:836 [inline]
+ ovl_fill_super_creds fs/overlayfs/super.c:1449 [inline]
+ ovl_fill_super+0x3a43/0x5d40 fs/overlayfs/super.c:1560
+ vfs_get_super fs/super.c:1267 [inline]
+ get_tree_nodev+0xbb/0x150 fs/super.c:1286
+ vfs_get_tree+0x92/0x2a0 fs/super.c:1694
+ fc_mount fs/namespace.c:1198 [inline]
+ do_new_mount_fc fs/namespace.c:3765 [inline]
+ do_new_mount+0x319/0xdc0 fs/namespace.c:3841
+ do_mount fs/namespace.c:4174 [inline]
+ __do_sys_mount fs/namespace.c:4390 [inline]
+ __se_sys_mount+0x31d/0x420 fs/namespace.c:4367
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f427399ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffce99c0f38 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 00007f4273c15fa0 RCX: 00007f427399ce59
+RDX: 0000200000000000 RSI: 0000200000000100 RDI: 0000000000000000
+RBP: 00007f4273a32e6f R08: 00002000000000c0 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f4273c15fac R14: 00007f4273c15fa0 R15: 00007f4273c15fa0
+ </TASK>
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0xffff888113752e00 pfn:0x113752
+flags: 0x17ff00000000000(node=0|zone=2|lastcpupid=0x7ff)
+raw: 017ff00000000000 ffffea0004296d08 ffffea0004501b08 0000000000000000
+raw: ffff888113752e00 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as freed
+page last allocated via order 1, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5462, tgid 5462 (rm), ts 46014589837, free_ts 77936825094
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x1f9/0x250 mm/page_alloc.c:1859
+ prep_new_page mm/page_alloc.c:1867 [inline]
+ get_page_from_freelist+0x21fa/0x2270 mm/page_alloc.c:3946
+ __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5304
+ alloc_slab_page mm/slub.c:3294 [inline]
+ allocate_slab+0x79/0x5e0 mm/slub.c:3408
+ new_slab mm/slub.c:3454 [inline]
+ refill_objects+0x2d5/0x350 mm/slub.c:7338
+ refill_sheaf mm/slub.c:2832 [inline]
+ __prefill_sheaf_pfmemalloc mm/slub.c:5035 [inline]
+ kmem_cache_prefill_sheaf+0x2fb/0x550 mm/slub.c:5123
+ mt_get_sheaf lib/maple_tree.c:154 [inline]
+ mas_alloc_nodes+0x1c2/0x350 lib/maple_tree.c:1119
+ mas_preallocate+0x2cf/0x630 lib/maple_tree.c:4961
+ vma_iter_prealloc mm/vma.h:577 [inline]
+ __split_vma+0x318/0xa50 mm/vma.c:529
+ vms_gather_munmap_vmas+0x322/0x1370 mm/vma.c:1427
+ __mmap_setup mm/vma.c:2439 [inline]
+ __mmap_region mm/vma.c:2756 [inline]
+ mmap_region+0x8f9/0x2310 mm/vma.c:2860
+ do_mmap+0xc3b/0x10c0 mm/mmap.c:560
+ vm_mmap_pgoff+0x272/0x4e0 mm/util.c:581
+ ksys_mmap_pgoff+0x4dc/0x760 mm/mmap.c:606
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+page last free pid 5736 tgid 5736 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ __free_pages_prepare mm/page_alloc.c:1406 [inline]
+ __free_frozen_pages+0xc1e/0xd10 mm/page_alloc.c:2950
+ __slab_free+0x274/0x2c0 mm/slub.c:5767
+ qlink_free mm/kasan/quarantine.c:163 [inline]
+ qlist_free_all+0x99/0x100 mm/kasan/quarantine.c:179
+ kasan_quarantine_reduce+0x148/0x160 mm/kasan/quarantine.c:286
+ __kasan_slab_alloc+0x22/0x80 mm/kasan/common.c:350
+ kasan_slab_alloc include/linux/kasan.h:253 [inline]
+ slab_post_alloc_hook mm/slub.c:4612 [inline]
+ slab_alloc_node mm/slub.c:4945 [inline]
+ __kmalloc_cache_noprof+0x2ab/0x660 mm/slub.c:5511
+ _kmalloc_noprof include/linux/slab.h:969 [inline]
+ _kzalloc_noprof include/linux/slab.h:1290 [inline]
+ ref_tracker_alloc+0x15b/0x4b0 lib/ref_tracker.c:270
+ __netdev_tracker_alloc include/linux/netdevice.h:4489 [inline]
+ netdev_hold include/linux/netdevice.h:4518 [inline]
+ rx_queue_add_kobject net/core/net-sysfs.c:1236 [inline]
+ net_rx_queue_update_kobjects+0x1c4/0x780 net/core/net-sysfs.c:1301
+ register_queue_kobjects net/core/net-sysfs.c:2093 [inline]
+ netdev_register_kobject+0x21f/0x310 net/core/net-sysfs.c:2341
+ register_netdevice+0x1433/0x1eb0 net/core/dev.c:11439
+ ipvlan_link_new+0x3e3/0xa90 drivers/net/ipvlan/ipvlan_main.c:593
+ rtnl_newlink_create+0x310/0xb00 net/core/rtnetlink.c:3905
+ __rtnl_newlink net/core/rtnetlink.c:4036 [inline]
+ rtnl_newlink+0x167f/0x1bd0 net/core/rtnetlink.c:4151
+ rtnetlink_rcv_msg+0x802/0xc00 net/core/rtnetlink.c:7068
+ netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2556
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x7bb/0x940 net/netlink/af_netlink.c:1345
+
+Memory state around the buggy address:
+ ffff888113751f00: 00 00 00 00 00 00 00 04 fc fc fc fc fc fc fc fc
+ ffff888113751f80: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+>ffff888113752000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                            ^
+ ffff888113752080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff888113752100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[ablagodarenko@thelustrecollective.com adilger.kernel@dilger.ca adilger@dilger.ca adilger@diliger.ca artem.blagodarenko@gmail.com linux-ext4@vger.kernel.org pravin.shelar@sun.com xiaowu.417@qq.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
