@@ -1,233 +1,100 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E7CE3A451E
-	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 09:59:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 756C52D23A6
+	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 10:51:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782295180; cv=none; b=BcmMn2ovoYA8VLJa2MWqbd6vYxPlxdKkUDu8/eVEG55UGAsMzsaWU8FT8oXE5ASHeQAQPUHLix2sjAy/kbYCYvV91vnjnxl/1cSDwz4R3syUzYt94g1TJ0WS+rfCirAPljsO3aBppTqt99ExbNYgDikp/nY3WR0ET8Uv7FBICh4=
+	t=1782298289; cv=none; b=kKniomUf49kSi8bBMWRG7GMWtKr8BbfKtrx9M4vLGuomijJLf6RbOeMieDKtc2iK3WG368v5VmFHaYjga/RATsWGYuNj/MCXJYhjfocdd1JmrcWoAehNxKqdhgIoJLFqo/w7rD6ERecedyPsFu3hs7gPaQlxHZoRdoNSmpmn5pU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782295180; c=relaxed/simple;
-	bh=7jHp5eB4Pr2SqEDTXJgqvQ/27t6NE2bPpkniXkY+0bY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=V4NU4MseoCm2FeAHAKOwLMFlXtvwO0Vo0OvfyCeQzasibTRYpvOcL5caBvhKTNZc1OMj1bEgnksK/cgxXJHRvwYeBdRvliSpSLBEQIRS3uTFXmEn8q9DJ6JxmYIJ6nnwWYQ0cY52uI/YKV4R86FeXXNt73wNa+i5tPZVYYRQk2I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=hIRyhm74; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=ce+JIJEU; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=hIRyhm74; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=ce+JIJEU; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="hIRyhm74";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="ce+JIJEU";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="hIRyhm74";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="ce+JIJEU"
-Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 4D9E271454;
-	Wed, 24 Jun 2026 09:59:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1782295177; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=EQPJ4EiuDrllZJA3azM9p7xLL+SsT75vO0yd801J6Bo=;
-	b=hIRyhm747agLQD6qwgpkCfv55RDAObRr8yKx4lakb/HoN10G5aFgzD0QvQi9L6LFljSz4U
-	6zwnA19a78MUb9wTQYw6DejYiztH8im/gVwcYZYm+0IESD6UTdfvUfZexr+mwgCuCjI/kv
-	d16Y9fETsOsy62j841gQDlqXhDUBRbo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1782295177;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=EQPJ4EiuDrllZJA3azM9p7xLL+SsT75vO0yd801J6Bo=;
-	b=ce+JIJEUcGCeKhGG98ZNEOZ38Ap19UouOfq7A2eHLGxuxWRRgYJ2l5/1yVqwiTgi06YIHp
-	iqb4HF0Lx/JCj4CQ==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1782295177; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=EQPJ4EiuDrllZJA3azM9p7xLL+SsT75vO0yd801J6Bo=;
-	b=hIRyhm747agLQD6qwgpkCfv55RDAObRr8yKx4lakb/HoN10G5aFgzD0QvQi9L6LFljSz4U
-	6zwnA19a78MUb9wTQYw6DejYiztH8im/gVwcYZYm+0IESD6UTdfvUfZexr+mwgCuCjI/kv
-	d16Y9fETsOsy62j841gQDlqXhDUBRbo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1782295177;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=EQPJ4EiuDrllZJA3azM9p7xLL+SsT75vO0yd801J6Bo=;
-	b=ce+JIJEUcGCeKhGG98ZNEOZ38Ap19UouOfq7A2eHLGxuxWRRgYJ2l5/1yVqwiTgi06YIHp
-	iqb4HF0Lx/JCj4CQ==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 44EC7779A8;
-	Wed, 24 Jun 2026 09:59:37 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id cfrMEImqO2qfKAAAD6G6ig
-	(envelope-from <jack@suse.cz>); Wed, 24 Jun 2026 09:59:37 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-	id D7F73A093E; Wed, 24 Jun 2026 11:59:36 +0200 (CEST)
-Date: Wed, 24 Jun 2026 11:59:36 +0200
-From: Jan Kara <jack@suse.cz>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-bugs@googlegroups.com, Jan Kara <jack@suse.com>, 
-	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Subject: Re: [PATCH] udf: Mark LVID buffer as uptodate before marking it dirty
-Message-ID: <m3sbeyqcoykao3mvz2e33jxixcohrawowcqcagfcf444qxkbve@rddlcubo7wze>
-References: <6ffb2ca8-e22f-4fd6-9f37-7202ec0878bd@mail.kernel.org>
+	s=arc-20240116; t=1782298289; c=relaxed/simple;
+	bh=GYW+L67vqtSKmsknaMSLvfrogMa5GCU/M7foClj+35E=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=UvS6Aku5E6ikI8Pfv2Su7E8ejoYpjP0x0dZ134RkmHtiKkia1PVQ45p6KO3kGaUWsQXU92e7qpYAl1epryJ6yLlEvGsAwmm8NSL27ZtoGKI9yyBTsAbEsSm+Q9NAy9wxJsuAnp9UE4U/rApPqcwhlfFxqJ9eJFU0bz3omc9AxCs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-48638da0e05so661171b6e.3
+        for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 03:51:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782298287; x=1782903087;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=i1W3v59bGQqry/PautJz8LTYDyEO8RkEpD5tp/mJE6c=;
+        b=JYwLiN7iO46cwDAOmd5dr2GZOZvgWKiGTsYE8DT+2Xp5Ea/XU5iMa256+MPWxKN77x
+         ZOtFSeogLI8haybqqTHNNjZ4UErG9X/L/G1DeOuDrnAtAWo1ErxxPtxRkXxeEdmqGN9/
+         YiZPmWm7mvcVS7Jiuxiax4P21nutftv9ebr/2fWjZMiXmuK/XENbO52m47MtRCZvWqVk
+         MrNhmBKeeL5VECK8L3MiPjQMuZxmHpYvOjKWV5s1qCKPz8tpXlq140FXUehw4LWEXWZF
+         AJtCHB9LfgZSaZKi3PszgKR9itspdrvHV8l0X2plMEKIp0lU14w/biLG2PmOjrTSNI2k
+         JQ0w==
+X-Gm-Message-State: AOJu0Yxf9fklO+gvDXohQqUyFLKm0aK6jGMIJ6UVp+f0nK3xYvoHcssA
+	3qIipYJ2CmibcGC916vKW51BD3ft8LgL0E313QzaSbJF8gH33IqKU//QlsE94BHT85t5gOBmLN2
+	8pvYfv+v26uKar2NfclNeVz/3C6xq3MkVAz+2MpIo9bHwdfLn+MKObsZLqf4=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6ffb2ca8-e22f-4fd6-9f37-7202ec0878bd@mail.kernel.org>
-X-Spam-Flag: NO
-X-Spamd-Result: default: False [-3.80 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	MID_RHS_NOT_FQDN(0.50)[];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	MISSING_XM_UA(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	ARC_NA(0.00)[];
-	TO_DN_SOME(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	RCVD_COUNT_THREE(0.00)[3];
-	RCPT_COUNT_FIVE(0.00)[5];
-	FROM_EQ_ENVFROM(0.00)[];
-	FUZZY_RATELIMITED(0.00)[rspamd.com];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	RCVD_TLS_LAST(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.com:email]
-X-Spam-Level: 
-X-Spam-Score: -3.80
+X-Received: by 2002:a05:6808:2204:b0:489:9724:1992 with SMTP id
+ 5614622812f47-48f29db1067mr4429858b6e.30.1782298287558; Wed, 24 Jun 2026
+ 03:51:27 -0700 (PDT)
+Date: Wed, 24 Jun 2026 03:51:27 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a3bb6af.ac26f6c2.9a9c4.0008.GAE@google.com>
+Subject: [moderation/CI] Re: mm: fix data-race in folio_batch_count()
+From: syzbot ci <syzbot+ci2b07f897379e39c9@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue 23-06-26 12:30:52, syzbot wrote:
-> From: Aleksandr Nogikh <nogikh@google.com>
-> 
-> When an I/O error occurs while writing the Logical Volume Integrity
-> Descriptor (LVID) buffer to the block device, the block layer's completion
-> handler (`end_buffer_write_sync()`) clears the `BH_Uptodate` flag on the
-> buffer. However, the buffer still contains valid LVID data in memory. If
-> the filesystem is subsequently remounted read-write or synced,
-> `udf_open_lvid()` or `udf_sync_fs()` will modify the LVID buffer and call
-> `mark_buffer_dirty()`. This triggers a spurious
-> `WARN_ON_ONCE(!buffer_uptodate(bh))` warning in `mark_buffer_dirty()`
-> because the buffer is not marked uptodate, even though its in-memory
-> contents are valid and are about to be overwritten.
-> 
-> To prevent this spurious warning, unconditionally set the `BH_Uptodate`
-> flag before calling `mark_buffer_dirty()` in `udf_open_lvid()` and
-> `udf_sync_fs()`. This acknowledges that the in-memory buffer is valid and
-> matches the workaround previously applied to `udf_close_lvid()` in commit
-> 853a0c25baf9 ("udf: Mark LVID buffer as uptodate before marking it dirty").
-> Extending this workaround ensures consistent behavior across all LVID
-> updates.
-> 
-> Buffer I/O error on dev loop0, logical block 128, lost sync page write
-> ------------[ cut here ]------------
-> !buffer_uptodate(bh)
-> WARNING: fs/buffer.c:1087 at mark_buffer_dirty+0x299/0x410 fs/buffer.c:1087
-> ...
-> Call Trace:
->  <TASK>
->  udf_open_lvid+0x369/0x5b0 fs/udf/super.c:2078
->  udf_reconfigure+0x336/0x540 fs/udf/super.c:679
->  reconfigure_super+0x232/0x8f0 fs/super.c:1080
->  vfs_cmd_reconfigure fs/fsopen.c:268 [inline]
->  vfs_fsconfig_locked+0x171/0x320 fs/fsopen.c:297
->  __do_sys_fsconfig fs/fsopen.c:463 [inline]
->  __se_sys_fsconfig+0x6b9/0x810 fs/fsopen.c:350
->  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
->  </TASK>
-> 
-> Fixes: 853a0c25baf9 ("udf: Mark LVID buffer as uptodate before marking it dirty")
-> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-> Reported-by: syzbot+0306b38d9ed6ef71467d@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=0306b38d9ed6ef71467d
-> Link: https://syzkaller.appspot.com/ai_job?id=05f8e20f-f080-4c7f-a206-08dbc15cb4a1
-> Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+syzbot ci has tested the following series
 
-Thanks. I've added the patch to my tree.
+[v1] mm: fix data-race in folio_batch_count()
+https://lore.kernel.org/all/20260624092606.1083449-1-wangxuewen@kylinos.cn
+* [PATCH v1] mm: fix data-race in folio_batch_count()
 
-								Honza
+and found the following issue:
+kernel build error
 
-> 
-> ---
-> diff --git a/fs/udf/super.c b/fs/udf/super.c
-> index cad2e15d6..7fa2e52cf 100644
-> --- a/fs/udf/super.c
-> +++ b/fs/udf/super.c
-> @@ -2040,6 +2040,17 @@ static int udf_load_vrs(struct super_block *sb, struct udf_options *uopt,
->  	return 0;
->  }
->  
-> +static void udf_mark_buffer_dirty(struct buffer_head *bh)
-> +{
-> +	/*
-> +	 * We set buffer uptodate unconditionally here to avoid spurious
-> +	 * warnings from mark_buffer_dirty() when previous EIO has marked
-> +	 * the buffer as !uptodate
-> +	 */
-> +	set_buffer_uptodate(bh);
-> +	mark_buffer_dirty(bh);
-> +}
-> +
->  static void udf_finalize_lvid(struct logicalVolIntegrityDesc *lvid)
->  {
->  	struct timespec64 ts;
-> @@ -2075,7 +2086,7 @@ static void udf_open_lvid(struct super_block *sb)
->  		UDF_SET_FLAG(sb, UDF_FLAG_INCONSISTENT);
->  
->  	udf_finalize_lvid(lvid);
-> -	mark_buffer_dirty(bh);
-> +	udf_mark_buffer_dirty(bh);
->  	sbi->s_lvid_dirty = 0;
->  	mutex_unlock(&sbi->s_alloc_mutex);
->  	/* Make opening of filesystem visible on the media immediately */
-> @@ -2108,14 +2119,8 @@ static void udf_close_lvid(struct super_block *sb)
->  	if (!UDF_QUERY_FLAG(sb, UDF_FLAG_INCONSISTENT))
->  		lvid->integrityType = cpu_to_le32(LVID_INTEGRITY_TYPE_CLOSE);
->  
-> -	/*
-> -	 * We set buffer uptodate unconditionally here to avoid spurious
-> -	 * warnings from mark_buffer_dirty() when previous EIO has marked
-> -	 * the buffer as !uptodate
-> -	 */
-> -	set_buffer_uptodate(bh);
->  	udf_finalize_lvid(lvid);
-> -	mark_buffer_dirty(bh);
-> +	udf_mark_buffer_dirty(bh);
->  	sbi->s_lvid_dirty = 0;
->  	mutex_unlock(&sbi->s_alloc_mutex);
->  	/* Make closing of filesystem visible on the media immediately */
-> @@ -2397,7 +2402,7 @@ static int udf_sync_fs(struct super_block *sb, int wait)
->  		 * Blockdevice will be synced later so we don't have to submit
->  		 * the buffer for IO
->  		 */
-> -		mark_buffer_dirty(bh);
-> +		udf_mark_buffer_dirty(bh);
->  		sbi->s_lvid_dirty = 0;
->  	}
->  	mutex_unlock(&sbi->s_alloc_mutex);
-> 
-> 
-> base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
-> -- 
-> See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-> You can comment on the patch as usual, syzbot will try to address
-> the comments and send a new version of the patch if necessary.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+Full report is available here:
+https://ci.syzbot.org/series/ed6b734b-c3ae-4463-9230-f601222fb149
+
+***
+
+kernel build error
+
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
+base:      189ce3c81f8188fb737d59a8a8784f074e830238
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/a1b9eb26-f378-4384-b196-dfd2a07c3d25/config
+
+./include/linux/folio_batch.h:56:9: error: call to undeclared function 'READ_ONCE'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[akpm@linux-foundation.org david@kernel.org liam@infradead.org linux-kernel@vger.kernel.org linux-mm@kvack.org ljs@kernel.org mhocko@suse.com rppt@kernel.org surenb@google.com vbabka@kernel.org wangxuewen@kylinos.cn]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
