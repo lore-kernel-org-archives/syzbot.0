@@ -1,205 +1,515 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 703F92F7F09
-	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 18:10:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782324616; cv=none; b=jxYjLrb/+iLtJLQfJ9tfpkwFJUJT1FdLAKUePL11iKzY4aIJpPrZFcrjGA7b0Dl3PyPEZ5ZoLcejrgfwCjYkvDA8CZ77ryiu/BDHDbQRm92YAWQ3G6nrAYZ/TSzKPJIKgpK5pIg+46pECCxYzU5bwlQSITHMWePBLVVqbO35CYk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782324616; c=relaxed/simple;
-	bh=U7F/e/0PSUexGQT3TUe5TCtnD/GVeTFULNf4c0Q/3NY=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=tgUw7pbmIYAXnq7VGsecXIbZAbdoK+iRJbbPjk3Kzsi+Ft0lWjxftN5QvO8OrdMt2eL7yEpOJWrc9Jwra0mPMOtCarglqfNLAL0brWQZ9rtmWD3MMnX85FVVAI2A5WJWhC/74zDLQ91rRKu9QSZmYVjg4pTUmaNQ9Urq9DmHhiI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nu7/OlE5; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C23DC3783B0
+	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 22:52:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.49
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782341560; cv=pass; b=QSNqTGcXGMB1+XvcJtwwmw6FTuWZLJbzxS+SJMJSPN3XtJMx/YVal7gT3bCU/EMAmLu+uiLp7CWiItZbRe1d8n53RrdjhEBee/acW2H7/IxLlOt4H850168vswLzmbma1BsS9Gsa2X85teZC2LIBcL3B5Qz96NO6fmlmnnl0ERM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782341560; c=relaxed/simple;
+	bh=FI7HCtKa2jbqgj3g/SwSF+dNRRErKRnJ4k3Ri1nr6KU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=A0soj275vhbBn6D+iQBizl2LUYbM1b7e9r+MXD8eRay2MpmLD7VxYHBbW8sXFz/fCIRhfhsNgNKtp6hykVSKmFAwsNvTrNDnYSa3KhnbA80/mEiSyYC8py5Jo7VEi8SFs/2oalbgYtPh32wGuVvjhDYrSKiGj/qg4TlwkdGLX4Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cWEWr5mJ; arc=pass smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nu7/OlE5"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 0FFA31F000E9;
-	Wed, 24 Jun 2026 18:10:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782324615;
-	bh=l2XLe9sd86K+DopYwmQ4bu2ToGGAfGfKpP/ROZRBYKU=;
-	h=From:To:Cc:Subject:Date;
-	b=nu7/OlE5XU++pw4MN+LxFsV5l2u8k0MEvuk1vzEmONIydOolpCuemDOY3MhhA1xR6
-	 8eBVRnuepz2X6cg4sn7gmBYkG8pzSYnWM38GKzgo/RbclydqNa/BiXTWD6i7QVAAvH
-	 B1/J+iXFL2URUVK7v8BDXbUJ2fy3cP9CnFpf53+u96KCmQz1EUDz8B9zu3UCWcLBoQ
-	 eWnoSTB8d5s8peSDvzrdWgFByGoDW2ifC6jyatKJ9mmOgqISGMxfoM6jlS0bA7Kjjp
-	 pTnJVnxjifjX8FX5P3FrXPMf6GW/PynQ+Fz2PUpYKFmdUlvHPVc2rxEjZWyrpYb/zU
-	 N0ssLaasD5PeA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] ext4: fix warning when starting journal on frozen filesystem
-Message-ID: <83efa4e7-b102-4abd-bbfb-142fb7b3254a@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cWEWr5mJ"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-490b4a8e28bso12095885e9.1
+        for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 15:52:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1782341556; cv=none;
+        d=google.com; s=arc-20240605;
+        b=LugwcPpIZnsiEBZpDPs2RrRGy00Tg0lSl9U18E0sWw4zQxB1J3P3e+39oNov6epo2y
+         6vYVwY48FXOc4j3chVgLDnKFuyqFwjIas/T8oTO5yMYNYKfR7GPooTT6iCM59n9M7IGj
+         mW7uLyQBFtEMtAxOxVlJuqyW0b2CMxxDMGuiHyAuJED6trF4AcCQtkkURHlKM4QWQDrz
+         LygcTPplp6SBKHowDHMKKPU+iKIbSyvsoHv/6cgbEs2pNoASGUrLuuukMrJvOtBXTCn1
+         dd1Z9uhOOsPxhOk9N3WFRME653fQx1zpwHAr/LlcqTU6Gewepgj+2Q0eXQAEgK6i7uqF
+         i9rA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=cKjWPC49A6Ixx2XoOUODObz27g5t/ZHDXmEOFiJgD5E=;
+        fh=k+7MP4G/Vf2uOo7Tsq/ng0djBH3tAwjNQAX2vmN6mVE=;
+        b=ekxqlnKf8NwxVBrVGP2hUljaa9YD3ERAEew+3nI6vI5Vdunk8SpJWywdAyD35/S5eq
+         v041HmeG8FUdgcFKb7vF2KscpYLKpt9nzc7kH1xWq6oaP2P3BasCBHGZwdo5dfbnn3s1
+         8QPrfTqI+iZKakf6DhlGhO73q3RVq5h63hh/QSX/V4+cJxmy32T+NbaKk9QHCrPB6GK5
+         mstoLTpgUNnWgIGalGjG9Cp1dwylh8ZnwC97vL/djmeds9fP0xCnn4fIal8jpqpy3ZLH
+         4Ak3cKKN/Z5+XpnbCDcKgCl8dURvNwNy2WzgK5tz6xXixPoC8Y2O5CYTv+reeD8mXZMA
+         fccw==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1782341556; x=1782946356; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cKjWPC49A6Ixx2XoOUODObz27g5t/ZHDXmEOFiJgD5E=;
+        b=cWEWr5mJpLSo1Q4AH0BkljuNhcFa1PxOVjjuNoZPrJvL755uEUZlE4uAF86eR0y9Jc
+         viikuc1qY86T2LQXEMESAQ2LFEx/EFlyJAFaE9rMb5/CHdPCjos+H5NNU4zqXP2bFDJy
+         criRPX5AnygOnWwHoqq1DQyh4ry+ZYqYkATsHlGB+XLCqMdnAfbYNqfaVlKW2gPWKUNE
+         pLZniPCVF1MfdCGM5WcVIpXYtpbxkpYgCPiQW3KcaBW9CorpuFu6ZP/ybhZIJYizEt+A
+         SeTldBq/5vmdyBt422/SolGy/FYni2wh0cYHm2dCcLEvrmHyr7RhH0ap4R5ie0VNnF6n
+         QquA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782341556; x=1782946356;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=cKjWPC49A6Ixx2XoOUODObz27g5t/ZHDXmEOFiJgD5E=;
+        b=MSyLKZMi3CVZTU4n/dA7VyPT2n+T8dvHN4Xx209in8lr3uvhMZ2286K0WPjbcAf7Ke
+         /wh0QEe/zfLcuToCx8YTC0LgvKU4YKMTl0EUSroT1ntDxVqeCB5M0TUhgiIHQe/qy9xx
+         pKT9yGYw5bgnenCSr3yF3Qxy7pTP9SWG29Ww3iIBMQhhoU4Lx60y79NG1bgGAa0WsDgh
+         m8xe2kKSwvtdjPHyA4HpRCfhj8I7PgfJ8THw/J8A0Nsdn+RT2GJfevkJrZiH5TLAhsvN
+         +K5luvH1VHZ0/zt/UrNAQWfpmJAsaVSRvc3Xn7ilRUt8tZEJ2iujSv9Vko6HcA7S0Pql
+         N2fA==
+X-Forwarded-Encrypted: i=1; AFNElJ/QXqAdu6skvmRQVvMvKIYJnEH6xPvXgbqUta/xJURdqswLBtWln5jj5fUbdIHRfXYjpum+gAU=@lists.linux.dev
+X-Gm-Message-State: AOJu0YxoTtP8Cie7xDADesvNG+PMbmJ0aXg4d6mYOnA/OLt7TtWFJ90D
+	7f3wgClUg+uX2Iqg0Xe78QmLPUWHlBkoAoFctP5DAIB9Ggk3qnswxGgeIqlZYyUzUjGc7/1JVJ/
+	fDLc7bprTrq/cVgCWiuYtdHvKujhwbUbVgFUHF1vo
+X-Gm-Gg: AfdE7cld0OkoPptGWUNl5s4DTXGbbVU12CNkBuFdBX2E2/WqO7WIMQzSUV0S+P16EHO
+	7dgYc3oYEVaqNUq205ME/Q37Jvg1OC7WkpeA7dMNQuAA2NN1faiMyeeNcmEiNdZBT8NxcsS9rUv
+	GkKgBt9WkABrh+OI8clKnc9fYKy14xLkXS0k11JMcVs1Tn2WAFA4/OVh96fkBqBSQQMlTZRd6fy
+	OLtNZhb2DG9cZXpBo6vuc/FMCRJOfK9T8nvvFnmQhy+Gnhgj/ZSNx17qGpVigro+ZEEVcPAadDc
+	hhxyM9L2isTR1A/ltfk8F+V36RjEJiC30R0HKRRKGwfUnRqEJLVYRdFp4L+3f8LpZJ9L+UPc
+X-Received: by 2002:a05:600c:4512:b0:490:3d62:f5e1 with SMTP id
+ 5b1f17b1804b1-4926087280cmr76132085e9.22.1782341555424; Wed, 24 Jun 2026
+ 15:52:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Wed, 24 Jun 2026 18:10:15 +0000 (UTC)
+References: <6a3c1cda.bd346d9a.250aae.0005.GAE@google.com>
+In-Reply-To: <6a3c1cda.bd346d9a.250aae.0005.GAE@google.com>
+From: Pimyn Girgis <pimyn@google.com>
+Date: Thu, 25 Jun 2026 00:52:24 +0200
+X-Gm-Features: AVVi8CcmoL_xYfatTmVi7uGcSiSwKqPnVG8haYX8z6LzPphXhveFWU6qRJKOcpc
+Message-ID: <CAJWNTGxHJFrzcu7=8nvxePbkWGgwy4hwAtqwrDkeHcQvPatnhg@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: Data in direntry (dirdata) feature
+To: syzbot ci <syzbot+ci1e5a0e2f4d024743@syzkaller.appspotmail.com>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-A WARNING is triggered in ext4_journal_check_start() when a background
-writeback thread attempts to start a journal transaction on a frozen
-filesystem:
-
-WARNING: fs/ext4/ext4_jbd2.c:78 at ext4_journal_check_start+0x25a/0x2b0
-fs/ext4/ext4_jbd2.c:78
-Call Trace:
- <TASK>
- __ext4_journal_start_sb+0x147/0x5d0 fs/ext4/ext4_jbd2.c:107
- __ext4_journal_start fs/ext4/ext4_jbd2.h:242 [inline]
- ext4_do_writepages+0x1018/0x47a0 fs/ext4/inode.c:2930
- ext4_writepages+0x241/0x3b0 fs/ext4/inode.c:3042
- do_writepages+0x338/0x560 mm/page-writeback.c:2571
- __writeback_single_inode+0x12e/0xf90 fs/fs-writeback.c:1764
- writeback_sb_inodes+0x96d/0x18a0 fs/fs-writeback.c:2056
- wb_writeback+0x41c/0xad0 fs/fs-writeback.c:2241
- wb_do_writeback fs/fs-writeback.c:2388 [inline]
- wb_workfn+0x3f8/0xf10 fs/fs-writeback.c:2428
- </TASK>
-
-The issue occurs during the EXT4_IOC_SHUTDOWN ioctl, which initiates a
-freeze via ext4_force_shutdown() and bdev_freeze(). If fs_bdev_freeze()
-successfully freezes the filesystem but sync_blockdev() fails (e.g., due to
-an I/O error or ENOSPC), fs_bdev_freeze() returns an error without thawing
-the filesystem. This leaves the filesystem stuck in the SB_FREEZE_COMPLETE
-state.
-
-Consequently, ext4_force_shutdown() sees the error and aborts immediately
-without setting the EXT4_FLAGS_SHUTDOWN flag. Because sync_blockdev()
-failed, dirty pages remain in the page cache. A background writeback thread
-eventually retries writing them. Since the shutdown flag was never set,
-ext4_do_writepages() assumes the filesystem is healthy and proceeds to
-start a journal transaction, hitting the WARN_ON in
-ext4_journal_check_start().
-
-A background writeback thread can legitimately attempt to write dirty pages
-on a frozen filesystem if ext4_writepages() previously failed (e.g., due to
-ENOSPC or EDQUOT) during the sync_filesystem phase of the freeze. In such
-cases, sync_filesystem can still return 0, allowing the freeze to complete
-but leaving dirty pages behind. Since this sequence can legitimately
-happen, WARN_ON must not be used for conditions that can legitimately
-happen, and ext4_msg() should be used instead.
-
-To fix this comprehensively, this patch implements a multi-layered
-approach. First, it replaces the WARN_ON in ext4_journal_check_start() with
-an ext4_msg() error log and an -EROFS return, as it is a recoverable state.
-Second, it updates fs_bdev_freeze() to explicitly call thaw_super() to undo
-the freeze if sync_blockdev() fails after a successful freeze_super().
-Third, it updates ext4_force_shutdown() to set EXT4_FLAGS_SHUTDOWN even if
-bdev_freeze() fails, ensuring the filesystem is properly marked as shut
-down. Finally, it updates ext4_sync_fs() to return -EROFS if the journal is
-aborted, ensuring that freeze_super() fails if the filesystem cannot be
-cleanly synced.
-
-Fixes: 49ef8832fb1a ("bdev: implement freeze and thaw holder operations")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+b75d75f957975f3d40e3@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=b75d75f957975f3d40e3
-Link: https://syzkaller.appspot.com/ai_job?id=a83c4c4e-9d52-4ccc-816d-160565cbc871
-To: "Christian Brauner" <brauner@kernel.org>
-To: <linux-ext4@vger.kernel.org>
-To: <linux-fsdevel@vger.kernel.org>
-To: "Theodore Ts'o" <tytso@mit.edu>
-To: "Alexander Viro" <viro@zeniv.linux.org.uk>
-Cc: "Andreas Dilger" <adilger.kernel@dilger.ca>
-Cc: "Jan Kara" <jack@suse.cz>
-Cc: "Baokun Li" <libaokun@linux.alibaba.com>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Ojaswin Mujoo" <ojaswin@linux.ibm.com>
-Cc: "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>
-Cc: "Zhang Yi" <yi.zhang@huawei.com>
-
----
-diff --git a/fs/ext4/ext4_jbd2.c b/fs/ext4/ext4_jbd2.c
-index 9a8c225f2..1756039b1 100644
---- a/fs/ext4/ext4_jbd2.c
-+++ b/fs/ext4/ext4_jbd2.c
-@@ -75,7 +75,13 @@ static int ext4_journal_check_start(struct super_block *sb)
- 	if (WARN_ON_ONCE(sb_rdonly(sb)))
- 		return -EROFS;
- 
--	WARN_ON(sb->s_writers.frozen == SB_FREEZE_COMPLETE);
-+	if (unlikely(sb->s_writers.frozen == SB_FREEZE_COMPLETE)) {
-+		ext4_msg(
-+			sb, KERN_ERR,
-+			"Attempt to start a journal transaction on a frozen filesystem");
-+		return -EROFS;
-+	}
-+
- 	journal = EXT4_SB(sb)->s_journal;
- 	/*
- 	 * Special case here: if the journal has aborted behind our
-diff --git a/fs/ext4/ioctl.c b/fs/ext4/ioctl.c
-index 1d0c3d4bd..30d92fc09 100644
---- a/fs/ext4/ioctl.c
-+++ b/fs/ext4/ioctl.c
-@@ -824,8 +824,10 @@ int ext4_force_shutdown(struct super_block *sb, u32 flags)
- 	switch (flags) {
- 	case EXT4_GOING_FLAGS_DEFAULT:
- 		ret = bdev_freeze(sb->s_bdev);
--		if (ret)
-+		if (ret) {
-+			set_bit(EXT4_FLAGS_SHUTDOWN, &sbi->s_ext4_flags);
- 			return ret;
-+		}
- 		set_bit(EXT4_FLAGS_SHUTDOWN, &sbi->s_ext4_flags);
- 		bdev_thaw(sb->s_bdev);
- 		break;
-diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 6a77db4d3..71735a31f 100644
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -6438,6 +6438,9 @@ static int ext4_sync_fs(struct super_block *sb, int wait)
- 	if (unlikely(ret))
- 		return ret;
- 
-+	if (sbi->s_journal && is_journal_aborted(sbi->s_journal))
-+		return -EROFS;
-+
- 	trace_ext4_sync_fs(sb, wait);
- 	flush_workqueue(sbi->rsv_conversion_wq);
- 	/*
-diff --git a/fs/super.c b/fs/super.c
-index 378e81efe..1077e3f0d 100644
---- a/fs/super.c
-+++ b/fs/super.c
-@@ -1541,8 +1541,22 @@ static int fs_bdev_freeze(struct block_device *bdev)
- 	else
- 		error = freeze_super(sb,
- 				FREEZE_MAY_NEST | FREEZE_HOLDER_USERSPACE, NULL);
--	if (!error)
-+	if (!error) {
- 		error = sync_blockdev(bdev);
-+		if (error) {
-+			if (sb->s_op->thaw_super)
-+				sb->s_op->thaw_super(
-+					sb,
-+					FREEZE_MAY_NEST |
-+						FREEZE_HOLDER_USERSPACE,
-+					NULL);
-+			else
-+				thaw_super(sb,
-+					   FREEZE_MAY_NEST |
-+						   FREEZE_HOLDER_USERSPACE,
-+					   NULL);
-+		}
-+	}
- 	deactivate_super(sb);
- 	return error;
- }
+#syz upstream
 
 
-base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+On Wed, Jun 24, 2026 at 8:07=E2=80=AFPM syzbot ci
+<syzbot+ci1e5a0e2f4d024743@syzkaller.appspotmail.com> wrote:
+>
+> syzbot ci has tested the following series
+>
+> [v4] Data in direntry (dirdata) feature
+> https://lore.kernel.org/all/20260624133642.18438-1-ablagodarenko@thelustr=
+ecollective.com
+> * [PATCH v4 01/11] ext4: validate count against limit in ext4_dx_csum_ver=
+ify/_set
+> * [PATCH v4 02/11] ext4: replace ext4_dir_entry with ext4_dir_entry_2
+> * [PATCH v4 03/11] ext4: add ext4_dir_entry_is_tail()
+> * [PATCH v4 04/11] ext4: refactor dx_root to support variable dirent size=
+s
+> * [PATCH v4 05/11] ext4: add dirdata format definitions and access helper=
+s
+> * [PATCH v4 06/11] ext4: preserve dirdata bits in get_dtype()
+> * [PATCH v4 07/11] ext4: add ext4_dir_entry_len() and harden dirdata pars=
+ing
+> * [PATCH v4 08/11] ext4: rename ext4_dir_rec_len() and clarify dirdata us=
+age
+> * [PATCH v4 09/11] ext4: dirdata feature
+> * [PATCH v4 10/11] ext4: add dirdata set/get helpers
+> * [PATCH v4 11/11] ext4: Add EXT4_IOC_SET_LUFID ioctl for setting LUFID o=
+n directory entries
+>
+> and found the following issues:
+> * KASAN: slab-use-after-free Read in ext4_inlinedir_to_tree
+> * KASAN: use-after-free Read in ext4_inlinedir_to_tree
+>
+> Full report is available here:
+> https://ci.syzbot.org/series/7075f9f8-5dad-4e13-83ee-2f76e1e06dcf
+>
+> ***
+>
+> KASAN: slab-use-after-free Read in ext4_inlinedir_to_tree
+>
+> tree:      torvalds
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torva=
+lds/linux
+> base:      840ef6c78e6a2f694b578ecb9063241c992aaa9e
+> arch:      amd64
+> compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~e=
+xp1~20260514074407.73), Debian LLD 22.1.6
+> config:    https://ci.syzbot.org/builds/c9c607fc-012f-4e4c-88e7-89d5bade9=
+f75/config
+> syz repro: https://ci.syzbot.org/findings/3badb95c-16ec-4f87-adf6-da2aca9=
+4c39c/syz_repro
+>
+> EXT4-fs (loop1): mounted filesystem 00000000-0000-0000-0000-000000000000 =
+r/w without journal. Quota mode: none.
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> BUG: KASAN: slab-use-after-free in ext4_dirent_get_data_len fs/ext4/ext4.=
+h:4156 [inline]
+> BUG: KASAN: slab-use-after-free in ext4_dir_entry_len fs/ext4/ext4.h:4189=
+ [inline]
+> BUG: KASAN: slab-use-after-free in ext4_inlinedir_to_tree+0x864/0x1030 fs=
+/ext4/inline.c:1339
+> Read of size 1 at addr ffff888108ff7c19 by task syz.1.18/5891
+>
+> CPU: 0 UID: 0 PID: 5891 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+>  print_report+0x58/0x70 mm/kasan/report.c:482
+>  kasan_report+0x117/0x150 mm/kasan/report.c:595
+>  ext4_dirent_get_data_len fs/ext4/ext4.h:4156 [inline]
+>  ext4_dir_entry_len fs/ext4/ext4.h:4189 [inline]
+>  ext4_inlinedir_to_tree+0x864/0x1030 fs/ext4/inline.c:1339
+>  ext4_htree_fill_tree+0x4b9/0x2140 fs/ext4/namei.c:1206
+>  ext4_dx_readdir fs/ext4/dir.c:600 [inline]
+>  ext4_readdir+0x2e2a/0x3720 fs/ext4/dir.c:146
+>  iterate_dir+0x2e2/0x4d0 fs/readdir.c:110
+>  ovl_dir_read+0x141/0x4a0 fs/overlayfs/readdir.c:388
+>  ovl_check_d_type_supported+0xc5/0x150 fs/overlayfs/readdir.c:1167
+>  ovl_make_workdir fs/overlayfs/super.c:695 [inline]
+>  ovl_get_workdir fs/overlayfs/super.c:836 [inline]
+>  ovl_fill_super_creds fs/overlayfs/super.c:1449 [inline]
+>  ovl_fill_super+0x3a43/0x5d40 fs/overlayfs/super.c:1560
+>  vfs_get_super fs/super.c:1267 [inline]
+>  get_tree_nodev+0xbb/0x150 fs/super.c:1286
+>  vfs_get_tree+0x92/0x2a0 fs/super.c:1694
+>  fc_mount fs/namespace.c:1198 [inline]
+>  do_new_mount_fc fs/namespace.c:3765 [inline]
+>  do_new_mount+0x319/0xdc0 fs/namespace.c:3841
+>  do_mount fs/namespace.c:4174 [inline]
+>  __do_sys_mount fs/namespace.c:4390 [inline]
+>  __se_sys_mount+0x31d/0x420 fs/namespace.c:4367
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7f09e159ce59
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f09e24a9028 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
+> RAX: ffffffffffffffda RBX: 00007f09e1815fa0 RCX: 00007f09e159ce59
+> RDX: 0000200000000000 RSI: 0000200000000100 RDI: 0000000000000000
+> RBP: 00007f09e1632e6f R08: 00002000000000c0 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007f09e1816038 R14: 00007f09e1815fa0 R15: 00007fff17222ac8
+>  </TASK>
+>
+> Allocated by task 5642:
+>  kasan_save_stack mm/kasan/common.c:57 [inline]
+>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+>  poison_kmalloc_redzone mm/kasan/common.c:398 [inline]
+>  __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
+>  kasan_kmalloc include/linux/kasan.h:263 [inline]
+>  __do_kmalloc_node mm/slub.c:5362 [inline]
+>  __kmalloc_node_track_caller_noprof+0x4c3/0x730 mm/slub.c:5497
+>  kmemdup_noprof+0x2b/0x70 mm/util.c:138
+>  kmemdup_noprof include/linux/fortify-string.h:715 [inline]
+>  xfrm6_net_sysctl_init net/ipv6/xfrm6_policy.c:206 [inline]
+>  xfrm6_net_init+0x86/0x180 net/ipv6/xfrm6_policy.c:261
+>  ops_init+0x35d/0x5d0 net/core/net_namespace.c:137
+>  setup_net+0x118/0x350 net/core/net_namespace.c:446
+>  copy_net_ns+0x4f9/0x720 net/core/net_namespace.c:579
+>  create_new_namespaces+0x3f0/0x6b0 kernel/nsproxy.c:132
+>  unshare_nsproxy_namespaces+0x149/0x190 kernel/nsproxy.c:234
+>  ksys_unshare+0x57d/0xa00 kernel/fork.c:3267
+>  __do_sys_unshare kernel/fork.c:3341 [inline]
+>  __se_sys_unshare kernel/fork.c:3339 [inline]
+>  __x64_sys_unshare+0x38/0x50 kernel/fork.c:3339
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>
+> Freed by task 12:
+>  kasan_save_stack mm/kasan/common.c:57 [inline]
+>  kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+>  kasan_save_free_info+0x40/0x50 mm/kasan/generic.c:584
+>  poison_slab_object mm/kasan/common.c:253 [inline]
+>  __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+>  kasan_slab_free include/linux/kasan.h:235 [inline]
+>  slab_free_hook mm/slub.c:2705 [inline]
+>  slab_free mm/slub.c:6405 [inline]
+>  kfree+0x1c5/0x640 mm/slub.c:6720
+>  xfrm6_net_sysctl_exit net/ipv6/xfrm6_policy.c:238 [inline]
+>  xfrm6_net_exit+0x79/0xa0 net/ipv6/xfrm6_policy.c:270
+>  ops_exit_list net/core/net_namespace.c:199 [inline]
+>  ops_undo_list+0x43d/0x8d0 net/core/net_namespace.c:252
+>  cleanup_net+0x572/0x810 net/core/net_namespace.c:702
+>  process_one_work kernel/workqueue.c:3322 [inline]
+>  process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+>  worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
+>  kthread+0x388/0x470 kernel/kthread.c:436
+>  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+>  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+>
+> The buggy address belongs to the object at ffff888108ff7c00
+>  which belongs to the cache kmalloc-64 of size 64
+> The buggy address is located 25 bytes inside of
+>  freed 64-byte region [ffff888108ff7c00, ffff888108ff7c40)
+>
+> The buggy address belongs to the physical page:
+> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x108f=
+f7
+> flags: 0x17ff00000000000(node=3D0|zone=3D2|lastcpupid=3D0x7ff)
+> page_type: f5(slab)
+> raw: 017ff00000000000 ffff8881000418c0 dead000000000100 dead000000000122
+> raw: 0000000000000000 0000000800200020 00000000f5000000 0000000000000000
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2cc0(=
+GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 1, =
+tgid 1 (swapper/0), ts 14581267674, free_ts 0
+>  set_page_owner include/linux/page_owner.h:32 [inline]
+>  post_alloc_hook+0x1f9/0x250 mm/page_alloc.c:1859
+>  prep_new_page mm/page_alloc.c:1867 [inline]
+>  get_page_from_freelist+0x21fa/0x2270 mm/page_alloc.c:3946
+>  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5304
+>  alloc_slab_page mm/slub.c:3294 [inline]
+>  allocate_slab+0x79/0x5e0 mm/slub.c:3408
+>  new_slab mm/slub.c:3454 [inline]
+>  refill_objects+0x2d5/0x350 mm/slub.c:7338
+>  refill_sheaf mm/slub.c:2832 [inline]
+>  __pcs_replace_empty_main+0x2bf/0x6b0 mm/slub.c:4703
+>  alloc_from_pcs mm/slub.c:4801 [inline]
+>  slab_alloc_node mm/slub.c:4933 [inline]
+>  __do_kmalloc_node mm/slub.c:5361 [inline]
+>  __kmalloc_noprof+0x485/0x720 mm/slub.c:5387
+>  _kmalloc_noprof include/linux/slab.h:973 [inline]
+>  _kzalloc_noprof include/linux/slab.h:1290 [inline]
+>  kobject_get_path+0xc5/0x2f0 lib/kobject.c:161
+>  kobject_uevent_env+0x29e/0x9e0 lib/kobject_uevent.c:548
+>  device_add+0x544/0xb80 drivers/base/core.c:3738
+>  device_create_groups_vargs drivers/base/core.c:4454 [inline]
+>  device_create+0x269/0x300 drivers/base/core.c:4493
+>  mon_bin_add+0xb6/0x130 drivers/usb/mon/mon_bin.c:1371
+>  mon_bus_init+0x162/0x2a0 drivers/usb/mon/mon_main.c:291
+>  mon_bus_add drivers/usb/mon/mon_main.c:188 [inline]
+>  mon_notify+0x10c/0x3f0 drivers/usb/mon/mon_main.c:219
+>  notifier_call_chain+0x1a5/0x3d0 kernel/notifier.c:85
+>  blocking_notifier_call_chain+0x6a/0x90 kernel/notifier.c:380
+> page_owner free stack trace missing
+>
+> Memory state around the buggy address:
+>  ffff888108ff7b00: 00 00 00 00 00 00 00 04 fc fc fc fc fc fc fc fc
+>  ffff888108ff7b80: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+> >ffff888108ff7c00: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+>                             ^
+>  ffff888108ff7c80: 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc fc
+>  ffff888108ff7d00: 00 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+>
+> ***
+>
+> KASAN: use-after-free Read in ext4_inlinedir_to_tree
+>
+> tree:      torvalds
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torva=
+lds/linux
+> base:      840ef6c78e6a2f694b578ecb9063241c992aaa9e
+> arch:      amd64
+> compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~e=
+xp1~20260514074407.73), Debian LLD 22.1.6
+> config:    https://ci.syzbot.org/builds/c9c607fc-012f-4e4c-88e7-89d5bade9=
+f75/config
+> syz repro: https://ci.syzbot.org/findings/560b0247-7e29-4a4c-91b8-c73d275=
+cb34f/syz_repro
+>
+> loop0: lost filesystem error report for type 5 error -117
+> EXT4-fs (loop0): mounted filesystem 00000000-0000-0000-0000-000000000000 =
+r/w without journal. Quota mode: none.
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> BUG: KASAN: use-after-free in ext4_dirent_get_data_len fs/ext4/ext4.h:415=
+6 [inline]
+> BUG: KASAN: use-after-free in ext4_dir_entry_len fs/ext4/ext4.h:4189 [inl=
+ine]
+> BUG: KASAN: use-after-free in ext4_inlinedir_to_tree+0x864/0x1030 fs/ext4=
+/inline.c:1339
+> Read of size 1 at addr ffff888113752019 by task syz.0.17/5794
+>
+> CPU: 0 UID: 0 PID: 5794 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+>  print_report+0x58/0x70 mm/kasan/report.c:482
+>  kasan_report+0x117/0x150 mm/kasan/report.c:595
+>  ext4_dirent_get_data_len fs/ext4/ext4.h:4156 [inline]
+>  ext4_dir_entry_len fs/ext4/ext4.h:4189 [inline]
+>  ext4_inlinedir_to_tree+0x864/0x1030 fs/ext4/inline.c:1339
+>  ext4_htree_fill_tree+0x4b9/0x2140 fs/ext4/namei.c:1206
+>  ext4_dx_readdir fs/ext4/dir.c:600 [inline]
+>  ext4_readdir+0x2e2a/0x3720 fs/ext4/dir.c:146
+>  iterate_dir+0x2e2/0x4d0 fs/readdir.c:110
+>  ovl_dir_read+0x141/0x4a0 fs/overlayfs/readdir.c:388
+>  ovl_check_d_type_supported+0xc5/0x150 fs/overlayfs/readdir.c:1167
+>  ovl_make_workdir fs/overlayfs/super.c:695 [inline]
+>  ovl_get_workdir fs/overlayfs/super.c:836 [inline]
+>  ovl_fill_super_creds fs/overlayfs/super.c:1449 [inline]
+>  ovl_fill_super+0x3a43/0x5d40 fs/overlayfs/super.c:1560
+>  vfs_get_super fs/super.c:1267 [inline]
+>  get_tree_nodev+0xbb/0x150 fs/super.c:1286
+>  vfs_get_tree+0x92/0x2a0 fs/super.c:1694
+>  fc_mount fs/namespace.c:1198 [inline]
+>  do_new_mount_fc fs/namespace.c:3765 [inline]
+>  do_new_mount+0x319/0xdc0 fs/namespace.c:3841
+>  do_mount fs/namespace.c:4174 [inline]
+>  __do_sys_mount fs/namespace.c:4390 [inline]
+>  __se_sys_mount+0x31d/0x420 fs/namespace.c:4367
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7f427399ce59
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007ffce99c0f38 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
+> RAX: ffffffffffffffda RBX: 00007f4273c15fa0 RCX: 00007f427399ce59
+> RDX: 0000200000000000 RSI: 0000200000000100 RDI: 0000000000000000
+> RBP: 00007f4273a32e6f R08: 00002000000000c0 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007f4273c15fac R14: 00007f4273c15fa0 R15: 00007f4273c15fa0
+>  </TASK>
+>
+> The buggy address belongs to the physical page:
+> page: refcount:0 mapcount:0 mapping:0000000000000000 index:0xffff88811375=
+2e00 pfn:0x113752
+> flags: 0x17ff00000000000(node=3D0|zone=3D2|lastcpupid=3D0x7ff)
+> raw: 017ff00000000000 ffffea0004296d08 ffffea0004501b08 0000000000000000
+> raw: ffff888113752e00 0000000000000000 00000000ffffffff 0000000000000000
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as freed
+> page last allocated via order 1, migratetype Unmovable, gfp_mask 0xd20c0(=
+__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), =
+pid 5462, tgid 5462 (rm), ts 46014589837, free_ts 77936825094
+>  set_page_owner include/linux/page_owner.h:32 [inline]
+>  post_alloc_hook+0x1f9/0x250 mm/page_alloc.c:1859
+>  prep_new_page mm/page_alloc.c:1867 [inline]
+>  get_page_from_freelist+0x21fa/0x2270 mm/page_alloc.c:3946
+>  __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5304
+>  alloc_slab_page mm/slub.c:3294 [inline]
+>  allocate_slab+0x79/0x5e0 mm/slub.c:3408
+>  new_slab mm/slub.c:3454 [inline]
+>  refill_objects+0x2d5/0x350 mm/slub.c:7338
+>  refill_sheaf mm/slub.c:2832 [inline]
+>  __prefill_sheaf_pfmemalloc mm/slub.c:5035 [inline]
+>  kmem_cache_prefill_sheaf+0x2fb/0x550 mm/slub.c:5123
+>  mt_get_sheaf lib/maple_tree.c:154 [inline]
+>  mas_alloc_nodes+0x1c2/0x350 lib/maple_tree.c:1119
+>  mas_preallocate+0x2cf/0x630 lib/maple_tree.c:4961
+>  vma_iter_prealloc mm/vma.h:577 [inline]
+>  __split_vma+0x318/0xa50 mm/vma.c:529
+>  vms_gather_munmap_vmas+0x322/0x1370 mm/vma.c:1427
+>  __mmap_setup mm/vma.c:2439 [inline]
+>  __mmap_region mm/vma.c:2756 [inline]
+>  mmap_region+0x8f9/0x2310 mm/vma.c:2860
+>  do_mmap+0xc3b/0x10c0 mm/mmap.c:560
+>  vm_mmap_pgoff+0x272/0x4e0 mm/util.c:581
+>  ksys_mmap_pgoff+0x4dc/0x760 mm/mmap.c:606
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> page last free pid 5736 tgid 5736 stack trace:
+>  reset_page_owner include/linux/page_owner.h:25 [inline]
+>  __free_pages_prepare mm/page_alloc.c:1406 [inline]
+>  __free_frozen_pages+0xc1e/0xd10 mm/page_alloc.c:2950
+>  __slab_free+0x274/0x2c0 mm/slub.c:5767
+>  qlink_free mm/kasan/quarantine.c:163 [inline]
+>  qlist_free_all+0x99/0x100 mm/kasan/quarantine.c:179
+>  kasan_quarantine_reduce+0x148/0x160 mm/kasan/quarantine.c:286
+>  __kasan_slab_alloc+0x22/0x80 mm/kasan/common.c:350
+>  kasan_slab_alloc include/linux/kasan.h:253 [inline]
+>  slab_post_alloc_hook mm/slub.c:4612 [inline]
+>  slab_alloc_node mm/slub.c:4945 [inline]
+>  __kmalloc_cache_noprof+0x2ab/0x660 mm/slub.c:5511
+>  _kmalloc_noprof include/linux/slab.h:969 [inline]
+>  _kzalloc_noprof include/linux/slab.h:1290 [inline]
+>  ref_tracker_alloc+0x15b/0x4b0 lib/ref_tracker.c:270
+>  __netdev_tracker_alloc include/linux/netdevice.h:4489 [inline]
+>  netdev_hold include/linux/netdevice.h:4518 [inline]
+>  rx_queue_add_kobject net/core/net-sysfs.c:1236 [inline]
+>  net_rx_queue_update_kobjects+0x1c4/0x780 net/core/net-sysfs.c:1301
+>  register_queue_kobjects net/core/net-sysfs.c:2093 [inline]
+>  netdev_register_kobject+0x21f/0x310 net/core/net-sysfs.c:2341
+>  register_netdevice+0x1433/0x1eb0 net/core/dev.c:11439
+>  ipvlan_link_new+0x3e3/0xa90 drivers/net/ipvlan/ipvlan_main.c:593
+>  rtnl_newlink_create+0x310/0xb00 net/core/rtnetlink.c:3905
+>  __rtnl_newlink net/core/rtnetlink.c:4036 [inline]
+>  rtnl_newlink+0x167f/0x1bd0 net/core/rtnetlink.c:4151
+>  rtnetlink_rcv_msg+0x802/0xc00 net/core/rtnetlink.c:7068
+>  netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2556
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+>  netlink_unicast+0x7bb/0x940 net/netlink/af_netlink.c:1345
+>
+> Memory state around the buggy address:
+>  ffff888113751f00: 00 00 00 00 00 00 00 04 fc fc fc fc fc fc fc fc
+>  ffff888113751f80: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+> >ffff888113752000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>                             ^
+>  ffff888113752080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>  ffff888113752100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+>
+> ***
+>
+> If these findings have caused you to resend the series or submit a
+> separate fix, please add the following tag to your commit message:
+>   Tested-by: syzbot@syzkaller.appspotmail.com
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+>
+> To test a patch for this bug, please reply with `#syz test`
+> (should be on a separate line).
+>
+> The patch should be attached to the email.
+> Note: arguments like custom git repos and branches are not supported.
+>
+> The email will later be sent to:
+> [ablagodarenko@thelustrecollective.com adilger.kernel@dilger.ca adilger@d=
+ilger.ca adilger@diliger.ca artem.blagodarenko@gmail.com linux-ext4@vger.ke=
+rnel.org pravin.shelar@sun.com xiaowu.417@qq.com]
+>
+> If the report looks fine to you, reply with:
+> #syz upstream
+>
+> If the report is a false positive, reply with
+> #syz invalid
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/6a3c1cda.bd346d9a.250aae.0005.GAE%40google.com.
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+
+--=20
+=E2=B2=A0=E2=B2=9F=E2=B2=93=E2=B2=99=E2=B2=8F=E2=B2=9B =E2=B2=84=E2=B2=89=
+=E2=B2=B1=E2=B2=A3=E2=B2=85=E2=B2=93=E2=B2=9F=E2=B2=A5 - Pimyn Girgis
+Software Engineer
+Kernel Dynamic Analysis
+pimyn@google.com
