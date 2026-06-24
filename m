@@ -1,222 +1,261 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94C2B3B27C9
-	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 09:27:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05E6033F361
+	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 09:56:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.49
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782293245; cv=pass; b=BaxijSypCgsA91t9tNvbmtba62d+Di2moQ1JKMPbjvE9hPI6+a0Lg1s0oRDYuV6whWALT7UZMPKhO5a9nPpvq2+Lu2xGShb7CsP/UBGMrpTIAM8B/vT1rM8zdcVExRXcJoPL7gbj9WZ1tmBG2EhtRsKVHdVcN3LV25lbvSMN27k=
+	t=1782295001; cv=pass; b=eKSmXxLXaDwKSJLYIsv8rkJVA8mJg29o/dyEf0ur+wb5P9pZsV0rnwcCf/GvqJVhsRCMRE3pCA3ialID/zQbKZPJdxLIC0STZrqFuVULAzq/LbrbfsUkFWqkrtt3SgiWL90tijDQoy8QqA+3Ia/tHYbPTDLOdFPFwDLGt4nJ1YA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782293245; c=relaxed/simple;
-	bh=oNPSkTu9X0McU5wN5yxQVx6BRkdnRxc1wA78wVu9xJM=;
+	s=arc-20240116; t=1782295001; c=relaxed/simple;
+	bh=hJMqy5COJpPBxleTt+qAb3aZGR2zue65/gyLblhbexA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=hW+mNpwvs2VD8cuf+mLEX5jPWrwbBb9kWT3qG0vnRhDJppy9Zv76AGyPoeKzKKMpPOztXa2+sKWUDZWirx472uUEPcLj2wKCPNArnslrnLnrD9CsI9ouRC+L4naPEQ4dpJdDxao0lGHOtHuUFPLlUwAznMBS1O5lHipHp7gT87E=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=rly+dxDL; arc=pass smtp.client-ip=209.85.208.44
+	 To:Cc:Content-Type; b=AsbumXY17gkJ1xbl117SZprLXWul2TNxSwy5qvQx8FwfCTRxuJCvDyMxGS4jgla2wjzM1elrtrR9bPfShMuKk2IllSF1Fw1NQwgCSQPDRiX/Yk6JOWKFuB+a6vMwFb3LjQX6o8SIxSumzIAth0p0ZpHqntt/G/YaHm/Ozy4xfYk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SKpHoPNz; arc=pass smtp.client-ip=209.85.161.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rly+dxDL"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-697e93b0d9bso1244094a12.3
-        for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 02:27:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1782293228; cv=none;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SKpHoPNz"
+Received: by mail-oo1-f49.google.com with SMTP id 006d021491bc7-6a0c7c4f55fso665271eaf.2
+        for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 02:56:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1782294999; cv=none;
         d=google.com; s=arc-20240605;
-        b=G8WVSffOqsvdiNI9jf8Yc2KxyB4UfKLyh2lnVOYa9JQBr9NJRFwG8+IOZ3kL72baUo
-         CeDeTkjvlwauqcWnBONWZqjnMVtnXwO4wp1s+i10uZ5oiHku7QkaecWwz+bPGz+cVL1A
-         P3X0/vGW/uQ7XSqOFyzZZLptt9l0nTBhgLQ2LeAo8ue9ceBHQSbo9rOj6n2IWVemah4I
-         8mlcypDmv2XQooAT7BqWgbgeJHEu9IXKBvi/tguI016ue44fM7dn8dXDAROHTo9A1Rgk
-         5hYf3wW8tFISPV2W3iCDT513Qy9ofgU6TprlN8iWzlXScnPC9u3MyhUGQaa4K8AbEFhF
-         aSCQ==
+        b=B8VGD/B55fJWdx88pLaA0eajx64+Fwf5j4UtxPvDsT5OEdpxxaj7Em0Li8VZ2DoJTu
+         VKd5FJK6DZj3g5O5d3Zq222YhCtpV5ojpIJsUuMpUAA22aB/KNZ75QDYHuTUxI7Qx5MJ
+         rZ7WZg1CHgbtZ8nKt00/NWQhCW2bLaLpwqPubqYh3vFAYlMowIdylNu1M0034rhu8R0q
+         Vq2EUf0TM4ZOe7VlXMPza0bUAEdjzCrt709yUG7MY26Lpw+DgUtE2NRplU/D3ZzXK55a
+         xvidAP9DwEe9rkNJ/tTceahsqh7H85c7HHJlP1sHiF4T3xXodPdT2OB0yyimVLvOT83h
+         QTLA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=tGpHvlELTSR+4hoW3pijCBgrQS7CKp1NXSchzJ4/GA0=;
-        fh=TOUA6iy8nw0LxeViBYjW6B5kAh/+i3Xgm43MF8tLYEI=;
-        b=Q0MFkfp/EI0jxQb6rQrRbSmEg1wYzJW/4igDYijOQOhJJSoyzCieIS/R7PakxDCQTU
-         h5jTLGU2tIGJdeU3/MosPIcEA2aC0H+ohBH6wRdnxst0cFdbgpcLw8BphPyGHmJiD2z6
-         jTwj6HXCrnftnsyvL1sD3cZAGBjIWNzxd9NSNSiX+5JYEArY10m9DVK8yWZDSCORejM6
-         ExGTbtk8wonBadcbXFq2EGSqooczLhybMvn5c54huQgXTmgeLrfQvp4rK8rhmxWdxvbP
-         7L+n8PydVuONffxDAkxYxLRgUX25vyJPUX8FtW1CQmIQALJnWZz3WN6AO6ww7WN987uJ
-         Y1Dw==;
+        bh=7PqrOAX+cQ/I64vxKTFtVwaUVQfII10eVu9HkGPNU10=;
+        fh=M78QWHPb98pZeS8lKwTKAGjgagv6QmaZGvHgVdOIbtI=;
+        b=Z7GrIC3ODUM3Wf47PczK5K3udnrJCn7C4Ugo/G0FOLOWVe0nKGH6GlyLPz+nTeZ74B
+         2LLcM680hT1PUI3f57FUaTTiiD8OFIsoN7WNDErE8c4lIgK3t/Fk0oThPyXDax8ZW9B4
+         EbwUeRZTjiNypa8AzNVlztaTGUuBFeGXk91IEutLR9dnverBGb1U8w9PQB+sPDzFCElx
+         XbbY9Xa3vMbQH7e25NjfCZh+qG6PACBdn3wlo7wqJAl6K8X6Ja5broTMiABKh96dqwnl
+         0weFudcJpdS1eMC+as4HSoHOrABC82oqbKKGpf8S8y3DrFszYyw6A7MGMgqcdWi85uEn
+         fl5w==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1782293228; x=1782898028; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1782294999; x=1782899799; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=tGpHvlELTSR+4hoW3pijCBgrQS7CKp1NXSchzJ4/GA0=;
-        b=rly+dxDLoBZEkUuuLhOo8lFMOBIOIaijPJ1ANT3VzTezcY/CRZk055qOpfZ2Sn/O4F
-         h3dO2WykcyRG2jquVRD1s2DJImXivYy25vIAs2jw+/S//Vjbv98mgnli0k0vq0fnF3lJ
-         0lf63hL1CttDbBA/Qe8Hdn2qVs20oJfYAOFKgcn/qUTZOXoWbbUrQvup57wjLMCBA3Y4
-         1RYzC/06cnulurKV5n7fpymiI+wRMWJvUXMad7YSHD04I//0FxaWHvRE0Rv8s954VYrB
-         h0y7YuPh3J5rmKgr8FBA+hhcpUlr04DvaAbJZIbenpdsUbVb4sEQPRoXMR7ClXXWVCsh
-         scUQ==
+        bh=7PqrOAX+cQ/I64vxKTFtVwaUVQfII10eVu9HkGPNU10=;
+        b=SKpHoPNzxl2kM+PYOHs3GABlNggAtza8ImNCDjkUCkL6/xkQCP7+/qf+Amw1MTjNsq
+         oNxKxM3+DQoW0kJrl3D4kYEfwRyKalJWc53eEcdbSFSiHRa2J2U0L3p1Wugiin4t9m0G
+         HdHHjBzKQFnHbjCC/Jcq+Zoy+LS02/peagZAt02pKdoKEaR3nf5VJ2CSQAqb61IRkrHW
+         8dYYO9wm2dkBOHh/BMpl7WUoCH/ciW5rkdf5u2LCY4T6quSUpZIcoQrCfHAzuxwT64Lw
+         Yw7Qrc1KJQL8sAouxnSOFNLJIcPE6sWAv+JVg32sdlxUb8mQb7LDUDhx/3iF0qZ5920q
+         PidA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782293228; x=1782898028;
+        d=1e100.net; s=20251104; t=1782294999; x=1782899799;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=tGpHvlELTSR+4hoW3pijCBgrQS7CKp1NXSchzJ4/GA0=;
-        b=p8sx/wzwtR/QJWb0J9XYEeUAX69Vi8WL9n3+raL4GDf/Hkr8Pip+167dDw3P4mFyE8
-         WNzeysNK1LGvBo9yJT9Em2B4Rr8y+geN9FGtujJbYvbDwSVQ0s5SRbAvCaU+/D14oYbk
-         3p3N4le/6znsroxDPhZAJzxvQloAPaO4g7DfwVslJOaudq8L4XH8HsqNWpCr6Y29RXCa
-         oiFgIPCAihNNZ6BNf9VcoojKvdTe8TEGc+IHlgtv/1vYWoprUifinvDtktf8HCmn2lIx
-         Pmy8fRJHgfZ1/E2AcR23k2e45Fiqn40AM11LGWRnEKn4peW9FVNJefC2oAQQUxnVO8Kn
-         zECQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpvKf9enQaVrjVighBjQTmekAoZ4LIsYmiY+zFgUJH32J2+FeNtydEP3cFWZ8Ufy81V6rHlOY8=@lists.linux.dev
-X-Gm-Message-State: AOJu0YyzrhTcx7kZWafQe+h5wLnxrTvO8wt7NyepOMr+klo5XvblWD9P
-	k3JaVi/pV1zA5UHVhhbpBEtpWXOZToSPzVYgKPBeIGyk2fpM07n10y+fv/C91cBuxrRqTFBhr+A
-	rMoDTtMbh1s+BsQvUXlqhqZG8BA7Ur/SNcUnD4v8bbr5Z/dJRpPH5kCXgdqU=
-X-Gm-Gg: AfdE7cnRcOVZxrAxIxpYwA0YKYyHgy3S//eOCUZa7CXOam0PPoBguqikjm3U8R2BOeb
-	PLu6uSEK4R5/3u7k/+ONQEAi1F/C+3JO7QQQm7KoBgCBY8sw2wFTMVvRAFuuhfm6AMG+LHXsjKM
-	gjuPsAtQGBJILrVzIpbjAwBjNJIr2o42Dv20Fyge7NZZOAcGdTnLFVPYA183R6a6QWlCTgZ3D9G
-	hvcfBFm9+hBQNf2IoXf03NNXWD1emkd+cRZ6szp2FRAlPBvm7bEgpzp+rl3LsNCKjmRKDBzVi0v
-	HaGbSGQT5zahB0cPoSf99SWNTaXEzQNJV3p4Iw==
-X-Received: by 2002:a05:6402:518b:b0:695:f580:a66f with SMTP id
- 4fb4d7f45d1cf-697f3addbe4mr1162811a12.21.1782293227778; Wed, 24 Jun 2026
- 02:27:07 -0700 (PDT)
+        bh=7PqrOAX+cQ/I64vxKTFtVwaUVQfII10eVu9HkGPNU10=;
+        b=TReF2kqxb7/ff+6Nf4R0fqSaInSH/BJFAtrDYMBuzB7iRHeCwcLN9tnNYSESgNxTN2
+         hAJX83LmfwF2mdodIW+hw8MdkgoXGmsLEoyzGr+ljZ1pkE+x1Aq031mUia6GTnERgZ8R
+         rUTuaRV4m7fT2BqwQwQytr186kpLazN9mlnq94AWJiw6SH7izQuKAt0gXmfTEPPAOYD/
+         KT9suUjhBgoKc2ge5t9Jxks0p7x5Qt3mAlRvqxfYLvSFDgUNRFXnd42gf+T6IdZDpUT6
+         Mv2M+Sm81n2i3mSbUxJZ2MXpCc/JcivSMe2ITkz1OPmvXSc3bQL1coInD3fx/x0oyFEQ
+         bs/Q==
+X-Forwarded-Encrypted: i=1; AFNElJ+H/karptcpKjhxNoDgtXz/6xsf5LeW39hNMoWZeeuoun7pawSCVGcYLEuuvKNUtch4OrRvWYw=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzsDe97UiEY7hZ6r1mZZvTpFHB+zAMCK8CdtsGM/xzoEqC1Vfrf
+	YCHRs8RQIAD2QJ4bjwTZB4bi7NO4kPkEYvdCZ+WTe0P+2vAZ5qhqbZCEABw3Jq9h/IJULTEPTFI
+	HhjiSWTtad73P4DrgvfZelgAcpkgNnZDTlxQqGmMi
+X-Gm-Gg: AfdE7cmSG+TLiIMK5MB8NOzQrw6muALLwAZRs7ngHprIM1EnOJmBhgiZ2kjMUsBlPb2
+	gx966keAZM434UP8qzDh0yTv0/QhxQXiViKBOHkxOqxEvHWDK5HkogYKTzOT+nwPVjYR0l3d0oD
+	020Nj1oXdCjPnFWw+zSpqeZSFnbuY9Rnfg/FofViHe0NhWF1ABJKJ7wnkz8Ort+wydVv6116kHS
+	ZAs/p/rW6QyDNHA9xTPDZzl0wpORpdlxNV6VJ1JmVZiK0zFSCCp9uWcUuFRl1Frtpa9H5qZXuU9
+	o3LX2GIf2Xr4za1rtWYZ0YFHb3KA4dH1Nt0G3uYa2HjRVpZneO77PSq3ywuWFM1GQ5H93QcKVcO
+	eQFTjigNRYVr2vDqU52E3DkUSpvZDOtobtEu4JawO
+X-Received: by 2002:a05:6820:99c:b0:6a1:1fa7:eb35 with SMTP id
+ 006d021491bc7-6a122ec0e64mr1707015eaf.12.1782294998341; Wed, 24 Jun 2026
+ 02:56:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <e61a6de2-8e9d-4768-b555-27f8954e48ec@mail.kernel.org>
-In-Reply-To: <e61a6de2-8e9d-4768-b555-27f8954e48ec@mail.kernel.org>
-From: Alexander Potapenko <glider@google.com>
-Date: Wed, 24 Jun 2026 11:26:30 +0200
-X-Gm-Features: AVVi8Ce9Wa_06UL2h2KbNtqQG-ZH9T1ntRURiZzTBAquh-3TerGfC9Xa7obXg4U
-Message-ID: <CAG_fn=XJ06FXN7=zDOUnFTnHXYf4q-CSTv4HBo7A2qaiyf3_Eg@mail.gmail.com>
-Subject: Re: [PATCH RFC] KVM: x86: Drop WARN_ON_ONCE() for concurrently
- disappearing interrupts
+References: <d0941a03-e111-4b0d-b50d-19352a8ef7e2@mail.kernel.org>
+In-Reply-To: <d0941a03-e111-4b0d-b50d-19352a8ef7e2@mail.kernel.org>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Wed, 24 Jun 2026 11:56:26 +0200
+X-Gm-Features: AVVi8CfDNjQRjt9JPb69F35XqMNNvHGxX9jMkQQDPb4XO6DE1ZLCtplVaJamP5U
+Message-ID: <CANp29Y6o2PzZVMeS5w=MAz22kKE5sRBPZ5_9xrpmZ6zeU5T03A@mail.gmail.com>
+Subject: Re: [PATCH RFC] netdevsim: remove debugfs files before freeing net_device
 To: syzbot <syzbot@kernel.org>
 Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 23, 2026 at 1:47=E2=80=AFPM 'syzbot' via
+On Tue, Jun 23, 2026 at 4:31=E2=80=AFPM 'syzbot' via
 syzkaller-upstream-moderation
 <syzkaller-upstream-moderation@googlegroups.com> wrote:
 >
-> A warning can be triggered in kvm_check_and_inject_events() when an
-> interrupt disappears between the time it is checked via
-> kvm_cpu_has_injectable_intr() and the time it is fetched via
-> kvm_cpu_get_interrupt(). This occurs because the warning incorrectly
-> assumes that if an interrupt is injectable, fetching it must always retur=
-n
-> a valid interrupt vector (i.e., not -1).
+> A KASAN slab-use-after-free was detected in debugfs_u32_get() when readin=
+g
+> a debugfs file associated with a netdevsim port.
 >
-> However, this assumption is broken by level-triggered interrupts that are
-> deasserted concurrently by another thread. For example, if a misconfigure=
-d
-> PIT or a PCI device asserts and then immediately deasserts a
-> level-triggered interrupt, the VCPU thread might see the pending interrup=
-t
-> during the check but find it gone during the fetch, resulting in
-> kvm_cpu_get_interrupt() returning -1.
+> BUG: KASAN: slab-use-after-free in debugfs_u32_get+0x6c/0x70
+> Read of size 4 at addr ffff88810cd6db00
 >
-> The warning manifests as follows:
->
-> ------------[ cut here ]------------
-> irq =3D=3D -1
-> WARNING: arch/x86/kvm/x86.c:10860 at kvm_check_and_inject_events
-> arch/x86/kvm/x86.c:10860 [inline]
-> WARNING: arch/x86/kvm/x86.c:10860 at vcpu_enter_guest
-> arch/x86/kvm/x86.c:11356 [inline]
-> WARNING: arch/x86/kvm/x86.c:10860 at vcpu_run+0x57ec/0x7950
-> arch/x86/kvm/x86.c:11770
-> RIP: 0010:kvm_check_and_inject_events arch/x86/kvm/x86.c:10860 [inline]
-> RIP: 0010:vcpu_enter_guest arch/x86/kvm/x86.c:11356 [inline]
-> RIP: 0010:vcpu_run+0x57ec/0x7950 arch/x86/kvm/x86.c:11770
 > Call Trace:
->  <TASK>
->  kvm_arch_vcpu_ioctl_run+0x1193/0x2070 arch/x86/kvm/x86.c:12125
->  kvm_vcpu_ioctl+0xa61/0xfd0 virt/kvm/kvm_main.c:4470
->  vfs_ioctl fs/ioctl.c:51 [inline]
->  __do_sys_ioctl fs/ioctl.c:597 [inline]
->  __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->  </TASK>
+>  debugfs_u32_get+0x6c/0x70
+>  simple_attr_read+0x227/0x490
+>  debugfs_attr_read+0x76/0x130
+>  vfs_read+0x213/0xa80
 >
-> Since this is a legitimate Time-Of-Check to Time-Of-Use (TOCTOU) race
-> condition that can occur during normal operation, WARN_ON_ONCE() must not
-> be used for conditions that can legitimately happen. The patch removes th=
+> The root cause is that the net_device (and its embedded netdevsim private
+> data) is freed before its associated debugfs files are removed. When a us=
+er
+> reads a debugfs file like rx_max_pending, debugfs_u32_get() dereferences =
+a
+> pointer to the freed memory. This happens because nsim_destroy() calls
+> free_netdev() but does not remove the debugfs files created by
+> nsim_ethtool_init() or nsim_bpf_init(). These files are only removed late=
+r
+> when nsim_dev_port_debugfs_exit() is called. A similar issue exists in th=
 e
-> WARN_ON_ONCE() in kvm_check_and_inject_events() and replaces it with a
-> pr_err_ratelimited() to log the event instead. The same flawed assumption
-> exists in vmx_check_nested_events(), where kvm_apic_has_interrupt() can
-> return -1 after kvm_cpu_has_interrupt() returns true. The patch applies t=
-he
-> same fix there by removing the WARN_ON_ONCE() and gracefully handling the
-> missing interrupt with a rate-limited error message.
+> error path of nsim_create().
 >
-> Fixes: bf672720e83c ("KVM: x86: check the kvm_cpu_get_interrupt result be=
-fore using it")
-> Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+dd769db18693736eee89@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=3Ddd769db18693736eee89
-> Link: https://syzkaller.appspot.com/ai_job?id=3Db37654f7-62ad-4e4a-a244-0=
-949c0ca4246
-> To: "Borislav Petkov" <bp@alien8.de>
-> To: "Dave Hansen" <dave.hansen@linux.intel.com>
-> To: <kvm@vger.kernel.org>
-> To: "Ingo Molnar" <mingo@redhat.com>
-> To: "Paolo Bonzini" <pbonzini@redhat.com>
-> To: "Sean Christopherson" <seanjc@google.com>
-> To: "Thomas Gleixner" <tglx@kernel.org>
-> To: <x86@kernel.org>
-> Cc: "H. Peter Anvin" <hpa@zytor.com>
+> To fix this, swap the teardown order in __nsim_dev_port_del() and the
+> __nsim_dev_port_add() error path so that nsim_dev_port_debugfs_exit() is
+> called before nsim_destroy(). This ensures the debugfs directory is
+> recursively removed before the net_device is freed. Additionally, remove
+> explicit debugfs_remove() calls from various subsystem teardown functions
+> (like nsim_psp_uninit, nsim_ipsec_teardown, etc.) since the parent
+> directory is now removed earlier, which would otherwise lead to a
+> use-after-free of the dentry itself. Finally, ensure the debugfs director=
+y
+> is removed before free_netdev() is called in the nsim_create() error path=
+.
+>
+> Fixes: e05b2d141fef ("netdevsim: move netdev creation/destruction to dev =
+probe")
+> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview =
+syzbot
+> Reported-by: syzbot+6c25f4750230faf70be9@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3D6c25f4750230faf70be9
+> Link: https://syzkaller.appspot.com/ai_job?id=3D84a7c962-d10e-424d-a37a-b=
+f27d4830a40
+> To: "Andrew Lunn" <andrew+netdev@lunn.ch>
+> To: "David S. Miller" <davem@davemloft.net>
+> To: "Eric Dumazet" <edumazet@google.com>
+> To: "Jakub Kicinski" <kuba@kernel.org>
+> To: <netdev@vger.kernel.org>
+> To: "Paolo Abeni" <pabeni@redhat.com>
 > Cc: <linux-kernel@vger.kernel.org>
 >
 > ---
-> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-> index 3fe88f29b..c3e9c9d9b 100644
-> --- a/arch/x86/kvm/vmx/nested.c
-> +++ b/arch/x86/kvm/vmx/nested.c
+> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+> index f00fc2f9e..beecc0c6e 100644
+> --- a/drivers/net/netdevsim/dev.c
+> +++ b/drivers/net/netdevsim/dev.c
+> @@ -1524,7 +1524,9 @@ static int __nsim_dev_port_add(struct nsim_dev *nsi=
+m_dev, enum nsim_dev_port_typ
+>         return 0;
+>
+>  err_nsim_destroy:
+> +       nsim_dev_port_debugfs_exit(nsim_dev_port);
+>         nsim_destroy(nsim_dev_port->ns);
+> +       goto err_port_resource_unregister;
 
-Let's not touch nested.c for now. Respin with just the arch/x86/kvm/x86.c p=
-art.
+goto to goto looks very weird..
+Maybe we can simplify it with an `if (nsim_dev_port->ns !=3D NULL)`
+check? Then `err_nsim_destroy` could be dropped.
 
-> @@ -4446,8 +4446,11 @@ static int vmx_check_nested_events(struct kvm_vcpu=
- *vcpu)
->                 }
+>  err_port_debugfs_exit:
+>         nsim_dev_port_debugfs_exit(nsim_dev_port);
+>  err_port_resource_unregister:
+> @@ -1544,8 +1546,8 @@ static void __nsim_dev_port_del(struct nsim_dev_por=
+t *nsim_dev_port)
+>         list_del(&nsim_dev_port->list);
+>         if (nsim_dev_port_is_vf(nsim_dev_port))
+>                 devl_rate_leaf_destroy(&nsim_dev_port->devlink_port);
+> -       nsim_destroy(nsim_dev_port->ns);
+>         nsim_dev_port_debugfs_exit(nsim_dev_port);
+> +       nsim_destroy(nsim_dev_port->ns);
+>         if (nsim_dev_port_is_pf(nsim_dev_port))
+>                 devl_port_resources_unregister(devlink_port);
+>         devl_port_unregister(devlink_port);
+> diff --git a/drivers/net/netdevsim/ipsec.c b/drivers/net/netdevsim/ipsec.=
+c
+> index 36a1be492..0bc9f42a5 100644
+> --- a/drivers/net/netdevsim/ipsec.c
+> +++ b/drivers/net/netdevsim/ipsec.c
+> @@ -292,5 +292,4 @@ void nsim_ipsec_teardown(struct netdevsim *ns)
+>         if (ipsec->count)
+>                 netdev_err(ns->netdev, "tearing down IPsec offload with %=
+d SAs left\n",
+>                            ipsec->count);
+> -       debugfs_remove_recursive(ipsec->pfile);
+>  }
+> diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netde=
+v.c
+> index a75076891..6918679ca 100644
+> --- a/drivers/net/netdevsim/netdev.c
+> +++ b/drivers/net/netdevsim/netdev.c
+> @@ -1164,6 +1164,8 @@ struct netdevsim *nsim_create(struct nsim_dev *nsim=
+_dev,
+>         return ns;
 >
->                 irq =3D kvm_apic_has_interrupt(vcpu);
-> -               if (WARN_ON_ONCE(irq < 0))
-> +               if (irq < 0) {
-> +                       pr_err_ratelimited(
-> +                               "KVM: APIC interrupt disappeared between =
-checking and fetching\n");
->                         goto no_vmexit;
-> +               }
+>  err_free_netdev:
+> +       debugfs_remove_recursive(nsim_dev_port->ddir);
+> +       nsim_dev_port->ddir =3D NULL;
+>         free_netdev(dev);
+>         return ERR_PTR(err);
+>  }
+> @@ -1174,10 +1176,6 @@ void nsim_destroy(struct netdevsim *ns)
+>         struct netdevsim *peer;
+>         u16 vid;
 >
->                 /*
->                  * If the IRQ is L2's PI notification vector, process pos=
-ted
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 0550359ed..c5b4cddd9 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -10857,10 +10857,13 @@ static int kvm_check_and_inject_events(struct k=
-vm_vcpu *vcpu,
->                 if (r) {
->                         int irq =3D kvm_cpu_get_interrupt(vcpu);
+> -       debugfs_remove(ns->vlan_dfs);
+> -       debugfs_remove(ns->qr_dfs);
+> -       debugfs_remove(ns->pp_dfs);
+
+Now that vlan_dfs, qr_dfs, pp_dfs are not used for debugfs_remove, do
+we actually still need those fields?
+
+> -
+>         if (ns->nb.notifier_call)
+>                 unregister_netdevice_notifier_dev_net(ns->netdev, &ns->nb=
+,
+>                                                       &ns->nn);
+> diff --git a/drivers/net/netdevsim/psp.c b/drivers/net/netdevsim/psp.c
+> index 6936ecb81..2f27a2114 100644
+> --- a/drivers/net/netdevsim/psp.c
+> +++ b/drivers/net/netdevsim/psp.c
+> @@ -227,7 +227,6 @@ static void __nsim_psp_uninit(struct netdevsim *ns, b=
+ool teardown)
 >
-> -                       if (!WARN_ON_ONCE(irq =3D=3D -1)) {
-> +                       if (irq !=3D -1) {
->                                 kvm_queue_interrupt(vcpu, irq, false);
->                                 kvm_x86_call(inject_irq)(vcpu, false);
->                                 WARN_ON(kvm_x86_call(interrupt_allowed)(v=
-cpu, true) < 0);
-> +                       } else {
-> +                               pr_err_ratelimited(
-> +                                       "KVM: interrupt disappeared betwe=
-en checking and fetching\n");
->                         }
->                 }
->                 if (kvm_cpu_has_injectable_intr(vcpu))
+>  void nsim_psp_uninit(struct netdevsim *ns)
+>  {
+> -       debugfs_remove(ns->psp.rereg);
+>         mutex_destroy(&ns->psp.rereg_lock);
+>         __nsim_psp_uninit(ns, true);
+>  }
+> diff --git a/drivers/net/netdevsim/udp_tunnels.c b/drivers/net/netdevsim/=
+udp_tunnels.c
+> index 89fff76e5..a69b15f12 100644
+> --- a/drivers/net/netdevsim/udp_tunnels.c
+> +++ b/drivers/net/netdevsim/udp_tunnels.c
+> @@ -188,9 +188,6 @@ int nsim_udp_tunnels_info_create(struct nsim_dev *nsi=
+m_dev,
+>
+>  void nsim_udp_tunnels_info_destroy(struct net_device *dev)
+>  {
+> -       struct netdevsim *ns =3D netdev_priv(dev);
+> -
+> -       debugfs_remove_recursive(ns->udp_ports.ddir);
+>         kfree(dev->udp_tunnel_nic_info);
+>         dev->udp_tunnel_nic_info =3D NULL;
+>  }
 >
 >
 > base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
@@ -232,25 +271,3 @@ patches.
 > the comments and send a new version of the patch if necessary.
 > syzbot engineers can be reached at syzkaller@googlegroups.com.
 >
-> --
-> You received this message because you are subscribed to the Google Groups=
- "syzkaller-upstream-moderation" group.
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/e61a6de2-8e9d-4768-b555-27f8954e48ec%40mail.kernel.org=
-.
-
-
-
---=20
-Alexander Potapenko
-Software Engineer
-
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
