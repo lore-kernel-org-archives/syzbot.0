@@ -1,177 +1,140 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C03A288C30
-	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 11:54:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 646232D6409
+	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 12:14:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782302086; cv=none; b=ZjTTlm/qtBa5QvFffgA1/aUf7zdpnV85ybaoUP5YOowGODQYvvuHeQUPesIDiCM8EqXl2oH2v1EqMNYQ9Gpf6Hyt9/g3ulBsSZdFcKDOyeuYxmUtd0f+ghHyZm8V9khBooSc/SrEZoYLgikW70tzMF+BOXCaDcWhSbSCKe06EfM=
+	t=1782303274; cv=none; b=PHEcki4d7MATUDD+t+M5pXfLQKwHyAx152CTAY+VKFxeTUIB+zN6XZp4YOOMcZTjI2l6RSwFhxRMl2xaxoJKWURglu/x/EJui0xESfkD6DnSJut/oUsuceuXk8dhwyNG6TAGAT9d/k2PTbiwW9RqXbtgGOW/iCZrM/46Po0NSWw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782302086; c=relaxed/simple;
-	bh=DPhIQLxQ2ZgmAt2vi+pC3cNvHS9XpyUt1ZrO8a0oJZs=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=hi4oNx3aYe5ZpNDHV3eVkCaUIYmFUbS4mJFndBFiiaxmg5UxxboPP8EXuuOCZ5L8wuGdeTB/DkbFd2/i+Ob2IxPM1sXs1h8EXzBSGBnAgNwtxbj/VHSJeQqqZdci3GumljTh+VN2B1dXnHYrCAba2kSsu40ZMomuMYOKFxbELbY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aTMdPZCy; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aTMdPZCy"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id D53751F000E9;
-	Wed, 24 Jun 2026 11:54:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782302084;
-	bh=iv1kQMCRkJQnRbnAE9FkN2EP9jP4J/U4KtCnMEmbhHU=;
-	h=From:To:Cc:Subject:Date;
-	b=aTMdPZCyxO07MY+z/ixLlFj6i9qM9Zq1OoGaIQV4iFEYB4ff9AT64shfHFvX2kdLJ
-	 8y3fhzrdCD79NOQnzhx61lU6VaswjVFE54g351+05aOdrFdz2XKfe8DUSEPOQIcPG0
-	 be4s/krGrIHcNqgknsd+NoCcFCmyBDBT580VdosuXOJOp9NDu/P74/xAn3DIcw1/Vv
-	 Twuud+La+EVTdWduwrShC6+LZfrJRXxr1Tej5ifaFc15UxYRX8Nww4Eg6s0Y2C8Ma/
-	 iyy+91b6mxnS4AALI31thDj5XCFHXMqLdv4yz/uHgjAtof1f9gnrLaARzX9OjFBzB3
-	 FSa/LF1zNeo8Q==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] wifi: mac80211: fix userspace-triggerable warnings in TX rate control
-Message-ID: <80ceeed0-d1a1-44a9-9a1b-ce88c4a8dc94@mail.kernel.org>
+	s=arc-20240116; t=1782303274; c=relaxed/simple;
+	bh=1VcIPUC/nBpYX8U3kB1v5nOwaGgdyAKzTTbUyoLIidY=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=sMIqmC85qU0uPCcA4WVcSHvAE1fsSqrIvRaKPhiWC/pOEVSTIfXjZRE43BZszzL2fNdf0bYr8LBVrPvlI0LUXtnarNzB/fa2dg/ijDRic/hZePcObak+M+EvGsJ1yugFeSGQAmvNSY8EQooZ8OXrx0aTs7fxdaRw2NXwcI3O7HI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-48b61eabb4cso1273691b6e.1
+        for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 05:14:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782303272; x=1782908072;
+        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=B0/BKGHSgt7kkPjfopsHIa52lwo20kFyOlX7eKJo26Y=;
+        b=lPe8/3PxzP68o/oHEX7TIwh0Eztd95SXUdX5vDNgo0ghnteScQzbMJOdkPAh+IJqfu
+         sN5rwaiW9FYYJ/hTbGAwuLCUAoWtybxlJ+IBXvZpvD4Qa8NQ1Xu7bonTRGGDWnsqt4gh
+         Q2yLhCwjmuSgc1s1pOca+axkcuqLhjkIPJxBswoDR9xw+JrvPF9yhxdEpZ5nZ9lEjJqU
+         DtQRuP9gOrTYoYH5cS8aChXm4sU5DMO/tLjKx7ujB3aKNeKWuSkbf9OGNcwTXUosIWHD
+         u1KZ0SAEPvQUopa2jcGTD2NIVxnRPx06XWFEolbeJbIqteBRZ/ExR0AGuCR1tQTtoft3
+         6ixw==
+X-Gm-Message-State: AOJu0YxaIl21Cj+XatZRycHc9RcM2BXNv7F8mrih3n/zRZ+6mtc2yJNl
+	HEqhl1ZyhahBz2VQWk2H0brifJ5mP2QrOwM/inkDUFLaxWhYZWo2gp01FLSGtBvvw3DMQpx0hHV
+	quXrby30weDpEVdxGIMAEOkGMIk/BkcbTEui9NUN/anTw92ASVaWaiR9AurQ=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Wed, 24 Jun 2026 11:54:44 +0000 (UTC)
+X-Received: by 2002:a05:6808:6718:b0:485:5982:4cfc with SMTP id
+ 5614622812f47-49079492366mr2337970b6e.33.1782303272549; Wed, 24 Jun 2026
+ 05:14:32 -0700 (PDT)
+Date: Wed, 24 Jun 2026 05:14:32 -0700
+In-Reply-To: <20260624073209.3703492-1-edumazet@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a3bca28.92e8a34c.2b91f1.0008.GAE@google.com>
+Subject: [syzbot ci] Re: net: clear transport header during tunnel decapsulation
+From: syzbot ci <syzbot+ci7e1fc283906ef7ab@syzkaller.appspotmail.com>
+To: davem@davemloft.net, dsahern@kernel.org, edumazet@google.com, 
+	eric.dumazet@gmail.com, horms@kernel.org, idosch@nvidia.com, kuba@kernel.org, 
+	netdev@vger.kernel.org, pabeni@redhat.com, syzbot@syzkaller.appspotmail.com
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-Userspace can intentionally trigger warnings in the mac80211 TX rate
-control code by providing conflicting constraints. For example, sending a
-scan request with the NL80211_ATTR_TX_NO_CCK_RATE attribute to a station
-that only supports CCK rates, or scanning on a band where the associated
-station has no supported rates. Since these conditions can legitimately
-happen due to userspace actions, they should not trigger kernel warnings.
+syzbot ci has tested the following series
 
-When this occurs, the kernel fails to find a valid transmission rate and
-triggers warnings in __rate_control_send_low() and
-ieee80211_tx_h_rate_ctrl():
+[v1] net: clear transport header during tunnel decapsulation
+https://lore.kernel.org/all/20260624073209.3703492-1-edumazet@google.com
+* [PATCH net] net: clear transport header during tunnel decapsulation
 
-WARNING: net/mac80211/rate.c:406 at __rate_control_send_low+0x524/0x800
-net/mac80211/rate.c:401
+and found the following issue:
+WARNING in geneve_udp_encap_recv
+
+Full report is available here:
+https://ci.syzbot.org/series/1f6dc47e-354f-4904-bc18-c2b7ea4d79b2
+
+***
+
+WARNING in geneve_udp_encap_recv
+
+tree:      net
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
+base:      d87363b0edfc7504ff2b144fe4cdd8154f90f42e
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/7bb83c16-d55d-4d99-8c2b-6050e0022ef6/config
+
+------------[ cut here ]------------
+!skb_transport_header_was_set(skb)
+WARNING: ./include/linux/skbuff.h:3094 at geneve_udp_encap_recv+0x26ed/0x4130, CPU#1: kworker/1:3/5072
+Modules linked in:
+CPU: 1 UID: 0 PID: 5072 Comm: kworker/1:3 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Workqueue: mld mld_ifc_work
+RIP: 0010:geneve_udp_encap_recv+0x26ed/0x4130
+Code: c8 00 00 00 0f b6 04 01 84 c0 0f 85 f2 18 00 00 48 8b 7c 24 78 66 44 89 6f 0a e8 7e 9b 7a 03 e9 8c 00 00 00 e8 f4 fc 33 fb 90 <0f> 0b 90 e9 2e e3 ff ff 49 83 c6 06 4c 89 f0 48 c1 e8 03 48 b9 00
+RSP: 0018:ffffc90000a08620 EFLAGS: 00010246
+RAX: ffffffff8691f92c RBX: ffff8881bcc8b5d0 RCX: ffff88816a7abb80
+RDX: 0000000000000100 RSI: 000000000000ffff RDI: 000000000000ffff
+RBP: ffffc90000a08790 R08: ffffffff903114f7 R09: 1ffffffff206229e
+R10: dffffc0000000000 R11: fffffbfff206229f R12: ffff888109f6a108
+R13: 1ffff110213ed5df R14: 0000000000000010 R15: dffffc0000000000
+FS:  0000000000000000(0000) GS:ffff8882a927b000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f6956ea5440 CR3: 000000016f55c000 CR4: 00000000000006f0
 Call Trace:
- rate_control_send_low+0xf9/0x7b0 net/mac80211/rate.c:429
- rate_control_get_rate+0x20b/0x5d0 net/mac80211/rate.c:943
- ieee80211_tx_h_rate_ctrl+0xafa/0x1760 net/mac80211/tx.c:764
- invoke_tx_handlers_late+0xb5/0x1830 net/mac80211/tx.c:1859
- ieee80211_tx+0x2d7/0x4b0 net/mac80211/tx.c:1983
+ <IRQ>
+ udp_queue_rcv_one_skb+0xfc5/0x10e0
+ udp_unicast_rcv_skb+0x21a/0x3a0
+ udp_rcv+0xecb/0x1db0
+ ip_protocol_deliver_rcu+0x27e/0x440
+ ip_local_deliver_finish+0x3bb/0x6f0
+ NF_HOOK+0x336/0x3c0
+ NF_HOOK+0x336/0x3c0
+ process_backlog+0xa34/0x1860
+ __napi_poll+0xaa/0x330
+ net_rx_action+0x61d/0xf50
+ handle_softirqs+0x225/0x840
+ do_softirq+0x76/0xd0
+ </IRQ>
+ <TASK>
+ __local_bh_enable_ip+0xf8/0x130
+ __dev_queue_xmit+0x1ed7/0x37f0
+ ip6_output+0x337/0x540
+ NF_HOOK+0x177/0x4f0
+ mld_sendpack+0x890/0xe10
+ mld_ifc_work+0x839/0xe70
+ process_scheduled_works+0xa8e/0x14e0
+ worker_thread+0xa47/0xfb0
+ kthread+0x388/0x470
+ ret_from_fork+0x514/0xb70
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
 
-WARNING: net/mac80211/tx.c:757 at ieee80211_tx_h_rate_ctrl+0xbd5/0x1760
-net/mac80211/tx.c:750
-Call Trace:
- invoke_tx_handlers_late+0xb5/0x1830 net/mac80211/tx.c:1859
- ieee80211_tx+0x2d7/0x4b0 net/mac80211/tx.c:1983
 
-To fix this, downgrade the WARN and WARN_ONCE macros to wiphy_dbg() prints,
-as WARN macros must not be used for conditions that can legitimately
-happen, and debug prints or pr_err should be used instead. Additionally,
-gracefully handle the empty rate intersection by initializing
-info->control.rates[0].idx to -1 before the loop in
-__rate_control_send_low(). This allows the caller to cleanly drop the
-packet. A check for rates[0].idx >= 0 is also added in
-rate_fixup_ratelist() to prevent out-of-bounds array accesses when the
-negative index propagates.
+***
 
-Fixes: 1431fcb74eb5 ("mac80211: fix honouring rate flags in low-rate transmit")
-Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+0d516b33238bd97ee864@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=0d516b33238bd97ee864
-Link: https://syzkaller.appspot.com/ai_job?id=81a658c5-b33e-4f9e-bd55-7b412c8c484f
-To: "Johannes Berg" <johannes@sipsolutions.net>
-To: <linux-wireless@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/net/mac80211/rate.c b/net/mac80211/rate.c
-index 31af7dd6a..17d2f7fac 100644
---- a/net/mac80211/rate.c
-+++ b/net/mac80211/rate.c
-@@ -384,7 +384,7 @@ static void __rate_control_send_low(struct ieee80211_hw *hw,
- 	    (info->flags & IEEE80211_TX_CTL_NO_CCK_RATE))
- 		rate_flags |= IEEE80211_RATE_ERP_G;
- 
--	info->control.rates[0].idx = 0;
-+	info->control.rates[0].idx = -1;
- 	for (i = 0; i < sband->n_bitrates; i++) {
- 		if (!(rate_mask & BIT(i)))
- 			continue;
-@@ -398,12 +398,14 @@ static void __rate_control_send_low(struct ieee80211_hw *hw,
- 		info->control.rates[0].idx = i;
- 		break;
- 	}
--	WARN_ONCE(i == sband->n_bitrates,
--		  "no supported rates for sta %pM (0x%x, band %d) in rate_mask 0x%x with flags 0x%x\n",
--		  sta ? sta->addr : NULL,
--		  sta ? sta->deflink.supp_rates[sband->band] : -1,
--		  sband->band,
--		  rate_mask, rate_flags);
-+
-+	if (i == sband->n_bitrates)
-+		wiphy_dbg(
-+			hw->wiphy,
-+			"no supported rates for sta %pM (0x%x, band %d) in rate_mask 0x%x with flags 0x%x\n",
-+			sta ? sta->addr : NULL,
-+			sta ? sta->deflink.supp_rates[sband->band] : -1,
-+			sband->band, rate_mask, rate_flags);
- 
- 	info->control.rates[0].count =
- 		(info->flags & IEEE80211_TX_CTL_NO_ACK) ?
-@@ -654,7 +656,8 @@ static void rate_fixup_ratelist(struct ieee80211_vif *vif,
- 	 *
- 	 * XXX: Should this check all retry rates?
- 	 */
--	if (!(rates[0].flags &
-+	if (rates[0].idx >= 0 &&
-+	    !(rates[0].flags &
- 	      (IEEE80211_TX_RC_MCS | IEEE80211_TX_RC_VHT_MCS))) {
- 		u32 basic_rates = vif->bss_conf.basic_rates;
- 		s8 baserate = basic_rates ? ffs(basic_rates) - 1 : 0;
-diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
-index ea7f63e1f..126596102 100644
---- a/net/mac80211/tx.c
-+++ b/net/mac80211/tx.c
-@@ -747,15 +747,19 @@ ieee80211_tx_h_rate_ctrl(struct ieee80211_tx_data *tx)
- 	 * Lets not bother rate control if we're associated and cannot
- 	 * talk to the sta. This should not happen.
- 	 */
--	if (WARN(test_bit(SCAN_SW_SCANNING, &tx->local->scanning) && assoc &&
--		 !rate_usable_index_exists(sband, &tx->sta->sta),
--		 "%s: Dropped data frame as no usable bitrate found while "
--		 "scanning and associated. Target station: "
--		 "%pM on %d GHz band\n",
--		 tx->sdata->name,
--		 encap ? ((struct ethhdr *)hdr)->h_dest : hdr->addr1,
--		 info->band ? 5 : 2))
-+	if (unlikely(test_bit(SCAN_SW_SCANNING, &tx->local->scanning) &&
-+		     assoc &&
-+		     !rate_usable_index_exists(sband, &tx->sta->sta))) {
-+		wiphy_dbg(
-+			tx->local->hw.wiphy,
-+			"%s: Dropped data frame as no usable bitrate found while "
-+			"scanning and associated. Target station: "
-+			"%pM on %d GHz band\n",
-+			tx->sdata->name,
-+			encap ? ((struct ethhdr *)hdr)->h_dest : hdr->addr1,
-+			info->band ? 5 : 2);
- 		return TX_DROP;
-+	}
- 
- 	/*
- 	 * If we're associated with the sta at this point we know we can at
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
-base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
