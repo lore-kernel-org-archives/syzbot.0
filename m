@@ -1,141 +1,103 @@
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF56538B7BB
-	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 07:13:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64F2431DDBF
+	for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 08:46:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782285198; cv=none; b=d+aJQeKMaoNQyiTyFkt2OrxnVB3f7MOHF5aUxSn4WPGRcKD06P9Fl4zZdZrDJ4k932FOyFdJqR98rLj6oMZpwPImLSV3D5SKBYKZ+/MXBKp77aU6VJ/qC+lcvMFabJioHKF5iXu+Nu02UjHOOcMZdHkE1SslpFlUGY4zRb7oWAw=
+	t=1782290816; cv=none; b=XJ44Zovg6GS7NYe6Vy/+DXgQr6/zmt82QVsyw9r7qkbsW/o4ig6DeaWCDMK75jIOTdXqSBilFXyCLNTEbJUSrODIrnigzoDoKxuv+3Biy/RdZQwVJA1GrjfL2PmdCvP+Svx38nAd/YOiqhpR02dfF0zB5/4oDV6KSznrfht4UKY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782285198; c=relaxed/simple;
-	bh=D5x3bMnC7ssQUxkomi6+PpKQQaU7Xoq+nvNPzzgbtlE=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=B93OdfCqKg/XujLmlo0g4KkWUr2o6qOjeMV+DpXY/4ej9jgZVqM+4bda3o0lVaxUgXfI8ckXz9AIlVGB8rDsq2njiN/AUfxhERxoWN/eSK/8exxGPAGuSor9bI17HyXJt9kvdQc/DW7eTbLB3XTJvUeSz2zzd3QUEeDGw1aM9Rg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-48952d1c293so1202282b6e.3
-        for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 00:13:16 -0700 (PDT)
+	s=arc-20240116; t=1782290816; c=relaxed/simple;
+	bh=JYmu2+JdkqGyZTP1oLieVZekIxSdPrIlArUvGyIdG1o=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MZlCu2KXy3KFMt8aNg3GbLO8KUR333MU5zy2ybGYRGPanKrsQLrMeUGkHRobsOK202/AHIAGXY4H/UQugyLR5lo/LZ+SpHvIx2rICtQz/AAC5G5x8O9kUXV0i5JPsXS4cqTU+SzP9EA19OXGeQ72bQWvvAdlm405yTSxgRwJ7xA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bynar.io; spf=pass smtp.mailfrom=bynar.io; dkim=pass (2048-bit key) header.d=bynar.io header.i=@bynar.io header.b=LxGR/JNd; arc=none smtp.client-ip=209.85.208.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bynar.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bynar.io
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=bynar.io header.i=@bynar.io header.b="LxGR/JNd"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-693c51a8a19so1328151a12.3
+        for <syzbot@lists.linux.dev>; Wed, 24 Jun 2026 01:46:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bynar.io; s=google; t=1782290814; x=1782895614; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=EVe3tCAxlFJeaGN50Dp+OHqy135nya+hifIMDSlUhLs=;
+        b=LxGR/JNdO4CmyVpdt9vcA9+LZkGVPw1XdhkySLPr1jHznLf25mneJLjrQ2slvrd+cj
+         5XJTaPJ72GiBiOS+DqE+QvaBLEjIUEpxJfa9vP3GOveQGS06TF/1ptCP6/Wkwv3iecDy
+         +LYDBC5iFTpW2QSrrsGtWdNzYycl0wK3p9hvpbSdr7t4eLQmLIonsLd427L0rUaJlu39
+         bCLD5udZkSqa2AlromLimihst1vhvhercoWQLeHyZIvRgi6o85WwmwRBfDFd53pxLX+R
+         jd+vBZg2t4Lvt8EEDRCo2myqL5tBlHLgSaTOrGWnq5Eid02aguqHTfb1cEjMs73ri+3M
+         1A/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782285196; x=1782889996;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bBoFAIV4uqiLRHVMXBdmCTKrSw3E3vg+XbDQ1EwUBeo=;
-        b=kIJtktBlG6YxQQ5LMGC+ZCZURP0H3tlUsM179iHe+X77DWuaYwnAV6Dlx/muAG18mH
-         dmgkMxXXBix0/mJOdYUFj97msPZgW+DLcwRmzalHra2PMj+4Fm6COLIuaAkOeQbpqs33
-         KQUSDynJUOdRZWhOQJKonLmKpk4g+c/wO8/X9UlFnChDuqpSYYzrJ2hIw3RTCGneOE1W
-         nd72v8wPvaxci87TQqCEKZUExDe+LaxLRSuPTTK4jXkvM7BGx9vEJk7AgoyvjhGTozsR
-         KxlpAEPGWKNfLBR5plxrB0hm1Q3d1+u4XzTLEbgahzmQyXxOFieoc+D7N0t91OxK3eEh
-         MkCg==
-X-Gm-Message-State: AOJu0YzqYwkN1MeNJPq8ru8zSSvMZ+ksBJf8w1ekW0aa+Wrg0apyWelW
-	zj896m+EvCTd6+r5PRxZHg3G36SAbxdizHNu9a1KK4U2FdaX9bBncv1Bx6iygrnUdisXsBl0rP7
-	fXK7n8mXZNo65BIca6cROhUILCnevbnfYT8F3uqb/e2Xac5D+rROBvLf3/+o=
+        d=1e100.net; s=20251104; t=1782290814; x=1782895614;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=EVe3tCAxlFJeaGN50Dp+OHqy135nya+hifIMDSlUhLs=;
+        b=LuwULCQJUg1icLsCdDsmEB4wbPc/eoKZGmqrtPV9t+8t2dp7aSoXH5QVQvvWofNpCr
+         bianp8x6iQyeWw5l86Ft2WZ5Df/PThcxgdTwHLPhyUP8CkD18F1dsxZNA7CTEiREUgBu
+         b3EkAFAmJBPHP6GjuL8PsIkPG5y5jbIxWaqjBwQswVqEMOMZx4Vpr6jxi5QgflPTMGG6
+         tepjJYTc6wqHsnY2F+ywii2Ts/1M7lon5BMeZNWeeHhh0uM1AjW5oyJ+KKW+MTPbOD41
+         5DEpf+WoZKoJYWdF2fWMhZyRxUCvRzBq2JlGsTuvfPkzz3eBcrzGRoo1WdOXxOIdtLYs
+         OBsg==
+X-Gm-Message-State: AOJu0Yzjbxp5ldjPQ7QLWE37vYRnC+LSQF1szXzUYSM5cfucN0n9QUdr
+	5TEdMVYthMENihA9P2xsVnuHls4rqBaf+jT0clog9iu7IDSEWTmH+AyKK/EDC7p4sM7T
+X-Gm-Gg: AfdE7cnCWnXvXw9DzJlMGW1iejt4TN73dPQi7WmUYmSymWLLBqksL+Iaa+oRt8yo8q7
+	zt7kRr0Zo1dlpy13oa3I3ovUrL1XM7QIh0TJ83VTacSt+mM1UPwDsVylqKQhWc5RVPhVKJi7zPX
+	1MjqIgmCtfO/7nLoq+lnOOUl1eHuM5UkO9Mgxd3G4JRblIe47Q+66URV8ntGRijDaDBlbR6Nw+F
+	TM5zjIRW3AWVvYFzFt+a0g/aXzvt/dgWJUy+7NUfKDzqh0fk+z8vLKP3m/fPmKpT+bTDosHVz1d
+	hNxSLdCOB5mnqGJw08/BVb4ZrI1RtCWVLCELMj+YeUIqyiAMH/gGD8c6qqjPaulsj5+e9BoeCqv
+	nB5D1IyOcKBICDoH+ymn0oZxsrZ8rpvQWBSMI2kakPSUU+0z3D496Ytth1NXaSDO5rNA7ZrQpWp
+	vz0TKvlYcr9xRUACGPDJCGZNg3C/1R+dCmUeLXHIMU4zn+5g==
+X-Received: by 2002:a17:907:a392:b0:c08:417e:3696 with SMTP id a640c23a62f3a-c107d7137b7mr319688366b.20.1782290812994;
+        Wed, 24 Jun 2026 01:46:52 -0700 (PDT)
+Received: from ?IPV6:2a06:61c2:d427:0:b321:1c7a:b072:326e? ([2a06:61c2:d427:0:b321:1c7a:b072:326e])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c0c61610b2esm640641866b.57.2026.06.24.01.46.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Jun 2026 01:46:52 -0700 (PDT)
+Message-ID: <c9abc633-239c-4562-b1df-5c9d687e70d4@bynar.io>
+Date: Wed, 24 Jun 2026 09:46:51 +0100
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1496:b0:48c:3b4:2b95 with SMTP id
- 5614622812f47-48c03b4480emr14653928b6e.29.1782285195953; Wed, 24 Jun 2026
- 00:13:15 -0700 (PDT)
-Date: Wed, 24 Jun 2026 00:13:15 -0700
-In-Reply-To: <20260623222402.175798-1-sam@bynar.io>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a3b838b.c358b6d0.89040.0007.GAE@google.com>
-Subject: [syzbot ci] Re: nfc: nci: fix uninit-value in nci_core_init_rsp_packet()
-From: syzbot ci <syzbot+cie92d4e0088e1c4d0@syzkaller.appspotmail.com>
-To: davem@davemloft.net, david@ixit.cz, edumazet@google.com, horms@kernel.org, 
-	kuba@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
-	oe-linux-nfc@lists.linux.dev, pabeni@redhat.com, sam@bynar.io, 
-	stable@vger.kernel.org
+User-Agent: Mozilla Thunderbird
+Subject: Re: [syzbot ci] Re: nfc: nci: fix uninit-value in
+ nci_core_init_rsp_packet()
+To: syzbot ci <syzbot+cie92d4e0088e1c4d0@syzkaller.appspotmail.com>,
+ davem@davemloft.net, david@ixit.cz, edumazet@google.com, horms@kernel.org,
+ kuba@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+ oe-linux-nfc@lists.linux.dev, pabeni@redhat.com, stable@vger.kernel.org
 Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+References: <6a3b838b.c358b6d0.89040.0007.GAE@google.com>
+Content-Language: en-GB
+From: Sam P <sam@bynar.io>
+In-Reply-To: <6a3b838b.c358b6d0.89040.0007.GAE@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-syzbot ci has tested the following series
+On 24/06/2026 09:13, syzbot ci wrote:
+> syzbot ci has tested the following series
+> 
+> [v1] nfc: nci: fix uninit-value in nci_core_init_rsp_packet()
+> https://lore.kernel.org/all/20260623222402.175798-1-sam@bynar.io
+> * [PATCH net] nfc: nci: fix uninit-value in nci_core_init_rsp_packet()
+> 
+> and found the following issue:
+> UBSAN: array-index-out-of-bounds in nci_init_complete_req
+> 
+> Full report is available here:
+> https://ci.syzbot.org/series/2a9a8657-37a3-4dce-8cb5-2035027791dd
 
-[v1] nfc: nci: fix uninit-value in nci_core_init_rsp_packet()
-https://lore.kernel.org/all/20260623222402.175798-1-sam@bynar.io
-* [PATCH net] nfc: nci: fix uninit-value in nci_core_init_rsp_packet()
+Oops, looks like this patch did indeed introduce a regression due to bad
+check ordering. I have a v2 prepared, tested against the syzbot repro and
+NCI selftest which I will submit after the ~24h patch resend period is up.
 
-and found the following issue:
-UBSAN: array-index-out-of-bounds in nci_init_complete_req
+Thanks,
+Sam
 
-Full report is available here:
-https://ci.syzbot.org/series/2a9a8657-37a3-4dce-8cb5-2035027791dd
-
-***
-
-UBSAN: array-index-out-of-bounds in nci_init_complete_req
-
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-base:      a986fde914d88af47eb78fd29c5d1af7952c3500
-arch:      amd64
-compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/80f835c3-e998-47ff-aaa5-24c578af3b4e/config
-syz repro: https://ci.syzbot.org/findings/65008893-2498-4786-b913-f2c474a7b34a/syz_repro
-
-------------[ cut here ]------------
-UBSAN: array-index-out-of-bounds in net/nfc/nci/core.c:192:7
-index 4 is out of range for type '__u8[4]' (aka 'unsigned char[4]')
-CPU: 0 UID: 0 PID: 5905 Comm: syz.1.33 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
- __ubsan_handle_out_of_bounds+0xe8/0xf0 lib/ubsan.c:455
- nci_init_complete_req+0x255/0x460 net/nfc/nci/core.c:192
- __nci_request+0x7d/0x300 net/nfc/nci/core.c:108
- nci_open_device net/nfc/nci/core.c:529 [inline]
- nci_dev_up+0x8c3/0xdc0 net/nfc/nci/core.c:643
- nfc_dev_up+0x165/0x350 net/nfc/core.c:118
- nfc_genl_dev_up+0x89/0xe0 net/nfc/netlink.c:775
- genl_family_rcv_msg_doit+0x233/0x340 net/netlink/genetlink.c:1114
- genl_family_rcv_msg net/netlink/genetlink.c:1194 [inline]
- genl_rcv_msg+0x614/0x7a0 net/netlink/genetlink.c:1209
- netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2556
- genl_rcv+0x28/0x40 net/netlink/genetlink.c:1218
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x7bb/0x940 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
- sock_sendmsg_nosec net/socket.c:775 [inline]
- __sock_sendmsg net/socket.c:790 [inline]
- ____sys_sendmsg+0x9b9/0xa20 net/socket.c:2684
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2738
- __sys_sendmsg net/socket.c:2770 [inline]
- __do_sys_sendmsg net/socket.c:2775 [inline]
- __se_sys_sendmsg net/socket.c:2773 [inline]
- __x64_sys_sendmsg+0x1b1/0x290 net/socket.c:2773
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f55ead9ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f55ebcb9028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f55eb015fa0 RCX: 00007f55ead9ce59
-RDX: 0000000004008054 RSI: 0000200000000200 RDI: 0000000000000005
-RBP: 00007f55eae32e6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f55eb016038 R14: 00007f55eb015fa0 R15: 00007ffcba11c798
- </TASK>
----[ end trace ]---
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
