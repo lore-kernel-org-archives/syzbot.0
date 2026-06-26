@@ -1,49 +1,49 @@
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 496352C11E6
-	for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 20:21:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E16373B42D8
+	for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 20:21:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782505286; cv=none; b=llHEyEdtKFUGYG4+gx/WuoFnRZhasBL03gVMpgPl3fKCBeqyYeylVq8fNd0/RuekrOqpfa4o154wpYmzYPGI3FBwog6cF9fHwGRbeHsrvghqrtGHOdB9/y61SkdZoH4ddL3o3v1+heakuXHRbj1nuN7gfQT0n4BaPEMmuTy2u6U=
+	t=1782505300; cv=none; b=DKvP7Pz12Lxdus3vNwdpe/ZVKcTeyB2X7F2Y9JoDe8oUo8REm1eeH309+35GhndTXP6RIA55k3UzAzBsCGxYIPWcTe09TXaSulDsGjYGQaRsjyWiOfSqdMxDg7OXga2RaPDNjafYa2gXi2owRgWsNxKpU7W7KLTwsV3Vf40o+58=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782505286; c=relaxed/simple;
+	s=arc-20240116; t=1782505300; c=relaxed/simple;
 	bh=g70fQQ7x6sCqbQCIBY3AVjHD6lS7lDRQuZGS/lmWhsk=;
 	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=a2eKQQFxk4yzwATGYbri4DLYlgBbIX0CSwChTkkcZcf3IOlOqA6NkSXMNpLb9TLMf9p/GLn0U5OuFwmbx/Lo+p89KlW5jTyBKtSEGgxbbujDp3xZ92pJDhHaKFsRiBhbNXG0im4wGhbYfLzZh1etzgNre4cQqVw524rIi8u1kbY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
+	 Content-Type; b=LQufMD4YmHAFIQ2MvFJGonDyLnv/FC5dcrf/KmRQs5tY0BdyeLARg/jyJH35L57hOtij1aqSeiIQgtmJJh1GGzayt8ax1HOZA1TjCa0YYtMeqjxJPJguZQ0LGRgebh+ivC3O7qBLPfFuub+KHlAAeAJs89KNIdmvMEYDztL3m7c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7e757d8937aso1426162a34.2
-        for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 13:21:25 -0700 (PDT)
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-6a0ebc78c26so1985602eaf.0
+        for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 13:21:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782505284; x=1783110084;
+        d=1e100.net; s=20251104; t=1782505298; x=1783110098;
         h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
         bh=vFnp6yPbpElupK1Zb77MSKNK5x0yNy0ECJxMHPtpLT4=;
-        b=jOOIZMRoq1g8eKvUBjb7RtSOegtmTh/BWFuBGO9fUnoxTRGD0cd6DnMjkZsQVFYOpv
-         pXVEQ4Wc6bBfch2bvCBJc5dEYWV7laHkRVfB4GDZqvQMh2RCOeynWy/k9wU4kOifzqMq
-         WdkSSr2e80Hv7Xbob83CLQArNJFgrcuhQE+Ywhsgjq1OkjTStDwpWvf64OK4cnEuR98r
-         kzjKKYGQSwj+Y2OLVz+S/ebeVGOHATM5bl92DSXBzoJf+5YtwDCBX05zmBlEZ47Q/wCT
-         rzrf3zyYLEs3wVeoIleMvfkyiFaP9eX5bnSbmpDLE9IU7r7bYh3tigQzNaHrwAyTEtD/
-         1eWQ==
-X-Gm-Message-State: AOJu0Yz5AKZ3N4szOKJPHfpYnrCQcNz9P1/3XDXxU2KcLkT8MfZ/0X14
-	ePnFQw6yBWg0Cq7JP7tAjSX5i3qTYRKY8EGWK5YLfM+fhuNxoWB4w0CQPoTMrECeEZPZed3MFz6
-	hQ1UEXtuZ8qc6b7n63v4Acvef1w97LBEHsdwqLF1JQeSIZmsXuDnBV8QM/wQ=
+        b=aMt09JJYp5vKSTE/kkDTwZOqMzxoMK7ywTFwLs0c3kpDJaxCISTHdNY9+1ZOpcHzYq
+         uPWA6W+PYp07uQFFxp3Kdp0YoWbzZKyBgAJXSTJxeY4WRcqAmshr1jXkthrB5OLiXeZH
+         wfiDylKEVHEQVuld0kt2kzFSdMmh0kYesrzXtD09hmPqxOyYJDrnJSwJBq7Urghn30mQ
+         U5BZJu9FQVpm/Ow0b5XmTYquDAEDXtU0KZRKGIiD06dMJc3bhBkpLsgVsPSDoqAqmw4e
+         +HzxWLM3VAMyWezzqMev2wdWL2Db+UAVkEk8iqH/+gvkgWGs9fyYNZdJPrSnvmKuJkHw
+         lYJg==
+X-Gm-Message-State: AOJu0Yze/AO68CoILxJMPEnuApthmZPVNesLFmLx9r9h6Bas1Rtjwy0M
+	VlE17c5JTxRJWIJmHNPIXpQAwHJxBoFvlrD9X7BxnX7aSaKHVtqMYko74AxZCIsyx4rRf1PpyU8
+	qHONkpio1GMXm2qvzBmZOvaDlMTYfHMMc8WUWPr6m5oN2mI5cT4fEF8cWTnY=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:339b:10b0:6a1:4155:3548 with SMTP id
- 006d021491bc7-6a141553682mr2290418eaf.36.1782505284290; Fri, 26 Jun 2026
- 13:21:24 -0700 (PDT)
-Date: Fri, 26 Jun 2026 13:21:24 -0700
+X-Received: by 2002:a05:6820:16a7:b0:6a1:4fbf:5f46 with SMTP id
+ 006d021491bc7-6a14fbf61bcmr1273040eaf.10.1782505298004; Fri, 26 Jun 2026
+ 13:21:38 -0700 (PDT)
+Date: Fri, 26 Jun 2026 13:21:37 -0700
 In-Reply-To: <20260626202118.2464544-1-jbingham@gmail.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a3edf44.80e5668d.5d0ef.000b.GAE@google.com>
+Message-ID: <6a3edf51.656f0a6b.201ab1.0001.GAE@google.com>
 Subject: Forwarded: [syzbot ci] Re: minix: convert to iomap and add direct I/O
 From: syzbot <syzbot@syzkaller.appspotmail.com>
 To: syzbot@lists.linux.dev
@@ -183,4 +183,5 @@ index face74100346..270e4e0620a1 100644
  extern const struct file_operations minix_file_operations;
 -- 
 2.47.3
+
 
