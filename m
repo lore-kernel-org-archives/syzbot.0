@@ -1,40 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC60F3FB07B
-	for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 17:21:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6794137F8DA
+	for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 17:23:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782494480; cv=pass; b=OFrBY2xBMNKZPswdpBK6C4tE3hOu6BS44KupPW5J2ScNVnuv53mcosNMHf7rAuzpe8MYiVQ4eh4mo0V/L19qSaZNAyLwBN3+/cwbPqwVt2NlZcTuTJvRH4Qy/4OzdZkPqV6hXtnl++khTj3vxwsuqXw4PoOR5HCthHpsz5deafU=
+	t=1782494584; cv=pass; b=MwsyW5u6slVF+NekclXLWLc2Pirazs6kJgEaIz2+ZpbhxPXEzHgs7ro3ZCDuDO0Gw5wSgrpJsZCzonnONwGcBmPk0cVltKy7NcXHiWjcmCpMDh2zJHtwD3Egl/PNXftyCxsieF7FFCl1c+8vWkluXGpF9PYCyj8tYJZmB4S0Xbs=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782494480; c=relaxed/simple;
+	s=arc-20240116; t=1782494584; c=relaxed/simple;
 	bh=0PJVp1Kj2dC6/iK5nFolvtVMfdl5xscpI2LaYQwVeTU=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Content-Type; b=VKKb32BHOyTMU89V0+F66dext7ghYQi6ofHX46OCSQDZEt5xx82DVjLPCrt3QcB0vNqjZTqdWbsbkpXju/3z/TP9FALeX4mSBOrXdrX1vCLmpedGBu2vwTaUjXzra5V3vibkG73SOGemW8Sk5X0EjmEXbU4Obbrju/1H/97HwsQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Wr54I6kw; arc=pass smtp.client-ip=100.103.45.18
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=GpHSgRDeuWPRQeyN4WKLBUtJFOnHriy1H0U9EcqttFHObDSl2R66p7xUYGqrh52kHHV1xFawB+6YVYRoZDFYpZg5QW8uf4x+1zWEvMrFFlb3LQTvRQDVw7vTzeQbt4oAfGhJsiuBx9wcenZzbJSepGEbK8OuHaciPQAidhZpNPA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=J+Ukn/3p; arc=pass smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Wr54I6kw"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="J+Ukn/3p"
 Received: by smtp.kernel.org (Postfix)
-	id 9C8111F00A3A; Fri, 26 Jun 2026 17:21:18 +0000 (UTC)
+	id 144BC1F00A3A; Fri, 26 Jun 2026 17:23:03 +0000 (UTC)
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=209.85.221.74
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1782494478;
-	b=fbN9qcg6YIT5+nJFWUbk2wLeELajFxTIZGVFhYj6XOAjmSopyLbjUo28BARSnqALUXFV
-	 b9i4wNEMNlKJMZhBXc7EqbeoXgoNuQ48PMUqzGEI9VJkbJ5rcmH8FCBV00EmNbzebH1Df
-	 voiNICkJlQHqgouMtoNaVGk7/MrO9GxD+lam0rUZuZorVBAIOfOV51Xkw+4XKqbg++DN5
-	 h8LxIt4FIfjbSS07L9Tc7uYUc3LLi3irAfdvQRPDglItN/0S6yEF6OjJeifw8xp+JRVmq
-	 NtSKlDsPylGEPb7AyZNLVp7OZHw9UGCXQz3jhgAiIBEs/XeezbmK3DF4cNYwCOtjpig==
+	t=1782494583;
+	b=vZxokoY566lBN+276pxOuJVeaUOyawcnWOPIirWWBOEiQu/I+sX7yiRQYIy4MEZFWGFe
+	 TAlhUahmldI59kcV36/q32V5Ciq9zoQqVP6FeP8zKiZUOXkv5lcfMA7p4Ye2TvmjSCjpX
+	 pAAfRwEkQ8rkYqiUbn+LPF/w9n6hSuRwWYOO2TKR6nRhB3CBsbW6kZkETNXkwgPwtzg1q
+	 OBYx2RiOuQGcVyKK2T5eBANP5EMXJZ8O78lnqiTZG1Lrhzzw02Fdr/r8aOuNirCfcp1xG
+	 Cl7TezhUS3IyOstnaGm3tFmqoFdM3ujB5mV/UGgxCkLf3xN9yIiE/DDP3r3lsvBE87g==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1782494478;
+	c=relaxed/relaxed; t=1782494583;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Received:Date:Mime-Version:X-Mailer:Message-ID:
-	 Subject:From:To:Content-Type;
+	 Subject:From:To:Cc:Content-Type;
 	bh=oSfnpZ0q8UAMS6XZxV7qFWvUKHSCDvdilDktcf4LOjA=;
-	b=uKI/bU7k18H7sg6HruTfRWtHBsuwPVq29ATeREoOZBXUyTR20Sd5kDt6Zds8tpryDTQe
-	 grM/6CPRSpbWr9G2zK94Q2xJAETZMmbsF6KrG1VQeuI7OJqzFwfc1L7BX65rcned3rQg1
-	 BDqxfT2sVPudV/esMlbd93cauU8GDZKI0NgdOK2EStPc0rGecGpmxj+Iub1I+h48QjIWv
-	 8XkOJQ485wA4j+BiTyLj9YinOqG2NoE+vlPi94BM/xYtxUY9TBFrtvnjuGq1wlxE2iIkk
-	 MLnqj08UWVpmELWY8oVnRZVw+46733RbNsL7xeTwEG9NGCUwxxABDNlGkyem/PrgqWw==
-ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=Wr54I6kw;
+	b=sVHOKnYGYnMepRwDFyIMRuib47+8k7DY05vZ8bqxVk6LjLsDFBUX14Vc485eXUJbb4b2
+	 dlA1iq2KOFOgDdpXCmLNo/GlSZ0Mh6wHA73C0synGO66MJMK2AoiAdF6aMuj9wyeVFVHw
+	 /EpI3gn8ffVPHabj1qNN111w+BObGD9FwGOq+zBHguP1w0QABXGetqJQ95syPlryOD7ov
+	 /TCpUWMC0NG4nj+vdXFH5nLti/7ZyzN9NV8z50mUzHu+qHlxQd+D9klTLsAZYOmcN0tYn
+	 2ICY7iIIl7HYR6MJKG5LPRauCghXzvVZnInhSGRyeVb4nDc9qYbugnf3cfhlm8sGN6w==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b="J+Ukn/3p";
 	dmarc=pass header.from=google.com;
 	spf=pass smtp.mailfrom=flex--nogikh.bounces.google.com;
 	arc=none smtp.remote-ip=209.85.221.74
@@ -42,46 +42,46 @@ Received: from mail-wr1-f74.google.com (mail-wr1-f74.google.com [209.85.221.74])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id ECAB51F000E9
-	for <syzbot@kernel.org>; Fri, 26 Jun 2026 17:21:17 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id 71EAE1F000E9
+	for <syzbot@kernel.org>; Fri, 26 Jun 2026 17:23:02 +0000 (UTC)
 Authentication-Results: smtp.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=Wr54I6kw
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org ECAB51F000E9
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=J+Ukn/3p
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 71EAE1F000E9
 Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=flex--nogikh.bounces.google.com
-Received: by mail-wr1-f74.google.com with SMTP id ffacd0b85a97d-4621b17733cso549000f8f.0
-        for <syzbot@kernel.org>; Fri, 26 Jun 2026 10:21:17 -0700 (PDT)
+Received: by mail-wr1-f74.google.com with SMTP id ffacd0b85a97d-46dc84ca722so752347f8f.1
+        for <syzbot@kernel.org>; Fri, 26 Jun 2026 10:23:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1782494476; x=1783099276; darn=kernel.org;
-        h=to:from:subject:message-id:mime-version:date:from:to:cc:subject
+        d=google.com; s=20251104; t=1782494581; x=1783099381; darn=kernel.org;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
          :date:message-id:reply-to;
         bh=oSfnpZ0q8UAMS6XZxV7qFWvUKHSCDvdilDktcf4LOjA=;
-        b=Wr54I6kwWAgRTEuVJKD2X5yDJI/8G4Eo7W0WpPQ7EkwjH6E3R3gthlY6+MiRSKrxDK
-         DTjJQuYFihpFyb2kSLZ00cbi7kbZ/+OMG792QhtejMOAG6FswsqbXbCDexpFwtDTwScA
-         5795amjZv1koJPVDpTzHcYh4aPMAw3VGJlEnJWtV9awCht0u4et0v5cyXrpl4nuleouL
-         /zRKSg3Rl8L/lLoS7PuSARs6B8YuVPzbct9eN040SPtH5eUB6LNmAb0PSXNlCnnb/L5i
-         aRQxtLHOAxkZZw8wg17jjv9Z9VnHLaOsouqx1VnY1J7v1yHtEJNg1M+8hAwYz5Gz68wN
-         +EVw==
+        b=J+Ukn/3pAWsZw/anDknVu7DAmAeXp1jy3VUpwSQ8A3MLSrL0gy8td9dJw9JNcnFvLB
+         UFgku1IzWoDOW0oqs/qwUxQTPl/8Wb5Nc3TbpNEPeHhlbRfOMGArAozDij9iSpOiTKQD
+         cs/wu6wmQLhBY35FY5dbuYppx8SMMHRk+vHDORQpLmCtLycStah8eWcJ5LBQSyOA7ZTi
+         Ga3X7f51Lr01T4pvB5kWQagECdt998JCU8v+Lc9mzjVIm3mWTOprFF8aX8S+fVL6lImA
+         w4IiAzeRHnFzQ0F4rXeNq2Ska0sHcFQjaXpsBDjnRz+wTCtFFvnNxqopUQHEQ9GDgy6N
+         8Chg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782494476; x=1783099276;
-        h=to:from:subject:message-id:mime-version:date:x-gm-message-state
+        d=1e100.net; s=20251104; t=1782494581; x=1783099381;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
         bh=oSfnpZ0q8UAMS6XZxV7qFWvUKHSCDvdilDktcf4LOjA=;
-        b=GHG8Ikyv3BHctlQ7vusFt1xOxu6ES52i8dHJlzM5ftUlxRBqUL2dWbJ/lcVCEstBiW
-         QZtbiJio19OG6BjXupuYHGcd59F+tOKRWWhF4A/ClN+S+nSSlWbjFLWeJgPmTKnTQHv7
-         7h5b3VKCKRt5/3bEVRXCPqn4ORrajDiA/x7XkSgH6Qiv743o3YtT8hUlsQOUO1os+6Gi
-         9bMWzq66cgP1QhKAPK+79+ZEFZu0UK1dsTajIKhCCc6rdeLyg32i4HlCOC60oeJ1K6BN
-         0i2gbfVQDT0H+56YpXP7ExWrPeCAhgHWOBAyQLl7VOHu1f2YPCnXVOffW0/pivZO8uha
-         tSgA==
-X-Gm-Message-State: AOJu0YwJcM7FjfRiKs96ebuI8cdpOlK87PF/l6i5RzrA1ZyQRUr6TOzM
-	Gh6Rdh5M1z4jDehU38zT47yPOb5U4TIs4Ge7b5FysmWDqub2jHsPKhDnfSsp07T4A6MzegpmBaY
-	ayYIijR0RRiuT26sod1t2QXKRJV0QKdx+oleTFejKStPWWQnbxKW/UrQM+HCVzfqNcvK61Hrv+g
-	bin6j4rkpA+vhm2JWh74c7hDSA6KTxEw==
-X-Received: from wrph10.prod.google.com ([2002:adf:f4ca:0:b0:45e:edca:cb12])
- (user=nogikh job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6000:470b:b0:46d:28a7:3ce7
- with SMTP id ffacd0b85a97d-46dbed35effmr11771304f8f.7.1782494475440; Fri, 26
- Jun 2026 10:21:15 -0700 (PDT)
-Date: Fri, 26 Jun 2026 17:21:14 +0000
+        b=LS6YRioqcaNLfigfbCg7DNkPRjdm3r/lRsUxxEHpwzQjfK8GX91HtSeIHEnY/nfABE
+         xDBptOQF3JI7TjLumLvlU5ezxqLGPaBYxEW5HIARNot4uzSUn9UXZn6q+SSlWozxGxlv
+         ox93mSMPGKB5JIdQNgxNIbeugJoM9Z+BLd4ON0x1BRnQwHtwvwtP2Sq+zQsr+NPrLDer
+         4JHvp7wkZDFWwe/R7W4JEKr4z19J7qGCllnWIn19xXPYyp5VjDo0WxwDn7GG1/oCg7Zm
+         bnK/EhZhJ8xnYD/DiiSIfZ4wEvA9iNLMtynqloNzr3p4aYrDNtz/mvNf7W+7MwUhW24q
+         wYKA==
+X-Gm-Message-State: AOJu0YweVHtcHMCPX1w5P60rFSYoZGrAa4wdzAOs4XcfCER6b63nzZKo
+	5MxPpZkVGxvcBpQw+oM879jvyddb4DYJUYnSE0t1zEwyiHkSJbNHRKnaQnRWwKjeNPj87rdYxoa
+	EgM9MSvhxK4n8cbDwGoU78xDr6wQEI7e20d6IgKonPcVzaJ7A6xs9UX2U77DBCKQ0bL4PRi/Tl5
+	EEQQzszj9iSI32Uo+hvdhECFeqdMgHWQ==
+X-Received: from wmej9.prod.google.com ([2002:a05:600c:42c9:b0:490:b42f:2a6f])
+ (user=nogikh job=prod-delivery.src-stubby-dispatcher) by 2002:a05:600c:3483:b0:490:b58a:dcc1
+ with SMTP id 5b1f17b1804b1-492668ac06dmr104962185e9.29.1782494580561; Fri, 26
+ Jun 2026 10:23:00 -0700 (PDT)
+Date: Fri, 26 Jun 2026 17:22:59 +0000
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -89,10 +89,11 @@ List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.55.0.rc0.799.gd6f94ed593-goog
-Message-ID: <20260626172114.1552389-1-nogikh@google.com>
+Message-ID: <20260626172259.1553912-1-nogikh@google.com>
 Subject: [PATCH RFC v2] TEST netdevsim: remove debugfs files before freeing net_device
 From: Aleksandr Nogikh <nogikh@google.com>
 To: syzbot@kernel.org
+Cc: nogikh@google.com
 Content-Type: text/plain; charset="UTF-8"
 
 A KASAN slab-use-after-free was detected in debugfs_u32_get() when reading
