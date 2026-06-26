@@ -1,187 +1,69 @@
 Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB67E17C220
-	for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 20:21:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6B5E358D37
+	for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 20:50:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782505313; cv=none; b=juAQ3HEi9DCgX0fIASx7tFC62JjOjpnZVi+WG2dHt6u+XUazC65oX6rmeX/3aSBqHtq9a8kzlpgzSDgpEtllunm2H5Gshc68a2BUypy7GVXKVMGV1L+ZxKzR5sclvzKtbXQtZiZGhk1ZCXJ5imBTeK2eem0o8X40Ph1IlSbjVzk=
+	t=1782507040; cv=none; b=GK7xqiqC7WLcLT8XQZlU2GMlafWbooLtfCo2S4UMVnKh8ht86T+04Fc462MCFkrI7mVvoQJ6hOE1QPWH0xqseKoU0O0KnPjw2EmJ+itSsvOYR9qaglrDJw199YghxEeayhxDHiG8ak8+MVtHR1uikcy16FI0PEwn5UWuVwgDThI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782505313; c=relaxed/simple;
-	bh=g70fQQ7x6sCqbQCIBY3AVjHD6lS7lDRQuZGS/lmWhsk=;
+	s=arc-20240116; t=1782507040; c=relaxed/simple;
+	bh=ou2HJLXV4VUI+g+s8t7rRe0Ze6PqtltKXvDD/jZE2/k=;
 	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=ghlFzbsU7aOt6vjKFL4KjtVjd8G5djYXP6kD8N2bm3tb9RHQgJ5YJuQHcM/wcZ9QKHemBHMU5W4ig4XSopKWUFP6OsItsFWaA3CRpbv7w70QbiAobNJojU0SWYLSrbEvfvhadTSw7/tH7oBBtr0iInvhSRWGD2m5NaCBHfL3J2U=
+	 Content-Type; b=QPeFdvyAOmfW1bzAjspiZ5/sOeJjSb1OZ7nwXGpkkwo3n9j8Q0sTgyMoqf4PHlXuQpxz1f7SesBrlgsEBKPG8OSAvDM9gTZTao6H4K/RT2MmAa76hJcZ9kxVK4y7OHX3zLSK+mXJHXQLxr622rKlmfrU9eueyHbN1fuIpeBAa5c=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4893fc86bebso1919430b6e.0
-        for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 13:21:51 -0700 (PDT)
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-48e5de5a23cso1525965b6e.0
+        for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 13:50:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782505311; x=1783110111;
+        d=1e100.net; s=20251104; t=1782507038; x=1783111838;
         h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vFnp6yPbpElupK1Zb77MSKNK5x0yNy0ECJxMHPtpLT4=;
-        b=PxZsKa/67/dpqF3RIlsNmqf3lyOFpxFspvxXdVZ7khR36gCGOzKMDwkFlxY1SfHw0J
-         e8yn5rvU5yPYKvzoPbYxj+hHYkewsY5X6nvFPsRwOF6LIfzZOvwJxxyVScMa/9yoY/9O
-         opWxPKKpl5jArLEQFJaxD4Q0Uqf25EITBlTgDF52leCQt3aMcNKW7KOJ2sCIzMrglEQK
-         QzQpIZBJS0FQtmnYyrsr6X0lNWW86qsCu+qydmqHjcRO0Ko/tVULxVm+XSnuHGMgWAVN
-         UkrIDMZ2yFXtMi76PYHT6z8bHJIm5TjNCI5wRriF5+a+UwO92GHWnXw+vtPdMNRGjFKs
-         LL3g==
-X-Gm-Message-State: AOJu0YyfdqKGtRSN00MFjf+S3oH7WQX7fZVJzxkBFikCX+D2fitiHYq5
-	zijt5jVHCi/Rm7y5ZRDqsyCvXPZSpn5e3ampdSZHrdIPeFDQ8Q+mdKaFhbyY5xYDsuWtEaK+F0C
-	Um4SBoOrAVc8lVJGwI8GOQnWpyuTgKUY5kWsjazLPAvT7Q9Q1BZCo9p7Tu9g=
+        bh=ou2HJLXV4VUI+g+s8t7rRe0Ze6PqtltKXvDD/jZE2/k=;
+        b=Kx0SOXLgG3ENt7GEXPdSoe3CLg+r0sL9t+TMJ0ULAmiiEWIIuS7kq10A911Zt/GZy6
+         P5OnKLMFvwGT6QnlNKGhcS2I0W6TjMek8z6g0loJBQ7a9p49VlwvpFZU2dTyCgPEGdAE
+         YxG4P/E95MRC0ZscCzeRJNMlZ669nvkgkaz7YFEPK1x3qSYn9jPPCO6JQ+/wSZVqD9v7
+         gkr+Y/OjALue85d3kV5tmooQbA0f7ZfHgGlLWmHIljNj8+67TELgI1LvhbaCQrHluXqV
+         K6cfMgiiyIyy6obtsTopjMdkAxpFgauNE50PZ1JD3KxH5t5ZBa2ZwswhJRVIH0Vz9CqW
+         3QNw==
+X-Gm-Message-State: AOJu0YyMf5Jaec/MXAQM60uuOFrJyoHcXx12JNzshlODqmCsCWiKCak3
+	zXOIp7Cm+iy4l3EDTS5TMMi8V8pWI1xuLRWSibvJeRuNq8Lb2jOScnvDz8jFnaQXptrkspN/8nf
+	NrTZtrt2MnGX3LL+xuBhvQmAWSdeHMedT9OSuqd2sJ5wm3wsYfw8AKY5S5jk=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:67c8:b0:489:6b4c:d779 with SMTP id
- 5614622812f47-49217d2713amr6918594b6e.20.1782505310924; Fri, 26 Jun 2026
- 13:21:50 -0700 (PDT)
-Date: Fri, 26 Jun 2026 13:21:50 -0700
-In-Reply-To: <20260626202118.2464544-1-jbingham@gmail.com>
+X-Received: by 2002:a05:6808:ecb:b0:487:4d4e:bd46 with SMTP id
+ 5614622812f47-49216e35773mr6795016b6e.5.1782507037995; Fri, 26 Jun 2026
+ 13:50:37 -0700 (PDT)
+Date: Fri, 26 Jun 2026 13:50:37 -0700
+In-Reply-To: <6a3edf44.80e5668d.5d0ef.000b.GAE@google.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a3edf5e.80e5668d.5d0ef.000c.GAE@google.com>
-Subject: Forwarded: [syzbot ci] Re: minix: convert to iomap and add direct I/O
-From: syzbot <syzbot@syzkaller.appspotmail.com>
-To: syzbot@lists.linux.dev
-Cc: syzbot <syzbot+ci97bc680341b3b928@syzkaller.appspotmail.com>, jbingham@gmail.com
+Message-ID: <6a3ee61d.ac7367b4.6675.0008.GAE@google.com>
+Subject: [syzbot ci] Re: minix: convert to iomap and add direct I/O
+From: syzbot ci <syzbot+cicae6c541ad03d010@syzkaller.appspotmail.com>
+To: syzbot@syzkaller.appspotmail.com, jbingham@gmail.com, 
+	syzbot@lists.linux.dev
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 
-For archival purposes, forwarding an incoming command email to
-syzbot@lists.linux.dev.
+syzbot ci has tested the suggested fix patch on top of the following series:
 
-***
+[v1] minix: convert to iomap and add direct I/O
+https://lore.kernel.org/all/cover.1782422707.git.jbingham@gmail.com
 
-Subject: [syzbot ci] Re: minix: convert to iomap and add direct I/O
-Author: jbingham@gmail.com
+Patch: https://ci.syzbot.org/jobs/fed6e8a8-1710-46a7-adfb-7eabdb09b18c/patch
 
-Apparently I did this wrong the first time. I misunderstood and sent one
-patch covering all the changes differing from master, rather than just
-patching the changes to fix the errors syzbot found.
+The patch testing request could not be completed:
+job has no testing tasks available
 
-#syz test
+Full report is available here:
+https://ci.syzbot.org/session/c784412e-7e79-4d5f-958c-0e527d73a430
 
 ---
- fs/minix/file.c         |  4 ++--
- fs/minix/inode.c        | 11 ++++++-----
- fs/minix/itree_common.c | 11 ++++++++++-
- fs/minix/minix.h        |  3 +++
- 4 files changed, 21 insertions(+), 8 deletions(-)
-
-diff --git a/fs/minix/file.c b/fs/minix/file.c
-index 1f4217115401..b07c853fa43a 100644
---- a/fs/minix/file.c
-+++ b/fs/minix/file.c
-@@ -175,8 +175,8 @@ const struct file_operations minix_file_operations = {
- 	.splice_write	= iter_file_splice_write,
- };
- 
--static int minix_setattr(struct mnt_idmap *idmap,
--			 struct dentry *dentry, struct iattr *attr)
-+int minix_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
-+	struct iattr *attr)
- {
- 	struct inode *inode = d_inode(dentry);
- 	int error;
-diff --git a/fs/minix/inode.c b/fs/minix/inode.c
-index cd12e59ce9b9..8a79ff82a656 100644
---- a/fs/minix/inode.c
-+++ b/fs/minix/inode.c
-@@ -444,10 +444,10 @@ static ssize_t minix_writeback_range(struct iomap_writepage_ctx *wpc,
- 	if (pos < wpc->iomap.offset ||
- 			pos >= wpc->iomap.offset + wpc->iomap.length) {
- 		if (INODE_VERSION(wpc->inode) == MINIX_V1)
--			error = V1_minix_iomap_begin(wpc->inode, pos, len, 0,
-+			error = V1_minix_iomap_begin(wpc->inode, pos, len, IOMAP_WRITE,
- 				&wpc->iomap, NULL);
- 		else
--			error = V2_minix_iomap_begin(wpc->inode, pos, len, 0,
-+			error = V2_minix_iomap_begin(wpc->inode, pos, len, IOMAP_WRITE,
- 				&wpc->iomap, NULL);
- 		if (error)
- 			return error;
-@@ -490,7 +490,7 @@ static int minix_writepages(struct address_space *mapping,
- 
- static int minix_read_folio(struct file *file, struct folio *folio)
- {
--	const struct iomap_ops *ops = minix_iomap_ops_ver(file->f_inode);
-+	const struct iomap_ops *ops = minix_iomap_ops_ver(folio->mapping->host);
- 
- 	iomap_bio_read_folio(folio, ops);
- 	return 0;
-@@ -504,7 +504,7 @@ static int minix_block_read_folio(struct file *file, struct folio *folio)
- 
- static void minix_readahead(struct readahead_control *rac)
- {
--	const struct iomap_ops *ops = minix_iomap_ops_ver(rac->file->f_inode);
-+	const struct iomap_ops *ops = minix_iomap_ops_ver(rac->mapping->host);
- 
- 	iomap_bio_readahead(rac, ops);
- }
-@@ -545,7 +545,7 @@ static sector_t minix_bmap(struct address_space *mapping, sector_t block)
- 	return iomap_bmap(mapping, block, ops);
- }
- 
--static const struct address_space_operations minix_aops = {
-+const struct address_space_operations minix_aops = {
- 	.dirty_folio	= iomap_dirty_folio,
- 	.invalidate_folio = iomap_invalidate_folio,
- 	.read_folio = minix_read_folio,
-@@ -575,6 +575,7 @@ static const struct address_space_operations minix_dir_aops = {
- static const struct inode_operations minix_symlink_inode_operations = {
- 	.get_link	= page_get_link,
- 	.getattr	= minix_getattr,
-+	.setattr	= minix_setattr,
- };
- 
- void minix_set_inode(struct inode *inode, dev_t rdev)
-diff --git a/fs/minix/itree_common.c b/fs/minix/itree_common.c
-index c3cd2c75af9c..5a8b73a7beda 100644
---- a/fs/minix/itree_common.c
-+++ b/fs/minix/itree_common.c
-@@ -311,7 +311,16 @@ static inline void truncate (struct inode * inode)
- 	long iblock;
- 
- 	iblock = (inode->i_size + sb->s_blocksize -1) >> sb->s_blocksize_bits;
--	block_truncate_page(inode->i_mapping, inode->i_size, get_block);
-+
-+	/* Depending on what address space operations are being used by the
-+	 * inode being truncated, we need to either call iomap_truncate_page or
-+	 * block_truncate_page.
-+	 */
-+	if (inode->i_mapping->a_ops == &minix_aops)
-+		iomap_truncate_page(inode, inode->i_size, NULL,
-+			minix_iomap_ops_ver(inode), NULL, NULL);
-+	else
-+		block_truncate_page(inode->i_mapping, inode->i_size, get_block);
- 
- 	n = block_to_path(inode, iblock, offsets);
- 	if (!n)
-diff --git a/fs/minix/minix.h b/fs/minix/minix.h
-index face74100346..270e4e0620a1 100644
---- a/fs/minix/minix.h
-+++ b/fs/minix/minix.h
-@@ -58,6 +58,8 @@ void minix_free_block(struct inode *inode, unsigned long block);
- unsigned long minix_count_free_blocks(struct super_block *sb);
- int minix_getattr(struct mnt_idmap *, const struct path *,
- 		struct kstat *, u32, unsigned);
-+int minix_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
-+	struct iattr *attr);
- int minix_prepare_chunk(struct folio *folio, loff_t pos, unsigned len);
- struct mapping_metadata_bhs *minix_get_metadata_bhs(struct inode *inode);
- int minix_fsync(struct file *file, loff_t start, loff_t end, int datasync);
-@@ -88,6 +90,7 @@ extern int V2_minix_iomap_begin(struct inode *inode, loff_t offset,
- 	loff_t length, unsigned int flags, struct iomap *iomap,
- 	struct iomap *srcmap);
- 
-+extern const struct address_space_operations minix_aops;
- extern const struct inode_operations minix_file_inode_operations;
- extern const struct inode_operations minix_dir_inode_operations;
- extern const struct file_operations minix_file_operations;
--- 
-2.47.3
-
-
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
