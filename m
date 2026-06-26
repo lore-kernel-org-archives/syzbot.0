@@ -1,51 +1,51 @@
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B7FD2E11B9
-	for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 20:13:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 617E82F5A13
+	for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 20:18:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782504818; cv=none; b=iBzUaf5buywxCJKclcL8/CPPHqPIKEGBqfh4rg/2G1EI977BN4CRnThVn8kaQDVcPg4P3oVV7zZ6/Yd2XgfXM58Nw/Kl+4sj+5uyacOyKgyn89sfKbz0bzdEqVSDwdKkRktBfYDESW20QTw8slfuBgJbbDM4oQ2iVSxpZcRpCGo=
+	t=1782505118; cv=none; b=Lf798zOkxuYKc7wlpF37osNFLGBS5BwL2X+1qkrzhNIW85xeJoPQsOoemQfY3N9wrvsp/FjCT5SCEk9nZjjGH1iBXfkNQ6BRSK/IrTYMlskXQpeQSgJ7khhEvtubzx+dpwctGbNriinlLdQ3z7gj1rrMFbkOhu5Ehtro0CDr780=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782504818; c=relaxed/simple;
-	bh=DhF+w5ofoyvimygmoilabJlp/vskIIwY5Qgy4yniMLY=;
+	s=arc-20240116; t=1782505118; c=relaxed/simple;
+	bh=H4CI0uK4jfWmr4soJ0NjRgEXiVqWrKfKn5R5v8bYUjw=;
 	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=AJ3if9vfsUxrwTKqVXZQfTyr6glaOr/5tR91ufFDtPMWmzwL+WcQYSV9WKbsKBORXsET8iadwgbID0bXHEm9jHsGZeN2S0CRsrLhEzYT06mCQmpany5iOpeLMlZR2Cf4pU8suBgTtCKu8I3VLFheGM1jT1znW+l3bbEEYODHDCQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
+	 Content-Type; b=KbN4BseRrchdO4mtOslWWjni2+rK9K0zQ8JNQLGK9vQNm2TVr9H7VDgksQTpT81ItfRzUdPnSVMuxBFZw/36MkNK4+oN4gfQByysOBKmn8D6ubeAxZz02L38FJDcZqLPo3atWHFBO65T5j8frqgVapyRTwj0KwG4cW+RQ/yjKyw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-49226201eb8so1035348b6e.1
-        for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 13:13:36 -0700 (PDT)
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6a0eb9d885bso1875896eaf.2
+        for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 13:18:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782504816; x=1783109616;
+        d=1e100.net; s=20251104; t=1782505116; x=1783109916;
         h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DhF+w5ofoyvimygmoilabJlp/vskIIwY5Qgy4yniMLY=;
-        b=n1UE5yOvvanu7WQYTabeA9XrajDIf+c++vluyrKhUd1I24wo7WsWykjMHOC6Q+Okso
-         u4ue1IloKqC8/0SiwxKLiW5kLU2cH+rwORdo2cht9a7zN0BsC6Q7tRi+NMIT5t1FEGx3
-         jxhLfC30wi9eAflpWDHtAyXWRhXxOkhxqeVCkiQNH2z9Wb/HB0UaIAX9NIixS7tpcmPF
-         EwPg3ismiWvNOLbhJn8STtwutk/PsS53M4c1ru2bZfqixIOr5i3yvP5f8oXibex2MCuL
-         hpzt7R2TG1GIP0kQ7K5bAFTXlpf+W8lI4wF30heF7V/0SqCGDzj11fYcx7wTsEaBGUda
-         xS+g==
-X-Gm-Message-State: AOJu0YyQWXHc/ZQVB/UZRYtTaQiPNv+iUrxFXfiiQwX5iF+j2VRGC0Nc
-	uFTZgWyk7lip79tviv7vf3aXZYUP71MZsMAT/O7R1nj/gk30EImhR1c5xVBfX9SOBd2qxqLJQMv
-	+05oGYagKe8czygzOkv8fTc4e5sj1EVZL9dixCzq83QNBH8JHFNfkfQ5Ynps=
+        bh=H4CI0uK4jfWmr4soJ0NjRgEXiVqWrKfKn5R5v8bYUjw=;
+        b=o23JeDiTmrCTuXbDAAMlBDbbNql+FRZCMaOK9s7W1kZB7cvdkpFASiwQ7KMdn5FBfj
+         lllQATuqxF4YW8FXVop1LFgfykujxFY72UAMlj8hl6teFno7brdkuiqQf+V1aOGGgULm
+         ZQN4/+gQ28otF8OvkENWnMw8XQ5hY4cexXv4wVfEi9b1hXPEnyhJQ21UozgiPX08qBZs
+         Az4uE1cQH6gGyhxUBo8sDHLcnD4mA4sxtoL+KZvhWk/kGxWPLty/wq3tkqpDGCWfX1AW
+         dUooZ8zJvQOzGkWHRNT00YZkjiL8ZIzQNJ241q3g7B64+uskz9fQoHrlZyF2QM1mErrL
+         wflg==
+X-Gm-Message-State: AOJu0YxjOyk1fAdQMKLX43qrmOT8uOxkxJD/KDpDkwkgVD1tX/Sa3PAh
+	T3a+jJCx5c01Nvbi2Au7vNtwNfe50csyf1Zc1w4OYUD3XDw3FN7AcJXJXJG10r2vao830pdx1gL
+	JLRYpr2XK0RpljzjSOQc2t0fqCVrsdDWn6MY3EwtjdF1pmNThDNhqtd7ZAyQ=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1185:b0:48a:7b94:26e2 with SMTP id
- 5614622812f47-4921593f572mr6897054b6e.7.1782504815920; Fri, 26 Jun 2026
- 13:13:35 -0700 (PDT)
-Date: Fri, 26 Jun 2026 13:13:35 -0700
-In-Reply-To: <6a3ed25e.81aa1f09.c949.0001.GAE@google.com>
+X-Received: by 2002:a05:6820:180f:b0:6a1:50eb:2124 with SMTP id
+ 006d021491bc7-6a150eb2409mr1132735eaf.72.1782505116587; Fri, 26 Jun 2026
+ 13:18:36 -0700 (PDT)
+Date: Fri, 26 Jun 2026 13:18:36 -0700
+In-Reply-To: <6a3ed24a.80e5668d.5d0ef.0009.GAE@google.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a3edd6f.81aa1f09.c949.0002.GAE@google.com>
+Message-ID: <6a3ede9c.80e5668d.5d0ef.000a.GAE@google.com>
 Subject: [syzbot ci] Re: minix: convert to iomap and add direct I/O
-From: syzbot ci <syzbot+ci8496eb5875c19b0e@syzkaller.appspotmail.com>
+From: syzbot ci <syzbot+cie396c5f3b2ebbb30@syzkaller.appspotmail.com>
 To: syzbot@syzkaller.appspotmail.com, jbingham@gmail.com, 
 	syzbot@lists.linux.dev
 Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
@@ -56,7 +56,7 @@ syzbot ci has tested the suggested fix patch on top of the following series:
 [v1] minix: convert to iomap and add direct I/O
 https://lore.kernel.org/all/cover.1782422707.git.jbingham@gmail.com
 
-Patch: https://ci.syzbot.org/jobs/cbb7b456-256e-4647-a65b-bcdb51592716/patch
+Patch: https://ci.syzbot.org/jobs/50a5bb64-c5eb-478b-a268-282a78ede7de/patch
 
 The patch testing request could not be completed:
 Testing failed due to an infrastructure error.
@@ -64,7 +64,7 @@ Testing results:
 * [build 0] Build Patched: error
 
 Full report is available here:
-https://ci.syzbot.org/session/de945a93-6cb3-4670-b8dc-d1f7a692453e
+https://ci.syzbot.org/session/d7e9fcf3-7004-4e6d-bc7c-0fcd795d5b6d
 
 ---
 This report is generated by a bot. It may contain errors.
