@@ -1,156 +1,363 @@
-Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E8C037CD37
-	for <syzbot@lists.linux.dev>; Thu, 25 Jun 2026 22:38:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9CBA1E633C
+	for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 02:09:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782427105; cv=none; b=DMqDwX7Dtvu+pUH7XkRMMqtdT+OPI1R2jnqS6jWebn7z38BsHw5MEv7w0d9c/W76e9V0oXmcBd7Vmo0CYB4O3hWTxWNrr6Ma+SR/vuBovN/BdN82wPw3tgw57Fr1VVowxgvt5hTLljgd12/IJYEgFVSPb4m09bBa//pW3O//cPQ=
+	t=1782439797; cv=none; b=KKuJeL91FVpXmlPHZnFf5nnxq+GcgOCz/665dyo8piJdekGk39DCP08Gf1XXBDMABb39a+fVTI7bMY22tsIvcr+o6FdynW3ndSPorqYk/JlQr+7A9dJASUiwke1yh92erDxYxPYp0HnVNOgjI4hSnY5ZWAFbISXDY2kF8iShkfU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782427105; c=relaxed/simple;
-	bh=CpABWUr260CgXpjicA89ge4lT71J4tbfxyzcLfz68os=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=NNlFaaGpTjh6MjfRpsAZ40OoiyVjf1QKxhlOhcNsqgwIK4PsiMMiBtbtk8sSoaCcR3fF+HXSq/5jL/H9gyXH8PY/hLcaw2C1tE6XKaWSmOrzBP/uEVkqOFJGcXP64DKB/UgCP2vGZvQjwXHRRrUiRFW35cF3gwjyVJZKEghD2uE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=t2KH+bRl; arc=none smtp.client-ip=209.85.215.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="t2KH+bRl"
-Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-c8894570b58so126465a12.3
-        for <syzbot@lists.linux.dev>; Thu, 25 Jun 2026 15:38:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1782427104; x=1783031904; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=C41fullCZRTObl53NmujOLk30v3K2S7YvKtmD0713xo=;
-        b=t2KH+bRlqL9uViKC6d3padcFkHhz2zKHk7DAFdX8E1NsWYSyMA7YoTlzLAOpvQw6hF
-         aQ81j4NstKdZ5X9tnqjM+aMD6ehdpDBVCGgCmKxy/jYnfqs6JKTMktBnhqcHboiynS4I
-         vJP2C8SCR8t+7NqQxfS8oKMNs+l19DG6CHXMsFZ1+959AmFHvywq7SFFsjpqyWVlmFNa
-         0EQB1AT6J9Hv0E0x1QIrUEdOvJYsBdNLvR4SjQckz6RzbKTqH/TUqmFhA0xZT6IVTIql
-         cqHfv/u0dd+U0fDiQOoD5uAPbp4LK6aohS6MrCl7o455y5AWjh35w9477tB1a2nDRiO/
-         rxVQ==
+	s=arc-20240116; t=1782439797; c=relaxed/simple;
+	bh=6J7PszlqucxxiqgfkqdOm1FEEu5pW5bZeqOsinyqGuc=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=IbIHbsCByCWIbV5BA5yNk0G3HC/+iAxgYQiFCzHEXg6zZWd2joFhBeHLBGreO28r/vdLI2G3dzhLEzCurXK28QMQ7tu5WgWrBSG12lZZh/p4l1b2yoHNXWszOWMwms5JJcbOUUj88JSyrh0KaCFRRvdye804gu9UPWT3IBjjCPM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-4856ecace68so386283b6e.1
+        for <syzbot@lists.linux.dev>; Thu, 25 Jun 2026 19:09:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782427104; x=1783031904;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=C41fullCZRTObl53NmujOLk30v3K2S7YvKtmD0713xo=;
-        b=IdJeE1L0aIfcKIDcsS94nNIqvECDpkYeSgFHxOXNN6s3SgH+zJGe8+DEBehzPCgsb6
-         GJiSN+1rO/BApcF7e0SVSSZVbdbh61iROh8uQDgFbjfCD1agZxIzroodaanSAnMBm9zl
-         ILnTh+zityfylfkHl24+8BTBfxPrUYjatLcSc4Hzu4OsVMy/J3RF63E7P9EpPqqXxNvD
-         pKuX2CCrdeBnhg/01aO+zKsmwS5iYhFOwm870wx+hfxM+6chOKR+erGNCprYxgPFw+QY
-         M/RyU+NcbJPZ6p4k93a1N8of1V10VYPRdbzA8F9bDzQX4gdkdUwvkTtL2WFKe4654grD
-         uIkw==
-X-Forwarded-Encrypted: i=1; AHgh+Rq5+WoRscNMzCZzkWo/ix0ZyBjD/MdDq8BuLxg4XMghITUvEsIo7Ld4buSCetAuKtfQa+YdM2c=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw8ZUV5Eni6Lt4iVBXj0Yz1qg8JNHrYqOz9g54+VtQ/bm2dkQEE
-	aD18RV0j7A5ENRj6Dx9xsZPE7d5c5o1W+dumKeCoLeyiAZe+YhAzfYIytwJfpwDGckvEGckMZkK
-	jydsGiA==
-X-Received: from pgbn7.prod.google.com ([2002:a63:5907:0:b0:c85:b968:afa])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:3c4f:b0:36d:e051:7b6a
- with SMTP id 98e67ed59e1d1-37dfa2434d9mr4486316a91.12.1782427103428; Thu, 25
- Jun 2026 15:38:23 -0700 (PDT)
-Date: Thu, 25 Jun 2026 15:38:22 -0700
-In-Reply-To: <CANp29Y7aiAeNCUPAYbym7_b7gxDsjweF+qssQ-VSussbZ1OGgw@mail.gmail.com>
+        d=1e100.net; s=20251104; t=1782439795; x=1783044595;
+        h=cc:to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=dm1bCjPB5vnmCPBtMoDQy8ByCm9XPJc069QJWfHWRqM=;
+        b=Snqm+tW9YSW5zP8uF8SPT5ydLS7BbRhg+rmNPoKIArYlouBJ2SFt0pwAPyFfjM3oRh
+         gBdxqfwqkODRdvlYsvs109QirJenmBzqwdkztbrX6mWSnzB4e2DvUN//WcLvOSNbRaPp
+         4M1PG0qX9Bg6xF+0DcYNhXYiX95ztng0uH6UKtOjVFxZtiEUOBDD5Do8bBlwPiFxaZH0
+         FGvogL5Ggcd9RJS1NOIyw52tSl+tIzXSdkBDI6kas/Bq7xk9YMNjUBMTqWq3YePkItKQ
+         JdASo6qoMaJsbD438RtD/h/CZ6ot3yoA66nEng+nxG2Gtp02Wf/yxzGJC4eD7XjEFeKR
+         WTLw==
+X-Gm-Message-State: AOJu0YxjScB8K9CF1c7JSDWDTxggJcSKiue7el5WOiSc+px2xuJRBGw8
+	bEGbKLXIlJQFqz7JoQhX7wgT8dXL2XMZtzZn2xtD0686CM6rBi8GyngxcY4bM+V/tYAfxK736Yz
+	bEMxPtPINE2QBblPiV+EnKyfOVBWay/vpiV+n1EklP8XozoWAV5oaEBqRV1w=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <86078441-92eb-4461-b823-7d3539ac5859@mail.kernel.org> <CANp29Y7aiAeNCUPAYbym7_b7gxDsjweF+qssQ-VSussbZ1OGgw@mail.gmail.com>
-Message-ID: <aj2t3vnFk_fkF6Gk@google.com>
-Subject: Re: [PATCH v2] KVM: x86: Exempt in-kernel PIC from "disappearing"
- interrupt warning
-From: Sean Christopherson <seanjc@google.com>
-To: Aleksandr Nogikh <nogikh@google.com>
-Cc: syzbot <syzbot@kernel.org>, syzkaller-bugs@googlegroups.com, 
-	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, kvm@vger.kernel.org, 
-	Ingo Molnar <mingo@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, 
-	Thomas Gleixner <tglx@kernel.org>, x86@kernel.org, hpa@zytor.com, 
-	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-Received: by 2002:a05:6808:c16b:b0:490:660f:597a with SMTP id
+ 5614622812f47-4921800fda7mr4969643b6e.29.1782439794831; Thu, 25 Jun 2026
+ 19:09:54 -0700 (PDT)
+Date: Thu, 25 Jun 2026 19:09:54 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a3ddf72.80e5668d.5d0ef.0007.GAE@google.com>
+Subject: [moderation/CI] Re: minix: convert to iomap and add direct I/O
+From: syzbot ci <syzbot+cibb4405b011c15be9@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Jun 26, 2026, Aleksandr Nogikh wrote:
-> On Thu, Jun 25, 2026 at 11:10=E2=80=AFPM 'syzbot' via syzkaller-bugs
-> > https://lore.kernel.org/all/345e9d6c-d7d9-4bab-adb3-d6a7bd27599f@mail.k=
-ernel.org/T/
-> > ---
-> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> > index 0550359ed..f1681aa9f 100644
-> > --- a/arch/x86/kvm/x86.c
-> > +++ b/arch/x86/kvm/x86.c
-> > @@ -10857,7 +10857,9 @@ static int kvm_check_and_inject_events(struct k=
-vm_vcpu *vcpu,
-> >                 if (r) {
-> >                         int irq =3D kvm_cpu_get_interrupt(vcpu);
-> >
-> > -                       if (!WARN_ON_ONCE(irq =3D=3D -1)) {
-> > +                       WARN_ON_ONCE(irq =3D=3D -1 && !pic_in_kernel(vc=
-pu->kvm));
-> > +
-> > +                       if (irq !=3D -1) {
->=20
-> Hmm, no, that looks weird.
-> Sorry for the noise, please ignore.
+syzbot ci has tested the following series
 
-Looks right to me?  FWIW, this is what I had thrown together locally:
+[v1] minix: convert to iomap and add direct I/O
+https://lore.kernel.org/all/cover.1782422707.git.jbingham@gmail.com
+* [PATCH 1/3] minix: add iomap infrastructure
+* [PATCH 2/3] minix: convert address space operations to iomap
+* [PATCH 3/3] minix: convert file operations to iomap and add direct I/O
+
+and found the following issues:
+* BUG: unable to handle kernel NULL pointer dereference in page_symlink
+* WARNING in block_truncate_page
+* WARNING in iomap_writeback_folio
+* general protection fault in minix_read_folio
+
+Full report is available here:
+https://ci.syzbot.org/series/5741f2fe-e35f-460c-b8ae-d02789a43a3a
+
+***
+
+BUG: unable to handle kernel NULL pointer dereference in page_symlink
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      ab9de95c9cf952332ab79453b4b5d1bfca8e514f
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/3e5d737a-bbd5-4a7b-9ad1-4a77f3c42b23/config
+syz repro: https://ci.syzbot.org/findings/6370c479-1d88-4203-ab64-5ce5413cc836/syz_repro
+
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+#PF: supervisor instruction fetch in kernel mode
+#PF: error_code(0x0010) - not-present page
+PGD 800000016c223067 P4D 800000016c223067 PUD 0 
+Oops: Oops: 0010 [#1] SMP KASAN PTI
+CPU: 1 UID: 0 PID: 5877 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:0x0
+Code: Unable to access opcode bytes at 0xffffffffffffffd6.
+RSP: 0018:ffffc90003a3fc18 EFLAGS: 00010246
+RAX: 1ffffffff17ce4d0 RBX: ffffffff8be72680 RCX: 0000000000000008
+RDX: 0000000000000000 RSI: ffff8881b4c23820 RDI: 0000000000000000
+RBP: ffffc90003a3fd48 R08: ffffc90003a3fcc0 R09: ffffc90003a3fce0
+R10: 000000000000000b R11: 0000000000000000 R12: ffff88816cfec218
+R13: 1ffffffff17ce4d1 R14: 0000000000000008 R15: dffffc0000000000
+FS:  00007fc3dc9f66c0(0000) GS:ffff8882a9227000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffffffffd6 CR3: 000000016bc24000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ page_symlink+0x27a/0x440 fs/namei.c:6418
+ minix_symlink+0xcc/0x150 fs/minix/namei.c:87
+ vfs_symlink+0x18b/0x330 fs/namei.c:5656
+ filename_symlinkat+0x1cd/0x410 fs/namei.c:5681
+ __do_sys_symlink fs/namei.c:5708 [inline]
+ __se_sys_symlink+0x4d/0x2b0 fs/namei.c:5704
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fc3dd39ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fc3dc9f6028 EFLAGS: 00000246 ORIG_RAX: 0000000000000058
+RAX: ffffffffffffffda RBX: 00007fc3dd615fa0 RCX: 00007fc3dd39ce59
+RDX: 0000000000000000 RSI: 00002000000002c0 RDI: 0000200000000100
+RBP: 00007fc3dd432e6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fc3dd616038 R14: 00007fc3dd615fa0 R15: 00007ffc9f986118
+ </TASK>
+Modules linked in:
+CR2: 0000000000000000
+---[ end trace 0000000000000000 ]---
+RIP: 0010:0x0
+Code: Unable to access opcode bytes at 0xffffffffffffffd6.
+RSP: 0018:ffffc90003a3fc18 EFLAGS: 00010246
+RAX: 1ffffffff17ce4d0 RBX: ffffffff8be72680 RCX: 0000000000000008
+RDX: 0000000000000000 RSI: ffff8881b4c23820 RDI: 0000000000000000
+RBP: ffffc90003a3fd48 R08: ffffc90003a3fcc0 R09: ffffc90003a3fce0
+R10: 000000000000000b R11: 0000000000000000 R12: ffff88816cfec218
+R13: 1ffffffff17ce4d1 R14: 0000000000000008 R15: dffffc0000000000
+FS:  00007fc3dc9f66c0(0000) GS:ffff8882a9227000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffffffffd6 CR3: 000000016bc24000 CR4: 00000000000006f0
+
+
+***
+
+WARNING in block_truncate_page
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      ab9de95c9cf952332ab79453b4b5d1bfca8e514f
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/3e5d737a-bbd5-4a7b-9ad1-4a77f3c42b23/config
+syz repro: https://ci.syzbot.org/findings/a5a50111-30c6-4d8b-876d-586b3b49470f/syz_repro
+
+loop0: detected capacity change from 0 to 64
+------------[ cut here ]------------
+bh->b_size != blocksize
+WARNING: fs/buffer.c:2696 at block_truncate_page+0x70a/0x830 fs/buffer.c:2696, CPU#0: syz.0.17/5866
+Modules linked in:
+CPU: 0 UID: 0 PID: 5866 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:block_truncate_page+0x70a/0x830 fs/buffer.c:2696
+Code: 5c d0 6a ff 89 e8 48 83 c4 40 5b 41 5c 41 5d 41 5e 41 5f 5d e9 c7 05 5b 09 cc e8 41 d0 6a ff e9 51 ff ff ff e8 37 d0 6a ff 90 <0f> 0b 90 e9 76 fc ff ff 44 89 f1 80 e1 07 38 c1 0f 8c 50 f9 ff ff
+RSP: 0018:ffffc90003a8f9e8 EFLAGS: 00010293
+RAX: ffffffff825b6069 RBX: 0000000000000003 RCX: ffff888113619dc0
+RDX: 0000000000000000 RSI: 0000000000000400 RDI: ffffffff93ef90a0
+RBP: 0000000000000000 R08: ffff88810b3f1d07 R09: 1ffff1102167e3a0
+R10: dffffc0000000000 R11: ffffed102167e3a1 R12: 0000000000000400
+R13: ffff88810b3f1d00 R14: ffffffff93ef90a0 R15: 1ffff1102167e3a0
+FS:  00007f743592d6c0(0000) GS:ffff88818dc27000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b33163fff CR3: 0000000021428000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ truncate fs/minix/itree_common.c:314 [inline]
+ V2_minix_truncate+0x22d/0x1150 fs/minix/itree_v2.c:73
+ minix_setattr+0x14f/0x1a0 fs/minix/file.c:195
+ notify_change+0xbba/0xea0 fs/attr.c:556
+ do_truncate+0x1c2/0x250 fs/open.c:68
+ do_ftruncate+0x4d4/0x580 fs/open.c:194
+ ksys_ftruncate fs/open.c:206 [inline]
+ __do_sys_ftruncate fs/open.c:211 [inline]
+ __se_sys_ftruncate fs/open.c:209 [inline]
+ __x64_sys_ftruncate+0x8f/0xe0 fs/open.c:209
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f743499ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f743592d028 EFLAGS: 00000246 ORIG_RAX: 000000000000004d
+RAX: ffffffffffffffda RBX: 00007f7434c15fa0 RCX: 00007f743499ce59
+RDX: 0000000000000000 RSI: 0000000000000003 RDI: 0000000000000004
+RBP: 00007f7434a32e6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f7434c16038 R14: 00007f7434c15fa0 R15: 00007ffd57fa9d88
+ </TASK>
+
+
+***
+
+WARNING in iomap_writeback_folio
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      ab9de95c9cf952332ab79453b4b5d1bfca8e514f
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/3e5d737a-bbd5-4a7b-9ad1-4a77f3c42b23/config
+syz repro: https://ci.syzbot.org/findings/faeadbdc-8f36-45bd-b9df-40b83300c68d/syz_repro
+
+------------[ cut here ]------------
+atomic_read(&ifs->write_bytes_pending) != 0
+WARNING: fs/iomap/buffered-io.c:1828 at iomap_writeback_init fs/iomap/buffered-io.c:1828 [inline], CPU#1: kworker/u10:5/4737
+WARNING: fs/iomap/buffered-io.c:1828 at iomap_writeback_folio+0x20f6/0x2790 fs/iomap/buffered-io.c:1974, CPU#1: kworker/u10:5/4737
+Modules linked in:
+CPU: 1 UID: 0 PID: 4737 Comm: kworker/u10:5 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Workqueue: writeback wb_workfn (flush-7:0)
+RIP: 0010:iomap_writeback_init fs/iomap/buffered-io.c:1828 [inline]
+RIP: 0010:iomap_writeback_folio+0x20f6/0x2790 fs/iomap/buffered-io.c:1974
+Code: e8 4f 96 5b ff 48 8d 3d 28 c1 ce 0d 67 48 0f b9 3a e9 da e3 ff ff e8 39 96 5b ff 90 0f 0b 90 e9 4b e5 ff ff e8 2b 96 5b ff 90 <0f> 0b 90 e9 cc e8 ff ff e8 1d 96 5b ff bf e4 ff ff ff 44 89 ee e8
+RSP: 0018:ffffc90003e3ef80 EFLAGS: 00010293
+RAX: ffffffff826a9a75 RBX: 00000000ffff8881 RCX: ffff88816b235940
+RDX: 0000000000000000 RSI: 00000000ffff8881 RDI: 0000000000000000
+RBP: 1ffff11036dd96d9 R08: ffff8881babac587 R09: 1ffff110375758b0
+R10: dffffc0000000000 R11: ffffed10375758b1 R12: 1ffff110375758b0
+R13: 000000000000000a R14: ffff8881babac584 R15: ffffea0006bc8ac0
+FS:  0000000000000000(0000) GS:ffff8882a9227000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005555779c0a28 CR3: 0000000113804000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ iomap_writepages+0x167/0x2e0 fs/iomap/buffered-io.c:2051
+ minix_writepages+0xef/0x160 fs/minix/inode.c:488
+ do_writepages+0x338/0x560 mm/page-writeback.c:2571
+ __writeback_single_inode+0x12e/0xf90 fs/fs-writeback.c:1787
+ writeback_sb_inodes+0x9de/0x1b00 fs/fs-writeback.c:2079
+ wb_writeback+0x41c/0xad0 fs/fs-writeback.c:2264
+ wb_do_writeback fs/fs-writeback.c:2432 [inline]
+ wb_workfn+0x431/0x10f0 fs/fs-writeback.c:2477
+ process_one_work kernel/workqueue.c:3322 [inline]
+ process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
+
+
+***
+
+general protection fault in minix_read_folio
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      ab9de95c9cf952332ab79453b4b5d1bfca8e514f
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/3e5d737a-bbd5-4a7b-9ad1-4a77f3c42b23/config
+syz repro: https://ci.syzbot.org/findings/fe6b7658-93e2-48c4-8808-28a98a8cc13c/syz_repro
+
+WARNING: The mand mount option has been deprecated and
+         and is ignored by this kernel. Remove the mand
+         option from the mount to silence this warning.
+=======================================================
+Oops: general protection fault, probably for non-canonical address 0xdffffc000000000c: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000060-0x0000000000000067]
+CPU: 1 UID: 0 PID: 5816 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:minix_read_folio+0x8b/0x1d0 fs/minix/inode.c:493
+Code: f1 f1 f8 f8 f8 f8 4b 89 44 25 00 48 b8 f8 f8 f3 f3 f3 f3 f3 f3 4b 89 44 25 08 e8 50 fb 1e ff 49 83 c6 60 4c 89 f0 48 c1 e8 03 <42> 80 3c 20 00 74 08 4c 89 f7 e8 a6 89 8c ff 4d 8b 36 49 83 c6 28
+RSP: 0018:ffffc9000398f680 EFLAGS: 00010206
+RAX: 000000000000000c RBX: ffffea0006c67fc0 RCX: ffff888102368000
+RDX: 0000000000000000 RSI: ffffea0006c67fc0 RDI: 0000000000000000
+RBP: ffffc9000398f750 R08: ffffea0006c67fc7 R09: 1ffffd4000d8cff8
+R10: dffffc0000000000 R11: ffffffff82a734d0 R12: dffffc0000000000
+R13: 1ffff92000731ed0 R14: 0000000000000060 R15: 1ffffd4000d8cff9
+FS:  00007f5343f936c0(0000) GS:ffff8882a9227000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b33763fff CR3: 00000001be366000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ filemap_read_folio+0x12c/0x3a0 mm/filemap.c:2510
+ do_read_cache_folio+0x354/0x590 mm/filemap.c:4140
+ read_mapping_folio include/linux/pagemap.h:1015 [inline]
+ __page_get_link+0x52/0x300 fs/namei.c:6332
+ page_get_link+0x27/0xc0 fs/namei.c:6362
+ pick_link+0x72f/0xfe0 fs/namei.c:-1
+ step_into_slowpath+0x58a/0x820 fs/namei.c:2127
+ step_into fs/namei.c:2152 [inline]
+ open_last_lookups fs/namei.c:4643 [inline]
+ path_openat+0x224e/0x3830 fs/namei.c:4856
+ do_file_open+0x23e/0x4a0 fs/namei.c:4888
+ do_sys_openat2+0x115/0x200 fs/open.c:1368
+ do_sys_open fs/open.c:1374 [inline]
+ __do_sys_openat fs/open.c:1390 [inline]
+ __se_sys_openat fs/open.c:1385 [inline]
+ __x64_sys_openat+0x138/0x170 fs/open.c:1385
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f534319ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f5343f93028 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+RAX: ffffffffffffffda RBX: 00007f5343415fa0 RCX: 00007f534319ce59
+RDX: 00000000000c4842 RSI: 0000200000000300 RDI: ffffffffffffff9c
+RBP: 00007f5343232e6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f5343416038 R14: 00007f5343415fa0 R15: 00007fff456bcb68
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:minix_read_folio+0x8b/0x1d0 fs/minix/inode.c:493
+Code: f1 f1 f8 f8 f8 f8 4b 89 44 25 00 48 b8 f8 f8 f3 f3 f3 f3 f3 f3 4b 89 44 25 08 e8 50 fb 1e ff 49 83 c6 60 4c 89 f0 48 c1 e8 03 <42> 80 3c 20 00 74 08 4c 89 f7 e8 a6 89 8c ff 4d 8b 36 49 83 c6 28
+RSP: 0018:ffffc9000398f680 EFLAGS: 00010206
+RAX: 000000000000000c RBX: ffffea0006c67fc0 RCX: ffff888102368000
+RDX: 0000000000000000 RSI: ffffea0006c67fc0 RDI: 0000000000000000
+RBP: ffffc9000398f750 R08: ffffea0006c67fc7 R09: 1ffffd4000d8cff8
+R10: dffffc0000000000 R11: ffffffff82a734d0 R12: dffffc0000000000
+R13: 1ffff92000731ed0 R14: 0000000000000060 R15: 1ffffd4000d8cff9
+FS:  00007f5343f936c0(0000) GS:ffff8882a9227000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f53431ea540 CR3: 00000001be366000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	f1                   	int1
+   1:	f1                   	int1
+   2:	f8                   	clc
+   3:	f8                   	clc
+   4:	f8                   	clc
+   5:	f8                   	clc
+   6:	4b 89 44 25 00       	mov    %rax,0x0(%r13,%r12,1)
+   b:	48 b8 f8 f8 f3 f3 f3 	movabs $0xf3f3f3f3f3f3f8f8,%rax
+  12:	f3 f3 f3
+  15:	4b 89 44 25 08       	mov    %rax,0x8(%r13,%r12,1)
+  1a:	e8 50 fb 1e ff       	call   0xff1efb6f
+  1f:	49 83 c6 60          	add    $0x60,%r14
+  23:	4c 89 f0             	mov    %r14,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 80 3c 20 00       	cmpb   $0x0,(%rax,%r12,1) <-- trapping instruction
+  2f:	74 08                	je     0x39
+  31:	4c 89 f7             	mov    %r14,%rdi
+  34:	e8 a6 89 8c ff       	call   0xff8c89df
+  39:	4d 8b 36             	mov    (%r14),%r14
+  3c:	49 83 c6 28          	add    $0x28,%r14
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-Author:     Sean Christopherson <seanjc@google.com>
-AuthorDate: Thu Jun 25 08:46:48 2026 -0700
-Commit:     Sean Christopherson <seanjc@google.com>
-CommitDate: Thu Jun 25 09:00:49 2026 -0700
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-    KVM: x86: Don't WARN if IRQ disappears because it was cleared from the =
-PIC
-   =20
-    When getting a to-be-injected IRQ, don't WARN if the IRQ disappeared an=
-d
-    the VM has an in-kernel PIC, as the ExtINT handling that's routed throu=
-gh
-    KVM's virtual PIC is tracked per-VM, not per-vCPU.  If another vCPU gra=
-bs
-    the IRQ, or deasserts the interrupt (which is level-triggered), then it=
-'s
-    both expected and "fine" for a
-   =20
-    Keep the assert for split IRQCHIP VMs to help detect KVM bugs, as users=
-pace
-    is responsible for routing ExtINT to the intended vCPU, i.e. once an Ex=
-tINT
-    is pending, it can't be cleared without holding the vCPU's mutex, and t=
-hus
-    false positives are impossible.
-   =20
-    Fixes: bf672720e83c ("KVM: x86: check the kvm_cpu_get_interrupt result =
-before using it")
-    Debugged-by: Alexander Potapenko <glider@google.com>
-    Reported-by: syzbot+dd769db18693736eee89@syzkaller.appspotmail.com
-    Closes: https://syzkaller.appspot.com/bug?extid=3Ddd769db18693736eee89
-    Closes: https://lore.kernel.org/all/6a360fdf.871e809a.2d6dda.0000.GAE@g=
-oogle.com
-    Signed-off-by: Sean Christopherson <seanjc@google.com>
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
-diff --git arch/x86/kvm/x86.c arch/x86/kvm/x86.c
-index 0626e835e9eb..7feddeeb819d 100644
---- arch/x86/kvm/x86.c
-+++ arch/x86/kvm/x86.c
-@@ -7686,10 +7686,12 @@ static int kvm_check_and_inject_events(struct kvm_v=
-cpu *vcpu,
-                if (r) {
-                        int irq =3D kvm_cpu_get_interrupt(vcpu);
-=20
--                       if (!WARN_ON_ONCE(irq =3D=3D -1)) {
-+                       if (likely(irq !=3D -1)) {
-                                kvm_queue_interrupt(vcpu, irq, false);
-                                kvm_x86_call(inject_irq)(vcpu, false);
-                                WARN_ON(kvm_x86_call(interrupt_allowed)(vcp=
-u, true) < 0);
-+                       } else {
-+                               WARN_ON_ONCE(!pic_in_kernel(vcpu->kvm));
-                        }
-                }
-                if (kvm_cpu_has_injectable_intr(vcpu))
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[brauner@kernel.org jbingham@gmail.com jkoolstra@xs4all.nl linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
