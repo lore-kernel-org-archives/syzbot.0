@@ -1,53 +1,87 @@
-Received: from mail-wr1-f73.google.com (mail-wr1-f73.google.com [209.85.221.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42EDA2D8370
-	for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 17:18:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.73
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782494307; cv=none; b=gdWDIA9oMtavH8qbT3WemeGc9SqvhaZtjKIYwd2X+L4SRylitXmCj5rQ6VPFg2FpKKs/TTCmUZ5C4fBQyI4J5pipasq+MF+4BRjr6vdvpBfy6/LNcwh6cron5LM6ElFesZUITEi1gdwbq+mUlSrCKxofWXkPPf2IeSmoNLI/0gE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782494307; c=relaxed/simple;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC60F3FB07B
+	for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 17:21:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782494480; cv=pass; b=OFrBY2xBMNKZPswdpBK6C4tE3hOu6BS44KupPW5J2ScNVnuv53mcosNMHf7rAuzpe8MYiVQ4eh4mo0V/L19qSaZNAyLwBN3+/cwbPqwVt2NlZcTuTJvRH4Qy/4OzdZkPqV6hXtnl++khTj3vxwsuqXw4PoOR5HCthHpsz5deafU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782494480; c=relaxed/simple;
 	bh=0PJVp1Kj2dC6/iK5nFolvtVMfdl5xscpI2LaYQwVeTU=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Content-Type; b=loH9fyyDNs6fypJeykr/4SGTarkySV5g95v4BIJG1o5DwTQgc0YivW4r4XmlnVbzsRNr8Z1Qdv4yfXtLXCfHn8NXOz1erlBGli9qlo/kSzdG2Pr1o1zno+xpWbDVc6uEGFCfyYPSMZ18/csusr7Bw9pGzXZq4qbXVV4To/q52TY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--nogikh.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=DBjsKLt0; arc=none smtp.client-ip=209.85.221.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--nogikh.bounces.google.com
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Content-Type; b=VKKb32BHOyTMU89V0+F66dext7ghYQi6ofHX46OCSQDZEt5xx82DVjLPCrt3QcB0vNqjZTqdWbsbkpXju/3z/TP9FALeX4mSBOrXdrX1vCLmpedGBu2vwTaUjXzra5V3vibkG73SOGemW8Sk5X0EjmEXbU4Obbrju/1H/97HwsQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Wr54I6kw; arc=pass smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="DBjsKLt0"
-Received: by mail-wr1-f73.google.com with SMTP id ffacd0b85a97d-46c3018dd9eso767814f8f.3
-        for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 10:18:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Wr54I6kw"
+Received: by smtp.kernel.org (Postfix)
+	id 9C8111F00A3A; Fri, 26 Jun 2026 17:21:18 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=209.85.221.74
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1782494478;
+	b=fbN9qcg6YIT5+nJFWUbk2wLeELajFxTIZGVFhYj6XOAjmSopyLbjUo28BARSnqALUXFV
+	 b9i4wNEMNlKJMZhBXc7EqbeoXgoNuQ48PMUqzGEI9VJkbJ5rcmH8FCBV00EmNbzebH1Df
+	 voiNICkJlQHqgouMtoNaVGk7/MrO9GxD+lam0rUZuZorVBAIOfOV51Xkw+4XKqbg++DN5
+	 h8LxIt4FIfjbSS07L9Tc7uYUc3LLi3irAfdvQRPDglItN/0S6yEF6OjJeifw8xp+JRVmq
+	 NtSKlDsPylGEPb7AyZNLVp7OZHw9UGCXQz3jhgAiIBEs/XeezbmK3DF4cNYwCOtjpig==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1782494478;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Received:Date:Mime-Version:X-Mailer:Message-ID:
+	 Subject:From:To:Content-Type;
+	bh=oSfnpZ0q8UAMS6XZxV7qFWvUKHSCDvdilDktcf4LOjA=;
+	b=uKI/bU7k18H7sg6HruTfRWtHBsuwPVq29ATeREoOZBXUyTR20Sd5kDt6Zds8tpryDTQe
+	 grM/6CPRSpbWr9G2zK94Q2xJAETZMmbsF6KrG1VQeuI7OJqzFwfc1L7BX65rcned3rQg1
+	 BDqxfT2sVPudV/esMlbd93cauU8GDZKI0NgdOK2EStPc0rGecGpmxj+Iub1I+h48QjIWv
+	 8XkOJQ485wA4j+BiTyLj9YinOqG2NoE+vlPi94BM/xYtxUY9TBFrtvnjuGq1wlxE2iIkk
+	 MLnqj08UWVpmELWY8oVnRZVw+46733RbNsL7xeTwEG9NGCUwxxABDNlGkyem/PrgqWw==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=Wr54I6kw;
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=flex--nogikh.bounces.google.com;
+	arc=none smtp.remote-ip=209.85.221.74
+Received: from mail-wr1-f74.google.com (mail-wr1-f74.google.com [209.85.221.74])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id ECAB51F000E9
+	for <syzbot@kernel.org>; Fri, 26 Jun 2026 17:21:17 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=Wr54I6kw
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org ECAB51F000E9
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=flex--nogikh.bounces.google.com
+Received: by mail-wr1-f74.google.com with SMTP id ffacd0b85a97d-4621b17733cso549000f8f.0
+        for <syzbot@kernel.org>; Fri, 26 Jun 2026 10:21:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1782494304; x=1783099104; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1782494476; x=1783099276; darn=kernel.org;
         h=to:from:subject:message-id:mime-version:date:from:to:cc:subject
          :date:message-id:reply-to;
         bh=oSfnpZ0q8UAMS6XZxV7qFWvUKHSCDvdilDktcf4LOjA=;
-        b=DBjsKLt0HEXL5uy6XGFjJjzDDCLE81uQu6giLMlrcbHJf4tUpbBNRbMXm64MIT5w3O
-         Jb41J4pMpnog80Vj7KrwVt+wL9DUmrRRV25jr3jxyfFK4RQVHaXpwqIRIte50p4hTvOr
-         Kb3o/oEXmxrRQ/zj7F96tbH6nukyuzZYaQVQY5IWyiC4rPRjk6AWXBIOCa0mQ2rMMjxp
-         uGVmF8saFJwCe6x7SFPuzE6iw0ZM5tfREdQHWlNioq/6hau/P3InS4Y4Ze88Tq0/wksW
-         hGn0oqXfcnkjwkWVNkAsA8bZRqWVnIj9Ja00djNV5Qnu5wbxxFl+Vytz8Tkv8CRbhhyd
-         8iXA==
+        b=Wr54I6kwWAgRTEuVJKD2X5yDJI/8G4Eo7W0WpPQ7EkwjH6E3R3gthlY6+MiRSKrxDK
+         DTjJQuYFihpFyb2kSLZ00cbi7kbZ/+OMG792QhtejMOAG6FswsqbXbCDexpFwtDTwScA
+         5795amjZv1koJPVDpTzHcYh4aPMAw3VGJlEnJWtV9awCht0u4et0v5cyXrpl4nuleouL
+         /zRKSg3Rl8L/lLoS7PuSARs6B8YuVPzbct9eN040SPtH5eUB6LNmAb0PSXNlCnnb/L5i
+         aRQxtLHOAxkZZw8wg17jjv9Z9VnHLaOsouqx1VnY1J7v1yHtEJNg1M+8hAwYz5Gz68wN
+         +EVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782494304; x=1783099104;
+        d=1e100.net; s=20251104; t=1782494476; x=1783099276;
         h=to:from:subject:message-id:mime-version:date:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
         bh=oSfnpZ0q8UAMS6XZxV7qFWvUKHSCDvdilDktcf4LOjA=;
-        b=SRiy9VXhx1zZqL9/dLQaZt2zx/2odbWmss3iAgTqtDEaono7GiVmUpRT+QXX4yd32T
-         ElS8NHNekoOx2V1RrbdcObFwvZcvmNwQ8VRfqgkfIHxDY2A4c5vbNluwCIy546+dxGG2
-         zg7vGxfShPJ0hd9CplxuN6GuW7QXClZEkTsTlBX1BUsijUK6VGGwXN32ynaxpE8CiW/U
-         zLS7ix0RhsMvoB4WElrS4v1NO0tbJ7jz+SY80oxbwAc2VuINhKTgET7BnARdr6n7PXdo
-         hto82DYUbYc4sda9Sf1soz/nk6VOyi5k4BdnTeoakMkFR3hVJEcAXZArzN6XFMOVN248
-         iBYQ==
-X-Gm-Message-State: AOJu0Yz2ACorvnVdvOiH4kKDvWbLS+c77OSy2GM/mrAYh836PPQ8FYOX
-	/li7Wk7LC9Y6iHKf1vIK90DQo7SZ0/71SaM2q6lX1xve/E/omnkmwLYI2XoNlaA5w0wYx6vau9T
-	W5X7JSHHwNPa2UhHqKQNuZTiY4vCVeu+6yl3ySSmt3xdhQHW0WLQhORoPsOQkelxu+aPMF5PSi5
-	NVJ4YBcy8EtaVMHnhMWDeNPBSWbzg95UCdVOzl
-X-Received: from wmla10.prod.google.com ([2002:a05:600d:238a:b0:492:413d:b354])
- (user=nogikh job=prod-delivery.src-stubby-dispatcher) by 2002:a05:600c:46c3:b0:492:3da4:81ef
- with SMTP id 5b1f17b1804b1-49266881aefmr108293285e9.18.1782494304250; Fri, 26
- Jun 2026 10:18:24 -0700 (PDT)
-Date: Fri, 26 Jun 2026 17:18:23 +0000
+        b=GHG8Ikyv3BHctlQ7vusFt1xOxu6ES52i8dHJlzM5ftUlxRBqUL2dWbJ/lcVCEstBiW
+         QZtbiJio19OG6BjXupuYHGcd59F+tOKRWWhF4A/ClN+S+nSSlWbjFLWeJgPmTKnTQHv7
+         7h5b3VKCKRt5/3bEVRXCPqn4ORrajDiA/x7XkSgH6Qiv743o3YtT8hUlsQOUO1os+6Gi
+         9bMWzq66cgP1QhKAPK+79+ZEFZu0UK1dsTajIKhCCc6rdeLyg32i4HlCOC60oeJ1K6BN
+         0i2gbfVQDT0H+56YpXP7ExWrPeCAhgHWOBAyQLl7VOHu1f2YPCnXVOffW0/pivZO8uha
+         tSgA==
+X-Gm-Message-State: AOJu0YwJcM7FjfRiKs96ebuI8cdpOlK87PF/l6i5RzrA1ZyQRUr6TOzM
+	Gh6Rdh5M1z4jDehU38zT47yPOb5U4TIs4Ge7b5FysmWDqub2jHsPKhDnfSsp07T4A6MzegpmBaY
+	ayYIijR0RRiuT26sod1t2QXKRJV0QKdx+oleTFejKStPWWQnbxKW/UrQM+HCVzfqNcvK61Hrv+g
+	bin6j4rkpA+vhm2JWh74c7hDSA6KTxEw==
+X-Received: from wrph10.prod.google.com ([2002:adf:f4ca:0:b0:45e:edca:cb12])
+ (user=nogikh job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6000:470b:b0:46d:28a7:3ce7
+ with SMTP id ffacd0b85a97d-46dbed35effmr11771304f8f.7.1782494475440; Fri, 26
+ Jun 2026 10:21:15 -0700 (PDT)
+Date: Fri, 26 Jun 2026 17:21:14 +0000
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -55,10 +89,10 @@ List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.55.0.rc0.799.gd6f94ed593-goog
-Message-ID: <20260626171823.1551544-1-nogikh@google.com>
+Message-ID: <20260626172114.1552389-1-nogikh@google.com>
 Subject: [PATCH RFC v2] TEST netdevsim: remove debugfs files before freeing net_device
 From: Aleksandr Nogikh <nogikh@google.com>
-To: syzbot@lists.linux.dev
+To: syzbot@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
 A KASAN slab-use-after-free was detected in debugfs_u32_get() when reading
