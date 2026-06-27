@@ -1,216 +1,212 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57A84377EDC;
-	Sat, 27 Jun 2026 11:20:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBDCD336896
+	for <syzbot@lists.linux.dev>; Sat, 27 Jun 2026 19:07:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782559213; cv=none; b=jEzOWjWPUqRphovu+r6IoPAmxRWhAaoD3gAeVPS4N/lwiPzee9FmuUImi37Tgxyef8D8vpHxCDriH86p4agKd1JIMUFzJmccLFPxnT29sKSux2I3t1ZzrOmbN84IArD3hpIo2IQ0EBAe+cA4ncZfVkcsI/+kcJXZjDJZTu6Qfrc=
+	t=1782587264; cv=none; b=sEBtoMH9saUfklfCnn1ulLZYjNYaO/3JRee+TCQ6GJJasbWsirV/p9rWpU8a5RKtuQvQKfCJay/tza3x6N51tOMp+eqWeUraz+ij4Vm8C33A4yLSp3/SyJPo91oS0pw2Op4VP/qvnFfKqoZ5m8KmZtgmCdF1TYO8ANuzJlZ6o7k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782559213; c=relaxed/simple;
-	bh=WCUXx01z2Y8UfrblA6Ezt3HI1umsj9SWxKhZyA6sByM=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=n/Acuq3pByskc4rd8qAnrEDlrZuabS0LQIVQd3ZCzvYZ6339isXEUTeIXtg5mcXM0KuiPZAbc21AD3i+HrEvkKNjYo/R0YlIGDLdkuTpWASlYg0j+3RhVOgg66cawqQdhk4rfmh2QvIAu2XYE3E62OUoj/ezrpRLH7EhUbhPwf4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DLnLsZml; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DLnLsZml"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 941371F000E9;
-	Sat, 27 Jun 2026 11:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782559211;
-	bh=rYQQUx7LclQ+ZAbuPlSmf6Qov10I1jjdY4SZQEjrMzo=;
-	h=From:To:Cc:Subject:Date;
-	b=DLnLsZmlcfPyo9IBhwaOY1ujPCLRDk/34TQFaHBLEsFEZLO0JlN7rphArobKVGcwj
-	 OU0JiOiT7LanCWLv7d2O+uSMNyBaMX7KSm1m3K/apA6Oc60RLEfvFXhb+pKzAeygP7
-	 ewq/qGR/lgcDfoDXfjeEiM5ctaQnV5M3DURkUWv2OVMUEypnP/HFCoukmDXjYLvDvU
-	 vPsF5Eu/wIjEhzLWOanODN+4a0h/yvAs7KaLVAWuWEkcYHAFVmcAVuXnjlCoAn/SRb
-	 IwXH9TcHog+MW3Tp+JBBDhovFLqXzNXrYaNMBavkOrFoUsPX3s2F41gALEzqUEO2y7
-	 CJHcDG8jQz3dQ==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, "Andrew Lunn" <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>, <netdev@vger.kernel.org>, "Paolo Abeni" <pabeni@redhat.com>
-Cc: linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Subject: [PATCH] netdevsim: remove debugfs files before freeing net_device
-Message-ID: <f15205c4-30e1-454f-97e6-92067a74f98f@mail.kernel.org>
+	s=arc-20240116; t=1782587264; c=relaxed/simple;
+	bh=k32h2aNXnYDTStt+qzIa1xUO6Ar/EfmLjuqgWN8LSOU=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=sWbk0QL8Ky8Raws7syYA7EjzbyE6HhdZxtGJcTHy4yBliZItEtaPTeSXhSHGJBCoYDUxcOeXyN5fVBXaxWhxci3lM5ZI1N7j4BZPd89UWgU5jBriHurIoSKxrxiG5ig682nXYT+8jcfBUebOM3+cv/tovbhkR6H5bw0lH2st7ZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-48e5de5a23cso2361054b6e.0
+        for <syzbot@lists.linux.dev>; Sat, 27 Jun 2026 12:07:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782587262; x=1783192062;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fFk7b9LuGVN6MLqpmkBD62zstjtru8fmitGNEO8uaqI=;
+        b=kGOo0OWi1x3luY7f7E6kaxvXsjCxqGGUXQ5lw9tkrI3qNSlJ8RcmHYAAugYiUxtmvA
+         t46UpohrANO6oBXqE7IzbkIwrwObop+HEl5qbA75j2c6FKW4NLKMzQ7fBsiD91ptzIlS
+         WdT2ghUjHGKCwomJ3rpWWTHZqVLAFx+96KflRB/1rQNbVvOTTlbyW1vjF0q5DQ5UGbj0
+         GgYib8Pj11sBlocJUNLerakyaGHBUE7L2L5fCs8Gd9OG5yj83IHGrp/mraypkrRwixe2
+         ueex1sEC5d9CB5VdKDCXRmp6srZiYYLsHAI2tz1dAUWP+Y7ivcR/PVBa1OgRJQtp/Nkt
+         b6Jw==
+X-Gm-Message-State: AOJu0Yz1tYzUWbjTB02gavhEoKYMWazqj5VNN8ZGk+ZYs7yHjEG3v7dW
+	PNThmu+YZ7/pIWpJF8EuS9PjNHwlgX3YF5sZz8/a62x34jX8RCiSGxumB0UGYOgA91sgTGdBFPS
+	eVRifE4rIB5Dv03+EdljDEAeom1dvUH4oZW0R7s0C8IInCrdzvCG6jbEG8tI=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Sat, 27 Jun 2026 11:20:11 +0000 (UTC)
+X-Received: by 2002:a05:6808:6c85:b0:494:19a3:b31d with SMTP id
+ 5614622812f47-49419a3b51cmr5411631b6e.42.1782587261887; Sat, 27 Jun 2026
+ 12:07:41 -0700 (PDT)
+Date: Sat, 27 Jun 2026 12:07:41 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a401f7d.6124255a.dd83.0000.GAE@google.com>
+Subject: [moderation/CI] Re: bpf: Introduce static-defined tracing probe for BPF
+From: syzbot ci <syzbot+ciee10aa76dc1fd513@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Aleksandr Nogikh <nogikh@google.com>
+syzbot ci has tested the following series
 
-A KASAN slab-use-after-free was detected in debugfs_u32_get() when reading
-a debugfs file associated with a netdevsim port.
+[v1] bpf: Introduce static-defined tracing probe for BPF
+https://lore.kernel.org/all/cover.1782571533.git.xukuohai@huawei.com
+* [RFC PATCH bpf-next 01/12] libbpf: Prepare bpf SDT probe section for the =
+linker
+* [RFC PATCH bpf-next 02/12] libbpf: Introduce bpf SDT probe macros
+* [RFC PATCH bpf-next 03/12] libbpf: Add bpf_sdt_notes section parser
+* [RFC PATCH bpf-next 04/12] bpf: Create insn_array map for bpf SDT probe
+* [RFC PATCH bpf-next 05/12] bpf: Collect SDT probe BTF IDs from BTF decl t=
+ags
+* [RFC PATCH bpf-next 06/12] bpf: Add type check for SDT probe site
+* [RFC PATCH bpf-next 07/12] bpf: Record probe name in SDT map
+* [RFC PATCH bpf-next 08/12] libbpf: Add libbpf support to load SDT observe=
+r program
+* [RFC PATCH bpf-next 09/12] bpf: Add kernel support to load SDT observer p=
+rogram
+* [RFC PATCH bpf-next 10/12] bpf: Support attach and detach for SDT observe=
+r program
+* [RFC PATCH bpf-next 11/12] bpf, x86: Add JIT support SDT for probe
+* [RFC PATCH bpf-next 12/12] selftests/bpf: Add tests for bpf SDT probe
 
-BUG: KASAN: slab-use-after-free in debugfs_u32_get+0x6c/0x70
-Read of size 4 at addr ffff88810cd6db00
+and found the following issue:
+general protection fault in do_jit
 
+Full report is available here:
+https://ci.syzbot.org/series/86d21ab6-d0e1-4dd3-b7e1-af4571d27460
+
+***
+
+general protection fault in do_jit
+
+tree:      bpf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
+-next.git
+base:      53435562a725962e4de0c29653223129ba11643a
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp=
+1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/549153a4-d4b8-46a4-8266-df26ad835e2=
+f/config
+syz repro: https://ci.syzbot.org/findings/2efaa7e4-eae0-45d0-b336-f0e311f83=
+56e/syz_repro
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc=
+000000010e: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000870-0x0000000000000877]
+CPU: 1 UID: 0 PID: 5818 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:do_jit+0x7c8c/0x12a90 arch/x86/net/bpf_jit_comp.c:2806
+Code: 49 83 c4 44 4c 89 e0 48 c1 e8 03 0f b6 04 10 84 c0 0f 85 0a 84 00 00 =
+45 03 34 24 48 8b bc 24 a0 01 00 00 48 89 f8 48 c1 e8 03 <80> 3c 10 00 74 1=
+7 e8 49 30 b0 00 48 8b bc 24 a0 01 00 00 48 ba 00
+RSP: 0018:ffffc900038cf640 EFLAGS: 00010202
+RAX: 000000000000010e RBX: 000000000000001c RCX: 0000000000000000
+RDX: dffffc0000000000 RSI: 0000000000000000 RDI: 0000000000000870
+RBP: ffffc900038cfa00 R08: ffff88816bb0d940 R09: 0000000000000096
+R10: 00000000000000fb R11: 0000000000000000 R12: ffff8881749b8044
+R13: ffff88816c445450 R14: 0000000000000003 R15: 0000000000000000
+FS:  00007f06814986c0(0000) GS:ffff8882a9224000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f0680472780 CR3: 000000001cfc8000 CR4: 00000000000006f0
 Call Trace:
- debugfs_u32_get+0x6c/0x70
- simple_attr_read+0x227/0x490
- debugfs_attr_read+0x76/0x130
- vfs_read+0x213/0xa80
+ <TASK>
+ bpf_int_jit_compile+0x8af/0x1620 arch/x86/net/bpf_jit_comp.c:3946
+ bpf_prog_jit_compile kernel/bpf/core.c:2571 [inline]
+ __bpf_prog_select_runtime+0x4e2/0xb20 kernel/bpf/core.c:2640
+ bpf_migrate_filter net/core/filter.c:1318 [inline]
+ bpf_prepare_filter+0x10ef/0x1280 net/core/filter.c:1366
+ sk_attach_filter+0x24/0x140 net/core/filter.c:1550
+ tun_attach_filter+0x176/0x280 drivers/net/tun.c:2992
+ __tun_chr_ioctl+0x15f1/0x1e10 drivers/net/tun.c:3344
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:597 [inline]
+ __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f068059ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f0681498028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f0680815fa0 RCX: 00007f068059ce59
+RDX: 0000200000000300 RSI: 00000000401054d5 RDI: 0000000000000003
+RBP: 00007f0680632e6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f0680816038 R14: 00007f0680815fa0 R15: 00007fff056e7c98
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:do_jit+0x7c8c/0x12a90 arch/x86/net/bpf_jit_comp.c:2806
+Code: 49 83 c4 44 4c 89 e0 48 c1 e8 03 0f b6 04 10 84 c0 0f 85 0a 84 00 00 =
+45 03 34 24 48 8b bc 24 a0 01 00 00 48 89 f8 48 c1 e8 03 <80> 3c 10 00 74 1=
+7 e8 49 30 b0 00 48 8b bc 24 a0 01 00 00 48 ba 00
+RSP: 0018:ffffc900038cf640 EFLAGS: 00010202
+RAX: 000000000000010e RBX: 000000000000001c RCX: 0000000000000000
+RDX: dffffc0000000000 RSI: 0000000000000000 RDI: 0000000000000870
+RBP: ffffc900038cfa00 R08: ffff88816bb0d940 R09: 0000000000000096
+R10: 00000000000000fb R11: 0000000000000000 R12: ffff8881749b8044
+R13: ffff88816c445450 R14: 0000000000000003 R15: 0000000000000000
+FS:  00007f06814986c0(0000) GS:ffff8882a9224000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f06805ea540 CR3: 000000001cfc8000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	49 83 c4 44          	add    $0x44,%r12
+   4:	4c 89 e0             	mov    %r12,%rax
+   7:	48 c1 e8 03          	shr    $0x3,%rax
+   b:	0f b6 04 10          	movzbl (%rax,%rdx,1),%eax
+   f:	84 c0                	test   %al,%al
+  11:	0f 85 0a 84 00 00    	jne    0x8421
+  17:	45 03 34 24          	add    (%r12),%r14d
+  1b:	48 8b bc 24 a0 01 00 	mov    0x1a0(%rsp),%rdi
+  22:	00
+  23:	48 89 f8             	mov    %rdi,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	80 3c 10 00          	cmpb   $0x0,(%rax,%rdx,1) <-- trapping instruct=
+ion
+  2e:	74 17                	je     0x47
+  30:	e8 49 30 b0 00       	call   0xb0307e
+  35:	48 8b bc 24 a0 01 00 	mov    0x1a0(%rsp),%rdi
+  3c:	00
+  3d:	48                   	rex.W
+  3e:	ba                   	.byte 0xba
 
-The root cause is that the net_device (and its embedded netdevsim private
-data) is freed before its associated debugfs files are removed. When a user
-reads a debugfs file like rx_max_pending, debugfs_u32_get() dereferences a
-pointer to the freed memory. This happens because nsim_destroy() calls
-free_netdev() but does not remove the debugfs files created by
-nsim_ethtool_init() or nsim_bpf_init(). These files are only removed later
-when nsim_dev_port_debugfs_exit() is called. A similar issue exists in the
-error path of nsim_create().
 
-To fix this, swap the teardown order in __nsim_dev_port_del() and the
-__nsim_dev_port_add() error path so that nsim_dev_port_debugfs_exit() is
-called before nsim_destroy(). This ensures the debugfs directory is
-recursively removed before the net_device is freed. Additionally, remove
-explicit debugfs_remove() calls from various subsystem teardown functions
-(like nsim_psp_uninit, nsim_ipsec_teardown, etc.) since the parent
-directory is now removed earlier, which would otherwise lead to a
-use-after-free of the dentry itself. Finally, ensure the debugfs directory
-is removed before free_netdev() is called in the nsim_create() error path.
+***
 
-Fixes: e05b2d141fef ("netdevsim: move netdev creation/destruction to dev probe")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+6c25f4750230faf70be9@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=6c25f4750230faf70be9
-Link: https://syzkaller.appspot.com/ai_job?id=f0f1a72a-a527-478e-a31c-7b83cdfee8d1
-Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index f00fc2f9e..4c2c9aa1e 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -1516,17 +1516,17 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_typ
- 		err = devl_rate_leaf_create(&nsim_dev_port->devlink_port,
- 					    nsim_dev_port, NULL);
- 		if (err)
--			goto err_nsim_destroy;
-+			goto err_port_debugfs_exit;
- 	}
- 
- 	list_add(&nsim_dev_port->list, &nsim_dev->port_list);
- 
- 	return 0;
- 
--err_nsim_destroy:
--	nsim_destroy(nsim_dev_port->ns);
- err_port_debugfs_exit:
- 	nsim_dev_port_debugfs_exit(nsim_dev_port);
-+	if (!IS_ERR_OR_NULL(nsim_dev_port->ns))
-+		nsim_destroy(nsim_dev_port->ns);
- err_port_resource_unregister:
- 	if (nsim_dev_port_is_pf(nsim_dev_port))
- 		devl_port_resources_unregister(devlink_port);
-@@ -1544,8 +1544,8 @@ static void __nsim_dev_port_del(struct nsim_dev_port *nsim_dev_port)
- 	list_del(&nsim_dev_port->list);
- 	if (nsim_dev_port_is_vf(nsim_dev_port))
- 		devl_rate_leaf_destroy(&nsim_dev_port->devlink_port);
--	nsim_destroy(nsim_dev_port->ns);
- 	nsim_dev_port_debugfs_exit(nsim_dev_port);
-+	nsim_destroy(nsim_dev_port->ns);
- 	if (nsim_dev_port_is_pf(nsim_dev_port))
- 		devl_port_resources_unregister(devlink_port);
- 	devl_port_unregister(devlink_port);
-diff --git a/drivers/net/netdevsim/ipsec.c b/drivers/net/netdevsim/ipsec.c
-index 36a1be492..0bc9f42a5 100644
---- a/drivers/net/netdevsim/ipsec.c
-+++ b/drivers/net/netdevsim/ipsec.c
-@@ -292,5 +292,4 @@ void nsim_ipsec_teardown(struct netdevsim *ns)
- 	if (ipsec->count)
- 		netdev_err(ns->netdev, "tearing down IPsec offload with %d SAs left\n",
- 			   ipsec->count);
--	debugfs_remove_recursive(ipsec->pfile);
- }
-diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
-index a75076891..240107369 100644
---- a/drivers/net/netdevsim/netdev.c
-+++ b/drivers/net/netdevsim/netdev.c
-@@ -1154,16 +1154,17 @@ struct netdevsim *nsim_create(struct nsim_dev *nsim_dev,
- 	if (err)
- 		goto err_free_netdev;
- 
--	ns->pp_dfs = debugfs_create_file("pp_hold", 0600, nsim_dev_port->ddir,
--					 ns, &nsim_pp_hold_fops);
--	ns->qr_dfs = debugfs_create_file("queue_reset", 0200,
--					 nsim_dev_port->ddir, ns,
--					 &nsim_qreset_fops);
--	ns->vlan_dfs = debugfs_create_file("vlan", 0400, nsim_dev_port->ddir,
--					   ns, &nsim_vlan_fops);
-+	debugfs_create_file("pp_hold", 0600, nsim_dev_port->ddir, ns,
-+			    &nsim_pp_hold_fops);
-+	debugfs_create_file("queue_reset", 0200, nsim_dev_port->ddir, ns,
-+			    &nsim_qreset_fops);
-+	debugfs_create_file("vlan", 0400, nsim_dev_port->ddir, ns,
-+			    &nsim_vlan_fops);
- 	return ns;
- 
- err_free_netdev:
-+	debugfs_remove_recursive(nsim_dev_port->ddir);
-+	nsim_dev_port->ddir = NULL;
- 	free_netdev(dev);
- 	return ERR_PTR(err);
- }
-@@ -1174,10 +1175,6 @@ void nsim_destroy(struct netdevsim *ns)
- 	struct netdevsim *peer;
- 	u16 vid;
- 
--	debugfs_remove(ns->vlan_dfs);
--	debugfs_remove(ns->qr_dfs);
--	debugfs_remove(ns->pp_dfs);
--
- 	if (ns->nb.notifier_call)
- 		unregister_netdevice_notifier_dev_net(ns->netdev, &ns->nb,
- 						      &ns->nn);
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index d909c4160..29cbf004a 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -153,9 +153,6 @@ struct netdevsim {
- 	} udp_ports;
- 
- 	struct page *page;
--	struct dentry *pp_dfs;
--	struct dentry *qr_dfs;
--	struct dentry *vlan_dfs;
- 
- 	struct nsim_ethtool ethtool;
- 	struct netdevsim __rcu *peer;
-diff --git a/drivers/net/netdevsim/psp.c b/drivers/net/netdevsim/psp.c
-index 6936ecb81..2f27a2114 100644
---- a/drivers/net/netdevsim/psp.c
-+++ b/drivers/net/netdevsim/psp.c
-@@ -227,7 +227,6 @@ static void __nsim_psp_uninit(struct netdevsim *ns, bool teardown)
- 
- void nsim_psp_uninit(struct netdevsim *ns)
- {
--	debugfs_remove(ns->psp.rereg);
- 	mutex_destroy(&ns->psp.rereg_lock);
- 	__nsim_psp_uninit(ns, true);
- }
-diff --git a/drivers/net/netdevsim/udp_tunnels.c b/drivers/net/netdevsim/udp_tunnels.c
-index 89fff76e5..a69b15f12 100644
---- a/drivers/net/netdevsim/udp_tunnels.c
-+++ b/drivers/net/netdevsim/udp_tunnels.c
-@@ -188,9 +188,6 @@ int nsim_udp_tunnels_info_create(struct nsim_dev *nsim_dev,
- 
- void nsim_udp_tunnels_info_destroy(struct net_device *dev)
- {
--	struct netdevsim *ns = netdev_priv(dev);
--
--	debugfs_remove_recursive(ns->udp_ports.ddir);
- 	kfree(dev->udp_tunnel_nic_info);
- 	dev->udp_tunnel_nic_info = NULL;
- }
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
-base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
--- 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[a.s.protopopov@gmail.com ameryhung@gmail.com andrii@kernel.org ast@kernel.=
+org bpf@vger.kernel.org daniel@iogearbox.net eddyz87@gmail.com eyal.birger@=
+gmail.com jolsa@kernel.org kpsingh@kernel.org linux-kernel@vger.kernel.org =
+memxor@gmail.com rongtao@cestc.cn xukuohai@huaweicloud.com yonghong.song@li=
+nux.dev]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
