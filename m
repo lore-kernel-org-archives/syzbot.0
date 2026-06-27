@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA09F3C1989
-	for <syzbot@lists.linux.dev>; Fri, 26 Jun 2026 22:22:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8963D13777E
+	for <syzbot@lists.linux.dev>; Sat, 27 Jun 2026 00:42:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782512546; cv=none; b=DuMMvCsFBlQnxdsZyrWNDLHyruIR7vLhX4bK6UsycGCkANu3RbyBytpb7xfbHlgY6V5W7rzqFNiUu9yRHQ4/rtksjhmAH9bMCwBbwqu7XNsRpXOxOM3CoR9Sdc+sfn2S0ztOHe0fuzG2ZrQeVu/5gtkNhtuwRPQbgyE24gMQIKM=
+	t=1782520975; cv=none; b=pMC7IRW2JJ+sEMZ6tjgVdT9jn9AI7XUYXOWpcQ/TwM4i7dqNWfJkoU9gMNj5AiciijqIC8Xyf34wv8GvZqeKaG9WSGk3XG/swFoPG8nnjwjRgD2HlZvh7i8iToNDXLzApvU+sBVjv326euSnuT/V1V6OmM4WXwIYHILh0E0LJDA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782512546; c=relaxed/simple;
-	bh=KrWHIDbJjOi29lPWu4WIDNw7PvX0I3sEEjMPDvIjFE0=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=TC6qsx/pZi3MUj29M4rUqiS1hZe/If4Z87zxUbDjztlZZbr4zRxgSzPekPpEJIWc2w0XcuJAMhZipMl4oINonrzrMqmCeuuDadzErkp7C0njyQQb9toC3cBaHyX0VYF36HS/BLcGTbYpD/YmaVMotUWTIqvCHK2Uz3dGW0x5ZQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bWiRo7do; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782520975; c=relaxed/simple;
+	bh=aq2Z7uDrePx4MlzQ90Vwso/zxGkHcH/KYdpjq7YRj5Y=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=aS4tNrT5gS5WXXbW2kCLjr0GZuT2vuXZDnG4EzBmqr+S0O81r2dSy0kCAJOHVh8KXaLvBqOKZwvM3k9P2stJOe9XVrKqTCM8BaYzHmVUUuVbThAbRpg2A3kIReV/SNJLXD6FrmDOQ0qbHpcFBHX7RjK+9YT1RVDdSL8FonDttfE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jX7rhkBC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bWiRo7do"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 51D3F1F000E9;
-	Fri, 26 Jun 2026 22:22:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jX7rhkBC"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 1AEEF1F000E9;
+	Sat, 27 Jun 2026 00:42:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782512544;
-	bh=foBFafYRfk056y+snlGqZbS10no9r5Dy1hvGXGUkyRI=;
+	s=k20260515; t=1782520974;
+	bh=ccaZqYFNW5vHezizaKvHfxRVmMWLfixxPwjCcyZTIFs=;
 	h=From:To:Cc:Subject:Date;
-	b=bWiRo7dogbL5BOCDI1mKXUdfY/H+pnejUyQvPUNKjpJUx58DoDsWtaWOA78nLOm1q
-	 lv/xl6FStHdSPEghCX4d/A5DsRFrJ6nAkNoxkWmhoLjIsFMIchilLg9vDpgdpjvXG2
-	 v3/9rqKXYUdhCtVeEFB5zgwbV8rfDxrVbuVvZelaYMsjnZNMvnayALhB24HjPA80nG
-	 YNPeh8X4FW+G2aXV5ktUeWSIKWILTtWNfwfbxgcCJDvLirpIzm5XZ4u09jPkE4rfIr
-	 Q6fOm9GE4s4Z3e/sbliZbukPVo+uxKe7Y6I/DmgahRUod8q+bR7fDzG7pOROM2HNrR
-	 mG2+jFuW7ldNA==
+	b=jX7rhkBCsH5b6/VXlI4cpz1CgiZsNdNXGDMi7YrFBS9/A5w7gvY7lJBHTkHJxeaWi
+	 LR8jxNlG+PoapwWXGBif92Dn8UgTrAzlWJ26snP62OVEqzrzLxKiJmEth31gmszsY7
+	 SFpgIcpR5TO3wwnRZSmL/OuSB+bLuMjGqLMH0V7TKJpugmV0RyQ/r2lJUXZFaWZg91
+	 K8BsxYwUEcJWrGJeGIxcmLJMUTPpPLljqbo8WiUI2vmpyzJe7c32dFeMyVqfehmBzw
+	 5oL8mTXCQpgVsE6hiie7wKXbqvn0ZtOINFZob/CGtYzx2k0TI2GGgeiKEa8sH+kY3D
+	 q62ff4AwKeLqQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] net/sched: taprio: enforce minimum software scheduling interval
-Message-ID: <be92b2ea-2bf9-4d7f-a833-de781ee804c8@mail.kernel.org>
+Subject: [PATCH RFC] nbd: fix deadlocks in socket shutdown and queue freeze
+Message-ID: <2ca4a3bd-0d41-4a4f-8838-d440c3541498@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,123 +38,235 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri, 26 Jun 2026 22:22:24 +0000 (UTC)
+Date: Sat, 27 Jun 2026 00:42:54 +0000 (UTC)
 
-When configuring taprio with a very small schedule interval (e.g., 129 ns),
-the kernel validates the interval against the time it takes to transmit a
-minimum-sized Ethernet frame (60 bytes). On high-speed links like 10 Gbps,
-this minimum duration is extremely small (e.g., 48 ns). Since the requested
-interval is larger than this, the validation passes.
+A classic deadlock (circular dependency) can occur involving the NBD
+socket's transmit lock (nsock->tx_lock), the socket's memory wait queue,
+and the block device's open mutex (disk->open_mutex).
 
-However, when hardware offload is not used, taprio falls back to software
-scheduling and arms an hrtimer. The hrtimer is programmed to fire every 129
-ns. This is significantly shorter than the overhead of handling a hardware
-interrupt and running the hrtimer subsystem. As a result, the timer
-constantly falls behind, and the CPU is livelocked in hardirq context
-endlessly servicing the advance_sched() hrtimer. This starves the RCU
-grace-period kthreads, leading to an RCU stall panic:
+The hung task detector reports:
 
-rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-rcu: 	1-...!: (1 GPs behind) idle=858c/1/0x4000000000000000
-softirq=112663/112663 fqs=0
-rcu: 	(detected by 0, t=10502 jiffies, g=143345, q=674 ncpus=2)
-Sending NMI from CPU 0 to CPUs 1:
-NMI backtrace for cpu 1
-...
+INFO: task udevd:5044 blocked for more than 143 seconds.
+task:udevd           state:D stack:23200 pid:5044  tgid:5044  ppid:1
+task_flags:0x400140 flags:0x00080000
 Call Trace:
- <IRQ>
- advance_sched+0x99a/0xc80 net/sched/sch_taprio.c:988
- __run_hrtimer kernel/time/hrtimer.c:1930 [inline]
- __hrtimer_run_queues+0x3bc/0xa10 kernel/time/hrtimer.c:1994
- hrtimer_interrupt+0x448/0x910 kernel/time/hrtimer.c:2113
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1050 [inline]
- __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:1067
- instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1061
- [inline]
- sysvec_apic_timer_interrupt+0xa1/0xc0 arch/x86/kernel/apic/apic.c:1061
- </IRQ>
+ <TASK>
+ __schedule+0x1840/0x56e0 kernel/sched/core.c:7189
+ schedule+0x164/0x360 kernel/sched/core.c:7283
+ schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7340
+ __mutex_lock+0x7c5/0x1590 kernel/locking/mutex.c:820
+ bdev_open+0xde/0xd70 block/bdev.c:953
+ blkdev_open+0x461/0x600 block/fops.c:697
+ do_dentry_open+0x774/0x14c0 fs/open.c:947
+ vfs_open+0x3b/0x340 fs/open.c:1079
+ path_openat+0x2e3b/0x3890 fs/namei.c:4858
+ do_file_open+0x23e/0x4a0 fs/namei.c:4887
+ do_sys_openat2+0x113/0x200 fs/open.c:1364
+ __x64_sys_openat+0x138/0x170 fs/open.c:1381
+ do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+ </TASK>
 
-To fix this, enforce a hard absolute minimum interval of 1 microsecond
-(NSEC_PER_USEC) for software-based scheduling, regardless of the link
-speed. Hardware-offloaded taprio can continue to support smaller intervals
-since it does not rely on the CPU's hrtimer. The same logic is applied to
-the overall cycle_time validation, casting num_entries to s64 to prevent
-potential integer overflow.
+The sequence of events leading to the hung tasks is:
+1. The NBD device is opened and ioctl(NBD_SET_SIZE_BLOCKS) is called,
+setting the GD_NEED_PART_SCAN bit on the disk's state.
+2. The device is connected and ioctl(NBD_DO_IT) starts the receive threads
+and blocks in wait_event_interruptible() waiting for disconnect.
+3. A background process (e.g., udevd) attempts to open /dev/nbd0, acquiring
+disk->open_mutex. Because GD_NEED_PART_SCAN is set, it triggers a partition
+scan.
+4. The partition scan submits a read bio, which is queued to the NBD
+driver. nbd_handle_cmd() acquires nsock->tx_lock and calls sock_sendmsg().
+If the other end of the socket is not being read, the socket buffer fills
+up, and sock_sendmsg() blocks in sk_stream_wait_memory(). At this point,
+the background process holds both nsock->tx_lock and disk->open_mutex.
+5. If the original process exits, nbd_start_device_ioctl() attempts to shut
+down the socket by calling sock_shutdown(). However, sock_shutdown() blocks
+indefinitely trying to acquire nsock->tx_lock.
+6. Since sock_shutdown() is blocked, the socket is never shut down, and the
+background process never wakes up. Other processes trying to open or
+release the block device will block indefinitely on disk->open_mutex,
+leading to system-wide hung tasks.
 
-Fixes: b5b73b26b3ca ("taprio: Fix allowing too small intervals")
-Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+19d01f6082ec61dd45b2@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=19d01f6082ec61dd45b2
-Link: https://syzkaller.appspot.com/ai_job?id=e96ce5ef-50a8-4856-a518-279d5610b23c
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: "Jamal Hadi Salim" <jhs@mojatatu.com>
-To: "Jiri Pirko" <jiri@resnulli.us>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
-Cc: "Simon Horman" <horms@kernel.org>
+Additionally, there are two other related deadlock scenarios:
+1. If a request is sent successfully but the server never replies, and
+timeout=0 is set, nbd_xmit_timeout() simply resets the timer. The request
+stays in flight forever.
+2. When nbd_start_device() is called, it holds nbd->config_lock and calls
+nbd_set_size(). nbd_set_size() calls blk_mq_freeze_queue() (via
+queue_limits_commit_update_frozen()), which waits for all in-flight
+requests to complete. If a request hangs forever, nbd_set_size() hangs
+holding nbd->config_lock. This prevents any other task from acquiring the
+lock to shut down the device, leading to a deadlock.
+
+To fix these issues:
+1. In sock_shutdown(), call kernel_sock_shutdown() before acquiring
+nsock->tx_lock. This asynchronously wakes up the blocked sock_sendmsg(),
+causing it to return -EPIPE, failing the request, releasing the locks, and
+breaking the deadlock.
+2. In nbd_set_size(), drop nbd->config_lock before calling
+queue_limits_commit_update_frozen(). This allows nbd_disconnect() or
+nbd_release() to acquire the lock, shut down the sockets, and abort the
+requests, unblocking the frozen queue.
+3. In nbd_xmit_timeout(), if timeout=0, check if the socket is dead
+(nsock->dead). If it is, abort the request to unblock the queue. Also, use
+mutex_trylock(&nsock->tx_lock) to avoid deadlocking the timeout handler
+itself, and if the request is actively sending (NBD_CMD_SENDING), call
+kernel_sock_shutdown().
+
+Fixes: 9561a7ade0c2 ("nbd: add multi-connection support")
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
+Reported-by: syzbot+5c6179f2c4f1e111df11@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=5c6179f2c4f1e111df11
+Link: https://syzkaller.appspot.com/ai_job?id=d5af2114-63a1-42d3-8774-43b898809d78
+To: "Jens Axboe" <axboe@kernel.dk>
+To: "Josef Bacik" <josef@toxicpanda.com>
+To: <linux-block@vger.kernel.org>
+To: <nbd@other.debian.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 45245157e..b5743a556 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -49,6 +49,11 @@ static struct static_key_false taprio_have_working_mqprio;
-  */
- #define TAPRIO_PICOS_PER_BYTE_MIN 17
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index fe63f3c55..a910e1627 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -144,6 +144,7 @@ struct nbd_device {
  
-+/* The software scheduler cannot sustain hrtimer intervals smaller than
-+ * this without livelocking the CPU.
-+ */
-+#define TAPRIO_MIN_SW_INTERVAL NSEC_PER_USEC
-+
- struct sched_entry {
- 	/* Durations between this GCL entry and the GCL entry where the
- 	 * respective traffic class gate closes
-@@ -1041,6 +1046,9 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
- 	int min_duration = length_to_duration(q, ETH_ZLEN);
- 	u32 interval = 0;
+ /* Just part of request header or data payload is sent successfully */
+ #define NBD_CMD_PARTIAL_SEND	3
++#define NBD_CMD_SENDING 4
  
-+	if (!FULL_OFFLOAD_IS_ENABLED(q->flags))
-+		min_duration = max_t(int, min_duration, TAPRIO_MIN_SW_INTERVAL);
-+
- 	if (tb[TCA_TAPRIO_SCHED_ENTRY_CMD])
- 		entry->command = nla_get_u8(
- 			tb[TCA_TAPRIO_SCHED_ENTRY_CMD]);
-@@ -1054,7 +1062,8 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
- 			tb[TCA_TAPRIO_SCHED_ENTRY_INTERVAL]);
+ struct nbd_cmd {
+ 	struct nbd_device *nbd;
+@@ -351,6 +352,7 @@ static int nbd_set_size(struct nbd_device *nbd, loff_t bytesize, loff_t blksize)
+ 	if (!nbd->pid)
+ 		return 0;
  
- 	/* The interval should allow at least the minimum ethernet
--	 * frame to go out.
-+	 * frame to go out. When software scheduling is used, the
-+	 * interval must also be at least the minimum hrtimer interval.
- 	 */
- 	if (interval < min_duration) {
- 		NL_SET_ERR_MSG(extack, "Invalid interval for schedule entry");
-@@ -1166,9 +1175,17 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
- 		new->cycle_time = cycle;
- 	}
++	mutex_unlock(&nbd->config_lock);
+ 	lim = queue_limits_start_update(nbd->disk->queue);
+ 	if (nbd->config->flags & NBD_FLAG_SEND_TRIM)
+ 		lim.max_hw_discard_sectors = UINT_MAX >> SECTOR_SHIFT;
+@@ -372,6 +374,7 @@ static int nbd_set_size(struct nbd_device *nbd, loff_t bytesize, loff_t blksize)
+ 	lim.logical_block_size = blksize;
+ 	lim.physical_block_size = blksize;
+ 	error = queue_limits_commit_update_frozen(nbd->disk->queue, &lim);
++	mutex_lock(&nbd->config_lock);
+ 	if (error)
+ 		return error;
  
--	if (new->cycle_time < new->num_entries * length_to_duration(q, ETH_ZLEN)) {
--		NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
--		return -EINVAL;
-+	{
-+		int min_duration = length_to_duration(q, ETH_ZLEN);
-+
-+		if (!FULL_OFFLOAD_IS_ENABLED(q->flags))
-+			min_duration = max_t(int, min_duration,
-+					     TAPRIO_MIN_SW_INTERVAL);
-+
-+		if (new->cycle_time < (s64)new->num_entries * min_duration) {
-+			NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
-+			return -EINVAL;
+@@ -407,6 +410,7 @@ static void sock_shutdown(struct nbd_device *nbd)
+ 
+ 	for (i = 0; i < config->num_connections; i++) {
+ 		struct nbd_sock *nsock = config->socks[i];
++		kernel_sock_shutdown(nsock->sock, SHUT_RDWR);
+ 		mutex_lock(&nsock->tx_lock);
+ 		nbd_mark_nsock_dead(nbd, nsock, 0);
+ 		mutex_unlock(&nsock->tx_lock);
+@@ -454,8 +458,23 @@ static enum blk_eh_timer_return nbd_xmit_timeout(struct request *req)
+ 	struct nbd_device *nbd = cmd->nbd;
+ 	struct nbd_config *config;
+ 
+-	if (!mutex_trylock(&cmd->lock))
++	if (!mutex_trylock(&cmd->lock)) {
++		if (test_bit(NBD_CMD_SENDING, &cmd->flags)) {
++			config = nbd_get_config_unlocked(nbd);
++			if (config) {
++				if (cmd->index < config->num_connections) {
++					struct nbd_sock *nsock =
++						config->socks[cmd->index];
++					if (nsock &&
++					    cmd->cookie == nsock->cookie)
++						kernel_sock_shutdown(
++							nsock->sock, SHUT_RDWR);
++				}
++				nbd_config_put(nbd);
++			}
 +		}
- 	}
+ 		return BLK_EH_RESET_TIMER;
++	}
  
- 	taprio_calculate_gate_durations(q, new);
+ 	/* partial send is handled in nbd_sock's work function */
+ 	if (test_bit(NBD_CMD_PARTIAL_SEND, &cmd->flags)) {
+@@ -522,7 +541,11 @@ static enum blk_eh_timer_return nbd_xmit_timeout(struct request *req)
+ 			(unsigned long long)blk_rq_pos(req) << 9,
+ 			blk_rq_bytes(req), (req->timeout / HZ) * cmd->retries);
+ 
+-		mutex_lock(&nsock->tx_lock);
++		if (!mutex_trylock(&nsock->tx_lock)) {
++			mutex_unlock(&cmd->lock);
++			nbd_config_put(nbd);
++			return BLK_EH_RESET_TIMER;
++		}
+ 		if (cmd->cookie != nsock->cookie) {
+ 			nbd_requeue_cmd(cmd);
+ 			mutex_unlock(&nsock->tx_lock);
+@@ -530,6 +553,15 @@ static enum blk_eh_timer_return nbd_xmit_timeout(struct request *req)
+ 			nbd_config_put(nbd);
+ 			return BLK_EH_DONE;
+ 		}
++		if (nsock->dead) {
++			cmd->status = BLK_STS_IOERR;
++			__clear_bit(NBD_CMD_INFLIGHT, &cmd->flags);
++			mutex_unlock(&nsock->tx_lock);
++			mutex_unlock(&cmd->lock);
++			nbd_config_put(nbd);
++			blk_mq_complete_request(req);
++			return BLK_EH_DONE;
++		}
+ 		mutex_unlock(&nsock->tx_lock);
+ 		mutex_unlock(&cmd->lock);
+ 		nbd_config_put(nbd);
+@@ -699,6 +731,7 @@ static blk_status_t nbd_send_cmd(struct nbd_device *nbd, struct nbd_cmd *cmd,
+ 	cmd->index = index;
+ 	cmd->cookie = nsock->cookie;
+ 	cmd->retries = 0;
++	set_bit(NBD_CMD_SENDING, &cmd->flags);
+ 	request.type = htonl(type | nbd_cmd_flags);
+ 	if (type != NBD_CMD_FLUSH) {
+ 		request.from = cpu_to_be64((u64)blk_rq_pos(req) << 9);
+@@ -718,15 +751,17 @@ static blk_status_t nbd_send_cmd(struct nbd_device *nbd, struct nbd_cmd *cmd,
+ 	if (result < 0) {
+ 		if (was_interrupted(result)) {
+ 			/* If we haven't sent anything we can just return BUSY,
+-			 * however if we have sent something we need to make
+-			 * sure we only allow this req to be sent until we are
+-			 * completely done.
+-			 */
++				 * however if we have sent something we need to make
++				 * sure we only allow this req to be sent until we are
++				 * completely done.
++				 */
+ 			if (sent) {
+ 				nbd_sched_pending_work(nbd, nsock, cmd, sent);
++				clear_bit(NBD_CMD_SENDING, &cmd->flags);
+ 				return BLK_STS_OK;
+ 			}
+ 			set_bit(NBD_CMD_REQUEUED, &cmd->flags);
++			clear_bit(NBD_CMD_SENDING, &cmd->flags);
+ 			return BLK_STS_RESOURCE;
+ 		}
+ 		dev_err_ratelimited(disk_to_dev(nbd->disk),
+@@ -762,6 +797,7 @@ static blk_status_t nbd_send_cmd(struct nbd_device *nbd, struct nbd_cmd *cmd,
+ 			if (result < 0) {
+ 				if (was_interrupted(result)) {
+ 					nbd_sched_pending_work(nbd, nsock, cmd, sent);
++					clear_bit(NBD_CMD_SENDING, &cmd->flags);
+ 					return BLK_STS_OK;
+ 				}
+ 				dev_err(disk_to_dev(nbd->disk),
+@@ -784,10 +820,12 @@ static blk_status_t nbd_send_cmd(struct nbd_device *nbd, struct nbd_cmd *cmd,
+ 	trace_nbd_payload_sent(req, handle);
+ 	nsock->pending = NULL;
+ 	nsock->sent = 0;
++	clear_bit(NBD_CMD_SENDING, &cmd->flags);
+ 	__set_bit(NBD_CMD_INFLIGHT, &cmd->flags);
+ 	return BLK_STS_OK;
+ 
+ requeue:
++	clear_bit(NBD_CMD_SENDING, &cmd->flags);
+ 	/*
+ 	 * Can't requeue in case we are dealing with partial send
+ 	 *
 
 
 base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
