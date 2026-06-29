@@ -1,192 +1,109 @@
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CBE27E792
-	for <syzbot@lists.linux.dev>; Mon, 29 Jun 2026 05:27:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7006B35675B
+	for <syzbot@lists.linux.dev>; Mon, 29 Jun 2026 14:46:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782710862; cv=none; b=EWptD+gXaFWIvLUqVNkxIWwDKROPW7ba+DVwn4z8LXonfSQskruGf4rn5QMZ/29sDKo70uvED8hgcPI4VXwUdXzU1kxXYVcP60U1/mqSk+7Q17jSjEZktF4ENYIv9IF3yyFU+dNigzTuAlo72wjkpk+mWoedq64XJru/wjPy7mk=
+	t=1782744378; cv=none; b=TpvEsHZOUH5RNX2F/hJzCU3qtMPxLgzOzShzVWeFHbG7Fth3Urg3t92u/4N1Vl0mf9uLaAwrcd+6HIlQ3Cd+6cK3UO/F/z+6vR37mj+LfVVMzET56TYcceRgEBNWTq3xe3a1yixE8TCbFOXRcvnh86OZPCeLYfn1eVLqjb6f+Rw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782710862; c=relaxed/simple;
-	bh=qwRvDvnS5Rp3n2hhsuYtgYuVfDND73nAHGHBiJAAhzI=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=i3GaJztMOHd2VU6NHkOcuB7l2fD4NQTfKDL4xHu122MzKR4j7Wbj9fG0Ipoh0T8d6R6JGeCfbR0EGc+SNMmCZCPiS2aI6K790mfOknEba0LrCXE7GxiFERyXddyqD6s0f7mOwH/VZN8Fgz/CQEPzTmEjuQo9i/Qbm0IwGU6IUvU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
+	s=arc-20240116; t=1782744378; c=relaxed/simple;
+	bh=qNRh9GfvE5r2ZQs4YBrsYdHDiD7PTckCZGUUxSxjNCQ=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=gQTyMuoGXaH0kPgCh5XSX3j3oZfnywZAAqM0Zxco9IC+cb+nr1d/GfvA7DKqEplKUYSFaYWK1Qkdm+LQcUSTXcwkpCDKPLlL0XETLllxFgaRcjlBKeAClSDFxycV3sgTISxqqdfG8gfMU5iJXUwnDJHQYEfIwm1tXqbDo7ppQ94=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4893fc86bebso4581497b6e.0
-        for <syzbot@lists.linux.dev>; Sun, 28 Jun 2026 22:27:40 -0700 (PDT)
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-495e6bbed50so239653b6e.1
+        for <syzbot@lists.linux.dev>; Mon, 29 Jun 2026 07:46:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782710860; x=1783315660;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Tvob1qPe+UI8y2x1Gv3H5S0zCulj4xK7a+b1bN0zHyg=;
-        b=BdElQriksgQKDN+20ent1nMlMy9oXzIICYpAm0G8YP9sSX5l5M3eaStYsO8cgJnpzf
-         VASUUQJFz9MoRSMiH8qGNNYvRJx47HlDFBgEXyQFBZBpHq47F3PQb9wQ+MdNxGdcgMeq
-         do5btY5t0NxIUCX5KMRzaiczbouqVV1D3vP+l1O8O8XyHST8hzRzOdhE5KcjXLEObHv5
-         ELkX7vniTtcY0oZpRfRzkaAk5cx6OWZi/Xm0BwP37yG37JgxK59DSWmKbpd1I+7tfzUL
-         FXDrRnnfD5vvnSlgAKQOY+DRmYZkYHL+vOP6RcKbwPl/WH4xZOmdq44izCkB+cFCj9QU
-         NDaw==
-X-Gm-Message-State: AOJu0YyOmlsDfwnBAI9b1Ka4F3S8oM4h4ZKwI8tEv7qSs7FlEBz+N1T0
-	6CSgW4kC7khMYTeuWX3oB6FOjk1pTmlQmjIPnu54NuTrrxaf/dskRAq9AMWOTGV+Zy4D2K1M4Yp
-	mMNGyjEpJPoi9bptLytKOytZteORlJcEPp46ywObQWuMIAnXbpJ9Q4L7gbyk=
+        d=1e100.net; s=20251104; t=1782744375; x=1783349175;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8wtLI8ZH0Xg+kKw+RlQb22zFGY2TWajXQMfskloSpwg=;
+        b=cVl1cjL7t+2tMZNdFh71Q+ldMrL7TPEuUSTodooTn67A6sB4Fvw0jLNpwbnnHUOzPw
+         e8sOTcmWkS+wDHWHMPcnEXCJM3qHmO9SgKoIAHvEGmECTmV/R0UvrNuGoEXjfle8fWIh
+         4pAZWS3Sn52a5/myNnTXF+wxLgUIW03u1+Gz0EuZ8FsmNVaLEmGP14OHEGCDm59iP+2B
+         spziFxjgPjQtMzGNdhP3+5HZsJUFQoLLh03PkWwGWYH4EIYa90TZ6o6EI2Lbib4CPGMk
+         M5yl7vyQVU5ETz48NdrUPoC3quV76t2TDZFnc3ED2piGwc/2A+wlB2XfvhCjZQuLE/jm
+         6RCA==
+X-Gm-Message-State: AOJu0YyggasAwCJnyESXF1b9AQhC3nMfe62sljj92QP3OLnMtBAEXlf2
+	0FR6UA9cpYRcUYA7ZTixZspO3Qhlxj5ZoSJ0vILRx9pFvZwr6c6FGBGwwvU3w4XgFRqec1VxzHq
+	xj9q9PbeptHv0QE06dPeRmSFpZdSfQlJeFDHFEGgB+o1LR5CMTFwW19Rf2rg=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1507:b0:495:afbe:b53d with SMTP id
- 5614622812f47-495afbeb899mr3481867b6e.13.1782710860272; Sun, 28 Jun 2026
- 22:27:40 -0700 (PDT)
-Date: Sun, 28 Jun 2026 22:27:40 -0700
-In-Reply-To: <cover.1782619718.git.jbingham@gmail.com>
+X-Received: by 2002:a05:6808:c18d:b0:485:7c72:bd08 with SMTP id
+ 5614622812f47-48ee577e684mr18683417b6e.33.1782744375517; Mon, 29 Jun 2026
+ 07:46:15 -0700 (PDT)
+Date: Mon, 29 Jun 2026 07:46:15 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a42024c.9dc7bc9d.3393b4.0006.GAE@google.com>
-Subject: [syzbot ci] Re: minix: convert to iomap and add direct I/O
-From: syzbot ci <syzbot+cie60057db19604ba2@syzkaller.appspotmail.com>
-To: brauner@kernel.org, hch@infradead.org, jack@suse.cz, jbingham@gmail.com, 
-	jkoolstra@xs4all.nl, linux-fsdevel@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, syzkaller@googlegroups.com, 
-	viro@zeniv.linux.org.uk
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <6a428537.854d4ab9.360e1d.0009.GAE@google.com>
+Subject: [moderation/CI] Re: Add support for IPQ5018 Bluetooth
+From: syzbot ci <syzbot+ci65ba89adbec7a7b3@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v2] minix: convert to iomap and add direct I/O
-https://lore.kernel.org/all/cover.1782619718.git.jbingham@gmail.com
-* [PATCH v2 1/4] minix: add iomap infrastructure
-* [PATCH v2 2/4] minix: convert address space operations to iomap
-* [PATCH v2 3/4] minix: convert file operations to iomap and add
-* [PATCH v2 4/4] minix: fix symlink and truncate for iomap
+[v2] Add support for IPQ5018 Bluetooth
+https://lore.kernel.org/all/20260629-ipq5018-bluetooth-v2-0-02770f03b6bb@ou=
+tlook.com
+* [PATCH v2 1/6] dt-bindings: net: bluetooth: Document Qualcomm IPQ5018 Blu=
+etooth controller
+* [PATCH v2 2/6] Bluetooth: btqca: Add IPQ5018 support
+* [PATCH v2 3/6] firmware: qcom: scm: Add support for setting Bluetooth pow=
+er modes
+* [PATCH v2 4/6] Bluetooth: Introduce Qualcomm IPQ5018 IPC based HCI driver
+* [PATCH v2 5/6] arm64: dts: qcom: ipq5018: add nodes required for Bluetoot=
+h support
+* [PATCH v2 6/6] MAINTAINERS: Add entry for Qualcomm IPQ5018 Bluetooth driv=
+er
 
-and found the following issues:
-* BUG: sleeping function called from invalid context in bdev_getblk
-* BUG: sleeping function called from invalid context in find_get_block_common
+and found the following issue:
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/3b663c96-cf07-46e0-9b8d-785fe615029d
+https://ci.syzbot.org/series/11239a4c-1917-4b73-8aa0-02496635d8f0
 
 ***
 
-BUG: sleeping function called from invalid context in bdev_getblk
+kernel build error
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      780d569e6c4b422290f5cba319eb904b355d64be
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net-next.git
+base:      805185b7c7a1069e407b6f7b3bc98e44d415f484
 arch:      amd64
-compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/61f38821-60a2-4c7c-a39e-27291869d296/config
-syz repro: https://ci.syzbot.org/findings/dda4e5c2-7cbc-498a-98ea-83cad3c680e3/syz_repro
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp=
+1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/0806f9ab-e49e-4caa-8ade-1b3c22d09a6=
+0/config
 
-         option from the mount to silence this warning.
-=======================================================
-BUG: sleeping function called from invalid context at ./include/linux/sched/mm.h:323
-in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 5865, name: syz.1.18
-preempt_count: 0, expected: 0
-RCU nest depth: 1, expected: 0
-1 lock held by syz.1.18/5865:
- #0: ffffffff8e959c20 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
- #0: ffffffff8e959c20 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:840 [inline]
- #0: ffffffff8e959c20 (rcu_read_lock){....}-{1:3}, at: path_init+0x124/0x1330 fs/namei.c:2689
-CPU: 1 UID: 0 PID: 5865 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- __might_resched+0x378/0x4d0 kernel/sched/core.c:9197
- might_alloc include/linux/sched/mm.h:323 [inline]
- bdev_getblk+0xce/0x6e0 fs/buffer.c:1435
- __bread_gfp+0x89/0x380 fs/buffer.c:1493
- sb_bread include/linux/buffer_head.h:348 [inline]
- minix_get_link+0x143/0x340 fs/minix/namei.c:396
- pick_link+0x782/0xfe0 fs/namei.c:2064
- step_into_slowpath+0x58a/0x820 fs/namei.c:2127
- step_into fs/namei.c:2152 [inline]
- open_last_lookups fs/namei.c:4643 [inline]
- path_openat+0x224e/0x3830 fs/namei.c:4856
- do_file_open+0x23e/0x4a0 fs/namei.c:4888
- do_sys_openat2+0x115/0x200 fs/open.c:1368
- do_sys_open fs/open.c:1374 [inline]
- __do_sys_openat fs/open.c:1390 [inline]
- __se_sys_openat fs/open.c:1385 [inline]
- __x64_sys_openat+0x138/0x170 fs/open.c:1385
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f9618b9ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f9619a29028 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
-RAX: ffffffffffffffda RBX: 00007f9618e15fa0 RCX: 00007f9618b9ce59
-RDX: 0000000000105042 RSI: 0000200000000080 RDI: ffffffffffffff9c
-RBP: 00007f9618c32e6f R08: 0000000000000000 R09: 0000000000000000
-R10: 00000000000001ff R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f9618e16038 R14: 00007f9618e15fa0 R15: 00007fffce8916b8
- </TASK>
-
-
-***
-
-BUG: sleeping function called from invalid context in find_get_block_common
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      780d569e6c4b422290f5cba319eb904b355d64be
-arch:      amd64
-compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/61f38821-60a2-4c7c-a39e-27291869d296/config
-syz repro: https://ci.syzbot.org/findings/2af8da3b-836a-479e-9af0-fef473c2f315/syz_repro
-
-loop2: detected capacity change from 0 to 64
-bad symlink on inode 4
-BUG: sleeping function called from invalid context at ./include/linux/pagemap.h:1155
-in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 5813, name: syz.2.19
-preempt_count: 0, expected: 0
-RCU nest depth: 1, expected: 0
-1 lock held by syz.2.19/5813:
- #0: ffffffff8e959c20 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
- #0: ffffffff8e959c20 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:840 [inline]
- #0: ffffffff8e959c20 (rcu_read_lock){....}-{1:3}, at: path_init+0x124/0x1330 fs/namei.c:2689
-CPU: 1 UID: 0 PID: 5813 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- __might_resched+0x378/0x4d0 kernel/sched/core.c:9197
- folio_lock include/linux/pagemap.h:1155 [inline]
- __find_get_block_slow fs/buffer.c:242 [inline]
- find_get_block_common+0x2d0/0xe10 fs/buffer.c:1386
- bdev_getblk+0x58/0x6e0 include/linux/gfp.h:-1
- __bread_gfp+0x89/0x380 fs/buffer.c:1493
- sb_bread include/linux/buffer_head.h:348 [inline]
- minix_get_link+0x143/0x340 fs/minix/namei.c:396
- pick_link+0x782/0xfe0 fs/namei.c:2064
- step_into_slowpath+0x58a/0x820 fs/namei.c:2127
- step_into fs/namei.c:2152 [inline]
- open_last_lookups fs/namei.c:4643 [inline]
- path_openat+0x224e/0x3830 fs/namei.c:4856
- do_file_open+0x23e/0x4a0 fs/namei.c:4888
- do_sys_openat2+0x115/0x200 fs/open.c:1368
- do_sys_open fs/open.c:1374 [inline]
- __do_sys_openat fs/open.c:1390 [inline]
- __se_sys_openat fs/open.c:1385 [inline]
- __x64_sys_openat+0x138/0x170 fs/open.c:1385
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fd37ef9ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fd37fe06028 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
-RAX: ffffffffffffffda RBX: 00007fd37f215fa0 RCX: 00007fd37ef9ce59
-RDX: 0000000000000042 RSI: 0000200000000080 RDI: ffffffffffffff9c
-RBP: 00007fd37f032e6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fd37f216038 R14: 00007fd37f215fa0 R15: 00007ffe5e5f14f8
- </TASK>
-bad symlink on inode 4
-
+drivers/bluetooth/btqcomipc.c:316:9: error: call to undeclared function 'FI=
+ELD_PREP'; ISO C99 and later do not support implicit function declarations =
+[-Wimplicit-function-declaration]
+drivers/bluetooth/btqcomipc.c:516:14: error: call to undeclared function 'F=
+IELD_GET'; ISO C99 and later do not support implicit function declarations =
+[-Wimplicit-function-declaration]
+drivers/bluetooth/btqcomipc.c:681:8: error: call to undeclared function 'qc=
+om_mdt_pas_init'; ISO C99 and later do not support implicit function declar=
+ations [-Wimplicit-function-declaration]
+drivers/bluetooth/btqcomipc.c:812:54: error: too few arguments to function =
+call, expected 6, have 5
+drivers/bluetooth/btqcomipc.c:821:22: error: use of undeclared identifier '=
+HCI_QUIRK_USE_BDADDR_NVMEM'; did you mean 'HCI_QUIRK_USE_BDADDR_PROPERTY'?
+drivers/bluetooth/btqcomipc.c:822:22: error: use of undeclared identifier '=
+HCI_QUIRK_BDADDR_NVMEM_BE'
+drivers/bluetooth/btqcomipc.c:829:12: error: call to undeclared function 'F=
+IELD_PREP'; ISO C99 and later do not support implicit function declarations=
+ [-Wimplicit-function-declaration]
 
 ***
 
@@ -203,3 +120,24 @@ To test a patch for this bug, please reply with `#syz test`
 
 The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[andersson@kernel.org andrew@lunn.ch ath10k@lists.infradead.org axboe@kerne=
+l.dk brgl@kernel.org conor@kernel.org davem@davemloft.net devicetree@vger.k=
+ernel.org devnull@kernel.org edumazet@google.com george.moussalem@outlook.c=
+om hkallweit1@gmail.com horms@kernel.org jjohnson@kernel.org johannes@sipso=
+lutions.net konradybcio@kernel.org krzk@kernel.org kuba@kernel.org linux-ar=
+m-msm@vger.kernel.org linux-block@vger.kernel.org linux-bluetooth@vger.kern=
+el.org linux-kernel@vger.kernel.org linux-mmc@vger.kernel.org linux-remotep=
+roc@vger.kernel.org linux-wireless@vger.kernel.org linux@armlinux.org.uk lu=
+iz.dentz@gmail.com marcel@holtmann.org mathieu.poirier@linaro.org netdev@vg=
+er.kernel.org p.zabel@pengutronix.de pabeni@redhat.com quic_bgodavar@quicin=
+c.com quic_rjliao@quicinc.com robh@kernel.org saravanak@kernel.org ulfh@ker=
+nel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
