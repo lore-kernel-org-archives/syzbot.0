@@ -1,113 +1,73 @@
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CB4C32FA30
-	for <syzbot@lists.linux.dev>; Tue, 30 Jun 2026 03:59:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDF2A233933
+	for <syzbot@lists.linux.dev>; Tue, 30 Jun 2026 04:05:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782791942; cv=none; b=mwEMihWcu6lhWgE4/H58Wt91PtwHSdxOEFt+a3U330qKi7n1SzNz4ZTTTFqPb8EyeJMBk21EZjARNhfhnH6PdETAfKlvYi1RyTALPFqEbRGugC4joi4rE4payY93rDuw7l3g/+bQqYaIddNjVxlHpPFeeBbgLXwSJRzibEnRNeE=
+	t=1782792303; cv=none; b=fIzcjYYCL4OPwWKOFlmmO7zscBQjCK0Jjax4jGlqwwu/C64FqEhl6A4NkrAoxgPw1uvKMY1nPaXTQH8xFUSVVJnL374zkTvfkQ21GI/V0hf1g/nYi0OEMfblULPhzjH8CI3Fys1MS/We/twsezglrdbR/iN96KuUbenecCZkRBE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782791942; c=relaxed/simple;
-	bh=dymXfuuaPYUhRgYxVn0uF4kcvjmNK95xmlAwRUNDvfk=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=UUamyZ4cKi+e/7V1jHuHL6XVtVxzULMSn2kpo4En5bMVhqIQJol66nwy3vV2Vcg8pMRkZad/ufFMVBR3PYkcg39fmj7i4+Nk/5+tg5Vyq2p5i2Qiq+RlCGtHlaL7uPj12kxzkQAFW5RX3Dq5swwbpmtfMZ5Q8SR5oshFDUzXRVg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
+	s=arc-20240116; t=1782792303; c=relaxed/simple;
+	bh=alOu7gwRSMbqrvli9KWAAa7wVcLCEXA4LC1xM2EZrVk=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=XS6e4IBWByoWdp7Ept+RVmd+Lk4/AFWnrAsM/o4Gc06Q0y2yeYGheIQvO4U/IQEZ1WwXABYo6Wc8evYO72Z3GUMNHddnI7jECgnBn+y1/eVgl2Y30iwn8a/EPZcgDZfwvG57+tAt6Hgx0p/YaeIXccjThG1hvJ4F5mfsIwBSJkY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-4959c49e054so2245211b6e.3
-        for <syzbot@lists.linux.dev>; Mon, 29 Jun 2026 20:59:00 -0700 (PDT)
+Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7e9f565a6e7so81789a34.2
+        for <syzbot@lists.linux.dev>; Mon, 29 Jun 2026 21:05:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782791940; x=1783396740;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+        d=1e100.net; s=20251104; t=1782792301; x=1783397101;
+        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=lI6svpdly770xI6883C6/UqmQVJ7EGj8iKMMuOF4p2w=;
-        b=XyKSew7dUzeaKo5XCZtEpsjKj5q7Q1lPpdGYHbjh2xhcxvG/Wdo8e0r1CKO0XFIwxG
-         ZlRK/uClz8YABbq52D7fMFiF/2APFi4ftGwk4DHu+Wfxuq62UyFcXreIKIDOOVLdEa+8
-         hNzORaGeKzUFZubbM1lWcOAG6PJm07dN/kCSXWtSy6hu/kaXlTrd1S/E8D72QJpSVSRy
-         NyoH4GPJxp2Qmj6nvT5XuisjNHRMvbyBsApByxBv5f0U3hdfwyVva0YLXR7mmqazw/ZH
-         h3Yb9djDHHaDs17WeveYOEYZJwbjyNvez03k7WC4rBFRK1iKjbGE+aZH9xk1rNX0szkN
-         KNlQ==
-X-Gm-Message-State: AOJu0YzpouoVADjj4AoH133aUS6zDOaMdgFOA6ZucefVwC+uNFhJ13Cy
-	B66ObvYZEjuVm42Okd/Xj2OqhAZtQT8mlBCjYeF5+Txqk1VG3NSeZERkpy36KnlxTFqjJcup+Oo
-	JwPsIwbqwLySL8d9ApXfAf5wM4UGbuF4A+4WFENK9Okb4ARMJTjaGPonnDkE=
+         :reply-to:content-type;
+        bh=alOu7gwRSMbqrvli9KWAAa7wVcLCEXA4LC1xM2EZrVk=;
+        b=cZmKV+ODkTRmJ6gmDbAy38Kn1zhJsXoc9xrJ8R0aUAPlcqJrgp1wqiWNTUigbPzwQL
+         mz1wcGI9KR3QM/KVL4LNV7epu5j6jT3Sqm9pBHeELSYOUsWox+E4yyJrw41f3uHys75R
+         CHvA3k8jZoGkhnB/FrCv+NQUY3C+2++9IdoVnq/4ms0D7auv4oktTFPB3lBtCdxeeRCP
+         Us3SGlwrrEkzhr/zoEMNqbbdAHftSnzq35wHJNxixlvzYrG4sRw5bwkSwt/QA7K2APGy
+         OLn4K5CzsT1FOsWgzOLkVKD67UDshUBvXeVYY/rwDThMBrzDEu5z4ZKUAV60Ku86J9Om
+         GlsA==
+X-Gm-Message-State: AOJu0YwJS2VUR/JqjTGQY99c5+QJNZvhWiQsIASMXJU0CbdvkI3XcZj+
+	pgqAIySOL2ybNTDPo+NiKii+GVGMFmOGqCLZOANsCGFJ5QeTmLOoU6aZYycwTCRCzut0FyCKX/Y
+	0CFLqA89HRZ6BpyVhueHXNY7uaa5MuzRpj2BQJt1nSaCuNj4K8RnMbywJy38=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6809:109:20b0:495:f223:c070 with SMTP id
- 5614622812f47-495f223c3a7mr352535b6e.30.1782791940253; Mon, 29 Jun 2026
- 20:59:00 -0700 (PDT)
-Date: Mon, 29 Jun 2026 20:59:00 -0700
+X-Received: by 2002:a05:6808:1808:b0:492:3a59:37cf with SMTP id
+ 5614622812f47-495eafe4f74mr1954717b6e.37.1782792301124; Mon, 29 Jun 2026
+ 21:05:01 -0700 (PDT)
+Date: Mon, 29 Jun 2026 21:05:01 -0700
+In-Reply-To: <20260630030535.3309854-1-jbingham@gmail.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a433f04.b42ede87.8e801.0002.GAE@google.com>
-Subject: [moderation/CI] Re: bpf: Fix use-after-free on mm_struct in bpf_find_vma()
-From: syzbot ci <syzbot+ci738420217ba889a2@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
+Message-ID: <6a43406d.854d4ab9.360e1d.0012.GAE@google.com>
+Subject: [syzbot ci] Re: minix: convert to iomap and add direct I/O
+From: syzbot ci <syzbot+ci94d886345594fe6a@syzkaller.appspotmail.com>
+To: jbingham@gmail.com, brauner@kernel.org, hch@infradead.org, jack@suse.cz, 
+	jkoolstra@xs4all.nl, linux-fsdevel@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev, 
+	syzkaller-bugs@googlegroups.com, syzkaller@googlegroups.com, 
+	viro@zeniv.linux.org.uk
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
+syzbot ci has tested the suggested fix patch on top of the following series:
 
-[v5] bpf: Fix use-after-free on mm_struct in bpf_find_vma()
-https://lore.kernel.org/all/20260630023443.3026627-2-sanghyun.park.cnu@gmai=
-l.com
-* [PATCH bpf-next v5] bpf: Fix use-after-free on mm_struct in bpf_find_vma(=
-)
+[v2] minix: convert to iomap and add direct I/O
+https://lore.kernel.org/all/cover.1782619718.git.jbingham@gmail.com
 
-and found the following issue:
-kernel build error
+Patch: https://ci.syzbot.org/jobs/fb0b2cff-4f4e-442b-a6f8-5fa767f200fc/patch
+Testing results:
+* [build 0] Build Patched: passed
+* [build 0] Boot test: Patched: passed
 
 Full report is available here:
-https://ci.syzbot.org/series/f0ce67c9-2c09-418c-bbe2-c698246e9c7f
-
-***
-
-kernel build error
-
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
--next.git
-base:      53435562a725962e4de0c29653223129ba11643a
-arch:      amd64
-compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp=
-1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/a434cf48-2810-46a3-bb75-064be88b96b=
-e/config
-
-kernel/bpf/task_iter.c:1017:3: error: call to undeclared function 'bpf_iter=
-_mmput_async'; ISO C99 and later do not support implicit function declarati=
-ons [-Wimplicit-function-declaration]
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+https://ci.syzbot.org/session/4d7ba7ce-a1cf-4df0-b856-6be6475a5498
 
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[andrii@kernel.org ast@kernel.org bpf@vger.kernel.org daniel@iogearbox.net =
-eddyz87@gmail.com emil@etsalapatis.com haoluo@google.com john.fastabend@gma=
-il.com jolsa@kernel.org kpsingh@kernel.org linux-kernel@vger.kernel.org mar=
-tin.lau@linux.dev memxor@gmail.com puranjay@kernel.org sanghyun.park.cnu@gm=
-ail.com sdf@fomichev.me song@kernel.org yonghong.song@linux.dev]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
