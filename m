@@ -1,119 +1,87 @@
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDAB93CDBD6
-	for <syzbot@lists.linux.dev>; Thu,  2 Jul 2026 22:57:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B723353A96
+	for <syzbot@lists.linux.dev>; Fri,  3 Jul 2026 13:42:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783033024; cv=none; b=lCN7i3IlJnf5+qqBVKFH4guxiY31aTFHysAWDH6RxGaPo5WNeifGEXGHoOUzvcKwlNhdeYdKM3V/slkM73BGE7+7OkTGOPsRgcrYGspqfaDBgsp++m9GWVk0aHNX/6BSIlYFgWUxa11GV/Mcy9DR1CHsGtD6wHiyTcOUrkOZAy4=
+	t=1783086138; cv=none; b=nrhXydP6YEMRolqt2z0QBeQOHM7WbBeaFqIBjrclPYfzE1tYDeX3BtJkl58tt/st6A2CjkaoACm6vf/RZFJz8slNzmHZxVNn18RwPXoi3ru9YhBU+jcgGHl8+WEC9RoU/rlDilAdqjaZrpf9luVKi4khh/rhPVgAYtf2mHChtoY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783033024; c=relaxed/simple;
-	bh=JbREc04h3WlPRWGedBjLlTNzwXCNqmFS1OsIK4EbIVg=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=lA1soJjawZ8ot8D5702xCSUm232+VYTj+KkWe4CTZe/saSOm4Gv1eiR0YH4Xsyd/5xmxzqU7qdWaF3+co1Qeu23JbpKgne9IyzS/duqa851crefluI1FsrUqrALPE6MpKHkAKaPq4fIadXpc2vn68kGGohAdWWb27j7v/ridMv4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+	s=arc-20240116; t=1783086138; c=relaxed/simple;
+	bh=5kltOHHQpiqr38ppqPjhCU5R8T4EuKdW5n0oEgNVlc8=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=YrApZi8CcHvkeJG8Y1kK41FjDQdB8ooa2nJuvfzXk4mAe+KWWMIR2Rbb2nwgF4r/HiPJOeIBL+F++6ji7i59NvM8Sm6ozhGGdndsogr2CLPZ7Y8C4Lr25kq3J3ykxM2Dv915QRU2XWNADyTxHdGAML5MzCiXWHVIlWgdkV95LXY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-48f0e5e664aso3397329b6e.1
-        for <syzbot@lists.linux.dev>; Thu, 02 Jul 2026 15:57:02 -0700 (PDT)
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-495b0cf250dso338755b6e.3
+        for <syzbot@lists.linux.dev>; Fri, 03 Jul 2026 06:42:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783033022; x=1783637822;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=j28VgG8vASX4K9xxxxnxbwBaDXCS94Uwp097TC+/578=;
-        b=BN/gsO9aOWetyBIBcU48/+qz5yeuDxyeovX0STlEr6gYUSVzSZIOX5NbZDbwiAiHrH
-         Xh5OQquO4ulRX9fOboScqjuztKW48O/ZqGJ5y1kc4mQWUP23pSugO6IWzwdIBLGuqFfP
-         vv0XsXhx/SHbHTZWLkfLKH0SQvCFtiEu0lBchFxrOILEOfv5LIsMao+LYsMEzuKuPzwW
-         eiMqidpXU3DErXBP7IJ/MWLR4zwbXrue1ZmSyIRcAq3BSBgRZ1daizp1uQ/onkWIbdfk
-         Bp0Owv+n3uGlTykZHwNeLIxkWsl+Nkr113YziZz9hW0fULnL0/1EJQGFv99Z56kE21li
-         kZ0Q==
-X-Gm-Message-State: AOJu0Ywp11mh2c2LC3CtS8PxhQkWhLEXW/Rd/7fwtJICFGw38Lsyy9bh
-	n7bRBrLtvyk0woJtWSmXYaZUCN/6UJy7AiKm0W+99Yg46THGaZSyPM0dXWoxKtIIa8NZUS6k2Wh
-	DnsVSMWVqf4nYSQ2IzhVeBq2tKWRqUbvtJ/nMPsy/ZBpDyvkJhk/I7NNvv/8=
+        d=1e100.net; s=20251104; t=1783086135; x=1783690935;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TE4dzJ6zLltJiubnnO6Ou2to00VB+GS7Q+yzx/GWTSA=;
+        b=GRQGXKOGFnPTJn9Il7I5+T6wzddih+ciM5ralIfX/d4eXCUNysdgO73CCAd5Z9rlo0
+         N0oKJ/OwY5amfR/LBT7oa7O628WidM0HsXDHyUI2x/8Vyi7zln5ML5k2M3Vllrsem71T
+         Xn04HHGP4jWW/xWnmDkxlXHVoMlMNpE0tSpTh7ZrRA3sUj9/yv4xWnb9dzROAIr3btO5
+         PHgU2Kq41iMAWz1d1hFHEGLVbshT3WWEFyOpTbf/TrJ1LS0ysCFslZ0t48O2EwOHLP3e
+         4bF1Z4yqFIg20+GZCF70X5mNGKncntQAqnuXIoGNQ270z+ev7UfqDNMtsMhfMYhnAoh4
+         AukQ==
+X-Gm-Message-State: AOJu0YxIdy4Udn0r1hpXTDErdhwICycnrnEGCGnNf1azQSzsohBwE4LG
+	X5ukQYUaxj8JPO5s0thrnsMQsj3mgb877myAhGoLvHXrilAiTzRbM9PMRfzlprd07AUzSimIVMK
+	I8P+/BjDtgdIG0ztagUks4bHUlMvti5oQh1N48DijnEMBJNmTpctIGy6kNQY=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:199d:b0:496:fd2:94ee with SMTP id
- 5614622812f47-4962d93e521mr5633343b6e.24.1783033021882; Thu, 02 Jul 2026
- 15:57:01 -0700 (PDT)
-Date: Thu, 02 Jul 2026 15:57:01 -0700
-In-Reply-To: <20260702152225.4071746-1-yun.zhou@windriver.com>
+X-Received: by 2002:a05:6808:3083:b0:496:e0:a46b with SMTP id
+ 5614622812f47-4960ed039bdmr7717117b6e.3.1783086135134; Fri, 03 Jul 2026
+ 06:42:15 -0700 (PDT)
+Date: Fri, 03 Jul 2026 06:42:15 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a46ecbd.52c20a74.1f8b39.000b.GAE@google.com>
-Subject: [syzbot ci] Re: ext4: deferred iput framework for EA inodes
-From: syzbot ci <syzbot+ciadd810ddf4701c1b@syzkaller.appspotmail.com>
-To: adilger.kernel@dilger.ca, brauner@kernel.org, jack@suse.cz, 
-	libaokun@linux.alibaba.com, linux-ext4@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	ojaswin@linux.ibm.com, ritesh.list@gmail.com, tytso@mit.edu, 
-	viro@zeniv.linux.org.uk, yi.zhang@huawei.com, yun.zhou@windriver.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <6a47bc37.52c20a74.1f8b39.000e.GAE@google.com>
+Subject: [moderation/CI] Re: Fix incorrect access of hugetlb pte entries
+From: syzbot ci <syzbot+ci56834226c065e115@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v13] ext4: deferred iput framework for EA inodes
-https://lore.kernel.org/all/20260702152225.4071746-1-yun.zhou@windriver.com
-* [PATCH v13 1/4] fs: add iput_if_not_last() helper
-* [PATCH v13 2/4] ext4: introduce ext4_put_ea_inode() for safe deferred iput
-* [PATCH v13 3/4] ext4: convert all EA inode iput() calls to ext4_put_ea_inode()
-* [PATCH v13 4/4] ext4: remove ea_inode_array mechanism in favor of ext4_put_ea_inode()
+[v3] Fix incorrect access of hugetlb pte entries
+https://lore.kernel.org/all/20260703114202.365553-1-dev.jain@arm.com
+* [PATCH v3 1/6] arm64: make huge_ptep_get handled unaligned addresses
+* [PATCH v3 2/6] mm/rmap: use huge_ptep_get() in try_to_unmap_one()
+* [PATCH v3 3/6] mm/rmap: use huge_ptep_get() in try_to_migrate_one()
+* [PATCH v3 4/6] mm/migrate: use huge_ptep_get() in remove_migration_pte()
+* [PATCH v3 5/6] mm/page_vma_mapped: use huge_ptep_get() for hugetlb
+* [PATCH v3 6/6] mm/mprotect: use huge_ptep_get() for hugetlb
 
 and found the following issue:
-WARNING in ext4_journal_check_start
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/ce304d7b-7f32-44b5-bf6f-e579abb42a5c
+https://ci.syzbot.org/series/ff6e67cd-e960-43ad-ab95-8bde17ac4f81
 
 ***
 
-WARNING in ext4_journal_check_start
+kernel build error
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      4a50a141f05a8d1737661b19ee22ff8455b94409
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
+.git
+base:      6476418cb871288d93c0241d94793c181b61d033
 arch:      amd64
-compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/e5413370-cf09-4540-b9d3-7d280f314ae0/config
-syz repro: https://ci.syzbot.org/findings/e7cd69b7-8bb9-4554-bd84-b5ebcd7a8089/syz_repro
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp=
+1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/f80d76c3-a64e-4cf4-9c67-807616ca426=
+e/config
 
-------------[ cut here ]------------
-sb_rdonly(sb)
-WARNING: fs/ext4/ext4_jbd2.c:75 at ext4_journal_check_start+0x24f/0x2b0 fs/ext4/ext4_jbd2.c:75, CPU#0: kworker/0:5/5860
-Modules linked in:
-CPU: 0 UID: 0 PID: 5860 Comm: kworker/0:5 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: events ext4_ea_inode_work
-RIP: 0010:ext4_journal_check_start+0x24f/0x2b0 fs/ext4/ext4_jbd2.c:75
-Code: 5b 41 5c 41 5d 41 5e 41 5f 5d c3 cc cc cc cc cc e8 06 75 42 ff 41 bf fb ff ff ff eb e0 e8 f9 74 42 ff eb d3 e8 f2 74 42 ff 90 <0f> 0b 90 eb c8 e8 e7 74 42 ff 90 0f 0b 90 43 80 7c 25 00 00 0f 85
-RSP: 0018:ffffc900036bf888 EFLAGS: 00010293
-RAX: ffffffff8283ecce RBX: ffff888170078000 RCX: ffff888107390000
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
-RBP: 00000000000000ef R08: ffff8881bb53440f R09: 1ffff110376a6881
-R10: dffffc0000000000 R11: ffffed10376a6882 R12: dffffc0000000000
-R13: 1ffff1102e00f0cd R14: ffff888170078668 R15: 0000000000000001
-FS:  0000000000000000(0000) GS:ffff88818dc20000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055557b325a28 CR3: 0000000114bfe000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- __ext4_journal_start_sb+0x147/0x5d0 fs/ext4/ext4_jbd2.c:107
- __ext4_journal_start fs/ext4/ext4_jbd2.h:242 [inline]
- ext4_evict_inode+0x7cb/0xf70 fs/ext4/inode.c:238
- evict+0x624/0xb50 fs/inode.c:825
- ext4_ea_inode_work+0x5c/0x90 fs/ext4/xattr.c:2974
- process_one_work kernel/workqueue.c:3322 [inline]
- process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-
+mm/mprotect.c:711:10: error: use of undeclared identifier 'EACCESS'
 
 ***
 
@@ -130,3 +98,23 @@ To test a patch for this bug, please reply with `#syz test`
 
 The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[ak@linux.intel.com akpm@linux-foundation.org anshuman.khandual@arm.com apo=
+pple@nvidia.com byungchul@sk.com catalin.marinas@arm.com dave.hansen@intel.=
+com david@kernel.org dev.jain@arm.com gourry@gourry.net harry@kernel.org j-=
+nomura@ce.jp.nec.com jannh@google.com joshua.hahnjy@gmail.com jpoimboe@kern=
+el.org kas@kernel.org lance.yang@linux.dev liam@infradead.org linux-arm-ker=
+nel@lists.infradead.org linux-kernel@vger.kernel.org linux-mm@kvack.org ljs=
+@kernel.org matthew.brost@intel.com mel@csn.ul.ie muchun.song@linux.dev nao=
+.horiguchi@gmail.com osalvador@suse.de pfalcato@suse.de rakie.kim@sk.com rc=
+ampbell@nvidia.com riel@surriel.com ryan.roberts@arm.com stable@vger.kernel=
+.org tglx@kernel.org vbabka@kernel.org will@kernel.org ying.huang@linux.ali=
+baba.com ziy@nvidia.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
