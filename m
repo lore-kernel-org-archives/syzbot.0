@@ -1,190 +1,205 @@
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4554921ABBD
-	for <syzbot@lists.linux.dev>; Tue,  7 Jul 2026 21:30:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5B6921ABBD
+	for <syzbot@lists.linux.dev>; Tue,  7 Jul 2026 21:30:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.43
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783459826; cv=pass; b=AEQBd4mxfHkdUIb0cwFjz9ttKGlVVCOzXadBDtcfMKviT3Kyd5n4oBa7g2f8Hy1kMIeYcZ15Q5OCbwxQRwyrx53aMuRmskcx/C2IQxeyGuOO0mdbPHuj7kosEMJ+D8bvcuhX8BVV12GhxlII+p9ZIX72HED3OkMJYwrCtt9KXYM=
+	t=1783459836; cv=pass; b=BU/BHAMPmZr1BBVHaolI4XwxvtiO0qLje04vO86jV1RJ2rRxR0WQxOXtZrx5AvF6dgpoXj5Puvek8VgGkmoBgLr35jDXpJos+jPVoy1zw72CoezI3yfTS4ypdzvkWjWn3xDUpJscSFXC00KA56Tj6vuKPh2djSeTpZsjkHZtudE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783459826; c=relaxed/simple;
-	bh=e5YhRhCK15CuEUQ/bu12LJR/XHhZSAS0LFWgRIDrwac=;
+	s=arc-20240116; t=1783459836; c=relaxed/simple;
+	bh=EJM3s/x7iNsVsNm8LW2t2klylQ6MvyfY0qtbAMn1Jgs=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=AenchDWHTxD53KnzyQY88otP74a7HnJ/ItQbu4OqQ6yddLT/CYzEc+M4X5MpVIBwcJExQ8661KC/2R/8qZdAAsqKbV2MVNNJig+w36t55KOzkUEtaGFNBLZhcpWkLvS3zglIsZe63sd9DNH0LpJxP3cvkSxzJK59v17FU8OMuZ4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=I+I3j5bG; arc=pass smtp.client-ip=209.85.160.54
+	 To:Cc:Content-Type; b=QWUO0GySQeZm1FlzK0/X+wG9/sT6LTXDtAtbSJqzzaABpAeYdJN3kkIzSyMQ1OjhCvoY9NallohvAga/xr6d9++sP/FO4YDqLs8zTPxXoINWsEEoXXd16jM1E1WaNAZpVkjBmPeYLeUJFaaI5F36W1tLXqM6+GZQuKeHOYYryo0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IJTDZpiD; arc=pass smtp.client-ip=209.85.161.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="I+I3j5bG"
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-44d2204d195so8888fac.1
-        for <syzbot@lists.linux.dev>; Tue, 07 Jul 2026 14:30:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1783459823; cv=none;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IJTDZpiD"
+Received: by mail-oo1-f43.google.com with SMTP id 006d021491bc7-6a18e363d52so21258eaf.0
+        for <syzbot@lists.linux.dev>; Tue, 07 Jul 2026 14:30:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1783459834; cv=none;
         d=google.com; s=arc-20260327;
-        b=meUQspjRbHm6PiLhg81qki15ZCWhKV8yKweQtbbyUZq4vmZWxiyodDNZVCl+eULsTr
-         UELUBe4HDSHp/77JBjqw02icK8BixfPuk544TCrmH/h4ibDio4Y3twHBkMprSHCJY2MQ
-         R7UNVbs51M87t3do7r2fWMD6lj5cPj5Njk0SI4ddQdfjgDCF3zow1EFWy21YCoH86n68
-         MBmbVbt5Qe6SfaAsBbdRkRVylVu8XCBgKgtvyfY90WsatH8S+4wCpDfX1KGENmTU8sFY
-         F4pqYgS77wEwHCt9BHGq6cH7VXdIj81zOU8uywN2juqTdnm5TaUEetBWi6BHasPJcWik
-         OFQw==
+        b=XaKMqcC/tp2LjM0AmlwJVjTfRz8yJAWhj117bHEonlz+OSrXzp7Sstwym6vMonFORz
+         nJly7zGlFVB/lRU4nFpLVz6SRju1cGr1mnUdO8bXc7djCLGi2cPrdJ4/Xp7e3oRV8vmm
+         e9Q24J+zf64Jg3nDdjG6vZzHbyeufqX1I+o4TnF/y2dLGu3pQcyzkVxWBpQtbzeb63Sh
+         KYNfB9gJn+PDTebk+Tj6JaU75JUVeHXdUj5QOrm3vmDv+zA3TOOlc5AaADoxtD3gIZTc
+         MwpSyKoIet11Uf/jh+///+j3UWRJbTFFzcRilLysJPfTEhJs3O/J804Wq1ZZfQMfImaQ
+         U9dQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=iEXqSCMI6Qg1dAg+FUmGWd8V5GqUuM/nxotNR4wkAs0=;
-        fh=eceKtA3sRNFfEO+kaHkvvVuVon/P362PQXO8kS5MaFU=;
-        b=r6mI1S1y6JVtcDyy6HvB8mdvIzqHljxzgn1vu4OZFXP5h7qOOdHgkBwaw27wct/rFr
-         M9d8qT5AGPy3RhZsBdCd3AH2opbDRq1XSUr4q8RMD5dTOmYr18vyfcE3hd1IIhUup8rb
-         4bXBtrv2wWWh6zfPZ7zJaSU8MiIQCpiZmH1xQWbJca77UuPVp8z3PAEN9bi/f5RAsnXl
-         GfbMrSUihv3xuybDjegCZxy6ErezIcrFHeHY3opeJ8rCmwuowNybdAC3mGpZ8iebBr27
-         ebkzd+UnAaCnmGkJsXcCGnnboscbuClnKCCMcbdC4e03iSBcPy5mEQ8XUdJwA4aoPVV9
-         YsWQ==;
+        bh=tYC4EBdj8JPQ+vxbluSZijUQ1CMYxcqSfWb96fkVbQM=;
+        fh=9XBoO+xNrgm2UTeZC7PzjAJbWI3B1y/ybXJ5Y6djnR0=;
+        b=nPjK/2wrAHAOlaJoKld/9iaqkXkH3ICgKfGBxEyIYYDPy0tTRRg+lSP62C1XZC1vwc
+         MHqBlkibjhI8NWdI+Mvmac8T0a6TFghgnMCxvP57zKcT9pfZt7Cv6fGeOXCWr4X1vixL
+         AdMSrOChW9MaPC0k6d4Bx7FwxKzu6an36CkZKUE2SUgWhLhMBrEo6W9GnF1Qd9sCYb3f
+         sCi3yUhAY2MQ79ih5SvIr6UyC1er3sdE4JXOaVh4J8yqEHHFliZRDqp5AB1+Cks2NwQv
+         BgdqjiySMCjnjz6YILnpE8ZYMX0dXlA7Oy1172AtN0NrpXml8IO4XlGRHrEtcCh0zvpv
+         xzBw==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1783459823; x=1784064623; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=iEXqSCMI6Qg1dAg+FUmGWd8V5GqUuM/nxotNR4wkAs0=;
-        b=I+I3j5bGj6WJtufpz2aXZi6+j3DqdAi3wsIYnni0e0SZ5vO/mEZnsVPnv7watgtCLN
-         MmU4NOAA8JZe9y+ejworOF6el5oJcN3mzlghryNrXQxUjROx3zD2eBS1pXROI9p47/Qb
-         yKdHyKg6WJR6Nd5Kr53niSbSTgRNrVRqJ6q4P1vzbMzL0fVQI8DugXfy/1B0bLuO0Rbj
-         gWycibGY/phYMZjdEgAu57WAE6IiA7zqiF8zV8wL/U+lxwKM1pvx9UenKPwc9PPL9SZM
-         6Xl/P2gzwrrBVGe9Qg88AcTQmbf4dnzWouxnNcs7HxJpSsNY8YZiIR1B65zfqmlW+4MV
-         /gMg==
+        d=google.com; s=20251104; t=1783459834; x=1784064634; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tYC4EBdj8JPQ+vxbluSZijUQ1CMYxcqSfWb96fkVbQM=;
+        b=IJTDZpiDUdaAHLn0kK2FTXSt8l7RkgzCEKHos7SwhLwS64n+1M/gzYvWSx18zihE/F
+         XzdPzU6LbWj9Goh+/xjconqfF34mMuJPlwM2t3cHUFXcJY/rjtHmFsI0w8dL7tLol8sZ
+         weEg6DBm/gjEzRJRmC3ITPS3dZjCI+kJuM+Xj5v7Dp6yhQ/88owPVvT0mkP53vobUxEe
+         YdqMbidiFCe/5lxBrUbKEF1PkpvQTvZXsgb7h3yqy101q40HLs4rAbsUUxzuydfqrLaw
+         b5CMzYEaF2ArB3uOGp6UNChd0m0FBJSsTntuu6vAL1CH4Q/NBQnpZ/MI0CzDwtT+R151
+         zSdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783459823; x=1784064623;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=iEXqSCMI6Qg1dAg+FUmGWd8V5GqUuM/nxotNR4wkAs0=;
-        b=iDV7CHFxyd36kERsdJzHMb9/k39Yn1rFcHPJImx12crsq4jTmTt7NcofgWELH8L9UM
-         /bTm7VcFEdPhW3/A+p7SxYYyfBvwkuAp0edqOGBe42ynBHKb7f8bafAsGVEgisouuzB6
-         fjzYlAI2OkQb6e/NZHuITt69/qyxrrhHMBIEJx3lQSHKcPclTUCNxDSgv6vk4yZRMgoE
-         1ebJAIrx4udl6JP+NCxWS1CB4LH5g07Gu9+cX+4kGJETzqsbMeELc/1VARQFmg1qksrq
-         5hmafpNDKzeXMbFQtpamOpJ62qPGb2ZiSIffbXSNeaTpU2lVvQ+w6VFASD+v+MelzVPo
-         0oOQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rq1faKAmoTFPtBMbMiWlHY5ZmqujdGlBWX0vUErtEAJw/wxjqu00Xmnz1UKorgwwma1aJy3IkM=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzSgTdTDXLrLc3yoA17/BXl/tbQn2VcJOJxJuCwtc8ouv2f7Oo3
-	ClAI/1VvkTPBEj/tuINIGTmnKKKXgoBTLt6lQS86gyHW2HGEW4vf2BnVQF7EbhDbPYQklQTyN4F
-	SimR6H/lQ0dZ1o3qVEAxtEJtKgN5GqvhFQPqi4SL1
-X-Gm-Gg: AfdE7cnk7KuY5phS6LE0zdHADHKx0BOmd28TCfcjr3ilzdehIBEfeMCnqGm/Emczhci
-	na9lyIwc2OG8nHJ66rZhqkzQtGLF1/pgmEMsYb8cQ9+LyVjDqf4NauTtlSEDDfovOpQrBBOBfge
-	RnONEfhqIUbyzwjXu54r9brJC944opvxY0tBDqpS2vL+zLk20A3951ETpur0WvSEzKMHZcv2jFT
-	WQGuJXuCgw/UO+YR6/AZ+R+pyno50vtQvGGAujt/sJwKYOV/hlMyrevPTlkIcdBheL37XlTYqVj
-	rmYiEwYsbXpGnRPRmHNbY4OFsaeKD8xlDahJmkkD39VGS5UNm0yOnzuxulj3jS7CvuIdjok7AzJ
-	XtKzj97OVhPljWfhg67wCTGSRHMN/8ND9LL4qlz8Nfw==
-X-Received: by 2002:a05:6871:3a20:b0:447:4fc:1da1 with SMTP id
- 586e51a60fabf-45105d71af3mr4451629fac.12.1783459822293; Tue, 07 Jul 2026
- 14:30:22 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1783459834; x=1784064634;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=tYC4EBdj8JPQ+vxbluSZijUQ1CMYxcqSfWb96fkVbQM=;
+        b=Zinx9RjQhDM1oMJyASe0kmh1Sziw0nKOest1aHGo2TYUYlT0CmySdR+8JSB8SHymgc
+         ngDEf5CuNkJfutp/dB4XTatsggQisU7iwN9y1x7P2haW20WHj1xFuCL2PZxNxzIuKUD2
+         ZU9nySGgRGloYbx0c9vx+g+HnIS/RFf0pAR647HGKWe2XKg+hFcOC7FzN6EVUnyqYSS2
+         Nh28eQgJmALHrtzjTVxM5SSt0XCu3Rtk2zMhjTvAip9b1xB4397/ly8lhBhQoDH0MsJR
+         S0kL2PpLJNX9w+GuYU3pROMMaGF44YHMTJaxjV7/t5OfXETMdq2HQI/c3IPMls97YE4a
+         qGLQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+hnS8Lr0HnQ1CDUJxEXUqyd8c/b/ajXjSlHosqWd6r/zA/LPMqjS4hFmB4oCZUxc/DC5T/FE4=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw6eELgWfw4fBDomAEKq+H2Epna6m/BsnjfiFHtV+u/N0Lou5sp
+	W+HfsLHMWSxD0X7F0B5HD+LY979SwmWYkB4d/ixXYg22GkhS2Nw9XpeEGW6rpf4Vn8+zMLdnZKp
+	FbQmfFxOqaHKJsWBbplRDuYoLGTwMdOcL/Vx23V8E
+X-Gm-Gg: AfdE7cnxPsxBH6PxWxgWvi5KOblC4YRLg8g3zY02UCzrFcB3inbXzHgsb+Oxv8PK8No
+	QyJdY+lGci1t4PX34pj400ZkOd15Dj5wQxt0ciRfTiQZTZ6iC9S/S4/UOZW0eQYTQV5WhJ5kNbH
+	qgZ0nYSp8xIKOINB9QH62HXPom5/BReQxU8WjkxkO4JotwNsNCrSb/GohbA9ud4RrOScwL3/DwB
+	4S58CeC1VWCoaiiA9ljgpXZCE0XtAfmmbEBIIiHIuBqHB2ynY5jAaeLtxsrx2Cg4LNmrj8/8Jve
+	x9Kj/uQwxF9duyKVHhV3VM4c2wELDLd/XdaoY2b3P9CS7SP715WTxLYKh8qX+CJDM6sciyWReO1
+	bhL309sXi5lF58vWem1xKeuGTXjvLt0PxVtOLHSVGvA==
+X-Received: by 2002:a4a:edcb:0:b0:6a1:87a3:af3c with SMTP id
+ 006d021491bc7-6a35c30b9e3mr2713938eaf.14.1783459833188; Tue, 07 Jul 2026
+ 14:30:33 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <6a4d45b3.c76b52dc.34afef.000e.GAE@google.com>
-In-Reply-To: <6a4d45b3.c76b52dc.34afef.000e.GAE@google.com>
+References: <6a4d5716.a1ad617e.25832.0009.GAE@google.com>
+In-Reply-To: <6a4d5716.a1ad617e.25832.0009.GAE@google.com>
 From: Aleksandr Nogikh <nogikh@google.com>
-Date: Tue, 7 Jul 2026 23:30:10 +0200
-X-Gm-Features: AVVi8CeslcO3jC3yRgfyKNAKTL7N194DECghfHoQvSIyiiqSgjCmz1WYuFfRTZM
-Message-ID: <CANp29Y7igj98NU9TvakvdQpQmbo5w6RyBUG73wK6NBOjXvAEfQ@mail.gmail.com>
-Subject: Re: [moderation/CI] Re: mm: rework anon_vma and remove anon_vma_chain
-To: syzbot ci <syzbot+cia0624a3957eaf595@syzkaller.appspotmail.com>
+Date: Tue, 7 Jul 2026 23:30:22 +0200
+X-Gm-Features: AVVi8Cd08iOV4wJq5_EM6mEoBdHBofgp5Uy47PIGWdDPYlpT9qUxw0Sfb1us20M
+Message-ID: <CANp29Y7k-H5ocTinTPkmAZEeYMW0eQ-nPZhrm9SAM+=xH6sqMg@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: mm: store zswap entries in swap table
+ (Pointer entry)
+To: syzbot ci <syzbot+ci3c668b9bdaa73218@syzkaller.appspotmail.com>
 Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 #syz upstream
 
-On Tue, Jul 7, 2026 at 8:30=E2=80=AFPM syzbot ci
-<syzbot+cia0624a3957eaf595@syzkaller.appspotmail.com> wrote:
+On Tue, Jul 7, 2026 at 9:44=E2=80=AFPM syzbot ci
+<syzbot+ci3c668b9bdaa73218@syzkaller.appspotmail.com> wrote:
 >
 > syzbot ci has tested the following series
 >
-> [v2] mm: rework anon_vma and remove anon_vma_chain
-> https://lore.kernel.org/all/20260707063308.29176-1-tao.wangtao@honor.com
-> * [RFC PATCH v2 01/13] mm: add CONFIG_ANON_VMA_FRACTAL
-> * [RFC PATCH v2 02/13] mm: implement helpers for ANON_VMA_FRACTAL
-> * [RFC PATCH v2 03/13] mm: implement __anon_node_prepare for ANON_VMA_FRA=
-CTAL
-> * [RFC PATCH v2 04/13] mm: implement anon_node_clone for ANON_VMA_FRACTAL
-> * [RFC PATCH v2 05/13] mm: implement anon_node_fork_with_prev for ANON_VM=
-A_FRACTAL
-> * [RFC PATCH v2 06/13] mm: implement unlink_anon_nodes for ANON_VMA_FRACT=
-AL
-> * [RFC PATCH v2 07/13] mm: handle rmap_base changes for ANON_VMA_FRACTAL
-> * [RFC PATCH v2 08/13] mm: implement anonymous folio rmap for ANON_VMA_FR=
-ACTAL
-> * [RFC PATCH v2 09/13] mm: prepare anon_node replacement for ANON_VMA_FRA=
-CTAL
-> * [RFC PATCH v2 10/13] mm: replace anon_vma with anon_node for ANON_VMA_F=
-RACTAL
-> * [RFC PATCH v2 11/13] mm: optimize rmap for ANON_VMA_FRACTAL with PVL
-> * [RFC PATCH v2 12/13] mm: shared semaphores for ANON_VMA_FRACTAL
-> * [RFC PATCH v2 13/13] mm: Enable CONFIG_ANON_VMA_FRACTAL by default
+> [v1] mm: store zswap entries in swap table (Pointer entry)
+> https://lore.kernel.org/all/20260707073215.72183-1-baoquan.he@linux.dev
+> * [RFC PATCH 1/7] mm/swap_table: add Pointer type support for zswap entry=
+ storage
+> * [RFC PATCH 2/7] mm/zswap: add swp_tb_val to zswap_entry and Pointer acc=
+essor helpers
+> * [RFC PATCH 3/7] mm/swap_state: do zswap conversion in __swap_cache_do_d=
+el_folio
+> * [RFC PATCH 4/7] mm/zswap, mm/swap_state: handle Pointer entries in add_=
+folio path
+> * [RFC PATCH 5/7] mm/swapfile: handle Pointer entries in count/dup/put pa=
+ths
+> * [RFC PATCH 6/7] mm/zswap, mm/swap_state: migrate zswap to use swap_tabl=
+e for entry indexing
+> * [RFC PATCH 7/7] mm/zswap, mm/swap_state: replace xarray indexing with s=
+wap table lookups
 >
 > and found the following issue:
-> WARNING: bad unlock balance in exc_page_fault
+> WARNING in __swap_cache_do_del_folio
 >
 > Full report is available here:
-> https://ci.syzbot.org/series/39466cf1-707b-420e-8f1e-11735bea6c66
+> https://ci.syzbot.org/series/1a9cfadb-ed85-48c1-b1b3-a3c12ea99471
 >
 > ***
 >
-> WARNING: bad unlock balance in exc_page_fault
+> WARNING in __swap_cache_do_del_folio
 >
 > tree:      mm-new
 > URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/=
 mm.git
-> base:      8ff49efd1cf18086320f3b43d1bd483c0b9e7e58
+> base:      01bc0932614c2d3c35e732f54d249b5897d94307
 > arch:      amd64
 > compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~e=
 xp1~20260514074407.73), Debian LLD 22.1.6
-> config:    https://ci.syzbot.org/builds/c3a229e4-b949-4889-b309-dbdd1fadd=
-95f/config
-> syz repro: https://ci.syzbot.org/findings/29b52ad4-b463-41da-877c-4138356=
-e3960/syz_repro
+> config:    https://ci.syzbot.org/builds/65f10583-d539-4b33-8ba9-494d42eb9=
+593/config
+> syz repro: https://ci.syzbot.org/findings/3673912c-5490-4f26-ba24-276021c=
+43d9b/syz_repro
 >
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> WARNING: bad unlock balance detected!
-> syzkaller #0 Not tainted
-> -------------------------------------
-> sshd/5593 is trying to release lock (vm_lock) at:
-> [<ffffffff8bb5032a>] handle_page_fault arch/x86/mm/fault.c:1483 [inline]
-> [<ffffffff8bb5032a>] exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1536
-> but there are no more locks to release!
->
-> other info that might help us debug this:
-> no locks held by sshd/5593.
->
-> stack backtrace:
-> CPU: 1 UID: 0 PID: 5593 Comm: sshd Not tainted syzkaller #0 PREEMPT(full)
+> ------------[ cut here ]------------
+> !swp_tb_is_folio(old_tb) || swp_tb_to_folio(old_tb) !=3D folio
+> WARNING: mm/swap_state.c:327 at __swap_cache_do_del_folio+0x6ef/0xdf0 mm/=
+swap_state.c:326, CPU#1: syz.2.63/6057
+> Modules linked in:
+> CPU: 1 UID: 0 PID: 6057 Comm: syz.2.63 Not tainted syzkaller #0 PREEMPT(f=
+ull)
 > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
 16.2-1 04/01/2014
+> RIP: 0010:__swap_cache_do_del_folio+0x6ef/0xdf0 mm/swap_state.c:326
+> Code: ff c9 48 09 c1 4c 21 f9 48 39 4c 24 08 0f 85 8c 02 00 00 e8 73 9a 9=
+b ff 49 bf 00 00 00 00 00 fc ff df eb 3d e8 62 9a 9b ff 90 <0f> 0b 90 41 89=
+ ed 41 83 e5 01 31 ff 4c 89 ee e8 2d 9f 9b ff 31 ff
+> RSP: 0018:ffffc90003ea6690 EFLAGS: 00010093
+> RAX: ffffffff822acdb9 RBX: 000000000000001f RCX: ffff88816d7d9e00
+> RDX: 0000000000000000 RSI: 0000000000000002 RDI: ffffea0006be5f08
+> RBP: 00000000006be5f2 R08: ffff88801c7d20ff R09: 1ffff110038fa41f
+> R10: dffffc0000000000 R11: ffffed10038fa420 R12: 0000000000000000
+> R13: 0000000006be5f00 R14: 0000000000000002 R15: dffffc0000000000
+> FS:  00007fef4622c6c0(0000) GS:ffff8882a921d000(0000) knlGS:0000000000000=
+000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000200000000280 CR3: 0000000176c44000 CR4: 00000000000006f0
 > Call Trace:
 >  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  print_unlock_imbalance_bug+0xdc/0xf0 kernel/locking/lockdep.c:5298
->  __lock_release kernel/locking/lockdep.c:5527 [inline]
->  lock_release+0x1f1/0x3c0 kernel/locking/lockdep.c:5889
->  vma_refcount_put include/linux/mmap_lock.h:216 [inline]
->  vma_end_read include/linux/mmap_lock.h:264 [inline]
->  do_user_addr_fault+0xab0/0x1340 arch/x86/mm/fault.c:1345
->  handle_page_fault arch/x86/mm/fault.c:1483 [inline]
->  exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1536
->  asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:595
-> RIP: 0033:0x5583206de68b
-> Code: 04 25 28 00 00 00 48 89 44 24 08 31 c0 48 89 e2 e8 8c 5b ff ff 85 c=
-0 78 13 31 c0 4d 85 e4 74 0c 48 8b 3c 24 48 89 de 4c 89 e1 <f3> a4 48 8b 54=
- 24 08 64 48 2b 14 25 28 00 00 00 74 05 e8 5e 17 fc
-> RSP: 002b:00007fff02a37e60 EFLAGS: 00010206
-> RAX: 0000000000000000 RBX: 000055835a20d6fe RCX: 0000000000008000
-> RDX: 0000000000000000 RSI: 000055835a20d6fe RDI: 00007fac5106c010
-> RBP: 000055832073df00 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000008000
-> R13: 000000000000005e R14: 00000000000000b3 R15: 00007fff02a37f88
+>  __swap_cache_del_folio+0xd5/0x170 mm/swap_state.c:377
+>  __remove_mapping+0xabb/0xe20 mm/vmscan.c:736
+>  shrink_folio_list+0x2b42/0x5350 mm/vmscan.c:1489
+>  reclaim_folio_list+0x100/0x430 mm/vmscan.c:2163
+>  reclaim_pages+0x2f1/0x530 mm/vmscan.c:2196
+>  madvise_cold_or_pageout_pte_range+0x1c1e/0x22e0 mm/madvise.c:562
+>  walk_pmd_range mm/pagewalk.c:148 [inline]
+>  walk_pud_range mm/pagewalk.c:239 [inline]
+>  walk_p4d_range mm/pagewalk.c:280 [inline]
+>  walk_pgd_range+0x100f/0x1e40 mm/pagewalk.c:321
+>  __walk_page_range+0x16d/0x720 mm/pagewalk.c:429
+>  walk_page_range_vma_unsafe+0x309/0x410 mm/pagewalk.c:733
+>  madvise_pageout_page_range mm/madvise.c:621 [inline]
+>  madvise_pageout mm/madvise.c:646 [inline]
+>  madvise_vma_behavior+0x2922/0x4340 mm/madvise.c:1357
+>  madvise_walk_vmas+0x576/0xb00 mm/madvise.c:1712
+>  madvise_do_behavior+0x385/0x540 mm/madvise.c:1907
+>  do_madvise+0x327/0x3a0 mm/madvise.c:2005
+>  __do_sys_madvise mm/madvise.c:2014 [inline]
+>  __se_sys_madvise mm/madvise.c:2012 [inline]
+>  __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7fef4539ce59
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007fef4622c028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+> RAX: ffffffffffffffda RBX: 00007fef45616180 RCX: 00007fef4539ce59
+> RDX: 0000000000000015 RSI: 0000000000600000 RDI: 0000200000000000
+> RBP: 00007fef45432e6f R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007fef45616218 R14: 00007fef45616180 R15: 00007ffcd47ce068
 >  </TASK>
 >
 >
@@ -205,20 +220,10 @@ e3960/syz_repro
 > Note: arguments like custom git repos and branches are not supported.
 >
 > The email will later be sent to:
-> [akpm@linux-foundation.org apopple@nvidia.com baohua@kernel.org baolin.wa=
-ng@linux.alibaba.com baoquan.he@linux.dev bp@alien8.de byungchul@sk.com cat=
-alin.marinas@arm.com chengming.zhou@linux.dev damon@lists.linux.dev dave.ha=
-nsen@linux.intel.com david@kernel.org dev.jain@arm.com dvander@google.com g=
-ourry@gourry.net harry@kernel.org hpa@zytor.com jack@suse.cz jannh@google.c=
-om jgg@ziepe.ca jhubbard@nvidia.com joshua.hahnjy@gmail.com jparsana@google=
-.com kas@kernel.org kees@kernel.org lance.yang@linux.dev liam@infradead.org=
- linux-arm-kernel@lists.infradead.org linux-fsdevel@vger.kernel.org linux-k=
-ernel@vger.kernel.org linux-mm@kvack.org ljs@kernel.org luizcap@redhat.com =
-matthew.brost@intel.com mhocko@suse.com mingo@redhat.com muchun.song@linux.=
-dev nao.horiguchi@gmail.com npache@redhat.com peterx@redhat.com pfalcato@su=
-se.de rakie.kim@sk.com riel@surriel.com rppt@kernel.org ryan.roberts@arm.co=
-m ryncsn@gmail.com shakeel.butt@linux.dev sj@kernel.org surenb@google.com t=
-ao.wangtao@honor.com]
+> [akpm@linux-foundation.org baohua@kernel.org baoquan.he@linux.dev chengmi=
+ng.zhou@linux.dev chrisl@kernel.org hannes@cmpxchg.org kasong@tencent.com l=
+inux-kernel@vger.kernel.org linux-mm@kvack.org nphamcs@gmail.com shikemeng@=
+huaweicloud.com yosry@kernel.org youngjun.park@lge.com]
 >
 > If the report looks fine to you, reply with:
 > #syz upstream
@@ -232,4 +237,4 @@ ao.wangtao@honor.com]
 > To unsubscribe from this group and stop receiving emails from it, send an=
  email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
 > To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/6a4d45b3.c76b52dc.34afef.000e.GAE%40google.com.
+-upstream-moderation/6a4d5716.a1ad617e.25832.0009.GAE%40google.com.
