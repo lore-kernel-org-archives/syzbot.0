@@ -1,183 +1,146 @@
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A6873AB5C7
-	for <syzbot@lists.linux.dev>; Tue,  7 Jul 2026 19:44:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783453464; cv=none; b=Bojr+BhMaIX7woLoZ4MGRqvz6n3OJ4yfr+MN8aGgDZy/yMiFQOdu1iQtPha+NjXlqFxfRIJxsMVqp7+xSOoBvuWCP5yPFQ4meDIArBhpe37LZaZUVp2ZKxW12uLcjqqU0AZYRXwmVMBcgkOVx26beCowCf6VCw87PT3KBvJUHXM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783453464; c=relaxed/simple;
-	bh=GFjKOCb46iRS1OGbg06m+gGbMWXQJJ9hzssqbaixduY=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=RLDqPy/CX9hZL6E/Ua7dC9WYebc8e3v6yuXb/7bPhgUfUGtQTiuuCOPG/+XAB8iuzfZPsrUSxIIYtp6IN0uwFppjI6SeuYTCHUqLd8hBB3fb5UjuUmUT8ZEpQ+If6xwSa7gplBwmFjAvKibwe07dYIeUEGXIN8LI63eVKMtAwoE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-6a153a05578so5865946eaf.0
-        for <syzbot@lists.linux.dev>; Tue, 07 Jul 2026 12:44:22 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18C3B37647E
+	for <syzbot@lists.linux.dev>; Tue,  7 Jul 2026 21:25:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783459539; cv=pass; b=jjtk/Nf8Xm6vmxStxVsqBlBKivT7ocQgFaMNNXHSo6EWxmUqio37bMWGJZhb9vpmkeqsz65PaiWk8BmDKtEEMXvj794jIY/YHhwYtuahO8Te+HyD6uZuQOCggrF2Iylav42I1m8nFKbarSvK+iWKCsTOuMDKvWinT6VrGC/QUOY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783459539; c=relaxed/simple;
+	bh=pOdXM2oymvr/smId1Omver3teKkaw9mprd4E/4+VOz0=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=bEohe6aYi96Wip2j2pWBQAkj0fFl5slfiN1ioMozyBh7PG9ZJCgSPPJ/5oEzTNgEB5i1ok06FXVcKi54huObie0P5psZOS/TvclRQG3i3FfEbFvQdN++t9WDv7GtagX5r8+fFPV1cFNTXX3z6psZ+pLi1OJWc1BlRgpIC7aPUXE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=uQYbYSO9; arc=pass smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="uQYbYSO9"
+Received: by smtp.kernel.org (Postfix)
+	id E624E1F00A3A; Tue,  7 Jul 2026 21:25:37 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=209.85.214.201
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1783459537;
+	b=S+/0lAHfbT0RYo3UMxMHWVQKA2j5cgzHLwpBRvrxzxvqLmnrz/rHd1fMimzraotuhHjC
+	 q2wIsGnOZeZKCyKzdr7cqdUhhi7ecyeKRuI1h67XYaEfuY84KJ+PIbjXcJdYlM9Z1XsPE
+	 xQyeXuwOMWXQJV3vsn8PlXHq4AmNbkJG1t+lvzXMUFKkKlHeq+38cYftHnzE/rxuEWezp
+	 JdQO2140QCAQkJDSGjn4Tv2dO4muRkIriiy81saCff0lkUADA6Vnr8Wc1nc8oSKc0nD69
+	 cVZLNOlQ7ewGygM1Q5WfXRDBa3dGCjG6EQlNNug9ikezSItoWkhgGACvNkzsOUhhOUQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1783459537;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Received:Date:In-Reply-To:Mime-Version:
+	 References:Message-ID:Subject:From:To:Cc:Content-Type;
+	bh=ZUVoSE8UgGc/A9+Kf+89pNsJjY/CmRXkhT+zbp2ozz0=;
+	b=kKzB4GvfB/XWDLqWC/sIfyYFQ6rCUqJgaq9+LdmssCNZin7mKWRgNXatz0+hRdnUt8Ij
+	 KbjdjyZ8r4x5s7aIkf3jHEru1KwE3VDj2N+iJY+QLbRPmk5sN+XX6LjSF1mJxSl0ijogo
+	 sm9uTmyD96sz48e0g/bdf/c57Lre8cvzaHOJM4SzcnTHceEdTwrCoAl9dXHNgET2b8OnH
+	 BH5EZe5lOAF2uaxm8bGnS6QnuX0Pw3KgsE8j3p/EI4LRc8CK+YKVe2Tt3jdVy+E4MpouR
+	 anPRQtOqrOmqX+iqgPp7R0X4whc1uOofYMNfLeIrzT7B7KQRkukEor8CjmVJenGdkjw==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=uQYbYSO9;
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com;
+	arc=none smtp.remote-ip=209.85.214.201
+Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 56D591F000E9
+	for <syzbot@kernel.org>; Tue,  7 Jul 2026 21:25:37 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=uQYbYSO9
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 56D591F000E9
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-2c82843005eso768895ad.1
+        for <syzbot@kernel.org>; Tue, 07 Jul 2026 14:25:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1783459536; x=1784064336; darn=kernel.org;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ZUVoSE8UgGc/A9+Kf+89pNsJjY/CmRXkhT+zbp2ozz0=;
+        b=uQYbYSO9aMJq9Cbj008vndFr848x0uJ8brseHURw63vUb22B+83Ob5rB+jPqwZGddz
+         V65oK1aMhusZwukFfAiJe2uBlcODTYGD+wOdKugbcRyBvfQ5INhe6s1p6OkJ1Vw53bWI
+         wd/o5tA+ZcxgKDjxIoQfYkj8yHEYNBb8rK15eTnOwy6QbgXCQ5wNrpzhvgUUO91ILJnR
+         9yLVA0rz8mPLifkTadvfGAk0u/WP6V3hxKfq95PseyRigN30g2oavQxWlvURe9p6rfYV
+         K+tgPc8D5f2UqOjEguoMTWgHC6YhpLgjb7zMwCXg/Z/5fMPhocuaw+BqLF3+P6RKczgm
+         loaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783453462; x=1784058262;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=vUUV1t3Pt3qDMXnZG/aV39SBzGIAYvCncmjNDu9KpH8=;
-        b=Zu/CVR9xHPbNA9rGz4+rS4wvNUahPSSifqn4DZ4mod+OY8F4vrwRpamb1AmqnmG3Pp
-         XqYYU8dDEDuLgLdkA1cVbLBWIj7V+JJrRJRN//sxFp4FLTn0byRcS5cO2AUMY36fe4ZS
-         K29l0rMtK9lyUeQOQTNTVVdhtaYDmugwO9p8h/n340S7l703lARKz5jeg/tWzksn+r5g
-         0zecQzsmfpPt1FUxwk+C/9BaSKJaV5ctXo611Fmg/QCREPPaUqXIkKr9XULVubHIvHLf
-         8z86tlhsz0NYFfmpqIWmuTX5GQHwqa6AQf7ecBvXtyG06e6JNI7DhJS5TuvROsNJ6Az7
-         X1jQ==
-X-Gm-Message-State: AOJu0YwH88ODBRCQV8F8S2QnseakwjzmNkcWucrnim2fMVOCaLcihRyx
-	xC28cE5GXvE7Wc5/F0WmFB0+NwzbMyNoi9XZ4ieiiBvO5f0uVQexlofBks621YbPdV3l5zaHfVw
-	aM4wYekLOxEYrdnwpENCZcJGuOk+2zmbl481+k15UQTMvsLMLOYmUmET5lC4=
+        d=1e100.net; s=20251104; t=1783459536; x=1784064336;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=ZUVoSE8UgGc/A9+Kf+89pNsJjY/CmRXkhT+zbp2ozz0=;
+        b=WOAGbd8JV6CAHQpQbJ9I3Xc3NlB0RasuHyw+Zdiu3Wxj/UOJz7rfG7lKQ6p6Y+QTs5
+         ac8a1TfquQV8gM2mc+YjcvMAWtdqPDyiwE8zF4QzNWsnHJkNkHfNJpDIJ5c2xoXESNPM
+         tey4TPFQ6FpXbS4+UzubsU5jaG8+swa9MhOTKztFlX/jFQTGu4fCvTkAqU5WzO535456
+         9T7YY3RvPtyC2iADRxWxfBYyfb2OPmft73q3WuB8sIOIIVTx/WzhRG7VQEA7V8Cy2sm4
+         5qM+LWJF6GWilkhBp7bgvKGX5OZlaGqC5U+kHKT1lNZcaekg3a6CdSHlkHn4mT313sNR
+         zkLA==
+X-Gm-Message-State: AOJu0YwNip8rxgHsbWS+PrtR2Os+va1PWlAyEFvISc5YRxGfO0Qr2yv+
+	gjjpdFoiru+yBlf7MREEVv4dYZVmV/DAD176LbCwNsWVwuIXSKQ6I1jDEBuezXqMZn0kA5Y7FA2
+	HuvrXtA==
+X-Received: from plpn4.prod.google.com ([2002:a17:902:9684:b0:2cc:8aff:d1e5])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:903:248c:b0:2ca:11af:5ee9
+ with SMTP id d9443c01a7336-2ccbf0515c7mr46279875ad.25.1783459536408; Tue, 07
+ Jul 2026 14:25:36 -0700 (PDT)
+Date: Tue, 7 Jul 2026 14:25:35 -0700
+In-Reply-To: <20260625212001.3B6561F000E9@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1a04:b0:6a1:7e36:e887 with SMTP id
- 006d021491bc7-6a3553a1e80mr4596207eaf.29.1783453462028; Tue, 07 Jul 2026
- 12:44:22 -0700 (PDT)
-Date: Tue, 07 Jul 2026 12:44:22 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a4d5716.a1ad617e.25832.0009.GAE@google.com>
-Subject: [moderation/CI] Re: mm: store zswap entries in swap table (Pointer entry)
-From: syzbot ci <syzbot+ci3c668b9bdaa73218@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+References: <86078441-92eb-4461-b823-7d3539ac5859@mail.kernel.org> <20260625212001.3B6561F000E9@smtp.kernel.org>
+Message-ID: <ak1uzySYz-i1EImO@google.com>
+Subject: Re: [PATCH v2] KVM: x86: Exempt in-kernel PIC from "disappearing"
+ interrupt warning
+From: Sean Christopherson <seanjc@google.com>
+To: sashiko-reviews@lists.linux.dev
+Cc: syzbot <syzbot@kernel.org>, kvm@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
 
-syzbot ci has tested the following series
+On Thu, Jun 25, 2026, sashiko-bot@kernel.org wrote:
+> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> > --- a/arch/x86/kvm/x86.c
+> > +++ b/arch/x86/kvm/x86.c
+> [ ... ]
+> > @@ -10857,7 +10857,9 @@ static int kvm_check_and_inject_events(struct kvm_vcpu *vcpu,
+> >  		if (r) {
+> >  			int irq = kvm_cpu_get_interrupt(vcpu);
+> >  
+> > -			if (!WARN_ON_ONCE(irq == -1)) {
+> > +			WARN_ON_ONCE(irq == -1 && !pic_in_kernel(vcpu->kvm));
+> 
+> [Severity: Medium]
+> Does this inadvertently suppress the warning for APIC bugs in the default
+> full-irqchip mode?
+> 
+> Since pic_in_kernel() evaluates to true when the in-kernel PIC is present,
+> checking !pic_in_kernel() disables the warning entirely for all interrupt
+> sources in that configuration. This appears to contradict the commit message
+> intent of preserving the warning for other sources like the APIC.
+> 
+> [Severity: High]
+> This is a pre-existing issue, but can a malicious guest still trigger this
+> warning when KVM is configured with a split irqchip and Xen emulation is
+> enabled?
 
-[v1] mm: store zswap entries in swap table (Pointer entry)
-https://lore.kernel.org/all/20260707073215.72183-1-baoquan.he@linux.dev
-* [RFC PATCH 1/7] mm/swap_table: add Pointer type support for zswap entry s=
-torage
-* [RFC PATCH 2/7] mm/zswap: add swp_tb_val to zswap_entry and Pointer acces=
-sor helpers
-* [RFC PATCH 3/7] mm/swap_state: do zswap conversion in __swap_cache_do_del=
-_folio
-* [RFC PATCH 4/7] mm/zswap, mm/swap_state: handle Pointer entries in add_fo=
-lio path
-* [RFC PATCH 5/7] mm/swapfile: handle Pointer entries in count/dup/put path=
-s
-* [RFC PATCH 6/7] mm/zswap, mm/swap_state: migrate zswap to use swap_table =
-for entry indexing
-* [RFC PATCH 7/7] mm/zswap, mm/swap_state: replace xarray indexing with swa=
-p table lookups
+Argh, yes.  
 
-and found the following issue:
-WARNING in __swap_cache_do_del_folio
+> If a guest concurrently toggles its evtchn_upcall_pending flag in memory
+> while the host executes the event injection loop, it seems this path is
+> directly reachable. 
 
-Full report is available here:
-https://ci.syzbot.org/series/1a9cfadb-ed85-48c1-b1b3-a3c12ea99471
+Even more coarsely, userspace could disable Xen event stuff entirely via
+KVM_XEN_HVM_CONFIG.  The easiest fix would be to condition the WARN on
+!IS_ENABLED(CONFIG_KVM_XEN).  We could track if the VM has ever used Xen
+emulation, but I don't think that's worth doing given that many deployments can
+and should disable Xen emulation.
 
-***
+The other annoying issue is that vmx_check_nested_events() has the same flaw.
+And I definitely don't want to toss that WARN either, because it recently found
+a real bug that actually matters.
 
-WARNING in __swap_cache_do_del_folio
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
-.git
-base:      01bc0932614c2d3c35e732f54d249b5897d94307
-arch:      amd64
-compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp=
-1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/65f10583-d539-4b33-8ba9-494d42eb959=
-3/config
-syz repro: https://ci.syzbot.org/findings/3673912c-5490-4f26-ba24-276021c43=
-d9b/syz_repro
-
-------------[ cut here ]------------
-!swp_tb_is_folio(old_tb) || swp_tb_to_folio(old_tb) !=3D folio
-WARNING: mm/swap_state.c:327 at __swap_cache_do_del_folio+0x6ef/0xdf0 mm/sw=
-ap_state.c:326, CPU#1: syz.2.63/6057
-Modules linked in:
-CPU: 1 UID: 0 PID: 6057 Comm: syz.2.63 Not tainted syzkaller #0 PREEMPT(ful=
-l)=20
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
-.2-1 04/01/2014
-RIP: 0010:__swap_cache_do_del_folio+0x6ef/0xdf0 mm/swap_state.c:326
-Code: ff c9 48 09 c1 4c 21 f9 48 39 4c 24 08 0f 85 8c 02 00 00 e8 73 9a 9b =
-ff 49 bf 00 00 00 00 00 fc ff df eb 3d e8 62 9a 9b ff 90 <0f> 0b 90 41 89 e=
-d 41 83 e5 01 31 ff 4c 89 ee e8 2d 9f 9b ff 31 ff
-RSP: 0018:ffffc90003ea6690 EFLAGS: 00010093
-RAX: ffffffff822acdb9 RBX: 000000000000001f RCX: ffff88816d7d9e00
-RDX: 0000000000000000 RSI: 0000000000000002 RDI: ffffea0006be5f08
-RBP: 00000000006be5f2 R08: ffff88801c7d20ff R09: 1ffff110038fa41f
-R10: dffffc0000000000 R11: ffffed10038fa420 R12: 0000000000000000
-R13: 0000000006be5f00 R14: 0000000000000002 R15: dffffc0000000000
-FS:  00007fef4622c6c0(0000) GS:ffff8882a921d000(0000) knlGS:000000000000000=
-0
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000200000000280 CR3: 0000000176c44000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- __swap_cache_del_folio+0xd5/0x170 mm/swap_state.c:377
- __remove_mapping+0xabb/0xe20 mm/vmscan.c:736
- shrink_folio_list+0x2b42/0x5350 mm/vmscan.c:1489
- reclaim_folio_list+0x100/0x430 mm/vmscan.c:2163
- reclaim_pages+0x2f1/0x530 mm/vmscan.c:2196
- madvise_cold_or_pageout_pte_range+0x1c1e/0x22e0 mm/madvise.c:562
- walk_pmd_range mm/pagewalk.c:148 [inline]
- walk_pud_range mm/pagewalk.c:239 [inline]
- walk_p4d_range mm/pagewalk.c:280 [inline]
- walk_pgd_range+0x100f/0x1e40 mm/pagewalk.c:321
- __walk_page_range+0x16d/0x720 mm/pagewalk.c:429
- walk_page_range_vma_unsafe+0x309/0x410 mm/pagewalk.c:733
- madvise_pageout_page_range mm/madvise.c:621 [inline]
- madvise_pageout mm/madvise.c:646 [inline]
- madvise_vma_behavior+0x2922/0x4340 mm/madvise.c:1357
- madvise_walk_vmas+0x576/0xb00 mm/madvise.c:1712
- madvise_do_behavior+0x385/0x540 mm/madvise.c:1907
- do_madvise+0x327/0x3a0 mm/madvise.c:2005
- __do_sys_madvise mm/madvise.c:2014 [inline]
- __se_sys_madvise mm/madvise.c:2012 [inline]
- __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fef4539ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
-f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fef4622c028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
-RAX: ffffffffffffffda RBX: 00007fef45616180 RCX: 00007fef4539ce59
-RDX: 0000000000000015 RSI: 0000000000600000 RDI: 0000200000000000
-RBP: 00007fef45432e6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fef45616218 R14: 00007fef45616180 R15: 00007ffcd47ce068
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[akpm@linux-foundation.org baohua@kernel.org baoquan.he@linux.dev chengming=
-.zhou@linux.dev chrisl@kernel.org hannes@cmpxchg.org kasong@tencent.com lin=
-ux-kernel@vger.kernel.org linux-mm@kvack.org nphamcs@gmail.com shikemeng@hu=
-aweicloud.com yosry@kernel.org youngjun.park@lge.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+I'll send a v2 in the near-ish future to weed out CONFIG_KVM_XEN, and fix the
+nVMX case as well, hopefully without having to duplicate too much code.
