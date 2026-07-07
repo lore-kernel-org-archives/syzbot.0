@@ -1,140 +1,142 @@
-Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com [209.85.160.69])
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 465BD21ABBD
-	for <syzbot@lists.linux.dev>; Tue,  7 Jul 2026 21:32:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4830D38BF7A
+	for <syzbot@lists.linux.dev>; Tue,  7 Jul 2026 21:33:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783459950; cv=none; b=WkGTNi6sNbi83uWUCYZRBIHq1QXPhIgVg3TI6lQ09wwzYc9JNqJqBCBpsIz/vSS2TfqvoP7OSKubFCKbbTfq3WdF2IHNl0D+fY/ERP1xuVLLc9j9QqF0rowduzpptW7og90TS3PKtvbn6ybtTCUzoHyXidqpuC8sJ3J+zTPYt5E=
+	t=1783459986; cv=none; b=CCqVwEMHLiz6yIuOEwKtCe+9uZCTaZtTHd94HbA2mv17Held4E8GwsuxBhGcJuREXLf/HNznYHnm8ZulBffyR+1WJQDbrt1s+Z3XjiJfxQJQ7YTu4FXEuFan91q+kHRmv0XOgLKizRvmsRxSnGLnhoAMG/eH8nq7wBu0laKmmvM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783459950; c=relaxed/simple;
-	bh=BXyms4S7XxEsEm5lUY/cu8JSQgUnFN4Y9hackk40wlk=;
+	s=arc-20240116; t=1783459986; c=relaxed/simple;
+	bh=jEqvd4EuPiFtruMx0AmvgitV0rlHUlhXdIoQyGq9uo0=;
 	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=Qn5VQLhBVK71eJBwQFAUkmr0LCpN755EvqGCaArg5PtS9V0NbYOkokXjiP+2Dqnlw54W6Mec895HDws5q9+GRDf2xyINcIo91dGS6VZT8SN43q7zyYA1FMHsI76vygU+ejuM8CNwS2yjxb89BW/9xXol1RJYT+o0mkNfT9gSSbk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.69
+	 Content-Type; b=Kl7sT5HT+gtXAh3uDGjBZ6vxH8/hYQs8oZNwWyxHgkpFEuE6hK/w+MkL/2v0Y2abGf1QvakmOmCVKfDQHkHW2O5SLEJmp0RegblrLXxsp6p4g5CVqY6GGKw/+geQP8zDzbvDXQDWmV6MaIXcdAtqoEYJ6oR8wljbkdjzuqTt158=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-44cb8914190so1132156fac.0
-        for <syzbot@lists.linux.dev>; Tue, 07 Jul 2026 14:32:29 -0700 (PDT)
+Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-7e9fa2cd5c9so77460a34.2
+        for <syzbot@lists.linux.dev>; Tue, 07 Jul 2026 14:33:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783459948; x=1784064748;
-        h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CcAmkyIYzqbWxUmxnwuS6djFxqJOxca0P9ZAUz5a2Yk=;
-        b=sNrwQoxftaSK8hilTufMNhIth1w1paOJPRjpJz0CWRvpLCkTqSUu+iNq+sD7sB1gsb
-         GGC5m0efcg5s7wS5rnyBm+tY2yh+y5PXdelkN/hndvzDd0ucrsHX6te1ZaukWKXygWYc
-         YcUGuVdI0BjXR/PTW85Pym23m+mMGfb9x5qaqEyyiXaORNQayvtV+W+FP8cTcG2Aa88I
-         B86F0Adipp/OO5IYG6DfEqvbIufvSFxj9QPNhtPmAQsVVA6PiM6prX33jj5VufR/rXTk
-         RWpYMb7aEr8gC4fmTvZuZ2K27ROOZxi62GRJdsAS6QIDcv2MBgGK5114eXamNJngkLGH
-         mg9g==
-X-Gm-Message-State: AOJu0YzdNqf0HF7IJI1PKP0m62y5cW4qQJxNHiRAOXStjMiEiZ1BR2RZ
-	6LXpZvD16DTbWDIHHJBMvhykFP25vrmPnXw9GTI5qoPwNMcFJ17fCsvmYUoESm9X+7Y1JWJVVnP
-	KOjzU5QhlSgVa2eux4YlWb39mVZ5CCPWZ3yaoGgM57jQ/fIsk3Lta54v7A3Y=
+        d=1e100.net; s=20251104; t=1783459979; x=1784064779;
+        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=ZbjaYNNT/DAa2ZgxKUTDH5wk4uWoo8h75GUG/OWPB4w=;
+        b=pmx9ECglIdvX4EN+rzn3q14kBuh4NZhGx7ehg9I4e/doM70SWNRCUVXQcvCdJcBJuA
+         3tRMQOC+whjCE5G6GxgjA7omOUpRBdPVDrmqm8eUCjG171NtFCFrt/v6ot4ui85s/WXB
+         nYlu3auaNf6L0Y/J42lHtovGTBgSEmEUZUx+yGeLzCnlOqVgtUNQTZnaxEJC8BML70hC
+         fYBZoJonrWSZruJE+3siTjxGSBcokkDFNEkVcbDwGsJP5r8DAPTLvufhHOXQE4b3nI74
+         +G7apXJ6+44xBM3GP87jm553ZfFYsc+dHUwByat9Jn+07LLAFvG0hz43ZhTMT9Gs0fRk
+         wePQ==
+X-Gm-Message-State: AOJu0YxyuN8pg+aqbMFxeF2KHufAtTuUvAdQYqop50VZjAR1VHvna+sJ
+	fwLPTuIYCWDzFF/nZCsdwey4pTJKROBYbyeKS1V964ng6NRoik7Cdq+cg3aDS0ULjimhbuctPtM
+	dCUQFKgPKefJd7aARI5mP4l92rFP1vCD3gsCeT0zIn56EDu/OHsMfuuB+RHg=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:f92:b0:497:9dec:13f4 with SMTP id
- 5614622812f47-4a078131fd0mr2831666b6e.4.1783459948284; Tue, 07 Jul 2026
- 14:32:28 -0700 (PDT)
-Date: Tue, 07 Jul 2026 14:32:28 -0700
-In-Reply-To: <20260707073215.72183-1-baoquan.he@linux.dev>
+X-Received: by 2002:a05:6820:1995:b0:6a1:5ca0:d52e with SMTP id
+ 006d021491bc7-6a355246c2emr4441088eaf.7.1783459978731; Tue, 07 Jul 2026
+ 14:32:58 -0700 (PDT)
+Date: Tue, 07 Jul 2026 14:32:58 -0700
+In-Reply-To: <20260707063308.29176-1-tao.wangtao@honor.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a4d706c.c76b52dc.34afef.0011.GAE@google.com>
-Subject: [syzbot ci] Re: mm: store zswap entries in swap table (Pointer entry)
-From: syzbot ci <syzbot+ci8a06015641ba192f@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, baohua@kernel.org, baoquan.he@linux.dev, 
-	chengming.zhou@linux.dev, chrisl@kernel.org, hannes@cmpxchg.org, 
-	kasong@tencent.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
-	nphamcs@gmail.com, shikemeng@huaweicloud.com, yosry@kernel.org, 
-	youngjun.park@lge.com
+Message-ID: <6a4d708a.a1ad617e.25832.000c.GAE@google.com>
+Subject: [syzbot ci] Re: mm: rework anon_vma and remove anon_vma_chain
+From: syzbot ci <syzbot+cie73eac57e65eaf28@syzkaller.appspotmail.com>
+To: akpm@linux-foundation.org, apopple@nvidia.com, baohua@kernel.org, 
+	baolin.wang@linux.alibaba.com, baoquan.he@linux.dev, bp@alien8.de, 
+	byungchul@sk.com, catalin.marinas@arm.com, chengming.zhou@linux.dev, 
+	damon@lists.linux.dev, dave.hansen@linux.intel.com, david@kernel.org, 
+	dev.jain@arm.com, dvander@google.com, gourry@gourry.net, harry@kernel.org, 
+	hpa@zytor.com, jack@suse.cz, jannh@google.com, jgg@ziepe.ca, 
+	jhubbard@nvidia.com, joshua.hahnjy@gmail.com, jparsana@google.com, 
+	kas@kernel.org, kees@kernel.org, lance.yang@linux.dev, liam@infradead.org, 
+	linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, ljs@kernel.org, 
+	luizcap@redhat.com, matthew.brost@intel.com, mhocko@suse.com, 
+	mingo@redhat.com, muchun.song@linux.dev, nao.horiguchi@gmail.com, 
+	npache@redhat.com, peterx@redhat.com, pfalcato@suse.de, rakie.kim@sk.com, 
+	riel@surriel.com, rppt@kernel.org, ryan.roberts@arm.com, ryncsn@gmail.com, 
+	shakeel.butt@linux.dev, sj@kernel.org, surenb@google.com, 
+	tao.wangtao@honor.com
 Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] mm: store zswap entries in swap table (Pointer entry)
-https://lore.kernel.org/all/20260707073215.72183-1-baoquan.he@linux.dev
-* [RFC PATCH 1/7] mm/swap_table: add Pointer type support for zswap entry storage
-* [RFC PATCH 2/7] mm/zswap: add swp_tb_val to zswap_entry and Pointer accessor helpers
-* [RFC PATCH 3/7] mm/swap_state: do zswap conversion in __swap_cache_do_del_folio
-* [RFC PATCH 4/7] mm/zswap, mm/swap_state: handle Pointer entries in add_folio path
-* [RFC PATCH 5/7] mm/swapfile: handle Pointer entries in count/dup/put paths
-* [RFC PATCH 6/7] mm/zswap, mm/swap_state: migrate zswap to use swap_table for entry indexing
-* [RFC PATCH 7/7] mm/zswap, mm/swap_state: replace xarray indexing with swap table lookups
+[v2] mm: rework anon_vma and remove anon_vma_chain
+https://lore.kernel.org/all/20260707063308.29176-1-tao.wangtao@honor.com
+* [RFC PATCH v2 01/13] mm: add CONFIG_ANON_VMA_FRACTAL
+* [RFC PATCH v2 02/13] mm: implement helpers for ANON_VMA_FRACTAL
+* [RFC PATCH v2 03/13] mm: implement __anon_node_prepare for ANON_VMA_FRACTAL
+* [RFC PATCH v2 04/13] mm: implement anon_node_clone for ANON_VMA_FRACTAL
+* [RFC PATCH v2 05/13] mm: implement anon_node_fork_with_prev for ANON_VMA_FRACTAL
+* [RFC PATCH v2 06/13] mm: implement unlink_anon_nodes for ANON_VMA_FRACTAL
+* [RFC PATCH v2 07/13] mm: handle rmap_base changes for ANON_VMA_FRACTAL
+* [RFC PATCH v2 08/13] mm: implement anonymous folio rmap for ANON_VMA_FRACTAL
+* [RFC PATCH v2 09/13] mm: prepare anon_node replacement for ANON_VMA_FRACTAL
+* [RFC PATCH v2 10/13] mm: replace anon_vma with anon_node for ANON_VMA_FRACTAL
+* [RFC PATCH v2 11/13] mm: optimize rmap for ANON_VMA_FRACTAL with PVL
+* [RFC PATCH v2 12/13] mm: shared semaphores for ANON_VMA_FRACTAL
+* [RFC PATCH v2 13/13] mm: Enable CONFIG_ANON_VMA_FRACTAL by default
 
 and found the following issue:
-WARNING in __swap_cache_do_del_folio
+WARNING: bad unlock balance in exc_page_fault
 
 Full report is available here:
-https://ci.syzbot.org/series/1a9cfadb-ed85-48c1-b1b3-a3c12ea99471
+https://ci.syzbot.org/series/39466cf1-707b-420e-8f1e-11735bea6c66
 
 ***
 
-WARNING in __swap_cache_do_del_folio
+WARNING: bad unlock balance in exc_page_fault
 
 tree:      mm-new
 URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      01bc0932614c2d3c35e732f54d249b5897d94307
+base:      8ff49efd1cf18086320f3b43d1bd483c0b9e7e58
 arch:      amd64
 compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/65f10583-d539-4b33-8ba9-494d42eb9593/config
-syz repro: https://ci.syzbot.org/findings/3673912c-5490-4f26-ba24-276021c43d9b/syz_repro
+config:    https://ci.syzbot.org/builds/c3a229e4-b949-4889-b309-dbdd1fadd95f/config
+syz repro: https://ci.syzbot.org/findings/29b52ad4-b463-41da-877c-4138356e3960/syz_repro
 
-------------[ cut here ]------------
-!swp_tb_is_folio(old_tb) || swp_tb_to_folio(old_tb) != folio
-WARNING: mm/swap_state.c:327 at __swap_cache_do_del_folio+0x6ef/0xdf0 mm/swap_state.c:326, CPU#1: syz.2.63/6057
-Modules linked in:
-CPU: 1 UID: 0 PID: 6057 Comm: syz.2.63 Not tainted syzkaller #0 PREEMPT(full) 
+=====================================
+WARNING: bad unlock balance detected!
+syzkaller #0 Not tainted
+-------------------------------------
+sshd/5593 is trying to release lock (vm_lock) at:
+[<ffffffff8bb5032a>] handle_page_fault arch/x86/mm/fault.c:1483 [inline]
+[<ffffffff8bb5032a>] exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1536
+but there are no more locks to release!
+
+other info that might help us debug this:
+no locks held by sshd/5593.
+
+stack backtrace:
+CPU: 1 UID: 0 PID: 5593 Comm: sshd Not tainted syzkaller #0 PREEMPT(full) 
 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__swap_cache_do_del_folio+0x6ef/0xdf0 mm/swap_state.c:326
-Code: ff c9 48 09 c1 4c 21 f9 48 39 4c 24 08 0f 85 8c 02 00 00 e8 73 9a 9b ff 49 bf 00 00 00 00 00 fc ff df eb 3d e8 62 9a 9b ff 90 <0f> 0b 90 41 89 ed 41 83 e5 01 31 ff 4c 89 ee e8 2d 9f 9b ff 31 ff
-RSP: 0018:ffffc90003ea6690 EFLAGS: 00010093
-RAX: ffffffff822acdb9 RBX: 000000000000001f RCX: ffff88816d7d9e00
-RDX: 0000000000000000 RSI: 0000000000000002 RDI: ffffea0006be5f08
-RBP: 00000000006be5f2 R08: ffff88801c7d20ff R09: 1ffff110038fa41f
-R10: dffffc0000000000 R11: ffffed10038fa420 R12: 0000000000000000
-R13: 0000000006be5f00 R14: 0000000000000002 R15: dffffc0000000000
-FS:  00007fef4622c6c0(0000) GS:ffff8882a921d000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000200000000280 CR3: 0000000176c44000 CR4: 00000000000006f0
 Call Trace:
  <TASK>
- __swap_cache_del_folio+0xd5/0x170 mm/swap_state.c:377
- __remove_mapping+0xabb/0xe20 mm/vmscan.c:736
- shrink_folio_list+0x2b42/0x5350 mm/vmscan.c:1489
- reclaim_folio_list+0x100/0x430 mm/vmscan.c:2163
- reclaim_pages+0x2f1/0x530 mm/vmscan.c:2196
- madvise_cold_or_pageout_pte_range+0x1c1e/0x22e0 mm/madvise.c:562
- walk_pmd_range mm/pagewalk.c:148 [inline]
- walk_pud_range mm/pagewalk.c:239 [inline]
- walk_p4d_range mm/pagewalk.c:280 [inline]
- walk_pgd_range+0x100f/0x1e40 mm/pagewalk.c:321
- __walk_page_range+0x16d/0x720 mm/pagewalk.c:429
- walk_page_range_vma_unsafe+0x309/0x410 mm/pagewalk.c:733
- madvise_pageout_page_range mm/madvise.c:621 [inline]
- madvise_pageout mm/madvise.c:646 [inline]
- madvise_vma_behavior+0x2922/0x4340 mm/madvise.c:1357
- madvise_walk_vmas+0x576/0xb00 mm/madvise.c:1712
- madvise_do_behavior+0x385/0x540 mm/madvise.c:1907
- do_madvise+0x327/0x3a0 mm/madvise.c:2005
- __do_sys_madvise mm/madvise.c:2014 [inline]
- __se_sys_madvise mm/madvise.c:2012 [inline]
- __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fef4539ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fef4622c028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
-RAX: ffffffffffffffda RBX: 00007fef45616180 RCX: 00007fef4539ce59
-RDX: 0000000000000015 RSI: 0000000000600000 RDI: 0000200000000000
-RBP: 00007fef45432e6f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fef45616218 R14: 00007fef45616180 R15: 00007ffcd47ce068
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_unlock_imbalance_bug+0xdc/0xf0 kernel/locking/lockdep.c:5298
+ __lock_release kernel/locking/lockdep.c:5527 [inline]
+ lock_release+0x1f1/0x3c0 kernel/locking/lockdep.c:5889
+ vma_refcount_put include/linux/mmap_lock.h:216 [inline]
+ vma_end_read include/linux/mmap_lock.h:264 [inline]
+ do_user_addr_fault+0xab0/0x1340 arch/x86/mm/fault.c:1345
+ handle_page_fault arch/x86/mm/fault.c:1483 [inline]
+ exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1536
+ asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:595
+RIP: 0033:0x5583206de68b
+Code: 04 25 28 00 00 00 48 89 44 24 08 31 c0 48 89 e2 e8 8c 5b ff ff 85 c0 78 13 31 c0 4d 85 e4 74 0c 48 8b 3c 24 48 89 de 4c 89 e1 <f3> a4 48 8b 54 24 08 64 48 2b 14 25 28 00 00 00 74 05 e8 5e 17 fc
+RSP: 002b:00007fff02a37e60 EFLAGS: 00010206
+RAX: 0000000000000000 RBX: 000055835a20d6fe RCX: 0000000000008000
+RDX: 0000000000000000 RSI: 000055835a20d6fe RDI: 00007fac5106c010
+RBP: 000055832073df00 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000008000
+R13: 000000000000005e R14: 00000000000000b3 R15: 00007fff02a37f88
  </TASK>
 
 
