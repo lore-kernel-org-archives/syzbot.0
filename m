@@ -1,127 +1,161 @@
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 420AA3859FA
-	for <syzbot@lists.linux.dev>; Mon,  6 Jul 2026 15:21:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A26E83101CE
+	for <syzbot@lists.linux.dev>; Tue,  7 Jul 2026 06:08:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783351278; cv=none; b=F4+7qXX5+DwsJCoHQiOm6ecUbel/rlSqThALxJCVLir3KMKZMn7Qnfd3wazTOnKyT+2qB0Bc0Nshxy1b4hZqf2m0CgqOTwlZ0zQ/VawurnmfJ47my3uLl/ejDXW3MRW0uZGCuG3JnAJtZ6Erze/1oYrSy3+Up9PZjet6NE10e4U=
+	t=1783404535; cv=none; b=A9Ky4SJA6bNXHeJpfE8zdOKxQ5VH8Kbf0j75MTI/wQcv/KUZDjcPPmHzh1ilez9f5V0NAq2pOQp8JmiQuW6+BVWTsUgxLfLJTHGCGp1NaFNZto5RVPMLo3QawBkgsUbAOxpRDjfRzZbgPta7yG35JPAGU63Z+8TMFuJ4tas7BmU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783351278; c=relaxed/simple;
-	bh=HR55Q/6yr5mPGu9pVNCuycHEfgXOsLJKHuzG7udNXYE=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=PHxUJCkWgBKgATRf11Q7qku94VbM8cJU4aADNXlh9Bxa20eWotI03E8Qc1F5L0lZJNID082NXJ6HMqhNlOZ7+Y/Yhw8kQzvuzqOTbO0/t2URb7Ai1MhA7dH+ZaCH9f+IzwRbx9BbMOhUJNhkNjuUI4i4t83X4rSzKRHzQ4+S3AA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
+	s=arc-20240116; t=1783404535; c=relaxed/simple;
+	bh=qaEIY9DsZ/VPSCJuB4XggjZXcwMjyTGR93Kg2Q+pIkc=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=VG/Zl4SKaY5pm/HVUtBbSQM8mqLFzmusDqe8e+XNixwCAUUJsKdwSGK/oiDQIZwJkoq4VkMlfN0+Xv2M5V0UxlzgKv2fi7LgZlvCuHfBH0K0yRRFuTUaeM70lFAWdCVJXy5Wq/GMhm3J+rAKavVQdp0ZWLFKBKvAAO9ctD7XI4A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-6a13e51ee7fso4979270eaf.2
-        for <syzbot@lists.linux.dev>; Mon, 06 Jul 2026 08:21:17 -0700 (PDT)
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-49f3a97f1caso999021b6e.0
+        for <syzbot@lists.linux.dev>; Mon, 06 Jul 2026 23:08:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783351276; x=1783956076;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=5dwe3FtSSXb9oYBtB9Tjm7DKvidSGWsMC0MjKKokC7E=;
-        b=LIPjZg5vJDGeiinM4lj1wQsG2+pq8XGprZgHG9ASU14cirgTO+k19gATfbqtwQ44MT
-         Yt/3cUMOBt4kLRyYQ9+lGAyQTNj7KkixMiGvac2fa5XEAhh7MXmeQH2csaTOE1fPZ5d4
-         u/+DXmkAcBY38yE2U0Cotpv6Lc0OcqjkxO/VpG2UtyfhSA8/ZxAX40hI7LEtuFZ1Sact
-         Yg9dojzpcZb2JZkITZuarQifkct9eGlkZFe+E9j3FfjU7f3pbGXFog+FZscrwVwPkwG5
-         LOPEQiUBtuTXMAqxw6izsjaczpLbUNwldgHUsHeIqYQMPBHSZeXwgxPJ/rUZXMqH/LoB
-         hg9Q==
-X-Gm-Message-State: AOJu0Yzz8rJbloI+siBVCyyXmlDJa5PhglKA21vpCj+1Ba8YmBhXylIy
-	iLFdX8EZ1RTaYQc3QW3iIaadkkLWeuqZc9CCEjIL/HWUYQekSxQE+gOFUdtoBQfczloXxuWUu6w
-	s6XYDtyEeoT+eegQnE5sz/tUEVInrmpAY67ei5aLZaeiresAa/WeM1teUPNg=
+        d=1e100.net; s=20251104; t=1783404532; x=1784009332;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=6cvEANn4a5YZZyE0kT6evt7ZPxbDec0nGWZExmDkOac=;
+        b=DFovUN6jAenqC3EkqKR3+SbErt/d6WqA71oCuhkWIIXFxB6mY/FeGs6KkrYnwZyhEq
+         WKFIRxiAP/UEUzHLe3yvPD3st44njPgpHMs0Nv4Q1HccF4acsSHBupMqwT/qHWLBUn/h
+         xjAXdsCDiuepnhpAJtZOrR5GuQ9GA/R2HBZbEFYz8TCET730N97J3xvUUMzMsR6fh1uh
+         D8+TCTDeEKYkdD77QOS5jPCTASbjlwlgE5iljO26Mf8wjnJcaaUXXAsakBvvWW2AkCtt
+         F+SqGh3bjRL81uSqaIAqK4nDBcTIGQC2ippJdVCqfF+RVVAPWAIs3SR71907RCPh1fPb
+         8h0w==
+X-Gm-Message-State: AOJu0Yyt0ePCdzJBKzCK1odovSx3DAuQjosKTq7+5TKqaG+y0AQ0adc3
+	mO4xmIBuWqVrlUfR9NKlIuITwo4wjNVJwGEkCj1s9a9JzrX6kZw4fK1JM0E+yluFzcBFWj5WcVv
+	fOugM4o+xzCxPMfMD8egDJnNt53Bu67JoGaOJ30sob2EpQO50woRyG+oN0to=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a4a:e84a:0:b0:6a1:42b7:1dfe with SMTP id
- 006d021491bc7-6a35536a32bmr615101eaf.16.1783351276346; Mon, 06 Jul 2026
- 08:21:16 -0700 (PDT)
-Date: Mon, 06 Jul 2026 08:21:16 -0700
-In-Reply-To: <20260706092021.3625908-2-twiederh@redhat.com>
+X-Received: by 2002:a05:6808:199c:b0:479:f7e7:4a81 with SMTP id
+ 5614622812f47-49fd87e86camr3342951b6e.0.1783404532635; Mon, 06 Jul 2026
+ 23:08:52 -0700 (PDT)
+Date: Mon, 06 Jul 2026 23:08:52 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a4bc7ec.57639fcc.86d58.0001.GAE@google.com>
-Subject: [syzbot ci] Re: KVM: x86: Document and enforce APIC base memory hole
-From: syzbot ci <syzbot+cie24f8b96f7149963@syzkaller.appspotmail.com>
-To: bp@alien8.de, corbet@lwn.net, dave.hansen@linux.intel.com, hpa@zytor.com, 
-	kvm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	mingo@redhat.com, pbonzini@redhat.com, seanjc@google.com, 
-	skhan@linuxfoundation.org, tglx@kernel.org, twiederh@redhat.com, 
-	x86@kernel.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <6a4c97f4.57639fcc.86d58.0009.GAE@google.com>
+Subject: [moderation/CI] Re: KVM: x86: Destroy the PIC and IOAPIC before
+ destroying vCPUs
+From: syzbot ci <syzbot+ci5bad6d1ccf4c5208@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] KVM: x86: Document and enforce APIC base memory hole
-https://lore.kernel.org/all/20260706092021.3625908-2-twiederh@redhat.com
-* [PATCH 1/4] KVM: x86: Document that KVM_CREATE_IRQCHIP must precede vcpu creation
-* [PATCH 2/4] KVM: x86: Document APIC base address constraint for in-kernel irqchip
-* [PATCH 3/4] KVM: x86: Reject KVM_CREATE_IRQCHIP if APIC base is already mapped
-* [PATCH 4/4] KVM: x86: Reject user memory regions covering the APIC base
+[v2] KVM: x86: Destroy the PIC and IOAPIC before destroying vCPUs
+https://lore.kernel.org/all/20260706180025.2735341-3-bestswngs@gmail.com
+* [PATCH v2] KVM: x86: Destroy the PIC and IOAPIC before destroying vCPUs
 
 and found the following issue:
-WARNING: suspicious RCU usage in gfn_to_memslot
+general protection fault in kvm_cpu_has_extint
 
 Full report is available here:
-https://ci.syzbot.org/series/b02ae7eb-bae2-492f-88f2-fa1b511c93cf
+https://ci.syzbot.org/series/43a61d29-79d6-47db-ac80-4e948bd10c1a
 
 ***
 
-WARNING: suspicious RCU usage in gfn_to_memslot
+general protection fault in kvm_cpu_has_extint
 
 tree:      kvm-next
 URL:       https://kernel.googlesource.com/pub/scm/virt/kvm/kvm/
-base:      8cd9520d35a6c38db6567e97dd93b1f11f185dc6
+base:      fb402386af4cdce108ff991a796386de55439735
 arch:      amd64
 compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/2e25da54-5ae8-4f08-889d-30a90ffbe688/config
-syz repro: https://ci.syzbot.org/findings/707c5fee-46af-42c3-9700-7fc53ef58eb2/syz_repro
+config:    https://ci.syzbot.org/builds/7f3721c2-14ce-4beb-aa97-08232f57e71a/config
+syz repro: https://ci.syzbot.org/findings/0522c527-432c-4524-9835-64ab75b899af/syz_repro
 
-=============================
-WARNING: suspicious RCU usage
-syzkaller #0 Not tainted
------------------------------
-./include/linux/kvm_host.h:1084 suspicious rcu_dereference_check() usage!
-
-other info that might help us debug this:
-
-
-rcu_scheduler_active = 2, debug_locks = 1
-1 lock held by syz.0.17/5871:
- #0: ffff888113334b40 (&kvm->lock){+.+.}-{4:4}, at: kvm_arch_vm_ioctl+0x8d1/0x1990 arch/x86/kvm/x86.c:7320
-
-stack backtrace:
-CPU: 0 UID: 0 PID: 5871 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Oops: general protection fault, probably for non-canonical address 0xdffffc0000000012: 0000 [#1] SMP KASAN NOPTI
+KASAN: null-ptr-deref in range [0x0000000000000090-0x0000000000000097]
+CPU: 1 UID: 0 PID: 5786 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:kvm_cpu_has_extint+0xdb/0x340 arch/x86/kvm/irq.c:83
+Code: c6 e8 0d 00 00 4c 89 f0 48 c1 e8 03 42 80 3c 38 00 74 08 4c 89 f7 e8 44 54 e0 00 bb 90 00 00 00 49 03 1e 48 89 d8 48 c1 e8 03 <42> 0f b6 04 38 84 c0 0f 85 aa 00 00 00 8b 2b eb 6d e8 df 08 76 00
+RSP: 0018:ffffc900032f7740 EFLAGS: 00010206
+RAX: 0000000000000012 RBX: 0000000000000090 RCX: ffff88816b748000
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000001
+RBP: 0000000000000001 R08: ffff88816b748000 R09: 0000000000000006
+R10: 0000000000000006 R11: 0000000000000000 R12: 1ffff1102e032000
+R13: dffffc0000000000 R14: ffff88811e33cde8 R15: dffffc0000000000
+FS:  00007f57357e76c0(0000) GS:ffff8882a9714000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fae800f0378 CR3: 0000000109ffc000 CR4: 0000000000352ef0
 Call Trace:
  <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- lockdep_rcu_suspicious+0x13f/0x1d0 kernel/locking/lockdep.c:6876
- __kvm_memslots include/linux/kvm_host.h:1082 [inline]
- kvm_memslots include/linux/kvm_host.h:1089 [inline]
- gfn_to_memslot+0x3df/0x420 virt/kvm/kvm_main.c:2630
- kvm_arch_vm_ioctl+0x1590/0x1990 arch/x86/kvm/x86.c:7340
- kvm_vm_ioctl+0x8f7/0xd30 virt/kvm/kvm_main.c:5381
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ kvm_cpu_has_injectable_intr+0x1c/0x170 arch/x86/kvm/irq.c:98
+ __nested_vmx_vmexit+0x1911/0x2b40 arch/x86/kvm/vmx/nested.c:5181
+ nested_vmx_vmexit arch/x86/kvm/vmx/nested.h:46 [inline]
+ vmx_leave_nested arch/x86/kvm/vmx/nested.c:6854 [inline]
+ nested_vmx_free_vcpu+0x8e/0xd0 arch/x86/kvm/vmx/nested.c:381
+ vmx_vcpu_free+0x109/0x2c0 arch/x86/kvm/vmx/vmx.c:7765
+ kvm_arch_vcpu_destroy+0x154/0x380 arch/x86/kvm/x86.c:12859
+ kvm_vcpu_destroy virt/kvm/kvm_main.c:469 [inline]
+ kvm_destroy_vcpus+0x123/0x380 virt/kvm/kvm_main.c:489
+ kvm_arch_destroy_vm+0xf9/0x2c0 arch/x86/kvm/x86.c:13405
+ kvm_destroy_vm virt/kvm/kvm_main.c:1301 [inline]
+ kvm_put_kvm+0x772/0xb10 virt/kvm/kvm_main.c:1338
+ kvm_vcpu_release+0x54/0x60 virt/kvm/kvm_main.c:4101
+ __fput+0x41f/0xa40 fs/file_table.c:469
+ task_work_run+0x1d9/0x270 kernel/task_work.c:233
+ get_signal+0x1181/0x12c0 kernel/signal.c:2807
+ arch_do_signal_or_restart+0xbb/0x810 arch/x86/kernel/signal.c:337
+ __exit_to_user_mode_loop kernel/entry/common.c:64 [inline]
+ exit_to_user_mode_loop+0xa3/0x5e0 kernel/entry/common.c:98
+ __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
+ syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:325 [inline]
+ do_syscall_64+0x357/0xf80 arch/x86/entry/syscall_64.c:100
  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fd744b9ce59
+RIP: 0033:0x7f573499ce59
 Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fd7459b7028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007fd744e15fa0 RCX: 00007fd744b9ce59
-RDX: 0000000000000000 RSI: 000000000000ae60 RDI: 0000000000000004
-RBP: 00007fd744c32e6f R08: 0000000000000000 R09: 0000000000000000
+RSP: 002b:00007f57357e7028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: fffffffffffffffc RBX: 00007f5734c15fa0 RCX: 00007f573499ce59
+RDX: 0000000000000000 RSI: 000000000000ae80 RDI: 0000000000000006
+RBP: 00007f5734a32e6f R08: 0000000000000000 R09: 0000000000000000
 R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fd744e16038 R14: 00007fd744e15fa0 R15: 00007ffe5f70a5a8
+R13: 00007f5734c16038 R14: 00007f5734c15fa0 R15: 00007fffda4d80f8
  </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:kvm_cpu_has_extint+0xdb/0x340 arch/x86/kvm/irq.c:83
+Code: c6 e8 0d 00 00 4c 89 f0 48 c1 e8 03 42 80 3c 38 00 74 08 4c 89 f7 e8 44 54 e0 00 bb 90 00 00 00 49 03 1e 48 89 d8 48 c1 e8 03 <42> 0f b6 04 38 84 c0 0f 85 aa 00 00 00 8b 2b eb 6d e8 df 08 76 00
+RSP: 0018:ffffc900032f7740 EFLAGS: 00010206
+RAX: 0000000000000012 RBX: 0000000000000090 RCX: ffff88816b748000
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000001
+RBP: 0000000000000001 R08: ffff88816b748000 R09: 0000000000000006
+R10: 0000000000000006 R11: 0000000000000000 R12: 1ffff1102e032000
+R13: dffffc0000000000 R14: ffff88811e33cde8 R15: dffffc0000000000
+FS:  00007f57357e76c0(0000) GS:ffff8882a9714000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000056532c5e2950 CR3: 0000000109ffc000 CR4: 0000000000352ef0
+----------------
+Code disassembly (best guess), 1 bytes skipped:
+   0:	e8 0d 00 00 4c       	call   0x4c000012
+   5:	89 f0                	mov    %esi,%eax
+   7:	48 c1 e8 03          	shr    $0x3,%rax
+   b:	42 80 3c 38 00       	cmpb   $0x0,(%rax,%r15,1)
+  10:	74 08                	je     0x1a
+  12:	4c 89 f7             	mov    %r14,%rdi
+  15:	e8 44 54 e0 00       	call   0xe0545e
+  1a:	bb 90 00 00 00       	mov    $0x90,%ebx
+  1f:	49 03 1e             	add    (%r14),%rbx
+  22:	48 89 d8             	mov    %rbx,%rax
+  25:	48 c1 e8 03          	shr    $0x3,%rax
+* 29:	42 0f b6 04 38       	movzbl (%rax,%r15,1),%eax <-- trapping instruction
+  2e:	84 c0                	test   %al,%al
+  30:	0f 85 aa 00 00 00    	jne    0xe0
+  36:	8b 2b                	mov    (%rbx),%ebp
+  38:	eb 6d                	jmp    0xa7
+  3a:	e8 df 08 76 00       	call   0x76091e
 
 
 ***
@@ -139,3 +173,13 @@ To test a patch for this bug, please reply with `#syz test`
 
 The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[bestswngs@gmail.com jasowang@redhat.com kai.huang@intel.com kvm@vger.kernel.org pbonzini@redhat.com seanjc@google.com shixuanqing.11@bytedance.com stable@vger.kernel.org wangzhong.c0ss4ck@bytedance.com zhanghy@sangfor.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
