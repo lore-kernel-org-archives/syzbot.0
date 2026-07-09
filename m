@@ -1,159 +1,252 @@
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
+Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30E2B3C4575
-	for <syzbot@lists.linux.dev>; Thu,  9 Jul 2026 06:26:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21A8B3C2762
+	for <syzbot@lists.linux.dev>; Thu,  9 Jul 2026 07:09:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783578395; cv=none; b=j2mFvgIpAl3/x9aHDqtzv8e/pv0vfpYzrzqocSgf+K+uZzf9q/l7VmECACa+zQbkSTmEpqsLaTmceJ+dB3IAxNcAOAnBhiaWZ9yDcEGzUCJXgsg682nbyCv5x30+0xBJC7B4oFof3Z3YRTY944uvjJTefeLfoZ2Jpby5eeFUgnQ=
+	t=1783580951; cv=none; b=dM4dMDAxRchQ17XzhkPWHtODW+bWylwMfPmg0rKM1lJNoPtFgKmHklMQ6CXyoQuuGVe3qEkVPkIk2gofAzd/Re3vu7ZKRwd/3TLiMC0yzv64caabMEZzQ2Asvudarzms//kCNNuXsmXal6PJxrbQ+wun1l7KSN76j2goWp0wnas=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783578395; c=relaxed/simple;
-	bh=bymmM7itjNf6NASDeVGA5S1tohPd/mGFdJxsI2iR/Ec=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=S590HuAXzNSwAO8VHYezNJYonNDI1ofwvhrM9VN1Dsy/7Kkbo8DiRwgejax/82mP6YJjvIQg93rImC8bh/koa4eeF6A4rjGQ6nj5rdABGnAEDl9Kzm3wmUVKbnlElXSJlbN+1qDuTktkjtL+GpVRwEQxAcK9+BfChQheloWMffI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7eb6429750eso2139382a34.0
-        for <syzbot@lists.linux.dev>; Wed, 08 Jul 2026 23:26:25 -0700 (PDT)
+	s=arc-20240116; t=1783580951; c=relaxed/simple;
+	bh=pRAxiRD81zUfCSNW1J+nMNcDoEYp/FixX/E1Jc8vrq4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=FHKpa8inbu6cMcKhQHHOBtFKopOVkFXE6M5mxVLPYQEOfNO2HSIoWKaUK5jXk8ipTZklfZVTOxH5mgldEGGBa2a1rYph1dTe3ZReGcIKX4BWuXvSvdSx2QlVgE4yBShXV1uUc0UOuhht2RJMgHanHtFmGoyWQU2UFtdzRSeSn2Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=devineni.in; spf=none smtp.mailfrom=devineni.in; dkim=pass (2048-bit key) header.d=devineni-in.20251104.gappssmtp.com header.i=@devineni-in.20251104.gappssmtp.com header.b=Fv5C40iy; arc=none smtp.client-ip=209.85.216.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=devineni.in
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=devineni.in
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=devineni-in.20251104.gappssmtp.com header.i=@devineni-in.20251104.gappssmtp.com header.b="Fv5C40iy"
+Received: by mail-pj1-f50.google.com with SMTP id 98e67ed59e1d1-381c51fde6bso1642716a91.2
+        for <syzbot@lists.linux.dev>; Thu, 09 Jul 2026 00:09:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=devineni-in.20251104.gappssmtp.com; s=20251104; t=1783580948; x=1784185748; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=wsJwI4k59LJTtSSRqcUMygS9266urm8J+OIxscT7x8k=;
+        b=Fv5C40iyTJhOVUlbOthHhFXbUeEw0p8X63nNT+Knaz4I01oYLolQgYUSyS9bjQpu8r
+         ubgB3NT6EV97hCIxXhTI4pUaYOTygiBRmwiR1kCJvLaFVlOFgqENNXnK+GLHGprJWioC
+         6AbgU3C+ltUeOS+DmZ68yFDnLkch9paGyeODwbswrM5orOl/OFugngIVAf3soLgJZhXC
+         9REVmdY1AU7rwAWR8a2n+lVM/LH0ofHlSjDi4VGA+qdpNA0cRTNLxWMQXwtoi+ErVUtL
+         yEd+sNGCSGmkOR8RD0Y2zIWSbf6DPXCZuaMnTvK0FlmXd25O8zaSekF6OcSNoXokgC4R
+         QCfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783578383; x=1784183183;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=aGYb6cIYWCwKklV7e199C3toXW7ue1Oty8gsT7/cke4=;
-        b=GKvdV66XHxDE4dkwy3JERNUVpPOD5MylrSphblZZm/Y5oMsED1Musco/BccDxrk/xt
-         4CfByaZ0U3K57YD1BtlBaCbzLCHW8O8hgt2Tp8+dtvBdfk+fPlBf9IJsuHqtTx50gu+V
-         qDBh7prbsvSWvvgL45RowC1JDPes6AbHAJeyEBs14jWtpwuYSwVXJHUa/A3ySBrSXVOz
-         27gwjcnFmWEjlcz+XMeuhkzR7ljS3C+oc/cWzY/i6bYZ8WPFjqarp58ajZWsdIRU/0ZE
-         qlyhkcZ7/FG6ZRWs+QOQwJ/j6KXSCXrj69n8sI7AHhlfTwEmXQ2LoOX9tbW5wjuSWc3j
-         gSKA==
-X-Gm-Message-State: AOJu0Yw8f0ZVSYit2BlQRIBm3DToTJUyCjeDiDzumCC7zyzRLnDvea1E
-	fZ2BQ6cBvRQna16SzjLx6ZC90n2keSqwfWEquyQCQYc+zNHqQdbtL2Fxh+tr7ygB/QsSxcbBnAe
-	of8uHu/6LlWkASs28CCzgXBkej+6We6sYLKJZtLKznyPEsgK12PTSdOkLwjY=
+        d=1e100.net; s=20251104; t=1783580948; x=1784185748;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=wsJwI4k59LJTtSSRqcUMygS9266urm8J+OIxscT7x8k=;
+        b=VI2HMeGRnGLd2unWV03MaZZwV4O1vNxx6rSojsWX9vaiE9195YmDTvQo+FSoxfOqKZ
+         DehVRCN5dJWGcnFCB4y44EcN2fFaLJNV+eYvebyXGATiy3APKH6ZrS6X7S9HcKBOHQoT
+         w1vJQAQvRmYRlowUpJuIQODCzW1oKdjw0S2P41XjV5EdZApV6JlaVJ9/ADhhczpiMKT4
+         pV3SO6GLveystBDxzSF7uxfVjdEh8PBhquT9ROXYHMZNdT/O9Fn1qwFbvRqEXwCZ7Wjj
+         en0BhxW8SGZuOe5SXQCN213GMgGG4oQvkRdas38hfp81KDeFQP1Qh/ttxBoiZQHJxDLm
+         +LHQ==
+X-Gm-Message-State: AOJu0YzPWiW4+p6QjgIAaTjfH45UkOLwE55iyPk5HvCQessdt83taQVY
+	raM16jjMqKvdwOEuIcNwNhpB8fA9035BXQHsLc2kEh/PSv26hFl5cFneAxl0rbLhVQ==
+X-Gm-Gg: AfdE7cmeNvVzSqfbe17U22iURTkZZjRYeZqkx2WCTp19CqMQqi2NQ+hLoInaeq0obpu
+	oVMAYxRNObiJP/4dXmVwUwWoZQNfI9sF1+qBoPaddfTeak/kog3YTs38EzEhOS/LRfTXZkNb4sD
+	yhfdli2CrCavMiCSBnGzppZ6lQdMZAed4LVaWyk0BNFG/cuCsIje6HgPbXRbeofSfaYWTjMP286
+	/59kz1APoVk8f232rUGtqvcLUxb5VruJql9M9K2tsR3DJw4f+3EM+QI2xnVifZq9vo1vmtluhH+
+	Dzbc32K7gTrmHbrOVg/KbbOe+UEKSJ5p95Ex2iSuDLsPVGoLZ8t0sVQRBkDSCu//YD4owO5Td6F
+	SbSOTmXNQ9c0CpLZk+GJRRSyyRm/LoVrcpoROzSyzzkr/8Pl47m7PwZ1TbzRLID68cCMVPR4znu
+	j42kXnOGeE6svTO/Vb2OByK1WR8r+rNUzebaUSFYkUyt/eEklwzzEy/mVKwh3Kuo96T0Oirwash
+	ZvqwOtNPmlac2LXLdUJ52dL
+X-Received: by 2002:a17:90b:2883:b0:381:28e0:624d with SMTP id 98e67ed59e1d1-389421ae226mr6332130a91.28.1783580948148;
+        Thu, 09 Jul 2026 00:09:08 -0700 (PDT)
+Received: from [192.168.0.103] ([49.205.97.85])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38a55a4727bsm672144a91.9.2026.07.09.00.09.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jul 2026 00:09:07 -0700 (PDT)
+Message-ID: <a3d7ee7a-3fbb-41e4-ad7b-dcdb4e2c0c37@devineni.in>
+Date: Thu, 9 Jul 2026 12:39:04 +0530
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:2d09:b0:6a3:66dd:c9fa with SMTP id
- 006d021491bc7-6a36da10ff8mr3986082eaf.55.1783578382884; Wed, 08 Jul 2026
- 23:26:22 -0700 (PDT)
-Date: Wed, 08 Jul 2026 23:26:22 -0700
-In-Reply-To: <20260707-riscv_insn_table-v3-0-3f8e5f75ba97@gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a4f3f0e.57639fcc.86d58.001b.GAE@google.com>
-Subject: [syzbot ci] Re: riscv: Generate riscv instruction functions
-From: syzbot ci <syzbot+ci19dac46105b003f7@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, alex@ghiti.fr, anup@brainfault.org, 
-	atish.patra@linux.dev, conor@kernel.org, jtaubepe@redhat.com, 
-	kvm-riscv@lists.infradead.org, kvm@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-	linux-riscv@lists.infradead.org, namcao@linutronix.de, palmer@dabbelt.com, 
-	pbonzini@redhat.com, pjw@kernel.org, radim.krcmar@oss.qualcomm.com, 
-	shuah@kernel.org, thecharlesjenkins@gmail.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC] jfs: validate BT_ROOT flag in xt_getpage and
+ DT_GETPAGE
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+References: <65efb3d8-bbf9-4f4b-800e-b9bc5577b381@mail.kernel.org>
+Content-Language: en-US
+From: Kusaram Devineni <kusaram@devineni.in>
+In-Reply-To: <65efb3d8-bbf9-4f4b-800e-b9bc5577b381@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-syzbot ci has tested the following series
+On 27-06-2026 03:44 am, syzbot wrote:
+> A corrupted JFS image can trick the kernel into calling release_metapage()
+> on a pseudo-metapage embedded within the inode, leading to an out-of-bounds
+> memory access and a spinlock crash.
+> 
+> When operating on the root page of an xtree or dtree (which is stored
+> inline within the inode), JFS doesn't use a real struct metapage. Instead,
+> BT_GETPAGE() sets the metapage pointer to the address of
+> JFS_IP(ip)->bxflag. Because this is a pseudo-metapage, it does not have a
+> valid wait_queue_head_t wait field. Accessing mp->wait reads out-of-bounds
+> memory in struct jfs_inode_info.
+> 
+> In xt_getpage(), the code validates nextindex and maxentry, but it fails to
+> verify that the BT_ROOT flag is set in p->header.flag for the root page (bn
+> == 0). If the inline xtree root page has a corrupted header.flag where
+> BT_ROOT is missing, xtTruncate() will mistakenly treat the root page as a
+> regular leaf page and call discard_metapage(mp).
+> 
+> Unlike XT_PUTPAGE() which safely checks !BT_IS_ROOT(mp) before releasing,
+> discard_metapage() calls release_metapage(mp) directly. This assumes mp is
+> a real metapage and calls unlock_metapage(mp), which executes
+> wake_up(&mp->wait), accessing garbage memory and resulting in a spinlock
+> bad magic BUG or UBSAN out-of-bounds array access.
+> 
+> Fix this by enforcing the invariant that the BT_ROOT flag is set if and
+> only if bn == 0 in both xt_getpage() and DT_GETPAGE().
+> 
 
-[v3] riscv: Generate riscv instruction functions
-https://lore.kernel.org/all/20260707-riscv_insn_table-v3-0-3f8e5f75ba97@gmail.com
-* [PATCH v3 01/17] riscv: Introduce instruction table generation
-* [PATCH v3 02/17] riscv: alternatives: Use generated instruction headers for patching code
-* [PATCH v3 03/17] riscv: kgdb: Use generated instruction headers
-* [PATCH v3 04/17] riscv: Add kprobes instruction simulation KUnit
-* [PATCH v3 05/17] riscv: kprobes: Use generated instruction headers
-* [PATCH v3 06/17] riscv: cfi: Use generated instruction headers
-* [PATCH v3 07/17] riscv: Maintain epc on misaligned emulation error
-* [PATCH v3 08/17] riscv: Use generated instruction headers for misaligned loads/stores
-* [PATCH v3 09/17] riscv: kvm: Use generated instruction headers for csr code
-* [PATCH v3 10/17] KVM: device: Add test device
-* [PATCH v3 11/17] KVM: riscv: selftests: Add mmio test
-* [PATCH v3 12/17] riscv: kvm: Use generated instruction headers for mmio emulation
-* [PATCH v3 13/17] riscv: kvm: Add emulated test csr
-* [PATCH v3 14/17] KVM: riscv: selftests: Add csr emulation test
-* [PATCH v3 15/17] riscv: kvm: Use generated instruction headers for csr emulation
-* [PATCH v3 16/17] riscv: kexec: Use generated instruction headers for kexec relocations
-* [PATCH v3 17/17] riscv: Remove unused instruction headers
+keep the current fix direction. The BT_ROOT invariant checks in both 
+xt_getpage() and DT_GETPAGE() are correct.
 
-and found the following issue:
-WARNING in kvm_io_bus_unregister_dev
+> BUG: spinlock bad magic on CPU#0, syz-executor/6066
+>   lock: 0xffff888120999b48, .magic: ffffffff, .owner: <...>/-1902340672,
+>   .owner_cpu: 768
+> CPU: 0 UID: 0 PID: 6066 Comm: syz-executor Not tainted syzkaller #1
+> PREEMPT(full)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+> 1.16.3-debian-1.16.3-2 04/01/2014
+> Call Trace:
+>   <TASK>
+>   dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>   spin_bug kernel/locking/spinlock_debug.c:78 [inline]
+>   debug_spin_lock_before kernel/locking/spinlock_debug.c:86 [inline]
+>   do_raw_spin_lock+0x1e5/0x2f0 kernel/locking/spinlock_debug.c:115
+>   __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:133 [inline]
+>   _raw_spin_lock_irqsave+0x4c/0x60 kernel/locking/spinlock.c:166
+>   __wake_up_common_lock+0x30/0x1f0 kernel/sched/wait.c:124
+>   unlock_metapage fs/jfs/jfs_metapage.c:40 [inline]
+>   release_metapage+0x131/0xa60 fs/jfs/jfs_metapage.c:872
+>   xtTruncate+0xeaa/0x2eb0 fs/jfs/jfs_xtree.c:-1
+>   jfs_free_zero_link+0x35b/0x4c0 fs/jfs/namei.c:760
+>   jfs_evict_inode+0x356/0x430 fs/jfs/inode.c:159
+>   evict+0x624/0xb50 fs/inode.c:841
+>   __dentry_kill+0x206/0x700 fs/dcache.c:718
+>   shrink_kill+0xa9/0x2c0 fs/dcache.c:1195
+>   shrink_dentry_list+0x2e0/0x5e0 fs/dcache.c:1222
+>   shrink_dcache_tree+0xe9/0x5d0 fs/dcache.c:-1
+>   do_one_tree+0x28/0xe0 fs/dcache.c:1721
+>   shrink_dcache_for_umount+0xa0/0x170 fs/dcache.c:1738
+>   generic_shutdown_super+0x6f/0x2d0 fs/super.c:624
+>   kill_block_super+0x44/0x90 fs/super.c:1725
+>   deactivate_locked_super+0xbc/0x130 fs/super.c:476
+>   cleanup_mnt+0x3d3/0x460 fs/namespace.c:1312
+>   task_work_run+0x1d9/0x270 kernel/task_work.c:233
+>   resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
+>   __exit_to_user_mode_loop kernel/entry/common.c:67 [inline]
+>   exit_to_user_mode_loop+0xf3/0x4f0 kernel/entry/common.c:98
+>   __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
+>   syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230
+>   [inline]
+>   syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
+>   do_syscall_64+0x33e/0x560 arch/x86/entry/syscall_64.c:100
+>   entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>   </TASK>
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+e380443eaa59bfb75a84@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=e380443eaa59bfb75a84
+> Link: https://syzkaller.appspot.com/ai_job?id=b075f2b7-e5d3-4157-9efa-ee28c166187b
+> To: <jfs-discussion@lists.sourceforge.net>
+> To: "Dave Kleikamp" <shaggy@kernel.org>
+> Cc: "Arnd Bergmann" <arnd@arndb.de>
+> Cc: <linux-kernel@vger.kernel.org>
+> Cc: "Suchit Karunakaran" <suchitkarunakaran@gmail.com>
+> Cc: "Yun Zhou" <yun.zhou@windriver.com>
+> Cc: "Zheng Yu" <zheng.yu@northwestern.edu>
+> 
+> ---
+> diff --git a/fs/jfs/jfs_dtree.c b/fs/jfs/jfs_dtree.c
+> index ac0f79faf..bbb157daf 100644
+> --- a/fs/jfs/jfs_dtree.c
+> +++ b/fs/jfs/jfs_dtree.c
+> @@ -111,19 +111,26 @@ struct dtsplit {
+>   #define DT_PAGE(IP, MP) BT_PAGE(IP, MP, dtpage_t, i_dtroot)
+>   
+>   /* get page buffer for specified block address */
+> -#define DT_GETPAGE(IP, BN, MP, SIZE, P, RC)				\
+> -do {									\
+> -	BT_GETPAGE(IP, BN, MP, dtpage_t, SIZE, P, RC, i_dtroot);	\
+> -	if (!(RC)) {							\
+> -		if ((BN) && !check_dtpage(P)) {				\
+> -			BT_PUTPAGE(MP);					\
+> -			jfs_error((IP)->i_sb,				\
+> -				  "DT_GETPAGE: dtree page corrupt\n");	\
+> -			MP = NULL;					\
+> -			RC = -EIO;					\
+> -		}							\
+> -	}								\
+> -} while (0)
+> +#define DT_GETPAGE(IP, BN, MP, SIZE, P, RC)                                       \
+> +	do {                                                                      \
+> +		BT_GETPAGE(IP, BN, MP, dtpage_t, SIZE, P, RC, i_dtroot);          \
+> +		if (!(RC)) {                                                      \
+> +			if (((BN) == 0) != !!((P)->header.flag & BT_ROOT)) {      \
+> +				BT_PUTPAGE(MP);                                   \
+> +				jfs_error(                                        \
+> +					(IP)->i_sb,                               \
+> +					"DT_GETPAGE: dtree root page corrupt\n"); \
+> +				MP = NULL;                                        \
+> +				RC = -EIO;                                        \
+> +			} else if ((BN) && !check_dtpage(P)) {                    \
+> +				BT_PUTPAGE(MP);                                   \
+> +				jfs_error((IP)->i_sb,                             \
+> +					  "DT_GETPAGE: dtree page corrupt\n");    \
+> +				MP = NULL;                                        \
+> +				RC = -EIO;                                        \
+> +			}                                                         \
+> +		}                                                                 \
+> +	} while (0)
+>   
 
-Full report is available here:
-https://ci.syzbot.org/series/f3c61796-0ca0-4bfd-add1-23a20352fb7b
+in DT_GETPAGE(), prefer the existing error message: "DT_GETPAGE: dtree 
+page corrupt\n" instead of: "DT_GETPAGE: dtree root page corrupt\n" or 
+explain why the new string is desirable despite the check being 
+bidirectional. i.e. the invariant is bidirectional and also catches 
+non-root pages incorrectly carrying BT_ROOT.
 
-***
+>   /* for consistency */
+>   #define DT_PUTPAGE(MP) BT_PUTPAGE(MP)
+> diff --git a/fs/jfs/jfs_xtree.c b/fs/jfs/jfs_xtree.c
+> index 28c3cf960..6d960dd96 100644
+> --- a/fs/jfs/jfs_xtree.c
+> +++ b/fs/jfs/jfs_xtree.c
+> @@ -118,10 +118,11 @@ static inline xtpage_t *xt_getpage(struct inode *ip, s64 bn, struct metapage **m
+>   	if (rc)
+>   		return ERR_PTR(rc);
+>   	if ((le16_to_cpu(p->header.nextindex) < XTENTRYSTART) ||
+> -		(le16_to_cpu(p->header.nextindex) >
+> -			le16_to_cpu(p->header.maxentry)) ||
+> -		(le16_to_cpu(p->header.maxentry) >
+> -			((bn == 0) ? XTROOTMAXSLOT : PSIZE >> L2XTSLOTSIZE))) {
+> +	    (le16_to_cpu(p->header.nextindex) >
+> +	     le16_to_cpu(p->header.maxentry)) ||
+> +	    (le16_to_cpu(p->header.maxentry) >
+> +	     ((bn == 0) ? XTROOTMAXSLOT : PSIZE >> L2XTSLOTSIZE)) ||
+> +	    ((bn == 0) != !!(p->header.flag & BT_ROOT))) {
+>   		jfs_error(ip->i_sb, "xt_getpage: xtree page corrupt\n");
+>   		BT_PUTPAGE(*mp);
+>   		*mp = NULL;
+> 
+> 
+> base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
 
-WARNING in kvm_io_bus_unregister_dev
+preserve local indentation/style in `DT_GETPAGE()` and `xt_getpage()`. 
+do not reindent the whole DT_GETPAGE() macro or existing xt_getpage() 
+condition block. add only the minimal new condition/branch.
 
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf-next.git
-base:      8cd9520d35a6c38db6567e97dd93b1f11f185dc6
-arch:      amd64
-compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/65190eb6-0d65-4629-b225-e3b7089a0b10/config
-syz repro: https://ci.syzbot.org/findings/fa2c789e-ba9f-4d55-b3ba-0d5f22f78a4d/syz_repro
+-kusaram
 
-------------[ cut here ]------------
-debug_locks && !(lock_is_held(&(&kvm->slots_lock)->dep_map) != 0)
-WARNING: arch/x86/kvm/../../../virt/kvm/kvm_main.c:6027 at kvm_io_bus_unregister_dev+0x4b0/0x580 virt/kvm/kvm_main.c:6027, CPU#1: syz.2.19/5828
-Modules linked in:
-CPU: 1 UID: 0 PID: 5828 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:kvm_io_bus_unregister_dev+0x4b0/0x580 virt/kvm/kvm_main.c:6027
-Code: 3f fc ff ff e8 a1 ce 86 00 48 c7 c7 40 f7 c1 8b e8 a5 29 e9 ff 48 89 ef e8 ed 00 00 00 b8 f4 ff ff ff eb a3 e8 81 ce 86 00 90 <0f> 0b 90 e9 cd fb ff ff 48 c7 c1 e0 bb 2f 90 80 e1 07 80 c1 03 38
-RSP: 0018:ffffc900032afc30 EFLAGS: 00010293
-RAX: ffffffff813e81af RBX: ffff88816b133688 RCX: ffff888160aba540
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000000 R08: ffffc900032afb7f R09: 0000000000000000
-R10: ffffc900032afb70 R11: ffffffff81404850 R12: dffffc0000000000
-R13: 0000000000000000 R14: dffffc0000000000 R15: ffff8881a5354000
-FS:  000055555b90c500(0000) GS:ffff8882a92b9000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b33663fff CR3: 00000001bceb8000 CR4: 0000000000352ef0
-Call Trace:
- <TASK>
- mmio_test_destroy+0x66/0x90 virt/kvm/mmio_test.c:83
- kvm_destroy_devices virt/kvm/kvm_main.c:1251 [inline]
- kvm_destroy_vm virt/kvm/kvm_main.c:1296 [inline]
- kvm_put_kvm+0x902/0xae0 virt/kvm/kvm_main.c:1332
- kvm_vm_release+0x43/0x50 virt/kvm/kvm_main.c:1355
- __fput+0x418/0xa50 fs/file_table.c:510
- task_work_run+0x1d9/0x270 kernel/task_work.c:233
- resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
- __exit_to_user_mode_loop kernel/entry/common.c:67 [inline]
- exit_to_user_mode_loop+0x193/0x6b0 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
- do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f2f43d9ce59
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffde9296e78 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
-RAX: 0000000000000000 RBX: 00007ffde9296f60 RCX: 00007f2f43d9ce59
-RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000000000000003
-RBP: 0000000000011938 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000001b32a20000 R11: 0000000000000246 R12: 00007ffde9296fa0
-R13: 00007f2f44015fac R14: 0000000000011971 R15: 00007f2f44015fa0
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
