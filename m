@@ -1,180 +1,150 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92F0425B09F
-	for <syzbot@lists.linux.dev>; Thu,  9 Jul 2026 13:07:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEA0C233933
+	for <syzbot@lists.linux.dev>; Thu,  9 Jul 2026 13:32:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783602436; cv=none; b=tidTKHHrh2dxhiZCvPtD+vmp7Ve1e8+dgHMYKGgOx3MuL2jjdUCviOMjntLZLuxp637fer6onY5vxdlUewJUly38y3i0rMOVkpWoYzZu4T7Yd4OF8reOam7Qu/cWEPomQuPRg9ysEEo5u/IdxBqmnP7yU9RZC8OOUEZ2O6ir9oI=
+	t=1783603947; cv=none; b=B/ekN/XzF4pwTS0nb1PJhORu5NoDdfnWo65E/+F1ue+JuRpkSAT8NspRAjdXCLWO9CUxDGaCTof/aZChAo/CVphXElhHDKSgWm06t7AB+0cxetLF+XIJi9ald6TX0mJUVy0ArFTcB39JzIPIetzy/Rs/gn8z0aUDh8bSbtzUWjI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783602436; c=relaxed/simple;
-	bh=gmqroTXGB0yWziQKTgkysxRmfqA2brsXW9mTvieIBEY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VKXHIRxi8w9U9MwmiB9mE0/uICoQhD7K9JvFBVKObUomsP16xW6Bb4a6sESmdFXqi4ZfKOZafseLYZXihprWeXG/k1q97cdtoWMPTa/aRVxLw4HbscPrGiP21wVQTn2TKYFZauo78zqlXj5WLVjr4C9AdwPWb2TZeBGuLpVusoc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=H2oLcLgD; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=Zc+o6Din; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=a1Ag9C6j; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=UapJLC3c; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1783603947; c=relaxed/simple;
+	bh=oLJkX98KDZ+ydOlC+s77lXnA8jJ6F+vP9GYEjjajW8Q=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=X+7tB9gXB3+aIHPiXoOsYG4qBJWmO6eSBANpeg0JFWnhiCJjXqAu94BC29FaX7fF3byNa8rwWS+mKkCncTA/BYdL7pwESEcQh6Posn88xIFXZoae81G1Y2m5SM6eJZ0ex7jDnjLJ0k2DIx6LRFRdQRqrEuzJKTIMVMFxOAwqmm0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ff7XrD9p; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="H2oLcLgD";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="Zc+o6Din";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="a1Ag9C6j";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="UapJLC3c"
-Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 360A5761EF;
-	Thu,  9 Jul 2026 13:07:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1783602432; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0844geh6ZMhXSB+w7btZHfyO0hTjHHopZLDBcN9ng8M=;
-	b=H2oLcLgD5yU6Z3X4DbJPCtKcetBPCyR3E+/BsC8+DJTBXkZGJv3bpoXZR26CSFLY9DyK9E
-	HjhZcsei8p6fZQAArqiQ4JjkbmiQojgRaY75vBzq+rCUOdwAb/3sWK2uDTCipTafwngQfS
-	KNz2tpgYxFEBa0HuTizm9YZ6Ja2vQvc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1783602432;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0844geh6ZMhXSB+w7btZHfyO0hTjHHopZLDBcN9ng8M=;
-	b=Zc+o6DinfwsNb02InFjj/5pz9VFp+QoFICEaN42PT51cmCc3qG7YRGiHJeY4rkzX5gCncY
-	bCFiaOKsc2toUxBA==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1783602431; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0844geh6ZMhXSB+w7btZHfyO0hTjHHopZLDBcN9ng8M=;
-	b=a1Ag9C6jDdC/TgzqolVR/Gd63iKsqGb8IgMtC6C6+i9gTbEAVwKR77+YTa+pDlKWFvyn4v
-	K8ZEGW1759MWMNoAIy/9Mc8nf/qtRKto1E2yEthB1BNFfi+kV5RxrMbMdkZqZRvfg0wF+5
-	dGyo9AfBXpxXNzvjMdHIEmUpu81f4B4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1783602431;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0844geh6ZMhXSB+w7btZHfyO0hTjHHopZLDBcN9ng8M=;
-	b=UapJLC3ccmfewaBTpAmMw44p3YSfz/F6OHGXKyYP0UhubWyiAwXd+MPwuQySo0Hs/qx+FT
-	puDzrndyPgl076AQ==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 2CAE7779AA;
-	Thu,  9 Jul 2026 13:07:11 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id ICrkCv+cT2pNHAAAD6G6ig
-	(envelope-from <jack@suse.cz>); Thu, 09 Jul 2026 13:07:11 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-	id CE9C4A12D7; Thu, 09 Jul 2026 15:07:06 +0200 (CEST)
-Date: Thu, 9 Jul 2026 15:07:06 +0200
-From: Jan Kara <jack@suse.cz>
-To: "Zhou, Yun" <yun.zhou@windriver.com>
-Cc: Jan Kara <jack@suse.cz>, adilger.kernel@dilger.ca, brauner@kernel.org, 
-	libaokun@linux.alibaba.com, linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, ojaswin@linux.ibm.com, ritesh.list@gmail.com, tytso@mit.edu, 
-	viro@zeniv.linux.org.uk, yi.zhang@huawei.com, syzbot@lists.linux.dev, 
-	syzkaller-bugs@googlegroups.com, syzbot ci <syzbot+ciadd810ddf4701c1b@syzkaller.appspotmail.com>
-Subject: Re: [syzbot ci] Re: ext4: deferred iput framework for EA inodes
-Message-ID: <7gqptufc6arv6ichvx63rzrawxmb2mvlvn463xripjo3snhjgt@dc7bvpkrmogp>
-References: <20260702152225.4071746-1-yun.zhou@windriver.com>
- <6a46ecbd.52c20a74.1f8b39.000b.GAE@google.com>
- <j6ftvy7a3w7js4whqps3fipbah452xhro37kxvkruoeobtlonb@zrp2pwoif3pc>
- <9bb5dbfe-bb82-4ca6-8a14-5c434bd54051@windriver.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ff7XrD9p"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 595EB1F00A3A;
+	Thu,  9 Jul 2026 13:32:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783603945;
+	bh=3eOA+uebrzc4PC2dYA/xtsDjoMp86SzrpnWms4KahAQ=;
+	h=From:To:Cc:Subject:Date;
+	b=Ff7XrD9p/N/xcp2+EZk7kvsMDQQAEmHqnW3+2owLg5llGQ6mI2j84/kAgksqhuvkh
+	 e2pjMSd1Uh5AoDyjAaSYnZlnMXuKcne3WKqzoeChQybx9Q22ERzkB865hnrgzUrZ+F
+	 Qb3X2ta/rK3DWnbguuRHVxMK8wR2HL5M72WGP+I96lQhaKmTTWvJg79wBmhKP+sVB7
+	 blKt82ysSkRYUd/DRBO7NEzefYPjghvPFmKuwwDKHKUcp1WxBPGHaMShUAmCvNLJa5
+	 389Gdt84RDBEVb9yo5IbbaWB6ncR+1WTfFEfJkCnvKMAcBdjl+4JRMCLTF/jwH+P4d
+	 N2h2f0FsHGEiQ==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] fuse: allow fatal signals to interrupt forced requests
+Message-ID: <5172c535-3f9d-4ed1-8855-414eee9a6010@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <9bb5dbfe-bb82-4ca6-8a14-5c434bd54051@windriver.com>
-X-Spam-Flag: NO
-X-Spam-Score: -2.30
-X-Spamd-Result: default: False [-2.30 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	SUSPICIOUS_RECIPS(1.50)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	MID_RHS_NOT_FQDN(0.50)[];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ARC_NA(0.00)[];
-	MISSING_XM_UA(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	FUZZY_RATELIMITED(0.00)[rspamd.com];
-	RCPT_COUNT_TWELVE(0.00)[16];
-	TAGGED_RCPT(0.00)[ciadd810ddf4701c1b];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	TO_DN_SOME(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	FREEMAIL_CC(0.00)[suse.cz,dilger.ca,kernel.org,linux.alibaba.com,vger.kernel.org,linux.ibm.com,gmail.com,mit.edu,zeniv.linux.org.uk,huawei.com,lists.linux.dev,googlegroups.com,syzkaller.appspotmail.com];
-	RCVD_COUNT_THREE(0.00)[3];
-	FROM_EQ_ENVFROM(0.00)[];
-	RCVD_TLS_LAST(0.00)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.com:email]
-X-Spam-Level: 
+Date: Thu,  9 Jul 2026 13:32:25 +0000 (UTC)
 
-Hi Yun,
+A single-threaded FUSE server can deadlock itself and cause a hung task
+panic if it calls close_range(). This syscall closes all open file
+descriptors, including the FUSE file descriptor. Closing the FUSE file
+triggers a FUSE_FLUSH request. Because the process is single-threaded and
+blocked in the kernel waiting for the flush reply, it cannot read the
+request from /dev/fuse and reply to it.
 
-On Tue 07-07-26 19:00:47, Zhou, Yun wrote:
-> On 7/3/26 22:02, Jan Kara wrote:
-> > 
-> > On Thu 02-07-26 15:57:01, syzbot ci wrote:
-> > > syzbot ci has tested the following series
-> > > 
-> > > [v13] ext4: deferred iput framework for EA inodes
-> > > https://lore.kernel.org/all/20260702152225.4071746-1-yun.zhou@windriver.com
-> > > * [PATCH v13 1/4] fs: add iput_if_not_last() helper
-> > > * [PATCH v13 2/4] ext4: introduce ext4_put_ea_inode() for safe deferred iput
-> > > * [PATCH v13 3/4] ext4: convert all EA inode iput() calls to ext4_put_ea_inode()
-> > > * [PATCH v13 4/4] ext4: remove ea_inode_array mechanism in favor of ext4_put_ea_inode()
-> > > 
-> > > and found the following issue:
-> > > WARNING in ext4_journal_check_start
-> > 
-> > Good catch. We need to flush the pending work with iputs also in
-> > ext4_sync_fs() which should also take care of this race with remount
-> > read-only (and the same issue with filesystem freezing etc.).
-> > 
-> 
-> Sorry for the late reply—I missed it because I receive too many emails from
-> syzbot. I've now reconfigured my filtering rules.
-> 
-> Regarding the issue reported by syzbot CI, would it be better to add
-> flush_delayed_work in __ext4_remount before sb->s_flags |= SB_RDONLY? That
-> would make the race window smaller.
+FUSE_FLUSH requests are sent with the FR_FORCE flag. In
+request_wait_answer(), forced requests skip the wait_event_killable() block
+and wait uninterruptibly (wait_event()). This makes the task completely
+unkillable (D state) and triggers the hung task watchdog:
 
-Well, if there is remount read-only happening, the operations modifying
-filesystem are blocked or made to fail (see mnt_get_write_access() /
-sb_prepare_remount_readonly()). So it doesn't really matter where in
-ext4_reconfigure() / __ext4_remount() we flush the work - no new items that
-are deleting any xattr inodes should be added.
+INFO: task blocked for more than 143 seconds.
+Call Trace:
+ <TASK>
+ __schedule+0x17d9/0x56c0 kernel/sched/core.c:7234
+ schedule+0x164/0x2b0 kernel/sched/core.c:7326
+ request_wait_answer fs/fuse/dev.c:743 [inline]
+ __fuse_request_send fs/fuse/dev.c:757 [inline]
+ fuse_chan_send+0x1065/0x1ac0 fs/fuse/dev.c:833
+ fuse_flush+0x66e/0x8b0 fs/fuse/file.c:504
+ filp_flush+0xbd/0x190 fs/open.c:1471
+ filp_close+0x1d/0x40 fs/open.c:1484
+ __range_close fs/file.c:793 [inline]
+ __do_sys_close_range fs/file.c:854 [inline]
+ __se_sys_close_range+0x3d3/0x900 fs/file.c:818
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+ </TASK>
 
-And placing the flushing into ext4_sync_fs() handles multiple similar
-problems - sync(2) should make sure all pending deletions are finished,
-remount needs to do this (and it calls sync_filesystem() which will end up
-calling ext4_sync_fs()), fsfreeze needs to do this (it calls
-sync_filesystem() as well).
+Historically, FR_FORCE was introduced to prevent FUSE_FLUSH from being
+interrupted by normal signals (like SIGINT), as cancelling it could lead to
+leaked POSIX locks on the server. However, making it completely
+uninterruptible even by fatal signals (SIGKILL) causes this unrecoverable
+deadlock.
+
+If a process is killed by a fatal signal, it is acceptable to cancel the
+FUSE_FLUSH request. The process is exiting, and all its file descriptors
+will be closed, which will eventually trigger a FUSE_RELEASE request. Since
+FUSE protocol 7.8, FUSE_RELEASE contains the lock_owner, allowing a
+well-written server to clean up any remaining POSIX locks. Even if a poorly
+written server leaks locks, a resource leak in a userspace server is vastly
+preferable to a kernel panic.
+
+By removing the !test_bit(FR_FORCE, &req->flags) condition around the
+wait_event_killable() block in request_wait_answer(), we allow forced
+requests to be interrupted by fatal signals. This places the task in the
+TASK_KILLABLE state, which the hung task watchdog ignores, preventing the
+panic. It also allows the task to be killed by SIGKILL, breaking the
+deadlock and allowing the task to exit gracefully.
+
+Fixes: 7142125937e1 ("[PATCH] fuse: add POSIX file locking support")
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
+Reported-by: syzbot+a531d1b1fb0fa2a75a73@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=a531d1b1fb0fa2a75a73
+Link: https://syzkaller.appspot.com/ai_job?id=864cba22-20c3-4bfa-b461-b7208b3fac7d
+To: <fuse-devel@lists.linux.dev>
+To: "Miklos Szeredi" <miklos@szeredi.hu>
+Cc: <linux-kernel@vger.kernel.org>
+
+---
+diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
+index 5763a7cd3..75943da8c 100644
+--- a/fs/fuse/dev.c
++++ b/fs/fuse/dev.c
+@@ -714,10 +714,17 @@ static void request_wait_answer(struct fuse_req *req)
+ 			queue_interrupt(req);
+ 	}
  
-> Also, should I resend the v14 series, or submit a separate patch
-> specifically for this fix?
+-	if (!test_bit(FR_FORCE, &req->flags)) {
++	{
+ 		bool removed;
+ 
+-		/* Only fatal signals may interrupt this */
++		/*
++		 * Only fatal signals may interrupt this.
++		 * Forced requests (like FUSE_FLUSH) used to be completely
++		 * uninterruptible, but it can cause self-deadlocks.
++		 * If killed, we cancel the request. POSIX locks might be
++		 * leaked on the server, but the process is dying anyway,
++		 * and FUSE_RELEASE will be sent.
++		 */
+ 		err = wait_event_killable(req->waitq,
+ 					test_bit(FR_FINISHED, &req->flags));
+ 		if (!err)
+@@ -737,8 +744,7 @@ static void request_wait_answer(struct fuse_req *req)
+ 	}
+ 
+ 	/*
+-	 * Either request is already in userspace, or it was forced.
+-	 * Wait it out.
++	 * Request is already in userspace, wait it out.
+ 	 */
+ 	wait_event(req->waitq, test_bit(FR_FINISHED, &req->flags));
+ }
 
-I think you can resend with the fixup. Ted didn't merge the series yet.
 
-								Honza
+base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
