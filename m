@@ -1,232 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F65F3C9ED9
-	for <syzbot@lists.linux.dev>; Thu,  9 Jul 2026 08:20:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AA213F44CB
+	for <syzbot@lists.linux.dev>; Thu,  9 Jul 2026 11:43:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783585226; cv=none; b=SMyVDy8QlvKsi9KAf6AVJgvyk6Uo4Yh/OvEdXePaF0mVdOdlhSKLtZN2PnUzHaf1EFtBvZjVmxuMFUJa13T/eeItgZ1KcWPFwqDwWAzLAYvtstATJ6YWDYPt72xYw2oyr7CnePpXPNCIRvjMesQwv79E+6S76xMiCOUdp1iZu+Y=
+	t=1783597405; cv=none; b=Wx2staI3NTBFISM65wB8YaWUwpgBtmalPpsJbd/8s+On5ibdgiBkvXi5Lpx0Tz+NBAcdufeZc5NcyH3Z9b666TwvjSyA7OyE/OV6EPuMuGMr8UvwoZ13U5us6qQxP0X5c3AURrmyZ75bTyw+F4Dxdqm9OjTwhQpDBzaGQnGcVho=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783585226; c=relaxed/simple;
-	bh=QcsdgLdRje7+OMUoACebu++wFZYpeHPJG/WedP6AkD8=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=LupsGmQm37/Kk5YP1AbMS3Q7v8jfuC2l8YYuDS+vdIo8n+OjjTrkeX7CQFEnguZ8NrTN8iDu7baC0Z0aTDd3aC171ZMSWyfzXRAXB0W1ds/myI+byOd2RsDepl+y4VqEl7AB1GdM9w8/EzVgKIE+U8ldXqOT8nuhagSBmihY0Ug=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mETobtsO; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mETobtsO"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 503AF1F000E9;
-	Thu,  9 Jul 2026 08:20:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783585225;
-	bh=MI4QcSCiZsk8SsVTeYsequsIHJ595Je82o2IeoRx0SA=;
-	h=From:To:Cc:Subject:Date;
-	b=mETobtsOiuDXWiZTEhv7PhXvUia27KBinbTyJex6ltCZRmX0tQ5GScQmauQv5cIv6
-	 3tTGj1kabmAS2kdh/p7HoTfvkKJV0kjtRUs74dKJEFOMTdn4SQ5CdTsjQfQh6qePhr
-	 btXa5KBVmRBUwdjRDVQ6WIliP+XYM2D5+TIvayBIIS24LVHTgN+Yr2Rz4Hprlhn+yu
-	 HgsAUyT/Ch6Rc+AsdUYAK4g2bJI0Knbms1Wm2ONfnS8S7xJ/tYiWIn1mQtJsONNVAj
-	 8HHL9foVIATgJz8mC9kOP34O4x2NPfVCNnDkfiVkCRVdV2Ijj8OFJkVXtveimJdsjy
-	 mjkmcg1hiUzUw==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] jfs: validate BT_ROOT flag in xt_getpage and DT_GETPAGE
-Message-ID: <b94e1523-acdb-4470-904e-373249bbf83d@mail.kernel.org>
+	s=arc-20240116; t=1783597405; c=relaxed/simple;
+	bh=8zT2FVdUcVAuOy4HbUEeH4iPlvJUWCrouHCkMo6WfXA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=qFClCPxB+y9sJER2SsFFuNmDw2RLcSiP52gHWo0OYjNv7tYYlrP8/a7gYqArLwx6PcKXyUhqeKtdIURmiw9YdFU/2ORnJhiStBXWoz+D8phKhs/AF/vnr40vElPt20PIDOSbYF8yJ8VzMZCSPz25/5WiRyBoAyUT4goKQtpjKu4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6a37fb394d5so652869eaf.0
+        for <syzbot@lists.linux.dev>; Thu, 09 Jul 2026 04:43:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783597403; x=1784202203;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=t/HGVYTQAs8Uevd/ZlFkHPQYCq0NPC3t7vYv0eoJD3U=;
+        b=G8faPFXGeivstKUyhlPtXbWzfukNlvGk16ALTS7UF6BWRuT3oIknu5dqXj9lypY/Hr
+         JUUTf71l6NzhjW0jiozAmHwvm5u8EyWczDUhBNCDl5//qPpc05FHYkyrXGtb5gz96OzX
+         cWyKuT2Srfbiea8LrJmXbF7aWUokuwEe0h4TJwenVd2Pbxb8J7SwWdMiKE68R4oHMaUD
+         kJ/Ofp1qctGNncqq8p//LpCiOXGM090yP6rRYxQybzXT8yFU1do6MvP0ZFJKdcd+pNyp
+         h1t7O72rpMgURT38XNdRk8zIEtmw9oumgyGUOn01SkqOpDdnY+vrnlfpOgJERbFUT33r
+         OtcA==
+X-Gm-Message-State: AOJu0YycT7SJwAMrTiqqwtT7Svn98XDXiZnfYOQt8+vEzbZ9hKzhHzRK
+	S97jR/kXVH424VEvlQlICT+jIB4QdZ8HbDF3EeQSpvPUjzC0FLH4PKdArP835ekecEXZZ455Tak
+	ES+WlWY+RLSsMIG6gA2semgo6WbG4/dcdWPZ5mpEfR3AvYlW12petkCBrWxA=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Thu,  9 Jul 2026 08:20:25 +0000 (UTC)
+X-Received: by 2002:a4a:edc3:0:b0:6a3:80b9:d7aa with SMTP id
+ 006d021491bc7-6a380b9e1aamr1507290eaf.34.1783597403469; Thu, 09 Jul 2026
+ 04:43:23 -0700 (PDT)
+Date: Thu, 09 Jul 2026 04:43:23 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a4f895b.a1ad617e.25832.000d.GAE@google.com>
+Subject: [moderation/CI] Re: Address Sashiko review of NAT hook dump code
+From: syzbot ci <syzbot+ci1d3dee1f96293ea6@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-A corrupted JFS image can trick the kernel into calling release_metapage()
-on a pseudo-metapage embedded within the inode, leading to an out-of-bounds
-memory access and a spinlock crash.
+syzbot ci has tested the following series
 
-When operating on the root page of an xtree or dtree (which is stored
-inline within the inode), JFS doesn't use a real struct metapage. Instead,
-BT_GETPAGE() sets the metapage pointer to the address of
-JFS_IP(ip)->bxflag. Because this is a pseudo-metapage, it does not have a
-valid wait_queue_head_t wait field. Accessing mp->wait reads out-of-bounds
-memory in struct jfs_inode_info.
+[v1] Address Sashiko review of NAT hook dump code
+https://lore.kernel.org/all/20260708161940.1477671-1-phil@nwl.cc
+* [nf-next PATCH 1/4] netfilter: nfnetlink_hook: Pass cb object to nfnl_hook_dump_nat()
+* [nf-next PATCH 2/4] netfilter: nfnetlink_hook: Deref hook entry using READ_ONCE()
+* [nf-next PATCH 3/4] netfilter: nfnetlink_hook: Handle multipart NAT hook dumps
+* [nf-next PATCH 4/4] netfilter: nfnetlink_hook: Fix for concurrent NAT hooks dump and change
 
-In xt_getpage(), the code validates nextindex and maxentry, but it fails to
-verify that the BT_ROOT flag is set in p->header.flag for the root page (bn
-== 0). If the inline xtree root page has a corrupted header.flag where
-BT_ROOT is missing, xtTruncate() will mistakenly treat the root page as a
-regular leaf page and call discard_metapage(mp).
+and found the following issue:
+kernel build error
 
-Unlike XT_PUTPAGE() which safely checks !BT_IS_ROOT(mp) before releasing,
-discard_metapage() calls release_metapage(mp) directly. This assumes mp is
-a real metapage and calls unlock_metapage(mp), which executes
-wake_up(&mp->wait), accessing garbage memory and resulting in a spinlock
-bad magic BUG or UBSAN out-of-bounds array access.
+Full report is available here:
+https://ci.syzbot.org/series/f0c9d07d-a474-4d2d-8448-3f804d40273b
 
-Fix this by enforcing the invariant that the BT_ROOT flag is set if and
-only if bn == 0 in both xt_getpage() and DT_GETPAGE().
+***
 
-BUG: spinlock bad magic on CPU#1, syz-executor/6074
- lock: 0xffff8881f71d1b48, .magic: ffffffff, .owner:  /-1902340672,
- .owner_cpu: 768
-CPU: 1 UID: 0 PID: 6074 Comm: syz-executor Not tainted syzkaller #1
-PREEMPT(full)
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
-1.16.3-debian-1.16.3-2 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- spin_bug kernel/locking/spinlock_debug.c:78 [inline]
- debug_spin_lock_before kernel/locking/spinlock_debug.c:86 [inline]
- do_raw_spin_lock+0x1e5/0x2f0 kernel/locking/spinlock_debug.c:115
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:133 [inline]
- _raw_spin_lock_irqsave+0x4c/0x60 kernel/locking/spinlock.c:166
- __wake_up_common_lock+0x30/0x1f0 kernel/sched/wait.c:124
- unlock_metapage fs/jfs/jfs_metapage.c:40 [inline]
- release_metapage+0x131/0xa60 fs/jfs/jfs_metapage.c:872
- xtTruncate+0xeaa/0x2eb0 fs/jfs/jfs_xtree.c:-1
- jfs_free_zero_link+0x35b/0x4c0 fs/jfs/namei.c:760
- jfs_evict_inode+0x356/0x430 fs/jfs/inode.c:159
- evict+0x624/0xb50 fs/inode.c:841
- __dentry_kill+0x206/0x700 fs/dcache.c:718
- shrink_kill+0xa9/0x2c0 fs/dcache.c:1195
- shrink_dentry_list+0x2e0/0x5e0 fs/dcache.c:1222
- shrink_dcache_tree+0xe9/0x5d0 fs/dcache.c:-1
- do_one_tree+0x28/0xe0 fs/dcache.c:1721
- shrink_dcache_for_umount+0xa0/0x170 fs/dcache.c:1738
- generic_shutdown_super+0x6f/0x2d0 fs/super.c:624
- kill_block_super+0x44/0x90 fs/super.c:1725
- deactivate_locked_super+0xbc/0x130 fs/super.c:476
- cleanup_mnt+0x3d3/0x460 fs/namespace.c:1312
- task_work_run+0x1d9/0x270 kernel/task_work.c:233
- resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
- __exit_to_user_mode_loop kernel/entry/common.c:67 [inline]
- exit_to_user_mode_loop+0xf3/0x4f0 kernel/entry/common.c:98
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230
- [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
- do_syscall_64+0x33e/0x560 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fbf84d9e097
- </TASK>
-------------[ cut here ]------------
-UBSAN: array-index-out-of-bounds in kernel/locking/qspinlock.h:68:9
-index 8945 is out of range for type 'unsigned long[8]'
-CPU: 1 UID: 0 PID: 6074 Comm: syz-executor Not tainted syzkaller #1
-PREEMPT(full)
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
-1.16.3-debian-1.16.3-2 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
- __ubsan_handle_out_of_bounds+0xe8/0xf0 lib/ubsan.c:455
- decode_tail kernel/locking/qspinlock.h:68 [inline]
- __pv_queued_spin_lock_slowpath+0xaf3/0xbc0 kernel/locking/qspinlock.c:285
- pv_queued_spin_lock_slowpath arch/x86/include/asm/paravirt-spinlock.h:35
- [inline]
- queued_spin_lock_slowpath arch/x86/include/asm/paravirt-spinlock.h:66
- [inline]
- queued_spin_lock include/asm-generic/qspinlock.h:114 [inline]
- do_raw_spin_lock+0x26c/0x2f0 kernel/locking/spinlock_debug.c:116
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:133 [inline]
- _raw_spin_lock_irqsave+0x4c/0x60 kernel/locking/spinlock.c:166
- __wake_up_common_lock+0x30/0x1f0 kernel/sched/wait.c:124
- unlock_metapage fs/jfs/jfs_metapage.c:40 [inline]
- release_metapage+0x131/0xa60 fs/jfs/jfs_metapage.c:872
- xtTruncate+0xeaa/0x2eb0 fs/jfs/jfs_xtree.c:-1
- </TASK>
+kernel build error
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+e380443eaa59bfb75a84@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=e380443eaa59bfb75a84
-Link: https://syzkaller.appspot.com/ai_job?id=755ca394-6f1f-4a09-8e45-1a3c045336ed
-To: <jfs-discussion@lists.sourceforge.net>
-To: "Dave Kleikamp" <shaggy@kernel.org>
-Cc: "Arnd Bergmann" <arnd@arndb.de>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Suchit Karunakaran" <suchitkarunakaran@gmail.com>
-Cc: "Yun Zhou" <yun.zhou@windriver.com>
-Cc: "Zheng Yu" <zheng.yu@northwestern.edu>
+tree:      nf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
+base:      b73bc9ca3686b78b642fb35dcc1fdf874ecb74a1
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/1c6c3eec-35f4-4096-93de-cecb79369f05/config
+
+net/netfilter/nfnetlink_hook.c:375:16: error: expected ';' after expression
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v2:
-- Combined the BT_ROOT flag validation with the existing page integrity check in DT_GETPAGE.
-- Unified the error message in DT_GETPAGE for both root and leaf page corruption.
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v1:
-https://lore.kernel.org/all/65efb3d8-bbf9-4f4b-800e-b9bc5577b381@mail.kernel.org/T/
----
-diff --git a/fs/jfs/jfs_dtree.c b/fs/jfs/jfs_dtree.c
-index ac0f79faf..2b6bdea1f 100644
---- a/fs/jfs/jfs_dtree.c
-+++ b/fs/jfs/jfs_dtree.c
-@@ -111,19 +111,20 @@ struct dtsplit {
- #define DT_PAGE(IP, MP) BT_PAGE(IP, MP, dtpage_t, i_dtroot)
- 
- /* get page buffer for specified block address */
--#define DT_GETPAGE(IP, BN, MP, SIZE, P, RC)				\
--do {									\
--	BT_GETPAGE(IP, BN, MP, dtpage_t, SIZE, P, RC, i_dtroot);	\
--	if (!(RC)) {							\
--		if ((BN) && !check_dtpage(P)) {				\
--			BT_PUTPAGE(MP);					\
--			jfs_error((IP)->i_sb,				\
--				  "DT_GETPAGE: dtree page corrupt\n");	\
--			MP = NULL;					\
--			RC = -EIO;					\
--		}							\
--	}								\
--} while (0)
-+#define DT_GETPAGE(IP, BN, MP, SIZE, P, RC)                                    \
-+	do {                                                                   \
-+		BT_GETPAGE(IP, BN, MP, dtpage_t, SIZE, P, RC, i_dtroot);       \
-+		if (!(RC)) {                                                   \
-+			if ((((BN) == 0) != !!((P)->header.flag & BT_ROOT)) || \
-+			    ((BN) && !check_dtpage(P))) {                      \
-+				BT_PUTPAGE(MP);                                \
-+				jfs_error((IP)->i_sb,                          \
-+					  "DT_GETPAGE: dtree page corrupt\n"); \
-+				MP = NULL;                                     \
-+				RC = -EIO;                                     \
-+			}                                                      \
-+		}                                                              \
-+	} while (0)
- 
- /* for consistency */
- #define DT_PUTPAGE(MP) BT_PUTPAGE(MP)
-diff --git a/fs/jfs/jfs_xtree.c b/fs/jfs/jfs_xtree.c
-index 28c3cf960..6d960dd96 100644
---- a/fs/jfs/jfs_xtree.c
-+++ b/fs/jfs/jfs_xtree.c
-@@ -118,10 +118,11 @@ static inline xtpage_t *xt_getpage(struct inode *ip, s64 bn, struct metapage **m
- 	if (rc)
- 		return ERR_PTR(rc);
- 	if ((le16_to_cpu(p->header.nextindex) < XTENTRYSTART) ||
--		(le16_to_cpu(p->header.nextindex) >
--			le16_to_cpu(p->header.maxentry)) ||
--		(le16_to_cpu(p->header.maxentry) >
--			((bn == 0) ? XTROOTMAXSLOT : PSIZE >> L2XTSLOTSIZE))) {
-+	    (le16_to_cpu(p->header.nextindex) >
-+	     le16_to_cpu(p->header.maxentry)) ||
-+	    (le16_to_cpu(p->header.maxentry) >
-+	     ((bn == 0) ? XTROOTMAXSLOT : PSIZE >> L2XTSLOTSIZE)) ||
-+	    ((bn == 0) != !!(p->header.flag & BT_ROOT))) {
- 		jfs_error(ip->i_sb, "xt_getpage: xtree page corrupt\n");
- 		BT_PUTPAGE(*mp);
- 		*mp = NULL;
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
 
-base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+The email will later be sent to:
+[fw@strlen.de netfilter-devel@vger.kernel.org pabeni@redhat.com pablo@netfilter.org phil@nwl.cc]
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
