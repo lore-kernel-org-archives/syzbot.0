@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEA0C233933
-	for <syzbot@lists.linux.dev>; Thu,  9 Jul 2026 13:32:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C675819B5B1
+	for <syzbot@lists.linux.dev>; Thu,  9 Jul 2026 13:44:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783603947; cv=none; b=B/ekN/XzF4pwTS0nb1PJhORu5NoDdfnWo65E/+F1ue+JuRpkSAT8NspRAjdXCLWO9CUxDGaCTof/aZChAo/CVphXElhHDKSgWm06t7AB+0cxetLF+XIJi9ald6TX0mJUVy0ArFTcB39JzIPIetzy/Rs/gn8z0aUDh8bSbtzUWjI=
+	t=1783604667; cv=none; b=uoCbycM8KIU4zfnT4sgafRDM69MAIXSUY5Tx4rXLXbuCTeA1M01NuTTe1ZE1zuXdGEAr5DKwz41RjT8UDLeaxXbiY83LrPukYm8EsJOaIwxf3raABmJhkc5hORzUcvvg3IwUyjccF5NrCw7sOmBUVMovcyTowM2SH/9lkJ1x4ZQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783603947; c=relaxed/simple;
-	bh=oLJkX98KDZ+ydOlC+s77lXnA8jJ6F+vP9GYEjjajW8Q=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=X+7tB9gXB3+aIHPiXoOsYG4qBJWmO6eSBANpeg0JFWnhiCJjXqAu94BC29FaX7fF3byNa8rwWS+mKkCncTA/BYdL7pwESEcQh6Posn88xIFXZoae81G1Y2m5SM6eJZ0ex7jDnjLJ0k2DIx6LRFRdQRqrEuzJKTIMVMFxOAwqmm0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ff7XrD9p; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783604667; c=relaxed/simple;
+	bh=hbahqmH47ydGVJfPlOfcLbzeSBz7vmTqyq4z57DRltA=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=DBeke4LuBZBSpD4ogRlJeyNX+p1yE1SJSMSSppTS6Susf+frUIMdvZkfoPKh0s17xMT+/vTf4NO9ais+zxJgF/nGaceClJl2CkHQ8HzBarJRAdcBV+oNRjw7lH8BA3oT+eAwqLz1AhmOlErChLAA3zMGSbdrIRBTCZXE9n2hut4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XgA0/m96; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ff7XrD9p"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 595EB1F00A3A;
-	Thu,  9 Jul 2026 13:32:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XgA0/m96"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 62F551F000E9;
+	Thu,  9 Jul 2026 13:44:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783603945;
-	bh=3eOA+uebrzc4PC2dYA/xtsDjoMp86SzrpnWms4KahAQ=;
+	s=k20260515; t=1783604665;
+	bh=DR5x4wxahHow7ph6ulrZTkUjKBwM6J+ulkYjA4TiZnk=;
 	h=From:To:Cc:Subject:Date;
-	b=Ff7XrD9p/N/xcp2+EZk7kvsMDQQAEmHqnW3+2owLg5llGQ6mI2j84/kAgksqhuvkh
-	 e2pjMSd1Uh5AoDyjAaSYnZlnMXuKcne3WKqzoeChQybx9Q22ERzkB865hnrgzUrZ+F
-	 Qb3X2ta/rK3DWnbguuRHVxMK8wR2HL5M72WGP+I96lQhaKmTTWvJg79wBmhKP+sVB7
-	 blKt82ysSkRYUd/DRBO7NEzefYPjghvPFmKuwwDKHKUcp1WxBPGHaMShUAmCvNLJa5
-	 389Gdt84RDBEVb9yo5IbbaWB6ncR+1WTfFEfJkCnvKMAcBdjl+4JRMCLTF/jwH+P4d
-	 N2h2f0FsHGEiQ==
+	b=XgA0/m96ZnjDCV0Qla6Y2H65uVLgX6zUBIOEbpUwf6TxUD2Sr23AoKDyFyiu1XmL2
+	 8nTuZcGdLhIqFVNjPjP5knMLiUWi/8zjHuRjzVr2D5XyEgS+9iHRceOUVfDOjUnaov
+	 zzMK7LpdBcugld7hFLJnnP6MeUvPWRo5dqmv1FLd2/33Y81JAtJ/fUHzR2JRGVsQAg
+	 DVDElBB50VzuxxWdUKJdKwPpiTq/jEQIFwoBH5VR4Nh7X1VHuSCyYYghWVIzMSPV8I
+	 hLRvjf8HWNJIJTKPkQcUJWLnBEh44Zt7282ypzR/JmES8T910WMps+wRBMHpkrMuiG
+	 2urx6hMUnm/ag==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] fuse: allow fatal signals to interrupt forced requests
-Message-ID: <5172c535-3f9d-4ed1-8855-414eee9a6010@mail.kernel.org>
+Subject: [PATCH RFC] ipvlan: hold reference to lower device to prevent use-after-free
+Message-ID: <e66f374b-905f-471b-989e-60a3e0505873@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,102 +38,128 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Thu,  9 Jul 2026 13:32:25 +0000 (UTC)
+Date: Thu,  9 Jul 2026 13:44:25 +0000 (UTC)
 
-A single-threaded FUSE server can deadlock itself and cause a hung task
-panic if it calls close_range(). This syscall closes all open file
-descriptors, including the FUSE file descriptor. Closing the FUSE file
-triggers a FUSE_FLUSH request. Because the process is single-threaded and
-blocked in the kernel waiting for the flush reply, it cannot read the
-request from /dev/fuse and reply to it.
+The ipvlan driver does not hold a reference to its lower device (phy_dev),
+allowing the lower device to be freed while the ipvlan device is still
+alive and being accessed.
 
-FUSE_FLUSH requests are sent with the FR_FORCE flag. In
-request_wait_answer(), forced requests skip the wait_event_killable() block
-and wait uninterruptibly (wait_event()). This makes the task completely
-unkillable (D state) and triggers the hung task watchdog:
+If a stacked network device configuration is created (e.g., a veth device
+as the lower device, an ipvlan device on top, and an rxe device on top of
+ipvlan), the rxe device holds a reference to the ipvlan device. When the
+veth device is unregistered, the ipvlan driver receives a NETDEV_UNREGISTER
+event and unregisters the ipvlan device. This triggers a NETDEV_UNREGISTER
+event for the ipvlan device, which is caught by the rxe driver, queuing
+asynchronous work to unregister the rxe device and drop its reference to
+the ipvlan device.
 
-INFO: task blocked for more than 143 seconds.
+During this process, netdev_run_todo() waits for the refcounts of both veth
+and ipvlan devices to drop to 1. Since the ipvlan device's refcount is
+elevated by the pending rxe unregistration, it is kept alive. However,
+because ipvlan does not hold a reference to its lower veth device, the veth
+device's refcount drops to 1, and netdev_run_todo() proceeds to free it.
+This leaves ipvlan->phy_dev as a dangling pointer.
+
+If an operation (like querying port attributes via ethtool) is performed on
+the ipvlan device while it is still alive, it can access the freed lower
+device, triggering a use-after-free:
+
+BUG: KASAN: slab-use-after-free in netdev_need_ops_lock
+include/net/netdev_lock.h:30 [inline]
+BUG: KASAN: slab-use-after-free in netdev_lock_ops
+include/net/netdev_lock.h:41 [inline]
+BUG: KASAN: slab-use-after-free in __ethtool_get_link_ksettings+0x230/0x250
+net/ethtool/ioctl.c:463
+Read of size 1 at addr ffff888118fece09 by task kworker/0:2/919
+
 Call Trace:
  <TASK>
- __schedule+0x17d9/0x56c0 kernel/sched/core.c:7234
- schedule+0x164/0x2b0 kernel/sched/core.c:7326
- request_wait_answer fs/fuse/dev.c:743 [inline]
- __fuse_request_send fs/fuse/dev.c:757 [inline]
- fuse_chan_send+0x1065/0x1ac0 fs/fuse/dev.c:833
- fuse_flush+0x66e/0x8b0 fs/fuse/file.c:504
- filp_flush+0xbd/0x190 fs/open.c:1471
- filp_close+0x1d/0x40 fs/open.c:1484
- __range_close fs/file.c:793 [inline]
- __do_sys_close_range fs/file.c:854 [inline]
- __se_sys_close_range+0x3d3/0x900 fs/file.c:818
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
+ netdev_need_ops_lock include/net/netdev_lock.h:30 [inline]
+ netdev_lock_ops include/net/netdev_lock.h:41 [inline]
+ __ethtool_get_link_ksettings+0x230/0x250 net/ethtool/ioctl.c:463
+ __ethtool_get_link_ksettings+0x11f/0x250 net/ethtool/ioctl.c:464
+ ib_get_eth_speed+0x180/0x7f0 drivers/infiniband/core/verbs.c:2052
+ rxe_query_port+0x93/0x3d0 drivers/infiniband/sw/rxe/rxe_verbs.c:56
+ __ib_query_port drivers/infiniband/core/device.c:2129 [inline]
+ ib_query_port+0x16e/0x830 drivers/infiniband/core/device.c:2161
+ smc_ib_remember_port_attr net/smc/smc_ib.c:364 [inline]
+ smc_ib_port_event_work+0x147/0x920 net/smc/smc_ib.c:388
+ ...
  </TASK>
 
-Historically, FR_FORCE was introduced to prevent FUSE_FLUSH from being
-interrupted by normal signals (like SIGINT), as cancelling it could lead to
-leaked POSIX locks on the server. However, making it completely
-uninterruptible even by fatal signals (SIGKILL) causes this unrecoverable
-deadlock.
+Fix this by holding a reference to the lower device using a
+netdevice_tracker in struct ipvl_dev. The reference is acquired in
+ipvlan_init() and released in a new priv_destructor callback
+(ipvlan_dev_free). Releasing the reference in priv_destructor guarantees
+that the lower device is held until the absolute end of the ipvlan device's
+lifetime, after netdev_run_todo() has finished waiting for the ipvlan
+device's refcount to drop to 1. This mirrors the behavior of other stacked
+devices like macvlan and vlan, and safely covers ipvtap devices as well.
 
-If a process is killed by a fatal signal, it is acceptable to cancel the
-FUSE_FLUSH request. The process is exiting, and all its file descriptors
-will be closed, which will eventually trigger a FUSE_RELEASE request. Since
-FUSE protocol 7.8, FUSE_RELEASE contains the lock_owner, allowing a
-well-written server to clean up any remaining POSIX locks. Even if a poorly
-written server leaks locks, a resource leak in a userspace server is vastly
-preferable to a kernel panic.
-
-By removing the !test_bit(FR_FORCE, &req->flags) condition around the
-wait_event_killable() block in request_wait_answer(), we allow forced
-requests to be interrupted by fatal signals. This places the task in the
-TASK_KILLABLE state, which the hung task watchdog ignores, preventing the
-panic. It also allows the task to be killed by SIGKILL, breaking the
-deadlock and allowing the task to exit gracefully.
-
-Fixes: 7142125937e1 ("[PATCH] fuse: add POSIX file locking support")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+a531d1b1fb0fa2a75a73@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=a531d1b1fb0fa2a75a73
-Link: https://syzkaller.appspot.com/ai_job?id=864cba22-20c3-4bfa-b461-b7208b3fac7d
-To: <fuse-devel@lists.linux.dev>
-To: "Miklos Szeredi" <miklos@szeredi.hu>
+Fixes: 2ad7bf363841 ("ipvlan: Initial check-in of the IPVLAN driver.")
+Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+5fe14f2ff4ccbace9a26@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=5fe14f2ff4ccbace9a26
+Link: https://syzkaller.appspot.com/ai_job?id=43c4fc37-40e6-4515-8ae6-40bdb52bb303
+To: "Andrew Lunn" <andrew+netdev@lunn.ch>
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+Cc: "Dmitry Skorodumov" <dskr99@gmail.com>
+Cc: "Kees Cook" <kees@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
+Cc: "Stanislav Fomichev" <sdf@fomichev.me>
 
 ---
-diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
-index 5763a7cd3..75943da8c 100644
---- a/fs/fuse/dev.c
-+++ b/fs/fuse/dev.c
-@@ -714,10 +714,17 @@ static void request_wait_answer(struct fuse_req *req)
- 			queue_interrupt(req);
+diff --git a/drivers/net/ipvlan/ipvlan.h b/drivers/net/ipvlan/ipvlan.h
+index 80f84fc87..13cdad002 100644
+--- a/drivers/net/ipvlan/ipvlan.h
++++ b/drivers/net/ipvlan/ipvlan.h
+@@ -64,6 +64,7 @@ struct ipvl_dev {
+ 	struct list_head	pnode;
+ 	struct ipvl_port	*port;
+ 	struct net_device	*phy_dev;
++	netdevice_tracker dev_tracker;
+ 	struct list_head	addrs;
+ 	struct ipvl_pcpu_stats	__percpu *pcpu_stats;
+ 	DECLARE_BITMAP(mac_filters, IPVLAN_MAC_FILTER_SIZE);
+diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
+index ed46439a9..b1435296a 100644
+--- a/drivers/net/ipvlan/ipvlan_main.c
++++ b/drivers/net/ipvlan/ipvlan_main.c
+@@ -162,6 +162,9 @@ static int ipvlan_init(struct net_device *dev)
  	}
+ 	port = ipvlan_port_get_rtnl(phy_dev);
+ 	port->count += 1;
++
++	netdev_hold(phy_dev, &ipvlan->dev_tracker, GFP_KERNEL);
++
+ 	return 0;
+ }
  
--	if (!test_bit(FR_FORCE, &req->flags)) {
-+	{
- 		bool removed;
+@@ -673,6 +676,13 @@ void ipvlan_link_delete(struct net_device *dev, struct list_head *head)
+ }
+ EXPORT_SYMBOL_GPL(ipvlan_link_delete);
  
--		/* Only fatal signals may interrupt this */
-+		/*
-+		 * Only fatal signals may interrupt this.
-+		 * Forced requests (like FUSE_FLUSH) used to be completely
-+		 * uninterruptible, but it can cause self-deadlocks.
-+		 * If killed, we cancel the request. POSIX locks might be
-+		 * leaked on the server, but the process is dying anyway,
-+		 * and FUSE_RELEASE will be sent.
-+		 */
- 		err = wait_event_killable(req->waitq,
- 					test_bit(FR_FINISHED, &req->flags));
- 		if (!err)
-@@ -737,8 +744,7 @@ static void request_wait_answer(struct fuse_req *req)
- 	}
- 
- 	/*
--	 * Either request is already in userspace, or it was forced.
--	 * Wait it out.
-+	 * Request is already in userspace, wait it out.
- 	 */
- 	wait_event(req->waitq, test_bit(FR_FINISHED, &req->flags));
++static void ipvlan_dev_free(struct net_device *dev)
++{
++	struct ipvl_dev *ipvlan = netdev_priv(dev);
++
++	netdev_put(ipvlan->phy_dev, &ipvlan->dev_tracker);
++}
++
+ void ipvlan_link_setup(struct net_device *dev)
+ {
+ 	ether_setup(dev);
+@@ -682,6 +692,7 @@ void ipvlan_link_setup(struct net_device *dev)
+ 	dev->priv_flags |= IFF_UNICAST_FLT | IFF_NO_QUEUE;
+ 	dev->netdev_ops = &ipvlan_netdev_ops;
+ 	dev->needs_free_netdev = true;
++	dev->priv_destructor = ipvlan_dev_free;
+ 	dev->header_ops = &ipvlan_header_ops;
+ 	dev->ethtool_ops = &ipvlan_ethtool_ops;
  }
 
 
