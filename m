@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D9EE3F0747
-	for <syzbot@lists.linux.dev>; Thu,  9 Jul 2026 12:07:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0D654219F6
+	for <syzbot@lists.linux.dev>; Thu,  9 Jul 2026 12:33:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783598847; cv=none; b=Pp23QxQuVG/YsQoWWwnYvNwR1kKadbgg7Wf6P9nPJ93vMA3jTVKvfctm3NsHfX1wucC27fga6dMQd9/ywWYlFVwjLuU3HCJPNvG/USpHOhc8i47uR1keMqsXCmKUbOabD7v1C2OQpOzIK1oLpkaH3OCo9dzGDYtwL/S3U+7REPk=
+	t=1783600437; cv=none; b=sN42hRzA8shuk6dVjO3gheeHY1DdkfPHrYiUtbTlsLT3vV+FC7UJNBt1IEMw1t9M28nQPt9avZAPNo2HHvDgetGUEHCsgRPYRbOPsx/lKfWqBoiN1yMISL27oVJAN8jf2Ha/bQf+GaXHRE5U2V7u6H5As39tZ4yU9304WAd2FLs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783598847; c=relaxed/simple;
-	bh=Yj7eZP3NjfSoBG+KpinZc8al4Mu+iRj1BVcKemJUwTI=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=t7F5Ef5yeHu8W+rk2NuAV5B4+BBlsdzZ8NtGRjEiBOHA5No/7QYwuI5ynYkw5VBoti57LzvL57GwWL93JmcCjG8PnqoT4/fbcsAe0UFIkmg+3HptxIVL5knnCk0428FrfYxRLJhPlSw3QnfoRe/jY6mLzaxkScJ8wPPIRwTj4bw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q1fSscrF; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783600437; c=relaxed/simple;
+	bh=7IfHAChe1tl5CBdOpDPj0DE7+mwv4U52eu7/mgz6Abc=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=jDffN/Zdfs2t7RVEoC77Paxf7IwH9sEatDmTtPQsfPodfqrfbt/OWIh+V5F0Xs+3bjWBYCj3atcwY9Tzmv8JGDyjs9UbFyehDO2kWUQ5mYemNYHHwHxKeUm4Eh8vV2DpOMvhhTPHCkDnFu1k4erh6izZ/m/vYloeMK0o5KK+hrI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cNqazM9Z; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q1fSscrF"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A65A11F000E9;
-	Thu,  9 Jul 2026 12:07:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cNqazM9Z"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 4940A1F000E9;
+	Thu,  9 Jul 2026 12:33:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783598845;
-	bh=jmqYXeTbZ593sQL3VChjh0Fzf2rH1J7UR+recY54xTU=;
+	s=k20260515; t=1783600435;
+	bh=G+iKGahmoddqAGgUhdqPEmXbTnBfoQqkecn4o/sjSyc=;
 	h=From:To:Cc:Subject:Date;
-	b=Q1fSscrFfRFU2LSeM2T+FqUgMQQT4GVva85yhrMSYX6kHa9EiWx6S+Qp/zw4dOKBM
-	 pApBgWQ4/Bj/n2CiBZwGKPM/6FI90D85wUkt8czcqSxMWRlV+kBA8Rkl1kGuEffN1t
-	 3LqK3DnArhb6Zay7waRctgU6u2hLuBJGwmQtY7ba2xMzdQabMLq++aGYs58GyHkjnT
-	 9/sQyzgyVIO6AmyDCfPuJZlHdt/BGKAuSwDnzSBc79TH0FpbIZcsXWFp1CUg+RBjYZ
-	 cVB4DoU1/mxCkpIbKWVu297YrlXbg2gPATW3duIU66P5rXZE89AtekJtpACqldbLkJ
-	 qaYwfHhKkzzHQ==
+	b=cNqazM9Zynwr0v1Dg+REOCqcmBmCqlF7MizegJ7dxw4D+2/MMuQowkpdCF1Tbq/g8
+	 3VKGmx07coI5comKF4yT055LEOA8l0LpJd2KTjIyJFh53Gb6qTixmi1U/oNylwKmKT
+	 8xB2uU0+0fU5lUswqKFrtn+beP4RWt2d4YQVCvT6dy9JIpHLg50RdLBHwFWEnNUfL8
+	 WrE8bFCiGsBKs6mBXO+0+82ICOaIAkmYJQIWhgfM7S0kYkEV88QXP2Dkvpyc5UAyhK
+	 JN8fX8+HrHhik1TSj3ZDM2A23MZrbphxaoK3r9uTg18M8VEAgzwLB2Y5JH27FkIyj1
+	 myYNdfLuN2jFA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] fs/ntfs3: handle partial allocation in attr_data_get_block_locked()
-Message-ID: <69fc5364-da7a-4a91-bdff-078af00db6f6@mail.kernel.org>
+Subject: [PATCH RFC] net/sched: taprio: fix hrtimer interrupt storm on small intervals
+Message-ID: <bc6a8890-9230-489a-bbce-5c255c1ef01a@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,70 +38,201 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Thu,  9 Jul 2026 12:07:25 +0000 (UTC)
+Date: Thu,  9 Jul 2026 12:33:55 +0000 (UTC)
 
-When allocating clusters for a sparse or compressed attribute in
-attr_data_get_block_locked(), the requested virtual cluster number (vcn0)
-is aligned down to a frame boundary (vcn). The function then attempts to
-allocate a full frame of clusters.
+The taprio qdisc allows configuring extremely small intervals (e.g., 255
+ns) which are valid for hardware offload but completely overwhelm the CPU
+when using software timers. When the interval is smaller than the time it
+takes to process the timer interrupt, the timer's expiration time is always
+in the past. This causes the hrtimer subsystem to continuously re-enqueue
+and fire the timer, leading to an interrupt storm that starves the CPU and
+triggers an RCU stall:
 
-If the disk is nearly full and highly fragmented, attr_allocate_clusters()
-might only manage to allocate a small fragment and return success with a
-partial allocation length. If this partial allocation is so small that it
-does not even reach the originally requested vcn0 (i.e., end <= vcn0), vcn0
-remains unallocated (a sparse hole).
+rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+rcu: 	1-...!: (1 GPs behind) idle=9714/0/0x1 softirq=132447/132447 fqs=1
+rcu: 	(detected by 0, t=10505 jiffies, g=152477, q=510 ncpus=2)
+rcu: rcu_preempt kthread starved for 10501 jiffies! g152477 f0x0
+RCU_GP_WAIT_FQS(5) ->state=0x0 ->cpu=0
+rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now
+expected behavior.
 
-When the code subsequently calls run_lookup_entry() for vcn0, it finds the
-original SPARSE_LCN entry, which triggers a WARN_ON(1).
+To fix this, implement two strategies. First, enforce sensible minimums in
+software mode by rejecting intervals and cycle times smaller than
+NSEC_PER_USEC (1 microsecond) when hardware offload is not enabled. Second,
+prevent timer stalls in advance_sched() by fast-forwarding the schedule to
+the current time instead of blindly restarting the timer in the past. This
+is done efficiently by skipping full cycles using division, and then
+looping through the remaining entries. To prevent the loop itself from
+causing a stall, cap the iterations at 2048 and yield the CPU if necessary
+by setting the timer to fire 1 microsecond in the future.
 
-Fix this by adding a check to verify if the partial allocation reached
-vcn0. If it did not (vcn0 >= end), treat this as an -ENOSPC failure and
-jump to the undo1 label. This safely rolls back the partial allocation,
-restores the original size, and repacks the runs, leaving the inode in a
-consistent state before returning the error to the caller.
-
-WARNING: fs/ntfs3/attrib.c:1236 at attr_data_get_block_locked+0x1980/0x25d0
-fs/ntfs3/attrib.c:1236
-RIP: 0010:attr_data_get_block_locked+0x1980/0x25d0 fs/ntfs3/attrib.c:1236
-Call Trace:
- <TASK>
- attr_data_get_block+0x1f1/0x2a0 fs/ntfs3/attrib.c:979
- ntfs_fallocate+0xd3d/0xf70 fs/ntfs3/file.c:670
- vfs_fallocate+0x663/0x7f0 fs/open.c:338
- ksys_fallocate fs/open.c:362 [inline]
- __do_sys_fallocate fs/open.c:367 [inline]
- __se_sys_fallocate fs/open.c:365 [inline]
- __x64_sys_fallocate+0xbf/0x110 fs/open.c:365
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
-
-Fixes: 099ef9ab9203 ("fs/ntfs3: implement iomap-based file operations")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+7be6ad5cb228286af3e3@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=7be6ad5cb228286af3e3
-Link: https://syzkaller.appspot.com/ai_job?id=3c9dee6e-001d-4972-8bf6-f6c960708246
-To: "Konstantin Komarov" <almaz.alexandrovich@paragon-software.com>
-To: <ntfs3@lists.linux.dev>
+Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
+Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+f8850bc3986562f79619@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=f8850bc3986562f79619
+Link: https://syzkaller.appspot.com/ai_job?id=4e81d0c1-77be-4527-8698-9eadc019d766
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jamal Hadi Salim" <jhs@mojatatu.com>
+To: "Jiri Pirko" <jiri@resnulli.us>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
+Cc: "Simon Horman" <horms@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c
-index c621a4c58..786fd0ec0 100644
---- a/fs/ntfs3/attrib.c
-+++ b/fs/ntfs3/attrib.c
-@@ -1227,6 +1227,10 @@ int attr_data_get_block_locked(struct ntfs_inode *ni, CLST vcn, CLST clen,
- 	total_size = total_size0 + ((u64)*len << cluster_bits);
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 299234a5f..910de14c4 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -944,46 +944,83 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 	 * entry of all schedules are pre-calculated during the
+ 	 * schedule initialization.
+ 	 */
+-	if (unlikely(!entry || entry->end_time == oper->base_time)) {
+-		next = list_first_entry(&oper->entries, struct sched_entry,
+-					list);
+-		end_time = next->end_time;
+-		goto first_run;
+-	}
+-
+-	if (should_restart_cycle(oper, entry)) {
+-		next = list_first_entry(&oper->entries, struct sched_entry,
+-					list);
+-		oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
+-						    oper->cycle_time);
+-	} else {
+-		next = list_next_entry(entry, list);
+-	}
++	int max_iter = 2048;
++	ktime_t now = taprio_get_time(q);
  
- 	if (vcn != vcn0) {
-+		if (vcn0 >= end) {
-+			err = -ENOSPC;
-+			goto undo1;
+-	end_time = ktime_add_ns(entry->end_time, next->interval);
+-	end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
++	do {
++		if (unlikely(!entry || entry->end_time == oper->base_time)) {
++			next = list_first_entry(&oper->entries,
++						struct sched_entry, list);
++			end_time = next->end_time;
++			goto first_run;
 +		}
- 		if (!run_lookup_entry(run, vcn0, lcn, len, NULL)) {
- 			err = -EINVAL;
- 			goto out;
+ 
+-	for (tc = 0; tc < num_tc; tc++) {
+-		if (next->gate_duration[tc] == oper->cycle_time)
+-			next->gate_close_time[tc] = KTIME_MAX;
+-		else
+-			next->gate_close_time[tc] = ktime_add_ns(entry->end_time,
+-								 next->gate_duration[tc]);
+-	}
++		if (should_restart_cycle(oper, entry)) {
++			next = list_first_entry(&oper->entries,
++						struct sched_entry, list);
++			oper->cycle_end_time = ktime_add_ns(
++				oper->cycle_end_time, oper->cycle_time);
++		} else {
++			next = list_next_entry(entry, list);
++		}
+ 
+-	if (should_change_schedules(admin, oper, end_time)) {
+-		switch_schedules(q, &admin, &oper);
+-		/* After changing schedules, the next entry is the first one
+-		 * in the new schedule, with a pre-calculated end_time.
+-		 */
+-		next = list_first_entry(&oper->entries, struct sched_entry, list);
+-		end_time = next->end_time;
+-	}
++		end_time = ktime_add_ns(entry->end_time, next->interval);
++		end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
++
++		for (tc = 0; tc < num_tc; tc++) {
++			if (next->gate_duration[tc] == oper->cycle_time)
++				next->gate_close_time[tc] = KTIME_MAX;
++			else
++				next->gate_close_time[tc] =
++					ktime_add_ns(entry->end_time,
++						     next->gate_duration[tc]);
++		}
++
++		if (should_change_schedules(admin, oper, end_time)) {
++			switch_schedules(q, &admin, &oper);
++			/* After changing schedules, the next entry is the first one
++			 * in the new schedule, with a pre-calculated end_time.
++			 */
++			next = list_first_entry(&oper->entries,
++						struct sched_entry, list);
++			end_time = next->end_time;
++		}
+ 
+-	next->end_time = end_time;
+-	taprio_set_budgets(q, oper, next);
++		next->end_time = end_time;
++		taprio_set_budgets(q, oper, next);
+ 
+ first_run:
++		if (ktime_after(end_time, now))
++			break;
++
++		if (!admin && ktime_before(end_time, now)) {
++			s64 diff = ktime_sub(now, end_time);
++			s64 cycles = div64_s64(diff, oper->cycle_time);
++			if (cycles > 0) {
++				oper->cycle_end_time =
++					ktime_add_ns(oper->cycle_end_time,
++						     cycles * oper->cycle_time);
++				end_time = ktime_add_ns(
++					end_time, cycles * oper->cycle_time);
++				next->end_time = end_time;
++				for (tc = 0; tc < num_tc; tc++) {
++					if (next->gate_close_time[tc] !=
++					    KTIME_MAX)
++						next->gate_close_time
++							[tc] = ktime_add_ns(
++							next->gate_close_time[tc],
++							cycles *
++								oper->cycle_time);
++				}
++			}
++		}
++
++		entry = next;
++	} while (--max_iter > 0);
++
++	if (max_iter == 0)
++		end_time = ktime_add_ns(now, NSEC_PER_USEC);
++
+ 	rcu_assign_pointer(q->current_entry, next);
+ 	spin_unlock(&q->current_entry_lock);
+ 
+@@ -1061,6 +1098,13 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
+ 		return -EINVAL;
+ 	}
+ 
++	if (!FULL_OFFLOAD_IS_ENABLED(q->flags) && interval < NSEC_PER_USEC) {
++		NL_SET_ERR_MSG(
++			extack,
++			"Invalid interval for software taprio, must be at least 1 us");
++		return -EINVAL;
++	}
++
+ 	entry->interval = interval;
+ 
+ 	return 0;
+@@ -1171,6 +1215,13 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+ 		return -EINVAL;
+ 	}
+ 
++	if (!FULL_OFFLOAD_IS_ENABLED(q->flags) &&
++	    new->cycle_time < NSEC_PER_USEC) {
++		NL_SET_ERR_MSG(extack,
++			       "'cycle_time' is too small for software taprio");
++		return -EINVAL;
++	}
++
+ 	taprio_calculate_gate_durations(q, new);
+ 
+ 	return 0;
 
 
 base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
