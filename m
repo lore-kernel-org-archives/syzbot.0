@@ -1,104 +1,117 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AA213F44CB
-	for <syzbot@lists.linux.dev>; Thu,  9 Jul 2026 11:43:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D9EE3F0747
+	for <syzbot@lists.linux.dev>; Thu,  9 Jul 2026 12:07:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783597405; cv=none; b=Wx2staI3NTBFISM65wB8YaWUwpgBtmalPpsJbd/8s+On5ibdgiBkvXi5Lpx0Tz+NBAcdufeZc5NcyH3Z9b666TwvjSyA7OyE/OV6EPuMuGMr8UvwoZ13U5us6qQxP0X5c3AURrmyZ75bTyw+F4Dxdqm9OjTwhQpDBzaGQnGcVho=
+	t=1783598847; cv=none; b=Pp23QxQuVG/YsQoWWwnYvNwR1kKadbgg7Wf6P9nPJ93vMA3jTVKvfctm3NsHfX1wucC27fga6dMQd9/ywWYlFVwjLuU3HCJPNvG/USpHOhc8i47uR1keMqsXCmKUbOabD7v1C2OQpOzIK1oLpkaH3OCo9dzGDYtwL/S3U+7REPk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783597405; c=relaxed/simple;
-	bh=8zT2FVdUcVAuOy4HbUEeH4iPlvJUWCrouHCkMo6WfXA=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=qFClCPxB+y9sJER2SsFFuNmDw2RLcSiP52gHWo0OYjNv7tYYlrP8/a7gYqArLwx6PcKXyUhqeKtdIURmiw9YdFU/2ORnJhiStBXWoz+D8phKhs/AF/vnr40vElPt20PIDOSbYF8yJ8VzMZCSPz25/5WiRyBoAyUT4goKQtpjKu4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6a37fb394d5so652869eaf.0
-        for <syzbot@lists.linux.dev>; Thu, 09 Jul 2026 04:43:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783597403; x=1784202203;
-        h=content-type:cc:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=t/HGVYTQAs8Uevd/ZlFkHPQYCq0NPC3t7vYv0eoJD3U=;
-        b=G8faPFXGeivstKUyhlPtXbWzfukNlvGk16ALTS7UF6BWRuT3oIknu5dqXj9lypY/Hr
-         JUUTf71l6NzhjW0jiozAmHwvm5u8EyWczDUhBNCDl5//qPpc05FHYkyrXGtb5gz96OzX
-         cWyKuT2Srfbiea8LrJmXbF7aWUokuwEe0h4TJwenVd2Pbxb8J7SwWdMiKE68R4oHMaUD
-         kJ/Ofp1qctGNncqq8p//LpCiOXGM090yP6rRYxQybzXT8yFU1do6MvP0ZFJKdcd+pNyp
-         h1t7O72rpMgURT38XNdRk8zIEtmw9oumgyGUOn01SkqOpDdnY+vrnlfpOgJERbFUT33r
-         OtcA==
-X-Gm-Message-State: AOJu0YycT7SJwAMrTiqqwtT7Svn98XDXiZnfYOQt8+vEzbZ9hKzhHzRK
-	S97jR/kXVH424VEvlQlICT+jIB4QdZ8HbDF3EeQSpvPUjzC0FLH4PKdArP835ekecEXZZ455Tak
-	ES+WlWY+RLSsMIG6gA2semgo6WbG4/dcdWPZ5mpEfR3AvYlW12petkCBrWxA=
+	s=arc-20240116; t=1783598847; c=relaxed/simple;
+	bh=Yj7eZP3NjfSoBG+KpinZc8al4Mu+iRj1BVcKemJUwTI=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=t7F5Ef5yeHu8W+rk2NuAV5B4+BBlsdzZ8NtGRjEiBOHA5No/7QYwuI5ynYkw5VBoti57LzvL57GwWL93JmcCjG8PnqoT4/fbcsAe0UFIkmg+3HptxIVL5knnCk0428FrfYxRLJhPlSw3QnfoRe/jY6mLzaxkScJ8wPPIRwTj4bw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q1fSscrF; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q1fSscrF"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A65A11F000E9;
+	Thu,  9 Jul 2026 12:07:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783598845;
+	bh=jmqYXeTbZ593sQL3VChjh0Fzf2rH1J7UR+recY54xTU=;
+	h=From:To:Cc:Subject:Date;
+	b=Q1fSscrFfRFU2LSeM2T+FqUgMQQT4GVva85yhrMSYX6kHa9EiWx6S+Qp/zw4dOKBM
+	 pApBgWQ4/Bj/n2CiBZwGKPM/6FI90D85wUkt8czcqSxMWRlV+kBA8Rkl1kGuEffN1t
+	 3LqK3DnArhb6Zay7waRctgU6u2hLuBJGwmQtY7ba2xMzdQabMLq++aGYs58GyHkjnT
+	 9/sQyzgyVIO6AmyDCfPuJZlHdt/BGKAuSwDnzSBc79TH0FpbIZcsXWFp1CUg+RBjYZ
+	 cVB4DoU1/mxCkpIbKWVu297YrlXbg2gPATW3duIU66P5rXZE89AtekJtpACqldbLkJ
+	 qaYwfHhKkzzHQ==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] fs/ntfs3: handle partial allocation in attr_data_get_block_locked()
+Message-ID: <69fc5364-da7a-4a91-bdff-078af00db6f6@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a4a:edc3:0:b0:6a3:80b9:d7aa with SMTP id
- 006d021491bc7-6a380b9e1aamr1507290eaf.34.1783597403469; Thu, 09 Jul 2026
- 04:43:23 -0700 (PDT)
-Date: Thu, 09 Jul 2026 04:43:23 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a4f895b.a1ad617e.25832.000d.GAE@google.com>
-Subject: [moderation/CI] Re: Address Sashiko review of NAT hook dump code
-From: syzbot ci <syzbot+ci1d3dee1f96293ea6@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Thu,  9 Jul 2026 12:07:25 +0000 (UTC)
 
-syzbot ci has tested the following series
+When allocating clusters for a sparse or compressed attribute in
+attr_data_get_block_locked(), the requested virtual cluster number (vcn0)
+is aligned down to a frame boundary (vcn). The function then attempts to
+allocate a full frame of clusters.
 
-[v1] Address Sashiko review of NAT hook dump code
-https://lore.kernel.org/all/20260708161940.1477671-1-phil@nwl.cc
-* [nf-next PATCH 1/4] netfilter: nfnetlink_hook: Pass cb object to nfnl_hook_dump_nat()
-* [nf-next PATCH 2/4] netfilter: nfnetlink_hook: Deref hook entry using READ_ONCE()
-* [nf-next PATCH 3/4] netfilter: nfnetlink_hook: Handle multipart NAT hook dumps
-* [nf-next PATCH 4/4] netfilter: nfnetlink_hook: Fix for concurrent NAT hooks dump and change
+If the disk is nearly full and highly fragmented, attr_allocate_clusters()
+might only manage to allocate a small fragment and return success with a
+partial allocation length. If this partial allocation is so small that it
+does not even reach the originally requested vcn0 (i.e., end <= vcn0), vcn0
+remains unallocated (a sparse hole).
 
-and found the following issue:
-kernel build error
+When the code subsequently calls run_lookup_entry() for vcn0, it finds the
+original SPARSE_LCN entry, which triggers a WARN_ON(1).
 
-Full report is available here:
-https://ci.syzbot.org/series/f0c9d07d-a474-4d2d-8448-3f804d40273b
+Fix this by adding a check to verify if the partial allocation reached
+vcn0. If it did not (vcn0 >= end), treat this as an -ENOSPC failure and
+jump to the undo1 label. This safely rolls back the partial allocation,
+restores the original size, and repacks the runs, leaving the inode in a
+consistent state before returning the error to the caller.
 
-***
+WARNING: fs/ntfs3/attrib.c:1236 at attr_data_get_block_locked+0x1980/0x25d0
+fs/ntfs3/attrib.c:1236
+RIP: 0010:attr_data_get_block_locked+0x1980/0x25d0 fs/ntfs3/attrib.c:1236
+Call Trace:
+ <TASK>
+ attr_data_get_block+0x1f1/0x2a0 fs/ntfs3/attrib.c:979
+ ntfs_fallocate+0xd3d/0xf70 fs/ntfs3/file.c:670
+ vfs_fallocate+0x663/0x7f0 fs/open.c:338
+ ksys_fallocate fs/open.c:362 [inline]
+ __do_sys_fallocate fs/open.c:367 [inline]
+ __se_sys_fallocate fs/open.c:365 [inline]
+ __x64_sys_fallocate+0xbf/0x110 fs/open.c:365
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+ </TASK>
 
-kernel build error
-
-tree:      nf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
-base:      b73bc9ca3686b78b642fb35dcc1fdf874ecb74a1
-arch:      amd64
-compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/1c6c3eec-35f4-4096-93de-cecb79369f05/config
-
-net/netfilter/nfnetlink_hook.c:375:16: error: expected ';' after expression
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: 099ef9ab9203 ("fs/ntfs3: implement iomap-based file operations")
+Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
+Reported-by: syzbot+7be6ad5cb228286af3e3@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=7be6ad5cb228286af3e3
+Link: https://syzkaller.appspot.com/ai_job?id=3c9dee6e-001d-4972-8bf6-f6c960708246
+To: "Konstantin Komarov" <almaz.alexandrovich@paragon-software.com>
+To: <ntfs3@lists.linux.dev>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c
+index c621a4c58..786fd0ec0 100644
+--- a/fs/ntfs3/attrib.c
++++ b/fs/ntfs3/attrib.c
+@@ -1227,6 +1227,10 @@ int attr_data_get_block_locked(struct ntfs_inode *ni, CLST vcn, CLST clen,
+ 	total_size = total_size0 + ((u64)*len << cluster_bits);
+ 
+ 	if (vcn != vcn0) {
++		if (vcn0 >= end) {
++			err = -ENOSPC;
++			goto undo1;
++		}
+ 		if (!run_lookup_entry(run, vcn0, lcn, len, NULL)) {
+ 			err = -EINVAL;
+ 			goto out;
 
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
 
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
 
-The email will later be sent to:
-[fw@strlen.de netfilter-devel@vger.kernel.org pabeni@redhat.com pablo@netfilter.org phil@nwl.cc]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
