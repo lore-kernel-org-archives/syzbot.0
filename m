@@ -1,168 +1,155 @@
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 047303DA7C5
-	for <syzbot@lists.linux.dev>; Fri, 10 Jul 2026 07:48:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783669733; cv=none; b=ptwX63FDbDdTxwTmGFqmKvYYU4hZPQ3G672wBPSXGMqb+71R7na7G7dqFnSAnCDUA3VDXGkImhQuWTAUdPmB3P3eOXi9Go6PN6oruV0XLTECwGyWrzvM68VUfuT4x0yfWqKgd6h+xUCIksmWDP+22sqWyFHfSORNXQIQylE+p3A=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783669733; c=relaxed/simple;
-	bh=M3Z6y4YsWmVKCH5ALvDjolmKNa3zXoIsX8XIF7VJupU=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=XR53rEr7pye0lLk/leHUgxMSP2QMJAHtacQYBSK3z+8qpL9mZX9tagaY/8aUyI9Zc+l5lzq1gnGA+Hhaqylx0NWvd+EP46TpFELzMAzs5Xh0WHtrIpMSjTHCLXFkLyD6OkzYjBdrr9TdgxVYTEDOtXEyDOz9fCobfpiLJvnQvd4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-4a41e3d6fe9so104118b6e.2
-        for <syzbot@lists.linux.dev>; Fri, 10 Jul 2026 00:48:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783669726; x=1784274526;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=S7iWmIGSqDaBYznUPH1jSqXgLOb7lcIMTX9KV8of18s=;
-        b=S4WbGWWlvGdgcw2iMoDZVWTS/1tm11VVD0YEUCY55KUctd0utJ58CK2ODXjafeSr3X
-         6fpuOfbHiHCDN0Z3PyKetk8Mr1n6FYYQWfQIspMgNQoPafMuLXRfzm1s9LLeFqZ+5JUe
-         qK3nYs6IPu5FMrooN+0m8RVonvOSftckqfo9zNEL4tSy3WVnyVEecUeWmW3bvczOq9kc
-         i713RtsLfG8Mty2RDW5//oBKBc9cMQT2Rgmx8wLu5rUK2CF19Zlit7EV2D5A+Qapg0pJ
-         0g9RHSZY2Bs48kgqFzvXkpyMLAkSzF1o1P8ngpVC/MUNUqrvIJNi8RId00fNg6ZbLEjw
-         nXfQ==
-X-Gm-Message-State: AOJu0YyyJw9zVYZT2XdQPIwHWMU1ysGPzZNrcX5gxZ2cuMnrJJC097dB
-	KphbaARWL8G/y0/cSKXPFmYi/zLz6G4tBYKAMbxld42n4xmasjRxQrsoz4ED9pI3HiiTfNuI7Hv
-	UZh5g5P32pVJYCkdXoNjoGt+TfLCzXSBc/eZvbQW7A7XneWJ1OlFGXNiM3Ec=
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 880973D5235
+	for <syzbot@lists.linux.dev>; Fri, 10 Jul 2026 08:45:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783673138; cv=pass; b=Xh+rdp4ob6yufprh8WU5lw0IlTxJK8Tc3X3tXEeCACN3s5rpL7+jWN/iq3XHhfVFDR0F/lK5hdRSjsfh4dxROjX1dyKzxZG0OOhMEhkBx0PMjv31J+wgScI2j0hm5oJ1oaAdxZd2MH0kHynM5axgK0w63VbjQqCTKWelroDaFyw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783673138; c=relaxed/simple;
+	bh=9KEb4UQUB+2pvmjb+7tyL3Wz6ehHzrdDenzhICPIKGs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=M00RjM59HIbUMIyM0WldcoCeYyHAacgtdKTyREe5ie9SurH8otZcRoFGhn4Q4jHo3iMA5jWVFO0rS2zl5bAhCY5moeXm33Do96LDquVpjT9NEdh4rmp/iQ7hIwnbBEbSquHdzpmkpNaFnMgXlk+Gfnsodk136e3r8NIyx+AKIgg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=xuQFTKz9; arc=pass smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="xuQFTKz9"
+Received: by smtp.kernel.org (Postfix)
+	id 534DB1F00A3A; Fri, 10 Jul 2026 08:45:36 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=217.74.67.49
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1783673136;
+	b=y+vFlN4odYlDLrTIa0rK53dVpPGbdNJT+tV49EWTI9/xjU1Pj9So6/qIRPncx9DihVAv
+	 Dfbp/OP+9w+xq7xyqmGz+hlM5oTEsZjRzspWfnZjOfbk+FKp0Lf139Vxw5eEtAhw+LLXE
+	 IuFbIv/p+7tsUzJgrL+6j4wVDGd/uhPYktWjFhQSTcLofmz0TiuIR2RDaebnZwlcFwxUa
+	 ZWVBLEoqijbzt7Ys7xuUiluj9aSwU5eocvw/2XUmLiW+nrDy2XWgD5BGIMvDug51DFeiA
+	 0/8qdluXqAu+tg2SW+6SrfxP0UWILrop2Iqu5obIsblR4kVIOuh2FhT2RObLgZRMI8g==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1783673136;
+	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 DKIM-Signature;
+	bh=Los3LQiJD5010/HC5UZN87PkHI2Lwx+x7SnMz753drM=;
+	b=geeVUh5fMl6vdWD3TyocShjfjhrmpdYWEGH5N5eAZLsUaKeG4V9waFv7fKoslXGafLDv
+	 dS/b1+0/FCTPDfEZO0x32M2VeU8c2b4VRlQMTv7fGP1z25T8eDJHHn4EzcUXWfArG+mI/
+	 d/Hq3IlMZkoXufUtA3DsBVIZPclQ10ht4OCNzX9el3D92FvZfKB2nwPMAAkiPqp74Mb6C
+	 En4iVBNVyRGk8fZCuR+gURVxsBa3kCX7w/AJGNYtUPJSLbyh50GarRASbmrOno8mPXFNq
+	 lCDFWPlhylXiGDNCge1yqkXZ8Tkaf3AF9FtNStW+Se38JkLOQwO8Tcn0DgW6bZKg6TA==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=xuQFTKz9;
+	dmarc=pass header.from=poczta.fm;
+	spf=pass smtp.mailfrom=poczta.fm;
+	arc=none smtp.remote-ip=217.74.67.49
+Received: from smtpo49.interia.pl (smtpo49.interia.pl [217.74.67.49])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 302771F000E9
+	for <syzbot@kernel.org>; Fri, 10 Jul 2026 08:45:33 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (1024-bit key, unprotected) header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=xuQFTKz9
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 302771F000E9
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Fri, 10 Jul 2026 10:45:23 +0200 (CEST)
+Date: Fri, 10 Jul 2026 10:45:17 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC] wifi: mac80211: reject station association if AP is
+ not started
+Message-ID: <alCxHUOOepQOJk8-@nr200>
+References: <8e8a5122-a09e-43b2-b42f-4c73b021b173@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:17a9:b0:486:8a11:6e8b with SMTP id
- 5614622812f47-4a2018ccdcemr8598435b6e.2.1783669726573; Fri, 10 Jul 2026
- 00:48:46 -0700 (PDT)
-Date: Fri, 10 Jul 2026 00:48:46 -0700
-In-Reply-To: <20260709091138.170348-1-t.martitz@fritz.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a50a3de.c76b52dc.2a15e.000c.GAE@google.com>
-Subject: [syzbot ci] Re: macvlan: allow source mode devices along with passthru
-From: syzbot ci <syzbot+cibb313f90ba9abb55@syzkaller.appspotmail.com>
-To: andrew@lunn.ch, davem@davemloft.net, edumazet@google.com, horms@kernel.org, 
-	kuba@kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, 
-	pabeni@redhat.com, t.martitz@fritz.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8e8a5122-a09e-43b2-b42f-4c73b021b173@mail.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1783673125; bh=Los3LQiJD5010/HC5UZN87PkHI2Lwx+x7SnMz753drM=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=xuQFTKz9buAjUKoBaPI1lS7ZwC1jhatuyLIZB1ieHA4QyuPtwoiK8Hy+WbadrkxJW
+	 Mgbt9lafKEpEAWHbFDL3LKdsKjKh7hkfqQwSTBsefKjww79y5MmHuE+qgIvf9CpLLe
+	 tprEJR7M7tXvCcjT4U5PoKupMgVZXLZvRkV9RJXo=
 
-syzbot ci has tested the following series
+On lip 01, 2026 09:52, syzbot wrote:
+> If an interface is changed to AP mode but not started, its channel context
+> configuration (chanctx_conf) remains NULL. If a station is then added to
+> this interface, the kernel may automatically set the
+> NL80211_STA_FLAG_ASSOCIATED flag for compatibility with older userspace
+> applications.
+> 
+> When this flag is set, sta_apply_auth_flags() attempts to initialize rate
+> control for the station by calling rate_control_rate_init_all_links(). This
+> eventually leads to rate_control_rate_init(), which dereferences the NULL
+> chanctx_conf, triggering a WARN_ON:
+> 
+> WARNING: net/mac80211/rate.c:51 at rate_control_rate_init+0x5a6/0x630
+> ...
+> Call Trace:
+>  rate_control_rate_init_all_links+0xf4/0x190 net/mac80211/rate.c:84
+>  sta_apply_auth_flags+0x1bc/0x430 net/mac80211/cfg.c:2152
+>  sta_apply_parameters+0x126d/0x1b10 net/mac80211/cfg.c:2618
+>  ieee80211_add_station+0x3de/0x700 net/mac80211/cfg.c:2684
+>  rdev_add_station+0xfc/0x290 net/wireless/rdev-ops.h:201
+>  nl80211_new_station+0x1b4e/0x1fd0 net/wireless/nl80211.c:9505
+> 
+> Fix this by rejecting the addition or modification of a station to the
+> associated state if the AP has not been started (chanctx_conf is NULL).
+> Exempt Multi-Link Operation (MLO) interfaces from this check, as they
+> handle chanctx_conf per-link rather than globally on the VIF, and
+> rate_control_rate_init() already handles them correctly.
 
-[v2] macvlan: allow source mode devices along with passthru
-https://lore.kernel.org/all/20260709091138.170348-1-t.martitz@fritz.com
-* [PATCH v2 1/1] macvlan: allow source mode devices along with passthru
+Well, the rate_control_rate_init() isn't really handling the MLO devices yet:
 
-and found the following issue:
-general protection fault in macvlan_port_release_mac
+	/* SW rate control isn't supported with MLO right now */
+	if (WARN_ON(ieee80211_vif_is_mld(&sta->sdata->vif)))
+		return;
 
-Full report is available here:
-https://ci.syzbot.org/series/72476997-558e-41ae-b146-c05346cdd7f6
+I think we can tackle this some other time, but maybe at the moment it is wise to remove the "and
+rate_control_rate_init() already handles them correctly" from commit message?
 
-***
+> Fixes: 55de908ab292 ("mac80211: use channel contexts")
+> Assisted-by: Gemini:gemini-3.1-pro-preview best-expensive syzbot
+> Reported-by: syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=9bdc0c5998ab45b05030
+> Link: https://syzkaller.appspot.com/ai_job?id=86851195-2aa0-410f-9fc9-952d95ae035d
+> To: "Johannes Berg" <johannes@sipsolutions.net>
+> To: <linux-wireless@vger.kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+> 
+> ---
+> diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
+> index 3b58af59f..b45d7923c 100644
+> --- a/net/mac80211/cfg.c
+> +++ b/net/mac80211/cfg.c
+> @@ -2143,6 +2143,10 @@ static int sta_apply_auth_flags(struct ieee80211_local *local,
+>  	if (mask & BIT(NL80211_STA_FLAG_ASSOCIATED) &&
+>  	    set & BIT(NL80211_STA_FLAG_ASSOCIATED) &&
+>  	    !test_sta_flag(sta, WLAN_STA_ASSOC)) {
+> +		if (!ieee80211_vif_is_mld(&sta->sdata->vif) &&
+> +		    !rcu_access_pointer(sta->sdata->vif.bss_conf.chanctx_conf))
+> +			return -EINVAL;
+> +
 
-general protection fault in macvlan_port_release_mac
+Could you move this check to the if body below (after the comment) where the WLAN_STA_RATE_CONTROL
+flag is checked for? I think having it there, right before calling the
+rate_control_rate_init_all_links(sta); is more readable and done only when the WLAN_STA_RATE_CONTROL
+is not set.
 
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
-base:      fe3e786ef4eb6e47d2901f568a27bd920477bbe9
-arch:      amd64
-compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/0c5e2f82-62bd-40bf-a873-66f277607c07/config
-syz repro: https://ci.syzbot.org/findings/d5d14725-5a48-484c-876d-026175d0b21a/syz_repro
+>  		/*
+>  		 * When peer becomes associated, init rate control as
+>  		 * well. Some drivers require rate control initialized
+> 
+> 
+> base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
 
-batman_adv: batadv0: Removing interface: batadv_slave_1
-veth1_macvtap: left promiscuous mode
-veth0_macvtap: left promiscuous mode
-veth1_vlan: left promiscuous mode
-veth0_vlan: left promiscuous mode
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000118: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x00000000000008c0-0x00000000000008c7]
-CPU: 1 UID: 0 PID: 13 Comm: kworker/u8:1 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: netns cleanup_net
-RIP: 0010:macvlan_passthru drivers/net/macvlan.c:78 [inline]
-RIP: 0010:macvlan_port_release_mac+0x138/0x490 drivers/net/macvlan.c:807
-Code: 01 00 00 48 89 d8 48 c1 e8 03 42 80 3c 20 00 74 08 48 89 df e8 b9 30 ae fb 48 8b 1b 4c 8d b3 c0 08 00 00 4c 89 f0 48 c1 e8 03 <42> 0f b6 04 20 84 c0 0f 85 44 02 00 00 45 8b 36 44 89 f6 83 e6 01
-RSP: 0018:ffffc90000127500 EFLAGS: 00010206
-RAX: 0000000000000118 RBX: 0000000000000000 RCX: ffff888102ec5940
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
-RBP: ffffc90000127630 R08: ffffffff9032faf7 R09: 1ffffffff2065f5e
-R10: dffffc0000000000 R11: fffffbfff2065f5f R12: dffffc0000000000
-R13: 1ffff92000024ea4 R14: 00000000000008c0 R15: ffff888109b28818
-FS:  0000000000000000(0000) GS:ffff8882a9223000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffefe7250d8 CR3: 000000000e746000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- macvlan_port_destroy+0x2eb/0x310 drivers/net/macvlan.c:1343
- unregister_netdevice_many_notify+0x1ad2/0x2150 net/core/dev.c:12464
- unregister_netdevice_many net/core/dev.c:12506 [inline]
- default_device_exit_batch+0x961/0x9e0 net/core/dev.c:13098
- ops_exit_list net/core/net_namespace.c:205 [inline]
- ops_undo_list+0x4b4/0x8d0 net/core/net_namespace.c:252
- cleanup_net+0x572/0x810 net/core/net_namespace.c:702
- process_one_work kernel/workqueue.c:3322 [inline]
- process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:macvlan_passthru drivers/net/macvlan.c:78 [inline]
-RIP: 0010:macvlan_port_release_mac+0x138/0x490 drivers/net/macvlan.c:807
-Code: 01 00 00 48 89 d8 48 c1 e8 03 42 80 3c 20 00 74 08 48 89 df e8 b9 30 ae fb 48 8b 1b 4c 8d b3 c0 08 00 00 4c 89 f0 48 c1 e8 03 <42> 0f b6 04 20 84 c0 0f 85 44 02 00 00 45 8b 36 44 89 f6 83 e6 01
-RSP: 0018:ffffc90000127500 EFLAGS: 00010206
-RAX: 0000000000000118 RBX: 0000000000000000 RCX: ffff888102ec5940
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
-RBP: ffffc90000127630 R08: ffffffff9032faf7 R09: 1ffffffff2065f5e
-R10: dffffc0000000000 R11: fffffbfff2065f5f R12: dffffc0000000000
-R13: 1ffff92000024ea4 R14: 00000000000008c0 R15: ffff888109b28818
-FS:  0000000000000000(0000) GS:ffff8882a9223000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffefe7250d8 CR3: 000000000e746000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess):
-   0:	01 00                	add    %eax,(%rax)
-   2:	00 48 89             	add    %cl,-0x77(%rax)
-   5:	d8 48 c1             	fmuls  -0x3f(%rax)
-   8:	e8 03 42 80 3c       	call   0x3c804210
-   d:	20 00                	and    %al,(%rax)
-   f:	74 08                	je     0x19
-  11:	48 89 df             	mov    %rbx,%rdi
-  14:	e8 b9 30 ae fb       	call   0xfbae30d2
-  19:	48 8b 1b             	mov    (%rbx),%rbx
-  1c:	4c 8d b3 c0 08 00 00 	lea    0x8c0(%rbx),%r14
-  23:	4c 89 f0             	mov    %r14,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	42 0f b6 04 20       	movzbl (%rax,%r12,1),%eax <-- trapping instruction
-  2f:	84 c0                	test   %al,%al
-  31:	0f 85 44 02 00 00    	jne    0x27b
-  37:	45 8b 36             	mov    (%r14),%r14d
-  3a:	44 89 f6             	mov    %r14d,%esi
-  3d:	83 e6 01             	and    $0x1,%esi
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+-- 
+Slawomir Stepien
