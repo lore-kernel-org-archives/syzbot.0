@@ -1,283 +1,174 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F47D3A9879
-	for <syzbot@lists.linux.dev>; Fri, 10 Jul 2026 06:05:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E5F12D0C98
+	for <syzbot@lists.linux.dev>; Fri, 10 Jul 2026 06:47:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783663534; cv=none; b=t/rMYfjWVEXicaVxlfvd1ThSNJOhcOocIsQnzuPOs30O2dTV+rr6EtlAr9W+1XFxrLltuLZLZsvDb7FowYiXb/PXKAlIibV8J2hN8efRY0HfE94XfIzDL2836w9lpqluu/XYiOYm2uKqgDg18HHwRcFBbqSTccjvPcxVF0Ynaeg=
+	t=1783666035; cv=none; b=sC87cAel94Mn82zUpXuUsxhrruOOA4Kl/Nu6VZ3ghCAZW3stHlN4uo8ee1NunOzmOPpvPSyLmRGrhfFcBT3FKlIJc9/HY/TIeIOuNc2fUQZC5eTrGv0wu5z0muGr5uh04rdHJpV9gH/44Hcm/M+js4C0nxjLg7Y2KJ+Hv/E/5HA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783663534; c=relaxed/simple;
-	bh=24oauDtAx4p5Ezzzgrl44FQm+KsvqSpZKXtmXPG17Tc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=eohB/qfA/Bhy5UodKkhBcl/HYkmrzdCr0L8lhJskOQcd//yrYVZs6ipN8Cd63nS1D+tyt5JkTMzt0MuRwPF5TPB//yCBRpWA1gKfEcxCty+v/PTjCe10swlQBhB8Qn4DZne2uR+wuhu9yDt7swe7a2SLNS5+ZauDJ4vpkf/Q9KY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=devineni.in; spf=none smtp.mailfrom=devineni.in; dkim=pass (2048-bit key) header.d=devineni-in.20251104.gappssmtp.com header.i=@devineni-in.20251104.gappssmtp.com header.b=WJZbdkDG; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=devineni.in
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=devineni.in
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=devineni-in.20251104.gappssmtp.com header.i=@devineni-in.20251104.gappssmtp.com header.b="WJZbdkDG"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2cace7da66eso5640075ad.0
-        for <syzbot@lists.linux.dev>; Thu, 09 Jul 2026 23:05:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=devineni-in.20251104.gappssmtp.com; s=20251104; t=1783663531; x=1784268331; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=A2i3tDffGLIBHBbRePj+Bb2zX/2S3rD/nqG4TFhx9PM=;
-        b=WJZbdkDGIysyt7d1MPTBujUyCpTs7lQHKPzFFmJ9uEUIf0RwaGeQP0Jf8uHgVqMx51
-         ovxDN/FR88befP3pkVt4FArfHNap/pwqu7wi+FG6zOeHIvRL8nmsXBoQRvg0YMx94Q5P
-         U8Z5/n/+G+T5EP2C82nxdF0uZ9BkUd7Wjoh0pybiJnV/Ou86Q1PrhmUAmWl/hDSJxZmY
-         YRfV4HrH2GhIpirjq63lX616OJAZfAYQQqSWADZ33QpkoMjorlxVRYq67phvEFfBQg+o
-         wR3k436Wvsm8WunwxNO8uPRQe/HevLjbNVynHCi+kcpdgTXV0jVhsaczM1g8uGHgQag3
-         rwYA==
+	s=arc-20240116; t=1783666035; c=relaxed/simple;
+	bh=mFHWPJdLu+eXJtgHjraWkzoEdqc9fw/0eV7sL4b3mf4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=p8fwpIzZDNVAZqpFFuWQP2yyfbLqpVMQBRGYe18jB8cnN0W1ZvYqva/LwDj/qpcpXRuG2A7rH1hCDztLPSbQPC3y75IPcvteoI285zBDfhKi/K7doNQqesZVKTFHUsN6TcFyV11BBGoJ0EuVdwf94N+POWyLmsK5/3wT/IMqH24=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-49f3a97f1caso403198b6e.0
+        for <syzbot@lists.linux.dev>; Thu, 09 Jul 2026 23:47:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783663531; x=1784268331;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=A2i3tDffGLIBHBbRePj+Bb2zX/2S3rD/nqG4TFhx9PM=;
-        b=L6S0z6GAW8WD5+c6I12WoV0bWS7kK7muC9rmJNFjvXHehhiVtdiKOs+ctQ5DefZYCs
-         /PFGhdXA8iXK0U9IYUmTbu8itIKkNqDdVnUOHz7FCC3OZh6JWshvMzmTJOIm+wXKIf4E
-         iwo8w9oPU3+C4ekVyIzl5jyWyzGrzh/TubOL7d6ybI6cmeNuW5MkrZIezSL93v+/Aamq
-         yheVFjw3mrw1d2Zallz6uuWgbfjyQnaVoOrakqJUOqEkoxiOGylxKUBaklIiUfKFaNt7
-         X+YcLlDn6+eNvyUL5eGKmOZnAP2B/WAuYyC7p6EgbdMvzmLGaudDcehSYrQylBQwYl1M
-         31WA==
-X-Gm-Message-State: AOJu0YwDnPeGcoD6UVCSjApNEvjjlJQ5VczEPzmyu870IU5Il16/ME3t
-	hbbicCkmYl7ap6//nJlCDx2I2oNVX9gGi4iuP5fFA6XZzZ7uH2F7eL/XINy8sdHCKGXEFILW+fl
-	HHIU=
-X-Gm-Gg: AfdE7cn5jIlzO3bnKzOQeJ/FrVQ0FVhA3ozGQBof2/ZPrffseHXzGyP2WeKu73Umsg8
-	0YEZKZI+Al0D3jvFAB1GDn3Q1nKW4BhhKOp7E+VuKmXfipiJAVOhatRzYvkt/06SuJArXd2Nc9y
-	5Cbeb3DA9ii+8t0FSAX1Cjbcygg/cj8Q5GuP9CuGsY5o2PE9V8BU3SQkOSIaFC3tIb1SLRlNIQL
-	wjB4Xzx+hI+R6evROVB9pAmu8vZ81QHlctD8IGVBlPBp1b2IZpBCUPKX9lSMaYkCdCNmbU4hl8N
-	uSfBdS5bTFwBPstSui4FFT+uyhSmk/9WB9UM29nggC22Fs5XMlPfQqcQbAOU6BTzUpIkS4fJuOx
-	BN76sTiqJVd62nTGZSQJihB+XjjQTd1R3A6Fh92zVS7pAmiAqCk3Mtn7DDXe70RrXxxvCATcUFG
-	1cc11sKW+lnbeypfaPqn8xtEzLq9O0H+V7/0G2pdri9RdMBAOufNlw0180MnZNvLSlQq5h/7EGN
-	5R2XwSewqq3dpc=
-X-Received: by 2002:a17:902:ff8e:b0:2cc:9179:325 with SMTP id d9443c01a7336-2ccea387551mr112168365ad.13.1783663530647;
-        Thu, 09 Jul 2026 23:05:30 -0700 (PDT)
-Received: from [192.168.0.103] ([49.205.107.67])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ccc9bdb73asm54363715ad.17.2026.07.09.23.05.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Jul 2026 23:05:29 -0700 (PDT)
-Message-ID: <f5d9b884-cad2-400a-bea4-197ccc887a5c@devineni.in>
-Date: Fri, 10 Jul 2026 11:35:16 +0530
+        d=1e100.net; s=20251104; t=1783666032; x=1784270832;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=JdshiCfY8gx89x/JFmjAfiCNo6PtASoipEMErBAQN6k=;
+        b=Mhzp4tOxx8xYoSIthBEYNvhzX/ttBqxnr50x3xeP7O/hjcIQf7KW1L5DJJxL8Df2i8
+         z5FA1s94i9S8oUq4u9m4opckNeYQV/mErel6YAXu+d9vlpy+GL11Ij+BRzrKL1NjRcdZ
+         LbHWh0/N/j1RV4psQ+pvuRATHgvRj/P/of5W1xzqwDALvMJ8qMobHsJyNxhhv5EzWT7O
+         aFl9EUBU32hoZ4YtGw5RGdXqr3f6cR82Fl/POT+zeai9hOP64CJEGnKr8Ho7ZfuXQE/b
+         uGXcb+qgNRGKyC8Lr4K9t4maIrCJoiRDNLqdwwFsZoKRWKfiFr/54jlN5hFmpkmOLVTq
+         K3Yg==
+X-Gm-Message-State: AOJu0YyHq7R/OeAzADHe3OvTcRaaCpWbsuOsxdKxj8wQ8hoQQFSc9ecV
+	oWrp3eZ/PGPzVG7paOvpnu4PBC2NGKesqxC07g+3MfqhaQIrDu29N/Y0VEy4zl8jOWOitBFndpd
+	XFWCSmSQ54uLopInIQKOLZDD6592SpWMJJRyiam1BY3s1HXgz7DXIFhGH4KA=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v2] jfs: validate BT_ROOT flag in xt_getpage and
- DT_GETPAGE
-To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+X-Received: by 2002:a05:6808:3384:b0:495:ebd3:ea52 with SMTP id
+ 5614622812f47-4a201cf888emr9525700b6e.2.1783666032637; Thu, 09 Jul 2026
+ 23:47:12 -0700 (PDT)
+Date: Thu, 09 Jul 2026 23:47:12 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a509570.c76b52dc.2a15e.0009.GAE@google.com>
+Subject: [moderation/CI] Re: macvlan: allow source mode devices along with passthru
+From: syzbot ci <syzbot+cid152941003025f4b@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-References: <b94e1523-acdb-4470-904e-373249bbf83d@mail.kernel.org>
-Content-Language: en-US
-From: Kusaram Devineni <kusaram@devineni.in>
-In-Reply-To: <b94e1523-acdb-4470-904e-373249bbf83d@mail.kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 
-On 09-07-2026 01:50 pm, syzbot wrote:
-> A corrupted JFS image can trick the kernel into calling release_metapage()
-> on a pseudo-metapage embedded within the inode, leading to an out-of-bounds
-> memory access and a spinlock crash.
-> 
-> When operating on the root page of an xtree or dtree (which is stored
-> inline within the inode), JFS doesn't use a real struct metapage. Instead,
-> BT_GETPAGE() sets the metapage pointer to the address of
-> JFS_IP(ip)->bxflag. Because this is a pseudo-metapage, it does not have a
-> valid wait_queue_head_t wait field. Accessing mp->wait reads out-of-bounds
-> memory in struct jfs_inode_info.
-> 
-> In xt_getpage(), the code validates nextindex and maxentry, but it fails to
-> verify that the BT_ROOT flag is set in p->header.flag for the root page (bn
-> == 0). If the inline xtree root page has a corrupted header.flag where
-> BT_ROOT is missing, xtTruncate() will mistakenly treat the root page as a
-> regular leaf page and call discard_metapage(mp).
-> 
-> Unlike XT_PUTPAGE() which safely checks !BT_IS_ROOT(mp) before releasing,
-> discard_metapage() calls release_metapage(mp) directly. This assumes mp is
-> a real metapage and calls unlock_metapage(mp), which executes
-> wake_up(&mp->wait), accessing garbage memory and resulting in a spinlock
-> bad magic BUG or UBSAN out-of-bounds array access.
-> 
-> Fix this by enforcing the invariant that the BT_ROOT flag is set if and
-> only if bn == 0 in both xt_getpage() and DT_GETPAGE().
-> 
-> BUG: spinlock bad magic on CPU#1, syz-executor/6074
->   lock: 0xffff8881f71d1b48, .magic: ffffffff, .owner:  /-1902340672,
->   .owner_cpu: 768
-> CPU: 1 UID: 0 PID: 6074 Comm: syz-executor Not tainted syzkaller #1
-> PREEMPT(full)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
-> 1.16.3-debian-1.16.3-2 04/01/2014
-> Call Trace:
->   <TASK>
->   dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->   spin_bug kernel/locking/spinlock_debug.c:78 [inline]
->   debug_spin_lock_before kernel/locking/spinlock_debug.c:86 [inline]
->   do_raw_spin_lock+0x1e5/0x2f0 kernel/locking/spinlock_debug.c:115
->   __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:133 [inline]
->   _raw_spin_lock_irqsave+0x4c/0x60 kernel/locking/spinlock.c:166
->   __wake_up_common_lock+0x30/0x1f0 kernel/sched/wait.c:124
->   unlock_metapage fs/jfs/jfs_metapage.c:40 [inline]
->   release_metapage+0x131/0xa60 fs/jfs/jfs_metapage.c:872
->   xtTruncate+0xeaa/0x2eb0 fs/jfs/jfs_xtree.c:-1
->   jfs_free_zero_link+0x35b/0x4c0 fs/jfs/namei.c:760
->   jfs_evict_inode+0x356/0x430 fs/jfs/inode.c:159
->   evict+0x624/0xb50 fs/inode.c:841
->   __dentry_kill+0x206/0x700 fs/dcache.c:718
->   shrink_kill+0xa9/0x2c0 fs/dcache.c:1195
->   shrink_dentry_list+0x2e0/0x5e0 fs/dcache.c:1222
->   shrink_dcache_tree+0xe9/0x5d0 fs/dcache.c:-1
->   do_one_tree+0x28/0xe0 fs/dcache.c:1721
->   shrink_dcache_for_umount+0xa0/0x170 fs/dcache.c:1738
->   generic_shutdown_super+0x6f/0x2d0 fs/super.c:624
->   kill_block_super+0x44/0x90 fs/super.c:1725
->   deactivate_locked_super+0xbc/0x130 fs/super.c:476
->   cleanup_mnt+0x3d3/0x460 fs/namespace.c:1312
->   task_work_run+0x1d9/0x270 kernel/task_work.c:233
->   resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
->   __exit_to_user_mode_loop kernel/entry/common.c:67 [inline]
->   exit_to_user_mode_loop+0xf3/0x4f0 kernel/entry/common.c:98
->   __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
->   syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230
->   [inline]
->   syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
->   do_syscall_64+0x33e/0x560 arch/x86/entry/syscall_64.c:100
->   entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7fbf84d9e097
->   </TASK>
-> ------------[ cut here ]------------
+syzbot ci has tested the following series
 
-- checkpatch.pl considers the line above "------------[ cut here 
-]------------" that is added inside the commit message as "ERROR: 
-Invalid commit separator". remove it.
+[v2] macvlan: allow source mode devices along with passthru
+https://lore.kernel.org/all/20260709091138.170348-1-t.martitz@fritz.com
+* [PATCH v2 1/1] macvlan: allow source mode devices along with passthru
 
-> UBSAN: array-index-out-of-bounds in kernel/locking/qspinlock.h:68:9
-> index 8945 is out of range for type 'unsigned long[8]'
-> CPU: 1 UID: 0 PID: 6074 Comm: syz-executor Not tainted syzkaller #1
-> PREEMPT(full)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
-> 1.16.3-debian-1.16.3-2 04/01/2014
-> Call Trace:
->   <TASK>
->   dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->   ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
->   __ubsan_handle_out_of_bounds+0xe8/0xf0 lib/ubsan.c:455
->   decode_tail kernel/locking/qspinlock.h:68 [inline]
->   __pv_queued_spin_lock_slowpath+0xaf3/0xbc0 kernel/locking/qspinlock.c:285
->   pv_queued_spin_lock_slowpath arch/x86/include/asm/paravirt-spinlock.h:35
->   [inline]
->   queued_spin_lock_slowpath arch/x86/include/asm/paravirt-spinlock.h:66
->   [inline]
->   queued_spin_lock include/asm-generic/qspinlock.h:114 [inline]
->   do_raw_spin_lock+0x26c/0x2f0 kernel/locking/spinlock_debug.c:116
->   __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:133 [inline]
->   _raw_spin_lock_irqsave+0x4c/0x60 kernel/locking/spinlock.c:166
->   __wake_up_common_lock+0x30/0x1f0 kernel/sched/wait.c:124
->   unlock_metapage fs/jfs/jfs_metapage.c:40 [inline]
->   release_metapage+0x131/0xa60 fs/jfs/jfs_metapage.c:872
->   xtTruncate+0xeaa/0x2eb0 fs/jfs/jfs_xtree.c:-1
->   </TASK>
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-> Reported-by: syzbot+e380443eaa59bfb75a84@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=e380443eaa59bfb75a84
-> Link: https://syzkaller.appspot.com/ai_job?id=755ca394-6f1f-4a09-8e45-1a3c045336ed
-> To: <jfs-discussion@lists.sourceforge.net>
-> To: "Dave Kleikamp" <shaggy@kernel.org>
-> Cc: "Arnd Bergmann" <arnd@arndb.de>
-> Cc: <linux-kernel@vger.kernel.org>
-> Cc: "Suchit Karunakaran" <suchitkarunakaran@gmail.com>
-> Cc: "Yun Zhou" <yun.zhou@windriver.com>
-> Cc: "Zheng Yu" <zheng.yu@northwestern.edu>
-> 
-> ---
-> v2:
-> - Combined the BT_ROOT flag validation with the existing page integrity check in DT_GETPAGE.
-> - Unified the error message in DT_GETPAGE for both root and leaf page corruption.
-> 
+and found the following issue:
+general protection fault in macvlan_port_release_mac
 
-- change v2 changelog wording from “root and leaf page corruption” to 
-“root/non-root invariant failures and non-root dtpage integrity 
-failures.”, as check_dtpage() is for non-root dtpage integrity 
-generally, not leaf-only.
+Full report is available here:
+https://ci.syzbot.org/series/72476997-558e-41ae-b146-c05346cdd7f6
 
-> v1:
-> https://lore.kernel.org/all/65efb3d8-bbf9-4f4b-800e-b9bc5577b381@mail.kernel.org/T/
-> ---
-> diff --git a/fs/jfs/jfs_dtree.c b/fs/jfs/jfs_dtree.c
-> index ac0f79faf..2b6bdea1f 100644
-> --- a/fs/jfs/jfs_dtree.c
-> +++ b/fs/jfs/jfs_dtree.c
-> @@ -111,19 +111,20 @@ struct dtsplit {
->   #define DT_PAGE(IP, MP) BT_PAGE(IP, MP, dtpage_t, i_dtroot)
->   
->   /* get page buffer for specified block address */
-> -#define DT_GETPAGE(IP, BN, MP, SIZE, P, RC)				\
-> -do {									\
-> -	BT_GETPAGE(IP, BN, MP, dtpage_t, SIZE, P, RC, i_dtroot);	\
-> -	if (!(RC)) {							\
-> -		if ((BN) && !check_dtpage(P)) {				\
-> -			BT_PUTPAGE(MP);					\
-> -			jfs_error((IP)->i_sb,				\
-> -				  "DT_GETPAGE: dtree page corrupt\n");	\
-> -			MP = NULL;					\
-> -			RC = -EIO;					\
-> -		}							\
-> -	}								\
-> -} while (0)
-> +#define DT_GETPAGE(IP, BN, MP, SIZE, P, RC)                                    \
-> +	do {                                                                   \
-> +		BT_GETPAGE(IP, BN, MP, dtpage_t, SIZE, P, RC, i_dtroot);       \
-> +		if (!(RC)) {                                                   \
-> +			if ((((BN) == 0) != !!((P)->header.flag & BT_ROOT)) || \
-> +			    ((BN) && !check_dtpage(P))) {                      \
-> +				BT_PUTPAGE(MP);                                \
-> +				jfs_error((IP)->i_sb,                          \
-> +					  "DT_GETPAGE: dtree page corrupt\n"); \
-> +				MP = NULL;                                     \
-> +				RC = -EIO;                                     \
-> +			}                                                      \
-> +		}                                                              \
-> +	} while (0)
->   
->   /* for consistency */
->   #define DT_PUTPAGE(MP) BT_PUTPAGE(MP)
-> diff --git a/fs/jfs/jfs_xtree.c b/fs/jfs/jfs_xtree.c
-> index 28c3cf960..6d960dd96 100644
-> --- a/fs/jfs/jfs_xtree.c
-> +++ b/fs/jfs/jfs_xtree.c
-> @@ -118,10 +118,11 @@ static inline xtpage_t *xt_getpage(struct inode *ip, s64 bn, struct metapage **m
->   	if (rc)
->   		return ERR_PTR(rc);
->   	if ((le16_to_cpu(p->header.nextindex) < XTENTRYSTART) ||
-> -		(le16_to_cpu(p->header.nextindex) >
-> -			le16_to_cpu(p->header.maxentry)) ||
-> -		(le16_to_cpu(p->header.maxentry) >
-> -			((bn == 0) ? XTROOTMAXSLOT : PSIZE >> L2XTSLOTSIZE))) {
-> +	    (le16_to_cpu(p->header.nextindex) >
-> +	     le16_to_cpu(p->header.maxentry)) ||
-> +	    (le16_to_cpu(p->header.maxentry) >
-> +	     ((bn == 0) ? XTROOTMAXSLOT : PSIZE >> L2XTSLOTSIZE)) ||
-> +	    ((bn == 0) != !!(p->header.flag & BT_ROOT))) {
->   		jfs_error(ip->i_sb, "xt_getpage: xtree page corrupt\n");
->   		BT_PUTPAGE(*mp);
->   		*mp = NULL;
-> 
+***
 
-- limit the formatting changes to only the lines, block, or branch being 
-modified. in DT_GETPAGE() and xt_getpage(), avoid reindenting the 
-surrounding existing code; add only the new BT_ROOT invariant condition 
-and keep the local style unchanged.
+general protection fault in macvlan_port_release_mac
 
-> 
-> base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      fe3e786ef4eb6e47d2901f568a27bd920477bbe9
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/0c5e2f82-62bd-40bf-a873-66f277607c07/config
+syz repro: https://ci.syzbot.org/findings/d5d14725-5a48-484c-876d-026175d0b21a/syz_repro
 
--kusaram
+batman_adv: batadv0: Removing interface: batadv_slave_1
+veth1_macvtap: left promiscuous mode
+veth0_macvtap: left promiscuous mode
+veth1_vlan: left promiscuous mode
+veth0_vlan: left promiscuous mode
+Oops: general protection fault, probably for non-canonical address 0xdffffc0000000118: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x00000000000008c0-0x00000000000008c7]
+CPU: 1 UID: 0 PID: 13 Comm: kworker/u8:1 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Workqueue: netns cleanup_net
+RIP: 0010:macvlan_passthru drivers/net/macvlan.c:78 [inline]
+RIP: 0010:macvlan_port_release_mac+0x138/0x490 drivers/net/macvlan.c:807
+Code: 01 00 00 48 89 d8 48 c1 e8 03 42 80 3c 20 00 74 08 48 89 df e8 b9 30 ae fb 48 8b 1b 4c 8d b3 c0 08 00 00 4c 89 f0 48 c1 e8 03 <42> 0f b6 04 20 84 c0 0f 85 44 02 00 00 45 8b 36 44 89 f6 83 e6 01
+RSP: 0018:ffffc90000127500 EFLAGS: 00010206
+RAX: 0000000000000118 RBX: 0000000000000000 RCX: ffff888102ec5940
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: ffffc90000127630 R08: ffffffff9032faf7 R09: 1ffffffff2065f5e
+R10: dffffc0000000000 R11: fffffbfff2065f5f R12: dffffc0000000000
+R13: 1ffff92000024ea4 R14: 00000000000008c0 R15: ffff888109b28818
+FS:  0000000000000000(0000) GS:ffff8882a9223000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffefe7250d8 CR3: 000000000e746000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ macvlan_port_destroy+0x2eb/0x310 drivers/net/macvlan.c:1343
+ unregister_netdevice_many_notify+0x1ad2/0x2150 net/core/dev.c:12464
+ unregister_netdevice_many net/core/dev.c:12506 [inline]
+ default_device_exit_batch+0x961/0x9e0 net/core/dev.c:13098
+ ops_exit_list net/core/net_namespace.c:205 [inline]
+ ops_undo_list+0x4b4/0x8d0 net/core/net_namespace.c:252
+ cleanup_net+0x572/0x810 net/core/net_namespace.c:702
+ process_one_work kernel/workqueue.c:3322 [inline]
+ process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:macvlan_passthru drivers/net/macvlan.c:78 [inline]
+RIP: 0010:macvlan_port_release_mac+0x138/0x490 drivers/net/macvlan.c:807
+Code: 01 00 00 48 89 d8 48 c1 e8 03 42 80 3c 20 00 74 08 48 89 df e8 b9 30 ae fb 48 8b 1b 4c 8d b3 c0 08 00 00 4c 89 f0 48 c1 e8 03 <42> 0f b6 04 20 84 c0 0f 85 44 02 00 00 45 8b 36 44 89 f6 83 e6 01
+RSP: 0018:ffffc90000127500 EFLAGS: 00010206
+RAX: 0000000000000118 RBX: 0000000000000000 RCX: ffff888102ec5940
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: ffffc90000127630 R08: ffffffff9032faf7 R09: 1ffffffff2065f5e
+R10: dffffc0000000000 R11: fffffbfff2065f5f R12: dffffc0000000000
+R13: 1ffff92000024ea4 R14: 00000000000008c0 R15: ffff888109b28818
+FS:  0000000000000000(0000) GS:ffff8882a9223000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffefe7250d8 CR3: 000000000e746000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	01 00                	add    %eax,(%rax)
+   2:	00 48 89             	add    %cl,-0x77(%rax)
+   5:	d8 48 c1             	fmuls  -0x3f(%rax)
+   8:	e8 03 42 80 3c       	call   0x3c804210
+   d:	20 00                	and    %al,(%rax)
+   f:	74 08                	je     0x19
+  11:	48 89 df             	mov    %rbx,%rdi
+  14:	e8 b9 30 ae fb       	call   0xfbae30d2
+  19:	48 8b 1b             	mov    (%rbx),%rbx
+  1c:	4c 8d b3 c0 08 00 00 	lea    0x8c0(%rbx),%r14
+  23:	4c 89 f0             	mov    %r14,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 0f b6 04 20       	movzbl (%rax,%r12,1),%eax <-- trapping instruction
+  2f:	84 c0                	test   %al,%al
+  31:	0f 85 44 02 00 00    	jne    0x27b
+  37:	45 8b 36             	mov    (%r14),%r14d
+  3a:	44 89 f6             	mov    %r14d,%esi
+  3d:	83 e6 01             	and    $0x1,%esi
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[andrew@lunn.ch davem@davemloft.net edumazet@google.com horms@kernel.org kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com t.martitz@fritz.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
