@@ -1,66 +1,66 @@
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E95D22083
-	for <syzbot@lists.linux.dev>; Sun, 12 Jul 2026 00:16:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35BAE22083
+	for <syzbot@lists.linux.dev>; Sun, 12 Jul 2026 00:25:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783815390; cv=none; b=SW138TzFto6xVxQOo4POTZEI33x93tkW544L7exXOAAu+ekVCCgQBDUv2EsJGzZwZ5qkOfwaFlEPqkA2bJs/3ykUlQMX7fwtbJTi6QDZoIlP8hWJ4q2BRZUC794DnkYXtPnwFJF7lvfXpQxm4DryIRiwHRUFdOBIf9bEmkK9WAM=
+	t=1783815901; cv=none; b=L0nPfHFiK6KHosjcimDIHmiAP2coEvdIHGz0Ew/AsAr8qHa+iRKWX5w/8oEjN1ATp94CkCTJ6KEwg6UgrlHaOZKXPoD/Smonbo5x6vpsL5bgPit+nIMyQxYOM6kT0WO7jEnaJSf4MguQQhgE7Ir4BCWkV5o6zlmlPUp1z6QeLAE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783815390; c=relaxed/simple;
-	bh=pqKXXrEn6EcBhpIxcoTJzeXcooqrhU0CslTnlU69e3Y=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=X8rqzJfqSluPQMpDM9c8n1FaKe17Tb5CBXJk6n3P8yQUbd9mprkJAjVdzg7ADk6zCiABtksgKr4j+5+mYhQc5cO6FbNQdPIl9wyYG2Xb+woCRJ9Wj6uBEeJD2NPtuASlb90S+EzwvcKYoW7w2w47Hwy4Xn3fq5G1h2roy6tMaxQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+	s=arc-20240116; t=1783815901; c=relaxed/simple;
+	bh=SkW+EeGrgt326TnLU3M/jIZOB7uK8h8mQDl+K3ptQeU=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=dcx2OMUN9rDa7GKfCIyj/8gHikZofUbAwCVpV1dqf/I03CIm+sYDlKshIyQ5IvYc2hWVPDuNqBHmqABkEi2IQmanq3Ench1AMXAMGz+1sRq2PK+s/nRVz4jifo4Obgzm6uVpbFd5qOy0rI9oSCMCM/Lipsxa5uDR68XHU1/YVjo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-4a41f46d629so2622991b6e.3
-        for <syzbot@lists.linux.dev>; Sat, 11 Jul 2026 17:16:28 -0700 (PDT)
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-49d4cb3ca23so3482642b6e.3
+        for <syzbot@lists.linux.dev>; Sat, 11 Jul 2026 17:25:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783815388; x=1784420188;
+        d=1e100.net; s=20251104; t=1783815899; x=1784420699;
         h=content-type:cc:to:from:subject:message-id:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=W8Kv0gCU075YG/2/ZBw3oWagQGfioDDUo07jwbisEDU=;
-        b=VA/xJMlw1f2ngcolEi9YWjv64kdqG46LO3Hs2VyKYYsy1eITE0Z9bJosfqFdqkwRU9
-         qR86QXD6MA/UmxaZsubwKtpG3yd8Ytk+wrErS7FJFDV2POyCE62glRL1ChGr92g3SYJE
-         fxUSXTC/quT4m+G0QT9Bs7syTlhPNW91dRvKimgygyzQGlLcfxI/NIYCTdsDln0JxTkf
-         uL99NXwCX1xqNpO2XovNynyHsvIRcK1+hFNXU2+ElRKbKrqW0QoUE1c2CakcRf+6Fp8x
-         vHhDmTQluawLKJ5r2VI8A4hsMeyqpWXrGugtttBbzk46V20ZJg/GuViis5pFXgE7/vtH
-         DQwg==
-X-Gm-Message-State: AOJu0Yztl2niYY6PVBaZNiCqRDscqr03yIrP+Hu18ALBAEWTxfoQuna0
-	3Okucrsl3YOYjEFcBEfh64zSq5IjFq5s383Yv2lqPxQyqa5W743OISB4eDcN8xAN4CH3oaTxR5g
-	dFzNKY90v4CoUUEwmLaYX0f3GfssSbfa1d/g7ds+jks+pq4FAhUIQuFc2lu8=
+        bh=JsV21V4r2eBPJo12G/dMqWMizuq1Puo3r+FQfmbbedY=;
+        b=B1eySpZMpUy2qXF5S+VqyCy6rUH5MmVZmB74t+davkZ42/Agp1MPNLAnqvD/W/YVIz
+         NETKo5V4p0T06bU0cnoAnWZgPei48JJEc3W/BFnQTzMGc1eS52Ap+GQnNhQ+0Y7TxZpn
+         xGficN7RuCX/e/7WDugXypAMsQ3Ggcm/RfwO9C95N/0kbmyJ6jXKh8V+vobqt1+kts42
+         ZKY1zIN1pVZThdbYRerHbutRgEw8CnDEUexCKwWdgRfsFCyJxjCcvPla68uJxKPzTZKs
+         QLYitLnV9kw2AKzu6pBs2896Swc3k+oaBUSL75VPmtM//cCfIkCymdCtCD45mpyHWjcj
+         kfRQ==
+X-Gm-Message-State: AOJu0YzY9bC/GnsEHinkey22tq+TWshzDMB/hSnfFMvZJ7LYnTlHsjaG
+	PO1nas3zzGbqOm6+Mh4HihBQAqSpzKoASaescn5NuKennCQCTkxNEh+LzxGzjlvzI9NadhUx4Xx
+	Vqyj2OQL5P6XzIqIUSKEaPnk339dcwUWsxzCo4vH5d+kNWl++Wl1I0DMa9uc=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:2445:b0:492:5b42:ab02 with SMTP id
- 5614622812f47-4a42a8b4be1mr3250564b6e.0.1783815388182; Sat, 11 Jul 2026
- 17:16:28 -0700 (PDT)
-Date: Sat, 11 Jul 2026 17:16:28 -0700
+X-Received: by 2002:a05:6808:840e:b0:486:503a:ce99 with SMTP id
+ 5614622812f47-4a432f9b4f3mr1849417b6e.27.1783815899260; Sat, 11 Jul 2026
+ 17:24:59 -0700 (PDT)
+Date: Sat, 11 Jul 2026 17:24:59 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a52dcdc.574492cf.19a3b.0009.GAE@google.com>
-Subject: [moderation/CI] Re: mm: shrinker: fix double-free in
+Message-ID: <6a52dedb.278cdcd2.e885.0018.GAE@google.com>
+Subject: [moderation/CI] Re: mm: shrinker: Fix double-free in
  alloc_shrinker_info error path
-From: syzbot ci <syzbot+ci952f20128b1851d5@syzkaller.appspotmail.com>
+From: syzbot ci <syzbot+ci444c5cd9d2aebe6e@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] mm: shrinker: fix double-free in alloc_shrinker_info error path
-https://lore.kernel.org/all/20260711041823.95135-1-zenghongling@kylinos.cn
-* [PATCH] mm: shrinker: fix double-free in alloc_shrinker_info error path
+[v1] mm: shrinker: Fix double-free in alloc_shrinker_info error path
+https://lore.kernel.org/all/20260711041954.95749-1-zenghongling@kylinos.cn
+* [PATCH] mm: shrinker: Fix double-free in alloc_shrinker_info error path
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/351eb9dd-1319-4816-a8ac-35ad4b208d5e
+https://ci.syzbot.org/series/348846f6-b8e9-4724-8320-654ad3472b53
 
 ***
 
@@ -71,7 +71,7 @@ URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
 base:      dc59e4fea9d83f03bad6bddf3fa2e52491777482
 arch:      amd64
 compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/80ab55ed-3ff8-426b-b086-e5617b53556d/config
+config:    https://ci.syzbot.org/builds/fb13ef19-37ba-420a-a80d-1be9633bdb35/config
 
 mm/shrinker.c:108:10: error: call to undeclared function 'shrinker_info_protected'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 mm/shrinker.c:108:8: error: incompatible integer to pointer conversion assigning to 'struct shrinker_info *' from 'int' [-Wint-conversion]
