@@ -1,1504 +1,496 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com [209.85.160.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAE2D1DFDA1
-	for <syzbot@lists.linux.dev>; Mon, 13 Jul 2026 16:43:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D56E9EAC7
+	for <syzbot@lists.linux.dev>; Tue, 14 Jul 2026 00:17:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783961002; cv=none; b=KNUy9dfafSVYMuYjTosjQL0zqrdfMOeNZXCVwz41iIq+G7/hZui/0/mdWrnqfSNP11BgBUveAkz75PC+2ln3V1dzd+dzZb2a+ZbqxJr9KFCi3I1h7OjvZyocIWmTaF7noSX8MrEc8LqE86c80iwMQjrHPbILxCRyDNwNvLGJ0Lw=
+	t=1783988227; cv=none; b=EbQhZF1iy4V/9OIGlMDcCXyqjZ2vHOCiqy83tMkfEh3RReKfRAYESvurR7DwOOx9CtKMtJ+Kt6Gbamp2FYcAGPCBuD7S+74kSIf8pN3OE9kTH1shXYXZPtQo7WFh7+30za/mjvVewNW3xDJqszUJqMwK5/KNkYzmdUoWKPfcb+s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783961002; c=relaxed/simple;
-	bh=hwzze2P4d2/sE2vYRfkhrCPGHb3rM6NMWnhpCzr5Kvg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DIWumDghjzjOMAAMz4a2FYJnJ+MhmbJYxVw57FkHeL0lqAhHttgt4RtMkcLaALVjWCgVFHAlfGc1MDD0eyMDQ/2ThTi4zCtop3yyyeARHg9fb6w60ctgd53l0sCT6BYPf7511bXlol3JBiItODkTA0Gw3sGrJXOgpCAc6d1zN9w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Dpal/7uF; arc=none smtp.client-ip=209.85.221.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Dpal/7uF"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-475cb71a4ebso3278358f8f.0
-        for <syzbot@lists.linux.dev>; Mon, 13 Jul 2026 09:43:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783960997; x=1784565797; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=egO0BBSSmMb+8SLbHwzs83itVcl/KLzLl6aTaxXhlK0=;
-        b=Dpal/7uFrLVbOQxaWm3CC+KYc2urDLyjH6MwhOAok2J1vTdMkjZDBlDMHINA3S+l8w
-         xLVAngWjLZvxoEuOAcmfvFJ3zfcjNR91GNM2BscFqdEaqswZ6W0SSjIJHatzI9LwYKdc
-         UVNAklUaNL2EUhlLLFLBdzFWHzPNJZ78iOtp4Qhhx6nQkROTbXoZmhke1mP4+d5bPDn9
-         y0LbLywF/AiUSvee/936Tj6tkvkoVNGrvVbFDUMbNd9vZr3Aicec2CC+J2vdCmVmGqYH
-         0/EXvdigH0mcgnBzXe0msACgQgXBi8LWuME9OQGi5Yx91CgTIRojxhqJrPP04cAbrQ42
-         LjyA==
+	s=arc-20240116; t=1783988227; c=relaxed/simple;
+	bh=9OPWZKefOE+gY1+kAv2SAqToot8zi8QyiFNJkMzK868=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=RDviOJHJXEhV2T6cYe+JloWbFcKmcZ08UOIqf0pzOycmDEJO3RikkcuesQ5hUSHlVUvu/RObRlNdUksLDNioXwdTYzNeQtXGvyaNsXJiKevyPMY27VslUUofPnwGtXZ/7uTtiNZEb05wqyPQjYPnqQBMkkskrbkrA7y1E33uP3Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-4519fdc5145so573702fac.1
+        for <syzbot@lists.linux.dev>; Mon, 13 Jul 2026 17:17:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783960997; x=1784565797;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20251104; t=1783988224; x=1784593024;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=egO0BBSSmMb+8SLbHwzs83itVcl/KLzLl6aTaxXhlK0=;
-        b=RgAzMGlWBdXJCrDdTfr3n0lI9QZRgmUpOKMK6YEna2TPde29UNeygZmSvtFZL424/w
-         CSgnV/JPC71NAPY3NiyQd/5PfE/HIGt5A4MRI8TmvWURQ890D1rw6WraLQ6eWtdv84ve
-         YJwSI3fVGfesBbMTwOdXFPppDpfs1/uD1tbuqdHd6kwsaICfFmZWm4kbdhNY0+5DKTl+
-         4VzZOaW2HDLUP9SgmRlTL9cMMpKj2r/jdHyYJV6+9oqNeDV09zP2l2MWW4bTeMD+41UL
-         UAw3deRFrHMbVtrC1MShwplMzUnIh6cXqCfOY4peya3iHZJsYUK0vzOmMinvfGipAhOA
-         r3iA==
-X-Forwarded-Encrypted: i=1; AHgh+RpANKJ6EF5OIj9bqj4yL/4YL+d+97mOxKenEkd6SXZ50mSiQ17Df+M6LiuLdsr+f9GJ2on4Jpo=@lists.linux.dev
-X-Gm-Message-State: AOJu0YyEkP1tjvGeSRkRf2R8Cyhx9zkoBEGYpdlFgAi2ChUYk5XDjQpQ
-	tnR9JbpAVb/ADav3KZHqkUppgcwfD7iyJRH3B8bSXR3GTZDgYNA+eByfZ+lXFDSz66g=
-X-Gm-Gg: AfdE7cnDtazxmDtHmZ8TkZChlgHsCLdFPyVwrWEye9buWdGfr0qiAWm+TIhv3XOKX2p
-	HmB51iayZMfhSIlxj588/snucw04QVXMYW6/ppunFu/KVklOesvrTD29Ars8GhXdIN6ONoiLX0a
-	ZG6C0qLpL1U/0fJAb7BtEkjohsTEl1WfOL3jJO+5skJ1dHdFqCNxZ3Z/AQezFOXqcgc3ec2qFKX
-	LXWw//eCIH49ySV7bofluT66yoSuf0V2rWDF/Q2M8rcZznd8noU3p42qIUlKWXutTQLwxWilzmF
-	g7YwwxnR0TWjSYipCk9uEXxLST9eYWMUdBoRstSBXqgu5D+jdUXgJBX6LgzRfJ+bCJCaTsuXyVu
-	bnuaV9zopOfqQi4ey1ZGOVGsybTJBXOpsUhc+sk+od53IvXBhkTSyjwS1Qzc9Y4S+Kf1/wHJne5
-	IkubNM0m4EQXuttpON8gxtvM4YbutrvbuY38JN1Q==
-X-Received: by 2002:a05:6000:22c5:b0:46d:d6e0:9cc8 with SMTP id ffacd0b85a97d-47f2dcfcd4amr11175720f8f.46.1783960996713;
-        Mon, 13 Jul 2026 09:43:16 -0700 (PDT)
-Received: from localhost ([37.30.50.91])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f464b7f09sm558676f8f.26.2026.07.13.09.43.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2026 09:43:16 -0700 (PDT)
-Date: Mon, 13 Jul 2026 18:43:15 +0200
-From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
-To: syzbot <syzbot@kernel.org>, 
-	syzbot+a843f6ae2130a987d63b@syzkaller.appspotmail.com
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC] jfs: replace BUG() with error return in txLock()
-Message-ID: <cwurrj7snyy6v5nfyw2pje5slhayb2lh4lxa4jf2xkjsg5qql4@gbkcndau4g7c>
-References: <9d2eba88-93bf-4f3c-a3b2-b554e1fffe80@mail.kernel.org>
+        bh=lkKUBkWGswAvFTN07DN/VzSIICHnVQ8tBzndDmGCHw4=;
+        b=GnNJeFvhDIaIg9hXa/u2ctSKMpdxOpMxUb3hFFOYZHOPdhy3OTVP9LwJh+Hieq6Znd
+         NB+hlI4iejaciFN8Wc6yuYk7JbwI12O0SWGCGyPLwanCeGnVxhgrb8CNTW1pcbAKi5R+
+         zU7UTi91WZe+pRSiCdwt5Ea202icbsZp4ktdmnXELwL+UiUz18oXZwK3PmEbakCi3D3m
+         S2a6dGZvYaYfKKj8eUJizHsVPz8+gljyMS1oVrDCMaFg+ElWLEx33sY/0IoMShYed02u
+         t8EMpylFaOEJjOExWyOg2WByYxPEqFR6TQ1NR3izHuZRa71dkt1I/y6yzFC4TamKIYSt
+         pvGg==
+X-Gm-Message-State: AOJu0YyIDFt0UC1vJy5vDnM3cl/3ci4gj2yLdHb95zag3xDxvqAkEvMY
+	y894YcniUp512sRBtjSJtTqAMFyIUBxdzKbD9CJG31024E/f12Uh82o4fRMo+o6lmC/nur8rEwY
+	w1dF0eOQSOIYDMljCQmfdBR7RwCkjF3xllal1RdC+LBJx9xnkUpAYtWTVTTs=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9d2eba88-93bf-4f3c-a3b2-b554e1fffe80@mail.kernel.org>
+X-Received: by 2002:a05:6820:61e:b0:6a3:8cf6:fe02 with SMTP id
+ 006d021491bc7-6a39a6c9c1bmr6656180eaf.37.1783988223814; Mon, 13 Jul 2026
+ 17:17:03 -0700 (PDT)
+Date: Mon, 13 Jul 2026 17:17:03 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a557fff.c90005c7.37d349.000e.GAE@google.com>
+Subject: [moderation/CI] Re: block: fix aligning of bounced dio read bios
+From: syzbot ci <syzbot+cied2c9b8b2e051ad0@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-Rewrite patch from the JFS block-map boundary, not from txLock().
+syzbot ci has tested the following series
 
-This feedback is per syzbot bug page reproducer path. Aim to fix all possible
-`kernel BUG in txLock` paths.
+[v1] block: fix aligning of bounced dio read bios
+https://lore.kernel.org/all/20260713152912.2333321-1-hch@lst.de
+* [PATCH] block: fix aligning of bounced dio read bios
 
-The syzbot AI patch states the ground failure correctly: "a block can be
-incorrectly marked as free in the bmap while it is actually in use as an inode
-table block."
+and found the following issues:
+* KASAN: slab-out-of-bounds Read in bio_iov_iter_get_pages
+* KASAN: stack-out-of-bounds Read in bio_iov_iter_get_pages
+* KASAN: use-after-free Read in bio_iov_iter_get_pages
 
-The implementation fixes where the bug got exposed (the crash sink), not the
-place that lets that impossible state form. txLock() only shows that a normal
-fileset metapage is already transaction-locked by another transaction. If
-directory split code got a block that is already used or locked as different
-metadata, the bad allocation already escaped.
+Full report is available here:
+https://ci.syzbot.org/series/c5526ca4-0280-46b9-acac-a3952d0df609
 
-Please rewrite the patch so the allocator stops returning overlapping or stale
-blocks. Validate JFS dmap/block-map metadata before allocation, free, or
-pmap-update users trust it, and reject inconsistent dmap header, range, tree,
-and bitmap state with -EIO.
+***
 
-Do not convert txLock() into an ERR_PTR-returning API. Keep txLock() as the
-transaction invariant detector and fix the bug at the dmap/block-map validation
-boundary before tree, quota, metapage, dirty, or transaction state can be
-mutated from already incorrect allocation data.
+KASAN: slab-out-of-bounds Read in bio_iov_iter_get_pages
 
-Please create a loop and iterate on the solution until all acceptance criteria below pass:
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      a13c140cc289c0b7b3770bce5b3ad42ab35074aa
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/826b3d15-d916-4201-92f4-a3110bf41809/config
+syz repro: https://ci.syzbot.org/findings/329bf95d-8223-48af-b49b-aad0ba31512c/syz_repro
 
-Stop condition: if an iteration cannot make technical progress toward these
-criteria, do not keep sending equivalent patch versions. Stop the loop, state
-which criteria still fail, explain the blocker, and say what evidence or design
-change is required before another version is useful.
+==================================================================
+BUG: KASAN: slab-out-of-bounds in bio_iov_iter_align_down block/bio.c:1204 [inline]
+BUG: KASAN: slab-out-of-bounds in bio_iov_iter_get_pages+0x818/0xb00 block/bio.c:1278
+Read of size 4 at addr ffff8881774e32f8 by task syz.2.19/5857
 
-1. Root Cause: identify the bmap/dmap validation bug as the cause, and keep
-   txLock() separate as where the bug got exposed (the crash sink).
-2. Approach: stop the allocator from returning overlapping or stale blocks by
-   validating JFS dmap/block-map metadata before allocator, free, or
-   pmap-update users trust it.
-3. Patch Description: describe crafted JFS dmap corruption, the validation
-   boundary, and the -EIO failure mode in normal kernel commit-message style,
-   using only kernel-standard attribution.
-4. To/Cc List: run get_maintainer.pl for the actual rewritten files and use the
-   JFS maintainer, JFS list, LKML, and relevant history-based recipients.
-5. Fixes Tag: include a Fixes tag only if history proves the commit introduced
-   the dmap/bmap trust bug that the rewritten fix changes. Do not use the
-   initial JFS import, the commit that added the `txLock()` assertion, or any
-   other crash-sink history unless it also introduced the allocator-side stale
-   or overlapping-block condition being fixed.
-6. Kernel RCA Criteria: reconstruct the syzbot bug page triggering path,
-   separate cause from crash sink, reject wrong alternatives, and prove the fix
-   covers the allocator invariant break.
-7. checkpatch.pl: run scripts/checkpatch.pl on the rewritten patch and make it
-   pass with 0 errors and 0 warnings.
-8. checkpatch.pl --strict: run scripts/checkpatch.pl --strict on the same
-   rewritten patch and iterate until strict has no unresolved findings.
-9. Performance Review: avoid unnecessary hot-path churn, new lock contention,
-   allocations in critical sections, algorithmic complexity increases, and
-   unjustified branch hints.
-10. Regression-Risk Review: preserve the txLock() return contract and avoid
-    broad caller churn; the rewritten fix should not require new txLock()
-    ERR_PTR handling across dtree, xtree, imap, or namei callers.
-11. Logic Review: enforce the dmap header, range, tree, and bitmap invariants
-    before JFS allocates, frees, or updates pmap state from the page.
-12. Security Impact Review: fail closed on malformed JFS metadata before it can
-    drive allocator decisions or mutate other metadata state.
-13. Memory Management and Lifetime Review: prove every error path releases or
-    preserves metapages, tlocks, transactions, quota state, dirty state, and
-    linelock state correctly.
-14. Focused Condition Checks: pass invariant/boundary, API/return-contract,
-    error-unwind/state-consistency, corruption-handling, and verification
-    mapping checks.
-15. Verification Mapping: state what each check proves, including apply,
-    checkpatch, strict checkpatch, build, reproducer/no-repro, and targeted
-    regression coverage.
-16. Reproducer Validation: prove the syzbot bug page reproducer path is no
-    longer reproducible with the rewritten patch; ideally also validate
-    adjacent paths that can reach `kernel BUG in txLock` and document no-repro
-    results or remaining gaps.
+CPU: 1 UID: 0 PID: 5857 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+ print_report+0x58/0x70 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ bio_iov_iter_align_down block/bio.c:1204 [inline]
+ bio_iov_iter_get_pages+0x818/0xb00 block/bio.c:1278
+ blkdev_iov_iter_get_pages block/fops.c:49 [inline]
+ __blkdev_direct_IO+0x656/0xf30 block/fops.c:219
+ blkdev_direct_IO+0x122e/0x17a0 block/fops.c:435
+ blkdev_read_iter+0x223/0x420 block/fops.c:814
+ do_iter_readv_writev+0x612/0x8c0 fs/read_write.c:-1
+ vfs_readv+0x28d/0x850 fs/read_write.c:1019
+ do_preadv fs/read_write.c:1133 [inline]
+ __do_sys_preadv2 fs/read_write.c:1192 [inline]
+ __se_sys_preadv2+0x177/0x2a0 fs/read_write.c:1183
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7ff72e39ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ff72f2bf028 EFLAGS: 00000246 ORIG_RAX: 0000000000000147
+RAX: ffffffffffffffda RBX: 00007ff72e615fa0 RCX: 00007ff72e39ce59
+RDX: 0000000000000002 RSI: 0000200000000400 RDI: 0000000000000003
+RBP: 00007ff72e432e6f R08: 0000000000000000 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ff72e616038 R14: 00007ff72e615fa0 R15: 00007fff57584868
+ </TASK>
 
-On Mon, Jun 29, 2026 at 10:55:11PM +0000, syzbot wrote:
-> A corrupted JFS filesystem image can cause a concurrency issue where the
-> block allocation map (bmap) and the inode map are out of sync.
-> Specifically, a block can be incorrectly marked as free in the bmap while
-> it is actually in use as an inode table block.
-> 
-> This corruption can lead to a race condition between the VFS writeback
-> thread and a user thread. For example, the writeback thread might lock the
-> inode table block's metapage to write a dirty inode. Concurrently, a user
-> thread might allocate the exact same block for a directory btree split (due
-> to the corrupted bmap) and attempt to lock its metapage. This causes
-> txLock() to detect that the metapage is already locked by a different
-> transaction for a non-aggregate inode, triggering a BUG():
-> 
-> ------------[ cut here ]------------
-> kernel BUG at fs/jfs/jfs_txnmgr.c:836!
-> Oops: invalid opcode: 0000 [#1] SMP KASAN NOPTI
-> CPU: 0 UID: 0 PID: 5543 Comm: syz.0.52 Not tainted
-> RIP: 0010:txLock+0x1cc3/0x1d10 fs/jfs/jfs_txnmgr.c:836
-> ...
-> Call Trace:
->  <TASK>
->  dtSplitRoot+0x38d/0x18a0 fs/jfs/jfs_dtree.c:1924
->  dtSplitUp fs/jfs/jfs_dtree.c:990 [inline]
->  dtInsert+0xeb2/0x5890 fs/jfs/jfs_dtree.c:868
->  jfs_create+0x730/0xae0 fs/jfs/namei.c:138
->  lookup_open fs/namei.c:4508 [inline]
->  open_last_lookups fs/namei.c:4608 [inline]
->  path_openat+0x133a/0x3830 fs/namei.c:4856
->  do_file_open+0x23e/0x4a0 fs/namei.c:4888
->  do_sys_openat2+0x115/0x200 fs/open.c:1368
->  do_sys_open fs/open.c:1374 [inline]
->  __do_sys_open fs/open.c:1382 [inline]
->  __se_sys_open fs/open.c:1378 [inline]
->  __x64_sys_open+0x11e/0x150 fs/open.c:1378
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->  </TASK>
-> 
-> To fix this, replace the BUG() in txLock() with a call to jfs_error() to
-> mark the filesystem as corrupted, and return ERR_PTR(-EIO) to gracefully
-> handle the error.
-> 
-> Since txLock() can now return an error pointer, update all of its callers
-> across the JFS codebase to check for IS_ERR() and properly propagate the
-> error up the call stack. This includes changing the return types of several
-> helper functions (such as lock_index(), free_index(), modify_index(),
-> dtInitRoot(), xtInitRoot(), and dtInsertEntry()) from void to int, and
-> ensuring that resources like pinned metapages are properly released on the
-> new error paths.
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Assisted-by: good-balanced Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview best-expensive syzbot
-> Reported-by: syzbot+a843f6ae2130a987d63b@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=a843f6ae2130a987d63b
-> Link: https://syzkaller.appspot.com/ai_job?id=62ec5f45-38f7-4129-96f4-2509f8ed6b21
-> To: <jfs-discussion@lists.sourceforge.net>
-> To: "Dave Kleikamp" <shaggy@kernel.org>
-> Cc: "Arnd Bergmann" <arnd@arndb.de>
-> Cc: "Christian Brauner (Amutable)" <brauner@kernel.org>
-> Cc: "Damien Le Moal" <dlemoal@kernel.org>
-> Cc: "Jan Kara" <jack@suse.cz>
-> Cc: "Jori Koolstra" <jkoolstra@xs4all.nl>
-> Cc: "Jeff Layton" <jlayton@kernel.org>
-> Cc: "Kees Cook" <kees@kernel.org>
-> Cc: <linux-kernel@vger.kernel.org>
-> Cc: "Mateusz Guzik" <mjguzik@gmail.com>
-> Cc: "Richard Weinberger" <richard@nod.at>
-> Cc: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
-> Cc: "Shaurya Rane" <ssrane_b23@ee.vjti.ac.in>
-> Cc: "Suchit Karunakaran" <suchitkarunakaran@gmail.com>
-> Cc: "Al Viro" <viro@zeniv.linux.org.uk>
-> Cc: "Yun Zhou" <yun.zhou@windriver.com>
-> Cc: "Hongling Zeng" <zenghongling@kylinos.cn>
-> Cc: "Zheng Yu" <zheng.yu@northwestern.edu>
-> 
-> ---
-> diff --git a/fs/jfs/jfs_dtree.c b/fs/jfs/jfs_dtree.c
-> index 8ce6e4458..936e408ab 100644
-> --- a/fs/jfs/jfs_dtree.c
-> +++ b/fs/jfs/jfs_dtree.c
-> @@ -167,8 +167,8 @@ static void dtGetKey(dtpage_t * p, int i, struct component_name * key,
->  static int ciGetLeafPrefixKey(dtpage_t * lp, int li, dtpage_t * rp,
->  			      int ri, struct component_name * key, int flag);
->  
-> -static void dtInsertEntry(dtpage_t * p, int index, struct component_name * key,
-> -			  ddata_t * data, struct dt_lock **);
-> +static int dtInsertEntry(dtpage_t *p, int index, struct component_name *key,
-> +			 ddata_t *data, struct dt_lock **);
->  
->  static void dtMoveEntry(dtpage_t * sp, int si, dtpage_t * dp,
->  			struct dt_lock ** sdtlock, struct dt_lock ** ddtlock,
-> @@ -286,14 +286,16 @@ static struct dir_table_slot *find_index(struct inode *ip, u32 index,
->  	return slot;
->  }
->  
-> -static inline void lock_index(tid_t tid, struct inode *ip, struct metapage * mp,
-> -			      u32 index)
-> +static inline int lock_index(tid_t tid, struct inode *ip, struct metapage *mp,
-> +			     u32 index)
->  {
->  	struct tlock *tlck;
->  	struct linelock *llck;
->  	struct lv *lv;
->  
->  	tlck = txLock(tid, ip, mp, tlckDATA);
-> +	if (IS_ERR(tlck))
-> +		return PTR_ERR(tlck);
->  	llck = (struct linelock *) tlck->lock;
->  
->  	if (llck->index >= llck->maxcnt)
-> @@ -307,6 +309,8 @@ static inline void lock_index(tid_t tid, struct inode *ip, struct metapage * mp,
->  	lv->offset = ((index - 2) & 511) >> 1;
->  	lv->length = 1;
->  	llck->index++;
-> +
-> +	return 0;
->  }
->  
->  /*
-> @@ -383,7 +387,13 @@ static u32 add_index(tid_t tid, struct inode *ip, s64 bn, int slot)
->  		/*
->  		 * Initialize empty x-tree
->  		 */
-> -		xtInitRoot(tid, ip);
-> +		if (xtInitRoot(tid, ip)) {
-> +			memcpy(&jfs_ip->i_dirtable, temp_table,
-> +			       sizeof(temp_table));
-> +			dbFree(ip, xaddr, sbi->nbperpage);
-> +			dquot_free_block(ip, sbi->nbperpage);
-> +			goto clean_up;
-> +		}
->  
->  		/*
->  		 * Add the first block to the xtree
-> @@ -408,6 +418,13 @@ static u32 add_index(tid_t tid, struct inode *ip, s64 bn, int slot)
->  			goto clean_up;
->  		}
->  		tlck = txLock(tid, ip, mp, tlckDATA);
-> +		if (IS_ERR(tlck)) {
-> +			release_metapage(mp);
-> +			xtTruncate(tid, ip, 0, COMMIT_PWMAP);
-> +			memcpy(&jfs_ip->i_dirtable, temp_table,
-> +			       sizeof(temp_table));
-> +			goto clean_up;
-> +		}
->  		llck = (struct linelock *) & tlck->lock;
->  		ASSERT(llck->index == 0);
->  		lv = &llck->lv[0];
-> @@ -453,7 +470,10 @@ static u32 add_index(tid_t tid, struct inode *ip, s64 bn, int slot)
->  		goto clean_up;
->  	}
->  
-> -	lock_index(tid, ip, mp, index);
-> +	if (lock_index(tid, ip, mp, index)) {
-> +		release_metapage(mp);
-> +		goto clean_up;
-> +	}
->  
->  	dirtab_slot =
->  	    (struct dir_table_slot *) ((char *) mp->data + page_offset);
-> @@ -478,27 +498,31 @@ static u32 add_index(tid_t tid, struct inode *ip, s64 bn, int slot)
->   *
->   *	Marks an entry to the directory index table as free.
->   */
-> -static void free_index(tid_t tid, struct inode *ip, u32 index, u32 next)
-> +static int free_index(tid_t tid, struct inode *ip, u32 index, u32 next)
->  {
->  	struct dir_table_slot *dirtab_slot;
->  	s64 lblock;
->  	struct metapage *mp = NULL;
-> +	int rc = 0;
->  
->  	dirtab_slot = find_index(ip, index, &mp, &lblock);
->  
->  	if (!dirtab_slot)
-> -		return;
-> +		return 0;
->  
->  	dirtab_slot->flag = DIR_INDEX_FREE;
->  	dirtab_slot->slot = dirtab_slot->addr1 = 0;
->  	dirtab_slot->addr2 = cpu_to_le32(next);
->  
->  	if (mp) {
-> -		lock_index(tid, ip, mp, index);
-> -		mark_metapage_dirty(mp);
-> +		rc = lock_index(tid, ip, mp, index);
-> +		if (!rc)
-> +			mark_metapage_dirty(mp);
->  		release_metapage(mp);
->  	} else
->  		set_cflag(COMMIT_Dirtable, ip);
-> +
-> +	return rc;
->  }
->  
->  /*
-> @@ -506,24 +530,28 @@ static void free_index(tid_t tid, struct inode *ip, u32 index, u32 next)
->   *
->   *	Changes an entry in the directory index table
->   */
-> -static void modify_index(tid_t tid, struct inode *ip, u32 index, s64 bn,
-> -			 int slot, struct metapage ** mp, s64 *lblock)
-> +static int modify_index(tid_t tid, struct inode *ip, u32 index, s64 bn,
-> +			int slot, struct metapage **mp, s64 *lblock)
->  {
->  	struct dir_table_slot *dirtab_slot;
-> +	int rc = 0;
->  
->  	dirtab_slot = find_index(ip, index, mp, lblock);
->  
->  	if (!dirtab_slot)
-> -		return;
-> +		return 0;
->  
->  	DTSaddress(dirtab_slot, bn);
->  	dirtab_slot->slot = slot;
->  
->  	if (*mp) {
-> -		lock_index(tid, ip, *mp, index);
-> -		mark_metapage_dirty(*mp);
-> +		rc = lock_index(tid, ip, *mp, index);
-> +		if (!rc)
-> +			mark_metapage_dirty(*mp);
->  	} else
->  		set_cflag(COMMIT_Dirtable, ip);
-> +
-> +	return rc;
->  }
->  
->  /*
-> @@ -879,6 +907,10 @@ int dtInsert(tid_t tid, struct inode *ip,
->  	 * acquire a transaction lock on the leaf page
->  	 */
->  	tlck = txLock(tid, ip, mp, tlckDTREE | tlckENTRY);
-> +	if (IS_ERR(tlck)) {
-> +		DT_PUTPAGE(mp);
-> +		return PTR_ERR(tlck);
-> +	}
->  	dtlck = (struct dt_lock *) & tlck->lock;
->  	ASSERT(dtlck->index == 0);
->  	lv = & dtlck->lv[0];
-> @@ -888,7 +920,11 @@ int dtInsert(tid_t tid, struct inode *ip,
->  	lv->length = 1;
->  	dtlck->index++;
->  
-> -	dtInsertEntry(p, index, name, &data, &dtlck);
-> +	rc = dtInsertEntry(p, index, name, &data, &dtlck);
-> +	if (rc) {
-> +		DT_PUTPAGE(mp);
-> +		return rc;
-> +	}
->  
->  	/* linelock stbl of non-root leaf page */
->  	if (!(p->header.flag & BT_ROOT)) {
-> @@ -1256,9 +1292,15 @@ static int dtSplitUp(tid_t tid,
->  			 * acquire a transaction lock on the parent page
->  			 */
->  			tlck = txLock(tid, ip, smp, tlckDTREE | tlckENTRY);
-> -			dtlck = (struct dt_lock *) & tlck->lock;
-> +			if (IS_ERR(tlck)) {
-> +				rc = PTR_ERR(tlck);
-> +				DT_PUTPAGE(smp);
-> +				DT_PUTPAGE(rmp);
-> +				goto splitOut;
-> +			}
-> +			dtlck = (struct dt_lock *)&tlck->lock;
->  			ASSERT(dtlck->index == 0);
-> -			lv = & dtlck->lv[0];
-> +			lv = &dtlck->lv[0];
->  
->  			/* linelock header */
->  			lv->offset = 0;
-> @@ -1270,13 +1312,18 @@ static int dtSplitUp(tid_t tid,
->  				lv++;
->  				n = skip >> L2DTSLOTSIZE;
->  				lv->offset = sp->header.stblindex + n;
-> -				lv->length =
-> -				    ((sp->header.nextindex -
-> -				      1) >> L2DTSLOTSIZE) - n + 1;
-> +				lv->length = ((sp->header.nextindex - 1) >>
-> +					      L2DTSLOTSIZE) -
-> +					     n + 1;
->  				dtlck->index++;
->  			}
->  
-> -			dtInsertEntry(sp, skip, &key, data, &dtlck);
-> +			rc = dtInsertEntry(sp, skip, &key, data, &dtlck);
-> +			if (rc) {
-> +				DT_PUTPAGE(smp);
-> +				DT_PUTPAGE(rmp);
-> +				goto splitOut;
-> +			}
->  
->  			/* exit propagate up */
->  			break;
-> @@ -1375,6 +1422,10 @@ static int dtSplitPage(tid_t tid, struct inode *ip, struct dtsplit * split,
->  	 * acquire a transaction lock on the new right page
->  	 */
->  	tlck = txLock(tid, ip, rmp, tlckDTREE | tlckNEW);
-> +	if (IS_ERR(tlck)) {
-> +		DT_PUTPAGE(rmp);
-> +		return PTR_ERR(tlck);
-> +	}
->  	rdtlck = (struct dt_lock *) & tlck->lock;
->  
->  	rp = (dtpage_t *) rmp->data;
-> @@ -1388,6 +1439,10 @@ static int dtSplitPage(tid_t tid, struct inode *ip, struct dtsplit * split,
->  	 * action:
->  	 */
->  	tlck = txLock(tid, ip, smp, tlckDTREE | tlckENTRY);
-> +	if (IS_ERR(tlck)) {
-> +		DT_PUTPAGE(rmp);
-> +		return PTR_ERR(tlck);
-> +	}
->  	sdtlck = (struct dt_lock *) & tlck->lock;
->  
->  	/* linelock header of split page */
-> @@ -1452,7 +1507,11 @@ static int dtSplitPage(tid_t tid, struct inode *ip, struct dtsplit * split,
->  		f->next = -1;
->  
->  		/* insert entry at the first entry of the new right page */
-> -		dtInsertEntry(rp, 0, split->key, split->data, &rdtlck);
-> +		rc = dtInsertEntry(rp, 0, split->key, split->data, &rdtlck);
-> +		if (rc) {
-> +			DT_PUTPAGE(rmp);
-> +			return rc;
-> +		}
->  
->  		goto out;
->  	}
-> @@ -1476,6 +1535,11 @@ static int dtSplitPage(tid_t tid, struct inode *ip, struct dtsplit * split,
->  		 * acquire a transaction lock on the next page
->  		 */
->  		tlck = txLock(tid, ip, mp, tlckDTREE | tlckRELINK);
-> +		if (IS_ERR(tlck)) {
-> +			DT_PUTPAGE(mp);
-> +			DT_PUTPAGE(rmp);
-> +			return PTR_ERR(tlck);
-> +		}
->  		jfs_info("dtSplitPage: tlck = 0x%p, ip = 0x%p, mp=0x%p",
->  			tlck, ip, mp);
->  		dtlck = (struct dt_lock *) & tlck->lock;
-> @@ -1577,40 +1641,54 @@ static int dtSplitPage(tid_t tid, struct inode *ip, struct dtsplit * split,
->  		mp = NULL;
->  		stbl = DT_GETSTBL(rp);
->  		for (n = 0; n < rp->header.nextindex; n++) {
-> -			ldtentry = (struct ldtentry *) & rp->slot[stbl[n]];
-> -			modify_index(tid, ip, le32_to_cpu(ldtentry->index),
-> -				     rbn, n, &mp, &lblock);
-> +			ldtentry = (struct ldtentry *)&rp->slot[stbl[n]];
-> +			rc = modify_index(tid, ip, le32_to_cpu(ldtentry->index),
-> +					  rbn, n, &mp, &lblock);
-> +			if (rc)
-> +				break;
->  		}
->  		if (mp)
->  			release_metapage(mp);
-> +		if (rc) {
-> +			DT_PUTPAGE(rmp);
-> +			return rc;
-> +		}
->  	}
->  
->  	/*
-> -	 * the skipped index was on the left page,
-> -	 */
-> +		 * the skipped index was on the left page,
-> +		 */
->  	if (skip <= off) {
->  		/* insert the new entry in the split page */
-> -		dtInsertEntry(sp, skip, split->key, split->data, &sdtlck);
-> +		rc = dtInsertEntry(sp, skip, split->key, split->data, &sdtlck);
-> +		if (rc) {
-> +			DT_PUTPAGE(rmp);
-> +			return rc;
-> +		}
->  
->  		/* linelock stbl of split page */
->  		if (sdtlck->index >= sdtlck->maxcnt)
-> -			sdtlck = (struct dt_lock *) txLinelock(sdtlck);
-> -		slv = & sdtlck->lv[sdtlck->index];
-> +			sdtlck = (struct dt_lock *)txLinelock(sdtlck);
-> +		slv = &sdtlck->lv[sdtlck->index];
->  		n = skip >> L2DTSLOTSIZE;
->  		slv->offset = sp->header.stblindex + n;
->  		slv->length =
-> -		    ((sp->header.nextindex - 1) >> L2DTSLOTSIZE) - n + 1;
-> +			((sp->header.nextindex - 1) >> L2DTSLOTSIZE) - n + 1;
->  		sdtlck->index++;
->  	}
->  	/*
-> -	 * the skipped index was on the right page,
-> -	 */
-> +		 * the skipped index was on the right page,
-> +		 */
->  	else {
->  		/* adjust the skip index to reflect the new position */
->  		skip -= nxt;
->  
->  		/* insert the new entry in the right page */
-> -		dtInsertEntry(rp, skip, split->key, split->data, &rdtlck);
-> +		rc = dtInsertEntry(rp, skip, split->key, split->data, &rdtlck);
-> +		if (rc) {
-> +			DT_PUTPAGE(rmp);
-> +			return rc;
-> +		}
->  	}
->  
->        out:
-> @@ -1702,13 +1780,19 @@ static int dtExtendPage(tid_t tid,
->  			stbl = DT_GETSTBL(sp);
->  			for (n = 0; n < sp->header.nextindex; n++) {
->  				ldtentry =
-> -				    (struct ldtentry *) & sp->slot[stbl[n]];
-> -				modify_index(tid, ip,
-> -					     le32_to_cpu(ldtentry->index),
-> -					     xaddr, n, &mp, &lblock);
-> +					(struct ldtentry *)&sp->slot[stbl[n]];
-> +				rc = modify_index(tid, ip,
-> +						  le32_to_cpu(ldtentry->index),
-> +						  xaddr, n, &mp, &lblock);
-> +				if (rc)
-> +					break;
->  			}
->  			if (mp)
->  				release_metapage(mp);
-> +			if (rc) {
-> +				DT_PUTPAGE(pmp);
-> +				return rc;
-> +			}
->  		}
->  	}
->  
-> @@ -1724,7 +1808,11 @@ static int dtExtendPage(tid_t tid,
->  	 * acquire a transaction lock on the extended/leaf page
->  	 */
->  	tlck = txLock(tid, ip, smp, tlckDTREE | type);
-> -	dtlck = (struct dt_lock *) & tlck->lock;
-> +	if (IS_ERR(tlck)) {
-> +		DT_PUTPAGE(pmp);
-> +		return PTR_ERR(tlck);
-> +	}
-> +	dtlck = (struct dt_lock *)&tlck->lock;
->  	lv = & dtlck->lv[0];
->  
->  	/* update buffer extent descriptor of extended page */
-> @@ -1811,7 +1899,11 @@ static int dtExtendPage(tid_t tid,
->  	/*
->  	 * insert the new entry
->  	 */
-> -	dtInsertEntry(sp, split->index, split->key, split->data, &dtlck);
-> +	rc = dtInsertEntry(sp, split->index, split->key, split->data, &dtlck);
-> +	if (rc) {
-> +		DT_PUTPAGE(pmp);
-> +		return rc;
-> +	}
->  
->  	BT_MARK_DIRTY(pmp, ip);
->  	/*
-> @@ -1830,8 +1922,12 @@ static int dtExtendPage(tid_t tid,
->  	 * acquire a transaction lock on the parent/root page
->  	 */
->  	tlck = txLock(tid, ip, pmp, tlckDTREE | tlckENTRY);
-> -	dtlck = (struct dt_lock *) & tlck->lock;
-> -	lv = & dtlck->lv[dtlck->index];
-> +	if (IS_ERR(tlck)) {
-> +		DT_PUTPAGE(pmp);
-> +		return PTR_ERR(tlck);
-> +	}
-> +	dtlck = (struct dt_lock *)&tlck->lock;
-> +	lv = &dtlck->lv[dtlck->index];
->  
->  	/* linelock parent entry - 1st slot */
->  	lv->offset = 1;
-> @@ -1922,6 +2018,10 @@ static int dtSplitRoot(tid_t tid,
->  	 * acquire a transaction lock on the new right page
->  	 */
->  	tlck = txLock(tid, ip, rmp, tlckDTREE | tlckNEW);
-> +	if (IS_ERR(tlck)) {
-> +		DT_PUTPAGE(rmp);
-> +		return PTR_ERR(tlck);
-> +	}
->  	dtlck = (struct dt_lock *) & tlck->lock;
->  
->  	rp->header.flag =
-> @@ -1993,17 +2093,27 @@ static int dtSplitRoot(tid_t tid,
->  		stbl = DT_GETSTBL(rp);
->  		for (n = 0; n < rp->header.nextindex; n++) {
->  			ldtentry = (struct ldtentry *) & rp->slot[stbl[n]];
-> -			modify_index(tid, ip, le32_to_cpu(ldtentry->index),
-> -				     rbn, n, &mp, &lblock);
-> +			rc = modify_index(tid, ip, le32_to_cpu(ldtentry->index),
-> +					  rbn, n, &mp, &lblock);
-> +			if (rc)
-> +				break;
->  		}
->  		if (mp)
->  			release_metapage(mp);
-> +		if (rc) {
-> +			DT_PUTPAGE(rmp);
-> +			return rc;
-> +		}
->  	}
->  	/*
->  	 * insert the new entry into the new right/child page
->  	 * (skip index in the new right page will not change)
->  	 */
-> -	dtInsertEntry(rp, split->index, split->key, split->data, &dtlck);
-> +	rc = dtInsertEntry(rp, split->index, split->key, split->data, &dtlck);
-> +	if (rc) {
-> +		DT_PUTPAGE(rmp);
-> +		return rc;
-> +	}
->  
->  	/*
->  	 *	reset parent/root page
-> @@ -2019,6 +2129,10 @@ static int dtSplitRoot(tid_t tid,
->  	 * acquire a transaction lock on the root page (in-memory inode)
->  	 */
->  	tlck = txLock(tid, ip, smp, tlckDTREE | tlckNEW | tlckBTROOT);
-> +	if (IS_ERR(tlck)) {
-> +		DT_PUTPAGE(rmp);
-> +		return PTR_ERR(tlck);
-> +	}
->  	dtlck = (struct dt_lock *) & tlck->lock;
->  
->  	/* linelock root */
-> @@ -2139,7 +2253,11 @@ int dtDelete(tid_t tid,
->  			    (struct ldtentry *) & p->slot[stbl[index + 1]];
->  			next_index = le32_to_cpu(ldtentry->index);
->  		}
-> -		free_index(tid, ip, table_index, next_index);
-> +		rc = free_index(tid, ip, table_index, next_index);
-> +		if (rc) {
-> +			DT_PUTPAGE(mp);
-> +			return rc;
-> +		}
->  	}
->  	/*
->  	 * the leaf page becomes empty, delete the page
-> @@ -2159,6 +2277,10 @@ int dtDelete(tid_t tid,
->  		 * acquire a transaction lock on the leaf page
->  		 */
->  		tlck = txLock(tid, ip, mp, tlckDTREE | tlckENTRY);
-> +		if (IS_ERR(tlck)) {
-> +			DT_PUTPAGE(mp);
-> +			return PTR_ERR(tlck);
-> +		}
->  		dtlck = (struct dt_lock *) & tlck->lock;
->  
->  		/*
-> @@ -2202,12 +2324,18 @@ int dtDelete(tid_t tid,
->  			for (i = index; i < p->header.nextindex; i++) {
->  				ldtentry =
->  				    (struct ldtentry *) & p->slot[stbl[i]];
-> -				modify_index(tid, ip,
-> -					     le32_to_cpu(ldtentry->index),
-> -					     bn, i, &imp, &lblock);
-> +				rc = modify_index(tid, ip,
-> +						  le32_to_cpu(ldtentry->index),
-> +						  bn, i, &imp, &lblock);
-> +				if (rc)
-> +					break;
->  			}
->  			if (imp)
->  				release_metapage(imp);
-> +			if (rc) {
-> +				DT_PUTPAGE(mp);
-> +				return rc;
-> +			}
->  		}
->  
->  		DT_PUTPAGE(mp);
-> @@ -2251,11 +2379,11 @@ static int dtDeleteUp(tid_t tid, struct inode *ip,
->  		 *
->  		 * dtInitRoot() acquires txlock on the root
->  		 */
-> -		dtInitRoot(tid, ip, PARENT(ip));
-> +		rc = dtInitRoot(tid, ip, PARENT(ip));
->  
->  		DT_PUTPAGE(fmp);
->  
-> -		return 0;
-> +		return rc;
->  	}
->  
->  	/*
-> @@ -2319,19 +2447,19 @@ static int dtDeleteUp(tid_t tid, struct inode *ip,
->  		 */
->  		if (nextindex == 1) {
->  			/*
-> -			 * keep the root internal page which has become empty
-> -			 */
-> +				 * keep the root internal page which has become empty
-> +				 */
->  			if (p->header.flag & BT_ROOT) {
->  				/*
-> -				 * reset the root
-> -				 *
-> -				 * dtInitRoot() acquires txlock on the root
-> -				 */
-> -				dtInitRoot(tid, ip, PARENT(ip));
-> +					 * reset the root
-> +					 *
-> +					 * dtInitRoot() acquires txlock on the root
-> +					 */
-> +				rc = dtInitRoot(tid, ip, PARENT(ip));
->  
->  				DT_PUTPAGE(mp);
->  
-> -				return 0;
-> +				return rc;
->  			}
->  			/*
->  			 * free the parent page
-> @@ -2381,6 +2509,10 @@ static int dtDeleteUp(tid_t tid, struct inode *ip,
->  		 * action: router entry deletion
->  		 */
->  		tlck = txLock(tid, ip, mp, tlckDTREE | tlckENTRY);
-> +		if (IS_ERR(tlck)) {
-> +			DT_PUTPAGE(mp);
-> +			return PTR_ERR(tlck);
-> +		}
->  		dtlck = (struct dt_lock *) & tlck->lock;
->  
->  		/* linelock header */
-> @@ -2464,6 +2596,10 @@ static int dtRelink(tid_t tid, struct inode *ip, dtpage_t * p)
->  		 * action: update prev pointer;
->  		 */
->  		tlck = txLock(tid, ip, mp, tlckDTREE | tlckRELINK);
-> +		if (IS_ERR(tlck)) {
-> +			DT_PUTPAGE(mp);
-> +			return PTR_ERR(tlck);
-> +		}
->  		jfs_info("dtRelink nextbn: tlck = 0x%p, ip = 0x%p, mp=0x%p",
->  			tlck, ip, mp);
->  		dtlck = (struct dt_lock *) & tlck->lock;
-> @@ -2493,6 +2629,10 @@ static int dtRelink(tid_t tid, struct inode *ip, dtpage_t * p)
->  		 * action: update next pointer;
->  		 */
->  		tlck = txLock(tid, ip, mp, tlckDTREE | tlckRELINK);
-> +		if (IS_ERR(tlck)) {
-> +			DT_PUTPAGE(mp);
-> +			return PTR_ERR(tlck);
-> +		}
->  		jfs_info("dtRelink prevbn: tlck = 0x%p, ip = 0x%p, mp=0x%p",
->  			tlck, ip, mp);
->  		dtlck = (struct dt_lock *) & tlck->lock;
-> @@ -2518,7 +2658,7 @@ static int dtRelink(tid_t tid, struct inode *ip, dtpage_t * p)
->   *
->   * initialize directory root (inline in inode)
->   */
-> -void dtInitRoot(tid_t tid, struct inode *ip, u32 idotdot)
-> +int dtInitRoot(tid_t tid, struct inode *ip, u32 idotdot)
->  {
->  	struct jfs_inode_info *jfs_ip = JFS_IP(ip);
->  	dtroot_t *p;
-> @@ -2570,6 +2710,8 @@ void dtInitRoot(tid_t tid, struct inode *ip, u32 idotdot)
->  	 */
->  	tlck = txLock(tid, ip, (struct metapage *) & jfs_ip->bxflag,
->  		      tlckDTREE | tlckENTRY | tlckBTROOT);
-> +	if (IS_ERR(tlck))
-> +		return PTR_ERR(tlck);
->  	dtlck = (struct dt_lock *) & tlck->lock;
->  
->  	/* linelock root */
-> @@ -2600,7 +2742,7 @@ void dtInitRoot(tid_t tid, struct inode *ip, u32 idotdot)
->  	/* init '..' entry */
->  	p->header.idotdot = cpu_to_le32(idotdot);
->  
-> -	return;
-> +	return 0;
->  }
->  
->  /*
-> @@ -2637,6 +2779,12 @@ static int add_missing_indices(struct inode *inode, s64 bn)
->  	ASSERT(p->header.flag & BT_LEAF);
->  
->  	tlck = txLock(tid, inode, mp, tlckDTREE | tlckENTRY);
-> +	if (IS_ERR(tlck)) {
-> +		rc = PTR_ERR(tlck);
-> +		DT_PUTPAGE(mp);
-> +		txAbort(tid, 0);
-> +		goto end;
-> +	}
->  	if (BT_IS_ROOT(mp))
->  		tlck->type |= tlckBTROOT;
->  
-> @@ -3624,8 +3772,8 @@ static void dtGetKey(dtpage_t * p, int i,	/* entry index */
->   *
->   * return: entry slot index
->   */
-> -static void dtInsertEntry(dtpage_t * p, int index, struct component_name * key,
-> -			  ddata_t * data, struct dt_lock ** dtlock)
-> +static int dtInsertEntry(dtpage_t *p, int index, struct component_name *key,
-> +			 ddata_t *data, struct dt_lock **dtlock)
->  {
->  	struct dtslot *h, *t;
->  	struct ldtentry *lh = NULL;
-> @@ -3640,6 +3788,7 @@ static void dtInsertEntry(dtpage_t * p, int index, struct component_name * key,
->  	int xsi, n;
->  	s64 bn = 0;
->  	struct metapage *mp = NULL;
-> +	int rc = 0;
->  
->  	klen = key->namlen;
->  	kname = key->name;
-> @@ -3752,18 +3901,22 @@ static void dtInsertEntry(dtpage_t * p, int index, struct component_name * key,
->  			s64 lblock;
->  
->  			/*
-> -			 * Need to update slot number for entries that moved
-> -			 * in the stbl
-> -			 */
-> +				 * Need to update slot number for entries that moved
-> +				 * in the stbl
-> +				 */
->  			mp = NULL;
->  			for (n = index + 1; n <= nextindex; n++) {
-> -				lh = (struct ldtentry *) & (p->slot[stbl[n]]);
-> -				modify_index(data->leaf.tid, data->leaf.ip,
-> -					     le32_to_cpu(lh->index), bn, n,
-> -					     &mp, &lblock);
-> +				lh = (struct ldtentry *)&(p->slot[stbl[n]]);
-> +				rc = modify_index(data->leaf.tid, data->leaf.ip,
-> +						  le32_to_cpu(lh->index), bn, n,
-> +						  &mp, &lblock);
-> +				if (rc)
-> +					break;
->  			}
->  			if (mp)
->  				release_metapage(mp);
-> +			if (rc)
-> +				return rc;
->  		}
->  	}
->  
-> @@ -3771,8 +3924,9 @@ static void dtInsertEntry(dtpage_t * p, int index, struct component_name * key,
->  
->  	/* advance next available entry index of stbl */
->  	++p->header.nextindex;
-> -}
->  
-> +	return 0;
-> +}
->  
->  /*
->   *	dtMoveEntry()
-> @@ -4270,6 +4424,10 @@ int dtModify(tid_t tid, struct inode *ip,
->  	 * acquire a transaction lock on the leaf page of named entry
->  	 */
->  	tlck = txLock(tid, ip, mp, tlckDTREE | tlckENTRY);
-> +	if (IS_ERR(tlck)) {
-> +		DT_PUTPAGE(mp);
-> +		return PTR_ERR(tlck);
-> +	}
->  	dtlck = (struct dt_lock *) & tlck->lock;
->  
->  	/* get slot index of the entry */
-> diff --git a/fs/jfs/jfs_dtree.h b/fs/jfs/jfs_dtree.h
-> index dfc87b669..33528521f 100644
-> --- a/fs/jfs/jfs_dtree.h
-> +++ b/fs/jfs/jfs_dtree.h
-> @@ -238,7 +238,7 @@ typedef union {
->  /*
->   *	external declarations
->   */
-> -extern void dtInitRoot(tid_t tid, struct inode *ip, u32 idotdot);
-> +extern int dtInitRoot(tid_t tid, struct inode *ip, u32 idotdot);
->  
->  extern int dtSearch(struct inode *ip, struct component_name * key,
->  		    ino_t * data, struct btstack * btstack, int flag);
-> diff --git a/fs/jfs/jfs_imap.c b/fs/jfs/jfs_imap.c
-> index b84ba4d7d..4a0f76501 100644
-> --- a/fs/jfs/jfs_imap.c
-> +++ b/fs/jfs/jfs_imap.c
-> @@ -650,8 +650,12 @@ int diWrite(tid_t tid, struct inode *ip)
->  	 * acquire transaction lock on the on-disk inode;
->  	 * N.B. tlock is acquired on ipimap not ip;
->  	 */
-> -	if ((ditlck =
-> -	     txLock(tid, ipimap, mp, tlckINODE | tlckENTRY)) == NULL)
-> +	ditlck = txLock(tid, ipimap, mp, tlckINODE | tlckENTRY);
-> +	if (IS_ERR(ditlck)) {
-> +		release_metapage(mp);
-> +		return PTR_ERR(ditlck);
-> +	}
-> +	if (ditlck == NULL)
->  		goto retry;
->  	dilinelock = (struct linelock *) & ditlck->lock;
->  
-> @@ -1231,6 +1235,7 @@ int diFree(struct inode *ip)
->  	tid = txBegin(ipimap->i_sb, COMMIT_FORCE);
->  	mutex_lock(&JFS_IP(ipimap)->commit_mutex);
->  
-> +retry:
->  	/* acquire tlock of the iag page of the freed ixad
->  	 * to force the page NOHOMEOK (even though no data is
->  	 * logged from the iag page) until NOREDOPAGE|FREEXTENT log
-> @@ -1239,6 +1244,16 @@ int diFree(struct inode *ip)
->  	 * N.B. linelock is overlaid as freed extent descriptor;
->  	 */
->  	tlck = txLock(tid, ipimap, mp, tlckINODE | tlckFREE);
-> +	if (IS_ERR(tlck)) {
-> +		rc = PTR_ERR(tlck);
-> +		txAbort(tid, 0);
-> +		mutex_unlock(&JFS_IP(ipimap)->commit_mutex);
-> +		AG_UNLOCK(imap, agno);
-> +		release_metapage(mp);
-> +		return rc;
-> +	}
-> +	if (tlck == NULL)
-> +		goto retry;
->  	pxdlock = (struct pxd_lock *) & tlck->lock;
->  	pxdlock->flag = mlckFREEPXD;
->  	pxdlock->pxd = freepxd;
-> diff --git a/fs/jfs/jfs_txnmgr.c b/fs/jfs/jfs_txnmgr.c
-> index 083dbbb0c..f5e28dc24 100644
-> --- a/fs/jfs/jfs_txnmgr.c
-> +++ b/fs/jfs/jfs_txnmgr.c
-> @@ -820,39 +820,32 @@ struct tlock *txLock(tid_t tid, struct inode *ip, struct metapage * mp,
->  	 * page is being locked by another transaction:
->  	 */
->        waitLock:
-> -	/* Only locks on ipimap or ipaimap should reach here */
-> -	/* assert(jfs_ip->fileset == AGGREGATE_I); */
-> -	if (jfs_ip->fileset != AGGREGATE_I) {
-> -		printk(KERN_ERR "txLock: trying to lock locked page!");
-> -		print_hex_dump(KERN_ERR, "ip: ", DUMP_PREFIX_ADDRESS, 16, 4,
-> -			       ip, sizeof(*ip), 0);
-> -		print_hex_dump(KERN_ERR, "mp: ", DUMP_PREFIX_ADDRESS, 16, 4,
-> -			       mp, sizeof(*mp), 0);
-> -		print_hex_dump(KERN_ERR, "Locker's tblock: ",
-> -			       DUMP_PREFIX_ADDRESS, 16, 4, tid_to_tblock(tid),
-> -			       sizeof(struct tblock), 0);
-> -		print_hex_dump(KERN_ERR, "Tlock: ", DUMP_PREFIX_ADDRESS, 16, 4,
-> -			       tlck, sizeof(*tlck), 0);
-> -		BUG();
-> -	}
-> -	INCREMENT(stattx.waitlock);	/* statistics */
-> -	TXN_UNLOCK();
-> -	release_metapage(mp);
-> -	TXN_LOCK();
-> -	xtid = tlck->tid;	/* reacquire after dropping TXN_LOCK */
-> -
-> -	jfs_info("txLock: in waitLock, tid = %d, xtid = %d, lid = %d",
-> -		 tid, xtid, lid);
-> -
-> -	/* Recheck everything since dropping TXN_LOCK */
-> -	if (xtid && (tlck->mp == mp) && (mp->lid == lid))
-> -		TXN_SLEEP_DROP_LOCK(&tid_to_tblock(xtid)->waitor);
-> -	else
-> -		TXN_UNLOCK();
-> -	jfs_info("txLock: awakened     tid = %d, lid = %d", tid, lid);
-> -
-> -	return NULL;
-> -}
-> +	      /* Only locks on ipimap or ipaimap should reach here */
-> +	      /* assert(jfs_ip->fileset == AGGREGATE_I); */
-> +	      if (jfs_ip->fileset != AGGREGATE_I) {
-> +		      TXN_UNLOCK();
-> +		      jfs_error(ip->i_sb,
-> +				"txLock: trying to lock locked page!\n");
-> +		      return ERR_PTR(-EIO);
-> +	      }
-> +	      INCREMENT(stattx.waitlock); /* statistics */
-> +	      TXN_UNLOCK();
-> +	      release_metapage(mp);
-> +	      TXN_LOCK();
-> +	      xtid = tlck->tid; /* reacquire after dropping TXN_LOCK */
-> +
-> +	      jfs_info("txLock: in waitLock, tid = %d, xtid = %d, lid = %d",
-> +		       tid, xtid, lid);
-> +
-> +	      /* Recheck everything since dropping TXN_LOCK */
-> +	      if (xtid && (tlck->mp == mp) && (mp->lid == lid))
-> +		      TXN_SLEEP_DROP_LOCK(&tid_to_tblock(xtid)->waitor);
-> +	      else
-> +		      TXN_UNLOCK();
-> +	      jfs_info("txLock: awakened     tid = %d, lid = %d", tid, lid);
-> +
-> +	      return NULL;
-> +      }
->  
->  /*
->   * NAME:	txRelease()
-> diff --git a/fs/jfs/jfs_xtree.c b/fs/jfs/jfs_xtree.c
-> index 28c3cf960..2944a8dbd 100644
-> --- a/fs/jfs/jfs_xtree.c
-> +++ b/fs/jfs/jfs_xtree.c
-> @@ -643,6 +643,10 @@ int xtInsert(tid_t tid,		/* transaction id */
->  	/* Don't log it if there are no links to the file */
->  	if (!test_cflag(COMMIT_Nolink, ip)) {
->  		tlck = txLock(tid, ip, mp, tlckXTREE | tlckGROW);
-> +		if (IS_ERR(tlck)) {
-> +			rc = PTR_ERR(tlck);
-> +			goto out;
-> +		}
->  		xtlck = (struct xtlock *) & tlck->lock;
->  		xtlck->lwm.offset =
->  		    (xtlck->lwm.offset) ? min(index,
-> @@ -734,6 +738,8 @@ xtSplitUp(tid_t tid,
->  		/* Don't log it if there are no links to the file */
->  		if (!test_cflag(COMMIT_Nolink, ip)) {
->  			tlck = txLock(tid, ip, smp, tlckXTREE | tlckGROW);
-> +			if (IS_ERR(tlck))
-> +				return PTR_ERR(tlck);
->  			xtlck = (struct xtlock *) & tlck->lock;
->  			xtlck->lwm.offset = (xtlck->lwm.offset) ?
->  			    min(skip, (int)xtlck->lwm.offset) : skip;
-> @@ -904,6 +910,11 @@ xtSplitUp(tid_t tid,
->  			if (!test_cflag(COMMIT_Nolink, ip)) {
->  				tlck = txLock(tid, ip, smp,
->  					      tlckXTREE | tlckGROW);
-> +				if (IS_ERR(tlck)) {
-> +					XT_PUTPAGE(smp);
-> +					XT_PUTPAGE(rmp);
-> +					return PTR_ERR(tlck);
-> +				}
->  				xtlck = (struct xtlock *) & tlck->lock;
->  				xtlck->lwm.offset = (xtlck->lwm.offset) ?
->  				    min(skip, (int)xtlck->lwm.offset) : skip;
-> @@ -1012,12 +1023,22 @@ xtSplitPage(tid_t tid, struct inode *ip,
->  		 * acquire a transaction lock on the new right page;
->  		 */
->  		tlck = txLock(tid, ip, rmp, tlckXTREE | tlckNEW);
-> +		if (IS_ERR(tlck)) {
-> +			rc = PTR_ERR(tlck);
-> +			XT_PUTPAGE(rmp);
-> +			goto clean_up;
-> +		}
->  		rxtlck = (struct xtlock *) & tlck->lock;
->  		rxtlck->lwm.offset = XTENTRYSTART;
->  		/*
->  		 * acquire a transaction lock on the split page
->  		 */
->  		tlck = txLock(tid, ip, smp, tlckXTREE | tlckGROW);
-> +		if (IS_ERR(tlck)) {
-> +			rc = PTR_ERR(tlck);
-> +			XT_PUTPAGE(rmp);
-> +			goto clean_up;
-> +		}
->  		sxtlck = (struct xtlock *) & tlck->lock;
->  	}
->  
-> @@ -1089,8 +1110,15 @@ xtSplitPage(tid_t tid, struct inode *ip,
->  		 *
->  		 * action:sibling pointer update;
->  		 */
-> -		if (!test_cflag(COMMIT_Nolink, ip))
-> +		if (!test_cflag(COMMIT_Nolink, ip)) {
->  			tlck = txLock(tid, ip, mp, tlckXTREE | tlckRELINK);
-> +			if (IS_ERR(tlck)) {
-> +				rc = PTR_ERR(tlck);
-> +				XT_PUTPAGE(mp);
-> +				XT_PUTPAGE(rmp);
-> +				goto clean_up;
-> +			}
-> +		}
->  
->  		p->header.prev = cpu_to_le64(rbn);
->  
-> @@ -1295,6 +1323,10 @@ xtSplitRoot(tid_t tid,
->  
->  	if (!test_cflag(COMMIT_Nolink, ip)) {
->  		tlck = txLock(tid, ip, rmp, tlckXTREE | tlckNEW);
-> +		if (IS_ERR(tlck)) {
-> +			XT_PUTPAGE(rmp);
-> +			return PTR_ERR(tlck);
-> +		}
->  		xtlck = (struct xtlock *) & tlck->lock;
->  		xtlck->lwm.offset = XTENTRYSTART;
->  		xtlck->lwm.length = le16_to_cpu(rp->header.nextindex) -
-> @@ -1326,6 +1358,10 @@ xtSplitRoot(tid_t tid,
->  
->  	if (!test_cflag(COMMIT_Nolink, ip)) {
->  		tlck = txLock(tid, ip, split->mp, tlckXTREE | tlckGROW);
-> +		if (IS_ERR(tlck)) {
-> +			XT_PUTPAGE(rmp);
-> +			return PTR_ERR(tlck);
-> +		}
->  		xtlck = (struct xtlock *) & tlck->lock;
->  		xtlck->lwm.offset = XTENTRYSTART;
->  		xtlck->lwm.length = 1;
-> @@ -1397,6 +1433,10 @@ int xtExtend(tid_t tid,		/* transaction id */
->  	BT_MARK_DIRTY(mp, ip);
->  	if (!test_cflag(COMMIT_Nolink, ip)) {
->  		tlck = txLock(tid, ip, mp, tlckXTREE | tlckGROW);
-> +		if (IS_ERR(tlck)) {
-> +			XT_PUTPAGE(mp);
-> +			return PTR_ERR(tlck);
-> +		}
->  		xtlck = (struct xtlock *) & tlck->lock;
->  	}
->  
-> @@ -1552,6 +1592,10 @@ int xtUpdate(tid_t tid, struct inode *ip, xad_t * nxad)
->  	 */
->  	if (!test_cflag(COMMIT_Nolink, ip)) {
->  		tlck = txLock(tid, ip, mp, tlckXTREE | tlckGROW);
-> +		if (IS_ERR(tlck)) {
-> +			XT_PUTPAGE(mp);
-> +			return PTR_ERR(tlck);
-> +		}
->  		xtlck = (struct xtlock *) & tlck->lock;
->  	}
->  
-> @@ -1730,10 +1774,10 @@ int xtUpdate(tid_t tid, struct inode *ip, xad_t * nxad)
->  		if (IS_ERR(p))
->  			return PTR_ERR(p);
->  		/*
-> -		 * if leaf root has been split, original root has been
-> -		 * copied to new child page, i.e., original entry now
-> -		 * resides on the new child page;
-> -		 */
-> +			 * if leaf root has been split, original root has been
-> +			 * copied to new child page, i.e., original entry now
-> +			 * resides on the new child page;
-> +			 */
->  		if (p->header.flag & BT_INTERNAL) {
->  			ASSERT(p->header.nextindex ==
->  			       cpu_to_le16(XTENTRYSTART + 1));
-> @@ -1748,8 +1792,13 @@ int xtUpdate(tid_t tid, struct inode *ip, xad_t * nxad)
->  
->  			BT_MARK_DIRTY(mp, ip);
->  			if (!test_cflag(COMMIT_Nolink, ip)) {
-> -				tlck = txLock(tid, ip, mp, tlckXTREE|tlckGROW);
-> -				xtlck = (struct xtlock *) & tlck->lock;
-> +				tlck = txLock(tid, ip, mp,
-> +					      tlckXTREE | tlckGROW);
-> +				if (IS_ERR(tlck)) {
-> +					XT_PUTPAGE(mp);
-> +					return PTR_ERR(tlck);
-> +				}
-> +				xtlck = (struct xtlock *)&tlck->lock;
->  			}
->  		} else {
->  			/* is nXAD on new page ? */
-> @@ -1810,6 +1859,10 @@ int xtUpdate(tid_t tid, struct inode *ip, xad_t * nxad)
->  		BT_MARK_DIRTY(mp, ip);
->  		if (!test_cflag(COMMIT_Nolink, ip)) {
->  			tlck = txLock(tid, ip, mp, tlckXTREE | tlckGROW);
-> +			if (IS_ERR(tlck)) {
-> +				XT_PUTPAGE(mp);
-> +				return PTR_ERR(tlck);
-> +			}
->  			xtlck = (struct xtlock *) & tlck->lock;
->  		}
->  
-> @@ -1902,8 +1955,13 @@ printf("xtUpdate.updateLeft.split p:0x%p\n", p);
->  
->  			BT_MARK_DIRTY(mp, ip);
->  			if (!test_cflag(COMMIT_Nolink, ip)) {
-> -				tlck = txLock(tid, ip, mp, tlckXTREE|tlckGROW);
-> -				xtlck = (struct xtlock *) & tlck->lock;
-> +				tlck = txLock(tid, ip, mp,
-> +					      tlckXTREE | tlckGROW);
-> +				if (IS_ERR(tlck)) {
-> +					XT_PUTPAGE(mp);
-> +					return PTR_ERR(tlck);
-> +				}
-> +				xtlck = (struct xtlock *)&tlck->lock;
->  			}
->  		}
->  	} else {
-> @@ -2082,6 +2140,10 @@ int xtAppend(tid_t tid,		/* transaction id */
->  	 * action: xad insertion/extension;
->  	 */
->  	tlck = txLock(tid, ip, mp, tlckXTREE | tlckGROW);
-> +	if (IS_ERR(tlck)) {
-> +		rc = PTR_ERR(tlck);
-> +		goto out;
-> +	}
->  	xtlck = (struct xtlock *) & tlck->lock;
->  
->  	/* insert the new entry: mark the entry NEW */
-> @@ -2111,17 +2173,21 @@ int xtAppend(tid_t tid,		/* transaction id */
->   *
->   * initialize file root (inline in inode)
->   */
-> -void xtInitRoot(tid_t tid, struct inode *ip)
-> +int xtInitRoot(tid_t tid, struct inode *ip)
->  {
->  	xtroot_t *p;
-> +	struct tlock *tlck;
->  
->  	/*
->  	 * acquire a transaction lock on the root
->  	 *
->  	 * action:
->  	 */
-> -	txLock(tid, ip, (struct metapage *) &JFS_IP(ip)->bxflag,
-> +	tlck = txLock(tid, ip, (struct metapage *)&JFS_IP(ip)->bxflag,
->  		      tlckXTREE | tlckNEW);
-> +	if (IS_ERR(tlck))
-> +		return PTR_ERR(tlck);
-> +
->  	p = &JFS_IP(ip)->i_xtroot;
->  
->  	p->header.flag = DXD_INDEX | BT_ROOT | BT_LEAF;
-> @@ -2134,8 +2200,7 @@ void xtInitRoot(tid_t tid, struct inode *ip)
->  		ip->i_size = 0;
->  	}
->  
-> -
-> -	return;
-> +	return 0;
->  }
->  
->  
-> @@ -2295,13 +2360,18 @@ s64 xtTruncate(tid_t tid, struct inode *ip, s64 newsize, int flag)
->  	 * sure that the next pointer is zero.
->  	 */
->  	if (p->header.next) {
-> -		if (log)
-> +		if (log) {
->  			/*
-> -			 * Make sure this change to the header is logged.
-> -			 * If we really truncate this leaf, the flag
-> -			 * will be changed to tlckTRUNCATE
-> -			 */
-> -			tlck = txLock(tid, ip, mp, tlckXTREE|tlckGROW);
-> +				 * Make sure this change to the header is logged.
-> +				 * If we really truncate this leaf, the flag
-> +				 * will be changed to tlckTRUNCATE
-> +				 */
-> +			tlck = txLock(tid, ip, mp, tlckXTREE | tlckGROW);
-> +			if (IS_ERR(tlck)) {
-> +				XT_PUTPAGE(mp);
-> +				return PTR_ERR(tlck);
-> +			}
-> +		}
->  		BT_MARK_DIRTY(mp, ip);
->  		p->header.next = 0;
->  	}
-> @@ -2310,8 +2380,8 @@ s64 xtTruncate(tid_t tid, struct inode *ip, s64 newsize, int flag)
->  		goto getChild;
->  
->  	/*
-> -	 *	leaf page
-> -	 */
-> +		 *	leaf page
-> +		 */
->  	freed = 0;
->  
->  	/* does region covered by leaf page precede Teof ? */
-> @@ -2327,16 +2397,20 @@ s64 xtTruncate(tid_t tid, struct inode *ip, s64 newsize, int flag)
->  	if (log) {
->  		if (++locked_leaves > MAX_TRUNCATE_LEAVES) {
->  			/*
-> -			 * We need to limit the size of the transaction
-> -			 * to avoid exhausting pagecache & tlocks
-> -			 */
-> +				 * We need to limit the size of the transaction
-> +				 * to avoid exhausting pagecache & tlocks
-> +				 */
->  			XT_PUTPAGE(mp);
->  			newsize = (xoff + xlen) << JFS_SBI(ip->i_sb)->l2bsize;
->  			goto getParent;
->  		}
->  		tlck = txLock(tid, ip, mp, tlckXTREE);
-> +		if (IS_ERR(tlck)) {
-> +			XT_PUTPAGE(mp);
-> +			return PTR_ERR(tlck);
-> +		}
->  		tlck->type = tlckXTREE | tlckTRUNCATE;
-> -		xtlck = (struct xtlock *) & tlck->lock;
-> +		xtlck = (struct xtlock *)&tlck->lock;
->  		xtlck->hwm.offset = le16_to_cpu(p->header.nextindex) - 1;
->  	}
->  	BT_MARK_DIRTY(mp, ip);
-> @@ -2533,20 +2607,24 @@ s64 xtTruncate(tid_t tid, struct inode *ip, s64 newsize, int flag)
->  		/* has any entry deleted from parent ? */
->  		if (index < le16_to_cpu(p->header.nextindex) - 1) {
->  			/* (re)acquire tlock on the parent page */
-> -			if (log) {	/* COMMIT_PWMAP */
-> +			if (log) { /* COMMIT_PWMAP */
->  				/* txCommit() with tlckTRUNCATE:
-> -				 * free child extents covered by parent [);
-> -				 */
-> +					 * free child extents covered by parent [);
-> +					 */
->  				tlck = txLock(tid, ip, mp, tlckXTREE);
-> -				xtlck = (struct xtlock *) & tlck->lock;
-> +				if (IS_ERR(tlck)) {
-> +					XT_PUTPAGE(mp);
-> +					return PTR_ERR(tlck);
-> +				}
-> +				xtlck = (struct xtlock *)&tlck->lock;
->  				if (!(tlck->type & tlckTRUNCATE)) {
->  					xtlck->hwm.offset =
-> -					    le16_to_cpu(p->header.
-> -							nextindex) - 1;
-> -					tlck->type =
-> -					    tlckXTREE | tlckTRUNCATE;
-> +						le16_to_cpu(
-> +							p->header.nextindex) -
-> +						1;
-> +					tlck->type = tlckXTREE | tlckTRUNCATE;
->  				}
-> -			} else {	/* COMMIT_WMAP */
-> +			} else { /* COMMIT_WMAP */
->  
->  				/* free child extents covered by parent */
->  				xadlock.xdlist = &p->xad[index + 1];
-> @@ -2605,20 +2683,24 @@ s64 xtTruncate(tid_t tid, struct inode *ip, s64 newsize, int flag)
->  	}
->  
->  	/*
-> -	 * parent page become empty: free the page
-> -	 */
-> +		 * parent page become empty: free the page
-> +		 */
->  	if (index == XTENTRYSTART) {
-> -		if (log) {	/* COMMIT_PWMAP */
-> +		if (log) { /* COMMIT_PWMAP */
->  			/* txCommit() with tlckFREE:
-> -			 * free child extents covered by parent;
-> -			 * invalidate parent if COMMIT_PWMAP;
-> -			 */
-> +				 * free child extents covered by parent;
-> +				 * invalidate parent if COMMIT_PWMAP;
-> +				 */
->  			tlck = txLock(tid, ip, mp, tlckXTREE);
-> -			xtlck = (struct xtlock *) & tlck->lock;
-> +			if (IS_ERR(tlck)) {
-> +				XT_PUTPAGE(mp);
-> +				return PTR_ERR(tlck);
-> +			}
-> +			xtlck = (struct xtlock *)&tlck->lock;
->  			xtlck->hwm.offset =
-> -			    le16_to_cpu(p->header.nextindex) - 1;
-> +				le16_to_cpu(p->header.nextindex) - 1;
->  			tlck->type = tlckXTREE | tlckFREE;
-> -		} else {	/* COMMIT_WMAP */
-> +		} else { /* COMMIT_WMAP */
->  
->  			/* free child extents covered by parent */
->  			xadlock.xdlist = &p->xad[XTENTRYSTART];
-> @@ -2832,8 +2914,12 @@ s64 xtTruncate_pmap(tid_t tid, struct inode *ip, s64 committed_size)
->  		return (xoff + xlen) << JFS_SBI(ip->i_sb)->l2bsize;
->  	}
->  	tlck = txLock(tid, ip, mp, tlckXTREE);
-> +	if (IS_ERR(tlck)) {
-> +		XT_PUTPAGE(mp);
-> +		return PTR_ERR(tlck);
-> +	}
->  	tlck->type = tlckXTREE | tlckFREE;
-> -	xtlck = (struct xtlock *) & tlck->lock;
-> +	xtlck = (struct xtlock *)&tlck->lock;
->  	xtlck->hwm.offset = index;
->  
->  
-> @@ -2865,7 +2951,11 @@ s64 xtTruncate_pmap(tid_t tid, struct inode *ip, s64 committed_size)
->  		 * invalidate parent if COMMIT_PWMAP;
->  		 */
->  		tlck = txLock(tid, ip, mp, tlckXTREE);
-> -		xtlck = (struct xtlock *) & tlck->lock;
-> +		if (IS_ERR(tlck)) {
-> +			XT_PUTPAGE(mp);
-> +			return PTR_ERR(tlck);
-> +		}
-> +		xtlck = (struct xtlock *)&tlck->lock;
->  		xtlck->hwm.offset = le16_to_cpu(p->header.nextindex) - 1;
->  		tlck->type = tlckXTREE | tlckFREE;
->  
-> diff --git a/fs/jfs/jfs_xtree.h b/fs/jfs/jfs_xtree.h
-> index 0f6cf5a1c..fd654908f 100644
-> --- a/fs/jfs/jfs_xtree.h
-> +++ b/fs/jfs/jfs_xtree.h
-> @@ -99,7 +99,7 @@ typedef union {
->   */
->  extern int xtLookup(struct inode *ip, s64 lstart, s64 llen,
->  		    int *pflag, s64 * paddr, int *plen, int flag);
-> -extern void xtInitRoot(tid_t tid, struct inode *ip);
-> +extern int xtInitRoot(tid_t tid, struct inode *ip);
->  extern int xtInsert(tid_t tid, struct inode *ip,
->  		    int xflag, s64 xoff, int xlen, s64 * xaddrp, int flag);
->  extern int xtExtend(tid_t tid, struct inode *ip, s64 xoff, int xlen,
-> diff --git a/fs/jfs/namei.c b/fs/jfs/namei.c
-> index 442d62679..1d538b107 100644
-> --- a/fs/jfs/namei.c
-> +++ b/fs/jfs/namei.c
-> @@ -128,7 +128,11 @@ static int jfs_create(struct mnt_idmap *idmap, struct inode *dip,
->  	/*
->  	 * initialize the child XAD tree root in-line in inode
->  	 */
-> -	xtInitRoot(tid, ip);
-> +	rc = xtInitRoot(tid, ip);
-> +	if (rc) {
-> +		txAbort(tid, 0);
-> +		goto out3;
-> +	}
->  
->  	/*
->  	 * create entry in parent directory for child directory
-> @@ -261,7 +265,11 @@ static struct dentry *jfs_mkdir(struct mnt_idmap *idmap, struct inode *dip,
->  	/*
->  	 * initialize the child directory in-line in inode
->  	 */
-> -	dtInitRoot(tid, ip, dip->i_ino);
-> +	rc = dtInitRoot(tid, ip, dip->i_ino);
-> +	if (rc) {
-> +		txAbort(tid, 0);
-> +		goto out3;
-> +	}
->  
->  	/*
->  	 * create entry in parent directory for child directory
-> @@ -944,7 +952,11 @@ static int jfs_symlink(struct mnt_idmap *idmap, struct inode *dip,
->  	/*
->  	 * write symbolic link target path name
->  	 */
-> -	xtInitRoot(tid, ip);
-> +	rc = xtInitRoot(tid, ip);
-> +	if (rc) {
-> +		txAbort(tid, 0);
-> +		goto out3;
-> +	}
->  
->  	/*
->  	 * write source path name inline in on-disk inode (fast symbolic link)
-> @@ -1260,6 +1272,10 @@ static int jfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
->  			tlck = txLock(tid, old_ip,
->  				    (struct metapage *) &JFS_IP(old_ip)->bxflag,
->  				      tlckDTREE | tlckBTROOT | tlckRELINK);
-> +			if (IS_ERR(tlck)) {
-> +				rc = PTR_ERR(tlck);
-> +				goto out_tx;
-> +			}
->  			dtlck = (struct dt_lock *) & tlck->lock;
->  			ASSERT(dtlck->index == 0);
->  			lv = & dtlck->lv[0];
-> 
-> 
-> base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
-> -- 
-> This is an AI-generated patch subject to moderation.
-> Reply with '#syz upstream' to Sign-off the patch as a human author
-> and send it to the upstream kernel mailing lists.
-> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-> 
-> See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-> You can comment on the patch as usual, syzbot will try to address
-> the comments and send a new version of the patch if necessary.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
+Allocated by task 1:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ unpoison_slab_object mm/kasan/common.c:340 [inline]
+ __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:366
+ kasan_slab_alloc include/linux/kasan.h:253 [inline]
+ slab_post_alloc_hook mm/slub.c:4612 [inline]
+ slab_alloc_node mm/slub.c:4945 [inline]
+ kmem_cache_alloc_noprof+0x2a0/0x5f0 mm/slub.c:4959
+ mempool_init_node+0x1f4/0x4f0 mm/mempool.c:259
+ mempool_init_noprof+0x3a/0x50 mm/mempool.c:289
+ biovec_init_pool block/bio.c:1909 [inline]
+ bioset_init+0x5c1/0x7e0 block/bio.c:1978
+ btrfs_init_dio+0x1f/0x30 fs/btrfs/direct-io.c:1145
+ init_btrfs_fs+0x6d/0x1f0 fs/btrfs/super.c:2727
+ do_one_initcall+0x250/0x870 init/main.c:1347
+ do_initcall_level+0x10a/0x1a0 init/main.c:1409
+ do_initcalls+0x59/0xa0 init/main.c:1425
+ kernel_init_freeable+0x29d/0x3e0 init/main.c:1658
+ kernel_init+0x1d/0x1d0 init/main.c:1548
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+Freed by task 1:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ kasan_save_free_info+0x40/0x50 mm/kasan/generic.c:584
+ poison_slab_object mm/kasan/common.c:253 [inline]
+ __kasan_mempool_poison_object+0x16e/0x1d0 mm/kasan/common.c:539
+ kasan_mempool_poison_object include/linux/kasan.h:363 [inline]
+ kasan_poison_element mm/mempool.c:156 [inline]
+ add_element mm/mempool.c:179 [inline]
+ mempool_init_node+0x2a6/0x4f0 mm/mempool.c:264
+ mempool_init_noprof+0x3a/0x50 mm/mempool.c:289
+ biovec_init_pool block/bio.c:1909 [inline]
+ bioset_init+0x5c1/0x7e0 block/bio.c:1978
+ btrfs_init_dio+0x1f/0x30 fs/btrfs/direct-io.c:1145
+ init_btrfs_fs+0x6d/0x1f0 fs/btrfs/super.c:2727
+ do_one_initcall+0x250/0x870 init/main.c:1347
+ do_initcall_level+0x10a/0x1a0 init/main.c:1409
+ do_initcalls+0x59/0xa0 init/main.c:1425
+ kernel_init_freeable+0x29d/0x3e0 init/main.c:1658
+ kernel_init+0x1d/0x1d0 init/main.c:1548
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+The buggy address belongs to the object at ffff8881774e2200
+ which belongs to the cache biovec-max of size 4096
+The buggy address is located 248 bytes to the right of
+ allocated 4096-byte region [ffff8881774e2200, ffff8881774e3200)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1774e0
+head: order:3 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+flags: 0x57ff00000000040(head|node=1|zone=2|lastcpupid=0x7ff)
+page_type: f5(slab)
+raw: 057ff00000000040 ffff888160414b40 dead000000000100 dead000000000122
+raw: 0000000000000000 0000000800070007 00000000f5000000 0000000000000000
+head: 057ff00000000040 ffff888160414b40 dead000000000100 dead000000000122
+head: 0000000000000000 0000000800070007 00000000f5000000 0000000000000000
+head: 057ff00000000003 fffffffffffffe01 00000000ffffffff 00000000ffffffff
+head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000008
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 1, tgid 1 (swapper/0), ts 22595717829, free_ts 19809479246
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x1f9/0x250 mm/page_alloc.c:1859
+ prep_new_page mm/page_alloc.c:1867 [inline]
+ get_page_from_freelist+0x21fa/0x2270 mm/page_alloc.c:3946
+ __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5304
+ alloc_slab_page mm/slub.c:3294 [inline]
+ allocate_slab+0x79/0x5e0 mm/slub.c:3408
+ new_slab mm/slub.c:3454 [inline]
+ refill_objects+0x2d5/0x350 mm/slub.c:7338
+ refill_sheaf mm/slub.c:2832 [inline]
+ __pcs_replace_empty_main+0x2bf/0x6b0 mm/slub.c:4703
+ alloc_from_pcs mm/slub.c:4801 [inline]
+ slab_alloc_node mm/slub.c:4933 [inline]
+ kmem_cache_alloc_noprof+0x382/0x5f0 mm/slub.c:4959
+ mempool_init_node+0x1f4/0x4f0 mm/mempool.c:259
+ mempool_init_noprof+0x3a/0x50 mm/mempool.c:289
+ biovec_init_pool block/bio.c:1909 [inline]
+ bioset_init+0x5c1/0x7e0 block/bio.c:1978
+ btrfs_init_dio+0x1f/0x30 fs/btrfs/direct-io.c:1145
+ init_btrfs_fs+0x6d/0x1f0 fs/btrfs/super.c:2727
+ do_one_initcall+0x250/0x870 init/main.c:1347
+ do_initcall_level+0x10a/0x1a0 init/main.c:1409
+ do_initcalls+0x59/0xa0 init/main.c:1425
+ kernel_init_freeable+0x29d/0x3e0 init/main.c:1658
+page last free pid 11 tgid 11 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ __free_pages_prepare mm/page_alloc.c:1406 [inline]
+ free_pages_prepare+0x960/0xa60 mm/page_alloc.c:1451
+ __free_contig_range_common+0x174/0x340 mm/page_alloc.c:6897
+ __free_contig_range mm/page_alloc.c:6942 [inline]
+ free_pages_bulk+0x48/0x120 mm/page_alloc.c:5257
+ vm_area_free_pages mm/vmalloc.c:3439 [inline]
+ vfree+0x224/0x4a0 mm/vmalloc.c:3488
+ delayed_vfree_work+0x55/0x80 mm/vmalloc.c:3392
+ process_one_work kernel/workqueue.c:3322 [inline]
+ process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+Memory state around the buggy address:
+ ffff8881774e3180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff8881774e3200: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff8881774e3280: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                                                                ^
+ ffff8881774e3300: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff8881774e3380: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
+
+
+***
+
+KASAN: stack-out-of-bounds Read in bio_iov_iter_get_pages
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      a13c140cc289c0b7b3770bce5b3ad42ab35074aa
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/826b3d15-d916-4201-92f4-a3110bf41809/config
+syz repro: https://ci.syzbot.org/findings/7548167b-8086-40cf-b7c4-0729bb64a887/syz_repro
+
+==================================================================
+BUG: KASAN: stack-out-of-bounds in bio_iov_iter_align_down block/bio.c:1204 [inline]
+BUG: KASAN: stack-out-of-bounds in bio_iov_iter_get_pages+0x818/0xb00 block/bio.c:1278
+Read of size 4 at addr ffffc90003d0f8d8 by task syz.0.17/5816
+
+CPU: 1 UID: 0 PID: 5816 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+ print_report+0x58/0x70 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ bio_iov_iter_align_down block/bio.c:1204 [inline]
+ bio_iov_iter_get_pages+0x818/0xb00 block/bio.c:1278
+ blkdev_iov_iter_get_pages block/fops.c:49 [inline]
+ __blkdev_direct_IO_simple block/fops.c:87 [inline]
+ blkdev_direct_IO+0x103c/0x17a0 block/fops.c:429
+ blkdev_direct_write+0x7c/0x140 block/fops.c:697
+ blkdev_write_iter+0x52d/0x700 block/fops.c:765
+ do_iter_readv_writev+0x612/0x8c0 fs/read_write.c:-1
+ vfs_writev+0x343/0x990 fs/read_write.c:1058
+ do_pwritev fs/read_write.c:1154 [inline]
+ __do_sys_pwritev2 fs/read_write.c:1212 [inline]
+ __se_sys_pwritev2+0x177/0x2a0 fs/read_write.c:1203
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f69e2f9ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f69e3dd7028 EFLAGS: 00000246 ORIG_RAX: 0000000000000148
+RAX: ffffffffffffffda RBX: 00007f69e3215fa0 RCX: 00007f69e2f9ce59
+RDX: 0000000000000001 RSI: 00002000000004c0 RDI: 0000000000000003
+RBP: 00007f69e3032e6f R08: 0000000000000006 R09: 000000000000000a
+R10: 0000000000000400 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f69e3216038 R14: 00007f69e3215fa0 R15: 00007ffd3e932d38
+ </TASK>
+
+The buggy address belongs to stack of task syz.0.17/5816
+ and is located at offset 24 in frame:
+ blkdev_direct_IO+0x0/0x17a0 block/fops.c:467
+
+This frame has 2 objects:
+ [32, 96) 'inline_vecs.i'
+ [128, 264) 'bio.i'
+
+The buggy address belongs to a vmalloc virtual mapping
+The buggy address belongs to the physical page:
+page: refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1bc8af
+memcg:ffff888171c78902
+flags: 0x57ff00000000000(node=1|zone=2|lastcpupid=0x7ff)
+raw: 057ff00000000000 0000000000000000 ffffea0006f22b88 0000000000000000
+raw: 0000000000000000 0000000000000000 00000001ffffffff ffff888171c78902
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x29c2(GFP_NOWAIT|__GFP_HIGHMEM|__GFP_IO|__GFP_FS|__GFP_ZERO), pid 5815, tgid 5815 (syz.0.17), ts 75932045692, free_ts 28228426703
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x1f9/0x250 mm/page_alloc.c:1859
+ prep_new_page mm/page_alloc.c:1867 [inline]
+ get_page_from_freelist+0x21fa/0x2270 mm/page_alloc.c:3946
+ __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5304
+ alloc_pages_mpol+0x212/0x380 mm/mempolicy.c:2490
+ alloc_frozen_pages_noprof mm/mempolicy.c:2561 [inline]
+ alloc_pages_noprof+0xac/0x2a0 mm/mempolicy.c:2581
+ vm_area_alloc_pages mm/vmalloc.c:3667 [inline]
+ __vmalloc_area_node mm/vmalloc.c:3892 [inline]
+ __vmalloc_node_range_noprof+0x795/0x1730 mm/vmalloc.c:4082
+ __vmalloc_node_noprof+0xc2/0x100 mm/vmalloc.c:4143
+ alloc_thread_stack_node kernel/fork.c:359 [inline]
+ dup_task_struct+0x2a0/0x8e0 kernel/fork.c:929
+ copy_process+0x820/0x4390 kernel/fork.c:2115
+ kernel_clone+0x2d7/0x940 kernel/fork.c:2748
+ __do_sys_clone3 kernel/fork.c:3050 [inline]
+ __se_sys_clone3+0x33c/0x360 kernel/fork.c:3029
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+page last free pid 5066 tgid 5066 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ __free_pages_prepare mm/page_alloc.c:1406 [inline]
+ __free_frozen_pages+0xc1e/0xd10 mm/page_alloc.c:2950
+ __slab_free+0x274/0x2c0 mm/slub.c:5767
+ qlink_free mm/kasan/quarantine.c:163 [inline]
+ qlist_free_all+0x99/0x100 mm/kasan/quarantine.c:179
+ kasan_quarantine_reduce+0x148/0x160 mm/kasan/quarantine.c:286
+ __kasan_slab_alloc+0x22/0x80 mm/kasan/common.c:350
+ kasan_slab_alloc include/linux/kasan.h:253 [inline]
+ slab_post_alloc_hook mm/slub.c:4612 [inline]
+ slab_alloc_node mm/slub.c:4945 [inline]
+ kmem_cache_alloc_noprof+0x2a0/0x5f0 mm/slub.c:4959
+ alloc_filename fs/namei.c:147 [inline]
+ do_getname+0x2e/0x250 fs/namei.c:187
+ getname_flags fs/namei.c:230 [inline]
+ getname include/linux/fs.h:2537 [inline]
+ class_filename_constructor include/linux/fs.h:2564 [inline]
+ __do_sys_symlink fs/namei.c:5710 [inline]
+ __se_sys_symlink+0x2b/0x2b0 fs/namei.c:5708
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Memory state around the buggy address:
+ ffffc90003d0f780: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffffc90003d0f800: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffffc90003d0f880: 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00 00 00 00
+                                                    ^
+ ffffc90003d0f900: 00 00 00 00 f2 f2 f2 f2 00 00 00 00 00 00 00 00
+ ffffc90003d0f980: 00 00 00 00 00 00 00 00 00 f3 f3 f3 f3 f3 f3 f3
+==================================================================
+
+
+***
+
+KASAN: use-after-free Read in bio_iov_iter_get_pages
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      a13c140cc289c0b7b3770bce5b3ad42ab35074aa
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/826b3d15-d916-4201-92f4-a3110bf41809/config
+syz repro: https://ci.syzbot.org/findings/9daf86a2-4bc7-464d-9b7d-713887f8d527/syz_repro
+
+==================================================================
+BUG: KASAN: use-after-free in bio_iov_iter_align_down block/bio.c:1204 [inline]
+BUG: KASAN: use-after-free in bio_iov_iter_get_pages+0x818/0xb00 block/bio.c:1278
+Read of size 4 at addr ffff88816bf6fff8 by task syz.2.19/5822
+
+CPU: 1 UID: 0 PID: 5822 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+ print_report+0x58/0x70 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ bio_iov_iter_align_down block/bio.c:1204 [inline]
+ bio_iov_iter_get_pages+0x818/0xb00 block/bio.c:1278
+ blkdev_iov_iter_get_pages block/fops.c:49 [inline]
+ __blkdev_direct_IO+0x656/0xf30 block/fops.c:219
+ blkdev_direct_IO+0x122e/0x17a0 block/fops.c:435
+ blkdev_read_iter+0x223/0x420 block/fops.c:814
+ do_iter_readv_writev+0x612/0x8c0 fs/read_write.c:-1
+ vfs_readv+0x28d/0x850 fs/read_write.c:1019
+ do_preadv fs/read_write.c:1133 [inline]
+ __do_sys_preadv2 fs/read_write.c:1192 [inline]
+ __se_sys_preadv2+0x177/0x2a0 fs/read_write.c:1183
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fc69259ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fc691bfe028 EFLAGS: 00000246 ORIG_RAX: 0000000000000147
+RAX: ffffffffffffffda RBX: 00007fc692815fa0 RCX: 00007fc69259ce59
+RDX: 0000000000000006 RSI: 0000200000000e80 RDI: 0000000000000003
+RBP: 00007fc692632e6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fc692816038 R14: 00007fc692815fa0 R15: 00007ffe0610dd38
+ </TASK>
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x16bf6f
+flags: 0x57ff00000000000(node=1|zone=2|lastcpupid=0x7ff)
+raw: 057ff00000000000 0000000000000000 ffffea0005afdbc8 0000000000000000
+raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as freed
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd2040(__GFP_IO|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5461, tgid 5461 (rm), ts 41922484692, free_ts 75795985916
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x1f9/0x250 mm/page_alloc.c:1859
+ prep_new_page mm/page_alloc.c:1867 [inline]
+ get_page_from_freelist+0x21fa/0x2270 mm/page_alloc.c:3946
+ __alloc_frozen_pages_noprof+0x18d/0x380 mm/page_alloc.c:5304
+ alloc_slab_page mm/slub.c:3294 [inline]
+ allocate_slab+0x79/0x5e0 mm/slub.c:3408
+ new_slab mm/slub.c:3454 [inline]
+ refill_objects+0x2d5/0x350 mm/slub.c:7338
+ refill_sheaf mm/slub.c:2832 [inline]
+ __pcs_replace_empty_main+0x2bf/0x6b0 mm/slub.c:4703
+ alloc_from_pcs mm/slub.c:4801 [inline]
+ slab_alloc_node mm/slub.c:4933 [inline]
+ __do_kmalloc_node mm/slub.c:5361 [inline]
+ __kmalloc_noprof+0x485/0x720 mm/slub.c:5387
+ _kmalloc_noprof include/linux/slab.h:973 [inline]
+ tomoyo_realpath_from_path+0xef/0x640 security/tomoyo/realpath.c:251
+ tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
+ tomoyo_path_perm+0x283/0x560 security/tomoyo/file.c:827
+ security_inode_getattr+0x12b/0x310 security/security.c:1895
+ vfs_getattr fs/stat.c:259 [inline]
+ vfs_fstat fs/stat.c:281 [inline]
+ vfs_fstatat+0xb4/0x170 fs/stat.c:371
+ __do_sys_newfstatat fs/stat.c:538 [inline]
+ __se_sys_newfstatat fs/stat.c:532 [inline]
+ __x64_sys_newfstatat+0x151/0x200 fs/stat.c:532
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+page last free pid 5753 tgid 5753 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ __free_pages_prepare mm/page_alloc.c:1406 [inline]
+ __free_frozen_pages+0xc1e/0xd10 mm/page_alloc.c:2950
+ __slab_free+0x274/0x2c0 mm/slub.c:5767
+ qlink_free mm/kasan/quarantine.c:163 [inline]
+ qlist_free_all+0x99/0x100 mm/kasan/quarantine.c:179
+ kasan_quarantine_reduce+0x148/0x160 mm/kasan/quarantine.c:286
+ __kasan_slab_alloc+0x22/0x80 mm/kasan/common.c:350
+ kasan_slab_alloc include/linux/kasan.h:253 [inline]
+ slab_post_alloc_hook mm/slub.c:4612 [inline]
+ slab_alloc_node mm/slub.c:4945 [inline]
+ __do_kmalloc_node mm/slub.c:5361 [inline]
+ __kvmalloc_node_noprof+0x4cd/0x860 mm/slub.c:6933
+ proc_sys_call_handler+0x3d0/0x830 fs/proc/proc_sysctl.c:583
+ new_sync_write fs/read_write.c:595 [inline]
+ vfs_write+0x612/0xba0 fs/read_write.c:687
+ ksys_write+0x150/0x270 fs/read_write.c:739
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Memory state around the buggy address:
+ ffff88816bf6fe80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88816bf6ff00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>ffff88816bf6ff80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                                                                ^
+ ffff88816bf70000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88816bf70080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[axboe@kernel.dk hch@lst.de kbusch@kernel.org linux-block@vger.kernel.org z1281552865@gmail.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
