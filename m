@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 692803AD525
-	for <syzbot@lists.linux.dev>; Wed, 15 Jul 2026 16:56:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E662632B13A
+	for <syzbot@lists.linux.dev>; Wed, 15 Jul 2026 17:01:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784134566; cv=none; b=a49KcebV3iZXlfvcOZHEKW9O5sshBnmgNAJU7wjF01D3Jgw9EFRuP6B9AvWUvtBrmNUX4XZi8ZtgYMuS1jbXtHrqsdDsB/8ofk582z8VVvdMT11WG2O1UjJxacD4NGFpVcE86PntC3m1g7eYaLYto2vLiMGfi5ERomoZb6EjFOg=
+	t=1784134896; cv=none; b=BCU7Vihio5D1bRE2d9953yapoACfmuYwRNOeVkgw4leUhQVKf3FrTLaNHIOwHOF92Epsmbalmt3tRy/hr3zrQf8oPjoCz/t/Ccz/BU6CR04kvcxUCqWrwUcq8YK9IgG1KV9uawU45xT/7jt5+WrgamMqoRJjaQ4G2H8R+zbgvTg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784134566; c=relaxed/simple;
-	bh=W6UoLU7Xq+fSQyijdKXbIS/9Q/EoGQXVrp/O2WngBIE=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=k07L7CKttWehFW/znmyZPCHxuVRbH2G9eiJrHD1V6HUA1Ys79NWJhgM8r1ozAOg0CTbe5ptbNTe0vde8JtsNV1q14EGacgnUMgtoebfjsqNzXpGjTkDTp3eDrNEk8vWaWG3aOVHaQL02+VHyvOuFvUySLnplPm+Tya99G1TRC9c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FfU9vLE6; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784134896; c=relaxed/simple;
+	bh=tB2U36oPyGsTgUb637NVbxuhUHta3kg90HWZQFFIOdY=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Yu+KGsZD2eyaM7v99T+TxvrujTQo8Vzfh/Wu1NJXZp7ptUBT1YZdY5gdUcCsp2oIOxR7uXb/rsbP0FIO1snCO53j/+wmbXZ1gc1gwqp7l+T5jyUifnfjcnR5x+Tc/TaIXMIGS043Tib1o1pvgZPrQyBqghuoNxobyP6yNxzHylk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iMUVSbCa; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FfU9vLE6"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id CD6301F000E9;
-	Wed, 15 Jul 2026 16:56:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iMUVSbCa"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 854DD1F00A3A;
+	Wed, 15 Jul 2026 17:01:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784134564;
-	bh=Ojvz0oJbYYp/xjHq+Jxy+0SxW1fKbwdyiWHZe4Xx9Do=;
+	s=k20260515; t=1784134894;
+	bh=C/rpRijJI3g66w5JnyhOWkdBYEyIBpFvmbbi3WldgHo=;
 	h=From:To:Cc:Subject:Date;
-	b=FfU9vLE66mQYupbTbLo89RTtF9fCAAorwbV0qWjbdPBr8OpRfNsytcKryrD/axRfj
-	 ILHIkUPL+b9zKqWuTNpY+8/uvj9ZyY3mip/NQPRfQ6LJmAJsx41vwHtf5wYQsc8MYL
-	 37JQNiNfYD6n1qRT3DNVlPqwDxsgwSg8nfV8wLMRrTcbf7X0xrkiVuOJUO35aIBh/4
-	 Uxi80Pfpx9m6eRveb8s6KUDjbv89GE1Viv3GvmkNvoJBrflQg+KKTh4R6WH/Z/D36C
-	 shX9m/jng1dZ8O2Pkcox9W43rNS5LEkM9gG/gke+1LmMJI+yD7sr/A5LT/GysTm3qV
-	 5PERIBWiSeXqQ==
+	b=iMUVSbCaXF2D803o10bzCLjeZ3g/ly/lGxtPoDGsHMhTnJADrdsCwiQ3FeApU5o/k
+	 K4NCpadIin8dcsCGfwaAlnk7XZ4/pZR/fO0LYzcAyhPn3u5maZt/j1uMcsYKcTw7Ic
+	 3Ca9AA4YMSnES3RN+NTu/qk6PPiohE+0z9K6i7bXSD5NMHnss1kDqth5/KKjccQkY6
+	 mi4rjrs45GSXk/z5uoSPwy5JJSoVaC1IwTdYkSAQyT/hvH9AMtoQ+fadz6rlz29zOH
+	 wo2kewHbTMuRAyo9IGnyVPc18Z70zCEeOQDrHIkryRZXagyPPGWzj9+lYTflNoEvO5
+	 xalB5bMpXiclA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] wifi: mac80211: reject station association if AP is not started
-Message-ID: <79cbf145-6652-4e15-be67-f7974ebc29cb@mail.kernel.org>
+Subject: [PATCH RFC] net/sched: taprio: enforce minimum interval to prevent hrtimer storms
+Message-ID: <7d5b3fcb-ab75-4a18-909f-5ff072e562e1@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,74 +38,122 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 15 Jul 2026 16:56:04 +0000 (UTC)
+Date: Wed, 15 Jul 2026 17:01:34 +0000 (UTC)
 
-If an interface is changed to AP mode but not started, its channel context
-configuration (chanctx_conf) remains NULL. If a station is then added to
-this interface, the kernel may automatically set the
-NL80211_STA_FLAG_ASSOCIATED flag for compatibility with older userspace
-applications.
+An issue with the taprio packet scheduler allows a user to configure an
+extremely small schedule interval (e.g., 127 ns). While taprio validates
+that the interval is at least the time required to transmit a minimum-sized
+Ethernet frame (ETH_ZLEN), on high-speed virtual interfaces like 10 Gbps
+veth, this minimum duration evaluates to just 48 ns.
 
-When this flag is set, sta_apply_auth_flags() attempts to initialize rate
-control for the station by calling rate_control_rate_init_all_links(). This
-eventually leads to rate_control_rate_init(), which dereferences the NULL
-chanctx_conf, triggering a WARN_ON:
+Because the execution time of the hrtimer callback (plus hardware interrupt
+overhead) is significantly larger than 127 ns, the newly calculated
+end_time in advance_sched() is already in the past by the time the
+interrupt handler finishes. The hrtimer subsystem immediately fires the
+timer again, trapping the CPU in a continuous stream of timer interrupts
+(an hrtimer interrupt storm). This starves other threads, including the RCU
+grace-period kthread, leading to an RCU stall:
 
-WARNING: net/mac80211/rate.c:51 at rate_control_rate_init+0x5a6/0x630
+rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+rcu: 	(detected by 0, t=10502 jiffies, g=15113, q=737 ncpus=2)
+rcu: All QSes seen, last rcu_preempt kthread activity 10502
+(4294956675-4294946173), jiffies_till_next_fqs=1, root ->qsmask 0x0
+rcu: rcu_preempt kthread timer wakeup didn't happen for 10501 jiffies!
+g15113 f0x2 RCU_GP_WAIT_FQS(5) ->state=0x200
+rcu: 	Possible timer handling issue on cpu=1 timer-softirq=3485
+rcu: rcu_preempt kthread starved for 10502 jiffies! g15113 f0x2
+RCU_GP_WAIT_FQS(5) ->state=0x200 ->cpu=1
+rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now
+expected behavior.
 ...
 Call Trace:
- <TASK>
- rate_control_rate_init_all_links+0xf4/0x190 net/mac80211/rate.c:84
- sta_apply_auth_flags+0x1bc/0x430 net/mac80211/cfg.c:2152
- sta_apply_parameters+0x126d/0x1b10 net/mac80211/cfg.c:2618
- ieee80211_add_station+0x3de/0x700 net/mac80211/cfg.c:2684
- rdev_add_station+0xfc/0x290 net/wireless/rdev-ops.h:201
- nl80211_new_station+0x1b4e/0x1fd0 net/wireless/nl80211.c:9505
+ <IRQ>
+ lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5868
+ rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
+ rcu_read_lock include/linux/rcupdate.h:840 [inline]
+ advance_sched+0xa04/0xc80 net/sched/sch_taprio.c:992
+ __run_hrtimer kernel/time/hrtimer.c:2032 [inline]
+ __hrtimer_run_queues+0x3bc/0xa10 kernel/time/hrtimer.c:2096
+ hrtimer_interrupt+0x448/0x910 kernel/time/hrtimer.c:2215
+ local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1051 [inline]
+ __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:1068
 
-Fix this by rejecting the addition or modification of a station to the
-associated state if the AP has not been started (chanctx_conf is NULL).
-Exempt Multi-Link Operation (MLO) interfaces from this check, as they
-handle chanctx_conf per-link rather than globally on the VIF.
+To fix this issue, clamp the minimum allowed interval to a higher, safer
+threshold during the configuration phase. Introduce TAPRIO_MIN_INTERVAL
+(set to NSEC_PER_USEC, i.e., 1 microsecond) to account for software
+interrupt overhead. This threshold is large enough to prevent hrtimer
+interrupt storms while still allowing legitimate high-speed configurations
+(e.g., 10 Gbps with 1500-byte packets, which take 1.2 us to transmit).
 
-Fixes: 55de908ab292 ("mac80211: use channel contexts")
+Apply this clamped minimum duration in both fill_sched_entry() and
+parse_taprio_schedule() to ensure that both individual intervals and the
+overall cycle time are safely bounded.
+
+Fixes: b5b73b26b3ca ("taprio: Fix allowing too small intervals")
 Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=9bdc0c5998ab45b05030
-Link: https://syzkaller.appspot.com/ai_job?id=6a1e0fff-0cb4-4d35-acf2-c84eee3af15c
-To: "Johannes Berg" <johannes@sipsolutions.net>
-To: <linux-wireless@vger.kernel.org>
+Reported-by: syzbot+e044a9b6370ed8ca9737@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=e044a9b6370ed8ca9737
+Link: https://syzkaller.appspot.com/ai_job?id=894fc82e-5f23-4209-a5b3-4d0c8178756d
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jamal Hadi Salim" <jhs@mojatatu.com>
+To: "Jiri Pirko" <jiri@resnulli.us>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
+Cc: "Simon Horman" <horms@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-v2:
-- Moved the chanctx_conf check inside the WLAN_STA_RATE_CONTROL check block.
-- Removed a phrase from the commit description as requested by reviewers.
-
-v1:
-https://lore.kernel.org/all/8e8a5122-a09e-43b2-b42f-4c73b021b173@mail.kernel.org/T/
----
-diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index 3b58af59f..ae29f799b 100644
---- a/net/mac80211/cfg.c
-+++ b/net/mac80211/cfg.c
-@@ -2148,8 +2148,13 @@ static int sta_apply_auth_flags(struct ieee80211_local *local,
- 		 * well. Some drivers require rate control initialized
- 		 * before drv_sta_state() is called.
- 		 */
--		if (!test_sta_flag(sta, WLAN_STA_RATE_CONTROL))
-+		if (!test_sta_flag(sta, WLAN_STA_RATE_CONTROL)) {
-+			if (!ieee80211_vif_is_mld(&sta->sdata->vif) &&
-+			    !rcu_access_pointer(
-+				    sta->sdata->vif.bss_conf.chanctx_conf))
-+				return -EINVAL;
- 			rate_control_rate_init_all_links(sta);
-+		}
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 299234a5f..d759a99e5 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -49,6 +49,9 @@ static struct static_key_false taprio_have_working_mqprio;
+  */
+ #define TAPRIO_PICOS_PER_BYTE_MIN 17
  
- 		ret = sta_info_move_state(sta, IEEE80211_STA_ASSOC);
- 		if (ret)
++/* Safe minimum interval to prevent hrtimer interrupt storms */
++#define TAPRIO_MIN_INTERVAL NSEC_PER_USEC
++
+ struct sched_entry {
+ 	/* Durations between this GCL entry and the GCL entry where the
+ 	 * respective traffic class gate closes
+@@ -1038,7 +1041,8 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
+ 			    struct sched_entry *entry,
+ 			    struct netlink_ext_ack *extack)
+ {
+-	int min_duration = length_to_duration(q, ETH_ZLEN);
++	int min_duration = max_t(int, length_to_duration(q, ETH_ZLEN),
++				 TAPRIO_MIN_INTERVAL);
+ 	u32 interval = 0;
+ 
+ 	if (tb[TCA_TAPRIO_SCHED_ENTRY_CMD])
+@@ -1054,7 +1058,8 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
+ 			tb[TCA_TAPRIO_SCHED_ENTRY_INTERVAL]);
+ 
+ 	/* The interval should allow at least the minimum ethernet
+-	 * frame to go out.
++	 * frame to go out, and should be large enough to prevent
++	 * hrtimer interrupt storms.
+ 	 */
+ 	if (interval < min_duration) {
+ 		NL_SET_ERR_MSG(extack, "Invalid interval for schedule entry");
+@@ -1166,7 +1171,9 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+ 		new->cycle_time = cycle;
+ 	}
+ 
+-	if (new->cycle_time < new->num_entries * length_to_duration(q, ETH_ZLEN)) {
++	if (new->cycle_time <
++	    new->num_entries * max_t(int, length_to_duration(q, ETH_ZLEN),
++				     TAPRIO_MIN_INTERVAL)) {
+ 		NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
+ 		return -EINVAL;
+ 	}
 
 
-base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
+base-commit: a13c140cc289c0b7b3770bce5b3ad42ab35074aa
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
