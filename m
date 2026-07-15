@@ -1,404 +1,294 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com [209.85.160.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FA993B635C
-	for <syzbot@lists.linux.dev>; Wed, 15 Jul 2026 05:54:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3C573B6C14
+	for <syzbot@lists.linux.dev>; Wed, 15 Jul 2026 05:55:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784094901; cv=none; b=D2NOn3eHWZNXMB2mOtk1Z9pQgQJuMGGwPjwzOXiNTo6tYcGu8JvSJF8sMAnL2bKlDlapF1YsLpMk+xcGmko7MSLLK8ykzsuOvqLSQPyxMhELMbIO+/0zAcLjHVmkH+BCMV4BGFUPZFvD7kbcEbYWVQEPofeV/zDryV8zrzqu8yM=
+	t=1784094931; cv=none; b=H1wlBskCW3S03wS/XhyIvBg/JesAJ2iacrcu87/V4G5g+I476G0zax2CbG5W7MYqOjUbjy8FWMBtrKrcVp5c+aufnGFXvW6Dx6vDBJ7ySUvqsDbnm63pDElu5nj0KG+adsBURL4bpKEPGqCtM8dEbHp8aM5TYDPOnlGmdeg2Fmk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784094901; c=relaxed/simple;
-	bh=b5EiTC671Y1pDVbMyWRCZ20P579y4/F0RsxEareAiZQ=;
+	s=arc-20240116; t=1784094931; c=relaxed/simple;
+	bh=6WCZ/zmlo11NwLOrAlzR5DY5t52P7qm9GOcb1/9q28Q=;
 	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=JVFpzl0L1vGKAJySoRzApeyRgGEz6Z7x2Smy3eAdWfmnpEa3ivof0lFsctx9X8TbqVl3icY5lirGAbPDLcKanMGIm0Jcd/pdLRO7GfUZQ4g0T/SzjoIgkBVRBcx+9Dqe5Np/3Yowi1qPvDZG2r3Pkoe9uJpV2Ab7OMkGLcl6SJ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+	 Content-Type; b=VR7n2fqX7E2NH6VyUSw4xWA+5Ce6WZTqy5axOEFfysbD5S047Hg/gK2YqHFEYhRZ2Y43MTy5Ce7S03MBIWnK36pGXj8dVl2PTv+xaRxpti4XcZlD1WJYd3j+tmW7qBurjHM4dVXALiL86AMZwTmdUd+pk0eJ8EgoTfKp8gNp/I8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6a17dafd042so6172200eaf.2
-        for <syzbot@lists.linux.dev>; Tue, 14 Jul 2026 22:54:58 -0700 (PDT)
+Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-451b05ee871so2425349fac.1
+        for <syzbot@lists.linux.dev>; Tue, 14 Jul 2026 22:55:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784094898; x=1784699698;
+        d=1e100.net; s=20251104; t=1784094928; x=1784699728;
         h=content-type:cc:to:from:subject:message-id:in-reply-to:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=86z9KoCgeKws/+I+dK7cuxc9QPL0DWFXWsQLYsPZANk=;
-        b=dQNxq8lpxCZy+KIozGmUDwN/nIuxACL8kt6IFBf4wGDOUn3U9FjIJY0g/ysXVQLe8E
-         +UDTmvVfK2idPec7GPzdC9FEciHEvpgbnSwD0mw3L15KFAyxKkmUsmlVPmPW1MPYQ376
-         gh3ltdK7YuUFYrTaku4toA7Z4U8xCc+7RS4e+U/2b3yjJXCn/T9azGAdoQwBx4QJ5HU2
-         7gvqT0HxWK6JRS8gPbh02swrDLcpNhUUaJbMvTByY9XOXTGeyaukK5sPhde+dPEDHIyQ
-         Gp3j/claiEsuoMPGEt1hNFQC7iwpdkM4MqvIJqJSTswhvIjZScMCtQkJOHvBcb6d/jC/
-         txug==
-X-Gm-Message-State: AOJu0Yz8BiO2YLfB+6xV/UH/4EbeEqrtpycZG7jd/dhZZoGCAWcLRh8p
-	Hb7eHkiZs0Et+9lfT3O01YGhAQXX663fB8+qRTpfeW/dGtHFM8vlKiTZFxXgVGLoG32LL+8sihG
-	jpouU01xKIve5WJBPzG8pCQTd9oLQjI/coOrTzzlDfQEYD4T/uWys1WQg/yE=
+        bh=/p2cbt+Bp5vr93KpjZNc8AVD+FrSKzekHkqO652yAGc=;
+        b=AowftjxX55AoTlrE/Mmf7Nw0R+RDnM1k6MCSRwSNBbAix55thCrZumroXz7JhK/JFR
+         iAGdetwgKONwS3+EEH62ZhHSYgGxvXHy0KXFM+HU/AsXJ+ioso28BXY3dqTnMWwv+V11
+         W8I9Qye/Lw4ZCacfGpmXyYtwcG2rWsJE2b2hb26Bqo0a/rjTGkiESDoPFfTKBTkvvLx0
+         Fs8F3gota/AVqcq91QYnXWOLZZRViMohLyVobwJdeMpWGPyuMZ0eJZYmzrjQy6uSE0y0
+         Strmdkwt07UC0UdoubhyLbJqT28RSjuZaS/rMyZwQTV5+b//yXCPNflJN2x7ZMdjBQ8N
+         vJ1g==
+X-Gm-Message-State: AOJu0YwfK31t8Lrp5A0b6Cg7Ja9HX9qkYgxyfOJG1/sUBAdyFXwTIam8
+	fO+bvGspXx8Qan5AtXlqrmmkywirr3YDWBktYYkWkaqiXaJcGqq0ESyFX5JEGt5I+pqpJn51gyG
+	epvo7zuJ7QPmDa0BRm6dPr0EBIKgGpfOd7vXaQoYWZAtJhTwLDBwnSu8qsw0=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:16a8:b0:69e:98c0:4bd6 with SMTP id
- 006d021491bc7-6a3c60086bbmr3408139eaf.1.1784094898094; Tue, 14 Jul 2026
- 22:54:58 -0700 (PDT)
-Date: Tue, 14 Jul 2026 22:54:58 -0700
-In-Reply-To: <20260714131828.10685-1-fw@strlen.de>
+X-Received: by 2002:a05:6820:4c86:b0:6a1:50eb:2119 with SMTP id
+ 006d021491bc7-6a39a82e4d7mr10003854eaf.61.1784094928744; Tue, 14 Jul 2026
+ 22:55:28 -0700 (PDT)
+Date: Tue, 14 Jul 2026 22:55:28 -0700
+In-Reply-To: <20260714122344.351895-1-kirill@shutemov.name>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a5720b2.c90005c7.37d349.0042.GAE@google.com>
-Subject: [syzbot ci] Re: netfilter: ipset: convert to rhashtable
-From: syzbot ci <syzbot+ci0695f40f43c0e2d7@syzkaller.appspotmail.com>
-To: fw@strlen.de, kadlec@netfilter.org, netfilter-devel@vger.kernel.org
+Message-ID: <6a5720d0.c90005c7.37d349.0043.GAE@google.com>
+Subject: [syzbot ci] Re: mm: fix inode UAF when splitting a file folio past EOF
+From: syzbot ci <syzbot+cidba0dde345b6f18b@syzkaller.appspotmail.com>
+To: akpm@linux-foundation.org, baohua@kernel.org, 
+	baolin.wang@linux.alibaba.com, david@kernel.org, dev.jain@arm.com, 
+	hao_zhang_kdev@163.com, kas@kernel.org, kirill@shutemov.name, 
+	lance.yang@linux.dev, liam@infradead.org, linmiaohe@huawei.com, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, ljs@kernel.org, 
+	nao.horiguchi@gmail.com, npache@redhat.com, ryan.roberts@arm.com, 
+	stable@vger.kernel.org, usama.arif@linux.dev, zhanghao1@kylinos.cn, 
+	ziy@nvidia.com
 Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] netfilter: ipset: convert to rhashtable
-https://lore.kernel.org/all/20260714131828.10685-1-fw@strlen.de
-* [PATCH RFC nf-next 01/12] netfilter: ipset: rework cidr bookkeeping
-* [PATCH RFC nf-next 02/12] netfilter: ipset: rework cidr bookkeeping fixups
-* [PATCH RFC nf-next 03/12] netfilter: ipset: add small wrappers for hash and bucket sizes
-* [PATCH RFC nf-next 04/12] netfilter: ipset: add and use mtype_del_cidr_all helper
-* [PATCH RFC nf-next 05/12] netfilter: ipset: add and use ip_set_init_comment_slow
-* [PATCH RFC nf-next 06/12] netfilter: ipset: add and use ip_set_ext_destroy_slow
-* [PATCH RFC nf-next 07/12] netfilter: ipset: add rhashtable boilerplate stubs
-* [PATCH RFC nf-next 08/12] netfilter: ipset: replace internal hash table with rhashtable
-* [PATCH RFC nf-next 09/12] netfilter: ipset: use plain rcu_read_lock
-* [PATCH RFC nf-next 10/12] netfilter: ipset: use correct lockdep annotation in ipset_dereference
-* [PATCH RFC nf-next 11/12] netfilter: ipset: remove last region lock usage
-* [PATCH RFC nf-next 12/12] netfilter: ipset: re-add forceadd support for rhashtable
+[v2] mm: fix inode UAF when splitting a file folio past EOF
+https://lore.kernel.org/all/20260714122344.351895-1-kirill@shutemov.name
+* [PATCH v2 1/5] mm/memory-failure: keep the folio, not the poisoned subpage, locked across split
+* [PATCH v2 2/5] mm/huge_memory: refuse to split a file folio when the anchor is beyond EOF
+* [PATCH v2 3/5] mm/huge_memory: remove unused split_huge_page_to_order()
+* [PATCH v2 4/5] mm/huge_memory: remove unused can_split_folio()
+* [PATCH v2 5/5] mm/huge_memory: fold split_folio_to_list_to_order() into split_folio_to_order()
 
-and found the following issue:
-BUG: sleeping function called from invalid context in irq_work_sync
+and found the following issues:
+* kernel BUG in __page_table_check_zero
+* kernel BUG in folio_isolate_lru
+* kernel BUG in memory_failure
 
 Full report is available here:
-https://ci.syzbot.org/series/47a605ae-2607-4da3-aa08-70c5d3d1d824
+https://ci.syzbot.org/series/6cad3430-1f9b-4a56-b60a-ef3ed2833e15
 
 ***
 
-BUG: sleeping function called from invalid context in irq_work_sync
+kernel BUG in __page_table_check_zero
 
-tree:      nf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf-next.git
-base:      f6f3b36c15ed44de1fbb44e645e4fae8c4a4453e
+tree:      bpf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf.git
+base:      0e35b9b6ec0ffcc5e23cbdec09f5c622ad532b53
 arch:      amd64
 compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
-config:    https://ci.syzbot.org/builds/5beb9029-2b0f-4419-ae52-16749b7b6034/config
-syz repro: https://ci.syzbot.org/findings/a6144f65-837e-4528-aaf8-77585ab7e425/syz_repro
+config:    https://ci.syzbot.org/builds/8d6a621e-aae6-4f99-8e0e-d0e02ddbed71/config
+syz repro: https://ci.syzbot.org/findings/1619ac56-823a-4cc2-975b-bbb1c1742447/syz_repro
 
-BUG: sleeping function called from invalid context at kernel/irq_work.c:289
-in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 5727, name: syz-executor
-preempt_count: 101, expected: 0
-RCU nest depth: 0, expected: 0
-8 locks held by syz-executor/5727:
- #0: ffff88816aad0450 (sb_writers#7){.+.+}-{0:0}, at: file_start_write include/linux/fs.h:2733 [inline]
- #0: ffff88816aad0450 (sb_writers#7){.+.+}-{0:0}, at: vfs_write+0x22b/0xba0 fs/read_write.c:683
- #1: ffff888115bedc80 (&of->mutex){+.+.}-{4:4}, at: kernfs_fop_write_iter+0x1d8/0x540 fs/kernfs/file.c:336
- #2: ffff88810c8b85a8 (kn->active#55){.+.+}-{0:0}, at: kernfs_get_active_of fs/kernfs/file.c:73 [inline]
- #2: ffff88810c8b85a8 (kn->active#55){.+.+}-{0:0}, at: kernfs_fop_write_iter+0x22b/0x540 fs/kernfs/file.c:337
- #3: ffffffff8f66a000 (nsim_bus_dev_list_lock){+.+.}-{4:4}, at: new_device_store+0x13c/0x710 drivers/net/netdevsim/bus.c:184
- #4: ffff88811df84128 (&dev->mutex){....}-{4:4}, at: device_lock include/linux/device.h:1102 [inline]
- #4: ffff88811df84128 (&dev->mutex){....}-{4:4}, at: __device_attach+0x88/0x450 drivers/base/dd.c:1073
- #5: ffff88811df94258 (&devlink->lock_key#4){+.+.}-{4:4}, at: nsim_drv_probe+0xfc/0xbf0 drivers/net/netdevsim/dev.c:1658
- #6: ffff88811e194ae0 (&sb->s_type->i_mutex_key#4/1){+.+.}-{4:4}, at: inode_lock_nested include/linux/fs.h:1069 [inline]
- #6: ffff88811e194ae0 (&sb->s_type->i_mutex_key#4/1){+.+.}-{4:4}, at: __start_dirop fs/namei.c:2918 [inline]
- #6: ffff88811e194ae0 (&sb->s_type->i_mutex_key#4/1){+.+.}-{4:4}, at: start_dirop+0x4f/0x90 fs/namei.c:2942
- #7: ffffffff8e959d80 (rcu_callback){....}-{0:0}, at: rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
- #7: ffffffff8e959d80 (rcu_callback){....}-{0:0}, at: rcu_do_batch kernel/rcu/tree.c:2639 [inline]
- #7: ffffffff8e959d80 (rcu_callback){....}-{0:0}, at: rcu_core+0x70d/0x10a0 kernel/rcu/tree.c:2897
-Preemption disabled at:
-[<ffffffff8228d9e3>] __pcs_replace_empty_main+0x383/0x6b0 mm/slub.c:4717
-CPU: 0 UID: 0 PID: 5727 Comm: syz-executor Not tainted syzkaller #0 PREEMPT(full) 
+Soft offlining pfn 0x120f0e at process virtual address 0x20000010e000
+------------[ cut here ]------------
+kernel BUG at mm/page_table_check.c:142!
+Oops: invalid opcode: 0000 [#1] SMP KASAN PTI
+CPU: 0 UID: 0 PID: 5870 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:__page_table_check_zero+0x416/0x430 mm/page_table_check.c:142
+Code: f3 ff e9 4e fc ff ff e8 78 70 85 ff 89 ea be 01 00 00 00 48 c7 c7 a0 c4 ac 8e e8 45 29 b7 02 e9 48 fd ff ff e8 5b 70 85 ff 90 <0f> 0b e8 53 70 85 ff 90 0f 0b e8 4b 70 85 ff 90 0f 0b 0f 1f 84 00
+RSP: 0018:ffffc900017e7948 EFLAGS: 00010293
+RAX: ffffffff8240f325 RBX: ffff88810544b4a8 RCX: ffff88810c68bb80
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: 0000000000000001 R08: ffff88810544b4ab R09: 1ffff11020a89695
+R10: dffffc0000000000 R11: ffffed1020a89696 R12: 0000000000000001
+R13: ffff88810544b460 R14: 0000000000000000 R15: 0000000000000001
+FS:  00007fb17e6b86c0(0000) GS:ffff88818dc0e000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f2353670000 CR3: 0000000109db2000 CR4: 00000000000006f0
 Call Trace:
- <IRQ>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- __might_resched+0x378/0x4d0 kernel/sched/core.c:9197
- irq_work_sync+0x9b/0x300 kernel/irq_work.c:289
- rhashtable_free_and_destroy+0x39/0x540 lib/rhashtable.c:1295
- hash_netport4_destroy+0x56/0xb0 net/netfilter/ipset/ip_set_hash_gen.h:420
- ip_set_destroy_set_rcu+0x63/0xc0 net/netfilter/ipset/ip_set_core.c:1169
- rcu_do_batch kernel/rcu/tree.c:2645 [inline]
- rcu_core+0x78b/0x10a0 kernel/rcu/tree.c:2897
- handle_softirqs+0x225/0x840 kernel/softirq.c:622
- __do_softirq kernel/softirq.c:656 [inline]
- invoke_softirq kernel/softirq.c:496 [inline]
- __irq_exit_rcu+0xca/0x220 kernel/softirq.c:735
- irq_exit_rcu+0x9/0x30 kernel/softirq.c:752
- instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1062 [inline]
- sysvec_apic_timer_interrupt+0xa6/0xc0 arch/x86/kernel/apic/apic.c:1062
- </IRQ>
  <TASK>
- asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.h:674
-RIP: 0010:stackdepot_memcmp lib/stackdepot.c:585 [inline]
-RIP: 0010:find_stack lib/stackdepot.c:618 [inline]
-RIP: 0010:stack_depot_save_flags+0x1aa/0x800 lib/stackdepot.c:676
-Code: 98 c3 ff 4c 8b 54 24 10 8b 74 24 04 85 db 75 5d 4d 8b 3f 4d 39 e7 74 52 41 39 6f 10 75 f2 45 39 57 14 75 ec 31 c0 49 8b 0c c6 <49> 3b 4c c7 20 75 df 48 ff c0 41 39 c5 75 ed 83 fe 02 72 2f 49 8d
-RSP: 0018:ffffc9000603ed48 EFLAGS: 00000202
-RAX: 000000000000001a RBX: 0000000000000c01 RCX: ffffffff82463f22
-RDX: 0000000046192dc0 RSI: 0000000000000001 RDI: 00000000b3bfa5ab
-RBP: 000000008cb0243d R08: 00000000786bc44c R09: 0000000093aed82f
-R10: 000000000000001e R11: ffffffff8e959c60 R12: ffff88823b4243d0
-R13: 000000000000001e R14: ffffc9000603eda0 R15: ffff8881b8318e00
- kasan_save_stack mm/kasan/common.c:58 [inline]
- kasan_save_track+0x4f/0x80 mm/kasan/common.c:78
- unpoison_slab_object mm/kasan/common.c:340 [inline]
- __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:366
- kasan_slab_alloc include/linux/kasan.h:253 [inline]
- slab_post_alloc_hook mm/slub.c:4612 [inline]
- slab_alloc_node mm/slub.c:4945 [inline]
- kmem_cache_alloc_lru_noprof+0x2aa/0x5f0 mm/slub.c:4978
- __d_alloc+0x37/0x6f0 fs/dcache.c:1902
- d_alloc+0x4b/0x190 fs/dcache.c:1981
- lookup_one_qstr_excl+0xd8/0x360 fs/namei.c:1806
- __start_dirop fs/namei.c:2920 [inline]
- start_dirop+0x5c/0x90 fs/namei.c:2942
- simple_start_creating+0xcc/0x110 fs/libfs.c:2305
- debugfs_start_creating+0xdb/0x1a0 fs/debugfs/inode.c:394
- debugfs_create_dir+0x24/0x350 fs/debugfs/inode.c:572
- nsim_ethtool_init+0x28c/0x500 drivers/net/netdevsim/ethtool.c:254
- nsim_create+0x26c/0x1150 drivers/net/netdevsim/netdev.c:1150
- __nsim_dev_port_add+0x7f8/0xcd0 drivers/net/netdevsim/dev.c:1509
- nsim_dev_port_add_all+0x37/0xf0 drivers/net/netdevsim/dev.c:1570
- nsim_drv_probe+0x8ce/0xbf0 drivers/net/netdevsim/dev.c:1731
- call_driver_probe drivers/base/dd.c:-1 [inline]
- really_probe+0x254/0xae0 drivers/base/dd.c:706
- __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
- driver_probe_device+0x4f/0x240 drivers/base/dd.c:898
- __device_attach_driver+0x270/0x410 drivers/base/dd.c:1026
- bus_for_each_drv+0x258/0x2f0 drivers/base/bus.c:500
- __device_attach+0x2c4/0x450 drivers/base/dd.c:1098
- device_initial_probe+0xa1/0xd0 drivers/base/dd.c:1153
- bus_probe_device+0x12a/0x220 drivers/base/bus.c:620
- device_add+0x7d7/0xb80 drivers/base/core.c:3772
- nsim_bus_dev_new drivers/net/netdevsim/bus.c:471 [inline]
- new_device_store+0x37b/0x710 drivers/net/netdevsim/bus.c:191
- kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x612/0xba0 fs/read_write.c:687
- ksys_write+0x150/0x270 fs/read_write.c:739
+ __folio_put+0x4b3/0x590 mm/swap.c:112
+ folio_put include/linux/mm.h:2124 [inline]
+ put_page include/linux/mm.h:2193 [inline]
+ page_handle_poison+0x35d/0x4a0 mm/memory-failure.c:204
+ soft_offline_in_use_page mm/memory-failure.c:2861 [inline]
+ soft_offline_page+0xd1d/0x1560 mm/memory-failure.c:2952
+ madvise_inject_error mm/madvise.c:1476 [inline]
+ madvise_do_behavior+0x319/0x930 mm/madvise.c:1897
+ do_madvise+0x327/0x3a0 mm/madvise.c:2005
+ __do_sys_madvise mm/madvise.c:2014 [inline]
+ __se_sys_madvise mm/madvise.c:2012 [inline]
+ __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fac41b5d68e
-Code: 08 0f 85 a5 a8 ff ff 49 89 fb 48 89 f0 48 89 d7 48 89 ce 4c 89 c2 4d 89 ca 4c 8b 44 24 08 4c 8b 4c 24 10 4c 89 5c 24 08 0f 05 <c3> 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 80 00 00 00 00 48 83 ec 08
-RSP: 002b:00007fff6b0eac58 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 000055556430f500 RCX: 00007fac41b5d68e
-RDX: 0000000000000003 RSI: 00007fff6b0eace0 RDI: 0000000000000005
-RBP: 00007fac41c33716 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
-R13: 00007fff6b0eace0 R14: 00007fac42944620 R15: 0000000000000003
+RIP: 0033:0x7fb17d79ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fb17e6b8028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+RAX: ffffffffffffffda RBX: 00007fb17da15fa0 RCX: 00007fb17d79ce59
+RDX: 0000000000000065 RSI: 0000000000002000 RDI: 000020000010e000
+RBP: 00007fb17d832e6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fb17da16038 R14: 00007fb17da15fa0 R15: 00007ffd7e9be1d8
  </TASK>
-BUG: sleeping function called from invalid context at kernel/irq_work.c:289
-in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 5780, name: kworker/u8:4
-preempt_count: 101, expected: 0
-RCU nest depth: 0, expected: 0
-4 locks held by kworker/u8:4/5780:
- #0: ffff88811326b140 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3297 [inline]
- #0: ffff88811326b140 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: process_scheduled_works+0xa20/0x14e0 kernel/workqueue.c:3405
- #1: ffffc90003edfc40 ((work_completion)(&(&ifa->dad_work)->work)){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3297 [inline]
- #1: ffffc90003edfc40 ((work_completion)(&(&ifa->dad_work)->work)){+.+.}-{0:0}, at: process_scheduled_works+0xa20/0x14e0 kernel/workqueue.c:3405
- #2: ffffffff8fded5c0 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_net_lock include/linux/rtnetlink.h:134 [inline]
- #2: ffffffff8fded5c0 (rtnl_mutex){+.+.}-{4:4}, at: addrconf_dad_work+0x116/0x15c0 net/ipv6/addrconf.c:4229
- #3: ffffffff8e959d80 (rcu_callback){....}-{0:0}, at: rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
- #3: ffffffff8e959d80 (rcu_callback){....}-{0:0}, at: rcu_do_batch kernel/rcu/tree.c:2639 [inline]
- #3: ffffffff8e959d80 (rcu_callback){....}-{0:0}, at: rcu_core+0x70d/0x10a0 kernel/rcu/tree.c:2897
-Preemption disabled at:
-[<0000000000000000>] 0x0
-CPU: 0 UID: 0 PID: 5780 Comm: kworker/u8:4 Tainted: G        W           syzkaller #0 PREEMPT(full) 
-Tainted: [W]=WARN
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: ipv6_addrconf addrconf_dad_work
-Call Trace:
- <IRQ>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- __might_resched+0x378/0x4d0 kernel/sched/core.c:9197
- irq_work_sync+0x9b/0x300 kernel/irq_work.c:289
- rhashtable_free_and_destroy+0x39/0x540 lib/rhashtable.c:1295
- hash_netport4_destroy+0x56/0xb0 net/netfilter/ipset/ip_set_hash_gen.h:420
- ip_set_destroy_set_rcu+0x63/0xc0 net/netfilter/ipset/ip_set_core.c:1169
- rcu_do_batch kernel/rcu/tree.c:2645 [inline]
- rcu_core+0x78b/0x10a0 kernel/rcu/tree.c:2897
- handle_softirqs+0x225/0x840 kernel/softirq.c:622
- do_softirq+0x76/0xd0 kernel/softirq.c:523
- </IRQ>
- <TASK>
- __local_bh_enable_ip+0xf8/0x130 kernel/softirq.c:450
- spin_unlock_bh include/linux/spinlock.h:396 [inline]
- addrconf_dad_work+0x2d1/0x15c0 net/ipv6/addrconf.c:4259
- process_one_work kernel/workqueue.c:3322 [inline]
- process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-
-=============================
-WARNING: suspicious RCU usage
-syzkaller #0 Tainted: G        W          
------------------------------
-kernel/sched/core.c:9159 Illegal context switch in RCU-sched read-side critical section!
-
-other info that might help us debug this:
-
-
-rcu_scheduler_active = 2, debug_locks = 1
-5 locks held by syz.1.174/6158:
- #0: ffff888111ca7e88 (vm_lock){++++}-{0:0}, at: lock_vma_under_rcu+0x1d1/0x500 mm/mmap_lock.c:310
- #1: ffffffff8e959c60 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
- #1: ffffffff8e959c60 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:840 [inline]
- #1: ffffffff8e959c60 (rcu_read_lock){....}-{1:3}, at: __pte_offset_map+0x29/0x240 mm/pgtable-generic.c:290
- #2: ffff88811429feb8 (ptlock_ptr(ptdesc)#2){+.+.}-{3:3}, at: spin_lock include/linux/spinlock.h:342 [inline]
- #2: ffff88811429feb8 (ptlock_ptr(ptdesc)#2){+.+.}-{3:3}, at: pte_offset_map_lock+0x13d/0x210 mm/pgtable-generic.c:404
- #3: ffffffff8e959d20 (rcu_read_lock_sched){....}-{1:2}, at: rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
- #3: ffffffff8e959d20 (rcu_read_lock_sched){....}-{1:2}, at: rcu_read_lock_sched include/linux/rcupdate.h:938 [inline]
- #3: ffffffff8e959d20 (rcu_read_lock_sched){....}-{1:2}, at: pfn_valid+0xba/0x480 include/linux/mmzone.h:2270
- #4: ffffffff8e959d80 (rcu_callback){....}-{0:0}, at: rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
- #4: ffffffff8e959d80 (rcu_callback){....}-{0:0}, at: rcu_do_batch kernel/rcu/tree.c:2639 [inline]
- #4: ffffffff8e959d80 (rcu_callback){....}-{0:0}, at: rcu_core+0x70d/0x10a0 kernel/rcu/tree.c:2897
-
-stack backtrace:
-CPU: 0 UID: 0 PID: 6158 Comm: syz.1.174 Tainted: G        W           syzkaller #0 PREEMPT(full) 
-Tainted: [W]=WARN
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <IRQ>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- lockdep_rcu_suspicious+0x13f/0x1d0 kernel/locking/lockdep.c:6876
- __might_resched+0xbb/0x4d0 kernel/sched/core.c:9159
- irq_work_sync+0x9b/0x300 kernel/irq_work.c:289
- rhashtable_free_and_destroy+0x39/0x540 lib/rhashtable.c:1295
- hash_netport4_destroy+0x56/0xb0 net/netfilter/ipset/ip_set_hash_gen.h:420
- ip_set_destroy_set_rcu+0x63/0xc0 net/netfilter/ipset/ip_set_core.c:1169
- rcu_do_batch kernel/rcu/tree.c:2645 [inline]
- rcu_core+0x78b/0x10a0 kernel/rcu/tree.c:2897
- handle_softirqs+0x225/0x840 kernel/softirq.c:622
- __do_softirq kernel/softirq.c:656 [inline]
- invoke_softirq kernel/softirq.c:496 [inline]
- __irq_exit_rcu+0xca/0x220 kernel/softirq.c:735
- irq_exit_rcu+0x9/0x30 kernel/softirq.c:752
- instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1062 [inline]
- sysvec_apic_timer_interrupt+0xa6/0xc0 arch/x86/kernel/apic/apic.c:1062
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.h:674
-RIP: 0010:valid_section include/linux/mmzone.h:2119 [inline]
-RIP: 0010:pfn_valid+0x11f/0x480 include/linux/mmzone.h:2271
-Code: 74 7d e8 84 ae 86 ff 4d 85 ff 75 11 e8 7a ae 86 ff eb 3d e8 73 ae 86 ff 4d 85 ff 74 ef 4d 89 fd 49 c1 ed 03 43 80 7c 25 00 00 <74> 08 4c 89 ff e8 07 3b f4 ff 49 8b 2f 48 89 ee 48 83 e6 02 31 ff
-RSP: 0000:ffffc9000283f8f0 EFLAGS: 00000246
-RAX: ffffffff823fb3bc RBX: ffffffff823fb37a RCX: ffff88811b629dc0
-RDX: 0000000000000000 RSI: ffffffff8c2ab860 RDI: ffffffff8c2ab820
-RBP: 0000000000000001 R08: ffffffff823fb37a R09: 0000000000000000
-R10: 0000000000000000 R11: ffffffff8e959d20 R12: dffffc0000000000
-R13: 1ffff11029fd668c R14: 000000000011c655 R15: ffff88814feb3460
- page_table_check_set+0x25/0x530 mm/page_table_check.c:105
- page_table_check_ptes_set include/linux/page_table_check.h:83 [inline]
- set_ptes include/linux/pgtable.h:447 [inline]
- set_pte_range+0x7ef/0x840 mm/memory.c:5588
- finish_fault+0xe65/0x1220 mm/memory.c:5724
- do_shared_fault mm/memory.c:5944 [inline]
- do_fault mm/memory.c:5998 [inline]
- do_pte_missing+0xf13/0x34b0 mm/memory.c:4566
- handle_pte_fault mm/memory.c:6379 [inline]
- __handle_mm_fault mm/memory.c:6517 [inline]
- handle_mm_fault+0x1b36/0x3080 mm/memory.c:6686
- do_user_addr_fault+0xa4d/0x1340 arch/x86/mm/fault.c:1343
- handle_page_fault arch/x86/mm/fault.c:1483 [inline]
- exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1536
- asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:595
-RIP: 0033:0x7f04b9c65711
-Code: 00 48 89 ef e8 60 52 ff ff 48 8b 05 69 00 ee 00 83 05 52 00 ee 00 01 be 08 00 00 00 48 89 ef 48 8d 50 ff 48 89 15 4f 00 ee 00 <44> 88 78 ff 44 8b 3d 34 00 ee 00 e8 2f 52 ff ff 48 8b 05 40 00 ee
-RSP: 002b:00007fffc2849160 EFLAGS: 00010202
-RAX: 0000001b32964000 RBX: 0000000000000000 RCX: 000000000003fde8
-RDX: 0000001b32963fff RSI: 0000000000000008 RDI: 00007f04bab45720
-RBP: 00007f04bab45720 R08: 0000000000000000 R09: 00007f04ba016038
-R10: 00007f04bab45700 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000003
- </TASK>
-------------[ cut here ]------------
-do not call blocking ops when !TASK_RUNNING; state=402 set at [<ffffffff819f28bd>] prepare_to_wait_event+0x3dd/0x480 kernel/sched/wait.c:317
-WARNING: kernel/sched/core.c:9124 at __might_sleep+0x92/0xf0 kernel/sched/core.c:9120, CPU#0: kworker/u9:0/26
 Modules linked in:
-CPU: 0 UID: 0 PID: 26 Comm: kworker/u9:0 Tainted: G        W           syzkaller #0 PREEMPT(full) 
-Tainted: [W]=WARN
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: events_unbound toggle_allocation_gate
-RIP: 0010:__might_sleep+0xac/0xf0 kernel/sched/core.c:9120
-Code: 00 00 48 89 3c 24 41 89 f5 4c 8d 35 1e c1 9f 0e 43 80 3c 3c 00 74 08 48 89 df e8 6f 7f 9e 00 48 8b 0b 4c 89 f7 89 ee 48 89 ca <67> 48 0f b9 3a 44 89 ee 48 8b 3c 24 eb b5 44 89 f1 80 e1 07 80 c1
-RSP: 0000:ffffc90000007c50 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: ffff88810329f1b0 RCX: ffffffff819f28bd
-RDX: ffffffff819f28bd RSI: 0000000000000402 RDI: ffffffff90353090
-RBP: 0000000000000402 R08: ffffffff81acc8cd R09: 0000000000000000
-R10: 0000000000000000 R11: ffffffff8a074b10 R12: 1ffff11020653e36
-R13: 0000000000000121 R14: ffffffff90353090 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff88818dc26000(0000) knlGS:0000000000000000
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__page_table_check_zero+0x416/0x430 mm/page_table_check.c:142
+Code: f3 ff e9 4e fc ff ff e8 78 70 85 ff 89 ea be 01 00 00 00 48 c7 c7 a0 c4 ac 8e e8 45 29 b7 02 e9 48 fd ff ff e8 5b 70 85 ff 90 <0f> 0b e8 53 70 85 ff 90 0f 0b e8 4b 70 85 ff 90 0f 0b 0f 1f 84 00
+RSP: 0018:ffffc900017e7948 EFLAGS: 00010293
+RAX: ffffffff8240f325 RBX: ffff88810544b4a8 RCX: ffff88810c68bb80
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: 0000000000000001 R08: ffff88810544b4ab R09: 1ffff11020a89695
+R10: dffffc0000000000 R11: ffffed1020a89696 R12: 0000000000000001
+R13: ffff88810544b460 R14: 0000000000000000 R15: 0000000000000001
+FS:  00007fb17e6b86c0(0000) GS:ffff88818dc0e000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f04ba016018 CR3: 000000000e746000 CR4: 00000000000006f0
+CR2: 00007fb17d7ea540 CR3: 0000000109db2000 CR4: 00000000000006f0
+
+
+***
+
+kernel BUG in folio_isolate_lru
+
+tree:      bpf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf.git
+base:      0e35b9b6ec0ffcc5e23cbdec09f5c622ad532b53
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/8d6a621e-aae6-4f99-8e0e-d0e02ddbed71/config
+syz repro: https://ci.syzbot.org/findings/7857300c-5c56-4b88-9f60-6f1f3603e3f1/syz_repro
+
+ do_madvise+0x327/0x3a0 mm/madvise.c:2005
+ __do_sys_madvise mm/madvise.c:2014 [inline]
+ __se_sys_madvise mm/madvise.c:2012 [inline]
+ __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+------------[ cut here ]------------
+kernel BUG at mm/vmscan.c:1803!
+Oops: invalid opcode: 0000 [#1] SMP KASAN PTI
+CPU: 0 UID: 0 PID: 5810 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:folio_isolate_lru+0x8ad/0x990 mm/vmscan.c:1803
+Code: 38 c1 0f 8c 75 fd ff ff 4c 89 f7 e8 ad 0e 28 00 e9 68 fd ff ff e8 d3 2b ba ff 4c 89 f7 48 c7 c6 20 5f d8 8b e8 84 d9 1b ff 90 <0f> 0b e8 bc 2b ba ff 4c 89 f7 48 c7 c6 60 8e d8 8b e8 6d d9 1b ff
+RSP: 0018:ffffc90003c678d8 EFLAGS: 00010246
+RAX: 2554150cb728ac00 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000006 RSI: ffffffff8dfe9eba RDI: 00000000ffffffff
+RBP: 1ffffd40000f9d26 R08: ffffffff90334ef7 R09: 1ffffffff20669de
+R10: dffffc0000000000 R11: fffffbfff20669df R12: dffffc0000000000
+R13: 0000000000100010 R14: ffffea00007ce900 R15: ffffea00007ce934
+FS:  00007fa1793946c0(0000) GS:ffff88818dc0e000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005640d3daa058 CR3: 00000001696d8000 CR4: 00000000000006f0
 Call Trace:
- <IRQ>
- irq_work_sync+0x9b/0x300 kernel/irq_work.c:289
- rhashtable_free_and_destroy+0x39/0x540 lib/rhashtable.c:1295
- hash_netport4_destroy+0x56/0xb0 net/netfilter/ipset/ip_set_hash_gen.h:420
- ip_set_destroy_set_rcu+0x63/0xc0 net/netfilter/ipset/ip_set_core.c:1169
- rcu_do_batch kernel/rcu/tree.c:2645 [inline]
- rcu_core+0x78b/0x10a0 kernel/rcu/tree.c:2897
- handle_softirqs+0x225/0x840 kernel/softirq.c:622
- __do_softirq kernel/softirq.c:656 [inline]
- invoke_softirq kernel/softirq.c:496 [inline]
- __irq_exit_rcu+0xca/0x220 kernel/softirq.c:735
- irq_exit_rcu+0x9/0x30 kernel/softirq.c:752
- instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1062 [inline]
- sysvec_apic_timer_interrupt+0xa6/0xc0 arch/x86/kernel/apic/apic.c:1062
- </IRQ>
  <TASK>
- asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.h:674
-RIP: 0010:__raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:179 [inline]
-RIP: 0010:_raw_spin_unlock_irqrestore+0x47/0x80 kernel/locking/spinlock.c:198
-Code: f7 e8 ad 6c ea f5 f7 c3 00 02 00 00 74 05 e8 10 51 16 f6 9c 58 a9 00 02 00 00 75 27 f7 c3 00 02 00 00 74 01 fb bf 01 00 00 00 <e8> b4 82 db f5 65 8b 05 ad 52 87 07 85 c0 74 18 5b 41 5e e9 91 48
-RSP: 0000:ffffc90000a179a8 EFLAGS: 00000206
-RAX: 0000000000000002 RBX: 0000000000000286 RCX: 0000000080000001
-RDX: 0000000000000006 RSI: ffffffff8dfdcfea RDI: 0000000000000001
-RBP: 0000000000000000 R08: ffffffff903237f7 R09: 1ffffffff20646fe
-R10: dffffc0000000000 R11: fffffbfff20646ff R12: ffff88810329d940
-R13: 0000000000000286 R14: ffffffff8eaa07c0 R15: ffffffff8eaa0800
- spin_unlock_irqrestore include/linux/spinlock.h:408 [inline]
- prepare_to_wait_event+0x436/0x480 kernel/sched/wait.c:319
- toggle_allocation_gate+0x147/0x290 mm/kfence/core.c:913
- process_one_work kernel/workqueue.c:3322 [inline]
- process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ delete_from_lru_cache+0x1a/0x1e0 mm/memory-failure.c:900
+ me_pagecache_clean+0x58/0x230 mm/memory-failure.c:1015
+ page_action mm/memory-failure.c:1298 [inline]
+ identify_page_state+0x13c/0x190 mm/memory-failure.c:1649
+ memory_failure+0x2fff/0x3380 mm/memory-failure.c:2548
+ madvise_inject_error mm/madvise.c:1480 [inline]
+ madvise_do_behavior+0x344/0x930 mm/madvise.c:1897
+ do_madvise+0x327/0x3a0 mm/madvise.c:2005
+ __do_sys_madvise mm/madvise.c:2014 [inline]
+ __se_sys_madvise mm/madvise.c:2012 [inline]
+ __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fa17859ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fa179394028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+RAX: ffffffffffffffda RBX: 00007fa178815fa0 RCX: 00007fa17859ce59
+RDX: 0000000000000064 RSI: 0000000000002000 RDI: 00002000005a4000
+RBP: 00007fa178632e6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fa178816038 R14: 00007fa178815fa0 R15: 00007fff254e3208
  </TASK>
-----------------
-Code disassembly (best guess):
-   0:	98                   	cwtl
-   1:	c3                   	ret
-   2:	ff 4c 8b 54          	decl   0x54(%rbx,%rcx,4)
-   6:	24 10                	and    $0x10,%al
-   8:	8b 74 24 04          	mov    0x4(%rsp),%esi
-   c:	85 db                	test   %ebx,%ebx
-   e:	75 5d                	jne    0x6d
-  10:	4d 8b 3f             	mov    (%r15),%r15
-  13:	4d 39 e7             	cmp    %r12,%r15
-  16:	74 52                	je     0x6a
-  18:	41 39 6f 10          	cmp    %ebp,0x10(%r15)
-  1c:	75 f2                	jne    0x10
-  1e:	45 39 57 14          	cmp    %r10d,0x14(%r15)
-  22:	75 ec                	jne    0x10
-  24:	31 c0                	xor    %eax,%eax
-  26:	49 8b 0c c6          	mov    (%r14,%rax,8),%rcx
-* 2a:	49 3b 4c c7 20       	cmp    0x20(%r15,%rax,8),%rcx <-- trapping instruction
-  2f:	75 df                	jne    0x10
-  31:	48 ff c0             	inc    %rax
-  34:	41 39 c5             	cmp    %eax,%r13d
-  37:	75 ed                	jne    0x26
-  39:	83 fe 02             	cmp    $0x2,%esi
-  3c:	72 2f                	jb     0x6d
-  3e:	49                   	rex.WB
-  3f:	8d                   	.byte 0x8d
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:folio_isolate_lru+0x8ad/0x990 mm/vmscan.c:1803
+Code: 38 c1 0f 8c 75 fd ff ff 4c 89 f7 e8 ad 0e 28 00 e9 68 fd ff ff e8 d3 2b ba ff 4c 89 f7 48 c7 c6 20 5f d8 8b e8 84 d9 1b ff 90 <0f> 0b e8 bc 2b ba ff 4c 89 f7 48 c7 c6 60 8e d8 8b e8 6d d9 1b ff
+RSP: 0018:ffffc90003c678d8 EFLAGS: 00010246
+RAX: 2554150cb728ac00 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000006 RSI: ffffffff8dfe9eba RDI: 00000000ffffffff
+RBP: 1ffffd40000f9d26 R08: ffffffff90334ef7 R09: 1ffffffff20669de
+R10: dffffc0000000000 R11: fffffbfff20669df R12: dffffc0000000000
+R13: 0000000000100010 R14: ffffea00007ce900 R15: ffffea00007ce934
+FS:  00007fa1793946c0(0000) GS:ffff88818dc0e000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005640d3daa058 CR3: 00000001696d8000 CR4: 00000000000006f0
+
+
+***
+
+kernel BUG in memory_failure
+
+tree:      bpf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf.git
+base:      0e35b9b6ec0ffcc5e23cbdec09f5c622ad532b53
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/8d6a621e-aae6-4f99-8e0e-d0e02ddbed71/config
+syz repro: https://ci.syzbot.org/findings/6feafe6c-6796-475f-9aca-225a9d35747c/syz_repro
+
+ do_madvise+0x327/0x3a0 mm/madvise.c:2005
+ __do_sys_madvise mm/madvise.c:2014 [inline]
+ __se_sys_madvise mm/madvise.c:2012 [inline]
+ __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+------------[ cut here ]------------
+kernel BUG at mm/memory-failure.c:2483!
+Oops: invalid opcode: 0000 [#1] SMP KASAN PTI
+CPU: 1 UID: 0 PID: 5850 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:memory_failure+0x3373/0x3380 mm/memory-failure.c:2483
+Code: cb 87 ff 48 89 df 48 c7 c6 e0 a2 dd 8b e8 45 79 e9 fe 90 0f 0b e8 7d cb 87 ff 4c 89 f7 48 c7 c6 40 93 dd 8b e8 2e 79 e9 fe 90 <0f> 0b 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90 90
+RSP: 0018:ffffc900036efa00 EFLAGS: 00010246
+RAX: 9a71b80f9d8a2200 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000006 RSI: ffffffff8dfe9eba RDI: 00000000ffffffff
+RBP: ffffc900036efb90 R08: ffffffff90334ef7 R09: 1ffffffff20669de
+R10: dffffc0000000000 R11: fffffbfff20669df R12: ffffea00045f6ac0
+R13: ffffea00045f0008 R14: ffffea00045f6ac0 R15: 1ffff920006ddf54
+FS:  00007fed60fc56c0(0000) GS:ffff8882a920e000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f3eee905440 CR3: 0000000165fdc000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ madvise_inject_error mm/madvise.c:1480 [inline]
+ madvise_do_behavior+0x344/0x930 mm/madvise.c:1897
+ do_madvise+0x327/0x3a0 mm/madvise.c:2005
+ __do_sys_madvise mm/madvise.c:2014 [inline]
+ __se_sys_madvise mm/madvise.c:2012 [inline]
+ __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fed6019ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fed60fc5028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+RAX: ffffffffffffffda RBX: 00007fed60415fa0 RCX: 00007fed6019ce59
+RDX: 0000000000000064 RSI: 0000000000001000 RDI: 0000200000ffe000
+RBP: 00007fed60232e6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fed60416038 R14: 00007fed60415fa0 R15: 00007ffc1c6c3eb8
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:memory_failure+0x3373/0x3380 mm/memory-failure.c:2483
+Code: cb 87 ff 48 89 df 48 c7 c6 e0 a2 dd 8b e8 45 79 e9 fe 90 0f 0b e8 7d cb 87 ff 4c 89 f7 48 c7 c6 40 93 dd 8b e8 2e 79 e9 fe 90 <0f> 0b 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90 90
+RSP: 0018:ffffc900036efa00 EFLAGS: 00010246
+RAX: 9a71b80f9d8a2200 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000006 RSI: ffffffff8dfe9eba RDI: 00000000ffffffff
+RBP: ffffc900036efb90 R08: ffffffff90334ef7 R09: 1ffffffff20669de
+R10: dffffc0000000000 R11: fffffbfff20669df R12: ffffea00045f6ac0
+R13: ffffea00045f0008 R14: ffffea00045f6ac0 R15: 1ffff920006ddf54
+FS:  00007fed60fc56c0(0000) GS:ffff8882a920e000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b33863fff CR3: 0000000165fdc000 CR4: 00000000000006f0
 
 
 ***
