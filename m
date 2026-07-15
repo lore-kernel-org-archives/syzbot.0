@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7CDD3815E7
-	for <syzbot@lists.linux.dev>; Wed, 15 Jul 2026 15:00:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4783F481AB6
+	for <syzbot@lists.linux.dev>; Wed, 15 Jul 2026 15:28:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784127635; cv=none; b=gyMy2TiaynsvseV1qkSVnBw0Cj5IPvSSldwbr96FceAo5CHsgAjM8fq3923ACr3tBy+WiRgwJvzrDUB937N9xhlALyw/9FUhkRfp2bJFMwDqRWhMEpTuyMzUrqNCxvS2yOCw37X/8NLkaK6JxGfGFBdSdX5pH2Ft5VvOFOtAKqs=
+	t=1784129322; cv=none; b=REr3EBIlHxaph9uSjifux7C07iDVT9FPtPfeM1FTLLXjzVaoWihWvjZWbPC1ptSTwlB5UQZiWwCfIAzc1B9pXblCQtvMX+X/u5/LWCBZ5ZSglGqtrlCifzofBEdol0JED+d9Nc1NF1PsZYF8pUXuMWRz12qAC2kEUNtW5+6HS8w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784127635; c=relaxed/simple;
-	bh=3Doozt/tQ9YNt7CjEzULbyVvbevKOlJV5679pypA2u0=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=f4L3kxknUCqfYqQ56FYDNtEFbFrloRldbx/NhbT92xUtv/ASW7kJ5oj4gqsFaS40eJbJtPlf7Z5iWdVJOu6TzOIXN/dSB1t1l8rsiE45IMClr/E5vehtIPxE1I9mn0ztIUXHeO5Hn5evwL/MRJQqy+AT9ZkCUN5DmTxd3ke5s78=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=loGT/2VE; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784129322; c=relaxed/simple;
+	bh=7eW4zIMNS6bt889rCCdaNofx+7t4GH2GUt/mwyRPrOo=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=q/IebdhhsVFrXQyLW50kiAwU3sGsWv27yxxjguMlfPfnOAGg+fvAp7oqk7aXtRF3sU4yxoejWu3w46UgX0GkhN8g++cpmXtySIh6YCh6/YgQYi4W+LMBwyraI5K/cm8pUbAeB8BE4AwsH3qY/SEaAVqpZGk57Et/Xm5C9Nhhb8M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HKQptmqw; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="loGT/2VE"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6F4A11F000E9;
-	Wed, 15 Jul 2026 15:00:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HKQptmqw"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 9544D1F000E9;
+	Wed, 15 Jul 2026 15:28:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784127634;
-	bh=NW0mNDfpjYqksWTzEdTzMGeTfngjaLZxMzibWBZQ5JY=;
+	s=k20260515; t=1784129314;
+	bh=fg8idb5evXcnh/qsD8TOXInBxSyJ5urRlE4gLSd/i14=;
 	h=From:To:Cc:Subject:Date;
-	b=loGT/2VEl5a3nshqeIWZcHlbBMrgsnW6AZvwsick4Onmz8wzciJ9ZMdsp3IIXzcf/
-	 0U2yuEz1KFjJWiCkDxfAD+PboFcnpvydKYwZytO9z0PXqG+Yi7SjKjCkCQmbk0Dpf+
-	 7AgSXDeV9hOy35AB12QOniBMN1D00ZqxH8QVMs1wLNRWNxvlXsQUsRGHX7YnEjH0Qz
-	 KGF4aEq5OeYe5DcRZYC95ChStPNNeR9+Zpu8Gha8zLnWVcOl2+paUO0AhvCsRuW2L0
-	 c8kkIeA8939vvjNYuqtmFSmy6Vij4i6rVPlXlHqEbBe6qZ+duE4V+SfDiQNh7HDZpW
-	 ++kLcM09LS4WA==
+	b=HKQptmqwABHk6ZI9z2RhGcDJjQeE/jJRry/5v3g2oW4fgbnQG7XeuN4iyutmSdnnL
+	 oBhEBM54AW1ugf/8qfWYu347ZBRTNlQcYgSUEWDqRnz34URTUMFA755deg7YDZL974
+	 n/tCnc2vcsZgbd62ykelRS7cMTCz24CHmLEMx5qQRYW7o8K+LKQQre9eaWga0sUaKA
+	 zuhPSF3/g5ohvNPkoY+J5LgYH5qdIlSw/2/KIhr+xdvJjOrepVW2qCoNMxwdy4vNBz
+	 p7DJlKAo9Duyg/Sy+qNbdlmZZ7DCat2wfZ1a5UshKkqXGfY/adj74u04EEgMkaTK3T
+	 mnDtM84NKLimQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: kusaram@devineni.in, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] nbd: fix I/O hang on dead socket and rate-limit console error
-Message-ID: <48d739d0-05cd-4b5e-90e4-38ae20eb2da6@mail.kernel.org>
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC v3] jfs: validate BT_ROOT flag in xt_getpage and DT_GETPAGE
+Message-ID: <31d895c9-6ed8-4661-ab39-2e3709540323@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,92 +38,169 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 15 Jul 2026 15:00:34 +0000 (UTC)
+Date: Wed, 15 Jul 2026 15:28:34 +0000 (UTC)
 
-When an NBD device is configured with a timeout of 0, a closed socket can
-lead to a permanent I/O hang. The sequence is as follows: a request is sent
-and marked in-flight, but then the socket becomes dead (e.g., due to a
-connection failure). Since the socket is dead, no reply will ever arrive.
-In nbd_xmit_timeout(), if the configured timeout is 0, the code currently
-only checks if the socket has been replaced by comparing cookies. If the
-cookie still matches, the request timer is unconditionally reset and the
-request stays in-flight forever. This causes tasks to hang indefinitely in
-TASK_UNINTERRUPTIBLE, triggering the hung task detector:
+A corrupted JFS image can trick the kernel into calling release_metapage()
+on a pseudo-metapage embedded within the inode, leading to an out-of-bounds
+memory access and a spinlock crash.
 
-INFO: task udevd:5915 blocked in I/O wait for more than 143 seconds.
+When operating on the root page of an xtree or dtree (which is stored
+inline within the inode), JFS doesn't use a real struct metapage. Instead,
+BT_GETPAGE() sets the metapage pointer to the address of
+JFS_IP(ip)->bxflag. Because this is a pseudo-metapage, it does not have a
+valid wait_queue_head_t wait field. Accessing mp->wait reads out-of-bounds
+memory in struct jfs_inode_info.
+
+In xt_getpage(), the code validates nextindex and maxentry, but it fails to
+verify that the BT_ROOT flag is set in p->header.flag for the root page (bn
+== 0). If the inline xtree root page has a corrupted header.flag where
+BT_ROOT is missing, xtTruncate() will mistakenly treat the root page as a
+regular leaf page and call discard_metapage(mp).
+
+Unlike XT_PUTPAGE() which safely checks !BT_IS_ROOT(mp) before releasing,
+discard_metapage() calls release_metapage(mp) directly. This assumes mp is
+a real metapage and calls unlock_metapage(mp), which executes
+wake_up(&mp->wait), accessing garbage memory and resulting in a spinlock
+bad magic BUG or UBSAN out-of-bounds array access.
+
+Fix this by enforcing the invariant that the BT_ROOT flag is set if and
+only if bn == 0 in both xt_getpage() and DT_GETPAGE().
+
+BUG: spinlock bad magic on CPU#1, syz-executor/6078
+ lock: 0xffff8881f55f1b48, .magic: ffffffff, .owner: /-1902340672,
+ .owner_cpu: 768
+CPU: 1 UID: 0 PID: 6078 Comm: syz-executor Not tainted syzkaller #1
+PREEMPT(full)
 Call Trace:
  <TASK>
- schedule+0x164/0x2b0
- io_schedule+0x7f/0xd0
- folio_wait_bit_common+0x836/0xbc0
- do_read_cache_folio+0x1ac/0x590
- read_part_sector+0xb6/0x2b0
- adfspart_check_POWERTEC+0x9a/0x7a0
- bdev_disk_changed+0x851/0x17a0
- blkdev_get_whole+0x372/0x510
- bdev_open+0x324/0xd70
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ spin_bug kernel/locking/spinlock_debug.c:78 [inline]
+ debug_spin_lock_before kernel/locking/spinlock_debug.c:86 [inline]
+ do_raw_spin_lock+0x1e5/0x2f0 kernel/locking/spinlock_debug.c:115
+ __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:133 [inline]
+ _raw_spin_lock_irqsave+0x4c/0x60 kernel/locking/spinlock.c:166
+ __wake_up_common_lock+0x30/0x1f0 kernel/sched/wait.c:124
+ unlock_metapage fs/jfs/jfs_metapage.c:40 [inline]
+ release_metapage+0x131/0xa60 fs/jfs/jfs_metapage.c:872
+ xtTruncate+0xeaa/0x2eb0 fs/jfs/jfs_xtree.c:-1
+ jfs_free_zero_link+0x35b/0x4c0 fs/jfs/namei.c:760
+ jfs_evict_inode+0x356/0x430 fs/jfs/inode.c:159
+ evict+0x624/0xb50 fs/inode.c:841
  ...
  </TASK>
 
-Fix this by checking nsock->dead in addition to the cookie check in
-nbd_xmit_timeout(). If the socket is dead, the command is requeued.
-Requeuing returns the request to the existing fallback, reconnect, or
-failure policy. For the reported configuration where no reconnect is
-possible, this results in the request being properly failed, which
-terminates the hung operation.
+UBSAN: array-index-out-of-bounds in kernel/locking/qspinlock.h:68:9
+index 8945 is out of range for type 'unsigned long[8]'
+CPU: 1 UID: 0 PID: 6078 Comm: syz-executor Not tainted syzkaller #1
+PREEMPT(full)
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
+ __ubsan_handle_out_of_bounds+0xe8/0xf0 lib/ubsan.c:455
+ decode_tail kernel/locking/qspinlock.h:68 [inline]
+ __pv_queued_spin_lock_slowpath+0xaf3/0xbc0 kernel/locking/qspinlock.c:285
+ pv_queued_spin_lock_slowpath arch/x86/include/asm/paravirt-spinlock.h:35
+ [inline]
+ queued_spin_lock_slowpath arch/x86/include/asm/paravirt-spinlock.h:66
+ [inline]
+ queued_spin_lock include/asm-generic/qspinlock.h:114 [inline]
+ do_raw_spin_lock+0x26c/0x2f0 kernel/locking/spinlock_debug.c:116
+ __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:133 [inline]
+ _raw_spin_lock_irqsave+0x4c/0x60 kernel/locking/spinlock.c:166
+ __wake_up_common_lock+0x30/0x1f0 kernel/sched/wait.c:124
+ unlock_metapage fs/jfs/jfs_metapage.c:40 [inline]
+ release_metapage+0x131/0xa60 fs/jfs/jfs_metapage.c:872
+ xtTruncate+0xeaa/0x2eb0 fs/jfs/jfs_xtree.c:-1
+ ...
+ </TASK>
 
-A secondary issue was observed where repeated attempts to connect to an
-already-in-use NBD device cause console spam because the "nbd%d already in
-use" error message in nbd_genl_connect() is not rate-limited. This can
-delay console_unlock() and trigger NMI backtraces. This is fixed by
-changing the pr_err() to pr_err_ratelimited().
-
-Fixes: 2c272542baee ("nbd: requeue command if the soecket is changed")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+82de77d3f217960f087d@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=82de77d3f217960f087d
-Link: https://syzkaller.appspot.com/ai_job?id=40e56b38-627e-4b49-b7ac-d3a21e77dba2
-To: "Jens Axboe" <axboe@kernel.dk>
-To: "Josef Bacik" <josef@toxicpanda.com>
-To: <linux-block@vger.kernel.org>
-To: <nbd@other.debian.org>
+Reported-by: syzbot+e380443eaa59bfb75a84@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=e380443eaa59bfb75a84
+Link: https://syzkaller.appspot.com/ai_job?id=20a14f45-b85b-4c13-8896-26c43b87a29b
+To: <jfs-discussion@lists.sourceforge.net>
+To: "Dave Kleikamp" <shaggy@kernel.org>
+Cc: "Arnd Bergmann" <arnd@arndb.de>
 Cc: <linux-kernel@vger.kernel.org>
+Cc: "Yun Zhou" <yun.zhou@windriver.com>
+Cc: "Zheng Yu" <zheng.yu@northwestern.edu>
 
 ---
+v3:
+- Validated root/non-root invariant failures and non-root dtpage integrity failures.
+- Removed '------------[ cut here ]------------' from the commit message.
+
 v2:
-- Updated the commit description to precisely detail the sequence leading to the I/O hang.
-- Clarified that requeueing returns the request to the existing fallback/reconnect/failure policy.
-- Highlighted the console spam as a secondary issue.
-- Switched to pr_err_ratelimited() for the "already in use" error in nbd_genl_connect().
+- Combined the BT_ROOT flag validation with the existing page integrity check in DT_GETPAGE.
+- Unified the error message in DT_GETPAGE for both root and leaf page corruption.
+https://lore.kernel.org/all/b94e1523-acdb-4470-904e-373249bbf83d@mail.kernel.org/T/
 
 v1:
-https://lore.kernel.org/all/b5a8f0cc-71aa-4deb-8864-29d7f0c5509a@mail.kernel.org/T/
+https://lore.kernel.org/all/65efb3d8-bbf9-4f4b-800e-b9bc5577b381@mail.kernel.org/T/
 ---
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 8f10762e9..eedb1c870 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -523,7 +523,7 @@ static enum blk_eh_timer_return nbd_xmit_timeout(struct request *req)
- 			blk_rq_bytes(req), (req->timeout / HZ) * cmd->retries);
+diff --git a/fs/jfs/jfs_dtree.c b/fs/jfs/jfs_dtree.c
+index ac0f79faf..2b6bdea1f 100644
+--- a/fs/jfs/jfs_dtree.c
++++ b/fs/jfs/jfs_dtree.c
+@@ -111,19 +111,20 @@ struct dtsplit {
+ #define DT_PAGE(IP, MP) BT_PAGE(IP, MP, dtpage_t, i_dtroot)
  
- 		mutex_lock(&nsock->tx_lock);
--		if (cmd->cookie != nsock->cookie) {
-+		if (cmd->cookie != nsock->cookie || nsock->dead) {
- 			nbd_requeue_cmd(cmd);
- 			mutex_unlock(&nsock->tx_lock);
- 			mutex_unlock(&cmd->lock);
-@@ -2172,7 +2172,7 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
- 		nbd_put(nbd);
- 		if (index == -1)
- 			goto again;
--		pr_err("nbd%d already in use\n", index);
-+		pr_err_ratelimited("nbd%d already in use\n", index);
- 		return -EBUSY;
- 	}
+ /* get page buffer for specified block address */
+-#define DT_GETPAGE(IP, BN, MP, SIZE, P, RC)				\
+-do {									\
+-	BT_GETPAGE(IP, BN, MP, dtpage_t, SIZE, P, RC, i_dtroot);	\
+-	if (!(RC)) {							\
+-		if ((BN) && !check_dtpage(P)) {				\
+-			BT_PUTPAGE(MP);					\
+-			jfs_error((IP)->i_sb,				\
+-				  "DT_GETPAGE: dtree page corrupt\n");	\
+-			MP = NULL;					\
+-			RC = -EIO;					\
+-		}							\
+-	}								\
+-} while (0)
++#define DT_GETPAGE(IP, BN, MP, SIZE, P, RC)                                    \
++	do {                                                                   \
++		BT_GETPAGE(IP, BN, MP, dtpage_t, SIZE, P, RC, i_dtroot);       \
++		if (!(RC)) {                                                   \
++			if ((((BN) == 0) != !!((P)->header.flag & BT_ROOT)) || \
++			    ((BN) && !check_dtpage(P))) {                      \
++				BT_PUTPAGE(MP);                                \
++				jfs_error((IP)->i_sb,                          \
++					  "DT_GETPAGE: dtree page corrupt\n"); \
++				MP = NULL;                                     \
++				RC = -EIO;                                     \
++			}                                                      \
++		}                                                              \
++	} while (0)
  
+ /* for consistency */
+ #define DT_PUTPAGE(MP) BT_PUTPAGE(MP)
+diff --git a/fs/jfs/jfs_xtree.c b/fs/jfs/jfs_xtree.c
+index 28c3cf960..6d960dd96 100644
+--- a/fs/jfs/jfs_xtree.c
++++ b/fs/jfs/jfs_xtree.c
+@@ -118,10 +118,11 @@ static inline xtpage_t *xt_getpage(struct inode *ip, s64 bn, struct metapage **m
+ 	if (rc)
+ 		return ERR_PTR(rc);
+ 	if ((le16_to_cpu(p->header.nextindex) < XTENTRYSTART) ||
+-		(le16_to_cpu(p->header.nextindex) >
+-			le16_to_cpu(p->header.maxentry)) ||
+-		(le16_to_cpu(p->header.maxentry) >
+-			((bn == 0) ? XTROOTMAXSLOT : PSIZE >> L2XTSLOTSIZE))) {
++	    (le16_to_cpu(p->header.nextindex) >
++	     le16_to_cpu(p->header.maxentry)) ||
++	    (le16_to_cpu(p->header.maxentry) >
++	     ((bn == 0) ? XTROOTMAXSLOT : PSIZE >> L2XTSLOTSIZE)) ||
++	    ((bn == 0) != !!(p->header.flag & BT_ROOT))) {
+ 		jfs_error(ip->i_sb, "xt_getpage: xtree page corrupt\n");
+ 		BT_PUTPAGE(*mp);
+ 		*mp = NULL;
 
 
-base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
+base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
