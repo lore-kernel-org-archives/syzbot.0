@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4783F481AB6
-	for <syzbot@lists.linux.dev>; Wed, 15 Jul 2026 15:28:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CA4E48A2D5
+	for <syzbot@lists.linux.dev>; Wed, 15 Jul 2026 15:32:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784129322; cv=none; b=REr3EBIlHxaph9uSjifux7C07iDVT9FPtPfeM1FTLLXjzVaoWihWvjZWbPC1ptSTwlB5UQZiWwCfIAzc1B9pXblCQtvMX+X/u5/LWCBZ5ZSglGqtrlCifzofBEdol0JED+d9Nc1NF1PsZYF8pUXuMWRz12qAC2kEUNtW5+6HS8w=
+	t=1784129526; cv=none; b=dZv9PjdCRgEyWON90KHtZVgKE34ReDfYGIUewZjaumDvlahn+VDxKbTWJT6sStC8RWKDT/OJLXJLW3StgvFGYLz38XEJSbpueBC6KkqE/xmAr0Tcr8CvYggk3smfhE0OljJZVH9iziQXUFYGAGKmgmTTSEhJyu3zk5TxdF3GqO4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784129322; c=relaxed/simple;
-	bh=7eW4zIMNS6bt889rCCdaNofx+7t4GH2GUt/mwyRPrOo=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=q/IebdhhsVFrXQyLW50kiAwU3sGsWv27yxxjguMlfPfnOAGg+fvAp7oqk7aXtRF3sU4yxoejWu3w46UgX0GkhN8g++cpmXtySIh6YCh6/YgQYi4W+LMBwyraI5K/cm8pUbAeB8BE4AwsH3qY/SEaAVqpZGk57Et/Xm5C9Nhhb8M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HKQptmqw; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784129526; c=relaxed/simple;
+	bh=1TAUSCIrpbY9rhEoYV5/aGlANvUFNLDYlOOYzCarnjs=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=epa7eHmt/cQQPtNGUXMEGAEvr39C4GycCNKyheVVg/1q8IgRCtwncEVmPluPhToxpSKHUR/pVp0ofJ/c9DjCe9e/PgCh0K3PvzKeD6R7xGfxcO2TvR1Q7bz42+LOLCdnLNqstgTxus6v5OF1ZmxaBZdj5FDhMnhtIEtF2eqUW/Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PR3vB+RS; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HKQptmqw"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 9544D1F000E9;
-	Wed, 15 Jul 2026 15:28:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PR3vB+RS"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 970021F00A3A;
+	Wed, 15 Jul 2026 15:32:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784129314;
-	bh=fg8idb5evXcnh/qsD8TOXInBxSyJ5urRlE4gLSd/i14=;
+	s=k20260515; t=1784129524;
+	bh=7DeKRWMYuGRCTwjwKF2aNkL5ySsmAig3VuAfWGTAg9Q=;
 	h=From:To:Cc:Subject:Date;
-	b=HKQptmqwABHk6ZI9z2RhGcDJjQeE/jJRry/5v3g2oW4fgbnQG7XeuN4iyutmSdnnL
-	 oBhEBM54AW1ugf/8qfWYu347ZBRTNlQcYgSUEWDqRnz34URTUMFA755deg7YDZL974
-	 n/tCnc2vcsZgbd62ykelRS7cMTCz24CHmLEMx5qQRYW7o8K+LKQQre9eaWga0sUaKA
-	 zuhPSF3/g5ohvNPkoY+J5LgYH5qdIlSw/2/KIhr+xdvJjOrepVW2qCoNMxwdy4vNBz
-	 p7DJlKAo9Duyg/Sy+qNbdlmZZ7DCat2wfZ1a5UshKkqXGfY/adj74u04EEgMkaTK3T
-	 mnDtM84NKLimQ==
+	b=PR3vB+RSnUcFT8QpjqmePfl5MmFPLU3Ma56X5VWSNp6Gs1NHwdfOfOhWT5UTCVIDp
+	 lvLZ3ruXQ5J31tmBHj2Hb34+9eBulk8UuZSW9ktN/USOPlEIKSuy7uZA70nuLReq7/
+	 j7LQegSJoJmG3OKhtndmbSU+CYKIjX23mJJRjeR9s2pE26Erv51VsBIIMfxtcOcqMv
+	 YaGiHu3i7GwEKy6/wkDkIPeX0Lmf+g8KK33+ZzO9RIncdT7nPSxoP8WYFHy5LrpKJv
+	 R/imEawQHQV6ggxrq64pnfLpL7TcEdDsjw+C8u8dPaKNd3DX06LRvlO7vFjVXOn7jr
+	 HeeIPWGbTnoaA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC v3] jfs: validate BT_ROOT flag in xt_getpage and DT_GETPAGE
-Message-ID: <31d895c9-6ed8-4661-ab39-2e3709540323@mail.kernel.org>
+Subject: [PATCH RFC] nbd: fix hung task and integer overflow in timeout configuration
+Message-ID: <b6347da3-3c11-46cb-b467-3416e4104deb@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,169 +38,120 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 15 Jul 2026 15:28:34 +0000 (UTC)
+Date: Wed, 15 Jul 2026 15:32:04 +0000 (UTC)
 
-A corrupted JFS image can trick the kernel into calling release_metapage()
-on a pseudo-metapage embedded within the inode, leading to an out-of-bounds
-memory access and a spinlock crash.
+An unprivileged user can configure an NBD device with an arbitrarily large
+dead connection timeout via the NBD_ATTR_DEAD_CONN_TIMEOUT netlink
+attribute. When a request is queued and the connection is dead,
+nbd_handle_cmd() calls wait_for_reconnect(), which blocks the current
+thread using wait_event_timeout(). Because this wait is in the
+TASK_UNINTERRUPTIBLE state, a timeout larger than 120 seconds triggers the
+hung task detector, leading to a kernel panic:
 
-When operating on the root page of an xtree or dtree (which is stored
-inline within the inode), JFS doesn't use a real struct metapage. Instead,
-BT_GETPAGE() sets the metapage pointer to the address of
-JFS_IP(ip)->bxflag. Because this is a pseudo-metapage, it does not have a
-valid wait_queue_head_t wait field. Accessing mp->wait reads out-of-bounds
-memory in struct jfs_inode_info.
-
-In xt_getpage(), the code validates nextindex and maxentry, but it fails to
-verify that the BT_ROOT flag is set in p->header.flag for the root page (bn
-== 0). If the inline xtree root page has a corrupted header.flag where
-BT_ROOT is missing, xtTruncate() will mistakenly treat the root page as a
-regular leaf page and call discard_metapage(mp).
-
-Unlike XT_PUTPAGE() which safely checks !BT_IS_ROOT(mp) before releasing,
-discard_metapage() calls release_metapage(mp) directly. This assumes mp is
-a real metapage and calls unlock_metapage(mp), which executes
-wake_up(&mp->wait), accessing garbage memory and resulting in a spinlock
-bad magic BUG or UBSAN out-of-bounds array access.
-
-Fix this by enforcing the invariant that the BT_ROOT flag is set if and
-only if bn == 0 in both xt_getpage() and DT_GETPAGE().
-
-BUG: spinlock bad magic on CPU#1, syz-executor/6078
- lock: 0xffff8881f55f1b48, .magic: ffffffff, .owner: /-1902340672,
- .owner_cpu: 768
-CPU: 1 UID: 0 PID: 6078 Comm: syz-executor Not tainted syzkaller #1
-PREEMPT(full)
+INFO: task kworker/1:1H:667 blocked for more than 143 seconds.
+Workqueue: kblockd blk_mq_run_work_fn
 Call Trace:
  <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- spin_bug kernel/locking/spinlock_debug.c:78 [inline]
- debug_spin_lock_before kernel/locking/spinlock_debug.c:86 [inline]
- do_raw_spin_lock+0x1e5/0x2f0 kernel/locking/spinlock_debug.c:115
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:133 [inline]
- _raw_spin_lock_irqsave+0x4c/0x60 kernel/locking/spinlock.c:166
- __wake_up_common_lock+0x30/0x1f0 kernel/sched/wait.c:124
- unlock_metapage fs/jfs/jfs_metapage.c:40 [inline]
- release_metapage+0x131/0xa60 fs/jfs/jfs_metapage.c:872
- xtTruncate+0xeaa/0x2eb0 fs/jfs/jfs_xtree.c:-1
- jfs_free_zero_link+0x35b/0x4c0 fs/jfs/namei.c:760
- jfs_evict_inode+0x356/0x430 fs/jfs/inode.c:159
- evict+0x624/0xb50 fs/inode.c:841
- ...
+ __schedule+0x17e7/0x5630
+ schedule+0x164/0x2b0
+ schedule_timeout+0x152/0x2c0
+ wait_for_reconnect drivers/block/nbd.c:1107 [inline]
+ nbd_handle_cmd drivers/block/nbd.c:1149 [inline]
+ nbd_queue_rq+0x797/0xfb0 drivers/block/nbd.c:1207
+ blk_mq_dispatch_rq_list+0x499/0x1990
+ __blk_mq_sched_dispatch_requests+0xd36/0x1580
+ blk_mq_sched_dispatch_requests+0xd7/0x190
+ blk_mq_run_work_fn+0x16c/0x300
+ process_one_work kernel/workqueue.c:3322 [inline]
+ process_scheduled_works+0xa8e/0x14e0
+ worker_thread+0x92d/0xe10
+ kthread+0x388/0x470
+ ret_from_fork+0x514/0xb70
+ ret_from_fork_asm+0x1a/0x30
  </TASK>
 
-UBSAN: array-index-out-of-bounds in kernel/locking/qspinlock.h:68:9
-index 8945 is out of range for type 'unsigned long[8]'
-CPU: 1 UID: 0 PID: 6078 Comm: syz-executor Not tainted syzkaller #1
-PREEMPT(full)
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
- __ubsan_handle_out_of_bounds+0xe8/0xf0 lib/ubsan.c:455
- decode_tail kernel/locking/qspinlock.h:68 [inline]
- __pv_queued_spin_lock_slowpath+0xaf3/0xbc0 kernel/locking/qspinlock.c:285
- pv_queued_spin_lock_slowpath arch/x86/include/asm/paravirt-spinlock.h:35
- [inline]
- queued_spin_lock_slowpath arch/x86/include/asm/paravirt-spinlock.h:66
- [inline]
- queued_spin_lock include/asm-generic/qspinlock.h:114 [inline]
- do_raw_spin_lock+0x26c/0x2f0 kernel/locking/spinlock_debug.c:116
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:133 [inline]
- _raw_spin_lock_irqsave+0x4c/0x60 kernel/locking/spinlock.c:166
- __wake_up_common_lock+0x30/0x1f0 kernel/sched/wait.c:124
- unlock_metapage fs/jfs/jfs_metapage.c:40 [inline]
- release_metapage+0x131/0xa60 fs/jfs/jfs_metapage.c:872
- xtTruncate+0xeaa/0x2eb0 fs/jfs/jfs_xtree.c:-1
- ...
- </TASK>
+Historically, wait_for_reconnect() used wait_event_interruptible_timeout(),
+but commit ff57dc94faec ("nbd: wait uninterruptible for the dead timeout")
+changed it to wait_event_timeout() to prevent signals from prematurely
+interrupting the wait. However, using TASK_UNINTERRUPTIBLE for arbitrarily
+long waits is an anti-pattern that trips the hung task detector.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-Reported-by: syzbot+e380443eaa59bfb75a84@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=e380443eaa59bfb75a84
-Link: https://syzkaller.appspot.com/ai_job?id=20a14f45-b85b-4c13-8896-26c43b87a29b
-To: <jfs-discussion@lists.sourceforge.net>
-To: "Dave Kleikamp" <shaggy@kernel.org>
-Cc: "Arnd Bergmann" <arnd@arndb.de>
+Fix this by replacing wait_event_timeout() with wait_event_idle_timeout().
+This puts the task into the TASK_IDLE state (TASK_UNINTERRUPTIBLE |
+TASK_NOLOAD), which ignores signals as intended but is explicitly ignored
+by the hung task detector.
+
+Additionally, add defense-in-depth by capping the parsed timeout to U32_MAX
+and the resulting jiffies to MAX_SCHEDULE_TIMEOUT. This prevents integer
+overflow when the u64 timeout is implicitly cast to a signed long by
+schedule_timeout(), which could otherwise result in a negative timeout and
+cause the wait to return immediately.
+
+Fixes: ff57dc94faec ("nbd: wait uninterruptible for the dead timeout")
+Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+30c16035531e3248dcbc@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=30c16035531e3248dcbc
+Link: https://syzkaller.appspot.com/ai_job?id=f07c3611-0a61-4d67-9f4d-033b1cb82e1e
+To: "Jens Axboe" <axboe@kernel.dk>
+To: "Josef Bacik" <josef@toxicpanda.com>
+To: <linux-block@vger.kernel.org>
+To: <nbd@other.debian.org>
+To: "Josef Bacik" <jbacik@fb.com>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Yun Zhou" <yun.zhou@windriver.com>
-Cc: "Zheng Yu" <zheng.yu@northwestern.edu>
 
 ---
-v3:
-- Validated root/non-root invariant failures and non-root dtpage integrity failures.
-- Removed '------------[ cut here ]------------' from the commit message.
-
-v2:
-- Combined the BT_ROOT flag validation with the existing page integrity check in DT_GETPAGE.
-- Unified the error message in DT_GETPAGE for both root and leaf page corruption.
-https://lore.kernel.org/all/b94e1523-acdb-4470-904e-373249bbf83d@mail.kernel.org/T/
-
-v1:
-https://lore.kernel.org/all/65efb3d8-bbf9-4f4b-800e-b9bc5577b381@mail.kernel.org/T/
----
-diff --git a/fs/jfs/jfs_dtree.c b/fs/jfs/jfs_dtree.c
-index ac0f79faf..2b6bdea1f 100644
---- a/fs/jfs/jfs_dtree.c
-+++ b/fs/jfs/jfs_dtree.c
-@@ -111,19 +111,20 @@ struct dtsplit {
- #define DT_PAGE(IP, MP) BT_PAGE(IP, MP, dtpage_t, i_dtroot)
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index 8f10762e9..874a916f8 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -1104,11 +1104,11 @@ static int wait_for_reconnect(struct nbd_device *nbd)
+ 	if (!config->dead_conn_timeout)
+ 		return 0;
  
- /* get page buffer for specified block address */
--#define DT_GETPAGE(IP, BN, MP, SIZE, P, RC)				\
--do {									\
--	BT_GETPAGE(IP, BN, MP, dtpage_t, SIZE, P, RC, i_dtroot);	\
--	if (!(RC)) {							\
--		if ((BN) && !check_dtpage(P)) {				\
--			BT_PUTPAGE(MP);					\
--			jfs_error((IP)->i_sb,				\
--				  "DT_GETPAGE: dtree page corrupt\n");	\
--			MP = NULL;					\
--			RC = -EIO;					\
--		}							\
--	}								\
--} while (0)
-+#define DT_GETPAGE(IP, BN, MP, SIZE, P, RC)                                    \
-+	do {                                                                   \
-+		BT_GETPAGE(IP, BN, MP, dtpage_t, SIZE, P, RC, i_dtroot);       \
-+		if (!(RC)) {                                                   \
-+			if ((((BN) == 0) != !!((P)->header.flag & BT_ROOT)) || \
-+			    ((BN) && !check_dtpage(P))) {                      \
-+				BT_PUTPAGE(MP);                                \
-+				jfs_error((IP)->i_sb,                          \
-+					  "DT_GETPAGE: dtree page corrupt\n"); \
-+				MP = NULL;                                     \
-+				RC = -EIO;                                     \
-+			}                                                      \
-+		}                                                              \
-+	} while (0)
+-	if (!wait_event_timeout(config->conn_wait,
+-				test_bit(NBD_RT_DISCONNECTED,
+-					 &config->runtime_flags) ||
+-				atomic_read(&config->live_connections) > 0,
+-				config->dead_conn_timeout))
++	if (!wait_event_idle_timeout(
++		    config->conn_wait,
++		    test_bit(NBD_RT_DISCONNECTED, &config->runtime_flags) ||
++			    atomic_read(&config->live_connections) > 0,
++		    config->dead_conn_timeout))
+ 		return 0;
  
- /* for consistency */
- #define DT_PUTPAGE(MP) BT_PUTPAGE(MP)
-diff --git a/fs/jfs/jfs_xtree.c b/fs/jfs/jfs_xtree.c
-index 28c3cf960..6d960dd96 100644
---- a/fs/jfs/jfs_xtree.c
-+++ b/fs/jfs/jfs_xtree.c
-@@ -118,10 +118,11 @@ static inline xtpage_t *xt_getpage(struct inode *ip, s64 bn, struct metapage **m
- 	if (rc)
- 		return ERR_PTR(rc);
- 	if ((le16_to_cpu(p->header.nextindex) < XTENTRYSTART) ||
--		(le16_to_cpu(p->header.nextindex) >
--			le16_to_cpu(p->header.maxentry)) ||
--		(le16_to_cpu(p->header.maxentry) >
--			((bn == 0) ? XTROOTMAXSLOT : PSIZE >> L2XTSLOTSIZE))) {
-+	    (le16_to_cpu(p->header.nextindex) >
-+	     le16_to_cpu(p->header.maxentry)) ||
-+	    (le16_to_cpu(p->header.maxentry) >
-+	     ((bn == 0) ? XTROOTMAXSLOT : PSIZE >> L2XTSLOTSIZE)) ||
-+	    ((bn == 0) != !!(p->header.flag & BT_ROOT))) {
- 		jfs_error(ip->i_sb, "xt_getpage: xtree page corrupt\n");
- 		BT_PUTPAGE(*mp);
- 		*mp = NULL;
+ 	return !test_bit(NBD_RT_DISCONNECTED, &config->runtime_flags);
+@@ -2194,9 +2194,11 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
+ 		nbd_set_cmd_timeout(nbd,
+ 				    nla_get_u64(info->attrs[NBD_ATTR_TIMEOUT]));
+ 	if (info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]) {
+-		config->dead_conn_timeout =
++		u64 timeout =
+ 			nla_get_u64(info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]);
+-		config->dead_conn_timeout *= HZ;
++		timeout = min_t(u64, timeout, U32_MAX);
++		config->dead_conn_timeout =
++			min_t(u64, timeout * HZ, MAX_SCHEDULE_TIMEOUT);
+ 	}
+ 	if (info->attrs[NBD_ATTR_SERVER_FLAGS])
+ 		config->flags =
+@@ -2415,9 +2417,11 @@ static int nbd_genl_reconfigure(struct sk_buff *skb, struct genl_info *info)
+ 		nbd_set_cmd_timeout(nbd,
+ 				    nla_get_u64(info->attrs[NBD_ATTR_TIMEOUT]));
+ 	if (info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]) {
+-		config->dead_conn_timeout =
++		u64 timeout =
+ 			nla_get_u64(info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]);
+-		config->dead_conn_timeout *= HZ;
++		timeout = min_t(u64, timeout, U32_MAX);
++		config->dead_conn_timeout =
++			min_t(u64, timeout * HZ, MAX_SCHEDULE_TIMEOUT);
+ 	}
+ 	if (info->attrs[NBD_ATTR_CLIENT_FLAGS]) {
+ 		u64 flags = nla_get_u64(info->attrs[NBD_ATTR_CLIENT_FLAGS]);
 
 
-base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
+base-commit: a13c140cc289c0b7b3770bce5b3ad42ab35074aa
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
