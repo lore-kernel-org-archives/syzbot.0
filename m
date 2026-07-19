@@ -1,68 +1,67 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F279200110
-	for <syzbot@lists.linux.dev>; Sun, 19 Jul 2026 08:54:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 969D017BA2
+	for <syzbot@lists.linux.dev>; Sun, 19 Jul 2026 09:20:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784451285; cv=none; b=hfPd4ltJGJpH4gtAAnpg9+JAkfy345Pug//tMgvvOYIexszzQO5aZ23xxMzErZM2kl/zJ2m2p2VXRSKD1tc953XooldqtNLMFt0xQsGmT6GMt5qki7aUqTo8g0CtCI46SAYN7VYc4udXFpkKpK9GHjQSLvAi3JXBx1hUyRlU3XQ=
+	t=1784452859; cv=none; b=RSJk2FlzDyV0IxAlYrCsIvt03oYQlRK3PfoaTi+juwbeXakfkxI/8VYVcDgEtmFm3jBd5d3eYDk/ozUUd9uIBkMwIKi7+GGgOholElpPk0hrl619dp+fxSBm/M/CWb78/RhXTv0amg5QO8UW8cQXj0ptSkKcpFnh7Z//tqxaoKc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784451285; c=relaxed/simple;
-	bh=cayEyOwFNYZBtwBqK/WoaNV7vNtBiAf186GYW/ecdMk=;
+	s=arc-20240116; t=1784452859; c=relaxed/simple;
+	bh=e6m1LGswlDTKtwI66jPxPV7iKLokXHDGSj4bz/rJQTI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fDrBTyzAESjsKrLexL/4MxpLMsbcJbNO0ZFgXyZoDVUHw50LYvYxo6tjtawuX7taLjwwD+WIvpmzwkgSGuAtIZpiJzT9GLfFlSqLbwzqJh7uSP+YxSMZiysVwXQ6T3StsCcm6Ru8GNoaJRnv4pOVMECF+UbBluLkZZ99xqflfhw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZTdQw2fD; arc=none smtp.client-ip=209.85.218.42
+	 In-Reply-To:Content-Type; b=av1q/xvQecZ8WEF4inutEg8Q5evcXVmXyatH5AspcXlXJog+Jzj9QkllfjxbOygtYHcRmhJihKpa8xFBZUkNLqnasMrypJNxUr63RqBSzu2W4ntFxyWf1yhXrag/6ngJujQn0sXPBKypgE8kIPVUO4knS3bTjodtj18Jjz4X1JE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jmide8+G; arc=none smtp.client-ip=209.85.167.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZTdQw2fD"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-c15cd3fd760so1035838966b.2
-        for <syzbot@lists.linux.dev>; Sun, 19 Jul 2026 01:54:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jmide8+G"
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5aeae771c49so10629611e87.3
+        for <syzbot@lists.linux.dev>; Sun, 19 Jul 2026 02:20:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784451281; x=1785056081; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1784452855; x=1785057655; darn=lists.linux.dev;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=CMaStQtxHA/bzIm2jRoC4ccUi9vRiuMHVhYiN4Z8Yh0=;
-        b=ZTdQw2fDzKX9Sn9rIfLAObsateSlca1olvvwURdlTwDEcLz/451PEW8pGoZ2OHWRtq
-         Px6gL/CyTHGG8YKBdS/YF1kV7WKgkbJS9pelhIRb8/xaDnGAOM/6wR3q+JKkJyTrb2FI
-         Lg80Z5gKATqLbsLNwfNFnhgLeXw71/0GNRNQZx6URhh+dxknK5Ec2SBgghhOBVG6FN6d
-         TfzgDUzY5vqKskOGpZHLt7n5EuUEZRtqeHjaIHSXEq5EOIp+YlQJgRTa4hLYKzGom5PO
-         ppqLLPhzA6pSI+FDrlpgCJ0xAHFbeicxeV0id52LzqP+WLI3flvrtjHquJfnSoSZWGgK
-         ZoUw==
+        bh=C7uDv0a3Sq6g02w6r7XjkyS8y2h10JMwbv91mU+15V4=;
+        b=Jmide8+GIAL2DA+UL2GiH80dBiBlD446VigsgQ8mZisEbyf/jqoyWrMfadkdVhNE3r
+         NRuEyoAlhfvLjnwRH9c2TdT8lm6nVfH+ctaiC66H2lRddhqqUlom+piE5UB7aNNaxcsq
+         HGk61MC6usmJh6mfeaBzeIwqmeqkqIbmrt7Vz8A1tsy3a7BAV5rVIyqQyV8Eoty7p0Kk
+         tVhJfSG2pSCxp3ChVIJbfB99qT2Jr4MQq4wB3FAPNpjIJjPH0sK9kknNZop/vny85pTq
+         SUUaX3DCrp3k/JrAigU6TZJyeCE1b40xrH6J1Oiv0EImtvX24CN0c8xv3HX+cM1Ojtww
+         CWmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784451281; x=1785056081;
+        d=1e100.net; s=20251104; t=1784452855; x=1785057655;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=CMaStQtxHA/bzIm2jRoC4ccUi9vRiuMHVhYiN4Z8Yh0=;
-        b=lXPo30u4rLfRVGZeyjEqwAsvZaTPJpsk/YhwnyoDilYSHKzBI85/RVJ2BiyNJd3TsM
-         dEfLMz3jC8+KKN2DKp5kF2QWl8Kt4OXZXdmyR0ir/MTFC2PbuW+2/bq/MeF6uPrbqS2A
-         h3VF+uOCXGgVvwOeIEkffkVGN6hsSNXSUQhs9rnLIPbGrk6c/SK4w84ejfpzMOtUKzjr
-         VBcIdsuOuY4JeVETQYtoYkeaYfeaybSjXUbKQBVd+UttrJQcNd91dZqqqopV19+COlDp
-         G7NRPJFWbVwkta2p+lKu/IisPJ4NQkm704rVyAz6u/0eFUXipe+WUSujE0vBsd+LvMVy
-         pJWA==
-X-Gm-Message-State: AOJu0Yw80RnB+8QpTMBda7905bZ88ThC9PtkOWRBk/l7+9uh2+Zue9az
-	AB5x/df7oXi/BnDhmRKYpK7GYPY8khX/alk9YQYyszyZ/pUAC1ZRZlI7
-X-Gm-Gg: AfdE7ck0BDh4FeYbkL20BVsp1WF373kJoT2c2kPAjpyHsHONFQb0U1hoWLEIDRIMCe6
-	XPQ2YR6t1M2uFVKkcaShlS10WJa/uW3zug+9QtxY9pAaCsHMo69JUscRhDsuwEoYAuoaDfiMmAW
-	OKFW/odvzoYTYFI+ircRz0k19347qLyAG2VAHnBrMU+1iWZXcDPtAFJAFmsv/rGADrcAbve+0v9
-	u7gtXbpsN0lM0bwSpKi55W+Xmuohw10PzQ1XbIguoD93MQ+IuThLdFD0kRjHZzo8nTbZ7HJyamT
-	w+0MXxLmRVBerMbKVthz3IeQglM2QV6LNIV9ZY5iW4Lx53vz1DZJZLYT5sIE+iBn315Vir/AWlv
-	BY3s1OhuyBcygJ9YjvakifhdQLWzgVfI9IXNFSPUP3Rh95a4C1Flkeu3zIZl9TA3EZj6WuCj2pQ
-	ShsP3gcVqu1WqwfZ8iwt9QX+Ti3TP/5zTE+kK0r5Cd3QeCf9ZmjnZSl/3X0PaVSr6onGC1WTX7k
-	utKBJrqdy7jdLANXe8Cc9jmPourA2EdZZxBmWxAeH/jCO0bkBv6JnnQ4wmWJHzDoqWkjRoSfKqm
-	Rwnjh3s=
-X-Received: by 2002:a17:907:e1ce:10b0:c19:4ea0:f4a3 with SMTP id a640c23a62f3a-c194ea0f712mr142385666b.22.1784451281069;
-        Sun, 19 Jul 2026 01:54:41 -0700 (PDT)
+        bh=C7uDv0a3Sq6g02w6r7XjkyS8y2h10JMwbv91mU+15V4=;
+        b=c0rGmMJq3cVkCo8phL47+rBevodJuDqJoSENhKNNmjDAXceyRVUKEHQ/95DSIy38fp
+         IUSu6ctP4BQ/kEXMDvVPzL7egFEY9VX4RUULTMBmpJaxsjbrBZWWdaBfq/pBCbeOVVb/
+         eJzK70N0ZrQxyE9XzLzcA+sKFyAuZ7ofRn3EHxIB0jeAOdszJW4MFT5MVsjWwUlCxygc
+         Uvy3DJjKYS1OajGpfI7NMPfmvkBmkMzYDOgLEBL+x4LQb99jWmqz+INe5I1qM+9mzoz0
+         KnLIHhqsy5PLPdyZuApVYe2moCa7cVgX9IYp4HtoTDDJfLgu/lSmo1lWtKMzDrCLUB6S
+         pTmg==
+X-Gm-Message-State: AOJu0YwHi4rzc1id0Ok16ClHE/SLiXnyr42XMF5053A3a/TAKj/Zwswp
+	93ZE8R6A/4OvCfUUt5LGXsbPAUXaqUxX0VQnt1V/7Rs5U+DbVlugIukr9szBedwcWKU=
+X-Gm-Gg: AfdE7cnTp4xxOmoihFwhdtNs+s/nyBEjLbucr7y6g/M8oK5CAUM6G1PZiavU9xWQJnv
+	chXGLUxBGOzvRyNHRX9F9xLsIptsPFiNpdSuSm/BMpif1bbQ9hhBZcdLIguuu+fvMjmWmlidXUY
+	rxJeEQRust2cjTop1/bGeQlnOptRI2f6313THz2bSRCkWEcCeLgsjDb3xlXjHcDk1ZIwdRvWPTc
+	HkqSrXkBiyduSnw1Um30M0GclIL746kn/MWunjUEYer/VthULjZmGsGmNld7XX/Kcu3zAbriLSi
+	L1FjV879h37UdM5bH4/AO5DdlfjECuRyYMF/KJMW1mD8C3kxXaRwW6iiSEruqqxzqZfje4MPtBv
+	Ffb6Kz2U+tabDX72WXlpTuZTSRdiT9ELIIsbnkH25zL9cRHK2RygNsmsA33Yw8gNfP0zZfMagDS
+	aGO/WZqMiJropfJcK+UbiKdgOAT2uNwbymZ1/bPxmWQevyNQwOMD9Ix6qA8CrPQDBUT0xus2eVY
+	k1hzmVRBHM3vFPUl9xYQZhtqsklAy2rSsc8iTb/3qais44yBnFLnrAv2osZEUhYkhCuaDSN
+X-Received: by 2002:a05:6512:688c:10b0:5ae:b952:6c with SMTP id 2adb3069b0e04-5b28f858617mr1234056e87.13.1784452855218;
+        Sun, 19 Jul 2026 02:20:55 -0700 (PDT)
 Received: from [192.168.100.51] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c17009adfe7sm315114266b.6.2026.07.19.01.54.40
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b291d8a490sm1654258e87.16.2026.07.19.02.20.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Jul 2026 01:54:40 -0700 (PDT)
-Message-ID: <c18892a5-ac3a-4073-a546-d2ad72da01c6@gmail.com>
-Date: Sun, 19 Jul 2026 10:54:39 +0200
+        Sun, 19 Jul 2026 02:20:54 -0700 (PDT)
+Message-ID: <b5c7b21f-73c6-4400-95d0-0dd7201b2177@gmail.com>
+Date: Sun, 19 Jul 2026 11:20:53 +0200
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -70,569 +69,204 @@ List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v2] ocfs2: fix circular locking dependency in
- ocfs2_init_acl()
+Subject: Re: [PATCH RFC] ipvlan: hold reference to lower device to prevent
+ use-after-free
 To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-References: <50178043-8171-44ae-ac9e-72449ba95928@mail.kernel.org>
+References: <e66f374b-905f-471b-989e-60a3e0505873@mail.kernel.org>
 Content-Language: en-US
 From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-In-Reply-To: <50178043-8171-44ae-ac9e-72449ba95928@mail.kernel.org>
+In-Reply-To: <e66f374b-905f-471b-989e-60a3e0505873@mail.kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Thanks for the v2 update. It fixes the ACL handling problem from v1 and 
-appears to remove the reported lock inversion. Please prepare another 
-revision with the following cleanup and semantic requirements.
+The code change itself looks correct. Please send a revised version that 
+changes only the subject and commit message. Keep the code diff unchanged.
 
-Keep the main locking rule from v2: the parent default ACL must be read 
-and prepared before ocfs2_start_trans(). The new version must not 
-reintroduce any path that acquires the parent ip_xattr_sem while holding 
-j_trans_barrier.
+Use this subject:
 
-Please centralize ACL preparation in fs/ocfs2/acl.c. A small state 
-structure containing the prepared default ACL, prepared access ACL, and 
-resulting mode would make the ownership and cleanup rules clearer. Both 
-ocfs2_mknod() and ocfs2_init_security_and_acl() should use this common 
-preparation path instead of duplicating the ACL lookup and 
-__posix_acl_create() handling.
+ipvlan: keep lower device alive until private destruction
 
-The mode passed to ACL preparation must start from inode->i_mode after 
-mode_strip_sgid() and inode_init_owner() have completed. Do not use the 
-original local mode argument as the starting value. That would lose 
-changes already made by inode initialization, including inherited 
-S_ISGID on new directories, or could restore S_ISGID that 
-mode_strip_sgid() removed.
+The current description incorrectly states that ipvlan does not hold any 
+reference to its lower device. Commit 40b9d1ab63f5 ("ipvlan: hold lower 
+dev to avoid possible use-after-free") added a lower-device reference 
+owned by the shared struct ipvl_port.
 
-ACL preparation should not update inode->i_mode directly. Store the 
-resulting mode in the prepared ACL state, then apply it through 
-ocfs2_acl_set_mode() while using the existing creation transaction. 
-Preserve the old operation order:
+The actual problem is that the last ipvlan_uninit() destroys the shared 
+port and releases that reference while an individual ipvlan netdev can 
+remain alive because RXE still holds a reference to it.
 
-1. Store the default ACL for a directory.
-2. Apply the prepared inode mode.
-3. Store the access ACL when one is required.
+Describe the lower device generically as a lower net_device. Do not 
+assume that it is always a veth device.
 
-Preserve the existing mode-update behavior and error propagation, 
-including the behavior when the calculated mode is unchanged, unless 
-there is a documented reason to change it.
+Replace the full KASAN report with only the relevant call chain:
 
-Keep ocfs2_get_acl_nolock() and ocfs2_acl_set_mode() private to acl.c. 
-Their locking and transaction requirements should not become part of a 
-wider interface. Expose only the higher-level ACL preparation, release, 
-and initialization operations needed by the callers.
+   smc_ib_port_event_work()
+     ib_query_port()
+       rxe_query_port()
+         ib_get_eth_speed()
+           ipvlan_ethtool_get_link_ksettings()
 
-Preserve the __posix_acl_create() result semantics exactly:
+Do not describe priv_destructor as the absolute end of the netdev 
+lifetime. It runs after outstanding references to the ipvlan netdev have 
+drained and before its final private teardown completes.
 
-- A negative result must abort and propagate the error.
-- A zero result means that no access ACL needs to be stored, so release 
-and clear it.
-- A positive result means that the access ACL must be retained and written.
-- A default ACL must only be stored for directories.
-- Symlinks must not have their mode filtered through the umask or ACL path.
+Please use a commit message close to the following:
 
-Keep the accurate xattr reservation introduced by v2. Calculate space 
-and external clusters independently for the prepared default and access 
-ACLs. Do not read the parent ACL again from ocfs2_calc_xattr_init().
+Commit 40b9d1ab63f5 ("ipvlan: hold lower dev to avoid possible
+use-after-free") added a lower-device reference owned by struct ipvl_port.
+The last ipvlan_uninit() destroys that shared port and drops the reference,
+but an individual ipvlan netdev can remain alive after ndo_uninit while RXE
+still holds a reference to it.
 
-Use the same preparation helper in the non-preserve reflink path. Keep 
-security initialization before ACL mode preparation, matching the 
-previous behavior.
+This can happen when a lower net_device, an ipvlan device, and an RXE
+device are stacked. RXE queues asynchronous removal on NETDEV_UNREGISTER,
+so the ipvlan netdev can still have outstanding references while the lower
+device reaches final cleanup in netdev_run_todo(). Once the port reference
+is dropped, ipvlan->phy_dev can point to the released lower net_device.
 
-Remove parameters that become unused after this refactoring. In 
-particular, ocfs2_init_acl() should no longer receive dir or dir_bh if 
-it only consumes prepared ACL state, and ocfs2_calc_xattr_init() should 
-not receive dir_bh if it no longer reads the parent xattr. Also remove 
-headers that are no longer needed after moving current_umask() handling 
-back into acl.c.
+A later port query reaches the stale pointer through:
 
-Please keep the patch focused on this OCFS2 lock-ordering problem. 
-Update the commit message to describe the lock cycle and the 
-preparation-before-transaction solution without including the full 
-lockdep report. Keep the existing Fixes, Reported-by, Closes, Link, 
-recipient, and base information. Do not invent a human Signed-off-by line.
+   smc_ib_port_event_work()
+     ib_query_port()
+       rxe_query_port()
+         ib_get_eth_speed()
+           ipvlan_ethtool_get_link_ksettings()
 
-Before sending the next version, please check at least the following cases:
+The existing code change gives each struct ipvl_dev its own tracked
+reference to phy_dev. It takes the reference at the successful end of
+ipvlan_init() and releases it from ipvlan_dev_free() after outstanding
+references to the ipvlan netdev have drained. This follows the lifetime
+model used by macvlan and 802.1Q VLAN and also covers ipvtap.
 
-- POSIX ACL support disabled.
-- No parent default ACL.
-- Equivalent and non-equivalent access ACLs.
-- A directory with a default ACL.
-- Large default and access ACLs using external xattr storage.
-- A new directory under an S_ISGID parent retains inherited S_ISGID.
-- An unprivileged non-directory does not regain an S_ISGID bit removed 
-by mode_strip_sgid().
-- The non-preserve reflink initialization path.
-- The original lockdep reproducer.
+Keep the existing code diff, Fixes, Reported-by, Closes, Link, recipient,
+and base-commit information unchanged.
 
-Please also build fs/ocfs2/, run checkpatch, and confirm that the 
-reproducer no longer reports the circular locking dependency.
+Please test the patch with the supplied reproducer using KASAN and
+CONFIG_NET_DEV_REFCNT_TRACKER=y.
 
-On 7/15/2026 6:14 PM, syzbot wrote:
-> A lockdep warning indicates a circular locking dependency between
-> `&oi->ip_xattr_sem` and `&journal->j_trans_barrier`.
+On 7/9/2026 3:44 PM, syzbot wrote:
+> The ipvlan driver does not hold a reference to its lower device (phy_dev),
+> allowing the lower device to be freed while the ipvlan device is still
+> alive and being accessed.
 >
-> The deadlock involves two code paths:
-> Path 1 (setxattr): `ocfs2_xattr_set()` acquires `ip_xattr_sem` (write) and
-> then starts a transaction, which acquires `j_trans_barrier` (read).
-> Path 2 (mkdir/mknod): `ocfs2_mknod()` starts a transaction
-> (`j_trans_barrier` read) and then calls `ocfs2_init_acl()`, which attempts
-> to acquire `ip_xattr_sem` (read) on the parent directory to retrieve the
-> default ACL.
+> If a stacked network device configuration is created (e.g., a veth device
+> as the lower device, an ipvlan device on top, and an rxe device on top of
+> ipvlan), the rxe device holds a reference to the ipvlan device. When the
+> veth device is unregistered, the ipvlan driver receives a NETDEV_UNREGISTER
+> event and unregisters the ipvlan device. This triggers a NETDEV_UNREGISTER
+> event for the ipvlan device, which is caught by the rxe driver, queuing
+> asynchronous work to unregister the rxe device and drop its reference to
+> the ipvlan device.
 >
-> Because rw_semaphores are subject to writer priority, a pending writer on
-> `j_trans_barrier` (e.g., the journal commit thread) can cause Path 1 to
-> block, while Path 2 is blocked waiting for Path 1 to release
-> `ip_xattr_sem`.
+> During this process, netdev_run_todo() waits for the refcounts of both veth
+> and ipvlan devices to drop to 1. Since the ipvlan device's refcount is
+> elevated by the pending rxe unregistration, it is kept alive. However,
+> because ipvlan does not hold a reference to its lower veth device, the veth
+> device's refcount drops to 1, and netdev_run_todo() proceeds to free it.
+> This leaves ipvlan->phy_dev as a dangling pointer.
 >
-> ======================================================
-> WARNING: possible circular locking dependency detected
-> syz.0.17/6116 is trying to acquire lock:
-> ffff88811dd5a2e8 (&oi->ip_xattr_sem){++++}-{4:4}, at:
-> ocfs2_init_acl+0x2fd/0x7e0 fs/ocfs2/acl.c:367
+> If an operation (like querying port attributes via ethtool) is performed on
+> the ipvlan device while it is still alive, it can access the freed lower
+> device, triggering a use-after-free:
 >
-> but task is already holding lock:
-> ffff888119b518e0 (&journal->j_trans_barrier){.+.+}-{4:4}, at:
-> ocfs2_start_trans+0x3ab/0x700 fs/ocfs2/journal.c:369
+> BUG: KASAN: slab-use-after-free in netdev_need_ops_lock
+> include/net/netdev_lock.h:30 [inline]
+> BUG: KASAN: slab-use-after-free in netdev_lock_ops
+> include/net/netdev_lock.h:41 [inline]
+> BUG: KASAN: slab-use-after-free in __ethtool_get_link_ksettings+0x230/0x250
+> net/ethtool/ioctl.c:463
+> Read of size 1 at addr ffff888118fece09 by task kworker/0:2/919
 >
-> which lock already depends on the new lock.
+> Call Trace:
+>   <TASK>
+>   netdev_need_ops_lock include/net/netdev_lock.h:30 [inline]
+>   netdev_lock_ops include/net/netdev_lock.h:41 [inline]
+>   __ethtool_get_link_ksettings+0x230/0x250 net/ethtool/ioctl.c:463
+>   __ethtool_get_link_ksettings+0x11f/0x250 net/ethtool/ioctl.c:464
+>   ib_get_eth_speed+0x180/0x7f0 drivers/infiniband/core/verbs.c:2052
+>   rxe_query_port+0x93/0x3d0 drivers/infiniband/sw/rxe/rxe_verbs.c:56
+>   __ib_query_port drivers/infiniband/core/device.c:2129 [inline]
+>   ib_query_port+0x16e/0x830 drivers/infiniband/core/device.c:2161
+>   smc_ib_remember_port_attr net/smc/smc_ib.c:364 [inline]
+>   smc_ib_port_event_work+0x147/0x920 net/smc/smc_ib.c:388
+>   ...
+>   </TASK>
 >
-> Chain exists of:
->    &oi->ip_xattr_sem --> sb_internal#2 --> &journal->j_trans_barrier
+> Fix this by holding a reference to the lower device using a
+> netdevice_tracker in struct ipvl_dev. The reference is acquired in
+> ipvlan_init() and released in a new priv_destructor callback
+> (ipvlan_dev_free). Releasing the reference in priv_destructor guarantees
+> that the lower device is held until the absolute end of the ipvlan device's
+> lifetime, after netdev_run_todo() has finished waiting for the ipvlan
+> device's refcount to drop to 1. This mirrors the behavior of other stacked
+> devices like macvlan and vlan, and safely covers ipvtap devices as well.
 >
->   Possible unsafe locking scenario:
->
->         CPU0                    CPU1
->         ----                    ----
->    rlock(&journal->j_trans_barrier);
->                                 lock(sb_internal#2);
->                                 lock(&journal->j_trans_barrier);
->    rlock(&oi->ip_xattr_sem);
->
->   *** DEADLOCK ***
->
-> The patch fixes the lock ordering by precomputing the ACL state before
-> starting the OCFS2 transaction, while preserving POSIX ACL storage
-> semantics and the existing inode/security initialization order. By reading
-> the parent directory's default ACL and preparing the new inode's ACLs
-> outside the transaction, `ip_xattr_sem` is always acquired before
-> `j_trans_barrier`.
->
-> Update `ocfs2_calc_xattr_init()` and `ocfs2_init_acl()` to use these
-> precomputed ACLs, removing internal `ip_xattr_sem` acquisition and
-> redundant disk reads. In `ocfs2_mknod()` and
-> `ocfs2_init_security_and_acl()`, the umask or default ACL is applied to
-> `inode->i_mode` before the transaction begins. If `__posix_acl_create()`
-> indicates an access ACL is not needed, it is released immediately.
->
-> Fixes: 16c8d569f570 ("ocfs2/acl: use 'ip_xattr_sem' to protect getting extended attribute")
-> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-> Reported-by: syzbot+4007ab5229e732466d9f@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=4007ab5229e732466d9f
-> Link: https://syzkaller.appspot.com/ai_job?id=c2b46419-cb28-4c0c-b757-f315188c1ae8
-> To: "Joel Becker" <jlbec@evilplan.org>
-> To: "Joseph Qi" <joseph.qi@linux.alibaba.com>
-> To: "Mark Fasheh" <mark@fasheh.com>
-> To: <ocfs2-devel@lists.linux.dev>
+> Fixes: 2ad7bf363841 ("ipvlan: Initial check-in of the IPVLAN driver.")
+> Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+5fe14f2ff4ccbace9a26@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=5fe14f2ff4ccbace9a26
+> Link: https://syzkaller.appspot.com/ai_job?id=43c4fc37-40e6-4515-8ae6-40bdb52bb303
+> To: "Andrew Lunn" <andrew+netdev@lunn.ch>
+> To: "David S. Miller" <davem@davemloft.net>
+> To: "Eric Dumazet" <edumazet@google.com>
+> To: "Jakub Kicinski" <kuba@kernel.org>
+> To: <netdev@vger.kernel.org>
+> To: "Paolo Abeni" <pabeni@redhat.com>
+> Cc: "Dmitry Skorodumov" <dskr99@gmail.com>
+> Cc: "Kees Cook" <kees@kernel.org>
 > Cc: <linux-kernel@vger.kernel.org>
+> Cc: "Stanislav Fomichev" <sdf@fomichev.me>
 >
 > ---
-> v2:
-> - Updated ocfs2_calc_xattr_init() to accept precomputed ACLs for more accurate credit and size calculation.
-> - Modified ocfs2_mknod() and ocfs2_init_security_and_acl() to fetch and create ACLs before starting a transaction, resolving the lock ordering issue.
-> - Ensured inode->i_mode is updated correctly during the pre-transaction ACL creation phase.
-> - Added logic to release the access ACL object if it is not required for storage (i.e., matches the file mode).
->
-> v1:
-> https://lore.kernel.org/all/bbc14e84-b364-4f93-90e0-bfe42220b2b1@mail.kernel.org/T/
-> ---
-> diff --git a/fs/ocfs2/acl.c b/fs/ocfs2/acl.c
-> index af1e2cedb..ec4b36004 100644
-> --- a/fs/ocfs2/acl.c
-> +++ b/fs/ocfs2/acl.c
-> @@ -110,9 +110,8 @@ static void *ocfs2_acl_to_xattr(const struct posix_acl *acl, size_t *size)
->   	return ocfs2_acl;
+> diff --git a/drivers/net/ipvlan/ipvlan.h b/drivers/net/ipvlan/ipvlan.h
+> index 80f84fc87..13cdad002 100644
+> --- a/drivers/net/ipvlan/ipvlan.h
+> +++ b/drivers/net/ipvlan/ipvlan.h
+> @@ -64,6 +64,7 @@ struct ipvl_dev {
+>   	struct list_head	pnode;
+>   	struct ipvl_port	*port;
+>   	struct net_device	*phy_dev;
+> +	netdevice_tracker dev_tracker;
+>   	struct list_head	addrs;
+>   	struct ipvl_pcpu_stats	__percpu *pcpu_stats;
+>   	DECLARE_BITMAP(mac_filters, IPVLAN_MAC_FILTER_SIZE);
+> diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
+> index ed46439a9..b1435296a 100644
+> --- a/drivers/net/ipvlan/ipvlan_main.c
+> +++ b/drivers/net/ipvlan/ipvlan_main.c
+> @@ -162,6 +162,9 @@ static int ipvlan_init(struct net_device *dev)
+>   	}
+>   	port = ipvlan_port_get_rtnl(phy_dev);
+>   	port->count += 1;
+> +
+> +	netdev_hold(phy_dev, &ipvlan->dev_tracker, GFP_KERNEL);
+> +
+>   	return 0;
 >   }
 >   
-> -static struct posix_acl *ocfs2_get_acl_nolock(struct inode *inode,
-> -					      int type,
-> -					      struct buffer_head *di_bh)
-> +struct posix_acl *ocfs2_get_acl_nolock(struct inode *inode, int type,
-> +				       struct buffer_head *di_bh)
->   {
->   	int name_index;
->   	char *value = NULL;
-> @@ -156,8 +155,8 @@ static struct posix_acl *ocfs2_get_acl_nolock(struct inode *inode,
->    * will not have di_bh or a journal handle to pass, in which case it
->    * will create it's own.
->    */
-> -static int ocfs2_acl_set_mode(struct inode *inode, struct buffer_head *di_bh,
-> -			      handle_t *handle, umode_t new_mode)
-> +int ocfs2_acl_set_mode(struct inode *inode, struct buffer_head *di_bh,
-> +		       handle_t *handle, umode_t new_mode)
->   {
->   	int ret, commit_handle = 0;
->   	struct ocfs2_dinode *di;
-> @@ -349,63 +348,33 @@ int ocfs2_acl_chmod(struct inode *inode, struct buffer_head *bh)
->    * Initialize the ACLs of a new inode. If parent directory has default ACL,
->    * then clone to new inode. Called from ocfs2_mknod.
->    */
-> -int ocfs2_init_acl(handle_t *handle,
-> -		   struct inode *inode,
-> -		   struct inode *dir,
-> -		   struct buffer_head *di_bh,
-> -		   struct buffer_head *dir_bh,
-> +int ocfs2_init_acl(handle_t *handle, struct inode *inode, struct inode *dir,
-> +		   struct buffer_head *di_bh, struct buffer_head *dir_bh,
->   		   struct ocfs2_alloc_context *meta_ac,
-> -		   struct ocfs2_alloc_context *data_ac)
-> +		   struct ocfs2_alloc_context *data_ac,
-> +		   struct posix_acl *default_acl, struct posix_acl *acl)
->   {
->   	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
-> -	struct posix_acl *acl = NULL;
-> -	int ret = 0, ret2;
-> -	umode_t mode;
-> -
-> -	if (!S_ISLNK(inode->i_mode)) {
-> -		if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-> -			down_read(&OCFS2_I(dir)->ip_xattr_sem);
-> -			acl = ocfs2_get_acl_nolock(dir, ACL_TYPE_DEFAULT,
-> -						   dir_bh);
-> -			up_read(&OCFS2_I(dir)->ip_xattr_sem);
-> -			if (IS_ERR(acl))
-> -				return PTR_ERR(acl);
-> -		}
-> -		if (!acl) {
-> -			mode = inode->i_mode & ~current_umask();
-> -			ret = ocfs2_acl_set_mode(inode, di_bh, handle, mode);
-> -			if (ret) {
-> -				mlog_errno(ret);
-> -				goto cleanup;
-> -			}
-> -		}
-> -	}
-> -	if ((osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) && acl) {
-> -		if (S_ISDIR(inode->i_mode)) {
-> +	int ret = 0;
-> +
-> +	if (S_ISLNK(inode->i_mode))
-> +		return 0;
-> +
-> +	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-> +		if (S_ISDIR(inode->i_mode) && default_acl) {
->   			ret = ocfs2_set_acl(handle, inode, di_bh,
-> -					    ACL_TYPE_DEFAULT, acl,
-> +					    ACL_TYPE_DEFAULT, default_acl,
->   					    meta_ac, data_ac);
->   			if (ret)
-> -				goto cleanup;
-> -		}
-> -		mode = inode->i_mode;
-> -		ret = __posix_acl_create(&acl, GFP_NOFS, &mode);
-> -		if (ret < 0)
-> -			return ret;
-> -
-> -		ret2 = ocfs2_acl_set_mode(inode, di_bh, handle, mode);
-> -		if (ret2) {
-> -			mlog_errno(ret2);
-> -			ret = ret2;
-> -			goto cleanup;
-> +				return ret;
->   		}
-> -		if (ret > 0) {
-> +
-> +		if (acl) {
->   			ret = ocfs2_set_acl(handle, inode,
->   					    di_bh, ACL_TYPE_ACCESS,
->   					    acl, meta_ac, data_ac);
->   		}
->   	}
-> -cleanup:
-> -	posix_acl_release(acl);
-> +
->   	return ret;
+> @@ -673,6 +676,13 @@ void ipvlan_link_delete(struct net_device *dev, struct list_head *head)
 >   }
-> diff --git a/fs/ocfs2/acl.h b/fs/ocfs2/acl.h
-> index 667c6f03f..786b4d32b 100644
-> --- a/fs/ocfs2/acl.h
-> +++ b/fs/ocfs2/acl.h
-> @@ -23,6 +23,11 @@ extern int ocfs2_acl_chmod(struct inode *, struct buffer_head *);
->   extern int ocfs2_init_acl(handle_t *, struct inode *, struct inode *,
->   			  struct buffer_head *, struct buffer_head *,
->   			  struct ocfs2_alloc_context *,
-> -			  struct ocfs2_alloc_context *);
-> +			  struct ocfs2_alloc_context *, struct posix_acl *,
-> +			  struct posix_acl *);
-> +struct posix_acl *ocfs2_get_acl_nolock(struct inode *inode, int type,
-> +				       struct buffer_head *di_bh);
-> +int ocfs2_acl_set_mode(struct inode *inode, struct buffer_head *di_bh,
-> +		       handle_t *handle, umode_t new_mode);
+>   EXPORT_SYMBOL_GPL(ipvlan_link_delete);
 >   
->   #endif /* OCFS2_ACL_H */
-> diff --git a/fs/ocfs2/namei.c b/fs/ocfs2/namei.c
-> index 1277666c7..30b945ba9 100644
-> --- a/fs/ocfs2/namei.c
-> +++ b/fs/ocfs2/namei.c
-> @@ -27,6 +27,7 @@
->   #include <linux/highmem.h>
->   #include <linux/quotaops.h>
->   #include <linux/iversion.h>
-> +#include <linux/fs_struct.h>
->   
->   #include <cluster/masklog.h>
->   
-> @@ -256,6 +257,7 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
->   	sigset_t oldset;
->   	int did_block_signals = 0;
->   	struct ocfs2_dentry_lock *dl = NULL;
-> +	struct posix_acl *default_acl = NULL, *acl = NULL;
->   
->   	trace_ocfs2_mknod(dir, dentry, dentry->d_name.len, dentry->d_name.name,
->   			  (unsigned long long)OCFS2_I(dir)->ip_blkno,
-> @@ -330,10 +332,41 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
->   		}
->   	}
->   
-> +	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-> +		down_read(&OCFS2_I(dir)->ip_xattr_sem);
-> +		default_acl = ocfs2_get_acl_nolock(dir, ACL_TYPE_DEFAULT,
-> +						   parent_fe_bh);
-> +		up_read(&OCFS2_I(dir)->ip_xattr_sem);
-> +		if (IS_ERR(default_acl)) {
-> +			status = PTR_ERR(default_acl);
-> +			default_acl = NULL;
-> +			goto leave;
-> +		}
-> +		if (default_acl) {
-> +			acl = posix_acl_dup(default_acl);
-> +			if (!acl) {
-> +				status = -ENOMEM;
-> +				goto leave;
-> +			}
-> +			status = __posix_acl_create(&acl, GFP_NOFS,
-> +						    &inode->i_mode);
-> +			if (status < 0)
-> +				goto leave;
-> +			if (status == 0) {
-> +				posix_acl_release(acl);
-> +				acl = NULL;
-> +			}
-> +		} else {
-> +			inode->i_mode &= ~current_umask();
-> +		}
-> +	} else {
-> +		inode->i_mode &= ~current_umask();
-> +	}
+> +static void ipvlan_dev_free(struct net_device *dev)
+> +{
+> +	struct ipvl_dev *ipvlan = netdev_priv(dev);
 > +
->   	/* calculate meta data/clusters for setting security and acl xattr */
-> -	status = ocfs2_calc_xattr_init(dir, parent_fe_bh, mode,
-> -				       &si, &want_clusters,
-> -				       &xattr_credits, &want_meta);
-> +	status = ocfs2_calc_xattr_init(dir, parent_fe_bh, mode, &si,
-> +				       &want_clusters, &xattr_credits,
-> +				       &want_meta, default_acl, acl);
->   	if (status < 0) {
->   		mlog_errno(status);
->   		goto leave;
-> @@ -412,7 +445,7 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
->   	}
->   
->   	status = ocfs2_init_acl(handle, inode, dir, new_fe_bh, parent_fe_bh,
-> -			 meta_ac, data_ac);
-> +				meta_ac, data_ac, default_acl, acl);
->   
->   	if (status < 0) {
->   		mlog_errno(status);
-> @@ -477,6 +510,9 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
->   	brelse(parent_fe_bh);
->   	kfree(si.value);
->   
-> +	posix_acl_release(default_acl);
-> +	posix_acl_release(acl);
+> +	netdev_put(ipvlan->phy_dev, &ipvlan->dev_tracker);
+> +}
 > +
->   	ocfs2_free_dir_lookup_result(&lookup);
->   
->   	if (inode_ac)
-> diff --git a/fs/ocfs2/xattr.c b/fs/ocfs2/xattr.c
-> index fcddd3c13..3b7d2aea7 100644
-> --- a/fs/ocfs2/xattr.c
-> +++ b/fs/ocfs2/xattr.c
-> @@ -26,6 +26,7 @@
->   #include <linux/module.h>
->   #include <linux/string.h>
->   #include <linux/security.h>
-> +#include <linux/fs_struct.h>
->   
->   #include <cluster/masklog.h>
->   
-> @@ -611,13 +612,11 @@ int ocfs2_calc_security_init(struct inode *dir,
->   	return ret;
->   }
->   
-> -int ocfs2_calc_xattr_init(struct inode *dir,
-> -			  struct buffer_head *dir_bh,
-> -			  umode_t mode,
-> -			  struct ocfs2_security_xattr_info *si,
-> -			  int *want_clusters,
-> -			  int *xattr_credits,
-> -			  int *want_meta)
-> +int ocfs2_calc_xattr_init(struct inode *dir, struct buffer_head *dir_bh,
-> +			  umode_t mode, struct ocfs2_security_xattr_info *si,
-> +			  int *want_clusters, int *xattr_credits,
-> +			  int *want_meta, struct posix_acl *default_acl,
-> +			  struct posix_acl *acl)
+>   void ipvlan_link_setup(struct net_device *dev)
 >   {
->   	int ret = 0;
->   	struct ocfs2_super *osb = OCFS2_SB(dir->i_sb);
-> @@ -628,19 +627,14 @@ int ocfs2_calc_xattr_init(struct inode *dir,
->   						     si->value_len);
->   
->   	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-> -		down_read(&OCFS2_I(dir)->ip_xattr_sem);
-> -		acl_len = ocfs2_xattr_get_nolock(dir, dir_bh,
-> -					OCFS2_XATTR_INDEX_POSIX_ACL_DEFAULT,
-> -					"", NULL, 0);
-> -		up_read(&OCFS2_I(dir)->ip_xattr_sem);
-> -		if (acl_len > 0) {
-> -			a_size = ocfs2_xattr_entry_real_size(0, acl_len);
-> -			if (S_ISDIR(mode))
-> -				a_size <<= 1;
-> -		} else if (acl_len != 0 && acl_len != -ENODATA) {
-> -			ret = acl_len;
-> -			mlog_errno(ret);
-> -			return ret;
-> +		if (default_acl && S_ISDIR(mode)) {
-> +			acl_len = default_acl->a_count *
-> +				  sizeof(struct ocfs2_acl_entry);
-> +			a_size += ocfs2_xattr_entry_real_size(0, acl_len);
-> +		}
-> +		if (acl) {
-> +			acl_len = acl->a_count * sizeof(struct ocfs2_acl_entry);
-> +			a_size += ocfs2_xattr_entry_real_size(0, acl_len);
->   		}
->   	}
->   
-> @@ -683,14 +677,28 @@ int ocfs2_calc_xattr_init(struct inode *dir,
->   							   new_clusters);
->   		*want_clusters += new_clusters;
->   	}
-> -	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL &&
-> -	    acl_len > OCFS2_XATTR_INLINE_SIZE) {
-> -		/* for directory, it has DEFAULT and ACCESS two types of acls */
-> -		new_clusters = (S_ISDIR(mode) ? 2 : 1) *
-> -				ocfs2_clusters_for_bytes(dir->i_sb, acl_len);
-> -		*xattr_credits += ocfs2_clusters_to_blocks(dir->i_sb,
-> -							   new_clusters);
-> -		*want_clusters += new_clusters;
-> +	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-> +		if (default_acl && S_ISDIR(mode)) {
-> +			acl_len = default_acl->a_count *
-> +				  sizeof(struct ocfs2_acl_entry);
-> +			if (acl_len > OCFS2_XATTR_INLINE_SIZE) {
-> +				new_clusters = ocfs2_clusters_for_bytes(
-> +					dir->i_sb, acl_len);
-> +				*xattr_credits += ocfs2_clusters_to_blocks(
-> +					dir->i_sb, new_clusters);
-> +				*want_clusters += new_clusters;
-> +			}
-> +		}
-> +		if (acl) {
-> +			acl_len = acl->a_count * sizeof(struct ocfs2_acl_entry);
-> +			if (acl_len > OCFS2_XATTR_INLINE_SIZE) {
-> +				new_clusters = ocfs2_clusters_for_bytes(
-> +					dir->i_sb, acl_len);
-> +				*xattr_credits += ocfs2_clusters_to_blocks(
-> +					dir->i_sb, new_clusters);
-> +				*want_clusters += new_clusters;
-> +			}
-> +		}
->   	}
->   
->   	return ret;
-> @@ -7257,6 +7265,8 @@ int ocfs2_init_security_and_acl(struct inode *dir,
->   {
->   	int ret = 0;
->   	struct buffer_head *dir_bh = NULL;
-> +	struct posix_acl *default_acl = NULL, *acl = NULL;
-> +	umode_t mode = inode->i_mode;
->   
->   	ret = ocfs2_init_security_get(inode, dir, qstr, NULL);
->   	if (ret) {
-> @@ -7269,12 +7279,55 @@ int ocfs2_init_security_and_acl(struct inode *dir,
->   		mlog_errno(ret);
->   		goto leave;
->   	}
-> -	ret = ocfs2_init_acl(NULL, inode, dir, NULL, dir_bh, NULL, NULL);
-> +
-> +	if (OCFS2_SB(dir->i_sb)->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-> +		down_read(&OCFS2_I(dir)->ip_xattr_sem);
-> +		default_acl =
-> +			ocfs2_get_acl_nolock(dir, ACL_TYPE_DEFAULT, dir_bh);
-> +		up_read(&OCFS2_I(dir)->ip_xattr_sem);
-> +		if (IS_ERR(default_acl)) {
-> +			ret = PTR_ERR(default_acl);
-> +			default_acl = NULL;
-> +			goto unlock;
-> +		}
-> +		if (default_acl) {
-> +			acl = posix_acl_dup(default_acl);
-> +			if (!acl) {
-> +				ret = -ENOMEM;
-> +				goto unlock;
-> +			}
-> +			ret = __posix_acl_create(&acl, GFP_NOFS, &mode);
-> +			if (ret < 0)
-> +				goto unlock;
-> +			if (ret == 0) {
-> +				posix_acl_release(acl);
-> +				acl = NULL;
-> +			}
-> +		} else {
-> +			mode &= ~current_umask();
-> +		}
-> +	} else {
-> +		mode &= ~current_umask();
-> +	}
-> +
-> +	if (mode != inode->i_mode) {
-> +		ret = ocfs2_acl_set_mode(inode, NULL, NULL, mode);
-> +		if (ret) {
-> +			mlog_errno(ret);
-> +			goto unlock;
-> +		}
-> +	}
-> +
-> +	ret = ocfs2_init_acl(NULL, inode, dir, NULL, dir_bh, NULL, NULL,
-> +			     default_acl, acl);
->   	if (ret)
->   		mlog_errno(ret);
->   
-> +unlock:
->   	ocfs2_inode_unlock(dir, 0);
->   	brelse(dir_bh);
-> +	posix_acl_release(default_acl);
-> +	posix_acl_release(acl);
->   leave:
->   	return ret;
+>   	ether_setup(dev);
+> @@ -682,6 +692,7 @@ void ipvlan_link_setup(struct net_device *dev)
+>   	dev->priv_flags |= IFF_UNICAST_FLT | IFF_NO_QUEUE;
+>   	dev->netdev_ops = &ipvlan_netdev_ops;
+>   	dev->needs_free_netdev = true;
+> +	dev->priv_destructor = ipvlan_dev_free;
+>   	dev->header_ops = &ipvlan_header_ops;
+>   	dev->ethtool_ops = &ipvlan_ethtool_ops;
 >   }
-> diff --git a/fs/ocfs2/xattr.h b/fs/ocfs2/xattr.h
-> index 65e9aa743..34f8904de 100644
-> --- a/fs/ocfs2/xattr.h
-> +++ b/fs/ocfs2/xattr.h
-> @@ -55,9 +55,9 @@ int ocfs2_init_security_set(handle_t *, struct inode *,
->   int ocfs2_calc_security_init(struct inode *,
->   			     struct ocfs2_security_xattr_info *,
->   			     int *, int *, struct ocfs2_alloc_context **);
-> -int ocfs2_calc_xattr_init(struct inode *, struct buffer_head *,
-> -			  umode_t, struct ocfs2_security_xattr_info *,
-> -			  int *, int *, int *);
-> +int ocfs2_calc_xattr_init(struct inode *, struct buffer_head *, umode_t,
-> +			  struct ocfs2_security_xattr_info *, int *, int *,
-> +			  int *, struct posix_acl *, struct posix_acl *);
->   
->   /*
->    * xattrs can live inside an inode, as part of an external xattr block,
 >
 >
-> base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
+> base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
