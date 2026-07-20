@@ -1,328 +1,174 @@
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D81FD3D88E5
-	for <syzbot@lists.linux.dev>; Mon, 20 Jul 2026 12:41:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01F70330D2A
+	for <syzbot@lists.linux.dev>; Mon, 20 Jul 2026 13:26:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784551291; cv=none; b=mQmw7RDt5weWgrpHKo3jHt2nocZPrLgc8Y7JUMJBDPM+RhKZhipuZNpWLhFOSc2TI6hDpLIAv75S+OX3vYF4rRLEFLQLP7/EpPZPO+2mtE7aPO2n0m6XSLWSsgeuxoey95ghZ4S+RkwWiZAbx9e5Z6Bt6v/zuYiuqp9gkQZCrH8=
+	t=1784553977; cv=none; b=COnyExVZthrjNdHhgAECWG9WR0OOfqp+Gfe434+n6ZK2yTMkk895fIT2fSF0/8aT/jHhLtgwUk2ubP0axr6oD1bXNcOhLkAxmBAVG1oBJQu5jjlYz9N0IvK54VJYLaefeutUznM5D5IZmpSJ6oBZNkov7wIz2OerJwkJODnRgC0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784551291; c=relaxed/simple;
-	bh=HFN+HeemPob2UZnIYj9j0sIVDenScztJ1lLtPmiNowA=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Content-Type; b=n83gfOt3qMWZcBvzrmc6xlFJfvW8cH3Bk7OyDmH72ZIo46E8Q/wr4FaKxJWhWKXMyN/3lgqqCtrrmcLJdto+WPa0uhKYCxgJYo6Pq1VoSEUwqmwGpqMvZES6KiV26QhNIysD3p3uPNjUbaFSjESKgSr0ersE0nSrXjMuc/UzsBk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--glider.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=I6457TpT; arc=none smtp.client-ip=209.85.128.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--glider.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="I6457TpT"
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-495517d39fbso10084195e9.2
-        for <syzbot@lists.linux.dev>; Mon, 20 Jul 2026 05:41:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1784551288; x=1785156088; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:to:from:subject:message-id
-         :mime-version:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=tLQp/CUq2IWxMACNptpVHnHh555NoaejCoYZMJqM1BA=;
-        b=I6457TpTPpmMPckypln5tq1M7kGUCRaDvbQS9uCChSAYm8g0uEvPRUMds0R7I5sU4O
-         tuGBgiFyXVKzjH9uzcO657Nf4cOj1pKVG26UMxdBbaxt8XBcNkkmDodJFLLb7XyKESSf
-         6JUbXvK8yy+4KFLyEj7IAUi+ZyRuwoA7JKMOaR289u+6ebGzPohZ63qTGIIcoo1d6pVm
-         QZ6CmVTvirj7lbjJyznqoeJLnaDwkvZUILrK/NOw3QBvU0bmYzkv0jeMkJQtmY8FaUz4
-         kCQBYZsLgb6qcl7LQewiebWbdwecRnQP0Gn2v3/LWind7IlY+1/DkLhDGXNKUgM1mlFZ
-         uAQw==
+	s=arc-20240116; t=1784553977; c=relaxed/simple;
+	bh=iYDUh+iot2J5lMvL3Z9p3IDK0h3aBh0B6jJq7pviRiQ=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=C1Ovu5wc7Zi2k+7rHHtFNGiAUtkqaflq4tE5urHn6I032i9j3PYNfUnhN2JDYhNe0eO63TyaE8eZfNEuJt2BM2gEjmlhPU/aNrWvOCh/4Ss9ZUWBwjYOtltJfa8OEV2RbeEIOwQ1lO2itqWH1/BJnAgCClBS/kdv4tWV+tk6UZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4959c49e054so9678022b6e.3
+        for <syzbot@lists.linux.dev>; Mon, 20 Jul 2026 06:26:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784551288; x=1785156088;
-        h=content-transfer-encoding:content-type:to:from:subject:message-id
-         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=tLQp/CUq2IWxMACNptpVHnHh555NoaejCoYZMJqM1BA=;
-        b=WpzNNPswtmTePK8oD+qP22e7vdNgVre83rh2wlC0Wvors8RG905vrvEO0j1A/4pidv
-         MjbvYrtzHgzVMoU2Mh9aFwjyw9jHJxbYyMRA7mU/h3Elz0FQV6nGhROusVxEJc2lXjSD
-         0w3iNWjzhMtkK37ogqHoPT+tUSVYvB5mmEwotaSmh5J3XPFlqI3X7f1C0MIRzdNoQoRt
-         vB7G9dsxOtvUzxi50zFQDEMo23fOeTXGV0LDjony0UmZuoz5FcjB+X3jtew4v33Yl6g/
-         9pZNMk6bnIeQ4wC+Gxzkdd06uLFbKM1annOQCGiAGDTpFeI8+vlr7oA5YWARNrPWjww/
-         v/aQ==
-X-Gm-Message-State: AOJu0YzyZxbVJigOLuSkdIJlSk8YayzS+w2TLIqFVpCDNVm6jnMCk8Gx
-	tXCxtY18B5jpNeT1bx2uXoj16urwJus6jvAkruaMiNJ1ziXgwCtXO07Osdc4XHWEr2zqQVDANK5
-	VQ4GRRH7BbYpMgQVi9HTBakhY2EJqXIUes6z02xBJMRF60+hk65qiKkVpvCtg3K0g6HGxAQl9Eh
-	d8+IdqQgQxkJPrcLxf6yivsCC92XGQTAYIj82M
-X-Received: from wmby19.prod.google.com ([2002:a05:600c:c053:b0:495:6060:d6f4])
- (user=glider job=prod-delivery.src-stubby-dispatcher) by 2002:a05:600c:474e:b0:493:c773:c3f4
- with SMTP id 5b1f17b1804b1-4954a403112mr171763545e9.22.1784551287518; Mon, 20
- Jul 2026 05:41:27 -0700 (PDT)
-Date: Mon, 20 Jul 2026 12:41:26 +0000
+        d=1e100.net; s=20251104; t=1784553975; x=1785158775;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=xJgk26XtEqpGZilgePSKIb09EzFfDMCXVHEW/6VznrM=;
+        b=JbDZHcQrLVscbd8bNY87MQRxA73gPi1uA286bTpg01wPuiy508A8HdWGuehrWXR78j
+         9nfyNGKzLfqzxFt71s6sp/VUxy3IFj9nSJD6MCLlAUsVxbWksYqagBpwPAf6LGDTwXVC
+         A78brh1YhnpVJ0rXFXj1Pmvscaen3/0AJocj8ynyLtoAL7kMiCd5LmYQSTGhAXWhMDHD
+         gmJqxKW9pmHb7lb5Nb+tCk3tyZKfTh8PS/YhpmBF3TonSmJNz+8Zufxyj52nvIjJgo7+
+         ZCO+j5LofWraeiF/ABfXKwkPKuXNc49wJXZdaPlyiM7WOi5m40NNK0GLCp6mLdqCjj7x
+         El1g==
+X-Gm-Message-State: AOJu0YyW8plAZBKDWqA72JiMSPzBfUZ7pYcWtM6Y88kt1sm1udw3IP4M
+	nMuHjbTNBWuI8t01xc+DM+8DxUtZ2MkoXnHuLQuMdUBlz8J0jR8NOa8Nuy6JZ7TO3A2rkAXKH+r
+	W/gUX9YreeoOKwU2ky0Jcqsiv0D5+y6NF8/ubcC3egnNF9qerG33XDdRmqdk=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.55.0.229.g6434b31f56-goog
-Message-ID: <20260720124126.1977559-1-glider@google.com>
-Subject: [PATCH v7] kcov: fix data corruption and race conditions on
- PREEMPT_RT by moving saved remote state to task_struct (v7)
-From: Alexander Potapenko <glider@google.com>
-To: syzbot@lists.linux.dev
+MIME-Version: 1.0
+X-Received: by 2002:a05:6808:13cb:b0:486:5466:e41f with SMTP id
+ 5614622812f47-4a4d03aeea4mr6581240b6e.38.1784553974855; Mon, 20 Jul 2026
+ 06:26:14 -0700 (PDT)
+Date: Mon, 20 Jul 2026 06:26:14 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a5e21f6.42649fcc.6186.0082.GAE@google.com>
+Subject: [moderation/CI] Re: sctp: socket: refactor sctp_skb_recv_datagram to
+ use ERR_PTR
+From: syzbot ci <syzbot+ci1ca46141c422550d@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-syzbot is reporting KCOV state corruption on PREEMPT_RT kernels, for the te=
-mporary storage used for saving/restoring remote KCOV state is currently al=
-located as the per-CPU area.
+syzbot ci has tested the following series
 
-On PREEMPT_RT kernels, softirq handlers run as preemptible task threads (e.=
-g., ksoftirqd). If a softirq context preempts a task running a remote KCOV =
-session, it safely saves the task's state into the per-CPU area.
-However, if that softirq thread is subsequently preempted by a higher-prior=
-ity softirq thread on the same CPU, the second softirq will overwrite the s=
-ame per-CPU area, permanently destroying the original task's KCOV state.
+[v4] sctp: socket: refactor sctp_skb_recv_datagram to use ERR_PTR
+https://lore.kernel.org/all/20260720082145.1072547-1-l1138897701@163.com
+* [PATCH net v4] sctp: socket: refactor sctp_skb_recv_datagram to use ERR_PTR
 
-Fix this data corruption by moving the temporary storage from the per-CPU a=
-rea to the per-thread area. Since each softirq thread now owns its own task=
- context, nested softirq preemption no longer causes data overwrites.
+and found the following issue:
+general protection fault in sctp_recvmsg
 
-Note that while the temporary storage is now on a per-thread basis, the per=
--CPU kcov_percpu_data.lock must be retained, for we need to ensure that kco=
-v_remote_start() and kcov_remote_stop() operate atomically without racing a=
-gainst asynchronous interrupts that manipulate the current task's KCOV stat=
-e.
+Full report is available here:
+https://ci.syzbot.org/series/f979ded9-9743-486d-b911-69a904c9f4ad
 
-Fixes: 5ff3b30ab57d ("kcov: collect coverage from interrupts")
+***
 
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+general protection fault in sctp_recvmsg
+
+tree:      net
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
+base:      e13caf1c26587434f0b768193100440939c0fb91
+arch:      amd64
+compiler:  Debian clang version 22.1.6 (++20260514074242+fc4aad7b5db3-1~exp1~20260514074407.73), Debian LLD 22.1.6
+config:    https://ci.syzbot.org/builds/e4b39daf-f862-498e-8aeb-c22b5a168551/config
+syz repro: https://ci.syzbot.org/findings/1893a3b4-56e4-49d0-9865-4ff919f027b3/syz_repro
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc000000000e: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000070-0x0000000000000077]
+CPU: 0 UID: 0 PID: 5830 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:sctp_recvmsg+0x28d/0xd60 net/sctp/socket.c:2135
+Code: ff 72 0d e8 35 6a d6 f6 41 89 ee e9 da 06 00 00 4c 89 7c 24 08 48 8d 7d 70 48 89 f8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <0f> b6 04 08 84 c0 0f 85 2f 08 00 00 4c 63 7d 70 4d 39 fe 4d 0f 43
+RSP: 0018:ffffc90003a8f838 EFLAGS: 00010202
+RAX: 000000000000000e RBX: ffff888115ad1c80 RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000070
+RBP: 0000000000000000 R08: 1ffff92000751ef4 R09: 1ffff11022b5a460
+R10: dffffc0000000000 R11: fffffbfff206639f R12: ffff888115ad22f0
+R13: ffffc90003a8fd00 R14: 0000000000000000 R15: 0000000000000300
+FS:  00007facf6b766c0(0000) GS:ffff88818dc17000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00002000000055c0 CR3: 000000010a812000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ sock_recvmsg_nosec net/socket.c:1128 [inline]
+ sock_recvmsg+0x166/0x1e0 net/socket.c:1148
+ ____sys_recvmsg+0x1e6/0x4a0 net/socket.c:2904
+ ___sys_recvmsg+0x213/0x5a0 net/socket.c:2946
+ do_recvmmsg+0x31a/0x7f0 net/socket.c:3041
+ __sys_recvmmsg net/socket.c:3115 [inline]
+ __do_sys_recvmmsg net/socket.c:3138 [inline]
+ __se_sys_recvmmsg net/socket.c:3131 [inline]
+ __x64_sys_recvmmsg+0x198/0x250 net/socket.c:3131
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7facf5d9ce59
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007facf6b76028 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
+RAX: ffffffffffffffda RBX: 00007facf6015fa0 RCX: 00007facf5d9ce59
+RDX: 000000000400023c RSI: 00002000000055c0 RDI: 0000000000000004
+RBP: 00007facf5e32e6f R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000300 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007facf6016038 R14: 00007facf6015fa0 R15: 00007ffcc05d60d8
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:sctp_recvmsg+0x28d/0xd60 net/sctp/socket.c:2135
+Code: ff 72 0d e8 35 6a d6 f6 41 89 ee e9 da 06 00 00 4c 89 7c 24 08 48 8d 7d 70 48 89 f8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <0f> b6 04 08 84 c0 0f 85 2f 08 00 00 4c 63 7d 70 4d 39 fe 4d 0f 43
+RSP: 0018:ffffc90003a8f838 EFLAGS: 00010202
+RAX: 000000000000000e RBX: ffff888115ad1c80 RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000070
+RBP: 0000000000000000 R08: 1ffff92000751ef4 R09: 1ffff11022b5a460
+R10: dffffc0000000000 R11: fffffbfff206639f R12: ffff888115ad22f0
+R13: ffffc90003a8fd00 R14: 0000000000000000 R15: 0000000000000300
+FS:  00007facf6b766c0(0000) GS:ffff88818dc17000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00002000000055c0 CR3: 000000010a812000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	ff 72 0d             	push   0xd(%rdx)
+   3:	e8 35 6a d6 f6       	call   0xf6d66a3d
+   8:	41 89 ee             	mov    %ebp,%r14d
+   b:	e9 da 06 00 00       	jmp    0x6ea
+  10:	4c 89 7c 24 08       	mov    %r15,0x8(%rsp)
+  15:	48 8d 7d 70          	lea    0x70(%rbp),%rdi
+  19:	48 89 f8             	mov    %rdi,%rax
+  1c:	48 c1 e8 03          	shr    $0x3,%rax
+  20:	48 b9 00 00 00 00 00 	movabs $0xdffffc0000000000,%rcx
+  27:	fc ff df
+* 2a:	0f b6 04 08          	movzbl (%rax,%rcx,1),%eax <-- trapping instruction
+  2e:	84 c0                	test   %al,%al
+  30:	0f 85 2f 08 00 00    	jne    0x865
+  36:	4c 63 7d 70          	movslq 0x70(%rbp),%r15
+  3a:	4d 39 fe             	cmp    %r15,%r14
+  3d:	4d                   	rex.WRB
+  3e:	0f                   	.byte 0xf
+  3f:	43                   	rex.XB
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
 ---
- include/linux/sched.h |  8 ++++
- kernel/kcov.c         | 90 ++++++++++++++++++++++---------------------
- lib/Kconfig.debug     |  5 ++-
- 3 files changed, 58 insertions(+), 45 deletions(-)
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 373bcc0598d1..7a53c15cecb5 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1543,6 +1543,14 @@ struct task_struct {
-=20
- 	/* Collect coverage from softirq context: */
- 	unsigned int			kcov_softirq;
-+
-+	/* Temporary storage for preempting remote coverage collection: */
-+	unsigned int			kcov_saved_mode;
-+	unsigned int			kcov_saved_size;
-+	void				*kcov_saved_area;
-+	struct kcov			*kcov_saved_kcov;
-+	int				kcov_saved_sequence;
-+
- #endif
-=20
- #ifdef CONFIG_MEMCG_V1
-diff --git a/kernel/kcov.c b/kernel/kcov.c
-index 1df373fb562b..a7514303eff3 100644
---- a/kernel/kcov.c
-+++ b/kernel/kcov.c
-@@ -86,17 +86,12 @@ struct kcov_remote {
-=20
- static DEFINE_SPINLOCK(kcov_remote_lock);
- static DEFINE_HASHTABLE(kcov_remote_map, 4);
--static struct list_head kcov_remote_areas =3D LIST_HEAD_INIT(kcov_remote_a=
-reas);
-+static struct list_head kcov_remote_areas[2] =3D {
-+	LIST_HEAD_INIT(kcov_remote_areas[0]), LIST_HEAD_INIT(kcov_remote_areas[1]=
-)
-+};
-=20
- struct kcov_percpu_data {
--	void			*irq_area;
- 	local_lock_t		lock;
--
--	unsigned int		saved_mode;
--	unsigned int		saved_size;
--	void			*saved_area;
--	struct kcov		*saved_kcov;
--	int			saved_sequence;
- };
-=20
- static DEFINE_PER_CPU(struct kcov_percpu_data, kcov_percpu_data) =3D {
-@@ -132,12 +127,13 @@ static struct kcov_remote *kcov_remote_add(struct kco=
-v *kcov, u64 handle)
- }
-=20
- /* Must be called with kcov_remote_lock locked. */
--static struct kcov_remote_area *kcov_remote_area_get(unsigned int size)
-+static struct kcov_remote_area *kcov_remote_area_get(unsigned int size, bo=
-ol irq)
- {
- 	struct kcov_remote_area *area;
- 	struct list_head *pos;
-+	struct list_head *list =3D &kcov_remote_areas[irq];
-=20
--	list_for_each(pos, &kcov_remote_areas) {
-+	list_for_each(pos, list) {
- 		area =3D list_entry(pos, struct kcov_remote_area, list);
- 		if (area->size =3D=3D size) {
- 			list_del(&area->list);
-@@ -149,11 +145,11 @@ static struct kcov_remote_area *kcov_remote_area_get(=
-unsigned int size)
-=20
- /* Must be called with kcov_remote_lock locked. */
- static void kcov_remote_area_put(struct kcov_remote_area *area,
--					unsigned int size)
-+				 unsigned int size, bool irq)
- {
- 	INIT_LIST_HEAD(&area->list);
- 	area->size =3D size;
--	list_add(&area->list, &kcov_remote_areas);
-+	list_add(&area->list, &kcov_remote_areas[irq]);
- 	/*
- 	 * KMSAN doesn't instrument this file, so it may not know area->list
- 	 * is initialized. Unpoison it explicitly to avoid reports in
-@@ -390,6 +386,12 @@ void kcov_task_init(struct task_struct *t)
- 	kcov_task_reset(t);
- 	t->kcov_remote =3D NULL;
- 	t->kcov_handle =3D current->kcov_handle;
-+	t->kcov_softirq =3D 0;
-+	t->kcov_saved_mode =3D 0;
-+	t->kcov_saved_size =3D 0;
-+	t->kcov_saved_area =3D NULL;
-+	t->kcov_saved_kcov =3D NULL;
-+	t->kcov_saved_sequence =3D 0;
- }
-=20
- static void kcov_reset(struct kcov *kcov)
-@@ -836,17 +838,16 @@ static inline bool kcov_mode_enabled(unsigned int mod=
-e)
- static void kcov_remote_softirq_start(struct task_struct *t)
- 	__must_hold(&kcov_percpu_data.lock)
- {
--	struct kcov_percpu_data *data =3D this_cpu_ptr(&kcov_percpu_data);
- 	unsigned int mode;
-=20
- 	mode =3D READ_ONCE(t->kcov_mode);
- 	barrier();
- 	if (kcov_mode_enabled(mode)) {
--		data->saved_mode =3D mode;
--		data->saved_size =3D t->kcov_size;
--		data->saved_area =3D t->kcov_area;
--		data->saved_sequence =3D t->kcov_sequence;
--		data->saved_kcov =3D t->kcov;
-+		t->kcov_saved_mode =3D mode;
-+		t->kcov_saved_size =3D t->kcov_size;
-+		t->kcov_saved_area =3D t->kcov_area;
-+		t->kcov_saved_sequence =3D t->kcov_sequence;
-+		t->kcov_saved_kcov =3D t->kcov;
- 		kcov_stop(t);
- 	}
- }
-@@ -854,17 +855,15 @@ static void kcov_remote_softirq_start(struct task_str=
-uct *t)
- static void kcov_remote_softirq_stop(struct task_struct *t)
- 	__must_hold(&kcov_percpu_data.lock)
- {
--	struct kcov_percpu_data *data =3D this_cpu_ptr(&kcov_percpu_data);
--
--	if (data->saved_kcov) {
--		kcov_start(t, data->saved_kcov, data->saved_size,
--				data->saved_area, data->saved_mode,
--				data->saved_sequence);
--		data->saved_mode =3D 0;
--		data->saved_size =3D 0;
--		data->saved_area =3D NULL;
--		data->saved_sequence =3D 0;
--		data->saved_kcov =3D NULL;
-+	if (t->kcov_saved_kcov) {
-+		kcov_start(t, t->kcov_saved_kcov, t->kcov_saved_size,
-+			   t->kcov_saved_area, t->kcov_saved_mode,
-+			   t->kcov_saved_sequence);
-+		t->kcov_saved_mode =3D 0;
-+		t->kcov_saved_size =3D 0;
-+		t->kcov_saved_area =3D NULL;
-+		t->kcov_saved_sequence =3D 0;
-+		t->kcov_saved_kcov =3D NULL;
- 	}
- }
-=20
-@@ -927,17 +926,17 @@ void kcov_remote_start(u64 handle)
- 	sequence =3D kcov->sequence;
- 	if (in_task()) {
- 		size =3D kcov->remote_size;
--		area =3D kcov_remote_area_get(size);
-+		area =3D kcov_remote_area_get(size, false);
- 	} else {
- 		size =3D CONFIG_KCOV_IRQ_AREA_SIZE;
--		area =3D this_cpu_ptr(&kcov_percpu_data)->irq_area;
-+		area =3D kcov_remote_area_get(size, true);
- 	}
- 	spin_unlock(&kcov_remote_lock);
-=20
--	/* Can only happen when in_task(). */
-+	/* Allocate new buffer if we can sleep. */
- 	if (!area) {
- 		local_unlock_irqrestore(&kcov_percpu_data.lock, flags);
--		area =3D vmalloc(size * sizeof(unsigned long));
-+		area =3D in_task() ? vmalloc(size * sizeof(unsigned long)) : NULL;
- 		if (!area) {
- 			kcov_put(kcov);
- 			return;
-@@ -1079,11 +1078,9 @@ void kcov_remote_stop(void)
- 		kcov_move_area(kcov->mode, kcov->area, kcov->size, area);
- 	spin_unlock(&kcov->lock);
-=20
--	if (in_task()) {
--		spin_lock(&kcov_remote_lock);
--		kcov_remote_area_put(area, size);
--		spin_unlock(&kcov_remote_lock);
--	}
-+	spin_lock(&kcov_remote_lock);
-+	kcov_remote_area_put(area, size, !in_task());
-+	spin_unlock(&kcov_remote_lock);
-=20
- 	local_unlock_irqrestore(&kcov_percpu_data.lock, flags);
-=20
-@@ -1129,14 +1126,21 @@ static void __init selftest(void)
-=20
- static int __init kcov_init(void)
- {
--	int cpu;
-+	int cpu =3D num_possible_cpus();
-+
-+#ifdef CONFIG_PREEMPT_RT
-+	/* Allocate some extra buffers in order to prepare for softirq preemption=
-. */
-+	cpu =3D cpu >=3D 4 ? cpu * 2 : cpu + 4;
-+#endif
-+	while (cpu--) {
-+		void *area =3D vmalloc(CONFIG_KCOV_IRQ_AREA_SIZE * sizeof(unsigned long)=
-);
-+		unsigned long flags;
-=20
--	for_each_possible_cpu(cpu) {
--		void *area =3D vmalloc_node(CONFIG_KCOV_IRQ_AREA_SIZE *
--				sizeof(unsigned long), cpu_to_node(cpu));
- 		if (!area)
- 			return -ENOMEM;
--		per_cpu_ptr(&kcov_percpu_data, cpu)->irq_area =3D area;
-+		spin_lock_irqsave(&kcov_remote_lock, flags);
-+		kcov_remote_area_put(area, CONFIG_KCOV_IRQ_AREA_SIZE, true);
-+		spin_unlock_irqrestore(&kcov_remote_lock, flags);
- 	}
-=20
- 	/*
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 1244dcac2294..12786379bf1d 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -2247,10 +2247,11 @@ config KCOV_INSTRUMENT_ALL
- config KCOV_IRQ_AREA_SIZE
- 	hex "Size of interrupt coverage collection area in words"
- 	depends on KCOV
-+	range 0x80 0x1000000
- 	default 0x40000
- 	help
--	  KCOV uses preallocated per-cpu areas to collect coverage from
--	  soft interrupts. This specifies the size of those areas in the
-+	  KCOV uses preallocated areas to collect coverage from soft
-+	  interrupts. This specifies the size of those areas in the
- 	  number of unsigned long words.
-=20
- config KCOV_SELFTEST
---=20
-2.55.0.229.g6434b31f56-goog
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[davem@davemloft.net edumazet@google.com horms@kernel.org kuba@kernel.org l1138897701@163.com linux-kernel@vger.kernel.org linux-sctp@vger.kernel.org lucien.xin@gmail.com marcelo.leitner@gmail.com netdev@vger.kernel.org pabeni@redhat.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
 
