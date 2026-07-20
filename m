@@ -1,188 +1,82 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 681D03B14DE
-	for <syzbot@lists.linux.dev>; Mon, 20 Jul 2026 20:04:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66A623CA4B2
+	for <syzbot@lists.linux.dev>; Mon, 20 Jul 2026 20:42:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784577854; cv=none; b=j6ytzTtPCiZyLfa5VkmUhV40mIMxSGtKdhaXFCg6VqQMX5vJgFFgZhlMi5efqgOR8NuG3jNQ2Yd4UcDBYXLNcq7AXLC5DE9vzYGsBa4QuxBiofM6BaE8bKDi/mDZ00sihurU9XeavBxFYeemCgnjHV9kKZl8InQns3v7t68CjTY=
+	t=1784580156; cv=none; b=KuBbV/hmr05L+fhzSmwiKZ8lpzGgbkhp2YwegRDR6L/NVUUKeALj8Mejk+zfQwxCsck5AmF+0Adw/4y63mLcR4FAT/p5o3sOWU2cMeSIaQqKZKsrk9cEbvsXXaul7tHJSndcSwUJ9KRJOEjzO54pQ9jH25YvJVNXDmkRuyMaoiE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784577854; c=relaxed/simple;
-	bh=3xIf5OtXH0c+1ECytBOHWteKLDeFGuMd1iYMo81V330=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=flwry/MAdApstK5SyDkIyCfC8bDeLXbGqUZweJ9hc//mFv9cHyTIFtCAYUOpBWBMwFfCv6tsAiNVXuAD3FNFuRiArqFwJV9SQd296X0L0FkaRF4SAxu+c/XaMsC/M4Tc6Y0VCA0rMVAeTyZKr8sKI7AxH3YL5MQ6xu5Yp21suqY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LtrE8tZ7; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LtrE8tZ7"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id B3FB01F000E9;
-	Mon, 20 Jul 2026 20:04:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784577851;
-	bh=C9/8k3/G48j2hjS5OnbqTQRSqXnzGU4a+f0dxenKdKs=;
-	h=From:To:Cc:Subject:Date;
-	b=LtrE8tZ7QD4BwCscW0FrU2506fI5eHwwhIQBlSUrvC18vVZqtaX+6KYOOLLfSncUG
-	 k3XhEf70bRBDwGi48cKRCl57Hbn2x4IPS6ehmIRY2ilhwS3ABb+davFf8GQVrRVUQa
-	 ihzc8ZlumDX9vaLIb/QLVzx7NLB3iyU5yEBByvhz3hKT7+hhQUbVKvj4oFhyUZd8hp
-	 gqYkkRPujywUrUy/R0/lCKDpMnervAR1a8XlBAQAWJMN2eZ3CoG4HTD2mtBRsJWAlB
-	 s79/klhoXNxV/eZv1pI4Ps27hlkY8l0L2EaaTkYx5RKkBQHHFs9lojBVOkxvLliExJ
-	 5F+zZAkjTYyHw==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] nbd: skip queue limits update for size-only reconfigure
-Message-ID: <514764a5-5acd-4e5d-a8eb-f40c403e7514@mail.kernel.org>
+	s=arc-20240116; t=1784580156; c=relaxed/simple;
+	bh=Hfk34aVYnf04DDmtPzjpCH7eeHHmyr4fetVFg/i2yu4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=KgbSp8IDGpDZ0+iQoUoGc8SQI1zKhQsYxa5O/8LsRABR/Mj+q6Tvj+gXmvjRGY0m4Bax2WnujVFo0PwopD63m/oAO+dJeVgwIQ8xGOTkChZXoSasqQ9nLec0nXLsY83D9azi+PksMfwEvtiCTM30RFOdHLAM8rX3r7miuo63r4w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7ead32f5c6aso6539797a34.1
+        for <syzbot@lists.linux.dev>; Mon, 20 Jul 2026 13:42:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784580153; x=1785184953;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=hv0islo9ugQyN6tOYPweVYNIFxX7v6O71cHJffvdVlE=;
+        b=celbUlqB5mBrlwzaS3fPImDeK+jURrGFpuNhZTinYHLX9ZpxMIFtpaaWtrmanZF6ZN
+         q8nRl7z51wjvGX1lALyXj907ZVxdLDAwuardqhj6tuAq18FoNNHAfVhZVr98BbRt+BNV
+         wC+HrGmDynVqPWdcwx/VWie6cfYC4PV1HcHbL/POzo3A+iu1i+go32GrT8tBocG0zVbW
+         fHxb0bdpNbFihNd3nMWEs6/PuovfpBFdw03wvhV13LtxZlxYAF1rlRsnG4aepFLhQsOZ
+         KZ0M3JmjUomub/70zwzJVwCB3/oRSJ5SSPiwSjTryL2NuzD6QbWj+G96DhJAMO79AV9L
+         OoFA==
+X-Gm-Message-State: AOJu0Ywqr/63m0zPpZ4n0/NEKw2itD+MV4mqjjuYSZxp4n15CBFsT4vu
+	HLGne8dvcYgP11peGk5cJhqvVKMpb5uM1PkWIIlkhb8i2PI2kCQh99qoLrVSXgfL8h5unVHIYDK
+	yFf+hSvkYGuG+sRbKQb83X/aYUfMyItXLTaCkq//SZ2WK4rsRknmsXEdoRN4=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Mon, 20 Jul 2026 20:04:11 +0000 (UTC)
+X-Received: by 2002:a05:6808:2393:b0:4a4:856a:c622 with SMTP id
+ 5614622812f47-4a4d0324cf1mr9409540b6e.20.1784580152856; Mon, 20 Jul 2026
+ 13:42:32 -0700 (PDT)
+Date: Mon, 20 Jul 2026 13:42:32 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a5e8838.42649fcc.6186.0087.GAE@google.com>
+Subject: [moderation/CI] Re: e2fsck: take flock(LOCK_EX) on whole-disk device
+ during filesystem check
+From: syzbot ci <syzbot+ci06d7dff9312e470f@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-Commit 242a49e5c878 ("nbd: fix queue freeze vs limits lock order")
-correctly added queue freezing for live updates of real queue limits.
-However, nbd_set_size() is also used for capacity-only generic netlink
-updates, so the freeze is unnecessarily broad for the reported request.
+syzbot ci has tested the following series
 
-When an NBD server becomes unresponsive, it leaves I/O in flight. An
-unnecessary queue freeze during a size-only reconfigure will wait forever
-for these in-flight I/Os to complete while the global genl_mutex is held,
-leading to a system-wide deadlock.
+[v1] e2fsck: take flock(LOCK_EX) on whole-disk device during filesystem check
+https://lore.kernel.org/all/20260720143246.4141501-1-naraghavan@linux.microsoft.com
+* [PATCH] e2fsck: take flock(LOCK_EX) on whole-disk device during filesystem check
 
-A size-only reconfigure can update config->bytesize and disk capacity
-directly because the effective block size and all other queue limits stay
-unchanged.
+and found no issues.
 
-This patch introduces nbd_size_set() to handle size-only updates directly
-without freezing the queue or committing queue limits. Startup and actual
-block-size changes continue to use the existing frozen limits update via
-nbd_set_size().
+Full report is available here:
+https://ci.syzbot.org/series/ffb3b978-7737-4c7a-b4aa-2f2d85cd91f3
 
-INFO: task nbd-client:6285 blocked for more than 143 seconds.
-Call Trace:
- <TASK>
- blk_mq_freeze_queue_wait+0x101/0x180 block/blk-mq.c:191
- queue_limits_commit_update_frozen+0x55/0xd0 block/blk-settings.c:590
- nbd_set_size+0x454/0x680 drivers/block/nbd.c:374
- nbd_genl_reconfigure+0x7e9/0x1e80 drivers/block/nbd.c:2373
- genl_rcv_msg+0x614/0x7a0 net/netlink/genetlink.c:1209
- </TASK>
+***
 
-INFO: task generic-netlink:6030 blocked for more than 143 seconds.
-Call Trace:
- <TASK>
- __mutex_lock+0x7c5/0x1590 kernel/locking/mutex.c:820
- genl_rcv_msg+0x10b/0x7a0 net/netlink/genetlink.c:1208
- </TASK>
-
-Fixes: 242a49e5c878 ("nbd: freeze the queue for queue limits updates")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot <syzbot+f272bbfbf8498ddadea5@syzkaller.appspotmail.com>
-Closes: https://syzkaller.appspot.com/bug?extid=f272bbfbf8498ddadea5
-Link: https://syzkaller.appspot.com/ai_job?id=e5538deb-f4ac-4b3b-a22a-b47c828fc99e
-To: "Jens Axboe" <axboe@kernel.dk>
-To: "Josef Bacik" <josef@toxicpanda.com>
-To: <linux-block@vger.kernel.org>
-To: <nbd@other.debian.org>
-To: "Christoph Hellwig" <hch@lst.de>
-Cc: <linux-kernel@vger.kernel.org>
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v2:
-- Replaced the approach of using parallel netlink ops and custom timeouts with skipping queue limits updates for size-only reconfigurations.
-- Introduced nbd_size_set() and nbd_size_update() to update device capacity directly without freezing the queue when the block size does not change.
-- Retained queue freezing only for actual block-size changes.
-- Added decrement of nbd_total_devices in nbd_dev_remove().
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v1:
-https://lore.kernel.org/all/69ff9a21-60be-4e97-bc8f-a59e739fd982@mail.kernel.org/T/
----
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index fe63f3c55..2302b8b40 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -277,6 +277,7 @@ static void nbd_dev_remove(struct nbd_device *nbd)
- 	mutex_unlock(&nbd_index_mutex);
- 	destroy_workqueue(nbd->recv_workq);
- 	put_disk(disk);
-+	nbd_total_devices--;
- }
- 
- static void nbd_dev_remove_work(struct work_struct *work)
-@@ -331,6 +332,27 @@ static void nbd_mark_nsock_dead(struct nbd_device *nbd, struct nbd_sock *nsock,
- 	nsock->sent = 0;
- }
- 
-+static void nbd_size_update(struct nbd_device *nbd)
-+{
-+	struct nbd_config *config = nbd->config;
-+
-+	if (max_part)
-+		set_bit(GD_NEED_PART_SCAN, &nbd->disk->state);
-+	if (!set_capacity_and_notify(nbd->disk, config->bytesize >> 9))
-+		kobject_uevent(&nbd_to_dev(nbd)->kobj, KOBJ_CHANGE);
-+}
-+
-+static int nbd_size_set(struct nbd_device *nbd, loff_t bytesize)
-+{
-+	if (bytesize < 0)
-+		return -EINVAL;
-+
-+	nbd->config->bytesize = bytesize;
-+	if (nbd->pid)
-+		nbd_size_update(nbd);
-+	return 0;
-+}
-+
- static int nbd_set_size(struct nbd_device *nbd, loff_t bytesize, loff_t blksize)
- {
- 	struct queue_limits lim;
-@@ -375,10 +397,7 @@ static int nbd_set_size(struct nbd_device *nbd, loff_t bytesize, loff_t blksize)
- 	if (error)
- 		return error;
- 
--	if (max_part)
--		set_bit(GD_NEED_PART_SCAN, &nbd->disk->state);
--	if (!set_capacity_and_notify(nbd->disk, bytesize >> 9))
--		kobject_uevent(&nbd_to_dev(nbd)->kobj, KOBJ_CHANGE);
-+	nbd_size_update(nbd);
- 	return 0;
- }
- 
-@@ -2062,11 +2081,19 @@ static int nbd_genl_size_set(struct genl_info *info, struct nbd_device *nbd)
- 	if (info->attrs[NBD_ATTR_SIZE_BYTES])
- 		bytes = nla_get_u64(info->attrs[NBD_ATTR_SIZE_BYTES]);
- 
--	if (info->attrs[NBD_ATTR_BLOCK_SIZE_BYTES])
-+	if (info->attrs[NBD_ATTR_BLOCK_SIZE_BYTES]) {
- 		bsize = nla_get_u64(info->attrs[NBD_ATTR_BLOCK_SIZE_BYTES]);
-+		if (!bsize)
-+			bsize = 1u << NBD_DEF_BLKSIZE_BITS;
-+		if (blk_validate_block_size(bsize))
-+			return -EINVAL;
-+	}
- 
--	if (bytes != config->bytesize || bsize != nbd_blksize(config))
--		return nbd_set_size(nbd, bytes, bsize);
-+	if (bytes != config->bytesize || bsize != nbd_blksize(config)) {
-+		if (bsize != nbd_blksize(config))
-+			return nbd_set_size(nbd, bytes, bsize);
-+		return nbd_size_set(nbd, bytes);
-+	}
- 	return 0;
- }
- 
+The email will later be sent to:
+[linux-ext4@vger.kernel.org naraghavan@linux.microsoft.com srivatsa@csail.mit.edu tytso@mit.edu]
 
+If the report looks fine to you, reply with:
+#syz upstream
 
-base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+If the report is a false positive, reply with
+#syz invalid
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
