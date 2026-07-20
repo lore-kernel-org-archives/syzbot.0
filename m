@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93DAC442118
-	for <syzbot@lists.linux.dev>; Mon, 20 Jul 2026 17:34:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE4273AFB11
+	for <syzbot@lists.linux.dev>; Mon, 20 Jul 2026 18:12:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784568864; cv=none; b=Wd7vZ4Td22q8jY60cnf+wQHcfEosL+0+nQaWUsfnwy8WWVGZSTDH3Njmz1HsgG5Z9cYV4svJouSODfs61CVWB7Shc4utLsxrZMozst2zXpfpSP0vZH2nSi9SetAnDtV2eG+76xUw9acFHOP8Yft/Fe1zEovjMC3Tf4Q2mGSiiRM=
+	t=1784571133; cv=none; b=mGKB9Byl74o80hcOa0UVuQNdt9HfHqDJYVSqeOpX4/N81Qs4f84qWV8Gdj8X5Ywqz7ApbvE9nG44oM7D1/LFEfMBO3AaqohdwUOzGhGZoxcyOwi/TnEiGaJKuj8eddFmdJDUaPe7GfdVqcqj40GK/KFCp9oqYgEkE3UzAcjXXB8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784568864; c=relaxed/simple;
-	bh=dynD7zh5z0KhMf4yHg7fE2Kb8NwjI8XEg0+HYRQPReE=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=palQhumVoEP+SBrEZyEnz0lCsujbN1eUXKP2arU4zc3WBg6PFdBn+5ylZ3c/rU0SqMlsVMvcaMabBYu81nUaWZ5oJYqRRtePpZ4dt7Ywb60Bs6LMwMIMD9ubKNHw6u6dWWOMyFZPjaQYeVGIPQrAcBLgL2v8kLRqufGXF/Du81Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IDMUFA1H; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784571133; c=relaxed/simple;
+	bh=6JRSidN9vY0k5rSDOm7IQFOEf746qTHFPmcU02VT3fw=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=NuWAIecPfMtOeNBxWfYo0CRoDyEAOrwiR1da4uhYBI+1+LLSSP6rlj/jCKIPByy05Yn6dpc0TGDyppHc2ixlYm52MZWjjWJ7VtkOPf6NlLwnFq02PSyM9WH65g8e9RARMABdBz4uI3bRYfHqOQcT3wAFyKltytAi9cEnbk1rOOc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gfoyS7uC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IDMUFA1H"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7F5651F000E9;
-	Mon, 20 Jul 2026 17:34:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gfoyS7uC"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 784641F000E9;
+	Mon, 20 Jul 2026 18:12:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784568851;
-	bh=O+cOtdo55je+rLmqUF2tTDT8jWLOBPRL5VI+kBHco5k=;
+	s=k20260515; t=1784571131;
+	bh=sAE1Qzsndpm1yBbOH3cKNmq5NFlCU58Ea7M3gJDdzhs=;
 	h=From:To:Cc:Subject:Date;
-	b=IDMUFA1HP46TrIyeKvMfDNQjVOTnlnkJpO5+k+B12IHBwVR6ez5RLmSNsMDaCyiHx
-	 vUfh45xpe6ytglttpcADHAi9Qb8AS7Gzr5Qwfmv1QUIgMe1MaBU/4uC1QwNkpCFMx/
-	 STsjcHV2HEpKVsJ8LlBrllwSzXMzvFg90ssoBKTrCz3g6mLot2mtGimv3/oDe/Qy0w
-	 NM7qbo36aLIPfUlSIg9jZri97uqNNxS1wV1vymJcST/7qWaj/OHZC5xUbZqLMsqJrw
-	 3K9sZnDwnYct+e54IbeSJKaMdoGFJ8FF5ZSMmDyGE9CcUvKK/ujl1ygz7yJNbaGnLD
-	 dcU3p2tVr9X/g==
+	b=gfoyS7uCu4wUbeqUOKf/uPfrc8+JqXML5upOnUdD1m4etDbrW10e5QzDfYlM5tW2V
+	 atwA17bi3C8r2hYKDI6iEJ9LXmsGYEtd9LsU0855EunrvKAuOqBuPZk+GkEyhKjpYY
+	 x5sxqjWx3HbDk3cfBrMmpc0JTgaWrEmC3qpg2iICUj/o5wUSt73RG6HH9x9ep/eEI9
+	 od/qvs6fLa4/+M3dZrxzY5aCvwu4dv5CZPJdIw/ax8y1AMTHKeXWGiYqm4dIoVpIYU
+	 j2JOVsDGZdBUwEU6eJnmE75DAcsLZUYwyhbzRYwTPQJV6O91TNgsScrGc8s0BcBkad
+	 pw8YmiCkuF4cA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v4] ocfs2: fix circular locking dependency in ocfs2_init_acl()
-Message-ID: <b2e72251-ea1a-458d-961e-7b7e99950e26@mail.kernel.org>
+Cc: kusaram@devineni.in, syzbot@lists.linux.dev
+Subject: [PATCH RFC v3] fuse: abort connection on /dev/fuse flush to prevent deadlock
+Message-ID: <40d9021a-6a93-43a1-97b0-6ec2f9cbabc6@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,453 +38,236 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Mon, 20 Jul 2026 17:34:11 +0000 (UTC)
+Date: Mon, 20 Jul 2026 18:12:11 +0000 (UTC)
 
-A lockdep warning indicates a circular locking dependency between
-`&oi->ip_xattr_sem` and `&journal->j_trans_barrier`.
+A single-threaded FUSE daemon can deadlock if it mounts a filesystem and
+opens a file on it. When the process exits or calls close_range(), the
+kernel closes file descriptors in ascending numerical order.
 
-The deadlock involves two code paths: Path 1 (setxattr) where
-`ocfs2_xattr_set()` acquires `ip_xattr_sem` (write) and then starts a
-transaction, which acquires `j_trans_barrier` (read); and Path 2
-(mkdir/mknod) where `ocfs2_mknod()` starts a transaction (`j_trans_barrier`
-read) and then calls `ocfs2_init_acl()`, which attempts to acquire
-`ip_xattr_sem` (read) on the parent directory to retrieve the default ACL.
+If the /dev/fuse file descriptor (e.g., fd 5) is closed first, filp_close()
+decrements the file reference count but defers the actual release (fput) to
+task work. As a result, the FUSE connection remains active.
 
-Because rw_semaphores are subject to writer priority, a pending writer on
-`j_trans_barrier` (e.g., the journal commit thread) can cause Path 1 to
-block, while Path 2 is blocked waiting for Path 1 to release
-`ip_xattr_sem`.
+Next, when the FUSE file descriptor (e.g., fd 6) is closed, filp_close()
+calls fuse_flush(), which sends a synchronous FUSE_FLUSH request to the
+daemon. Since the daemon is the same thread that is currently blocked in
+the close() syscall, it cannot process the request. The FUSE_FLUSH request
+uses args.force = true, making the wait uninterruptible. The thread hangs
+forever, eventually triggering a hung task panic:
 
-The patch fixes the lock ordering by precomputing the ACL state before
-starting the OCFS2 transaction, while preserving POSIX ACL storage
-semantics and the existing inode/security initialization order. By reading
-the parent directory's default ACL and preparing the new inode's ACLs
-outside the transaction, `ip_xattr_sem` is always acquired before
-`j_trans_barrier`.
+Call Trace:
+ <TASK>
+ __schedule+0x17d9/0x56c0 kernel/sched/core.c:7234
+ schedule+0x164/0x2b0 kernel/sched/core.c:7326
+ request_wait_answer fs/fuse/dev.c:743 [inline]
+ __fuse_request_send fs/fuse/dev.c:757 [inline]
+ fuse_chan_send+0x1065/0x1ab0 fs/fuse/dev.c:833
+ fuse_simple_request fs/fuse/fuse_i.h:1012 [inline]
+ fuse_flush+0x66e/0x8b0 fs/fuse/file.c:504
+ filp_flush+0xbd/0x190 fs/open.c:1471
+ filp_close+0x1d/0x40 fs/open.c:1484
+ __range_close fs/file.c:793 [inline]
+ __do_sys_close_range fs/file.c:854 [inline]
+ __se_sys_close_range+0x3d3/0x900 fs/file.c:818
+ do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
 
-We introduce `struct ocfs2_acl_state` to encapsulate the prepared ACL
-state, along with `ocfs2_acl_init_prepare()` and `ocfs2_acl_init_release()`
-helpers to avoid code duplication between `ocfs2_mknod()` and
-`ocfs2_init_security_and_acl()`. `ocfs2_calc_xattr_init()` and
-`ocfs2_init_acl()` are updated to use this precomputed state, removing
-internal `ip_xattr_sem` acquisition and redundant disk reads.
+To fix this, implement a .flush method for /dev/fuse (fuse_dev_operations).
+The .flush method is called synchronously by filp_close() during the
+close() syscall, bypassing the fput delay.
 
-Fixes: 16c8d569f570 ("ocfs2/acl: use 'ip_xattr_sem' to protect getting extended attribute")
+In fuse_dev_flush(), if this is the final close of the file descriptor
+(file_count(file) <= 1), we mark the device as closing. Since multiple
+cloned /dev/fuse devices can exist for the same connection, we track the
+closing state of each device under the channel lock. If all devices
+associated with the channel are closing, we proactively abort the FUSE
+connection. By aborting the connection synchronously in .flush, any
+subsequent fuse_flush() calls on FUSE files will immediately fail with
+-ENOTCONN instead of blocking indefinitely, avoiding the deadlock.
+
+To handle the race where a /dev/fuse file descriptor is closed before it is
+fully installed into a connection (i.e., fud->chan is still NULL), we use
+cmpxchg() to atomically transition fud->chan from NULL to
+FUSE_DEV_CHAN_DISCONNECTED. This prevents a concurrent fuse_dev_install()
+from succeeding on a device that is already being closed.
+
+Note that CUSE (Character Device in User Space) also shares
+fuse_dev_operations and therefore inherits this new .flush callback, which
+is safe and consistent with its lifecycle.
+
+Fixes: 4a9d4b024a31 ("switch fput to task_work_add")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+4007ab5229e732466d9f@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=4007ab5229e732466d9f
-Link: https://syzkaller.appspot.com/ai_job?id=1241036a-ad93-4dc6-8823-45a6f15e1dd8
-To: "Joel Becker" <jlbec@evilplan.org>
-To: "Joseph Qi" <joseph.qi@linux.alibaba.com>
-To: "Mark Fasheh" <mark@fasheh.com>
-To: <ocfs2-devel@lists.linux.dev>
+Reported-by: syzbot+0dbb0d6fda088e78a4d8@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=0dbb0d6fda088e78a4d8
+Link: https://syzkaller.appspot.com/ai_job?id=ea95192d-3fa6-40f6-a70f-f147aaa37d22
+To: <fuse-devel@lists.linux.dev>
+To: "Miklos Szeredi" <miklos@szeredi.hu>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-v4:
-- Initialize `ocfs2_acl_state` structures to `{ 0 }` to ensure safe cleanup.
-- Fix memory leaks in `ocfs2_acl_init_prepare()` error paths.
-- Ensure `ocfs2_acl_init_release()` is always called in `ocfs2_init_security_and_acl()`.
-- Reset pointers to `NULL` in `ocfs2_acl_init_release()` after releasing them.
-- Add parameter names to `ocfs2_calc_xattr_init()` prototype in `xattr.h`.
-
 v3:
-- Introduced `struct ocfs2_acl_state` to encapsulate the prepared ACL state.
-- Added `ocfs2_acl_init_prepare()` and `ocfs2_acl_init_release()` helpers to avoid code duplication between `ocfs2_mknod()` and `ocfs2_init_security_and_acl()`.
-- Updated `ocfs2_calc_xattr_init()` and `ocfs2_init_acl()` to accept the new `ocfs2_acl_state` structure.
-https://lore.kernel.org/all/857bb6cb-547c-48fb-ae38-b9ffff129432@mail.kernel.org/T/
+- Added fuse_dev_all_closing() helper to check if all devices on a channel are closing.
+- Updated fuse_dev_release() to abort the connection if all remaining devices are closing.
+- Fixed the file reference count check in fuse_dev_flush() to check for file_count(file) != 1 instead of file_count(file) > 1.
+- Updated the comment in fs/fuse/fuse_dev_i.h to clarify the lifecycle of fud->chan and when it is set to FUSE_DEV_CHAN_DISCONNECTED.
 
 v2:
-- Updated ocfs2_calc_xattr_init() to accept precomputed ACLs for more accurate credit and size calculation.
-- Modified ocfs2_mknod() and ocfs2_init_security_and_acl() to fetch and create ACLs before starting a transaction, resolving the lock ordering issue.
-- Ensured inode->i_mode is updated correctly during the pre-transaction ACL creation phase.
-- Added logic to release the access ACL object if it is not required for storage (i.e., matches the file mode).
-https://lore.kernel.org/all/50178043-8171-44ae-ac9e-72449ba95928@mail.kernel.org/T/
+- Added `closing` flag to `struct fuse_dev` to track the closing state of each device.
+- Updated `fuse_dev_flush()` to check if all associated devices are closing, properly handling cloned devices.
+- Used `cmpxchg()` in `fuse_dev_flush()` to handle the race where a device is closed before being fully installed.
+- Updated `fuse_dev_release()` to handle `FUSE_DEV_CHAN_DISCONNECTED` safely.
+https://lore.kernel.org/all/3e4a3361-9e1b-4f46-8033-f85ada100a79@mail.kernel.org/T/
 
 v1:
-https://lore.kernel.org/all/bbc14e84-b364-4f93-90e0-bfe42220b2b1@mail.kernel.org/T/
+https://lore.kernel.org/all/bedbc009-8806-4913-9a03-1b25b6d33729@mail.kernel.org/T/
 ---
-diff --git a/fs/ocfs2/acl.c b/fs/ocfs2/acl.c
-index af1e2cedb..090ec60fb 100644
---- a/fs/ocfs2/acl.c
-+++ b/fs/ocfs2/acl.c
-@@ -110,8 +110,7 @@ static void *ocfs2_acl_to_xattr(const struct posix_acl *acl, size_t *size)
- 	return ocfs2_acl;
+diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
+index 5763a7cd3..7cf541873 100644
+--- a/fs/fuse/dev.c
++++ b/fs/fuse/dev.c
+@@ -2211,17 +2211,30 @@ void fuse_chan_wait_aborted(struct fuse_chan *fch)
+ 	fuse_uring_wait_stopped_queues(fch);
  }
  
--static struct posix_acl *ocfs2_get_acl_nolock(struct inode *inode,
--					      int type,
-+static struct posix_acl *ocfs2_get_acl_nolock(struct inode *inode, int type,
- 					      struct buffer_head *di_bh)
- {
- 	int name_index;
-@@ -349,63 +348,105 @@ int ocfs2_acl_chmod(struct inode *inode, struct buffer_head *bh)
-  * Initialize the ACLs of a new inode. If parent directory has default ACL,
-  * then clone to new inode. Called from ocfs2_mknod.
-  */
--int ocfs2_init_acl(handle_t *handle,
--		   struct inode *inode,
--		   struct inode *dir,
--		   struct buffer_head *di_bh,
--		   struct buffer_head *dir_bh,
--		   struct ocfs2_alloc_context *meta_ac,
--		   struct ocfs2_alloc_context *data_ac)
-+void ocfs2_acl_init_release(struct ocfs2_acl_state *state)
++/* fch->lock must be held */
++static bool fuse_dev_all_closing(struct fuse_chan *fch)
 +{
-+	posix_acl_release(state->default_acl);
-+	posix_acl_release(state->acl);
-+	state->default_acl = NULL;
-+	state->acl = NULL;
++	struct fuse_dev *pos;
++
++	list_for_each_entry(pos, &fch->devices, entry) {
++		if (!pos->closing)
++			return false;
++	}
++	return true;
 +}
 +
-+int ocfs2_acl_init_prepare(struct inode *inode, struct inode *dir,
-+			   struct buffer_head *dir_bh,
-+			   struct ocfs2_acl_state *state)
+ int fuse_dev_release(struct inode *inode, struct file *file)
  {
- 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
--	struct posix_acl *acl = NULL;
--	int ret = 0, ret2;
--	umode_t mode;
--
--	if (!S_ISLNK(inode->i_mode)) {
--		if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
--			down_read(&OCFS2_I(dir)->ip_xattr_sem);
--			acl = ocfs2_get_acl_nolock(dir, ACL_TYPE_DEFAULT,
--						   dir_bh);
--			up_read(&OCFS2_I(dir)->ip_xattr_sem);
--			if (IS_ERR(acl))
--				return PTR_ERR(acl);
-+	int ret = 0;
+ 	struct fuse_dev *fud = fuse_file_to_fud(file);
+ 	/* Pairs with cmpxchg() in fuse_dev_install() */
+ 	struct fuse_chan *fch = xchg(&fud->chan, FUSE_DEV_CHAN_DISCONNECTED);
+ 
+-	if (fch) {
++	if (fch && fch != FUSE_DEV_CHAN_DISCONNECTED) {
+ 		struct fuse_pqueue *fpq = &fud->pq;
+ 		LIST_HEAD(to_end);
+ 		unsigned int i;
+ 		bool last;
++		bool all_closing;
+ 
+ 		/* Make sure fuse_dev_install_with_pq() has finished */
+ 		spin_lock(&fch->lock);
+@@ -2234,12 +2247,14 @@ int fuse_dev_release(struct inode *inode, struct file *file)
+ 		list_del(&fud->entry);
+ 		/* Are we the last open device? */
+ 		last = list_empty(&fch->devices);
++		all_closing = last || fuse_dev_all_closing(fch);
+ 		spin_unlock(&fch->lock);
+ 
+ 		fuse_dev_end_requests(&to_end);
+ 
+-		if (last) {
+-			WARN_ON(fch->iq.fasync != NULL);
++		if (all_closing) {
++			if (last)
++				WARN_ON(fch->iq.fasync != NULL);
+ 			fuse_chan_abort(fch, false);
+ 		}
+ 		fuse_conn_put(fch->conn);
+@@ -2375,23 +2390,52 @@ static void fuse_dev_show_fdinfo(struct seq_file *seq, struct file *file)
+ }
+ #endif
+ 
++static int fuse_dev_flush(struct file *file, fl_owner_t id)
++{
++	struct fuse_dev *fud = fuse_file_to_fud(file);
++	struct fuse_chan *fch;
++	bool all_closing;
 +
-+	state->default_acl = NULL;
-+	state->acl = NULL;
-+	state->mode = inode->i_mode;
-+
-+	if (S_ISLNK(inode->i_mode))
++	if (file_count(file) != 1)
 +		return 0;
 +
-+	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-+		down_read(&OCFS2_I(dir)->ip_xattr_sem);
-+		state->default_acl =
-+			ocfs2_get_acl_nolock(dir, ACL_TYPE_DEFAULT, dir_bh);
-+		up_read(&OCFS2_I(dir)->ip_xattr_sem);
-+		if (IS_ERR(state->default_acl)) {
-+			ret = PTR_ERR(state->default_acl);
-+			state->default_acl = NULL;
-+			return ret;
- 		}
--		if (!acl) {
--			mode = inode->i_mode & ~current_umask();
--			ret = ocfs2_acl_set_mode(inode, di_bh, handle, mode);
--			if (ret) {
--				mlog_errno(ret);
-+		if (state->default_acl) {
-+			state->acl = posix_acl_dup(state->default_acl);
-+			if (!state->acl) {
-+				ret = -ENOMEM;
- 				goto cleanup;
- 			}
-+			ret = __posix_acl_create(&state->acl, GFP_NOFS,
-+						 &state->mode);
-+			if (ret < 0)
-+				goto cleanup;
-+			if (ret == 0) {
-+				posix_acl_release(state->acl);
-+				state->acl = NULL;
-+			}
-+			if (!S_ISDIR(inode->i_mode)) {
-+				posix_acl_release(state->default_acl);
-+				state->default_acl = NULL;
-+			}
-+		} else {
-+			state->mode &= ~current_umask();
- 		}
-+	} else {
-+		state->mode &= ~current_umask();
- 	}
--	if ((osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) && acl) {
--		if (S_ISDIR(inode->i_mode)) {
++	/*
++	 * Atomically transition fud->chan from NULL to FUSE_DEV_CHAN_DISCONNECTED
++	 * on final close to prevent a later fuse_dev_install() from succeeding.
++	 */
++	fch = cmpxchg(&fud->chan, NULL, FUSE_DEV_CHAN_DISCONNECTED);
++	if (!fch || fch == FUSE_DEV_CHAN_DISCONNECTED)
++		return 0;
++
++	spin_lock(&fch->lock);
++	fud->closing = true;
++	all_closing = fuse_dev_all_closing(fch);
++	spin_unlock(&fch->lock);
++
++	if (all_closing)
++		fuse_chan_abort(fch, false);
 +
 +	return 0;
-+cleanup:
-+	ocfs2_acl_init_release(state);
-+	return ret;
 +}
 +
-+int ocfs2_init_acl(handle_t *handle, struct inode *inode,
-+		   struct buffer_head *di_bh,
-+		   struct ocfs2_alloc_context *meta_ac,
-+		   struct ocfs2_alloc_context *data_ac,
-+		   struct ocfs2_acl_state *state)
-+{
-+	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
-+	int ret = 0;
+ const struct file_operations fuse_dev_operations = {
+-	.owner		= THIS_MODULE,
+-	.open		= fuse_dev_open,
+-	.read_iter	= fuse_dev_read,
+-	.splice_read	= fuse_dev_splice_read,
+-	.write_iter	= fuse_dev_write,
+-	.splice_write	= fuse_dev_splice_write,
+-	.poll		= fuse_dev_poll,
+-	.release	= fuse_dev_release,
+-	.fasync		= fuse_dev_fasync,
++	.owner = THIS_MODULE,
++	.open = fuse_dev_open,
++	.read_iter = fuse_dev_read,
++	.splice_read = fuse_dev_splice_read,
++	.write_iter = fuse_dev_write,
++	.splice_write = fuse_dev_splice_write,
++	.poll = fuse_dev_poll,
++	.flush = fuse_dev_flush,
++	.release = fuse_dev_release,
++	.fasync = fuse_dev_fasync,
+ 	.unlocked_ioctl = fuse_dev_ioctl,
+-	.compat_ioctl   = compat_ptr_ioctl,
++	.compat_ioctl = compat_ptr_ioctl,
+ #ifdef CONFIG_FUSE_IO_URING
+-	.uring_cmd	= fuse_uring_cmd,
++	.uring_cmd = fuse_uring_cmd,
+ #endif
+ #ifdef CONFIG_PROC_FS
+-	.show_fdinfo	= fuse_dev_show_fdinfo,
++	.show_fdinfo = fuse_dev_show_fdinfo,
+ #endif
+ };
+ EXPORT_SYMBOL_GPL(fuse_dev_operations);
+diff --git a/fs/fuse/fuse_dev_i.h b/fs/fuse/fuse_dev_i.h
+index 668c8391d..ec6334414 100644
+--- a/fs/fuse/fuse_dev_i.h
++++ b/fs/fuse/fuse_dev_i.h
+@@ -310,6 +310,9 @@ struct fuse_dev {
+ 
+ 	/** @entry: list entry on fch->devices */
+ 	struct list_head entry;
 +
-+	if (S_ISLNK(inode->i_mode))
-+		return 0;
-+
-+	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-+		if (S_ISDIR(inode->i_mode) && state->default_acl) {
- 			ret = ocfs2_set_acl(handle, inode, di_bh,
--					    ACL_TYPE_DEFAULT, acl,
--					    meta_ac, data_ac);
-+					    ACL_TYPE_DEFAULT,
-+					    state->default_acl, meta_ac,
-+					    data_ac);
- 			if (ret)
--				goto cleanup;
-+				return ret;
- 		}
--		mode = inode->i_mode;
--		ret = __posix_acl_create(&acl, GFP_NOFS, &mode);
--		if (ret < 0)
--			return ret;
-+	}
++	/** @closing: is this device closing? */
++	bool closing;
+ };
  
--		ret2 = ocfs2_acl_set_mode(inode, di_bh, handle, mode);
--		if (ret2) {
--			mlog_errno(ret2);
--			ret = ret2;
--			goto cleanup;
--		}
--		if (ret > 0) {
--			ret = ocfs2_set_acl(handle, inode,
--					    di_bh, ACL_TYPE_ACCESS,
--					    acl, meta_ac, data_ac);
-+	ret = ocfs2_acl_set_mode(inode, di_bh, handle, state->mode);
-+	if (ret) {
-+		mlog_errno(ret);
-+		return ret;
-+	}
-+
-+	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-+		if (state->acl) {
-+			ret = ocfs2_set_acl(handle, inode, di_bh,
-+					    ACL_TYPE_ACCESS, state->acl,
-+					    meta_ac, data_ac);
- 		}
- 	}
--cleanup:
--	posix_acl_release(acl);
-+
- 	return ret;
- }
-diff --git a/fs/ocfs2/acl.h b/fs/ocfs2/acl.h
-index 667c6f03f..a91f9ce27 100644
---- a/fs/ocfs2/acl.h
-+++ b/fs/ocfs2/acl.h
-@@ -20,9 +20,20 @@ struct posix_acl *ocfs2_iop_get_acl(struct inode *inode, int type, bool rcu);
- int ocfs2_iop_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
- 		      struct posix_acl *acl, int type);
- extern int ocfs2_acl_chmod(struct inode *, struct buffer_head *);
--extern int ocfs2_init_acl(handle_t *, struct inode *, struct inode *,
--			  struct buffer_head *, struct buffer_head *,
--			  struct ocfs2_alloc_context *,
--			  struct ocfs2_alloc_context *);
-+struct ocfs2_acl_state {
-+	struct posix_acl *default_acl;
-+	struct posix_acl *acl;
-+	umode_t mode;
-+};
-+
-+int ocfs2_acl_init_prepare(struct inode *inode, struct inode *dir,
-+			   struct buffer_head *dir_bh,
-+			   struct ocfs2_acl_state *state);
-+void ocfs2_acl_init_release(struct ocfs2_acl_state *state);
-+int ocfs2_init_acl(handle_t *handle, struct inode *inode,
-+		   struct buffer_head *di_bh,
-+		   struct ocfs2_alloc_context *meta_ac,
-+		   struct ocfs2_alloc_context *data_ac,
-+		   struct ocfs2_acl_state *state);
- 
- #endif /* OCFS2_ACL_H */
-diff --git a/fs/ocfs2/namei.c b/fs/ocfs2/namei.c
-index 1277666c7..d9aba16a8 100644
---- a/fs/ocfs2/namei.c
-+++ b/fs/ocfs2/namei.c
-@@ -256,6 +256,7 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
- 	sigset_t oldset;
- 	int did_block_signals = 0;
- 	struct ocfs2_dentry_lock *dl = NULL;
-+	struct ocfs2_acl_state acl_state = { 0 };
- 
- 	trace_ocfs2_mknod(dir, dentry, dentry->d_name.len, dentry->d_name.name,
- 			  (unsigned long long)OCFS2_I(dir)->ip_blkno,
-@@ -330,10 +331,13 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
- 		}
- 	}
- 
-+	status = ocfs2_acl_init_prepare(inode, dir, parent_fe_bh, &acl_state);
-+	if (status < 0)
-+		goto leave;
-+
- 	/* calculate meta data/clusters for setting security and acl xattr */
--	status = ocfs2_calc_xattr_init(dir, parent_fe_bh, mode,
--				       &si, &want_clusters,
--				       &xattr_credits, &want_meta);
-+	status = ocfs2_calc_xattr_init(dir, mode, &si, &want_clusters,
-+				       &xattr_credits, &want_meta, &acl_state);
- 	if (status < 0) {
- 		mlog_errno(status);
- 		goto leave;
-@@ -411,8 +415,8 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
- 		inc_nlink(dir);
- 	}
- 
--	status = ocfs2_init_acl(handle, inode, dir, new_fe_bh, parent_fe_bh,
--			 meta_ac, data_ac);
-+	status = ocfs2_init_acl(handle, inode, new_fe_bh, meta_ac, data_ac,
-+				&acl_state);
- 
- 	if (status < 0) {
- 		mlog_errno(status);
-@@ -477,6 +481,8 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
- 	brelse(parent_fe_bh);
- 	kfree(si.value);
- 
-+	ocfs2_acl_init_release(&acl_state);
-+
- 	ocfs2_free_dir_lookup_result(&lookup);
- 
- 	if (inode_ac)
-diff --git a/fs/ocfs2/xattr.c b/fs/ocfs2/xattr.c
-index fcddd3c13..a03c24df8 100644
---- a/fs/ocfs2/xattr.c
-+++ b/fs/ocfs2/xattr.c
-@@ -611,13 +611,10 @@ int ocfs2_calc_security_init(struct inode *dir,
- 	return ret;
- }
- 
--int ocfs2_calc_xattr_init(struct inode *dir,
--			  struct buffer_head *dir_bh,
--			  umode_t mode,
-+int ocfs2_calc_xattr_init(struct inode *dir, umode_t mode,
- 			  struct ocfs2_security_xattr_info *si,
--			  int *want_clusters,
--			  int *xattr_credits,
--			  int *want_meta)
-+			  int *want_clusters, int *xattr_credits,
-+			  int *want_meta, struct ocfs2_acl_state *acl_state)
- {
- 	int ret = 0;
- 	struct ocfs2_super *osb = OCFS2_SB(dir->i_sb);
-@@ -628,19 +625,15 @@ int ocfs2_calc_xattr_init(struct inode *dir,
- 						     si->value_len);
- 
- 	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
--		down_read(&OCFS2_I(dir)->ip_xattr_sem);
--		acl_len = ocfs2_xattr_get_nolock(dir, dir_bh,
--					OCFS2_XATTR_INDEX_POSIX_ACL_DEFAULT,
--					"", NULL, 0);
--		up_read(&OCFS2_I(dir)->ip_xattr_sem);
--		if (acl_len > 0) {
--			a_size = ocfs2_xattr_entry_real_size(0, acl_len);
--			if (S_ISDIR(mode))
--				a_size <<= 1;
--		} else if (acl_len != 0 && acl_len != -ENODATA) {
--			ret = acl_len;
--			mlog_errno(ret);
--			return ret;
-+		if (acl_state->default_acl && S_ISDIR(mode)) {
-+			acl_len = acl_state->default_acl->a_count *
-+				  sizeof(struct ocfs2_acl_entry);
-+			a_size += ocfs2_xattr_entry_real_size(0, acl_len);
-+		}
-+		if (acl_state->acl) {
-+			acl_len = acl_state->acl->a_count *
-+				  sizeof(struct ocfs2_acl_entry);
-+			a_size += ocfs2_xattr_entry_real_size(0, acl_len);
- 		}
- 	}
- 
-@@ -683,14 +676,29 @@ int ocfs2_calc_xattr_init(struct inode *dir,
- 							   new_clusters);
- 		*want_clusters += new_clusters;
- 	}
--	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL &&
--	    acl_len > OCFS2_XATTR_INLINE_SIZE) {
--		/* for directory, it has DEFAULT and ACCESS two types of acls */
--		new_clusters = (S_ISDIR(mode) ? 2 : 1) *
--				ocfs2_clusters_for_bytes(dir->i_sb, acl_len);
--		*xattr_credits += ocfs2_clusters_to_blocks(dir->i_sb,
--							   new_clusters);
--		*want_clusters += new_clusters;
-+	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-+		if (acl_state->default_acl && S_ISDIR(mode)) {
-+			acl_len = acl_state->default_acl->a_count *
-+				  sizeof(struct ocfs2_acl_entry);
-+			if (acl_len > OCFS2_XATTR_INLINE_SIZE) {
-+				new_clusters = ocfs2_clusters_for_bytes(
-+					dir->i_sb, acl_len);
-+				*xattr_credits += ocfs2_clusters_to_blocks(
-+					dir->i_sb, new_clusters);
-+				*want_clusters += new_clusters;
-+			}
-+		}
-+		if (acl_state->acl) {
-+			acl_len = acl_state->acl->a_count *
-+				  sizeof(struct ocfs2_acl_entry);
-+			if (acl_len > OCFS2_XATTR_INLINE_SIZE) {
-+				new_clusters = ocfs2_clusters_for_bytes(
-+					dir->i_sb, acl_len);
-+				*xattr_credits += ocfs2_clusters_to_blocks(
-+					dir->i_sb, new_clusters);
-+				*want_clusters += new_clusters;
-+			}
-+		}
- 	}
- 
- 	return ret;
-@@ -7257,6 +7265,7 @@ int ocfs2_init_security_and_acl(struct inode *dir,
- {
- 	int ret = 0;
- 	struct buffer_head *dir_bh = NULL;
-+	struct ocfs2_acl_state acl_state = { 0 };
- 
- 	ret = ocfs2_init_security_get(inode, dir, qstr, NULL);
- 	if (ret) {
-@@ -7269,10 +7278,17 @@ int ocfs2_init_security_and_acl(struct inode *dir,
- 		mlog_errno(ret);
- 		goto leave;
- 	}
--	ret = ocfs2_init_acl(NULL, inode, dir, NULL, dir_bh, NULL, NULL);
-+
-+	ret = ocfs2_acl_init_prepare(inode, dir, dir_bh, &acl_state);
-+	if (ret)
-+		goto unlock;
-+
-+	ret = ocfs2_init_acl(NULL, inode, NULL, NULL, NULL, &acl_state);
- 	if (ret)
- 		mlog_errno(ret);
- 
-+unlock:
-+	ocfs2_acl_init_release(&acl_state);
- 	ocfs2_inode_unlock(dir, 0);
- 	brelse(dir_bh);
- leave:
-diff --git a/fs/ocfs2/xattr.h b/fs/ocfs2/xattr.h
-index 65e9aa743..5cdd6c6b4 100644
---- a/fs/ocfs2/xattr.h
-+++ b/fs/ocfs2/xattr.h
-@@ -55,9 +55,12 @@ int ocfs2_init_security_set(handle_t *, struct inode *,
- int ocfs2_calc_security_init(struct inode *,
- 			     struct ocfs2_security_xattr_info *,
- 			     int *, int *, struct ocfs2_alloc_context **);
--int ocfs2_calc_xattr_init(struct inode *, struct buffer_head *,
--			  umode_t, struct ocfs2_security_xattr_info *,
--			  int *, int *, int *);
-+
-+struct ocfs2_acl_state;
-+int ocfs2_calc_xattr_init(struct inode *dir, umode_t mode,
-+			  struct ocfs2_security_xattr_info *si,
-+			  int *want_clusters, int *xattr_credits,
-+			  int *want_meta, struct ocfs2_acl_state *acl_state);
- 
- /*
-  * xattrs can live inside an inode, as part of an external xattr block,
+ struct fuse_copy_state {
+@@ -337,8 +340,10 @@ struct fuse_copy_state {
+  * Lockless access is OK, because fud->chan is set once during mount and is valid
+  * until the file is released.
+  *
+- * fud->chan is set to FUSE_DEV_CHAN_DISCONNECTED only after the containing file is
+- * released, so result is safe to dereference in most cases.  Exceptions are:
++ * Final flush replaces NULL with the disconnected sentinel only for an
++ * uninstalled device, while for an installed device, flush leaves the channel
++ * pointer intact and records closing, and release later installs the sentinel.
++ * Thus the result is safe to dereference in most cases.  Exceptions are:
+  * fuse_dev_put() and fuse_fill_super_common().
+  */
+ static inline struct fuse_chan *fuse_dev_chan_get(struct fuse_dev *fud)
 
 
-base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
+base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
