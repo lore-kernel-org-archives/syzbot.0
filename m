@@ -1,153 +1,328 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DFF6396591
-	for <syzbot@lists.linux.dev>; Mon, 20 Jul 2026 14:25:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A3E73DC87A
+	for <syzbot@lists.linux.dev>; Mon, 20 Jul 2026 15:01:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784557528; cv=none; b=bC/7NsffOx1OjMyFEtqCNraelw0qKDeigKomPSsLoc+3mi9bmX6nwsre0KQm3O14EzJZuMwCizzoKV95Xpuy43/KvKB0OyzOjC1hTVpQVKROxpJtZqyH+yu7f3kXcaBYcGozZH7rMSyDIElu1Aox4Fbuz8i28/0SGhgQouXnBcw=
+	t=1784559669; cv=none; b=SWshjUapAI1qJyvTUAgyCGXT8XeT2ZRirrpizhaSpz87hlana7NFdFPwbYEyaBdD/biBHqf+3nTwtjXqW/61divcH+hggn7NZHEtUIMZ2Gz5wkF7y0tada9kmeiUYScSTagyyYlJA/+TLRiu7DAfGTLI7g1ndifU7XjeKv9aCfI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784557528; c=relaxed/simple;
-	bh=4L2nlBDtuU+AWA3oejs4GsBVwxQPXgHfbml2QoBML5U=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=fADDZGTZhctgzxtLipq0yO1BnoLTWTnbAcgNFeNCUXxZ3Sv7lyIdHWBzWJTQTZrle91I5i89DxTnQHjfO4Qu3kJ2rjXjY87VoPbFHB4KzQPZzZ1BCJe2nssidM+n6AF5bzR+XujaKKIwLKkDlhXW548bKlQxRJl5NbxqeVAb6uU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=czdpnxRs; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784559669; c=relaxed/simple;
+	bh=HFN+HeemPob2UZnIYj9j0sIVDenScztJ1lLtPmiNowA=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Content-Type; b=HMUfSR3duPQ34p7oYh6MIy6xifr6MRFSk9+JanlOxZnXET9GzR7V7MoAAuqOESNSOKcQ396gk3Cga48Pc/1AFGz/87pT1t/Rw2NrHVC3layq1DlZJOe99CjvP7xpleL/X+i0rkRT+cUWo10lzaoAk3HahdcHJv69jBLgD9dYsBM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--glider.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cu28jMbE; arc=none smtp.client-ip=209.85.218.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--glider.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="czdpnxRs"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 1E6E01F000E9;
-	Mon, 20 Jul 2026 14:25:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784557527;
-	bh=xidEuyzwb6XGiZQBYCThN/KtJR0cDJvzK7ZrewuN1Jc=;
-	h=From:To:Cc:Subject:Date;
-	b=czdpnxRsP+B2+KtOs4KjG0m7iLxZZlokjm8pifywHXo7kfTI/88Ot69OfNJlagTyW
-	 0VTx7R74Hm6iv1GGni44aiWvWmsPsKATqjmTbClrgjdQelSV560bEZOs8E/FpNUdLk
-	 ZC7ruCGrzzMsh0XIz5/0nWwhFpy6Jp2S91aKVXo7Hu+UyJ1vqhsZehffK5A7MD+KJ5
-	 4mCKNdF7jXSfLMVIapiPztt+/k03qTEBghB0OgEofVWmLPzddQbxsjPRCyZHfmCdKM
-	 4zAknNxGgeJfpWVNe/UT/dWDi67gdmYXL9icHKc61IionNOxLw3spgIslaYSdDhH/S
-	 +O3UKdQdMhppA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] fs: fix superblock freeze rollback on sync_blockdev failure
-Message-ID: <fcc77fd9-e38f-49f9-8268-e86683444f29@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cu28jMbE"
+Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-c15f0aea084so720091366b.0
+        for <syzbot@lists.linux.dev>; Mon, 20 Jul 2026 08:01:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1784559665; x=1785164465; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:to:from:subject:message-id
+         :mime-version:date:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=tLQp/CUq2IWxMACNptpVHnHh555NoaejCoYZMJqM1BA=;
+        b=cu28jMbEoya7q0nFClGsshKTCQDcE2S0ZVWb8ECmDyz+TCarBkvJoS74En8+XDnUmc
+         DId0AfpfbUEnNkUXnqOycoezS6oOFii6uc3FJTOpbimL/u8lJTE0VPWyj5Q9ReCupCUT
+         IoACwosduuw5KRMvDa1kVkdo1uIt8aH8t55/kqlzNK9984mSwxs1hyFSZPH+GEAJzBI3
+         D0b17waLGIF+bj2vB+fJdhXfYPAcOMTvTQzntj/7SywrgronYQg4Nzr1XJd71PLS7Wrb
+         eBSyw6kqRfnQCTXwjzeHMmM4Srz3f9vnr07ppdTHrsfvXQUeD91LmbNGFM2h0jO8mCT8
+         mrLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784559665; x=1785164465;
+        h=content-transfer-encoding:content-type:to:from:subject:message-id
+         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=tLQp/CUq2IWxMACNptpVHnHh555NoaejCoYZMJqM1BA=;
+        b=MVNvh77rSqVjIxj17FFc3kJOmtAxf6vo+kBMK7Welat/VebqXfzKDKuCNETw0hRmN6
+         8ch3ulibOPw/DGN4xcCrzDmpOv02IUH+xtvzbAYtoF6rtHngMK5nwQzfZNjSy202alJq
+         Lcn0amuKl9S+jamCUYQGy9D541jaDVFX72dV4pPgGhwgUC/xcCc9u3eY2s8SUjdiU14c
+         IWrgTlwReOdKSyneb8HAoRerb/xQZT/oKCVkwq4Q8Xj7gZi7Z8Tb+P9+N5Wmqeuoh6Nr
+         GT+eS5qF7GzLlMMlmZpuk9CXaumitOJIYHpe6x1zKV80cVmmoynsF/Hc3tB/Hh63HXdc
+         Wu6w==
+X-Gm-Message-State: AOJu0Yy5cOWklr2ajtHYKuonp7EIoC7gMaa0qQlrI6Kd3+Uz+BBc45ad
+	YnrmkeVeDiOT2CHaRwC+QiI3+6mPyWoCys7xPLcGkFdlLQsUBwy/ESuEgklEtaeQ59Purk3v63E
+	g9ov4GRkLuoXY8hpxTwjie/TKiOeSqRHJJJSszvNHmnOU3jDmTU7PBo7wK6C5PGlU03HbqIcaLU
+	SNNk6OCm9e6oZj0nx217Mz8lOe5vhvVs2eV+b6
+X-Received: from ejem10.prod.google.com ([2002:a17:906:2aca:b0:c12:6633:c1d5])
+ (user=glider job=prod-delivery.src-stubby-dispatcher) by 2002:a17:906:7947:b0:c16:9043:7973
+ with SMTP id a640c23a62f3a-c16b46aa99amr538342966b.4.1784559665067; Mon, 20
+ Jul 2026 08:01:05 -0700 (PDT)
+Date: Mon, 20 Jul 2026 15:01:04 +0000
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Mon, 20 Jul 2026 14:25:27 +0000 (UTC)
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.55.0.229.g6434b31f56-goog
+Message-ID: <20260720150104.2634801-1-glider@google.com>
+Subject: [PATCH v7] kcov: fix data corruption and race conditions on
+ PREEMPT_RT by moving saved remote state to task_struct (v7)
+From: Alexander Potapenko <glider@google.com>
+To: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-If sync_blockdev() fails during fs_bdev_freeze(), the superblock is left in
-a frozen state, but the block device is not. When the filesystem is later
-unmounted and destroyed, the s_writers.rw_sem per-CPU rw-semaphores are
-freed while still held for write, triggering a warning in rcu_sync_dtor():
+syzbot is reporting KCOV state corruption on PREEMPT_RT kernels, for the te=
+mporary storage used for saving/restoring remote KCOV state is currently al=
+located as the per-CPU area.
 
-READ_ONCE(rsp->gp_state) == GP_PASSED
-WARNING: kernel/rcu/sync.c:177 at rcu_sync_dtor+0xcd/0x180
-kernel/rcu/sync.c:177, CPU#0: kworker/0:2/5024
-Call Trace:
- <TASK>
- percpu_free_rwsem+0x43/0x80 kernel/locking/percpu-rwsem.c:42
- destroy_super_work+0x217/0x310 fs/super.c:284
- process_one_work kernel/workqueue.c:3322 [inline]
- process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
+On PREEMPT_RT kernels, softirq handlers run as preemptible task threads (e.=
+g., ksoftirqd). If a softirq context preempts a task running a remote KCOV =
+session, it safely saves the task's state into the per-CPU area.
+However, if that softirq thread is subsequently preempted by a higher-prior=
+ity softirq thread on the same CPU, the second softirq will overwrite the s=
+ame per-CPU area, permanently destroying the original task's KCOV state.
 
-This happens because of two issues. First, in fs_bdev_freeze(), if
-freeze_super() succeeds but sync_blockdev() fails, thaw_super() is not
-called to roll back the freeze. Second, in exfat, an I/O error during
-sync_blockdev() triggers the error handler (__exfat_fs_error()), which
-directly sets SB_RDONLY without holding the s_umount semaphore. If
-thaw_super() is called after this, it sees the filesystem as read-only and
-skips releasing the freeze semaphores.
+Fix this data corruption by moving the temporary storage from the per-CPU a=
+rea to the per-thread area. Since each softirq thread now owns its own task=
+ context, nested softirq preemption no longer causes data overwrites.
 
-Fix this by adding the missing thaw_super() rollback in fs_bdev_freeze()
-when sync_blockdev() fails. Additionally, modify the exfat error handler to
-set EXFAT_FLAGS_SHUTDOWN instead of directly setting SB_RDONLY, which
-prevents confusing the VFS freeze logic and allows thaw_super() to
-correctly release the semaphores.
+Note that while the temporary storage is now on a per-thread basis, the per=
+-CPU kcov_percpu_data.lock must be retained, for we need to ensure that kco=
+v_remote_start() and kcov_remote_stop() operate atomically without racing a=
+gainst asynchronous interrupts that manipulate the current task's KCOV stat=
+e.
 
-Fixes: 49ef8832fb1a ("bdev: implement freeze and thaw holder operations")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+823cd0d24881f21ab9f1@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=823cd0d24881f21ab9f1
-Link: https://syzkaller.appspot.com/ai_job?id=431fcee8-0777-4619-a114-4a86af680864
-To: "Christian Brauner" <brauner@kernel.org>
-To: "Namjae Jeon" <linkinjeon@kernel.org>
-To: <linux-fsdevel@vger.kernel.org>
-To: "Sungjong Seo" <sj1557.seo@samsung.com>
-To: "Alexander Viro" <viro@zeniv.linux.org.uk>
-Cc: "Jan Kara" <jack@suse.cz>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Yuezhang Mo" <yuezhang.mo@sony.com>
+Fixes: 5ff3b30ab57d ("kcov: collect coverage from interrupts")
 
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 ---
-diff --git a/fs/exfat/misc.c b/fs/exfat/misc.c
-index 6f11a96a4..dbb3b2907 100644
---- a/fs/exfat/misc.c
-+++ b/fs/exfat/misc.c
-@@ -41,7 +41,14 @@ void __exfat_fs_error(struct super_block *sb, int report, const char *fmt, ...)
- 		panic("exFAT-fs (%s): fs panic from previous error\n",
- 			sb->s_id);
- 	} else if (opts->errors == EXFAT_ERRORS_RO && !sb_rdonly(sb)) {
--		sb->s_flags |= SB_RDONLY;
-+		set_bit(EXFAT_FLAGS_SHUTDOWN, &EXFAT_SB(sb)->s_exfat_flags);
-+		/*
-+		 * We have already set EXFAT_FLAGS_SHUTDOWN flag to stop all updates
-+		 * to filesystem, so it doesn't need to set SB_RDONLY flag here
-+		 * because the flag should be set covered w/ sb->s_umount semaphore
-+		 * via remount procedure, otherwise, it will confuse code like
-+		 * freeze_super() which will lead to deadlocks and other problems.
-+		 */
- 		exfat_err(sb, "Filesystem has been set read-only");
+ include/linux/sched.h |  8 ++++
+ kernel/kcov.c         | 90 ++++++++++++++++++++++---------------------
+ lib/Kconfig.debug     |  5 ++-
+ 3 files changed, 58 insertions(+), 45 deletions(-)
+
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 373bcc0598d1..7a53c15cecb5 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1543,6 +1543,14 @@ struct task_struct {
+=20
+ 	/* Collect coverage from softirq context: */
+ 	unsigned int			kcov_softirq;
++
++	/* Temporary storage for preempting remote coverage collection: */
++	unsigned int			kcov_saved_mode;
++	unsigned int			kcov_saved_size;
++	void				*kcov_saved_area;
++	struct kcov			*kcov_saved_kcov;
++	int				kcov_saved_sequence;
++
+ #endif
+=20
+ #ifdef CONFIG_MEMCG_V1
+diff --git a/kernel/kcov.c b/kernel/kcov.c
+index 1df373fb562b..a7514303eff3 100644
+--- a/kernel/kcov.c
++++ b/kernel/kcov.c
+@@ -86,17 +86,12 @@ struct kcov_remote {
+=20
+ static DEFINE_SPINLOCK(kcov_remote_lock);
+ static DEFINE_HASHTABLE(kcov_remote_map, 4);
+-static struct list_head kcov_remote_areas =3D LIST_HEAD_INIT(kcov_remote_a=
+reas);
++static struct list_head kcov_remote_areas[2] =3D {
++	LIST_HEAD_INIT(kcov_remote_areas[0]), LIST_HEAD_INIT(kcov_remote_areas[1]=
+)
++};
+=20
+ struct kcov_percpu_data {
+-	void			*irq_area;
+ 	local_lock_t		lock;
+-
+-	unsigned int		saved_mode;
+-	unsigned int		saved_size;
+-	void			*saved_area;
+-	struct kcov		*saved_kcov;
+-	int			saved_sequence;
+ };
+=20
+ static DEFINE_PER_CPU(struct kcov_percpu_data, kcov_percpu_data) =3D {
+@@ -132,12 +127,13 @@ static struct kcov_remote *kcov_remote_add(struct kco=
+v *kcov, u64 handle)
+ }
+=20
+ /* Must be called with kcov_remote_lock locked. */
+-static struct kcov_remote_area *kcov_remote_area_get(unsigned int size)
++static struct kcov_remote_area *kcov_remote_area_get(unsigned int size, bo=
+ol irq)
+ {
+ 	struct kcov_remote_area *area;
+ 	struct list_head *pos;
++	struct list_head *list =3D &kcov_remote_areas[irq];
+=20
+-	list_for_each(pos, &kcov_remote_areas) {
++	list_for_each(pos, list) {
+ 		area =3D list_entry(pos, struct kcov_remote_area, list);
+ 		if (area->size =3D=3D size) {
+ 			list_del(&area->list);
+@@ -149,11 +145,11 @@ static struct kcov_remote_area *kcov_remote_area_get(=
+unsigned int size)
+=20
+ /* Must be called with kcov_remote_lock locked. */
+ static void kcov_remote_area_put(struct kcov_remote_area *area,
+-					unsigned int size)
++				 unsigned int size, bool irq)
+ {
+ 	INIT_LIST_HEAD(&area->list);
+ 	area->size =3D size;
+-	list_add(&area->list, &kcov_remote_areas);
++	list_add(&area->list, &kcov_remote_areas[irq]);
+ 	/*
+ 	 * KMSAN doesn't instrument this file, so it may not know area->list
+ 	 * is initialized. Unpoison it explicitly to avoid reports in
+@@ -390,6 +386,12 @@ void kcov_task_init(struct task_struct *t)
+ 	kcov_task_reset(t);
+ 	t->kcov_remote =3D NULL;
+ 	t->kcov_handle =3D current->kcov_handle;
++	t->kcov_softirq =3D 0;
++	t->kcov_saved_mode =3D 0;
++	t->kcov_saved_size =3D 0;
++	t->kcov_saved_area =3D NULL;
++	t->kcov_saved_kcov =3D NULL;
++	t->kcov_saved_sequence =3D 0;
+ }
+=20
+ static void kcov_reset(struct kcov *kcov)
+@@ -836,17 +838,16 @@ static inline bool kcov_mode_enabled(unsigned int mod=
+e)
+ static void kcov_remote_softirq_start(struct task_struct *t)
+ 	__must_hold(&kcov_percpu_data.lock)
+ {
+-	struct kcov_percpu_data *data =3D this_cpu_ptr(&kcov_percpu_data);
+ 	unsigned int mode;
+=20
+ 	mode =3D READ_ONCE(t->kcov_mode);
+ 	barrier();
+ 	if (kcov_mode_enabled(mode)) {
+-		data->saved_mode =3D mode;
+-		data->saved_size =3D t->kcov_size;
+-		data->saved_area =3D t->kcov_area;
+-		data->saved_sequence =3D t->kcov_sequence;
+-		data->saved_kcov =3D t->kcov;
++		t->kcov_saved_mode =3D mode;
++		t->kcov_saved_size =3D t->kcov_size;
++		t->kcov_saved_area =3D t->kcov_area;
++		t->kcov_saved_sequence =3D t->kcov_sequence;
++		t->kcov_saved_kcov =3D t->kcov;
+ 		kcov_stop(t);
  	}
  }
-diff --git a/fs/super.c b/fs/super.c
-index a8fd61136..909d8b9ab 100644
---- a/fs/super.c
-+++ b/fs/super.c
-@@ -1481,8 +1481,23 @@ static int fs_bdev_freeze(struct block_device *bdev)
- 	else
- 		error = freeze_super(sb,
- 				FREEZE_MAY_NEST | FREEZE_HOLDER_USERSPACE, NULL);
--	if (!error)
-+	if (!error) {
- 		error = sync_blockdev(bdev);
-+		if (error) {
-+			if (sb->s_op->thaw_super)
-+				(void)sb->s_op->thaw_super(
-+					sb,
-+					FREEZE_MAY_NEST |
-+						FREEZE_HOLDER_USERSPACE,
-+					NULL);
-+			else
-+				(void)thaw_super(
-+					sb,
-+					FREEZE_MAY_NEST |
-+						FREEZE_HOLDER_USERSPACE,
-+					NULL);
-+		}
-+	}
- 	deactivate_super(sb);
- 	return error;
+@@ -854,17 +855,15 @@ static void kcov_remote_softirq_start(struct task_str=
+uct *t)
+ static void kcov_remote_softirq_stop(struct task_struct *t)
+ 	__must_hold(&kcov_percpu_data.lock)
+ {
+-	struct kcov_percpu_data *data =3D this_cpu_ptr(&kcov_percpu_data);
+-
+-	if (data->saved_kcov) {
+-		kcov_start(t, data->saved_kcov, data->saved_size,
+-				data->saved_area, data->saved_mode,
+-				data->saved_sequence);
+-		data->saved_mode =3D 0;
+-		data->saved_size =3D 0;
+-		data->saved_area =3D NULL;
+-		data->saved_sequence =3D 0;
+-		data->saved_kcov =3D NULL;
++	if (t->kcov_saved_kcov) {
++		kcov_start(t, t->kcov_saved_kcov, t->kcov_saved_size,
++			   t->kcov_saved_area, t->kcov_saved_mode,
++			   t->kcov_saved_sequence);
++		t->kcov_saved_mode =3D 0;
++		t->kcov_saved_size =3D 0;
++		t->kcov_saved_area =3D NULL;
++		t->kcov_saved_sequence =3D 0;
++		t->kcov_saved_kcov =3D NULL;
+ 	}
  }
+=20
+@@ -927,17 +926,17 @@ void kcov_remote_start(u64 handle)
+ 	sequence =3D kcov->sequence;
+ 	if (in_task()) {
+ 		size =3D kcov->remote_size;
+-		area =3D kcov_remote_area_get(size);
++		area =3D kcov_remote_area_get(size, false);
+ 	} else {
+ 		size =3D CONFIG_KCOV_IRQ_AREA_SIZE;
+-		area =3D this_cpu_ptr(&kcov_percpu_data)->irq_area;
++		area =3D kcov_remote_area_get(size, true);
+ 	}
+ 	spin_unlock(&kcov_remote_lock);
+=20
+-	/* Can only happen when in_task(). */
++	/* Allocate new buffer if we can sleep. */
+ 	if (!area) {
+ 		local_unlock_irqrestore(&kcov_percpu_data.lock, flags);
+-		area =3D vmalloc(size * sizeof(unsigned long));
++		area =3D in_task() ? vmalloc(size * sizeof(unsigned long)) : NULL;
+ 		if (!area) {
+ 			kcov_put(kcov);
+ 			return;
+@@ -1079,11 +1078,9 @@ void kcov_remote_stop(void)
+ 		kcov_move_area(kcov->mode, kcov->area, kcov->size, area);
+ 	spin_unlock(&kcov->lock);
+=20
+-	if (in_task()) {
+-		spin_lock(&kcov_remote_lock);
+-		kcov_remote_area_put(area, size);
+-		spin_unlock(&kcov_remote_lock);
+-	}
++	spin_lock(&kcov_remote_lock);
++	kcov_remote_area_put(area, size, !in_task());
++	spin_unlock(&kcov_remote_lock);
+=20
+ 	local_unlock_irqrestore(&kcov_percpu_data.lock, flags);
+=20
+@@ -1129,14 +1126,21 @@ static void __init selftest(void)
+=20
+ static int __init kcov_init(void)
+ {
+-	int cpu;
++	int cpu =3D num_possible_cpus();
++
++#ifdef CONFIG_PREEMPT_RT
++	/* Allocate some extra buffers in order to prepare for softirq preemption=
+. */
++	cpu =3D cpu >=3D 4 ? cpu * 2 : cpu + 4;
++#endif
++	while (cpu--) {
++		void *area =3D vmalloc(CONFIG_KCOV_IRQ_AREA_SIZE * sizeof(unsigned long)=
+);
++		unsigned long flags;
+=20
+-	for_each_possible_cpu(cpu) {
+-		void *area =3D vmalloc_node(CONFIG_KCOV_IRQ_AREA_SIZE *
+-				sizeof(unsigned long), cpu_to_node(cpu));
+ 		if (!area)
+ 			return -ENOMEM;
+-		per_cpu_ptr(&kcov_percpu_data, cpu)->irq_area =3D area;
++		spin_lock_irqsave(&kcov_remote_lock, flags);
++		kcov_remote_area_put(area, CONFIG_KCOV_IRQ_AREA_SIZE, true);
++		spin_unlock_irqrestore(&kcov_remote_lock, flags);
+ 	}
+=20
+ 	/*
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 1244dcac2294..12786379bf1d 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -2247,10 +2247,11 @@ config KCOV_INSTRUMENT_ALL
+ config KCOV_IRQ_AREA_SIZE
+ 	hex "Size of interrupt coverage collection area in words"
+ 	depends on KCOV
++	range 0x80 0x1000000
+ 	default 0x40000
+ 	help
+-	  KCOV uses preallocated per-cpu areas to collect coverage from
+-	  soft interrupts. This specifies the size of those areas in the
++	  KCOV uses preallocated areas to collect coverage from soft
++	  interrupts. This specifies the size of those areas in the
+ 	  number of unsigned long words.
+=20
+ config KCOV_SELFTEST
+--=20
+2.55.0.229.g6434b31f56-goog
 
-
-base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
