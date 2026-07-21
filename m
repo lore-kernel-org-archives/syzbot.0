@@ -1,65 +1,67 @@
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66A623CA4B2
-	for <syzbot@lists.linux.dev>; Mon, 20 Jul 2026 20:42:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09F8D445ADF
+	for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 09:32:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784580156; cv=none; b=KuBbV/hmr05L+fhzSmwiKZ8lpzGgbkhp2YwegRDR6L/NVUUKeALj8Mejk+zfQwxCsck5AmF+0Adw/4y63mLcR4FAT/p5o3sOWU2cMeSIaQqKZKsrk9cEbvsXXaul7tHJSndcSwUJ9KRJOEjzO54pQ9jH25YvJVNXDmkRuyMaoiE=
+	t=1784626330; cv=none; b=LUimhzoIJJE2s4ataJM/sKiCTvxxpC6X1GTbeoAuYBhvyS/+X0fXGd4z+WsKB/clwAxny7o4GleUHl85W2myviRrUTZ6Iw+PAgRIsozUTxuxPifyW9rEHQheTW9mv3vnJiB5LQIfNiGaZkdjSbLKYOOmnAvJ3kvd2eSkCeQYMms=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784580156; c=relaxed/simple;
-	bh=Hfk34aVYnf04DDmtPzjpCH7eeHHmyr4fetVFg/i2yu4=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=KgbSp8IDGpDZ0+iQoUoGc8SQI1zKhQsYxa5O/8LsRABR/Mj+q6Tvj+gXmvjRGY0m4Bax2WnujVFo0PwopD63m/oAO+dJeVgwIQ8xGOTkChZXoSasqQ9nLec0nXLsY83D9azi+PksMfwEvtiCTM30RFOdHLAM8rX3r7miuo63r4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
+	s=arc-20240116; t=1784626330; c=relaxed/simple;
+	bh=NioXT3Tlz+H0NjDL97/UDEwscbAxCf0mD7rW+MpU65E=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=m9nfK2cg5bX3NalJZdoE6w+xdMv57nztuJvuYtkOku0kA2Y0ep6lPeiEKwOhmW3j0e4jKAyeesU/bR7KPBLIB0jHjxSOKY1kzTNC5H4dn9mxIlLKk0818EHKE54ieviJPA73mhL4Di2zvHiw3VdjidKcI9XyWU75yqu0FwU4weo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7ead32f5c6aso6539797a34.1
-        for <syzbot@lists.linux.dev>; Mon, 20 Jul 2026 13:42:34 -0700 (PDT)
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-48976713b46so10224046b6e.0
+        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 02:32:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784580153; x=1785184953;
-        h=content-type:cc:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=hv0islo9ugQyN6tOYPweVYNIFxX7v6O71cHJffvdVlE=;
-        b=celbUlqB5mBrlwzaS3fPImDeK+jURrGFpuNhZTinYHLX9ZpxMIFtpaaWtrmanZF6ZN
-         q8nRl7z51wjvGX1lALyXj907ZVxdLDAwuardqhj6tuAq18FoNNHAfVhZVr98BbRt+BNV
-         wC+HrGmDynVqPWdcwx/VWie6cfYC4PV1HcHbL/POzo3A+iu1i+go32GrT8tBocG0zVbW
-         fHxb0bdpNbFihNd3nMWEs6/PuovfpBFdw03wvhV13LtxZlxYAF1rlRsnG4aepFLhQsOZ
-         KZ0M3JmjUomub/70zwzJVwCB3/oRSJ5SSPiwSjTryL2NuzD6QbWj+G96DhJAMO79AV9L
-         OoFA==
-X-Gm-Message-State: AOJu0Ywqr/63m0zPpZ4n0/NEKw2itD+MV4mqjjuYSZxp4n15CBFsT4vu
-	HLGne8dvcYgP11peGk5cJhqvVKMpb5uM1PkWIIlkhb8i2PI2kCQh99qoLrVSXgfL8h5unVHIYDK
-	yFf+hSvkYGuG+sRbKQb83X/aYUfMyItXLTaCkq//SZ2WK4rsRknmsXEdoRN4=
+        d=1e100.net; s=20251104; t=1784626328; x=1785231128;
+        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=VeWuPlQ6+7BTLzwSkrLL2yYB8oAE3Or7Vkj22cHVDIY=;
+        b=kSusGq8caUPQ+l6PFaCC1REd3fmaNTglEHAYyZZVoBgRsoS1iVIEqWde2eE69gOy8k
+         Mjl3r0nkHcuooPHZP02TmTcGCu1xYghHQ3dHukct9wIxB7s2t//Ji/mFclxkGpL6LseJ
+         Eocn0lxy2JdN2YXlqHnOD9PJNEvyABqAgwVztCPt85W7HOnmIf694myNucF4TwRaSgkS
+         PpJ1cjr1NK5z11uyAyUYlB7gjpApy+0ucouDnH/6AmcfIDfigApoddUA3B+pQ664GEUO
+         uvx+45A9AzG5P6P9mpg5ESY4Phbd55HOF7Ga87MjkyQ7lKN0VjqrewArNuJdWcabf85h
+         IVvA==
+X-Gm-Message-State: AOJu0YzBigj+fH3n6cOGzmCfsI/hqCnebG5MMVC0AbUPjsiPpsRle+Hd
+	YKiO1CZEo8Xphpb9iXB6mqyZCn2co5PRXJQ2S55IpnkJdK98DooAyQHuuj6MuHvVCOgYoieSmGd
+	ewc4SzzLQNbjy8m/WsRjCP0Z63ng88I2+j3DaqOU/7JPB930fnCUBxwJofwI=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:2393:b0:4a4:856a:c622 with SMTP id
- 5614622812f47-4a4d0324cf1mr9409540b6e.20.1784580152856; Mon, 20 Jul 2026
- 13:42:32 -0700 (PDT)
-Date: Mon, 20 Jul 2026 13:42:32 -0700
+X-Received: by 2002:a05:6808:4fca:b0:495:4a22:f29e with SMTP id
+ 5614622812f47-4a4d031b280mr12293277b6e.25.1784626327894; Tue, 21 Jul 2026
+ 02:32:07 -0700 (PDT)
+Date: Tue, 21 Jul 2026 02:32:07 -0700
+In-Reply-To: <514764a5-5acd-4e5d-a8eb-f40c403e7514@mail.kernel.org>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a5e8838.42649fcc.6186.0087.GAE@google.com>
-Subject: [moderation/CI] Re: e2fsck: take flock(LOCK_EX) on whole-disk device
- during filesystem check
-From: syzbot ci <syzbot+ci06d7dff9312e470f@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
+Message-ID: <6a5f3c97.42649fcc.22d900.0001.GAE@google.com>
+Subject: [syzbot ci] Re: nbd: skip queue limits update for size-only reconfigure
+From: syzbot ci <syzbot+ci5a934432463e5344@syzkaller.appspotmail.com>
+To: krystianmkaniewski@gmail.com, syzbot@kernel.org, syzbot@lists.linux.dev, 
+	syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] e2fsck: take flock(LOCK_EX) on whole-disk device during filesystem check
-https://lore.kernel.org/all/20260720143246.4141501-1-naraghavan@linux.microsoft.com
-* [PATCH] e2fsck: take flock(LOCK_EX) on whole-disk device during filesystem check
+[v2] nbd: skip queue limits update for size-only reconfigure
+https://lore.kernel.org/all/514764a5-5acd-4e5d-a8eb-f40c403e7514@mail.kernel.org
+* [PATCH RFC v2] nbd: skip queue limits update for size-only reconfigure
 
 and found no issues.
 
 Full report is available here:
-https://ci.syzbot.org/series/ffb3b978-7737-4c7a-b4aa-2f2d85cd91f3
+https://ci.syzbot.org/series/409945b0-159c-4d52-ae37-bc7c04383918
 
 ***
 
@@ -70,13 +72,3 @@ separate fix, please add the following tag to your commit message:
 ---
 This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-The email will later be sent to:
-[linux-ext4@vger.kernel.org naraghavan@linux.microsoft.com srivatsa@csail.mit.edu tytso@mit.edu]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
