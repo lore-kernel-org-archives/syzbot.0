@@ -1,20 +1,20 @@
-Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com [209.85.160.71])
+Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com [209.85.160.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FCB948BD29
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50FF047CC87
 	for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 14:51:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.71
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784645505; cv=none; b=Gib6+8dgVK202bNZEyqmZ8ExmAA6R3BY5Wi8QGQ5Vd7+vIrcW50ydGBgIULzWPNu1ArEm9mYDnBqRiBT8luEt+lsnW4aaZmmSKSZ7L7Ki+kSVsHMjl2tMtuaziN8i8ZvDtsIOvdCYrc1dVWHI3r5CF0MaE+DNhK5q8g3ncElbwk=
+	t=1784645505; cv=none; b=EUpwp+TBGDcIevhrxXxqIOjwplcUqoHWrcKjD4kFbWKbKWk0QE0IFeZCi+Joh9co0b9tsgfgD6NEqLjSOr0BR/Twffg9I11uhFSZxYM0BZHARgHdUugs2YYX4AC8bTAJZ+XxO16RkoozMhFTKM/4hxkDb31edoot1Zw9mWl4H50=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1784645505; c=relaxed/simple;
 	bh=aQBd3iwef2+xWzz24bKAAzC/uYFdjjyuYckQjpbQmSM=;
 	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=S6XxxgLdxKpgktK3nX/q9megSkDJAClMD117YRs8kNnsJtZdvWcES4jC/0p3OnqCP++Q7nRsSorULSCfp+4JliLq0zrIm6Pb0vE+0yO7YAKiB26eotYjzwnNREtD4m/CZ8n58U2vGtTAoyM+Ygjn5TAhQxokXNx24ZDhdEmIwAE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.71
+	 Content-Type; b=GwWPV/WWfxKscNh5V7qHaLTvnztIQ3eLSXQj5yMUsDk7xstGfFxWplqOiLZgeyClaKwDcw0dh/7yp+enjyGblMIIfSby3x9wx4yxQkqoLvnFcjdLoS7cXsT6+cbsn1UgQ0h7Z3NLaBxqordlmhjMjmyojT0sz4Y2jCoCOXeOgXk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-43ccd5d5357so6510272fac.0
+Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-451ff8b9acbso4861763fac.0
         for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 07:51:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20251104; t=1784645503; x=1785250303;
@@ -22,29 +22,29 @@ X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to:content-type;
         bh=N4ZUNtrXALlJKoZ9NmTFHjcN8iF1e7G5yCpfklkVZIo=;
-        b=OPGBiZ8aEeIjAMAQjJhIME26fJUZiSdzREN70UqSmrPOXCxVrQOUmhQtQZrM5AVhlk
-         m530ywGwwwQLAhCT3Fz1TDbT8mQLd9ObXtReDOTeUetWQ8P8wudBnSYAN5ErN0TGZSXU
-         eQs15qdbg0iX0ZZc56Lg12O/iHKEojsMp+ewkeps/I/lidrIP6M1MeWCLqfIsAH8BvmM
-         tmWDonB8IBCQw1XPyPFt6nHT+MVdQtcbVglWI64aqFRaIKdMF3k8BBMBVEFem58/DZ+i
-         Ie1EnvoEGMW1I9aKtUMBCe0AyiCuLT7tWLdTB+YQ1jSqybYA4yHPRqGjZxctA5kXrR9K
-         c8LA==
-X-Gm-Message-State: AOJu0YyxUEVT8jHP1bp861b7HX5NrMGhO5iNZm8YrzFBVZ/yu+23iFu8
-	oJAbNxh9dNAWSh3QnYsYqlMPgNf6gU6Yf38F2zxmyz2nX19UegFspChEv4w8yy5Hj7Pbwul/yAs
-	jZqF9rqI5Nf7S8ZqzXrJHzATN4fw8qwnDUqGJUNEJPx9IpTUO0Ytxu61/QCo=
+        b=AQY0zyAryVqqzrzz3jxnNJj8aiIBChXFdk1DGoSdo2lthcK+LqcNB2XmpVhGbFx7rt
+         uU8Qxx9KXDZDTmcrxrI52BoGVTM081LruBpLI9SguVfir4ZAcOPma9wxKAK4XXkHIWhn
+         wEceIvzO71sPHj5Q/0LFffed/W7NglpcC+2tDyWbrQ5lHRWhubLvYREnpdrXDwEc/URL
+         yQnQ78kXvmE6Opsq3QbxO5jIBpHTA96Gk3rULBuSlRpKGB8X7tdl9fBvY/7KjNiSNLk3
+         XrvRgwuKmLNetc+fbgYID+wTm0sZxvz3Z2U15JhCFcwqjnI0CzquREVLssd8TFa1PC+M
+         i3qw==
+X-Gm-Message-State: AOJu0YyIpYli5vUYaBTNeqHyUmXmO8SxiiuhxQcAmOYwmSKTeN5iC2ee
+	G7wHNVGOS8VAZgPzSadHQ9rQHNUeADh0Z8ooQh19930SWvlk1bHsjYI6FGpeaKEJoC3oNS36S9q
+	p2i6ujuq2Ns1buC5AAdV9BqMca3USQG3fLJbMGphK1xNkNZhRlgoeNYSFyYc=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:6ae5:b0:6a1:8c15:7cae with SMTP id
- 006d021491bc7-6a536aba0c3mr9266596eaf.71.1784645503470; Tue, 21 Jul 2026
+X-Received: by 2002:a05:6808:2207:b0:495:f926:a7fe with SMTP id
+ 5614622812f47-4a4b237b515mr11557923b6e.28.1784645503226; Tue, 21 Jul 2026
  07:51:43 -0700 (PDT)
 Date: Tue, 21 Jul 2026 07:51:43 -0700
 In-Reply-To: <20260720124126.1977559-1-glider@google.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a5f877f.42649fcc.22d900.0005.GAE@google.com>
+Message-ID: <6a5f877f.33ea6125.251e5.0003.GAE@google.com>
 Subject: [syzbot ci] Re: kcov: fix data corruption and race conditions on
  PREEMPT_RT by moving saved remote state to task_struct (v7)
 From: syzbot ci <syzbot+ci410bbf8b6339678e@syzkaller.appspotmail.com>
