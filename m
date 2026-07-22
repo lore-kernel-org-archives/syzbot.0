@@ -1,67 +1,65 @@
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FCAF2CCC5
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 06:13:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82570386C17
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 06:27:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784700824; cv=none; b=ugSlNT96W+c19WgKFqXV8iTP2VbBWwTG2n5Z+o4RfD6m/enKK9g7o7TS8RUST75vEB2G4MaLCQioN0/8IQZPGmDbFFSwEDu70YQYWRERf0zsk1dq9HfBBYkKLs7Qp7wmiRlc0mcjoxyaIEhTQvbdi6rJXNJ+O8NnNAhs9wJnj8s=
+	t=1784701665; cv=none; b=PFjLzAHdz3HBmFHsvaP8nt/5nr3n/VSpZUxdlx8lOt4LhdGG3A3SRSUzzq+IBCy1KjK1n5Qj6IpqXUkdDGQQli3a4O1VV91bU1CkH5dMH3SgTsXjMrFsZM+5/rhHUqDmuH0HxR/ZZsjkSx3GaGi+hBcPCDOqE7q2akAaOWlizqs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784700824; c=relaxed/simple;
-	bh=TDAXvEf/qrH2BpC3JHp27gtEKfRbe6jQABczGWU8D0c=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=EBenxABkImdPlnjT6TklXF4pbLEbdPhaRFK157Wg1Ekw0vz7v7/I1dz6o2nQ9FTGl6UJgiv+DA+dywsrFh/hCCCkflCqkVVdGWfPozi/cFOAK19/3VOZbFS2Rdu58EKDg2mljfzUeThtq2mpZ5biuU0yaCsc5aFkiRdg6yjYt94=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
+	s=arc-20240116; t=1784701665; c=relaxed/simple;
+	bh=dNOvZOjwMmsq+RzAwZ85cKgC0qmY/W4q7Al7DhbtbbQ=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=StA+e428gTlfq10RkGzLUlQvOuTQYtaDGRvNoqrG7/apKsZb4x5RYPqUEYYTRrxkg7E94xM47IL8JElMzRv3Ox0f724ch3W8gWP+fkz63d320kZQGzGD3HwYjJpgmFJXK1HZ90fVfF/9PR//xormhL5v5be8s9rzVKDpbXCq9Mc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7e9fdc2870fso6949047a34.2
-        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 23:13:43 -0700 (PDT)
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6a196857c7aso11670685eaf.2
+        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 23:27:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784700822; x=1785305622;
+        d=1e100.net; s=20251104; t=1784701663; x=1785306463;
         h=content-type:cc:to:from:subject:message-id:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=cCq+gbXggumSPeZbCA9YaAo93N/dw7uzbRcX9RRdUoM=;
-        b=DU4LyG1jQV6vNCEriS28bdeTkt0bjF5O2/AerWG8TImBPD7lwEjtVXb2EJVnAiaT3p
-         P8NupFMUVL6oEPUHt9Bj75ue+lII6ExtRpo7gW9SrgSgKBd8XjOEQkbeedltUhGin3GS
-         g4rkIlb8zPm3kjamsUAkgBKaoFi3iVKxqbVoRLtLSMu1wJBQ2B74/typonSkGqV8EFVG
-         kx/bMZFMZhLQ+XebmTtPPKjNeEhTv8gl+KeUaxY+7gx/pGCQBtbYu+iEz6ebD6gK0h9n
-         TnKxPHtR2diDsMVN3UYeFMtfnjvjIPN9/Y93u88WrRIwgJ1rlDo3y8S+OVzT8HwNLKcP
-         OlGg==
-X-Gm-Message-State: AOJu0YyYBsMylkZuSLfFVotWGzvOVobDfvI2xVYJALAF8HDknnFwHPt1
-	9oNRPzxa4uslScp8OxR6UJd4mxxUGENwmRhH7CozdxOYprJGY2mc5VLHyWZFJDy1AI9yfdi6I0l
-	VXwC8GGpn7dyXYNm2Il6YiQ89Asun3czLLltewenvCWZNutTxWGedysL3ixA=
+        bh=TbKIjAJTq95TmQ/DjS/5x3EA0WbuERBCy7Csb4YbY3E=;
+        b=BNMXpadDwoD6GG2oXpD50DMOmA8bgFifsGx+xoV8UksrH0aDPvhtlTJR3XMUHsb4Ng
+         0B46IC722RYUuyyueO5g1NIZVm+F5F1BHIbBsb2wUNkOUA1TO2uOV8eDpfJ630CFrPXh
+         S/WLuCWSd1JSTD9UApSw2B8JUJ7Cl0eXq6ekw+HcWrSuy9JeUWPLoAqqjkKLaWjgR+5K
+         lL8xVcLBFxFBB2xpK2W+aSepM0rQ3fDW/Blpk/smLlZRR1wRrozKSvnt1lTwumiwB8mC
+         eK5CxudHQZE91i01ll9riInfeZ6KnR42HaiViJKENXWmBo876gxGLbsWTFFrGE+HtW7M
+         46KA==
+X-Gm-Message-State: AOJu0Yz1xx/yb/PehbbYx+xIN2ddLUB1PyPPP+jIq9/KpBXh9cZ/dRFI
+	u8assiisGzANeDVnUm7shN+TfCSKgO3bV2o8eTPHaaGnDHWe4lFXdXArOffircWI4/K6bc2bfTU
+	hNTboTlp4siHy0y2k/Ag9+HzYBimITlc3fabfRsKF7TnMlil7uHqdXr9z0Rk=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4d01:b0:6a3:d72a:8b5d with SMTP id
- 006d021491bc7-6a535b0fbaemr9578602eaf.0.1784700822226; Tue, 21 Jul 2026
- 23:13:42 -0700 (PDT)
-Date: Tue, 21 Jul 2026 23:13:42 -0700
+X-Received: by 2002:a05:6820:1386:b0:6a3:aea9:67da with SMTP id
+ 006d021491bc7-6a5368184b2mr11309694eaf.28.1784701663391; Tue, 21 Jul 2026
+ 23:27:43 -0700 (PDT)
+Date: Tue, 21 Jul 2026 23:27:43 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a605f96.33ea6125.251e5.0005.GAE@google.com>
-Subject: [moderation/CI] Re: wifi: aic: add AIC8800 SDIO FullMAC driver
-From: syzbot ci <syzbot+ci08c21137e0617291@syzkaller.appspotmail.com>
+Message-ID: <6a6062df.83245ca4.2d5e11.000c.GAE@google.com>
+Subject: [moderation/CI] Re: binfmt_misc: fix leaked write-access denial on
+ F-flag interpreter inode
+From: syzbot ci <syzbot+ci0bca28e419a40662@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] wifi: aic: add AIC8800 SDIO FullMAC driver
-https://lore.kernel.org/all/cover.1784544076.git.yanli.yang@bedmex.com
-* [RFC PATCH wireless-next 1/4] wifi: aic: add SDIO BSP and build configuration
-* [RFC PATCH wireless-next 2/4] wifi: aic: add FullMAC firmware and platform interface
-* [RFC PATCH wireless-next 3/4] wifi: aic: add FullMAC WLAN driver
-* [RFC PATCH wireless-next 4/4] wifi: aic: integrate AIC8800 driver
+[v1] binfmt_misc: fix leaked write-access denial on F-flag interpreter inode
+https://lore.kernel.org/all/20260721095659.80690-1-aayushdixit924@gmail.com
+* [PATCH] binfmt_misc: fix leaked write-access denial on F-flag interpreter inode
 
 and found no issues.
 
 Full report is available here:
-https://ci.syzbot.org/series/8373c06b-143f-41c4-a4fa-b53eb7f9eeb1
+https://ci.syzbot.org/series/0630ffd2-2369-4833-82f7-b5ffa3fe109e
 
 ***
 
@@ -74,7 +72,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[chunqiuliu@aicsemi.com dijiaxu@aicsemi.com johannes@sipsolutions.net liheng.wei@bedmex.com linux-wireless@vger.kernel.org yanli.yang@bedmex.com zhirunliu@aicsemi.com]
+[aayushdixit924@gmail.com brauner@kernel.org kees@kernel.org linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org viro@zeniv.linux.org.uk]
 
 If the report looks fine to you, reply with:
 #syz upstream
