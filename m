@@ -1,64 +1,64 @@
 Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D63C43112A5
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 05:44:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF7223264D9
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 05:58:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784699082; cv=none; b=UvZDoyqQ49O3sap1G1idtmotwSqiFyqUVHzZhD1mssUx7wOOytij81GcJVtuEykAs15hpfDqtRU7EE7YbDf1ujSHvrhno9lZ1GhmICquVIGzBYk/QVs9AbqpqM/jyTwB69IodItxZVX82SjK5FnnNLjyWRlysSFQ8/jwZNSVGQA=
+	t=1784699923; cv=none; b=GsChULnTjCKykAH/yxhInsuJxqa10frIhgn3pccxeNuLaVk2KJONfFSo7P1LqreVIiz6lPa/p9Tio3jMOaMBhYfoyjRolNiRVGz+6I/Mhul+oIG/aoe1oXDppsd9Pvw3lFDls/T2BWNDyQlv4mZv98lBIqVUu1jdnidq3CiQRKk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784699082; c=relaxed/simple;
-	bh=kOfHcqUs70cYaeOn+4V0cnpkO9W8JijpZpjNOdur4Zs=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=gDjB3CIcU1xhfTZSROe0HMJjwSDbXRdExiezU7Nv0Osfd54uITZDGR7MKnGSuKTwQ/Pud8HtsFuZoSHaGwFOHxM75/pxHh+EKYDdCedcITIy0BmmmzYJH4JwFtVQey1NaWaiLNTMoLLBENd5F+aSSkgyrsSOZT14qrz7sLxlZ6s=
+	s=arc-20240116; t=1784699923; c=relaxed/simple;
+	bh=YEFiLzpxRihmkkXiBbwoUMO42d2XoPq7NobhR8bAwbs=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=cAGi0ilCKyIZbv42/nBThEr+yBz7BkmDYbmOIr0LsNK03nqrnYE15E4nynjtnYKdrvfs5wxRA488oQvI8Z1TU8ux3wTe4zgDtM8OJWQucXe926lXXrw9oLAVXVjny2OsttEjlMe1G7r0Fgx//t6jgWmEgkkbIyTlYJ2Ite7mFYk=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-49aa4525b82so17896492b6e.1
-        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 22:44:40 -0700 (PDT)
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-49001defc4dso17657657b6e.3
+        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 22:58:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784699080; x=1785303880;
+        d=1e100.net; s=20251104; t=1784699921; x=1785304721;
         h=content-type:cc:to:from:subject:message-id:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=xU5bkjWcPDYNIr12AXpqf24jXQPO6whtkNjIhFSSIgQ=;
-        b=qFnm4nfEz8RgKfH7A/JKEvS+L621AJqX3rRjq5nttKTwudGptIo7gBk87HcWe4fZ3A
-         kIWIoAWZYcEn+nGIOdU/KQG3E5Ps3HjBsgbftKh5dXlZF4qcGRi8GxlVfkT8BdHdELBa
-         xA07ZXdq95HqsP3aYY673xJCjvDhFmWvXdMUHm3EaGoRuOiWHsUWi+ZufsGRY0vofU1/
-         VWrOO1ZQt2LXmULA35bHa/dOhy48k9l8NkUWcXE1lcA8V2EvH+WMsk16bZNihciaR75j
-         XkkLXKwWdp3momJmCamwSwSTri+8iMBy7+86CZ6oMmOEn68UrTvhdTvPOIo8mvgOl8PW
-         UqEw==
-X-Gm-Message-State: AOJu0YzAItPjZp6b5VQB3hh8kzYy8XpB3sHnhPgyQMRPUPRLrIIWrFE5
-	+RWjaTpPuOvjNtYPWu3aOm1u8cMgP1NqZDxNdc7ReO2DU29tcMcAqqOAFi5R3gzMGJNhPzlQgie
-	8SSNgzyEYCsdq76dYu+7YPnDTKNzibnP5mwPyw/3e0ihO/7rOp4bN9RdG9iI=
+        bh=3UGH1k3+zYS6caTp+Zr3xWnuPLUm3LEqBBHsWnl71F8=;
+        b=R2AT8YJkCQW6MUuccBQF2atJvTt7L/qSn5ONxPDTcygoryg911NPexUG7MhnyCdQcC
+         D89e30kqBVPmMwRrVNz0WPJIFQwpnCa22FsA8Uhs6DQH79lpWJxSr6fWYTzoScFPLRvg
+         k85WPREfdDfvspkBtS3XjTcPYkWYxAwUe5xOULEsfDUon4iDoefQWjYGmLhhSTmHFjuY
+         I142U/iGSEazVrsKpc3q68t85vIzGcrqvCCH6ZV0DO/c1f/xCR78tXzrSDloT0tTAP/B
+         JLfr9XJp3yh2peq6TIZi1XbxfqtS/+19QG8fFOAJEbXeIWsefvZG1FGON4mSxRCqG2gD
+         y3XA==
+X-Gm-Message-State: AOJu0YyMorTI+aNgleVfnKE4E8i6knJA7Jj9Qc7caQqCP/Ni0Lf6QMSl
+	wu6oLnOVXjPYvVS58+8IAybGDMTSSAYVQQPXSdKk4d+9rvfE6gaVawC7aiRykv5hL/NnsyhnBGL
+	KoXzgUp0+YSalIZsE1M/IJcgc9HYPqgad0gOS3C5TygyfLDTG9Pvf8Z1qZ8g=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1b2b:b0:497:da97:8c7b with SMTP id
- 5614622812f47-4a4d0392492mr12842650b6e.31.1784699079815; Tue, 21 Jul 2026
- 22:44:39 -0700 (PDT)
-Date: Tue, 21 Jul 2026 22:44:39 -0700
+X-Received: by 2002:a05:6808:444b:b0:4a2:ca6b:4214 with SMTP id
+ 5614622812f47-4a4d0357287mr12598961b6e.29.1784699920826; Tue, 21 Jul 2026
+ 22:58:40 -0700 (PDT)
+Date: Tue, 21 Jul 2026 22:58:40 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a6058c7.42649fcc.22d900.0011.GAE@google.com>
-Subject: [moderation/CI] Re: MAINTAINERS: update Nico Pache's email address
-From: syzbot ci <syzbot+cicffde6c8822bbee3@syzkaller.appspotmail.com>
+Message-ID: <6a605c10.83245ca4.2d5e11.000a.GAE@google.com>
+Subject: [moderation/CI] Re: phonet: pep: fix use-after-free in pep_get_sb()
+From: syzbot ci <syzbot+ci2a8a982944f27538@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] MAINTAINERS: update Nico Pache's email address
-https://lore.kernel.org/all/20260721101811.115954-1-nico.pache@linux.dev
-* [PATCH] MAINTAINERS: update Nico Pache's email address
+[v1] phonet: pep: fix use-after-free in pep_get_sb()
+https://lore.kernel.org/all/20260721-phonet_get_sb_uaf-v1-1-95fd7881cc4e@debian.org
+* [PATCH net] phonet: pep: fix use-after-free in pep_get_sb()
 
 and found no issues.
 
 Full report is available here:
-https://ci.syzbot.org/series/d391f29e-6c32-4f8f-a1ed-ce39c86b0150
+https://ci.syzbot.org/series/0400a16e-2694-4b96-a8f1-26b48ffb2073
 
 ***
 
@@ -71,7 +71,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[akpm@linux-foundation.org david@kernel.org linux-kernel@vger.kernel.org linux-mm@kvack.org nico.pache@linux.dev npache@redhat.com]
+[courmisch@gmail.com davem@davemloft.net edumazet@google.com horms@kernel.org kernel-team@meta.com kuba@kernel.org leitao@debian.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com remi.denis-courmont@nokia.com stable@vger.kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
