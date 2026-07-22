@@ -1,64 +1,65 @@
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF7223264D9
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 05:58:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5161D14A60F
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 06:02:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784699923; cv=none; b=GsChULnTjCKykAH/yxhInsuJxqa10frIhgn3pccxeNuLaVk2KJONfFSo7P1LqreVIiz6lPa/p9Tio3jMOaMBhYfoyjRolNiRVGz+6I/Mhul+oIG/aoe1oXDppsd9Pvw3lFDls/T2BWNDyQlv4mZv98lBIqVUu1jdnidq3CiQRKk=
+	t=1784700163; cv=none; b=p3B7ZpUjRyoGBr4ScAllo9IhGVH7hILec5GjKrOk7sCTQ1NsA/r2K+V8a1UVvgeM+tz0zlZmxanvvuQbnR0af/Hl2P39/fauNN0E5uX7wLWJls7OxOfiWLS+gUgoVwFRnjsA3WGo5Om93zCcDBaALc94RH1UorjpfVUHTyJwWq0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784699923; c=relaxed/simple;
-	bh=YEFiLzpxRihmkkXiBbwoUMO42d2XoPq7NobhR8bAwbs=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=cAGi0ilCKyIZbv42/nBThEr+yBz7BkmDYbmOIr0LsNK03nqrnYE15E4nynjtnYKdrvfs5wxRA488oQvI8Z1TU8ux3wTe4zgDtM8OJWQucXe926lXXrw9oLAVXVjny2OsttEjlMe1G7r0Fgx//t6jgWmEgkkbIyTlYJ2Ite7mFYk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
+	s=arc-20240116; t=1784700163; c=relaxed/simple;
+	bh=bN2evtcW05PJ4mM8MGuuQttm3pGMlF4eEbRe0ZEu4pY=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=M8Ty00PkMVXonruk976BLA3Z5py33PeJ+zIu45Hb3wtpU/UVo3RuSXiIe4oFyNZcKZ+RUt71SC1fQ2pYIQhZoxFhxjsL5f0N9MLPFt/1BkqjEL2IF9E320i0x7QW6G/dJK5VV0KXEKD376bMLeao3U4hQAiEqH2L8e+kiKaE+yo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-49001defc4dso17657657b6e.3
-        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 22:58:41 -0700 (PDT)
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6a374304efbso15287357eaf.3
+        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 23:02:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784699921; x=1785304721;
+        d=1e100.net; s=20251104; t=1784700161; x=1785304961;
         h=content-type:cc:to:from:subject:message-id:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=3UGH1k3+zYS6caTp+Zr3xWnuPLUm3LEqBBHsWnl71F8=;
-        b=R2AT8YJkCQW6MUuccBQF2atJvTt7L/qSn5ONxPDTcygoryg911NPexUG7MhnyCdQcC
-         D89e30kqBVPmMwRrVNz0WPJIFQwpnCa22FsA8Uhs6DQH79lpWJxSr6fWYTzoScFPLRvg
-         k85WPREfdDfvspkBtS3XjTcPYkWYxAwUe5xOULEsfDUon4iDoefQWjYGmLhhSTmHFjuY
-         I142U/iGSEazVrsKpc3q68t85vIzGcrqvCCH6ZV0DO/c1f/xCR78tXzrSDloT0tTAP/B
-         JLfr9XJp3yh2peq6TIZi1XbxfqtS/+19QG8fFOAJEbXeIWsefvZG1FGON4mSxRCqG2gD
-         y3XA==
-X-Gm-Message-State: AOJu0YyMorTI+aNgleVfnKE4E8i6knJA7Jj9Qc7caQqCP/Ni0Lf6QMSl
-	wu6oLnOVXjPYvVS58+8IAybGDMTSSAYVQQPXSdKk4d+9rvfE6gaVawC7aiRykv5hL/NnsyhnBGL
-	KoXzgUp0+YSalIZsE1M/IJcgc9HYPqgad0gOS3C5TygyfLDTG9Pvf8Z1qZ8g=
+        bh=jAQwQk57uXM7ZlviKWyqY+eVnP5P0wR7lRiiLOshFt0=;
+        b=f4RVellBMCZrkrRWQFojEQ4uICL7v47gStHSMUsGC8K5/d79zPxE83Ve5r9MjDkGH7
+         QqNOgT9r5oKz8ndNxoVTe8x+Uqp80MyZo66bu+4eUK3BC5M0Y6NwoyuWW4NF3Xe/SSCE
+         23InSFEakZKEkTUOLhShc0OtVtfQR5TTahed93BNeBT54TJKZ6S604lBZLbFUbqxkMJf
+         UCJDsn7w6HnvkvjQ/CClIRzCLHZ4GTwjkWafErvzNZ/5NZAL4MeNeDWw3hfc+KflK45o
+         on0gUru8D0DJS3oHhjx56uEv7yXRkCe3I8ZumrEW43V/obctfWDD1FiWMbnQiNxLcFGh
+         kXAA==
+X-Gm-Message-State: AOJu0YxvpxVfZKug7c8PnORFpP7boYWFlZ3f4B8SVJl1oasu7qR8ZabF
+	Iv8t8fRK8uxXSGb6KGm6r+sFazXRgVeS+QtaajoOdn6y4aYFeYjSCvizHpTUdqWOwsxq5G9lVuT
+	EnePAmNuadSjxl/ge89BiHJClOd+w9UQoHvSwzFX3VHQhJJtXy7RdTCyBtgw=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:444b:b0:4a2:ca6b:4214 with SMTP id
- 5614622812f47-4a4d0357287mr12598961b6e.29.1784699920826; Tue, 21 Jul 2026
- 22:58:40 -0700 (PDT)
-Date: Tue, 21 Jul 2026 22:58:40 -0700
+X-Received: by 2002:a05:6820:4d01:b0:6a3:e0fb:6f39 with SMTP id
+ 006d021491bc7-6a5367fb337mr10251482eaf.23.1784700161261; Tue, 21 Jul 2026
+ 23:02:41 -0700 (PDT)
+Date: Tue, 21 Jul 2026 23:02:41 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a605c10.83245ca4.2d5e11.000a.GAE@google.com>
-Subject: [moderation/CI] Re: phonet: pep: fix use-after-free in pep_get_sb()
-From: syzbot ci <syzbot+ci2a8a982944f27538@syzkaller.appspotmail.com>
+Message-ID: <6a605d01.83245ca4.2d5e11.000b.GAE@google.com>
+Subject: [moderation/CI] Re: phonet: check register_netdevice_notifier() error
+ in phonet_device_init()
+From: syzbot ci <syzbot+ci60628a029dae151a@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] phonet: pep: fix use-after-free in pep_get_sb()
-https://lore.kernel.org/all/20260721-phonet_get_sb_uaf-v1-1-95fd7881cc4e@debian.org
-* [PATCH net] phonet: pep: fix use-after-free in pep_get_sb()
+[v4] phonet: check register_netdevice_notifier() error in phonet_device_init()
+https://lore.kernel.org/all/20260721093956.162617-1-heminhong@kylinos.cn
+* [PATCH net v4] phonet: check register_netdevice_notifier() error in phonet_device_init()
 
 and found no issues.
 
 Full report is available here:
-https://ci.syzbot.org/series/0400a16e-2694-4b96-a8f1-26b48ffb2073
+https://ci.syzbot.org/series/d306dbe6-2048-4a31-bb81-b363ac844a11
 
 ***
 
@@ -71,7 +72,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[courmisch@gmail.com davem@davemloft.net edumazet@google.com horms@kernel.org kernel-team@meta.com kuba@kernel.org leitao@debian.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com remi.denis-courmont@nokia.com stable@vger.kernel.org]
+[courmisch@gmail.com davem@davemloft.net edumazet@google.com heminhong@kylinos.cn horms@kernel.org kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com remi.denis-courmont@nokia.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
