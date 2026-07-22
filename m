@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E568A36197C
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 16:04:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3970439F82
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 16:32:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784736268; cv=none; b=LfEQ/AtDD9lt7B8mTTz3CHBQ37ZGsfjS1puQcnBVjtXbmsBtc2v1YckpyFVJssKrGHyXH00//SpRVVOxP+gY3FU+l48y0zs2iYwK4AkgbED6nSk30R83TFsL9/+IjF1K6V3xbZfBkeZ519a5Y200MepqZNz5UY+nHgK/LZkdrPc=
+	t=1784737979; cv=none; b=redKCaPaUbjXkMOnOK5UOf/nKIEqO0VGz2/zgq98tM+lZNPMbUvsIItm4dluFovMh7sPj0Lenu1x8ADjsfl5PNvmwce5N/NPlPRmDPftVD0vni9IJTPnZEkM0meIvZfb3MOpTbAwkK3UWZd/CSJ69vf5pD506eCmCyyM/ZEfYMw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784736268; c=relaxed/simple;
-	bh=r4pSEgFeD3rt8Yb0ageGidBsORCHx6CcT0AbIhFC3Dw=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=aXb47I1oIYnvCxnK183QjgZ4tiwCppMpQEhY0ff8POyX0g7jEilx0xRTgkDVM05mifSRSJtf/98oGDFw8yws/qcCo26+z+sTRHcH4MHImiVmrwcs0ezb5bdvpd3a1wQsaqoszxSOfsIW4FRbq92yiIo/THSRw7CHQQCtQ6VX44g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Il1KSRTa; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784737979; c=relaxed/simple;
+	bh=eQ0He0lbm2Sip6Lcp+/BRasYd+3NUCGKoccPriCtb5E=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=QrBDJDVIWedvgmjAkMVQJCWAVGImdrXTHv2bwefXgo7xN1ILF5wwpqXkeLOJ3oduD1a4+P+XgZwcB1WAWbJOhtXh4ZN4JfZ/lklWlhcoqyB4+xDaT5/wbyPypg2FM9R+nMGXlcaVNzSgzWp65HNY6ZKNbjM+C5OZS91x05rrAIc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=loBCWeyx; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Il1KSRTa"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 654EA1F00A3A;
-	Wed, 22 Jul 2026 16:04:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="loBCWeyx"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6344B1F00A3A;
+	Wed, 22 Jul 2026 16:32:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784736266;
-	bh=k0DySdt4cFe6uLhk2SInCSD+zAIDy/ZuTxujlC8RHwc=;
+	s=k20260515; t=1784737976;
+	bh=Qb3pX1a6X8jbk9eq4JjBWbdRTWdMsLAbyqT0VSSRFok=;
 	h=From:To:Cc:Subject:Date;
-	b=Il1KSRTaZ+yoR+2hBjSEq7pw+9McoKKoV5iC23cPxz6oQhsdJFKu0R+qFipVThHAt
-	 avFGPvH3/ZY7Khhi0J0WXtmzi+0xlAH8BbMJNtPZDwjECUng+1Lhm7SPEzExNrgaVJ
-	 7+8yUrYaykZWsJsG2eVG4rQjM6Re0EucHNNo8nOuHrs3c/L0d1DgZkWaf6E9TbRBBn
-	 WtVhcLChB6Umwc0zCEtGppNtznk0CctK54nwDbdGdO3QikxbzVapNdHaops2f+jLM7
-	 RJ1tmKRRJyFYAxk01UD61MfNEVVzLkCIzlEWATsR+3kZ6wwlWzhcsbV8A9jMb+lC/k
-	 +WIKnnjRzxggQ==
+	b=loBCWeyxC1h0A81RJ5k9e2Z/TPOU40LydOvw1lxsvKqhhqt+QI6nPjK5zwe9CXYO+
+	 b9h7h3A6ai93fmboRTsYqla68Klxe8VDwFrh6M9VDWKP7HsnBMUG/5RZpZUN6PBe/L
+	 kyf6zOlrLA05NYBhnbVDfNhZBIoffAl16TdiQSmEcFCkONC3TBYNT1qpRut93/LlDL
+	 erYnaH9vlPjq1kgdjT0021cMZf+qjoo9j7AwslJ/CsuPB7IdpA8anwtb+aLv44pPnz
+	 iu5I6dFNI4Uyl4BMQ8b10dyHKgq5HcZNzd8jsGjWn73LypScjISmjLqYBQ4+hVokwt
+	 D7y4f2aFOeLwA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] fbdev: core: Add bounds checking to drawing functions
-Message-ID: <8fa4f66c-506a-4929-9906-9cec63760a7b@mail.kernel.org>
+Cc: sst@poczta.fm, syzbot@lists.linux.dev
+Subject: [PATCH RFC v4] wifi: mac80211: reject station association if AP is not started
+Message-ID: <fc12db53-baa2-4eb0-ae53-9f0469eafdc9@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,147 +38,82 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 22 Jul 2026 16:04:26 +0000 (UTC)
+Date: Wed, 22 Jul 2026 16:32:56 +0000 (UTC)
 
-A vmalloc-out-of-bounds write can occur in the framebuffer drawing
-functions. This happens when fbcon ignores a failure from vc_resize()
-(e.g., due to a memory allocation failure) and proceeds to draw the console
-using the old, larger dimensions that no longer fit within the new, smaller
-framebuffer resolution. This mismatch causes the calculated drawing
-coordinates to underflow, resulting in massive positive numbers.
+If an interface is changed to AP mode but not started, its channel context
+configuration (chanctx_conf) remains NULL. If a station is then added to
+this interface, the kernel may automatically set the
+NL80211_STA_FLAG_ASSOCIATED flag for compatibility with older userspace
+applications.
 
-Because the low-level drawing functions (fb_imageblit, fb_fillrect, and
-fb_copyarea) previously lacked bounds checking, they blindly used these
-invalid coordinates to calculate memory addresses, leading to a
-vmalloc-out-of-bounds write.
+When this flag is set, sta_apply_auth_flags() attempts to initialize rate
+control for the station by calling rate_control_rate_init_all_links(). This
+eventually leads to rate_control_rate_init(), which dereferences the NULL
+chanctx_conf, triggering a WARN_ON:
 
-While it might seem tempting to handle the error in fbcon_modechanged(),
-doing so cleanly is difficult because the hardware resolution and rotation
-state have already been altered by the time the failure occurs. Instead,
-the most robust and idiomatic solution is to implement defense-in-depth by
-adding bounds checking directly to the low-level drawing functions. This
-protects all framebuffer drivers from out-of-bounds accesses, regardless of
-whether the invalid coordinates come from fbcon or another source.
-
-Add bounds checks at the beginning of the inline functions in
-drivers/video/fbdev/core/fb_imageblit.h, fb_fillrect.h, and fb_copyarea.h.
-These checks validate the destination coordinates (dx, dy) and dimensions
-(width, height) against the virtual resolution of the framebuffer
-(p->var.xres_virtual and p->var.yres_virtual). Because the coordinates and
-dimensions are unsigned 32-bit integers (u32), any negative coordinate
-resulting from an underflow will wrap around to a huge positive number. The
->= xres_virtual (or yres_virtual) checks safely and correctly catch these
-underflows. If the bounds check fails, the function simply returns early,
-dropping the invalid drawing operation and protecting kernel memory.
-
-BUG: KASAN: vmalloc-out-of-bounds in fb_write_offset
-drivers/video/fbdev/core/sysmem.h:30 [inline]
-BUG: KASAN: vmalloc-out-of-bounds in fb_bitmap_2ppw
-drivers/video/fbdev/core/fb_imageblit.h:364 [inline]
-BUG: KASAN: vmalloc-out-of-bounds in fb_bitmap_imageblit
-drivers/video/fbdev/core/fb_imageblit.h:462 [inline]
-BUG: KASAN: vmalloc-out-of-bounds in fb_imageblit
-drivers/video/fbdev/core/fb_imageblit.h:492 [inline]
-BUG: KASAN: vmalloc-out-of-bounds in sys_imageblit+0xff5/0x1e40
-drivers/video/fbdev/core/sysimgblt.c:24
-Write of size 8 at addr ffffc90005101fc0 by task syz.0.17/6108
-
+WARNING: net/mac80211/rate.c:51 at rate_control_rate_init+0x5a6/0x630
+...
 Call Trace:
  <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_address_description+0x55/0x1e0 mm/kasan/report.c:378
- print_report+0x58/0x70 mm/kasan/report.c:482
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- fb_write_offset drivers/video/fbdev/core/sysmem.h:30 [inline]
- fb_bitmap_2ppw drivers/video/fbdev/core/fb_imageblit.h:364 [inline]
- fb_bitmap_imageblit drivers/video/fbdev/core/fb_imageblit.h:462 [inline]
- fb_imageblit drivers/video/fbdev/core/fb_imageblit.h:492 [inline]
- sys_imageblit+0xff5/0x1e40 drivers/video/fbdev/core/sysimgblt.c:24
- drm_fbdev_shmem_defio_imageblit+0x2c/0x110
- drivers/gpu/drm/drm_fbdev_shmem.c:39
- cw_putcs_aligned drivers/video/fbdev/core/fbcon_cw.c:111 [inline]
- cw_putcs+0x1626/0x18e0 drivers/video/fbdev/core/fbcon_cw.c:159
- fbcon_putcs+0x3c5/0x5a0 drivers/video/fbdev/core/fbcon.c:1392
- do_update_region+0x389/0x440 drivers/tty/vt/vt.c:656
- redraw_screen+0xa3d/0x1020 drivers/tty/vt/vt.c:1008
- fbcon_rotate drivers/video/fbdev/core/fbcon.c:230 [inline]
- rotate_store+0x32d/0x500 drivers/video/fbdev/core/fbcon.c:3171
- kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x612/0xba0 fs/read_write.c:687
- ksys_write+0x150/0x270 fs/read_write.c:739
+ rate_control_rate_init_all_links+0xf4/0x190 net/mac80211/rate.c:84
+ sta_apply_auth_flags+0x1bc/0x430 net/mac80211/cfg.c:2152
+ sta_apply_parameters+0x126d/0x1b10 net/mac80211/cfg.c:2618
+ ieee80211_add_station+0x3de/0x700 net/mac80211/cfg.c:2684
+ rdev_add_station+0xfc/0x290 net/wireless/rdev-ops.h:201
+ nl80211_new_station+0x1b4e/0x1fd0 net/wireless/nl80211.c:9505
 
-Fixes: eabb03293087 ("fbdev: Refactoring the fbcon packed pixel drawing routines")
+Fix this by rejecting the addition or modification of a station to the
+associated state if the AP has not been started (chanctx_conf is NULL).
+Exempt Multi-Link Operation (MLO) interfaces from this check, as they
+handle chanctx_conf per-link rather than globally on the VIF.
+
+Fixes: 55de908ab292 ("mac80211: use channel contexts")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+5a40432dfe8f86ee657a@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=5a40432dfe8f86ee657a
-Link: https://syzkaller.appspot.com/ai_job?id=46e0f6f1-3c42-4372-a8ba-1f6573bdc0ae
-To: "Helge Deller" <deller@gmx.de>
-To: <dri-devel@lists.freedesktop.org>
-To: <linux-fbdev@vger.kernel.org>
-To: "Simona Vetter" <simona@ffwll.ch>
-To: "Zsolt Kajtar" <soci@c64.rulez.org>
+Reported-by: syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=9bdc0c5998ab45b05030
+Link: https://syzkaller.appspot.com/ai_job?id=64f3e3ae-e43e-4917-b403-f9b7799fe1bc
+To: "Johannes Berg" <johannes@sipsolutions.net>
+To: <linux-wireless@vger.kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/drivers/video/fbdev/core/fb_copyarea.h b/drivers/video/fbdev/core/fb_copyarea.h
-index 53f1d5385..f4fc86a51 100644
---- a/drivers/video/fbdev/core/fb_copyarea.h
-+++ b/drivers/video/fbdev/core/fb_copyarea.h
-@@ -386,6 +386,16 @@ static inline void fb_copyarea(struct fb_info *p, const struct fb_copyarea *area
- 	struct fb_address src = dst;
- 	bool rev_copy = (dy > sy) || (dy == sy && area->dx > area->sx);
- 
-+	if (area->dx >= p->var.xres_virtual ||
-+	    area->dy >= p->var.yres_virtual ||
-+	    area->sx >= p->var.xres_virtual ||
-+	    area->sy >= p->var.yres_virtual ||
-+	    area->width > p->var.xres_virtual - area->dx ||
-+	    area->height > p->var.yres_virtual - area->dy ||
-+	    area->width > p->var.xres_virtual - area->sx ||
-+	    area->height > p->var.yres_virtual - area->sy)
-+		return;
+v4:
+- Avoid unnecessary line wrapping in the chanctx_conf check.
+
+v3:
+- Added an empty line after the newly added code block for better readability.
+https://lore.kernel.org/all/9524f34c-7766-4543-a49c-a9fe48fd9d1e@mail.kernel.org/T/
+
+v2:
+- Moved the chanctx_conf check inside the WLAN_STA_RATE_CONTROL check block.
+- Removed a phrase from the commit description as requested by reviewers.
+https://lore.kernel.org/all/79cbf145-6652-4e15-be67-f7974ebc29cb@mail.kernel.org/T/
+
+v1:
+https://lore.kernel.org/all/8e8a5122-a09e-43b2-b42f-4c73b021b173@mail.kernel.org/T/
+---
+diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
+index 3b58af59f..830c9fc95 100644
+--- a/net/mac80211/cfg.c
++++ b/net/mac80211/cfg.c
+@@ -2148,8 +2148,13 @@ static int sta_apply_auth_flags(struct ieee80211_local *local,
+ 		 * well. Some drivers require rate control initialized
+ 		 * before drv_sta_state() is called.
+ 		 */
+-		if (!test_sta_flag(sta, WLAN_STA_RATE_CONTROL))
++		if (!test_sta_flag(sta, WLAN_STA_RATE_CONTROL)) {
++			if (!ieee80211_vif_is_mld(&sta->sdata->vif) &&
++			    !rcu_access_pointer(sta->sdata->vif.bss_conf.chanctx_conf))
++				return -EINVAL;
 +
- 	if (rev_copy) {
- 		dy += height - 1;
- 		sy += height - 1;
-diff --git a/drivers/video/fbdev/core/fb_fillrect.h b/drivers/video/fbdev/core/fb_fillrect.h
-index f366670a5..37f55adb2 100644
---- a/drivers/video/fbdev/core/fb_fillrect.h
-+++ b/drivers/video/fbdev/core/fb_fillrect.h
-@@ -261,6 +261,12 @@ static inline void fb_fillrect(struct fb_info *p, const struct fb_fillrect *rect
- 	struct fb_address dst = fb_address_init(p);
- 	struct fb_pattern pattern;
+ 			rate_control_rate_init_all_links(sta);
++		}
  
-+	if (rect->dx >= p->var.xres_virtual ||
-+	    rect->dy >= p->var.yres_virtual ||
-+	    rect->width > p->var.xres_virtual - rect->dx ||
-+	    rect->height > p->var.yres_virtual - rect->dy)
-+		return;
-+
- 	fb_address_forward(&dst, rect->dy * bits_per_line + rect->dx * bpp);
- 
- 	pattern.pixels = pixel_to_pat(bpp, palette ? palette[rect->color] : rect->color);
-diff --git a/drivers/video/fbdev/core/fb_imageblit.h b/drivers/video/fbdev/core/fb_imageblit.h
-index 3b2bb4946..5ec17d7b9 100644
---- a/drivers/video/fbdev/core/fb_imageblit.h
-+++ b/drivers/video/fbdev/core/fb_imageblit.h
-@@ -486,6 +486,12 @@ static inline void fb_imageblit(struct fb_info *p, const struct fb_image *image)
- 	struct fb_reverse reverse = fb_reverse_init(p);
- 	const u32 *palette = fb_palette(p);
- 
-+	if (image->dx >= p->var.xres_virtual ||
-+	    image->dy >= p->var.yres_virtual ||
-+	    image->width > p->var.xres_virtual - image->dx ||
-+	    image->height > p->var.yres_virtual - image->dy)
-+		return;
-+
- 	fb_address_forward(&dst, image->dy * bits_per_line + image->dx * bpp);
- 
- 	if (image->depth == 1)
+ 		ret = sta_info_move_state(sta, IEEE80211_STA_ASSOC);
+ 		if (ret)
 
 
-base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
+base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
