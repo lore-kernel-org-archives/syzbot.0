@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63F1C4457A8
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 18:39:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 929ED4457AF
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 18:40:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784745579; cv=none; b=SPus+QGcgBVFbG3o+48op5dcsYZ6a0bTX/uSZg1qQOSeDB2XoR6dxoejRzGh6oCxeGRw51v3vXduVSLgAX837MxPnNz3PSy83sbjtr5LWfCOKYLF3vX1BUKrdMQnMd8QPzLj08ew0rppll7/hSOHB3G3/tv981zPC/zAxND1JYo=
+	t=1784745639; cv=none; b=au7tOGKg5LWxSpO5d6ZmT7dYy//mu+sro4ZfAE8MT6JQAEhqBKc8rXCpjGrK2WL0jnTof8RZyEPLWK5mc9tnAKs0YMYVxHLU2NnHpsAAl5zzmf5RJBDn0gqq0TzilBpiUjnaWKXaYdUHxODlBLZ2v7sQzN/COfrRD0igyp6YJeY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784745579; c=relaxed/simple;
-	bh=TbI6f5j0GPGINL6xEKxCAAjdjrWiECsDrF0HdmKY3Zs=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=KDqBCThdbSX6Nui89Z/IEyEKECtE0WP//fkIcseH7RFJD/bjPugxeMjAbNDUNYXWfot7wmkGYPSfshpur3MnA+8oHMc6O86vg8f6tX+b0+/qTiIp6iBXC2P8+v0nUD3zZH5hmij4qGX2ZlFpJmI8Sxq2ZijRY+1M9XUHAJgmyvs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NG5uPtbV; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784745639; c=relaxed/simple;
+	bh=eauhpAxUtSfVU5G+T9XGFL3tAyCX0tC+EnM6Ua6tVLk=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=LoQCyvgXesfgMgkFHX22c0QUXU3tEul6X7HijqRSroQBphYLslqEiOm5SYRPcGgHv6kvMV8SbqQVZVaM6+h21nXxzKtD0VSvdkbXAaIcV/z9qtCL6eVsTbb3+VE0hZC83GINFsFysn9c6rwANAtReKp0857cCLWmfPAgJ6SrQ7o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hwhIYekb; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NG5uPtbV"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id ECD241F000E9;
-	Wed, 22 Jul 2026 18:39:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hwhIYekb"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id EBBD01F000E9;
+	Wed, 22 Jul 2026 18:40:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784745578;
-	bh=Wcw/JxobscY3UWNSaL0c6tWhXHyT+qkJ2DentzNSY6c=;
+	s=k20260515; t=1784745638;
+	bh=Dxi2V/P9VRXZq4CS8Fa0wZh5xph7tB6T5gyVEbvxHqs=;
 	h=From:To:Cc:Subject:Date;
-	b=NG5uPtbVjqcEHX9hE/epagEdnmMRw5mhel6F7ctoZtSejJDL4PgtwoQWgBIFOLM7J
-	 cpCYeMEJwjaBlAT/PpJcoiI+2XFxvw3iqbcV/8PWL9f+7ZMxhr89L3eI1QTDhja1+i
-	 /p9H5FO22BulB/zUXzB7dTwGNR8+k3MiWzyBXun9PCdjFDKMyfSowB5vRCi4nappN5
-	 2canmxVfSXC+1HBloyaAP2DuehypHITlHstZoUWJSQ1s8nXUqdjXVjsRQ9EPAT62vJ
-	 cl+muaNhK4LGXtACkoydtl98iOhUJez01C9Ke5qEVZ4/mFJdUQSXUIiqp4RVcRtDE/
-	 morvvOjKlNS3g==
+	b=hwhIYekbtt+xKurvdUjqYFMRD/ttpgfc/ItzZ0pzas3xMkIjv6E+3Syenb/5qGtGn
+	 GkIZoz0in0AYxNSj5lzELj2uIi9sCBo8dHfkWQEnNJtpOx2qqgLnNUe1kiajLLQlga
+	 fUQ0dT9wXO1Ss5DA8oVWvanJfeVnImUaOcXMzr/HwwSO/3OWDBsOtFzkLKrTn5+BRc
+	 VO6kFCfnWMdOQirUqDqEytylNNN8kNXPHta75sbBtpIBRDVBBuge30TD13OCyceuN/
+	 KFoT2gcsezjyp0S+fVX11gx2OAfFCKt7cIrWc4/n+XpIXnwDBHu1JBG9oR1mcCZfyv
+	 B7aRU8zolI+GA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] tipc: fix spinlock recursion in tipc_sk_rcv()
-Message-ID: <01641937-e30d-43dd-ba9c-95b3d2ae5691@mail.kernel.org>
+Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v3] nbd: skip queue limits update for size-only reconfigure
+Message-ID: <130f544a-70fd-4ca0-91e8-08824170c91b@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,195 +38,143 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 22 Jul 2026 18:39:37 +0000 (UTC)
+Date: Wed, 22 Jul 2026 18:40:37 +0000 (UTC)
 
-An RCU stall (infinite loop / livelock) can occur due to a spinlock
-recursion bug in the TIPC subsystem. Specifically, tipc_sk_rcv() can be
-called recursively on the same CPU and try to acquire a socket spinlock
-that is already held higher up in the call stack. Because it uses
-spin_trylock_bh(), it fails to acquire the lock and enters an infinite
-loop.
+Commit 242a49e5c878 ("nbd: freeze the queue for queue limits updates")
+correctly added queue freezing for live updates of real queue limits.
+However, nbd_set_size() is also used for capacity-only generic netlink
+updates, so the freeze is unnecessarily broad for the reported request.
 
-The issue is triggered by the concurrent execution of sendmsg() and
-setsockopt() on a connected TIPC socket pair (fd0 and fd1), which reside on
-the same node (loopback).
+When an NBD server becomes unresponsive, it leaves I/O in flight. An
+unnecessary queue freeze during a size-only reconfigure will wait forever
+for these in-flight I/Os to complete while the global genl_mutex is held,
+leading to a system-wide deadlock.
 
-The sequence of events leading to the livelock is:
-1. setsockopt locks fd0 (acquires the socket mutex sk->sk_lock.owned).
-While fd0 is locked, sendmsg on fd1 sends messages to fd0. Since fd0 is
-owned by the user, tipc_sk_enqueue() adds these messages to fd0's backlog
-queue.
-2. setsockopt processes SO_RCVBUFFORCE and reduces fd0's sk_rcvbuf to the
-minimum value (SOCK_MIN_RCVBUF, 2048).
-3. setsockopt finishes and calls release_sock(fd0). Seeing a non-empty
-backlog, it calls __release_sock(fd0).
-4. __release_sock(fd0) drops fd0's spinlock (sk->sk_lock.slock) and calls
-sk_backlog_rcv() -> tipc_sk_backlog_rcv() -> tipc_sk_filter_rcv() to
-process the backlog.
-5. Because sk_rcvbuf was drastically reduced, the receive queue limit is
-exceeded. tipc_sk_filter_rcv(fd0) rejects the message (TIPC_ERR_OVERLOAD)
-and queues a reject message to xmitq.
-6. tipc_sk_backlog_rcv(fd0) calls tipc_node_distr_xmit(&xmitq) to send the
-reject message back to fd1. Since fd1 is on the same node, tipc_node_xmit()
-synchronously calls tipc_sk_rcv(fd1).
-7. tipc_sk_rcv(fd1) successfully locks fd1's spinlock and calls
-tipc_sk_enqueue(fd1) -> tipc_sk_filter_rcv(fd1) ->
-tipc_sk_filter_connect(fd1).
-8. tipc_sk_filter_connect(fd1) sees that fd1's sk_write_queue is not empty.
-It calls tipc_sk_push_backlog(fd1).
-9. tipc_sk_push_backlog(fd1) calls tipc_node_xmit() to send the queued
-messages to fd0. This synchronously calls tipc_sk_rcv(fd0).
-10. tipc_sk_rcv(fd0) successfully locks fd0's spinlock (as __release_sock
-dropped it) and calls tipc_sk_enqueue(fd0). Since fd0 is still owned by the
-user, it tries to add the message to the backlog. The backlog is full, so
-it rejects the message again, sending a new reject message back to fd1.
-11. The new reject message is sent to fd1 via tipc_node_xmit() ->
-tipc_sk_rcv(fd1). tipc_sk_rcv(fd1) tries to lock fd1's spinlock. However,
-fd1's spinlock is already held by the outer tipc_sk_rcv(fd1) at step 7.
+A size-only reconfigure can update config->bytesize and disk capacity
+directly because the effective block size and all other queue limits stay
+unchanged.
 
-In tipc_sk_rcv(), if spin_trylock_bh() fails, it assumes another CPU holds
-the lock, so it just continues the loop without dequeuing the message from
-inputq. Because the lock is held by the current CPU, it will never be
-released, and the while loop spins infinitely, causing the RCU stall:
+This patch introduces nbd_size_set() to handle size-only updates directly
+without freezing the queue or committing queue limits. Capacity-only
+generic netlink reconfiguration no longer freezes the queue, while startup
+and real block-size changes continue to use the existing frozen limits
+update via nbd_set_size().
 
-rcu: INFO: rcu_preempt self-detected stall on CPU
-...
+INFO: task nbd-client:6285 blocked for more than 143 seconds.
 Call Trace:
  <TASK>
- __raw_spin_trylock_bh include/linux/spinlock_api_smp.h:207 [inline]
- _raw_spin_trylock_bh+0x60/0x70 kernel/locking/spinlock.c:150
- spin_trylock_bh include/linux/spinlock.h:414 [inline]
- tipc_sk_rcv+0x420/0x2b50 net/tipc/socket.c:2500
- tipc_node_xmit+0x205/0xf10 net/tipc/node.c:1701
- tipc_node_xmit_skb net/tipc/node.c:1766 [inline]
- tipc_node_distr_xmit+0x2cd/0x400 net/tipc/node.c:1781
- tipc_sk_rcv+0x2539/0x2b50 net/tipc/socket.c:2505
- tipc_node_xmit+0x205/0xf10 net/tipc/node.c:1701
- tipc_sk_push_backlog net/tipc/socket.c:1313 [inline]
- tipc_sk_filter_connect net/tipc/socket.c:2259 [inline]
- tipc_sk_filter_rcv+0x17f3/0x3210 net/tipc/socket.c:2368
- tipc_sk_enqueue net/tipc/socket.c:2449 [inline]
- tipc_sk_rcv+0x877/0x2b50 net/tipc/socket.c:2501
- tipc_node_xmit+0x205/0xf10 net/tipc/node.c:1701
- tipc_node_xmit_skb net/tipc/node.c:1766 [inline]
- tipc_node_distr_xmit+0x2cd/0x400 net/tipc/node.c:1781
- tipc_sk_backlog_rcv+0x1ad/0x270 net/tipc/socket.c:2416
- sk_backlog_rcv include/net/sock.h:1190 [inline]
- __release_sock+0x28b/0x390 net/core/sock.c:3261
- release_sock+0x190/0x260 net/core/sock.c:3860
- sockopt_release_sock net/core/sock.c:1163 [inline]
- sk_setsockopt+0x2822/0x2e80 net/core/sock.c:1681
- do_sock_setsockopt+0x11b/0x1b0 net/socket.c:2364
- __sys_setsockopt net/socket.c:2393 [inline]
- __do_sys_setsockopt net/socket.c:2399 [inline]
- __se_sys_setsockopt net/socket.c:2396 [inline]
- __x64_sys_setsockopt+0x13d/0x1b0 net/socket.c:2396
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
+ blk_mq_freeze_queue_wait+0x101/0x180 block/blk-mq.c:191
+ queue_limits_commit_update_frozen+0x55/0xd0 block/blk-settings.c:590
+ nbd_set_size+0x454/0x680 drivers/block/nbd.c:374
+ nbd_genl_reconfigure+0x7e9/0x1e80 drivers/block/nbd.c:2373
+ genl_rcv_msg+0x614/0x7a0 net/netlink/genetlink.c:1209
  </TASK>
 
-To fix this, tipc_sk_push_backlog() should not call tipc_node_xmit()
-directly while holding the socket spinlock. Instead, modify
-tipc_sk_push_backlog() to take an xmitq parameter. If xmitq is provided, it
-splices the write queue into xmitq, deferring the transmission until after
-the spinlock is released. For calls like __tipc_shutdown() that execute
-under the socket mutex rather than the spinlock, passing NULL for xmitq
-allows direct transmission to continue safely.
+INFO: task generic-netlink:6030 blocked for more than 143 seconds.
+Call Trace:
+ <TASK>
+ __mutex_lock+0x7c5/0x1590 kernel/locking/mutex.c:820
+ genl_rcv_msg+0x10b/0x7a0 net/netlink/genetlink.c:1208
+ </TASK>
 
-Fixes: c0bceb97db9e ("tipc: add smart nagle feature")
+Fixes: 2dc691cc4ac2 ("nbd: refactor size updates")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+10a41dc44eef71aa9450@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=10a41dc44eef71aa9450
-Link: https://syzkaller.appspot.com/ai_job?id=109dc7c6-7562-4bd4-9094-58dfff0a3623
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: "Jon Maloy" <jmaloy@redhat.com>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: <tipc-discussion@lists.sourceforge.net>
-To: "Jon Maloy" <jon.maloy@ericsson.com>
-Cc: "Simon Horman" <horms@kernel.org>
+Reported-by: syzbot <syzbot+f272bbfbf8498ddadea5@syzkaller.appspotmail.com>
+Closes: https://syzkaller.appspot.com/bug?extid=f272bbfbf8498ddadea5
+Link: https://syzkaller.appspot.com/ai_job?id=c8611da4-ddd9-47e3-bbe2-8e178beb3f96
+To: "Jens Axboe" <axboe@kernel.dk>
+To: "Josef Bacik" <josef@toxicpanda.com>
+To: <linux-block@vger.kernel.org>
+To: <nbd@other.debian.org>
+To: "Christoph Hellwig" <hch@lst.de>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index e564341e0..4b3d8193d 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -156,7 +156,8 @@ static int tipc_sk_insert(struct tipc_sock *tsk);
- static void tipc_sk_remove(struct tipc_sock *tsk);
- static int __tipc_sendstream(struct socket *sock, struct msghdr *m, size_t dsz);
- static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dsz);
--static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack);
-+static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack,
-+				 struct sk_buff_head *xmitq);
- static int tipc_wait_for_connect(struct socket *sock, long *timeo_p);
+v3:
+- Removed the unrelated decrement of nbd_total_devices in nbd_dev_remove().
+- Corrected the referenced commit title of 242a49e5c878 in the description.
+- Clarified that capacity-only generic netlink reconfiguration no longer freezes the queue, while startup and real block-size changes continue to do so.
+
+v2:
+- Replaced the approach of using parallel netlink ops and custom timeouts with skipping queue limits updates for size-only reconfigurations.
+- Introduced nbd_size_set() and nbd_size_update() to update device capacity directly without freezing the queue when the block size does not change.
+- Retained queue freezing only for actual block-size changes.
+- Added decrement of nbd_total_devices in nbd_dev_remove().
+https://lore.kernel.org/all/514764a5-5acd-4e5d-a8eb-f40c403e7514@mail.kernel.org/T/
+
+v1:
+https://lore.kernel.org/all/69ff9a21-60be-4e97-bc8f-a59e739fd982@mail.kernel.org/T/
+---
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index fe63f3c55..567b031ec 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -331,6 +331,27 @@ static void nbd_mark_nsock_dead(struct nbd_device *nbd, struct nbd_sock *nsock,
+ 	nsock->sent = 0;
+ }
  
- static const struct proto_ops packet_ops;
-@@ -560,7 +561,7 @@ static void __tipc_shutdown(struct socket *sock, int error)
- 					    !tsk_conn_cong(tsk)));
- 
- 	/* Push out delayed messages if in Nagle mode */
--	tipc_sk_push_backlog(tsk, false);
-+	tipc_sk_push_backlog(tsk, false, NULL);
- 	/* Remove pending SYN */
- 	__skb_queue_purge(&sk->sk_write_queue);
- 
-@@ -1268,7 +1269,8 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
- /* tipc_sk_push_backlog(): send accumulated buffers in socket write queue
-  *                         when socket is in Nagle mode
-  */
--static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
-+static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack,
-+				 struct sk_buff_head *xmitq)
++static void nbd_size_update(struct nbd_device *nbd)
++{
++	struct nbd_config *config = nbd->config;
++
++	if (max_part)
++		set_bit(GD_NEED_PART_SCAN, &nbd->disk->state);
++	if (!set_capacity_and_notify(nbd->disk, config->bytesize >> 9))
++		kobject_uevent(&nbd_to_dev(nbd)->kobj, KOBJ_CHANGE);
++}
++
++static int nbd_size_set(struct nbd_device *nbd, loff_t bytesize)
++{
++	if (bytesize < 0)
++		return -EINVAL;
++
++	nbd->config->bytesize = bytesize;
++	if (nbd->pid)
++		nbd_size_update(nbd);
++	return 0;
++}
++
+ static int nbd_set_size(struct nbd_device *nbd, loff_t bytesize, loff_t blksize)
  {
- 	struct sk_buff_head *txq = &tsk->sk.sk_write_queue;
- 	struct sk_buff *skb = skb_peek_tail(txq);
-@@ -1310,6 +1312,12 @@ static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
- 		tsk->pkt_cnt += skb_queue_len(txq);
- 	tsk->snt_unacked += tsk->snd_backlog;
- 	tsk->snd_backlog = 0;
-+
-+	if (xmitq) {
-+		skb_queue_splice_tail_init(txq, xmitq);
-+		return;
-+	}
-+
- 	rc = tipc_node_xmit(net, txq, dnode, tsk->portid);
- 	if (rc == -ELINKCONG)
- 		tsk->cong_link_cnt = 1;
-@@ -1367,7 +1375,7 @@ static void tipc_sk_conn_proto_rcv(struct tipc_sock *tsk, struct sk_buff *skb,
- 			goto exit;
+ 	struct queue_limits lim;
+@@ -375,10 +396,7 @@ static int nbd_set_size(struct nbd_device *nbd, loff_t bytesize, loff_t blksize)
+ 	if (error)
+ 		return error;
  
- 		was_cong = tsk_conn_cong(tsk);
--		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr));
-+		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr), xmitq);
- 		tsk->snt_unacked -= msg_conn_ack(hdr);
- 		if (tsk->peer_caps & TIPC_BLOCK_FLOWCTL)
- 			tsk->snd_win = msg_adv_win(hdr);
-@@ -2165,7 +2173,7 @@ static void tipc_sk_proto_rcv(struct sock *sk,
- 		smp_wmb();
- 		tsk->cong_link_cnt--;
- 		wakeup = true;
--		tipc_sk_push_backlog(tsk, false);
-+		tipc_sk_push_backlog(tsk, false, xmitq);
- 		break;
- 	case GROUP_PROTOCOL:
- 		tipc_group_proto_rcv(grp, &wakeup, hdr, inputq, xmitq);
-@@ -2256,7 +2264,7 @@ static bool tipc_sk_filter_connect(struct tipc_sock *tsk, struct sk_buff *skb,
- 		return false;
- 	case TIPC_ESTABLISHED:
- 		if (!skb_queue_empty(&sk->sk_write_queue))
--			tipc_sk_push_backlog(tsk, false);
-+			tipc_sk_push_backlog(tsk, false, xmitq);
- 		/* Accept only connection-based messages sent by peer */
- 		if (likely(con_msg && !err && pport == oport &&
- 			   pnode == onode)) {
+-	if (max_part)
+-		set_bit(GD_NEED_PART_SCAN, &nbd->disk->state);
+-	if (!set_capacity_and_notify(nbd->disk, bytesize >> 9))
+-		kobject_uevent(&nbd_to_dev(nbd)->kobj, KOBJ_CHANGE);
++	nbd_size_update(nbd);
+ 	return 0;
+ }
+ 
+@@ -2062,11 +2080,19 @@ static int nbd_genl_size_set(struct genl_info *info, struct nbd_device *nbd)
+ 	if (info->attrs[NBD_ATTR_SIZE_BYTES])
+ 		bytes = nla_get_u64(info->attrs[NBD_ATTR_SIZE_BYTES]);
+ 
+-	if (info->attrs[NBD_ATTR_BLOCK_SIZE_BYTES])
++	if (info->attrs[NBD_ATTR_BLOCK_SIZE_BYTES]) {
+ 		bsize = nla_get_u64(info->attrs[NBD_ATTR_BLOCK_SIZE_BYTES]);
++		if (!bsize)
++			bsize = 1u << NBD_DEF_BLKSIZE_BITS;
++		if (blk_validate_block_size(bsize))
++			return -EINVAL;
++	}
+ 
+-	if (bytes != config->bytesize || bsize != nbd_blksize(config))
+-		return nbd_set_size(nbd, bytes, bsize);
++	if (bytes != config->bytesize || bsize != nbd_blksize(config)) {
++		if (bsize != nbd_blksize(config))
++			return nbd_set_size(nbd, bytes, bsize);
++		return nbd_size_set(nbd, bytes);
++	}
+ 	return 0;
+ }
+ 
 
 
-base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
+base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
