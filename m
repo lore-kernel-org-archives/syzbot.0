@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41519411F91
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 17:53:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C1981CAA6D
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 18:32:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784742821; cv=none; b=UqU1fL++KkvntrEy1029gb/29NzvveoMLOwOKYrQvnh29CDBfeFncgLjGywm1W0D1c/HWwjvqsdvD0xEzJgSXIml4o6T5M/4q1zn/VUAC60TaCXE2kl+1G+BxTwo6Eo6IA4aQxEnbQVoE58qD9Hu77W5MXlMbQt7d+cEgHK8QxQ=
+	t=1784745159; cv=none; b=VHrY6/QXonexlaCrMXdkHeUQvDmrqbovHhwD/fhRFQoaZdpHccAJJ4HXsOIAO7jljcexYxtyA+IihB1eAj7uqNjidsEQzhzMIdswFSHr5Wng8sPMYzmzajJpdumykXCSq5r7aZ53qnpJiVb9Z/DHG3+NMlf+aS2cKUaO+r6Ob24=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784742821; c=relaxed/simple;
-	bh=M3y8zGBTc1oEYpB9hdR2tBGLxXTaekCp0R+oF2sjqNU=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ghX/R1POjuRtwZJGBsDUGAtSaPVfbCJxzA/NbXM2HXZ8zIYay9g4Ff9awd6OHwvoSvA5aPK9AqyEA9qZHFRMnXPOiDwmq0QpCrX7Jiqx80JTdLk5yz8cWXHfdb+GfXT61wLK6RDHD9C3+El+Ys6ydRsgOX+O61Hq+gqtsm/zccQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UZJWKacC; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784745159; c=relaxed/simple;
+	bh=2h/oNPOFuHDSp7Hfl/Hbv04Z7gOzXFwI123NqyqXuTQ=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=qdse5CtxpoJrfN5ZvdCohQAWrt0Il15W8VTDm4Q49Usw9p1+WR5edxH8NJmBSw8xnbGanUbyydxi/MLM9PZvYOVLH4r4xR3ooXTUM5jsYcBg3Zn1ws25NtmsjX9zZPk+lqMHnkO8fOJhc90aGA6sRDfm4OBJFnK8RlTC5t//VIo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S+1WXsxa; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UZJWKacC"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 2D7261F000E9;
-	Wed, 22 Jul 2026 17:53:38 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S+1WXsxa"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 065AA1F000E9;
+	Wed, 22 Jul 2026 18:32:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784742818;
-	bh=syGMFYnJ2Prs7Y4MQtOYmW/g6xF5YZJn88oljx+opME=;
+	s=k20260515; t=1784745158;
+	bh=MvtIp0tbzgKf2NvCtmEYsTXq4chLOjKB7FitNHQLrWE=;
 	h=From:To:Cc:Subject:Date;
-	b=UZJWKacCTX9/I+KUpTDpH73CDRRI2OFzfRku/NkWbXzVgyg1ymaJxEFZ4Ug087ops
-	 6nJRvPdZ9v/cj7Atsde9d+zYDpDItQnzHnCmeygeteJEhnIBUYZu1g+ZPQf8Gp4MoA
-	 S7RRZHsX8H/rExlbRv24aNDsDNog+zUWdlRfm7FkhMgKetLxZhn/64hl6PZJW3MOP5
-	 3vmqiqYaDtEOhOHMY9Shrm4SxPKq3NERsxBQnjkRL8bTfd95T388LcjBpFptO21e4L
-	 WmFN/h20f10XUi5+GwcSfQKR67B6JkLUhxZmJuvDYSdR2DFMM5gehK6YcQ7flG/Z7O
-	 yDeYp3KnU6M8A==
+	b=S+1WXsxarQwnbCGXWBsfRkgKhkhcmy4DjrC6QbCvg2r4MjWMfnysJtJiZ/qrI4ste
+	 5pA2saV2H7AsE+m3Jqk+/vvnD2k5yLJOIv3VhAcu5dAuHJgMVnkzULjIZepxRQ9yGj
+	 hMGKD43Pk6kpTfpXLc/zHAaHPV/Au1rctDvberGJhVav4REy5hXiqaSsHUHGwY0i7z
+	 nectKlkjDTpuNJVf98MWpl+Hom75k0keJQj3qRiBNJuZpdmTHS27xBfkjuXnGhpTaK
+	 Q4cMs3xmgF20lz8hYBRqCcdL67F05HDIafcRHM2ESjjfvTLoN+wvvFEi2xDyZwwVMx
+	 FXGMjCkRd2phA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v5] ocfs2: fix circular locking dependency in ocfs2_init_acl()
-Message-ID: <7ae71a37-e360-413c-9618-2acc77194fa2@mail.kernel.org>
+Cc: syzbot@lists.linux.dev, uladzislau.zhauniarovich@gmail.com
+Subject: [PATCH RFC v2] net/sched: taprio: enforce minimum software scheduling interval
+Message-ID: <d54f0bbd-ed4d-42bc-8a37-3268d9b3ebb8@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,492 +38,145 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 22 Jul 2026 17:53:38 +0000 (UTC)
+Date: Wed, 22 Jul 2026 18:32:37 +0000 (UTC)
 
-A lockdep warning indicates a circular locking dependency between
-`&oi->ip_xattr_sem` and `&journal->j_trans_barrier`:
+When configuring taprio with a very small schedule interval (e.g., 129 ns),
+the kernel validates the interval against the time it takes to transmit a
+minimum-sized Ethernet frame (60 bytes). On high-speed links, this minimum
+duration is extremely small (e.g., 48 ns at 10 Gbps). Since the requested
+interval is larger than this, the validation passes. Virtual devices like
+veth or bonding can defeat this link-speed minimum check because they
+report inflated link speeds (e.g., veth reports 10 Gbps, and bonding sums
+member speeds).
 
-======================================================
-WARNING: possible circular locking dependency detected
-------------------------------------------------------
-is trying to acquire lock:
- (&oi->ip_xattr_sem){++++}-{4:4}, at: ocfs2_init_acl+0x2fd/0x7e0
- fs/ocfs2/acl.c:367
+However, when hardware offload is not used, taprio falls back to software
+scheduling and arms an hrtimer. The hrtimer is programmed to fire at the
+configured interval. If this interval is too small, it cannot sustain the
+timer service cost of one advance_sched() invocation, which includes lock
+acquisition, budget recomputation, and TX softirq processing. As a result,
+the timer constantly falls behind, and the CPU is livelocked in hardirq
+context endlessly servicing the advance_sched() hrtimer. This starves the
+RCU grace-period kthreads, leading to an RCU stall panic:
 
-but task is already holding lock:
- (&journal->j_trans_barrier){.+.+}-{4:4}, at: ocfs2_start_trans+0x3ab/0x700
- fs/ocfs2/journal.c:369
-======================================================
+rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+rcu: 	1-...!: (1 GPs behind) idle=4854/0/0x1 softirq=136062/136068 fqs=0
+rcu: 	(detected by 0, t=10506 jiffies, g=161469, q=1866 ncpus=2)
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1
+CPU: 1 UID: 0 PID: 0 Comm: swapper/1 Not tainted
+Call Trace:
+ <IRQ>
+ lock_is_held include/linux/lockdep.h:249 [inline]
+ enqueue_hrtimer+0x79/0x2c0 kernel/time/hrtimer.c:1107
+ __run_hrtimer kernel/time/hrtimer.c:1946 [inline]
+ __hrtimer_run_queues+0x4ce/0xa10 kernel/time/hrtimer.c:1994
+ hrtimer_interrupt+0x448/0x910 kernel/time/hrtimer.c:2113
+ local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1050 [inline]
+ __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:1067
+ instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1061
+ [inline]
+ sysvec_apic_timer_interrupt+0xa1/0xc0 arch/x86/kernel/apic/apic.c:1061
+ </IRQ>
 
-The deadlock involves two code paths: Path 1 (setxattr) where
-`ocfs2_xattr_set()` acquires `ip_xattr_sem` (write) and then starts a
-transaction, which acquires `j_trans_barrier` (read); and Path 2
-(mkdir/mknod) where `ocfs2_mknod()` starts a transaction (`j_trans_barrier`
-read) and then calls `ocfs2_init_acl()`, which attempts to acquire
-`ip_xattr_sem` (read) on the parent directory to retrieve the default ACL.
+To fix this, enforce a hard absolute minimum interval of 100 microseconds
+(TAPRIO_MIN_SW_INTERVAL_NS) for software-based scheduling, which provides
+enough margin over the timer service cost. Fully offloaded schedules are
+unaffected since they do not rely on the CPU's hrtimer. Introduce a helper
+taprio_min_interval() to consolidate the minimum interval logic for both
+individual schedule entries and the overall cycle_time validation.
 
-Because rw_semaphores are subject to writer priority, a pending writer on
-`j_trans_barrier` (e.g., the journal commit thread) can cause Path 1 to
-block, while Path 2 is blocked waiting for Path 1 to release
-`ip_xattr_sem`.
-
-The patch fixes the lock ordering by precomputing the ACL state before
-starting the OCFS2 transaction, while preserving POSIX ACL storage
-semantics and the existing inode/security initialization order. By reading
-the parent directory's default ACL and preparing the new inode's ACLs
-outside the transaction, `ip_xattr_sem` is always acquired before
-`j_trans_barrier`.
-
-We introduce `struct ocfs2_acl_state` to encapsulate the prepared ACL
-state, along with `ocfs2_acl_init_prepare()` and `ocfs2_acl_init_release()`
-helpers to avoid code duplication between `ocfs2_mknod()` and
-`ocfs2_init_security_and_acl()`. `ocfs2_calc_xattr_init()` and
-`ocfs2_init_acl()` are updated to use this precomputed state, removing
-internal `ip_xattr_sem` acquisition and redundant disk reads.
-
-Additionally, remove the `ip_xattr_sem` acquisition from
-`ocfs2_xattr_set_handle()`. This function is only used while initializing a
-new inode that has not yet been inserted into the inode hash or attached to
-a dentry, meaning there is no risk of concurrent access and the lock is
-unnecessary.
-
-Fixes: 16c8d569f570 ("ocfs2/acl: use 'ip_xattr_sem' to protect getting extended attribute")
+Fixes: b5b73b26b3ca ("taprio: Fix allowing too small intervals")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+4007ab5229e732466d9f@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=4007ab5229e732466d9f
-Link: https://syzkaller.appspot.com/ai_job?id=3400974e-6075-4a65-b36e-5df83d839827
-To: "Joel Becker" <jlbec@evilplan.org>
-To: "Joseph Qi" <joseph.qi@linux.alibaba.com>
-To: "Mark Fasheh" <mark@fasheh.com>
-To: <ocfs2-devel@lists.linux.dev>
+Reported-by: syzbot+19d01f6082ec61dd45b2@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=19d01f6082ec61dd45b2
+Link: https://syzkaller.appspot.com/ai_job?id=37f064ee-e021-43aa-8cfc-9f2a5a7c35d7
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jamal Hadi Salim" <jhs@mojatatu.com>
+To: "Jiri Pirko" <jiri@resnulli.us>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
+Cc: "Simon Horman" <horms@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-v5:
-- Removed `ip_xattr_sem` locking from `ocfs2_xattr_set_handle()` as it is only called during initialization of unhashed/unattached inodes.
-
-v4:
-- Initialize `ocfs2_acl_state` structures to `{ 0 }` to ensure safe cleanup.
-- Fix memory leaks in `ocfs2_acl_init_prepare()` error paths.
-- Ensure `ocfs2_acl_init_release()` is always called in `ocfs2_init_security_and_acl()`.
-- Reset pointers to `NULL` in `ocfs2_acl_init_release()` after releasing them.
-- Add parameter names to `ocfs2_calc_xattr_init()` prototype in `xattr.h`.
-https://lore.kernel.org/all/b2e72251-ea1a-458d-961e-7b7e99950e26@mail.kernel.org/T/
-
-v3:
-- Introduced `struct ocfs2_acl_state` to encapsulate the prepared ACL state.
-- Added `ocfs2_acl_init_prepare()` and `ocfs2_acl_init_release()` helpers to avoid code duplication between `ocfs2_mknod()` and `ocfs2_init_security_and_acl()`.
-- Updated `ocfs2_calc_xattr_init()` and `ocfs2_init_acl()` to accept the new `ocfs2_acl_state` structure.
-https://lore.kernel.org/all/857bb6cb-547c-48fb-ae38-b9ffff129432@mail.kernel.org/T/
-
 v2:
-- Updated ocfs2_calc_xattr_init() to accept precomputed ACLs for more accurate credit and size calculation.
-- Modified ocfs2_mknod() and ocfs2_init_security_and_acl() to fetch and create ACLs before starting a transaction, resolving the lock ordering issue.
-- Ensured inode->i_mode is updated correctly during the pre-transaction ACL creation phase.
-- Added logic to release the access ACL object if it is not required for storage (i.e., matches the file mode).
-https://lore.kernel.org/all/50178043-8171-44ae-ac9e-72449ba95928@mail.kernel.org/T/
+- Increased the minimum software scheduling interval from 1us to 100us to cover the timer service cost.
+- Explained how virtual devices (veth, bonding) bypass the link-speed validation.
+- Clarified that fully offloaded schedules are unaffected.
+- Refactored the minimum interval check into a new taprio_min_interval() helper.
 
 v1:
-https://lore.kernel.org/all/bbc14e84-b364-4f93-90e0-bfe42220b2b1@mail.kernel.org/T/
+https://lore.kernel.org/all/be92b2ea-2bf9-4d7f-a833-de781ee804c8@mail.kernel.org/T/
 ---
-diff --git a/fs/ocfs2/acl.c b/fs/ocfs2/acl.c
-index af1e2cedb..090ec60fb 100644
---- a/fs/ocfs2/acl.c
-+++ b/fs/ocfs2/acl.c
-@@ -110,8 +110,7 @@ static void *ocfs2_acl_to_xattr(const struct posix_acl *acl, size_t *size)
- 	return ocfs2_acl;
- }
- 
--static struct posix_acl *ocfs2_get_acl_nolock(struct inode *inode,
--					      int type,
-+static struct posix_acl *ocfs2_get_acl_nolock(struct inode *inode, int type,
- 					      struct buffer_head *di_bh)
- {
- 	int name_index;
-@@ -349,63 +348,105 @@ int ocfs2_acl_chmod(struct inode *inode, struct buffer_head *bh)
-  * Initialize the ACLs of a new inode. If parent directory has default ACL,
-  * then clone to new inode. Called from ocfs2_mknod.
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 45245157e..2bf4cae16 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -49,6 +49,13 @@ static struct static_key_false taprio_have_working_mqprio;
   */
--int ocfs2_init_acl(handle_t *handle,
--		   struct inode *inode,
--		   struct inode *dir,
--		   struct buffer_head *di_bh,
--		   struct buffer_head *dir_bh,
--		   struct ocfs2_alloc_context *meta_ac,
--		   struct ocfs2_alloc_context *data_ac)
-+void ocfs2_acl_init_release(struct ocfs2_acl_state *state)
-+{
-+	posix_acl_release(state->default_acl);
-+	posix_acl_release(state->acl);
-+	state->default_acl = NULL;
-+	state->acl = NULL;
-+}
-+
-+int ocfs2_acl_init_prepare(struct inode *inode, struct inode *dir,
-+			   struct buffer_head *dir_bh,
-+			   struct ocfs2_acl_state *state)
- {
- 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
--	struct posix_acl *acl = NULL;
--	int ret = 0, ret2;
--	umode_t mode;
--
--	if (!S_ISLNK(inode->i_mode)) {
--		if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
--			down_read(&OCFS2_I(dir)->ip_xattr_sem);
--			acl = ocfs2_get_acl_nolock(dir, ACL_TYPE_DEFAULT,
--						   dir_bh);
--			up_read(&OCFS2_I(dir)->ip_xattr_sem);
--			if (IS_ERR(acl))
--				return PTR_ERR(acl);
-+	int ret = 0;
-+
-+	state->default_acl = NULL;
-+	state->acl = NULL;
-+	state->mode = inode->i_mode;
-+
-+	if (S_ISLNK(inode->i_mode))
-+		return 0;
-+
-+	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-+		down_read(&OCFS2_I(dir)->ip_xattr_sem);
-+		state->default_acl =
-+			ocfs2_get_acl_nolock(dir, ACL_TYPE_DEFAULT, dir_bh);
-+		up_read(&OCFS2_I(dir)->ip_xattr_sem);
-+		if (IS_ERR(state->default_acl)) {
-+			ret = PTR_ERR(state->default_acl);
-+			state->default_acl = NULL;
-+			return ret;
- 		}
--		if (!acl) {
--			mode = inode->i_mode & ~current_umask();
--			ret = ocfs2_acl_set_mode(inode, di_bh, handle, mode);
--			if (ret) {
--				mlog_errno(ret);
-+		if (state->default_acl) {
-+			state->acl = posix_acl_dup(state->default_acl);
-+			if (!state->acl) {
-+				ret = -ENOMEM;
- 				goto cleanup;
- 			}
-+			ret = __posix_acl_create(&state->acl, GFP_NOFS,
-+						 &state->mode);
-+			if (ret < 0)
-+				goto cleanup;
-+			if (ret == 0) {
-+				posix_acl_release(state->acl);
-+				state->acl = NULL;
-+			}
-+			if (!S_ISDIR(inode->i_mode)) {
-+				posix_acl_release(state->default_acl);
-+				state->default_acl = NULL;
-+			}
-+		} else {
-+			state->mode &= ~current_umask();
- 		}
-+	} else {
-+		state->mode &= ~current_umask();
- 	}
--	if ((osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) && acl) {
--		if (S_ISDIR(inode->i_mode)) {
-+
-+	return 0;
-+cleanup:
-+	ocfs2_acl_init_release(state);
-+	return ret;
-+}
-+
-+int ocfs2_init_acl(handle_t *handle, struct inode *inode,
-+		   struct buffer_head *di_bh,
-+		   struct ocfs2_alloc_context *meta_ac,
-+		   struct ocfs2_alloc_context *data_ac,
-+		   struct ocfs2_acl_state *state)
-+{
-+	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
-+	int ret = 0;
-+
-+	if (S_ISLNK(inode->i_mode))
-+		return 0;
-+
-+	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-+		if (S_ISDIR(inode->i_mode) && state->default_acl) {
- 			ret = ocfs2_set_acl(handle, inode, di_bh,
--					    ACL_TYPE_DEFAULT, acl,
--					    meta_ac, data_ac);
-+					    ACL_TYPE_DEFAULT,
-+					    state->default_acl, meta_ac,
-+					    data_ac);
- 			if (ret)
--				goto cleanup;
-+				return ret;
- 		}
--		mode = inode->i_mode;
--		ret = __posix_acl_create(&acl, GFP_NOFS, &mode);
--		if (ret < 0)
--			return ret;
-+	}
+ #define TAPRIO_PICOS_PER_BYTE_MIN 17
  
--		ret2 = ocfs2_acl_set_mode(inode, di_bh, handle, mode);
--		if (ret2) {
--			mlog_errno(ret2);
--			ret = ret2;
--			goto cleanup;
--		}
--		if (ret > 0) {
--			ret = ocfs2_set_acl(handle, inode,
--					    di_bh, ACL_TYPE_ACCESS,
--					    acl, meta_ac, data_ac);
-+	ret = ocfs2_acl_set_mode(inode, di_bh, handle, state->mode);
-+	if (ret) {
-+		mlog_errno(ret);
-+		return ret;
-+	}
++/* The software scheduler cannot sustain hrtimer intervals smaller than
++ * this without livelocking the CPU. The value must exceed the cost of
++ * one advance_sched() invocation (lock acquisition, budget recomputation,
++ * TX softirq) with margin.
++ */
++#define TAPRIO_MIN_SW_INTERVAL_NS (100 * NSEC_PER_USEC)
 +
-+	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-+		if (state->acl) {
-+			ret = ocfs2_set_acl(handle, inode, di_bh,
-+					    ACL_TYPE_ACCESS, state->acl,
-+					    meta_ac, data_ac);
- 		}
- 	}
--cleanup:
--	posix_acl_release(acl);
-+
- 	return ret;
- }
-diff --git a/fs/ocfs2/acl.h b/fs/ocfs2/acl.h
-index 667c6f03f..a91f9ce27 100644
---- a/fs/ocfs2/acl.h
-+++ b/fs/ocfs2/acl.h
-@@ -20,9 +20,20 @@ struct posix_acl *ocfs2_iop_get_acl(struct inode *inode, int type, bool rcu);
- int ocfs2_iop_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
- 		      struct posix_acl *acl, int type);
- extern int ocfs2_acl_chmod(struct inode *, struct buffer_head *);
--extern int ocfs2_init_acl(handle_t *, struct inode *, struct inode *,
--			  struct buffer_head *, struct buffer_head *,
--			  struct ocfs2_alloc_context *,
--			  struct ocfs2_alloc_context *);
-+struct ocfs2_acl_state {
-+	struct posix_acl *default_acl;
-+	struct posix_acl *acl;
-+	umode_t mode;
-+};
-+
-+int ocfs2_acl_init_prepare(struct inode *inode, struct inode *dir,
-+			   struct buffer_head *dir_bh,
-+			   struct ocfs2_acl_state *state);
-+void ocfs2_acl_init_release(struct ocfs2_acl_state *state);
-+int ocfs2_init_acl(handle_t *handle, struct inode *inode,
-+		   struct buffer_head *di_bh,
-+		   struct ocfs2_alloc_context *meta_ac,
-+		   struct ocfs2_alloc_context *data_ac,
-+		   struct ocfs2_acl_state *state);
- 
- #endif /* OCFS2_ACL_H */
-diff --git a/fs/ocfs2/namei.c b/fs/ocfs2/namei.c
-index 1277666c7..d9aba16a8 100644
---- a/fs/ocfs2/namei.c
-+++ b/fs/ocfs2/namei.c
-@@ -256,6 +256,7 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
- 	sigset_t oldset;
- 	int did_block_signals = 0;
- 	struct ocfs2_dentry_lock *dl = NULL;
-+	struct ocfs2_acl_state acl_state = { 0 };
- 
- 	trace_ocfs2_mknod(dir, dentry, dentry->d_name.len, dentry->d_name.name,
- 			  (unsigned long long)OCFS2_I(dir)->ip_blkno,
-@@ -330,10 +331,13 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
- 		}
- 	}
- 
-+	status = ocfs2_acl_init_prepare(inode, dir, parent_fe_bh, &acl_state);
-+	if (status < 0)
-+		goto leave;
-+
- 	/* calculate meta data/clusters for setting security and acl xattr */
--	status = ocfs2_calc_xattr_init(dir, parent_fe_bh, mode,
--				       &si, &want_clusters,
--				       &xattr_credits, &want_meta);
-+	status = ocfs2_calc_xattr_init(dir, mode, &si, &want_clusters,
-+				       &xattr_credits, &want_meta, &acl_state);
- 	if (status < 0) {
- 		mlog_errno(status);
- 		goto leave;
-@@ -411,8 +415,8 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
- 		inc_nlink(dir);
- 	}
- 
--	status = ocfs2_init_acl(handle, inode, dir, new_fe_bh, parent_fe_bh,
--			 meta_ac, data_ac);
-+	status = ocfs2_init_acl(handle, inode, new_fe_bh, meta_ac, data_ac,
-+				&acl_state);
- 
- 	if (status < 0) {
- 		mlog_errno(status);
-@@ -477,6 +481,8 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
- 	brelse(parent_fe_bh);
- 	kfree(si.value);
- 
-+	ocfs2_acl_init_release(&acl_state);
-+
- 	ocfs2_free_dir_lookup_result(&lookup);
- 
- 	if (inode_ac)
-diff --git a/fs/ocfs2/xattr.c b/fs/ocfs2/xattr.c
-index fcddd3c13..4cf5b69d1 100644
---- a/fs/ocfs2/xattr.c
-+++ b/fs/ocfs2/xattr.c
-@@ -611,13 +611,10 @@ int ocfs2_calc_security_init(struct inode *dir,
- 	return ret;
+ struct sched_entry {
+ 	/* Durations between this GCL entry and the GCL entry where the
+ 	 * respective traffic class gate closes
+@@ -259,6 +266,16 @@ static int length_to_duration(struct taprio_sched *q, int len)
+ 	return div_u64(len * atomic64_read(&q->picos_per_byte), PSEC_PER_NSEC);
  }
  
--int ocfs2_calc_xattr_init(struct inode *dir,
--			  struct buffer_head *dir_bh,
--			  umode_t mode,
-+int ocfs2_calc_xattr_init(struct inode *dir, umode_t mode,
- 			  struct ocfs2_security_xattr_info *si,
--			  int *want_clusters,
--			  int *xattr_credits,
--			  int *want_meta)
-+			  int *want_clusters, int *xattr_credits,
-+			  int *want_meta, struct ocfs2_acl_state *acl_state)
++static int taprio_min_interval(struct taprio_sched *q)
++{
++	int min_duration = length_to_duration(q, ETH_ZLEN);
++
++	if (!FULL_OFFLOAD_IS_ENABLED(q->flags))
++		min_duration = max_t(int, min_duration, TAPRIO_MIN_SW_INTERVAL_NS);
++
++	return min_duration;
++}
++
+ static int duration_to_length(struct taprio_sched *q, u64 duration)
  {
- 	int ret = 0;
- 	struct ocfs2_super *osb = OCFS2_SB(dir->i_sb);
-@@ -628,19 +625,15 @@ int ocfs2_calc_xattr_init(struct inode *dir,
- 						     si->value_len);
- 
- 	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
--		down_read(&OCFS2_I(dir)->ip_xattr_sem);
--		acl_len = ocfs2_xattr_get_nolock(dir, dir_bh,
--					OCFS2_XATTR_INDEX_POSIX_ACL_DEFAULT,
--					"", NULL, 0);
--		up_read(&OCFS2_I(dir)->ip_xattr_sem);
--		if (acl_len > 0) {
--			a_size = ocfs2_xattr_entry_real_size(0, acl_len);
--			if (S_ISDIR(mode))
--				a_size <<= 1;
--		} else if (acl_len != 0 && acl_len != -ENODATA) {
--			ret = acl_len;
--			mlog_errno(ret);
--			return ret;
-+		if (acl_state->default_acl && S_ISDIR(mode)) {
-+			acl_len = acl_state->default_acl->a_count *
-+				  sizeof(struct ocfs2_acl_entry);
-+			a_size += ocfs2_xattr_entry_real_size(0, acl_len);
-+		}
-+		if (acl_state->acl) {
-+			acl_len = acl_state->acl->a_count *
-+				  sizeof(struct ocfs2_acl_entry);
-+			a_size += ocfs2_xattr_entry_real_size(0, acl_len);
- 		}
- 	}
- 
-@@ -683,14 +676,29 @@ int ocfs2_calc_xattr_init(struct inode *dir,
- 							   new_clusters);
- 		*want_clusters += new_clusters;
- 	}
--	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL &&
--	    acl_len > OCFS2_XATTR_INLINE_SIZE) {
--		/* for directory, it has DEFAULT and ACCESS two types of acls */
--		new_clusters = (S_ISDIR(mode) ? 2 : 1) *
--				ocfs2_clusters_for_bytes(dir->i_sb, acl_len);
--		*xattr_credits += ocfs2_clusters_to_blocks(dir->i_sb,
--							   new_clusters);
--		*want_clusters += new_clusters;
-+	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-+		if (acl_state->default_acl && S_ISDIR(mode)) {
-+			acl_len = acl_state->default_acl->a_count *
-+				  sizeof(struct ocfs2_acl_entry);
-+			if (acl_len > OCFS2_XATTR_INLINE_SIZE) {
-+				new_clusters = ocfs2_clusters_for_bytes(dir->i_sb,
-+									acl_len);
-+				*xattr_credits += ocfs2_clusters_to_blocks(dir->i_sb,
-+									   new_clusters);
-+				*want_clusters += new_clusters;
-+			}
-+		}
-+		if (acl_state->acl) {
-+			acl_len = acl_state->acl->a_count *
-+				  sizeof(struct ocfs2_acl_entry);
-+			if (acl_len > OCFS2_XATTR_INLINE_SIZE) {
-+				new_clusters = ocfs2_clusters_for_bytes(dir->i_sb,
-+									acl_len);
-+				*xattr_credits += ocfs2_clusters_to_blocks(dir->i_sb,
-+									   new_clusters);
-+				*want_clusters += new_clusters;
-+			}
-+		}
- 	}
- 
- 	return ret;
-@@ -3542,8 +3550,6 @@ int ocfs2_xattr_set_handle(handle_t *handle,
- 	xis.inode_bh = xbs.inode_bh = di_bh;
- 	di = (struct ocfs2_dinode *)di_bh->b_data;
- 
--	down_write(&OCFS2_I(inode)->ip_xattr_sem);
--
- 	ret = ocfs2_xattr_ibody_find(inode, name_index, name, &xis);
- 	if (ret)
- 		goto cleanup;
-@@ -3556,7 +3562,6 @@ int ocfs2_xattr_set_handle(handle_t *handle,
- 	ret = __ocfs2_xattr_set_handle(inode, di, &xi, &xis, &xbs, &ctxt);
- 
- cleanup:
--	up_write(&OCFS2_I(inode)->ip_xattr_sem);
- 	brelse(xbs.xattr_bh);
- 	ocfs2_xattr_bucket_free(xbs.bucket);
- 
-@@ -7257,6 +7262,7 @@ int ocfs2_init_security_and_acl(struct inode *dir,
+ 	return div_u64(duration * PSEC_PER_NSEC, atomic64_read(&q->picos_per_byte));
+@@ -1038,7 +1055,7 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
+ 			    struct sched_entry *entry,
+ 			    struct netlink_ext_ack *extack)
  {
- 	int ret = 0;
- 	struct buffer_head *dir_bh = NULL;
-+	struct ocfs2_acl_state acl_state = { 0 };
+-	int min_duration = length_to_duration(q, ETH_ZLEN);
++	int min_duration = taprio_min_interval(q);
+ 	u32 interval = 0;
  
- 	ret = ocfs2_init_security_get(inode, dir, qstr, NULL);
- 	if (ret) {
-@@ -7269,10 +7275,17 @@ int ocfs2_init_security_and_acl(struct inode *dir,
- 		mlog_errno(ret);
- 		goto leave;
+ 	if (tb[TCA_TAPRIO_SCHED_ENTRY_CMD])
+@@ -1054,7 +1071,8 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
+ 			tb[TCA_TAPRIO_SCHED_ENTRY_INTERVAL]);
+ 
+ 	/* The interval should allow at least the minimum ethernet
+-	 * frame to go out.
++	 * frame to go out. When software scheduling is used, the
++	 * interval must also be at least the minimum hrtimer interval.
+ 	 */
+ 	if (interval < min_duration) {
+ 		NL_SET_ERR_MSG(extack, "Invalid interval for schedule entry");
+@@ -1166,7 +1184,7 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+ 		new->cycle_time = cycle;
  	}
--	ret = ocfs2_init_acl(NULL, inode, dir, NULL, dir_bh, NULL, NULL);
-+
-+	ret = ocfs2_acl_init_prepare(inode, dir, dir_bh, &acl_state);
-+	if (ret)
-+		goto unlock;
-+
-+	ret = ocfs2_init_acl(NULL, inode, NULL, NULL, NULL, &acl_state);
- 	if (ret)
- 		mlog_errno(ret);
  
-+unlock:
-+	ocfs2_acl_init_release(&acl_state);
- 	ocfs2_inode_unlock(dir, 0);
- 	brelse(dir_bh);
- leave:
-diff --git a/fs/ocfs2/xattr.h b/fs/ocfs2/xattr.h
-index 65e9aa743..5cdd6c6b4 100644
---- a/fs/ocfs2/xattr.h
-+++ b/fs/ocfs2/xattr.h
-@@ -55,9 +55,12 @@ int ocfs2_init_security_set(handle_t *, struct inode *,
- int ocfs2_calc_security_init(struct inode *,
- 			     struct ocfs2_security_xattr_info *,
- 			     int *, int *, struct ocfs2_alloc_context **);
--int ocfs2_calc_xattr_init(struct inode *, struct buffer_head *,
--			  umode_t, struct ocfs2_security_xattr_info *,
--			  int *, int *, int *);
-+
-+struct ocfs2_acl_state;
-+int ocfs2_calc_xattr_init(struct inode *dir, umode_t mode,
-+			  struct ocfs2_security_xattr_info *si,
-+			  int *want_clusters, int *xattr_credits,
-+			  int *want_meta, struct ocfs2_acl_state *acl_state);
- 
- /*
-  * xattrs can live inside an inode, as part of an external xattr block,
+-	if (new->cycle_time < new->num_entries * length_to_duration(q, ETH_ZLEN)) {
++	if (new->cycle_time < (s64)new->num_entries * taprio_min_interval(q)) {
+ 		NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
+ 		return -EINVAL;
+ 	}
 
 
-base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
+base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
