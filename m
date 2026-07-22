@@ -1,67 +1,64 @@
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8F3838F642
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 03:33:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5399638F95E
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 03:33:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784691184; cv=none; b=frFAIFYqnINkwpvMP1BZowcqvHxw0BVH06tF8V6oXm0FGii0uCVphZmKeEB/ge8W+ZbgiOO0murhQqB6eNSODUTjY+Y5MGdJKiKpIrr1liPZ9F3WAjSWzAGMv4/NDrAzE3AYeY3pgZeMr8/TBAhoiO0l50jk/kMDpT3FQWx86dw=
+	t=1784691216; cv=none; b=mCEMCmpGEQA7SB5akjJUAwfiHHzGWX+QoXa1hekqJ7tYRW1a2wqxnXYcIE4jqUjQlX2oePN/97XAHTQ9ZWQ9vKUQCTFz7eRCQyXFYuYfWz2bPnvsTxAef/NvWuNE6Kq9zKPMkbJYftNQiQ7Yv9c59T/zfBO4zdaVCxoVtNwuJ5k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784691184; c=relaxed/simple;
-	bh=5BbolyKz6fXMi8ioBNO75xjRe4tztVDtc+nGS6LCFsc=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ZJ2YT1/J2RfhPqqVDIcH7MlyWs7HPugJT6BJTCiFoQDxY0h6Jtud1x+MgXa/zUN50d5ccYr2SVrpR2jqXFoqHAaqTat6Xh8nAw/2KXgYIXs6Wlmyxn5K01o73gJd3mlSFZT7c2NluYtq3drNh20Pa/jrPXB83WIfNinc1ls28aY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
+	s=arc-20240116; t=1784691216; c=relaxed/simple;
+	bh=5VNQJpRiG5vpTOp0xqVNp90nURSG8ZGIo5NW5QbkSZM=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=dkE13kdrLaGShjcZxVkVPv+KtkF0tifLj2iyH2r9bUhcyI3+4YrxTixFUzX7JUGpf2EjQ4KZoGd/5FzxiK01rUNy2uj6ua4lA1gt8lEWgLSL+8RufVDVOJZ9Qt3f/dso5puO8GBoYs7CWktRmXDf37zhdUorZ5te4oIATrAtdDY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-4a45b3f0bdfso13477229b6e.1
-        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 20:33:02 -0700 (PDT)
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4909b046dabso19287379b6e.0
+        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 20:33:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784691182; x=1785295982;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=whh3+Qia9p8R4dg8KcrMThz25wywkhGbBli00jRdQPQ=;
-        b=GNOxSIpbN7HAvH9Ddmc34cwKZ66Wlke93SP2mSQZpX4KZetUpK5qVmE7oBpl9g6jZU
-         TrijjSlGjU1icovToWr3tTGDCDRkSI2bav8Icp0lx7A7A2nIpFJ3Hs07crOzTyQLRmjP
-         vmzAHVOfb173LpDty4EHrUBaHEGu4/u8IIviY6S7YkxIiCQ6B+WFZCVzQq+ST9d+htGB
-         pmbBk+h6t5G7KjK1lAFhjgblQ2W8KptOMKYFwtfFmVIf2Q7jh0R7aEREBpGUHHgQeWIa
-         QST1t9z2rjMO7NlLYNnttoC4Ja0qQo/0909yxYc7jedfU+K+TBOz8MirfdYoZf1sp3d6
-         ChaQ==
-X-Gm-Message-State: AOJu0YxQHdZaBcxQ7fUrVnZIz5foOEn+v/gFH9ERLnTYseV9IHoRz2z8
-	EpubW1bHQd+RBYbU7hWSrTns+wlFYwP1zSqVLaDJG7r0rG1Dtv0rdmW/FyWTsvVbDlYhfKqLNhy
-	NC5ZR8wNmabhvojccBI+kjx5Iv2lK9Rjr6u3L4b5TL2SY0bV4yL6nS2Eed64=
+        d=1e100.net; s=20251104; t=1784691212; x=1785296012;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=rJylzcnwd6gaVynnMz4J70ENd3LeqPIwTzAG+KKDyZs=;
+        b=Sp4RAZF94jVoBkDgphpKyAg9tiwgRokyWv2zkefNhqPwrsx5Mgp2T2xbaC9vG4P3k9
+         j07OhpmfIeJfOPasKY0i9Okn2k7GxN4oQWwQGNggXNexAU4FBXc/bK6dZIwydNcxapGa
+         l0UM4RqI36xfPgfljr264E4MISJOYKojBpcfCNpgLcJukNVFzQgvsYF7mdckBAbFd+IM
+         IuXxOqbuAXGmAeNgvdNgxc6CjVN/e/Gt4wOh02si2NfLOP6wMU1MxSXE9gwoTavLcrS9
+         d1ENX0o/kpJyvMUQb/gLhRrnlm3p/r6ByWGFDijfnG3j9I+hjKPsrRbxvWHNm4RkYrlU
+         V/AQ==
+X-Gm-Message-State: AOJu0YzdlYI47bHeFkfm08nTt03ncMyiU8NfaPeAAql28C8tHS1fkMkG
+	7j4IXiHGK1zAY6W+pYciKsD7vgIq5p1TszcPCTfU/EMyzYt6+LNN9Dn1yA0f16cLJtde64WX/8B
+	jRkNVPbtZZsXbIq2Ot45qqMRBq20mN7o7vyBHtM9Gh63tdfITkbGXGU9YTHI=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:309f:b0:4a4:12c4:9c16 with SMTP id
- 5614622812f47-4a4d03219e4mr16208083b6e.7.1784691181776; Tue, 21 Jul 2026
- 20:33:01 -0700 (PDT)
-Date: Tue, 21 Jul 2026 20:33:01 -0700
+X-Received: by 2002:a05:6808:13ca:b0:4a4:a930:1f76 with SMTP id
+ 5614622812f47-4a4d02f988cmr11346261b6e.11.1784691212107; Tue, 21 Jul 2026
+ 20:33:32 -0700 (PDT)
+Date: Tue, 21 Jul 2026 20:33:32 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a6039ed.42649fcc.22d900.000c.GAE@google.com>
-Subject: [moderation/CI] Re: KVM: selftests: riscv: Add lazy V extension
- enablement for guests
-From: syzbot ci <syzbot+ci2fde393e08e1cd50@syzkaller.appspotmail.com>
+Message-ID: <6a603a0c.33ea6125.251e5.0004.GAE@google.com>
+Subject: [moderation/CI] Re: mm/memcg: check kzalloc_node() return in memcg1_init()
+From: syzbot ci <syzbot+ci91fa56ff75ddc0a8@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] KVM: selftests: riscv: Add lazy V extension enablement for guests
-https://lore.kernel.org/all/4FAAF34C966898C0+20260721101406.305108-1-jinrui=
-@haiwei.tech
-* [PATCH] KVM: selftests: riscv: Add lazy V extension enablement for guests
+[v1] mm/memcg: check kzalloc_node() return in memcg1_init()
+https://lore.kernel.org/all/20260721100916.76822-1-hongfu.li@linux.dev
+* [PATCH] mm/memcg: check kzalloc_node() return in memcg1_init()
 
 and found no issues.
 
 Full report is available here:
-https://ci.syzbot.org/series/882c1cc7-f20d-4e3c-8d81-6ba0bcabe93c
+https://ci.syzbot.org/series/9ce52aca-9929-43d4-83f5-a0e0b5bea51a
 
 ***
 
@@ -74,11 +71,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[alex@ghiti.fr anup@brainfault.org aou@eecs.berkeley.edu atish.patra@linux.=
-dev jinrui@haiwei.tech kvm-riscv@lists.infradead.org kvm@vger.kernel.org li=
-nux-kernel@vger.kernel.org linux-kselftest@vger.kernel.org linux-riscv@list=
-s.infradead.org palmer@dabbelt.com pbonzini@redhat.com pjw@kernel.org shuah=
-@kernel.org]
+[akpm@linux-foundation.org cgroups@vger.kernel.org hannes@cmpxchg.org hongfu.li@linux.dev lihongfu@kylinos.cn linux-kernel@vger.kernel.org linux-mm@kvack.org mhocko@kernel.org muchun.song@linux.dev roman.gushchin@linux.dev shakeel.butt@linux.dev]
 
 If the report looks fine to you, reply with:
 #syz upstream
