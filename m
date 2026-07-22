@@ -1,82 +1,127 @@
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpo63.interia.pl (smtpo63.interia.pl [217.74.67.63])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 202192EBDFA
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 06:32:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25D85472F85
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 07:46:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.63
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784701966; cv=none; b=T+cN5ZAl+vyu+XK0co+Mz+vIVFlqExueGZZtVDEMqewYiNFU3schhzPAcj7SbgptAcZprmleznFyjhO9B1NDGDN8eEMSnY1k4n2wBNIc7//D+MpVK+gg7LxuyttJ1Ri1YnCt9Sy/MyOb1ekzBOdaHCcQ8lnr3/3rfAp38mFC41k=
+	t=1784706418; cv=none; b=SXyhNLJaU1TZcDLRTsHWj3EJKxGYlUQ3OuWSg6G7mvfjrlqQX6TSJmgJPAbXuFuez1g81WS7tnKd3p+Bc+Wdcp7i5JJI/mF3upZ4m9lhrru+mEG+49kiLvUgh7p1nmRfOO06RL6Mt4iE9CIxdORTba/PPM6YfVKJ7WIImucEX0w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784701966; c=relaxed/simple;
-	bh=n8WYfsf480Ty+XZVTMi7FkUXxqPvUNTIiCwNBmewcOg=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=jjOOGDPEwx5eO/iHytHeV/UKYRpBE+s+xzlMzeAejtkhP6aKk52c+bxVInu5jd99FUf23jbNpyIvrCu8o1CXYJ2m9OtVxXxyzaOj8Yqyj+y3suh2BhFN2U3bmS9wwIN7wwvLkuDEcwLkhUgJxdngHkLd8BoGOsca+fFvAW1jmlQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7e9dee2f7b5so12525110a34.1
-        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 23:32:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784701964; x=1785306764;
-        h=content-type:cc:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=sir794h97zxnWUiroAtkq9xPvp1WFfF42lZrHyp4+0w=;
-        b=ZzfeLdb+4XJbbniFz3RhdJMyMCkvMwz8deYl3I96pu1LEGgAhAdtzcjQwNUyOjuY9U
-         X2GcumZoMDS30896UUM7LlydJNbEhJdoFVWNwZbs8VEJIAhd8zrNU67dJPm6BrGq+48s
-         JM6Dfc65GDIUmf056oxCC35GH1aEXpWnNVaRRbJk1tX25Ui1ge4AigdRiSWQa7VWdHuJ
-         U/nkblskD7oNAMYwansjdaeBIlYUwYUHu4wtwF5KneiqWTQd4WlnBWBlgkUpytw0QqI7
-         1weyrt8yFLaES9AGD3bKDq31NmwfeIX2Mgw+m94edk5YinD8glPQGL08TPHiKYzXITHT
-         ATSw==
-X-Gm-Message-State: AOJu0Yxy/IQ3O8/2J6BIeygsbAXHuOb0mfh+3brtjjYLqjH8/ifc+QEQ
-	1+wPhbs+IoVW9YkX7Dm55QAKs7q+eHa5oCfKczeyV/ufrxRHUQxMArpZ2EC8ea4Jb+MGQyfGSeD
-	HmD1+FpLG6/bp+mioz+PHUSTBAvp0Ocv15QkI3JSZ3KW89PCiB4rdoVDpKYQ=
+	s=arc-20240116; t=1784706418; c=relaxed/simple;
+	bh=nQwAWBv2toYlhPh2e2d5NZDZsP70Jnygi63E1LPfq2Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IosKWc2zt6atqrygPoUV625a/qw0K9UHpaFU1wgEpPS4/8E1oa9ELMIm2/SwlEbWANZwjQ8Jnkdr+JFrLIwfgRcVlfITyQcVzsn4nwpVpZFkFOKfF3CfIeqPK66mOr/gq4EHk8g8Oex9exbjMk6SYCFgtW6optlWfni0VA9ixPs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=A8Sik5nz; arc=none smtp.client-ip=217.74.67.63
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="A8Sik5nz"
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Wed, 22 Jul 2026 09:46:44 +0200 (CEST)
+Date: Wed, 22 Jul 2026 09:46:41 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC v3] wifi: mac80211: reject station association if AP
+ is not started
+Message-ID: <amB1YWWPFBPDzOyf@nr200>
+References: <9524f34c-7766-4543-a49c-a9fe48fd9d1e@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:178e:b0:6a1:363d:bc42 with SMTP id
- 006d021491bc7-6a536691609mr11354216eaf.15.1784701964099; Tue, 21 Jul 2026
- 23:32:44 -0700 (PDT)
-Date: Tue, 21 Jul 2026 23:32:44 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a60640c.33ea6125.251e5.0006.GAE@google.com>
-Subject: [moderation/CI] Re: wifi: ath12k: Use different RX release ring sizes
- as per memory profiles
-From: syzbot ci <syzbot+ci7590df36fa56d7fc@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9524f34c-7766-4543-a49c-a9fe48fd9d1e@mail.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1784706405; bh=TIkpMmc64euRKGX6FHdcy+OMqIoEW/RmKaXEwQOIWQA=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=A8Sik5nzYDBaykBCbLtUQkJALqFqKQ9ft7px0Inj5E+u/W3/1oRgY+oy3qqhJT+XR
+	 a+ehGcxeeJAyoTqr91Wgh9aGiUCopW7Pv/qGOMdUgJ5j2+N6KuORl/b4TKSfaJQf+q
+	 uwwU40Yy0j8F6NSSBdayohkFIqSTFoBWdxpN0t38=
 
-syzbot ci has tested the following series
+On lip 16, 2026 08:22, 'syzbot' via syzkaller-upstream-moderation wrote:
+> If an interface is changed to AP mode but not started, its channel context
+> configuration (chanctx_conf) remains NULL. If a station is then added to
+> this interface, the kernel may automatically set the
+> NL80211_STA_FLAG_ASSOCIATED flag for compatibility with older userspace
+> applications.
+> 
+> When this flag is set, sta_apply_auth_flags() attempts to initialize rate
+> control for the station by calling rate_control_rate_init_all_links(). This
+> eventually leads to rate_control_rate_init(), which dereferences the NULL
+> chanctx_conf, triggering a WARN_ON:
+> 
+> WARNING: net/mac80211/rate.c:51 at rate_control_rate_init+0x5a6/0x630
+> ...
+> Call Trace:
+>  <TASK>
+>  rate_control_rate_init_all_links+0xf4/0x190 net/mac80211/rate.c:84
+>  sta_apply_auth_flags+0x1bc/0x430 net/mac80211/cfg.c:2152
+>  sta_apply_parameters+0x126d/0x1b10 net/mac80211/cfg.c:2618
+>  ieee80211_add_station+0x3de/0x700 net/mac80211/cfg.c:2684
+>  rdev_add_station+0xfc/0x290 net/wireless/rdev-ops.h:201
+>  nl80211_new_station+0x1b4e/0x1fd0 net/wireless/nl80211.c:9505
+> 
+> Fix this by rejecting the addition or modification of a station to the
+> associated state if the AP has not been started (chanctx_conf is NULL).
+> Exempt Multi-Link Operation (MLO) interfaces from this check, as they
+> handle chanctx_conf per-link rather than globally on the VIF.
+> 
+> Fixes: 55de908ab292 ("mac80211: use channel contexts")
+> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
+> Reported-by: syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=9bdc0c5998ab45b05030
+> Link: https://syzkaller.appspot.com/ai_job?id=0c474d56-8871-480a-8ac4-9a9658930b46
+> To: "Johannes Berg" <johannes@sipsolutions.net>
+> To: <linux-wireless@vger.kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+> 
+> ---
+> v3:
+> - Added an empty line after the newly added code block for better readability.
+> 
+> v2:
+> - Moved the chanctx_conf check inside the WLAN_STA_RATE_CONTROL check block.
+> - Removed a phrase from the commit description as requested by reviewers.
+> https://lore.kernel.org/all/79cbf145-6652-4e15-be67-f7974ebc29cb@mail.kernel.org/T/
+> 
+> v1:
+> https://lore.kernel.org/all/8e8a5122-a09e-43b2-b42f-4c73b021b173@mail.kernel.org/T/
+> ---
+> diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
+> index 3b58af59f..d4331fbae 100644
+> --- a/net/mac80211/cfg.c
+> +++ b/net/mac80211/cfg.c
+> @@ -2148,8 +2148,14 @@ static int sta_apply_auth_flags(struct ieee80211_local *local,
+>  		 * well. Some drivers require rate control initialized
+>  		 * before drv_sta_state() is called.
+>  		 */
+> -		if (!test_sta_flag(sta, WLAN_STA_RATE_CONTROL))
+> +		if (!test_sta_flag(sta, WLAN_STA_RATE_CONTROL)) {
+> +			if (!ieee80211_vif_is_mld(&sta->sdata->vif) &&
+> +			    !rcu_access_pointer(
+> +				    sta->sdata->vif.bss_conf.chanctx_conf))
 
-[v1] wifi: ath12k: Use different RX release ring sizes as per memory profiles
-https://lore.kernel.org/all/20260721110459.2203038-1-pavankumar.nandeshwar@oss.qualcomm.com
-* [PATCH ath-next] wifi: ath12k: Use different RX release ring sizes as per memory profiles
+Don't worry about 80 column limit (it is 100 for some time now in scripts/checkpatch.pl). Make this
+a one line please: !rcu_access_pointer(sta->sdata->vif.bss_conf.chanctx_conf))
 
-and found no issues.
+> +				return -EINVAL;
+> +
+>  			rate_control_rate_init_all_links(sta);
+> +		}
+>  
+>  		ret = sta_info_move_state(sta, IEEE80211_STA_ASSOC);
+>  		if (ret)
+> 
+> 
+> base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
 
-Full report is available here:
-https://ci.syzbot.org/series/40075bf7-7ac6-4568-825a-826bb944cb65
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-The email will later be sent to:
-[ath12k@lists.infradead.org linux-wireless@vger.kernel.org pavankumar.nandeshwar@oss.qualcomm.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+-- 
+Slawomir Stepien
