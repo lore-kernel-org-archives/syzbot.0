@@ -1,64 +1,65 @@
 Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E97D835E926
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 01:08:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39F6022425B
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 02:30:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784682536; cv=none; b=Z8AzqTUsHMAW3h8An3CbcKsVrhHxaa2stby4biawPnugapcmu2yIf3QYlMYQA6B1kQALNSE8dS1X1zE5GQZa5NbOdfW/zeM6QhSOfduRD/GvKYW12rP8HZrW43A/SVCmjuQWKT8cZgLfl9oSZp7sQKiTTvDCXWIF7axqo7oK/0M=
+	t=1784687460; cv=none; b=cDgB/RY82d/SSE0PJ8FhIme+YTIegm3pKEscbjU7aFZPDNgh5o3SUU5P4uYskFAXCdmQ45GbwFcfqqfBqVPUHY6WS/JEJvS6SdFVWvFa4hHejhLuh9d0BXuJXp8gQourcj9AT67NxKTaNAGQu2vXhW1l6Zi0jGa8zayDwHlNhXg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784682536; c=relaxed/simple;
-	bh=WC1f3Jap2sV4uOssJ6wgDg7DCVcxr7dD+mV0dIcrNWQ=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=LsGOqvPeOjhh2DcLJ1cmlJ0eUioXsq1vw6BAzo6mMZGkM5pUqPesyg2e5AHGVnZRLQLZ6oeg6/7jO5cXsZJJ/RmXRZ8qsJifaqZfqMw7M8ZnsWIeFF447LQ8Mh1i+shOCpNwnenPV9DTtHw97P3+zT1uyzB11Hd3jXDsxzPa8qE=
+	s=arc-20240116; t=1784687460; c=relaxed/simple;
+	bh=xooxZPkK5U3wOxExlw8g4sk0zoudIaMfKoHPtUmEOvQ=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Eq41XaOuA+8e2eZAKmcazZHSW+rrMENX2shwiP5qB9xUBsTn7KAP16dTe4Uilu2t/jxYP496wrwb7VAj6aS1tXs/3Z8fKS+FBLfdyYL43IgNVqUXwAshC1vgug+V+4B765mrHfq66DyD4RC/cFtCiWsH//mqvkaK6mYxGORwKrs=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4a45997664aso14163716b6e.1
-        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 18:08:54 -0700 (PDT)
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-485ebc5706cso9699238b6e.0
+        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 19:30:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784682534; x=1785287334;
-        h=content-type:cc:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=c4GhwGcgka23c6Y7KEwBuUAunJyYTkjGNvn0sphp2vo=;
-        b=Jmg90QPNws6qtVKOBp6yD1apsVo/MLwx7dkL+nG4N4uQA3DidYQV85W2a2w1QSDjFp
-         tF9AG/xFAfOthWaR++969Ll/0Fe045IhG2AOLk01bF6JQKuaSTOqeYfl7dtSqa+PkYXm
-         VSYOv0Eyu3EERUC2ghrlG6VCI67ieysiMmOSBB/b6lirAh0CCZVxNpo07vMuU64S9ya6
-         zLS6JXSjShrlXt8y24LUHk2scusEyXDTG6P2URRndPsbCn7j3OsUfLXQisecUho/c+BR
-         xvxyQG8vwgZ1sioDtclQEEjCpR6fL5fYWV7hBOXNG44/lNsPYfXtL5SXfBbJRtetHjFv
-         jEYw==
-X-Gm-Message-State: AOJu0Yxfnl0Kak3gyf5xtRDLCrmVO2YOyhNxdbm6/h0Y30IfQbKjaL4u
-	QlnULX6igSECBUgmHH2XG9uXin7i2OuYqiBqpHJTZHQqM1JeHRKoL8/h5yD9/qafuUDJ2cf8Gys
-	6dVOhw6sa5uRe7dwyQJgRgeWIl9BFuir/p3VHxgIPDdT2a2NzIoMCl7qBMRo=
+        d=1e100.net; s=20251104; t=1784687458; x=1785292258;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=igqhe5PsBCfBkI9RKQe/Y/mWF9zY8XoN+AbVWomXij0=;
+        b=JAzDujuIq3upxbG705G7koVcZYa5uDOp0gxgnScj6VixLrbNrhqDNmuKech0ch5ePc
+         5j9QUioNJk25yr/QTU4G56QWS+JPIXUJ4m6Zo5IQ4SKX+991yqHyPL4iLHnG5ccQihI8
+         k9OKQIntgMiOcIw+oOHtn3IXnM3r1mPdGro55/1XCFNJUAkEkjqVg6XqSCXtD5EHnJep
+         VkS2zqbZoTONzqSfG8d1/0fQnD2yAAjCRTqtE+Gc7CqpTPLLB+oxeneVSUvGzzwwEIIL
+         jdbfkP6EWcgsdz5JgCyfD3pQ9ZJYUyprjqdZg+lN0Iiyr+OoMiJfxBmmuZnUxZ6Kwe1o
+         T6Wg==
+X-Gm-Message-State: AOJu0Yx2458P192pxX0qsX6VvNS+kJ7lKXhFOytlL45XF/2iXJ3r9Tiq
+	/KcIDAb7PSK4FYXKJI0rztCgLCD7y5kcmBMsvl6fLbYX3jviDGKEemA8XNr7ACP89VO+zas8YKR
+	NtiXFC5N7Ts/DTgRkVl1eHehTsO1z8Gu4xx9guAYacUSdJdn0hfdcfvrvaJ0=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:14ca:b0:495:f74a:b572 with SMTP id
- 5614622812f47-4a4d02b863emr14384486b6e.5.1784682533858; Tue, 21 Jul 2026
- 18:08:53 -0700 (PDT)
-Date: Tue, 21 Jul 2026 18:08:53 -0700
+X-Received: by 2002:a05:6808:bd4:b0:4a4:66f8:1275 with SMTP id
+ 5614622812f47-4aaaa55ed83mr1183166b6e.14.1784687458120; Tue, 21 Jul 2026
+ 19:30:58 -0700 (PDT)
+Date: Tue, 21 Jul 2026 19:30:58 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a601825.42649fcc.22d900.000a.GAE@google.com>
-Subject: [moderation/CI] Re: slab: silence sparse warning with type-based partitioning
-From: syzbot ci <syzbot+ci270ac763e046c07c@syzkaller.appspotmail.com>
+Message-ID: <6a602b62.42649fcc.22d900.000b.GAE@google.com>
+Subject: [moderation/CI] Re: selftests/bpf: Fix double free of name
+From: syzbot ci <syzbot+cic15107246e09c26f@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] slab: silence sparse warning with type-based partitioning
-https://lore.kernel.org/all/20260721092005.1986693-1-elver@google.com
-* [PATCH] slab: silence sparse warning with type-based partitioning
+[v1] selftests/bpf: Fix double free of name
+https://lore.kernel.org/all/20260721094404.593127-1-yangfeng59949@163.com
+* [PATCH bpf-next] selftests/bpf: Fix double free of name
 
 and found no issues.
 
 Full report is available here:
-https://ci.syzbot.org/series/a9a61f69-42cf-4e6f-8168-1bc7e861735f
+https://ci.syzbot.org/series/4630347c-f446-4726-a38c-7b2d79cd27e1
 
 ***
 
@@ -71,7 +72,10 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[akpm@linux-foundation.org cl@gentwo.org elver@google.com hao.li@linux.dev harry@kernel.org kasan-dev@googlegroups.com linux-kernel@vger.kernel.org linux-mm@kvack.org lkp@intel.com rientjes@google.com roman.gushchin@linux.dev vbabka@kernel.org]
+[andrii@kernel.org ast@kernel.org bpf@vger.kernel.org daniel@iogearbox.net =
+eddyz87@gmail.com emil@etsalapatis.com jolsa@kernel.org linux-kernel@vger.k=
+ernel.org linux-kselftest@vger.kernel.org martin.lau@linux.dev memxor@gmail=
+.com song@kernel.org yangfeng59949@163.com yonghong.song@linux.dev]
 
 If the report looks fine to you, reply with:
 #syz upstream
