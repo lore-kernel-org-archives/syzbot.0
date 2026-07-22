@@ -1,50 +1,51 @@
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39F6022425B
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 02:30:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8F3838F642
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 03:33:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784687460; cv=none; b=cDgB/RY82d/SSE0PJ8FhIme+YTIegm3pKEscbjU7aFZPDNgh5o3SUU5P4uYskFAXCdmQ45GbwFcfqqfBqVPUHY6WS/JEJvS6SdFVWvFa4hHejhLuh9d0BXuJXp8gQourcj9AT67NxKTaNAGQu2vXhW1l6Zi0jGa8zayDwHlNhXg=
+	t=1784691184; cv=none; b=frFAIFYqnINkwpvMP1BZowcqvHxw0BVH06tF8V6oXm0FGii0uCVphZmKeEB/ge8W+ZbgiOO0murhQqB6eNSODUTjY+Y5MGdJKiKpIrr1liPZ9F3WAjSWzAGMv4/NDrAzE3AYeY3pgZeMr8/TBAhoiO0l50jk/kMDpT3FQWx86dw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784687460; c=relaxed/simple;
-	bh=xooxZPkK5U3wOxExlw8g4sk0zoudIaMfKoHPtUmEOvQ=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Eq41XaOuA+8e2eZAKmcazZHSW+rrMENX2shwiP5qB9xUBsTn7KAP16dTe4Uilu2t/jxYP496wrwb7VAj6aS1tXs/3Z8fKS+FBLfdyYL43IgNVqUXwAshC1vgug+V+4B765mrHfq66DyD4RC/cFtCiWsH//mqvkaK6mYxGORwKrs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
+	s=arc-20240116; t=1784691184; c=relaxed/simple;
+	bh=5BbolyKz6fXMi8ioBNO75xjRe4tztVDtc+nGS6LCFsc=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ZJ2YT1/J2RfhPqqVDIcH7MlyWs7HPugJT6BJTCiFoQDxY0h6Jtud1x+MgXa/zUN50d5ccYr2SVrpR2jqXFoqHAaqTat6Xh8nAw/2KXgYIXs6Wlmyxn5K01o73gJd3mlSFZT7c2NluYtq3drNh20Pa/jrPXB83WIfNinc1ls28aY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-485ebc5706cso9699238b6e.0
-        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 19:30:58 -0700 (PDT)
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-4a45b3f0bdfso13477229b6e.1
+        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 20:33:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784687458; x=1785292258;
+        d=1e100.net; s=20251104; t=1784691182; x=1785295982;
         h=content-transfer-encoding:content-type:cc:to:from:subject
          :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=igqhe5PsBCfBkI9RKQe/Y/mWF9zY8XoN+AbVWomXij0=;
-        b=JAzDujuIq3upxbG705G7koVcZYa5uDOp0gxgnScj6VixLrbNrhqDNmuKech0ch5ePc
-         5j9QUioNJk25yr/QTU4G56QWS+JPIXUJ4m6Zo5IQ4SKX+991yqHyPL4iLHnG5ccQihI8
-         k9OKQIntgMiOcIw+oOHtn3IXnM3r1mPdGro55/1XCFNJUAkEkjqVg6XqSCXtD5EHnJep
-         VkS2zqbZoTONzqSfG8d1/0fQnD2yAAjCRTqtE+Gc7CqpTPLLB+oxeneVSUvGzzwwEIIL
-         jdbfkP6EWcgsdz5JgCyfD3pQ9ZJYUyprjqdZg+lN0Iiyr+OoMiJfxBmmuZnUxZ6Kwe1o
-         T6Wg==
-X-Gm-Message-State: AOJu0Yx2458P192pxX0qsX6VvNS+kJ7lKXhFOytlL45XF/2iXJ3r9Tiq
-	/KcIDAb7PSK4FYXKJI0rztCgLCD7y5kcmBMsvl6fLbYX3jviDGKEemA8XNr7ACP89VO+zas8YKR
-	NtiXFC5N7Ts/DTgRkVl1eHehTsO1z8Gu4xx9guAYacUSdJdn0hfdcfvrvaJ0=
+        bh=whh3+Qia9p8R4dg8KcrMThz25wywkhGbBli00jRdQPQ=;
+        b=GNOxSIpbN7HAvH9Ddmc34cwKZ66Wlke93SP2mSQZpX4KZetUpK5qVmE7oBpl9g6jZU
+         TrijjSlGjU1icovToWr3tTGDCDRkSI2bav8Icp0lx7A7A2nIpFJ3Hs07crOzTyQLRmjP
+         vmzAHVOfb173LpDty4EHrUBaHEGu4/u8IIviY6S7YkxIiCQ6B+WFZCVzQq+ST9d+htGB
+         pmbBk+h6t5G7KjK1lAFhjgblQ2W8KptOMKYFwtfFmVIf2Q7jh0R7aEREBpGUHHgQeWIa
+         QST1t9z2rjMO7NlLYNnttoC4Ja0qQo/0909yxYc7jedfU+K+TBOz8MirfdYoZf1sp3d6
+         ChaQ==
+X-Gm-Message-State: AOJu0YxQHdZaBcxQ7fUrVnZIz5foOEn+v/gFH9ERLnTYseV9IHoRz2z8
+	EpubW1bHQd+RBYbU7hWSrTns+wlFYwP1zSqVLaDJG7r0rG1Dtv0rdmW/FyWTsvVbDlYhfKqLNhy
+	NC5ZR8wNmabhvojccBI+kjx5Iv2lK9Rjr6u3L4b5TL2SY0bV4yL6nS2Eed64=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:bd4:b0:4a4:66f8:1275 with SMTP id
- 5614622812f47-4aaaa55ed83mr1183166b6e.14.1784687458120; Tue, 21 Jul 2026
- 19:30:58 -0700 (PDT)
-Date: Tue, 21 Jul 2026 19:30:58 -0700
+X-Received: by 2002:a05:6808:309f:b0:4a4:12c4:9c16 with SMTP id
+ 5614622812f47-4a4d03219e4mr16208083b6e.7.1784691181776; Tue, 21 Jul 2026
+ 20:33:01 -0700 (PDT)
+Date: Tue, 21 Jul 2026 20:33:01 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a602b62.42649fcc.22d900.000b.GAE@google.com>
-Subject: [moderation/CI] Re: selftests/bpf: Fix double free of name
-From: syzbot ci <syzbot+cic15107246e09c26f@syzkaller.appspotmail.com>
+Message-ID: <6a6039ed.42649fcc.22d900.000c.GAE@google.com>
+Subject: [moderation/CI] Re: KVM: selftests: riscv: Add lazy V extension
+ enablement for guests
+From: syzbot ci <syzbot+ci2fde393e08e1cd50@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -52,14 +53,15 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] selftests/bpf: Fix double free of name
-https://lore.kernel.org/all/20260721094404.593127-1-yangfeng59949@163.com
-* [PATCH bpf-next] selftests/bpf: Fix double free of name
+[v1] KVM: selftests: riscv: Add lazy V extension enablement for guests
+https://lore.kernel.org/all/4FAAF34C966898C0+20260721101406.305108-1-jinrui=
+@haiwei.tech
+* [PATCH] KVM: selftests: riscv: Add lazy V extension enablement for guests
 
 and found no issues.
 
 Full report is available here:
-https://ci.syzbot.org/series/4630347c-f446-4726-a38c-7b2d79cd27e1
+https://ci.syzbot.org/series/882c1cc7-f20d-4e3c-8d81-6ba0bcabe93c
 
 ***
 
@@ -72,10 +74,11 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[andrii@kernel.org ast@kernel.org bpf@vger.kernel.org daniel@iogearbox.net =
-eddyz87@gmail.com emil@etsalapatis.com jolsa@kernel.org linux-kernel@vger.k=
-ernel.org linux-kselftest@vger.kernel.org martin.lau@linux.dev memxor@gmail=
-.com song@kernel.org yangfeng59949@163.com yonghong.song@linux.dev]
+[alex@ghiti.fr anup@brainfault.org aou@eecs.berkeley.edu atish.patra@linux.=
+dev jinrui@haiwei.tech kvm-riscv@lists.infradead.org kvm@vger.kernel.org li=
+nux-kernel@vger.kernel.org linux-kselftest@vger.kernel.org linux-riscv@list=
+s.infradead.org palmer@dabbelt.com pbonzini@redhat.com pjw@kernel.org shuah=
+@kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
