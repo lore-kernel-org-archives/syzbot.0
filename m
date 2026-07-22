@@ -1,65 +1,65 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82570386C17
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 06:27:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 202192EBDFA
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 06:32:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784701665; cv=none; b=PFjLzAHdz3HBmFHsvaP8nt/5nr3n/VSpZUxdlx8lOt4LhdGG3A3SRSUzzq+IBCy1KjK1n5Qj6IpqXUkdDGQQli3a4O1VV91bU1CkH5dMH3SgTsXjMrFsZM+5/rhHUqDmuH0HxR/ZZsjkSx3GaGi+hBcPCDOqE7q2akAaOWlizqs=
+	t=1784701966; cv=none; b=T+cN5ZAl+vyu+XK0co+Mz+vIVFlqExueGZZtVDEMqewYiNFU3schhzPAcj7SbgptAcZprmleznFyjhO9B1NDGDN8eEMSnY1k4n2wBNIc7//D+MpVK+gg7LxuyttJ1Ri1YnCt9Sy/MyOb1ekzBOdaHCcQ8lnr3/3rfAp38mFC41k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784701665; c=relaxed/simple;
-	bh=dNOvZOjwMmsq+RzAwZ85cKgC0qmY/W4q7Al7DhbtbbQ=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=StA+e428gTlfq10RkGzLUlQvOuTQYtaDGRvNoqrG7/apKsZb4x5RYPqUEYYTRrxkg7E94xM47IL8JElMzRv3Ox0f724ch3W8gWP+fkz63d320kZQGzGD3HwYjJpgmFJXK1HZ90fVfF/9PR//xormhL5v5be8s9rzVKDpbXCq9Mc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+	s=arc-20240116; t=1784701966; c=relaxed/simple;
+	bh=n8WYfsf480Ty+XZVTMi7FkUXxqPvUNTIiCwNBmewcOg=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=jjOOGDPEwx5eO/iHytHeV/UKYRpBE+s+xzlMzeAejtkhP6aKk52c+bxVInu5jd99FUf23jbNpyIvrCu8o1CXYJ2m9OtVxXxyzaOj8Yqyj+y3suh2BhFN2U3bmS9wwIN7wwvLkuDEcwLkhUgJxdngHkLd8BoGOsca+fFvAW1jmlQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6a196857c7aso11670685eaf.2
-        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 23:27:44 -0700 (PDT)
+Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7e9dee2f7b5so12525110a34.1
+        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 23:32:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784701663; x=1785306463;
+        d=1e100.net; s=20251104; t=1784701964; x=1785306764;
         h=content-type:cc:to:from:subject:message-id:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=TbKIjAJTq95TmQ/DjS/5x3EA0WbuERBCy7Csb4YbY3E=;
-        b=BNMXpadDwoD6GG2oXpD50DMOmA8bgFifsGx+xoV8UksrH0aDPvhtlTJR3XMUHsb4Ng
-         0B46IC722RYUuyyueO5g1NIZVm+F5F1BHIbBsb2wUNkOUA1TO2uOV8eDpfJ630CFrPXh
-         S/WLuCWSd1JSTD9UApSw2B8JUJ7Cl0eXq6ekw+HcWrSuy9JeUWPLoAqqjkKLaWjgR+5K
-         lL8xVcLBFxFBB2xpK2W+aSepM0rQ3fDW/Blpk/smLlZRR1wRrozKSvnt1lTwumiwB8mC
-         eK5CxudHQZE91i01ll9riInfeZ6KnR42HaiViJKENXWmBo876gxGLbsWTFFrGE+HtW7M
-         46KA==
-X-Gm-Message-State: AOJu0Yz1xx/yb/PehbbYx+xIN2ddLUB1PyPPP+jIq9/KpBXh9cZ/dRFI
-	u8assiisGzANeDVnUm7shN+TfCSKgO3bV2o8eTPHaaGnDHWe4lFXdXArOffircWI4/K6bc2bfTU
-	hNTboTlp4siHy0y2k/Ag9+HzYBimITlc3fabfRsKF7TnMlil7uHqdXr9z0Rk=
+        bh=sir794h97zxnWUiroAtkq9xPvp1WFfF42lZrHyp4+0w=;
+        b=ZzfeLdb+4XJbbniFz3RhdJMyMCkvMwz8deYl3I96pu1LEGgAhAdtzcjQwNUyOjuY9U
+         X2GcumZoMDS30896UUM7LlydJNbEhJdoFVWNwZbs8VEJIAhd8zrNU67dJPm6BrGq+48s
+         JM6Dfc65GDIUmf056oxCC35GH1aEXpWnNVaRRbJk1tX25Ui1ge4AigdRiSWQa7VWdHuJ
+         U/nkblskD7oNAMYwansjdaeBIlYUwYUHu4wtwF5KneiqWTQd4WlnBWBlgkUpytw0QqI7
+         1weyrt8yFLaES9AGD3bKDq31NmwfeIX2Mgw+m94edk5YinD8glPQGL08TPHiKYzXITHT
+         ATSw==
+X-Gm-Message-State: AOJu0Yxy/IQ3O8/2J6BIeygsbAXHuOb0mfh+3brtjjYLqjH8/ifc+QEQ
+	1+wPhbs+IoVW9YkX7Dm55QAKs7q+eHa5oCfKczeyV/ufrxRHUQxMArpZ2EC8ea4Jb+MGQyfGSeD
+	HmD1+FpLG6/bp+mioz+PHUSTBAvp0Ocv15QkI3JSZ3KW89PCiB4rdoVDpKYQ=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1386:b0:6a3:aea9:67da with SMTP id
- 006d021491bc7-6a5368184b2mr11309694eaf.28.1784701663391; Tue, 21 Jul 2026
- 23:27:43 -0700 (PDT)
-Date: Tue, 21 Jul 2026 23:27:43 -0700
+X-Received: by 2002:a05:6820:178e:b0:6a1:363d:bc42 with SMTP id
+ 006d021491bc7-6a536691609mr11354216eaf.15.1784701964099; Tue, 21 Jul 2026
+ 23:32:44 -0700 (PDT)
+Date: Tue, 21 Jul 2026 23:32:44 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a6062df.83245ca4.2d5e11.000c.GAE@google.com>
-Subject: [moderation/CI] Re: binfmt_misc: fix leaked write-access denial on
- F-flag interpreter inode
-From: syzbot ci <syzbot+ci0bca28e419a40662@syzkaller.appspotmail.com>
+Message-ID: <6a60640c.33ea6125.251e5.0006.GAE@google.com>
+Subject: [moderation/CI] Re: wifi: ath12k: Use different RX release ring sizes
+ as per memory profiles
+From: syzbot ci <syzbot+ci7590df36fa56d7fc@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] binfmt_misc: fix leaked write-access denial on F-flag interpreter inode
-https://lore.kernel.org/all/20260721095659.80690-1-aayushdixit924@gmail.com
-* [PATCH] binfmt_misc: fix leaked write-access denial on F-flag interpreter inode
+[v1] wifi: ath12k: Use different RX release ring sizes as per memory profiles
+https://lore.kernel.org/all/20260721110459.2203038-1-pavankumar.nandeshwar@oss.qualcomm.com
+* [PATCH ath-next] wifi: ath12k: Use different RX release ring sizes as per memory profiles
 
 and found no issues.
 
 Full report is available here:
-https://ci.syzbot.org/series/0630ffd2-2369-4833-82f7-b5ffa3fe109e
+https://ci.syzbot.org/series/40075bf7-7ac6-4568-825a-826bb944cb65
 
 ***
 
@@ -72,7 +72,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[aayushdixit924@gmail.com brauner@kernel.org kees@kernel.org linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org viro@zeniv.linux.org.uk]
+[ath12k@lists.infradead.org linux-wireless@vger.kernel.org pavankumar.nandeshwar@oss.qualcomm.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
