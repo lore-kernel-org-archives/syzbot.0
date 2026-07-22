@@ -1,64 +1,65 @@
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5399638F95E
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 03:33:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69E3122538F
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 03:51:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784691216; cv=none; b=mCEMCmpGEQA7SB5akjJUAwfiHHzGWX+QoXa1hekqJ7tYRW1a2wqxnXYcIE4jqUjQlX2oePN/97XAHTQ9ZWQ9vKUQCTFz7eRCQyXFYuYfWz2bPnvsTxAef/NvWuNE6Kq9zKPMkbJYftNQiQ7Yv9c59T/zfBO4zdaVCxoVtNwuJ5k=
+	t=1784692265; cv=none; b=Oz0hs0l7rwGCm8sQd1NzIL5/WbjickZxzqZwhttUDS+qqihWkKhqegfRW65zPgzQVs+HQHBSybtXTIhnvO9OBqcXX4E83sox2N8/m4DRCCBplfpokWndGTlrvc+zT59VGEkuKv5Zttkx7XORbqqHCadcjm3yAIIOGlg9VnDvA2g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784691216; c=relaxed/simple;
-	bh=5VNQJpRiG5vpTOp0xqVNp90nURSG8ZGIo5NW5QbkSZM=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=dkE13kdrLaGShjcZxVkVPv+KtkF0tifLj2iyH2r9bUhcyI3+4YrxTixFUzX7JUGpf2EjQ4KZoGd/5FzxiK01rUNy2uj6ua4lA1gt8lEWgLSL+8RufVDVOJZ9Qt3f/dso5puO8GBoYs7CWktRmXDf37zhdUorZ5te4oIATrAtdDY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
+	s=arc-20240116; t=1784692265; c=relaxed/simple;
+	bh=yQK0NIFEflA5O41wbSlvmPw7sPp6Xl0t1okGMIwWPH8=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=dIZVNYc9kPVgBQlnrZ7ke8LwH3Uppfk1gnuAu6D/BtlGo4DlXQ+JM1x4K+lcXtJWm311yHpGJ8KtwpP0A42r9DM5JLyWvXn4CpjFQAA543t9OCaM3y82Fc/0YXuo1xMzbdEKNhGFWA8ZPkGh0Qsn3X7dKYAQahDbQnqCzx3Yh/M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4909b046dabso19287379b6e.0
-        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 20:33:33 -0700 (PDT)
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-4a416619e8dso9915683b6e.1
+        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 20:51:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784691212; x=1785296012;
-        h=content-type:cc:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=rJylzcnwd6gaVynnMz4J70ENd3LeqPIwTzAG+KKDyZs=;
-        b=Sp4RAZF94jVoBkDgphpKyAg9tiwgRokyWv2zkefNhqPwrsx5Mgp2T2xbaC9vG4P3k9
-         j07OhpmfIeJfOPasKY0i9Okn2k7GxN4oQWwQGNggXNexAU4FBXc/bK6dZIwydNcxapGa
-         l0UM4RqI36xfPgfljr264E4MISJOYKojBpcfCNpgLcJukNVFzQgvsYF7mdckBAbFd+IM
-         IuXxOqbuAXGmAeNgvdNgxc6CjVN/e/Gt4wOh02si2NfLOP6wMU1MxSXE9gwoTavLcrS9
-         d1ENX0o/kpJyvMUQb/gLhRrnlm3p/r6ByWGFDijfnG3j9I+hjKPsrRbxvWHNm4RkYrlU
-         V/AQ==
-X-Gm-Message-State: AOJu0YzdlYI47bHeFkfm08nTt03ncMyiU8NfaPeAAql28C8tHS1fkMkG
-	7j4IXiHGK1zAY6W+pYciKsD7vgIq5p1TszcPCTfU/EMyzYt6+LNN9Dn1yA0f16cLJtde64WX/8B
-	jRkNVPbtZZsXbIq2Ot45qqMRBq20mN7o7vyBHtM9Gh63tdfITkbGXGU9YTHI=
+        d=1e100.net; s=20251104; t=1784692263; x=1785297063;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=oUDOS/qNDhyOz9aT239BFtLIBrlv3bjqDhQ4UTJw8g0=;
+        b=atY3y5qyjwA5qB/Jy8+vE5bXshNkDVYBzxmEXVlaTtYMG9tTg0vrnaWO3vXEQufG2T
+         2sJ3B7/caYAPqPh9duuYAnA0qw0plCLLHFbzwBUrjDCygsc829zLae0EY/SUCXUYzly0
+         dN6Unw44PhQ1aeMlfyGpH+CEvnvnuoInC88DlABP4kUvioWmOhHd2IjgMd3mi9OjR7oy
+         U1R39Hs10WTe/KTSaRXZe8XCIlEO8/R5hIrcjcE5jiGZ8G52+UOQGCYGRztMH46EpqNh
+         RZPYSvEv2CpqJ/5xwlDXC8vr00aMnwCAYWlfB6k7dMAp/mCW4a+XxcXMZQpSoGbY71a4
+         dR4g==
+X-Gm-Message-State: AOJu0Yy8IC/oXa2wy+z4oOXg2GaleLxq69naXh9zfsmqP+/FYf2tW0QX
+	ODBoDgMxGsmuI4T+UHW0l/EUsJMSWZhBmBofSdJub1ZlNl7HY+0PQpWk/KDiW6VcgydyIFSrzBs
+	TSaGVegIyYtRgtLGzceEoejmIPjPCLHaoHcXK9EaHiIHbe17voniZ9yL15ag=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:13ca:b0:4a4:a930:1f76 with SMTP id
- 5614622812f47-4a4d02f988cmr11346261b6e.11.1784691212107; Tue, 21 Jul 2026
- 20:33:32 -0700 (PDT)
-Date: Tue, 21 Jul 2026 20:33:32 -0700
+X-Received: by 2002:a05:6808:1719:b0:495:ca1b:7865 with SMTP id
+ 5614622812f47-4aaaa45f35fmr1190969b6e.11.1784692263278; Tue, 21 Jul 2026
+ 20:51:03 -0700 (PDT)
+Date: Tue, 21 Jul 2026 20:51:03 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a603a0c.33ea6125.251e5.0004.GAE@google.com>
-Subject: [moderation/CI] Re: mm/memcg: check kzalloc_node() return in memcg1_init()
-From: syzbot ci <syzbot+ci91fa56ff75ddc0a8@syzkaller.appspotmail.com>
+Message-ID: <6a603e27.42649fcc.22d900.000d.GAE@google.com>
+Subject: [moderation/CI] Re: igbvf: fix DMA mapping leak on Tx error
+From: syzbot ci <syzbot+cid6a834cc2932c380@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] mm/memcg: check kzalloc_node() return in memcg1_init()
-https://lore.kernel.org/all/20260721100916.76822-1-hongfu.li@linux.dev
-* [PATCH] mm/memcg: check kzalloc_node() return in memcg1_init()
+[v1] igbvf: fix DMA mapping leak on Tx error
+https://lore.kernel.org/all/20260721092323.39372-1-xuanqiang.luo@linux.dev
+* [PATCH iwl-net v1] igbvf: fix DMA mapping leak on Tx error
 
 and found no issues.
 
 Full report is available here:
-https://ci.syzbot.org/series/9ce52aca-9929-43d4-83f5-a0e0b5bea51a
+https://ci.syzbot.org/series/d970927b-67f6-4d82-a469-d6fbd8330172
 
 ***
 
@@ -71,7 +72,11 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[akpm@linux-foundation.org cgroups@vger.kernel.org hannes@cmpxchg.org hongfu.li@linux.dev lihongfu@kylinos.cn linux-kernel@vger.kernel.org linux-mm@kvack.org mhocko@kernel.org muchun.song@linux.dev roman.gushchin@linux.dev shakeel.butt@linux.dev]
+[andrew@lunn.ch anthony.l.nguyen@intel.com davem@davemloft.net edumazet@goo=
+gle.com intel-wired-lan@lists.osuosl.org kuba@kernel.org luoxuanqiang@kylin=
+os.cn netdev@vger.kernel.org pabeni@redhat.com przemyslaw.kitszel@intel.com=
+ roel.kluin@gmail.com stable@vger.kernel.org tactii@gmail.com xuanqiang.luo=
+@linux.dev]
 
 If the report looks fine to you, reply with:
 #syz upstream
