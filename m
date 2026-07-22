@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3970439F82
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 16:32:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4773833FE05
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 17:46:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784737979; cv=none; b=redKCaPaUbjXkMOnOK5UOf/nKIEqO0VGz2/zgq98tM+lZNPMbUvsIItm4dluFovMh7sPj0Lenu1x8ADjsfl5PNvmwce5N/NPlPRmDPftVD0vni9IJTPnZEkM0meIvZfb3MOpTbAwkK3UWZd/CSJ69vf5pD506eCmCyyM/ZEfYMw=
+	t=1784742371; cv=none; b=pMe3JhYlgmkdyTB2CZBSp4fkr6tiWYz8aM0VxVPAG7RG3EeRtVFy4hbQp9OHg/mBxFfsm/tn72LEF1vaMRs+fYFUf7H52GLNFsNk1VcrZymXOdOTNwK4vzb6TVKSez4yGi8fmsY6UrGwhBTp5rB+M9Na3PjTCJWK6KL1udp60Jw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784737979; c=relaxed/simple;
-	bh=eQ0He0lbm2Sip6Lcp+/BRasYd+3NUCGKoccPriCtb5E=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=QrBDJDVIWedvgmjAkMVQJCWAVGImdrXTHv2bwefXgo7xN1ILF5wwpqXkeLOJ3oduD1a4+P+XgZwcB1WAWbJOhtXh4ZN4JfZ/lklWlhcoqyB4+xDaT5/wbyPypg2FM9R+nMGXlcaVNzSgzWp65HNY6ZKNbjM+C5OZS91x05rrAIc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=loBCWeyx; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784742371; c=relaxed/simple;
+	bh=Vx6oAz5XSNODFwg3syopa7OSe7ghVs/nX8iPVhr11zw=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=if+LT80/v3cPxXUiS5bgrDlx99WCg0xKBvHLQmWaijsh5w3ZeBqqIwr1dp9uidb4AZzod5LF7KkoCw52hzwXzFM8CR4H/DXz69t1CxCcgN/84qsPeyUw1ulwrKR366i7kMbPAkhrohiSqaXcMQgVFD8keYFErzCQFLAXneyt0aQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e59KlRiJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="loBCWeyx"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6344B1F00A3A;
-	Wed, 22 Jul 2026 16:32:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e59KlRiJ"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 178C61F000E9;
+	Wed, 22 Jul 2026 17:46:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784737976;
-	bh=Qb3pX1a6X8jbk9eq4JjBWbdRTWdMsLAbyqT0VSSRFok=;
+	s=k20260515; t=1784742368;
+	bh=mxBtKiQL+MnPwi40v3afdrl95BXTGiK5Yd2i8B/vkTs=;
 	h=From:To:Cc:Subject:Date;
-	b=loBCWeyxC1h0A81RJ5k9e2Z/TPOU40LydOvw1lxsvKqhhqt+QI6nPjK5zwe9CXYO+
-	 b9h7h3A6ai93fmboRTsYqla68Klxe8VDwFrh6M9VDWKP7HsnBMUG/5RZpZUN6PBe/L
-	 kyf6zOlrLA05NYBhnbVDfNhZBIoffAl16TdiQSmEcFCkONC3TBYNT1qpRut93/LlDL
-	 erYnaH9vlPjq1kgdjT0021cMZf+qjoo9j7AwslJ/CsuPB7IdpA8anwtb+aLv44pPnz
-	 iu5I6dFNI4Uyl4BMQ8b10dyHKgq5HcZNzd8jsGjWn73LypScjISmjLqYBQ4+hVokwt
-	 D7y4f2aFOeLwA==
+	b=e59KlRiJCCjy/j5CqBhT1Yhxj7LY7eKRinLL/NLVYiQnzpMsmxMasxI++kmH+YxzB
+	 r04tey8fuIB5o6DnWJ6rwOvDnIJUOnAS4HqwUtux3d+irkHnoraXFrTSUS/L6RtFuE
+	 auXaiPPiXkYCvnu2KrMinfnuFTOmdjLknjsFRg5Mi83fmh0pxut2uC6LjzmnNMiHG7
+	 l15bvNcXDfIr0POC2bF1d1iUYj0PzoUDrxAcUJYcxHwkRuyip3y4ZUH6L4E5Ac1SGk
+	 IZlYv+UEg8c5YlGeiRaflJsHt0MJchC7182jVdO70jm4V7Pfu52TEoNazsCd7VUGH3
+	 D39LTBEHxLlvQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: sst@poczta.fm, syzbot@lists.linux.dev
-Subject: [PATCH RFC v4] wifi: mac80211: reject station association if AP is not started
-Message-ID: <fc12db53-baa2-4eb0-ae53-9f0469eafdc9@mail.kernel.org>
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] Input: yealink - abort URB submission on fatal errors
+Message-ID: <57cf484d-3235-473f-a61d-570585626176@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,82 +38,103 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 22 Jul 2026 16:32:56 +0000 (UTC)
+Date: Wed, 22 Jul 2026 17:46:08 +0000 (UTC)
 
-If an interface is changed to AP mode but not started, its channel context
-configuration (chanctx_conf) remains NULL. If a station is then added to
-this interface, the kernel may automatically set the
-NL80211_STA_FLAG_ASSOCIATED flag for compatibility with older userspace
-applications.
+The yealink driver uses two URBs (interrupt and control) to communicate
+with the device. When an URB completes with an error status (such as
+-EPROTO), the completion handlers (urb_irq_callback and urb_ctl_callback)
+log the error but do not abort. Instead, they proceed to process the
+potentially invalid data and unconditionally resubmit the URB.
 
-When this flag is set, sta_apply_auth_flags() attempts to initialize rate
-control for the station by calling rate_control_rate_init_all_links(). This
-eventually leads to rate_control_rate_init(), which dereferences the NULL
-chanctx_conf, triggering a WARN_ON:
+Because control URBs are not rate-limited by the USB core, resubmitting a
+failing control URB in a tight loop floods the console with error messages
+and keeps the CPU completely busy in the softirq context. This eventually
+triggers an RCU preempt stall:
 
-WARNING: net/mac80211/rate.c:51 at rate_control_rate_init+0x5a6/0x630
-...
+yealink 3-1:36.0: unexpected response 0
+yealink 3-1:36.0: urb_ctl_callback - urb status -71
+rcu: INFO: rcu_preempt self-detected stall on CPU
 Call Trace:
- <TASK>
- rate_control_rate_init_all_links+0xf4/0x190 net/mac80211/rate.c:84
- sta_apply_auth_flags+0x1bc/0x430 net/mac80211/cfg.c:2152
- sta_apply_parameters+0x126d/0x1b10 net/mac80211/cfg.c:2618
- ieee80211_add_station+0x3de/0x700 net/mac80211/cfg.c:2684
- rdev_add_station+0xfc/0x290 net/wireless/rdev-ops.h:201
- nl80211_new_station+0x1b4e/0x1fd0 net/wireless/nl80211.c:9505
+ __console_flush_and_unlock kernel/printk/printk.c:3373 [inline]
+ console_unlock+0xd1/0x1c0 kernel/printk/printk.c:3413
+ dev_vprintk_emit+0x338/0x400 drivers/base/core.c:4996
+ dev_printk_emit+0xee/0x140 drivers/base/core.c:5007
+ usb_generic_driver_probe+0x10b/0x150 drivers/usb/core/generic.c:252
+ ...
+ hub_event+0x28e8/0x4d30 drivers/usb/core/hub.c:5953
+ worker_thread+0x92d/0xe10 kernel/workqueue.c:3486
+ kthread+0x388/0x470 kernel/kthread.c:436
 
-Fix this by rejecting the addition or modification of a station to the
-associated state if the AP has not been started (chanctx_conf is NULL).
-Exempt Multi-Link Operation (MLO) interfaces from this check, as they
-handle chanctx_conf per-link rather than globally on the VIF.
+Fix this by explicitly checking the URB status for fatal errors (-ENOENT,
+-ECONNRESET, -ESHUTDOWN, -EPROTO, -EPIPE, -EILSEQ) in both
+urb_irq_callback() and urb_ctl_callback(). If a fatal error is detected,
+the callback now returns early, breaking the infinite resubmission loop and
+preventing the RCU stall.
 
-Fixes: 55de908ab292 ("mac80211: use channel contexts")
+Fixes: aca951a22a1d ("[PATCH] input-driver-yealink-P1K-usb-phone")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=9bdc0c5998ab45b05030
-Link: https://syzkaller.appspot.com/ai_job?id=64f3e3ae-e43e-4917-b403-f9b7799fe1bc
-To: "Johannes Berg" <johannes@sipsolutions.net>
-To: <linux-wireless@vger.kernel.org>
+Reported-by: syzbot+78e2288f58b881ed3c45@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=78e2288f58b881ed3c45
+Link: https://syzkaller.appspot.com/ai_job?id=6ef5721d-1286-4deb-85e1-d7201e028127
+To: "Henk Vergonet" <Henk.Vergonet@gmail.com>
+To: "Dmitry Torokhov" <dmitry.torokhov@gmail.com>
+To: <linux-input@vger.kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-v4:
-- Avoid unnecessary line wrapping in the chanctx_conf check.
-
-v3:
-- Added an empty line after the newly added code block for better readability.
-https://lore.kernel.org/all/9524f34c-7766-4543-a49c-a9fe48fd9d1e@mail.kernel.org/T/
-
-v2:
-- Moved the chanctx_conf check inside the WLAN_STA_RATE_CONTROL check block.
-- Removed a phrase from the commit description as requested by reviewers.
-https://lore.kernel.org/all/79cbf145-6652-4e15-be67-f7974ebc29cb@mail.kernel.org/T/
-
-v1:
-https://lore.kernel.org/all/8e8a5122-a09e-43b2-b42f-4c73b021b173@mail.kernel.org/T/
----
-diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index 3b58af59f..830c9fc95 100644
---- a/net/mac80211/cfg.c
-+++ b/net/mac80211/cfg.c
-@@ -2148,8 +2148,13 @@ static int sta_apply_auth_flags(struct ieee80211_local *local,
- 		 * well. Some drivers require rate control initialized
- 		 * before drv_sta_state() is called.
- 		 */
--		if (!test_sta_flag(sta, WLAN_STA_RATE_CONTROL))
-+		if (!test_sta_flag(sta, WLAN_STA_RATE_CONTROL)) {
-+			if (!ieee80211_vif_is_mld(&sta->sdata->vif) &&
-+			    !rcu_access_pointer(sta->sdata->vif.bss_conf.chanctx_conf))
-+				return -EINVAL;
-+
- 			rate_control_rate_init_all_links(sta);
-+		}
+diff --git a/drivers/input/misc/yealink.c b/drivers/input/misc/yealink.c
+index 560f895a0..232d8e71b 100644
+--- a/drivers/input/misc/yealink.c
++++ b/drivers/input/misc/yealink.c
+@@ -405,9 +405,21 @@ static void urb_irq_callback(struct urb *urb)
+ 	struct yealink_dev *yld = urb->context;
+ 	int ret, status = urb->status;
  
- 		ret = sta_info_move_state(sta, IEEE80211_STA_ASSOC);
- 		if (ret)
+-	if (status)
++	if (status) {
+ 		dev_err(&yld->intf->dev, "%s - urb status %d\n",
+ 			__func__, status);
++		switch (status) {
++		case -ENOENT:
++		case -ECONNRESET:
++		case -ESHUTDOWN:
++		case -EPROTO:
++		case -EPIPE:
++		case -EILSEQ:
++			return;
++		default:
++			break;
++		}
++	}
+ 
+ 	switch (yld->irq_data->cmd) {
+ 	case CMD_KEYPRESS:
+@@ -443,9 +455,21 @@ static void urb_ctl_callback(struct urb *urb)
+ 	struct yealink_dev *yld = urb->context;
+ 	int ret = 0, status = urb->status;
+ 
+-	if (status)
++	if (status) {
+ 		dev_err(&yld->intf->dev, "%s - urb status %d\n",
+ 			__func__, status);
++		switch (status) {
++		case -ENOENT:
++		case -ECONNRESET:
++		case -ESHUTDOWN:
++		case -EPROTO:
++		case -EPIPE:
++		case -EILSEQ:
++			return;
++		default:
++			break;
++		}
++	}
+ 
+ 	switch (yld->ctl_data->cmd) {
+ 	case CMD_KEYPRESS:
 
 
-base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
+base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
