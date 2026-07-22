@@ -1,196 +1,191 @@
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EFD333FE33
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 13:20:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E568A36197C
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 16:04:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784726443; cv=none; b=uZiYcmqinY1W+SDBNljVFnxrPxVC9Qa8FddwHtgb/H9gGYcMUR3udsk/AmHbpJGDa7rXTG0O84Dzf944XoVZlvXKF62AwozgdqLp3gdzGoK+EAxAVgnp3qR+rRrUz8LZ6FzESOPes4CYAm6YAkJqfd4W7Z2xkHFkLCfB9IkNQ2U=
+	t=1784736268; cv=none; b=LfEQ/AtDD9lt7B8mTTz3CHBQ37ZGsfjS1puQcnBVjtXbmsBtc2v1YckpyFVJssKrGHyXH00//SpRVVOxP+gY3FU+l48y0zs2iYwK4AkgbED6nSk30R83TFsL9/+IjF1K6V3xbZfBkeZ519a5Y200MepqZNz5UY+nHgK/LZkdrPc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784726443; c=relaxed/simple;
-	bh=ea607ANU07c7pV5Z/ke4ZHxl2tnYPPx7aSiPzCOLt/0=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=tXhW0SLZDM+5qYCwYewmsk6xhz5OnDGQWm7zmrMsb9GMWvjFmP8f6qn6Kf5rQi/GPlD6/bHDaSYmQgQlN9xFT60QK7Y3kj9sg1Yechdp6IAVkUGJuWMm6pbd1ANHJP121wDE+uKx6EcGT6gWyasD6eukBHJ0Opx08M0Q+vCItIM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-495b8b30310so14475599b6e.1
-        for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 06:20:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784726440; x=1785331240;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=0OUYkqz3oMV82NBiRzhZsN3Su7jaCGkuk4svSuitAHk=;
-        b=rvuA6VxsrtD7plmqOEHUrcfVdfiXIrhXYDKQ1yiv+5QHLYhdMcgTp5g2QCP5sCE/Na
-         Ri4lp0EvnTuXN27x8yp2nBkCVXhQ8UgbIhmYnppagUU+Z6hulYaH50irowUxuLHf+wqW
-         v/7NfpI2MJmIIaCFAaZ/pQ+uL+INbp0OHnbf+QZ9TUIiKcwFiS8W3VcnF+2H1SOl8Eek
-         MPzmPVU21JH2UPJvbHnbvCCKQS3/Y77aOnoABm3BjP9Uvgjqb8P6aLQzuz9sXf2Kjcje
-         4xPsfAaWpgrxJUxGKxeJh7vtst8abvR764xck1T0H4AlFqtUCePs9QKBm+nA18wDozHG
-         4Hlw==
-X-Gm-Message-State: AOJu0Yw1NOK1PbwCK53yRB2PPHpHOgsBLwXsRUeNGl2Bwj31MyjX7rXU
-	sK3EwUdeJVsPZzC2wVZdrNicOpOHtJVzYaN3TsffQ1wj5XUh5fjsUJgEWMG8LtcTMrhlacOr/4M
-	/3OiclHOhv29gNHQuwwrXpIkV03jLBqfEmZIQ5g/SX6TJ67Gvqor/NdAHFOY=
+	s=arc-20240116; t=1784736268; c=relaxed/simple;
+	bh=r4pSEgFeD3rt8Yb0ageGidBsORCHx6CcT0AbIhFC3Dw=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=aXb47I1oIYnvCxnK183QjgZ4tiwCppMpQEhY0ff8POyX0g7jEilx0xRTgkDVM05mifSRSJtf/98oGDFw8yws/qcCo26+z+sTRHcH4MHImiVmrwcs0ezb5bdvpd3a1wQsaqoszxSOfsIW4FRbq92yiIo/THSRw7CHQQCtQ6VX44g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Il1KSRTa; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Il1KSRTa"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 654EA1F00A3A;
+	Wed, 22 Jul 2026 16:04:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784736266;
+	bh=k0DySdt4cFe6uLhk2SInCSD+zAIDy/ZuTxujlC8RHwc=;
+	h=From:To:Cc:Subject:Date;
+	b=Il1KSRTaZ+yoR+2hBjSEq7pw+9McoKKoV5iC23cPxz6oQhsdJFKu0R+qFipVThHAt
+	 avFGPvH3/ZY7Khhi0J0WXtmzi+0xlAH8BbMJNtPZDwjECUng+1Lhm7SPEzExNrgaVJ
+	 7+8yUrYaykZWsJsG2eVG4rQjM6Re0EucHNNo8nOuHrs3c/L0d1DgZkWaf6E9TbRBBn
+	 WtVhcLChB6Umwc0zCEtGppNtznk0CctK54nwDbdGdO3QikxbzVapNdHaops2f+jLM7
+	 RJ1tmKRRJyFYAxk01UD61MfNEVVzLkCIzlEWATsR+3kZ6wwlWzhcsbV8A9jMb+lC/k
+	 +WIKnnjRzxggQ==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] fbdev: core: Add bounds checking to drawing functions
+Message-ID: <8fa4f66c-506a-4929-9906-9cec63760a7b@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:170b:b0:49b:dcb8:e2b5 with SMTP id
- 5614622812f47-4a4d022413dmr11716902b6e.19.1784726440406; Wed, 22 Jul 2026
- 06:20:40 -0700 (PDT)
-Date: Wed, 22 Jul 2026 06:20:40 -0700
-In-Reply-To: <20260721-generic-set-memory-v0-1-v1-0-2c1fc62306b3@kernel.org>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a60c3a8.42649fcc.22d900.0013.GAE@google.com>
-Subject: [syzbot ci] Re: arch, mm: create a generic set_memory/change_page_attr
- core
-From: syzbot ci <syzbot+ciff95a07853f6d218@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, aou@eecs.berkeley.edu, bp@alien8.de, 
-	catalin.marinas@arm.com, chenhuacai@kernel.org, dave.hansen@intel.com, 
-	dave.hansen@linux.intel.com, david@kernel.org, hpa@zytor.com, 
-	jackmanb@google.com, jgross@suse.com, kevin.brodsky@arm.com, 
-	liam@infradead.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-riscv@lists.infradead.org, ljs@kernel.org, loongarch@lists.linux.dev, 
-	luto@kernel.org, mhocko@suse.com, mingo@kernel.org, mingo@redhat.com, 
-	palmer@dabbelt.com, peterz@infradead.org, pjw@kernel.org, rppt@kernel.org, 
-	surenb@google.com, tglx@kernel.org, vbabka@kernel.org, will@kernel.org, 
-	x86@kernel.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Wed, 22 Jul 2026 16:04:26 +0000 (UTC)
 
-syzbot ci has tested the following series
+A vmalloc-out-of-bounds write can occur in the framebuffer drawing
+functions. This happens when fbcon ignores a failure from vc_resize()
+(e.g., due to a memory allocation failure) and proceeds to draw the console
+using the old, larger dimensions that no longer fit within the new, smaller
+framebuffer resolution. This mismatch causes the calculated drawing
+coordinates to underflow, resulting in massive positive numbers.
 
-[v1] arch, mm: create a generic set_memory/change_page_attr core
-https://lore.kernel.org/all/20260721-generic-set-memory-v0-1-v1-0-2c1fc62306b3@kernel.org
-* [PATCH RFC 01/18] x86/mm/pat: Don't gate cpa_lock on debug_pagealloc_enabled()
-* [PATCH RFC 02/18] x86/mm/pat: fix effective RW computation in lookup_address_in_pgd_attr()
-* [PATCH RFC 03/18] x86/mm/pat: replace x86-speficic pg_level with generic pgtable_level
-* [PATCH RFC 04/18] x86/mm/pat: use page table accessors for effective RW/NX bits
-* [PATCH RFC 05/18] x86/mm/pat: use a generic helper for the large page size
-* [PATCH RFC 06/18] x86/mm/pat: introduce an inline helper to check if alias needs update
-* [PATCH RFC 07/18] x86/mm/pat: introduce cpa_handle_large_page()
-* [PATCH RFC 08/18] x86/mm/pat: use cpa_split_data structure to pass split parameters
-* [PATCH RFC 09/18] x86/mm/pat: use a single locked lookup for PTE verification
-* [PATCH RFC 10/18] x86/mm/pat: move the large page size calculation to should_split_large_page
-* [PATCH RFC 11/18] x86/mm/pat, mm: set_memory: pull change_page_attr() core to mm/
-* [PATCH RFC 12/18] x86/pat/mm, mm/set_memory: abstract the CPA page table lock
-* [PATCH RFC 13/18] mm/set_memory: read page table entries with pXdp_get()
-* [PATCH RFC 14/18] x86/mm/pat, mm: move cpa-test to mm
-* [PATCH RFC 15/18] riscv: convert set_memory to the generic CPA implementation
-* [PATCH RFC 16/18] riscv: make set_direct_map_*_noflush actually noflush
-* [PATCH RFC 17/18] loongarch: convert set_memory to the generic CPA implementation
-* [PATCH RFC 18/18] loongarch: make set_direct_map_*_noflush actually noflush
+Because the low-level drawing functions (fb_imageblit, fb_fillrect, and
+fb_copyarea) previously lacked bounds checking, they blindly used these
+invalid coordinates to calculate memory addresses, leading to a
+vmalloc-out-of-bounds write.
 
-and found the following issue:
-WARNING in arch_should_split_large_page
+While it might seem tempting to handle the error in fbcon_modechanged(),
+doing so cleanly is difficult because the hardware resolution and rotation
+state have already been altered by the time the failure occurs. Instead,
+the most robust and idiomatic solution is to implement defense-in-depth by
+adding bounds checking directly to the low-level drawing functions. This
+protects all framebuffer drivers from out-of-bounds accesses, regardless of
+whether the invalid coordinates come from fbcon or another source.
 
-Full report is available here:
-https://ci.syzbot.org/series/08799ddb-4fca-4e5c-a2a7-a16eb2845851
+Add bounds checks at the beginning of the inline functions in
+drivers/video/fbdev/core/fb_imageblit.h, fb_fillrect.h, and fb_copyarea.h.
+These checks validate the destination coordinates (dx, dy) and dimensions
+(width, height) against the virtual resolution of the framebuffer
+(p->var.xres_virtual and p->var.yres_virtual). Because the coordinates and
+dimensions are unsigned 32-bit integers (u32), any negative coordinate
+resulting from an underflow will wrap around to a huge positive number. The
+>= xres_virtual (or yres_virtual) checks safely and correctly catch these
+underflows. If the bounds check fails, the function simply returns early,
+dropping the invalid drawing operation and protecting kernel memory.
 
-***
+BUG: KASAN: vmalloc-out-of-bounds in fb_write_offset
+drivers/video/fbdev/core/sysmem.h:30 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in fb_bitmap_2ppw
+drivers/video/fbdev/core/fb_imageblit.h:364 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in fb_bitmap_imageblit
+drivers/video/fbdev/core/fb_imageblit.h:462 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in fb_imageblit
+drivers/video/fbdev/core/fb_imageblit.h:492 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in sys_imageblit+0xff5/0x1e40
+drivers/video/fbdev/core/sysimgblt.c:24
+Write of size 8 at addr ffffc90005101fc0 by task syz.0.17/6108
 
-WARNING in arch_should_split_large_page
-
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf-next.git
-base:      dc59e4fea9d83f03bad6bddf3fa2e52491777482
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/9a435490-f68f-4ca0-96ae-457a5caa17e6/config
-
-Demotion targets for Node 1: null
-debug_vm_pgtable: [debug_vm_pgtable         ]: Validating architecture page table helpers
-Key type .fscrypt registered
-Key type fscrypt-provisioning registered
-kAFS: Red Hat AFS client v0.1 registering.
-Btrfs loaded, assert=on, zoned=yes, fsverity=yes
-Key type big_key registered
-Key type encrypted registered
-AppArmor: AppArmor sha256 policy hashing enabled
-ima: No TPM chip found, activating TPM-bypass!
-Loading compiled-in module X.509 certificates
-Loaded X.509 cert 'Build time autogenerated kernel key: dc5bfa299b381f3c121e230b24acaec0874c302b'
-ima: Allocated hash algorithm: sha256
-ima: No architecture policies found
-evm: Initialising EVM extended attributes:
-evm: security.selinux (disabled)
-evm: security.SMACK64 (disabled)
-evm: security.SMACK64EXEC (disabled)
-evm: security.SMACK64TRANSMUTE (disabled)
-evm: security.SMACK64MMAP (disabled)
-evm: security.apparmor
-evm: security.ima
-evm: security.capability
-evm: HMAC attrs: 0x1
-PM:   Magic number: 2:551:79
-netconsole: network logging started
-gtp: GTP module loaded (pdp ctx size 128 bytes)
-rdma_rxe: loaded
-cfg80211: Loading compiled-in X.509 certificates for regulatory database
-Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
-Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
-clk: Disabling unused clocks
-ALSA device list:
-  #0: Dummy 1
-  #1: Loopback 1
-  #2: Virtual MIDI Card 1
-md: Waiting for all devices to be available before autodetect
-md: If you don't use raid, use raid=noautodetect
-md: Autodetecting RAID arrays.
-md: autorun ...
-md: ... autorun DONE.
-EXT4-fs (sda1): mounted filesystem b4773fba-1738-4da0-8a90-0fe043d0a496 ro with ordered data mode. Quota mode: none.
-VFS: Mounted root (ext4 filesystem) readonly on device 8:1.
-devtmpfs: mounted
-VFS: Pivoted into new rootfs
-Freeing unused kernel image (initmem) memory: 26964K
-Write protecting the kernel read-only data: 221184k
-Testing CPA: undo ffffffff81000000-ffffffff8e800000
-------------[ cut here ]------------
-CPA detected W^X violation: 00000000000001a1 -> 00000000000001a3 range: 0xffffffff81000000 - 0xffffffff811fffff PFN 1000
-WARNING: arch/x86/mm/pat/set_memory.c:601 at arch_should_split_large_page+0x493/0x710, CPU#0: swapper/0/1
-Modules linked in:
-CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:arch_should_split_large_page+0x49e/0x710
-Code: 00 48 8b 44 24 20 48 25 00 f0 ff ff 48 8b 4c 24 08 4c 8d 04 08 49 ff c8 48 8d 3d 4d 66 e1 0e 4c 89 ee 48 89 ea 4c 8b 4c 24 18 <67> 48 0f b9 3a eb 05 e8 46 37 4d 00 4c 89 f7 48 89 ee e8 9b 39 4d
-RSP: 0000:ffffc900000679f0 EFLAGS: 00010296
-RAX: 0000000000200000 RBX: 0000000000000123 RCX: ffffffff81000000
-RDX: 00000000000001a3 RSI: 00000000000001a1 RDI: ffffffff905a8280
-RBP: 00000000000001a3 R08: ffffffff811fffff R09: 0000000000001000
-R10: 0000000000000003 R11: 0000000000000000 R12: 0000000000000002
-R13: 00000000000001a1 R14: 00000000000001a3 R15: 0000000000000002
-FS:  0000000000000000(0000) GS:ffff88818d95a000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffff88823ffff000 CR3: 000000000e946000 CR4: 00000000000006f0
 Call Trace:
  <TASK>
- __change_page_attr_set_clr+0x936/0x12d0
- change_page_attr_set_clr+0x3ac/0x450
- set_memory_rw+0x8c/0xd0
- mark_rodata_ro+0xf0/0x140
- kernel_init+0x4e/0x1d0
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+ print_report+0x58/0x70 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ fb_write_offset drivers/video/fbdev/core/sysmem.h:30 [inline]
+ fb_bitmap_2ppw drivers/video/fbdev/core/fb_imageblit.h:364 [inline]
+ fb_bitmap_imageblit drivers/video/fbdev/core/fb_imageblit.h:462 [inline]
+ fb_imageblit drivers/video/fbdev/core/fb_imageblit.h:492 [inline]
+ sys_imageblit+0xff5/0x1e40 drivers/video/fbdev/core/sysimgblt.c:24
+ drm_fbdev_shmem_defio_imageblit+0x2c/0x110
+ drivers/gpu/drm/drm_fbdev_shmem.c:39
+ cw_putcs_aligned drivers/video/fbdev/core/fbcon_cw.c:111 [inline]
+ cw_putcs+0x1626/0x18e0 drivers/video/fbdev/core/fbcon_cw.c:159
+ fbcon_putcs+0x3c5/0x5a0 drivers/video/fbdev/core/fbcon.c:1392
+ do_update_region+0x389/0x440 drivers/tty/vt/vt.c:656
+ redraw_screen+0xa3d/0x1020 drivers/tty/vt/vt.c:1008
+ fbcon_rotate drivers/video/fbdev/core/fbcon.c:230 [inline]
+ rotate_store+0x32d/0x500 drivers/video/fbdev/core/fbcon.c:3171
+ kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
+ new_sync_write fs/read_write.c:595 [inline]
+ vfs_write+0x612/0xba0 fs/read_write.c:687
+ ksys_write+0x150/0x270 fs/read_write.c:739
 
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: eabb03293087 ("fbdev: Refactoring the fbcon packed pixel drawing routines")
+Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+5a40432dfe8f86ee657a@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=5a40432dfe8f86ee657a
+Link: https://syzkaller.appspot.com/ai_job?id=46e0f6f1-3c42-4372-a8ba-1f6573bdc0ae
+To: "Helge Deller" <deller@gmx.de>
+To: <dri-devel@lists.freedesktop.org>
+To: <linux-fbdev@vger.kernel.org>
+To: "Simona Vetter" <simona@ffwll.ch>
+To: "Zsolt Kajtar" <soci@c64.rulez.org>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/drivers/video/fbdev/core/fb_copyarea.h b/drivers/video/fbdev/core/fb_copyarea.h
+index 53f1d5385..f4fc86a51 100644
+--- a/drivers/video/fbdev/core/fb_copyarea.h
++++ b/drivers/video/fbdev/core/fb_copyarea.h
+@@ -386,6 +386,16 @@ static inline void fb_copyarea(struct fb_info *p, const struct fb_copyarea *area
+ 	struct fb_address src = dst;
+ 	bool rev_copy = (dy > sy) || (dy == sy && area->dx > area->sx);
+ 
++	if (area->dx >= p->var.xres_virtual ||
++	    area->dy >= p->var.yres_virtual ||
++	    area->sx >= p->var.xres_virtual ||
++	    area->sy >= p->var.yres_virtual ||
++	    area->width > p->var.xres_virtual - area->dx ||
++	    area->height > p->var.yres_virtual - area->dy ||
++	    area->width > p->var.xres_virtual - area->sx ||
++	    area->height > p->var.yres_virtual - area->sy)
++		return;
++
+ 	if (rev_copy) {
+ 		dy += height - 1;
+ 		sy += height - 1;
+diff --git a/drivers/video/fbdev/core/fb_fillrect.h b/drivers/video/fbdev/core/fb_fillrect.h
+index f366670a5..37f55adb2 100644
+--- a/drivers/video/fbdev/core/fb_fillrect.h
++++ b/drivers/video/fbdev/core/fb_fillrect.h
+@@ -261,6 +261,12 @@ static inline void fb_fillrect(struct fb_info *p, const struct fb_fillrect *rect
+ 	struct fb_address dst = fb_address_init(p);
+ 	struct fb_pattern pattern;
+ 
++	if (rect->dx >= p->var.xres_virtual ||
++	    rect->dy >= p->var.yres_virtual ||
++	    rect->width > p->var.xres_virtual - rect->dx ||
++	    rect->height > p->var.yres_virtual - rect->dy)
++		return;
++
+ 	fb_address_forward(&dst, rect->dy * bits_per_line + rect->dx * bpp);
+ 
+ 	pattern.pixels = pixel_to_pat(bpp, palette ? palette[rect->color] : rect->color);
+diff --git a/drivers/video/fbdev/core/fb_imageblit.h b/drivers/video/fbdev/core/fb_imageblit.h
+index 3b2bb4946..5ec17d7b9 100644
+--- a/drivers/video/fbdev/core/fb_imageblit.h
++++ b/drivers/video/fbdev/core/fb_imageblit.h
+@@ -486,6 +486,12 @@ static inline void fb_imageblit(struct fb_info *p, const struct fb_image *image)
+ 	struct fb_reverse reverse = fb_reverse_init(p);
+ 	const u32 *palette = fb_palette(p);
+ 
++	if (image->dx >= p->var.xres_virtual ||
++	    image->dy >= p->var.yres_virtual ||
++	    image->width > p->var.xres_virtual - image->dx ||
++	    image->height > p->var.yres_virtual - image->dy)
++		return;
++
+ 	fb_address_forward(&dst, image->dy * bits_per_line + image->dx * bpp);
+ 
+ 	if (image->depth == 1)
 
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
 
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
