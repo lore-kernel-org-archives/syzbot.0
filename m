@@ -1,65 +1,67 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5161D14A60F
-	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 06:02:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FCAF2CCC5
+	for <syzbot@lists.linux.dev>; Wed, 22 Jul 2026 06:13:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784700163; cv=none; b=p3B7ZpUjRyoGBr4ScAllo9IhGVH7hILec5GjKrOk7sCTQ1NsA/r2K+V8a1UVvgeM+tz0zlZmxanvvuQbnR0af/Hl2P39/fauNN0E5uX7wLWJls7OxOfiWLS+gUgoVwFRnjsA3WGo5Om93zCcDBaALc94RH1UorjpfVUHTyJwWq0=
+	t=1784700824; cv=none; b=ugSlNT96W+c19WgKFqXV8iTP2VbBWwTG2n5Z+o4RfD6m/enKK9g7o7TS8RUST75vEB2G4MaLCQioN0/8IQZPGmDbFFSwEDu70YQYWRERf0zsk1dq9HfBBYkKLs7Qp7wmiRlc0mcjoxyaIEhTQvbdi6rJXNJ+O8NnNAhs9wJnj8s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784700163; c=relaxed/simple;
-	bh=bN2evtcW05PJ4mM8MGuuQttm3pGMlF4eEbRe0ZEu4pY=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=M8Ty00PkMVXonruk976BLA3Z5py33PeJ+zIu45Hb3wtpU/UVo3RuSXiIe4oFyNZcKZ+RUt71SC1fQ2pYIQhZoxFhxjsL5f0N9MLPFt/1BkqjEL2IF9E320i0x7QW6G/dJK5VV0KXEKD376bMLeao3U4hQAiEqH2L8e+kiKaE+yo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+	s=arc-20240116; t=1784700824; c=relaxed/simple;
+	bh=TDAXvEf/qrH2BpC3JHp27gtEKfRbe6jQABczGWU8D0c=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=EBenxABkImdPlnjT6TklXF4pbLEbdPhaRFK157Wg1Ekw0vz7v7/I1dz6o2nQ9FTGl6UJgiv+DA+dywsrFh/hCCCkflCqkVVdGWfPozi/cFOAK19/3VOZbFS2Rdu58EKDg2mljfzUeThtq2mpZ5biuU0yaCsc5aFkiRdg6yjYt94=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6a374304efbso15287357eaf.3
-        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 23:02:42 -0700 (PDT)
+Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7e9fdc2870fso6949047a34.2
+        for <syzbot@lists.linux.dev>; Tue, 21 Jul 2026 23:13:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784700161; x=1785304961;
+        d=1e100.net; s=20251104; t=1784700822; x=1785305622;
         h=content-type:cc:to:from:subject:message-id:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=jAQwQk57uXM7ZlviKWyqY+eVnP5P0wR7lRiiLOshFt0=;
-        b=f4RVellBMCZrkrRWQFojEQ4uICL7v47gStHSMUsGC8K5/d79zPxE83Ve5r9MjDkGH7
-         QqNOgT9r5oKz8ndNxoVTe8x+Uqp80MyZo66bu+4eUK3BC5M0Y6NwoyuWW4NF3Xe/SSCE
-         23InSFEakZKEkTUOLhShc0OtVtfQR5TTahed93BNeBT54TJKZ6S604lBZLbFUbqxkMJf
-         UCJDsn7w6HnvkvjQ/CClIRzCLHZ4GTwjkWafErvzNZ/5NZAL4MeNeDWw3hfc+KflK45o
-         on0gUru8D0DJS3oHhjx56uEv7yXRkCe3I8ZumrEW43V/obctfWDD1FiWMbnQiNxLcFGh
-         kXAA==
-X-Gm-Message-State: AOJu0YxvpxVfZKug7c8PnORFpP7boYWFlZ3f4B8SVJl1oasu7qR8ZabF
-	Iv8t8fRK8uxXSGb6KGm6r+sFazXRgVeS+QtaajoOdn6y4aYFeYjSCvizHpTUdqWOwsxq5G9lVuT
-	EnePAmNuadSjxl/ge89BiHJClOd+w9UQoHvSwzFX3VHQhJJtXy7RdTCyBtgw=
+        bh=cCq+gbXggumSPeZbCA9YaAo93N/dw7uzbRcX9RRdUoM=;
+        b=DU4LyG1jQV6vNCEriS28bdeTkt0bjF5O2/AerWG8TImBPD7lwEjtVXb2EJVnAiaT3p
+         P8NupFMUVL6oEPUHt9Bj75ue+lII6ExtRpo7gW9SrgSgKBd8XjOEQkbeedltUhGin3GS
+         g4rkIlb8zPm3kjamsUAkgBKaoFi3iVKxqbVoRLtLSMu1wJBQ2B74/typonSkGqV8EFVG
+         kx/bMZFMZhLQ+XebmTtPPKjNeEhTv8gl+KeUaxY+7gx/pGCQBtbYu+iEz6ebD6gK0h9n
+         TnKxPHtR2diDsMVN3UYeFMtfnjvjIPN9/Y93u88WrRIwgJ1rlDo3y8S+OVzT8HwNLKcP
+         OlGg==
+X-Gm-Message-State: AOJu0YyYBsMylkZuSLfFVotWGzvOVobDfvI2xVYJALAF8HDknnFwHPt1
+	9oNRPzxa4uslScp8OxR6UJd4mxxUGENwmRhH7CozdxOYprJGY2mc5VLHyWZFJDy1AI9yfdi6I0l
+	VXwC8GGpn7dyXYNm2Il6YiQ89Asun3czLLltewenvCWZNutTxWGedysL3ixA=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4d01:b0:6a3:e0fb:6f39 with SMTP id
- 006d021491bc7-6a5367fb337mr10251482eaf.23.1784700161261; Tue, 21 Jul 2026
- 23:02:41 -0700 (PDT)
-Date: Tue, 21 Jul 2026 23:02:41 -0700
+X-Received: by 2002:a05:6820:4d01:b0:6a3:d72a:8b5d with SMTP id
+ 006d021491bc7-6a535b0fbaemr9578602eaf.0.1784700822226; Tue, 21 Jul 2026
+ 23:13:42 -0700 (PDT)
+Date: Tue, 21 Jul 2026 23:13:42 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a605d01.83245ca4.2d5e11.000b.GAE@google.com>
-Subject: [moderation/CI] Re: phonet: check register_netdevice_notifier() error
- in phonet_device_init()
-From: syzbot ci <syzbot+ci60628a029dae151a@syzkaller.appspotmail.com>
+Message-ID: <6a605f96.33ea6125.251e5.0005.GAE@google.com>
+Subject: [moderation/CI] Re: wifi: aic: add AIC8800 SDIO FullMAC driver
+From: syzbot ci <syzbot+ci08c21137e0617291@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v4] phonet: check register_netdevice_notifier() error in phonet_device_init()
-https://lore.kernel.org/all/20260721093956.162617-1-heminhong@kylinos.cn
-* [PATCH net v4] phonet: check register_netdevice_notifier() error in phonet_device_init()
+[v1] wifi: aic: add AIC8800 SDIO FullMAC driver
+https://lore.kernel.org/all/cover.1784544076.git.yanli.yang@bedmex.com
+* [RFC PATCH wireless-next 1/4] wifi: aic: add SDIO BSP and build configuration
+* [RFC PATCH wireless-next 2/4] wifi: aic: add FullMAC firmware and platform interface
+* [RFC PATCH wireless-next 3/4] wifi: aic: add FullMAC WLAN driver
+* [RFC PATCH wireless-next 4/4] wifi: aic: integrate AIC8800 driver
 
 and found no issues.
 
 Full report is available here:
-https://ci.syzbot.org/series/d306dbe6-2048-4a31-bb81-b363ac844a11
+https://ci.syzbot.org/series/8373c06b-143f-41c4-a4fa-b53eb7f9eeb1
 
 ***
 
@@ -72,7 +74,7 @@ This report is generated by a bot. It may contain errors.
 syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
 The email will later be sent to:
-[courmisch@gmail.com davem@davemloft.net edumazet@google.com heminhong@kylinos.cn horms@kernel.org kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com remi.denis-courmont@nokia.com]
+[chunqiuliu@aicsemi.com dijiaxu@aicsemi.com johannes@sipsolutions.net liheng.wei@bedmex.com linux-wireless@vger.kernel.org yanli.yang@bedmex.com zhirunliu@aicsemi.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
