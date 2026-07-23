@@ -1,35 +1,23 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C5AC4570EA
-	for <syzbot@lists.linux.dev>; Thu, 23 Jul 2026 16:16:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFAA442AFBE
+	for <syzbot@lists.linux.dev>; Thu, 23 Jul 2026 16:17:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784823402; cv=none; b=uFZ1mvJt/uJT6HXU9MUhNieeZZFxojXrQnpsDdw1RB1ivHbiruKtVDr6wbiN9t9062dHGwYlfHRCg4TopRXYXOtcFvFzEZSVyoLoKWKpHvK7wsEScD0gWEB1ZBN1SVMYS5aADNPQHWZ8mCWZyq4tUL9B3/+0+va8jUgREZFgWmc=
+	t=1784823433; cv=none; b=ccaalFCZguB/9PDaZ0eRVVdk/6oh/m+y+3mAdZ9yk7aOS+QEP0e7G3Cvvq2NUvVpowDXOeExnnynfx0LUazOh31i5x9a/mByQGjLGVCLCp8QjxxIF2oFaLdJNidCgH4oL/f6MBaEbN+2nxo4JdZkgbVgsCbVavLxS+rvwTkCNH4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784823402; c=relaxed/simple;
-	bh=l/Q8jsddHxgzoxLFsMKobmlnoGpFS3uMhJ25Kfeo2b8=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=qhECG2aEc+1SLSmEX6TZMi2O0zZypwBpObTa3NvXkO/xLa6WoqoSyWpyrQXQwyU26aYYjbq2C/obIJQuDK2e6f+TZ6ktEuJazzoHXa4CeFQxTJp3f0Wq+xyVBfI0VTO5eHLRZCm+7/JW6UHqBZMETIdezvWXNi7gZ3hThyn83c8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FZ9K9x1u; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FZ9K9x1u"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 2603B1F000E9;
-	Thu, 23 Jul 2026 16:16:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784823398;
-	bh=T+0LDKHKNOG29LQwKdGwZyPa/rQL+FWe5/BVLGWDyF0=;
-	h=From:To:Cc:Subject:Date;
-	b=FZ9K9x1upoKKY7SLfEnp8j2WUskAxrkieQ7efgE3r92vnmLaD36F4bZclvms8nAWJ
-	 fcBM+mB/1HGgX1GGhB2B4ESLU6SFM7sf/ev1B+zVfKWcCZGB4af9p3Cyx9Jk/hdKAR
-	 LilDdsqiX4vW+LusFjSpZxEIaQZ3W5zftrI+88mBY4pwpnYFpX8TiEvddGWtUDK9cX
-	 aBdfaOmv2vgMbLMUBNrZ4wHj15QQVhrpaA1TsGDs8UqFj+K5b3uQZ1UwWX0u3rC5S7
-	 sioYCK7NxsaiMOrWr6QClIyW6z0vq/QoOTE9Hp7yssGerg07duGKkldHWnxxpjsuDh
-	 ELu0DsRGqlLfA==
+	s=arc-20240116; t=1784823433; c=relaxed/simple;
+	bh=sxD6Fcs1CTWVTAHw3EKxNw13zgzT5xxn7Cljoo2UedM=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=RteZ8k3kJ+RR6Is6mlfZzXzEEpk0V1WnwxNcBMFCnz31IeZJ2JQkI+wvTJdGVCkrC64/6KOOa95VtyQRelAHpm4p/mFiBKsAJIqTHT2/9Sjd8QMgPmtFwyuT3mcrMOntHmBhmVQSUbLzhDE68GRAsKgOoioHr635imCSe6yM0KA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id B4F1E1F000E9;
+	Thu, 23 Jul 2026 16:17:10 +0000 (UTC)
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev, uladzislau.zhauniarovich@gmail.com
-Subject: [PATCH RFC v2] nbd: fix hung task and integer overflow in timeout configuration
-Message-ID: <d8588b05-ec96-4b61-9eff-87983c857148@mail.kernel.org>
+Cc: immersa.bartosz.chronowski@gmail.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v2] btrfs: commit current transaction in btrfs_relocate_block_group
+Message-ID: <38fe7b3f-75f7-47c9-9554-db7628338b20@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,144 +26,73 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Thu, 23 Jul 2026 16:16:38 +0000 (UTC)
+Date: Thu, 23 Jul 2026 16:17:10 +0000 (UTC)
 
-An unprivileged user can configure an NBD device with an arbitrarily large
-dead connection timeout via the NBD_ATTR_DEAD_CONN_TIMEOUT netlink
-attribute. When a request is queued and the connection is dead,
-nbd_handle_cmd() calls wait_for_reconnect(), which blocks the current
-thread. Because the BLK_MQ_F_BLOCKING async-dispatch path leaves the
-submitter in an uninterruptible I/O-completion wait, a dead connection
-timeout larger than 120 seconds triggers the hung task detector, leading to
-a kernel panic:
+During block group relocation, btrfs_relocate_block_group() is called to
+relocate a block group. It first makes the block group read-only by calling
+btrfs_inc_block_group_ro(). If there are pending space reservations or
+pinned extents in the current transaction, making the block group read-only
+or subsequent relocation steps can fail, leading to a transaction abort and
+a warning in cleanup_transaction() during the transaction commit in
+prepare_to_relocate().
 
-INFO: task kworker/1:1H:99 blocked for more than 143 seconds.
-Workqueue: kblockd blk_mq_run_work_fn
+To fix this, commit the current transaction before calling
+btrfs_inc_block_group_ro() in btrfs_relocate_block_group(). This ensures
+that all pending extents are unpinned and space reservations are committed,
+providing a clean state for marking the block group read-only.
+
+WARNING: fs/btrfs/transaction.c:2068 at cleanup_transaction+0x727/0x7c0
 Call Trace:
  <TASK>
- __schedule+0x17e7/0x5630
- schedule+0x164/0x2b0
- schedule_timeout+0x152/0x2c0
- wait_for_reconnect drivers/block/nbd.c:1107 [inline]
- nbd_handle_cmd drivers/block/nbd.c:1149 [inline]
- nbd_queue_rq+0x797/0xfb0 drivers/block/nbd.c:1207
- blk_mq_dispatch_rq_list+0x499/0x1990
- __blk_mq_sched_dispatch_requests+0xd36/0x1580
- blk_mq_sched_dispatch_requests+0xd7/0x190
- blk_mq_run_work_fn+0x16c/0x300
- process_one_work kernel/workqueue.c:3322 [inline]
- process_scheduled_works+0xa8e/0x14e0
- worker_thread+0x92d/0xe10
- kthread+0x388/0x470
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
+ btrfs_commit_transaction+0x262c/0x30b0 fs/btrfs/transaction.c:2664
+ prepare_to_relocate+0x3dd/0x4e0 fs/btrfs/relocation.c:3541
+ relocate_block_group+0x141/0xe90 fs/btrfs/relocation.c:3566
+ do_nonremap_reloc+0xa7/0x560 fs/btrfs/relocation.c:5323
+ btrfs_relocate_block_group+0x6e2/0xaf0 fs/btrfs/relocation.c:5490
+ btrfs_relocate_chunk+0x114/0x830 fs/btrfs/volumes.c:3647
+ __btrfs_balance+0x1b6e/0x29e0 fs/btrfs/volumes.c:4586
+ btrfs_balance+0xaa6/0x1180 fs/btrfs/volumes.c:4973
+ btrfs_ioctl_balance+0x3dd/0x640 fs/btrfs/ioctl.c:3474
  </TASK>
 
-Historically, wait_for_reconnect() used wait_event_interruptible_timeout(),
-but commit ff57dc94faec ("nbd: wait uninterruptible for the dead timeout")
-changed it to wait_event_timeout() to prevent non-fatal signals from
-prematurely interrupting the wait. While commit ff57dc94faec is not the
-root cause of the unbounded-wait DoS, keeping the wait safe against
-non-fatal signals is still necessary.
-
-To fix this, cap the dead connection timeout to a maximum of 100 seconds
-(100 * HZ). Bounding the timeout to 100 seconds is what actually prevents
-the hung task panic, as it is below the default 120-second threshold of the
-hung task detector. Additionally, replace wait_event_timeout() with
-wait_event_killable_timeout() as reapability hardening, allowing the
-waiting task to be terminated by fatal signals. Also, call wake_up() in
-sock_shutdown() to ensure any waiting tasks are woken up when the socket is
-shut down.
-
-Finally, prevent integer overflow when parsing the timeout by capping the
-input value to U32_MAX before converting it to jiffies.
-
-Fixes: 560bc4b39952 ("nbd: handle dead connections")
+Fixes: 72bd2323ec87 ("Btrfs: do not abort transaction at btrfs_update_root() after failure to COW path")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+30c16035531e3248dcbc@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=30c16035531e3248dcbc
-Link: https://syzkaller.appspot.com/ai_job?id=a75e9299-d014-47a0-abf8-8bbea2f535a5
-To: "Jens Axboe" <axboe@kernel.dk>
-To: "Josef Bacik" <josef@toxicpanda.com>
-To: <linux-block@vger.kernel.org>
-To: <nbd@other.debian.org>
+Reported-by: syzbot+021d10c4d4edc87daa03@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=021d10c4d4edc87daa03
+Link: https://syzkaller.appspot.com/ai_job?id=1627ee87-ad22-4097-8936-8e307d6ddb4b
+To: "Chris Mason" <clm@fb.com>
+To: "David Sterba" <dsterba@suse.com>
+To: <linux-btrfs@vger.kernel.org>
+To: "Filipe Manana" <fdmanana@suse.com>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
 v2:
-- Capped dead_conn_timeout to 100 seconds (100 * HZ) instead of MAX_SCHEDULE_TIMEOUT to prevent the hung task detector from triggering.
-- Replaced wait_event_idle_timeout with wait_event_killable_timeout to allow the waiting task to be terminated by fatal signals.
-- Added wake_up(&config->conn_wait) in sock_shutdown() to ensure waiting tasks are woken up during socket shutdown.
+- Replaced the transaction abort changes in the commit path with committing the current transaction before making the block group read-only during relocation.
+- Removed changes to fs/btrfs/qgroup.c, fs/btrfs/root-tree.c, fs/btrfs/transaction.c, and fs/btrfs/transaction.h.
+- Added a call to btrfs_commit_current_transaction() in btrfs_relocate_block_group() before calling btrfs_inc_block_group_ro().
 
 v1:
-https://lore.kernel.org/all/b6347da3-3c11-46cb-b467-3416e4104deb@mail.kernel.org/T/
+https://lore.kernel.org/all/1586eaf3-2208-42eb-8877-7c4f83a6638c@mail.kernel.org/T/
 ---
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 8f10762e9..9a212da7c 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -412,6 +412,7 @@ static void sock_shutdown(struct nbd_device *nbd)
- 		mutex_unlock(&nsock->tx_lock);
- 	}
- 	dev_warn(disk_to_dev(nbd->disk), "shutting down sockets\n");
-+	wake_up(&config->conn_wait);
- }
+diff --git a/fs/btrfs/relocation.c b/fs/btrfs/relocation.c
+index fb85bc8b3..05f5110c2 100644
+--- a/fs/btrfs/relocation.c
++++ b/fs/btrfs/relocation.c
+@@ -5430,6 +5430,10 @@ int btrfs_relocate_block_group(struct btrfs_fs_info *fs_info, u64 group_start,
+ 	if (ret < 0)
+ 		goto out_put_rc;
  
- static u32 req_to_nbd_cmd_type(struct request *req)
-@@ -1101,14 +1102,17 @@ static int find_fallback(struct nbd_device *nbd, int index)
- static int wait_for_reconnect(struct nbd_device *nbd)
- {
- 	struct nbd_config *config = nbd->config;
-+	long ret;
++	ret = btrfs_commit_current_transaction(extent_root);
++	if (ret)
++		goto out;
 +
- 	if (!config->dead_conn_timeout)
- 		return 0;
- 
--	if (!wait_event_timeout(config->conn_wait,
--				test_bit(NBD_RT_DISCONNECTED,
--					 &config->runtime_flags) ||
--				atomic_read(&config->live_connections) > 0,
--				config->dead_conn_timeout))
-+	ret = wait_event_killable_timeout(config->conn_wait,
-+					  test_bit(NBD_RT_DISCONNECTED,
-+						   &config->runtime_flags) ||
-+					  atomic_read(&config->live_connections) > 0,
-+					  config->dead_conn_timeout);
-+	if (ret <= 0)
- 		return 0;
- 
- 	return !test_bit(NBD_RT_DISCONNECTED, &config->runtime_flags);
-@@ -2194,9 +2198,11 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
- 		nbd_set_cmd_timeout(nbd,
- 				    nla_get_u64(info->attrs[NBD_ATTR_TIMEOUT]));
- 	if (info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]) {
--		config->dead_conn_timeout =
-+		u64 timeout =
- 			nla_get_u64(info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]);
--		config->dead_conn_timeout *= HZ;
-+		timeout = min_t(u64, timeout, U32_MAX);
-+		config->dead_conn_timeout =
-+			min_t(u64, timeout * HZ, 100 * HZ);
- 	}
- 	if (info->attrs[NBD_ATTR_SERVER_FLAGS])
- 		config->flags =
-@@ -2415,9 +2421,11 @@ static int nbd_genl_reconfigure(struct sk_buff *skb, struct genl_info *info)
- 		nbd_set_cmd_timeout(nbd,
- 				    nla_get_u64(info->attrs[NBD_ATTR_TIMEOUT]));
- 	if (info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]) {
--		config->dead_conn_timeout =
-+		u64 timeout =
- 			nla_get_u64(info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]);
--		config->dead_conn_timeout *= HZ;
-+		timeout = min_t(u64, timeout, U32_MAX);
-+		config->dead_conn_timeout =
-+			min_t(u64, timeout * HZ, 100 * HZ);
- 	}
- 	if (info->attrs[NBD_ATTR_CLIENT_FLAGS]) {
- 		u64 flags = nla_get_u64(info->attrs[NBD_ATTR_CLIENT_FLAGS]);
+ 	ret = btrfs_inc_block_group_ro(rc->block_group, true);
+ 	if (ret)
+ 		goto out;
 
 
-base-commit: a13c140cc289c0b7b3770bce5b3ad42ab35074aa
+base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
