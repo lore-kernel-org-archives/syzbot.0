@@ -1,281 +1,239 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EE823D0939
-	for <syzbot@lists.linux.dev>; Thu, 23 Jul 2026 10:12:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1F6E330D24
+	for <syzbot@lists.linux.dev>; Thu, 23 Jul 2026 14:18:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784801560; cv=none; b=QfkJNhMgIol7koJCCkqe/NRku3cKP/6CoybYSJmsJdHwQAlK1HGnCYYcPeh7WWru0hFNINSfpXUyhx/gziHl+CudgjoHZJL/Lrp81/Qx5RRUZZa0o77Z0vZBBFD8vlQlRdUgYXz7u08+OVrxmluRc4+irK4nI1seoRisKhX0Wzg=
+	t=1784816331; cv=none; b=fkXVM8/bTv7Fe+u+TT0Acn4t+RCh/ZHcxAWOjarKSw7aybzdt8atY3SdBXLXGV3cKUnQR0Uab1dMHFI+RJac/KAkbpUbFmcKLie+rPQCmHg0woyAgy1fLLguZU+JUDtG0RvochZ2qZBOFz37EmkCLaCi3+/0S93jqem453Lig4U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784801560; c=relaxed/simple;
-	bh=1AJYv00b0FHjJE5GdJC8LhuaLt3gd+G5F5R55USAcXg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Bw0gX+6IUH5OpRo60nheaF7g251OkEhwxeCuTTtm03RBUtofCj/knhSYRGOEVZRyF+und9eOY2CRvmN10TWgFtRTuMFGcNgjCwr/yOURVfPj4p64GGL7ucEG0EZIAYFuIoZ9IKWLcKAoOQHvpOWjcaAJ2uz4cGXm7WRoe89N8RU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dGhBJL7r; arc=none smtp.client-ip=209.85.128.51
+	s=arc-20240116; t=1784816331; c=relaxed/simple;
+	bh=fSOsLMqFsNwQ6LfeGbqpjkkwwQ0uemHptk+1w1uT+xg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UDuV2A4FdpjJ2IsXvDjY3RZYl2C1j95Y7mw+LsJh9Sj0TrCrWeTUkyMUJB63V/uXB43P2QH1jfZTq2S1GFKtZhPTR+Up+0uPlJ39M5FZeNHCC6yjQqSVBZasTdr8f2TnlkeFFFEnh/jut6yfK3S5U1TFoCWWajunhszP/mj6+Jc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hM4HDjnO; arc=none smtp.client-ip=209.85.221.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dGhBJL7r"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-493b966dd74so2937095e9.3
-        for <syzbot@lists.linux.dev>; Thu, 23 Jul 2026 03:12:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hM4HDjnO"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-47f3b39f2a1so642440f8f.2
+        for <syzbot@lists.linux.dev>; Thu, 23 Jul 2026 07:18:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784801556; x=1785406356; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=zEK8CeXuLvVb03FYsfxb6wttTn0ZY24AnJzimxO1TgM=;
-        b=dGhBJL7r5GcNYG3mjZ7T/3Pnx0NlQujVUu78aicyiBiJXkkBN+GAX9dm9+TPX167i+
-         hnJd1m0GD7B251TpL6f26ytKTuTD/i1qgfOjhAcJliDkP33q1eRZrzo+oyYqQuomLNat
-         u5XIak7ERCRjPf+EOVzTE8JIc4+6Xf54cgAYbI2TDg7dpC7hvmNwDMaTxn3Aex+he73J
-         RHw12rqb/mU+nXCYCaVKEXP590CXHpsYZyuJ3A9qRejW7ZJzwCx01Xnl7kZPeD6kUeaF
-         a2RbX/fhRCW+YAlF0TzPWTcICHiQYHQOfz8hOTrMSeWA2ezKtuyJh8Jwx35FJPPtEDi3
-         Hcjw==
+        d=gmail.com; s=20251104; t=1784816328; x=1785421128; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=k7YPn/3Uc65SEdSr61RZf3k1k3PjwWDYhrEN1V+kRhk=;
+        b=hM4HDjnOY+0Bo1SOAwj6WcrAY3kmZjOG0YmiIykhBwaiefi0U+3oKuyqcrsVK3lgsJ
+         os4yqbKbkaEABT06SHcu0aaGJMmabgQEhH/McsMwnYpgrzoKiKBto6JDtcQBQR4QN1Jt
+         baqV3AtCsmekJi8YskctT0gXh6XXzd4ID2J2dRJO2sORKEvQptKgTcpzTBktCzhfhwTT
+         u+iM63AmIKb+aCrRUffxe57FDKHDM3/oAqhac0nE0DD9gsKA5lHKy0TRGJefAraXA7UM
+         SfRKe0gXMlAFt7NEhcDEN5OcE+hNzVTjrtYXyR+RNd7jOkLbj12rl+cPEfJwYfhvfqsD
+         VzWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784801556; x=1785406356;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=zEK8CeXuLvVb03FYsfxb6wttTn0ZY24AnJzimxO1TgM=;
-        b=s26XL1SE91PqhjWPoNhChiNunK42PcPNfBpaGNmDKI8bGwDuEpW0lo6LnE5VcA5XlO
-         EChHrCZ5upIKkvlk5BqqIBY7mDGtXwL7tn31GjscWyOuUZjqNt5/vCfbMLlaVOXFVlCS
-         D7YYeT+z8843FCIa4QI9Uh3F1beiIHdns361l7FqeQBEsIRnF0bAT0o0trqsB0bbLAqy
-         bBaW1RO+o92YhD4G7skkhYO9PjrcekwmqWgqr4iTlzaXXStZnFQo7OHuU2QxrlG4Gvp2
-         oOZkqFYNbWFMISIXeLMUCOeLYDjmAHCrw6A7Co9Vq948j+LmWWk9+SqGLecANaX0azid
-         YDfw==
-X-Gm-Message-State: AOJu0YwUCDdStB+mC3zjVasKlKUECulbI71U36ZvvJOxOQM2CmvvLZuN
-	QW7Bt1RJX0voB66D4YSDYM5Du7HHLJuli3mbDlA3PCIU21D6J/KmQUAOto/NkakNaco=
-X-Gm-Gg: AR+sD128iCDoSJ480KhtimkjcpTSiywofkVdmR51ECzvtHj5ZDaucbZVbEtmPmKfYVm
-	7j7ayPQDHz8Ab0AXhI2Y9lKrdrOg2Emff5c7/iT3u8XiYjUsjmfHIZ3kNKSCcpUQf+9BdXhHRHH
-	I9boYRJIIvFMaIN8UPjt7DJm45qZIPNTtd/NYDhRKabhydV1BSz3B79Am/x2JjhkG9T6tN4vE5K
-	L51+YgajRwTgVgbv15LFlVtutDlF8Ckak7he6VHrNdYmFffStmkzPbppFtptMAamTuwVKQazZGD
-	IMVg1emmIGpj5K32V7b+AgFxlm8UB73pCXF7bqsppbAuQiTLIeXrzZCLMoMAVBGmR/7AruR3VAh
-	u4esLoWPnFTPOrfuDWT30U0vWI4nM+JntpXPbQ1uwbcj5SfQTcNW7qeCLkn6XAWsPyHkrowMy+s
-	Lo7vOmM1B0Jah+xZ6Mo0egDeceOhZs5JAD3AeIAvSsdOG5DzUnj4Is
-X-Received: by 2002:a05:600c:3b91:b0:493:a623:d090 with SMTP id 5b1f17b1804b1-49573ccdc3bmr29685735e9.10.1784801556069;
-        Thu, 23 Jul 2026 03:12:36 -0700 (PDT)
-Received: from [192.168.0.50] (93-159-28-46.cgnat.inetia.pl. [93.159.28.46])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4956a4f2453sm143715405e9.3.2026.07.23.03.12.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jul 2026 03:12:35 -0700 (PDT)
-Message-ID: <973648dc-c7d2-48f7-bc1c-908e35e47dd6@gmail.com>
-Date: Thu, 23 Jul 2026 12:12:34 +0200
+        d=1e100.net; s=20251104; t=1784816328; x=1785421128;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=k7YPn/3Uc65SEdSr61RZf3k1k3PjwWDYhrEN1V+kRhk=;
+        b=GT5xP7/qzuYk4eqcOimaRKdl8Wdky24t2YKDb4qDfmcbe9qAP1DQDuyT2hSzPTXHmU
+         Gms7Y/JmJS5bo00PYdVsijvmONya3yOqRNQPfoIPY7X8/lu5YKmXavtytZH2OLqqNFWn
+         +uwDWFBfrD0jxi3TglSq1bMjN2SzvFEHnMnqQu3NHAa/g+xJGqHbbDieX42A2OTehTXM
+         eWd31owVajFPB4Q242aYmQIVl1HyP8ex/uVoKjzM24DUAhJDmFbtr8+vegBrHv15g6y8
+         GcsprPbZAUd86iD1ssMgfMBwwTOf5ag8pQE96x77TTRNmM4oqlPD2mn2RfzaodGbttLe
+         pjHg==
+X-Forwarded-Encrypted: i=1; AHgh+RqTRMscLi43mB7bNs87zufZcP8hwdEOKSOzxC4vzfj8twx9F52J1Ibum5K8k1U+wDwRfkgJhvc=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyul1049Wy0LwVARFbDKDNyy2v3JWIXZFbJ6dxmYN2JQuSKdJwO
+	Z47+vdYZlCoZni7OmDn3vJsXhGW6cfqjL/BF8K+sR/I37V07W7JNw9LI
+X-Gm-Gg: AR+sD11beOm1505PK5nKrKZlccQXo/xaynOSw6pFaJUEKpaTxJBQEEH+y61xJe0yKJ8
+	kBONstIGjXhpWY684nv8VO4aH9ynqW8t66gUFvMt9AbOboBZDpl+sODXKoReDb+7a4O8GmcuG56
+	N6RmoqxJshN8UxXSeF+p68xO3psKzonBRS5SdSZWzbbB6Tq32CQFZvBtLid5HD4zisuAhiwMPc7
+	XIovHyC+Uc3Fc6mc3TenCD/vFYNBumEgD0oFiWxrlBzbjLkzoTiZ+oOHNUE8MbCDa05rPK3cZ3q
+	y0hc9smiwPcIBfYnl5HOno9EY885DmNWUMZkHJgmKh3RjVdFzVjjlxF860uShzNbYpWLBL76Mqq
+	RcknHnHBOzalhQT8aih9b9ZFg2cmzcUC8YLriPWNBencNAYfx/DzenYxRdfRPX16sY0UXeS4JXE
+	DrzQRsnGga1tmredNtu/rbiYbZr1DO3JqUDoKq+w==
+X-Received: by 2002:a5d:5f55:0:b0:47f:93d8:f480 with SMTP id ffacd0b85a97d-47f93d8f4f3mr882130f8f.39.1784816327187;
+        Thu, 23 Jul 2026 07:18:47 -0700 (PDT)
+Received: from localhost ([37.30.48.33])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f85b9a5a2sm17253833f8f.7.2026.07.23.07.18.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jul 2026 07:18:46 -0700 (PDT)
+Date: Thu, 23 Jul 2026 16:18:45 +0200
+From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC] btrfs: abort transaction directly on errors in
+ commit path
+Message-ID: <n6vtyhyk7dcb7zf3tko5grqqcfod7co6uxvzyyy47u5bffevzo@7d6qolowq4gh>
+References: <1586eaf3-2208-42eb-8877-7c4f83a6638c@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC] nbd: fix hung task and integer overflow in timeout
- configuration
-To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-References: <b6347da3-3c11-46cb-b467-3416e4104deb@mail.kernel.org>
-Content-Language: en-US
-From: Uladzislau Zhauniarovich <uladzislau.zhauniarovich@gmail.com>
-In-Reply-To: <b6347da3-3c11-46cb-b467-3416e4104deb@mail.kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1586eaf3-2208-42eb-8877-7c4f83a6638c@mail.kernel.org>
 
-The v1 patch correctly identifies that wait_for_reconnect() blocks in 
-TASK_UNINTERRUPTIBLE for a user-controlled NBD_ATTR_DEAD_CONN_TIMEOUT, 
-and it is right to split the netlink parsing into a local u64 timeout 
-and to guard the jiffies conversion against overflow. Keep the local 
-variable, the overflow-safe conversion at both nbd_genl_connect() and 
-nbd_genl_reconfigure(), and the Reported-by/Closes tags.
+Aim for minimal patch:
+btrfs_relocate_block_group() should call btrfs_commit_current_transaction(extent_root) 
+after relocation starts and after the relocation control has the target block 
+group, but before btrfs_inc_block_group_ro() marks that target block group read-only.
 
-However, the fix is incomplete: changing the sleep state of 
-wait_for_reconnect() (to TASK_IDLE via wait_event_idle_timeout()) does 
-not stop the hung-task panic, and the MAX_SCHEDULE_TIMEOUT clamp does 
-not bound the actual hang.
+Check return value for the out: cleanup.
+Iterate on patch development until the patch passes CI pipeline resulting in "Correct" 
+status.
 
-nbd allocates its tag set with BLK_MQ_F_BLOCKING (nbd_dev_add()), so 
-nbd_queue_rq() is not guaranteed to run in the submitter's context. In 
-the common case the block layer dispatches it from a kworker 
-(blk_mq_run_work_fn), while the submitting task blocks in 
-folio_wait_bit_common() (io_schedule, plain TASK_UNINTERRUPTIBLE) 
-waiting for the bio to complete during the partition scan (bdev_open -> 
-bdev_disk_changed -> do_read_cache_folio). That submitter wait is caught 
-by the base hung-task detector regardless of what state 
-wait_for_reconnect() sleeps in — the "blocked in I/O wait" message is 
-printed unconditionally in check_hung_task() (t->in_iowait ? " in I/O 
-wait" : "") and is not gated on CONFIG_DETECT_HUNG_TASK_BLOCKER. 
-wait_event_idle_timeout() only hides the wait_for_reconnect() frame (the 
-"inline dispatch" manifestation from the sample report); it cannot hide 
-the submitter's I/O-completion wait, so the panic still fires.
-
-The clamp is also not a bound. min_t(u64, timeout, U32_MAX) then 
-min_t(u64, timeout * HZ, MAX_SCHEDULE_TIMEOUT) only prevents the u64 * 
-HZ overflow; the resulting wait is still ~136 years, i.e. effectively 
-unbounded. Because the submitter's I/O-completion wait cannot be made 
-interruptible, the only way to guarantee the request fails before the 
-detector threshold is to bound the reconnect wait itself.
-
-This was confirmed on a KASAN build (hung-task timeout lowered to 20s) 
-with a reproducer that configures a single-connection nbd device with a 
-huge dead_conn_timeout, kills the socket, and reads /dev/nbd0:
-
-unpatched, huge timeout: PANIC.
-v1 (idle + MAX_SCHEDULE_TIMEOUT clamp), huge timeout: STILL PANIC 
-(nbd_synth blocked in I/O wait, folio_wait_bit_common, Kernel panic - 
-hung_task).
-wait_event_killable_timeout + MAX_SCHEDULE_TIMEOUT clamp, huge timeout: 
-STILL PANIC (identical).
-unpatched, dead_conn_timeout = 8s: CLEAN — the read returns -EIO after 
-8s, no hung task.
-Required corrections:
-
-Bound dead_conn_timeout to a real maximum that keeps the effective 
-reconnect wait below the hung-task detection threshold, not merely below 
-MAX_SCHEDULE_TIMEOUT. The clamp must cap the wait to a finite, small 
-value (on the order of the default hung_task_timeout_secs, e.g. a few 
-tens of seconds) so that a request against a dead connection fails with 
--EIO in bounded time. Keep the overflow-safe u64 timeout conversion, but 
-the ceiling must bound the hang, not just the arithmetic. The exact 
-ceiling is a semantics decision for the nbd maintainers; state it 
-explicitly in the commit message.
-
-Replace wait_event_idle_timeout() with wait_event_killable_timeout() 
-rather than TASK_IDLE. Both are skipped by the hung-task detector, but 
-TASK_KILLABLE additionally lets SIGKILL/the OOM killer reap a submitter 
-that does run wait_for_reconnect() inline. Capture the return value in a 
-long and treat ret <= 0 (timeout, or -ERESTARTSYS from a fatal signal) 
-as "no reconnect" and fail the request. Non-fatal signals must still not 
-end the wait, preserving the intent of commit ff57dc94faec ("nbd: wait 
-uninterruptible for the dead timeout").
-
-Wake the reconnect waitqueue when the connection is torn down. 
-sock_shutdown() sets NBD_RT_DISCONNECTED but does not wake 
-config->conn_wait, so a concurrent waiter only observes the flag after 
-its own timeout. Add wake_up(&config->conn_wait) in sock_shutdown() 
-after the sockets are marked dead.
-
-Do not rely on the sleep-state change alone to close the report. Note in 
-the commit message that the BLK_MQ_F_BLOCKING async-dispatch path leaves 
-the submitter in an uninterruptible I/O-completion wait, and that 
-bounding the timeout (correction 1) is what actually prevents the panic; 
-the killable wait (correction 2) is reapability hardening, not the 
-primary fix.
-
-Use Fixes: 560bc4b39952 ("nbd: handle dead connections"), which 
-introduced both wait_for_reconnect() and the unbounded 
-dead_conn_timeout. Reference ff57dc94faec in the body when explaining 
-why the wait must stay signal-safe against non-fatal signals, but it is 
-not the root of the unbounded-wait DoS.
-
-
-On 15/07/2026 17:32, syzbot wrote:
-> An unprivileged user can configure an NBD device with an arbitrarily large
-> dead connection timeout via the NBD_ATTR_DEAD_CONN_TIMEOUT netlink
-> attribute. When a request is queued and the connection is dead,
-> nbd_handle_cmd() calls wait_for_reconnect(), which blocks the current
-> thread using wait_event_timeout(). Because this wait is in the
-> TASK_UNINTERRUPTIBLE state, a timeout larger than 120 seconds triggers the
-> hung task detector, leading to a kernel panic:
->
-> INFO: task kworker/1:1H:667 blocked for more than 143 seconds.
-> Workqueue: kblockd blk_mq_run_work_fn
+On Thu, Jul 09, 2026 at 07:08:55PM +0000, syzbot wrote:
+> When a transaction commit fails due to filesystem corruption (-EUCLEAN),
+> some functions like btrfs_qgroup_account_extents() and btrfs_update_root()
+> return the error without explicitly calling btrfs_abort_transaction(). This
+> forces the generic cleanup_transaction() fallback to abort the transaction,
+> which masks the actual location of the failure in the stack trace.
+> 
+> This results in confusing warnings that do not point to the actual failure:
+> 
+> BTRFS warning (device loop0): Skipping commit of aborted transaction.
+> [ cut here ]
+> btrfs_abort_should_print_stack(__error)
+> WARNING: fs/btrfs/transaction.c:2068 at cleanup_transaction+0x727/0x7c0
+> ...
 > Call Trace:
->   <TASK>
->   __schedule+0x17e7/0x5630
->   schedule+0x164/0x2b0
->   schedule_timeout+0x152/0x2c0
->   wait_for_reconnect drivers/block/nbd.c:1107 [inline]
->   nbd_handle_cmd drivers/block/nbd.c:1149 [inline]
->   nbd_queue_rq+0x797/0xfb0 drivers/block/nbd.c:1207
->   blk_mq_dispatch_rq_list+0x499/0x1990
->   __blk_mq_sched_dispatch_requests+0xd36/0x1580
->   blk_mq_sched_dispatch_requests+0xd7/0x190
->   blk_mq_run_work_fn+0x16c/0x300
->   process_one_work kernel/workqueue.c:3322 [inline]
->   process_scheduled_works+0xa8e/0x14e0
->   worker_thread+0x92d/0xe10
->   kthread+0x388/0x470
->   ret_from_fork+0x514/0xb70
->   ret_from_fork_asm+0x1a/0x30
->   </TASK>
->
-> Historically, wait_for_reconnect() used wait_event_interruptible_timeout(),
-> but commit ff57dc94faec ("nbd: wait uninterruptible for the dead timeout")
-> changed it to wait_event_timeout() to prevent signals from prematurely
-> interrupting the wait. However, using TASK_UNINTERRUPTIBLE for arbitrarily
-> long waits is an anti-pattern that trips the hung task detector.
->
-> Fix this by replacing wait_event_timeout() with wait_event_idle_timeout().
-> This puts the task into the TASK_IDLE state (TASK_UNINTERRUPTIBLE |
-> TASK_NOLOAD), which ignores signals as intended but is explicitly ignored
-> by the hung task detector.
->
-> Additionally, add defense-in-depth by capping the parsed timeout to U32_MAX
-> and the resulting jiffies to MAX_SCHEDULE_TIMEOUT. This prevents integer
-> overflow when the u64 timeout is implicitly cast to a signed long by
-> schedule_timeout(), which could otherwise result in a negative timeout and
-> cause the wait to return immediately.
->
-> Fixes: ff57dc94faec ("nbd: wait uninterruptible for the dead timeout")
-> Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+30c16035531e3248dcbc@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=30c16035531e3248dcbc
-> Link: https://syzkaller.appspot.com/ai_job?id=f07c3611-0a61-4d67-9f4d-033b1cb82e1e
-> To: "Jens Axboe" <axboe@kernel.dk>
-> To: "Josef Bacik" <josef@toxicpanda.com>
-> To: <linux-block@vger.kernel.org>
-> To: <nbd@other.debian.org>
-> To: "Josef Bacik" <jbacik@fb.com>
+>  <TASK>
+>  btrfs_commit_transaction+0x262c/0x30b0
+>  prepare_to_relocate+0x3dd/0x4e0
+>  relocate_block_group+0x141/0xe90
+>  do_nonremap_reloc+0xa7/0x560
+>  btrfs_relocate_block_group+0x6e2/0xaf0
+>  btrfs_relocate_chunk+0x114/0x830
+>  __btrfs_balance+0x1b6e/0x29e0
+>  btrfs_balance+0xaa6/0x1180
+>  btrfs_ioctl_balance+0x3dd/0x640
+> 
+> Fix this by calling btrfs_abort_transaction() directly in these functions
+> when they encounter an error. For btrfs_update_root(), -ENOSPC is a normal
+> error when updating the log root tree (e.g., during btrfs_sync_log()), so
+> we only abort if it is not the log root tree or the error is not -ENOSPC.
+> 
+> Additionally, btrfs_abort_transaction() triggers a WARN_ON for -EUCLEAN and
+> -ENOSPC because they are not in the ignore list of
+> btrfs_abort_should_print_stack(). WARN_ON must not be used for conditions
+> that can legitimately happen, such as encountering a corrupted filesystem
+> image (-EUCLEAN) or running out of space (-ENOSPC). To prevent unnecessary
+> warnings, add -EUCLEAN and -ENOSPC to the ignore list. To ensure we still
+> get meaningful stack traces for debugging, add manual dump_stack() calls in
+> __btrfs_abort_transaction() for these specific errors.
+> 
+> Fixes: 72bd2323ec87 ("Btrfs: do not abort transaction at btrfs_update_root() after failure to COW path")
+> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
+> Reported-by: syzbot+021d10c4d4edc87daa03@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=021d10c4d4edc87daa03
+> Link: https://syzkaller.appspot.com/ai_job?id=36e1fafd-13a6-44c6-a988-98fb6981cb2b
+> To: "Chris Mason" <clm@fb.com>
+> To: "David Sterba" <dsterba@suse.com>
+> To: <linux-btrfs@vger.kernel.org>
+> To: "Filipe Manana" <fdmanana@suse.com>
 > Cc: <linux-kernel@vger.kernel.org>
->
+> 
 > ---
-> diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-> index 8f10762e9..874a916f8 100644
-> --- a/drivers/block/nbd.c
-> +++ b/drivers/block/nbd.c
-> @@ -1104,11 +1104,11 @@ static int wait_for_reconnect(struct nbd_device *nbd)
->   	if (!config->dead_conn_timeout)
->   		return 0;
->   
-> -	if (!wait_event_timeout(config->conn_wait,
-> -				test_bit(NBD_RT_DISCONNECTED,
-> -					 &config->runtime_flags) ||
-> -				atomic_read(&config->live_connections) > 0,
-> -				config->dead_conn_timeout))
-> +	if (!wait_event_idle_timeout(
-> +		    config->conn_wait,
-> +		    test_bit(NBD_RT_DISCONNECTED, &config->runtime_flags) ||
-> +			    atomic_read(&config->live_connections) > 0,
-> +		    config->dead_conn_timeout))
->   		return 0;
->   
->   	return !test_bit(NBD_RT_DISCONNECTED, &config->runtime_flags);
-> @@ -2194,9 +2194,11 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
->   		nbd_set_cmd_timeout(nbd,
->   				    nla_get_u64(info->attrs[NBD_ATTR_TIMEOUT]));
->   	if (info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]) {
-> -		config->dead_conn_timeout =
-> +		u64 timeout =
->   			nla_get_u64(info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]);
-> -		config->dead_conn_timeout *= HZ;
-> +		timeout = min_t(u64, timeout, U32_MAX);
-> +		config->dead_conn_timeout =
-> +			min_t(u64, timeout * HZ, MAX_SCHEDULE_TIMEOUT);
->   	}
->   	if (info->attrs[NBD_ATTR_SERVER_FLAGS])
->   		config->flags =
-> @@ -2415,9 +2417,11 @@ static int nbd_genl_reconfigure(struct sk_buff *skb, struct genl_info *info)
->   		nbd_set_cmd_timeout(nbd,
->   				    nla_get_u64(info->attrs[NBD_ATTR_TIMEOUT]));
->   	if (info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]) {
-> -		config->dead_conn_timeout =
-> +		u64 timeout =
->   			nla_get_u64(info->attrs[NBD_ATTR_DEAD_CONN_TIMEOUT]);
-> -		config->dead_conn_timeout *= HZ;
-> +		timeout = min_t(u64, timeout, U32_MAX);
-> +		config->dead_conn_timeout =
-> +			min_t(u64, timeout * HZ, MAX_SCHEDULE_TIMEOUT);
->   	}
->   	if (info->attrs[NBD_ATTR_CLIENT_FLAGS]) {
->   		u64 flags = nla_get_u64(info->attrs[NBD_ATTR_CLIENT_FLAGS]);
->
->
-> base-commit: a13c140cc289c0b7b3770bce5b3ad42ab35074aa
+> diff --git a/fs/btrfs/qgroup.c b/fs/btrfs/qgroup.c
+> index 502fb4a55..1870595f1 100644
+> --- a/fs/btrfs/qgroup.c
+> +++ b/fs/btrfs/qgroup.c
+> @@ -3068,8 +3068,10 @@ int btrfs_qgroup_account_extents(struct btrfs_trans_handle *trans)
+>  			if (!record->old_roots) {
+>  				/* Search commit root to find old_roots */
+>  				ret = btrfs_find_all_roots(&ctx, false);
+> -				if (ret < 0)
+> +				if (ret < 0) {
+> +					btrfs_abort_transaction(trans, ret);
+>  					goto cleanup;
+> +				}
+>  				record->old_roots = ctx.roots;
+>  				ctx.roots = NULL;
+>  			}
+> @@ -3082,8 +3084,10 @@ int btrfs_qgroup_account_extents(struct btrfs_trans_handle *trans)
+>  			ctx.trans = trans;
+>  			ctx.time_seq = BTRFS_SEQ_LAST;
+>  			ret = btrfs_find_all_roots(&ctx, false);
+> -			if (ret < 0)
+> +			if (ret < 0) {
+> +				btrfs_abort_transaction(trans, ret);
+>  				goto cleanup;
+> +			}
+>  			new_roots = ctx.roots;
+>  			if (qgroup_to_skip) {
+>  				ulist_del(new_roots, qgroup_to_skip, 0);
+> diff --git a/fs/btrfs/root-tree.c b/fs/btrfs/root-tree.c
+> index 90659b287..13695e4f4 100644
+> --- a/fs/btrfs/root-tree.c
+> +++ b/fs/btrfs/root-tree.c
+> @@ -142,8 +142,17 @@ int btrfs_update_root(struct btrfs_trans_handle *trans, struct btrfs_root
+>  		return -ENOMEM;
+>  
+>  	ret = btrfs_search_slot(trans, root, key, path, 0, 1);
+> -	if (ret < 0)
+> +	if (ret < 0) {
+> +		/*
+> +		 * Abort the transaction if we are not updating the log root tree.
+> +		 * In btrfs_sync_log, -ENOSPC is a normal error and should not
+> +		 * abort the transaction.
+> +		 */
+> +		if (ret != -ENOSPC ||
+> +		    root->root_key.objectid != BTRFS_TREE_LOG_OBJECTID)
+> +			btrfs_abort_transaction(trans, ret);
+>  		return ret;
+> +	}
+>  
+>  	if (unlikely(ret > 0)) {
+>  		btrfs_crit(fs_info,
+> diff --git a/fs/btrfs/transaction.c b/fs/btrfs/transaction.c
+> index 8f9419728..aa53eb831 100644
+> --- a/fs/btrfs/transaction.c
+> +++ b/fs/btrfs/transaction.c
+> @@ -2751,8 +2751,16 @@ void __cold __btrfs_abort_transaction(struct btrfs_trans_handle *trans,
+>  	if (first_hit) {
+>  		btrfs_err(fs_info, "Transaction %llu aborted (error %d)",
+>  			  trans->transid, error);
+> -		if (error == -ENOSPC)
+> +		if (error == -ENOSPC) {
+>  			btrfs_dump_space_info_for_trans_abort(fs_info);
+> +			dump_stack();
+> +		}
+> +		if (error == -EUCLEAN) {
+> +			btrfs_err(
+> +				fs_info,
+> +				"Aborting transaction due to filesystem corruption");
+> +			dump_stack();
+> +		}
+>  	}
+>  	/* Wake up anybody who may be waiting on this transaction */
+>  	wake_up(&fs_info->transaction_wait);
+> diff --git a/fs/btrfs/transaction.h b/fs/btrfs/transaction.h
+> index 5e4b1106f..ec66a60cc 100644
+> --- a/fs/btrfs/transaction.h
+> +++ b/fs/btrfs/transaction.h
+> @@ -237,6 +237,8 @@ static inline bool btrfs_abort_should_print_stack(int error)
+>  	case -EIO:
+>  	case -EROFS:
+>  	case -ENOMEM:
+> +	case -EUCLEAN:
+> +	case -ENOSPC:
+>  		return false;
+>  	}
+>  	return true;
+> 
+> 
+> base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
+> -- 
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+> 
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
