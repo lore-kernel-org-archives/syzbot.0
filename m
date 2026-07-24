@@ -1,357 +1,426 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FEED361656
-	for <syzbot@lists.linux.dev>; Fri, 24 Jul 2026 18:19:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E5182E7BD6
+	for <syzbot@lists.linux.dev>; Fri, 24 Jul 2026 18:58:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784917154; cv=none; b=g//qvBbKFFNUqlgm7Vjl5sPEjzEPedWpEyc+ysq+vtwstHBW4nPSU3xnsMtyP7kWmVyEBVxhIMMSPcmgopQCpR4zRZCKBriCEivD2SP7zd4YjQ7K/JcdMye8WbJhuRznYLWCmxQ2fHyxvf8fkOQsE6aD1MO728+qwnJ1zipVXFI=
+	t=1784919495; cv=none; b=fzrSj3MxgHrawKhpVZ+FNq2t4NBN2qp22xoKC82WqPjpZdCZJVTMh8RrzThO+N+K14tG1PKzB5E2LnEafvElTZrS/sCEsuRNgxHnxYMhuZlhQbFTHA3iv5UrSIhf1PkPoA1rj3GCQjW1BThFRhb77KLVJ7hSkIGfcJ3t7X1kegg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784917154; c=relaxed/simple;
-	bh=VtGcqaBIlWKJrdEmcPy7YVveR8BZ1OvpqTa/JJnjhkI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=V2SHvt9/9V0LCP46EOyy8Q7EcbZxtvU4X+Bg2wiWCxKeWISy3Ui9ruXavZnk6qoxAq00Qy0lDdvkFP5k2CTBaqoHb+9xJr0vrG+8PlRMuUzhNIP9hHUYW/XXuc0YhiTF0sN7dD76/nY6q935MgnALuOsw/drvVzufjBD377Bmnw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Uajt8nM5; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784919495; c=relaxed/simple;
+	bh=EZ/aGtybWywnF2NsSC3DR5p9LTN4nxNLhH/8GtGcKlY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sB/Tlpw23YE+u1QaF6nGLduz2eDCPwypaGwAOTDWQf4AYFSVSNL8o+BvO91fB3UItq+T6JQoaj88Isy6hC6CHOZfsWN5AuxK3HrCBsweRot4O0kUn2dtyfcO5+RzpBIPt8ghw4m3m6DnX/Xzb0ic8tFXwOp97Q0cVn9GFxVCI6Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=devineni.in; spf=none smtp.mailfrom=devineni.in; dkim=pass (2048-bit key) header.d=devineni.in header.i=@devineni.in header.b=V+GECYRT; arc=none smtp.client-ip=209.85.214.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=devineni.in
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=devineni.in
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Uajt8nM5"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4954dff6536so5511655e9.0
-        for <syzbot@lists.linux.dev>; Fri, 24 Jul 2026 11:19:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=devineni.in header.i=@devineni.in header.b="V+GECYRT"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2cacf197759so11338625ad.2
+        for <syzbot@lists.linux.dev>; Fri, 24 Jul 2026 11:58:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784917151; x=1785521951; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=8KaD05WZyiD3P7ZaqeK2hKWmnWSxsGirg2dVnC5B0gY=;
-        b=Uajt8nM5+zWpZHxxBCn8kbH2Lx9BL2XtHMZoDi1IYmUFN8RWp3If4+9WvkBfwfRUiI
-         QcuqOHK3nq12NC9T38QnMi5dFaXyrnnidWJHBNOijegYIDuOTHEEuoO8DQ0UlDskgine
-         ZlUUdRyoeGzpCfNXXOsPJrpuAyNcZ4PKU+GV/akddPG/R5dsItdBb4TImCGVFfFE/o3Z
-         PI8ME2gckTMkOAQ/gGle2rLvHcRYFIiTWzyGv1nO7Mq6qw/N/0C8jQH5bnYoS4KANquM
-         pGVGZn+xwtR6JrauSYq0KkD+2NcxoZmv+cwecnMW2yKZ2TlLVE4VUq8PlUVaZvaPgtNP
-         Vsug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784917151; x=1785521951;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=devineni.in; s=google; t=1784919492; x=1785524292; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=8KaD05WZyiD3P7ZaqeK2hKWmnWSxsGirg2dVnC5B0gY=;
-        b=i4awXGYCJMsrb99YIBh8GRZx2Jsk3cfY5WaYm1C0NolM09jH0fSLcf9NiyV3e4XIYe
-         a7H3CRz56ktlPI1w2ZxXgW5uGgFB+ImNTa5Oyvx4ekMCpBxOiTb5Pn04pf2bco/ETs1o
-         dmMTrmlCGgKoOsPapqFszWGCImjBUxd2p2cwCas+K0O+AptevlthU1QSdia0OsxFP9qI
-         CQEgtaXX75tPnkt0uG70bFwyo4w5911iLtuCvFD7KzgnXMCg4u+LL/KJNsCYgwbzg+SU
-         bvtKPpt3j1zmnI44FNbw7b//7NMwXUx8y4wndmrINNdWbsBa/7MerhNloWRlsvpeB+qG
-         krvg==
-X-Forwarded-Encrypted: i=1; AHgh+RpA2z6wbLtPpcz7692CYHcR9KHKl2+NrnsUw7G1Fa3bFEVGRm2pLyGLIzgbFIaSqtju2t27bJo=@lists.linux.dev
-X-Gm-Message-State: AOJu0YyPLR07f9lY59upo/RfcTJo/YTqGESWOODFJe4sD5znCVAn1UQL
-	tPclLXqlhsqtMW7V5HmToMDVJ5UdT1aRn33+EypuG60ALPvq+/oXghCY
-X-Gm-Gg: AR+sD10j+ZLLDSdFPTI2DmAi8nGAZeMZa3qlk/rvlRkIE8fM7CdEumvWTCWzlWMObvT
-	6aKt5pBQ2BoCocSxw9gyzZbxF7KHLbqpoVAr6aYMAiXOEvXZulons29NJZhvgzeVBBEVZKlukKW
-	jsgUWKKBg+2HA3DnOd5uGoQkQb2MTANh+5o25Wgy3aLlwMVxTSdcm87D/Z+MlnXv+lJYiwKwO1a
-	qGX43p6b2VmZa0w+k+j0uKB1qaQJfUC8AkczzZIuoKfdU0A9nazZateixl899MMSDlftWz96YNM
-	plocp8WRkfUt7dDfjmGYet/WKRzF9iS0xr/olPd7c+CFrGYP0MMj/s2WANHNMHz899YAuEC2uAC
-	7YvM78nac4iMeC5rc8LizSDweEBvP/Oo66k5BZdU48JvT2NvkAfczz28nycnxdEFhjPnCnTMdAe
-	0hyhzNsYORZ0z/enwcTOMfGMRrfhCa
-X-Received: by 2002:a05:600c:6d83:b0:492:6447:7a7f with SMTP id 5b1f17b1804b1-49573cbf8ccmr60092745e9.6.1784917150445;
-        Fri, 24 Jul 2026 11:19:10 -0700 (PDT)
-Received: from localhost ([37.30.44.117])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4957bfc2ff2sm59436875e9.4.2026.07.24.11.19.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jul 2026 11:19:10 -0700 (PDT)
-Date: Fri, 24 Jul 2026 20:19:09 +0200
-From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC] net/sched: taprio: fix hrtimer interrupt storm on
- small intervals
-Message-ID: <bww2koc7edy644if3re575zlrfxfk545jxj5ghwhg6kzd6pa5l@2qdzo6zgu72y>
-References: <bc6a8890-9230-489a-bbce-5c255c1ef01a@mail.kernel.org>
+        bh=GSF2hQE4kBOClpPtG/3ryML2O12vdNwpwEKVFl9N5I8=;
+        b=V+GECYRT7LVXiVM0sZOjgoSUs/9acc3haUfNB04ghiqrh7ErfG8B89ssF7hTe+8NeO
+         oiezYNUfuDBQnVj0pU1XXzHIuRYXycFPbuhW9MkvsqsVsGQLE/mZH5/1y4rhE5wdJSgE
+         MYScCiqMsih1wJ+d+9h1VLntkj10lxnLW2oPvd1zXhLcLB46PLEBCCDxeewA26lfmUl5
+         lBm3rpizovqLSM4rAIUlCPewr28pJgO2OuYEtS/LQ58Uj+Xo9Jg9Zo+nkbT50pEDPNm/
+         vLlYwcdoEKcl3iSIdj0jR32ibnUhvFCvqmrLot9jN8aysVdsrwGHwjni9ss9GkUlYUIt
+         7Jtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784919492; x=1785524292;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=GSF2hQE4kBOClpPtG/3ryML2O12vdNwpwEKVFl9N5I8=;
+        b=Ss/F973O8gUu6gjaPofhFCALsostviQ3d11aKVsKLhvtZJhSoult6QsXG9B55B7S28
+         XUAIqWbCF+eshn8tddOVImAXLxUyStUY6lsRTiMEW1hR0Yh1t015OvkLJ4FCnkg9VrCO
+         eKQNr7QqjXILZrTqEd2Kp70Ow4Ka7hnLj8jPVzc2B5jqBwBgk4pY0w7DCofngsYCxJdC
+         n6JkW2+mTOanISiViDsOTM945LrBPXN7qQNQ8RQxPxPrpv9Kz/LORLMORbOQHNXt3Z3p
+         2kaFOenGANbe5BRPFU2QYvom2BgrwbOc+96b+cU3Ikji2QrllHOR38X+0FeqRE8S9qCU
+         ENGA==
+X-Gm-Message-State: AOJu0Yz1UMCelRKxV6UGFBd1G+kZKtYAUEhJliFQO+9pHLVb6szhV4yX
+	sRBENuLEwZZGQlQ35ucMUPyJnDM6ggS8erUftbxwHVcyLfOZ/YOh9Geu+pQuuae6rg==
+X-Gm-Gg: AR+sD11Qz1qQPHCN3WjgEINIUKO9+psKIHZp4YWWdqXekjA2GKRB9H7HfdFHfOiGGBX
+	pDhX3LwDNX1I5z0rAiFU2RaBRacIq33c46hzrl1b4g5OFBqqUbTnXJa7vMjW9APLkyCtN/Qdjbz
+	o9upeqiYWIXI4mSUQPUimrNgobUE2M2mEGkYQuK9xBSMwhoaRIQUC0wgaXzNpy2r5X2qZJ0r6f6
+	8RjBYarETwTVjvKGEUwMLd1uQbaCMhSKKj+NDqODP/9rqvGyyIvExpaDv/pafkrnfEfX+i65uNB
+	7N+Jl/1gJ/6ExBOS5ZhgryGj/h4Jo6yYogRJqUwyt/KpFF8fbCp6mXHhGdZipRuVPMUMhX4wvgQ
+	ePyEPF6kVTweaNcQDNXlKGTwcB7WWAcOvXKVMniiBf7ovDn6ksIhdKXj90eKVdVej2y3NaPjdsM
+	kNz/Tfl/3/KK9pffTurHqJ1c3pi4bl1IaCsApwnUk1mX1sAzIU0ifTqXrznb4HHsLcuNvm6g8VH
+	P3/Fv03jbSK/M9912qhPrfx3vokfhwITBkwNmI1ZYuYo52d4pTBWWivPhs7kuz290hQbzQYqQ==
+X-Received: by 2002:a05:6a20:4711:b0:3c6:4b29:1180 with SMTP id adf61e73a8af0-3c64b296132mr5014874637.48.1784919492321;
+        Fri, 24 Jul 2026 11:58:12 -0700 (PDT)
+Received: from [192.168.0.100] ([49.205.105.129])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-314bc4164ddsm1717074eec.9.2026.07.24.11.58.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jul 2026 11:58:11 -0700 (PDT)
+Message-ID: <2e545595-8010-441f-be89-212cd3bc9ca8@devineni.in>
+Date: Sat, 25 Jul 2026 00:27:57 +0530
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bc6a8890-9230-489a-bbce-5c255c1ef01a@mail.kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v5] fuse: abort connection on /dev/fuse flush to
+ prevent deadlock
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+References: <13552139-cd2b-4ea9-994c-cfed6c07000b@mail.kernel.org>
+Content-Language: en-US
+From: Kusaram Devineni <kusaram@devineni.in>
+In-Reply-To: <13552139-cd2b-4ea9-994c-cfed6c07000b@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The v1 patch identifies the correct causal function, and arithmetic catch-up in
-advance_sched() is the right direction. The exact-base accepted-1000-ns test
-pair supports that mechanism: the unpatched kernel reproduced the timer/RCU
-stall class on 4/4 machines, while the patched kernel produced no crash on
-4/4 machines. However, the exact 255 ns no-repro is not evidence for catch-up,
-because the new parser check rejects that input before the timer path runs.
-The patch is not ready: the parser floor has the wrong scope, the capped path
-performs too much repeated state work in hardirq context, an overdue
-administrative transition is not caught up arithmetically, and the description
-overstates what the physical retry deadline guarantees.
-
-Please address these points in the next version:
-
-1. Remove the NSEC_PER_USEC admission checks from fill_sched_entry() and
-parse_taprio_schedule(). They are not required to fix an overdue timer, reject
-the exact reproducer before it exercises the catch-up path, and also reject
-TXTIME-assist configurations even though that mode does not use
-advance_sched(). The existing link-speed-based frame-duration validation
-should remain unchanged.
-
-2. Preserve two distinct time contracts. The logical deadline in the selected
-schedule entry records where catch-up must resume. The physical hrtimer expiry
-controls when the callback may run again. On every HRTIMER_RESTART return, the
-physical expiry must be later than the hrtimer queue's saved comparison time
-for the current run, so __hrtimer_run_queues() cannot replay the callback
-indefinitely against one fixed time snapshot. A TAPRIO-clock sample taken
-inside the callback, after the queue snapshot, plus a positive retry interval
-can establish that ordering. It is not necessary to claim that the expiry
-will still be in the future when the callback finally returns; time can pass
-during callback work.
-
-3. Keep the logical schedule state coherent independently of that physical
-retry. The published current_entry, its logical end_time, finite
-gate_close_time values, cycle_end_time, budgets, and the oper/admin identity
-must describe the same logical schedule phase. If a bounded callback stops
-before reaching current time, retain that logical deadline so the next
-callback resumes from it; do not overwrite it with the synthetic physical
-retry deadline. Arm the hrtimer with the separate physical expiry described
-above and document this split explicitly.
-
-4. Avoid replaying up to 2048 gate and per-TC budget transitions under
-current_entry_lock. First skip complete operational cycles arithmetically only
-up to the earlier of current time and a pending administrative base time.
-When the administrative boundary is due, promote it once, then position the
-new operational schedule arithmetically. Within the remaining cycle, locate
-the selected entry without repeatedly publishing or recalculating budgets for
-intermediate entries; update gate timing, budgets, and current_entry only for
-the final logical state. If list traversal still needs a retry bound, make it
-small and documented, retain the resumable logical state, and use the separate
-physical retry contract from points 2 and 3.
-
-5. Update the description accordingly. The fallback does not "yield the CPU";
-it requests a later physical expiration relative to the timer queue's saved
-comparison time. Describe the logical/physical deadline split, the bounded
-state work, and administrative-schedule handling. Do not present a
-one-microsecond admission policy as the causal fix. Keep the distinction
-between the 255 ns trigger and the underlying overdue-absolute-deadline
-invariant.
-
-The existing Fixes tag and proposed upstream recipient set are reasonable.
-
-Please include focused coverage for the following state and mode boundaries in
-the revised version: the exact 255 ns input must remain accepted so the
-catch-up path is exercised; a long-lived small-interval schedule must be
-checked for CPU and hardirq behavior rather than only repeated short runs; an
-actually overdue administrative schedule must be promoted and caught up;
-multi-entry wrap must be covered; supported clock IDs and forward clock
-movement must be exercised; TXTIME-assist acceptance and normal on-time
-behavior must remain unchanged; and default and strict checkpatch must be
-clean.
-
-On Thu, Jul 09, 2026 at 12:33:55PM +0000, syzbot wrote:
-> The taprio qdisc allows configuring extremely small intervals (e.g., 255
-> ns) which are valid for hardware offload but completely overwhelm the CPU
-> when using software timers. When the interval is smaller than the time it
-> takes to process the timer interrupt, the timer's expiration time is always
-> in the past. This causes the hrtimer subsystem to continuously re-enqueue
-> and fire the timer, leading to an interrupt storm that starves the CPU and
-> triggers an RCU stall:
+On 24-07-2026 06:13 pm, syzbot wrote:
+> A single-threaded FUSE daemon can deadlock if it mounts a filesystem and
+> opens a file on it. When the process exits or calls close_range(), the
+> kernel closes file descriptors in ascending numerical order.
 > 
-> rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-> rcu: 	1-...!: (1 GPs behind) idle=9714/0/0x1 softirq=132447/132447 fqs=1
-> rcu: 	(detected by 0, t=10505 jiffies, g=152477, q=510 ncpus=2)
-> rcu: rcu_preempt kthread starved for 10501 jiffies! g152477 f0x0
-> RCU_GP_WAIT_FQS(5) ->state=0x0 ->cpu=0
-> rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now
-> expected behavior.
+> If the /dev/fuse file descriptor (e.g., fd 5) is closed first, filp_close()
+> decrements the file reference count but defers the actual release (fput) to
+> task work. As a result, the FUSE connection remains active.
 > 
-> To fix this, implement two strategies. First, enforce sensible minimums in
-> software mode by rejecting intervals and cycle times smaller than
-> NSEC_PER_USEC (1 microsecond) when hardware offload is not enabled. Second,
-> prevent timer stalls in advance_sched() by fast-forwarding the schedule to
-> the current time instead of blindly restarting the timer in the past. This
-> is done efficiently by skipping full cycles using division, and then
-> looping through the remaining entries. To prevent the loop itself from
-> causing a stall, cap the iterations at 2048 and yield the CPU if necessary
-> by setting the timer to fire 1 microsecond in the future.
+> Next, when the FUSE file descriptor (e.g., fd 6) is closed, filp_close()
+> calls fuse_flush(), which sends a synchronous FUSE_FLUSH request to the
+> daemon. Since the daemon is the same thread that is currently blocked in
+> the close() syscall, it cannot process the request. The FUSE_FLUSH request
+> uses args.force = true, making the wait uninterruptible. The thread hangs
+> forever, eventually triggering a hung task panic:
 > 
-> Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
-> Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+f8850bc3986562f79619@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=f8850bc3986562f79619
-> Link: https://syzkaller.appspot.com/ai_job?id=4e81d0c1-77be-4527-8698-9eadc019d766
-> To: "David S. Miller" <davem@davemloft.net>
-> To: "Eric Dumazet" <edumazet@google.com>
-> To: "Jamal Hadi Salim" <jhs@mojatatu.com>
-> To: "Jiri Pirko" <jiri@resnulli.us>
-> To: "Jakub Kicinski" <kuba@kernel.org>
-> To: <netdev@vger.kernel.org>
-> To: "Paolo Abeni" <pabeni@redhat.com>
-> To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
-> Cc: "Simon Horman" <horms@kernel.org>
+> Call Trace:
+>   <TASK>
+>   __schedule+0x17d9/0x56c0 kernel/sched/core.c:7234
+>   schedule+0x164/0x2b0 kernel/sched/core.c:7326
+>   request_wait_answer fs/fuse/dev.c:743 [inline]
+>   __fuse_request_send fs/fuse/dev.c:757 [inline]
+>   fuse_chan_send+0x1065/0x1ab0 fs/fuse/dev.c:833
+>   fuse_simple_request fs/fuse/fuse_i.h:1012 [inline]
+>   fuse_flush+0x66e/0x8b0 fs/fuse/file.c:504
+>   filp_flush+0xbd/0x190 fs/open.c:1471
+>   filp_close+0x1d/0x40 fs/open.c:1484
+>   __range_close fs/file.c:793 [inline]
+>   __do_sys_close_range fs/file.c:854 [inline]
+>   __se_sys_close_range+0x3d3/0x900 fs/file.c:818
+>   do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
+> 
+> To fix this, implement a .flush method for /dev/fuse (fuse_dev_operations).
+> The .flush method is called synchronously by filp_close() during the
+> close() syscall, bypassing the fput delay.
+> 
+> In fuse_dev_flush(), if this is the final close of the file descriptor
+> (file_count(file) == 1), we mark the device as closing. Since multiple
+> cloned /dev/fuse devices can exist for the same connection, we track the
+> closing state of each device under the channel lock. If all devices
+> associated with the channel are closing, we proactively abort the FUSE
+> connection. By aborting the connection synchronously in .flush, any
+> subsequent fuse_flush() calls on FUSE files will immediately fail with
+> -ENOTCONN instead of blocking indefinitely, avoiding the deadlock.
+> 
+> To handle the race where a /dev/fuse file descriptor is closed before it is
+> fully installed into a connection (i.e., fud->chan is still NULL), we use
+> cmpxchg() to atomically transition fud->chan from NULL to
+> FUSE_DEV_CHAN_DISCONNECTED. This prevents a concurrent fuse_dev_install()
+> from succeeding on a device that is already being closed. Furthermore,
+> because the VFS may invoke .fasync after .flush but before .release,
+> fuse_get_dev() and __fuse_get_dev() must reject the
+> FUSE_DEV_CHAN_DISCONNECTED sentinel to prevent .fasync from dereferencing
+> it.
+> 
+> Note that CUSE (Character Device in User Space) also shares
+> fuse_dev_operations and therefore inherits this new .flush callback, which
+> is safe and consistent with its lifecycle.
+> 
+> Fixes: 4a9d4b024a31 ("switch fput to task_work_add")
+> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> Tested-by: syzbot <syzbot@syzkaller.appspotmail.com>
+> Reported-by: syzbot+0dbb0d6fda088e78a4d8@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=0dbb0d6fda088e78a4d8
+> Link: https://syzkaller.appspot.com/ai_job?id=01c5ea2a-b608-4f47-aed0-a4e606dcc0c0
+> To: <fuse-devel@lists.linux.dev>
+> To: "Miklos Szeredi" <miklos@szeredi.hu>
 > Cc: <linux-kernel@vger.kernel.org>
 > 
 > ---
-> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-> index 299234a5f..910de14c4 100644
-> --- a/net/sched/sch_taprio.c
-> +++ b/net/sched/sch_taprio.c
-> @@ -944,46 +944,83 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
->  	 * entry of all schedules are pre-calculated during the
->  	 * schedule initialization.
->  	 */
-> -	if (unlikely(!entry || entry->end_time == oper->base_time)) {
-> -		next = list_first_entry(&oper->entries, struct sched_entry,
-> -					list);
-> -		end_time = next->end_time;
-> -		goto first_run;
-> -	}
-> -
-> -	if (should_restart_cycle(oper, entry)) {
-> -		next = list_first_entry(&oper->entries, struct sched_entry,
-> -					list);
-> -		oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
-> -						    oper->cycle_time);
-> -	} else {
-> -		next = list_next_entry(entry, list);
-> -	}
-> +	int max_iter = 2048;
-> +	ktime_t now = taprio_get_time(q);
->  
-> -	end_time = ktime_add_ns(entry->end_time, next->interval);
-> -	end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
-> +	do {
-> +		if (unlikely(!entry || entry->end_time == oper->base_time)) {
-> +			next = list_first_entry(&oper->entries,
-> +						struct sched_entry, list);
-> +			end_time = next->end_time;
-> +			goto first_run;
-> +		}
->  
-> -	for (tc = 0; tc < num_tc; tc++) {
-> -		if (next->gate_duration[tc] == oper->cycle_time)
-> -			next->gate_close_time[tc] = KTIME_MAX;
-> -		else
-> -			next->gate_close_time[tc] = ktime_add_ns(entry->end_time,
-> -								 next->gate_duration[tc]);
-> -	}
-> +		if (should_restart_cycle(oper, entry)) {
-> +			next = list_first_entry(&oper->entries,
-> +						struct sched_entry, list);
-> +			oper->cycle_end_time = ktime_add_ns(
-> +				oper->cycle_end_time, oper->cycle_time);
-> +		} else {
-> +			next = list_next_entry(entry, list);
-> +		}
->  
-> -	if (should_change_schedules(admin, oper, end_time)) {
-> -		switch_schedules(q, &admin, &oper);
-> -		/* After changing schedules, the next entry is the first one
-> -		 * in the new schedule, with a pre-calculated end_time.
-> -		 */
-> -		next = list_first_entry(&oper->entries, struct sched_entry, list);
-> -		end_time = next->end_time;
-> -	}
-> +		end_time = ktime_add_ns(entry->end_time, next->interval);
-> +		end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
+suggestive v6 changelog is as below...
+
+v6:
+- Reworked the `fud->chan` lifecycle documentation to describe both
+   `NULL -> valid channel -> FUSE_DEV_CHAN_DISCONNECTED` and
+   `NULL -> FUSE_DEV_CHAN_DISCONNECTED`.
+- Corrected the v4 and v5 revision history.
+
+> v5:
+> - Moved `closing` next to `sync_init` in `struct fuse_dev` to preserve compact placement of boolean members.
+> - Restored formatting of `fuse_dev_operations`.
+> - Updated commit message to explain why `fuse_get_dev()` and `__fuse_get_dev()` reject `FUSE_DEV_CHAN_DISCONNECTED` due to `.fasync` invocation.
+> - Removed duplicate `Tested-by` tag.
+> 
+> v4:
+> - Changed `(file_count(file) <= 1)` to `(file_count(file) == 1)` in the commit message.
+> - Added `Tested-by: syzbot@syzkaller.appspotmail.com` tag.
+> - Added lockdep assertion in `fuse_dev_all_closing()`.
+> - Updated `fuse_get_dev()` and `__fuse_get_dev()` to reject `FUSE_DEV_CHAN_DISCONNECTED`.
+> - Checked `fch->connected` before aborting in `fuse_dev_release()` and `fuse_dev_flush()`.
+> https://lore.kernel.org/all/17ec009d-743f-4703-b56d-c78b2152ace2@mail.kernel.org/T/
+> 
+v4, v5 changelog above needs to be described correctly as below...
+
+v5:
+- Added documentation explaining that final flush can install
+   `FUSE_DEV_CHAN_DISCONNECTED` before release for an uninstalled device.
+- Updated the commit message to explain why `fuse_get_dev()` and
+   `__fuse_get_dev()` reject `FUSE_DEV_CHAN_DISCONNECTED` due to the VFS
+   `.fasync` invocation between `.flush` and `.release`.
+- Removed the duplicate `Tested-by` tag.
+
+v4:
+- Changed `(file_count(file) <= 1)` to `(file_count(file) == 1)` in the
+   commit message.
+- Added `Tested-by: syzbot@syzkaller.appspotmail.com`.
+- Added a lockdep assertion in `fuse_dev_all_closing()`.
+- Updated `fuse_get_dev()` and `__fuse_get_dev()` to reject
+   `FUSE_DEV_CHAN_DISCONNECTED`.
+- Checked `fch->connected` before aborting in `fuse_dev_release()` and
+   `fuse_dev_flush()`.
+- Moved `closing` next to `sync_init` in `struct fuse_dev` to preserve 
+compact
+   placement of the boolean members.
+- Restored the existing formatting of `fuse_dev_operations`.
+https://lore.kernel.org/all/17ec009d-743f-4703-b56d-c78b2152ace2@mail.kernel.org/T/
+
+> v3:
+> - Added fuse_dev_all_closing() helper to check if all devices on a channel are closing.
+> - Updated fuse_dev_release() to abort the connection if all remaining devices are closing.
+> - Fixed the file reference count check in fuse_dev_flush() to check for file_count(file) != 1 instead of file_count(file) > 1.
+> - Updated the comment in fs/fuse/fuse_dev_i.h to clarify the lifecycle of fud->chan and when it is set to FUSE_DEV_CHAN_DISCONNECTED.
+> https://lore.kernel.org/all/40d9021a-6a93-43a1-97b0-6ec2f9cbabc6@mail.kernel.org/T/
+> 
+> v2:
+> - Added `closing` flag to `struct fuse_dev` to track the closing state of each device.
+> - Updated `fuse_dev_flush()` to check if all associated devices are closing, properly handling cloned devices.
+> - Used `cmpxchg()` in `fuse_dev_flush()` to handle the race where a device is closed before being fully installed.
+> - Updated `fuse_dev_release()` to handle `FUSE_DEV_CHAN_DISCONNECTED` safely.
+> https://lore.kernel.org/all/3e4a3361-9e1b-4f46-8033-f85ada100a79@mail.kernel.org/T/
+> 
+> v1:
+> https://lore.kernel.org/all/bedbc009-8806-4913-9a03-1b25b6d33729@mail.kernel.org/T/
+> ---
+> diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
+> index 5763a7cd3..8b14c7d57 100644
+> --- a/fs/fuse/dev.c
+> +++ b/fs/fuse/dev.c
+> @@ -1662,18 +1662,23 @@ static int fuse_dev_open(struct inode *inode, struct file *file)
+>   struct fuse_dev *fuse_get_dev(struct file *file)
+>   {
+>   	struct fuse_dev *fud = fuse_file_to_fud(file);
+> +	struct fuse_chan *fch = fuse_dev_chan_get(fud);
+>   	int err;
+>   
+> -	if (unlikely(!fuse_dev_chan_get(fud))) {
+> +	if (unlikely(!fch)) {
+>   		/* only block waiting for mount if sync init was requested */
+>   		if (!fud->sync_init)
+>   			return ERR_PTR(-EPERM);
+>   
+> -		err = wait_event_interruptible(fuse_dev_waitq, fuse_dev_chan_get(fud) != NULL);
+> +		err = wait_event_interruptible(fuse_dev_waitq,
+> +					       (fch = fuse_dev_chan_get(fud)) != NULL);
+>   		if (err)
+>   			return ERR_PTR(err);
+>   	}
+>   
+> +	if (unlikely(fch == FUSE_DEV_CHAN_DISCONNECTED))
+> +		return ERR_PTR(-EPERM);
 > +
-> +		for (tc = 0; tc < num_tc; tc++) {
-> +			if (next->gate_duration[tc] == oper->cycle_time)
-> +				next->gate_close_time[tc] = KTIME_MAX;
-> +			else
-> +				next->gate_close_time[tc] =
-> +					ktime_add_ns(entry->end_time,
-> +						     next->gate_duration[tc]);
-> +		}
+>   	return fud;
+>   }
+>   
+> @@ -2211,17 +2216,31 @@ void fuse_chan_wait_aborted(struct fuse_chan *fch)
+>   	fuse_uring_wait_stopped_queues(fch);
+>   }
+>   
+> +static bool fuse_dev_all_closing(struct fuse_chan *fch)
+> +{
+> +	struct fuse_dev *pos;
 > +
-> +		if (should_change_schedules(admin, oper, end_time)) {
-> +			switch_schedules(q, &admin, &oper);
-> +			/* After changing schedules, the next entry is the first one
-> +			 * in the new schedule, with a pre-calculated end_time.
-> +			 */
-> +			next = list_first_entry(&oper->entries,
-> +						struct sched_entry, list);
-> +			end_time = next->end_time;
-> +		}
->  
-> -	next->end_time = end_time;
-> -	taprio_set_budgets(q, oper, next);
-> +		next->end_time = end_time;
-> +		taprio_set_budgets(q, oper, next);
->  
->  first_run:
-> +		if (ktime_after(end_time, now))
-> +			break;
+> +	lockdep_assert_held(&fch->lock);
 > +
-> +		if (!admin && ktime_before(end_time, now)) {
-> +			s64 diff = ktime_sub(now, end_time);
-> +			s64 cycles = div64_s64(diff, oper->cycle_time);
-> +			if (cycles > 0) {
-> +				oper->cycle_end_time =
-> +					ktime_add_ns(oper->cycle_end_time,
-> +						     cycles * oper->cycle_time);
-> +				end_time = ktime_add_ns(
-> +					end_time, cycles * oper->cycle_time);
-> +				next->end_time = end_time;
-> +				for (tc = 0; tc < num_tc; tc++) {
-> +					if (next->gate_close_time[tc] !=
-> +					    KTIME_MAX)
-> +						next->gate_close_time
-> +							[tc] = ktime_add_ns(
-> +							next->gate_close_time[tc],
-> +							cycles *
-> +								oper->cycle_time);
-> +				}
-> +			}
-> +		}
-> +
-> +		entry = next;
-> +	} while (--max_iter > 0);
-> +
-> +	if (max_iter == 0)
-> +		end_time = ktime_add_ns(now, NSEC_PER_USEC);
-> +
->  	rcu_assign_pointer(q->current_entry, next);
->  	spin_unlock(&q->current_entry_lock);
->  
-> @@ -1061,6 +1098,13 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
->  		return -EINVAL;
->  	}
->  
-> +	if (!FULL_OFFLOAD_IS_ENABLED(q->flags) && interval < NSEC_PER_USEC) {
-> +		NL_SET_ERR_MSG(
-> +			extack,
-> +			"Invalid interval for software taprio, must be at least 1 us");
-> +		return -EINVAL;
+> +	list_for_each_entry(pos, &fch->devices, entry) {
+> +		if (!pos->closing)
+> +			return false;
 > +	}
+> +	return true;
+> +}
 > +
->  	entry->interval = interval;
->  
->  	return 0;
-> @@ -1171,6 +1215,13 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
->  		return -EINVAL;
->  	}
->  
-> +	if (!FULL_OFFLOAD_IS_ENABLED(q->flags) &&
-> +	    new->cycle_time < NSEC_PER_USEC) {
-> +		NL_SET_ERR_MSG(extack,
-> +			       "'cycle_time' is too small for software taprio");
-> +		return -EINVAL;
-> +	}
+>   int fuse_dev_release(struct inode *inode, struct file *file)
+>   {
+>   	struct fuse_dev *fud = fuse_file_to_fud(file);
+>   	/* Pairs with cmpxchg() in fuse_dev_install() */
+>   	struct fuse_chan *fch = xchg(&fud->chan, FUSE_DEV_CHAN_DISCONNECTED);
+>   
+> -	if (fch) {
+> +	if (fch && fch != FUSE_DEV_CHAN_DISCONNECTED) {
+>   		struct fuse_pqueue *fpq = &fud->pq;
+>   		LIST_HEAD(to_end);
+>   		unsigned int i;
+>   		bool last;
+> +		bool abort;
+>   
+>   		/* Make sure fuse_dev_install_with_pq() has finished */
+>   		spin_lock(&fch->lock);
+> @@ -2234,14 +2253,15 @@ int fuse_dev_release(struct inode *inode, struct file *file)
+>   		list_del(&fud->entry);
+>   		/* Are we the last open device? */
+>   		last = list_empty(&fch->devices);
+> +		abort = fch->connected && fuse_dev_all_closing(fch);
+>   		spin_unlock(&fch->lock);
+>   
+>   		fuse_dev_end_requests(&to_end);
+>   
+> -		if (last) {
+> +		if (last)
+>   			WARN_ON(fch->iq.fasync != NULL);
+> +		if (abort)
+>   			fuse_chan_abort(fch, false);
+> -		}
+>   		fuse_conn_put(fch->conn);
+>   	}
+>   	fuse_dev_put(fud);
+> @@ -2375,6 +2395,34 @@ static void fuse_dev_show_fdinfo(struct seq_file *seq, struct file *file)
+>   }
+>   #endif
+>   
+> +static int fuse_dev_flush(struct file *file, fl_owner_t id)
+> +{
+> +	struct fuse_dev *fud = fuse_file_to_fud(file);
+> +	struct fuse_chan *fch;
+> +	bool abort;
 > +
->  	taprio_calculate_gate_durations(q, new);
->  
->  	return 0;
+> +	if (file_count(file) != 1)
+> +		return 0;
+> +
+> +	/*
+> +	 * Atomically transition fud->chan from NULL to FUSE_DEV_CHAN_DISCONNECTED
+> +	 * on final close to prevent a later fuse_dev_install() from succeeding.
+> +	 */
+> +	fch = cmpxchg(&fud->chan, NULL, FUSE_DEV_CHAN_DISCONNECTED);
+> +	if (!fch || fch == FUSE_DEV_CHAN_DISCONNECTED)
+> +		return 0;
+> +
+> +	spin_lock(&fch->lock);
+> +	fud->closing = true;
+> +	abort = fch->connected && fuse_dev_all_closing(fch);
+> +	spin_unlock(&fch->lock);
+> +
+> +	if (abort)
+> +		fuse_chan_abort(fch, false);
+> +
+> +	return 0;
+> +}
+> +
+>   const struct file_operations fuse_dev_operations = {
+>   	.owner		= THIS_MODULE,
+>   	.open		= fuse_dev_open,
+> @@ -2383,6 +2431,7 @@ const struct file_operations fuse_dev_operations = {
+>   	.write_iter	= fuse_dev_write,
+>   	.splice_write	= fuse_dev_splice_write,
+>   	.poll		= fuse_dev_poll,
+> +	.flush		= fuse_dev_flush,
+>   	.release	= fuse_dev_release,
+>   	.fasync		= fuse_dev_fasync,
+>   	.unlocked_ioctl = fuse_dev_ioctl,
+> diff --git a/fs/fuse/fuse_dev_i.h b/fs/fuse/fuse_dev_i.h
+> index 668c8391d..e45788c7f 100644
+> --- a/fs/fuse/fuse_dev_i.h
+> +++ b/fs/fuse/fuse_dev_i.h
+> @@ -302,6 +302,9 @@ struct fuse_dev {
+>   	/** @sync_init: Issue FUSE_INIT synchronously */
+>   	bool sync_init;
+>   
+> +	/** @closing: Final close has started, protected by chan->lock */
+> +	bool closing;
+> +
+>   	/** @chan: Fuse channel for this device */
+>   	struct fuse_chan *chan;
+>   
+> @@ -330,16 +333,28 @@ struct fuse_copy_state {
+>   	} ring;
+>   };
+>   
+> -/* fud->chan gets assigned to this value when /dev/fuse is closed */
+> +/*
+> + * fud->chan gets assigned to this value when /dev/fuse is closed or
+> + * by the final flush before release when the device was never installed,
+> + * so it does not exclusively mean that the device has already been released.
+> + */
+replace the description above with the block below...
+
+/*
+  * fud->chan has the following monotonic state transitions:
+  *
+  * NULL -> valid channel -> FUSE_DEV_CHAN_DISCONNECTED
+  * NULL -----------------> FUSE_DEV_CHAN_DISCONNECTED
+  *
+  * A valid channel pointer remains valid until the file is released. Final
+  * flush can install FUSE_DEV_CHAN_DISCONNECTED directly for an uninstalled
+  * device, preventing any later channel installation. The sentinel 
+therefore
+  * means that the channel can no longer be installed or accessed 
+through this
+  * file; it does not imply that release has already run and it must 
+never be
+  * dereferenced.
+  *
+  * fuse_dev_chan_get() reads this state locklessly. Callers must 
+distinguish
+  * NULL, a valid channel pointer, and FUSE_DEV_CHAN_DISCONNECTED before
+  * dereferencing the result.
+  */
+
+>   #define FUSE_DEV_CHAN_DISCONNECTED ((struct fuse_chan *) 1)
+>   
+>   /*
+>    * Lockless access is OK, because fud->chan is set once during mount and is valid
+>    * until the file is released.
+>    *
+> - * fud->chan is set to FUSE_DEV_CHAN_DISCONNECTED only after the containing file is
+> - * released, so result is safe to dereference in most cases.  Exceptions are:
+> - * fuse_dev_put() and fuse_fill_super_common().
+> + * fud->chan can have three states:
+> + * - NULL: device is not installed yet
+> + * - valid pointer: device is installed
+> + * - FUSE_DEV_CHAN_DISCONNECTED: device is released
+> + *
+> + * Final flush replaces NULL with the disconnected sentinel only for an
+> + * uninstalled device, while for an installed device, flush leaves the channel
+> + * pointer intact and records closing, and release later installs the sentinel.
+> + * Thus the result is safe to dereference in most cases.  Exceptions are:
+> + * fuse_dev_put() and fuse_fill_super_common(). fuse_get_dev() and
+> + * __fuse_get_dev() reject the sentinel.
+>    */
+>   static inline struct fuse_chan *fuse_dev_chan_get(struct fuse_dev *fud)
+>   {
+> @@ -355,8 +370,9 @@ static inline struct fuse_dev *fuse_file_to_fud(struct file *file)
+>   static inline struct fuse_dev *__fuse_get_dev(struct file *file)
+>   {
+>   	struct fuse_dev *fud = fuse_file_to_fud(file);
+> +	struct fuse_chan *fch = fuse_dev_chan_get(fud);
+>   
+> -	if (!fuse_dev_chan_get(fud))
+> +	if (!fch || fch == FUSE_DEV_CHAN_DISCONNECTED)
+>   		return NULL;
+>   
+>   	return fud;
 > 
 > 
 > base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
-> -- 
-> This is an AI-generated patch subject to moderation.
-> Reply with '#syz upstream' to Sign-off the patch as a human author
-> and send it to the upstream kernel mailing lists.
-> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-> 
-> See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-> You can comment on the patch as usual, syzbot will try to address
-> the comments and send a new version of the patch if necessary.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
+
