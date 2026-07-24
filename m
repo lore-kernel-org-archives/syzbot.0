@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E94C431E82B
-	for <syzbot@lists.linux.dev>; Fri, 24 Jul 2026 19:19:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA1DD382383
+	for <syzbot@lists.linux.dev>; Fri, 24 Jul 2026 20:21:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784920742; cv=none; b=hEr4qUNKLjZVnDZYsytyaFkzRCXPcNSQHynw9alW2YXPi7mHI0hMjTQRd4mSVxiryky0hepxcDG2F5MURbCyXpna+vgtSmBpPYnJFOLq7Yy2DIWhvbkLIcDU99qrtCQ8GZ0ndEFQ2CX/f4n9yMdUHSos7+vHsJuo9lhVliaW45w=
+	t=1784924492; cv=none; b=HCPw3Xs5wPTWmv6MVyqysMnla/oCOUxKbKwQHuYC9CJ7ZmYFBEuC4xALaQ8i5yo33sgmpCnm5uJRavLRN0MpKlgsz50ELaHm3xHnLT2TYff976nwAaiES5j98YwIOecjjmJuJoz8svbj1/pWpEeX3OVywbi+NMNwAeWzYS4vC7Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784920742; c=relaxed/simple;
-	bh=9/G//jeXoXAhp5e4Wu1n3NqsNaDg+LPGLSLBoP2sSdc=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=dt+gLHIqMzrJn4ZJJRzZUzr8zvi75ElKvMFa2rh96rN10da3ne08Av408ObCt2YC0SycWZ/2nsykO9IxgF5Igno0wiCPf6RJd6fqg2NjVy+7iIfssK6wC6TvNJ1tAYaEuUe4vDsY3EBBOpWf/bLq56x+4Z7FOrKwwmJBq+6xHL0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ezHiNUN5; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784924492; c=relaxed/simple;
+	bh=/CRPaoafAgOYNbkVK47FWhJHZy+/h6COZJEF0IG8pV4=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ARLI43l8bohZQB3KxxtdRBDGGMCNes1XeRGkg0vrmz08yYYItIhcejvz/Dda9RoX8+1k1EPxEg4sCV8UPT8cutdbBQ+G4CzCQHT7YDJIcT+Jv9bycH4Qku9b/0N3T1yV+CKiwNoNdBuUo3JNGA9xUvdsMDxs3PreD1BxRByPmAg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cbSPVt0F; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ezHiNUN5"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7673C1F000E9;
-	Fri, 24 Jul 2026 19:19:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cbSPVt0F"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 68DC41F000E9;
+	Fri, 24 Jul 2026 20:21:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784920740;
-	bh=co9SksKj5bjNNNbfPzb6FUsPfaBDl1fdiblhWGIe8Uc=;
+	s=k20260515; t=1784924490;
+	bh=9z9RvM05ippi9hMY0pwqv7HNkXxai/COGYy4J4QLE3k=;
 	h=From:To:Cc:Subject:Date;
-	b=ezHiNUN5tXT2DQJHAPAb9dN7UiMDhBCIjBIKQb1DzWZmo+vAOHRPKcIbYSthV25lB
-	 p2JqnK0yk2P7266EJWqGXxD/sbCd63oco+Uoa9hb7VvKFnB/EolVKPtIIoTy91ao6P
-	 bcwOXr9nM/J3FGYz5zTbSjj4Ykhp2NyCjEoHVeAxwIrhqNWNYE0GE2NfejgcpHSOvi
-	 AqPATKPui5BqSzF+wvY5Dguzq9qUoZmAnxyf2zHhPlrxPUJxHu2D6MC8tFAXp1qCYw
-	 rtWujVjs49qMMsmU5MrA5tzORkU4KI6Spdv2X6opDok6BuqgyDYJrDxKjEiRVEBE2J
-	 Tzmaiv0SCcUnw==
+	b=cbSPVt0FQUyxTZ/BncXeRqIPfyc8ZVAaTYM+10SW4oNT9fTkTWDkE8YxrkL8KdxEX
+	 uqhR3XwilG20H+zuzAG5xXBSR3QKFwCxYHC2VJaYguXCqzxOjDcP2+PHOY8M5hOyYC
+	 qB73P5jYZsJsVug+Ql5uMkzgfAVlBcopl6aROzntwLrdJi0PphC2PtBjFVQlo78AFH
+	 /kf51yWjTwC+WlcJqN+zT96zBfbT+t+p/cZIy4+ryAhIZrfwmswHlgS/GbF2l/oEXJ
+	 M6G1HOkN4jOcpNRDho7Lzx6GKNYLt7RvwMiRVYGf0ArqfKLnCFkZufbmJTndbVskDp
+	 GXuqb5hJ3Lvnw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: immersa.bartosz.chronowski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v3] jfs: validate dmap start before block map operations
-Message-ID: <7c3c4fb4-ccbd-486f-b087-6074364ee206@mail.kernel.org>
+Subject: [PATCH RFC v2] net/sched: taprio: fix hrtimer interrupt storm on small intervals
+Message-ID: <03dbde3b-8c45-46b6-8291-dd12bcc3120c@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,203 +38,195 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri, 24 Jul 2026 19:19:00 +0000 (UTC)
+Date: Fri, 24 Jul 2026 20:21:30 +0000 (UTC)
 
-A corrupted JFS filesystem image can cause a state where the block
-allocation map (bmap) and the dmap pages are out of sync. Specifically, if
-a dmap page's `dp->start` is corrupted, it can lead to a mismatch during
-block allocation or update operations. The block allocator calculates the
-returned block number based on `dp->start` (i.e., `dp->start +
-block_index`), while the bitmap update is derived from the block's relative
-position within the dmap. If `dp->start` does not match the expected start
-block number for that dmap's position in the bmap, the allocator may return
-a block number that is already in use (e.g., as an inode table block or
-metadata), while marking a completely different block as allocated. This
-mismatch leads to duplicate allocations. When a thread later attempts to
-lock this duplicate block (for example, during a directory btree split),
-`txLock()` detects a metapage conflict because the block is already locked
-for another purpose, triggering a kernel BUG:
+The taprio qdisc allows configuring extremely small intervals (e.g., 255
+ns) which can completely overwhelm the CPU when using software timers. When
+the interval is smaller than the time it takes to process the timer
+interrupt, the timer's expiration time is always in the past. This causes
+the hrtimer subsystem to continuously re-enqueue and fire the timer,
+leading to an interrupt storm that starves the CPU and triggers an RCU
+stall. While a 255 ns interval triggers this, the underlying issue is the
+overdue-absolute-deadline invariant where the timer is repeatedly scheduled
+in the past.
 
-kernel BUG at fs/jfs/jfs_txnmgr.c:836!
-Oops: invalid opcode: 0000 [#1] SMP KASAN NOPTI
-RIP: 0010:txLock+0x1cc3/0x1d10 fs/jfs/jfs_txnmgr.c:836
-Call Trace:
- <TASK>
- dtSplitRoot+0x38d/0x18a0 fs/jfs/jfs_dtree.c:1924
- dtSplitUp fs/jfs/jfs_dtree.c:990 [inline]
- dtInsert+0xeb2/0x5890 fs/jfs/jfs_dtree.c:868
- jfs_create+0x730/0xae0 fs/jfs/namei.c:138
- vfs_create+0x2c4/0x450 fs/namei.c:4202
- filename_mknodat+0x3e8/0x660 fs/namei.c:5181
-...
+To fix this, we split the logical schedule deadline (`end_time`) from the
+physical timer expiration (`expires`). In `advance_sched()`, we
+fast-forward the schedule to the current time by skipping full cycles using
+division, taking care not to overshoot the administrative schedule's base
+time (`admin->base_time`). To prevent softirq stalls, we bound the state
+work by capping the schedule advancement loop to 32 iterations. If we reach
+this limit and the logical deadline is still in the past, we fall back to
+requesting a later physical expiration relative to the timer queue's saved
+comparison time, rather than yielding the CPU. This ensures the physical
+timer queue can make progress.
 
-To fix this, validate that the `dp->start` of the dmap page matches the
-expected start block number before performing block map operations.
-Rejecting a mismatched start with `-EIO` prevents duplicate allocations
-before `txLock()` is reached.
-
+Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+a843f6ae2130a987d63b@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=a843f6ae2130a987d63b
-Link: https://syzkaller.appspot.com/ai_job?id=bdbf4b4d-3729-479d-89c3-0cee1fcde974
-To: <jfs-discussion@lists.sourceforge.net>
-To: "Dave Kleikamp" <shaggy@kernel.org>
-Cc: "Kees Cook" <kees@kernel.org>
+Reported-by: syzbot+f8850bc3986562f79619@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=f8850bc3986562f79619
+Link: https://syzkaller.appspot.com/ai_job?id=9ef6c8de-8e92-44a9-b075-955697b790a6
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jamal Hadi Salim" <jhs@mojatatu.com>
+To: "Jiri Pirko" <jiri@resnulli.us>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
+Cc: "Simon Horman" <horms@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Yun Zhou" <yun.zhou@windriver.com>
-Cc: "Zheng Yu" <zheng.yu@northwestern.edu>
 
 ---
-v3:
-- Renamed the patch to "jfs: validate dmap start before block map operations".
-- Simplified dbValidateDmap() to only validate that the dmap dp->start matches the expected start block number, removing unproven integrity checks.
-- Updated the commit description to explain the exact root cause of the selection/update mismatch and how validating dp->start prevents duplicate allocations before txLock() is reached.
-
 v2:
-- Replaced the approach of propagating errors from txLock() with proactive dmap validation.
-- Introduced dbValidateDmap() to check dmap page integrity (nblocks, nfree, start address, and tree structure).
-- Integrated dmap validation into dbFree(), dbUpdatePMap(), dbAlloc(), dbExtend(), dbAllocCtl(), dbAllocBottomUp(), and dbExtendFS().
-- Reverted return type changes for functions in jfs_dtree.c and jfs_xtree.c from the previous version.
-https://lore.kernel.org/all/ff86d803-d687-48f6-9cc2-f3d35b27a666@mail.kernel.org/T/
+- Removed the 1 microsecond admission policy for software taprio.
+- Reduced the loop iteration limit from 2048 to 32 to avoid softirq stalls.
+- Added handling for administrative schedules during fast-forwarding to avoid overshooting `admin->base_time`.
+- Split logical schedule deadline (`end_time`) and physical timer expiration (`expires`).
+- Updated the fallback mechanism to request a physical expiration 1 microsecond in the future relative to the current time rather than yielding the CPU.
+- Optimized gate close time calculation to only run once after the loop if not already calculated.
 
 v1:
-https://lore.kernel.org/all/9d2eba88-93bf-4f3c-a3b2-b554e1fffe80@mail.kernel.org/T/
+https://lore.kernel.org/all/bc6a8890-9230-489a-bbce-5c255c1ef01a@mail.kernel.org/T/
 ---
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index a841cf21d..f15954c1f 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -98,6 +98,9 @@ static int blkstol2(s64 nb);
- static int cntlz(u32 value);
- static int cnttz(u32 word);
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 299234a5f..8e8be568d 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -920,11 +920,16 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 	struct taprio_sched *q = container_of(timer, struct taprio_sched,
+ 					      advance_timer);
+ 	struct net_device *dev = qdisc_dev(q->root);
++	bool gate_close_time_calculated = false;
+ 	struct sched_gate_list *oper, *admin;
+ 	int num_tc = netdev_get_num_tc(dev);
++	ktime_t now = taprio_get_time(q);
+ 	struct sched_entry *entry, *next;
+ 	struct Qdisc *sch = q->root;
++	/* Small retry bound to avoid softirq stall */
++	int max_iter = 32;
+ 	ktime_t end_time;
++	ktime_t expires;
+ 	int tc;
  
-+static bool dbValidateDmap(struct super_block *sb, const struct dmap *dp,
-+			   s64 expected_start);
-+
- static int dbAllocDmapBU(struct bmap * bmp, struct dmap * dp, s64 blkno,
- 			 int nblocks);
- static int dbInitDmap(struct dmap * dp, s64 blkno, int nblocks);
-@@ -476,6 +479,12 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
- 		}
- 		dp = (struct dmap *) mp->data;
+ 	spin_lock(&q->current_entry_lock);
+@@ -948,46 +953,86 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 		next = list_first_entry(&oper->entries, struct sched_entry,
+ 					list);
+ 		end_time = next->end_time;
+-		goto first_run;
++		gate_close_time_calculated = true;
++		if (ktime_after(end_time, now))
++			goto first_run;
++		entry = next;
+ 	}
  
-+		if (!dbValidateDmap(ip->i_sb, dp, blkno & ~(s64)(BPERDMAP - 1))) {
-+			release_metapage(mp);
-+			IREAD_UNLOCK(ipbmap);
-+			return -EIO;
+-	if (should_restart_cycle(oper, entry)) {
+-		next = list_first_entry(&oper->entries, struct sched_entry,
+-					list);
+-		oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
+-						    oper->cycle_time);
+-	} else {
+-		next = list_next_entry(entry, list);
+-	}
++	do {
++		ktime_t limit = now;
+ 
+-	end_time = ktime_add_ns(entry->end_time, next->interval);
+-	end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
++		if (admin && ktime_before(admin->base_time, limit))
++			limit = admin->base_time;
+ 
+-	for (tc = 0; tc < num_tc; tc++) {
+-		if (next->gate_duration[tc] == oper->cycle_time)
+-			next->gate_close_time[tc] = KTIME_MAX;
+-		else
+-			next->gate_close_time[tc] = ktime_add_ns(entry->end_time,
+-								 next->gate_duration[tc]);
+-	}
++		if (oper->cycle_time && ktime_after(limit, oper->cycle_end_time)) {
++			s64 diff = ktime_sub(limit, oper->cycle_end_time);
++			s64 cycles = div64_s64(diff, oper->cycle_time) + 1;
+ 
+-	if (should_change_schedules(admin, oper, end_time)) {
+-		switch_schedules(q, &admin, &oper);
+-		/* After changing schedules, the next entry is the first one
+-		 * in the new schedule, with a pre-calculated end_time.
+-		 */
+-		next = list_first_entry(&oper->entries, struct sched_entry, list);
+-		end_time = next->end_time;
++			oper->cycle_end_time =
++				ktime_add_ns(oper->cycle_end_time,
++					     cycles * oper->cycle_time);
++			entry->end_time = ktime_add_ns(entry->end_time,
++						       cycles * oper->cycle_time);
 +		}
 +
- 		/* determine the number of blocks to be freed from
- 		 * this dmap.
- 		 */
-@@ -568,6 +577,13 @@ dbUpdatePMap(struct inode *ipbmap,
- 			if (mp == NULL)
- 				return -EIO;
- 			metapage_wait_for_io(mp);
++		if (should_restart_cycle(oper, entry)) {
++			next = list_first_entry(&oper->entries,
++						struct sched_entry, list);
++			oper->cycle_end_time =
++				ktime_add_ns(oper->cycle_end_time,
++					     oper->cycle_time);
++		} else {
++			next = list_next_entry(entry, list);
++		}
 +
-+			if (!dbValidateDmap(ipbmap->i_sb,
-+					    (struct dmap *) mp->data,
-+					    blkno & ~(s64)(BPERDMAP - 1))) {
-+				release_metapage(mp);
-+				return -EIO;
++		end_time = ktime_add_ns(entry->end_time, next->interval);
++		end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
++
++		if (should_change_schedules(admin, oper, end_time)) {
++			switch_schedules(q, &admin, &oper);
++			/* After changing schedules, the next entry is the first one
++			 * in the new schedule, with a pre-calculated end_time.
++			 */
++			next = list_first_entry(&oper->entries,
++						struct sched_entry, list);
++			end_time = next->end_time;
++			gate_close_time_calculated = true;
++		} else {
++			gate_close_time_calculated = false;
++		}
++
++		next->end_time = end_time;
++
++		if (ktime_after(end_time, now))
++			break;
++
++		entry = next;
++	} while (--max_iter > 0);
++
++	if (!gate_close_time_calculated) {
++		for (tc = 0; tc < num_tc; tc++) {
++			if (next->gate_duration[tc] == oper->cycle_time) {
++				next->gate_close_time[tc] = KTIME_MAX;
++			} else {
++				next->gate_close_time[tc] =
++					ktime_add_ns(entry->end_time,
++						     next->gate_duration[tc]);
 +			}
- 		}
- 		dp = (struct dmap *) mp->data;
- 
-@@ -886,6 +902,11 @@ int dbAlloc(struct inode *ip, s64 hint, s64 nblocks, s64 * results)
- 
- 		dp = (struct dmap *) mp->data;
- 
-+		if (!dbValidateDmap(ip->i_sb, dp, blkno & ~(s64)(BPERDMAP - 1))) {
-+			release_metapage(mp);
-+			goto read_unlock;
 +		}
+ 	}
+ 
+-	next->end_time = end_time;
+ 	taprio_set_budgets(q, oper, next);
+ 
+ first_run:
+ 	rcu_assign_pointer(q->current_entry, next);
+ 	spin_unlock(&q->current_entry_lock);
+ 
+-	hrtimer_set_expires(&q->advance_timer, end_time);
++	expires = end_time;
++	if (unlikely(max_iter == 0 && ktime_before(expires, now)))
++		expires = ktime_add_ns(now, NSEC_PER_USEC);
 +
- 		/* first, try to satisfy the allocation request with the
- 		 * blocks beginning at the hint.
- 		 */
-@@ -1118,6 +1139,12 @@ static int dbExtend(struct inode *ip, s64 blkno, s64 nblocks, s64 addnblocks)
++	hrtimer_set_expires(&q->advance_timer, expires);
  
- 	dp = (struct dmap *) mp->data;
- 
-+	if (!dbValidateDmap(ip->i_sb, dp, extblkno & ~(s64)(BPERDMAP - 1))) {
-+		release_metapage(mp);
-+		IREAD_UNLOCK(ipbmap);
-+		return -EIO;
-+	}
-+
- 	/* try to allocate the blocks immediately following the
- 	 * current allocation.
- 	 */
-@@ -1902,7 +1929,7 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
- 			return -EIO;
- 		dp = (struct dmap *) mp->data;
- 
--		if (dp->tree.budmin < 0) {
-+		if (!dbValidateDmap(bmp->db_ipbmap->i_sb, dp, blkno & ~(s64)(BPERDMAP - 1))) {
- 			release_metapage(mp);
- 			return -EIO;
- 		}
-@@ -1936,6 +1963,12 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
- 		}
- 		dp = (struct dmap *) mp->data;
- 
-+		if (!dbValidateDmap(bmp->db_ipbmap->i_sb, dp, b & ~(s64)(BPERDMAP - 1))) {
-+			release_metapage(mp);
-+			rc = -EIO;
-+			goto backout;
-+		}
-+
- 		/* the dmap better be all free.
- 		 */
- 		if (dp->tree.stree[ROOT] != L2BPERDMAP) {
-@@ -1993,6 +2026,11 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
- 		}
- 		dp = (struct dmap *) mp->data;
- 
-+		if (!dbValidateDmap(bmp->db_ipbmap->i_sb, dp, b & ~(s64)(BPERDMAP - 1))) {
-+			release_metapage(mp);
-+			continue;
-+		}
-+
- 		/* free the blocks is this dmap.
- 		 */
- 		if (dbFreeDmap(bmp, dp, b, BPERDMAP)) {
-@@ -2134,6 +2172,18 @@ static int dbAllocDmap(struct bmap * bmp, struct dmap * dp, s64 blkno,
- 	return (rc);
- }
- 
-+static bool dbValidateDmap(struct super_block *sb, const struct dmap *dp,
-+			   s64 expected_start)
-+{
-+	if (le64_to_cpu(dp->start) != expected_start) {
-+		jfs_error(sb, "corrupt dmap page: start %lld expected %lld\n",
-+			  (long long)le64_to_cpu(dp->start),
-+			  (long long)expected_start);
-+		return false;
-+	}
-+
-+	return true;
-+}
- 
- /*
-  * NAME:	dbFreeDmap()
-@@ -3308,6 +3358,12 @@ int dbAllocBottomUp(struct inode *ip, s64 blkno, s64 nblocks)
- 		}
- 		dp = (struct dmap *) mp->data;
- 
-+		if (!dbValidateDmap(ip->i_sb, dp, blkno & ~(s64)(BPERDMAP - 1))) {
-+			release_metapage(mp);
-+			IREAD_UNLOCK(ipbmap);
-+			return -EIO;
-+		}
-+
- 		/* determine the number of blocks to be allocated from
- 		 * this dmap.
- 		 */
+ 	rcu_read_lock();
+ 	__netif_schedule(sch);
 
 
-base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
+base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
