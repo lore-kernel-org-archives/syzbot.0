@@ -1,71 +1,72 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 816303DAAB5
-	for <syzbot@lists.linux.dev>; Fri, 24 Jul 2026 17:30:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FEED361656
+	for <syzbot@lists.linux.dev>; Fri, 24 Jul 2026 18:19:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784914234; cv=none; b=Mxenh4SesNrp1j7uR2JLORwZ4KZjnKsdE78bl7Ab523AWTQ8Pdco5Rmz/khw+lnqMPs/7Xt/MS5XXnOF+kC9nJnGSbzQ/CCDQl+u5Fh1/3zapy0GSfLBlM8UmMxs29qnT67OyW/E/blOvyQPHXPmLappgNIGAiYLhbHJfPSuiKg=
+	t=1784917154; cv=none; b=g//qvBbKFFNUqlgm7Vjl5sPEjzEPedWpEyc+ysq+vtwstHBW4nPSU3xnsMtyP7kWmVyEBVxhIMMSPcmgopQCpR4zRZCKBriCEivD2SP7zd4YjQ7K/JcdMye8WbJhuRznYLWCmxQ2fHyxvf8fkOQsE6aD1MO728+qwnJ1zipVXFI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784914234; c=relaxed/simple;
-	bh=8BUsiJ4uh9Qx0LPuXBVgbzQ8KjiIjsv56KSyDtqNNQw=;
+	s=arc-20240116; t=1784917154; c=relaxed/simple;
+	bh=VtGcqaBIlWKJrdEmcPy7YVveR8BZ1OvpqTa/JJnjhkI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MLF6RybDK01qbPTlLYEGJgFpyvTzlDdKC4eD1eDAlT/rTuk0difqhvz6Z54OqcsA5toJZM175UKJGb0ZCqoIGkV97nSnPwH3W8H7u04PE31FEGU7eUYJF0X41k5e9pQefuBQY27/IVnIrcHJIAchc7DWNMZqaU9oenYxQNHUhQA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GpdG1H7B; arc=none smtp.client-ip=209.85.221.50
+	 Content-Type:Content-Disposition:In-Reply-To; b=V2SHvt9/9V0LCP46EOyy8Q7EcbZxtvU4X+Bg2wiWCxKeWISy3Ui9ruXavZnk6qoxAq00Qy0lDdvkFP5k2CTBaqoHb+9xJr0vrG+8PlRMuUzhNIP9hHUYW/XXuc0YhiTF0sN7dD76/nY6q935MgnALuOsw/drvVzufjBD377Bmnw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Uajt8nM5; arc=none smtp.client-ip=209.85.128.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GpdG1H7B"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-472326ca506so554323f8f.2
-        for <syzbot@lists.linux.dev>; Fri, 24 Jul 2026 10:30:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Uajt8nM5"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4954dff6536so5511655e9.0
+        for <syzbot@lists.linux.dev>; Fri, 24 Jul 2026 11:19:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784914224; x=1785519024; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1784917151; x=1785521951; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=7Guam7TKBV5fgeurYYbuymip/i4vE8NqeZ+B1MEkxXI=;
-        b=GpdG1H7B1XlO5mh/4OnwlRgIUk8u4v/WL4uLfdzuC3wq7H1tQ4oY7mz/S6RuY0/W4D
-         itsoCcaVBmIhrPHDvk/kvZdnDyslp7rCXnyQR272xek4Hprk4P2J7CMlvu7S6qsJaIHY
-         Rmx/6FgvMETdy0/3KZjNor4j0v41VcPoyRphQXnc+Bc/HTtGSzTJLZVU6IVzlXTaceeY
-         mz6hYs4n0i1YEjFsT8ErI3LQbLXPpOYiMsfjmZwlek/jhYHmMaiNs2X1OJ5M0zAay1YP
-         6Gwmnp+3tL+Hzn+8GMLuVIW3bqUcYmiHiH60S6mBV/RWxMr1ej5gB5zr1S0ceBq428cf
-         Brlw==
+        bh=8KaD05WZyiD3P7ZaqeK2hKWmnWSxsGirg2dVnC5B0gY=;
+        b=Uajt8nM5+zWpZHxxBCn8kbH2Lx9BL2XtHMZoDi1IYmUFN8RWp3If4+9WvkBfwfRUiI
+         QcuqOHK3nq12NC9T38QnMi5dFaXyrnnidWJHBNOijegYIDuOTHEEuoO8DQ0UlDskgine
+         ZlUUdRyoeGzpCfNXXOsPJrpuAyNcZ4PKU+GV/akddPG/R5dsItdBb4TImCGVFfFE/o3Z
+         PI8ME2gckTMkOAQ/gGle2rLvHcRYFIiTWzyGv1nO7Mq6qw/N/0C8jQH5bnYoS4KANquM
+         pGVGZn+xwtR6JrauSYq0KkD+2NcxoZmv+cwecnMW2yKZ2TlLVE4VUq8PlUVaZvaPgtNP
+         Vsug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784914224; x=1785519024;
+        d=1e100.net; s=20251104; t=1784917151; x=1785521951;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=7Guam7TKBV5fgeurYYbuymip/i4vE8NqeZ+B1MEkxXI=;
-        b=hE8uShDxEbK6yT5keO6jAat8I55BxY+XPj1ACZ8vzYYhqhOsqzWwDk+O6ornQQIQ4U
-         BUyVtxsAfrq4b9FbBWmxabSa2cqk2s4gqxJC9MU9L/0Xw1Qwk3SXiE4v3QYla0yAWE13
-         umqZ+XDOyxY/WeR/+pV9XVWI9qjyQ+RZY4+bgGf/OuqieZfzzIkPVmmD3joinyVtPvLt
-         6A2jkTqPduiS6f0QLTXnFVS6PdblnTCvhCM/YRNJw77XnuMwYywH4//Ak2qkyno9wBZG
-         SNw2LDO6NUteCNweqC8sQ9iMZyH7SOKZ+z3WlLU7gKEM9ilnLvNSFCt4yLoahteFNzKp
-         2e/Q==
-X-Forwarded-Encrypted: i=1; AHgh+RrNerEsW+qFfp+JXsQVzgMyTlRGgMVd6PJkF+VzYkDoRmf24gWnqs2LWvd1Xfd7q+hdvxyf4Jw=@lists.linux.dev
-X-Gm-Message-State: AOJu0YxyLsN9ky+XgIKCtV0GmHe6FdnjshlzfnHfsyzykVeXyFC9aQ/P
-	BaHk1h1KMMzUE8g2r1zrTyp5SQaa834Wz4ExMajNTHcSRNTi9y0GQTpm5zb7JE05O/w=
-X-Gm-Gg: AR+sD12O8twYuihkSR6iUBiGOUVmCiXP0nPFmBuwnDU2y9m5oJLU4nw/u+oBSCjW5LL
-	TSCpjNIsi2Z0R8EHzDIWP9E+pIgGRU8E/eArmhPxYRPIxHhKO0x+jHZvZf637X6Z86csbnOm4Vw
-	X6b6yMKI/Hdm3oZ/xQpqcpk9M8NjcpvMKUzcbaOt/l9f6BW3oXaLkXed1/+CUw9r9HZ/pVH+1D0
-	vMgUMLirWZipofh51F9LBg5Vvr9YILzM79qYbaBERudr4sAuAroJmQsYlznGJJ0OlhJPlryLaGP
-	cxiQ5qDp8+MQzbq2S163uY7xuMU4I29TVud07VEzhAcM7MjZQjFXJ0VeQ5UE74MdDgGBjkN6qlP
-	qUxvFk+RXfyfnRy3GUygrbuzaVl7D40OBZ3KUKPw8A6X4o2hsR/sZL0nAZNH2aHWC2hHhtaJQgX
-	QzvRJ/dCLLQ7eklY88LPin0gdZE+OEV6bFK/bhBYM=
-X-Received: by 2002:a05:6000:26cd:b0:47f:9720:473f with SMTP id ffacd0b85a97d-47f972047a5mr4776092f8f.36.1784914223857;
-        Fri, 24 Jul 2026 10:30:23 -0700 (PDT)
+        bh=8KaD05WZyiD3P7ZaqeK2hKWmnWSxsGirg2dVnC5B0gY=;
+        b=i4awXGYCJMsrb99YIBh8GRZx2Jsk3cfY5WaYm1C0NolM09jH0fSLcf9NiyV3e4XIYe
+         a7H3CRz56ktlPI1w2ZxXgW5uGgFB+ImNTa5Oyvx4ekMCpBxOiTb5Pn04pf2bco/ETs1o
+         dmMTrmlCGgKoOsPapqFszWGCImjBUxd2p2cwCas+K0O+AptevlthU1QSdia0OsxFP9qI
+         CQEgtaXX75tPnkt0uG70bFwyo4w5911iLtuCvFD7KzgnXMCg4u+LL/KJNsCYgwbzg+SU
+         bvtKPpt3j1zmnI44FNbw7b//7NMwXUx8y4wndmrINNdWbsBa/7MerhNloWRlsvpeB+qG
+         krvg==
+X-Forwarded-Encrypted: i=1; AHgh+RpA2z6wbLtPpcz7692CYHcR9KHKl2+NrnsUw7G1Fa3bFEVGRm2pLyGLIzgbFIaSqtju2t27bJo=@lists.linux.dev
+X-Gm-Message-State: AOJu0YyPLR07f9lY59upo/RfcTJo/YTqGESWOODFJe4sD5znCVAn1UQL
+	tPclLXqlhsqtMW7V5HmToMDVJ5UdT1aRn33+EypuG60ALPvq+/oXghCY
+X-Gm-Gg: AR+sD10j+ZLLDSdFPTI2DmAi8nGAZeMZa3qlk/rvlRkIE8fM7CdEumvWTCWzlWMObvT
+	6aKt5pBQ2BoCocSxw9gyzZbxF7KHLbqpoVAr6aYMAiXOEvXZulons29NJZhvgzeVBBEVZKlukKW
+	jsgUWKKBg+2HA3DnOd5uGoQkQb2MTANh+5o25Wgy3aLlwMVxTSdcm87D/Z+MlnXv+lJYiwKwO1a
+	qGX43p6b2VmZa0w+k+j0uKB1qaQJfUC8AkczzZIuoKfdU0A9nazZateixl899MMSDlftWz96YNM
+	plocp8WRkfUt7dDfjmGYet/WKRzF9iS0xr/olPd7c+CFrGYP0MMj/s2WANHNMHz899YAuEC2uAC
+	7YvM78nac4iMeC5rc8LizSDweEBvP/Oo66k5BZdU48JvT2NvkAfczz28nycnxdEFhjPnCnTMdAe
+	0hyhzNsYORZ0z/enwcTOMfGMRrfhCa
+X-Received: by 2002:a05:600c:6d83:b0:492:6447:7a7f with SMTP id 5b1f17b1804b1-49573cbf8ccmr60092745e9.6.1784917150445;
+        Fri, 24 Jul 2026 11:19:10 -0700 (PDT)
 Received: from localhost ([37.30.44.117])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f85a2573csm25159662f8f.0.2026.07.24.10.30.23
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4957bfc2ff2sm59436875e9.4.2026.07.24.11.19.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jul 2026 10:30:23 -0700 (PDT)
-Date: Fri, 24 Jul 2026 19:30:22 +0200
+        Fri, 24 Jul 2026 11:19:10 -0700 (PDT)
+Date: Fri, 24 Jul 2026 20:19:09 +0200
 From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
 To: syzbot <syzbot@kernel.org>
 Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC v2] jfs: add dmap validation to prevent txLock BUG
-Message-ID: <ypwoxwe3m5o7xhz5zb3ulrxjof7gt35dcnfltdy2uepvtppko4@66mehlfyf4tg>
-References: <ff86d803-d687-48f6-9cc2-f3d35b27a666@mail.kernel.org>
+Subject: Re: [PATCH RFC] net/sched: taprio: fix hrtimer interrupt storm on
+ small intervals
+Message-ID: <bww2koc7edy644if3re575zlrfxfk545jxj5ghwhg6kzd6pa5l@2qdzo6zgu72y>
+References: <bc6a8890-9230-489a-bbce-5c255c1ef01a@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -74,451 +75,276 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ff86d803-d687-48f6-9cc2-f3d35b27a666@mail.kernel.org>
+In-Reply-To: <bc6a8890-9230-489a-bbce-5c255c1ef01a@mail.kernel.org>
 
-The v2 direction is close, but the patch still needs changes before it is
-ready for upstream review. Please keep the expected-dmap-start check as the
-basis of v3; changing txLock() is not the right fix.
+The v1 patch identifies the correct causal function, and arithmetic catch-up in
+advance_sched() is the right direction. The exact-base accepted-1000-ns test
+pair supports that mechanism: the unpatched kernel reproduced the timer/RCU
+stall class on 4/4 machines, while the patched kernel produced no crash on
+4/4 machines. However, the exact 255 ns no-repro is not evidence for catch-up,
+because the new parser check rejects that input before the timer path runs.
+The patch is not ready: the parser floor has the wrong scope, the capped path
+performs too much repeated state work in hardirq context, an overdue
+administrative transition is not caught up arithmetically, and the description
+overstates what the physical retry deadline guarantees.
 
-Describe the exact root cause.
-The selected image has one dmap for a 3788-block map. That dmap must start at
-block 0, but dp->start is 1792. dbAllocDmapLev() selects leaf 1, offset 12 and
-derives block 1836 from the forged start. dbAllocBits() maps block 1836 using
-its dmap-relative low bits and updates word 57 instead of the selected word 1.
-Word 1 therefore remains free and block 1836 can be returned again. txLock()
-only detects that duplicate allocation later.
+Please address these points in the next version:
 
-The commit message should explain this selection/update mismatch. It should
-not describe an unproven race or claim generic dmap integrity checking.
+1. Remove the NSEC_PER_USEC admission checks from fill_sched_entry() and
+parse_taprio_schedule(). They are not required to fix an overdue timer, reject
+the exact reproducer before it exercises the catch-up path, and also reject
+TXTIME-assist configurations even though that mode does not use
+advance_sched(). The existing link-speed-based frame-duration validation
+should remain unchanged.
 
-Narrow the helper to the proven invariant.
-The expected aligned start comparison is the causal fix and is constant-time.
-Please make the helper boolean (and preferably const-correct) unless it will
-return distinct errors that callers propagate. For example, its contract can
-simply be "does this loaded dmap have the expected start?"
+2. Preserve two distinct time contracts. The logical deadline in the selected
+schedule entry records where catch-up must resume. The physical hrtimer expiry
+controls when the callback may run again. On every HRTIMER_RESTART return, the
+physical expiry must be later than the hrtimer queue's saved comparison time
+for the current run, so __hrtimer_run_queues() cannot replay the callback
+indefinitely against one fixed time snapshot. A TAPRIO-clock sample taken
+inside the callback, after the queue snapshot, plus a positive retry interval
+can establish that ordering. It is not necessary to claim that the expiry
+will still be in the future when the callback finally returns; time can pass
+during callback work.
 
-The current nblocks, tree.budmin, and stree[ROOT] checks turn the helper into a
-partial generic validator. stree[ROOT] does not validate all leaves, and
-requiring tree.budmin == BUDMIN makes the later tree.budmin < 0 branch
-unreachable. Either remove those unrelated predicates from this fix or provide
-a separately justified, complete validation contract and audit all callers.
+3. Keep the logical schedule state coherent independently of that physical
+retry. The published current_entry, its logical end_time, finite
+gate_close_time values, cycle_end_time, budgets, and the oper/admin identity
+must describe the same logical schedule phase. If a bounded callback stops
+before reaching current time, retain that logical deadline so the next
+callback resumes from it; do not overwrite it with the synthetic physical
+retry deadline. Arm the hrtimer with the separate physical expiry described
+above and document this split explicitly.
 
-Reconsider dbExtendFS().
-The new dbExtendFS() call is broader than the allocation bug. If it remains,
-validate the old partial-dmap extent before dbInitDmap() adds blocks, including
-that the existing nblocks matches blkno - expected_start. Otherwise omit the
-dbExtendFS() change from this minimal fix and handle extension hardening
-separately.
+4. Avoid replaying up to 2048 gate and per-TC budget transitions under
+current_entry_lock. First skip complete operational cycles arithmetically only
+up to the earlier of current time and a pending administrative base time.
+When the administrative boundary is due, promote it once, then position the
+new operational schedule arithmetically. Within the remaining cycle, locate
+the selected entry without repeatedly publishing or recalculating budgets for
+intermediate entries; update gate timing, budgets, and current_entry only for
+the final logical state. If list traversal still needs a retry bound, make it
+small and documented, retain the resumable logical state, and use the separate
+physical retry contract from points 2 and 3.
 
-Preserve fail-closed error handling and clean unwind.
-A malformed on-disk dmap should use jfs_error() and return -EIO; a warning
-alone is too weak for corrupted filesystem metadata. Replace the generic
-"error in block map" text with a dmap-specific message that includes the
-observed and expected start.
+5. Update the description accordingly. The fallback does not "yield the CPU";
+it requests a later physical expiration relative to the timer queue's saved
+comparison time. Describe the logical/physical deadline split, the bounded
+state work, and administrative-schedule handling. Do not present a
+one-microsecond admission policy as the causal fix. Keep the distinction
+between the 255 ns trigger and the underlying overdue-absolute-deadline
+invariant.
 
-The new exits that own an IREAD lock and metapage currently release both.
-Preserve those balanced paths. Callers that do not own an IREAD lock must not
-gain a matching unlock. No allocation, reference-transfer, quota, or
-transaction ownership change is needed.
+The existing Fixes tag and proposed upstream recipient set are reasonable.
 
-Remove unrelated changes.
-Please remove the jfs_dtree.c blank-line deletion, the jfs_xtree.c comment
-reindentation, incidental spacing churn, and the now-unreachable budmin branch.
-They are unrelated to the defect and make the review harder.
+Please include focused coverage for the following state and mode boundaries in
+the revised version: the exact 255 ns input must remain accepted so the
+catch-up path is exercised; a long-lived small-interval schedule must be
+checked for CPU and hardirq behavior rather than only repeated short runs; an
+actually overdue administrative schedule must be promoted and caught up;
+multi-entry wrap must be covered; supported clock IDs and forward clock
+movement must be exercised; TXTIME-assist acceptance and normal on-time
+behavior must remain unchanged; and default and strict checkpatch must be
+clean.
 
-Correct the description and metadata.
-A suitable subject would be along the lines of:
-
-jfs: validate dmap start before block map operations
-
-The description should state that the returned block is derived from
-dp->start, while the bitmap update is derived from the block's relative
-position, and that rejecting a mismatched start with -EIO prevents duplicate
-allocation before txLock() is reached.
-
-For the eventual upstream submission, the maintainer-derived recipients are:
-
-To: Dave Kleikamp shaggy@kernel.org
-Cc: jfs-discussion@lists.sourceforge.net
-Cc: linux-kernel@vger.kernel.org
-
-Please remove torvalds@ppc970.osdl.org and unrelated recipients unless there
-is a specific review reason for them.
-
-Please omit:
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-
-That initial Git import proves only that the code already existed; it does not
-prove that the import introduced this trust defect. Add a Fixes tag only if
-the introducing change can be established from history. A human submitter
-must add Signed-off-by. Assisted-by is acceptable when it accurately records
-the tooling and contribution.
-
-Verification needed for v3.
-Please provide:
-
-clean default and strict checkpatch results for the final patch;
-a JFS build at the stated base and a current-mainline forward check;
-an exact baseline/patched run of the reported C reproducer;
-a malformed-image result showing -EIO without the txLock() BUG;
-valid JFS allocation/free coverage;
-a partial-dmap filesystem-extension regression if dbExtendFS() remains;
-confirmation that no full dmap tree/bitmap scan was added to hot paths.
-For v2, the applied diff passes default checkpatch and has three strict checks:
-one unbalanced-braces advisory and two line-ending-with-'(' advisories. I have
-not run build or runtime validation for v2.
-
-With those focused changes, this remains a revision of the v2 approach rather
-than a rewrite from scratch
-
-On Thu, Jul 16, 2026 at 03:23:34AM +0000, syzbot wrote:
-> A corrupted JFS filesystem image can cause a state where the block
-> allocation map (bmap) and the inode map are out of sync. Specifically, a
-> block can be incorrectly marked as free in the bmap while it is actually in
-> use (e.g., as an inode table block). This inconsistency leads to a BUG() in
-> txLock() when a thread attempts to allocate the block for a directory btree
-> split while it is already locked by another process for a different
-> purpose.
+On Thu, Jul 09, 2026 at 12:33:55PM +0000, syzbot wrote:
+> The taprio qdisc allows configuring extremely small intervals (e.g., 255
+> ns) which are valid for hardware offload but completely overwhelm the CPU
+> when using software timers. When the interval is smaller than the time it
+> takes to process the timer interrupt, the timer's expiration time is always
+> in the past. This causes the hrtimer subsystem to continuously re-enqueue
+> and fire the timer, leading to an interrupt storm that starves the CPU and
+> triggers an RCU stall:
 > 
-> The crash manifests in txLock() as it detects a metapage conflict, but
-> txLock() is merely the sink for the underlying corruption. The root cause
-> is the lack of validation when reading dmap pages from the block map.
+> rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+> rcu: 	1-...!: (1 GPs behind) idle=9714/0/0x1 softirq=132447/132447 fqs=1
+> rcu: 	(detected by 0, t=10505 jiffies, g=152477, q=510 ncpus=2)
+> rcu: rcu_preempt kthread starved for 10501 jiffies! g152477 f0x0
+> RCU_GP_WAIT_FQS(5) ->state=0x0 ->cpu=0
+> rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now
+> expected behavior.
 > 
-> ------------[ cut here ]------------
-> kernel BUG at fs/jfs/jfs_txnmgr.c:836!
-> Oops: invalid opcode: 0000 [#1] SMP KASAN NOPTI
-> CPU: 1 UID: 0 PID: 5785 Comm: syz.0.124 Not tainted syzkaller #1
-> PREEMPT(full)
-> RIP: 0010:txLock+0x1cc3/0x1d10 fs/jfs/jfs_txnmgr.c:836
-> Call Trace:
->  <TASK>
->  dtSplitRoot+0x38d/0x18a0 fs/jfs/jfs_dtree.c:1924
->  dtSplitUp fs/jfs/jfs_dtree.c:990 [inline]
->  dtInsert+0xeb2/0x5890 fs/jfs/jfs_dtree.c:868
->  jfs_create+0x730/0xae0 fs/jfs/namei.c:138
->  vfs_create+0x2c4/0x450 fs/namei.c:4202
-> ...
+> To fix this, implement two strategies. First, enforce sensible minimums in
+> software mode by rejecting intervals and cycle times smaller than
+> NSEC_PER_USEC (1 microsecond) when hardware offload is not enabled. Second,
+> prevent timer stalls in advance_sched() by fast-forwarding the schedule to
+> the current time instead of blindly restarting the timer in the past. This
+> is done efficiently by skipping full cycles using division, and then
+> looping through the remaining entries. To prevent the loop itself from
+> causing a stall, cap the iterations at 2048 and yield the CPU if necessary
+> by setting the timer to fire 1 microsecond in the future.
 > 
-> This patch introduces dbValidateDmap() to verify the integrity of dmap
-> structures upon access. It checks for valid block counts, free block
-> counts, consistent start addresses, and internal tree metadata (height,
-> leafs, etc.). If validation fails, the filesystem is marked as corrupted
-> with jfs_error() and -EIO is returned to the caller, preventing the
-> corruption from reaching the transaction manager.
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-> Reported-by: syzbot+a843f6ae2130a987d63b@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=a843f6ae2130a987d63b
-> Link: https://syzkaller.appspot.com/ai_job?id=8dc49502-691a-48e9-907b-7e005180b8b2
-> To: <jfs-discussion@lists.sourceforge.net>
-> To: "Dave Kleikamp" <shaggy@kernel.org>
-> To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
-> Cc: "Arnd Bergmann" <arnd@arndb.de>
-> Cc: "Christian Brauner (Amutable)" <brauner@kernel.org>
-> Cc: "Kees Cook" <kees@kernel.org>
+> Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
+> Assisted-by: Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+f8850bc3986562f79619@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=f8850bc3986562f79619
+> Link: https://syzkaller.appspot.com/ai_job?id=4e81d0c1-77be-4527-8698-9eadc019d766
+> To: "David S. Miller" <davem@davemloft.net>
+> To: "Eric Dumazet" <edumazet@google.com>
+> To: "Jamal Hadi Salim" <jhs@mojatatu.com>
+> To: "Jiri Pirko" <jiri@resnulli.us>
+> To: "Jakub Kicinski" <kuba@kernel.org>
+> To: <netdev@vger.kernel.org>
+> To: "Paolo Abeni" <pabeni@redhat.com>
+> To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
+> Cc: "Simon Horman" <horms@kernel.org>
 > Cc: <linux-kernel@vger.kernel.org>
-> Cc: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
-> Cc: "Yun Zhou" <yun.zhou@windriver.com>
-> Cc: "Zheng Yu" <zheng.yu@northwestern.edu>
 > 
 > ---
-> v2:
-> - Replaced the approach of propagating errors from txLock() with proactive dmap validation.
-> - Introduced dbValidateDmap() to check dmap page integrity (nblocks, nfree, start address, and tree structure).
-> - Integrated dmap validation into dbFree(), dbUpdatePMap(), dbAlloc(), dbExtend(), dbAllocCtl(), dbAllocBottomUp(), and dbExtendFS().
-> - Reverted return type changes for functions in jfs_dtree.c and jfs_xtree.c from the previous version.
-> 
-> v1:
-> https://lore.kernel.org/all/9d2eba88-93bf-4f3c-a3b2-b554e1fffe80@mail.kernel.org/T/
-> ---
-> diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-> index a841cf21d..66a3d5416 100644
-> --- a/fs/jfs/jfs_dmap.c
-> +++ b/fs/jfs/jfs_dmap.c
-> @@ -98,6 +98,8 @@ static int blkstol2(s64 nb);
->  static int cntlz(u32 value);
->  static int cnttz(u32 word);
->  
-> +static int dbValidateDmap(struct dmap *dp, s64 dmap_blkno);
-> +
->  static int dbAllocDmapBU(struct bmap * bmp, struct dmap * dp, s64 blkno,
->  			 int nblocks);
->  static int dbInitDmap(struct dmap * dp, s64 blkno, int nblocks);
-> @@ -476,6 +478,13 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
->  		}
->  		dp = (struct dmap *) mp->data;
->  
-> +		if (dbValidateDmap(dp, blkno & ~(s64)(BPERDMAP - 1))) {
-> +			jfs_error(ip->i_sb, "error in block map\n");
-> +			release_metapage(mp);
-> +			IREAD_UNLOCK(ipbmap);
-> +			return -EIO;
-> +		}
-> +
->  		/* determine the number of blocks to be freed from
->  		 * this dmap.
->  		 */
-> @@ -563,13 +572,20 @@ dbUpdatePMap(struct inode *ipbmap,
->  				write_metapage(mp);
->  			}
->  
-> -			mp = read_metapage(bmp->db_ipbmap, lblkno, PSIZE,
-> -					   0);
-> +			mp = read_metapage(bmp->db_ipbmap, lblkno, PSIZE, 0);
->  			if (mp == NULL)
->  				return -EIO;
->  			metapage_wait_for_io(mp);
-> -		}
-> -		dp = (struct dmap *) mp->data;
-> +
-> +			dp = (struct dmap *)mp->data;
-> +
-> +			if (dbValidateDmap(dp, blkno & ~(s64)(BPERDMAP - 1))) {
-> +				jfs_error(ipbmap->i_sb, "error in block map\n");
-> +				release_metapage(mp);
-> +				return -EIO;
-> +			}
-> +		} else
-> +			dp = (struct dmap *)mp->data;
->  
->  		/* determine the bit number and word within the dmap of
->  		 * the starting block.  also determine how many blocks
-> @@ -884,7 +900,13 @@ int dbAlloc(struct inode *ip, s64 hint, s64 nblocks, s64 * results)
->  		if (mp == NULL)
->  			goto read_unlock;
->  
-> -		dp = (struct dmap *) mp->data;
-> +		dp = (struct dmap *)mp->data;
-> +
-> +		if (dbValidateDmap(dp, blkno & ~(s64)(BPERDMAP - 1))) {
-> +			jfs_error(ip->i_sb, "error in block map\n");
-> +			release_metapage(mp);
-> +			goto read_unlock;
-> +		}
->  
->  		/* first, try to satisfy the allocation request with the
->  		 * blocks beginning at the hint.
-> @@ -1118,6 +1140,13 @@ static int dbExtend(struct inode *ip, s64 blkno, s64 nblocks, s64 addnblocks)
->  
->  	dp = (struct dmap *) mp->data;
->  
-> +	if (dbValidateDmap(dp, extblkno & ~(s64)(BPERDMAP - 1))) {
-> +		jfs_error(ip->i_sb, "error in block map\n");
-> +		release_metapage(mp);
-> +		IREAD_UNLOCK(ipbmap);
-> +		return -EIO;
-> +	}
-> +
->  	/* try to allocate the blocks immediately following the
->  	 * current allocation.
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index 299234a5f..910de14c4 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -944,46 +944,83 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+>  	 * entry of all schedules are pre-calculated during the
+>  	 * schedule initialization.
 >  	 */
-> @@ -1900,7 +1929,13 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
->  		mp = read_metapage(bmp->db_ipbmap, lblkno, PSIZE, 0);
->  		if (mp == NULL)
->  			return -EIO;
-> -		dp = (struct dmap *) mp->data;
-> +		dp = (struct dmap *)mp->data;
-> +
-> +		if (dbValidateDmap(dp, blkno & ~(s64)(BPERDMAP - 1))) {
-> +			jfs_error(bmp->db_ipbmap->i_sb, "error in block map\n");
-> +			release_metapage(mp);
-> +			return -EIO;
-> +		}
->  
->  		if (dp->tree.budmin < 0) {
->  			release_metapage(mp);
-> @@ -1934,7 +1969,14 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
->  			rc = -EIO;
->  			goto backout;
->  		}
-> -		dp = (struct dmap *) mp->data;
-> +		dp = (struct dmap *)mp->data;
-> +
-> +		if (dbValidateDmap(dp, b & ~(s64)(BPERDMAP - 1))) {
-> +			jfs_error(bmp->db_ipbmap->i_sb, "error in block map\n");
-> +			release_metapage(mp);
-> +			rc = -EIO;
-> +			goto backout;
-> +		}
->  
->  		/* the dmap better be all free.
->  		 */
-> @@ -1973,12 +2015,11 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
->  	 * we fail in backing out the allocation, we'll mark the file
->  	 * system to indicate that blocks have been leaked.
->  	 */
-> -      backout:
-> +backout:
->  
->  	/* try to backout the allocations dmap by dmap.
->  	 */
-> -	for (n = nblocks - n, b = blkno; n > 0;
-> -	     n -= BPERDMAP, b += BPERDMAP) {
-> +	for (n = nblocks - n, b = blkno; n > 0; n -= BPERDMAP, b += BPERDMAP) {
->  		/* get the buffer for this dmap.
->  		 */
->  		lblkno = BLKTODMAP(b, bmp->db_l2nbperpage);
-> @@ -1991,7 +2032,13 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
->  				  "I/O Error: Block Leakage\n");
->  			continue;
->  		}
-> -		dp = (struct dmap *) mp->data;
-> +		dp = (struct dmap *)mp->data;
-> +
-> +		if (dbValidateDmap(dp, b & ~(s64)(BPERDMAP - 1))) {
-> +			jfs_error(bmp->db_ipbmap->i_sb, "error in block map\n");
-> +			release_metapage(mp);
-> +			continue;
-> +		}
->  
->  		/* free the blocks is this dmap.
->  		 */
-> @@ -2134,6 +2181,34 @@ static int dbAllocDmap(struct bmap * bmp, struct dmap * dp, s64 blkno,
->  	return (rc);
->  }
->  
-> +static int dbValidateDmap(struct dmap *dp, s64 dmap_blkno)
-> +{
-> +	struct dmaptree *tp = &dp->tree;
-> +
-> +	if (le32_to_cpu(dp->nblocks) == 0 ||
-> +	    le32_to_cpu(dp->nblocks) > BPERDMAP)
-> +		return -EIO;
-> +
-> +	if (le32_to_cpu(dp->nfree) > le32_to_cpu(dp->nblocks))
-> +		return -EIO;
-> +
-> +	if (le64_to_cpu(dp->start) != dmap_blkno)
-> +		return -EIO;
-> +
-> +	if (le32_to_cpu(tp->nleafs) != LPERDMAP ||
-> +	    le32_to_cpu(tp->l2nleafs) != L2LPERDMAP ||
-> +	    le32_to_cpu(tp->leafidx) != LEAFIND ||
-> +	    le32_to_cpu(tp->height) != 4 || tp->budmin != BUDMIN)
-> +		return -EIO;
-> +
-> +	if (tp->stree[ROOT] < NOFREE || tp->stree[ROOT] > L2BPERDMAP)
-> +		return -EIO;
-> +
-> +	if (le32_to_cpu(dp->nfree) == 0 && tp->stree[ROOT] != NOFREE)
-> +		return -EIO;
-> +
-> +	return 0;
-> +}
->  
->  /*
->   * NAME:	dbFreeDmap()
-> @@ -3308,6 +3383,13 @@ int dbAllocBottomUp(struct inode *ip, s64 blkno, s64 nblocks)
->  		}
->  		dp = (struct dmap *) mp->data;
->  
-> +		if (dbValidateDmap(dp, blkno & ~(s64)(BPERDMAP - 1))) {
-> +			jfs_error(ip->i_sb, "error in block map\n");
-> +			release_metapage(mp);
-> +			IREAD_UNLOCK(ipbmap);
-> +			return -EIO;
-> +		}
-> +
->  		/* determine the number of blocks to be allocated from
->  		 * this dmap.
->  		 */
-> @@ -3643,22 +3725,33 @@ int dbExtendFS(struct inode *ipbmap, s64 blkno,	s64 nblocks)
->  				 */
->  				if ((n = blkno & (BPERDMAP - 1))) {
->  					/* read in dmap page: */
-> -					mp = read_metapage(ipbmap, p,
-> -							   PSIZE, 0);
-> +					mp = read_metapage(ipbmap, p, PSIZE, 0);
->  					if (mp == NULL)
->  						goto errout;
-> +
-> +					dp = (struct dmap *)mp->data;
-> +					if (dbValidateDmap(
-> +						    dp,
-> +						    blkno & ~(s64)(BPERDMAP -
-> +								   1))) {
-> +						jfs_error(
-> +							ipbmap->i_sb,
-> +							"error in block map\n");
-> +						release_metapage(mp);
-> +						goto errout;
-> +					}
-> +
->  					n = min(nblocks, (s64)BPERDMAP - n);
->  				} else {
->  					/* assign/init dmap page */
-> -					mp = read_metapage(ipbmap, p,
-> -							   PSIZE, 0);
-> +					mp = read_metapage(ipbmap, p, PSIZE, 0);
->  					if (mp == NULL)
->  						goto errout;
->  
-> +					dp = (struct dmap *)mp->data;
->  					n = min_t(s64, nblocks, BPERDMAP);
->  				}
->  
-> -				dp = (struct dmap *) mp->data;
->  				*l0leaf = dbInitDmap(dp, blkno, n);
->  
->  				bmp->db_nfree += n;
-> diff --git a/fs/jfs/jfs_dtree.c b/fs/jfs/jfs_dtree.c
-> index 8ce6e4458..d89bda9ee 100644
-> --- a/fs/jfs/jfs_dtree.c
-> +++ b/fs/jfs/jfs_dtree.c
-> @@ -3773,7 +3773,6 @@ static void dtInsertEntry(dtpage_t * p, int index, struct component_name * key,
->  	++p->header.nextindex;
->  }
->  
+> -	if (unlikely(!entry || entry->end_time == oper->base_time)) {
+> -		next = list_first_entry(&oper->entries, struct sched_entry,
+> -					list);
+> -		end_time = next->end_time;
+> -		goto first_run;
+> -	}
 > -
->  /*
->   *	dtMoveEntry()
->   *
-> diff --git a/fs/jfs/jfs_xtree.c b/fs/jfs/jfs_xtree.c
-> index 28c3cf960..859439d57 100644
-> --- a/fs/jfs/jfs_xtree.c
-> +++ b/fs/jfs/jfs_xtree.c
-> @@ -1730,10 +1730,10 @@ int xtUpdate(tid_t tid, struct inode *ip, xad_t * nxad)
->  		if (IS_ERR(p))
->  			return PTR_ERR(p);
->  		/*
-> -		 * if leaf root has been split, original root has been
-> -		 * copied to new child page, i.e., original entry now
-> -		 * resides on the new child page;
+> -	if (should_restart_cycle(oper, entry)) {
+> -		next = list_first_entry(&oper->entries, struct sched_entry,
+> -					list);
+> -		oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
+> -						    oper->cycle_time);
+> -	} else {
+> -		next = list_next_entry(entry, list);
+> -	}
+> +	int max_iter = 2048;
+> +	ktime_t now = taprio_get_time(q);
+>  
+> -	end_time = ktime_add_ns(entry->end_time, next->interval);
+> -	end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
+> +	do {
+> +		if (unlikely(!entry || entry->end_time == oper->base_time)) {
+> +			next = list_first_entry(&oper->entries,
+> +						struct sched_entry, list);
+> +			end_time = next->end_time;
+> +			goto first_run;
+> +		}
+>  
+> -	for (tc = 0; tc < num_tc; tc++) {
+> -		if (next->gate_duration[tc] == oper->cycle_time)
+> -			next->gate_close_time[tc] = KTIME_MAX;
+> -		else
+> -			next->gate_close_time[tc] = ktime_add_ns(entry->end_time,
+> -								 next->gate_duration[tc]);
+> -	}
+> +		if (should_restart_cycle(oper, entry)) {
+> +			next = list_first_entry(&oper->entries,
+> +						struct sched_entry, list);
+> +			oper->cycle_end_time = ktime_add_ns(
+> +				oper->cycle_end_time, oper->cycle_time);
+> +		} else {
+> +			next = list_next_entry(entry, list);
+> +		}
+>  
+> -	if (should_change_schedules(admin, oper, end_time)) {
+> -		switch_schedules(q, &admin, &oper);
+> -		/* After changing schedules, the next entry is the first one
+> -		 * in the new schedule, with a pre-calculated end_time.
 > -		 */
-> +			 * if leaf root has been split, original root has been
-> +			 * copied to new child page, i.e., original entry now
-> +			 * resides on the new child page;
+> -		next = list_first_entry(&oper->entries, struct sched_entry, list);
+> -		end_time = next->end_time;
+> -	}
+> +		end_time = ktime_add_ns(entry->end_time, next->interval);
+> +		end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
+> +
+> +		for (tc = 0; tc < num_tc; tc++) {
+> +			if (next->gate_duration[tc] == oper->cycle_time)
+> +				next->gate_close_time[tc] = KTIME_MAX;
+> +			else
+> +				next->gate_close_time[tc] =
+> +					ktime_add_ns(entry->end_time,
+> +						     next->gate_duration[tc]);
+> +		}
+> +
+> +		if (should_change_schedules(admin, oper, end_time)) {
+> +			switch_schedules(q, &admin, &oper);
+> +			/* After changing schedules, the next entry is the first one
+> +			 * in the new schedule, with a pre-calculated end_time.
 > +			 */
->  		if (p->header.flag & BT_INTERNAL) {
->  			ASSERT(p->header.nextindex ==
->  			       cpu_to_le16(XTENTRYSTART + 1));
-> @@ -2310,8 +2310,8 @@ s64 xtTruncate(tid_t tid, struct inode *ip, s64 newsize, int flag)
->  		goto getChild;
+> +			next = list_first_entry(&oper->entries,
+> +						struct sched_entry, list);
+> +			end_time = next->end_time;
+> +		}
 >  
->  	/*
-> -	 *	leaf page
-> -	 */
-> +		 *	leaf page
-> +		 */
->  	freed = 0;
+> -	next->end_time = end_time;
+> -	taprio_set_budgets(q, oper, next);
+> +		next->end_time = end_time;
+> +		taprio_set_budgets(q, oper, next);
 >  
->  	/* does region covered by leaf page precede Teof ? */
-> @@ -2605,8 +2605,8 @@ s64 xtTruncate(tid_t tid, struct inode *ip, s64 newsize, int flag)
+>  first_run:
+> +		if (ktime_after(end_time, now))
+> +			break;
+> +
+> +		if (!admin && ktime_before(end_time, now)) {
+> +			s64 diff = ktime_sub(now, end_time);
+> +			s64 cycles = div64_s64(diff, oper->cycle_time);
+> +			if (cycles > 0) {
+> +				oper->cycle_end_time =
+> +					ktime_add_ns(oper->cycle_end_time,
+> +						     cycles * oper->cycle_time);
+> +				end_time = ktime_add_ns(
+> +					end_time, cycles * oper->cycle_time);
+> +				next->end_time = end_time;
+> +				for (tc = 0; tc < num_tc; tc++) {
+> +					if (next->gate_close_time[tc] !=
+> +					    KTIME_MAX)
+> +						next->gate_close_time
+> +							[tc] = ktime_add_ns(
+> +							next->gate_close_time[tc],
+> +							cycles *
+> +								oper->cycle_time);
+> +				}
+> +			}
+> +		}
+> +
+> +		entry = next;
+> +	} while (--max_iter > 0);
+> +
+> +	if (max_iter == 0)
+> +		end_time = ktime_add_ns(now, NSEC_PER_USEC);
+> +
+>  	rcu_assign_pointer(q->current_entry, next);
+>  	spin_unlock(&q->current_entry_lock);
+>  
+> @@ -1061,6 +1098,13 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
+>  		return -EINVAL;
 >  	}
 >  
->  	/*
-> -	 * parent page become empty: free the page
-> -	 */
-> +		 * parent page become empty: free the page
-> +		 */
->  	if (index == XTENTRYSTART) {
->  		if (log) {	/* COMMIT_PWMAP */
->  			/* txCommit() with tlckFREE:
+> +	if (!FULL_OFFLOAD_IS_ENABLED(q->flags) && interval < NSEC_PER_USEC) {
+> +		NL_SET_ERR_MSG(
+> +			extack,
+> +			"Invalid interval for software taprio, must be at least 1 us");
+> +		return -EINVAL;
+> +	}
+> +
+>  	entry->interval = interval;
+>  
+>  	return 0;
+> @@ -1171,6 +1215,13 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+>  		return -EINVAL;
+>  	}
+>  
+> +	if (!FULL_OFFLOAD_IS_ENABLED(q->flags) &&
+> +	    new->cycle_time < NSEC_PER_USEC) {
+> +		NL_SET_ERR_MSG(extack,
+> +			       "'cycle_time' is too small for software taprio");
+> +		return -EINVAL;
+> +	}
+> +
+>  	taprio_calculate_gate_durations(q, new);
+>  
+>  	return 0;
 > 
 > 
-> base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
+> base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
 > -- 
 > This is an AI-generated patch subject to moderation.
 > Reply with '#syz upstream' to Sign-off the patch as a human author
