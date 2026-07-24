@@ -1,112 +1,337 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CDAB3A7F4A
-	for <syzbot@lists.linux.dev>; Fri, 24 Jul 2026 12:05:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784894737; cv=pass; b=tTqpqSDRR/US/nGMMPR3yX8HSf+2LexVKipJ6UUzZieU6sij2/tqZW/UYjLNgdSzlqvs8j1MDlyFkR+VblDE9gX5GFRYOYjwqvBbs4gel/aQfnwNQICNwTTRUE4Q8tXAXUKBGR9l+1K4Jv9SsuwZSGTD84lz42bwRAfOQZE8iN4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784894737; c=relaxed/simple;
-	bh=6JWqdbeXuwxuJ3OgX9YlJ7Klum5SgMtFIEHAD2O/UcQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Em8sdk7ZHGRI0/gPYoYgFaOyKBRsspbAIzYx0Gy2ft6Wmkw9x3nNRSB3rNaR/cMjbtWUwmfQeiBO+h+T/SECUUVLTxXRoLgjdT2FF4UWh4VJDWLu3/PowBq/440b7k9DFhQbhETINFquBp2WybVG4pdjsz0rmEWzlirFhVQS7RE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=BX1nQulB; arc=pass smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10B60418A37
+	for <syzbot@lists.linux.dev>; Fri, 24 Jul 2026 12:43:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784897012; cv=none; b=AeoNdwhm0bBeX6P9E5Hfzshe2nwsTDfXmd+kCmT8CWibS/iZN5oCtQkp8aeRy0BMAWFxWMveJYxgRXkbrNj8U7A3Hv+gNlQsD0HRh12JShcWFUnI3TBkXWWxt3Vd4lIDm01DTUx8RaNWCGZIe2tRtHnsKR4wzEUMZwCOszYxdDA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784897012; c=relaxed/simple;
+	bh=X8/T/fhaKU0TiLYHMDIPk2A/uGkFc8BC4YuTX8Ztnys=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Z0oJ3X4UUkyVMIJ9C9kK4Fsag18WF7vJrDMN47ArAcKyeN5rQXtUoGJr3TohV5VdRkrl6MMcl/xB4VoYayse6eLSIb//AP+QhiOljkw40nJvYsGhikHBrwbXe9rgVQaxBX3BMlCXTCYdLJhf5EqaCva79ByENw+l52lxIrjqdBs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fYgHjjfI; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="BX1nQulB"
-Received: by smtp.kernel.org (Postfix)
-	id BCCFE1F00A3A; Fri, 24 Jul 2026 12:05:35 +0000 (UTC)
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=217.74.67.63
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1784894735;
-	b=DWXlWAbU8LILYMMruryg3iNnRTZmKlpvbgzWlzHfmuiGhFdTchtDjqR0vZCqninwl7aQ
-	 vzYKdiKMHepKNs6Rf5PuHIFKNq6ZDT1coNfRy5gWgfT4Hb9L8EKnAwvd7vcEYR4tUhawP
-	 fqW8TfvtTedLjV1+AYDmTfIRDbex3lXWOmG4s0fkN7k7IJHUZMcSN6K3OP3J1gNRF0rOd
-	 ZrTWZikioXQDOxH+bh/W6kZslby1V02CG+n3RPJNeqKmTUmi/iidzCkaRvf7U3j5WBKjR
-	 C3bT/epbj+QrBEPFj4ziNUTEbTNRaDAhvbbKPDGTRWDt9yS0TnAQHXLtv74OmSta8YQ==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1784894735;
-	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 DKIM-Signature;
-	bh=9WCcUBpcZugisq07q9owkL/cyHa7KP34+EFlP4Tgs1M=;
-	b=DKFtkLOM8pbj71o9BVitMVL3lVYo4bJLz8aCPrLFjgq4FEJksKo6Q09K+jLoM/mc/z0e
-	 a4T4ExknLRje2gq4Wqs96xLXjXj+02OZTlVx384vQiA3LyBAIcFcARNpdxM9MgaGoMujL
-	 QOxxzDTQBk5o/F32T6Xk/MD3gv/1Nd4QtWNyKaEP9ajzWqcCJsLEgvCu8qUORB5H0chnM
-	 iol0r1x6vRYEjPwFHyKQx60psc4k4dr/eJn3EzlMcXKhFJXgBvk6r54uXWBB9mnNSXGgo
-	 zpUcH2ujI+VAhliBQVdTR69LBsWhpPuSxhI+Z0g3xBAoQNfkOjBhghT5en1yXZv4L0w==
-ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=BX1nQulB;
-	dmarc=pass header.from=poczta.fm;
-	spf=pass smtp.mailfrom=poczta.fm;
-	arc=none smtp.remote-ip=217.74.67.63
-Received: from smtpo63.interia.pl (smtpo63.interia.pl [217.74.67.63])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 290461F000E9
-	for <syzbot@kernel.org>; Fri, 24 Jul 2026 12:05:32 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=BX1nQulB
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 290461F000E9
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=poczta.fm
-Received: from nr200 (unknown [80.68.231.31])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
-	Fri, 24 Jul 2026 14:03:20 +0200 (CEST)
-Date: Fri, 24 Jul 2026 14:02:58 +0200
-From: Slawomir Stepien <sst@poczta.fm>
-To: Johannes Berg <johannes@sipsolutions.net>
-Cc: syzbot <syzbot@kernel.org>, syzkaller-bugs@googlegroups.com,
-	linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-	syzbot@lists.linux.dev
-Subject: Re: [PATCH] wifi: mac80211: reject station association if AP is not
- started
-Message-ID: <amNUcscgkmCjJdnT@nr200>
-References: <373210a9-4365-4cac-823a-0eec391858e7@mail.kernel.org>
- <c9fa1c083ef9878240c2ee2fb223413153d93a68.camel@sipsolutions.net>
- <amMLPgO8Yv1wjMGa@nr200>
- <86efc46da2c0c5cf73ca262f8be8c5086d626ee7.camel@sipsolutions.net>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fYgHjjfI"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7893E1F000E9;
+	Fri, 24 Jul 2026 12:43:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784897010;
+	bh=bDyjS0Bx/ZGwZqq6RAzr0vRlf9PGJgJBp544gHeQ3Dg=;
+	h=From:To:Cc:Subject:Date;
+	b=fYgHjjfIkDSIhDGsAGHhq8fOvcRSlOat+HzXzS+NRaNY6e1gTWjU64ZmEas8o2JTG
+	 FNDdEbVJ+KIZHm6Ci0snxhCInUaZsUg48TmGwlx0G1fWwPBknC20WTWwaRbK+up3XE
+	 74oZ8/EyO8aT7EhUcenOGsQBgxOWOrBWaoy7gJQv1/GqcJtdLSUBKY5b6nrQEBNwG0
+	 CJpPVjsvEg57yYEQET80cvagUpXV971drwVj1qKAoI0J/W50rNpoxBxOq4ZuY+umMZ
+	 X1I9Z6reFY61UsZyuRp4wacnBXuxhPe87e1WloGIf1zDB2T129SPS2CtBkfkbag98d
+	 i18LRBLr3CHRw==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: kusaram@devineni.in, syzbot@lists.linux.dev
+Subject: [PATCH RFC v5] fuse: abort connection on /dev/fuse flush to prevent deadlock
+Message-ID: <13552139-cd2b-4ea9-994c-cfed6c07000b@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <86efc46da2c0c5cf73ca262f8be8c5086d626ee7.camel@sipsolutions.net>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
-	t=1784894730; bh=9WCcUBpcZugisq07q9owkL/cyHa7KP34+EFlP4Tgs1M=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-	b=BX1nQulB7njOGni5MWKWw025B7m/y3cZfvjjUuoNhYJSP09cqKqasSE/XqsckiXcB
-	 5koJHZ/CauhtM0y/hoV4BpMaaw/EmW8rI9e+mwRYwMSdard6emcKpCBtg1AaYG/yCN
-	 wqQWxne+Kr5AP/uqUT5pWH7wyHDedruMFzslvqFY=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Fri, 24 Jul 2026 12:43:30 +0000 (UTC)
 
-On lip 24, 2026 09:15, Johannes Berg wrote:
-> On Fri, 2026-07-24 at 08:50 +0200, Slawomir Stepien wrote:
-> > On lip 23, 2026 11:14, Johannes Berg wrote:
-> > > On Thu, 2026-07-23 at 08:11 +0000, syzbot wrote:
-> > > > From: Slawomir Stepien <sst@poczta.fm>
-> > > 
-> > > I'm a bit confused? Did syzbot just pick up another patch?
-> > 
-> > Hi Johannes!
-> > 
-> > No, this issue has been found by syzbot while doing fuzzing testing.
-> 
-> Yeah, but the email? It's "From: syzbot <...>" and actually was
-> delivered to me by sea.source.kernel.org, whereas your other mail was
-> delivered to me by smtpo49.interia.pl, so I'm confused as to who sent
-> the mail and how :)
+A single-threaded FUSE daemon can deadlock if it mounts a filesystem and
+opens a file on it. When the process exits or calls close_range(), the
+kernel closes file descriptors in ascending numerical order.
 
-The initial e-mail with patch was sent by the syzbot on my request, that's why I'm in the added From
-and Signed-off-by (bot can't be the Author of commit and I'm responsible for handling this patch on
-mailing list).
+If the /dev/fuse file descriptor (e.g., fd 5) is closed first, filp_close()
+decrements the file reference count but defers the actual release (fput) to
+task work. As a result, the FUSE connection remains active.
 
-You can read more about this here:
-https://github.com/google/syzkaller/blob/master/docs/syzbot_ai_patches.md.
+Next, when the FUSE file descriptor (e.g., fd 6) is closed, filp_close()
+calls fuse_flush(), which sends a synchronous FUSE_FLUSH request to the
+daemon. Since the daemon is the same thread that is currently blocked in
+the close() syscall, it cannot process the request. The FUSE_FLUSH request
+uses args.force = true, making the wait uninterruptible. The thread hangs
+forever, eventually triggering a hung task panic:
 
+Call Trace:
+ <TASK>
+ __schedule+0x17d9/0x56c0 kernel/sched/core.c:7234
+ schedule+0x164/0x2b0 kernel/sched/core.c:7326
+ request_wait_answer fs/fuse/dev.c:743 [inline]
+ __fuse_request_send fs/fuse/dev.c:757 [inline]
+ fuse_chan_send+0x1065/0x1ab0 fs/fuse/dev.c:833
+ fuse_simple_request fs/fuse/fuse_i.h:1012 [inline]
+ fuse_flush+0x66e/0x8b0 fs/fuse/file.c:504
+ filp_flush+0xbd/0x190 fs/open.c:1471
+ filp_close+0x1d/0x40 fs/open.c:1484
+ __range_close fs/file.c:793 [inline]
+ __do_sys_close_range fs/file.c:854 [inline]
+ __se_sys_close_range+0x3d3/0x900 fs/file.c:818
+ do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
+
+To fix this, implement a .flush method for /dev/fuse (fuse_dev_operations).
+The .flush method is called synchronously by filp_close() during the
+close() syscall, bypassing the fput delay.
+
+In fuse_dev_flush(), if this is the final close of the file descriptor
+(file_count(file) == 1), we mark the device as closing. Since multiple
+cloned /dev/fuse devices can exist for the same connection, we track the
+closing state of each device under the channel lock. If all devices
+associated with the channel are closing, we proactively abort the FUSE
+connection. By aborting the connection synchronously in .flush, any
+subsequent fuse_flush() calls on FUSE files will immediately fail with
+-ENOTCONN instead of blocking indefinitely, avoiding the deadlock.
+
+To handle the race where a /dev/fuse file descriptor is closed before it is
+fully installed into a connection (i.e., fud->chan is still NULL), we use
+cmpxchg() to atomically transition fud->chan from NULL to
+FUSE_DEV_CHAN_DISCONNECTED. This prevents a concurrent fuse_dev_install()
+from succeeding on a device that is already being closed. Furthermore,
+because the VFS may invoke .fasync after .flush but before .release,
+fuse_get_dev() and __fuse_get_dev() must reject the
+FUSE_DEV_CHAN_DISCONNECTED sentinel to prevent .fasync from dereferencing
+it.
+
+Note that CUSE (Character Device in User Space) also shares
+fuse_dev_operations and therefore inherits this new .flush callback, which
+is safe and consistent with its lifecycle.
+
+Fixes: 4a9d4b024a31 ("switch fput to task_work_add")
+Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+Tested-by: syzbot <syzbot@syzkaller.appspotmail.com>
+Reported-by: syzbot+0dbb0d6fda088e78a4d8@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=0dbb0d6fda088e78a4d8
+Link: https://syzkaller.appspot.com/ai_job?id=01c5ea2a-b608-4f47-aed0-a4e606dcc0c0
+To: <fuse-devel@lists.linux.dev>
+To: "Miklos Szeredi" <miklos@szeredi.hu>
+Cc: <linux-kernel@vger.kernel.org>
+
+---
+v5:
+- Moved `closing` next to `sync_init` in `struct fuse_dev` to preserve compact placement of boolean members.
+- Restored formatting of `fuse_dev_operations`.
+- Updated commit message to explain why `fuse_get_dev()` and `__fuse_get_dev()` reject `FUSE_DEV_CHAN_DISCONNECTED` due to `.fasync` invocation.
+- Removed duplicate `Tested-by` tag.
+
+v4:
+- Changed `(file_count(file) <= 1)` to `(file_count(file) == 1)` in the commit message.
+- Added `Tested-by: syzbot@syzkaller.appspotmail.com` tag.
+- Added lockdep assertion in `fuse_dev_all_closing()`.
+- Updated `fuse_get_dev()` and `__fuse_get_dev()` to reject `FUSE_DEV_CHAN_DISCONNECTED`.
+- Checked `fch->connected` before aborting in `fuse_dev_release()` and `fuse_dev_flush()`.
+https://lore.kernel.org/all/17ec009d-743f-4703-b56d-c78b2152ace2@mail.kernel.org/T/
+
+v3:
+- Added fuse_dev_all_closing() helper to check if all devices on a channel are closing.
+- Updated fuse_dev_release() to abort the connection if all remaining devices are closing.
+- Fixed the file reference count check in fuse_dev_flush() to check for file_count(file) != 1 instead of file_count(file) > 1.
+- Updated the comment in fs/fuse/fuse_dev_i.h to clarify the lifecycle of fud->chan and when it is set to FUSE_DEV_CHAN_DISCONNECTED.
+https://lore.kernel.org/all/40d9021a-6a93-43a1-97b0-6ec2f9cbabc6@mail.kernel.org/T/
+
+v2:
+- Added `closing` flag to `struct fuse_dev` to track the closing state of each device.
+- Updated `fuse_dev_flush()` to check if all associated devices are closing, properly handling cloned devices.
+- Used `cmpxchg()` in `fuse_dev_flush()` to handle the race where a device is closed before being fully installed.
+- Updated `fuse_dev_release()` to handle `FUSE_DEV_CHAN_DISCONNECTED` safely.
+https://lore.kernel.org/all/3e4a3361-9e1b-4f46-8033-f85ada100a79@mail.kernel.org/T/
+
+v1:
+https://lore.kernel.org/all/bedbc009-8806-4913-9a03-1b25b6d33729@mail.kernel.org/T/
+---
+diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
+index 5763a7cd3..8b14c7d57 100644
+--- a/fs/fuse/dev.c
++++ b/fs/fuse/dev.c
+@@ -1662,18 +1662,23 @@ static int fuse_dev_open(struct inode *inode, struct file *file)
+ struct fuse_dev *fuse_get_dev(struct file *file)
+ {
+ 	struct fuse_dev *fud = fuse_file_to_fud(file);
++	struct fuse_chan *fch = fuse_dev_chan_get(fud);
+ 	int err;
+ 
+-	if (unlikely(!fuse_dev_chan_get(fud))) {
++	if (unlikely(!fch)) {
+ 		/* only block waiting for mount if sync init was requested */
+ 		if (!fud->sync_init)
+ 			return ERR_PTR(-EPERM);
+ 
+-		err = wait_event_interruptible(fuse_dev_waitq, fuse_dev_chan_get(fud) != NULL);
++		err = wait_event_interruptible(fuse_dev_waitq,
++					       (fch = fuse_dev_chan_get(fud)) != NULL);
+ 		if (err)
+ 			return ERR_PTR(err);
+ 	}
+ 
++	if (unlikely(fch == FUSE_DEV_CHAN_DISCONNECTED))
++		return ERR_PTR(-EPERM);
++
+ 	return fud;
+ }
+ 
+@@ -2211,17 +2216,31 @@ void fuse_chan_wait_aborted(struct fuse_chan *fch)
+ 	fuse_uring_wait_stopped_queues(fch);
+ }
+ 
++static bool fuse_dev_all_closing(struct fuse_chan *fch)
++{
++	struct fuse_dev *pos;
++
++	lockdep_assert_held(&fch->lock);
++
++	list_for_each_entry(pos, &fch->devices, entry) {
++		if (!pos->closing)
++			return false;
++	}
++	return true;
++}
++
+ int fuse_dev_release(struct inode *inode, struct file *file)
+ {
+ 	struct fuse_dev *fud = fuse_file_to_fud(file);
+ 	/* Pairs with cmpxchg() in fuse_dev_install() */
+ 	struct fuse_chan *fch = xchg(&fud->chan, FUSE_DEV_CHAN_DISCONNECTED);
+ 
+-	if (fch) {
++	if (fch && fch != FUSE_DEV_CHAN_DISCONNECTED) {
+ 		struct fuse_pqueue *fpq = &fud->pq;
+ 		LIST_HEAD(to_end);
+ 		unsigned int i;
+ 		bool last;
++		bool abort;
+ 
+ 		/* Make sure fuse_dev_install_with_pq() has finished */
+ 		spin_lock(&fch->lock);
+@@ -2234,14 +2253,15 @@ int fuse_dev_release(struct inode *inode, struct file *file)
+ 		list_del(&fud->entry);
+ 		/* Are we the last open device? */
+ 		last = list_empty(&fch->devices);
++		abort = fch->connected && fuse_dev_all_closing(fch);
+ 		spin_unlock(&fch->lock);
+ 
+ 		fuse_dev_end_requests(&to_end);
+ 
+-		if (last) {
++		if (last)
+ 			WARN_ON(fch->iq.fasync != NULL);
++		if (abort)
+ 			fuse_chan_abort(fch, false);
+-		}
+ 		fuse_conn_put(fch->conn);
+ 	}
+ 	fuse_dev_put(fud);
+@@ -2375,6 +2395,34 @@ static void fuse_dev_show_fdinfo(struct seq_file *seq, struct file *file)
+ }
+ #endif
+ 
++static int fuse_dev_flush(struct file *file, fl_owner_t id)
++{
++	struct fuse_dev *fud = fuse_file_to_fud(file);
++	struct fuse_chan *fch;
++	bool abort;
++
++	if (file_count(file) != 1)
++		return 0;
++
++	/*
++	 * Atomically transition fud->chan from NULL to FUSE_DEV_CHAN_DISCONNECTED
++	 * on final close to prevent a later fuse_dev_install() from succeeding.
++	 */
++	fch = cmpxchg(&fud->chan, NULL, FUSE_DEV_CHAN_DISCONNECTED);
++	if (!fch || fch == FUSE_DEV_CHAN_DISCONNECTED)
++		return 0;
++
++	spin_lock(&fch->lock);
++	fud->closing = true;
++	abort = fch->connected && fuse_dev_all_closing(fch);
++	spin_unlock(&fch->lock);
++
++	if (abort)
++		fuse_chan_abort(fch, false);
++
++	return 0;
++}
++
+ const struct file_operations fuse_dev_operations = {
+ 	.owner		= THIS_MODULE,
+ 	.open		= fuse_dev_open,
+@@ -2383,6 +2431,7 @@ const struct file_operations fuse_dev_operations = {
+ 	.write_iter	= fuse_dev_write,
+ 	.splice_write	= fuse_dev_splice_write,
+ 	.poll		= fuse_dev_poll,
++	.flush		= fuse_dev_flush,
+ 	.release	= fuse_dev_release,
+ 	.fasync		= fuse_dev_fasync,
+ 	.unlocked_ioctl = fuse_dev_ioctl,
+diff --git a/fs/fuse/fuse_dev_i.h b/fs/fuse/fuse_dev_i.h
+index 668c8391d..e45788c7f 100644
+--- a/fs/fuse/fuse_dev_i.h
++++ b/fs/fuse/fuse_dev_i.h
+@@ -302,6 +302,9 @@ struct fuse_dev {
+ 	/** @sync_init: Issue FUSE_INIT synchronously */
+ 	bool sync_init;
+ 
++	/** @closing: Final close has started, protected by chan->lock */
++	bool closing;
++
+ 	/** @chan: Fuse channel for this device */
+ 	struct fuse_chan *chan;
+ 
+@@ -330,16 +333,28 @@ struct fuse_copy_state {
+ 	} ring;
+ };
+ 
+-/* fud->chan gets assigned to this value when /dev/fuse is closed */
++/*
++ * fud->chan gets assigned to this value when /dev/fuse is closed or
++ * by the final flush before release when the device was never installed,
++ * so it does not exclusively mean that the device has already been released.
++ */
+ #define FUSE_DEV_CHAN_DISCONNECTED ((struct fuse_chan *) 1)
+ 
+ /*
+  * Lockless access is OK, because fud->chan is set once during mount and is valid
+  * until the file is released.
+  *
+- * fud->chan is set to FUSE_DEV_CHAN_DISCONNECTED only after the containing file is
+- * released, so result is safe to dereference in most cases.  Exceptions are:
+- * fuse_dev_put() and fuse_fill_super_common().
++ * fud->chan can have three states:
++ * - NULL: device is not installed yet
++ * - valid pointer: device is installed
++ * - FUSE_DEV_CHAN_DISCONNECTED: device is released
++ *
++ * Final flush replaces NULL with the disconnected sentinel only for an
++ * uninstalled device, while for an installed device, flush leaves the channel
++ * pointer intact and records closing, and release later installs the sentinel.
++ * Thus the result is safe to dereference in most cases.  Exceptions are:
++ * fuse_dev_put() and fuse_fill_super_common(). fuse_get_dev() and
++ * __fuse_get_dev() reject the sentinel.
+  */
+ static inline struct fuse_chan *fuse_dev_chan_get(struct fuse_dev *fud)
+ {
+@@ -355,8 +370,9 @@ static inline struct fuse_dev *fuse_file_to_fud(struct file *file)
+ static inline struct fuse_dev *__fuse_get_dev(struct file *file)
+ {
+ 	struct fuse_dev *fud = fuse_file_to_fud(file);
++	struct fuse_chan *fch = fuse_dev_chan_get(fud);
+ 
+-	if (!fuse_dev_chan_get(fud))
++	if (!fch || fch == FUSE_DEV_CHAN_DISCONNECTED)
+ 		return NULL;
+ 
+ 	return fud;
+
+
+base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
 -- 
-Slawomir Stepien
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
