@@ -1,79 +1,149 @@
 Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B55B1A76BB
-	for <syzbot@lists.linux.dev>; Sat, 25 Jul 2026 13:32:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0A55310652
+	for <syzbot@lists.linux.dev>; Sat, 25 Jul 2026 23:30:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784986325; cv=none; b=uFqze6sRNObl445kK+KpFFMveWuyeYKczhRSTn6wzHVzoOsjep1jygW4R2xssddMVNpg0wC9rGJTpLF9QdcVrjkYxmn74q0v4ZOFrKhIDLZ435wUPoGZmf25V5qYzQzr6QnwRDpcVku9dfa88wqvl6njrY7p2VeNIH6eSk01MfE=
+	t=1785022205; cv=none; b=euJlv6kNqBO/8i8jlZ4o/wm/m7XSM9r47+chzrB4I7Z2z1CUT0dZ/bAovKY7yeRiiAZ7mlOsOviBHKE2MdG+dEc2dDcRW3guLZLQIhHkgolAEX2OuEWslvCWrdNfMqgePIsVotzV8plH67FL0XIBxuCiW7SAflQbOG/wxoYrnt8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784986325; c=relaxed/simple;
-	bh=Syx9pQEJ4B7vpeg4sCMWB/TRGslNYfdVKEFPkocIuNo=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Qb3KXGpgVLr0842eRAGmqBHCdfIdKoS388vaIZHuIT1v3RKCXvzSTYOBjdEy0eYhrpeHPiV64kop1paxHfpLGULhJ/0FA5Ptw8oz1InEqgtPgtSnnJOnqwFfNf8r8M639piWetMQ3tgwCS1WpDPsT8RrnaoE/3lLS82LPk7y7CU=
+	s=arc-20240116; t=1785022205; c=relaxed/simple;
+	bh=67CARrvFQFUTmfPLOROhlED1UY8QTK+c8eY3PFF9tC8=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ACCghTCWzNFsbMs4yGnr/T50TapwQQZvxwyMsOZKhsQE0gatrdP9RvYyxdgsEdLA0gf7RlKW6bYl1VK/ay0M2vVMJvfQawzWpNQ/NYNVLUptFaqabxo6rBQ9P7Lk9mLxseNpHtAgdEQAS147B+gOBpr/JUxeNzOLuxfvG5HhROs=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4ab4dd46ddeso719634b6e.3
-        for <syzbot@lists.linux.dev>; Sat, 25 Jul 2026 06:32:03 -0700 (PDT)
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-495b8b30310so2322747b6e.1
+        for <syzbot@lists.linux.dev>; Sat, 25 Jul 2026 16:30:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784986323; x=1785591123;
+        d=1e100.net; s=20251104; t=1785022202; x=1785627002;
         h=content-type:cc:to:from:subject:message-id:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=L+khD+JBRRannw95tm2pLNAMxr5ur79xPIiEjchrXYw=;
-        b=SLT68rD4PGBEINe7iRLfIR49W/NPHkvTvIFhGS/j/d+/cyQvWJ3MJORMaZKaebbZfl
-         LNq5bwQAn9o7j3ibprxzWYx8fm1AWEvR7K/kGHFnG2umR+fef4xIWpXXQ8UTY4/uhuLZ
-         croZwg+x2DEB9T+uTuNEydEcF7LMj/28tWhW2t0wGn61dIGqvhIBRJc3uJ2I6YjoD8fO
-         MXnMnAHY29dydvPH+Nm/X0UuO/eTtmqLmI6+2+SIDHQZhXtlhHmOAGpIoY2Ik0sjgHil
-         VT3Dm3d7waoYDl9aVw4dC/O63gu1XX6Tte+P/79dO91lWMd7vtMwwAF+xxtAiD2+i3wO
-         75Rg==
-X-Gm-Message-State: AOJu0YweL5ZKwbrYVO9IpFiR0Bbi+s10mGwKrlI8J122uVoK13yCOkz/
-	CTAPnJLv2YtDgwsJZ/8rwK/ib6Sz4r9wF61ocoi4Kd0Yb5jRNAtdAhd2p5SNHBlG1tqiQlOxegq
-	xz3NthU3nA8G2Qe1PyBTDb1PP6LfbyxmAwI2stdH0M9vE34w3sX76Z8YQz8k=
+        bh=amqNs1S/2Fp1uY3EfeXj2ofiQjuVI6bXmZISzGGKWww=;
+        b=FBIz9TuBKGN45ofSl6mReUAUPS2UjAEqlXR46LRGO1MR5zERR87IkPgy6yr+P7CuiZ
+         HbAW2aB0eUNJBk9M6pgk6SYO8JRTFSOVx51ODulAh7lIonqbD409fuPnby3tOTC+wmPX
+         R7R2w3qTtqINY8gLe+yCXmjp4M1nuv3dQecNrRGQ4R/+T0Ue/mZPrGG+MPHm0jao/ZCz
+         YK+POJJOdyVPNzOHD6G0L1utQOKlfI5zZndLOzVj2/Rn/QM8UdPShMxZ4SdN7/iDot5D
+         4VdK49pnaWjkplEAhEO1A3N4Mc5H7ZMvLm9TVN8mMBhpCtpYv26ELVtBbVwWRbr3AEY6
+         B2uA==
+X-Gm-Message-State: AOJu0YxN5KO+dmrtNpD1Gks9p5rTuY1Gh2X7JNfTjX7r7WuW4BfVw8EP
+	cFfjPAdAeHSSr+iLbTT4NW33ZMVlqmTaTnvtnmcelIOG34ujAjdiFce1geGyjR2Xh0zUOlrhclC
+	KIQN4Z1tSgt1Xo2HhHkD5prFEMrWB0t+GyJvuTIBqbtAWHMllgbLf0oq5BbI=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:c3ea:b0:4ab:2256:a410 with SMTP id
- 5614622812f47-4ab6a19b2c7mr2021609b6e.22.1784986323031; Sat, 25 Jul 2026
- 06:32:03 -0700 (PDT)
-Date: Sat, 25 Jul 2026 06:32:03 -0700
+X-Received: by 2002:a05:6808:124d:b0:4a4:88ab:126f with SMTP id
+ 5614622812f47-4ab6a13b7bcmr3229841b6e.21.1785022202382; Sat, 25 Jul 2026
+ 16:30:02 -0700 (PDT)
+Date: Sat, 25 Jul 2026 16:30:02 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a64bad3.70955b6c.323240.001e.GAE@google.com>
-Subject: [moderation/CI] Re: wifi: mt76: mt7925: add MT7928 debugfs
- txpower_sku with power table selection
-From: syzbot ci <syzbot+ci03289160ae271a01@syzkaller.appspotmail.com>
+Message-ID: <6a6546fa.a2ea2cc8.fbad6.0021.GAE@google.com>
+Subject: [moderation/CI] Re: blk-cgroup: protect blkgs with blkcg_mutex
+From: syzbot ci <syzbot+ci771ccbeba8613948@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] wifi: mt76: mt7925: add MT7928 debugfs txpower_sku with power table selection
-https://lore.kernel.org/all/20260724085202.3156422-1-jb.tsai@mediatek.com
-* [PATCH] wifi: mt76: mt7925: add MT7928 debugfs txpower_sku with power table selection
+[v2] blk-cgroup: protect blkgs with blkcg_mutex
+https://lore.kernel.org/all/20260724123037.3004560-1-yukuai@kernel.org
+* [RFC PATCH v2 1/8] block: associate blkg in submit_bio instead of bio_set_dev
+* [RFC PATCH v2 2/8] blk-throttle: protect throttle state with td lock
+* [RFC PATCH v2 3/8] blk-cgroup: protect blkgs with blkcg_mutex
+* [RFC PATCH v2 4/8] blk-cgroup: remove blkg radix tree preloading
+* [RFC PATCH v2 5/8] blk-cgroup: allocate blkgs in blkg_create
+* [RFC PATCH v2 6/8] blk-cgroup: share blkg creation between lookup and config prep
+* [RFC PATCH v2 7/8] bfq: avoid blkg lookup from locked cgroup update
+* [RFC PATCH v2 8/8] block: fail nowait bio submit if blkg allocation can't sleep
 
 and found the following issue:
-kernel build error
+general protection fault in blkcg_punt_bio_submit
 
 Full report is available here:
-https://ci.syzbot.org/series/902de955-db8d-47e0-a4fe-d624ae5adeb5
+https://ci.syzbot.org/series/eece31b0-1f5d-4840-8a12-407d9a4d1c57
 
 ***
 
-kernel build error
+general protection fault in blkcg_punt_bio_submit
 
-tree:      wireless-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/wireless/wireless-next.git
-base:      90883c513ca01e77c56b8d94be7de11420c1dacf
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
+base:      093fbffe03f5c1bb9c10a9e5aa65b23250844403
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/3bcd1859-e29d-4361-b72c-e2c7e47081ee/config
+config:    https://ci.syzbot.org/builds/2cc06765-4cf6-4329-9c0a-9fe326a5338e/config
+syz repro: https://ci.syzbot.org/findings/38efdd1d-4179-4903-8ade-04afbce263b2/syz_repro
 
-drivers/net/wireless/mediatek/mt76/mt7925/debugfs.c:445:6: error: call to undeclared function 'is_mt7928'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+Oops: general protection fault, probably for non-canonical address 0xdffffc0000000006: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000030-0x0000000000000037]
+CPU: 0 UID: 0 PID: 26 Comm: kworker/u9:0 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Workqueue: btrfs-worker btrfs_work_helper
+RIP: 0010:blkcg_punt_bio_submit+0x47/0x130 block/blk-cgroup.c:243
+Code: ae 13 fd 4c 8d 73 50 4c 89 f0 48 c1 e8 03 80 3c 28 00 74 08 4c 89 f7 e8 07 06 7f fd 4d 8b 36 4d 8d 7e 30 4c 89 f8 48 c1 e8 03 <80> 3c 28 00 74 08 4c 89 ff e8 eb 05 7f fd 49 83 3f 00 0f 84 ab 00
+RSP: 0000:ffffc90000a17a28 EFLAGS: 00010206
+RAX: 0000000000000006 RBX: ffff888117071348 RCX: ffff8881032f5940
+RDX: 0000000000000000 RSI: 0000000004000000 RDI: ffff888117071348
+RBP: dffffc0000000000 R08: ffff8881bb74406f R09: 1ffff110376e880d
+R10: dffffc0000000000 R11: ffffed10376e880e R12: ffff88816c5e6f08
+R13: dffffc0000000000 R14: 0000000000000000 R15: 0000000000000030
+FS:  0000000000000000(0000) GS:ffff88818d9cb000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f05d5660000 CR3: 0000000172eb2000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ run_ordered_work fs/btrfs/async-thread.c:243 [inline]
+ btrfs_work_helper+0x577/0xc50 fs/btrfs/async-thread.c:322
+ process_one_work kernel/workqueue.c:3314 [inline]
+ process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3397
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3478
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:blkcg_punt_bio_submit+0x47/0x130 block/blk-cgroup.c:243
+Code: ae 13 fd 4c 8d 73 50 4c 89 f0 48 c1 e8 03 80 3c 28 00 74 08 4c 89 f7 e8 07 06 7f fd 4d 8b 36 4d 8d 7e 30 4c 89 f8 48 c1 e8 03 <80> 3c 28 00 74 08 4c 89 ff e8 eb 05 7f fd 49 83 3f 00 0f 84 ab 00
+RSP: 0000:ffffc90000a17a28 EFLAGS: 00010206
+RAX: 0000000000000006 RBX: ffff888117071348 RCX: ffff8881032f5940
+RDX: 0000000000000000 RSI: 0000000004000000 RDI: ffff888117071348
+RBP: dffffc0000000000 R08: ffff8881bb74406f R09: 1ffff110376e880d
+R10: dffffc0000000000 R11: ffffed10376e880e R12: ffff88816c5e6f08
+R13: dffffc0000000000 R14: 0000000000000000 R15: 0000000000000030
+FS:  0000000000000000(0000) GS:ffff8882a8fcb000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007efceadf26a8 CR3: 0000000115190000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	ae                   	scas   %es:(%rdi),%al
+   1:	13 fd                	adc    %ebp,%edi
+   3:	4c 8d 73 50          	lea    0x50(%rbx),%r14
+   7:	4c 89 f0             	mov    %r14,%rax
+   a:	48 c1 e8 03          	shr    $0x3,%rax
+   e:	80 3c 28 00          	cmpb   $0x0,(%rax,%rbp,1)
+  12:	74 08                	je     0x1c
+  14:	4c 89 f7             	mov    %r14,%rdi
+  17:	e8 07 06 7f fd       	call   0xfd7f0623
+  1c:	4d 8b 36             	mov    (%r14),%r14
+  1f:	4d 8d 7e 30          	lea    0x30(%r14),%r15
+  23:	4c 89 f8             	mov    %r15,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	80 3c 28 00          	cmpb   $0x0,(%rax,%rbp,1) <-- trapping instruction
+  2e:	74 08                	je     0x38
+  30:	4c 89 ff             	mov    %r15,%rdi
+  33:	e8 eb 05 7f fd       	call   0xfd7f0623
+  38:	49 83 3f 00          	cmpq   $0x0,(%r15)
+  3c:	0f                   	.byte 0xf
+  3d:	84                   	.byte 0x84
+  3e:	ab                   	stos   %eax,%es:(%rdi)
+
 
 ***
 
@@ -92,7 +162,7 @@ The patch should be attached to the email.
 Note: arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[charlie-cy.wu@mediatek.com jb.tsai@mediatek.com linux-mediatek@lists.infradead.org linux-wireless@vger.kernel.org litien.chang@mediatek.com lorenzo@kernel.org nbd@nbd.name quan.zhou@mediatek.com ryder.lee@mediatek.com sean.wang@mediatek.com]
+[axboe@kernel.dk cengku@gmail.com cgroups@vger.kernel.org dongsheng.yang@linux.dev hch@lst.de josef@toxicpanda.com linux-block@vger.kernel.org ming.lei@redhat.com nilay@linux.ibm.com tj@kernel.org yukuai@fygo.io yukuai@kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
