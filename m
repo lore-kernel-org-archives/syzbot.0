@@ -1,243 +1,391 @@
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B12352931C9
-	for <syzbot@lists.linux.dev>; Sat, 25 Jul 2026 05:04:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DACA02874F5
+	for <syzbot@lists.linux.dev>; Sat, 25 Jul 2026 07:04:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784955843; cv=none; b=Ug4vlXz6UoQZd5XHtazBsE6D3Go04efjn7ynnoXYBWFjfSpALVNTMEe9exTtfISHvbF4yrz5TKDTsNo5z2iAvw+sDqzLsmr7xBZA04d0pLw6tKiTNoOWrv2waIxR7DX2jFq1A5Sj1praF19e7PBQrL2jZq3vMIJs3bI8dp2QWHs=
+	t=1784963079; cv=none; b=mKOw1+z2cQUWS/jF3ACR8eOI0T5Q07EC/p9bxX6M+ncr4k6z0eyHWbrW+lun5If7rPUAsjbE2Bn3g+le4hDiWezFWw4H4SrqXOcbClNgkbuG1+TmOa6JnRf0+E50H2wyLC+KcySIYMh7yp+iJVZ6E3h7kq8KEcK53f18Jk+E4v4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784955843; c=relaxed/simple;
-	bh=C9e0aPsGldrlejS47UcyDEWdFlxlSTYp7tRka5XHtY8=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=IsVgytaE8McpO4S4qaV8q3/p0QJduhr+ASiaAktYyrcc7+j+eED5kpyjwlR6Ee4h0EyB9RzCzyHHkoBwYpaAluU/I4bXC6HrpGUx4dXMFHI13gqo6vaZ6Os5nwV6di2Ro0OjcaH911+D+tMJWAGyaou2AcOO608/doQUbArmHqw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7e74781faaaso1527269a34.2
-        for <syzbot@lists.linux.dev>; Fri, 24 Jul 2026 22:04:01 -0700 (PDT)
+	s=arc-20240116; t=1784963079; c=relaxed/simple;
+	bh=dqDKRFMM011OTPXiUWKqDWNWplpKAXGzFQm+/otAdqQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=hqGIJUiMtE2Kz5lDpnbBdt19QBZhnwsLOVBw6tVigHfYGJS6Yrf1UZcvH9L1y1yZt//yK/Q45sH9H+B0TUAbtHWib3ZnIuAwtQGJe4+bjXVfraIh6ofBVeZgsmKCURK8F3Zv6p8OSQJfxOXTS2wC4uAbllB5xVj5Dzup03txHQ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=devineni.in; spf=none smtp.mailfrom=devineni.in; dkim=pass (2048-bit key) header.d=devineni.in header.i=@devineni.in header.b=YnnI505s; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=devineni.in
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=devineni.in
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=devineni.in header.i=@devineni.in header.b="YnnI505s"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2cc73e322dbso12444745ad.1
+        for <syzbot@lists.linux.dev>; Sat, 25 Jul 2026 00:04:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=devineni.in; s=google; t=1784963076; x=1785567876; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=0NtYj7ydAzLEG0y3rMiPcitRPaYaNFR2AtPRiV5e9Ww=;
+        b=YnnI505skva5RhrkAFEfpkBOt0N8WAKexzrdWqkxbYEG00eE0MR9uOwRmwruTG0RTu
+         o44Impeu+sYL98nrmkoE19ow4kEO4D4ms1Zc5O9ncLAziRMAO30RXNfKnHyS2SWTDdMB
+         SWyZP+qe40VALiriobvzXICeouKWkyqt0BoHkDiZFAdsXKp6RO95Iylv1qI7qv/x93EE
+         X6Menu7a7F3xbOed89GGcG9mmGBWHjbX0JNjdNMLKmcBwsQVKujUJnt92NtIL5tnYfCn
+         FucRVKOU/HUpY/J0SGH/IC/MPXnMulh/FLmcmoUmntM6cmXQOTiGlI4dEkwZEsiYviKk
+         21VA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784955840; x=1785560640;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=Q5yLx/7epMatkM14jxB6RPWceg+tmwlfXFxGPVUJWcg=;
-        b=F8+OAF+WdsKWc91yMMtRzB8uZ8UhykHZT5+YWgr/srdcQEG3ZGzlP8mufiUsPayUNj
-         4bnqHDNyJrYTM1KB4tCUMukH80AdVQQ2uQu2JYanELGiZceiS+hVV4/B06kx4f9aV4O1
-         CuoxXmyQ2Csdm5iTbdFrXck9qC8uEQF3gAQS/mP8THwedvOguyZXDoZtcsi1xzVtr8YS
-         zyeu5eViZ2KRGaFP8+0s8lCZQypSojSBHvZN2TuqLJE0tbKvR6orp5aVgaeXj21uUaTp
-         Otwh/wq2FjBNLlaWov70JQD06EFgXVt9wh7vpnCWBNqFOOJxa7/kHrMoc2TpV+CiuEEp
-         IAPw==
-X-Gm-Message-State: AOJu0YzY7aXzVZUw61UQkfg2HYTt1s8iYBxJPCXD2Arby/KNXDGjq4GU
-	akX2GLQ4oedpDFBIIseYu3gm0Cng6fzn0p8rsmrOi3U4UphYuzwrgvj2Fgi2XCIRmZGATlpHrNP
-	F3IxAZHZhlxSnSX9VlzElW31sKrqJqMa7duWPIrh2kT6Vv4Hv+GsDhsVypr4=
+        d=1e100.net; s=20251104; t=1784963076; x=1785567876;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=0NtYj7ydAzLEG0y3rMiPcitRPaYaNFR2AtPRiV5e9Ww=;
+        b=q/I0ig38XwUV/Q3Hgrr2Y8D8pmGDzq0l0Kp3avXay44H3AKFsRJugCgQxWWVgGFKgU
+         pMa0kqCL2zE5vCxXBVzYUa8l72KtPdxykxlFeVd9pnyMFMz0pC+XwBLdR51qC3CfVsT6
+         d2N4v1jcJJAOcWEXe53+FOa4eFgXylK7WlOHEbqdwBOVYTQ4m8riyYsAfD3ZP0w7vJX1
+         6SIRHaeM0+biacSA66XU5vlvP/mYsesCe2juppCByhU0jqhsWheahOipQ7lXgVAZP1+y
+         na7iv437L6UeSE5jRH+W7RTmwz88QLigqlLHJUxcQBISijCOdKuaPPB71i9C49Ka8qMv
+         aiug==
+X-Gm-Message-State: AOJu0YxRs9bSqQ0d3LqetJ3c7uuY0xdffSbaWbb/5cZF6U4ZT1Ox8XJx
+	5FY4HKkZmalAvrfltmkwg3XEnT8p3diY5BPhB2HDwHtCM2m7y3phhRDxqbntpHjZPQ==
+X-Gm-Gg: AR+sD10SsigDSzZ5aOVARhlCsR6ehAIHxoR1xtdWbLas2BcHcBNuxcceWT4JaDc+BNI
+	qhnm/m3l6jzjXR3OkrDGOBhGJqovI8gRJ6Fj7CQgo4u49DxMDqobhublk2UaRVtuJzCGHmURaru
+	ONsUsiuUrrfpMQVqeLJHXvD/vlp3J3jK8ph+oTY9gxRfQuWVC+UH8VcXPIqD5qp7f/BqmNnLwMR
+	HNgBaGXe/IBRCpMo9TEtfsymQXQpsb/OCet1A4Msu5YLzNULbLOcOR6G2MH65qQ6bPopUOh9WJn
+	h6Hun5Eu/Qz3dHVJAX4n/GgLnlOOoAKHJRwqopoWy/zOzvdsRuLpqsf8hIfJPtJlEtxpJyMfDWE
+	Z9KzG1oAn130VmKYb1ruLaSf3xUlBHImAAGfQDCn212W2Wedg8M6NUH0srOYmaK9wf0bGsLrLyn
+	pwN6YEl0/y/r8ngtvmgjpqJ2hj4kO0SPbDMLOBGkcdQkBFJ0QNQzqK7o6j6WzEprPSHN43CTuzA
+	sViiiMw0U+whXFW0ldxTzbQ4Jtu0a/D0V2HQz77gTaJikZh2G20IQjz3UUPtd0=
+X-Received: by 2002:a17:903:32cd:b0:2cc:a853:1311 with SMTP id d9443c01a7336-2cfde89cb4fmr13800965ad.47.1784963076046;
+        Sat, 25 Jul 2026 00:04:36 -0700 (PDT)
+Received: from [192.168.0.100] ([49.205.105.129])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2cfde5e8a0asm6024745ad.34.2026.07.25.00.04.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 25 Jul 2026 00:04:35 -0700 (PDT)
+Message-ID: <41bf0ae4-a33e-46ce-ada0-69f10ac519b6@devineni.in>
+Date: Sat, 25 Jul 2026 12:34:21 +0530
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:118d:b0:496:10e6:f76e with SMTP id
- 5614622812f47-4ab6a04a45fmr1158979b6e.4.1784955840293; Fri, 24 Jul 2026
- 22:04:00 -0700 (PDT)
-Date: Fri, 24 Jul 2026 22:04:00 -0700
-In-Reply-To: <20260723143034.175661-1-willy@infradead.org>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a6443c0.70955b6c.323240.0013.GAE@google.com>
-Subject: [syzbot ci] Re: Use generic_file_read_iter() in hugetlbfs
-From: syzbot ci <syzbot+cibabc01dbab7e054c@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, christian@brauner.io, david@kernel.org, 
-	jack@suse.cz, jane.chu@oracle.com, jiaqiyan@google.com, linmiaohe@huawei.com, 
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, muchun.song@linux.dev, 
-	nao.horiguchi@gmail.com, naoya.horiguchi@nec.com, osalvador@suse.de, 
-	stable@vger.kernel.org, usama.arif@linux.dev, willy@infradead.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v6] fuse: abort connection on /dev/fuse flush to
+ prevent deadlock
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+References: <6d8fbedb-e0dc-4133-81be-dc44a2b066d9@mail.kernel.org>
+Content-Language: en-US
+From: Kusaram Devineni <kusaram@devineni.in>
+In-Reply-To: <6d8fbedb-e0dc-4133-81be-dc44a2b066d9@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-syzbot ci has tested the following series
+On 25-07-2026 01:52 am, syzbot wrote:
+> A single-threaded FUSE daemon can deadlock if it mounts a filesystem and
+> opens a file on it. When the process exits or calls close_range(), the
+> kernel closes file descriptors in ascending numerical order.
+> 
+> If the /dev/fuse file descriptor (e.g., fd 5) is closed first, filp_close()
+> decrements the file reference count but defers the actual release (fput) to
+> task work. As a result, the FUSE connection remains active.
+> 
+> Next, when the FUSE file descriptor (e.g., fd 6) is closed, filp_close()
+> calls fuse_flush(), which sends a synchronous FUSE_FLUSH request to the
+> daemon. Since the daemon is the same thread that is currently blocked in
+> the close() syscall, it cannot process the request. The FUSE_FLUSH request
+> uses args.force = true, making the wait uninterruptible. The thread hangs
+> forever, eventually triggering a hung task panic:
+> 
+> Call Trace:
+>   <TASK>
+>   __schedule+0x17d9/0x56c0 kernel/sched/core.c:7234
+>   schedule+0x164/0x2b0 kernel/sched/core.c:7326
+>   request_wait_answer fs/fuse/dev.c:743 [inline]
+>   __fuse_request_send fs/fuse/dev.c:757 [inline]
+>   fuse_chan_send+0x1065/0x1ab0 fs/fuse/dev.c:833
+>   fuse_simple_request fs/fuse/fuse_i.h:1012 [inline]
+>   fuse_flush+0x66e/0x8b0 fs/fuse/file.c:504
+>   filp_flush+0xbd/0x190 fs/open.c:1471
+>   filp_close+0x1d/0x40 fs/open.c:1484
+>   __range_close fs/file.c:793 [inline]
+>   __do_sys_close_range fs/file.c:854 [inline]
+>   __se_sys_close_range+0x3d3/0x900 fs/file.c:818
+>   do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
+> 
+> To fix this, implement a .flush method for /dev/fuse (fuse_dev_operations).
+> The .flush method is called synchronously by filp_close() during the
+> close() syscall, bypassing the fput delay.
+> 
+> In fuse_dev_flush(), if this is the final close of the file descriptor
+> (file_count(file) == 1), we mark the device as closing. Since multiple
+> cloned /dev/fuse devices can exist for the same connection, we track the
+> closing state of each device under the channel lock. If all devices
+> associated with the channel are closing, we proactively abort the FUSE
+> connection. By aborting the connection synchronously in .flush, any
+> subsequent fuse_flush() calls on FUSE files will immediately fail with
+> -ENOTCONN instead of blocking indefinitely, avoiding the deadlock.
+> 
+> To handle the race where a /dev/fuse file descriptor is closed before it is
+> fully installed into a connection (i.e., fud->chan is still NULL), we use
+> cmpxchg() to atomically transition fud->chan from NULL to
+> FUSE_DEV_CHAN_DISCONNECTED. This prevents a concurrent fuse_dev_install()
+> from succeeding on a device that is already being closed. Furthermore,
+> because the VFS may invoke .fasync after .flush but before .release,
+> fuse_get_dev() and __fuse_get_dev() must reject the
+> FUSE_DEV_CHAN_DISCONNECTED sentinel to prevent .fasync from dereferencing
+> it.
+> 
+> Note that CUSE (Character Device in User Space) also shares
+> fuse_dev_operations and therefore inherits this new .flush callback, which
+> is safe and consistent with its lifecycle.
+> 
+> ---
+> v5:
+> - Clarified fud->chan state transitions and lockless access rules in
+> comments.
+> 
+> v4:
+> - Fixed race conditions and handled uninstalled devices during flush.
 
-[v4] Use generic_file_read_iter() in hugetlbfs
-https://lore.kernel.org/all/20260723143034.175661-1-willy@infradead.org
-* [PATCH v4 01/14] memory-failure: Fix hardware poison check in unpoison_memory() again
-* [PATCH v4 02/14] memory-failure: Test the page is hwpoison before taking the mutex
-* [PATCH v4 03/14] mm: Rename folio_contain_hwpoison_page() to folio_has_hwpoison_page()
-* [PATCH v4 04/14] hugetlb: Mark some function arguments as const
-* [PATCH v4 05/14] guest_memfd: Use folio_has_hwpoisoned_page()
-* [PATCH v4 06/14] memory-failure: Remove raw_hwp_list_head()
-* [PATCH v4 07/14] hugetlb: Use the has_hwpoisoned flag
-* [PATCH v4 08/14] mm: Remove locking mf_mutex in is_raw_hwpoison_page_in_hugepage()
-* [PATCH v4 09/14] mm: Check individual hugetlb pages for poison
-* [PATCH v4 10/14] filemap: Add hwpoison handling to filemap_read()
-* [PATCH v4 11/14] filemap: Remove checks in mapping_set_folio_order_range()
-* [PATCH v4 12/14] hugetlb: Set mapping folio order
-* [PATCH v4 13/14] filemap: Add support for authoritative mappings
-* [PATCH v4 14/14] hugetlb: replace hugetlbfs_read_iter() with generic_file_read_iter()
+the lines above contain the unintended first --- separator and an 
+abridged changelog. the separator terminates the commit message before 
+its trailers, consequently placing the Fixes, Tested-by, Reported-by, 
+Closes, and other trailers in the patch payload instead of the applied 
+commit message. so delete these lines completely.
 
-and found the following issues:
-* WARNING in bio_add_page
-* general protection fault in create_empty_buffers
+> 
+> Fixes: 4a9d4b024a31 ("switch fput to task_work_add")
+> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> Tested-by: syzbot <syzbot@syzkaller.appspotmail.com>
+> Reported-by: syzbot+0dbb0d6fda088e78a4d8@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=0dbb0d6fda088e78a4d8
+> Link: https://syzkaller.appspot.com/ai_job?id=3c6357d9-cf52-4934-97e8-7bc5a1042fa6
+> To: <fuse-devel@lists.linux.dev>
+> To: "Miklos Szeredi" <miklos@szeredi.hu>
+> Cc: <linux-kernel@vger.kernel.org>
+> 
+> ---
+> v6:
+> - Clarified fud->chan state transitions and lockless access rules in comments.
+> 
+> v5:
+> - Moved `closing` next to `sync_init` in `struct fuse_dev` to preserve compact placement of boolean members.
+> - Restored formatting of `fuse_dev_operations`.
+> - Updated commit message to explain why `fuse_get_dev()` and `__fuse_get_dev()` reject `FUSE_DEV_CHAN_DISCONNECTED` due to `.fasync` invocation.
+> - Removed duplicate `Tested-by` tag.
+> https://lore.kernel.org/all/13552139-cd2b-4ea9-994c-cfed6c07000b@mail.kernel.org/T/
+> 
+> v4:
+> - Changed `(file_count(file) <= 1)` to `(file_count(file) == 1)` in the commit message.
+> - Added `Tested-by: syzbot@syzkaller.appspotmail.com` tag.
+> - Added lockdep assertion in `fuse_dev_all_closing()`.
+> - Updated `fuse_get_dev()` and `__fuse_get_dev()` to reject `FUSE_DEV_CHAN_DISCONNECTED`.
+> - Checked `fch->connected` before aborting in `fuse_dev_release()` and `fuse_dev_flush()`.
+> https://lore.kernel.org/all/17ec009d-743f-4703-b56d-c78b2152ace2@mail.kernel.org/T/
+> 
+> v3:
+> - Added fuse_dev_all_closing() helper to check if all devices on a channel are closing.
+> - Updated fuse_dev_release() to abort the connection if all remaining devices are closing.
+> - Fixed the file reference count check in fuse_dev_flush() to check for file_count(file) != 1 instead of file_count(file) > 1.
+> - Updated the comment in fs/fuse/fuse_dev_i.h to clarify the lifecycle of fud->chan and when it is set to FUSE_DEV_CHAN_DISCONNECTED.
+> https://lore.kernel.org/all/40d9021a-6a93-43a1-97b0-6ec2f9cbabc6@mail.kernel.org/T/
+> 
+> v2:
+> - Added `closing` flag to `struct fuse_dev` to track the closing state of each device.
+> - Updated `fuse_dev_flush()` to check if all associated devices are closing, properly handling cloned devices.
+> - Used `cmpxchg()` in `fuse_dev_flush()` to handle the race where a device is closed before being fully installed.
+> - Updated `fuse_dev_release()` to handle `FUSE_DEV_CHAN_DISCONNECTED` safely.
+> https://lore.kernel.org/all/3e4a3361-9e1b-4f46-8033-f85ada100a79@mail.kernel.org/T/
+> 
+> v1:
+> https://lore.kernel.org/all/bedbc009-8806-4913-9a03-1b25b6d33729@mail.kernel.org/T/
+> ---
+> diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
+> index 5763a7cd3..8b14c7d57 100644
+> --- a/fs/fuse/dev.c
+> +++ b/fs/fuse/dev.c
+> @@ -1662,18 +1662,23 @@ static int fuse_dev_open(struct inode *inode, struct file *file)
+>   struct fuse_dev *fuse_get_dev(struct file *file)
+>   {
+>   	struct fuse_dev *fud = fuse_file_to_fud(file);
+> +	struct fuse_chan *fch = fuse_dev_chan_get(fud);
+>   	int err;
+>   
+> -	if (unlikely(!fuse_dev_chan_get(fud))) {
+> +	if (unlikely(!fch)) {
+>   		/* only block waiting for mount if sync init was requested */
+>   		if (!fud->sync_init)
+>   			return ERR_PTR(-EPERM);
+>   
+> -		err = wait_event_interruptible(fuse_dev_waitq, fuse_dev_chan_get(fud) != NULL);
+> +		err = wait_event_interruptible(fuse_dev_waitq,
+> +					       (fch = fuse_dev_chan_get(fud)) != NULL);
+>   		if (err)
+>   			return ERR_PTR(err);
+>   	}
+>   
+> +	if (unlikely(fch == FUSE_DEV_CHAN_DISCONNECTED))
+> +		return ERR_PTR(-EPERM);
+> +
+>   	return fud;
+>   }
+>   
+> @@ -2211,17 +2216,31 @@ void fuse_chan_wait_aborted(struct fuse_chan *fch)
+>   	fuse_uring_wait_stopped_queues(fch);
+>   }
+>   
+> +static bool fuse_dev_all_closing(struct fuse_chan *fch)
+> +{
+> +	struct fuse_dev *pos;
+> +
+> +	lockdep_assert_held(&fch->lock);
+> +
+> +	list_for_each_entry(pos, &fch->devices, entry) {
+> +		if (!pos->closing)
+> +			return false;
+> +	}
+> +	return true;
+> +}
+> +
+>   int fuse_dev_release(struct inode *inode, struct file *file)
+>   {
+>   	struct fuse_dev *fud = fuse_file_to_fud(file);
+>   	/* Pairs with cmpxchg() in fuse_dev_install() */
+>   	struct fuse_chan *fch = xchg(&fud->chan, FUSE_DEV_CHAN_DISCONNECTED);
+>   
+> -	if (fch) {
+> +	if (fch && fch != FUSE_DEV_CHAN_DISCONNECTED) {
+>   		struct fuse_pqueue *fpq = &fud->pq;
+>   		LIST_HEAD(to_end);
+>   		unsigned int i;
+>   		bool last;
+> +		bool abort;
+>   
+>   		/* Make sure fuse_dev_install_with_pq() has finished */
+>   		spin_lock(&fch->lock);
+> @@ -2234,14 +2253,15 @@ int fuse_dev_release(struct inode *inode, struct file *file)
+>   		list_del(&fud->entry);
+>   		/* Are we the last open device? */
+>   		last = list_empty(&fch->devices);
+> +		abort = fch->connected && fuse_dev_all_closing(fch);
+>   		spin_unlock(&fch->lock);
+>   
+>   		fuse_dev_end_requests(&to_end);
+>   
+> -		if (last) {
+> +		if (last)
+>   			WARN_ON(fch->iq.fasync != NULL);
+> +		if (abort)
+>   			fuse_chan_abort(fch, false);
+> -		}
+>   		fuse_conn_put(fch->conn);
+>   	}
+>   	fuse_dev_put(fud);
+> @@ -2375,6 +2395,34 @@ static void fuse_dev_show_fdinfo(struct seq_file *seq, struct file *file)
+>   }
+>   #endif
+>   
+> +static int fuse_dev_flush(struct file *file, fl_owner_t id)
+> +{
+> +	struct fuse_dev *fud = fuse_file_to_fud(file);
+> +	struct fuse_chan *fch;
+> +	bool abort;
+> +
+> +	if (file_count(file) != 1)
+> +		return 0;
+> +
+> +	/*
+> +	 * Atomically transition fud->chan from NULL to FUSE_DEV_CHAN_DISCONNECTED
+> +	 * on final close to prevent a later fuse_dev_install() from succeeding.
+> +	 */
+> +	fch = cmpxchg(&fud->chan, NULL, FUSE_DEV_CHAN_DISCONNECTED);
+> +	if (!fch || fch == FUSE_DEV_CHAN_DISCONNECTED)
+> +		return 0;
+> +
+> +	spin_lock(&fch->lock);
+> +	fud->closing = true;
+> +	abort = fch->connected && fuse_dev_all_closing(fch);
+> +	spin_unlock(&fch->lock);
+> +
+> +	if (abort)
+> +		fuse_chan_abort(fch, false);
+> +
+> +	return 0;
+> +}
+> +
+>   const struct file_operations fuse_dev_operations = {
+>   	.owner		= THIS_MODULE,
+>   	.open		= fuse_dev_open,
+> @@ -2383,6 +2431,7 @@ const struct file_operations fuse_dev_operations = {
+>   	.write_iter	= fuse_dev_write,
+>   	.splice_write	= fuse_dev_splice_write,
+>   	.poll		= fuse_dev_poll,
+> +	.flush		= fuse_dev_flush,
+>   	.release	= fuse_dev_release,
+>   	.fasync		= fuse_dev_fasync,
+>   	.unlocked_ioctl = fuse_dev_ioctl,
+> diff --git a/fs/fuse/fuse_dev_i.h b/fs/fuse/fuse_dev_i.h
+> index 668c8391d..2833a0350 100644
+> --- a/fs/fuse/fuse_dev_i.h
+> +++ b/fs/fuse/fuse_dev_i.h
+> @@ -302,6 +302,9 @@ struct fuse_dev {
+>   	/** @sync_init: Issue FUSE_INIT synchronously */
+>   	bool sync_init;
+>   
+> +	/** @closing: Final close has started, protected by chan->lock */
+> +	bool closing;
+> +
+>   	/** @chan: Fuse channel for this device */
+>   	struct fuse_chan *chan;
+>   
+> @@ -330,17 +333,25 @@ struct fuse_copy_state {
+>   	} ring;
+>   };
+>   
+> -/* fud->chan gets assigned to this value when /dev/fuse is closed */
+> -#define FUSE_DEV_CHAN_DISCONNECTED ((struct fuse_chan *) 1)
+> -
+>   /*
+> - * Lockless access is OK, because fud->chan is set once during mount and is valid
+> - * until the file is released.
+> + * fud->chan has the following monotonic state transitions:
+> + *
+> + * NULL -> valid channel -> FUSE_DEV_CHAN_DISCONNECTED
+> + * NULL -----------------> FUSE_DEV_CHAN_DISCONNECTED
+>    *
+> - * fud->chan is set to FUSE_DEV_CHAN_DISCONNECTED only after the containing file is
+> - * released, so result is safe to dereference in most cases.  Exceptions are:
+> - * fuse_dev_put() and fuse_fill_super_common().
+> + * A valid channel pointer remains valid until the file is released. Final
+> + * flush can install FUSE_DEV_CHAN_DISCONNECTED directly for an uninstalled
+> + * device, preventing any later channel installation. The sentinel therefore
+> + * means that the channel can no longer be installed or accessed through this
+> + * file; it does not imply that release has already run and it must never be
+> + * dereferenced.
+> + *
+> + * fuse_dev_chan_get() reads this state locklessly. Callers must distinguish
+> + * NULL, a valid channel pointer, and FUSE_DEV_CHAN_DISCONNECTED before
+> + * dereferencing the result.
+>    */
+> +#define FUSE_DEV_CHAN_DISCONNECTED ((struct fuse_chan *) 1)
+> +
+>   static inline struct fuse_chan *fuse_dev_chan_get(struct fuse_dev *fud)
+>   {
+>   	/* Pairs with xchg() in fuse_dev_install() */
+> @@ -355,8 +366,9 @@ static inline struct fuse_dev *fuse_file_to_fud(struct file *file)
+>   static inline struct fuse_dev *__fuse_get_dev(struct file *file)
+>   {
+>   	struct fuse_dev *fud = fuse_file_to_fud(file);
+> +	struct fuse_chan *fch = fuse_dev_chan_get(fud);
+>   
+> -	if (!fuse_dev_chan_get(fud))
+> +	if (!fch || fch == FUSE_DEV_CHAN_DISCONNECTED)
+>   		return NULL;
+>   
+>   	return fud;
+> 
+> 
+> base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
 
-Full report is available here:
-https://ci.syzbot.org/series/4b3a4f52-06f4-4a41-872f-dde0771be8ef
+-kusaram
 
-***
-
-WARNING in bio_add_page
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      1590cf0329716306e948a8fc29f1d3ee87d3989f
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/bb071828-9749-428c-a78c-fc39b0b5caf2/config
-syz repro: https://ci.syzbot.org/findings/38d53450-b153-4f47-8474-be250791ea91/syz_repro
-
-------------[ cut here ]------------
-len == 0
-WARNING: block/bio.c:1052 at bio_add_page+0x516/0x700 block/bio.c:1052, CPU#0: udevd/5630
-Modules linked in:
-CPU: 0 UID: 0 PID: 5630 Comm: udevd Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:bio_add_page+0x516/0x700 block/bio.c:1052
-Code: 31 ed 44 89 e8 48 83 c4 50 5b 41 5c 41 5d 41 5e 41 5f 5d c3 cc cc cc cc cc e8 86 5e 17 fd 90 0f 0b 90 eb db e8 7b 5e 17 fd 90 <0f> 0b 90 eb d0 e8 70 5e 17 fd 90 0f 0b 90 e9 76 fe ff ff e8 62 5e
-RSP: 0018:ffffc9000487f0f8 EFLAGS: 00010293
-RAX: ffffffff84af2445 RBX: 0000000000000000 RCX: ffff8881108d0000
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 1ffff110228761e2 R08: ffff8881143b0f7f R09: 1ffff110228761ef
-R10: dffffc0000000000 R11: ffffed10228761f0 R12: ffff8881143b0f14
-R13: 0000000000000000 R14: dffffc0000000000 R15: 0000000000000000
-FS:  00007faeac7ccc80(0000) GS:ffff88818d945000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000295e815ae000 CR3: 0000000114e0e000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- bio_add_folio+0x64/0x90 block/bio.c:1107
- do_mpage_readpage+0xd8c/0x1b40 fs/mpage.c:294
- mpage_readahead+0x3e7/0x800 fs/mpage.c:370
- read_pages+0x193/0x5a0 mm/readahead.c:174
- page_cache_ra_unbounded+0x679/0x8f0 mm/readahead.c:315
- do_page_cache_ra mm/readahead.c:348 [inline]
- force_page_cache_ra+0x26c/0x2e0 mm/readahead.c:378
- filemap_get_pages+0x4d9/0x1ef0 mm/filemap.c:2708
- filemap_read+0x422/0x1630 mm/filemap.c:2841
- blkdev_read_iter+0x2f1/0x420 block/fops.c:830
- new_sync_read fs/read_write.c:493 [inline]
- vfs_read+0x595/0xa80 fs/read_write.c:574
- ksys_read+0x150/0x270 fs/read_write.c:716
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7faeac316b6a
-Code: 00 3d 00 00 41 00 75 0d 50 48 8d 3d 2d 08 0a 00 e8 ea 7d 01 00 31 c0 e9 07 ff ff ff 64 8b 04 25 18 00 00 00 85 c0 75 1b 0f 05 <48> 3d 00 f0 ff ff 76 6c 48 8b 15 8f a2 0d 00 f7 d8 64 89 02 48 83
-RSP: 002b:00007ffd8d811da8 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007faeac316b6a
-RDX: 0000000000000400 RSI: 0000557e6b670e18 RDI: 0000000000000009
-RBP: 0000000000000400 R08: 0000557e6b670df0 R09: 0000000000000008
-R10: 0000000000000051 R11: 0000000000000246 R12: 0000557e6b670df0
-R13: 0000557e6b670e08 R14: 0000557e6b66e128 R15: 0000557e6b66e0d0
- </TASK>
-
-
-***
-
-general protection fault in create_empty_buffers
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      1590cf0329716306e948a8fc29f1d3ee87d3989f
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/bb071828-9749-428c-a78c-fc39b0b5caf2/config
-syz repro: https://ci.syzbot.org/findings/2406d176-ea76-40a8-b6bc-41d3e6326388/syz_repro
-
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 1 UID: 0 PID: 5932 Comm: udevd Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:create_empty_buffers+0x48/0x520 fs/buffer.c:1672
-Code: 00 00 00 00 fc ff df e8 96 dc 69 ff 48 89 df 4c 89 e6 ba 40 8c 40 00 e8 e6 bc ff ff 49 89 c4 48 89 04 24 4c 89 e0 48 c1 e8 03 <42> 80 3c 30 00 74 08 4c 89 e7 e8 09 bc d7 ff 4d 09 3c 24 49 83 c4
-RSP: 0018:ffffc900034bf570 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: ffffea0005ceb100 RCX: 0000000000000046
-RDX: 0000000000000002 RSI: ffffffff8e4b7f70 RDI: ffff888172cdbb80
-RBP: ffffc900034bf6f0 R08: ffffffff825c6656 R09: 0000000000000000
-R10: 0000000000000000 R11: ffffffff8eb5a120 R12: 0000000000000000
-R13: 1ffffd4000b9d620 R14: dffffc0000000000 R15: 0000000000000000
-FS:  00007fd3c0fc7c80(0000) GS:ffff8882a8f45000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00005567a5ebae48 CR3: 000000017395c000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- block_read_full_folio+0x116/0x810 fs/buffer.c:2381
- filemap_read_folio+0x12c/0x3a0 mm/filemap.c:2512
- filemap_update_page mm/filemap.c:2599 [inline]
- filemap_get_pages+0x1742/0x1ef0 mm/filemap.c:2731
- filemap_read+0x422/0x1630 mm/filemap.c:2841
- blkdev_read_iter+0x2f1/0x420 block/fops.c:830
- new_sync_read fs/read_write.c:493 [inline]
- vfs_read+0x595/0xa80 fs/read_write.c:574
- ksys_read+0x150/0x270 fs/read_write.c:716
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fd3c0b16b6a
-Code: 00 3d 00 00 41 00 75 0d 50 48 8d 3d 2d 08 0a 00 e8 ea 7d 01 00 31 c0 e9 07 ff ff ff 64 8b 04 25 18 00 00 00 85 c0 75 1b 0f 05 <48> 3d 00 f0 ff ff 76 6c 48 8b 15 8f a2 0d 00 f7 d8 64 89 02 48 83
-RSP: 002b:00007ffcab174708 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fd3c0b16b6a
-RDX: 0000000000000400 RSI: 000055c883b6c638 RDI: 0000000000000009
-RBP: 0000000000000400 R08: 000055c883b6c610 R09: 0000000000000008
-R10: 0000000000000051 R11: 0000000000000246 R12: 000055c883b6c610
-R13: 000055c883b6c628 R14: 000055c883b60b48 R15: 000055c883b60af0
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:create_empty_buffers+0x48/0x520 fs/buffer.c:1672
-Code: 00 00 00 00 fc ff df e8 96 dc 69 ff 48 89 df 4c 89 e6 ba 40 8c 40 00 e8 e6 bc ff ff 49 89 c4 48 89 04 24 4c 89 e0 48 c1 e8 03 <42> 80 3c 30 00 74 08 4c 89 e7 e8 09 bc d7 ff 4d 09 3c 24 49 83 c4
-RSP: 0018:ffffc900034bf570 EFLAGS: 00010246
-
-RAX: 0000000000000000 RBX: ffffea0005ceb100 RCX: 0000000000000046
-RDX: 0000000000000002 RSI: ffffffff8e4b7f70 RDI: ffff888172cdbb80
-RBP: ffffc900034bf6f0 R08: ffffffff825c6656 R09: 0000000000000000
-R10: 0000000000000000 R11: ffffffff8eb5a120 R12: 0000000000000000
-R13: 1ffffd4000b9d620 R14: dffffc0000000000 R15: 0000000000000000
-FS:  00007fd3c0fc7c80(0000) GS:ffff8882a8f45000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b30763fff CR3: 000000017395c000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess), 6 bytes skipped:
-   0:	df e8                	fucomip %st(0),%st
-   2:	96                   	xchg   %eax,%esi
-   3:	dc 69 ff             	fsubrl -0x1(%rcx)
-   6:	48 89 df             	mov    %rbx,%rdi
-   9:	4c 89 e6             	mov    %r12,%rsi
-   c:	ba 40 8c 40 00       	mov    $0x408c40,%edx
-  11:	e8 e6 bc ff ff       	call   0xffffbcfc
-  16:	49 89 c4             	mov    %rax,%r12
-  19:	48 89 04 24          	mov    %rax,(%rsp)
-  1d:	4c 89 e0             	mov    %r12,%rax
-  20:	48 c1 e8 03          	shr    $0x3,%rax
-* 24:	42 80 3c 30 00       	cmpb   $0x0,(%rax,%r14,1) <-- trapping instruction
-  29:	74 08                	je     0x33
-  2b:	4c 89 e7             	mov    %r12,%rdi
-  2e:	e8 09 bc d7 ff       	call   0xffd7bc3c
-  33:	4d 09 3c 24          	or     %r15,(%r12)
-  37:	49                   	rex.WB
-  38:	83                   	.byte 0x83
-  39:	c4                   	.byte 0xc4
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
