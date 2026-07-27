@@ -1,313 +1,384 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B49FA3B4E95
-	for <syzbot@lists.linux.dev>; Mon, 27 Jul 2026 16:56:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 005C141D106
+	for <syzbot@lists.linux.dev>; Mon, 27 Jul 2026 17:27:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785171389; cv=none; b=hGeMrZigB8kg2Dvyt2AIlHorgBOK+vLAKYGZOAMBPPRu90+M4pV2HxxMkkvRYuxRdBrbSIbKy/lRc58LcjRz1HLCBsa0xCvE3IreJUFwiVNEXUZqhcbNkVTCij15RI1ETCnMa5d5cRx848HFKzijMmDEgxWBahcTRoakuRe8Lts=
+	t=1785173254; cv=none; b=m76qfmXtVFu/UceB7CBaVdln9imxBxgNUhuYvTezM9BBPZ4zJSj2Y2Zt/k9tgZP4hMQfZwuIqsBLrnCBvVbBWatPxeLqZHUfe+3STnvm3J3vMfwVRHDbLG92qPN0lW+m2aldNaJHHGJeCgzYXGBbHgJoPzL6o3W3R7aBUzC72WM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785171389; c=relaxed/simple;
-	bh=lKOaijUxlQfX7/XAqmhaiD+xnfJkE+YW2KBhrdFk9iA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=l8iTtY7eoeywSdaaRlrsAIt4fToNawi1kYHsCQ2AqshgZY+8JtdOwmgDS38G7c5QNQuTeYjzYsdPptjnJe5OlntPhQ62oMm/X1wRZj5omo4cQJsutCh2l+poLfsedKslOYyRRdkiIh86OmUFWWtXOil4cCVGbCnFSASK7BVa524=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=prziaF6I; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785173254; c=relaxed/simple;
+	bh=7e+Y8W2KXVG1Q/Vcf7ZOpr3LVshhj/ac1oS23LIBgHo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=FFaRtYXioYLHgcqxasGblQv88xgsmnI7ZWdiUb3CmHZHeiEkRFa+Euc660WUh0mKZkgnYOxUFRlIqdlt3JY7zi2osE8CeMcTIArM3yU39u+J6kRSDluZ2Erhezxu27ha42R2R6WL4t9R38biKmCzEpfZ3RkN/GePy7NDmJOAk2g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=devineni.in; spf=none smtp.mailfrom=devineni.in; dkim=pass (2048-bit key) header.d=devineni.in header.i=@devineni.in header.b=DE5NcTeF; arc=none smtp.client-ip=209.85.210.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=devineni.in
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=devineni.in
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="prziaF6I"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-49545ba3d4eso17395635e9.3
-        for <syzbot@lists.linux.dev>; Mon, 27 Jul 2026 09:56:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=devineni.in header.i=@devineni.in header.b="DE5NcTeF"
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-8423f236418so2241105b3a.1
+        for <syzbot@lists.linux.dev>; Mon, 27 Jul 2026 10:27:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785171386; x=1785776186; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ql2jP+0b5ihOx780F/mldKU1sg9/Fd3hVg6l3QL7Auo=;
-        b=prziaF6IQdNCTShhPKFZzvSY2ROUtJyyZ/BE9fhzNUq76c9VxpOTO0QrJox3KD0SVG
-         J8qCc2qWqeREZIW6mLXqx5GEngX0wFWqLmrbEMv4WkC3yS79rrOMVaN2UA21xPse9rQ9
-         Dgcnh+3ZJHlmVq4mVcRdkS4ptpYfQh3xXK+LZZv4REnQZx1hQH5H1yJ+puJUrRdQqZ0b
-         mYGKwY0KPRhh4nrZEzKKGc3ciaQUCHudpNc8T1XCi93QgZBoKvs8iHm8IYc7Q3cdTZod
-         hIYUPSvKQmu8zWUoMdddjzBXMHxjbFoQdmXLR43AUhXvxBkw9Gi6iq6bqy+d1JC5ilve
-         TKxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785171386; x=1785776186;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=devineni.in; s=google; t=1785173243; x=1785778043; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ql2jP+0b5ihOx780F/mldKU1sg9/Fd3hVg6l3QL7Auo=;
-        b=oSb7Suz6MnQxpTgCZQ1gui1YS2r4L72C23FeuXpTrDgs9lvGWhtuOPmIPhp88LKEkb
-         Flyappm7JnqRvQ28Kp60aYfcZ9ynasij27Kdr81sCrUA2zMkpWniJMYuitiKdh/9CNLk
-         SrXgTLvXHeu1esVohaacoXVehghBLrx0CyPmC87UbK4CqTItjxBexuWqOXZT6me44V+T
-         NUgdujJMPZ1QUwSxw1pkiqksuoSbMyS91MQ2W7NiqOMUlCTf87sembCa9OWfK3cpgiA5
-         H/KwuXEtCSLOfzfWdTroCSGiHCy1Tcg7zRhAfvxWWsTyz3IlZGgMVSUVr1pSWc0PLDUl
-         vieA==
-X-Forwarded-Encrypted: i=1; AHgh+Ro77c1PtF4mz8ImQ6vtV9jkrAgksH6qvFvIsClRp08f0TIoT14pNTCiwzFuMm6NibbyluNxk1E=@lists.linux.dev
-X-Gm-Message-State: AOJu0YylPg//XAJjtzda0xr7Na5jX9YxHvzY+bk4BDa+Dk7lWTnMiXs+
-	d0mg4JuaRsqegBqUCfJmtKhGGlm+bFDhfPP0MDJM7iMI24kC5SGcOoCH
-X-Gm-Gg: AR+sD12bTKLxsdtSKov1flLKcitVDLqaxvrFjThtM48a5UbtSr9NY17bDdgboleX9ST
-	wUn2Ouow+NAJjeCNHDIr9Zye15g7W8vB3dPTFttjoeojhUta+zwzxEan6XlBbDv2FXW/s2lpKNF
-	Wr8HmUtInkqnniK27ZoJf0wLKkY/JtSyebxDv/7GkwMWgXw7FLgajma7pK8bpK68X4HZuiTGmM0
-	eBwz28tXNy00yMNDoCZDk8C9foEu8ZDh/ZMUEFOMUItufaFrJq0bIzi8AuDnOkfbnjcUsTQ15RD
-	g0aGURjLA0GR1CEP/jz14HQbBAbsO5lwhNWDJkWBLnervoyxZBmr04m5iAKx7A2LlJUxlONn8+x
-	uNtiqKlAc5ucjCNljmd6Nxc2riTYW9QBnFn6xkEcf6c3Mgfb/7C6oPjqPL1MpVgx8Dtrlh12XBq
-	koX8TeKIOPq4/lklkmsPc99jLumyZCFv04rSm170Q=
-X-Received: by 2002:a05:600c:255:b0:495:3e08:ad24 with SMTP id 5b1f17b1804b1-496c3a62dccmr12367595e9.33.1785171385785;
-        Mon, 27 Jul 2026 09:56:25 -0700 (PDT)
-Received: from localhost ([37.30.44.117])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-496c45cb67esm6168565e9.8.2026.07.27.09.56.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jul 2026 09:56:25 -0700 (PDT)
-Date: Mon, 27 Jul 2026 18:56:24 +0200
-From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC v3] jfs: validate dmap start before block map
- operations
-Message-ID: <j446ponu3rdh3cc57g3c645jzi6pl2ltishbun4mcqtcmvuuxj@4qrihlhaxm4b>
-References: <7c3c4fb4-ccbd-486f-b087-6074364ee206@mail.kernel.org>
+        bh=DfaAmb06XyOMLrb4SDGdRgVQMWGJYoinMS+4zKRkyDQ=;
+        b=DE5NcTeFaaqDc7fAIuxE6MjvUKZDBC8YPKYdN3KnjWf5yUwmaoTOcFEs/HaCLOo2X/
+         L/cy1C8hgJn8CDB1SjmnCSRtV+XuBZ3vmJoN2d1az4Xsu+h1ncoU92gjFJm5Lxy6bEq6
+         4S3pxTdHHeGtRbbHx58/CrwiwaoIJQnmO8URk3kWwVr1h0tfinY7Ekgi2Rd56Q3S89kF
+         6DZCIMfCm6FchRQ9EBmOK/Er2zba0w/0v81Q/aeuzUZLu1gf5rSfmMN4sK7OSeH0JsVJ
+         rD1Nc14Bjm7aoshlF5+vuadqa9UeGIiLvSkzZgZAypaYFEKwtgECUsorA/aFgQwLQmqi
+         3WLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785173243; x=1785778043;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=DfaAmb06XyOMLrb4SDGdRgVQMWGJYoinMS+4zKRkyDQ=;
+        b=pHpFFjWALTBPv3Wypob4rxQKQWjmQybFKCWjqljpz3XMYySC+b99FpAtXSYFW85PPY
+         o9YWMOdYYRnNN3YsZZkN/TUt6bWdjbzEKAcQgYevfNfL+HuzBeBjvTmvK8ktq2onoNtS
+         CceozPAjGjkT+L8uOjQeFiTCDnaN4q0njmyUGT8QOFE6gY3c0CPIZ3TI2zWVrVlgZbZF
+         liOurTGhrCx/Kn60KjDKOOkBOf08hdPQOyfAC3+ddLKd6SHNjsWrziygVR+lMNjW3ITs
+         bcbqkgnVz7tjQm2+dChugUPsaIP43Kz/uR/sxGmc9coyptGXJI83t8F5mViqw6bX+nGe
+         1OZQ==
+X-Gm-Message-State: AOJu0YxuA7rew3teuSYCi9P06ncDiy3XaJktarSsq41rtMjNPcWz73++
+	h3F/e13IV2RJKTOyLKEKsQ0DO3nYNuTypLGMMMQb7uZZI7eQO0m4bduGXFNC151RAg==
+X-Gm-Gg: AR+sD12azmc2nJphGPM1bV1DsthH3faSedJGLsgSMHuDIDY/0sQ7SImElq/FVWpmrS8
+	jCHMyvH6fsYwNhXNoVc3d1PuFtJAHs/UCsg7y68A8pbn6gUc3pyoj7cXa9VKzS17+fgOgS20L8C
+	WEZf8Ez/8vvyfwLxB4OZ5J9DQBeiRg+wTfNqln0HLwckQZ/VNBlv+pdH7GVadbdF8lDEL/F3ETH
+	Rfn4QrS/He/zsI7mx5zmXL2NkfpvGiK22+qF0LYwwHNwCzlNMV3WNRBlp2et7mA3MwhXwl9H9Hb
+	lYm23Am36qFgomgLWjKMlYx5zB/kgeFgRSzZ/DSOsGLrxSfvoOGqKO/eK45qx4XOncz/fZ4pRSr
+	ynWod0IM2Chk8NK9n01y3L6xJT6oda5PbM9hbWL+YTY5cxdDqni7aW4KRhRYdA1/n5MBOQBHq3m
+	cI/S4JWfx+dA0qeSEbffRmw+MIc+Fs5beGBgQSru6cT4hVZgFkf+bA77lbWQ+DFf6OzywoTLOm/
+	83VXieAZw7ydugYtdMOC2UVK4AsF0IH2NHko6nQAUHkLnsPfuwIR9sqV0EoKepPc4VwT+IWCA==
+X-Received: by 2002:a05:6a21:6f12:b0:3bf:a11c:176e with SMTP id adf61e73a8af0-3c67dfd3119mr8923256637.57.1785173243024;
+        Mon, 27 Jul 2026 10:27:23 -0700 (PDT)
+Received: from [192.168.0.120] ([49.205.101.182])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-314bc3e1285sm36440834eec.5.2026.07.27.10.27.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jul 2026 10:27:22 -0700 (PDT)
+Message-ID: <49713e72-babd-4001-bdf1-c7cd684d25b4@devineni.in>
+Date: Mon, 27 Jul 2026 22:57:18 +0530
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7c3c4fb4-ccbd-486f-b087-6074364ee206@mail.kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v8] fuse: abort connection on /dev/fuse flush to
+ prevent deadlock
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+References: <ffbdc3cc-fdc0-417b-9b8c-ee418c4734bf@mail.kernel.org>
+Content-Language: en-US
+From: Kusaram Devineni <kusaram@devineni.in>
+In-Reply-To: <ffbdc3cc-fdc0-417b-9b8c-ee418c4734bf@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The v3 expected-start check is at the right boundary and most of the v2
-review points are addressed. The exact-base comparison is inconclusive: the
-reported crash appeared in none of four unpatched VMs and none of four
-patched VMs. The patch is not ready because dbAllocCtl() replaces an
-independent negative-budmin rejection with the narrower helper.
-
-In the single-dmap branch, preserve both invariants. Reject the page when
-dp->tree.budmin < 0, and also reject it when dbValidateDmap() reports an
-unexpected start. A page can have the expected start and still carry invalid
-negative tree geometry; v3 lets that page reach dbAllocDmapLev() even though
-the base code rejects it.
-
-Keep dbValidateDmap() focused on expected-start equality. The boolean
-contract, fail-closed -EIO handling, balanced metapage releases, narrowed
-description, omitted initial-import Fixes: tag, and removal of unrelated
-source changes are all improvements over v2.
-
-For v4:
-
-- restore the dp->tree.budmin < 0 guard alongside dbValidateDmap();
-- mention preservation of that independent geometry check in the description;
-- fix the strict checkpatch CamelCase and cast-spacing checks;
-- rerun the malformed-image check and show that both a mismatched start and a
-  negative budmin fail with -EIO before allocation reaches txLock().
-
-This remains a focused correction to the v3 implementation. Changing txLock()
-or replacing the expected-start design is unnecessary.
-
-On Fri, Jul 24, 2026 at 07:19:00PM +0000, syzbot wrote:
-> A corrupted JFS filesystem image can cause a state where the block
-> allocation map (bmap) and the dmap pages are out of sync. Specifically, if
-> a dmap page's `dp->start` is corrupted, it can lead to a mismatch during
-> block allocation or update operations. The block allocator calculates the
-> returned block number based on `dp->start` (i.e., `dp->start +
-> block_index`), while the bitmap update is derived from the block's relative
-> position within the dmap. If `dp->start` does not match the expected start
-> block number for that dmap's position in the bmap, the allocator may return
-> a block number that is already in use (e.g., as an inode table block or
-> metadata), while marking a completely different block as allocated. This
-> mismatch leads to duplicate allocations. When a thread later attempts to
-> lock this duplicate block (for example, during a directory btree split),
-> `txLock()` detects a metapage conflict because the block is already locked
-> for another purpose, triggering a kernel BUG:
+On 27-07-2026 06:57 pm, syzbot wrote:
+> A single-threaded FUSE daemon can deadlock if it mounts a filesystem and
+> opens a file on it. When the process exits or calls close_range(), the
+> kernel closes file descriptors in ascending numerical order.
 > 
-> kernel BUG at fs/jfs/jfs_txnmgr.c:836!
-> Oops: invalid opcode: 0000 [#1] SMP KASAN NOPTI
-> RIP: 0010:txLock+0x1cc3/0x1d10 fs/jfs/jfs_txnmgr.c:836
+> If the /dev/fuse file descriptor (e.g., fd 5) is closed first, filp_close()
+> decrements the file reference count but defers the actual release (fput) to
+> task work. As a result, the FUSE connection remains active.
+> 
+> Next, when the FUSE file descriptor (e.g., fd 6) is closed, filp_close()
+> calls fuse_flush(), which sends a synchronous FUSE_FLUSH request to the
+> daemon. Since the daemon is the same thread that is currently blocked in
+> the close() syscall, it cannot process the request. The FUSE_FLUSH request
+> uses args.force = true, making the wait uninterruptible. The thread hangs
+> forever, eventually triggering a hung task panic:
+> 
 > Call Trace:
->  <TASK>
->  dtSplitRoot+0x38d/0x18a0 fs/jfs/jfs_dtree.c:1924
->  dtSplitUp fs/jfs/jfs_dtree.c:990 [inline]
->  dtInsert+0xeb2/0x5890 fs/jfs/jfs_dtree.c:868
->  jfs_create+0x730/0xae0 fs/jfs/namei.c:138
->  vfs_create+0x2c4/0x450 fs/namei.c:4202
->  filename_mknodat+0x3e8/0x660 fs/namei.c:5181
-> ...
+>   <TASK>
+>   __schedule+0x17d9/0x56c0 kernel/sched/core.c:7234
+>   schedule+0x164/0x2b0 kernel/sched/core.c:7326
+>   request_wait_answer fs/fuse/dev.c:743 [inline]
+>   __fuse_request_send fs/fuse/dev.c:757 [inline]
+>   fuse_chan_send+0x1065/0x1ab0 fs/fuse/dev.c:833
+>   fuse_simple_request fs/fuse/fuse_i.h:1012 [inline]
+>   fuse_flush+0x66e/0x8b0 fs/fuse/file.c:504
+>   filp_flush+0xbd/0x190 fs/open.c:1471
+>   filp_close+0x1d/0x40 fs/open.c:1484
+>   __range_close fs/file.c:793 [inline]
+>   __do_sys_close_range fs/file.c:854 [inline]
+>   __se_sys_close_range+0x3d3/0x900 fs/file.c:818
+>   do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
 > 
-> To fix this, validate that the `dp->start` of the dmap page matches the
-> expected start block number before performing block map operations.
-> Rejecting a mismatched start with `-EIO` prevents duplicate allocations
-> before `txLock()` is reached.
+> To fix this, implement a .flush method for /dev/fuse (fuse_dev_operations).
+> The .flush method is called synchronously by filp_close() during the
+> close() syscall, bypassing the fput delay.
 > 
+> In fuse_dev_flush(), if this is the final close of the file descriptor
+> (file_count(file) == 1), the device is marked as closing. Since multiple
+> cloned /dev/fuse devices can exist for the same connection, the closing
+> state of each device is tracked under the channel lock. If all devices
+> associated with the channel are closing, the FUSE connection is proactively
+> aborted. By aborting the connection synchronously in .flush, any subsequent
+> fuse_flush() calls on FUSE files will immediately fail with -ENOTCONN
+> instead of blocking indefinitely, avoiding the deadlock.
+> 
+> To handle the race where a /dev/fuse file descriptor is closed before it is
+> fully installed into a connection (i.e., fud->chan is still NULL),
+> cmpxchg() is used to atomically transition fud->chan from NULL to
+> FUSE_DEV_CHAN_DISCONNECTED. This prevents a concurrent fuse_dev_install()
+> from succeeding on a device that is already being closed. Furthermore,
+> because the VFS may invoke .fasync after .flush but before .release,
+> fuse_get_dev() and __fuse_get_dev() must reject the
+> FUSE_DEV_CHAN_DISCONNECTED sentinel to prevent .fasync from dereferencing
+> it.
+> 
+> Note that CUSE (Character Device in User Space) also shares
+> fuse_dev_operations and therefore inherits this new .flush callback, which
+> is safe and consistent with its lifecycle.
+> 
+> Fixes: 4a9d4b024a31 ("switch fput to task_work_add")
 > Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+a843f6ae2130a987d63b@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=a843f6ae2130a987d63b
-> Link: https://syzkaller.appspot.com/ai_job?id=bdbf4b4d-3729-479d-89c3-0cee1fcde974
-> To: <jfs-discussion@lists.sourceforge.net>
-> To: "Dave Kleikamp" <shaggy@kernel.org>
-> Cc: "Kees Cook" <kees@kernel.org>
+> Tested-by: syzbot <syzbot@syzkaller.appspotmail.com>
+> Reported-by: syzbot+0dbb0d6fda088e78a4d8@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=0dbb0d6fda088e78a4d8
+> Link: https://syzkaller.appspot.com/ai_job?id=fdcc0473-0605-4428-aad0-dd002b5f15aa
+> To: <fuse-devel@lists.linux.dev>
+> To: "Miklos Szeredi" <miklos@szeredi.hu>
 > Cc: <linux-kernel@vger.kernel.org>
-> Cc: "Yun Zhou" <yun.zhou@windriver.com>
-> Cc: "Zheng Yu" <zheng.yu@northwestern.edu>
 > 
 > ---
+> v8:
+> - Avoided first-person pronouns ('we') in the commit description to use impersonal wording.
+> 
+> v7:
+> - Removed the unintended `---` separator and the abridged changelog from the commit message.
+> https://lore.kernel.org/all/1a00ee11-60cc-4a12-9c47-e0de73aa20a5@mail.kernel.org/T/
+> 
+> v6:
+> - Clarified fud->chan state transitions and lockless access rules in comments.
+> https://lore.kernel.org/all/6d8fbedb-e0dc-4133-81be-dc44a2b066d9@mail.kernel.org/T/
+> 
+> v5:
+> - Moved `closing` next to `sync_init` in `struct fuse_dev` to preserve compact placement of boolean members.
+> - Restored formatting of `fuse_dev_operations`.
+> - Updated commit message to explain why `fuse_get_dev()` and `__fuse_get_dev()` reject `FUSE_DEV_CHAN_DISCONNECTED` due to `.fasync` invocation.
+> - Removed duplicate `Tested-by` tag.
+> https://lore.kernel.org/all/13552139-cd2b-4ea9-994c-cfed6c07000b@mail.kernel.org/T/
+> 
+> v4:
+> - Changed `(file_count(file) <= 1)` to `(file_count(file) == 1)` in the commit message.
+> - Added `Tested-by: syzbot@syzkaller.appspotmail.com` tag.
+> - Added lockdep assertion in `fuse_dev_all_closing()`.
+> - Updated `fuse_get_dev()` and `__fuse_get_dev()` to reject `FUSE_DEV_CHAN_DISCONNECTED`.
+> - Checked `fch->connected` before aborting in `fuse_dev_release()` and `fuse_dev_flush()`.
+> https://lore.kernel.org/all/17ec009d-743f-4703-b56d-c78b2152ace2@mail.kernel.org/T/
+> 
 > v3:
-> - Renamed the patch to "jfs: validate dmap start before block map operations".
-> - Simplified dbValidateDmap() to only validate that the dmap dp->start matches the expected start block number, removing unproven integrity checks.
-> - Updated the commit description to explain the exact root cause of the selection/update mismatch and how validating dp->start prevents duplicate allocations before txLock() is reached.
+> - Added fuse_dev_all_closing() helper to check if all devices on a channel are closing.
+> - Updated fuse_dev_release() to abort the connection if all remaining devices are closing.
+> - Fixed the file reference count check in fuse_dev_flush() to check for file_count(file) != 1 instead of file_count(file) > 1.
+> - Updated the comment in fs/fuse/fuse_dev_i.h to clarify the lifecycle of fud->chan and when it is set to FUSE_DEV_CHAN_DISCONNECTED.
+> https://lore.kernel.org/all/40d9021a-6a93-43a1-97b0-6ec2f9cbabc6@mail.kernel.org/T/
 > 
 > v2:
-> - Replaced the approach of propagating errors from txLock() with proactive dmap validation.
-> - Introduced dbValidateDmap() to check dmap page integrity (nblocks, nfree, start address, and tree structure).
-> - Integrated dmap validation into dbFree(), dbUpdatePMap(), dbAlloc(), dbExtend(), dbAllocCtl(), dbAllocBottomUp(), and dbExtendFS().
-> - Reverted return type changes for functions in jfs_dtree.c and jfs_xtree.c from the previous version.
-> https://lore.kernel.org/all/ff86d803-d687-48f6-9cc2-f3d35b27a666@mail.kernel.org/T/
+> - Added `closing` flag to `struct fuse_dev` to track the closing state of each device.
+> - Updated `fuse_dev_flush()` to check if all associated devices are closing, properly handling cloned devices.
+> - Used `cmpxchg()` in `fuse_dev_flush()` to handle the race where a device is closed before being fully installed.
+> - Updated `fuse_dev_release()` to handle `FUSE_DEV_CHAN_DISCONNECTED` safely.
+> https://lore.kernel.org/all/3e4a3361-9e1b-4f46-8033-f85ada100a79@mail.kernel.org/T/
 > 
 > v1:
-> https://lore.kernel.org/all/9d2eba88-93bf-4f3c-a3b2-b554e1fffe80@mail.kernel.org/T/
+> https://lore.kernel.org/all/bedbc009-8806-4913-9a03-1b25b6d33729@mail.kernel.org/T/
 > ---
-> diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-> index a841cf21d..f15954c1f 100644
-> --- a/fs/jfs/jfs_dmap.c
-> +++ b/fs/jfs/jfs_dmap.c
-> @@ -98,6 +98,9 @@ static int blkstol2(s64 nb);
->  static int cntlz(u32 value);
->  static int cnttz(u32 word);
->  
-> +static bool dbValidateDmap(struct super_block *sb, const struct dmap *dp,
-> +			   s64 expected_start);
+> diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
+> index 5763a7cd3..8b14c7d57 100644
+> --- a/fs/fuse/dev.c
+> +++ b/fs/fuse/dev.c
+> @@ -1662,18 +1662,23 @@ static int fuse_dev_open(struct inode *inode, struct file *file)
+>   struct fuse_dev *fuse_get_dev(struct file *file)
+>   {
+>   	struct fuse_dev *fud = fuse_file_to_fud(file);
+> +	struct fuse_chan *fch = fuse_dev_chan_get(fud);
+>   	int err;
+>   
+> -	if (unlikely(!fuse_dev_chan_get(fud))) {
+> +	if (unlikely(!fch)) {
+>   		/* only block waiting for mount if sync init was requested */
+>   		if (!fud->sync_init)
+>   			return ERR_PTR(-EPERM);
+>   
+> -		err = wait_event_interruptible(fuse_dev_waitq, fuse_dev_chan_get(fud) != NULL);
+> +		err = wait_event_interruptible(fuse_dev_waitq,
+> +					       (fch = fuse_dev_chan_get(fud)) != NULL);
+>   		if (err)
+>   			return ERR_PTR(err);
+>   	}
+>   
+> +	if (unlikely(fch == FUSE_DEV_CHAN_DISCONNECTED))
+> +		return ERR_PTR(-EPERM);
 > +
->  static int dbAllocDmapBU(struct bmap * bmp, struct dmap * dp, s64 blkno,
->  			 int nblocks);
->  static int dbInitDmap(struct dmap * dp, s64 blkno, int nblocks);
-> @@ -476,6 +479,12 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
->  		}
->  		dp = (struct dmap *) mp->data;
->  
-> +		if (!dbValidateDmap(ip->i_sb, dp, blkno & ~(s64)(BPERDMAP - 1))) {
-> +			release_metapage(mp);
-> +			IREAD_UNLOCK(ipbmap);
-> +			return -EIO;
-> +		}
-> +
->  		/* determine the number of blocks to be freed from
->  		 * this dmap.
->  		 */
-> @@ -568,6 +577,13 @@ dbUpdatePMap(struct inode *ipbmap,
->  			if (mp == NULL)
->  				return -EIO;
->  			metapage_wait_for_io(mp);
-> +
-> +			if (!dbValidateDmap(ipbmap->i_sb,
-> +					    (struct dmap *) mp->data,
-> +					    blkno & ~(s64)(BPERDMAP - 1))) {
-> +				release_metapage(mp);
-> +				return -EIO;
-> +			}
->  		}
->  		dp = (struct dmap *) mp->data;
->  
-> @@ -886,6 +902,11 @@ int dbAlloc(struct inode *ip, s64 hint, s64 nblocks, s64 * results)
->  
->  		dp = (struct dmap *) mp->data;
->  
-> +		if (!dbValidateDmap(ip->i_sb, dp, blkno & ~(s64)(BPERDMAP - 1))) {
-> +			release_metapage(mp);
-> +			goto read_unlock;
-> +		}
-> +
->  		/* first, try to satisfy the allocation request with the
->  		 * blocks beginning at the hint.
->  		 */
-> @@ -1118,6 +1139,12 @@ static int dbExtend(struct inode *ip, s64 blkno, s64 nblocks, s64 addnblocks)
->  
->  	dp = (struct dmap *) mp->data;
->  
-> +	if (!dbValidateDmap(ip->i_sb, dp, extblkno & ~(s64)(BPERDMAP - 1))) {
-> +		release_metapage(mp);
-> +		IREAD_UNLOCK(ipbmap);
-> +		return -EIO;
-> +	}
-> +
->  	/* try to allocate the blocks immediately following the
->  	 * current allocation.
->  	 */
-> @@ -1902,7 +1929,7 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
->  			return -EIO;
->  		dp = (struct dmap *) mp->data;
->  
-> -		if (dp->tree.budmin < 0) {
-> +		if (!dbValidateDmap(bmp->db_ipbmap->i_sb, dp, blkno & ~(s64)(BPERDMAP - 1))) {
->  			release_metapage(mp);
->  			return -EIO;
->  		}
-> @@ -1936,6 +1963,12 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
->  		}
->  		dp = (struct dmap *) mp->data;
->  
-> +		if (!dbValidateDmap(bmp->db_ipbmap->i_sb, dp, b & ~(s64)(BPERDMAP - 1))) {
-> +			release_metapage(mp);
-> +			rc = -EIO;
-> +			goto backout;
-> +		}
-> +
->  		/* the dmap better be all free.
->  		 */
->  		if (dp->tree.stree[ROOT] != L2BPERDMAP) {
-> @@ -1993,6 +2026,11 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
->  		}
->  		dp = (struct dmap *) mp->data;
->  
-> +		if (!dbValidateDmap(bmp->db_ipbmap->i_sb, dp, b & ~(s64)(BPERDMAP - 1))) {
-> +			release_metapage(mp);
-> +			continue;
-> +		}
-> +
->  		/* free the blocks is this dmap.
->  		 */
->  		if (dbFreeDmap(bmp, dp, b, BPERDMAP)) {
-> @@ -2134,6 +2172,18 @@ static int dbAllocDmap(struct bmap * bmp, struct dmap * dp, s64 blkno,
->  	return (rc);
->  }
->  
-> +static bool dbValidateDmap(struct super_block *sb, const struct dmap *dp,
-> +			   s64 expected_start)
+>   	return fud;
+>   }
+>   
+> @@ -2211,17 +2216,31 @@ void fuse_chan_wait_aborted(struct fuse_chan *fch)
+>   	fuse_uring_wait_stopped_queues(fch);
+>   }
+>   
+> +static bool fuse_dev_all_closing(struct fuse_chan *fch)
 > +{
-> +	if (le64_to_cpu(dp->start) != expected_start) {
-> +		jfs_error(sb, "corrupt dmap page: start %lld expected %lld\n",
-> +			  (long long)le64_to_cpu(dp->start),
-> +			  (long long)expected_start);
-> +		return false;
-> +	}
+> +	struct fuse_dev *pos;
 > +
+> +	lockdep_assert_held(&fch->lock);
+> +
+> +	list_for_each_entry(pos, &fch->devices, entry) {
+> +		if (!pos->closing)
+> +			return false;
+> +	}
 > +	return true;
 > +}
->  
->  /*
->   * NAME:	dbFreeDmap()
-> @@ -3308,6 +3358,12 @@ int dbAllocBottomUp(struct inode *ip, s64 blkno, s64 nblocks)
->  		}
->  		dp = (struct dmap *) mp->data;
->  
-> +		if (!dbValidateDmap(ip->i_sb, dp, blkno & ~(s64)(BPERDMAP - 1))) {
-> +			release_metapage(mp);
-> +			IREAD_UNLOCK(ipbmap);
-> +			return -EIO;
-> +		}
 > +
->  		/* determine the number of blocks to be allocated from
->  		 * this dmap.
->  		 */
+>   int fuse_dev_release(struct inode *inode, struct file *file)
+>   {
+>   	struct fuse_dev *fud = fuse_file_to_fud(file);
+>   	/* Pairs with cmpxchg() in fuse_dev_install() */
+>   	struct fuse_chan *fch = xchg(&fud->chan, FUSE_DEV_CHAN_DISCONNECTED);
+>   
+> -	if (fch) {
+> +	if (fch && fch != FUSE_DEV_CHAN_DISCONNECTED) {
+>   		struct fuse_pqueue *fpq = &fud->pq;
+>   		LIST_HEAD(to_end);
+>   		unsigned int i;
+>   		bool last;
+> +		bool abort;
+>   
+>   		/* Make sure fuse_dev_install_with_pq() has finished */
+>   		spin_lock(&fch->lock);
+> @@ -2234,14 +2253,15 @@ int fuse_dev_release(struct inode *inode, struct file *file)
+>   		list_del(&fud->entry);
+>   		/* Are we the last open device? */
+>   		last = list_empty(&fch->devices);
+> +		abort = fch->connected && fuse_dev_all_closing(fch);
+>   		spin_unlock(&fch->lock);
+>   
+>   		fuse_dev_end_requests(&to_end);
+>   
+> -		if (last) {
+> +		if (last)
+>   			WARN_ON(fch->iq.fasync != NULL);
+> +		if (abort)
+>   			fuse_chan_abort(fch, false);
+> -		}
+>   		fuse_conn_put(fch->conn);
+>   	}
+>   	fuse_dev_put(fud);
+> @@ -2375,6 +2395,34 @@ static void fuse_dev_show_fdinfo(struct seq_file *seq, struct file *file)
+>   }
+>   #endif
+>   
+> +static int fuse_dev_flush(struct file *file, fl_owner_t id)
+> +{
+> +	struct fuse_dev *fud = fuse_file_to_fud(file);
+> +	struct fuse_chan *fch;
+> +	bool abort;
+> +
+> +	if (file_count(file) != 1)
+> +		return 0;
+> +
+> +	/*
+> +	 * Atomically transition fud->chan from NULL to FUSE_DEV_CHAN_DISCONNECTED
+> +	 * on final close to prevent a later fuse_dev_install() from succeeding.
+> +	 */
+> +	fch = cmpxchg(&fud->chan, NULL, FUSE_DEV_CHAN_DISCONNECTED);
+> +	if (!fch || fch == FUSE_DEV_CHAN_DISCONNECTED)
+> +		return 0;
+> +
+> +	spin_lock(&fch->lock);
+> +	fud->closing = true;
+> +	abort = fch->connected && fuse_dev_all_closing(fch);
+> +	spin_unlock(&fch->lock);
+> +
+> +	if (abort)
+> +		fuse_chan_abort(fch, false);
+> +
+> +	return 0;
+> +}
+> +
+>   const struct file_operations fuse_dev_operations = {
+>   	.owner		= THIS_MODULE,
+>   	.open		= fuse_dev_open,
+> @@ -2383,6 +2431,7 @@ const struct file_operations fuse_dev_operations = {
+>   	.write_iter	= fuse_dev_write,
+>   	.splice_write	= fuse_dev_splice_write,
+>   	.poll		= fuse_dev_poll,
+> +	.flush		= fuse_dev_flush,
+>   	.release	= fuse_dev_release,
+>   	.fasync		= fuse_dev_fasync,
+>   	.unlocked_ioctl = fuse_dev_ioctl,
+> diff --git a/fs/fuse/fuse_dev_i.h b/fs/fuse/fuse_dev_i.h
+> index 668c8391d..2833a0350 100644
+> --- a/fs/fuse/fuse_dev_i.h
+> +++ b/fs/fuse/fuse_dev_i.h
+> @@ -302,6 +302,9 @@ struct fuse_dev {
+>   	/** @sync_init: Issue FUSE_INIT synchronously */
+>   	bool sync_init;
+>   
+> +	/** @closing: Final close has started, protected by chan->lock */
+> +	bool closing;
+> +
+>   	/** @chan: Fuse channel for this device */
+>   	struct fuse_chan *chan;
+>   
+> @@ -330,17 +333,25 @@ struct fuse_copy_state {
+>   	} ring;
+>   };
+>   
+> -/* fud->chan gets assigned to this value when /dev/fuse is closed */
+> -#define FUSE_DEV_CHAN_DISCONNECTED ((struct fuse_chan *) 1)
+> -
+>   /*
+> - * Lockless access is OK, because fud->chan is set once during mount and is valid
+> - * until the file is released.
+> + * fud->chan has the following monotonic state transitions:
+> + *
+> + * NULL -> valid channel -> FUSE_DEV_CHAN_DISCONNECTED
+> + * NULL -----------------> FUSE_DEV_CHAN_DISCONNECTED
+>    *
+> - * fud->chan is set to FUSE_DEV_CHAN_DISCONNECTED only after the containing file is
+> - * released, so result is safe to dereference in most cases.  Exceptions are:
+> - * fuse_dev_put() and fuse_fill_super_common().
+> + * A valid channel pointer remains valid until the file is released. Final
+> + * flush can install FUSE_DEV_CHAN_DISCONNECTED directly for an uninstalled
+> + * device, preventing any later channel installation. The sentinel therefore
+> + * means that the channel can no longer be installed or accessed through this
+> + * file; it does not imply that release has already run and it must never be
+> + * dereferenced.
+> + *
+> + * fuse_dev_chan_get() reads this state locklessly. Callers must distinguish
+> + * NULL, a valid channel pointer, and FUSE_DEV_CHAN_DISCONNECTED before
+> + * dereferencing the result.
+>    */
+> +#define FUSE_DEV_CHAN_DISCONNECTED ((struct fuse_chan *) 1)
+> +
+>   static inline struct fuse_chan *fuse_dev_chan_get(struct fuse_dev *fud)
+>   {
+>   	/* Pairs with xchg() in fuse_dev_install() */
+> @@ -355,8 +366,9 @@ static inline struct fuse_dev *fuse_file_to_fud(struct file *file)
+>   static inline struct fuse_dev *__fuse_get_dev(struct file *file)
+>   {
+>   	struct fuse_dev *fud = fuse_file_to_fud(file);
+> +	struct fuse_chan *fch = fuse_dev_chan_get(fud);
+>   
+> -	if (!fuse_dev_chan_get(fud))
+> +	if (!fch || fch == FUSE_DEV_CHAN_DISCONNECTED)
+>   		return NULL;
+>   
+>   	return fud;
 > 
 > 
-> base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
-> -- 
-> This is an AI-generated patch subject to moderation.
-> Reply with '#syz upstream' to Sign-off the patch as a human author
-> and send it to the upstream kernel mailing lists.
-> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-> 
-> See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-> You can comment on the patch as usual, syzbot will try to address
-> the comments and send a new version of the patch if necessary.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
+
+#syz upstream
+
