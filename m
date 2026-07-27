@@ -1,167 +1,172 @@
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpo49.interia.pl (smtpo49.interia.pl [217.74.67.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5C3C3346A8
-	for <syzbot@lists.linux.dev>; Sun, 26 Jul 2026 07:08:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E3793E316B
+	for <syzbot@lists.linux.dev>; Mon, 27 Jul 2026 07:46:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785049684; cv=none; b=r5vbG9Z53yn0LYvE/yH9vnbPi3FmMetTJwcdoCkktB75Y50977hAl9/Yh6VElBjwEeZZUfOcfgp0qVU2hbv2OejyPI8oDyk5iP7i7lci++df+RXJlX8esQJPIcXDzR3KTXmDYDCTMMEBPE6Fre1PTKC+M4dY+UQtA7u9/oNp0WA=
+	t=1785138408; cv=none; b=FC1wuz91jmGwEwnBRuA3Bm/jsqf9Of+RZVm5NL2/94mT3vzwTULSqK0mUILLp14dSwr1qTpuD6ZA4qYRhyFkEVk88HI5BHtDoXw/MSwTCW6redUJnX/xdDW//wiKJzXBPYOq600A/VdjxPgNd0Hip4Za6Fo5YYlrrqbJlXVYM4w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785049684; c=relaxed/simple;
-	bh=MHoGe+90hZ9L09syldld3iRrVB9477XinVV/vSsaNLE=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=jZSV+EW5gto3mQR1A2kUwHbPSJhRq8/hLzv5SQ7mnTHk3Q2FSUwxDpNsbb2IO4zstkhGroBvteeLUzlEMXaDVtcF2qMPUYfdDpEd1m7d52G+WSqrZH0QcbdyKlKhPGwF12+kM/mcH2GFWU25yvsHfzSArWXDB2lnko/ChUCFYjQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7eb64224fd2so2524481a34.0
-        for <syzbot@lists.linux.dev>; Sun, 26 Jul 2026 00:08:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785049682; x=1785654482;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=XKW6kq58maKYt/2lW6GoOr8xzvWAewxyPhVuBDRpRgw=;
-        b=Dwf9RNrR/ZtCednQzippB5T1+cYEVS4UIhdZCKq9W6m1hptiEbvW4mt/ievpIwC8Nm
-         FX/vUkEOyLEFt5dyvsLT9IFlKpsnwmtTca8esv3ynrCZJKzLDs+/hrl8rTJNYjWOc0Bk
-         s7iLQD4z4JNuuMceFPrmaYergM3xgRfamJvvgArBpeLBJtKT7ottm6IJ2XIQS3FU9s7o
-         wqL9PbxWzsNAPom7EmZGI8zdYyZPlg58heu3neVsT9jkEDUKZ2uzkMx2x26r+KN1Ro+b
-         K52yy3PJyZhtN9CNTaSFPKj0Lezxgs764AxO9hBFndI1Vv2Y5yKFIdUMG1Q+S/9JkCvQ
-         6GrQ==
-X-Gm-Message-State: AOJu0YwV6T1GVeVJAHpwt9Ip0+k3/aDGagQoD1i6uIc+0fBzUg9BdGd+
-	NINhZ0n3W9k6zZYIbJ4C8vKwRsVdW6S3oR/jDB0ntiZgxz5ZRBC8OVnc4+1r4KCNFu0LEmTuOQp
-	o2ajZ8MqrqLrArimsYv4z30cRFH70Evt1NrAfZKHa89TUJtM2KwXNWXt8iqg=
+	s=arc-20240116; t=1785138408; c=relaxed/simple;
+	bh=hH3iMPyaoJ5mkOhv3F2jIxeUnzRMusFiIDzaEhvu5HY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=R2Fg/nsuUFVE2Y9rvzldZd3r686I2Ti0tXBnEZrCFmRLeEuiLvLy/izeAS3mpvIjzCwUtqhFyPck0KdTReSKxh4UJ1Y7AZld/ozB1jXwD77h8TFxoGiiRXlFukc5Mdd43o1vEaSVUrP84Q2pp/PFhQkleNuGej5K/ULktb8xnMI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=bkBHqs+n; arc=none smtp.client-ip=217.74.67.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="bkBHqs+n"
+Received: from localhost (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Mon, 27 Jul 2026 09:46:33 +0200 (CEST)
+From: Slawomir Stepien <sst@poczta.fm>
+To: syzkaller-bugs@googlegroups.com,
+	johannes@sipsolutions.net,
+	linux-wireless@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	syzbot@lists.linux.dev,
+	Slawomir Stepien <sst@poczta.fm>,
+	syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
+Subject: [PATCH v2] mac80211: reject station addition if AP or MLO link is inactive
+Date: Mon, 27 Jul 2026 09:45:26 +0200
+Message-ID: <20260727074526.248393-1-sst@poczta.fm>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1385:b0:4a3:d383:b3ea with SMTP id
- 5614622812f47-4ab6a24e0cdmr4071021b6e.27.1785049681809; Sun, 26 Jul 2026
- 00:08:01 -0700 (PDT)
-Date: Sun, 26 Jul 2026 00:08:01 -0700
-In-Reply-To: <20260724123037.3004560-1-yukuai@kernel.org>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a65b251.073198cf.94f0f.0024.GAE@google.com>
-Subject: [syzbot ci] Re: blk-cgroup: protect blkgs with blkcg_mutex
-From: syzbot ci <syzbot+cic2326f0718d065ef@syzkaller.appspotmail.com>
-To: axboe@kernel.dk, cengku@gmail.com, cgroups@vger.kernel.org, 
-	dongsheng.yang@linux.dev, hch@lst.de, josef@toxicpanda.com, 
-	linux-block@vger.kernel.org, ming.lei@redhat.com, nilay@linux.ibm.com, 
-	tj@kernel.org, yukuai@fygo.io, yukuai@kernel.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1785138395; bh=pAG5JQKFpd6sLu0HpXWK8TdT6a3g/pT8xNcL5/8HWXg=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version;
+	b=bkBHqs+n9+XO5dc3MXQL0Kgb0KowY0fGWJpVfyzYXbNd7R+Ov4Tjdfa37wzbWt3k9
+	 HooSh64lzUE+EU7yDQF2r0SoMTTL2vAX802i8ORYx6V5bxCRMAHLVJiFBsMuBVo5Q5
+	 eLt6laR/4XJ7GW+DXFi06bIBuSfmmGdNCpt3SuIk=
 
-syzbot ci has tested the following series
+Currently, userspace can issue a netlink command to add a station to
+an AP or P2P GO interface before the AP has fully started, or before
+a specific MLO link has begun beaconing. This will e.g. lead to a
+WARN_ON trigger:
 
-[v2] blk-cgroup: protect blkgs with blkcg_mutex
-https://lore.kernel.org/all/20260724123037.3004560-1-yukuai@kernel.org
-* [RFC PATCH v2 1/8] block: associate blkg in submit_bio instead of bio_set_dev
-* [RFC PATCH v2 2/8] blk-throttle: protect throttle state with td lock
-* [RFC PATCH v2 3/8] blk-cgroup: protect blkgs with blkcg_mutex
-* [RFC PATCH v2 4/8] blk-cgroup: remove blkg radix tree preloading
-* [RFC PATCH v2 5/8] blk-cgroup: allocate blkgs in blkg_create
-* [RFC PATCH v2 6/8] blk-cgroup: share blkg creation between lookup and config prep
-* [RFC PATCH v2 7/8] bfq: avoid blkg lookup from locked cgroup update
-* [RFC PATCH v2 8/8] block: fail nowait bio submit if blkg allocation can't sleep
-
-and found the following issue:
-general protection fault in blkcg_punt_bio_submit
-
-Full report is available here:
-https://ci.syzbot.org/series/eece31b0-1f5d-4840-8a12-407d9a4d1c57
-
-***
-
-general protection fault in blkcg_punt_bio_submit
-
-tree:      axboe
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
-base:      093fbffe03f5c1bb9c10a9e5aa65b23250844403
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/2cc06765-4cf6-4329-9c0a-9fe326a5338e/config
-syz repro: https://ci.syzbot.org/findings/38efdd1d-4179-4903-8ade-04afbce263b2/syz_repro
-
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000006: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000030-0x0000000000000037]
-CPU: 0 UID: 0 PID: 26 Comm: kworker/u9:0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: btrfs-worker btrfs_work_helper
-RIP: 0010:blkcg_punt_bio_submit+0x47/0x130 block/blk-cgroup.c:243
-Code: ae 13 fd 4c 8d 73 50 4c 89 f0 48 c1 e8 03 80 3c 28 00 74 08 4c 89 f7 e8 07 06 7f fd 4d 8b 36 4d 8d 7e 30 4c 89 f8 48 c1 e8 03 <80> 3c 28 00 74 08 4c 89 ff e8 eb 05 7f fd 49 83 3f 00 0f 84 ab 00
-RSP: 0000:ffffc90000a17a28 EFLAGS: 00010206
-RAX: 0000000000000006 RBX: ffff888117071348 RCX: ffff8881032f5940
-RDX: 0000000000000000 RSI: 0000000004000000 RDI: ffff888117071348
-RBP: dffffc0000000000 R08: ffff8881bb74406f R09: 1ffff110376e880d
-R10: dffffc0000000000 R11: ffffed10376e880e R12: ffff88816c5e6f08
-R13: dffffc0000000000 R14: 0000000000000000 R15: 0000000000000030
-FS:  0000000000000000(0000) GS:ffff88818d9cb000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f05d5660000 CR3: 0000000172eb2000 CR4: 00000000000006f0
+WARNING: net/mac80211/rate.c:51 at rate_control_rate_init+0x5a6/0x630
+...
 Call Trace:
  <TASK>
- run_ordered_work fs/btrfs/async-thread.c:243 [inline]
- btrfs_work_helper+0x577/0xc50 fs/btrfs/async-thread.c:322
- process_one_work kernel/workqueue.c:3314 [inline]
- process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3397
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3478
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:blkcg_punt_bio_submit+0x47/0x130 block/blk-cgroup.c:243
-Code: ae 13 fd 4c 8d 73 50 4c 89 f0 48 c1 e8 03 80 3c 28 00 74 08 4c 89 f7 e8 07 06 7f fd 4d 8b 36 4d 8d 7e 30 4c 89 f8 48 c1 e8 03 <80> 3c 28 00 74 08 4c 89 ff e8 eb 05 7f fd 49 83 3f 00 0f 84 ab 00
-RSP: 0000:ffffc90000a17a28 EFLAGS: 00010206
-RAX: 0000000000000006 RBX: ffff888117071348 RCX: ffff8881032f5940
-RDX: 0000000000000000 RSI: 0000000004000000 RDI: ffff888117071348
-RBP: dffffc0000000000 R08: ffff8881bb74406f R09: 1ffff110376e880d
-R10: dffffc0000000000 R11: ffffed10376e880e R12: ffff88816c5e6f08
-R13: dffffc0000000000 R14: 0000000000000000 R15: 0000000000000030
-FS:  0000000000000000(0000) GS:ffff8882a8fcb000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007efceadf26a8 CR3: 0000000115190000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess):
-   0:	ae                   	scas   %es:(%rdi),%al
-   1:	13 fd                	adc    %ebp,%edi
-   3:	4c 8d 73 50          	lea    0x50(%rbx),%r14
-   7:	4c 89 f0             	mov    %r14,%rax
-   a:	48 c1 e8 03          	shr    $0x3,%rax
-   e:	80 3c 28 00          	cmpb   $0x0,(%rax,%rbp,1)
-  12:	74 08                	je     0x1c
-  14:	4c 89 f7             	mov    %r14,%rdi
-  17:	e8 07 06 7f fd       	call   0xfd7f0623
-  1c:	4d 8b 36             	mov    (%r14),%r14
-  1f:	4d 8d 7e 30          	lea    0x30(%r14),%r15
-  23:	4c 89 f8             	mov    %r15,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	80 3c 28 00          	cmpb   $0x0,(%rax,%rbp,1) <-- trapping instruction
-  2e:	74 08                	je     0x38
-  30:	4c 89 ff             	mov    %r15,%rdi
-  33:	e8 eb 05 7f fd       	call   0xfd7f0623
-  38:	49 83 3f 00          	cmpq   $0x0,(%r15)
-  3c:	0f                   	.byte 0xf
-  3d:	84                   	.byte 0x84
-  3e:	ab                   	stos   %eax,%es:(%rdi)
+ rate_control_rate_init_all_links+0xf4/0x190 net/mac80211/rate.c:84
+ sta_apply_auth_flags+0x1bc/0x430 net/mac80211/cfg.c:2152
+ sta_apply_parameters+0x126d/0x1b10 net/mac80211/cfg.c:2618
+ ieee80211_add_station+0x3de/0x700 net/mac80211/cfg.c:2684
+ rdev_add_station+0xfc/0x290 net/wireless/rdev-ops.h:201
+ nl80211_new_station+0x1b4e/0x1fd0 net/wireless/nl80211.c:9505
 
+Fix this by introducing a two-tiered active state check in
+ieee80211_add_station():
 
-***
+1. Global AP State: Add an early return if the main wdev is an AP or
+   P2P GO and `sdata->u.ap.active` is false.
 
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+2. MLO Link State: For Wi-Fi 7 MLO setups, links can start asynchronously.
+   Even if the global AP is active, a specific link might still be down.
+   If a specific link_id is requested, ensure the underlying physical link
+   has an allocated beacon (`link->u.ap.beacon`) before proceeding with
+   sta_info allocation.
 
+Assisted-by: Gemini:3.1-pro
+Reported-by: syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=9bdc0c5998ab45b05030
+Signed-off-by: Slawomir Stepien <sst@poczta.fm>
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+v2:
+* Move the logic inside ieee80211_add_station()
+* Check both the non-MLO AP/P2P state and MLO link state
+* Update subject line and commit message
 
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
+v1:
+* https://lore.kernel.org/linux-wireless/373210a9-4365-4cac-823a-0eec391858e7@mail.kernel.org/
+---
+ net/mac80211/cfg.c | 43 ++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 34 insertions(+), 9 deletions(-)
 
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
+index 43f142624d33..c3a580ad97e9 100644
+--- a/net/mac80211/cfg.c
++++ b/net/mac80211/cfg.c
+@@ -2637,19 +2637,24 @@ static int ieee80211_add_station(struct wiphy *wiphy, struct wireless_dev *wdev,
+ {
+ 	struct ieee80211_local *local = wiphy_priv(wiphy);
+ 	struct sta_info *sta;
+-	struct ieee80211_sub_if_data *sdata;
++	struct ieee80211_sub_if_data *sdata = IEEE80211_WDEV_TO_SUB_IF(wdev);
+ 	int err;
+ 
+ 	lockdep_assert_wiphy(local->hw.wiphy);
+ 
++	if (sdata->vif.type == NL80211_IFTYPE_AP ||
++	    sdata->vif.type == NL80211_IFTYPE_P2P_GO) {
++		if (!sdata->u.ap.active)
++			return -ENETDOWN;
++	}
++
+ 	if (params->vlan) {
+ 		sdata = IEEE80211_DEV_TO_SUB_IF(params->vlan);
+ 
+ 		if (sdata->vif.type != NL80211_IFTYPE_AP_VLAN &&
+ 		    sdata->vif.type != NL80211_IFTYPE_AP)
+ 			return -EINVAL;
+-	} else
+-		sdata = IEEE80211_WDEV_TO_SUB_IF(wdev);
++	}
+ 
+ 	if (ether_addr_equal(mac, sdata->vif.addr))
+ 		return -EINVAL;
+@@ -2663,17 +2668,37 @@ static int ieee80211_add_station(struct wiphy *wiphy, struct wireless_dev *wdev,
+ 		return -EINVAL;
+ 
+ 	/*
+-	 * If we have a link ID, it can be a non-MLO station on an AP MLD,
+-	 * but we need to have a link_mac in that case as well, so use the
+-	 * STA's MAC address in that case.
++	 * If we have a link ID:
++	 * (1) check if it is valid, up and beaconing
++	 * (2) it can be a non-MLO station on an AP MLD, but we need to have a
++	 * link_mac in that case as well, so use the STA's MAC address in that
++	 * case.
+ 	 */
+-	if (params->link_sta_params.link_id >= 0)
++	if (params->link_sta_params.link_id >= 0) {
++		int link_id = params->link_sta_params.link_id;
++		struct ieee80211_link_data *link;
++		struct ieee80211_sub_if_data *wdev_sdata = IEEE80211_WDEV_TO_SUB_IF(wdev);
++
++		if (link_id >= IEEE80211_MLD_MAX_NUM_LINKS)
++			return -EINVAL;
++
++		link = sdata_dereference(wdev_sdata->link[link_id], wdev_sdata);
++		if (!link)
++			return -ENOLINK;
++
++		if (wdev_sdata->vif.type == NL80211_IFTYPE_AP ||
++		    wdev_sdata->vif.type == NL80211_IFTYPE_P2P_GO) {
++			if (!rcu_access_pointer(link->u.ap.beacon))
++				return -ENETDOWN;
++		}
++
+ 		sta = sta_info_alloc_with_link(sdata, mac,
+-					       params->link_sta_params.link_id,
++					       link_id,
+ 					       params->link_sta_params.link_mac ?: mac,
+ 					       GFP_KERNEL);
+-	else
++	} else {
+ 		sta = sta_info_alloc(sdata, mac, GFP_KERNEL);
++	}
+ 
+ 	if (!sta)
+ 		return -ENOMEM;
+-- 
+2.55.0
+
