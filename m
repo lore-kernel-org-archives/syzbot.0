@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4EC92FFF8B;
-	Tue, 28 Jul 2026 10:25:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDC713EEACB
+	for <syzbot@lists.linux.dev>; Tue, 28 Jul 2026 11:14:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785234339; cv=none; b=oMATasCK/SvEuTKQBKSJFvGN0D5Y2fYISh4CqXoG/yQYMOUBzchq0n/WhnjnQ2CwcRRh1bPAZN0o+0kkRYrIGb4drTUESEXbA6A+37wtB3AK9zuAXRmYHCBKk3uITPs/a7n//jHWw+FnYkaJDuwZPmF7D9DakkUHN02fsm0cxFA=
+	t=1785237279; cv=none; b=GfYkLDSmNqsGrYETzpeJqAlY1c2r17Ms3vkaqKRnHgDJZ6NZhQAfnBMKpom7lkXysCYAltcyYG3tlmCmmJOKmrqdO65fM+JczY8VZHCpyQvNBp5zH3YVE011SLIsfd0iLLprT0sI10vL037IeHFREk81L0wGT4RHmyoNwjwAIYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785234339; c=relaxed/simple;
-	bh=kcEkfz+ZCfXOsIXQnsOGf3nIuYdKTGxilPpWgHEMF58=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=r8xMayaoqULS/bsNXdXh4IWEvasFw0HMHBGFP3mB7mjO1Laov8h7MAwOdqtV6/kv0stBeDOGnWrq/5ny1MHPIwLge8cfSDQps2QGWtOhwk8krM2KL6TFefQaNb42OcAQtd2X10ogRWJKaWZCk0ZQxEC4Jx/DTx6DOOYsa/4dN18=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cRqtQzUS; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785237279; c=relaxed/simple;
+	bh=D5gateXrl36FZHOGWC/ex/JPvwUFU59OnACxFEOrNCU=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=lQDj2wakskVAX42OW4wkZDID+OENhB/3WFMGU+DFhZYUdAiLHfF8eo+KRvXrOIW1ZAsSPJIjZLoBzxkdBHa02KaT4vFA5Z3BWE15BOxq4GayVREIv525IMEvnwpxR7fC51yShkPaSUtEEEj0EnqYG4vwxM6hmDKvmHn6nbIZBig=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fciiwzvo; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cRqtQzUS"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 133301F000E9;
-	Tue, 28 Jul 2026 10:25:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fciiwzvo"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 4AF141F000E9;
+	Tue, 28 Jul 2026 11:14:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785234337;
-	bh=hJu0lR51o8IvVMj4GsYy7qbL2iP0dJ6hZ1TdUfXicZo=;
+	s=k20260515; t=1785237277;
+	bh=jSgoJSRHt7vSFhfY8RsaBdsM7PKP/FOdYpcF91Y5lQs=;
 	h=From:To:Cc:Subject:Date;
-	b=cRqtQzUSP2JpAg9qVda8W4+cWbnVJx4SMHm2bUrE1080ecz0HwcvoMsQa+/YTG0+t
-	 9hUUeULaJXAJx3OCsCcovDPCQ4qBQiCg0B+2p8RyEkgsam9PrGEuarm3waq8X4CR+R
-	 3Q2i4++NvNAByHzjUoTlAuPaF/QipU3EMYTE0cTzsGMtpcGClZ/qbNQb6/Ogz29aTM
-	 ZrBXbi9qOPc0sGH8/mE9o6HaWGJUxmRvuwsD43u6NpKDQOHNzNA/lP5w4n5yUMz/fr
-	 /AXqMJ5R4tFEGiH82GeEaiQyd/ScrpEiiqnas0brsvfqz6OVIul5FH7BcJWtst+WE8
-	 n+g7n2IC0BeVQ==
+	b=FciiwzvoDqFc90deXCGzkJPmTx0itceb+ppVpf8PU5Vav4fLU5W7tH8Rr1r+rDQkO
+	 ZN0t7oDyei+tD9h9WjvqqiFyPHsm1do55/EGi1U+Zm7Skw0nX0J1VqMz4i/QFk5ouM
+	 8t7VrAeTctpVcUgMF6kMDNl21cMbTo/Lqik7j3oi0KhFN7MygKycBpK1K8nC/Mx0eT
+	 EKZTSC2P1YjgqMroVWhDyC6kTaANaFNynlDYNRU0Xqwp/mliNuuahClR5nRi0VvlUE
+	 NnFf2NyojTMsOBZR348nT7OA+svMspmNPAu7cgOWxXxAjAVFbOEzempvENWSSB8xwE
+	 U2T5QeD/eEPvA==
 From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Krystian Kaniewski <krystianmkaniewski@gmail.com>, "Jens Axboe" <axboe@kernel.dk>, "Josef Bacik" <josef@toxicpanda.com>, <linux-block@vger.kernel.org>, <nbd@other.debian.org>, "Christoph Hellwig" <hch@lst.de>
-Cc: linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Subject: [PATCH] nbd: skip queue limits update for size-only reconfigure
-Message-ID: <1ec17dae-f9ac-424a-b597-b2794f157dbb@mail.kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: sst@poczta.fm, syzbot@lists.linux.dev
+Subject: [PATCH RFC v2] wifi: zd1211rw: reject secondary interfaces to prevent conflicts
+Message-ID: <4ccb85ef-8c74-4226-92ac-f8145816eb0a@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,109 +38,82 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue, 28 Jul 2026 10:25:37 +0000 (UTC)
+Date: Tue, 28 Jul 2026 11:14:37 +0000 (UTC)
 
-From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+The zd1211rw driver is designed for single-function Wi-Fi dongles and
+hardcodes its USB endpoints. When a malformed USB device exposes multiple
+interfaces that match the driver's device ID, the driver blindly binds to
+all of them.
 
-Commit 242a49e5c878 ("nbd: freeze the queue for queue limits updates")
-correctly added queue freezing for live updates of real queue limits.
-However, nbd_set_size() is also used for capacity-only generic netlink
-updates, so the freeze is unnecessarily broad for the reported request.
+During probe(), the driver calls usb_reset_device(), which iterates over
+all interfaces and invokes the pre_reset() callback for each bound
+interface. Since multiple interfaces are bound to zd1211rw, pre_reset() is
+called sequentially for each instance, acquiring their respective
+&mac->chip.mutex. Because all instances initialize their mutexes with the
+same lock class, lockdep detects a task acquiring a lock of the same class
+it already holds and flags it as a possible recursive deadlock:
 
-When an NBD server becomes unresponsive, it leaves I/O in flight. An
-unnecessary queue freeze during a size-only reconfigure will wait forever
-for these in-flight I/Os to complete while the global genl_mutex is held,
-leading to a global generic netlink stall.
+WARNING: possible recursive locking detected
+kworker/0:1/11 is trying to acquire lock:
+ffff88810371dde0 (&chip->mutex){+.+.}-{4:4}, at:
+zd_chip_disable_rxtx+0x20/0x50
+drivers/net/wireless/zydas/zd1211rw/zd_chip.c:1465
 
-A size-only reconfigure can update config->bytesize and disk capacity
-directly because the effective block size and all other queue limits stay
-unchanged.
+but task is already holding lock:
+ffff8881138ddde0 (&chip->mutex){+.+.}-{4:4}, at: pre_reset+0x28c/0x380
+drivers/net/wireless/zydas/zd1211rw/zd_usb.c:1505
 
-This patch introduces nbd_size_set() to handle size-only updates directly
-without freezing the queue or committing queue limits. Capacity-only
-generic netlink reconfiguration no longer freezes the queue, while startup
-and real block-size changes continue to use the existing frozen limits
-update via nbd_set_size().
+Fix this by explicitly rejecting secondary interfaces (bInterfaceNumber !=
+0) during probe(). This ensures that only a single instance of the driver
+binds to the device, eliminating the recursive locking scenario.
 
-Fixes: 242a49e5c878 ("nbd: freeze the queue for queue limits updates")
+Fixes: e85d0918b54f ("[PATCH] ZyDAS ZD1211 USB-WLAN driver")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot <syzbot+f272bbfbf8498ddadea5@syzkaller.appspotmail.com>
-Closes: https://syzkaller.appspot.com/bug?extid=f272bbfbf8498ddadea5
-Link: https://syzkaller.appspot.com/ai_job?id=786b3bd0-fdad-4252-9e86-7a6a35c3b756
-Signed-off-by: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+Reported-by: syzbot+0ec3d1a6cf1fbe79c153@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=0ec3d1a6cf1fbe79c153
+Link: https://syzkaller.appspot.com/ai_job?id=00724ef7-fd77-4cde-9779-895b8f63c2f6
+To: <linux-wireless@vger.kernel.org>
+To: "Daniel Drake" <dsd@gentoo.org>
+Cc: "Johannes Berg" <johannes.berg@intel.com>
+Cc: "Kees Cook" <kees@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+Cc: "Abdun Nihaal" <nihaal@cse.iitm.ac.in>
 
 ---
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index fe63f3c55..567b031ec 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -331,6 +331,27 @@ static void nbd_mark_nsock_dead(struct nbd_device *nbd, struct nbd_sock *nsock,
- 	nsock->sent = 0;
- }
+v2:
+- Removed the explanation of the -EAGAIN error from the commit message.
+- Removed the line containing only '=' from the commit message.
+
+v1:
+https://lore.kernel.org/all/a15b9bcb-e2d2-4767-a0d1-87522fa559a1@mail.kernel.org/T/
+---
+diff --git a/drivers/net/wireless/zydas/zd1211rw/zd_usb.c b/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
+index 966d8ccb0..2bb2df12c 100644
+--- a/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
++++ b/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
+@@ -1353,6 +1353,13 @@ static int probe(struct usb_interface *intf, const struct usb_device_id *id)
+ 	struct zd_usb *usb;
+ 	struct ieee80211_hw *hw = NULL;
  
-+static void nbd_size_update(struct nbd_device *nbd)
-+{
-+	struct nbd_config *config = nbd->config;
++	/* ZD1211 devices are single-function. Reject secondary interfaces
++	 * to prevent multiple instances from conflicting on hardcoded endpoints
++	 * and triggering recursive locking warnings.
++	 */
++	if (intf->cur_altsetting->desc.bInterfaceNumber != 0)
++		return -ENODEV;
 +
-+	if (max_part)
-+		set_bit(GD_NEED_PART_SCAN, &nbd->disk->state);
-+	if (!set_capacity_and_notify(nbd->disk, config->bytesize >> 9))
-+		kobject_uevent(&nbd_to_dev(nbd)->kobj, KOBJ_CHANGE);
-+}
-+
-+static int nbd_size_set(struct nbd_device *nbd, loff_t bytesize)
-+{
-+	if (bytesize < 0)
-+		return -EINVAL;
-+
-+	nbd->config->bytesize = bytesize;
-+	if (nbd->pid)
-+		nbd_size_update(nbd);
-+	return 0;
-+}
-+
- static int nbd_set_size(struct nbd_device *nbd, loff_t bytesize, loff_t blksize)
- {
- 	struct queue_limits lim;
-@@ -375,10 +396,7 @@ static int nbd_set_size(struct nbd_device *nbd, loff_t bytesize, loff_t blksize)
- 	if (error)
- 		return error;
+ 	print_id(udev);
  
--	if (max_part)
--		set_bit(GD_NEED_PART_SCAN, &nbd->disk->state);
--	if (!set_capacity_and_notify(nbd->disk, bytesize >> 9))
--		kobject_uevent(&nbd_to_dev(nbd)->kobj, KOBJ_CHANGE);
-+	nbd_size_update(nbd);
- 	return 0;
- }
- 
-@@ -2062,11 +2080,19 @@ static int nbd_genl_size_set(struct genl_info *info, struct nbd_device *nbd)
- 	if (info->attrs[NBD_ATTR_SIZE_BYTES])
- 		bytes = nla_get_u64(info->attrs[NBD_ATTR_SIZE_BYTES]);
- 
--	if (info->attrs[NBD_ATTR_BLOCK_SIZE_BYTES])
-+	if (info->attrs[NBD_ATTR_BLOCK_SIZE_BYTES]) {
- 		bsize = nla_get_u64(info->attrs[NBD_ATTR_BLOCK_SIZE_BYTES]);
-+		if (!bsize)
-+			bsize = 1u << NBD_DEF_BLKSIZE_BITS;
-+		if (blk_validate_block_size(bsize))
-+			return -EINVAL;
-+	}
- 
--	if (bytes != config->bytesize || bsize != nbd_blksize(config))
--		return nbd_set_size(nbd, bytes, bsize);
-+	if (bytes != config->bytesize || bsize != nbd_blksize(config)) {
-+		if (bsize != nbd_blksize(config))
-+			return nbd_set_size(nbd, bytes, bsize);
-+		return nbd_size_set(nbd, bytes);
-+	}
- 	return 0;
- }
- 
+ 	if (id->driver_info & DEVICE_INSTALLER)
 
 
-base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
+base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
 -- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
 See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
 You can comment on the patch as usual, syzbot will try to address
 the comments and send a new version of the patch if necessary.
