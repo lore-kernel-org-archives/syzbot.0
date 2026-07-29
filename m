@@ -1,72 +1,73 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F0A8411A1E
-	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 15:34:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0883E3AAF7D
+	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 15:45:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785339266; cv=none; b=koZYTlrpMsnzHFAuig7tt7ru6a/AHm0ycRIG9Ez4dfzPqgh9CxdQjyllP2LXQahiiheVZ9XCgTkEzYAikQARkQ43MoNimIaZrOWJ0OxNIcDRrwzS7DxsWBGsJ5Wag0pZa2Qfwhle/3IytWBmOxOlB9rp4vHdf8xepk46D6KGzOI=
+	t=1785339943; cv=none; b=n2lobI9KFFWkxHgFfBMF10UA899oNw5cchgq3vXU0peEjwPIeMLVieq1DEARQ2wHUfnNHMiX0OgAGL9R4TzqsHICTZ6yXR77o8PPK5Z2WWSfN/ayY+G8vQN26IqBmGRPYIWc9oez65H0UBYMtVSTAxZSQuQj44jiXjUyojOl1l4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785339266; c=relaxed/simple;
-	bh=/8E/mzpV8NvxuL7qhatlYh5ujbLF/B6CEStB/a62ENE=;
+	s=arc-20240116; t=1785339943; c=relaxed/simple;
+	bh=DJHojELkSstG2WgbL0sa4LZouaXXQHa1XDq2Dy+l3zU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CuQVIR++LrJru2TJR4Vo9URXx7tXHyDbYH7Ut9KGuD7V+vOg/JI9LKr05g/60NNkRehwtFTGXA9HoiAgTu9c267fwI/lCnXOFTEfNAb6nt/YYFbFjOedQexNiYtLKAkYrCuLInXXLbiCi3erOhqC9JY7C/w4bYacnLwan6tUAdg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D/aLs0Tm; arc=none smtp.client-ip=209.85.221.44
+	 Content-Type:Content-Disposition:In-Reply-To; b=TfIR1aWeOh3n1kXKT6HtsadBMJe0weCms9LBVgquFAV4bqfBoq7fqvk9EgjWR8ThkXynYMOE8U6WQJPKbiC366RS0J8ci3EnvF01fdXlBEOg5JHn9eWFdxIQ7cVr537ev0WRcyqhj7nCv1kB0xAyaJDMtWDgWjzznue0Ql5mk6U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=A3Kwf1eN; arc=none smtp.client-ip=209.85.221.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D/aLs0Tm"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-47f6609c657so592180f8f.2
-        for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 08:34:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A3Kwf1eN"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-4728c12ba97so766472f8f.0
+        for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 08:45:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785339261; x=1785944061; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1785339939; x=1785944739; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=1EBA1WeYKawLQghfRidv/cNBg2UmglALNRNll5TJn7k=;
-        b=D/aLs0TmsOpj5lwIMzFONAaW+XXfxaYFW7Arp8iQK4mHYhFfAA9bPN/SXyUc2K7SZn
-         moD6HFDadLHx0oj8xKD1dg4aPR+hAcvMs3DVW8bLh0luCrHQS0FYSiHt8zQVWKEEdLZC
-         C9RTCCGW6Q6FKA9qxWJMnO9lkSnes4qUbLojndBws9NvPqA1CjVbV8BeNokOkwpdtRyI
-         uW7N2DNZ2ouYmP/NFwcT0Xz/fjGpuWCe0C4jhMhGE6bKir0/LehXFNRqHcP0qJXorFdL
-         +AiaBoFqZwj3GrU68ia+wQNpXDkGtm3T2l/HS64yh0qdMhWwdj1x24TSiFFcRQBZ0Yai
-         HxGg==
+        bh=GgdOkkiUd9f8EzYDM3/WWfj1sTSW9ut64k2BUV8l/Ss=;
+        b=A3Kwf1eNSHsibFCnxnRjKKJjiM/hssUG9/kpD+vkEd6fuBdEv34ejBv1I9yKG6JKSC
+         69kpkVL4ElvcVaqEvgl5JVNRVIbXJPg4t4tRRa8O2T1fLQCc2jBxY1hEpLsNySbANIsf
+         MydSl5PqumXtGyrBF5dx40nBa/kFhv0VLOCxYuLWPBaJqEAuxA6Vaumg0JpChgVj2Oin
+         jmrT8DIoULprl97ADIcgGL3OwBxoO1ZP2sU+C4QiE7WJZUjghT4v8V5yd4h6984/UXJC
+         jea9IiEkC1fJqm4CXi759LSwlePS3EEUHt4wPz1rW1z+gd7Beu9TsL0ElQ2FeLwkGlgo
+         fuxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785339261; x=1785944061;
+        d=1e100.net; s=20251104; t=1785339939; x=1785944739;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=1EBA1WeYKawLQghfRidv/cNBg2UmglALNRNll5TJn7k=;
-        b=lFSj92BHKy22UNbNpjm48POo2WhWj265U0+K1r5PMqIM99d461pENgWEO8YF0boz83
-         Lf1ts2DcuvU+rxDhzeSsc4RO+vfrUvAvDtK+98dF7VjevT1ZfTSLknR/CprkLxzWWcJV
-         s/B86h9hg7Y/xYx+jZ2vfeMxvnmo+7r2hwui7HuiGyjMfZnTe2tC8YBFM4AvLB1vtwc/
-         o1awzCMvcxEciE/e+Yg0xy0vjHW9TXe3AS43EUKnZlbecM7Gt8fslwlG3MDulxgvYKby
-         MskqQkL6IYItUBLz008L3yT3K9kfQBCtXIpplZXZvkVM+Nj5TE5g3+3Xi7h0t1kprRSl
-         yzTA==
-X-Forwarded-Encrypted: i=1; AHgh+RpBinotr0M3d95VCJFrXk1Slvkxft6eZwKza7NJ7PBuacKEIys58Ky7pPb0w/Eyx+LcCCtm48Y=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzP9Fj9SVorzkw2pdhb/H+9JX9OtEzmYiVPENNO8oYwWyMcQP6u
-	59R/ihZiHXRwXLCxGyMqNU02iAxrf930u3HNUtktbC4aBjAZ3ybXGjb4
-X-Gm-Gg: AR+sD13JYci1xfctK6vAaN3ZjdJY0uPfZjma9xwlVrvjv2jG65C0UHl1FoiDcpIExPN
-	sOuyO0bmHC1aYdI2r7dIJLoijdfsE7H/HOQpsjJ9aekByS50vTbILzuKBtBNY1fNAQiojrxmQ9v
-	AQ+chfmpa68zRR/wT4BmxFpZ2EfWEoXB4lrKDKgDQteHy6eXGm4+X64OlSGRdn0cXrIkTiR9FKR
-	kMKX1W5/7kGYfynHDMwCVgITDQqcUNxD0R+CDwRVRlGlPa+SRnCg0o/Hp/kt0sWxJdRJ80HrPdJ
-	+93+dtl0KorvNEnhR5XcXOaupWgJ2y6k0KWOTz1zBG/DIRUNzFaZMgDB5AsbLVT6UQVxbGcXtuG
-	nyvjdqzlQ+M4YGslQj/EHz4aiw4ap80MtlpYB3NHZGzb/HW55xjnI/lXjkb0Ut7M5fzwP8GSL99
-	bv5KiBTXaZZSKBmKsVHh9WZroOeZGnzcnZ5HDdk24z+kt2a8p5ISI8a/sdBEk/vYpvedVLxy53i
-	2rg6q64DyQL6d8=
-X-Received: by 2002:a05:6000:2908:b0:47f:52e9:3716 with SMTP id ffacd0b85a97d-47fb1eb7108mr8857878f8f.44.1785339260635;
-        Wed, 29 Jul 2026 08:34:20 -0700 (PDT)
+        bh=GgdOkkiUd9f8EzYDM3/WWfj1sTSW9ut64k2BUV8l/Ss=;
+        b=pKkxZmb50enwQoBTSYICBTM5yiyEgs8qc0Hr5jWMDqxNspBrjmXQaXwvhj3gmaHFOt
+         pla2dz8pjEIoWzKyVDhbPpJVqm0LC2zs4A9BRi+2dy+WqW2K29qgHttDohvXnBGR6rTf
+         mfKa9W51ND/fpHW6a9Nqd7psAooe77rsrp4hgHqjKAagV6nlTHa9SavudTnhE3fN5df0
+         OnSxSPahbEW3btv5jg2zBJdLPbA/lX7aCrN8y0BOZF5UMXcBBGLRCGLfEYZ7kadiqNpE
+         vbctx6UAldb9q1QFZ/D3Ft3osTbDck87QFzN85Dbmk+5hBBUJDDGJpa6oeYqlKd6uMJ3
+         t8NQ==
+X-Forwarded-Encrypted: i=1; AHgh+RrWqTJOXWcPHPCfvfaNGoVIoOlgM1j96gHZcLEL6H0jEk9eD+eCdUPbjOJWkSULk9wLtMumlCA=@lists.linux.dev
+X-Gm-Message-State: AOJu0YyaeV1sF+DjFFLHW7sEO4qPCa7Bnq2q99HAaUWfLt+3CrcjkCmf
+	gLLeAvnF+wBRmwVod/OoPja/Di9rU+4+Kb9+5rjHlRL/JZM2kLR0hbyB
+X-Gm-Gg: AR+sD108FMDuEBCI1ENUqwcvz6P2NBB54o68Kjd0MFv3z02BNPLcTAKkdBTbj+pZ7o5
+	03Akyo0frunupwfWLecxyi4Ddx+r1D+76yhggTyUS+0gDxGUZ0/fuPshWq3EOFMB0CAYAAX61IW
+	l9lDEG3E6TmFyk3Q2iJaTH7vimzmCqXuAOpsj9vOlCaONTF/J64StBmg9dwOAaZxr03Pp0IzzvL
+	kAQL2yziyf+7YDXP3zvTT5LwdEohWTehn5Lo2cHrKrF1TcQ/PUe1Dmmp9njD5f7qyQT9t9WSna6
+	TrSXAE5ISqXQaqsoGgJMs1VwOdjMCuhgFeANTC/9U1R3AQTmVhbmlkOpH0LJzRP5kyK08ii+hTt
+	m69H5Ru3O/InHO5/wo+ls/qrt/Y6QTJdocY6w9fSKUgqUqPdD81/KVMsmXWfhzkHnykMdyELE8t
+	rFJ47mIv3Dkl4rXHD0BtPTsj/gXOgypflxFWsk29B8K6s33HNSmkPQ5DLY5i7KvjEIn4imdYeGs
+	yWVkjyDrJrpDPA=
+X-Received: by 2002:a05:6000:2586:b0:47f:95e8:2ebf with SMTP id ffacd0b85a97d-47fb1ecc29emr8603474f8f.12.1785339938855;
+        Wed, 29 Jul 2026 08:45:38 -0700 (PDT)
 Received: from localhost ([37.30.44.117])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fb6b2768fsm8857481f8f.37.2026.07.29.08.34.19
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fb6b0f2ddsm8894873f8f.20.2026.07.29.08.45.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jul 2026 08:34:20 -0700 (PDT)
-Date: Wed, 29 Jul 2026 17:34:19 +0200
+        Wed, 29 Jul 2026 08:45:38 -0700 (PDT)
+Date: Wed, 29 Jul 2026 17:45:37 +0200
 From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
 To: syzbot <syzbot@kernel.org>
 Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC] tipc: fix spinlock recursion in tipc_sk_rcv()
-Message-ID: <itkgtjwcza6bl3zirj6ahx3v6dzp2krksh3gate62fylv2vo37@ndcnjfhv3ohy>
-References: <01641937-e30d-43dd-ba9c-95b3d2ae5691@mail.kernel.org>
+Subject: Re: [PATCH RFC v4] jfs: validate dmap start before block map
+ operations
+Message-ID: <tkqyaulre47jjj3ll3t5pst3xdpjcrvdn3e2jdg4tct7pwdmm7@z75nvc36fe7e>
+References: <d1405703-afc9-40f9-bc57-ddedf66f35da@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -75,223 +76,241 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <01641937-e30d-43dd-ba9c-95b3d2ae5691@mail.kernel.org>
+In-Reply-To: <d1405703-afc9-40f9-bc57-ddedf66f35da@mail.kernel.org>
 
-This patch fixes the tested own-node lock recursion by deferring queued data
-until the receive-side socket lock has been released. Comparable four-VM
-testing reproduced the target TIPC stall in 4/4 baseline VMs and 0/4 patched
-VMs. The patch is not ready because the unconditional if (xmitq) branch also
-defers remote-node backlogs and bypasses the existing whole-queue transmit and
-congestion-result handling.
+The v4 expected-start predicate and covered error paths are correct, and this
+version restores the independent negative-budmin guard and fixes the helper
+naming and checkpatch findings. Comparable four-VM testing reproduced the
+target crash in 2/4 baseline VMs and 0/4 patched VMs. The patch is still not
+ready because its broad call-site set omits the partial-dmap branch in
+dbExtendFS().
 
-tipc_sk_push_backlog() currently uses xmitq as both a lock-context signal and a
-destination test. Those are not equivalent. For a remote dnode, the existing
-tipc_node_xmit() call must remain responsible for sending the complete queue
-and restoring cong_link_cnt when it returns -ELINKCONG. Sending those buffers
-later through tipc_node_distr_xmit() changes that contract.
+In that branch, dbInitDmap() preserves the loaded dp->start while extending an
+existing partial dmap, and dbExtendFS() later derives the allocation-group
+index from that value. Version 4 validates other dmap consumers but not this
+one. The no-crash result proves target suppression for the tested image; it
+does not make the broader invariant complete.
 
-For the next revision:
+For v5:
 
-- Restrict the splice-to-xmitq branch to own-node delivery, equivalent to
-  xmitq && in_own_node(net, dnode).
-- Preserve direct tipc_node_xmit() and -ELINKCONG handling for remote nodes,
-  and keep the NULL shutdown path unchanged.
-- Update the commit message to describe the own-node boundary instead of
-  implying that every receive-side backlog can be deferred.
-- Run focused local, remote, shutdown, and connection-flow checks in addition
-  to the comparable baseline/patched reproducer pair.
+- Prefer the demonstrated narrow fix: keep expected-start validation in
+  dbAlloc() and the single-dmap path in dbAllocCtl(), retain the independent
+  dp->tree.budmin < 0 rejection, and remove the unrelated broad call sites.
+- If broad coverage is retained, validate the existing partial dmap in
+  dbExtendFS() before using its start, and add deterministic tests for both a
+  matching-start success path and a mismatched-start -EIO path.
+- Match the description to the final scope. Keep Fixes: omitted unless a
+  first-bad commit is proven, rerun get_maintainer.pl on the final diff, and
+  rerun default and strict checkpatch plus the comparable baseline/patched
+  reproducer pair.
 
-A broader TIPC transmit redesign is unnecessary. Keep the next revision on
-the existing smart-Nagle helper and narrow its deferral predicate.
+Changing txLock() or inventing another allocation algorithm is unnecessary.
+Keep the next revision on the expected-start boundary above.
 
-On Wed, Jul 22, 2026 at 06:39:37PM +0000, 'syzbot' via syzkaller-upstream-moderation wrote:
-> An RCU stall (infinite loop / livelock) can occur due to a spinlock
-> recursion bug in the TIPC subsystem. Specifically, tipc_sk_rcv() can be
-> called recursively on the same CPU and try to acquire a socket spinlock
-> that is already held higher up in the call stack. Because it uses
-> spin_trylock_bh(), it fails to acquire the lock and enters an infinite
-> loop.
+On Mon, Jul 27, 2026 at 06:48:37PM +0000, syzbot wrote:
+> A corrupted JFS filesystem image can cause a state where the block
+> allocation map (bmap) and the dmap pages are out of sync. Specifically, if
+> a dmap page's `dp->start` is corrupted, it can lead to a mismatch during
+> block allocation or update operations. The block allocator calculates the
+> returned block number based on `dp->start` (i.e., `dp->start +
+> block_index`), while the bitmap update is derived from the block's relative
+> position within the dmap. If `dp->start` does not match the expected start
+> block number for that dmap's position in the bmap, the allocator may return
+> a block number that is already in use (e.g., as an inode table block or
+> metadata), while marking a completely different block as allocated. This
+> mismatch leads to duplicate allocations. When a thread later attempts to
+> lock this duplicate block (for example, during a directory btree split),
+> `txLock()` detects a metapage conflict because the block is already locked
+> for another purpose, triggering a kernel BUG:
 > 
-> The issue is triggered by the concurrent execution of sendmsg() and
-> setsockopt() on a connected TIPC socket pair (fd0 and fd1), which reside on
-> the same node (loopback).
-> 
-> The sequence of events leading to the livelock is:
-> 1. setsockopt locks fd0 (acquires the socket mutex sk->sk_lock.owned).
-> While fd0 is locked, sendmsg on fd1 sends messages to fd0. Since fd0 is
-> owned by the user, tipc_sk_enqueue() adds these messages to fd0's backlog
-> queue.
-> 2. setsockopt processes SO_RCVBUFFORCE and reduces fd0's sk_rcvbuf to the
-> minimum value (SOCK_MIN_RCVBUF, 2048).
-> 3. setsockopt finishes and calls release_sock(fd0). Seeing a non-empty
-> backlog, it calls __release_sock(fd0).
-> 4. __release_sock(fd0) drops fd0's spinlock (sk->sk_lock.slock) and calls
-> sk_backlog_rcv() -> tipc_sk_backlog_rcv() -> tipc_sk_filter_rcv() to
-> process the backlog.
-> 5. Because sk_rcvbuf was drastically reduced, the receive queue limit is
-> exceeded. tipc_sk_filter_rcv(fd0) rejects the message (TIPC_ERR_OVERLOAD)
-> and queues a reject message to xmitq.
-> 6. tipc_sk_backlog_rcv(fd0) calls tipc_node_distr_xmit(&xmitq) to send the
-> reject message back to fd1. Since fd1 is on the same node, tipc_node_xmit()
-> synchronously calls tipc_sk_rcv(fd1).
-> 7. tipc_sk_rcv(fd1) successfully locks fd1's spinlock and calls
-> tipc_sk_enqueue(fd1) -> tipc_sk_filter_rcv(fd1) ->
-> tipc_sk_filter_connect(fd1).
-> 8. tipc_sk_filter_connect(fd1) sees that fd1's sk_write_queue is not empty.
-> It calls tipc_sk_push_backlog(fd1).
-> 9. tipc_sk_push_backlog(fd1) calls tipc_node_xmit() to send the queued
-> messages to fd0. This synchronously calls tipc_sk_rcv(fd0).
-> 10. tipc_sk_rcv(fd0) successfully locks fd0's spinlock (as __release_sock
-> dropped it) and calls tipc_sk_enqueue(fd0). Since fd0 is still owned by the
-> user, it tries to add the message to the backlog. The backlog is full, so
-> it rejects the message again, sending a new reject message back to fd1.
-> 11. The new reject message is sent to fd1 via tipc_node_xmit() ->
-> tipc_sk_rcv(fd1). tipc_sk_rcv(fd1) tries to lock fd1's spinlock. However,
-> fd1's spinlock is already held by the outer tipc_sk_rcv(fd1) at step 7.
-> 
-> In tipc_sk_rcv(), if spin_trylock_bh() fails, it assumes another CPU holds
-> the lock, so it just continues the loop without dequeuing the message from
-> inputq. Because the lock is held by the current CPU, it will never be
-> released, and the while loop spins infinitely, causing the RCU stall:
-> 
-> rcu: INFO: rcu_preempt self-detected stall on CPU
-> ...
+> kernel BUG at fs/jfs/jfs_txnmgr.c:836!
+> Oops: invalid opcode: 0000 [#1] SMP KASAN NOPTI
+> RIP: 0010:txLock+0x1cc3/0x1d10 fs/jfs/jfs_txnmgr.c:836
 > Call Trace:
 >  <TASK>
->  __raw_spin_trylock_bh include/linux/spinlock_api_smp.h:207 [inline]
->  _raw_spin_trylock_bh+0x60/0x70 kernel/locking/spinlock.c:150
->  spin_trylock_bh include/linux/spinlock.h:414 [inline]
->  tipc_sk_rcv+0x420/0x2b50 net/tipc/socket.c:2500
->  tipc_node_xmit+0x205/0xf10 net/tipc/node.c:1701
->  tipc_node_xmit_skb net/tipc/node.c:1766 [inline]
->  tipc_node_distr_xmit+0x2cd/0x400 net/tipc/node.c:1781
->  tipc_sk_rcv+0x2539/0x2b50 net/tipc/socket.c:2505
->  tipc_node_xmit+0x205/0xf10 net/tipc/node.c:1701
->  tipc_sk_push_backlog net/tipc/socket.c:1313 [inline]
->  tipc_sk_filter_connect net/tipc/socket.c:2259 [inline]
->  tipc_sk_filter_rcv+0x17f3/0x3210 net/tipc/socket.c:2368
->  tipc_sk_enqueue net/tipc/socket.c:2449 [inline]
->  tipc_sk_rcv+0x877/0x2b50 net/tipc/socket.c:2501
->  tipc_node_xmit+0x205/0xf10 net/tipc/node.c:1701
->  tipc_node_xmit_skb net/tipc/node.c:1766 [inline]
->  tipc_node_distr_xmit+0x2cd/0x400 net/tipc/node.c:1781
->  tipc_sk_backlog_rcv+0x1ad/0x270 net/tipc/socket.c:2416
->  sk_backlog_rcv include/net/sock.h:1190 [inline]
->  __release_sock+0x28b/0x390 net/core/sock.c:3261
->  release_sock+0x190/0x260 net/core/sock.c:3860
->  sockopt_release_sock net/core/sock.c:1163 [inline]
->  sk_setsockopt+0x2822/0x2e80 net/core/sock.c:1681
->  do_sock_setsockopt+0x11b/0x1b0 net/socket.c:2364
->  __sys_setsockopt net/socket.c:2393 [inline]
->  __do_sys_setsockopt net/socket.c:2399 [inline]
->  __se_sys_setsockopt net/socket.c:2396 [inline]
->  __x64_sys_setsockopt+0x13d/0x1b0 net/socket.c:2396
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->  </TASK>
+>  dtSplitRoot+0x38d/0x18a0 fs/jfs/jfs_dtree.c:1924
+>  dtSplitUp fs/jfs/jfs_dtree.c:990 [inline]
+>  dtInsert+0xeb2/0x5890 fs/jfs/jfs_dtree.c:868
+>  jfs_create+0x730/0xae0 fs/jfs/namei.c:138
+> ...
 > 
-> To fix this, tipc_sk_push_backlog() should not call tipc_node_xmit()
-> directly while holding the socket spinlock. Instead, modify
-> tipc_sk_push_backlog() to take an xmitq parameter. If xmitq is provided, it
-> splices the write queue into xmitq, deferring the transmission until after
-> the spinlock is released. For calls like __tipc_shutdown() that execute
-> under the socket mutex rather than the spinlock, passing NULL for xmitq
-> allows direct transmission to continue safely.
+> To fix this, validate that the `dp->start` of the dmap page matches the
+> expected start block number before performing block map operations.
+> Rejecting a mismatched start with `-EIO` prevents duplicate allocations
+> before `txLock()` is reached. Additionally, preserve the existing
+> independent geometry check (`dp->tree.budmin < 0`) in `dbAllocCtl()`. Both
+> a mismatched start and a negative `budmin` will now fail with `-EIO` early,
+> preventing corrupted dmap structures from causing duplicate allocations and
+> subsequent transaction lock crashes.
 > 
-> Fixes: c0bceb97db9e ("tipc: add smart nagle feature")
 > Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+10a41dc44eef71aa9450@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=10a41dc44eef71aa9450
-> Link: https://syzkaller.appspot.com/ai_job?id=109dc7c6-7562-4bd4-9094-58dfff0a3623
-> To: "David S. Miller" <davem@davemloft.net>
-> To: "Eric Dumazet" <edumazet@google.com>
-> To: "Jon Maloy" <jmaloy@redhat.com>
-> To: "Jakub Kicinski" <kuba@kernel.org>
-> To: <netdev@vger.kernel.org>
-> To: "Paolo Abeni" <pabeni@redhat.com>
-> To: <tipc-discussion@lists.sourceforge.net>
-> To: "Jon Maloy" <jon.maloy@ericsson.com>
-> Cc: "Simon Horman" <horms@kernel.org>
+> Reported-by: syzbot+a843f6ae2130a987d63b@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=a843f6ae2130a987d63b
+> Link: https://syzkaller.appspot.com/ai_job?id=30db4661-77f8-49bf-8389-8df570488e85
+> To: <jfs-discussion@lists.sourceforge.net>
+> To: "Dave Kleikamp" <shaggy@kernel.org>
+> Cc: "Kees Cook" <kees@kernel.org>
 > Cc: <linux-kernel@vger.kernel.org>
+> Cc: "Yun Zhou" <yun.zhou@windriver.com>
+> Cc: "Zheng Yu" <zheng.yu@northwestern.edu>
 > 
 > ---
-> diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-> index e564341e0..4b3d8193d 100644
-> --- a/net/tipc/socket.c
-> +++ b/net/tipc/socket.c
-> @@ -156,7 +156,8 @@ static int tipc_sk_insert(struct tipc_sock *tsk);
->  static void tipc_sk_remove(struct tipc_sock *tsk);
->  static int __tipc_sendstream(struct socket *sock, struct msghdr *m, size_t dsz);
->  static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dsz);
-> -static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack);
-> +static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack,
-> +				 struct sk_buff_head *xmitq);
->  static int tipc_wait_for_connect(struct socket *sock, long *timeo_p);
+> v4:
+> - Renamed dbValidateDmap to db_validate_dmap to follow kernel naming conventions.
+> - Preserved the existing dp->tree.budmin < 0 check in dbAllocCtl instead of replacing it.
+> 
+> v3:
+> - Renamed the patch to "jfs: validate dmap start before block map operations".
+> - Simplified dbValidateDmap() to only validate that the dmap dp->start matches the expected start block number, removing unproven integrity checks.
+> - Updated the commit description to explain the exact root cause of the selection/update mismatch and how validating dp->start prevents duplicate allocations before txLock() is reached.
+> https://lore.kernel.org/all/7c3c4fb4-ccbd-486f-b087-6074364ee206@mail.kernel.org/T/
+> 
+> v2:
+> - Replaced the approach of propagating errors from txLock() with proactive dmap validation.
+> - Introduced dbValidateDmap() to check dmap page integrity (nblocks, nfree, start address, and tree structure).
+> - Integrated dmap validation into dbFree(), dbUpdatePMap(), dbAlloc(), dbExtend(), dbAllocCtl(), dbAllocBottomUp(), and dbExtendFS().
+> - Reverted return type changes for functions in jfs_dtree.c and jfs_xtree.c from the previous version.
+> https://lore.kernel.org/all/ff86d803-d687-48f6-9cc2-f3d35b27a666@mail.kernel.org/T/
+> 
+> v1:
+> https://lore.kernel.org/all/9d2eba88-93bf-4f3c-a3b2-b554e1fffe80@mail.kernel.org/T/
+> ---
+> diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
+> index a841cf21d..063572456 100644
+> --- a/fs/jfs/jfs_dmap.c
+> +++ b/fs/jfs/jfs_dmap.c
+> @@ -98,6 +98,9 @@ static int blkstol2(s64 nb);
+>  static int cntlz(u32 value);
+>  static int cnttz(u32 word);
 >  
->  static const struct proto_ops packet_ops;
-> @@ -560,7 +561,7 @@ static void __tipc_shutdown(struct socket *sock, int error)
->  					    !tsk_conn_cong(tsk)));
->  
->  	/* Push out delayed messages if in Nagle mode */
-> -	tipc_sk_push_backlog(tsk, false);
-> +	tipc_sk_push_backlog(tsk, false, NULL);
->  	/* Remove pending SYN */
->  	__skb_queue_purge(&sk->sk_write_queue);
->  
-> @@ -1268,7 +1269,8 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
->  /* tipc_sk_push_backlog(): send accumulated buffers in socket write queue
->   *                         when socket is in Nagle mode
->   */
-> -static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
-> +static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack,
-> +				 struct sk_buff_head *xmitq)
->  {
->  	struct sk_buff_head *txq = &tsk->sk.sk_write_queue;
->  	struct sk_buff *skb = skb_peek_tail(txq);
-> @@ -1310,6 +1312,12 @@ static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
->  		tsk->pkt_cnt += skb_queue_len(txq);
->  	tsk->snt_unacked += tsk->snd_backlog;
->  	tsk->snd_backlog = 0;
+> +static bool db_validate_dmap(struct super_block *sb, const struct dmap *dp,
+> +			     s64 expected_start);
 > +
-> +	if (xmitq) {
-> +		skb_queue_splice_tail_init(txq, xmitq);
-> +		return;
+>  static int dbAllocDmapBU(struct bmap * bmp, struct dmap * dp, s64 blkno,
+>  			 int nblocks);
+>  static int dbInitDmap(struct dmap * dp, s64 blkno, int nblocks);
+> @@ -476,6 +479,12 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
+>  		}
+>  		dp = (struct dmap *) mp->data;
+>  
+> +		if (!db_validate_dmap(ip->i_sb, dp, blkno & ~(s64)(BPERDMAP - 1))) {
+> +			release_metapage(mp);
+> +			IREAD_UNLOCK(ipbmap);
+> +			return -EIO;
+> +		}
+> +
+>  		/* determine the number of blocks to be freed from
+>  		 * this dmap.
+>  		 */
+> @@ -568,6 +577,13 @@ dbUpdatePMap(struct inode *ipbmap,
+>  			if (mp == NULL)
+>  				return -EIO;
+>  			metapage_wait_for_io(mp);
+> +
+> +			if (!db_validate_dmap(ipbmap->i_sb,
+> +					      (struct dmap *)mp->data,
+> +					      blkno & ~(s64)(BPERDMAP - 1))) {
+> +				release_metapage(mp);
+> +				return -EIO;
+> +			}
+>  		}
+>  		dp = (struct dmap *) mp->data;
+>  
+> @@ -886,6 +902,11 @@ int dbAlloc(struct inode *ip, s64 hint, s64 nblocks, s64 * results)
+>  
+>  		dp = (struct dmap *) mp->data;
+>  
+> +		if (!db_validate_dmap(ip->i_sb, dp, blkno & ~(s64)(BPERDMAP - 1))) {
+> +			release_metapage(mp);
+> +			goto read_unlock;
+> +		}
+> +
+>  		/* first, try to satisfy the allocation request with the
+>  		 * blocks beginning at the hint.
+>  		 */
+> @@ -1118,6 +1139,12 @@ static int dbExtend(struct inode *ip, s64 blkno, s64 nblocks, s64 addnblocks)
+>  
+>  	dp = (struct dmap *) mp->data;
+>  
+> +	if (!db_validate_dmap(ip->i_sb, dp, extblkno & ~(s64)(BPERDMAP - 1))) {
+> +		release_metapage(mp);
+> +		IREAD_UNLOCK(ipbmap);
+> +		return -EIO;
 > +	}
 > +
->  	rc = tipc_node_xmit(net, txq, dnode, tsk->portid);
->  	if (rc == -ELINKCONG)
->  		tsk->cong_link_cnt = 1;
-> @@ -1367,7 +1375,7 @@ static void tipc_sk_conn_proto_rcv(struct tipc_sock *tsk, struct sk_buff *skb,
->  			goto exit;
+>  	/* try to allocate the blocks immediately following the
+>  	 * current allocation.
+>  	 */
+> @@ -1902,7 +1929,8 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
+>  			return -EIO;
+>  		dp = (struct dmap *) mp->data;
 >  
->  		was_cong = tsk_conn_cong(tsk);
-> -		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr));
-> +		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr), xmitq);
->  		tsk->snt_unacked -= msg_conn_ack(hdr);
->  		if (tsk->peer_caps & TIPC_BLOCK_FLOWCTL)
->  			tsk->snd_win = msg_adv_win(hdr);
-> @@ -2165,7 +2173,7 @@ static void tipc_sk_proto_rcv(struct sock *sk,
->  		smp_wmb();
->  		tsk->cong_link_cnt--;
->  		wakeup = true;
-> -		tipc_sk_push_backlog(tsk, false);
-> +		tipc_sk_push_backlog(tsk, false, xmitq);
->  		break;
->  	case GROUP_PROTOCOL:
->  		tipc_group_proto_rcv(grp, &wakeup, hdr, inputq, xmitq);
-> @@ -2256,7 +2264,7 @@ static bool tipc_sk_filter_connect(struct tipc_sock *tsk, struct sk_buff *skb,
->  		return false;
->  	case TIPC_ESTABLISHED:
->  		if (!skb_queue_empty(&sk->sk_write_queue))
-> -			tipc_sk_push_backlog(tsk, false);
-> +			tipc_sk_push_backlog(tsk, false, xmitq);
->  		/* Accept only connection-based messages sent by peer */
->  		if (likely(con_msg && !err && pport == oport &&
->  			   pnode == onode)) {
+> -		if (dp->tree.budmin < 0) {
+> +		if (dp->tree.budmin < 0 ||
+> +		    !db_validate_dmap(bmp->db_ipbmap->i_sb, dp, blkno & ~(s64)(BPERDMAP - 1))) {
+>  			release_metapage(mp);
+>  			return -EIO;
+>  		}
+> @@ -1936,6 +1964,12 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
+>  		}
+>  		dp = (struct dmap *) mp->data;
+>  
+> +		if (!db_validate_dmap(bmp->db_ipbmap->i_sb, dp, b & ~(s64)(BPERDMAP - 1))) {
+> +			release_metapage(mp);
+> +			rc = -EIO;
+> +			goto backout;
+> +		}
+> +
+>  		/* the dmap better be all free.
+>  		 */
+>  		if (dp->tree.stree[ROOT] != L2BPERDMAP) {
+> @@ -1993,6 +2027,11 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
+>  		}
+>  		dp = (struct dmap *) mp->data;
+>  
+> +		if (!db_validate_dmap(bmp->db_ipbmap->i_sb, dp, b & ~(s64)(BPERDMAP - 1))) {
+> +			release_metapage(mp);
+> +			continue;
+> +		}
+> +
+>  		/* free the blocks is this dmap.
+>  		 */
+>  		if (dbFreeDmap(bmp, dp, b, BPERDMAP)) {
+> @@ -2134,6 +2173,18 @@ static int dbAllocDmap(struct bmap * bmp, struct dmap * dp, s64 blkno,
+>  	return (rc);
+>  }
+>  
+> +static bool db_validate_dmap(struct super_block *sb, const struct dmap *dp,
+> +			     s64 expected_start)
+> +{
+> +	if (le64_to_cpu(dp->start) != expected_start) {
+> +		jfs_error(sb, "corrupt dmap page: start %lld expected %lld\n",
+> +			  (long long)le64_to_cpu(dp->start),
+> +			  (long long)expected_start);
+> +		return false;
+> +	}
+> +
+> +	return true;
+> +}
+>  
+>  /*
+>   * NAME:	dbFreeDmap()
+> @@ -3308,6 +3359,12 @@ int dbAllocBottomUp(struct inode *ip, s64 blkno, s64 nblocks)
+>  		}
+>  		dp = (struct dmap *) mp->data;
+>  
+> +		if (!db_validate_dmap(ip->i_sb, dp, blkno & ~(s64)(BPERDMAP - 1))) {
+> +			release_metapage(mp);
+> +			IREAD_UNLOCK(ipbmap);
+> +			return -EIO;
+> +		}
+> +
+>  		/* determine the number of blocks to be allocated from
+>  		 * this dmap.
+>  		 */
 > 
 > 
-> base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
+> base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
 > -- 
 > This is an AI-generated patch subject to moderation.
 > Reply with '#syz upstream' to Sign-off the patch as a human author
@@ -302,8 +321,3 @@ On Wed, Jul 22, 2026 at 06:39:37PM +0000, 'syzbot' via syzkaller-upstream-modera
 > You can comment on the patch as usual, syzbot will try to address
 > the comments and send a new version of the patch if necessary.
 > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> -- 
-> You received this message because you are subscribed to the Google Groups "syzkaller-upstream-moderation" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> To view this discussion visit https://groups.google.com/d/msgid/syzkaller-upstream-moderation/01641937-e30d-43dd-ba9c-95b3d2ae5691%40mail.kernel.org.
