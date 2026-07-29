@@ -1,264 +1,276 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4151B43F0BC
-	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 09:08:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECCF0440A17
+	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 09:09:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785316099; cv=none; b=sUpTWjuDoGjwgO9a+4XdK7BqTJKLDfIM//hUKeKmFCiqY9YbImdycbs0+OEWjOBUGkKiS/mZDU0z1XE7CmXKwNEnChLh8RybEM/Di7Ju1Nti+lMGGhogl4W5qKC1dQEz3ZaFZWeSwWj5YVmPE8V9H6DHjY8n05ZPfbDFzdHEWDk=
+	t=1785316196; cv=none; b=t88xMBRlPwi88YXpoX0mOMcXaDLq/6h2Y8PjpfkgCLCyOjwxLwENbkBETGqstSHrcQfNQfidl6Ra4uQdxm1rpexdvFlvxpNfOtoeIOp2OY3nXwb363Gbq2VoCqS9s96AMfAIb9NzZVt0RDb8nKFeH4WOP8xpqPmTsh56zhf6htY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785316099; c=relaxed/simple;
-	bh=ZEBPBnhk6HhJr2XxqpmYmLROaHdMvAg92olce0fyuVI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jDAB1yY1NO03/LM224ACYHDwDKZhDj091fdOzJXAyfec2idM1MgcivAZ+JZIHEtR6FMmn3ya2/oqRyGxVRxekPzCdSvArIOsrdxofhi3HfPDDusD/JKh6tydQ2aDks7cQAu6CqCPzCVSs3UACSDe9tBm3NDUvlRelImOnUFC6Eo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=devineni.in; spf=none smtp.mailfrom=devineni.in; dkim=pass (2048-bit key) header.d=devineni.in header.i=@devineni.in header.b=TnsD+inh; arc=none smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=devineni.in
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=devineni.in
+	s=arc-20240116; t=1785316196; c=relaxed/simple;
+	bh=FA9tFQ5t0u8dqhFuzBhnxt8ftV+sVmNCATqpgHJQpUU=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=O2wOW8XwYpoHuM7prhaw7D71gBLaRxRRsBNiUWYJxA9j4+kRO2KhnXJ/4/MnSS9StMA/bk03+AKOZ9yOm0iMAtHmEGuCTyZxKb+EWx4RlMvqACnsIxJZyRRGrZHRLOZCI8ZvzhOnJTBtbQ4yKNJuqUUTBxfj277cm3b83ulEo3s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J71a59Sh; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=devineni.in header.i=@devineni.in header.b="TnsD+inh"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2cacb8416a1so7772485ad.1
-        for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 02:08:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=devineni.in; s=google; t=1785316096; x=1785920896; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=0RUO4XzPfeWLlkMcISYpm0aLMz5oBUNFwN33JKuZawQ=;
-        b=TnsD+inh+GNrCOwN7+NEeyQ6s3Mw8xZz0FfCUFyvvc0FfZ9KEisndYQYxD3oPf5Wc7
-         r+St2ynNZ8+TA0d97zFweuJPKr/fZRrDdIGhedRQbVZN2iB1iDqK3EP4uDa5zaFFxznC
-         F4W4DdnlkiNV7dlieKzkt7xE6eDHpc1zesLwQYRpd+2iE7+cH7HAiTwthI69+tISEV6u
-         1pcwUxANKBm5r14aOYMQ+4NYNYjqzzAwz+qK8DVkhF6sLROEwPhjrnhgNflQxCUOkn+U
-         UsRWZWNbM9AN1fhGzF300NTXh5fubpUXfamc467VBC22FaWmNovganVWZ2+vvvIVYm0n
-         0pFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785316096; x=1785920896;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=0RUO4XzPfeWLlkMcISYpm0aLMz5oBUNFwN33JKuZawQ=;
-        b=Fx6HzaTog8QWpmQSapo8BxlqRcS/5pDjxrHgqZTLcDJMCzXCc6FIE6ysarXXyBxAZ7
-         qDPFaAu4O+7BlwQtiFR/izBY1wW1ca8ty7wub4akAu9ryfD5TvfE5/J4DX0uH3egBBcJ
-         ByG3r3s6j8KJA8tIqfmHH6VTMYsHIh1d9ji0ayphjul5sgOfaASdaKkthJuXm8wKpb0O
-         Phj2EOJlBhQhDTqoIawgPeuMJqgZuqGNYImWxD3QmBa+oYgdMgDXoNbmmQrSxSkY4nz7
-         dlsiP+5ZXoNcp77Yz3uDPmwEUQzOLEZuv9MqG5VwTOo0Vn6Ybd2vX91XSc0nRtlo3zRu
-         Yqiw==
-X-Gm-Message-State: AOJu0YwzhfzIknrhlLGjsCDn/HpYJAxgN3JHYGUBwqh4x0ZZurQJpTGZ
-	crzo9oaqXeKvAmsYgYgSGAjYbe4PCcwoM+SSbq3KQmTuAWaA7VWktGupG65pA+rjI5K0rjbrWg4
-	DeHo=
-X-Gm-Gg: AR+sD10Bb1DkEEDh9b7VESpcX8D1B32agjcbN3Pi9KdhPNIOf8i+uqLBNifQkYDX9no
-	SfSyh1eDTtRrhw+gBgqf2s6K3CNBDCd4Uf8UK2Su+jnAT2t68GfUZicSMTP4eCKtwSddcjKMn6U
-	dLSn6wl7WvdqMHYC2nkM6NdtXaolL0XvqY6ACaR03tdL5c3E0ih443hPzHtSc+HyPhiDg1Fq+OF
-	j0X1g8egh1byUbYXut96GPIB6rwbSMkxsy/2r5n6W8svtZ7a4lTKcX+po6Q45xrLsDyvh0pggG+
-	dH7igG0hYHtXGSz/0zLAihIHDOUCFzKZHLfnV0Acym0Ftco223+mGE23Mfs6x0m0Uf5XS9lEYSc
-	6u9MPAgD3uXDcjg6/A1RJ0NODMzRQ/fGTfo7DRgAzeuhaNE5oLCQ+ZqPvtvF0R0Br98etvLV7mN
-	75aJFx5CufcevMu2vH1j8A9qhP+CJrB1MLaPwx7jzLaOx5zPW/kFvKXD07aMW4LUJ8RLtkGqAZ7
-	R+PtmLkZPgVncBaZmhDdTEw98RCkw3SDVWKjL1vinI3t3YL3lgg3obmdB+dVUR57DEjxOtGxwG3
-	nAuFGvzIIJ1zyB3NkDK4QHdBcnVvJnYWCl45ui/v1T/Pt5V8a50RcQ==
-X-Received: by 2002:a17:903:390d:b0:2c9:97a8:afef with SMTP id d9443c01a7336-2d015d6e468mr66309905ad.40.1785316096425;
-        Wed, 29 Jul 2026 02:08:16 -0700 (PDT)
-Received: from [192.168.0.120] ([49.205.104.3])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d022a167b5sm8177625ad.7.2026.07.29.02.08.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jul 2026 02:08:15 -0700 (PDT)
-Message-ID: <2a9a22b3-0372-49e8-ab38-944fda03f0d7@devineni.in>
-Date: Wed, 29 Jul 2026 14:38:02 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J71a59Sh"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 798781F000E9;
+	Wed, 29 Jul 2026 09:09:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785316194;
+	bh=DOFgH9ZKfpSofBHiCReNvsO06vVwagiJqD83DPZSv20=;
+	h=From:To:Cc:Subject:Date;
+	b=J71a59ShCU8a6mcdGb+c5b5Y7aRnwbZqYCpqHoAViMqhcNZTg7HTGvQFI1jc4376L
+	 m3BO/1sVCELotp290HKq3iMcfvOtBMyNEeaOq2Drg07Xl0cylge3pfJUbcWxU4lG3E
+	 HyBdRO/7leEFFPNGzjYU2YqittM520PFOEif9NaYnS3Zxu4wEQThHOtQB7D0LBOsk6
+	 i6mtD9iBNV6aPJ2Zi/BEq8Cl0iSXQ1lmvidc7aTUurbI5in8odEVmzdD1XSm7O64xE
+	 0pO1litE4tD3GEqP7I4Y8LZuZi/9MN+SxB1Ea7cxotzMHM5ThY9n47I3Rzn9RUwoxq
+	 j87u9zt+qxZHA==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] usb: gadget: f_uac: fix multiple bugs in configfs attributes
+Message-ID: <e06c057a-7edb-4d51-8d72-a03316857a04@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v3] jfs: validate BT_ROOT flag in xt_getpage and
- DT_GETPAGE
-To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-References: <31d895c9-6ed8-4661-ab39-2e3709540323@mail.kernel.org>
-Content-Language: en-US
-From: Kusaram Devineni <kusaram@devineni.in>
-In-Reply-To: <31d895c9-6ed8-4661-ab39-2e3709540323@mail.kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Wed, 29 Jul 2026 09:09:54 +0000 (UTC)
 
-On 15-07-2026 08:58 pm, syzbot wrote:
-> A corrupted JFS image can trick the kernel into calling release_metapage()
-> on a pseudo-metapage embedded within the inode, leading to an out-of-bounds
-> memory access and a spinlock crash.
-> 
-> When operating on the root page of an xtree or dtree (which is stored
-> inline within the inode), JFS doesn't use a real struct metapage. Instead,
-> BT_GETPAGE() sets the metapage pointer to the address of
-> JFS_IP(ip)->bxflag. Because this is a pseudo-metapage, it does not have a
-> valid wait_queue_head_t wait field. Accessing mp->wait reads out-of-bounds
-> memory in struct jfs_inode_info.
-> 
-> In xt_getpage(), the code validates nextindex and maxentry, but it fails to
-> verify that the BT_ROOT flag is set in p->header.flag for the root page (bn
-> == 0). If the inline xtree root page has a corrupted header.flag where
-> BT_ROOT is missing, xtTruncate() will mistakenly treat the root page as a
-> regular leaf page and call discard_metapage(mp).
-> 
-> Unlike XT_PUTPAGE() which safely checks !BT_IS_ROOT(mp) before releasing,
-> discard_metapage() calls release_metapage(mp) directly. This assumes mp is
-> a real metapage and calls unlock_metapage(mp), which executes
-> wake_up(&mp->wait), accessing garbage memory and resulting in a spinlock
-> bad magic BUG or UBSAN out-of-bounds array access.
-> 
-> Fix this by enforcing the invariant that the BT_ROOT flag is set if and
-> only if bn == 0 in both xt_getpage() and DT_GETPAGE().
-> 
-> BUG: spinlock bad magic on CPU#1, syz-executor/6078
->   lock: 0xffff8881f55f1b48, .magic: ffffffff, .owner: /-1902340672,
->   .owner_cpu: 768
-> CPU: 1 UID: 0 PID: 6078 Comm: syz-executor Not tainted syzkaller #1
-> PREEMPT(full)
-> Call Trace:
->   <TASK>
->   dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->   spin_bug kernel/locking/spinlock_debug.c:78 [inline]
->   debug_spin_lock_before kernel/locking/spinlock_debug.c:86 [inline]
->   do_raw_spin_lock+0x1e5/0x2f0 kernel/locking/spinlock_debug.c:115
->   __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:133 [inline]
->   _raw_spin_lock_irqsave+0x4c/0x60 kernel/locking/spinlock.c:166
->   __wake_up_common_lock+0x30/0x1f0 kernel/sched/wait.c:124
->   unlock_metapage fs/jfs/jfs_metapage.c:40 [inline]
->   release_metapage+0x131/0xa60 fs/jfs/jfs_metapage.c:872
->   xtTruncate+0xeaa/0x2eb0 fs/jfs/jfs_xtree.c:-1
->   jfs_free_zero_link+0x35b/0x4c0 fs/jfs/namei.c:760
->   jfs_evict_inode+0x356/0x430 fs/jfs/inode.c:159
->   evict+0x624/0xb50 fs/inode.c:841
->   ...
->   </TASK>
-> 
-> UBSAN: array-index-out-of-bounds in kernel/locking/qspinlock.h:68:9
-> index 8945 is out of range for type 'unsigned long[8]'
-> CPU: 1 UID: 0 PID: 6078 Comm: syz-executor Not tainted syzkaller #1
-> PREEMPT(full)
-> Call Trace:
->   <TASK>
->   dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->   ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
->   __ubsan_handle_out_of_bounds+0xe8/0xf0 lib/ubsan.c:455
->   decode_tail kernel/locking/qspinlock.h:68 [inline]
->   __pv_queued_spin_lock_slowpath+0xaf3/0xbc0 kernel/locking/qspinlock.c:285
->   pv_queued_spin_lock_slowpath arch/x86/include/asm/paravirt-spinlock.h:35
->   [inline]
->   queued_spin_lock_slowpath arch/x86/include/asm/paravirt-spinlock.h:66
->   [inline]
->   queued_spin_lock include/asm-generic/qspinlock.h:114 [inline]
->   do_raw_spin_lock+0x26c/0x2f0 kernel/locking/spinlock_debug.c:116
->   __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:133 [inline]
->   _raw_spin_lock_irqsave+0x4c/0x60 kernel/locking/spinlock.c:166
->   __wake_up_common_lock+0x30/0x1f0 kernel/sched/wait.c:124
->   unlock_metapage fs/jfs/jfs_metapage.c:40 [inline]
->   release_metapage+0x131/0xa60 fs/jfs/jfs_metapage.c:872
->   xtTruncate+0xeaa/0x2eb0 fs/jfs/jfs_xtree.c:-1
->   ...
->   </TASK>
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
-> Reported-by: syzbot+e380443eaa59bfb75a84@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=e380443eaa59bfb75a84
-> Link: https://syzkaller.appspot.com/ai_job?id=20a14f45-b85b-4c13-8896-26c43b87a29b
-> To: <jfs-discussion@lists.sourceforge.net>
-> To: "Dave Kleikamp" <shaggy@kernel.org>
-> Cc: "Arnd Bergmann" <arnd@arndb.de>
-> Cc: <linux-kernel@vger.kernel.org>
-> Cc: "Yun Zhou" <yun.zhou@windriver.com>
-> Cc: "Zheng Yu" <zheng.yu@northwestern.edu>
-> 
-> ---
-> v3:
-> - Validated root/non-root invariant failures and non-root dtpage integrity failures.
+This patch addresses several issues in the configfs attribute store
+functions for the USB Audio Class (UAC) gadget functions (f_uac1,
+f_uac1_legacy, and f_uac2):
 
-update the above changelog statement with something simpler, like below...
+1. Invalid free and memory leak in UAC1_RATE_ATTRIBUTE and
+UAC2_RATE_ATTRIBUTE:
+The store functions generated by these macros duplicate the input string
+using kstrdup(). The pointer is then passed to strsep(), which modifies it.
+If parsing fails, the modified (interior) pointer is passed to kfree(),
+causing a KASAN invalid-free. If parsing succeeds, strsep() sets the
+pointer to NULL, and kfree(NULL) is a no-op, causing a memory leak. Fix
+this by keeping a copy of the original pointer to pass to kfree().
 
-"Kept the existing DT_GETPAGE error message for both corruption checks."
+2. Heap buffer overflow in UAC1_RATE_ATTRIBUTE and UAC2_RATE_ATTRIBUTE:
+There was no bounds checking on the number of sampling rates parsed. If a
+user provided a string with more than UAC_MAX_RATES (10) comma-separated
+numbers, the array assignment would write out of bounds. Add a check to
+prevent this and return -EINVAL.
 
-> - Removed '------------[ cut here ]------------' from the commit message.
-> 
-> v2:
-> - Combined the BT_ROOT flag validation with the existing page integrity check in DT_GETPAGE.
-> - Unified the error message in DT_GETPAGE for both root and leaf page corruption.
-> https://lore.kernel.org/all/b94e1523-acdb-4470-904e-373249bbf83d@mail.kernel.org/T/
-> 
-> v1:
-> https://lore.kernel.org/all/65efb3d8-bbf9-4f4b-800e-b9bc5577b381@mail.kernel.org/T/
-> ---
-> diff --git a/fs/jfs/jfs_dtree.c b/fs/jfs/jfs_dtree.c
-> index ac0f79faf..2b6bdea1f 100644
-> --- a/fs/jfs/jfs_dtree.c
-> +++ b/fs/jfs/jfs_dtree.c
-> @@ -111,19 +111,20 @@ struct dtsplit {
->   #define DT_PAGE(IP, MP) BT_PAGE(IP, MP, dtpage_t, i_dtroot)
->   
->   /* get page buffer for specified block address */
-> -#define DT_GETPAGE(IP, BN, MP, SIZE, P, RC)				\
-> -do {									\
-> -	BT_GETPAGE(IP, BN, MP, dtpage_t, SIZE, P, RC, i_dtroot);	\
-> -	if (!(RC)) {							\
-> -		if ((BN) && !check_dtpage(P)) {				\
-> -			BT_PUTPAGE(MP);					\
-> -			jfs_error((IP)->i_sb,				\
-> -				  "DT_GETPAGE: dtree page corrupt\n");	\
-> -			MP = NULL;					\
-> -			RC = -EIO;					\
-> -		}							\
-> -	}								\
-> -} while (0)
-> +#define DT_GETPAGE(IP, BN, MP, SIZE, P, RC)                                    \
-> +	do {                                                                   \
-> +		BT_GETPAGE(IP, BN, MP, dtpage_t, SIZE, P, RC, i_dtroot);       \
-> +		if (!(RC)) {                                                   \
-> +			if ((((BN) == 0) != !!((P)->header.flag & BT_ROOT)) || \
-> +			    ((BN) && !check_dtpage(P))) {                      \
-> +				BT_PUTPAGE(MP);                                \
-> +				jfs_error((IP)->i_sb,                          \
-> +					  "DT_GETPAGE: dtree page corrupt\n"); \
-> +				MP = NULL;                                     \
-> +				RC = -EIO;                                     \
-> +			}                                                      \
-> +		}                                                              \
-> +	} while (0)
->   
+3. Incorrect return value and missing newline stripping in
+UAC1_ATTRIBUTE_STRING (f_uac1.c):
+The store function returned the result of scnprintf() instead of the
+original len. This causes userspace writes to assume a partial write
+occurred. Additionally, it did not strip trailing newlines. Apply the same
+fix as previously done for f_uac2.c.
 
-in DT_GETPAGE() macro above, preserve the existing tab-aligned macro 
-style and avoid reindenting the whole macro. limit the change only to 
-the condition/branch needed for the BT_ROOT invariant check.
+4. Inverted null check in UAC1_STR_ATTRIBUTE (f_uac1_legacy.c):
+The store function had an inverted null check: if (tmp) { ret = -ENOMEM;
+goto end; }. This meant it would abort with an out-of-memory error if
+allocation succeeded, and proceed to dereference a null pointer if
+allocation failed. Fix the check to if (!tmp) and add trailing newline
+stripping.
 
->   /* for consistency */
->   #define DT_PUTPAGE(MP) BT_PUTPAGE(MP)
-> diff --git a/fs/jfs/jfs_xtree.c b/fs/jfs/jfs_xtree.c
-> index 28c3cf960..6d960dd96 100644
-> --- a/fs/jfs/jfs_xtree.c
-> +++ b/fs/jfs/jfs_xtree.c
-> @@ -118,10 +118,11 @@ static inline xtpage_t *xt_getpage(struct inode *ip, s64 bn, struct metapage **m
->   	if (rc)
->   		return ERR_PTR(rc);
->   	if ((le16_to_cpu(p->header.nextindex) < XTENTRYSTART) ||
-> -		(le16_to_cpu(p->header.nextindex) >
-> -			le16_to_cpu(p->header.maxentry)) ||
-> -		(le16_to_cpu(p->header.maxentry) >
-> -			((bn == 0) ? XTROOTMAXSLOT : PSIZE >> L2XTSLOTSIZE))) {
-> +	    (le16_to_cpu(p->header.nextindex) >
-> +	     le16_to_cpu(p->header.maxentry)) ||
-> +	    (le16_to_cpu(p->header.maxentry) >
-> +	     ((bn == 0) ? XTROOTMAXSLOT : PSIZE >> L2XTSLOTSIZE)) ||
-> +	    ((bn == 0) != !!(p->header.flag & BT_ROOT))) {
+The KASAN invalid-free report for the first issue:
 
-in the change to xt_getpage() block made above, preserve the existing 
-continuation indentation of the nextindex and maxentry checks. add only 
-the new BT_ROOT invariant condition.
+BUG: KASAN: invalid-free in f_uac2_opts_c_srate_store+0x225/0x2b0
+drivers/usb/gadget/function/f_uac2.c:2091
+Free of addr ffff888113e32b4c by task syz.0.17/6122
 
->   		jfs_error(ip->i_sb, "xt_getpage: xtree page corrupt\n");
->   		BT_PUTPAGE(*mp);
->   		*mp = NULL;
-> 
-> 
-> base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
+CPU: 0 UID: 0 PID: 6122 Comm: syz.0.17 Not tainted syzkaller #1
+PREEMPT(full)
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+1.16.3-debian-1.16.3-2 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+ print_report+0x58/0x70 mm/kasan/report.c:482
+ kasan_report_invalid_free+0xea/0x110 mm/kasan/report.c:557
+ check_slab_allocation+0xd7/0xf0 mm/kasan/common.c:-1
+ kasan_slab_pre_free include/linux/kasan.h:199 [inline]
+ slab_free_hook mm/slub.c:2622 [inline]
+ slab_free mm/slub.c:6377 [inline]
+ kfree+0x173/0x640 mm/slub.c:6692
+ f_uac2_opts_c_srate_store+0x225/0x2b0
+ drivers/usb/gadget/function/f_uac2.c:2091
+ flush_write_buffer fs/configfs/file.c:207 [inline]
+ configfs_write_iter+0x337/0x430 fs/configfs/file.c:229
+ new_sync_write fs/read_write.c:595 [inline]
+ vfs_write+0x612/0xba0 fs/read_write.c:687
+ ksys_write+0x150/0x270 fs/read_write.c:739
 
--kusaram
+Fixes: a7339e4f5788 ("usb: gadget: f_uac2: Support multiple sampling rates")
+Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+a4f65284f1451010b0a8@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=a4f65284f1451010b0a8
+Link: https://syzkaller.appspot.com/ai_job?id=9ef2273f-9be1-4b2e-9b62-48ad434a2ff9
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
+To: "Julian Scheel" <julian@jusst.de>
+Cc: "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>
+Cc: "Taegu Ha" <hataegu0826@gmail.com>
+Cc: "Kees Cook" <kees@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
+---
+diff --git a/drivers/usb/gadget/function/f_uac1.c b/drivers/usb/gadget/function/f_uac1.c
+index 85c502e98..44598db19 100644
+--- a/drivers/usb/gadget/function/f_uac1.c
++++ b/drivers/usb/gadget/function/f_uac1.c
+@@ -1594,6 +1594,7 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
+ 					  const char *page, size_t len)	\
+ {									\
+ 	struct f_uac1_opts *opts = to_f_uac1_opts(item);		\
++	char *page_copy = NULL;						\
+ 	char *split_page = NULL;					\
+ 	int ret = -EINVAL;						\
+ 	char *token;							\
+@@ -1608,18 +1609,28 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
+ 									\
+ 	i = 0;								\
+ 	memset(opts->name##s, 0x00, sizeof(opts->name##s));		\
+-	split_page = kstrdup(page, GFP_KERNEL);				\
++	page_copy = kstrdup(page, GFP_KERNEL);				\
++	if (!page_copy) {						\
++		ret = -ENOMEM;						\
++		goto end;						\
++	}								\
++	split_page = page_copy;						\
+ 	while ((token = strsep(&split_page, ",")) != NULL) {		\
+ 		ret = kstrtou32(token, 0, &num);			\
+ 		if (ret)						\
+ 			goto end;					\
+ 									\
++		if (i >= UAC_MAX_RATES) {				\
++			ret = -EINVAL;					\
++			goto end;					\
++		}							\
++									\
+ 		opts->name##s[i++] = num;				\
+ 		ret = len;						\
+ 	};								\
+ 									\
+ end:									\
+-	kfree(split_page);						\
++	kfree(page_copy);						\
+ 	mutex_unlock(&opts->lock);					\
+ 	return ret;							\
+ }									\
+@@ -1644,7 +1655,7 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
+ 					  const char *page, size_t len)	\
+ {									\
+ 	struct f_uac1_opts *opts = to_f_uac1_opts(item);		\
+-	int ret = 0;							\
++	int ret = len;							\
+ 									\
+ 	mutex_lock(&opts->lock);					\
+ 	if (opts->refcnt) {						\
+@@ -1652,8 +1663,11 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
+ 		goto end;						\
+ 	}								\
+ 									\
+-	ret = scnprintf(opts->name, min(sizeof(opts->name), len),	\
+-			"%s", page);					\
++	if (len && page[len - 1] == '\n')				\
++		len--;							\
++									\
++	scnprintf(opts->name, min(sizeof(opts->name), len + 1),		\
++		  "%s", page);						\
+ 									\
+ end:									\
+ 	mutex_unlock(&opts->lock);					\
+diff --git a/drivers/usb/gadget/function/f_uac1_legacy.c b/drivers/usb/gadget/function/f_uac1_legacy.c
+index 5d201a2e3..338c04b39 100644
+--- a/drivers/usb/gadget/function/f_uac1_legacy.c
++++ b/drivers/usb/gadget/function/f_uac1_legacy.c
+@@ -906,15 +906,20 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
+ 					  const char *page, size_t len)	\
+ {									\
+ 	struct f_uac1_legacy_opts *opts = to_f_uac1_opts(item);		\
+-	int ret = -EBUSY;						\
++	int ret = len;							\
+ 	char *tmp;							\
+ 									\
+ 	mutex_lock(&opts->lock);					\
+-	if (opts->refcnt)						\
++	if (opts->refcnt) {						\
++		ret = -EBUSY;						\
+ 		goto end;						\
++	}								\
++									\
++	if (len && page[len - 1] == '\n')				\
++		len--;							\
+ 									\
+ 	tmp = kstrndup(page, len, GFP_KERNEL);				\
+-	if (tmp) {							\
++	if (!tmp) {							\
+ 		ret = -ENOMEM;						\
+ 		goto end;						\
+ 	}								\
+@@ -922,7 +927,6 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
+ 		kfree(opts->name);					\
+ 	opts->name##_alloc = true;					\
+ 	opts->name = tmp;						\
+-	ret = len;							\
+ 									\
+ end:									\
+ 	mutex_unlock(&opts->lock);					\
+diff --git a/drivers/usb/gadget/function/f_uac2.c b/drivers/usb/gadget/function/f_uac2.c
+index 897787d08..133f09672 100644
+--- a/drivers/usb/gadget/function/f_uac2.c
++++ b/drivers/usb/gadget/function/f_uac2.c
+@@ -2012,6 +2012,7 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
+ 					  const char *page, size_t len)	\
+ {									\
+ 	struct f_uac2_opts *opts = to_f_uac2_opts(item);		\
++	char *page_copy = NULL;						\
+ 	char *split_page = NULL;					\
+ 	int ret = -EINVAL;						\
+ 	char *token;							\
+@@ -2026,18 +2027,28 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
+ 									\
+ 	i = 0;								\
+ 	memset(opts->name##s, 0x00, sizeof(opts->name##s));		\
+-	split_page = kstrdup(page, GFP_KERNEL);				\
++	page_copy = kstrdup(page, GFP_KERNEL);				\
++	if (!page_copy) {						\
++		ret = -ENOMEM;						\
++		goto end;						\
++	}								\
++	split_page = page_copy;						\
+ 	while ((token = strsep(&split_page, ",")) != NULL) {		\
+ 		ret = kstrtou32(token, 0, &num);			\
+ 		if (ret)						\
+ 			goto end;					\
+ 									\
++		if (i >= UAC_MAX_RATES) {				\
++			ret = -EINVAL;					\
++			goto end;					\
++		}							\
++									\
+ 		opts->name##s[i++] = num;				\
+ 		ret = len;						\
+ 	};								\
+ 									\
+ end:									\
+-	kfree(split_page);						\
++	kfree(page_copy);						\
+ 	mutex_unlock(&opts->lock);					\
+ 	return ret;							\
+ }									\
+
+
+base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
