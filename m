@@ -1,154 +1,138 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B987382371
-	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 18:53:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87BAE3AA50B
+	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 19:38:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785351218; cv=none; b=kMrVR8O+tgjbR1bppQdQHrB/mASeiknwL8hEekRCmvuo7nkqKNPHMbX+4CraIMJGkDdMPk2k/IGkjWsCughbLzMCjthvO54wP2Q0vR2fWBA/kScKTi99uu9aRnSvftVxk6z8pI39PtBJBNMFzwpqj+IxDvs7opCMKYlsXhuCdrg=
+	t=1785353896; cv=none; b=iFU5HbkCmoXoonqLGu26DrOhBkp2LawEeGsN/XztNfMzCRfRFIB7pAKqQQE9bV8lJxrRwZwXfc9jbuuZBpQdSxzVsliHhLXr0m+Y3faSeo6Yuz0xgQkBajvXsSFJtGzSrzuIWjkn9bSHtmeAof/mE/t1xAEedlnf6zNdid4x1pQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785351218; c=relaxed/simple;
-	bh=mIdBjX8uWqj3jMTW4Q4CHO0TOmt+GQF84JHyOLNKTHY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Y/17gKDUSKM+2USZtf5YIE8baxTWqeh14b3wJBaaH/EorDTwqWv5fuYTg+rCk0BRLqqhje92apZBX+QyKetE9HzJ+CVCAJ3msjNe2LSDiLDMSa98RH1/xwFPuoqlZe6urceE4S5CwPwW648g9BhIBJSOXlKf33i2cwFQPRjI+hk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=CpMHFBK0; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=amJ3Bb1s; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1785353896; c=relaxed/simple;
+	bh=XwNgm9ATHQcGjGNk+lydH01xqpvPa6t/7xgikX+lowA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=mGJru9O4d2E3e/gHbtNzOyBUhrjpk5ldb1fU1gcRCnVtugm0GHLgpNgh+onse4NeCQTr30gDIp5X4xAt5VvR7vaYTkQxGlkubiCKL3WgcqESoMkOf/ZwKy5dTL5RyMejm3tND90i447Z4Y1TGEaBVmwf3bkNh7naQYNm3BVSSs0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PyHnG4vZ; arc=none smtp.client-ip=209.85.216.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="CpMHFBK0";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="amJ3Bb1s"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66TIQqLm2830835
-	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 18:53:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	GGb/D0+cHzWfDdgb8vv4OyJOIxrUr1v/2y04Z8q3NrA=; b=CpMHFBK0Dt3WId6t
-	94I3Gp4gLVZx+iRAu4EGJk19Pgd2L29Szjb1iMI214t1oAG3jWxypJSPfIJ/qRKj
-	sijV3O6LKp0e6/qq+5zecS0Ga9RG+BeHfKbb0h0Un6ffOmTUDiticdMCLI+P+eYB
-	umAbrER3dIeFaLdDEJ9shbRKuRQNf4BYc/r5lT8pQPyHEUsTLkLs+7Cr3yklMKTk
-	QRBMRSyQa6wSabS+/iSfa07huE6x5ZiD0WbMcNKtFRvAWP0KNTbsxhoUXmc9MZX8
-	jXxKCtHMS6BdMRru09gYb3R0QoZ9TzP8DwU7o8AVps4QGMAM+ks/QAZlwPIb8dVV
-	2aDvcQ==
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fqhe9a2ah-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 18:53:36 +0000 (GMT)
-Received: by mail-pl1-f199.google.com with SMTP id d9443c01a7336-2cc7e86e7c5so24050995ad.3
-        for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 11:53:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PyHnG4vZ"
+Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-381216921aaso1250050a91.1
+        for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 12:38:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1785351216; x=1785956016; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=GGb/D0+cHzWfDdgb8vv4OyJOIxrUr1v/2y04Z8q3NrA=;
-        b=amJ3Bb1syloMdaaBTRQ3EYeklKXhg6LKj44HNYbDGwBWpArzwzsPu+NsTqwkgIUS2a
-         j4YiTYymK+EK9yeohH4RDkHRRA81HEOkfo5x3r4PRnrH2H8gQWGzaC8JEqsuwQldkAEc
-         Oeb5zMrWEgkf9aocgCXnYJ4vMHtK1fgow8p0HtfYdNhqzPg/OmG+6hG6stgY51zsPQDm
-         mfD5w4La03svJb3+4bcoqPKJY2187pCvt1gQbrtd9iWNyQfXe3C/3ZmtEEtOYZZFoYQs
-         f+KZ2EPf3HzfhKwgqFYd5lsiPLxna1jqSxhk78M9Tgw58fdGG242yRMnybrWlrs3T95+
-         I8eA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785351216; x=1785956016;
-        h=content-transfer-encoding:content-type:in-reply-to:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1785353895; x=1785958695; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=GGb/D0+cHzWfDdgb8vv4OyJOIxrUr1v/2y04Z8q3NrA=;
-        b=cp7YTmbJpjvYC/XTpHKdBBgJS9D7ScJqMnBnsXXkDmyOF+EcyOkZEq+8P2gsU5sW5o
-         t0xXHMzypr6A8pI+HPR+ecQNBGuyQ5LV7acR4eJvx6VZswE+xGki31rdWW6PnujpqfMk
-         5q7UnD1FkTXUBfrMwIWyMO07JiHFij70P7eDHm4njg9DsZ+OxPBf4deP+058TPz32nqJ
-         TeBcYacvUh8RrjBC3zcx/QqAVDtRlzdzNLNrzFuzBa57qmf2LZRJPRIvVudUfEitDA6D
-         p2osBRDodXBfECR0y+R2dlMrqsjP/Wo2FkaKjujAIkjMS70bjvNHZDXAIYRR/EEQjadH
-         +XiQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpWsanXLJPG+AHBjMVLPDD3fKB2TIDEz6OGskAhBVAPH7iWfHBaekxJPV9marndkaZV5aua+tw=@lists.linux.dev
-X-Gm-Message-State: AOJu0YwZ4nK3Zbk4ZJjXtOFSwZnjbBRW66E51jtd7hjQcegFO97rnGhl
-	OY2ud2JHHIQlek7FBkElQ8IHIwxtsqdTHGr2NbjzVl7EDWkEeWQaAU25F6LRgiQL90+6zCNTWCN
-	QuEnCayySsh0lFNh9aWATc/mR5zkreCZ/hgQLglRRDn+qV+tYJylZiLdVwi9pFOTeTP8=
-X-Gm-Gg: AR+sD109R6UZBuicAzXTL+ARaS/h7aeXKqaIzDYKV32RYb80KJCvgwxL8sv85MrZwKq
-	3o1ZAMdI7SGlkjdqN6nfco2PSTBh1HKS/D3EMDcJgzCGaE2ARVPZTJC3VgABt4/DVnnMdXX4VCK
-	LP83fC1/594jFB4chbsjXNwMpEZeS71nbRQntGc/nZ9ZN29fK2xtZXyEjSNmddJx6RO5Qvu9Lo2
-	0KlHpoKtgxiG9SA7BnXVyuJVSrVYLCc/oFxtG+hW6gZGP4zK7fuwqH8QZrJnHQTpv9+kJzqfUM/
-	piR2K1WxWVYCixz4iwZYBCaR13Gyt1KqLf11b5IwFdXEjNlfk6BPw5lNCyCCGBr2OhT7JJ6EmRi
-	Q76rAXaRGmetDa9MibSZlblooW9DsnlWxY8ADrvpu8gIN5GUq0+wjG5BpZBMs
-X-Received: by 2002:a17:903:19e4:b0:2cc:c9cb:371c with SMTP id d9443c01a7336-2d033d576c7mr632925ad.40.1785351215755;
-        Wed, 29 Jul 2026 11:53:35 -0700 (PDT)
-X-Received: by 2002:a17:903:19e4:b0:2cc:c9cb:371c with SMTP id d9443c01a7336-2d033d576c7mr632705ad.40.1785351215381;
-        Wed, 29 Jul 2026 11:53:35 -0700 (PDT)
-Received: from [10.227.110.203] (i-global254.qualcomm.com. [199.106.103.254])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31504baa01dsm13218325eec.12.2026.07.29.11.53.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jul 2026 11:53:34 -0700 (PDT)
-Message-ID: <a8e1200f-5f79-4c86-915c-96464596fd0e@oss.qualcomm.com>
-Date: Wed, 29 Jul 2026 11:53:32 -0700
+        bh=fGQJH3HgC5JOXAIct0TTf3DXud55D/ZhU/Mkkd98GCc=;
+        b=PyHnG4vZjtBc8LS/dUsiq6jzHh7Vt+xjrsYd4/BWrCxME9YWptS5yf+0PvWOwsio4I
+         f/FPNWbHO8ktXWVr05uJZBGfP3A9wHzPIHZVsbps4Zv/Uj76QUFWLcnxL0oh8hdmTC5a
+         hG+CbOQdUQd1BK+jeLhj1HgAs2dLIVOVlHBH8qSncP8jpwyd3iH7zaUH7o+Iu+Gq+OQx
+         7vZgRCqBb+CmTJKfw9wNghC7wX1VCyBJ/5p+mqyB2mXWaz5DUIfu6vqR2bsSYWnslfN6
+         9mvrLLCILPxhNPS3N3SnajHKF1R5QcobMoBNxRy87ZvShEBrO0EOe7dPEhuaDXbeC9ty
+         IuFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785353895; x=1785958695;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=fGQJH3HgC5JOXAIct0TTf3DXud55D/ZhU/Mkkd98GCc=;
+        b=roiCLJL/+4uISyOFX+1KqQUzHgbf4trqznd00IeMlaFEcK5Df1r9q+s427WHdCy7tG
+         UJfoCLTFKthieYzE5cL1iRr9dDJSjVLwSRPdLq+fSYwMKOBxuOwVZfyEl5RjDpUPv747
+         hDuZvv7Wykfm77f7nMoQo8kOtQL11L16/09wvuTviN3GQIcpFLXq4PBv675okzRJDti7
+         1Kr1z0wK5km7vVZzHIzzGH8mbwAsvrjQszwMIDFyAOQtwVGBCTbJPsZ980k+R7HQjJMY
+         odBDB1D+E7WWzeZlnJl3MAAvxB3injzyb6E1yENbNXY7jQyuXJhVetVQ/kgZwrtUplPq
+         cYtg==
+X-Forwarded-Encrypted: i=1; AHgh+Roo+n81LPtx0aJHb3aJrCVT/nN+EvxDJLVrR1Wq5GcLR23tJ9NUfxqHTLtZtNj28FFfhdy0kOo=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzYWfaQH+eTzECBlAkGtliVp4UHCf+wjx2/79ICJm2CdZukamHL
+	INPXkEf2gNatIjw9SFhFfRr4MNZyRM5wRKwY/2QhM19Y7CWXAakiv0VH
+X-Gm-Gg: AR+sD13bEwlDDBZFov7V477qg4Be+wx1OBPL+2DaY40SlHUxrLqbw6ghtX2tKMv/o9r
+	IbT2nPYTO0uvV60WjvbM+FELsF7L1vDmspfXsbc7awfp5FEFbndWv4uNNiYwI6n2SPacdg8hQLt
+	lwP6dDgysjLPrE+r4ZWYxRG/8i57sd5ArszUrIcrD4drZIDGeII6uNAh7vrhzZPK4BFD5GOzxjr
+	AHQzUCb3fkyiNFmjn/h+7aiaFR+T6TplmjpEMUUu5UX6JEkERqbocKBDTmEJrHTK5KDoPI4coaR
+	lU3FQ+vrFafyL95nHFLpgI2leYIGgBlw9VBb6m/9z21y8gaTWJtuJuBfgTkPySMPFmvnNYuZnBp
+	Ja3bjiM9wVg1ER3YPv99LzD++S71KN/mCAjnAaq1IdKfGxmPzzAJhWtH6uH2tD4diGpe3iFePnJ
+	JO9MbtWGjYOK/WnfnqEqnieFhx03ltQZVMoNxii89mt0AsrZZ0HvkFAQrpWjSQFqWQ
+X-Received: by 2002:a17:90b:498f:b0:37f:9ce3:ca95 with SMTP id 98e67ed59e1d1-38f993843fdmr155523a91.30.1785353894717;
+        Wed, 29 Jul 2026 12:38:14 -0700 (PDT)
+Received: from Default ([2409:40f4:100c:ca91:db1d:88f3:514:9ded])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31504927a7bsm14207721eec.0.2026.07.29.12.38.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jul 2026 12:38:14 -0700 (PDT)
+From: Jeffin Philip <jeffinphilip14@gmail.com>
+To: syzbot@kernel.org
+Cc: christophe.jaillet@wanadoo.fr,
+	gregkh@linuxfoundation.org,
+	kees@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	nogikh@google.com,
+	syzbot@lists.linux.dev,
+	syzkaller-bugs@googlegroups.com,
+	tiwai@suse.de,
+	Jeffin Philip <jeffinphilip14@gmail.com>
+Subject: Re: [PATCH] usb: gadget: midi2: Fix null-pointer dereference in f_midi2_free_ep_reqs
+Date: Thu, 30 Jul 2026 01:07:45 +0530
+Message-ID: <20260729193746.313378-1-jeffinphilip14@gmail.com>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <cafe65f4-e1bb-46a3-901d-732814b861b2@mail.kernel.org>
+References: <cafe65f4-e1bb-46a3-901d-732814b861b2@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] wifi: zd1211rw: reject secondary interfaces to prevent
- conflicts
-To: syzbot <syzbot@kernel.org>, syzkaller-bugs@googlegroups.com,
-        Slawomir Stepien <sst@poczta.fm>, linux-wireless@vger.kernel.org,
-        Daniel Drake <dsd@gentoo.org>
-Cc: johannes.berg@intel.com, kees@kernel.org, linux-kernel@vger.kernel.org,
-        nihaal@cse.iitm.ac.in, syzbot@lists.linux.dev
-References: <0720e3ad-d98e-47d7-89af-4d22416b0fbc@mail.kernel.org>
-From: Jeff Johnson <jeff.johnson@oss.qualcomm.com>
-Content-Language: en-US
-In-Reply-To: <0720e3ad-d98e-47d7-89af-4d22416b0fbc@mail.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzI5MDE0NCBTYWx0ZWRfX/pXKWN3khoWq
- Qq03sGb2uJg0uO4dBXT+k3daOr+b3+rvnyN0SRH83Gx4OX127lbpd13RfaX++ZQg8VvlXuztxGi
- vZLVsQdDmADt+7lrbEpfF1UNu8w08ruz/ifiGoqXyqOMgi7PZA9z3DVtp7bbmiFDrTkOAOG2a9f
- h8emit7jdfBE++x1htfMAYKlBLH3AVGbYg/NvuWesxfe8VggUA0pHFqE/MIickerKlCArfjb/sk
- gNaRztK+Z0UVFw2BFqVv666MINq8FbnnGZ7V1dggtSZ6Nm13ax6In09wC+AADscVDLrrZDXE2P+
- xjk3cxI8lASaxS3zH7pcnlczLXxihIckhd4V5BCQi46p41TylCDy9XS3879eJX42NSL/2+Tt9jl
- lTzD2H64T21cgGxO4fXX5zelhkbWXQQag+4hUIYAAt7PbFiLFo3FkS+CCzjStGu7sW87f541OCb
- X/581mS0NrbK5R2/H7w==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzI5MDE0NCBTYWx0ZWRfX9+UwN7Gy6CAi
- NLz5YXMTcn8PpebAu6u5uBg2JpR+k2yPem7MxccSi9P+fHzzV2IgBXrl/Dsx9mkjowDBD/+64rQ
- zcGRK+qHZRBC6haQ4jtDs22O+WdegVk=
-X-Proofpoint-ORIG-GUID: 05NhGaICmUFAR_49c0oaYAKmgOP-RgWB
-X-Proofpoint-GUID: 05NhGaICmUFAR_49c0oaYAKmgOP-RgWB
-X-Authority-Analysis: v=2.4 cv=EsriaycA c=1 sm=1 tr=0 ts=6a6a4c30 cx=c_pps
- a=JL+w9abYAAE89/QcEU+0QA==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
- a=hi2ICmPa-PouKQFzbIkA:9 a=QEXdDO2ut3YA:10 a=324X-CrmTo6CU4MGRt3R:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-29_07,2026-07-29_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1011 bulkscore=0 malwarescore=0 adultscore=0 priorityscore=1501
- spamscore=0 lowpriorityscore=0 impostorscore=0 phishscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607290144
+Content-Transfer-Encoding: 8bit
 
-On 7/29/2026 1:04 AM, syzbot wrote:
-> @@ -1353,6 +1353,13 @@ static int probe(struct usb_interface *intf, const struct usb_device_id *id)
->  	struct zd_usb *usb;
->  	struct ieee80211_hw *hw = NULL;
->  
-> +	/* ZD1211 devices are single-function. Reject secondary interfaces
-
-this does not follow linux block comment style
-/* should be on a separate line
-(at one time networking code had a different style, but not now)
-
-> +	 * to prevent multiple instances from conflicting on hardcoded endpoints
-> +	 * and triggering recursive locking warnings.
-> +	 */
-> +	if (intf->cur_altsetting->desc.bInterfaceNumber != 0)
-> +		return -ENODEV;
-> +
->  	print_id(udev);
->  
->  	if (id->driver_info & DEVICE_INSTALLER)
+On Wed, 29 Jul 2026 11:04:54 +0200,
+syzbot wrote:
 > 
+> From: Aleksandr Nogikh <nogikh@google.com>
 > 
-> base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
+> A null-pointer dereference occurs in f_midi2_free_ep_reqs() when attempting
+> to clean up an endpoint that was never initialized.
+> 
+> When configuring the MIDI 2.0 gadget via configfs and setting the block
+> direction to SNDRV_UMP_DIR_INPUT, the initialization of the midi1_ep_out
+> endpoint is explicitly skipped during the gadget bind phase
+> (f_midi2_bind()). As a result, the usb_ep->card field remains NULL.
+> 
+> Later, when the host sets the alternate setting, f_midi2_set_alt()
+> unconditionally stops both the IN and OUT endpoints by calling
+> f_midi2_stop_eps(), which in turn calls f_midi2_free_ep_reqs() for both
+> endpoints. When f_midi2_free_ep_reqs() is called for the uninitialized
+> midi1_ep_out, it attempts to dereference usb_ep->card to determine the
+> number of requests to free, leading to a crash.
+> 
+> Fix this by using usb_ep->num_reqs instead of usb_ep->card->info.num_reqs
+> in f_midi2_free_ep_reqs(). usb_ep->num_reqs is correctly set during
+> f_midi2_init_ep() and remains 0 if the endpoint was never initialized,
+> safely avoiding the loop. For consistency, apply the same change to
+> f_midi2_alloc_ep_reqs().
+> 
+> Oops: general protection fault, probably for non-canonical address
+> 0xdffffc00000000ee: 0000 [#1] SMP KASAN NOPTI
+> KASAN: null-ptr-deref in range [0x0000000000000770-0x0000000000000777]
+> ...
+> RIP: 0010:f_midi2_free_ep_reqs drivers/usb/gadget/function/f_midi2.c:1166
+> [inline]
+> RIP: 0010:f_midi2_stop_eps+0x28e/0x4d0
+> drivers/usb/gadget/function/f_midi2.c:1246
+> ...
+> Call Trace:
+>  <TASK>
+>  f_midi2_set_alt+0x11c/0xf00 drivers/usb/gadget/function/f_midi2.c:1296
+>  composite_setup+0x1ffd/0x3480 drivers/usb/gadget/composite.c:1933
+>  configfs_composite_setup+0xbd/0x100 drivers/usb/gadget/configfs.c:1877
+> 
+> Fixes: 8b645922b223 ("usb: gadget: Add support for USB MIDI 2.0 function driver")
+> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+bbb6dad313f4aaa8da6b@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=bbb6dad313f4aaa8da6b
+> Link: https://syzkaller.appspot.com/ai_job?id=8ce30b1a-8cf7-4e38-bcf7-1f69e6f6313f
+> Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
 
+Closes: https://syzkaller.appspot.com/bug?extid=01a17afb30637396955e
+
+Thanks,
+Jeffin.
