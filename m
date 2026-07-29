@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F3B2449B22
-	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 09:50:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D65A44B66B
+	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 09:55:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785318626; cv=none; b=NLTaFpQ+ySxlA87ihmDN6C6mFe4YxHsVt4/RhvTthxK7Du3+ME3r6UPN/YS+/1gkIh1bzLOqTs8Y4kqaPo+MZneCO5j3B9ojCnpuNlUgxvDtTv87/oo7+bSQwrTvRW7Un0CbOYgtTLtxuu2103TMtfAV8NlqLVfETQ2ajA9UTkk=
+	t=1785318931; cv=none; b=cDJWPLHEy/dahzSMwdv7wKGdlQfOgfVo92wgiQAiMIH3Ksojt49iQ2odYuB4/EvDX1GbGlvFXfbb0lsVedDNovqSQY0Quh4+frQJPIq+Knv6YTCmuSvqBkjHgZ8KTCpovfOO1WjRCbTUw+I5j+MXbCbahd9obsiVuyq0Ez+q2IY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785318626; c=relaxed/simple;
-	bh=XtW94cVtP5SuRmeKofNvnHVwPvVIWDas+5O1NWimlqg=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=RVC0+NLG6w3X83o+hbOMU/S5G7PwxiIhxWHy5/DAqkEwYB8aWlbcdJwf2fvDvmeR1CVMpVECHzGUS5Hs0ZUKMNtgxHfaujCWTRGiDzq3fLKIqdCg23nirzTT+l/V9ahB4RDde7mWlt4Ie9GTmzmCmYuANmw1zU2a4CYn9ZgXAEc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jqCcZnNU; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785318931; c=relaxed/simple;
+	bh=33LSsWxaGWNlrsHR/DR7ZL/8LHSdrMxf472LIDH6/tw=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=KGTUs0cCvN5FP94ZYbiE/IdyzP3iDdsRMEPDNYxxpz6krSyPjTH5dPYwfkyPeTUFfEPS3H1S4f2VXX1Ze8AfJxihc0yiTeJZBIFNzZ7swbDc1i5POvJMF3fQgvGFxQ+03XQEjxuV7DYOR0uKGy97rlU1lU2Ce1qu2ppZ39s1ABk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=astRIAGJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jqCcZnNU"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 5CCAE1F000E9;
-	Wed, 29 Jul 2026 09:50:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="astRIAGJ"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 8274A1F000E9;
+	Wed, 29 Jul 2026 09:55:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785318624;
-	bh=K7EoTWvUQ6ftUiGJljGvUIxexvo3U/h6WW45MdN/KiA=;
+	s=k20260515; t=1785318924;
+	bh=gEE9PLN/1s2N9hIHKFDzz4p66H54iapyHeRbxSEUKUY=;
 	h=From:To:Cc:Subject:Date;
-	b=jqCcZnNU7KN0TwY4uVoEDp5Q/M/LP1IqfOCsbuwxxwaFSUlOP/9FtD1Oz/Rl+Mtj6
-	 ypS1kUwpCkzglfmuFMqqxfbNQqSpuT4Obkq7s8TAIWLU2WayccbJYa+JfZZfS+laY3
-	 IyUKi578iLexldc1ZtuZx8fgvYnyb7J/mbftk7r7CumxzxuycKVlpbNseAVAlHX83Y
-	 epfwVey4OeDumiS+eaBaqaqEO7LObi70C69H+01NWZ/DGrifOuTPW6PEH4BobwLZ/+
-	 lPzNi8N9Iyu+Ixxfg2o6ZeHdybiuOr2ZMug1uYjA+Eg301rg5IRw3ip2BveF0XvAGk
-	 bcD+QNw3+qKLQ==
+	b=astRIAGJfpLhnr3aT+Pp88KBEOVRyy8a+55paVpSDp359oNL0jo57oPC3nfMTPJ8r
+	 /MM7OOl/9JP7mrnBQpVFUQduClsjArao1X2hfEx31v9hwfsZsKkO/C8/gtkcIn9m8S
+	 JQRZhWolEKKdhz4a7BQl0VMdnuq1zMXkmiR0MJ5ZP4zQaxVAlTL+pmEGc2/SR0stbA
+	 GLa2eOph9P98dA80cjVjL/MnqpCWLNyTl1Cmr0BhwOUhwreg7Hc6ptWF8KxiuO1TOB
+	 fupGCY8gyMJiJjdFAQkfwcjqC+xSqGnSko/amqBTlFRgyuJwsrIyWzqNy7uWp9CE2G
+	 Bl5unGj2laW/A==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] irqchip/gic-v3-its: Make LPI free path infallible
-Message-ID: <564b7035-7d20-4f5b-ac7d-a48e58e4a0a0@mail.kernel.org>
+Subject: [PATCH RFC] usb: raw-gadget: fix use-after-free during gadget unbind
+Message-ID: <7e44f4c6-6cfb-490b-b037-10d9921f9f54@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,173 +38,317 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 29 Jul 2026 09:50:24 +0000 (UTC)
+Date: Wed, 29 Jul 2026 09:55:24 +0000 (UTC)
 
-The ITS driver manages available LPI ranges using a linked list. When LPIs
-are freed via free_lpi_range(), the driver allocates a new lpi_range node
-to add the freed range back to this list. If this allocation fails (e.g.,
-under memory pressure), free_lpi_range() returns -ENOMEM.
+A use-after-free vulnerability occurs in the raw-gadget driver when the
+underlying USB Device Controller (UDC) is unbound while concurrent ioctls
+are in progress.
 
-The caller, its_lpi_free(), has a void return type and cannot propagate the
-error. It wraps the call in a WARN_ON(). When the allocation fails, the
-warning is triggered, and the LPI range is permanently leaked because it is
-never added back to the free list.
+When the UDC is unbound, gadget_unbind() is called. However, this function
+fails to clear the dev->gadget pointer and update dev->state. It only
+clears the driver data. After gadget_unbind() returns, the UDC core frees
+the struct usb_gadget and its associated device name string.
 
-WARNING: drivers/irqchip/irq-gic-v3-its.c:2251 at its_lpi_free
-drivers/irqchip/irq-gic-v3-its.c:2251 [inline]
-WARNING: drivers/irqchip/irq-gic-v3-its.c:2251 at
-its_msi_teardown+0x3a4/0x424 drivers/irqchip/irq-gic-v3-its.c:3644
-Call trace:
- its_lpi_free drivers/irqchip/irq-gic-v3-its.c:2251 [inline]
- its_msi_teardown+0x3a4/0x424 drivers/irqchip/irq-gic-v3-its.c:3644
- its_msi_teardown+0xa0/0xb8 drivers/irqchip/irq-gic-its-msi-parent.c:249
- msi_remove_device_irq_domain+0x16c/0x27c kernel/irq/msi.c:1127
- msi_device_data_release+0x38/0x9c kernel/irq/msi.c:293
+If a concurrent ioctl (e.g., USB_RAW_IOCTL_EP0_READ) is executing, it may
+pass the state checks because dev->state was not updated, and proceed to
+use the dangling dev->gadget pointer. If usb_ep_queue() fails (e.g., due to
+the UDC being disconnected), the error path attempts to print an error
+message using dev_err(&dev->gadget->dev, ...), which dereferences the freed
+device name string, resulting in a KASAN slab-use-after-free crash:
 
-Free paths must generally be infallible because the caller usually cannot
-handle a failure. WARN_ON must not be used for conditions that can
-legitimately happen, and pr_err should be used instead if necessary.
+BUG: KASAN: slab-use-after-free in string_nocheck lib/vsprintf.c:648
+[inline]
+BUG: KASAN: slab-use-after-free in string+0x216/0x2d0 lib/vsprintf.c:730
+Read of size 1 at addr ffff888195535600 by task syz.0.40/6395
+...
+Call Trace:
+ <TASK>
+...
+ string_nocheck lib/vsprintf.c:648 [inline]
+ string+0x216/0x2d0 lib/vsprintf.c:730
+ vsnprintf+0x74a/0xef0 lib/vsprintf.c:2945
+ snprintf+0xe8/0x140 lib/vsprintf.c:3043
+ set_dev_info drivers/base/core.c:4984 [inline]
+ dev_vprintk_emit+0x30f/0x400 drivers/base/core.c:4994
+ dev_printk_emit+0xee/0x140 drivers/base/core.c:5007
+ _dev_err+0x11e/0x180 drivers/base/core.c:5062
+ raw_process_ep0_io+0x531/0x990 drivers/usb/gadget/legacy/raw_gadget.c:730
+ raw_ioctl_ep0_read drivers/usb/gadget/legacy/raw_gadget.c:782 [inline]
+ raw_ioctl+0x2721/0x40d0 drivers/usb/gadget/legacy/raw_gadget.c:1316
+...
 
-Fix this by decoupling the memory allocation from the free path and
-shifting it to the allocation path (alloc_lpi_range()), which is allowed to
-fail. Introduce a global cache (lpi_free_cache) for lpi_range nodes.
-Pre-allocate a node in alloc_lpi_range() and add it to the cache. In
-free_lpi_range(), simply pop a node from the cache. Since every successful
-allocation adds a node to the cache, free_lpi_range() is guaranteed to find
-at least one node.
+To fix this, gadget_unbind() must clear dev->gadget and update dev->state
+to STATE_DEV_FAILED under dev->lock.
 
-Additionally, fix two existing memory leaks in the allocation error paths
-to keep the cache perfectly balanced. First, in its_lpi_alloc(), if
-bitmap_zalloc() fails, free the successfully allocated LPI range before
-returning. Second, in its_create_device(), if col_map allocation fails but
-lpi_map was successfully allocated, call its_lpi_free() instead of
-bitmap_free() to correctly free both the bitmap and the underlying LPI
-range.
+To prevent race conditions where an ioctl has already passed the checks but
+hasn't yet called usb_ep_queue(), a synchronization mechanism is
+introduced. A udc_usage counter tracks ongoing UDC calls. gadget_unbind()
+waits for this counter to drop to zero before returning.
 
-Fixes: 880cb3cddd16 ("irqchip/gic-v3-its: Refactor LPI allocator")
+To avoid deadlocks where ioctls are waiting for I/O completion,
+gadget_unbind() explicitly dequeues all pending requests before waiting for
+udc_usage to drop. This forces the UDC core to complete the requests
+immediately, waking up the waiting ioctls so they can decrement udc_usage
+and signal the completion.
+
+Additionally, if an ioctl is interrupted by a signal, it checks if
+dev->state == STATE_DEV_FAILED. If so, it knows gadget_unbind() is handling
+the dequeue and simply waits for the completion handler to finish. Finally,
+proper cleanup is added in gadget_bind() if the connect event fails to
+queue, and dev_err() calls are updated to use dev->dev instead of
+dev->gadget->dev to avoid dereferencing the gadget pointer in error paths.
+
+Fixes: f2c2e717642c ("usb: gadget: add raw-gadget interface")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+229d761b8a110e6de517@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=229d761b8a110e6de517
-Link: https://syzkaller.appspot.com/ai_job?id=09d24d0b-29ec-4b31-b433-6367b7670bfc
-To: <linux-arm-kernel@lists.infradead.org>
-To: "Marc Zyngier" <maz@kernel.org>
-To: "Thomas Gleixner" <tglx@kernel.org>
-To: "Marc Zyngier" <marc.zyngier@arm.com>
+Reported-by: syzbot+9aacea11bc70c3ddaff2@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=9aacea11bc70c3ddaff2
+Link: https://syzkaller.appspot.com/ai_job?id=2b271df2-0caf-4de1-92ff-99534a3e1708
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
+To: "Andrey Konovalov" <andreyknvl@google.com>
+Cc: "Andrey Konovalov" <andreyknvl@gmail.com>
+Cc: "Kees Cook" <kees@kernel.org>
+Cc: "Gopi Krishna Menon" <krishnagopi487@gmail.com>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-index 6f5811aae..634b0e154 100644
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -2097,6 +2097,7 @@ static struct irq_chip its_irq_chip = {
- 
- static DEFINE_MUTEX(lpi_range_lock);
- static LIST_HEAD(lpi_range_list);
-+static LIST_HEAD(lpi_free_cache);
- 
- struct lpi_range {
- 	struct list_head	entry;
-@@ -2120,8 +2121,13 @@ static struct lpi_range *mk_lpi_range(u32 base, u32 span)
- static int alloc_lpi_range(u32 nr_lpis, u32 *base)
+diff --git a/drivers/usb/gadget/legacy/raw_gadget.c b/drivers/usb/gadget/legacy/raw_gadget.c
+index 4febf8dac..bce4f8d3f 100644
+--- a/drivers/usb/gadget/legacy/raw_gadget.c
++++ b/drivers/usb/gadget/legacy/raw_gadget.c
+@@ -175,6 +175,8 @@ struct raw_dev {
+ 	bool				gadget_registered;
+ 	struct usb_gadget		*gadget;
+ 	struct usb_request		*req;
++	int				udc_usage;
++	struct completion		*unbind_completion;
+ 	bool				ep0_in_pending;
+ 	bool				ep0_out_pending;
+ 	bool				ep0_urb_queued;
+@@ -205,27 +207,13 @@ static struct raw_dev *dev_new(void)
+ static void dev_free(struct kref *kref)
  {
- 	struct lpi_range *range, *tmp;
-+	struct lpi_range *new_node;
- 	int err = -ENOSPC;
+ 	struct raw_dev *dev = container_of(kref, struct raw_dev, count);
+-	int i;
  
-+	new_node = mk_lpi_range(0, 0);
-+	if (!new_node)
-+		return -ENOMEM;
-+
- 	mutex_lock(&lpi_range_lock);
- 
- 	list_for_each_entry_safe(range, tmp, &lpi_range_list, entry) {
-@@ -2140,6 +2146,11 @@ static int alloc_lpi_range(u32 nr_lpis, u32 *base)
- 		}
- 	}
- 
-+	if (!err)
-+		list_add(&new_node->entry, &lpi_free_cache);
-+	else
-+		kfree(new_node);
-+
- 	mutex_unlock(&lpi_range_lock);
- 
- 	pr_debug("ITS: alloc %u:%u\n", *base, nr_lpis);
-@@ -2162,11 +2173,18 @@ static int free_lpi_range(u32 base, u32 nr_lpis)
- {
- 	struct lpi_range *new, *old;
- 
--	new = mk_lpi_range(base, nr_lpis);
--	if (!new)
-+	mutex_lock(&lpi_range_lock);
-+
-+	if (WARN_ON(list_empty(&lpi_free_cache))) {
-+		mutex_unlock(&lpi_range_lock);
- 		return -ENOMEM;
-+	}
- 
--	mutex_lock(&lpi_range_lock);
-+	new = list_first_entry(&lpi_free_cache, struct lpi_range, entry);
-+	list_del(&new->entry);
-+
-+	new->base_id = base;
-+	new->span = nr_lpis;
- 
- 	list_for_each_entry_reverse(old, &lpi_range_list, entry) {
- 		if (old->base_id < base)
-@@ -2195,6 +2213,7 @@ static int __init its_lpi_init(u32 id_bits)
- {
- 	u32 lpis = (1UL << id_bits) - 8192;
- 	u32 numlpis;
-+	struct lpi_range *range;
- 	int err;
- 
- 	numlpis = 1UL << GICD_TYPER_NUM_LPIS(gic_rdists->gicd_typer);
-@@ -2205,6 +2224,12 @@ static int __init its_lpi_init(u32 id_bits)
- 			lpis);
- 	}
- 
-+	range = mk_lpi_range(0, 0);
-+	if (!range)
-+		return -ENOMEM;
-+
-+	list_add(&range->entry, &lpi_free_cache);
-+
- 	/*
- 	 * Initializing the allocator is just the same as freeing the
- 	 * full range of LPIs.
-@@ -2234,8 +2259,10 @@ static unsigned long *its_lpi_alloc(int nr_irqs, u32 *base, int *nr_ids)
- 		goto out;
- 
- 	bitmap = bitmap_zalloc(nr_irqs, GFP_ATOMIC);
--	if (!bitmap)
-+	if (!bitmap) {
-+		free_lpi_range(*base, nr_irqs);
- 		goto out;
-+	}
- 
- 	*nr_ids = nr_irqs;
- 
-@@ -2248,7 +2275,7 @@ static unsigned long *its_lpi_alloc(int nr_irqs, u32 *base, int *nr_ids)
- 
- static void its_lpi_free(unsigned long *bitmap, u32 base, u32 nr_ids)
- {
--	WARN_ON(free_lpi_range(base, nr_ids));
-+	free_lpi_range(base, nr_ids);
- 	bitmap_free(bitmap);
+ 	kfree(dev->udc_name);
+ 	kfree(dev->driver.udc_name);
+ 	kfree(dev->driver.driver.name);
+ 	if (dev->driver_id_number >= 0)
+ 		ida_free(&driver_id_numbers, dev->driver_id_number);
+-	if (dev->req) {
+-		if (dev->ep0_urb_queued)
+-			usb_ep_dequeue(dev->gadget->ep0, dev->req);
+-		usb_ep_free_request(dev->gadget->ep0, dev->req);
+-	}
+ 	raw_event_queue_destroy(&dev->queue);
+-	for (i = 0; i < dev->eps_num; i++) {
+-		if (dev->eps[i].state == STATE_EP_DISABLED)
+-			continue;
+-		usb_ep_disable(dev->eps[i].ep);
+-		usb_ep_free_request(dev->eps[i].ep, dev->eps[i].req);
+-		kfree(dev->eps[i].ep->desc);
+-		dev->eps[i].state = STATE_EP_DISABLED;
+-	}
+ 	kfree(dev);
  }
  
-@@ -3510,7 +3537,8 @@ static struct its_device *its_create_device(struct its_node *its, u32 dev_id,
- 	if (!dev || !itt || !col_map || (!lpi_map && alloc_lpis)) {
- 		kfree(dev);
- 		itt_free_pool(itt, sz);
--		bitmap_free(lpi_map);
-+		if (lpi_map)
-+			its_lpi_free(lpi_map, lpi_base, nr_lpis);
- 		kfree(col_map);
- 		return NULL;
+@@ -316,6 +304,11 @@ static int gadget_bind(struct usb_gadget *gadget,
+ 	ret = raw_queue_event(dev, USB_RAW_EVENT_CONNECT, 0, NULL);
+ 	if (ret < 0) {
+ 		dev_err(&gadget->dev, "failed to queue connect event\n");
++		spin_lock_irqsave(&dev->lock, flags);
++		dev->gadget = NULL;
++		dev->req = NULL;
++		spin_unlock_irqrestore(&dev->lock, flags);
++		usb_ep_free_request(gadget->ep0, req);
+ 		set_gadget_data(gadget, NULL);
+ 		return ret;
  	}
+@@ -328,6 +321,47 @@ static int gadget_bind(struct usb_gadget *gadget,
+ static void gadget_unbind(struct usb_gadget *gadget)
+ {
+ 	struct raw_dev *dev = get_gadget_data(gadget);
++	unsigned long flags;
++	DECLARE_COMPLETION_ONSTACK(done);
++	int i;
++
++	spin_lock_irqsave(&dev->lock, flags);
++	dev->state = STATE_DEV_FAILED;
++
++	if (dev->ep0_urb_queued) {
++		spin_unlock_irqrestore(&dev->lock, flags);
++		usb_ep_dequeue(gadget->ep0, dev->req);
++		spin_lock_irqsave(&dev->lock, flags);
++	}
++	for (i = 0; i < dev->eps_num; i++) {
++		if (dev->eps[i].state == STATE_EP_ENABLED && dev->eps[i].urb_queued) {
++			spin_unlock_irqrestore(&dev->lock, flags);
++			usb_ep_dequeue(dev->eps[i].ep, dev->eps[i].req);
++			spin_lock_irqsave(&dev->lock, flags);
++		}
++	}
++
++	if (dev->udc_usage > 0) {
++		dev->unbind_completion = &done;
++		spin_unlock_irqrestore(&dev->lock, flags);
++		wait_for_completion(&done);
++		spin_lock_irqsave(&dev->lock, flags);
++	}
++	dev->gadget = NULL;
++	spin_unlock_irqrestore(&dev->lock, flags);
++
++	for (i = 0; i < dev->eps_num; i++) {
++		if (dev->eps[i].state == STATE_EP_DISABLED)
++			continue;
++		usb_ep_disable(dev->eps[i].ep);
++		usb_ep_free_request(dev->eps[i].ep, dev->eps[i].req);
++		kfree(dev->eps[i].ep->desc);
++		dev->eps[i].state = STATE_EP_DISABLED;
++	}
++	if (dev->req) {
++		usb_ep_free_request(gadget->ep0, dev->req);
++		dev->req = NULL;
++	}
+ 
+ 	set_gadget_data(gadget, NULL);
+ 	/* Matches kref_get() in gadget_bind(). */
+@@ -637,11 +671,11 @@ static int raw_ioctl_event_fetch(struct raw_dev *dev, unsigned long value)
+ 
+ 	event = raw_event_queue_fetch(&dev->queue);
+ 	if (PTR_ERR(event) == -EINTR) {
+-		dev_dbg(&dev->gadget->dev, "event fetching interrupted\n");
++		dev_dbg(dev->dev, "event fetching interrupted\n");
+ 		return -EINTR;
+ 	}
+ 	if (IS_ERR(event)) {
+-		dev_err(&dev->gadget->dev, "failed to fetch event\n");
++		dev_err(dev->dev, "failed to fetch event\n");
+ 		spin_lock_irqsave(&dev->lock, flags);
+ 		dev->state = STATE_DEV_FAILED;
+ 		spin_unlock_irqrestore(&dev->lock, flags);
+@@ -723,22 +757,37 @@ static int raw_process_ep0_io(struct raw_dev *dev, struct usb_raw_ep_io *io,
+ 	dev->req->length = io->length;
+ 	dev->req->zero = usb_raw_io_flags_zero(io->flags);
+ 	dev->ep0_urb_queued = true;
++	dev->udc_usage++;
+ 	spin_unlock_irqrestore(&dev->lock, flags);
+ 
+ 	ret = usb_ep_queue(dev->gadget->ep0, dev->req, GFP_KERNEL);
+ 	if (ret) {
+-		dev_err(&dev->gadget->dev,
+-				"fail, usb_ep_queue returned %d\n", ret);
++		dev_err(dev->dev, "fail, usb_ep_queue returned %d\n", ret);
+ 		spin_lock_irqsave(&dev->lock, flags);
++		dev->udc_usage--;
++		if (!dev->udc_usage && dev->unbind_completion)
++			complete(dev->unbind_completion);
+ 		goto out_queue_failed;
+ 	}
+ 
+ 	ret = wait_for_completion_interruptible(&dev->ep0_done);
+ 	if (ret) {
+-		dev_dbg(&dev->gadget->dev, "wait interrupted\n");
+-		usb_ep_dequeue(dev->gadget->ep0, dev->req);
+-		wait_for_completion(&dev->ep0_done);
++		dev_dbg(dev->dev, "wait interrupted\n");
+ 		spin_lock_irqsave(&dev->lock, flags);
++		if (dev->state != STATE_DEV_FAILED && dev->gadget) {
++			struct usb_ep *ep0 = dev->gadget->ep0;
++
++			spin_unlock_irqrestore(&dev->lock, flags);
++
++			usb_ep_dequeue(ep0, dev->req);
++			wait_for_completion(&dev->ep0_done);
++
++			spin_lock_irqsave(&dev->lock, flags);
++		} else {
++			spin_unlock_irqrestore(&dev->lock, flags);
++			wait_for_completion(&dev->ep0_done);
++			spin_lock_irqsave(&dev->lock, flags);
++		}
+ 		if (dev->ep0_status == -ECONNRESET)
+ 			dev->ep0_status = -EINTR;
+ 		goto out_interrupted;
+@@ -750,6 +799,9 @@ static int raw_process_ep0_io(struct raw_dev *dev, struct usb_raw_ep_io *io,
+ 	ret = dev->ep0_status;
+ out_queue_failed:
+ 	dev->ep0_urb_queued = false;
++	dev->udc_usage--;
++	if (!dev->udc_usage && dev->unbind_completion)
++		complete(dev->unbind_completion);
+ out_unlock:
+ 	spin_unlock_irqrestore(&dev->lock, flags);
+ 	return ret;
+@@ -956,11 +1008,15 @@ static int raw_ioctl_ep_disable(struct raw_dev *dev, unsigned long value)
+ 		goto out_unlock;
+ 	}
+ 	dev->eps[i].disabling = true;
++	dev->udc_usage++;
+ 	spin_unlock_irqrestore(&dev->lock, flags);
+ 
+ 	usb_ep_disable(dev->eps[i].ep);
+ 
+ 	spin_lock_irqsave(&dev->lock, flags);
++	dev->udc_usage--;
++	if (!dev->udc_usage && dev->unbind_completion)
++		complete(dev->unbind_completion);
+ 	usb_ep_free_request(dev->eps[i].ep, dev->eps[i].req);
+ 	kfree(dev->eps[i].ep->desc);
+ 	dev->eps[i].state = STATE_EP_DISABLED;
+@@ -1109,22 +1165,37 @@ static int raw_process_ep_io(struct raw_dev *dev, struct usb_raw_ep_io *io,
+ 	ep->req->length = io->length;
+ 	ep->req->zero = usb_raw_io_flags_zero(io->flags);
+ 	ep->urb_queued = true;
++	dev->udc_usage++;
+ 	spin_unlock_irqrestore(&dev->lock, flags);
+ 
+ 	ret = usb_ep_queue(ep->ep, ep->req, GFP_KERNEL);
+ 	if (ret) {
+-		dev_err(&dev->gadget->dev,
+-				"fail, usb_ep_queue returned %d\n", ret);
++		dev_err(dev->dev, "fail, usb_ep_queue returned %d\n", ret);
+ 		spin_lock_irqsave(&dev->lock, flags);
++		dev->udc_usage--;
++		if (!dev->udc_usage && dev->unbind_completion)
++			complete(dev->unbind_completion);
+ 		goto out_queue_failed;
+ 	}
+ 
+ 	ret = wait_for_completion_interruptible(&done);
+ 	if (ret) {
+-		dev_dbg(&dev->gadget->dev, "wait interrupted\n");
+-		usb_ep_dequeue(ep->ep, ep->req);
+-		wait_for_completion(&done);
++		dev_dbg(dev->dev, "wait interrupted\n");
+ 		spin_lock_irqsave(&dev->lock, flags);
++		if (dev->state != STATE_DEV_FAILED && dev->gadget) {
++			struct usb_ep *usb_ep = ep->ep;
++
++			spin_unlock_irqrestore(&dev->lock, flags);
++
++			usb_ep_dequeue(usb_ep, ep->req);
++			wait_for_completion(&done);
++
++			spin_lock_irqsave(&dev->lock, flags);
++		} else {
++			spin_unlock_irqrestore(&dev->lock, flags);
++			wait_for_completion(&done);
++			spin_lock_irqsave(&dev->lock, flags);
++		}
+ 		if (ep->status == -ECONNRESET)
+ 			ep->status = -EINTR;
+ 		goto out_interrupted;
+@@ -1136,6 +1207,9 @@ static int raw_process_ep_io(struct raw_dev *dev, struct usb_raw_ep_io *io,
+ 	ret = ep->status;
+ out_queue_failed:
+ 	ep->urb_queued = false;
++	dev->udc_usage--;
++	if (!dev->udc_usage && dev->unbind_completion)
++		complete(dev->unbind_completion);
+ out_unlock:
+ 	spin_unlock_irqrestore(&dev->lock, flags);
+ 	return ret;
 
 
 base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
