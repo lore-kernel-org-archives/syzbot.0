@@ -1,138 +1,189 @@
-Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87BAE3AA50B
-	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 19:38:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D489442900C
+	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 21:27:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785353896; cv=none; b=iFU5HbkCmoXoonqLGu26DrOhBkp2LawEeGsN/XztNfMzCRfRFIB7pAKqQQE9bV8lJxrRwZwXfc9jbuuZBpQdSxzVsliHhLXr0m+Y3faSeo6Yuz0xgQkBajvXsSFJtGzSrzuIWjkn9bSHtmeAof/mE/t1xAEedlnf6zNdid4x1pQ=
+	t=1785360433; cv=none; b=UYQBCwYLE+TkWOhq66D7xGag8L1oX9Jj7ifJzsQh93XaV1tltOt8P9+MDWTx+yMzhSAllnXEEihC9bRJWCIFhWteqY7m55IYHKeksugrgpb9o2+BqELrRuVEar/bVySnZi3efhTiE9obuWT3dGrpoVavttHR605asUDylEWAGbI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785353896; c=relaxed/simple;
-	bh=XwNgm9ATHQcGjGNk+lydH01xqpvPa6t/7xgikX+lowA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mGJru9O4d2E3e/gHbtNzOyBUhrjpk5ldb1fU1gcRCnVtugm0GHLgpNgh+onse4NeCQTr30gDIp5X4xAt5VvR7vaYTkQxGlkubiCKL3WgcqESoMkOf/ZwKy5dTL5RyMejm3tND90i447Z4Y1TGEaBVmwf3bkNh7naQYNm3BVSSs0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PyHnG4vZ; arc=none smtp.client-ip=209.85.216.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PyHnG4vZ"
-Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-381216921aaso1250050a91.1
-        for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 12:38:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785353895; x=1785958695; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=fGQJH3HgC5JOXAIct0TTf3DXud55D/ZhU/Mkkd98GCc=;
-        b=PyHnG4vZjtBc8LS/dUsiq6jzHh7Vt+xjrsYd4/BWrCxME9YWptS5yf+0PvWOwsio4I
-         f/FPNWbHO8ktXWVr05uJZBGfP3A9wHzPIHZVsbps4Zv/Uj76QUFWLcnxL0oh8hdmTC5a
-         hG+CbOQdUQd1BK+jeLhj1HgAs2dLIVOVlHBH8qSncP8jpwyd3iH7zaUH7o+Iu+Gq+OQx
-         7vZgRCqBb+CmTJKfw9wNghC7wX1VCyBJ/5p+mqyB2mXWaz5DUIfu6vqR2bsSYWnslfN6
-         9mvrLLCILPxhNPS3N3SnajHKF1R5QcobMoBNxRy87ZvShEBrO0EOe7dPEhuaDXbeC9ty
-         IuFg==
+	s=arc-20240116; t=1785360433; c=relaxed/simple;
+	bh=5Qe0IKPnEuPLGIW2ZWoNJaEG7aBVEHHb4zMuI/w3dL8=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=RLETwk5+LKV9VaO/Mavqb7TMHt2Ep5zl323Nk4pRLvtiDqPNomF0pSLQhajtPao0eNIbcQAnCwZz8spOoMyhqUCTiMtRYEydHP0LwL/4ba3ZYpDEffMFCURAm7HSKdOcVUNkZnNXhRGx+bs21vdKvgCYWggPAh0gJvHHNA8snXo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-4a4a7d0362eso1467182b6e.0
+        for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 14:27:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785353895; x=1785958695;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=fGQJH3HgC5JOXAIct0TTf3DXud55D/ZhU/Mkkd98GCc=;
-        b=roiCLJL/+4uISyOFX+1KqQUzHgbf4trqznd00IeMlaFEcK5Df1r9q+s427WHdCy7tG
-         UJfoCLTFKthieYzE5cL1iRr9dDJSjVLwSRPdLq+fSYwMKOBxuOwVZfyEl5RjDpUPv747
-         hDuZvv7Wykfm77f7nMoQo8kOtQL11L16/09wvuTviN3GQIcpFLXq4PBv675okzRJDti7
-         1Kr1z0wK5km7vVZzHIzzGH8mbwAsvrjQszwMIDFyAOQtwVGBCTbJPsZ980k+R7HQjJMY
-         odBDB1D+E7WWzeZlnJl3MAAvxB3injzyb6E1yENbNXY7jQyuXJhVetVQ/kgZwrtUplPq
-         cYtg==
-X-Forwarded-Encrypted: i=1; AHgh+Roo+n81LPtx0aJHb3aJrCVT/nN+EvxDJLVrR1Wq5GcLR23tJ9NUfxqHTLtZtNj28FFfhdy0kOo=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzYWfaQH+eTzECBlAkGtliVp4UHCf+wjx2/79ICJm2CdZukamHL
-	INPXkEf2gNatIjw9SFhFfRr4MNZyRM5wRKwY/2QhM19Y7CWXAakiv0VH
-X-Gm-Gg: AR+sD13bEwlDDBZFov7V477qg4Be+wx1OBPL+2DaY40SlHUxrLqbw6ghtX2tKMv/o9r
-	IbT2nPYTO0uvV60WjvbM+FELsF7L1vDmspfXsbc7awfp5FEFbndWv4uNNiYwI6n2SPacdg8hQLt
-	lwP6dDgysjLPrE+r4ZWYxRG/8i57sd5ArszUrIcrD4drZIDGeII6uNAh7vrhzZPK4BFD5GOzxjr
-	AHQzUCb3fkyiNFmjn/h+7aiaFR+T6TplmjpEMUUu5UX6JEkERqbocKBDTmEJrHTK5KDoPI4coaR
-	lU3FQ+vrFafyL95nHFLpgI2leYIGgBlw9VBb6m/9z21y8gaTWJtuJuBfgTkPySMPFmvnNYuZnBp
-	Ja3bjiM9wVg1ER3YPv99LzD++S71KN/mCAjnAaq1IdKfGxmPzzAJhWtH6uH2tD4diGpe3iFePnJ
-	JO9MbtWGjYOK/WnfnqEqnieFhx03ltQZVMoNxii89mt0AsrZZ0HvkFAQrpWjSQFqWQ
-X-Received: by 2002:a17:90b:498f:b0:37f:9ce3:ca95 with SMTP id 98e67ed59e1d1-38f993843fdmr155523a91.30.1785353894717;
-        Wed, 29 Jul 2026 12:38:14 -0700 (PDT)
-Received: from Default ([2409:40f4:100c:ca91:db1d:88f3:514:9ded])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31504927a7bsm14207721eec.0.2026.07.29.12.38.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jul 2026 12:38:14 -0700 (PDT)
-From: Jeffin Philip <jeffinphilip14@gmail.com>
-To: syzbot@kernel.org
-Cc: christophe.jaillet@wanadoo.fr,
-	gregkh@linuxfoundation.org,
-	kees@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-usb@vger.kernel.org,
-	nogikh@google.com,
-	syzbot@lists.linux.dev,
-	syzkaller-bugs@googlegroups.com,
-	tiwai@suse.de,
-	Jeffin Philip <jeffinphilip14@gmail.com>
-Subject: Re: [PATCH] usb: gadget: midi2: Fix null-pointer dereference in f_midi2_free_ep_reqs
-Date: Thu, 30 Jul 2026 01:07:45 +0530
-Message-ID: <20260729193746.313378-1-jeffinphilip14@gmail.com>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <cafe65f4-e1bb-46a3-901d-732814b861b2@mail.kernel.org>
-References: <cafe65f4-e1bb-46a3-901d-732814b861b2@mail.kernel.org>
+        d=1e100.net; s=20251104; t=1785360428; x=1785965228;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=zlgtTQGlHElflLR0cumuyMIcUboBIrkYXpeuHJ1Y/VM=;
+        b=WV+Rq+ZWJWUQRgBpS1gMOlQZNMainuOqyTiwqqkPk682uupi96z00mIgn9TfYwkaba
+         3Phr4L/tmeJuLjLAadx5UQD5e331b01XmVNXan2Xso/4MJ7f3NnfStF8Nnlj9zbWuLRk
+         WMuCuzOdWhG8i6/EmDp6ltZ1QZ10KnYtrGNvZwEmV6y8nqUK8pV4LKEmo6Ywi8VPFjpy
+         AyEZjJXUXJCerH6ubz41bHZ8mhAUV+wKt8fjNHrooB0YqW0wBaids8u03j0/6rISdwKd
+         PXXIIIBcDiHA8f9V3/X9g1RHPWHYii5KrO+6/m4n5AcNNrMsREzZXlfje2wBxYi3LLOL
+         uTXw==
+X-Gm-Message-State: AOJu0YxMZa7tCucRWvgFkXEvtsuCYNUV3tgd/mWSUGHfwHenh8Nk3Km7
+	TILmseuqRQPYv7tF+2QikrH8a+aRb5ku7u/n3CRjv6Hx2NLqCIX+vs6f7NMDP/XYq52iJ44tfcD
+	nwZSt9f/GO8+Nev8GZgIXcokquZwabVv22a7tMXof0fjrgV21pfJvVr94sQg=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6808:13c7:b0:4a4:adaf:5576 with SMTP id
+ 5614622812f47-4ad8780be9emr109560b6e.4.1785360428590; Wed, 29 Jul 2026
+ 14:27:08 -0700 (PDT)
+Date: Wed, 29 Jul 2026 14:27:08 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a6a702c.57649fcc.360844.0005.GAE@google.com>
+Subject: [moderation/CI] Re: Cleaning up the KVM clock mess
+From: syzbot ci <syzbot+ci6e398c6b63e189f8@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 29 Jul 2026 11:04:54 +0200,
-syzbot wrote:
-> 
-> From: Aleksandr Nogikh <nogikh@google.com>
-> 
-> A null-pointer dereference occurs in f_midi2_free_ep_reqs() when attempting
-> to clean up an endpoint that was never initialized.
-> 
-> When configuring the MIDI 2.0 gadget via configfs and setting the block
-> direction to SNDRV_UMP_DIR_INPUT, the initialization of the midi1_ep_out
-> endpoint is explicitly skipped during the gadget bind phase
-> (f_midi2_bind()). As a result, the usb_ep->card field remains NULL.
-> 
-> Later, when the host sets the alternate setting, f_midi2_set_alt()
-> unconditionally stops both the IN and OUT endpoints by calling
-> f_midi2_stop_eps(), which in turn calls f_midi2_free_ep_reqs() for both
-> endpoints. When f_midi2_free_ep_reqs() is called for the uninitialized
-> midi1_ep_out, it attempts to dereference usb_ep->card to determine the
-> number of requests to free, leading to a crash.
-> 
-> Fix this by using usb_ep->num_reqs instead of usb_ep->card->info.num_reqs
-> in f_midi2_free_ep_reqs(). usb_ep->num_reqs is correctly set during
-> f_midi2_init_ep() and remains 0 if the endpoint was never initialized,
-> safely avoiding the loop. For consistency, apply the same change to
-> f_midi2_alloc_ep_reqs().
-> 
-> Oops: general protection fault, probably for non-canonical address
-> 0xdffffc00000000ee: 0000 [#1] SMP KASAN NOPTI
-> KASAN: null-ptr-deref in range [0x0000000000000770-0x0000000000000777]
-> ...
-> RIP: 0010:f_midi2_free_ep_reqs drivers/usb/gadget/function/f_midi2.c:1166
-> [inline]
-> RIP: 0010:f_midi2_stop_eps+0x28e/0x4d0
-> drivers/usb/gadget/function/f_midi2.c:1246
-> ...
-> Call Trace:
->  <TASK>
->  f_midi2_set_alt+0x11c/0xf00 drivers/usb/gadget/function/f_midi2.c:1296
->  composite_setup+0x1ffd/0x3480 drivers/usb/gadget/composite.c:1933
->  configfs_composite_setup+0xbd/0x100 drivers/usb/gadget/configfs.c:1877
-> 
-> Fixes: 8b645922b223 ("usb: gadget: Add support for USB MIDI 2.0 function driver")
-> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+bbb6dad313f4aaa8da6b@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=bbb6dad313f4aaa8da6b
-> Link: https://syzkaller.appspot.com/ai_job?id=8ce30b1a-8cf7-4e38-bcf7-1f69e6f6313f
-> Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+syzbot ci has tested the following series
 
-Closes: https://syzkaller.appspot.com/bug?extid=01a17afb30637396955e
+[v7] Cleaning up the KVM clock mess
+https://lore.kernel.org/all/20260728144954.355376-1-dwmw2@infradead.org
+* [PATCH v7 01/36] KVM: x86: Improve accuracy of KVM clock when TSC scaling=
+ is in force
+* [PATCH v7 02/36] KVM: x86: Explicitly disable TSC scaling without CONSTAN=
+T_TSC
+* [PATCH v7 03/36] KVM: x86: Activate master clock immediately on vCPU crea=
+tion
+* [PATCH v7 04/36] KVM: x86: Avoid NTP frequency skew for KVM clock on 32-b=
+it host
+* [PATCH v7 05/36] KVM: x86: Fold __get_kvmclock() into get_kvmclock()
+* [PATCH v7 06/36] KVM: x86: Drop CPU pinning in get_kvmclock()
+* [PATCH v7 07/36] KVM: x86: Restructure get_kvmclock()
+* [PATCH v7 08/36] KVM: x86: Fix KVM clock precision in get_kvmclock() with=
+ TSC scaling
+* [PATCH v7 09/36] KVM: x86: Use get_kvmclock() in kvm_get_wall_clock_epoch=
+()
+* [PATCH v7 10/36] KVM: x86: Fix compute_guest_tsc() to handle negative tim=
+e deltas
+* [PATCH v7 11/36] KVM: x86: Restructure kvm_guest_time_update() for TSC up=
+scaling
+* [PATCH v7 12/36] KVM: x86: Simplify and comment kvm_get_time_scale()
+* [PATCH v7 13/36] KVM: x86: Remove implicit rdtsc() from kvm_compute_l1_ts=
+c_offset()
+* [PATCH v7 14/36] KVM: x86: Improve synchronization in kvm_synchronize_tsc=
+()
+* [PATCH v7 15/36] KVM: x86: Kill last_tsc_{nsec,write,offset} fields
+* [PATCH v7 16/36] KVM: x86: Replace nr_vcpus_matched_tsc count with all_vc=
+pus_matched_tsc bool
+* [PATCH v7 17/36] KVM: x86: Allow KVM master clock mode when TSCs are offs=
+et from each other
+* [PATCH v7 18/36] KVM: x86: Factor out kvm_use_master_clock()
+* [PATCH v7 19/36] KVM: x86: Avoid gratuitous global clock updates
+* [PATCH v7 20/36] KVM: x86/xen: Prevent runstate times from becoming negat=
+ive
+* [PATCH v7 21/36] KVM: x86: Avoid redundant masterclock updates from multi=
+ple vCPUs
+* [PATCH v7 22/36] KVM: x86: Remove runtime Xen TSC frequency CPUID update
+* [PATCH v7 23/36] KVM: x86: Re-synchronize TSC after KVM_SET_TSC_KHZ
+* [PATCH v7 24/36] KVM: x86: Use ktime_get_snapshot_id() for master clock
+* [PATCH v7 25/36] KVM: x86: Compute kvmclock base without pvclock_gtod_dat=
+a
+* [PATCH v7 26/36] KVM: x86: Cache host vclock_mode for masterclock eligibi=
+lity checks
+* [PATCH v7 27/36] KVM: x86: Remove pvclock_gtod_data and private timekeepi=
+ng code
+* [PATCH v7 28/36] KVM: x86: Activate master clock from kvm_arch_init_vm()
+* [PATCH v7 29/36] UAPI: x86: Move pvclock-abi to UAPI for x86 platforms
+* [PATCH v7 30/36] KVM: selftests: Use UAPI pvclock-abi.h in xen_shinfo_tes=
+t
+* [PATCH v7 31/36] KVM: x86: Add KVM_[GS]ET_CLOCK_GUEST for accurate KVM cl=
+ock migration
+* [PATCH v7 32/36] KVM: x86: Add KVM_VCPU_TSC_SCALE and fix the documentati=
+on on TSC migration
+* [PATCH v7 33/36] KVM: selftests: Add KVM/PV clock selftest to prove timer=
+ correction
+* [PATCH v7 34/36] KVM: selftests: Add master clock offset test
+* [PATCH v7 35/36] KVM: selftests: Add Xen/generic CPUID timing leaf test
+* [PATCH v7 36/36] KVM: selftests: Add Xen runstate migration test
 
-Thanks,
-Jeffin.
+and found the following issue:
+kernel build error
+
+Full report is available here:
+https://ci.syzbot.org/series/d9831298-9bd0-48af-8723-35fb5dfd0d61
+
+***
+
+kernel build error
+
+tree:      kvm-next
+URL:       https://kernel.googlesource.com/pub/scm/virt/kvm/kvm/
+base:      a204badd8432f93b7e862e7dac6db0fe3d65f370
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/f94277a2-d36b-4aee-8a28-5c6042355c1=
+8/config
+
+arch/x86/kvm/x86.c:1418:13: error: no member named 'valid' in 'struct syste=
+m_time_snapshot'
+arch/x86/kvm/x86.c:1426:12: error: no member named 'hw_csid' in 'struct sys=
+tem_time_snapshot'
+arch/x86/kvm/x86.c:1426:45: error: no member named 'hw_cycles' in 'struct s=
+ystem_time_snapshot'
+arch/x86/kvm/x86.c:1427:26: error: no member named 'hw_cycles' in 'struct s=
+ystem_time_snapshot'
+arch/x86/kvm/x86.c:1438:2: error: call to undeclared function 'ktime_get_sn=
+apshot_id'; ISO C99 and later do not support implicit function declarations=
+ [-Wimplicit-function-declaration]
+arch/x86/kvm/x86.c:1442:50: error: no member named 'systime' in 'struct sys=
+tem_time_snapshot'
+arch/x86/kvm/x86.c:1454:2: error: call to undeclared function 'ktime_get_sn=
+apshot_id'; ISO C99 and later do not support implicit function declarations=
+ [-Wimplicit-function-declaration]
+arch/x86/kvm/x86.c:1458:32: error: no member named 'systime' in 'struct sys=
+tem_time_snapshot'
+arch/x86/kvm/x86.c:1474:2: error: call to undeclared function 'ktime_get_sn=
+apshot_id'; ISO C99 and later do not support implicit function declarations=
+ [-Wimplicit-function-declaration]
+arch/x86/kvm/x86.c:1478:33: error: no member named 'systime' in 'struct sys=
+tem_time_snapshot'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[boris.ostrovsky@oracle.com bp@alien8.de corbet@lwn.net dave.hansen@linux.i=
+ntel.com dongli.zhang@oracle.com dwmw2@infradead.org hpa@zytor.com jalliste=
+@amazon.com jgross@suse.com jic23@kernel.org joe.jin@oracle.com joey.gouly@=
+arm.com kvm@vger.kernel.org linux-doc@vger.kernel.org linux-kernel@vger.ker=
+nel.org linux-kselftest@vger.kernel.org maz@kernel.org mingo@redhat.com pau=
+l@xen.org pbonzini@redhat.com sascha.bischoff@arm.com seanjc@google.com skh=
+an@linuxfoundation.org tglx@kernel.org vkuznets@redhat.com x86@kernel.org x=
+en-devel@lists.xenproject.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
