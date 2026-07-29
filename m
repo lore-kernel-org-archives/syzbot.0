@@ -1,173 +1,116 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5515339EF3F
-	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 09:16:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 074273C5525;
+	Wed, 29 Jul 2026 09:19:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785316566; cv=none; b=MIfSNNCrl5TKn1jMYffhfqjrZQBSZun3puyi2ifPdJFm4oOEV3E6h/fRVFUhx3t7Zss2moXpmHuMc1atZP391BstWO/wgjH+dGpNhglBwjdPBfgtc0ys64bT3kNo6N3F4NN8P+e7P8ePvDNtVBOQgT9uRmldqv4CcTDNXIUjQHM=
+	t=1785316796; cv=none; b=HoHyYF1RtPaT3po3VUZP0KFi5hSeFUDsqhI17uisT9yXzi4KmUhdxGwHXhxai8yoqpEE3IOVLbZM1rLjj72tNV0Es/uiT9QDkxH61dnarCJ2v6LSIQQKMwjLnwpH0/y3Yg23sEa8HwptVNqZrOUCmtQQ/C36iVUL3wDzkP2KRIs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785316566; c=relaxed/simple;
-	bh=8vOt1qOw2QasGnPAYpImvZ1g3qItLj5uthb1gjUw1cc=;
-	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rKsEDSJT19OjqY+1KRF20AzRK2+2b8MI2zc4ZZUjN3vWAlhwTIxuOwMz1huvQet+SkeJlvn5P7bU4mvCLYDRNGA+rAL8aKk8LrObxJH3XW0iFiZ74lgKSd7hE4TW7sfzAAVrIJTFBhoNSSVuRdDMRAs2+Jm2hDqr/2uU+2McF9c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=N+uYxqq2; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=lt0jOTAq; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=0jIUgZWi; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=8cfDM205; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	s=arc-20240116; t=1785316796; c=relaxed/simple;
+	bh=nqwd1aeayF/tTSe1p1DlzBVqmH9ArOQHbigtgzdusZc=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=qKnF6iC1YRsA2rhFzIbTehFxb0Sy7Q/3J2/EpSpFMv5gwYinN54fkiBss3Ur6yLXG0SmIZgQVkI2GNidhCrWNHkTWcExejFDsN70hvKbV7A5yZqt+DJ6lK1nuQt58nsfAY5rTWt0T4BVyBL22uswrUcbT8IdjN3TKNnuiQDLdrs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=obGo9WYI; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="N+uYxqq2";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="lt0jOTAq";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="0jIUgZWi";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="8cfDM205"
-Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 1B0037C9CD;
-	Wed, 29 Jul 2026 09:15:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1785316558; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=3zMW4bJA/KFBZl/mm8hnEF29U0iYIM2G/iSU/T9jgkk=;
-	b=N+uYxqq2B8zng6JAnPxkuFGjG6PNbVRoqS2IuFoO4KSvvDqQNhU9FLe0QqIaEa/+3Vrhxx
-	UF71ir3l3BOwBYzEYb9AvDv4q8kudB/lI8bwdAc0fIf8zynSMwfP6yIF2TqtRx+7Iik/KL
-	dc8jhThH/qGVXWzQXlaXM0XtzLxdI68=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1785316558;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=3zMW4bJA/KFBZl/mm8hnEF29U0iYIM2G/iSU/T9jgkk=;
-	b=lt0jOTAqnbBExB6Ln6KNnM/nQEVehv3Pw1KTK5KNxFjCWFYie9sy8sz8YC6XC5cq9jUdh7
-	ifMvg3QSeSPW2pBA==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1785316554; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=3zMW4bJA/KFBZl/mm8hnEF29U0iYIM2G/iSU/T9jgkk=;
-	b=0jIUgZWi4fnWhbhrQe9AWQvvu2cgHSNuWakFJ84C31S1m0cOZWh+w/twunjCSAOghY1pNO
-	OvpywmdjoKDLKtjSp8blRNv4pUUsvlyVz5qgnBublnwpIsm0LqlpeqSOGbgk+lfeaTMuok
-	T9OCD9wQ+ps9n5y2wjECWVkJKljwM3Y=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1785316554;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=3zMW4bJA/KFBZl/mm8hnEF29U0iYIM2G/iSU/T9jgkk=;
-	b=8cfDM205j4sY04tH0wdEkNnoj7vFZIzYw+ev3sq0OSpW0Cr9vNK0B8LKLCFYY6uFgovoL8
-	IVBSYRJ8YXUTLaBg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id AFDA9779A1;
-	Wed, 29 Jul 2026 09:15:53 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id YQKUKcnEaWo7fQAAD6G6ig
-	(envelope-from <tiwai@suse.de>); Wed, 29 Jul 2026 09:15:53 +0000
-Date: Wed, 29 Jul 2026 11:15:53 +0200
-Message-ID: <87zeza40mu.wl-tiwai@suse.de>
-From: Takashi Iwai <tiwai@suse.de>
-To: "syzbot" <syzbot@kernel.org>
-Cc: syzkaller-bugs@googlegroups.com,
-	Aleksandr Nogikh <nogikh@google.com>,
-	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-	<linux-usb@vger.kernel.org>,
-	"Takashi Iwai" <tiwai@suse.de>,
-	christophe.jaillet@wanadoo.fr,
-	kees@kernel.org,
-	linux-kernel@vger.kernel.org,
-	syzbot@lists.linux.dev
-Subject: Re: [PATCH] usb: gadget: midi2: Fix null-pointer dereference in f_midi2_free_ep_reqs
-In-Reply-To: <cafe65f4-e1bb-46a3-901d-732814b861b2@mail.kernel.org>
-References: <cafe65f4-e1bb-46a3-901d-732814b861b2@mail.kernel.org>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/30.2 Mule/6.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="obGo9WYI"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6577E1F000E9;
+	Wed, 29 Jul 2026 09:19:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785316794;
+	bh=79VI3Ct6agLLEKvEp8Q1IlyWfRd7S13KEiFjfSd6Ndw=;
+	h=From:To:Cc:Subject:Date;
+	b=obGo9WYIxUw0p4y8Ly0PTrWD433q065h8b8YT6X5BHQPOAGV5RXP7xsrGgvPM03vB
+	 WNiJ28mkYMVDjvlboVEZePdETp+hmIuJ59mAmt527p9Y4Z+38gL8mx/tVGO9W7ojty
+	 Qet/mM0Tf2jyGc8agX8/YJAlfOHiCe/hHYGDt3L8Uq0vWP/RdDYb7YH62SwPADEwIt
+	 nQRoB55UfDsAL2EQ3kxCT3kYsVefp4zbuD0ELOwfnTRbYruG+E3QTySPT4bqpLceAq
+	 YdwfYlAbWcX4pRMEWbk5VUGHNirhipfWyci36Z/NYmNXXeBJPEoXzsZowcXFyOEoYf
+	 j/9UNv2W//+Sw==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-bugs@googlegroups.com, Aleksandr Nogikh <nogikh@google.com>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, <linux-usb@vger.kernel.org>, "Greg Kroah-Hartman" <gregkh@suse.de>
+Cc: kees@kernel.org, linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
+Subject: [PATCH] usb: usbtest: fix NULL pointer dereference in usbtest_probe
+Message-ID: <2650cf0f-26f9-48b5-b198-e4cb67c59cf0@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Score: -3.30
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Spamd-Result: default: False [-3.30 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	MID_CONTAINS_FROM(1.00)[];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	RCPT_COUNT_SEVEN(0.00)[10];
-	MIME_TRACE(0.00)[0:+];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ARC_NA(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[wanadoo.fr];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	FREEMAIL_CC(0.00)[googlegroups.com,google.com,linuxfoundation.org,vger.kernel.org,suse.de,wanadoo.fr,kernel.org,lists.linux.dev];
-	TO_DN_SOME(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	FROM_EQ_ENVFROM(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[appspotmail.com:email,suse.de:email,suse.de:mid,imap1.dmz-prg2.suse.org:helo,syzkaller.appspot.com:url]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Wed, 29 Jul 2026 09:19:54 +0000 (UTC)
 
-On Wed, 29 Jul 2026 11:04:54 +0200,
-syzbot wrote:
-> 
-> From: Aleksandr Nogikh <nogikh@google.com>
-> 
-> A null-pointer dereference occurs in f_midi2_free_ep_reqs() when attempting
-> to clean up an endpoint that was never initialized.
-> 
-> When configuring the MIDI 2.0 gadget via configfs and setting the block
-> direction to SNDRV_UMP_DIR_INPUT, the initialization of the midi1_ep_out
-> endpoint is explicitly skipped during the gadget bind phase
-> (f_midi2_bind()). As a result, the usb_ep->card field remains NULL.
-> 
-> Later, when the host sets the alternate setting, f_midi2_set_alt()
-> unconditionally stops both the IN and OUT endpoints by calling
-> f_midi2_stop_eps(), which in turn calls f_midi2_free_ep_reqs() for both
-> endpoints. When f_midi2_free_ep_reqs() is called for the uninitialized
-> midi1_ep_out, it attempts to dereference usb_ep->card to determine the
-> number of requests to free, leading to a crash.
-> 
-> Fix this by using usb_ep->num_reqs instead of usb_ep->card->info.num_reqs
-> in f_midi2_free_ep_reqs(). usb_ep->num_reqs is correctly set during
-> f_midi2_init_ep() and remains 0 if the endpoint was never initialized,
-> safely avoiding the loop. For consistency, apply the same change to
-> f_midi2_alloc_ep_reqs().
-> 
-> Oops: general protection fault, probably for non-canonical address
-> 0xdffffc00000000ee: 0000 [#1] SMP KASAN NOPTI
-> KASAN: null-ptr-deref in range [0x0000000000000770-0x0000000000000777]
-> ...
-> RIP: 0010:f_midi2_free_ep_reqs drivers/usb/gadget/function/f_midi2.c:1166
-> [inline]
-> RIP: 0010:f_midi2_stop_eps+0x28e/0x4d0
-> drivers/usb/gadget/function/f_midi2.c:1246
-> ...
-> Call Trace:
->  <TASK>
->  f_midi2_set_alt+0x11c/0xf00 drivers/usb/gadget/function/f_midi2.c:1296
->  composite_setup+0x1ffd/0x3480 drivers/usb/gadget/composite.c:1933
->  configfs_composite_setup+0xbd/0x100 drivers/usb/gadget/configfs.c:1877
-> 
-> Fixes: 8b645922b223 ("usb: gadget: Add support for USB MIDI 2.0 function driver")
-> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+bbb6dad313f4aaa8da6b@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=bbb6dad313f4aaa8da6b
-> Link: https://syzkaller.appspot.com/ai_job?id=8ce30b1a-8cf7-4e38-bcf7-1f69e6f6313f
-> Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+From: Aleksandr Nogikh <nogikh@google.com>
 
-Reviewed-by: Takashi Iwai <tiwai@suse.de>
+The usbtest driver relies on the driver_info field of the usb_device_id
+structure to hold a pointer to a struct usbtest_info, which contains
+necessary configuration for the device. When a new device ID is dynamically
+added via the sysfs new_id interface without specifying a reference device,
+the driver_info field defaults to 0. When the USB core binds the device
+using this dynamic ID, usbtest_probe() unconditionally casts the 0 to a
+pointer, resulting in a NULL pointer dereference when attempting to access
+the autoconf bitfield (at offset 0xa) of the struct usbtest_info.
+
+This leads to the following crash:
+
+Oops: general protection fault, probably for non-canonical address
+0xdffffc0000000001: 0000 [#1] SMP KASAN NOPTI
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+RIP: 0010:usbtest_probe+0x522/0xcc0 drivers/usb/misc/usbtest.c:2822
+Call Trace:
+ <TASK>
+ usb_probe_interface+0x653/0xc60 drivers/usb/core/driver.c:396
+ call_driver_probe drivers/base/dd.c:-1 [inline]
+ really_probe+0x254/0xae0 drivers/base/dd.c:706
+ __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
+ driver_probe_device+0x4f/0x240 drivers/base/dd.c:898
+ __device_attach_driver+0x270/0x410 drivers/base/dd.c:1026
+ bus_for_each_drv+0x258/0x2f0 drivers/base/bus.c:500
+ __device_attach+0x2c4/0x450 drivers/base/dd.c:1098
+ device_initial_probe+0xa1/0xd0 drivers/base/dd.c:1153
+ bus_probe_device+0x12a/0x220 drivers/base/bus.c:620
+ device_add+0x7d7/0xb80 drivers/base/core.c:3772
+ usb_set_configuration+0x1ad8/0x2180 drivers/usb/core/message.c:2268
+ usb_generic_driver_probe+0x8d/0x150 drivers/usb/core/generic.c:250
+ usb_probe_device+0x1c3/0x3b0 drivers/usb/core/driver.c:291
+
+To fix this, validate that id->driver_info is not NULL before proceeding
+with the probe. If it is NULL, gracefully return -ENODEV. The check is
+placed before any memory allocation to avoid unnecessary work and simplify
+error handling.
+
+Fixes: 733260ff9c45 ("[PATCH] USB: add dynamic id functionality to USB core")
+Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+7e1e5911f9eac50bedc7@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=7e1e5911f9eac50bedc7
+Link: https://syzkaller.appspot.com/ai_job?id=9e476ca5-99d1-47d2-b9d1-f3b501897179
+Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+
+---
+diff --git a/drivers/usb/misc/usbtest.c b/drivers/usb/misc/usbtest.c
+index 98071b25a..6410b3e26 100644
+--- a/drivers/usb/misc/usbtest.c
++++ b/drivers/usb/misc/usbtest.c
+@@ -2786,10 +2786,13 @@ usbtest_probe(struct usb_interface *intf, const struct usb_device_id *id)
+ 	}
+ #endif
+ 
++	info = (struct usbtest_info *) id->driver_info;
++	if (!info)
++		return -ENODEV;
++
+ 	dev = kzalloc_obj(*dev);
+ 	if (!dev)
+ 		return -ENOMEM;
+-	info = (struct usbtest_info *) id->driver_info;
+ 	dev->info = info;
+ 	mutex_init(&dev->lock);
+ 
 
 
-thanks,
-
-Takashi
+base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
+-- 
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
