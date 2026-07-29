@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BB7E4779BE
-	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 14:55:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCA513B058D
+	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 15:14:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785336959; cv=none; b=bRqwnQtoPl++bSD//bMUsnCb0zj7e7UqroXxxs+ji/a9kV+sc16Weqo5u0oO/XauUtCq7c9rdV2xJ/Ch+jT97VYCS08moF91bTEJJ7mJBxb3BFvI5WxUX7jGuWAVPtbycaBbhjzGCELacGUWSGUcMqgNH5hDbR1KdgeSLkgZdYc=
+	t=1785338069; cv=none; b=J/lfbvvgII73C2XIvK2veqm1R24sjTa5Mi0Co4pt6bl45HZm1Ztin3cyoeofEg9YGeuPmVif84S/6V+WZdb27+88uLOmG0djXNBMq3m809dMQwbuvuPbH7swnNezBI6RodyE/pwqBtafP1KqJKdRaBWzBMtXYE9Ph+cVX7XL3kY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785336959; c=relaxed/simple;
-	bh=mAfmUh1bpNYYnlnQpNmPvysYtculY/uqr1HNzgHqHGw=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=M8pfV1m+L7cJaX/ubnOKyezsSl6IDqpVHvOCZxjFhfjJYeZNOAi6go33PqC5sUvZOtxQqbo2QgmbR+HnCGg2SOgh/3uK63uL/r9eFSrrrlGELMFLRs0698PPFKVeaH8I4cRjUoEDYAdcOTAagU3Frsqqa8xUvOCCiSZlTSfDTmE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qa52b72u; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785338069; c=relaxed/simple;
+	bh=aFZALc48F1HG2dscCslvObYKL8Sjpy44oHbXR8+9MN8=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=At7Tc/IgkA6KGmhhzWWKaPSQwRma6iDmGKWQXns1DwpMbRhb/AFGbU3utecU/CRU/cYwaCv5gKKHU1sQQK453CLkdfc3CccNuuU0HQZFQHSRSXJwfY97t4yjmDDirRfZnvWUoqYak1xBNbFOlLVlHrPVcbBmAVG1FlUZXFjzsQU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kZWT4/o1; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qa52b72u"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 8F0FC1F00A3A;
-	Wed, 29 Jul 2026 14:55:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kZWT4/o1"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7D4501F000E9;
+	Wed, 29 Jul 2026 15:14:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785336957;
-	bh=gQ9Uv0vNCJIfElwb5LIstL8DP6y3ADbwQiT6ergXrpA=;
+	s=k20260515; t=1785338067;
+	bh=m4vrVZ60mgNHmxoIPhlEVWzETDT0MJVwZmr4jY47TZU=;
 	h=From:To:Cc:Subject:Date;
-	b=Qa52b72ulJr56fIt9Mh+Z97ruNBO9LV8SectE9cmrwYUk6TWaww/bfR1coHityYIj
-	 4tJjRLYnJ/UFe/pkOtI2ii975lJjCh8J7C9XKw3akvA5W4kBFdTakpmy4oZBtSCrxV
-	 Ie4r0x2OSOO+ssCLgMvan4sblmQN6rWUAXoZ2V8DhP5JxVv8ptmi4WwW9lLACeFePF
-	 NwW/ge1hRDqXSd08utIs08FEX6Wm60jzMLJyEYCUyBGkF54cotbJ4MS/3OGCKxbMBO
-	 HsEpnTokQJ3u+aP9+kDgH5V6k0ApzwGX6iqiSLa/rhnG0cDklHhdJJJNC+lGee8fNm
-	 4vTM3wpW+QMqQ==
+	b=kZWT4/o1WRwIbHfb7TTF79I8BYI6KpNB3Wu0QQWI11saERfTHVwrGRQTd7OKnCm2Q
+	 mwgXEvjC3IQY5dWP2VYukk4c4hDKC1eqOedZ0MBpQqhqsYVqzni/7ADpGsNMj9gg+I
+	 Hc2102z98ViQTf4CFxQKH+L8dh4k7IcjQ/+9Hv1Mt23Uf74hlSQsbJx0+uVUYsGxbe
+	 TT8LcSDBqE0b/4YYGqxWgORqji+4KTfTCttdTu66iFqw3cDof9b+A5LMsAHKkMVbrd
+	 VJnNbCdJplinN4zs6okkAkGIgjCBR6Mw3uzFi3/vcAQuYeHfiWb6gwXZmVXAsHbcRF
+	 ZPCUyCqbeWDUg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: nogikh@google.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] KVM: pfncache: Check gpc->active before sanity checking GPA and HVA
-Message-ID: <e88ab678-71c6-4de9-85e6-1d20d1579f28@mail.kernel.org>
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] usb: gadget: f_uac1, f_uac2: fix invalid free and memory leak
+Message-ID: <c0546d86-1fb7-46c5-a37d-645407387aeb@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,88 +38,126 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 29 Jul 2026 14:55:57 +0000 (UTC)
+Date: Wed, 29 Jul 2026 15:14:27 +0000 (UTC)
 
-When attempting to refresh a gfn_to_pfn_cache (gpc) that has never been
-activated, KVM triggers a sanity-check warning in __kvm_gpc_refresh(). This
-occurs because an inactive cache naturally has both its GPA and HVA
-initialized to error values, which violates the condition that exactly one
-of them must be valid.
+The `UAC1_RATE_ATTRIBUTE` and `UAC2_RATE_ATTRIBUTE` macros generate store
+functions that use `strsep()` to parse a comma-separated list of sample
+rates. The `strsep()` function modifies the pointer passed to it, advancing
+it past the delimiter.
 
-This can be triggered via the KVM_XEN_HVM_EVTCHN_SEND ioctl. If the guest
-has not yet set up the shared info page, the shinfo_cache is inactive.
-Attempting to deliver the event returns -EWOULDBLOCK, prompting KVM to
-attempt a refresh of the cache, leading to the warning:
+This causes two issues. First, if `kstrtou32()` fails (e.g., due to an
+invalid token), the code jumps to the `end` label and calls
+`kfree(split_page)`. Since `split_page` has been advanced by `strsep()`,
+this results in an invalid free. Second, if the loop completes
+successfully, `strsep()` sets `split_page` to `NULL`. The subsequent
+`kfree(split_page)` becomes a no-op, leaking the memory allocated by
+`kstrdup()`.
 
-------------[ cut here ]------------
-kvm_is_error_gpa(gpa) == kvm_is_error_hva(uhva)
-WARNING: arch/x86/kvm/../../../virt/kvm/pfncache.c:267 at
-__kvm_gpc_refresh+0x1510/0x1710 virt/kvm/pfncache.c:267
-...
+KASAN reports the invalid free as follows:
+
+BUG: KASAN: invalid-free in f_uac2_opts_p_srate_store+0x225/0x2b0
+drivers/usb/gadget/function/f_uac2.c:2087
+Free of addr ffff888192cb7806 by task syz.0.17/6182
 Call Trace:
- <TASK>
- kvm_gpc_refresh+0xe1/0x110 virt/kvm/pfncache.c:382
- kvm_xen_set_evtchn+0x14f/0x220 arch/x86/kvm/xen.c:1945
- kvm_xen_hvm_evtchn_send+0x120/0x1e0 arch/x86/kvm/xen.c:2036
- kvm_arch_vm_ioctl+0xfad/0x1a10 arch/x86/kvm/x86.c:7523
- kvm_vm_ioctl+0x8f7/0xd30 virt/kvm/kvm_main.c:5381
-...
+ kfree+0x173/0x6c0 mm/slub.c:6692
+ f_uac2_opts_p_srate_store+0x225/0x2b0
+ drivers/usb/gadget/function/f_uac2.c:2087
+ flush_write_buffer fs/configfs/file.c:207 [inline]
+ configfs_write_iter+0x33a/0x430 fs/configfs/file.c:229
+ vfs_write+0x61e/0xbb0 fs/read_write.c:687
+ ksys_write+0x156/0x270 fs/read_write.c:739
+The buggy address is located 6 bytes inside of
+ 32-byte region [ffff888192cb7800, ffff888192cb7820)
 
-The warning can also be triggered via vcpu_info_cache if an event is sent
-while the cache is inactive, causing the vCPU to attempt a refresh when
-injecting pending events.
+Fix this by keeping the original pointer returned by `kstrdup()` in a
+separate variable `page_alloc` and passing a temporary pointer `split_page`
+to `strsep()`. This ensures that the correct pointer is passed to
+`kfree()`. Additionally, add a check to handle `kstrdup()` allocation
+failures.
 
-Fix this by moving the check for an inactive cache to kvm_gpc_refresh(),
-before calling __kvm_gpc_refresh(). It is completely safe to check
-gpc->active under gpc->refresh_lock because all modifications to
-gpc->active are fully serialized by gpc->refresh_lock. Bailing out early
-also avoids the overhead of unnecessarily acquiring and releasing the lock
-(which disables and re-enables interrupts) for a cache that cannot be
-refreshed.
-
-Fixes: 721f5b0dda78 ("KVM: pfncache: allow a cache to be activated with a fixed (userspace) HVA")
+Fixes: a7339e4f5788 ("usb: gadget: f_uac2: Support multiple sampling rates")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+cde12433b6c56f55d9ed@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=cde12433b6c56f55d9ed
-Link: https://syzkaller.appspot.com/ai_job?id=06c5ed03-3710-4a03-8db9-c370eb80da49
-To: <kvm@vger.kernel.org>
-To: "Paolo Bonzini" <pbonzini@redhat.com>
-To: "Paul Durrant" <pdurrant@amazon.com>
+Reported-by: syzbot+bfca46c96ddf3b7d5c55@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=bfca46c96ddf3b7d5c55
+Link: https://syzkaller.appspot.com/ai_job?id=705307cf-805c-4e75-8f76-2a0acc541cb8
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
+To: "Julian Scheel" <julian@jusst.de>
+Cc: "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>
+Cc: "Kees Cook" <kees@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-v2:
-- Move the `gpc->active` check from `__kvm_gpc_refresh()` to `kvm_gpc_refresh()`.
-
-v1:
-https://lore.kernel.org/all/a144cc7e-406a-4896-9299-9f425c722100@mail.kernel.org/T/
----
-diff --git a/virt/kvm/pfncache.c b/virt/kvm/pfncache.c
-index 728d2c1b4..aac85a140 100644
---- a/virt/kvm/pfncache.c
-+++ b/virt/kvm/pfncache.c
-@@ -271,11 +271,6 @@ static int __kvm_gpc_refresh(struct gfn_to_pfn_cache *gpc, gpa_t gpa, unsigned l
- 
- 	write_lock_irq(&gpc->lock);
- 
--	if (!gpc->active) {
--		ret = -EINVAL;
--		goto out_unlock;
--	}
--
- 	old_pfn = gpc->pfn;
- 	old_khva = (void *)PAGE_ALIGN_DOWN((uintptr_t)gpc->khva);
- 	old_uhva = PAGE_ALIGN_DOWN(gpc->uhva);
-@@ -369,6 +364,9 @@ int kvm_gpc_refresh(struct gfn_to_pfn_cache *gpc, unsigned long len)
- 
- 	guard(mutex)(&gpc->refresh_lock);
- 
-+	if (!gpc->active)
-+		return -EINVAL;
-+
- 	if (!kvm_gpc_is_valid_len(gpc->gpa, gpc->uhva, len))
- 		return -EINVAL;
- 
+diff --git a/drivers/usb/gadget/function/f_uac1.c b/drivers/usb/gadget/function/f_uac1.c
+index 85c502e98..f4b7bbd93 100644
+--- a/drivers/usb/gadget/function/f_uac1.c
++++ b/drivers/usb/gadget/function/f_uac1.c
+@@ -1594,6 +1594,7 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
+ 					  const char *page, size_t len)	\
+ {									\
+ 	struct f_uac1_opts *opts = to_f_uac1_opts(item);		\
++	char *page_alloc = NULL;					\
+ 	char *split_page = NULL;					\
+ 	int ret = -EINVAL;						\
+ 	char *token;							\
+@@ -1608,7 +1609,12 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
+ 									\
+ 	i = 0;								\
+ 	memset(opts->name##s, 0x00, sizeof(opts->name##s));		\
+-	split_page = kstrdup(page, GFP_KERNEL);				\
++	page_alloc = kstrdup(page, GFP_KERNEL);				\
++	if (!page_alloc) {						\
++		ret = -ENOMEM;						\
++		goto end;						\
++	}								\
++	split_page = page_alloc;					\
+ 	while ((token = strsep(&split_page, ",")) != NULL) {		\
+ 		ret = kstrtou32(token, 0, &num);			\
+ 		if (ret)						\
+@@ -1619,7 +1625,7 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
+ 	};								\
+ 									\
+ end:									\
+-	kfree(split_page);						\
++	kfree(page_alloc);						\
+ 	mutex_unlock(&opts->lock);					\
+ 	return ret;							\
+ }									\
+diff --git a/drivers/usb/gadget/function/f_uac2.c b/drivers/usb/gadget/function/f_uac2.c
+index 897787d08..336aeaec9 100644
+--- a/drivers/usb/gadget/function/f_uac2.c
++++ b/drivers/usb/gadget/function/f_uac2.c
+@@ -2012,6 +2012,7 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
+ 					  const char *page, size_t len)	\
+ {									\
+ 	struct f_uac2_opts *opts = to_f_uac2_opts(item);		\
++	char *page_alloc = NULL;					\
+ 	char *split_page = NULL;					\
+ 	int ret = -EINVAL;						\
+ 	char *token;							\
+@@ -2026,7 +2027,12 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
+ 									\
+ 	i = 0;								\
+ 	memset(opts->name##s, 0x00, sizeof(opts->name##s));		\
+-	split_page = kstrdup(page, GFP_KERNEL);				\
++	page_alloc = kstrdup(page, GFP_KERNEL);				\
++	if (!page_alloc) {						\
++		ret = -ENOMEM;						\
++		goto end;						\
++	}								\
++	split_page = page_alloc;					\
+ 	while ((token = strsep(&split_page, ",")) != NULL) {		\
+ 		ret = kstrtou32(token, 0, &num);			\
+ 		if (ret)						\
+@@ -2037,7 +2043,7 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
+ 	};								\
+ 									\
+ end:									\
+-	kfree(split_page);						\
++	kfree(page_alloc);						\
+ 	mutex_unlock(&opts->lock);					\
+ 	return ret;							\
+ }									\
 
 
 base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
