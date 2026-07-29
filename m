@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A686C399354
-	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 11:04:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA0484749DC
+	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 11:27:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785323069; cv=none; b=QKbdc9+BydRU+EYxqunvdwDT7wiIesQAWn+pWawNQ/V/oPKd15kiGj/6xCsSdvmnNWmUuLd1Uv37tKFeMp9XK3yQG3rF+kGxSzseRiDdEM2/7JUaT3bcJl183PJgIux7lGDCrHm32Nlws4/KW1GImIc1d+uCNOvY9cHnLELRtHo=
+	t=1785324479; cv=none; b=LMMNitiloVpvRPxIelT7O3tSxtdfpeTt89Nda4HiC6tremb5luO6xJSR3i1uLe0DDzvZTv+c0INFaw/xAOQdzHZeRDit7j84SmB07BaSrJspXS64aX0M8fZtL73nd+bLY21jmEGFsfwaT5lIBeBx+Nlnvu8x2/SLha5Zp30t0R4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785323069; c=relaxed/simple;
-	bh=hd9isi3QOufZx4vx10MPXAvh4z6lLjkCyVyNXNmy1hI=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=XUlTT/CwlZAb8zPS9/hl1qOzTqNlS1a9aEdCfOpjjdLeKR+/bcvV0FCzQaBa6j9QlzKqEhGqDazCTjC56lM/tcPDVhL5ReX5bdRfaZ4yhEHzEjvxDAWnVxrHKqVYs2r/DrJOVVN6hTLHxYNsqwQy4KhpuKU1hSzj5dZ5oUkoF+I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m47Xyrih; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785324479; c=relaxed/simple;
+	bh=x2evtz0Tzdbljpe4/YO2uCAP30JjbFZmYuFBv5WItOc=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=PLyLuc2N0o791aukjtuj8i8S8Uk4UJbpZTfi2vXwwiEdXZITgf/L5lOkxZ+iUVlLwaPZGFnmvcsQdj8kyWjlxJ24vh0PENWVJjxOUtZFUOttyqzEKwcQPMTfkKSXaDdLXrWmxPB59YwlzY3kRAPR/gz0MCIDmLoduISBpyb+rMw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jOKIjoRz; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m47Xyrih"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6B2BE1F000E9;
-	Wed, 29 Jul 2026 11:04:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jOKIjoRz"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 567CC1F000E9;
+	Wed, 29 Jul 2026 11:27:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785323067;
-	bh=AquvaZ6/ojrUANbnRiFtVqa8sPcqB61g4Z6SlRcCG8s=;
+	s=k20260515; t=1785324477;
+	bh=qHllbbUFPybDZThPZbR7n/UPwi/gQLtYMfM7b+hvIUc=;
 	h=From:To:Cc:Subject:Date;
-	b=m47Xyrih0rY1GQGyCL3KA4zXhqktb8nRIyHBC/uHCE3dDywE4XhGPXgRfk4tcX+ST
-	 dG8OTVbWUX96W9jnsLlJ+tBntFwMm3JkS0D8spA5CGUrRF4loEWrcpanRw40wis+cY
-	 X0Dm28Qg8R+uZMTMPIlvB1NhuwXQrSdNIpUg+sgN74c3JnbeKRe3ucoxUbtq3RIVp9
-	 JYWAe8jTfrj65bawyBWLCOHpnMpwif8IvPjXf0FP1v/lLg+ZYZca66U59lS1ZQjqQZ
-	 9zn2AnG8cInDfG3CWfYpCzMlkhNr9m+Idz8VIKdhSfIY4PuIBmfqslIW0rJOs7aYh+
-	 Y9bxtrFrSXPvQ==
+	b=jOKIjoRzoUIyimhNpQQpdE/ufqTennMEbitGGIzix3deTnGo76EqmtB2DVBaIcHA+
+	 wtbr3en7KG5hnWoXodLFFc0qhk3yi7kpKkKy1CEOkbNlqmKigAANttratk30YMRjLe
+	 4A05PpPJXr+cHa2BEXPppQa0/ALCWXMDFTKHwD3RMGN/M3dyOXqDdvdNqOlfw5xL4S
+	 5LIAMz+uQKNvAjCDF783sWW8NEkXuhK4jtUxPvjb3xC85vPjhrvW7zsklsp2t6Rkaj
+	 Oa2gwtNVlN8u2bKUb1naybQte8+lkw0M1tdRq6JMQLDucNuco3028nxmi2fEtqRoyy
+	 hPBX04ru+gOFw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] configfs: fix race between symlink and rmdir
-Message-ID: <ac90b080-8c3f-4d8b-a0be-a32a52c77212@mail.kernel.org>
+Subject: [PATCH RFC] usb: gadget: f_tcm: Fix false positive circular locking dependency
+Message-ID: <7ed63268-8601-4d0c-bbb0-99fe949d51e6@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,131 +38,220 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 29 Jul 2026 11:04:27 +0000 (UTC)
+Date: Wed, 29 Jul 2026 11:27:57 +0000 (UTC)
 
-A race condition between configfs_rmdir() and configfs_symlink() can lead
-to a use-after-free of a config_item.
+Lockdep reports a possible circular locking dependency:
 
-When a directory is removed, configfs_rmdir() frees the associated
-config_item but leaves the dentry hashed until vfs_rmdir() calls
-d_delete(). This creates a window where a concurrent symlinkat() can find
-the hashed dentry, see that !d_unhashed(dentry) is true, and attempt to
-increment the refcount of the already freed config_item, triggering a
-warning:
+WARNING: possible circular locking dependency detected
+------------------------------------------------------
+task is trying to acquire lock:
+(gadget_subsys.su_mutex){+.+.}-{4:4}, at:
+uvcg_streaming_header_allow_link+0x75/0x4d0
+drivers/usb/gadget/function/uvc_configfs.c:1750
 
-  refcount_t: addition on 0; use-after-free.
-  WARNING: lib/refcount.c:25 at refcount_warn_saturate+0x9f/0x110
-  ...
-  Call Trace:
-   __refcount_add include/linux/refcount.h:-1 [inline]
-   __refcount_inc include/linux/refcount.h:366 [inline]
-   refcount_inc include/linux/refcount.h:383 [inline]
-   kref_get include/linux/kref.h:45 [inline]
-   config_item_get+0x88/0x90 fs/configfs/item.c:104
-   configfs_get_config_item fs/configfs/configfs_internal.h:127 [inline]
-   get_target fs/configfs/symlink.c:128 [inline]
-   configfs_symlink+0x4ab/0x1030 fs/configfs/symlink.c:185
-   vfs_symlink+0x18b/0x330 fs/namei.c:5660
-   filename_symlinkat+0x1cd/0x420 fs/namei.c:5685
-   __do_sys_symlinkat fs/namei.c:5705 [inline]
-   __se_sys_symlinkat+0x4e/0x2b0 fs/namei.c:5700
+but task is already holding lock:
+(&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: inode_lock
+include/linux/fs.h:1024 [inline]
+(&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at:
+configfs_symlink+0x3af/0x1030 fs/configfs/symlink.c:186
 
-To fix this, add d_drop(dentry) in configfs_rmdir() immediately after
-detaching the group/item and before unlinking the object. This ensures that
-any concurrent kern_path() will either not find the dentry, or
-configfs_get_config_item() will see d_unhashed(dentry) == true and safely
-return NULL.
+which lock already depends on the new lock.
 
-However, adding d_drop(dentry) exposes a secondary use-after-free bug in
-create_link(). configfs_symlink() calls get_target(), which resolves the
-path, gets the config_item, and then immediately drops the path reference.
-If configfs_rmdir() runs concurrently, it drops its config_item reference,
-and vfs_rmdir() calls d_delete_notify(). Since the dentry has only 1
-reference left, dentry_unlink_inode() is called, freeing the
-configfs_dirent. Later, create_link() accesses the freed configfs_dirent.
+the existing dependency chain (in reverse order) is:
 
-To fix this secondary issue, modify get_target() to return the path, and
-hold the path reference in configfs_symlink() until after create_link()
-finishes. By holding the path reference, the dentry's refcount remains >=
-2, preventing d_delete() from calling dentry_unlink_inode(), which keeps
-the configfs_dirent alive. The path is safely cleaned up using the
-__free(path_put) attribute in configfs_symlink().
+-> #2 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}:
+       inode_lock include/linux/fs.h:1024 [inline]
+       configfs_depend_item_unlocked+0x153/0x420 fs/configfs/dir.c:1259
+       usbg_make_tpg+0x1f6/0x590 drivers/usb/gadget/function/f_tcm.c:1686
+       target_fabric_make_tpg+0xa8/0x6d0
+       drivers/target/target_core_fabric_configfs.c:939
+       configfs_mkdir+0x4f6/0x9e0 fs/configfs/dir.c:1360
 
-Fixes: 98702467f829 ("configfs: remove unnecessary dentry_unhash on rmdir, dir rename")
+-> #1 (&opts->dep_lock){+.+.}-{4:4}:
+       mutex_lock_nested+0x5a/0x1d0 kernel/locking/rtmutex_api.c:578
+       tcm_set_name+0x2b/0xd0 drivers/usb/gadget/function/f_tcm.c:2669
+       function_make+0x1a8/0x360 drivers/usb/gadget/configfs.c:636
+       configfs_mkdir+0x4f6/0x9e0 fs/configfs/dir.c:1360
+
+-> #0 (gadget_subsys.su_mutex){+.+.}-{4:4}:
+       mutex_lock_nested+0x5a/0x1d0 kernel/locking/rtmutex_api.c:578
+       uvcg_streaming_header_allow_link+0x75/0x4d0
+       drivers/usb/gadget/function/uvc_configfs.c:1750
+       configfs_symlink+0x59a/0x1030 fs/configfs/symlink.c:196
+
+The cycle is reported as follows. First, inode_lock ->
+gadget_subsys.su_mutex: In configfs_symlink(), VFS holds the inode_lock of
+the parent directory. The function then calls
+uvcg_streaming_header_allow_link(), which acquires gadget_subsys.su_mutex.
+Second, gadget_subsys.su_mutex -> opts->dep_lock: In configfs_mkdir() for
+the gadget subsystem, configfs holds gadget_subsys.su_mutex and calls
+function_make() -> tcm_set_name(), which acquires opts->dep_lock. Third,
+opts->dep_lock -> inode_lock: In configfs_mkdir() for the target subsystem,
+configfs calls target_fabric_make_tpg() -> usbg_make_tpg(). This function
+acquires opts->dep_lock and then calls configfs_depend_item_unlocked().
+Because the target and gadget subsystems are different,
+configfs_depend_item_unlocked() acquires the inode_lock of the configfs
+root directory.
+
+This is a false positive because configfs assigns the default VFS lock
+class (&sb->s_type->i_mutex_key) to all non-default directories, including
+the root directory and user-created directories. Lockdep sees the
+inode_lock on the symlink parent directory and the inode_lock on the
+configfs root directory as the same lock class, assuming a cycle. In
+reality, these are different inodes, and the root directory's inode_lock is
+never held while waiting for su_mutex or dep_lock.
+
+To break this false positive cycle, avoid holding opts->dep_lock and
+tpg_instances_lock while calling configfs_depend_item_unlocked() in
+usbg_make_tpg(). This severs the dep_lock -> i_mutex_key link in lockdep's
+graph.
+
+To do this safely without introducing race conditions or use-after-free
+bugs, several steps are taken. First, pre-allocate and reserve the tpg in
+the tpg_instances array before dropping the locks so that concurrent calls
+to usbg_make_tpg() skip this instance. Second, take a reference on the
+config_item (config_item_get()) before dropping the locks. This prevents a
+concurrent rmdir on the function directory from freeing the item while we
+are depending on it. Third, drop the extra reference (config_item_put())
+only after we have fully unlocked tpg_instances_lock. This is crucial
+because config_item_put() might trigger the release function
+tcm_free_inst(), which acquires tpg_instances_lock and would cause a real
+deadlock if we still held it.
+
+Fixes: 4bb8548df632 ("usb: gadget: f_tcm: add configfs support")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+8358d1f3d9c15bdf1c9a@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=8358d1f3d9c15bdf1c9a
-Link: https://syzkaller.appspot.com/ai_job?id=13fec684-23f7-4f06-99db-ed37ae92a405
-To: "Andreas Hindborg" <a.hindborg@kernel.org>
-To: <linux-kernel@vger.kernel.org>
-To: "Sage Weil" <sage@newdream.net>
-Cc: "Breno Leitao" <leitao@debian.org>
+Reported-by: syzbot+ed4b9a6a61280b24d9c3@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=ed4b9a6a61280b24d9c3
+Link: https://syzkaller.appspot.com/ai_job?id=cf0ad2c8-f356-4700-bd6a-e8c2d28a72cd
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
+To: "Andrzej Pietrasiewicz" <andrzej.p@samsung.com>
+Cc: "Jiasheng Jiang" <jiashengjiangcool@gmail.com>
+Cc: <linux-kernel@vger.kernel.org>
+Cc: "Cen Zhang" <zzzccc427@gmail.com>
 
 ---
-diff --git a/fs/configfs/dir.c b/fs/configfs/dir.c
-index 3c88f13f1..b0812432f 100644
---- a/fs/configfs/dir.c
-+++ b/fs/configfs/dir.c
-@@ -1552,12 +1552,14 @@ static int configfs_rmdir(struct inode *dir, struct dentry *dentry)
+diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
+index b3fa5a17f..c8278053d 100644
+--- a/drivers/usb/gadget/function/f_tcm.c
++++ b/drivers/usb/gadget/function/f_tcm.c
+@@ -1660,6 +1660,7 @@ static struct se_portal_group *usbg_make_tpg(struct se_wwn *wwn,
+ 	int ret;
+ 	struct f_tcm_opts *opts;
+ 	unsigned i;
++	bool dep_taken = false;
  
- 	if (sd->s_type & CONFIGFS_USET_DIR) {
- 		configfs_detach_group(dentry);
-+		d_drop(dentry);
+ 	if (strstr(name, "tpgt_") != name)
+ 		return ERR_PTR(-EINVAL);
+@@ -1679,59 +1680,84 @@ static struct se_portal_group *usbg_make_tpg(struct se_wwn *wwn,
+ 	if (!opts->ready)
+ 		goto unlock_dep;
  
- 		mutex_lock(&subsys->su_mutex);
- 		client_disconnect_notify(parent_item, item);
- 		unlink_group(to_config_group(item));
- 	} else {
- 		configfs_detach_item(dentry);
-+		d_drop(dentry);
+-	if (opts->has_dep) {
+-		if (!try_module_get(opts->dependent))
+-			goto unlock_dep;
+-	} else {
+-		ret = configfs_depend_item_unlocked(
+-			wwn->wwn_group.cg_subsys,
+-			&opts->func_inst.group.cg_item);
+-		if (ret)
+-			goto unlock_dep;
+-	}
+-
+ 	tpg = kzalloc_obj(struct usbg_tpg);
+-	ret = -ENOMEM;
+-	if (!tpg)
+-		goto unref_dep;
++	if (!tpg) {
++		ret = -ENOMEM;
++		goto unlock_dep;
++	}
+ 	mutex_init(&tpg->tpg_mutex);
+ 	atomic_set(&tpg->tpg_port_count, 0);
+ 	tpg->workqueue = alloc_workqueue("tcm_usb_gadget",
+ 					 WQ_UNBOUND, WQ_UNBOUND_MAX_ACTIVE);
+-	if (!tpg->workqueue)
+-		goto free_tpg;
+-
++	if (!tpg->workqueue) {
++		ret = -ENOMEM;
++		kfree(tpg);
++		goto unlock_dep;
++	}
+ 	tpg->tport = tport;
+ 	tpg->tport_tpgt = tpgt;
  
- 		mutex_lock(&subsys->su_mutex);
- 		client_disconnect_notify(parent_item, item);
-diff --git a/fs/configfs/symlink.c b/fs/configfs/symlink.c
-index 31eb28b27..c8a2d9ad6 100644
---- a/fs/configfs/symlink.c
-+++ b/fs/configfs/symlink.c
-@@ -114,18 +114,17 @@ static int create_link(struct config_item *parent_item,
++	tpg_instances[i].tpg = tpg;
++
++	if (opts->has_dep) {
++		if (!try_module_get(opts->dependent)) {
++			ret = -ENODEV;
++			goto free_tpg;
++		}
++	} else {
++		config_item_get(&opts->func_inst.group.cg_item);
++		dep_taken = true;
++		mutex_unlock(&opts->dep_lock);
++		mutex_unlock(&tpg_instances_lock);
++
++		ret = configfs_depend_item_unlocked(
++			wwn->wwn_group.cg_subsys,
++			&opts->func_inst.group.cg_item);
++
++		if (ret) {
++			mutex_lock(&tpg_instances_lock);
++			tpg_instances[i].tpg = NULL;
++			mutex_unlock(&tpg_instances_lock);
++			destroy_workqueue(tpg->workqueue);
++			kfree(tpg);
++			config_item_put(&opts->func_inst.group.cg_item);
++			return ERR_PTR(ret);
++		}
++
++		mutex_lock(&tpg_instances_lock);
++		mutex_lock(&opts->dep_lock);
++	}
++
+ 	/*
+ 	 * SPC doesn't assign a protocol identifier for USB-SCSI, so we
+ 	 * pretend to be SAS..
+ 	 */
+ 	ret = core_tpg_register(wwn, &tpg->se_tpg, SCSI_PROTOCOL_SAS);
+ 	if (ret < 0)
+-		goto free_workqueue;
++		goto unref_dep;
+ 
+-	tpg_instances[i].tpg = tpg;
+ 	tpg->fi = tpg_instances[i].func_inst;
+ 	mutex_unlock(&opts->dep_lock);
+ 	mutex_unlock(&tpg_instances_lock);
++	if (dep_taken)
++		config_item_put(&opts->func_inst.group.cg_item);
+ 	return &tpg->se_tpg;
+ 
+-free_workqueue:
+-	destroy_workqueue(tpg->workqueue);
+-free_tpg:
+-	kfree(tpg);
+ unref_dep:
+ 	if (opts->has_dep)
+ 		module_put(opts->dependent);
+ 	else
+ 		configfs_undepend_item_unlocked(&opts->func_inst.group.cg_item);
++free_tpg:
++	tpg_instances[i].tpg = NULL;
++	destroy_workqueue(tpg->workqueue);
++	kfree(tpg);
+ unlock_dep:
+ 	mutex_unlock(&opts->dep_lock);
+ unlock_inst:
+ 	mutex_unlock(&tpg_instances_lock);
+-
++	if (dep_taken)
++		config_item_put(&opts->func_inst.group.cg_item);
+ 	return ERR_PTR(ret);
  }
  
- 
--static int get_target(const char *symname, struct config_item **target,
--		      struct super_block *sb)
-+static int get_target(const char *symname, struct path *path,
-+		      struct config_item **target, struct super_block *sb)
- {
--	struct path path __free(path_put) = {};
- 	int ret;
- 
--	ret = kern_path(symname, LOOKUP_FOLLOW|LOOKUP_DIRECTORY, &path);
-+	ret = kern_path(symname, LOOKUP_FOLLOW | LOOKUP_DIRECTORY, path);
- 	if (ret)
- 		return ret;
--	if (path.dentry->d_sb != sb)
-+	if (path->dentry->d_sb != sb)
- 		return -EPERM;
--	*target = configfs_get_config_item(path.dentry);
-+	*target = configfs_get_config_item(path->dentry);
- 	if (!*target)
- 		return -ENOENT;
- 	return 0;
-@@ -136,6 +135,7 @@ int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
- 		     struct dentry *dentry, const char *symname)
- {
- 	int ret;
-+	struct path path __free(path_put) = {};
- 	struct configfs_dirent *sd;
- 	struct config_item *parent_item;
- 	struct config_item *target_item = NULL;
-@@ -182,7 +182,7 @@ int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
- 	 *  AV, a thoroughly annoyed bastard.
- 	 */
- 	inode_unlock(dir);
--	ret = get_target(symname, &target_item, dentry->d_sb);
-+	ret = get_target(symname, &path, &target_item, dentry->d_sb);
- 	inode_lock(dir);
- 	if (ret)
- 		goto out_put;
 
 
 base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
