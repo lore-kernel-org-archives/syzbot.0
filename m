@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FA4D3054C7;
-	Wed, 29 Jul 2026 16:00:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 112A4469832
+	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 16:54:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785340829; cv=none; b=r02eyI7Zjk2uF7c3lqVj8h3C2gw3JRr5C3PRfXXu9VDA9LZOUNlUW/T+4II8xleoIFLWl543LSXn1LksQQeH+vWwPMb0Ok/rKfAUNlx2XaYi3c1afdmkdJldZaaP5uHhGcf5qdFj+PwsbxNd0mYUbHPsArksPxjYBPVce6xSo88=
+	t=1785344069; cv=none; b=cKSrPElVuQkmXp4bnSeMDRdVEpwPcuBPcAsetugks6o9l5jqrmLFoHDlifuPvS4vWeAPYl/lOKnyNouz7PF6ztStyrwjj20slXBTMnHF/CM9Xo+t08d9RUKznxZKvr75jSiR2BFZkL8wyvxjJ8lKlJl8GaAsc5i/w6Qm0LnPaUM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785340829; c=relaxed/simple;
-	bh=F33ada4OmlS+8/2MgZh5k8anahQVk85omhHgDq3n/Ek=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=vAr43BUuDv6qVbhhta+YofF6vW6ZQfWobSZ0NOeS14vIFBgIJs0srLULkVW2j6E6S4iVdIunMZg9xLBEuDIEb9QLmzgttFGPngDRRQLaROqTvESTriKUBkTa8wV6nIowwp+k3lMlH++ANpcFX2E/UaEas6hagLbeM6TyA2abEG4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mKiBLzdh; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785344069; c=relaxed/simple;
+	bh=kisaunHPSglLtCTilq7dG7n3cHMylY2xkqAc+GFOoTw=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=V0SNpx8HLQM3ON7VIve2ZzFr+CS9umPz3zjS+UI2gnUUpXiOxZKW80Xeys+5Ln+OI7slb2zYRig67lOeEX9Z4uL0DBrZnWHYJnGirA0t8x/St5HXp8+Prjk1q0Y1Wc2S2+Qis8Pfn/MCoQ0V1mFmypaC5aHwdKZj/PlQk6KdoZk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DBnJHIgN; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mKiBLzdh"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7A3561F000E9;
-	Wed, 29 Jul 2026 16:00:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DBnJHIgN"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 860191F000E9;
+	Wed, 29 Jul 2026 16:54:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785340827;
-	bh=Iu9fxVl0EBhvOLnfdANvBli5d6rGsACH+DRmq4nb+p0=;
+	s=k20260515; t=1785344067;
+	bh=GuLY3i6SBJtad/FSiPC4s2VbXEQPIiWOVbN2GgWcuQE=;
 	h=From:To:Cc:Subject:Date;
-	b=mKiBLzdhNCB3W5UWhc55ZCgpjIfEArFl8rAYPYTASHXc0mx/YlR8E2EDGXPX0glug
-	 tiqk2BdG6oIzk1XP2gJVaQPJ+eoprgxTZaieoy9ukV2xEgfQSJQsZZ4nMfnXMjtD+J
-	 GKARTxKcCek8NVGjLqyeC5dZe4ILIEFTWrWp1KJLxhtK4KNS2NBU1xg5vx/KhV5dTo
-	 nZYc/jbIfqBqs7kYtreiCxG0KxjHw9Jd+6eix+9DUmBRlvsB/JqWglF4KM8Upjv7hq
-	 nWjupaSCYIj+lwOjqdmjT1ksITs9D7VH60lfdL/91PVxXVxlDarAGdVrYNmj+RLAKI
-	 Sjuei2XPKj09w==
+	b=DBnJHIgNQ2V882tcgl9N8T3XktvnVfOXDEvthbsRKp9o9bVeWJjTn2zroR7EIS85M
+	 9xXuk4NKodXiC3L05zwlk+ByQtu8chddCiljEezZCKca1t/r8MXK9cefqPdyTrWBuc
+	 /zryTFubGVemhXhQpGWUCeK8C8IFbcTzOCrDTLiM/1bBPaYuzPcNnbtDxbIxw+htj6
+	 jApE7U4MFKJ1LgTAxJUhXPAnpu3TIZSxprk1JrflKuqNL71Xu3hSSJnyUZoiKejQsN
+	 dYe5IphxlX3XkrQnIZ7dS7FNS5jnrIMauJ9w/gXlfTp1kGZnUI5unxAjwqa9ZlLxqs
+	 /8u/Oycgn7+jQ==
 From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Aleksandr Nogikh <nogikh@google.com>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, <linux-usb@vger.kernel.org>, "Julian Scheel" <julian@jusst.de>
-Cc: christophe.jaillet@wanadoo.fr, kees@kernel.org, linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Subject: [PATCH] usb: gadget: f_uac1, f_uac2: fix invalid free and memory leak
-Message-ID: <b1b92444-7b06-4ce1-abf7-66145a4e8939@mail.kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: immersa.bartosz.chronowski@gmail.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v2] tipc: fix spinlock recursion in tipc_sk_rcv()
+Message-ID: <368f7232-39e9-424c-9683-0c28db1151af@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,127 +38,211 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed, 29 Jul 2026 16:00:27 +0000 (UTC)
+Date: Wed, 29 Jul 2026 16:54:27 +0000 (UTC)
 
-From: Aleksandr Nogikh <nogikh@google.com>
+An RCU stall (infinite loop / livelock) can occur due to a spinlock
+recursion bug in the TIPC subsystem. Specifically, tipc_sk_rcv() can be
+called recursively on the same CPU and try to acquire a socket spinlock
+that is already held higher up in the call stack. Because it uses
+spin_trylock_bh(), it fails to acquire the lock and enters an infinite
+loop.
 
-The `UAC1_RATE_ATTRIBUTE` and `UAC2_RATE_ATTRIBUTE` macros generate store
-functions that use `strsep()` to parse a comma-separated list of sample
-rates. The `strsep()` function modifies the pointer passed to it, advancing
-it past the delimiter.
+The issue is triggered by the concurrent execution of sendmsg() and
+setsockopt() on a connected TIPC socket pair (fd0 and fd1), which reside on
+the same node (loopback).
 
-This causes two issues. First, if `kstrtou32()` fails (e.g., due to an
-invalid token), the code jumps to the `end` label and calls
-`kfree(split_page)`. Since `split_page` has been advanced by `strsep()`,
-this results in an invalid free. Second, if the loop completes
-successfully, `strsep()` sets `split_page` to `NULL`. The subsequent
-`kfree(split_page)` becomes a no-op, leaking the memory allocated by
-`kstrdup()`.
+The sequence of events leading to the livelock is:
+1. setsockopt locks fd0 (acquires the socket mutex sk->sk_lock.owned).
+While fd0 is locked, sendmsg on fd1 sends messages to fd0. Since fd0 is
+owned by the user, tipc_sk_enqueue() adds these messages to fd0's backlog
+queue.
+2. setsockopt processes SO_RCVBUFFORCE and reduces fd0's sk_rcvbuf to the
+minimum value (SOCK_MIN_RCVBUF, 2048).
+3. setsockopt finishes and calls release_sock(fd0). Seeing a non-empty
+backlog, it calls __release_sock(fd0).
+4. __release_sock(fd0) drops fd0's spinlock (sk->sk_lock.slock) and calls
+sk_backlog_rcv() -> tipc_sk_backlog_rcv() -> tipc_sk_filter_rcv() to
+process the backlog.
+5. Because sk_rcvbuf was drastically reduced, the receive queue limit is
+exceeded. tipc_sk_filter_rcv(fd0) rejects the message (TIPC_ERR_OVERLOAD)
+and queues a reject message to xmitq.
+6. tipc_sk_backlog_rcv(fd0) calls tipc_node_distr_xmit(&xmitq) to send the
+reject message back to fd1. Since fd1 is on the same node, tipc_node_xmit()
+synchronously calls tipc_sk_rcv(fd1).
+7. tipc_sk_rcv(fd1) successfully locks fd1's spinlock and calls
+tipc_sk_enqueue(fd1) -> tipc_sk_filter_rcv(fd1) ->
+tipc_sk_filter_connect(fd1).
+8. tipc_sk_filter_connect(fd1) sees that fd1's sk_write_queue is not empty.
+It calls tipc_sk_push_backlog(fd1).
+9. tipc_sk_push_backlog(fd1) calls tipc_node_xmit() to send the queued
+messages to fd0. This synchronously calls tipc_sk_rcv(fd0).
+10. tipc_sk_rcv(fd0) successfully locks fd0's spinlock (as __release_sock
+dropped it) and calls tipc_sk_enqueue(fd0). Since fd0 is still owned by the
+user, it tries to add the message to the backlog. The backlog is full, so
+it rejects the message again, sending a new reject message back to fd1.
+11. The new reject message is sent to fd1 via tipc_node_xmit() ->
+tipc_sk_rcv(fd1). tipc_sk_rcv(fd1) tries to lock fd1's spinlock. However,
+fd1's spinlock is already held by the outer tipc_sk_rcv(fd1) at step 7.
 
-KASAN reports the invalid free as follows:
+In tipc_sk_rcv(), if spin_trylock_bh() fails, it assumes another CPU holds
+the lock, so it just continues the loop without dequeuing the message from
+inputq. Because the lock is held by the current CPU, it will never be
+released, and the while loop spins infinitely, causing the RCU stall:
 
-BUG: KASAN: invalid-free in f_uac2_opts_p_srate_store+0x225/0x2b0
-drivers/usb/gadget/function/f_uac2.c:2087
-Free of addr ffff888192cb7806 by task syz.0.17/6182
+rcu: INFO: rcu_preempt self-detected stall on CPU
+...
 Call Trace:
- kfree+0x173/0x6c0 mm/slub.c:6692
- f_uac2_opts_p_srate_store+0x225/0x2b0
- drivers/usb/gadget/function/f_uac2.c:2087
- flush_write_buffer fs/configfs/file.c:207 [inline]
- configfs_write_iter+0x33a/0x430 fs/configfs/file.c:229
- vfs_write+0x61e/0xbb0 fs/read_write.c:687
- ksys_write+0x156/0x270 fs/read_write.c:739
-The buggy address is located 6 bytes inside of
- 32-byte region [ffff888192cb7800, ffff888192cb7820)
+ <TASK>
+ __raw_spin_trylock_bh include/linux/spinlock_api_smp.h:207 [inline]
+ _raw_spin_trylock_bh+0x60/0x70 kernel/locking/spinlock.c:150
+ spin_trylock_bh include/linux/spinlock.h:414 [inline]
+ tipc_sk_rcv+0x420/0x2b50 net/tipc/socket.c:2500
+ tipc_node_xmit+0x205/0xf10 net/tipc/node.c:1701
+ tipc_node_xmit_skb net/tipc/node.c:1766 [inline]
+ tipc_node_distr_xmit+0x2cd/0x400 net/tipc/node.c:1781
+ tipc_sk_rcv+0x2539/0x2b50 net/tipc/socket.c:2505
+ tipc_node_xmit+0x205/0xf10 net/tipc/node.c:1701
+ tipc_sk_push_backlog net/tipc/socket.c:1313 [inline]
+ tipc_sk_filter_connect net/tipc/socket.c:2259 [inline]
+ tipc_sk_filter_rcv+0x17f3/0x3210 net/tipc/socket.c:2368
+ tipc_sk_enqueue net/tipc/socket.c:2449 [inline]
+ tipc_sk_rcv+0x877/0x2b50 net/tipc/socket.c:2501
+ tipc_node_xmit+0x205/0xf10 net/tipc/node.c:1701
+ tipc_node_xmit_skb net/tipc/node.c:1766 [inline]
+ tipc_node_distr_xmit+0x2cd/0x400 net/tipc/node.c:1781
+ tipc_sk_backlog_rcv+0x1ad/0x270 net/tipc/socket.c:2416
+ sk_backlog_rcv include/net/sock.h:1190 [inline]
+ __release_sock+0x28b/0x390 net/core/sock.c:3261
+ release_sock+0x190/0x260 net/core/sock.c:3860
+ sockopt_release_sock net/core/sock.c:1163 [inline]
+ sk_setsockopt+0x2822/0x2e80 net/core/sock.c:1681
+ do_sock_setsockopt+0x11b/0x1b0 net/socket.c:2364
+ __sys_setsockopt net/socket.c:2393 [inline]
+ __do_sys_setsockopt net/socket.c:2399 [inline]
+ __se_sys_setsockopt net/socket.c:2396 [inline]
+ __x64_sys_setsockopt+0x13d/0x1b0 net/socket.c:2396
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+ </TASK>
 
-Fix this by keeping the original pointer returned by `kstrdup()` in a
-separate variable `page_alloc` and passing a temporary pointer `split_page`
-to `strsep()`. This ensures that the correct pointer is passed to
-`kfree()`. Additionally, add a check to handle `kstrdup()` allocation
-failures.
+To fix this, tipc_sk_push_backlog() should not call tipc_node_xmit()
+directly for own-node destinations while holding the socket spinlock.
+Instead, modify tipc_sk_push_backlog() to take an xmitq parameter. If xmitq
+is provided and the destination is on the own node, it splices the write
+queue into xmitq, deferring the transmission until after the spinlock is
+released. For calls like __tipc_shutdown() that execute under the socket
+mutex rather than the spinlock, passing NULL for xmitq allows direct
+transmission to continue safely. For off-node destinations, direct
+transmission remains safe as it does not lead to synchronous loopback
+recursion.
 
-Fixes: a7339e4f5788 ("usb: gadget: f_uac2: Support multiple sampling rates")
+Fixes: c0bceb97db9e ("tipc: add smart nagle feature")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+bfca46c96ddf3b7d5c55@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=bfca46c96ddf3b7d5c55
-Link: https://syzkaller.appspot.com/ai_job?id=705307cf-805c-4e75-8f76-2a0acc541cb8
-Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+Reported-by: syzbot+10a41dc44eef71aa9450@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=10a41dc44eef71aa9450
+Link: https://syzkaller.appspot.com/ai_job?id=e6db6744-c061-4f81-bde8-25993166f061
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jon Maloy" <jmaloy@redhat.com>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: <tipc-discussion@lists.sourceforge.net>
+To: "Jon Maloy" <jon.maloy@ericsson.com>
+Cc: "Simon Horman" <horms@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/drivers/usb/gadget/function/f_uac1.c b/drivers/usb/gadget/function/f_uac1.c
-index 85c502e98..f4b7bbd93 100644
---- a/drivers/usb/gadget/function/f_uac1.c
-+++ b/drivers/usb/gadget/function/f_uac1.c
-@@ -1594,6 +1594,7 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
- 					  const char *page, size_t len)	\
- {									\
- 	struct f_uac1_opts *opts = to_f_uac1_opts(item);		\
-+	char *page_alloc = NULL;					\
- 	char *split_page = NULL;					\
- 	int ret = -EINVAL;						\
- 	char *token;							\
-@@ -1608,7 +1609,12 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
- 									\
- 	i = 0;								\
- 	memset(opts->name##s, 0x00, sizeof(opts->name##s));		\
--	split_page = kstrdup(page, GFP_KERNEL);				\
-+	page_alloc = kstrdup(page, GFP_KERNEL);				\
-+	if (!page_alloc) {						\
-+		ret = -ENOMEM;						\
-+		goto end;						\
-+	}								\
-+	split_page = page_alloc;					\
- 	while ((token = strsep(&split_page, ",")) != NULL) {		\
- 		ret = kstrtou32(token, 0, &num);			\
- 		if (ret)						\
-@@ -1619,7 +1625,7 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
- 	};								\
- 									\
- end:									\
--	kfree(split_page);						\
-+	kfree(page_alloc);						\
- 	mutex_unlock(&opts->lock);					\
- 	return ret;							\
- }									\
-diff --git a/drivers/usb/gadget/function/f_uac2.c b/drivers/usb/gadget/function/f_uac2.c
-index 897787d08..336aeaec9 100644
---- a/drivers/usb/gadget/function/f_uac2.c
-+++ b/drivers/usb/gadget/function/f_uac2.c
-@@ -2012,6 +2012,7 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
- 					  const char *page, size_t len)	\
- {									\
- 	struct f_uac2_opts *opts = to_f_uac2_opts(item);		\
-+	char *page_alloc = NULL;					\
- 	char *split_page = NULL;					\
- 	int ret = -EINVAL;						\
- 	char *token;							\
-@@ -2026,7 +2027,12 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
- 									\
- 	i = 0;								\
- 	memset(opts->name##s, 0x00, sizeof(opts->name##s));		\
--	split_page = kstrdup(page, GFP_KERNEL);				\
-+	page_alloc = kstrdup(page, GFP_KERNEL);				\
-+	if (!page_alloc) {						\
-+		ret = -ENOMEM;						\
-+		goto end;						\
-+	}								\
-+	split_page = page_alloc;					\
- 	while ((token = strsep(&split_page, ",")) != NULL) {		\
- 		ret = kstrtou32(token, 0, &num);			\
- 		if (ret)						\
-@@ -2037,7 +2043,7 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
- 	};								\
- 									\
- end:									\
--	kfree(split_page);						\
-+	kfree(page_alloc);						\
- 	mutex_unlock(&opts->lock);					\
- 	return ret;							\
- }									\
+v2:
+- Only defer transmission in tipc_sk_push_backlog() if the destination is on the own node.
+- Update the commit description to clarify that deferral is only needed for own-node destinations.
+
+v1:
+https://lore.kernel.org/all/01641937-e30d-43dd-ba9c-95b3d2ae5691@mail.kernel.org/T/
+---
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index e564341e0..16d844fc8 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -156,7 +156,8 @@ static int tipc_sk_insert(struct tipc_sock *tsk);
+ static void tipc_sk_remove(struct tipc_sock *tsk);
+ static int __tipc_sendstream(struct socket *sock, struct msghdr *m, size_t dsz);
+ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dsz);
+-static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack);
++static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack,
++				 struct sk_buff_head *xmitq);
+ static int tipc_wait_for_connect(struct socket *sock, long *timeo_p);
+ 
+ static const struct proto_ops packet_ops;
+@@ -560,7 +561,7 @@ static void __tipc_shutdown(struct socket *sock, int error)
+ 					    !tsk_conn_cong(tsk)));
+ 
+ 	/* Push out delayed messages if in Nagle mode */
+-	tipc_sk_push_backlog(tsk, false);
++	tipc_sk_push_backlog(tsk, false, NULL);
+ 	/* Remove pending SYN */
+ 	__skb_queue_purge(&sk->sk_write_queue);
+ 
+@@ -1268,7 +1269,8 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
+ /* tipc_sk_push_backlog(): send accumulated buffers in socket write queue
+  *                         when socket is in Nagle mode
+  */
+-static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
++static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack,
++				 struct sk_buff_head *xmitq)
+ {
+ 	struct sk_buff_head *txq = &tsk->sk.sk_write_queue;
+ 	struct sk_buff *skb = skb_peek_tail(txq);
+@@ -1310,6 +1312,12 @@ static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
+ 		tsk->pkt_cnt += skb_queue_len(txq);
+ 	tsk->snt_unacked += tsk->snd_backlog;
+ 	tsk->snd_backlog = 0;
++
++	if (xmitq && in_own_node(net, dnode)) {
++		skb_queue_splice_tail_init(txq, xmitq);
++		return;
++	}
++
+ 	rc = tipc_node_xmit(net, txq, dnode, tsk->portid);
+ 	if (rc == -ELINKCONG)
+ 		tsk->cong_link_cnt = 1;
+@@ -1367,7 +1375,7 @@ static void tipc_sk_conn_proto_rcv(struct tipc_sock *tsk, struct sk_buff *skb,
+ 			goto exit;
+ 
+ 		was_cong = tsk_conn_cong(tsk);
+-		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr));
++		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr), xmitq);
+ 		tsk->snt_unacked -= msg_conn_ack(hdr);
+ 		if (tsk->peer_caps & TIPC_BLOCK_FLOWCTL)
+ 			tsk->snd_win = msg_adv_win(hdr);
+@@ -2165,7 +2173,7 @@ static void tipc_sk_proto_rcv(struct sock *sk,
+ 		smp_wmb();
+ 		tsk->cong_link_cnt--;
+ 		wakeup = true;
+-		tipc_sk_push_backlog(tsk, false);
++		tipc_sk_push_backlog(tsk, false, xmitq);
+ 		break;
+ 	case GROUP_PROTOCOL:
+ 		tipc_group_proto_rcv(grp, &wakeup, hdr, inputq, xmitq);
+@@ -2256,7 +2264,7 @@ static bool tipc_sk_filter_connect(struct tipc_sock *tsk, struct sk_buff *skb,
+ 		return false;
+ 	case TIPC_ESTABLISHED:
+ 		if (!skb_queue_empty(&sk->sk_write_queue))
+-			tipc_sk_push_backlog(tsk, false);
++			tipc_sk_push_backlog(tsk, false, xmitq);
+ 		/* Accept only connection-based messages sent by peer */
+ 		if (likely(con_msg && !err && pport == oport &&
+ 			   pnode == onode)) {
 
 
-base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
+base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
 -- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
 See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
 You can comment on the patch as usual, syzbot will try to address
 the comments and send a new version of the patch if necessary.
