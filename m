@@ -1,141 +1,154 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85E58483BD1
-	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 18:27:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B987382371
+	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 18:53:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785349658; cv=none; b=iEzzx4WAbsXPB959coQqab3dC0zRSl/wFEx1Eo9qI7tnC3hWpDVBoHGritTrWV34MIsiz+/uPeUJMTfOVf0dIuTadR5PtpndbIweNeQd4Psx8qYorFrHGmpWFSbvehbg5LzMs8lDGyWd5aAsGw5FBtm+o8YKxvPhGj7eSTmMftA=
+	t=1785351218; cv=none; b=kMrVR8O+tgjbR1bppQdQHrB/mASeiknwL8hEekRCmvuo7nkqKNPHMbX+4CraIMJGkDdMPk2k/IGkjWsCughbLzMCjthvO54wP2Q0vR2fWBA/kScKTi99uu9aRnSvftVxk6z8pI39PtBJBNMFzwpqj+IxDvs7opCMKYlsXhuCdrg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785349658; c=relaxed/simple;
-	bh=v/YhUcBMZHX2GQU0m9OyMtPzO/kbHtbG4xFV1TXmKqQ=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ctO+wNMvFCK9UQHN8I48OYwd5jkfhgUVwP25ETOzJJDAtM7QolCJKymYiTNZQaqFtE6xy0+aNhnagAu7fqByaMFKxWpjXv4M8M6+12OOzYbDpA1vsPCy2NkM9OKq4r6i0ODtaNHFHFEhLRBgMh33YNGKwAisayaUeLWvhE2O6SQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oAuvwwsV; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785351218; c=relaxed/simple;
+	bh=mIdBjX8uWqj3jMTW4Q4CHO0TOmt+GQF84JHyOLNKTHY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Y/17gKDUSKM+2USZtf5YIE8baxTWqeh14b3wJBaaH/EorDTwqWv5fuYTg+rCk0BRLqqhje92apZBX+QyKetE9HzJ+CVCAJ3msjNe2LSDiLDMSa98RH1/xwFPuoqlZe6urceE4S5CwPwW648g9BhIBJSOXlKf33i2cwFQPRjI+hk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=CpMHFBK0; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=amJ3Bb1s; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oAuvwwsV"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 703F11F000E9;
-	Wed, 29 Jul 2026 18:27:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785349647;
-	bh=fhYO3+xSaUfqX06/IR46wuVobmb/K+B8p8D7d0UCgx0=;
-	h=From:To:Cc:Subject:Date;
-	b=oAuvwwsVtltVcLuUu8LN9F60ZqFNmIa5wEJU+xIemQN4OlaMclatRXvaEqzOlOglb
-	 eA913jZgNA578TJRd2ojdVTzrLjuro97OwANQpHNDu1PqG83U4dIPBsnZdl77PmsGt
-	 1ur3J2Ub9tKN1i7TmsdrOQMU/NMb8zUxKlN8aCp3vxfac9HnIBE6wLEzKzE8b2LukD
-	 r9C+/4L1KS4M1xGwGbQvcxsefoxY5aqAx4WGg+3MPAOFsEyYmgpDxHhKM3A9ReDcSj
-	 oUzw1XI6jIe9wzz4vz1oc0RyOd10oGkdMON5kA2uW0YmCWYSzd+OM2cflhpbvoBvpD
-	 km66NHl2lwmUg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] arm64: suspend: Fix context tracking during system suspend
-Message-ID: <33408a6a-74eb-45e3-90c5-b39977e3f986@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="CpMHFBK0";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="amJ3Bb1s"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66TIQqLm2830835
+	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 18:53:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	GGb/D0+cHzWfDdgb8vv4OyJOIxrUr1v/2y04Z8q3NrA=; b=CpMHFBK0Dt3WId6t
+	94I3Gp4gLVZx+iRAu4EGJk19Pgd2L29Szjb1iMI214t1oAG3jWxypJSPfIJ/qRKj
+	sijV3O6LKp0e6/qq+5zecS0Ga9RG+BeHfKbb0h0Un6ffOmTUDiticdMCLI+P+eYB
+	umAbrER3dIeFaLdDEJ9shbRKuRQNf4BYc/r5lT8pQPyHEUsTLkLs+7Cr3yklMKTk
+	QRBMRSyQa6wSabS+/iSfa07huE6x5ZiD0WbMcNKtFRvAWP0KNTbsxhoUXmc9MZX8
+	jXxKCtHMS6BdMRru09gYb3R0QoZ9TzP8DwU7o8AVps4QGMAM+ks/QAZlwPIb8dVV
+	2aDvcQ==
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fqhe9a2ah-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 18:53:36 +0000 (GMT)
+Received: by mail-pl1-f199.google.com with SMTP id d9443c01a7336-2cc7e86e7c5so24050995ad.3
+        for <syzbot@lists.linux.dev>; Wed, 29 Jul 2026 11:53:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1785351216; x=1785956016; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=GGb/D0+cHzWfDdgb8vv4OyJOIxrUr1v/2y04Z8q3NrA=;
+        b=amJ3Bb1syloMdaaBTRQ3EYeklKXhg6LKj44HNYbDGwBWpArzwzsPu+NsTqwkgIUS2a
+         j4YiTYymK+EK9yeohH4RDkHRRA81HEOkfo5x3r4PRnrH2H8gQWGzaC8JEqsuwQldkAEc
+         Oeb5zMrWEgkf9aocgCXnYJ4vMHtK1fgow8p0HtfYdNhqzPg/OmG+6hG6stgY51zsPQDm
+         mfD5w4La03svJb3+4bcoqPKJY2187pCvt1gQbrtd9iWNyQfXe3C/3ZmtEEtOYZZFoYQs
+         f+KZ2EPf3HzfhKwgqFYd5lsiPLxna1jqSxhk78M9Tgw58fdGG242yRMnybrWlrs3T95+
+         I8eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785351216; x=1785956016;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=GGb/D0+cHzWfDdgb8vv4OyJOIxrUr1v/2y04Z8q3NrA=;
+        b=cp7YTmbJpjvYC/XTpHKdBBgJS9D7ScJqMnBnsXXkDmyOF+EcyOkZEq+8P2gsU5sW5o
+         t0xXHMzypr6A8pI+HPR+ecQNBGuyQ5LV7acR4eJvx6VZswE+xGki31rdWW6PnujpqfMk
+         5q7UnD1FkTXUBfrMwIWyMO07JiHFij70P7eDHm4njg9DsZ+OxPBf4deP+058TPz32nqJ
+         TeBcYacvUh8RrjBC3zcx/QqAVDtRlzdzNLNrzFuzBa57qmf2LZRJPRIvVudUfEitDA6D
+         p2osBRDodXBfECR0y+R2dlMrqsjP/Wo2FkaKjujAIkjMS70bjvNHZDXAIYRR/EEQjadH
+         +XiQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpWsanXLJPG+AHBjMVLPDD3fKB2TIDEz6OGskAhBVAPH7iWfHBaekxJPV9marndkaZV5aua+tw=@lists.linux.dev
+X-Gm-Message-State: AOJu0YwZ4nK3Zbk4ZJjXtOFSwZnjbBRW66E51jtd7hjQcegFO97rnGhl
+	OY2ud2JHHIQlek7FBkElQ8IHIwxtsqdTHGr2NbjzVl7EDWkEeWQaAU25F6LRgiQL90+6zCNTWCN
+	QuEnCayySsh0lFNh9aWATc/mR5zkreCZ/hgQLglRRDn+qV+tYJylZiLdVwi9pFOTeTP8=
+X-Gm-Gg: AR+sD109R6UZBuicAzXTL+ARaS/h7aeXKqaIzDYKV32RYb80KJCvgwxL8sv85MrZwKq
+	3o1ZAMdI7SGlkjdqN6nfco2PSTBh1HKS/D3EMDcJgzCGaE2ARVPZTJC3VgABt4/DVnnMdXX4VCK
+	LP83fC1/594jFB4chbsjXNwMpEZeS71nbRQntGc/nZ9ZN29fK2xtZXyEjSNmddJx6RO5Qvu9Lo2
+	0KlHpoKtgxiG9SA7BnXVyuJVSrVYLCc/oFxtG+hW6gZGP4zK7fuwqH8QZrJnHQTpv9+kJzqfUM/
+	piR2K1WxWVYCixz4iwZYBCaR13Gyt1KqLf11b5IwFdXEjNlfk6BPw5lNCyCCGBr2OhT7JJ6EmRi
+	Q76rAXaRGmetDa9MibSZlblooW9DsnlWxY8ADrvpu8gIN5GUq0+wjG5BpZBMs
+X-Received: by 2002:a17:903:19e4:b0:2cc:c9cb:371c with SMTP id d9443c01a7336-2d033d576c7mr632925ad.40.1785351215755;
+        Wed, 29 Jul 2026 11:53:35 -0700 (PDT)
+X-Received: by 2002:a17:903:19e4:b0:2cc:c9cb:371c with SMTP id d9443c01a7336-2d033d576c7mr632705ad.40.1785351215381;
+        Wed, 29 Jul 2026 11:53:35 -0700 (PDT)
+Received: from [10.227.110.203] (i-global254.qualcomm.com. [199.106.103.254])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31504baa01dsm13218325eec.12.2026.07.29.11.53.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Jul 2026 11:53:34 -0700 (PDT)
+Message-ID: <a8e1200f-5f79-4c86-915c-96464596fd0e@oss.qualcomm.com>
+Date: Wed, 29 Jul 2026 11:53:32 -0700
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] wifi: zd1211rw: reject secondary interfaces to prevent
+ conflicts
+To: syzbot <syzbot@kernel.org>, syzkaller-bugs@googlegroups.com,
+        Slawomir Stepien <sst@poczta.fm>, linux-wireless@vger.kernel.org,
+        Daniel Drake <dsd@gentoo.org>
+Cc: johannes.berg@intel.com, kees@kernel.org, linux-kernel@vger.kernel.org,
+        nihaal@cse.iitm.ac.in, syzbot@lists.linux.dev
+References: <0720e3ad-d98e-47d7-89af-4d22416b0fbc@mail.kernel.org>
+From: Jeff Johnson <jeff.johnson@oss.qualcomm.com>
+Content-Language: en-US
+In-Reply-To: <0720e3ad-d98e-47d7-89af-4d22416b0fbc@mail.kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Wed, 29 Jul 2026 18:27:27 +0000 (UTC)
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzI5MDE0NCBTYWx0ZWRfX/pXKWN3khoWq
+ Qq03sGb2uJg0uO4dBXT+k3daOr+b3+rvnyN0SRH83Gx4OX127lbpd13RfaX++ZQg8VvlXuztxGi
+ vZLVsQdDmADt+7lrbEpfF1UNu8w08ruz/ifiGoqXyqOMgi7PZA9z3DVtp7bbmiFDrTkOAOG2a9f
+ h8emit7jdfBE++x1htfMAYKlBLH3AVGbYg/NvuWesxfe8VggUA0pHFqE/MIickerKlCArfjb/sk
+ gNaRztK+Z0UVFw2BFqVv666MINq8FbnnGZ7V1dggtSZ6Nm13ax6In09wC+AADscVDLrrZDXE2P+
+ xjk3cxI8lASaxS3zH7pcnlczLXxihIckhd4V5BCQi46p41TylCDy9XS3879eJX42NSL/2+Tt9jl
+ lTzD2H64T21cgGxO4fXX5zelhkbWXQQag+4hUIYAAt7PbFiLFo3FkS+CCzjStGu7sW87f541OCb
+ X/581mS0NrbK5R2/H7w==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzI5MDE0NCBTYWx0ZWRfX9+UwN7Gy6CAi
+ NLz5YXMTcn8PpebAu6u5uBg2JpR+k2yPem7MxccSi9P+fHzzV2IgBXrl/Dsx9mkjowDBD/+64rQ
+ zcGRK+qHZRBC6haQ4jtDs22O+WdegVk=
+X-Proofpoint-ORIG-GUID: 05NhGaICmUFAR_49c0oaYAKmgOP-RgWB
+X-Proofpoint-GUID: 05NhGaICmUFAR_49c0oaYAKmgOP-RgWB
+X-Authority-Analysis: v=2.4 cv=EsriaycA c=1 sm=1 tr=0 ts=6a6a4c30 cx=c_pps
+ a=JL+w9abYAAE89/QcEU+0QA==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
+ a=hi2ICmPa-PouKQFzbIkA:9 a=QEXdDO2ut3YA:10 a=324X-CrmTo6CU4MGRt3R:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-29_07,2026-07-29_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1011 bulkscore=0 malwarescore=0 adultscore=0 priorityscore=1501
+ spamscore=0 lowpriorityscore=0 impostorscore=0 phishscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607290144
 
-Commit 19235e472798 ("cpuidle, arm64: Fix the ARM64 cpuidle logic") added
-unconditional calls to ct_cpuidle_enter() and ct_cpuidle_exit() in
-cpu_suspend() to keep RCU active longer before entering CPUIDLE. However,
-cpu_suspend() is a dual-purpose function used both for CPUIDLE (called from
-the idle task) and for system suspend (called synchronously by the task
-initiating the suspend).
+On 7/29/2026 1:04 AM, syzbot wrote:
+> @@ -1353,6 +1353,13 @@ static int probe(struct usb_interface *intf, const struct usb_device_id *id)
+>  	struct zd_usb *usb;
+>  	struct ieee80211_hw *hw = NULL;
+>  
+> +	/* ZD1211 devices are single-function. Reject secondary interfaces
 
-When cpu_suspend() is invoked during system suspend by a non-idle task,
-ct_cpuidle_enter() triggers a warning in ct_kernel_exit() because it
-expects to be called only from the idle task:
+this does not follow linux block comment style
+/* should be on a separate line
+(at one time networking code had a different style, but not now)
 
-WARNING: kernel/context_tracking.c:120 at ct_kernel_exit+0x1b4/0x1f4
-Call trace:
- ct_kernel_exit+0x1b4/0x1f4
- ct_idle_enter+0x24/0x38
- ct_cpuidle_enter include/linux/cpuidle.h:134 [inline]
- cpu_suspend+0x264/0x474
- psci_system_suspend_enter+0x4c/0x80
- suspend_enter kernel/power/suspend.c:468 [inline]
- suspend_devices_and_enter+0x88c/0xd0c
+> +	 * to prevent multiple instances from conflicting on hardcoded endpoints
+> +	 * and triggering recursive locking warnings.
+> +	 */
+> +	if (intf->cur_altsetting->desc.bInterfaceNumber != 0)
+> +		return -ENODEV;
+> +
+>  	print_id(udev);
+>  
+>  	if (id->driver_info & DEVICE_INSTALLER)
+> 
+> 
+> base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
 
-Furthermore, ct_cpuidle_enter() incorrectly tells lockdep that interrupts
-are enabled, which is true for CPUIDLE but wrong for system suspend where
-interrupts are strictly disabled.
-
-Fix this by conditionally calling ct_cpuidle_enter() and ct_cpuidle_exit()
-only if the current task is the idle task. This preserves the required RCU
-context tracking behavior for CPUIDLE without violating context tracking
-assumptions during system suspend.
-
-Fixes: 19235e472798 ("cpuidle, arm64: Fix the ARM64 cpuidle logic")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+79883955da3a62652a80@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=79883955da3a62652a80
-Link: https://syzkaller.appspot.com/ai_job?id=a12b1304-974c-4342-8eb2-8cae11276afb
-To: "Catalin Marinas" <catalin.marinas@arm.com>
-To: <linux-arm-kernel@lists.infradead.org>
-To: "Will Deacon" <will@kernel.org>
-To: "Peter Zijlstra" <peterz@infradead.org>
-Cc: <linux-kernel@vger.kernel.org>
-
----
-diff --git a/arch/arm64/kernel/suspend.c b/arch/arm64/kernel/suspend.c
-index eaaff9432..c6b6b1cac 100644
---- a/arch/arm64/kernel/suspend.c
-+++ b/arch/arm64/kernel/suspend.c
-@@ -5,6 +5,7 @@
- #include <linux/uaccess.h>
- #include <linux/pgtable.h>
- #include <linux/cpuidle.h>
-+#include <linux/sched.h>
- #include <asm/alternative.h>
- #include <asm/cacheflush.h>
- #include <asm/cpufeature.h>
-@@ -99,6 +100,7 @@ int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
- 	int ret = 0;
- 	unsigned long flags;
- 	struct sleep_stack_data state;
-+	bool idle = is_idle_task(current);
- 	struct arm_cpuidle_irq_context context;
- 
- 	/*
-@@ -137,7 +139,8 @@ int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
- 	 */
- 	arm_cpuidle_save_irq_context(&context);
- 
--	ct_cpuidle_enter();
-+	if (idle)
-+		ct_cpuidle_enter();
- 
- 	if (__cpu_suspend_enter(&state)) {
- 		/* Call the suspend finisher */
-@@ -153,9 +156,11 @@ int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
- 		if (!ret)
- 			ret = -EOPNOTSUPP;
- 
--		ct_cpuidle_exit();
-+		if (idle)
-+			ct_cpuidle_exit();
- 	} else {
--		ct_cpuidle_exit();
-+		if (idle)
-+			ct_cpuidle_exit();
- 		__cpu_suspend_exit();
- 	}
- 
-
-
-base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
