@@ -1,288 +1,275 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C76714052BB
-	for <syzbot@lists.linux.dev>; Thu, 30 Jul 2026 10:54:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785408846; cv=none; b=DeIgRu1Rjw/SH9tfL2XIZ9Iv3QpCdE8S4jTvCar9+eZKmT70uTjkjhpCGX9DVET8Buv/9YWZO8i63SzZhvaDqgTUAsYK6OjJqXCFj9uRDblnGLIOAie1D184aq+3V2diOL5EVA8q0yifmrCx2DGIyksSL+vou3sviUe00MjmBgI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785408846; c=relaxed/simple;
-	bh=732sv5HuFbELkxGuyNPt0TTxS0I0n00iC74z4uBGn2E=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=L/3ygaELHTwZqqwTgUmLjhozvf86/6WCiKbtxKC/rBA41MpTcq17kFc/crkxTiVe/BVu7ndjlvDtvLECsCVhbUghr3S53h06uyqcuPONmCRmLQ7XE422pD3ZbdR5h+Yk/eWV3MnxLCNcTh+RHHNuVP/JogDidQoNFplfAaClwmU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H/relKK6; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0EC641B8ED
+	for <syzbot@lists.linux.dev>; Thu, 30 Jul 2026 11:45:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785411954; cv=pass; b=XuFMpYKRuIvd02jaV4jdzZ70m7m9Bg+2r1Mm5P9Rsh1rBb6L0VwzHk+pQppyfcF3y+hltDBguzGY6loJsiKZCOGmskQLwWIRn29pacQybvAKWfq9W7BUUfxtWiQbnZrpQQy2cnHgoSEwG5kGXF3mhFeQtu0QPqfnFv1L1l8uC24=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785411954; c=relaxed/simple;
+	bh=LgbO9OXkX+oAoVk3TxbCypdSrbho2I1sLwhUemOj4wE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=baieSMofftdxt8wdr/qtn0dBxY6jm4txa89/HuMo5LJDr+IrEe2eMzzlPWoGUsdbi0XbyAgXHW0QqBPMI3mTmGtR8R4woXzd7oQQRvcnMbnIaJcm8nyqW/d2wNbsMpNENMefTPpe924ym87PxbVcgS9pFUrgBXka3v9TjbsqsxM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=sKtswT6E; arc=pass smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H/relKK6"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 570CD1F000E9;
-	Thu, 30 Jul 2026 10:54:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785408844;
-	bh=qPMyUwZ1baZey0u2Mm/uMHzpseGpWBE7t5DMoUzoJjY=;
-	h=From:To:Cc:Subject:Date;
-	b=H/relKK6gv/9nFI/JwHdjFvgsyzD7YXspFZ+Ltgph1xIsRWLgaq8PpFXEGLI0hwTh
-	 qbYDiFBTSZQiEO8HrBnaZ3uJMdkrdslX814E4/4+6eSkBhhYJawzb19oLKJO48HG84
-	 Me1JaGJqhZifYxucZJDHZ6VtGmzYtZ3O9Sqc8Pflm3rdeh01gIp0EPWZNTWPdCm1+H
-	 TxTtvrC5F8UWbXh8I9cKDO08eGRtgi++J2rusyohWHFoeiBA6gWHd8jnPmJlGHzgVb
-	 QR2uN8rDJp+28k2rSKYTxL4S2klA9baSzs+fUzy7dRaSiOBabmBKFrTWUstRhNPXX5
-	 IgKVLhqvcN2Gg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: gadget: f_tcm: Fix circular locking dependency in TPG creation
-Message-ID: <7955f822-f22f-46dd-ad08-eb84e0f958bd@mail.kernel.org>
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="sKtswT6E"
+Received: by smtp.kernel.org (Postfix)
+	id 8271F1F00A3A; Thu, 30 Jul 2026 11:45:51 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=217.74.67.75
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1785411951;
+	b=MIM6HqIXV4nirM3LaVmSkcK23VNE7gMN9HniU+x5ceD5s86IJV17BmlXTe1PlTsaidF1
+	 pY4lzaVmfDPrQ6UJ1bwW4SENB6AdjAOn0rosHPnavBfIShRVgmNaYzSqSj7LxuVMLJrWw
+	 LBOhzDKWOt8hjX4YhZhPSiOtb8FxBRYMkx3FXn5cNOBwNFeQyC6RZJAvdLQGID4sQ88OK
+	 eugxbyuWuy8FyljWl2ZgxfFe7YQw3HXrPJajbntM3xRTLmS1hvVA2t+xhQMfYo9NhAAmk
+	 XYnYtG9giGTT8KnDmBfnREUyQ+iaBs9uux5Nj6c5XSGU3S31x3MerONIjZAo07ivRfw==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1785411951;
+	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 DKIM-Signature;
+	bh=uUZdKorYaV2prqOMcpeiMrN9iM2TCErtY1waeVEDxu0=;
+	b=CwOqdd77DpQ1vr2jMkl7VNOixDWPyrcwGEO9Xfe16zLIT05tE0AxO4eQBM7sp1FgWP69
+	 m2mkNfg9+6EiVCNYoBZ0GxF/v91Hx/jGGG/kbzJimo7meKayjcIFdondMS8Q151o9+MM/
+	 JGOn2RqK8jf3jpKR6svFW9x/H/Perik6Wu7Pg3pJdLIxcXjJvO+PZdveHbNdnz+/69swJ
+	 w9eb0YwnFiWY8y/7oQr6EGHPfFKt+D7P3UXFKVt6+UzelXmObgi9vOaCAjsbwSMJOKDO9
+	 DzFNjieGbWm9HyvJY+4SVuxNYH0Ae2GzIZwNuQNkmD7k07qG7dolWFI5+8c6mGZ1S0g==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=sKtswT6E;
+	dmarc=pass header.from=poczta.fm;
+	spf=pass smtp.mailfrom=poczta.fm;
+	arc=none smtp.remote-ip=217.74.67.75
+Received: from smtpo75.interia.pl (smtpo75.interia.pl [217.74.67.75])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 0F0211F000E9
+	for <syzbot@kernel.org>; Thu, 30 Jul 2026 11:45:48 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (1024-bit key, unprotected) header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=sKtswT6E
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 0F0211F000E9
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Thu, 30 Jul 2026 13:45:44 +0200 (CEST)
+Date: Thu, 30 Jul 2026 13:45:42 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC] 9p/trans_fd: enforce non-blocking I/O with
+ IOCB_NOWAIT
+Message-ID: <ams5Zg_d25P06k0J@nr200>
+References: <7b6e50bb-fee0-4489-a753-00087e6944ae@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Thu, 30 Jul 2026 10:54:04 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7b6e50bb-fee0-4489-a753-00087e6944ae@mail.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1785411946; bh=uUZdKorYaV2prqOMcpeiMrN9iM2TCErtY1waeVEDxu0=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=sKtswT6EZYleMY3BophpAHAaLbsNmtYdPdjC9cpyi+BmlqpMi1Q3pGaaUFgp9rArP
+	 new3KE4wN27PMMigo4xNoZtQcOs7mFCqRCSsibSaOpqQjU9IOKmyZyGNVp3A0RK3Wn
+	 xRiG95066cwKewmu/Opjxxyc8T4e2YypHvDWYCw8=
 
-A lockdep splat indicates a circular locking dependency involving
-`opts->dep_lock`, `inode_lock` (on configfs directories), and
-`gadget_subsys.su_mutex`:
+On cze 29, 2026 18:08, syzbot wrote:
+> The 9p filesystem's file descriptor transport uses workqueues to handle
+> asynchronous reading and writing. When a connection is established, it sets
+> the O_NONBLOCK flag on the provided file descriptors to prevent workers
+> from hanging on I/O. However, because the file descriptors are shared with
+> userspace, a malicious or buggy userspace program can clear the O_NONBLOCK
+> flag concurrently using fcntl(fd, F_SETFL, ...).
+> 
+> If userspace clears the O_NONBLOCK flag, the read worker (p9_read_work) can
+> block indefinitely in kernel_read() when reading from an empty pipe. When
+> the connection is subsequently destroyed, p9_conn_destroy() calls
+> cancel_work_sync(&m->rq), which hangs forever waiting for the blocked read
+> worker, eventually triggering the khungtaskd watchdog:
+> 
+> INFO: task blocked for more than 143 seconds.
+> Call Trace:
+>  <TASK>
+>  __schedule+0x17e7/0x5630 kernel/sched/core.c:7234
+>  schedule+0x164/0x2b0 kernel/sched/core.c:7326
+>  schedule_timeout+0xc0/0x2c0 kernel/time/sleep_timeout.c:75
+>  wait_for_completion+0x2ca/0x5e0 kernel/sched/completion.c:153
+>  __flush_work+0xa63/0xca0 kernel/workqueue.c:4374
+>  __cancel_work_sync+0xbe/0x110 kernel/workqueue.c:4494
+>  p9_conn_destroy net/9p/trans_fd.c:805 [inline]
+>  p9_fd_close+0x23c/0x3f0 net/9p/trans_fd.c:840
+>  p9_client_create+0x8a6/0xc60 net/9p/client.c:939
+>  v9fs_session_init+0x46/0xd40 fs/9p/v9fs.c:471
+>  v9fs_get_tree+0xbd/0xac0 fs/9p/vfs_super.c:97
+>  vfs_get_tree+0x92/0x2a0 fs/super.c:1694
+>  do_new_mount+0x319/0xdc0 fs/namespace.c:3841
+>  __se_sys_mount+0x31d/0x420 fs/namespace.c:4367
+>  do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>  </TASK>
+> 
+> To fix this, do not rely on file->f_flags & O_NONBLOCK to ensure
+> non-blocking I/O. Instead, replace kernel_read() and kernel_write() with
+> vfs_iocb_iter_read() and vfs_iocb_iter_write(), passing a kiocb with the
+> IOCB_NOWAIT flag set. This guarantees non-blocking behavior regardless of
+> the f_flags state, completely eliminating the race condition with
+> userspace.
+> 
+> Fixes: ef575281b21e ("9p/trans_fd: always use O_NONBLOCK read/write")
+> Assisted-by: Gemini:gemini-3.1-pro-preview best-expensive syzbot
+> Reported-by: syzbot+ed53e35a1e9dde289579@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=ed53e35a1e9dde289579
+> Link: https://syzkaller.appspot.com/ai_job?id=372eb0ab-345a-4053-96b2-027ab6aa8d21
+> To: "Dominique Martinet" <asmadeus@codewreck.org>
+> To: "Eric Van Hensbergen" <ericvh@kernel.org>
+> To: "Latchesar Ionkov" <lucho@ionkov.net>
+> To: <v9fs@lists.linux.dev>
+> Cc: <linux-kernel@vger.kernel.org>
+> Cc: "Christian Schoenebeck" <linux_oss@crudebyte.com>
+> 
+> ---
+> diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+> index eb685b52a..2b3a07b98 100644
+> --- a/net/9p/trans_fd.c
+> +++ b/net/9p/trans_fd.c
+> @@ -22,6 +22,7 @@
+>  #include <linux/uaccess.h>
+>  #include <linux/inet.h>
+>  #include <linux/file.h>
+> +#include <linux/fs.h>
+>  #include <linux/fs_context.h>
+>  #include <linux/slab.h>
+>  #include <linux/seq_file.h>
+> @@ -217,7 +218,9 @@ static int p9_fd_read(struct p9_client *client, void *v, int len)
+>  {
+>  	int ret;
+>  	struct p9_trans_fd *ts = NULL;
+> -	loff_t pos;
+> +	struct kiocb kiocb;
+> +	struct iov_iter iter;
+> +	struct kvec iov = { .iov_base = v, .iov_len = len };
 
-======================================================
-WARNING: possible circular locking dependency detected
-...
-syz.0.18/6129 is trying to acquire lock:
-ffff8881088cb220 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: inode_lock
-include/linux/fs.h:1024 [inline]
-ffff8881088cb220 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at:
-configfs_depend_item_unlocked+0x153/0x420 fs/configfs/dir.c:1259
+I see that __kernel_read() (called from kernel_read()) clamps the iov_len:
 
-but task is already holding lock:
-ffff888110c27110 (&opts->dep_lock){+.+.}-{4:4}, at:
-usbg_make_tpg+0x147/0x590 drivers/usb/gadget/function/f_tcm.c:1678
-...
-Chain exists of:
-  &sb->s_type->i_mutex_key#24 --> gadget_subsys.su_mutex -->
-  &opts->dep_lock
-======================================================
+	.iov_len	= min_t(size_t, count, MAX_RW_COUNT)
 
-The circular dependency is formed by three concurrent operations: 1.
-`usbg_make_tpg()` holds `opts->dep_lock` and calls
-`configfs_depend_item_unlocked()`, which acquires the configfs
-`inode_lock`. 2. `configfs_rmdir()` holds `inode_lock` and acquires
-`gadget_subsys.su_mutex`. 3. `configfs_mkdir()` holds
-`gadget_subsys.su_mutex` and calls `function_make()`, which eventually
-acquires `opts->dep_lock` via `tcm_set_name()`.
+Maybe it is worth doing the same in this patch?
 
-To break this cycle, we must drop `opts->dep_lock` before calling
-`configfs_depend_item_unlocked()`. However, doing so while still holding
-`tpg_instances_lock` creates a new circular dependency:
-`tpg_instances_lock` -> `inode_lock` -> `gadget_subsys.su_mutex` ->
-`func_lock` -> `tpg_instances_lock`.
+>  	if (client && client->status != Disconnected)
+>  		ts = client->trans;
+> @@ -225,11 +228,16 @@ static int p9_fd_read(struct p9_client *client, void *v, int len)
+>  	if (!ts)
+>  		return -EREMOTEIO;
+>  
+> -	if (!(ts->rd->f_flags & O_NONBLOCK))
+> -		p9_debug(P9_DEBUG_ERROR, "blocking read ...\n");
+> +	init_sync_kiocb(&kiocb, ts->rd);
+> +	kiocb.ki_pos = ts->rd->f_pos;
+> +	kiocb.ki_flags |= IOCB_NOWAIT;
+> +
+> +	iov_iter_kvec(&iter, ITER_DEST, &iov, 1, len);
+> +
+> +	ret = vfs_iocb_iter_read(ts->rd, &kiocb, &iter);
 
-To fix this completely, we must drop both `opts->dep_lock` and
-`tpg_instances_lock` before calling into the configfs or module subsystems
-(`configfs_depend_item_unlocked()` or `try_module_get()`).
+If the kernel_read() is replaced with vfs_iocb_iter_read() then accounting functions will not be
+called like it is with __kernel_read():
 
-Dropping `tpg_instances_lock` introduces two new challenges: 1.
-Concurrency: Another thread calling `usbg_make_tpg()` might find the same
-`tpg_instances[i]` and try to use it concurrently. 2. Use-after-free: If
-the user concurrently removes the function directory, `tcm_free_inst()`
-could be called, freeing the `opts` structure while we are still using it.
+	ret = file->f_op->read_iter(&kiocb, &iter);
+	if (ret > 0) {
+		...
+		add_rchar(current, ret);
+	}
+	inc_syscr(current);
 
-To solve these challenges safely, we introduce a boolean `in_use` flag in
-`struct tpg_instance` to mark an instance as "currently being configured".
-This prevents other threads from picking the same instance while we have
-dropped `tpg_instances_lock`. We also take a temporary reference to the
-configfs item (`config_item_get_unless_zero()`) while holding
-`tpg_instances_lock`. This guarantees that the `opts` structure cannot be
-freed by `tcm_free_inst()` while we are doing our setup outside the lock.
-The allocation of `tpg` is moved to the beginning of the function to
-simplify the error handling path. Finally, we apply the same
-reference-taking strategy in `usbg_drop_tpg()` to drop `tpg_instances_lock`
-before calling `configfs_undepend_item_unlocked()`.
+Maybe it would be better to duplicated what kernel_read()/__kernel_read() does but with IOCB_NOWAIT
+set, even if that brings a bit of code duplication?
 
-Fixes: 4bb8548df632 ("usb: gadget: f_tcm: add configfs support")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+c75a7db5ca6ae96ed2d4@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=c75a7db5ca6ae96ed2d4
-Link: https://syzkaller.appspot.com/ai_job?id=3f265cbf-27c7-4edc-a58e-cab50809748f
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-To: "Andrzej Pietrasiewicz" <andrzej.p@samsung.com>
-Cc: "Jiasheng Jiang" <jiashengjiangcool@gmail.com>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Cen Zhang" <zzzccc427@gmail.com>
+I've done some tests (num of IOPS, mean latency for READ and WRITE) with fio to benchmark this fix
+and I see 5% to 10% degradation in performance with this patch.
 
----
-diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
-index b3fa5a17f..6e195834a 100644
---- a/drivers/usb/gadget/function/f_tcm.c
-+++ b/drivers/usb/gadget/function/f_tcm.c
-@@ -31,6 +31,7 @@
- struct tpg_instance {
- 	struct usb_function_instance	*func_inst;
- 	struct usbg_tpg			*tpg;
-+	bool				in_use;
- };
- 
- static struct tpg_instance tpg_instances[TPG_INSTANCES];
-@@ -1665,72 +1666,89 @@ static struct se_portal_group *usbg_make_tpg(struct se_wwn *wwn,
- 		return ERR_PTR(-EINVAL);
- 	if (kstrtou16(name + 5, 0, &tpgt))
- 		return ERR_PTR(-EINVAL);
-+
-+	tpg = kzalloc_obj(struct usbg_tpg);
-+	if (!tpg)
-+		return ERR_PTR(-ENOMEM);
-+	mutex_init(&tpg->tpg_mutex);
-+	atomic_set(&tpg->tpg_port_count, 0);
-+	tpg->workqueue = alloc_workqueue("tcm_usb_gadget",
-+					 WQ_UNBOUND, WQ_UNBOUND_MAX_ACTIVE);
-+	if (!tpg->workqueue) {
-+		kfree(tpg);
-+		return ERR_PTR(-ENOMEM);
-+	}
-+
-+	tpg->tport = tport;
-+	tpg->tport_tpgt = tpgt;
-+
- 	ret = -ENODEV;
- 	mutex_lock(&tpg_instances_lock);
--	for (i = 0; i < TPG_INSTANCES; ++i)
--		if (tpg_instances[i].func_inst && !tpg_instances[i].tpg)
--			break;
--	if (i == TPG_INSTANCES)
--		goto unlock_inst;
-+	for (i = 0; i < TPG_INSTANCES; ++i) {
-+		if (tpg_instances[i].func_inst && !tpg_instances[i].tpg &&
-+		    !tpg_instances[i].in_use) {
-+			opts = container_of(tpg_instances[i].func_inst,
-+					    struct f_tcm_opts, func_inst);
-+			if (config_item_get_unless_zero(&opts->func_inst.group.cg_item))
-+				break;
-+		}
-+	}
-+	if (i == TPG_INSTANCES) {
-+		mutex_unlock(&tpg_instances_lock);
-+		goto free_workqueue;
-+	}
-+
-+	tpg_instances[i].in_use = true;
-+	mutex_unlock(&tpg_instances_lock);
- 
--	opts = container_of(tpg_instances[i].func_inst, struct f_tcm_opts,
--		func_inst);
- 	mutex_lock(&opts->dep_lock);
--	if (!opts->ready)
--		goto unlock_dep;
-+	if (!opts->ready) {
-+		mutex_unlock(&opts->dep_lock);
-+		goto clear_in_use;
-+	}
-+	mutex_unlock(&opts->dep_lock);
- 
- 	if (opts->has_dep) {
- 		if (!try_module_get(opts->dependent))
--			goto unlock_dep;
-+			goto clear_in_use;
- 	} else {
- 		ret = configfs_depend_item_unlocked(
- 			wwn->wwn_group.cg_subsys,
- 			&opts->func_inst.group.cg_item);
- 		if (ret)
--			goto unlock_dep;
-+			goto clear_in_use;
- 	}
- 
--	tpg = kzalloc_obj(struct usbg_tpg);
--	ret = -ENOMEM;
--	if (!tpg)
--		goto unref_dep;
--	mutex_init(&tpg->tpg_mutex);
--	atomic_set(&tpg->tpg_port_count, 0);
--	tpg->workqueue = alloc_workqueue("tcm_usb_gadget",
--					 WQ_UNBOUND, WQ_UNBOUND_MAX_ACTIVE);
--	if (!tpg->workqueue)
--		goto free_tpg;
--
--	tpg->tport = tport;
--	tpg->tport_tpgt = tpgt;
--
- 	/*
- 	 * SPC doesn't assign a protocol identifier for USB-SCSI, so we
- 	 * pretend to be SAS..
- 	 */
- 	ret = core_tpg_register(wwn, &tpg->se_tpg, SCSI_PROTOCOL_SAS);
- 	if (ret < 0)
--		goto free_workqueue;
-+		goto unref_dep;
- 
-+	mutex_lock(&tpg_instances_lock);
- 	tpg_instances[i].tpg = tpg;
- 	tpg->fi = tpg_instances[i].func_inst;
--	mutex_unlock(&opts->dep_lock);
-+	tpg_instances[i].in_use = false;
- 	mutex_unlock(&tpg_instances_lock);
-+
-+	config_item_put(&opts->func_inst.group.cg_item);
- 	return &tpg->se_tpg;
- 
--free_workqueue:
--	destroy_workqueue(tpg->workqueue);
--free_tpg:
--	kfree(tpg);
- unref_dep:
- 	if (opts->has_dep)
- 		module_put(opts->dependent);
- 	else
- 		configfs_undepend_item_unlocked(&opts->func_inst.group.cg_item);
--unlock_dep:
--	mutex_unlock(&opts->dep_lock);
--unlock_inst:
-+clear_in_use:
-+	mutex_lock(&tpg_instances_lock);
-+	tpg_instances[i].in_use = false;
- 	mutex_unlock(&tpg_instances_lock);
-+	config_item_put(&opts->func_inst.group.cg_item);
-+free_workqueue:
-+	destroy_workqueue(tpg->workqueue);
-+	kfree(tpg);
- 
- 	return ERR_PTR(ret);
- }
-@@ -1755,16 +1773,21 @@ static void usbg_drop_tpg(struct se_portal_group *se_tpg)
- 	if (i < TPG_INSTANCES) {
- 		tpg_instances[i].tpg = NULL;
- 		opts = container_of(tpg_instances[i].func_inst,
--			struct f_tcm_opts, func_inst);
--		mutex_lock(&opts->dep_lock);
-+				    struct f_tcm_opts, func_inst);
-+		config_item_get(&opts->func_inst.group.cg_item);
-+	} else {
-+		opts = NULL;
-+	}
-+	mutex_unlock(&tpg_instances_lock);
-+
-+	if (opts) {
- 		if (opts->has_dep)
- 			module_put(opts->dependent);
- 		else
- 			configfs_undepend_item_unlocked(
- 				&opts->func_inst.group.cg_item);
--		mutex_unlock(&opts->dep_lock);
-+		config_item_put(&opts->func_inst.group.cg_item);
- 	}
--	mutex_unlock(&tpg_instances_lock);
- 
- 	kfree(tpg);
- }
+> +	if (ret > 0)
+> +		ts->rd->f_pos = kiocb.ki_pos;
+>  
+> -	pos = ts->rd->f_pos;
+> -	ret = kernel_read(ts->rd, v, len, &pos);
+>  	if (ret <= 0 && ret != -ERESTARTSYS && ret != -EAGAIN)
+>  		client->status = Disconnected;
+>  	return ret;
+> @@ -385,6 +393,9 @@ static int p9_fd_write(struct p9_client *client, void *v, int len)
+>  {
+>  	ssize_t ret;
+>  	struct p9_trans_fd *ts = NULL;
+> +	struct kiocb kiocb;
+> +	struct iov_iter iter;
+> +	struct kvec iov = { .iov_base = v, .iov_len = len };
 
+ditto
 
-base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
+>  	if (client && client->status != Disconnected)
+>  		ts = client->trans;
+> @@ -392,10 +403,16 @@ static int p9_fd_write(struct p9_client *client, void *v, int len)
+>  	if (!ts)
+>  		return -EREMOTEIO;
+>  
+> -	if (!(ts->wr->f_flags & O_NONBLOCK))
+> -		p9_debug(P9_DEBUG_ERROR, "blocking write ...\n");
+> +	init_sync_kiocb(&kiocb, ts->wr);
+> +	kiocb.ki_pos = ts->wr->f_pos;
+> +	kiocb.ki_flags |= IOCB_NOWAIT;
+> +
+> +	iov_iter_kvec(&iter, ITER_SOURCE, &iov, 1, len);
+> +
+> +	ret = vfs_iocb_iter_write(ts->wr, &kiocb, &iter);
+> +	if (ret > 0)
+> +		ts->wr->f_pos = kiocb.ki_pos;
+
+ditto
+
+>  
+> -	ret = kernel_write(ts->wr, v, len, &ts->wr->f_pos);
+>  	if (ret <= 0 && ret != -ERESTARTSYS && ret != -EAGAIN)
+>  		client->status = Disconnected;
+>  	return ret;
+> @@ -728,21 +745,11 @@ static int p9_fd_open(struct p9_client *client, int rfd, int wfd)
+>  		goto out_free_ts;
+>  	if (!(ts->rd->f_mode & FMODE_READ))
+>  		goto out_put_rd;
+> -	/* Prevent workers from hanging on IO when fd is a pipe.
+> -	 * It's technically possible for userspace or concurrent mounts to
+> -	 * modify this flag concurrently, which will likely result in a
+> -	 * broken filesystem. However, just having bad flags here should
+> -	 * not crash the kernel or cause any other sort of bug, so mark this
+> -	 * particular data race as intentional so that tooling (like KCSAN)
+> -	 * can allow it and detect further problems.
+> -	 */
+> -	data_race(ts->rd->f_flags |= O_NONBLOCK);
+>  	ts->wr = fget(wfd);
+>  	if (!ts->wr)
+>  		goto out_put_rd;
+>  	if (!(ts->wr->f_mode & FMODE_WRITE))
+>  		goto out_put_wr;
+> -	data_race(ts->wr->f_flags |= O_NONBLOCK);
+>  
+>  	client->trans = ts;
+>  	client->status = Connected;
+> @@ -784,8 +791,6 @@ static int p9_socket_open(struct p9_client *client, struct socket *csocket)
+>  	client->trans = p;
+>  	client->status = Connected;
+>  
+> -	p->rd->f_flags |= O_NONBLOCK;
+> -
+>  	p9_conn_create(client);
+>  	return 0;
+>  }
+> 
+> 
+> base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
+
 -- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Slawomir Stepien
