@@ -1,518 +1,183 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04FA438C438;
-	Thu, 30 Jul 2026 07:42:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 083733914FD
+	for <syzbot@lists.linux.dev>; Thu, 30 Jul 2026 07:43:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785397343; cv=none; b=e2yijy6i3YLaOq2P8c33ibY5RCkQ7UENAPAikEM3KGaRDa7gWLsWPCxBfzxsbk25g4vc6+UnE30CGQdH9H/cMS+I34cgcobtFzdA0BPffTDOAFXVAyhXHiZNkcAxYAyLTPXIVQFDHjdxTTlgFHssKFVjehxuc+0AqAdeVrtLC7c=
+	t=1785397410; cv=none; b=NLXasQhP++RNe/cpn0+NV0qwgupIYYvg2jnSqXkANFuN3Ak4rZwPKc5e0AVJMIyPzAcPvl61YqfdnpYjeNTgEGsdP8m0xQ/Nd/plc4wPSimi6zdbbXqY3Gq62czXPjHa9cXtn3+sUymsJokdHgFPSaKqiUYPGrgM0R/uht2rjrI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785397343; c=relaxed/simple;
-	bh=HCECpUIWcqr9dJfpq2Ab8of894A6o7IKDSkgffWfMdo=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=GKgTVZprOLu/+iBa5+OmAXXYFkPwHDyWJm473MBPZ7t2cmivhRMRjWcGs5cLzeWAaocRfmmDMk5P0RO/gzPjxVZzp2qEABxdoOH8oyj6T0X0sQl1gr3PsVYF5dJSqC5TfG6AruLhqzR39bn5aqwq6RLpARd11Hf3PIKNoxF4gHs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZBsHIaTo; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785397410; c=relaxed/simple;
+	bh=7UOgXUTiPjdGkbEnW/pIVJ0FyYaOvTdAsAB+oZ3ybFE=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:Content-Type:
+	 MIME-Version; b=RiLaK/bFa358rjVNQUf7AUS+LazhP2FI52b9a1R+zvaDNHQ3fbkPSSUhPyE/6mKOR6/49vl2GBg9DBuZR+AfisoDKLrHN3eUkP2SesnEkm7TLGTgO9S6nrBHbVsM6TDGOGJw94rRkNKnl7RL9v0KJpT6wc29xqqXNuUQYTKxyPQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=casper.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=ExSX097P; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=casper.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZBsHIaTo"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 2532A1F000E9;
-	Thu, 30 Jul 2026 07:42:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785397341;
-	bh=vuDgfyERzul6SxN/KQFxKKPcYWZny8R4SyWvS+01V3c=;
-	h=From:To:Cc:Subject:Date;
-	b=ZBsHIaTo0ZXDSHv+xgxRnrG9+IFImofXfyHKe7ZFbrnQI+RZHzAJ1GVDLje7+isl9
-	 7D8fj5AvykXRJFGdBqx+yOJ6gBJJtNKyb12c/HNOPAamhXZRUp60N2Ox167w/vFj1a
-	 zLdguGzYVLshnCK32Mz9ymPjWk9ZcLGaeagRKa5EdWEGVVO3i+ILFldrev5plIPsxu
-	 37wjB6kQEIMHyZ5/39Ow60qB9x7h1Ud8S/+Y8/ChStBBPcRy08M3QvZ43ODuviKUhY
-	 Eg2lOh9d6/tp9k0Ym3M1xWGvZAVA2I7sBQUVvC/qSmA4CVpv5y27QrQNpOByjo8dY8
-	 YvAH52a+7KxaA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Krystian Kaniewski <krystianmkaniewski@gmail.com>, "Joel Becker" <jlbec@evilplan.org>, "Joseph Qi" <joseph.qi@linux.alibaba.com>, "Mark Fasheh" <mark@fasheh.com>, <ocfs2-devel@lists.linux.dev>
-Cc: linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Subject: [PATCH] ocfs2: fix circular locking dependency in ocfs2_init_acl()
-Message-ID: <4094de06-9b69-4174-b2ee-08126dffc693@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ExSX097P"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=MIME-Version:Content-Type:In-Reply-To:
+	Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
+	Content-ID:Content-Description:References;
+	bh=qVAt+mjYa9YYTSKqDt69Up7FDRQ03VR0omtuKdiLJ3E=; b=ExSX097PKx4aVZ4UECS/MVBE7m
+	PmxEZ8nMsGTOWPslRE5nIErF6zCQYkOaO537WkyK/jj7Zqv88SIPymumY5+hiCQR110U2xLcUKdWI
+	uZEN5DxCpYLgTgz8QQwi8IJCUXijISi69w4VqjrqQ/1qbgogQlo1sFBLicX2cbTJJGkoPxhGi0NCa
+	U+kja2FXgXCEC8A7SMLYqQ1rWCpb6YIFc1gjZFxewfeTEVsDjhtlAeLYyQUu7F8w3LrD10Hvn0wPC
+	Gevn06D9TKNjSUXpHuJEL6Py8wnsDM/RtVFIikZn0J0hhCWZI8VvMXnECTbgkgke5VE5UBS/mHfTI
+	biDliHdg==;
+Received: from [2001:8b0:10b:5:a217:c6b3:eeea:376f] (helo=u09cd745991455d.ant.amazon.com)
+	by casper.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1wpLQC-00000008DMz-0zrA;
+	Thu, 30 Jul 2026 07:43:16 +0000
+Message-ID: <b5e3e5c81ebcbf4f6a793b89463e4979fc7cba4d.camel@infradead.org>
+Subject: Re: [moderation/CI] Re: Cleaning up the KVM clock mess
+From: David Woodhouse <dwmw2@infradead.org>
+To: syzbot ci <syzbot+ci6e398c6b63e189f8@syzkaller.appspotmail.com>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Date: Thu, 30 Jul 2026 08:43:15 +0100
+In-Reply-To: <6a6a702c.57649fcc.360844.0005.GAE@google.com>
+Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
+	boundary="=-zbOkO5jY2jsbLOgGcc1i"
+User-Agent: Evolution 3.60.3-0ubuntu1~ppa9~24.04 
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Thu, 30 Jul 2026 07:42:21 +0000 (UTC)
-
-From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-
-A lockdep warning indicates a circular locking dependency between
-`&oi->ip_xattr_sem` and `&journal->j_trans_barrier`:
-
-WARNING: possible circular locking dependency detected
-is trying to acquire lock:
- (&oi->ip_xattr_sem){++++}-{4:4}, at: ocfs2_init_acl+0x2fd/0x7e0
- fs/ocfs2/acl.c:367
-
-but task is already holding lock:
- (&journal->j_trans_barrier){.+.+}-{4:4}, at: ocfs2_start_trans+0x3ab/0x700
- fs/ocfs2/journal.c:369
-
-The deadlock involves two code paths: Path 1 (setxattr) where
-`ocfs2_xattr_set()` acquires `ip_xattr_sem` (write) and then starts a
-transaction, which acquires `j_trans_barrier` (read); and Path 2
-(mkdir/mknod) where `ocfs2_mknod()` starts a transaction (`j_trans_barrier`
-read) and then calls `ocfs2_init_acl()`, which attempts to acquire
-`ip_xattr_sem` (read) on the parent directory to retrieve the default ACL.
-
-Because rw_semaphores are subject to writer priority, a pending writer on
-`j_trans_barrier` (e.g., the journal commit thread) can cause Path 1 to
-block, while Path 2 is blocked waiting for Path 1 to release
-`ip_xattr_sem`.
-
-The patch fixes the lock ordering by precomputing the ACL state before
-starting the OCFS2 transaction, while preserving POSIX ACL storage
-semantics and the existing inode/security initialization order. By reading
-the parent directory's default ACL and preparing the new inode's ACLs
-outside the transaction, `ip_xattr_sem` is always acquired before
-`j_trans_barrier`.
-
-`struct ocfs2_acl_state` encapsulates the prepared ACL state, while
-`ocfs2_acl_init_prepare()` and `ocfs2_acl_init_release()` avoid code
-duplication between `ocfs2_mknod()` and `ocfs2_init_security_and_acl()`.
-`ocfs2_calc_xattr_init()` and `ocfs2_init_acl()` use this precomputed
-state, removing internal `ip_xattr_sem` acquisition and redundant disk
-reads.
-
-Additionally, remove the `ip_xattr_sem` acquisition from
-`ocfs2_xattr_set_handle()`. This function is only used while initializing a
-new inode that has not yet been inserted into the inode hash or attached to
-a dentry, meaning there is no risk of concurrent access and the lock is
-unnecessary.
-
-Fixes: 16c8d569f570 ("ocfs2/acl: use 'ip_xattr_sem' to protect getting extended attribute")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+4007ab5229e732466d9f@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=4007ab5229e732466d9f
-Link: https://syzkaller.appspot.com/ai_job?id=cc75363d-c672-499e-8fc5-44bcdc1cee39
-Signed-off-by: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-
----
-diff --git a/fs/ocfs2/acl.c b/fs/ocfs2/acl.c
-index af1e2cedb..090ec60fb 100644
---- a/fs/ocfs2/acl.c
-+++ b/fs/ocfs2/acl.c
-@@ -110,8 +110,7 @@ static void *ocfs2_acl_to_xattr(const struct posix_acl *acl, size_t *size)
- 	return ocfs2_acl;
- }
- 
--static struct posix_acl *ocfs2_get_acl_nolock(struct inode *inode,
--					      int type,
-+static struct posix_acl *ocfs2_get_acl_nolock(struct inode *inode, int type,
- 					      struct buffer_head *di_bh)
- {
- 	int name_index;
-@@ -349,63 +348,105 @@ int ocfs2_acl_chmod(struct inode *inode, struct buffer_head *bh)
-  * Initialize the ACLs of a new inode. If parent directory has default ACL,
-  * then clone to new inode. Called from ocfs2_mknod.
-  */
--int ocfs2_init_acl(handle_t *handle,
--		   struct inode *inode,
--		   struct inode *dir,
--		   struct buffer_head *di_bh,
--		   struct buffer_head *dir_bh,
--		   struct ocfs2_alloc_context *meta_ac,
--		   struct ocfs2_alloc_context *data_ac)
-+void ocfs2_acl_init_release(struct ocfs2_acl_state *state)
-+{
-+	posix_acl_release(state->default_acl);
-+	posix_acl_release(state->acl);
-+	state->default_acl = NULL;
-+	state->acl = NULL;
-+}
-+
-+int ocfs2_acl_init_prepare(struct inode *inode, struct inode *dir,
-+			   struct buffer_head *dir_bh,
-+			   struct ocfs2_acl_state *state)
- {
- 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
--	struct posix_acl *acl = NULL;
--	int ret = 0, ret2;
--	umode_t mode;
--
--	if (!S_ISLNK(inode->i_mode)) {
--		if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
--			down_read(&OCFS2_I(dir)->ip_xattr_sem);
--			acl = ocfs2_get_acl_nolock(dir, ACL_TYPE_DEFAULT,
--						   dir_bh);
--			up_read(&OCFS2_I(dir)->ip_xattr_sem);
--			if (IS_ERR(acl))
--				return PTR_ERR(acl);
-+	int ret = 0;
-+
-+	state->default_acl = NULL;
-+	state->acl = NULL;
-+	state->mode = inode->i_mode;
-+
-+	if (S_ISLNK(inode->i_mode))
-+		return 0;
-+
-+	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-+		down_read(&OCFS2_I(dir)->ip_xattr_sem);
-+		state->default_acl =
-+			ocfs2_get_acl_nolock(dir, ACL_TYPE_DEFAULT, dir_bh);
-+		up_read(&OCFS2_I(dir)->ip_xattr_sem);
-+		if (IS_ERR(state->default_acl)) {
-+			ret = PTR_ERR(state->default_acl);
-+			state->default_acl = NULL;
-+			return ret;
- 		}
--		if (!acl) {
--			mode = inode->i_mode & ~current_umask();
--			ret = ocfs2_acl_set_mode(inode, di_bh, handle, mode);
--			if (ret) {
--				mlog_errno(ret);
-+		if (state->default_acl) {
-+			state->acl = posix_acl_dup(state->default_acl);
-+			if (!state->acl) {
-+				ret = -ENOMEM;
- 				goto cleanup;
- 			}
-+			ret = __posix_acl_create(&state->acl, GFP_NOFS,
-+						 &state->mode);
-+			if (ret < 0)
-+				goto cleanup;
-+			if (ret == 0) {
-+				posix_acl_release(state->acl);
-+				state->acl = NULL;
-+			}
-+			if (!S_ISDIR(inode->i_mode)) {
-+				posix_acl_release(state->default_acl);
-+				state->default_acl = NULL;
-+			}
-+		} else {
-+			state->mode &= ~current_umask();
- 		}
-+	} else {
-+		state->mode &= ~current_umask();
- 	}
--	if ((osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) && acl) {
--		if (S_ISDIR(inode->i_mode)) {
-+
-+	return 0;
-+cleanup:
-+	ocfs2_acl_init_release(state);
-+	return ret;
-+}
-+
-+int ocfs2_init_acl(handle_t *handle, struct inode *inode,
-+		   struct buffer_head *di_bh,
-+		   struct ocfs2_alloc_context *meta_ac,
-+		   struct ocfs2_alloc_context *data_ac,
-+		   struct ocfs2_acl_state *state)
-+{
-+	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
-+	int ret = 0;
-+
-+	if (S_ISLNK(inode->i_mode))
-+		return 0;
-+
-+	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-+		if (S_ISDIR(inode->i_mode) && state->default_acl) {
- 			ret = ocfs2_set_acl(handle, inode, di_bh,
--					    ACL_TYPE_DEFAULT, acl,
--					    meta_ac, data_ac);
-+					    ACL_TYPE_DEFAULT,
-+					    state->default_acl, meta_ac,
-+					    data_ac);
- 			if (ret)
--				goto cleanup;
-+				return ret;
- 		}
--		mode = inode->i_mode;
--		ret = __posix_acl_create(&acl, GFP_NOFS, &mode);
--		if (ret < 0)
--			return ret;
-+	}
- 
--		ret2 = ocfs2_acl_set_mode(inode, di_bh, handle, mode);
--		if (ret2) {
--			mlog_errno(ret2);
--			ret = ret2;
--			goto cleanup;
--		}
--		if (ret > 0) {
--			ret = ocfs2_set_acl(handle, inode,
--					    di_bh, ACL_TYPE_ACCESS,
--					    acl, meta_ac, data_ac);
-+	ret = ocfs2_acl_set_mode(inode, di_bh, handle, state->mode);
-+	if (ret) {
-+		mlog_errno(ret);
-+		return ret;
-+	}
-+
-+	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-+		if (state->acl) {
-+			ret = ocfs2_set_acl(handle, inode, di_bh,
-+					    ACL_TYPE_ACCESS, state->acl,
-+					    meta_ac, data_ac);
- 		}
- 	}
--cleanup:
--	posix_acl_release(acl);
-+
- 	return ret;
- }
-diff --git a/fs/ocfs2/acl.h b/fs/ocfs2/acl.h
-index 667c6f03f..a91f9ce27 100644
---- a/fs/ocfs2/acl.h
-+++ b/fs/ocfs2/acl.h
-@@ -20,9 +20,20 @@ struct posix_acl *ocfs2_iop_get_acl(struct inode *inode, int type, bool rcu);
- int ocfs2_iop_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
- 		      struct posix_acl *acl, int type);
- extern int ocfs2_acl_chmod(struct inode *, struct buffer_head *);
--extern int ocfs2_init_acl(handle_t *, struct inode *, struct inode *,
--			  struct buffer_head *, struct buffer_head *,
--			  struct ocfs2_alloc_context *,
--			  struct ocfs2_alloc_context *);
-+struct ocfs2_acl_state {
-+	struct posix_acl *default_acl;
-+	struct posix_acl *acl;
-+	umode_t mode;
-+};
-+
-+int ocfs2_acl_init_prepare(struct inode *inode, struct inode *dir,
-+			   struct buffer_head *dir_bh,
-+			   struct ocfs2_acl_state *state);
-+void ocfs2_acl_init_release(struct ocfs2_acl_state *state);
-+int ocfs2_init_acl(handle_t *handle, struct inode *inode,
-+		   struct buffer_head *di_bh,
-+		   struct ocfs2_alloc_context *meta_ac,
-+		   struct ocfs2_alloc_context *data_ac,
-+		   struct ocfs2_acl_state *state);
- 
- #endif /* OCFS2_ACL_H */
-diff --git a/fs/ocfs2/namei.c b/fs/ocfs2/namei.c
-index 1277666c7..ea37a5058 100644
---- a/fs/ocfs2/namei.c
-+++ b/fs/ocfs2/namei.c
-@@ -256,6 +256,7 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
- 	sigset_t oldset;
- 	int did_block_signals = 0;
- 	struct ocfs2_dentry_lock *dl = NULL;
-+	struct ocfs2_acl_state acl_state = { 0 };
- 
- 	trace_ocfs2_mknod(dir, dentry, dentry->d_name.len, dentry->d_name.name,
- 			  (unsigned long long)OCFS2_I(dir)->ip_blkno,
-@@ -330,10 +331,14 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
- 		}
- 	}
- 
-+	status = ocfs2_acl_init_prepare(inode, dir, parent_fe_bh, &acl_state);
-+	if (status < 0)
-+		goto leave;
-+
- 	/* calculate meta data/clusters for setting security and acl xattr */
--	status = ocfs2_calc_xattr_init(dir, parent_fe_bh, mode,
--				       &si, &want_clusters,
--				       &xattr_credits, &want_meta);
-+	status = ocfs2_calc_xattr_init(dir, mode, &si, &want_clusters,
-+				       &xattr_credits, &want_meta,
-+				       &acl_state);
- 	if (status < 0) {
- 		mlog_errno(status);
- 		goto leave;
-@@ -411,8 +416,8 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
- 		inc_nlink(dir);
- 	}
- 
--	status = ocfs2_init_acl(handle, inode, dir, new_fe_bh, parent_fe_bh,
--			 meta_ac, data_ac);
-+	status = ocfs2_init_acl(handle, inode, new_fe_bh, meta_ac, data_ac,
-+				&acl_state);
- 
- 	if (status < 0) {
- 		mlog_errno(status);
-@@ -477,6 +482,8 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
- 	brelse(parent_fe_bh);
- 	kfree(si.value);
- 
-+	ocfs2_acl_init_release(&acl_state);
-+
- 	ocfs2_free_dir_lookup_result(&lookup);
- 
- 	if (inode_ac)
-diff --git a/fs/ocfs2/xattr.c b/fs/ocfs2/xattr.c
-index fcddd3c13..86f029368 100644
---- a/fs/ocfs2/xattr.c
-+++ b/fs/ocfs2/xattr.c
-@@ -611,13 +611,10 @@ int ocfs2_calc_security_init(struct inode *dir,
- 	return ret;
- }
- 
--int ocfs2_calc_xattr_init(struct inode *dir,
--			  struct buffer_head *dir_bh,
--			  umode_t mode,
-+int ocfs2_calc_xattr_init(struct inode *dir, umode_t mode,
- 			  struct ocfs2_security_xattr_info *si,
--			  int *want_clusters,
--			  int *xattr_credits,
--			  int *want_meta)
-+			  int *want_clusters, int *xattr_credits,
-+			  int *want_meta, struct ocfs2_acl_state *acl_state)
- {
- 	int ret = 0;
- 	struct ocfs2_super *osb = OCFS2_SB(dir->i_sb);
-@@ -628,19 +625,15 @@ int ocfs2_calc_xattr_init(struct inode *dir,
- 						     si->value_len);
- 
- 	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
--		down_read(&OCFS2_I(dir)->ip_xattr_sem);
--		acl_len = ocfs2_xattr_get_nolock(dir, dir_bh,
--					OCFS2_XATTR_INDEX_POSIX_ACL_DEFAULT,
--					"", NULL, 0);
--		up_read(&OCFS2_I(dir)->ip_xattr_sem);
--		if (acl_len > 0) {
--			a_size = ocfs2_xattr_entry_real_size(0, acl_len);
--			if (S_ISDIR(mode))
--				a_size <<= 1;
--		} else if (acl_len != 0 && acl_len != -ENODATA) {
--			ret = acl_len;
--			mlog_errno(ret);
--			return ret;
-+		if (acl_state->default_acl && S_ISDIR(mode)) {
-+			acl_len = acl_state->default_acl->a_count *
-+				  sizeof(struct ocfs2_acl_entry);
-+			a_size += ocfs2_xattr_entry_real_size(0, acl_len);
-+		}
-+		if (acl_state->acl) {
-+			acl_len = acl_state->acl->a_count *
-+				  sizeof(struct ocfs2_acl_entry);
-+			a_size += ocfs2_xattr_entry_real_size(0, acl_len);
- 		}
- 	}
- 
-@@ -683,14 +676,33 @@ int ocfs2_calc_xattr_init(struct inode *dir,
- 							   new_clusters);
- 		*want_clusters += new_clusters;
- 	}
--	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL &&
--	    acl_len > OCFS2_XATTR_INLINE_SIZE) {
--		/* for directory, it has DEFAULT and ACCESS two types of acls */
--		new_clusters = (S_ISDIR(mode) ? 2 : 1) *
--				ocfs2_clusters_for_bytes(dir->i_sb, acl_len);
--		*xattr_credits += ocfs2_clusters_to_blocks(dir->i_sb,
--							   new_clusters);
--		*want_clusters += new_clusters;
-+	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
-+		if (acl_state->default_acl && S_ISDIR(mode)) {
-+			acl_len = acl_state->default_acl->a_count *
-+				  sizeof(struct ocfs2_acl_entry);
-+			if (acl_len > OCFS2_XATTR_INLINE_SIZE) {
-+				new_clusters =
-+					ocfs2_clusters_for_bytes(dir->i_sb,
-+								 acl_len);
-+				*xattr_credits +=
-+					ocfs2_clusters_to_blocks(dir->i_sb,
-+								 new_clusters);
-+				*want_clusters += new_clusters;
-+			}
-+		}
-+		if (acl_state->acl) {
-+			acl_len = acl_state->acl->a_count *
-+				  sizeof(struct ocfs2_acl_entry);
-+			if (acl_len > OCFS2_XATTR_INLINE_SIZE) {
-+				new_clusters =
-+					ocfs2_clusters_for_bytes(dir->i_sb,
-+								 acl_len);
-+				*xattr_credits +=
-+					ocfs2_clusters_to_blocks(dir->i_sb,
-+								 new_clusters);
-+				*want_clusters += new_clusters;
-+			}
-+		}
- 	}
- 
- 	return ret;
-@@ -3483,9 +3495,10 @@ static int __ocfs2_xattr_set_handle(struct inode *inode,
- }
- 
- /*
-- * This function only called duing creating inode
-- * for init security/acl xattrs of the new inode.
-- * All transanction credits have been reserved in mknod.
-+ * This helper is only for setting initial ACL or security xattrs on an inode
-+ * that is still unpublished, unhashed, and unattached to a dentry.
-+ * Ordinary xattr updates must use ocfs2_xattr_set().
-+ * All transaction credits have been reserved in mknod or symlink callers.
-  */
- int ocfs2_xattr_set_handle(handle_t *handle,
- 			   struct inode *inode,
-@@ -3542,8 +3555,6 @@ int ocfs2_xattr_set_handle(handle_t *handle,
- 	xis.inode_bh = xbs.inode_bh = di_bh;
- 	di = (struct ocfs2_dinode *)di_bh->b_data;
- 
--	down_write(&OCFS2_I(inode)->ip_xattr_sem);
--
- 	ret = ocfs2_xattr_ibody_find(inode, name_index, name, &xis);
- 	if (ret)
- 		goto cleanup;
-@@ -3556,7 +3567,6 @@ int ocfs2_xattr_set_handle(handle_t *handle,
- 	ret = __ocfs2_xattr_set_handle(inode, di, &xi, &xis, &xbs, &ctxt);
- 
- cleanup:
--	up_write(&OCFS2_I(inode)->ip_xattr_sem);
- 	brelse(xbs.xattr_bh);
- 	ocfs2_xattr_bucket_free(xbs.bucket);
- 
-@@ -7257,6 +7267,7 @@ int ocfs2_init_security_and_acl(struct inode *dir,
- {
- 	int ret = 0;
- 	struct buffer_head *dir_bh = NULL;
-+	struct ocfs2_acl_state acl_state = { 0 };
- 
- 	ret = ocfs2_init_security_get(inode, dir, qstr, NULL);
- 	if (ret) {
-@@ -7269,10 +7280,17 @@ int ocfs2_init_security_and_acl(struct inode *dir,
- 		mlog_errno(ret);
- 		goto leave;
- 	}
--	ret = ocfs2_init_acl(NULL, inode, dir, NULL, dir_bh, NULL, NULL);
-+
-+	ret = ocfs2_acl_init_prepare(inode, dir, dir_bh, &acl_state);
-+	if (ret)
-+		goto unlock;
-+
-+	ret = ocfs2_init_acl(NULL, inode, NULL, NULL, NULL, &acl_state);
- 	if (ret)
- 		mlog_errno(ret);
- 
-+unlock:
-+	ocfs2_acl_init_release(&acl_state);
- 	ocfs2_inode_unlock(dir, 0);
- 	brelse(dir_bh);
- leave:
-diff --git a/fs/ocfs2/xattr.h b/fs/ocfs2/xattr.h
-index 65e9aa743..5cdd6c6b4 100644
---- a/fs/ocfs2/xattr.h
-+++ b/fs/ocfs2/xattr.h
-@@ -55,9 +55,12 @@ int ocfs2_init_security_set(handle_t *, struct inode *,
- int ocfs2_calc_security_init(struct inode *,
- 			     struct ocfs2_security_xattr_info *,
- 			     int *, int *, struct ocfs2_alloc_context **);
--int ocfs2_calc_xattr_init(struct inode *, struct buffer_head *,
--			  umode_t, struct ocfs2_security_xattr_info *,
--			  int *, int *, int *);
-+
-+struct ocfs2_acl_state;
-+int ocfs2_calc_xattr_init(struct inode *dir, umode_t mode,
-+			  struct ocfs2_security_xattr_info *si,
-+			  int *want_clusters, int *xattr_credits,
-+			  int *want_meta, struct ocfs2_acl_state *acl_state);
- 
- /*
-  * xattrs can live inside an inode, as part of an external xattr block,
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 
 
-base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
--- 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+--=-zbOkO5jY2jsbLOgGcc1i
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+#syz invalid
+
+The series (or at least patch 01/36) was posted with
+
+  base-commit: 271255273d5ff348fe29d89fe4712b2f7f7907c3
+
+which is the tip of kvm-x86/next and contains the timekeeping
+prerequisites (ktime_get_snapshot_id() et al). The CI applied it to a
+kvm-next tree at a204badd8432 which predates them, hence the build
+failure. Wrong base tree, not a bug in the series.
+
+--=-zbOkO5jY2jsbLOgGcc1i
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCE8Ew
+ggWvMIIEl6ADAgECAhANkOKMSmGXhF5eMl0rsRhvMA0GCSqGSIb3DQEBDAUAMGUxCzAJBgNVBAYT
+AlVTMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xJDAi
+BgNVBAMTG0RpZ2lDZXJ0IEFzc3VyZWQgSUQgUm9vdCBHMjAeFw0yNDAzMTMwMDAwMDBaFw0zNDAz
+MTIyMzU5NTlaMGIxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE6MDgGA1UE
+AxMxRGlnaUNlcnQgQXNzdXJlZCBHMiBTTUlNRSBSU0E0MDk2IFNIQTM4NCAyMDI0IENBMTCCAiIw
+DQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAOfSIeC0vv1xPQ+dgSxbIIrkaru6skAWJYaGFzmv
+q4Kq+2wU2jxhcWlJg/JeP5jEkq/LM3pn5aaLao79j+XRmS7J1ZpJKUODJVoM4s9MQJhTMvo4qS5Z
+S64g6QR7Obkz3I1Lr3aWeSBmDDEyzue+NKtuWZ1Cxy3RdXo/w5HgRc3l2AercOM3Gt1XonTzEtTb
+Z/Hwc0Sn9Gz8RmGRK6Ka4hVDl8q/2l110KaV233Kh5etP0csXS8MIMdVRfRu3sc5hp13DG7lCKzK
+72a2GEpI8Wpl26G6I1/LMzz/98T+FqjTqxsdquk7Cj7m2vKGLW1BorpQH7WFGPdJQXJe1hfbfiZA
+CcVdCtl4nAacFacmsiArZBfX7AQGL7isvHUwwYFEtcApyGW4p2Lt+t8nvU0CANA6BHOpOz1xOP8W
+mAESbUriIjyuTUf3fJ9oDNCurVqhASMJCDaWI3lYX/QAoiAzt6akqbbZxo2ujW7mGGqc0KxqE2cs
+h2T79v7pC8aUtHBfwNrTR19GnZVxE0eQ7ViIQhR6mpSaUQFA9sG+cmD2G8TnCgYsLa0q8De6F61a
+CBevQGHNzrbZ3JAMneveYg/Jy1XxQHDRcvrMfWKe0jjcWbdKYlaGVPm5V1ILwYz7Yv5ewo3NUrxI
+GJiywe9qPhuJSDZs7VehTuI0FxGIsgKzVjgbAgMBAAGjggFcMIIBWDASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdDgQWBBT3m6JO05fF9DQPQw6Bhc6RkzKv+TAfBgNVHSMEGDAWgBTOw0q5mVXyuNtg
+v6l+vVa1lzan1jAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMC
+MHkGCCsGAQUFBwEBBG0wazAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuZGlnaWNlcnQuY29tMEMG
+CCsGAQUFBzAChjdodHRwOi8vY2FjZXJ0cy5kaWdpY2VydC5jb20vRGlnaUNlcnRBc3N1cmVkSURS
+b290RzIuY3J0MEUGA1UdHwQ+MDwwOqA4oDaGNGh0dHA6Ly9jcmwzLmRpZ2ljZXJ0LmNvbS9EaWdp
+Q2VydEFzc3VyZWRJRFJvb3RHMi5jcmwwEQYDVR0gBAowCDAGBgRVHSAAMA0GCSqGSIb3DQEBDAUA
+A4IBAQA+b8Uw53sDspdZgukU+qzLyyHkcjlxGGhHlP+zrmDLKm1wEFvCRS2pili3Hy67i8N4N5NU
+vw5Rg6kv3lxb9S9Rktxk43k+tvm68pl7OxQE55ZjVY87P0lUPGwEqOOwLLyH02ZQcsfq5p5LrOH9
+0JvmvZ1yy73HS+VpDAqOlytE0NSvTIRqFFkKQGQwfjvtql9YflujuNNvJztjBaHKYZsnNSg+J38o
+jYq4TP3pSg3UdVH0PncVjPQyqxC9xef5Xae92Kbkzol3x7Nel3A1bwAkalrDMspvTHvey6LfiBks
+FIqviTnoy7fgjaRAJgHS+RXx/cmuRd3rUAclSVVrYu8RMIIHAzCCBOugAwIBAgIQAzUotrsybJHx
+HTjKOIVdIDANBgkqhkiG9w0BAQsFADBiMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQs
+IEluYy4xOjA4BgNVBAMTMURpZ2lDZXJ0IEFzc3VyZWQgRzIgU01JTUUgUlNBNDA5NiBTSEEzODQg
+MjAyNCBDQTEwHhcNMjYwNzE4MDAwMDAwWhcNMjgwMTA0MjM1OTU5WjAeMRwwGgYDVQQDDBNkd213
+MkBpbmZyYWRlYWQub3JnMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA2pYux73kdbYX
+sWF8f1u6DJP91qcqaZetsyfPkZk0B+MmXmAEv0kVes5n15V2mbDThOnpoPFly0UugQO9JYqLfrtD
+tKD5yL58fgrDB9Dw+LQikgrHafl6YSCds5AvUu/8hw2J6noKrcOLJpKlKn9Fl/4IB9Q3JIdLx5aa
+EtTqMalIPqHFOlgrJ7s+aua8xbB8YQ9ahqYBXWRJNv3P/2b1DYtdrz1oqZPE3CcB8Pc6Gf2a1Tcm
+6TAgtEx7Cf1BFcrsrMz7TWHmGQITieNb2r9UYWSc2Gp+GtYFNJCgT0JJXKUBIauPMKBLteYrL8Fo
+ff/uY44dC/mDWjdCP/5x0qelPQjlBvWdHL5zvBTOj06rJ0m3HNI/hnIcDh0Qu2j9reb9rLVcdym6
+bWmBM4uDEB8Zv9Ph0KTBFSy1IosyakuD1j1Os30EzjGfbi0EUXIvnOcYbTBAbM5UAzrxEHMhBvoX
+Pvnx+OyvjJmc9tWxTX6AcSz+m40esbT17URBeZS18afgieiikm5TynlUYP1LciR3hSgGVzvGXnKO
+02VDFR5itGWdRKZ2W5wIShNfWfhSa0D0K5UdIDt5Qc7sjzwK1Yb1sY5Tu0uA5mhIS82q1ov83uxB
+sFkriNnhGv/M1NCDVLBiOMsHu73qUM+yKmgKLwF9Hfn9WI25glbAMI4S5r3hYzcCAwEAAaOCAfcw
+ggHzMB8GA1UdIwQYMBaAFPebok7Tl8X0NA9DDoGFzpGTMq/5MB0GA1UdDgQWBBRcYhqbcGzn1jrT
+JOZaB8O7qllDpzAwBgNVHREEKTAngRNkd213MkBpbmZyYWRlYWQub3JngRBkYXZpZEB3b29kaG91
+LnNlMBQGA1UdIAQNMAswCQYHZ4EMAQUBAjAOBgNVHQ8BAf8EBAMCBeAwHQYDVR0lBBYwFAYIKwYB
+BQUHAwIGCCsGAQUFBwMEMIGpBgNVHR8EgaEwgZ4wTaBLoEmGR2h0dHA6Ly9jcmwzLmRpZ2ljZXJ0
+LmNvbS9EaWdpQ2VydEFzc3VyZWRHMlNNSU1FUlNBNDA5NlNIQTM4NDIwMjRDQTEuY3JsME2gS6BJ
+hkdodHRwOi8vY3JsNC5kaWdpY2VydC5jb20vRGlnaUNlcnRBc3N1cmVkRzJTTUlNRVJTQTQwOTZT
+SEEzODQyMDI0Q0ExLmNybDCBjQYIKwYBBQUHAQEEgYAwfjAkBggrBgEFBQcwAYYYaHR0cDovL29j
+c3AuZGlnaWNlcnQuY29tMFYGCCsGAQUFBzAChkpodHRwOi8vY2FjZXJ0cy5kaWdpY2VydC5jb20v
+RGlnaUNlcnRBc3N1cmVkRzJTTUlNRVJTQTQwOTZTSEEzODQyMDI0Q0ExLmNydDANBgkqhkiG9w0B
+AQsFAAOCAgEAocabrh1cPd5s3vY5rnlBVQSTc7zs2ZWs67dAIltR+05WELrYClVzzUhMs/LOJPlr
+EUo45UDDomXq38DxFepaPd9+iNLjXfn33EX/IG44j04lU/oF/Rg9VeQILkYLbCZ/x9wOjNHZc4SN
+ydY7Dhvf/sT5aBz88u7D5+azZJ7Qf1U57wYseCH1Mt0nDrtr5y19IJ8D9xJJ33RFL6vfpHZBBAQ8
++3RqkKNxLoV2aFvQhxdhjNLDqTv3LjUIdicwPraN7JkxEu7CV2Lka7eRqJgkWL7SK0YmBjGpRafs
++icP/ON5RCCKTTb6VlX8eTG2sJJfsFhvJNCCt6xexbWzWtIrfP7NvPBvwBB737AyEGBZkS5aNizT
+McURJGTv9UKvBh1LF/+tNhYtLvPCN7oecGzhCHht9jcwSkygTo3Y6YlK3QgOu+ncmiBbfeuwlLZ1
+LxbYvG6hgNqXv7u6YyADbYajAQJXJ2OQen39pm3Q/AQSyLYG+B8lDglWsM8tYXPlEdrYJcksGK6F
+nqIX6Bumn43rBooLJdiZp4WmfWdL2pxe+LxRDjprmqu1WprixDxULSTOKJZoqTlugs6y3Bc+if+s
+gHnBBtz9WQ6MtPHkh7zONDAFIKcBmv8OqPQCx0F3Wv3OEybwMpXx0OsKgK8wLldaX1pXcMuyDgTL
+Sqs0AV0OHUgwggcDMIIE66ADAgECAhADNSi2uzJskfEdOMo4hV0gMA0GCSqGSIb3DQEBCwUAMGIx
+CzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE6MDgGA1UEAxMxRGlnaUNlcnQg
+QXNzdXJlZCBHMiBTTUlNRSBSU0E0MDk2IFNIQTM4NCAyMDI0IENBMTAeFw0yNjA3MTgwMDAwMDBa
+Fw0yODAxMDQyMzU5NTlaMB4xHDAaBgNVBAMME2R3bXcyQGluZnJhZGVhZC5vcmcwggIiMA0GCSqG
+SIb3DQEBAQUAA4ICDwAwggIKAoICAQDali7HveR1thexYXx/W7oMk/3Wpyppl62zJ8+RmTQH4yZe
+YAS/SRV6zmfXlXaZsNOE6emg8WXLRS6BA70liot+u0O0oPnIvnx+CsMH0PD4tCKSCsdp+XphIJ2z
+kC9S7/yHDYnqegqtw4smkqUqf0WX/ggH1Dckh0vHlpoS1OoxqUg+ocU6WCsnuz5q5rzFsHxhD1qG
+pgFdZEk2/c//ZvUNi12vPWipk8TcJwHw9zoZ/ZrVNybpMCC0THsJ/UEVyuyszPtNYeYZAhOJ41va
+v1RhZJzYan4a1gU0kKBPQklcpQEhq48woEu15isvwWh9/+5jjh0L+YNaN0I//nHSp6U9COUG9Z0c
+vnO8FM6PTqsnSbcc0j+GchwOHRC7aP2t5v2stVx3KbptaYEzi4MQHxm/0+HQpMEVLLUiizJqS4PW
+PU6zfQTOMZ9uLQRRci+c5xhtMEBszlQDOvEQcyEG+hc++fH47K+MmZz21bFNfoBxLP6bjR6xtPXt
+REF5lLXxp+CJ6KKSblPKeVRg/UtyJHeFKAZXO8Zeco7TZUMVHmK0ZZ1EpnZbnAhKE19Z+FJrQPQr
+lR0gO3lBzuyPPArVhvWxjlO7S4DmaEhLzarWi/ze7EGwWSuI2eEa/8zU0INUsGI4ywe7vepQz7Iq
+aAovAX0d+f1YjbmCVsAwjhLmveFjNwIDAQABo4IB9zCCAfMwHwYDVR0jBBgwFoAU95uiTtOXxfQ0
+D0MOgYXOkZMyr/kwHQYDVR0OBBYEFFxiGptwbOfWOtMk5loHw7uqWUOnMDAGA1UdEQQpMCeBE2R3
+bXcyQGluZnJhZGVhZC5vcmeBEGRhdmlkQHdvb2Rob3Uuc2UwFAYDVR0gBA0wCzAJBgdngQwBBQEC
+MA4GA1UdDwEB/wQEAwIF4DAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwgakGA1UdHwSB
+oTCBnjBNoEugSYZHaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0QXNzdXJlZEcyU01J
+TUVSU0E0MDk2U0hBMzg0MjAyNENBMS5jcmwwTaBLoEmGR2h0dHA6Ly9jcmw0LmRpZ2ljZXJ0LmNv
+bS9EaWdpQ2VydEFzc3VyZWRHMlNNSU1FUlNBNDA5NlNIQTM4NDIwMjRDQTEuY3JsMIGNBggrBgEF
+BQcBAQSBgDB+MCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5kaWdpY2VydC5jb20wVgYIKwYBBQUH
+MAKGSmh0dHA6Ly9jYWNlcnRzLmRpZ2ljZXJ0LmNvbS9EaWdpQ2VydEFzc3VyZWRHMlNNSU1FUlNB
+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
+Zh+5CaZso2RKpKssRFh7tPEAAAAAAAA=
+
+
+--=-zbOkO5jY2jsbLOgGcc1i--
