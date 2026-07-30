@@ -1,104 +1,57 @@
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79DDE3DA5C3
-	for <syzbot@lists.linux.dev>; Thu, 30 Jul 2026 22:26:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 416AB3D4105;
+	Thu, 30 Jul 2026 22:32:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785450364; cv=none; b=DfyEnzKpdi27IyxhJPJstmb9MOASLnpbCebWVrlZdsUnQfzIUkEGFfcn8ptcgqu+Uu0JIo8SOGT1IskdU3q/+JKHR9vXipVZCXbpagFRTi5SdEHaqDq5wYb0cC9giw9BjCGvSaCG2Qu5ENvReWObf+7QTl/31I+mwtUad0wknJA=
+	t=1785450770; cv=none; b=GxBuABdHwcGK5BoviFr0866TUVp4LCyBjpkmodEQBmq7regI65/ll1MZStTA45ybYYRBtBgswGIJMA4ZcIUCOgAyGlKKZ889cYQzLyhAspTbPO/33N7CKd5lAUCKyme5YZK5lhTY0ZUcKvnQl61jVINFD1f/gw/h1CwKc3bORMg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785450364; c=relaxed/simple;
-	bh=55vo5Bh4iZ2QewJQKeXpIMZxb39S9TsKGly+O4LJPcA=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=SAaFX/iMVqVWbTsNFgMyMpey6WU7KYwfP91OBygvHoJw6Iut4to/6Wp6uhjQn+NJBNhc624CayklFjHmECVdkRlqRgq0EAv1UXj0HgQ85CQ5H5mmVlYhDrGd6rr9Cyp5VsW4y6CsWg4O+TAh3X/OkQkajwEeGRpDx4+tpvVUMEc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7eb60cfd476so262698a34.3
-        for <syzbot@lists.linux.dev>; Thu, 30 Jul 2026 15:26:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785450362; x=1786055162;
-        h=content-type:cc:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=aaZSp4ietQ2rMVLvtF22IgZdiAKPZoWYoRWVLeE5SFM=;
-        b=L6oWgS+ljtgMN3ynLP/QNuNFK2oliu+3SEgF5pCKfKbRBi59qdaQCKv4MwSG7IDsaj
-         LwCLy9iHSN/jiUIgGo0FRyoi4mb2/c7VlZDvN/zGcrESdmgEbhoAjC84fDPeEvnP9zuC
-         KLZP13z7/mHzsnhwPR8NXD/WD/NRRKJrSRdLjlSHX9gtEME0xvx6EsnirjWyzu4TUqAt
-         m0QCQSDoAB3ElsNlUs58wG547SgnU2Z6FuNfWrpHf13domIvc5xaqCl2culNhAkVz3vh
-         W3HHI5LQy6GPDXpXPjS+QKu8hEsZXAIoQkfDlmr3bG/Mbh/8O16yB92psvPwBU8rF3mZ
-         OOyg==
-X-Gm-Message-State: AOJu0YzaCmd+C5MVBmGeOhMW4UCK1yOlCenTrEM4E37G7gwxBL8YiDio
-	IABmWTNaZMi8aOGONNU9b8kcru2D8GSUfSUOAlyvsF631yhl5FiULY/zry+3kDfAJ3nd5IWGbEW
-	nm51EDdaf3w+9vxSi/pLR7TYMkdkIJeUsSJDIMgzhcofmfbKJ7U8c415xtPE=
+	s=arc-20240116; t=1785450770; c=relaxed/simple;
+	bh=j+FX6xg6tPwXVeimEhngDdnA6nU3pL3rYKzacO944jQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ffS+QvAJvC2xPWvanpXFNq/qRKsG7uPPqhE0yq2FB/Q1DShLh12sPJ0PXIfYQwQOpYSYRghuHoRav1A1OjIdjijghi/k7eUg2iBzn3J6MM4hY1VbbaoMtpd0lCk4h5cK9MLH17kVE2Bj+BG9HVKr11sK40uWHdmeT9TfYDJioRQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=elK4ZcLN; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="elK4ZcLN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D6661F000E9;
+	Thu, 30 Jul 2026 22:32:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785450768;
+	bh=SRwrT1r0NKbkZ/4FVHLT2H1almQLO4Ohk2yrJOdusig=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=elK4ZcLN9JjaOwxXsTiy9dHl2zOiFRC1cIWxjhb/I8mqOPFckShR/nBP5obHW9wkb
+	 2XHMToe/w3sPS8KfhjSJeUUgf7psouIZQBrW9cuuDNL+4mq7C9RsPTkEHwSloEaPOm
+	 aLLnqwNAIFEbJJK+8tkXi+lQYf3tGht4rfgLPnTrbZCrYZpsKNjnLivO6RUW7DDhMd
+	 kim2AbjC+oBhDDcJJ2Ljh6QNSViGR2HqIT7F2NcVHvy69pMxr4E9oGg2DwhV3lJoHU
+	 DqCDjOZw4ArNTPSuFwhGB+daQVFs1d/F+rEwHxnrlbIQrOS8dhO38Z5J4hf+v9XtBg
+	 DnnpAlnxAb50g==
+Date: Thu, 30 Jul 2026 15:32:47 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: "syzbot" <syzbot@kernel.org>
+Cc: syzkaller-bugs@googlegroups.com, Krystian Kaniewski
+ <krystianmkaniewski@gmail.com>, "Andrew Lunn" <andrew+netdev@lunn.ch>,
+ "David S. Miller" <davem@davemloft.net>, "Eric Dumazet"
+ <edumazet@google.com>, <netdev@vger.kernel.org>, "Paolo Abeni"
+ <pabeni@redhat.com>, dskr99@gmail.com, kees@kernel.org,
+ linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
+Subject: Re: [PATCH] ipvlan: keep lower device alive until private
+ destruction
+Message-ID: <20260730153247.2373cf7e@kernel.org>
+In-Reply-To: <26b3176e-d9ed-4508-bde7-388deefd970d@mail.kernel.org>
+References: <26b3176e-d9ed-4508-bde7-388deefd970d@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:244d:b0:4a0:97bc:53a6 with SMTP id
- 5614622812f47-4ad87728d5bmr3428582b6e.7.1785450362325; Thu, 30 Jul 2026
- 15:26:02 -0700 (PDT)
-Date: Thu, 30 Jul 2026 15:26:02 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a6bcf7a.77639fcc.3d4fd0.0011.GAE@google.com>
-Subject: [moderation/CI] Re: udf: Fix data loss when converting inline inodes
- to out of line
-From: syzbot ci <syzbot+cie464680588e3636b@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-syzbot ci has tested the following series
+On Tue, 28 Jul 2026 08:40:37 +0000 (UTC) syzbot wrote:
+> Subject: [PATCH] ipvlan: keep lower device alive until private destruction
 
-[v1] udf: Fix data loss when converting inline inodes to out of line
-https://lore.kernel.org/all/20260729144547.4028292-2-jack@suse.cz
-* [PATCH] udf: Fix data loss when converting inline inodes to out of line
-
-and found the following issue:
-kernel build error
-
-Full report is available here:
-https://ci.syzbot.org/series/4fd6ec7d-910f-419f-97fd-98adfdca5e52
-
-***
-
-kernel build error
-
-tree:      vfs
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs.git
-base:      05c09c9c8a79d5539fef30d42e732eba90a15dcf
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/bf7f881a-5ac4-4451-8a16-c8d869102893/config
-
-fs/udf/inode.c:348:13: error: use of undeclared identifier 'UDF_MAP_CREATE'
-fs/udf/inode.c:346:20: error: variable has incomplete type 'struct udf_map_rq'
-fs/udf/inode.c:382:8: error: call to undeclared function 'udf_map_block'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[jack@suse.cz linux-fsdevel@vger.kernel.org stable@vger.kernel.org]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+please rebase on net/main, and repost with [PATCH net v2]
+-- 
+pw-bot: cr
