@@ -1,229 +1,132 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5CDC364021
-	for <syzbot@lists.linux.dev>; Thu, 30 Jul 2026 12:55:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785416136; cv=none; b=HOrfF9r/W3F1ud41RFx81+LDV59YzyBvQc65SlOpqsoeZDCQad9XvsuyioZ9hKLS1Fv9vs9K3E/IdkfGAro08dUqdYqdIRg5FoOy1GaqNHMln5lm1mCi8pSUISjusGHj5Nm2KyA2D8d8/DmTNFpRtyREHR3BMwhHK/6mBsCpEf0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785416136; c=relaxed/simple;
-	bh=yd8fzhzBiuX6NV/e8BqK6R+Xsbc7igUORIgcc/d8LN0=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=RZ0REWjYekK+ZKvkD4HItcS/0u2llClKJNks/H5BTNcTVuBmTQLGeiI2utBcVn/HmzJ1NYQmM38hQUvoRc8hE7LaAVAuk5OBAucUeI5urA0LpS2/Hm7txlxYGjBe9g4GHPE0dWq6pEkq9qIw9Lq7jyJGCXpvJQbXTt5kPMIgbd8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EdHAe/w1; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 726BA421F0F
+	for <syzbot@lists.linux.dev>; Thu, 30 Jul 2026 13:40:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785418818; cv=pass; b=XgnKkTvvq7Q1K65tRPVjweUlNR4WJKXojty2fG2nL9zHI1+podJjEQBRzgIPFRyRzddmqUQAe4OLi2OerJUjhwHC2hqbTprAXoPvsY+xJlkiw3C0Tosmwen/S/QB6jLWmEW9mw9gF27rgb7k2bwNKGBQ5wa8cCpPuxhaEbah+a8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785418818; c=relaxed/simple;
+	bh=CqdqAdyJhzy8SAqPy+51Zf6+qD3v1I8nL6rt+WZzl1I=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=lwTKD3B7gt0wq/6f6FjKTcHl6GADSSiZCq4stJ34PPsOyO0iTLtfTMTY4HtkJ5+aBvcN0Y9SoCByiyLZbIKb12j9OEKlrt5jgKuqCb3Qt42nwdDa3oOuKjj/c9If/HmgQ9JcAB610UT+0rmZ4CjAYYJfqsOsjCJr4YH/ZD7vhjA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mpTwpuOu; arc=pass smtp.client-ip=209.85.210.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EdHAe/w1"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 5D05A1F00A3A;
-	Thu, 30 Jul 2026 12:55:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785416134;
-	bh=7zHvRw/l/cfokfMkhhrBLItr97uIiDVl0sGX+WEXuUw=;
-	h=From:To:Cc:Subject:Date;
-	b=EdHAe/w1HLMV+2IiPV0LCIF0KsasgJNnGQ9MakHCR6ALT5ITM7tm8oWXJooqFFisX
-	 knNuf670w4o7go/P3wQdpm4JNXWSOVjBCixjlBUyORBjum5qlU2vTjkXATg0J0nDWg
-	 379gWvR6v7iUnjG932gK7phD6ydA7srY05pEhVwtOHasu2vP3doZkTA6bjLwK0B83J
-	 HJlw7yN3BDfs6K6f1tOrshRdadp5pzFEpfgpC03uH6DZeJgLpjiPADSn8EvR+2h3pv
-	 VbUtXE8zCaWGy4MjL9bj+OqrCqNFiumdxstoxBxxpeQ5ILBf9lFvogff5VnKTltJpH
-	 4tZgShF+j3ZlQ==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: sst@poczta.fm, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] 9p/trans_fd: enforce non-blocking I/O with IOCB_NOWAIT
-Message-ID: <92de8bb2-056c-48f7-90f7-fa788e6357e0@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mpTwpuOu"
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-7ebd88be784so1647094a34.2
+        for <syzbot@lists.linux.dev>; Thu, 30 Jul 2026 06:40:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1785418816; cv=none;
+        d=google.com; s=arc-20260327;
+        b=p8Ix0jsMeWvrZNvLytsJpd9UqVlCBmyqT3j9Mf2JVQ66wFh8YBnSx8sehkfgMTho2x
+         cLyuah69yo6RRzkZxc9Wp5snPxPFfSqaXKok3BvdmoH6DCTtB16nTTJ/Gb6/v+Dr6qX3
+         sJbJviW2rHoDadOSx0n7fCKQAqKGgiBH6SSbPFL98tmv8Z9/3x6KBsjZX4QZko2Fvb+o
+         17k6UxYh+P3DDgnSe1ov52JuWCOzqoKLHh90OGZ/PMloBUNbWR6+4n+8/LPjUJUFszIT
+         gvlX+Iq5fM+ttQLK5vGIsA/CISVuJNf19e1TIS2UUwiRjCAsHxX62PuKN4v90Qw1Yb7E
+         zUqA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=Pv7rrDR2XqGC2X7Ezzi+Jh4LSpjuVVPtj/SQaLf+UvY=;
+        fh=vEI801S/EgA0NkrHqSJtsCPwnkUlem/o69myROalz+I=;
+        b=JOGh9mB8HSwZ5gKuQ04pWT3y48qaxwX5a4aX29GL0QIqv+3o55prbiuGmi+eh6fO/1
+         WJ+o0nvEfqJZ2NChUwCvsoXDItbkAd8pmAON/B6c0lk7+s7igA8MVtMCld/zTfFYlu4C
+         Z1Xoqr0bEcjGSZqeql95bWMnVHZWCd1gzB9A/ipJwfNqZ5B2FsozJWqiu84O5hsSehlu
+         tuEXSlVdA+p6HVLhX6MrgmpvXp7A6Zb4LB8Fx0+WW8cPVroQNnUPAqYTelal+2f0btx4
+         70TByeV2JKXXWxwi/LMSHREuWn0/gaWrbuHSCjr5Mpbrt+crL3PJehO+nsxv3RIhruL3
+         iF5w==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1785418816; x=1786023616; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=Pv7rrDR2XqGC2X7Ezzi+Jh4LSpjuVVPtj/SQaLf+UvY=;
+        b=mpTwpuOuXDAM8me/8qZ/pDNEUfnOaS5heENfFtatnbTJNYDXeG4LT2tUc4gSK8oR59
+         JUIuQi1ism0GnxVMT6o8ioPSC77WMl2VcQYEUwiB1WlvfmRlBKGZvGgHFo3vofiaZVE8
+         s8vvETvTIfVuMXtfOdQyIqHN1mPGv2kCRj0FnuHBbz2zXnkUYrz4aXjLSQxjMh7IqxB6
+         BzheNy5awBPbjk4ba7CalWJXRuEGovcOL/WT3jsIUw5OyLrRbPx3sFwhuSiUgTIB41jM
+         UkLE3h26xAlkkhBSOiz3rvtSuJk/gyxmqQ4HHtwuuRfNawMobxCYHspF60K88ekEH2vp
+         w8Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785418816; x=1786023616;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Pv7rrDR2XqGC2X7Ezzi+Jh4LSpjuVVPtj/SQaLf+UvY=;
+        b=M5Ur8TUKLFrr9BxJE32PFoHSelgisNbDf2vW3TxS2/9vh/0emoknN9mjCrR+UUVO2v
+         EU7Q7C0xAHXwTnfbvCHK02vW4sBggQTFEnxBWloo4gEuxAOQThkDwwAYoGY3zol/yE+o
+         YRudEsGoiOCVs6cMIynWwtYqlAE+yjjX06nc7on5kxWR6gP+AR1LsZVcg4uU9SVLAYiC
+         v3a43aMAc9KapXqunOcQO+92vpZIegrPhTYwwH2dXu/KU6S6UYJZDRyunMjAkMoWkz3m
+         Nns58JytTQ/7r4CreeMBJVvv1Z/f+pjd5SHDtXMsMMgGAG9kfIPzegfM/1QCf76enut1
+         sTGw==
+X-Forwarded-Encrypted: i=1; AHgh+RpKNkTZUYFmNaLSo9IGaciQ9NapMmUde3zR1QYpFvAOH9RCPLC6gXcCiLaAI6TS7dB5M9BkDOw=@lists.linux.dev
+X-Gm-Message-State: AOJu0YwqVdKWvI7MMmJJv6M6tD3d++E4/AwrjUHzjTD2nN21F36/+Rv6
+	ubFekRadeMJYs3XwiYKO2p2f2jEPmPcbWPxvxUYJOqcKkJdM2RHFVm1BvM3Ias7pF+VwIjIiV3o
+	5gzvGTRS75sjoRr1O05oIfxL3pmUhBmWxgUscItrl
+X-Gm-Gg: AR+sD10CmZLdVnEURSNiUpqQJzFhGNrZfm//fooxHEwK6bPQkusfNOUqyFw0yATU1t1
+	U0RRVPJmGpDwF6p3/S+HjeFK9aeI7Vfnkp0jKnxybbfTyKDyhlj8G3Q88qFNBGpIfkXJfiGzAbY
+	JNBHL/Vb9vyzF2MKWF2rVbgDfMtf1pn6sKXzIKron3C+72Kuo7SaTbMpUkdkbMr9Q5ovDphtGr9
+	zn5duqormblB/I8Rd2hFkGPMZpjJciEKUVz+xEJIzT466EK8WfvGdpVKFe26FYrQBtEiDwhhYGn
+	IkbcJ5cdYIdXT+qQ6MsFlcJ/PC29Cn4ZbWDE2zBDZcv+ZKpZ2lGM+uHNw3Zmi1Sq7CrMfVbZ8Rp
+	rUiXgujC0SBJAxc04RcMJw+32QTPm8c/X5p1TgIXeBBw7zdZD7fNfVwESWZE9Rk3GWa+ks1hfgb
+	UOP4q97loFwhW+
+X-Received: by 2002:a05:6808:f94:b0:495:e5a5:d62 with SMTP id
+ 5614622812f47-4ad8780d6f0mr1753556b6e.6.1785418815703; Thu, 30 Jul 2026
+ 06:40:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Thu, 30 Jul 2026 12:55:34 +0000 (UTC)
+References: <6a6a702c.57649fcc.360844.0005.GAE@google.com> <b5e3e5c81ebcbf4f6a793b89463e4979fc7cba4d.camel@infradead.org>
+In-Reply-To: <b5e3e5c81ebcbf4f6a793b89463e4979fc7cba4d.camel@infradead.org>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Thu, 30 Jul 2026 15:40:04 +0200
+X-Gm-Features: AUfX_mx3aT-Hp6Q79evErdovScYwuByvd_VePZhx5h0dgfZO54E0yocQbFwcJGo
+Message-ID: <CANp29Y4TTLG-=O-Vd9D_7t04RbUOqhLQUbuCUgRFdphq-DBf7w@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: Cleaning up the KVM clock mess
+To: David Woodhouse <dwmw2@infradead.org>
+Cc: syzbot ci <syzbot+ci6e398c6b63e189f8@syzkaller.appspotmail.com>, 
+	syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The 9p filesystem's file descriptor transport uses workqueues to handle
-asynchronous reading and writing. When a connection is established, it sets
-the O_NONBLOCK flag on the provided file descriptors to prevent workers
-from hanging on I/O. However, because the file descriptors are shared with
-userspace, a malicious or buggy userspace program can clear the O_NONBLOCK
-flag concurrently using fcntl(fd, F_SETFL, ...).
+Thanks for triaging this report!
 
-If userspace clears the O_NONBLOCK flag, the read worker (p9_read_work) can
-block indefinitely in kernel_read() when reading from an empty pipe. When
-the connection is subsequently destroyed, p9_conn_destroy() calls
-cancel_work_sync(&m->rq), which hangs forever waiting for the blocked read
-worker, eventually triggering the khungtaskd watchdog:
+The CI did recognize the base commit, but it didn't know about the
+kvm-x86 tree, so couldn't fetch it.
+I've added it in
+https://github.com/google/syzkaller/commit/285e8c809b7ce04c728f02b57698320b=
+cc0efa48
 
-INFO: task blocked for more than 143 seconds.
-Call Trace:
- <TASK>
- __schedule+0x17e7/0x5630 kernel/sched/core.c:7234
- schedule+0x164/0x2b0 kernel/sched/core.c:7326
- schedule_timeout+0xc0/0x2c0 kernel/time/sleep_timeout.c:75
- wait_for_completion+0x2ca/0x5e0 kernel/sched/completion.c:153
- __flush_work+0xa63/0xca0 kernel/workqueue.c:4374
- __cancel_work_sync+0xbe/0x110 kernel/workqueue.c:4494
- p9_conn_destroy net/9p/trans_fd.c:805 [inline]
- p9_fd_close+0x23c/0x3f0 net/9p/trans_fd.c:840
- p9_client_create+0x8a6/0xc60 net/9p/client.c:939
- v9fs_session_init+0x46/0xd40 fs/9p/v9fs.c:471
- v9fs_get_tree+0xbd/0xac0 fs/9p/vfs_super.c:97
- vfs_get_tree+0x92/0x2a0 fs/super.c:1694
- do_new_mount+0x319/0xdc0 fs/namespace.c:3841
- __se_sys_mount+0x31d/0x420 fs/namespace.c:4367
- do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
+--=20
+Aleksandr
 
-To fix this, do not rely on file->f_flags & O_NONBLOCK to ensure
-non-blocking I/O. Instead, replace kernel_read() and kernel_write() with
-vfs_iocb_iter_read() and vfs_iocb_iter_write(), passing a kiocb with the
-IOCB_NOWAIT flag set. This guarantees non-blocking behavior regardless of
-the f_flags state, completely eliminating the race condition with
-userspace.
-
-Fixes: ef575281b21e ("9p/trans_fd: always use O_NONBLOCK read/write")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+ed53e35a1e9dde289579@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=ed53e35a1e9dde289579
-Link: https://syzkaller.appspot.com/ai_job?id=7f77983d-c40c-432f-aac6-3aa4872417cb
-To: "Dominique Martinet" <asmadeus@codewreck.org>
-To: "Eric Van Hensbergen" <ericvh@kernel.org>
-To: "Latchesar Ionkov" <lucho@ionkov.net>
-To: <v9fs@lists.linux.dev>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Christian Schoenebeck" <linux_oss@crudebyte.com>
-
----
-v2:
-- Limit read and write sizes to MAX_RW_COUNT to match kernel_read() and kernel_write() behavior.
-- Restore task I/O accounting by calling add_rchar()/add_wchar() and inc_syscr()/inc_syscw().
-- Include <linux/sched/xacct.h> for task accounting helper functions.
-
-v1:
-https://lore.kernel.org/all/7b6e50bb-fee0-4489-a753-00087e6944ae@mail.kernel.org/T/
----
-diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-index eb685b52a..db524bd30 100644
---- a/net/9p/trans_fd.c
-+++ b/net/9p/trans_fd.c
-@@ -22,6 +22,8 @@
- #include <linux/uaccess.h>
- #include <linux/inet.h>
- #include <linux/file.h>
-+#include <linux/fs.h>
-+#include <linux/sched/xacct.h>
- #include <linux/fs_context.h>
- #include <linux/slab.h>
- #include <linux/seq_file.h>
-@@ -217,7 +219,9 @@ static int p9_fd_read(struct p9_client *client, void *v, int len)
- {
- 	int ret;
- 	struct p9_trans_fd *ts = NULL;
--	loff_t pos;
-+	struct kiocb kiocb;
-+	struct iov_iter iter;
-+	struct kvec iov = { .iov_base = v, .iov_len = min_t(size_t, len, MAX_RW_COUNT) };
- 
- 	if (client && client->status != Disconnected)
- 		ts = client->trans;
-@@ -225,11 +229,19 @@ static int p9_fd_read(struct p9_client *client, void *v, int len)
- 	if (!ts)
- 		return -EREMOTEIO;
- 
--	if (!(ts->rd->f_flags & O_NONBLOCK))
--		p9_debug(P9_DEBUG_ERROR, "blocking read ...\n");
-+	init_sync_kiocb(&kiocb, ts->rd);
-+	kiocb.ki_pos = ts->rd->f_pos;
-+	kiocb.ki_flags |= IOCB_NOWAIT;
-+
-+	iov_iter_kvec(&iter, ITER_DEST, &iov, 1, iov.iov_len);
-+
-+	ret = vfs_iocb_iter_read(ts->rd, &kiocb, &iter);
-+	if (ret > 0) {
-+		ts->rd->f_pos = kiocb.ki_pos;
-+		add_rchar(current, ret);
-+	}
-+	inc_syscr(current);
- 
--	pos = ts->rd->f_pos;
--	ret = kernel_read(ts->rd, v, len, &pos);
- 	if (ret <= 0 && ret != -ERESTARTSYS && ret != -EAGAIN)
- 		client->status = Disconnected;
- 	return ret;
-@@ -385,6 +397,9 @@ static int p9_fd_write(struct p9_client *client, void *v, int len)
- {
- 	ssize_t ret;
- 	struct p9_trans_fd *ts = NULL;
-+	struct kiocb kiocb;
-+	struct iov_iter iter;
-+	struct kvec iov = { .iov_base = v, .iov_len = min_t(size_t, len, MAX_RW_COUNT) };
- 
- 	if (client && client->status != Disconnected)
- 		ts = client->trans;
-@@ -392,10 +407,19 @@ static int p9_fd_write(struct p9_client *client, void *v, int len)
- 	if (!ts)
- 		return -EREMOTEIO;
- 
--	if (!(ts->wr->f_flags & O_NONBLOCK))
--		p9_debug(P9_DEBUG_ERROR, "blocking write ...\n");
-+	init_sync_kiocb(&kiocb, ts->wr);
-+	kiocb.ki_pos = ts->wr->f_pos;
-+	kiocb.ki_flags |= IOCB_NOWAIT;
-+
-+	iov_iter_kvec(&iter, ITER_SOURCE, &iov, 1, iov.iov_len);
-+
-+	ret = vfs_iocb_iter_write(ts->wr, &kiocb, &iter);
-+	if (ret > 0) {
-+		ts->wr->f_pos = kiocb.ki_pos;
-+		add_wchar(current, ret);
-+	}
-+	inc_syscw(current);
- 
--	ret = kernel_write(ts->wr, v, len, &ts->wr->f_pos);
- 	if (ret <= 0 && ret != -ERESTARTSYS && ret != -EAGAIN)
- 		client->status = Disconnected;
- 	return ret;
-@@ -728,21 +752,11 @@ static int p9_fd_open(struct p9_client *client, int rfd, int wfd)
- 		goto out_free_ts;
- 	if (!(ts->rd->f_mode & FMODE_READ))
- 		goto out_put_rd;
--	/* Prevent workers from hanging on IO when fd is a pipe.
--	 * It's technically possible for userspace or concurrent mounts to
--	 * modify this flag concurrently, which will likely result in a
--	 * broken filesystem. However, just having bad flags here should
--	 * not crash the kernel or cause any other sort of bug, so mark this
--	 * particular data race as intentional so that tooling (like KCSAN)
--	 * can allow it and detect further problems.
--	 */
--	data_race(ts->rd->f_flags |= O_NONBLOCK);
- 	ts->wr = fget(wfd);
- 	if (!ts->wr)
- 		goto out_put_rd;
- 	if (!(ts->wr->f_mode & FMODE_WRITE))
- 		goto out_put_wr;
--	data_race(ts->wr->f_flags |= O_NONBLOCK);
- 
- 	client->trans = ts;
- 	client->status = Connected;
-@@ -784,8 +798,6 @@ static int p9_socket_open(struct p9_client *client, struct socket *csocket)
- 	client->trans = p;
- 	client->status = Connected;
- 
--	p->rd->f_flags |= O_NONBLOCK;
--
- 	p9_conn_create(client);
- 	return 0;
- }
-
-
-base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On Thu, Jul 30, 2026 at 10:36=E2=80=AFAM David Woodhouse <dwmw2@infradead.o=
+rg> wrote:
+>
+> #syz invalid
+>
+> The series (or at least patch 01/36) was posted with
+>
+>   base-commit: 271255273d5ff348fe29d89fe4712b2f7f7907c3
+>
+> which is the tip of kvm-x86/next and contains the timekeeping
+> prerequisites (ktime_get_snapshot_id() et al). The CI applied it to a
+> kvm-next tree at a204badd8432 which predates them, hence the build
+> failure. Wrong base tree, not a bug in the series.
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/b5e3e5c81ebcbf4f6a793b89463e4979fc7cba4d.camel%40infra=
+dead.org.
