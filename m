@@ -1,93 +1,77 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32E993C0A06
-	for <syzbot@lists.linux.dev>; Thu, 30 Jul 2026 08:30:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785400214; cv=pass; b=lwjcKKw/GkIz5dBUw6qStg+KRx5T+Ius4Duihz7D8mRdEc1+Cu0Spi9jO2YOeEqId5KPjarVPannlQqPWWZc9r9Uq/uyjod9xrTZCagsBs5fTGmGBROl1qiPOfYGgvpCp2mJd61sYhUbAh5RYLb9UqKA/1F/WYQNKMtkkJZcrrw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785400214; c=relaxed/simple;
-	bh=hKZMhKORj9ZhOdiajaQlLWpx/bnFzTMmYZQm4PvPwXU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HL+IuLRQgqCorVUxIrG4zzPBPhrdlAzSx2I4VvicXcCEaATiycS97ns7jwrUeZbYftz+N/5SSqGFSlrLAphwyhcdIcwybMWrYqWptkYkJlhIR3iz+dIOFlUx0hWBiWoQ0BPoSG5KupywNNJtawkLzLyx8h4MzcNnEh/L1pjF02g=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=debian.org header.i=@debian.org header.b=gY8vCNO0; arc=pass smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=debian.org header.i=@debian.org header.b="gY8vCNO0"
-Received: by smtp.kernel.org (Postfix)
-	id D57C21F00A3A; Thu, 30 Jul 2026 08:30:12 +0000 (UTC)
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=82.195.75.108
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1785400212;
-	b=hlfleJCkjR6pYfXa1zLtH/a4mmwMZQGBPbebs5LEKW+BRQR6To5Sl+MJ4EHaVK+oSp7F
-	 dDRKwHDGAv4oVfK5cEQA89RHorC+gRayWqoj9wmKdCsuUseRSSWKZkXvDRC9SEEXCbxh9
-	 9V9k14VZz4Rjab9tVdEnvSjt86fELrSYCKrdAIuqvU+MHpPlzOmwxrBLv2uw/wrnuMYum
-	 iLDBuGwX/wzd+/zHzdkQTIdVv/YajrqrHRI8X2UXHtDptJBW/vks5aQmbPTvTZg6tFk1F
-	 A7z5h+u4nrOyjUjnSrOzkzwHORCiHFmtz+T4/MZPHuQFAfdDUD5QcblBU20QvvstE0g==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1785400212;
-	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
-	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
-	 In-Reply-To:X-Debian-User;
-	bh=hKZMhKORj9ZhOdiajaQlLWpx/bnFzTMmYZQm4PvPwXU=;
-	b=DtHKDxSYTHeFzPlTDDp+ZlAUSNJNl9e0NVZi0xrDsugBQ8hXy8WZSbH2WpbEq5CKvyQB
-	 TZwEbGBcsO8uY4o7GWPKN5vkRiPBFG7iT6i1ItPgCbM0Em32sNnnH6F8e2m9B3by5+ifz
-	 SVRu3A8/hgXbbwhLFeocGRro905YgJk65zYq+JvLFnl4OJjWcJJnNkSDjqJx/XP67IXme
-	 BuWy1lkgSSh0Q0KnldW2xhPJMk1IC1M+rYpzX64syCUbBS+Db6fqH/kPpNDslgkZjja6o
-	 BEHlyx3hkpmtNLIJvgwoGJQoX+bodCw+4mKBJTJLPiKIkPS9uQg3xuiGcpulHjs9t1g==
-ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=debian.org header.i=@debian.org header.a=rsa-sha256 header.s=smtpauto.stravinsky header.b=gY8vCNO0;
-	dmarc=pass header.from=debian.org;
-	spf=pass smtp.mailfrom=debian.org;
-	arc=none smtp.remote-ip=82.195.75.108
-Received: from stravinsky.debian.org (stravinsky.debian.org [82.195.75.108])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 0035F1F000E9;
-	Thu, 30 Jul 2026 08:30:11 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=debian.org header.i=@debian.org header.a=rsa-sha256 header.s=smtpauto.stravinsky header.b=gY8vCNO0
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 0035F1F000E9
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=none dis=none) header.from=debian.org
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=debian.org
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=debian.org;
-	s=smtpauto.stravinsky; h=X-Debian-User:In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=hKZMhKORj9ZhOdiajaQlLWpx/bnFzTMmYZQm4PvPwXU=; b=gY8vCNO0PmJWtEi0LAXpOtQTdE
-	m9+7we/OlZTgR4+hdsXMFNouqz7cf7Nns4IOT/xX79art4JAtBYqOUftvjor/HhFGOO+Wort1yzgA
-	7BDN2Bg9GuAYVth1jlHTKZe0Y4DlKsz8ML32Ins7mua021FrGTVYFD+BCt3DBWOpiDlKaUmaea3At
-	xhVedktEE2L/m3waBXOsLDUvkEKhNatbXEcFy3Essl7xSkM5ysO5paLyb5Rb1wO6V2q6/IOoHqxOe
-	pPkSF21XcPooZvsDzERegr1OAaNcqXnDgH8WzH63fS37ekxNgPfqSzCkd96aMtovOLh95qgycxos/
-	FFUc3o1w==;
-Received: from authenticated-user
-	by stravinsky.debian.org with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim 4.96)
-	(envelope-from <leitao@debian.org>)
-	id 1wpM9Y-0096LD-28;
-	Thu, 30 Jul 2026 08:30:08 +0000
-Date: Thu, 30 Jul 2026 01:30:03 -0700
-From: Breno Leitao <leitao@debian.org>
-To: Jeffin Philip <jeffinphilip14@gmail.com>
-Cc: a.hindborg@kernel.org, viro@zeniv.linux.org.uk, sage@newdream.net, 
-	linux-kernel@vger.kernel.org, syzbot <syzbot@kernel.org>, 
-	syzbot+8358d1f3d9c15bdf1c9a@syzkaller.appspotmail.com
-Subject: Re: [PATCH] configfs: fix race between symlink and rmdir
-Message-ID: <amsLTqLR1I9LOyN2@gmail.com>
-References: <20260730032040.95378-1-jeffinphilip14@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6FD43D34B1
+	for <syzbot@lists.linux.dev>; Thu, 30 Jul 2026 08:39:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785400795; cv=none; b=I6NnIWAAO5kqHaKHaGfh1QLve8PzeX8Yea+Add7zpuN+X17zEdKYalzwhNXBetxuGlsBBCxG+KSx0meSsNupQEn5HoXGs+AJVzei1FujOs0sIBgSZOST07AuamNTQb9Dde4vhI+K0ZR1mzQCVpGpS0TaPpYPjq7o/E+pesSqapg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785400795; c=relaxed/simple;
+	bh=RRQgUvdQ3aavNVgsn07sNMPutigdLkIImz5NBoYA1BI=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=bt/Ey/LucKlrgxzx50C2fVbJyKA2cK6+sLEad/7IHJ7U4XK+ywmfy02E7rGfwN0enlGK2gfoq1JMmgEJ8ev9mesH4NOi3gyrVhH5BSQA16gJMfAdrqfXw8NuY6K4GiiG0YD5STM2yQBFRnv/cJoEB44UvTpQdyCyrSyIKLKCBOc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-6aca189b5a9so810502eaf.0
+        for <syzbot@lists.linux.dev>; Thu, 30 Jul 2026 01:39:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785400792; x=1786005592;
+        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=qPHUvKAFy8CDKIgzImZmEkcdzJ9femtXsPgBerSdioA=;
+        b=rwyGYRWxBM71FwFkALP6Rg/D0wmZf6ZnxU4dHxGaNe7y3u9PmiyKFZGhbP6AzCrmVY
+         COuISD4MFnwLYjhdxAkS09HKQ12wZvzy0G55hR+IPbJgdn5Lx89ek7MGnucwlw1DlIH2
+         CmtAuTmXULM6iFxz/QIBbjF+EVrx/WxjEZWFooj8Ia8nrH7Zl5/EbIRQVvadLJPASRBC
+         HMcyocyUNlJn8AK2K1b/Irz+hYIeGa03z70l9+2U6pc040jqKh5dkEzr8sO/W0kx4Sjh
+         YZc8wQIgvn/KpwpKHvCLFCzFNEN8UX2LkNtc/dJRTWj3xzoqvISnxbeUXihbDs5DMx7U
+         IVhA==
+X-Gm-Message-State: AOJu0YypEDLaCGpWsWo1NY3AtgNlpxnefdjffJL3uBneNITciXqEKT0q
+	VnDkw7PiPYdAPADEpbMJ93FxzL/0yzlfMNMqfKVv5fkkxAzgOCmo86Scbr1Rco0UmN+hlfvSSWH
+	poUGNMJ3jYGh5v9i8XtfMgTfXbJ7l5OAxb/+x3pmNAGBv0HHZYFec2T14REg=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260730032040.95378-1-jeffinphilip14@gmail.com>
-X-Debian-User: leitao
+X-Received: by 2002:a05:6820:808:b0:6a3:5ba3:4fef with SMTP id
+ 006d021491bc7-6acbc12d79amr939075eaf.43.1785400792742; Thu, 30 Jul 2026
+ 01:39:52 -0700 (PDT)
+Date: Thu, 30 Jul 2026 01:39:52 -0700
+In-Reply-To: <20260730065231.1644030-1-sst@poczta.fm>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a6b0dd8.79190830.3d7c75.001b.GAE@google.com>
+Subject: [syzbot ci] Re: wifi: zd1211rw: reject secondary interfaces to
+ prevent conflicts
+From: syzbot ci <syzbot+cid88d044a615d9e11@syzkaller.appspotmail.com>
+To: dsd@gentoo.org, johannes.berg@intel.com, kees@kernel.org, 
+	linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org, 
+	nihaal@cse.iitm.ac.in, sst@poczta.fm, syzbot@lists.linux.dev, 
+	syzbot@syzkaller.appspotmail.com, syzkaller-bugs@googlegroups.com
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Jul 30, 2026 at 08:50:40AM +0530, Jeffin Philip wrote:
-> From: syzbot <syzbot@kernel.org>
+syzbot ci has tested the following series
 
-I have never seen a syzbot fix before. Have the policy change and now we
-have fixes from bots?
+[v2] wifi: zd1211rw: reject secondary interfaces to prevent conflicts
+https://lore.kernel.org/all/20260730065231.1644030-1-sst@poczta.fm
+* [PATCH v2] wifi: zd1211rw: reject secondary interfaces to prevent conflicts
+
+and found no issues.
+
+Full report is available here:
+https://ci.syzbot.org/series/9b94bd4a-bcde-4e2d-80ff-1f2f332416a6
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
