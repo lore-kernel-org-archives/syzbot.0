@@ -1,134 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C392C3750CF
-	for <syzbot@lists.linux.dev>; Thu, 30 Jul 2026 15:12:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79DDE3DA5C3
+	for <syzbot@lists.linux.dev>; Thu, 30 Jul 2026 22:26:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785424326; cv=none; b=e0p0PGILqzIOvP7sQp3QQOJZEY5PszriEO2nWaF+cYD1LOCwUq9ObiHE0EjH5lhQpESdVtT2/LO4z+4EWRucj+LrOJHXw6QexUt5ZMbOwS8ALsVwamktdz9Yq4GGkbFCVWd8hq5Ht0Lc+J/4UmZhA3gve1pgvG3OTWzkYMXISv8=
+	t=1785450364; cv=none; b=DfyEnzKpdi27IyxhJPJstmb9MOASLnpbCebWVrlZdsUnQfzIUkEGFfcn8ptcgqu+Uu0JIo8SOGT1IskdU3q/+JKHR9vXipVZCXbpagFRTi5SdEHaqDq5wYb0cC9giw9BjCGvSaCG2Qu5ENvReWObf+7QTl/31I+mwtUad0wknJA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785424326; c=relaxed/simple;
-	bh=f744/0nqxzA7DyY4C/46tLx3kMmk5gHV/IExdjYsScc=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=PtKP6x9jpMZrfQYzHtNsK0TTewHG3sQJKqXNHz+gdTk+ywtjFxJDNFqCUKrc4LwdquCt1lRB1VSePKvdafPgFl0OQSGMupIlAM+kJllRwKMQBJxsotvQhOAAaV1dKNXuz0YD1aFQM7kIdFZEOlMP42kGBtwl8Lj88gbbg8WWUGA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q4X/TjsM; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q4X/TjsM"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 760031F00A3A;
-	Thu, 30 Jul 2026 15:12:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785424324;
-	bh=U8H+MHA3u5eYK1LhnmWfHLgHZt+eGDnQbL5pikwkTw4=;
-	h=From:To:Cc:Subject:Date;
-	b=Q4X/TjsMBCmQYb0Z+JzoyK/i0myPV0W2WuZHKhXC5V2aOPjLTjJRfabnTH9FnBPa4
-	 ltc578/C68g9acLh1wxWc+vpBXm6WsCqeKm1UezQm9CJDZsVLO79x4+6w+QFidgtvj
-	 c9Iaj/2GjMv2pkcuHkpKS/5ihbWhAnEjoy2vb/ftQ+eahYtrD4yaZmzzyAvdMbgSyx
-	 RaCaGsz9HIst9pRunUmqHiuWWIkyptospjD0GK5wKdqkRRDs3oHSRxS8oej0kAXkGa
-	 feWNw4l2+sYddlt2dy7C785Lg4eoIJB3AwsqABgqms6hfy9XAs61uHMRJGhRCDZI6E
-	 TiRSugYqOApjg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: gadget: midi2: Fix memory leak in configfs default groups
-Message-ID: <67862448-cd60-416f-b63f-bbd295ceeba1@mail.kernel.org>
+	s=arc-20240116; t=1785450364; c=relaxed/simple;
+	bh=55vo5Bh4iZ2QewJQKeXpIMZxb39S9TsKGly+O4LJPcA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=SAaFX/iMVqVWbTsNFgMyMpey6WU7KYwfP91OBygvHoJw6Iut4to/6Wp6uhjQn+NJBNhc624CayklFjHmECVdkRlqRgq0EAv1UXj0HgQ85CQ5H5mmVlYhDrGd6rr9Cyp5VsW4y6CsWg4O+TAh3X/OkQkajwEeGRpDx4+tpvVUMEc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7eb60cfd476so262698a34.3
+        for <syzbot@lists.linux.dev>; Thu, 30 Jul 2026 15:26:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785450362; x=1786055162;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=aaZSp4ietQ2rMVLvtF22IgZdiAKPZoWYoRWVLeE5SFM=;
+        b=L6oWgS+ljtgMN3ynLP/QNuNFK2oliu+3SEgF5pCKfKbRBi59qdaQCKv4MwSG7IDsaj
+         LwCLy9iHSN/jiUIgGo0FRyoi4mb2/c7VlZDvN/zGcrESdmgEbhoAjC84fDPeEvnP9zuC
+         KLZP13z7/mHzsnhwPR8NXD/WD/NRRKJrSRdLjlSHX9gtEME0xvx6EsnirjWyzu4TUqAt
+         m0QCQSDoAB3ElsNlUs58wG547SgnU2Z6FuNfWrpHf13domIvc5xaqCl2culNhAkVz3vh
+         W3HHI5LQy6GPDXpXPjS+QKu8hEsZXAIoQkfDlmr3bG/Mbh/8O16yB92psvPwBU8rF3mZ
+         OOyg==
+X-Gm-Message-State: AOJu0YzaCmd+C5MVBmGeOhMW4UCK1yOlCenTrEM4E37G7gwxBL8YiDio
+	IABmWTNaZMi8aOGONNU9b8kcru2D8GSUfSUOAlyvsF631yhl5FiULY/zry+3kDfAJ3nd5IWGbEW
+	nm51EDdaf3w+9vxSi/pLR7TYMkdkIJeUsSJDIMgzhcofmfbKJ7U8c415xtPE=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Thu, 30 Jul 2026 15:12:04 +0000 (UTC)
+X-Received: by 2002:a05:6808:244d:b0:4a0:97bc:53a6 with SMTP id
+ 5614622812f47-4ad87728d5bmr3428582b6e.7.1785450362325; Thu, 30 Jul 2026
+ 15:26:02 -0700 (PDT)
+Date: Thu, 30 Jul 2026 15:26:02 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a6bcf7a.77639fcc.3d4fd0.0011.GAE@google.com>
+Subject: [moderation/CI] Re: udf: Fix data loss when converting inline inodes
+ to out of line
+From: syzbot ci <syzbot+cie464680588e3636b@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-When a USB function instance for midi2 is allocated, it dynamically
-allocates ep_opts and block_opts structures and adds them as default groups
-(ep.0 and block.0). While configfs removes the dentries for default groups
-when the parent directory is removed, it does not automatically drop their
-reference counts. This responsibility lies with the driver.
+syzbot ci has tested the following series
 
-Because f_midi2_free_inst() and f_midi2_ep_opts_release() do not clean up
-their default groups, the ep_opts and block_opts structures are leaked when
-the function instance is destroyed.
+[v1] udf: Fix data loss when converting inline inodes to out of line
+https://lore.kernel.org/all/20260729144547.4028292-2-jack@suse.cz
+* [PATCH] udf: Fix data loss when converting inline inodes to out of line
 
-Fix this by explicitly calling configfs_remove_default_groups() in the
-respective release functions. This ensures that the reference counts of the
-default groups are properly dropped, triggering the existing release
-callbacks (f_midi2_ep_opts_release and f_midi2_block_opts_release) to
-safely free the dynamically allocated memory.
+and found the following issue:
+kernel build error
 
-Kmemleak reports:
+Full report is available here:
+https://ci.syzbot.org/series/4fd6ec7d-910f-419f-97fd-98adfdca5e52
 
-BUG: memory leak
-unreferenced object 0xffff88810aacb200 (size 512):
-  comm "syz.0.19", pid 6225, jiffies 4294944049
-  hex dump (first 32 bytes):
-    08 b2 ac 0a 81 88 ff ff 65 70 2e 30 00 00 00 00  ........ep.0....
-    00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00  ................
-  backtrace (crc f2efe6a4):
-    ...
-    f_midi2_ep_opts_create drivers/usb/gadget/function/f_midi2.c:2504
-    [inline]
-    f_midi2_alloc_inst+0x80/0x2c0
-    drivers/usb/gadget/function/f_midi2.c:2666
-    ...
+***
 
-BUG: memory leak
-unreferenced object 0xffff8881083d9e00 (size 256):
-  comm "syz.0.19", pid 6225, jiffies 4294944049
-  hex dump (first 32 bytes):
-    08 9e 3d 08 81 88 ff ff 62 6c 6f 63 6b 2e 30 00  ..=.....block.0.
-    00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00  ................
-  backtrace (crc cc37bc9e):
-    ...
-    f_midi2_block_opts_create drivers/usb/gadget/function/f_midi2.c:2342
-    [inline]
-    f_midi2_alloc_inst+0x16a/0x2c0
-    drivers/usb/gadget/function/f_midi2.c:2673
-    ...
+kernel build error
 
-Fixes: 29ee7a4dddd5 ("usb: gadget: midi2: Add configfs support")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+eaa106d192c9daf37f95@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=eaa106d192c9daf37f95
-Link: https://syzkaller.appspot.com/ai_job?id=9087164f-64c8-456d-abd0-052d4a7f1ddd
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-To: "Takashi Iwai" <tiwai@suse.de>
-Cc: "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>
-Cc: "Kees Cook" <kees@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+tree:      vfs
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs.git
+base:      05c09c9c8a79d5539fef30d42e732eba90a15dcf
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/bf7f881a-5ac4-4451-8a16-c8d869102893/config
+
+fs/udf/inode.c:348:13: error: use of undeclared identifier 'UDF_MAP_CREATE'
+fs/udf/inode.c:346:20: error: variable has incomplete type 'struct udf_map_rq'
+fs/udf/inode.c:382:8: error: call to undeclared function 'udf_map_block'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/drivers/usb/gadget/function/f_midi2.c b/drivers/usb/gadget/function/f_midi2.c
-index 19fdac024..ec4266ecc 100644
---- a/drivers/usb/gadget/function/f_midi2.c
-+++ b/drivers/usb/gadget/function/f_midi2.c
-@@ -2473,6 +2473,7 @@ static void f_midi2_ep_opts_release(struct config_item *item)
- {
- 	struct f_midi2_ep_opts *opts = to_f_midi2_ep_opts(item);
- 
-+	configfs_remove_default_groups(to_config_group(item));
- 	kfree(opts->info.ep_name);
- 	kfree(opts->info.product_id);
- 	kfree(opts);
-@@ -2639,6 +2640,7 @@ static void f_midi2_free_inst(struct usb_function_instance *f)
- 
- 	opts = container_of(f, struct f_midi2_opts, func_inst);
- 
-+	configfs_remove_default_groups(&opts->func_inst.group);
- 	kfree(opts->info.iface_name);
- 	kfree(opts);
- }
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
-base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+The email will later be sent to:
+[jack@suse.cz linux-fsdevel@vger.kernel.org stable@vger.kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
