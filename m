@@ -1,95 +1,193 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1EA83CB565;
-	Fri, 31 Jul 2026 10:06:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785492403; cv=none; b=LwoD3wJpHVuA/hjg8V0IRN/7WU+aasc/drQCWoGSlqv58A4LCeSr99TIzBFdLcgiJn/vlijRT1/rFu8OWXarmjgAhrpFqs0QmmbNRqLI1Dfe5sJYnTZbC5GK8aLxEc2Aox8XKiW5TUBPfijWffyGjAJCWLm3UqBTSslE/r63whM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785492403; c=relaxed/simple;
-	bh=wx4kngmNrTo/NSw75ebXXyzUURVJejqXFLaIDkBKXqo=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=i7zjbN4PrEI5gb2/uPU9DmfbkxUp6bdi987SemI67TiuoFBRwIS1oH8+lXbrbaro9CuqqHuvojoENBhsJcQnO+veDKESPOEVzt3nZXAvs+mcHFKj8xjuvMhSo/iYJUYdOFXkUhpveOYJcjitNgSqzttQam7khj8+6mVTMnGW9tM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rou5vz6Q; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D580C3E1696
+	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 10:10:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.178
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785492639; cv=pass; b=RZlYdrvSgbcJNxPES7t2tDYidKScKm2r0G/hjKiHMpB1fM1mZZZtreh8/nfP0sVKtDe64/pJ9klUWAt3tjkosYsgdVdsn/mopxTGdmCJ4gIONDUOZZ+Q3WwqGLn3u+FPfzS/EbvoPf1VhMHYsqWsEovD2dPO085jjlzrG1QxcoY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785492639; c=relaxed/simple;
+	bh=IbJwhBZmwMfBI422w5j+Sf1rz3qf9xg5Y7LrN3aiaD0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=a/CXoQjZC3Y2hdJyz/zAewwCG5hNh74HI3Zti4k42EfkMKMcR8QX2dtqJVaZIwIzQW0UYB2tOAJh7Gj083qEnJfi6BUNs8fPEaiQt6xJIR9aenOK2D2GMDd8xGl8rbWVGIsW/xSRdtO3dqhAhaLCsRIzwk0c0ZfV5YefdemVe2k=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=sXOpBL9s; arc=pass smtp.client-ip=209.85.167.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rou5vz6Q"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A05E41F00A3A;
-	Fri, 31 Jul 2026 10:06:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785492381;
-	bh=1PAjhfiJGNKE7o1Y+80U2ZTuRF/fFH0ZTMJo/XOsbh8=;
-	h=From:To:Cc:Subject:Date;
-	b=Rou5vz6QmgO1xtAD5B/GAXzPW0AYW7cXXf8RLp7YJhnwmBkEBE1AA/SopkBs2gCEL
-	 PPQ2NXzRhrN9VfLOqQONHzQ/+9YDKUlkC69+FZbw4VSekfQFlk5+66meWCR3qeP9i0
-	 9OYzLSfiTtn9UTf9DmD0ozYPJe5xmqlKJsy5ygdDZMYt82ElsGzIf4+pjBci6FOZ0I
-	 m5jXSbn5bLeQYcaS5sWIQyJZPKwwPQ6t+NqRE92FzmWOctC/8TQOqw12s8D9EdYPig
-	 /NEzggSmpW6d+HHZXw9BSHXTZC5qOec8yNRlU8uXN2Or5VpYPfxHPjAGfwzu77hTJ0
-	 Yvsn6NFUcRR+Q==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Aleksandr Nogikh <nogikh@google.com>, "David S. Miller" <davem@davemloft.net>, "Eric Dumazet" <edumazet@google.com>, "Herbert Xu" <herbert@gondor.apana.org.au>, "Jakub Kicinski" <kuba@kernel.org>, <netdev@vger.kernel.org>, "Paolo Abeni" <pabeni@redhat.com>, "Steffen Klassert" <steffen.klassert@secunet.com>, "Antony Antony" <antony.antony@secunet.com>
-Cc: horms@kernel.org, linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Subject: [PATCH] xfrm: add missing RCU read lock in xfrm_send_migrate_state()
-Message-ID: <2f866679-25c2-4b17-9fa6-086d4c3b593f@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="sXOpBL9s"
+Received: by mail-oi1-f178.google.com with SMTP id 5614622812f47-497deab2d66so576351b6e.0
+        for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 03:10:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1785492619; cv=none;
+        d=google.com; s=arc-20260327;
+        b=kMzAyGI7ojt8FkfIsr1I9BcNLlnMJTHxVpnN0oLFPQLQKW1tbX1jB+amJzozEaLato
+         tU2zLtLVfhM3j+CzFcPhFKrrrwIswKQQcmyOji7FqcRr/DoHXmopnhyvVha8HsEvYIyX
+         yOJyo+ZhqDIVgQM+CB3db0a2PtY5dCyNAwoKJPRbeb9LFU0rCltZ3gbNbpwP+fyALzzf
+         8PxlcqOaWlPPnJ4whgYgdkVeduibyDqqpMzdY04QWwW1pvRNfNSICgM/lJEUfXw2ODsK
+         zplS3U4mCIJc6hLCryKjL2V5nM8dr54d7HD27UVuYb42mi4zTfUi9sScKx6ltqm5w5zb
+         bjfA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=QidHawpFrn7oagZ6gRmz2sTd6ybC7NSR1hzrfPHkUGw=;
+        fh=h9lLtRBEY5+ClF3RtLTsYYJXaLQrb/fbBOn7WKZQWVg=;
+        b=c0BJ8DQMqogg7B1R56+rMwlxEQtXDViCa0flzM4ezM4/Ko48WUG8XbNIGJc1OaMiv1
+         +JDz/eE7soI01hTU/iLn0RW7pEsf7qfGW2Gb80TQr3Srxy+9gQxR+y6PzVU0A6QQlvLq
+         Rvq9LLyd6nF6rg9cD0TkZDygK8nOJtgv5RZ/s19ukfonUmxFcFZT3RcRA/Pa7SqkFESe
+         m/0cYt46NMvBxUsa6pyRXMlEhdl9TfQTUSYAp1mXPB1O+6kUO2pX8AUaFiyDXi6627qD
+         36PEl5N644gJI1TMoWR9W5/B3d8cIBEDoGTPCSXmlPTsUiorGTWmPVOyup84ErrSpDu2
+         gGqA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1785492619; x=1786097419; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=QidHawpFrn7oagZ6gRmz2sTd6ybC7NSR1hzrfPHkUGw=;
+        b=sXOpBL9siEHJT5wyvcq0AL2u0PGUMyLVErxdW5Qdva3HO9s5SyzowYaGiMqhwrcNia
+         hS/JXOin6zAPu4op/B33Bd33aw1gTrIc8SuCzdxk+kEatxeED4lf4bSSkwJHlUbp1LBC
+         dC8JgwwHszsjT+xTRWbOob0RGRQ2uQy2W69Q2CMlkWLKCJgZCfGgekTwUP2awUNCnCj/
+         pcyRlua6US1ZHSVqgLZGkNFm8cH4D484mpr+zh/zEvGcZCkJq6lS8n/UCoPjZVhsJDPB
+         uAjGKdUSaZH0zKtdGzS+wdeCHxsjvKLGDZcTIFRNtozzKbF5dbdlKehbLl4WIyQBoLwZ
+         aSsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785492619; x=1786097419;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=QidHawpFrn7oagZ6gRmz2sTd6ybC7NSR1hzrfPHkUGw=;
+        b=OBPr+MToTJvhLkts+meI2wWgaO8u+mTPcWv1e3rWF7wOoq87QHfJgn8DbJKlv+IIUd
+         UH2vvymyn7UwBkgw5tLAe08DBf8JpbRzg5WUnSv8UE7He+LRHRKNsPX2LTvVqUIAZeAH
+         F58+j00K3wm+G0RuXdoJIY8+yVz/547nWxpm3d7g8ofKz6ckhlKJLBLvHdX+vqee/NX9
+         S/AnAzhiSSTRzoPA7Uhf9N+Cajmd0I78c+HB1sVrQbP8Mio1m2FFoB7SIL1yHMB3ORKR
+         0VfLtDY2aOQWtgDSs4yD50iBSgAefI0ApsDLQUrp7pjeYa6z2SfdsNOGqfOHriclebAE
+         J3CA==
+X-Forwarded-Encrypted: i=1; AHgh+RrfcLlM1QWDDYOQ2SxKa9SvCC4cwFDy2PmEPKhdtICVQOvYXxcWBFUknI6XGX6Z3kw7IkcRgl8=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy7H64GoJK3ABQXkfLdIlUXg11zNh5Jr9C5Op0voEqxd35hlH1+
+	kM4G0PRm1zC8s4bo8dKJVnRpQ5wWfkkmJYga94X1Npmo8v4iHyWNf1qcIFacv8Hd/Zf7NZ1Zhwz
+	omozuS8Q311a1Tj6KXTyoKeKx/uLr+JnPc1zLF5/Z
+X-Gm-Gg: AR+sD13qs38oGRYtIDr/dqQ4falblRaXqU3KSu2ugv0I5RglG0F283lDT0Mo8lCiiu4
+	dFAEBxwIujGPOzcLHc3O8tyR0FJ/7GTC1QX0LUgsShE1akQxx226NbYpuYrYQ9cgNz1bd5ZSvK1
+	WemhRf3SvBiOPvuz6vJx8jXVAkhG9hjiQjkq5Z5dcu6X2WqRfwhL2vdlogAIpbznf+hsvnt0/xp
+	CYxbrIOnlQH2DEjzQXi1YEpuESBoL5TpxIAiD6fM7GggZZT0UerhJVue7cwQXUUQLogg9Ze0yLa
+	mdAPLKm1kpsDiFaEZL5pKhlwt6J2LTjtrIZc6ZigGlkr3LEt0675NmBDoCugX12yW4gXYAyCYR1
+	eu+kx4VF5nI8oSHb5+9ltwXgvnSHzGXIy6NxmzDDQRogQa9OE+dgmZepGLpxj3KtJsVt5G1BDd6
+	6ncz6YpnbRkQvlFa6KgKVvLKE=
+X-Received: by 2002:a05:6808:309d:b0:496:1111:d7a8 with SMTP id
+ 5614622812f47-4ae318d4659mr1728414b6e.8.1785492618758; Fri, 31 Jul 2026
+ 03:10:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri, 31 Jul 2026 10:06:20 +0000 (UTC)
-
+References: <10fa68ab-b588-4ca1-8ac1-dd13a95cff91@mail.kernel.org>
+In-Reply-To: <10fa68ab-b588-4ca1-8ac1-dd13a95cff91@mail.kernel.org>
 From: Aleksandr Nogikh <nogikh@google.com>
+Date: Fri, 31 Jul 2026 12:10:07 +0200
+X-Gm-Features: AUfX_myOzkvUAwKGbYNyWT-cknoQuAmu18Exdj5b377BE3D0uC-nSmQABYcQ_mQ
+Message-ID: <CANp29Y6oPs4vTeE-pw+5EybTeK5UewTkLLbXT4EwO8gP__9SgQ@mail.gmail.com>
+Subject: Re: [PATCH RFC] libceph: validate banner payload length
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-xfrm_nlmsg_multicast() requires the RCU read lock to be held because it
-safely dereferences the net->xfrm.nlsk pointer using rcu_dereference().
-When it is called from xfrm_send_migrate_state(), the RCU read lock is not
-held, which triggers a suspicious RCU usage warning:
+#syz upstream
 
-WARNING: suspicious RCU usage
-net/xfrm/xfrm_user.c:1630 suspicious rcu_dereference_check() usage!
-
-Call Trace:
- lockdep_rcu_suspicious+0x13f/0x1d0 kernel/locking/lockdep.c:6876
- xfrm_nlmsg_multicast+0x1d8/0x1f0 net/xfrm/xfrm_user.c:1630
- xfrm_send_migrate_state+0x870/0xae0 net/xfrm/xfrm_user.c:3340
- xfrm_do_migrate_state+0x1749/0x1e90 net/xfrm/xfrm_user.c:3507
- xfrm_user_rcv_msg+0x7a8/0xf30 net/xfrm/xfrm_user.c:3907
-
-Fix this by wrapping the xfrm_nlmsg_multicast() call in
-xfrm_send_migrate_state() with rcu_read_lock() and rcu_read_unlock().
-
-Fixes: a9d155ea9b44 ("xfrm: add XFRM_MSG_MIGRATE_STATE for single SA migration")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+c0e99a1aa85a286d7a3b@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=c0e99a1aa85a286d7a3b
-Link: https://syzkaller.appspot.com/ai_job?id=8977f559-3a7e-4bb5-b4d6-1196956260b6
-Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
-
----
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index d6db63304..0ba0614d6 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -3337,7 +3337,11 @@ static int xfrm_send_migrate_state(struct net *net,
- 		return err;
- 	}
- 
--	return xfrm_nlmsg_multicast(net, skb, 0, XFRMNLGRP_MIGRATE);
-+	rcu_read_lock();
-+	err = xfrm_nlmsg_multicast(net, skb, 0, XFRMNLGRP_MIGRATE);
-+	rcu_read_unlock();
-+
-+	return err;
- }
- 
- static int xfrm_do_migrate_state(struct sk_buff *skb, struct nlmsghdr *nlh,
-
-
-base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
--- 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On Fri, Jul 31, 2026 at 11:52=E2=80=AFAM 'syzbot' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
+>
+> When parsing the Ceph messenger v2 protocol banner, the `payload_len` fie=
+ld
+> is decoded from the banner prefix. If a client sends a banner with a
+> `payload_len` of 0, the kernel sets up a 0-length socket read. This
+> violates an invariant in the state machine, triggering a warning in
+> `populate_in_iter()`:
+>
+> ------------[ cut here ]------------
+> !iov_iter_count(&con->v2.in_iter)
+> WARNING: net/ceph/messenger_v2.c:3129 at populate_in_iter
+> net/ceph/messenger_v2.c:3129 [inline], CPU#1: kworker/1:3/5070
+> WARNING: net/ceph/messenger_v2.c:3129 at ceph_con_v2_try_read+0x6634/0x68=
+10
+> net/ceph/messenger_v2.c:3159, CPU#1: kworker/1:3/5070
+> ...
+> Call Trace:
+>  <TASK>
+>  ceph_con_workfn+0x1f5/0x14a0 net/ceph/messenger.c:1575
+>  process_one_work kernel/workqueue.c:3322 [inline]
+>  process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+>  worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
+>  kthread+0x388/0x470 kernel/kthread.c:436
+>  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+>  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+>  </TASK>
+>
+> According to the msgr2 protocol specification, the banner payload is
+> expected to contain at least two 64-bit integers (`server_feat` and
+> `server_req_feat`). Therefore, `payload_len` must be at least 16 bytes.
+>
+> Fix this by adding a check in `process_banner_prefix()` to reject a
+> `payload_len` smaller than 16 bytes. This prevents the 0-length read and
+> correctly aborts the connection with a protocol error.
+>
+> Fixes: cd1a677cad99 ("libceph, ceph: implement msgr2.1 protocol (crc and =
+secure modes)")
+> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+87c7c2d63c44e41c77a3@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3D87c7c2d63c44e41c77a3
+> Link: https://syzkaller.appspot.com/ai_job?id=3Dc8ca3d63-717a-4933-89ec-f=
+3d761b8690d
+> To: "Alex Markuze" <amarkuze@redhat.com>
+> To: <ceph-devel@vger.kernel.org>
+> To: "Ilya Dryomov" <idryomov@gmail.com>
+> To: "Viacheslav Dubeyko" <slava@dubeyko.com>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> ---
+> diff --git a/net/ceph/messenger_v2.c b/net/ceph/messenger_v2.c
+> index 05f6eea29..b323b61e7 100644
+> --- a/net/ceph/messenger_v2.c
+> +++ b/net/ceph/messenger_v2.c
+> @@ -2142,6 +2142,11 @@ static int process_banner_prefix(struct ceph_conne=
+ction *con)
+>         payload_len =3D ceph_decode_16(&p);
+>         dout("%s con %p payload_len %d\n", __func__, con, payload_len);
+>
+> +       if (payload_len < sizeof(u64) + sizeof(u64)) {
+> +               con->error_msg =3D "protocol error, bad banner payload le=
+n";
+> +               return -EINVAL;
+> +       }
+> +
+>         return prepare_read_banner_payload(con, payload_len);
+>  }
+>
+>
+>
+> base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+>
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated =
+patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/10fa68ab-b588-4ca1-8ac1-dd13a95cff91%40mail.kernel.org=
+.
