@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED4C331ECF
-	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 08:42:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30300489865
+	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 09:38:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785487326; cv=none; b=gvYiYslucf8X29Ld4r993t1HdU+MftyeRUIrNz5CaGaXscv0RFH+0mM3iynEiP3ZVOi0OH86TR4kFRwWeYEwFP5IC9Z/m+/X9nRqpwvoPzgDTRK5hVkAftNbfOMPGZ+AdkwXi6OU1UM+lxwDOmVxKY5BgHdfGXh9rOAfEJ5BTz4=
+	t=1785490686; cv=none; b=irumbi8Tmc+dxI/RIzgckQf2DgpPah+nAas76d/Ss0H2dxBLCu/idArpdkMK+byWH2iIo9Q1c5YC28h58nr5wsV48yDX0szCHl98jK0ZYjtsvr2A+D27kXPOOSYfJ1rDKrwIlruDTUI1uVPbBKmrpMHq1wuCMyYrPJ8kC0ir1oQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785487326; c=relaxed/simple;
-	bh=SDeNmkLveDOcooWNCrbeaQqzkzAaWrmP/Jyq5s4rf/U=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=BqUQdJyOXLjV27WMpKXBSCKp9zzj9j2gu8BHrmjZpJtB5xM/aflt0ho+2cClkE+AGPW8EiyOGobYVE8bsY7ap/53ucVbf9rDj+iW/dWMARXZjXqe/UzTwUgCRiSJuUZbYedNPB32Us1xWM96v5VRaE6J9Za4xtHyC/7SuUv9g4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WkVO725b; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785490686; c=relaxed/simple;
+	bh=U/7vgkDVn5JycvsNiTi5sIP/QucdsSue4yXens45su4=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=heSA3/15fp/1+G1wJ+h7TjiJPzc03HtFpdl6rMWjA8PV/eSlwYdJeui4L3C+MTRXsC073hAZjAP7KnlAvXnGU2koWSRaMoych2VaJ0MKQQxHxFqwXOtCQVoV9ex4/Jh35T5LBajwJ1oT3PBGpi1+tlTKMuJ3h/ZSGfTfCi/l4R8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kTW8MDO0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WkVO725b"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id F3F171F000E9;
-	Fri, 31 Jul 2026 08:42:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kTW8MDO0"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 636441F000E9;
+	Fri, 31 Jul 2026 09:38:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785487325;
-	bh=10+aDNAFyYCXsfEJQp0zLKxb4beflCtTw+vWUJojFQs=;
+	s=k20260515; t=1785490684;
+	bh=FJy2PulH+WdhpXHHGVzmhPc/XOdP3cShyA8oJahHodY=;
 	h=From:To:Cc:Subject:Date;
-	b=WkVO725bCr+/5C7Y/ArjJCIYHyXq+vjIVqE2Zhi6n+qJi/oQrcN23Tn6wQ69Qgv5V
-	 MD9qdWtszMmZMQmmS61Ju9Hf+D5jjoObaapaivIti800ej6yeS+s4vpDnGcJG1I8Ge
-	 17wbmGfO1tOhOwBhflSRkYS4YS0qKjK1nyDcenX8IeDXzAgjI0CJQkG40h/IOApcIU
-	 YplPEvTKyANDnAxbZZ7W4ttotwubCiCRh0n4CnDkoK9YNoHrR3loplVEi6Dug9CKsg
-	 Gk5xwSZSDVrn+6TdQ9A5H2LmQMCC/eAOj2tsVqy5Ullb66wrcyMI39P7KbHFNLq2Ix
-	 PTXW3sYdoBAMg==
+	b=kTW8MDO0+MwQ+8Dcm4rulGC+hpbEbJV3z00yf/ifEzfO7zphW29x9HpQBqvLKPRso
+	 glrwFKzBpF+pfjGPjc066V+R6ISGrgOgCDWOa9XCcHDTClNiR14B89xaZ0YSd7Zsdl
+	 nDLgyY4oGFqvyAgKOG60A493yh6V3cdohPyIM3t1v8ELocfFv8f66qHWQyVNpETClx
+	 w1pzgRMdINMobCeytlXiLe8bGBfBRp9lssjBaZN3fswvtRa4mo0JRn/3sYOogseMv/
+	 4sP6BziuGK9oZy4j0WXq9p0gil/KRMoKDId6eKivLlRYuNxK1411VpcmbmeQYQZPxk
+	 /w3l7BgfsjDyg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: gadget: f_uac1, f_uac2: fix memory leak and invalid free
-Message-ID: <3a95db7e-c37a-418a-8ba8-092b4c1e75f6@mail.kernel.org>
+Subject: [PATCH RFC] xfrm: add missing RCU read lock in xfrm_send_migrate_state()
+Message-ID: <d9a2552d-df0d-4144-a5ad-1db7aabb3dee@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,128 +38,71 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri, 31 Jul 2026 08:42:04 +0000 (UTC)
+Date: Fri, 31 Jul 2026 09:38:04 +0000 (UTC)
 
-In the UAC1_RATE_ATTRIBUTE and UAC2_RATE_ATTRIBUTE macros, the store
-functions duplicate the input string using kstrdup(). The duplicated string
-is then parsed using strsep(), which modifies the pointer to point to the
-next token.
+The xfrm_nlmsg_multicast() function requires the caller to hold the RCU
+read lock because it uses rcu_dereference() to safely access
+net->xfrm.nlsk.
 
-When the loop finishes successfully, the pointer becomes NULL, and calling
-kfree() on it does nothing, resulting in a memory leak. If an error occurs
-during parsing (e.g., kstrtou32() fails), the pointer is advanced to the
-middle of the allocated block. Calling kfree() on this modified pointer
-leads to an invalid free.
+When xfrm_send_migrate_state() is called directly from the netlink message
+handler xfrm_do_migrate_state(), it bypasses the xfrm_mgr callbacks which
+typically acquire the RCU read lock centrally. The netlink handler only
+holds the xfrm_cfg_mutex and does not hold the RCU read lock, leading to a
+suspicious RCU usage warning:
 
-BUG: memory leak
-unreferenced object 0xffff8881a08a76c0 (size 64):
-  comm "syz.0.18", pid 6226, jiffies 4294944138
-  hex dump (first 32 bytes):
-    34 34 31 30 30 00 34 38 30 30 30 00 38 38 32 30  44100.48000.8820
-    30 00 39 36 30 30 30 00 31 37 36 34 30 30 00 31  0.96000.176400.1
-  backtrace (crc 9bbd8bc9):
-    kmemleak_alloc_recursive include/linux/kmemleak.h:44 [inline]
-    slab_post_alloc_hook mm/slub.c:4597 [inline]
-    slab_alloc_node mm/slub.c:4917 [inline]
-    __do_kmalloc_node mm/slub.c:5333 [inline]
-    __kmalloc_node_track_caller_noprof+0x309/0x4e0 mm/slub.c:5471
-    __kmemdup_nul mm/util.c:64 [inline]
-    kstrdup+0x3e/0xc0 mm/util.c:84
-    f_uac2_opts_c_srate_store+0xeb/0x1a0
-    drivers/usb/gadget/function/f_uac2.c:2091
-    flush_write_buffer fs/configfs/file.c:207 [inline]
-    configfs_write_iter+0x115/0x170 fs/configfs/file.c:229
-    new_sync_write fs/read_write.c:595 [inline]
-    vfs_write+0x3a0/0x640 fs/read_write.c:687
+WARNING: suspicious RCU usage
+net/xfrm/xfrm_user.c:1630 suspicious rcu_dereference_check() usage!
 
-To fix this, use a separate pointer to keep track of the original memory
-block returned by kstrdup() so it can be correctly passed to kfree().
-Additionally, add a check for kstrdup() failure and return -ENOMEM instead
-of relying on strsep() to handle the NULL pointer and returning -EINVAL.
+Call trace:
+ lockdep_rcu_suspicious+0x168/0x26c kernel/locking/lockdep.c:6876
+ xfrm_nlmsg_multicast net/xfrm/xfrm_user.c:1630 [inline]
+ xfrm_send_migrate_state+0x6b0/0x958 net/xfrm/xfrm_user.c:3340
+ xfrm_do_migrate_state+0x1114/0x1728 net/xfrm/xfrm_user.c:3507
+ xfrm_user_rcv_msg+0x4e0/0x950 net/xfrm/xfrm_user.c:3907
+ netlink_rcv_skb+0x238/0x414 net/netlink/af_netlink.c:2556
+ xfrm_netlink_rcv+0x80/0x9c net/xfrm/xfrm_user.c:3929
 
-Fixes: a7339e4f5788 ("usb: gadget: f_uac2: Support multiple sampling rates")
+Fix this by explicitly acquiring and releasing the RCU read lock around the
+xfrm_nlmsg_multicast() call in xfrm_send_migrate_state(), similar to what
+is done in other direct netlink handlers like xfrm_notify_userpolicy().
+
+Fixes: a9d155ea9b44 ("xfrm: add XFRM_MSG_MIGRATE_STATE for single SA
+migration")
+
+Fixes: a9d155ea9b44 ("xfrm: add XFRM_MSG_MIGRATE_STATE for single SA migration")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+ebd045a6645cfb713c95@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=ebd045a6645cfb713c95
-Link: https://syzkaller.appspot.com/ai_job?id=cd9711f3-2259-4827-9de9-96cca016901b
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-To: "Julian Scheel" <julian@jusst.de>
-Cc: "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>
-Cc: "Kees Cook" <kees@kernel.org>
+Reported-by: syzbot+b9e97485773456b16a4a@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=b9e97485773456b16a4a
+Link: https://syzkaller.appspot.com/ai_job?id=d3018c43-91ed-4b51-be71-8469c523a748
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Herbert Xu" <herbert@gondor.apana.org.au>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Steffen Klassert" <steffen.klassert@secunet.com>
+To: "Antony Antony" <antony.antony@secunet.com>
+Cc: "Simon Horman" <horms@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/drivers/usb/gadget/function/f_uac1.c b/drivers/usb/gadget/function/f_uac1.c
-index 85c502e98..05684d9f3 100644
---- a/drivers/usb/gadget/function/f_uac1.c
-+++ b/drivers/usb/gadget/function/f_uac1.c
-@@ -1594,6 +1594,7 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
- 					  const char *page, size_t len)	\
- {									\
- 	struct f_uac1_opts *opts = to_f_uac1_opts(item);		\
-+	char *page_alloc = NULL;					\
- 	char *split_page = NULL;					\
- 	int ret = -EINVAL;						\
- 	char *token;							\
-@@ -1608,7 +1609,12 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
- 									\
- 	i = 0;								\
- 	memset(opts->name##s, 0x00, sizeof(opts->name##s));		\
--	split_page = kstrdup(page, GFP_KERNEL);				\
-+	page_alloc = kstrdup(page, GFP_KERNEL);			\
-+	if (!page_alloc) {						\
-+		ret = -ENOMEM;						\
-+		goto end;						\
-+	}								\
-+	split_page = page_alloc;					\
- 	while ((token = strsep(&split_page, ",")) != NULL) {		\
- 		ret = kstrtou32(token, 0, &num);			\
- 		if (ret)						\
-@@ -1619,7 +1625,7 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
- 	};								\
- 									\
- end:									\
--	kfree(split_page);						\
-+	kfree(page_alloc);						\
- 	mutex_unlock(&opts->lock);					\
- 	return ret;							\
- }									\
-diff --git a/drivers/usb/gadget/function/f_uac2.c b/drivers/usb/gadget/function/f_uac2.c
-index 897787d08..201a38815 100644
---- a/drivers/usb/gadget/function/f_uac2.c
-+++ b/drivers/usb/gadget/function/f_uac2.c
-@@ -2012,6 +2012,7 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
- 					  const char *page, size_t len)	\
- {									\
- 	struct f_uac2_opts *opts = to_f_uac2_opts(item);		\
-+	char *page_alloc = NULL;					\
- 	char *split_page = NULL;					\
- 	int ret = -EINVAL;						\
- 	char *token;							\
-@@ -2026,7 +2027,12 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
- 									\
- 	i = 0;								\
- 	memset(opts->name##s, 0x00, sizeof(opts->name##s));		\
--	split_page = kstrdup(page, GFP_KERNEL);				\
-+	page_alloc = kstrdup(page, GFP_KERNEL);			\
-+	if (!page_alloc) {						\
-+		ret = -ENOMEM;						\
-+		goto end;						\
-+	}								\
-+	split_page = page_alloc;					\
- 	while ((token = strsep(&split_page, ",")) != NULL) {		\
- 		ret = kstrtou32(token, 0, &num);			\
- 		if (ret)						\
-@@ -2037,7 +2043,7 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
- 	};								\
- 									\
- end:									\
--	kfree(split_page);						\
-+	kfree(page_alloc);						\
- 	mutex_unlock(&opts->lock);					\
- 	return ret;							\
- }									\
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index d6db63304..0ba0614d6 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -3337,7 +3337,11 @@ static int xfrm_send_migrate_state(struct net *net,
+ 		return err;
+ 	}
+ 
+-	return xfrm_nlmsg_multicast(net, skb, 0, XFRMNLGRP_MIGRATE);
++	rcu_read_lock();
++	err = xfrm_nlmsg_multicast(net, skb, 0, XFRMNLGRP_MIGRATE);
++	rcu_read_unlock();
++
++	return err;
+ }
+ 
+ static int xfrm_do_migrate_state(struct sk_buff *skb, struct nlmsghdr *nlh,
 
 
 base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
