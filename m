@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30300489865
-	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 09:38:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0513E21C173
+	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 09:41:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785490686; cv=none; b=irumbi8Tmc+dxI/RIzgckQf2DgpPah+nAas76d/Ss0H2dxBLCu/idArpdkMK+byWH2iIo9Q1c5YC28h58nr5wsV48yDX0szCHl98jK0ZYjtsvr2A+D27kXPOOSYfJ1rDKrwIlruDTUI1uVPbBKmrpMHq1wuCMyYrPJ8kC0ir1oQ=
+	t=1785490866; cv=none; b=i4xvUDW5E4M6ql20ApRxy6PYzDGOYg8I2FH64dmR1vGLoA3OayfVdbL3tgTB0XD9C0A8ShNwXzZrFj8pw9q4Kj6mz3c5xwh/l9zP52TvNvq9X3n/B/YLhdvofzB9lGOLalv8kj5jYTqH0cherKPik6axl1JV/eEUHziPFKg5TvQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785490686; c=relaxed/simple;
-	bh=U/7vgkDVn5JycvsNiTi5sIP/QucdsSue4yXens45su4=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=heSA3/15fp/1+G1wJ+h7TjiJPzc03HtFpdl6rMWjA8PV/eSlwYdJeui4L3C+MTRXsC073hAZjAP7KnlAvXnGU2koWSRaMoych2VaJ0MKQQxHxFqwXOtCQVoV9ex4/Jh35T5LBajwJ1oT3PBGpi1+tlTKMuJ3h/ZSGfTfCi/l4R8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kTW8MDO0; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785490866; c=relaxed/simple;
+	bh=iJ8idODRvcKm56QJcMIr9Mi/pLQAIxBP7191VmdTsMo=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=eNaM5OWiELx9C1hD5rsVBW3mxlgiwA980PDud3Y1B5w4UyZG54Fg21DKnU0zbygx+UANgLDSYR57VMG+JJzQi/jJ5FFT+ZXBPm43eN4oj1nqWYd4CsVXDN0DtaRzsdZg/nDhWhi3D8sTlI7ahLTBNBPamRvNRsLegsI+hwa5J+0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Th3l0KlM; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kTW8MDO0"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 636441F000E9;
-	Fri, 31 Jul 2026 09:38:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Th3l0KlM"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 69AB31F000E9;
+	Fri, 31 Jul 2026 09:41:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785490684;
-	bh=FJy2PulH+WdhpXHHGVzmhPc/XOdP3cShyA8oJahHodY=;
+	s=k20260515; t=1785490864;
+	bh=3vmdwQelKkAp9uTFYl8JoJSv0s2cz7eV+hCKGtHXOcs=;
 	h=From:To:Cc:Subject:Date;
-	b=kTW8MDO0+MwQ+8Dcm4rulGC+hpbEbJV3z00yf/ifEzfO7zphW29x9HpQBqvLKPRso
-	 glrwFKzBpF+pfjGPjc066V+R6ISGrgOgCDWOa9XCcHDTClNiR14B89xaZ0YSd7Zsdl
-	 nDLgyY4oGFqvyAgKOG60A493yh6V3cdohPyIM3t1v8ELocfFv8f66qHWQyVNpETClx
-	 w1pzgRMdINMobCeytlXiLe8bGBfBRp9lssjBaZN3fswvtRa4mo0JRn/3sYOogseMv/
-	 4sP6BziuGK9oZy4j0WXq9p0gil/KRMoKDId6eKivLlRYuNxK1411VpcmbmeQYQZPxk
-	 /w3l7BgfsjDyg==
+	b=Th3l0KlM4dDndLAkaZCx1ql0Hzv1tYUWQhamD5CvgmAY57AQjHjleWBZ13/uqCoky
+	 Jwl+D9vpd/76JiC8idDBVzRJLH6IybNTArZojoDb2UoAnCOjjGeBCwCFQSWRMnfVwq
+	 gXwtc1HF/D/JOClqWQv1ye6DR117LBcdWOtXnSlWtpmwWs7/WinlBTVy2Zz4gg5N7f
+	 eGBX8bcbAH4wkQ7erATxH2ULa1AvrR3yV0OhA6WQsPz5cq2jA2Z4OjYd0CcWaRVmU2
+	 okXsfGWTftwLbRpvfg1qPy2Fnho2QWr4hfj0krHqxDI0yUhQhEjHLQo2CcU2SCXxWP
+	 E+w6HyGuQfnOg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] xfrm: add missing RCU read lock in xfrm_send_migrate_state()
-Message-ID: <d9a2552d-df0d-4144-a5ad-1db7aabb3dee@mail.kernel.org>
+Cc: sst@poczta.fm, syzbot@lists.linux.dev
+Subject: [PATCH RFC v2] netdevsim: fix deadlock in nsim_bus_dev_max_vfs_write()
+Message-ID: <61024160-6fe7-45d6-baa0-0ddcba466bbe@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,74 +38,92 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri, 31 Jul 2026 09:38:04 +0000 (UTC)
+Date: Fri, 31 Jul 2026 09:41:04 +0000 (UTC)
 
-The xfrm_nlmsg_multicast() function requires the caller to hold the RCU
-read lock because it uses rcu_dereference() to safely access
-net->xfrm.nlsk.
+There is an ABBA deadlock between the devlink instance lock and the debugfs
+active file reference mechanism.
 
-When xfrm_send_migrate_state() is called directly from the netlink message
-handler xfrm_do_migrate_state(), it bypasses the xfrm_mgr callbacks which
-typically acquire the RCU read lock centrally. The netlink handler only
-holds the xfrm_cfg_mutex and does not hold the RCU read lock, leading to a
-suspicious RCU usage warning:
+When a device is being removed (e.g., via nsim_drv_remove()), the driver
+acquires the devlink instance lock and then calls
+debugfs_remove_recursive(). This function blocks waiting for all active
+file operations on the debugfs files to complete.
 
-WARNING: suspicious RCU usage
-net/xfrm/xfrm_user.c:1630 suspicious rcu_dereference_check() usage!
+Concurrently, if a user writes to the "max_vfs" debugfs file, the VFS layer
+acquires an active reference to the file. The write handler,
+nsim_bus_dev_max_vfs_write(), then attempts to acquire the devlink instance
+lock, which is already held by the removal task.
 
-Call trace:
- lockdep_rcu_suspicious+0x168/0x26c kernel/locking/lockdep.c:6876
- xfrm_nlmsg_multicast net/xfrm/xfrm_user.c:1630 [inline]
- xfrm_send_migrate_state+0x6b0/0x958 net/xfrm/xfrm_user.c:3340
- xfrm_do_migrate_state+0x1114/0x1728 net/xfrm/xfrm_user.c:3507
- xfrm_user_rcv_msg+0x4e0/0x950 net/xfrm/xfrm_user.c:3907
- netlink_rcv_skb+0x238/0x414 net/netlink/af_netlink.c:2556
- xfrm_netlink_rcv+0x80/0x9c net/xfrm/xfrm_user.c:3929
+This creates a circular dependency resulting in a deadlock:
 
-Fix this by explicitly acquiring and releasing the RCU read lock around the
-xfrm_nlmsg_multicast() call in xfrm_send_migrate_state(), similar to what
-is done in other direct netlink handlers like xfrm_notify_userpolicy().
+INFO: task blocked for more than 143 seconds.
+Call Trace:
+ wait_for_completion+0x2ca/0x5e0 kernel/sched/completion.c:153
+ __debugfs_file_removed fs/debugfs/inode.c:751 [inline]
+ remove_one+0x2df/0x3b0 fs/debugfs/inode.c:758
+ __simple_recursive_removal+0x215/0x520 fs/libfs.c:623
+ debugfs_remove+0x5b/0x70 fs/debugfs/inode.c:781
+ nsim_dev_debugfs_exit drivers/net/netdevsim/dev.c:372 [inline]
+ nsim_drv_remove+0xc0/0x170 drivers/net/netdevsim/dev.c:1803
 
-Fixes: a9d155ea9b44 ("xfrm: add XFRM_MSG_MIGRATE_STATE for single SA
-migration")
+INFO: task blocked for more than 143 seconds.
+Call Trace:
+ __mutex_lock+0x7bf/0x1550 kernel/locking/mutex.c:821
+ nsim_bus_dev_max_vfs_write+0x229/0x3d0 drivers/net/netdevsim/dev.c:276
+ full_proxy_write+0x127/0x1f0 fs/debugfs/file.c:388
+ vfs_write+0x296/0xba0 fs/read_write.c:685
 
-Fixes: a9d155ea9b44 ("xfrm: add XFRM_MSG_MIGRATE_STATE for single SA migration")
+To fix this, use devl_trylock() in nsim_bus_dev_max_vfs_write() instead of
+devl_lock(). If the lock cannot be acquired, return -EBUSY. This aborts the
+write operation, releases the debugfs active file reference, and allows the
+pending debugfs_remove_recursive() to proceed.
+
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+b9e97485773456b16a4a@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=b9e97485773456b16a4a
-Link: https://syzkaller.appspot.com/ai_job?id=d3018c43-91ed-4b51-be71-8469c523a748
+Reported-by: syzbot+3147c5de186107ffc7a1@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=3147c5de186107ffc7a1
+Link: https://syzkaller.appspot.com/ai_job?id=fcdda182-bebf-49ab-ada0-d4d2e814ebf7
+To: "Andrew Lunn" <andrew+netdev@lunn.ch>
 To: "David S. Miller" <davem@davemloft.net>
 To: "Eric Dumazet" <edumazet@google.com>
-To: "Herbert Xu" <herbert@gondor.apana.org.au>
 To: "Jakub Kicinski" <kuba@kernel.org>
 To: <netdev@vger.kernel.org>
 To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Steffen Klassert" <steffen.klassert@secunet.com>
-To: "Antony Antony" <antony.antony@secunet.com>
-Cc: "Simon Horman" <horms@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index d6db63304..0ba0614d6 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -3337,7 +3337,11 @@ static int xfrm_send_migrate_state(struct net *net,
- 		return err;
- 	}
+v2:
+- No changes since v1.
+
+v1:
+https://lore.kernel.org/all/a861f535-2bc3-46cd-ab28-a4190ae24248@mail.kernel.org/T/
+---
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index aed9ad5f1..421cd7327 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -273,7 +273,11 @@ static ssize_t nsim_bus_dev_max_vfs_write(struct file *file,
+ 		return -ENOMEM;
  
--	return xfrm_nlmsg_multicast(net, skb, 0, XFRMNLGRP_MIGRATE);
-+	rcu_read_lock();
-+	err = xfrm_nlmsg_multicast(net, skb, 0, XFRMNLGRP_MIGRATE);
-+	rcu_read_unlock();
+ 	nsim_dev = file->private_data;
+-	devl_lock(priv_to_devlink(nsim_dev));
++	if (!devl_trylock(priv_to_devlink(nsim_dev))) {
++		ret = -EBUSY;
++		goto out;
++	}
 +
-+	return err;
- }
+ 	/* Reject if VFs are configured */
+ 	if (nsim_dev_get_vfs(nsim_dev)) {
+ 		ret = -EBUSY;
+@@ -285,6 +289,7 @@ static ssize_t nsim_bus_dev_max_vfs_write(struct file *file,
+ 	}
+ 	devl_unlock(priv_to_devlink(nsim_dev));
  
- static int xfrm_do_migrate_state(struct sk_buff *skb, struct nlmsghdr *nlh,
++out:
+ 	kfree(vfconfigs);
+ 	return ret;
+ }
 
 
-base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
+base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
