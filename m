@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F6CE3C4172;
-	Fri, 31 Jul 2026 10:14:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2346F3DA7D6;
+	Fri, 31 Jul 2026 10:15:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785492906; cv=none; b=bKVU1Edo0aRCk6x0jaYvUWXrrZvVt/j6BYPJ+vo0HhiY0hHAhmDfILDsCy+5nLqers+LnJvFAQ0eCmG23c/6PC84RzvsqqhCNGyJFrii0C2D0SV2PJtFX5cNbJPBSbF7vUPG5qYwqPgN0MBMxz3TpUk+EKhpVvwlgigj88Cf0mY=
+	t=1785492936; cv=none; b=gaU0W50XBhA7PL4ATUmkwN0S3cNU0DR8FlmomN1kfDvNuOoRQ69e1xidKoWXz0D1DN6hTDzUMAuI2nKuqzi60DGfbDZw5+4gT7AJBSdkOIE4JOWqNFoY+IYP1VNXskIEL7yZrMdrozuT3V9DdlMoUNFMxQTIKSJUc4IYe2MwEIo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785492906; c=relaxed/simple;
-	bh=hOVBjEhj881AduAfxRM4Kkaam08OAvoklM/AEWeXIGU=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=mcPofQ89iW+eG0Q+Slu73YliI1X8gbF0mayq4sDiwqo0pPpwMY2Pl67oQlaDxcLh+j7FNOs07ZZw2tsZkxr0/j0mxMbN+y63k1+ApqbZJexI1X5hAiauh/wKg9olYWcyv7gVgs2RM2ce/I4A40BNwP3MssH/5g+o3lMOuHBB7A4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZOdnbWRB; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785492936; c=relaxed/simple;
+	bh=iKGZZoPiLZbpP6fqsFth6A6aZtjn2VQzfx5vDbpAxLA=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=NiRs0jC0i7X5aOIpUN0CGPPmPbGwbFevOTjdbk5M0LiQEp6znOrrsUzrx2dGG3JNf9adOBizM9uF/SvE8fY6KzPEjKLelFwXrpiBF4bdjf76PAe0i39gVMXKkQjDVvPpu4MhSG+9jnuvMdwQ6uG+F4LfZxWDohoXDGh9ML0D10g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Nl+rJ6Gy; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZOdnbWRB"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A32E91F000E9;
-	Fri, 31 Jul 2026 10:14:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Nl+rJ6Gy"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A57751F000E9;
+	Fri, 31 Jul 2026 10:15:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785492891;
-	bh=+kH9xojsM2T8bI2xbrx2KxKoYuIBEFYn1YpY4NiUPik=;
+	s=k20260515; t=1785492921;
+	bh=igCGcuVr3RVFJK8/Uk1UFFC3NA0FBLSNwlzVaDvkXzA=;
 	h=From:To:Cc:Subject:Date;
-	b=ZOdnbWRBBiYXh37AazNkz55xQ5rrmJA4j7sH800oh+MmowC0n/wO2Ku9rADhan4R1
-	 fYoNnLicSXnMkI+40Rlcg9ejYPrUJPLOuZSls6ylW5srN8ipTFBz0KifwjAtFw737q
-	 oXCv2MU275GXauob/oTqZ3JV2Z/60Z0E57ltHvGPjdbm9h3mWfB0a0qAI5mpHAhZLX
-	 RQRY2qS7PoZe32ehEtZKXWTRUmiQSj6Q2jXlNV4kqxgh8+6Ox64p5WHo0kBLTan0zr
-	 RGuxgJlLqkSF7xaDxtbRZod5/VDcBBybu5159bul950BgnuCLflR1SNVIhW7MY11L+
-	 y3Dma6bl5Bihg==
+	b=Nl+rJ6GyKZ8ba+2bqo7MGDCHI6P2EgJHg3evd07ZnjdThA+IyhB9/ajWpjgi2SaAD
+	 a+EiGm3E3f7rGgJXCK1NOLFZtlyjgvoVZ5yvW/Yw/Y42JWKE3Iv0OWgwi9xeV3vctO
+	 T+v49hvwnyiMlBPij8iMIqDjTwEkuLl+D5+KlP5mR1/5mu/S8vpfwOZmKyk36irpTa
+	 Q5miiZgEQIvHTlNuHCXJE8/HiJzm/62vzT0VW/Jpj2XnbGvzJ0OrCfOAbxfTSYwVE3
+	 neQ1fTw4ywM2c+uAicwJOx/H19runwL4ednFQ4KH5zGzcYRnFNlkciauRcLac6KdpJ
+	 L56hXNuQqPdlQ==
 From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Aleksandr Nogikh <nogikh@google.com>, "Alex Markuze" <amarkuze@redhat.com>, <ceph-devel@vger.kernel.org>, "Ilya Dryomov" <idryomov@gmail.com>, "Viacheslav Dubeyko" <slava@dubeyko.com>
+To: syzkaller-bugs@googlegroups.com, Aleksandr Nogikh <nogikh@google.com>, "Chas Williams" <3chas3@gmail.com>, <accessrunner-general@lists.sourceforge.net>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, <linux-atm-general@lists.sourceforge.net>, <linux-usb@vger.kernel.org>, <netdev@vger.kernel.org>, "Duncan Sands" <duncan.sands@math.u-psud.fr>
 Cc: linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Subject: [PATCH] libceph: validate banner payload length
-Message-ID: <88076cd2-1b1c-4988-905d-aa4745af3872@mail.kernel.org>
+Subject: [PATCH] usb: atm: cxacru: properly kill rcv_urb on error in cxacru_cm()
+Message-ID: <91edfa4c-a63d-400c-9f00-31f3e1f98c00@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,66 +38,63 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri, 31 Jul 2026 10:14:50 +0000 (UTC)
+Date: Fri, 31 Jul 2026 10:15:20 +0000 (UTC)
 
 From: Aleksandr Nogikh <nogikh@google.com>
 
-When parsing the Ceph messenger v2 protocol banner, the `payload_len` field
-is decoded from the banner prefix. If a client sends a banner with a
-`payload_len` of 0, the kernel sets up a 0-length socket read. This
-violates an invariant in the state machine, triggering a warning in
-`populate_in_iter()`:
+If cxacru_cm() encounters an error while submitting or waiting for snd_urb,
+it aborts and returns the error without killing the already submitted
+rcv_urb. This leaves the rcv_urb active.
 
+When this happens during initialization (e.g., in cxacru_atm_start()), the
+driver may ignore the error and proceed to call cxacru_poll_status(), which
+invokes cxacru_cm() again. Attempting to submit the still-active rcv_urb
+triggers a warning in usb_submit_urb():
+
+cxacru 1-1:1.0: send of cm 0x84 failed (-104)
+ATM dev 0: cxacru_atm_start: CHIP_ADSL_LINE_START returned -104
 ------------[ cut here ]------------
-!iov_iter_count(&con->v2.in_iter)
-WARNING: net/ceph/messenger_v2.c:3129 at populate_in_iter
-net/ceph/messenger_v2.c:3129 [inline], CPU#1: kworker/1:3/5070
-WARNING: net/ceph/messenger_v2.c:3129 at ceph_con_v2_try_read+0x6634/0x6810
-net/ceph/messenger_v2.c:3159, CPU#1: kworker/1:3/5070
+URB ffff88812658d200 submitted while active
+WARNING: drivers/usb/core/urb.c:379 at usb_submit_urb+0x79/0x18b0
+drivers/usb/core/urb.c:379
 ...
 Call Trace:
  <TASK>
- ceph_con_workfn+0x1f5/0x14a0 net/ceph/messenger.c:1575
- process_one_work kernel/workqueue.c:3322 [inline]
- process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
+ cxacru_cm+0x21a/0xf10 drivers/usb/atm/cxacru.c:631
+ cxacru_cm_get_array drivers/usb/atm/cxacru.c:722 [inline]
+ cxacru_poll_status+0x178/0x1110 drivers/usb/atm/cxacru.c:828
+ cxacru_atm_start+0x185/0x360 drivers/usb/atm/cxacru.c:814
+ usbatm_atm_init+0x144/0x3a0 drivers/usb/atm/usbatm.c:927
+ usbatm_usb_probe+0x15cb/0x1db0 drivers/usb/atm/usbatm.c:1178
+ cxacru_usb_probe+0x17f/0x220 drivers/usb/atm/cxacru.c:1370
+...
 
-According to the msgr2 protocol specification, the banner payload is
-expected to contain at least two 64-bit integers (`server_feat` and
-`server_req_feat`). Therefore, `payload_len` must be at least 16 bytes.
+To fix this, ensure that rcv_urb is properly killed if cxacru_cm() aborts
+early. We can safely call usb_kill_urb() on rcv_urb in the error path, as
+it is safe to call even if the URB is not active (e.g., if it failed to
+submit in the first place, or if it already completed).
 
-Fix this by adding a check in `process_banner_prefix()` to reject a
-`payload_len` smaller than 16 bytes. This prevents the 0-length read and
-correctly aborts the connection with a protocol error.
-
-Fixes: cd1a677cad99 ("libceph, ceph: implement msgr2.1 protocol (crc and secure modes)")
+Fixes: 1b0e61465234 ("[PATCH] USB ATM: driver for the Conexant AccessRunner chipset cxacru")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+87c7c2d63c44e41c77a3@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=87c7c2d63c44e41c77a3
-Link: https://syzkaller.appspot.com/ai_job?id=c8ca3d63-717a-4933-89ec-f3d761b8690d
+Reported-by: syzbot+c9dff578c3a41775176a@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=c9dff578c3a41775176a
+Link: https://syzkaller.appspot.com/ai_job?id=75fec6f2-c8a6-43b1-b184-4d26baba86cc
 Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
 
 ---
-diff --git a/net/ceph/messenger_v2.c b/net/ceph/messenger_v2.c
-index 05f6eea29..b323b61e7 100644
---- a/net/ceph/messenger_v2.c
-+++ b/net/ceph/messenger_v2.c
-@@ -2142,6 +2142,11 @@ static int process_banner_prefix(struct ceph_connection *con)
- 	payload_len = ceph_decode_16(&p);
- 	dout("%s con %p payload_len %d\n", __func__, con, payload_len);
- 
-+	if (payload_len < sizeof(u64) + sizeof(u64)) {
-+		con->error_msg = "protocol error, bad banner payload len";
-+		return -EINVAL;
-+	}
-+
- 	return prepare_read_banner_payload(con, payload_len);
- }
- 
+diff --git a/drivers/usb/atm/cxacru.c b/drivers/usb/atm/cxacru.c
+index f1900c567..429ac20a8 100644
+--- a/drivers/usb/atm/cxacru.c
++++ b/drivers/usb/atm/cxacru.c
+@@ -700,6 +700,8 @@ static int cxacru_cm(struct cxacru_data *instance, enum cxacru_cm_request cm,
+ 	ret = offd;
+ 	usb_dbg(instance->usbatm, "cm %#x\n", cm);
+ fail:
++	if (ret < 0)
++		usb_kill_urb(instance->rcv_urb);
+ 	mutex_unlock(&instance->cm_serialize);
+ err:
+ 	return ret;
 
 
 base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
