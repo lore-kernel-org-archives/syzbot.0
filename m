@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 835D73B893A;
-	Fri, 31 Jul 2026 13:24:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A3DF43D515
+	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 15:26:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785504292; cv=none; b=mIzzg635YuppfzY67UGFqGQYGZxIfMeF8QiCy2uWlw9SvFh8Newl8R4/migD+6v5J62eh8WytpagQa+FoT+5j/wmFe0DXuCn1XeF5LvewqjppqiFEMDkfgzdMZ0lXZjYgRD54aclGy9yVSaNUaIJmBFYqxrFIWBXqALzavpiYgY=
+	t=1785511612; cv=none; b=uJ/yjgkrQXTmnKwnJ1cTaJAdXWWnZiD7GLaDzh6E6Bqnv1YKeQ6X0TY0aEhhDfsvRBiEC5zKRGDQo72nmchQAJq90JURRcw6q4crWT2EES2ktRUVfMdSqF0P8PJ0TYY0x8C5ROoktMSEiizVlYtB4dwqFRJwUIsNyVjGLxZJqZg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785504292; c=relaxed/simple;
-	bh=p6wU/huXjgB5p13IOyxi82vUuyc/Ez+nj45Qi8Cgb5Q=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=c4rll5Bzmwl/lUilgwTWGLhdffINDQUfGk7iX6Lr2rnKcW+n24XqMsUTbUhhs7LnJdFaapyq8srDF79YPhjT5IK0NFuCsK4IlyH/z9ISlsO0GJg9CXBn+gudeHxyCPgcFlYfioBi/2C89XEd/LHPICsOUuvd4JvgEox7GkSh9y4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BOLEJY4z; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785511612; c=relaxed/simple;
+	bh=ekZSXlK7nOWmxBvqyYWcsvILC5Ha00m9agYcLRTMXgU=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=aX3njAGhnAgpktocIhZab+toYhiuzBOlT8GDVDf84rtybeoLFJ5ahXlN6oFoH2elyLFwyIq8yU6kcztTIFttRlU08eHER8PmI5ZTbCYiQZ6FA0KZWslENmZma57fBcfImjn3Nd1oiIRne0RSZsl/uSUIPPyBsTTIvplhDMI+jcA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YpnnwHCm; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BOLEJY4z"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 9DE4D1F000E9;
-	Fri, 31 Jul 2026 13:24:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YpnnwHCm"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 9C42E1F00A3A;
+	Fri, 31 Jul 2026 15:26:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785504291;
-	bh=nLLuZcz3ofYeWJwtdA2UrXbg4PCWRF5kuKHXXu2RiGE=;
+	s=k20260515; t=1785511610;
+	bh=vLPkfYcUGl/B+XidVKISuiin6j5FwdN6WAva/6ZI3Q0=;
 	h=From:To:Cc:Subject:Date;
-	b=BOLEJY4ziPx9RLxJEGpS1Edis8uNSVtvx25jxeeHeJtN5w/9mUNEuk3wKSr98KCC2
-	 tlw1BB++q5snNjCK/w3/8CGPiz1h8vFzDQzfvs3QxpSI5ThnzyqlCHExvN7xKpfDVK
-	 G42qpEoNSvLHsWW8tQ2AMsqqxcY3k13yo5mPV04alP1Z4HVVz6eO6IEqaXJtTPUESt
-	 /hAaoRQuN97Y2mtbagls2WNVmvCI+WggfXklurirWAja1y6wXd9xq/prisq4rw8kC8
-	 5bNa1Jm6Ccbqip6XXuqBDrpVAqTZdu85lbsuJE80i3YbAneIPt/pAAFkUB7Dh6by6H
-	 9CbVeJ2czIEAg==
+	b=YpnnwHCmoBjBD7+F9UNAD94Q9ufQCC5c/i0+VdZSf7ncSNlLfpeq1tK7Fd/GiVTfe
+	 1slH0mGwZamsZXsqrDnv4ozhQXRWzzfxt1ZEJxfmKLWbdV7SZ7oYlfQQQCh7s+UpXQ
+	 Ct6HMssl+q5LLOsbaCLv50hcJY2ZWpQx1UEBb36sfKlWZGlTGjyxUTFmHIaCgmwXvn
+	 1aoYvYkKRjGxI0wlm9LmCkPTuJMmqy7WhfIUMi0G2bcOzzUJekL9GC7u9mNYcjuoyR
+	 S4NcWJdEy+djgAXy+upa9gAQJ7AQHca274oQ45QI2FS+drX6ep9UiHjuib7yKhcSwu
+	 s01itPnLxorVw==
 From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Aleksandr Nogikh <nogikh@google.com>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, <linux-usb@vger.kernel.org>, "Linus Torvalds" <torvalds@ppc970.osdl.org>
-Cc: brauner@kernel.org, jack@suse.cz, kees@kernel.org, linux-kernel@vger.kernel.org, mjguzik@gmail.com, syzbot@lists.linux.dev, viro@zeniv.linux.org.uk
-Subject: [PATCH] usb: gadgetfs: fix use-after-free in ep_open()
-Message-ID: <ee41fbfd-f368-4a06-95d6-ae9b4267fd82@mail.kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] x86/cpu: Replace WARN_ON() with pr_err() for late feature clearing
+Message-ID: <ab024666-d81f-4373-be4a-775133519fb2@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,107 +38,133 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri, 31 Jul 2026 13:24:50 +0000 (UTC)
+Date: Fri, 31 Jul 2026 15:26:50 +0000 (UTC)
 
-From: Aleksandr Nogikh <nogikh@google.com>
+A warning can be triggered when a CPU feature is cleared after alternatives
+have been patched. This can happen if a privileged user modifies
+architectural MSRs (like MSR_IA32_MISC_ENABLE) from userspace and then
+hotplugs a CPU. This creates an inconsistent SMP state where a secondary
+CPU lacks a feature that the boot CPU had.
 
-A race condition exists between opening a gadgetfs endpoint file and the
-destruction of the endpoint files, leading to a use-after-free of the
-ep_data object.
+The warning looks like this:
 
-When an endpoint file is opened, the VFS looks up the dentry and calls
-ep_open(). ep_open() retrieves the ep_data pointer from inode->i_private
-and attempts to lock its mutex. Concurrently, if the gadget is unbound,
-destroy_ep_files() iterates over the endpoints, unhashes their dentries,
-and immediately calls put_ep(). This drops the initial reference to the
-ep_data object, freeing it. If another thread is already in the process of
-opening the file, it holds a reference to the dentry and the inode. The
-inode remains alive, and its i_private pointer still points to the
-now-freed ep_data. When ep_open() proceeds to lock data->lock, it accesses
-freed memory.
+------------[ cut here ]------------
+alternatives_patched
+WARNING: arch/x86/kernel/cpu/cpuid-deps.c:127 at
+do_clear_cpu_cap+0x416/0x450 arch/x86/kernel/cpu/cpuid-deps.c:127, CPU#1:
+swapper/1/0
+Call Trace:
+ <TASK>
+ early_init_intel+0xb3d/0xea0 arch/x86/kernel/cpu/intel.c:309
+ init_intel+0x28/0x780 arch/x86/kernel/cpu/intel.c:528
+ identify_cpu+0xc7a/0x3660 arch/x86/kernel/cpu/common.c:2053
+ identify_secondary_cpu+0xaa/0x160 arch/x86/kernel/cpu/common.c:2177
+ ap_starting+0x9c/0x150 arch/x86/kernel/smpboot.c:190
+ start_secondary+0x66/0x110 arch/x86/kernel/smpboot.c:280
+ common_startup_64+0x13e/0x157
+ </TASK>
 
-BUG: KASAN: slab-use-after-free in __mutex_lock_common
-kernel/locking/mutex.c:625 [inline]
-BUG: KASAN: slab-use-after-free in __mutex_lock+0x130/0xf14
-kernel/locking/mutex.c:821
-Read of size 8 at addr ffff0000f43acc58 by task syz-executor/5900
+WARN_ON() must not be used for conditions that can legitimately happen,
+such as a privileged user modifying MSRs or a broken BIOS. Replace the
+WARN_ON() with a pr_err() that logs a clear error message indicating that a
+CPU feature was cleared late, and explicitly prints the name of the feature
+being cleared to provide better context.
 
-Call trace:
- __mutex_lock_common kernel/locking/mutex.c:625 [inline]
- __mutex_lock+0x130/0xf14 kernel/locking/mutex.c:821
- mutex_lock_interruptible_nested+0x24/0x30 kernel/locking/mutex.c:899
- ep_open+0x58/0x25c drivers/usb/gadget/legacy/inode.c:823
- do_dentry_open+0x5c4/0xfc0 fs/open.c:947
- vfs_open+0x44/0x2dc fs/open.c:1052
+To achieve this, move the x86_feature_name() helper function higher up in
+arch/x86/kernel/cpu/cpuid-deps.c so it can be utilized inside
+do_clear_cpu_cap().
 
-Freed by task 6138:
- kfree+0x188/0x690 mm/slub.c:6692
- put_ep+0xd0/0x144 drivers/usb/gadget/legacy/inode.c:225
- destroy_ep_files+0x244/0x2dc drivers/usb/gadget/legacy/inode.c:1582
- gadgetfs_unbind+0x114/0x1f0 drivers/usb/gadget/legacy/inode.c:1655
- gadget_unbind_driver+0x188/0x790 drivers/usb/gadget/udc/core.c:1724
-
-To fix this, tie the base reference of ep_data to the lifetime of the inode
-rather than manually dropping it in destroy_ep_files(). Add an .evict_inode
-callback to gadget_fs_operations that drops the reference when the inode is
-finally destroyed. Remove the premature put_ep() call from
-destroy_ep_files(). Additionally, to prevent a double-free in the error
-path of activate_ep_files(), clear inode->i_private in
-gadgetfs_create_file() before calling iput() if simple_start_creating()
-fails.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: ee8962082a44 ("x86/alternatives: Catch late X86_FEATURE modifiers")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+df9e891bf8ea586f846b@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=df9e891bf8ea586f846b
-Link: https://syzkaller.appspot.com/ai_job?id=ae49a838-5eb9-4227-93a3-56ad2313483a
-Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+Reported-by: syzbot+907f82f5bbbf4a0d89fc@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=907f82f5bbbf4a0d89fc
+Link: https://syzkaller.appspot.com/ai_job?id=c3c1fb43-1c46-43f9-9819-b9e6b7d3e0b4
+To: "Borislav Petkov" <bp@alien8.de>
+To: "Dave Hansen" <dave.hansen@linux.intel.com>
+To: <linux-kernel@vger.kernel.org>
+To: "Ingo Molnar" <mingo@redhat.com>
+To: "Thomas Gleixner" <tglx@kernel.org>
+To: <x86@kernel.org>
+Cc: "Babu Moger" <babu.moger@amd.com>
+Cc: "Elena Reshetova" <elena.reshetova@intel.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: "Reinette Chatre" <reinette.chatre@intel.com>
+Cc: "Sohil Mehta" <sohil.mehta@intel.com>
+Cc: "Tom Lendacky" <thomas.lendacky@amd.com>
 
 ---
-diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
-index d87a8ab51..a03062986 100644
---- a/drivers/usb/gadget/legacy/inode.c
-+++ b/drivers/usb/gadget/legacy/inode.c
-@@ -1579,8 +1579,6 @@ static void destroy_ep_files (struct dev_data *dev)
- 		/* break link to dcache */
- 		simple_remove_by_name(dev->sb->s_root, ep->name, NULL);
+diff --git a/arch/x86/kernel/cpu/cpuid-deps.c b/arch/x86/kernel/cpu/cpuid-deps.c
+index 99801e844..a7c57cc81 100644
+--- a/arch/x86/kernel/cpu/cpuid-deps.c
++++ b/arch/x86/kernel/cpu/cpuid-deps.c
+@@ -114,6 +114,21 @@ static inline void clear_feature(struct cpuinfo_x86 *c, unsigned int feature)
+ /* Take the capabilities and the BUG bits into account */
+ #define MAX_FEATURE_BITS ((NCAPINTS + NBUGINTS) * sizeof(u32) * 8)
  
--		put_ep (ep);
--
- 		spin_lock_irq (&dev->lock);
- 	}
- 	spin_unlock_irq (&dev->lock);
-@@ -1996,6 +1994,7 @@ static int gadgetfs_create_file (struct super_block *sb, char const *name,
- 
- 	dentry = simple_start_creating(sb->s_root, name);
- 	if (IS_ERR(dentry)) {
-+		inode->i_private = NULL;
- 		iput(inode);
- 		return PTR_ERR(dentry);
- 	}
-@@ -2006,9 +2005,18 @@ static int gadgetfs_create_file (struct super_block *sb, char const *name,
- 	return 0;
- }
- 
-+static void gadgetfs_evict_inode(struct inode *inode)
++/*
++ * Return the feature "name" if available, otherwise return
++ * the X86_FEATURE_* numerals to make it easier to identify
++ * the feature.
++ */
++static const char *x86_feature_name(unsigned int feature, char *buf)
 +{
-+	truncate_inode_pages_final(&inode->i_data);
-+	clear_inode(inode);
-+	if (inode->i_private && inode->i_fop == &ep_io_operations)
-+		put_ep(inode->i_private);
++	if (x86_cap_flags[feature])
++		return x86_cap_flags[feature];
++
++	snprintf(buf, 16, "%d*32+%2d", feature / 32, feature % 32);
++
++	return buf;
 +}
 +
- static const struct super_operations gadget_fs_operations = {
- 	.statfs =	simple_statfs,
- 	.drop_inode =	inode_just_drop,
-+	.evict_inode =	gadgetfs_evict_inode,
- };
+ static void do_clear_cpu_cap(struct cpuinfo_x86 *c, unsigned int feature)
+ {
+ 	DECLARE_BITMAP(disable, MAX_FEATURE_BITS);
+@@ -123,8 +138,12 @@ static void do_clear_cpu_cap(struct cpuinfo_x86 *c, unsigned int feature)
+ 	if (WARN_ON(feature >= MAX_FEATURE_BITS))
+ 		return;
  
- static int
+-	if (boot_cpu_has(feature))
+-		WARN_ON(alternatives_patched);
++	if (boot_cpu_has(feature) && alternatives_patched) {
++		char feature_buf[16];
++
++		pr_err("x86/cpu: CPU feature %s cleared after alternatives patched\n",
++		       x86_feature_name(feature, feature_buf));
++	}
+ 
+ 	clear_feature(c, feature);
+ 
+@@ -157,21 +176,6 @@ void setup_clear_cpu_cap(unsigned int feature)
+ 	do_clear_cpu_cap(NULL, feature);
+ }
+ 
+-/*
+- * Return the feature "name" if available, otherwise return
+- * the X86_FEATURE_* numerals to make it easier to identify
+- * the feature.
+- */
+-static const char *x86_feature_name(unsigned int feature, char *buf)
+-{
+-	if (x86_cap_flags[feature])
+-		return x86_cap_flags[feature];
+-
+-	snprintf(buf, 16, "%d*32+%2d", feature / 32, feature % 32);
+-
+-	return buf;
+-}
+-
+ void check_cpufeature_deps(struct cpuinfo_x86 *c)
+ {
+ 	char feature_buf[16], depends_buf[16];
 
 
 base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
 -- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
 See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
 You can comment on the patch as usual, syzbot will try to address
 the comments and send a new version of the patch if necessary.
