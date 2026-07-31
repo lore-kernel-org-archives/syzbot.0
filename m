@@ -1,96 +1,96 @@
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D580C3E1696
-	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 10:10:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5660C3BC68D
+	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 10:11:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.173
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785492639; cv=pass; b=RZlYdrvSgbcJNxPES7t2tDYidKScKm2r0G/hjKiHMpB1fM1mZZZtreh8/nfP0sVKtDe64/pJ9klUWAt3tjkosYsgdVdsn/mopxTGdmCJ4gIONDUOZZ+Q3WwqGLn3u+FPfzS/EbvoPf1VhMHYsqWsEovD2dPO085jjlzrG1QxcoY=
+	t=1785492678; cv=pass; b=ByUD5YbqvJman34DPBjZ8NrTQKx9m4g21p2WHjrdQO8oVkGBJ5PaTSCUMHmnD1MNTmg8QgD+M7RD9UChA4hAm3d/CAxZYRqSHEpFhp5znKEr2oZY2hi0WMI6OPLzZazCU3NsGA97vjE5EhVtpZMLJDus5tbk/jfSVy95G9XnNaQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785492639; c=relaxed/simple;
-	bh=IbJwhBZmwMfBI422w5j+Sf1rz3qf9xg5Y7LrN3aiaD0=;
+	s=arc-20240116; t=1785492678; c=relaxed/simple;
+	bh=29bf8lMlbXfQNXAhMEB+LOAuMqx4V1JP3Jt+Gau+wR4=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=a/CXoQjZC3Y2hdJyz/zAewwCG5hNh74HI3Zti4k42EfkMKMcR8QX2dtqJVaZIwIzQW0UYB2tOAJh7Gj083qEnJfi6BUNs8fPEaiQt6xJIR9aenOK2D2GMDd8xGl8rbWVGIsW/xSRdtO3dqhAhaLCsRIzwk0c0ZfV5YefdemVe2k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=sXOpBL9s; arc=pass smtp.client-ip=209.85.167.178
+	 To:Cc:Content-Type; b=G89X4a9uAzYbyzoZZhNj0hS6XWWIODEkYTFn5k0f0B0w/mSo3TznRjogqBWvs7xd/iDPiCI8e6LO2zCxpLoV7POh2eVC4FXomdSWEq8Qh/HNM1iMZRM2ByOo6+QHBDOsOwlTq8dRCACgsifYFjydHYllebzBbbt2mPvZfxHxYWw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=rmw7+ene; arc=pass smtp.client-ip=209.85.167.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="sXOpBL9s"
-Received: by mail-oi1-f178.google.com with SMTP id 5614622812f47-497deab2d66so576351b6e.0
-        for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 03:10:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1785492619; cv=none;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rmw7+ene"
+Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-49fa951b2c6so511412b6e.1
+        for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 03:11:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1785492661; cv=none;
         d=google.com; s=arc-20260327;
-        b=kMzAyGI7ojt8FkfIsr1I9BcNLlnMJTHxVpnN0oLFPQLQKW1tbX1jB+amJzozEaLato
-         tU2zLtLVfhM3j+CzFcPhFKrrrwIswKQQcmyOji7FqcRr/DoHXmopnhyvVha8HsEvYIyX
-         yOJyo+ZhqDIVgQM+CB3db0a2PtY5dCyNAwoKJPRbeb9LFU0rCltZ3gbNbpwP+fyALzzf
-         8PxlcqOaWlPPnJ4whgYgdkVeduibyDqqpMzdY04QWwW1pvRNfNSICgM/lJEUfXw2ODsK
-         zplS3U4mCIJc6hLCryKjL2V5nM8dr54d7HD27UVuYb42mi4zTfUi9sScKx6ltqm5w5zb
-         bjfA==
+        b=KOkEUMm4CpYhaWrY0vAf8qMMQaTlVaWBDsM8VQYaGlABN8dydcEK+FsMXMu13hlv42
+         BbfS5NnwegXrpIA5MHMHrn1N78LHWxUMuWqqzg9hjqbPFKqEW67JQ2zoxp9x4MwowpII
+         a3nyluSZoOqNTEBt7y/vxyaxMNPhMp4pgjiZoglS4/XWaGoFJgmfrsVn3O7dMc4dxY6+
+         I7mYkaIk7gU903x9l4sP8R66lK6bXQttzvKOD+A2l4GSwWG0QDVUCzsL0XEj9px//dWy
+         TNG3vqu4o+U90zP3+zsQZHfQvCbGfgdszf7oSdP/R9UQ33l6rmjFvLZF1L+WwoOpHTIl
+         L9Hg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=QidHawpFrn7oagZ6gRmz2sTd6ybC7NSR1hzrfPHkUGw=;
-        fh=h9lLtRBEY5+ClF3RtLTsYYJXaLQrb/fbBOn7WKZQWVg=;
-        b=c0BJ8DQMqogg7B1R56+rMwlxEQtXDViCa0flzM4ezM4/Ko48WUG8XbNIGJc1OaMiv1
-         +JDz/eE7soI01hTU/iLn0RW7pEsf7qfGW2Gb80TQr3Srxy+9gQxR+y6PzVU0A6QQlvLq
-         Rvq9LLyd6nF6rg9cD0TkZDygK8nOJtgv5RZ/s19ukfonUmxFcFZT3RcRA/Pa7SqkFESe
-         m/0cYt46NMvBxUsa6pyRXMlEhdl9TfQTUSYAp1mXPB1O+6kUO2pX8AUaFiyDXi6627qD
-         36PEl5N644gJI1TMoWR9W5/B3d8cIBEDoGTPCSXmlPTsUiorGTWmPVOyup84ErrSpDu2
-         gGqA==;
+        bh=sblFT3dEsVIGs6qmguUMjprVItGIvy/4picQ0nRJevw=;
+        fh=VtIczgQKL3ostBV43tDbwSOaXgyKEu4KzRv79ezn3HI=;
+        b=gQyQ9fDrCQGmEyhut2MX45XbPUzURSBIJlXmnbm5d+maerz5yljwzIETeeGpCRHHf/
+         bHg61yYuSp7HNT1wU4me9/H6EqC+uHP6XxsPwRhxoslO7GMHO6Ga2zFQJz/82pYL3Uro
+         ioMNgCAXeHbbMeAXWyr25MUIpKfKqR69dQshUEZqLaQXlkarzxtAKCSxVo4yb9vY0QUl
+         N4gSB1S/tddaZO0XwzMdFHIBbZU3+1EQjHhnTPt405Flp++dYjao89h+lRA7htvA8P4U
+         f63OpywBXT407Wsv+lnV0mP7ezW/23OcM5e24ZMEVUbgyk9HYcH7Xk6rf3msOaT3dEm1
+         x2HQ==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1785492619; x=1786097419; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1785492661; x=1786097461; darn=lists.linux.dev;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=QidHawpFrn7oagZ6gRmz2sTd6ybC7NSR1hzrfPHkUGw=;
-        b=sXOpBL9siEHJT5wyvcq0AL2u0PGUMyLVErxdW5Qdva3HO9s5SyzowYaGiMqhwrcNia
-         hS/JXOin6zAPu4op/B33Bd33aw1gTrIc8SuCzdxk+kEatxeED4lf4bSSkwJHlUbp1LBC
-         dC8JgwwHszsjT+xTRWbOob0RGRQ2uQy2W69Q2CMlkWLKCJgZCfGgekTwUP2awUNCnCj/
-         pcyRlua6US1ZHSVqgLZGkNFm8cH4D484mpr+zh/zEvGcZCkJq6lS8n/UCoPjZVhsJDPB
-         uAjGKdUSaZH0zKtdGzS+wdeCHxsjvKLGDZcTIFRNtozzKbF5dbdlKehbLl4WIyQBoLwZ
-         aSsA==
+        bh=sblFT3dEsVIGs6qmguUMjprVItGIvy/4picQ0nRJevw=;
+        b=rmw7+eneHNrXmcuyAvqK030EiAlu84OJk2rqkUIBevl8anhzsDPYArxnEICqhn8omr
+         m+9LSBDNfieXXuhEoPiSrGJAFF+F1czREpCJwZ5KEk/+Xx/iOnwFIrwzQ5Pljxfs5vSH
+         ZtqhZdhIlNujfw+u31OtzH53SF6zhjxDbvndj58JqxCN1X1ya+3QckAmtA2O3maa8ONY
+         JDqT94W0NUxeXYk3y3LTi4/nmQbyWmkSSUl3R8vP5qPkMgAzKtqLfCPtl66AVFGkLahb
+         iADZO+SbzwlkjdmoGpRn+DRMAx7J6pf249qHXgKPYtpPUJGpxxDBp7fTL6v2q+reE0Or
+         RzQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785492619; x=1786097419;
+        d=1e100.net; s=20251104; t=1785492661; x=1786097461;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=QidHawpFrn7oagZ6gRmz2sTd6ybC7NSR1hzrfPHkUGw=;
-        b=OBPr+MToTJvhLkts+meI2wWgaO8u+mTPcWv1e3rWF7wOoq87QHfJgn8DbJKlv+IIUd
-         UH2vvymyn7UwBkgw5tLAe08DBf8JpbRzg5WUnSv8UE7He+LRHRKNsPX2LTvVqUIAZeAH
-         F58+j00K3wm+G0RuXdoJIY8+yVz/547nWxpm3d7g8ofKz6ckhlKJLBLvHdX+vqee/NX9
-         S/AnAzhiSSTRzoPA7Uhf9N+Cajmd0I78c+HB1sVrQbP8Mio1m2FFoB7SIL1yHMB3ORKR
-         0VfLtDY2aOQWtgDSs4yD50iBSgAefI0ApsDLQUrp7pjeYa6z2SfdsNOGqfOHriclebAE
-         J3CA==
-X-Forwarded-Encrypted: i=1; AHgh+RrfcLlM1QWDDYOQ2SxKa9SvCC4cwFDy2PmEPKhdtICVQOvYXxcWBFUknI6XGX6Z3kw7IkcRgl8=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy7H64GoJK3ABQXkfLdIlUXg11zNh5Jr9C5Op0voEqxd35hlH1+
-	kM4G0PRm1zC8s4bo8dKJVnRpQ5wWfkkmJYga94X1Npmo8v4iHyWNf1qcIFacv8Hd/Zf7NZ1Zhwz
-	omozuS8Q311a1Tj6KXTyoKeKx/uLr+JnPc1zLF5/Z
-X-Gm-Gg: AR+sD13qs38oGRYtIDr/dqQ4falblRaXqU3KSu2ugv0I5RglG0F283lDT0Mo8lCiiu4
-	dFAEBxwIujGPOzcLHc3O8tyR0FJ/7GTC1QX0LUgsShE1akQxx226NbYpuYrYQ9cgNz1bd5ZSvK1
-	WemhRf3SvBiOPvuz6vJx8jXVAkhG9hjiQjkq5Z5dcu6X2WqRfwhL2vdlogAIpbznf+hsvnt0/xp
-	CYxbrIOnlQH2DEjzQXi1YEpuESBoL5TpxIAiD6fM7GggZZT0UerhJVue7cwQXUUQLogg9Ze0yLa
-	mdAPLKm1kpsDiFaEZL5pKhlwt6J2LTjtrIZc6ZigGlkr3LEt0675NmBDoCugX12yW4gXYAyCYR1
-	eu+kx4VF5nI8oSHb5+9ltwXgvnSHzGXIy6NxmzDDQRogQa9OE+dgmZepGLpxj3KtJsVt5G1BDd6
-	6ncz6YpnbRkQvlFa6KgKVvLKE=
-X-Received: by 2002:a05:6808:309d:b0:496:1111:d7a8 with SMTP id
- 5614622812f47-4ae318d4659mr1728414b6e.8.1785492618758; Fri, 31 Jul 2026
- 03:10:18 -0700 (PDT)
+        bh=sblFT3dEsVIGs6qmguUMjprVItGIvy/4picQ0nRJevw=;
+        b=cPgS+q55qPGgVcISqk6iKBgKvfkIFZSHxjeS9RrHAGv+p5WcSEU45RjAszr1ZtgOX8
+         s2TkyfDTVbccQ1QgiJ+KZC8taRYwxbLcIBvatL1iiWSHdy/DPrPNCveUSDrB5ydHlbdk
+         ICD/IuMEDgNVVvYwRf3wOLi9dUQGymu/EbaIWokcLRjKu+atTuWe0ZUAHTspnLZqk5BY
+         yscihyAnzByBTPjunLm7C2Gh2v2gzjIqe1LGe6g816YJ3Cn/bkrGUK2Ti9TvMC51Yyaq
+         Atltks1QB5lAYDZZqSwZp4zLQJANWcOs4gf+BLvU9GUCeTupHxRT1SCF3greXFKXQE/j
+         8KDg==
+X-Forwarded-Encrypted: i=1; AHgh+RoHxqm+D4Kf7cpesty/rp3EWYeU5H6UNOYwlGh4VB3OAVUTdgbP/A7sslJ2MnbHu2jNMDmlXNE=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz6GqJLpc4nMCOy9aOnmyd8x3DbM8bNYep5T1SU8cx35GxZao53
+	0ImPMrUXfNhf+7Ad37MTpstr4pmS9ynLbkcdxonpVjqrXBUeZrNBUglIYDy4OjTjpRMYFAPn3jF
+	stkZypo6Q8jvO/gPGSfrZIETvrbzZWbLcxHOjEuE3
+X-Gm-Gg: AR+sD105xfP8XZeM2nle7M9GJxjx7SB9Cgp+C0zVsnx6lV7t3iKTSNuOi8RDbAjCV+J
+	aHczksr6BMRgvzzD3PWsih4UcY2KkZpj26f72BDFXqzp4bAzDp8m1g7RBiaTEcGElsUabsJn2Dw
+	e+a/fm/Yq2bqm7YxjYxNuLSfjvdz+l1+fhjgsIpv5QNgoE2SSUIjocng9aWt9WwPNGsB/cdxbLo
+	+rVNv76zPi4rN8BcDAdFvpW5Z7bd952r0e+JwK9CsRq4+Hxw3tnQrFNlyc9LpmD90v8/4WEi9mi
+	e6n2fild34yyibOojgAHD53z+HYARVzFG0s+cUdzzezMDrya6fxUfz6/DWHmfuZqyX/5fJf3mk3
+	gh1dq1ZxBTr58UGYTpb7vyjo3Rh9yB3TqtGL1eYsn3c45IqhzOukJs/X6UCmuPqqMc+bpN6SK8L
+	VpmDzm2Uxlx/FQTL2WVI70+rc=
+X-Received: by 2002:a05:6808:2507:b0:495:e997:528d with SMTP id
+ 5614622812f47-4ae4c3d5b2dmr1305824b6e.3.1785492661060; Fri, 31 Jul 2026
+ 03:11:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <10fa68ab-b588-4ca1-8ac1-dd13a95cff91@mail.kernel.org>
-In-Reply-To: <10fa68ab-b588-4ca1-8ac1-dd13a95cff91@mail.kernel.org>
+References: <19c83890-3da4-471c-bbca-8d873b803586@mail.kernel.org>
+In-Reply-To: <19c83890-3da4-471c-bbca-8d873b803586@mail.kernel.org>
 From: Aleksandr Nogikh <nogikh@google.com>
-Date: Fri, 31 Jul 2026 12:10:07 +0200
-X-Gm-Features: AUfX_myOzkvUAwKGbYNyWT-cknoQuAmu18Exdj5b377BE3D0uC-nSmQABYcQ_mQ
-Message-ID: <CANp29Y6oPs4vTeE-pw+5EybTeK5UewTkLLbXT4EwO8gP__9SgQ@mail.gmail.com>
-Subject: Re: [PATCH RFC] libceph: validate banner payload length
+Date: Fri, 31 Jul 2026 12:10:49 +0200
+X-Gm-Features: AUfX_mxm5u_qtqDfrkJW3MvYxrwuo0Df2HcDC_SqBqNvjglPnEmST3EoZ12WQCM
+Message-ID: <CANp29Y5Q-NdjxbSdq_ansUzpFqPaLEv+Wdp7rL5YwN-qwWtsMA@mail.gmail.com>
+Subject: Re: [PATCH RFC] usb: atm: cxacru: properly kill rcv_urb on error in cxacru_cm()
 To: syzbot <syzbot@kernel.org>
 Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -98,76 +98,76 @@ Content-Transfer-Encoding: quoted-printable
 
 #syz upstream
 
-On Fri, Jul 31, 2026 at 11:52=E2=80=AFAM 'syzbot' via
+On Fri, Jul 31, 2026 at 9:54=E2=80=AFAM 'syzbot' via
 syzkaller-upstream-moderation
 <syzkaller-upstream-moderation@googlegroups.com> wrote:
 >
-> When parsing the Ceph messenger v2 protocol banner, the `payload_len` fie=
-ld
-> is decoded from the banner prefix. If a client sends a banner with a
-> `payload_len` of 0, the kernel sets up a 0-length socket read. This
-> violates an invariant in the state machine, triggering a warning in
-> `populate_in_iter()`:
+> If cxacru_cm() encounters an error while submitting or waiting for snd_ur=
+b,
+> it aborts and returns the error without killing the already submitted
+> rcv_urb. This leaves the rcv_urb active.
 >
+> When this happens during initialization (e.g., in cxacru_atm_start()), th=
+e
+> driver may ignore the error and proceed to call cxacru_poll_status(), whi=
+ch
+> invokes cxacru_cm() again. Attempting to submit the still-active rcv_urb
+> triggers a warning in usb_submit_urb():
+>
+> cxacru 1-1:1.0: send of cm 0x84 failed (-104)
+> ATM dev 0: cxacru_atm_start: CHIP_ADSL_LINE_START returned -104
 > ------------[ cut here ]------------
-> !iov_iter_count(&con->v2.in_iter)
-> WARNING: net/ceph/messenger_v2.c:3129 at populate_in_iter
-> net/ceph/messenger_v2.c:3129 [inline], CPU#1: kworker/1:3/5070
-> WARNING: net/ceph/messenger_v2.c:3129 at ceph_con_v2_try_read+0x6634/0x68=
-10
-> net/ceph/messenger_v2.c:3159, CPU#1: kworker/1:3/5070
+> URB ffff88812658d200 submitted while active
+> WARNING: drivers/usb/core/urb.c:379 at usb_submit_urb+0x79/0x18b0
+> drivers/usb/core/urb.c:379
 > ...
 > Call Trace:
 >  <TASK>
->  ceph_con_workfn+0x1f5/0x14a0 net/ceph/messenger.c:1575
->  process_one_work kernel/workqueue.c:3322 [inline]
->  process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
->  worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
->  kthread+0x388/0x470 kernel/kthread.c:436
->  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
->  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
->  </TASK>
+>  cxacru_cm+0x21a/0xf10 drivers/usb/atm/cxacru.c:631
+>  cxacru_cm_get_array drivers/usb/atm/cxacru.c:722 [inline]
+>  cxacru_poll_status+0x178/0x1110 drivers/usb/atm/cxacru.c:828
+>  cxacru_atm_start+0x185/0x360 drivers/usb/atm/cxacru.c:814
+>  usbatm_atm_init+0x144/0x3a0 drivers/usb/atm/usbatm.c:927
+>  usbatm_usb_probe+0x15cb/0x1db0 drivers/usb/atm/usbatm.c:1178
+>  cxacru_usb_probe+0x17f/0x220 drivers/usb/atm/cxacru.c:1370
+> ...
 >
-> According to the msgr2 protocol specification, the banner payload is
-> expected to contain at least two 64-bit integers (`server_feat` and
-> `server_req_feat`). Therefore, `payload_len` must be at least 16 bytes.
+> To fix this, ensure that rcv_urb is properly killed if cxacru_cm() aborts
+> early. We can safely call usb_kill_urb() on rcv_urb in the error path, as
+> it is safe to call even if the URB is not active (e.g., if it failed to
+> submit in the first place, or if it already completed).
 >
-> Fix this by adding a check in `process_banner_prefix()` to reject a
-> `payload_len` smaller than 16 bytes. This prevents the 0-length read and
-> correctly aborts the connection with a protocol error.
->
-> Fixes: cd1a677cad99 ("libceph, ceph: implement msgr2.1 protocol (crc and =
-secure modes)")
+> Fixes: 1b0e61465234 ("[PATCH] USB ATM: driver for the Conexant AccessRunn=
+er chipset cxacru")
 > Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+87c7c2d63c44e41c77a3@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=3D87c7c2d63c44e41c77a3
-> Link: https://syzkaller.appspot.com/ai_job?id=3Dc8ca3d63-717a-4933-89ec-f=
-3d761b8690d
-> To: "Alex Markuze" <amarkuze@redhat.com>
-> To: <ceph-devel@vger.kernel.org>
-> To: "Ilya Dryomov" <idryomov@gmail.com>
-> To: "Viacheslav Dubeyko" <slava@dubeyko.com>
+> Reported-by: syzbot+c9dff578c3a41775176a@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3Dc9dff578c3a41775176a
+> Link: https://syzkaller.appspot.com/ai_job?id=3D75fec6f2-c8a6-43b1-b184-4=
+d26baba86cc
+> To: "Chas Williams" <3chas3@gmail.com>
+> To: <accessrunner-general@lists.sourceforge.net>
+> To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+> To: <linux-atm-general@lists.sourceforge.net>
+> To: <linux-usb@vger.kernel.org>
+> To: <netdev@vger.kernel.org>
+> To: "Duncan Sands" <duncan.sands@math.u-psud.fr>
 > Cc: <linux-kernel@vger.kernel.org>
 >
 > ---
-> diff --git a/net/ceph/messenger_v2.c b/net/ceph/messenger_v2.c
-> index 05f6eea29..b323b61e7 100644
-> --- a/net/ceph/messenger_v2.c
-> +++ b/net/ceph/messenger_v2.c
-> @@ -2142,6 +2142,11 @@ static int process_banner_prefix(struct ceph_conne=
-ction *con)
->         payload_len =3D ceph_decode_16(&p);
->         dout("%s con %p payload_len %d\n", __func__, con, payload_len);
->
-> +       if (payload_len < sizeof(u64) + sizeof(u64)) {
-> +               con->error_msg =3D "protocol error, bad banner payload le=
-n";
-> +               return -EINVAL;
-> +       }
-> +
->         return prepare_read_banner_payload(con, payload_len);
->  }
->
+> diff --git a/drivers/usb/atm/cxacru.c b/drivers/usb/atm/cxacru.c
+> index f1900c567..429ac20a8 100644
+> --- a/drivers/usb/atm/cxacru.c
+> +++ b/drivers/usb/atm/cxacru.c
+> @@ -700,6 +700,8 @@ static int cxacru_cm(struct cxacru_data *instance, en=
+um cxacru_cm_request cm,
+>         ret =3D offd;
+>         usb_dbg(instance->usbatm, "cm %#x\n", cm);
+>  fail:
+> +       if (ret < 0)
+> +               usb_kill_urb(instance->rcv_urb);
+>         mutex_unlock(&instance->cm_serialize);
+>  err:
+>         return ret;
 >
 >
 > base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
@@ -189,5 +189,5 @@ patches.
 > To unsubscribe from this group and stop receiving emails from it, send an=
  email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
 > To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/10fa68ab-b588-4ca1-8ac1-dd13a95cff91%40mail.kernel.org=
+-upstream-moderation/19c83890-3da4-471c-bbca-8d873b803586%40mail.kernel.org=
 .
