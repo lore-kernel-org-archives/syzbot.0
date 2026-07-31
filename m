@@ -1,176 +1,100 @@
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sipsolutions.net (s3.sipsolutions.net [168.119.38.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A32703F7AA8
-	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 11:41:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E67EF3E120E;
+	Fri, 31 Jul 2026 12:40:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=168.119.38.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785498076; cv=none; b=MTDb7Ule7/CuVuf1MoT0x/rjU/2kxHaL3GW8fuQnJAl9mplLtQHOqC/PKb7N1P4J+zuQDpS4g6w/5DJ8qjgXQ4pYJmibzkekEnM8szxu/BSghf5E1YiG5V1oxFyayXcnktBTsqeTNSZAdAUQkfM5v6FvDH1v+h2DKoz2FYYMKco=
+	t=1785501623; cv=none; b=CuQQcJ6i0hYiN3r/mKYzsQDb36FZIAs9huhSYa445RpUCO1Ui3MQ85vC7mO5hFYg0AZVz/5xiTGCIrSt6BgfzD9WkLjakfm+P4AW7GXoN7NzrRrGPSSgAOgqIn7cR2vla23RwHwHhvu6BZpq4KC61WS1MOYk3nW7ZQeA9uReEIs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785498076; c=relaxed/simple;
-	bh=e2vjSttxcoNtyW6JrbhYTnqq7Pxo0YsnVImfEbqlRQk=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=cGMTzpiml007vcfXLKRB42SVJIxSdAJAK3NiKWVzf4z7tnusnA4f1LbgRxK0HzFlhpVga1FLG+rb+zSZEgC2zVE0cbHqBF7e4vHb7Mwdj37HWnboBVdwbcdB25ZOdDBJDmG+3zIsZqpSWiRdrhQIvQUmqewiXTqLTGN1mEqoj3k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-4959c49e054so655856b6e.3
-        for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 04:41:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785498073; x=1786102873;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=m8VUZ3s3LYwXHsVpWfjVPQGrgQzqZfc/ZafskNEpMqk=;
-        b=aSdMiXI1gfV0oYrKpUfDVGDzU9AQQ8hjGsg+BkkFmOnU0tpWLfsouruVn68T8KqsLc
-         MUK4nuFinPUtYz36bAUrwyrbCF63COw8Zr+EYzsRZATJ9UShSAiT9p5ZwNqctS9laNU/
-         InfwLPoko96uhtutD1QJ9jH+iPj2z2hgNd6xvnEGbv+dTePkqK98lwhZF/GsXhVwZ88y
-         LCvbfsqK+lzCpkyEoMyuuzt89VRcpo6DnsWzIZ3/wLvF0ksQv7FjJoLgoy7bLJH5cnom
-         vDDErXFGGGLUIREflCEm2anm381hk+GjoOA2+9DsxD4eWzKwS0kDUPDe8BGheXDv9ybh
-         a59g==
-X-Gm-Message-State: AOJu0YwWhE54nc/lQMtVJJzYXMu0H+jD4eZFTUXU3bpvR88fggBZMj1F
-	tjRfPJTkm6QoToZsldCJGZn48zP4i+gqCRfzQiyrP9jNHBQGvgRnSqtuzL7mJmqjxOQT0xiPpC3
-	jj0gtGZwwiSbSByZUSySeeJv2zhwjz/yOI3IAdkw+pTx/oO6mMY86s6PESzk=
+	s=arc-20240116; t=1785501623; c=relaxed/simple;
+	bh=tn2B029Dtir033b/0Q0ceEw2++qPx2SRAqXFZAZL2Eo=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=u3HKx3y1ZiLkbvE/cZ7eoZbpxRIs8kXR/BaOhYD72pnAM8IWLqM0tH8VJHOnTQjbNaPtHi98RCp140QJZTwxWgOAsew1Jw/e5WL1Ytjkj8HOie2wecv+tJX8LJSpR399OjEDnKQqtSk/DAC6h4ZgH5cBZCiCWcwyk1VKCNvbT6k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=permerror header.from=sipsolutions.net; spf=pass smtp.mailfrom=sipsolutions.net; dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b=xduaMDKM; arc=none smtp.client-ip=168.119.38.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=permerror header.from=sipsolutions.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sipsolutions.net
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b="xduaMDKM"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+	Resent-Cc:Resent-Message-ID; bh=sqWCceK2vYuDCSiE8EHX4JY4JDuJ6uArfkAkp2kVxsg=;
+	t=1785501621; x=1786711221; b=xduaMDKMmskNd7RSCqAC986h+LMJ78AG6bnurHdgLEkPQ3/
+	RXtluvz1oMhG8sPkNJqPe6fguWOzKTqNrJUdqMwtUW6fZttQKVP662RGCCndfDH47qFC6Mxb33lxF
+	7F58NcTzcEUVsJQ1WSjoLAjFapacVblolkOGhnyj4oxcO7JIjiEoaro+sRWpBlJ3hlKzMO6+3Nuki
+	8+RHfNAkmtiHV3lf+8KiOvtenapaxGk9fln3qOT0z002YML8mr31NPy7EDrETXTU69C84XpcZJleq
+	Ql/fj/+2Fcqg9S+CwBzquIgPTvfWJiUtc81DTYEnVI4RolW2cVSOtMRu2QJJkS8w==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__ECDSA_SECP256R1_SHA256__AES_256_GCM:256)
+	(Exim 4.98.2)
+	(envelope-from <johannes@sipsolutions.net>)
+	id 1wpmXB-00000002cdV-3ogt;
+	Fri, 31 Jul 2026 14:40:18 +0200
+Message-ID: <28f4f5b6fbe594c41538d5068b2d77495250ecd7.camel@sipsolutions.net>
+Subject: Re: [PATCH v2] mac80211: reject station addition if AP or MLO link
+ is inactive
+From: Johannes Berg <johannes@sipsolutions.net>
+To: Slawomir Stepien <sst@poczta.fm>
+Cc: syzkaller-bugs@googlegroups.com, linux-wireless@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev, 
+	syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
+Date: Fri, 31 Jul 2026 14:40:16 +0200
+In-Reply-To: <amdckJhgBz7xT2F7@nr200>
+References: <20260727074526.248393-1-sst@poczta.fm>
+	 <9a9a794ad16663cfd7a652b83455ff16156b9baa.camel@sipsolutions.net>
+	 <amcjYrOESqnHjbhe@nr200>
+	 <741854f0b9774ce2da1e5c2fb551631aa4028122.camel@sipsolutions.net>
+	 <amcyO4e4bnBPinrP@nr200> <amdckJhgBz7xT2F7@nr200>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.60.2 (3.60.2-1.fc44) 
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:10cc:b0:4a4:c12:49d9 with SMTP id
- 5614622812f47-4ae4c4de8a7mr1992011b6e.3.1785498073711; Fri, 31 Jul 2026
- 04:41:13 -0700 (PDT)
-Date: Fri, 31 Jul 2026 04:41:13 -0700
-In-Reply-To: <e69cc8a4a9c3f641b97872b50f04c397880077cd.1785374485.git.wqu@suse.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a6c89d9.77639fcc.3d4fd0.0026.GAE@google.com>
-Subject: [syzbot ci] Re: iomap: follow the alignment requirement for iomap_dio_hole_iter()
-From: syzbot ci <syzbot+ci731b4119b755b229@syzkaller.appspotmail.com>
-To: linux-btrfs@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	linux-xfs@vger.kernel.org, wqu@suse.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-malware-bazaar: not-scanned
 
-syzbot ci has tested the following series
+On Mon, 2026-07-27 at 15:26 +0200, Slawomir Stepien wrote:
+> After taking a closer look at this I wonder how AP_VLAN should be handled=
+? Is there a way on
+> cfg80211 level to be able to check AP_VLAN's main device state?
 
-[v1] iomap: follow the alignment requirement for iomap_dio_hole_iter()
-https://lore.kernel.org/all/e69cc8a4a9c3f641b97872b50f04c397880077cd.1785374485.git.wqu@suse.com
-* [PATCH] iomap: follow the alignment requirement for iomap_dio_hole_iter()
+Hmm, yeah that might be an issue? I guess in theory it could track it,
+but it doesn't.
 
-and found the following issue:
-general protection fault in __iomap_dio_rw
+> My code change would look something like this:
+>=20
+> @@ -9404,6 +9404,12 @@ static int nl80211_new_station(struct sk_buff *skb=
+, struct genl_info *info)
+>         case NL80211_IFTYPE_AP:
+>         case NL80211_IFTYPE_AP_VLAN:
+>         case NL80211_IFTYPE_P2P_GO:
+> +               /* Add new station only after the AP and link has been st=
+arted */
+> +               int link =3D params.link_sta_params.link_id >=3D 0 ?
+> +                          params.link_sta_params.link_id : 0;
+> +               if (!wdev->links[link].ap.beacon_interval)
+> +                       return -ENETDOWN;
+> +
+>                 /* ignore WME attributes if iface/sta is not capable */
+>                 if (!(rdev->wiphy.flags & WIPHY_FLAG_AP_UAPSD) ||
+>                     !(params.sta_flags_set & BIT(NL80211_STA_FLAG_WME)))
+>=20
+> but the NL80211_IFTYPE_AP_VLAN case would not work here, right? Can I jus=
+t do the checking only for
+> NL80211_IFTYPE_AP and NL80211_IFTYPE_P2P_GO and skip NL80211_IFTYPE_AP_VL=
+AN?
 
-Full report is available here:
-https://ci.syzbot.org/series/81e0fbae-4715-4d62-8e9e-bcd19e46b164
+Yeah it'd just reject everything, I guess.
 
-***
+I think in practice stations are added at the AP interface first and
+then moved to a VLAN, which would argue for actually rejecting
+everything being OK anyway - but then that shouldn't be because of this
+but rather by just removing the AP_VLAN case there, or so.
 
-general protection fault in __iomap_dio_rw
+Not sure what the best thing would be though.
 
-tree:      vfs
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs.git
-base:      70c2cbf8600c7d3a622b77e31136b83d6ac7d86c
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/8d5fee65-291c-46a2-9f9a-d512f8fad82b/config
-syz repro: https://ci.syzbot.org/findings/c9f79a18-3316-44ec-b805-b805b1c49325/syz_repro
-
-loop0: rw=2049, sector=53248, nr_sectors = 976 limit=40427
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000003: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000018-0x000000000000001f]
-CPU: 0 UID: 0 PID: 5842 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:bdev_get_queue include/linux/blkdev.h:1058 [inline]
-RIP: 0010:bdev_logical_block_size include/linux/blkdev.h:1403 [inline]
-RIP: 0010:iomap_dio_alignment fs/iomap/direct-io.c:415 [inline]
-RIP: 0010:iomap_dio_hole_iter fs/iomap/direct-io.c:595 [inline]
-RIP: 0010:iomap_dio_iter fs/iomap/direct-io.c:643 [inline]
-RIP: 0010:__iomap_dio_rw+0x1142/0x2130 fs/iomap/direct-io.c:815
-Code: e2 5a ff 83 e3 08 75 5c e8 ab de 5a ff 48 8b 9c 24 68 01 00 00 48 83 c3 18 48 89 d8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 08 48 89 df e8 d0 75 c8 ff 48 8b 1b b8 58 01 00 00
-RSP: 0018:ffffc90003fef560 EFLAGS: 00010206
-RAX: 0000000000000003 RBX: 0000000000000018 RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffffc90003fef860 R08: ffff8881148d8fff R09: 0000000000000000
-R10: ffff8881148d8000 R11: ffffed102291b200 R12: 1ffff920007fdecc
-R13: 0000000000000000 R14: ffff888166b45340 R15: 0000000000001000
-FS:  00007fd77743d6c0(0000) GS:ffff88818d951000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000200000078000 CR3: 000000011606a000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- f2fs_dio_read_iter fs/f2fs/file.c:4887 [inline]
- f2fs_file_read_iter+0x60b/0x940 fs/f2fs/file.c:4950
- copy_splice_read+0x5ff/0xaa0 fs/splice.c:362
- do_splice_read fs/splice.c:979 [inline]
- splice_direct_to_actor+0x4b6/0xcb0 fs/splice.c:1084
- do_splice_direct_actor fs/splice.c:1202 [inline]
- do_splice_direct+0x195/0x290 fs/splice.c:1228
- do_sendfile+0x52e/0x7c0 fs/read_write.c:1371
- __do_sys_sendfile64 fs/read_write.c:1432 [inline]
- __se_sys_sendfile64+0x144/0x1a0 fs/read_write.c:1418
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fd77659df99
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fd77743d028 EFLAGS: 00000246 ORIG_RAX: 0000000000000028
-RAX: ffffffffffffffda RBX: 00007fd776825fa0 RCX: 00007fd77659df99
-RDX: 0000000000000000 RSI: 0000000000000004 RDI: 0000000000000004
-RBP: 00007fd776634ec4 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000800000009 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fd776826038 R14: 00007fd776825fa0 R15: 00007fff168f4a18
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:bdev_get_queue include/linux/blkdev.h:1058 [inline]
-RIP: 0010:bdev_logical_block_size include/linux/blkdev.h:1403 [inline]
-RIP: 0010:iomap_dio_alignment fs/iomap/direct-io.c:415 [inline]
-RIP: 0010:iomap_dio_hole_iter fs/iomap/direct-io.c:595 [inline]
-RIP: 0010:iomap_dio_iter fs/iomap/direct-io.c:643 [inline]
-RIP: 0010:__iomap_dio_rw+0x1142/0x2130 fs/iomap/direct-io.c:815
-Code: e2 5a ff 83 e3 08 75 5c e8 ab de 5a ff 48 8b 9c 24 68 01 00 00 48 83 c3 18 48 89 d8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 08 48 89 df e8 d0 75 c8 ff 48 8b 1b b8 58 01 00 00
-RSP: 0018:ffffc90003fef560 EFLAGS: 00010206
-RAX: 0000000000000003 RBX: 0000000000000018 RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffffc90003fef860 R08: ffff8881148d8fff R09: 0000000000000000
-R10: ffff8881148d8000 R11: ffffed102291b200 R12: 1ffff920007fdecc
-R13: 0000000000000000 R14: ffff888166b45340 R15: 0000000000001000
-FS:  00007fd77743d6c0(0000) GS:ffff8882a8f51000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007faa8f64dc80 CR3: 000000011606a000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess):
-   0:	e2 5a                	loop   0x5c
-   2:	ff 83 e3 08 75 5c    	incl   0x5c7508e3(%rbx)
-   8:	e8 ab de 5a ff       	call   0xff5adeb8
-   d:	48 8b 9c 24 68 01 00 	mov    0x168(%rsp),%rbx
-  14:	00
-  15:	48 83 c3 18          	add    $0x18,%rbx
-  19:	48 89 d8             	mov    %rbx,%rax
-  1c:	48 c1 e8 03          	shr    $0x3,%rax
-  20:	48 b9 00 00 00 00 00 	movabs $0xdffffc0000000000,%rcx
-  27:	fc ff df
-* 2a:	80 3c 08 00          	cmpb   $0x0,(%rax,%rcx,1) <-- trapping instruction
-  2e:	74 08                	je     0x38
-  30:	48 89 df             	mov    %rbx,%rdi
-  33:	e8 d0 75 c8 ff       	call   0xffc87608
-  38:	48 8b 1b             	mov    (%rbx),%rbx
-  3b:	b8 58 01 00 00       	mov    $0x158,%eax
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+johannes
