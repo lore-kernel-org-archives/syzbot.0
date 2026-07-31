@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4EF83AD539
-	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 08:13:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91B60253340
+	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 08:28:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785485615; cv=none; b=YMCM57T7xVpaF9U+KAm0JBU31Rsw7bgiu0nHvAFviu+CgI7euQZn698JxC6+o0R38tDQJYEx58hPQQHk0bMv34lDE9tJX7+AlgTfM4tiGgy2BIOBzjQuUAjMVDURJf8DYk1KdWkA832T3npfT8XfX6UCtLkqqs+i6aoYP9TOYM4=
+	t=1785486515; cv=none; b=acKfMcea+uGH6OL57XlxjxtqXqIbrZ8YIM8GmXlkZbHyw3m1g7wT9oYHZlDfOMYouSIhUV79MTUdNEgi0ZMQjRTrQgTmUnvM1/mCbkPkBbEFiV9QDYQY/ej8UKs9e+S6ADNMoLCZGwe4+clusmZpqB86G0vgr5rMYOhCFYRQbYc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785485615; c=relaxed/simple;
-	bh=4+H+6ppOFArh4Gj66O3MI+ufaSabkuQsb4CpDqyT5i4=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=KH8IM/SmpK4ArMraxBrkg31Der43hgoX73blfC/1tGwLQjqlC6wLP9necDPts9ag5eHqh+Xwd683OHAHa2av5E/EskdU5/HxjN7YghRo4pWf/04nssfPsXvu2NK88/RHsdFD5yZQjtYi6RIJj0av4gffFyrrawQ+YIzmJ/uysH8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WO03f0ml; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785486515; c=relaxed/simple;
+	bh=t+AoDq3dLosN+anyInT2UoG1xNvqUYiL/3vnRScVoTo=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Mwrg6S87tgsjnP7RNlBNTmddj8QP39GYY3uAiZ9mDzQaTGY3ilcjTZeFzVZ20FkhIwbgKRR9yiw1aNdSfLiyEHHR6CfUX3EegIWPY27e6fu8QBGwYxeF1OrgUBfV0d01GvG682CysfJtP1kFdC9bIejsgJDaZtVptscXCFqjZMU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nAhN7Y+e; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WO03f0ml"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 4CE381F000E9;
-	Fri, 31 Jul 2026 08:13:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nAhN7Y+e"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 60A391F000E9;
+	Fri, 31 Jul 2026 08:28:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785485614;
-	bh=ehUTfHeWXSv3diOMTV7jMKhBOYsEySxUsLk2xZS0/5E=;
+	s=k20260515; t=1785486514;
+	bh=k4CfFuM9AsH4ILlmi+wHzJdukpIvLAqIuKfMimhDHEQ=;
 	h=From:To:Cc:Subject:Date;
-	b=WO03f0mlsW6fr4MXNfIr5GTePN0+kp+dLFGV/rJzDQqDaoPq9SIsNQARBunaUISSf
-	 B6eyT07OpPlPkTWPgRjZzVQrXBI8+liWdbz9zYMDKIVNS4kWXT6eRZy2ZvnYwlH8zc
-	 SJO6XEjyC3gf8YTaO1thEM07wHzdEAfCZcAceFyhKKBtSg2Z3sDMaPuWsSvD8JUIam
-	 812sMEsvWwhsvxAqf4JY/4Z+oztSkjMWJSIEIyfLkVc7LAOboMLCCmVKRXS5F1ZqEC
-	 1gTjP+kJqs9Dcs4IV/WB3tMbA9Qb3eZEnhGpg3zYQdL3Utx4m/onsIx0s+BcjZ4Vvf
-	 MUW8rAUQdWYvw==
+	b=nAhN7Y+eJCBSUkZeYn5mG9bgQz0gWCXJ24mGLJXbw2HwU1c/JrAP1kh+YADt1Fjul
+	 kEk9+ENyzf2aTi5sd6hGDGH96i0+cQTAOPiGzrVieK7pIGk7jaW/1je0lcTRpr0F9Z
+	 3uFEHqOwPONg5YVOBt5fb4UnhXWNHmfxE/MHJWSvsL6wzwSBbIJLf5TrKxNWchO6LE
+	 IjRhVXIWUSLGbMQI9pcbdZD5p16q6nmoTpO3hJm2VOdTcfEhzTYwkUdO25NNjlKt8G
+	 cZIrl7Hmc8s/3KS/uT7pkiQg4wVV8itopHQuwS/NSzc+dMg0QbOzIJp7G4VmhJO3e2
+	 WzpEkSqDD9g/A==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: gadgetfs: fix use-after-free in ep_open()
-Message-ID: <a6f4f066-bd64-4a53-b3e0-0d71b34bf773@mail.kernel.org>
+Subject: [PATCH RFC] media: dvb-core: fix memory leak in dvb_dmxdev_filter_start error path
+Message-ID: <f470778d-f931-4e3a-b653-d8d01b9a005c@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,109 +38,187 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri, 31 Jul 2026 08:13:34 +0000 (UTC)
+Date: Fri, 31 Jul 2026 08:28:34 +0000 (UTC)
 
-A race condition exists between opening a gadgetfs endpoint file and the
-destruction of the endpoint files, leading to a use-after-free of the
-ep_data object.
+When starting a DVB demux PES filter with multiple PIDs,
+`dvb_dmxdev_filter_start()` iterates over the feeds and calls
+`dvb_dmxdev_start_feed()` for each. If starting a feed fails (e.g., due to
+a signal interrupting a mutex lock), the code attempts to clean up by
+calling `dvb_dmxdev_filter_stop()`. However, `dvb_dmxdev_filter_stop()` has
+an early exit check that returns immediately if the filter state is less
+than `DMXDEV_STATE_GO`. Since `dvb_dmxdev_filter_start()` only sets the
+state to `DMXDEV_STATE_GO` at the very end of the function, the state is
+still `DMXDEV_STATE_SET` during the error path. Consequently,
+`dvb_dmxdev_filter_stop()` does nothing, leaving previously started feeds
+running indefinitely. When the file descriptor is closed, the feeds are
+permanently leaked.
 
-When an endpoint file is opened, the VFS looks up the dentry and calls
-ep_open(). ep_open() retrieves the ep_data pointer from inode->i_private
-and attempts to lock its mutex. Concurrently, if the gadget is unbound,
-destroy_ep_files() iterates over the endpoints, unhashes their dentries,
-and immediately calls put_ep(). This drops the initial reference to the
-ep_data object, freeing it. If another thread is already in the process of
-opening the file, it holds a reference to the dentry and the inode. The
-inode remains alive, and its i_private pointer still points to the
-now-freed ep_data. When ep_open() proceeds to lock data->lock, it accesses
-freed memory.
+This leads to memory leaks, as observed in the following kmemleak report:
 
-BUG: KASAN: slab-use-after-free in __mutex_lock_common
-kernel/locking/mutex.c:625 [inline]
-BUG: KASAN: slab-use-after-free in __mutex_lock+0x130/0xf14
-kernel/locking/mutex.c:821
-Read of size 8 at addr ffff0000f43acc58 by task syz-executor/5900
+BUG: memory leak
+unreferenced object 0xffff88818bd15680 (size 32):
+  comm "syz.0.17", pid 6220, jiffies 4294944052
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 48 19 02 0c 70 38 71 8b  ........H...p8q.
+    81 88 ff ff 0a 20 b6 fe 8b 81 88 ff ff 00 00 00  ..... ..........
+  backtrace (crc ab93546c):
+    kmemleak_alloc_recursive include/linux/kmemleak.h:44 [inline]
+    slab_post_alloc_hook mm/slub.c:4597 [inline]
+    slab_alloc_node mm/slub.c:4917 [inline]
+    __kmalloc_cache_noprof+0x1be/0x3f0 mm/slub.c:5485
+    _kmalloc_noprof include/linux/slab.h:988 [inline]
+    _kzalloc_noprof include/linux/slab.h:1309 [inline]
+    vidtv_psi_service_desc_init+0x7a/0x1b0
+    drivers/media/test-drivers/vidtv/vidtv_psi.c:233
+    vidtv_channel_s302m_init+0xd3/0x2c0
+    drivers/media/test-drivers/vidtv/vidtv_channel.c:83
+    vidtv_channels_init+0x20/0x40
+    drivers/media/test-drivers/vidtv/vidtv_channel.c:528
+    vidtv_mux_init+0x117/0x830
+    drivers/media/test-drivers/vidtv/vidtv_mux.c:521
+    vidtv_start_streaming
+    drivers/media/test-drivers/vidtv/vidtv_bridge.c:194 [inline]
+    vidtv_start_feed+0x1d3/0x260
+    drivers/media/test-drivers/vidtv/vidtv_bridge.c:239
+    dmx_ts_feed_start_filtering+0xaf/0x110
+    drivers/media/dvb-core/dvb_demux.c:747
+    dvb_dmxdev_start_feed drivers/media/dvb-core/dmxdev.c:658 [inline]
+    dvb_dmxdev_filter_start+0x1d4/0x650 drivers/media/dvb-core/dmxdev.c:769
+    dvb_demux_do_ioctl+0x383/0x3b0 drivers/media/dvb-core/dmxdev.c:1065
 
-Call trace:
- __mutex_lock_common kernel/locking/mutex.c:625 [inline]
- __mutex_lock+0x130/0xf14 kernel/locking/mutex.c:821
- mutex_lock_interruptible_nested+0x24/0x30 kernel/locking/mutex.c:899
- ep_open+0x58/0x25c drivers/usb/gadget/legacy/inode.c:823
- do_dentry_open+0x5c4/0xfc0 fs/open.c:947
- vfs_open+0x44/0x2dc fs/open.c:1052
+To fix this, `dvb_dmxdev_filter_start()` is updated to manually stop and
+release the previously started feeds in the error path, rather than relying
+on `dvb_dmxdev_filter_stop()`.
 
-Freed by task 6138:
- kfree+0x188/0x690 mm/slub.c:6692
- put_ep+0xd0/0x144 drivers/usb/gadget/legacy/inode.c:225
- destroy_ep_files+0x244/0x2dc drivers/usb/gadget/legacy/inode.c:1582
- gadgetfs_unbind+0x114/0x1f0 drivers/usb/gadget/legacy/inode.c:1655
- gadget_unbind_driver+0x188/0x790 drivers/usb/gadget/udc/core.c:1724
+Additionally, several related issues and edge cases in the same file are
+addressed to ensure robust error handling:
 
-To fix this, tie the base reference of ep_data to the lifetime of the inode
-rather than manually dropping it in destroy_ep_files(). Add an .evict_inode
-callback to gadget_fs_operations that drops the reference when the inode is
-finally destroyed. Remove the premature put_ep() call from
-destroy_ep_files(). Additionally, to prevent a double-free in the error
-path of activate_ep_files(), clear inode->i_private in
-gadgetfs_create_file() before calling iput() if simple_start_creating()
-fails.
+1. In `dvb_dmxdev_start_feed()`, `feed->ts` is set to NULL in the error
+paths after releasing the feed to prevent dangling pointers which could
+lead to use-after-free or double-free bugs.
+2. In `dvb_dmxdev_filter_start()` for the SEC case, a similar leak in the
+error path is fixed by properly releasing the filter, restarting the feed,
+and nullifying the pointers if `start_filtering()` fails.
+3. In `dvb_dmxdev_add_pid()`, if adding a PID to an already running filter
+fails to start the feed, the newly allocated feed is now removed from the
+list and freed.
+4. In `dvb_dmxdev_filter_stop()`, a NULL pointer check for `feed->ts` is
+added before calling `release_ts_feed()` to prevent potential dereferences.
+5. In `dvb_dmxdev_remove_pid()`, the logic is fixed to ensure the feed is
+always removed from the list and freed, even if the filter hasn't been
+started yet (where `feed->ts` is intentionally NULL).
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 1cb662a31449 ("V4L/DVB (12275): Add two new ioctls: DMX_ADD_PID and DMX_REMOVE_PID")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+df9e891bf8ea586f846b@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=df9e891bf8ea586f846b
-Link: https://syzkaller.appspot.com/ai_job?id=ae49a838-5eb9-4227-93a3-56ad2313483a
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
-Cc: "Christian Brauner" <brauner@kernel.org>
-Cc: "Jan Kara" <jack@suse.cz>
-Cc: "Kees Cook" <kees@kernel.org>
+Reported-by: syzbot+070afba8f438130eca76@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=070afba8f438130eca76
+Link: https://syzkaller.appspot.com/ai_job?id=98187064-a3c9-477c-97c8-4ae8278fe5f3
+To: <linux-media@vger.kernel.org>
+To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
+To: "Andreas Oberritter" <obi@linuxtv.org>
+Cc: "Hans Verkuil" <hverkuil@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Mateusz Guzik" <mjguzik@gmail.com>
-Cc: "Al Viro" <viro@zeniv.linux.org.uk>
 
 ---
-diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
-index d87a8ab51..a03062986 100644
---- a/drivers/usb/gadget/legacy/inode.c
-+++ b/drivers/usb/gadget/legacy/inode.c
-@@ -1579,8 +1579,6 @@ static void destroy_ep_files (struct dev_data *dev)
- 		/* break link to dcache */
- 		simple_remove_by_name(dev->sb->s_root, ep->name, NULL);
- 
--		put_ep (ep);
--
- 		spin_lock_irq (&dev->lock);
+diff --git a/drivers/media/dvb-core/dmxdev.c b/drivers/media/dvb-core/dmxdev.c
+index 3c8bc75e4..6d7c38722 100644
+--- a/drivers/media/dvb-core/dmxdev.c
++++ b/drivers/media/dvb-core/dmxdev.c
+@@ -572,8 +572,10 @@ static int dvb_dmxdev_filter_stop(struct dmxdev_filter *dmxdevfilter)
+ 		dvb_dmxdev_feed_stop(dmxdevfilter);
+ 		demux = dmxdevfilter->dev->demux;
+ 		list_for_each_entry(feed, &dmxdevfilter->feed.ts, next) {
+-			demux->release_ts_feed(demux, feed->ts);
+-			feed->ts = NULL;
++			if (feed->ts) {
++				demux->release_ts_feed(demux, feed->ts);
++				feed->ts = NULL;
++			}
+ 		}
+ 		break;
+ 	default:
+@@ -652,12 +654,14 @@ static int dvb_dmxdev_start_feed(struct dmxdev *dmxdev,
+ 	ret = tsfeed->set(tsfeed, feed->pid, ts_type, ts_pes, timeout);
+ 	if (ret < 0) {
+ 		dmxdev->demux->release_ts_feed(dmxdev->demux, tsfeed);
++		feed->ts = NULL;
+ 		return ret;
  	}
- 	spin_unlock_irq (&dev->lock);
-@@ -1996,6 +1994,7 @@ static int gadgetfs_create_file (struct super_block *sb, char const *name,
  
- 	dentry = simple_start_creating(sb->s_root, name);
- 	if (IS_ERR(dentry)) {
-+		inode->i_private = NULL;
- 		iput(inode);
- 		return PTR_ERR(dentry);
+ 	ret = tsfeed->start_filtering(tsfeed);
+ 	if (ret < 0) {
+ 		dmxdev->demux->release_ts_feed(dmxdev->demux, tsfeed);
++		feed->ts = NULL;
+ 		return ret;
  	}
-@@ -2006,9 +2005,18 @@ static int gadgetfs_create_file (struct super_block *sb, char const *name,
+ 
+@@ -758,8 +762,13 @@ static int dvb_dmxdev_filter_start(struct dmxdev_filter *filter)
+ 		filter->todo = 0;
+ 
+ 		ret = filter->feed.sec->start_filtering(filter->feed.sec);
+-		if (ret < 0)
++		if (ret < 0) {
++			filter->feed.sec->release_filter(filter->feed.sec, filter->filter.sec);
++			dvb_dmxdev_feed_restart(filter);
++			filter->feed.sec = NULL;
++			filter->filter.sec = NULL;
+ 			return ret;
++		}
+ 
+ 		dvb_dmxdev_filter_timer(filter);
+ 		break;
+@@ -768,7 +777,15 @@ static int dvb_dmxdev_filter_start(struct dmxdev_filter *filter)
+ 		list_for_each_entry(feed, &filter->feed.ts, next) {
+ 			ret = dvb_dmxdev_start_feed(dmxdev, filter, feed);
+ 			if (ret < 0) {
+-				dvb_dmxdev_filter_stop(filter);
++				struct dmxdev_feed *f;
++
++				list_for_each_entry(f, &filter->feed.ts, next) {
++					if (f == feed)
++						break;
++					f->ts->stop_filtering(f->ts);
++					dmxdev->demux->release_ts_feed(dmxdev->demux, f->ts);
++					f->ts = NULL;
++				}
+ 				return ret;
+ 			}
+ 		}
+@@ -901,8 +918,15 @@ static int dvb_dmxdev_add_pid(struct dmxdev *dmxdev,
+ 	feed->pid = pid;
+ 	list_add(&feed->next, &filter->feed.ts);
+ 
+-	if (filter->state >= DMXDEV_STATE_GO)
+-		return dvb_dmxdev_start_feed(dmxdev, filter, feed);
++	if (filter->state >= DMXDEV_STATE_GO) {
++		int ret = dvb_dmxdev_start_feed(dmxdev, filter, feed);
++
++		if (ret < 0) {
++			list_del(&feed->next);
++			kfree(feed);
++			return ret;
++		}
++	}
+ 
  	return 0;
  }
+@@ -917,10 +941,12 @@ static int dvb_dmxdev_remove_pid(struct dmxdev *dmxdev,
+ 		return -EINVAL;
  
-+static void gadgetfs_evict_inode(struct inode *inode)
-+{
-+	truncate_inode_pages_final(&inode->i_data);
-+	clear_inode(inode);
-+	if (inode->i_private && inode->i_fop == &ep_io_operations)
-+		put_ep(inode->i_private);
-+}
-+
- static const struct super_operations gadget_fs_operations = {
- 	.statfs =	simple_statfs,
- 	.drop_inode =	inode_just_drop,
-+	.evict_inode =	gadgetfs_evict_inode,
- };
- 
- static int
+ 	list_for_each_entry_safe(feed, tmp, &filter->feed.ts, next) {
+-		if ((feed->pid == pid) && (feed->ts != NULL)) {
+-			feed->ts->stop_filtering(feed->ts);
+-			filter->dev->demux->release_ts_feed(filter->dev->demux,
+-							    feed->ts);
++		if (feed->pid == pid) {
++			if (feed->ts != NULL) {
++				feed->ts->stop_filtering(feed->ts);
++				filter->dev->demux->release_ts_feed(filter->dev->demux,
++								    feed->ts);
++			}
+ 			list_del(&feed->next);
+ 			kfree(feed);
+ 		}
 
 
 base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
