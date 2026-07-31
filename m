@@ -1,105 +1,101 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2346F3DA7D6;
-	Fri, 31 Jul 2026 10:15:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785492936; cv=none; b=gaU0W50XBhA7PL4ATUmkwN0S3cNU0DR8FlmomN1kfDvNuOoRQ69e1xidKoWXz0D1DN6hTDzUMAuI2nKuqzi60DGfbDZw5+4gT7AJBSdkOIE4JOWqNFoY+IYP1VNXskIEL7yZrMdrozuT3V9DdlMoUNFMxQTIKSJUc4IYe2MwEIo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785492936; c=relaxed/simple;
-	bh=iKGZZoPiLZbpP6fqsFth6A6aZtjn2VQzfx5vDbpAxLA=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=NiRs0jC0i7X5aOIpUN0CGPPmPbGwbFevOTjdbk5M0LiQEp6znOrrsUzrx2dGG3JNf9adOBizM9uF/SvE8fY6KzPEjKLelFwXrpiBF4bdjf76PAe0i39gVMXKkQjDVvPpu4MhSG+9jnuvMdwQ6uG+F4LfZxWDohoXDGh9ML0D10g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Nl+rJ6Gy; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A454408607
+	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 10:15:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785492949; cv=pass; b=MB9eam4iyiKoC2S595vMPRPxjJ5utlKVJ/aHUDIXcgkv67Bw9eR9y47tkOuBbKs69IZw4bcr0uxQHc0Tq7AHTZAlTkK1o/nLuK1HDgXtrGPSJQg/dDxz63c257WQvZo6Dz/odTTjA44q+6B067oAt32+e2MZ5OMZrW136L9Hf/0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785492949; c=relaxed/simple;
+	bh=LXX8eivxKxrbAOK3pn025OPZrile2JurTBg3reT34hE=;
+	h=MIME-Version:Content-Type:Subject:From:To:Message-ID:Date; b=rgeWl8OgnTHJIV03EhQpeD5EiT/RFC8ZYx5VdM6Yv998ZsKE5ciEyj9+EQUalffDNZzfs0Kxjiz/rK52iaugAuDPBNPYCoMVby0vzkpciqsPC1l/WqMgP979jtqzarNiY4qciWb2KjFQAQfAKor35E1YkqyPjQnZ0Ao6FbrJ81E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.b=fNhi22JQ; arc=pass smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Nl+rJ6Gy"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A57751F000E9;
-	Fri, 31 Jul 2026 10:15:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785492921;
-	bh=igCGcuVr3RVFJK8/Uk1UFFC3NA0FBLSNwlzVaDvkXzA=;
-	h=From:To:Cc:Subject:Date;
-	b=Nl+rJ6GyKZ8ba+2bqo7MGDCHI6P2EgJHg3evd07ZnjdThA+IyhB9/ajWpjgi2SaAD
-	 a+EiGm3E3f7rGgJXCK1NOLFZtlyjgvoVZ5yvW/Yw/Y42JWKE3Iv0OWgwi9xeV3vctO
-	 T+v49hvwnyiMlBPij8iMIqDjTwEkuLl+D5+KlP5mR1/5mu/S8vpfwOZmKyk36irpTa
-	 Q5miiZgEQIvHTlNuHCXJE8/HiJzm/62vzT0VW/Jpj2XnbGvzJ0OrCfOAbxfTSYwVE3
-	 neQ1fTw4ywM2c+uAicwJOx/H19runwL4ednFQ4KH5zGzcYRnFNlkciauRcLac6KdpJ
-	 L56hXNuQqPdlQ==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Aleksandr Nogikh <nogikh@google.com>, "Chas Williams" <3chas3@gmail.com>, <accessrunner-general@lists.sourceforge.net>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, <linux-atm-general@lists.sourceforge.net>, <linux-usb@vger.kernel.org>, <netdev@vger.kernel.org>, "Duncan Sands" <duncan.sands@math.u-psud.fr>
-Cc: linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Subject: [PATCH] usb: atm: cxacru: properly kill rcv_urb on error in cxacru_cm()
-Message-ID: <91edfa4c-a63d-400c-9f00-31f3e1f98c00@mail.kernel.org>
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.b="fNhi22JQ"
+Received: by smtp.kernel.org (Postfix)
+	id 3B03C1F000E9; Fri, 31 Jul 2026 10:15:40 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=216.105.38.7
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1785492940;
+	b=1DgS2+d3Vsj/ySwIHXJgFm/rzj934UmOVwTta99Y8ug2gOASzRfbqqlOLChHNbg/wj9H
+	 pw2YVuFHTauNoOoE/ghoOaY8EkvsIb8liKEClKv1BTuiIriWQEhXmp7S8ehwNSOK7heFt
+	 SkNu26xuUs/b5A3vPGEULFVQbqCHzrytsOEqf1/xCboCubbaCwpcy8FbyAAhrKJuRLQ+v
+	 Yk/wIDHiFPBAs+0OORzEjBxkDrHtJphvjODI/w0Wnd+BcGPiES/fWwEsmZfzbYkgTsaYS
+	 hhR5fXPJWpml+5LFmWZVZy251zuUghJq7A4bDEBI5GjW7veClWWf1qDzoFTt12NfzLQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1785492940;
+	h=DMARC-Filter:DKIM-Signature:Received:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Subject:From:To:Message-ID:Date:Precedence:
+	 X-BeenThere:X-Mailman-Version:List-Id:X-List-Administrivia:Errors-To;
+	bh=kEvxb85qDVbL2MynTLLXGY0pSQ6A8/YXuy5+ACWBXTc=;
+	b=uW9fkt2seyKXF2pKmfbh0lcz8bSgk840QTCZ0FrtndZnba3WcJtsrtFgmdIwXXaRbQgw
+	 uiKehOI1t9dm9N2z/KN8obMRZ7zyFJyjsVUzZzFcCoJnlFsaNn/LuExaXL56sPQWKTeb9
+	 N6xGDtrtZIkLfqUyGvvsXGEPu86o4xRkBoiU/p3ICX9Thw0Q6XtWS8JGTQqIr+Q4Ucs6h
+	 jw6KmYf5SWvCWq9ZPtqHKsVpUFIfjpMQ6kQdpwsEMahIYSszPkqqtnGMkfweFVd/3cW5K
+	 F0hKZWOE9VxIZJnR/cxKr4mccZqOIh0oKIb2dcTzNx1p4r8T8fy5ZfUi8mpItyDgsZQ==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=fNhi22JQ;
+	dmarc=pass header.from=lists.sourceforge.net;
+	spf=pass smtp.mailfrom=lists.sourceforge.net;
+	arc=none smtp.remote-ip=216.105.38.7
+Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id B29861F00A3D
+	for <syzbot@kernel.org>; Fri, 31 Jul 2026 10:15:39 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=fNhi22JQ
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org B29861F00A3D
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=none dis=none) header.from=lists.sourceforge.net
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=lists.sourceforge.net
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.sourceforge.net; s=beta; h=List-Id:Date:Message-ID:To:From:Subject:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Sender:Reply-To:Cc:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=kEvxb85qDVbL2MynTLLXGY0pSQ6A8/YXuy5+ACWBXTc=; b=fNhi22JQHW8/Kj/tW29P0zapWA
+	mGMdr0mYJF8JXFmxVrPAigSGXSVsrPtipbX23A8HD2kxIK/of7YZ0MweP8WliKTNCYKZZ85bMi836
+	njolKGgZtsvZTHHoix03e0alDPFLj9dGjFkMApDRjuxwMSgqReLIm3l96fejq34yAl7o=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	(envelope-from <linux-atm-general-bounces@lists.sourceforge.net>)
+	id 1wpkHC-0003r5-Jg
+	for syzbot@kernel.org;
+	Fri, 31 Jul 2026 10:15:39 +0000
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri, 31 Jul 2026 10:15:20 +0000 (UTC)
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: Your message to Linux-atm-general awaits moderator approval
+From: linux-atm-general-owner@lists.sourceforge.net
+To: syzbot@kernel.org
+Message-ID: <mailman.108068.1785492938.1583.linux-atm-general@lists.sourceforge.net>
+Date: Fri, 31 Jul 2026 10:15:38 +0000
+Precedence: bulk
+X-BeenThere: linux-atm-general@lists.sourceforge.net
+X-Mailman-Version: 2.1.21
+X-List-Administrivia: yes
+Errors-To: linux-atm-general-bounces@lists.sourceforge.net
 
-From: Aleksandr Nogikh <nogikh@google.com>
+Your mail to 'Linux-atm-general' with the subject
 
-If cxacru_cm() encounters an error while submitting or waiting for snd_urb,
-it aborts and returns the error without killing the already submitted
-rcv_urb. This leaves the rcv_urb active.
+    [PATCH] usb: atm: cxacru: properly kill rcv_urb on error in
+cxacru_cm()
 
-When this happens during initialization (e.g., in cxacru_atm_start()), the
-driver may ignore the error and proceed to call cxacru_poll_status(), which
-invokes cxacru_cm() again. Attempting to submit the still-active rcv_urb
-triggers a warning in usb_submit_urb():
+Is being held until the list moderator can review it for approval.
 
-cxacru 1-1:1.0: send of cm 0x84 failed (-104)
-ATM dev 0: cxacru_atm_start: CHIP_ADSL_LINE_START returned -104
-------------[ cut here ]------------
-URB ffff88812658d200 submitted while active
-WARNING: drivers/usb/core/urb.c:379 at usb_submit_urb+0x79/0x18b0
-drivers/usb/core/urb.c:379
-...
-Call Trace:
- <TASK>
- cxacru_cm+0x21a/0xf10 drivers/usb/atm/cxacru.c:631
- cxacru_cm_get_array drivers/usb/atm/cxacru.c:722 [inline]
- cxacru_poll_status+0x178/0x1110 drivers/usb/atm/cxacru.c:828
- cxacru_atm_start+0x185/0x360 drivers/usb/atm/cxacru.c:814
- usbatm_atm_init+0x144/0x3a0 drivers/usb/atm/usbatm.c:927
- usbatm_usb_probe+0x15cb/0x1db0 drivers/usb/atm/usbatm.c:1178
- cxacru_usb_probe+0x17f/0x220 drivers/usb/atm/cxacru.c:1370
-...
+The reason it is being held:
 
-To fix this, ensure that rcv_urb is properly killed if cxacru_cm() aborts
-early. We can safely call usb_kill_urb() on rcv_urb in the error path, as
-it is safe to call even if the URB is not active (e.g., if it failed to
-submit in the first place, or if it already completed).
+    Post by non-member to a members-only list
 
-Fixes: 1b0e61465234 ("[PATCH] USB ATM: driver for the Conexant AccessRunner chipset cxacru")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+c9dff578c3a41775176a@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=c9dff578c3a41775176a
-Link: https://syzkaller.appspot.com/ai_job?id=75fec6f2-c8a6-43b1-b184-4d26baba86cc
-Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+Either the message will get posted to the list, or you will receive
+notification of the moderator's decision.  If you would like to cancel
+this posting, please visit the following URL:
 
----
-diff --git a/drivers/usb/atm/cxacru.c b/drivers/usb/atm/cxacru.c
-index f1900c567..429ac20a8 100644
---- a/drivers/usb/atm/cxacru.c
-+++ b/drivers/usb/atm/cxacru.c
-@@ -700,6 +700,8 @@ static int cxacru_cm(struct cxacru_data *instance, enum cxacru_cm_request cm,
- 	ret = offd;
- 	usb_dbg(instance->usbatm, "cm %#x\n", cm);
- fail:
-+	if (ret < 0)
-+		usb_kill_urb(instance->rcv_urb);
- 	mutex_unlock(&instance->cm_serialize);
- err:
- 	return ret;
+    https://lists.sourceforge.net/lists/confirm/linux-atm-general/51bca878f37862e58da7b2f9b347edf0997350c4
 
-
-base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
--- 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
