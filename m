@@ -1,138 +1,115 @@
-Received: from smtpo49.interia.pl (smtpo49.interia.pl [217.74.67.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72E951917FB
-	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 09:50:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B09163CC9F2
+	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 09:52:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785491452; cv=none; b=lN2FXPUg7l857agGg2+HZ46VF/KtdlHybDYQTZ09YhfXxnyhr0jSSXwVjwsvU48mvSKTMKSYbPEw5FVELZN/mYGFeZfde2Cxi7xoHz9+aA5qiHHkukSEYK7NRkvnoAH180vq8kCYVjLUXkSeDR+BSb46IPbAaTSfRk4Q8gHYGyU=
+	t=1785491558; cv=none; b=m+SHKcpWUoVoMqFcVqAUiPU2zRkYr/P7hVsivdMzUFBnHJQglQQI0wkpAriVZkSyQPoa9qOT3jhNs6B+x2koFeh7G04QHkceNhpiTgJGtAO2Iw1mPwBZSlp2XtXlKkhcSE+LyXhKYV8VWpphB4Ami9Yqj9G3tFEwvMbrq8Csd4Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785491452; c=relaxed/simple;
-	bh=CHc+wCr9gxcPne4TuTzNkOO6oLbFIqOkceGJjhlrMPo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cMZD9M5fHU3FPBBpdSgfFn9Khh72LeYk1+1M9hk2CTIZFumq1vTEZ2B4cWJHCsHgjyl1UUmKNx9NuFBFj9jGEvCijF+JxRnT8a/R/vKLiTMuhv6kwgep3T8n+BpzsUiBA5pnntSGq4HCqAU6Wjf0CU/DIJBFjRJJ3OTS03uyVd4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=maSqDwJz; arc=none smtp.client-ip=217.74.67.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+	s=arc-20240116; t=1785491558; c=relaxed/simple;
+	bh=VGKxfEbviSbja/eMNJzF+TPtjbms/kv7Cux6FzsrxB4=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=T35dZdH7HIK7DDEazDu3DUK60AYHWGX95lLsv0yxVpXP19Fiwl/g+4WEdidIC6doEFg2J6ZfpoPEyxiEnZXGYhIeT5E/W8cVZA0BpmE267kGsAhHsEMX5HRgFJS57nLewIuIayuIcXi8KGOU1d/kL7X+Ki/J4THQ1+Tr5fs6D4k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cqkMqIpW; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="maSqDwJz"
-Received: from nr200 (unknown [80.68.231.31])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
-	Fri, 31 Jul 2026 11:50:36 +0200 (CEST)
-Date: Fri, 31 Jul 2026 11:50:34 +0200
-From: Slawomir Stepien <sst@poczta.fm>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC v2] netdevsim: fix deadlock in
- nsim_bus_dev_max_vfs_write()
-Message-ID: <amxv6obePgfHNDsA@nr200>
-References: <61024160-6fe7-45d6-baa0-0ddcba466bbe@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cqkMqIpW"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6704E1F00A3A;
+	Fri, 31 Jul 2026 09:52:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785491554;
+	bh=4lkjisO35TlzepT078oVsqte7AcZhzAxjCR720frHOg=;
+	h=From:To:Cc:Subject:Date;
+	b=cqkMqIpWOQlO5P5aJidvuWTKH11sjW2HZIoHqWEmHM2gliwOasbppTs9CL1hLliYw
+	 xk44o8DvSa9ZNfoy6Mj8NihcEMPUl0BFlFux0RcbMfpFTCxHTbxydqByvH3l1XVYLk
+	 XNIHBISUHjliz+3XyHsVlYy52NPxD/eWAbej+HiGS6EKg7r6z/UUJuVindbVQLLVl/
+	 mMd2ReSztX+0YPW5hAyN8mYqnFSGgBKjZewr2f+IG2eetkjo2VuLTig9yh4m8cHVGo
+	 +hWdPPkuNS0e4+W6ySoFNzDGSpLDF8Yrq8CYDQ3cgPxIzrzPkRdIRIQK4Qa/qNK4y6
+	 9w1AvaQv3NYnw==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] libceph: validate banner payload length
+Message-ID: <10fa68ab-b588-4ca1-8ac1-dd13a95cff91@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <61024160-6fe7-45d6-baa0-0ddcba466bbe@mail.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
-	t=1785491438; bh=SwV0TqTuX7uXIt03mWGjQfoGTj/5CjXy9IsI8zxllPI=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-	b=maSqDwJzglMJ9rtyNC6nzU72JmxhtSijB4pW/GTJwaGw6EvFqK9BeGWJIUuVo3rr9
-	 n7st66Tj+bPJct98H6QrYkgHj6WCsFSpb03XFl51aTQZAq77DxlXUuY1gknJEl9s3t
-	 KkqSxMUrYav3ky8dFpkw5KwSxMQA5RGEbsQ4zJU0=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Fri, 31 Jul 2026 09:52:34 +0000 (UTC)
 
-#syz upstream
+When parsing the Ceph messenger v2 protocol banner, the `payload_len` field
+is decoded from the banner prefix. If a client sends a banner with a
+`payload_len` of 0, the kernel sets up a 0-length socket read. This
+violates an invariant in the state machine, triggering a warning in
+`populate_in_iter()`:
 
-On lip 31, 2026 09:41, 'syzbot' via syzkaller-upstream-moderation wrote:
-> There is an ABBA deadlock between the devlink instance lock and the debugfs
-> active file reference mechanism.
-> 
-> When a device is being removed (e.g., via nsim_drv_remove()), the driver
-> acquires the devlink instance lock and then calls
-> debugfs_remove_recursive(). This function blocks waiting for all active
-> file operations on the debugfs files to complete.
-> 
-> Concurrently, if a user writes to the "max_vfs" debugfs file, the VFS layer
-> acquires an active reference to the file. The write handler,
-> nsim_bus_dev_max_vfs_write(), then attempts to acquire the devlink instance
-> lock, which is already held by the removal task.
-> 
-> This creates a circular dependency resulting in a deadlock:
-> 
-> INFO: task blocked for more than 143 seconds.
-> Call Trace:
->  wait_for_completion+0x2ca/0x5e0 kernel/sched/completion.c:153
->  __debugfs_file_removed fs/debugfs/inode.c:751 [inline]
->  remove_one+0x2df/0x3b0 fs/debugfs/inode.c:758
->  __simple_recursive_removal+0x215/0x520 fs/libfs.c:623
->  debugfs_remove+0x5b/0x70 fs/debugfs/inode.c:781
->  nsim_dev_debugfs_exit drivers/net/netdevsim/dev.c:372 [inline]
->  nsim_drv_remove+0xc0/0x170 drivers/net/netdevsim/dev.c:1803
-> 
-> INFO: task blocked for more than 143 seconds.
-> Call Trace:
->  __mutex_lock+0x7bf/0x1550 kernel/locking/mutex.c:821
->  nsim_bus_dev_max_vfs_write+0x229/0x3d0 drivers/net/netdevsim/dev.c:276
->  full_proxy_write+0x127/0x1f0 fs/debugfs/file.c:388
->  vfs_write+0x296/0xba0 fs/read_write.c:685
-> 
-> To fix this, use devl_trylock() in nsim_bus_dev_max_vfs_write() instead of
-> devl_lock(). If the lock cannot be acquired, return -EBUSY. This aborts the
-> write operation, releases the debugfs active file reference, and allows the
-> pending debugfs_remove_recursive() to proceed.
-> 
-> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+3147c5de186107ffc7a1@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=3147c5de186107ffc7a1
-> Link: https://syzkaller.appspot.com/ai_job?id=fcdda182-bebf-49ab-ada0-d4d2e814ebf7
-> To: "Andrew Lunn" <andrew+netdev@lunn.ch>
-> To: "David S. Miller" <davem@davemloft.net>
-> To: "Eric Dumazet" <edumazet@google.com>
-> To: "Jakub Kicinski" <kuba@kernel.org>
-> To: <netdev@vger.kernel.org>
-> To: "Paolo Abeni" <pabeni@redhat.com>
-> Cc: <linux-kernel@vger.kernel.org>
-> 
-> ---
-> v2:
-> - No changes since v1.
-> 
-> v1:
-> https://lore.kernel.org/all/a861f535-2bc3-46cd-ab28-a4190ae24248@mail.kernel.org/T/
-> ---
-> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-> index aed9ad5f1..421cd7327 100644
-> --- a/drivers/net/netdevsim/dev.c
-> +++ b/drivers/net/netdevsim/dev.c
-> @@ -273,7 +273,11 @@ static ssize_t nsim_bus_dev_max_vfs_write(struct file *file,
->  		return -ENOMEM;
->  
->  	nsim_dev = file->private_data;
-> -	devl_lock(priv_to_devlink(nsim_dev));
-> +	if (!devl_trylock(priv_to_devlink(nsim_dev))) {
-> +		ret = -EBUSY;
-> +		goto out;
-> +	}
-> +
->  	/* Reject if VFs are configured */
->  	if (nsim_dev_get_vfs(nsim_dev)) {
->  		ret = -EBUSY;
-> @@ -285,6 +289,7 @@ static ssize_t nsim_bus_dev_max_vfs_write(struct file *file,
->  	}
->  	devl_unlock(priv_to_devlink(nsim_dev));
->  
-> +out:
->  	kfree(vfconfigs);
->  	return ret;
->  }
-> 
-> 
-> base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
+------------[ cut here ]------------
+!iov_iter_count(&con->v2.in_iter)
+WARNING: net/ceph/messenger_v2.c:3129 at populate_in_iter
+net/ceph/messenger_v2.c:3129 [inline], CPU#1: kworker/1:3/5070
+WARNING: net/ceph/messenger_v2.c:3129 at ceph_con_v2_try_read+0x6634/0x6810
+net/ceph/messenger_v2.c:3159, CPU#1: kworker/1:3/5070
+...
+Call Trace:
+ <TASK>
+ ceph_con_workfn+0x1f5/0x14a0 net/ceph/messenger.c:1575
+ process_one_work kernel/workqueue.c:3322 [inline]
+ process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
 
+According to the msgr2 protocol specification, the banner payload is
+expected to contain at least two 64-bit integers (`server_feat` and
+`server_req_feat`). Therefore, `payload_len` must be at least 16 bytes.
+
+Fix this by adding a check in `process_banner_prefix()` to reject a
+`payload_len` smaller than 16 bytes. This prevents the 0-length read and
+correctly aborts the connection with a protocol error.
+
+Fixes: cd1a677cad99 ("libceph, ceph: implement msgr2.1 protocol (crc and secure modes)")
+Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+87c7c2d63c44e41c77a3@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=87c7c2d63c44e41c77a3
+Link: https://syzkaller.appspot.com/ai_job?id=c8ca3d63-717a-4933-89ec-f3d761b8690d
+To: "Alex Markuze" <amarkuze@redhat.com>
+To: <ceph-devel@vger.kernel.org>
+To: "Ilya Dryomov" <idryomov@gmail.com>
+To: "Viacheslav Dubeyko" <slava@dubeyko.com>
+Cc: <linux-kernel@vger.kernel.org>
+
+---
+diff --git a/net/ceph/messenger_v2.c b/net/ceph/messenger_v2.c
+index 05f6eea29..b323b61e7 100644
+--- a/net/ceph/messenger_v2.c
++++ b/net/ceph/messenger_v2.c
+@@ -2142,6 +2142,11 @@ static int process_banner_prefix(struct ceph_connection *con)
+ 	payload_len = ceph_decode_16(&p);
+ 	dout("%s con %p payload_len %d\n", __func__, con, payload_len);
+ 
++	if (payload_len < sizeof(u64) + sizeof(u64)) {
++		con->error_msg = "protocol error, bad banner payload len";
++		return -EINVAL;
++	}
++
+ 	return prepare_read_banner_payload(con, payload_len);
+ }
+ 
+
+
+base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
 -- 
-Slawomir Stepien
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
