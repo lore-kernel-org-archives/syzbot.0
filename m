@@ -1,137 +1,175 @@
-Received: from smtpo75.interia.pl (smtpo75.interia.pl [217.74.67.75])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EA60489862
-	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 08:36:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.75
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED4C331ECF
+	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 08:42:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785486972; cv=none; b=CQoTEyRJmdvwuM/4/2uuRZ8WTW/WiI+EIbnu2mSOh9aoq3J/yQWZffwcZN7OUTGWJpuipldVdYOJ7rBvgtttXjlevSvIT548WEF3kt/YilgakIaV/iia5/3by52RMXDUjqy9/1mZLSSR90BgwiNsgWyFCdZqwYRKoOyrOxBcZSI=
+	t=1785487326; cv=none; b=gvYiYslucf8X29Ld4r993t1HdU+MftyeRUIrNz5CaGaXscv0RFH+0mM3iynEiP3ZVOi0OH86TR4kFRwWeYEwFP5IC9Z/m+/X9nRqpwvoPzgDTRK5hVkAftNbfOMPGZ+AdkwXi6OU1UM+lxwDOmVxKY5BgHdfGXh9rOAfEJ5BTz4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785486972; c=relaxed/simple;
-	bh=Bl1nS70W/Gjrww2Mw95AiWzDR83LDhZSB/eEPRITF2s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=N4DRn+zap3UG4lg8rLIsgdzfEpWKtt7bm6DoM6UZGAA+BTgUIO+h0IvPdS+DJsF7bf9Peeb6qP2auu+zDAwIxXac5dPdr7yvXF2l7kJSfAKs5Du0/cQaeIsrlFNIFxioAKRtMmrvMWP11KtTvx6npW0dtMR/s/NgIuntocnVvQE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=AnEXTdKh; arc=none smtp.client-ip=217.74.67.75
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+	s=arc-20240116; t=1785487326; c=relaxed/simple;
+	bh=SDeNmkLveDOcooWNCrbeaQqzkzAaWrmP/Jyq5s4rf/U=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=BqUQdJyOXLjV27WMpKXBSCKp9zzj9j2gu8BHrmjZpJtB5xM/aflt0ho+2cClkE+AGPW8EiyOGobYVE8bsY7ap/53ucVbf9rDj+iW/dWMARXZjXqe/UzTwUgCRiSJuUZbYedNPB32Us1xWM96v5VRaE6J9Za4xtHyC/7SuUv9g4o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WkVO725b; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="AnEXTdKh"
-Received: from nr200 (unknown [80.68.231.31])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
-	Fri, 31 Jul 2026 10:35:59 +0200 (CEST)
-Date: Fri, 31 Jul 2026 10:35:56 +0200
-From: Slawomir Stepien <sst@poczta.fm>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC] netdevsim: fix deadlock in
- nsim_bus_dev_max_vfs_write()
-Message-ID: <amxebB2hqiSQq5Vs@nr200>
-References: <a861f535-2bc3-46cd-ab28-a4190ae24248@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WkVO725b"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id F3F171F000E9;
+	Fri, 31 Jul 2026 08:42:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785487325;
+	bh=10+aDNAFyYCXsfEJQp0zLKxb4beflCtTw+vWUJojFQs=;
+	h=From:To:Cc:Subject:Date;
+	b=WkVO725bCr+/5C7Y/ArjJCIYHyXq+vjIVqE2Zhi6n+qJi/oQrcN23Tn6wQ69Qgv5V
+	 MD9qdWtszMmZMQmmS61Ju9Hf+D5jjoObaapaivIti800ej6yeS+s4vpDnGcJG1I8Ge
+	 17wbmGfO1tOhOwBhflSRkYS4YS0qKjK1nyDcenX8IeDXzAgjI0CJQkG40h/IOApcIU
+	 YplPEvTKyANDnAxbZZ7W4ttotwubCiCRh0n4CnDkoK9YNoHrR3loplVEi6Dug9CKsg
+	 Gk5xwSZSDVrn+6TdQ9A5H2LmQMCC/eAOj2tsVqy5Ullb66wrcyMI39P7KbHFNLq2Ix
+	 PTXW3sYdoBAMg==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] usb: gadget: f_uac1, f_uac2: fix memory leak and invalid free
+Message-ID: <3a95db7e-c37a-418a-8ba8-092b4c1e75f6@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a861f535-2bc3-46cd-ab28-a4190ae24248@mail.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
-	t=1785486960; bh=sr+b8dafCtOjsxKxqYuWnaRElZkmtD7Yqhe/mb33XMs=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-	b=AnEXTdKhMcLL6ORARt+4wAzNswkiXMvdn6taN4sbnQxggifdF6CPzoKfoYTqB0u8y
-	 N1aAgOOPFTy0p3pDXOPjMcN8MgoS0+yoF1kxHUlZ/KIdyFVCBIddJHyQTWoJDAz91D
-	 DBpxtdedZJwf+Vm5Fnesy2CS5zjz5DQkfoOL+quw=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Fri, 31 Jul 2026 08:42:04 +0000 (UTC)
 
-On lip 01, 2026 13:15, syzbot wrote:
-> There is an ABBA deadlock between the devlink instance lock and the debugfs
-> active file reference mechanism.
-> 
-> When a device is being removed (e.g., via nsim_drv_remove()), the driver
-> acquires the devlink instance lock and then calls
-> debugfs_remove_recursive(). This function blocks waiting for all active
-> file operations on the debugfs files to complete.
-> 
-> Concurrently, if a user writes to the "max_vfs" debugfs file, the VFS layer
-> acquires an active reference to the file. The write handler,
-> nsim_bus_dev_max_vfs_write(), then attempts to acquire the devlink instance
-> lock, which is already held by the removal task.
-> 
-> This creates a circular dependency resulting in a deadlock:
-> 
-> INFO: task blocked for more than 143 seconds.
-> Call Trace:
->  wait_for_completion+0x2ca/0x5e0 kernel/sched/completion.c:153
->  __debugfs_file_removed fs/debugfs/inode.c:751 [inline]
->  remove_one+0x2df/0x3b0 fs/debugfs/inode.c:758
->  __simple_recursive_removal+0x215/0x520 fs/libfs.c:623
->  debugfs_remove+0x5b/0x70 fs/debugfs/inode.c:781
->  nsim_dev_debugfs_exit drivers/net/netdevsim/dev.c:372 [inline]
->  nsim_drv_remove+0xc0/0x170 drivers/net/netdevsim/dev.c:1803
-> 
-> INFO: task blocked for more than 143 seconds.
-> Call Trace:
->  __mutex_lock+0x7bf/0x1550 kernel/locking/mutex.c:821
->  nsim_bus_dev_max_vfs_write+0x229/0x3d0 drivers/net/netdevsim/dev.c:276
->  full_proxy_write+0x127/0x1f0 fs/debugfs/file.c:388
->  vfs_write+0x296/0xba0 fs/read_write.c:685
-> 
-> To fix this, use devl_trylock() in nsim_bus_dev_max_vfs_write() instead of
-> devl_lock(). If the lock cannot be acquired, return -EBUSY. This aborts the
-> write operation, releases the debugfs active file reference, and allows the
-> pending debugfs_remove_recursive() to proceed.
-> 
-> Fixes: 012ec02ae441 ("netdevsim: convert driver to use unlocked devlink API during init/fini")
+In the UAC1_RATE_ATTRIBUTE and UAC2_RATE_ATTRIBUTE macros, the store
+functions duplicate the input string using kstrdup(). The duplicated string
+is then parsed using strsep(), which modifies the pointer to point to the
+next token.
 
-I think this Fixes commit isn't correct. The devl_lock() was there since
-aff3a925094633a5b77058b9a715efbb12fc2698 and there is a big change that before this change the
-mutex_lock that was there, was also deadlocking. I would remove this line since it is not correct in
-the 1st place.
+When the loop finishes successfully, the pointer becomes NULL, and calling
+kfree() on it does nothing, resulting in a memory leak. If an error occurs
+during parsing (e.g., kstrtou32() fails), the pointer is advanced to the
+middle of the allocated block. Calling kfree() on this modified pointer
+leads to an invalid free.
 
-> Assisted-by: Gemini:gemini-3.1-pro-preview best-expensive syzbot
-> Reported-by: syzbot+3147c5de186107ffc7a1@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=3147c5de186107ffc7a1
-> Link: https://syzkaller.appspot.com/ai_job?id=e3832a24-8c9f-416a-8161-a50e277bc628
-> To: "Andrew Lunn" <andrew+netdev@lunn.ch>
-> To: "David S. Miller" <davem@davemloft.net>
-> To: "Eric Dumazet" <edumazet@google.com>
-> To: "Jakub Kicinski" <kuba@kernel.org>
-> To: <netdev@vger.kernel.org>
-> To: "Paolo Abeni" <pabeni@redhat.com>
-> Cc: <linux-kernel@vger.kernel.org>
-> 
-> ---
-> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-> index aed9ad5f1..421cd7327 100644
-> --- a/drivers/net/netdevsim/dev.c
-> +++ b/drivers/net/netdevsim/dev.c
-> @@ -273,7 +273,11 @@ static ssize_t nsim_bus_dev_max_vfs_write(struct file *file,
->  		return -ENOMEM;
->  
->  	nsim_dev = file->private_data;
-> -	devl_lock(priv_to_devlink(nsim_dev));
-> +	if (!devl_trylock(priv_to_devlink(nsim_dev))) {
-> +		ret = -EBUSY;
-> +		goto out;
-> +	}
-> +
->  	/* Reject if VFs are configured */
->  	if (nsim_dev_get_vfs(nsim_dev)) {
->  		ret = -EBUSY;
-> @@ -285,6 +289,7 @@ static ssize_t nsim_bus_dev_max_vfs_write(struct file *file,
->  	}
->  	devl_unlock(priv_to_devlink(nsim_dev));
->  
-> +out:
->  	kfree(vfconfigs);
->  	return ret;
->  }
-> 
-> 
-> base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
+BUG: memory leak
+unreferenced object 0xffff8881a08a76c0 (size 64):
+  comm "syz.0.18", pid 6226, jiffies 4294944138
+  hex dump (first 32 bytes):
+    34 34 31 30 30 00 34 38 30 30 30 00 38 38 32 30  44100.48000.8820
+    30 00 39 36 30 30 30 00 31 37 36 34 30 30 00 31  0.96000.176400.1
+  backtrace (crc 9bbd8bc9):
+    kmemleak_alloc_recursive include/linux/kmemleak.h:44 [inline]
+    slab_post_alloc_hook mm/slub.c:4597 [inline]
+    slab_alloc_node mm/slub.c:4917 [inline]
+    __do_kmalloc_node mm/slub.c:5333 [inline]
+    __kmalloc_node_track_caller_noprof+0x309/0x4e0 mm/slub.c:5471
+    __kmemdup_nul mm/util.c:64 [inline]
+    kstrdup+0x3e/0xc0 mm/util.c:84
+    f_uac2_opts_c_srate_store+0xeb/0x1a0
+    drivers/usb/gadget/function/f_uac2.c:2091
+    flush_write_buffer fs/configfs/file.c:207 [inline]
+    configfs_write_iter+0x115/0x170 fs/configfs/file.c:229
+    new_sync_write fs/read_write.c:595 [inline]
+    vfs_write+0x3a0/0x640 fs/read_write.c:687
 
+To fix this, use a separate pointer to keep track of the original memory
+block returned by kstrdup() so it can be correctly passed to kfree().
+Additionally, add a check for kstrdup() failure and return -ENOMEM instead
+of relying on strsep() to handle the NULL pointer and returning -EINVAL.
+
+Fixes: a7339e4f5788 ("usb: gadget: f_uac2: Support multiple sampling rates")
+Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+ebd045a6645cfb713c95@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=ebd045a6645cfb713c95
+Link: https://syzkaller.appspot.com/ai_job?id=cd9711f3-2259-4827-9de9-96cca016901b
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
+To: "Julian Scheel" <julian@jusst.de>
+Cc: "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>
+Cc: "Kees Cook" <kees@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+
+---
+diff --git a/drivers/usb/gadget/function/f_uac1.c b/drivers/usb/gadget/function/f_uac1.c
+index 85c502e98..05684d9f3 100644
+--- a/drivers/usb/gadget/function/f_uac1.c
++++ b/drivers/usb/gadget/function/f_uac1.c
+@@ -1594,6 +1594,7 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
+ 					  const char *page, size_t len)	\
+ {									\
+ 	struct f_uac1_opts *opts = to_f_uac1_opts(item);		\
++	char *page_alloc = NULL;					\
+ 	char *split_page = NULL;					\
+ 	int ret = -EINVAL;						\
+ 	char *token;							\
+@@ -1608,7 +1609,12 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
+ 									\
+ 	i = 0;								\
+ 	memset(opts->name##s, 0x00, sizeof(opts->name##s));		\
+-	split_page = kstrdup(page, GFP_KERNEL);				\
++	page_alloc = kstrdup(page, GFP_KERNEL);			\
++	if (!page_alloc) {						\
++		ret = -ENOMEM;						\
++		goto end;						\
++	}								\
++	split_page = page_alloc;					\
+ 	while ((token = strsep(&split_page, ",")) != NULL) {		\
+ 		ret = kstrtou32(token, 0, &num);			\
+ 		if (ret)						\
+@@ -1619,7 +1625,7 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
+ 	};								\
+ 									\
+ end:									\
+-	kfree(split_page);						\
++	kfree(page_alloc);						\
+ 	mutex_unlock(&opts->lock);					\
+ 	return ret;							\
+ }									\
+diff --git a/drivers/usb/gadget/function/f_uac2.c b/drivers/usb/gadget/function/f_uac2.c
+index 897787d08..201a38815 100644
+--- a/drivers/usb/gadget/function/f_uac2.c
++++ b/drivers/usb/gadget/function/f_uac2.c
+@@ -2012,6 +2012,7 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
+ 					  const char *page, size_t len)	\
+ {									\
+ 	struct f_uac2_opts *opts = to_f_uac2_opts(item);		\
++	char *page_alloc = NULL;					\
+ 	char *split_page = NULL;					\
+ 	int ret = -EINVAL;						\
+ 	char *token;							\
+@@ -2026,7 +2027,12 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
+ 									\
+ 	i = 0;								\
+ 	memset(opts->name##s, 0x00, sizeof(opts->name##s));		\
+-	split_page = kstrdup(page, GFP_KERNEL);				\
++	page_alloc = kstrdup(page, GFP_KERNEL);			\
++	if (!page_alloc) {						\
++		ret = -ENOMEM;						\
++		goto end;						\
++	}								\
++	split_page = page_alloc;					\
+ 	while ((token = strsep(&split_page, ",")) != NULL) {		\
+ 		ret = kstrtou32(token, 0, &num);			\
+ 		if (ret)						\
+@@ -2037,7 +2043,7 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
+ 	};								\
+ 									\
+ end:									\
+-	kfree(split_page);						\
++	kfree(page_alloc);						\
+ 	mutex_unlock(&opts->lock);					\
+ 	return ret;							\
+ }									\
+
+
+base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
 -- 
-Slawomir Stepien
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
