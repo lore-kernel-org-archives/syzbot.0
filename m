@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9BDE2DF3EA
-	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 07:54:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCE8E3A450C
+	for <syzbot@lists.linux.dev>; Fri, 31 Jul 2026 07:56:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785484476; cv=none; b=lxrM3wECDzkhM45JHLtTcaiciBUAQbFYE+m5CVXgYoST5aS2u5+5kh3yjannF6lCX12rzZADB65mFCasOAG3AssyF+za7eCchkHSHEbDlIGSpaYq8vxq8MSkRF+4h/PFDa2q9n2tr8I3F9yhAoWh3Z6fENZy2+yS2UJ+9+kR4jI=
+	t=1785484566; cv=none; b=cibq1Uh/4qoneN6JJxZQ/5s1uoMUOnFX3oXtfvs+/MdXFTsArufA/AH7jc29O0LcuXTMNhmrxWdPpkVWtURtpSQVZLyJTHolli3YdqKObRssgCxqR96I6fzgRcuDmlD+/oHzHx38yWwxbDIcgWZs4TJdULA4nkfg6qbNlDoForE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785484476; c=relaxed/simple;
-	bh=ZYNr000EgSm/D2i1JnFciLKL1KSFzRIRRkpIPhj5bdU=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=kpzyEJriJLRLXbBzF1gfXgYSNCQ0i5UpOKLiI9BZMapQjAcagOWVNeaKyKGDqfrezGDGNFnljt/Cmit+oWlUNNsHXq3Z2wcfHUa7jJWWdgidilFidioMM16MUvt0ac0glhsGupXnOwXR/oK+5yNkx396b/cZyt8fpIpVlD1Ph4E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IBFXJ1r+; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785484566; c=relaxed/simple;
+	bh=f4PqCrX28LbmjEpf+9zVybkdqcEvdjfn99dfGfrtZjQ=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=IERvvWEnplIgF+zVzYYbTOMq2r6f94OSG1NFPkdbxj76kMy9SVqWOAfaUloPT/jcBocvWLh7mUPt70Ysd7p49DT1ZoUwm8u01+SzBqchqHFHmj3gNhV6rEgWRHZpBJ7esD3K2g4ypbkbuhADFXtR1F3966LQPQvJKSi7HwvoTfo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RPJ5auLB; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IBFXJ1r+"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 5D7601F000E9;
-	Fri, 31 Jul 2026 07:54:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RPJ5auLB"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 5AE7D1F000E9;
+	Fri, 31 Jul 2026 07:56:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785484474;
-	bh=06X0rwztBYWS/fmp9M9iYq/RSesKbmPaJYwHKWIcXMg=;
+	s=k20260515; t=1785484564;
+	bh=3cJcVUXGYFyHkcYUv36W7T2cQrSkeuvWXSXFGlvNAwU=;
 	h=From:To:Cc:Subject:Date;
-	b=IBFXJ1r+HXicU9GI1pGAfScH9MHwkf0LD7kuSJlUuifx8RF4VqLU17YG1jFfWzW2n
-	 sIL1doO+86aMlelq+Z/B0OVPFqLVloOwF0+wzGfRDCekSUyl756LcND9PxKaAeUF/D
-	 PxCBUbswL6mwpLnQ1HN0hj/y9vq8YyBykRY8K/rzHUVPzaRKWOJo++7kXQQbijYiPq
-	 CyWYOjclgTCV4TUX82tsJmjLG5Cw1b838FfRpRYI3smzfpFt1aSlJ7Y7KdLXMweJn+
-	 JHvrzooUa8w1nsL8fvi0etDB9d16DAAarHqvIHnQ0ZeXziUSmK507n5xzX+o5Nuqo4
-	 Ah0vmXlC2NBGQ==
+	b=RPJ5auLBZM4ENEqsHwc96kXyJbq9dAv2JE9zQXqm54me2Z7+Va0xjdz7CtK14ngP2
+	 yc4Psv0opSjiLGsyI24sHoyVqA4nJAmjuX4d8a1mRqdzztYBp2Yi77kXAlP2ZEBIeB
+	 6P+7gxakZXC4spmptSQhrF4Q86vvRuiwSXbMb33ZRKezcQqHEGZcLTbOzPiXpOJWNq
+	 tZLHXkLLEx9fqK6p/CGxifLX0hE9xUcLOZAylSIzKFjWr8HTSTHdmes7at+aI2acMh
+	 oZoLu6HPMByZ+jdT+a71IqXe1zgAUuOkFqdyRcpF9o8juMKD4RhrbwnYpfL/Oqoa7k
+	 gE7XqBW1gur5A==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: atm: cxacru: properly kill rcv_urb on error in cxacru_cm()
-Message-ID: <19c83890-3da4-471c-bbca-8d873b803586@mail.kernel.org>
+Subject: [PATCH RFC] usb: gadgetfs: fix unbalanced refcount in gadgetfs_bind() error path
+Message-ID: <20bb5db4-2b26-4b7a-ad54-7d20fa11499e@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,68 +38,87 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri, 31 Jul 2026 07:54:34 +0000 (UTC)
+Date: Fri, 31 Jul 2026 07:56:04 +0000 (UTC)
 
-If cxacru_cm() encounters an error while submitting or waiting for snd_urb,
-it aborts and returns the error without killing the already submitted
-rcv_urb. This leaves the rcv_urb active.
+A KASAN slab-use-after-free can occur in gadget_dev_open() due to an
+unbalanced reference count in the error path of gadgetfs_bind().
 
-When this happens during initialization (e.g., in cxacru_atm_start()), the
-driver may ignore the error and proceed to call cxacru_poll_status(), which
-invokes cxacru_cm() again. Attempting to submit the still-active rcv_urb
-triggers a warning in usb_submit_urb():
+When gadgetfs_bind() is called, it performs several initialization steps.
+If it succeeds, it takes a reference to the dev object by calling
+get_dev(dev) at the very end of the function. This reference is meant to be
+balanced by a call to put_dev(dev) inside gadgetfs_unbind() when the driver
+is eventually unbound.
 
-cxacru 1-1:1.0: send of cm 0x84 failed (-104)
-ATM dev 0: cxacru_atm_start: CHIP_ADSL_LINE_START returned -104
-------------[ cut here ]------------
-URB ffff88812658d200 submitted while active
-WARNING: drivers/usb/core/urb.c:379 at usb_submit_urb+0x79/0x18b0
-drivers/usb/core/urb.c:379
+However, if gadgetfs_bind() fails midway (e.g., due to a memory allocation
+failure in usb_ep_alloc_request() or activate_ep_files()), it jumps to the
+enomem label and calls gadgetfs_unbind(gadget). Because get_dev(dev) was
+never called, gadgetfs_unbind() drops a reference that was never acquired.
+This leads to the dev object being freed prematurely when the file
+descriptor is closed, resulting in a use-after-free when the file is opened
+again.
+
+BUG: KASAN: slab-use-after-free in __raw_spin_lock_irq
+include/linux/spinlock_api_smp.h:142 [inline]
+BUG: KASAN: slab-use-after-free in _raw_spin_lock_irq+0x58/0x70
+kernel/locking/spinlock.c:174
+Read of size 1 at addr ffff0000dbe16018 by task syz.0.18/5334
 ...
-Call Trace:
- <TASK>
- cxacru_cm+0x21a/0xf10 drivers/usb/atm/cxacru.c:631
- cxacru_cm_get_array drivers/usb/atm/cxacru.c:722 [inline]
- cxacru_poll_status+0x178/0x1110 drivers/usb/atm/cxacru.c:828
- cxacru_atm_start+0x185/0x360 drivers/usb/atm/cxacru.c:814
- usbatm_atm_init+0x144/0x3a0 drivers/usb/atm/usbatm.c:927
- usbatm_usb_probe+0x15cb/0x1db0 drivers/usb/atm/usbatm.c:1178
- cxacru_usb_probe+0x17f/0x220 drivers/usb/atm/cxacru.c:1370
+Call trace:
 ...
+ __raw_spin_lock_irq include/linux/spinlock_api_smp.h:142 [inline]
+ _raw_spin_lock_irq+0x58/0x70 kernel/locking/spinlock.c:174
+ spin_lock_irq include/linux/spinlock.h:372 [inline]
+ gadget_dev_open+0x50/0x1c4 drivers/usb/gadget/legacy/inode.c:1919
+ do_dentry_open+0x5c4/0xfc0 fs/open.c:947
+ vfs_open+0x44/0x2dc fs/open.c:1052
 
-To fix this, ensure that rcv_urb is properly killed if cxacru_cm() aborts
-early. We can safely call usb_kill_urb() on rcv_urb in the error path, as
-it is safe to call even if the URB is not active (e.g., if it failed to
-submit in the first place, or if it already completed).
+To fix this, replace the monolithic gadgetfs_unbind() call in the enomem
+error path with manual, step-by-step cleanup of exactly the resources that
+were allocated prior to the failure. If dev->req was allocated, it is freed
+and set to NULL. The gadget data pointers (gadget->ep0->driver_data,
+dev->gadget, and set_gadget_data) are cleared. Note that
+activate_ep_files() already cleans up after itself if it fails, so we don't
+need to manually undo its effects.
 
-Fixes: 1b0e61465234 ("[PATCH] USB ATM: driver for the Conexant AccessRunner chipset cxacru")
+This ensures that only the resources actually allocated by gadgetfs_bind()
+are cleaned up, preventing the unbalanced put_dev() and incorrect state
+changes that caused the use-after-free.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+c9dff578c3a41775176a@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=c9dff578c3a41775176a
-Link: https://syzkaller.appspot.com/ai_job?id=75fec6f2-c8a6-43b1-b184-4d26baba86cc
-To: "Chas Williams" <3chas3@gmail.com>
-To: <accessrunner-general@lists.sourceforge.net>
+Reported-by: syzbot+1459655b2bf1e798f9d0@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=1459655b2bf1e798f9d0
+Link: https://syzkaller.appspot.com/ai_job?id=992d95f0-8de6-44af-9ebe-f7c976f4ba68
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-atm-general@lists.sourceforge.net>
 To: <linux-usb@vger.kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Duncan Sands" <duncan.sands@math.u-psud.fr>
+To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
+Cc: "Christian Brauner" <brauner@kernel.org>
+Cc: "Jan Kara" <jack@suse.cz>
+Cc: "Kees Cook" <kees@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
+Cc: "Mateusz Guzik" <mjguzik@gmail.com>
+Cc: "Al Viro" <viro@zeniv.linux.org.uk>
 
 ---
-diff --git a/drivers/usb/atm/cxacru.c b/drivers/usb/atm/cxacru.c
-index f1900c567..429ac20a8 100644
---- a/drivers/usb/atm/cxacru.c
-+++ b/drivers/usb/atm/cxacru.c
-@@ -700,6 +700,8 @@ static int cxacru_cm(struct cxacru_data *instance, enum cxacru_cm_request cm,
- 	ret = offd;
- 	usb_dbg(instance->usbatm, "cm %#x\n", cm);
- fail:
-+	if (ret < 0)
-+		usb_kill_urb(instance->rcv_urb);
- 	mutex_unlock(&instance->cm_serialize);
- err:
- 	return ret;
+diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
+index d87a8ab51..365f9ab4d 100644
+--- a/drivers/usb/gadget/legacy/inode.c
++++ b/drivers/usb/gadget/legacy/inode.c
+@@ -1700,7 +1700,13 @@ static int gadgetfs_bind(struct usb_gadget *gadget,
+ 	return 0;
+ 
+ enomem:
+-	gadgetfs_unbind (gadget);
++	if (dev->req) {
++		usb_ep_free_request(gadget->ep0, dev->req);
++		dev->req = NULL;
++	}
++	gadget->ep0->driver_data = NULL;
++	dev->gadget = NULL;
++	set_gadget_data(gadget, NULL);
+ 	return -ENOMEM;
+ }
+ 
 
 
 base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
