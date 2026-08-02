@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 822733B42D8
-	for <syzbot@lists.linux.dev>; Sun,  2 Aug 2026 21:21:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2791E318ED2
+	for <syzbot@lists.linux.dev>; Sun,  2 Aug 2026 21:52:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785705674; cv=none; b=CyGeC3+AU7MQ6KO2dxsJ0ed/QSKuAB6DKK46eTLZlFY+H5sVMJ7SCPnIZDd5Q4+3gaMb8nI2EIFN9HUu4gyO228VrMkCNtop0b17Pd6h1+OXnL5FFWtKB2qoTXbmu+rEftL+BAnAKDfA2RWML4HjIkZSPhsxH8cUJ0ghRiutJGk=
+	t=1785707532; cv=none; b=ViHfdTxCE1IDiVFAey8LG8sw8aU5SF4MG2BF+nKda+VfMDUBx8vydFy6gYpgsXSKbegzPu/b4igGBcK6clteYe1asNOBdafxLDy8K8Py0ZIjA9PEm3P/kSD4ORGzoPJ0hEgjo3v/yzX/0hC1zjbaRe0RJG9Q4VrMdh03j24Kniw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785705674; c=relaxed/simple;
-	bh=2alo3ztX/owlnwJzM5A57JRvFiroyl831EfoufofeeI=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=omCmSsqxRKDUFkpODWvhSs6/m/VGML6eC+K5vDEvScNBc91Zj0SgkJ/FfiertlqWOfmssDK3XXA/8SFi7FtlVDNPRWinNNY9cEMIjEyjy0DgX5GWhPjMUM6FOfVhyVlbC9S0aWC0tj8OfTXLymRTx2lt2bwSE1o2Nw9cf6uJc1I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lDTmeIC9; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785707532; c=relaxed/simple;
+	bh=66MpmDmScDAyDapECy4jIwHP4A7P2zbY8ajuo57OKbk=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ms0TpNqwn7Bw7Ab2F3vnuCKGI5vgqhqd5kJtm3ywtFksfGm/EwhZfw4Cjhx8SydlqUEKOmcoo1D5OFYKWJAMM7POmo/orn7guFlyRbUyBQ322oS4ujYZrSp8hWJqTnUPINvU0UtP2ZA2Ah5nhcQTIzARyfKdiJscwhHr0lL9/sE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FGkVRNao; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lDTmeIC9"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 769BE1F000E9;
-	Sun,  2 Aug 2026 21:21:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FGkVRNao"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 933A11F000E9;
+	Sun,  2 Aug 2026 21:52:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785705670;
-	bh=oTYOeOvPbLL+Q00jQr8LcOoGzQGbgoTMNilAmpqduBQ=;
+	s=k20260515; t=1785707530;
+	bh=x4JZj/HFHm0Jlc70+LstoCn9ELyxIdSb3WXr+DF3PCM=;
 	h=From:To:Cc:Subject:Date;
-	b=lDTmeIC9WLP6PKrBaVYpX0gSQYv8H5uF90exVnliOY0279WOevNMd8UmSsVbt4I7w
-	 /1hpTsoqLhgrOVe2QHjRXw6lcquH2vPVxHerRlogeYuDMlkMPlAR/RD8id+w3fqpJ/
-	 witntEqaRBC4o5VUVx5Jp5YLYP8XpAGNBNog5/gVh8gE/tdB7CGEaJRwGcBcYDeeo+
-	 9Xe5DUa9cS/f0hgYdDcWbu4aEE/h65+YgAK/Lo8+s60tKu1AVpWa3s8scVBMokP4Oa
-	 I0zt0rklCrJK2ZBi9QH2HmS41aSmGe/GZp3vD2ywo9T8aG+zNajkLu1n0BLbdJxOeN
-	 mDfw+JcDBgBIA==
+	b=FGkVRNao9zZyfArGyT6tGlbQWGBXIcLCmpswB0YQHMA7r83H2nkVr3rbG8eBFD3N/
+	 DBAUcX5DHR4P5FHuWiFmHbInH2LfThcSwdsmLWOgeuWYd4JiqUn2U+1Mfhn8Mb1WA5
+	 dxI0FQhuLBZchmxj1pzxPk+nVGlfz3KbRrh+WIA2z46gF7NTqC5Dh/ChgM7MrDYeq8
+	 /c0/S8pPQQhA+ErhxbWDR4dfVWh8oWemsw7QRvhdHK3wbcYwt2DuI6dzX6OeLsJMLu
+	 wdTk0hwiiI//fCzX+ybdGt0R+q5Yz3GaEL/z+N880k5fCoIMHmdfW4LTs9r0v0MoFa
+	 yyPt7Y/p8+o9A==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] rhashtable: use unique lockdep classes for bucket locks
-Message-ID: <fbb936dc-916f-4cb5-bd46-a43c4710d586@mail.kernel.org>
+Subject: [PATCH RFC] wifi: mac80211: prevent destroying non-TDLS stations in TDLS operations
+Message-ID: <7f0c8fa8-559d-4fdf-989f-c81259e4e719@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,206 +38,95 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Sun,  2 Aug 2026 21:21:10 +0000 (UTC)
+Date: Sun,  2 Aug 2026 21:52:10 +0000 (UTC)
 
-Lockdep reports an inconsistent lock state (`{INITIAL USE} -> {IN-NMI}`)
-when a BPF program deletes an element from a `BPF_MAP_TYPE_RHASH` map in
-NMI context:
+When userspace sends a NL80211_CMD_TDLS_OPER command with the
+NL80211_TDLS_DISABLE_LINK operation, the request is handled by
+ieee80211_tdls_oper(). The code for this operation directly calls
+sta_info_destroy_addr() to destroy the station entry associated with the
+provided MAC address. Unlike the NL80211_TDLS_ENABLE_LINK case, which
+correctly verifies that the target station exists and is actually a TDLS
+peer, the disable link path blindly destroys whatever station matches the
+MAC address.
 
-  inconsistent {INITIAL USE} -> {IN-NMI} usage.
-  ...
-  Possible unsafe locking scenario:
+If the provided MAC address is the AP's MAC address, this causes the AP's
+station entry to be destroyed while the interface is still associated.
+Later, when the driver attempts to send a probe request to the AP, it looks
+up the AP's station entry, which returns NULL, triggering a warning in
+ieee80211_mgd_probe_ap_send():
 
-        CPU0
-        ====
-   lock(rhashtable_bucket);
-   <Interrupt>
-     lock(rhashtable_bucket);
+WARNING: net/mac80211/mlme.c:4898 at
+ieee80211_mgd_probe_ap_send+0x497/0x560 net/mac80211/mlme.c:4898
+RIP: 0010:ieee80211_mgd_probe_ap_send+0x497/0x560 net/mac80211/mlme.c:4898
+Call Trace:
+ <TASK>
+ cfg80211_wiphy_work+0x29e/0x420 net/wireless/core.c:538
+ process_one_work kernel/workqueue.c:3322 [inline]
+ process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
 
-  *** DEADLOCK ***
+A similar issue exists in ieee80211_tdls_peer_del_work() which is queued by
+ieee80211_tdls_mgmt_setup(). If a TDLS setup request is sent with the AP's
+MAC address, the AP's station entry will be destroyed when the setup
+timeout expires.
 
-The `{INITIAL USE}` of the lock is registered during process creation when
-`pidfs_add_pid()` inserts a new PID into the `pidfs_ino_ht` rhashtable and
-acquires the bucket lock in normal process context. Later, a BPF program
-attached to a hardware breakpoint executes in NMI context and calls
-`bpf_map_delete_elem()` on a `BPF_MAP_TYPE_RHASH` map. This calls
-`rhashtable_remove_fast()`, which acquires the bucket lock in NMI context,
-triggering the lockdep warning.
+Fix this by explicitly verifying that the station exists and is a TDLS peer
+(sta->sta.tdls == true) before destroying it in both ieee80211_tdls_oper()
+and ieee80211_tdls_peer_del_work().
 
-This is a false positive caused by all `rhashtable` instances in the kernel
-sharing the exact same lock class for their bucket locks. The bucket table
-allocation function `bucket_table_alloc()` initializes the lockdep map for
-the bucket locks using a single static key. Thus, lockdep assumes that the
-bucket lock acquired by the BPF program in NMI context is the same lock
-acquired by `pidfs` in normal process context, leading to a perceived
-deadlock.
-
-In reality, they operate on completely different `rhashtable` instances.
-Furthermore, a real deadlock on the same `BPF_MAP_TYPE_RHASH` instance is
-explicitly prevented by the BPF subsystem using
-`bpf_disable_instrumentation()`, which increments the per-CPU
-`bpf_prog_active` counter and prevents reentrancy.
-
-To fix this, update the `rhashtable` API to allow different lock classes
-for the bucket locks of different `rhashtable` instances. Extend the
-initialization macros to generate a unique static `lock_class_key` for the
-bucket locks and pass it down to `bucket_table_alloc()`.
-
-For BPF maps, use `__lockdep_no_track__` to completely bypass lockdep
-tracking for the bucket locks. This avoids issues with shared global keys
-like `__lockdep_no_validate__` (which can cause invalid wait context
-warnings if previously registered as a mutex by another subsystem) while
-relying on BPF's internal NMI deadlock prevention mechanism.
-
-Fixes: 16b4d3e2fb24 ("bpf: Implement resizable hashmap basic functions")
+Fixes: dfe018bf9953 ("mac80211: handle TDLS high-level commands and frames")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+2fb31ade2d0e920fea9a@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=2fb31ade2d0e920fea9a
-Link: https://syzkaller.appspot.com/ai_job?id=31a9ea31-9998-4618-b127-6dbc2e463ee9
-To: "Andrew Morton" <akpm@linux-foundation.org>
-To: "Andrii Nakryiko" <andrii@kernel.org>
-To: "Alexei Starovoitov" <ast@kernel.org>
-To: <bpf@vger.kernel.org>
-To: "Daniel Borkmann" <daniel@iogearbox.net>
-To: "Eduard Zingerman" <eddyz87@gmail.com>
-To: "Herbert Xu" <herbert@gondor.apana.org.au>
-To: <linux-crypto@vger.kernel.org>
-To: "Kumar Kartikeya Dwivedi" <memxor@gmail.com>
-To: "Thomas Graf" <tgraf@suug.ch>
-To: "Mykyta Yatsenko" <yatsenko@meta.com>
-Cc: "Emil Tsalapatis" <emil@etsalapatis.com>
-Cc: "Jiri Olsa" <jolsa@kernel.org>
+Reported-by: syzbot+a59b5291776979816910@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=a59b5291776979816910
+Link: https://syzkaller.appspot.com/ai_job?id=52e47481-fb24-46ec-8402-1f14cf87081f
+To: "Johannes Berg" <johannes@sipsolutions.net>
+To: <linux-wireless@vger.kernel.org>
+To: "Arik Nemtsov" <arik@wizery.com>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Martin KaFai Lau" <martin.lau@linux.dev>
-Cc: "Song Liu" <song@kernel.org>
-Cc: "Yonghong Song" <yonghong.song@linux.dev>
 
 ---
-diff --git a/include/linux/rhashtable-types.h b/include/linux/rhashtable-types.h
-index 57c11ec9d..059f21e37 100644
---- a/include/linux/rhashtable-types.h
-+++ b/include/linux/rhashtable-types.h
-@@ -94,6 +94,9 @@ struct rhashtable {
- 	struct mutex                    mutex;
- 	spinlock_t			lock;
- 	atomic_t			nelems;
-+#ifdef CONFIG_LOCKDEP
-+	struct lock_class_key	*dep_key;
-+#endif
- #ifdef CONFIG_MEM_ALLOC_PROFILING
- 	struct alloc_tag		*alloc_tag;
- #endif
-@@ -138,23 +141,27 @@ struct rhashtable_iter {
+diff --git a/net/mac80211/tdls.c b/net/mac80211/tdls.c
+index ffd575a8d..24297552f 100644
+--- a/net/mac80211/tdls.c
++++ b/net/mac80211/tdls.c
+@@ -33,8 +33,12 @@ void ieee80211_tdls_peer_del_work(struct wiphy *wiphy, struct wiphy_work *wk)
+ 	lockdep_assert_wiphy(local->hw.wiphy);
  
- int __rhashtable_init_noprof(struct rhashtable *ht,
- 		    const struct rhashtable_params *params,
--		    struct lock_class_key *key);
-+		    struct lock_class_key *key,
-+		    struct lock_class_key *bucket_key);
- #define rhashtable_init_noprof(ht, params)				\
- ({									\
- 	static struct lock_class_key __key;				\
-+	static struct lock_class_key __bucket_key;			\
- 									\
--	__rhashtable_init_noprof(ht, params, &__key);			\
-+	__rhashtable_init_noprof(ht, params, &__key, &__bucket_key);	\
- })
- #define rhashtable_init(...)	alloc_hooks(rhashtable_init_noprof(__VA_ARGS__))
- 
- int __rhltable_init_noprof(struct rhltable *hlt,
- 		  const struct rhashtable_params *params,
--		  struct lock_class_key *key);
-+		  struct lock_class_key *key,
-+		  struct lock_class_key *bucket_key);
- #define rhltable_init_noprof(hlt, params)				\
- ({									\
- 	static struct lock_class_key __key;				\
-+	static struct lock_class_key __bucket_key;			\
- 									\
--	__rhltable_init_noprof(hlt, params, &__key);			\
-+	__rhltable_init_noprof(hlt, params, &__key, &__bucket_key);	\
- })
- #define rhltable_init(...)	alloc_hooks(rhltable_init_noprof(__VA_ARGS__))
- 
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index 9f394e1aa..d7e2a601c 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -2822,7 +2822,19 @@ static struct bpf_map *rhtab_map_alloc(union bpf_attr *attr)
- 		params.obj_cmpfn = rhtab_key_cmp_long;
- 	}
- 
--	err = rhashtable_init(&rhtab->ht, &params);
-+#ifdef CONFIG_LOCKDEP
-+#define bpf_rhashtable_init(ht, params)					\
-+	({								\
-+		static struct lock_class_key __key;			\
-+									\
-+		__rhashtable_init_noprof(ht, params, &__key,		\
-+					 &__lockdep_no_track__);	\
-+	})
-+#else
-+#define bpf_rhashtable_init(ht, params) rhashtable_init_noprof(ht, params)
-+#endif
-+	err = alloc_hooks(bpf_rhashtable_init(&rhtab->ht, &params));
-+#undef bpf_rhashtable_init
- 	if (err)
- 		goto free_rhtab;
- 
-diff --git a/lib/rhashtable.c b/lib/rhashtable.c
-index d459bef24..f872136ca 100644
---- a/lib/rhashtable.c
-+++ b/lib/rhashtable.c
-@@ -205,7 +205,12 @@ static struct bucket_table *bucket_table_alloc(struct rhashtable *ht,
- 	if (tbl == NULL)
- 		return NULL;
- 
--	lockdep_init_map(&tbl->dep_map, "rhashtable_bucket", &__key, 0);
-+#ifdef CONFIG_LOCKDEP
-+	if (ht->dep_key)
-+		lockdep_init_map(&tbl->dep_map, "rhashtable_bucket", ht->dep_key, 0);
-+	else
-+#endif
-+		lockdep_init_map(&tbl->dep_map, "rhashtable_bucket", &__key, 0);
- 
- 	tbl->size = size;
- 
-@@ -1162,7 +1167,8 @@ static u32 rhashtable_jhash2(const void *key, u32 length, u32 seed)
-  */
- int __rhashtable_init_noprof(struct rhashtable *ht,
- 		    const struct rhashtable_params *params,
--		    struct lock_class_key *key)
-+		    struct lock_class_key *key,
-+		    struct lock_class_key *bucket_key)
- {
- 	struct bucket_table *tbl;
- 	size_t size;
-@@ -1176,6 +1182,10 @@ int __rhashtable_init_noprof(struct rhashtable *ht,
- 	spin_lock_init(&ht->lock);
- 	memcpy(&ht->p, params, sizeof(*params));
- 
-+#ifdef CONFIG_LOCKDEP
-+	ht->dep_key = bucket_key;
-+#endif
+ 	if (!is_zero_ether_addr(sdata->u.mgd.tdls_peer)) {
++		struct sta_info *sta;
 +
- 	alloc_tag_record(ht->alloc_tag);
- 
- 	if (params->min_size)
-@@ -1237,11 +1247,12 @@ EXPORT_SYMBOL_GPL(__rhashtable_init_noprof);
-  */
- int __rhltable_init_noprof(struct rhltable *hlt,
- 			   const struct rhashtable_params *params,
--			   struct lock_class_key *key)
-+			   struct lock_class_key *key,
-+			   struct lock_class_key *bucket_key)
- {
- 	int err;
- 
--	err = __rhashtable_init_noprof(&hlt->ht, params, key);
-+	err = __rhashtable_init_noprof(&hlt->ht, params, key, bucket_key);
- 	hlt->ht.rhlist = true;
- 	return err;
+ 		tdls_dbg(sdata, "TDLS del peer %pM\n", sdata->u.mgd.tdls_peer);
+-		sta_info_destroy_addr(sdata, sdata->u.mgd.tdls_peer);
++		sta = sta_info_get(sdata, sdata->u.mgd.tdls_peer);
++		if (sta && sta->sta.tdls)
++			__sta_info_destroy(sta);
+ 		eth_zero_addr(sdata->u.mgd.tdls_peer);
+ 	}
  }
+@@ -1462,6 +1466,10 @@ int ieee80211_tdls_oper(struct wiphy *wiphy, struct net_device *dev,
+ 			     !ether_addr_equal(sdata->u.mgd.tdls_peer, peer));
+ 		break;
+ 	case NL80211_TDLS_DISABLE_LINK:
++		sta = sta_info_get(sdata, peer);
++		if (!sta || !sta->sta.tdls)
++			return -ENOLINK;
++
+ 		/*
+ 		 * The teardown message in ieee80211_tdls_mgmt_teardown() was
+ 		 * created while the queues were stopped, so it might still be
+@@ -1476,7 +1484,7 @@ int ieee80211_tdls_oper(struct wiphy *wiphy, struct net_device *dev,
+ 		/* flush a potentially queued teardown packet */
+ 		ieee80211_flush_queues(local, sdata, false);
+ 
+-		ret = sta_info_destroy_addr(sdata, peer);
++		ret = __sta_info_destroy(sta);
+ 
+ 		iee80211_tdls_recalc_ht_protection(sdata, NULL);
+ 
 
 
 base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
