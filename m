@@ -1,175 +1,182 @@
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E4EF324B33
-	for <syzbot@lists.linux.dev>; Sun,  2 Aug 2026 19:14:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03BEE335081
+	for <syzbot@lists.linux.dev>; Sun,  2 Aug 2026 20:29:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785698051; cv=none; b=rvhbB8TYPoISmrkZLWDAhZJG4njiOjvzc41HUs97c2RikIW60z1VkEhuRoMbXcz3Gh9edCmy1+oUUMY22cwej3iLQghm0uuFtie18c4gBMxK1NqMM5UjaHcoIKIhAxQHOL72uvy++iF8OB9Y8UelePXNQ1+2M9sWuv2fOVp/uO8=
+	t=1785702582; cv=none; b=meJAL/ZCrYboSq+TLKLcI+WGa+SBh6QmhX2ag48u3+ydsdI0be5ruGEl5Xx0ceyDgMvgF5mDrjP2D/nzBDfFKv/jb3A+0dO8W8G+zTUvky7s9955d+ptGcecZaHPrAktKkIMZNWqJFeuBUv+cVEW68NJlZk/eYnRSniTS1p5e80=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785698051; c=relaxed/simple;
-	bh=PNkPQ00M4cug6cnINhKqePsxzOVYzVtwcuGLIK2Vg14=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=l1uY7z6Ff3yfNAao9dqyvcH6sfsxgsd6ldnVnvTGswuSPJPylFSGZJpyGlAlmQfGPUGs7HZMyUzOitqTrQABzhn4JzZpWlyv96/1HInTaWwqQyjoAxMyA75Qcwd9wmUB0FjsknQBTIp2cHPF5/hgQ9vBYQul8+tgQ3yjBVwJpuY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-4a485034d01so4101297b6e.3
-        for <syzbot@lists.linux.dev>; Sun, 02 Aug 2026 12:14:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785698049; x=1786302849;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=TeXFxPT1F5icdtJbwoponQFYgcfJt3/FmWXGCthR0WY=;
-        b=F7f36MJdNoQHe23J1qVPQ4xzVvQjuK3RDGH+6L5cGCy/XYwxubUebpkklIxwc+xdom
-         UYtOVlCDRFkvI0NZQMASoSlzmiUQKmY+M9zL+MTq3NBIYWbKHojbhgHw81wOx8hGum3U
-         ihQxa1+sdY2GV+CnppnjYsF/Mu0LUhVOR54gJjq+K6N2IjnzKwHEMXEGWiow+snUv6jt
-         azm/aEnpwf/S2NTeICJVDfXLy7fdKLcgkMP5Qv8lTYqs8rgwnxPDIb4twNBmwXJy3hCi
-         RxK61BUxPDdN011/sdqghLRwPutDSf3/j+zMbmB4cEYMtNk9+dvCcXTdPJ9fxE+t7742
-         aQmg==
-X-Gm-Message-State: AOJu0YwG8qx/kJCCxkTiUsfAUBadp70mBwpgKZAm2Kb6XGbG1WCH5imt
-	x+/96pdLx+LiJsk9p5tT+I8BqZ8IAnl0muh/gYhD8RM1sjzr9FOO1+2out7XTIsSJw/inYyx+0D
-	EMMet7i+mUToK7v+nsJ1Z13uN2/LraoGja251LK9q91W37XugDpJf38FbXoI=
+	s=arc-20240116; t=1785702582; c=relaxed/simple;
+	bh=Ldt2z3o8feRMLzFURVKm1draKXlGAcWm8rlMRq6aVaE=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ZEHLJ1ixss9zH+O4491KdYynl9lTRSKvx2+WRG4vv7Z09OvxVsSYNsoX+voUH9kRU9gUTbfadXDiyc4l9DXkwjLM0B5ct4eTCCFCTuNRTgNr7ZibQJ82YaSAxZFSQlvZ0j8LLOnxkrkROXVZPALXczQMnLKoXcRzTgLHkdpGZk8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jRdyJNlF; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jRdyJNlF"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7F1681F00A3A;
+	Sun,  2 Aug 2026 20:29:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785702580;
+	bh=bYDSUeaqrgh3UaDColqJCu7Iy2ZhpVWjHTU72d3FpBc=;
+	h=From:To:Cc:Subject:Date;
+	b=jRdyJNlFTVR3CMmxYkYKsnsrYNKUlZ6n+cRAHrIt5ZQWRjBnvJ3kLEHR/mZBRFyVX
+	 a94V8CaGVnXSd72f0inlIZ0a8CUi3HomU+HknesoYFTIsHZszbL1TOB76HHLCwx5zM
+	 dCqGtHBDbndvXTdxJwoXdkL488lnqWzOF/L2QK1bVGpxICC8wxm23B+CCW846LPkwm
+	 bZ5Q36zB99HtFNWRR/NaAGnzUbMLrEv5Ma2RawBaE5YT+BCPb0T8+58RiyQ5YoVvCX
+	 33pu+u+SywW9kW7o7Y9V7t+yP+GocD0WeAIznmwguLQpTxNQmBaiwb5kOV44yyuYfp
+	 XURhw1Z2BPKMg==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] usb: atm: cxacru: fix use-after-free in cxacru_poll_status()
+Message-ID: <77ea3b90-4c30-432f-ab20-768878233d48@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1a1c:b0:4af:5d69:1cb4 with SMTP id
- 5614622812f47-4af5e25091dmr11802434b6e.15.1785698049130; Sun, 02 Aug 2026
- 12:14:09 -0700 (PDT)
-Date: Sun, 02 Aug 2026 12:14:09 -0700
-In-Reply-To: <9209e7204fc6b7b60c28f196750084be8a2faba8.1785489008.git.wqu@suse.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a6f9701.1aa927e4.17d4bf.001c.GAE@google.com>
-Subject: [syzbot ci] Re: iomap: follow the alignment requirement for iomap_dio_hole_iter()
-From: syzbot ci <syzbot+cif06ef19c5d178998@syzkaller.appspotmail.com>
-To: linux-btrfs@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	linux-xfs@vger.kernel.org, wqu@suse.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Sun,  2 Aug 2026 20:29:40 +0000 (UTC)
 
-syzbot ci has tested the following series
+A KASAN use-after-free was detected in __mutex_lock_common triggered by the
+cxacru_poll_status work item attempting to lock
+instance->poll_state_serialize after the instance (struct cxacru_data) has
+been freed by cxacru_unbind.
 
-[v2] iomap: follow the alignment requirement for iomap_dio_hole_iter()
-https://lore.kernel.org/all/9209e7204fc6b7b60c28f196750084be8a2faba8.1785489008.git.wqu@suse.com
-* [PATCH v2] iomap: follow the alignment requirement for iomap_dio_hole_iter()
+The root cause is a race condition in cxacru_unbind where it conditionally
+skips canceling the delayed work instance->poll_work if
+instance->poll_state == CXPOLL_STOPPED. However, the state CXPOLL_STOPPED
+only means that the work should not reschedule itself; it does not mean
+that the work is not currently executing.
 
-and found the following issue:
-general protection fault in iomap_dio_hole_iter
+If the work is executing while cxacru_unbind skips the cancellation and
+frees the instance memory, the work item will eventually attempt to access
+the freed memory, leading to the use-after-free.
 
-Full report is available here:
-https://ci.syzbot.org/series/9d98023b-4249-4697-ab21-ea7cf83805c8
+To fix this, remove the is_polling variable and the conditional check in
+cxacru_unbind. The driver now unconditionally calls
+cancel_delayed_work_sync(&instance->poll_work). This safely guarantees that
+the work item has completely finished executing before the instance memory
+is freed.
 
-***
+Additionally, update cxacru_poll_status to check if instance->poll_state ==
+CXPOLL_SHUTDOWN before deciding to reschedule itself. This ensures that if
+the work item is currently executing while cxacru_unbind sets the state to
+CXPOLL_SHUTDOWN, it will cleanly exit and not attempt to reschedule itself.
 
-general protection fault in iomap_dio_hole_iter
+BUG: KASAN: slab-use-after-free in __mutex_lock_common
+kernel/locking/mutex.c:625 [inline]
+BUG: KASAN: slab-use-after-free in __mutex_lock+0x154/0x1550
+kernel/locking/mutex.c:821
+Read of size 8 at addr ffff8881fbf3e218 by task kworker/1:1/32
 
-tree:      vfs
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs.git
-base:      fa20f6cb6063f7f1a6a56693d4a8713f19058d23
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/a53b891c-9ac3-484a-a77e-61c04d35157f/config
-syz repro: https://ci.syzbot.org/findings/8ed3b1e3-7e4e-4c2c-b0f6-934cfea6e536/syz_repro
-
-syz.0.17: attempt to access beyond end of device
-loop0: rw=2049, sector=53248, nr_sectors = 976 limit=40427
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000003: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000018-0x000000000000001f]
-CPU: 1 UID: 0 PID: 6257 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:bdev_get_queue include/linux/blkdev.h:1056 [inline]
-RIP: 0010:bdev_logical_block_size include/linux/blkdev.h:1401 [inline]
-RIP: 0010:iomap_dio_alignment fs/iomap/direct-io.c:412 [inline]
-RIP: 0010:iomap_dio_hole_iter+0x1bf/0x390 fs/iomap/direct-io.c:598
-Code: fc ff df 80 3c 08 00 74 08 4c 89 ef e8 aa d7 c7 ff 49 8b 6d 00 48 83 c5 18 48 89 e8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 08 48 89 ef e8 83 d7 c7 ff 41 bd 58 01 00 00 4c 03
-RSP: 0018:ffffc90003eff500 EFLAGS: 00010206
-RAX: 0000000000000003 RBX: ffffc90003eff680 RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000018 R08: ffff88816dc38fff R09: 0000000000000000
-R10: ffff88816dc38000 R11: ffffed102db87200 R12: 0000000000001000
-R13: ffffc90003eff6c8 R14: ffff88816b839c00 R15: 1ffff1102d707388
-FS:  00007ffb1678d6c0(0000) GS:ffff8882a8f4b000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000563ae8dcd0a8 CR3: 0000000110cf4000 CR4: 00000000000006f0
+Workqueue: events cxacru_poll_status
 Call Trace:
  <TASK>
- iomap_dio_iter fs/iomap/direct-io.c:-1 [inline]
- __iomap_dio_rw+0xe56/0x1ac0 fs/iomap/direct-io.c:823
- f2fs_dio_read_iter fs/f2fs/file.c:4887 [inline]
- f2fs_file_read_iter+0x60b/0x940 fs/f2fs/file.c:4950
- copy_splice_read+0x5ff/0xaa0 fs/splice.c:362
- do_splice_read fs/splice.c:979 [inline]
- splice_direct_to_actor+0x4b6/0xcb0 fs/splice.c:1084
- do_splice_direct_actor fs/splice.c:1202 [inline]
- do_splice_direct+0x195/0x290 fs/splice.c:1228
- do_sendfile+0x52e/0x7c0 fs/read_write.c:1371
- __do_sys_sendfile64 fs/read_write.c:1432 [inline]
- __se_sys_sendfile64+0x144/0x1a0 fs/read_write.c:1418
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7ffb1599e019
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffb1678d028 EFLAGS: 00000246 ORIG_RAX: 0000000000000028
-RAX: ffffffffffffffda RBX: 00007ffb15c25fa0 RCX: 00007ffb1599e019
-RDX: 0000000000000000 RSI: 0000000000000004 RDI: 0000000000000004
-RBP: 00007ffb15a3500c R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000800000009 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffb15c26038 R14: 00007ffb15c25fa0 R15: 00007ffc15b4ab58
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+ print_report+0x58/0x70 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ __mutex_lock_common kernel/locking/mutex.c:625 [inline]
+ __mutex_lock+0x154/0x1550 kernel/locking/mutex.c:821
+ cxacru_poll_status+0x73a/0x1110 drivers/usb/atm/cxacru.c:920
+ process_one_work kernel/workqueue.c:3322 [inline]
+ process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
  </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:bdev_get_queue include/linux/blkdev.h:1056 [inline]
-RIP: 0010:bdev_logical_block_size include/linux/blkdev.h:1401 [inline]
-RIP: 0010:iomap_dio_alignment fs/iomap/direct-io.c:412 [inline]
-RIP: 0010:iomap_dio_hole_iter+0x1bf/0x390 fs/iomap/direct-io.c:598
-Code: fc ff df 80 3c 08 00 74 08 4c 89 ef e8 aa d7 c7 ff 49 8b 6d 00 48 83 c5 18 48 89 e8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 08 48 89 ef e8 83 d7 c7 ff 41 bd 58 01 00 00 4c 03
-RSP: 0018:ffffc90003eff500 EFLAGS: 00010206
-RAX: 0000000000000003 RBX: ffffc90003eff680 RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000018 R08: ffff88816dc38fff R09: 0000000000000000
-R10: ffff88816dc38000 R11: ffffed102db87200 R12: 0000000000001000
-R13: ffffc90003eff6c8 R14: ffff88816b839c00 R15: 1ffff1102d707388
-FS:  00007ffb1678d6c0(0000) GS:ffff8882a8f4b000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000558d8b221b40 CR3: 0000000110cf4000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess), 2 bytes skipped:
-   0:	df 80 3c 08 00 74    	filds  0x7400083c(%rax)
-   6:	08 4c 89 ef          	or     %cl,-0x11(%rcx,%rcx,4)
-   a:	e8 aa d7 c7 ff       	call   0xffc7d7b9
-   f:	49 8b 6d 00          	mov    0x0(%r13),%rbp
-  13:	48 83 c5 18          	add    $0x18,%rbp
-  17:	48 89 e8             	mov    %rbp,%rax
-  1a:	48 c1 e8 03          	shr    $0x3,%rax
-  1e:	48 b9 00 00 00 00 00 	movabs $0xdffffc0000000000,%rcx
-  25:	fc ff df
-* 28:	80 3c 08 00          	cmpb   $0x0,(%rax,%rcx,1) <-- trapping instruction
-  2c:	74 08                	je     0x36
-  2e:	48 89 ef             	mov    %rbp,%rdi
-  31:	e8 83 d7 c7 ff       	call   0xffc7d7b9
-  36:	41 bd 58 01 00 00    	mov    $0x158,%r13d
-  3c:	4c                   	rex.WR
-  3d:	03                   	.byte 0x3
 
+Freed by task 5720:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ kasan_save_free_info+0x40/0x50 mm/kasan/generic.c:584
+ poison_slab_object mm/kasan/common.c:253 [inline]
+ __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+ kasan_slab_free include/linux/kasan.h:235 [inline]
+ slab_free_hook mm/slub.c:2677 [inline]
+ slab_free mm/slub.c:6377 [inline]
+ kfree+0x1c5/0x640 mm/slub.c:6692
+ cxacru_unbind+0x1c8/0x340 drivers/usb/atm/cxacru.c:1266
+ usbatm_usb_disconnect+0x42b/0x620 drivers/usb/atm/usbatm.c:1255
+ usb_unbind_interface+0x295/0x9f0 drivers/usb/core/driver.c:458
+ device_remove drivers/base/dd.c:618 [inline]
+ __device_release_driver drivers/base/dd.c:1349 [inline]
+ device_release_driver_internal+0x4f5/0x880 drivers/base/dd.c:1372
+ bus_remove_device+0x444/0x560 drivers/base/bus.c:664
+ device_del+0x524/0x8f0 drivers/base/core.c:3961
+ usb_disable_device+0x3d4/0x8d0 drivers/usb/core/message.c:1478
+ usb_disconnect+0x346/0x9a0 drivers/usb/core/hub.c:2345
 
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: 6a02c996bce2 ("USB: cxacru: ADSL state management")
+Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+24eb38c789655fc43663@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=24eb38c789655fc43663
+Link: https://syzkaller.appspot.com/ai_job?id=79150e78-3441-40ad-8389-e897b217e2a0
+To: "Chas Williams" <3chas3@gmail.com>
+To: <accessrunner-general@lists.sourceforge.net>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-atm-general@lists.sourceforge.net>
+To: <linux-usb@vger.kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Simon Arlott" <simon@fire.lp0.eu>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/drivers/usb/atm/cxacru.c b/drivers/usb/atm/cxacru.c
+index f1900c567..4a2206d3b 100644
+--- a/drivers/usb/atm/cxacru.c
++++ b/drivers/usb/atm/cxacru.c
+@@ -923,7 +923,8 @@ static void cxacru_poll_status(struct work_struct *work)
+ 				instance->line_status == 0) /* down */
+ 		instance->poll_state = CXPOLL_STOPPED;
+ 
+-	if (instance->poll_state == CXPOLL_STOPPED)
++	if (instance->poll_state == CXPOLL_STOPPED ||
++	    instance->poll_state == CXPOLL_SHUTDOWN)
+ 		keep_polling = 0;
+ 	mutex_unlock(&instance->poll_state_serialize);
+ 
+@@ -1231,7 +1232,6 @@ static void cxacru_unbind(struct usbatm_data *usbatm_instance,
+ 		struct usb_interface *intf)
+ {
+ 	struct cxacru_data *instance = usbatm_instance->driver_data;
+-	int is_polling = 1;
+ 
+ 	usb_dbg(usbatm_instance, "cxacru_unbind entered\n");
+ 
+@@ -1243,17 +1243,11 @@ static void cxacru_unbind(struct usbatm_data *usbatm_instance,
+ 	mutex_lock(&instance->poll_state_serialize);
+ 	BUG_ON(instance->poll_state == CXPOLL_SHUTDOWN);
+ 
+-	/* ensure that status polling continues unless
+-	 * it has already stopped */
+-	if (instance->poll_state == CXPOLL_STOPPED)
+-		is_polling = 0;
+-
+ 	/* stop polling from being stopped or started */
+ 	instance->poll_state = CXPOLL_SHUTDOWN;
+ 	mutex_unlock(&instance->poll_state_serialize);
+ 
+-	if (is_polling)
+-		cancel_delayed_work_sync(&instance->poll_work);
++	cancel_delayed_work_sync(&instance->poll_work);
+ 
+ 	usb_kill_urb(instance->snd_urb);
+ 	usb_kill_urb(instance->rcv_urb);
 
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
 
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
