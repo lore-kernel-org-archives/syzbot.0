@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2791E318ED2
-	for <syzbot@lists.linux.dev>; Sun,  2 Aug 2026 21:52:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 027BA48989D
+	for <syzbot@lists.linux.dev>; Sun,  2 Aug 2026 22:23:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785707532; cv=none; b=ViHfdTxCE1IDiVFAey8LG8sw8aU5SF4MG2BF+nKda+VfMDUBx8vydFy6gYpgsXSKbegzPu/b4igGBcK6clteYe1asNOBdafxLDy8K8Py0ZIjA9PEm3P/kSD4ORGzoPJ0hEgjo3v/yzX/0hC1zjbaRe0RJG9Q4VrMdh03j24Kniw=
+	t=1785709422; cv=none; b=XPltt2mhTqVlhm2QFeRP9mT6BYqvt1tqUecBpT2rCX6ujVARMk7U+mdGGh62vfloYy6cad6N3S9PFauy7KX5uGWNz+p4bERBwmWjSpay6ELke8l9bz9gHIHbRNNgPc4gJztDNbMuWolKUziRIx9F+gOOhW3/s0Fe7hZM9k5/Va4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785707532; c=relaxed/simple;
-	bh=66MpmDmScDAyDapECy4jIwHP4A7P2zbY8ajuo57OKbk=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ms0TpNqwn7Bw7Ab2F3vnuCKGI5vgqhqd5kJtm3ywtFksfGm/EwhZfw4Cjhx8SydlqUEKOmcoo1D5OFYKWJAMM7POmo/orn7guFlyRbUyBQ322oS4ujYZrSp8hWJqTnUPINvU0UtP2ZA2Ah5nhcQTIzARyfKdiJscwhHr0lL9/sE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FGkVRNao; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785709422; c=relaxed/simple;
+	bh=5MYfSfZsjIG7Sa900xnwo/+gAiJGRAiJDM43z62nKRg=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Vxn4Z2KuigVYaVoGiyPtWsYdud9JhFs2I1MFrTxEBz0pBLe2sJ+MReshf/nNKrpDcUVxvSnK25k7yeokKH+rlZLXEcKE1mq9B3+Z3RcpCzUw8wkvPPGh6UCczSmMb1z8nJF9JzQ9I76ZsgsyA2UH5zXlrKODIk+WQ73fo7JBptY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hMmuXg0d; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FGkVRNao"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 933A11F000E9;
-	Sun,  2 Aug 2026 21:52:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hMmuXg0d"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6BF1F1F000E9;
+	Sun,  2 Aug 2026 22:23:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785707530;
-	bh=x4JZj/HFHm0Jlc70+LstoCn9ELyxIdSb3WXr+DF3PCM=;
+	s=k20260515; t=1785709420;
+	bh=bGsqEhf8YvZYXnTZHoS4zy9AMu0ZbGkh3X9c7gbv9Iw=;
 	h=From:To:Cc:Subject:Date;
-	b=FGkVRNao9zZyfArGyT6tGlbQWGBXIcLCmpswB0YQHMA7r83H2nkVr3rbG8eBFD3N/
-	 DBAUcX5DHR4P5FHuWiFmHbInH2LfThcSwdsmLWOgeuWYd4JiqUn2U+1Mfhn8Mb1WA5
-	 dxI0FQhuLBZchmxj1pzxPk+nVGlfz3KbRrh+WIA2z46gF7NTqC5Dh/ChgM7MrDYeq8
-	 /c0/S8pPQQhA+ErhxbWDR4dfVWh8oWemsw7QRvhdHK3wbcYwt2DuI6dzX6OeLsJMLu
-	 wdTk0hwiiI//fCzX+ybdGt0R+q5Yz3GaEL/z+N880k5fCoIMHmdfW4LTs9r0v0MoFa
-	 yyPt7Y/p8+o9A==
+	b=hMmuXg0dOkN1M+4h6AhznOXzqCgFw1DpnCGs1T4Pwv0j2+19fPnOo39p8+LWx8I2V
+	 i5I092ZRVoP8O/m+v3bhwaUZQmbibk6mE6Sg37EclKAh21+3Fc6P9Q8QuQevrmUIdM
+	 4IQ2fX94EBXuENv2dhsRMY9mWWs2sKXRMBN1c8qinf17U3nlMNrJnYSnHHcAqPiZKu
+	 eboloikp4xkfIPfBU1SAmE1f//qu6JgBczjVw5z3EymK5qnCUzcl65j5konEkLA+yc
+	 lvGDj7orA2/BvWp5GZF1fZGuocyic1TTqoTgHWw5zLRSfUiJt6HbpcfmakG6Vb+6n7
+	 MFbBYkFtJLbvw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] wifi: mac80211: prevent destroying non-TDLS stations in TDLS operations
-Message-ID: <7f0c8fa8-559d-4fdf-989f-c81259e4e719@mail.kernel.org>
+Subject: [PATCH RFC] wifi: cfg80211: fix BSS RB tree collision during channel switch
+Message-ID: <a8455fef-711a-4293-89ce-248c5f3428e7@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,94 +38,80 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Sun,  2 Aug 2026 21:52:10 +0000 (UTC)
+Date: Sun,  2 Aug 2026 22:23:40 +0000 (UTC)
 
-When userspace sends a NL80211_CMD_TDLS_OPER command with the
-NL80211_TDLS_DISABLE_LINK operation, the request is handled by
-ieee80211_tdls_oper(). The code for this operation directly calls
-sta_info_destroy_addr() to destroy the station entry associated with the
-provided MAC address. Unlike the NL80211_TDLS_ENABLE_LINK case, which
-correctly verifies that the target station exists and is actually a TDLS
-peer, the disable link path blindly destroys whatever station matches the
-MAC address.
+When a station processes a Channel Switch Announcement (CSA),
+cfg80211_update_assoc_bss_entry() is called to update the channel of the
+associated BSS. Because the channel is part of the BSS Red-Black (RB) tree
+key, changing the channel requires removing the BSS from the tree and
+re-inserting it.
 
-If the provided MAC address is the AP's MAC address, this causes the AP's
-station entry to be destroyed while the interface is still associated.
-Later, when the driver attempts to send a probe request to the AP, it looks
-up the AP's station entry, which returns NULL, triggering a warning in
-ieee80211_mgd_probe_ap_send():
+Before re-inserting, cfg80211_update_assoc_bss_entry() searches for any
+existing BSS on the new channel that matches the associated BSS so it can
+be unlinked to prevent an RB tree collision. However, the search loop
+incorrectly uses cfg80211_bss_type_match() to filter candidates based on
+their capabilities. If an existing BSS matches perfectly in cmp_bss() (same
+channel, BSSID, and SSID) but has different capabilities (e.g., due to a
+malicious or misconfigured beacon setting both ESS and IBSS bits),
+cfg80211_bss_type_match() skips it.
 
-WARNING: net/mac80211/mlme.c:4898 at
-ieee80211_mgd_probe_ap_send+0x497/0x560 net/mac80211/mlme.c:4898
-RIP: 0010:ieee80211_mgd_probe_ap_send+0x497/0x560 net/mac80211/mlme.c:4898
+This leaves the colliding BSS in the tree. When cfg80211_rehash_bss()
+attempts to re-insert the associated BSS, rb_insert_bss() compares them
+using cmp_bss(), which ignores capabilities. It finds them identical,
+resulting in an RB tree collision and triggering a warning:
+
+------------[ cut here ]------------
+!cmp
+WARNING: net/wireless/scan.c:1675 at rb_insert_bss net/wireless/scan.c:1675
+[inline], CPU#0: kworker/u9:2/39
+WARNING: net/wireless/scan.c:1675 at cfg80211_rehash_bss+0x1e6/0x540
+net/wireless/scan.c:1732, CPU#0: kworker/u9:2/39
+...
 Call Trace:
  <TASK>
+ cfg80211_update_assoc_bss_entry+0x3cd/0x660 net/wireless/scan.c:3478
+ cfg80211_ch_switch_notify+0x3b1/0x780 net/wireless/nl80211.c:22366
+ ieee80211_sta_process_chanswitch+0xbd1/0x29e0 net/mac80211/mlme.c:-1
+ ieee80211_rx_mgmt_beacon+0x1dc6/0x32a0 net/mac80211/mlme.c:8309
+ ieee80211_sta_rx_queued_frame+0x6ac/0x4e40 net/mac80211/mlme.c:11793
+ ieee80211_iface_process_skb net/mac80211/iface.c:1766 [inline]
+ ieee80211_iface_work+0x552/0x1010 net/mac80211/iface.c:1823
  cfg80211_wiphy_work+0x29e/0x420 net/wireless/core.c:538
- process_one_work kernel/workqueue.c:3322 [inline]
- process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
+...
 
-A similar issue exists in ieee80211_tdls_peer_del_work() which is queued by
-ieee80211_tdls_mgmt_setup(). If a TDLS setup request is sent with the AP's
-MAC address, the AP's station entry will be destroyed when the setup
-timeout expires.
+Fix this by removing the cfg80211_bss_type_match() check from the collision
+search loop. The RB tree uniqueness is defined solely by cmp_bss(), so any
+BSS that evaluates to cmp == 0 must be unlinked to prevent a collision,
+regardless of whether its capability matches the connection type. If the
+AP's capabilities legitimately changed, cfg80211_update_known_bss() will
+safely update the capability later.
 
-Fix this by explicitly verifying that the station exists and is a TDLS peer
-(sta->sta.tdls == true) before destroying it in both ieee80211_tdls_oper()
-and ieee80211_tdls_peer_del_work().
-
-Fixes: dfe018bf9953 ("mac80211: handle TDLS high-level commands and frames")
+Fixes: 0afd425b1b64 ("cfg80211: fix duplicated scan entries after channel switch")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+a59b5291776979816910@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=a59b5291776979816910
-Link: https://syzkaller.appspot.com/ai_job?id=52e47481-fb24-46ec-8402-1f14cf87081f
+Reported-by: syzbot+dc6f4dce0d707900cdea@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=dc6f4dce0d707900cdea
+Link: https://syzkaller.appspot.com/ai_job?id=36735ba4-a810-4748-9be0-c030fc138df1
 To: "Johannes Berg" <johannes@sipsolutions.net>
 To: <linux-wireless@vger.kernel.org>
-To: "Arik Nemtsov" <arik@wizery.com>
+To: "Sergey Matyukevich" <sergey.matyukevich.os@quantenna.com>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/net/mac80211/tdls.c b/net/mac80211/tdls.c
-index ffd575a8d..24297552f 100644
---- a/net/mac80211/tdls.c
-+++ b/net/mac80211/tdls.c
-@@ -33,8 +33,12 @@ void ieee80211_tdls_peer_del_work(struct wiphy *wiphy, struct wiphy_work *wk)
- 	lockdep_assert_wiphy(local->hw.wiphy);
+diff --git a/net/wireless/scan.c b/net/wireless/scan.c
+index 071083cc3..97bf7ab8c 100644
+--- a/net/wireless/scan.c
++++ b/net/wireless/scan.c
+@@ -3443,11 +3443,6 @@ void cfg80211_update_assoc_bss_entry(struct wireless_dev *wdev,
+ 	cbss->pub.channel = chan;
  
- 	if (!is_zero_ether_addr(sdata->u.mgd.tdls_peer)) {
-+		struct sta_info *sta;
-+
- 		tdls_dbg(sdata, "TDLS del peer %pM\n", sdata->u.mgd.tdls_peer);
--		sta_info_destroy_addr(sdata, sdata->u.mgd.tdls_peer);
-+		sta = sta_info_get(sdata, sdata->u.mgd.tdls_peer);
-+		if (sta && sta->sta.tdls)
-+			__sta_info_destroy(sta);
- 		eth_zero_addr(sdata->u.mgd.tdls_peer);
- 	}
- }
-@@ -1462,6 +1466,10 @@ int ieee80211_tdls_oper(struct wiphy *wiphy, struct net_device *dev,
- 			     !ether_addr_equal(sdata->u.mgd.tdls_peer, peer));
- 		break;
- 	case NL80211_TDLS_DISABLE_LINK:
-+		sta = sta_info_get(sdata, peer);
-+		if (!sta || !sta->sta.tdls)
-+			return -ENOLINK;
-+
- 		/*
- 		 * The teardown message in ieee80211_tdls_mgmt_teardown() was
- 		 * created while the queues were stopped, so it might still be
-@@ -1476,7 +1484,7 @@ int ieee80211_tdls_oper(struct wiphy *wiphy, struct net_device *dev,
- 		/* flush a potentially queued teardown packet */
- 		ieee80211_flush_queues(local, sdata, false);
- 
--		ret = sta_info_destroy_addr(sdata, peer);
-+		ret = __sta_info_destroy(sta);
- 
- 		iee80211_tdls_recalc_ht_protection(sdata, NULL);
+ 	list_for_each_entry(bss, &rdev->bss_list, list) {
+-		if (!cfg80211_bss_type_match(bss->pub.capability,
+-					     bss->pub.channel->band,
+-					     wdev->conn_bss_type))
+-			continue;
+-
+ 		if (bss == cbss)
+ 			continue;
  
 
 
