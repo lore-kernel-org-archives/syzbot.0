@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03BEE335081
-	for <syzbot@lists.linux.dev>; Sun,  2 Aug 2026 20:29:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A47E9259498
+	for <syzbot@lists.linux.dev>; Sun,  2 Aug 2026 20:47:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785702582; cv=none; b=meJAL/ZCrYboSq+TLKLcI+WGa+SBh6QmhX2ag48u3+ydsdI0be5ruGEl5Xx0ceyDgMvgF5mDrjP2D/nzBDfFKv/jb3A+0dO8W8G+zTUvky7s9955d+ptGcecZaHPrAktKkIMZNWqJFeuBUv+cVEW68NJlZk/eYnRSniTS1p5e80=
+	t=1785703632; cv=none; b=pXtL18107o7naRRBFXFwWNM67sJPug7u/aienr3z2uKHKkNAuCaUPGV0eTNgYpFt/QlQNC72wJvBeGXPI3i0iHchOJG1acTJseCS59lXRpk9oLox6s29IfNjrRHtJRbFj+FtLWimYt+wKIgpQj8OBdHIi5wrkyiK3o+lm1HdSKA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785702582; c=relaxed/simple;
-	bh=Ldt2z3o8feRMLzFURVKm1draKXlGAcWm8rlMRq6aVaE=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ZEHLJ1ixss9zH+O4491KdYynl9lTRSKvx2+WRG4vv7Z09OvxVsSYNsoX+voUH9kRU9gUTbfadXDiyc4l9DXkwjLM0B5ct4eTCCFCTuNRTgNr7ZibQJ82YaSAxZFSQlvZ0j8LLOnxkrkROXVZPALXczQMnLKoXcRzTgLHkdpGZk8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jRdyJNlF; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785703632; c=relaxed/simple;
+	bh=MGvJ6IW9bTcjwxz446L77nlvrlAt7quw67uI/Xu9AVM=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=KwaTUfn+euivja7lLppnhj+nvywyMNMX8R5ng4jIoUr3RhYJg5ySfeaXFWYAiokZgJCLmpB6Cf95YEQyDNFf/Pd7ezVEy5bI3knCoqXPcsj2Svi+uGb8ZoiS4tA6tzUpNfrTD0UoPFmfdzjICVXL2WvgCtkCYKuKotlv/kcM764=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fBMjRJx3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jRdyJNlF"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7F1681F00A3A;
-	Sun,  2 Aug 2026 20:29:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fBMjRJx3"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 756EF1F00A3A;
+	Sun,  2 Aug 2026 20:47:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785702580;
-	bh=bYDSUeaqrgh3UaDColqJCu7Iy2ZhpVWjHTU72d3FpBc=;
+	s=k20260515; t=1785703630;
+	bh=JKNCbEvyILTyitRkboJsY2QayOUgKErViz0TckvaiMo=;
 	h=From:To:Cc:Subject:Date;
-	b=jRdyJNlFTVR3CMmxYkYKsnsrYNKUlZ6n+cRAHrIt5ZQWRjBnvJ3kLEHR/mZBRFyVX
-	 a94V8CaGVnXSd72f0inlIZ0a8CUi3HomU+HknesoYFTIsHZszbL1TOB76HHLCwx5zM
-	 dCqGtHBDbndvXTdxJwoXdkL488lnqWzOF/L2QK1bVGpxICC8wxm23B+CCW846LPkwm
-	 bZ5Q36zB99HtFNWRR/NaAGnzUbMLrEv5Ma2RawBaE5YT+BCPb0T8+58RiyQ5YoVvCX
-	 33pu+u+SywW9kW7o7Y9V7t+yP+GocD0WeAIznmwguLQpTxNQmBaiwb5kOV44yyuYfp
-	 XURhw1Z2BPKMg==
+	b=fBMjRJx3UfGyK3t6voAxETS1Kbr0m0+B53mf/TO5DcKChUyXzDCHq0SubT1RgxTlQ
+	 MlwBuyc6UPkUO47fJ+eg4TtPc2yjfu8E5dRKncAvzdhbZKCW4TZrLc0aPEgITxiwF8
+	 pSeKXuiliDVJPnuBgW4UtdckHR5N9rZqAztywYqiUru2TyI0q6mylGPhM5bsfuXwol
+	 AvFmB/jvJbKvdzqqHTPph7cD3IA0YPwbbRZKM5ulQGRBODyg22hrJYe6JNQZXY7T2/
+	 e+L5g462yNzSePOiKKmanNBxgU2RQZanFvb2MG6RQyqW2FODWUwKdQKZaFnmspEBdF
+	 NtHJbVTpFDfyg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: atm: cxacru: fix use-after-free in cxacru_poll_status()
-Message-ID: <77ea3b90-4c30-432f-ab20-768878233d48@mail.kernel.org>
+Subject: [PATCH RFC] media: ttusb-dec: fix buffer overflow in ttusb_dec_send_command()
+Message-ID: <9ffeb96e-84cb-45be-b55c-93826550f3bd@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,135 +38,270 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Sun,  2 Aug 2026 20:29:40 +0000 (UTC)
+Date: Sun,  2 Aug 2026 20:47:10 +0000 (UTC)
 
-A KASAN use-after-free was detected in __mutex_lock_common triggered by the
-cxacru_poll_status work item attempting to lock
-instance->poll_state_serialize after the instance (struct cxacru_data) has
-been freed by cxacru_unbind.
+The `ttusb_dec_send_command()` function sends a command to the USB device
+and reads back the response into a dynamically allocated buffer. If the
+bulk message succeeds, the function blindly trusts `b[3]` (which is
+controlled by the USB device) as the length of the payload to copy into the
+caller-provided `cmd_result` buffer.
 
-The root cause is a race condition in cxacru_unbind where it conditionally
-skips canceling the delayed work instance->poll_work if
-instance->poll_state == CXPOLL_STOPPED. However, the state CXPOLL_STOPPED
-only means that the work should not reschedule itself; it does not mean
-that the work is not currently executing.
+This leads to two distinct buffer overflow issues. First, a read overflow:
+the buffer `b` is 64 bytes long, meaning the payload starting at `&b[4]`
+has exactly 60 bytes of space. If the device sends a packet where `b[3] >
+60`, `memcpy()` will read past the end of the `b` buffer. Second, a write
+overflow: the function has no knowledge of the size of the `cmd_result`
+buffer provided by the caller. In `ttusb_dec_get_stb_state()`, the buffer
+is 60 bytes on the stack. In `ttusbdecfe_dvbt_read_status()`, the buffer is
+only 4 bytes. A length greater than the buffer size will result in a stack
+buffer overflow.
 
-If the work is executing while cxacru_unbind skips the cancellation and
-frees the instance memory, the work item will eventually attempt to access
-the freed memory, leading to the use-after-free.
+This issue can be observed in the following crash report:
 
-To fix this, remove the is_polling variable and the conditional check in
-cxacru_unbind. The driver now unconditionally calls
-cancel_delayed_work_sync(&instance->poll_work). This safely guarantees that
-the work item has completely finished executing before the instance memory
-is freed.
-
-Additionally, update cxacru_poll_status to check if instance->poll_state ==
-CXPOLL_SHUTDOWN before deciding to reschedule itself. This ensures that if
-the work item is currently executing while cxacru_unbind sets the state to
-CXPOLL_SHUTDOWN, it will cleanly exit and not attempt to reschedule itself.
-
-BUG: KASAN: slab-use-after-free in __mutex_lock_common
-kernel/locking/mutex.c:625 [inline]
-BUG: KASAN: slab-use-after-free in __mutex_lock+0x154/0x1550
-kernel/locking/mutex.c:821
-Read of size 8 at addr ffff8881fbf3e218 by task kworker/1:1/32
-
-Workqueue: events cxacru_poll_status
+------------[ cut here ]------------
+memcpy: detected buffer overflow: 75 byte read of buffer size 60
+WARNING: lib/string_helpers.c:1037 at __fortify_report+0x6b/0xa0
+lib/string_helpers.c:1036, CPU#1: kworker/1:1/38
+...
 Call Trace:
  <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_address_description+0x55/0x1e0 mm/kasan/report.c:378
- print_report+0x58/0x70 mm/kasan/report.c:482
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- __mutex_lock_common kernel/locking/mutex.c:625 [inline]
- __mutex_lock+0x154/0x1550 kernel/locking/mutex.c:821
- cxacru_poll_status+0x73a/0x1110 drivers/usb/atm/cxacru.c:920
- process_one_work kernel/workqueue.c:3322 [inline]
- process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
+ __fortify_panic+0x9/0x10 lib/string_helpers.c:1043
+ fortify_memcpy_chk include/linux/fortify-string.h:549 [inline]
+ ttusb_dec_send_command+0x681/0x690
+ drivers/media/usb/ttusb-dec/ttusb_dec.c:372
+ ttusb_dec_get_stb_state drivers/media/usb/ttusb-dec/ttusb_dec.c:392
+ [inline]
+ ttusb_dec_init_stb drivers/media/usb/ttusb-dec/ttusb_dec.c:1413 [inline]
+ ttusb_dec_probe+0x8e4/0x2160 drivers/media/usb/ttusb-dec/ttusb_dec.c:1671
+ usb_probe_interface+0x653/0xc60 drivers/usb/core/driver.c:396
+...
 
-Freed by task 5720:
- kasan_save_stack mm/kasan/common.c:57 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
- kasan_save_free_info+0x40/0x50 mm/kasan/generic.c:584
- poison_slab_object mm/kasan/common.c:253 [inline]
- __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
- kasan_slab_free include/linux/kasan.h:235 [inline]
- slab_free_hook mm/slub.c:2677 [inline]
- slab_free mm/slub.c:6377 [inline]
- kfree+0x1c5/0x640 mm/slub.c:6692
- cxacru_unbind+0x1c8/0x340 drivers/usb/atm/cxacru.c:1266
- usbatm_usb_disconnect+0x42b/0x620 drivers/usb/atm/usbatm.c:1255
- usb_unbind_interface+0x295/0x9f0 drivers/usb/core/driver.c:458
- device_remove drivers/base/dd.c:618 [inline]
- __device_release_driver drivers/base/dd.c:1349 [inline]
- device_release_driver_internal+0x4f5/0x880 drivers/base/dd.c:1372
- bus_remove_device+0x444/0x560 drivers/base/bus.c:664
- device_del+0x524/0x8f0 drivers/base/core.c:3961
- usb_disable_device+0x3d4/0x8d0 drivers/usb/core/message.c:1478
- usb_disconnect+0x346/0x9a0 drivers/usb/core/hub.c:2345
+To fix this, update the API signature of `ttusb_dec_send_command()` and the
+`send_command` callback to take the destination buffer length
+(`cmd_result_len`). Add validation in `ttusb_dec_send_command()` to ensure
+the length field `b[3]` does not exceed the actual received USB packet
+length and the destination buffer size. Update all callers to pass the
+correct buffer size.
 
-Fixes: 6a02c996bce2 ("USB: cxacru: ADSL state management")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+24eb38c789655fc43663@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=24eb38c789655fc43663
-Link: https://syzkaller.appspot.com/ai_job?id=79150e78-3441-40ad-8389-e897b217e2a0
-To: "Chas Williams" <3chas3@gmail.com>
-To: <accessrunner-general@lists.sourceforge.net>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-atm-general@lists.sourceforge.net>
-To: <linux-usb@vger.kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Simon Arlott" <simon@fire.lp0.eu>
+Reported-by: syzbot+ac9880be0b0b1a5f54d6@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=ac9880be0b0b1a5f54d6
+Link: https://syzkaller.appspot.com/ai_job?id=fb923fb6-2d12-42a7-a06c-83685d3f6461
+To: <linux-media@vger.kernel.org>
+To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
+To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
+Cc: "Kees Cook" <kees@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/drivers/usb/atm/cxacru.c b/drivers/usb/atm/cxacru.c
-index f1900c567..4a2206d3b 100644
---- a/drivers/usb/atm/cxacru.c
-+++ b/drivers/usb/atm/cxacru.c
-@@ -923,7 +923,8 @@ static void cxacru_poll_status(struct work_struct *work)
- 				instance->line_status == 0) /* down */
- 		instance->poll_state = CXPOLL_STOPPED;
+diff --git a/drivers/media/usb/ttusb-dec/ttusb_dec.c b/drivers/media/usb/ttusb-dec/ttusb_dec.c
+index 825a38759..41e9501cd 100644
+--- a/drivers/media/usb/ttusb-dec/ttusb_dec.c
++++ b/drivers/media/usb/ttusb-dec/ttusb_dec.c
+@@ -314,7 +314,8 @@ static u16 crc16(u16 crc, const u8 *buf, size_t len)
  
--	if (instance->poll_state == CXPOLL_STOPPED)
-+	if (instance->poll_state == CXPOLL_STOPPED ||
-+	    instance->poll_state == CXPOLL_SHUTDOWN)
- 		keep_polling = 0;
- 	mutex_unlock(&instance->poll_state_serialize);
- 
-@@ -1231,7 +1232,6 @@ static void cxacru_unbind(struct usbatm_data *usbatm_instance,
- 		struct usb_interface *intf)
+ static int ttusb_dec_send_command(struct ttusb_dec *dec, const u8 command,
+ 				  int param_length, const u8 params[],
+-				  int *result_length, u8 cmd_result[])
++				  int *result_length, u8 cmd_result[],
++				  int cmd_result_len)
  {
- 	struct cxacru_data *instance = usbatm_instance->driver_data;
--	int is_polling = 1;
+ 	int result, actual_len;
+ 	u8 *b;
+@@ -361,15 +362,26 @@ static int ttusb_dec_send_command(struct ttusb_dec *dec, const u8 command,
+ 		       __func__, result);
+ 		goto err_mutex_unlock;
+ 	} else {
++		int rlen = 0;
++
+ 		if (debug) {
+ 			printk(KERN_DEBUG "%s: result: %*ph\n",
+ 			       __func__, actual_len, b);
+ 		}
  
- 	usb_dbg(usbatm_instance, "cxacru_unbind entered\n");
++		if (actual_len >= 4) {
++			rlen = b[3];
++			if (rlen > actual_len - 4)
++				rlen = actual_len - 4;
++		}
++
++		if (cmd_result && rlen > cmd_result_len)
++			rlen = cmd_result_len;
++
+ 		if (result_length)
+-			*result_length = b[3];
+-		if (cmd_result && b[3] > 0)
+-			memcpy(cmd_result, &b[4], b[3]);
++			*result_length = rlen;
++		if (cmd_result && rlen > 0)
++			memcpy(cmd_result, &b[4], rlen);
+ 	}
  
-@@ -1243,17 +1243,11 @@ static void cxacru_unbind(struct usbatm_data *usbatm_instance,
- 	mutex_lock(&instance->poll_state_serialize);
- 	BUG_ON(instance->poll_state == CXPOLL_SHUTDOWN);
+ err_mutex_unlock:
+@@ -389,7 +401,8 @@ static int ttusb_dec_get_stb_state (struct ttusb_dec *dec, unsigned int *mode,
  
--	/* ensure that status polling continues unless
--	 * it has already stopped */
--	if (instance->poll_state == CXPOLL_STOPPED)
--		is_polling = 0;
--
- 	/* stop polling from being stopped or started */
- 	instance->poll_state = CXPOLL_SHUTDOWN;
- 	mutex_unlock(&instance->poll_state_serialize);
+ 	dprintk("%s\n", __func__);
  
--	if (is_polling)
--		cancel_delayed_work_sync(&instance->poll_work);
-+	cancel_delayed_work_sync(&instance->poll_work);
+-	result = ttusb_dec_send_command(dec, 0x08, 0, NULL, &c_length, c);
++	result = ttusb_dec_send_command(dec, 0x08, 0, NULL, &c_length, c,
++					sizeof(c));
+ 	if (result)
+ 		return result;
  
- 	usb_kill_urb(instance->snd_urb);
- 	usb_kill_urb(instance->rcv_urb);
+@@ -448,7 +461,7 @@ static void ttusb_dec_set_pids(struct ttusb_dec *dec)
+ 	memcpy(&b[2], &audio, 2);
+ 	memcpy(&b[4], &video, 2);
+ 
+-	ttusb_dec_send_command(dec, 0x50, sizeof(b), b, NULL, NULL);
++	ttusb_dec_send_command(dec, 0x50, sizeof(b), b, NULL, NULL, 0);
+ 
+ 	dvb_filter_pes2ts_init(&dec->a_pes2ts, dec->pid[DMX_PES_AUDIO],
+ 			       ttusb_dec_audio_pes2ts_cb, dec);
+@@ -902,7 +915,7 @@ static int ttusb_dec_set_interface(struct ttusb_dec *dec,
+ 			break;
+ 		case TTUSB_DEC_INTERFACE_IN:
+ 			result = ttusb_dec_send_command(dec, 0x80, sizeof(b),
+-							b, NULL, NULL);
++							b, NULL, NULL, 0);
+ 			if (result)
+ 				return result;
+ 			result = usb_set_interface(dec->udev, 0, 8);
+@@ -1021,7 +1034,7 @@ static int ttusb_dec_start_ts_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 
+ 	}
+ 
+-	result = ttusb_dec_send_command(dec, 0x80, sizeof(b0), b0, NULL, NULL);
++	result = ttusb_dec_send_command(dec, 0x80, sizeof(b0), b0, NULL, NULL, 0);
+ 	if (result)
+ 		return result;
+ 
+@@ -1056,7 +1069,7 @@ static int ttusb_dec_start_sec_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 	memcpy(&b0[5], &dvbdmxfeed->filter->filter.filter_value[0], 1);
+ 
+ 	result = ttusb_dec_send_command(dec, 0x60, sizeof(b0), b0,
+-					&c_length, c);
++					&c_length, c, sizeof(c));
+ 
+ 	if (!result) {
+ 		if (c_length == 2) {
+@@ -1114,7 +1127,7 @@ static int ttusb_dec_stop_ts_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 	struct ttusb_dec *dec = dvbdmxfeed->demux->priv;
+ 	u8 b0[] = { 0x00 };
+ 
+-	ttusb_dec_send_command(dec, 0x81, sizeof(b0), b0, NULL, NULL);
++	ttusb_dec_send_command(dec, 0x81, sizeof(b0), b0, NULL, NULL, 0);
+ 
+ 	dec->pva_stream_count--;
+ 
+@@ -1135,7 +1148,7 @@ static int ttusb_dec_stop_sec_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 	list_del(&finfo->filter_info_list);
+ 	spin_unlock_irqrestore(&dec->filter_info_list_lock, flags);
+ 	kfree(finfo);
+-	ttusb_dec_send_command(dec, 0x62, sizeof(b0), b0, NULL, NULL);
++	ttusb_dec_send_command(dec, 0x62, sizeof(b0), b0, NULL, NULL, 0);
+ 
+ 	dec->filter_stream_count--;
+ 
+@@ -1238,7 +1251,7 @@ static int ttusb_init_rc( struct ttusb_dec *dec)
+ 	if (usb_submit_urb(dec->irq_urb, GFP_KERNEL))
+ 		printk("%s: usb_submit_urb failed\n",__func__);
+ 	/* enable irq pipe */
+-	ttusb_dec_send_command(dec,0xb0,sizeof(b),b,NULL,NULL);
++	ttusb_dec_send_command(dec, 0xb0, sizeof(b), b, NULL, NULL, 0);
+ 
+ 	return 0;
+ }
+@@ -1354,7 +1367,7 @@ static int ttusb_dec_boot_dsp(struct ttusb_dec *dec)
+ 	firmware_csum_ns = htons(firmware_csum);
+ 	memcpy(&b0[6], &firmware_csum_ns, 2);
+ 
+-	result = ttusb_dec_send_command(dec, 0x41, sizeof(b0), b0, NULL, NULL);
++	result = ttusb_dec_send_command(dec, 0x41, sizeof(b0), b0, NULL, NULL, 0);
+ 
+ 	if (result) {
+ 		release_firmware(fw_entry);
+@@ -1395,7 +1408,7 @@ static int ttusb_dec_boot_dsp(struct ttusb_dec *dec)
+ 		}
+ 	}
+ 
+-	result = ttusb_dec_send_command(dec, 0x43, sizeof(b1), b1, NULL, NULL);
++	result = ttusb_dec_send_command(dec, 0x43, sizeof(b1), b1, NULL, NULL, 0);
+ 
+ 	release_firmware(fw_entry);
+ 	kfree(b);
+@@ -1621,10 +1634,14 @@ static void ttusb_dec_exit_filters(struct ttusb_dec *dec)
+ 
+ static int fe_send_command(struct dvb_frontend* fe, const u8 command,
+ 			   int param_length, const u8 params[],
+-			   int *result_length, u8 cmd_result[])
++			   int *result_length, u8 cmd_result[],
++			   int cmd_result_len)
+ {
+ 	struct ttusb_dec* dec = fe->dvb->priv;
+-	return ttusb_dec_send_command(dec, command, param_length, params, result_length, cmd_result);
++
++	return ttusb_dec_send_command(dec, command, param_length, params,
++				      result_length, cmd_result,
++				      cmd_result_len);
+ }
+ 
+ static const struct ttusbdecfe_config fe_config = {
+diff --git a/drivers/media/usb/ttusb-dec/ttusbdecfe.c b/drivers/media/usb/ttusb-dec/ttusbdecfe.c
+index 215221370..b013d6dfc 100644
+--- a/drivers/media/usb/ttusb-dec/ttusbdecfe.c
++++ b/drivers/media/usb/ttusb-dec/ttusbdecfe.c
+@@ -44,7 +44,8 @@ static int ttusbdecfe_dvbt_read_status(struct dvb_frontend *fe,
+ 
+ 	*status=0;
+ 
+-	ret=state->config->send_command(fe, 0x73, sizeof(b), b, &len, result);
++	ret = state->config->send_command(fe, 0x73, sizeof(b), b, &len, result,
++					  sizeof(result));
+ 	if(ret)
+ 		return ret;
+ 
+@@ -85,7 +86,7 @@ static int ttusbdecfe_dvbt_set_frontend(struct dvb_frontend *fe)
+ 
+ 	__be32 freq = htonl(p->frequency / 1000);
+ 	memcpy(&b[4], &freq, sizeof (u32));
+-	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL);
++	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL, 0);
+ 
+ 	return 0;
+ }
+@@ -130,7 +131,7 @@ static int ttusbdecfe_dvbs_set_frontend(struct dvb_frontend *fe)
+ 	lnb_voltage = htonl(state->voltage);
+ 	memcpy(&b[28], &lnb_voltage, sizeof(u32));
+ 
+-	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL);
++	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL, 0);
+ 
+ 	return 0;
+ }
+@@ -149,7 +150,7 @@ static int ttusbdecfe_dvbs_diseqc_send_master_cmd(struct dvb_frontend* fe, struc
+ 
+ 	state->config->send_command(fe, 0x72,
+ 				    sizeof(b) - (6 - cmd->msg_len), b,
+-				    NULL, NULL);
++				    NULL, NULL, 0);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/media/usb/ttusb-dec/ttusbdecfe.h b/drivers/media/usb/ttusb-dec/ttusbdecfe.h
+index 73828bb22..96600ad4c 100644
+--- a/drivers/media/usb/ttusb-dec/ttusbdecfe.h
++++ b/drivers/media/usb/ttusb-dec/ttusbdecfe.h
+@@ -14,7 +14,8 @@ struct ttusbdecfe_config
+ {
+ 	int (*send_command)(struct dvb_frontend* fe, const u8 command,
+ 			    int param_length, const u8 params[],
+-			    int *result_length, u8 cmd_result[]);
++			    int *result_length, u8 cmd_result[],
++			    int cmd_result_len);
+ };
+ 
+ extern struct dvb_frontend* ttusbdecfe_dvbs_attach(const struct ttusbdecfe_config* config);
 
 
 base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
