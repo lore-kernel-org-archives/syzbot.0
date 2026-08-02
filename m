@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8369E37DEA3
-	for <syzbot@lists.linux.dev>; Sun,  2 Aug 2026 21:15:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 822733B42D8
+	for <syzbot@lists.linux.dev>; Sun,  2 Aug 2026 21:21:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785705348; cv=none; b=kYiaioZEUea+Rl2i2c6y+a9IAdZRntxAvMGRjK/2VHdfZTJZAw9RL6WrRWAqr1rskdsQAsZ+sPbmyfYhLPtR+NABbrI110+r98V1qBNKEH3nekBoad7Zo+JTtzQ7Oem6IKZutVF3S4ct1PmcIO8Zk8PG1WKepx1JJF5t+6H3PbY=
+	t=1785705674; cv=none; b=CyGeC3+AU7MQ6KO2dxsJ0ed/QSKuAB6DKK46eTLZlFY+H5sVMJ7SCPnIZDd5Q4+3gaMb8nI2EIFN9HUu4gyO228VrMkCNtop0b17Pd6h1+OXnL5FFWtKB2qoTXbmu+rEftL+BAnAKDfA2RWML4HjIkZSPhsxH8cUJ0ghRiutJGk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785705348; c=relaxed/simple;
-	bh=1QdYTxzXg7L+zIw0uaRymfk7c+WjIg2+oJgo0LRuaHU=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=tBm/1ZFDkMoz6LgBHX9BpjlkAoYoYL4dY2+zONeOvEVb6zDdlOxyXCTdMXP8Nbk1lbRts9Qi+NTVALB3DmempHGc74mZLHwEV/iYZRI/9M0XE74xbJKKB6ZCBixIKcpYKu4OLFGN2SQoJhh63TMlip+Ea+XOtatC8q5PcYwY9H8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IR2rzioT; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785705674; c=relaxed/simple;
+	bh=2alo3ztX/owlnwJzM5A57JRvFiroyl831EfoufofeeI=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=omCmSsqxRKDUFkpODWvhSs6/m/VGML6eC+K5vDEvScNBc91Zj0SgkJ/FfiertlqWOfmssDK3XXA/8SFi7FtlVDNPRWinNNY9cEMIjEyjy0DgX5GWhPjMUM6FOfVhyVlbC9S0aWC0tj8OfTXLymRTx2lt2bwSE1o2Nw9cf6uJc1I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lDTmeIC9; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IR2rzioT"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 786D61F000E9;
-	Sun,  2 Aug 2026 21:15:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lDTmeIC9"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 769BE1F000E9;
+	Sun,  2 Aug 2026 21:21:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785705340;
-	bh=xBTDZHHEG7yImiypUNDozFLyRmvhU31Mjq5vueauVds=;
+	s=k20260515; t=1785705670;
+	bh=oTYOeOvPbLL+Q00jQr8LcOoGzQGbgoTMNilAmpqduBQ=;
 	h=From:To:Cc:Subject:Date;
-	b=IR2rzioTYa5jSdU5ygJEusSaD+RcZ4KqpkFb+lG0VyX0tIYxA9S3up+H3srE8akws
-	 zj2GC7OwkkG69Cpu+O41KAlbOJrYdunOpYLvmANh9pE2p8nDtDpRO7mMSl/NXWugx4
-	 a3pJ+n+uuAhVUDyosoUCs5U1iokQwChHw+gZBXByzGrqrqMu0WIp47bvKzf34o5u0/
-	 JcXq5K/xH7hvw8wa8CfqH8hKrlYyfBDL1xTyoIJMtFa9p9p7QHwfpdEyWOJzdcns58
-	 P5tOfsBuPUKC1kNRT64Qx8ZYvYMeOeBlXvoqVH2CaToA2bsPz/+bo3f9CmA/dtenJl
-	 IRnzvhLCJVx+g==
+	b=lDTmeIC9WLP6PKrBaVYpX0gSQYv8H5uF90exVnliOY0279WOevNMd8UmSsVbt4I7w
+	 /1hpTsoqLhgrOVe2QHjRXw6lcquH2vPVxHerRlogeYuDMlkMPlAR/RD8id+w3fqpJ/
+	 witntEqaRBC4o5VUVx5Jp5YLYP8XpAGNBNog5/gVh8gE/tdB7CGEaJRwGcBcYDeeo+
+	 9Xe5DUa9cS/f0hgYdDcWbu4aEE/h65+YgAK/Lo8+s60tKu1AVpWa3s8scVBMokP4Oa
+	 I0zt0rklCrJK2ZBi9QH2HmS41aSmGe/GZp3vD2ywo9T8aG+zNajkLu1n0BLbdJxOeN
+	 mDfw+JcDBgBIA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: gadgetfs: dequeue ep0 request before freeing it
-Message-ID: <161c70c4-a363-469d-8665-64f71763f84b@mail.kernel.org>
+Subject: [PATCH RFC] rhashtable: use unique lockdep classes for bucket locks
+Message-ID: <fbb936dc-916f-4cb5-bd46-a43c4710d586@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,98 +38,205 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Sun,  2 Aug 2026 21:15:40 +0000 (UTC)
+Date: Sun,  2 Aug 2026 21:21:10 +0000 (UTC)
 
-The gadgetfs driver frees its endpoint 0 request (dev->req) during the
-unbind process without first dequeuing it. When the USB Device Controller
-(UDC) is subsequently stopped, it attempts to flush all pending requests
-from its endpoint queues, leading to a use-after-free when it accesses the
-already freed dev->req.
+Lockdep reports an inconsistent lock state (`{INITIAL USE} -> {IN-NMI}`)
+when a BPF program deletes an element from a `BPF_MAP_TYPE_RHASH` map in
+NMI context:
 
-In gadgetfs_unbind(), the code assumes that because the device has been
-disconnected, no I/O is active, and it directly frees dev->req without
-dequeuing it. However, if the port was never fully powered/enabled or if a
-disconnect event didn't trigger a full cleanup in the UDC, requests can
-remain in the endpoint queues. When the UDC is subsequently stopped (e.g.,
-dummy_udc_stop() calling nuke()), it attempts to flush all pending requests
-from its queues, leading to a use-after-free when it accesses the already
-freed dev->req.
+  inconsistent {INITIAL USE} -> {IN-NMI} usage.
+  ...
+  Possible unsafe locking scenario:
 
-BUG: KASAN: slab-use-after-free in
-__list_del_entry_valid_or_report+0x3c/0x1b8 lib/list_debug.c:49
-Read of size 8 at addr ffff0000d6655308 by task syz-executor239/8549
-CPU: 0 UID: 0 PID: 8549 Comm: syz-executor239 Tainted: G        W
-syzkaller #1 PREEMPT
-Tainted: [W]=WARN
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-Google 07/02/2026
-Call trace:
- show_stack+0x2c/0x3c arch/arm64/kernel/stacktrace.c:499 (C)
- __dump_stack+0x30/0x40 lib/dump_stack.c:94
- dump_stack_lvl+0xd8/0x12c lib/dump_stack.c:120
- print_address_description+0xb0/0x238 mm/kasan/report.c:378
- print_report+0x68/0x84 mm/kasan/report.c:482
- kasan_report+0x8c/0xc4 mm/kasan/report.c:595
- __asan_report_load8_noabort+0x20/0x2c mm/kasan/report_generic.c:381
- __list_del_entry_valid_or_report+0x3c/0x1b8 lib/list_debug.c:49
- __list_del_entry_valid include/linux/list.h:132 [inline]
- __list_del_entry include/linux/list.h:246 [inline]
- list_del_init include/linux/list.h:318 [inline]
- nuke+0x60/0x194 drivers/usb/gadget/udc/dummy_hcd.c:360
- stop_activity drivers/usb/gadget/udc/dummy_hcd.c:379 [inline]
- dummy_udc_stop+0xe4/0x180 drivers/usb/gadget/udc/dummy_hcd.c:1057
- usb_gadget_udc_stop_locked drivers/usb/gadget/udc/core.c:1265 [inline]
- gadget_unbind_driver+0x204/0x790 drivers/usb/gadget/udc/core.c:1727
- device_remove+0xc4/0x134 drivers/base/dd.c:616
+        CPU0
+        ====
+   lock(rhashtable_bucket);
+   <Interrupt>
+     lock(rhashtable_bucket);
 
-To fix this, explicitly call usb_ep_dequeue() on dev->req before freeing it
-in gadgetfs_unbind(). This must be done before gadget->ep0->driver_data is
-set to NULL because if the UDC synchronously invokes the completion
-callback during the dequeue, the callback might rely on ep->driver_data,
-and clearing it beforehand could cause a NULL pointer dereference. The
-dequeue is safely placed outside the spin_lock_irq(&dev->lock) block to
-avoid deadlocks in case the completion callback unconditionally acquires
-dev->lock.
+  *** DEADLOCK ***
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+The `{INITIAL USE}` of the lock is registered during process creation when
+`pidfs_add_pid()` inserts a new PID into the `pidfs_ino_ht` rhashtable and
+acquires the bucket lock in normal process context. Later, a BPF program
+attached to a hardware breakpoint executes in NMI context and calls
+`bpf_map_delete_elem()` on a `BPF_MAP_TYPE_RHASH` map. This calls
+`rhashtable_remove_fast()`, which acquires the bucket lock in NMI context,
+triggering the lockdep warning.
+
+This is a false positive caused by all `rhashtable` instances in the kernel
+sharing the exact same lock class for their bucket locks. The bucket table
+allocation function `bucket_table_alloc()` initializes the lockdep map for
+the bucket locks using a single static key. Thus, lockdep assumes that the
+bucket lock acquired by the BPF program in NMI context is the same lock
+acquired by `pidfs` in normal process context, leading to a perceived
+deadlock.
+
+In reality, they operate on completely different `rhashtable` instances.
+Furthermore, a real deadlock on the same `BPF_MAP_TYPE_RHASH` instance is
+explicitly prevented by the BPF subsystem using
+`bpf_disable_instrumentation()`, which increments the per-CPU
+`bpf_prog_active` counter and prevents reentrancy.
+
+To fix this, update the `rhashtable` API to allow different lock classes
+for the bucket locks of different `rhashtable` instances. Extend the
+initialization macros to generate a unique static `lock_class_key` for the
+bucket locks and pass it down to `bucket_table_alloc()`.
+
+For BPF maps, use `__lockdep_no_track__` to completely bypass lockdep
+tracking for the bucket locks. This avoids issues with shared global keys
+like `__lockdep_no_validate__` (which can cause invalid wait context
+warnings if previously registered as a mutex by another subsystem) while
+relying on BPF's internal NMI deadlock prevention mechanism.
+
+Fixes: 16b4d3e2fb24 ("bpf: Implement resizable hashmap basic functions")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+c73e1942197af9f54ca3@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=c73e1942197af9f54ca3
-Link: https://syzkaller.appspot.com/ai_job?id=e95b2737-0582-4db2-9c86-a70a9a1e16cc
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
-Cc: "Christian Brauner" <brauner@kernel.org>
-Cc: "Jan Kara" <jack@suse.cz>
-Cc: "Kees Cook" <kees@kernel.org>
+Reported-by: syzbot+2fb31ade2d0e920fea9a@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=2fb31ade2d0e920fea9a
+Link: https://syzkaller.appspot.com/ai_job?id=31a9ea31-9998-4618-b127-6dbc2e463ee9
+To: "Andrew Morton" <akpm@linux-foundation.org>
+To: "Andrii Nakryiko" <andrii@kernel.org>
+To: "Alexei Starovoitov" <ast@kernel.org>
+To: <bpf@vger.kernel.org>
+To: "Daniel Borkmann" <daniel@iogearbox.net>
+To: "Eduard Zingerman" <eddyz87@gmail.com>
+To: "Herbert Xu" <herbert@gondor.apana.org.au>
+To: <linux-crypto@vger.kernel.org>
+To: "Kumar Kartikeya Dwivedi" <memxor@gmail.com>
+To: "Thomas Graf" <tgraf@suug.ch>
+To: "Mykyta Yatsenko" <yatsenko@meta.com>
+Cc: "Emil Tsalapatis" <emil@etsalapatis.com>
+Cc: "Jiri Olsa" <jolsa@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Mateusz Guzik" <mjguzik@gmail.com>
-Cc: "Al Viro" <viro@zeniv.linux.org.uk>
+Cc: "Martin KaFai Lau" <martin.lau@linux.dev>
+Cc: "Song Liu" <song@kernel.org>
+Cc: "Yonghong Song" <yonghong.song@linux.dev>
 
 ---
-diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
-index d87a8ab51..38bcdeafe 100644
---- a/drivers/usb/gadget/legacy/inode.c
-+++ b/drivers/usb/gadget/legacy/inode.c
-@@ -1652,13 +1652,16 @@ gadgetfs_unbind (struct usb_gadget *gadget)
+diff --git a/include/linux/rhashtable-types.h b/include/linux/rhashtable-types.h
+index 57c11ec9d..059f21e37 100644
+--- a/include/linux/rhashtable-types.h
++++ b/include/linux/rhashtable-types.h
+@@ -94,6 +94,9 @@ struct rhashtable {
+ 	struct mutex                    mutex;
+ 	spinlock_t			lock;
+ 	atomic_t			nelems;
++#ifdef CONFIG_LOCKDEP
++	struct lock_class_key	*dep_key;
++#endif
+ #ifdef CONFIG_MEM_ALLOC_PROFILING
+ 	struct alloc_tag		*alloc_tag;
+ #endif
+@@ -138,23 +141,27 @@ struct rhashtable_iter {
+ 
+ int __rhashtable_init_noprof(struct rhashtable *ht,
+ 		    const struct rhashtable_params *params,
+-		    struct lock_class_key *key);
++		    struct lock_class_key *key,
++		    struct lock_class_key *bucket_key);
+ #define rhashtable_init_noprof(ht, params)				\
+ ({									\
+ 	static struct lock_class_key __key;				\
++	static struct lock_class_key __bucket_key;			\
+ 									\
+-	__rhashtable_init_noprof(ht, params, &__key);			\
++	__rhashtable_init_noprof(ht, params, &__key, &__bucket_key);	\
+ })
+ #define rhashtable_init(...)	alloc_hooks(rhashtable_init_noprof(__VA_ARGS__))
+ 
+ int __rhltable_init_noprof(struct rhltable *hlt,
+ 		  const struct rhashtable_params *params,
+-		  struct lock_class_key *key);
++		  struct lock_class_key *key,
++		  struct lock_class_key *bucket_key);
+ #define rhltable_init_noprof(hlt, params)				\
+ ({									\
+ 	static struct lock_class_key __key;				\
++	static struct lock_class_key __bucket_key;			\
+ 									\
+-	__rhltable_init_noprof(hlt, params, &__key);			\
++	__rhltable_init_noprof(hlt, params, &__key, &__bucket_key);	\
+ })
+ #define rhltable_init(...)	alloc_hooks(rhltable_init_noprof(__VA_ARGS__))
+ 
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 9f394e1aa..d7e2a601c 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -2822,7 +2822,19 @@ static struct bpf_map *rhtab_map_alloc(union bpf_attr *attr)
+ 		params.obj_cmpfn = rhtab_key_cmp_long;
  	}
- 	spin_unlock_irq (&dev->lock);
  
-+	if (dev->req) {
-+		usb_ep_dequeue(gadget->ep0, dev->req);
-+		usb_ep_free_request(gadget->ep0, dev->req);
-+		dev->req = NULL;
-+	}
+-	err = rhashtable_init(&rhtab->ht, &params);
++#ifdef CONFIG_LOCKDEP
++#define bpf_rhashtable_init(ht, params)					\
++	({								\
++		static struct lock_class_key __key;			\
++									\
++		__rhashtable_init_noprof(ht, params, &__key,		\
++					 &__lockdep_no_track__);	\
++	})
++#else
++#define bpf_rhashtable_init(ht, params) rhashtable_init_noprof(ht, params)
++#endif
++	err = alloc_hooks(bpf_rhashtable_init(&rhtab->ht, &params));
++#undef bpf_rhashtable_init
+ 	if (err)
+ 		goto free_rhtab;
+ 
+diff --git a/lib/rhashtable.c b/lib/rhashtable.c
+index d459bef24..f872136ca 100644
+--- a/lib/rhashtable.c
++++ b/lib/rhashtable.c
+@@ -205,7 +205,12 @@ static struct bucket_table *bucket_table_alloc(struct rhashtable *ht,
+ 	if (tbl == NULL)
+ 		return NULL;
+ 
+-	lockdep_init_map(&tbl->dep_map, "rhashtable_bucket", &__key, 0);
++#ifdef CONFIG_LOCKDEP
++	if (ht->dep_key)
++		lockdep_init_map(&tbl->dep_map, "rhashtable_bucket", ht->dep_key, 0);
++	else
++#endif
++		lockdep_init_map(&tbl->dep_map, "rhashtable_bucket", &__key, 0);
+ 
+ 	tbl->size = size;
+ 
+@@ -1162,7 +1167,8 @@ static u32 rhashtable_jhash2(const void *key, u32 length, u32 seed)
+  */
+ int __rhashtable_init_noprof(struct rhashtable *ht,
+ 		    const struct rhashtable_params *params,
+-		    struct lock_class_key *key)
++		    struct lock_class_key *key,
++		    struct lock_class_key *bucket_key)
+ {
+ 	struct bucket_table *tbl;
+ 	size_t size;
+@@ -1176,6 +1182,10 @@ int __rhashtable_init_noprof(struct rhashtable *ht,
+ 	spin_lock_init(&ht->lock);
+ 	memcpy(&ht->p, params, sizeof(*params));
+ 
++#ifdef CONFIG_LOCKDEP
++	ht->dep_key = bucket_key;
++#endif
 +
- 	destroy_ep_files (dev);
- 	gadget->ep0->driver_data = NULL;
- 	set_gadget_data (gadget, NULL);
+ 	alloc_tag_record(ht->alloc_tag);
  
--	/* we've already been disconnected ... no i/o is active */
--	if (dev->req)
--		usb_ep_free_request (gadget->ep0, dev->req);
- 	DBG (dev, "%s done\n", __func__);
- 	put_dev (dev);
+ 	if (params->min_size)
+@@ -1237,11 +1247,12 @@ EXPORT_SYMBOL_GPL(__rhashtable_init_noprof);
+  */
+ int __rhltable_init_noprof(struct rhltable *hlt,
+ 			   const struct rhashtable_params *params,
+-			   struct lock_class_key *key)
++			   struct lock_class_key *key,
++			   struct lock_class_key *bucket_key)
+ {
+ 	int err;
+ 
+-	err = __rhashtable_init_noprof(&hlt->ht, params, key);
++	err = __rhashtable_init_noprof(&hlt->ht, params, key, bucket_key);
+ 	hlt->ht.rhlist = true;
+ 	return err;
  }
 
 
