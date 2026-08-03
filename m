@@ -1,179 +1,208 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86350331ECF
-	for <syzbot@lists.linux.dev>; Mon,  3 Aug 2026 12:01:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C567930F92E
+	for <syzbot@lists.linux.dev>; Mon,  3 Aug 2026 12:11:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785758502; cv=none; b=abVYlMwZAlBIfoL9JY8mFcd0+TcGlB5GQAP8g9RMeipKuTEHR9R3uyRS7BWbk055Yu3+xWD4Wpis9CljklEpvUNF4dM/DgBkA+d1TKq/xOQnOEMfmYKBYIOTEhV+33XB1x56h3kUDrM9pLHUIUxbR2JwE97/7iG9RwPufCjMJ7I=
+	t=1785759108; cv=none; b=pxjtpKA022Lx2faqX+5hDns3ALAuuMsXGVAbXSLdcG5x2lo4JyIc0W5I2N/gZwgMaawyto9vmJ5ArFU3dV+DwypjRlim97f5RewLY4z8NRVYY5tTHCdMZ+eVkytjEgVz/vQAfV1j/OaCZEqYgJcK9ZVvM5eoxtbAOmJ+xMFzSpg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785758502; c=relaxed/simple;
-	bh=cE3QWQxNpQEjMZGvzjZK/QNX58jnZvwayDX9PfTCKEM=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=FMGGsMTPZ8p+GJVTkWcpPvd9myWiMBIb7fmDDrfjb8Dh1sRcW1Ix6/DiWyvoel5p52Cpfe+LJiZ0z7Z7wtHDWVRsCCntOEGJ+LfjgcEauptr7u0CmX1sQ36eVVVISxsWhPLbVsD/1/Mb+DFSx35QoRmS+X+kmURWBCZRHC4qy0k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HHW8T91i; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785759108; c=relaxed/simple;
+	bh=5FhqZcuvXbUA7XKnBEjLE6oGOpoajtBISrkOKD3VszQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=H/2LUMgqUATyg928jCZwqaYNMJFlfmavWuWeJXm5XZRE6pOMC1PkjOnBFUz+rxeC6Phpvw/2A/hDu3XR9IRt40hsJ+zlR94+KYjIWrCw3vL5yyx6aF9p1D9KQFQ+WbiDg1OmdAzO2aDZm5acp1eAggxc0I07l1NO+LDiS5tPrFI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m4dUh7GX; arc=none smtp.client-ip=209.85.208.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HHW8T91i"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 1B0651F00A3A;
-	Mon,  3 Aug 2026 12:01:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785758501;
-	bh=r4jt+x2i+RR3htWQcrzciGIKXuyJkOseQUXPfnia+RM=;
-	h=From:To:Cc:Subject:Date;
-	b=HHW8T91ixDkQv0CE/0WkcrJRXE//NkGRKmukkbiSqbwex5M6ybSHYL7pgKQizmg1H
-	 HYIfLAItKsNgE3AYVhqWYHb7XlXLcdMEedXvB40qe3QETys2cGKZJ7xVY8XZmpJhIF
-	 q1Q8UonCUP4keSIE3ajHgPqHUKmWXxJILJuMa/jzr62hPdWOAjMs5/q2sGDZKvNby4
-	 6f21a13Equuk+rnwNnCt0r8O5t1cuBwWOHzqxzktHgB3QOrV/MFm37Ox6kIlxuf/gO
-	 K8jW3xxnbmmDA826NoI1lL7ix0wNvuJi/Gn5fFmGgO2X6uhEJbEx+XBdXE04Zwj7FI
-	 fuj0BA3omXYQA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: gadget: f_uac1, f_uac2: fix memory leak in rate attribute store
-Message-ID: <8735723e-7d67-4068-b575-d265ee7a5385@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m4dUh7GX"
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-6a051b73866so5267178a12.0
+        for <syzbot@lists.linux.dev>; Mon, 03 Aug 2026 05:11:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785759105; x=1786363905; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=EcjQI2JYKwg5xZMIFGY1JaKQvya3kkElNk2GTcB9VuQ=;
+        b=m4dUh7GX8IVXcKN1rY7OgY9TvYxdre5ibnuiuyVY/7b7+2rgswXVYeD1y3j/ioMU9u
+         y40vxPnNhGMk/9VLP7BYThqANcODoTVhn216hVYRpuT/4+fBgUkz1omsixlOYEMKVHxS
+         SBjsOk0mgkCEu6xyeoJfJyA8D9FTHiTuy1lWKvptUdRfUdKlF1tDONw4vhcAa/TcVhg9
+         pFmnWcstJeQlKeE1lA79BAMI5dsVlHDY+mwruFHhrKe3LECNgSGlwakKexHYCvcCwDM3
+         UQy0DvMAt3iW+cTeWRWYoex4flGbkobOJRLkMStW35dVRo0ydqXiTE+wQp3oqqfyw873
+         p65g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785759105; x=1786363905;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=EcjQI2JYKwg5xZMIFGY1JaKQvya3kkElNk2GTcB9VuQ=;
+        b=E0f38tZoTb2iHykK75sNX0EIF55899Tw+CdDniEoyUo+MUmOL5vKupryfaxJ6Nw7jr
+         DPqsj65wL6JXdC6AhydZMm1O6Upu0hrkXbMRUEd1AvGBTfjRFYm9tFHEP5GjxbdtUX0m
+         K5wchbM0C6oWyDLW2M71M9nsYcwDrDFZ8+NufL+hbI/yU2hcfIrbClWtxGXmcJjw+q8E
+         WRydV59Udhk/9DsTAQF+22T7Zf+tFrwOYzVZmoxfuaQP6d3wPIZId0cLe3/6z79fE1Z7
+         tILfDPQI/wARukVH7fjWbWnoXWi3Gcz9Kej8Zs5V6i3b7HqFt6EsbDSYQmsXvGFuz97z
+         1RDg==
+X-Forwarded-Encrypted: i=1; AHgh+RqOZCGm/YV7sbROQbAhilVki1Yw/NALqPmrVSmumKTllWL/PS/g3g1l5o7q4kLTt0thwk0Nvcs=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxsu/q7E9QQXVxS8Tui8Pa3C85iF/K+n4PdEKQZgIJNdJZjJena
+	RxWVhCm7YgPIJH7tFhcU8qxf4NSg10fBDXEG9nhk8ZhtbPI/612uVtgb
+X-Gm-Gg: AR+sD13YoKfuTQyMomQdF8S9xVjdXoxsunqtKYu8QRnzj5ujY9RhR7bpKb0QbgVICpK
+	6w8l8jpAxKxM50Uq2lG42BaEvtZOMzHBF4S99nWvNCagGao2lseuCuL+8r2NgUL3P1x6D9nLGTn
+	uN6DKumiz36MhXsfztYVJ5bl3YPcySUxAkM/TJs40+VrdcfQ6FQKaBq38A23bAYShFLzbgHusPG
+	qM7qWjtqvgG1dbEu3Xea5mbyJkfmIx5q3cCjDj2/fjdDPqj1P+1wRj5aRYvJw6OUVV4VU1XD3vW
+	0SnKvVAZ23jczJZh4TlM7rzbI9hcrvt4UiKyLw9XSNYqnNp3eR/5sTwYsLoxcBmV2TRKgccM+NR
+	4p7E3B+i5kNHBMSjnqFf0aIIvG35kG8mqa+ElXqbwdRb2/MKx86tfV5ull/DKpK2SZ9pO0B0OI5
+	5vjkwOBekybHDPKYRsc+fAa+lZB1AtiOGXCUjBKjjIkxN3iX3emrM7rMm2yto10EhEV4tP9cn2d
+	vp0Othu5M4BQdKecXZAJAxlRZjYbq7yRPpxrrHpTis3Fx8D2IrcSPlV2fjsSHmMj4r9emgaB/eS
+	O38sBFFP9VX+3Dv+IQwGlj0PNrTnrjAT9Ah9vg==
+X-Received: by 2002:a05:6402:21cf:b0:69e:8ad:515f with SMTP id 4fb4d7f45d1cf-6a0a7c60fbamr6798287a12.6.1785759104890;
+        Mon, 03 Aug 2026 05:11:44 -0700 (PDT)
+Received: from Ubuntu.ts.net (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a09c63daf7sm5208181a12.18.2026.08.03.05.11.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Aug 2026 05:11:44 -0700 (PDT)
+From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+To: netdev@vger.kernel.org,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>
+Cc: syzkaller-bugs@googlegroups.com,
+	dskr99@gmail.com,
+	Kees Cook <kees@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	syzbot@lists.linux.dev,
+	syzbot+5fe14f2ff4ccbace9a26@syzkaller.appspotmail.com
+Subject: [PATCH net v2] ipvlan: keep lower device alive until private destruction
+Date: Mon,  3 Aug 2026 14:11:39 +0200
+Message-ID: <20260803121140.261329-1-krystianmkaniewski@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Mon,  3 Aug 2026 12:01:41 +0000 (UTC)
 
-A memory leak occurs in the `f_uac1_opts_##name##_store` and
-`f_uac2_opts_##name##_store` functions, which are generated by the
-`UAC1_RATE_ATTRIBUTE` and `UAC2_RATE_ATTRIBUTE` macros.
+Commit 40b9d1ab63f5 ("ipvlan: hold lower dev to avoid possible
+use-after-free") added a reference to the lower net_device owned by struct
+ipvl_port. However, this reference is released when the last
+ipvlan_uninit() reduces port->count to zero and calls
+ipvlan_port_destroy(), which can happen before all outstanding external
+references to the ipvlan netdev have drained.
 
-When setting the sampling rates via configfs (e.g., writing to `p_srate` or
-`c_srate`), the input string is duplicated using `kstrdup()`. The
-duplicated string is then parsed using `strsep()`, which modifies the
-pointer to point to the next token. By the time the loop finishes, the
-pointer is updated to `NULL` (or points to the middle of the string if an
-error occurred). Consequently, `kfree()` is called with an invalid pointer,
-and the original memory block allocated by `kstrdup()` is never freed,
-causing a memory leak.
+Specifically, RXE acts as an asynchronous owner in this scenario. RXE
+queues RDMA device removal on NETDEV_UNREGISTER, meaning it can retain a
+reference to the ipvlan netdev after ndo_uninit has completed. This allows
+a later SMC port query to reach the ipvlan device and access its phy_dev.
 
-Fix this by preserving the original pointer returned by `kstrdup()` in a
-separate variable `split_page_alloc` so that it can be correctly passed to
-`kfree()`. Additionally, add a check to return `-ENOMEM` if `kstrdup()`
-fails to allocate memory.
+This leads to the following sequence:
+1. The shared ipvl_port owns the reference to the lower net_device
+(phy_dev).
+2. The last ipvlan_uninit() drops this reference by calling
+ipvlan_port_destroy() when port->count reaches zero.
+3. RXE retains a reference to the ipvlan netdev, keeping it alive.
+4. The lower net_device's refcount drops to 1 and it is freed by
+netdev_run_todo(), leaving ipvlan->phy_dev as a dangling pointer. A
+subsequent SMC port query accesses this dangling pointer, triggering a
+use-after-free.
+5. A new per-device hold keeps phy_dev alive until ipvlan_dev_free() runs.
 
-Kmemleak reports the following:
+The KASAN report illustrates this use-after-free:
 
-BUG: memory leak
-unreferenced object 0xffff88818b6ecf00 (size 64):
-  comm "syz.0.17", pid 6220, jiffies 4294944006
-  hex dump (first 32 bytes):
-    34 34 31 30 30 00 34 38 30 30 30 00 38 38 32 30  44100.48000.8820
-    30 00 39 36 30 30 30 00 31 37 36 34 30 30 00 31  0.96000.176400.1
-  backtrace (crc 6cdecf20):
-    kmemleak_alloc_recursive include/linux/kmemleak.h:44 [inline]
-    slab_post_alloc_hook mm/slub.c:4597 [inline]
-    slab_alloc_node mm/slub.c:4917 [inline]
-    __do_kmalloc_node mm/slub.c:5333 [inline]
-    __kmalloc_node_track_caller_noprof+0x309/0x4e0 mm/slub.c:5471
-    __kmemdup_nul mm/util.c:64 [inline]
-    kstrdup+0x3e/0xc0 mm/util.c:84
-    f_uac2_opts_p_srate_store+0xeb/0x1a0
-    drivers/usb/gadget/function/f_uac2.c:2087
-    flush_write_buffer fs/configfs/file.c:207 [inline]
-    configfs_write_iter+0x115/0x170 fs/configfs/file.c:229
-    new_sync_write fs/read_write.c:595 [inline]
-    vfs_write+0x3a0/0x640 fs/read_write.c:687
+BUG: KASAN: slab-use-after-free in netdev_need_ops_lock
+include/net/netdev_lock.h:30 [inline]
+BUG: KASAN: slab-use-after-free in netdev_lock_ops
+include/net/netdev_lock.h:41 [inline]
+BUG: KASAN: slab-use-after-free in __ethtool_get_link_ksettings+0x230/0x250
+net/ethtool/ioctl.c:463
+Read of size 1 at addr ffff8881988dae09 by task kworker/1:3/1289
 
-Fixes: a7339e4f5788 ("usb: gadget: f_uac2: Support multiple sampling rates")
+Call Trace:
+ <TASK>
+  __ethtool_get_link_ksettings+0x230/0x250 net/ethtool/ioctl.c:463
+  __ethtool_get_link_ksettings+0x11f/0x250 net/ethtool/ioctl.c:464
+  ib_get_eth_speed+0x180/0x7f0 drivers/infiniband/core/verbs.c:2052
+  rxe_query_port+0x93/0x3d0 drivers/infiniband/sw/rxe/rxe_verbs.c:56
+  __ib_query_port drivers/infiniband/core/device.c:2129 [inline]
+  ib_query_port+0x16e/0x830 drivers/infiniband/core/device.c:2161
+  smc_ib_remember_port_attr net/smc/smc_ib.c:364 [inline]
+  smc_ib_port_event_work+0x147/0x920 net/smc/smc_ib.c:388
+ </TASK>
+
+Fix this by holding a reference to the lower net_device using a
+netdevice_tracker in struct ipvl_dev. The reference is acquired in
+ipvlan_init() and released in the priv_destructor callback
+(ipvlan_dev_free()). Releasing the reference in ipvlan_dev_free()
+guarantees that the lower net_device is held until outstanding external
+references to the ipvlan netdev have drained and before final private
+teardown and object release. This mirrors the behavior of other stacked
+devices like macvlan and vlan, and safely covers ipvtap devices as well.
+
+Fixes: 2ad7bf363841 ("ipvlan: Initial check-in of the IPVLAN driver.")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+87c10526d2cfa8d14ff6@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=87c10526d2cfa8d14ff6
-Link: https://syzkaller.appspot.com/ai_job?id=4939b73c-7f4a-4a7b-8e48-7889ee6fc965
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-To: "Julian Scheel" <julian@jusst.de>
-Cc: "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>
-Cc: "Kees Cook" <kees@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-
+Reported-by: syzbot+5fe14f2ff4ccbace9a26@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=5fe14f2ff4ccbace9a26
+Link: https://syzkaller.appspot.com/ai_job?id=3e3edd19-4e52-49d3-bfdb-ebdde1bda5c3
+Signed-off-by: Krystian Kaniewski <krystianmkaniewski@gmail.com>
 ---
-diff --git a/drivers/usb/gadget/function/f_uac1.c b/drivers/usb/gadget/function/f_uac1.c
-index 85c502e98..ba1a9f51c 100644
---- a/drivers/usb/gadget/function/f_uac1.c
-+++ b/drivers/usb/gadget/function/f_uac1.c
-@@ -1595,6 +1595,7 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
- {									\
- 	struct f_uac1_opts *opts = to_f_uac1_opts(item);		\
- 	char *split_page = NULL;					\
-+	char *split_page_alloc = NULL;					\
- 	int ret = -EINVAL;						\
- 	char *token;							\
- 	u32 num;							\
-@@ -1608,7 +1609,12 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
- 									\
- 	i = 0;								\
- 	memset(opts->name##s, 0x00, sizeof(opts->name##s));		\
--	split_page = kstrdup(page, GFP_KERNEL);				\
-+	split_page_alloc = kstrdup(page, GFP_KERNEL);			\
-+	if (!split_page_alloc) {					\
-+		ret = -ENOMEM;						\
-+		goto end;						\
-+	}								\
-+	split_page = split_page_alloc;					\
- 	while ((token = strsep(&split_page, ",")) != NULL) {		\
- 		ret = kstrtou32(token, 0, &num);			\
- 		if (ret)						\
-@@ -1619,7 +1625,7 @@ static ssize_t f_uac1_opts_##name##_store(struct config_item *item,	\
- 	};								\
- 									\
- end:									\
--	kfree(split_page);						\
-+	kfree(split_page_alloc);					\
- 	mutex_unlock(&opts->lock);					\
- 	return ret;							\
- }									\
-diff --git a/drivers/usb/gadget/function/f_uac2.c b/drivers/usb/gadget/function/f_uac2.c
-index 897787d08..c92caa149 100644
---- a/drivers/usb/gadget/function/f_uac2.c
-+++ b/drivers/usb/gadget/function/f_uac2.c
-@@ -2013,6 +2013,7 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
- {									\
- 	struct f_uac2_opts *opts = to_f_uac2_opts(item);		\
- 	char *split_page = NULL;					\
-+	char *split_page_alloc = NULL;					\
- 	int ret = -EINVAL;						\
- 	char *token;							\
- 	u32 num;							\
-@@ -2026,7 +2027,12 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
- 									\
- 	i = 0;								\
- 	memset(opts->name##s, 0x00, sizeof(opts->name##s));		\
--	split_page = kstrdup(page, GFP_KERNEL);				\
-+	split_page_alloc = kstrdup(page, GFP_KERNEL);			\
-+	if (!split_page_alloc) {					\
-+		ret = -ENOMEM;						\
-+		goto end;						\
-+	}								\
-+	split_page = split_page_alloc;					\
- 	while ((token = strsep(&split_page, ",")) != NULL) {		\
- 		ret = kstrtou32(token, 0, &num);			\
- 		if (ret)						\
-@@ -2037,7 +2043,7 @@ static ssize_t f_uac2_opts_##name##_store(struct config_item *item,	\
- 	};								\
- 									\
- end:									\
--	kfree(split_page);						\
-+	kfree(split_page_alloc);					\
- 	mutex_unlock(&opts->lock);					\
- 	return ret;							\
- }									\
+v2:
+  - Rebased onto net/main; no code changes.
+  - Added the net target-tree prefix.
+v1: https://lore.kernel.org/all/26b3176e-d9ed-4508-bde7-388deefd970d@mail.kernel.org/
 
+ drivers/net/ipvlan/ipvlan.h      |  1 +
+ drivers/net/ipvlan/ipvlan_main.c | 11 +++++++++++
+ 2 files changed, 12 insertions(+)
 
-base-commit: 075b74841bd0065a3bda3440873c747938e69b68
+diff --git a/drivers/net/ipvlan/ipvlan.h b/drivers/net/ipvlan/ipvlan.h
+index 80f84fc87008..13cdad00297c 100644
+--- a/drivers/net/ipvlan/ipvlan.h
++++ b/drivers/net/ipvlan/ipvlan.h
+@@ -64,6 +64,7 @@ struct ipvl_dev {
+ 	struct list_head	pnode;
+ 	struct ipvl_port	*port;
+ 	struct net_device	*phy_dev;
++	netdevice_tracker dev_tracker;
+ 	struct list_head	addrs;
+ 	struct ipvl_pcpu_stats	__percpu *pcpu_stats;
+ 	DECLARE_BITMAP(mac_filters, IPVLAN_MAC_FILTER_SIZE);
+diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
+index ed46439a9f4e..b1435296a0f1 100644
+--- a/drivers/net/ipvlan/ipvlan_main.c
++++ b/drivers/net/ipvlan/ipvlan_main.c
+@@ -162,6 +162,9 @@ static int ipvlan_init(struct net_device *dev)
+ 	}
+ 	port = ipvlan_port_get_rtnl(phy_dev);
+ 	port->count += 1;
++
++	netdev_hold(phy_dev, &ipvlan->dev_tracker, GFP_KERNEL);
++
+ 	return 0;
+ }
+ 
+@@ -673,6 +676,13 @@ void ipvlan_link_delete(struct net_device *dev, struct list_head *head)
+ }
+ EXPORT_SYMBOL_GPL(ipvlan_link_delete);
+ 
++static void ipvlan_dev_free(struct net_device *dev)
++{
++	struct ipvl_dev *ipvlan = netdev_priv(dev);
++
++	netdev_put(ipvlan->phy_dev, &ipvlan->dev_tracker);
++}
++
+ void ipvlan_link_setup(struct net_device *dev)
+ {
+ 	ether_setup(dev);
+@@ -682,6 +692,7 @@ void ipvlan_link_setup(struct net_device *dev)
+ 	dev->priv_flags |= IFF_UNICAST_FLT | IFF_NO_QUEUE;
+ 	dev->netdev_ops = &ipvlan_netdev_ops;
+ 	dev->needs_free_netdev = true;
++	dev->priv_destructor = ipvlan_dev_free;
+ 	dev->header_ops = &ipvlan_header_ops;
+ 	dev->ethtool_ops = &ipvlan_ethtool_ops;
+ }
+
+base-commit: af39eb111ce6b5eba9c08513b62c4868eb7e7fd5
 -- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+2.53.0
