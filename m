@@ -1,288 +1,202 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C5C537FF75
-	for <syzbot@lists.linux.dev>; Mon,  3 Aug 2026 13:33:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785764029; cv=none; b=hdz9C+UcQqUeSTbDGR7UmGci/PWhUo95tjpY+xL5gedvYCOKz8260o+frhtUlRt+QVXvW5Oh8fH0RxqORgGsGPalaRJJFDBObpCz8+pLLfkA32iPfuLGd0jZncg3sUJ+a7pzIn+80t9upIHuZq6nBPGpSo4Dcl7YNyth7s7rkyk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785764029; c=relaxed/simple;
-	bh=+atSdXlFJqeuAnLw5Co+DVX4SBfjprDSitfNOJKAFfc=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=dAxzSke3Cb3pyRSItAs8MYN9sXFjqrQ4g8U+wpLQHXvmyF/9QyF1P3JZGTg4aXag9QwPI07d0i7O5cfcLpIiuFDbiTdTAdrGog8fKEm+WMZs6tsp5wDKBmncNRQAF7d1hobMABRfhPg0ihvWNzxj2ZbvMvK5FZsr+oxByCs1AQI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Gk4e6aKx; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAC62403156
+	for <syzbot@lists.linux.dev>; Mon,  3 Aug 2026 15:04:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.173
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785769458; cv=pass; b=Ly5ErCmSNQqQIXFfROe0zZZMDyfqSouKPuB5N86jqarr0Ay/bUpEINd9oRWls4f4bciiHNZDDWLY4u/TwJroyULRZCwifvGBP9dV0mhFhZiKRmK+ldgKaorCFrzr2CnCi9iyF8RCRrADKPozj/iUY1BpDgvzfNfrJ6ynLpUYf/M=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785769458; c=relaxed/simple;
+	bh=9iNdn50hKPleESQnQ8An8gNoEmZ0g7ncs9XZhJY1XEw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=d+a/iM4+Qs1AzwHtedClx9dpeUMulxuxKbH0+VQz4Tr/Uy1VOYTsNMOxsa8CKHt3UlVkoGerB4c9bjRt8XJICdJnEDlUM1xplz3ESvpKsxwveyrOTeZm/qxmZChZ18apMHb0zB3RhfqzHD45aXzVvsdC3BHLvDfOl/pyF3X8AmM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XtnwdwLB; arc=pass smtp.client-ip=209.85.167.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Gk4e6aKx"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 881861F00A3A;
-	Mon,  3 Aug 2026 13:33:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785764020;
-	bh=X0b6KCjcsjyDxUxll3VOITisu/QFQ1UP8Zr4TwbOI90=;
-	h=From:To:Cc:Subject:Date;
-	b=Gk4e6aKxLbE/kdktq5/tlksbgh7z9qRU+HDPvGqzPTLUvPrZPnOKBUPuQYbNmusVz
-	 uD0Ez6VHKirKKZsGJNYIgUwRQRbaX3cjH8bDrfkwymhwI8M1moC3yOCkwh4jv9KppC
-	 oqJ545Qb1fkP2F4pZOqtnOLByfCcTS518NnIeH8hS+DD0nYTW+A6keGuu0RIsTs5hX
-	 y7/Oh7w7vSFB+C0E/NMNvRfYXULwrzeaRU568j89GWqha0jxd3YEnowMIwZRMIBT6P
-	 5uatCPGgRKbrzuyspI+ok7f0NCzN0/1G/Vg4+LyvE49Sc+W44Ot7sHXqfGBXCLOSWy
-	 AeXY5OCVOPOjA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: gadget: f_tcm: Fix circular locking dependency
-Message-ID: <1053cf17-d7b2-4199-b802-f02b67857d92@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XtnwdwLB"
+Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-4955cd5da3dso1042496b6e.2
+        for <syzbot@lists.linux.dev>; Mon, 03 Aug 2026 08:04:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1785769452; cv=none;
+        d=google.com; s=arc-20260327;
+        b=oonXjmbtIQ1R9L2F9rk1kF/D7/ZlyZQCNFopLBoh+6JZ+S/Wgz3QH3zsZWIC+jUDMp
+         0KVemTvcejz0LwS3deYyOYIbzTW/wbhXBLDHX52z74GRTPcmfGP4zY9Pvz8PhkbMMsF7
+         kWnOw/lmae18fiB5NjIkQSzGct/JOJwyflnPLYLYQ5Kzwmw+x1GuS88vZ5GjnrD02U+y
+         RRU91dDw4+NKITF0EdEvur3PQ2daWjlgsUUtGLCb2DIe1XoHynBcvpyBuOJZTCccyCX7
+         47HBVhBO9V6vwWFnWCLvQlI4dmLYJtdQvEn2SYCTuE/skh0NcG/p5CEyF6EYHuOUHgRB
+         njmQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=bB5Vm/CAXL1ig3tYYUrc4LUvzZRsFDnoyqTrFu5sGl0=;
+        fh=JFBzuuC2KArzswOG1WfLbanQ6Y1uf0+O1Imza7cxU0s=;
+        b=hJNHbvjvaou3lXaBRu7ZyohWQwz1WuTOLFgoNWzS1wA5umo6EmySvcsVtQqg7/hzIq
+         JdEOJEOv7jVVj3CT5VUhRJBEbQwH7mqbyc8QK8/8GanQdKzOTluucmlSkMEK10rBNgWS
+         ZR1Tu1NNqXZLNj7WgZzYWKML4TUm6eJQWWGlOuhDUiYdcM2uIJ3ctt4/951px/ko28+2
+         Q5u/DFHAQlKcqP39wavVr11XJFLVifmcajGz/sP8iHfoOMN7LXhWYcq3rVHUBF6zuafj
+         5tx/CPs4ghwYa3l+/A2473EZ0YDIVMT+kfXG7MiapyblN8JaxLjM5If1NJw3J2rA6hXE
+         NYOg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1785769452; x=1786374252; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=bB5Vm/CAXL1ig3tYYUrc4LUvzZRsFDnoyqTrFu5sGl0=;
+        b=XtnwdwLB56JVpYC2QDTsPtIx7FqKI5YGEl6Qta2t0SN5Mpvq23I5/dWi8Wt5M8MQpi
+         PTJAnUvmF/3XInuFnZ+gpYs8FcnDGQ5BR1RDw1nrDF1HbcpgSLbq0fcUxUxN8gfazrl2
+         Zqm29PckapicqX9L6+4ajmC8VI3Wf7FsAW/cLDxgq3e+ZmMEbDunoIe7CjZeQw7pW2iN
+         nyFKBj+SdJRIALqx81uqmsmmZm2bBOk/cO6e25qJAVVF2NoJ/bC2YItT1ZWTqT7lgcd6
+         QBoz+4R/Bus2013VdaA+ev522KFpDDO2dsinK23XQohS7S9nEAMmQL344/1SuB8gaefH
+         TgYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785769452; x=1786374252;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=bB5Vm/CAXL1ig3tYYUrc4LUvzZRsFDnoyqTrFu5sGl0=;
+        b=lda/SLrOvwJp+EHVQLFkUk+AI0CCKJqSM+tb6OB1tSy1oQNxK0RGIdQIsa2n4/hYcj
+         Grhhh3XYS7kyEfiSyppZFSEj6w/6oATR/AklZFF/i9VhJgWNCgyUfrDBXxvccfpCeNE3
+         KKIYJJxYbCEBWgLPCsFr0WuBDuqTI9sPoi008cKzjSfE/nyPBpt5dWX1b5zWiVRikn0R
+         cFSzyBoFsQKYvb8saotprIbZs4nijMwNT+de14jalLwdq3saZ9NyADU4d1uO3eLtFJHm
+         O3VrVt9FG44vVuPcZ+eMavu+Oa7McUWj2hDYarhjM2gGRucvEwo3t64f8JIyCP8FWXK2
+         dVpw==
+X-Forwarded-Encrypted: i=1; AHgh+RpEm3btqSgKm3LGrDG0AU7IJXJPQWMG95wNOzHeo8xo49cS8490Vp3tebSE9tK0KRseTf68GCc=@lists.linux.dev
+X-Gm-Message-State: AOJu0YyDbuEz5lu7aR924Tn13hhIdN8h8oeXT2T8DkM/HdWHwZdlKQAL
+	zUAdvSM/tbEL6UZdUzy02OmT2Jlsun6x6/JbtkB4oYD9l+v0WNG7Vb5NL4UxtKhK4cWO2NxGsYb
+	lAlY/mNoaphbZP7NlbzvLdt4d4DqSUbfHiMrxkFAh
+X-Gm-Gg: AR+sD11VKQUJwsk3nqr07LOUJXU5DXTpCqBIyC2ZtOMBVCY0OE0YgEMxg9JKOXR7Tmj
+	3Z7DiR1rXGsu7FfNtKov53VodtX9zZRx9A3JBdZLjxaHLGq14PbJ247FQH/OvUF2BWSFotDRIdX
+	rrIm/rvrEaia2L61rgaqZu2uF6XML2PqCGMIghXnWjPGV8lYq1Qmp808K+pQxYNDu4pwiRLu6AJ
+	58xP+3Oo31bVZk7zlqH8gZAAlYxAcbNyK6XnvcC/GoSoPDI3+DqdMB5xn0WP3k0atePW5vqc2Mv
+	awqbwkmCW616x3kQM84ODVDXLqAPCC4z5rJg9lLgxQJwIIPbIszOjuzAInV6QcjBbig5hB6mPQF
+	PO+8FadiSFJXvRIvT/ItHCdeh1cdsceH+rrKrNrz6FPvctHo6gdEQuIe86pqRXFcplE8rtb8hii
+	0kwFqLsDqWpja+
+X-Received: by 2002:a05:6808:c1e8:b0:497:d371:21c8 with SMTP id
+ 5614622812f47-4af5e2cd936mr15745770b6e.19.1785769451914; Mon, 03 Aug 2026
+ 08:04:11 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Mon,  3 Aug 2026 13:33:40 +0000 (UTC)
+References: <330619da-665c-4dd6-ac14-30e8bef174fd@mail.kernel.org>
+In-Reply-To: <330619da-665c-4dd6-ac14-30e8bef174fd@mail.kernel.org>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Mon, 3 Aug 2026 17:04:00 +0200
+X-Gm-Features: AUfX_mzKGal5NBhEa6Tmu8HEN83ADg5aEG361ZqVumhaCjsBQf89iivSg2IMpGc
+Message-ID: <CANp29Y73zeaR5Xkob11VFxgmjHcYvOjdjLaTO55vBVuY=L1KHg@mail.gmail.com>
+Subject: Re: [PATCH RFC] usbip: fix use-after-free in event_handler()
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-A circular locking dependency was detected involving `inode_lock`,
-`gadget_subsys.su_mutex`, `opts->dep_lock`, and `tpg_instances_lock`.
+#syz upstream
 
-The cycle is formed by the following chains:
-
-1. `inode_lock` -> `gadget_subsys.su_mutex`: When creating a symlink in
-configfs (e.g., for UVC extensions), the VFS layer calls configfs_symlink()
-with the inode_lock of the parent directory held. configfs_symlink() then
-calls the allow_link callback, which acquires gadget_subsys.su_mutex.
-
-2. `gadget_subsys.su_mutex` -> `opts->dep_lock` / `tpg_instances_lock`:
-When creating a new TCM USB gadget function directory, configfs_mkdir()
-acquires gadget_subsys.su_mutex and calls function_make(). This calls
-tcm_set_name(), which acquires opts->dep_lock. It also acquires
-tpg_instances_lock during instance allocation.
-
-3. `opts->dep_lock` / `tpg_instances_lock` -> `inode_lock`: When creating a
-new Target Portal Group (TPG) directory for the TCM USB gadget,
-usbg_make_tpg() is called. It acquires tpg_instances_lock and
-opts->dep_lock. While holding these locks, it calls
-configfs_depend_item_unlocked(), which acquires the inode_lock of the
-configfs root directory.
-
-This leads to the following lockdep splat:
-
-======================================================
-WARNING: possible circular locking dependency detected
-------------------------------------------------------
-task is trying to acquire lock:
-(gadget_subsys.su_mutex){+.+.}-{4:4}, at:
-uvcg_extension_allow_link+0x70/0x1f8
-
-but task is already holding lock:
-(&sb->s_type->i_mutex_key#23){+.+.}-{4:4}, at: inode_lock
-include/linux/fs.h:1024 [inline]
-
-which lock already depends on the new lock.
-
-the existing dependency chain (in reverse order) is:
-
--> #2 (&sb->s_type->i_mutex_key#23){+.+.}-{4:4}:
-       inode_lock include/linux/fs.h:1024 [inline]
-       configfs_depend_item_unlocked+0x154/0x344 fs/configfs/dir.c:1259
-       usbg_make_tpg+0x230/0x4b4 drivers/usb/gadget/function/f_tcm.c:1686
-       target_fabric_make_tpg+0x98/0x518
-       drivers/target/target_core_fabric_configfs.c:939
-       configfs_mkdir+0x374/0x7d4 fs/configfs/dir.c:1360
-
--> #1 (&opts->dep_lock){+.+.}-{4:4}:
-       __mutex_lock+0x164/0xf14 kernel/locking/mutex.c:821
-       tcm_set_name+0x34/0xd0 drivers/usb/gadget/function/f_tcm.c:2669
-       function_make+0x18c/0x300 drivers/usb/gadget/configfs.c:636
-       configfs_mkdir+0x374/0x7d4 fs/configfs/dir.c:1360
-
--> #0 (gadget_subsys.su_mutex){+.+.}-{4:4}:
-       __mutex_lock+0x164/0xf14 kernel/locking/mutex.c:821
-       uvcg_extension_allow_link+0x70/0x1f8
-       drivers/usb/gadget/function/uvc_configfs.c:1195
-       configfs_symlink+0x478/0xde0 fs/configfs/symlink.c:196
-
-To break the cycle, we must drop both opts->dep_lock and tpg_instances_lock
-before calling configfs_depend_item_unlocked() in usbg_make_tpg() and
-configfs_undepend_item_unlocked() in usbg_drop_tpg().
-
-Dropping tpg_instances_lock introduces two potential race conditions that
-are handled as follows:
-
-1. Slot Reservation Race: usbg_make_tpg() finds a free slot by checking
-!tpg_instances[i].tpg. To prevent a concurrent usbg_make_tpg() from picking
-the same slot after the lock is dropped, we allocate the tpg structure and
-assign it to tpg_instances[i].tpg before dropping the lock.
-
-2. Use-After-Free Race: A concurrent removal of the function directory
-could trigger tcm_free_inst(), freeing the opts structure. To prevent this,
-we take a temporary reference on the configfs item using config_item_get()
-before dropping the lock, and release it with config_item_put() afterwards.
-
-Similarly, in usbg_drop_tpg(), we delay setting tpg_instances[i].tpg = NULL
-until after we have called configfs_undepend_item_unlocked() and
-re-acquired the lock, keeping the slot reserved.
-
-Fixes: 4bb8548df632 ("usb: gadget: f_tcm: add configfs support")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+b3410eb576b568216ae5@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=b3410eb576b568216ae5
-Link: https://syzkaller.appspot.com/ai_job?id=deadd783-1210-4cb4-976a-2e037b0ca322
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-To: "Andrzej Pietrasiewicz" <andrzej.p@samsung.com>
-Cc: "Jiasheng Jiang" <jiashengjiangcool@gmail.com>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Cen Zhang" <zzzccc427@gmail.com>
-
----
-diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
-index b3fa5a17f..e5fbb8ca0 100644
---- a/drivers/usb/gadget/function/f_tcm.c
-+++ b/drivers/usb/gadget/function/f_tcm.c
-@@ -1660,6 +1660,7 @@ static struct se_portal_group *usbg_make_tpg(struct se_wwn *wwn,
- 	int ret;
- 	struct f_tcm_opts *opts;
- 	unsigned i;
-+	bool has_dep;
- 
- 	if (strstr(name, "tpgt_") != name)
- 		return ERR_PTR(-EINVAL);
-@@ -1676,19 +1677,19 @@ static struct se_portal_group *usbg_make_tpg(struct se_wwn *wwn,
- 	opts = container_of(tpg_instances[i].func_inst, struct f_tcm_opts,
- 		func_inst);
- 	mutex_lock(&opts->dep_lock);
--	if (!opts->ready)
--		goto unlock_dep;
-+	if (!opts->ready) {
-+		mutex_unlock(&opts->dep_lock);
-+		goto unlock_inst;
-+	}
- 
--	if (opts->has_dep) {
--		if (!try_module_get(opts->dependent))
--			goto unlock_dep;
--	} else {
--		ret = configfs_depend_item_unlocked(
--			wwn->wwn_group.cg_subsys,
--			&opts->func_inst.group.cg_item);
--		if (ret)
--			goto unlock_dep;
-+	has_dep = opts->has_dep;
-+	if (has_dep) {
-+		if (!try_module_get(opts->dependent)) {
-+			mutex_unlock(&opts->dep_lock);
-+			goto unlock_inst;
-+		}
- 	}
-+	mutex_unlock(&opts->dep_lock);
- 
- 	tpg = kzalloc_obj(struct usbg_tpg);
- 	ret = -ENOMEM;
-@@ -1704,31 +1705,44 @@ static struct se_portal_group *usbg_make_tpg(struct se_wwn *wwn,
- 	tpg->tport = tport;
- 	tpg->tport_tpgt = tpgt;
- 
-+	tpg_instances[i].tpg = tpg;
-+	tpg->fi = tpg_instances[i].func_inst;
-+
-+	config_item_get(&opts->func_inst.group.cg_item);
-+	mutex_unlock(&tpg_instances_lock);
-+
-+	if (!has_dep) {
-+		ret = configfs_depend_item_unlocked(
-+			wwn->wwn_group.cg_subsys,
-+			&opts->func_inst.group.cg_item);
-+		if (ret)
-+			goto put_item;
-+	}
-+
- 	/*
- 	 * SPC doesn't assign a protocol identifier for USB-SCSI, so we
- 	 * pretend to be SAS..
- 	 */
- 	ret = core_tpg_register(wwn, &tpg->se_tpg, SCSI_PROTOCOL_SAS);
- 	if (ret < 0)
--		goto free_workqueue;
-+		goto undepend_item;
- 
--	tpg_instances[i].tpg = tpg;
--	tpg->fi = tpg_instances[i].func_inst;
--	mutex_unlock(&opts->dep_lock);
--	mutex_unlock(&tpg_instances_lock);
-+	config_item_put(&opts->func_inst.group.cg_item);
- 	return &tpg->se_tpg;
- 
--free_workqueue:
-+undepend_item:
-+	if (!has_dep)
-+		configfs_undepend_item_unlocked(&opts->func_inst.group.cg_item);
-+put_item:
-+	config_item_put(&opts->func_inst.group.cg_item);
- 	destroy_workqueue(tpg->workqueue);
-+	mutex_lock(&tpg_instances_lock);
-+	tpg_instances[i].tpg = NULL;
- free_tpg:
- 	kfree(tpg);
- unref_dep:
--	if (opts->has_dep)
-+	if (has_dep)
- 		module_put(opts->dependent);
--	else
--		configfs_undepend_item_unlocked(&opts->func_inst.group.cg_item);
--unlock_dep:
--	mutex_unlock(&opts->dep_lock);
- unlock_inst:
- 	mutex_unlock(&tpg_instances_lock);
- 
-@@ -1743,6 +1757,7 @@ static void usbg_drop_tpg(struct se_portal_group *se_tpg)
- 				struct usbg_tpg, se_tpg);
- 	unsigned i;
- 	struct f_tcm_opts *opts;
-+	bool has_dep;
- 
- 	tcm_usbg_drop_nexus(tpg);
- 	core_tpg_deregister(se_tpg);
-@@ -1753,16 +1768,28 @@ static void usbg_drop_tpg(struct se_portal_group *se_tpg)
- 		if (tpg_instances[i].tpg == tpg)
- 			break;
- 	if (i < TPG_INSTANCES) {
--		tpg_instances[i].tpg = NULL;
- 		opts = container_of(tpg_instances[i].func_inst,
- 			struct f_tcm_opts, func_inst);
- 		mutex_lock(&opts->dep_lock);
--		if (opts->has_dep)
-+		has_dep = opts->has_dep;
-+		mutex_unlock(&opts->dep_lock);
-+
-+		config_item_get(&opts->func_inst.group.cg_item);
-+		mutex_unlock(&tpg_instances_lock);
-+
-+		if (has_dep)
- 			module_put(opts->dependent);
- 		else
- 			configfs_undepend_item_unlocked(
- 				&opts->func_inst.group.cg_item);
--		mutex_unlock(&opts->dep_lock);
-+
-+		mutex_lock(&tpg_instances_lock);
-+		tpg_instances[i].tpg = NULL;
-+		mutex_unlock(&tpg_instances_lock);
-+
-+		config_item_put(&opts->func_inst.group.cg_item);
-+		kfree(tpg);
-+		return;
- 	}
- 	mutex_unlock(&tpg_instances_lock);
- 
-
-
-base-commit: 075b74841bd0065a3bda3440873c747938e69b68
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On Mon, Aug 3, 2026 at 11:26=E2=80=AFAM 'syzbot' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
+>
+> The event_handler function in drivers/usb/usbip/usbip_event.c is a
+> workqueue item responsible for processing events for a struct usbip_devic=
+e.
+> During device teardown, usbip_stop_eh() is called to wait for the event
+> handler to finish processing. However, usbip_stop_eh() uses
+> wait_event_interruptible() and ignores its return value. If the process
+> unbinding the driver receives a signal, wait_event_interruptible() return=
+s
+> immediately, causing the teardown process to falsely assume the event
+> handler has finished. The teardown process then proceeds to free the
+> usbip_device memory. Meanwhile, the event_handler workqueue is still
+> running and attempts to access the freed usbip_device, resulting in a KAS=
+AN
+> slab-use-after-free crash.
+>
+> BUG: KASAN: slab-use-after-free in __mutex_lock_common
+> kernel/locking/rtmutex_api.c:559 [inline]
+> BUG: KASAN: slab-use-after-free in mutex_lock_nested+0x5a/0x1d0
+> kernel/locking/rtmutex_api.c:578
+> Read of size 1 at addr ffff8881145245b0 by task kworker/u8:5/6177
+>
+> Call Trace:
+>  <TASK>
+>  lock_acquire+0x84/0x350 kernel/locking/lockdep.c:5842
+>  __mutex_lock_common kernel/locking/rtmutex_api.c:559 [inline]
+>  mutex_lock_nested+0x5a/0x1d0 kernel/locking/rtmutex_api.c:578
+>  event_handler+0x1e3/0x4a0 drivers/usb/usbip/usbip_event.c:73
+>  process_one_work kernel/workqueue.c:3322 [inline]
+>  process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+>  worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
+>  kthread+0x388/0x470 kernel/kthread.c:436
+>  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+>  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+>  </TASK>
+>
+> To fix this, change wait_event_interruptible() to wait_event() in
+> usbip_stop_eh(). This ensures that the teardown process strictly waits fo=
+r
+> the event handler to finish its execution and drop all references to the
+> usbip_device before the memory is freed, preventing the use-after-free.
+> This change is safe from deadlocks because usbip_stop_eh() is never calle=
+d
+> with locks held that the event_handler would need to acquire.
+>
+> Fixes: bb7871ad99ea ("usbip: event handler as one thread")
+> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+f4518ac0a3dd3aafde38@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3Df4518ac0a3dd3aafde38
+> Link: https://syzkaller.appspot.com/ai_job?id=3D88101c8e-4da9-45de-b879-0=
+549d6fe5649
+> To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+> To: <linux-usb@vger.kernel.org>
+> To: "Shuah Khan" <shuah@kernel.org>
+> To: "Valentina Manea" <valentina.manea.m@gmail.com>
+> To: "Nobuo Iwata" <nobuo.iwata@fujixerox.co.jp>
+> Cc: "Hongren Zheng" <i@zenithal.me>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> ---
+> diff --git a/drivers/usb/usbip/usbip_event.c b/drivers/usb/usbip/usbip_ev=
+ent.c
+> index 0e00c2d00..81d761891 100644
+> --- a/drivers/usb/usbip/usbip_event.c
+> +++ b/drivers/usb/usbip/usbip_event.c
+> @@ -115,7 +115,7 @@ void usbip_stop_eh(struct usbip_device *ud)
+>         if (pending)
+>                 usbip_dbg_eh("usbip_eh waiting completion %lx\n", pending=
+);
+>
+> -       wait_event_interruptible(ud->eh_waitq, !(ud->event & ~USBIP_EH_BY=
+E));
+> +       wait_event(ud->eh_waitq, !(ud->event & ~USBIP_EH_BYE));
+>         usbip_dbg_eh("usbip_eh has stopped\n");
+>  }
+>  EXPORT_SYMBOL_GPL(usbip_stop_eh);
+>
+>
+> base-commit: 075b74841bd0065a3bda3440873c747938e69b68
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+>
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated =
+patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/330619da-665c-4dd6-ac14-30e8bef174fd%40mail.kernel.org=
+.
