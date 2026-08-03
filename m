@@ -1,221 +1,149 @@
-Received: from smtpo75.interia.pl (smtpo75.interia.pl [217.74.67.75])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+Received: from sipsolutions.net (s3.sipsolutions.net [168.119.38.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FEEB40D590
-	for <syzbot@lists.linux.dev>; Mon,  3 Aug 2026 13:10:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.75
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C5A73BCD00;
+	Mon,  3 Aug 2026 13:15:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=168.119.38.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785762615; cv=none; b=rYtYn22d58aTHiWqkZagWNoeDr4NYnGBjcayRBR1YVLTXL11ux6TudesO8fX/TKSXPYNCryOThTS9EXI0QcDSaL3tWYHlIqFcbfRgN7nsBL+wY5up+CxfLrCBaxX3ywdITQI2HeWTeIIWQYbdxNL7Lgnb4OEC8szzT9cydP1CXM=
+	t=1785762949; cv=none; b=ngl2yk6MZ7aiT2zbB6uXKOGCK9TNQEfOTWL5sucWH0G6ErxCsJiG/IeNI363SQUBNU+UYWRio+yBXAUCBxUO8QdZ6VxBVY10rdv70EgDBWc1d0MTQQZcHWVTy1O+B/UQsvPUpgk83fI7YRQef00XqjHNuJ+f+W5fS3CGQ8rFiKQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785762615; c=relaxed/simple;
-	bh=skZ3o2C83bqo64O48eP2TbVWJScyinPe2K7YPqDQbl8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LEenR2X47QnlLlJfLupEndZ3LIuIxzacypvOvL4JxuOYyEXURGoKAHdUixDb9UE2pSizyEeHsxmNn3BFPV1Pc4s8wEz/uM7eqMz7/GH2lZSPH8rwmkFRYtm+EadaLQ2c/tR9+AY/lx8bpYtTj+6jPxViFz2OlRegoLyO+aZfd7E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=Cf5mUZUO; arc=none smtp.client-ip=217.74.67.75
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+	s=arc-20240116; t=1785762949; c=relaxed/simple;
+	bh=7skgG640I9Y27CSJCPv4vVblkC9ONnYRz3n9i0WG8js=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Qk4rgY7MZN5zf0sIDUBC9chOk+3PNM3M8Keh/XqTCWKQyQxXAjijvNrTuDqXsBZB2QRT6RMOMqC4ge4JcAZtXhSZawu+c3Xtu4nO5Vu4QzEt/6+q6qMvAJfE1hJIlBZBNdiAFTUTDgkd3aIsRgDwarKjPbH1eUg8tjL7KTK2U4Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=permerror header.from=sipsolutions.net; spf=pass smtp.mailfrom=sipsolutions.net; dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b=po8rppf3; arc=none smtp.client-ip=168.119.38.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=permerror header.from=sipsolutions.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sipsolutions.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="Cf5mUZUO"
-Received: from nr200 (unknown [80.68.231.31])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
-	Mon,  3 Aug 2026 15:09:58 +0200 (CEST)
-Date: Mon, 3 Aug 2026 15:09:56 +0200
-From: Slawomir Stepien <sst@poczta.fm>
-To: Johannes Berg <johannes@sipsolutions.net>
-Cc: syzkaller-bugs@googlegroups.com, linux-wireless@vger.kernel.org,
-	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev,
-	syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
+	dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b="po8rppf3"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+	Resent-Cc:Resent-Message-ID; bh=IVuFzLv86C3W5DdcoQiE0co6a6YTdM2LHmIH7EuYVAk=;
+	t=1785762941; x=1786972541; b=po8rppf3bVm0rA9c0CVeST3bo4uXdNE/2liAJkoIPY4hOl1
+	uC0g923lwVhKzjIQ/q4GunZ6fdS7KnaeYEhwHXNae8BopsJPKqxpkGuQgQ4AUC8HIhZG1oYtXaNI0
+	5dCE/0fXwiQ4gmRVuCJa8QeGzqeEbq2VCWvDYCm1AP5IwW17GRdZQN32lnDmZQYCGCCEjbIuSyR3Z
+	YvhVj8iUq/n9HvpRkd2C5aqs0Mu8Fsb5BjQV1s0jcp39V3SEuHhoJ48bao+jAP9IWfSQPyAiL7Yn7
+	6HttSXv5fZk9yP7NyiqQkxfbWtB9WeE8nOO7S3CcJW9OxOekiXCBhCqazZ241ixw==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__ECDSA_SECP256R1_SHA256__AES_256_GCM:256)
+	(Exim 4.98.2)
+	(envelope-from <johannes@sipsolutions.net>)
+	id 1wqsVw-0000000E9jT-39Ir;
+	Mon, 03 Aug 2026 15:15:33 +0200
+Message-ID: <95571b0374a24554beb39cee4fb92852b1222942.camel@sipsolutions.net>
 Subject: Re: [PATCH v2] mac80211: reject station addition if AP or MLO link
  is inactive
-Message-ID: <anCTJFZ54Y93O8Qs@nr200>
+From: Johannes Berg <johannes@sipsolutions.net>
+To: Slawomir Stepien <sst@poczta.fm>
+Cc: syzkaller-bugs@googlegroups.com, linux-wireless@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev, 
+	syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
+Date: Mon, 03 Aug 2026 15:15:25 +0200
+In-Reply-To: <anCTJFZ54Y93O8Qs@nr200>
 References: <20260727074526.248393-1-sst@poczta.fm>
- <9a9a794ad16663cfd7a652b83455ff16156b9baa.camel@sipsolutions.net>
- <amcjYrOESqnHjbhe@nr200>
- <741854f0b9774ce2da1e5c2fb551631aa4028122.camel@sipsolutions.net>
- <amcyO4e4bnBPinrP@nr200>
- <amdckJhgBz7xT2F7@nr200>
- <28f4f5b6fbe594c41538d5068b2d77495250ecd7.camel@sipsolutions.net>
+	 <9a9a794ad16663cfd7a652b83455ff16156b9baa.camel@sipsolutions.net>
+	 <amcjYrOESqnHjbhe@nr200>
+	 <741854f0b9774ce2da1e5c2fb551631aa4028122.camel@sipsolutions.net>
+	 <amcyO4e4bnBPinrP@nr200> <amdckJhgBz7xT2F7@nr200>
+	 <28f4f5b6fbe594c41538d5068b2d77495250ecd7.camel@sipsolutions.net>
+	 <anCTJFZ54Y93O8Qs@nr200>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.60.2 (3.60.2-1.fc44) 
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <28f4f5b6fbe594c41538d5068b2d77495250ecd7.camel@sipsolutions.net>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
-	t=1785762600; bh=H46BO01Jn8KSezBfJtXDje0ki6VhnDh0lE6fQuGUTGg=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-	b=Cf5mUZUO3/ttFfBwiAsUCylvrFvpdL87z6sC+BUah/XEpgDmKBHl1lyxwvg5fthYY
-	 e2kC3TmoPtaGMJUjoPo5v8aXTEi6RBpZzvRgMazyPl2PV29Cknsvt6Xb03HoyCnTr/
-	 Ek3IEKbSFyT2nHmKlaATAQi6EgBWpumed4+bCmA8=
+X-malware-bazaar: not-scanned
 
-On lip 31, 2026 14:40, Johannes Berg wrote:
-> On Mon, 2026-07-27 at 15:26 +0200, Slawomir Stepien wrote:
-> > After taking a closer look at this I wonder how AP_VLAN should be handled? Is there a way on
-> > cfg80211 level to be able to check AP_VLAN's main device state?
-> 
-> Hmm, yeah that might be an issue? I guess in theory it could track it,
-> but it doesn't.
-> 
-> > My code change would look something like this:
-> > 
-> > @@ -9404,6 +9404,12 @@ static int nl80211_new_station(struct sk_buff *skb, struct genl_info *info)
-> >         case NL80211_IFTYPE_AP:
-> >         case NL80211_IFTYPE_AP_VLAN:
-> >         case NL80211_IFTYPE_P2P_GO:
-> > +               /* Add new station only after the AP and link has been started */
-> > +               int link = params.link_sta_params.link_id >= 0 ?
-> > +                          params.link_sta_params.link_id : 0;
-> > +               if (!wdev->links[link].ap.beacon_interval)
-> > +                       return -ENETDOWN;
-> > +
-> >                 /* ignore WME attributes if iface/sta is not capable */
-> >                 if (!(rdev->wiphy.flags & WIPHY_FLAG_AP_UAPSD) ||
-> >                     !(params.sta_flags_set & BIT(NL80211_STA_FLAG_WME)))
-> > 
-> > but the NL80211_IFTYPE_AP_VLAN case would not work here, right? Can I just do the checking only for
-> > NL80211_IFTYPE_AP and NL80211_IFTYPE_P2P_GO and skip NL80211_IFTYPE_AP_VLAN?
-> 
-> Yeah it'd just reject everything, I guess.
-> 
-> I think in practice stations are added at the AP interface first and
-> then moved to a VLAN, which would argue for actually rejecting
+On Mon, 2026-08-03 at 15:09 +0200, Slawomir Stepien wrote:
+> On lip 31, 2026 14:40, Johannes Berg wrote:
+> > On Mon, 2026-07-27 at 15:26 +0200, Slawomir Stepien wrote:
+> > > After taking a closer look at this I wonder how AP_VLAN should be han=
+dled? Is there a way on
+> > > cfg80211 level to be able to check AP_VLAN's main device state?
+> >=20
+> > Hmm, yeah that might be an issue? I guess in theory it could track it,
+> > but it doesn't.
+> >=20
+> > > My code change would look something like this:
+> > >=20
+> > > @@ -9404,6 +9404,12 @@ static int nl80211_new_station(struct sk_buff =
+*skb, struct genl_info *info)
+> > >         case NL80211_IFTYPE_AP:
+> > >         case NL80211_IFTYPE_AP_VLAN:
+> > >         case NL80211_IFTYPE_P2P_GO:
+> > > +               /* Add new station only after the AP and link has bee=
+n started */
+> > > +               int link =3D params.link_sta_params.link_id >=3D 0 ?
+> > > +                          params.link_sta_params.link_id : 0;
+> > > +               if (!wdev->links[link].ap.beacon_interval)
+> > > +                       return -ENETDOWN;
+> > > +
+> > >                 /* ignore WME attributes if iface/sta is not capable =
+*/
+> > >                 if (!(rdev->wiphy.flags & WIPHY_FLAG_AP_UAPSD) ||
+> > >                     !(params.sta_flags_set & BIT(NL80211_STA_FLAG_WME=
+)))
+> > >=20
+> > > but the NL80211_IFTYPE_AP_VLAN case would not work here, right? Can I=
+ just do the checking only for
+> > > NL80211_IFTYPE_AP and NL80211_IFTYPE_P2P_GO and skip NL80211_IFTYPE_A=
+P_VLAN?
+> >=20
+> > Yeah it'd just reject everything, I guess.
+> >=20
+> > I think in practice stations are added at the AP interface first and
+> > then moved to a VLAN, which would argue for actually rejecting
+>=20
+> But are they moved and then this `case NL80211_IFTYPE_AP_VLAN` should mat=
+ch?
 
-But are they moved and then this `case NL80211_IFTYPE_AP_VLAN` should match?
-In my tests this case doesn't match, even after the STA is assoc with vlan interface (e.g.
-wlan0.10).
+I'm not entirely sure, but I believe they're _added_ to the AP first,
+and then _modified_ to be in the AP_VLAN via another path
+(NL80211_CMD_SET_STATION, NL80211_ATTR_VLAN_ID).
 
-My test is done using qemu with:
+The question is whether or not we can rely on this, i.e. no userspace
+ever used the other path.
 
-Files:
-------
-==> hostapd.accept <==
-02:00:00:00:01:00 10
+> In my tests this case doesn't match, even after the STA is assoc with vla=
+n interface (e.g.
+> wlan0.10).
 
-==> hostapd.conf <==
-interface=wlan0
-driver=nl80211
-ssid=VLAN_Test_AP
-hw_mode=g
-channel=1
+Right.
 
-# Basic WPA2-PSK
-wpa=2
-wpa_passphrase=password123
-wpa_key_mgmt=WPA-PSK
+> My test is done using qemu with:
 
-# Enable MAC-based Access Control and VLAN Assignment
-macaddr_acl=1
-accept_mac_file=/root/hostapd.accept
+I'd probably use UML/hwsim tests, but sure.
 
-# Enable Dynamic VLAN interface creation
-dynamic_vlan=1
-vlan_file=/root/hostapd.vlan
-vlan_naming=1
+> This index 4 is assigned to wlan0, so it will never have iftype =3D=3D NL=
+80211_IFTYPE_AP_VLAN.
+> Also the print of wdev->identifier will give 0x1 and not 0x2.
+>=20
+> So, is it even possible that `case NL80211_IFTYPE_AP_VLAN` would match? I=
+f it will never match, then
+> do I understand that the change I proposed should be correct for other ca=
+ses?
 
-==> hostapd.vlan <==
-10  wlan0.10  br10
+Well, it's _possible_, right? It just appears to not be used in
+practice, as I described above (guess your test says I'm right).
 
-==> wpa.conf <==
-p2p_disabled=1
-network={
-        ssid="VLAN_Test_AP"
-        #psk="password123"
-        psk=c31c83ea62af5b750232dc32865586f7658777dce974a980446dd6bff0154913
-}
+But then I think we should do two changes:
 
-Commands:
----------
-modprobe mac80211_hwsim radios=2
-ip link add br10 type bridge
-ip link set br10 up
-hostapd -d hostapd.conf -B
-wpa_supplicant -i wlan1 -c wpa.conf
+1) simply refuse adding stations to AP_VLAN, i.e. drop the
+   NL80211_IFTYPE_AP_VLAN case entirely from the function
 
-Results:
---------
-# iw dev
-phy#1
-        Interface wlan1
-                ifindex 5
-                wdev 0x100000001
-                addr 02:00:00:00:01:00
-                type managed
-                channel 1 (2412 MHz), width: 20 MHz (no HT), center1: 2412 MHz
-                txpower 20.00 dBm
-                multicast TXQ:
-                        qsz-byt qsz-pkt flows   drops   marks   overlmt hashcol tx-bytes        tx-packets
-                        0       0       0       0       0       0       0       0               0
-phy#0
-        Interface wlan0.10
-                ifindex 8
-                wdev 0x2
-                addr 02:00:00:00:00:00
-                type AP/VLAN
-                channel 1 (2412 MHz), width: 20 MHz (no HT), center1: 2412 MHz
-                txpower 20.00 dBm
-        Interface wlan0
-                ifindex 4
-                wdev 0x1
-                addr 02:00:00:00:00:00
-                ssid VLAN_Test_AP
-                type AP
-                channel 1 (2412 MHz), width: 20 MHz (no HT), center1: 2412 MHz
-                txpower 20.00 dBm
-                multicast TXQ:
-                        qsz-byt qsz-pkt flows   drops   marks   overlmt hashcol tx-bytes        tx-packets
-                        0       0       33      0       0       0       0       3868            33
+2) make the change you suggested validating the link
 
-# iw dev wlan0.10 station dump
-Station 02:00:00:00:01:00 (on wlan0.10)
-        authorized:     yes
-        authenticated:  yes
-        associated:     yes
-        preamble:       short
-        WMM/WME:        no
-        MFP:            no
-        TDLS peer:      no
-        inactive time:  5676 ms
-        rx bytes:       3569
-        rx packets:     30
-        tx bytes:       410
-        tx packets:     4
-        tx retries:     0
-        tx failed:      0
-        rx drop misc:   0
-        signal:         -30 dBm
-        signal avg:     -30 dBm
-        tx bitrate:     1.0 MBit/s
-        tx duration:    0 us
-        rx bitrate:     54.0 MBit/s
-        rx duration:    0 us
-        DTIM period:    0
-        beacon interval:0
-        connected time: 238 seconds
-        associated at [boottime]:       30.496s
-        associated at:  1785761454053 ms
-        current time:   1785761692411 ms
 
-# dmesg | grep laza
-(this is just a print of this field just before the switch() call)
-[   30.489902][  T189] laza: info->attrs[NL80211_ATTR_IFINDEX]: 4
-(and yes, it is just one print triggered)
+Actually only validating the link as you showed would basically achieve
+(1) with -ENETDOWN (we've been using -ENOLINK btw) rather than with the
+-EOPNOTSUPP error from the default switch case, but it also seems less
+explicit...
 
-This index 4 is assigned to wlan0, so it will never have iftype == NL80211_IFTYPE_AP_VLAN.
-Also the print of wdev->identifier will give 0x1 and not 0x2.
+Or maybe just do both in one commit?
 
-So, is it even possible that `case NL80211_IFTYPE_AP_VLAN` would match? If it will never match, then
-do I understand that the change I proposed should be correct for other cases?
-
-> everything being OK anyway - but then that shouldn't be because of this
-> but rather by just removing the AP_VLAN case there, or so.
-> 
-> Not sure what the best thing would be though.
-
--- 
-Slawomir Stepien
+johannes
