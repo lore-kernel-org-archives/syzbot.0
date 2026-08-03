@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E445339D6C8
-	for <syzbot@lists.linux.dev>; Mon,  3 Aug 2026 09:08:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA7CC3DC4AF
+	for <syzbot@lists.linux.dev>; Mon,  3 Aug 2026 09:26:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785748092; cv=none; b=umTlF2ISw6s75JtEWzhIywBTlHFEakqpQ92nRVnfPRBl5veKaHgY9+g4Bhawa/ETmE6LHvEvtIwfnGMLEpj+MGUiDeAnpmUfy5WPD2RUYzcysWNG/eBLeDtvbLL/sYooPd9culIeG17JvUvQGU1vSlSQArHmJ757mkGqaXTAcqI=
+	t=1785749175; cv=none; b=qfagmMvczKQA3rW+48t/mfUL2nvkJv29ssZkwBnJpvFaGzQRh1Ee7gyb1H0GRnvKmiORYxYIZUVzZ6ZvZu5F/O/GX7JT9YZ6kqmPwn3Mz/XaK6WL31R4UPD/3SMu2XddUs0vSHQrgUSy/3ttA2QKtKt7XcaCkDMEydH1NGerMKY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785748092; c=relaxed/simple;
-	bh=Rk3T6U4+fLoe5B6qv970U9fO+ySoOp2PT3Uwjrlrx68=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=GpTmAghAo7BA5lQCRAHcG4DzKqG94CbZoiuu0x4pGJ0s781odkTE4kKyJ1ZirQ/kFBO5rh5BM8z65aMfSR7e+iLVRLZ+eTnyYYicmAjEHQ8kXPrsSh6Tvw41oe50jjSLZTamKKJQCzuoXFNpXBuiWaYhHtenQjTfdCyAAqerl8w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fDR8PjJY; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785749175; c=relaxed/simple;
+	bh=/AHbSs+7RLE/O8H3yWEJA7w7lVuo8uTKOPnrhKw5uLM=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=S1O9n+TCDauZMHoAevD80ujSGfC8o60DukIE2KxnbFIeHZnNMjt+YrfpgK7VU8zr6r+1wJ67zD2b6I73R66gh6qpHykdTYcEmLz80nXvE6evmqByfSuEGXNAlPWUM47ZzzoXUR28UWTMTCKtem2w08DF4G22MXGuGdv5BovxKnU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=al9pPuYL; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fDR8PjJY"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 83C3C1F000E9;
-	Mon,  3 Aug 2026 09:08:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="al9pPuYL"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 70DC91F00A3A;
+	Mon,  3 Aug 2026 09:26:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785748090;
-	bh=wDU7z2ItcnJK4BHfvyBZ4buGzo2scvkrsyngtm/T2vk=;
+	s=k20260515; t=1785749170;
+	bh=a58LqytePNVqZmWaubr/UBreD97Q6dDEXQfqrli1VtE=;
 	h=From:To:Cc:Subject:Date;
-	b=fDR8PjJYoy3XWjkVjb8aMxm/iXy90WRGnIPLXkhH7luJksXa/ayXI4uFtwfn1If3g
-	 WFjV2uP15QxV888kqRlAehTuAgGStJP/uv4MSMzbZa8lbYGHPZARoIhnyhtkLrthPE
-	 1lg7UMQI7Gp3GIF/ooMsVruGawgWYmHcJ+8y6h8r/Un15v9i+jBKYst4KVPZiejDIH
-	 aCH/x7HBXhmW2Ze/+l8UW+lWQb3ayRiFfgZSIHFWS0EdmVhj7prN3May1409blRWPL
-	 KcCM3mc/PJ5Nx0wbP7TgX8FIL7DG4gCsgNyVHZquqVmSxJLwLoV+bR93ygvqdjLcAi
-	 MuoyaXGi5JyvA==
+	b=al9pPuYLv7ddhW0MrgY08X6dr/SMumYBAR7Lv8PsjjaHh1EeiXObOUcltbcaHfRSL
+	 atuVjhDfgGpvZlSyr7WGbyC7gXE2vbp9XrI6WIJ3WGx+CI2n5DthLlOhwF1BEaUZUE
+	 fLZv8Ck31FND5zj2qRJKXndedCauESxp66nmmxUtUQe8YHEsGItyt7wC/F6kN16BTS
+	 8zYw00cLBOMKdrlcmezjqWP/kk1w+UxV5nYaCdlG5joOhinFqJygvG5tKLv8WGllPZ
+	 OeDhoeXE6RCKUyG6NHLIhnREg+YM83vSSxwzFGO0707OaAYCV7oF5TqXQn2fxcbEUJ
+	 isQ4zT3c/syIw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] ihex: Fix integer underflow and out-of-bounds read
-Message-ID: <3f9e6afb-f025-4ae5-a5d6-b8a9972a127a@mail.kernel.org>
+Subject: [PATCH RFC] usbip: fix use-after-free in event_handler()
+Message-ID: <330619da-665c-4dd6-ac14-30e8bef174fd@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,77 +38,74 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Mon,  3 Aug 2026 09:08:10 +0000 (UTC)
+Date: Mon,  3 Aug 2026 09:26:10 +0000 (UTC)
 
-When loading a 0-byte firmware, ihex_validate_fw() calculates the end
-pointer by subtracting sizeof(*end) from fw->size. Since fw->size is 0,
-this results in an integer underflow, making end a huge pointer far past
-the end of the buffer. The validation loop then executes with a NULL rec
-pointer, leading to a NULL pointer dereference when ihex_binrec_size()
-attempts to read rec->len.
+The event_handler function in drivers/usb/usbip/usbip_event.c is a
+workqueue item responsible for processing events for a struct usbip_device.
+During device teardown, usbip_stop_eh() is called to wait for the event
+handler to finish processing. However, usbip_stop_eh() uses
+wait_event_interruptible() and ignores its return value. If the process
+unbinding the driver receives a signal, wait_event_interruptible() returns
+immediately, causing the teardown process to falsely assume the event
+handler has finished. The teardown process then proceeds to free the
+usbip_device memory. Meanwhile, the event_handler workqueue is still
+running and attempts to access the freed usbip_device, resulting in a KASAN
+slab-use-after-free crash.
 
-Oops: general protection fault, probably for non-canonical address
-0xdffffc0000000000: 0000 [#1] SMP KASAN NOPTI
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-...
-RIP: 0010:ihex_binrec_size include/linux/ihex.h:26 [inline]
-RIP: 0010:__ihex_next_binrec include/linux/ihex.h:35 [inline]
-RIP: 0010:ihex_validate_fw include/linux/ihex.h:54 [inline]
-RIP: 0010:request_ihex_firmware include/linux/ihex.h:74 [inline]
-RIP: 0010:emi26_load_firmware drivers/usb/misc/emi26.c:86 [inline]
-RIP: 0010:emi26_probe+0x283/0x1690 drivers/usb/misc/emi26.c:232
+BUG: KASAN: slab-use-after-free in __mutex_lock_common
+kernel/locking/rtmutex_api.c:559 [inline]
+BUG: KASAN: slab-use-after-free in mutex_lock_nested+0x5a/0x1d0
+kernel/locking/rtmutex_api.c:578
+Read of size 1 at addr ffff8881145245b0 by task kworker/u8:5/6177
 
-Additionally, if a firmware file consists only of the 6-byte EOF record,
-ihex_validate_fw() successfully validates it. However, when iterating over
-the records, ihex_next_binrec() blindly advances past the current record.
-If the current record is the EOF record, __ihex_next_binrec() advances the
-pointer past the end of the firmware buffer, and the subsequent read of
-rec->len results in an out-of-bounds read.
+Call Trace:
+ <TASK>
+ lock_acquire+0x84/0x350 kernel/locking/lockdep.c:5842
+ __mutex_lock_common kernel/locking/rtmutex_api.c:559 [inline]
+ mutex_lock_nested+0x5a/0x1d0 kernel/locking/rtmutex_api.c:578
+ event_handler+0x1e3/0x4a0 drivers/usb/usbip/usbip_event.c:73
+ process_one_work kernel/workqueue.c:3322 [inline]
+ process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
 
-Fix both issues by adding a size check in ihex_validate_fw() to ensure the
-firmware is at least large enough to contain a single IHEX record, and by
-updating ihex_next_binrec() to check the current record's length before
-advancing so it returns NULL immediately when encountering the EOF record.
+To fix this, change wait_event_interruptible() to wait_event() in
+usbip_stop_eh(). This ensures that the teardown process strictly waits for
+the event handler to finish its execution and drop all references to the
+usbip_device before the memory is freed, preventing the use-after-free.
+This change is safe from deadlocks because usbip_stop_eh() is never called
+with locks held that the event_handler would need to acquire.
 
-Fixes: bacfe09dd754 ("ihex.h: binary representation of ihex records")
+Fixes: bb7871ad99ea ("usbip: event handler as one thread")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+baf3cbba7dd980984f0d@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=baf3cbba7dd980984f0d
-Link: https://syzkaller.appspot.com/ai_job?id=a0c10e66-d30e-44f1-8ad1-c7f25ff69b04
-To: <linux-kernel@vger.kernel.org>
-To: "David Woodhouse" <dwmw2@infradead.org>
+Reported-by: syzbot+f4518ac0a3dd3aafde38@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=f4518ac0a3dd3aafde38
+Link: https://syzkaller.appspot.com/ai_job?id=88101c8e-4da9-45de-b879-0549d6fe5649
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
+To: "Shuah Khan" <shuah@kernel.org>
+To: "Valentina Manea" <valentina.manea.m@gmail.com>
+To: "Nobuo Iwata" <nobuo.iwata@fujixerox.co.jp>
+Cc: "Hongren Zheng" <i@zenithal.me>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/include/linux/ihex.h b/include/linux/ihex.h
-index b824877e6..4ee4b5960 100644
---- a/include/linux/ihex.h
-+++ b/include/linux/ihex.h
-@@ -38,9 +38,13 @@ __ihex_next_binrec(const struct ihex_binrec *rec)
- static inline const struct ihex_binrec *
- ihex_next_binrec(const struct ihex_binrec *rec)
- {
--	rec = __ihex_next_binrec(rec);
-+	const struct ihex_binrec *next;
+diff --git a/drivers/usb/usbip/usbip_event.c b/drivers/usb/usbip/usbip_event.c
+index 0e00c2d00..81d761891 100644
+--- a/drivers/usb/usbip/usbip_event.c
++++ b/drivers/usb/usbip/usbip_event.c
+@@ -115,7 +115,7 @@ void usbip_stop_eh(struct usbip_device *ud)
+ 	if (pending)
+ 		usbip_dbg_eh("usbip_eh waiting completion %lx\n", pending);
  
--	return be16_to_cpu(rec->len) ? rec : NULL;
-+	if (!be16_to_cpu(rec->len))
-+		return NULL;
-+
-+	next = __ihex_next_binrec(rec);
-+	return be16_to_cpu(next->len) ? next : NULL;
+-	wait_event_interruptible(ud->eh_waitq, !(ud->event & ~USBIP_EH_BYE));
++	wait_event(ud->eh_waitq, !(ud->event & ~USBIP_EH_BYE));
+ 	usbip_dbg_eh("usbip_eh has stopped\n");
  }
- 
- /* Check that ihex_next_binrec() won't take us off the end of the image... */
-@@ -48,6 +52,9 @@ static inline int ihex_validate_fw(const struct firmware *fw)
- {
- 	const struct ihex_binrec *end, *rec;
- 
-+	if (fw->size < sizeof(*end))
-+		return -EINVAL;
-+
- 	rec = (const void *)fw->data;
- 	end = (const void *)&fw->data[fw->size - sizeof(*end)];
- 
+ EXPORT_SYMBOL_GPL(usbip_stop_eh);
 
 
 base-commit: 075b74841bd0065a3bda3440873c747938e69b68
