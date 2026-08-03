@@ -1,149 +1,233 @@
-Received: from sipsolutions.net (s3.sipsolutions.net [168.119.38.16])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C5A73BCD00;
-	Mon,  3 Aug 2026 13:15:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=168.119.38.16
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785762949; cv=none; b=ngl2yk6MZ7aiT2zbB6uXKOGCK9TNQEfOTWL5sucWH0G6ErxCsJiG/IeNI363SQUBNU+UYWRio+yBXAUCBxUO8QdZ6VxBVY10rdv70EgDBWc1d0MTQQZcHWVTy1O+B/UQsvPUpgk83fI7YRQef00XqjHNuJ+f+W5fS3CGQ8rFiKQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785762949; c=relaxed/simple;
-	bh=7skgG640I9Y27CSJCPv4vVblkC9ONnYRz3n9i0WG8js=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Qk4rgY7MZN5zf0sIDUBC9chOk+3PNM3M8Keh/XqTCWKQyQxXAjijvNrTuDqXsBZB2QRT6RMOMqC4ge4JcAZtXhSZawu+c3Xtu4nO5Vu4QzEt/6+q6qMvAJfE1hJIlBZBNdiAFTUTDgkd3aIsRgDwarKjPbH1eUg8tjL7KTK2U4Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=permerror header.from=sipsolutions.net; spf=pass smtp.mailfrom=sipsolutions.net; dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b=po8rppf3; arc=none smtp.client-ip=168.119.38.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=permerror header.from=sipsolutions.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sipsolutions.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65B0E3D7A01
+	for <syzbot@lists.linux.dev>; Mon,  3 Aug 2026 13:32:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785763981; cv=pass; b=vAgcDZMVrTE8MthzS3gcwXLNSw8wmObxOat3ZRtO2HVWQqwad+33ASFT0vweW9QWqBmVS1pRaApfQrln7vswFJ/M9hz+kNSTl3YFy/Dinq7/EJh1g37uU5LuJ2JKGchCYjyQZiM7oivvMxb6Amfr6pmurnhDRVNSg3drVP8G6h0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785763981; c=relaxed/simple;
+	bh=SgX59LJ9LcHKvcTeSEmKdxDvnMa2UDzeZq8PVABpe8E=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=FIMeI3gDYDCbjli2fvn5//DJ6zEu/SA8LiqNiHD6tOjkd1PpgULBh/RHQRWapLYrtnyjZq2Rx3gFtRKm7Bw3wUFjmFp61ZTnGzV+fYxzUelIZXqS1TAtu7b//MQvYjCbvhQxkE815pKUDDUzLmKtYoQwUJ+/RZ+QAoPMuV5Je0E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Pk/Nxssl; arc=pass smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b="po8rppf3"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-	Resent-Cc:Resent-Message-ID; bh=IVuFzLv86C3W5DdcoQiE0co6a6YTdM2LHmIH7EuYVAk=;
-	t=1785762941; x=1786972541; b=po8rppf3bVm0rA9c0CVeST3bo4uXdNE/2liAJkoIPY4hOl1
-	uC0g923lwVhKzjIQ/q4GunZ6fdS7KnaeYEhwHXNae8BopsJPKqxpkGuQgQ4AUC8HIhZG1oYtXaNI0
-	5dCE/0fXwiQ4gmRVuCJa8QeGzqeEbq2VCWvDYCm1AP5IwW17GRdZQN32lnDmZQYCGCCEjbIuSyR3Z
-	YvhVj8iUq/n9HvpRkd2C5aqs0Mu8Fsb5BjQV1s0jcp39V3SEuHhoJ48bao+jAP9IWfSQPyAiL7Yn7
-	6HttSXv5fZk9yP7NyiqQkxfbWtB9WeE8nOO7S3CcJW9OxOekiXCBhCqazZ241ixw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__ECDSA_SECP256R1_SHA256__AES_256_GCM:256)
-	(Exim 4.98.2)
-	(envelope-from <johannes@sipsolutions.net>)
-	id 1wqsVw-0000000E9jT-39Ir;
-	Mon, 03 Aug 2026 15:15:33 +0200
-Message-ID: <95571b0374a24554beb39cee4fb92852b1222942.camel@sipsolutions.net>
-Subject: Re: [PATCH v2] mac80211: reject station addition if AP or MLO link
- is inactive
-From: Johannes Berg <johannes@sipsolutions.net>
-To: Slawomir Stepien <sst@poczta.fm>
-Cc: syzkaller-bugs@googlegroups.com, linux-wireless@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev, 
-	syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
-Date: Mon, 03 Aug 2026 15:15:25 +0200
-In-Reply-To: <anCTJFZ54Y93O8Qs@nr200>
-References: <20260727074526.248393-1-sst@poczta.fm>
-	 <9a9a794ad16663cfd7a652b83455ff16156b9baa.camel@sipsolutions.net>
-	 <amcjYrOESqnHjbhe@nr200>
-	 <741854f0b9774ce2da1e5c2fb551631aa4028122.camel@sipsolutions.net>
-	 <amcyO4e4bnBPinrP@nr200> <amdckJhgBz7xT2F7@nr200>
-	 <28f4f5b6fbe594c41538d5068b2d77495250ecd7.camel@sipsolutions.net>
-	 <anCTJFZ54Y93O8Qs@nr200>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.60.2 (3.60.2-1.fc44) 
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Pk/Nxssl"
+Received: by smtp.kernel.org (Postfix)
+	id 256D01F00A3E; Mon,  3 Aug 2026 13:32:55 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=209.85.208.181
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1785763975;
+	b=uNVXQmkqldoA+UcWb1MqPHgl8IBnN6pwWdhiMH2D7cpX5Q6CZH/dlGSFrLKxSS98eLHX
+	 jqTtdN2Oiz41zLFLugNEQxIAoah/9X6qhNDp4C5WTNuikDoWJIEUfx02rD+OISUdyPyXM
+	 NlclY4dfAa7vlZzTQ2w+uRpp5INc6fskHZCwofY+DNWL3dKt0yeXWL5nBalvd5rKr7lZP
+	 cbf+yTr+P31UZcwpjdM3qvdwSc83JP3bv6egGVOXY7+t+KYJr8BfgY3HSpF74WUoqhura
+	 7Ac/9T1oWukHbTcxsYJQ9uNI4e01EezKUJm0PbL9ZRVwSfWuOO2cl4DuJJL7gmlCRqA==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1785763975;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=9/IuO40b9vi1qlIswA4BahkDQm7YQ34CTFPcK/6MNnM=;
+	b=IqI/sh9Yt+R9EVPm6/70QIfRt96cWXjBseRIfeFDtUH29M24h42+knDGyvJxEHQWN3oM
+	 h4L/gwMmnjkQKGJFIgY/eD6RbnAUFOR/0wygadFnAYzR60Vut1vD6YAeBxeVIboUUP5zM
+	 qfeEuMKE6I8NTSQtBDXw5U438JXf4kgtG7fL6f29U1LkrOPZpL+qVsvplW2g53XYZcZJI
+	 e01P2Mv5zzlU5yz8MBOe+KI2k0skoG1iZkg9Bk5xTaGFbLLkAR/9QHh5vzg8gLaJQw2Fm
+	 Ip3okz0iwSS0L1TUObsWpShiPNZoEnHhT2SMJjOhvhGKtUXwjBa7y/W5ufl48uLpR4w==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b="Pk/Nxssl";
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	arc=none smtp.remote-ip=209.85.208.181
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 8790C1F00A3A
+	for <syzbot@kernel.org>; Mon,  3 Aug 2026 13:32:54 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Pk/Nxssl
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 8790C1F00A3A
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-39c8dbf4f38so30455581fa.3
+        for <syzbot@kernel.org>; Mon, 03 Aug 2026 06:32:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785763973; x=1786368773; darn=kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=9/IuO40b9vi1qlIswA4BahkDQm7YQ34CTFPcK/6MNnM=;
+        b=Pk/NxsslWEp5oS2Cemi44SyVZbzopRbez0EV4uycR5+ghWsOBoQ8srNf6VR+D8KoQc
+         X4TbPjmFPje3jQPYIYewOxy+GMrKVis9KFUchXK5PJnUfWS6LOSN8zTA5anVzCq2RwiA
+         cv7W8eKL1Yv45MyzaqzxNexcwYXg8xvUWRtxpaUVBc2e3XfBhC2s/JkSEoM/6xwO7v4P
+         Hmg4EU0AbSoNsBl8UOquRmGqkjDY9qbQuq9PupCMCHO352GndwBKrKepitKkCpFDWJdT
+         kCkcyd4fMihNPtmB3JNB4E+Cevu073UPgervKotaSybfwl51oKeFl/QvDbpajHdSIaga
+         raCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785763973; x=1786368773;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=9/IuO40b9vi1qlIswA4BahkDQm7YQ34CTFPcK/6MNnM=;
+        b=WjeEYe0NYTqJwyB9oj+F2QX/bm7HIMCiDk0e3sbWoTXNgoYcG55GtEYsASrnXBL8Po
+         Yj7lSatZLuSMW6BnhQWEMwVdcoLSRzP2wKWJvZ8LrAqDZKDIwXwMaYSZpozmAwg+Fpwq
+         j0Qu4v1FhA9uoPaA+UZ1naV7OMQqHAF1sLYm4phFVGh2kOVlxB5M70sjfPb5e7jChsy0
+         avRj+GETPmza6AXIowrsRlznEcDe8nnDEe8pJSr6SU4NXd2gMAtQoUE5EqqHXuFhEaWX
+         SWhLT8Bscs8LndIOwpXMU4Z4OscXP0m/L4YJaHelHtGdhK8ZamzHrUJiA5drgTAi0kFw
+         UZPw==
+X-Gm-Message-State: AOJu0Yx33It3XU9cIe1w+u8UHHESroSiRLqbMja52W6ExrpwRdrM21Qe
+	Kajmh9znnE9jWsZO3eAkwYBAOYqbflBWcCF0LUqWfxoVR4bq+Aaf6R27khJyDkwXNfg=
+X-Gm-Gg: AR+sD10ANksKhfpuINPAYse0gKP+h9WIBogCWzp/lMG7+CmubA4u4Ryx0Ur5tOz1a1u
+	8l/utaRpem2mWNH6M8K5Vr+sWsl++/OzogztxpT+K0tjOThi9tQaQIBpGtn+ohJ8hFOUbaOvOWZ
+	lP94OXlo0jY8qCo1UkKZn6+xj9Yuk8R0URZwKxK+zSrRaLlZFniGjM0xZ9s+RGPbOIeuIxBUrAv
+	aY71KOohch80CjIreMHQ21FrJ71dB0lkqYEKgHofnQc4frfvYUPlL3m9hkUvkQo8l1MdpNab4AG
+	FTFZ3IBxwZleCPllLlvakzBoqQ42imUGAYNj5qamHnIBNA2iWj0zabjFZetHZtQVthZPghRm/yr
+	gArXsRjT3yp+umglNDqqSmw+cH5AxkDo1FbAMReiaf6/oCCZt6O6BXftsGaP8mTmKsA/9bJfuDY
+	QDRzeofh/UX9RYR1UEi2qTGmBNUa6IdZzzvC1ri9KKGS5SS1R1lcdTMFQYfPo4RrY0YJOUYGsLd
+	Ey7zqnVOIxjGyilZXU3xHVayzfatSlKoRcd4+0w5lFYdo1wclqjufpNq3lHHtdybe5tfEyrJdS9
+	iBKJSelaj1Mp4xYBMudVi6UW3TluaZDF+IT5K9oxtF7LS50BQ+30qAM=
+X-Received: by 2002:a05:651c:1145:b0:39c:63bb:cbd6 with SMTP id 38308e7fff4ca-39f86150e25mr19634341fa.1.1785763972303;
+        Mon, 03 Aug 2026 06:32:52 -0700 (PDT)
+Received: from [192.168.100.51] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-39f810f87ebsm11701471fa.16.2026.08.03.06.32.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Aug 2026 06:32:51 -0700 (PDT)
+Message-ID: <e27a10e5-9718-47c2-b50e-26c35409b65f@gmail.com>
+Date: Mon, 3 Aug 2026 15:32:51 +0200
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC] wifi: mac80211: prevent destroying non-TDLS stations
+ in TDLS operations
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+References: <7f0c8fa8-559d-4fdf-989f-c81259e4e719@mail.kernel.org>
+Content-Language: en-US
+From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+In-Reply-To: <7f0c8fa8-559d-4fdf-989f-c81259e4e719@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, 2026-08-03 at 15:09 +0200, Slawomir Stepien wrote:
-> On lip 31, 2026 14:40, Johannes Berg wrote:
-> > On Mon, 2026-07-27 at 15:26 +0200, Slawomir Stepien wrote:
-> > > After taking a closer look at this I wonder how AP_VLAN should be han=
-dled? Is there a way on
-> > > cfg80211 level to be able to check AP_VLAN's main device state?
-> >=20
-> > Hmm, yeah that might be an issue? I guess in theory it could track it,
-> > but it doesn't.
-> >=20
-> > > My code change would look something like this:
-> > >=20
-> > > @@ -9404,6 +9404,12 @@ static int nl80211_new_station(struct sk_buff =
-*skb, struct genl_info *info)
-> > >         case NL80211_IFTYPE_AP:
-> > >         case NL80211_IFTYPE_AP_VLAN:
-> > >         case NL80211_IFTYPE_P2P_GO:
-> > > +               /* Add new station only after the AP and link has bee=
-n started */
-> > > +               int link =3D params.link_sta_params.link_id >=3D 0 ?
-> > > +                          params.link_sta_params.link_id : 0;
-> > > +               if (!wdev->links[link].ap.beacon_interval)
-> > > +                       return -ENETDOWN;
-> > > +
-> > >                 /* ignore WME attributes if iface/sta is not capable =
-*/
-> > >                 if (!(rdev->wiphy.flags & WIPHY_FLAG_AP_UAPSD) ||
-> > >                     !(params.sta_flags_set & BIT(NL80211_STA_FLAG_WME=
-)))
-> > >=20
-> > > but the NL80211_IFTYPE_AP_VLAN case would not work here, right? Can I=
- just do the checking only for
-> > > NL80211_IFTYPE_AP and NL80211_IFTYPE_P2P_GO and skip NL80211_IFTYPE_A=
-P_VLAN?
-> >=20
-> > Yeah it'd just reject everything, I guess.
-> >=20
-> > I think in practice stations are added at the AP interface first and
-> > then moved to a VLAN, which would argue for actually rejecting
->=20
-> But are they moved and then this `case NL80211_IFTYPE_AP_VLAN` should mat=
-ch?
+Preserve the TDLS-peer validation in both touched paths. The verified bug is
+that NL80211_TDLS_DISABLE_LINK accepts the associated AP's address and 
+blindly
+destroys its non-TDLS station entry; later AP probing cannot find that 
+station
+and triggers the reported !sta warning. The delayed setup cleanup has 
+the same
+destructive risk because setup currently records any existing station 
+address,
+not necessarily a TDLS peer.
 
-I'm not entirely sure, but I believe they're _added_ to the AP first,
-and then _modified_ to be in the AP_VLAN via another path
-(NL80211_CMD_SET_STATION, NL80211_ATTR_VLAN_ID).
+Correct the delayed-work hunk so it does not ignore the return value of
+__sta_info_destroy(), which is declared __must_check and causes an
+-Wunused-result compiler warning. The smallest correction is to retain the
+new sta_info_get() plus sta->sta.tdls validation, but call the existing
+sta_info_destroy_addr(sdata, sdata->u.mgd.tdls_peer) wrapper after that 
+check.
+Alternatively, explicitly consume and handle the internal helper's result.
 
-The question is whether or not we can rely on this, i.e. no userspace
-ever used the other path.
+Keep the early missing/non-TDLS rejection in NL80211_TDLS_DISABLE_LINK, the
+queue flushing and recalculation order for valid TDLS peers, and the 
+existing
+commit message and tags. Do not add unrelated cleanup or broaden the change.
 
-> In my tests this case doesn't match, even after the STA is assoc with vla=
-n interface (e.g.
-> wlan0.10).
-
-Right.
-
-> My test is done using qemu with:
-
-I'd probably use UML/hwsim tests, but sure.
-
-> This index 4 is assigned to wlan0, so it will never have iftype =3D=3D NL=
-80211_IFTYPE_AP_VLAN.
-> Also the print of wdev->identifier will give 0x1 and not 0x2.
->=20
-> So, is it even possible that `case NL80211_IFTYPE_AP_VLAN` would match? I=
-f it will never match, then
-> do I understand that the change I proposed should be correct for other ca=
-ses?
-
-Well, it's _possible_, right? It just appears to not be used in
-practice, as I described above (guess your test says I'm right).
-
-But then I think we should do two changes:
-
-1) simply refuse adding stations to AP_VLAN, i.e. drop the
-   NL80211_IFTYPE_AP_VLAN case entirely from the function
-
-2) make the change you suggested validating the link
-
-
-Actually only validating the link as you showed would basically achieve
-(1) with -ENETDOWN (we've been using -ENOLINK btw) rather than with the
--EOPNOTSUPP error from the default switch case, but it also seems less
-explicit...
-
-Or maybe just do both in one commit?
-
-johannes
+On 8/2/2026 11:52 PM, syzbot wrote:
+> When userspace sends a NL80211_CMD_TDLS_OPER command with the
+> NL80211_TDLS_DISABLE_LINK operation, the request is handled by
+> ieee80211_tdls_oper(). The code for this operation directly calls
+> sta_info_destroy_addr() to destroy the station entry associated with the
+> provided MAC address. Unlike the NL80211_TDLS_ENABLE_LINK case, which
+> correctly verifies that the target station exists and is actually a TDLS
+> peer, the disable link path blindly destroys whatever station matches the
+> MAC address.
+>
+> If the provided MAC address is the AP's MAC address, this causes the AP's
+> station entry to be destroyed while the interface is still associated.
+> Later, when the driver attempts to send a probe request to the AP, it looks
+> up the AP's station entry, which returns NULL, triggering a warning in
+> ieee80211_mgd_probe_ap_send():
+>
+> WARNING: net/mac80211/mlme.c:4898 at
+> ieee80211_mgd_probe_ap_send+0x497/0x560 net/mac80211/mlme.c:4898
+> RIP: 0010:ieee80211_mgd_probe_ap_send+0x497/0x560 net/mac80211/mlme.c:4898
+> Call Trace:
+>   <TASK>
+>   cfg80211_wiphy_work+0x29e/0x420 net/wireless/core.c:538
+>   process_one_work kernel/workqueue.c:3322 [inline]
+>   process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+>   worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
+>   kthread+0x388/0x470 kernel/kthread.c:436
+>   ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+>   ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+>   </TASK>
+>
+> A similar issue exists in ieee80211_tdls_peer_del_work() which is queued by
+> ieee80211_tdls_mgmt_setup(). If a TDLS setup request is sent with the AP's
+> MAC address, the AP's station entry will be destroyed when the setup
+> timeout expires.
+>
+> Fix this by explicitly verifying that the station exists and is a TDLS peer
+> (sta->sta.tdls == true) before destroying it in both ieee80211_tdls_oper()
+> and ieee80211_tdls_peer_del_work().
+>
+> Fixes: dfe018bf9953 ("mac80211: handle TDLS high-level commands and frames")
+> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+a59b5291776979816910@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=a59b5291776979816910
+> Link: https://syzkaller.appspot.com/ai_job?id=52e47481-fb24-46ec-8402-1f14cf87081f
+> To: "Johannes Berg" <johannes@sipsolutions.net>
+> To: <linux-wireless@vger.kernel.org>
+> To: "Arik Nemtsov" <arik@wizery.com>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> ---
+> diff --git a/net/mac80211/tdls.c b/net/mac80211/tdls.c
+> index ffd575a8d..24297552f 100644
+> --- a/net/mac80211/tdls.c
+> +++ b/net/mac80211/tdls.c
+> @@ -33,8 +33,12 @@ void ieee80211_tdls_peer_del_work(struct wiphy *wiphy, struct wiphy_work *wk)
+>   	lockdep_assert_wiphy(local->hw.wiphy);
+>   
+>   	if (!is_zero_ether_addr(sdata->u.mgd.tdls_peer)) {
+> +		struct sta_info *sta;
+> +
+>   		tdls_dbg(sdata, "TDLS del peer %pM\n", sdata->u.mgd.tdls_peer);
+> -		sta_info_destroy_addr(sdata, sdata->u.mgd.tdls_peer);
+> +		sta = sta_info_get(sdata, sdata->u.mgd.tdls_peer);
+> +		if (sta && sta->sta.tdls)
+> +			__sta_info_destroy(sta);
+>   		eth_zero_addr(sdata->u.mgd.tdls_peer);
+>   	}
+>   }
+> @@ -1462,6 +1466,10 @@ int ieee80211_tdls_oper(struct wiphy *wiphy, struct net_device *dev,
+>   			     !ether_addr_equal(sdata->u.mgd.tdls_peer, peer));
+>   		break;
+>   	case NL80211_TDLS_DISABLE_LINK:
+> +		sta = sta_info_get(sdata, peer);
+> +		if (!sta || !sta->sta.tdls)
+> +			return -ENOLINK;
+> +
+>   		/*
+>   		 * The teardown message in ieee80211_tdls_mgmt_teardown() was
+>   		 * created while the queues were stopped, so it might still be
+> @@ -1476,7 +1484,7 @@ int ieee80211_tdls_oper(struct wiphy *wiphy, struct net_device *dev,
+>   		/* flush a potentially queued teardown packet */
+>   		ieee80211_flush_queues(local, sdata, false);
+>   
+> -		ret = sta_info_destroy_addr(sdata, peer);
+> +		ret = __sta_info_destroy(sta);
+>   
+>   		iee80211_tdls_recalc_ht_protection(sdata, NULL);
+>   
+>
+>
+> base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
