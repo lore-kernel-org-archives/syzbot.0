@@ -1,148 +1,348 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAE9830F924
-	for <syzbot@lists.linux.dev>; Mon,  3 Aug 2026 15:36:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEB7F2D23A6
+	for <syzbot@lists.linux.dev>; Mon,  3 Aug 2026 16:22:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785771402; cv=none; b=hDWzFNXQBmYYPt1vC8ih5RxsvTbzKu4xCqe8bqkevsBqXthQUKYZuK+QrryaDnDp1YNza9nCZgUzP2wLTmI6qGKNGj/94CNiBq/EWpmV0rRUWT8AGvJaem0p1AEjIN7EMHQC0CLAuBVKYI7ZIieULsZnxpS/akuzCKAu72LqgtA=
+	t=1785774131; cv=none; b=FGoHm8iIFve8+OO9fyXHPHA1Hp0Ge1/9q6LUy5uoGzZI+enq/2uKfRhT9/X06iBTyt5uyHyY0p3M+Kb1oQDBDreqIfaNfClowoOnEXgKAy1QIKXCkruByiIU9wTvvN0tHbSvecTUwsbbC40o38QI1Ck4B1rHjBIJG6Y16ysJA50=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785771402; c=relaxed/simple;
-	bh=yq6636QNMalg3Sp8wLs7j6JfUXIUtuOcXTGp7Pd3DfI=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=eGtyeERQOLYNds3ink7B8BBBF8SWQuKNLb8MATOvqVl2zZEdL9JXtvddV+jHUGd6trw6lVvr9YY6bxTcPt/hEZWAjMnJ2tx6LWKqjfGLEVFuBEaL11IIJM3oSYjA6mX01liddTgvOx8cECYkVXS6gGFreSDwOIGrosD2XQ72tI0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Kbbg+2cs; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Kbbg+2cs"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 60D7D1F00A3A;
-	Mon,  3 Aug 2026 15:36:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785771400;
-	bh=EOoK02Hs3rgUpkdSeohiisE2mwfqDDi+dHwjcLdaPdE=;
-	h=From:To:Cc:Subject:Date;
-	b=Kbbg+2cs94kTr+/sCjHosg+f8BejZnxhQXeB2qOQf5CtXRgDrpsUICJMR2qL/deYJ
-	 XeeIuNgmLz4LCuJferX6n3cZ9Y9WrGGShCkpjETepDKIh8keJIKkd9m2EC776KRask
-	 zdqrHHqX8Pt5wN1sxJxl0NqTwoiuIvskUwZlvBQO7e4fB5zJYq0y39aZvx2CvLE18k
-	 P/NxGMLN3aYIP9007+UUVePE2crXk8tp9U1dM73LS9ezVPJINK8+jwXz6c4AoT6SKp
-	 Fd1UCHEAGxHRJdQjZpfyUxIritJbw31ltXjrkAVQAGbRkQ4Yx6tzErz0v9YMiCQZH1
-	 E/bzxvsG8Sx1w==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] wifi: mac80211: prevent destroying non-TDLS stations in TDLS operations
-Message-ID: <1b40a6ad-58b6-4111-b352-c82aaaa7d02c@mail.kernel.org>
+	s=arc-20240116; t=1785774131; c=relaxed/simple;
+	bh=klbCjH8YOMWT6r2ccvk5bQ9BVEikFkTG5EiGUd8d6ew=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=ZXQOACjhGmSDZUS+7LdpLNlRfGsVbCYKbajiLoMHdO11sxhgxNQCEb/AgJMDeLNBDqi77agjKN5qG4NkLXAujM0pRgsaRZRnIgpZ6Kf/s2j3+09afufWhWXY/EFYFOfedwlK2uKrSLffFk4cqCt3KAeiLQE7Adcg1zGRjeYuaxw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-49d4cb3ca23so5253951b6e.3
+        for <syzbot@lists.linux.dev>; Mon, 03 Aug 2026 09:22:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785774128; x=1786378928;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=tTwi0shPIm6T4aP7XtOdNp6o389CxompsxQWj+QvP9Y=;
+        b=WDMrbx46x40p4LtJXivtPcNfzCDT1PkWfWQHD3EsOJHwDBSFGT+SCQtb0WJ9JJoQBZ
+         loSA9ViuttHqrk5UQc0sBqxdgMKJJhX0tM8b9SjcPrI60cTBpBgZpIMCFEDFmJWdSod+
+         X4Q4ukz/AiBR4OF9BE/4jtWJ6htrdWTzRbXV8pSN9j2Zph6YoMuZnLHxL5z90zBylodX
+         tngfcdcu+p2eHYBS6umhqMReYtSC2xyxtGuCY4GcpwrV8nE7pvhs1rO9hCussYGrIAoY
+         0+qoEyWQAa+s4wUeLwL/OjjdYKLFe0GZNe4WFbXz3/GFpTI8PQ2Ni6ksvXGUYG8OlKX8
+         PcQw==
+X-Gm-Message-State: AOJu0Yxcp/cKC4MV8/UbrPcvRzy9IWOHc8FK47+yBikM9qhuhdZVzIuB
+	fMGQOdLkWLOIH1AYA0QOmvkCZ0QfZ9tYU4lMVD1KP2Dyn/mp6bw0sKLBrKRxoRxciEv41iC+BUT
+	8+DSaIUukZRwgSl2rsnPmPQY/MVVz3trM/hZTwIxjDW6KmvakN1wyYlv0dic=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Mon,  3 Aug 2026 15:36:40 +0000 (UTC)
+X-Received: by 2002:a05:6808:250e:b0:495:f74a:b572 with SMTP id
+ 5614622812f47-4af5e031fb3mr15742890b6e.5.1785774127695; Mon, 03 Aug 2026
+ 09:22:07 -0700 (PDT)
+Date: Mon, 03 Aug 2026 09:22:07 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a70c02f.6ce73036.24301b.0029.GAE@google.com>
+Subject: [moderation/CI] Re: jbd2:remove unnecessary finish_wait call in jbd2_journal_wait_updates
+From: syzbot ci <syzbot+cib058ec6bd8e2b759@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-When userspace sends a NL80211_CMD_TDLS_OPER command with the
-NL80211_TDLS_DISABLE_LINK operation, the request is handled by
-ieee80211_tdls_oper(). The code for this operation directly calls
-sta_info_destroy_addr() to destroy the station entry associated with the
-provided MAC address. Unlike the NL80211_TDLS_ENABLE_LINK case, which
-correctly verifies that the target station exists and is actually a TDLS
-peer, the disable link path blindly destroys whatever station matches the
-MAC address.
+syzbot ci has tested the following series
 
-If the provided MAC address is the AP's MAC address, this causes the AP's
-station entry to be destroyed while the interface is still associated.
-Later, when the driver attempts to send a probe request to the AP, it looks
-up the AP's station entry, which returns NULL, triggering a warning in
-ieee80211_mgd_probe_ap_send():
+[v1] jbd2:remove unnecessary finish_wait call in jbd2_journal_wait_updates
+https://lore.kernel.org/all/tencent_815048083723E7EA4309DA0B7DA35B78D106@qq.com
+* [PATCH] jbd2:remove unnecessary finish_wait call in jbd2_journal_wait_updates
 
-WARNING: net/mac80211/mlme.c:4898 at
-ieee80211_mgd_probe_ap_send+0x497/0x560 net/mac80211/mlme.c:4898
-RIP: 0010:ieee80211_mgd_probe_ap_send+0x497/0x560 net/mac80211/mlme.c:4898
+and found the following issue:
+INFO: task hung in start_this_handle
+
+Full report is available here:
+https://ci.syzbot.org/series/73998915-3df1-4ace-8b1c-a5696f54030a
+
+***
+
+INFO: task hung in start_this_handle
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      075b74841bd0065a3bda3440873c747938e69b68
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/a996e3f8-10dc-4864-a50b-8ec9751a77fa/config
+syz repro: https://ci.syzbot.org/findings/189b0cba-cb40-4fb0-8fe5-1fb8f8edbabf/syz_repro
+
+INFO: task syz.0.17:5845 blocked for more than 143 seconds.
+      Not tainted syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz.0.17        state:D stack:19240 pid:5845  tgid:5844  ppid:5752   task_flags:0x400140 flags:0x00080002
 Call Trace:
  <TASK>
- cfg80211_wiphy_work+0x29e/0x420 net/wireless/core.c:538
- process_one_work kernel/workqueue.c:3322 [inline]
- process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
+ context_switch kernel/sched/core.c:5510 [inline]
+ __schedule+0x17d9/0x56c0 kernel/sched/core.c:7234
+ __schedule_loop kernel/sched/core.c:7311 [inline]
+ schedule+0x164/0x2b0 kernel/sched/core.c:7326
+ wait_transaction_locked+0x1d6/0x280 fs/jbd2/transaction.c:152
+ add_transaction_credits fs/jbd2/transaction.c:-1 [inline]
+ start_this_handle+0x7ea/0x2210 fs/jbd2/transaction.c:403
+ jbd2__journal_start+0x2c0/0x5c0 fs/jbd2/transaction.c:502
+ jbd2_journal_start+0x2a/0x40 fs/jbd2/transaction.c:541
+ ocfs2_start_trans+0x3b7/0x700 fs/ocfs2/journal.c:371
+ ocfs2_dio_end_io_write fs/ocfs2/aops.c:2357 [inline]
+ ocfs2_dio_end_io+0xb55/0x13c0 fs/ocfs2/aops.c:2423
+ dio_complete+0x251/0x760 fs/direct-io.c:281
+ __blockdev_direct_IO+0x2ce1/0x3380 fs/direct-io.c:1296
+ ocfs2_direct_IO+0x249/0x2c0 fs/ocfs2/aops.c:2460
+ generic_file_direct_write+0x1d0/0x3f0 mm/filemap.c:4292
+ __generic_file_write_iter+0x11d/0x230 mm/filemap.c:4461
+ ocfs2_file_write_iter+0x1706/0x1f10 fs/ocfs2/file.c:2481
+ iter_file_splice_write+0xa31/0x1240 fs/splice.c:736
+ do_splice_from fs/splice.c:936 [inline]
+ direct_splice_actor+0x101/0x160 fs/splice.c:1159
+ splice_direct_to_actor+0x57b/0xcb0 fs/splice.c:1103
+ do_splice_direct_actor fs/splice.c:1202 [inline]
+ do_splice_direct+0x195/0x290 fs/splice.c:1228
+ do_sendfile+0x52e/0x7c0 fs/read_write.c:1371
+ __do_sys_sendfile64 fs/read_write.c:1432 [inline]
+ __se_sys_sendfile64+0x144/0x1a0 fs/read_write.c:1418
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f281339e019
+RSP: 002b:00007f281419a028 EFLAGS: 00000246 ORIG_RAX: 0000000000000028
+RAX: ffffffffffffffda RBX: 00007f2813625fa0 RCX: 00007f281339e019
+RDX: 0000000000000000 RSI: 0000000000000005 RDI: 0000000000000004
+RBP: 00007f281343500c R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000020fffe82 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f2813626038 R14: 00007f2813625fa0 R15: 00007ffd9d864f08
+ </TASK>
+INFO: task jbd2/loop0-75:5849 blocked for more than 143 seconds.
+      Not tainted syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:jbd2/loop0-75   state:D stack:26992 pid:5849  tgid:5849  ppid:2      task_flags:0x240040 flags:0x00080000
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5510 [inline]
+ __schedule+0x17d9/0x56c0 kernel/sched/core.c:7234
+ __schedule_loop kernel/sched/core.c:7311 [inline]
+ schedule+0x164/0x2b0 kernel/sched/core.c:7326
+ jbd2_journal_wait_updates+0x1a3/0x280 fs/jbd2/transaction.c:841
+ jbd2_journal_commit_transaction+0x93c/0x5b70 fs/jbd2/commit.c:482
+ kjournald2+0x3bc/0x750 fs/jbd2/journal.c:199
  kthread+0x388/0x470 kernel/kthread.c:436
  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
  </TASK>
 
-A similar issue exists in ieee80211_tdls_peer_del_work() which is queued by
-ieee80211_tdls_mgmt_setup(). If a TDLS setup request is sent with the AP's
-MAC address, the AP's station entry will be destroyed when the setup
-timeout expires.
+Showing all locks held in the system:
+1 lock held by khungtaskd/35:
+ #0: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
+ #0: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:840 [inline]
+ #0: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: debug_show_all_locks+0x2e/0x180 kernel/locking/lockdep.c:6775
+2 locks held by getty/5438:
+ #0: ffff888113f2b0a0 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x25/0x70 drivers/tty/tty_ldisc.c:243
+ #1: ffffc900034732e8 (&ldata->atomic_read_lock){+.+.}-{4:4}, at: n_tty_read+0x45a/0x1360 drivers/tty/n_tty.c:2211
+5 locks held by syz.0.17/5845:
+ #0: ffff8881be206450 (sb_writers#12){.+.+}-{0:0}, at: direct_splice_actor+0x49/0x160 fs/splice.c:1158
+ #1: ffff8881b1044fa0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: inode_lock include/linux/fs.h:1024 [inline]
+ #1: ffff8881b1044fa0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: ocfs2_file_write_iter+0x440/0x1f10 fs/ocfs2/file.c:2411
+ #2: ffff8881b1044c58 (&oi->ip_alloc_sem){++++}-{4:4}, at: ocfs2_dio_end_io_write fs/ocfs2/aops.c:2299 [inline]
+ #2: ffff8881b1044c58 (&oi->ip_alloc_sem){++++}-{4:4}, at: ocfs2_dio_end_io+0x441/0x13c0 fs/ocfs2/aops.c:2423
+ #3: ffff8881be206640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_dio_end_io_write fs/ocfs2/aops.c:2357 [inline]
+ #3: ffff8881be206640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_dio_end_io+0xb55/0x13c0 fs/ocfs2/aops.c:2423
+ #4: ffff8881a51ab0e0 (&journal->j_trans_barrier){.+.+}-{4:4}, at: ocfs2_start_trans+0x3ab/0x700 fs/ocfs2/journal.c:369
+5 locks held by syz.1.27/5936:
+ #0: ffff8881bdd42450 (sb_writers#12){.+.+}-{0:0}, at: direct_splice_actor+0x49/0x160 fs/splice.c:1158
+ #1: ffff8881b8bb79a0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: inode_lock include/linux/fs.h:1024 [inline]
+ #1: ffff8881b8bb79a0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: ocfs2_file_write_iter+0x440/0x1f10 fs/ocfs2/file.c:2411
+ #2: ffff8881b8bd4fa0 (&ocfs2_sysfile_lock_key[ORPHAN_DIR_SYSTEM_INODE]){+.+.}-{4:4}, at: inode_lock include/linux/fs.h:1024 [inline]
+ #2: ffff8881b8bd4fa0 (&ocfs2_sysfile_lock_key[ORPHAN_DIR_SYSTEM_INODE]){+.+.}-{4:4}, at: ocfs2_lookup_lock_orphan_dir+0xec/0x2e0 fs/ocfs2/namei.c:2129
+ #3: ffff8881bdd42640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_add_inode_to_orphan+0x22b/0x7c0 fs/ocfs2/namei.c:2680
+ #4: ffff8881bdd0ece0 (&journal->j_trans_barrier){.+.+}-{4:4}, at: ocfs2_start_trans+0x3ab/0x700 fs/ocfs2/journal.c:369
+5 locks held by syz.2.28/5938:
+ #0: ffff88811152c450 (sb_writers#12){.+.+}-{0:0}, at: direct_splice_actor+0x49/0x160 fs/splice.c:1158
+ #1: ffff888120e741a0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: inode_lock include/linux/fs.h:1024 [inline]
+ #1: ffff888120e741a0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: ocfs2_file_write_iter+0x440/0x1f10 fs/ocfs2/file.c:2411
+ #2: ffff888120e73e58 (&oi->ip_alloc_sem){++++}-{4:4}, at: ocfs2_dio_end_io_write fs/ocfs2/aops.c:2299 [inline]
+ #2: ffff888120e73e58 (&oi->ip_alloc_sem){++++}-{4:4}, at: ocfs2_dio_end_io+0x441/0x13c0 fs/ocfs2/aops.c:2423
+ #3: ffff88811152c640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_dio_end_io_write fs/ocfs2/aops.c:2357 [inline]
+ #3: ffff88811152c640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_dio_end_io+0xb55/0x13c0 fs/ocfs2/aops.c:2423
+ #4: ffff8881159438e0 (&journal->j_trans_barrier){.+.+}-{4:4}, at: ocfs2_start_trans+0x3ab/0x700 fs/ocfs2/journal.c:369
+5 locks held by syz.3.29/5981:
+ #0: ffff888104af8450 (sb_writers#12){.+.+}-{0:0}, at: direct_splice_actor+0x49/0x160 fs/splice.c:1158
+ #1: ffff88801c8917a0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: inode_lock include/linux/fs.h:1024 [inline]
+ #1: ffff88801c8917a0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: ocfs2_file_write_iter+0x440/0x1f10 fs/ocfs2/file.c:2411
+ #2: ffff888120db5da0 (&ocfs2_sysfile_lock_key[ORPHAN_DIR_SYSTEM_INODE]){+.+.}-{4:4}, at: inode_lock include/linux/fs.h:1024 [inline]
+ #2: ffff888120db5da0 (&ocfs2_sysfile_lock_key[ORPHAN_DIR_SYSTEM_INODE]){+.+.}-{4:4}, at: ocfs2_del_inode_from_orphan+0x12e/0x7b0 fs/ocfs2/namei.c:2728
+ #3: ffff888104af8640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_del_inode_from_orphan+0x16c/0x7b0 fs/ocfs2/namei.c:2737
+ #4: ffff888110b7f8e0 (&journal->j_trans_barrier){.+.+}-{4:4}, at: ocfs2_start_trans+0x3ab/0x700 fs/ocfs2/journal.c:369
+5 locks held by syz.5.31/6074:
+ #0: ffff88801c03e450 (sb_writers#12){.+.+}-{0:0}, at: direct_splice_actor+0x49/0x160 fs/splice.c:1158
+ #1: ffff888120db41a0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: inode_lock include/linux/fs.h:1024 [inline]
+ #1: ffff888120db41a0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: ocfs2_file_write_iter+0x440/0x1f10 fs/ocfs2/file.c:2411
+ #2: ffff888120db3e58 (&ocfs2_file_ip_alloc_sem_key){++++}-{4:4}, at: ocfs2_dio_end_io_write fs/ocfs2/aops.c:2299 [inline]
+ #2: ffff888120db3e58 (&ocfs2_file_ip_alloc_sem_key){++++}-{4:4}, at: ocfs2_dio_end_io+0x441/0x13c0 fs/ocfs2/aops.c:2423
+ #3: ffff88801c03e640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_dio_end_io_write fs/ocfs2/aops.c:2357 [inline]
+ #3: ffff88801c03e640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_dio_end_io+0xb55/0x13c0 fs/ocfs2/aops.c:2423
+ #4: ffff888115943ce0 (&journal->j_trans_barrier){.+.+}-{4:4}, at: ocfs2_start_trans+0x3ab/0x700 fs/ocfs2/journal.c:369
+5 locks held by syz.4.32/6079:
+ #0: ffff888172ede450 (sb_writers#12){.+.+}-{0:0}, at: direct_splice_actor+0x49/0x160 fs/splice.c:1158
+ #1: ffff8881b1045da0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: inode_lock include/linux/fs.h:1024 [inline]
+ #1: ffff8881b1045da0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: ocfs2_file_write_iter+0x440/0x1f10 fs/ocfs2/file.c:2411
+ #2: ffff8881b10417a0 (&ocfs2_sysfile_lock_key[ORPHAN_DIR_SYSTEM_INODE]){+.+.}-{4:4}, at: inode_lock include/linux/fs.h:1024 [inline]
+ #2: ffff8881b10417a0 (&ocfs2_sysfile_lock_key[ORPHAN_DIR_SYSTEM_INODE]){+.+.}-{4:4}, at: ocfs2_del_inode_from_orphan+0x12e/0x7b0 fs/ocfs2/namei.c:2728
+ #3: ffff888172ede640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_del_inode_from_orphan+0x16c/0x7b0 fs/ocfs2/namei.c:2737
+ #4: ffff88816d09cce0 (&journal->j_trans_barrier){.+.+}-{4:4}, at: ocfs2_start_trans+0x3ab/0x700 fs/ocfs2/journal.c:369
+5 locks held by syz.6.33/6125:
+ #0: ffff8881bc03e450 (sb_writers#12){.+.+}-{0:0}, at: direct_splice_actor+0x49/0x160 fs/splice.c:1158
+ #1: ffff88801c8ab3a0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: inode_lock include/linux/fs.h:1024 [inline]
+ #1: ffff88801c8ab3a0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: ocfs2_file_write_iter+0x440/0x1f10 fs/ocfs2/file.c:2411
+ #2: ffff88801c8ab058 (&oi->ip_alloc_sem){++++}-{4:4}, at: ocfs2_dio_end_io_write fs/ocfs2/aops.c:2299 [inline]
+ #2: ffff88801c8ab058 (&oi->ip_alloc_sem){++++}-{4:4}, at: ocfs2_dio_end_io+0x441/0x13c0 fs/ocfs2/aops.c:2423
+ #3: ffff8881bc03e640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_dio_end_io_write fs/ocfs2/aops.c:2357 [inline]
+ #3: ffff8881bc03e640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_dio_end_io+0xb55/0x13c0 fs/ocfs2/aops.c:2423
+ #4: ffff8881bd7454e0 (&journal->j_trans_barrier){.+.+}-{4:4}, at: ocfs2_start_trans+0x3ab/0x700 fs/ocfs2/journal.c:369
+5 locks held by syz.7.36/6223:
+ #0: ffff888168f9e450 (sb_writers#12){.+.+}-{0:0}, at: direct_splice_actor+0x49/0x160 fs/splice.c:1158
+ #1: ffff8881a20217a0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: inode_lock include/linux/fs.h:1024 [inline]
+ #1: ffff8881a20217a0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: ocfs2_file_write_iter+0x440/0x1f10 fs/ocfs2/file.c:2411
+ #2: ffff8881a2021458 (&oi->ip_alloc_sem){++++}-{4:4}, at: ocfs2_dio_end_io_write fs/ocfs2/aops.c:2299 [inline]
+ #2: ffff8881a2021458 (&oi->ip_alloc_sem){++++}-{4:4}, at: ocfs2_dio_end_io+0x441/0x13c0 fs/ocfs2/aops.c:2423
+ #3: ffff888168f9e640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_dio_end_io_write fs/ocfs2/aops.c:2357 [inline]
+ #3: ffff888168f9e640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_dio_end_io+0xb55/0x13c0 fs/ocfs2/aops.c:2423
+ #4: ffff8881be92f0e0 (&journal->j_trans_barrier){.+.+}-{4:4}, at: ocfs2_start_trans+0x3ab/0x700 fs/ocfs2/journal.c:369
+5 locks held by syz.8.38/6233:
+ #0: ffff88801e146450 (sb_writers#12){.+.+}-{0:0}, at: direct_splice_actor+0x49/0x160 fs/splice.c:1158
+ #1: ffff888120ecdda0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: inode_lock include/linux/fs.h:1024 [inline]
+ #1: ffff888120ecdda0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: ocfs2_file_write_iter+0x440/0x1f10 fs/ocfs2/file.c:2411
+ #2: ffff88801c8925a0 (&ocfs2_sysfile_lock_key[ORPHAN_DIR_SYSTEM_INODE]){+.+.}-{4:4}, at: inode_lock include/linux/fs.h:1024 [inline]
+ #2: ffff88801c8925a0 (&ocfs2_sysfile_lock_key[ORPHAN_DIR_SYSTEM_INODE]){+.+.}-{4:4}, at: ocfs2_del_inode_from_orphan+0x12e/0x7b0 fs/ocfs2/namei.c:2728
+ #3: ffff88801e146640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_del_inode_from_orphan+0x16c/0x7b0 fs/ocfs2/namei.c:2737
+ #4: ffff8881155170e0 (&journal->j_trans_barrier){.+.+}-{4:4}, at: ocfs2_start_trans+0x3ab/0x700 fs/ocfs2/journal.c:369
+5 locks held by syz.9.40/6285:
+ #0: ffff888116eba450 (sb_writers#12){.+.+}-{0:0}, at: direct_splice_actor+0x49/0x160 fs/splice.c:1158
+ #1: ffff88801c8aa5a0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: inode_lock include/linux/fs.h:1024 [inline]
+ #1: ffff88801c8aa5a0 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: ocfs2_file_write_iter+0x440/0x1f10 fs/ocfs2/file.c:2411
+ #2: ffff88801c8aa258 (&ocfs2_file_ip_alloc_sem_key){++++}-{4:4}, at: ocfs2_dio_end_io_write fs/ocfs2/aops.c:2299 [inline]
+ #2: ffff88801c8aa258 (&ocfs2_file_ip_alloc_sem_key){++++}-{4:4}, at: ocfs2_dio_end_io+0x441/0x13c0 fs/ocfs2/aops.c:2423
+ #3: ffff888116eba640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_dio_end_io_write fs/ocfs2/aops.c:2357 [inline]
+ #3: ffff888116eba640 (sb_internal#2){.+.+}-{0:0}, at: ocfs2_dio_end_io+0xb55/0x13c0 fs/ocfs2/aops.c:2423
+ #4: ffff88801b9554e0 (&journal->j_trans_barrier){.+.+}-{4:4}, at: ocfs2_start_trans+0x3ab/0x700 fs/ocfs2/journal.c:369
+3 locks held by syz.2.306/6936:
+2 locks held by syz.0.305/6938:
+2 locks held by syz.1.307/6940:
 
-Fix this by explicitly verifying that the station exists and is a TDLS peer
-(sta->sta.tdls == true) before destroying it in both ieee80211_tdls_oper()
-and ieee80211_tdls_peer_del_work().
+=============================================
 
-Fixes: dfe018bf9953 ("mac80211: handle TDLS high-level commands and frames")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+a59b5291776979816910@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=a59b5291776979816910
-Link: https://syzkaller.appspot.com/ai_job?id=986e342d-a720-47ab-84bf-e8be0e8b70e5
-To: "Johannes Berg" <johannes@sipsolutions.net>
-To: <linux-wireless@vger.kernel.org>
-To: "Arik Nemtsov" <arik@wizery.com>
-Cc: <linux-kernel@vger.kernel.org>
+NMI backtrace for cpu 0
+CPU: 0 UID: 0 PID: 35 Comm: khungtaskd Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ nmi_cpu_backtrace+0x274/0x2d0 lib/nmi_backtrace.c:122
+ nmi_trigger_cpumask_backtrace+0x17a/0x380 lib/nmi_backtrace.c:65
+ trigger_all_cpu_backtrace include/linux/nmi.h:162 [inline]
+ __sys_info lib/sys_info.c:157 [inline]
+ sys_info+0x135/0x170 lib/sys_info.c:165
+ check_hung_uninterruptible_tasks kernel/hung_task.c:353 [inline]
+ watchdog+0xfd7/0x1030 kernel/hung_task.c:561
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1
+CPU: 1 UID: 0 PID: 6940 Comm: syz.1.307 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:__lock_acquire+0x56/0x2cf0 kernel/locking/lockdep.c:5098
+Code: 3d ee 07 b5 0e 00 0f 84 6e 13 00 00 49 89 fb 48 8b 07 48 3d 20 15 31 94 0f 84 5c 13 00 00 41 89 cd 41 89 d2 8b 0d 8a b4 ff 0c <85> c9 44 0f 44 c1 31 ff 48 3d 10 15 31 94 41 0f 45 f8 8b 0d f2 dc
+RSP: 0018:ffffc90000a08be0 EFLAGS: 00000087
+RAX: ffff8881210281d8 RBX: 0000000000000000 RCX: 0000000000000001
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff88823c6281d8
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+R10: 0000000000000000 R11: ffff88823c6281d8 R12: 0000000000000000
+R13: 0000000000000000 R14: ffff88816bf63b80 R15: 0000000000000046
+FS:  00007f58059476c0(0000) GS:ffff8882a8f4b000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f57fc9ff000 CR3: 000000016d1f6000 CR4: 00000000000006f0
+Call Trace:
+ <IRQ>
+ lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5868
+ __raw_spin_lock_irq include/linux/spinlock_api_smp.h:142 [inline]
+ _raw_spin_lock_irq+0x3d/0x50 kernel/locking/spinlock.c:174
+ __run_hrtimer kernel/time/hrtimer.c:2036 [inline]
+ __hrtimer_run_queues+0x466/0xa10 kernel/time/hrtimer.c:2096
+ hrtimer_interrupt+0x448/0x910 kernel/time/hrtimer.c:2215
+ local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1051 [inline]
+ __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:1068
+ instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1062 [inline]
+ sysvec_apic_timer_interrupt+0xa1/0xc0 arch/x86/kernel/apic/apic.c:1062
+ </IRQ>
+ <TASK>
+ asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.h:674
+RIP: 0010:arch_atomic_sub_and_test arch/x86/include/asm/atomic.h:47 [inline]
+RIP: 0010:raw_atomic_sub_and_test include/linux/atomic/atomic-arch-fallback.h:2258 [inline]
+RIP: 0010:atomic_sub_and_test include/linux/atomic/atomic-instrumented.h:1366 [inline]
+RIP: 0010:page_ref_sub_and_test include/linux/page_ref.h:195 [inline]
+RIP: 0010:folio_ref_sub_and_test include/linux/page_ref.h:204 [inline]
+RIP: 0010:folios_put_refs+0x28b/0xb30 mm/swap.c:1029
+Code: 00 e8 49 31 bc ff e9 dc 03 00 00 e8 3f 31 bc ff e9 d2 03 00 00 49 8d 7d 34 be 04 00 00 00 e8 ec cc 29 00 31 db f0 45 29 65 34 <41> 0f 94 c4 0f 94 c3 bf 02 00 00 00 89 de e8 12 34 bc ff 31 ff 89
+RSP: 0018:ffffc900075674e0 EFLAGS: 00000202
+RAX: ffffffff820ae301 RBX: 0000000000000000 RCX: ffffffff820ae3b4
+RDX: 0000000000000001 RSI: 0000000000000004 RDI: ffffea00066d18f4
+RBP: ffffc900075675f0 R08: ffffea00066d18f7 R09: 1ffffd4000cda31e
+R10: dffffc0000000000 R11: fffff94000cda31f R12: 0000000000000001
+R13: ffffea00066d18c0 R14: 1ffffd4000cda318 R15: 0200000000000000
+ folios_put include/linux/mm.h:2183 [inline]
+ folio_batch_move_lru+0x908/0xa60 mm/swap.c:214
+ __folio_batch_add_and_move+0x510/0xc50 mm/swap.c:231
+ shmem_alloc_and_add_folio+0xcc2/0xf60 mm/shmem.c:2018
+ shmem_get_folio_gfp+0x5da/0x16d0 mm/shmem.c:2512
+ shmem_get_folio mm/shmem.c:2618 [inline]
+ shmem_write_begin+0x16c/0x330 mm/shmem.c:3249
+ generic_perform_write+0x2d5/0x8f0 mm/filemap.c:4358
+ shmem_file_write_iter+0xf8/0x120 mm/shmem.c:3424
+ new_sync_write fs/read_write.c:595 [inline]
+ vfs_write+0x612/0xba0 fs/read_write.c:687
+ ksys_write+0x150/0x270 fs/read_write.c:739
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f580495e84e
+Code: 08 0f 85 a5 a8 ff ff 49 89 fb 48 89 f0 48 89 d7 48 89 ce 4c 89 c2 4d 89 ca 4c 8b 44 24 08 4c 8b 4c 24 10 4c 89 5c 24 08 0f 05 <c3> 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 80 00 00 00 00 48 83 ec 08
+RSP: 002b:00007f5805946da8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 00007f58059476c0 RCX: 00007f580495e84e
+RDX: 0000000001000000 RSI: 00007f57fba00000 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
+R13: 00007f5805946ee0 R14: 00007f5805946ea0 R15: 00007f57fba00000
+ </TASK>
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v2:
-- In ieee80211_tdls_peer_del_work(), use sta_info_destroy_addr() instead of __sta_info_destroy() to destroy the station.
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v1:
-https://lore.kernel.org/all/7f0c8fa8-559d-4fdf-989f-c81259e4e719@mail.kernel.org/T/
----
-diff --git a/net/mac80211/tdls.c b/net/mac80211/tdls.c
-index ffd575a8d..eef1dde1c 100644
---- a/net/mac80211/tdls.c
-+++ b/net/mac80211/tdls.c
-@@ -33,8 +33,12 @@ void ieee80211_tdls_peer_del_work(struct wiphy *wiphy, struct wiphy_work *wk)
- 	lockdep_assert_wiphy(local->hw.wiphy);
- 
- 	if (!is_zero_ether_addr(sdata->u.mgd.tdls_peer)) {
-+		struct sta_info *sta;
-+
- 		tdls_dbg(sdata, "TDLS del peer %pM\n", sdata->u.mgd.tdls_peer);
--		sta_info_destroy_addr(sdata, sdata->u.mgd.tdls_peer);
-+		sta = sta_info_get(sdata, sdata->u.mgd.tdls_peer);
-+		if (sta && sta->sta.tdls)
-+			sta_info_destroy_addr(sdata, sdata->u.mgd.tdls_peer);
- 		eth_zero_addr(sdata->u.mgd.tdls_peer);
- 	}
- }
-@@ -1462,6 +1466,10 @@ int ieee80211_tdls_oper(struct wiphy *wiphy, struct net_device *dev,
- 			     !ether_addr_equal(sdata->u.mgd.tdls_peer, peer));
- 		break;
- 	case NL80211_TDLS_DISABLE_LINK:
-+		sta = sta_info_get(sdata, peer);
-+		if (!sta || !sta->sta.tdls)
-+			return -ENOLINK;
-+
- 		/*
- 		 * The teardown message in ieee80211_tdls_mgmt_teardown() was
- 		 * created while the queues were stopped, so it might still be
-@@ -1476,7 +1484,7 @@ int ieee80211_tdls_oper(struct wiphy *wiphy, struct net_device *dev,
- 		/* flush a potentially queued teardown packet */
- 		ieee80211_flush_queues(local, sdata, false);
- 
--		ret = sta_info_destroy_addr(sdata, peer);
-+		ret = __sta_info_destroy(sta);
- 
- 		iee80211_tdls_recalc_ht_protection(sdata, NULL);
- 
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
 
-base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+The email will later be sent to:
+[1289151713@qq.com linux-ext4@vger.kernel.org]
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
