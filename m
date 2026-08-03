@@ -1,208 +1,221 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpo75.interia.pl (smtpo75.interia.pl [217.74.67.75])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C567930F92E
-	for <syzbot@lists.linux.dev>; Mon,  3 Aug 2026 12:11:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FEEB40D590
+	for <syzbot@lists.linux.dev>; Mon,  3 Aug 2026 13:10:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.75
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785759108; cv=none; b=pxjtpKA022Lx2faqX+5hDns3ALAuuMsXGVAbXSLdcG5x2lo4JyIc0W5I2N/gZwgMaawyto9vmJ5ArFU3dV+DwypjRlim97f5RewLY4z8NRVYY5tTHCdMZ+eVkytjEgVz/vQAfV1j/OaCZEqYgJcK9ZVvM5eoxtbAOmJ+xMFzSpg=
+	t=1785762615; cv=none; b=rYtYn22d58aTHiWqkZagWNoeDr4NYnGBjcayRBR1YVLTXL11ux6TudesO8fX/TKSXPYNCryOThTS9EXI0QcDSaL3tWYHlIqFcbfRgN7nsBL+wY5up+CxfLrCBaxX3ywdITQI2HeWTeIIWQYbdxNL7Lgnb4OEC8szzT9cydP1CXM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785759108; c=relaxed/simple;
-	bh=5FhqZcuvXbUA7XKnBEjLE6oGOpoajtBISrkOKD3VszQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=H/2LUMgqUATyg928jCZwqaYNMJFlfmavWuWeJXm5XZRE6pOMC1PkjOnBFUz+rxeC6Phpvw/2A/hDu3XR9IRt40hsJ+zlR94+KYjIWrCw3vL5yyx6aF9p1D9KQFQ+WbiDg1OmdAzO2aDZm5acp1eAggxc0I07l1NO+LDiS5tPrFI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m4dUh7GX; arc=none smtp.client-ip=209.85.208.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785762615; c=relaxed/simple;
+	bh=skZ3o2C83bqo64O48eP2TbVWJScyinPe2K7YPqDQbl8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LEenR2X47QnlLlJfLupEndZ3LIuIxzacypvOvL4JxuOYyEXURGoKAHdUixDb9UE2pSizyEeHsxmNn3BFPV1Pc4s8wEz/uM7eqMz7/GH2lZSPH8rwmkFRYtm+EadaLQ2c/tR9+AY/lx8bpYtTj+6jPxViFz2OlRegoLyO+aZfd7E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=Cf5mUZUO; arc=none smtp.client-ip=217.74.67.75
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m4dUh7GX"
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-6a051b73866so5267178a12.0
-        for <syzbot@lists.linux.dev>; Mon, 03 Aug 2026 05:11:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785759105; x=1786363905; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=EcjQI2JYKwg5xZMIFGY1JaKQvya3kkElNk2GTcB9VuQ=;
-        b=m4dUh7GX8IVXcKN1rY7OgY9TvYxdre5ibnuiuyVY/7b7+2rgswXVYeD1y3j/ioMU9u
-         y40vxPnNhGMk/9VLP7BYThqANcODoTVhn216hVYRpuT/4+fBgUkz1omsixlOYEMKVHxS
-         SBjsOk0mgkCEu6xyeoJfJyA8D9FTHiTuy1lWKvptUdRfUdKlF1tDONw4vhcAa/TcVhg9
-         pFmnWcstJeQlKeE1lA79BAMI5dsVlHDY+mwruFHhrKe3LECNgSGlwakKexHYCvcCwDM3
-         UQy0DvMAt3iW+cTeWRWYoex4flGbkobOJRLkMStW35dVRo0ydqXiTE+wQp3oqqfyw873
-         p65g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785759105; x=1786363905;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=EcjQI2JYKwg5xZMIFGY1JaKQvya3kkElNk2GTcB9VuQ=;
-        b=E0f38tZoTb2iHykK75sNX0EIF55899Tw+CdDniEoyUo+MUmOL5vKupryfaxJ6Nw7jr
-         DPqsj65wL6JXdC6AhydZMm1O6Upu0hrkXbMRUEd1AvGBTfjRFYm9tFHEP5GjxbdtUX0m
-         K5wchbM0C6oWyDLW2M71M9nsYcwDrDFZ8+NufL+hbI/yU2hcfIrbClWtxGXmcJjw+q8E
-         WRydV59Udhk/9DsTAQF+22T7Zf+tFrwOYzVZmoxfuaQP6d3wPIZId0cLe3/6z79fE1Z7
-         tILfDPQI/wARukVH7fjWbWnoXWi3Gcz9Kej8Zs5V6i3b7HqFt6EsbDSYQmsXvGFuz97z
-         1RDg==
-X-Forwarded-Encrypted: i=1; AHgh+RqOZCGm/YV7sbROQbAhilVki1Yw/NALqPmrVSmumKTllWL/PS/g3g1l5o7q4kLTt0thwk0Nvcs=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxsu/q7E9QQXVxS8Tui8Pa3C85iF/K+n4PdEKQZgIJNdJZjJena
-	RxWVhCm7YgPIJH7tFhcU8qxf4NSg10fBDXEG9nhk8ZhtbPI/612uVtgb
-X-Gm-Gg: AR+sD13YoKfuTQyMomQdF8S9xVjdXoxsunqtKYu8QRnzj5ujY9RhR7bpKb0QbgVICpK
-	6w8l8jpAxKxM50Uq2lG42BaEvtZOMzHBF4S99nWvNCagGao2lseuCuL+8r2NgUL3P1x6D9nLGTn
-	uN6DKumiz36MhXsfztYVJ5bl3YPcySUxAkM/TJs40+VrdcfQ6FQKaBq38A23bAYShFLzbgHusPG
-	qM7qWjtqvgG1dbEu3Xea5mbyJkfmIx5q3cCjDj2/fjdDPqj1P+1wRj5aRYvJw6OUVV4VU1XD3vW
-	0SnKvVAZ23jczJZh4TlM7rzbI9hcrvt4UiKyLw9XSNYqnNp3eR/5sTwYsLoxcBmV2TRKgccM+NR
-	4p7E3B+i5kNHBMSjnqFf0aIIvG35kG8mqa+ElXqbwdRb2/MKx86tfV5ull/DKpK2SZ9pO0B0OI5
-	5vjkwOBekybHDPKYRsc+fAa+lZB1AtiOGXCUjBKjjIkxN3iX3emrM7rMm2yto10EhEV4tP9cn2d
-	vp0Othu5M4BQdKecXZAJAxlRZjYbq7yRPpxrrHpTis3Fx8D2IrcSPlV2fjsSHmMj4r9emgaB/eS
-	O38sBFFP9VX+3Dv+IQwGlj0PNrTnrjAT9Ah9vg==
-X-Received: by 2002:a05:6402:21cf:b0:69e:8ad:515f with SMTP id 4fb4d7f45d1cf-6a0a7c60fbamr6798287a12.6.1785759104890;
-        Mon, 03 Aug 2026 05:11:44 -0700 (PDT)
-Received: from Ubuntu.ts.net (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a09c63daf7sm5208181a12.18.2026.08.03.05.11.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2026 05:11:44 -0700 (PDT)
-From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-To: netdev@vger.kernel.org,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>
-Cc: syzkaller-bugs@googlegroups.com,
-	dskr99@gmail.com,
-	Kees Cook <kees@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	syzbot@lists.linux.dev,
-	syzbot+5fe14f2ff4ccbace9a26@syzkaller.appspotmail.com
-Subject: [PATCH net v2] ipvlan: keep lower device alive until private destruction
-Date: Mon,  3 Aug 2026 14:11:39 +0200
-Message-ID: <20260803121140.261329-1-krystianmkaniewski@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="Cf5mUZUO"
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Mon,  3 Aug 2026 15:09:58 +0200 (CEST)
+Date: Mon, 3 Aug 2026 15:09:56 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: Johannes Berg <johannes@sipsolutions.net>
+Cc: syzkaller-bugs@googlegroups.com, linux-wireless@vger.kernel.org,
+	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev,
+	syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
+Subject: Re: [PATCH v2] mac80211: reject station addition if AP or MLO link
+ is inactive
+Message-ID: <anCTJFZ54Y93O8Qs@nr200>
+References: <20260727074526.248393-1-sst@poczta.fm>
+ <9a9a794ad16663cfd7a652b83455ff16156b9baa.camel@sipsolutions.net>
+ <amcjYrOESqnHjbhe@nr200>
+ <741854f0b9774ce2da1e5c2fb551631aa4028122.camel@sipsolutions.net>
+ <amcyO4e4bnBPinrP@nr200>
+ <amdckJhgBz7xT2F7@nr200>
+ <28f4f5b6fbe594c41538d5068b2d77495250ecd7.camel@sipsolutions.net>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <28f4f5b6fbe594c41538d5068b2d77495250ecd7.camel@sipsolutions.net>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1785762600; bh=H46BO01Jn8KSezBfJtXDje0ki6VhnDh0lE6fQuGUTGg=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=Cf5mUZUO3/ttFfBwiAsUCylvrFvpdL87z6sC+BUah/XEpgDmKBHl1lyxwvg5fthYY
+	 e2kC3TmoPtaGMJUjoPo5v8aXTEi6RBpZzvRgMazyPl2PV29Cknsvt6Xb03HoyCnTr/
+	 Ek3IEKbSFyT2nHmKlaATAQi6EgBWpumed4+bCmA8=
 
-Commit 40b9d1ab63f5 ("ipvlan: hold lower dev to avoid possible
-use-after-free") added a reference to the lower net_device owned by struct
-ipvl_port. However, this reference is released when the last
-ipvlan_uninit() reduces port->count to zero and calls
-ipvlan_port_destroy(), which can happen before all outstanding external
-references to the ipvlan netdev have drained.
+On lip 31, 2026 14:40, Johannes Berg wrote:
+> On Mon, 2026-07-27 at 15:26 +0200, Slawomir Stepien wrote:
+> > After taking a closer look at this I wonder how AP_VLAN should be handled? Is there a way on
+> > cfg80211 level to be able to check AP_VLAN's main device state?
+> 
+> Hmm, yeah that might be an issue? I guess in theory it could track it,
+> but it doesn't.
+> 
+> > My code change would look something like this:
+> > 
+> > @@ -9404,6 +9404,12 @@ static int nl80211_new_station(struct sk_buff *skb, struct genl_info *info)
+> >         case NL80211_IFTYPE_AP:
+> >         case NL80211_IFTYPE_AP_VLAN:
+> >         case NL80211_IFTYPE_P2P_GO:
+> > +               /* Add new station only after the AP and link has been started */
+> > +               int link = params.link_sta_params.link_id >= 0 ?
+> > +                          params.link_sta_params.link_id : 0;
+> > +               if (!wdev->links[link].ap.beacon_interval)
+> > +                       return -ENETDOWN;
+> > +
+> >                 /* ignore WME attributes if iface/sta is not capable */
+> >                 if (!(rdev->wiphy.flags & WIPHY_FLAG_AP_UAPSD) ||
+> >                     !(params.sta_flags_set & BIT(NL80211_STA_FLAG_WME)))
+> > 
+> > but the NL80211_IFTYPE_AP_VLAN case would not work here, right? Can I just do the checking only for
+> > NL80211_IFTYPE_AP and NL80211_IFTYPE_P2P_GO and skip NL80211_IFTYPE_AP_VLAN?
+> 
+> Yeah it'd just reject everything, I guess.
+> 
+> I think in practice stations are added at the AP interface first and
+> then moved to a VLAN, which would argue for actually rejecting
 
-Specifically, RXE acts as an asynchronous owner in this scenario. RXE
-queues RDMA device removal on NETDEV_UNREGISTER, meaning it can retain a
-reference to the ipvlan netdev after ndo_uninit has completed. This allows
-a later SMC port query to reach the ipvlan device and access its phy_dev.
+But are they moved and then this `case NL80211_IFTYPE_AP_VLAN` should match?
+In my tests this case doesn't match, even after the STA is assoc with vlan interface (e.g.
+wlan0.10).
 
-This leads to the following sequence:
-1. The shared ipvl_port owns the reference to the lower net_device
-(phy_dev).
-2. The last ipvlan_uninit() drops this reference by calling
-ipvlan_port_destroy() when port->count reaches zero.
-3. RXE retains a reference to the ipvlan netdev, keeping it alive.
-4. The lower net_device's refcount drops to 1 and it is freed by
-netdev_run_todo(), leaving ipvlan->phy_dev as a dangling pointer. A
-subsequent SMC port query accesses this dangling pointer, triggering a
-use-after-free.
-5. A new per-device hold keeps phy_dev alive until ipvlan_dev_free() runs.
+My test is done using qemu with:
 
-The KASAN report illustrates this use-after-free:
+Files:
+------
+==> hostapd.accept <==
+02:00:00:00:01:00 10
 
-BUG: KASAN: slab-use-after-free in netdev_need_ops_lock
-include/net/netdev_lock.h:30 [inline]
-BUG: KASAN: slab-use-after-free in netdev_lock_ops
-include/net/netdev_lock.h:41 [inline]
-BUG: KASAN: slab-use-after-free in __ethtool_get_link_ksettings+0x230/0x250
-net/ethtool/ioctl.c:463
-Read of size 1 at addr ffff8881988dae09 by task kworker/1:3/1289
+==> hostapd.conf <==
+interface=wlan0
+driver=nl80211
+ssid=VLAN_Test_AP
+hw_mode=g
+channel=1
 
-Call Trace:
- <TASK>
-  __ethtool_get_link_ksettings+0x230/0x250 net/ethtool/ioctl.c:463
-  __ethtool_get_link_ksettings+0x11f/0x250 net/ethtool/ioctl.c:464
-  ib_get_eth_speed+0x180/0x7f0 drivers/infiniband/core/verbs.c:2052
-  rxe_query_port+0x93/0x3d0 drivers/infiniband/sw/rxe/rxe_verbs.c:56
-  __ib_query_port drivers/infiniband/core/device.c:2129 [inline]
-  ib_query_port+0x16e/0x830 drivers/infiniband/core/device.c:2161
-  smc_ib_remember_port_attr net/smc/smc_ib.c:364 [inline]
-  smc_ib_port_event_work+0x147/0x920 net/smc/smc_ib.c:388
- </TASK>
+# Basic WPA2-PSK
+wpa=2
+wpa_passphrase=password123
+wpa_key_mgmt=WPA-PSK
 
-Fix this by holding a reference to the lower net_device using a
-netdevice_tracker in struct ipvl_dev. The reference is acquired in
-ipvlan_init() and released in the priv_destructor callback
-(ipvlan_dev_free()). Releasing the reference in ipvlan_dev_free()
-guarantees that the lower net_device is held until outstanding external
-references to the ipvlan netdev have drained and before final private
-teardown and object release. This mirrors the behavior of other stacked
-devices like macvlan and vlan, and safely covers ipvtap devices as well.
+# Enable MAC-based Access Control and VLAN Assignment
+macaddr_acl=1
+accept_mac_file=/root/hostapd.accept
 
-Fixes: 2ad7bf363841 ("ipvlan: Initial check-in of the IPVLAN driver.")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+5fe14f2ff4ccbace9a26@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=5fe14f2ff4ccbace9a26
-Link: https://syzkaller.appspot.com/ai_job?id=3e3edd19-4e52-49d3-bfdb-ebdde1bda5c3
-Signed-off-by: Krystian Kaniewski <krystianmkaniewski@gmail.com>
----
-v2:
-  - Rebased onto net/main; no code changes.
-  - Added the net target-tree prefix.
-v1: https://lore.kernel.org/all/26b3176e-d9ed-4508-bde7-388deefd970d@mail.kernel.org/
+# Enable Dynamic VLAN interface creation
+dynamic_vlan=1
+vlan_file=/root/hostapd.vlan
+vlan_naming=1
 
- drivers/net/ipvlan/ipvlan.h      |  1 +
- drivers/net/ipvlan/ipvlan_main.c | 11 +++++++++++
- 2 files changed, 12 insertions(+)
+==> hostapd.vlan <==
+10  wlan0.10  br10
 
-diff --git a/drivers/net/ipvlan/ipvlan.h b/drivers/net/ipvlan/ipvlan.h
-index 80f84fc87008..13cdad00297c 100644
---- a/drivers/net/ipvlan/ipvlan.h
-+++ b/drivers/net/ipvlan/ipvlan.h
-@@ -64,6 +64,7 @@ struct ipvl_dev {
- 	struct list_head	pnode;
- 	struct ipvl_port	*port;
- 	struct net_device	*phy_dev;
-+	netdevice_tracker dev_tracker;
- 	struct list_head	addrs;
- 	struct ipvl_pcpu_stats	__percpu *pcpu_stats;
- 	DECLARE_BITMAP(mac_filters, IPVLAN_MAC_FILTER_SIZE);
-diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
-index ed46439a9f4e..b1435296a0f1 100644
---- a/drivers/net/ipvlan/ipvlan_main.c
-+++ b/drivers/net/ipvlan/ipvlan_main.c
-@@ -162,6 +162,9 @@ static int ipvlan_init(struct net_device *dev)
- 	}
- 	port = ipvlan_port_get_rtnl(phy_dev);
- 	port->count += 1;
-+
-+	netdev_hold(phy_dev, &ipvlan->dev_tracker, GFP_KERNEL);
-+
- 	return 0;
- }
- 
-@@ -673,6 +676,13 @@ void ipvlan_link_delete(struct net_device *dev, struct list_head *head)
- }
- EXPORT_SYMBOL_GPL(ipvlan_link_delete);
- 
-+static void ipvlan_dev_free(struct net_device *dev)
-+{
-+	struct ipvl_dev *ipvlan = netdev_priv(dev);
-+
-+	netdev_put(ipvlan->phy_dev, &ipvlan->dev_tracker);
-+}
-+
- void ipvlan_link_setup(struct net_device *dev)
- {
- 	ether_setup(dev);
-@@ -682,6 +692,7 @@ void ipvlan_link_setup(struct net_device *dev)
- 	dev->priv_flags |= IFF_UNICAST_FLT | IFF_NO_QUEUE;
- 	dev->netdev_ops = &ipvlan_netdev_ops;
- 	dev->needs_free_netdev = true;
-+	dev->priv_destructor = ipvlan_dev_free;
- 	dev->header_ops = &ipvlan_header_ops;
- 	dev->ethtool_ops = &ipvlan_ethtool_ops;
- }
+==> wpa.conf <==
+p2p_disabled=1
+network={
+        ssid="VLAN_Test_AP"
+        #psk="password123"
+        psk=c31c83ea62af5b750232dc32865586f7658777dce974a980446dd6bff0154913
+}
 
-base-commit: af39eb111ce6b5eba9c08513b62c4868eb7e7fd5
+Commands:
+---------
+modprobe mac80211_hwsim radios=2
+ip link add br10 type bridge
+ip link set br10 up
+hostapd -d hostapd.conf -B
+wpa_supplicant -i wlan1 -c wpa.conf
+
+Results:
+--------
+# iw dev
+phy#1
+        Interface wlan1
+                ifindex 5
+                wdev 0x100000001
+                addr 02:00:00:00:01:00
+                type managed
+                channel 1 (2412 MHz), width: 20 MHz (no HT), center1: 2412 MHz
+                txpower 20.00 dBm
+                multicast TXQ:
+                        qsz-byt qsz-pkt flows   drops   marks   overlmt hashcol tx-bytes        tx-packets
+                        0       0       0       0       0       0       0       0               0
+phy#0
+        Interface wlan0.10
+                ifindex 8
+                wdev 0x2
+                addr 02:00:00:00:00:00
+                type AP/VLAN
+                channel 1 (2412 MHz), width: 20 MHz (no HT), center1: 2412 MHz
+                txpower 20.00 dBm
+        Interface wlan0
+                ifindex 4
+                wdev 0x1
+                addr 02:00:00:00:00:00
+                ssid VLAN_Test_AP
+                type AP
+                channel 1 (2412 MHz), width: 20 MHz (no HT), center1: 2412 MHz
+                txpower 20.00 dBm
+                multicast TXQ:
+                        qsz-byt qsz-pkt flows   drops   marks   overlmt hashcol tx-bytes        tx-packets
+                        0       0       33      0       0       0       0       3868            33
+
+# iw dev wlan0.10 station dump
+Station 02:00:00:00:01:00 (on wlan0.10)
+        authorized:     yes
+        authenticated:  yes
+        associated:     yes
+        preamble:       short
+        WMM/WME:        no
+        MFP:            no
+        TDLS peer:      no
+        inactive time:  5676 ms
+        rx bytes:       3569
+        rx packets:     30
+        tx bytes:       410
+        tx packets:     4
+        tx retries:     0
+        tx failed:      0
+        rx drop misc:   0
+        signal:         -30 dBm
+        signal avg:     -30 dBm
+        tx bitrate:     1.0 MBit/s
+        tx duration:    0 us
+        rx bitrate:     54.0 MBit/s
+        rx duration:    0 us
+        DTIM period:    0
+        beacon interval:0
+        connected time: 238 seconds
+        associated at [boottime]:       30.496s
+        associated at:  1785761454053 ms
+        current time:   1785761692411 ms
+
+# dmesg | grep laza
+(this is just a print of this field just before the switch() call)
+[   30.489902][  T189] laza: info->attrs[NL80211_ATTR_IFINDEX]: 4
+(and yes, it is just one print triggered)
+
+This index 4 is assigned to wlan0, so it will never have iftype == NL80211_IFTYPE_AP_VLAN.
+Also the print of wdev->identifier will give 0x1 and not 0x2.
+
+So, is it even possible that `case NL80211_IFTYPE_AP_VLAN` would match? If it will never match, then
+do I understand that the change I proposed should be correct for other cases?
+
+> everything being OK anyway - but then that shouldn't be because of this
+> but rather by just removing the AP_VLAN case there, or so.
+> 
+> Not sure what the best thing would be though.
+
 -- 
-2.53.0
+Slawomir Stepien
