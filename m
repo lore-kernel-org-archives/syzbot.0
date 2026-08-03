@@ -1,185 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF5CC37998C
-	for <syzbot@lists.linux.dev>; Sun,  2 Aug 2026 22:41:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC27337F33A
+	for <syzbot@lists.linux.dev>; Mon,  3 Aug 2026 03:43:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785710502; cv=none; b=G6pZUveO0PjYWVwS6YuzSXQ9gWcfk0C9pRbtM8k0fiZl4IDVVWVv2KuXucDQ7ziQxsJ+2WSR+WCAcEK8l5Oq3JaI4oaT/OSlxtmc6KxcFFbH4YUxNNi0QZmU91YlbYD7ULndgaTOToFj5Ph3NBqda2Zfb/zVhqTruOmAvgO25mc=
+	t=1785728615; cv=none; b=ApGE+fmdn5xRQi8BEnaFZfEwsl84b8p/XHGRvfXbflEDi8733NKsyrx2/PL1aXIROpzrot5yVjkrBkGdxWAwvR5uYgCkwj2TL1vs0OccPqBMhzu6UXdzY1MPjHg8unmI/4HvhhQuH8oCVWCi7A8rddGSm2KiEvtcuLRuYouSnqg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785710502; c=relaxed/simple;
-	bh=xsduuTbNE9K++pUks2f/yjgsaeoOMJlRBSaKcfcDRoY=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Bkof+l+kAdrnLQUwo2MkydaTIC9IO0syVaMvWwETqbp3aupAqcCp47gf9iLSRdH9bp1HZlkPdtfLHsbBwHtcgsMpHHyvH/mVGgnuwIS4j9zPATp5YjP3kA4LtZuXm41EvnaDD+QI1P5hY2CvLmBRdpQG9QV5Y+4EDlh765On3k4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G4x5Yw8Y; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G4x5Yw8Y"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 8767A1F000E9;
-	Sun,  2 Aug 2026 22:41:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785710500;
-	bh=6eUrIynzEwQUkcxuSEB4BqJPj4wVnBStyIj7tAcmtmQ=;
-	h=From:To:Cc:Subject:Date;
-	b=G4x5Yw8YXp8SYCJAAC9HmjvwU+z2FZGLa6dSePe35bxf0qsYta4AH/d7CnrDWibs0
-	 Ri6WMkZOofATAVB4tR63XBw4bPFJzVr8F69TeqPdZ31O+rxiy44UwPFAHfj2cltIvZ
-	 rtdOlJt6OWq3oPYzWkrMoEGy2c2BFLW0xhTQy9IPg8rCLDGQzZ7jJ5K80mgN0+OGON
-	 emLB57Hgpg/Cv3sZUwroKJNiSdDaT/wHtreUq7OsYIRJ9wit+6jIHU/TdYv4kSH9e6
-	 cX9frGB9eIrY2rfxG/A7VxGAJmwBnrlLwoRKNWAkYkVv4eFJ22UhcHLZsvaxOr8H6+
-	 dxV1HD8FO//sQ==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] net/sched: taprio: prevent infinite loop in advance_sched()
-Message-ID: <160181c7-1e1c-4541-8bf1-a7df53fe5d7b@mail.kernel.org>
+	s=arc-20240116; t=1785728615; c=relaxed/simple;
+	bh=2bQxluv3OL3EVmKDYl73bxiDxMtV6YOXS3MUni75tTQ=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=AlLX+2yi93GpHQmfPYrh1VD23JpzTRx8ITtjsV1YGetHAAbRt+Yi2SMa9GJefU6Bd/dypPQCZDnIIg808KqgoNV3SbqjifnsZhhytM/0237LmMkQuwJLCCJFGeV84iUu/oQfSRIjII+8jlVscskfR5v1TUQE8x0aS8+fgDSon8A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-49ce04870f8so3828153b6e.0
+        for <syzbot@lists.linux.dev>; Sun, 02 Aug 2026 20:43:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785728611; x=1786333411;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Z/Cux8LvzAv4s6nuL/fv3x25OThs1wPwpYQ4GNb+VgU=;
+        b=RN+IKmnl67TliAIljgas4NQip/suftSW9NFqLAF5tRiZVyAJWI+0LIUOzdjuubig4c
+         9WwFqB9qDgyfhUEJMHKv//iSQlhAwkW/khILR3Mupp9eaQD67nxytIw/o6BBzcrHsRO9
+         W0p3/iktzCxiEIwxequH6+gbAJrmf3E4XW9aE+ksd9KSMfPWlxlZoTc0nkWjCel/4K5+
+         nmUe/TBqenzbGwPPgVuwoY+9xZCBD8Xxhi/CHCm2qY4pGMSb5Cley4PQaZln6nUXp7Fj
+         zZ7nMlupPHdNnCh0rkynEuGg11o7V96Ni3yhyO0oq6P+avYp6pT72uCe9rW1U/NM2jDF
+         shbg==
+X-Gm-Message-State: AOJu0YyzPiHgR4lNabwaWa3kDgYrGdOX/qzxeLX9BUgmO/m5ZFBGQCbL
+	ou1NbneAG6Uor6t4m2L3BXK6ZQogMWVIebaWPmwP7dUyY9Po2tcAg1wD2HaNf6J4HgGSA4FIlYG
+	8cwmyb2YCuGihb2F4dw7vVrnl/Yl0FyujIWX1e3xUDSVem3yATFPUU/pC5+U=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Sun,  2 Aug 2026 22:41:40 +0000 (UTC)
+X-Received: by 2002:a05:6808:19aa:b0:4a4:c12:ee68 with SMTP id
+ 5614622812f47-4af5e1b213fmr13424553b6e.10.1785728611618; Sun, 02 Aug 2026
+ 20:43:31 -0700 (PDT)
+Date: Sun, 02 Aug 2026 20:43:31 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a700e63.2d659fcc.1d46f5.01e3.GAE@google.com>
+Subject: [moderation/CI] Re: eventpoll: add lockless fast-path for eventfd
+From: syzbot ci <syzbot+ci5a635dc5e10b9acf@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-When hardware offload is not used, the taprio qdisc uses a software hrtimer
-(`q->advance_timer`) to advance its schedule. The timer callback,
-`advance_sched()`, calculates the next expiration time by adding the
-schedule entry's interval to the current entry's end time.
+syzbot ci has tested the following series
 
-If a schedule is configured with an extremely small interval (e.g., 1
-microsecond), the execution time of `advance_sched()` and the surrounding
-hrtimer interrupt overhead can exceed the interval itself. When this
-happens, the newly programmed expiration time is already in the past. The
-hrtimer subsystem (`__hrtimer_run_queues()`) then attempts to catch up by
-repeatedly invoking the timer callback. Because each invocation takes
-longer than the tiny interval, the catch-up process diverges, leading to an
-infinite loop that starves the CPU and triggers an RCU stall:
+[v1] eventpoll: add lockless fast-path for eventfd
+https://lore.kernel.org/all/20260803015242.1810867-1-syhuang.nju@gmail.com
+* [RFC PATCH RESEND] eventpoll: add lockless fast-path for eventfd
 
-rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-rcu: 	1-...!: (1 GPs behind) idle=c50c/1/0x4000000000000000
-softirq=21413/21531 fqs=770
-Call Trace:
- <IRQ>
- advance_sched+0xe4/0xc80 net/sched/sch_taprio.c:932
- __run_hrtimer kernel/time/hrtimer.c:2032 [inline]
- __hrtimer_run_queues+0x3bc/0xa10 kernel/time/hrtimer.c:2096
- hrtimer_interrupt+0x448/0x910 kernel/time/hrtimer.c:2215
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1051 [inline]
- __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:1068
- instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1062
- [inline]
- sysvec_apic_timer_interrupt+0xa1/0xc0 arch/x86/kernel/apic/apic.c:1062
- </IRQ>
+and found the following issue:
+kernel build error
 
-To fix this, implement two complementary solutions. First, enforce a
-reasonable minimum interval for software scheduling. Introduce
-`TAPRIO_MIN_SW_INTERVAL` (50 us) and enforce it in `fill_sched_entry()` and
-`parse_taprio_schedule()` when hardware offload is not enabled. This
-prevents configuring schedules that software hrtimers cannot reliably
-maintain. Second, advance the schedule mathematically on overruns. If the
-newly calculated `end_time` is still in the past relative to the current
-time, calculate the number of missed cycles and advance the expiration
-times mathematically. This breaks the infinite loop by skipping missed
-cycles and scheduling the next timer expiration in the future, ensuring the
-system can recover gracefully even if an overrun occurs due to heavy system
-load.
+Full report is available here:
+https://ci.syzbot.org/series/24d98c96-0d95-4055-820d-d990e00aa38e
 
-Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+8785aaf121cfb2141e0d@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=8785aaf121cfb2141e0d
-Link: https://syzkaller.appspot.com/ai_job?id=8f74a8d2-7a9d-4fb5-96f1-392245f3cf7f
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: "Jamal Hadi Salim" <jhs@mojatatu.com>
-To: "Jiri Pirko" <jiri@resnulli.us>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
-Cc: "Simon Horman" <horms@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+***
+
+kernel build error
+
+tree:      vfs
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs.git
+base:      6cdd5e04412e9d15455a4c1262fe3c0f5ec5362d
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/3231313d-9fcf-48a6-8b17-8434ff875ad2/config
+
+fs/eventpoll.c:1923:36: error: use of undeclared identifier 'tfile'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 299234a5f..64600f3bc 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -40,6 +40,7 @@ static struct static_key_false taprio_have_working_mqprio;
- 
- #define TXTIME_ASSIST_IS_ENABLED(flags) ((flags) & TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST)
- #define FULL_OFFLOAD_IS_ENABLED(flags) ((flags) & TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD)
-+#define TAPRIO_MIN_SW_INTERVAL 50000 /* 50 us */
- #define TAPRIO_SUPPORTED_FLAGS \
- 	(TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST | TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD)
- #define TAPRIO_FLAGS_INVALID U32_MAX
-@@ -980,10 +981,31 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
- 		end_time = next->end_time;
- 	}
- 
-+first_run:
-+	/* Check if we fell behind and advance the schedule mathematically */
-+	if (unlikely(ktime_after(taprio_get_time(q), end_time))) {
-+		ktime_t now = taprio_get_time(q);
-+		ktime_t cycle = oper->cycle_time;
-+		s64 n;
-+
-+		if (likely(cycle)) {
-+			n = div64_s64(ktime_sub_ns(now, end_time), cycle);
-+			end_time = ktime_add_ns(end_time, (n + 1) * cycle);
-+			oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
-+							    (n + 1) * cycle);
-+
-+			for (tc = 0; tc < num_tc; tc++) {
-+				if (next->gate_close_time[tc] != KTIME_MAX)
-+					next->gate_close_time[tc] =
-+						ktime_add_ns(next->gate_close_time[tc],
-+							     (n + 1) * cycle);
-+			}
-+		}
-+	}
-+
- 	next->end_time = end_time;
- 	taprio_set_budgets(q, oper, next);
- 
--first_run:
- 	rcu_assign_pointer(q->current_entry, next);
- 	spin_unlock(&q->current_entry_lock);
- 
-@@ -1061,6 +1083,11 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
- 		return -EINVAL;
- 	}
- 
-+	if (!FULL_OFFLOAD_IS_ENABLED(q->flags) && interval < TAPRIO_MIN_SW_INTERVAL) {
-+		NL_SET_ERR_MSG_MOD(extack, "Interval too small for software scheduling");
-+		return -EINVAL;
-+	}
-+
- 	entry->interval = interval;
- 
- 	return 0;
-@@ -1171,6 +1198,12 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
- 		return -EINVAL;
- 	}
- 
-+	if (!FULL_OFFLOAD_IS_ENABLED(q->flags) &&
-+	    new->cycle_time < new->num_entries * TAPRIO_MIN_SW_INTERVAL) {
-+		NL_SET_ERR_MSG_MOD(extack, "'cycle_time' is too small for software scheduling");
-+		return -EINVAL;
-+	}
-+
- 	taprio_calculate_gate_durations(q, new);
- 
- 	return 0;
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
-base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+The email will later be sent to:
+[brauner@kernel.org jack@suse.cz linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org syhuang.nju@gmail.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
