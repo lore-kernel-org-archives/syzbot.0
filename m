@@ -1,179 +1,131 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtpo75.interia.pl (smtpo75.interia.pl [217.74.67.75])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBA8845D1A4
-	for <syzbot@lists.linux.dev>; Tue,  4 Aug 2026 11:15:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85B9E34A3AB
+	for <syzbot@lists.linux.dev>; Tue,  4 Aug 2026 12:38:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.75
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785842148; cv=none; b=RULNg8L25Zb6N9txVlm3u1IH1CClYzRufiDsF0nhWk0wecIWwqVTX4OoB/mOKeZFuUNPKHd76so24bIfqTuo1z3S42rjB4HKMd3zSrUW1ViSeNRVlhClOEkmwMIsm/IKT8gyANwxhKa5d8Tn4sS1VizI9CkUKTOb6Q5DnP/dKjM=
+	t=1785847128; cv=none; b=HrV+E1TkIM5qdiYQW35NaJQJu3fiEoBmEFd5chjf/91rlM6q2ayyB4EjrSt9BCCqcnW0DAToLITFyOD98KVZQlMg6VfE50BnqesnyxIC/cZh1hWlEilt43m6PnXYJPI86OmiWWVMzGXaf2H4Vlwz1PPlVGknPoZUhD5HaBAOGSU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785842148; c=relaxed/simple;
-	bh=qnjNZn4xLPfdSHOo8hxRSQHwIRhL4fZKyMgjxnx2+yY=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=HdApMii4JVtR3+x2IBo+sxFcnAYgdRuUXXleDfn57kma48Mbfutxruhhztv/OX5tAP6X/rzv4armUZ/EUbzkgLO7eq6AECF0u+2PPbbH9CdTtbMstRPkOGDomnZNd0/t3GRDTkdon2+eidw4Tmp8OpqZ2nKFkAoQN4FNW/XM7gI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KfqAM8EF; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785847128; c=relaxed/simple;
+	bh=npyuzQLETb5HYyqvoTXWk3vK3qMx5DQYtoyCVOM7308=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nuNRmRo+/OPlhqDNrb8o6ZqDF7wrwPk+8E42F6Mgklkyqcsn7SFwXMtOt/pFhLUBnHyY36kgjeKlJCiAWUolTmYzMPHPNY/dsOU6W/3FZ+Hv5H6lJAOZ4aX5Ma0uo/WJId9IvmON9CosiIGmbD3NUiZ6yhoB4D/it+/37K+eSFs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=s9PloEg4; arc=none smtp.client-ip=217.74.67.75
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KfqAM8EF"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 55D831F00A3A;
-	Tue,  4 Aug 2026 11:15:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785842146;
-	bh=Vb2JByWJdMLjhvuvAenY7NFFIeVqmjp+LnFXXLH3+v4=;
-	h=From:To:Cc:Subject:Date;
-	b=KfqAM8EFXx94De8iQZXLNRv6EUC7k6AtscicqAT6cZdM2E3rfAsJuLg1mGjpX0yS+
-	 YrEZ+sRmwtx7XbArXFpWTYghbxaP3W28Yhq2lgPTT37kWw5S7tdmYbF0o5PgeIDLZ/
-	 dwr1RUKoHC/OccaCN/V35tCGQC4Lw+X3Ev6kZ8zAD8jkc8IznKiE3DH+pp0zj7v2Qo
-	 SrneepGl0VQPOcVVgRzRnaWUvyyOleJfPNgs3JBjPegCjD+XW6vfFH+J1h0XziviHG
-	 lSx4M4Wpg1mLUgdpyUPO9/W34kj0dZ2p+y5npXscWDcZhRLXA2u3g7NvGp1rVhOR2C
-	 diZcCP0veP5aQ==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] vsock: fix memory leak of rejected sockets in vsock_accept()
-Message-ID: <d0ddc503-5433-41e2-9bd3-6a31364b320e@mail.kernel.org>
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="s9PloEg4"
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Tue,  4 Aug 2026 14:38:40 +0200 (CEST)
+Date: Tue, 4 Aug 2026 14:38:37 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC] wifi: cfg80211: fix BSS RB tree collision during
+ channel switch
+Message-ID: <anHdTQ5SOsY8FOIR@nr200>
+References: <a8455fef-711a-4293-89ce-248c5f3428e7@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Tue,  4 Aug 2026 11:15:46 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a8455fef-711a-4293-89ce-248c5f3428e7@mail.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1785847121; bh=rxHkQLwHKELasOcsivaqvuHxxpsg8YyIxhgqhWBNQHM=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=s9PloEg4BcPZWSSG1NARp2gQywa42pg+bLTS44XcW7R51l/LrrnChFz9IOurHWIZD
+	 ky01JmERa5paxb5+TRP1EBLyQms3uznOtborh9RR8a/f5q4va1IA8DYSKKx6BshbRk
+	 DwSvo6y3dFtSTTn2M8LN5aRcJMT9kOnVFFTqEvfs=
 
-When a listening socket has an error (e.g. sk_err is set due to a failed
-connect() before listen()), vsock_accept() rejects incoming connections.
-Previously, vsock_accept() marked the child socket as rejected and relied
-on a transport-specific delayed cleanup function to handle the cleanup.
+On sie 02, 2026 22:23, syzbot wrote:
+> When a station processes a Channel Switch Announcement (CSA),
+> cfg80211_update_assoc_bss_entry() is called to update the channel of the
+> associated BSS. Because the channel is part of the BSS Red-Black (RB) tree
+> key, changing the channel requires removing the BSS from the tree and
+> re-inserting it.
+> 
+> Before re-inserting, cfg80211_update_assoc_bss_entry() searches for any
+> existing BSS on the new channel that matches the associated BSS so it can
+> be unlinked to prevent an RB tree collision. However, the search loop
+> incorrectly uses cfg80211_bss_type_match() to filter candidates based on
+> their capabilities. If an existing BSS matches perfectly in cmp_bss() (same
+> channel, BSSID, and SSID) but has different capabilities (e.g., due to a
+> malicious or misconfigured beacon setting both ESS and IBSS bits),
+> cfg80211_bss_type_match() skips it.
+> 
+> This leaves the colliding BSS in the tree. When cfg80211_rehash_bss()
+> attempts to re-insert the associated BSS, rb_insert_bss() compares them
+> using cmp_bss(), which ignores capabilities. It finds them identical,
+> resulting in an RB tree collision and triggering a warning:
+> 
+> ------------[ cut here ]------------
 
-However, virtio_transport (and loopback_transport) do not schedule any
-cleanup work for sockets in the accept queue. As a result, the child socket
-is completely orphaned and its memory is leaked.
+Remove this line; checkpatch.pl doesn't like it since it might be taken as commit separator (---).
 
-Kmemleak reports the following memory leak:
+> !cmp
+> WARNING: net/wireless/scan.c:1675 at rb_insert_bss net/wireless/scan.c:1675
+> [inline], CPU#0: kworker/u9:2/39
+> WARNING: net/wireless/scan.c:1675 at cfg80211_rehash_bss+0x1e6/0x540
+> net/wireless/scan.c:1732, CPU#0: kworker/u9:2/39
+> ...
+> Call Trace:
+>  <TASK>
+>  cfg80211_update_assoc_bss_entry+0x3cd/0x660 net/wireless/scan.c:3478
+>  cfg80211_ch_switch_notify+0x3b1/0x780 net/wireless/nl80211.c:22366
+>  ieee80211_sta_process_chanswitch+0xbd1/0x29e0 net/mac80211/mlme.c:-1
+>  ieee80211_rx_mgmt_beacon+0x1dc6/0x32a0 net/mac80211/mlme.c:8309
+>  ieee80211_sta_rx_queued_frame+0x6ac/0x4e40 net/mac80211/mlme.c:11793
+>  ieee80211_iface_process_skb net/mac80211/iface.c:1766 [inline]
+>  ieee80211_iface_work+0x552/0x1010 net/mac80211/iface.c:1823
+>  cfg80211_wiphy_work+0x29e/0x420 net/wireless/core.c:538
+> ...
+> 
+> Fix this by removing the cfg80211_bss_type_match() check from the collision
+> search loop. The RB tree uniqueness is defined solely by cmp_bss(), so any
+> BSS that evaluates to cmp == 0 must be unlinked to prevent a collision,
+> regardless of whether its capability matches the connection type. If the
+> AP's capabilities legitimately changed, cfg80211_update_known_bss() will
+> safely update the capability later.
+> 
+> Fixes: 0afd425b1b64 ("cfg80211: fix duplicated scan entries after channel switch")
+> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+dc6f4dce0d707900cdea@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=dc6f4dce0d707900cdea
+> Link: https://syzkaller.appspot.com/ai_job?id=36735ba4-a810-4748-9be0-c030fc138df1
+> To: "Johannes Berg" <johannes@sipsolutions.net>
+> To: <linux-wireless@vger.kernel.org>
+> To: "Sergey Matyukevich" <sergey.matyukevich.os@quantenna.com>
+> Cc: <linux-kernel@vger.kernel.org>
+> 
+> ---
+> diff --git a/net/wireless/scan.c b/net/wireless/scan.c
+> index 071083cc3..97bf7ab8c 100644
+> --- a/net/wireless/scan.c
+> +++ b/net/wireless/scan.c
+> @@ -3443,11 +3443,6 @@ void cfg80211_update_assoc_bss_entry(struct wireless_dev *wdev,
+>  	cbss->pub.channel = chan;
+>  
+>  	list_for_each_entry(bss, &rdev->bss_list, list) {
+> -		if (!cfg80211_bss_type_match(bss->pub.capability,
+> -					     bss->pub.channel->band,
+> -					     wdev->conn_bss_type))
+> -			continue;
+> -
+>  		if (bss == cbss)
+>  			continue;
+>  
+> 
+> 
+> base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
 
-BUG: memory leak
-unreferenced object 0xffff88811c6fad00 (size 1272):
-  comm "kworker/0:4", pid 5848, jiffies 4294944188
-  backtrace (crc efdf9d94):
-    kmem_cache_alloc_noprof+0x1ba/0x3e0 mm/slub.c:4931
-    sk_prot_alloc+0x35/0x1b0 net/core/sock.c:2246
-    sk_alloc+0x34/0x2d0 net/core/sock.c:2308
-    __vsock_create+0x37/0x2e0 net/vmw_vsock/af_vsock.c:919
-    virtio_transport_recv_listen+0x284/0x640
-    net/vmw_vsock/virtio_transport_common.c:1721
-    virtio_transport_recv_pkt+0x812/0x9e0
-    net/vmw_vsock/virtio_transport_common.c:1847
-    vsock_loopback_work+0xed/0x140 net/vmw_vsock/vsock_loopback.c:142
-
-Do not rely on transport-specific delayed work to clean up rejected
-sockets. Instead, explicitly clean up the socket by calling
-__vsock_release() directly in vsock_accept() when an error occurs. This
-safely cleans up the socket for all transports.
-
-Additionally, since rejected sockets are now cleaned up synchronously, the
-rejected flag in struct vsock_sock is obsolete and can be safely removed.
-
-Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+53515d23498d641e21ea@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=53515d23498d641e21ea
-Link: https://syzkaller.appspot.com/ai_job?id=00823f4e-0b0b-4294-a519-38c6921e12fa
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Stefano Garzarella" <sgarzare@redhat.com>
-To: <virtualization@lists.linux.dev>
-To: "Andy King" <acking@vmware.com>
-Cc: "Simon Horman" <horms@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-
----
-diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
-index 30046a3c2..3357ee62d 100644
---- a/include/net/af_vsock.h
-+++ b/include/net/af_vsock.h
-@@ -52,13 +52,10 @@ struct vsock_sock {
- 	 * The listening socket is the head for both lists.  Sockets created
- 	 * for connection requests are placed in the pending list until they
- 	 * are connected, at which point they are put in the accept queue list
--	 * so they can be accepted in accept().  If accept() cannot accept the
--	 * connection, it is marked as rejected so the cleanup function knows
--	 * to clean up the socket.
-+	 * so they can be accepted in accept().
- 	 */
- 	struct list_head pending_links;
- 	struct list_head accept_queue;
--	bool rejected;
- 	struct delayed_work connect_work;
- 	struct delayed_work pending_work;
- 	struct delayed_work close_work;
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 622dbd046..371038708 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -774,11 +774,10 @@ static void vsock_pending_work(struct work_struct *work)
- 
- 	if (vsock_is_pending(sk)) {
- 		vsock_remove_pending(listener, sk);
--	} else if (!vsk->rejected) {
--		/* We are not on the pending list and accept() did not reject
--		 * us, so we must have been accepted by our user process.  We
--		 * just need to drop our references to the sockets and be on
--		 * our way.
-+	} else {
-+		/* We are not on the pending list, so we must have been
-+		 * accepted by our user process.  We just need to drop our
-+		 * references to the sockets and be on our way.
- 		 */
- 		cleanup = false;
- 		goto out;
-@@ -942,7 +941,6 @@ static struct sock *__vsock_create(struct net *net,
- 	vsk->listener = NULL;
- 	INIT_LIST_HEAD(&vsk->pending_links);
- 	INIT_LIST_HEAD(&vsk->accept_queue);
--	vsk->rejected = false;
- 	vsk->sent_request = false;
- 	vsk->ignore_connecting_rst = false;
- 	WRITE_ONCE(vsk->peer_shutdown, 0);
-@@ -1919,15 +1917,9 @@ static int vsock_accept(struct socket *sock, struct socket *newsock,
- 		vconnected = vsock_sk(connected);
- 
- 		/* If the listener socket has received an error, then we should
--		 * reject this socket and return.  Note that we simply mark the
--		 * socket rejected, drop our reference, and let the cleanup
--		 * function handle the cleanup; the fact that we found it in
--		 * the listener's accept queue guarantees that the cleanup
--		 * function hasn't run yet.
-+		 * reject this socket and return.
- 		 */
--		if (err) {
--			vconnected->rejected = true;
--		} else {
-+		if (!err) {
- 			newsock->state = SS_CONNECTED;
- 			sock_graft(connected, newsock);
- 
-@@ -1940,6 +1932,8 @@ static int vsock_accept(struct socket *sock, struct socket *newsock,
- 		}
- 
- 		release_sock(connected);
-+		if (err)
-+			__vsock_release(connected, SINGLE_DEPTH_NESTING);
- 		sock_put(connected);
- 	}
- 
-
-
-base-commit: 075b74841bd0065a3bda3440873c747938e69b68
 -- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Slawomir Stepien
