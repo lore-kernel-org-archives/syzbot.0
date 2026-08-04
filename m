@@ -1,184 +1,527 @@
-Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EF273DAAB8
-	for <syzbot@lists.linux.dev>; Tue,  4 Aug 2026 05:56:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF1703FADFD;
+	Tue,  4 Aug 2026 06:36:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785823012; cv=none; b=jpDtXa4bxiOplsssX1z8mcbLc7vlwdi2vqSUqNUqC5zSBP66IWkjiieSHbglrBIyKwFOVs2WHqFmXla4p2/6oYt4nINZZ8H3u1z/ykRYRwSNIn4n77QzFDSCaDy4izTJjbrFMBMgXhG/pzQ5uRwnsWVuHLSvQ0yG7/pD019xwUY=
+	t=1785825375; cv=none; b=aB24VyrKwQB/uV33Q0U5v2I7OEoGnhpDhDqGdYxRZOrlyHp46/BebQ1c08bnStvi0pT66KoJvMoqzJph6W4wIENMi6PnHiBt+GUbRcUMx/rtT4NpkzqiBPsyUd+dlYdXbl3E8CtFV9Uctl+vAA1I6NyKw71pBvRJNGkVn4PaZ88=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785823012; c=relaxed/simple;
-	bh=XIpcj3r3YcWKiqcpXlC6N+Gs3AESCVhWad1VgzeDsQE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Yhu0moMb03P7GN/psHVOc05lUrTARCPjCQj2PPFKpXA2nw5l26gx5zL+IpjcQx16wquBhOI8Igu0Lgwg6SIXzC5uWmSBliX4RyHuOKLzj5TBOA2R7olair8FlYSlmrjQMpttwN6lBC27fWSuY6RkKJmqJkf7H5ReedvGIBgLXew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=L5blt4ar; arc=none smtp.client-ip=209.85.216.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785825375; c=relaxed/simple;
+	bh=1nu7MCghf8EnTXHq9nkl7aNDn6uCtPxmvo3IOfqCYWU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=umibOidf/djEJHKde4UDDBE1Meiig7+F4m7UGZnUNtB/QRU/HVEnVuyQnUHbGsfaV7HEB/bWi123MydAH22nnxK1AIpH7X2gCqv4+XK96mDJ7fPMqc6U+9FCpql3k4aN2r7AqYsVaYisi+Lub7hYYKIliVYqQ2KofZT34rMzVdw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=K6omRzJv; arc=none smtp.client-ip=115.124.30.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="L5blt4ar"
-Received: by mail-pj1-f51.google.com with SMTP id 98e67ed59e1d1-38e08baf860so3650344a91.2
-        for <syzbot@lists.linux.dev>; Mon, 03 Aug 2026 22:56:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785823011; x=1786427811; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=WkkhbIXoG8axKsH27helYvVd967WpJzV0kiVofr/iko=;
-        b=L5blt4arnMw9cus9fEGV/DbPN5bOazZ8Mpd0M4jtUrL+YMhDLh4nTjmm6b/KHEXKP4
-         Dddv/0bEtgojTHKs5XllXuwJ92wfCGDM6jnHHpVCEtALcDfT5Gay8moufFirleOs9i4g
-         E4p41RYslt7Nfe8CEOVeGHjLVVoe2fGqEs5ec99rLK60ZTvhLE86q9UxtIHMFEjPAY3u
-         CNJ+0yOydA07DcXEL3JngCV44R/FJW3Fnx/NoshmwLRJAJxWG1Od9IEjRZDHo2lFM08q
-         B5cR1nDxGC8H+Yw03e5gX9Arl33XpKlYXWXUrUhVTe9b8hRRDSV1OX474eJfxB9ObAZA
-         8Atw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785823011; x=1786427811;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=WkkhbIXoG8axKsH27helYvVd967WpJzV0kiVofr/iko=;
-        b=SdAPu5IpDOJXSvoE8pvgnY8TWkHfIF8NamTsyZ4dgACpxi8IcnuNz4+NB3lZi+XggD
-         SOucqxaYPcJ4/im0FTrnJd165NmYupSDnsv2fhSrBp4K8RGfAUDsQ8QEgnYhW5uH7to7
-         hfn7LB73kzOMK/1GLXJzcwdqYmpMSNi2UYWXDu+I5oYSdv8xt0tC9pEMtqEw4ztTz0H/
-         L1YQ/yZLsMVnRXSkk6Im46nO/6KvD/sPvKQB0aCGjNTa6qRu3YbkvcPzybLVO17ral3a
-         tsXjGkhavtmpqYsXjs/d+bDVjG0gkS3K/BhGqVbOiUz0NLP8KrPQNCKWcndgjFEoOm6h
-         m03g==
-X-Forwarded-Encrypted: i=1; AHgh+RqxWwEvpTxXmdnmv2H+L53KvbmtevwBCZRwiewHGAExiZ3tXVMvojBU1z00vn/+gVjuC0I/9V8=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx51f8R36OdeeEx2wSmcaSjroGDYLV7euCCX7gMg5wWs4aUJYHV
-	zMHriPhSNuNdoFfiS1aPNGWW7IIxBdif58LapSaD0T9xo3FMADzMZBek
-X-Gm-Gg: AR+sD10DO7FOEAT6jMdKFt2ORVF8j8xjEdarm9TLSKCMDGfo0H3EVDiKMPIdv0AvyrO
-	rotj8IfksbKR3wukZPrMzYv/jqMzaYB7nFmAMGcrfT/9wj7hSknabE5NQE4hZK9CFfwVrWAvGP+
-	q/TilU3/7LAE+aOmmUGMXXyu4Ktw8Nql9KzRq33xIrUp59tneE9wSyH3NhFAgMSx+AmgUStoLoa
-	zYSTUdIMJj2boO4+bSfa+2RoY3k8cr3o92NyudyLC7OrUs6PxipfkisBwzyPxQLcZjrJ3nP/7ta
-	HfC3liwevXhZwUqkOnii5gOKBfUaNA32/EM4lx0aFzgfBWwuywt+D8NBZsxT4ES6H2CpalAY8Xa
-	Q9zxMvcgjMC/BRXeIYGWZ5g7yyFELTaCywfIG/4AVUcXGcV12FTp/YBMJRVzEOp66PP7vevNMC7
-	J1Jxoid7wol9SM4napXrjTaKWc7dFGuIFahRr14abPraekW/l/U4jNbSijpmF+cT9b8VwYjAqQX
-	tVuSjanvnFa9OzgvB2XXB0pXxjeUg/a7WM=
-X-Received: by 2002:a17:90b:2dc7:b0:37f:9ce2:348c with SMTP id 98e67ed59e1d1-38fbc4eead6mr12029409a91.29.1785823010828;
-        Mon, 03 Aug 2026 22:56:50 -0700 (PDT)
-Received: from KASONG-MC4 ([43.132.141.25])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38febfd8fecsm759984a91.2.2026.08.03.22.56.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2026 22:56:50 -0700 (PDT)
-Date: Tue, 4 Aug 2026 13:56:39 +0800
-From: Kairui Song <ryncsn@gmail.com>
-To: syzbot ci <syzbot+ci218ae24e07bfb1fa@syzkaller.appspotmail.com>
-Cc: akpm@linux-foundation.org, axelrasmussen@google.com, baohua@kernel.org, 
-	baolin.wang@linux.alibaba.com, baoquan.he@linux.dev, cgroups@vger.kernel.org, 
-	chenridong@xiaomi.com, chrisl@kernel.org, david@kernel.org, dev.jain@arm.com, 
-	devnull@kernel.org, gourry@gourry.net, hannes@cmpxchg.org, hughd@google.com, 
-	kasong@tencent.com, lance.yang@linux.dev, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, ljs@kernel.org, mhocko@kernel.org, muchun.song@linux.dev, 
-	nico.pache@linux.dev, nphamcs@gmail.com, qi.zheng@linux.dev, rientjes@google.com, 
-	roman.gushchin@linux.dev, ryan.roberts@arm.com, shakeel.butt@linux.dev, 
-	shikemeng@huaweicloud.com, sj@kernel.org, surenb@google.com, tz2294@columbia.edu, 
-	usama.arif@linux.dev, vbabka@kernel.org, vernon2gm@gmail.com, wangzicheng@honor.com, 
-	weixugc@google.com, willy@infradead.org, ying.huang@linux.alibaba.com, 
-	youngjun.park@lge.com, yuanchu@google.com, yuzhao@google.com, ziy@nvidia.com, 
-	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot ci] Re: mm/mglru: frequency guided promotion (MGLRU-FG)
- and flag cleanup
-Message-ID: <anF9cewVHJ-MYdP6@KASONG-MC4>
-References: <20260804-mglru-fg-v1-0-4d8dad39dad6@tencent.com>
- <6a7177f9.d35e88fd.de8b.000b.GAE@google.com>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="K6omRzJv"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1785825364; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	bh=EWX7mfH9rNFRR4DQrB+AxMKw0bmkEltXSsKC4HTX0+I=;
+	b=K6omRzJvLBbNLb1HCq6VXw2NE+4T0AOY20zCkUJy55xVEda2lMigIEHVN7ZYofu6yI3lncTF9z/fVykbkNUzzCt6WxVTlsn5PGXZfcVN/L7u5dbaDxDFFT6pgRhR3t1VYtj7YpmYM8C0bplg2o4kD2ZqPQvHfkhviyicrihovmE=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R561e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam011083073210;MF=joseph.qi@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0X8MwMul_1785825362;
+Received: from 30.221.129.86(mailfrom:joseph.qi@linux.alibaba.com fp:SMTPD_---0X8MwMul_1785825362 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Tue, 04 Aug 2026 14:36:02 +0800
+Message-ID: <f98ff905-74bf-4017-a673-fd28f30f11d3@linux.alibaba.com>
+Date: Tue, 4 Aug 2026 14:36:02 +0800
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6a7177f9.d35e88fd.de8b.000b.GAE@google.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] ocfs2: fix circular locking dependency in
+ ocfs2_init_acl()
+To: syzbot <syzbot@kernel.org>,
+ Krystian Kaniewski <krystianmkaniewski@gmail.com>,
+ Andrew Morton <akpm@linux-foundation.org>
+Cc: Mark Fasheh <mark@fasheh.com>, Joel Becker <jlbec@evilplan.org>,
+ syzkaller-bugs@googlegroups.com, ocfs2-devel@lists.linux.dev,
+ linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
+References: <4094de06-9b69-4174-b2ee-08126dffc693@mail.kernel.org>
+From: Joseph Qi <joseph.qi@linux.alibaba.com>
+In-Reply-To: <4094de06-9b69-4174-b2ee-08126dffc693@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, Aug 03, 2026 at 10:26:17PM +0800, syzbot ci wrote:
-> syzbot ci has tested the following series
-> 
-> [v1] mm/mglru: frequency guided promotion (MGLRU-FG) and flag cleanup
-> https://lore.kernel.org/all/20260804-mglru-fg-v1-0-4d8dad39dad6@tencent.com
-> * [PATCH RFC 01/15] mm/memcontrol: make lru_zone_size atomic and simplify sanity check
-> * [PATCH RFC 02/15] mm/memcontrol: allow update of LRU statistic without holding LRU lock
-> * [PATCH RFC 03/15] mm/mglru: introduce and always use helpers for manipulating page flags
-> * [PATCH RFC 04/15] mm/mglru: make generation page counters atomic
-> * [PATCH RFC 05/15] mm/mglru: move max_seq read into walk_update_folio
-> * [PATCH RFC 06/15] mm/mglru: use explicit tier range in read_ctrl_pos()
-> * [PATCH RFC 07/15] mm/mglru: move refault workingset activation into lru_gen_refault
-> * [PATCH RFC 08/15] mm/memcg: add folio-based lruvec live helper
-> * [PATCH RFC 09/15] mm/mglru: frequency guided workingset promotion (MGLRU-FG)
-> * [PATCH RFC 10/15] mm/mglru: make folio lru referenced times count a generic API
-> * [PATCH RFC 11/15] mm/mglru: replace folio workinset check and update with new helper
-> * [PATCH RFC 12/15] mm/smap: report workingset folios as referenced
-> * [PATCH RFC 13/15] mm/huge_memory: mark file folio as accessed more accurately on split
-> * [PATCH RFC 14/15] mm/khugepaged: consider workingset folios as referenced
-> * [PATCH RFC 15/15] mm/madvise: convert to new lru refs API and better support for MGLRU
-> 
-> and found the following issue:
-> WARNING in folio_inc_lru_refs
-> 
-> Full report is available here:
-> https://ci.syzbot.org/series/5db36d1d-9faa-4882-9f0d-1a8f52132274
-> 
-> ***
-> 
-> WARNING in folio_inc_lru_refs
-> 
-> tree:      mm-new
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-> base:      94f9b3980dd446b56acf1dfed649e9b32a9f3813
-> arch:      amd64
-> compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-> config:    https://ci.syzbot.org/builds/9f324367-2b95-4fd0-9025-fef1ff1f605a/config
-> 
-> page: refcount:3 mapcount:2 mapping:0000000000000000 index:0x0 pfn:0xe4ee
-> flags: 0xfff00000002000(reserved|node=0|zone=1|lastcpupid=0x7ff)
-> raw: 00fff00000002000 ffffea0000393b88 ffffea0000393b88 0000000000000000
-> raw: 0000000000000000 0000000000000000 0000000300000001 0000000000000000
-> page dumped because: VM_WARN_ON_ONCE_FOLIO(!memcg && !mem_cgroup_disabled())
-> page_owner info is not present (never set?)
-> ------------[ cut here ]------------
-> 1
-> WARNING: ./include/linux/memcontrol.h:745 at folio_inc_lru_refs+0xb4f/0xc10, CPU#0: mount/5025
-> Modules linked in:
-> CPU: 0 UID: 0 PID: 5025 Comm: mount Not tainted syzkaller #0 PREEMPT(full) 
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> RIP: 0010:folio_inc_lru_refs+0xb4f/0xc10
-> Code: ff 4c 89 e7 e8 c2 ae fd ff e9 e9 fc ff ff e8 18 91 ba ff 4c 89 e7 48 c7 c6 20 90 f8 8b e8 99 b0 1b ff c6 05 a6 a9 34 0e 01 90 <0f> 0b 90 e9 85 f6 ff ff e8 f4 90 ba ff e9 29 f8 ff ff 44 89 f1 80
-> RSP: 0018:ffffc9000324f4c0 EFLAGS: 00010246
-> RAX: 8e914a919570c700 RBX: 0000000000000000 RCX: 0000000000000001
-> RDX: 0000000000000000 RSI: ffffffff8e4b4187 RDI: ffff888174f53c00
-> RBP: ffffc9000324f5d0 R08: 0000000000000003 R09: 0000000000000004
-> R10: dffffc0000000000 R11: fffffbfff1d3ca24 R12: ffffea0000393b80
-> R13: 1ffffd4000072770 R14: 1ffff92000649ea8 R15: dffffc0000000000
-> FS:  0000000000000000(0000) GS:ffff88818d949000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007fb77b215440 CR3: 000000000e946000 CR4: 00000000000006f0
-> Call Trace:
->  <TASK>
->  __zap_vma_range+0x20f5/0x4f70
->  unmap_vmas+0x390/0x550
->  exit_mmap+0x293/0x9f0
->  __mmput+0x118/0x420
->  exit_mm+0x221/0x2d0
->  do_exit+0x6cd/0x2360
->  do_group_exit+0x22d/0x2f0
->  __x64_sys_exit_group+0x3f/0x40
->  x64_sys_call+0x221a/0x2240
->  do_syscall_64+0x174/0x580
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7fb77b2d3a90
-> Code: Unable to access opcode bytes at 0x7fb77b2d3a66.
-> RSP: 002b:00007ffe32d58618 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-> RAX: ffffffffffffffda RBX: 00007fb77b3c4860 RCX: 00007fb77b2d3a90
-> RDX: 00000000000000e7 RSI: 000000000000003c RDI: 0000000000000000
-> RBP: 00007fb77b3c4860 R08: 00007ffe32d58490 R09: 00007ffe32d58570
-> R10: 00007ffe32d584d0 R11: 0000000000000246 R12: 0000000000000000
-> R13: 0000000000000000 R14: 00007fb77b3c8658 R15: 0000000000000001
->  </TASK>
 
-OK, so we might hit a uncharged folio in folio_mark_access, which isn't
-strange, right now it will just skip the gen bump and work as expected,
-problem is it's triggering this warning, and doing redundant work for
-lruvec lookup. To fix that, checking flags first then the lruvec should
-be good.
 
-Will do in V2.
+On 7/30/26 3:42 PM, syzbot wrote:
+> From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+> 
+> A lockdep warning indicates a circular locking dependency between
+> `&oi->ip_xattr_sem` and `&journal->j_trans_barrier`:
+> 
+> WARNING: possible circular locking dependency detected
+> is trying to acquire lock:
+>  (&oi->ip_xattr_sem){++++}-{4:4}, at: ocfs2_init_acl+0x2fd/0x7e0
+>  fs/ocfs2/acl.c:367
+> 
+> but task is already holding lock:
+>  (&journal->j_trans_barrier){.+.+}-{4:4}, at: ocfs2_start_trans+0x3ab/0x700
+>  fs/ocfs2/journal.c:369
+> 
+> The deadlock involves two code paths: Path 1 (setxattr) where
+> `ocfs2_xattr_set()` acquires `ip_xattr_sem` (write) and then starts a
+> transaction, which acquires `j_trans_barrier` (read); and Path 2
+> (mkdir/mknod) where `ocfs2_mknod()` starts a transaction (`j_trans_barrier`
+> read) and then calls `ocfs2_init_acl()`, which attempts to acquire
+> `ip_xattr_sem` (read) on the parent directory to retrieve the default ACL.
+> 
+> Because rw_semaphores are subject to writer priority, a pending writer on
+> `j_trans_barrier` (e.g., the journal commit thread) can cause Path 1 to
+> block, while Path 2 is blocked waiting for Path 1 to release
+> `ip_xattr_sem`.
+> 
+> The patch fixes the lock ordering by precomputing the ACL state before
+> starting the OCFS2 transaction, while preserving POSIX ACL storage
+> semantics and the existing inode/security initialization order. By reading
+> the parent directory's default ACL and preparing the new inode's ACLs
+> outside the transaction, `ip_xattr_sem` is always acquired before
+> `j_trans_barrier`.
+> 
+> `struct ocfs2_acl_state` encapsulates the prepared ACL state, while
+> `ocfs2_acl_init_prepare()` and `ocfs2_acl_init_release()` avoid code
+> duplication between `ocfs2_mknod()` and `ocfs2_init_security_and_acl()`.
+> `ocfs2_calc_xattr_init()` and `ocfs2_init_acl()` use this precomputed
+> state, removing internal `ip_xattr_sem` acquisition and redundant disk
+> reads.
+> 
+> Additionally, remove the `ip_xattr_sem` acquisition from
+> `ocfs2_xattr_set_handle()`. This function is only used while initializing a
+> new inode that has not yet been inserted into the inode hash or attached to
+> a dentry, meaning there is no risk of concurrent access and the lock is
+> unnecessary.
+> 
+> Fixes: 16c8d569f570 ("ocfs2/acl: use 'ip_xattr_sem' to protect getting extended attribute")
+> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+4007ab5229e732466d9f@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=4007ab5229e732466d9f
+> Link: https://syzkaller.appspot.com/ai_job?id=cc75363d-c672-499e-8fc5-44bcdc1cee39
+> Signed-off-by: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+
+Reviewed-by: Joseph Qi <joseph.qi@linux.alibaba.com>
+> 
+> ---
+> diff --git a/fs/ocfs2/acl.c b/fs/ocfs2/acl.c
+> index af1e2cedb..090ec60fb 100644
+> --- a/fs/ocfs2/acl.c
+> +++ b/fs/ocfs2/acl.c
+> @@ -110,8 +110,7 @@ static void *ocfs2_acl_to_xattr(const struct posix_acl *acl, size_t *size)
+>  	return ocfs2_acl;
+>  }
+>  
+> -static struct posix_acl *ocfs2_get_acl_nolock(struct inode *inode,
+> -					      int type,
+> +static struct posix_acl *ocfs2_get_acl_nolock(struct inode *inode, int type,
+>  					      struct buffer_head *di_bh)
+>  {
+>  	int name_index;
+> @@ -349,63 +348,105 @@ int ocfs2_acl_chmod(struct inode *inode, struct buffer_head *bh)
+>   * Initialize the ACLs of a new inode. If parent directory has default ACL,
+>   * then clone to new inode. Called from ocfs2_mknod.
+>   */
+> -int ocfs2_init_acl(handle_t *handle,
+> -		   struct inode *inode,
+> -		   struct inode *dir,
+> -		   struct buffer_head *di_bh,
+> -		   struct buffer_head *dir_bh,
+> -		   struct ocfs2_alloc_context *meta_ac,
+> -		   struct ocfs2_alloc_context *data_ac)
+> +void ocfs2_acl_init_release(struct ocfs2_acl_state *state)
+> +{
+> +	posix_acl_release(state->default_acl);
+> +	posix_acl_release(state->acl);
+> +	state->default_acl = NULL;
+> +	state->acl = NULL;
+> +}
+> +
+> +int ocfs2_acl_init_prepare(struct inode *inode, struct inode *dir,
+> +			   struct buffer_head *dir_bh,
+> +			   struct ocfs2_acl_state *state)
+>  {
+>  	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
+> -	struct posix_acl *acl = NULL;
+> -	int ret = 0, ret2;
+> -	umode_t mode;
+> -
+> -	if (!S_ISLNK(inode->i_mode)) {
+> -		if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
+> -			down_read(&OCFS2_I(dir)->ip_xattr_sem);
+> -			acl = ocfs2_get_acl_nolock(dir, ACL_TYPE_DEFAULT,
+> -						   dir_bh);
+> -			up_read(&OCFS2_I(dir)->ip_xattr_sem);
+> -			if (IS_ERR(acl))
+> -				return PTR_ERR(acl);
+> +	int ret = 0;
+> +
+> +	state->default_acl = NULL;
+> +	state->acl = NULL;
+> +	state->mode = inode->i_mode;
+> +
+> +	if (S_ISLNK(inode->i_mode))
+> +		return 0;
+> +
+> +	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
+> +		down_read(&OCFS2_I(dir)->ip_xattr_sem);
+> +		state->default_acl =
+> +			ocfs2_get_acl_nolock(dir, ACL_TYPE_DEFAULT, dir_bh);
+> +		up_read(&OCFS2_I(dir)->ip_xattr_sem);
+> +		if (IS_ERR(state->default_acl)) {
+> +			ret = PTR_ERR(state->default_acl);
+> +			state->default_acl = NULL;
+> +			return ret;
+>  		}
+> -		if (!acl) {
+> -			mode = inode->i_mode & ~current_umask();
+> -			ret = ocfs2_acl_set_mode(inode, di_bh, handle, mode);
+> -			if (ret) {
+> -				mlog_errno(ret);
+> +		if (state->default_acl) {
+> +			state->acl = posix_acl_dup(state->default_acl);
+> +			if (!state->acl) {
+> +				ret = -ENOMEM;
+>  				goto cleanup;
+>  			}
+> +			ret = __posix_acl_create(&state->acl, GFP_NOFS,
+> +						 &state->mode);
+> +			if (ret < 0)
+> +				goto cleanup;
+> +			if (ret == 0) {
+> +				posix_acl_release(state->acl);
+> +				state->acl = NULL;
+> +			}
+> +			if (!S_ISDIR(inode->i_mode)) {
+> +				posix_acl_release(state->default_acl);
+> +				state->default_acl = NULL;
+> +			}
+> +		} else {
+> +			state->mode &= ~current_umask();
+>  		}
+> +	} else {
+> +		state->mode &= ~current_umask();
+>  	}
+> -	if ((osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) && acl) {
+> -		if (S_ISDIR(inode->i_mode)) {
+> +
+> +	return 0;
+> +cleanup:
+> +	ocfs2_acl_init_release(state);
+> +	return ret;
+> +}
+> +
+> +int ocfs2_init_acl(handle_t *handle, struct inode *inode,
+> +		   struct buffer_head *di_bh,
+> +		   struct ocfs2_alloc_context *meta_ac,
+> +		   struct ocfs2_alloc_context *data_ac,
+> +		   struct ocfs2_acl_state *state)
+> +{
+> +	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
+> +	int ret = 0;
+> +
+> +	if (S_ISLNK(inode->i_mode))
+> +		return 0;
+> +
+> +	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
+> +		if (S_ISDIR(inode->i_mode) && state->default_acl) {
+>  			ret = ocfs2_set_acl(handle, inode, di_bh,
+> -					    ACL_TYPE_DEFAULT, acl,
+> -					    meta_ac, data_ac);
+> +					    ACL_TYPE_DEFAULT,
+> +					    state->default_acl, meta_ac,
+> +					    data_ac);
+>  			if (ret)
+> -				goto cleanup;
+> +				return ret;
+>  		}
+> -		mode = inode->i_mode;
+> -		ret = __posix_acl_create(&acl, GFP_NOFS, &mode);
+> -		if (ret < 0)
+> -			return ret;
+> +	}
+>  
+> -		ret2 = ocfs2_acl_set_mode(inode, di_bh, handle, mode);
+> -		if (ret2) {
+> -			mlog_errno(ret2);
+> -			ret = ret2;
+> -			goto cleanup;
+> -		}
+> -		if (ret > 0) {
+> -			ret = ocfs2_set_acl(handle, inode,
+> -					    di_bh, ACL_TYPE_ACCESS,
+> -					    acl, meta_ac, data_ac);
+> +	ret = ocfs2_acl_set_mode(inode, di_bh, handle, state->mode);
+> +	if (ret) {
+> +		mlog_errno(ret);
+> +		return ret;
+> +	}
+> +
+> +	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
+> +		if (state->acl) {
+> +			ret = ocfs2_set_acl(handle, inode, di_bh,
+> +					    ACL_TYPE_ACCESS, state->acl,
+> +					    meta_ac, data_ac);
+>  		}
+>  	}
+> -cleanup:
+> -	posix_acl_release(acl);
+> +
+>  	return ret;
+>  }
+> diff --git a/fs/ocfs2/acl.h b/fs/ocfs2/acl.h
+> index 667c6f03f..a91f9ce27 100644
+> --- a/fs/ocfs2/acl.h
+> +++ b/fs/ocfs2/acl.h
+> @@ -20,9 +20,20 @@ struct posix_acl *ocfs2_iop_get_acl(struct inode *inode, int type, bool rcu);
+>  int ocfs2_iop_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
+>  		      struct posix_acl *acl, int type);
+>  extern int ocfs2_acl_chmod(struct inode *, struct buffer_head *);
+> -extern int ocfs2_init_acl(handle_t *, struct inode *, struct inode *,
+> -			  struct buffer_head *, struct buffer_head *,
+> -			  struct ocfs2_alloc_context *,
+> -			  struct ocfs2_alloc_context *);
+> +struct ocfs2_acl_state {
+> +	struct posix_acl *default_acl;
+> +	struct posix_acl *acl;
+> +	umode_t mode;
+> +};
+> +
+> +int ocfs2_acl_init_prepare(struct inode *inode, struct inode *dir,
+> +			   struct buffer_head *dir_bh,
+> +			   struct ocfs2_acl_state *state);
+> +void ocfs2_acl_init_release(struct ocfs2_acl_state *state);
+> +int ocfs2_init_acl(handle_t *handle, struct inode *inode,
+> +		   struct buffer_head *di_bh,
+> +		   struct ocfs2_alloc_context *meta_ac,
+> +		   struct ocfs2_alloc_context *data_ac,
+> +		   struct ocfs2_acl_state *state);
+>  
+>  #endif /* OCFS2_ACL_H */
+> diff --git a/fs/ocfs2/namei.c b/fs/ocfs2/namei.c
+> index 1277666c7..ea37a5058 100644
+> --- a/fs/ocfs2/namei.c
+> +++ b/fs/ocfs2/namei.c
+> @@ -256,6 +256,7 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
+>  	sigset_t oldset;
+>  	int did_block_signals = 0;
+>  	struct ocfs2_dentry_lock *dl = NULL;
+> +	struct ocfs2_acl_state acl_state = { 0 };
+>  
+>  	trace_ocfs2_mknod(dir, dentry, dentry->d_name.len, dentry->d_name.name,
+>  			  (unsigned long long)OCFS2_I(dir)->ip_blkno,
+> @@ -330,10 +331,14 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
+>  		}
+>  	}
+>  
+> +	status = ocfs2_acl_init_prepare(inode, dir, parent_fe_bh, &acl_state);
+> +	if (status < 0)
+> +		goto leave;
+> +
+>  	/* calculate meta data/clusters for setting security and acl xattr */
+> -	status = ocfs2_calc_xattr_init(dir, parent_fe_bh, mode,
+> -				       &si, &want_clusters,
+> -				       &xattr_credits, &want_meta);
+> +	status = ocfs2_calc_xattr_init(dir, mode, &si, &want_clusters,
+> +				       &xattr_credits, &want_meta,
+> +				       &acl_state);
+>  	if (status < 0) {
+>  		mlog_errno(status);
+>  		goto leave;
+> @@ -411,8 +416,8 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
+>  		inc_nlink(dir);
+>  	}
+>  
+> -	status = ocfs2_init_acl(handle, inode, dir, new_fe_bh, parent_fe_bh,
+> -			 meta_ac, data_ac);
+> +	status = ocfs2_init_acl(handle, inode, new_fe_bh, meta_ac, data_ac,
+> +				&acl_state);
+>  
+>  	if (status < 0) {
+>  		mlog_errno(status);
+> @@ -477,6 +482,8 @@ static int ocfs2_mknod(struct mnt_idmap *idmap,
+>  	brelse(parent_fe_bh);
+>  	kfree(si.value);
+>  
+> +	ocfs2_acl_init_release(&acl_state);
+> +
+>  	ocfs2_free_dir_lookup_result(&lookup);
+>  
+>  	if (inode_ac)
+> diff --git a/fs/ocfs2/xattr.c b/fs/ocfs2/xattr.c
+> index fcddd3c13..86f029368 100644
+> --- a/fs/ocfs2/xattr.c
+> +++ b/fs/ocfs2/xattr.c
+> @@ -611,13 +611,10 @@ int ocfs2_calc_security_init(struct inode *dir,
+>  	return ret;
+>  }
+>  
+> -int ocfs2_calc_xattr_init(struct inode *dir,
+> -			  struct buffer_head *dir_bh,
+> -			  umode_t mode,
+> +int ocfs2_calc_xattr_init(struct inode *dir, umode_t mode,
+>  			  struct ocfs2_security_xattr_info *si,
+> -			  int *want_clusters,
+> -			  int *xattr_credits,
+> -			  int *want_meta)
+> +			  int *want_clusters, int *xattr_credits,
+> +			  int *want_meta, struct ocfs2_acl_state *acl_state)
+>  {
+>  	int ret = 0;
+>  	struct ocfs2_super *osb = OCFS2_SB(dir->i_sb);
+> @@ -628,19 +625,15 @@ int ocfs2_calc_xattr_init(struct inode *dir,
+>  						     si->value_len);
+>  
+>  	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
+> -		down_read(&OCFS2_I(dir)->ip_xattr_sem);
+> -		acl_len = ocfs2_xattr_get_nolock(dir, dir_bh,
+> -					OCFS2_XATTR_INDEX_POSIX_ACL_DEFAULT,
+> -					"", NULL, 0);
+> -		up_read(&OCFS2_I(dir)->ip_xattr_sem);
+> -		if (acl_len > 0) {
+> -			a_size = ocfs2_xattr_entry_real_size(0, acl_len);
+> -			if (S_ISDIR(mode))
+> -				a_size <<= 1;
+> -		} else if (acl_len != 0 && acl_len != -ENODATA) {
+> -			ret = acl_len;
+> -			mlog_errno(ret);
+> -			return ret;
+> +		if (acl_state->default_acl && S_ISDIR(mode)) {
+> +			acl_len = acl_state->default_acl->a_count *
+> +				  sizeof(struct ocfs2_acl_entry);
+> +			a_size += ocfs2_xattr_entry_real_size(0, acl_len);
+> +		}
+> +		if (acl_state->acl) {
+> +			acl_len = acl_state->acl->a_count *
+> +				  sizeof(struct ocfs2_acl_entry);
+> +			a_size += ocfs2_xattr_entry_real_size(0, acl_len);
+>  		}
+>  	}
+>  
+> @@ -683,14 +676,33 @@ int ocfs2_calc_xattr_init(struct inode *dir,
+>  							   new_clusters);
+>  		*want_clusters += new_clusters;
+>  	}
+> -	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL &&
+> -	    acl_len > OCFS2_XATTR_INLINE_SIZE) {
+> -		/* for directory, it has DEFAULT and ACCESS two types of acls */
+> -		new_clusters = (S_ISDIR(mode) ? 2 : 1) *
+> -				ocfs2_clusters_for_bytes(dir->i_sb, acl_len);
+> -		*xattr_credits += ocfs2_clusters_to_blocks(dir->i_sb,
+> -							   new_clusters);
+> -		*want_clusters += new_clusters;
+> +	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
+> +		if (acl_state->default_acl && S_ISDIR(mode)) {
+> +			acl_len = acl_state->default_acl->a_count *
+> +				  sizeof(struct ocfs2_acl_entry);
+> +			if (acl_len > OCFS2_XATTR_INLINE_SIZE) {
+> +				new_clusters =
+> +					ocfs2_clusters_for_bytes(dir->i_sb,
+> +								 acl_len);
+> +				*xattr_credits +=
+> +					ocfs2_clusters_to_blocks(dir->i_sb,
+> +								 new_clusters);
+> +				*want_clusters += new_clusters;
+> +			}
+> +		}
+> +		if (acl_state->acl) {
+> +			acl_len = acl_state->acl->a_count *
+> +				  sizeof(struct ocfs2_acl_entry);
+> +			if (acl_len > OCFS2_XATTR_INLINE_SIZE) {
+> +				new_clusters =
+> +					ocfs2_clusters_for_bytes(dir->i_sb,
+> +								 acl_len);
+> +				*xattr_credits +=
+> +					ocfs2_clusters_to_blocks(dir->i_sb,
+> +								 new_clusters);
+> +				*want_clusters += new_clusters;
+> +			}
+> +		}
+>  	}
+>  
+>  	return ret;
+> @@ -3483,9 +3495,10 @@ static int __ocfs2_xattr_set_handle(struct inode *inode,
+>  }
+>  
+>  /*
+> - * This function only called duing creating inode
+> - * for init security/acl xattrs of the new inode.
+> - * All transanction credits have been reserved in mknod.
+> + * This helper is only for setting initial ACL or security xattrs on an inode
+> + * that is still unpublished, unhashed, and unattached to a dentry.
+> + * Ordinary xattr updates must use ocfs2_xattr_set().
+> + * All transaction credits have been reserved in mknod or symlink callers.
+>   */
+>  int ocfs2_xattr_set_handle(handle_t *handle,
+>  			   struct inode *inode,
+> @@ -3542,8 +3555,6 @@ int ocfs2_xattr_set_handle(handle_t *handle,
+>  	xis.inode_bh = xbs.inode_bh = di_bh;
+>  	di = (struct ocfs2_dinode *)di_bh->b_data;
+>  
+> -	down_write(&OCFS2_I(inode)->ip_xattr_sem);
+> -
+>  	ret = ocfs2_xattr_ibody_find(inode, name_index, name, &xis);
+>  	if (ret)
+>  		goto cleanup;
+> @@ -3556,7 +3567,6 @@ int ocfs2_xattr_set_handle(handle_t *handle,
+>  	ret = __ocfs2_xattr_set_handle(inode, di, &xi, &xis, &xbs, &ctxt);
+>  
+>  cleanup:
+> -	up_write(&OCFS2_I(inode)->ip_xattr_sem);
+>  	brelse(xbs.xattr_bh);
+>  	ocfs2_xattr_bucket_free(xbs.bucket);
+>  
+> @@ -7257,6 +7267,7 @@ int ocfs2_init_security_and_acl(struct inode *dir,
+>  {
+>  	int ret = 0;
+>  	struct buffer_head *dir_bh = NULL;
+> +	struct ocfs2_acl_state acl_state = { 0 };
+>  
+>  	ret = ocfs2_init_security_get(inode, dir, qstr, NULL);
+>  	if (ret) {
+> @@ -7269,10 +7280,17 @@ int ocfs2_init_security_and_acl(struct inode *dir,
+>  		mlog_errno(ret);
+>  		goto leave;
+>  	}
+> -	ret = ocfs2_init_acl(NULL, inode, dir, NULL, dir_bh, NULL, NULL);
+> +
+> +	ret = ocfs2_acl_init_prepare(inode, dir, dir_bh, &acl_state);
+> +	if (ret)
+> +		goto unlock;
+> +
+> +	ret = ocfs2_init_acl(NULL, inode, NULL, NULL, NULL, &acl_state);
+>  	if (ret)
+>  		mlog_errno(ret);
+>  
+> +unlock:
+> +	ocfs2_acl_init_release(&acl_state);
+>  	ocfs2_inode_unlock(dir, 0);
+>  	brelse(dir_bh);
+>  leave:
+> diff --git a/fs/ocfs2/xattr.h b/fs/ocfs2/xattr.h
+> index 65e9aa743..5cdd6c6b4 100644
+> --- a/fs/ocfs2/xattr.h
+> +++ b/fs/ocfs2/xattr.h
+> @@ -55,9 +55,12 @@ int ocfs2_init_security_set(handle_t *, struct inode *,
+>  int ocfs2_calc_security_init(struct inode *,
+>  			     struct ocfs2_security_xattr_info *,
+>  			     int *, int *, struct ocfs2_alloc_context **);
+> -int ocfs2_calc_xattr_init(struct inode *, struct buffer_head *,
+> -			  umode_t, struct ocfs2_security_xattr_info *,
+> -			  int *, int *, int *);
+> +
+> +struct ocfs2_acl_state;
+> +int ocfs2_calc_xattr_init(struct inode *dir, umode_t mode,
+> +			  struct ocfs2_security_xattr_info *si,
+> +			  int *want_clusters, int *xattr_credits,
+> +			  int *want_meta, struct ocfs2_acl_state *acl_state);
+>  
+>  /*
+>   * xattrs can live inside an inode, as part of an external xattr block,
+> 
+> 
+> base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
+
