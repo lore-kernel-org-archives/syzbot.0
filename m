@@ -1,136 +1,70 @@
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B9BA344D9B
-	for <syzbot@lists.linux.dev>; Tue,  4 Aug 2026 17:31:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45562352031
+	for <syzbot@lists.linux.dev>; Tue,  4 Aug 2026 23:46:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785864687; cv=none; b=r5dpA7Y29qtimitDgKArwNm8DEHKtiiuXz8Qr/E4aIXgAaRFetchjHF+yOA6Oguj7r2d+I1mlfNblRU1Z7KE7Gp0vK8FtuhZpnilMPpC5cGUfoe3dEiSMmP2pV+ViKRenMIsUJZ6tFvnxUD8DezrCCDrsuzTbiOqEM6cBCefieE=
+	t=1785887163; cv=none; b=QHc4t0HEfSvqhD7XJRIFtqUT3/JKDJcpVFu9CPv3qkLy/hnmsg4J3sI5k03DtBO3zY65WcsnNBSmTYOgnW2TW1LdUpePRJTpagMSGTVaOUpLG9pySWOyHcrgugFHHtX+nLwXfrafUGJdhzfyhsak8i4MmbFHTHhya3lIae0D9wc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785864687; c=relaxed/simple;
-	bh=PEIo+F6nSB/oPmXub2a1WcIGBd3T5QhN0xPjELeCzQA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=oqlHoy7WPDC3qPYNHep0xOQiA6JL8GHOXim7MZRlXA9UAbpq5uHVPoTM4bihZyGDzQm3Ym4Wm0Mt22npiUCZ7lfhcUHmdeVXf2ItbCTtEHHMmi7zLy3idpZJ0+mAGI3HbhOMI+ej6XS4Y2tDAAO3pWIdNtWffReNZRzZvytwBwo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=GhjgvZ90; arc=none smtp.client-ip=209.85.210.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	s=arc-20240116; t=1785887163; c=relaxed/simple;
+	bh=GhdadLDSeT3S451tJMeeXYj/r5d03FbU3MzwrQGTy20=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=R9HV5G6/q1t58mhHoOY1zJsAOCpDx6E82Vuog1AGKNF9sSyz3ht0qfoisMBj9T/uDUswpacVyX+JeLqvfdGgexrMoFH5hiukHxF9Azp1XHQgljKpB8Od4KmmdQ7kz7Rb1HbvAP9RS8ALneXSQsj27A8sZOQHpzqCdxy3uzXLcLU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=sP4IDR92; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="GhjgvZ90"
-Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-7ec3b429a3aso116505a34.1
-        for <syzbot@lists.linux.dev>; Tue, 04 Aug 2026 10:31:25 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="sP4IDR92"
+Received: by smtp.kernel.org (Postfix)
+	id 1103F1F00A3A; Tue,  4 Aug 2026 23:46:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC1091F000E9;
+	Tue,  4 Aug 2026 23:46:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google; t=1785864684; x=1786469484; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=nShkqNi6OVr5kcjYAHosuW4Py7XxiJXhmTYRr0hY3Fc=;
-        b=GhjgvZ90fxqPTBKE+ykW/AnWj4d3iGp6k/HkLsNTvpT56puBYYt76psR8CzZJv71gx
-         rCNKk1u19RKYvkPJCkx11v3Jfah8jN785HOKZTNfOSfzQkAIVhwxvHc2AdcX3sw5q9St
-         k8f/zULwY7iwjxnJCL2yaD3DxKKRBJUsNNyG8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785864684; x=1786469484;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=nShkqNi6OVr5kcjYAHosuW4Py7XxiJXhmTYRr0hY3Fc=;
-        b=ca/YgyGBn+dXusrJsfvWP5K5hsU9HD/QK/n1hvjO4YgTnwIoKcgXHoLBBPi+u7dJTA
-         uJn7998rD1BRkV7n0Hiop6cQmkMClPjXNSxPv00lGC8ESdFYv/F4hF0UnaRH7LsGD+Dj
-         B5uvdmvUnxdSJ9W+Quqgf4uplRCBkh+UqksQ304x0/D8MeDTZ3Y5VF7R31nwgbkW4DOX
-         5iuMWzpY/jxEQSvMd9hd5hijFhEDOZVIt7OkBJ40JNF/xyYJFGs8RI6vxXbsKmZhvnyg
-         PZQV949S9vcRZSh+RDtJ+422r4DJaCrVg6RdPlyoxGBsRl0JiHRaYB2j7aLOll4Um/1Y
-         i8jg==
-X-Forwarded-Encrypted: i=1; AHgh+RofN+zqTRgLqsQ5oCM5eUqM58zZgbL7k5l5OyZp1qWavXWG2gJbJ0xoqX3RFsycGyiCZKwBvwE=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz6MDIXKcrb4LsWehtkRQjy7UHL4i8ZhP6wPQzYwnfWKh3vK7uV
-	roDNcwa52oFnEfVS2J8uCVuIWriaOofTEsL0ks65zUoAPaQNULp5I2fWNYEBFP59IdU=
-X-Gm-Gg: AR+sD10vLpm2DEa+5R6k8KPLdBScM/luVwBqacn5yDQFB8pvA8F1kRC1s2QarU7ms5u
-	pKZ5bCYB7lbRuFBuuBmfCXohvqSW995GQUBn/IEV+cDjqSPVdtMKR7Hk0Ca7mIVZAfwhSdXM7Al
-	aY5N/2zWuVFGtZeXgEEXPGvvRVphz38IxKvOCwwKWyGJTlzRFlG/xDMBkrXyQi63uq5bL9W0JGO
-	bYERV6uYIRi2JYbdfIBA0D+2xiIQldJkiq+LtPhy4liBYWz9YRtONYOZ9J1/4jSXuJWIIzFoBty
-	mi+xLvufvJLXMC8LtWcp2Mh/d0LxKbAYSBgF5WcD0Soaf0HseixnfErdROl7tnPQkY2OQhrxY4Q
-	YFqF4Ficfe/5Q0nI2n6QruJD79IRGmnyaG/NKitp2h6Tg/GWKsFQ+7v2tVQUhbqz4aQGsxxU0St
-	zwQ1xZj4JlDBifbR1zYpHClE7W5Un0CL9U6FKWtF18VGjR/MsYH9l4L003EjBh4mc8OTKvHw==
-X-Received: by 2002:a05:6830:83b7:b0:7e6:ef2e:28a5 with SMTP id 46e09a7af769-7f1e5f5ed24mr508079a34.15.1785864684292;
-        Tue, 04 Aug 2026 10:31:24 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.57.99])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7f1df5e21d0sm1396175a34.27.2026.08.04.10.31.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Aug 2026 10:31:23 -0700 (PDT)
-Message-ID: <b47d2b37-0aba-46cc-afaf-cf824d99524e@linuxfoundation.org>
-Date: Tue, 4 Aug 2026 11:31:21 -0600
+	d=linux-foundation.org; s=korg; t=1785887162;
+	bh=zbFNwSxHCbe7qsUFSvQh7UbeLmGxMU+19xHxb3EsmZo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=sP4IDR923j/E2kQlUQy86c+5YtIMo4a4g3Eafh/p5aJOkjyfD90TZmby3vxQs11E2
+	 equPzIDZvJlZZ4duKXjD5NlLXj8NgyBTgckQNFReM0jFJCCuWkUX6G1VW5d0R3hOHy
+	 diXRyPzl9mFdhiV7xBFCHTh2eCB8vsxGnCvTItTE=
+Date: Tue, 4 Aug 2026 16:46:01 -0700
+From: Andrew Morton <akpm@linux-foundation.org>
+To: Joseph Qi <joseph.qi@linux.alibaba.com>
+Cc: syzbot <syzbot@kernel.org>, Krystian Kaniewski
+ <krystianmkaniewski@gmail.com>, Mark Fasheh <mark@fasheh.com>, Joel Becker
+ <jlbec@evilplan.org>, syzkaller-bugs@googlegroups.com,
+ ocfs2-devel@lists.linux.dev, linux-kernel@vger.kernel.org,
+ syzbot@lists.linux.dev
+Subject: Re: [PATCH] ocfs2: fix circular locking dependency in
+ ocfs2_init_acl()
+Message-Id: <20260804164601.2a5f2a95f53f62b43a50e601@linux-foundation.org>
+In-Reply-To: <f98ff905-74bf-4017-a673-fd28f30f11d3@linux.alibaba.com>
+References: <4094de06-9b69-4174-b2ee-08126dffc693@mail.kernel.org>
+	<f98ff905-74bf-4017-a673-fd28f30f11d3@linux.alibaba.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] usbip: fix use-after-free in event_handler()
-To: syzbot <syzbot@kernel.org>, syzkaller-bugs@googlegroups.com,
- Aleksandr Nogikh <nogikh@google.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org,
- Shuah Khan <shuah@kernel.org>, Valentina Manea
- <valentina.manea.m@gmail.com>, Nobuo Iwata <nobuo.iwata@fujixerox.co.jp>
-Cc: i@zenithal.me, linux-kernel@vger.kernel.org, syzbot@lists.linux.dev,
- Shuah Khan <skhan@linuxfoundation.org>
-References: <ee9bc932-2fbf-4e8f-90e2-6cf604be9ff1@mail.kernel.org>
-Content-Language: en-US
-From: Shuah Khan <skhan@linuxfoundation.org>
-In-Reply-To: <ee9bc932-2fbf-4e8f-90e2-6cf604be9ff1@mail.kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 8/3/26 09:05, syzbot wrote:
-> From: Aleksandr Nogikh <nogikh@google.com>
-> 
-> The event_handler function in drivers/usb/usbip/usbip_event.c is a
-> workqueue item responsible for processing events for a struct usbip_device.
-> During device teardown, usbip_stop_eh() is called to wait for the event
-> handler to finish processing. However, usbip_stop_eh() uses
-> wait_event_interruptible() and ignores its return value. If the process
-> unbinding the driver receives a signal, wait_event_interruptible() returns
-> immediately, causing the teardown process to falsely assume the event
-> handler has finished. 
+On Tue, 4 Aug 2026 14:36:02 +0800 Joseph Qi <joseph.qi@linux.alibaba.com> wrote:
 
-Does this mean unbinding didn't happen?
-
-The teardown process then proceeds to free the
-> usbip_device memory. Meanwhile, the event_handler workqueue is still
-> running and attempts to access the freed usbip_device, resulting in a KASAN
-> slab-use-after-free crash.
+> > Additionally, remove the `ip_xattr_sem` acquisition from
+> > `ocfs2_xattr_set_handle()`. This function is only used while initializing a
+> > new inode that has not yet been inserted into the inode hash or attached to
+> > a dentry, meaning there is no risk of concurrent access and the lock is
+> > unnecessary.
+> > 
+> > Fixes: 16c8d569f570 ("ocfs2/acl: use 'ip_xattr_sem' to protect getting extended attribute")
+> > Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> > Reported-by: syzbot+4007ab5229e732466d9f@syzkaller.appspotmail.com
+> > Closes: https://syzkaller.appspot.com/bug?extid=4007ab5229e732466d9f
+> > Link: https://syzkaller.appspot.com/ai_job?id=cc75363d-c672-499e-8fc5-44bcdc1cee39
+> > Signed-off-by: Krystian Kaniewski <krystianmkaniewski@gmail.com>
 > 
-> BUG: KASAN: slab-use-after-free in __mutex_lock_common
-> kernel/locking/rtmutex_api.c:559 [inline]
-> BUG: KASAN: slab-use-after-free in mutex_lock_nested+0x5a/0x1d0
-> kernel/locking/rtmutex_api.c:578
-> Read of size 1 at addr ffff8881145245b0 by task kworker/u8:5/6177
-> 
-> Call Trace:
->   <TASK>
->   lock_acquire+0x84/0x350 kernel/locking/lockdep.c:5842
->   __mutex_lock_common kernel/locking/rtmutex_api.c:559 [inline]
->   mutex_lock_nested+0x5a/0x1d0 kernel/locking/rtmutex_api.c:578
->   event_handler+0x1e3/0x4a0 drivers/usb/usbip/usbip_event.c:73
->   process_one_work kernel/workqueue.c:3322 [inline]
->   process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
->   worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
->   kthread+0x388/0x470 kernel/kthread.c:436
->   ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
->   ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
->   </TASK>
-> 
-> To fix this, change wait_event_interruptible() to wait_event() in
-> usbip_stop_eh(). This ensures that the teardown process strictly waits for
-> the event handler to finish its execution and drop all references to the
-> usbip_device before the memory is freed, preventing the use-after-free.
-> This change is safe from deadlocks because usbip_stop_eh() is never called
-> with locks held that the event_handler would need to acquire.
+> Reviewed-by: Joseph Qi <joseph.qi@linux.alibaba.com>
 
-Correct - usbip_stop_eh() is called without lock hold after updating
-the shutdown_busid status to true. However I am curious what happens
-to the unbinding? Should usbip_stop_eh() check the return value of
-wait_event_interruptible() and handle the error instead?
-
-thanks,
--- Shuah
+Thanks.  AI review might have found a pre-existing bug:
+	https://sashiko.dev/#/patchset/4094de06-9b69-4174-b2ee-08126dffc693@mail.kernel.org
