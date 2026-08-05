@@ -1,102 +1,177 @@
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE8AE41A920
-	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 10:02:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1608B45DF65
+	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 12:23:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785924169; cv=none; b=a2Hwdvg0Hau/mo+xXEwfDr1BCrhVVQLmmBJwnPsWknL72/ox1ZQjSL1p/JErQ5qHVmbPn2tXUcSQGlmiUdYD6Z+AmtL2T0LRzwZm+Fk+ZxyLe/X55QiqkOSgqCVfcgaNrqs9e23LNTrMe4m8mDjuupoI4jyNoxni8aYZtXs+ulQ=
+	t=1785932600; cv=none; b=CWGDJkP2wMR7B9DON6PpBm9JFxPX0RlKOsII4Is0IIR1GDMSga9AXRWG3V/6fki42LDwyhcL5RNjm76a99D+gRkNkF6TTUhzrclCZ0Be6CFqSH+OmwEL6vBiKaH+XWpzOhz4krptRzhyPUSek/bHNQ4n4kkPzBYfs4twmcubBww=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785924169; c=relaxed/simple;
-	bh=HQNFOSRxPKTlW4UztY1BIBRMx1JnMqGpOnv0T1Riz0c=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=YWNmtDWNbjjmDDqBwss5+EbTzWiiNtwAxNcvcyMPpJMbcApurnfkDkdOsrKKivn5DxIYlAyAZ+085D5Ui/h7z1HgI2VWxLXp/S8DKSSy0o9vOFt7IuZeLIM/anB9Qr3gFNx21RRp1ycDRxjIdl//09X5cn0T3ZuoUCBX22KVQYM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4ab4f652f9bso510889b6e.0
-        for <syzbot@lists.linux.dev>; Wed, 05 Aug 2026 03:02:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785924167; x=1786528967;
-        h=content-type:cc:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=wu5WgtB2Bv0xaju/JD8cYbF/oHyXY28vzdmqQpOVP9s=;
-        b=SIybsgE49HkzzbJUjOHzSO4rS69I682Ae6Zl7+wOWrYdEULnPZIqm/8/Wbe0WZoTHo
-         cdeoo3RJ8w8KRYvxeFBFFCzUGoDa6iVKGZNekPvOk8BVObW+r4NoqX/HLlTEdKYIfMiE
-         Imp+/bS81DWl/HNgaAf7wCQ7R0XJr+rvwqcDp28MKEnppK+LhjeDgOni1cJf9ajaEIAi
-         vxZ3yB+3yvtrFlsVIWmSEFyxO+w5JKD9QtVFY2l2E2O+EpA9AxDpPSD6MOHfRQ7Vc4nt
-         aQmJsVebL1j1UvIfeMX1KcDFo7WyotJQVcCTxNI+0VfB1yIypbWchaaZG9pBPPBDi7yZ
-         0y5w==
-X-Gm-Message-State: AOJu0Yx+t3IjkbxHne6Kg0nqMxdOCoCGhi8CdwRSD8bh4KgGnqrJPq1v
-	ZSofEVZOHLIDgPpQyIa9m+hB4bRNF1jc7Nyvxw/zFwD48usIXLVqqUTeBKMlHU+2H8dtP9gYljf
-	8S9mC9pqL9+ZAYAj6Jm/K+ceAYLEkzpfamE64G+j+8BAybs4gIN9kdqlqn+8=
+	s=arc-20240116; t=1785932600; c=relaxed/simple;
+	bh=rIpxpteKMHOhRaEos7rTkuFxeQjxq4hzWnHrXGsBOTc=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=D4eJhDhllbGe6VP1tlt2jXQ/rLI4hzQnG2U/ldBLJJArzUp+Ke1ZOugjNP9KBmvLmc0x4QYAImC3GtdrPyFld17KVobOYg4cEqLHSxqX4d6H6FqBYWd+yaDOliasYLYTeCFBuL9Uh7Su5TJo7gaZ5B2bcV5Ur3LUYqGWPbSag/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XQBKUnLj; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XQBKUnLj"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id CAD281F000E9;
+	Wed,  5 Aug 2026 12:23:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785932598;
+	bh=oER2ViWZ/5rCIN4k3xM2KdjxaGJU70zaKxvx+V+Dnl8=;
+	h=From:To:Cc:Subject:Date;
+	b=XQBKUnLjiFtm5BdbATe5ROED5rN8wHYh/sfeXWH7lBFTF92KgdpiF9tYf9eLk4DXT
+	 xn9jTwOFWPsA5olqGzzq+lWYqL2BXmUZqgLwDTuKIcNvC4dThMwxg7gLiihp5KXM+I
+	 ikNimo0uzfU+cmHolV4h9f1IHI6Ktq/OhPFffh+euvdoA+JPKKIQr4rPEWDkv8xsVw
+	 8t/tFCwtZRZlgoL6af2LGvqNShrIGR1PzvwYR0TdfUr9hpAUBDMTSxqv1WZGD+KKIw
+	 la6HvJgwL+SbwvHLzhaHbb/BoyB1JSNd5d+hmv7Y9X83UT4qHM573LlxvkLlZR63TP
+	 V9cIyMjmWr9mw==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] usb: gadget: mass_storage: defer file open to workqueue
+Message-ID: <dba5bf38-fc4a-4f36-9069-397e269115ce@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:2083:b0:6aa:da04:b56f with SMTP id
- 006d021491bc7-6ae96c10163mr3005655eaf.3.1785924166765; Wed, 05 Aug 2026
- 03:02:46 -0700 (PDT)
-Date: Wed, 05 Aug 2026 03:02:46 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a730a46.13623e66.bdc14.0057.GAE@google.com>
-Subject: [moderation/CI] Re: mm/memory-failure: fix concurrent access issue in min_order_for_split()
-From: syzbot ci <syzbot+ci5ba8432f6f1c5666@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Wed,  5 Aug 2026 12:23:18 +0000 (UTC)
 
-syzbot ci has tested the following series
+When a user writes a file path to a configfs attribute (e.g., the
+lun.0/file attribute of the USB mass storage gadget) and the provided path
+happens to reside on the same configfs filesystem, it triggers a lockdep
+warning about a possible recursive locking on the sb_writers percpu rwsem.
 
-[v3] mm/memory-failure: fix concurrent access issue in min_order_for_split()
-https://lore.kernel.org/all/20260805084224.2597547-1-dayou5941@163.com
-* [PATCH v3] mm/memory-failure: fix concurrent access issue in min_order_for_split()
+Because configfs attributes are regular files, the VFS layer acquires the
+sb_writers freeze protection lock for the configfs superblock when the
+write() syscall is issued. When the driver's store method subsequently
+calls filp_open() to open the backing file, filp_open() attempts to acquire
+the sb_writers lock again for the target path's superblock. If the target
+path is also on configfs, it results in a recursive lock on the same
+superblock, which lockdep correctly flags as a potential deadlock.
 
-and found the following issue:
-kernel build error
+Fix this lock inversion by deferring the execution of fsg_lun_open() to a
+system workqueue. By executing the file opening in a separate worker
+thread, it escapes the lockdep context of the write() syscall and does not
+inherit the sb_writers lock held by vfs_write(). The store method uses
+flush_work() to wait for completion and return the synchronous error code,
+preserving the existing API behavior.
 
-Full report is available here:
-https://ci.syzbot.org/series/b0ec4d6e-6671-4b25-860d-98cf480bdd8f
+The lockdep warning is as follows:
 
-***
+WARNING: possible recursive locking detected
+task is trying to acquire lock:
+ffff8881899b0500 (sb_writers#12){.+.+}-{0:0}, at: mnt_want_write+0x41/0x90
+fs/namespace.c:494
 
-kernel build error
+but task is already holding lock:
+ffff8881899b0500 (sb_writers#12){.+.+}-{0:0}, at: file_start_write
+include/linux/fs.h:2733 [inline]
+ffff8881899b0500 (sb_writers#12){.+.+}-{0:0}, at: vfs_write+0x231/0xbb0
+fs/read_write.c:683
 
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      e47602c51d20a93fa1711ed896dc9480de4374d9
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/a6869e1a-07af-443d-ba6a-48775cf67ba1/config
+other info that might help us debug this:
+ Possible unsafe locking scenario:
 
-mm/memory-failure.c:2517:13: error: cannot assign to variable 'new_order' with const-qualified type 'const int'
-mm/memory-failure.c:2873:13: error: cannot assign to variable 'new_order' with const-qualified type 'const int'
+       CPU0
+  lock(sb_writers#12);
+  lock(sb_writers#12);
 
-***
+ *** DEADLOCK ***
 
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Call Trace:
+ <TASK>
+ sb_start_write+0x4d/0x1c0 include/linux/fs/super.h:125
+ mnt_want_write+0x41/0x90 fs/namespace.c:494
+ path_openat+0xa7b/0x3850 fs/namei.c:4860
+ do_file_open+0x23e/0x4a0 fs/namei.c:4892
+ filp_open+0x16d/0x1d0 fs/open.c:1343
+ fsg_lun_open+0x6c/0xe00 drivers/usb/gadget/function/storage_common.c:194
+ fsg_store_file+0x19e/0x400
+ drivers/usb/gadget/function/storage_common.c:455
+ configfs_write_iter+0x33a/0x430 fs/configfs/file.c:229
+ vfs_write+0x61e/0xbb0 fs/read_write.c:687
+ ksys_write+0x156/0x270 fs/read_write.c:739
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ </TASK>
+
+Fixes: ef0aa4b92cf1 ("usb: gadget: f_mass_storage: add configfs support")
+Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+da381387152f0dd8bedf@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=da381387152f0dd8bedf
+Link: https://syzkaller.appspot.com/ai_job?id=43881a07-9f58-4a9b-b110-6696a48ed088
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
+To: "Andrzej Pietrasiewicz" <andrzej.p@samsung.com>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/drivers/usb/gadget/function/storage_common.c b/drivers/usb/gadget/function/storage_common.c
+index 75831f2c7..45842f8e0 100644
+--- a/drivers/usb/gadget/function/storage_common.c
++++ b/drivers/usb/gadget/function/storage_common.c
+@@ -24,6 +24,7 @@
+ #include <linux/file.h>
+ #include <linux/fs.h>
+ #include <linux/kstrtox.h>
++#include <linux/workqueue.h>
+ #include <linux/usb/composite.h>
+ 
+ #include "storage_common.h"
+@@ -434,6 +435,21 @@ ssize_t fsg_store_nofua(struct fsg_lun *curlun, const char *buf, size_t count)
+ }
+ EXPORT_SYMBOL_GPL(fsg_store_nofua);
+ 
++struct fsg_lun_open_work {
++	struct work_struct	work;
++	struct fsg_lun		*curlun;
++	const char		*filename;
++	int			rc;
++};
++
++static void fsg_lun_open_work_func(struct work_struct *work)
++{
++	struct fsg_lun_open_work	*fwork;
++
++	fwork = container_of(work, struct fsg_lun_open_work, work);
++	fwork->rc = fsg_lun_open(fwork->curlun, fwork->filename);
++}
++
+ ssize_t fsg_store_file(struct fsg_lun *curlun, struct rw_semaphore *filesem,
+ 		       const char *buf, size_t count)
+ {
+@@ -451,8 +467,17 @@ ssize_t fsg_store_file(struct fsg_lun *curlun, struct rw_semaphore *filesem,
+ 	/* Load new medium */
+ 	down_write(filesem);
+ 	if (count > 0 && buf[0]) {
++		struct fsg_lun_open_work fwork;
++
++		fwork.curlun = curlun;
++		fwork.filename = buf;
++		INIT_WORK_ONSTACK(&fwork.work, fsg_lun_open_work_func);
++		schedule_work(&fwork.work);
++		flush_work(&fwork.work);
++		destroy_work_on_stack(&fwork.work);
++		rc = fwork.rc;
++
+ 		/* fsg_lun_open() will close existing file if any. */
+-		rc = fsg_lun_open(curlun, buf);
+ 		if (rc == 0)
+ 			curlun->unit_attention_data =
+ 					SS_NOT_READY_TO_READY_TRANSITION;
 
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
 
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+base-commit: 075b74841bd0065a3bda3440873c747938e69b68
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
 
-The email will later be sent to:
-[akpm@linux-foundation.org david@kernel.org dayou5941@163.com linux-mm@kvack.org liyouhong@kylinos.cn ljs@kernel.org sashiko-bot@kernel.org stable@vger.kernel.org ziy@nvidia.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
