@@ -1,170 +1,102 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B67F39060C
-	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 08:20:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785918007; cv=pass; b=SjvosX21hvGqYbtwXAlCx9pxVqmbEx7nD+UwirQFUjdtb0fER82sUln5vfQS/qZyF7QrJ0gdx+46sEKlCBPIJyjuTWkILCG4PaY+WPUb/IMGkUTyddpATObCwXBxRIe1X4osCUqkF6fCI2JcPmGICiWLAGw/oj5k8Zh+SWJO89U=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785918007; c=relaxed/simple;
-	bh=/OWI8qBD1lqOVHMrWpyAHuEMpetqyf4e5+hFRLOSxz8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rDUnJ2jxyHaZMrI9KfMpLq6PRoKKM3NuYwNh8zoa/rM62HEEyDZkU3UTGUc5vNVcSEvUbsbJ8SiazOqOUOIEwZQIFwWsFKVpuRKkum1rlRSZ8QgotBd5bcq2zeBz+kmDyI5HgA1y75gUTBIUHVWqsiwykcx6aG5rzpfMC6El/bM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=uSIuX0A+; arc=pass smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="uSIuX0A+"
-Received: by smtp.kernel.org (Postfix)
-	id 759DB1F00A3A; Wed,  5 Aug 2026 08:20:05 +0000 (UTC)
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=217.74.67.75
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1785918005;
-	b=V70CjilBye3Ur3aBkdLBcHc8X+SX4hOVRhKBQ3SuF3LsRLeh8H+lZxNdKg+prDa3z97u
-	 imE3rzIe/kK10eggo619xyZhzymji+K4AiOjUqQgDXu1PjVy9c/UlsbbJXX97tyQNCyqj
-	 YapHgJiGirHfvw5AZf6X4/Jhwpvb7VplD9C8PECAjOPx2phbzYhxBEUrU8hL7TjdJs6n3
-	 PPHDfvcxUZ70V8WZ+UXrZmEySRF6H7l2xxPO0PtePcnlfTt/iU5fexQVS1rhzsn/AsixT
-	 0EKCFAcCHGItkrMeOyQiZQrTpx/MF0muuBbATTuaGuzsyoT3vEgRXDBAZH5q431rgAw==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1785918005;
-	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 DKIM-Signature;
-	bh=LtAk53VaP0Sb33aS43bux8CL5zlcbRKXAeJDWIfbgVM=;
-	b=NwDNMRk7eKWdNPqil3/Y+/0SctEQ9Q5hun/iIJnWheL+J02sO6BoVuWIBMA56m1QplMe
-	 eenu7hNMUiPhlVcs73eH34lbvaYttwtw2QUWWUSUbz4ucxd1t9okEeOR5G2kG31Yw6dBn
-	 oMPD3N+83SlhvpZlSg6d4jB/QTec8mOU4s+47KjQMtUrB0xAlnB84PaGZtxByBSk+HYkx
-	 OWm+9/fZ7EAzWD6+DPJaT9MhEf8l9Ud+g+nR+kQYkAagTlE3HS0VcaQGF51aXx3oeXuQ2
-	 OuzcTJ2CB1mFrJUEOxRm1DQBdpNA6lJPnKlnxGpU1R+W0kUQikAE1piN6AF8sQeLXag==
-ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=uSIuX0A+;
-	dmarc=pass header.from=poczta.fm;
-	spf=pass smtp.mailfrom=poczta.fm;
-	arc=none smtp.remote-ip=217.74.67.75
-Received: from smtpo75.interia.pl (smtpo75.interia.pl [217.74.67.75])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 526631F000E9
-	for <syzbot@kernel.org>; Wed,  5 Aug 2026 08:20:02 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=uSIuX0A+
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 526631F000E9
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=poczta.fm
-Received: from nr200 (unknown [80.68.231.31])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
-	Wed,  5 Aug 2026 10:19:53 +0200 (CEST)
-Date: Wed, 5 Aug 2026 10:19:51 +0200
-From: Slawomir Stepien <sst@poczta.fm>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC v2] wifi: cfg80211: fix BSS RB tree collision during
- channel switch
-Message-ID: <anLyJzWTjl1_8S6G@nr200>
-References: <4119b372-fffd-487d-b08f-f9cc0825ba05@mail.kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BEAA3EAC71
+	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 08:32:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785918766; cv=none; b=U1zOZNje639OQ6OvXOlZJXsTkH2LaMLidhklvkAtTb6Gdbnj/IsUPpDK2EJnijdZ9HsNL0qW9mWdQ/0PJ1pCVwWuzlMqUQ5A76R5XM4ws+EkCCwODGwg/Tgu+OVxxTZB4fmgpm0bZ9Yn0xntCusWKIWHBhX2A5U6/2NVbXe6egQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785918766; c=relaxed/simple;
+	bh=ynkWE4pDXWrkKWTNJ9CXaLLrM7Ba3f18nBLhObFFpak=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=j/sV+0YN7JoaN/i1J9NL+h/5YUDVITYSQqGBM81jy0bPgJF2RcvHuc8D5/0LA3cNNim2lNr2g2fw0a08vc2g/lRJvGOX9MeBp2D8N6PiaNo3nhFVsQFhOeY+QRzM2BPVZ+TiqAteRPTDe6LGZ7nPcWYJ/wpj2SCoMds3eUzJxT8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-6ae7c37604aso419012eaf.0
+        for <syzbot@lists.linux.dev>; Wed, 05 Aug 2026 01:32:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785918761; x=1786523561;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=8egjVG3FsDuVtCWxx6b7xjWS9H7LwDGQHEPT+1+mWWA=;
+        b=OjhejbMwzGBRCSHZy7KULXEV29n5ELbQrMT2yzjsAtFaralCjtZTkdqte2RNWy6t37
+         0/Av/B5xHYEvmxupXk/BXuvsLNxSl4rR6xPv3SnIp1jDeUvk1s0/58WTjut3bjjpxYBe
+         Pf2oGAW/usUv03gHRh2MCMQhFXmFUPzA99P1+gXOf7fe6iyHguUaq9GWJwGhOV+g9Hcx
+         0cYFnY/jr55K1zwF1XuId/9tys7fCBdAodXVyCPboZRb1+z7r/WgFM2T2D+Uu4k8hRip
+         gczWhzIJeDyHRyZ0piHzKqgvhGPe/hAaGmTZCLlDml1eJ02nEJi6TquJhGmjEykw4qXJ
+         RwAA==
+X-Gm-Message-State: AOJu0Yz0Z0u72fvTMARq+ahU54DC5K21GBJZVg/H2AU7cUutT8XGtx5w
+	AA6UD0ON+h7n5dlxR2LgiCfYX1vtthgeNTTOofvaQdbngOUQZLc005KABMBr+H6VpRBXnbKjlVv
+	CbgfWBJ/FF/FIgKqIwWgnUGOqAboj1yV0D1VEu2J2UqqEmaP0FLmbikgRzjY=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4119b372-fffd-487d-b08f-f9cc0825ba05@mail.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
-	t=1785917995; bh=LtAk53VaP0Sb33aS43bux8CL5zlcbRKXAeJDWIfbgVM=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-	b=uSIuX0A+ZncaLsSTF8lk8zL+oILtk6EKJZT+n4Q3CH1qONM3G999xojOhA66Ld2rm
-	 Yi3eyuyktLDQhMZjbMnIuOPfurxzBt3UK88Y+AH8exF0A2vkU6IgELhBNq4dQGIaAp
-	 wPPWLGQqYxglJW9PDlCRrx/q67kO3kRdLgbQACW0=
+X-Received: by 2002:a05:6820:f012:b0:6a0:f3b5:12a2 with SMTP id
+ 006d021491bc7-6ae96e81c9fmr2818921eaf.20.1785918761542; Wed, 05 Aug 2026
+ 01:32:41 -0700 (PDT)
+Date: Wed, 05 Aug 2026 01:32:41 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a72f529.13623e66.bdc14.0056.GAE@google.com>
+Subject: [moderation/CI] Re: mm/memory-failure: fix concurrent access issue in min_order_for_split()
+From: syzbot ci <syzbot+cib99b951dec2336a5@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On sie 04, 2026 13:45, syzbot wrote:
-> When a station processes a Channel Switch Announcement (CSA),
-> cfg80211_update_assoc_bss_entry() is called to update the channel of the
-> associated BSS. Because the channel is part of the BSS Red-Black (RB) tree
-> key, changing the channel requires removing the BSS from the tree and
-> re-inserting it.
-> 
-> Before re-inserting, cfg80211_update_assoc_bss_entry() searches for any
-> existing BSS on the new channel that matches the associated BSS so it can
-> be unlinked to prevent an RB tree collision. However, the search loop
-> incorrectly uses cfg80211_bss_type_match() to filter candidates based on
-> their capabilities. If an existing BSS matches perfectly in cmp_bss() (same
-> channel, BSSID, and SSID) but has different capabilities (e.g., due to a
-> malicious or misconfigured beacon setting both ESS and IBSS bits),
-> cfg80211_bss_type_match() skips it.
-> 
-> This leaves the colliding BSS in the tree. When cfg80211_rehash_bss()
-> attempts to re-insert the associated BSS, rb_insert_bss() compares them
-> using cmp_bss(), which ignores capabilities. It finds them identical,
-> resulting in an RB tree collision and triggering a warning:
-> 
-> WARNING: net/wireless/scan.c:1675 at rb_insert_bss net/wireless/scan.c:1675
-> [inline]
+syzbot ci has tested the following series
 
-Don't wrap lines from logs. Keep it as it was for readability.
+[v2] mm/memory-failure: fix concurrent access issue in min_order_for_split()
+https://lore.kernel.org/all/20260805072625.2437636-1-dayou5941@163.com
+* [PATCH v2] mm/memory-failure: fix concurrent access issue in min_order_for_split()
 
-> WARNING: net/wireless/scan.c:1675 at cfg80211_rehash_bss+0x1e6/0x540
-> net/wireless/scan.c:1732
+and found the following issue:
+kernel build error
 
-ditto
+Full report is available here:
+https://ci.syzbot.org/series/840418d2-f62b-4ce1-a5c9-a3efc9275fca
 
-> Call Trace:
->  <TASK>
->  cfg80211_update_assoc_bss_entry+0x3cd/0x660 net/wireless/scan.c:3478
->  cfg80211_ch_switch_notify+0x3b1/0x780 net/wireless/nl80211.c:22366
->  ieee80211_sta_process_chanswitch+0xbd1/0x29e0 net/mac80211/mlme.c:-1
->  ieee80211_rx_mgmt_beacon+0x1dc6/0x32a0 net/mac80211/mlme.c:8309
->  ieee80211_sta_rx_queued_frame+0x6ac/0x4e40 net/mac80211/mlme.c:11793
->  ieee80211_iface_process_skb net/mac80211/iface.c:1766 [inline]
->  ieee80211_iface_work+0x552/0x1010 net/mac80211/iface.c:1823
->  cfg80211_wiphy_work+0x29e/0x420 net/wireless/core.c:538
->  </TASK>
-> 
-> Fix this by removing the cfg80211_bss_type_match() check from the collision
-> search loop. The RB tree uniqueness is defined solely by cmp_bss(), so any
-> BSS that evaluates to cmp == 0 must be unlinked to prevent a collision,
-> regardless of whether its capability matches the connection type. If the
-> AP's capabilities legitimately changed, cfg80211_update_known_bss() will
-> safely update the capability later.
-> 
-> Fixes: 0afd425b1b64 ("cfg80211: fix duplicated scan entries after channel switch")
-> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+dc6f4dce0d707900cdea@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=dc6f4dce0d707900cdea
-> Link: https://syzkaller.appspot.com/ai_job?id=075be109-44b2-42f2-89a0-050bc51d2a19
-> To: "Johannes Berg" <johannes@sipsolutions.net>
-> To: <linux-wireless@vger.kernel.org>
-> To: "Sergey Matyukevich" <sergey.matyukevich.os@quantenna.com>
-> Cc: <linux-kernel@vger.kernel.org>
-> 
-> ---
-> v2:
-> - Removed the '------------[ cut here ]------------' line from the commit message to prevent checkpatch.pl from interpreting it as a commit separator.
-> 
-> v1:
-> https://lore.kernel.org/all/a8455fef-711a-4293-89ce-248c5f3428e7@mail.kernel.org/T/
-> ---
-> diff --git a/net/wireless/scan.c b/net/wireless/scan.c
-> index 071083cc3..97bf7ab8c 100644
-> --- a/net/wireless/scan.c
-> +++ b/net/wireless/scan.c
-> @@ -3443,11 +3443,6 @@ void cfg80211_update_assoc_bss_entry(struct wireless_dev *wdev,
->  	cbss->pub.channel = chan;
->  
->  	list_for_each_entry(bss, &rdev->bss_list, list) {
-> -		if (!cfg80211_bss_type_match(bss->pub.capability,
-> -					     bss->pub.channel->band,
-> -					     wdev->conn_bss_type))
-> -			continue;
-> -
->  		if (bss == cbss)
->  			continue;
->  
-> 
-> 
-> base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
+***
 
--- 
-Slawomir Stepien
+kernel build error
+
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
+base:      e47602c51d20a93fa1711ed896dc9480de4374d9
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/9bcfa5db-a65f-4a0a-adeb-25cfc52714d9/config
+
+mm/memory-failure.c:2517:13: error: cannot assign to variable 'new_order' with const-qualified type 'const int'
+mm/memory-failure.c:2873:13: error: cannot assign to variable 'new_order' with const-qualified type 'const int'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[akpm@linux-foundation.org david@kernel.org dayou5941@163.com linux-mm@kvack.org liyouhong@kylinos.cn ljs@kernel.org sashiko-bot@kernel.org stable@vger.kernel.org ziy@nvidia.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
