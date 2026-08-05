@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9907846D0A5
-	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 12:59:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0468837A83B
+	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 13:24:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785934789; cv=none; b=YArzyJECzcAtpdUqJ6twvsjqzX1oOBP/okJ4/pTB4iHSfP4OIu/s0NEoNPBUIMDZdOG6BVVVf+1mzj1AcqEZ8GLNpVFXJjETYKySKo1386igcKaZO128s8bC66Q4Meo7+88igFgGDxsGe29P5VKHzOhiT3be2VHwH/Xq8mYqcp4=
+	t=1785936260; cv=none; b=O3ldH+Akzc/iKhYzkF5eDZh8UQo6zQnsEFXCmBHDw1iT8J18wNlIIkdqmKW8++VfOlwjNu7zH6O0zEedTBJ3jzHiGtAVu6/njMFNvGq1zVGF9dPc3bB+sYMWHA8XXG7VC1kTX5IoksCvnO6Su8AyBrK2hnuBKnuhWfsV3lMRnxI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785934789; c=relaxed/simple;
-	bh=sCN+P8FgF4T0f6tOkGXIfnp3wif28+ybCbs6J7Zftcg=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=sR3o7a23WoX86qpzAcb5xvj3PqRAilM8iaQmWB5PDVUKDaK/Ai7Mmd1E6WkSoMbuQf8atPL91HBkfij4VySYFKhVBSX2hcQqHDpDm+RT5tvhg5wyphIWRsOFmpqTh3FS22mdyg/aVzpbvqZ0umEPbD5wiahHO8sMPO0o+30MYyQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pqi64aI5; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785936260; c=relaxed/simple;
+	bh=FtdXF2sgcoufcFLZP663dd02jlaDcYEcpm1eJmmHoD0=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=C4PykEf1HyALZbvJhSSjm2+EpVAI3NvRAd06gxhyfCHASUTfhRmXYHJW1m7Ru5RmNa34z/s1MrJDn+7clhNvQWJMZY18jqVvpNdiLuLdqQxJWA8PQlmZ6NiOoJiRFElQf3XKJ4ax+jZ86P3ytY541Q6LQL9jsEpPz9VccOVuAs4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iqSn3YDy; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pqi64aI5"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 68BDB1F000E9;
-	Wed,  5 Aug 2026 12:59:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iqSn3YDy"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6FC751F000E9;
+	Wed,  5 Aug 2026 13:24:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785934788;
-	bh=iJN8MtJX6Vt++cqsVp6ZIuuUjDTWivcSlFJEnsufCEg=;
+	s=k20260515; t=1785936258;
+	bh=9i0AGObQBqNzkutz0GqBurd19/Pl2KBXelwrnwTOkUA=;
 	h=From:To:Cc:Subject:Date;
-	b=Pqi64aI5bmaM0gagtxaLekRTi6HwXv/fGnN9KaROWKE88LovrcZWKoX/D2NifUWVz
-	 fiQPLwK0K3k8szfJ34waQZolMazoSqqclMDTOX7XPmO6SIsrKsFsczMAPdKdRymAzX
-	 lulhxegRtL2MONAU8x8QSmeFfmG7JSq5uXUTIIc0kFKS181RuRjlaS8fUSSzqE3BHh
-	 7K+6/qPPvyzbUwzG5l31V8xbaVDLDmdqcOkzkGpeoQk3ICW73p795z621LZP3kDRTy
-	 SEKtnRNCfyR0H6FzNnRmtsWJpH6IRPNxmh9lWWGbOkes7t3rAC2JXc41wJXBjmSaFW
-	 yGHZnXl5vMPmQ==
+	b=iqSn3YDy2Z6bWm3rc1GQeEfAo8b3gd/kDllAdSuiXT992jKzMveUEiQznvAgDunFc
+	 yJvaaEyYgp5paI+OS85kxDbHuW+5j4+SZ76GOhH5xaBAqmWf+kQbq3IbrwFg/CDWI3
+	 9UztJbod03OYQ8KRjTKSSgSNhmY0mDWDt9EcRvefdz/pKbaTLp7R61xSITXuqoJEUz
+	 6E/KnKDIZCXQoe+HzB7IX9BPKHEw9SKl9N2gG1yNmOmOixg+iEpI1sX4JBCwHpawBq
+	 W4pl/A3xXIaQnGyAHrFCIuA9pOxr3YIP1iY3vEXa8rJ7OnfEX+JY+WE0M75PNDf3T5
+	 wNF1RPOacCKug==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: gadgetfs: fix unbalanced refcount in gadgetfs_bind() error path
-Message-ID: <92acf44b-fcee-4138-90ea-0a2275b9ddd8@mail.kernel.org>
+Subject: [PATCH RFC] usb: gadget: f_tcm: Drop tpg_instances_lock in tcm_alloc()
+Message-ID: <80f554dc-dcc3-4909-94c6-4cde763895dd@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,90 +38,110 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed,  5 Aug 2026 12:59:48 +0000 (UTC)
+Date: Wed,  5 Aug 2026 13:24:18 +0000 (UTC)
 
-In gadgetfs_bind(), if an error occurs (for example, failing to allocate
-the endpoint request), the error path calls gadgetfs_unbind().
-gadgetfs_unbind() unconditionally drops a reference to the device object
-(dev) by calling put_dev(). However, gadgetfs_bind() only acquires a
-reference to dev at the very end of the function upon success. This
-mismatch causes the reference count to drop prematurely.
+A circular locking dependency was reported by lockdep involving
+tpg_instances_lock, opts->dep_lock, inode_lock, and gi->lock:
 
-If multiple UDCs are available, the driver core will attempt to bind the
-driver to each of them. If the first bind fails, the premature put_dev()
-can drop the reference count to zero, freeing the dev object. Subsequent
-bind attempts will then trigger a use-after-free when accessing the freed
-dev object.
+WARNING: possible circular locking dependency detected
+task is trying to acquire lock:
+ffffffff8faaae80 (tpg_instances_lock){+.+.}-{4:4}, at: tcm_alloc+0x21/0x2e0
 
-BUG: KASAN: slab-use-after-free in gadgetfs_bind+0xd8/0xae0
-drivers/usb/gadget/legacy/inode.c:1682
-Write of size 8 at addr ffff88819002e900 by task syz.0.17/6152
+but task is already holding lock:
+ffff8881940a6390 (&gi->lock){+.+.}-{4:4}, at:
+config_usb_cfg_link+0x59/0x260
 
-Call Trace:
- <TASK>
- gadgetfs_bind+0xd8/0xae0 drivers/usb/gadget/legacy/inode.c:1682
- gadget_bind_driver+0x2ca/0x9e0 drivers/usb/gadget/udc/core.c:1662
- call_driver_probe drivers/base/dd.c:-1 [inline]
- really_probe+0x254/0xae0 drivers/base/dd.c:706
- __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
- driver_probe_device+0x4f/0x240 drivers/base/dd.c:898
- __driver_attach+0x339/0x600 drivers/base/dd.c:1292
- bus_for_each_dev+0x23e/0x2c0 drivers/base/bus.c:383
- bus_add_driver+0x348/0x670 drivers/base/bus.c:763
- driver_register+0x23a/0x320 drivers/base/driver.c:174
- usb_gadget_register_driver_owner+0xf9/0x270
- drivers/usb/gadget/udc/core.c:1752
- dev_config+0xe4e/0x12c0 drivers/usb/gadget/legacy/inode.c:1883
- vfs_write+0x29f/0xbb0 fs/read_write.c:685
- ksys_write+0x156/0x270 fs/read_write.c:739
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
+which lock already depends on the new lock.
 
-To fix this, move the get_dev(dev) call to the beginning of
-gadgetfs_bind(), right after the gadget data pointers are set up and before
-any potential failure paths that lead to gadgetfs_unbind(). This ensures
-that the reference count is properly balanced when gadgetfs_unbind() is
-invoked on the error path.
+the existing dependency chain (in reverse order) is:
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+-> #3 (&gi->lock){+.+.}-{4:4}:
+       config_usb_cfg_link+0x59/0x260
+       configfs_symlink+0x59a/0x1030
+
+-> #2 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}:
+       inode_lock include/linux/fs.h:1024 [inline]
+       configfs_depend_item_unlocked+0x153/0x420
+       usbg_make_tpg+0x1f6/0x590
+
+-> #1 (&opts->dep_lock){+.+.}-{4:4}:
+       usbg_make_tpg+0x147/0x590
+
+-> #0 (tpg_instances_lock){+.+.}-{4:4}:
+       tcm_alloc+0x21/0x2e0
+       usb_get_function+0x63/0xb0
+       config_usb_cfg_link+0x148/0x260
+       configfs_symlink+0x59a/0x1030
+
+The dependency chain is formed by two separate code paths. First, when
+creating a new Target Portal Group (TPG) via configfs, usbg_make_tpg()
+acquires tpg_instances_lock, then opts->dep_lock, and then calls
+configfs_depend_item_unlocked() which acquires the VFS inode_lock. Second,
+when linking the TCM function to a USB gadget configuration via configfs,
+configfs_symlink() acquires the VFS inode_lock, then config_usb_cfg_link()
+acquires gi->lock, and finally tcm_alloc() acquires tpg_instances_lock.
+This creates a cycle: tpg_instances_lock -> opts->dep_lock -> inode_lock ->
+gi->lock -> tpg_instances_lock.
+
+To break this cycle, remove tpg_instances_lock from tcm_alloc(). The lock
+is unnecessary here because tcm_alloc() only iterates over the static
+tpg_instances array to read the tpg pointer. The func_inst pointer is
+stable since the caller (usb_get_function()) holds a reference to it,
+ensuring the array entry won't be cleared concurrently. Furthermore,
+reading the tpg pointer is atomic, and the lock was previously dropped
+immediately after reading, providing no protection against concurrent
+modifications after tcm_alloc() returns. The actual protection relies on
+configfs lifecycle guarantees and the opts->can_attach flag checked later
+during tcm_bind().
+
+Fixes: dc8c46a5ae77 ("usb: gadget: f_tcm: convert to new function interface with backward compatibility")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+f63ad1084fd77fab48e4@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=f63ad1084fd77fab48e4
-Link: https://syzkaller.appspot.com/ai_job?id=6fafa316-17a5-4928-b109-4b866d73749d
+Reported-by: syzbot+2799146a53c356f8017d@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=2799146a53c356f8017d
+Link: https://syzkaller.appspot.com/ai_job?id=49909002-0104-485f-85b2-50f21a062149
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 To: <linux-usb@vger.kernel.org>
-To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
-Cc: "Christian Brauner" <brauner@kernel.org>
-Cc: "Jan Kara" <jack@suse.cz>
-Cc: "Kees Cook" <kees@kernel.org>
+To: "Andrzej Pietrasiewicz" <andrzej.p@samsung.com>
+Cc: "Jiasheng Jiang" <jiashengjiangcool@gmail.com>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Mateusz Guzik" <mjguzik@gmail.com>
-Cc: "Al Viro" <viro@zeniv.linux.org.uk>
+Cc: "Cen Zhang" <zzzccc427@gmail.com>
 
 ---
-diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
-index d87a8ab51..ba901023d 100644
---- a/drivers/usb/gadget/legacy/inode.c
-+++ b/drivers/usb/gadget/legacy/inode.c
-@@ -1682,6 +1682,8 @@ static int gadgetfs_bind(struct usb_gadget *gadget,
- 	dev->gadget = gadget;
- 	gadget->ep0->driver_data = dev;
+diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
+index b3fa5a17f..368fbffcb 100644
+--- a/drivers/usb/gadget/function/f_tcm.c
++++ b/drivers/usb/gadget/function/f_tcm.c
+@@ -2730,20 +2730,15 @@ static struct usb_function *tcm_alloc(struct usb_function_instance *fi)
+ 	struct f_uas *fu;
+ 	unsigned i;
  
-+	get_dev(dev);
-+
- 	/* preallocate control response and buffer */
- 	dev->req = usb_ep_alloc_request (gadget->ep0, GFP_KERNEL);
- 	if (!dev->req)
-@@ -1696,7 +1698,6 @@ static int gadgetfs_bind(struct usb_gadget *gadget,
- 	spin_lock_irq(&dev->lock);
- 	dev->state = STATE_DEV_UNCONNECTED;
- 	spin_unlock_irq(&dev->lock);
--	get_dev (dev);
- 	return 0;
+-	mutex_lock(&tpg_instances_lock);
+ 	for (i = 0; i < TPG_INSTANCES; ++i)
+ 		if (tpg_instances[i].func_inst == fi)
+ 			break;
+-	if (i == TPG_INSTANCES) {
+-		mutex_unlock(&tpg_instances_lock);
++	if (i == TPG_INSTANCES)
+ 		return ERR_PTR(-ENODEV);
+-	}
  
- enomem:
+ 	fu = kzalloc_obj(*fu);
+-	if (!fu) {
+-		mutex_unlock(&tpg_instances_lock);
++	if (!fu)
+ 		return ERR_PTR(-ENOMEM);
+-	}
+ 
+ 	fu->function.name = "Target Function";
+ 	fu->function.bind = tcm_bind;
+@@ -2758,7 +2753,6 @@ static struct usb_function *tcm_alloc(struct usb_function_instance *fi)
+ 	spin_lock_init(&fu->delayed_set_alt_lock);
+ 
+ 	hash_init(fu->stream_hash);
+-	mutex_unlock(&tpg_instances_lock);
+ 
+ 	return &fu->function;
+ }
 
 
 base-commit: 075b74841bd0065a3bda3440873c747938e69b68
