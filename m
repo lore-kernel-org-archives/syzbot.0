@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C61E387359
-	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 14:28:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DABD7477281
+	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 15:45:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785940139; cv=none; b=gu1FKYbBw3kLvZpxTfPQbiH2AZYM+moAy95CrK4wfjbXuRAG+I5M8FUoQn1Gl1tDhlQqEhuc2rhcl+EPEd/7QYQGRQNW+Ail+4Mt9Spqaw6eU9TyTOWAQT+gWYSscY9RxE32FUeYNPtjWXWAwbPVo013/DXxa96DQ6IrWEMuXk8=
+	t=1785944723; cv=none; b=CyVkYiviBqA9oPpqef2knxusZikIDd3zasKGdx8MpOGvzg3mN9DuP8M6mmZrNrs+2Yk6a7jIXbXcaEtZL2P/MTuKE45o4o6VfWfwhgdb/wN/j2wH4yJbT/HKr3HuZaGRWe2iI+rJ2PYYcJTKqTRiHxgMPW5GMKxVTYdSr1n9ZEc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785940139; c=relaxed/simple;
-	bh=ZfnqAKrBxbwGtRFCS66wM7JW2ArNUU9Ql6yEEVJ8sVQ=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=QR2p8bCH3pqiCYaQigFtnNYWsbRjJLys+IqXaLs6qSHcpo9r0heKQEKOMc1XHenPVEAcsF4XsHh+9xP3y+byy568Fdb/pTTZTGtE4fIHlGvgfr+2k0QZbd45cCqgM98lL865BAR2nwJy4knGcadL9hxujvhtxaxxL8V6gz0Lxuo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iKaK2uMg; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785944723; c=relaxed/simple;
+	bh=JH8IyLV2DftRqEbzsgO6f4cGfrCxOlN/SWyWsrBMFaU=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=lLr70XG7pWYtwoa3ERX6v/KvHyr7fHGCT1fAh+Ho8fvGkYLHfIakYEU86y0zXxpt7uUQJWxDlJUMn6jB9ouI4I2sK5c3poOckEDnQyc7UUa79CYA/wLZB+cs5sYhPXBXdzEmOGUPmwvSByfCkW6K0RFuEQRPVgBoAAvAzX+gFCI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iLrvmNf0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iKaK2uMg"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7D8C31F00A3A;
-	Wed,  5 Aug 2026 14:28:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iLrvmNf0"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6C67F1F000E9;
+	Wed,  5 Aug 2026 15:45:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785940128;
-	bh=twBAyuLwVWaNMgDlM6g01CzOciwzhz672uI+hMGEIkY=;
+	s=k20260515; t=1785944718;
+	bh=Q3BghsquyUBIQCdnWnKfa7kTkkomipj7momkTTJifuM=;
 	h=From:To:Cc:Subject:Date;
-	b=iKaK2uMgyMoAiz9W3owPeERzMy5oTkJXcgtS3AyvuE19VS0p/4Gu7UeqnyGPSoUK5
-	 qAw4TeCfSE0+uxXf6c7LmRfLVGgTC41UrXW8wo1SUwe0+bkLJhFqnJt/uGjXmBmf/R
-	 0OfUT6iy9cyJGvyylUMV7jPRfeEfu7/kuTLy2PTcdEIvhk3sy2XTDiE8DvdQQMFj42
-	 K/DCwS8yu61tXr1X8YeDdiWzTolOwbx6jil0xLrh6W+l69bH/1u3tmY0kanU9CntIt
-	 VKKFKdaOQlKvSG6Ysw3FsXlbTRT7O4IEVl0o1Ci3mdmWousmdQ/nO/7KcUEl5szSip
-	 nvSjGzzTpNo3Q==
+	b=iLrvmNf06u5VhGu+ZjP/suxKcpBUa1bmfbzSaE2zVm/dBs0PcVC7FTN/Ysa9Q2ttx
+	 vsqQxz96zC98/SVTcJZH/sSZnttmdJ09F0y+3pcoCBKadl/4KMQZtz4FSKXHF8BquJ
+	 Y5pMjgzCFNHRTn8Yf5wlnSkJwCjvZ7LTDPzcLF6RTfl0uRAMqtQ+BuQ6s1xRT3VmHN
+	 O36/uaEEdrKHNQWv0p7mTafflYemXVA7XpUE8oycEtQ+YphYpwxZpSCUygKLL6OFxi
+	 YQK4GETIk3QMtNjqxPv47au7dTCXiieC9Gy92lyLEEQf3KeGIfiIdafT4X+HEn+LIs
+	 UnX2/YKXSeZtA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] i2c: core: fix race between adapter removal and new_device_store
-Message-ID: <bddb13e0-6443-4164-a9a9-175146652b6a@mail.kernel.org>
+Subject: [PATCH RFC] usbip: fix use-after-free in event handler during device teardown
+Message-ID: <d8bac699-d54d-4ad0-acc4-a095464e2172@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,103 +38,107 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed,  5 Aug 2026 14:28:48 +0000 (UTC)
+Date: Wed,  5 Aug 2026 15:45:18 +0000 (UTC)
 
-There is a race condition between the removal of an I2C adapter
-(`i2c_del_adapter`) and the instantiation of a new I2C client device via
-sysfs (`new_device_store`).
+During device teardown (e.g., when unbinding a device), `vhci_stop()` calls
+`usbip_stop_eh()` to wait for the `event_handler` workqueue to finish
+processing shutdown events. `usbip_stop_eh()` uses
+`wait_event_interruptible()`. If the user-space process triggering the
+teardown receives a signal, the wait is aborted immediately. Since the
+return value is ignored, the teardown path proceeds to free the `vhci_hcd`
+(and the embedded `usbip_device`) while the `event_handler` is still
+actively using it, resulting in a use-after-free.
 
-When an adapter is being removed, `i2c_del_adapter()` removes it from
-`i2c_adapter_idr`, deregisters clients (emptying `adap->userspace_clients`
-under `adap->userspace_clients_lock`), and recursively removes the
-adapter's debugfs directory. Concurrently, a write to the `new_device`
-sysfs attribute invokes `new_device_store()`, which calls
-`i2c_new_client_device()` to instantiate and probe a new client. If this
-happens after the adapter's debugfs directory is removed,
-`i2c_device_probe()` will attempt to create a debugfs directory for the new
-client using the now-removed (negative) adapter debugfs dentry as the
-parent. This results in a NULL-pointer dereference in `inode_lock_nested()`
-when `debugfs_create_dir()` tries to lock the parent's inode.
+Even if `wait_event_interruptible()` is changed to `wait_event()`, a
+secondary race exists. The `event_handler` pops events from a global
+`event_list` before processing them. If `usbip_event_add()` is called
+concurrently, it might allocate and add a second event to the list because
+the first one was already popped. When `event_handler` finishes processing
+the first event, it clears the event flags and wakes up `usbip_stop_eh()`.
+`usbip_stop_eh()` sees the flags are cleared, returns, and the device is
+freed. However, the `event_handler` then loops back, pops the second event
+from the list, and attempts to access the now-freed device structure.
 
-Additionally, if the crash did not occur, the newly created client would be
-added to the `adap->userspace_clients` list after
-`i2c_deregister_clients()` had already finished, leaking the device and
-associated resources.
+Fix this by changing `wait_event_interruptible()` to `wait_event()` so that
+the teardown path waits uninterruptibly, guaranteeing that background tasks
+have logically finished before memory is freed. Additionally, add a
+`flush_workqueue(usbip_queue)` call immediately after `wait_event()` to act
+as a strict synchronization barrier, ensuring that the worker thread has
+completely drained the `event_list` and exited the function before
+`usbip_stop_eh()` returns and the device is freed. The declarations of
+`usbip_queue` and `usbip_work` are moved above `usbip_stop_eh()` to allow
+calling `flush_workqueue()`.
 
-The crash trace looks like this:
+BUG: KASAN: slab-use-after-free in __raw_spin_lock_irqsave
+include/linux/spinlock_api_smp.h:132 [inline]
+BUG: KASAN: slab-use-after-free in _raw_spin_lock_irqsave+0x40/0x60
+kernel/locking/spinlock.c:166
+Read of size 1 at addr ffff88811cecc478 by task kworker/u8:5/6058
 
-Unable to handle kernel paging request at virtual address dfff800000000028
-KASAN: null-ptr-deref in range [0x0000000000000140-0x0000000000000147]
-...
-Call trace:
- kasan_mem_to_shadow include/linux/kasan.h:65 [inline] (P)
- kasan_byte_accessible+0x10/0x20 mm/kasan/generic.c:210 (P)
- kasan_check_byte include/linux/kasan.h:402 [inline]
- lock_acquire+0xa4/0x364 kernel/locking/lockdep.c:5842
- down_write_nested+0x58/0xcc kernel/locking/rwsem.c:1757
- inode_lock_nested include/linux/fs.h:1069 [inline]
- __start_dirop+0xa0/0xf4 fs/namei.c:2918
- start_dirop+0x38/0x4c fs/namei.c:2942
- simple_start_creating+0xcc/0x114 fs/libfs.c:2305
- debugfs_start_creating+0xf8/0x1ac fs/debugfs/inode.c:394
- debugfs_create_dir+0x30/0x2f4 fs/debugfs/inode.c:572
- i2c_device_probe+0x7fc/0x9d4 drivers/i2c/i2c-core-base.c:588
+Call Trace:
+ <TASK>
+ lock_acquire+0x84/0x350 kernel/locking/lockdep.c:5842
+ __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:132 [inline]
+ _raw_spin_lock_irqsave+0x40/0x60 kernel/locking/spinlock.c:166
+ unset_event drivers/usb/usbip/usbip_event.c:35 [inline]
+ event_handler+0x2b0/0x4b0 drivers/usb/usbip/usbip_event.c:80
+ process_one_work kernel/workqueue.c:3322 [inline]
+ process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+ worker_thread+0x92d/0xe10 kernel/workqueue.c:3486
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
 
-To fix both the crash and the resource leak, synchronize
-`new_device_store()` with `i2c_del_adapter()`. This is achieved by
-extending the `adap->userspace_clients_lock` critical section in
-`new_device_store()` to cover the entire client creation process.
-Furthermore, a liveness check is added: while holding the lock, we check if
-the adapter is still present in `i2c_adapter_idr` under `core_lock`. If the
-adapter is already being removed, we safely abort and return `-ENODEV`.
-This guarantees that if `new_device_store()` starts first,
-`i2c_del_adapter()` will block waiting for `userspace_clients_lock`,
-delaying the debugfs removal until the client is fully instantiated and
-added to the list, ensuring it gets properly cleaned up.
-
-Fixes: 99cd8e25875a ("i2c: Add a sysfs interface to instantiate devices")
+Fixes: bb7871ad99ea ("usbip: event handler as one thread")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+cc460646984184ad435a@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=cc460646984184ad435a
-Link: https://syzkaller.appspot.com/ai_job?id=f83d9281-0bbe-47a6-ac52-5b5911268adc
-To: "Andi Shyti" <andi.shyti@kernel.org>
-To: <linux-i2c@vger.kernel.org>
-To: "Jean Delvare" <khali@linux-fr.org>
+Reported-by: syzbot+31117fde582fe6a0cd62@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=31117fde582fe6a0cd62
+Link: https://syzkaller.appspot.com/ai_job?id=48067f76-5bee-4b9c-a4d6-69685bd6f80d
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
+To: "Shuah Khan" <shuah@kernel.org>
+To: "Valentina Manea" <valentina.manea.m@gmail.com>
+To: "Nobuo Iwata" <nobuo.iwata@fujixerox.co.jp>
+Cc: "Hongren Zheng" <i@zenithal.me>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
-index 3ec04787a..884a26695 100644
---- a/drivers/i2c/i2c-core-base.c
-+++ b/drivers/i2c/i2c-core-base.c
-@@ -1304,12 +1304,25 @@ new_device_store(struct device *dev, struct device_attribute *attr,
- 		info.flags |= I2C_CLIENT_SLAVE;
- 	}
+diff --git a/drivers/usb/usbip/usbip_event.c b/drivers/usb/usbip/usbip_event.c
+index 0e00c2d00..e498102e8 100644
+--- a/drivers/usb/usbip/usbip_event.c
++++ b/drivers/usb/usbip/usbip_event.c
+@@ -105,6 +105,11 @@ int usbip_start_eh(struct usbip_device *ud)
+ }
+ EXPORT_SYMBOL_GPL(usbip_start_eh);
  
-+	mutex_lock_nested(&adap->userspace_clients_lock,
-+			  i2c_adapter_depth(adap));
++#define WORK_QUEUE_NAME "usbip_event"
 +
-+	/* Check if the adapter is still registered / alive */
-+	mutex_lock(&core_lock);
-+	if (idr_find(&i2c_adapter_idr, adap->nr) != adap) {
-+		mutex_unlock(&core_lock);
-+		mutex_unlock(&adap->userspace_clients_lock);
-+		return -ENODEV;
-+	}
-+	mutex_unlock(&core_lock);
++static struct workqueue_struct *usbip_queue;
++static DECLARE_WORK(usbip_work, event_handler);
 +
- 	client = i2c_new_client_device(adap, &info);
--	if (IS_ERR(client))
-+	if (IS_ERR(client)) {
-+		mutex_unlock(&adap->userspace_clients_lock);
- 		return PTR_ERR(client);
-+	}
+ void usbip_stop_eh(struct usbip_device *ud)
+ {
+ 	unsigned long pending = ud->event & ~USBIP_EH_BYE;
+@@ -115,16 +120,12 @@ void usbip_stop_eh(struct usbip_device *ud)
+ 	if (pending)
+ 		usbip_dbg_eh("usbip_eh waiting completion %lx\n", pending);
  
- 	/* Keep track of the added device */
--	mutex_lock(&adap->userspace_clients_lock);
- 	list_add_tail(&client->detected, &adap->userspace_clients);
- 	mutex_unlock(&adap->userspace_clients_lock);
- 	dev_info(dev, "%s: Instantiated device %s at 0x%02hx\n", "new_device",
+-	wait_event_interruptible(ud->eh_waitq, !(ud->event & ~USBIP_EH_BYE));
++	wait_event(ud->eh_waitq, !(ud->event & ~USBIP_EH_BYE));
++	flush_workqueue(usbip_queue);
+ 	usbip_dbg_eh("usbip_eh has stopped\n");
+ }
+ EXPORT_SYMBOL_GPL(usbip_stop_eh);
+ 
+-#define WORK_QUEUE_NAME "usbip_event"
+-
+-static struct workqueue_struct *usbip_queue;
+-static DECLARE_WORK(usbip_work, event_handler);
+-
+ int usbip_init_eh(void)
+ {
+ 	usbip_queue = create_singlethread_workqueue(WORK_QUEUE_NAME);
 
 
 base-commit: 075b74841bd0065a3bda3440873c747938e69b68
