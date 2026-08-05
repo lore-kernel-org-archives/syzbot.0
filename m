@@ -1,215 +1,213 @@
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B9DC352014
-	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 14:13:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 712323537F9
+	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 14:13:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.41
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785939186; cv=pass; b=X4EWSyKs95KXESwpwgcr1YzI78Hue+CETAswu70p59w+HIoH2fT86K9M7zPDcQF/UReae92vp9NedYqAIA4TZmdmF/jbQH/HE0r9IQw89RtFa9LuxG9Xk2pZO+BJLPn690rAM+CDGS8hOzP5pUCnaXEJ6Fx65scPDl7ryHi13CY=
+	t=1785939210; cv=pass; b=g/B1Y41MjqNvEln8HAl2gny+zf1TxvctSXnpaHmLpLszYVIZqDBhH4VUEDNYQGQmv8gifsSzs/4HcFV9pziTVm+XCCYipMtKRVEZFBDQpaWoLWid7wAfd8KjhlWnKKGy3dtgN6WwnZi2f2nRNSAbQRXXShIlIt2VDFpWeO3qOlM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785939186; c=relaxed/simple;
-	bh=0FgDUkeBaNSKWepg6S43lsmASYq6OUFxdv+y5bAuXAc=;
+	s=arc-20240116; t=1785939210; c=relaxed/simple;
+	bh=afhhqFuykcv7hhvulqRjFX0bdgZOLtv2/4ShhBtmydM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UOpcLbEzOzussQF/WYpf5jNePlvio9EJaOYjt+LkPTcoqElsKnQ7Vzh45AJdOKRJQFUMVt3gZeGZlun7jkoJmnfiNSMceMA7aBZhMIiRKMhGu3BMQEZca3JllzirtTbqWhuzGjAmwMLwcWKrHThj5XRkWO5JWyFyetM7spc9xhw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=wl+fibiS; arc=pass smtp.client-ip=209.85.160.54
+	 To:Cc:Content-Type; b=WE62p6Um68EymNRxlfu4rlp2emZEcfefMSusIo8ijVIgiY/AD0XAQM/5H9d7M1Wxq8TAm2IczQFMl8zKGXtnbZW/t78s35K5sVaXVmNFvBcyfgzf8Gow4Q1ns9fWHxvZWL3MOEbRuF55ZE293ekDkNhRqNElMozRccplyRyVgCc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UXRyRiz8; arc=pass smtp.client-ip=209.85.160.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="wl+fibiS"
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-43bf9548df4so640306fac.0
-        for <syzbot@lists.linux.dev>; Wed, 05 Aug 2026 07:13:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1785939183; cv=none;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UXRyRiz8"
+Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-44caeb973b3so718340fac.1
+        for <syzbot@lists.linux.dev>; Wed, 05 Aug 2026 07:13:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1785939207; cv=none;
         d=google.com; s=arc-20260327;
-        b=p4eFSYcEYj+4GrbELU9yKfpAytYZ91LJBAn0xGXQYz41yAWBnjLXfdo9ne8x05Lvtg
-         SxHxTCo3juIW3vbmumvKx8j11Y6JAuVCPIsm4sbNIXigJWvFGOMcLXbgqajpbB8NGtJJ
-         Vm65WX01Hi0NA2XY0LPQls5fsAchxLd3RdkrSA6xneZaIndHnHULTGGaQc6at3CpOkG1
-         TPvVi7eBQd1bxIJQJTAHg3YSiUN/y66bwLJKP5qcBDCM4w4GuZfDfZfdmyGoTmNzvwlY
-         QAWfnfT0bL/MYpjLF3LM25JKYPEUgAvOSi3y+L4XV/C9Tfpj5tzUx1JCToVJ/npulvCf
-         s21g==
+        b=GHmLSzxQaXhxz3txhPJRf3wyHPSGHbj3Giw7XT6t0Iu8TxhYAT5uzYjq7TJH6RzHQY
+         N4r/YIRCfbvAMkp9r6+eFl1cHc739IiYNVlkymJRANYJYZgvchZ/89sDVYwv9pUr0zel
+         LwODJkJA768XRo/NJLK28OH9Qha4P/GhjFZPUEg0mtO09nT4s/PxFLIXScd/0E4hof64
+         QrgIR6/bGvyQ49WdLWcZq+Yf8G7W1xSSxRotXo3GW/fLfwdXMqLTx1OfhE42My09hfNc
+         3ZUWE+NeJxdiS0L3xSuRKVIYemrH4TGq7FbGlXGa564L5tniX7/rjefzqoWuGc+S1SBw
+         Ju6w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=RDod6rQyfTZzbG+avpqwefoM9i9P9+Ds1SjXYDiqpd0=;
-        fh=4NM2fH5fJfH3QUSQn1Ni1SVmqh190HjSCA1ucOEjYfQ=;
-        b=souWqzkHk/Ml9I5uPWbFgHUAlvjykubPOq53E5McE9ZO0kNTcaQROEifz3qyJiQKP2
-         RzR4P+ZhluhsGQV5PyqlYutmMBXli+8B2sJGtONLQcOOjfJ0j2hhTHRYDL2Qh04PZ6Ep
-         plNvLK1Vi+w0S5hOGUiV8TbwWkpw7odVT/KY9JvrspQ3n/XHFGqCcslO8RJcnzbgxhbf
-         D0LOvZDqD9mk716IbtueRYTpYC245BCmTpRwkP4bqjbzSPDF3PXcY6EOvpbo6gSv2oFv
-         re+CwpnODkhr52H8aoWPp7ktN8QG1A26W2cKpgGxarFXIBa22xLo6a8wMJlk3LZKlWUF
-         Phjw==;
+        bh=bXctWwNo3iIy6LzUUnEZmgCBo1i4OHbmKz1fGWKMmxg=;
+        fh=8ZHkXfmr0fj6MmalgCtKqKnB9OqvX7RfL6QET2GGUmc=;
+        b=XvocvtVEuTMw7vrY2ST/Yfqsrm5G8/M6qO3GZrnmn60AjutvP/npeD8V/hh4m9bgfn
+         7v2LUuc51NJHEd7sp8aZNxWZvbyssLSXLlyidf7lZvgvogxun5uDgeiyvvKXfuNVTlMg
+         edMlrlK9blbyjriJSgXLjA1212KyUJYHMtdqKGkF9/Lt9pFZ0Yebb1XMARQJufePHHyS
+         ps988q7V10FD+/v2BBmV0GtdXRSARGF6vZgaZhyZmOFkkFjYiYp5PvQtGo434Xq7z5RM
+         p+D8eoz3Xa/0q1++XofKgDjfo/zzCZpPZ/jM9s/OlE61eonJkHJPQVgb31drbcZAvhgT
+         x33w==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1785939183; x=1786543983; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1785939207; x=1786544007; darn=lists.linux.dev;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=RDod6rQyfTZzbG+avpqwefoM9i9P9+Ds1SjXYDiqpd0=;
-        b=wl+fibiSo2w/ERWv4hEhnSmtiq5o6TZlsMy9Pr/YDc//NrybQe8m5OvmKQ3hTj6HcW
-         QGqg5pR4qsaN1KWzYOzIJXNP8xp17q7jD0OhQE+HWjGlyZYCeNhCAIlruDt6K4X679hg
-         qyCNqfBmQ0PMeIErq2HPICb/NivZetWWyrRefrIqEtAEOHsRwh4M+yL5ty5QTWJGk/0l
-         fgzyuOrZ4YlqOX92VTC3ZUxLCBVdyFaYbuwOgtIBz+uQvMgsTBuHs3FSviTLXXbXz+/B
-         mQH4iNXP6zq4XE0GvdaJFT5csYMonkB6axvqihcDghCbTCzgCQtUHlku8uJFQ+tTN9MD
-         hACA==
+        bh=bXctWwNo3iIy6LzUUnEZmgCBo1i4OHbmKz1fGWKMmxg=;
+        b=UXRyRiz8s39MY0NPZGl5r9/qs8kfeXG1QDX41XrQ9+SHKjuKoAL888GlKRnkEFbPAm
+         8guhvJH8hi+vSM9jFOGWdKG9qXhMKxLwsIFCdK9zfz154J/nMlZnqzNnjHxtWUPgpabX
+         0YV+kNbakKWOtOPBs07uQbG40pBxjgzgv8Pi0cYu8dOLmUe8pA9PnGb9JQb3U/GVru1I
+         NDfj+YYCDHGnk0f31a5cAv9ENiLatGXHd12NyCLldmAagcjpWHwi5B6owDqAMniDzADz
+         Jj+UfeENGo9OiHIrCb2tP3X7SGf+1K/08ZLVZl+W/3N+1/Jk52qqCbg9hJqv6pGA/+I9
+         Cirw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785939183; x=1786543983;
+        d=1e100.net; s=20251104; t=1785939207; x=1786544007;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=RDod6rQyfTZzbG+avpqwefoM9i9P9+Ds1SjXYDiqpd0=;
-        b=qyGS2q71mOnkGzSjCKW9MNMC1DJ5pXcNyQ2B8NO+L1uIf+balfxtPFBdE8atkWnYVC
-         qAxCWutDcUT0/+yeN8oNDF4aVw4R6lXE6IMGfa/2IRqPq0+kGNiefe5COsvkXg/VvB4g
-         s3+ukUlKpIe0geqL0lKyMHvmxN08RdhNuB3VGarUKxcpR8FTrVk2p0h4Xucah/blFPLc
-         HCArk1jtxFqQiCnhHd38Yuy8UkjjzOVsH2Gi71OEK6bSlPCbnXz+I3OjVE1YZ7jgIP3X
-         2iB83jNl66IyX96ytukAv3oh8BqOIogb7JSfJAc0+Fakfv9RQjm79flzrlbEBkesWqte
-         NgxQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rrozit+BdSGU8OoJU9lnJfCdzOXy+VIRtIdaaT18C6qS8FhiNxrcs2bFAhJ6qm4C2nSvyktnzI=@lists.linux.dev
-X-Gm-Message-State: AOJu0YwInXDwGenX9M6RM0UfPNH6Kklfvkkm7uOp4/Jh8caZ3Fl3MRlg
-	+l+BIG8vQszlRM3mu7ycYasMYeznc723rEJ6siBSwuijGyZRTNuBuicvpqRPcKTKp4/E9z4fYuf
-	KE5a3ydfVPWG5nJNRPscPSwrngtTYFurro1p7+NIp
-X-Gm-Gg: AR+sD10m9YxXFKQm6tyuO0mj2bb4wZrsr/USva+mbeInuH0WXciLs1RVvoF1rTzM8Zq
-	cF43vhTaPi3J7NFzNLn2ghQk/gTdNOmnxVtBw8QFs1RhHw15Rlp0kED0pUt/2lBlFIkpc4xT7bF
-	VFPtCCuFaOVh8eZHbRZgvXU/12IScBz596zcR8GaqQzm7u3d8nqIFBkPwwBOvZLjpkJALUe14RI
-	vK3wZAMct2KYW5ONM7PzujAMh5tT1DrVLdJJiMWO39tRUS5Y5Fvts30VqKaVBkcXSoUlN4pd7n1
-	7wO5ch7os3iCVUCgYfeorX+10Gi7aSKnA9UHkmAsPjHUh5OmoiQNvA4LLd75HsiuP4qT08e5m96
-	UTaQaSh0OmIwbNgUPFTK1yRqWfeucN2n/nB78nEes7Tx/NnZyFoe1hjq9UKztmRENtLN90mwNkO
-	zKBdxIw6e3Iv/i
-X-Received: by 2002:a05:6870:21ca:b0:459:fe2:ef54 with SMTP id
- 586e51a60fabf-4599ea801eamr3729977fac.1.1785939182288; Wed, 05 Aug 2026
- 07:13:02 -0700 (PDT)
+        bh=bXctWwNo3iIy6LzUUnEZmgCBo1i4OHbmKz1fGWKMmxg=;
+        b=Fr0xrlTCRpyUbVMEKJc5RrxDhOHPownTJbxq/3tN7k2HgIchiU6u4s61YyAzdlAJ8I
+         qP7qo5e/m8K/I2nvXbMTnwY7nf38a8/vp+jBqPQTDKGsC9mnu1lhBOGPjcj7JwCUA+SP
+         PRb3Es7IdFF6tfWnQaMufM0DvlEB+9kp61rEq+gy9BOABHfjJZvonFquZZaDUNs19Fx/
+         2TQnKcjA2SnZxMrOTnl41JINqda6Rl6zRJIsM6+yl+o8mIoGPtoX9QcyB7IsNen7Vuh6
+         y7FOjy5qrUQlmc7RD4J2mXjZCkJnX8Kqn43X4KUlDtsMLGkJRJ2W1e4n4RqPuyltEriT
+         7tKA==
+X-Forwarded-Encrypted: i=1; AHgh+Rq9CNu/daEp3Ry/kwWvFZxqDzZ3/uIhHWH7YsCux647UgYmL613Qmgyi3gVYnTdVg/ulNBGK7k=@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywk48DFMzNaAn54Pr0qdmjcBWCCi85wbgj8nWPeFQQmVnZPBglv
+	rlEnWIkIrNhQKe+iD6ODhAgaW6q0NWiShGJJIyuIZinru39ncuoee+BkhDv45JSpIL2PHB1AON+
+	xmOG+IrgPyf35brm66KtldL5IPWrtpUAo5Wz3NnJm
+X-Gm-Gg: AR+sD12TQ7JAu6HlSZnTlZrgJeCWcinoR+6MfD4yiniC7QZpu3TrkDZlzBnOstV1YzZ
+	5aL12R0F5mUC0K1Tpun9YLZKutpuCBkJAfQ91+y+a/nrLjjNOxQW+Xz8miuiFy7G/QjtHH/hs38
+	UXK7lnRfEPxPOx16n734aDwv51iJfVSrLG7CfyHBTrh46/dvg1jjYNi92nJ22U6koeXa697i7L+
+	TNikrkvStTYZgzwGFStdSPd3FKQ/3LJ/ROzlFx6h42el608K89m4/M92uJelVSq1wWUL9F7hyNJ
+	QjHfKq5vdZ+6oh5Fcw1YnkORGJ2XHxw0xEcFsPcaumr2d8GG4qyvrYxLFmZ+nsrARm92q0/bx7v
+	fVULal2kPbxot5jc1eQigcli40nPkXZdKxDjwXNaydFwWkY7b5bVtTIRfcQ3pDpOoTJPxMi5OYH
+	UaThX9Wj1GwHv7
+X-Received: by 2002:a05:6870:8112:b0:456:b9a1:796e with SMTP id
+ 586e51a60fabf-4599eaafda8mr3840710fac.2.1785939206668; Wed, 05 Aug 2026
+ 07:13:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <2650cf0f-26f9-48b5-b198-e4cb67c59cf0@mail.kernel.org>
- <2026080336-covenant-limpness-55cc@gregkh> <2026080322-obsessed-daringly-e6df@gregkh>
-In-Reply-To: <2026080322-obsessed-daringly-e6df@gregkh>
+References: <92acf44b-fcee-4138-90ea-0a2275b9ddd8@mail.kernel.org>
+In-Reply-To: <92acf44b-fcee-4138-90ea-0a2275b9ddd8@mail.kernel.org>
 From: Aleksandr Nogikh <nogikh@google.com>
-Date: Wed, 5 Aug 2026 16:12:51 +0200
-X-Gm-Features: AUfX_myhx1UT7YuZLv76ps63pUQOVA0rWCMh7UFrFfX-goB0uNf0WfxNsQaXwwM
-Message-ID: <CANp29Y7i54S8jXyd50uBU0TYgm5GmcKNxAsP6_XDuq8zSvG3cg@mail.gmail.com>
-Subject: Re: [PATCH] usb: usbtest: fix NULL pointer dereference in usbtest_probe
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: syzbot <syzbot@kernel.org>, syzkaller-bugs@googlegroups.com, 
-	linux-usb@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>, kees@kernel.org, 
-	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
+Date: Wed, 5 Aug 2026 16:13:14 +0200
+X-Gm-Features: AUfX_mwo-IMtmn1U2DU4Q8aqSX4yQfNmgbx0x5dnMhiuqWbD8rjK5fjzjK9t1J4
+Message-ID: <CANp29Y5s=yArS31h-PQj-mYfxcx8m_ud4ydOUFT0DQ84jvNQBw@mail.gmail.com>
+Subject: Re: [PATCH RFC] usb: gadgetfs: fix unbalanced refcount in
+ gadgetfs_bind() error path
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Greg,
+#syz upstream
 
-Thanks for the review!
-
-
-On Mon, Aug 3, 2026 at 5:15=E2=80=AFPM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Wed, Aug 5, 2026 at 2:59=E2=80=AFPM 'syzbot' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
 >
-> On Mon, Aug 03, 2026 at 05:13:00PM +0200, Greg Kroah-Hartman wrote:
-> > On Wed, Jul 29, 2026 at 09:19:54AM +0000, syzbot wrote:
-> > > From: Aleksandr Nogikh <nogikh@google.com>
-> > >
-> > > The usbtest driver relies on the driver_info field of the usb_device_=
-id
-> > > structure to hold a pointer to a struct usbtest_info, which contains
-> > > necessary configuration for the device. When a new device ID is dynam=
-ically
-> > > added via the sysfs new_id interface without specifying a reference d=
-evice,
-> > > the driver_info field defaults to 0. When the USB core binds the devi=
-ce
-> > > using this dynamic ID, usbtest_probe() unconditionally casts the 0 to=
- a
-> > > pointer, resulting in a NULL pointer dereference when attempting to a=
-ccess
-> > > the autoconf bitfield (at offset 0xa) of the struct usbtest_info.
-> > >
-> > > This leads to the following crash:
-> > >
-> > > Oops: general protection fault, probably for non-canonical address
-> > > 0xdffffc0000000001: 0000 [#1] SMP KASAN NOPTI
-> > > KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f=
-]
-> > > RIP: 0010:usbtest_probe+0x522/0xcc0 drivers/usb/misc/usbtest.c:2822
-> > > Call Trace:
-> > >  <TASK>
-> > >  usb_probe_interface+0x653/0xc60 drivers/usb/core/driver.c:396
-> > >  call_driver_probe drivers/base/dd.c:-1 [inline]
-> > >  really_probe+0x254/0xae0 drivers/base/dd.c:706
-> > >  __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
-> > >  driver_probe_device+0x4f/0x240 drivers/base/dd.c:898
-> > >  __device_attach_driver+0x270/0x410 drivers/base/dd.c:1026
-> > >  bus_for_each_drv+0x258/0x2f0 drivers/base/bus.c:500
-> > >  __device_attach+0x2c4/0x450 drivers/base/dd.c:1098
-> > >  device_initial_probe+0xa1/0xd0 drivers/base/dd.c:1153
-> > >  bus_probe_device+0x12a/0x220 drivers/base/bus.c:620
-> > >  device_add+0x7d7/0xb80 drivers/base/core.c:3772
-> > >  usb_set_configuration+0x1ad8/0x2180 drivers/usb/core/message.c:2268
-> > >  usb_generic_driver_probe+0x8d/0x150 drivers/usb/core/generic.c:250
-> > >  usb_probe_device+0x1c3/0x3b0 drivers/usb/core/driver.c:291
-> > >
-> > > To fix this, validate that id->driver_info is not NULL before proceed=
-ing
-> > > with the probe. If it is NULL, gracefully return -ENODEV. The check i=
-s
-> > > placed before any memory allocation to avoid unnecessary work and sim=
-plify
-> > > error handling.
-> > >
-> > > Fixes: 733260ff9c45 ("[PATCH] USB: add dynamic id functionality to US=
-B core")
+> In gadgetfs_bind(), if an error occurs (for example, failing to allocate
+> the endpoint request), the error path calls gadgetfs_unbind().
+> gadgetfs_unbind() unconditionally drops a reference to the device object
+> (dev) by calling put_dev(). However, gadgetfs_bind() only acquires a
+> reference to dev at the very end of the function upon success. This
+> mismatch causes the reference count to drop prematurely.
 >
-> Not really, but I can see why the LLM thinks this.  It's "just how this
-> driver works" instead, right?
+> If multiple UDCs are available, the driver core will attempt to bind the
+> driver to each of them. If the first bind fails, the premature put_dev()
+> can drop the reference count to zero, freeing the dev object. Subsequent
+> bind attempts will then trigger a use-after-free when accessing the freed
+> dev object.
 >
-> > > Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview sy=
-zbot
-> > > Reported-by: syzbot+7e1e5911f9eac50bedc7@syzkaller.appspotmail.com
-> > > Closes: https://syzkaller.appspot.com/bug?extid=3D7e1e5911f9eac50bedc=
-7
-> > > Link: https://syzkaller.appspot.com/ai_job?id=3D9e476ca5-99d1-47d2-b9=
-d1-f3b501897179
-> > > Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
-> > >
-> > > ---
-> > > diff --git a/drivers/usb/misc/usbtest.c b/drivers/usb/misc/usbtest.c
-> > > index 98071b25a..6410b3e26 100644
-> > > --- a/drivers/usb/misc/usbtest.c
-> > > +++ b/drivers/usb/misc/usbtest.c
-> > > @@ -2786,10 +2786,13 @@ usbtest_probe(struct usb_interface *intf, con=
-st struct usb_device_id *id)
-> > >     }
-> > >  #endif
-> > >
-> > > +   info =3D (struct usbtest_info *) id->driver_info;
-> >
-> > Extra space there, right?  Didn't checkpatch catch that?
-
-The checkpatch was happy with the diff:
-total: 0 errors, 0 warnings, 14 lines checked
-
-You mean the whitespace after `*)`?
-I've just looked at the other code in `drivers/usb/misc/usbtest.c`,
-and it's inconsistent: in some cases there's a whiltespace, in some
-isn't.
-
-> >
-> > And this really isn't the proper solution, just don't allow dynamic
-> > binding for this driver.  That should resolve it, right?
-
-I'll double-check that and send a v2, thanks for the suggestion.
-
+> BUG: KASAN: slab-use-after-free in gadgetfs_bind+0xd8/0xae0
+> drivers/usb/gadget/legacy/inode.c:1682
+> Write of size 8 at addr ffff88819002e900 by task syz.0.17/6152
 >
-> If you don't want to do that, you need a BIG comment here as to what you
-> are trying to prevent, as a NULL check just looks like any other normal
-> check, while you are trying to prevent a specific use case from being
-> possible, and it WILL have user-visable affect.
+> Call Trace:
+>  <TASK>
+>  gadgetfs_bind+0xd8/0xae0 drivers/usb/gadget/legacy/inode.c:1682
+>  gadget_bind_driver+0x2ca/0x9e0 drivers/usb/gadget/udc/core.c:1662
+>  call_driver_probe drivers/base/dd.c:-1 [inline]
+>  really_probe+0x254/0xae0 drivers/base/dd.c:706
+>  __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
+>  driver_probe_device+0x4f/0x240 drivers/base/dd.c:898
+>  __driver_attach+0x339/0x600 drivers/base/dd.c:1292
+>  bus_for_each_dev+0x23e/0x2c0 drivers/base/bus.c:383
+>  bus_add_driver+0x348/0x670 drivers/base/bus.c:763
+>  driver_register+0x23a/0x320 drivers/base/driver.c:174
+>  usb_gadget_register_driver_owner+0xf9/0x270
+>  drivers/usb/gadget/udc/core.c:1752
+>  dev_config+0xe4e/0x12c0 drivers/usb/gadget/legacy/inode.c:1883
+>  vfs_write+0x29f/0xbb0 fs/read_write.c:685
+>  ksys_write+0x156/0x270 fs/read_write.c:739
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>  </TASK>
 >
-> thanks,
+> To fix this, move the get_dev(dev) call to the beginning of
+> gadgetfs_bind(), right after the gadget data pointers are set up and befo=
+re
+> any potential failure paths that lead to gadgetfs_unbind(). This ensures
+> that the reference count is properly balanced when gadgetfs_unbind() is
+> invoked on the error path.
 >
-> greg k-h
-
---=20
-Aleksandr
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+f63ad1084fd77fab48e4@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3Df63ad1084fd77fab48e4
+> Link: https://syzkaller.appspot.com/ai_job?id=3D6fafa316-17a5-4928-b109-4=
+b866d73749d
+> To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+> To: <linux-usb@vger.kernel.org>
+> To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
+> Cc: "Christian Brauner" <brauner@kernel.org>
+> Cc: "Jan Kara" <jack@suse.cz>
+> Cc: "Kees Cook" <kees@kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+> Cc: "Mateusz Guzik" <mjguzik@gmail.com>
+> Cc: "Al Viro" <viro@zeniv.linux.org.uk>
+>
+> ---
+> diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legac=
+y/inode.c
+> index d87a8ab51..ba901023d 100644
+> --- a/drivers/usb/gadget/legacy/inode.c
+> +++ b/drivers/usb/gadget/legacy/inode.c
+> @@ -1682,6 +1682,8 @@ static int gadgetfs_bind(struct usb_gadget *gadget,
+>         dev->gadget =3D gadget;
+>         gadget->ep0->driver_data =3D dev;
+>
+> +       get_dev(dev);
+> +
+>         /* preallocate control response and buffer */
+>         dev->req =3D usb_ep_alloc_request (gadget->ep0, GFP_KERNEL);
+>         if (!dev->req)
+> @@ -1696,7 +1698,6 @@ static int gadgetfs_bind(struct usb_gadget *gadget,
+>         spin_lock_irq(&dev->lock);
+>         dev->state =3D STATE_DEV_UNCONNECTED;
+>         spin_unlock_irq(&dev->lock);
+> -       get_dev (dev);
+>         return 0;
+>
+>  enomem:
+>
+>
+> base-commit: 075b74841bd0065a3bda3440873c747938e69b68
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+>
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated =
+patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/92acf44b-fcee-4138-90ea-0a2275b9ddd8%40mail.kernel.org=
+.
