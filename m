@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50672364942;
-	Wed,  5 Aug 2026 14:15:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C61E387359
+	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 14:28:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785939350; cv=none; b=RwxxsEvE6Vw1EDqcdvEjJIi3bwpkFJRfR3w6YAOf/sZk2d2ZVNwQ3KpWQSj0dsgBZHSWchgAWAjJncNH9m3KtSLs6Mcp7ECE7F1hSbqohX80nb8vwY24b7DAtfbKsiDELaqSUB0/YfTWjFHf8Puo0keiQDbwgO2Hu0cerLyock4=
+	t=1785940139; cv=none; b=gu1FKYbBw3kLvZpxTfPQbiH2AZYM+moAy95CrK4wfjbXuRAG+I5M8FUoQn1Gl1tDhlQqEhuc2rhcl+EPEd/7QYQGRQNW+Ail+4Mt9Spqaw6eU9TyTOWAQT+gWYSscY9RxE32FUeYNPtjWXWAwbPVo013/DXxa96DQ6IrWEMuXk8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785939350; c=relaxed/simple;
-	bh=KtK1uDlEfrhDuvTRZxSqM8PK01kq31Rw1Gqq6nNou3w=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Mmxe9qCAkVkNQV7lleENeT1xRiSvdLHpP3SERH+DNV6Wm/wr/OORoL25VuD9zcPWhyvzZ2YiUZFR4fj1OEEMbUmJzqqdDwTzxiu+X68CeA7FJdjTXD496XiSD3KJZkqNO9xHh806nCscepDE5vPYFCOnoRM/FmcchMebPI8tMek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g5X3nJW6; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785940139; c=relaxed/simple;
+	bh=ZfnqAKrBxbwGtRFCS66wM7JW2ArNUU9Ql6yEEVJ8sVQ=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=QR2p8bCH3pqiCYaQigFtnNYWsbRjJLys+IqXaLs6qSHcpo9r0heKQEKOMc1XHenPVEAcsF4XsHh+9xP3y+byy568Fdb/pTTZTGtE4fIHlGvgfr+2k0QZbd45cCqgM98lL865BAR2nwJy4knGcadL9hxujvhtxaxxL8V6gz0Lxuo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iKaK2uMg; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g5X3nJW6"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6B7DA1F000E9;
-	Wed,  5 Aug 2026 14:15:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iKaK2uMg"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7D8C31F00A3A;
+	Wed,  5 Aug 2026 14:28:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785939349;
-	bh=mPcyaOrbkQr3zyaOcuxdt4QQfLFjFN+nGNR5FTjcNzM=;
+	s=k20260515; t=1785940128;
+	bh=twBAyuLwVWaNMgDlM6g01CzOciwzhz672uI+hMGEIkY=;
 	h=From:To:Cc:Subject:Date;
-	b=g5X3nJW6N1PQ0iEBZfc8ZqiwHIsIs+7aSNE4UrLoqRXpBLxLUBhlSdgUziUSsLlkI
-	 pkkEyfSvw800s28fSl728Z5ffOdZG9mDujk+0qYXciGga83OawaeuKYkUJ/Dwy1G17
-	 ICJPezO27hSuzaIvDykGqStfF3eFfuYeU4QEKm+wN3w+RkV8nbXUvYGf9HzsTQUB/R
-	 IQxNpWYQ4ko0HCFSqcmnq5e8fmNiazbO6jNTd2/wvaHLJGM8beio3AtjVzMSI4j7yl
-	 SIthZ3XQ42QAKlrqhWylcEfNJOuNQFO3EKGuCS8RE6KeSPQ8aJEAIiANFp8MqUdW2Z
-	 5PbZCVdc5pMFg==
+	b=iKaK2uMgyMoAiz9W3owPeERzMy5oTkJXcgtS3AyvuE19VS0p/4Gu7UeqnyGPSoUK5
+	 qAw4TeCfSE0+uxXf6c7LmRfLVGgTC41UrXW8wo1SUwe0+bkLJhFqnJt/uGjXmBmf/R
+	 0OfUT6iy9cyJGvyylUMV7jPRfeEfu7/kuTLy2PTcdEIvhk3sy2XTDiE8DvdQQMFj42
+	 K/DCwS8yu61tXr1X8YeDdiWzTolOwbx6jil0xLrh6W+l69bH/1u3tmY0kanU9CntIt
+	 VKKFKdaOQlKvSG6Ysw3FsXlbTRT7O4IEVl0o1Ci3mdmWousmdQ/nO/7KcUEl5szSip
+	 nvSjGzzTpNo3Q==
 From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Aleksandr Nogikh <nogikh@google.com>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, <linux-usb@vger.kernel.org>, "Linus Torvalds" <torvalds@ppc970.osdl.org>
-Cc: brauner@kernel.org, jack@suse.cz, kees@kernel.org, linux-kernel@vger.kernel.org, mjguzik@gmail.com, syzbot@lists.linux.dev, viro@zeniv.linux.org.uk
-Subject: [PATCH] usb: gadgetfs: fix unbalanced refcount in gadgetfs_bind() error path
-Message-ID: <deb7f348-3cb9-4e8d-b246-b0d5e5f49d16@mail.kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] i2c: core: fix race between adapter removal and new_device_store
+Message-ID: <bddb13e0-6443-4164-a9a9-175146652b6a@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,88 +38,112 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed,  5 Aug 2026 14:15:48 +0000 (UTC)
+Date: Wed,  5 Aug 2026 14:28:48 +0000 (UTC)
 
-From: Aleksandr Nogikh <nogikh@google.com>
+There is a race condition between the removal of an I2C adapter
+(`i2c_del_adapter`) and the instantiation of a new I2C client device via
+sysfs (`new_device_store`).
 
-In gadgetfs_bind(), if an error occurs (for example, failing to allocate
-the endpoint request), the error path calls gadgetfs_unbind().
-gadgetfs_unbind() unconditionally drops a reference to the device object
-(dev) by calling put_dev(). However, gadgetfs_bind() only acquires a
-reference to dev at the very end of the function upon success. This
-mismatch causes the reference count to drop prematurely.
+When an adapter is being removed, `i2c_del_adapter()` removes it from
+`i2c_adapter_idr`, deregisters clients (emptying `adap->userspace_clients`
+under `adap->userspace_clients_lock`), and recursively removes the
+adapter's debugfs directory. Concurrently, a write to the `new_device`
+sysfs attribute invokes `new_device_store()`, which calls
+`i2c_new_client_device()` to instantiate and probe a new client. If this
+happens after the adapter's debugfs directory is removed,
+`i2c_device_probe()` will attempt to create a debugfs directory for the new
+client using the now-removed (negative) adapter debugfs dentry as the
+parent. This results in a NULL-pointer dereference in `inode_lock_nested()`
+when `debugfs_create_dir()` tries to lock the parent's inode.
 
-If multiple UDCs are available, the driver core will attempt to bind the
-driver to each of them. If the first bind fails, the premature put_dev()
-can drop the reference count to zero, freeing the dev object. Subsequent
-bind attempts will then trigger a use-after-free when accessing the freed
-dev object.
+Additionally, if the crash did not occur, the newly created client would be
+added to the `adap->userspace_clients` list after
+`i2c_deregister_clients()` had already finished, leaking the device and
+associated resources.
 
-BUG: KASAN: slab-use-after-free in gadgetfs_bind+0xd8/0xae0
-drivers/usb/gadget/legacy/inode.c:1682
-Write of size 8 at addr ffff88819002e900 by task syz.0.17/6152
+The crash trace looks like this:
 
-Call Trace:
- <TASK>
- gadgetfs_bind+0xd8/0xae0 drivers/usb/gadget/legacy/inode.c:1682
- gadget_bind_driver+0x2ca/0x9e0 drivers/usb/gadget/udc/core.c:1662
- call_driver_probe drivers/base/dd.c:-1 [inline]
- really_probe+0x254/0xae0 drivers/base/dd.c:706
- __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
- driver_probe_device+0x4f/0x240 drivers/base/dd.c:898
- __driver_attach+0x339/0x600 drivers/base/dd.c:1292
- bus_for_each_dev+0x23e/0x2c0 drivers/base/bus.c:383
- bus_add_driver+0x348/0x670 drivers/base/bus.c:763
- driver_register+0x23a/0x320 drivers/base/driver.c:174
- usb_gadget_register_driver_owner+0xf9/0x270
- drivers/usb/gadget/udc/core.c:1752
- dev_config+0xe4e/0x12c0 drivers/usb/gadget/legacy/inode.c:1883
- vfs_write+0x29f/0xbb0 fs/read_write.c:685
- ksys_write+0x156/0x270 fs/read_write.c:739
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
+Unable to handle kernel paging request at virtual address dfff800000000028
+KASAN: null-ptr-deref in range [0x0000000000000140-0x0000000000000147]
+...
+Call trace:
+ kasan_mem_to_shadow include/linux/kasan.h:65 [inline] (P)
+ kasan_byte_accessible+0x10/0x20 mm/kasan/generic.c:210 (P)
+ kasan_check_byte include/linux/kasan.h:402 [inline]
+ lock_acquire+0xa4/0x364 kernel/locking/lockdep.c:5842
+ down_write_nested+0x58/0xcc kernel/locking/rwsem.c:1757
+ inode_lock_nested include/linux/fs.h:1069 [inline]
+ __start_dirop+0xa0/0xf4 fs/namei.c:2918
+ start_dirop+0x38/0x4c fs/namei.c:2942
+ simple_start_creating+0xcc/0x114 fs/libfs.c:2305
+ debugfs_start_creating+0xf8/0x1ac fs/debugfs/inode.c:394
+ debugfs_create_dir+0x30/0x2f4 fs/debugfs/inode.c:572
+ i2c_device_probe+0x7fc/0x9d4 drivers/i2c/i2c-core-base.c:588
 
-To fix this, move the get_dev(dev) call to the beginning of
-gadgetfs_bind(), right after the gadget data pointers are set up and before
-any potential failure paths that lead to gadgetfs_unbind(). This ensures
-that the reference count is properly balanced when gadgetfs_unbind() is
-invoked on the error path.
+To fix both the crash and the resource leak, synchronize
+`new_device_store()` with `i2c_del_adapter()`. This is achieved by
+extending the `adap->userspace_clients_lock` critical section in
+`new_device_store()` to cover the entire client creation process.
+Furthermore, a liveness check is added: while holding the lock, we check if
+the adapter is still present in `i2c_adapter_idr` under `core_lock`. If the
+adapter is already being removed, we safely abort and return `-ENODEV`.
+This guarantees that if `new_device_store()` starts first,
+`i2c_del_adapter()` will block waiting for `userspace_clients_lock`,
+delaying the debugfs removal until the client is fully instantiated and
+added to the list, ensuring it gets properly cleaned up.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 99cd8e25875a ("i2c: Add a sysfs interface to instantiate devices")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+f63ad1084fd77fab48e4@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=f63ad1084fd77fab48e4
-Link: https://syzkaller.appspot.com/ai_job?id=6fafa316-17a5-4928-b109-4b866d73749d
-Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+Reported-by: syzbot+cc460646984184ad435a@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=cc460646984184ad435a
+Link: https://syzkaller.appspot.com/ai_job?id=f83d9281-0bbe-47a6-ac52-5b5911268adc
+To: "Andi Shyti" <andi.shyti@kernel.org>
+To: <linux-i2c@vger.kernel.org>
+To: "Jean Delvare" <khali@linux-fr.org>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
-index d87a8ab51..ba901023d 100644
---- a/drivers/usb/gadget/legacy/inode.c
-+++ b/drivers/usb/gadget/legacy/inode.c
-@@ -1682,6 +1682,8 @@ static int gadgetfs_bind(struct usb_gadget *gadget,
- 	dev->gadget = gadget;
- 	gadget->ep0->driver_data = dev;
+diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
+index 3ec04787a..884a26695 100644
+--- a/drivers/i2c/i2c-core-base.c
++++ b/drivers/i2c/i2c-core-base.c
+@@ -1304,12 +1304,25 @@ new_device_store(struct device *dev, struct device_attribute *attr,
+ 		info.flags |= I2C_CLIENT_SLAVE;
+ 	}
  
-+	get_dev(dev);
++	mutex_lock_nested(&adap->userspace_clients_lock,
++			  i2c_adapter_depth(adap));
 +
- 	/* preallocate control response and buffer */
- 	dev->req = usb_ep_alloc_request (gadget->ep0, GFP_KERNEL);
- 	if (!dev->req)
-@@ -1696,7 +1698,6 @@ static int gadgetfs_bind(struct usb_gadget *gadget,
- 	spin_lock_irq(&dev->lock);
- 	dev->state = STATE_DEV_UNCONNECTED;
- 	spin_unlock_irq(&dev->lock);
--	get_dev (dev);
- 	return 0;
++	/* Check if the adapter is still registered / alive */
++	mutex_lock(&core_lock);
++	if (idr_find(&i2c_adapter_idr, adap->nr) != adap) {
++		mutex_unlock(&core_lock);
++		mutex_unlock(&adap->userspace_clients_lock);
++		return -ENODEV;
++	}
++	mutex_unlock(&core_lock);
++
+ 	client = i2c_new_client_device(adap, &info);
+-	if (IS_ERR(client))
++	if (IS_ERR(client)) {
++		mutex_unlock(&adap->userspace_clients_lock);
+ 		return PTR_ERR(client);
++	}
  
- enomem:
+ 	/* Keep track of the added device */
+-	mutex_lock(&adap->userspace_clients_lock);
+ 	list_add_tail(&client->detected, &adap->userspace_clients);
+ 	mutex_unlock(&adap->userspace_clients_lock);
+ 	dev_info(dev, "%s: Instantiated device %s at 0x%02hx\n", "new_device",
 
 
 base-commit: 075b74841bd0065a3bda3440873c747938e69b68
 -- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
 See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
 You can comment on the patch as usual, syzbot will try to address
 the comments and send a new version of the patch if necessary.
