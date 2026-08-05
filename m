@@ -1,102 +1,165 @@
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BEAA3EAC71
-	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 08:32:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785918766; cv=none; b=U1zOZNje639OQ6OvXOlZJXsTkH2LaMLidhklvkAtTb6Gdbnj/IsUPpDK2EJnijdZ9HsNL0qW9mWdQ/0PJ1pCVwWuzlMqUQ5A76R5XM4ws+EkCCwODGwg/Tgu+OVxxTZB4fmgpm0bZ9Yn0xntCusWKIWHBhX2A5U6/2NVbXe6egQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785918766; c=relaxed/simple;
-	bh=ynkWE4pDXWrkKWTNJ9CXaLLrM7Ba3f18nBLhObFFpak=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=j/sV+0YN7JoaN/i1J9NL+h/5YUDVITYSQqGBM81jy0bPgJF2RcvHuc8D5/0LA3cNNim2lNr2g2fw0a08vc2g/lRJvGOX9MeBp2D8N6PiaNo3nhFVsQFhOeY+QRzM2BPVZ+TiqAteRPTDe6LGZ7nPcWYJ/wpj2SCoMds3eUzJxT8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-6ae7c37604aso419012eaf.0
-        for <syzbot@lists.linux.dev>; Wed, 05 Aug 2026 01:32:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785918761; x=1786523561;
-        h=content-type:cc:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=8egjVG3FsDuVtCWxx6b7xjWS9H7LwDGQHEPT+1+mWWA=;
-        b=OjhejbMwzGBRCSHZy7KULXEV29n5ELbQrMT2yzjsAtFaralCjtZTkdqte2RNWy6t37
-         0/Av/B5xHYEvmxupXk/BXuvsLNxSl4rR6xPv3SnIp1jDeUvk1s0/58WTjut3bjjpxYBe
-         Pf2oGAW/usUv03gHRh2MCMQhFXmFUPzA99P1+gXOf7fe6iyHguUaq9GWJwGhOV+g9Hcx
-         0cYFnY/jr55K1zwF1XuId/9tys7fCBdAodXVyCPboZRb1+z7r/WgFM2T2D+Uu4k8hRip
-         gczWhzIJeDyHRyZ0piHzKqgvhGPe/hAaGmTZCLlDml1eJ02nEJi6TquJhGmjEykw4qXJ
-         RwAA==
-X-Gm-Message-State: AOJu0Yz0Z0u72fvTMARq+ahU54DC5K21GBJZVg/H2AU7cUutT8XGtx5w
-	AA6UD0ON+h7n5dlxR2LgiCfYX1vtthgeNTTOofvaQdbngOUQZLc005KABMBr+H6VpRBXnbKjlVv
-	CbgfWBJ/FF/FIgKqIwWgnUGOqAboj1yV0D1VEu2J2UqqEmaP0FLmbikgRzjY=
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A11C3EC685
+	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 08:56:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785920168; cv=pass; b=k1wMxa04r1nqXmBX24OsNHKwNIn1baUdlo6Jo47bUM+ImnF/ev/7KYhJpt3oqTgmrisGxoCCjjljN+lH2V7ocbKF6hOr8F31pOh3UP+80ndAUKq5zommiBFAX0M+SwEljAfojejbpGbE5C2RCKNkPoAQ00vQ5qh8qd4uqcBvQIo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785920168; c=relaxed/simple;
+	bh=c1YjyoeK/qFMR6sBt7V9ccs+ulqofSkUAe5ARGX/Bj0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DFsM6bNbHaclDuvQuyj0bk/JnnMjU1LLdXDoL6y7+OZQvpYTCbVNouzwO4wVYU/T9AxhJjW1Vit5tjNJoEGUyd48F14uKzWFr/N1PeFeQzpYhO36A4fmrR96KS28FbG2q/8s4Jn8Dqf61FFickq7LuuyL4yvhgQ2qnBIQMf+kKc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=YDafMYZl; arc=pass smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="YDafMYZl"
+Received: by smtp.kernel.org (Postfix)
+	id B7A801F00A3A; Wed,  5 Aug 2026 08:56:05 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=217.74.67.49
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1785920165;
+	b=Zx++YL/HfxJr4ELbzn3vfYOAjkzIhynXmlMgDm4NVzxVrzLzWIJOS15Vipbut5gNb18l
+	 Jk7JR0G54MUxz4PHB08/PZ1rTWXp610KYqJEIXkkK3mau6pmvUFi9zLflxSVTO9r+8LpV
+	 DONt89DYphJCw0C2+FmIKuo2glHaDSnSw6G+dH4/uybhFpo4auviZ7GZ3pN+wax048DCs
+	 dtfyZHrglOHCVNQLJdyMl/SjzE+/OqjreLrwoXUjXouAGzy9x7xHCB3n7+B4UsDQHCO75
+	 km1EL8Zj+pblphUjZJEGC/heQBFItniGob+Lsd/zOwU2BUlPMevL8+PkSAlXiNWGQiw==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1785920165;
+	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 DKIM-Signature;
+	bh=LhlHuk8MCeIb9JOjrstGCs9CqnMd4hE1KqF/ZjhqpVw=;
+	b=TNz+wivVG/VABKbkMP7NiEwE+XqPFTkpQOCDHJ7Td8CG2YbfrwXDJz/aa3V+WQDtu4BM
+	 5MrKg24urBclpd7hc+2MauG03+XVQHt/7cWh5Vz38E3oT5DEcUPJfB1ir9w53bBIpNLAe
+	 ltsecFSbKZPmvNe5faij7oQSeu3wChga8ZiM0uYTzLcA7dlFQIf8WmZPNLksZxQ7bEPop
+	 ISC9nsDQ6xTpO5/jqd4dAYu2YQO+B8Sv3/4+o2GUpMdPTw3lkCa0LJ8NxNIUIa93dlkIv
+	 aIQIR2Zr6HLSuKlDkAeH7v52mQnKOoRXNJLrNONmMnCKTcZR0JViQisxOI9lTIlL+gQ==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=YDafMYZl;
+	dmarc=pass header.from=poczta.fm;
+	spf=pass smtp.mailfrom=poczta.fm;
+	arc=none smtp.remote-ip=217.74.67.49
+Received: from smtpo49.interia.pl (smtpo49.interia.pl [217.74.67.49])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 4E0721F000E9
+	for <syzbot@kernel.org>; Wed,  5 Aug 2026 08:56:03 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (1024-bit key, unprotected) header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=YDafMYZl
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 4E0721F000E9
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Wed,  5 Aug 2026 10:55:59 +0200 (CEST)
+Date: Wed, 5 Aug 2026 10:55:56 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: Paolo Abeni <pabeni@redhat.com>
+Cc: syzbot <syzbot@kernel.org>, syzkaller-bugs@googlegroups.com,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
+Subject: Re: [PATCH] netdevsim: fix deadlock in nsim_bus_dev_max_vfs_write()
+Message-ID: <anL6nNIJDqWOynzw@nr200>
+References: <b7bf56ea-7522-4163-acd5-aaa69ad03b3a@mail.kernel.org>
+ <c74a0579-dc37-4f3b-8dba-8380223b361c@redhat.com>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:f012:b0:6a0:f3b5:12a2 with SMTP id
- 006d021491bc7-6ae96e81c9fmr2818921eaf.20.1785918761542; Wed, 05 Aug 2026
- 01:32:41 -0700 (PDT)
-Date: Wed, 05 Aug 2026 01:32:41 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a72f529.13623e66.bdc14.0056.GAE@google.com>
-Subject: [moderation/CI] Re: mm/memory-failure: fix concurrent access issue in min_order_for_split()
-From: syzbot ci <syzbot+cib99b951dec2336a5@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c74a0579-dc37-4f3b-8dba-8380223b361c@redhat.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1785920161; bh=LhlHuk8MCeIb9JOjrstGCs9CqnMd4hE1KqF/ZjhqpVw=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=YDafMYZlZUZJ1Vnm75juh132XReDi6FTj/aH6TPcYx+9R8Snm6PlN35MIPmrBqwwI
+	 vkizl5XDoDbh3RSAVkHVAXLdS9Opllg+2jufeqxMHhz5WhKdHSP720ALSwT288QP+v
+	 V8HsVQ0DiIIfUWY2uwCydv5BqBxta7z06wrSGLQ8=
 
-syzbot ci has tested the following series
+On sie 04, 2026 16:33, Paolo Abeni wrote:
+> On 7/31/26 11:55 AM, syzbot wrote:
+> > From: Slawomir Stepien <sst@poczta.fm>
+> > 
+> > There is an ABBA deadlock between the devlink instance lock and the debugfs
+> > active file reference mechanism.
+> > 
+> > When a device is being removed (e.g., via nsim_drv_remove()), the driver
+> > acquires the devlink instance lock and then calls
+> > debugfs_remove_recursive(). This function blocks waiting for all active
+> > file operations on the debugfs files to complete.
+> > 
+> > Concurrently, if a user writes to the "max_vfs" debugfs file, the VFS layer
+> > acquires an active reference to the file. The write handler,
+> > nsim_bus_dev_max_vfs_write(), then attempts to acquire the devlink instance
+> > lock, which is already held by the removal task.
+> > 
+> > This creates a circular dependency resulting in a deadlock:
+> > 
+> > INFO: task blocked for more than 143 seconds.
+> > Call Trace:
+> >  wait_for_completion+0x2ca/0x5e0 kernel/sched/completion.c:153
+> >  __debugfs_file_removed fs/debugfs/inode.c:751 [inline]
+> >  remove_one+0x2df/0x3b0 fs/debugfs/inode.c:758
+> >  __simple_recursive_removal+0x215/0x520 fs/libfs.c:623
+> >  debugfs_remove+0x5b/0x70 fs/debugfs/inode.c:781
+> >  nsim_dev_debugfs_exit drivers/net/netdevsim/dev.c:372 [inline]
+> >  nsim_drv_remove+0xc0/0x170 drivers/net/netdevsim/dev.c:1803
+> > 
+> > INFO: task blocked for more than 143 seconds.
+> > Call Trace:
+> >  __mutex_lock+0x7bf/0x1550 kernel/locking/mutex.c:821
+> >  nsim_bus_dev_max_vfs_write+0x229/0x3d0 drivers/net/netdevsim/dev.c:276
+> >  full_proxy_write+0x127/0x1f0 fs/debugfs/file.c:388
+> >  vfs_write+0x296/0xba0 fs/read_write.c:685
+> > 
+> > To fix this, use devl_trylock() in nsim_bus_dev_max_vfs_write() instead of
+> > devl_lock(). If the lock cannot be acquired, return -EBUSY. This aborts the
+> > write operation, releases the debugfs active file reference, and allows the
+> > pending debugfs_remove_recursive() to proceed.
+> > 
+> > Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> > Reported-by: syzbot+3147c5de186107ffc7a1@syzkaller.appspotmail.com
+> > Closes: https://syzkaller.appspot.com/bug?extid=3147c5de186107ffc7a1
+> > Link: https://syzkaller.appspot.com/ai_job?id=fcdda182-bebf-49ab-ada0-d4d2e814ebf7
+> > Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+> > 
+> > ---
+> > diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+> > index aed9ad5f1..421cd7327 100644
+> > --- a/drivers/net/netdevsim/dev.c
+> > +++ b/drivers/net/netdevsim/dev.c
+> > @@ -273,7 +273,11 @@ static ssize_t nsim_bus_dev_max_vfs_write(struct file *file,
+> >  		return -ENOMEM;
+> >  
+> >  	nsim_dev = file->private_data;
+> > -	devl_lock(priv_to_devlink(nsim_dev));
+> > +	if (!devl_trylock(priv_to_devlink(nsim_dev))) {
+> > +		ret = -EBUSY;
+> 
+> I think this should return restart_syscall(). This kind of schema is
+> calling for trouble, but for netdevsim should be okish.
 
-[v2] mm/memory-failure: fix concurrent access issue in min_order_for_split()
-https://lore.kernel.org/all/20260805072625.2437636-1-dayou5941@163.com
-* [PATCH v2] mm/memory-failure: fix concurrent access issue in min_order_for_split()
+Thanks Paolo for your comment!
 
-and found the following issue:
-kernel build error
+Can you explain a bit more? What is your reasoning here? Is it, that we expect that we could have
+the lock in e.g. 1ns, so it is worth restarting without bothering userspace[1]?
 
-Full report is available here:
-https://ci.syzbot.org/series/840418d2-f62b-4ce1-a5c9-a3efc9275fca
+I see a lot of:
 
-***
+if (!rtnl_trylock())
+	return restart_syscall();
 
-kernel build error
+Why this pattern is so popular? Is it for the same reason as above?
 
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      e47602c51d20a93fa1711ed896dc9480de4374d9
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/9bcfa5db-a65f-4a0a-adeb-25cfc52714d9/config
+[1] https://kernel-internals.org/syscalls/restart-block/
 
-mm/memory-failure.c:2517:13: error: cannot assign to variable 'new_order' with const-qualified type 'const int'
-mm/memory-failure.c:2873:13: error: cannot assign to variable 'new_order' with const-qualified type 'const int'
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[akpm@linux-foundation.org david@kernel.org dayou5941@163.com linux-mm@kvack.org liyouhong@kylinos.cn ljs@kernel.org sashiko-bot@kernel.org stable@vger.kernel.org ziy@nvidia.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+-- 
+Slawomir Stepien
