@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1608B45DF65
-	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 12:23:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9907846D0A5
+	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 12:59:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785932600; cv=none; b=CWGDJkP2wMR7B9DON6PpBm9JFxPX0RlKOsII4Is0IIR1GDMSga9AXRWG3V/6fki42LDwyhcL5RNjm76a99D+gRkNkF6TTUhzrclCZ0Be6CFqSH+OmwEL6vBiKaH+XWpzOhz4krptRzhyPUSek/bHNQ4n4kkPzBYfs4twmcubBww=
+	t=1785934789; cv=none; b=YArzyJECzcAtpdUqJ6twvsjqzX1oOBP/okJ4/pTB4iHSfP4OIu/s0NEoNPBUIMDZdOG6BVVVf+1mzj1AcqEZ8GLNpVFXJjETYKySKo1386igcKaZO128s8bC66Q4Meo7+88igFgGDxsGe29P5VKHzOhiT3be2VHwH/Xq8mYqcp4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785932600; c=relaxed/simple;
-	bh=rIpxpteKMHOhRaEos7rTkuFxeQjxq4hzWnHrXGsBOTc=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=D4eJhDhllbGe6VP1tlt2jXQ/rLI4hzQnG2U/ldBLJJArzUp+Ke1ZOugjNP9KBmvLmc0x4QYAImC3GtdrPyFld17KVobOYg4cEqLHSxqX4d6H6FqBYWd+yaDOliasYLYTeCFBuL9Uh7Su5TJo7gaZ5B2bcV5Ur3LUYqGWPbSag/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XQBKUnLj; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785934789; c=relaxed/simple;
+	bh=sCN+P8FgF4T0f6tOkGXIfnp3wif28+ybCbs6J7Zftcg=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=sR3o7a23WoX86qpzAcb5xvj3PqRAilM8iaQmWB5PDVUKDaK/Ai7Mmd1E6WkSoMbuQf8atPL91HBkfij4VySYFKhVBSX2hcQqHDpDm+RT5tvhg5wyphIWRsOFmpqTh3FS22mdyg/aVzpbvqZ0umEPbD5wiahHO8sMPO0o+30MYyQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pqi64aI5; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XQBKUnLj"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id CAD281F000E9;
-	Wed,  5 Aug 2026 12:23:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pqi64aI5"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 68BDB1F000E9;
+	Wed,  5 Aug 2026 12:59:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785932598;
-	bh=oER2ViWZ/5rCIN4k3xM2KdjxaGJU70zaKxvx+V+Dnl8=;
+	s=k20260515; t=1785934788;
+	bh=iJN8MtJX6Vt++cqsVp6ZIuuUjDTWivcSlFJEnsufCEg=;
 	h=From:To:Cc:Subject:Date;
-	b=XQBKUnLjiFtm5BdbATe5ROED5rN8wHYh/sfeXWH7lBFTF92KgdpiF9tYf9eLk4DXT
-	 xn9jTwOFWPsA5olqGzzq+lWYqL2BXmUZqgLwDTuKIcNvC4dThMwxg7gLiihp5KXM+I
-	 ikNimo0uzfU+cmHolV4h9f1IHI6Ktq/OhPFffh+euvdoA+JPKKIQr4rPEWDkv8xsVw
-	 8t/tFCwtZRZlgoL6af2LGvqNShrIGR1PzvwYR0TdfUr9hpAUBDMTSxqv1WZGD+KKIw
-	 la6HvJgwL+SbwvHLzhaHbb/BoyB1JSNd5d+hmv7Y9X83UT4qHM573LlxvkLlZR63TP
-	 V9cIyMjmWr9mw==
+	b=Pqi64aI5bmaM0gagtxaLekRTi6HwXv/fGnN9KaROWKE88LovrcZWKoX/D2NifUWVz
+	 fiQPLwK0K3k8szfJ34waQZolMazoSqqclMDTOX7XPmO6SIsrKsFsczMAPdKdRymAzX
+	 lulhxegRtL2MONAU8x8QSmeFfmG7JSq5uXUTIIc0kFKS181RuRjlaS8fUSSzqE3BHh
+	 7K+6/qPPvyzbUwzG5l31V8xbaVDLDmdqcOkzkGpeoQk3ICW73p795z621LZP3kDRTy
+	 SEKtnRNCfyR0H6FzNnRmtsWJpH6IRPNxmh9lWWGbOkes7t3rAC2JXc41wJXBjmSaFW
+	 yGHZnXl5vMPmQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: gadget: mass_storage: defer file open to workqueue
-Message-ID: <dba5bf38-fc4a-4f36-9069-397e269115ce@mail.kernel.org>
+Subject: [PATCH RFC] usb: gadgetfs: fix unbalanced refcount in gadgetfs_bind() error path
+Message-ID: <92acf44b-fcee-4138-90ea-0a2275b9ddd8@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,130 +38,90 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed,  5 Aug 2026 12:23:18 +0000 (UTC)
+Date: Wed,  5 Aug 2026 12:59:48 +0000 (UTC)
 
-When a user writes a file path to a configfs attribute (e.g., the
-lun.0/file attribute of the USB mass storage gadget) and the provided path
-happens to reside on the same configfs filesystem, it triggers a lockdep
-warning about a possible recursive locking on the sb_writers percpu rwsem.
+In gadgetfs_bind(), if an error occurs (for example, failing to allocate
+the endpoint request), the error path calls gadgetfs_unbind().
+gadgetfs_unbind() unconditionally drops a reference to the device object
+(dev) by calling put_dev(). However, gadgetfs_bind() only acquires a
+reference to dev at the very end of the function upon success. This
+mismatch causes the reference count to drop prematurely.
 
-Because configfs attributes are regular files, the VFS layer acquires the
-sb_writers freeze protection lock for the configfs superblock when the
-write() syscall is issued. When the driver's store method subsequently
-calls filp_open() to open the backing file, filp_open() attempts to acquire
-the sb_writers lock again for the target path's superblock. If the target
-path is also on configfs, it results in a recursive lock on the same
-superblock, which lockdep correctly flags as a potential deadlock.
+If multiple UDCs are available, the driver core will attempt to bind the
+driver to each of them. If the first bind fails, the premature put_dev()
+can drop the reference count to zero, freeing the dev object. Subsequent
+bind attempts will then trigger a use-after-free when accessing the freed
+dev object.
 
-Fix this lock inversion by deferring the execution of fsg_lun_open() to a
-system workqueue. By executing the file opening in a separate worker
-thread, it escapes the lockdep context of the write() syscall and does not
-inherit the sb_writers lock held by vfs_write(). The store method uses
-flush_work() to wait for completion and return the synchronous error code,
-preserving the existing API behavior.
-
-The lockdep warning is as follows:
-
-WARNING: possible recursive locking detected
-task is trying to acquire lock:
-ffff8881899b0500 (sb_writers#12){.+.+}-{0:0}, at: mnt_want_write+0x41/0x90
-fs/namespace.c:494
-
-but task is already holding lock:
-ffff8881899b0500 (sb_writers#12){.+.+}-{0:0}, at: file_start_write
-include/linux/fs.h:2733 [inline]
-ffff8881899b0500 (sb_writers#12){.+.+}-{0:0}, at: vfs_write+0x231/0xbb0
-fs/read_write.c:683
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-  lock(sb_writers#12);
-  lock(sb_writers#12);
-
- *** DEADLOCK ***
+BUG: KASAN: slab-use-after-free in gadgetfs_bind+0xd8/0xae0
+drivers/usb/gadget/legacy/inode.c:1682
+Write of size 8 at addr ffff88819002e900 by task syz.0.17/6152
 
 Call Trace:
  <TASK>
- sb_start_write+0x4d/0x1c0 include/linux/fs/super.h:125
- mnt_want_write+0x41/0x90 fs/namespace.c:494
- path_openat+0xa7b/0x3850 fs/namei.c:4860
- do_file_open+0x23e/0x4a0 fs/namei.c:4892
- filp_open+0x16d/0x1d0 fs/open.c:1343
- fsg_lun_open+0x6c/0xe00 drivers/usb/gadget/function/storage_common.c:194
- fsg_store_file+0x19e/0x400
- drivers/usb/gadget/function/storage_common.c:455
- configfs_write_iter+0x33a/0x430 fs/configfs/file.c:229
- vfs_write+0x61e/0xbb0 fs/read_write.c:687
+ gadgetfs_bind+0xd8/0xae0 drivers/usb/gadget/legacy/inode.c:1682
+ gadget_bind_driver+0x2ca/0x9e0 drivers/usb/gadget/udc/core.c:1662
+ call_driver_probe drivers/base/dd.c:-1 [inline]
+ really_probe+0x254/0xae0 drivers/base/dd.c:706
+ __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
+ driver_probe_device+0x4f/0x240 drivers/base/dd.c:898
+ __driver_attach+0x339/0x600 drivers/base/dd.c:1292
+ bus_for_each_dev+0x23e/0x2c0 drivers/base/bus.c:383
+ bus_add_driver+0x348/0x670 drivers/base/bus.c:763
+ driver_register+0x23a/0x320 drivers/base/driver.c:174
+ usb_gadget_register_driver_owner+0xf9/0x270
+ drivers/usb/gadget/udc/core.c:1752
+ dev_config+0xe4e/0x12c0 drivers/usb/gadget/legacy/inode.c:1883
+ vfs_write+0x29f/0xbb0 fs/read_write.c:685
  ksys_write+0x156/0x270 fs/read_write.c:739
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
  </TASK>
 
-Fixes: ef0aa4b92cf1 ("usb: gadget: f_mass_storage: add configfs support")
+To fix this, move the get_dev(dev) call to the beginning of
+gadgetfs_bind(), right after the gadget data pointers are set up and before
+any potential failure paths that lead to gadgetfs_unbind(). This ensures
+that the reference count is properly balanced when gadgetfs_unbind() is
+invoked on the error path.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+da381387152f0dd8bedf@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=da381387152f0dd8bedf
-Link: https://syzkaller.appspot.com/ai_job?id=43881a07-9f58-4a9b-b110-6696a48ed088
+Reported-by: syzbot+f63ad1084fd77fab48e4@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=f63ad1084fd77fab48e4
+Link: https://syzkaller.appspot.com/ai_job?id=6fafa316-17a5-4928-b109-4b866d73749d
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 To: <linux-usb@vger.kernel.org>
-To: "Andrzej Pietrasiewicz" <andrzej.p@samsung.com>
+To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
+Cc: "Christian Brauner" <brauner@kernel.org>
+Cc: "Jan Kara" <jack@suse.cz>
+Cc: "Kees Cook" <kees@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
+Cc: "Mateusz Guzik" <mjguzik@gmail.com>
+Cc: "Al Viro" <viro@zeniv.linux.org.uk>
 
 ---
-diff --git a/drivers/usb/gadget/function/storage_common.c b/drivers/usb/gadget/function/storage_common.c
-index 75831f2c7..45842f8e0 100644
---- a/drivers/usb/gadget/function/storage_common.c
-+++ b/drivers/usb/gadget/function/storage_common.c
-@@ -24,6 +24,7 @@
- #include <linux/file.h>
- #include <linux/fs.h>
- #include <linux/kstrtox.h>
-+#include <linux/workqueue.h>
- #include <linux/usb/composite.h>
+diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
+index d87a8ab51..ba901023d 100644
+--- a/drivers/usb/gadget/legacy/inode.c
++++ b/drivers/usb/gadget/legacy/inode.c
+@@ -1682,6 +1682,8 @@ static int gadgetfs_bind(struct usb_gadget *gadget,
+ 	dev->gadget = gadget;
+ 	gadget->ep0->driver_data = dev;
  
- #include "storage_common.h"
-@@ -434,6 +435,21 @@ ssize_t fsg_store_nofua(struct fsg_lun *curlun, const char *buf, size_t count)
- }
- EXPORT_SYMBOL_GPL(fsg_store_nofua);
++	get_dev(dev);
++
+ 	/* preallocate control response and buffer */
+ 	dev->req = usb_ep_alloc_request (gadget->ep0, GFP_KERNEL);
+ 	if (!dev->req)
+@@ -1696,7 +1698,6 @@ static int gadgetfs_bind(struct usb_gadget *gadget,
+ 	spin_lock_irq(&dev->lock);
+ 	dev->state = STATE_DEV_UNCONNECTED;
+ 	spin_unlock_irq(&dev->lock);
+-	get_dev (dev);
+ 	return 0;
  
-+struct fsg_lun_open_work {
-+	struct work_struct	work;
-+	struct fsg_lun		*curlun;
-+	const char		*filename;
-+	int			rc;
-+};
-+
-+static void fsg_lun_open_work_func(struct work_struct *work)
-+{
-+	struct fsg_lun_open_work	*fwork;
-+
-+	fwork = container_of(work, struct fsg_lun_open_work, work);
-+	fwork->rc = fsg_lun_open(fwork->curlun, fwork->filename);
-+}
-+
- ssize_t fsg_store_file(struct fsg_lun *curlun, struct rw_semaphore *filesem,
- 		       const char *buf, size_t count)
- {
-@@ -451,8 +467,17 @@ ssize_t fsg_store_file(struct fsg_lun *curlun, struct rw_semaphore *filesem,
- 	/* Load new medium */
- 	down_write(filesem);
- 	if (count > 0 && buf[0]) {
-+		struct fsg_lun_open_work fwork;
-+
-+		fwork.curlun = curlun;
-+		fwork.filename = buf;
-+		INIT_WORK_ONSTACK(&fwork.work, fsg_lun_open_work_func);
-+		schedule_work(&fwork.work);
-+		flush_work(&fwork.work);
-+		destroy_work_on_stack(&fwork.work);
-+		rc = fwork.rc;
-+
- 		/* fsg_lun_open() will close existing file if any. */
--		rc = fsg_lun_open(curlun, buf);
- 		if (rc == 0)
- 			curlun->unit_attention_data =
- 					SS_NOT_READY_TO_READY_TRANSITION;
+ enomem:
 
 
 base-commit: 075b74841bd0065a3bda3440873c747938e69b68
