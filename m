@@ -1,135 +1,152 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F8993EB7F4
-	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 09:26:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0512B41A516
+	for <syzbot@lists.linux.dev>; Wed,  5 Aug 2026 09:58:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785921978; cv=none; b=aa3h+J3QnSlX54JRX6Gc9rNaVxFT5m9CoszuBSgion6LEnHlFdCpx2SSqyNTRVEn8YjY3CbK4qVSgAl6ZpTRj+2NYXCcwOV1mlQgcA3C/uMohkjJ443oMZB8mjbB+/WqkCBf+9oZReKBFwP9JuRhX2AkmCoRF9sD1aPvjisvNzA=
+	t=1785923941; cv=none; b=lZz84p8RIpiftQmyVoHPEpaIUi3deGRWLwvDlmnPNmWvh86QWzbn4JSKDB46s7pLFEZIADKG6XH5LvQkpVy12J8uvhepM7Vcsy5Z3jT4YEy4TOdHGdkHta3EVx8xAFzzae9eySIIml5Z1vdIaq28M3vf1tSzYU0AEGMTQPVVhzg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785921978; c=relaxed/simple;
-	bh=nFqUcM27YrTN1L/5+74uT4IogCH0RCY6AWi+02ViVbg=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=lMP1tV0/Rmo93mKMJl6ee9aXPSvH1P71qS9XkLX5NRXwuyrq/S57OYBYBLJF1MXgwY4NF8gmZamYU8+URk5Td2H/B2Yn2HyK0j9nl87Ip2E64PXYOupLcBhqHKnnBm4MBASeTAT8CZdRumH+McRYjSNUBxmQ9mtVAv0/W8f8SDQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MGIx+Gb2; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785923941; c=relaxed/simple;
+	bh=c7YIVA+SG+qzFPXxkLgUdQa2D+RAa4Xove/Ai1/Z7uA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MO5bAEypaPbiefY+I2POzWWxBEqVtAwRgWveEvmQDGPrWVSNLEOtUOWKRd5YjMix7AF2pZxPfM7t67aAWRodShK6mSvNi43lcyOmRNVTnRe1F9zU/fBuAI7nxFKENdqFf61HIkEWLkTpt8bPm9PHZWI/5t6fqPw0botaa9Whrho=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ripjS4f/; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MGIx+Gb2"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 60C151F000E9;
-	Wed,  5 Aug 2026 09:26:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785921976;
-	bh=m78fe4ioOaWJZ3D8ARfmJ8n200kyyZbTJSdISqXXtPs=;
-	h=From:To:Cc:Subject:Date;
-	b=MGIx+Gb2aTnMePCXwdaMcXFvz38Pr4Fz68VINmEu+3t/sQoNv1sFHkn9h1A5nS2HX
-	 /015paw/He3ikV6SXzCPYzzTuPjNYfRVhWQMStW+9XSsBNcbuXfnpiXIzA94mUIU+w
-	 ALfKMWILGPDlqxkyywJ1jXsGjDFF8cIwOGwoPwmKLGJVbQnZM/cwN+lYKvexE9vbWK
-	 Q6VToFkgIVAWUYKjyFij13jDJRER4Pko8WC5VgNYWJlBfMXodzG21ZQsPK1k5c5zIH
-	 ixhG8YpaRj48KyN4jWpwsKKH9ACaM49jTroXoJzihfkiQtSH8RqOKYU5nFQ289jG79
-	 gF/+xD+AcjRQA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: sst@poczta.fm, syzbot@lists.linux.dev
-Subject: [PATCH RFC v3] wifi: cfg80211: fix BSS RB tree collision during channel switch
-Message-ID: <986597e1-174a-4bd0-9de5-dde9cb474df9@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ripjS4f/"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4921eed3fa2so6166405e9.0
+        for <syzbot@lists.linux.dev>; Wed, 05 Aug 2026 02:58:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785923938; x=1786528738; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=1/iHo2xERAnExVG+3ChTm788wqBgAkaZ40GV3g2etAI=;
+        b=ripjS4f/wpQYKvQbbKYqqUydP5rLw1KOyRZUxIP5Z7J68iG0LzTPLctGy/PrDZiQIg
+         16OU2K25F2SUJUcO8aW+h4MjHZ+zOb/w6plfN+xVeV3veo2ziOue7WFfblO5o15qyubZ
+         EiD8x8XKN7LvDKz3M5Dvc6jpJJpzODf92X01wMcWz6Uw+NsoshaIP0Wi8bSYoFIycW5Q
+         ZnEhkie8Tg4dOecx2GyZtrHbQ423dPpZzdDCPEnrlkPJUiaOOg1Ilufn4njnnCyZ+kxd
+         qwlZPDXYp69I8zFj6mJ2LPyy4EjmfG9PUvaLGwrcKzNnQpMnL+I15a3dGD863L4G+nMM
+         FQ4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785923938; x=1786528738;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=1/iHo2xERAnExVG+3ChTm788wqBgAkaZ40GV3g2etAI=;
+        b=rkWWmKzVBw9e2a64qnPk8+H+j7zOSTvlUmXtMvtE92S2pkfkfDL5IrExIbVfURKEwb
+         w/3IiNHx//CXqTWXlnMxtQgREZeyf9rleGwebIUoFHHYq7vXcyz6cnUr1I1WyhtnPbjB
+         OnnwwMZGz85DyIThAWtDko7ccAczwHU/Fick6hO5nGtH86KZxofrGu8qiX9nBDRg5UYO
+         OwOQUEduRBceHcm1jm/bJ81L0GiFDNe4zB/HWhLaH28Y7j0kcB80KkXZgyzfv95NvKNd
+         sbjzixLaLoIP42mzP9haAqLnopDhq+1/gv7naI2R+m68qpkmGDH2b8FFmcLfSnwgYJe8
+         LfgQ==
+X-Forwarded-Encrypted: i=1; AHgh+RoyvEFrtvclEQ8VoRuILWkUrAi/2lxgL8U0LUyT1so0SnBqleeGHQJOdhta5Rl4urmdE5yISck=@lists.linux.dev
+X-Gm-Message-State: AOJu0YybJ/rMIXHSiX3db+dR0Ktv1fb5iY9pz1P6TZbY/SHveI00aCzm
+	DkBPqrQt0WV5FIkdslZD8JFVn+vXNP0FcRU9UIqvdf1+PUMDRW9ZY2Tf
+X-Gm-Gg: AR+sD13ZXo7Pa3KjbOcTpzbwMeEuh15V+rhlTM31DaF4YUZa1qRgF/7yNZfz8VAW7VY
+	pJ60We+H3FVASbCfxG4Daj2d+zmuEMIVFrfBIsLuT5V95XFpWod4LJ63Xxagxz5Bp+oz2wYNdDK
+	VtvrO5L7t6Xky/GdKWgFkpJcWWh9zrD6Mw18pT2BNIteoT1PfAjDdBQa2yaAlvgHanIkmpelQQV
+	7EQhpEFMf+dZyTTD0+fToxfLzcqzCLjlPO4LlEGX2IQMOn74Gpu+xCh89AlUMSiw07vSo/4UzBF
+	kw7IU/yigcxNUibfoRE1MTmNKbe79zt04kjaZyL+Sd9DKZnGNo0NNP/XoMWJyhX3J9tUHJX25e7
+	CjsNwNcQITl0WaEb5ZQc9njpkOHv0URyuBOGTs6wdiC2S0TpPoiUelPLkhs6pNMIIw9H7ha5hfM
+	vESV6ZFeFiRUgc3nlxtp0cZ5L+d0j+YugsBBHCU2GQECbCw8mB93+gXKLx7QMBgYx0vzDWvTZG3
+	e7ZiEXAol+ODg==
+X-Received: by 2002:a05:600c:4e87:b0:493:e365:ace9 with SMTP id 5b1f17b1804b1-4994e7c0356mr61353515e9.11.1785923937984;
+        Wed, 05 Aug 2026 02:58:57 -0700 (PDT)
+Received: from localhost ([37.30.50.82])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49949fcb46esm188721605e9.5.2026.08.05.02.58.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Aug 2026 02:58:57 -0700 (PDT)
+Date: Wed, 5 Aug 2026 11:58:56 +0200
+From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-bugs@googlegroups.com, Chris Mason <clm@fb.com>, 
+	David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org, "Yan, Zheng" <zheng.yan@oracle.com>, 
+	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
+Subject: Re: [PATCH] btrfs: commit current transaction in
+ btrfs_relocate_block_group
+Message-ID: <qh7zryk22vobwtwcf2swvi4hnspqu2rdrgqv7k6el64oxlyo7c@lqxxk46og5ju>
+References: <a06b5077-baa5-473f-9c65-bf72ac651b14@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Wed,  5 Aug 2026 09:26:16 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a06b5077-baa5-473f-9c65-bf72ac651b14@mail.kernel.org>
 
-When a station processes a Channel Switch Announcement (CSA),
-cfg80211_update_assoc_bss_entry() is called to update the channel of the
-associated BSS. Because the channel is part of the BSS Red-Black (RB) tree
-key, changing the channel requires removing the BSS from the tree and
-re-inserting it.
+#syz reject
 
-Before re-inserting, cfg80211_update_assoc_bss_entry() searches for any
-existing BSS on the new channel that matches the associated BSS so it can
-be unlinked to prevent an RB tree collision. However, the search loop
-incorrectly uses cfg80211_bss_type_match() to filter candidates based on
-their capabilities. If an existing BSS matches perfectly in cmp_bss() (same
-channel, BSSID, and SSID) but has different capabilities (e.g., due to a
-malicious or misconfigured beacon setting both ESS and IBSS bits),
-cfg80211_bss_type_match() skips it.
-
-This leaves the colliding BSS in the tree. When cfg80211_rehash_bss()
-attempts to re-insert the associated BSS, rb_insert_bss() compares them
-using cmp_bss(), which ignores capabilities. It finds them identical,
-resulting in an RB tree collision and triggering a warning:
-
-WARNING: net/wireless/scan.c:1675 at rb_insert_bss net/wireless/scan.c:1675
-[inline]
-WARNING: net/wireless/scan.c:1675 at cfg80211_rehash_bss+0x1e6/0x540
-net/wireless/scan.c:1732
-Call Trace:
- <TASK>
- cfg80211_update_assoc_bss_entry+0x3cd/0x660 net/wireless/scan.c:3478
- cfg80211_ch_switch_notify+0x3b1/0x780 net/wireless/nl80211.c:22366
- ieee80211_sta_process_chanswitch+0xbd1/0x29e0 net/mac80211/mlme.c:-1
- ieee80211_rx_mgmt_beacon+0x1dc6/0x32a0 net/mac80211/mlme.c:8309
- ieee80211_sta_rx_queued_frame+0x6ac/0x4e40 net/mac80211/mlme.c:11793
- ieee80211_iface_process_skb net/mac80211/iface.c:1766 [inline]
- ieee80211_iface_work+0x552/0x1010 net/mac80211/iface.c:1823
- cfg80211_wiphy_work+0x29e/0x420 net/wireless/core.c:538
- </TASK>
-
-Fix this by removing the cfg80211_bss_type_match() check from the collision
-search loop. The RB tree uniqueness is defined solely by cmp_bss(), so any
-BSS that evaluates to cmp == 0 must be unlinked to prevent a collision,
-regardless of whether its capability matches the connection type. If the
-AP's capabilities legitimately changed, cfg80211_update_known_bss() will
-safely update the capability later.
-
-Fixes: 0afd425b1b64 ("cfg80211: fix duplicated scan entries after channel switch")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+dc6f4dce0d707900cdea@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=dc6f4dce0d707900cdea
-Link: https://syzkaller.appspot.com/ai_job?id=3e1a2f1d-82c9-492d-8063-7fb21356c013
-To: "Johannes Berg" <johannes@sipsolutions.net>
-To: <linux-wireless@vger.kernel.org>
-To: "Sergey Matyukevich" <sergey.matyukevich.os@quantenna.com>
-Cc: <linux-kernel@vger.kernel.org>
-
----
-v3:
-- Do not wrap log lines in the commit message.
-
-v2:
-- Removed the '------------[ cut here ]------------' line from the commit message to prevent checkpatch.pl from interpreting it as a commit separator.
-https://lore.kernel.org/all/4119b372-fffd-487d-b08f-f9cc0825ba05@mail.kernel.org/T/
-
-v1:
-https://lore.kernel.org/all/a8455fef-711a-4293-89ce-248c5f3428e7@mail.kernel.org/T/
----
-diff --git a/net/wireless/scan.c b/net/wireless/scan.c
-index 071083cc3..97bf7ab8c 100644
---- a/net/wireless/scan.c
-+++ b/net/wireless/scan.c
-@@ -3443,11 +3443,6 @@ void cfg80211_update_assoc_bss_entry(struct wireless_dev *wdev,
- 	cbss->pub.channel = chan;
- 
- 	list_for_each_entry(bss, &rdev->bss_list, list) {
--		if (!cfg80211_bss_type_match(bss->pub.capability,
--					     bss->pub.channel->band,
--					     wdev->conn_bss_type))
--			continue;
--
- 		if (bss == cbss)
- 			continue;
- 
-
-
-base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On Tue, Jul 28, 2026 at 08:45:36AM +0000, syzbot wrote:
+> From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
+> 
+> During block group relocation, btrfs_relocate_block_group() is called to
+> relocate a block group. It first makes the block group read-only by calling
+> btrfs_inc_block_group_ro(). If there are pending space reservations or
+> pinned extents in the current transaction, making the block group read-only
+> can fail, leading to a transaction abort and a warning in
+> cleanup_transaction() during the transaction commit in
+> prepare_to_relocate().
+> 
+> To fix this, commit the current transaction before calling
+> btrfs_inc_block_group_ro() in btrfs_relocate_block_group(). This drains the
+> current transaction before the block group becomes read-only, ensuring that
+> pending extents are unpinned and space reservations are committed. This
+> does not claim global settlement of every reservation or later transaction,
+> but it provides a clean state for marking the block group read-only. The
+> setup commit in prepare_to_relocate() remains necessary because it commits
+> the transaction started during the relocation setup (such as creating the
+> reloc tree) to ensure everything is in a consistent state before starting
+> to move extents.
+> 
+> WARNING: fs/btrfs/transaction.c:2068 at cleanup_transaction+0x727/0x7c0
+> Call Trace:
+>  <TASK>
+>  btrfs_commit_transaction+0x262c/0x30b0 fs/btrfs/transaction.c:2664
+>  prepare_to_relocate+0x3dd/0x4e0 fs/btrfs/relocation.c:3541
+>  relocate_block_group+0x141/0xe90 fs/btrfs/relocation.c:3566
+>  do_nonremap_reloc+0xa7/0x560 fs/btrfs/relocation.c:5323
+>  btrfs_relocate_block_group+0x6e2/0xaf0 fs/btrfs/relocation.c:5490
+>  btrfs_relocate_chunk+0x114/0x830 fs/btrfs/volumes.c:3647
+>  __btrfs_balance+0x1b6e/0x29e0 fs/btrfs/volumes.c:4586
+>  btrfs_balance+0xaa6/0x1180 fs/btrfs/volumes.c:4973
+>  btrfs_ioctl_balance+0x3dd/0x640 fs/btrfs/ioctl.c:3474
+>  </TASK>
+> 
+> Fixes: 3fd0a5585eb9 ("Btrfs: Metadata ENOSPC handling for balance")
+> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+021d10c4d4edc87daa03@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=021d10c4d4edc87daa03
+> Link: https://syzkaller.appspot.com/ai_job?id=ca6bd6c4-fbcf-4533-af07-79b4a0eba74d
+> Signed-off-by: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
+> 
+> ---
+> diff --git a/fs/btrfs/relocation.c b/fs/btrfs/relocation.c
+> index fb85bc8b3..05f5110c2 100644
+> --- a/fs/btrfs/relocation.c
+> +++ b/fs/btrfs/relocation.c
+> @@ -5430,6 +5430,10 @@ int btrfs_relocate_block_group(struct btrfs_fs_info *fs_info, u64 group_start,
+>  	if (ret < 0)
+>  		goto out_put_rc;
+>  
+> +	ret = btrfs_commit_current_transaction(extent_root);
+> +	if (ret)
+> +		goto out;
+> +
+>  	ret = btrfs_inc_block_group_ro(rc->block_group, true);
+>  	if (ret)
+>  		goto out;
+> 
+> 
+> base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
+> -- 
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
