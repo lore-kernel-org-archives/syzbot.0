@@ -1,351 +1,123 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E094B33E360
-	for <syzbot@lists.linux.dev>; Thu,  6 Aug 2026 14:13:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63B5039B4B9
+	for <syzbot@lists.linux.dev>; Thu,  6 Aug 2026 14:25:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786025624; cv=none; b=NesvtJenLhKjDW8E1K/O8X+m+8LguRdne/fzA8j/v+L0Gy2v/EsawjonA/ajJPIiGmG07oKWGu1Crra18USmzg6qFHFWzsrBxeNeN+JhrYK3+FIRtmVo76z72zrxdd2INAgkOWZWQ7zolxtxMaWT21/1CnxCUlDsYo3xc1Nz7rM=
+	t=1786026317; cv=none; b=YcTPE9WucIxz4kDnM2WkQ2Lee8Ov5XMyIzzRnLGRK+j0FEtpSsnBSspYDHi7w9mvrFjX8yCro8IkwLTc/QplXStevUPaAYWJubpeR4RIH22el/8IsERW1yrSmCjdKCz4OlRV3T9q0bYpfMkShh3rmXSD/dSNuKrDK5fHmVOpkhE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786025624; c=relaxed/simple;
-	bh=YHlcFLILUGmAsJgb7w1WTd3sw6zHAPxBDFM0Tws2G1s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Op0zOFxkFhozjSlZ+pIdAKYIRgzzzvJ0WVxU4pdobi2pBb+YVi9Wm00R+eMugkqfqXDsRQZhiPTXNMQp31nCTNlvnur4WoOgciYUQMgZkp+IFdRForcrT5LUgB62om83//AejCOBcbdlDVEU/G/pcSTJd4OSvOsl2eWKozaD7D0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VstptyAq; arc=none smtp.client-ip=209.85.218.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1786026317; c=relaxed/simple;
+	bh=AvjA1M5b99YYhvvLAZYS047Vqnyc3DiDJbzlTqcxLRQ=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=NTzhZ3iV5x79MlWLXBRiKMNQkPNsCIJBpNJZX8pJe5UkrKwkZE7s9nOqsKFgWxwrnFkx5nPduubdfxbU/HGsD281VU2ma9Ho2vsuUev44En68s/hvNSYlTM4IplhjSiZwmzvqsgE2tSqRDw6RUplqthG/l3fj5OXn3cdIHCKTrk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--nogikh.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=q4JFcOSA; arc=none smtp.client-ip=209.85.128.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--nogikh.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VstptyAq"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-c160420289bso327451866b.0
-        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 07:13:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="q4JFcOSA"
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-49554715277so20167955e9.1
+        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 07:25:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786025617; x=1786630417; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+        d=google.com; s=20251104; t=1786026314; x=1786631114; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=C8if9re9mgFEN3kJKi2AbRKPR4XsTsHdGSRiXLSWeC8=;
-        b=VstptyAqg5GZLTRhAC0b9boz2azxCK3+L9CDq4I4Kvz6RLB3fpiN2Kuw00n0sfdi8a
-         OInaHAKRHpgpUnoUVyD3zLgeDb8wqEYFoi3pzbQJnxjopSVo5N6iLgNXAsPwISvPAWpz
-         7dxWsFn7592TW71iocnRl53KX9uP9GHfFAYoj42wBsZPPGzD/84HtpQGawA5vJK7ynRq
-         uK2VHlXj5l353eDZ9bQFjKJoF4aWgBYP15qHCejK004x6bQi18r/Y0u0EHkAKBylNlNH
-         OOipp5w7LvxCzUrmdjZXKdzDsxjgdGOpMjAtb2tAGVRvSjwTAD7W8dC27E6ZlrI2t2iN
-         yi6w==
+        bh=2QH/vyaXc9mQlWmLqa26CL98fda7tXqOOXhnKxF4DxQ=;
+        b=q4JFcOSAr4g7orba29/e4NHPyywviEbQL5OK1GJ5ZF/0zNUMU5n92YVPXOEWxwaHgP
+         DWVPEWALn6LNGT4lp1b8WC1ky3hTJOXzY8Q6dH0Q0b0qvsBzmd/0ATNcab98weJCdzs3
+         AD4fRtc/nGnammGbKJEYg/XWAERbHcbnXrjWfW9jhu/9RbmF5SSYLcS/TkieM/SQ6moo
+         ei9F0S9wyzrTwV16NjmiOc8s7KfWJg+PZ4trCQYYD/SjrCTDm42bbMu+F5FoiBp3GGep
+         q9lZk0HNO2oSO05hOtPqmMKHnJ2v0z75CQVSkIhGdKnCbi6DY9nFnInTUIZCONreX8EO
+         RIDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786025617; x=1786630417;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20251104; t=1786026314; x=1786631114;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=C8if9re9mgFEN3kJKi2AbRKPR4XsTsHdGSRiXLSWeC8=;
-        b=nJLkRqWuFPXhk4I8AtW4S+MPbMXH+ejrXhNO38dwGABqOVrSjraYR+kpOOKzMdYLv4
-         FLaG5hfqL4eZuVJXD5eb0Y+fNPCQJwYJw/mWmLKEi0qPI01o8rxnt6bEkgMb7wRUd/2K
-         pPRFyxaFt/AsFMr+H71PklvMPqnRZbr0ZPeOrV4ef2fZg9kJ6lp+nvej1Br2zikt7Az2
-         U3ImxNN+7D/YoxdO1E17W0LIsGxkCJvaeiVoA4YHCbxFcO1aU3+lWX/x55JZsNz9Yzjy
-         LjKVq7u490QWOYTky/pZ6wFrAKSn8GHIAtfPhhYNgfx6GVq3LjanX+RvhIwaQfOAlWYn
-         8P0Q==
-X-Gm-Message-State: AOJu0YywrZ+4KhCYuV2CrPNWZa3eZzD5q0vmz2VVVurj5BBuZ3oQDGHD
-	BEFt4EYL6IPo3gigCehbPZ1KYEeiIkPmAQOPuWuAgaElmnEboTWUoXdJQ4Gvesj6
-X-Gm-Gg: AR+sD11KVwm8/aXQGs7U3k12MAmetP2Pqo7hE/4wBcQVe+tr2XmonH4l0Br3Hd8WrTj
-	JavqbMf7aJMXQGycuoxNPMb0JULU3UbA/KyNFpmO3E6YJWJzFmImgTO8x0g3/k/mIOS/eTMz0WS
-	4s+/KIBJayLYSY4HyTYXFzsAor6PVfjGG42cWHJeF+wjA5yf0ebAlJ1UyQEk1t4fADDkcNfEk0R
-	6Uhur9SuiiSPDIRi918I3oMIXss6DWupI8JgEss9ZA1SP4dwnzYjff+PfmJYG2u7B/r0MZTmvn/
-	aXKQ2Ye5UmPPNlviViKdtRlplEf1CIhavcXxbEAWevFmoYkKnpFUh7g/r3aVHZVnZelS4wJKGgP
-	ufL6qmjCK53zmIM+u4y09c9LIkrqF8UUnLsvt69yVYWDTyThko/KtK6BtwETmrPVb+RJL12CBEt
-	n8738mYnvrCoGMX9EaYt+4Npr64Jx8/edv43I0bJyQHv6WdkGM9cGfj8pDcwhdMaVVSBW7mghnq
-	2F0Tz+Cu/NhACCgwjw66vOT1qnQBlEbR0AppQskVA==
-X-Received: by 2002:a17:907:8e98:b0:c19:5a94:4121 with SMTP id a640c23a62f3a-c2039b37b6cmr853138466b.6.1786025617075;
-        Thu, 06 Aug 2026 07:13:37 -0700 (PDT)
-Received: from [192.168.0.50] (93-159-20-152.cgnat.inetia.pl. [93.159.20.152])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c203645c087sm251648366b.58.2026.08.06.07.13.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Aug 2026 07:13:36 -0700 (PDT)
-Message-ID: <d18d3ef1-83ba-48f4-b90f-66ff752ca50f@gmail.com>
-Date: Thu, 6 Aug 2026 16:13:35 +0200
+        bh=2QH/vyaXc9mQlWmLqa26CL98fda7tXqOOXhnKxF4DxQ=;
+        b=Lv4IN70KUVCIeQutfaopr7qv8z9Ftr6zJO0wVpnrHqiMYgEXx7/2jnc/QOcFrTYxQ8
+         VgvzxYMaVY2h6LuTkBZmJJN+VNFtnBpC39rCK/emi14DgI3i/EMfFO41Lg4uASOkfz9k
+         IuKmWg94seCwPa7rh+/5f3f71RBK5QwXtgVWFrDJiK+O7F5h7Dey+p324W8E79nZiDmA
+         0gdep7HBQk81bSP3lL86agfEiMcnxnEMh83zzv7NdWLZSknUD+7KSXncRZ1m0ciAQNHO
+         nvr4M8AkQ2uQxVkf6FdawbxI+29TUG4OlNrRvYR+d0qPP3yS/qe3fLWPMJApqQ+tHt1v
+         hZJw==
+X-Forwarded-Encrypted: i=1; AHgh+RphEdbAW2SdVqHP8IA8JjBdO0l4TAh/tXsiY9GfAUQuDuL8GEsOb+DYIPwpLJza9HIE6SgTVyU=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzZuy0nyiCFMFC9O5WhZyC4rQM9XTL9WOUpUc/UVA2KHMC2Nu9B
+	WgBAPAFjDKYFWZfLWlWH8HiWF6B5yq76cRPGQGiIn+4rIVymh5jvb1Pjh6YilJmZaiZEeTADjAF
+	cg5Kw/w==
+X-Received: from wmix24-n2.prod.google.com ([2002:a05:600c:e558:20b0:495:3d1b:2bc5])
+ (user=nogikh job=prod-delivery.src-stubby-dispatcher) by 2002:a05:600c:840f:b0:496:c1f3:e8fb
+ with SMTP id 5b1f17b1804b1-4994e71ffafmr198271475e9.8.1786026314072; Thu, 06
+ Aug 2026 07:25:14 -0700 (PDT)
+Date: Thu,  6 Aug 2026 14:25:11 +0000
+In-Reply-To: <2026080322-obsessed-daringly-e6df@gregkh>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v2] exfat: avoid setting SB_RDONLY directly on error
-To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-References: <8a80967c-5201-4c6a-a2b2-521c49cd5e93@mail.kernel.org>
-Content-Language: en-US
-From: Uladzislau Zhauniarovich <uladzislau.zhauniarovich@gmail.com>
-In-Reply-To: <8a80967c-5201-4c6a-a2b2-521c49cd5e93@mail.kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+References: <2026080322-obsessed-daringly-e6df@gregkh>
+X-Mailer: git-send-email 2.55.0.654.g21b8a5bc05-goog
+Message-ID: <20260806142511.2337081-1-nogikh@google.com>
+Subject: [PATCH v2] usb: usbtest: disable dynamic ID support
+From: Aleksandr Nogikh <nogikh@google.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Kees Cook <kees@kernel.org>, syzbot@lists.linux.dev, 
+	syzbot+7e1e5911f9eac50bedc7@syzkaller.appspotmail.com, 
+	Aleksandr Nogikh <nogikh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-Two small things before it goes upstream:
+The usbtest driver relies on the driver_info field of struct usb_device_id
+to point to a valid struct usbtest_info descriptor. This structure contains
+essential test configurations, such as endpoint addresses and test modes,
+which are required during probe.
 
-1) Fixes tag. The rcu_sync_dtor() warning only becomes reachable once the
-    filesystem can be frozen/thawed against a concurrent error; the syzbot
-    cause bisection points at the shutdown ioctl. Please use:
-      Fixes: f761fcdd289d ("exfat: Implement sops->shutdown and ioctl")
-    instead of 772b29cca528.
+When a user dynamically adds a new device ID via the sysfs new_id
+interface without specifying a reference device, the USB core initializes
+driver_info to 0 (NULL). When a matching device is subsequently probed,
+usbtest_probe() unconditionally casts driver_info to a struct usbtest_info
+pointer and dereferences it, leading to a NULL pointer dereference crash:
 
-2) Commit message. Please note why a *separate* flag is used instead of
-    reusing EXFAT_FLAGS_SHUTDOWN: reads, fsync and writeback of 
-already-dirty
-    data must keep working (as they did with SB_RDONLY), so only modifying
-    operations are rejected with -EROFS. This avoids a later 
-"simplification"
-    back to the shutdown flag, which would break reads with -EIO under the
-    default errors=remount-ro.
+  Oops: general protection fault, probably for non-canonical address
+  0xdffffc0000000001: 0000 [#1] SMP KASAN NOPTI
+  KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+  RIP: 0010:usbtest_probe+0x3b9/0x1280 drivers/usb/misc/usbtest.c:2822
 
-Otherwise this looks correct; gating exfat_rename() at the entry and 
-hoisting
-the page_mkwrite() check are both fine.
+Because usbtest strictly requires pre-defined usbtest_info descriptors
+to function, dynamic ID binding via sysfs is fundamentally unsupported
+for this driver.
 
-On 06/08/2026 14:11, syzbot wrote:
-> In exfat, an I/O error during sync_blockdev() triggers the error handler
-> (__exfat_fs_error()), which directly sets SB_RDONLY without holding the
-> s_umount semaphore. If thaw_super() is called after this, it sees the
-> filesystem as read-only and skips releasing the freeze semaphores. When the
-> filesystem is later unmounted and destroyed, the s_writers.rw_sem per-CPU
-> rw-semaphores are freed while still held for write, triggering a warning in
-> rcu_sync_dtor():
->
-> WARNING: kernel/rcu/sync.c:177 at rcu_sync_dtor+0xcd/0x180
-> Call Trace:
->   <TASK>
->   percpu_free_rwsem+0x43/0x80 kernel/locking/percpu-rwsem.c:42
->   destroy_super_work+0x217/0x310 fs/super.c:284
->   process_one_work kernel/workqueue.c:3322 [inline]
->   process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
->   worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
->   kthread+0x388/0x470 kernel/kthread.c:436
->   ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
->   ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
->   </TASK>
->
-> Fix this by introducing an internal EXFAT_FLAGS_ERROR_RO flag instead of
-> directly setting SB_RDONLY on error. This prevents confusing the VFS freeze
-> logic and allows thaw_super() to correctly release the semaphores. We also
-> add the exfat_check_writable() helper to check both EXFAT_FLAGS_SHUTDOWN
-> and EXFAT_FLAGS_ERROR_RO, and use it to reject write operations when the
-> filesystem is in an error-induced read-only state.
->
-> Fixes: 772b29cca528 ("exfat: add misc operations")
-> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+823cd0d24881f21ab9f1@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=823cd0d24881f21ab9f1
-> Link: https://syzkaller.appspot.com/ai_job?id=7b3f57df-f2f0-4b0d-a492-627c4efe465b
-> To: "Namjae Jeon" <linkinjeon@kernel.org>
-> To: <linux-fsdevel@vger.kernel.org>
-> To: "Sungjong Seo" <sj1557.seo@samsung.com>
-> To: "Namjae Jeon" <namjae.jeon@samsung.com>
-> Cc: <linux-kernel@vger.kernel.org>
-> Cc: "Yuezhang Mo" <yuezhang.mo@sony.com>
->
-> ---
-> v2:
-> - Dropped the fs/super.c changes to handle rollback of freeze on sync_blockdev failure.
-> - Fixed the issue entirely inside exfat by introducing an internal EXFAT_FLAGS_ERROR_RO flag instead of directly setting SB_RDONLY.
-> - Added exfat_check_writable() helper to check both EXFAT_FLAGS_SHUTDOWN and EXFAT_FLAGS_ERROR_RO.
-> - Updated write paths in exfat to use exfat_check_writable().
-> - Cleared EXFAT_FLAGS_ERROR_RO in exfat_reconfigure() when remounting read-write.
->
-> v1:
-> https://lore.kernel.org/all/fcc77fd9-e38f-49f9-8268-e86683444f29@mail.kernel.org/T/
-> ---
-> diff --git a/fs/exfat/exfat_fs.h b/fs/exfat/exfat_fs.h
-> index 9be50949c..50846630e 100644
-> --- a/fs/exfat/exfat_fs.h
-> +++ b/fs/exfat/exfat_fs.h
-> @@ -122,6 +122,7 @@ enum {
->   
->   /* Superblock flags */
->   #define EXFAT_FLAGS_SHUTDOWN	1
-> +#define EXFAT_FLAGS_ERROR_RO	2
->   
->   struct exfat_dentry_namebuf {
->   	char *lfn;
-> @@ -320,6 +321,15 @@ static inline int exfat_forced_shutdown(struct super_block *sb)
->   	return test_bit(EXFAT_FLAGS_SHUTDOWN, &EXFAT_SB(sb)->s_exfat_flags);
->   }
->   
-> +static inline int exfat_check_writable(struct super_block *sb)
-> +{
-> +	if (unlikely(exfat_forced_shutdown(sb)))
-> +		return -EIO;
-> +	if (unlikely(test_bit(EXFAT_FLAGS_ERROR_RO, &EXFAT_SB(sb)->s_exfat_flags)))
-> +		return -EROFS;
-> +	return 0;
-> +}
-> +
->   /*
->    * If ->i_mode can't hold 0222 (i.e. ATTR_RO), we use ->i_attrs to
->    * save ATTR_RO instead of ->i_mode.
-> diff --git a/fs/exfat/file.c b/fs/exfat/file.c
-> index 5fc13378d..b6afeede2 100644
-> --- a/fs/exfat/file.c
-> +++ b/fs/exfat/file.c
-> @@ -125,8 +125,9 @@ static long exfat_fallocate(struct file *file, int mode,
->   	if (!S_ISREG(inode->i_mode))
->   		return -EOPNOTSUPP;
->   
-> -	if (unlikely(exfat_forced_shutdown(inode->i_sb)))
-> -		return -EIO;
-> +	err = exfat_check_writable(inode->i_sb);
-> +	if (err)
-> +		return err;
->   
->   	inode_lock(inode);
->   
-> @@ -354,8 +355,9 @@ int exfat_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
->   	unsigned int ia_valid;
->   	int error;
->   
-> -	if (unlikely(exfat_forced_shutdown(inode->i_sb)))
-> -		return -EIO;
-> +	error = exfat_check_writable(inode->i_sb);
-> +	if (error)
-> +		return error;
->   
->   	if ((attr->ia_valid & ATTR_SIZE) &&
->   	    attr->ia_size > i_size_read(inode)) {
-> @@ -738,8 +740,9 @@ static ssize_t exfat_file_write_iter(struct kiocb *iocb, struct iov_iter *iter)
->   	loff_t valid_size;
->   	int err;
->   
-> -	if (unlikely(exfat_forced_shutdown(inode->i_sb)))
-> -		return -EIO;
-> +	ret = exfat_check_writable(inode->i_sb);
-> +	if (ret < 0)
-> +		return ret;
->   
->   	inode_lock(inode);
->   
-> @@ -826,6 +829,11 @@ static vm_fault_t exfat_page_mkwrite(struct vm_fault *vmf)
->   	struct exfat_inode_info *ei = EXFAT_I(inode);
->   	vm_fault_t ret;
->   	loff_t new_valid_size, mmap_valid_size;
-> +	int err;
-> +
-> +	err = exfat_check_writable(inode->i_sb);
-> +	if (err)
-> +		return vmf_fs_error(err);
->   
->   	if (!inode_trylock(inode))
->   		return VM_FAULT_RETRY;
-> @@ -835,8 +843,6 @@ static vm_fault_t exfat_page_mkwrite(struct vm_fault *vmf)
->   
->   	if (ei->valid_size < new_valid_size) {
->   		if (ei->zeroed_size < mmap_valid_size) {
-> -			int err;
-> -
->   			/*
->   			 * Only zero the range that hasn't been zeroed yet for
->   			 * this mmap write path. zeroed_size tracks the largest
-> diff --git a/fs/exfat/misc.c b/fs/exfat/misc.c
-> index 6f11a96a4..ab875473f 100644
-> --- a/fs/exfat/misc.c
-> +++ b/fs/exfat/misc.c
-> @@ -41,8 +41,8 @@ void __exfat_fs_error(struct super_block *sb, int report, const char *fmt, ...)
->   		panic("exFAT-fs (%s): fs panic from previous error\n",
->   			sb->s_id);
->   	} else if (opts->errors == EXFAT_ERRORS_RO && !sb_rdonly(sb)) {
-> -		sb->s_flags |= SB_RDONLY;
-> -		exfat_err(sb, "Filesystem has been set read-only");
-> +		if (!test_and_set_bit(EXFAT_FLAGS_ERROR_RO, &EXFAT_SB(sb)->s_exfat_flags))
-> +			exfat_err(sb, "Filesystem has been set read-only");
->   	}
->   }
->   
-> diff --git a/fs/exfat/namei.c b/fs/exfat/namei.c
-> index b7d5e44ad..f08170de6 100644
-> --- a/fs/exfat/namei.c
-> +++ b/fs/exfat/namei.c
-> @@ -547,8 +547,9 @@ static int exfat_create(struct mnt_idmap *idmap, struct inode *dir,
->   	int err;
->   	loff_t size = i_size_read(dir);
->   
-> -	if (unlikely(exfat_forced_shutdown(sb)))
-> -		return -EIO;
-> +	err = exfat_check_writable(sb);
-> +	if (err)
-> +		return err;
->   
->   	mutex_lock(&EXFAT_SB(sb)->s_lock);
->   	exfat_set_volume_dirty(sb);
-> @@ -765,10 +766,11 @@ static int exfat_unlink(struct inode *dir, struct dentry *dentry)
->   	struct inode *inode = dentry->d_inode;
->   	struct exfat_inode_info *ei = EXFAT_I(inode);
->   	struct exfat_entry_set_cache es;
-> -	int err = 0;
-> +	int err;
->   
-> -	if (unlikely(exfat_forced_shutdown(sb)))
-> -		return -EIO;
-> +	err = exfat_check_writable(sb);
-> +	if (err)
-> +		return err;
->   
->   	mutex_lock(&EXFAT_SB(sb)->s_lock);
->   	if (ei->dir.dir == DIR_DELETED) {
-> @@ -820,8 +822,9 @@ static struct dentry *exfat_mkdir(struct mnt_idmap *idmap, struct inode *dir,
->   	int err;
->   	loff_t size = i_size_read(dir);
->   
-> -	if (unlikely(exfat_forced_shutdown(sb)))
-> -		return ERR_PTR(-EIO);
-> +	err = exfat_check_writable(sb);
-> +	if (err)
-> +		return ERR_PTR(err);
->   
->   	mutex_lock(&EXFAT_SB(sb)->s_lock);
->   	exfat_set_volume_dirty(sb);
-> @@ -911,8 +914,9 @@ static int exfat_rmdir(struct inode *dir, struct dentry *dentry)
->   	struct exfat_entry_set_cache es;
->   	int err;
->   
-> -	if (unlikely(exfat_forced_shutdown(sb)))
-> -		return -EIO;
-> +	err = exfat_check_writable(sb);
-> +	if (err)
-> +		return err;
->   
->   	mutex_lock(&EXFAT_SB(inode->i_sb)->s_lock);
->   
-> @@ -995,9 +999,6 @@ static int exfat_rename_file(struct inode *parent_inode,
->   	int sync = IS_DIRSYNC(parent_inode);
->   	unsigned int num_extra_entries, num_total_entries;
->   
-> -	if (unlikely(exfat_forced_shutdown(sb)))
-> -		return -EIO;
-> -
->   	num_new_entries = exfat_calc_num_entries(p_uniname);
->   	if (num_new_entries < 0)
->   		return num_new_entries;
-> @@ -1267,6 +1268,10 @@ static int exfat_rename(struct mnt_idmap *idmap,
->   	if (flags & ~RENAME_NOREPLACE)
->   		return -EINVAL;
->   
-> +	err = exfat_check_writable(sb);
-> +	if (err)
-> +		return err;
-> +
->   	mutex_lock(&EXFAT_SB(sb)->s_lock);
->   	old_inode = old_dentry->d_inode;
->   	new_inode = new_dentry->d_inode;
-> diff --git a/fs/exfat/super.c b/fs/exfat/super.c
-> index 388db271c..dcb6e15e4 100644
-> --- a/fs/exfat/super.c
-> +++ b/fs/exfat/super.c
-> @@ -807,6 +807,9 @@ static int exfat_reconfigure(struct fs_context *fc)
->   
->   	swap(*cur_opts, *new_opts);
->   
-> +	if (!(fc->sb_flags & SB_RDONLY))
-> +		clear_bit(EXFAT_FLAGS_ERROR_RO, &sbi->s_exfat_flags);
-> +
->   	return 0;
->   }
->   
->
->
-> base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
+Fix this by setting .no_dynamic_id = 1 on usbtest_driver. This instructs
+the USB core to skip creating the new_id and remove_id sysfs interfaces
+for usbtest, preventing invalid dynamic ID entries from being created.
+
+Reported-by: syzbot+7e1e5911f9eac50bedc7@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=7e1e5911f9eac50bedc7
+Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+---
+Changes in v2:
+- Disable dynamic IDs via .no_dynamic_id = 1 instead of adding a runtime NULL
+  check in probe().
+- Link to v1: https://lore.kernel.org/r/2650cf0f-26f9-48b5-b198-e4cb67c59cf0@mail.kernel.org
+
+ drivers/usb/misc/usbtest.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/usb/misc/usbtest.c b/drivers/usb/misc/usbtest.c
+index 98071b25ac076..8759df49be287 100644
+--- a/drivers/usb/misc/usbtest.c
++++ b/drivers/usb/misc/usbtest.c
+@@ -3054,6 +3054,7 @@ static struct usb_driver usbtest_driver = {
+ 	.disconnect =	usbtest_disconnect,
+ 	.suspend =	usbtest_suspend,
+ 	.resume =	usbtest_resume,
++	.no_dynamic_id = 1,
+ };
+ 
+ /*-------------------------------------------------------------------------*/
+-- 
+base-commit: 48a5a7ab8d6ab7090564339e039c421f315de912
+-- 
+2.55.0.654.g21b8a5bc05-goog
