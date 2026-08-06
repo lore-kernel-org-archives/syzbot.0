@@ -1,66 +1,66 @@
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D9B03BB12C
-	for <syzbot@lists.linux.dev>; Thu,  6 Aug 2026 18:49:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E880494821
+	for <syzbot@lists.linux.dev>; Thu,  6 Aug 2026 19:43:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786042176; cv=none; b=Tu2z8Zugt/P/F1ee0AgSPCxOvzVGxNB2CpQDaYvsompmlRbfQ1nxLTYIA1M9rrWBh7XU/dmsjYAfpRV7ydvMk8cWCpaEGOM+wzXHnz5z1HTLdDsylaQDdWQj+jakW4anr2hMFFMvwCfadXXYqz+QRC6Aact9LWYC9PMeGksiVsE=
+	t=1786045418; cv=none; b=ZeZmhQcPhlx2ySLSiXDEDC8ceboHRmvYhKH/MgxBFBrp+y4NBJFDjVCXdbWw9rIvmqAFzCgQOfSKDXxX1rL/qqn6hLSxYgRGtVgedIVhsHFcJbtlDf+/LuYkNgroHhRrSTUgJ3LL9Zjm3K2GlkrnHRfnbmwl0wXFv6YMr71xwvQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786042176; c=relaxed/simple;
-	bh=QE5RLs5SC76L10cnRMXshi1t3ksbJfIx7ddjk2wOVP8=;
+	s=arc-20240116; t=1786045418; c=relaxed/simple;
+	bh=BSsJ+r/uFsu4Sp6gHKYgBPmySH+En9WXiqAETiuKXXQ=;
 	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=QSx8CglFIaglaoCbAaId/LKshfnqYh9ExeWnzTOrcIChA0d7HTM6nSC3d8B8CZhNLQWyVFYlS9vgjQ+Mb5+qFJl2N+SRzs0MsbyW8OyWUTEkjuVzX0/7ssf1wymvozj8v3M7XXcGDV4hy4vXaA3Tk6of3DQPInFdHx7eydy91vg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
+	 Content-Type; b=OYR5vuISezOWET2tM/EP7CfWObjBETCR3DqnBaCuPiYKZ7nDwzOKUmrPfetZwzO7qletyY5Casm6JXVSqdwe+rsWMqmjC2GHR6Kkl29aeSYQQbPv+SKn7pLjY2FjDvhqH6MGYPO4Hvq69vOhEN5iq508Bq1lTUOJ0p5m8SOos/4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7e9e2db9914so1561635a34.1
-        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 11:49:33 -0700 (PDT)
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-6ae8bc06f00so2069057eaf.3
+        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 12:43:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786042172; x=1786646972;
+        d=1e100.net; s=20251104; t=1786045416; x=1786650216;
         h=content-type:cc:to:from:subject:message-id:in-reply-to:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=t9scLQRpdfEYmJ5PNsfus2glMtE39Em3/wKi2ln12v4=;
-        b=Wccp4GjAsYep4Ns9NKksk5K3lqdmV4Q7e4KxwWMaY4CQTDa1XZKzie1qIyRcVNyddJ
-         bBu8SNFnDiQqnOgIFyaJvaZWgquio+yW9LY1nM9rjDl8CWpZM6Zt54eSS8qBPGCWb+os
-         DQMAxIfRgTVON+mL9vrLPJ5eiJ+9528kIEz7SZOdcD6WCNlQMqC9isvrsQY2b4XS/dvP
-         Zjk1J1ahH3IrxxUDnYT92WxmSrxB4w0hnLxvKSny7NCaUfCqaqGnljsELjbG1RqZ3B4d
-         zHjnd3PWnxjRpZGOJe0veJa1ndfXFICx1DT+a961o3D6UHTHdagIC8tc4hRqN7cD75wN
-         TjBg==
-X-Gm-Message-State: AOJu0Ywj5ySh2r1u+4iVdQ0gCfK4sxqOEHV0l98NSG/hXgRUocwlmTrU
-	AbB3+w78pjq0CRG/3H3iLhetLybKFMSQ/2eHf0RwYWGd8cDbQT9QCl8dGa/sqj8pdXDn5HpuaGK
-	DlHuaAFSY/ymyR+3zn8nhWW08NLgsDwEgKkZuMuZHEwv+ONAKKUKtPOJn4pU=
+        bh=7nnUZmi/XBfDs3a/mFceIlNQxD8n0JbAKqlXQbc6sgc=;
+        b=jEa9yfBJWrETSq7aZ6vTMwQ/JRJwzQC0UgkkJ25tT61vEV/Jrp7BeB1yoef1pIpsHw
+         RYi3ucX8+77cfvesD5gvB/8E+lVqIJt8Qg0ch4myMxilmRFGPNNAw2VfEbKxRno/vLXJ
+         8+2S43xEuucyY6/+M6SIj7RvX7TgB1LQTEVvyNu3zlpH96SUnAO+/XpWqBZZIBy6okSc
+         X/XjA44tJAAz8tUzeBR5FqVgdGISPsz7StVcnGCDRVgrwPlRuLi2cavkDB5AjzsvmzWX
+         g5zQvH8/SUXlPGTRxK7YHNFGzQ89DFQp7R5CSuKHg3I8k8Wl6nzbBd4VT3p6vSk/+sIH
+         Qs/g==
+X-Gm-Message-State: AOJu0YyxRveVIBGqJYF5VIyihFB6bPLQNJANfqSzpa8En92Q2xJ8t4vp
+	a73q6+zLLBrNImXORoHkBdLX/7zO3fUx5Pi2gYt8cWOKSTSSuGKGj3Ti2nQArgYyZO6o38gEa3o
+	ZY72D93MEl2hhb4+Edbubpw49SQAbu5LzvXa+LCRiliA4y9ZMhwnqDldMViU=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:a38f:b0:6ae:aa9b:b8fe with SMTP id
- 006d021491bc7-6aeb242507emr3543267eaf.12.1786042172783; Thu, 06 Aug 2026
- 11:49:32 -0700 (PDT)
-Date: Thu, 06 Aug 2026 11:49:32 -0700
-In-Reply-To: <20260806142511.2337081-1-nogikh@google.com>
+X-Received: by 2002:a4a:e845:0:b0:6a3:8023:f344 with SMTP id
+ 006d021491bc7-6b0211b735emr2057546eaf.2.1786045416015; Thu, 06 Aug 2026
+ 12:43:36 -0700 (PDT)
+Date: Thu, 06 Aug 2026 12:43:35 -0700
+In-Reply-To: <20260806152651.2370795-1-nogikh@google.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a74d73c.9c11d2ce.289b96.009e.GAE@google.com>
+Message-ID: <6a74e3e7.01d0871a.3a0d52.002e.GAE@google.com>
 Subject: [syzbot ci] Re: usb: usbtest: disable dynamic ID support
-From: syzbot ci <syzbot+cia2d3f76a3d3230d7@syzkaller.appspotmail.com>
+From: syzbot ci <syzbot+ci5c3663723658006c@syzkaller.appspotmail.com>
 To: nogikh@google.com
 Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v2] usb: usbtest: disable dynamic ID support
-https://lore.kernel.org/all/20260806142511.2337081-1-nogikh@google.com
-* [PATCH v2] usb: usbtest: disable dynamic ID support
+[v3] usb: usbtest: disable dynamic ID support
+https://lore.kernel.org/all/20260806152651.2370795-1-nogikh@google.com
+* [PATCH v3] usb: usbtest: disable dynamic ID support
 
 and found no issues.
 
 Full report is available here:
-https://ci.syzbot.org/series/97f82df9-c73a-4096-9895-f64c7015efa5
+https://ci.syzbot.org/series/de685b28-f615-42d9-ba4b-01110fee0f94
 
 ***
 
