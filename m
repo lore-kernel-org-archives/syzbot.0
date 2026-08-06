@@ -1,199 +1,187 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECC5F43D4E9
-	for <syzbot@lists.linux.dev>; Thu,  6 Aug 2026 10:55:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786013739; cv=none; b=evCGrJKy/FA9vL8puQVCTAz0692MiyanecN1xAiOGsS28oX4y3NxKm/Ey9j1SW2G3VFyfHz3jaZJHjFtSIsnLk3TrRWRxuLqO9xuhJk71Asoh/0eUcsynzoliSS84XfTbZrXjZxDqxJhrMORQhqmzIpv7EOm/nK/CiIMgc0k/rk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786013739; c=relaxed/simple;
-	bh=mDJBYYgSWDDu6K0B1aat6pLbM1iL4aPMg9L3gm/jNVY=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=kN3jpilfIu+3UopOCCRQ0tC8Ar10zXWXS3URYPmz88UDqrTcKdx0kGpjNp8/ZL6I1oCakTtfsx+2upluMNlEIeTyYBNukbMpy2cnmm6QigQIdHWmOdZE+Umed+kCnk/NkG2EJlHP/MrQ/i7hzfe9JpryPH2vF4K2TQNcJ/Z20Dc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Is7Sg5kl; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A328D470102
+	for <syzbot@lists.linux.dev>; Thu,  6 Aug 2026 11:39:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786016361; cv=pass; b=hcJaMhBLNk6BPizyJQEi0n2ELUNGw38bjfPp/pX2zVml7NHpcNWLENnqJvoE+pq/wsYYBhPjFKBVAX4pGevbAGaQz9f6F8WZIMVq7+jQpTOhM4MmhhJma8TwRQb2b+TLIHdSCbZnd83j/BcmIDrQOsNHqNpNUdrv4HTxodDZg/k=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786016361; c=relaxed/simple;
+	bh=Ms2b1+iwLYtJW4EKc+FcT7UgEfOQ/W9ht+OujYO5R4w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=C7AwwMogru9PMJJHOiwBsH8uXRN1anFZ4EzPojjI5zKoi9ZzkILXF5YeSTX3vUvlyAOp/3wd6unGUbzztgKZq2qhkMa4TaNL2LDbauoD+HmgobxnibJh4+jgmri654T0GKkkrY1dHDY32SoepS88Xf90LErc1R2rRqY8ds4wT9U=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=JXu4DdVl; arc=pass smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Is7Sg5kl"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 9A83A1F00A3A;
-	Thu,  6 Aug 2026 10:55:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786013737;
-	bh=Nk/KuyNR7DdBT8jUXrlIXmeq1/lwe0UaXWVe3L4pvzE=;
-	h=From:To:Cc:Subject:Date;
-	b=Is7Sg5klxLHQbeGkHJB3Jv0Y1BiLP19IX+zyqwZUFrHg5ZbSTKNlLjVh0vWLDLW9v
-	 q9kTymHczDr5de7aLvww6OyjbIWIFfx3Y3OGW7+JN8/REpPgT13/Zj7cHdVdBbHBou
-	 lpaEuwvDDZekCsgEtvnyFVmWHbKZVzfmiPQ5gsKf2e0CrxCF8vjEH3PnJ7/cgDXfYw
-	 Gze+m/YS+lm2A/hEeeN4Xc7JIAO+bmF/+n5AyP8Y/eRoziCOr/0qWYPr9VGEot5frG
-	 a5dLMl9Dw9k7z2oYIb933duzjeQFvfLtH4aeLuqnXYzdamrnMdGV/CoRdLdWykLKaQ
-	 VJR1mRcR7PwkA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] drm/client: Avoid warning on vblank timeout during modeset client waits
-Message-ID: <5edd530e-c20d-42c4-bf55-0656081f030d@mail.kernel.org>
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="JXu4DdVl"
+Received: by smtp.kernel.org (Postfix)
+	id E2B351F00A3A; Thu,  6 Aug 2026 11:39:09 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=217.74.67.49
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1786016349;
+	b=Xeewb+wuj2iEPzorodsTFOW5FZYGbzgCfgl2Q9VOicyTG3LrEOihyXlqTrmGlYn/RKBL
+	 UeeLWEN0R78XUuRgBaHw2HuL4xjV9/GCD+EOEIpGpQMNTa5RdnR0XJanvDXA9Zb2fu7dB
+	 b2jByQOKJp5+2ij57JDmAxhi+IkIq616XaNsTcnNZsFB/r20XVMoFSY4yLeUG56k0ZADY
+	 55lxc9oosdrsQeQHkEghdBRuWrwl0wUk6LFd0ZmS+QhtS6qjUPdw5+abOgPvaLHCDxA9/
+	 1cIQ0kQevIJIDkAcLb8lswWytXQnKdxAXF1OB1qQpvDh9YaaBHGs7KsaKr4Yx8MhBbw==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1786016349;
+	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 DKIM-Signature;
+	bh=fLlyC2WWzGpA57gYNxu0gi5EVGg83nFZiTa91Q+iepA=;
+	b=Qz87YvNcjOLFwrJpGUze3vC6sDXmdLhjgQv/6BR8pR05gjtYybGHJ15iWg40N5wvaRtq
+	 aQPmCvpyPNQUzARTTctYdCBeoL82jNcgAXcJpvCk6TwsbZGSAjT4MVQQkMJfNFcAwhbXZ
+	 CryOdyU/L9T97gPW5qkLfvvRHaQaE5aQgAXfEODHMZKKzmKtifMbK75Fix+Vrp/43VQqJ
+	 jzV+sIHfDksqskdsbAbBwpZUH6clDVZxJLFBZiSpxZa4m1O1euoprr/LZMTLIQZUsj3Z5
+	 lFzGJKdjQ2PBJFoVRNPYi8xbWgz2qn6MbQCpSAle34ovjN+zBDAZhcLCuicbsMkViRg==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=JXu4DdVl;
+	dmarc=pass header.from=poczta.fm;
+	spf=pass smtp.mailfrom=poczta.fm;
+	arc=none smtp.remote-ip=217.74.67.49
+Received: from smtpo49.interia.pl (smtpo49.interia.pl [217.74.67.49])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 873F11F000E9
+	for <syzbot@kernel.org>; Thu,  6 Aug 2026 11:39:07 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (1024-bit key, unprotected) header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=JXu4DdVl
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 873F11F000E9
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Thu,  6 Aug 2026 13:38:56 +0200 (CEST)
+Date: Thu, 6 Aug 2026 13:38:54 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: Johannes Berg <johannes@sipsolutions.net>
+Cc: Aleksandr Nogikh <nogikh@google.com>, syzbot <syzbot@kernel.org>,
+	syzkaller-bugs@googlegroups.com, linux-wireless@vger.kernel.org,
+	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev,
+	Krystian Kaniewski <krystianmkaniewski@gmail.com>
+Subject: Re: sysbot AI patches and wireless
+Message-ID: <anRyTtgRT8gVUZYR@nr200>
+References: <068e46b5-0c88-4432-959a-b9400d9691ee@mail.kernel.org>
+ <3b6c46b6d79f3a0e0ded2967db3cfd469314b05c.camel@sipsolutions.net>
+ <CANp29Y6sHOe5QY6BgzeUtKFGqc2pDyP8WAUzQ6E1-3oYgZTY0g@mail.gmail.com>
+ <6007f37089d14eb14deed54d34921f0ef691e1fa.camel@sipsolutions.net>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Thu,  6 Aug 2026 10:55:37 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6007f37089d14eb14deed54d34921f0ef691e1fa.camel@sipsolutions.net>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1786016338; bh=fLlyC2WWzGpA57gYNxu0gi5EVGg83nFZiTa91Q+iepA=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=JXu4DdVlV8VFgq8sIy0qeIIHOvDUAKqPtCMa3f/mNQd3v6Q8oHGauTuC+sU2GNeKc
+	 wcZKKANzKBh9uOS6q6vHyktjVQY+toPMyhSfBsU3zATrMX2HjpVcoEehQ1/5Di479A
+	 LOs5QhYpTyZ4JzcQp8xRW/6Yb1dlajzuJ1J5vI7g=
 
-On PREEMPT_RT kernels, a user-space task with elevated Real-Time (RT)
-priority can starve essential kernel threads. For example, the VKMS driver
-simulates vblank interrupts using hrtimers. On PREEMPT_RT, these timers run
-in the per-CPU timer threads at a low RT priority. If a user-space task
-elevates its priority above the timer thread and monopolizes the CPU, the
-timer thread is starved and the VKMS software vblank delivery is delayed
-beyond the timeout.
+On sie 06, 2026 12:15, Johannes Berg wrote:
+> Hi!
+> 
+> > 1. Every AI-generated patch sent by syzbot has been pre-reviewed and
+> > approved by a human engineer. The person who approved the patch is
+> > listed in the From: and Signed-off-by: fields.
+> 
+> Yes, I realize that. But the experience still seems to be one of me
+> effectively consuming pure LLM output, just via an intermediary. If I
+> had the time to do that, then I'd be perfectly able to talk to an LLM
+> directly, cutting out the intermediaries, and get the issues fixed that
+> way - much, much faster than writing everything in emails.
+> 
+> If, on the other hand, the intermediaries actually do the necessary
+> legwork etc. then I don't think this whole process is necessary; I don't
+> think using "b4" would be a significant hurdle in the process, and
+> that's really the only thing this helps with? Maybe LLM access (not
+> everyone has effectively free tokens), but that's still enabled by
+> syzbot providing the service over on the internal/upstream-moderation
+> list I guess.
+> 
+> Now, of course now that I say this (and you disabled it) I guess I'll
+> just see the patches pasted into an email manually instead, and I've
+> lost the signal that I could use to just ignore them entirely, but at
+> least I've been honest about it - and I guess I'll still silently drop
+> patches where the "human engineer" has no idea what they're doing. Even
+> having Reported-by: syzbot has been a signal of that to some extent.
+> 
+> I do think syzbot is a bit of a special case - at least if there's a
+> reproducer it's trivial to tell the system "hack the code until the
+> issue no longer reproduces" - but that's almost certainly guaranteed to
+> not be a useful patch yet.
+> 
+> The system, in a case like this, is almost certainly going to provide a
+> very narrow, targeted fix (with an annoying wall of text explaining
+> exactly that), but I think that at least the human in the loop should
+> actually take a step back from that and ask what the semantics of the
+> code should be ... I've played this game with Slawomir's first patch
+> myself, but that clearly cannot scale if the original intermediary
+> doesn't want to do that.
+> 
+> Maybe it's something you can even tell the LLM to do, somehow, so the
+> first draft is better. In this case, for example, why the hell did it
+> decide that it made any sense to have multiple branches of the same
+> switch statement - and there are even only two! - implement the same
+> validation? At the very least I'd expect the "human engineer" to take
+> that step back.
+> 
+> This is why I'm refusing these patches, because clearly nobody actually
+> even bothers to look at the semantics of the code before or during the
+> patching. Does pulling out the check outside of the switch change the
+> order of errors? Yes. Does that matter? No, the new order of errors for
+> NL80211_TDLS_ENABLE_LINK would actually - if you think about it (!) -
+> make a lot more sense! Am I surprised the LLM doesn't do that when you
+> tell it to make a targeted fix? Absolutely not.
+> 
+> But I really cannot make that judgement call myself for every single
+> issue like that, if I could, see above, I could be doing all of this
+> myself. Need the contributors to do that. Slawomir did that after I
+> prompted (pun intended!) him to do that, and it didn't work out so well
 
-This leads to a timeout when a worker thread waits for the vblank event.
-For instance, a console update triggers a framebuffer update, scheduling
-drm_fb_helper_damage_work() on the system workqueue. The worker thread
-eventually calls drm_client_modeset_wait_for_vblank() to synchronize the
-screen update with the vblank interval. Due to the starved timer, the wait
-times out and triggers a warning in drm_crtc_wait_one_vblank():
+It didn't? Or it did? :) Well I do not have new version of the patch yet, but I'm still
+investigating correct approach and testing a lot. I see now, that I should do that in the 1st place.
+I'm sorry for that.
 
-------------[ cut here ]------------
-faux_driver vkms: [drm] vblank wait timed out on crtc 0
-WARNING: drivers/gpu/drm/drm_vblank.c:1329 at
-drm_crtc_wait_one_vblank+0x3bc/0x560
-Workqueue: events drm_fb_helper_damage_work
-RIP: 0010:drm_crtc_wait_one_vblank+0x51a/0x560
-Call Trace:
- <TASK>
- drm_client_modeset_wait_for_vblank+0xc5/0xf0
- drivers/gpu/drm/drm_client_modeset.c:1331
- drm_fb_helper_damage_work+0x6cf/0xf00 drivers/gpu/drm/drm_fb_helper.c:365
- process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
- worker_thread+0x92d/0xe10 kernel/workqueue.c:3486
- kthread+0x388/0x470 kernel/kthread.c:436
- </TASK>
+> and we had a good discussion about it, but again, I can't provide that
+> support all time.
+> 
+> > 2. For the patches already sent to LKML, the bot *does not* send
+> > automatic replies and *does not* automatically submit newer versions.
+> > Once the patch is on LKML, follow-ups, comments, and iterations are
+> > handled entirely by the human developer who signed off on it, so you
+> > have not been interacting with an LLM.
+> 
+> Thanks for clarifying. I've definitely seen pure LLM replies (sometimes
+> even with the output saying things along the lines of "the reviewer said
+> this, I'll explain...") but that might have been in other contexts,
+> clearly it's not just syzbot which enables people doing things like
+> that.
+> 
+> > I apologize for the frustration this may have caused. We'll stop
+> > sending AI-assisted patches to the wireless subsystem.
+> 
+> Apology accepted, and thanks for disabling it.
+> 
+> Slawomir, Krystian, I assume you mean well and I apologise that you're
+> getting caught in the cross-fire here. Even the targeted fixes are still
+> fixes, so I understand from your perspective this still made sense, but
+> from mine it just absolutely cannot scale, both in terms of long-term
+> maintenance (sprinkling checks all over the code disregarding the
+> architecture) and also in terms of review bandwidth etc. I'm sorry
+> you're effectively the two first victims of this new process.
 
-Since this vblank wait in the client modeset path is only used for optional
-client update throttling, a timeout is acceptable and does not indicate a
-kernel bug. Therefore, we should not trigger a warning in this case.
+Thanks and now worries! It's a good lesson, that the overall subsystem might need a better
+approach. I know, that I sometimes will overlook this.
 
-Introduce drm_crtc_wait_one_vblank_internal(), which performs the vblank
-wait without triggering a warning on timeout. Use this new function in
-drm_client_modeset_wait_for_vblank() to avoid the warning, while keeping
-the warning in drm_crtc_wait_one_vblank() for other callers where a timeout
-might still indicate an actual issue.
+In the end, I should be saying sorry for wasting your time. And also, I should say `thanks!` for all
+the good hints and "prompts"!
 
-Fixes: d8c4bddcd8bc ("drm/fb-helper: Synchronize dirty worker with vblank")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+f59157955aba9d0cb43b@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=f59157955aba9d0cb43b
-Link: https://syzkaller.appspot.com/ai_job?id=dc062239-05be-4cff-92cb-604030dc57a5
-To: "David Airlie" <airlied@gmail.com>
-To: <dri-devel@lists.freedesktop.org>
-To: "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>
-To: "Maxime Ripard" <mripard@kernel.org>
-To: "Simona Vetter" <simona@ffwll.ch>
-To: "Thomas Zimmermann" <tzimmermann@suse.de>
-Cc: <linux-kernel@vger.kernel.org>
-
----
-v2:
-- Introduced drm_crtc_wait_one_vblank_internal() to allow waiting for vblank without warning on timeout.
-- Updated drm_client_modeset_wait_for_vblank() to use the new internal function, avoiding warnings during optional client update throttling.
-- Restored the warning in drm_crtc_wait_one_vblank() for other callers.
-
-v1:
-https://lore.kernel.org/all/7527aaed-dcb2-4bde-a807-1677dcd0af99@mail.kernel.org/T/
----
-diff --git a/drivers/gpu/drm/drm_client_modeset.c b/drivers/gpu/drm/drm_client_modeset.c
-index 0080a8e95..7ff0f24a0 100644
---- a/drivers/gpu/drm/drm_client_modeset.c
-+++ b/drivers/gpu/drm/drm_client_modeset.c
-@@ -1328,7 +1328,7 @@ int drm_client_modeset_wait_for_vblank(struct drm_client_dev *client, unsigned i
- 	 */
- 	ret = drm_crtc_vblank_get(crtc);
- 	if (!ret) {
--		drm_crtc_wait_one_vblank(crtc);
-+		drm_crtc_wait_one_vblank_internal(crtc);
- 		drm_crtc_vblank_put(crtc);
- 	}
- 
-diff --git a/drivers/gpu/drm/drm_internal.h b/drivers/gpu/drm/drm_internal.h
-index f893b1e3a..6fd33672d 100644
---- a/drivers/gpu/drm/drm_internal.h
-+++ b/drivers/gpu/drm/drm_internal.h
-@@ -115,6 +115,7 @@ void drm_vblank_disable_and_save(struct drm_device *dev, unsigned int pipe);
- int drm_vblank_get(struct drm_device *dev, unsigned int pipe);
- void drm_vblank_put(struct drm_device *dev, unsigned int pipe);
- u64 drm_vblank_count(struct drm_device *dev, unsigned int pipe);
-+int drm_crtc_wait_one_vblank_internal(struct drm_crtc *crtc);
- 
- /* drm_vblank_work.c */
- static inline void drm_vblank_flush_worker(struct drm_vblank_crtc *vblank)
-diff --git a/drivers/gpu/drm/drm_vblank.c b/drivers/gpu/drm/drm_vblank.c
-index f90fb2d13..7758e8265 100644
---- a/drivers/gpu/drm/drm_vblank.c
-+++ b/drivers/gpu/drm/drm_vblank.c
-@@ -1297,17 +1297,7 @@ void drm_crtc_vblank_put(struct drm_crtc *crtc)
- }
- EXPORT_SYMBOL(drm_crtc_vblank_put);
- 
--/**
-- * drm_crtc_wait_one_vblank - wait for one vblank
-- * @crtc: DRM crtc
-- *
-- * This waits for one vblank to pass on @crtc, using the irq driver interfaces.
-- * It is a failure to call this when the vblank irq for @crtc is disabled, e.g.
-- * due to lack of driver support or because the crtc is off.
-- *
-- * Returns: 0 on success, negative error on failures.
-- */
--int drm_crtc_wait_one_vblank(struct drm_crtc *crtc)
-+int drm_crtc_wait_one_vblank_internal(struct drm_crtc *crtc)
- {
- 	struct drm_device *dev = crtc->dev;
- 	int pipe = drm_crtc_index(crtc);
-@@ -1326,12 +1316,30 @@ int drm_crtc_wait_one_vblank(struct drm_crtc *crtc)
- 				 last != drm_vblank_count(dev, pipe),
- 				 msecs_to_jiffies(1000));
- 
--	drm_WARN(dev, ret == 0, "vblank wait timed out on crtc %i\n", pipe);
--
- 	drm_vblank_put(dev, pipe);
- 
- 	return ret ? 0 : -ETIMEDOUT;
- }
-+
-+/**
-+ * drm_crtc_wait_one_vblank - wait for one vblank
-+ * @crtc: DRM crtc
-+ *
-+ * This waits for one vblank to pass on @crtc, using the irq driver interfaces.
-+ * It is a failure to call this when the vblank irq for @crtc is disabled, e.g.
-+ * due to lack of driver support or because the crtc is off.
-+ *
-+ * Returns: 0 on success, negative error on failures.
-+ */
-+int drm_crtc_wait_one_vblank(struct drm_crtc *crtc)
-+{
-+	int ret = drm_crtc_wait_one_vblank_internal(crtc);
-+
-+	drm_WARN(crtc->dev, ret == -ETIMEDOUT, "vblank wait timed out on crtc %i\n",
-+		 drm_crtc_index(crtc));
-+
-+	return ret;
-+}
- EXPORT_SYMBOL(drm_crtc_wait_one_vblank);
- 
- /**
-
-
-base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
 -- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Slawomir Stepien
