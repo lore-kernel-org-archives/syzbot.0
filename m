@@ -1,73 +1,102 @@
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E880494821
-	for <syzbot@lists.linux.dev>; Thu,  6 Aug 2026 19:43:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786045418; cv=none; b=ZeZmhQcPhlx2ySLSiXDEDC8ceboHRmvYhKH/MgxBFBrp+y4NBJFDjVCXdbWw9rIvmqAFzCgQOfSKDXxX1rL/qqn6hLSxYgRGtVgedIVhsHFcJbtlDf+/LuYkNgroHhRrSTUgJ3LL9Zjm3K2GlkrnHRfnbmwl0wXFv6YMr71xwvQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786045418; c=relaxed/simple;
-	bh=BSsJ+r/uFsu4Sp6gHKYgBPmySH+En9WXiqAETiuKXXQ=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=OYR5vuISezOWET2tM/EP7CfWObjBETCR3DqnBaCuPiYKZ7nDwzOKUmrPfetZwzO7qletyY5Casm6JXVSqdwe+rsWMqmjC2GHR6Kkl29aeSYQQbPv+SKn7pLjY2FjDvhqH6MGYPO4Hvq69vOhEN5iq508Bq1lTUOJ0p5m8SOos/4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-6ae8bc06f00so2069057eaf.3
-        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 12:43:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786045416; x=1786650216;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=7nnUZmi/XBfDs3a/mFceIlNQxD8n0JbAKqlXQbc6sgc=;
-        b=jEa9yfBJWrETSq7aZ6vTMwQ/JRJwzQC0UgkkJ25tT61vEV/Jrp7BeB1yoef1pIpsHw
-         RYi3ucX8+77cfvesD5gvB/8E+lVqIJt8Qg0ch4myMxilmRFGPNNAw2VfEbKxRno/vLXJ
-         8+2S43xEuucyY6/+M6SIj7RvX7TgB1LQTEVvyNu3zlpH96SUnAO+/XpWqBZZIBy6okSc
-         X/XjA44tJAAz8tUzeBR5FqVgdGISPsz7StVcnGCDRVgrwPlRuLi2cavkDB5AjzsvmzWX
-         g5zQvH8/SUXlPGTRxK7YHNFGzQ89DFQp7R5CSuKHg3I8k8Wl6nzbBd4VT3p6vSk/+sIH
-         Qs/g==
-X-Gm-Message-State: AOJu0YyxRveVIBGqJYF5VIyihFB6bPLQNJANfqSzpa8En92Q2xJ8t4vp
-	a73q6+zLLBrNImXORoHkBdLX/7zO3fUx5Pi2gYt8cWOKSTSSuGKGj3Ti2nQArgYyZO6o38gEa3o
-	ZY72D93MEl2hhb4+Edbubpw49SQAbu5LzvXa+LCRiliA4y9ZMhwnqDldMViU=
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 154C23F4DE9
+	for <syzbot@lists.linux.dev>; Thu,  6 Aug 2026 23:30:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786059027; cv=pass; b=dKxLe9kWhBSFu+VgpazRG/6Cd0MZ9YFw2yaMaOcd6oPQoi0kMYay/gfA2AiasuzDGVScaE/tU5j+QdDMctemSbGn/UuaF7eFHCC95gKMvY18EPY8s3yX6eJIekT8G0qYbTujUrP7NjolZWL7OeYnScsOOAUigSEjtvF75+KFJH4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786059027; c=relaxed/simple;
+	bh=LLPIVZLkcDBEXmcY+m6qHFAz6hVv8iBq31NdOIuv73Q=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=qp/lB9uYs6ZKhXsD4UBAb+QIxdA9jehJ73B6wES6MDf4iNcCrDRSHxMB7c2v1drhrPizsC3t6Ywv5Y+oCMokIOxD073LBbyHenutcI/BM8LgH4Y1NqANmZBz3KU3JdZtMdFsgqPkAqFeRK5g2BIlZ8FRkTUcy+4+X24nJb2nK+Y=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=sina.com header.i=@sina.com header.b=FegA9rv3; arc=pass smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=sina.com header.i=@sina.com header.b="FegA9rv3"
+Received: by smtp.kernel.org (Postfix)
+	id EAA0B1F00A3A; Thu,  6 Aug 2026 23:30:25 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=202.108.3.165
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1786059025;
+	b=tYTtouaBCP6C5WnklBMezC3/lUJ/0Mswbq2X7JX22lEZrH1Pl8kWbqNy/nJ5csYf7+vL
+	 fTVmqI8d+w+qHOtt0vD3ioHDz9TzW4t7Gw3RM1xzD14EGTOL8ITeVLy9cgy0blYm3xgby
+	 sae8twG+TR2FiENJuSKPJycxfsKZledvVoPZTeMzyKZBuLBLoN6aMrEWmzDbCxSK5A7W2
+	 uu6adbFX1rvHi7nbZh1abuClAq3n1GC+uSqrPSwi1fPVyM6G5ROSUAjFyl6AMgOou/915
+	 Swh9icpkJ2BDIW0dh5Gs42PnEs3SasbxSrycBeXQXISM3zWsh4j4Wnl5A9m2FTU+V2g==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1786059025;
+	h=DMARC-Filter:DKIM-Signature:X-SMAIL-HELO:Received:X-Sender:X-Auth-ID:
+	 X-SMAIL-MID:X-SMAIL-UIID:From:To:Cc:Subject:Date:Message-ID:
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
+	bh=LLPIVZLkcDBEXmcY+m6qHFAz6hVv8iBq31NdOIuv73Q=;
+	b=E58E/zL76qc4D43AqNzPo1KK7m106BAHZcB8Fzwqq1gxOKeqQzXr0GXR7OSfYYQt4tDC
+	 tdeS4UNMX7CAhFWaLFEPttUrSPMbzPUJv4gRZ0R8YVLGWoe97bYuHZUgjj/PvteX9OqAf
+	 2YkKtXQEEPnsCxlLgCJI7DR5eVPSqOqqOg4LvC9dKUaVYfVO1RJXRWtW0vJBYRp+DPW5v
+	 +YVIeaJ2oTCS6pAGZ3Tm78+AvT+cAWkNMr7wzfyEX9aIJv6yk69j5zTiqUMVHrMjL92zc
+	 +2gLOQC+AfX5DADCbsZtqOzSAudoS7ByZIU3r5qLCnNUbxinz5g80v0voOQ+rAfLR2g==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=sina.com header.i=@sina.com header.a=rsa-sha256 header.s=201208 header.b=FegA9rv3;
+	dmarc=pass header.from=sina.com;
+	spf=pass smtp.mailfrom=sina.com;
+	arc=none smtp.remote-ip=202.108.3.165
+Received: from mail3-165.sinamail.sina.com.cn (mail3-165.sinamail.sina.com.cn [202.108.3.165])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 56BC71F000E9
+	for <syzbot@kernel.org>; Thu,  6 Aug 2026 23:30:22 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (1024-bit key, unprotected) header.d=sina.com header.i=@sina.com header.a=rsa-sha256 header.s=201208 header.b=FegA9rv3
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 56BC71F000E9
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=none dis=none) header.from=sina.com
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=sina.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sina.com; s=201208; t=1786059023;
+	bh=LLPIVZLkcDBEXmcY+m6qHFAz6hVv8iBq31NdOIuv73Q=;
+	h=From:Subject:Date:Message-ID;
+	b=FegA9rv3OfKYr1k9KdzJ4x63BfxM7dRqCjyrX+W/YyF9ZnkBP9bISMHshucbOmw3b
+	 Fl9XuzPQSbZebZ1+4npEEYAyzx5azSYtG4p2uzWLIYFPZ+87SKAJcO+9tCihq7UhAf
+	 gCWSXBlIb0Hy0N7cr4lTu6I0TTdsQwzgTPnFdyIw=
+X-SMAIL-HELO: localhost.localdomain
+Received: from unknown (HELO localhost.localdomain)([221.216.154.155])
+	by sina.com (10.54.253.33) with ESMTP
+	id 6A75190300000BF6; Thu, 7 Aug 2026 07:30:14 +0800 (CST)
+X-Sender: hdanton@sina.com
+X-Auth-ID: hdanton@sina.com
+Authentication-Results: sina.com;
+	 spf=none smtp.mailfrom=hdanton@sina.com;
+	 dkim=none header.i=none;
+	 dmarc=none action=none header.from=hdanton@sina.com
+X-SMAIL-MID: 5296506685417
+X-SMAIL-UIID: DB663BE915C8410096AD3F36CA1047D9-20260807-073014-1
+From: Hillf Danton <hdanton@sina.com>
+To: Johannes Berg <johannes@sipsolutions.net>
+Cc: Slawomir Stepien <sst@poczta.fm>,
+	Aleksandr Nogikh <nogikh@google.com>,
+	syzbot <syzbot@kernel.org>,
+	syzkaller-bugs@googlegroups.com,
+	linux-wireless@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	syzbot@lists.linux.dev,
+	Krystian Kaniewski <krystianmkaniewski@gmail.com>
+Subject: Re: sysbot AI patches and wireless
+Date: Fri,  7 Aug 2026 07:30:00 +0800
+Message-ID: <20260806233001.997-1-hdanton@sina.com>
+In-Reply-To: <8a0020fb5318ed645b0331d3790a75f83c0ee443.camel@sipsolutions.net>
+References: 
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a4a:e845:0:b0:6a3:8023:f344 with SMTP id
- 006d021491bc7-6b0211b735emr2057546eaf.2.1786045416015; Thu, 06 Aug 2026
- 12:43:36 -0700 (PDT)
-Date: Thu, 06 Aug 2026 12:43:35 -0700
-In-Reply-To: <20260806152651.2370795-1-nogikh@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a74e3e7.01d0871a.3a0d52.002e.GAE@google.com>
-Subject: [syzbot ci] Re: usb: usbtest: disable dynamic ID support
-From: syzbot ci <syzbot+ci5c3663723658006c@syzkaller.appspotmail.com>
-To: nogikh@google.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-syzbot ci has tested the following series
-
-[v3] usb: usbtest: disable dynamic ID support
-https://lore.kernel.org/all/20260806152651.2370795-1-nogikh@google.com
-* [PATCH v3] usb: usbtest: disable dynamic ID support
-
-and found no issues.
-
-Full report is available here:
-https://ci.syzbot.org/series/de685b28-f615-42d9-ba4b-01110fee0f94
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+On Thu, 06 Aug 2026 16:49:45 +0200 Johannes Berg wrote:
+>
+> It's definitely part of the job to train new contributors, and it's
+> actually very rewarding to see someone grow from first time contributor.
+> Sadly, now there's basically no "first-contact signal" that says "I care
+> about this more than landing this one patch". :-/ Getting a well-formed
+> (and well-argued) patch used to be worth something, now it's basically not.
+>
+Nope, who cares (LPC/Unix)?
+Is Linux helping make the earth a better place (for who/all)?
