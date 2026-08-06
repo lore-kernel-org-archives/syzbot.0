@@ -1,312 +1,292 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42D91477999
-	for <syzbot@lists.linux.dev>; Thu,  6 Aug 2026 15:00:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786028444; cv=none; b=Kl2+k/Z/fqP7z7ttk+VrbGn3OHXfnW9LwVL2D/WGAh2rxpSXy35ZF3vDGaKEqkyWzA/TqlAMsiiVAfzNQx+p8kWWowcDmXLTNUSFrzpfP8ZX+BgTpQaX+xGY95nrXHMBhJnyhlfHzb9HkAiGjUDyLri6axfF0ms4tVALvdismp8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786028444; c=relaxed/simple;
-	bh=owrR4bPW6kL1w/uL1j3kvp3sAnD+vqt2LBfqBBKhC3M=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=LtI6PiFB+tIKK+TBB4wXY+0mp9jUTkQ74poFY+iDzku+A8e6LpUvzXwfN+ngDgBy6p7Ur/and+fHekeW0j6+3fYsOaP4lLpb4118vdYeSy8uTnbb6iOXnpQHWIlf8spwblEdSXfuX4sshpNearM5XZNffpldQydetad2wdBSeYY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lmqoQVpi; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE95D3F824B
+	for <syzbot@lists.linux.dev>; Thu,  6 Aug 2026 15:21:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.51
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786029693; cv=pass; b=Mc+6Y1aRYXL1fD8ljV6EDh7GLUPDoIgR3DPHoTp6H3XEGV3sCnrrIXNa9m26nUb508E/w1LT1kgMxToeM7SfA0OdsFCHzSsDv53eTo6CtnFlsME2rSvSNubB1XHYSQY7B2A1/Z7KEtdFpsq3cLpAjY9s1g0bzWKEkiq3NPXxv7c=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786029693; c=relaxed/simple;
+	bh=g/FdFiEUIcri45Cs/TMFo2IThGI+SwQNIg3tx1vaIoU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ohZPlr4KGtmd79YkbX8+z4Ze53kPG0+e6E0rUfmodGy+B2AZLHKbvZe5JDWy2qi9fIN5rXgTmVkGvj8vWrHvsxyYKBYAyuJPv8o9NUwtH/nlhVrmSgg3QhXGcdeKXSnH7pt17pKr49ANTe18bUBxO7FJYNf2qXggX53N6ZVx7S8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=LDc3hmhD; arc=pass smtp.client-ip=209.85.210.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lmqoQVpi"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id B27341F000E9;
-	Thu,  6 Aug 2026 15:00:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786028437;
-	bh=VsHknos/gsVjkfHvzHVKuYEswq1CgD6mcIPaBFCes4U=;
-	h=From:To:Cc:Subject:Date;
-	b=lmqoQVpiY34v/HIlh2JonAZ/waSXQif5qzcTt3hxkg93DlI3PFCBJwT+FeY+8LKXB
-	 ucCYgFGOp0YF8FSjvNBFK26D5u8byL+TMjQrXbYSmn7vUkr7PIsupX4nfaqaWJzpIY
-	 mtmM9Ihf/aI2pjGRmpC2LeeryzaX9Nn+UUo5D2tBNkIqHFUGY3xZXS8HLT1hyKW/94
-	 ZcEQriwTkkYrG8cHxY0OddGUtOG/xzmtfJG3TyS/RNqo4WpyZ7ablTjfBQd8RxKVUg
-	 WOOoV6xNWrCfhYoaa7FPH4NIjFCqXBiMZSSqLBP0rWMA0L1Gm8cgHAW55X+Eec/2Et
-	 yG6N3+pEUUtLw==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev, uladzislau.zhauniarovich@gmail.com
-Subject: [PATCH RFC v3] exfat: avoid setting SB_RDONLY directly on error
-Message-ID: <9c0678ed-ecc6-455f-bb8a-2f605899c1fc@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="LDc3hmhD"
+Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7ec3b429a3aso1722543a34.1
+        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 08:21:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786029690; cv=none;
+        d=google.com; s=arc-20260327;
+        b=oK3IX5+enK0dY6jDZXNHxPctBjE+L0Re1uUdHMUuzZ8tUgkjtxr8zAk/XW6o2E1x/2
+         4AG97NaEpGSzsv9zoOQki9KPNUKPyLpaO6Bc+OB7ce/mED3od8zf7oEdig1zDrJc/i8J
+         OaPMmFeT8ETmkAOyjOroYfTPsOq+DE9EgmDXT3k86VZZXV7itN0pfAKQJ1CwQobx4TBK
+         MpnC6WNeW4njKMfy0C8xulkhTlvEof5u/HMpD3gYYZpq8CBDgcXwpx/Is3rAmZ0hONlM
+         PtiTJnjc7LSjsd5pIQWJAbztIh7l4nMCpgMl36LvMu3XfnjJqgfEJ9+nlkOjDqlXU3xY
+         ysPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=6/e6MDFzYQ9h/a8E4TOInku0vhFQvsqSLdeauCepjjM=;
+        fh=FooDoVNXSnO6+cypw93T8QG0bWtPktpzz54YhKZeOqI=;
+        b=pxcUcL4ceJll8FuWIXmpvPRlHhchI3TnBXQhUeVEBX/iEil+SQzAMOEaRwYSFQj+Dj
+         6uF1hDZ4Czlc9MSJu8zA7NsL6pGXhARtCPLzr+m7loOqk/3Vq+0kt3tcLOtZzg9J5Z9+
+         dq2w0eAMIyrADXt86oJdLfH9wjyRawMKOP7KXbgfzLtYomYnAwRtz1FwwMTK1J4wrwUI
+         /8Ix0mEZoezA4jACnLPIZDy2RGcdWpTZ+kvYIQuN85KYQpfx8jvgJjJAOihSN63Z8VOx
+         Lj8Zv8E8Gxst5gaJ1/Dci3UfV26Rj4X+HOl0gj0O61RStLglyzi5CIrLHTvL2nUx5YxY
+         tskg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1786029690; x=1786634490; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=6/e6MDFzYQ9h/a8E4TOInku0vhFQvsqSLdeauCepjjM=;
+        b=LDc3hmhDmUwZnsDi7ht50GprQ2xyll5Y0Yi4cBclXkBrEzsgOARXmJ7OsJXqOpxWNd
+         kNSQoIh57BkAfC1NjgYdgzcMrDfHLBEMz7JSvGHY/D/9yDSFSIiE6mM8TsLt6vMFVByu
+         BqmFh4Cvz7hcBJ9l0KGlSOP3EnhsvjW0XK7go1mf3IEKAQYSkVux45LgahrqnPhU5reF
+         nC9m0iMIyFgU/dS1L5RVDfuoZ1rNPtYFn3XO0n9I0O6qq9fHzSotlnu0n1unPviWnQAp
+         G/NdkCr8DvAMYzo+wVV66s0BBcZU16MvX7hoosiMdesoTZc1XdTDmLVZ11tNoD/IC8vu
+         sMuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786029690; x=1786634490;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=6/e6MDFzYQ9h/a8E4TOInku0vhFQvsqSLdeauCepjjM=;
+        b=bSlF5fsd4WxmOruILt1vxhPqlQPjNbjkDTkWqOWYU3FX7F+cDtZQaCleySJ5oFFOa3
+         siUDgM+GqP4Vq6E5ZgT9tAAxAerSgX9GZGqf2BBDFxCvwhpTFxtgA3/pZm2XCOHRqmH5
+         1D/TY6FZd27+vQ2HeY9ZLov4oy1gcO9xGB0ghjHZ5Vwejrdbt3UmdGedjZKzHq2CD4FO
+         rjuvhFGSHzhoX+nj/PVkOTYRKZkbRS4e3VntZmP7X9lwTSTa7DmQvQvIAs+WcqYyLRsR
+         24qih/BM6cSmmxUlllPa1zTxxySqQCHaARzQVYU+pFfTjQcf9gi+EBci9DPeEETom2TD
+         Czlw==
+X-Forwarded-Encrypted: i=1; AHgh+RrQCQAPwCOTGbbNezASbN1uKGQOk5TUnDqvj9decNRogf2B0noP39IO2FEC4Jj0wiH6LSz76HY=@lists.linux.dev
+X-Gm-Message-State: AOJu0YybIJHuiSOD+/ySEljFovAmVlxYccVH8ND90FrcrNeh54wq1Pul
+	QHvwYdRqcv3vk0Hjm3dcytzm3hT9uhcgysa2n7vT3+l7tvS40Om04iuC/UD7a/o8XY6+06OlNJO
+	nVnaDIRWBf6edAD74sYiRm/r3LBxvsWaTgz8NezN0
+X-Gm-Gg: AR+sD11DpWEsQiIeWwJiXrRn0nN6aUg5VPySnK1apmiahafbZ1opglPxp9GFwlUOPtq
+	XJ1FOhwf1EGLp6uK3G1OgCfT08sOrcuXw0DGYYWaoEwbdnUHqLn95hdd4SGEBrcw6OhXodoW+2E
+	OfRJwt69BsQ6aFnrtGxLsj92wHE3vJZeml3ShlMuWFDDAHMJQPpQLa9hPGt85GktxI/KtkxHuTJ
+	Eky0fZMptzCM4wgdTI2RkE8/ppdmly72MDOqOnTztKPKuqRCqrfikNKU69krHCQZnKoV5B9P4jR
+	dIg8ys7HdJOp0ykIv0DaMNPSODy/LFyvvMU9yozRcQ0ZWED4RTjOP0mLpwSTNXO4J276tIpjI6g
+	910WgdlyrHPBhlNKuG+1IhGPYbZ19TBTodRGKNbfwRPB1nnL4n2HdKb5Y4oyqp+Xa/U4IWdzCZR
+	+hFH+0LL5Yun0c
+X-Received: by 2002:a05:6820:2d0a:b0:6aa:f585:aabe with SMTP id
+ 006d021491bc7-6ae96d16ee6mr7799632eaf.15.1786029689768; Thu, 06 Aug 2026
+ 08:21:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Thu,  6 Aug 2026 15:00:37 +0000 (UTC)
+References: <6a749d86.01d0871a.3a0d52.001d.GAE@google.com>
+In-Reply-To: <6a749d86.01d0871a.3a0d52.001d.GAE@google.com>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Thu, 6 Aug 2026 17:21:18 +0200
+X-Gm-Features: AUfX_mzOfVGj5c6L5gETJpxWBjNrXERSzkDeUXhGiHKjYmyKkvi1P5Wo3Ixv_JE
+Message-ID: <CANp29Y6q_buFNw1EU8hz7DYQ3x8WpbStX_oSb2CTDCTbX3-94g@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: netfilter: switch ipset to rhashtable
+To: syzbot ci <syzbot+ci5efd086adca92588@syzkaller.appspotmail.com>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-In exfat, an I/O error during sync_blockdev() triggers the error handler
-(__exfat_fs_error()), which directly sets SB_RDONLY without holding the
-s_umount semaphore. If thaw_super() is called after this, it sees the
-filesystem as read-only and skips releasing the freeze semaphores. When the
-filesystem is later unmounted and destroyed, the s_writers.rw_sem per-CPU
-rw-semaphores are freed while still held for write, triggering a warning in
-rcu_sync_dtor():
+#syz upstream
 
-WARNING: kernel/rcu/sync.c:177 at rcu_sync_dtor+0xcd/0x180
-Call Trace:
- <TASK>
- percpu_free_rwsem+0x43/0x80 kernel/locking/percpu-rwsem.c:42
- destroy_super_work+0x217/0x310 fs/super.c:284
- process_one_work kernel/workqueue.c:3322 [inline]
- process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-
-Fix this by introducing an internal EXFAT_FLAGS_ERROR_RO flag instead of
-directly setting SB_RDONLY on error. This prevents confusing the VFS freeze
-logic and allows thaw_super() to correctly release the semaphores. We also
-add the exfat_check_writable() helper to check both EXFAT_FLAGS_SHUTDOWN
-and EXFAT_FLAGS_ERROR_RO, and use it to reject write operations when the
-filesystem is in an error-induced read-only state.
-
-A separate EXFAT_FLAGS_ERROR_RO flag is used instead of reusing
-EXFAT_FLAGS_SHUTDOWN because reads, fsync, and writeback of already-dirty
-data must keep working when the filesystem is in an error-induced read-only
-state, so only modifying operations are rejected with -EROFS.
-
-Fixes: f761fcdd289d ("exfat: Implement sops->shutdown and ioctl")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+823cd0d24881f21ab9f1@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=823cd0d24881f21ab9f1
-Link: https://syzkaller.appspot.com/ai_job?id=11376f36-01ae-409d-9d3b-0b3206678981
-To: "Namjae Jeon" <linkinjeon@kernel.org>
-To: <linux-fsdevel@vger.kernel.org>
-To: "Sungjong Seo" <sj1557.seo@samsung.com>
-To: "Dongliang Cui" <dongliang.cui@unisoc.com>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Yuezhang Mo" <yuezhang.mo@sony.com>
-
----
-v3:
-- Wrapped long lines in exfat_check_writable() and __exfat_fs_error() to comply with coding style guidelines.
-- Updated the commit description to explain why EXFAT_FLAGS_ERROR_RO is used instead of EXFAT_FLAGS_SHUTDOWN.
-
-v2:
-- Dropped the fs/super.c changes to handle rollback of freeze on sync_blockdev failure.
-- Fixed the issue entirely inside exfat by introducing an internal EXFAT_FLAGS_ERROR_RO flag instead of directly setting SB_RDONLY.
-- Added exfat_check_writable() helper to check both EXFAT_FLAGS_SHUTDOWN and EXFAT_FLAGS_ERROR_RO.
-- Updated write paths in exfat to use exfat_check_writable().
-- Cleared EXFAT_FLAGS_ERROR_RO in exfat_reconfigure() when remounting read-write.
-https://lore.kernel.org/all/8a80967c-5201-4c6a-a2b2-521c49cd5e93@mail.kernel.org/T/
-
-v1:
-https://lore.kernel.org/all/fcc77fd9-e38f-49f9-8268-e86683444f29@mail.kernel.org/T/
----
-diff --git a/fs/exfat/exfat_fs.h b/fs/exfat/exfat_fs.h
-index 9be50949c..cffac6590 100644
---- a/fs/exfat/exfat_fs.h
-+++ b/fs/exfat/exfat_fs.h
-@@ -122,6 +122,7 @@ enum {
- 
- /* Superblock flags */
- #define EXFAT_FLAGS_SHUTDOWN	1
-+#define EXFAT_FLAGS_ERROR_RO	2
- 
- struct exfat_dentry_namebuf {
- 	char *lfn;
-@@ -320,6 +321,16 @@ static inline int exfat_forced_shutdown(struct super_block *sb)
- 	return test_bit(EXFAT_FLAGS_SHUTDOWN, &EXFAT_SB(sb)->s_exfat_flags);
- }
- 
-+static inline int exfat_check_writable(struct super_block *sb)
-+{
-+	if (unlikely(exfat_forced_shutdown(sb)))
-+		return -EIO;
-+	if (unlikely(test_bit(EXFAT_FLAGS_ERROR_RO,
-+			&EXFAT_SB(sb)->s_exfat_flags)))
-+		return -EROFS;
-+	return 0;
-+}
-+
- /*
-  * If ->i_mode can't hold 0222 (i.e. ATTR_RO), we use ->i_attrs to
-  * save ATTR_RO instead of ->i_mode.
-diff --git a/fs/exfat/file.c b/fs/exfat/file.c
-index 5fc13378d..b6afeede2 100644
---- a/fs/exfat/file.c
-+++ b/fs/exfat/file.c
-@@ -125,8 +125,9 @@ static long exfat_fallocate(struct file *file, int mode,
- 	if (!S_ISREG(inode->i_mode))
- 		return -EOPNOTSUPP;
- 
--	if (unlikely(exfat_forced_shutdown(inode->i_sb)))
--		return -EIO;
-+	err = exfat_check_writable(inode->i_sb);
-+	if (err)
-+		return err;
- 
- 	inode_lock(inode);
- 
-@@ -354,8 +355,9 @@ int exfat_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
- 	unsigned int ia_valid;
- 	int error;
- 
--	if (unlikely(exfat_forced_shutdown(inode->i_sb)))
--		return -EIO;
-+	error = exfat_check_writable(inode->i_sb);
-+	if (error)
-+		return error;
- 
- 	if ((attr->ia_valid & ATTR_SIZE) &&
- 	    attr->ia_size > i_size_read(inode)) {
-@@ -738,8 +740,9 @@ static ssize_t exfat_file_write_iter(struct kiocb *iocb, struct iov_iter *iter)
- 	loff_t valid_size;
- 	int err;
- 
--	if (unlikely(exfat_forced_shutdown(inode->i_sb)))
--		return -EIO;
-+	ret = exfat_check_writable(inode->i_sb);
-+	if (ret < 0)
-+		return ret;
- 
- 	inode_lock(inode);
- 
-@@ -826,6 +829,11 @@ static vm_fault_t exfat_page_mkwrite(struct vm_fault *vmf)
- 	struct exfat_inode_info *ei = EXFAT_I(inode);
- 	vm_fault_t ret;
- 	loff_t new_valid_size, mmap_valid_size;
-+	int err;
-+
-+	err = exfat_check_writable(inode->i_sb);
-+	if (err)
-+		return vmf_fs_error(err);
- 
- 	if (!inode_trylock(inode))
- 		return VM_FAULT_RETRY;
-@@ -835,8 +843,6 @@ static vm_fault_t exfat_page_mkwrite(struct vm_fault *vmf)
- 
- 	if (ei->valid_size < new_valid_size) {
- 		if (ei->zeroed_size < mmap_valid_size) {
--			int err;
--
- 			/*
- 			 * Only zero the range that hasn't been zeroed yet for
- 			 * this mmap write path. zeroed_size tracks the largest
-diff --git a/fs/exfat/misc.c b/fs/exfat/misc.c
-index 6f11a96a4..d5cd5b9a6 100644
---- a/fs/exfat/misc.c
-+++ b/fs/exfat/misc.c
-@@ -41,8 +41,9 @@ void __exfat_fs_error(struct super_block *sb, int report, const char *fmt, ...)
- 		panic("exFAT-fs (%s): fs panic from previous error\n",
- 			sb->s_id);
- 	} else if (opts->errors == EXFAT_ERRORS_RO && !sb_rdonly(sb)) {
--		sb->s_flags |= SB_RDONLY;
--		exfat_err(sb, "Filesystem has been set read-only");
-+		if (!test_and_set_bit(EXFAT_FLAGS_ERROR_RO,
-+				&EXFAT_SB(sb)->s_exfat_flags))
-+			exfat_err(sb, "Filesystem has been set read-only");
- 	}
- }
- 
-diff --git a/fs/exfat/namei.c b/fs/exfat/namei.c
-index b7d5e44ad..f08170de6 100644
---- a/fs/exfat/namei.c
-+++ b/fs/exfat/namei.c
-@@ -547,8 +547,9 @@ static int exfat_create(struct mnt_idmap *idmap, struct inode *dir,
- 	int err;
- 	loff_t size = i_size_read(dir);
- 
--	if (unlikely(exfat_forced_shutdown(sb)))
--		return -EIO;
-+	err = exfat_check_writable(sb);
-+	if (err)
-+		return err;
- 
- 	mutex_lock(&EXFAT_SB(sb)->s_lock);
- 	exfat_set_volume_dirty(sb);
-@@ -765,10 +766,11 @@ static int exfat_unlink(struct inode *dir, struct dentry *dentry)
- 	struct inode *inode = dentry->d_inode;
- 	struct exfat_inode_info *ei = EXFAT_I(inode);
- 	struct exfat_entry_set_cache es;
--	int err = 0;
-+	int err;
- 
--	if (unlikely(exfat_forced_shutdown(sb)))
--		return -EIO;
-+	err = exfat_check_writable(sb);
-+	if (err)
-+		return err;
- 
- 	mutex_lock(&EXFAT_SB(sb)->s_lock);
- 	if (ei->dir.dir == DIR_DELETED) {
-@@ -820,8 +822,9 @@ static struct dentry *exfat_mkdir(struct mnt_idmap *idmap, struct inode *dir,
- 	int err;
- 	loff_t size = i_size_read(dir);
- 
--	if (unlikely(exfat_forced_shutdown(sb)))
--		return ERR_PTR(-EIO);
-+	err = exfat_check_writable(sb);
-+	if (err)
-+		return ERR_PTR(err);
- 
- 	mutex_lock(&EXFAT_SB(sb)->s_lock);
- 	exfat_set_volume_dirty(sb);
-@@ -911,8 +914,9 @@ static int exfat_rmdir(struct inode *dir, struct dentry *dentry)
- 	struct exfat_entry_set_cache es;
- 	int err;
- 
--	if (unlikely(exfat_forced_shutdown(sb)))
--		return -EIO;
-+	err = exfat_check_writable(sb);
-+	if (err)
-+		return err;
- 
- 	mutex_lock(&EXFAT_SB(inode->i_sb)->s_lock);
- 
-@@ -995,9 +999,6 @@ static int exfat_rename_file(struct inode *parent_inode,
- 	int sync = IS_DIRSYNC(parent_inode);
- 	unsigned int num_extra_entries, num_total_entries;
- 
--	if (unlikely(exfat_forced_shutdown(sb)))
--		return -EIO;
--
- 	num_new_entries = exfat_calc_num_entries(p_uniname);
- 	if (num_new_entries < 0)
- 		return num_new_entries;
-@@ -1267,6 +1268,10 @@ static int exfat_rename(struct mnt_idmap *idmap,
- 	if (flags & ~RENAME_NOREPLACE)
- 		return -EINVAL;
- 
-+	err = exfat_check_writable(sb);
-+	if (err)
-+		return err;
-+
- 	mutex_lock(&EXFAT_SB(sb)->s_lock);
- 	old_inode = old_dentry->d_inode;
- 	new_inode = new_dentry->d_inode;
-diff --git a/fs/exfat/super.c b/fs/exfat/super.c
-index 388db271c..dcb6e15e4 100644
---- a/fs/exfat/super.c
-+++ b/fs/exfat/super.c
-@@ -807,6 +807,9 @@ static int exfat_reconfigure(struct fs_context *fc)
- 
- 	swap(*cur_opts, *new_opts);
- 
-+	if (!(fc->sb_flags & SB_RDONLY))
-+		clear_bit(EXFAT_FLAGS_ERROR_RO, &sbi->s_exfat_flags);
-+
- 	return 0;
- }
- 
-
-
-base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On Thu, Aug 6, 2026 at 4:43=E2=80=AFPM syzbot ci
+<syzbot+ci5efd086adca92588@syzkaller.appspotmail.com> wrote:
+>
+> syzbot ci has tested the following series
+>
+> [v1] netfilter: switch ipset to rhashtable
+> https://lore.kernel.org/all/20260806101947.2802-1-fw@strlen.de
+> * [PATCH nf 1/7] netfilter: ipset: remove need to allocate memory on dele=
+te operations
+> * [PATCH nf 2/7] netfilter: ipset: let destroy callbacks adjust ext mem s=
+ize
+> * [PATCH nf 3/7] netfilter: ipset: add rhashtable boilerplate stubs
+> * [PATCH nf 4/7] netfilter: ipset: add rhltable boilerplate stubs
+> * [PATCH nf 5/7] netfilter: ipset: replace internal hash table with rhash=
+table
+> * [PATCH nf 6/7] netfilter: ipset: re-add forceadd support for rhashtable
+> * [PATCH nf 7/7] netfilter: ipset: also report mem size for cidr storage =
+to userspace
+>
+> and found the following issues:
+> * UBSAN: shift-out-of-bounds in hash_netiface6_head
+> * UBSAN: shift-out-of-bounds in hash_netportnet6_head
+>
+> Full report is available here:
+> https://ci.syzbot.org/series/e7969a90-d2b3-4da4-8795-4c3794dae0f0
+>
+> ***
+>
+> UBSAN: shift-out-of-bounds in hash_netiface6_head
+>
+> tree:      nf
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfi=
+lter/nf.git
+> base:      44871eadd07a7f004aa00cb87399461eea08c630
+> arch:      amd64
+> compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~e=
+xp1~20260613092250.77), Debian LLD 22.1.8
+> config:    https://ci.syzbot.org/builds/81d26051-7806-406c-9355-fbf52dca8=
+f68/config
+> syz repro: https://ci.syzbot.org/findings/cb9f585e-5753-41c6-b732-20d1d77=
+f5564/syz_repro
+>
+> ------------[ cut here ]------------
+> UBSAN: shift-out-of-bounds in net/netfilter/ipset/ip_set_hash_gen.h:1120:=
+46
+> shift exponent 32 is too large for 32-bit type 'u32' (aka 'unsigned int')
+> CPU: 1 UID: 0 PID: 5865 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
+>  __ubsan_handle_shift_out_of_bounds+0x36d/0x400 lib/ubsan.c:494
+>  hash_netiface6_head+0x89e/0x970 net/netfilter/ipset/ip_set_hash_gen.h:11=
+20
+>  ip_set_dump_do+0x1476/0x1920 net/netfilter/ipset/ip_set_core.c:1664
+>  netlink_dump+0x711/0xee0 net/netlink/af_netlink.c:2331
+>  __netlink_dump_start+0x589/0x7b0 net/netlink/af_netlink.c:2446
+>  netlink_dump_start include/linux/netlink.h:341 [inline]
+>  ip_set_dump+0x15b/0x1f0 net/netfilter/ipset/ip_set_core.c:1730
+>  nfnetlink_rcv_msg+0xcc2/0x12b0 net/netfilter/nfnetlink.c:300
+>  netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2556
+>  nfnetlink_rcv+0x2b9/0x28c0 net/netfilter/nfnetlink.c:667
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+>  netlink_unicast+0x7bb/0x940 net/netlink/af_netlink.c:1345
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+>  sock_sendmsg_nosec+0x13a/0x180 net/socket.c:775
+>  __sock_sendmsg net/socket.c:790 [inline]
+>  ____sys_sendmsg+0x54e/0x850 net/socket.c:2684
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2738
+>  __sys_sendmsg net/socket.c:2770 [inline]
+>  __do_sys_sendmsg net/socket.c:2775 [inline]
+>  __se_sys_sendmsg net/socket.c:2773 [inline]
+>  __x64_sys_sendmsg+0x1b1/0x290 net/socket.c:2773
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7f7b3159e019
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f7b323e2028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007f7b31825fa0 RCX: 00007f7b3159e019
+> RDX: 0000000000008080 RSI: 0000200000000180 RDI: 0000000000000004
+> RBP: 00007f7b3163500c R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007f7b31826038 R14: 00007f7b31825fa0 R15: 00007ffdc35054d8
+>  </TASK>
+> ---[ end trace ]---
+>
+>
+> ***
+>
+> UBSAN: shift-out-of-bounds in hash_netportnet6_head
+>
+> tree:      nf
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfi=
+lter/nf.git
+> base:      44871eadd07a7f004aa00cb87399461eea08c630
+> arch:      amd64
+> compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~e=
+xp1~20260613092250.77), Debian LLD 22.1.8
+> config:    https://ci.syzbot.org/builds/81d26051-7806-406c-9355-fbf52dca8=
+f68/config
+> syz repro: https://ci.syzbot.org/findings/0f098de1-ac6a-4b30-8a0d-ea1586a=
+67851/syz_repro
+>
+> ------------[ cut here ]------------
+> UBSAN: shift-out-of-bounds in net/netfilter/ipset/ip_set_hash_gen.h:1120:=
+46
+> shift exponent 32 is too large for 32-bit type 'u32' (aka 'unsigned int')
+> CPU: 1 UID: 0 PID: 5838 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
+>  __ubsan_handle_shift_out_of_bounds+0x36d/0x400 lib/ubsan.c:494
+>  hash_netportnet6_head+0x97a/0xa40 net/netfilter/ipset/ip_set_hash_gen.h:=
+1120
+>  ip_set_dump_do+0x1476/0x1920 net/netfilter/ipset/ip_set_core.c:1664
+>  netlink_dump+0x711/0xee0 net/netlink/af_netlink.c:2331
+>  __netlink_dump_start+0x589/0x7b0 net/netlink/af_netlink.c:2446
+>  netlink_dump_start include/linux/netlink.h:341 [inline]
+>  ip_set_dump+0x15b/0x1f0 net/netfilter/ipset/ip_set_core.c:1730
+>  nfnetlink_rcv_msg+0xcc2/0x12b0 net/netfilter/nfnetlink.c:300
+>  netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2556
+>  nfnetlink_rcv+0x2b9/0x28c0 net/netfilter/nfnetlink.c:667
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+>  netlink_unicast+0x7bb/0x940 net/netlink/af_netlink.c:1345
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+>  sock_sendmsg_nosec+0x13a/0x180 net/socket.c:775
+>  __sock_sendmsg net/socket.c:790 [inline]
+>  ____sys_sendmsg+0x54e/0x850 net/socket.c:2684
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2738
+>  __sys_sendmsg net/socket.c:2770 [inline]
+>  __do_sys_sendmsg net/socket.c:2775 [inline]
+>  __se_sys_sendmsg net/socket.c:2773 [inline]
+>  __x64_sys_sendmsg+0x1b1/0x290 net/socket.c:2773
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7f44dc59e019
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f44dd41d028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007f44dc825fa0 RCX: 00007f44dc59e019
+> RDX: 0000000000000000 RSI: 0000200000000200 RDI: 0000000000000004
+> RBP: 00007f44dc63500c R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007f44dc826038 R14: 00007f44dc825fa0 R15: 00007ffdbc9c05c8
+>  </TASK>
+> ---[ end trace ]---
+>
+>
+> ***
+>
+> If these findings have caused you to resend the series or submit a
+> separate fix, please add the following tag to your commit message:
+>   Tested-by: syzbot@syzkaller.appspotmail.com
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+>
+> To test a patch for this bug, please reply with `#syz test`
+> (should be on a separate line).
+>
+> The patch should be attached to the email.
+> Note: arguments like custom git repos and branches are not supported.
+>
+> The email will later be sent to:
+> [fw@strlen.de kadlec@netfilter.org netfilter-devel@vger.kernel.org]
+>
+> If the report looks fine to you, reply with:
+> #syz upstream
+>
+> If the report is a false positive, reply with
+> #syz invalid
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/6a749d86.01d0871a.3a0d52.001d.GAE%40google.com.
