@@ -1,93 +1,209 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 716A52F7F12;
-	Thu,  6 Aug 2026 14:43:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83BCD47988D
+	for <syzbot@lists.linux.dev>; Thu,  6 Aug 2026 14:43:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786027397; cv=none; b=WlaEIASkWjp8ZovI4V9B6Chd6aMpMNi6/3z2UsfbRtD/oG3ZRF0jyUGVVa7M5184oq7At1Gn+Ekq1gQ7CuWT+f129OR6K3urooOQaehL4f/cld8wa0vBqrBJHlYsKFqd4vR2RTlacpWKjVb+w0NckWetet31Q8r/sjbGKiYKNUE=
+	t=1786027401; cv=none; b=eNoMGoJtWzfBW1E/098BC/ddxhCr/RcGmpqmaE4spmQRnIh1SSTooW6uLcv+yoAyiGgUbmyJYncapibyZcqLS5kUb7jqi9GJSBBriBqxaCVODf4fIovAnku40gujC3VlFCciIYMdYeYfQBbvM88n6btH4LyaB8GGj6gm2Dz0flo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786027397; c=relaxed/simple;
-	bh=VgS1WDQXxUeg/akVFfFefVq6TPQGGSVvc+F5LThYrZI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rP4Y7ituTkfY/F/xF6/Cu1/Nb3ynPNnVHgw0xly23lCL147oB0o1Wa0IG9YH0gxjxaDl0XbPLUMKYQbSVYULDwGbCtcNEzeK3yct1AEDWoKYXqw3bRH+lCxK6DDW6ZovpKDqrBCkWHMimMzBd7uaWLLaIeqH3pJO0VPfTsWOZ+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=pB6M1nJY; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="pB6M1nJY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7434F1F00A3D;
-	Thu,  6 Aug 2026 14:43:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1786027396;
-	bh=UJ3jAi2sBzyd7dfaSmaHrafxl8rcwZjgKJV+w1CG/N4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=pB6M1nJYS0T7GRb288Pz6G2Uk5mi5J6ftLKibqWQ5LCgZviGumjznArOO1gFmJl7n
-	 /0McSXYS6P49t8jBhkswXlcefgoQzeyHq9JGALSBWQFKVL5+OJuYwNDCsQz//ASOgw
-	 nohwJyenGLExyqHuw4fJrXChMVwJs+BpPKExfKsE=
-Date: Thu, 6 Aug 2026 16:42:58 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Aleksandr Nogikh <nogikh@google.com>
-Cc: linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Kees Cook <kees@kernel.org>, syzbot@lists.linux.dev,
-	syzbot+7e1e5911f9eac50bedc7@syzkaller.appspotmail.com
-Subject: Re: [PATCH v2] usb: usbtest: disable dynamic ID support
-Message-ID: <2026080612-whomever-abide-ff93@gregkh>
-References: <2026080322-obsessed-daringly-e6df@gregkh>
- <20260806142511.2337081-1-nogikh@google.com>
- <2026080617-gave-widely-c5dc@gregkh>
- <CANp29Y7R1OzK3mo_i6uBxLV6zCgFUVxMgrfozAT-QNivp+gHMg@mail.gmail.com>
+	s=arc-20240116; t=1786027401; c=relaxed/simple;
+	bh=Tx2bR9o7OCKIfzcYmXCLnwQq5N9hRtXuQODjYgqIB/E=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=t8tZSW2EwECAOXL7tXDe9oOJ4XxnjaxO9pF6oCK0e+pIWIb136HxBNIPlfTzQKyEja7fpE2flHfKDxGjCP4XjVDltOdPR4hAWaiRZi8mlrRtGP29MDWvltwiM1iFdrHrAfdnOPbmuZnn3aKMI/fZ0oMS5C1dh4cs+B7ZL83Bjog=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-7e9fc6dc091so1742102a34.2
+        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 07:43:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786027398; x=1786632198;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=34J4CNQaZ5lhdPTPFn4FxD8ltl72uVJwf1DWQ9HMQ+s=;
+        b=eBkN1zSP3v7gul291hFgN2uTP1JwIfFb7Q4iUnqcWSNs5ZKPz4rnm4A4pf+Y35Ubnt
+         kHk9FlAri9/3zGt9tyfNEVFVeExzKSeQlJVSRLWwe1Sly4ouUI3ZM4gJWc0xytoMBFK9
+         DWPErGQvKk2Z/S2+Mm/xCeQiec463MMwdwq/6Ya2YHRoejS7Z3o4bv7NOY35NV0ouAz8
+         nAl9N34LMCnN4ije58OrdMB7AEWO5UL+qvXwTuAu2IB8w2KkiNnLno1CyTWRm4bKQuEy
+         Fy8w9nrliotrBg/sXExXwFMNO8V87S2xAY1fwfuEw6DHldcw4x9x34wgemX6nAhKhb/0
+         cERQ==
+X-Gm-Message-State: AOJu0Yylyj602I8pKnmDw2XTUInwnHFbYoyKowh5VDQIocPRUPVryZhQ
+	woxou41+MDkYnDbOKbwKVaB/wExN2UOZD573XxZKf+XzjC6BTKRH40TYR43knj7g3HuuC1by5UW
+	zhYsx1/9eNa6RmjtkoxCZKgpjcuprSYzm3p42AMPjg1sMVTd//SiZVXx9p2E=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CANp29Y7R1OzK3mo_i6uBxLV6zCgFUVxMgrfozAT-QNivp+gHMg@mail.gmail.com>
+X-Received: by 2002:a05:6820:2909:b0:6ae:8ee4:e01f with SMTP id
+ 006d021491bc7-6ae96c1003amr7760093eaf.4.1786027398441; Thu, 06 Aug 2026
+ 07:43:18 -0700 (PDT)
+Date: Thu, 06 Aug 2026 07:43:18 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a749d86.01d0871a.3a0d52.001d.GAE@google.com>
+Subject: [moderation/CI] Re: netfilter: switch ipset to rhashtable
+From: syzbot ci <syzbot+ci5efd086adca92588@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Aug 06, 2026 at 04:35:12PM +0200, Aleksandr Nogikh wrote:
-> On Thu, Aug 6, 2026 at 4:32 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Thu, Aug 06, 2026 at 02:25:11PM +0000, Aleksandr Nogikh wrote:
-> > > The usbtest driver relies on the driver_info field of struct usb_device_id
-> > > to point to a valid struct usbtest_info descriptor. This structure contains
-> > > essential test configurations, such as endpoint addresses and test modes,
-> > > which are required during probe.
-> > >
-> > > When a user dynamically adds a new device ID via the sysfs new_id
-> > > interface without specifying a reference device, the USB core initializes
-> > > driver_info to 0 (NULL). When a matching device is subsequently probed,
-> > > usbtest_probe() unconditionally casts driver_info to a struct usbtest_info
-> > > pointer and dereferences it, leading to a NULL pointer dereference crash:
-> > >
-> > >   Oops: general protection fault, probably for non-canonical address
-> > >   0xdffffc0000000001: 0000 [#1] SMP KASAN NOPTI
-> > >   KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-> > >   RIP: 0010:usbtest_probe+0x3b9/0x1280 drivers/usb/misc/usbtest.c:2822
-> > >
-> > > Because usbtest strictly requires pre-defined usbtest_info descriptors
-> > > to function, dynamic ID binding via sysfs is fundamentally unsupported
-> > > for this driver.
-> > >
-> > > Fix this by setting .no_dynamic_id = 1 on usbtest_driver. This instructs
-> > > the USB core to skip creating the new_id and remove_id sysfs interfaces
-> > > for usbtest, preventing invalid dynamic ID entries from being created.
-> > >
-> > > Reported-by: syzbot+7e1e5911f9eac50bedc7@syzkaller.appspotmail.com
-> > > Closes: https://syzkaller.appspot.com/bug?extid=7e1e5911f9eac50bedc7
-> > > Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
-> >
-> > Shouldn't this also get a cc: stable?
-> 
-> Is there (in general) value in cc: stable without a Fixes: tag?
+syzbot ci has tested the following series
 
-Very much so.  Don't you want this in stable trees so that your syzbot
-runs on the older kernels don't fail horribly?  If not, then hey,
-waiting for newer releases is fine with me, but I got the impression
-this was a good thing to fix :)
+[v1] netfilter: switch ipset to rhashtable
+https://lore.kernel.org/all/20260806101947.2802-1-fw@strlen.de
+* [PATCH nf 1/7] netfilter: ipset: remove need to allocate memory on delete operations
+* [PATCH nf 2/7] netfilter: ipset: let destroy callbacks adjust ext mem size
+* [PATCH nf 3/7] netfilter: ipset: add rhashtable boilerplate stubs
+* [PATCH nf 4/7] netfilter: ipset: add rhltable boilerplate stubs
+* [PATCH nf 5/7] netfilter: ipset: replace internal hash table with rhashtable
+* [PATCH nf 6/7] netfilter: ipset: re-add forceadd support for rhashtable
+* [PATCH nf 7/7] netfilter: ipset: also report mem size for cidr storage to userspace
 
-thanks,
+and found the following issues:
+* UBSAN: shift-out-of-bounds in hash_netiface6_head
+* UBSAN: shift-out-of-bounds in hash_netportnet6_head
 
-greg k-h
+Full report is available here:
+https://ci.syzbot.org/series/e7969a90-d2b3-4da4-8795-4c3794dae0f0
+
+***
+
+UBSAN: shift-out-of-bounds in hash_netiface6_head
+
+tree:      nf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf.git
+base:      44871eadd07a7f004aa00cb87399461eea08c630
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/81d26051-7806-406c-9355-fbf52dca8f68/config
+syz repro: https://ci.syzbot.org/findings/cb9f585e-5753-41c6-b732-20d1d77f5564/syz_repro
+
+------------[ cut here ]------------
+UBSAN: shift-out-of-bounds in net/netfilter/ipset/ip_set_hash_gen.h:1120:46
+shift exponent 32 is too large for 32-bit type 'u32' (aka 'unsigned int')
+CPU: 1 UID: 0 PID: 5865 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
+ __ubsan_handle_shift_out_of_bounds+0x36d/0x400 lib/ubsan.c:494
+ hash_netiface6_head+0x89e/0x970 net/netfilter/ipset/ip_set_hash_gen.h:1120
+ ip_set_dump_do+0x1476/0x1920 net/netfilter/ipset/ip_set_core.c:1664
+ netlink_dump+0x711/0xee0 net/netlink/af_netlink.c:2331
+ __netlink_dump_start+0x589/0x7b0 net/netlink/af_netlink.c:2446
+ netlink_dump_start include/linux/netlink.h:341 [inline]
+ ip_set_dump+0x15b/0x1f0 net/netfilter/ipset/ip_set_core.c:1730
+ nfnetlink_rcv_msg+0xcc2/0x12b0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2b9/0x28c0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x7bb/0x940 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec+0x13a/0x180 net/socket.c:775
+ __sock_sendmsg net/socket.c:790 [inline]
+ ____sys_sendmsg+0x54e/0x850 net/socket.c:2684
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2738
+ __sys_sendmsg net/socket.c:2770 [inline]
+ __do_sys_sendmsg net/socket.c:2775 [inline]
+ __se_sys_sendmsg net/socket.c:2773 [inline]
+ __x64_sys_sendmsg+0x1b1/0x290 net/socket.c:2773
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f7b3159e019
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f7b323e2028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f7b31825fa0 RCX: 00007f7b3159e019
+RDX: 0000000000008080 RSI: 0000200000000180 RDI: 0000000000000004
+RBP: 00007f7b3163500c R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f7b31826038 R14: 00007f7b31825fa0 R15: 00007ffdc35054d8
+ </TASK>
+---[ end trace ]---
+
+
+***
+
+UBSAN: shift-out-of-bounds in hash_netportnet6_head
+
+tree:      nf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf.git
+base:      44871eadd07a7f004aa00cb87399461eea08c630
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/81d26051-7806-406c-9355-fbf52dca8f68/config
+syz repro: https://ci.syzbot.org/findings/0f098de1-ac6a-4b30-8a0d-ea1586a67851/syz_repro
+
+------------[ cut here ]------------
+UBSAN: shift-out-of-bounds in net/netfilter/ipset/ip_set_hash_gen.h:1120:46
+shift exponent 32 is too large for 32-bit type 'u32' (aka 'unsigned int')
+CPU: 1 UID: 0 PID: 5838 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
+ __ubsan_handle_shift_out_of_bounds+0x36d/0x400 lib/ubsan.c:494
+ hash_netportnet6_head+0x97a/0xa40 net/netfilter/ipset/ip_set_hash_gen.h:1120
+ ip_set_dump_do+0x1476/0x1920 net/netfilter/ipset/ip_set_core.c:1664
+ netlink_dump+0x711/0xee0 net/netlink/af_netlink.c:2331
+ __netlink_dump_start+0x589/0x7b0 net/netlink/af_netlink.c:2446
+ netlink_dump_start include/linux/netlink.h:341 [inline]
+ ip_set_dump+0x15b/0x1f0 net/netfilter/ipset/ip_set_core.c:1730
+ nfnetlink_rcv_msg+0xcc2/0x12b0 net/netfilter/nfnetlink.c:300
+ netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2556
+ nfnetlink_rcv+0x2b9/0x28c0 net/netfilter/nfnetlink.c:667
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x7bb/0x940 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec+0x13a/0x180 net/socket.c:775
+ __sock_sendmsg net/socket.c:790 [inline]
+ ____sys_sendmsg+0x54e/0x850 net/socket.c:2684
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2738
+ __sys_sendmsg net/socket.c:2770 [inline]
+ __do_sys_sendmsg net/socket.c:2775 [inline]
+ __se_sys_sendmsg net/socket.c:2773 [inline]
+ __x64_sys_sendmsg+0x1b1/0x290 net/socket.c:2773
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f44dc59e019
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f44dd41d028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f44dc825fa0 RCX: 00007f44dc59e019
+RDX: 0000000000000000 RSI: 0000200000000200 RDI: 0000000000000004
+RBP: 00007f44dc63500c R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f44dc826038 R14: 00007f44dc825fa0 R15: 00007ffdbc9c05c8
+ </TASK>
+---[ end trace ]---
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[fw@strlen.de kadlec@netfilter.org netfilter-devel@vger.kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
