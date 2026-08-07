@@ -1,154 +1,195 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A21F4361965
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 06:37:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68C4D3B27F4
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 07:21:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786084666; cv=none; b=QdT6hY0BUeqYtGBTZgf5WRfuNkQa4cOXTwlLdsxcnYRUq4LP4C0EP+v99Hacz/vmDzl3fKh25pxmHx9a5h0fIALcaCOBi/+HkUroTnGoXflhkZrrB+wYRB6c7UBzq8L4x3XyPzeGi/EWjABiLODBmVyGcDM60WSwPVm7LZJ7vek=
+	t=1786087308; cv=none; b=SOXPTE1MAc5GxpMcsHoMKSvSBwqegTjz6I7AVfL9aJTvazSYx9BRINvkwm8le9wrk8M+rZorOUmpjxLh79tbB9ScbQVau0HUO+FsI9+wVd5GDv1ZckQamPqvk7+8yxbb7XB509R8zouxB6WQI4/KqOD0oNGVaa2/TdjSCiD05RQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786084666; c=relaxed/simple;
-	bh=rmUPAXESJoVau+kq7/1HNT3Mj/EpolDaXBtlDwuaEsE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YCpFxiCAwV2wLYOvXYyAVsZ0Bu5KHCL4MBq1VRUA7njmF2jqmQJYBoR+N+3a+exnOQtEYqcnVSpVJaYNx7o0kQMfd8TysdGQgcNqnWKqFbC4jy3mKSEJkSICbt07wrciIDXtExelFNj861dvUzcc0AxdC/353pnV881CzkWCfm4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=openvpn.net; spf=pass smtp.mailfrom=openvpn.com; dkim=pass (2048-bit key) header.d=openvpn.net header.i=@openvpn.net header.b=frUiS11D; arc=none smtp.client-ip=209.85.221.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=openvpn.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=openvpn.com
+	s=arc-20240116; t=1786087308; c=relaxed/simple;
+	bh=sODOpdzjCpH/tq/ElSBVsdqLUkhfKBufQNYjtkcKSoY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Rz5SpQr4trm/mUCtDNSNbH1nE0US5ayzcHYJEv+PWrd893OtMrxWsEsCiRvGOfBuEU2v7NoLOa8Ew32RpDGrXh9zt/Yc6oRXteBVQSTckkTQtsbZOJ/Fv8AwYksDBryq/H8nMvhH3uJSXnFWPX37PGFULgNuGUdxtlt35cXshBU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HNRCUnbF; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=openvpn.net header.i=@openvpn.net header.b="frUiS11D"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-47f84023916so2739575f8f.3
-        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 23:37:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvpn.net; s=google; t=1786084663; x=1786689463; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:organization
-         :autocrypt:from:content-language:references:cc:to:subject:user-agent
-         :mime-version:date:message-id:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=L86XMQZx1Pr+hc/ioaLvvk/7Hsm6pyPOxYwS82SfiwU=;
-        b=frUiS11DBX2dgDdr2exUQnFGhS7uMRFBhVupXXM/lVgpBi6iJ0nmKFlVy3TB4tiJu5
-         NTTtpyAty7ubDrgiXmdr1MivYw35umUGMEHNfJ9PBR2xIEhqcseuzu+Gz9muH5+62KXQ
-         drH6lweDRwVnmzTOyiMUsEJJRubyLQqVCN//KkcD4PM5X+Lo2DoFl5S2Evh+FZp+pWPN
-         P9jBTE8H3kzTAROYFrv92j9mR+Bhiu03e4vjYR8nL8ZNJeOo3OCyeJ6a4K9pHbAIvFRf
-         3cPPoe39xtUka+2FzxYQTPO2+JxtqHQvMSOlFRPEen1nqfA52UAxLzDmD0tZYepvU+Na
-         dxDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786084663; x=1786689463;
-        h=content-transfer-encoding:content-type:in-reply-to:organization
-         :autocrypt:from:content-language:references:cc:to:subject:user-agent
-         :mime-version:date:message-id:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=L86XMQZx1Pr+hc/ioaLvvk/7Hsm6pyPOxYwS82SfiwU=;
-        b=Fdb0czGtUlzj1bxRSnp4HHp94DYZEuAhybrq2r1OLPwry4S0jAFuSCxPtxSgTG78Vu
-         UujKUfkZPrz9Y4bC5Fx569/9lUHIZAKz9RGmC3kV0gs99ilfaEiv8H0TRKeEVqVE/DHL
-         j2YCBn1z5ZMzCF+OYDqOVxQRVoA6m3yfq/qQbYWESPL/TK7BqGHawttjyxQ51yzYcPgS
-         SO9bdd6b9ci9lcgpFoEVfKo1BJZDrgXHwpVjQxFedXuptELZsA8sQ0krlvfKvZGy0Okv
-         qGlScJrAgEpXCNcwOkw8fHekh/6qdr3VLYqXABYyIFovbfy1uOyccC4WOOHIdZqOYC15
-         etoA==
-X-Gm-Message-State: AOJu0Yzo/QUofMOqPmz3JIGTzUGEof4XhQAixHvqyLlqZKwtBgikRzWn
-	HqC8POwIIcF8qN0ARNObC3NcV6iwzfbXuVocec4/Dm6TI39+ZIVJPolb0vUpQYOFv8/n8StgM4m
-	JKmRU39UTxi3OHTaW/hfJKuJhVuaTYAZ+mfpUZVDEgmCvw7xwqwc=
-X-Gm-Gg: AR+sD13LOkKtKWxGx1N5L8R5ja9cINuB2hvHt03lVL7rAW3QAY5576FIap1QLX/vUXG
-	1K8gRaXTc9rDMsu92bJZ+d9CF7UzQnp4eVn427dRO8k8irYYDLSqYmhbvVtuAQlOZlGTMPPdBX3
-	zdiE+k90OmGHuIwn64gEm6gGEc8CHdNvDz5yEWyqRtmabw8BKpLGMJILDrJy8MWirZ0lHMaJVZ3
-	SDHCs1VZYCLV7zZWffE4L5Yack3kv7FbN5GCvFLf6pJFhdeSP3CFEDuUyMX6JoUJt4g4NM33sAy
-	risPayjNiJEPlu88hTHmefWYQKQQFz9xmdUdzElivPlrkP+i6T1C7wjZ+q68FTvkqGK4uXyfrR4
-	uyk23yE0UImSdRAnkilKdEKwDrvGbqlFhyDaIhumgtzK0q97RC4/nnGV9+H+gdsLlho/OSQmVfQ
-	N48VX7hL7YByczi/NUy7AiZOxTFdeL5Rw1CqqGD1ER9y/BoVEevJyPgPfB2XHusGVbjsrf/aZA/
-	Rd6rlgyUWzJDHkeyEOY+9e6tXJQMU+GNRRY534=
-X-Received: by 2002:a5d:588c:0:b0:47f:eca7:ad1a with SMTP id ffacd0b85a97d-47feca7ad3fmr32925617f8f.1.1786084662881;
-        Thu, 06 Aug 2026 23:37:42 -0700 (PDT)
-Received: from ?IPV6:2001:67c:2fbc:1:5ff3:d0c3:bbb9:1151? ([2001:67c:2fbc:1:5ff3:d0c3:bbb9:1151])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-480021e8d50sm2630859f8f.24.2026.08.06.23.37.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Aug 2026 23:37:42 -0700 (PDT)
-Message-ID: <937f09b2-cd5f-4352-90dc-dad67ef8ddf2@openvpn.net>
-Date: Fri, 7 Aug 2026 08:37:39 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HNRCUnbF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 235211F01562
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 07:21:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786087305;
+	bh=6knPXuawpByGmHYtyjqi3P0YpFZD/HtTUFoZPvYRqx8=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=HNRCUnbFaam/k5LgBTYP/e6dtJ7kDEWtYzOhDewwe8Er1hfweJSQYSRyo6dzVkgJQ
+	 eRnrcNOVLNuuVWsQ1aqV5NJ0uAIEDfHGGh+d3ylc39ThDzBeTR0teEYM8wCIJp+SV6
+	 zQ1xH5NBr/Pcs6NuIT1ZoteqSlS8sATsjlD5a+zsl7d/W6wsJjx9AR5C8YfpXVixTq
+	 IYg/kMlenwslbTydnxz5YRtD1jbi6IgpmhtBeYK8h+1oG+UKtsZYeO8kDpPCmJ1w4n
+	 HEXdAMYl6Yio7PLL4ivbbqGxn1hCEXhwMQm8OjUD620gFi38aNjmn+FMP0NRD9VCHm
+	 OSJOF8KAVMxjQ==
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-80e24970f1dso25596877b3.0
+        for <syzbot@lists.linux.dev>; Fri, 07 Aug 2026 00:21:45 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RoXbB1vreg2Epax9B2nK+V9LykeSx67Xf5cBM6HslzVoRvPr9jSjn3X31FBdu3IUHAIfyFrw7c=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzLpomiST8eZ5qMw22anx3i7+Foil0beIebuhyHicvnrmYAbilm
+	Fy9V9qvwbBucbWuRfeDbNi4sNcPx+ilCG1KmoOcJcH7KTtWT9z0wYXvCz9uWeMM/ACXQ+UFO1sj
+	XCBdLAW3W44s2r4TK55WNiOHP7Zl12lfEnFw2yIl7Eg==
+X-Received: by 2002:a05:690c:b98:b0:820:b24:27c7 with SMTP id
+ 00721157ae682-82258a8f2e6mr43057887b3.14.1786087304379; Fri, 07 Aug 2026
+ 00:21:44 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [syzbot ci] Re: pull request: fixes for ovpn 2026-08-07
-To: syzbot ci <syzbot+cifb58fcbd8413e765@syzkaller.appspotmail.com>,
- andrew@lunn.ch, davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- netdev@vger.kernel.org, pabeni@redhat.com, ralf@mandelbit.com,
- sd@queasysnail.net
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-References: <6a756ce9.01d0871a.3a0d52.003b.GAE@google.com>
-Content-Language: en-US
-From: Antonio Quartulli <antonio@openvpn.net>
-Autocrypt: addr=antonio@openvpn.net; keydata=
- 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
- ifS0+hzvnPVD9wXa9kdjO+0H
-Organization: OpenVPN Inc.
-In-Reply-To: <6a756ce9.01d0871a.3a0d52.003b.GAE@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20260806184254.3790858-1-nphamcs@gmail.com> <6a756c71.01d0871a.3a0d52.003a.GAE@google.com>
+In-Reply-To: <6a756c71.01d0871a.3a0d52.003a.GAE@google.com>
+From: Chris Li <chrisl@kernel.org>
+Date: Fri, 7 Aug 2026 00:21:33 -0700
+X-Gmail-Original-Message-ID: <CACePvbVKpkyV7KpUoiYPTUN0MgEcRUzZL71qTL5ePyjHTA3Kbg@mail.gmail.com>
+X-Gm-Features: AUfX_mztVbvHM-WKo6lxh0LLm1G5XKwrWW650OzZbqB3e06Q5YutiaN72WNICvM
+Message-ID: <CACePvbVKpkyV7KpUoiYPTUN0MgEcRUzZL71qTL5ePyjHTA3Kbg@mail.gmail.com>
+Subject: Re: [syzbot ci] Re: Virtual Swap Space (Swap Table Edition)
+To: Nhat Pham <nphamcs@gmail.com>
+Cc: akpm@linux-foundation.org, axelrasmussen@google.com, baohua@kernel.org, 
+	baoquan.he@linux.dev, cgroups@vger.kernel.org, chengming.zhou@linux.dev, 
+	corbet@lwn.net, david@kernel.org, gourry@gourry.net, hannes@cmpxchg.org, 
+	haowenchao22@gmail.com, kasong@tencent.com, kernel-team@meta.com, 
+	liam@infradead.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mm@kvack.org, ljs@kernel.org, mhocko@kernel.org, muchun.song@linux.dev, 
+	qi.zheng@linux.dev, riel@surriel.com, roman.gushchin@linux.dev, 
+	rppt@kernel.org, shakeel.butt@linux.dev, shikemeng@huaweicloud.com, 
+	surenb@google.com, vbabka@kernel.org, weixugc@google.com, yosry@kernel.org, 
+	youngjun.park@lge.com, yuanchu@google.com, syzbot@lists.linux.dev, 
+	syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 07/08/2026 07:28, syzbot ci wrote:
+Hi Nhat,
+
+On Thu, Aug 6, 2026 at 10:26=E2=80=AFPM syzbot ci
+<syzbot+cif942a042aaa8793c@syzkaller.appspotmail.com> wrote:
+>
 > syzbot ci has tested the following series
-> 
-> [v1] pull request: fixes for ovpn 2026-08-07
-> https://lore.kernel.org/all/20260807002250.1817498-1-antonio@openvpn.net
-> * [PATCH net 1/4] ovpn: fix NULL dereference when killing missing key
-> * [PATCH net 2/4] ovpn: finish crypto callback cleanup before peer release
-> * [PATCH net 3/4] ovpn: run deferred work on a module-owned workqueue
-> * [PATCH net 4/4] ovpn: defer key slot crypto freeing to workqueue
-> 
+>
+> [v3] Virtual Swap Space (Swap Table Edition)
+> https://lore.kernel.org/all/20260806184254.3790858-1-nphamcs@gmail.com
+> * [PATCH v3 01/11] mm, swap: add virtual swap device infrastructure
+> * [PATCH v3 02/11] mm, swap: support zswap and zeroswap as vswap backends
+> * [PATCH v3 03/11] mm, swap: prepare the swap IO path for vswap
+> * [PATCH v3 04/11] mm, swap: support physical swap as a vswap backend
+> * [PATCH v3 05/11] mm, swap: enable THP swapin for vswap entries
+> * [PATCH v3 06/11] mm, swap: write back vswap zswap entries to physical s=
+wap
+> * [PATCH v3 07/11] mm, swap: reclaim physical slots backing cache-only vs=
+wap entries
+> * [PATCH v3 08/11] mm, swap: only charge physical swap entries
+> * [PATCH v3 09/11] mm, swap: add debugfs counters for vswap
+> * [PATCH v3 10/11] mm, swap: defer memcg_table allocation for physical sw=
+ap clusters
+> * [PATCH v3 11/11] mm, swap: widen swap_info_struct max/pages to unsigned=
+ long
+>
 > and found the following issue:
-> WARNING in __alloc_workqueue
-> 
+> KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
+>
 > Full report is available here:
-> https://ci.syzbot.org/series/a46f06c7-f8d8-4053-a746-91498a46c290
-> 
+> https://ci.syzbot.org/series/e7da1097-3230-4e50-80cb-1dfafeebea40
+
+Please take a look at the syzbot report and let us know what you think.
+
+Chris
+
+>
 > ***
-> 
-> WARNING in __alloc_workqueue
-
-This is indeed triggered by 3/4.
-
-Will get this addressed and respin the series.
-
-Thanks.
-Regards,
-
-
--- 
-Antonio Quartulli
-OpenVPN Inc.
-
+>
+> KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
+>
+> tree:      linux-next
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/=
+linux-next
+> base:      bacc32cc7de65ffff70080a48eb294f89e434d5e
+> arch:      amd64
+> compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~e=
+xp1~20260613092250.77), Debian LLD 22.1.8
+> config:    https://ci.syzbot.org/builds/4f943657-9481-4637-9b1f-9be1bff18=
+f92/config
+> syz repro: https://ci.syzbot.org/findings/f6c4f1ab-951c-4759-b397-e22c23c=
+3bf32/syz_repro
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instru=
+mented.h:82 [inline]
+> BUG: KASAN: null-ptr-deref in atomic_long_read include/linux/atomic/atomi=
+c-instrumented.h:3188 [inline]
+> BUG: KASAN: null-ptr-deref in __vtable_get mm/vswap.h:147 [inline]
+> BUG: KASAN: null-ptr-deref in vswap_to_phys mm/vswap.h:197 [inline]
+> BUG: KASAN: null-ptr-deref in swap_entry_backend_has_flag+0xfe/0x220 mm/v=
+swap.h:441
+> Read of size 8 at addr 0000000000000000 by task syz.2.20/5818
+>
+> CPU: 1 UID: 0 PID: 5818 Comm: syz.2.20 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  kasan_report+0x117/0x150 mm/kasan/report.c:595
+>  check_region_inline mm/kasan/generic.c:-1 [inline]
+>  kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
+>  instrument_atomic_read include/linux/instrumented.h:82 [inline]
+>  atomic_long_read include/linux/atomic/atomic-instrumented.h:3188 [inline=
+]
+>  __vtable_get mm/vswap.h:147 [inline]
+>  vswap_to_phys mm/vswap.h:197 [inline]
+>  swap_entry_backend_has_flag+0xfe/0x220 mm/vswap.h:441
+>  do_swap_page+0x3c0/0x5620 mm/memory.c:4975
+>  __collapse_huge_page_swapin mm/khugepaged.c:1202 [inline]
+>  collapse_huge_page mm/khugepaged.c:1325 [inline]
+>  mthp_collapse mm/khugepaged.c:1524 [inline]
+>  collapse_scan_pmd mm/khugepaged.c:1786 [inline]
+>  collapse_single_pmd+0x24c6/0x3da0 mm/khugepaged.c:2803
+>  madvise_collapse+0x2cf/0x790 mm/khugepaged.c:3237
+>  madvise_vma_behavior+0x115f/0x4170 mm/madvise.c:1363
+>  madvise_walk_vmas+0x576/0xb00 mm/madvise.c:1712
+>  madvise_do_behavior+0x385/0x540 mm/madvise.c:1907
+>  do_madvise+0x327/0x3a0 mm/madvise.c:2005
+>  __do_sys_madvise mm/madvise.c:2014 [inline]
+>  __se_sys_madvise mm/madvise.c:2012 [inline]
+>  __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7fbcad79e019
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007fbcae5c4028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+> RAX: ffffffffffffffda RBX: 00007fbcada25fa0 RCX: 00007fbcad79e019
+> RDX: 0000000000000019 RSI: 0000000000c00000 RDI: 0000200000000000
+> RBP: 00007fbcad83500c R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007fbcada26038 R14: 00007fbcada25fa0 R15: 00007fff095fa0b8
+>  </TASK>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+>
+> ***
+>
+> If these findings have caused you to resend the series or submit a
+> separate fix, please add the following tag to your commit message:
+>   Tested-by: syzbot@syzkaller.appspotmail.com
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+>
+> To test a patch for this bug, please reply with `#syz test`
+> (should be on a separate line).
+>
+> The patch should be attached to the email.
+> Note: arguments like custom git repos and branches are not supported.
