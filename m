@@ -1,189 +1,152 @@
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F10763B38B1
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 02:11:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ECFC33DEFD
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 02:30:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786068720; cv=none; b=gSLFfPbk0RjhDMX/xEGGiRLH1n2Ph188zQwT/4vnSnaXZL4fdEqYJGJj/F6Ksv/u2E8mASSFOgU9TyPf7ovRQLIB15v7CDN3NjGCQUs1Pl3QHszRdqcgV2Wy1feW1FYdPpykDZQ6wRSEma3ejC2wdjSKFdxXJiCELGqAvMzO7tE=
+	t=1786069810; cv=none; b=ISKN+kV6fINaxW3qz8G+5EEBlCURqelN2Jacy89KGLIwQZiQNKGjQxb/jRexNeK6gGcOiYGa6tzSWaJW5gCfOv/fH+63VmK8mhxWjOFgpw9He9oXZfgIAMqzEJQ1ogtQz0TvrOwqpVL6u0OH58y/lIkHcTh1ps83WcBkb6+rWIM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786068720; c=relaxed/simple;
-	bh=1WECoMc2EYSVL0Nko7rU+H00Qk5h2g9Z0mHjyCYBpls=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=M0+9inA6tQYFaC6i68FNSrBnUG8ZUEdaXLcHLu8lbMGJ0L18ruP4o7uN5k+dfRchZ9/k6e6Ea1LUB8/yLo44I/DAtildLHwJPLqh/H3FIAelkrQjiCyTLMvHe79jZD6wWcNfrAEfL992p6cpZVKQW6nHv3/0/k+kkW8+SlCFLy4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-49d4cb3ca23so3075216b6e.3
-        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 19:11:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786068718; x=1786673518;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=otPd1ksl6C+ICa+OU1DO6JCanDMc5AOJMCQ1T/zJV5U=;
-        b=PofxknAi5Sv1vsnfRK+ucYJSCfLgY7yQQ0VVNHpjYg2YhjK0rx+q9EC0a4CHMdoXpg
-         Ad5ofGseN13bJ5Mh6DFhTENEOOVVHTKsSx8WgKWGCf4FNylLzrilsXuwxsyNPaiOBYtJ
-         sZCx2JgqbSsgwlUtBq6ZEZvwgNvK96jCytkmcqWgOqPumr6bM9EwFb6rnmH1t3AAZi2p
-         hOHk0ZS/kU9arKiBf7n+zQ2HoNg4qdS0vR13K2ZQayIo2ZOr6tJcdUYe2clqoaThuhqb
-         nW5JbgQhkWJTqtW6JZxJSvfkWxvzNfyAQFuMx3RyrH/1Maccg7pDR8vfhhz+I2bGP3lO
-         YMRg==
-X-Gm-Message-State: AOJu0YwrE2W8/8ngDOH/3fYSCMlqhunb8eIBCksCMYrq2tRy3IGom17y
-	FqY4Ro8MBL7A91P/N5W1yQRRNpl+4TxryK2ULVG2eWcAnlxY5BdQtqbe8YX8c1vD9AbrSpQFpUV
-	2LVL4Zj1PLTQESSon6h9jx8TV1ulYvYu4Ac6WPgzKX0YjN6u4U7IKnbrCHHI=
+	s=arc-20240116; t=1786069810; c=relaxed/simple;
+	bh=In9wSjitMdfIe1fsdW5TGoMy+rfz5Ilj9/DMl2x0mLM=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=IesXLAzpuLxY02YudZUYoOxD3a8frjFdixuu+mz5YwL1wjukyQaiCrEed0VsolQ+ebTn//YiydVIzm1e4W1lhxFo6ICCAPUF9+msP1ePVx0LaXlwG1AZMKw+uOmgOpV59pdNSbCfojM8w9JkRN9mJIjDT+WDq3WmAv+W/9du1jo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iKcWrIqE; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iKcWrIqE"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id AD1BE1F00A3A;
+	Fri,  7 Aug 2026 02:30:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786069807;
+	bh=pwPt+ZglWQzJOL3mof72eQrkhqRDWzmf5q1S/KWW6gQ=;
+	h=From:To:Cc:Subject:Date;
+	b=iKcWrIqEz+vcbwXzgl58plx9C6aErPwTEWEg7b0zw3uKGNkkA8zKcEOvBbwyMgThV
+	 SSHlIsLp08NQqG7vj7QaYXazJ7CFB3mVCKcD3fushQRKGFFjjjZ76geCeiZlV6eOAx
+	 bGsao+rC+2x8ZfUDKNF+NBjOLyM9gHV21+Jtln4ZYIYglyVmxISdgTIo95Y3k2hCty
+	 7NwFcVmhZFUKE0zOf+l05bUgDb4nmjt/IvrqtJDRgQDRB9FASyYHz+DocmMSACZ6x2
+	 tUQEIZ/0tUse+G6fnmZfue+9568QZiU7vPFGZVj+Co9VnBvRcb4ubNC27ZZouYtZsA
+	 KLDTe4noUqRyg==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] USB: serial: spcp8x5: drop carrier_raised callback
+Message-ID: <c523fe26-ff24-4e16-ab25-440592b4f565@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1910:b0:495:f519:70f0 with SMTP id
- 5614622812f47-4afae01bf6emr11339882b6e.19.1786068717905; Thu, 06 Aug 2026
- 19:11:57 -0700 (PDT)
-Date: Thu, 06 Aug 2026 19:11:57 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a753eed.01d0871a.3a0d52.0037.GAE@google.com>
-Subject: [moderation/CI] Re: Virtual Swap Space (Swap Table Edition)
-From: syzbot ci <syzbot+ci0044aa36144eea42@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Fri,  7 Aug 2026 02:30:07 +0000 (UTC)
 
-syzbot ci has tested the following series
+When a TTY device is opened, the generic TTY layer calls
+tty_port_block_til_ready() to wait for the carrier detect (DCD) line to be
+raised. This function sets the task state to TASK_INTERRUPTIBLE and then
+calls the driver's .carrier_raised callback.
 
-[v3] Virtual Swap Space (Swap Table Edition)
-https://lore.kernel.org/all/20260806184254.3790858-1-nphamcs@gmail.com
-* [PATCH v3 01/11] mm, swap: add virtual swap device infrastructure
-* [PATCH v3 02/11] mm, swap: support zswap and zeroswap as vswap backends
-* [PATCH v3 03/11] mm, swap: prepare the swap IO path for vswap
-* [PATCH v3 04/11] mm, swap: support physical swap as a vswap backend
-* [PATCH v3 05/11] mm, swap: enable THP swapin for vswap entries
-* [PATCH v3 06/11] mm, swap: write back vswap zswap entries to physical swa=
-p
-* [PATCH v3 07/11] mm, swap: reclaim physical slots backing cache-only vswa=
-p entries
-* [PATCH v3 08/11] mm, swap: only charge physical swap entries
-* [PATCH v3 09/11] mm, swap: add debugfs counters for vswap
-* [PATCH v3 10/11] mm, swap: defer memcg_table allocation for physical swap=
- clusters
-* [PATCH v3 11/11] mm, swap: widen swap_info_struct max/pages to unsigned l=
-ong
+In the spcp8x5 driver, the spcp8x5_carrier_raised() callback calls
+spcp8x5_get_msr(), which allocates memory with GFP_KERNEL and sends a USB
+control message. Both of these operations can sleep. Calling sleeping
+functions while the task state is TASK_INTERRUPTIBLE is invalid and
+triggers a __might_sleep warning:
 
-and found the following issue:
-KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
-
-Full report is available here:
-https://ci.syzbot.org/series/e7da1097-3230-4e50-80cb-1dfafeebea40
-
-***
-
-KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
-
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
-nux-next
-base:      bacc32cc7de65ffff70080a48eb294f89e434d5e
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
-1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/4f943657-9481-4637-9b1f-9be1bff18f9=
-2/config
-syz repro: https://ci.syzbot.org/findings/f6c4f1ab-951c-4759-b397-e22c23c3b=
-f32/syz_repro
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instrume=
-nted.h:82 [inline]
-BUG: KASAN: null-ptr-deref in atomic_long_read include/linux/atomic/atomic-=
-instrumented.h:3188 [inline]
-BUG: KASAN: null-ptr-deref in __vtable_get mm/vswap.h:147 [inline]
-BUG: KASAN: null-ptr-deref in vswap_to_phys mm/vswap.h:197 [inline]
-BUG: KASAN: null-ptr-deref in swap_entry_backend_has_flag+0xfe/0x220 mm/vsw=
-ap.h:441
-Read of size 8 at addr 0000000000000000 by task syz.2.20/5818
-
-CPU: 1 UID: 0 PID: 5818 Comm: syz.2.20 Not tainted syzkaller #0 PREEMPT(ful=
-l)=20
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
-.2-1 04/01/2014
+do not call blocking ops when !TASK_RUNNING; state=1 set at
+[<ffffffff819e7a64>] prepare_to_wait+0x174/0x210 kernel/sched/wait.c:256
+WARNING: kernel/sched/core.c:9124 at __might_sleep+0x92/0xf0
+kernel/sched/core.c:9120
+...
 Call Trace:
  <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- check_region_inline mm/kasan/generic.c:-1 [inline]
- kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
- instrument_atomic_read include/linux/instrumented.h:82 [inline]
- atomic_long_read include/linux/atomic/atomic-instrumented.h:3188 [inline]
- __vtable_get mm/vswap.h:147 [inline]
- vswap_to_phys mm/vswap.h:197 [inline]
- swap_entry_backend_has_flag+0xfe/0x220 mm/vswap.h:441
- do_swap_page+0x3c0/0x5620 mm/memory.c:4975
- __collapse_huge_page_swapin mm/khugepaged.c:1202 [inline]
- collapse_huge_page mm/khugepaged.c:1325 [inline]
- mthp_collapse mm/khugepaged.c:1524 [inline]
- collapse_scan_pmd mm/khugepaged.c:1786 [inline]
- collapse_single_pmd+0x24c6/0x3da0 mm/khugepaged.c:2803
- madvise_collapse+0x2cf/0x790 mm/khugepaged.c:3237
- madvise_vma_behavior+0x115f/0x4170 mm/madvise.c:1363
- madvise_walk_vmas+0x576/0xb00 mm/madvise.c:1712
- madvise_do_behavior+0x385/0x540 mm/madvise.c:1907
- do_madvise+0x327/0x3a0 mm/madvise.c:2005
- __do_sys_madvise mm/madvise.c:2014 [inline]
- __se_sys_madvise mm/madvise.c:2012 [inline]
- __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fbcad79e019
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
-f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fbcae5c4028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
-RAX: ffffffffffffffda RBX: 00007fbcada25fa0 RCX: 00007fbcad79e019
-RDX: 0000000000000019 RSI: 0000000000c00000 RDI: 0000200000000000
-RBP: 00007fbcad83500c R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fbcada26038 R14: 00007fbcada25fa0 R15: 00007fff095fa0b8
- </TASK>
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ might_alloc include/linux/sched/mm.h:323 [inline]
+ slab_pre_alloc_hook mm/slub.c:4537 [inline]
+ slab_alloc_node mm/slub.c:4897 [inline]
+ __kmalloc_cache_noprof+0x94/0x660 mm/slub.c:5485
+ _kmalloc_noprof include/linux/slab.h:988 [inline]
+ _kzalloc_noprof include/linux/slab.h:1309 [inline]
+ spcp8x5_get_msr+0xd3/0x2d0 drivers/usb/serial/spcp8x5.c:197
+ spcp8x5_carrier_raised+0x30/0x80 drivers/usb/serial/spcp8x5.c:243
+ serial_port_carrier_raised+0x8c/0xc0 drivers/usb/serial/usb-serial.c:757
+ tty_port_carrier_raised drivers/tty/tty_port.c:441 [inline]
+ tty_port_block_til_ready+0x449/0x8b0 drivers/tty/tty_port.c:559
+ tty_open+0x48a/0xcc0 drivers/tty/tty_io.c:2137
 
+Furthermore, because usb_control_msg() waits for the URB completion, it
+internally uses wait_for_completion_timeout(), which resets the task state
+back to TASK_RUNNING. When spcp8x5_carrier_raised() returns to
+tty_port_block_til_ready(), the task state is no longer TASK_INTERRUPTIBLE.
+The subsequent schedule() call sees TASK_RUNNING and returns immediately
+without blocking, accidentally turning the wait loop into a 100% CPU
+busy-polling loop that constantly spams the USB device with control
+messages until the carrier is raised.
 
-***
+Unlike some other USB serial adapters, the spcp8x5 hardware does not have
+an interrupt IN endpoint. This means it cannot receive asynchronous
+notifications when the modem status changes, and therefore the driver can
+never wake up a sleeping task waiting for carrier detect. A device that
+cannot asynchronously detect carrier changes cannot support blocking on
+carrier detect.
 
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fix this by completely removing the .carrier_raised callback from the
+spcp8x5_device struct and deleting the spcp8x5_carrier_raised() function.
+When .carrier_raised is NULL, tty_port_carrier_raised() defaults to
+returning true. This allows the TTY open operation to proceed immediately
+without blocking, which is the standard and expected behavior for devices
+lacking asynchronous carrier detect capabilities.
+
+Fixes: e1ed212d8593 ("USB: spcp8x5: add proper modem-status support")
+Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+3b514b87202742f22c44@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=3b514b87202742f22c44
+Link: https://syzkaller.appspot.com/ai_job?id=0fb9718c-010d-42ad-a2c2-a1593fbfbe39
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: "Johan Hovold" <johan@kernel.org>
+To: <linux-usb@vger.kernel.org>
+To: "Johan Hovold" <jhovold@gmail.com>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/drivers/usb/serial/spcp8x5.c b/drivers/usb/serial/spcp8x5.c
+index c11d64bf0..f610aef6b 100644
+--- a/drivers/usb/serial/spcp8x5.c
++++ b/drivers/usb/serial/spcp8x5.c
+@@ -235,18 +235,6 @@ static void spcp8x5_set_work_mode(struct usb_serial_port *port, u16 value,
+ 		dev_err(&port->dev, "failed to set work mode: %d\n", ret);
+ }
+ 
+-static int spcp8x5_carrier_raised(struct usb_serial_port *port)
+-{
+-	u8 msr;
+-	int ret;
+-
+-	ret = spcp8x5_get_msr(port, &msr);
+-	if (ret || msr & MSR_STATUS_LINE_DCD)
+-		return 1;
+-
+-	return 0;
+-}
+-
+ static void spcp8x5_dtr_rts(struct usb_serial_port *port, int on)
+ {
+ 	struct spcp8x5_private *priv = usb_get_serial_port_data(port);
+@@ -458,7 +446,6 @@ static struct usb_serial_driver spcp8x5_device = {
+ 	.num_bulk_out		= 1,
+ 	.open			= spcp8x5_open,
+ 	.dtr_rts		= spcp8x5_dtr_rts,
+-	.carrier_raised		= spcp8x5_carrier_raised,
+ 	.set_termios		= spcp8x5_set_termios,
+ 	.init_termios		= spcp8x5_init_termios,
+ 	.tiocmget		= spcp8x5_tiocmget,
 
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
 
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
+base-commit: 075b74841bd0065a3bda3440873c747938e69b68
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
 
-The email will later be sent to:
-[akpm@linux-foundation.org axelrasmussen@google.com baohua@kernel.org baoqu=
-an.he@linux.dev cgroups@vger.kernel.org chengming.zhou@linux.dev chrisl@ker=
-nel.org corbet@lwn.net david@kernel.org gourry@gourry.net hannes@cmpxchg.or=
-g haowenchao22@gmail.com kasong@tencent.com kernel-team@meta.com liam@infra=
-dead.org linux-doc@vger.kernel.org linux-kernel@vger.kernel.org linux-mm@kv=
-ack.org ljs@kernel.org mhocko@kernel.org muchun.song@linux.dev nphamcs@gmai=
-l.com qi.zheng@linux.dev riel@surriel.com roman.gushchin@linux.dev rppt@ker=
-nel.org shakeel.butt@linux.dev shikemeng@huaweicloud.com surenb@google.com =
-vbabka@kernel.org weixugc@google.com yosry@kernel.org youngjun.park@lge.com=
- yuanchu@google.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+The person who has signed off on the patch is responsible for
+addressing comments.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
