@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ECFC33DEFD
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 02:30:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1492E381C4
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 03:36:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786069810; cv=none; b=ISKN+kV6fINaxW3qz8G+5EEBlCURqelN2Jacy89KGLIwQZiQNKGjQxb/jRexNeK6gGcOiYGa6tzSWaJW5gCfOv/fH+63VmK8mhxWjOFgpw9He9oXZfgIAMqzEJQ1ogtQz0TvrOwqpVL6u0OH58y/lIkHcTh1ps83WcBkb6+rWIM=
+	t=1786073802; cv=none; b=WEuJSKcl06GJmEyLoNbvUpHFS7h1h/67UCDvhtU9UnY/FvtRNryDa04jTu+zlaxJfy9mxIu4oH7oLHM18jhwr3U6D5p3UTjeYsy2/nKM1oekl9gMlbBuQURL5tHsjrGE/im3vH/5guVigezJTC62Bg90ogShj1kxOlKCcP3eG7I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786069810; c=relaxed/simple;
-	bh=In9wSjitMdfIe1fsdW5TGoMy+rfz5Ilj9/DMl2x0mLM=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=IesXLAzpuLxY02YudZUYoOxD3a8frjFdixuu+mz5YwL1wjukyQaiCrEed0VsolQ+ebTn//YiydVIzm1e4W1lhxFo6ICCAPUF9+msP1ePVx0LaXlwG1AZMKw+uOmgOpV59pdNSbCfojM8w9JkRN9mJIjDT+WDq3WmAv+W/9du1jo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iKcWrIqE; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786073802; c=relaxed/simple;
+	bh=38LtmZxF07NT8Z1If6RyKodo8xVIY1vzOxcszMbxOr4=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Yv7Ppl5lZViTHgeUULuBme2m5cC90716y0dlwVplWThs/BftumltyGSkkbHd0KfyQvJzQCBmbp4gr30UXUsC+O4ZNpq1FN42w0Da6a26D5FuUD9zJZ80b2e0XUbvQrcIUMi3vJ2seIVwXtuDpdhVYEvjqkQzoyKqCfHkyn47ooM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N9YhDcl8; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iKcWrIqE"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id AD1BE1F00A3A;
-	Fri,  7 Aug 2026 02:30:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N9YhDcl8"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id C586B1F000E9;
+	Fri,  7 Aug 2026 03:36:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786069807;
-	bh=pwPt+ZglWQzJOL3mof72eQrkhqRDWzmf5q1S/KWW6gQ=;
+	s=k20260515; t=1786073797;
+	bh=UU4Ud+hblCcFB5Xs47ehOnF/OboPeU78IStnF/SuWjY=;
 	h=From:To:Cc:Subject:Date;
-	b=iKcWrIqEz+vcbwXzgl58plx9C6aErPwTEWEg7b0zw3uKGNkkA8zKcEOvBbwyMgThV
-	 SSHlIsLp08NQqG7vj7QaYXazJ7CFB3mVCKcD3fushQRKGFFjjjZ76geCeiZlV6eOAx
-	 bGsao+rC+2x8ZfUDKNF+NBjOLyM9gHV21+Jtln4ZYIYglyVmxISdgTIo95Y3k2hCty
-	 7NwFcVmhZFUKE0zOf+l05bUgDb4nmjt/IvrqtJDRgQDRB9FASyYHz+DocmMSACZ6x2
-	 tUQEIZ/0tUse+G6fnmZfue+9568QZiU7vPFGZVj+Co9VnBvRcb4ubNC27ZZouYtZsA
-	 KLDTe4noUqRyg==
+	b=N9YhDcl8lvkt4psdAOX3JLnHoeHqJ/lwFr1R5h4FyAqsPlMDS48tO0l3A1DVuuOO7
+	 SljYrdgRsImhXpM5O/p0QPBc2bdzvXQpsMgexKs5DqItbTaBGWfznMUs9iNYN+dvn6
+	 iZBPMNHuOUykvZf2YywRl6o0s4un3wvHpWgCXg8CD1Vd+D56fZX84m/vXZE2TaNmgN
+	 OyKZK9HKLRTl54VWLHPkW3/BlpRLTtKN+NNxFEynZddsZNDzgMGUJdKoaU8lvWl70g
+	 E4+5kr5NGytdLYUew4nHtOqMJ+lfTsHwn6do5FhGI5KK8uWlxz4wFjvyLc/kuEDTm7
+	 w8xbVvGMAnAvQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] USB: serial: spcp8x5: drop carrier_raised callback
-Message-ID: <c523fe26-ff24-4e16-ab25-440592b4f565@mail.kernel.org>
+Subject: [PATCH RFC] mmc: vub300: fix sleeping function called from invalid context
+Message-ID: <397da4bd-97e2-4367-b3f4-d69e0f58dd91@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,105 +38,131 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri,  7 Aug 2026 02:30:07 +0000 (UTC)
+Date: Fri,  7 Aug 2026 03:36:37 +0000 (UTC)
 
-When a TTY device is opened, the generic TTY layer calls
-tty_port_block_til_ready() to wait for the carrier detect (DCD) line to be
-raised. This function sets the task state to TASK_INTERRUPTIBLE and then
-calls the driver's .carrier_raised callback.
+The vub300 driver manages an inactivity timer that holds a reference to the
+vub300 object. When the timer expires and the interface is disconnected
+(!vub300->interface), the timer callback drops the reference. If this is
+the last reference, it triggers vub300_delete(), which calls
+mmc_free_host(). Since mmc_free_host() can sleep (e.g., calling
+cancel_delayed_work_sync()), calling it from the timer's softirq context
+causes a "sleeping function called from invalid context" BUG.
 
-In the spcp8x5 driver, the spcp8x5_carrier_raised() callback calls
-spcp8x5_get_msr(), which allocates memory with GFP_KERNEL and sends a USB
-control message. Both of these operations can sleep. Calling sleeping
-functions while the task state is TASK_INTERRUPTIBLE is invalid and
-triggers a __might_sleep warning:
-
-do not call blocking ops when !TASK_RUNNING; state=1 set at
-[<ffffffff819e7a64>] prepare_to_wait+0x174/0x210 kernel/sched/wait.c:256
-WARNING: kernel/sched/core.c:9124 at __might_sleep+0x92/0xf0
-kernel/sched/core.c:9120
-...
+BUG: sleeping function called from invalid context at
+kernel/workqueue.c:4487
+in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 0, name: swapper/1
+Preemption disabled at:
+[<0000000000000000>] 0x0
+CPU: 1 UID: 0 PID: 0 Comm: swapper/1 Not tainted
 Call Trace:
- <TASK>
- might_alloc include/linux/sched/mm.h:323 [inline]
- slab_pre_alloc_hook mm/slub.c:4537 [inline]
- slab_alloc_node mm/slub.c:4897 [inline]
- __kmalloc_cache_noprof+0x94/0x660 mm/slub.c:5485
- _kmalloc_noprof include/linux/slab.h:988 [inline]
- _kzalloc_noprof include/linux/slab.h:1309 [inline]
- spcp8x5_get_msr+0xd3/0x2d0 drivers/usb/serial/spcp8x5.c:197
- spcp8x5_carrier_raised+0x30/0x80 drivers/usb/serial/spcp8x5.c:243
- serial_port_carrier_raised+0x8c/0xc0 drivers/usb/serial/usb-serial.c:757
- tty_port_carrier_raised drivers/tty/tty_port.c:441 [inline]
- tty_port_block_til_ready+0x449/0x8b0 drivers/tty/tty_port.c:559
- tty_open+0x48a/0xcc0 drivers/tty/tty_io.c:2137
+ <IRQ>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ __might_resched+0x378/0x4d0 kernel/sched/core.c:9197
+ __cancel_work_sync+0x6d/0x110 kernel/workqueue.c:4487
+ mmc_free_host+0x19/0x30 drivers/mmc/core/host.c:700
+ call_timer_fn+0x192/0x5e0 kernel/time/timer.c:1748
+ expire_timers kernel/time/timer.c:1799 [inline]
+ __run_timers kernel/time/timer.c:2374 [inline]
+ __run_timer_base+0x652/0x8b0 kernel/time/timer.c:2386
+ run_timer_base kernel/time/timer.c:2395 [inline]
+ run_timer_softirq+0xb7/0x170 kernel/time/timer.c:2405
+ handle_softirqs+0x225/0x840 kernel/softirq.c:622
+ __do_softirq kernel/softirq.c:656 [inline]
+ invoke_softirq kernel/softirq.c:496 [inline]
+ __irq_exit_rcu+0xca/0x220 kernel/softirq.c:735
+ irq_exit_rcu+0x9/0x30 kernel/softirq.c:752
+ instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1062
+ [inline]
+ sysvec_apic_timer_interrupt+0xa6/0xc0 arch/x86/kernel/apic/apic.c:1062
+ </IRQ>
 
-Furthermore, because usb_control_msg() waits for the URB completion, it
-internally uses wait_for_completion_timeout(), which resets the task state
-back to TASK_RUNNING. When spcp8x5_carrier_raised() returns to
-tty_port_block_til_ready(), the task state is no longer TASK_INTERRUPTIBLE.
-The subsequent schedule() call sees TASK_RUNNING and returns immediately
-without blocking, accidentally turning the wait loop into a 100% CPU
-busy-polling loop that constantly spams the USB device with control
-messages until the carrier is raised.
+To fix this, decouple the timer from the object's reference counting. The
+timer does not need to hold a reference to the vub300 object if we ensure
+it is synchronously stopped before the object is freed. Remove the
+kref_get() and kref_put() associated with the inactivity_timer, and
+explicitly call timer_delete_sync() in vub300_disconnect() and the probe
+error path. Since vub300->interface is set to NULL before
+timer_delete_sync(), any concurrently running timer will simply exit,
+allowing the synchronous wait to complete safely.
 
-Unlike some other USB serial adapters, the spcp8x5 hardware does not have
-an interrupt IN endpoint. This means it cannot receive asynchronous
-notifications when the modem status changes, and therefore the driver can
-never wake up a sleeping task waiting for carrier detect. A device that
-cannot asynchronously detect carrier changes cannot support blocking on
-carrier detect.
+Additionally, fix similar issues with sg_transfer_timer. In
+__command_read_data() and __command_write_data(), replace timer_delete()
+with timer_delete_sync() to prevent the timer callback from running
+concurrently after the function returns. In __command_write_data(), ensure
+the timer is unconditionally stopped even if an error occurs.
 
-Fix this by completely removing the .carrier_raised callback from the
-spcp8x5_device struct and deleting the spcp8x5_carrier_raised() function.
-When .carrier_raised is NULL, tty_port_carrier_raised() defaults to
-returning true. This allows the TTY open operation to proceed immediately
-without blocking, which is the standard and expected behavior for devices
-lacking asynchronous carrier detect capabilities.
-
-Fixes: e1ed212d8593 ("USB: spcp8x5: add proper modem-status support")
+Fixes: 88095e7b473a ("mmc: Add new VUB300 USB-to-SD/SDIO/MMC driver")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+3b514b87202742f22c44@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=3b514b87202742f22c44
-Link: https://syzkaller.appspot.com/ai_job?id=0fb9718c-010d-42ad-a2c2-a1593fbfbe39
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: "Johan Hovold" <johan@kernel.org>
-To: <linux-usb@vger.kernel.org>
-To: "Johan Hovold" <jhovold@gmail.com>
+Reported-by: syzbot+0e06aa1bdc6495bac24b@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=0e06aa1bdc6495bac24b
+Link: https://syzkaller.appspot.com/ai_job?id=dcef6af0-9740-47ea-949c-72048301deb8
+To: <linux-mmc@vger.kernel.org>
+To: "Ulf Hansson" <ulfh@kernel.org>
+To: "Tony Olech" <tony.olech@elandigitalsystems.com>
+Cc: "Johan Hovold" <johan@kernel.org>
+Cc: "Guangshuo Li" <lgs201920130244@gmail.com>
 Cc: <linux-kernel@vger.kernel.org>
+Cc: "Runyu Xiao" <runyu.xiao@seu.edu.cn>
 
 ---
-diff --git a/drivers/usb/serial/spcp8x5.c b/drivers/usb/serial/spcp8x5.c
-index c11d64bf0..f610aef6b 100644
---- a/drivers/usb/serial/spcp8x5.c
-+++ b/drivers/usb/serial/spcp8x5.c
-@@ -235,18 +235,6 @@ static void spcp8x5_set_work_mode(struct usb_serial_port *port, u16 value,
- 		dev_err(&port->dev, "failed to set work mode: %d\n", ret);
- }
+diff --git a/drivers/mmc/host/vub300.c b/drivers/mmc/host/vub300.c
+index 2dae474dc..9b08755cc 100644
+--- a/drivers/mmc/host/vub300.c
++++ b/drivers/mmc/host/vub300.c
+@@ -744,7 +744,7 @@ static void vub300_inactivity_timer_expired(struct timer_list *t)
+ 	struct vub300_mmc_host *vub300 = timer_container_of(vub300, t,
+ 							    inactivity_timer);
+ 	if (!vub300->interface) {
+-		kref_put(&vub300->kref, vub300_delete);
++		/* timer_delete_sync() will wait for us */
+ 	} else if (vub300->cmd) {
+ 		mod_timer(&vub300->inactivity_timer, jiffies + HZ);
+ 	} else {
+@@ -1453,7 +1453,7 @@ static int __command_read_data(struct vub300_mmc_host *vub300,
+ 						  (linear_length / 16384));
+ 			add_timer(&vub300->sg_transfer_timer);
+ 			usb_sg_wait(&vub300->sg_request);
+-			timer_delete(&vub300->sg_transfer_timer);
++			timer_delete_sync(&vub300->sg_transfer_timer);
+ 			if (vub300->sg_request.status < 0) {
+ 				cmd->error = vub300->sg_request.status;
+ 				data->bytes_xfered = 0;
+@@ -1570,10 +1570,10 @@ static int __command_write_data(struct vub300_mmc_host *vub300,
+ 							   linear_length / 16384);
+ 			add_timer(&vub300->sg_transfer_timer);
+ 			usb_sg_wait(&vub300->sg_request);
++			timer_delete_sync(&vub300->sg_transfer_timer);
+ 			if (cmd->error) {
+ 				data->bytes_xfered = 0;
+ 			} else {
+-				timer_delete(&vub300->sg_transfer_timer);
+ 				if (vub300->sg_request.status < 0) {
+ 					cmd->error = vub300->sg_request.status;
+ 					data->bytes_xfered = 0;
+@@ -2327,7 +2327,6 @@ static int vub300_probe(struct usb_interface *interface,
+ 	INIT_WORK(&vub300->deadwork, vub300_deadwork_thread);
+ 	kref_init(&vub300->kref);
+ 	timer_setup(&vub300->sg_transfer_timer, vub300_sg_timed_out, 0);
+-	kref_get(&vub300->kref);
+ 	timer_setup(&vub300->inactivity_timer,
+ 		    vub300_inactivity_timer_expired, 0);
+ 	vub300->inactivity_timer.expires = jiffies + HZ;
+@@ -2350,6 +2349,7 @@ static int vub300_probe(struct usb_interface *interface,
  
--static int spcp8x5_carrier_raised(struct usb_serial_port *port)
--{
--	u8 msr;
--	int ret;
--
--	ret = spcp8x5_get_msr(port, &msr);
--	if (ret || msr & MSR_STATUS_LINE_DCD)
--		return 1;
--
--	return 0;
--}
--
- static void spcp8x5_dtr_rts(struct usb_serial_port *port, int on)
- {
- 	struct spcp8x5_private *priv = usb_get_serial_port_data(port);
-@@ -458,7 +446,6 @@ static struct usb_serial_driver spcp8x5_device = {
- 	.num_bulk_out		= 1,
- 	.open			= spcp8x5_open,
- 	.dtr_rts		= spcp8x5_dtr_rts,
--	.carrier_raised		= spcp8x5_carrier_raised,
- 	.set_termios		= spcp8x5_set_termios,
- 	.init_termios		= spcp8x5_init_termios,
- 	.tiocmget		= spcp8x5_tiocmget,
+ err_stop_io:
+ 	vub300->interface = NULL;
++	timer_delete_sync(&vub300->inactivity_timer);
+ 	kref_put(&vub300->kref, vub300_delete);
+ 
+ 	return retval;
+@@ -2385,6 +2385,7 @@ static void vub300_disconnect(struct usb_interface *interface)
+ 			/* prevent more I/O from starting */
+ 			vub300->interface = NULL;
+ 			mmc_remove_host(mmc);
++			timer_delete_sync(&vub300->inactivity_timer);
+ 			kref_put(&vub300->kref, vub300_delete);
+ 			pr_info("USB vub300 remote SDIO host controller[%d]"
+ 				" now disconnected", ifnum);
 
 
 base-commit: 075b74841bd0065a3bda3440873c747938e69b68
