@@ -1,274 +1,181 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91ABF3DA5B4
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 04:51:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33744374A1D
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 05:21:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786078286; cv=none; b=XgRXyhlCd2hbyzSeeOWttJ13/AolQYqmbXvVvTryl/y5lb/fT2RH2bg8679il1MqSJ1vOV9ZhZrK6UrICAHrrNxYNWako++ewzqyFEHI//p3IOesQxhmLZrJAJDEkdtNw56VPTMGffTApssb/5lx0dNvWBXdIidlcO6VjIkUIGk=
+	t=1786080073; cv=none; b=ml2T2b2GglvCEDVf7zht5P+IUYxemkphTwZSwu5ypoW7OvcOsJbi5/HdmzKRSeqSGsLVaux6SedTJAto71+P1v0WTjSoNGi2bqD45qWzglDjykB2tIdj7rVokCOTb8uOdiXbt0XhW+/Xwux70xy6pKgJq7BkL1NGfy9y5nEWwhs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786078286; c=relaxed/simple;
-	bh=+tA7Fxwis75c1n76Z1BokevVESaLbtMdpD6Q47sg6CQ=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=IWGQlTL3BCiqC9otV7Lmfg/JIVrvWnMmtPy5cROC6XZTodFp/19GVuE0SK/jQY7BXS2cTkBOTnRZngvgRaZBYVs3Ev+QvTC0e/9YrI99bUILpPIbjn+bb4SUZE4syJBA24QsfXjS6642H05K0f1x8KfngqNwFe72uqsQwHQbZ7Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=STf5wikg; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="STf5wikg"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id D48E11F000E9;
-	Fri,  7 Aug 2026 04:51:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786078268;
-	bh=en2AlW7mmRmRkaGxud751sP1vUZ/JrVkAtGH4TnG2Fk=;
-	h=From:To:Cc:Subject:Date;
-	b=STf5wikgVdvgDS7AbWr9htp1xbTOc9YtI2tjRxhGgxku5f6mpnQUPrNSZlHnrD5G7
-	 cYdmqKSnBMAdbUr31/sk8OCsAlvtDBXYtS7LCQqu2y2BllNnzg3YsdHbAl6XR0R+yW
-	 VvUdSbZx/CpTUSfzcVNyKZHHiDBDkGvPAWT+1Zk1YaAUf+1yoH4g45zrUrqkyHSYvK
-	 Kpwl4GEyGisNa1I0630HfOwLLNQ5pqOVjtln/v4FluO1jx/6svsezq4KeNO0sjedTT
-	 ixz5i4HERoCN1zecfRC4nheZOLnmcPOlvCINyeYpI/TKLEaK2Am6SvNEPpTNdbN5ga
-	 0sD3xxuyEzFPw==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] media: dw2102: fix out-of-bounds read in dw2102_load_firmware
-Message-ID: <af1420ef-107b-40f3-be7f-7720e4271a49@mail.kernel.org>
+	s=arc-20240116; t=1786080073; c=relaxed/simple;
+	bh=giuvWXZfoWsUg62fyurOOC5twjov7LOSaQFLcTvVm9M=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=b0HOhyWZvKzvHLuyZqL+g77ePDO+Zi+gMxyIWZ+XpvDz5vIxg5iXREWdqpF9ZJs+gQ/0g/c5i0xDebvyGQYOl/sAxu0g0NRRQQstnQWg09kmUK9XZYkvH+h357gyAoMz9Ys0sKgcDW4SX32Ta+ZZTKuAXDIE098peGWJ3Lzd+H4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-4412c255fd4so1476511fac.3
+        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 22:21:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786080068; x=1786684868;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ANFLdT4dQdtrF43x2Qourf65n61wd4KKLnLUzf85R+A=;
+        b=H5rD8H2qYGPXM30SLghazzI0Zdcxq3KaR6vybzPR7qPK/MRfbqDAB9h+F0P9xwoz/8
+         0hJEldFON1Ue05yAJDpzZr/dYuX2SBhYiwttRA33UutI91N5dCZx4U5p4mY+sw/N0HwR
+         rbzTVvY76s7DZztygevOGoJwVY+Uafz5I5p9vJooYveH9f3KAMf/YZuNBdoxeX4rZMlP
+         50UhlnWpYuNXyEXemOXMI+QJMpqQAVvkfD3WjpUx4V/rZfrMu7+Rr9Krk/VqSyAd8sm6
+         lx3rJQR+WhIIjQxRu/iXG6nhCikv7xoyXb+SmLFSMk2OuhoVKQXrpIXWsTi7LoPErKxe
+         wNMw==
+X-Gm-Message-State: AOJu0Yxy95/fTGNMaFZDgYTw2mjWg4kalSZaw3ZjDYeG6EhkH2pqCnY6
+	DB4+ZKaJxQCbqqjdrw36tMvt0/ngFefgfCGG6GdXs+je1hUmY3PUBu2/9NUeZ7W6u8ePYgV9xPL
+	nlFgRfoFbl1TaNJifmQx2sHGbLx19mk5knEh4VSSTw6CgfORyCH6ynnVjd0g=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri,  7 Aug 2026 04:51:07 +0000 (UTC)
+X-Received: by 2002:a05:6820:1792:b0:6ac:a994:8a02 with SMTP id
+ 006d021491bc7-6ae96c8ee40mr10213662eaf.12.1786080068555; Thu, 06 Aug 2026
+ 22:21:08 -0700 (PDT)
+Date: Thu, 06 Aug 2026 22:21:08 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a756b44.9c11d2ce.289b96.00a5.GAE@google.com>
+Subject: [moderation/CI] Re: pull request: fixes for ovpn 2026-08-07
+From: syzbot ci <syzbot+cia3579a1608aada9e@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-In dw2102_load_firmware(), the driver allocates a buffer for the firmware
-and copies the firmware data into it. It then transfers the firmware to the
-USB device in chunks of 64 bytes (0x40). However, if the firmware size is
-not a multiple of 64, the last iteration of the loop will read past the end
-of the allocated buffer, triggering a slab-out-of-bounds read.
+syzbot ci has tested the following series
 
-Additionally, if the memory allocation for the firmware buffer fails, the
-function skips the firmware loading block but still returns 0 (success)
-instead of an error code.
+[v1] pull request: fixes for ovpn 2026-08-07
+https://lore.kernel.org/all/20260807002250.1817498-1-antonio@openvpn.net
+* [PATCH net 1/4] ovpn: fix NULL dereference when killing missing key
+* [PATCH net 2/4] ovpn: finish crypto callback cleanup before peer release
+* [PATCH net 3/4] ovpn: run deferred work on a module-owned workqueue
+* [PATCH net 4/4] ovpn: defer key slot crypto freeing to workqueue
 
-Fix the out-of-bounds read by calculating the length of the current chunk
-using min_t() to ensure that the transfer length never exceeds the
-remaining bytes of the firmware. Also, handle the memory allocation failure
-correctly by returning -ENOMEM, and use kmemdup() to simplify the
-allocation and copying of the firmware data.
+and found the following issue:
+WARNING in __alloc_workqueue
 
-BUG: KASAN: slab-out-of-bounds in dw210x_op_rw+0xb6/0x180
-drivers/media/usb/dvb-usb/dw2102.c:102
-Read of size 64 at addr ffff8881913cfa20 by task kworker/1:4/5693
+Full report is available here:
+https://ci.syzbot.org/series/a46f06c7-f8d8-4053-a746-91498a46c290
 
+***
+
+WARNING in __alloc_workqueue
+
+tree:      net
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
+base:      594d905195024b228c962627ae5ae7c17bd582a4
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/cc426b49-07b7-496e-badf-5b0646780dd0/config
+
+usbcore: registered new interface driver udl
+bochs-drm 0000:00:01.0: vgaarb: deactivate vga console
+[drm] Found bochs VGA, ID 0xb0c5.
+[drm] Framebuffer size 16384 kB @ 0xfd000000, mmio @ 0xfebf0000.
+[drm] Initialized bochs-drm 1.0.0 for 0000:00:01.0 on minor 2
+bochs-drm 0000:00:01.0: [drm] fb1: bochs-drmdrmfb frame buffer device
+usbcore: registered new interface driver gm12u320
+usbcore: registered new interface driver gud
+brd: module loaded
+loop: module loaded
+zram: Added device: zram0
+null_blk: disk nullb0 created
+null_blk: module loaded
+Guest personality initialized and is inactive
+VMCI host device registered (name=vmci, major=10, minor=267)
+Initialized host personality
+usbcore: registered new interface driver rtsx_usb
+lpc_ich 0000:00:1f.0: I/O space for GPIO uninitialized
+usbcore: registered new interface driver viperboard
+usbcore: registered new interface driver dln2
+usbcore: registered new interface driver pn533_usb
+nfcsim 0.2 initialized
+usbcore: registered new interface driver port100
+usbcore: registered new interface driver nfcmrvl
+Loading iSCSI transport class v2.0-870.
+st: Version 20160209, fixed bufsize 32768, s/g segs 256
+ACPI: \_SB_.GSIA: Enabled at IRQ 16
+ahci 0000:00:1f.2: AHCI vers 0001.0000, 32 command slots, 1.5 Gbps, SATA mode
+ahci 0000:00:1f.2: 6/6 ports implemented (port mask 0x3f)
+ahci 0000:00:1f.2: flags: 64bit ncq only 
+scsi host0: ahci
+scsi host1: ahci
+scsi host2: ahci
+scsi host3: ahci
+scsi host4: ahci
+scsi host5: ahci
+ata1: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2100 irq 26 lpm-pol 1
+ata2: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2180 irq 26 lpm-pol 1
+ata3: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2200 irq 26 lpm-pol 1
+ata4: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2280 irq 26 lpm-pol 1
+ata5: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2300 irq 26 lpm-pol 1
+ata6: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2380 irq 26 lpm-pol 1
+Rounding down aligned max_sectors from 4294967295 to 4294967288
+db_root: cannot open: /etc/target
+slram: not enough parameters.
+ftl_cs: FTL header not found.
+wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
+wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+------------[ cut here ]------------
+workqueue: ovpn is using neither WQ_PERCPU or WQ_UNBOUND. Setting WQ_PERCPU.
+WARNING: kernel/workqueue.c:5852 at __alloc_workqueue+0x1cf5/0x2060, CPU#0: swapper/0/1
+Modules linked in:
+CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:__alloc_workqueue+0x1cf8/0x2060
+Code: 38 00 e9 59 f9 ff ff e8 46 96 38 00 e9 26 fb ff ff e8 3c 96 38 00 e9 a7 fb ff ff e8 32 96 38 00 48 8d 3d fb a1 cc 0e 4c 89 f6 <67> 48 0f b9 3a 81 cd 00 01 00 00 e9 a7 e5 ff ff e8 13 96 38 00 48
+RSP: 0000:ffffc900000677a8 EFLAGS: 00010293
+RAX: ffffffff818e8c5e RBX: 0000000000000000 RCX: ffff888102a95940
+RDX: 0000000000000000 RSI: ffff88810c4cf570 RDI: ffffffff905b2e60
+RBP: 0000000000000000 R08: ffff888102a95940 R09: 0000000000000002
+R10: 0000000000000102 R11: 0000000000000000 R12: ffffc900000678c0
+R13: ffff88810c4cf400 R14: ffff88810c4cf570 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff88818d934000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffff88823ffff000 CR3: 000000000e946000 CR4: 00000000000006f0
 Call Trace:
- dw210x_op_rw+0xb6/0x180 drivers/media/usb/dvb-usb/dw2102.c:102
- dw2102_load_firmware+0x2b4/0x970 drivers/media/usb/dvb-usb/dw2102.c:1906
- dvb_usb_download_firmware+0x1c3/0x270
- drivers/media/usb/dvb-usb/dvb-usb-firmware.c:109
- dvb_usb_device_init+0xddf/0x2570
- drivers/media/usb/dvb-usb/dvb-usb-init.c:298
- dw2102_probe+0x8a/0x270 drivers/media/usb/dvb-usb/dw2102.c:2594
- usb_probe_interface+0x653/0xc60 drivers/usb/core/driver.c:396
+ <TASK>
+ alloc_workqueue_noprof+0xe3/0x210
+ ovpn_init+0x1b/0xb0
+ do_one_initcall+0x250/0x870
+ do_initcall_level+0x10a/0x1a0
+ do_initcalls+0x59/0xa0
+ kernel_init_freeable+0x29d/0x3e0
+ kernel_init+0x1d/0x1d0
+ ret_from_fork+0x514/0xb70
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
 
-Fixes: 7fd4828f6cc5 ("V4L/DVB (8421): Adds support for Dvbworld DVB-S 2102 USB card")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+f408eac9faa61d5a1927@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=f408eac9faa61d5a1927
-Link: https://syzkaller.appspot.com/ai_job?id=1984d3dc-3d19-4b09-98dd-b5151c7690f1
-To: <linux-media@vger.kernel.org>
-To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-To: "Igor M Liplianin" <liplianin@me.by>
-Cc: <linux-kernel@vger.kernel.org>
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/drivers/media/usb/dvb-usb/dw2102.c b/drivers/media/usb/dvb-usb/dw2102.c
-index 4fecf2f96..50364a15d 100644
---- a/drivers/media/usb/dvb-usb/dw2102.c
-+++ b/drivers/media/usb/dvb-usb/dw2102.c
-@@ -1893,93 +1893,98 @@ static int dw2102_load_firmware(struct usb_device *dev,
- 		break;
- 	}
- 	info("start downloading DW210X firmware");
--	p = kmalloc(fw->size, GFP_KERNEL);
-+	p = kmemdup(fw->data, fw->size, GFP_KERNEL);
-+	if (!p) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+
- 	reset = 1;
- 	/*stop the CPU*/
- 	dw210x_op_rw(dev, 0xa0, 0x7f92, 0, &reset, 1, DW210X_WRITE_MSG);
- 	dw210x_op_rw(dev, 0xa0, 0xe600, 0, &reset, 1, DW210X_WRITE_MSG);
- 
--	if (p) {
--		memcpy(p, fw->data, fw->size);
--		for (i = 0; i < fw->size; i += 0x40) {
--			b = (u8 *)p + i;
--			if (dw210x_op_rw(dev, 0xa0, i, 0, b, 0x40,
--					 DW210X_WRITE_MSG) != 0x40) {
--				err("error while transferring firmware");
--				ret = -EINVAL;
--				break;
--			}
--		}
--		/* restart the CPU */
--		reset = 0;
--		if (ret || dw210x_op_rw(dev, 0xa0, 0x7f92, 0, &reset, 1,
--					DW210X_WRITE_MSG) != 1) {
--			err("could not restart the USB controller CPU.");
--			ret = -EINVAL;
--		}
--		if (ret || dw210x_op_rw(dev, 0xa0, 0xe600, 0, &reset, 1,
--					DW210X_WRITE_MSG) != 1) {
--			err("could not restart the USB controller CPU.");
-+	for (i = 0; i < fw->size; i += 0x40) {
-+		int len = min_t(int, fw->size - i, 0x40);
-+
-+		b = (u8 *)p + i;
-+		if (dw210x_op_rw(dev, 0xa0, i, 0, b, len,
-+				 DW210X_WRITE_MSG) != len) {
-+			err("error while transferring firmware");
- 			ret = -EINVAL;
-+			break;
- 		}
--		/* init registers */
--		switch (le16_to_cpu(dev->descriptor.idProduct)) {
--		case USB_PID_TEVII_S650:
--			dw2104_properties.rc.core.rc_codes = RC_MAP_TEVII_NEC;
--			fallthrough;
--		case USB_PID_CYPRESS_DW2104:
--			reset = 1;
--			dw210x_op_rw(dev, 0xc4, 0x0000, 0, &reset, 1,
--				     DW210X_WRITE_MSG);
--			fallthrough;
--		case USB_PID_CYPRESS_DW3101:
--			reset = 0;
--			dw210x_op_rw(dev, 0xbf, 0x0040, 0, &reset, 0,
--				     DW210X_WRITE_MSG);
-+	}
-+	/* restart the CPU */
-+	reset = 0;
-+	if (ret || dw210x_op_rw(dev, 0xa0, 0x7f92, 0, &reset, 1,
-+				DW210X_WRITE_MSG) != 1) {
-+		err("could not restart the USB controller CPU.");
-+		ret = -EINVAL;
-+	}
-+	if (ret || dw210x_op_rw(dev, 0xa0, 0xe600, 0, &reset, 1,
-+				DW210X_WRITE_MSG) != 1) {
-+		err("could not restart the USB controller CPU.");
-+		ret = -EINVAL;
-+	}
-+	/* init registers */
-+	switch (le16_to_cpu(dev->descriptor.idProduct)) {
-+	case USB_PID_TEVII_S650:
-+		dw2104_properties.rc.core.rc_codes = RC_MAP_TEVII_NEC;
-+		fallthrough;
-+	case USB_PID_CYPRESS_DW2104:
-+		reset = 1;
-+		dw210x_op_rw(dev, 0xc4, 0x0000, 0, &reset, 1,
-+			     DW210X_WRITE_MSG);
-+		fallthrough;
-+	case USB_PID_CYPRESS_DW3101:
-+		reset = 0;
-+		dw210x_op_rw(dev, 0xbf, 0x0040, 0, &reset, 0,
-+			     DW210X_WRITE_MSG);
-+		break;
-+	case USB_PID_TERRATEC_CINERGY_S:
-+	case USB_PID_CYPRESS_DW2102:
-+		dw210x_op_rw(dev, 0xbf, 0x0040, 0, &reset, 0,
-+			     DW210X_WRITE_MSG);
-+		dw210x_op_rw(dev, 0xb9, 0x0000, 0, &reset16[0], 2,
-+			     DW210X_READ_MSG);
-+		/* check STV0299 frontend  */
-+		dw210x_op_rw(dev, 0xb5, 0, 0, &reset16[0], 2,
-+			     DW210X_READ_MSG);
-+		if ((reset16[0] == 0xa1) || (reset16[0] == 0x80)) {
-+			dw2102_properties.i2c_algo = &dw2102_i2c_algo;
-+			dw2102_properties.adapter->fe[0].tuner_attach = &dw2102_tuner_attach;
- 			break;
--		case USB_PID_TERRATEC_CINERGY_S:
--		case USB_PID_CYPRESS_DW2102:
--			dw210x_op_rw(dev, 0xbf, 0x0040, 0, &reset, 0,
--				     DW210X_WRITE_MSG);
--			dw210x_op_rw(dev, 0xb9, 0x0000, 0, &reset16[0], 2,
--				     DW210X_READ_MSG);
--			/* check STV0299 frontend  */
--			dw210x_op_rw(dev, 0xb5, 0, 0, &reset16[0], 2,
--				     DW210X_READ_MSG);
--			if ((reset16[0] == 0xa1) || (reset16[0] == 0x80)) {
--				dw2102_properties.i2c_algo = &dw2102_i2c_algo;
--				dw2102_properties.adapter->fe[0].tuner_attach = &dw2102_tuner_attach;
--				break;
--			}
--			/* check STV0288 frontend  */
--			reset16[0] = 0xd0;
--			reset16[1] = 1;
--			reset16[2] = 0;
--			dw210x_op_rw(dev, 0xc2, 0, 0, &reset16[0], 3,
--				     DW210X_WRITE_MSG);
--			dw210x_op_rw(dev, 0xc3, 0xd1, 0, &reset16[0], 3,
--				     DW210X_READ_MSG);
--			if (reset16[2] == 0x11) {
--				dw2102_properties.i2c_algo = &dw2102_earda_i2c_algo;
--				break;
--			}
--			fallthrough;
--		case 0x2101:
--			dw210x_op_rw(dev, 0xbc, 0x0030, 0, &reset16[0], 2,
--				     DW210X_READ_MSG);
--			dw210x_op_rw(dev, 0xba, 0x0000, 0, &reset16[0], 7,
--				     DW210X_READ_MSG);
--			dw210x_op_rw(dev, 0xba, 0x0000, 0, &reset16[0], 7,
--				     DW210X_READ_MSG);
--			dw210x_op_rw(dev, 0xb9, 0x0000, 0, &reset16[0], 2,
--				     DW210X_READ_MSG);
-+		}
-+		/* check STV0288 frontend  */
-+		reset16[0] = 0xd0;
-+		reset16[1] = 1;
-+		reset16[2] = 0;
-+		dw210x_op_rw(dev, 0xc2, 0, 0, &reset16[0], 3,
-+			     DW210X_WRITE_MSG);
-+		dw210x_op_rw(dev, 0xc3, 0xd1, 0, &reset16[0], 3,
-+			     DW210X_READ_MSG);
-+		if (reset16[2] == 0x11) {
-+			dw2102_properties.i2c_algo = &dw2102_earda_i2c_algo;
- 			break;
- 		}
--
--		msleep(100);
--		kfree(p);
-+		fallthrough;
-+	case 0x2101:
-+		dw210x_op_rw(dev, 0xbc, 0x0030, 0, &reset16[0], 2,
-+			     DW210X_READ_MSG);
-+		dw210x_op_rw(dev, 0xba, 0x0000, 0, &reset16[0], 7,
-+			     DW210X_READ_MSG);
-+		dw210x_op_rw(dev, 0xba, 0x0000, 0, &reset16[0], 7,
-+			     DW210X_READ_MSG);
-+		dw210x_op_rw(dev, 0xb9, 0x0000, 0, &reset16[0], 2,
-+			     DW210X_READ_MSG);
-+		break;
- 	}
- 
-+	msleep(100);
-+	kfree(p);
-+
-+out:
- 	if (le16_to_cpu(dev->descriptor.idProduct) == 0x2101)
- 		release_firmware(fw);
- 	return ret;
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
-base-commit: 075b74841bd0065a3bda3440873c747938e69b68
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+The email will later be sent to:
+[andrew@lunn.ch antonio@openvpn.net davem@davemloft.net edumazet@google.com kuba@kernel.org netdev@vger.kernel.org pabeni@redhat.com ralf@mandelbit.com sd@queasysnail.net]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
