@@ -1,148 +1,161 @@
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1A1740D588
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 05:26:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CEA337F74C
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 05:28:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786080374; cv=none; b=o7uH+npB0iORWUwJexvFb81nC2SWOdS3JH2hyLgqzyZMjxGwbkuuxi4VNQ4MeSugjY9RwWc7Spu/YldwMrm1JRnCg1b7NONlYGvfltfmXRh/X/QZGGLzPmiolWJJJYF/L2Q3Nx7kFhirZ8sp7p+VJe+9hziU1T0+bwBTq8ZZyCY=
+	t=1786080494; cv=none; b=il8to+MJA6cypgq2AIvJfrwQPXSXHn//QBA3I3APZDy6Odgzprey3b1XbDDqjXHcQtbRZoy9xeinpBv2BbIDBe5gjdrY+tlSca7JYodFNsdGzde5eMb+8Mq51oRuSVYbTaGK7siSqIrwEVBPErZpQRb1ibaeJolXaLDktAPweZI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786080374; c=relaxed/simple;
-	bh=XoAKRdAJIJ9Bz8/wlI6yz3LVQ9NQvOp4X8SzO7nxy1g=;
+	s=arc-20240116; t=1786080494; c=relaxed/simple;
+	bh=qFvp4uTofHAGTkfOnJ0T+NM7iIzp2wiRIOn9DUfpOUw=;
 	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=d3PB0gSIQxz90A8g4Ias0JJ1AVEVRdQ1XkRG4gS5NMsnVI8L2qekOcZFneIIVEML9uplnstMhQhR1d6xLuFgVtDYVgdf9k/ZL+k7HN3O6FmsEqWF3EicPRdHUG5wds7wNO/Bw2nHXDAn7PsadUmvcgm5SSofzkbQtCJZTj5woDs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
+	 Content-Type; b=rHxIEFQm1Jb7AHxf1eQkDgKxdvu0xnFbuAwdKSdWfUXNLAlTGXmKGAgwfIuVa4CVkdSvaGWRzTQq9KGubyvLVsqKef2IiJRSDbfdQmY6Q9PL2fDJmtKBi2RSwyqirVTCYL4unrm6cipxlVqnkBZz8cAb9yyEEpwDt2wnG2a9qhM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4a416619e8dso2181243b6e.1
-        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 22:26:10 -0700 (PDT)
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-49aa4525b82so2906529b6e.1
+        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 22:28:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786080369; x=1786685169;
+        d=1e100.net; s=20251104; t=1786080490; x=1786685290;
         h=content-type:cc:to:from:subject:message-id:in-reply-to:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=T3m0nal8RAOlIDKOwy4iei8tz0r4SQ1BHd4+5WMc7ws=;
-        b=pKcPkd8KUKTazejMbDDH0y1qHJQypc8kDqO34XKjSvFyETWpY00wbKvS/CpzUew7o6
-         IQV2t8gFTLliCYpP0ntFfofpk4sst6t1kd+oizWfa0Hn4geO3A1kPeH0N0QuHQUw2tTp
-         ovdghXHTdkXJOaVqU15zlyM5WgPcXwSUB5jPEdDm9Rt6mWy91jXKnSGq3DiVEwaK15+c
-         ejjtWEfoc+xv5dlVwQPwK0a7w35fgPkEb0t/5CR+E+A59oxg3Gw6jXyL7dvIoS9p774L
-         SsHTEAtT3szPQwOF5o8MLMBWTncANKnp14dXJLdBtlcZHWsZ+7NarVZQiTl6IE43d76q
-         S6Hw==
-X-Gm-Message-State: AOJu0Yw0tQZOArLqfAwylcjiEsCMpCH6JjqMIvgFW9/srlxphSwS6avF
-	ZFmZoECbeI52aKxow+DWu4YBC9rx8XemrW5lk0RSHkOmF5x/h3RZcUGgq3/OiOu+p6ofY74uTR6
-	iEKWIAUb67d4103ylmzcUYL3x5gKOvmHIgqOg9UQE5Ra5SewYpvEsGaAHevk=
+        bh=TvTYXt+JOaan37lriLTI6Cyp2pGjz3SyqEWd9qAwVQU=;
+        b=nzi88uDnk0J4KNJqAaRVe+HxFMQjeSkQNYn8F9x2/KJ8H2a6ykyrWe0ZdrCNuvIfZQ
+         EnbT1zlnpuC5UqwguyMjPsm0iavvPwRVmy75wYLjitlCb4blrLspcR1Xw/N1H64x8lxz
+         Y4gsVll6IwSDRLDK3RtyaJx4JlJzMKAM46PIcrqGvaSm6Bb/6J4layxxerqCf4YS48I4
+         BjAiiID9upscXZNXQdTEpK9u1g6qB8cPOmlFwLVREBnFhDpilABXfqwaEV1mRb1TMNGZ
+         STFO6fbiCvyDBoNgfbi0UHC5eEY6yDL2UwLCdarRm/ysRkRtW6zTzrvf2bV62DF+r6mL
+         RBCA==
+X-Gm-Message-State: AOJu0YwPF/FtoPBLMDMNZeGd7EHQ4vWfIgraFhlEw1XARmMA4ameXx4d
+	5PD1VOnywlIywwFGrvyjjWTZemcpOwAsqYAQCIYrHCia90Fv/mZVpOK1Lv4EJz1gxon/T70qdUG
+	i3JGaVClhJSpBKKRyRlkjtaflPVVCJ+iC8oZ51UdrSPp8zSk0Zfe2x6tkurg=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:169f:b0:485:7c46:b866 with SMTP id
- 5614622812f47-4afc513e9b0mr6403807b6e.16.1786080369495; Thu, 06 Aug 2026
- 22:26:09 -0700 (PDT)
-Date: Thu, 06 Aug 2026 22:26:09 -0700
-In-Reply-To: <20260806184254.3790858-1-nphamcs@gmail.com>
+X-Received: by 2002:a05:6820:1c89:b0:6ae:4ff6:8d99 with SMTP id
+ 006d021491bc7-6ae96f658cemr10227803eaf.26.1786080490002; Thu, 06 Aug 2026
+ 22:28:10 -0700 (PDT)
+Date: Thu, 06 Aug 2026 22:28:09 -0700
+In-Reply-To: <20260807002250.1817498-1-antonio@openvpn.net>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a756c71.01d0871a.3a0d52.003a.GAE@google.com>
-Subject: [syzbot ci] Re: Virtual Swap Space (Swap Table Edition)
-From: syzbot ci <syzbot+cif942a042aaa8793c@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, axelrasmussen@google.com, baohua@kernel.org, 
-	baoquan.he@linux.dev, cgroups@vger.kernel.org, chengming.zhou@linux.dev, 
-	chrisl@kernel.org, corbet@lwn.net, david@kernel.org, gourry@gourry.net, 
-	hannes@cmpxchg.org, haowenchao22@gmail.com, kasong@tencent.com, 
-	kernel-team@meta.com, liam@infradead.org, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, ljs@kernel.org, 
-	mhocko@kernel.org, muchun.song@linux.dev, nphamcs@gmail.com, 
-	qi.zheng@linux.dev, riel@surriel.com, roman.gushchin@linux.dev, 
-	rppt@kernel.org, shakeel.butt@linux.dev, shikemeng@huaweicloud.com, 
-	surenb@google.com, vbabka@kernel.org, weixugc@google.com, yosry@kernel.org, 
-	youngjun.park@lge.com, yuanchu@google.com
+Message-ID: <6a756ce9.01d0871a.3a0d52.003b.GAE@google.com>
+Subject: [syzbot ci] Re: pull request: fixes for ovpn 2026-08-07
+From: syzbot ci <syzbot+cifb58fcbd8413e765@syzkaller.appspotmail.com>
+To: andrew@lunn.ch, antonio@openvpn.net, davem@davemloft.net, 
+	edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org, 
+	pabeni@redhat.com, ralf@mandelbit.com, sd@queasysnail.net
 Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v3] Virtual Swap Space (Swap Table Edition)
-https://lore.kernel.org/all/20260806184254.3790858-1-nphamcs@gmail.com
-* [PATCH v3 01/11] mm, swap: add virtual swap device infrastructure
-* [PATCH v3 02/11] mm, swap: support zswap and zeroswap as vswap backends
-* [PATCH v3 03/11] mm, swap: prepare the swap IO path for vswap
-* [PATCH v3 04/11] mm, swap: support physical swap as a vswap backend
-* [PATCH v3 05/11] mm, swap: enable THP swapin for vswap entries
-* [PATCH v3 06/11] mm, swap: write back vswap zswap entries to physical swap
-* [PATCH v3 07/11] mm, swap: reclaim physical slots backing cache-only vswap entries
-* [PATCH v3 08/11] mm, swap: only charge physical swap entries
-* [PATCH v3 09/11] mm, swap: add debugfs counters for vswap
-* [PATCH v3 10/11] mm, swap: defer memcg_table allocation for physical swap clusters
-* [PATCH v3 11/11] mm, swap: widen swap_info_struct max/pages to unsigned long
+[v1] pull request: fixes for ovpn 2026-08-07
+https://lore.kernel.org/all/20260807002250.1817498-1-antonio@openvpn.net
+* [PATCH net 1/4] ovpn: fix NULL dereference when killing missing key
+* [PATCH net 2/4] ovpn: finish crypto callback cleanup before peer release
+* [PATCH net 3/4] ovpn: run deferred work on a module-owned workqueue
+* [PATCH net 4/4] ovpn: defer key slot crypto freeing to workqueue
 
 and found the following issue:
-KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
+WARNING in __alloc_workqueue
 
 Full report is available here:
-https://ci.syzbot.org/series/e7da1097-3230-4e50-80cb-1dfafeebea40
+https://ci.syzbot.org/series/a46f06c7-f8d8-4053-a746-91498a46c290
 
 ***
 
-KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
+WARNING in __alloc_workqueue
 
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-base:      bacc32cc7de65ffff70080a48eb294f89e434d5e
+tree:      net
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
+base:      594d905195024b228c962627ae5ae7c17bd582a4
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/4f943657-9481-4637-9b1f-9be1bff18f92/config
-syz repro: https://ci.syzbot.org/findings/f6c4f1ab-951c-4759-b397-e22c23c3bf32/syz_repro
+config:    https://ci.syzbot.org/builds/cc426b49-07b7-496e-badf-5b0646780dd0/config
 
-==================================================================
-BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instrumented.h:82 [inline]
-BUG: KASAN: null-ptr-deref in atomic_long_read include/linux/atomic/atomic-instrumented.h:3188 [inline]
-BUG: KASAN: null-ptr-deref in __vtable_get mm/vswap.h:147 [inline]
-BUG: KASAN: null-ptr-deref in vswap_to_phys mm/vswap.h:197 [inline]
-BUG: KASAN: null-ptr-deref in swap_entry_backend_has_flag+0xfe/0x220 mm/vswap.h:441
-Read of size 8 at addr 0000000000000000 by task syz.2.20/5818
-
-CPU: 1 UID: 0 PID: 5818 Comm: syz.2.20 Not tainted syzkaller #0 PREEMPT(full) 
+usbcore: registered new interface driver udl
+bochs-drm 0000:00:01.0: vgaarb: deactivate vga console
+[drm] Found bochs VGA, ID 0xb0c5.
+[drm] Framebuffer size 16384 kB @ 0xfd000000, mmio @ 0xfebf0000.
+[drm] Initialized bochs-drm 1.0.0 for 0000:00:01.0 on minor 2
+bochs-drm 0000:00:01.0: [drm] fb1: bochs-drmdrmfb frame buffer device
+usbcore: registered new interface driver gm12u320
+usbcore: registered new interface driver gud
+brd: module loaded
+loop: module loaded
+zram: Added device: zram0
+null_blk: disk nullb0 created
+null_blk: module loaded
+Guest personality initialized and is inactive
+VMCI host device registered (name=vmci, major=10, minor=267)
+Initialized host personality
+usbcore: registered new interface driver rtsx_usb
+lpc_ich 0000:00:1f.0: I/O space for GPIO uninitialized
+usbcore: registered new interface driver viperboard
+usbcore: registered new interface driver dln2
+usbcore: registered new interface driver pn533_usb
+nfcsim 0.2 initialized
+usbcore: registered new interface driver port100
+usbcore: registered new interface driver nfcmrvl
+Loading iSCSI transport class v2.0-870.
+st: Version 20160209, fixed bufsize 32768, s/g segs 256
+ACPI: \_SB_.GSIA: Enabled at IRQ 16
+ahci 0000:00:1f.2: AHCI vers 0001.0000, 32 command slots, 1.5 Gbps, SATA mode
+ahci 0000:00:1f.2: 6/6 ports implemented (port mask 0x3f)
+ahci 0000:00:1f.2: flags: 64bit ncq only 
+scsi host0: ahci
+scsi host1: ahci
+scsi host2: ahci
+scsi host3: ahci
+scsi host4: ahci
+scsi host5: ahci
+ata1: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2100 irq 26 lpm-pol 1
+ata2: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2180 irq 26 lpm-pol 1
+ata3: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2200 irq 26 lpm-pol 1
+ata4: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2280 irq 26 lpm-pol 1
+ata5: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2300 irq 26 lpm-pol 1
+ata6: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2380 irq 26 lpm-pol 1
+Rounding down aligned max_sectors from 4294967295 to 4294967288
+db_root: cannot open: /etc/target
+slram: not enough parameters.
+ftl_cs: FTL header not found.
+wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
+wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+------------[ cut here ]------------
+workqueue: ovpn is using neither WQ_PERCPU or WQ_UNBOUND. Setting WQ_PERCPU.
+WARNING: kernel/workqueue.c:5852 at __alloc_workqueue+0x1cf5/0x2060, CPU#0: swapper/0/1
+Modules linked in:
+CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:__alloc_workqueue+0x1cf8/0x2060
+Code: 38 00 e9 59 f9 ff ff e8 46 96 38 00 e9 26 fb ff ff e8 3c 96 38 00 e9 a7 fb ff ff e8 32 96 38 00 48 8d 3d fb a1 cc 0e 4c 89 f6 <67> 48 0f b9 3a 81 cd 00 01 00 00 e9 a7 e5 ff ff e8 13 96 38 00 48
+RSP: 0000:ffffc900000677a8 EFLAGS: 00010293
+RAX: ffffffff818e8c5e RBX: 0000000000000000 RCX: ffff888102a95940
+RDX: 0000000000000000 RSI: ffff88810c4cf570 RDI: ffffffff905b2e60
+RBP: 0000000000000000 R08: ffff888102a95940 R09: 0000000000000002
+R10: 0000000000000102 R11: 0000000000000000 R12: ffffc900000678c0
+R13: ffff88810c4cf400 R14: ffff88810c4cf570 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff88818d934000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffff88823ffff000 CR3: 000000000e946000 CR4: 00000000000006f0
 Call Trace:
  <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- check_region_inline mm/kasan/generic.c:-1 [inline]
- kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
- instrument_atomic_read include/linux/instrumented.h:82 [inline]
- atomic_long_read include/linux/atomic/atomic-instrumented.h:3188 [inline]
- __vtable_get mm/vswap.h:147 [inline]
- vswap_to_phys mm/vswap.h:197 [inline]
- swap_entry_backend_has_flag+0xfe/0x220 mm/vswap.h:441
- do_swap_page+0x3c0/0x5620 mm/memory.c:4975
- __collapse_huge_page_swapin mm/khugepaged.c:1202 [inline]
- collapse_huge_page mm/khugepaged.c:1325 [inline]
- mthp_collapse mm/khugepaged.c:1524 [inline]
- collapse_scan_pmd mm/khugepaged.c:1786 [inline]
- collapse_single_pmd+0x24c6/0x3da0 mm/khugepaged.c:2803
- madvise_collapse+0x2cf/0x790 mm/khugepaged.c:3237
- madvise_vma_behavior+0x115f/0x4170 mm/madvise.c:1363
- madvise_walk_vmas+0x576/0xb00 mm/madvise.c:1712
- madvise_do_behavior+0x385/0x540 mm/madvise.c:1907
- do_madvise+0x327/0x3a0 mm/madvise.c:2005
- __do_sys_madvise mm/madvise.c:2014 [inline]
- __se_sys_madvise mm/madvise.c:2012 [inline]
- __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fbcad79e019
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fbcae5c4028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
-RAX: ffffffffffffffda RBX: 00007fbcada25fa0 RCX: 00007fbcad79e019
-RDX: 0000000000000019 RSI: 0000000000c00000 RDI: 0000200000000000
-RBP: 00007fbcad83500c R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fbcada26038 R14: 00007fbcada25fa0 R15: 00007fff095fa0b8
+ alloc_workqueue_noprof+0xe3/0x210
+ ovpn_init+0x1b/0xb0
+ do_one_initcall+0x250/0x870
+ do_initcall_level+0x10a/0x1a0
+ do_initcalls+0x59/0xa0
+ kernel_init_freeable+0x29d/0x3e0
+ kernel_init+0x1d/0x1d0
+ ret_from_fork+0x514/0xb70
+ ret_from_fork_asm+0x1a/0x30
  </TASK>
-==================================================================
 
 
 ***
