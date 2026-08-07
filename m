@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1492E381C4
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 03:36:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91ABF3DA5B4
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 04:51:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786073802; cv=none; b=WEuJSKcl06GJmEyLoNbvUpHFS7h1h/67UCDvhtU9UnY/FvtRNryDa04jTu+zlaxJfy9mxIu4oH7oLHM18jhwr3U6D5p3UTjeYsy2/nKM1oekl9gMlbBuQURL5tHsjrGE/im3vH/5guVigezJTC62Bg90ogShj1kxOlKCcP3eG7I=
+	t=1786078286; cv=none; b=XgRXyhlCd2hbyzSeeOWttJ13/AolQYqmbXvVvTryl/y5lb/fT2RH2bg8679il1MqSJ1vOV9ZhZrK6UrICAHrrNxYNWako++ewzqyFEHI//p3IOesQxhmLZrJAJDEkdtNw56VPTMGffTApssb/5lx0dNvWBXdIidlcO6VjIkUIGk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786073802; c=relaxed/simple;
-	bh=38LtmZxF07NT8Z1If6RyKodo8xVIY1vzOxcszMbxOr4=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Yv7Ppl5lZViTHgeUULuBme2m5cC90716y0dlwVplWThs/BftumltyGSkkbHd0KfyQvJzQCBmbp4gr30UXUsC+O4ZNpq1FN42w0Da6a26D5FuUD9zJZ80b2e0XUbvQrcIUMi3vJ2seIVwXtuDpdhVYEvjqkQzoyKqCfHkyn47ooM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N9YhDcl8; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786078286; c=relaxed/simple;
+	bh=+tA7Fxwis75c1n76Z1BokevVESaLbtMdpD6Q47sg6CQ=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=IWGQlTL3BCiqC9otV7Lmfg/JIVrvWnMmtPy5cROC6XZTodFp/19GVuE0SK/jQY7BXS2cTkBOTnRZngvgRaZBYVs3Ev+QvTC0e/9YrI99bUILpPIbjn+bb4SUZE4syJBA24QsfXjS6642H05K0f1x8KfngqNwFe72uqsQwHQbZ7Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=STf5wikg; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N9YhDcl8"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id C586B1F000E9;
-	Fri,  7 Aug 2026 03:36:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="STf5wikg"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id D48E11F000E9;
+	Fri,  7 Aug 2026 04:51:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786073797;
-	bh=UU4Ud+hblCcFB5Xs47ehOnF/OboPeU78IStnF/SuWjY=;
+	s=k20260515; t=1786078268;
+	bh=en2AlW7mmRmRkaGxud751sP1vUZ/JrVkAtGH4TnG2Fk=;
 	h=From:To:Cc:Subject:Date;
-	b=N9YhDcl8lvkt4psdAOX3JLnHoeHqJ/lwFr1R5h4FyAqsPlMDS48tO0l3A1DVuuOO7
-	 SljYrdgRsImhXpM5O/p0QPBc2bdzvXQpsMgexKs5DqItbTaBGWfznMUs9iNYN+dvn6
-	 iZBPMNHuOUykvZf2YywRl6o0s4un3wvHpWgCXg8CD1Vd+D56fZX84m/vXZE2TaNmgN
-	 OyKZK9HKLRTl54VWLHPkW3/BlpRLTtKN+NNxFEynZddsZNDzgMGUJdKoaU8lvWl70g
-	 E4+5kr5NGytdLYUew4nHtOqMJ+lfTsHwn6do5FhGI5KK8uWlxz4wFjvyLc/kuEDTm7
-	 w8xbVvGMAnAvQ==
+	b=STf5wikgVdvgDS7AbWr9htp1xbTOc9YtI2tjRxhGgxku5f6mpnQUPrNSZlHnrD5G7
+	 cYdmqKSnBMAdbUr31/sk8OCsAlvtDBXYtS7LCQqu2y2BllNnzg3YsdHbAl6XR0R+yW
+	 VvUdSbZx/CpTUSfzcVNyKZHHiDBDkGvPAWT+1Zk1YaAUf+1yoH4g45zrUrqkyHSYvK
+	 Kpwl4GEyGisNa1I0630HfOwLLNQ5pqOVjtln/v4FluO1jx/6svsezq4KeNO0sjedTT
+	 ixz5i4HERoCN1zecfRC4nheZOLnmcPOlvCINyeYpI/TKLEaK2Am6SvNEPpTNdbN5ga
+	 0sD3xxuyEzFPw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] mmc: vub300: fix sleeping function called from invalid context
-Message-ID: <397da4bd-97e2-4367-b3f4-d69e0f58dd91@mail.kernel.org>
+Subject: [PATCH RFC] media: dw2102: fix out-of-bounds read in dw2102_load_firmware
+Message-ID: <af1420ef-107b-40f3-be7f-7720e4271a49@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,131 +38,227 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri,  7 Aug 2026 03:36:37 +0000 (UTC)
+Date: Fri,  7 Aug 2026 04:51:07 +0000 (UTC)
 
-The vub300 driver manages an inactivity timer that holds a reference to the
-vub300 object. When the timer expires and the interface is disconnected
-(!vub300->interface), the timer callback drops the reference. If this is
-the last reference, it triggers vub300_delete(), which calls
-mmc_free_host(). Since mmc_free_host() can sleep (e.g., calling
-cancel_delayed_work_sync()), calling it from the timer's softirq context
-causes a "sleeping function called from invalid context" BUG.
+In dw2102_load_firmware(), the driver allocates a buffer for the firmware
+and copies the firmware data into it. It then transfers the firmware to the
+USB device in chunks of 64 bytes (0x40). However, if the firmware size is
+not a multiple of 64, the last iteration of the loop will read past the end
+of the allocated buffer, triggering a slab-out-of-bounds read.
 
-BUG: sleeping function called from invalid context at
-kernel/workqueue.c:4487
-in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 0, name: swapper/1
-Preemption disabled at:
-[<0000000000000000>] 0x0
-CPU: 1 UID: 0 PID: 0 Comm: swapper/1 Not tainted
+Additionally, if the memory allocation for the firmware buffer fails, the
+function skips the firmware loading block but still returns 0 (success)
+instead of an error code.
+
+Fix the out-of-bounds read by calculating the length of the current chunk
+using min_t() to ensure that the transfer length never exceeds the
+remaining bytes of the firmware. Also, handle the memory allocation failure
+correctly by returning -ENOMEM, and use kmemdup() to simplify the
+allocation and copying of the firmware data.
+
+BUG: KASAN: slab-out-of-bounds in dw210x_op_rw+0xb6/0x180
+drivers/media/usb/dvb-usb/dw2102.c:102
+Read of size 64 at addr ffff8881913cfa20 by task kworker/1:4/5693
+
 Call Trace:
- <IRQ>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- __might_resched+0x378/0x4d0 kernel/sched/core.c:9197
- __cancel_work_sync+0x6d/0x110 kernel/workqueue.c:4487
- mmc_free_host+0x19/0x30 drivers/mmc/core/host.c:700
- call_timer_fn+0x192/0x5e0 kernel/time/timer.c:1748
- expire_timers kernel/time/timer.c:1799 [inline]
- __run_timers kernel/time/timer.c:2374 [inline]
- __run_timer_base+0x652/0x8b0 kernel/time/timer.c:2386
- run_timer_base kernel/time/timer.c:2395 [inline]
- run_timer_softirq+0xb7/0x170 kernel/time/timer.c:2405
- handle_softirqs+0x225/0x840 kernel/softirq.c:622
- __do_softirq kernel/softirq.c:656 [inline]
- invoke_softirq kernel/softirq.c:496 [inline]
- __irq_exit_rcu+0xca/0x220 kernel/softirq.c:735
- irq_exit_rcu+0x9/0x30 kernel/softirq.c:752
- instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1062
- [inline]
- sysvec_apic_timer_interrupt+0xa6/0xc0 arch/x86/kernel/apic/apic.c:1062
- </IRQ>
+ dw210x_op_rw+0xb6/0x180 drivers/media/usb/dvb-usb/dw2102.c:102
+ dw2102_load_firmware+0x2b4/0x970 drivers/media/usb/dvb-usb/dw2102.c:1906
+ dvb_usb_download_firmware+0x1c3/0x270
+ drivers/media/usb/dvb-usb/dvb-usb-firmware.c:109
+ dvb_usb_device_init+0xddf/0x2570
+ drivers/media/usb/dvb-usb/dvb-usb-init.c:298
+ dw2102_probe+0x8a/0x270 drivers/media/usb/dvb-usb/dw2102.c:2594
+ usb_probe_interface+0x653/0xc60 drivers/usb/core/driver.c:396
 
-To fix this, decouple the timer from the object's reference counting. The
-timer does not need to hold a reference to the vub300 object if we ensure
-it is synchronously stopped before the object is freed. Remove the
-kref_get() and kref_put() associated with the inactivity_timer, and
-explicitly call timer_delete_sync() in vub300_disconnect() and the probe
-error path. Since vub300->interface is set to NULL before
-timer_delete_sync(), any concurrently running timer will simply exit,
-allowing the synchronous wait to complete safely.
-
-Additionally, fix similar issues with sg_transfer_timer. In
-__command_read_data() and __command_write_data(), replace timer_delete()
-with timer_delete_sync() to prevent the timer callback from running
-concurrently after the function returns. In __command_write_data(), ensure
-the timer is unconditionally stopped even if an error occurs.
-
-Fixes: 88095e7b473a ("mmc: Add new VUB300 USB-to-SD/SDIO/MMC driver")
+Fixes: 7fd4828f6cc5 ("V4L/DVB (8421): Adds support for Dvbworld DVB-S 2102 USB card")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+0e06aa1bdc6495bac24b@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=0e06aa1bdc6495bac24b
-Link: https://syzkaller.appspot.com/ai_job?id=dcef6af0-9740-47ea-949c-72048301deb8
-To: <linux-mmc@vger.kernel.org>
-To: "Ulf Hansson" <ulfh@kernel.org>
-To: "Tony Olech" <tony.olech@elandigitalsystems.com>
-Cc: "Johan Hovold" <johan@kernel.org>
-Cc: "Guangshuo Li" <lgs201920130244@gmail.com>
+Reported-by: syzbot+f408eac9faa61d5a1927@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=f408eac9faa61d5a1927
+Link: https://syzkaller.appspot.com/ai_job?id=1984d3dc-3d19-4b09-98dd-b5151c7690f1
+To: <linux-media@vger.kernel.org>
+To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
+To: "Igor M Liplianin" <liplianin@me.by>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Runyu Xiao" <runyu.xiao@seu.edu.cn>
 
 ---
-diff --git a/drivers/mmc/host/vub300.c b/drivers/mmc/host/vub300.c
-index 2dae474dc..9b08755cc 100644
---- a/drivers/mmc/host/vub300.c
-+++ b/drivers/mmc/host/vub300.c
-@@ -744,7 +744,7 @@ static void vub300_inactivity_timer_expired(struct timer_list *t)
- 	struct vub300_mmc_host *vub300 = timer_container_of(vub300, t,
- 							    inactivity_timer);
- 	if (!vub300->interface) {
--		kref_put(&vub300->kref, vub300_delete);
-+		/* timer_delete_sync() will wait for us */
- 	} else if (vub300->cmd) {
- 		mod_timer(&vub300->inactivity_timer, jiffies + HZ);
- 	} else {
-@@ -1453,7 +1453,7 @@ static int __command_read_data(struct vub300_mmc_host *vub300,
- 						  (linear_length / 16384));
- 			add_timer(&vub300->sg_transfer_timer);
- 			usb_sg_wait(&vub300->sg_request);
--			timer_delete(&vub300->sg_transfer_timer);
-+			timer_delete_sync(&vub300->sg_transfer_timer);
- 			if (vub300->sg_request.status < 0) {
- 				cmd->error = vub300->sg_request.status;
- 				data->bytes_xfered = 0;
-@@ -1570,10 +1570,10 @@ static int __command_write_data(struct vub300_mmc_host *vub300,
- 							   linear_length / 16384);
- 			add_timer(&vub300->sg_transfer_timer);
- 			usb_sg_wait(&vub300->sg_request);
-+			timer_delete_sync(&vub300->sg_transfer_timer);
- 			if (cmd->error) {
- 				data->bytes_xfered = 0;
- 			} else {
--				timer_delete(&vub300->sg_transfer_timer);
- 				if (vub300->sg_request.status < 0) {
- 					cmd->error = vub300->sg_request.status;
- 					data->bytes_xfered = 0;
-@@ -2327,7 +2327,6 @@ static int vub300_probe(struct usb_interface *interface,
- 	INIT_WORK(&vub300->deadwork, vub300_deadwork_thread);
- 	kref_init(&vub300->kref);
- 	timer_setup(&vub300->sg_transfer_timer, vub300_sg_timed_out, 0);
--	kref_get(&vub300->kref);
- 	timer_setup(&vub300->inactivity_timer,
- 		    vub300_inactivity_timer_expired, 0);
- 	vub300->inactivity_timer.expires = jiffies + HZ;
-@@ -2350,6 +2349,7 @@ static int vub300_probe(struct usb_interface *interface,
+diff --git a/drivers/media/usb/dvb-usb/dw2102.c b/drivers/media/usb/dvb-usb/dw2102.c
+index 4fecf2f96..50364a15d 100644
+--- a/drivers/media/usb/dvb-usb/dw2102.c
++++ b/drivers/media/usb/dvb-usb/dw2102.c
+@@ -1893,93 +1893,98 @@ static int dw2102_load_firmware(struct usb_device *dev,
+ 		break;
+ 	}
+ 	info("start downloading DW210X firmware");
+-	p = kmalloc(fw->size, GFP_KERNEL);
++	p = kmemdup(fw->data, fw->size, GFP_KERNEL);
++	if (!p) {
++		ret = -ENOMEM;
++		goto out;
++	}
++
+ 	reset = 1;
+ 	/*stop the CPU*/
+ 	dw210x_op_rw(dev, 0xa0, 0x7f92, 0, &reset, 1, DW210X_WRITE_MSG);
+ 	dw210x_op_rw(dev, 0xa0, 0xe600, 0, &reset, 1, DW210X_WRITE_MSG);
  
- err_stop_io:
- 	vub300->interface = NULL;
-+	timer_delete_sync(&vub300->inactivity_timer);
- 	kref_put(&vub300->kref, vub300_delete);
+-	if (p) {
+-		memcpy(p, fw->data, fw->size);
+-		for (i = 0; i < fw->size; i += 0x40) {
+-			b = (u8 *)p + i;
+-			if (dw210x_op_rw(dev, 0xa0, i, 0, b, 0x40,
+-					 DW210X_WRITE_MSG) != 0x40) {
+-				err("error while transferring firmware");
+-				ret = -EINVAL;
+-				break;
+-			}
+-		}
+-		/* restart the CPU */
+-		reset = 0;
+-		if (ret || dw210x_op_rw(dev, 0xa0, 0x7f92, 0, &reset, 1,
+-					DW210X_WRITE_MSG) != 1) {
+-			err("could not restart the USB controller CPU.");
+-			ret = -EINVAL;
+-		}
+-		if (ret || dw210x_op_rw(dev, 0xa0, 0xe600, 0, &reset, 1,
+-					DW210X_WRITE_MSG) != 1) {
+-			err("could not restart the USB controller CPU.");
++	for (i = 0; i < fw->size; i += 0x40) {
++		int len = min_t(int, fw->size - i, 0x40);
++
++		b = (u8 *)p + i;
++		if (dw210x_op_rw(dev, 0xa0, i, 0, b, len,
++				 DW210X_WRITE_MSG) != len) {
++			err("error while transferring firmware");
+ 			ret = -EINVAL;
++			break;
+ 		}
+-		/* init registers */
+-		switch (le16_to_cpu(dev->descriptor.idProduct)) {
+-		case USB_PID_TEVII_S650:
+-			dw2104_properties.rc.core.rc_codes = RC_MAP_TEVII_NEC;
+-			fallthrough;
+-		case USB_PID_CYPRESS_DW2104:
+-			reset = 1;
+-			dw210x_op_rw(dev, 0xc4, 0x0000, 0, &reset, 1,
+-				     DW210X_WRITE_MSG);
+-			fallthrough;
+-		case USB_PID_CYPRESS_DW3101:
+-			reset = 0;
+-			dw210x_op_rw(dev, 0xbf, 0x0040, 0, &reset, 0,
+-				     DW210X_WRITE_MSG);
++	}
++	/* restart the CPU */
++	reset = 0;
++	if (ret || dw210x_op_rw(dev, 0xa0, 0x7f92, 0, &reset, 1,
++				DW210X_WRITE_MSG) != 1) {
++		err("could not restart the USB controller CPU.");
++		ret = -EINVAL;
++	}
++	if (ret || dw210x_op_rw(dev, 0xa0, 0xe600, 0, &reset, 1,
++				DW210X_WRITE_MSG) != 1) {
++		err("could not restart the USB controller CPU.");
++		ret = -EINVAL;
++	}
++	/* init registers */
++	switch (le16_to_cpu(dev->descriptor.idProduct)) {
++	case USB_PID_TEVII_S650:
++		dw2104_properties.rc.core.rc_codes = RC_MAP_TEVII_NEC;
++		fallthrough;
++	case USB_PID_CYPRESS_DW2104:
++		reset = 1;
++		dw210x_op_rw(dev, 0xc4, 0x0000, 0, &reset, 1,
++			     DW210X_WRITE_MSG);
++		fallthrough;
++	case USB_PID_CYPRESS_DW3101:
++		reset = 0;
++		dw210x_op_rw(dev, 0xbf, 0x0040, 0, &reset, 0,
++			     DW210X_WRITE_MSG);
++		break;
++	case USB_PID_TERRATEC_CINERGY_S:
++	case USB_PID_CYPRESS_DW2102:
++		dw210x_op_rw(dev, 0xbf, 0x0040, 0, &reset, 0,
++			     DW210X_WRITE_MSG);
++		dw210x_op_rw(dev, 0xb9, 0x0000, 0, &reset16[0], 2,
++			     DW210X_READ_MSG);
++		/* check STV0299 frontend  */
++		dw210x_op_rw(dev, 0xb5, 0, 0, &reset16[0], 2,
++			     DW210X_READ_MSG);
++		if ((reset16[0] == 0xa1) || (reset16[0] == 0x80)) {
++			dw2102_properties.i2c_algo = &dw2102_i2c_algo;
++			dw2102_properties.adapter->fe[0].tuner_attach = &dw2102_tuner_attach;
+ 			break;
+-		case USB_PID_TERRATEC_CINERGY_S:
+-		case USB_PID_CYPRESS_DW2102:
+-			dw210x_op_rw(dev, 0xbf, 0x0040, 0, &reset, 0,
+-				     DW210X_WRITE_MSG);
+-			dw210x_op_rw(dev, 0xb9, 0x0000, 0, &reset16[0], 2,
+-				     DW210X_READ_MSG);
+-			/* check STV0299 frontend  */
+-			dw210x_op_rw(dev, 0xb5, 0, 0, &reset16[0], 2,
+-				     DW210X_READ_MSG);
+-			if ((reset16[0] == 0xa1) || (reset16[0] == 0x80)) {
+-				dw2102_properties.i2c_algo = &dw2102_i2c_algo;
+-				dw2102_properties.adapter->fe[0].tuner_attach = &dw2102_tuner_attach;
+-				break;
+-			}
+-			/* check STV0288 frontend  */
+-			reset16[0] = 0xd0;
+-			reset16[1] = 1;
+-			reset16[2] = 0;
+-			dw210x_op_rw(dev, 0xc2, 0, 0, &reset16[0], 3,
+-				     DW210X_WRITE_MSG);
+-			dw210x_op_rw(dev, 0xc3, 0xd1, 0, &reset16[0], 3,
+-				     DW210X_READ_MSG);
+-			if (reset16[2] == 0x11) {
+-				dw2102_properties.i2c_algo = &dw2102_earda_i2c_algo;
+-				break;
+-			}
+-			fallthrough;
+-		case 0x2101:
+-			dw210x_op_rw(dev, 0xbc, 0x0030, 0, &reset16[0], 2,
+-				     DW210X_READ_MSG);
+-			dw210x_op_rw(dev, 0xba, 0x0000, 0, &reset16[0], 7,
+-				     DW210X_READ_MSG);
+-			dw210x_op_rw(dev, 0xba, 0x0000, 0, &reset16[0], 7,
+-				     DW210X_READ_MSG);
+-			dw210x_op_rw(dev, 0xb9, 0x0000, 0, &reset16[0], 2,
+-				     DW210X_READ_MSG);
++		}
++		/* check STV0288 frontend  */
++		reset16[0] = 0xd0;
++		reset16[1] = 1;
++		reset16[2] = 0;
++		dw210x_op_rw(dev, 0xc2, 0, 0, &reset16[0], 3,
++			     DW210X_WRITE_MSG);
++		dw210x_op_rw(dev, 0xc3, 0xd1, 0, &reset16[0], 3,
++			     DW210X_READ_MSG);
++		if (reset16[2] == 0x11) {
++			dw2102_properties.i2c_algo = &dw2102_earda_i2c_algo;
+ 			break;
+ 		}
+-
+-		msleep(100);
+-		kfree(p);
++		fallthrough;
++	case 0x2101:
++		dw210x_op_rw(dev, 0xbc, 0x0030, 0, &reset16[0], 2,
++			     DW210X_READ_MSG);
++		dw210x_op_rw(dev, 0xba, 0x0000, 0, &reset16[0], 7,
++			     DW210X_READ_MSG);
++		dw210x_op_rw(dev, 0xba, 0x0000, 0, &reset16[0], 7,
++			     DW210X_READ_MSG);
++		dw210x_op_rw(dev, 0xb9, 0x0000, 0, &reset16[0], 2,
++			     DW210X_READ_MSG);
++		break;
+ 	}
  
- 	return retval;
-@@ -2385,6 +2385,7 @@ static void vub300_disconnect(struct usb_interface *interface)
- 			/* prevent more I/O from starting */
- 			vub300->interface = NULL;
- 			mmc_remove_host(mmc);
-+			timer_delete_sync(&vub300->inactivity_timer);
- 			kref_put(&vub300->kref, vub300_delete);
- 			pr_info("USB vub300 remote SDIO host controller[%d]"
- 				" now disconnected", ifnum);
++	msleep(100);
++	kfree(p);
++
++out:
+ 	if (le16_to_cpu(dev->descriptor.idProduct) == 0x2101)
+ 		release_firmware(fw);
+ 	return ret;
 
 
 base-commit: 075b74841bd0065a3bda3440873c747938e69b68
