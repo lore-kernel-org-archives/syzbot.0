@@ -1,289 +1,249 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 484E13F44CD
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 08:54:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C98013B58C
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 09:07:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786092889; cv=none; b=FWgtpsOXt8DROb6byoefdaY17j1nVGaxP6jzpib6t/vwSuIFx+v9cNhL1fUfeRumKY1Wmudp76A+JrN1mNFQACn0jvoVepSOvy2rkBr0d5ecNHwkN+WeKGFgfNN8lpZQEFQMEYScepe9fO6LEJwmzPNj9Go2qfKDRJHUgEU/3eM=
+	t=1786093679; cv=none; b=DLAKJ3WHL/Zpf0GEjlsw8zsU8ZTcZmQIlPIbD+9+WdswXrCtaeca2+2XMDe/bC802X3pAz3ZSt7M3NR0pgTivB9xRCgpEYSggYnQL0ZXjUUz6gpFp353JDJVZ+OJ5qblPrTzgZ7Os8qW2otPiHmtnmgMTA9Rp5/maKU6No6bnXg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786092889; c=relaxed/simple;
-	bh=9T0hVfr5rbvDUzC3XjJwW0mlakOFmt7TdaxG28Y8pDU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FaHbgiGLxAg3l/RCdxyLvTGlbv3fNrcuyQWfXR0ub3WsAUtRtWaOfaSmNbqsOQ5/yBcWi9h+qU9D7/CgMtaoDp/9ysEbvlbDJdAC0jZxaDZbOSq5MrWR0YeDaRdIblvVoz0AGXeWESSArMkJmp8TK8NxEicHJKxvmgFYKukB9qA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nl+AbEJ0; arc=none smtp.client-ip=209.85.128.44
+	s=arc-20240116; t=1786093679; c=relaxed/simple;
+	bh=+8j7alp2JrkwSbF5p0MJHlU15GhlWakdZANGDt//VJs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ku2BtMyRswNNpGZWZAV8JfXnf8vIE3exmDiAO28khQZA2qwWUgI4nKs4VMMDnsf1z2so82wGxnSXipTiQaG1ZjccYWcuP+aYZetDJmczTaIlv6/IxRQhcTqIJNC4CkZpiKhP33HD1lbuzEeLcus/JvEzb83XmR/2VyoP3I7diwg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fLeEi8mM; arc=none smtp.client-ip=209.85.218.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nl+AbEJ0"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-495437bb891so16361795e9.1
-        for <syzbot@lists.linux.dev>; Fri, 07 Aug 2026 01:54:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fLeEi8mM"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-c1fbe461f59so460887566b.2
+        for <syzbot@lists.linux.dev>; Fri, 07 Aug 2026 02:07:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786092885; x=1786697685; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Zq9Vv7qLtJwXrWiUZ1UflGFkycG4XOnpj4usAXguzew=;
-        b=nl+AbEJ0F/P8VASZ4ajLUBW1NHuYjLWF+Zy22gcrX1Rpg1zfDYf743HNU27/CH2ffU
-         6Gg5EdbOjyM9ePB7AraWb2k7IPHUgxLHQ12wGGJg1sXiAlEVZnaAY5p78DnwtOemM8wu
-         cBr/ZaisYBjyvt/QEzRhh+btYtxcP2nxlHZbpjohJ3IWxsA6Dv+QkN72AHZ86zkTP/kZ
-         zhaAqmKB9BOzUwMhGntRVdCuoYbJouGVt9Jx6vY1pdW1aC9tQsXPEmAhY6PLsAGPHk+Z
-         jlJolQWE8ojg0WLCoK1A/0kTyL5+Jb+m3TOSBTbkw9XmVKCnG2a6hdNBWRvuJRLwmxo6
-         nTAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786092885; x=1786697685;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20251104; t=1786093675; x=1786698475; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=Zq9Vv7qLtJwXrWiUZ1UflGFkycG4XOnpj4usAXguzew=;
-        b=O/Te3O4Smd973v7kd+CBcitn/rCnV7Y1gGFFN7ur522ELgzT1hjPRy56ibrjzPAC6X
-         aI/MAQk+7oCdClT/n5rTJaaLRzoecH6ccbnWfwibSnHMyNAcEeVAdwOA4zKPaAz505Hd
-         dYLFr9RP2gY16Gy2299hVyfTycrG21rh66B9DZhwQmF8mmy+DkwnfPIDKOEbaYwgNcbZ
-         kLtF2Eo00gJcxo78EFlSIfju5JWO9BelqfUMMxifai9ayY65ojpULyryEOP0fZ+5hKnQ
-         N+KP1JFcEpYAyCXUEFRtHxi9uC74aMd0BTVe7yvt4Vbv4gDkn5174N+xrHbnn03Ln2kt
-         zNdw==
-X-Forwarded-Encrypted: i=1; AHgh+RqGUgPtv9UIRF8VVzYHMuSjyZMjRKPTEYlGDmGCcaSIB0M2YtGLJsQIuObCkvuzuB/rJLI6u40=@lists.linux.dev
-X-Gm-Message-State: AOJu0YwG1e4tmfHKJgvnkElpYSjbuXtvL8DxA58mvESr5a3Sm8BidqaK
-	a1OzykThK5B9xjAzI/32r32OymcAH6BAyIwkFaYoPeY6+U4Hyd7hkz4J
-X-Gm-Gg: AR+sD10MVBVOmkH1bJ4JXxKCdCr3Ay70EoZLmTdm5xq0wQvT/VFJYcZtQEAFhPS8IAN
-	NK4y/VShNg5vAwW/Pvq+wmqOAvSaVwlbp1amKzKl70UFlZUAXe9ynqp2cFdW2KSk8MYwh2YoYaH
-	AEi7c6XH6CdlBOX5W4B6lQoNvD7R1KxdbsJCJS11GIE+4DuR8E1t6s0Eyr56nZ1v9Vwlq90r4ou
-	WG3uy/mbMS9C2Ock9sAiIyldg7GlD+1Fz9jSSmMUn46eI9awr0AoNuFuNheFjJHCHzJX6oEa3W5
-	ai/U4nK0ylswPCARcoO5lZDFNRrRxCA8mzfGLkI30k14USxaec+QosF5DTf42p3JJxKR4ep05iX
-	UBj0VHEyKkfHxYZ80m797KGo1xd4xVi86+UJbOe5VR/1NSJ++d1s5jDKRmdtDAoJ5Zhb2Y1vj1z
-	UYoPk2O1J31kFBwdgBYpJmppUB7zuOSOt+urLFhncybc4tJZA4ymim3XRpF2GkUOYNQgbXyO+b4
-	o0OOLe7AltUGrA7hkXgm4mb
-X-Received: by 2002:a05:600c:1546:b0:495:3bc6:d381 with SMTP id 5b1f17b1804b1-499553bcbc8mr115433305e9.2.1786092885249;
-        Fri, 07 Aug 2026 01:54:45 -0700 (PDT)
-Received: from localhost ([37.30.44.17])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4995e9f9424sm17625405e9.8.2026.08.07.01.54.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Aug 2026 01:54:44 -0700 (PDT)
-Date: Fri, 7 Aug 2026 10:54:43 +0200
-From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC v2] tipc: fix spinlock recursion in tipc_sk_rcv()
-Message-ID: <gzke36g4mm6sanr2fsln44fugfypmfmhnzibyws2ponsbjjius@lgai63h6ahli>
-References: <368f7232-39e9-424c-9683-0c28db1151af@mail.kernel.org>
+        bh=X0lH4pPBuy/D9mnlikrnB0VUHLOlrivlK94IzTKexHQ=;
+        b=fLeEi8mMJiPwYYBSRXVGgICnwGm70vI2uvN8iQgP9UvfBdyl9veKF1xCUkAgcgjbIO
+         kgOWnARyiV0OtkBfGfUyGm/CW2DGO/+YEnJrzKhZhFksR2KOpHB4iSW3NKEueZHpB7iF
+         DL6zCIRd+l8RIgDARq1bQxbOkV7d6FBxQT2/3OeizdfC9X0vk/bZaFbfNXXc8KD1WG3C
+         qTwr3M5zTOOKreZsZAIecy+Bcmp+6J1rHuzn4j4IOhTq/iHe8wgKFf+j+YYctrV5TS3O
+         BzZobYceJlXz7fz2wYdyAitQIb99snk8fnBYcO4Tx/+wTqpVaPRpT6UdXpRBXs9gygc7
+         YWLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786093675; x=1786698475;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=X0lH4pPBuy/D9mnlikrnB0VUHLOlrivlK94IzTKexHQ=;
+        b=fsZbWziV2LkILlczsabZZtM0QlCWnxp4EWBvu+Zv32TrWAU+oYtCv7/BC5RLZHJovn
+         3x4LSDEA4mVdxrXoGFM9rYVzno/ycWpF30Tb8dxvSiFuLNL/NCewFgXNBsrXGRwXxCui
+         9SR+oe/srNimcvz6KAYQf1kB6sDNm/VouwVXBp4cZHxW6iw+tCGPyeeOW/vHau3pHKxk
+         FDfj/92PP0v0RIzpLF5Ms61sJJqafVMW1bM3bp+soBP98rSHhKkPlHYYtJPzUZuqa6bL
+         rahP8aRTDijDg9T7voFUM8gYlfMMvCQEGE5rgLovs7HqYBRCFRV4vbcaVC7HBKN8j1xQ
+         kwHQ==
+X-Gm-Message-State: AOJu0Yxi0In2fYwBovYjd+5uoeyQackfWNf6kNU5Cbs0A/PW5Z1ofjE3
+	qsypPYQY9bXjejkED57nhOgIOpO5EWKVRaTWt3gXr0r1YJdE7WN8FGFmSVhaUQ==
+X-Gm-Gg: AR+sD12ldZPXOcbgVDaUakIbVHpWb7HSqd7jXpV1W8Yhf8mkCkMduFGlONTWk/5HuOx
+	wrENa6gCC1Lxx6F6YZJ9qOGzUYTxOV3A6e0X0bQKde2K4hQgxKfAGDmw5I+ShCpnDXbtJGxboaf
+	jJyilvGljJMNqkiRzZkao+L8dtFop016PEX3MIGIoiPzP2MqvIv/+rob8HSdpYBmPs025cOl7Zx
+	x70CimS7fOvgYOSdfjEhPEmPlrhdZ5b8ylNSp8fY48A4k/0V9XYx8CemeVSBfspSzR5yHX48Vh9
+	0j5THiShw+klRr01mgCCML8H12lGknQssV7DzMwaZtrESxMl/wKZ4ZDhLEfAuNZx4yqCvZbEAHt
+	ZKnEQ/6jcoyCUiX85Ze6qHI3UA9po5D/65rSkuD2PzQqNsTBYYeYsBtzxbTKbwvaEDhhTp+x69f
+	zDgDBIebKSYjzbzrYsyqbbEA6mCVZM6x3ViS0aAFOrjFIWpeCX7FtMETi5/449wHEghV8MDXFrV
+	LJyCPIaNWJxhZRIxNKM1Sxb2WeuRNQ8n2GijiVlBjHLuhrP7E2Inbj4fuY98X2rpfxL6uEBmOVs
+	Z5fqKpjikNY/ShLxB7M9Vz5PpLfTDe0bBgTe68Q/YL7OfmTiDGAlidc=
+X-Received: by 2002:a17:907:3cd2:b0:c20:295d:6574 with SMTP id a640c23a62f3a-c207320a7e7mr375294566b.12.1786093674710;
+        Fri, 07 Aug 2026 02:07:54 -0700 (PDT)
+Received: from [192.168.100.51] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c2080a29a8fsm28909166b.4.2026.08.07.02.07.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Aug 2026 02:07:54 -0700 (PDT)
+Message-ID: <00b8feba-9c2c-4ce8-8f48-7c9b13ec6403@gmail.com>
+Date: Fri, 7 Aug 2026 11:07:53 +0200
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <368f7232-39e9-424c-9683-0c28db1151af@mail.kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v3] drm/client: Avoid warning on vblank timeout during
+ modeset client waits
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+References: <0bbd5c22-3a1c-4e66-9d45-932bb858d0af@mail.kernel.org>
+Content-Language: en-US
+From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+In-Reply-To: <0bbd5c22-3a1c-4e66-9d45-932bb858d0af@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-#syz test
+Keep the timeout-warning suppression limited to the best-effort DRM 
+client path, but fix the public helper's error-source ambiguity. The 
+current wrapper emits the wait-timeout warning whenever the internal 
+helper returns `-ETIMEDOUT`. That return value can also come from 
+`drm_vblank_get()`, which propagates the driver's `enable_vblank()` 
+errno. If acquisition returns `-ETIMEDOUT`, no wait occurred, yet the 
+patch emits both the availability warning and a false wait-timeout warning.
 
-On Wed, Jul 29, 2026 at 04:54:27PM +0000, syzbot wrote:
-> An RCU stall (infinite loop / livelock) can occur due to a spinlock
-> recursion bug in the TIPC subsystem. Specifically, tipc_sk_rcv() can be
-> called recursively on the same CPU and try to acquire a socket spinlock
-> that is already held higher up in the call stack. Because it uses
-> spin_trylock_bh(), it fails to acquire the lock and enters an infinite
-> loop.
-> 
-> The issue is triggered by the concurrent execution of sendmsg() and
-> setsockopt() on a connected TIPC socket pair (fd0 and fd1), which reside on
-> the same node (loopback).
-> 
-> The sequence of events leading to the livelock is:
-> 1. setsockopt locks fd0 (acquires the socket mutex sk->sk_lock.owned).
-> While fd0 is locked, sendmsg on fd1 sends messages to fd0. Since fd0 is
-> owned by the user, tipc_sk_enqueue() adds these messages to fd0's backlog
-> queue.
-> 2. setsockopt processes SO_RCVBUFFORCE and reduces fd0's sk_rcvbuf to the
-> minimum value (SOCK_MIN_RCVBUF, 2048).
-> 3. setsockopt finishes and calls release_sock(fd0). Seeing a non-empty
-> backlog, it calls __release_sock(fd0).
-> 4. __release_sock(fd0) drops fd0's spinlock (sk->sk_lock.slock) and calls
-> sk_backlog_rcv() -> tipc_sk_backlog_rcv() -> tipc_sk_filter_rcv() to
-> process the backlog.
-> 5. Because sk_rcvbuf was drastically reduced, the receive queue limit is
-> exceeded. tipc_sk_filter_rcv(fd0) rejects the message (TIPC_ERR_OVERLOAD)
-> and queues a reject message to xmitq.
-> 6. tipc_sk_backlog_rcv(fd0) calls tipc_node_distr_xmit(&xmitq) to send the
-> reject message back to fd1. Since fd1 is on the same node, tipc_node_xmit()
-> synchronously calls tipc_sk_rcv(fd1).
-> 7. tipc_sk_rcv(fd1) successfully locks fd1's spinlock and calls
-> tipc_sk_enqueue(fd1) -> tipc_sk_filter_rcv(fd1) ->
-> tipc_sk_filter_connect(fd1).
-> 8. tipc_sk_filter_connect(fd1) sees that fd1's sk_write_queue is not empty.
-> It calls tipc_sk_push_backlog(fd1).
-> 9. tipc_sk_push_backlog(fd1) calls tipc_node_xmit() to send the queued
-> messages to fd0. This synchronously calls tipc_sk_rcv(fd0).
-> 10. tipc_sk_rcv(fd0) successfully locks fd0's spinlock (as __release_sock
-> dropped it) and calls tipc_sk_enqueue(fd0). Since fd0 is still owned by the
-> user, it tries to add the message to the backlog. The backlog is full, so
-> it rejects the message again, sending a new reject message back to fd1.
-> 11. The new reject message is sent to fd1 via tipc_node_xmit() ->
-> tipc_sk_rcv(fd1). tipc_sk_rcv(fd1) tries to lock fd1's spinlock. However,
-> fd1's spinlock is already held by the outer tipc_sk_rcv(fd1) at step 7.
-> 
-> In tipc_sk_rcv(), if spin_trylock_bh() fails, it assumes another CPU holds
-> the lock, so it just continues the loop without dequeuing the message from
-> inputq. Because the lock is held by the current CPU, it will never be
-> released, and the while loop spins infinitely, causing the RCU stall:
-> 
-> rcu: INFO: rcu_preempt self-detected stall on CPU
-> ...
-> Call Trace:
->  <TASK>
->  __raw_spin_trylock_bh include/linux/spinlock_api_smp.h:207 [inline]
->  _raw_spin_trylock_bh+0x60/0x70 kernel/locking/spinlock.c:150
->  spin_trylock_bh include/linux/spinlock.h:414 [inline]
->  tipc_sk_rcv+0x420/0x2b50 net/tipc/socket.c:2500
->  tipc_node_xmit+0x205/0xf10 net/tipc/node.c:1701
->  tipc_node_xmit_skb net/tipc/node.c:1766 [inline]
->  tipc_node_distr_xmit+0x2cd/0x400 net/tipc/node.c:1781
->  tipc_sk_rcv+0x2539/0x2b50 net/tipc/socket.c:2505
->  tipc_node_xmit+0x205/0xf10 net/tipc/node.c:1701
->  tipc_sk_push_backlog net/tipc/socket.c:1313 [inline]
->  tipc_sk_filter_connect net/tipc/socket.c:2259 [inline]
->  tipc_sk_filter_rcv+0x17f3/0x3210 net/tipc/socket.c:2368
->  tipc_sk_enqueue net/tipc/socket.c:2449 [inline]
->  tipc_sk_rcv+0x877/0x2b50 net/tipc/socket.c:2501
->  tipc_node_xmit+0x205/0xf10 net/tipc/node.c:1701
->  tipc_node_xmit_skb net/tipc/node.c:1766 [inline]
->  tipc_node_distr_xmit+0x2cd/0x400 net/tipc/node.c:1781
->  tipc_sk_backlog_rcv+0x1ad/0x270 net/tipc/socket.c:2416
->  sk_backlog_rcv include/net/sock.h:1190 [inline]
->  __release_sock+0x28b/0x390 net/core/sock.c:3261
->  release_sock+0x190/0x260 net/core/sock.c:3860
->  sockopt_release_sock net/core/sock.c:1163 [inline]
->  sk_setsockopt+0x2822/0x2e80 net/core/sock.c:1681
->  do_sock_setsockopt+0x11b/0x1b0 net/socket.c:2364
->  __sys_setsockopt net/socket.c:2393 [inline]
->  __do_sys_setsockopt net/socket.c:2399 [inline]
->  __se_sys_setsockopt net/socket.c:2396 [inline]
->  __x64_sys_setsockopt+0x13d/0x1b0 net/socket.c:2396
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->  </TASK>
-> 
-> To fix this, tipc_sk_push_backlog() should not call tipc_node_xmit()
-> directly for own-node destinations while holding the socket spinlock.
-> Instead, modify tipc_sk_push_backlog() to take an xmitq parameter. If xmitq
-> is provided and the destination is on the own node, it splices the write
-> queue into xmitq, deferring the transmission until after the spinlock is
-> released. For calls like __tipc_shutdown() that execute under the socket
-> mutex rather than the spinlock, passing NULL for xmitq allows direct
-> transmission to continue safely. For off-node destinations, direct
-> transmission remains safe as it does not lead to synchronous loopback
-> recursion.
-> 
-> Fixes: c0bceb97db9e ("tipc: add smart nagle feature")
+Separate vblank acquisition from the quiet counter wait. Make the 
+private helper perform only the counter sampling and 
+`wait_event_timeout()` under a caller-held vblank reference. Keep the 
+client's existing outer `drm_crtc_vblank_get()` and 
+`drm_crtc_vblank_put()` pair, call the private helper between them, and 
+continue to ignore its timeout result.
+
+In the exported `drm_crtc_wait_one_vblank()` wrapper, perform 
+`drm_vblank_get()` and its availability warning directly, and return an 
+acquisition error immediately. Only after successful acquisition should 
+it call the private helper and emit the timeout warning for 
+`-ETIMEDOUT`. Preserve the original warning-before-put ordering, return 
+values, one-second deadline, wait predicate, public signature, exported 
+ABI, and strict behavior of all direct public callers. Keep 
+`drm_atomic_helper_wait_for_vblanks()` unchanged.
+
+Retain the cleaned commit-message style, corrected `Fixes` tag, AI 
+provenance, report links, and current recipient list. Update the 
+explanation to state that keeping acquisition in the public wrapper 
+prevents an `enable_vblank()` error from being mislabeled as a wait timeout.
+
+On 8/6/2026 8:10 PM, syzbot wrote:
+> On PREEMPT_RT kernels, a user-space task with elevated Real-Time (RT)
+> priority can starve essential kernel threads. For example, the VKMS driver
+> simulates vblank interrupts using hrtimers. On PREEMPT_RT, these timers run
+> in the per-CPU timer threads at a low RT priority. If a user-space task
+> elevates its priority above the timer thread and monopolizes the CPU, the
+> timer thread is starved and the VKMS software vblank delivery is delayed
+> beyond the timeout.
+>
+> This leads to a timeout when a worker thread waits for the vblank event.
+> For instance, a console update triggers a framebuffer update, scheduling
+> drm_fb_helper_damage_work() on the system workqueue. The worker thread
+> eventually calls drm_client_modeset_wait_for_vblank() to synchronize the
+> screen update with the vblank interval. Due to the starved timer, the wait
+> times out and triggers a warning in drm_crtc_wait_one_vblank().
+>
+> Since this vblank wait in the client modeset path is only used for optional
+> client update throttling, a timeout is acceptable and does not indicate a
+> kernel bug. Therefore, a warning should not be triggered in this case.
+>
+> Introduce drm_crtc_wait_one_vblank_internal(), which performs the vblank
+> wait without triggering a warning on timeout. This new function is used in
+> drm_client_modeset_wait_for_vblank() to avoid the warning, while keeping
+> the warning in drm_crtc_wait_one_vblank() for other callers where a timeout
+> might still indicate an actual issue.
+>
+> Fixes: d8c4bddcd8bc ("drm/fb-helper: Synchronize dirty worker with vblank")
 > Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+10a41dc44eef71aa9450@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=10a41dc44eef71aa9450
-> Link: https://syzkaller.appspot.com/ai_job?id=e6db6744-c061-4f81-bde8-25993166f061
-> To: "David S. Miller" <davem@davemloft.net>
-> To: "Eric Dumazet" <edumazet@google.com>
-> To: "Jon Maloy" <jmaloy@redhat.com>
-> To: "Jakub Kicinski" <kuba@kernel.org>
-> To: <netdev@vger.kernel.org>
-> To: "Paolo Abeni" <pabeni@redhat.com>
-> To: <tipc-discussion@lists.sourceforge.net>
-> To: "Jon Maloy" <jon.maloy@ericsson.com>
-> Cc: "Simon Horman" <horms@kernel.org>
+> Reported-by: syzbot+f59157955aba9d0cb43b@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=f59157955aba9d0cb43b
+> Link: https://syzkaller.appspot.com/ai_job?id=527b7209-9098-44da-8634-7792d361dea5
+> To: "David Airlie" <airlied@gmail.com>
+> To: <dri-devel@lists.freedesktop.org>
+> To: "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>
+> To: "Maxime Ripard" <mripard@kernel.org>
+> To: "Simona Vetter" <simona@ffwll.ch>
+> To: "Thomas Zimmermann" <tzimmermann@suse.de>
 > Cc: <linux-kernel@vger.kernel.org>
-> 
+>
 > ---
+> v3:
+> - Removed the raw kernel cut marker and full warning trace from the commit description.
+> - Replaced first-person phrasing with impersonal wording in the commit description.
+>
 > v2:
-> - Only defer transmission in tipc_sk_push_backlog() if the destination is on the own node.
-> - Update the commit description to clarify that deferral is only needed for own-node destinations.
-> 
+> - Introduced drm_crtc_wait_one_vblank_internal() to allow waiting for vblank without warning on timeout.
+> - Updated drm_client_modeset_wait_for_vblank() to use the new internal function, avoiding warnings during optional client update throttling.
+> - Restored the warning in drm_crtc_wait_one_vblank() for other callers.
+> https://lore.kernel.org/all/5edd530e-c20d-42c4-bf55-0656081f030d@mail.kernel.org/T/
+>
 > v1:
-> https://lore.kernel.org/all/01641937-e30d-43dd-ba9c-95b3d2ae5691@mail.kernel.org/T/
+> https://lore.kernel.org/all/7527aaed-dcb2-4bde-a807-1677dcd0af99@mail.kernel.org/T/
 > ---
-> diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-> index e564341e0..16d844fc8 100644
-> --- a/net/tipc/socket.c
-> +++ b/net/tipc/socket.c
-> @@ -156,7 +156,8 @@ static int tipc_sk_insert(struct tipc_sock *tsk);
->  static void tipc_sk_remove(struct tipc_sock *tsk);
->  static int __tipc_sendstream(struct socket *sock, struct msghdr *m, size_t dsz);
->  static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dsz);
-> -static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack);
-> +static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack,
-> +				 struct sk_buff_head *xmitq);
->  static int tipc_wait_for_connect(struct socket *sock, long *timeo_p);
->  
->  static const struct proto_ops packet_ops;
-> @@ -560,7 +561,7 @@ static void __tipc_shutdown(struct socket *sock, int error)
->  					    !tsk_conn_cong(tsk)));
->  
->  	/* Push out delayed messages if in Nagle mode */
-> -	tipc_sk_push_backlog(tsk, false);
-> +	tipc_sk_push_backlog(tsk, false, NULL);
->  	/* Remove pending SYN */
->  	__skb_queue_purge(&sk->sk_write_queue);
->  
-> @@ -1268,7 +1269,8 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
->  /* tipc_sk_push_backlog(): send accumulated buffers in socket write queue
->   *                         when socket is in Nagle mode
->   */
-> -static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
-> +static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack,
-> +				 struct sk_buff_head *xmitq)
->  {
->  	struct sk_buff_head *txq = &tsk->sk.sk_write_queue;
->  	struct sk_buff *skb = skb_peek_tail(txq);
-> @@ -1310,6 +1312,12 @@ static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
->  		tsk->pkt_cnt += skb_queue_len(txq);
->  	tsk->snt_unacked += tsk->snd_backlog;
->  	tsk->snd_backlog = 0;
+> diff --git a/drivers/gpu/drm/drm_client_modeset.c b/drivers/gpu/drm/drm_client_modeset.c
+> index 0080a8e95..7ff0f24a0 100644
+> --- a/drivers/gpu/drm/drm_client_modeset.c
+> +++ b/drivers/gpu/drm/drm_client_modeset.c
+> @@ -1328,7 +1328,7 @@ int drm_client_modeset_wait_for_vblank(struct drm_client_dev *client, unsigned i
+>   	 */
+>   	ret = drm_crtc_vblank_get(crtc);
+>   	if (!ret) {
+> -		drm_crtc_wait_one_vblank(crtc);
+> +		drm_crtc_wait_one_vblank_internal(crtc);
+>   		drm_crtc_vblank_put(crtc);
+>   	}
+>   
+> diff --git a/drivers/gpu/drm/drm_internal.h b/drivers/gpu/drm/drm_internal.h
+> index f893b1e3a..6fd33672d 100644
+> --- a/drivers/gpu/drm/drm_internal.h
+> +++ b/drivers/gpu/drm/drm_internal.h
+> @@ -115,6 +115,7 @@ void drm_vblank_disable_and_save(struct drm_device *dev, unsigned int pipe);
+>   int drm_vblank_get(struct drm_device *dev, unsigned int pipe);
+>   void drm_vblank_put(struct drm_device *dev, unsigned int pipe);
+>   u64 drm_vblank_count(struct drm_device *dev, unsigned int pipe);
+> +int drm_crtc_wait_one_vblank_internal(struct drm_crtc *crtc);
+>   
+>   /* drm_vblank_work.c */
+>   static inline void drm_vblank_flush_worker(struct drm_vblank_crtc *vblank)
+> diff --git a/drivers/gpu/drm/drm_vblank.c b/drivers/gpu/drm/drm_vblank.c
+> index f90fb2d13..7758e8265 100644
+> --- a/drivers/gpu/drm/drm_vblank.c
+> +++ b/drivers/gpu/drm/drm_vblank.c
+> @@ -1297,17 +1297,7 @@ void drm_crtc_vblank_put(struct drm_crtc *crtc)
+>   }
+>   EXPORT_SYMBOL(drm_crtc_vblank_put);
+>   
+> -/**
+> - * drm_crtc_wait_one_vblank - wait for one vblank
+> - * @crtc: DRM crtc
+> - *
+> - * This waits for one vblank to pass on @crtc, using the irq driver interfaces.
+> - * It is a failure to call this when the vblank irq for @crtc is disabled, e.g.
+> - * due to lack of driver support or because the crtc is off.
+> - *
+> - * Returns: 0 on success, negative error on failures.
+> - */
+> -int drm_crtc_wait_one_vblank(struct drm_crtc *crtc)
+> +int drm_crtc_wait_one_vblank_internal(struct drm_crtc *crtc)
+>   {
+>   	struct drm_device *dev = crtc->dev;
+>   	int pipe = drm_crtc_index(crtc);
+> @@ -1326,12 +1316,30 @@ int drm_crtc_wait_one_vblank(struct drm_crtc *crtc)
+>   				 last != drm_vblank_count(dev, pipe),
+>   				 msecs_to_jiffies(1000));
+>   
+> -	drm_WARN(dev, ret == 0, "vblank wait timed out on crtc %i\n", pipe);
+> -
+>   	drm_vblank_put(dev, pipe);
+>   
+>   	return ret ? 0 : -ETIMEDOUT;
+>   }
 > +
-> +	if (xmitq && in_own_node(net, dnode)) {
-> +		skb_queue_splice_tail_init(txq, xmitq);
-> +		return;
-> +	}
+> +/**
+> + * drm_crtc_wait_one_vblank - wait for one vblank
+> + * @crtc: DRM crtc
+> + *
+> + * This waits for one vblank to pass on @crtc, using the irq driver interfaces.
+> + * It is a failure to call this when the vblank irq for @crtc is disabled, e.g.
+> + * due to lack of driver support or because the crtc is off.
+> + *
+> + * Returns: 0 on success, negative error on failures.
+> + */
+> +int drm_crtc_wait_one_vblank(struct drm_crtc *crtc)
+> +{
+> +	int ret = drm_crtc_wait_one_vblank_internal(crtc);
 > +
->  	rc = tipc_node_xmit(net, txq, dnode, tsk->portid);
->  	if (rc == -ELINKCONG)
->  		tsk->cong_link_cnt = 1;
-> @@ -1367,7 +1375,7 @@ static void tipc_sk_conn_proto_rcv(struct tipc_sock *tsk, struct sk_buff *skb,
->  			goto exit;
->  
->  		was_cong = tsk_conn_cong(tsk);
-> -		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr));
-> +		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr), xmitq);
->  		tsk->snt_unacked -= msg_conn_ack(hdr);
->  		if (tsk->peer_caps & TIPC_BLOCK_FLOWCTL)
->  			tsk->snd_win = msg_adv_win(hdr);
-> @@ -2165,7 +2173,7 @@ static void tipc_sk_proto_rcv(struct sock *sk,
->  		smp_wmb();
->  		tsk->cong_link_cnt--;
->  		wakeup = true;
-> -		tipc_sk_push_backlog(tsk, false);
-> +		tipc_sk_push_backlog(tsk, false, xmitq);
->  		break;
->  	case GROUP_PROTOCOL:
->  		tipc_group_proto_rcv(grp, &wakeup, hdr, inputq, xmitq);
-> @@ -2256,7 +2264,7 @@ static bool tipc_sk_filter_connect(struct tipc_sock *tsk, struct sk_buff *skb,
->  		return false;
->  	case TIPC_ESTABLISHED:
->  		if (!skb_queue_empty(&sk->sk_write_queue))
-> -			tipc_sk_push_backlog(tsk, false);
-> +			tipc_sk_push_backlog(tsk, false, xmitq);
->  		/* Accept only connection-based messages sent by peer */
->  		if (likely(con_msg && !err && pport == oport &&
->  			   pnode == onode)) {
-> 
-> 
-> base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
-> -- 
-> This is an AI-generated patch subject to moderation.
-> Reply with '#syz upstream' to Sign-off the patch as a human author
-> and send it to the upstream kernel mailing lists.
-> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-> 
-> See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-> You can comment on the patch as usual, syzbot will try to address
-> the comments and send a new version of the patch if necessary.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> +	drm_WARN(crtc->dev, ret == -ETIMEDOUT, "vblank wait timed out on crtc %i\n",
+> +		 drm_crtc_index(crtc));
+> +
+> +	return ret;
+> +}
+>   EXPORT_SYMBOL(drm_crtc_wait_one_vblank);
+>   
+>   /**
+>
+>
+> base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
