@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE19B31F985
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 10:08:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED74841A57E
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 10:10:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786097338; cv=none; b=rZWNPe5MR4ZkJej0+FBrlihX9Rp560UWHIgHtYqldcYJl4OOzQC0H8oeaIAWw1G9pR/vnvktA3JRtoBy4Y7GDASbZIx23FJ8isoxS5YDPqaqQNTZ9T8qwxSNHWSWHQQl46gMXGYjUdGEufcrih49iXdZkqQys+uYZ1x1RIJow/M=
+	t=1786097458; cv=none; b=r7vu6AVKfH8KeBG/AZNixJg7usCig2n1BH0WIscE460QesArLW6bPbyeM+jytNpJ6YKI0CgMxFB9PjkDgkM/rnBra1Lx54e0lwGYl8BZB2rfZgb25m6axKi4nCXtqBbyvU7HGQsz9RrvJvA7IiqibK7Xg7jql0uUV6UNhdAfCcA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786097338; c=relaxed/simple;
-	bh=NIG+PGtWHmTORoty3CG4HEKf5honUhSNCrkSrfXn6XM=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=jmKo74Yas68WH+lL4tXy6zgVtpAuxEprd8Cifwi/dWP4nBRFSOTK6NWV6CP23KH2yzNHFhJ0aXDQdd5Nc585etXVkq5Zdo6/tTq0eeMHNaHOei7XBE7ei5hPECfvJvBT6yoLogNeccMZUO4/xQhoW/DHOExLz68dZw67nry9wlM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BYoDJjjC; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786097458; c=relaxed/simple;
+	bh=LhQSifobOBjJuQjJBlvWgJ8ZU6O9R8XF5Ec+r177Uj0=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=IP2tS7csDIOxxZKpr3cyASrfbb+5JTGK9RKIctOfdbO8B5w6iKYws1pIAtiQNdd2Rdd0JzfK1GFqPReXbpCCxB6py7QhVpZOaKW+8Ptspd3fn4swa0LtTGymzXIQ1AtNIKSP0VZpm2tFGfBJRQyL8dmA1S2mRtDnfrbsVDP63pc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IipyYia8; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BYoDJjjC"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 5BD101F00A3A;
-	Fri,  7 Aug 2026 10:08:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IipyYia8"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 5CC1E1F000E9;
+	Fri,  7 Aug 2026 10:10:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786097336;
-	bh=B+MnfMLYzB0ebeziKYlnjXuxkTsu3uOF3S2Eo3It9dc=;
+	s=k20260515; t=1786097456;
+	bh=C+0HShQdg5bm6HsuPwRfGIA7hRMpYF3ahqj2L1O+9Q8=;
 	h=From:To:Cc:Subject:Date;
-	b=BYoDJjjChN1ZewFNmnRS1uPbivfkmvsc0gV7nJnqQ92crj3isWhHaK0GN2Sm3XTM2
-	 PhKsJmyCqfygjhJt+JDuMgfg77owuyaCChCBCba2rMZOT5J6OmMO4HCJwx8sxq0z4+
-	 SKBOrDt6nt+BKACZLX0pvLtBSx2i3Nb5el5Zom06WsgjYVYbzTgDMfw21TY+nOKIO7
-	 KWBXysi9uYltiXSCzitXzBQ3P3KoKdacBP2G1b5u5KliQrZJpy/jxJVzQzbqHKGu+q
-	 iokQ04ucSjNP3hZgHpO6E7Em430+Z4J1JptQDibVwXP+NXvXT13qHoCH7VXx4D6aou
-	 3p3Wc9Aygv2rQ==
+	b=IipyYia8KQWUGNd6bGiQ+N7aqcWNMrTkl91AIplf/XSpiGyAO/2nIKyP+iWj81Kry
+	 o+96zz0lyAXDA6INsjOXTrCwCTaJYc/NLX0xPJJoauNZ7clW6RmKLxGR3tOBekIip3
+	 pUekx5yDMIaSbjt3o4alXtDHM9+yQrAmFIPuQvwbO+SXLMYX42Aky0jtLDb38cgNIY
+	 jVXbJ4L2jvsBcfiTbigWTDxmPi216ohQmCMhTL7nz3C1sq39cOlRuE6hUpK2z0V8HV
+	 UTc8N0eUJCeLejcj8jVyOe0tH04IfjWrN90O3HKRvDrksjkY7DUGd+qVnSKOVdkggL
+	 f2dY94QUELQNw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] firewire: ohci: fix NULL pointer dereference in ar_context_release
-Message-ID: <eb1357dd-f393-49f1-8e3d-60888cbb683c@mail.kernel.org>
+Cc: immersa.bartosz.chronowski@gmail.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v3] tipc: defer local Nagle backlog xmit from receive path
+Message-ID: <e5b4f184-4cf0-4891-9623-526d3dbf5a12@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,70 +38,126 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri,  7 Aug 2026 10:08:56 +0000 (UTC)
+Date: Fri,  7 Aug 2026 10:10:56 +0000 (UTC)
 
-During the error handling path of the driver's probe function, a NULL
-pointer dereference can occur in ar_context_release().
+An RCU stall can occur due to a spinlock recursion bug in the TIPC
+subsystem. When tipc_sk_rcv() is called recursively on the same CPU, it
+tries to acquire a socket spinlock that is already held higher up in the
+call stack. Because it uses spin_trylock_bh(), it fails to acquire the lock
+and enters an infinite loop.
 
-When pci_probe() fails early (e.g., if pcim_enable_device() or MMIO mapping
-fails), the devres cleanup mechanism invokes release_ohci(). This function
-unconditionally calls ar_context_release() to clean up the asynchronous
-receive contexts. However, if ar_context_init() was not yet called,
-ctx->ohci remains NULL (as the fw_ohci structure is zero-initialized by
-devres_alloc()).
+To fix this, modify tipc_sk_push_backlog() to take an xmitq parameter. If
+xmitq is provided and the destination is on the own node, splice the write
+queue into xmitq, deferring the transmission until after the spinlock is
+released. For calls like __tipc_shutdown() that execute under the socket
+mutex rather than the spinlock, passing NULL for xmitq allows direct
+transmission to continue safely.
 
-ar_context_release() immediately dereferences ctx->ohci to get the dev
-pointer before checking if the context was actually initialized, leading to
-a crash:
-
-Oops: general protection fault, probably for non-canonical address
-0xdffffc0000000001: 0000 [#1] SMP KASAN NOPTI
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-RIP: 0010:ar_context_release+0x3f/0x380 drivers/firewire/ohci.c:543
-Call Trace:
- release_ohci+0x3f/0x60 drivers/firewire/ohci.c:3567
- release_nodes drivers/base/devres.c:546 [inline]
- devres_release_all+0x1a8/0x260 drivers/base/devres.c:576
- device_unbind_cleanup drivers/base/dd.c:597 [inline]
- really_probe+0x451/0xae0 drivers/base/dd.c:772
-
-To fix this, move the assignment of the dev pointer after the !ctx->buffer
-check. If ctx->buffer is NULL, it indicates that the context was never
-successfully initialized and there is nothing to release, safely avoiding
-the dereference of the uninitialized ctx->ohci pointer.
-
-Fixes: 5716e58aecdd ("firewire: ohci: release buffer for AR req/resp contexts when managed resource is released")
+Fixes: c0bceb97db9e ("tipc: add smart nagle feature")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+d30aad27833a559defab@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=d30aad27833a559defab
-Link: https://syzkaller.appspot.com/ai_job?id=10a18617-7893-42dd-bf1c-cd49e19e95d9
-To: <linux1394-devel@lists.sourceforge.net>
-To: "Takashi Sakamoto" <o-takashi@sakamocchi.jp>
+Reported-by: syzbot+10a41dc44eef71aa9450@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=10a41dc44eef71aa9450
+Link: https://syzkaller.appspot.com/ai_job?id=3b51a2d9-6039-4d50-b8fe-9bd92fe8a3f1
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jon Maloy" <jmaloy@redhat.com>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: <tipc-discussion@lists.sourceforge.net>
+To: "Jon Maloy" <jon.maloy@ericsson.com>
+Cc: "Simon Horman" <horms@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/drivers/firewire/ohci.c b/drivers/firewire/ohci.c
-index 8153d62c5..e947227e0 100644
---- a/drivers/firewire/ohci.c
-+++ b/drivers/firewire/ohci.c
-@@ -540,11 +540,13 @@ static void ar_context_link_page(struct ar_context *ctx, unsigned int index)
+v3:
+- Updated the commit subject to 'tipc: defer local Nagle backlog xmit from receive path'
+- Simplified the commit description by removing the detailed eleven-step execution narrative and the full call trace.
+
+v2:
+- Only defer transmission in tipc_sk_push_backlog() if the destination is on the own node.
+- Update the commit description to clarify that deferral is only needed for own-node destinations.
+https://lore.kernel.org/all/368f7232-39e9-424c-9683-0c28db1151af@mail.kernel.org/T/
+
+v1:
+https://lore.kernel.org/all/01641937-e30d-43dd-ba9c-95b3d2ae5691@mail.kernel.org/T/
+---
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index e564341e0..16d844fc8 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -156,7 +156,8 @@ static int tipc_sk_insert(struct tipc_sock *tsk);
+ static void tipc_sk_remove(struct tipc_sock *tsk);
+ static int __tipc_sendstream(struct socket *sock, struct msghdr *m, size_t dsz);
+ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dsz);
+-static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack);
++static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack,
++				 struct sk_buff_head *xmitq);
+ static int tipc_wait_for_connect(struct socket *sock, long *timeo_p);
  
- static void ar_context_release(struct ar_context *ctx)
+ static const struct proto_ops packet_ops;
+@@ -560,7 +561,7 @@ static void __tipc_shutdown(struct socket *sock, int error)
+ 					    !tsk_conn_cong(tsk)));
+ 
+ 	/* Push out delayed messages if in Nagle mode */
+-	tipc_sk_push_backlog(tsk, false);
++	tipc_sk_push_backlog(tsk, false, NULL);
+ 	/* Remove pending SYN */
+ 	__skb_queue_purge(&sk->sk_write_queue);
+ 
+@@ -1268,7 +1269,8 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
+ /* tipc_sk_push_backlog(): send accumulated buffers in socket write queue
+  *                         when socket is in Nagle mode
+  */
+-static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
++static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack,
++				 struct sk_buff_head *xmitq)
  {
--	struct device *dev = ctx->ohci->card.device;
-+	struct device *dev;
- 
- 	if (!ctx->buffer)
- 		return;
- 
-+	dev = ctx->ohci->card.device;
+ 	struct sk_buff_head *txq = &tsk->sk.sk_write_queue;
+ 	struct sk_buff *skb = skb_peek_tail(txq);
+@@ -1310,6 +1312,12 @@ static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
+ 		tsk->pkt_cnt += skb_queue_len(txq);
+ 	tsk->snt_unacked += tsk->snd_backlog;
+ 	tsk->snd_backlog = 0;
 +
- 	for (int i = 0; i < AR_BUFFERS; ++i) {
- 		dma_addr_t dma_addr = ctx->dma_addrs[i];
- 		if (dma_addr)
++	if (xmitq && in_own_node(net, dnode)) {
++		skb_queue_splice_tail_init(txq, xmitq);
++		return;
++	}
++
+ 	rc = tipc_node_xmit(net, txq, dnode, tsk->portid);
+ 	if (rc == -ELINKCONG)
+ 		tsk->cong_link_cnt = 1;
+@@ -1367,7 +1375,7 @@ static void tipc_sk_conn_proto_rcv(struct tipc_sock *tsk, struct sk_buff *skb,
+ 			goto exit;
+ 
+ 		was_cong = tsk_conn_cong(tsk);
+-		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr));
++		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr), xmitq);
+ 		tsk->snt_unacked -= msg_conn_ack(hdr);
+ 		if (tsk->peer_caps & TIPC_BLOCK_FLOWCTL)
+ 			tsk->snd_win = msg_adv_win(hdr);
+@@ -2165,7 +2173,7 @@ static void tipc_sk_proto_rcv(struct sock *sk,
+ 		smp_wmb();
+ 		tsk->cong_link_cnt--;
+ 		wakeup = true;
+-		tipc_sk_push_backlog(tsk, false);
++		tipc_sk_push_backlog(tsk, false, xmitq);
+ 		break;
+ 	case GROUP_PROTOCOL:
+ 		tipc_group_proto_rcv(grp, &wakeup, hdr, inputq, xmitq);
+@@ -2256,7 +2264,7 @@ static bool tipc_sk_filter_connect(struct tipc_sock *tsk, struct sk_buff *skb,
+ 		return false;
+ 	case TIPC_ESTABLISHED:
+ 		if (!skb_queue_empty(&sk->sk_write_queue))
+-			tipc_sk_push_backlog(tsk, false);
++			tipc_sk_push_backlog(tsk, false, xmitq);
+ 		/* Accept only connection-based messages sent by peer */
+ 		if (likely(con_msg && !err && pport == oport &&
+ 			   pnode == onode)) {
 
 
-base-commit: 075b74841bd0065a3bda3440873c747938e69b68
+base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
