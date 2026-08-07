@@ -1,181 +1,257 @@
-Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33744374A1D
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 05:21:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786080073; cv=none; b=ml2T2b2GglvCEDVf7zht5P+IUYxemkphTwZSwu5ypoW7OvcOsJbi5/HdmzKRSeqSGsLVaux6SedTJAto71+P1v0WTjSoNGi2bqD45qWzglDjykB2tIdj7rVokCOTb8uOdiXbt0XhW+/Xwux70xy6pKgJq7BkL1NGfy9y5nEWwhs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786080073; c=relaxed/simple;
-	bh=giuvWXZfoWsUg62fyurOOC5twjov7LOSaQFLcTvVm9M=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=b0HOhyWZvKzvHLuyZqL+g77ePDO+Zi+gMxyIWZ+XpvDz5vIxg5iXREWdqpF9ZJs+gQ/0g/c5i0xDebvyGQYOl/sAxu0g0NRRQQstnQWg09kmUK9XZYkvH+h357gyAoMz9Ys0sKgcDW4SX32Ta+ZZTKuAXDIE098peGWJ3Lzd+H4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-4412c255fd4so1476511fac.3
-        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 22:21:09 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D84CA37E5D0
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 05:24:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.219.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786080299; cv=pass; b=KdNKbAaLrO0yXFn5/gyh339vH2cu3LrGgGcOhGW3OwoxAk3eTXKBU3eXcrIn7cyahqEOyJgZx5IU0gzILir5oEk7goBE+EYUeDMb7P8XjmyfKj8sPe6OeHmx7S/66hYaJWNae99qI+G7wor8ZKsbzL/hQw6wuu2qbeuqgjPkrLk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786080299; c=relaxed/simple;
+	bh=3S/68kvH4dLGhyr+clINbpl1ZgPIfzdO6o1mH1iUJh8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=O7w7o7qvoNVuSXAfAXSxAMNWzS+uY8hlqTMqKMK+2CPOmzQsE0DPtrOc7uc5VSZ0NFUozkcYLVGhTs5EeAD2OWrJV8oFHXf29NV6feFsbYrOp/Uh3EcjUOgFlqxiQeCaWIJmFrXbSf2n2JwKfnQETl5IHxe/Ih6RLPaq3WJMQrU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=eph0Ju94; arc=pass smtp.client-ip=209.85.219.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="eph0Ju94"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-8efec2c28f8so19518086d6.2
+        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 22:24:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786080292; cv=none;
+        d=google.com; s=arc-20260327;
+        b=qskr+gULVtjy5g599J900IlPBPf4IhABAoqn0pGDOz/UqmRQo/d+14mGrSHcvBIwu7
+         nUb3P7UY4JKw1zXo1iyl8f3r3hmu7nL5i5eZIiHqhpxjwVio6AEBY1rdRMtpFngm7v3/
+         eragTHt3YaUg+a67pxFeDpsEmOMS9jYvRIl9jwR/28UqCIcB3V0LruovphywLOsq8YB7
+         sfHWFmS2sbt5f4z+9UYYBHLhOadqFW2uj1orMEHdPDzFe7jLPgrwa5xrWxm2e4ibTnNb
+         VyLMRtz6qRMR4I34DVCzNbKHmCdRGHZcZ6FPdPSHcetLsWA8pCsfTscwZKYUUXmDxKgQ
+         qatg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=kHd+5C+HmBr7fm2zJtpFBe9TM4ENGoYBtxSBumNdjd8=;
+        fh=OVHQIEIo71c1QqJFByM3wrEGM2OhTLYmRWOSeY2xTso=;
+        b=b1z+box/6gGzmHwLIz+Yt3eMHK3cy7ZcHP7/uRlGuEfEakym4kvb0V9YRyLl8Gha4E
+         lPNGEBJrJFpFeYNeLddW4lfTBH5Om51jccm5XjKL38Q8EdBaKQ2Qvc3EDB2NGo1UPNj0
+         WLR4+aol3KaVKbUEze1GxoAY0nJSphnSRweUFi4N7O97SaY+DVfRuFFoum+Ktsee67IR
+         KK4PIs5q9TXobPN/BHG7yGBbv7iMxXDeNnPbRt+lRaP/JX7yOFnSzi6eEUj9XyEyUdKQ
+         nVISDRn1u/q+xgiMCkVQHmpBKg5/4+36L9WrSImXmCN8C48nQCjHPkqp6Dv52kh6cO/X
+         /eCA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1786080292; x=1786685092; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=kHd+5C+HmBr7fm2zJtpFBe9TM4ENGoYBtxSBumNdjd8=;
+        b=eph0Ju94lAz/GpRuy2QDDPuCpeA8lSSkgEPEnFzqxKHGHa0lRcWNZFqOmG/Vj06GrA
+         9+g/LdgQ+OIfAyfw5dtmI+pr0lrDS8MYdPxGbEzgCNFUip8bMYLRKEinSedCm1913/K0
+         DpyoY103pV9VsvgyXCVhe1FyYUFA+0YRtwS/u+bbx1T9C1tvwOux5hy/2sSfcVJRjDnH
+         tM7hI9zoWoPst9HaQbpuxHS9m12nzAwtwn9sRy10u5pvNi/SGBuaINN8S4WpgIQg+EJ1
+         +SEcmvrpw6+p7/lg0NEtfln6bRmrrspqq/CynfFhsknCJ7/CL3ZQIvYdASZomAv+wTvy
+         bysg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786080068; x=1786684868;
-        h=content-type:cc:to:from:subject:message-id:date:mime-version
+        d=1e100.net; s=20251104; t=1786080292; x=1786685092;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ANFLdT4dQdtrF43x2Qourf65n61wd4KKLnLUzf85R+A=;
-        b=H5rD8H2qYGPXM30SLghazzI0Zdcxq3KaR6vybzPR7qPK/MRfbqDAB9h+F0P9xwoz/8
-         0hJEldFON1Ue05yAJDpzZr/dYuX2SBhYiwttRA33UutI91N5dCZx4U5p4mY+sw/N0HwR
-         rbzTVvY76s7DZztygevOGoJwVY+Uafz5I5p9vJooYveH9f3KAMf/YZuNBdoxeX4rZMlP
-         50UhlnWpYuNXyEXemOXMI+QJMpqQAVvkfD3WjpUx4V/rZfrMu7+Rr9Krk/VqSyAd8sm6
-         lx3rJQR+WhIIjQxRu/iXG6nhCikv7xoyXb+SmLFSMk2OuhoVKQXrpIXWsTi7LoPErKxe
-         wNMw==
-X-Gm-Message-State: AOJu0Yxy95/fTGNMaFZDgYTw2mjWg4kalSZaw3ZjDYeG6EhkH2pqCnY6
-	DB4+ZKaJxQCbqqjdrw36tMvt0/ngFefgfCGG6GdXs+je1hUmY3PUBu2/9NUeZ7W6u8ePYgV9xPL
-	nlFgRfoFbl1TaNJifmQx2sHGbLx19mk5knEh4VSSTw6CgfORyCH6ynnVjd0g=
+        bh=kHd+5C+HmBr7fm2zJtpFBe9TM4ENGoYBtxSBumNdjd8=;
+        b=tHO/52jyZnkUXSroKVwETUqp2g55xR73EL2y9LEKPp3GYG9SIzsqcQAfuSqt2HcxBJ
+         Mz7NRzzAb1fsWgBns6FVT35VlQZxhkifS8Ka3rlcjNh+UdUbAH2zJQxeQkGHoGTBHKSO
+         cDunER1zND15X4euaJQBQOcuRrs/5j+cBO1lEouMDDQqnNKAxMEMKQKq+NwxktVmq45q
+         0yYGaZLqul5Y5GgWX953Z+eiDNQqrl6Ya5+bQJ12ayOe8QfIRdEW32ZGpYinmTz6RcC+
+         chREHkgsDpM/b+BC8SHwuacUL4RHAX8wB0mYIYeNMgtCw3Ch+TkHYxU3ODCCG5YJkVQP
+         IcTA==
+X-Forwarded-Encrypted: i=1; AHgh+RrHld5Wd9sz7Eq7CO4EBa/MbNaW3QLOET2Mb6W9uqZth3HxZrCrUciOeb7q6bOwEjEE/TYUnQQ=@lists.linux.dev
+X-Gm-Message-State: AOJu0YxlvhKQL6JuiVA9Fih1xCoOUNWbQbPWY66xmqEVKXHmCVigHR8S
+	lAojhXV8k3o4RY79DQU7hhjgRBT3Hc915UwyEsdzbmvMc171k7z/ZLtjWHFVPCgiASx8u0gBDLa
+	PsK73eW7pjVUFhTMkxez+QA5rvSTjkesvHKmNsakP
+X-Gm-Gg: AR+sD13XRH9MO4rejp1uHggW3L5yIHNOVV9dXEZG6WFBwIgp3BREowjCSl061wPJqGJ
+	gOca2cCa/TwE1H48dlECZN/NDKYBVIuKVjsPThxgFRHWgMRiVhvi8N/83F6vE701b7gcqbkoWVG
+	BIzh+/pavDGaND8dBup3DSuDGYMhUYnDUMIHfnRV3Xe2QGBWw6iTH6hn5+mDdBdq0tMLbO9ja8u
+	fK1YlNETvd4zWIltn0ch29kC6K8nHf0RsVreeq59cuDUS60QVRpiRX1xgAF1a1Z7y5Bifahcse+
+	kqiLWlstOgtZ26M/PiT1A+/4WiH6J7sskwxn2P4XAzIGe/4Xei0aovFnh4GPKDoTzybNezRfEtF
+	1atBcDXALxNa7dnMMiY0vVUjL1x4+rvFrN1TSC4hTJ2VZ/Q==
+X-Received: by 2002:ad4:5de7:0:b0:8ee:871e:f2e0 with SMTP id
+ 6a1803df08f44-908a70f43d7mr9045506d6.27.1786080291878; Thu, 06 Aug 2026
+ 22:24:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1792:b0:6ac:a994:8a02 with SMTP id
- 006d021491bc7-6ae96c8ee40mr10213662eaf.12.1786080068555; Thu, 06 Aug 2026
- 22:21:08 -0700 (PDT)
-Date: Thu, 06 Aug 2026 22:21:08 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a756b44.9c11d2ce.289b96.00a5.GAE@google.com>
-Subject: [moderation/CI] Re: pull request: fixes for ovpn 2026-08-07
-From: syzbot ci <syzbot+cia3579a1608aada9e@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
+References: <6a753eed.01d0871a.3a0d52.0037.GAE@google.com>
+In-Reply-To: <6a753eed.01d0871a.3a0d52.0037.GAE@google.com>
+From: Pimyn Girgis <pimyn@google.com>
+Date: Fri, 7 Aug 2026 07:24:41 +0200
+X-Gm-Features: AUfX_mw6elW5yeCcQmaIUtNjo8QSWFrAA6xIDe9E91DzEQnj6zk3PFNy-NKGgPk
+Message-ID: <CAJWNTGxhvi75aJ7y79c9rdKum561GVqJJAWE0TLLVub-iqB8vg@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: Virtual Swap Space (Swap Table Edition)
+To: syzbot ci <syzbot+ci0044aa36144eea42@syzkaller.appspotmail.com>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
-
-[v1] pull request: fixes for ovpn 2026-08-07
-https://lore.kernel.org/all/20260807002250.1817498-1-antonio@openvpn.net
-* [PATCH net 1/4] ovpn: fix NULL dereference when killing missing key
-* [PATCH net 2/4] ovpn: finish crypto callback cleanup before peer release
-* [PATCH net 3/4] ovpn: run deferred work on a module-owned workqueue
-* [PATCH net 4/4] ovpn: defer key slot crypto freeing to workqueue
-
-and found the following issue:
-WARNING in __alloc_workqueue
-
-Full report is available here:
-https://ci.syzbot.org/series/a46f06c7-f8d8-4053-a746-91498a46c290
-
-***
-
-WARNING in __alloc_workqueue
-
-tree:      net
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
-base:      594d905195024b228c962627ae5ae7c17bd582a4
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/cc426b49-07b7-496e-badf-5b0646780dd0/config
-
-usbcore: registered new interface driver udl
-bochs-drm 0000:00:01.0: vgaarb: deactivate vga console
-[drm] Found bochs VGA, ID 0xb0c5.
-[drm] Framebuffer size 16384 kB @ 0xfd000000, mmio @ 0xfebf0000.
-[drm] Initialized bochs-drm 1.0.0 for 0000:00:01.0 on minor 2
-bochs-drm 0000:00:01.0: [drm] fb1: bochs-drmdrmfb frame buffer device
-usbcore: registered new interface driver gm12u320
-usbcore: registered new interface driver gud
-brd: module loaded
-loop: module loaded
-zram: Added device: zram0
-null_blk: disk nullb0 created
-null_blk: module loaded
-Guest personality initialized and is inactive
-VMCI host device registered (name=vmci, major=10, minor=267)
-Initialized host personality
-usbcore: registered new interface driver rtsx_usb
-lpc_ich 0000:00:1f.0: I/O space for GPIO uninitialized
-usbcore: registered new interface driver viperboard
-usbcore: registered new interface driver dln2
-usbcore: registered new interface driver pn533_usb
-nfcsim 0.2 initialized
-usbcore: registered new interface driver port100
-usbcore: registered new interface driver nfcmrvl
-Loading iSCSI transport class v2.0-870.
-st: Version 20160209, fixed bufsize 32768, s/g segs 256
-ACPI: \_SB_.GSIA: Enabled at IRQ 16
-ahci 0000:00:1f.2: AHCI vers 0001.0000, 32 command slots, 1.5 Gbps, SATA mode
-ahci 0000:00:1f.2: 6/6 ports implemented (port mask 0x3f)
-ahci 0000:00:1f.2: flags: 64bit ncq only 
-scsi host0: ahci
-scsi host1: ahci
-scsi host2: ahci
-scsi host3: ahci
-scsi host4: ahci
-scsi host5: ahci
-ata1: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2100 irq 26 lpm-pol 1
-ata2: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2180 irq 26 lpm-pol 1
-ata3: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2200 irq 26 lpm-pol 1
-ata4: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2280 irq 26 lpm-pol 1
-ata5: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2300 irq 26 lpm-pol 1
-ata6: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2380 irq 26 lpm-pol 1
-Rounding down aligned max_sectors from 4294967295 to 4294967288
-db_root: cannot open: /etc/target
-slram: not enough parameters.
-ftl_cs: FTL header not found.
-wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
-wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-------------[ cut here ]------------
-workqueue: ovpn is using neither WQ_PERCPU or WQ_UNBOUND. Setting WQ_PERCPU.
-WARNING: kernel/workqueue.c:5852 at __alloc_workqueue+0x1cf5/0x2060, CPU#0: swapper/0/1
-Modules linked in:
-CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__alloc_workqueue+0x1cf8/0x2060
-Code: 38 00 e9 59 f9 ff ff e8 46 96 38 00 e9 26 fb ff ff e8 3c 96 38 00 e9 a7 fb ff ff e8 32 96 38 00 48 8d 3d fb a1 cc 0e 4c 89 f6 <67> 48 0f b9 3a 81 cd 00 01 00 00 e9 a7 e5 ff ff e8 13 96 38 00 48
-RSP: 0000:ffffc900000677a8 EFLAGS: 00010293
-RAX: ffffffff818e8c5e RBX: 0000000000000000 RCX: ffff888102a95940
-RDX: 0000000000000000 RSI: ffff88810c4cf570 RDI: ffffffff905b2e60
-RBP: 0000000000000000 R08: ffff888102a95940 R09: 0000000000000002
-R10: 0000000000000102 R11: 0000000000000000 R12: ffffc900000678c0
-R13: ffff88810c4cf400 R14: ffff88810c4cf570 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff88818d934000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffff88823ffff000 CR3: 000000000e946000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- alloc_workqueue_noprof+0xe3/0x210
- ovpn_init+0x1b/0xb0
- do_one_initcall+0x250/0x870
- do_initcall_level+0x10a/0x1a0
- do_initcalls+0x59/0xa0
- kernel_init_freeable+0x29d/0x3e0
- kernel_init+0x1d/0x1d0
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[andrew@lunn.ch antonio@openvpn.net davem@davemloft.net edumazet@google.com kuba@kernel.org netdev@vger.kernel.org pabeni@redhat.com ralf@mandelbit.com sd@queasysnail.net]
-
-If the report looks fine to you, reply with:
 #syz upstream
 
-If the report is a false positive, reply with
-#syz invalid
 
+On Fri, Aug 7, 2026 at 4:12=E2=80=AFAM syzbot ci
+<syzbot+ci0044aa36144eea42@syzkaller.appspotmail.com> wrote:
+>
+> syzbot ci has tested the following series
+>
+> [v3] Virtual Swap Space (Swap Table Edition)
+> https://lore.kernel.org/all/20260806184254.3790858-1-nphamcs@gmail.com
+> * [PATCH v3 01/11] mm, swap: add virtual swap device infrastructure
+> * [PATCH v3 02/11] mm, swap: support zswap and zeroswap as vswap backends
+> * [PATCH v3 03/11] mm, swap: prepare the swap IO path for vswap
+> * [PATCH v3 04/11] mm, swap: support physical swap as a vswap backend
+> * [PATCH v3 05/11] mm, swap: enable THP swapin for vswap entries
+> * [PATCH v3 06/11] mm, swap: write back vswap zswap entries to physical s=
+wap
+> * [PATCH v3 07/11] mm, swap: reclaim physical slots backing cache-only vs=
+wap entries
+> * [PATCH v3 08/11] mm, swap: only charge physical swap entries
+> * [PATCH v3 09/11] mm, swap: add debugfs counters for vswap
+> * [PATCH v3 10/11] mm, swap: defer memcg_table allocation for physical sw=
+ap clusters
+> * [PATCH v3 11/11] mm, swap: widen swap_info_struct max/pages to unsigned=
+ long
+>
+> and found the following issue:
+> KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
+>
+> Full report is available here:
+> https://ci.syzbot.org/series/e7da1097-3230-4e50-80cb-1dfafeebea40
+>
+> ***
+>
+> KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
+>
+> tree:      linux-next
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/=
+linux-next
+> base:      bacc32cc7de65ffff70080a48eb294f89e434d5e
+> arch:      amd64
+> compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~e=
+xp1~20260613092250.77), Debian LLD 22.1.8
+> config:    https://ci.syzbot.org/builds/4f943657-9481-4637-9b1f-9be1bff18=
+f92/config
+> syz repro: https://ci.syzbot.org/findings/f6c4f1ab-951c-4759-b397-e22c23c=
+3bf32/syz_repro
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instru=
+mented.h:82 [inline]
+> BUG: KASAN: null-ptr-deref in atomic_long_read include/linux/atomic/atomi=
+c-instrumented.h:3188 [inline]
+> BUG: KASAN: null-ptr-deref in __vtable_get mm/vswap.h:147 [inline]
+> BUG: KASAN: null-ptr-deref in vswap_to_phys mm/vswap.h:197 [inline]
+> BUG: KASAN: null-ptr-deref in swap_entry_backend_has_flag+0xfe/0x220 mm/v=
+swap.h:441
+> Read of size 8 at addr 0000000000000000 by task syz.2.20/5818
+>
+> CPU: 1 UID: 0 PID: 5818 Comm: syz.2.20 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  kasan_report+0x117/0x150 mm/kasan/report.c:595
+>  check_region_inline mm/kasan/generic.c:-1 [inline]
+>  kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
+>  instrument_atomic_read include/linux/instrumented.h:82 [inline]
+>  atomic_long_read include/linux/atomic/atomic-instrumented.h:3188 [inline=
+]
+>  __vtable_get mm/vswap.h:147 [inline]
+>  vswap_to_phys mm/vswap.h:197 [inline]
+>  swap_entry_backend_has_flag+0xfe/0x220 mm/vswap.h:441
+>  do_swap_page+0x3c0/0x5620 mm/memory.c:4975
+>  __collapse_huge_page_swapin mm/khugepaged.c:1202 [inline]
+>  collapse_huge_page mm/khugepaged.c:1325 [inline]
+>  mthp_collapse mm/khugepaged.c:1524 [inline]
+>  collapse_scan_pmd mm/khugepaged.c:1786 [inline]
+>  collapse_single_pmd+0x24c6/0x3da0 mm/khugepaged.c:2803
+>  madvise_collapse+0x2cf/0x790 mm/khugepaged.c:3237
+>  madvise_vma_behavior+0x115f/0x4170 mm/madvise.c:1363
+>  madvise_walk_vmas+0x576/0xb00 mm/madvise.c:1712
+>  madvise_do_behavior+0x385/0x540 mm/madvise.c:1907
+>  do_madvise+0x327/0x3a0 mm/madvise.c:2005
+>  __do_sys_madvise mm/madvise.c:2014 [inline]
+>  __se_sys_madvise mm/madvise.c:2012 [inline]
+>  __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7fbcad79e019
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007fbcae5c4028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+> RAX: ffffffffffffffda RBX: 00007fbcada25fa0 RCX: 00007fbcad79e019
+> RDX: 0000000000000019 RSI: 0000000000c00000 RDI: 0000200000000000
+> RBP: 00007fbcad83500c R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007fbcada26038 R14: 00007fbcada25fa0 R15: 00007fff095fa0b8
+>  </TASK>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+>
+> ***
+>
+> If these findings have caused you to resend the series or submit a
+> separate fix, please add the following tag to your commit message:
+>   Tested-by: syzbot@syzkaller.appspotmail.com
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+>
+> To test a patch for this bug, please reply with `#syz test`
+> (should be on a separate line).
+>
+> The patch should be attached to the email.
+> Note: arguments like custom git repos and branches are not supported.
+>
+> The email will later be sent to:
+> [akpm@linux-foundation.org axelrasmussen@google.com baohua@kernel.org bao=
+quan.he@linux.dev cgroups@vger.kernel.org chengming.zhou@linux.dev chrisl@k=
+ernel.org corbet@lwn.net david@kernel.org gourry@gourry.net hannes@cmpxchg.=
+org haowenchao22@gmail.com kasong@tencent.com kernel-team@meta.com liam@inf=
+radead.org linux-doc@vger.kernel.org linux-kernel@vger.kernel.org linux-mm@=
+kvack.org ljs@kernel.org mhocko@kernel.org muchun.song@linux.dev nphamcs@gm=
+ail.com qi.zheng@linux.dev riel@surriel.com roman.gushchin@linux.dev rppt@k=
+ernel.org shakeel.butt@linux.dev shikemeng@huaweicloud.com surenb@google.co=
+m vbabka@kernel.org weixugc@google.com yosry@kernel.org youngjun.park@lge.c=
+om yuanchu@google.com]
+>
+> If the report looks fine to you, reply with:
+> #syz upstream
+>
+> If the report is a false positive, reply with
+> #syz invalid
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/6a753eed.01d0871a.3a0d52.0037.GAE%40google.com.
+
+
+
+--=20
+=E2=B2=A0=E2=B2=9F=E2=B2=93=E2=B2=99=E2=B2=8F=E2=B2=9B =E2=B2=84=E2=B2=89=
+=E2=B2=B1=E2=B2=A3=E2=B2=85=E2=B2=93=E2=B2=9F=E2=B2=A5 - Pimyn Girgis
+Software Engineer
+Kernel Dynamic Analysis
+pimyn@google.com
