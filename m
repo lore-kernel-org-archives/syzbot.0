@@ -1,195 +1,111 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68C4D3B27F4
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 07:21:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786087308; cv=none; b=SOXPTE1MAc5GxpMcsHoMKSvSBwqegTjz6I7AVfL9aJTvazSYx9BRINvkwm8le9wrk8M+rZorOUmpjxLh79tbB9ScbQVau0HUO+FsI9+wVd5GDv1ZckQamPqvk7+8yxbb7XB509R8zouxB6WQI4/KqOD0oNGVaa2/TdjSCiD05RQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786087308; c=relaxed/simple;
-	bh=sODOpdzjCpH/tq/ElSBVsdqLUkhfKBufQNYjtkcKSoY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Rz5SpQr4trm/mUCtDNSNbH1nE0US5ayzcHYJEv+PWrd893OtMrxWsEsCiRvGOfBuEU2v7NoLOa8Ew32RpDGrXh9zt/Yc6oRXteBVQSTckkTQtsbZOJ/Fv8AwYksDBryq/H8nMvhH3uJSXnFWPX37PGFULgNuGUdxtlt35cXshBU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HNRCUnbF; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92971359A90
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 07:31:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786087902; cv=pass; b=d7EvggCQ2vC91vKBfz1lfKJAV2KYHM6+vTEn3hyZV0fdBjhKU00Ikvcu4mkdDuf3htIo76Hv9i32dRolnhtzT8SvfRDGmrpvcTfPunUf+/fKmDxeBjiB6/8dVkAt9ye0NNv4AY8cBUYxH9Fd+WeH4LjBIOVmuVXKEmUwX/FFY5U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786087902; c=relaxed/simple;
+	bh=1VyDuJHYR+ciOz9BYEen75fLFOo4/umvL81BHUNGmEk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LEDpH0tjsFP8R4CmCrZwEiwPejPmE2dUdQgQXE4ft4GSCELGEW+SC50tNcLpwSvHuC+ntisQPLiEozyc947FSh5z9JetGCkSn+u7RfA3Fi1eB8nMAQMJsbcFvSZcRP1u0uODRRER0hSr4NF2VgicvDu7+3C4iNn9UBoy7dKew6Y=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=WVimykD0; arc=pass smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HNRCUnbF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 235211F01562
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 07:21:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786087305;
-	bh=6knPXuawpByGmHYtyjqi3P0YpFZD/HtTUFoZPvYRqx8=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=HNRCUnbFaam/k5LgBTYP/e6dtJ7kDEWtYzOhDewwe8Er1hfweJSQYSRyo6dzVkgJQ
-	 eRnrcNOVLNuuVWsQ1aqV5NJ0uAIEDfHGGh+d3ylc39ThDzBeTR0teEYM8wCIJp+SV6
-	 zQ1xH5NBr/Pcs6NuIT1ZoteqSlS8sATsjlD5a+zsl7d/W6wsJjx9AR5C8YfpXVixTq
-	 IYg/kMlenwslbTydnxz5YRtD1jbi6IgpmhtBeYK8h+1oG+UKtsZYeO8kDpPCmJ1w4n
-	 HEXdAMYl6Yio7PLL4ivbbqGxn1hCEXhwMQm8OjUD620gFi38aNjmn+FMP0NRD9VCHm
-	 OSJOF8KAVMxjQ==
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-80e24970f1dso25596877b3.0
-        for <syzbot@lists.linux.dev>; Fri, 07 Aug 2026 00:21:45 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+RoXbB1vreg2Epax9B2nK+V9LykeSx67Xf5cBM6HslzVoRvPr9jSjn3X31FBdu3IUHAIfyFrw7c=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzLpomiST8eZ5qMw22anx3i7+Foil0beIebuhyHicvnrmYAbilm
-	Fy9V9qvwbBucbWuRfeDbNi4sNcPx+ilCG1KmoOcJcH7KTtWT9z0wYXvCz9uWeMM/ACXQ+UFO1sj
-	XCBdLAW3W44s2r4TK55WNiOHP7Zl12lfEnFw2yIl7Eg==
-X-Received: by 2002:a05:690c:b98:b0:820:b24:27c7 with SMTP id
- 00721157ae682-82258a8f2e6mr43057887b3.14.1786087304379; Fri, 07 Aug 2026
- 00:21:44 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="WVimykD0"
+Received: by smtp.kernel.org (Postfix)
+	id C13801F00A3D; Fri,  7 Aug 2026 07:31:34 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=217.74.67.49
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1786087894;
+	b=1Tgz1ms5W1L9FFbB0DgdZXnc+JFysFyadzXOjebqmWnXwIore91yNSIeYzbF+Z7QiQAX
+	 D9dtMpBIIMsf83AnEeVNHbWyvpes9VRBLJtT3KdJnqFC3RaCWZg8zOzqHqOH+PKn/Kn02
+	 EQ/LdS85f97X/vSqJfYm8+BFDJjygI5cs04tYtg0XeFQUV8DAUDW01XhKPY6VFlW/hoLu
+	 gag2OcZZRY7HlAQsLVMKypis6GVs0wZzZ3kEURRxNMCH0ogCej92wGKxOR2S9hcGIZ85z
+	 vlzTXolsz9iF24p9rsYXYSWfI/wCDhiFgseIRsEBqOY5iwTjwLiR7YM3DH36sX4dSXg==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1786087894;
+	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 DKIM-Signature;
+	bh=qF4lEOy63wNW7hqrz8tDkLwya64utF2ElrqG9+tBOAw=;
+	b=CRtvKToF9MOTHXeMUY8jGO649OZUeaeqPJjqhx8pRklgsEj5t8T9gPGBee58IzD/VRDU
+	 MhkIt2lEl+8KoUel4rubLZm0P7HPDja0KuXgMELwaeWON7oGLvAWaGNuGlp9cgvS3JUn8
+	 wMrXPZzlt8w+xWPYGGGiaagAMul7P7ndSO7AXVdoze8DHlJm4XSRAbCsJZYtzUmECiUlO
+	 C5U5SfohpuIJloxQE/vSyfxAnYtqHmNtujkdi4CvzlgJzL1KrJAUcAUhtHWBq3UgXDhdP
+	 v/MT6ONcoa9hZ3Ee0Sph26V1Pi84rbqOUYmPvMU0BX3EqlHrPcdqrYsrN0EjT8Z6b7A==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=WVimykD0;
+	dmarc=pass header.from=poczta.fm;
+	spf=pass smtp.mailfrom=poczta.fm;
+	arc=none smtp.remote-ip=217.74.67.49
+Received: from smtpo49.interia.pl (smtpo49.interia.pl [217.74.67.49])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id E30721F00A3A
+	for <syzbot@kernel.org>; Fri,  7 Aug 2026 07:31:27 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (1024-bit key, unprotected) header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=WVimykD0
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org E30721F00A3A
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Fri,  7 Aug 2026 09:31:23 +0200 (CEST)
+Date: Fri, 7 Aug 2026 09:31:20 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: syzbot <syzbot@kernel.org>, syzkaller-bugs@googlegroups.com,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+	Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+	syzbot@lists.linux.dev
+Subject: Re: [PATCH] netdevsim: fix deadlock in nsim_bus_dev_max_vfs_write()
+Message-ID: <anWJyHCic8XvA0Q2@nr200>
+References: <b7bf56ea-7522-4163-acd5-aaa69ad03b3a@mail.kernel.org>
+ <20260805160851.571ed66f@kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260806184254.3790858-1-nphamcs@gmail.com> <6a756c71.01d0871a.3a0d52.003a.GAE@google.com>
-In-Reply-To: <6a756c71.01d0871a.3a0d52.003a.GAE@google.com>
-From: Chris Li <chrisl@kernel.org>
-Date: Fri, 7 Aug 2026 00:21:33 -0700
-X-Gmail-Original-Message-ID: <CACePvbVKpkyV7KpUoiYPTUN0MgEcRUzZL71qTL5ePyjHTA3Kbg@mail.gmail.com>
-X-Gm-Features: AUfX_mztVbvHM-WKo6lxh0LLm1G5XKwrWW650OzZbqB3e06Q5YutiaN72WNICvM
-Message-ID: <CACePvbVKpkyV7KpUoiYPTUN0MgEcRUzZL71qTL5ePyjHTA3Kbg@mail.gmail.com>
-Subject: Re: [syzbot ci] Re: Virtual Swap Space (Swap Table Edition)
-To: Nhat Pham <nphamcs@gmail.com>
-Cc: akpm@linux-foundation.org, axelrasmussen@google.com, baohua@kernel.org, 
-	baoquan.he@linux.dev, cgroups@vger.kernel.org, chengming.zhou@linux.dev, 
-	corbet@lwn.net, david@kernel.org, gourry@gourry.net, hannes@cmpxchg.org, 
-	haowenchao22@gmail.com, kasong@tencent.com, kernel-team@meta.com, 
-	liam@infradead.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, ljs@kernel.org, mhocko@kernel.org, muchun.song@linux.dev, 
-	qi.zheng@linux.dev, riel@surriel.com, roman.gushchin@linux.dev, 
-	rppt@kernel.org, shakeel.butt@linux.dev, shikemeng@huaweicloud.com, 
-	surenb@google.com, vbabka@kernel.org, weixugc@google.com, yosry@kernel.org, 
-	youngjun.park@lge.com, yuanchu@google.com, syzbot@lists.linux.dev, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260805160851.571ed66f@kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1786087885; bh=qF4lEOy63wNW7hqrz8tDkLwya64utF2ElrqG9+tBOAw=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=WVimykD0rQZfu7zdYgBAq0HfudsyaL9tOFC8XsII51f52/7Fye4NmA64YHCrKQ+Xu
+	 4jE22bBavpjZZH+8L4icizt8Uf/RDPr4+rUatuGTISKyg9w7XJOVqNY2si2aIU+KvD
+	 pNA3WFJo5NfLT5M1UWuG0HN00Zkp2+8Y+y77Pv8g=
 
-Hi Nhat,
+On sie 05, 2026 16:08, Jakub Kicinski wrote:
+> On Fri, 31 Jul 2026 09:55:04 +0000 (UTC) syzbot wrote:
+> > --- a/drivers/net/netdevsim/dev.c
+> > +++ b/drivers/net/netdevsim/dev.c
+> > @@ -273,7 +273,11 @@ static ssize_t nsim_bus_dev_max_vfs_write(struct file *file,
+> 
+> Sorry to chime in poniewczasie.
+> Please delete this file. netdevsim is a harness for in-tree selftests,
+> none seems to be reading or writing the debugfs num_vfs AFAICT
+> so let's just drop it?
 
-On Thu, Aug 6, 2026 at 10:26=E2=80=AFPM syzbot ci
-<syzbot+cif942a042aaa8793c@syzkaller.appspotmail.com> wrote:
->
-> syzbot ci has tested the following series
->
-> [v3] Virtual Swap Space (Swap Table Edition)
-> https://lore.kernel.org/all/20260806184254.3790858-1-nphamcs@gmail.com
-> * [PATCH v3 01/11] mm, swap: add virtual swap device infrastructure
-> * [PATCH v3 02/11] mm, swap: support zswap and zeroswap as vswap backends
-> * [PATCH v3 03/11] mm, swap: prepare the swap IO path for vswap
-> * [PATCH v3 04/11] mm, swap: support physical swap as a vswap backend
-> * [PATCH v3 05/11] mm, swap: enable THP swapin for vswap entries
-> * [PATCH v3 06/11] mm, swap: write back vswap zswap entries to physical s=
-wap
-> * [PATCH v3 07/11] mm, swap: reclaim physical slots backing cache-only vs=
-wap entries
-> * [PATCH v3 08/11] mm, swap: only charge physical swap entries
-> * [PATCH v3 09/11] mm, swap: add debugfs counters for vswap
-> * [PATCH v3 10/11] mm, swap: defer memcg_table allocation for physical sw=
-ap clusters
-> * [PATCH v3 11/11] mm, swap: widen swap_info_struct max/pages to unsigned=
- long
->
-> and found the following issue:
-> KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
->
-> Full report is available here:
-> https://ci.syzbot.org/series/e7da1097-3230-4e50-80cb-1dfafeebea40
+That's true, but is netdevsim used *just* by the selftests (or was designed with only selftests in
+mind)? What if someone is using it without selftests?
 
-Please take a look at the syzbot report and let us know what you think.
+On the other hand: what sashiko found:
+https://netdev-ai.bots.linux.dev/sashiko/#/patchset/b7bf56ea-7522-4163-acd5-aaa69ad03b3a%40mail.kernel.org
+is true: the same issue will be with e.g. break_health. So it seems to me that a better approach
+would be to change when the debugfs files are removed.
 
-Chris
+It seems to me that change in nsim_drv_remove() might be easy, but what about
+nsim_dev_reload_down()...it seems it will have the same deadlock. Or am I missing something for this
+case?
 
->
-> ***
->
-> KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
->
-> tree:      linux-next
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/=
-linux-next
-> base:      bacc32cc7de65ffff70080a48eb294f89e434d5e
-> arch:      amd64
-> compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~e=
-xp1~20260613092250.77), Debian LLD 22.1.8
-> config:    https://ci.syzbot.org/builds/4f943657-9481-4637-9b1f-9be1bff18=
-f92/config
-> syz repro: https://ci.syzbot.org/findings/f6c4f1ab-951c-4759-b397-e22c23c=
-3bf32/syz_repro
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instru=
-mented.h:82 [inline]
-> BUG: KASAN: null-ptr-deref in atomic_long_read include/linux/atomic/atomi=
-c-instrumented.h:3188 [inline]
-> BUG: KASAN: null-ptr-deref in __vtable_get mm/vswap.h:147 [inline]
-> BUG: KASAN: null-ptr-deref in vswap_to_phys mm/vswap.h:197 [inline]
-> BUG: KASAN: null-ptr-deref in swap_entry_backend_has_flag+0xfe/0x220 mm/v=
-swap.h:441
-> Read of size 8 at addr 0000000000000000 by task syz.2.20/5818
->
-> CPU: 1 UID: 0 PID: 5818 Comm: syz.2.20 Not tainted syzkaller #0 PREEMPT(f=
-ull)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  kasan_report+0x117/0x150 mm/kasan/report.c:595
->  check_region_inline mm/kasan/generic.c:-1 [inline]
->  kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
->  instrument_atomic_read include/linux/instrumented.h:82 [inline]
->  atomic_long_read include/linux/atomic/atomic-instrumented.h:3188 [inline=
-]
->  __vtable_get mm/vswap.h:147 [inline]
->  vswap_to_phys mm/vswap.h:197 [inline]
->  swap_entry_backend_has_flag+0xfe/0x220 mm/vswap.h:441
->  do_swap_page+0x3c0/0x5620 mm/memory.c:4975
->  __collapse_huge_page_swapin mm/khugepaged.c:1202 [inline]
->  collapse_huge_page mm/khugepaged.c:1325 [inline]
->  mthp_collapse mm/khugepaged.c:1524 [inline]
->  collapse_scan_pmd mm/khugepaged.c:1786 [inline]
->  collapse_single_pmd+0x24c6/0x3da0 mm/khugepaged.c:2803
->  madvise_collapse+0x2cf/0x790 mm/khugepaged.c:3237
->  madvise_vma_behavior+0x115f/0x4170 mm/madvise.c:1363
->  madvise_walk_vmas+0x576/0xb00 mm/madvise.c:1712
->  madvise_do_behavior+0x385/0x540 mm/madvise.c:1907
->  do_madvise+0x327/0x3a0 mm/madvise.c:2005
->  __do_sys_madvise mm/madvise.c:2014 [inline]
->  __se_sys_madvise mm/madvise.c:2012 [inline]
->  __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7fbcad79e019
-> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
-7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
- ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007fbcae5c4028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
-> RAX: ffffffffffffffda RBX: 00007fbcada25fa0 RCX: 00007fbcad79e019
-> RDX: 0000000000000019 RSI: 0000000000c00000 RDI: 0000200000000000
-> RBP: 00007fbcad83500c R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fbcada26038 R14: 00007fbcada25fa0 R15: 00007fff095fa0b8
->  </TASK>
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->
->
-> ***
->
-> If these findings have caused you to resend the series or submit a
-> separate fix, please add the following tag to your commit message:
->   Tested-by: syzbot@syzkaller.appspotmail.com
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
->
-> To test a patch for this bug, please reply with `#syz test`
-> (should be on a separate line).
->
-> The patch should be attached to the email.
-> Note: arguments like custom git repos and branches are not supported.
+-- 
+Slawomir Stepien
