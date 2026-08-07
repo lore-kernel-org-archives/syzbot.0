@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4572D446BF9
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 06:25:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B10B414A0C
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 06:31:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786083939; cv=none; b=B3ALsZYHuisMUEXmJEkz6lwf+hS3wMFZpogaWZFJoUdVCTDs5iuIqGpKrAwRQ939IwaVhR62MvFOPsMybtoOoIvp6mk7XcIPXdLYp/EQn71KmUSHyRYN98pQKeHrXxoxrEvfSzCtrCnDHhJ15WN7kmy0Ja6a3ToVyVNWqdiOdCM=
+	t=1786084269; cv=none; b=BWfymjXTSvjZl4OtGKfTzCv06oA6/IDvs56dnchPqSn0hpN9WBeXoI6dxCSMytael6z6Iifo1kdHK9uXfp3BWieX4/k35XBA2bKQjVVkBLYqe/g4NKZYOn1MLpLioTCCZKmbHwmgOnk0SQIL/nUy+xNQDBCcUm18cZZy4hcfJ4w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786083939; c=relaxed/simple;
-	bh=IMY5g4Zp+wodky7Y1NikMaF6ffZPtucMz9b41FPErAQ=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=OS7OPJgm8b9aMzX7k0Ts9O8uL+mhGDHTDmOZ4dFdYHZazNqI0PQXcSCoBIYZY/m9SC8t8FweEL7gQq+GeI4v1ySWMaeaFldp4qttNkh0DP51MAbf8+bF7BV6P+Zsa5j7fvJnjsHym/6NVp8QCXyegUXe6GUTg4GbZpVptBK1NWU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LGlwgGsE; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786084269; c=relaxed/simple;
+	bh=CY8qWDDnR63b2gfRF7b0bLHINrxdvnTuoIFM46B9pSE=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=qiHLNRux67J3Y9Pl0RIQw/48Y9Ssm4jCK1W1ADlUckGXPUtzZUpYwCSuId7upZXXp+nk6iFMMMnpnhFAMgufNDQktRkLr/ovGhoti9um7+/nLsMY6agdv0mTkrerPxMUTAkVRUHf3/ww+GgMDDCaH/GcaFVL3SN2U9DccutdzgY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=De4mALkG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LGlwgGsE"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id C4C691F000E9;
-	Fri,  7 Aug 2026 06:25:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="De4mALkG"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id AFB1A1F00A3A;
+	Fri,  7 Aug 2026 06:31:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786083937;
-	bh=a/Y2ux7iNyhoCEdKmfgDwytKJ3Gzx7Y5FQDTvmUCFJk=;
+	s=k20260515; t=1786084267;
+	bh=nWPxy0BDn7QW/hwyFwisvsIeKmZ3uS80KF4mqqT1HVw=;
 	h=From:To:Cc:Subject:Date;
-	b=LGlwgGsEqe8NWt6qLmrdQ6hXye8MuaBMNyn+01OfBHhz056Njr0jkSqO2O+9x/bkP
-	 HC8SdlqFmsuaVob+OOJq2PUxQrZHc24MkFbeAJC8jmJh/WwwP0R7ayTtKYwrmTgVhN
-	 V02lq966RhSz8ml3V12d1a4iwcO+41xvw+Jh14s3pTf7f8KAvvHSjNoiDIcapBmVRU
-	 1Fz5I/AZd4V6TVGqgJVz8RZi5uLzDmk0wNKta7RkO3pvXVspq9w3WMN0LSfL4w0jlk
-	 syi04TIACabSmr/iewELAFA7V7jwgznOEg+QCp6iMKoTEPJpfsjJR+DIrl5qCNtO7D
-	 RXbZMiFdYvZuA==
+	b=De4mALkGOMQNLRCCP4eOoZOHGqZAkIXrVVfcfuP9tcFYieE/hQ9jn4j3zOTpRfmRb
+	 r6AiWe+h4A8n51Ij9t/dd1Qqa7jrAGsbwiuXqtX6QXywxAUND9do79gtvR3NAgUmHb
+	 HWDCIDUp17HXxzr6yEfwjy6Ib8/vbcq9MFOAkxEPtwjsP7CgapUw1vFWYwQ4z7pTB7
+	 OcXim0FNDO7kdsuFdSWEINxgt6fQ6Z0UfPMnl95f//yNHZ5q7mFg5Ae/X3SIbKmCNo
+	 GjSWsslfhwE+CMggJV9xOSislIKmkXoJDT2RnKCna5IgKgPuhX/3numzh1mcpsXytF
+	 gkQNS8FNOl8nQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: gadgetfs: fix reference count underflow in gadgetfs_bind()
-Message-ID: <f4fb3f3c-7a51-44ed-bbd3-4ea5fa486d2e@mail.kernel.org>
+Subject: [PATCH RFC] ALSA: drivers: Fix out-of-bounds array access in probe functions
+Message-ID: <34c42cb8-c11e-4dd3-9016-b327fe40a2af@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,93 +38,161 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri,  7 Aug 2026 06:25:37 +0000 (UTC)
+Date: Fri,  7 Aug 2026 06:31:07 +0000 (UTC)
 
-A KASAN slab-use-after-free bug was found in gadgetfs_kill_sb():
+When a platform driver is forced to bind to a device with a negative ID
+(e.g., PLATFORM_DEVID_NONE, which is -1), the device ID is used directly as
+an index into static arrays without proper bounds checking. This results in
+an out-of-bounds array access, as reported by UBSAN:
 
-BUG: KASAN: slab-use-after-free in put_dev
-drivers/usb/gadget/legacy/inode.c:165 [inline]
-BUG: KASAN: slab-use-after-free in gadgetfs_kill_sb+0x46/0x110
-drivers/usb/gadget/legacy/inode.c:2104
-Write of size 4 at addr ffff88811638c080 by task syz-executor169/5848
-
-CPU: 0 UID: 0 PID: 5848 Comm: syz-executor169 Not tainted
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
-1.16.3-debian-1.16.3-2 04/01/2014
+UBSAN: array-index-out-of-bounds in sound/drivers/dummy.c:1020:40
+index -1 is out of range for type 'int[8]'
 Call Trace:
  <TASK>
  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_address_description+0x55/0x1e0 mm/kasan/report.c:378
- print_report+0x58/0x70 mm/kasan/report.c:482
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- check_region_inline mm/kasan/generic.c:-1 [inline]
- kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
- instrument_atomic_read_write include/linux/instrumented.h:112 [inline]
- atomic_fetch_sub_release include/linux/atomic/atomic-instrumented.h:400
- [inline]
- __refcount_sub_and_test include/linux/refcount.h:389 [inline]
- __refcount_dec_and_test include/linux/refcount.h:432 [inline]
- refcount_dec_and_test include/linux/refcount.h:450 [inline]
- put_dev drivers/usb/gadget/legacy/inode.c:165 [inline]
- gadgetfs_kill_sb+0x46/0x110 drivers/usb/gadget/legacy/inode.c:2104
- deactivate_locked_super+0xbc/0x130 fs/super.c:477
- cleanup_mnt+0x3d3/0x460 fs/namespace.c:1317
- task_work_run+0x1d9/0x270 kernel/task_work.c:233
+ ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
+ __ubsan_handle_out_of_bounds+0xe8/0xf0 lib/ubsan.c:455
+ snd_dummy_probe+0x12c6/0x18f0 sound/drivers/dummy.c:1020
+ platform_probe+0xf9/0x190 drivers/base/platform.c:1439
 
-The root cause is a reference count underflow in the error handling path of
-gadgetfs_bind(). When gadgetfs_bind() encounters an error (e.g., memory
-allocation failure), it jumps to the enomem label and calls
-gadgetfs_unbind(). However, gadgetfs_unbind() is designed to tear down a
-fully initialized and bound gadget, and unconditionally drops a device
-reference by calling put_dev(dev). Since gadgetfs_bind() only acquires this
-reference (get_dev(dev)) at the very end of the function upon complete
-success, calling gadgetfs_unbind() in the error path drops a reference that
-was never taken.
+This issue affects several ALSA platform drivers that trust the device ID
+without validation.
 
-This leads to a premature free of the dev structure when the ep0 file is
-closed, and subsequently a use-after-free when the filesystem is unmounted
-and gadgetfs_kill_sb() tries to drop the initial reference.
+Fix this by adding explicit bounds checking for the device ID at the
+beginning of the probe functions in the affected drivers. For the ALSA
+drivers in sound/drivers/, ensure the ID is within the valid range of [0,
+SNDRV_CARDS). For the ASoC bells driver, check the ID against the size of
+the bells_cards array.
 
-To fix this, stop calling the full teardown function gadgetfs_unbind() from
-the gadgetfs_bind() error path. Instead, manually and locally clean up only
-the specific state that was successfully altered before the failure
-occurred.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 6e65c1cc4458 ("[ALSA] dummy - Use platform_device")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+4a5c87a01894ca37f25c@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=4a5c87a01894ca37f25c
-Link: https://syzkaller.appspot.com/ai_job?id=d40043f8-d813-4477-b6e2-0f071c04be7c
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
-Cc: "Christian Brauner" <brauner@kernel.org>
-Cc: "Jan Kara" <jack@suse.cz>
+Reported-by: syzbot+2fb5d1f7cc4c1f132bcc@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=2fb5d1f7cc4c1f132bcc
+Link: https://syzkaller.appspot.com/ai_job?id=420b7754-7b1e-46a8-bbc3-9b77df287d5d
+To: "Mark Brown" <broonie@kernel.org>
+To: "Liam Girdwood" <lgirdwood@gmail.com>
+To: <linux-sound@vger.kernel.org>
+To: "Jaroslav Kysela" <perex@perex.cz>
+To: "Sylwester Nawrocki" <s.nawrocki@samsung.com>
+To: "Takashi Iwai" <tiwai@suse.com>
+To: "Takashi Iwai" <tiwai@suse.de>
+Cc: =?utf-8?q?C=C3=A1ssio_Gabriel?= <cassiogabrielcontato@gmail.com>
 Cc: "Kees Cook" <kees@kernel.org>
+Cc: "Len Bao" <len.bao@gmx.us>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Mateusz Guzik" <mjguzik@gmail.com>
-Cc: "Al Viro" <viro@zeniv.linux.org.uk>
+Cc: =?utf-8?b?VXdlIEtsZWluZS1Lw7ZuaWcgKFRoZSBDYXBhYmxlIEh1Yik=?= <u.kleine-koenig@baylibre.com>
 
 ---
-diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
-index d87a8ab51..365f9ab4d 100644
---- a/drivers/usb/gadget/legacy/inode.c
-+++ b/drivers/usb/gadget/legacy/inode.c
-@@ -1700,7 +1700,13 @@ static int gadgetfs_bind(struct usb_gadget *gadget,
- 	return 0;
+diff --git a/sound/drivers/aloop.c b/sound/drivers/aloop.c
+index 06bfe09ea..9520d3431 100644
+--- a/sound/drivers/aloop.c
++++ b/sound/drivers/aloop.c
+@@ -1802,6 +1802,9 @@ static int loopback_probe(struct platform_device *devptr)
+ 	int dev = devptr->id;
+ 	int err;
  
- enomem:
--	gadgetfs_unbind (gadget);
-+	if (dev->req) {
-+		usb_ep_free_request(gadget->ep0, dev->req);
-+		dev->req = NULL;
-+	}
-+	gadget->ep0->driver_data = NULL;
-+	dev->gadget = NULL;
-+	set_gadget_data(gadget, NULL);
- 	return -ENOMEM;
- }
++	if (dev < 0 || dev >= SNDRV_CARDS)
++		return -ENODEV;
++
+ 	err = snd_devm_card_new(&devptr->dev, index[dev], id[dev], THIS_MODULE,
+ 				sizeof(struct loopback), &card);
+ 	if (err < 0)
+diff --git a/sound/drivers/dummy.c b/sound/drivers/dummy.c
+index 7283f0f18..41e79574c 100644
+--- a/sound/drivers/dummy.c
++++ b/sound/drivers/dummy.c
+@@ -1017,6 +1017,9 @@ static int snd_dummy_probe(struct platform_device *devptr)
+ 	int idx, err;
+ 	int dev = devptr->id;
  
++	if (dev < 0 || dev >= SNDRV_CARDS)
++		return -ENODEV;
++
+ 	err = snd_devm_card_new(&devptr->dev, index[dev], id[dev], THIS_MODULE,
+ 				sizeof(struct snd_dummy), &card);
+ 	if (err < 0)
+diff --git a/sound/drivers/mpu401/mpu401.c b/sound/drivers/mpu401/mpu401.c
+index c217c427b..a519ce9eb 100644
+--- a/sound/drivers/mpu401/mpu401.c
++++ b/sound/drivers/mpu401/mpu401.c
+@@ -89,6 +89,9 @@ static int snd_mpu401_probe(struct platform_device *devptr)
+ 	int err;
+ 	struct snd_card *card;
+ 
++	if (dev < 0 || dev >= SNDRV_CARDS)
++		return -ENODEV;
++
+ 	if (port[dev] == SNDRV_AUTO_PORT) {
+ 		dev_err(&devptr->dev, "specify port\n");
+ 		return -EINVAL;
+diff --git a/sound/drivers/mts64.c b/sound/drivers/mts64.c
+index 36e9eab20..3fff5cfc4 100644
+--- a/sound/drivers/mts64.c
++++ b/sound/drivers/mts64.c
+@@ -900,7 +900,7 @@ static int snd_mts64_probe(struct platform_device *pdev)
+ 	p = platform_get_drvdata(pdev);
+ 	platform_set_drvdata(pdev, NULL);
+ 
+-	if (dev >= SNDRV_CARDS)
++	if (dev < 0 || dev >= SNDRV_CARDS)
+ 		return -ENODEV;
+ 	if (!enable[dev]) 
+ 		return -ENOENT;
+diff --git a/sound/drivers/portman2x4.c b/sound/drivers/portman2x4.c
+index dcc0899cf..0a7815880 100644
+--- a/sound/drivers/portman2x4.c
++++ b/sound/drivers/portman2x4.c
+@@ -697,7 +697,7 @@ static int snd_portman_probe(struct platform_device *pdev)
+ 	p = platform_get_drvdata(pdev);
+ 	platform_set_drvdata(pdev, NULL);
+ 
+-	if (dev >= SNDRV_CARDS)
++	if (dev < 0 || dev >= SNDRV_CARDS)
+ 		return -ENODEV;
+ 	if (!enable[dev]) 
+ 		return -ENOENT;
+diff --git a/sound/drivers/serial-u16550.c b/sound/drivers/serial-u16550.c
+index 3c2896109..aec02a15a 100644
+--- a/sound/drivers/serial-u16550.c
++++ b/sound/drivers/serial-u16550.c
+@@ -846,6 +846,9 @@ static int snd_serial_probe(struct platform_device *devptr)
+ 	int err;
+ 	int dev = devptr->id;
+ 
++	if (dev < 0 || dev >= SNDRV_CARDS)
++		return -ENODEV;
++
+ 	switch (adaptor[dev]) {
+ 	case SNDRV_SERIAL_SOUNDCANVAS:
+ 		ins[dev] = 1;
+diff --git a/sound/drivers/virmidi.c b/sound/drivers/virmidi.c
+index a204f42d1..0a9313eeb 100644
+--- a/sound/drivers/virmidi.c
++++ b/sound/drivers/virmidi.c
+@@ -75,6 +75,9 @@ static int snd_virmidi_probe(struct platform_device *devptr)
+ 	int idx, err;
+ 	int dev = devptr->id;
+ 
++	if (dev < 0 || dev >= SNDRV_CARDS)
++		return -ENODEV;
++
+ 	err = snd_devm_card_new(&devptr->dev, index[dev], id[dev], THIS_MODULE,
+ 				sizeof(struct snd_card_virmidi), &card);
+ 	if (err < 0)
+diff --git a/sound/soc/samsung/bells.c b/sound/soc/samsung/bells.c
+index fc4963d3b..3a0352499 100644
+--- a/sound/soc/samsung/bells.c
++++ b/sound/soc/samsung/bells.c
+@@ -470,6 +470,9 @@ static int bells_probe(struct platform_device *pdev)
+ {
+ 	int ret;
+ 
++	if (pdev->id < 0 || pdev->id >= ARRAY_SIZE(bells_cards))
++		return -EINVAL;
++
+ 	bells_cards[pdev->id].dev = &pdev->dev;
+ 
+ 	ret = devm_snd_soc_register_card(&pdev->dev, &bells_cards[pdev->id]);
 
 
 base-commit: 075b74841bd0065a3bda3440873c747938e69b68
