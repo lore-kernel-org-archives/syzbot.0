@@ -1,269 +1,162 @@
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DA243E2777
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 05:25:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.222.171
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786080317; cv=pass; b=pVyKyQH8/5zXLGw8sLhXjkvOZKRPQPZwHH998jGSXY/s4y2hk7mI/OEgKYgOcG+RjMURoabe4E1MZCk7iNjLqFxKqqVkY+0YeD0rKAXzwCVJ6fj8bg1NXlPsJc7qJLhtj6luf8JDE/vTRzseYR1puV2kifPxAunOTbJwk5eZj1c=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786080317; c=relaxed/simple;
-	bh=SIJGjc/vd0eTIo+PzCbUgej4zsQHGaxB/EEkRnlYHE0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=hfXBKCjguCyjZmTNJj+bOL4xoNjnep59CEDwWvX2XXjmPciWaEh7b/Wv89qizramoJ26YX2p4uaJ+hA9SaFWKZdC3P0Wvy/OMUp6WTgqSnveCTkj9yxj26flHFEI9EkdrOay0DVagoHd3GJmNbn6nyecDZmc7ju9a11cn+y2dx0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mAQr9dX1; arc=pass smtp.client-ip=209.85.222.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mAQr9dX1"
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-92e67555e24so157436785a.3
-        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 22:25:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1786080312; cv=none;
-        d=google.com; s=arc-20260327;
-        b=Nac319ZVscv/vpiG6pmsh9r4MOlt6QXC1VBZtdCgWLAUIItVaZ8ERAQ+WSVVjdMmCN
-         lQls9LeQFSngLopSIJtNDTLDY2sIB6Ko0LJtAc94hcdFWff81GBiLpBb1d/KrRUF7FWS
-         bt7/iju4Ohb55b/29VD4sBQNSnLtuoWXuCBGYqSndkuxGZnRFgghkc7W50RnYAg1nTPV
-         Mf2ZYQFr0D9TWjpVIezA/mAKvN4oV/0lp2GVfgrL7k3Dj+DGW2zMNciY3im6cxDtb/jL
-         T84DIqndAq1hwE6fYCfQuGISKRVK5UzfkVQqas10+Ryi0duTBcp23aBLNWc26IKMwL2/
-         h/bQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=P2iVRzQvU/ARB0Uq6DDAaIY0C0rSBmunUX/1sGUrmfc=;
-        fh=G0jEkEWKVFNXYwoBxKgfb+zf98fpgNQRNAjo/WxGbcw=;
-        b=F59npgb5DLzW5Yte3nEpbDNmsgQVWeqwK1BNXEsPOfjEo4438WnIhmOIQgE4YN7rKC
-         2W/Rp2Mj9bOz6CZnkDZBlsaVwut7MacNSDMG+Y64Dlzx2oRULxjMWgxsOVrUzOXvEyiB
-         ezNdiLYPg68B/w1EZSTLTuf0pJedTbjVBSG1tBjSo6L2h63WYVCHs+EwaPEjGVEJnOgN
-         kvEyPQ/LpHdM5+wa3yKjGqLjL0AiJTAwKt1XZTAOqy9IWD3IxGiLusupNh2sxeXx2ecq
-         EOP6xi7HmIRPaE484lLfDn2mg5zf2Ibd6SM4cQNaCvxgFgCxf/j3fanXEIvZqgD+Bi08
-         Eeyw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1786080312; x=1786685112; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=P2iVRzQvU/ARB0Uq6DDAaIY0C0rSBmunUX/1sGUrmfc=;
-        b=mAQr9dX1KuZ4aPa35gM4kfG1zLjgSBnyGkHz3Iw6hqKeuNshVei2pcnN970ekp7LPo
-         r/CuWIeTsVkLpXkyOmKFi5w06D82gFQpv6szxMkMmcE0LO3QDm1r3j71+3UfqTsziAP0
-         pqdZnLMk8dpcqs8N1QyPjohOpxtUrMsjG7GMbongWiVwvwyszczILiuRgmjHxhHRwBUi
-         yKFV82VnLLFjWN377u83itt81xYyzDsncs4o+wveiQmQmRWqHbHIn7rG6lXfQfkKxSPr
-         93roU7yJ6ZunanM5ycOw0GN/1UuOPt1jDwxNsYwkmFgbkqpgpSdmVULpAn4R52WVM/Q0
-         OAMw==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1A1740D588
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 05:26:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786080374; cv=none; b=o7uH+npB0iORWUwJexvFb81nC2SWOdS3JH2hyLgqzyZMjxGwbkuuxi4VNQ4MeSugjY9RwWc7Spu/YldwMrm1JRnCg1b7NONlYGvfltfmXRh/X/QZGGLzPmiolWJJJYF/L2Q3Nx7kFhirZ8sp7p+VJe+9hziU1T0+bwBTq8ZZyCY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786080374; c=relaxed/simple;
+	bh=XoAKRdAJIJ9Bz8/wlI6yz3LVQ9NQvOp4X8SzO7nxy1g=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=d3PB0gSIQxz90A8g4Ias0JJ1AVEVRdQ1XkRG4gS5NMsnVI8L2qekOcZFneIIVEML9uplnstMhQhR1d6xLuFgVtDYVgdf9k/ZL+k7HN3O6FmsEqWF3EicPRdHUG5wds7wNO/Bw2nHXDAn7PsadUmvcgm5SSofzkbQtCJZTj5woDs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4a416619e8dso2181243b6e.1
+        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 22:26:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786080312; x=1786685112;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=P2iVRzQvU/ARB0Uq6DDAaIY0C0rSBmunUX/1sGUrmfc=;
-        b=Bm9t9BsdBMDl2Sab9GE71dCvvmsAPDcM4Zsz8L2j7LdG40KAzVYZ1mLQUr30MT9X9C
-         wo2ZIQP02Fpnx3h7cIFRqDC1eDDSA86Xrdkelqnxkbx7wr9KwV42H2s/aB1pqMiuPb3I
-         OVevP4c1ldS0igutEvarcHYhkcjZSxrWP7V2Le0nrvAnKbzdbj75YGl1rSziZoHBvxqW
-         1cPOhA+dchtKg7UHNGNLlLX3XtF70PIhuezP7k8qzdaaNN7770L/JXvVWE1licsojRy7
-         WUuzqRLZzyRBooxT1cWNgg53Mrj4iY6WTlifqVdWpv94GiTjoSovzqXSGg2GrSzvUYtd
-         S1oQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpElrasGb1dFTw0esdHRMLMEOt/HIJd4+cChYk6dYoeqAKM9yAjJG3qMuu7/R5aJsksq9LSiKg=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy2cqLRsniNi+9gnktHySiWDvY9kb98Jn7Ibw2O2y9MzaUMCDk4
-	QbsrzFTATzMrc+lU0WSrs5rfw3A1Hc3Hy3epZhoe2R89XkMUx+ILwEa5Wy4eDS46pKNmZXP+FWG
-	RrCIoeE4jKBVhk2SHXJHMx9EuOXcP7Vu942b1vhzF
-X-Gm-Gg: AR+sD129lMlvA6vKQZoGKB7Xe8Ek1jRj0O/nkEq/EI9Zphhz8D3LuuhOFQ+qjf30Ev5
-	KpKpUNPcBgEp+5I1JQQeKsKOxIvGxq2OEke0ieuxz1Zm4bsAlR4ewv+TlUgb54FVEedjON0g4gi
-	G2edZN6eTGXtbK98sUSudGUayoDLgNEY5S+qH9NL9SRWoxYDrmTvu3wURrvito+Dpmn4QjPc/6k
-	DcUO4xO7/ARl2eRvpaACJ4lEZlCZ1ZGXLXIXJcx21FCzJMHs2eWYK6TrYt/Wz45FGm6gqqGD8db
-	wMhTLjPDPG5H9DqVXuKo2ePEpe8nVeQdhR5ZZtafa8HVc34tyCVvHuqWb+wq3DRSoPE//w2Z9LD
-	9Dp9fG3OSct7anlPY0+dDTwQsjIT/oxxmMNU=
-X-Received: by 2002:a05:620a:2b8b:b0:930:9fdd:f4e0 with SMTP id
- af79cd13be357-936491d4b87mr2032011785a.26.1786080311221; Thu, 06 Aug 2026
- 22:25:11 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1786080369; x=1786685169;
+        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=T3m0nal8RAOlIDKOwy4iei8tz0r4SQ1BHd4+5WMc7ws=;
+        b=pKcPkd8KUKTazejMbDDH0y1qHJQypc8kDqO34XKjSvFyETWpY00wbKvS/CpzUew7o6
+         IQV2t8gFTLliCYpP0ntFfofpk4sst6t1kd+oizWfa0Hn4geO3A1kPeH0N0QuHQUw2tTp
+         ovdghXHTdkXJOaVqU15zlyM5WgPcXwSUB5jPEdDm9Rt6mWy91jXKnSGq3DiVEwaK15+c
+         ejjtWEfoc+xv5dlVwQPwK0a7w35fgPkEb0t/5CR+E+A59oxg3Gw6jXyL7dvIoS9p774L
+         SsHTEAtT3szPQwOF5o8MLMBWTncANKnp14dXJLdBtlcZHWsZ+7NarVZQiTl6IE43d76q
+         S6Hw==
+X-Gm-Message-State: AOJu0Yw0tQZOArLqfAwylcjiEsCMpCH6JjqMIvgFW9/srlxphSwS6avF
+	ZFmZoECbeI52aKxow+DWu4YBC9rx8XemrW5lk0RSHkOmF5x/h3RZcUGgq3/OiOu+p6ofY74uTR6
+	iEKWIAUb67d4103ylmzcUYL3x5gKOvmHIgqOg9UQE5Ra5SewYpvEsGaAHevk=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <6a756b44.9c11d2ce.289b96.00a5.GAE@google.com>
-In-Reply-To: <6a756b44.9c11d2ce.289b96.00a5.GAE@google.com>
-From: Pimyn Girgis <pimyn@google.com>
-Date: Fri, 7 Aug 2026 07:25:00 +0200
-X-Gm-Features: AUfX_mwqFOdHUPhfXEwGHIHw2F9-xJCxnQKS60q23l8UGedOFfvGCfj7kOyb0J0
-Message-ID: <CAJWNTGy4i1qNn2v_7FW4iH6-mJQTUf6TuqvK0Z4oLEvn3d8eug@mail.gmail.com>
-Subject: Re: [moderation/CI] Re: pull request: fixes for ovpn 2026-08-07
-To: syzbot ci <syzbot+cia3579a1608aada9e@syzkaller.appspotmail.com>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+X-Received: by 2002:a05:6808:169f:b0:485:7c46:b866 with SMTP id
+ 5614622812f47-4afc513e9b0mr6403807b6e.16.1786080369495; Thu, 06 Aug 2026
+ 22:26:09 -0700 (PDT)
+Date: Thu, 06 Aug 2026 22:26:09 -0700
+In-Reply-To: <20260806184254.3790858-1-nphamcs@gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a756c71.01d0871a.3a0d52.003a.GAE@google.com>
+Subject: [syzbot ci] Re: Virtual Swap Space (Swap Table Edition)
+From: syzbot ci <syzbot+cif942a042aaa8793c@syzkaller.appspotmail.com>
+To: akpm@linux-foundation.org, axelrasmussen@google.com, baohua@kernel.org, 
+	baoquan.he@linux.dev, cgroups@vger.kernel.org, chengming.zhou@linux.dev, 
+	chrisl@kernel.org, corbet@lwn.net, david@kernel.org, gourry@gourry.net, 
+	hannes@cmpxchg.org, haowenchao22@gmail.com, kasong@tencent.com, 
+	kernel-team@meta.com, liam@infradead.org, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, ljs@kernel.org, 
+	mhocko@kernel.org, muchun.song@linux.dev, nphamcs@gmail.com, 
+	qi.zheng@linux.dev, riel@surriel.com, roman.gushchin@linux.dev, 
+	rppt@kernel.org, shakeel.butt@linux.dev, shikemeng@huaweicloud.com, 
+	surenb@google.com, vbabka@kernel.org, weixugc@google.com, yosry@kernel.org, 
+	youngjun.park@lge.com, yuanchu@google.com
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-#syz upstream
+syzbot ci has tested the following series
 
-On Fri, Aug 7, 2026 at 7:21=E2=80=AFAM syzbot ci
-<syzbot+cia3579a1608aada9e@syzkaller.appspotmail.com> wrote:
->
-> syzbot ci has tested the following series
->
-> [v1] pull request: fixes for ovpn 2026-08-07
-> https://lore.kernel.org/all/20260807002250.1817498-1-antonio@openvpn.net
-> * [PATCH net 1/4] ovpn: fix NULL dereference when killing missing key
-> * [PATCH net 2/4] ovpn: finish crypto callback cleanup before peer releas=
-e
-> * [PATCH net 3/4] ovpn: run deferred work on a module-owned workqueue
-> * [PATCH net 4/4] ovpn: defer key slot crypto freeing to workqueue
->
-> and found the following issue:
-> WARNING in __alloc_workqueue
->
-> Full report is available here:
-> https://ci.syzbot.org/series/a46f06c7-f8d8-4053-a746-91498a46c290
->
-> ***
->
-> WARNING in __alloc_workqueue
->
-> tree:      net
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netde=
-v/net.git
-> base:      594d905195024b228c962627ae5ae7c17bd582a4
-> arch:      amd64
-> compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~e=
-xp1~20260613092250.77), Debian LLD 22.1.8
-> config:    https://ci.syzbot.org/builds/cc426b49-07b7-496e-badf-5b0646780=
-dd0/config
->
-> usbcore: registered new interface driver udl
-> bochs-drm 0000:00:01.0: vgaarb: deactivate vga console
-> [drm] Found bochs VGA, ID 0xb0c5.
-> [drm] Framebuffer size 16384 kB @ 0xfd000000, mmio @ 0xfebf0000.
-> [drm] Initialized bochs-drm 1.0.0 for 0000:00:01.0 on minor 2
-> bochs-drm 0000:00:01.0: [drm] fb1: bochs-drmdrmfb frame buffer device
-> usbcore: registered new interface driver gm12u320
-> usbcore: registered new interface driver gud
-> brd: module loaded
-> loop: module loaded
-> zram: Added device: zram0
-> null_blk: disk nullb0 created
-> null_blk: module loaded
-> Guest personality initialized and is inactive
-> VMCI host device registered (name=3Dvmci, major=3D10, minor=3D267)
-> Initialized host personality
-> usbcore: registered new interface driver rtsx_usb
-> lpc_ich 0000:00:1f.0: I/O space for GPIO uninitialized
-> usbcore: registered new interface driver viperboard
-> usbcore: registered new interface driver dln2
-> usbcore: registered new interface driver pn533_usb
-> nfcsim 0.2 initialized
-> usbcore: registered new interface driver port100
-> usbcore: registered new interface driver nfcmrvl
-> Loading iSCSI transport class v2.0-870.
-> st: Version 20160209, fixed bufsize 32768, s/g segs 256
-> ACPI: \_SB_.GSIA: Enabled at IRQ 16
-> ahci 0000:00:1f.2: AHCI vers 0001.0000, 32 command slots, 1.5 Gbps, SATA =
-mode
-> ahci 0000:00:1f.2: 6/6 ports implemented (port mask 0x3f)
-> ahci 0000:00:1f.2: flags: 64bit ncq only
-> scsi host0: ahci
-> scsi host1: ahci
-> scsi host2: ahci
-> scsi host3: ahci
-> scsi host4: ahci
-> scsi host5: ahci
-> ata1: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2100 irq 26 lpm-=
-pol 1
-> ata2: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2180 irq 26 lpm-=
-pol 1
-> ata3: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2200 irq 26 lpm-=
-pol 1
-> ata4: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2280 irq 26 lpm-=
-pol 1
-> ata5: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2300 irq 26 lpm-=
-pol 1
-> ata6: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2380 irq 26 lpm-=
-pol 1
-> Rounding down aligned max_sectors from 4294967295 to 4294967288
-> db_root: cannot open: /etc/target
-> slram: not enough parameters.
-> ftl_cs: FTL header not found.
-> wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
-> wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. =
-All Rights Reserved.
-> ------------[ cut here ]------------
-> workqueue: ovpn is using neither WQ_PERCPU or WQ_UNBOUND. Setting WQ_PERC=
-PU.
-> WARNING: kernel/workqueue.c:5852 at __alloc_workqueue+0x1cf5/0x2060, CPU#=
-0: swapper/0/1
-> Modules linked in:
-> CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(ful=
-l)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> RIP: 0010:__alloc_workqueue+0x1cf8/0x2060
-> Code: 38 00 e9 59 f9 ff ff e8 46 96 38 00 e9 26 fb ff ff e8 3c 96 38 00 e=
-9 a7 fb ff ff e8 32 96 38 00 48 8d 3d fb a1 cc 0e 4c 89 f6 <67> 48 0f b9 3a=
- 81 cd 00 01 00 00 e9 a7 e5 ff ff e8 13 96 38 00 48
-> RSP: 0000:ffffc900000677a8 EFLAGS: 00010293
-> RAX: ffffffff818e8c5e RBX: 0000000000000000 RCX: ffff888102a95940
-> RDX: 0000000000000000 RSI: ffff88810c4cf570 RDI: ffffffff905b2e60
-> RBP: 0000000000000000 R08: ffff888102a95940 R09: 0000000000000002
-> R10: 0000000000000102 R11: 0000000000000000 R12: ffffc900000678c0
-> R13: ffff88810c4cf400 R14: ffff88810c4cf570 R15: 0000000000000000
-> FS:  0000000000000000(0000) GS:ffff88818d934000(0000) knlGS:0000000000000=
-000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: ffff88823ffff000 CR3: 000000000e946000 CR4: 00000000000006f0
-> Call Trace:
->  <TASK>
->  alloc_workqueue_noprof+0xe3/0x210
->  ovpn_init+0x1b/0xb0
->  do_one_initcall+0x250/0x870
->  do_initcall_level+0x10a/0x1a0
->  do_initcalls+0x59/0xa0
->  kernel_init_freeable+0x29d/0x3e0
->  kernel_init+0x1d/0x1d0
->  ret_from_fork+0x514/0xb70
->  ret_from_fork_asm+0x1a/0x30
->  </TASK>
->
->
-> ***
->
-> If these findings have caused you to resend the series or submit a
-> separate fix, please add the following tag to your commit message:
->   Tested-by: syzbot@syzkaller.appspotmail.com
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
->
-> To test a patch for this bug, please reply with `#syz test`
-> (should be on a separate line).
->
-> The patch should be attached to the email.
-> Note: arguments like custom git repos and branches are not supported.
->
-> The email will later be sent to:
-> [andrew@lunn.ch antonio@openvpn.net davem@davemloft.net edumazet@google.c=
-om kuba@kernel.org netdev@vger.kernel.org pabeni@redhat.com ralf@mandelbit.=
-com sd@queasysnail.net]
->
-> If the report looks fine to you, reply with:
-> #syz upstream
->
-> If the report is a false positive, reply with
-> #syz invalid
->
-> --
-> You received this message because you are subscribed to the Google Groups=
- "syzkaller-upstream-moderation" group.
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/6a756b44.9c11d2ce.289b96.00a5.GAE%40google.com.
+[v3] Virtual Swap Space (Swap Table Edition)
+https://lore.kernel.org/all/20260806184254.3790858-1-nphamcs@gmail.com
+* [PATCH v3 01/11] mm, swap: add virtual swap device infrastructure
+* [PATCH v3 02/11] mm, swap: support zswap and zeroswap as vswap backends
+* [PATCH v3 03/11] mm, swap: prepare the swap IO path for vswap
+* [PATCH v3 04/11] mm, swap: support physical swap as a vswap backend
+* [PATCH v3 05/11] mm, swap: enable THP swapin for vswap entries
+* [PATCH v3 06/11] mm, swap: write back vswap zswap entries to physical swap
+* [PATCH v3 07/11] mm, swap: reclaim physical slots backing cache-only vswap entries
+* [PATCH v3 08/11] mm, swap: only charge physical swap entries
+* [PATCH v3 09/11] mm, swap: add debugfs counters for vswap
+* [PATCH v3 10/11] mm, swap: defer memcg_table allocation for physical swap clusters
+* [PATCH v3 11/11] mm, swap: widen swap_info_struct max/pages to unsigned long
+
+and found the following issue:
+KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
+
+Full report is available here:
+https://ci.syzbot.org/series/e7da1097-3230-4e50-80cb-1dfafeebea40
+
+***
+
+KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
+
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
+base:      bacc32cc7de65ffff70080a48eb294f89e434d5e
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/4f943657-9481-4637-9b1f-9be1bff18f92/config
+syz repro: https://ci.syzbot.org/findings/f6c4f1ab-951c-4759-b397-e22c23c3bf32/syz_repro
+
+==================================================================
+BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instrumented.h:82 [inline]
+BUG: KASAN: null-ptr-deref in atomic_long_read include/linux/atomic/atomic-instrumented.h:3188 [inline]
+BUG: KASAN: null-ptr-deref in __vtable_get mm/vswap.h:147 [inline]
+BUG: KASAN: null-ptr-deref in vswap_to_phys mm/vswap.h:197 [inline]
+BUG: KASAN: null-ptr-deref in swap_entry_backend_has_flag+0xfe/0x220 mm/vswap.h:441
+Read of size 8 at addr 0000000000000000 by task syz.2.20/5818
+
+CPU: 1 UID: 0 PID: 5818 Comm: syz.2.20 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ check_region_inline mm/kasan/generic.c:-1 [inline]
+ kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
+ instrument_atomic_read include/linux/instrumented.h:82 [inline]
+ atomic_long_read include/linux/atomic/atomic-instrumented.h:3188 [inline]
+ __vtable_get mm/vswap.h:147 [inline]
+ vswap_to_phys mm/vswap.h:197 [inline]
+ swap_entry_backend_has_flag+0xfe/0x220 mm/vswap.h:441
+ do_swap_page+0x3c0/0x5620 mm/memory.c:4975
+ __collapse_huge_page_swapin mm/khugepaged.c:1202 [inline]
+ collapse_huge_page mm/khugepaged.c:1325 [inline]
+ mthp_collapse mm/khugepaged.c:1524 [inline]
+ collapse_scan_pmd mm/khugepaged.c:1786 [inline]
+ collapse_single_pmd+0x24c6/0x3da0 mm/khugepaged.c:2803
+ madvise_collapse+0x2cf/0x790 mm/khugepaged.c:3237
+ madvise_vma_behavior+0x115f/0x4170 mm/madvise.c:1363
+ madvise_walk_vmas+0x576/0xb00 mm/madvise.c:1712
+ madvise_do_behavior+0x385/0x540 mm/madvise.c:1907
+ do_madvise+0x327/0x3a0 mm/madvise.c:2005
+ __do_sys_madvise mm/madvise.c:2014 [inline]
+ __se_sys_madvise mm/madvise.c:2012 [inline]
+ __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fbcad79e019
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fbcae5c4028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+RAX: ffffffffffffffda RBX: 00007fbcada25fa0 RCX: 00007fbcad79e019
+RDX: 0000000000000019 RSI: 0000000000c00000 RDI: 0000200000000000
+RBP: 00007fbcad83500c R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fbcada26038 R14: 00007fbcada25fa0 R15: 00007fff095fa0b8
+ </TASK>
+==================================================================
 
 
+***
 
---=20
-=E2=B2=A0=E2=B2=9F=E2=B2=93=E2=B2=99=E2=B2=8F=E2=B2=9B =E2=B2=84=E2=B2=89=
-=E2=B2=B1=E2=B2=A3=E2=B2=85=E2=B2=93=E2=B2=9F=E2=B2=A5 - Pimyn Girgis
-Software Engineer
-Kernel Dynamic Analysis
-pimyn@google.com
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
