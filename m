@@ -1,163 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A534441F36F
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 11:35:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BA0C471268
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 11:54:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786102559; cv=none; b=SyLeka0WqbNFNRwtrl4GIPZTvbOViy9GSsHmHSJvc+w9y3O7h9t2IE3wCtJnS51Q/SykRfUVWRebVGUGewBsLqQJI3Zver6QvrBKaxeilVC99SdySXscVNUvgWp4632+VR3C4nXL5eNvR+k4+ApnsskP5uIUOoyWeRbkwXhl3lE=
+	t=1786103704; cv=none; b=XVgRpqwiQol33YGSMIlQv9kX40uJH12csFQ6TRMN/uQC53BYZfgsmVR+JnwCZ4ip1/JndP/5CBn1cAWzGtgI9Bdn0sk3KyLCK20RblexgvwfQnKTfZ9jsVeISN46cPIT9puQBVTaSuBe7zQ4rN85BDA8PKAeyY2gN47K7fWzDkw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786102559; c=relaxed/simple;
-	bh=eQs7+U8Y+vBjdYII607JqtkDKbgPDSUq93UhEdM1oo4=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=XFTTfsL8e56+rtM4PXRTMomEX5gnHZohsTbg398w+QtvXd1jPz63EXZQ6oVrVpxIyDeFH+A+5076KJI2gE8I6Y8ch0bBFq7tZfnzUohG+eP+gFeI7RLKDr2pIr53y/ax5hBYS3pzx6O/M3sRAx73eJ8TbOjEKG0ka+CPnEJmNEc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jjQHB3V2; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786103704; c=relaxed/simple;
+	bh=W3KhDTimuwgisUptLxdE3P0lFgT70NS8NtJzHMxIpog=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Cy810X+iE754KV+O9eL71j6oP71WDE04dKeOdbGJRteMsNBPbEuzOIOfE0LlH94iVOwzPLVGh0WhJDFuntcXFJ74x66bEYWZ/YxqIF+sCrYfSz1snv3MjZhx5Ujx8dsOlcuwriR5Cg7aACJ4T9jnWklLTgJoF391rAUxIsmXcY0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gfbcPlOx; arc=none smtp.client-ip=209.85.208.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jjQHB3V2"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 96B841F000E9;
-	Fri,  7 Aug 2026 11:35:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786102556;
-	bh=K7uJEEow9ftkOZGm7TxIg4RWt7nJDUDvcl0yljCKLOA=;
-	h=From:To:Cc:Subject:Date;
-	b=jjQHB3V2lvWVhhrFowVtz5VrAP8WOLuJISTSCm6hqOf42nBP7AlKRe9Z9Ge5Hc8Zp
-	 oXNKaEj4fe1S8/SHAhHfdmuq7oAutzHXaMqKP86EnQ6jP2NRyjkkgj9QoNtTcQLjNi
-	 sd51l0lWlBuxH2hA5lh/VH6zKawNmzrsKShI6Lbw7tpEdjWg4o1Mn1nRttQXhGjEcU
-	 vaVKhSSiGYGDhKJIdlnVKG7y8cBdJKW9WRNdZhYOX4ODVnPX+WY6EAoz3eRjO7w42/
-	 izq0BV3NCEBvcF2aKhvvQz9DHnio9iRG6K9u62HqIqIxIFoOXCB76wIWRnt5KMVjqw
-	 kDeeo7sKBBqxA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: immersa.bartosz.chronowski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] smb: client: fix double decrement of server->in_flight
-Message-ID: <8eee63bf-fe76-434c-9a55-3886e41bb755@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gfbcPlOx"
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-6a1542cdb53so3186120a12.2
+        for <syzbot@lists.linux.dev>; Fri, 07 Aug 2026 04:54:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786103695; x=1786708495; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=AjCLnnMYnIXAKd2QojkF632kR9nXx4FuPCfAi4Zg5FI=;
+        b=gfbcPlOxTnrf5xmz9jfayWoyMFvm6fy0SrYiZbjXIIFRKz1THdnp1OVrUlN/8pBnkZ
+         e7BNye128nWot+f5sAengqh1kdKRDgJXpyQSOyzJoAEQnTCB0pFqNwmWsUf7J5m0l7X5
+         lk9VD366gp4NTVta74jbBgqH8yrO7tN+2+W2rGpky3qEiwfrfaVJJSdwHt+AiFoWwNqW
+         fug8S3bTJL86WV9u0kkOJYcmHjNrff2wPvrCu2QoxS1TuB+3eajhoqYNv4Hc0sJXP9xP
+         7OOUMWXAVIbWF5+DRh93+Ne+lZM9kHVeSWvovou61sDYT2eoWsjymPXvwS7dD5SvNf9d
+         mI0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786103695; x=1786708495;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=AjCLnnMYnIXAKd2QojkF632kR9nXx4FuPCfAi4Zg5FI=;
+        b=mBy9d/ZwOFNnKwYojxhtPdXkOAzCaoflsi82ytxE/cGoIEJGxEctt+zyI/JR6ZHY1a
+         myMU6QcmPSrUjVI1vh4Nfs5RFfFd1pKSMgbiIKu1kcR/o8FZAivsYN4Dp6rGVdgGEHVN
+         Nk65ERqI67ZBPyJU29QiWQTp4mVEiXxJw1Imz6K4/FYMnZ7KRP5K98cuGMSOzK/35GXU
+         ln73BvEw7Km9PWm5t8Tohf6iLYwIpM2dIgTEayfw+eP181kD1le927NXXJGpm5+ZaTaD
+         IYMqsBfiEJSnJpFgsrVYcT40OBaFH0Qxkagy+xWwpNRGsSt7RFSlFnYzQDWvcG54Bq0X
+         OGOg==
+X-Forwarded-Encrypted: i=1; AHgh+Rr3YAgWTZaFb8+gweW+bs2EQWL4emEu6PRTPUA7944wCXml88RqujQIYIbJktYsiMmE8VM4H4o=@lists.linux.dev
+X-Gm-Message-State: AOJu0YycXm3Aqz6IeeBZrWiZNfQTbFfHzwcP/lvXr2TOT+o8PMDKd/BD
+	+5zODqjAU0oCzdHYY2IzwLFjIdJPCbn0jHzjt9QDks8RtjPegXCyLENW
+X-Gm-Gg: AR+sD12cXKUeuFlEJGi7IXJGJTnqoiaRapaOwAX92LJM9d11+aoJd9ZD9vFQfQ5ulsj
+	IvGcaQbIbp5kkjC2tCNqgHfMvGgISHC1UbeERwGRtgjFlqLwgzBXDCzrBBf5nAHA0QKVBNtIaI2
+	/RkKJlUKLmJan55V5puCcPZ4FZ8nd6alS72paooftCkW01Hg2TzCJSKYlAweJmS0Zt1ZCA3yewj
+	3ZP7KBLuyqJb7F0qoiq8gJ2IUSlsI+4y+2MoWRFZiIyM6gN45jTr8vFCyT+GdyRgHWxMPZUhfuE
+	N6+fGpzeg4IilkywlDOQCA1V6Ss32CR+E8gHoRvpsldePSH4+5sy8PtEgoHIXKN9Rns7xrjD16V
+	6wGhv8QXpR6OAxvqzZEDnJcVaFphItuhb8Gs9e1g4i4GuAUJvl1PWNeKAu1RuwPIUyAUd/R52q9
+	P9awkGkn/7WMN8YtxWfD+wTpctAJvwxX78CrPRyS1rhUWMdEOq4pnvP3xB8dHyBkCmfOMKd00wg
+	yH1Og+VAOUcRkrM8IU8tlEzXNbT2lr/aRIsFKcO9UIYUzJBsfj5xYfRIWNtr5aQ6dxR1OsH2RXp
+	tNXh+hMMEEbvgdl6sCrRLFF7dHFDGUmLSYwknkOKiQwQuUbleB4nED0=
+X-Received: by 2002:a05:6402:e93:b0:69a:928:9405 with SMTP id 4fb4d7f45d1cf-6a14f09ff2cmr11039309a12.1.1786103695297;
+        Fri, 07 Aug 2026 04:54:55 -0700 (PDT)
+Received: from [192.168.100.51] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a1e7cbaf69sm471408a12.13.2026.08.07.04.54.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Aug 2026 04:54:54 -0700 (PDT)
+Message-ID: <8df5c003-f28f-4fce-ad4d-9c6247d06892@gmail.com>
+Date: Fri, 7 Aug 2026 13:54:53 +0200
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri,  7 Aug 2026 11:35:56 +0000 (UTC)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net v2] ipvlan: keep lower device alive until private
+ destruction
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org, Andrew Lunn <andrew+netdev@lunn.ch>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Paolo Abeni <pabeni@redhat.com>, syzkaller-bugs@googlegroups.com,
+ dskr99@gmail.com, Kees Cook <kees@kernel.org>, linux-kernel@vger.kernel.org,
+ syzbot@lists.linux.dev, syzbot+5fe14f2ff4ccbace9a26@syzkaller.appspotmail.com
+References: <20260803121140.261329-1-krystianmkaniewski@gmail.com>
+ <20260806083834.28db4cde@kernel.org>
+Content-Language: en-US
+From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+In-Reply-To: <20260806083834.28db4cde@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-During a failed send or reconnect, the reconnect thread can process a
-still-queued multiplex ID (MID) before the sender returns the same
-reservation. This double completion corrupts request accounting, wraps the
-unsigned server->in_flight counter to UINT_MAX, and can affect system
-availability by blocking further requests.
+You're right. I treated the netdev reference as a guarantee that the
+device was still usable, while it only keeps struct net_device
+allocated. It does not guarantee that the device is still operational
+after unregister has started.
 
-Specifically, when smb_send_rqst() fails (e.g., with -ECONNRESET), it
-signals the cifsd thread for a reconnect. If compound_send_recv() drops the
-cifs_server_lock(server) before removing the MIDs from the pending queue,
-the cifsd thread can wake up, acquire the lock, and execute
-cifs_abort_connection().
+Keeping the lower device referenced for longer in ipvlan is therefore
+not the right solution. The caller that wants to operate on the device
+needs to verify that it is still alive.
 
-cifs_abort_connection() iterates over server->pending_mid_q, finds the MIDs
-that failed to send, and executes their callbacks (cifs_compound_callback).
-Because no response was received, the callback calls add_credits() with 0
-credits. smb2_add_credits() unconditionally decrements server->in_flight,
-even if the number of credits being added is 0.
+Thank you for the review and for clarifying this. I will prepare a v3
+later with the fix on the caller side.
 
-After the callback finishes, compound_send_recv() continues its execution,
-sees that rc < 0, and explicitly calls add_credits() to return the credits
-it originally reserved. This results in a second call to
-smb2_add_credits(), which decrements server->in_flight again. Since
-in_flight was already decremented to 0 by the callback, this second
-decrement triggers a warning and wraps the unsigned counter to UINT_MAX.
-
-CIFS: VFS: \\127.0.0.1 Error -32 sending data on socket to server
-------------[ cut here ]------------
-server->in_flight == 0
-WARNING: fs/smb/client/smb2ops.c:104 at smb2_add_credits+0x1249/0x2b70
-fs/smb/client/smb2ops.c:104
-Call Trace:
- <TASK>
- add_credits fs/smb/client/cifsglob.h:894 [inline]
- compound_send_recv+0x13b4/0x2b90 fs/smb/client/transport.c:979
- cifs_send_recv+0x42/0x60 fs/smb/client/transport.c:1106
- SMB2_negotiate+0x164d/0x4030 fs/smb/client/smb2pdu.c:1188
- cifs_negotiate_protocol+0x45d/0x680 fs/smb/client/connect.c:4043
- cifs_get_smb_ses+0x1104/0x1ff0 fs/smb/client/connect.c:2492
- cifs_mount_get_session+0xf1/0x450 fs/smb/client/connect.c:3578
- get_session fs/smb/client/dfs.c:65 [inline]
- dfs_mount_share+0x22e/0x990 fs/smb/client/dfs.c:275
- cifs_mount+0xcc/0xbf0 fs/smb/client/connect.c:3860
- cifs_smb3_do_mount+0x2d0/0x8a0 fs/smb/client/cifsfs.c:1024
- smb3_get_tree_common fs/smb/client/fs_context.c:897 [inline]
- smb3_get_tree+0x2dd/0x400 fs/smb/client/fs_context.c:917
- vfs_get_tree+0x92/0x2a0 fs/super.c:1700
- fc_mount fs/namespace.c:1198 [inline]
- do_new_mount_fc fs/namespace.c:3765 [inline]
- do_new_mount+0x319/0xdc0 fs/namespace.c:3841
- do_mount fs/namespace.c:4174 [inline]
- __do_sys_mount fs/namespace.c:4390 [inline]
- __se_sys_mount+0x31d/0x420 fs/namespace.c:4367
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
-
-To fix this, ensure that the cifsd thread cannot observe these MIDs if the
-request failed to send (rc < 0) or if no response is expected (flags &
-CIFS_NO_SRV_RSP). By calling delete_mid() before dropping
-cifs_server_lock(server), we safely remove the MIDs from the pending queue
-while still holding the mutex. This guarantees that cifs_abort_connection()
-will not find them and will not execute their callbacks. We also set
-cancelled_mid[i] = true so that the common cleanup code safely skips the
-already-deleted MIDs, preventing any double-free issues.
-
-Fixes: ee258d79159a ("CIFS: Move credit processing to mid callbacks for SMB3")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+eeb58d2197d88720a228@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=eeb58d2197d88720a228
-Link: https://syzkaller.appspot.com/ai_job?id=41f83e92-1b53-4701-b089-30a34a1b8cc8
-To: <linux-cifs@vger.kernel.org>
-To: <samba-technical@lists.samba.org>
-To: "Steve French" <sfrench@samba.org>
-To: "Pavel Shilovsky" <pshilov@microsoft.com>
-Cc: "Bharath SM" <bharathsm@microsoft.com>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Paulo Alcantara" <pc@manguebit.org>
-Cc: "Ronnie Sahlberg" <ronniesahlberg@gmail.com>
-Cc: "Shyam Prasad N" <sprasad@microsoft.com>
-Cc: "Tom Talpey" <tom@talpey.com>
-
----
-v2:
-- Updated the commit description to lead with the failed-send/reconnect trigger and its impact on request accounting and system availability.
-- Corrected the description to state that the unsigned server->in_flight counter wraps to UINT_MAX instead of becoming -1.
-
-v1:
-https://lore.kernel.org/all/05aeff9e-78c8-4060-8efb-7debe418f6dd@mail.kernel.org/T/
----
-diff --git a/fs/smb/client/transport.c b/fs/smb/client/transport.c
-index fdf4e50c2..8d14225e9 100644
---- a/fs/smb/client/transport.c
-+++ b/fs/smb/client/transport.c
-@@ -968,6 +968,13 @@ compound_send_recv(const unsigned int xid, struct cifs_ses *ses,
- 		server->sequence_number -= 2;
- 	}
- 
-+	if (rc < 0 || (flags & CIFS_NO_SRV_RSP)) {
-+		for (i = 0; i < num_rqst; i++) {
-+			delete_mid(server, mid[i]);
-+			cancelled_mid[i] = true;
-+		}
-+	}
-+
- 	cifs_server_unlock(server);
- 
- 	/*
-
-
-base-commit: 075b74841bd0065a3bda3440873c747938e69b68
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On 8/6/2026 5:38 PM, Jakub Kicinski wrote:
+> On Mon,  3 Aug 2026 14:11:39 +0200 Krystian Kaniewski wrote:
+>> Specifically, RXE acts as an asynchronous owner in this scenario. RXE
+>> queues RDMA device removal on NETDEV_UNREGISTER, meaning it can retain a
+>> reference to the ipvlan netdev after ndo_uninit has completed.
+> The netdev reference only guarantees that struct net_device does not
+> go away. Caller must check that the device is still alive if it is
+> trying to operate on it without a guarantee that it's still live.
