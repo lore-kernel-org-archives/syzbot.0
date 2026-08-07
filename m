@@ -1,102 +1,189 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 154C23F4DE9
-	for <syzbot@lists.linux.dev>; Thu,  6 Aug 2026 23:30:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786059027; cv=pass; b=dKxLe9kWhBSFu+VgpazRG/6Cd0MZ9YFw2yaMaOcd6oPQoi0kMYay/gfA2AiasuzDGVScaE/tU5j+QdDMctemSbGn/UuaF7eFHCC95gKMvY18EPY8s3yX6eJIekT8G0qYbTujUrP7NjolZWL7OeYnScsOOAUigSEjtvF75+KFJH4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786059027; c=relaxed/simple;
-	bh=LLPIVZLkcDBEXmcY+m6qHFAz6hVv8iBq31NdOIuv73Q=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=qp/lB9uYs6ZKhXsD4UBAb+QIxdA9jehJ73B6wES6MDf4iNcCrDRSHxMB7c2v1drhrPizsC3t6Ywv5Y+oCMokIOxD073LBbyHenutcI/BM8LgH4Y1NqANmZBz3KU3JdZtMdFsgqPkAqFeRK5g2BIlZ8FRkTUcy+4+X24nJb2nK+Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=sina.com header.i=@sina.com header.b=FegA9rv3; arc=pass smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=sina.com header.i=@sina.com header.b="FegA9rv3"
-Received: by smtp.kernel.org (Postfix)
-	id EAA0B1F00A3A; Thu,  6 Aug 2026 23:30:25 +0000 (UTC)
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=202.108.3.165
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1786059025;
-	b=tYTtouaBCP6C5WnklBMezC3/lUJ/0Mswbq2X7JX22lEZrH1Pl8kWbqNy/nJ5csYf7+vL
-	 fTVmqI8d+w+qHOtt0vD3ioHDz9TzW4t7Gw3RM1xzD14EGTOL8ITeVLy9cgy0blYm3xgby
-	 sae8twG+TR2FiENJuSKPJycxfsKZledvVoPZTeMzyKZBuLBLoN6aMrEWmzDbCxSK5A7W2
-	 uu6adbFX1rvHi7nbZh1abuClAq3n1GC+uSqrPSwi1fPVyM6G5ROSUAjFyl6AMgOou/915
-	 Swh9icpkJ2BDIW0dh5Gs42PnEs3SasbxSrycBeXQXISM3zWsh4j4Wnl5A9m2FTU+V2g==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1786059025;
-	h=DMARC-Filter:DKIM-Signature:X-SMAIL-HELO:Received:X-Sender:X-Auth-ID:
-	 X-SMAIL-MID:X-SMAIL-UIID:From:To:Cc:Subject:Date:Message-ID:
-	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=LLPIVZLkcDBEXmcY+m6qHFAz6hVv8iBq31NdOIuv73Q=;
-	b=E58E/zL76qc4D43AqNzPo1KK7m106BAHZcB8Fzwqq1gxOKeqQzXr0GXR7OSfYYQt4tDC
-	 tdeS4UNMX7CAhFWaLFEPttUrSPMbzPUJv4gRZ0R8YVLGWoe97bYuHZUgjj/PvteX9OqAf
-	 2YkKtXQEEPnsCxlLgCJI7DR5eVPSqOqqOg4LvC9dKUaVYfVO1RJXRWtW0vJBYRp+DPW5v
-	 +YVIeaJ2oTCS6pAGZ3Tm78+AvT+cAWkNMr7wzfyEX9aIJv6yk69j5zTiqUMVHrMjL92zc
-	 +2gLOQC+AfX5DADCbsZtqOzSAudoS7ByZIU3r5qLCnNUbxinz5g80v0voOQ+rAfLR2g==
-ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=sina.com header.i=@sina.com header.a=rsa-sha256 header.s=201208 header.b=FegA9rv3;
-	dmarc=pass header.from=sina.com;
-	spf=pass smtp.mailfrom=sina.com;
-	arc=none smtp.remote-ip=202.108.3.165
-Received: from mail3-165.sinamail.sina.com.cn (mail3-165.sinamail.sina.com.cn [202.108.3.165])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 56BC71F000E9
-	for <syzbot@kernel.org>; Thu,  6 Aug 2026 23:30:22 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=sina.com header.i=@sina.com header.a=rsa-sha256 header.s=201208 header.b=FegA9rv3
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 56BC71F000E9
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=none dis=none) header.from=sina.com
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=sina.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sina.com; s=201208; t=1786059023;
-	bh=LLPIVZLkcDBEXmcY+m6qHFAz6hVv8iBq31NdOIuv73Q=;
-	h=From:Subject:Date:Message-ID;
-	b=FegA9rv3OfKYr1k9KdzJ4x63BfxM7dRqCjyrX+W/YyF9ZnkBP9bISMHshucbOmw3b
-	 Fl9XuzPQSbZebZ1+4npEEYAyzx5azSYtG4p2uzWLIYFPZ+87SKAJcO+9tCihq7UhAf
-	 gCWSXBlIb0Hy0N7cr4lTu6I0TTdsQwzgTPnFdyIw=
-X-SMAIL-HELO: localhost.localdomain
-Received: from unknown (HELO localhost.localdomain)([221.216.154.155])
-	by sina.com (10.54.253.33) with ESMTP
-	id 6A75190300000BF6; Thu, 7 Aug 2026 07:30:14 +0800 (CST)
-X-Sender: hdanton@sina.com
-X-Auth-ID: hdanton@sina.com
-Authentication-Results: sina.com;
-	 spf=none smtp.mailfrom=hdanton@sina.com;
-	 dkim=none header.i=none;
-	 dmarc=none action=none header.from=hdanton@sina.com
-X-SMAIL-MID: 5296506685417
-X-SMAIL-UIID: DB663BE915C8410096AD3F36CA1047D9-20260807-073014-1
-From: Hillf Danton <hdanton@sina.com>
-To: Johannes Berg <johannes@sipsolutions.net>
-Cc: Slawomir Stepien <sst@poczta.fm>,
-	Aleksandr Nogikh <nogikh@google.com>,
-	syzbot <syzbot@kernel.org>,
-	syzkaller-bugs@googlegroups.com,
-	linux-wireless@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	syzbot@lists.linux.dev,
-	Krystian Kaniewski <krystianmkaniewski@gmail.com>
-Subject: Re: sysbot AI patches and wireless
-Date: Fri,  7 Aug 2026 07:30:00 +0800
-Message-ID: <20260806233001.997-1-hdanton@sina.com>
-In-Reply-To: <8a0020fb5318ed645b0331d3790a75f83c0ee443.camel@sipsolutions.net>
-References: 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F10763B38B1
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 02:11:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786068720; cv=none; b=gSLFfPbk0RjhDMX/xEGGiRLH1n2Ph188zQwT/4vnSnaXZL4fdEqYJGJj/F6Ksv/u2E8mASSFOgU9TyPf7ovRQLIB15v7CDN3NjGCQUs1Pl3QHszRdqcgV2Wy1feW1FYdPpykDZQ6wRSEma3ejC2wdjSKFdxXJiCELGqAvMzO7tE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786068720; c=relaxed/simple;
+	bh=1WECoMc2EYSVL0Nko7rU+H00Qk5h2g9Z0mHjyCYBpls=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=M0+9inA6tQYFaC6i68FNSrBnUG8ZUEdaXLcHLu8lbMGJ0L18ruP4o7uN5k+dfRchZ9/k6e6Ea1LUB8/yLo44I/DAtildLHwJPLqh/H3FIAelkrQjiCyTLMvHe79jZD6wWcNfrAEfL992p6cpZVKQW6nHv3/0/k+kkW8+SlCFLy4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-49d4cb3ca23so3075216b6e.3
+        for <syzbot@lists.linux.dev>; Thu, 06 Aug 2026 19:11:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786068718; x=1786673518;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=otPd1ksl6C+ICa+OU1DO6JCanDMc5AOJMCQ1T/zJV5U=;
+        b=PofxknAi5Sv1vsnfRK+ucYJSCfLgY7yQQ0VVNHpjYg2YhjK0rx+q9EC0a4CHMdoXpg
+         Ad5ofGseN13bJ5Mh6DFhTENEOOVVHTKsSx8WgKWGCf4FNylLzrilsXuwxsyNPaiOBYtJ
+         sZCx2JgqbSsgwlUtBq6ZEZvwgNvK96jCytkmcqWgOqPumr6bM9EwFb6rnmH1t3AAZi2p
+         hOHk0ZS/kU9arKiBf7n+zQ2HoNg4qdS0vR13K2ZQayIo2ZOr6tJcdUYe2clqoaThuhqb
+         nW5JbgQhkWJTqtW6JZxJSvfkWxvzNfyAQFuMx3RyrH/1Maccg7pDR8vfhhz+I2bGP3lO
+         YMRg==
+X-Gm-Message-State: AOJu0YwrE2W8/8ngDOH/3fYSCMlqhunb8eIBCksCMYrq2tRy3IGom17y
+	FqY4Ro8MBL7A91P/N5W1yQRRNpl+4TxryK2ULVG2eWcAnlxY5BdQtqbe8YX8c1vD9AbrSpQFpUV
+	2LVL4Zj1PLTQESSon6h9jx8TV1ulYvYu4Ac6WPgzKX0YjN6u4U7IKnbrCHHI=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6808:1910:b0:495:f519:70f0 with SMTP id
+ 5614622812f47-4afae01bf6emr11339882b6e.19.1786068717905; Thu, 06 Aug 2026
+ 19:11:57 -0700 (PDT)
+Date: Thu, 06 Aug 2026 19:11:57 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a753eed.01d0871a.3a0d52.0037.GAE@google.com>
+Subject: [moderation/CI] Re: Virtual Swap Space (Swap Table Edition)
+From: syzbot ci <syzbot+ci0044aa36144eea42@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 06 Aug 2026 16:49:45 +0200 Johannes Berg wrote:
->
-> It's definitely part of the job to train new contributors, and it's
-> actually very rewarding to see someone grow from first time contributor.
-> Sadly, now there's basically no "first-contact signal" that says "I care
-> about this more than landing this one patch". :-/ Getting a well-formed
-> (and well-argued) patch used to be worth something, now it's basically not.
->
-Nope, who cares (LPC/Unix)?
-Is Linux helping make the earth a better place (for who/all)?
+syzbot ci has tested the following series
+
+[v3] Virtual Swap Space (Swap Table Edition)
+https://lore.kernel.org/all/20260806184254.3790858-1-nphamcs@gmail.com
+* [PATCH v3 01/11] mm, swap: add virtual swap device infrastructure
+* [PATCH v3 02/11] mm, swap: support zswap and zeroswap as vswap backends
+* [PATCH v3 03/11] mm, swap: prepare the swap IO path for vswap
+* [PATCH v3 04/11] mm, swap: support physical swap as a vswap backend
+* [PATCH v3 05/11] mm, swap: enable THP swapin for vswap entries
+* [PATCH v3 06/11] mm, swap: write back vswap zswap entries to physical swa=
+p
+* [PATCH v3 07/11] mm, swap: reclaim physical slots backing cache-only vswa=
+p entries
+* [PATCH v3 08/11] mm, swap: only charge physical swap entries
+* [PATCH v3 09/11] mm, swap: add debugfs counters for vswap
+* [PATCH v3 10/11] mm, swap: defer memcg_table allocation for physical swap=
+ clusters
+* [PATCH v3 11/11] mm, swap: widen swap_info_struct max/pages to unsigned l=
+ong
+
+and found the following issue:
+KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
+
+Full report is available here:
+https://ci.syzbot.org/series/e7da1097-3230-4e50-80cb-1dfafeebea40
+
+***
+
+KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
+
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
+nux-next
+base:      bacc32cc7de65ffff70080a48eb294f89e434d5e
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/4f943657-9481-4637-9b1f-9be1bff18f9=
+2/config
+syz repro: https://ci.syzbot.org/findings/f6c4f1ab-951c-4759-b397-e22c23c3b=
+f32/syz_repro
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instrume=
+nted.h:82 [inline]
+BUG: KASAN: null-ptr-deref in atomic_long_read include/linux/atomic/atomic-=
+instrumented.h:3188 [inline]
+BUG: KASAN: null-ptr-deref in __vtable_get mm/vswap.h:147 [inline]
+BUG: KASAN: null-ptr-deref in vswap_to_phys mm/vswap.h:197 [inline]
+BUG: KASAN: null-ptr-deref in swap_entry_backend_has_flag+0xfe/0x220 mm/vsw=
+ap.h:441
+Read of size 8 at addr 0000000000000000 by task syz.2.20/5818
+
+CPU: 1 UID: 0 PID: 5818 Comm: syz.2.20 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ check_region_inline mm/kasan/generic.c:-1 [inline]
+ kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
+ instrument_atomic_read include/linux/instrumented.h:82 [inline]
+ atomic_long_read include/linux/atomic/atomic-instrumented.h:3188 [inline]
+ __vtable_get mm/vswap.h:147 [inline]
+ vswap_to_phys mm/vswap.h:197 [inline]
+ swap_entry_backend_has_flag+0xfe/0x220 mm/vswap.h:441
+ do_swap_page+0x3c0/0x5620 mm/memory.c:4975
+ __collapse_huge_page_swapin mm/khugepaged.c:1202 [inline]
+ collapse_huge_page mm/khugepaged.c:1325 [inline]
+ mthp_collapse mm/khugepaged.c:1524 [inline]
+ collapse_scan_pmd mm/khugepaged.c:1786 [inline]
+ collapse_single_pmd+0x24c6/0x3da0 mm/khugepaged.c:2803
+ madvise_collapse+0x2cf/0x790 mm/khugepaged.c:3237
+ madvise_vma_behavior+0x115f/0x4170 mm/madvise.c:1363
+ madvise_walk_vmas+0x576/0xb00 mm/madvise.c:1712
+ madvise_do_behavior+0x385/0x540 mm/madvise.c:1907
+ do_madvise+0x327/0x3a0 mm/madvise.c:2005
+ __do_sys_madvise mm/madvise.c:2014 [inline]
+ __se_sys_madvise mm/madvise.c:2012 [inline]
+ __x64_sys_madvise+0xa6/0xc0 mm/madvise.c:2012
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fbcad79e019
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fbcae5c4028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+RAX: ffffffffffffffda RBX: 00007fbcada25fa0 RCX: 00007fbcad79e019
+RDX: 0000000000000019 RSI: 0000000000c00000 RDI: 0000200000000000
+RBP: 00007fbcad83500c R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fbcada26038 R14: 00007fbcada25fa0 R15: 00007fff095fa0b8
+ </TASK>
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
+
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[akpm@linux-foundation.org axelrasmussen@google.com baohua@kernel.org baoqu=
+an.he@linux.dev cgroups@vger.kernel.org chengming.zhou@linux.dev chrisl@ker=
+nel.org corbet@lwn.net david@kernel.org gourry@gourry.net hannes@cmpxchg.or=
+g haowenchao22@gmail.com kasong@tencent.com kernel-team@meta.com liam@infra=
+dead.org linux-doc@vger.kernel.org linux-kernel@vger.kernel.org linux-mm@kv=
+ack.org ljs@kernel.org mhocko@kernel.org muchun.song@linux.dev nphamcs@gmai=
+l.com qi.zheng@linux.dev riel@surriel.com roman.gushchin@linux.dev rppt@ker=
+nel.org shakeel.butt@linux.dev shikemeng@huaweicloud.com surenb@google.com =
+vbabka@kernel.org weixugc@google.com yosry@kernel.org youngjun.park@lge.com=
+ yuanchu@google.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
