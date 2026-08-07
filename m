@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D476449B21
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 06:21:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4572D446BF9
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 06:25:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786083669; cv=none; b=TJAYNAdgN31zph+4OMtd2oX/jHXTBnVKlzi0PM2bCo9XF+ifeUlWcm35mbVg1khmkxZyXjlqyTp6X3DjcGc+Ab7ze1NMel/itscQdjU0oOgNQJaVjCAsCFgznEOBBQ7WBi8H6DUlvd/FkN8RD8gMP2MwTWgtvuVS/ZikFXQ3PsU=
+	t=1786083939; cv=none; b=B3ALsZYHuisMUEXmJEkz6lwf+hS3wMFZpogaWZFJoUdVCTDs5iuIqGpKrAwRQ939IwaVhR62MvFOPsMybtoOoIvp6mk7XcIPXdLYp/EQn71KmUSHyRYN98pQKeHrXxoxrEvfSzCtrCnDHhJ15WN7kmy0Ja6a3ToVyVNWqdiOdCM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786083669; c=relaxed/simple;
-	bh=KLjsD/LdOEbFSUlHICodEQ9ZiMjhYuAOFwdSAQ3bXxQ=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=rmzlzXtpEF1KCmjdq7d4s0pnx1qYpWitcv8OelPke85b0JFN6oku7e8fx0CxMDE7KAqh+YCLlGutSjphjnKERKqkgKgjhFfQLEXlizqw6SO6e5tX+ZL+03OfBRgKTT6B4szbZPIUW9VSbUxUia7y70DCmFNdn6nKuu3iR8rm7aM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n63PMwXA; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786083939; c=relaxed/simple;
+	bh=IMY5g4Zp+wodky7Y1NikMaF6ffZPtucMz9b41FPErAQ=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=OS7OPJgm8b9aMzX7k0Ts9O8uL+mhGDHTDmOZ4dFdYHZazNqI0PQXcSCoBIYZY/m9SC8t8FweEL7gQq+GeI4v1ySWMaeaFldp4qttNkh0DP51MAbf8+bF7BV6P+Zsa5j7fvJnjsHym/6NVp8QCXyegUXe6GUTg4GbZpVptBK1NWU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LGlwgGsE; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n63PMwXA"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id B6DBC1F000E9;
-	Fri,  7 Aug 2026 06:21:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LGlwgGsE"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id C4C691F000E9;
+	Fri,  7 Aug 2026 06:25:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786083667;
-	bh=2r7bTDs1NG2Lwy5/c3rw5VgxlQ6g8Dp7NT777G6OWUY=;
+	s=k20260515; t=1786083937;
+	bh=a/Y2ux7iNyhoCEdKmfgDwytKJ3Gzx7Y5FQDTvmUCFJk=;
 	h=From:To:Cc:Subject:Date;
-	b=n63PMwXArsRuWhlGGAN/gbTb4BnCp6AkypgLYL2Es347PkamXGbYU3+FsALWbqmPA
-	 LvIZ6vuz5oesiCJupKHQMcwNWKYXpK2z3T0hGYiAA2RVrTlWkcJ9Uy487xi/X9fTSa
-	 Z+gOqcRI49g35i1sYUrwM07cX0/X31TNIjU/pOzMHsdOKWhbYDvSEak85Ida5SPuZT
-	 tXR0r6q03Gf/DrcAJ9GQSjRaDgB/jpkpoSMtyEX7V5l4Kfish5Kxkf0ZObZGfybBGl
-	 8iYbPcrCbnPRDXqVC7XZG1n4H6e5ZLO9s6UvWufDPlGjqKUx64KSUxbPs0VSfe4oOt
-	 s8qav7JjGluqA==
+	b=LGlwgGsEqe8NWt6qLmrdQ6hXye8MuaBMNyn+01OfBHhz056Njr0jkSqO2O+9x/bkP
+	 HC8SdlqFmsuaVob+OOJq2PUxQrZHc24MkFbeAJC8jmJh/WwwP0R7ayTtKYwrmTgVhN
+	 V02lq966RhSz8ml3V12d1a4iwcO+41xvw+Jh14s3pTf7f8KAvvHSjNoiDIcapBmVRU
+	 1Fz5I/AZd4V6TVGqgJVz8RZi5uLzDmk0wNKta7RkO3pvXVspq9w3WMN0LSfL4w0jlk
+	 syi04TIACabSmr/iewELAFA7V7jwgznOEg+QCp6iMKoTEPJpfsjJR+DIrl5qCNtO7D
+	 RXbZMiFdYvZuA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] media: rc: fix use-after-free in probe error path
-Message-ID: <2dca4c07-9078-4e58-a99d-43b7a3b3a9b7@mail.kernel.org>
+Subject: [PATCH RFC] usb: gadgetfs: fix reference count underflow in gadgetfs_bind()
+Message-ID: <f4fb3f3c-7a51-44ed-bbd3-4ea5fa486d2e@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,83 +38,93 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri,  7 Aug 2026 06:21:07 +0000 (UTC)
+Date: Fri,  7 Aug 2026 06:25:37 +0000 (UTC)
 
-In redrat3_dev_probe() and streamzap_probe(), if an error occurs after the
-RC device has been successfully registered, the error handling path frees
-the parent device structure without unregistering the RC device. This
-leaves a dangling RC device registered in sysfs.
+A KASAN slab-use-after-free bug was found in gadgetfs_kill_sb():
 
-When userspace (e.g., udevd) subsequently reads the uevent file of the
-dangling RC device, it triggers a use-after-free because the device name
-points to the already freed parent structure memory. This results in the
-following KASAN report:
+BUG: KASAN: slab-use-after-free in put_dev
+drivers/usb/gadget/legacy/inode.c:165 [inline]
+BUG: KASAN: slab-use-after-free in gadgetfs_kill_sb+0x46/0x110
+drivers/usb/gadget/legacy/inode.c:2104
+Write of size 4 at addr ffff88811638c080 by task syz-executor169/5848
 
-BUG: KASAN: slab-use-after-free in string_nocheck lib/vsprintf.c:648
-[inline]
-BUG: KASAN: slab-use-after-free in string+0x216/0x2d0 lib/vsprintf.c:730
-Read of size 1 at addr ffff8881fa2d0758 by task udevd/5037
-
+CPU: 0 UID: 0 PID: 5848 Comm: syz-executor169 Not tainted
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+1.16.3-debian-1.16.3-2 04/01/2014
 Call Trace:
- string_nocheck lib/vsprintf.c:648 [inline]
- string+0x216/0x2d0 lib/vsprintf.c:730
- vsnprintf+0x74a/0xef0 lib/vsprintf.c:2945
- add_uevent_var+0x1ce/0x460 lib/kobject_uevent.c:682
- rc_dev_uevent+0x164/0x1a0 drivers/media/rc/rc-main.c:1632
- dev_uevent+0x537/0x870 drivers/base/core.c:2779
- uevent_show+0x1a0/0x310 drivers/base/core.c:2826
- dev_attr_show+0x58/0xc0 drivers/base/core.c:2487
- sysfs_kf_seq_show+0x331/0x490 fs/sysfs/file.c:65
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+ print_report+0x58/0x70 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ check_region_inline mm/kasan/generic.c:-1 [inline]
+ kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
+ instrument_atomic_read_write include/linux/instrumented.h:112 [inline]
+ atomic_fetch_sub_release include/linux/atomic/atomic-instrumented.h:400
+ [inline]
+ __refcount_sub_and_test include/linux/refcount.h:389 [inline]
+ __refcount_dec_and_test include/linux/refcount.h:432 [inline]
+ refcount_dec_and_test include/linux/refcount.h:450 [inline]
+ put_dev drivers/usb/gadget/legacy/inode.c:165 [inline]
+ gadgetfs_kill_sb+0x46/0x110 drivers/usb/gadget/legacy/inode.c:2104
+ deactivate_locked_super+0xbc/0x130 fs/super.c:477
+ cleanup_mnt+0x3d3/0x460 fs/namespace.c:1317
+ task_work_run+0x1d9/0x270 kernel/task_work.c:233
 
-Fix this by adding the missing rc_unregister_device() calls in the error
-handling paths of both drivers, ensuring the sysfs interface is safely torn
-down before the parent structure is destroyed.
+The root cause is a reference count underflow in the error handling path of
+gadgetfs_bind(). When gadgetfs_bind() encounters an error (e.g., memory
+allocation failure), it jumps to the enomem label and calls
+gadgetfs_unbind(). However, gadgetfs_unbind() is designed to tear down a
+fully initialized and bound gadget, and unconditionally drops a device
+reference by calling put_dev(dev). Since gadgetfs_bind() only acquires this
+reference (get_dev(dev)) at the very end of the function upon complete
+success, calling gadgetfs_unbind() in the error path drops a reference that
+was never taken.
 
-Fixes: 8a21ec9bb3ec ("[media] redrat3: fix error paths in probe")
+This leads to a premature free of the dev structure when the ep0 file is
+closed, and subsequently a use-after-free when the filesystem is unmounted
+and gadgetfs_kill_sb() tries to drop the initial reference.
+
+To fix this, stop calling the full teardown function gadgetfs_unbind() from
+the gadgetfs_bind() error path. Instead, manually and locally clean up only
+the specific state that was successfully altered before the failure
+occurred.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+237c754233330b2bf565@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=237c754233330b2bf565
-Link: https://syzkaller.appspot.com/ai_job?id=aadad1ed-bce5-4fa8-8017-ddbb8433853a
-To: <linux-media@vger.kernel.org>
-To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-To: "Sean Young" <sean@mess.org>
+Reported-by: syzbot+4a5c87a01894ca37f25c@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=4a5c87a01894ca37f25c
+Link: https://syzkaller.appspot.com/ai_job?id=d40043f8-d813-4477-b6e2-0f071c04be7c
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
+To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
+Cc: "Christian Brauner" <brauner@kernel.org>
+Cc: "Jan Kara" <jack@suse.cz>
+Cc: "Kees Cook" <kees@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
+Cc: "Mateusz Guzik" <mjguzik@gmail.com>
+Cc: "Al Viro" <viro@zeniv.linux.org.uk>
 
 ---
-diff --git a/drivers/media/rc/redrat3.c b/drivers/media/rc/redrat3.c
-index 3f828a564..d2a805dbd 100644
---- a/drivers/media/rc/redrat3.c
-+++ b/drivers/media/rc/redrat3.c
-@@ -1111,13 +1111,16 @@ static int redrat3_dev_probe(struct usb_interface *intf,
- 	/* might be all we need to do? */
- 	retval = redrat3_enable_detector(rr3);
- 	if (retval < 0)
--		goto led_free;
-+		goto rc_free;
- 
- 	/* we can register the device now, as it is ready */
- 	usb_set_intfdata(intf, rr3);
- 
+diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
+index d87a8ab51..365f9ab4d 100644
+--- a/drivers/usb/gadget/legacy/inode.c
++++ b/drivers/usb/gadget/legacy/inode.c
+@@ -1700,7 +1700,13 @@ static int gadgetfs_bind(struct usb_gadget *gadget,
  	return 0;
  
-+rc_free:
-+	rc_unregister_device(rr3->rc);
-+	rc_free_device(rr3->rc);
- led_free:
- 	led_classdev_unregister(&rr3->led);
- redrat_free:
-diff --git a/drivers/media/rc/streamzap.c b/drivers/media/rc/streamzap.c
-index 307985d74..41195ad82 100644
---- a/drivers/media/rc/streamzap.c
-+++ b/drivers/media/rc/streamzap.c
-@@ -365,6 +365,7 @@ static int streamzap_probe(struct usb_interface *intf,
+ enomem:
+-	gadgetfs_unbind (gadget);
++	if (dev->req) {
++		usb_ep_free_request(gadget->ep0, dev->req);
++		dev->req = NULL;
++	}
++	gadget->ep0->driver_data = NULL;
++	dev->gadget = NULL;
++	set_gadget_data(gadget, NULL);
+ 	return -ENOMEM;
+ }
  
- 	return 0;
- rc_submit_fail:
-+	rc_unregister_device(sz->rdev);
- 	rc_free_device(sz->rdev);
- 	usb_set_intfdata(intf, NULL);
- rc_dev_fail:
 
 
 base-commit: 075b74841bd0065a3bda3440873c747938e69b68
