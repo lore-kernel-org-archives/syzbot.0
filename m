@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0D4246D090
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 15:35:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 987993101A7
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 16:36:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786116928; cv=none; b=sn1RoU98dowzA4Hd7C6x4+72Qiygo1Wu4HZlZFNHALGGvtK1CA0MNZTpOLcwvKPfeNK0ImsPUsgbGhgsO1WH5dANXMkA+NWshRJwTFvFv0wcNNwdAbtvr40KyBOuLL25cX4SH1zm0YlgtOmp9A4+JqNEbF0qw+zKuisMm2zMhZg=
+	t=1786120617; cv=none; b=DCDnCJXY7Y3Fgi+y4q96zGvTE2OalwKkm9ArPvdxO79YFwVQ7BsmWtHyqZelx41KFwu7cn562U+JK1DLlPkzsaKHI6vA4O9eEVag46PTYEIj8DizdTSubmXIKlW7SKaiUz3bZc5ZYD8D2ZYcMMxg241QtlJCNGCFjwwurBzyK4c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786116928; c=relaxed/simple;
-	bh=uwFwF6aFOc6YEcGLYwdoxFMY4xg4Q2B6Wpv3dl1mY1M=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=GMqczxeFO8lvvh/CjbqCJU8ETFRYFBC/yX446DI3LP4VYSDVsd83rr8aLIg20+TH9BK/6CZJHDeNK1YK/0PVUSu+O5//shkteE4H9EDEAgd7ofsUH2331rDdt6jYxXLzZOt4rdo+AsmavfMZGdKLmETYxs/Jwh8CWsCOKBvpfgU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VoPSkmI4; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786120617; c=relaxed/simple;
+	bh=xZm4t97HiL0M8PhgVh5YB7niZ/h6Haee5doKtaBei6c=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=gamtKqoMTzuRaAYZRzyuc+UcZmgt8z6uSb+Od1oWQ4EigjOH8+Eq2C+ou4HlPMljdxBb75GjmKlHrUUiIpA9PNnXknS0Gu7W1W6Z5G6lZEYpyWTlR/p1O83EOurFFZV2JtPQ7ZYNoL8ImJM1ImqiXEgC8SXfga9JlKwFSA4eSAo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bii1UlNk; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VoPSkmI4"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 725CE1F00A3D;
-	Fri,  7 Aug 2026 15:35:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bii1UlNk"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 698611F000E9;
+	Fri,  7 Aug 2026 16:36:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786116926;
-	bh=l3SbRsFxz+qjK206Fo0Y23MtE2UOeFHJ2HDReTpD8Jg=;
+	s=k20260515; t=1786120616;
+	bh=x0u0+VNEN7aYLCLGeaUsNVAh/WvE2ZqPcsWXys57zpU=;
 	h=From:To:Cc:Subject:Date;
-	b=VoPSkmI4psGlcldN3PfI4DBCboOafifsWvjVXZCKUMzhAG0xTxqG1H/8suwgvYxwV
-	 OOvM0AwdTzGM3kY83kZM3RRzoLIBvR+hq4U25c1C29j1seHOUBJZU++rWeN77qszTH
-	 Ciy5PrZMUn3qnc7Z4TtjGTOcI4weXAM7ytosj0ZuEN4nIEL4x4PYHnOV8UeHR79RYS
-	 wVggRWcvc4Jjzm/tu+BU7t+5Oz2AHAN8G5N9BxLcGU43yTMzCfUvrmr5OTlLKPTUCI
-	 kIfshL3Fmchl9zmD8VOKpRMr6jJbcAAsrb+PMioABwNx5k8EGSanXsFmpH3COjauy4
-	 +KMLzAkwEuK4w==
+	b=bii1UlNk+sVfjzhj/zeKCnw4l4t0u6MbkpkI6w9mv5G2awPyCxcoKO0iT4m/7gn6J
+	 XK53XFjslnwVpr351rTbKu2UF1rLRbad1R1OitPSYosTo3WY9O4rEtbqbAz6pWctZr
+	 5dlVzj2T37Vl7b02kOSb6HE7OJ7wOBb08QZFeeQTLdHNJBmYlxIZb8m0hrorvwQjjl
+	 rUA3zqB6GqZMqI1JIsv8Nk4laqVh7QdOxWf33JD3tW+gc2TXL2npmGl3WaQfxrgbf2
+	 ExvwJXjUMEs88jOna2HaU+NL5/nJmxE1CrdL/jW2DHcuLpZxNK50YGJ86k8YhQAyT2
+	 9sH+OIOSrnerg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] locking/percpu-rwsem: Use TASK_IDLE for freezable waits
-Message-ID: <f81953d5-fab0-4dce-b33f-a43d57e7ac8e@mail.kernel.org>
+Cc: immersa.bartosz.chronowski@gmail.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v4] tipc: defer local Nagle backlog xmit from receive path
+Message-ID: <ff6d3f6a-6d4e-4927-83f7-a718982a55ab@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,84 +38,133 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri,  7 Aug 2026 15:35:26 +0000 (UTC)
+Date: Fri,  7 Aug 2026 16:36:56 +0000 (UTC)
 
-When a filesystem is frozen via the FIFREEZE ioctl, the superblock's write
-lock is acquired and held until the filesystem is explicitly thawed via
-FITHAW. Any task attempting to write to the frozen filesystem (e.g.,
-calling open(O_TMPFILE) or unlink) will block in sb_start_write(), waiting
-for the superblock's read lock.
+A local TIPC stream socket workload can trap a CPU in an endless receive
+loop. The resulting soft lockup can make the system unavailable.
 
-Currently, percpu_rwsem_wait() puts these waiting tasks into the
-TASK_UNINTERRUPTIBLE state. Since thawing a filesystem relies on an
-explicit user-space action, the wait can take an arbitrary amount of time.
-If this wait exceeds the hung task timeout, the watchdog fires and can
-panic the kernel:
+tipc_sk_push_backlog() can transmit delayed stream data while tipc_sk_rcv()
+holds a destination socket's sk_lock.slock. Own-node transmission enters
+tipc_sk_rcv() synchronously. A reply that reaches the ancestor socket
+cannot acquire the still-held lock, and tipc_sk_rcv() retries without
+consuming its input queue.
 
-INFO: task crond:5389 blocked for more than 15 seconds.
-task:crond           state:D stack:23720 pid:5389  tgid:5389  ppid:1
-task_flags:0x400000 flags:0x00080000
-Call Trace:
- <TASK>
- __schedule+0x16dc/0x5500 kernel/sched/core.c:7234
- schedule+0x164/0x2b0 kernel/sched/core.c:7326
- percpu_rwsem_wait+0x32d/0x4a0 kernel/locking/percpu-rwsem.c:164
- __percpu_down_read+0xf8/0x140 kernel/locking/percpu-rwsem.c:180
- percpu_down_read_freezable include/linux/percpu-rwsem.h:83 [inline]
- __sb_start_write include/linux/fs/super.h:19 [inline]
- sb_start_write+0x18e/0x1c0 include/linux/fs/super.h:125
- mnt_want_write+0x41/0x90 fs/namespace.c:494
- filename_unlinkat+0x148/0x610 fs/namei.c:5562
- __do_sys_unlink fs/namei.c:5620 [inline]
- __se_sys_unlink+0x2e/0x140 fs/namei.c:5617
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
+Pass the receive output queue to tipc_sk_push_backlog() from receive-side
+callers. Queue own-node output there so the enclosing receive path sends it
+after releasing the socket lock. Keep shutdown and remote-node transmission
+on the existing direct path, preserving remote link congestion handling.
 
-This behavior allows an unprivileged user to intentionally trigger a kernel
-panic by freezing a user namespace mount (like tmpfs or fuse) and
-attempting to write to it, leading to a local denial of service.
-
-Fix this by using TASK_IDLE (which is TASK_UNINTERRUPTIBLE | TASK_NOLOAD)
-instead of TASK_UNINTERRUPTIBLE when freeze is true. This explicitly tells
-the hung task watchdog to ignore these tasks, preventing false positive
-panics while preserving the freeze/thaw mechanics and system suspend
-capabilities (TASK_FREEZABLE). Since freeze is only true when called from
-percpu_down_read_freezable() (used exclusively by __sb_start_write()), this
-change safely and specifically targets tasks waiting on a frozen
-superblock.
-
-Fixes: 559b3bbfa978 ("locking/percpu-rwsem: add freezable alternative to down_read")
+Fixes: c0bceb97db9e ("tipc: add smart nagle feature")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+b3fba2e269970207b61d@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=b3fba2e269970207b61d
-Link: https://syzkaller.appspot.com/ai_job?id=1f731a02-676c-4f22-a26c-1ff8c1dd0a49
-To: "Boqun Feng" <boqun@kernel.org>
-To: <linux-kernel@vger.kernel.org>
-To: "Ingo Molnar" <mingo@redhat.com>
-To: "Peter Zijlstra" <peterz@infradead.org>
-To: "Will Deacon" <will@kernel.org>
-To: "James Bottomley" <James.Bottomley@HansenPartnership.com>
-Cc: "Waiman Long" <longman@redhat.com>
+Reported-by: syzbot+10a41dc44eef71aa9450@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=10a41dc44eef71aa9450
+Link: https://syzkaller.appspot.com/ai_job?id=aa2dc129-33d3-42e7-bd0b-bf2198c9c9c2
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jon Maloy" <jmaloy@redhat.com>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: <tipc-discussion@lists.sourceforge.net>
+To: "Jon Maloy" <jon.maloy@ericsson.com>
+Cc: "Simon Horman" <horms@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/kernel/locking/percpu-rwsem.c b/kernel/locking/percpu-rwsem.c
-index f7e152c40..57e24fdc0 100644
---- a/kernel/locking/percpu-rwsem.c
-+++ b/kernel/locking/percpu-rwsem.c
-@@ -157,8 +157,7 @@ static void percpu_rwsem_wait(struct percpu_rw_semaphore *sem, bool reader,
- 	spin_unlock_irq(&sem->waiters.lock);
+v4:
+- Added kernel-doc documentation for the new xmitq parameter of tipc_sk_push_backlog()
+
+v3:
+- Updated the commit subject to 'tipc: defer local Nagle backlog xmit from receive path'
+- Simplified the commit description by removing the detailed eleven-step execution narrative and the full call trace.
+https://lore.kernel.org/all/e5b4f184-4cf0-4891-9623-526d3dbf5a12@mail.kernel.org/T/
+
+v2:
+- Only defer transmission in tipc_sk_push_backlog() if the destination is on the own node.
+- Update the commit description to clarify that deferral is only needed for own-node destinations.
+https://lore.kernel.org/all/368f7232-39e9-424c-9683-0c28db1151af@mail.kernel.org/T/
+
+v1:
+https://lore.kernel.org/all/01641937-e30d-43dd-ba9c-95b3d2ae5691@mail.kernel.org/T/
+---
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index e564341e0..33d744dc5 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -156,7 +156,8 @@ static int tipc_sk_insert(struct tipc_sock *tsk);
+ static void tipc_sk_remove(struct tipc_sock *tsk);
+ static int __tipc_sendstream(struct socket *sock, struct msghdr *m, size_t dsz);
+ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dsz);
+-static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack);
++static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack,
++				 struct sk_buff_head *xmitq);
+ static int tipc_wait_for_connect(struct socket *sock, long *timeo_p);
  
- 	while (wait) {
--		set_current_state(TASK_UNINTERRUPTIBLE |
--				  (freeze ? TASK_FREEZABLE : 0));
-+		set_current_state(freeze ? (TASK_IDLE | TASK_FREEZABLE) : TASK_UNINTERRUPTIBLE);
- 		if (!smp_load_acquire(&wq_entry.private))
- 			break;
- 		schedule();
+ static const struct proto_ops packet_ops;
+@@ -560,7 +561,7 @@ static void __tipc_shutdown(struct socket *sock, int error)
+ 					    !tsk_conn_cong(tsk)));
+ 
+ 	/* Push out delayed messages if in Nagle mode */
+-	tipc_sk_push_backlog(tsk, false);
++	tipc_sk_push_backlog(tsk, false, NULL);
+ 	/* Remove pending SYN */
+ 	__skb_queue_purge(&sk->sk_write_queue);
+ 
+@@ -1267,8 +1268,10 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
+ 
+ /* tipc_sk_push_backlog(): send accumulated buffers in socket write queue
+  *                         when socket is in Nagle mode
++ * @xmitq: receive output queue, or NULL outside receive context
+  */
+-static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
++static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack,
++				 struct sk_buff_head *xmitq)
+ {
+ 	struct sk_buff_head *txq = &tsk->sk.sk_write_queue;
+ 	struct sk_buff *skb = skb_peek_tail(txq);
+@@ -1310,6 +1313,12 @@ static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
+ 		tsk->pkt_cnt += skb_queue_len(txq);
+ 	tsk->snt_unacked += tsk->snd_backlog;
+ 	tsk->snd_backlog = 0;
++
++	if (xmitq && in_own_node(net, dnode)) {
++		skb_queue_splice_tail_init(txq, xmitq);
++		return;
++	}
++
+ 	rc = tipc_node_xmit(net, txq, dnode, tsk->portid);
+ 	if (rc == -ELINKCONG)
+ 		tsk->cong_link_cnt = 1;
+@@ -1367,7 +1376,7 @@ static void tipc_sk_conn_proto_rcv(struct tipc_sock *tsk, struct sk_buff *skb,
+ 			goto exit;
+ 
+ 		was_cong = tsk_conn_cong(tsk);
+-		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr));
++		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr), xmitq);
+ 		tsk->snt_unacked -= msg_conn_ack(hdr);
+ 		if (tsk->peer_caps & TIPC_BLOCK_FLOWCTL)
+ 			tsk->snd_win = msg_adv_win(hdr);
+@@ -2165,7 +2174,7 @@ static void tipc_sk_proto_rcv(struct sock *sk,
+ 		smp_wmb();
+ 		tsk->cong_link_cnt--;
+ 		wakeup = true;
+-		tipc_sk_push_backlog(tsk, false);
++		tipc_sk_push_backlog(tsk, false, xmitq);
+ 		break;
+ 	case GROUP_PROTOCOL:
+ 		tipc_group_proto_rcv(grp, &wakeup, hdr, inputq, xmitq);
+@@ -2256,7 +2265,7 @@ static bool tipc_sk_filter_connect(struct tipc_sock *tsk, struct sk_buff *skb,
+ 		return false;
+ 	case TIPC_ESTABLISHED:
+ 		if (!skb_queue_empty(&sk->sk_write_queue))
+-			tipc_sk_push_backlog(tsk, false);
++			tipc_sk_push_backlog(tsk, false, xmitq);
+ 		/* Accept only connection-based messages sent by peer */
+ 		if (likely(con_msg && !err && pport == oport &&
+ 			   pnode == onode)) {
 
 
-base-commit: 075b74841bd0065a3bda3440873c747938e69b68
+base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
