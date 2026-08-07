@@ -1,177 +1,300 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 987993101A7
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 16:36:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF75237CD3A
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 16:41:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786120617; cv=none; b=DCDnCJXY7Y3Fgi+y4q96zGvTE2OalwKkm9ArPvdxO79YFwVQ7BsmWtHyqZelx41KFwu7cn562U+JK1DLlPkzsaKHI6vA4O9eEVag46PTYEIj8DizdTSubmXIKlW7SKaiUz3bZc5ZYD8D2ZYcMMxg241QtlJCNGCFjwwurBzyK4c=
+	t=1786120906; cv=none; b=CFN3P5l5Qbf+568VzF0dGa58bvjQvDHZmBWlz0s8HBOJfFFQ7MhqPctDPNoqaSEC+q417CU4dwQn8y0REwKKiFEqvDRDbtzxCqizIypR4ZpO7C+2Fu3hDtP/Ngvjxwnx0C2b2sn+mNwtVpLMEznwSVuXEuAEgftwUqVNWU6Jobw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786120617; c=relaxed/simple;
-	bh=xZm4t97HiL0M8PhgVh5YB7niZ/h6Haee5doKtaBei6c=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=gamtKqoMTzuRaAYZRzyuc+UcZmgt8z6uSb+Od1oWQ4EigjOH8+Eq2C+ou4HlPMljdxBb75GjmKlHrUUiIpA9PNnXknS0Gu7W1W6Z5G6lZEYpyWTlR/p1O83EOurFFZV2JtPQ7ZYNoL8ImJM1ImqiXEgC8SXfga9JlKwFSA4eSAo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bii1UlNk; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bii1UlNk"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 698611F000E9;
-	Fri,  7 Aug 2026 16:36:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786120616;
-	bh=x0u0+VNEN7aYLCLGeaUsNVAh/WvE2ZqPcsWXys57zpU=;
-	h=From:To:Cc:Subject:Date;
-	b=bii1UlNk+sVfjzhj/zeKCnw4l4t0u6MbkpkI6w9mv5G2awPyCxcoKO0iT4m/7gn6J
-	 XK53XFjslnwVpr351rTbKu2UF1rLRbad1R1OitPSYosTo3WY9O4rEtbqbAz6pWctZr
-	 5dlVzj2T37Vl7b02kOSb6HE7OJ7wOBb08QZFeeQTLdHNJBmYlxIZb8m0hrorvwQjjl
-	 rUA3zqB6GqZMqI1JIsv8Nk4laqVh7QdOxWf33JD3tW+gc2TXL2npmGl3WaQfxrgbf2
-	 ExvwJXjUMEs88jOna2HaU+NL5/nJmxE1CrdL/jW2DHcuLpZxNK50YGJ86k8YhQAyT2
-	 9sH+OIOSrnerg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: immersa.bartosz.chronowski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v4] tipc: defer local Nagle backlog xmit from receive path
-Message-ID: <ff6d3f6a-6d4e-4927-83f7-a718982a55ab@mail.kernel.org>
+	s=arc-20240116; t=1786120906; c=relaxed/simple;
+	bh=8TmyZo365lLShlDBSSxnyiRrumZLufQ8qtsrtXDefXg=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=qtXrwpSSINFdRTPz7I4jggtdNGqjbh1gY7EuBBrBwipBkDK76gPvLUARcO4U9Jz4wEuCHMiQEStA/Q4Rp7m8ACLEW5G7bCHB6Ws6L5k0F/UGbOXGvluMJjtM1CP7LBiZ0He9DWsvGQXrup4Ip6iOfbwDGSQKATZl4ASXImrwEfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6a196857c7aso3562748eaf.2
+        for <syzbot@lists.linux.dev>; Fri, 07 Aug 2026 09:41:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786120903; x=1786725703;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=OarURpj/btM5D+cNjTvbMamtMjYnAvte5XtVi9vAO/8=;
+        b=UWNMhfPoqAQS3IslM8YoVVlsQyOtra1de9Q0aIzPiaP56PjY9a2P5GMRevcoP9uTij
+         0pMbg4Z8GcYaG6OVz8RBqJwJfuyEfcLufgoQ79TtgnjtR8Fr+EyB8R659Eueh9JwbRoZ
+         CISrD6rEGikQpMMvqlSBxKEJlSAM+FZixttfDjsVsjCI2DRRIdLFjXy9dr4qKLhnuPLq
+         YpROEsgoZVGc3jvwUAnwD/NWw+0ezrgI4ZCjY4tcNmv6pNyUao5Y34Lb4UI3hMjM9LVn
+         JmCMIVLLIqcqhQWX5w6ejfFAlMsTZzaKwldPwySYMlqul9+yXI7wudcg6U+oW9pgituZ
+         oQqw==
+X-Gm-Message-State: AOJu0Yxu1Dpa2wp9KWblesOpz402tZG+nGmfJTioOiSYILYdDggqraYP
+	JQ/UbZ/gySuX6UtEniHI6+Hve3tT8YzOOsiLiWFHxmAsOIFm8e8Mx2nZ8a8aceNOY7toxdC4a4v
+	UW28oXM2Lk1lgLMn4zJ0bi6+MLXpvKayGGokHCuPiod9NqohHp8XpebLfPWw=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri,  7 Aug 2026 16:36:56 +0000 (UTC)
+X-Received: by 2002:a05:6820:c90:b0:6ae:8421:4f61 with SMTP id
+ 006d021491bc7-6b041eb0faemr799360eaf.6.1786120902816; Fri, 07 Aug 2026
+ 09:41:42 -0700 (PDT)
+Date: Fri, 07 Aug 2026 09:41:42 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a760ac6.01d0871a.3a0d52.004e.GAE@google.com>
+Subject: [moderation/CI] Re: mm/mglru: fix lockless folio_putback_lru() race
+ in evict_folios()
+From: syzbot ci <syzbot+ci574de685c44b0d14@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-A local TIPC stream socket workload can trap a CPU in an endless receive
-loop. The resulting soft lockup can make the system unavailable.
+syzbot ci has tested the following series
 
-tipc_sk_push_backlog() can transmit delayed stream data while tipc_sk_rcv()
-holds a destination socket's sk_lock.slock. Own-node transmission enters
-tipc_sk_rcv() synchronously. A reply that reaches the ancestor socket
-cannot acquire the still-held lock, and tipc_sk_rcv() retries without
-consuming its input queue.
+[v1] mm/mglru: fix lockless folio_putback_lru() race in evict_folios()
+https://lore.kernel.org/all/20260807-evict_folios_race-v1-1-b167c6b4cfde@os=
+s.qualcomm.com
+* [PATCH] mm/mglru: fix lockless folio_putback_lru() race in evict_folios()
 
-Pass the receive output queue to tipc_sk_push_backlog() from receive-side
-callers. Queue own-node output there so the enclosing receive path sends it
-after releasing the socket lock. Keep shutdown and remote-node transmission
-on the existing direct path, preserving remote link congestion handling.
+and found the following issue:
+possible deadlock in __folio_batch_add_and_move
 
-Fixes: c0bceb97db9e ("tipc: add smart nagle feature")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+10a41dc44eef71aa9450@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=10a41dc44eef71aa9450
-Link: https://syzkaller.appspot.com/ai_job?id=aa2dc129-33d3-42e7-bd0b-bf2198c9c9c2
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: "Jon Maloy" <jmaloy@redhat.com>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: <tipc-discussion@lists.sourceforge.net>
-To: "Jon Maloy" <jon.maloy@ericsson.com>
-Cc: "Simon Horman" <horms@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+Full report is available here:
+https://ci.syzbot.org/series/84ef3e36-11bb-4ace-93cf-a1d457206afc
+
+***
+
+possible deadlock in __folio_batch_add_and_move
+
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
+nux-next
+base:      ea2bff00da89d7767d677bb68470130ba96f4928
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/fefee38b-873a-46f2-b7ad-f80279b083f=
+8/config
+syz repro: https://ci.syzbot.org/findings/9a05a8ec-c7b9-47ec-8888-0383f37b2=
+35c/syz_repro
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
+WARNING: possible circular locking dependency detected
+syzkaller #0 Not tainted
+------------------------------------------------------
+syz.0.17/5796 is trying to acquire lock:
+ffff888121033c10 (lock#3){+.+.}-{3:3}, at: local_lock_acquire include/linux=
+/local_lock_internal.h:46 [inline]
+ffff888121033c10 (lock#3){+.+.}-{3:3}, at: __folio_batch_add_and_move+0x11a=
+/0xc50 mm/folio.c:220
+
+but task is already holding lock:
+ffff888102ab6cb0 (&lruvec->lru_lock){....}-{3:3}, at: spin_lock_irq include=
+/linux/spinlock.h:372 [inline]
+ffff888102ab6cb0 (&lruvec->lru_lock){....}-{3:3}, at: evict_folios+0x3cf5/0=
+x4970 mm/vmscan.c:4926
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #1 (&lruvec->lru_lock){....}-{3:3}:
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:132 [inline=
+]
+       _raw_spin_lock_irqsave+0x40/0x60 kernel/locking/spinlock.c:166
+       folio_lruvec_lock_irqsave+0x273/0x550 mm/memcontrol.c:1509
+       folio_lruvec_relock_irqsave include/linux/memcontrol.h:1567 [inline]
+       folio_batch_move_lru+0x6d3/0xa60 mm/folio.c:192
+       __folio_batch_add_and_move+0x510/0xc50 mm/folio.c:224
+       shmem_alloc_and_add_folio+0xcc2/0xf60 mm/shmem.c:2033
+       shmem_get_folio_gfp+0x5da/0x16d0 mm/shmem.c:2527
+       shmem_read_folio_gfp+0x8a/0xe0 mm/shmem.c:5964
+       drm_gem_get_pages+0x253/0x9c0 drivers/gpu/drm/drm_gem.c:695
+       drm_gem_shmem_get_pages_locked+0x22b/0x480 drivers/gpu/drm/drm_gem_s=
+hmem_helper.c:242
+       drm_gem_shmem_pin_locked+0x251/0x510 drivers/gpu/drm/drm_gem_shmem_h=
+elper.c:305
+       drm_gem_shmem_vmap_locked+0x487/0x7d0 drivers/gpu/drm/drm_gem_shmem_=
+helper.c:409
+       drm_gem_vmap_locked drivers/gpu/drm/drm_gem.c:1421 [inline]
+       drm_gem_vmap+0x10a/0x1d0 drivers/gpu/drm/drm_gem.c:1463
+       drm_client_buffer_vmap+0x6c/0xb0 drivers/gpu/drm/drm_client.c:356
+       drm_fbdev_shmem_driver_fbdev_probe+0x280/0x930 drivers/gpu/drm/drm_f=
+bdev_shmem.c:159
+       drm_fb_helper_single_fb_probe drivers/gpu/drm/drm_fb_helper.c:1544 [=
+inline]
+       __drm_fb_helper_initial_config_and_unlock+0x148f/0x1b50 drivers/gpu/=
+drm/drm_fb_helper.c:1725
+       drm_fbdev_client_hotplug+0x16c/0x230 drivers/gpu/drm/clients/drm_fbd=
+ev_client.c:66
+       drm_client_register+0x16e/0x200 drivers/gpu/drm/drm_client.c:143
+       drm_fbdev_client_setup+0x1a0/0x450 drivers/gpu/drm/clients/drm_fbdev=
+_client.c:168
+       drm_client_setup+0x107/0x220 drivers/gpu/drm/clients/drm_client_setu=
+p.c:46
+       bochs_pci_probe+0xa9a/0xbb0 drivers/gpu/drm/tiny/bochs.c:776
+       local_pci_probe drivers/pci/pci-driver.c:354 [inline]
+       pci_call_probe drivers/pci/pci-driver.c:416 [inline]
+       __pci_device_probe drivers/pci/pci-driver.c:478 [inline]
+       pci_device_probe+0x48e/0xd10 drivers/pci/pci-driver.c:512
+       call_driver_probe drivers/base/dd.c:-1 [inline]
+       really_probe+0x254/0xae0 drivers/base/dd.c:706
+       __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
+       driver_probe_device+0x4f/0x240 drivers/base/dd.c:898
+       __driver_attach+0x339/0x600 drivers/base/dd.c:1292
+       bus_for_each_dev+0x23b/0x2c0 drivers/base/bus.c:383
+       bus_add_driver+0x345/0x670 drivers/base/bus.c:763
+       driver_register+0x23a/0x320 drivers/base/driver.c:174
+       do_one_initcall+0x250/0x870 init/main.c:1359
+       do_initcall_level+0x10a/0x1a0 init/main.c:1421
+       do_initcalls+0x59/0xa0 init/main.c:1437
+       kernel_init_freeable+0x29d/0x3e0 init/main.c:1672
+       kernel_init+0x22/0x1d0 init/main.c:1562
+       ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+       ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+-> #0 (lock#3){+.+.}-{3:3}:
+       check_prev_add kernel/locking/lockdep.c:3181 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3300 [inline]
+       validate_chain kernel/locking/lockdep.c:3924 [inline]
+       __lock_acquire+0x15ff/0x2e50 kernel/locking/lockdep.c:5254
+       lock_acquire+0x115/0x350 kernel/locking/lockdep.c:5908
+       local_lock_acquire include/linux/local_lock_internal.h:46 [inline]
+       __folio_batch_add_and_move+0x132/0xc50 mm/folio.c:220
+       folio_putback_lru+0x18/0xe0 mm/vmscan.c:822
+       evict_folios+0x3cfd/0x4970 mm/vmscan.c:4927
+       try_to_shrink_lruvec+0xe3b/0x1340 mm/vmscan.c:5081
+       lru_gen_shrink_lruvec mm/vmscan.c:5226 [inline]
+       shrink_lruvec+0x54f/0x2c40 mm/vmscan.c:5986
+       shrink_node_memcgs mm/vmscan.c:6225 [inline]
+       shrink_node+0xa9b/0x3e30 mm/vmscan.c:6269
+       shrink_zones mm/vmscan.c:6508 [inline]
+       do_try_to_free_pages+0x6a3/0x1990 mm/vmscan.c:6570
+       try_to_free_mem_cgroup_pages+0x30d/0x830 mm/vmscan.c:6892
+       mem_cgroup_resize_max+0x23c/0x470 mm/memcontrol-v1.c:1817
+       mem_cgroup_write+0x223/0x290 mm/memcontrol-v1.c:-1
+       cgroup_file_write+0x331/0x8f0 kernel/cgroup/cgroup.c:4412
+       kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
+       new_sync_write fs/read_write.c:595 [inline]
+       vfs_write+0x612/0xba0 fs/read_write.c:687
+       ksys_write+0x150/0x270 fs/read_write.c:739
+       do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+       do_syscall_64+0x166/0x510 arch/x86/entry/syscall_64.c:84
+       entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+other info that might help us debug this:
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&lruvec->lru_lock);
+                               lock(lock#3);
+                               lock(&lruvec->lru_lock);
+  lock(lock#3);
+
+ *** DEADLOCK ***
+
+locks held by syz.0.17/5796: 5, last CPU#0:
+ #0: ffff88810338ecf0 (&f->f_pos_lock){+.+.}-{4:4}, at: fdget_pos+0x246/0x3=
+20 fs/file.c:1259
+ #1: ffff888110422460 (sb_writers#10){.+.+}-{0:0}, at: file_start_write inc=
+lude/linux/fs.h:2754 [inline]
+ #1: ffff888110422460 (sb_writers#10){.+.+}-{0:0}, at: vfs_write+0x22b/0xba=
+0 fs/read_write.c:683
+ #2: ffff88811ad85880 (&of->mutex){+.+.}-{4:4}, at: kernfs_fop_write_iter+0=
+x1d8/0x540 fs/kernfs/file.c:336
+ #3: ffff8881bd86d3c8 (kn->active#53){.+.+}-{0:0}, at: kernfs_get_active_of=
+ fs/kernfs/file.c:73 [inline]
+ #3: ffff8881bd86d3c8 (kn->active#53){.+.+}-{0:0}, at: kernfs_fop_write_ite=
+r+0x22b/0x540 fs/kernfs/file.c:337
+ #4: ffff888102ab6cb0 (&lruvec->lru_lock){....}-{3:3}, at: spin_lock_irq in=
+clude/linux/spinlock.h:372 [inline]
+ #4: ffff888102ab6cb0 (&lruvec->lru_lock){....}-{3:3}, at: evict_folios+0x3=
+cf5/0x4970 mm/vmscan.c:4926
+
+stack backtrace:
+CPU: 0 UID: 0 PID: 5796 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_circular_bug+0x2e2/0x300 kernel/locking/lockdep.c:2059
+ check_noncircular+0x12f/0x150 kernel/locking/lockdep.c:2191
+ check_prev_add kernel/locking/lockdep.c:3181 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3300 [inline]
+ validate_chain kernel/locking/lockdep.c:3924 [inline]
+ __lock_acquire+0x15ff/0x2e50 kernel/locking/lockdep.c:5254
+ lock_acquire+0x115/0x350 kernel/locking/lockdep.c:5908
+ local_lock_acquire include/linux/local_lock_internal.h:46 [inline]
+ __folio_batch_add_and_move+0x132/0xc50 mm/folio.c:220
+ folio_putback_lru+0x18/0xe0 mm/vmscan.c:822
+ evict_folios+0x3cfd/0x4970 mm/vmscan.c:4927
+ try_to_shrink_lruvec+0xe3b/0x1340 mm/vmscan.c:5081
+ lru_gen_shrink_lruvec mm/vmscan.c:5226 [inline]
+ shrink_lruvec+0x54f/0x2c40 mm/vmscan.c:5986
+ shrink_node_memcgs mm/vmscan.c:6225 [inline]
+ shrink_node+0xa9b/0x3e30 mm/vmscan.c:6269
+ shrink_zones mm/vmscan.c:6508 [inline]
+ do_try_to_free_pages+0x6a3/0x1990 mm/vmscan.c:6570
+ try_to_free_mem_cgroup_pages+0x30d/0x830 mm/vmscan.c:6892
+ mem_cgroup_resize_max+0x23c/0x470 mm/memcontrol-v1.c:1817
+ mem_cgroup_write+0x223/0x290 mm/memcontrol-v1.c:-1
+ cgroup_file_write+0x331/0x8f0 kernel/cgroup/cgroup.c:4412
+ kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
+ new_sync_write fs/read_write.c:595 [inline]
+ vfs_write+0x612/0xba0 fs/read_write.c:687
+ ksys_write+0x150/0x270 fs/read_write.c:739
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x510 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f64a439e0d9
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f64a5333028 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 00007f64a4625fa0 RCX: 00007f64a439e0d9
+RDX: 0000000000000020 RSI: 00002000000002c0 RDI: 0000000000000003
+RBP: 00007f64a4435024 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f64a4626038 R14: 00007f64a4625fa0 R15: 00007fff0f9eaaa8
+ </TASK>
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v4:
-- Added kernel-doc documentation for the new xmitq parameter of tipc_sk_push_backlog()
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v3:
-- Updated the commit subject to 'tipc: defer local Nagle backlog xmit from receive path'
-- Simplified the commit description by removing the detailed eleven-step execution narrative and the full call trace.
-https://lore.kernel.org/all/e5b4f184-4cf0-4891-9623-526d3dbf5a12@mail.kernel.org/T/
+To test a patch for this bug, please reply with `#syz test`
+(should be on a separate line).
 
-v2:
-- Only defer transmission in tipc_sk_push_backlog() if the destination is on the own node.
-- Update the commit description to clarify that deferral is only needed for own-node destinations.
-https://lore.kernel.org/all/368f7232-39e9-424c-9683-0c28db1151af@mail.kernel.org/T/
+The patch should be attached to the email.
+Note: arguments like custom git repos and branches are not supported.
 
-v1:
-https://lore.kernel.org/all/01641937-e30d-43dd-ba9c-95b3d2ae5691@mail.kernel.org/T/
----
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index e564341e0..33d744dc5 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -156,7 +156,8 @@ static int tipc_sk_insert(struct tipc_sock *tsk);
- static void tipc_sk_remove(struct tipc_sock *tsk);
- static int __tipc_sendstream(struct socket *sock, struct msghdr *m, size_t dsz);
- static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dsz);
--static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack);
-+static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack,
-+				 struct sk_buff_head *xmitq);
- static int tipc_wait_for_connect(struct socket *sock, long *timeo_p);
- 
- static const struct proto_ops packet_ops;
-@@ -560,7 +561,7 @@ static void __tipc_shutdown(struct socket *sock, int error)
- 					    !tsk_conn_cong(tsk)));
- 
- 	/* Push out delayed messages if in Nagle mode */
--	tipc_sk_push_backlog(tsk, false);
-+	tipc_sk_push_backlog(tsk, false, NULL);
- 	/* Remove pending SYN */
- 	__skb_queue_purge(&sk->sk_write_queue);
- 
-@@ -1267,8 +1268,10 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
- 
- /* tipc_sk_push_backlog(): send accumulated buffers in socket write queue
-  *                         when socket is in Nagle mode
-+ * @xmitq: receive output queue, or NULL outside receive context
-  */
--static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
-+static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack,
-+				 struct sk_buff_head *xmitq)
- {
- 	struct sk_buff_head *txq = &tsk->sk.sk_write_queue;
- 	struct sk_buff *skb = skb_peek_tail(txq);
-@@ -1310,6 +1313,12 @@ static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack)
- 		tsk->pkt_cnt += skb_queue_len(txq);
- 	tsk->snt_unacked += tsk->snd_backlog;
- 	tsk->snd_backlog = 0;
-+
-+	if (xmitq && in_own_node(net, dnode)) {
-+		skb_queue_splice_tail_init(txq, xmitq);
-+		return;
-+	}
-+
- 	rc = tipc_node_xmit(net, txq, dnode, tsk->portid);
- 	if (rc == -ELINKCONG)
- 		tsk->cong_link_cnt = 1;
-@@ -1367,7 +1376,7 @@ static void tipc_sk_conn_proto_rcv(struct tipc_sock *tsk, struct sk_buff *skb,
- 			goto exit;
- 
- 		was_cong = tsk_conn_cong(tsk);
--		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr));
-+		tipc_sk_push_backlog(tsk, msg_nagle_ack(hdr), xmitq);
- 		tsk->snt_unacked -= msg_conn_ack(hdr);
- 		if (tsk->peer_caps & TIPC_BLOCK_FLOWCTL)
- 			tsk->snd_win = msg_adv_win(hdr);
-@@ -2165,7 +2174,7 @@ static void tipc_sk_proto_rcv(struct sock *sk,
- 		smp_wmb();
- 		tsk->cong_link_cnt--;
- 		wakeup = true;
--		tipc_sk_push_backlog(tsk, false);
-+		tipc_sk_push_backlog(tsk, false, xmitq);
- 		break;
- 	case GROUP_PROTOCOL:
- 		tipc_group_proto_rcv(grp, &wakeup, hdr, inputq, xmitq);
-@@ -2256,7 +2265,7 @@ static bool tipc_sk_filter_connect(struct tipc_sock *tsk, struct sk_buff *skb,
- 		return false;
- 	case TIPC_ESTABLISHED:
- 		if (!skb_queue_empty(&sk->sk_write_queue))
--			tipc_sk_push_backlog(tsk, false);
-+			tipc_sk_push_backlog(tsk, false, xmitq);
- 		/* Accept only connection-based messages sent by peer */
- 		if (likely(con_msg && !err && pport == oport &&
- 			   pnode == onode)) {
+The email will later be sent to:
+[akpm@linux-foundation.org axelrasmussen@google.com baohua@kernel.org david=
+@kernel.org hannes@cmpxchg.org kasong@tencent.com kernel@oss.qualcomm.com k=
+etan.kishore@oss.qualcomm.com linux-kernel@vger.kernel.org linux-mm@kvack.o=
+rg ljs@kernel.org mhocko@kernel.org prakash.gupta@oss.qualcomm.com qi.zheng=
+@linux.dev shakeel.butt@linux.dev weixugc@google.com yuanchu@google.com yuz=
+hao@google.com]
 
+If the report looks fine to you, reply with:
+#syz upstream
 
-base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+If the report is a false positive, reply with
+#syz invalid
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
