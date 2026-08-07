@@ -1,204 +1,215 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 194B741D638
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 10:11:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B08F1A9FB7
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 10:18:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786097488; cv=none; b=CLA/cLkjcosSZmUtIzznI9JVWmPyiROVZnroe1oZquHi5Hk9qolpyAqwmZIb1z3DZ90wKEW4JkzDewLzwRorgFIY7Oh0vy7wpmXBzAysW5MnrOQlFIf6+QHqlYhyB4KdsZKXQ8TVSK27EbIkL7U56D6cdrqVxxoGqd20PteXxDw=
+	t=1786097898; cv=none; b=DEMZURXycl+ItJRnUi692E/RmN5R/mXMoQoZiRxR06OC1nddLfeL/OenkBnH+DgsSxFCXaW+aJKFtq+vvcv6tNCoYwf3VGuUKVdTeS14lj/zIIxb+ylt8YI0bEg3/p0aVVtrTjwdFGuXQ5dzx4sPGwLdNn0aWeW1KWoe3hHtNUw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786097488; c=relaxed/simple;
-	bh=ZybEpOJyujWR+U5WHoryXu4biCKACDCrv5ELyNtHR70=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=aRLYxoeycb17WcAckH/3AiUR/MMDUYefctZbqhkr7xsrjQRS0R0TgXFo9YaakiVSnBFKZLEFACCPKiLLXBUScGFJpoEFWNjMUedK/aH7sjGYZS1s9R+xtx2VO/CSj5PGDrbFDk7NH0U7QScYy+o8h+n4oIw9OU44RefKE9PfQ1c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HGO12lG6; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786097898; c=relaxed/simple;
+	bh=wvMnncUteHPExM7e/0bTT2X0HRxyEZZGFcPdHutbbfE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nsxJ0D1Xi9gTl80SLvXaum1ulkMC3c0pjZ3cVcVoDQz59QqbCdajblWWRuQ7Yk9tqrUJXTDersug3esc8BiH56YJbZIX1mtqKpwodBeWp57ZHtIirP+V5Ky1PGAx2j9ZltwX1plrNx6QODcdKMDxhm2GCWnfDLvxUsqeESQq6jE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MhWOtdhT; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HGO12lG6"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A895B1F000E9;
-	Fri,  7 Aug 2026 10:11:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786097486;
-	bh=KNA4DEph2upr8BAsgpBqZHwC75bnMcg6juAcbGMSyJ4=;
-	h=From:To:Cc:Subject:Date;
-	b=HGO12lG6ieCMmM7lIvyouOBFkFa+Yj4NHUQwQYoB2JgsMtTFQVH93G4w+QRn1AYqL
-	 LyQ1xOdnsbs8gjl+wKWSvlwp8vEyEpDpiEx2AYHmT5ZfcYsm6V04TcmIkn3xhvSaqX
-	 ZNWREH4mii0JgBfXExi6PaVd/TV4+ty7xrw7c32cDopydZikYM5R4Um/v2SlBWqQRe
-	 pIhuQN3huMxJrv0jDiOOkwGBA1fD3dUGPHF+ZTEq5sgmjO12AD0lRiZbhnC/SaLn71
-	 y8luzDwm6c4BuaB8LA+iUSAupZts5/nQOQ0SrctbailNCyTQA05xdJjmbcHJewl8Sa
-	 VDo2wO75EM+Hg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] power: require CAP_SYS_BOOT and wakeup sources for suspend
-Message-ID: <a5677b92-2b2b-418d-bfc6-3a590dc343da@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MhWOtdhT"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4955aa106b1so28054335e9.0
+        for <syzbot@lists.linux.dev>; Fri, 07 Aug 2026 03:18:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786097894; x=1786702694; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=qxTa/ZBtGMKDMLBbFcTLlIghDTBkFRKsN0B4WO3iXak=;
+        b=MhWOtdhTCrSHzXsWgDl3aqIpGdFv0XyJAcwLzu9gSn3iMDtlQEYpvjPBp32qJqM09e
+         a+mtexQXzS8+YZ8yWipJJcnNErVwXVksRwEmboRo3XxRmVyQbfv7zQ7UmsXuSybKqCGf
+         ua52Bz4KFlHOQD+iLHPldk6m36/oHyRuA7m7ifsFn6JoMOvw3pm7AX0QACU9Cqee1bYf
+         0PcywsfhMXEKJ7FyZ66CXzKjuEclp6Esaxh9etqsjpsfj4iq2HwBzjAgI++4o7t8xYiU
+         wRmt23C68wQroggYsf3r1l6xK6TTAP5awYx69+PZy+xn6tRRh9devBSHL5EIHDigMva2
+         gAxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786097894; x=1786702694;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=qxTa/ZBtGMKDMLBbFcTLlIghDTBkFRKsN0B4WO3iXak=;
+        b=pL+aceLTQVurkB2hVkX8HmQf/IuJ384CD/IO/Hhl0pm+7nvoKl6OIIOv20gzUb8P23
+         EY4dTwheJhPlxgS/yUF+aQgdJdu3zBTe+4DlGKFGhkVhxLOYxAG4FIm7XAiKQnAJU3hO
+         YfOfxYNRyjTM06Ed0KWTqldtt99QtZu1s+INYuWCP9r/bXYTL7+g/mwGnHonRGTMqUFo
+         pte4AYoM/yUvMfDg6n++2KIpCZBLN5hqNU3iXGRVR3631Hc+MMUpfQjwh0VzI82wrm0K
+         mwWSj0BTBi3dMlpZ6KzFDHohIQC4Xl4mK7SN5ltvkMZuvCY4+c1AoK9zxkHqGtn+wlqz
+         Qi3A==
+X-Forwarded-Encrypted: i=1; AHgh+Ro8YuF5qrfm2dcUNVCyrZGK1mM6UZ+qT0ZB0xeL4hSOvVBEJgGqjG0we/x9lHz8t+/+GkMbMTs=@lists.linux.dev
+X-Gm-Message-State: AOJu0YyklutRVQ97M1OFLwoD/wRzRBGSB1ntu+lws0pXyzVJkxBdUDGl
+	w3yQ7PaPNVNDIgB+CFVs/A+5/PychdEV65jQWah0QuEuiRbt9OZo8+wi
+X-Gm-Gg: AR+sD10ESlHcpxBfXegpQMPBbY5j2g+nGuacbHnqRf1AKqR9hcXbpYU9WEd7QkrHytB
+	UApzGy+oja/DbKLZ/VSdkifBeBeZ6RW2OhVzGU2X8jvR354tfeNKTr0jjcfLVvaPYaPsZ5jHCMG
+	xstzybn9stLJskEcG7PoZBcup7GsO0pWdLIb7V0UE67fn7Q3TgXtgqDPN5jl7ZGBIH9RXnLn5lw
+	0qIUVPUr9Op7nR2/SEfHs2ia9mlqnUpzru+jqL9ggPl+WA+DZf2g5Au1j1F7Wssq3CyqkKXS7ba
+	0tdRwHDF1qwjGke9Y5O4dQJGN831D9F8e5yTn5tlU8Kd6/y/CMFqiuQbR+zw6rZ3OxZBg1pjVhk
+	fLzEiV21HLQaepio2cUYk7kHqvNrDsSFW7VFbW8NSITjhRZUshkXdT9LkwOy0IgdGkg22il1nzW
+	TI+mCk0j0Npz493zt53rXSJSv0rUFmRCpdId0QWxyHfwzuplTN4QaTE4bciPzklhnihvnzkIY0w
+	qaEOUGDZSyeAA==
+X-Received: by 2002:a05:600c:a47:b0:496:c379:b2a1 with SMTP id 5b1f17b1804b1-4994e71296fmr279313355e9.2.1786097893830;
+        Fri, 07 Aug 2026 03:18:13 -0700 (PDT)
+Received: from localhost ([37.30.44.17])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4995bdca3ddsm42943795e9.1.2026.08.07.03.18.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Aug 2026 03:18:13 -0700 (PDT)
+Date: Fri, 7 Aug 2026 12:18:12 +0200
+From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC] smb: client: fix double decrement of
+ server->in_flight
+Message-ID: <gn67lcblu7pgg6mmh5dstx2mlmkh3mzdv2m3te5crxnxz2xykd@lzin2sfbp5iy>
+References: <05aeff9e-78c8-4060-8efb-7debe418f6dd@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri,  7 Aug 2026 10:11:26 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <05aeff9e-78c8-4060-8efb-7debe418f6dd@mail.kernel.org>
 
-Writing to /sys/power/state can suspend a system indefinitely if there are
-no wakeup sources configured (e.g., no RTC alarm or power button). This can
-lead to an unrecoverable state where the system remains suspended forever.
-Additionally, during suspend, tasks frozen while holding locks can trigger
-false positive lockdep warnings, such as:
+The v1 code change direction is correct: failed-send and no-response MIDs are removed
+before cifs_server_unlock(), and cancelled_mid[] makes the common cleanup skip
+the MIDs already removed there. The exact-base reproducer hit the warning in
+4/4 unpatched runs and 0/4 patched runs; all four patched runs completed the
+full 270-second window. The patch is not yet correct.
 
-WARNING: kernel/freezer.c:139 at __set_task_frozen+0x260/0x340
-kernel/freezer.c:139
-Call Trace:
- <TASK>
- task_call_func+0x1aa/0x260 kernel/sched/core.c:4495
- __freeze_task kernel/freezer.c:150 [inline]
- freeze_task+0x216/0x390 kernel/freezer.c:169
- try_to_freeze_tasks+0x190/0x620 kernel/power/process.c:54
- freeze_processes+0xce/0x1e0 kernel/power/process.c:137
- suspend_freeze_processes kernel/power/power.h:281 [inline]
- suspend_prepare kernel/power/suspend.c:387 [inline]
- enter_state kernel/power/suspend.c:609 [inline]
- pm_suspend+0x2f1/0x760 kernel/power/suspend.c:644
- state_store+0x206/0x290 kernel/power/main.c:819
- kernfs_fop_write_iter+0x3a5/0x540 fs/kernfs/file.c:345
- vfs_write+0x61e/0xbb0 fs/read_write.c:687
- ksys_write+0x156/0x270 fs/read_write.c:739
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- </TASK>
+Removing each MID from pending_mid_q while the server mutex is held prevents
+reconnect cleanup from taking callback ownership. The sender then remains the
+sole owner of the credit return, while successful response-bearing requests
+keep their existing callback-owned accounting.
 
-To prevent this, require CAP_SYS_BOOT and check if any wakeup sources are
-registered in the system before allowing suspend via state_store() and
-autosleep_store(). If the list of wakeup sources is empty, return -EPERM.
+For v2:
 
-Furthermore, fix the false positive lockdep warnings in FUSE and SunRPC by
-changing TASK_FREEZABLE to TASK_FREEZABLE_UNSAFE in fuse_get_req() and
-__rpc_execute(). This explicitly tells lockdep that sleeping with locks
-held in these specific locations is safe and expected during system freeze.
-
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+209eccd8f507de9f7f1b@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=209eccd8f507de9f7f1b
-Link: https://syzkaller.appspot.com/ai_job?id=b9059933-51e0-4b0e-81e5-3baa7c7ce899
-To: "Anna Schumaker" <anna@kernel.org>
-To: "Chuck Lever" <cel@kernel.org>
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: <fuse-devel@lists.linux.dev>
-To: "Jeff Layton" <jlayton@kernel.org>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <linux-nfs@vger.kernel.org>
-To: <linux-pm@vger.kernel.org>
-To: "Miklos Szeredi" <miklos@szeredi.hu>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-To: "Trond Myklebust" <trondmy@kernel.org>
-Cc: "Dai Ngo" <Dai.Ngo@oracle.com>
-Cc: "Simon Horman" <horms@kernel.org>
-Cc: "Len Brown" <lenb@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "NeilBrown" <neil@brown.name>
-Cc: "Olga Kornievskaia" <okorniev@redhat.com>
-Cc: "Pavel Machek" <pavel@kernel.org>
-Cc: "Tom Talpey" <tom@talpey.com>
-
----
-diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
-index 5763a7cd3..9e8dc96d2 100644
---- a/fs/fuse/dev.c
-+++ b/fs/fuse/dev.c
-@@ -116,7 +116,7 @@ static struct fuse_req *fuse_get_req(struct fuse_chan *fch, bool for_background)
- 		err = -EINTR;
- 		if (wait_event_state_exclusive(fch->blocked_waitq,
- 				!fuse_block_alloc(fch, for_background),
--				(TASK_KILLABLE | TASK_FREEZABLE)))
-+				(TASK_KILLABLE | TASK_FREEZABLE_UNSAFE)))
- 			goto out;
- 	}
- 
-diff --git a/kernel/power/main.c b/kernel/power/main.c
-index 5429e9f19..780afda11 100644
---- a/kernel/power/main.c
-+++ b/kernel/power/main.c
-@@ -20,6 +20,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/atomic.h>
- #include <linux/wait.h>
-+#include <linux/pm_wakeup.h>
- 
- #include "power.h"
- 
-@@ -802,6 +803,22 @@ static ssize_t state_store(struct kobject *kobj, struct kobj_attribute *attr,
- 	suspend_state_t state;
- 	int error;
- 
-+#ifdef CONFIG_PM_SLEEP
-+	int idx;
-+	struct wakeup_source *ws;
-+#endif
-+
-+	if (!capable(CAP_SYS_BOOT))
-+		return -EPERM;
-+
-+#ifdef CONFIG_PM_SLEEP
-+	idx = wakeup_sources_read_lock();
-+	ws = wakeup_sources_walk_start();
-+	wakeup_sources_read_unlock(idx);
-+	if (!ws)
-+		return -EPERM;
-+#endif
-+
- 	error = pm_autosleep_lock();
- 	if (error)
- 		return error;
-@@ -929,6 +946,24 @@ static ssize_t autosleep_store(struct kobject *kobj,
- 	suspend_state_t state = decode_state(buf, n);
- 	int error;
- 
-+#ifdef CONFIG_PM_SLEEP
-+	int idx;
-+	struct wakeup_source *ws;
-+#endif
-+
-+	if (!capable(CAP_SYS_BOOT))
-+		return -EPERM;
-+
-+#ifdef CONFIG_PM_SLEEP
-+	if (state != PM_SUSPEND_ON) {
-+		idx = wakeup_sources_read_lock();
-+		ws = wakeup_sources_walk_start();
-+		wakeup_sources_read_unlock(idx);
-+		if (!ws)
-+			return -EPERM;
-+	}
-+#endif
-+
- 	if (state == PM_SUSPEND_ON
- 	    && strcmp(buf, "off") && strcmp(buf, "off\n"))
- 		return -EINVAL;
-diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
-index 016f16ca5..494947d50 100644
---- a/net/sunrpc/sched.c
-+++ b/net/sunrpc/sched.c
-@@ -984,7 +984,7 @@ static void __rpc_execute(struct rpc_task *task)
- 		trace_rpc_task_sync_sleep(task, task->tk_action);
- 		status = out_of_line_wait_on_bit(&task->tk_runstate,
- 				RPC_TASK_QUEUED, rpc_wait_bit_killable,
--				TASK_KILLABLE|TASK_FREEZABLE);
-+				TASK_KILLABLE | TASK_FREEZABLE_UNSAFE);
- 		if (status < 0) {
- 			/*
- 			 * When a sync task receives a signal, it exits with
+- Replace the claim that server->in_flight becomes -1. The counter is unsigned,
+  so the second decrement wraps it to UINT_MAX.
+- Lead the description with the failed-send/reconnect trigger: reconnect can
+  process a still-queued MID before the sender returns the same reservation.
+  Evaluate and stet if the resulting double completion corrupts request accounting and
+  can affect availability.
 
 
-base-commit: 075b74841bd0065a3bda3440873c747938e69b68
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On Mon, Aug 03, 2026 at 09:32:40AM +0000, syzbot wrote:
+> There is a race condition between the error handling path in
+> compound_send_recv() and the cifsd reconnect thread that can lead to a
+> double decrement of server->in_flight.
+> 
+> When smb_send_rqst() fails (e.g., with -ECONNRESET), it signals the cifsd
+> thread for a reconnect. If compound_send_recv() drops the
+> cifs_server_lock(server) before removing the multiplex IDs (mids) from the
+> pending queue, the cifsd thread can wake up, acquire the lock, and execute
+> cifs_abort_connection().
+> 
+> cifs_abort_connection() iterates over server->pending_mid_q, finds the mids
+> that failed to send, and executes their callbacks (cifs_compound_callback).
+> Because no response was received, the callback calls add_credits() with 0
+> credits. smb2_add_credits() unconditionally decrements server->in_flight,
+> even if the number of credits being added is 0.
+> 
+> After the callback finishes, compound_send_recv() continues its execution,
+> sees that rc < 0, and explicitly calls add_credits() to return the credits
+> it originally reserved. This results in a second call to
+> smb2_add_credits(), which decrements server->in_flight again. Since
+> in_flight was already decremented to 0 by the callback, this second
+> decrement triggers a warning and corrupts the counter to -1.
+> 
+> CIFS: VFS: \\127.0.0.1 Error -104 sending data on socket to server
+> ------------[ cut here ]------------
+> server->in_flight == 0
+> WARNING: fs/smb/client/smb2ops.c:104 at smb2_add_credits+0x1249/0x2b70
+> fs/smb/client/smb2ops.c:104
+> Call Trace:
+>  <TASK>
+>  add_credits fs/smb/client/cifsglob.h:894 [inline]
+>  compound_send_recv+0x13b4/0x2b90 fs/smb/client/transport.c:979
+>  cifs_send_recv+0x42/0x60 fs/smb/client/transport.c:1106
+>  SMB2_negotiate+0x164d/0x4030 fs/smb/client/smb2pdu.c:1188
+>  cifs_negotiate_protocol+0x45d/0x680 fs/smb/client/connect.c:4043
+>  cifs_get_smb_ses+0x1104/0x1ff0 fs/smb/client/connect.c:2492
+>  cifs_mount_get_session+0xf1/0x450 fs/smb/client/connect.c:3578
+>  get_session fs/smb/client/dfs.c:65 [inline]
+>  dfs_mount_share+0x22e/0x990 fs/smb/client/dfs.c:275
+>  cifs_mount+0xcc/0xbf0 fs/smb/client/connect.c:3860
+>  cifs_smb3_do_mount+0x2d0/0x8a0 fs/smb/client/cifsfs.c:1024
+>  smb3_get_tree_common fs/smb/client/fs_context.c:897 [inline]
+>  smb3_get_tree+0x2dd/0x400 fs/smb/client/fs_context.c:917
+>  vfs_get_tree+0x92/0x2a0 fs/super.c:1700
+>  fc_mount fs/namespace.c:1198 [inline]
+>  do_new_mount_fc fs/namespace.c:3765 [inline]
+>  do_new_mount+0x319/0xdc0 fs/namespace.c:3841
+>  do_mount fs/namespace.c:4174 [inline]
+>  __do_sys_mount fs/namespace.c:4390 [inline]
+>  __se_sys_mount+0x31d/0x420 fs/namespace.c:4367
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>  </TASK>
+> 
+> To fix this, ensure that the cifsd thread cannot observe these mids if the
+> request failed to send (rc < 0) or if no response is expected (flags &
+> CIFS_NO_SRV_RSP). By calling delete_mid() before dropping
+> cifs_server_lock(server), we safely remove the mids from the pending queue
+> while still holding the mutex. This guarantees that cifs_abort_connection()
+> will not find them and will not execute their callbacks. We also set
+> cancelled_mid[i] = true so that the common cleanup code safely skips the
+> already-deleted mids, preventing any double-free issues.
+> 
+> Fixes: ee258d79159a ("CIFS: Move credit processing to mid callbacks for SMB3")
+> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+eeb58d2197d88720a228@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=eeb58d2197d88720a228
+> Link: https://syzkaller.appspot.com/ai_job?id=53130d26-0860-4523-bf44-fbc757857958
+> To: <linux-cifs@vger.kernel.org>
+> To: <samba-technical@lists.samba.org>
+> To: "Steve French" <sfrench@samba.org>
+> To: "Pavel Shilovsky" <pshilov@microsoft.com>
+> Cc: "Bharath SM" <bharathsm@microsoft.com>
+> Cc: <linux-kernel@vger.kernel.org>
+> Cc: "Paulo Alcantara" <pc@manguebit.org>
+> Cc: "Ronnie Sahlberg" <ronniesahlberg@gmail.com>
+> Cc: "Shyam Prasad N" <sprasad@microsoft.com>
+> Cc: "Tom Talpey" <tom@talpey.com>
+> 
+> ---
+> diff --git a/fs/smb/client/transport.c b/fs/smb/client/transport.c
+> index fdf4e50c2..8d14225e9 100644
+> --- a/fs/smb/client/transport.c
+> +++ b/fs/smb/client/transport.c
+> @@ -968,6 +968,13 @@ compound_send_recv(const unsigned int xid, struct cifs_ses *ses,
+>  		server->sequence_number -= 2;
+>  	}
+>  
+> +	if (rc < 0 || (flags & CIFS_NO_SRV_RSP)) {
+> +		for (i = 0; i < num_rqst; i++) {
+> +			delete_mid(server, mid[i]);
+> +			cancelled_mid[i] = true;
+> +		}
+> +	}
+> +
+>  	cifs_server_unlock(server);
+>  
+>  	/*
+> 
+> 
+> base-commit: 075b74841bd0065a3bda3440873c747938e69b68
+> -- 
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+> 
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
