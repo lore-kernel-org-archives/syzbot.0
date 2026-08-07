@@ -1,215 +1,219 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B08F1A9FB7
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 10:18:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1ED8D282F1E
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 10:30:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786097898; cv=none; b=DEMZURXycl+ItJRnUi692E/RmN5R/mXMoQoZiRxR06OC1nddLfeL/OenkBnH+DgsSxFCXaW+aJKFtq+vvcv6tNCoYwf3VGuUKVdTeS14lj/zIIxb+ylt8YI0bEg3/p0aVVtrTjwdFGuXQ5dzx4sPGwLdNn0aWeW1KWoe3hHtNUw=
+	t=1786098661; cv=none; b=aXOhVzef9JGexZ/jeS7JezHlBXEJF7ZFg4nGIgbh72DSiOKX238KE5QLEmReSwk/1EvV2Bn8a1JAZm04Dub//EbVQSOHsdyoabl5YWccC0Zcob9TWQBrsrj/dT4j6YFmcveOp0LazQs5biYcm4ftqEpTn2xhFlFcZ8BprL85I6s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786097898; c=relaxed/simple;
-	bh=wvMnncUteHPExM7e/0bTT2X0HRxyEZZGFcPdHutbbfE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nsxJ0D1Xi9gTl80SLvXaum1ulkMC3c0pjZ3cVcVoDQz59QqbCdajblWWRuQ7Yk9tqrUJXTDersug3esc8BiH56YJbZIX1mtqKpwodBeWp57ZHtIirP+V5Ky1PGAx2j9ZltwX1plrNx6QODcdKMDxhm2GCWnfDLvxUsqeESQq6jE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MhWOtdhT; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1786098661; c=relaxed/simple;
+	bh=Wfg8+lLRj4S7/zx1EfrIt/yvG0MDvYp8OA9vlHNG38M=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=jMILOcLwmdCGPCQLGB8beqAnAjM1PVTiqFGlPW+a2y3UjzsNpRqRn+tGJiNflc5cfNPM/HukF+qudca7O3DhfLDVMPMpvSDlgVMAm7V01AGqkExadTxwisU0K0pl/4/oKTHAGlUgTk+6ArgTwFO3P037PhWOMMGJ7Fw+TfGw/c4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bpIFK1Kj; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MhWOtdhT"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4955aa106b1so28054335e9.0
-        for <syzbot@lists.linux.dev>; Fri, 07 Aug 2026 03:18:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786097894; x=1786702694; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=qxTa/ZBtGMKDMLBbFcTLlIghDTBkFRKsN0B4WO3iXak=;
-        b=MhWOtdhTCrSHzXsWgDl3aqIpGdFv0XyJAcwLzu9gSn3iMDtlQEYpvjPBp32qJqM09e
-         a+mtexQXzS8+YZ8yWipJJcnNErVwXVksRwEmboRo3XxRmVyQbfv7zQ7UmsXuSybKqCGf
-         ua52Bz4KFlHOQD+iLHPldk6m36/oHyRuA7m7ifsFn6JoMOvw3pm7AX0QACU9Cqee1bYf
-         0PcywsfhMXEKJ7FyZ66CXzKjuEclp6Esaxh9etqsjpsfj4iq2HwBzjAgI++4o7t8xYiU
-         wRmt23C68wQroggYsf3r1l6xK6TTAP5awYx69+PZy+xn6tRRh9devBSHL5EIHDigMva2
-         gAxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786097894; x=1786702694;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=qxTa/ZBtGMKDMLBbFcTLlIghDTBkFRKsN0B4WO3iXak=;
-        b=pL+aceLTQVurkB2hVkX8HmQf/IuJ384CD/IO/Hhl0pm+7nvoKl6OIIOv20gzUb8P23
-         EY4dTwheJhPlxgS/yUF+aQgdJdu3zBTe+4DlGKFGhkVhxLOYxAG4FIm7XAiKQnAJU3hO
-         YfOfxYNRyjTM06Ed0KWTqldtt99QtZu1s+INYuWCP9r/bXYTL7+g/mwGnHonRGTMqUFo
-         pte4AYoM/yUvMfDg6n++2KIpCZBLN5hqNU3iXGRVR3631Hc+MMUpfQjwh0VzI82wrm0K
-         mwWSj0BTBi3dMlpZ6KzFDHohIQC4Xl4mK7SN5ltvkMZuvCY4+c1AoK9zxkHqGtn+wlqz
-         Qi3A==
-X-Forwarded-Encrypted: i=1; AHgh+Ro8YuF5qrfm2dcUNVCyrZGK1mM6UZ+qT0ZB0xeL4hSOvVBEJgGqjG0we/x9lHz8t+/+GkMbMTs=@lists.linux.dev
-X-Gm-Message-State: AOJu0YyklutRVQ97M1OFLwoD/wRzRBGSB1ntu+lws0pXyzVJkxBdUDGl
-	w3yQ7PaPNVNDIgB+CFVs/A+5/PychdEV65jQWah0QuEuiRbt9OZo8+wi
-X-Gm-Gg: AR+sD10ESlHcpxBfXegpQMPBbY5j2g+nGuacbHnqRf1AKqR9hcXbpYU9WEd7QkrHytB
-	UApzGy+oja/DbKLZ/VSdkifBeBeZ6RW2OhVzGU2X8jvR354tfeNKTr0jjcfLVvaPYaPsZ5jHCMG
-	xstzybn9stLJskEcG7PoZBcup7GsO0pWdLIb7V0UE67fn7Q3TgXtgqDPN5jl7ZGBIH9RXnLn5lw
-	0qIUVPUr9Op7nR2/SEfHs2ia9mlqnUpzru+jqL9ggPl+WA+DZf2g5Au1j1F7Wssq3CyqkKXS7ba
-	0tdRwHDF1qwjGke9Y5O4dQJGN831D9F8e5yTn5tlU8Kd6/y/CMFqiuQbR+zw6rZ3OxZBg1pjVhk
-	fLzEiV21HLQaepio2cUYk7kHqvNrDsSFW7VFbW8NSITjhRZUshkXdT9LkwOy0IgdGkg22il1nzW
-	TI+mCk0j0Npz493zt53rXSJSv0rUFmRCpdId0QWxyHfwzuplTN4QaTE4bciPzklhnihvnzkIY0w
-	qaEOUGDZSyeAA==
-X-Received: by 2002:a05:600c:a47:b0:496:c379:b2a1 with SMTP id 5b1f17b1804b1-4994e71296fmr279313355e9.2.1786097893830;
-        Fri, 07 Aug 2026 03:18:13 -0700 (PDT)
-Received: from localhost ([37.30.44.17])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4995bdca3ddsm42943795e9.1.2026.08.07.03.18.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Aug 2026 03:18:13 -0700 (PDT)
-Date: Fri, 7 Aug 2026 12:18:12 +0200
-From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC] smb: client: fix double decrement of
- server->in_flight
-Message-ID: <gn67lcblu7pgg6mmh5dstx2mlmkh3mzdv2m3te5crxnxz2xykd@lzin2sfbp5iy>
-References: <05aeff9e-78c8-4060-8efb-7debe418f6dd@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bpIFK1Kj"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7EA1B1F000E9;
+	Fri,  7 Aug 2026 10:30:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786098656;
+	bh=ZZeau0AWMCEwTm0yEBwbB0wi/zo4GjnScrZvPWa8ZuE=;
+	h=From:To:Cc:Subject:Date;
+	b=bpIFK1Kj5jEL8GT7tlOV2nBgfH6HYFt11j9MjINUHpkRIcns2kLCXn7+A4aLYuDF0
+	 HJMl3TpwOiruB/tn6yZy84yb5tow3TcM3uMF0WnCqt2F9OYr9wLVYkBEU7VjC9PZq6
+	 bEBoiYhdMFGA5C5sQJhABfPmpRqofad3DcoPOI1KNP65niAsLUY7UlUvqAWh21pw3P
+	 xsCQBvmrM7He/WaBtwcEeBLoLZjyX9zFdQUH6WYFTLIWDIe5gMhsJ1B0b5opXYoZ5L
+	 UoQWWyknp9kM263s8tVnV/dzK5ZOt9JqpoQl0L3/6JFJlSbA7t8rzyvCegMhBhw/pr
+	 ezrM/7/4y+4Jg==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v4] drm/client: Avoid warning on vblank timeout during modeset client waits
+Message-ID: <d0de0809-9381-4925-b5d6-2499dab9e3ce@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <05aeff9e-78c8-4060-8efb-7debe418f6dd@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Fri,  7 Aug 2026 10:30:56 +0000 (UTC)
 
-The v1 code change direction is correct: failed-send and no-response MIDs are removed
-before cifs_server_unlock(), and cancelled_mid[] makes the common cleanup skip
-the MIDs already removed there. The exact-base reproducer hit the warning in
-4/4 unpatched runs and 0/4 patched runs; all four patched runs completed the
-full 270-second window. The patch is not yet correct.
+On PREEMPT_RT kernels, a user-space task with elevated Real-Time (RT)
+priority can starve essential kernel threads. For example, the VKMS driver
+simulates vblank interrupts using hrtimers. On PREEMPT_RT, these timers run
+in the per-CPU timer threads at a low RT priority. If a user-space task
+elevates its priority above the timer thread and monopolizes the CPU, the
+timer thread is starved and the VKMS software vblank delivery is delayed
+beyond the timeout.
 
-Removing each MID from pending_mid_q while the server mutex is held prevents
-reconnect cleanup from taking callback ownership. The sender then remains the
-sole owner of the credit return, while successful response-bearing requests
-keep their existing callback-owned accounting.
+This leads to a timeout when a worker thread waits for the vblank event.
+For instance, a console update triggers a framebuffer update, scheduling
+drm_fb_helper_damage_work() on the system workqueue. The worker thread
+eventually calls drm_client_modeset_wait_for_vblank() to synchronize the
+screen update with the vblank interval. Due to the starved timer, the wait
+times out and triggers a warning in drm_crtc_wait_one_vblank():
 
-For v2:
+[   12.345678] faux_driver vkms: [drm] vblank wait timed out on crtc 0
+[   12.345679] WARNING: drivers/gpu/drm/drm_vblank.c:1329 at
+drm_crtc_wait_one_vblank+0x3bc/0x560
+[   12.345680] CPU: 0 UID: 0 PID: 9 Comm: kworker/0:0 Not tainted
+[   12.345681] Workqueue: events drm_fb_helper_damage_work
+[   12.345682] RIP: 0010:drm_crtc_wait_one_vblank+0x51a/0x560
+[   12.345683] Call Trace:
+[   12.345684]  <TASK>
+[   12.345685]  drm_client_modeset_wait_for_vblank+0xc5/0xf0
+[   12.345686]  drm_fb_helper_fb_dirty [inline]
+[   12.345687]  drm_fb_helper_damage_work+0x6cf/0xf00
+[   12.345688]  process_one_work kernel/workqueue.c:3322 [inline]
+[   12.345689]  process_scheduled_works+0xa8e/0x14e0
+[   12.345690]  worker_thread+0x92d/0xe10
+[   12.345691]  kthread+0x388/0x470
+[   12.345692]  ret_from_fork+0x514/0xb70
+[   12.345693]  ret_from_fork_asm+0x1a/0x30
+[   12.345694]  </TASK>
 
-- Replace the claim that server->in_flight becomes -1. The counter is unsigned,
-  so the second decrement wraps it to UINT_MAX.
-- Lead the description with the failed-send/reconnect trigger: reconnect can
-  process a still-queued MID before the sender returns the same reservation.
-  Evaluate and stet if the resulting double completion corrupts request accounting and
-  can affect availability.
+Since this vblank wait in the client modeset path is only used for optional
+client update throttling, a timeout is acceptable and does not indicate a
+kernel bug. Therefore, a warning should not be triggered in this case.
+
+Introduce drm_crtc_wait_one_vblank_internal(), which performs the vblank
+wait without triggering a warning on timeout. This new function is used in
+drm_client_modeset_wait_for_vblank() to avoid the warning, while keeping
+the warning in drm_crtc_wait_one_vblank() for other callers where a timeout
+might still indicate an actual issue.
+
+Keeping the vblank reference acquisition (drm_vblank_get()) in the public
+wrapper drm_crtc_wait_one_vblank() rather than moving it to the internal
+helper prevents an enable_vblank() error from being mislabeled as a wait
+timeout.
+
+Fixes: d8c4bddcd8bc ("drm/fb-helper: Synchronize dirty worker with vblank")
+Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+f59157955aba9d0cb43b@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=f59157955aba9d0cb43b
+Link: https://syzkaller.appspot.com/ai_job?id=be2179ac-d334-4861-a28c-7b1d32526126
+To: "David Airlie" <airlied@gmail.com>
+To: <dri-devel@lists.freedesktop.org>
+To: "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>
+To: "Maxime Ripard" <mripard@kernel.org>
+To: "Simona Vetter" <simona@ffwll.ch>
+To: "Thomas Zimmermann" <tzimmermann@suse.de>
+Cc: <linux-kernel@vger.kernel.org>
+
+---
+v4:
+- Keep vblank reference acquisition in the public drm_crtc_wait_one_vblank() wrapper instead of moving it to drm_crtc_wait_one_vblank_internal().
+- Update the commit description to explain how this prevents enable_vblank() errors from being mislabeled as wait timeouts.
+
+v3:
+- Removed the raw kernel cut marker and full warning trace from the commit description.
+- Replaced first-person phrasing with impersonal wording in the commit description.
+https://lore.kernel.org/all/0bbd5c22-3a1c-4e66-9d45-932bb858d0af@mail.kernel.org/T/
+
+v2:
+- Introduced drm_crtc_wait_one_vblank_internal() to allow waiting for vblank without warning on timeout.
+- Updated drm_client_modeset_wait_for_vblank() to use the new internal function, avoiding warnings during optional client update throttling.
+- Restored the warning in drm_crtc_wait_one_vblank() for other callers.
+https://lore.kernel.org/all/5edd530e-c20d-42c4-bf55-0656081f030d@mail.kernel.org/T/
+
+v1:
+https://lore.kernel.org/all/7527aaed-dcb2-4bde-a807-1677dcd0af99@mail.kernel.org/T/
+---
+diff --git a/drivers/gpu/drm/drm_client_modeset.c b/drivers/gpu/drm/drm_client_modeset.c
+index 0080a8e95..7ff0f24a0 100644
+--- a/drivers/gpu/drm/drm_client_modeset.c
++++ b/drivers/gpu/drm/drm_client_modeset.c
+@@ -1328,7 +1328,7 @@ int drm_client_modeset_wait_for_vblank(struct drm_client_dev *client, unsigned i
+ 	 */
+ 	ret = drm_crtc_vblank_get(crtc);
+ 	if (!ret) {
+-		drm_crtc_wait_one_vblank(crtc);
++		drm_crtc_wait_one_vblank_internal(crtc);
+ 		drm_crtc_vblank_put(crtc);
+ 	}
+ 
+diff --git a/drivers/gpu/drm/drm_internal.h b/drivers/gpu/drm/drm_internal.h
+index f893b1e3a..6fd33672d 100644
+--- a/drivers/gpu/drm/drm_internal.h
++++ b/drivers/gpu/drm/drm_internal.h
+@@ -115,6 +115,7 @@ void drm_vblank_disable_and_save(struct drm_device *dev, unsigned int pipe);
+ int drm_vblank_get(struct drm_device *dev, unsigned int pipe);
+ void drm_vblank_put(struct drm_device *dev, unsigned int pipe);
+ u64 drm_vblank_count(struct drm_device *dev, unsigned int pipe);
++int drm_crtc_wait_one_vblank_internal(struct drm_crtc *crtc);
+ 
+ /* drm_vblank_work.c */
+ static inline void drm_vblank_flush_worker(struct drm_vblank_crtc *vblank)
+diff --git a/drivers/gpu/drm/drm_vblank.c b/drivers/gpu/drm/drm_vblank.c
+index f90fb2d13..923e20053 100644
+--- a/drivers/gpu/drm/drm_vblank.c
++++ b/drivers/gpu/drm/drm_vblank.c
+@@ -1297,6 +1297,23 @@ void drm_crtc_vblank_put(struct drm_crtc *crtc)
+ }
+ EXPORT_SYMBOL(drm_crtc_vblank_put);
+ 
++int drm_crtc_wait_one_vblank_internal(struct drm_crtc *crtc)
++{
++	struct drm_device *dev = crtc->dev;
++	int pipe = drm_crtc_index(crtc);
++	struct drm_vblank_crtc *vblank = drm_crtc_vblank_crtc(crtc);
++	int ret;
++	u64 last;
++
++	last = drm_vblank_count(dev, pipe);
++
++	ret = wait_event_timeout(vblank->queue,
++				 last != drm_vblank_count(dev, pipe),
++				 msecs_to_jiffies(1000));
++
++	return ret ? 0 : -ETIMEDOUT;
++}
++
+ /**
+  * drm_crtc_wait_one_vblank - wait for one vblank
+  * @crtc: DRM crtc
+@@ -1311,26 +1328,20 @@ int drm_crtc_wait_one_vblank(struct drm_crtc *crtc)
+ {
+ 	struct drm_device *dev = crtc->dev;
+ 	int pipe = drm_crtc_index(crtc);
+-	struct drm_vblank_crtc *vblank = drm_crtc_vblank_crtc(crtc);
+ 	int ret;
+-	u64 last;
+ 
+ 	ret = drm_vblank_get(dev, pipe);
+ 	if (drm_WARN(dev, ret, "vblank not available on crtc %i, ret=%i\n",
+ 		     pipe, ret))
+ 		return ret;
+ 
+-	last = drm_vblank_count(dev, pipe);
+-
+-	ret = wait_event_timeout(vblank->queue,
+-				 last != drm_vblank_count(dev, pipe),
+-				 msecs_to_jiffies(1000));
++	ret = drm_crtc_wait_one_vblank_internal(crtc);
+ 
+-	drm_WARN(dev, ret == 0, "vblank wait timed out on crtc %i\n", pipe);
++	drm_WARN(dev, ret == -ETIMEDOUT, "vblank wait timed out on crtc %i\n", pipe);
+ 
+ 	drm_vblank_put(dev, pipe);
+ 
+-	return ret ? 0 : -ETIMEDOUT;
++	return ret;
+ }
+ EXPORT_SYMBOL(drm_crtc_wait_one_vblank);
+ 
 
 
-On Mon, Aug 03, 2026 at 09:32:40AM +0000, syzbot wrote:
-> There is a race condition between the error handling path in
-> compound_send_recv() and the cifsd reconnect thread that can lead to a
-> double decrement of server->in_flight.
-> 
-> When smb_send_rqst() fails (e.g., with -ECONNRESET), it signals the cifsd
-> thread for a reconnect. If compound_send_recv() drops the
-> cifs_server_lock(server) before removing the multiplex IDs (mids) from the
-> pending queue, the cifsd thread can wake up, acquire the lock, and execute
-> cifs_abort_connection().
-> 
-> cifs_abort_connection() iterates over server->pending_mid_q, finds the mids
-> that failed to send, and executes their callbacks (cifs_compound_callback).
-> Because no response was received, the callback calls add_credits() with 0
-> credits. smb2_add_credits() unconditionally decrements server->in_flight,
-> even if the number of credits being added is 0.
-> 
-> After the callback finishes, compound_send_recv() continues its execution,
-> sees that rc < 0, and explicitly calls add_credits() to return the credits
-> it originally reserved. This results in a second call to
-> smb2_add_credits(), which decrements server->in_flight again. Since
-> in_flight was already decremented to 0 by the callback, this second
-> decrement triggers a warning and corrupts the counter to -1.
-> 
-> CIFS: VFS: \\127.0.0.1 Error -104 sending data on socket to server
-> ------------[ cut here ]------------
-> server->in_flight == 0
-> WARNING: fs/smb/client/smb2ops.c:104 at smb2_add_credits+0x1249/0x2b70
-> fs/smb/client/smb2ops.c:104
-> Call Trace:
->  <TASK>
->  add_credits fs/smb/client/cifsglob.h:894 [inline]
->  compound_send_recv+0x13b4/0x2b90 fs/smb/client/transport.c:979
->  cifs_send_recv+0x42/0x60 fs/smb/client/transport.c:1106
->  SMB2_negotiate+0x164d/0x4030 fs/smb/client/smb2pdu.c:1188
->  cifs_negotiate_protocol+0x45d/0x680 fs/smb/client/connect.c:4043
->  cifs_get_smb_ses+0x1104/0x1ff0 fs/smb/client/connect.c:2492
->  cifs_mount_get_session+0xf1/0x450 fs/smb/client/connect.c:3578
->  get_session fs/smb/client/dfs.c:65 [inline]
->  dfs_mount_share+0x22e/0x990 fs/smb/client/dfs.c:275
->  cifs_mount+0xcc/0xbf0 fs/smb/client/connect.c:3860
->  cifs_smb3_do_mount+0x2d0/0x8a0 fs/smb/client/cifsfs.c:1024
->  smb3_get_tree_common fs/smb/client/fs_context.c:897 [inline]
->  smb3_get_tree+0x2dd/0x400 fs/smb/client/fs_context.c:917
->  vfs_get_tree+0x92/0x2a0 fs/super.c:1700
->  fc_mount fs/namespace.c:1198 [inline]
->  do_new_mount_fc fs/namespace.c:3765 [inline]
->  do_new_mount+0x319/0xdc0 fs/namespace.c:3841
->  do_mount fs/namespace.c:4174 [inline]
->  __do_sys_mount fs/namespace.c:4390 [inline]
->  __se_sys_mount+0x31d/0x420 fs/namespace.c:4367
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
->  </TASK>
-> 
-> To fix this, ensure that the cifsd thread cannot observe these mids if the
-> request failed to send (rc < 0) or if no response is expected (flags &
-> CIFS_NO_SRV_RSP). By calling delete_mid() before dropping
-> cifs_server_lock(server), we safely remove the mids from the pending queue
-> while still holding the mutex. This guarantees that cifs_abort_connection()
-> will not find them and will not execute their callbacks. We also set
-> cancelled_mid[i] = true so that the common cleanup code safely skips the
-> already-deleted mids, preventing any double-free issues.
-> 
-> Fixes: ee258d79159a ("CIFS: Move credit processing to mid callbacks for SMB3")
-> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+eeb58d2197d88720a228@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=eeb58d2197d88720a228
-> Link: https://syzkaller.appspot.com/ai_job?id=53130d26-0860-4523-bf44-fbc757857958
-> To: <linux-cifs@vger.kernel.org>
-> To: <samba-technical@lists.samba.org>
-> To: "Steve French" <sfrench@samba.org>
-> To: "Pavel Shilovsky" <pshilov@microsoft.com>
-> Cc: "Bharath SM" <bharathsm@microsoft.com>
-> Cc: <linux-kernel@vger.kernel.org>
-> Cc: "Paulo Alcantara" <pc@manguebit.org>
-> Cc: "Ronnie Sahlberg" <ronniesahlberg@gmail.com>
-> Cc: "Shyam Prasad N" <sprasad@microsoft.com>
-> Cc: "Tom Talpey" <tom@talpey.com>
-> 
-> ---
-> diff --git a/fs/smb/client/transport.c b/fs/smb/client/transport.c
-> index fdf4e50c2..8d14225e9 100644
-> --- a/fs/smb/client/transport.c
-> +++ b/fs/smb/client/transport.c
-> @@ -968,6 +968,13 @@ compound_send_recv(const unsigned int xid, struct cifs_ses *ses,
->  		server->sequence_number -= 2;
->  	}
->  
-> +	if (rc < 0 || (flags & CIFS_NO_SRV_RSP)) {
-> +		for (i = 0; i < num_rqst; i++) {
-> +			delete_mid(server, mid[i]);
-> +			cancelled_mid[i] = true;
-> +		}
-> +	}
-> +
->  	cifs_server_unlock(server);
->  
->  	/*
-> 
-> 
-> base-commit: 075b74841bd0065a3bda3440873c747938e69b68
-> -- 
-> This is an AI-generated patch subject to moderation.
-> Reply with '#syz upstream' to Sign-off the patch as a human author
-> and send it to the upstream kernel mailing lists.
-> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-> 
-> See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-> You can comment on the patch as usual, syzbot will try to address
-> the comments and send a new version of the patch if necessary.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
+base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+The person who has signed off on the patch is responsible for
+addressing comments.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
