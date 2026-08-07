@@ -1,69 +1,68 @@
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BA0C471268
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 11:54:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AB1C39EF25
+	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 13:08:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786103704; cv=none; b=XVgRpqwiQol33YGSMIlQv9kX40uJH12csFQ6TRMN/uQC53BYZfgsmVR+JnwCZ4ip1/JndP/5CBn1cAWzGtgI9Bdn0sk3KyLCK20RblexgvwfQnKTfZ9jsVeISN46cPIT9puQBVTaSuBe7zQ4rN85BDA8PKAeyY2gN47K7fWzDkw=
+	t=1786108142; cv=none; b=oSKYOwZ2kZ3dLAufeefO+VSJC4aWSotjhAB3BTmtXrgRpSQRHZtRxDQdpzKCfPYK73i5tqC5mjFP7bC0FG+m16CAWQLTOknJZhtG1Zz7cmGlmHqnCMbEgAgBzioV9V8qeQaK9Lc8I/I2wpwMjrVuAD1omlW2hfa87McnfppgS2Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786103704; c=relaxed/simple;
-	bh=W3KhDTimuwgisUptLxdE3P0lFgT70NS8NtJzHMxIpog=;
+	s=arc-20240116; t=1786108142; c=relaxed/simple;
+	bh=KaDgs43eWEnsW2N7pAlu17TvBa83/W5QQ/mbLrbjU4Q=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Cy810X+iE754KV+O9eL71j6oP71WDE04dKeOdbGJRteMsNBPbEuzOIOfE0LlH94iVOwzPLVGh0WhJDFuntcXFJ74x66bEYWZ/YxqIF+sCrYfSz1snv3MjZhx5Ujx8dsOlcuwriR5Cg7aACJ4T9jnWklLTgJoF391rAUxIsmXcY0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gfbcPlOx; arc=none smtp.client-ip=209.85.208.54
+	 In-Reply-To:Content-Type; b=gbScyBxI0pqnNH0LKTYJNF14KxHHr5YT3CSSVSnZow6KD6FdlvA/RvtkFnbR7W10O2pZIlE23AKSclZPl5NtzKWMFwErkmudR0FJuTh3bjf3skEYdoy4+YNuKnZmbm3OX3Y/NX2eF5TaVQWFU+NLRnOwTRRYA9jM90q4WRTKU5Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D2Te4CWP; arc=none smtp.client-ip=209.85.208.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gfbcPlOx"
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-6a1542cdb53so3186120a12.2
-        for <syzbot@lists.linux.dev>; Fri, 07 Aug 2026 04:54:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D2Te4CWP"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6a097f5ab95so5309110a12.2
+        for <syzbot@lists.linux.dev>; Fri, 07 Aug 2026 06:08:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786103695; x=1786708495; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1786108134; x=1786712934; darn=lists.linux.dev;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=AjCLnnMYnIXAKd2QojkF632kR9nXx4FuPCfAi4Zg5FI=;
-        b=gfbcPlOxTnrf5xmz9jfayWoyMFvm6fy0SrYiZbjXIIFRKz1THdnp1OVrUlN/8pBnkZ
-         e7BNye128nWot+f5sAengqh1kdKRDgJXpyQSOyzJoAEQnTCB0pFqNwmWsUf7J5m0l7X5
-         lk9VD366gp4NTVta74jbBgqH8yrO7tN+2+W2rGpky3qEiwfrfaVJJSdwHt+AiFoWwNqW
-         fug8S3bTJL86WV9u0kkOJYcmHjNrff2wPvrCu2QoxS1TuB+3eajhoqYNv4Hc0sJXP9xP
-         7OOUMWXAVIbWF5+DRh93+Ne+lZM9kHVeSWvovou61sDYT2eoWsjymPXvwS7dD5SvNf9d
-         mI0A==
+        bh=hx05bVEo7B6VZOwu/gTD2X5od9QQVtH7XKZQ7gO14aM=;
+        b=D2Te4CWPJu2lrT3uq/n/5NRk5RBJWw2yrj9z3RK2KLcpvldQIvbe3SM/+bHRMU7AAy
+         7cGiBBxa+VvZ76SU/qkWYL9itifO53S47bq02FfajcZQk5tHZwiXHOtU1J9GZN9wPAub
+         KvJbqaEJWCFthZem3Jd7nlrmmD1W7sa6UYh1bbIDTJmRNYSeN1ulwiAMxv1j/x4bujPV
+         fGXwKROcDb+aroFvHylOvYphX/5K/oOI2uLaHIWHaXJs6E5y5NkkUPcDCFEQ/VVfXRvO
+         keWNRfefsx2/wphOXhOdju9Y3PyaF6K0Xo7d3aO60TO2U7fqBhkSpCb+goei5rTDV6fi
+         GSKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786103695; x=1786708495;
+        d=1e100.net; s=20251104; t=1786108134; x=1786712934;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=AjCLnnMYnIXAKd2QojkF632kR9nXx4FuPCfAi4Zg5FI=;
-        b=mBy9d/ZwOFNnKwYojxhtPdXkOAzCaoflsi82ytxE/cGoIEJGxEctt+zyI/JR6ZHY1a
-         myMU6QcmPSrUjVI1vh4Nfs5RFfFd1pKSMgbiIKu1kcR/o8FZAivsYN4Dp6rGVdgGEHVN
-         Nk65ERqI67ZBPyJU29QiWQTp4mVEiXxJw1Imz6K4/FYMnZ7KRP5K98cuGMSOzK/35GXU
-         ln73BvEw7Km9PWm5t8Tohf6iLYwIpM2dIgTEayfw+eP181kD1le927NXXJGpm5+ZaTaD
-         IYMqsBfiEJSnJpFgsrVYcT40OBaFH0Qxkagy+xWwpNRGsSt7RFSlFnYzQDWvcG54Bq0X
-         OGOg==
-X-Forwarded-Encrypted: i=1; AHgh+Rr3YAgWTZaFb8+gweW+bs2EQWL4emEu6PRTPUA7944wCXml88RqujQIYIbJktYsiMmE8VM4H4o=@lists.linux.dev
-X-Gm-Message-State: AOJu0YycXm3Aqz6IeeBZrWiZNfQTbFfHzwcP/lvXr2TOT+o8PMDKd/BD
-	+5zODqjAU0oCzdHYY2IzwLFjIdJPCbn0jHzjt9QDks8RtjPegXCyLENW
-X-Gm-Gg: AR+sD12cXKUeuFlEJGi7IXJGJTnqoiaRapaOwAX92LJM9d11+aoJd9ZD9vFQfQ5ulsj
-	IvGcaQbIbp5kkjC2tCNqgHfMvGgISHC1UbeERwGRtgjFlqLwgzBXDCzrBBf5nAHA0QKVBNtIaI2
-	/RkKJlUKLmJan55V5puCcPZ4FZ8nd6alS72paooftCkW01Hg2TzCJSKYlAweJmS0Zt1ZCA3yewj
-	3ZP7KBLuyqJb7F0qoiq8gJ2IUSlsI+4y+2MoWRFZiIyM6gN45jTr8vFCyT+GdyRgHWxMPZUhfuE
-	N6+fGpzeg4IilkywlDOQCA1V6Ss32CR+E8gHoRvpsldePSH4+5sy8PtEgoHIXKN9Rns7xrjD16V
-	6wGhv8QXpR6OAxvqzZEDnJcVaFphItuhb8Gs9e1g4i4GuAUJvl1PWNeKAu1RuwPIUyAUd/R52q9
-	P9awkGkn/7WMN8YtxWfD+wTpctAJvwxX78CrPRyS1rhUWMdEOq4pnvP3xB8dHyBkCmfOMKd00wg
-	yH1Og+VAOUcRkrM8IU8tlEzXNbT2lr/aRIsFKcO9UIYUzJBsfj5xYfRIWNtr5aQ6dxR1OsH2RXp
-	tNXh+hMMEEbvgdl6sCrRLFF7dHFDGUmLSYwknkOKiQwQuUbleB4nED0=
-X-Received: by 2002:a05:6402:e93:b0:69a:928:9405 with SMTP id 4fb4d7f45d1cf-6a14f09ff2cmr11039309a12.1.1786103695297;
-        Fri, 07 Aug 2026 04:54:55 -0700 (PDT)
+        bh=hx05bVEo7B6VZOwu/gTD2X5od9QQVtH7XKZQ7gO14aM=;
+        b=VI4+apphxc9RWGILZwTS+v05Rb/AOrJKgtrN2JyvSoLdA9LR+kszl2qYzlBwDGWXFI
+         7B2qJ4o79aad3MTgeOrekAGwPP1JBOXZ+YUryrSWnQ4ak2X4KJ5j3b1Sk1TIxUiQOBgF
+         yZUZcGbYV94GeHHf7PCdbKrDczdWpYSQYG3y3cQMOd/UqdqTKzs9Yr0DTSd9o79dkMva
+         bd7Y4K3SjZZNMVfJneS0GDKJClQt5QSCQDBNk/1PTqLE3CYEqOHxOjMSPaOvuQ5/VLQs
+         QijjGlDPuVWxyDm38kWLnM+NXFjoGpMQtBZnk9DiP3Smnt9FUbMV0xmV3XHKPUUC9uV2
+         GEEA==
+X-Gm-Message-State: AOJu0YwPN5CPaYszIcpUJ87WcQZHhaNq4P0CTKRE3VPOT2FU3EBkHAiT
+	1GkH8G6DxQhMLshmrfcOICuJorC66RwZtApmeEIlUJ9Jp66CXkNq/dvG4Mx8DVbP
+X-Gm-Gg: AR+sD12FZVRwYSHZ8SizlZ1cTmWswhLMVrG40c6M982asZ4uQP0lki/OP1Wo9HJv4wr
+	cAR4WI/IldzDbP5dxR6PkbsqPOe+/f/74wQmr//W9ogiDU5BY/FbWvgo3cr0dJpP2s/b95ixlSJ
+	6HmZIemr/2DSGqz9+KaVXoBThUa4w19wAWfOdbnBozL7VgVn/y6MuWAxsL0QKFa/XnkA0jZekjB
+	CTxFNvi2MaWuaFFrwiC7nvHvK41cCh381mH0Kx5XyuJlNCViRxQfqAlFDLhf6xsQwo3NwlXAe3h
+	s+JQ8gXzWWFdOCuYdPXsrFMIRzmLmcWvjgDKX+ixev67s1Ea7vjdTlA3YTLsMXh6C4YkMpKcye1
+	t886lp4j0QtXEIADwk/dIKbkj//T3R809yu6fxR3Qj1i/urb0FXvqPFAiLLVFNtEuUgZZE7Dn8I
+	hlrQm/+Al7CbiuZWXVgcjSivNu901xa65RAQQsFit5ebTp5FShz76+d3alA1WRhqmdjfqjF+BqQ
+	YYH0HbDjVzihnY3dE26G8MkhWzVsQObHKuIY/gVB98FkkFR59jDAnlfka//AGQ0hzulooFz+9bw
+	O/xv4oVdW9vsYmoxwxzp/60XaDKLSgE3Cq6zlVxUsCyZjFRZJTF80Xj5c7UqB3u3bQ==
+X-Received: by 2002:a17:907:1c18:b0:c1c:67c3:7371 with SMTP id a640c23a62f3a-c207eb9dfd3mr233419466b.8.1786108133889;
+        Fri, 07 Aug 2026 06:08:53 -0700 (PDT)
 Received: from [192.168.100.51] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a1e7cbaf69sm471408a12.13.2026.08.07.04.54.54
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c2080c9047esm49953966b.33.2026.08.07.06.08.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Aug 2026 04:54:54 -0700 (PDT)
-Message-ID: <8df5c003-f28f-4fce-ad4d-9c6247d06892@gmail.com>
-Date: Fri, 7 Aug 2026 13:54:53 +0200
+        Fri, 07 Aug 2026 06:08:53 -0700 (PDT)
+Message-ID: <a29e64ad-2f97-46dd-9a31-9572e8f6f01d@gmail.com>
+Date: Fri, 7 Aug 2026 15:08:52 +0200
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -71,39 +70,204 @@ List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net v2] ipvlan: keep lower device alive until private
- destruction
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org, Andrew Lunn <andrew+netdev@lunn.ch>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Paolo Abeni <pabeni@redhat.com>, syzkaller-bugs@googlegroups.com,
- dskr99@gmail.com, Kees Cook <kees@kernel.org>, linux-kernel@vger.kernel.org,
- syzbot@lists.linux.dev, syzbot+5fe14f2ff4ccbace9a26@syzkaller.appspotmail.com
-References: <20260803121140.261329-1-krystianmkaniewski@gmail.com>
- <20260806083834.28db4cde@kernel.org>
+Subject: Re: [PATCH RFC v4] drm/client: Avoid warning on vblank timeout during
+ modeset client waits
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+References: <d0de0809-9381-4925-b5d6-2499dab9e3ce@mail.kernel.org>
 Content-Language: en-US
 From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-In-Reply-To: <20260806083834.28db4cde@kernel.org>
+In-Reply-To: <d0de0809-9381-4925-b5d6-2499dab9e3ce@mail.kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-You're right. I treated the netdev reference as a guarantee that the
-device was still usable, while it only keeps struct net_device
-allocated. It does not guarantee that the device is still operational
-after unregister has started.
+Please make two focused corrections.
 
-Keeping the lower device referenced for longer in ipvlan is therefore
-not the right solution. The caller that wants to operate on the device
-needs to verify that it is still alive.
+Remove the synthetic full warning trace with placeholder timestamps from the
+commit description. Keep a concise explanation based on the verified report,
+including why PREEMPT_RT scheduling can delay VKMS vblank delivery and 
+why the
+client wait is best effort.
 
-Thank you for the review and for clarifying this. I will prepare a v3
-later with the fix on the caller side.
+Document next to drm_crtc_wait_one_vblank_internal() that every caller 
+must hold
+a vblank reference across the complete wait.
 
-On 8/6/2026 5:38 PM, Jakub Kicinski wrote:
-> On Mon,  3 Aug 2026 14:11:39 +0200 Krystian Kaniewski wrote:
->> Specifically, RXE acts as an asynchronous owner in this scenario. RXE
->> queues RDMA device removal on NETDEV_UNREGISTER, meaning it can retain a
->> reference to the ipvlan netdev after ndo_uninit has completed.
-> The netdev reference only guarantees that struct net_device does not
-> go away. Caller must check that the device is still alive if it is
-> trying to operate on it without a guarantee that it's still live.
+Preserve the current behavior. The public helper must acquire the reference,
+report an acquisition failure, return before timeout handling on that 
+failure,
+warn only after an actual counter-wait timeout, and warn before dropping the
+reference. The client helper must use its existing outer get and put while
+treating timeout as quiet best-effort pacing. Leave the atomic helper, 
+timeout,
+predicate, public API, and exported symbols unchanged. Retain all existing
+attribution, report links, and the recipient set.
+
+On 8/7/2026 12:30 PM, syzbot wrote:
+> On PREEMPT_RT kernels, a user-space task with elevated Real-Time (RT)
+> priority can starve essential kernel threads. For example, the VKMS driver
+> simulates vblank interrupts using hrtimers. On PREEMPT_RT, these timers run
+> in the per-CPU timer threads at a low RT priority. If a user-space task
+> elevates its priority above the timer thread and monopolizes the CPU, the
+> timer thread is starved and the VKMS software vblank delivery is delayed
+> beyond the timeout.
+>
+> This leads to a timeout when a worker thread waits for the vblank event.
+> For instance, a console update triggers a framebuffer update, scheduling
+> drm_fb_helper_damage_work() on the system workqueue. The worker thread
+> eventually calls drm_client_modeset_wait_for_vblank() to synchronize the
+> screen update with the vblank interval. Due to the starved timer, the wait
+> times out and triggers a warning in drm_crtc_wait_one_vblank():
+>
+> [   12.345678] faux_driver vkms: [drm] vblank wait timed out on crtc 0
+> [   12.345679] WARNING: drivers/gpu/drm/drm_vblank.c:1329 at
+> drm_crtc_wait_one_vblank+0x3bc/0x560
+> [   12.345680] CPU: 0 UID: 0 PID: 9 Comm: kworker/0:0 Not tainted
+> [   12.345681] Workqueue: events drm_fb_helper_damage_work
+> [   12.345682] RIP: 0010:drm_crtc_wait_one_vblank+0x51a/0x560
+> [   12.345683] Call Trace:
+> [   12.345684]  <TASK>
+> [   12.345685]  drm_client_modeset_wait_for_vblank+0xc5/0xf0
+> [   12.345686]  drm_fb_helper_fb_dirty [inline]
+> [   12.345687]  drm_fb_helper_damage_work+0x6cf/0xf00
+> [   12.345688]  process_one_work kernel/workqueue.c:3322 [inline]
+> [   12.345689]  process_scheduled_works+0xa8e/0x14e0
+> [   12.345690]  worker_thread+0x92d/0xe10
+> [   12.345691]  kthread+0x388/0x470
+> [   12.345692]  ret_from_fork+0x514/0xb70
+> [   12.345693]  ret_from_fork_asm+0x1a/0x30
+> [   12.345694]  </TASK>
+>
+> Since this vblank wait in the client modeset path is only used for optional
+> client update throttling, a timeout is acceptable and does not indicate a
+> kernel bug. Therefore, a warning should not be triggered in this case.
+>
+> Introduce drm_crtc_wait_one_vblank_internal(), which performs the vblank
+> wait without triggering a warning on timeout. This new function is used in
+> drm_client_modeset_wait_for_vblank() to avoid the warning, while keeping
+> the warning in drm_crtc_wait_one_vblank() for other callers where a timeout
+> might still indicate an actual issue.
+>
+> Keeping the vblank reference acquisition (drm_vblank_get()) in the public
+> wrapper drm_crtc_wait_one_vblank() rather than moving it to the internal
+> helper prevents an enable_vblank() error from being mislabeled as a wait
+> timeout.
+>
+> Fixes: d8c4bddcd8bc ("drm/fb-helper: Synchronize dirty worker with vblank")
+> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+f59157955aba9d0cb43b@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=f59157955aba9d0cb43b
+> Link: https://syzkaller.appspot.com/ai_job?id=be2179ac-d334-4861-a28c-7b1d32526126
+> To: "David Airlie" <airlied@gmail.com>
+> To: <dri-devel@lists.freedesktop.org>
+> To: "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>
+> To: "Maxime Ripard" <mripard@kernel.org>
+> To: "Simona Vetter" <simona@ffwll.ch>
+> To: "Thomas Zimmermann" <tzimmermann@suse.de>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> ---
+> v4:
+> - Keep vblank reference acquisition in the public drm_crtc_wait_one_vblank() wrapper instead of moving it to drm_crtc_wait_one_vblank_internal().
+> - Update the commit description to explain how this prevents enable_vblank() errors from being mislabeled as wait timeouts.
+>
+> v3:
+> - Removed the raw kernel cut marker and full warning trace from the commit description.
+> - Replaced first-person phrasing with impersonal wording in the commit description.
+> https://lore.kernel.org/all/0bbd5c22-3a1c-4e66-9d45-932bb858d0af@mail.kernel.org/T/
+>
+> v2:
+> - Introduced drm_crtc_wait_one_vblank_internal() to allow waiting for vblank without warning on timeout.
+> - Updated drm_client_modeset_wait_for_vblank() to use the new internal function, avoiding warnings during optional client update throttling.
+> - Restored the warning in drm_crtc_wait_one_vblank() for other callers.
+> https://lore.kernel.org/all/5edd530e-c20d-42c4-bf55-0656081f030d@mail.kernel.org/T/
+>
+> v1:
+> https://lore.kernel.org/all/7527aaed-dcb2-4bde-a807-1677dcd0af99@mail.kernel.org/T/
+> ---
+> diff --git a/drivers/gpu/drm/drm_client_modeset.c b/drivers/gpu/drm/drm_client_modeset.c
+> index 0080a8e95..7ff0f24a0 100644
+> --- a/drivers/gpu/drm/drm_client_modeset.c
+> +++ b/drivers/gpu/drm/drm_client_modeset.c
+> @@ -1328,7 +1328,7 @@ int drm_client_modeset_wait_for_vblank(struct drm_client_dev *client, unsigned i
+>   	 */
+>   	ret = drm_crtc_vblank_get(crtc);
+>   	if (!ret) {
+> -		drm_crtc_wait_one_vblank(crtc);
+> +		drm_crtc_wait_one_vblank_internal(crtc);
+>   		drm_crtc_vblank_put(crtc);
+>   	}
+>   
+> diff --git a/drivers/gpu/drm/drm_internal.h b/drivers/gpu/drm/drm_internal.h
+> index f893b1e3a..6fd33672d 100644
+> --- a/drivers/gpu/drm/drm_internal.h
+> +++ b/drivers/gpu/drm/drm_internal.h
+> @@ -115,6 +115,7 @@ void drm_vblank_disable_and_save(struct drm_device *dev, unsigned int pipe);
+>   int drm_vblank_get(struct drm_device *dev, unsigned int pipe);
+>   void drm_vblank_put(struct drm_device *dev, unsigned int pipe);
+>   u64 drm_vblank_count(struct drm_device *dev, unsigned int pipe);
+> +int drm_crtc_wait_one_vblank_internal(struct drm_crtc *crtc);
+>   
+>   /* drm_vblank_work.c */
+>   static inline void drm_vblank_flush_worker(struct drm_vblank_crtc *vblank)
+> diff --git a/drivers/gpu/drm/drm_vblank.c b/drivers/gpu/drm/drm_vblank.c
+> index f90fb2d13..923e20053 100644
+> --- a/drivers/gpu/drm/drm_vblank.c
+> +++ b/drivers/gpu/drm/drm_vblank.c
+> @@ -1297,6 +1297,23 @@ void drm_crtc_vblank_put(struct drm_crtc *crtc)
+>   }
+>   EXPORT_SYMBOL(drm_crtc_vblank_put);
+>   
+> +int drm_crtc_wait_one_vblank_internal(struct drm_crtc *crtc)
+> +{
+> +	struct drm_device *dev = crtc->dev;
+> +	int pipe = drm_crtc_index(crtc);
+> +	struct drm_vblank_crtc *vblank = drm_crtc_vblank_crtc(crtc);
+> +	int ret;
+> +	u64 last;
+> +
+> +	last = drm_vblank_count(dev, pipe);
+> +
+> +	ret = wait_event_timeout(vblank->queue,
+> +				 last != drm_vblank_count(dev, pipe),
+> +				 msecs_to_jiffies(1000));
+> +
+> +	return ret ? 0 : -ETIMEDOUT;
+> +}
+> +
+>   /**
+>    * drm_crtc_wait_one_vblank - wait for one vblank
+>    * @crtc: DRM crtc
+> @@ -1311,26 +1328,20 @@ int drm_crtc_wait_one_vblank(struct drm_crtc *crtc)
+>   {
+>   	struct drm_device *dev = crtc->dev;
+>   	int pipe = drm_crtc_index(crtc);
+> -	struct drm_vblank_crtc *vblank = drm_crtc_vblank_crtc(crtc);
+>   	int ret;
+> -	u64 last;
+>   
+>   	ret = drm_vblank_get(dev, pipe);
+>   	if (drm_WARN(dev, ret, "vblank not available on crtc %i, ret=%i\n",
+>   		     pipe, ret))
+>   		return ret;
+>   
+> -	last = drm_vblank_count(dev, pipe);
+> -
+> -	ret = wait_event_timeout(vblank->queue,
+> -				 last != drm_vblank_count(dev, pipe),
+> -				 msecs_to_jiffies(1000));
+> +	ret = drm_crtc_wait_one_vblank_internal(crtc);
+>   
+> -	drm_WARN(dev, ret == 0, "vblank wait timed out on crtc %i\n", pipe);
+> +	drm_WARN(dev, ret == -ETIMEDOUT, "vblank wait timed out on crtc %i\n", pipe);
+>   
+>   	drm_vblank_put(dev, pipe);
+>   
+> -	return ret ? 0 : -ETIMEDOUT;
+> +	return ret;
+>   }
+>   EXPORT_SYMBOL(drm_crtc_wait_one_vblank);
+>   
+>
+>
+> base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
