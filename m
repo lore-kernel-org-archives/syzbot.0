@@ -1,142 +1,206 @@
-Received: from fout-b5-smtp.messagingengine.com (fout-b5-smtp.messagingengine.com [202.12.124.148])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A252D34BA5B
-	for <syzbot@lists.linux.dev>; Fri,  7 Aug 2026 23:38:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.148
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1433D15A86D
+	for <syzbot@lists.linux.dev>; Sat,  8 Aug 2026 04:50:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786145920; cv=none; b=QzpfTx0Syh5l0ORRnSd1RK6UbqfG3SHnXqR7Qi7F9Js0aqKLpKIZKC2atnnaf5fJsBSJ6ZS/uh2QhpNXQDkNMqeFadg7+UMOHnYGnvyFax3fDX0DFmIhN55ebIBx7Pohi323ENHHkQgcwMQn78KHeskn9eoxQf6Isq0mhxKDBdQ=
+	t=1786164658; cv=none; b=O5fIW+R4vcCNd/501j0k3bWeZgHz2XlIBnO3mFlEqoPkR860/+KDr27SQmOJIW++K9iOfXfCyOn6G7U6yVMrJYS2zSkgVrdJ9EASLRYi+TKgnJFY4BNH971v7+4ULPWJoM39ZCQmm5B0ZcBc/7tWShEPpZ45p6nDRbOPefwer3Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786145920; c=relaxed/simple;
-	bh=/eCNesmnjXg2DZ9eQuZJzfeaYwYhKGrPR0IljtrpqhU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Qv0LkPfxcY9zUVfcFo0lmNs/rxkVDtpLmuaXkn7kuELGT0CfELpANx7vrO4AHMeQ5lV6D6aTJLpXI/E/idflOJihyfcnvDxtZrIkFWZjRx9DvB6v7UCXak+m4jRzBw9peXrvzxTA/EkO0JOuvrTShCqMh0LloGWJ25po11kl+4E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sakamocchi.jp; spf=pass smtp.mailfrom=sakamocchi.jp; dkim=pass (2048-bit key) header.d=sakamocchi.jp header.i=@sakamocchi.jp header.b=h4oSArwV; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=Kf99lEvu; arc=none smtp.client-ip=202.12.124.148
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sakamocchi.jp
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sakamocchi.jp
+	s=arc-20240116; t=1786164658; c=relaxed/simple;
+	bh=skaUxwzkKE/sKPN+QHjSWT6T24EUsu0Gn7HtuE5KDHs=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=U51YOQtMjyEQ8UjvmMRGD+0QLhIu2sUPL0LtlHgF/EOA2t7ZntNlwUiUn+JbWE8ZUeF2+Ao6qsBAcLlBvQr21pFbRHzZNYhSqUvu8IEofAToPgBPJVG/G23dWKbFPISFwLRpbJ8k73sQj7v2u4rDLFvvyvLNPRPMMKkzOW/kHOg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Awpny1dY; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sakamocchi.jp header.i=@sakamocchi.jp header.b="h4oSArwV";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="Kf99lEvu"
-Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
-	by mailfout.stl.internal (Postfix) with ESMTP id C1C541D00138;
-	Fri,  7 Aug 2026 19:38:37 -0400 (EDT)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-05.internal (MEProxy); Fri, 07 Aug 2026 19:38:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sakamocchi.jp;
-	 h=cc:cc:content-type:content-type:date:date:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm3; t=1786145917; x=
-	1786232317; bh=wFGxNR4KDQgZaxbDqlfhZF1nqBzVWqT1kkp5gL+l2Vk=; b=h
-	4oSArwVdKPrKkQQJFcrnWfEs9xSTRxs5YrkQlI3SSEa4T+WPR12qBTAP9Qzr1ja4
-	rtUNy71m6O03Nzw+4cbEpUZtvb/YFifdEuq2EievBbwuD41rLk2nTFUSsHYZxhWF
-	8CvkPBEfdpoCRxvNHp3vuPeDeqZiOT4pdai6mcYyBxc8QuKcy2dIiXXl6g3oEWOb
-	Gf4nEKONFYIIIUZjtcqSK67eY1Zjo5MxbHa17b6Z+j9FqVk+RYSuXIDzZIldgU2O
-	/puEaeSN2NPjbcunvaCnn5796nISa9rPA9ngLfNaQHN/An0nXQC+FzaN0SHqSqfG
-	jO7y8Vxyrq8SJk5m2q1bw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
-	1786145917; x=1786232317; bh=wFGxNR4KDQgZaxbDqlfhZF1nqBzVWqT1kkp
-	5gL+l2Vk=; b=Kf99lEvuaEV3hzlCnyGhq1tbk758IAVpDGEm/3ZYvDBOnd+T132
-	ZieENnOMxatka5NXD85di9NwqS9e4CeXMVQqQba1hWHFbBCuC4QDxY13EhxqPSQU
-	rst/2LroGN4v6Qb1+1iL+LVwfuVRNqg9ty8u9yxYKXkWtCo3HTpUk2jDqRy9Iv80
-	UmOtvKNR6GS5lvJd2Qp1V3vzbMADzzcwAMadsArs6dnrX/+pKy2+esqpsoCxQ4Lo
-	De1A/rOk0/2atBG270GylvC1+FvvFtEB0U48ayHweaxRs29+mveqV7vYoq1KOFts
-	I0AOzqk4vxTNVieZRp+fq0nDTjkcy8IT35Q==
-X-ME-Sender: <xms:fWx2arRvAW-XdUeEGe-3Pvwry9FiouY8smB-JPlbokDJqtrY0koesg>
-    <xme:fWx2antmGC_OtjksCaaJdXLhkfqJccQH6DumowiDtJ-HQwDywDgI4QxtEQM4LXOMh
-    hIwoVBo5GCxVFwsWjE2xxUdCKZ5qfhhKtGmPxbL7u9ZcHXXdpSJB6M>
-X-ME-Received: <xmr:fWx2av2a4iotoVEVZFnyA9E5VDGMhbIxaficpFR_iukY2-cdKe7z1SrNapBoijgNHBon9TsfaeDVF4zgepvhZZRHWcFOdQ>
-X-ME-Proxy-Cause: dmFkZTFOpMpQ1XXxnxE8r51UoC0v4JSMyMSVCJ+8AlXIBqzvZDgt1a2sCct5jSdipfZaTk
-    42zYezUMuyD4aG5f+4q83D3/NQlKUR5CnY+e50An4iiF/0PIZIZ4ZtH5ulMPFVFOWd3W0u
-    6kuFZt8Fd8CM6O7ekp+bkkvwu7bPdSTziM4fydTNdIrjuw0TEY5oR0Z6qMQ3cYUMZc4xRy
-    9hcvGqRPf3cFarjBwM5kRQRrQtMVG8M3LIfsY6yS3PECjkk+yC4cKr85IiMxsvV0UArzmW
-    RODEokSqkH9WYQwtd7ybF/6rHul+Z8qNq6IcaEuGmfZzrd9/Tf02PwWa7DTIphvXBZuMra
-    TZ69330QcOxPPVlCuPWM9yVOs10sSopmED+HJt66QbA9AjPFQ6mYOv19Z0drHe1qdyE7IF
-    J0f1dDBER9EOr0tokMmsT+Rw+z30MoVl99gs8wZxgbrF0/bYyluv+Dsmvw0KIlRJJw96S2
-    jlq7u1ugKcIJl+IxMKzfNSK1S10R9Cl/uaW4RJ9krDpmiOzbS6efNemXIwaf7LotC2JyI5
-    sOUaAh6PBHqSwZyzSaYSa1B3EJrOtoGJce/KKst0/Mt6t5b35yXB2R2P4cNvyovO9bSieo
-    n7ejP7eRkEmaXTwoMJWfvMpKvZoGgPgfRCihya21cNDhrj7XQbhQ/DtCAVVw
-X-ME-Proxy: <xmx:fWx2agVQxR8xdmCICMj_T2vnYeg0yEA--6vqlYpBwExkqKBLRcJdGQ>
-    <xmx:fWx2aiJsx9J0fAgXTg3uU1fw0gWxj7IhtKd96x662oT2-vIjfLOC7Q>
-    <xmx:fWx2aq0EF6T3tiPGtB6VgjJYXMUTJ_SfmiGAfi5tbmm0enjRLRPByg>
-    <xmx:fWx2ag5AMSk85HnNiUGxxBVJY4rEFJSYjGr2t-WAL_NFKJuIlsYxww>
-    <xmx:fWx2avROfc0AUFHTSJrIjsU2SO2OgN2jxi7H5MkhDg5WEP3LUyoCkRkL>
-Feedback-ID: ie8e14432:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 7 Aug 2026 19:38:35 -0400 (EDT)
-Date: Sat, 8 Aug 2026 08:38:33 +0900
-From: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-bugs@googlegroups.com, Aleksandr Nogikh <nogikh@google.com>,
-	linux1394-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-	syzbot@lists.linux.dev
-Subject: Re: [PATCH] firewire: ohci: fix NULL pointer dereference in
- ar_context_release
-Message-ID: <20260807233833.GA479199@sakamocchi.jp>
-Mail-Followup-To: syzbot <syzbot@kernel.org>,
-	syzkaller-bugs@googlegroups.com,
-	Aleksandr Nogikh <nogikh@google.com>,
-	linux1394-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-	syzbot@lists.linux.dev
-References: <90c5db71-dd1f-4d46-b9d3-2f1046cbd5ea@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Awpny1dY"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 8333B1F000E9;
+	Sat,  8 Aug 2026 04:50:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786164656;
+	bh=hIwpmJ6GkxoIqN8hjanzWPZNjliSAJTUIPVuJqxaWNM=;
+	h=From:To:Cc:Subject:Date;
+	b=Awpny1dYX6qfE6KtLLjqt+n5vlfhg4NMFw2FKF454GmWdTnvxgvozhE39RMc+h77H
+	 4VWcv+DD23EMh1q0EMkbmzEGCmxe9JJvPYruiS6lOX7YtxvkElHppbCctL2WdEnuvv
+	 bJRSan83Dag6B8GYwh69hlkoaxmPnAH/DVZk4EMBN3nOvG0IRlOP/pyU0f/UGkRc/O
+	 MW05cUG93T8gHuPOJsBzq4B7VmIgQOPrzlPSyEZET2oqHK1dlnYh9Kp5xp4Em+x9Xd
+	 g6NhCzLyLizKB1pli16D4UQTmOtTJXC1d2YAnwkBzLdAzB+cX+VCt0XKK5J2gXzEW+
+	 +nH4zPpplkIIg==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] btrfs: check system chunk space before removing device extents
+Message-ID: <dc6f919f-966d-41dc-91a1-846dae1b8860@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <90c5db71-dd1f-4d46-b9d3-2f1046cbd5ea@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Sat,  8 Aug 2026 04:50:56 +0000 (UTC)
 
-Hi,
+During a chunk relocation/balance operation, a transaction abort with
+-ENOSPC can occur in btrfs_remove_chunk(). This happens because the
+filesystem runs out of system space while trying to remove a chunk item
+from the chunk tree, and it cannot allocate a new system chunk.
 
-On Fri, Aug 07, 2026 at 02:25:26PM +0000, syzbot wrote:
-> From: Aleksandr Nogikh <nogikh@google.com>
-> 
-> During the error handling path of the driver's probe function, a NULL
-> pointer dereference can occur in ar_context_release().
-> 
-> When pci_probe() fails early (e.g., if pcim_enable_device() or MMIO mapping
-> fails), the devres cleanup mechanism invokes release_ohci(). This function
-> unconditionally calls ar_context_release() to clean up the asynchronous
-> receive contexts. However, if ar_context_init() was not yet called,
-> ctx->ohci remains NULL (as the fw_ohci structure is zero-initialized by
-> devres_alloc()).
-> 
-> ar_context_release() immediately dereferences ctx->ohci to get the dev
-> pointer before checking if the context was actually initialized, leading to
-> a crash:
-> 
-> Oops: general protection fault, probably for non-canonical address
-> 0xdffffc0000000001: 0000 [#1] SMP KASAN NOPTI
-> KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-> RIP: 0010:ar_context_release+0x3f/0x380 drivers/firewire/ohci.c:543
-> Call Trace:
->  release_ohci+0x3f/0x60 drivers/firewire/ohci.c:3567
->  release_nodes drivers/base/devres.c:546 [inline]
->  devres_release_all+0x1a8/0x260 drivers/base/devres.c:576
->  device_unbind_cleanup drivers/base/dd.c:597 [inline]
->  really_probe+0x451/0xae0 drivers/base/dd.c:772
-> 
-> To fix this, move the assignment of the dev pointer after the !ctx->buffer
-> check. If ctx->buffer is NULL, it indicates that the context was never
-> successfully initialized and there is nothing to release, safely avoiding
-> the dereference of the uninitialized ctx->ohci pointer.
-> 
-> Fixes: 5716e58aecdd ("firewire: ohci: release buffer for AR req/resp contexts when managed resource is released")
-> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+d30aad27833a559defab@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=d30aad27833a559defab
-> Link: https://syzkaller.appspot.com/ai_job?id=10a18617-7893-42dd-bf1c-cd49e19e95d9
-> Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+The crash trace is as follows:
 
-Applied to for-linus branch.
+WARNING: fs/btrfs/volumes.c:3526 at btrfs_remove_chunk+0xc9b/0x1070
+Call Trace:
+ <TASK>
+ btrfs_relocate_chunk_finish fs/btrfs/volumes.c:3614 [inline]
+ btrfs_relocate_chunk+0x3e5/0x810 fs/btrfs/volumes.c:3668
+ __btrfs_balance+0x1b5f/0x29d0 fs/btrfs/volumes.c:4586
+ btrfs_balance+0xaa6/0x1180 fs/btrfs/volumes.c:4973
+ btrfs_ioctl_balance+0x3da/0x640 fs/btrfs/ioctl.c:3481
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:597 [inline]
+ __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+ </TASK>
+
+The sequence of events leading to the abort is as follows. First,
+btrfs_remove_chunk() removes the device extents from the device tree by
+calling btrfs_remove_dev_extents(). It then calls check_system_chunk() to
+reserve system space for removing the chunk item from the chunk tree. If
+the system space is full, check_system_chunk() attempts to allocate a new
+system chunk. To allocate a new chunk, find_free_dev_extent() is called.
+However, find_free_dev_extent() searches the commit root of the device tree
+to prevent reusing space freed in the current transaction. Because the
+device extents were just freed in the current transaction by
+btrfs_remove_dev_extents(), find_free_dev_extent() does not see this freed
+space. If the device is otherwise full, it returns -ENOSPC.
+check_system_chunk() ignores the failure to allocate a system chunk and
+does not reserve any space. Finally, remove_chunk_item() is called, which
+fails with -ENOSPC because it needs to COW a node in the chunk tree but no
+system space was reserved. Since btrfs_remove_dev_extents() has already
+modified the device tree, btrfs_remove_chunk() cannot fail gracefully and
+is forced to abort the transaction.
+
+To fix this, we must ensure that we have enough system space before
+modifying the device tree. We change check_system_chunk() and
+reserve_chunk_space() to return an int error code. In btrfs_remove_chunk(),
+we call check_system_chunk() early. If it fails, we can fail gracefully and
+return -ENOSPC before any irreversible tree modifications occur. If it
+succeeds, we immediately release the reserved metadata space using
+btrfs_trans_release_chunk_metadata(). This is necessary because
+btrfs_remove_dev_extents() can trigger nested chunk allocations which
+unconditionally release all chunk metadata reservations. We then proceed to
+call check_system_chunk() a second time later in the function to make the
+actual reservation, which is now guaranteed to succeed since we ensured the
+system space_info has enough free space.
+
+Fixes: 79bd37120b14 ("btrfs: rework chunk allocation to avoid exhaustion of the system chunk array")
+Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+e8582cc16881ec70a430@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=e8582cc16881ec70a430
+Link: https://syzkaller.appspot.com/ai_job?id=399adcc1-1743-4bd3-bec2-62461394dbb5
+To: "Chris Mason" <clm@fb.com>
+To: "David Sterba" <dsterba@suse.com>
+To: <linux-btrfs@vger.kernel.org>
+To: "Filipe Manana" <fdmanana@suse.com>
+Cc: <linux-kernel@vger.kernel.org>
+
+---
+diff --git a/fs/btrfs/block-group.c b/fs/btrfs/block-group.c
+index 8def7abb7..b99bd7bdf 100644
+--- a/fs/btrfs/block-group.c
++++ b/fs/btrfs/block-group.c
+@@ -4488,9 +4488,9 @@ static u64 get_profile_num_devs(const struct btrfs_fs_info *fs_info, u64 type)
+ 	return num_dev;
+ }
+ 
+-static void reserve_chunk_space(struct btrfs_trans_handle *trans,
+-				u64 bytes,
+-				u64 type)
++static int reserve_chunk_space(struct btrfs_trans_handle *trans,
++			       u64 bytes,
++			       u64 type)
+ {
+ 	struct btrfs_fs_info *fs_info = trans->fs_info;
+ 	struct btrfs_space_info *info;
+@@ -4565,13 +4565,15 @@ static void reserve_chunk_space(struct btrfs_trans_handle *trans,
+ 		if (!ret)
+ 			trans->chunk_bytes_reserved += bytes;
+ 	}
++
++	return ret;
+ }
+ 
+ /*
+  * Reserve space in the system space for allocating or removing a chunk.
+  * The caller must be holding fs_info->chunk_mutex.
+  */
+-void check_system_chunk(struct btrfs_trans_handle *trans, u64 type)
++int check_system_chunk(struct btrfs_trans_handle *trans, u64 type)
+ {
+ 	struct btrfs_fs_info *fs_info = trans->fs_info;
+ 	const u64 num_devs = get_profile_num_devs(fs_info, type);
+@@ -4581,7 +4583,7 @@ void check_system_chunk(struct btrfs_trans_handle *trans, u64 type)
+ 	bytes = btrfs_calc_metadata_size(fs_info, num_devs) +
+ 		btrfs_calc_insert_metadata_size(fs_info, 1);
+ 
+-	reserve_chunk_space(trans, bytes, type);
++	return reserve_chunk_space(trans, bytes, type);
+ }
+ 
+ /*
+diff --git a/fs/btrfs/block-group.h b/fs/btrfs/block-group.h
+index 790c2d467..43800523b 100644
+--- a/fs/btrfs/block-group.h
++++ b/fs/btrfs/block-group.h
+@@ -378,7 +378,7 @@ int btrfs_chunk_alloc(struct btrfs_trans_handle *trans,
+ 		      struct btrfs_space_info *space_info, u64 flags,
+ 		      enum btrfs_chunk_alloc_enum force);
+ int btrfs_force_chunk_alloc(struct btrfs_trans_handle *trans, u64 type);
+-void check_system_chunk(struct btrfs_trans_handle *trans, const u64 type);
++int check_system_chunk(struct btrfs_trans_handle *trans, const u64 type);
+ void btrfs_reserve_chunk_metadata(struct btrfs_trans_handle *trans,
+ 				  bool is_item_insertion);
+ u64 btrfs_get_alloc_profile(struct btrfs_fs_info *fs_info, u64 orig_flags);
+diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
+index 6eab4cc73..e77306e09 100644
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -3463,6 +3463,24 @@ int btrfs_remove_chunk(struct btrfs_trans_handle *trans, u64 chunk_offset)
+ 		return PTR_ERR(map);
+ 	}
+ 
++	/*
++	 * Check if we have enough system space to remove the chunk.
++	 * If we don't, and we can't allocate a new system chunk, we fail gracefully
++	 * before modifying the device tree.
++	 */
++	mutex_lock(&fs_info->chunk_mutex);
++	ret = check_system_chunk(trans, map->type);
++	if (ret) {
++		mutex_unlock(&fs_info->chunk_mutex);
++		goto out;
++	}
++	/*
++	 * Release the block reserve. We just wanted to ensure the system
++	 * space_info has enough free space. We will reserve it again later.
++	 */
++	btrfs_trans_release_chunk_metadata(trans);
++	mutex_unlock(&fs_info->chunk_mutex);
++
+ 	ret = btrfs_remove_dev_extents(trans, map);
+ 	if (ret)
+ 		goto out;
 
 
-Thanks
+base-commit: 075b74841bd0065a3bda3440873c747938e69b68
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
 
-Takashi Sakamoto
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+The person who has signed off on the patch is responsible for
+addressing comments.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
