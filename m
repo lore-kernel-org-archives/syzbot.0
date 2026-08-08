@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7726A1D6DA9
-	for <syzbot@lists.linux.dev>; Sat,  8 Aug 2026 21:29:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26F4C37D124
+	for <syzbot@lists.linux.dev>; Sat,  8 Aug 2026 23:23:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786224543; cv=none; b=BT9LQbAxSKw012WX4xs1ToJwzpyHHUpklF/RTzvFRuXZ8anufuearzxOXTNlAcAZtXARFqWBJ6EXYouNcb2wT2CZQQk7UlZLPFjmynUK8HwMo3DeQNiBCd+CUEI/WMm6VTNgJm2jfToLboMMPIjKnxhM6OCH9JBJsNA4PoQJWts=
+	t=1786231413; cv=none; b=aw44b+m2eQ4YMKjPzIiao1Fbpjx45o4VN+oAw9bFTFW/d2Cvyli6amw2HyklkSyAhjjLCRTynMuxCK/Stnz0NzraG19gZWW61eOn+zbU//ppMiwMyDMNUyjYuDw0/F4j8925V866kudG36I7c0OyPwSLX7N/QEPYdpyQ2JcCtSM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786224543; c=relaxed/simple;
-	bh=zNHfdX1ahIAMWWK1BmxLxFoaAzYae2J0nxVfAg7xDL0=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=eVhFgLBsgdbF5UYe3WoqUhXRxHvKMIgEIx78XCsCvnYDnZVjFSc2npJuUIcWqLfTjsCF8miMxR6GbUMYtVaiNBoAYo0//sqOBY/OrWUsq2noU0UgBfV3NQSfEeGHJme34LHbVjzqoIsL1NuTY5RtjkgxJ9qFh9w25c2Fq3WZyyI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Mq4xdlkA; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786231413; c=relaxed/simple;
+	bh=lQH5OSn/4wK/snqkjjjTykq3pEkEdTyYKkWg0Lmo8e8=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=fjeBHW5hATdqzidpdKduitKI8BZJIwWr5Y4g3AK2v7E7758g/dWj2pnGJB3NrJbObJNEEhjV0F5RLVlIsCxrpxrknk9KTHwbYqu5EqY+KC/V0eOMKHNC06TtQeuUEEDLsXWHxGnvXyAADLEBDyh124qeagfSAhcCsXnRT9JyXu8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JPoC5Yy9; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Mq4xdlkA"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id E61881F000E9;
-	Sat,  8 Aug 2026 21:29:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JPoC5Yy9"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id B1F431F000E9;
+	Sat,  8 Aug 2026 23:23:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786224542;
-	bh=KnctBQRjT2OhdtXQPpXZRRehzESmlhBmKmB+Gg75upI=;
+	s=k20260515; t=1786231411;
+	bh=gJlp86jG5SdpQ/s1urJumHF0qQJF9GRrgNGgZWzSJrM=;
 	h=From:To:Cc:Subject:Date;
-	b=Mq4xdlkApbkbBV74130iF69zIunrB7cBZZ9Lzy4ff0SXcmV/rZe2xS4/sZ/FTL6mQ
-	 cS8B6FafBi4Ba91HWVz2linH50S5Ui90pNnacx7i8wTMExFd3icXdge6O96WD7403p
-	 BzukHclXKYY0hRJ75cbIYl7IKIDq40edz3xLgNEAAwnKbA58vJMATbAjTeM6VOTY6O
-	 +EdWONElIrQni62AVvSqt/81QQkjD7NAMEmKlL6EPeYzuFzUzs0PT4h7TkXI4qkxyJ
-	 DCln/VXPP6OvksgMdWIDqqrbrbdwOfHZabQeD6zlAjm93JuRixl619KA7Z9aGGe81T
-	 g3PIq8xdkz0GA==
+	b=JPoC5Yy9aWJi9fjlTdOSQlaztmnITgoK7Bb2sSfzcG8a9JGIO6P/75fhzEL1Bpe2Y
+	 3XkRbxPP3L5lKhgWY55QdtXy1Pf865ReJkrMu7SgflD6W6ChnmRPBoqAFUYhGTSMnG
+	 Cgx6DCox6FAaiycFgk06zzP/Up98owU4uYX1nNtvMrwAWd/mMasxs1DqoInkTYxk/L
+	 2Q/X3Mm1PlrwrFSJ9sIuY9oNTC9Dt+TwUMKMiAz+Dv4dA1pW4PsGoVp1Vu/9XYvQ1L
+	 hWj9WMKuQJ1R9dQUF0oBWmdXQsunfiyEbCHUiIm21qGNg1rjv42kLe9YWAdLJIBzFA
+	 E9B3F2PJcVxRg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] Bluetooth: hci_core: Check HCI_UP before queuing tx_work
-Message-ID: <2c2febf2-fc12-4407-9c81-d3d9713f09a4@mail.kernel.org>
+Subject: [PATCH RFC] media: radio-usb-si4713: fix use-after-free on disconnect
+Message-ID: <985bf6f5-bab6-41fc-adb4-b92eb42389a9@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,99 +38,97 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Sat,  8 Aug 2026 21:29:01 +0000 (UTC)
+Date: Sat,  8 Aug 2026 23:23:31 +0000 (UTC)
 
-During the shutdown process of a Bluetooth device, hci_dev_close_sync() is
-called. This function clears the HCI_UP flag, flushes pending RX and TX
-works, and drains the workqueue to prevent lockdep issues during cleanup.
-After the workqueue is drained, it flushes the connections.
+A use-after-free bug occurs in i2c_adapter_depth() when the USB device is
+disconnected while a user-space process holds a file descriptor open for
+the video device. The radio-usb-si4713 driver defers i2c_del_adapter() to
+the v4l2_device release callback. If the release is delayed, the I2C
+adapter remains registered after the USB device is deleted. When the I2C
+core is accessed later, it traverses the device tree using the dangling
+parent pointer, leading to a use-after-free.
 
-Because the connections are flushed after the workqueue is drained, there
-is a race window where the workqueue is draining but the sockets are still
-in the BT_CONNECTED state. If a concurrent thread calls sendmsg() on an
-active L2CAP, SCO, or ISO socket during this window, the socket state is
-still considered connected. The sendmsg() call will eventually reach
-hci_send_acl(), hci_send_sco(), or hci_send_iso(), which unconditionally
-attempt to queue the transmission work (hdev->tx_work) on the draining
-workqueue. This triggers a warning in __queue_work() because non-chained
-work cannot be queued on a draining workqueue.
+BUG: KASAN: slab-use-after-free in i2c_adapter_depth
+drivers/i2c/i2c-core-base.c:1243 [inline]
+BUG: KASAN: slab-use-after-free in i2c_adapter_lock_bus+0x5e/0xf0
+drivers/i2c/i2c-core-base.c:849
+Read of size 8 at addr ffff88818f703108 by task syz-executor235/5896
 
-[ cut here ]
-workqueue: cannot queue hci_tx_work on wq hci0
-WARNING: kernel/workqueue.c:2306 at __queue_work+0xd4a/0x1090
-kernel/workqueue.c:2305
-RIP: 0010:__queue_work+0xd66/0x1090 kernel/workqueue.c:2305
 Call Trace:
  <TASK>
- queue_work_on+0x106/0x1c0 kernel/workqueue.c:2452
- l2cap_chan_send+0x168a/0x22f0 net/bluetooth/l2cap_core.c:-1
- l2cap_sock_sendmsg+0x33a/0x4d0 net/bluetooth/l2cap_sock.c:1180
- sock_sendmsg_nosec+0x13a/0x180 net/socket.c:775
- __sock_sendmsg net/socket.c:790 [inline]
- ____sys_sendmsg+0x54e/0x850 net/socket.c:2684
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2738
- __sys_sendmmsg+0x273/0x4d0 net/socket.c:2827
- __do_sys_sendmmsg net/socket.c:2854 [inline]
- __se_sys_sendmmsg net/socket.c:2851 [inline]
- __x64_sys_sendmmsg+0xa0/0xc0 net/socket.c:2851
+ i2c_adapter_depth drivers/i2c/i2c-core-base.c:1243 [inline]
+ i2c_adapter_lock_bus+0x5e/0xf0 drivers/i2c/i2c-core-base.c:849
+ i2c_lock_bus include/linux/i2c.h:809 [inline]
+ __i2c_lock_bus_helper drivers/i2c/i2c-core.h:47 [inline]
+ i2c_transfer+0xc8/0x2d0 drivers/i2c/i2c-core-base.c:2339
+ i2cdev_ioctl_rdwr+0x460/0x740 drivers/i2c/i2c-dev.c:306
+ i2cdev_ioctl+0x6a5/0x880 drivers/i2c/i2c-dev.c:467
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:597 [inline]
+ __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
  </TASK>
 
-To fix this issue, modify hci_send_acl(), hci_send_sco(), and
-hci_send_iso() to check if the HCI_UP flag is set on the device before
-attempting to queue the transmission work. The HCI_UP flag is cleared early
-in hci_dev_close_sync(), well before the workqueue is drained. If the flag
-is not set, the work is not queued. The skb is safely appended to the
-channel's or connection's data_q, which will be safely purged shortly after
-when hci_conn_hash_flush() executes, ensuring no memory leaks occur.
+To fix this, unregister the I2C adapter and V4L2 device synchronously in
+the disconnect callback. Additionally, call v4l2_device_unregister() before
+i2c_del_adapter() to prevent a double-free of the I2C client device, which
+would occur if the I2C adapter unregisters its clients before V4L2 does.
+The same ordering is applied to the error path in usb_si4713_probe().
+Finally, i2c_del_adapter() is called outside of radio->lock to avoid
+deadlocks with concurrent ioctl calls.
 
-Fixes: 76727c02c1e1 ("Bluetooth: Call drain_workqueue() before resetting state")
+Fixes: b874b39fcd2f ("[media] si4713: Added the USB driver for Si4713")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+b6919040d9958e2fc1ae@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=b6919040d9958e2fc1ae
-Link: https://syzkaller.appspot.com/ai_job?id=59121999-1293-40a6-aeeb-713e2d7dc16b
-To: <linux-bluetooth@vger.kernel.org>
-To: "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>
-To: "Marcel Holtmann" <marcel@holtmann.org>
-To: "Johan Hedberg" <johan.hedberg@intel.com>
+Reported-by: syzbot+450abcfc7906fe1a1e16@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=450abcfc7906fe1a1e16
+Link: https://syzkaller.appspot.com/ai_job?id=4960f118-574d-47b1-a640-160d51f8ec71
+To: "Hans Verkuil" <hverkuil@kernel.org>
+To: <linux-media@vger.kernel.org>
+To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
+To: "Dinesh Ram" <Dinesh.Ram@cern.ch>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 5ba9fe826..d9f091af3 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3242,7 +3242,8 @@ void hci_send_acl(struct hci_chan *chan, struct sk_buff *skb, __u16 flags)
+diff --git a/drivers/media/radio/si4713/radio-usb-si4713.c b/drivers/media/radio/si4713/radio-usb-si4713.c
+index 6e6764143..d5d97e336 100644
+--- a/drivers/media/radio/si4713/radio-usb-si4713.c
++++ b/drivers/media/radio/si4713/radio-usb-si4713.c
+@@ -128,10 +128,7 @@ static const struct v4l2_file_operations usb_si4713_fops = {
+ static void usb_si4713_video_device_release(struct v4l2_device *v4l2_dev)
+ {
+ 	struct si4713_usb_device *radio = to_si4713_dev(v4l2_dev);
+-	struct i2c_adapter *adapter = &radio->i2c_adapter;
  
- 	hci_queue_acl(chan, &chan->data_q, skb, flags);
+-	i2c_del_adapter(adapter);
+-	v4l2_device_unregister(&radio->v4l2_dev);
+ 	kfree(radio->buffer);
+ 	kfree(radio);
+ }
+@@ -488,7 +485,9 @@ static int usb_si4713_probe(struct usb_interface *intf,
+ 	return 0;
  
--	queue_work(hdev->workqueue, &hdev->tx_work);
-+	if (test_bit(HCI_UP, &hdev->flags))
-+		queue_work(hdev->workqueue, &hdev->tx_work);
+ del_adapter:
++	v4l2_device_unregister(&radio->v4l2_dev);
+ 	i2c_del_adapter(adapter);
++	goto err_v4l2;
+ err_i2cdev:
+ 	v4l2_device_unregister(&radio->v4l2_dev);
+ err_v4l2:
+@@ -506,8 +505,11 @@ static void usb_si4713_disconnect(struct usb_interface *intf)
+ 	mutex_lock(&radio->lock);
+ 	usb_set_intfdata(intf, NULL);
+ 	video_unregister_device(&radio->vdev);
+-	v4l2_device_disconnect(&radio->v4l2_dev);
+ 	mutex_unlock(&radio->lock);
++
++	v4l2_device_unregister(&radio->v4l2_dev);
++	i2c_del_adapter(&radio->i2c_adapter);
++
+ 	v4l2_device_put(&radio->v4l2_dev);
  }
  
- /* Send SCO data */
-@@ -3267,7 +3268,8 @@ void hci_send_sco(struct hci_conn *conn, struct sk_buff *skb)
- 	bt_dev_dbg(hdev, "hcon %p queued %d", conn,
- 		   skb_queue_len(&conn->data_q));
- 
--	queue_work(hdev->workqueue, &hdev->tx_work);
-+	if (test_bit(HCI_UP, &hdev->flags))
-+		queue_work(hdev->workqueue, &hdev->tx_work);
- }
- 
- /* Send ISO data */
-@@ -3338,7 +3340,8 @@ void hci_send_iso(struct hci_conn *conn, struct sk_buff *skb)
- 
- 	hci_queue_iso(conn, &conn->data_q, skb);
- 
--	queue_work(hdev->workqueue, &hdev->tx_work);
-+	if (test_bit(HCI_UP, &hdev->flags))
-+		queue_work(hdev->workqueue, &hdev->tx_work);
- }
- 
- /* ---- HCI TX task (outgoing data) ---- */
 
 
 base-commit: 075b74841bd0065a3bda3440873c747938e69b68
