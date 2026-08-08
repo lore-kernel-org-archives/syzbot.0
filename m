@@ -1,226 +1,143 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 020F4165F1A
-	for <syzbot@lists.linux.dev>; Sat,  8 Aug 2026 09:53:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93B8C3A16B8
+	for <syzbot@lists.linux.dev>; Sat,  8 Aug 2026 19:43:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786182808; cv=none; b=p7d+J+zpGGramF/xECcItDOZsy+5W8VUqV1NbgtrOP/FtRT66zbXpWEf7JMoFL0gPPxNhjMxitf0dzejFam6JL+19U6fZmjsqnFJ8FYP94b2zzwwdABz3I3AW6eZRhQylrq8oNQycojRe/C8F28RerbP+RvJYgM/Sl9ma/y7iEE=
+	t=1786218238; cv=none; b=dYfo4JvT+SmteFBpgMnudUxIzli+9X//59+TYxqObzZEvCXwCY8ySWrjjfEIdVFhfHa2iMIGB9k8I5zozcatSQRmuB4XFUyXk78BSJSZLzIo1CbMCIVxZHcmb7u7euenEq88V6k42jjBXfVPFSEqkDEPkT8GGDn7EI82yey+BWA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786182808; c=relaxed/simple;
-	bh=uPhwBiQo1mm3zjklGN+6KoTP9qrad7zYZ0W6tKfgW+M=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=hTIor0Aw/710ILl2IytEWM5heFe8TkFBk5OB1OSkYnxM+kFbtwEGT45PlkPVuIxKqnieHLPOFFdSIIghA4ofAkYNUPym4HAhwrnlmjwYKQwsNd3c4nc5KOuVYPs/BWSkETfjOqLrtTcAViPDVnTWXavnymUycoTT16lvzPam8zE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Gpv02tpM; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786218238; c=relaxed/simple;
+	bh=xjuAQz7VSBrZUXr4Qim7eaCsxevzN5sk4XPZCmcgkCI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MJyAVu7QWnU1EhgWmvCJ45wwG0WP0DT3A1dZCprwa8yBI9qrqkRnkskJZlt58yT/99cY9CpVAzTRG5cQ6uUc7lwV6fOKMghSTWiJEE1X7D9WMxo8FmdPlfirNCSnoTRK9qKNeD93NGI/6BBnMKPgGnU5eF4wNRmPF8khlwUFSbE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=openvpn.net; spf=pass smtp.mailfrom=openvpn.com; dkim=pass (2048-bit key) header.d=openvpn.net header.i=@openvpn.net header.b=gRNDX3BJ; arc=none smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=openvpn.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=openvpn.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Gpv02tpM"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 8CE661F000E9;
-	Sat,  8 Aug 2026 09:53:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786182806;
-	bh=5fIOH2jhj9esCEBi2Y0xYXmG8VsI5tKu9izA5bpBuy8=;
-	h=From:To:Cc:Subject:Date;
-	b=Gpv02tpMeeS3jO5A7kihYGi9YqIZE67ZbR8NC+fFF3zKjikniS0iDGwvVRKnO7J0P
-	 L6PxWAkAXEX3qHg/98rda3mSxdOHr9DA3Wi6RIgbeyKgqFtbvANwAxI9H8hdHxJlFY
-	 aKTQQ4wWnKyNFq2s0Truk7OzI+6QQOiGaPnSA6JUyBQ/uFd+zoxIb5XuFAOiwVtOuR
-	 lXT5PVIh/TXnQmByMWKBZ6yxuZpz9AjHZWh9o/3ToHvodhzEa0HDFxEC8wHrR/Nde/
-	 cymf3ndxefblYUy/fs7qP2YvGLc3OhJBDkZEoc5npHic4JC1zHbYSBwKEJBhVLVpmr
-	 18zhj1SyhsscA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] libceph: replace WARN_ON() with error handling for network input
-Message-ID: <9ec9dff3-f779-4ac6-ab8e-fcedd8a467b0@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=openvpn.net header.i=@openvpn.net header.b="gRNDX3BJ"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-47de0093c42so410442f8f.3
+        for <syzbot@lists.linux.dev>; Sat, 08 Aug 2026 12:43:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=openvpn.net; s=google; t=1786218235; x=1786823035; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:organization
+         :autocrypt:from:content-language:references:cc:to:subject:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=reh0WLx5n9bqEjEOwxCRA1XODyRksj/VupCL85M155A=;
+        b=gRNDX3BJPLU4U1bDjwhHLIptTwQ3PuDbbKQ3o6G+EnPtKVGJ8qcquYwDfjFTTKjKA9
+         5TfEG/0ztEz8wJyIKzOY1qJIo+dvggTTgwyXamSCmKC24L9om0bh+lHS1IlWYYoY9g0q
+         7J423to24bJOgUfWay1fLJS56e/HR930F7kUC1fMbQBCJ/HB9Esao9X4MbEAftmb5hMM
+         L1hfPKWWxem7xxjKvP1N1axmsykrqzx4wwM9EenedqNw3aBrgvAZyctBi506Lyz9TlHI
+         q9wQhX4LD4d6vk29fepaAtLg+umPop/8mK+sZsmPwKj9vKCU6mSHb5oLfMF8FnrEHbX+
+         vqXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786218235; x=1786823035;
+        h=content-transfer-encoding:content-type:in-reply-to:organization
+         :autocrypt:from:content-language:references:cc:to:subject:user-agent
+         :mime-version:date:message-id:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=reh0WLx5n9bqEjEOwxCRA1XODyRksj/VupCL85M155A=;
+        b=myRRdGy/AlWBXnzqkhtzc5fDzXnasynqt0hONNJozq/4P3M1zrIOyWBl7avWlA0GkY
+         2WD5k+inz9S0vfyIgdQ1yV5pNsPe5SRXqVhd4KVtWHsmltPJ8eHQZ3PtoWBA2Sm9C3zv
+         lsm6lnreA9dzIsZsd3K583CSwflMLiZmA2a8xJrfovXy99ZyIqnkDqOhTWGh4oefmvgr
+         JI/pP3lEmQkogJjxDCJCqxW+85AWBOx1BL72PiUlVyuVh9D2kaIGwR3uYHR4iTPH6NPm
+         E2aJPsHoGc+iowLes0dyhntR200dwCIrABHnRrQrwnWYTfNcMQGbLY3Y9PIQ7Y+cMGgB
+         nf7g==
+X-Forwarded-Encrypted: i=1; AHgh+Rotc9SzbxIEUUbIGOoOjWTD7srf0nUMdYVKuKXYH0E3UlaWOMmIJWqysQjr9psrcbUkWFwAFwA=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw6m+/axXGsYbbqkFctPKGfM13PZFCkEG2Yh8O8tLT4i4RE0nzY
+	9UnXidBaMFgxDlqRBo7ZYMwQu4z+U0ipqcYuRELub15xozVV8J2E8c9U6PUn1zAZ7PMKfZLztiM
+	cckzZfIS9q41932eXCH2WiglKXqtp0chW/l2Ifnltz41TMA+4M0s=
+X-Gm-Gg: AR+sD139YyffDBoiOVltguO4OG63xngrToFj7RYRzJmMDzabe5ZMW908VXzgklje0Dy
+	kkh5qoxKqWZcHVXQJKdhqXb+LNTs2EMkzPBfIRcYf68CJKPApj2A3VIJsUbdsAYR58BG4uh0L2f
+	T2fjnax7ff8YEw5jySR2TQxadaXrsarfZVNbzPTNvY+9DJZg53q8fZ4cgDcyECPL7R9TNYEGz85
+	9UMqYdEno/KH5fRAFMwbDJ35o9QNj34YoAXYKwZnhSSbBoPtCZltF1dzJbVfrLO9CNs7oixuU13
+	ozEgqDaOns/Wlu7j+gdmv4uFRHhjoJ/f6jtIE+uflhvuzQDgB4P70SXO0SsCQFXt73WUM5PA5p7
+	rZVsRZmT5XNyG6Nw6D5Z3471A1CmsxcZL+9pcayXUpJ8GLNWFoND676Xan9Z5UEP+nX84Q++wh/
+	G6uMAjR8ShekGCquQlZcff/mnLEKiHgfZz2EOW6AQYdyPz4W5GbT6LyvzG7Cghm5g3ULlvxZvZL
+	WfhW+xdVOWwix3vy+pzlztesBwfk/eAUAFNuA==
+X-Received: by 2002:a05:6000:4021:b0:47f:9176:da23 with SMTP id ffacd0b85a97d-48130c04453mr12526791f8f.0.1786218234829;
+        Sat, 08 Aug 2026 12:43:54 -0700 (PDT)
+Received: from ?IPV6:2001:67c:2fbc:1:7b3e:3878:d9a3:4ff0? ([2001:67c:2fbc:1:7b3e:3878:d9a3:4ff0])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48002145839sm16946528f8f.7.2026.08.08.12.43.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 08 Aug 2026 12:43:54 -0700 (PDT)
+Message-ID: <30dff1e5-cf28-4a42-9cbe-ffb7319c33d1@openvpn.net>
+Date: Sat, 8 Aug 2026 21:43:52 +0200
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Sat,  8 Aug 2026 09:53:26 +0000 (UTC)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [syzbot ci] Re: pull request: fixes for ovpn 2026-08-07
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: syzbot ci <syzbot+cifb58fcbd8413e765@syzkaller.appspotmail.com>,
+ andrew@lunn.ch, davem@davemloft.net, edumazet@google.com,
+ netdev@vger.kernel.org, pabeni@redhat.com, ralf@mandelbit.com,
+ sd@queasysnail.net, syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <6a756ce9.01d0871a.3a0d52.003b.GAE@google.com>
+ <937f09b2-cd5f-4352-90dc-dad67ef8ddf2@openvpn.net>
+ <20260807153529.79fdd152@kernel.org>
+Content-Language: en-US
+From: Antonio Quartulli <antonio@openvpn.net>
+Autocrypt: addr=antonio@openvpn.net; keydata=
+ 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
+ ifS0+hzvnPVD9wXa9kdjO+0H
+Organization: OpenVPN Inc.
+In-Reply-To: <20260807153529.79fdd152@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The Ceph messenger v1 and v2 protocol implementations currently use
-WARN_ON() to assert that the server's response adheres to the protocol.
-However, network input from a server can be invalid due to a buggy or
-malicious server. WARN_ON() must not be used for conditions that can
-legitimately happen, such as receiving invalid network data. While WARNINGs
-are not fatal by default, they pollute the kernel log with stack traces and
-can lead to kernel panics on systems configured with panic_on_warn.
+On 08/08/2026 00:35, Jakub Kicinski wrote:
+> On Fri, 7 Aug 2026 08:37:39 +0200 Antonio Quartulli wrote:
+>> Will get this addressed and respin the series.
+> 
+> This gets triggered in your own selftests.
+> You should probably take a hard look at your CI setup?
 
-When the kernel Ceph client connects to a Ceph server, it initiates a
-handshake and reads the server's reply directly from the network socket.
-The reply is then processed in process_connect() (for v1) or other
-processing functions (for v2). If the server sends an unexpected value,
-such as an incorrect connect_seq, the client triggers a WARN_ON(),
-resulting in the following warning:
+Yeah, sorry - I must have mixed it up with some other unrelated warning 
+that shows up during my VM test.
 
-------------[ cut here ]------------
-con->v1.connect_seq != le32_to_cpu(con->v1.in_reply.connect_seq)
-WARNING: net/ceph/messenger_v1.c:902 at process_connect
-net/ceph/messenger_v1.c:901 [inline], CPU#1: kworker/1:3/5645
-WARNING: net/ceph/messenger_v1.c:902 at ceph_con_v1_try_read+0x3335/0x6eb0
-net/ceph/messenger_v1.c:1366, CPU#1: kworker/1:3/5645
-RIP: 0010:process_connect net/ceph/messenger_v1.c:901 [inline]
-RIP: 0010:ceph_con_v1_try_read+0x3335/0x6eb0 net/ceph/messenger_v1.c:1366
-Call Trace:
- <TASK>
- ceph_con_workfn+0x208/0x14a0 net/ceph/messenger.c:1577
- process_one_work kernel/workqueue.c:3322 [inline]
- process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
+Will make sure to double check them all next time.
 
-Fix this by replacing WARN_ON() assertions on network input with graceful
-error handling. If the server sends unexpected data, log a descriptive
-error message using pr_err() instead, set the connection error message, and
-return an error code to abort the connection. This ensures that invalid
-network input is treated as a protocol violation rather than a kernel bug.
-The fix is applied to both messenger v1 (process_connect) and v2
-(process_hello, process_server_ident, process_session_retry, and
-process_session_retry_global).
+Regards,
 
-Fixes: 31b8006e1d79 ("ceph: messenger library")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+21f8628595b2061c438d@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=21f8628595b2061c438d
-Link: https://syzkaller.appspot.com/ai_job?id=56e865ad-bcea-4dc1-9df8-618a118f27c9
-To: "Alex Markuze" <amarkuze@redhat.com>
-To: <ceph-devel@vger.kernel.org>
-To: "Ilya Dryomov" <idryomov@gmail.com>
-To: "Viacheslav Dubeyko" <slava@dubeyko.com>
-To: "Sage Weil" <sage@newdream.net>
-Cc: <linux-kernel@vger.kernel.org>
-
----
-diff --git a/net/ceph/messenger_v1.c b/net/ceph/messenger_v1.c
-index c9e002d96..df2248b7b 100644
---- a/net/ceph/messenger_v1.c
-+++ b/net/ceph/messenger_v1.c
-@@ -898,8 +898,15 @@ static int process_connect(struct ceph_connection *con)
- 		     con->v1.peer_global_seq,
- 		     le32_to_cpu(con->v1.in_reply.connect_seq),
- 		     con->v1.connect_seq);
--		WARN_ON(con->v1.connect_seq !=
--			le32_to_cpu(con->v1.in_reply.connect_seq));
-+		if (con->v1.connect_seq != le32_to_cpu(con->v1.in_reply.connect_seq)) {
-+			pr_err("%s%lld %s connect_seq mismatch, expected %u, got %u\n",
-+			       ENTITY_NAME(con->peer_name),
-+			       ceph_pr_addr(&con->peer_addr),
-+			       con->v1.connect_seq,
-+			       le32_to_cpu(con->v1.in_reply.connect_seq));
-+			con->error_msg = "connect_seq mismatch";
-+			return -1;
-+		}
- 
- 		if (con->v1.in_reply.flags & CEPH_MSG_CONNECT_LOSSY)
- 			ceph_con_flag_set(con, CEPH_CON_F_LOSSYTX);
-diff --git a/net/ceph/messenger_v2.c b/net/ceph/messenger_v2.c
-index 05f6eea29..966a5f800 100644
---- a/net/ceph/messenger_v2.c
-+++ b/net/ceph/messenger_v2.c
-@@ -2237,9 +2237,16 @@ static int process_hello(struct ceph_connection *con, void *p, void *end)
- 		     __func__, con, ceph_pr_addr(my_addr));
- 	}
- 
--	WARN_ON(ceph_addr_is_blank(my_addr) || ceph_addr_port(my_addr));
--	WARN_ON(my_addr->type != CEPH_ENTITY_ADDR_TYPE_ANY);
--	WARN_ON(!my_addr->nonce);
-+	if (ceph_addr_is_blank(my_addr) || ceph_addr_port(my_addr) ||
-+	    my_addr->type != CEPH_ENTITY_ADDR_TYPE_ANY ||
-+	    !my_addr->nonce) {
-+		pr_err("%s%lld %s bad my_addr %s\n",
-+		       ENTITY_NAME(con->peer_name),
-+		       ceph_pr_addr(&con->peer_addr),
-+		       ceph_pr_addr(my_addr));
-+		con->error_msg = "bad my_addr";
-+		return -EINVAL;
-+	}
- 
- 	/* no reset_out_kvecs() as our hello may still be pending */
- 	ret = prepare_auth_request(con);
-@@ -2529,14 +2536,33 @@ static int process_server_ident(struct ceph_connection *con,
- 	con->peer_name.num = cpu_to_le64(global_id);
- 	con->v2.peer_global_seq = global_seq;
- 	con->peer_features = features;
--	WARN_ON(required_features & ~client->supported_features);
-+	if (required_features & ~client->supported_features) {
-+		pr_err("%s%lld %s missing required protocol features, my supported 0x%llx, server's required 0x%llx\n",
-+		       ENTITY_NAME(con->peer_name),
-+		       ceph_pr_addr(&con->peer_addr),
-+		       client->supported_features, required_features);
-+		con->error_msg = "missing required protocol features";
-+		return -EINVAL;
-+	}
- 	con->v2.server_cookie = cookie;
- 
- 	if (flags & CEPH_MSG_CONNECT_LOSSY) {
- 		ceph_con_flag_set(con, CEPH_CON_F_LOSSYTX);
--		WARN_ON(con->v2.server_cookie);
-+		if (con->v2.server_cookie) {
-+			pr_err("%s%lld %s server_cookie is set for lossy connection\n",
-+			       ENTITY_NAME(con->peer_name),
-+			       ceph_pr_addr(&con->peer_addr));
-+			con->error_msg = "server_cookie is set for lossy connection";
-+			return -EINVAL;
-+		}
- 	} else {
--		WARN_ON(!con->v2.server_cookie);
-+		if (!con->v2.server_cookie) {
-+			pr_err("%s%lld %s server_cookie is not set for lossless connection\n",
-+			       ENTITY_NAME(con->peer_name),
-+			       ceph_pr_addr(&con->peer_addr));
-+			con->error_msg = "server_cookie is not set for lossless connection";
-+			return -EINVAL;
-+		}
- 	}
- 
- 	clear_in_sign_kvecs(con);
-@@ -2618,7 +2644,14 @@ static int process_session_retry(struct ceph_connection *con,
- 	ceph_decode_64_safe(&p, end, connect_seq, bad);
- 
- 	dout("%s con %p connect_seq %llu\n", __func__, con, connect_seq);
--	WARN_ON(connect_seq <= con->v2.connect_seq);
-+	if (connect_seq <= con->v2.connect_seq) {
-+		pr_err("%s%lld %s connect_seq mismatch, expected > %llu, got %llu\n",
-+		       ENTITY_NAME(con->peer_name),
-+		       ceph_pr_addr(&con->peer_addr),
-+		       con->v2.connect_seq, connect_seq);
-+		con->error_msg = "connect_seq mismatch";
-+		return -EINVAL;
-+	}
- 	con->v2.connect_seq = connect_seq + 1;
- 
- 	free_conn_bufs(con);
-@@ -2651,7 +2684,14 @@ static int process_session_retry_global(struct ceph_connection *con,
- 	ceph_decode_64_safe(&p, end, global_seq, bad);
- 
- 	dout("%s con %p global_seq %llu\n", __func__, con, global_seq);
--	WARN_ON(global_seq <= con->v2.global_seq);
-+	if (global_seq <= con->v2.global_seq) {
-+		pr_err("%s%lld %s global_seq mismatch, expected > %llu, got %llu\n",
-+		       ENTITY_NAME(con->peer_name),
-+		       ceph_pr_addr(&con->peer_addr),
-+		       con->v2.global_seq, global_seq);
-+		con->error_msg = "global_seq mismatch";
-+		return -EINVAL;
-+	}
- 	con->v2.global_seq = ceph_get_global_seq(con->msgr, global_seq);
- 
- 	free_conn_bufs(con);
-
-
-base-commit: 075b74841bd0065a3bda3440873c747938e69b68
 -- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+Antonio Quartulli
+OpenVPN Inc.
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
