@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1433D15A86D
-	for <syzbot@lists.linux.dev>; Sat,  8 Aug 2026 04:50:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05BEE1A08AF
+	for <syzbot@lists.linux.dev>; Sat,  8 Aug 2026 07:49:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786164658; cv=none; b=O5fIW+R4vcCNd/501j0k3bWeZgHz2XlIBnO3mFlEqoPkR860/+KDr27SQmOJIW++K9iOfXfCyOn6G7U6yVMrJYS2zSkgVrdJ9EASLRYi+TKgnJFY4BNH971v7+4ULPWJoM39ZCQmm5B0ZcBc/7tWShEPpZ45p6nDRbOPefwer3Q=
+	t=1786175368; cv=none; b=HOc0GbWmArrsgFOd4zq3lp7Ba+cAA3GtQR1PHv9Gk+UoAkOMder8nh+921ySzBMvy2novIZvBiToXSN7YFe6R5Xspab5So8F/p1fzHzfznbp27ewkzToHkvGfLFCu+43BSKQNIczyHe+wLTATVlwttcq9R95B/omkug6KoOW4ws=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786164658; c=relaxed/simple;
-	bh=skaUxwzkKE/sKPN+QHjSWT6T24EUsu0Gn7HtuE5KDHs=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=U51YOQtMjyEQ8UjvmMRGD+0QLhIu2sUPL0LtlHgF/EOA2t7ZntNlwUiUn+JbWE8ZUeF2+Ao6qsBAcLlBvQr21pFbRHzZNYhSqUvu8IEofAToPgBPJVG/G23dWKbFPISFwLRpbJ8k73sQj7v2u4rDLFvvyvLNPRPMMKkzOW/kHOg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Awpny1dY; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786175368; c=relaxed/simple;
+	bh=EoaWr4cLwCiTyLQXiwKQtLr54FfdWN2nJqcgc28BkVs=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=FHfcpYgV765JzFvkJQnIwqZ6Hvqwrrw+GOJ+6L5FBgNhwyj4wmj8MuVb6Jgl+HEM8mep35c7IYXz0NVvYq0frSzaBGz3EZmQq/fHr/iPLHJpFIaCtfH5FQT4xRFqikArwVcPJ88zbCulmV676F0U9e4G6g8UVxPxW02h8ITLubw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MYIOB/p6; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Awpny1dY"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 8333B1F000E9;
-	Sat,  8 Aug 2026 04:50:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MYIOB/p6"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6E54C1F000E9;
+	Sat,  8 Aug 2026 07:49:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786164656;
-	bh=hIwpmJ6GkxoIqN8hjanzWPZNjliSAJTUIPVuJqxaWNM=;
+	s=k20260515; t=1786175366;
+	bh=f/UttVWOlahtr2FLO1ppMJq+hGAcx8YIcEuUq9mbx3o=;
 	h=From:To:Cc:Subject:Date;
-	b=Awpny1dYX6qfE6KtLLjqt+n5vlfhg4NMFw2FKF454GmWdTnvxgvozhE39RMc+h77H
-	 4VWcv+DD23EMh1q0EMkbmzEGCmxe9JJvPYruiS6lOX7YtxvkElHppbCctL2WdEnuvv
-	 bJRSan83Dag6B8GYwh69hlkoaxmPnAH/DVZk4EMBN3nOvG0IRlOP/pyU0f/UGkRc/O
-	 MW05cUG93T8gHuPOJsBzq4B7VmIgQOPrzlPSyEZET2oqHK1dlnYh9Kp5xp4Em+x9Xd
-	 g6NhCzLyLizKB1pli16D4UQTmOtTJXC1d2YAnwkBzLdAzB+cX+VCt0XKK5J2gXzEW+
-	 +nH4zPpplkIIg==
+	b=MYIOB/p69WKRurjq0Gdv4/5ExPhM+4FG3ELXfj05uUqXcUfZVFI75C05M+U6Nyk16
+	 TJvbL0kB4+KLicibzqe/QJCX/i/CGG6AWW6nzO0bMu4BC8+S3Pumpr9M5vBx5JMqHk
+	 5A/7fQ1Xaa/tYUrg2QwIIicy8UH2fUACp2gcEghu95ChOE6SB2tTRjBVs0LNtmQXkN
+	 prTRAWHicMMZ1noXFkJzdQ0ujRMuj/m7UmR4lqlx9BiUmd9Fh3GoeTEDzRMJXTYo8Z
+	 ZMzV3bz2rGNj+ENFGfKwHSwQRfKY+ILt4PZO1fHsboLI7daIiDIu0EDXJeTHJ+PBV+
+	 gbIkAOvpctxgQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] btrfs: check system chunk space before removing device extents
-Message-ID: <dc6f919f-966d-41dc-91a1-846dae1b8860@mail.kernel.org>
+Subject: [PATCH RFC] Bluetooth: hci_conn: Fix race condition during device teardown
+Message-ID: <21db7fdb-887d-4b6f-8971-79eb4145508a@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,159 +38,137 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Sat,  8 Aug 2026 04:50:56 +0000 (UTC)
+Date: Sat,  8 Aug 2026 07:49:26 +0000 (UTC)
 
-During a chunk relocation/balance operation, a transaction abort with
--ENOSPC can occur in btrfs_remove_chunk(). This happens because the
-filesystem runs out of system space while trying to remove a chunk item
-from the chunk tree, and it cannot allocate a new system chunk.
+A general protection fault occurs in klist_remove() (via klist_put() ->
+klist_del()) because it is being called on a klist_node that has already
+been removed from its list. This is caused by a race condition between the
+Bluetooth HCI subsystem and the RFCOMM subsystem (or other child
+subsystems) when tearing down devices.
 
-The crash trace is as follows:
-
-WARNING: fs/btrfs/volumes.c:3526 at btrfs_remove_chunk+0xc9b/0x1070
+Oops: general protection fault, probably for non-canonical address
+0xdffffc000000000b: 0000 [#1] SMP KASAN NOPTI
+KASAN: null-ptr-deref in range [0x0000000000000058-0x000000000000005f]
+CPU: 1 UID: 0 PID: 5001 Comm: kworker/u11:1 Not tainted
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+1.16.3-debian-1.16.3-2 04/01/2014
+Workqueue: hci0 hci_rx_work
+RIP: 0010:klist_put lib/klist.c:212 [inline]
+RIP: 0010:klist_del lib/klist.c:230 [inline]
+RIP: 0010:klist_remove+0x156/0x340 lib/klist.c:249
 Call Trace:
  <TASK>
- btrfs_relocate_chunk_finish fs/btrfs/volumes.c:3614 [inline]
- btrfs_relocate_chunk+0x3e5/0x810 fs/btrfs/volumes.c:3668
- __btrfs_balance+0x1b5f/0x29d0 fs/btrfs/volumes.c:4586
- btrfs_balance+0xaa6/0x1180 fs/btrfs/volumes.c:4973
- btrfs_ioctl_balance+0x3da/0x640 fs/btrfs/ioctl.c:3481
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x15f/0x560 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
+ device_move+0x18e/0x720 drivers/base/core.c:4698
+ hci_conn_del_sysfs+0xb8/0x1a0 net/bluetooth/hci_sysfs.c:75
+ hci_conn_cleanup net/bluetooth/hci_conn.c:170 [inline]
+ hci_conn_del+0xc3d/0x1200 net/bluetooth/hci_conn.c:1308
+ hci_disconn_complete_evt+0x5ac/0x890 net/bluetooth/hci_event.c:3470
+ hci_event_func net/bluetooth/hci_event.c:7784 [inline]
+ hci_event_packet+0x6cd/0xf10 net/bluetooth/hci_event.c:7835
+ hci_rx_work+0x3ee/0x1020 net/bluetooth/hci_core.c:4039
+ process_one_work kernel/workqueue.c:3322 [inline]
+ process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3486
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
  </TASK>
 
-The sequence of events leading to the abort is as follows. First,
-btrfs_remove_chunk() removes the device extents from the device tree by
-calling btrfs_remove_dev_extents(). It then calls check_system_chunk() to
-reserve system space for removing the chunk item from the chunk tree. If
-the system space is full, check_system_chunk() attempts to allocate a new
-system chunk. To allocate a new chunk, find_free_dev_extent() is called.
-However, find_free_dev_extent() searches the commit root of the device tree
-to prevent reusing space freed in the current transaction. Because the
-device extents were just freed in the current transaction by
-btrfs_remove_dev_extents(), find_free_dev_extent() does not see this freed
-space. If the device is otherwise full, it returns -ENOSPC.
-check_system_chunk() ignores the failure to allocate a system chunk and
-does not reserve any space. Finally, remove_chunk_item() is called, which
-fails with -ENOSPC because it needs to COW a node in the chunk tree but no
-system space was reserved. Since btrfs_remove_dev_extents() has already
-modified the device tree, btrfs_remove_chunk() cannot fail gracefully and
-is forced to abort the transaction.
+When an HCI connection is disconnected, hci_conn_del_sysfs() is called.
+This function iterates over all child devices of the connection device
+(conn->dev) and attempts to reparent them to NULL using device_move().
+Concurrently, the subsystem that actually owns the child device (e.g.,
+RFCOMM) might be deleting it, triggering device_del().
 
-To fix this, we must ensure that we have enough system space before
-modifying the device tree. We change check_system_chunk() and
-reserve_chunk_space() to return an int error code. In btrfs_remove_chunk(),
-we call check_system_chunk() early. If it fails, we can fail gracefully and
-return -ENOSPC before any irreversible tree modifications occur. If it
-succeeds, we immediately release the reserved metadata space using
-btrfs_trans_release_chunk_metadata(). This is necessary because
-btrfs_remove_dev_extents() can trigger nested chunk allocations which
-unconditionally release all chunk metadata reservations. We then proceed to
-call check_system_chunk() a second time later in the function to make the
-actual reservation, which is now guaranteed to succeed since we ensured the
-system space_info has enough free space.
+device_move() and device_del() are not designed to run concurrently on the
+same device. device_del() removes the device from its parent's list by
+calling klist_del(), which sets the node's internal list pointer to NULL.
+device_move() concurrently modifies dev->parent and calls klist_remove().
+If device_del() removes the node just before device_move() calls
+klist_remove(), klist_remove() will dereference a NULL list pointer,
+resulting in the observed general protection fault.
 
-Fixes: 79bd37120b14 ("btrfs: rework chunk allocation to avoid exhaustion of the system chunk array")
+The device_move() loop was recently introduced to fix a use-after-free bug.
+The UAF occurred because conn->dev dropped its reference to its parent hdev
+too early (in hci_conn_cleanup() during the unregistration phase). If
+conn->dev was kept alive by its children, its parent pointer would become
+dangling when hdev was subsequently freed. The flawed fix attempted to
+manually reparent children to NULL during unregistration to avoid accessing
+the freed parent.
+
+The correct and robust way to fix the underlying UAF is to ensure that
+conn->dev holds a reference to hdev for its entire lifetime, not just while
+it is registered. By moving hci_dev_put(hdev) from hci_conn_cleanup() to
+bt_link_release() (the .release callback called when the last reference to
+conn->dev is dropped), we guarantee that hdev remains alive as long as
+conn->dev exists in memory. This completely eliminates the UAF without
+needing to manually reparent children.
+
+With the UAF properly fixed by tying the parent's lifetime to the child's
+actual memory lifetime, the racy device_move() loop in hci_conn_del_sysfs()
+is no longer needed and is safely removed, resolving the general protection
+fault.
+
+Fixes: 27aabf27fd01 ("Bluetooth: fix use-after-free in device_for_each_child()")
 Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+e8582cc16881ec70a430@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=e8582cc16881ec70a430
-Link: https://syzkaller.appspot.com/ai_job?id=399adcc1-1743-4bd3-bec2-62461394dbb5
-To: "Chris Mason" <clm@fb.com>
-To: "David Sterba" <dsterba@suse.com>
-To: <linux-btrfs@vger.kernel.org>
-To: "Filipe Manana" <fdmanana@suse.com>
+Reported-by: syzbot+1f4e278e8e1a9b01f95f@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=1f4e278e8e1a9b01f95f
+Link: https://syzkaller.appspot.com/ai_job?id=0cfe0d07-8d9c-4f23-a9e3-d73b9f3b7cb0
+To: <linux-bluetooth@vger.kernel.org>
+To: "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>
+To: "Marcel Holtmann" <marcel@holtmann.org>
+To: "Dmitry Antipov" <dmantipov@yandex.ru>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/fs/btrfs/block-group.c b/fs/btrfs/block-group.c
-index 8def7abb7..b99bd7bdf 100644
---- a/fs/btrfs/block-group.c
-+++ b/fs/btrfs/block-group.c
-@@ -4488,9 +4488,9 @@ static u64 get_profile_num_devs(const struct btrfs_fs_info *fs_info, u64 type)
- 	return num_dev;
+diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
+index b1f911fd4..c01e77f94 100644
+--- a/net/bluetooth/hci_conn.c
++++ b/net/bluetooth/hci_conn.c
+@@ -168,8 +168,6 @@ static void hci_conn_cleanup(struct hci_conn *conn)
+ 	debugfs_remove_recursive(conn->debugfs);
+ 
+ 	hci_conn_del_sysfs(conn);
+-
+-	hci_dev_put(hdev);
  }
  
--static void reserve_chunk_space(struct btrfs_trans_handle *trans,
--				u64 bytes,
--				u64 type)
-+static int reserve_chunk_space(struct btrfs_trans_handle *trans,
-+			       u64 bytes,
-+			       u64 type)
+ int hci_disconnect(struct hci_conn *conn, __u8 reason)
+diff --git a/net/bluetooth/hci_sysfs.c b/net/bluetooth/hci_sysfs.c
+index 8957ce7c2..18e3c3508 100644
+--- a/net/bluetooth/hci_sysfs.c
++++ b/net/bluetooth/hci_sysfs.c
+@@ -13,7 +13,10 @@ static const struct class bt_class = {
+ static void bt_link_release(struct device *dev)
  {
- 	struct btrfs_fs_info *fs_info = trans->fs_info;
- 	struct btrfs_space_info *info;
-@@ -4565,13 +4565,15 @@ static void reserve_chunk_space(struct btrfs_trans_handle *trans,
- 		if (!ret)
- 			trans->chunk_bytes_reserved += bytes;
- 	}
+ 	struct hci_conn *conn = to_hci_conn(dev);
++	struct hci_dev *hdev = conn->hdev;
 +
-+	return ret;
+ 	kfree(conn);
++	hci_dev_put(hdev);
  }
  
- /*
-  * Reserve space in the system space for allocating or removing a chunk.
-  * The caller must be holding fs_info->chunk_mutex.
-  */
--void check_system_chunk(struct btrfs_trans_handle *trans, u64 type)
-+int check_system_chunk(struct btrfs_trans_handle *trans, u64 type)
- {
- 	struct btrfs_fs_info *fs_info = trans->fs_info;
- 	const u64 num_devs = get_profile_num_devs(fs_info, type);
-@@ -4581,7 +4583,7 @@ void check_system_chunk(struct btrfs_trans_handle *trans, u64 type)
- 	bytes = btrfs_calc_metadata_size(fs_info, num_devs) +
- 		btrfs_calc_insert_metadata_size(fs_info, 1);
- 
--	reserve_chunk_space(trans, bytes, type);
-+	return reserve_chunk_space(trans, bytes, type);
- }
- 
- /*
-diff --git a/fs/btrfs/block-group.h b/fs/btrfs/block-group.h
-index 790c2d467..43800523b 100644
---- a/fs/btrfs/block-group.h
-+++ b/fs/btrfs/block-group.h
-@@ -378,7 +378,7 @@ int btrfs_chunk_alloc(struct btrfs_trans_handle *trans,
- 		      struct btrfs_space_info *space_info, u64 flags,
- 		      enum btrfs_chunk_alloc_enum force);
- int btrfs_force_chunk_alloc(struct btrfs_trans_handle *trans, u64 type);
--void check_system_chunk(struct btrfs_trans_handle *trans, const u64 type);
-+int check_system_chunk(struct btrfs_trans_handle *trans, const u64 type);
- void btrfs_reserve_chunk_metadata(struct btrfs_trans_handle *trans,
- 				  bool is_item_insertion);
- u64 btrfs_get_alloc_profile(struct btrfs_fs_info *fs_info, u64 orig_flags);
-diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
-index 6eab4cc73..e77306e09 100644
---- a/fs/btrfs/volumes.c
-+++ b/fs/btrfs/volumes.c
-@@ -3463,6 +3463,24 @@ int btrfs_remove_chunk(struct btrfs_trans_handle *trans, u64 chunk_offset)
- 		return PTR_ERR(map);
+ static const struct device_type bt_link = {
+@@ -63,19 +66,6 @@ void hci_conn_del_sysfs(struct hci_conn *conn)
+ 		return;
  	}
  
-+	/*
-+	 * Check if we have enough system space to remove the chunk.
-+	 * If we don't, and we can't allocate a new system chunk, we fail gracefully
-+	 * before modifying the device tree.
-+	 */
-+	mutex_lock(&fs_info->chunk_mutex);
-+	ret = check_system_chunk(trans, map->type);
-+	if (ret) {
-+		mutex_unlock(&fs_info->chunk_mutex);
-+		goto out;
-+	}
-+	/*
-+	 * Release the block reserve. We just wanted to ensure the system
-+	 * space_info has enough free space. We will reserve it again later.
-+	 */
-+	btrfs_trans_release_chunk_metadata(trans);
-+	mutex_unlock(&fs_info->chunk_mutex);
-+
- 	ret = btrfs_remove_dev_extents(trans, map);
- 	if (ret)
- 		goto out;
+-	/* If there are devices using the connection as parent reset it to NULL
+-	 * before unregistering the device.
+-	 */
+-	while (1) {
+-		struct device *dev;
+-
+-		dev = device_find_any_child(&conn->dev);
+-		if (!dev)
+-			break;
+-		device_move(dev, NULL, DPM_ORDER_DEV_LAST);
+-		put_device(dev);
+-	}
+-
+ 	device_unregister(&conn->dev);
+ }
+ 
 
 
 base-commit: 075b74841bd0065a3bda3440873c747938e69b68
