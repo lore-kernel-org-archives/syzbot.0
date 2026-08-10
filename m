@@ -1,144 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtpo63.interia.pl (smtpo63.interia.pl [217.74.67.63])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26F4C37D124
-	for <syzbot@lists.linux.dev>; Sat,  8 Aug 2026 23:23:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 384A43672BA
+	for <syzbot@lists.linux.dev>; Mon, 10 Aug 2026 08:06:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.63
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786231413; cv=none; b=aw44b+m2eQ4YMKjPzIiao1Fbpjx45o4VN+oAw9bFTFW/d2Cvyli6amw2HyklkSyAhjjLCRTynMuxCK/Stnz0NzraG19gZWW61eOn+zbU//ppMiwMyDMNUyjYuDw0/F4j8925V866kudG36I7c0OyPwSLX7N/QEPYdpyQ2JcCtSM=
+	t=1786349190; cv=none; b=jVVLdMFc/AD4QYSVtyLNtN0IK4xAS9sLxaz5dAQ41dWfW9dWpxW29HJbwwMC3XRZD/f+JhsHNWa/K4iHH5p0NrvvMUx5XA6gFWhMKxuQBfyIxTZEr1SkjSkq3n+lX5tLie1UhVtCCxKqtbYezh3qYyZW2dDCblXDw7rsXkJw7pc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786231413; c=relaxed/simple;
-	bh=lQH5OSn/4wK/snqkjjjTykq3pEkEdTyYKkWg0Lmo8e8=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=fjeBHW5hATdqzidpdKduitKI8BZJIwWr5Y4g3AK2v7E7758g/dWj2pnGJB3NrJbObJNEEhjV0F5RLVlIsCxrpxrknk9KTHwbYqu5EqY+KC/V0eOMKHNC06TtQeuUEEDLsXWHxGnvXyAADLEBDyh124qeagfSAhcCsXnRT9JyXu8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JPoC5Yy9; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786349190; c=relaxed/simple;
+	bh=2R0N38cQyg+9z4f6+8mKllGslg3z8WpbANxKatSrqQk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nKpIuHgzKkgZfE6YwPUO2rwAUMoBx7d7OMjKwh0pvExwvtfIa/2Jq7KtLROgcMQK5WJZOtU+nM+adbRHnjY/3PCqHgiP58ycwOZQKSPq82pvtLspM6gW0Rru9VOJZU9T5bOr1jJURDiJJnP9hAuKbWnFQCcazzZzbIR1ShhyMNQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=FbRy/Pxp; arc=none smtp.client-ip=217.74.67.63
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JPoC5Yy9"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id B1F431F000E9;
-	Sat,  8 Aug 2026 23:23:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786231411;
-	bh=gJlp86jG5SdpQ/s1urJumHF0qQJF9GRrgNGgZWzSJrM=;
-	h=From:To:Cc:Subject:Date;
-	b=JPoC5Yy9aWJi9fjlTdOSQlaztmnITgoK7Bb2sSfzcG8a9JGIO6P/75fhzEL1Bpe2Y
-	 3XkRbxPP3L5lKhgWY55QdtXy1Pf865ReJkrMu7SgflD6W6ChnmRPBoqAFUYhGTSMnG
-	 Cgx6DCox6FAaiycFgk06zzP/Up98owU4uYX1nNtvMrwAWd/mMasxs1DqoInkTYxk/L
-	 2Q/X3Mm1PlrwrFSJ9sIuY9oNTC9Dt+TwUMKMiAz+Dv4dA1pW4PsGoVp1Vu/9XYvQ1L
-	 hWj9WMKuQJ1R9dQUF0oBWmdXQsunfiyEbCHUiIm21qGNg1rjv42kLe9YWAdLJIBzFA
-	 E9B3F2PJcVxRg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] media: radio-usb-si4713: fix use-after-free on disconnect
-Message-ID: <985bf6f5-bab6-41fc-adb4-b92eb42389a9@mail.kernel.org>
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="FbRy/Pxp"
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Mon, 10 Aug 2026 10:06:16 +0200 (CEST)
+Date: Mon, 10 Aug 2026 10:06:14 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: syzbot <syzbot@kernel.org>, syzkaller-bugs@googlegroups.com,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+	Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+	syzbot@lists.linux.dev
+Subject: Re: [PATCH] netdevsim: fix deadlock in nsim_bus_dev_max_vfs_write()
+Message-ID: <anmGdjgYCnH1G9gd@nr200>
+References: <b7bf56ea-7522-4163-acd5-aaa69ad03b3a@mail.kernel.org>
+ <20260805160851.571ed66f@kernel.org>
+ <anWJyHCic8XvA0Q2@nr200>
+ <20260807144755.49141d2d@kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Sat,  8 Aug 2026 23:23:31 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260807144755.49141d2d@kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1786349179; bh=5MUEEcbuzgwtEAb5xoGkQk/hmb6TxNRvXJ7Qdg1Xaj8=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=FbRy/Pxp8ZUdzq54VgJq7dhCVIyRAZAXwNswYL5J+Zilddj3jHDLOe55+RmSbUl+C
+	 H/siqXs3rKDuPZdoACu7QdLE+gLjH6pL3/vuGO9YmgtR2cXWrWkX/bg7tDaRmNC5VW
+	 H0EOHFG6wqQknzr4GjKHD+dagl8zLMgC2e2DdRPI=
 
-A use-after-free bug occurs in i2c_adapter_depth() when the USB device is
-disconnected while a user-space process holds a file descriptor open for
-the video device. The radio-usb-si4713 driver defers i2c_del_adapter() to
-the v4l2_device release callback. If the release is delayed, the I2C
-adapter remains registered after the USB device is deleted. When the I2C
-core is accessed later, it traverses the device tree using the dangling
-parent pointer, leading to a use-after-free.
+On sie 07, 2026 14:47, Jakub Kicinski wrote:
+> On Fri, 7 Aug 2026 09:31:20 +0200 Slawomir Stepien wrote:
+> > That's true, but is netdevsim used *just* by the selftests (or was
+> > designed with only selftests in mind)? What if someone is using it
+> > without selftests?
+> 
+> Quoting documentation:
+> 
+>   netdevsim
+>   ~~~~~~~~~
+>   
+>   ``netdevsim`` is a test driver which can be used to exercise driver
+>   configuration APIs without requiring capable hardware.
+>   Mock-ups and tests based on ``netdevsim`` are encouraged when
+>   adding new APIs with complex logic in the stack. The tests should
+>   be written so that they can run both against ``netdevsim`` and a real
+>   device (see ``tools/testing/selftests/drivers/net/README.rst``).
+>   ``netdevsim``-only tests should focus on testing corner cases
+>   and failure paths in the core which are hard to exercise with a real driver.
+>   
+>   ``netdevsim`` in itself is **not** considered
+>   a use case/user. You must also implement the new APIs in a real driver.
+>   
+>   We give no guarantees that ``netdevsim`` won't change in the future
+>   in a way which would break what would normally be considered uAPI.
+>   
+>   ``netdevsim`` is reserved for use by upstream tests only, so any
+>   new ``netdevsim`` features must be accompanied by selftests under
+>   ``tools/testing/selftests/``.
+>   
+> See: https://www.kernel.org/doc/html/next/process/maintainer-netdev.html#netdevsim
+> 
+> > On the other hand: what sashiko found:
+> > https://netdev-ai.bots.linux.dev/sashiko/#/patchset/b7bf56ea-7522-4163-acd5-aaa69ad03b3a%40mail.kernel.org
+> > is true: the same issue will be with e.g. break_health. So it seems
+> > to me that a better approach would be to change when the debugfs
+> > files are removed.
+> 
+> I seem to recall being annoyed at the fact that the health API takes
+> devlink lock. It should be callable from IRQ even. Forcing drivers
+> to worry about calling context is annoying for real drivers too.
+> 
+> > It seems to me that change in nsim_drv_remove() might be easy, but
+> > what about nsim_dev_reload_down()...it seems it will have the same
+> > deadlock. Or am I missing something for this case?
+> 
+> netdevsim is just a test mock. Fixing it for the sake of fixing
+> netdevsim is a waste of everyone's time. The first question you should
+> be asking yourself is "do I understand what this code was *designed
+> for*"..
 
-BUG: KASAN: slab-use-after-free in i2c_adapter_depth
-drivers/i2c/i2c-core-base.c:1243 [inline]
-BUG: KASAN: slab-use-after-free in i2c_adapter_lock_bus+0x5e/0xf0
-drivers/i2c/i2c-core-base.c:849
-Read of size 8 at addr ffff88818f703108 by task syz-executor235/5896
+Thanks Jakub, this is now clear for me. I will create a patch that removes this not used part then.
 
-Call Trace:
- <TASK>
- i2c_adapter_depth drivers/i2c/i2c-core-base.c:1243 [inline]
- i2c_adapter_lock_bus+0x5e/0xf0 drivers/i2c/i2c-core-base.c:849
- i2c_lock_bus include/linux/i2c.h:809 [inline]
- __i2c_lock_bus_helper drivers/i2c/i2c-core.h:47 [inline]
- i2c_transfer+0xc8/0x2d0 drivers/i2c/i2c-core-base.c:2339
- i2cdev_ioctl_rdwr+0x460/0x740 drivers/i2c/i2c-dev.c:306
- i2cdev_ioctl+0x6a5/0x880 drivers/i2c/i2c-dev.c:467
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
-
-To fix this, unregister the I2C adapter and V4L2 device synchronously in
-the disconnect callback. Additionally, call v4l2_device_unregister() before
-i2c_del_adapter() to prevent a double-free of the I2C client device, which
-would occur if the I2C adapter unregisters its clients before V4L2 does.
-The same ordering is applied to the error path in usb_si4713_probe().
-Finally, i2c_del_adapter() is called outside of radio->lock to avoid
-deadlocks with concurrent ioctl calls.
-
-Fixes: b874b39fcd2f ("[media] si4713: Added the USB driver for Si4713")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+450abcfc7906fe1a1e16@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=450abcfc7906fe1a1e16
-Link: https://syzkaller.appspot.com/ai_job?id=4960f118-574d-47b1-a640-160d51f8ec71
-To: "Hans Verkuil" <hverkuil@kernel.org>
-To: <linux-media@vger.kernel.org>
-To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-To: "Dinesh Ram" <Dinesh.Ram@cern.ch>
-Cc: <linux-kernel@vger.kernel.org>
-
----
-diff --git a/drivers/media/radio/si4713/radio-usb-si4713.c b/drivers/media/radio/si4713/radio-usb-si4713.c
-index 6e6764143..d5d97e336 100644
---- a/drivers/media/radio/si4713/radio-usb-si4713.c
-+++ b/drivers/media/radio/si4713/radio-usb-si4713.c
-@@ -128,10 +128,7 @@ static const struct v4l2_file_operations usb_si4713_fops = {
- static void usb_si4713_video_device_release(struct v4l2_device *v4l2_dev)
- {
- 	struct si4713_usb_device *radio = to_si4713_dev(v4l2_dev);
--	struct i2c_adapter *adapter = &radio->i2c_adapter;
- 
--	i2c_del_adapter(adapter);
--	v4l2_device_unregister(&radio->v4l2_dev);
- 	kfree(radio->buffer);
- 	kfree(radio);
- }
-@@ -488,7 +485,9 @@ static int usb_si4713_probe(struct usb_interface *intf,
- 	return 0;
- 
- del_adapter:
-+	v4l2_device_unregister(&radio->v4l2_dev);
- 	i2c_del_adapter(adapter);
-+	goto err_v4l2;
- err_i2cdev:
- 	v4l2_device_unregister(&radio->v4l2_dev);
- err_v4l2:
-@@ -506,8 +505,11 @@ static void usb_si4713_disconnect(struct usb_interface *intf)
- 	mutex_lock(&radio->lock);
- 	usb_set_intfdata(intf, NULL);
- 	video_unregister_device(&radio->vdev);
--	v4l2_device_disconnect(&radio->v4l2_dev);
- 	mutex_unlock(&radio->lock);
-+
-+	v4l2_device_unregister(&radio->v4l2_dev);
-+	i2c_del_adapter(&radio->i2c_adapter);
-+
- 	v4l2_device_put(&radio->v4l2_dev);
- }
- 
-
-
-base-commit: 075b74841bd0065a3bda3440873c747938e69b68
 -- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Slawomir Stepien
