@@ -1,130 +1,155 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EDA3418340
-	for <syzbot@lists.linux.dev>; Tue, 11 Aug 2026 21:16:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786483017; cv=none; b=jTEQyTpOPs4ObdAnWVqf6xju/egrmdaA/W2Zc/FpNz5ma0mnX7NH+U2DmYI9nl+ESYqd2F4UM2Z8J5u70ytBxsCH0r5O0IhTdjb3U7ikWZ4Z9So6VJrmsTmjR9W+QajSW+4uZ7jGtuUFMA+nfleBxUCpQSheiIm0+USdxfw/ECc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786483017; c=relaxed/simple;
-	bh=ppRPobPS74JdkGWvukYj6+HEkvlWp/SJnqnLCKAbQc8=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=QCPjalM1DG927GXVl4TOXM3y3HXgpc4il8gvMUH/gmP5UcUW1INKA2QYXFZCoxzy2oCm6eTX0IfywJY+0/KsX5u9ZloxTJeVfIYTNz5uBmYohWr/301qawkYS5cW0JxFBwNfdZXrOMq/KNF6cyxX6oIBzX7icn0ceFqse2XQNX8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KbySESao; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7C0B3AFB06
+	for <syzbot@lists.linux.dev>; Tue, 11 Aug 2026 22:39:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786487955; cv=pass; b=oXWBtC4fUhCC9jgA6brUhAiGmZbarcJhoujo6X+7sc616O9aE6HbAtqLRwzu1pw1If/nixtUAukfCGt5MMRXLHkC6SBzMUwW6NC+XXFpcILDEcuzHwgTMh968fKthUiVetk+DtVdCixVSBPvXFVmy3ibkOnHV5vSV+uSSqMuJj8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786487955; c=relaxed/simple;
+	bh=kQ+fdYLDhgGWWrJs09YPGMYtOEZLeknZ+epQWvrMl0w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QYJ7AxWWbljDr9NB/CqwZ++YwyIIazVDJ9k+Y7W6LS03ElT5vURXCZO1viv1nOGmJOLvPkclzi9YBeZTsu7A24dA61U2J3alcX+lsDNw7MfeSORNo/QRC81cdIxVFW8SYoy87JHtmKbHW6LdC3urk8qTD7E9XPlPOBz9/Zf23JA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=fLUy3D2f; arc=pass smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KbySESao"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 468E11F000E9;
-	Tue, 11 Aug 2026 21:16:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786483009;
-	bh=TaJHvEPKW09t3BHNvD0nv2g5DhY2hmMM1Q4Y2eah5JA=;
-	h=From:To:Cc:Subject:Date;
-	b=KbySESaodtucnIl1FpvNAQg6kg6l+jHtWKqKB7oAuZSXzmqGIX5sygJIOJB/1ojlM
-	 ThWGaWzaInsIA/PAH9Nod2cyNMv8OWGo/t/IqvqwTv3esj/cFLWkYV6dnv2d9WSvqI
-	 qXpLoNKnU9HqAg3FNhXvumCb5P+NfoMfV9ntoDzfKeh/6ZyTK7yEULolE3PvUqKkBk
-	 9bDQffjjWvAKEztNL/rv4syBk8R0/KhyDAoOLRB2JikbmY8PDYhQHKvXSgPg0mltt1
-	 qrKY5MKBq0vz2kzacw4lFnVbGHTkzSg7NuZudWwpeJgVhfabiueLvWKbBvMIAWyD1e
-	 z1dv5z0Pp2npg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: gadget: uvc: check endpoint enabled state in uvcg_video_enable()
-Message-ID: <f345b3ad-4dff-4a90-8a9e-672979e4a8ba@mail.kernel.org>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="fLUy3D2f"
+Received: by smtp.kernel.org (Postfix)
+	id 351DC1F00A3A; Tue, 11 Aug 2026 22:39:14 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=209.85.210.51
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1786487954;
+	b=FJGqVygr3h9JU1WOhDRc9A0bNQdYwaM+taEE7HfJUKidPmWMI0/nQQQw6kqcy0R/EyJs
+	 lwJZ2ahTCM0OIxu47FGzVYLiJBEPl4b6qdm9RrQ16zbNNT0w2vZmJ1lPBRYybDqVIbvgn
+	 PTab97RkgNAq/gmGexZonp4U387fiyIpudhSr6ZK+JTotFbXW+AmjOAaqLb45BgV2Ysc2
+	 2LUkW0Y3X8enUybI2ExuI3WuUxE9t6h8SMe9G9cOhKeYoVoyBb1Tjf1KAVv4+tmWSK3Ci
+	 ToKlDmZqjuiycNVSC+L/6K2KA83TpYmRgIym5X7SmE6BaUGNrlFKrCSg+s5e9H6tOlw==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1786487954;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=ZYA0I95z6d9/WlICxAA3jTqC1JPj7QxjoWJUfGcNVY4=;
+	b=TJQK3TPFhFZj+BCGETxvUz2eSgu/1eKizmvIPufOuvKR9g7UK5h+3iHgpleGwcSxIvpD
+	 jsoIp1R6/Z4NB7YLN8RVk3fHX3DKXAJJPdENh4tmxaUQwqKp3BB1sgFHDpkI8BVTvuUDc
+	 NJFI94TbJVLDAwW24KtHGIrmeBQdRnzKJU7At/uE1njBUPQpCZJZXurjP07VuFJvKy+UO
+	 cPsWHzORio3Rty7vjomGYjbKrFuHlcU8RCRy/rVXitPE1793MrlpnF5yj8CLY5J/qP5fg
+	 dvGao9J8gek6XpB/ht1OcG7ocgQK4jURXcgyc+VP8/6aa2SaKZ7fmKmMLxLAmiLt3vA==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=google header.b=fLUy3D2f;
+	dmarc=pass header.from=linuxfoundation.org;
+	spf=pass smtp.mailfrom=linuxfoundation.org;
+	arc=none smtp.remote-ip=209.85.210.51
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id C0A561F000E9
+	for <syzbot@kernel.org>; Tue, 11 Aug 2026 22:39:12 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=google header.b=fLUy3D2f
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org C0A561F000E9
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7eb4d532e65so188669a34.0
+        for <syzbot@kernel.org>; Tue, 11 Aug 2026 15:39:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google; t=1786487951; x=1787092751; darn=kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ZYA0I95z6d9/WlICxAA3jTqC1JPj7QxjoWJUfGcNVY4=;
+        b=fLUy3D2fOHqJmwR+Bj1bFRA/4EOzmdAl9VhxlSLQKF+CDKYAjIW0dNYdQdLXFOlc6f
+         SeZ0I7b7EPGbDGJsVozFhrwHqx/zw0+uYIT198ysCTMYvytRormB3JVx5UCc/JY8418j
+         xFHtY1kammKRLTac3GM+lrF1SFi18ctkByOYM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786487951; x=1787092751;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=ZYA0I95z6d9/WlICxAA3jTqC1JPj7QxjoWJUfGcNVY4=;
+        b=Za6WI8lBzKNynPbWlCjU2uu9yVi+AbmhGEwBdSspQjuLJT92HLwTPe4/w1Utm/dJAP
+         u4BKjbeGLem5I9Bli24jioudtIqWcbQYnGbXOhnJ+1li66gajaD3yczVasn+mx/qXnjr
+         Mc9qnusbOeKztHt8PNnl4EpCxWW8zHqaxs4t3rC52B/K/MKXJPE/w7D6oweu/7iV+piV
+         CJRzM30ZFGzSlnaj1AWwIOtxgz96lE2DoMKkVZXUyHb9S5dhvPJ6rQVjr0yEUGqmWkSv
+         dbVzJ9n/YvbgAEjvaYajiDABwKh29r+oxN89uPsv0JRHAktbI90ZT8yFoZMwvU2hQ5Qy
+         9HpQ==
+X-Gm-Message-State: AOJu0Yweav7vy4GL44sKvgCTgdi5exdNGl2f0SuIxp1dQCECCrn78UL6
+	N0Jumgyk1+5hSDiwnQy/IT5L/lpraUDrBSRQmqEVg/yGJRu8BFj7wwGbW7ZgqmvkUnrYWZG8wTW
+	11k4SDZM=
+X-Gm-Gg: AR+sD135XLp6pgfELDyZVcRS4e++2mFw1l/4nuFVYlCTz4Pb1WFUMYdS8ERBFP1IpQz
+	uw3OQCDPmjhU3dZJcTIOWepzHmOdoShk9TYnGaYi9CurRG800U3mLpNhIGycSkGesWF7RCA9Xt9
+	Sskn17wqusnkZxx1wyhIpUaHr/qkOo6P8atxWLh8KSy1uNDXpyV+3BB958CE24DrOtWxJ+fYvHy
+	SDh1RUGNRgZNtSRqShmaRa6l/CdEKvN7awUPKSkpgnOAfususUlOSrBtFHQ8r/V3tkyVpiyBntd
+	57HUOYLNhgJPV+AZ5ylzLuirV/+saNlhgSapC46FqPrqraQwkKdRmewqNMFTKVXfe9FR2hQTwW4
+	yX3r3IQ/YXsQILitXHC56DPEWucSxWQBIRa4UQoOQ/JVhYzHiWtHRe0E6TBHWSnZ7dmA9yA1XMo
+	nokikPyA+wvJKz3mSj3VHKgWrrBNYKbqCbHmLqzXcvIsAYY7qFKWWcGBllyFrfDE7HoubyBA==
+X-Received: by 2002:a05:6830:82ad:b0:7e6:f083:130e with SMTP id 46e09a7af769-7f3b791b0f2mr587825a34.4.1786487951697;
+        Tue, 11 Aug 2026 15:39:11 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.57.99])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7f3b3475bfesm1063173a34.27.2026.08.11.15.39.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Aug 2026 15:39:11 -0700 (PDT)
+Message-ID: <246f34a4-e564-4f0a-911c-1f9f0b4ae1e9@linuxfoundation.org>
+Date: Tue, 11 Aug 2026 16:39:08 -0600
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] usbip: fix use-after-free in event_handler()
+To: Aleksandr Nogikh <nogikh@google.com>
+Cc: syzbot <syzbot@kernel.org>, syzkaller-bugs@googlegroups.com,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org,
+ Shuah Khan <shuah@kernel.org>, Valentina Manea
+ <valentina.manea.m@gmail.com>, Nobuo Iwata <nobuo.iwata@fujixerox.co.jp>,
+ i@zenithal.me, linux-kernel@vger.kernel.org, syzbot@lists.linux.dev,
+ Shuah Khan <skhan@linuxfoundation.org>
+References: <ee9bc932-2fbf-4e8f-90e2-6cf604be9ff1@mail.kernel.org>
+ <b47d2b37-0aba-46cc-afaf-cf824d99524e@linuxfoundation.org>
+ <CANp29Y51K1Y0Z77oUEQmDpVPjJuz3fQhvvZp2=fw3GWSPiCg3w@mail.gmail.com>
+ <34d4ca1b-ce89-444f-bb02-245287edfad0@linuxfoundation.org>
+ <CANp29Y4NLVebq6L7STgcFJYSJo81ZpO4hNvaJQT14OGDZqwzxQ@mail.gmail.com>
+Content-Language: en-US
+From: Shuah Khan <skhan@linuxfoundation.org>
+In-Reply-To: <CANp29Y4NLVebq6L7STgcFJYSJo81ZpO4hNvaJQT14OGDZqwzxQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Date: Tue, 11 Aug 2026 21:16:49 +0000 (UTC)
 
-A NULL pointer dereference can occur in uvc_video_prep_requests() if
-userspace issues a VIDIOC_STREAMON ioctl before the USB host has fully
-configured the streaming endpoint.
+On 8/11/26 07:07, Aleksandr Nogikh wrote:
+> On Mon, Aug 10, 2026 at 9:33 PM Shuah Khan <skhan@linuxfoundation.org> wrote:
+>>
+> < ... >
+>>>
+>>> During unbinding, we must wait for the scheduled removal event to
+>>> finish before we can safely free the device structures. From what I
+>>> see in the code, once we have reached wait_event_interruptible(),
+>>> there's no way to abort the process or somehow gracefully handle the
+>>> error.
+>>>
+>>
+>> Yes I agree with you on rewinding being hard.
+>>
+>> Care to explain the scope of this assist?
+>>
+>> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> 
+> It was generated by the syzbot's AI patch generation agent:
+> https://github.com/google/syzkaller/blob/master/docs/syzbot_ai_patches.md
+> 
+> We manually review the patches it suggests and upstream those we
+> believe are fully correct.
+> 
 
-When userspace calls VIDIOC_STREAMON, the driver handles it in
-uvc_v4l2_streamon(), which in turn calls uvcg_video_enable(). Currently,
-uvcg_video_enable() only checks if the endpoint pointer is allocated
-(video->ep == NULL), but it fails to check if the endpoint is actually
-enabled (video->ep->enabled).
+As you are reviewing this generated code, did you look into scenarios
+where the driver to hang in wait_event()?
 
-The endpoint descriptor (video->ep->desc) is only assigned when the USB
-host explicitly selects the streaming alternate setting via a SET_INTERFACE
-control request. If userspace prematurely calls VIDIOC_STREAMON before the
-host has selected the streaming alternate setting, video->ep->desc will
-still be NULL.
-
-Because uvcg_video_enable() does not verify the endpoint's enabled state,
-it proceeds to call uvc_video_alloc_requests() and then
-uvc_video_prep_requests(). Inside uvc_video_prep_requests(), the code
-unconditionally dereferences video->ep->desc, resulting in a KASAN
-null-ptr-deref / general protection fault:
-
-Oops: general protection fault, probably for non-canonical address
-0xdffffc0000000000: 0000 [#1] SMP KASAN NOPTI
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-RIP: 0010:usb_endpoint_xfer_isoc include/uapi/linux/usb/ch9.h:571 [inline]
-RIP: 0010:uvc_video_prep_requests
-drivers/usb/gadget/function/uvc_video.c:508 [inline]
-RIP: 0010:uvc_video_alloc_requests
-drivers/usb/gadget/function/uvc_video.c:559 [inline]
-RIP: 0010:uvcg_video_enable+0x142/0xe70
-drivers/usb/gadget/function/uvc_video.c:784
-Call Trace:
- <TASK>
- uvc_v4l2_streamon+0x7e/0x110 drivers/usb/gadget/function/uvc_v4l2.c:531
- __video_do_ioctl+0x8af/0xc70 drivers/media/v4l2-core/v4l2-ioctl.c:3133
- video_usercopy+0x860/0x1430 drivers/media/v4l2-core/v4l2-ioctl.c:3475
- v4l2_ioctl+0x18d/0x1e0 drivers/media/v4l2-core/v4l2-dev.c:366
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
-
-To fix this, update uvcg_video_enable() to also verify that the endpoint is
-enabled (!video->ep->enabled). This ensures that if userspace prematurely
-calls VIDIOC_STREAMON, the driver will safely reject the request with
--ENODEV instead of crashing the kernel.
-
-Fixes: 48dbe731171e ("usb: gadget: uvc: set req_size and n_requests based on the frame interval")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+44835f0858f11e3e923c@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=44835f0858f11e3e923c
-Link: https://syzkaller.appspot.com/ai_job?id=7c0e5e06-0c49-4143-aeab-5a4c53b4bdaa
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-To: "Michael Grzeschik" <m.grzeschik@pengutronix.de>
-Cc: "Frank Li" <Frank.Li@nxp.com>
-Cc: "Kees Cook" <kees@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Junzhong Pan" <panjunzhong@linux.spacemit.com>
-Cc: "Xu Yang" <xu.yang_2@nxp.com>
-
----
-diff --git a/drivers/usb/gadget/function/uvc_video.c b/drivers/usb/gadget/function/uvc_video.c
-index 2f9700b3f..d4aeedacc 100644
---- a/drivers/usb/gadget/function/uvc_video.c
-+++ b/drivers/usb/gadget/function/uvc_video.c
-@@ -764,7 +764,7 @@ int uvcg_video_enable(struct uvc_video *video)
- {
- 	int ret;
- 
--	if (video->ep == NULL) {
-+	if (video->ep == NULL || !video->ep->enabled) {
- 		uvcg_info(&video->uvc->func,
- 			  "Video enable failed, device is uninitialized.\n");
- 		return -ENODEV;
+thanks,
+-- Shuah
 
 
-base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
