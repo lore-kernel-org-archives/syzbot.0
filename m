@@ -1,110 +1,279 @@
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A09A37C90E
-	for <syzbot@lists.linux.dev>; Tue, 11 Aug 2026 07:24:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C190347520
+	for <syzbot@lists.linux.dev>; Tue, 11 Aug 2026 08:03:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786433069; cv=none; b=RJLEOg/4qJp9NC7Eg43gRMCHPRJfslfCw5EI3WbZg6nBHVWfQw+wMA2V7CQ/OLpTo0GMLQaCRgXRHxP3aSpmuPQeaxYaV2rgimvSsALWRXF8KffmjHXKnv0rrwqWMcrFV2iZzprnY/cZaM6yAPkGIB6JDeqgP4krz4KuIACm4jc=
+	t=1786435407; cv=none; b=G4L9Y+BZTjpSB4ZyHaF6TSo7kdTt7iOAlE3RDdjcVq+cwfsCc7/Gh9mV3G2GcEi6THDOUu2Mo3vQZPizo6LunwnHzE8PyD4VISbt5S/BnES1s6JF3PujGhiyjjI45PMq1Wb1uME/dD4TIZPapvEdM4DeeMeH9Ivt1BlizSHKv6w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786433069; c=relaxed/simple;
-	bh=BBTpldh41dIEPqbm9WawDmidKL1XBbgKOGF3CAIU8yY=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Gtl/aEGWbgePLXpT7bRgHyx5IxdkouSbETmew5JPAAk48DVWUAgrcws+nXihykc3JRnb90bsY6PRkS4+TtOpb/G98oDuOpfVVO2W9PA/NGxnA/ogFmOmajTObmd5Rn6BxeruFAeiFgy/AayJZxJmaGVssfzUX6jn+lc2aAtaXvA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4a41f46d629so3728772b6e.3
-        for <syzbot@lists.linux.dev>; Tue, 11 Aug 2026 00:24:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786433067; x=1787037867;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=hBa3yf9d8aorJQ2UONpa8JeMOZUKimhOqihsp4lwidw=;
-        b=ZbGAQGVymYYs2oDXbFC8uPhu0a5/+T231SLaXPSD/N3E2ha5rn9QwUwpna2Lke+q/9
-         1NKgUAEsfVgWgZY3tO6a+VTJUPoaCkvnSZdmY6UvTu1oVjzhq/c/q7yezYAs1E0cFX1K
-         0z9DgcB9Wwyy5yPXiTXDWDwM4ukFp4LKoKBIi3P0Oe/4ezfn15GfmnLRn/AEUNtl5X3F
-         Id0dG9OC9GvqhBQgkXxPHHZBBD8SIzsz/Ibe82cuOUNs/TuMpSjBZzlx4Agkl0hq/Rdn
-         xxFQrqHUPKsIiTLCMBl0ZSCasZBTJQ7gjAk3Wu71KcReX30LsdKCImKVnB6fs5W3U6KA
-         S6bQ==
-X-Gm-Message-State: AOJu0YxPYkcJiF9S2AEoAaaUfI3+fFvaQLg8gUm7bin42k1czt1gC5wL
-	Y+zlCiolmSfuy8BCUyUHFBOYgUSuxQiWxPSiwkd4dINcvL2NPfkhC52+LHfJy3bhcDS966ZNnS7
-	3invNSXyzeQ7+Cm/zDeI8Zqiu94VkP+QTb8wDdfS8e5WBLFrtpXLdV2lJYqw=
+	s=arc-20240116; t=1786435407; c=relaxed/simple;
+	bh=IHbkF+T7acp4FkqqDqWvOXN1W50vhWpyHI3pcCVb0jo=;
+	h=Content-Type:Message-ID:Date:MIME-Version:Subject:To:References:
+	 Cc:From:In-Reply-To; b=mfNVDfOmnhAMxTJ2kcf01uTXkXAVyu23tw8lbY4P5VJSgGQT9oOYEvtmOXLeS+2QGh6s8x+aGrqEpNEiJJaFYFlONeCBZEyb8NwU3S6N+ryCZgpDU8DoAkPU5tZCnuprKz7saey2JJfbQa/jj7Rk5qiig0gdQS8CDIQH/4ZAhBM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=abg/YrNx; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="abg/YrNx"
+Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67AN1c3Z2999542;
+	Tue, 11 Aug 2026 08:03:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=pp1; bh=IHbkF+T7acp4FkqqDqWvOXN1W50vhW
+	pyHI3pcCVb0jo=; b=abg/YrNxbmB4MxRLXQW9UYBpaHQpV0R2pDYfCYHyTnj2yM
+	8yV/bWeH3+/biMvEENotaVUGTZjANk8lfUp/A7rdeUGw1z/cIjlIvc3f2j5xccTf
+	zi3+HnysHfuRMQXK1K7GrYGd6GAIIUZGw5gFTsvxNIfD9jJKtEVOs0dv0R6aqe/k
+	TnLNA6ghN0OE/M/3bThqF4lgYZLtiQjQxsIgrBHU9/+M4MJE5SsX6tOC7LRfcf5d
+	e9f1ZEvPDv1opAtqzmhxiWRvR4OQY2j9sa67gMceyzH5Cn53bPJahV/8eWGCKjEx
+	AoBnxAo+uUfdL0LPvdiueZ0EyW8Df6G+a4sEVZjA==
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4fwvnw3agw-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 11 Aug 2026 08:03:23 +0000 (GMT)
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 67B7uIIl027557;
+	Tue, 11 Aug 2026 08:03:23 GMT
+Received: from smtprelay07.wdc07v.mail.ibm.com ([172.16.1.74])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 4fxhfxywbd-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 11 Aug 2026 08:03:22 +0000 (GMT)
+Received: from smtpav05.dal12v.mail.ibm.com (smtpav05.dal12v.mail.ibm.com [10.241.53.104])
+	by smtprelay07.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 67B83LZL49021208
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 11 Aug 2026 08:03:22 GMT
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id D800C58052;
+	Tue, 11 Aug 2026 08:03:21 +0000 (GMT)
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id A95E058067;
+	Tue, 11 Aug 2026 08:03:20 +0000 (GMT)
+Received: from [9.123.5.171] (unknown [9.123.5.171])
+	by smtpav05.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 11 Aug 2026 08:03:20 +0000 (GMT)
+Content-Type: multipart/mixed; boundary="------------9FIW4NC8HR1t5xcTBLRymH63"
+Message-ID: <f6c69f07-9b9e-498f-ac74-bbeaaa605bd2@linux.ibm.com>
+Date: Tue, 11 Aug 2026 13:33:19 +0530
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:144d:b0:479:ead7:2a5b with SMTP id
- 5614622812f47-4b1fd83b893mr935180b6e.16.1786433067014; Tue, 11 Aug 2026
- 00:24:27 -0700 (PDT)
-Date: Tue, 11 Aug 2026 00:24:26 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a7ace2a.9c11d2ce.289b96.00fe.GAE@google.com>
-Subject: [moderation/CI] Re: rust: block: gen_disk: set fops.owner from driver
- module pointer
-From: syzbot ci <syzbot+ci7193c164973bdb66@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [syzbot ci] Re: net/smc: fix clcsock and lgr/lnk races in
+ smc_diag dump path
+To: syzbot ci <syzbot+cia7ddf4f17dfab266@syzkaller.appspotmail.com>
+References: <6a75f37d.b50370da.49fe0.001c.GAE@google.com>
+Content-Language: en-US
+Cc: syzbot@lists.linux.dev, ",syzkaller-bugs"@googlegroups.com
+From: Mahanta Jambigi <mjambigi@linux.ibm.com>
+In-Reply-To: <6a75f37d.b50370da.49fe0.001c.GAE@google.com>
+X-TM-AS-GCONF: 00
+X-Authority-Analysis: v=2.4 cv=RsP16imK c=1 sm=1 tr=0 ts=6a7ad74b cx=c_pps
+ a=aDMHemPKRhS1OARIsFnwRA==:117 a=aDMHemPKRhS1OARIsFnwRA==:17
+ a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=RnoormkPH1_aCDwRdu11:22
+ a=RzCfie-kr_QcCd8fBx8p:22 a=r77TgQKjGQsHNAKrUKIA:9 a=k0fw03_q-m6dyHKtINgA:9
+ a=QEXdDO2ut3YA:10 a=gHpNGMHqd84v3HusNisA:9 a=B2y7HmGcmWMA:10
+X-Proofpoint-GUID: 92bUv_89NNy1umLL4J9IlcdRZa-m9ojS
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODExMDA2NiBTYWx0ZWRfX9eIAwIwg7POu
+ MTO5WJqnAlraM72HNgV3nl094Vf6Www+87xq6YZWPphjFpioiLd8o2+oNXSoGwBMcQd+A/q0Qjg
+ bpYybW032UewB7kQUi3aZ1AHOxSST8o4aLLfRQUrkZNfMt+CKR/mxYeUbdVGT1XcNkWDJwEJp8F
+ SvWiTwBkKIULQ/XERcbl5ujUpwqxJTicEZ3xXBmWr153D1izLPsfIJPVitpdAwj/PkAglHhfGm6
+ Xf80hv5Q+INHxNkW64f8V+kyzn6c6Flmpuxvj1P3weGu+vN4Z8LVvm+JW62ew4CEqC2LutelpHJ
+ HD61IKRMUVdaxy034rAXNlHk5eD9z1YE307HPdxnp1u6Mqo9lCT3499q+jrrdLnxENGzf/6C+SD
+ 8IoiQaqF0nfFdCYMQ55yQAbD5ltBnDKPmMjud/+TwYoJs+dtNqj6J9iKtT08SYuWB7UlqbPVoWt
+ +CdiCPNDl7kSiG/PwnQ==
+X-Proofpoint-ORIG-GUID: 92bUv_89NNy1umLL4J9IlcdRZa-m9ojS
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODExMDA2NiBTYWx0ZWRfX5VZTZ7aB9sfc
+ M/Q1KyZtuJ7r3MOjK1fiAFZ4tPAE0VgqTZdu2Z1zLFANfUWnTJP2kEKoWTDeNx5sLYnlwUw3vmZ
+ NXsm+4pxiv5KwGcEEwgxz8OVYVmKurg=
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-10_06,2026-08-10_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 impostorscore=0 suspectscore=0 clxscore=1011 malwarescore=0
+ phishscore=0 adultscore=0 lowpriorityscore=0 priorityscore=1501 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608110066
 
-syzbot ci has tested the following series
+This is a multi-part message in MIME format.
+--------------9FIW4NC8HR1t5xcTBLRymH63
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-[v1] rust: block: gen_disk: set fops.owner from driver module pointer
-https://lore.kernel.org/all/20260811-fix-gendisk-owner-v1-1-c0fe4a449ecb@li=
-nux.dev
-* [PATCH] rust: block: gen_disk: set fops.owner from driver module pointer
+#syz test
 
-and found the following issue:
-kernel build error
+v4: fixes two races in the smc_diag dump path (clcsock NULL race and
+lgr/lnk teardown race) plus moves mutex_init(&clcsock_release_lock)
+before sk->sk_prot->hash(sk) in smc_sk_init() to fix the uninitialized
+mutex warning you reported.
+--------------9FIW4NC8HR1t5xcTBLRymH63
+Content-Type: text/plain; charset=UTF-8;
+ name="v4-0001-net-smc-fix-clcsock-lgr-lnk-races-and-mutex-init-ordering.patch"
+Content-Disposition: attachment;
+ filename*0="v4-0001-net-smc-fix-clcsock-lgr-lnk-races-and-mutex-init-ord";
+ filename*1="ering.patch"
+Content-Transfer-Encoding: base64
 
-Full report is available here:
-https://ci.syzbot.org/series/66dae9d1-830e-4fc1-8627-361f18c38676
+RnJvbSAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwIE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBNYWhhbnRhIEphbWJpZ2kgPG1qYW1iaWdpQGxpbnV4
+LmlibS5jb20+CkRhdGU6IE1vbiwgMTEgQXVnIDIwMjYgMDA6MDA6MDAgKzAwMDAKU3ViamVj
+dDogW1BBVENIIG5ldCB2NF0gbmV0L3NtYzogZml4IGNsY3NvY2sgYW5kIGxnci9sbmsgcmFj
+ZXMgaW4gc21jX2RpYWcKIGR1bXAgcGF0aAoKVHdvIHJhY2VzIGluIHRoZSBTTUMgZGlhZyBk
+dW1wIHBhdGg6CgpSYWNlIDE6IHNtY19kaWFnX21zZ19jb21tb25fZmlsbCgpIHJlYWRzIHNt
+Yy0+Y2xjc29jayBmaWVsZHMgYWZ0ZXIgYQpOVUxMIGNoZWNrLCBidXQgc21jX2NsY3NvY2tf
+cmVsZWFzZSgpIGNhbiBzZXQgY2xjc29jayA9IE5VTEwgdW5kZXIKY2xjc29ja19yZWxlYXNl
+X2xvY2sgYmV0d2VlbiB0aGUgY2hlY2sgYW5kIHRoZSByZWFkcy4gIEhvbGQgdGhlIHNhbWUK
+bXV0ZXggaW4gdGhlIHJlYWQgcGF0aCB0byBtYWtlIHRoZSBjaGVjayBhbmQgcmVhZHMgYXRv
+bWljLgoKUmFjZSAyOiBfX3NtY19kaWFnX2R1bXAoKSBkZXJlZmVyZW5jZXMgY29ubi0+bGdy
+IGFuZCBjb25uLT5sbmsgd2l0aCBubwpwcm90ZWN0aW9uIGFnYWluc3QgY29uY3VycmVudCB0
+ZWFyZG93bi4gIHNtY19jbG9zZV9hY3RpdmVfYWJvcnQoKSBjYWxscwpzbWNfY29ubl9mcmVl
+KCkgLS0gd2hpY2ggZHJvcHMgbGdyIGFuZCBsaW5rIHJlZmNvdW50cyAtLSB3aXRob3V0IGZp
+cnN0CnVuaGFzaGluZyB0aGUgc29ja2V0LCBsZWF2aW5nIHN0YWxlIHBvaW50ZXJzIHZpc2li
+bGUgdG8gdGhlIGR1bXAuICBUaGUKdGVhcmRvd24gcGF0aCBob2xkcyBsb2NrX3NvY2soc2sp
+IGFjcm9zcyBzbWNfY29ubl9mcmVlKCk7IHRha2UgdGhlIHNhbWUKbG9jayBpbiBfX3NtY19k
+aWFnX2R1bXAoKSB0byBzZXJpYWxpc2UgZnVsbHkuCgpCb3RoIGZpeGVzIHJlcXVpcmUgc2xl
+ZXBpbmcgbG9ja3MsIHdoaWNoIGFyZSBpbGxlZ2FsIHVuZGVyIHRoZQpyZWFkX2xvY2soJnNt
+Y19oYXNoLT5sb2NrKSBoZWxkIGJ5IHNtY19kaWFnX2R1bXBfcHJvdG8oKS4gIFBpbiBlYWNo
+CnNvY2tldCB3aXRoIHJlZmNvdW50X2luY19ub3RfemVybygpIGJlZm9yZSBkcm9wcGluZyB0
+aGUgaGFzaCBsb2NrLCBjYWxsCl9fc21jX2RpYWdfZHVtcCgpIGxvY2tsZXNzbHksIHRoZW4g
+cmVsZWFzZSB0aGUgcGluLiAgUmVzdGFydCBza19mb3JfZWFjaCgpCmZyb20gaGVhZCBhZnRl
+ciBlYWNoIHVubG9jayByYXRoZXIgdGhhbiByZXN1bWluZyBtaWQtd2FsazoKc21jX3VuaGFz
+aF9zaygpIG51bGxzIHNrLT5za19ub2RlLm5leHQgdmlhIHNrX2RlbF9ub2RlX2luaXQoKSwg
+c28KcmVzdW1pbmcgYW4gaW50ZXJydXB0ZWQgd2FsayBzaWxlbnRseSB0cnVuY2F0ZXMgdGhl
+IGR1bXAuCgpBZGRpdGlvbmFsbHksIHNtY19za19pbml0KCkgY2FsbGVkIHNrLT5za19wcm90
+LT5oYXNoKHNrKSBiZWZvcmUKbXV0ZXhfaW5pdCgmY2xjc29ja19yZWxlYXNlX2xvY2spLCBj
+cmVhdGluZyBhIHdpbmRvdyB3aGVyZSBhIGNvbmN1cnJlbnQKZGlhZyBkdW1wIGNvdWxkIGNh
+bGwgbXV0ZXhfbG9jaygpIG9uIGFuIHVuaW5pdGlhbGl6ZWQgbXV0ZXggYW5kIHRyaWdnZXI6
+CgogICAgREVCVUdfTE9DS1NfV0FSTl9PTihsb2NrLT5tYWdpYyAhPSBsb2NrKQogICAgV0FS
+TklORzoga2VybmVsL2xvY2tpbmcvbXV0ZXguYzo2MjUKCkZpeCBieSBtb3ZpbmcgbXV0ZXhf
+aW5pdCgpIGJlZm9yZSBoYXNoKCkgc28gdGhlIG11dGV4IGlzIGZ1bGx5CmluaXRpYWxpemVk
+IGJlZm9yZSB0aGUgc29ja2V0IGJlY29tZXMgdmlzaWJsZSB0byBjb25jdXJyZW50IHJlYWRl
+cnMuCgpGaXhlczogZjE2YTdkZDVjZjI3ICgic21jOiBuZXRsaW5rIGludGVyZmFjZSBmb3Ig
+U01DIHNvY2tldHMiKQpGaXhlczogOWRiZTA4NmM2OWI4ICgibmV0L3NtYzogZml4IGludmFs
+aWQgbGluayBhY2Nlc3MgaW4gZHVtcGluZyBTTUMtUiBjb25uZWN0aW9ucyIpClJlcG9ydGVk
+LWJ5OiBzeXpib3QrY2lhN2RkZjRmMTdkZmFiMjY2QHN5emthbGxlci5hcHBzcG90bWFpbC5j
+b20KU2lnbmVkLW9mZi1ieTogTWFoYW50YSBKYW1iaWdpIDxtamFtYmlnaUBsaW51eC5pYm0u
+Y29tPgotLS0KQ2hhbmdlcyBpbiB2NDoKLSBNb3ZlIG11dGV4X2luaXQoJmNsY3NvY2tfcmVs
+ZWFzZV9sb2NrKSBiZWZvcmUgc2stPnNrX3Byb3QtPmhhc2goc2spCiAgaW4gc21jX3NrX2lu
+aXQoKSB0byBjbG9zZSBhIHdpbmRvdyB3aGVyZSBhIGNvbmN1cnJlbnQgZGlhZyBkdW1wIGNv
+dWxkCiAgY2FsbCBtdXRleF9sb2NrKCkgb24gYW4gdW5pbml0aWFsaXplZCBtdXRleCAoc3l6
+Ym90KS4KCkNoYW5nZXMgaW4gdjM6Ci0gUmVzdGFydCBza19mb3JfZWFjaCgpIGZyb20gaGVh
+ZCBhZnRlciBlYWNoIHVubG9jayByYXRoZXIgdGhhbgogIHJlc3VtaW5nIG1pZC13YWxrLiBz
+a19kZWxfbm9kZV9pbml0KCkgbnVsbHMgc2stPnNrX25vZGUubmV4dCBzbwogIGNvbnRpbnVp
+bmcgYW4gaW50ZXJydXB0ZWQgaGxpc3Qgd2FsayBzaWxlbnRseSB0cnVuY2F0ZXMgdGhlIGR1
+bXAKICAoSGlkYXlhdGggS2hhbikuCi0gTW92ZSBzb2NrX3B1dCgpIHRvIGJlZm9yZSByZWFk
+X2xvY2soKSBzbyBhIGxhc3QtcmVmZXJlbmNlIGRyb3AKICBjYW5ub3QgcnVuIHNvY2tldCB0
+ZWFyZG93biB1bmRlciB0aGUgcndsb2NrIChIaWRheWF0aCBLaGFuKS4KLSBNb3ZlIHItPmRp
+YWdfc3RhdGUgPSBzay0+c2tfc3RhdGUgYWZ0ZXIgbG9ja19zb2NrKCkgc28gZGlhZ19zdGF0
+ZQogIGFuZCB0aGUgbGdyL2xuayBmaWVsZHMgZm9ybSBhIGNvbnNpc3RlbnQgc25hcHNob3Qg
+KFNpZHJheWEgSmF5YWdvbmQpLgoKQ2hhbmdlcyBpbiB2MjoKLSBSZXBsYWNlcyBhbGwgdGhy
+ZWUgcGF0Y2hlcyB3aXRoIGEgc2luZ2xlIHBhdGNoIGFuZCBhIHNpbXBsZXIKICBhcHByb2Fj
+aCwgYmFzZWQgb24gSGlkYXlhdGgncyBjb21tZW50cy4KLSBEcm9wIHJlYWRfbG9jaygmc21j
+X2hhc2gtPmxvY2spIGJlZm9yZSBjYWxsaW5nIF9fc21jX2RpYWdfZHVtcCgpCiAgYW5kIHJl
+LWFjcXVpcmUgaXQgYWZ0ZXJ3YXJkcywgdXNpbmcgcmVmY291bnRfaW5jX25vdF96ZXJvKCkg
+dG8gcGluCiAgdGhlIHNvY2tldCBhY3Jvc3MgdGhlIHVubG9jayB3aW5kb3cgKHNhbWUgcGF0
+dGVybiBhcyB0Y3BfZGlhZykuCi0gV2l0aCBubyBzcGlubG9jayBoZWxkLCB0YWtlIGxvY2tf
+c29jayhzaykgaW4gX19zbWNfZGlhZ19kdW1wKCkKICBiZWZvcmUgYW55IGxnciBvciBsbmsg
+ZGVyZWZlcmVuY2UuCi0gV2l0aCB0aGUgc3BpbmxvY2sgZHJvcHBlZCwgc21jX2RpYWdfbXNn
+X2NvbW1vbl9maWxsKCkgY2FuIHVzZQogIG11dGV4X2xvY2soJmNsY3NvY2tfcmVsZWFzZV9s
+b2NrKSBpbnN0ZWFkIG9mIG11dGV4X3RyeWxvY2soKS4KCiBuZXQvc21jL2FmX3NtYy5jICAg
+fCAgMiArLQogbmV0L3NtYy9zbWNfZGlhZy5jIHwgNzYgKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKystLS0tLS0tLS0tLQoKZGlmZiAtLWdpdCBhL25ldC9zbWMvYWZfc21j
+LmMgYi9uZXQvc21jL2FmX3NtYy5jCmluZGV4IGI1ZGI2OTA3M2UyMC4uMzhhNGMwMDkzNjNj
+IDEwMDY0NAotLS0gYS9uZXQvc21jL2FmX3NtYy5jCisrKyBiL25ldC9zbWMvYWZfc21jLmMK
+QEAgLTQwOSw4ICs0MDksOCBAQCB2b2lkIHNtY19za19pbml0KHN0cnVjdCBuZXQgKm5ldCwg
+c3RydWN0IHNvY2sgKnNrLCBpbnQgcHJvdG9jb2wpCiAJCQkJICAgICAgInNrX2xvY2stQUZf
+U01DIiwgJnNtY19rZXkpOwogCXNwaW5fbG9ja19pbml0KCZzbWMtPmFjY2VwdF9xX2xvY2sp
+OwogCXNwaW5fbG9ja19pbml0KCZzbWMtPmNvbm4uc2VuZF9sb2NrKTsKLQlzay0+c2tfcHJv
+dC0+aGFzaChzayk7CiAJbXV0ZXhfaW5pdCgmc21jLT5jbGNzb2NrX3JlbGVhc2VfbG9jayk7
+CisJc2stPnNrX3Byb3QtPmhhc2goc2spOwogCXNtY19pbml0X3NhdmVkX2NhbGxiYWNrcyhz
+bWMpOwogCXNtYy0+bGltaXRfc21jX2hzID0gbmV0LT5zbWMubGltaXRfc21jX2hzOwogCXNt
+Yy0+dXNlX2ZhbGxiYWNrID0gZmFsc2U7IC8qIGFzc3VtZSByZG1hIGNhcGFiaWxpdHkgZmly
+c3QgKi8KZGlmZiAtLWdpdCBhL25ldC9zbWMvc21jX2RpYWcuYyBiL25ldC9zbWMvc21jX2Rp
+YWcuYwppbmRleCBiZjBiZWFhMjNiZGIuLmYzYmFkMGNiMDliMSAxMDA2NDQKLS0tIGEvbmV0
+L3NtYy9zbWNfZGlhZy5jCisrKyBiL25ldC9zbWMvc21jX2RpYWcuYwpAQCAtMzksMjIgKzM5
+LDM0IEBAIHN0YXRpYyB2b2lkIHNtY19kaWFnX21zZ19jb21tb25fZmlsbChzdHJ1Y3Qgc21j
+X2RpYWdfbXNnICpyLCBzdHJ1Y3Qgc29jayAqc2spCiAJbWVtc2V0KHIsIDAsIHNpemVvZigq
+cikpOwogCXItPmRpYWdfZmFtaWx5ID0gc2stPnNrX2ZhbWlseTsKIAlzb2NrX2RpYWdfc2F2
+ZV9jb29raWUoc2ssIHItPmlkLmlkaWFnX2Nvb2tpZSk7Ci0JaWYgKCFzbWMtPmNsY3NvY2sp
+Ci0JCXJldHVybjsKLQlyLT5pZC5pZGlhZ19zcG9ydCA9IGh0b25zKHNtYy0+Y2xjc29jay0+
+c2stPnNrX251bSk7Ci0Jci0+aWQuaWRpYWdfZHBvcnQgPSBzbWMtPmNsY3NvY2stPnNrLT5z
+a19kcG9ydDsKLQlyLT5pZC5pZGlhZ19pZiA9IHNtYy0+Y2xjc29jay0+c2stPnNrX2JvdW5k
+X2Rldl9pZjsKLQlpZiAoc2stPnNrX3Byb3RvY29sID09IFNNQ1BST1RPX1NNQykgewotCQly
+LT5pZC5pZGlhZ19zcmNbMF0gPSBzbWMtPmNsY3NvY2stPnNrLT5za19yY3Zfc2FkZHI7Ci0J
+CXItPmlkLmlkaWFnX2RzdFswXSA9IHNtYy0+Y2xjc29jay0+c2stPnNrX2RhZGRyOworCS8q
+CisJICogc21jX2NsY3NvY2tfcmVsZWFzZSgpIHNldHMgc21jLT5jbGNzb2NrID0gTlVMTCB1
+bmRlcgorCSAqIGNsY3NvY2tfcmVsZWFzZV9sb2NrIGJlZm9yZSBmcmVlaW5nIHRoZSBzb2Nr
+ZXQuIEhvbGQgdGhlIHNhbWUKKwkgKiBtdXRleCBoZXJlIHRvIG1ha2UgdGhlIE5VTEwgY2hl
+Y2sgYW5kIGFsbCBmaWVsZCByZWFkcyBhdG9taWMKKwkgKiB3aXRoIHRoYXQgd3JpdGVyLiBt
+dXRleF9sb2NrKCkgaXMgc2FmZTogdGhpcyBmdW5jdGlvbiBpcyBjYWxsZWQKKwkgKiBvbmx5
+IGFmdGVyIHRoZSBoYXNoIHNwaW5sb2NrIGhhcyBiZWVuIGRyb3BwZWQgYnkKKwkgKiBzbWNf
+ZGlhZ19kdW1wX3Byb3RvKCkuCisJICovCisJbXV0ZXhfbG9jaygmc21jLT5jbGNzb2NrX3Jl
+bGVhc2VfbG9jayk7CisJaWYgKHNtYy0+Y2xjc29jaykgeworCQlyLT5pZC5pZGlhZ19zcG9y
+dCA9IGh0b25zKHNtYy0+Y2xjc29jay0+c2stPnNrX251bSk7CisJCXItPmlkLmlkaWFnX2Rw
+b3J0ID0gc21jLT5jbGNzb2NrLT5zay0+c2tfZHBvcnQ7CisJCXItPmlkLmlkaWFnX2lmID0g
+c21jLT5jbGNzb2NrLT5zay0+c2tfYm91bmRfZGV2X2lmOworCQlpZiAoc2stPnNrX3Byb3Rv
+Y29sID09IFNNQ1BST1RPX1NNQykgeworCQkJci0+aWQuaWRpYWdfc3JjWzBdID0gc21jLT5j
+bGNzb2NrLT5zay0+c2tfcmN2X3NhZGRyOworCQkJci0+aWQuaWRpYWdfZHN0WzBdID0gc21j
+LT5jbGNzb2NrLT5zay0+c2tfZGFkZHI7CiAjaWYgSVNfRU5BQkxFRChDT05GSUdfSVBWNikK
+LQl9IGVsc2UgaWYgKHNrLT5za19wcm90b2NvbCA9PSBTTUNQUk9UT19TTUM2KSB7Ci0JCW1l
+bWNweSgmci0+aWQuaWRpYWdfc3JjLCAmc21jLT5jbGNzb2NrLT5zay0+c2tfdjZfcmN2X3Nh
+ZGRyLAotCQkgICAgICAgc2l6ZW9mKHNtYy0+Y2xjc29jay0+c2stPnNrX3Y2X3Jjdl9zYWRk
+cikpOwotCQltZW1jcHkoJnItPmlkLmlkaWFnX2RzdCwgJnNtYy0+Y2xjc29jay0+c2stPnNr
+X3Y2X2RhZGRyLAotCQkgICAgICAgc2l6ZW9mKHNtYy0+Y2xjc29jay0+c2stPnNrX3Y2X2Rh
+ZGRyKSk7CisJCX0gZWxzZSBpZiAoc2stPnNrX3Byb3RvY29sID09IFNNQ1BST1RPX1NNQzYp
+IHsKKwkJCW1lbWNweSgmci0+aWQuaWRpYWdfc3JjLAorCQkJICAgICAgICZzbWMtPmNsY3Nv
+Y2stPnNrLT5za192Nl9yY3Zfc2FkZHIsCisJCQkgICAgICAgc2l6ZW9mKHNtYy0+Y2xjc29j
+ay0+c2stPnNrX3Y2X3Jjdl9zYWRkcikpOworCQkJbWVtY3B5KCZyLT5pZC5pZGlhZ19kc3Qs
+CisJCQkgICAgICAgJnNtYy0+Y2xjc29jay0+c2stPnNrX3Y2X2RhZGRyLAorCQkJICAgICAg
+IHNpemVvZihzbWMtPmNsY3NvY2stPnNrLT5za192Nl9kYWRkcikpOwogI2VuZGlmCisJCX0K
+IAl9CisJbXV0ZXhfdW5sb2NrKCZzbWMtPmNsY3NvY2tfcmVsZWFzZV9sb2NrKTsKIH0KIAog
+c3RhdGljIGludCBzbWNfZGlhZ19tc2dfYXR0cnNfZmlsbChzdHJ1Y3Qgc29jayAqc2ssIHN0
+cnVjdCBza19idWZmICpza2IsCkBAIC04Nyw2ICs5OSwxNSBAQCBzdGF0aWMgaW50IF9fc21j
+X2RpYWdfZHVtcChzdHJ1Y3Qgc29jayAqc2ssIHN0cnVjdCBza19idWZmICpza2IsCiAKIAly
+ID0gbmxtc2dfZGF0YShubGgpOwogCXNtY19kaWFnX21zZ19jb21tb25fZmlsbChyLCBzayk7
+CisJLyoKKwkgKiBUYWtlIHRoZSBzb2NrZXQgbG9jayB0byBzZXJpYWxpc2UgYWdhaW5zdCBz
+bWNfY29ubl9mcmVlKCksCisJICogd2hpY2ggZHJvcHMgbGdyIGFuZCBsaW5rIHJlZmNvdW50
+cyB1bmRlciBsb2NrX3NvY2soKS4gV2l0aG91dAorCSAqIHRoaXMsIGEgY29uY3VycmVudCBj
+bG9zZSBjYW4gZnJlZSBsZ3ItPmxua1tdIG1lbW9yeSBiZXR3ZWVuCisJICogb3VyIHNtY19j
+b25uX2xncl92YWxpZCgpIGNoZWNrIGFuZCB0aGUgc3Vic2VxdWVudCBsZ3IvbG5rCisJICog
+ZGVyZWZlcmVuY2VzLiBsb2NrX3NvY2soKSBpcyBzYWZlIGhlcmUgYmVjYXVzZSB0aGUgaGFz
+aAorCSAqIHNwaW5sb2NrIGhhcyBiZWVuIGRyb3BwZWQgYnkgc21jX2RpYWdfZHVtcF9wcm90
+bygpLgorCSAqLworCWxvY2tfc29jayhzayk7CiAJci0+ZGlhZ19zdGF0ZSA9IHNrLT5za19z
+dGF0ZTsKIAlpZiAoc21jLT51c2VfZmFsbGJhY2spCiAJCXItPmRpYWdfbW9kZSA9IFNNQ19E
+SUFHX01PREVfRkFMTEJBQ0tfVENQOwpAQCAtMTg0LDExICsyMDUsMTIgQEAgc3RhdGljIGlu
+dCBfX3NtY19kaWFnX2R1bXAoc3RydWN0IHNvY2sgKnNrLCBzdHJ1Y3Qgc2tfYnVmZiAqc2ti
+LAogCQlpZiAobmxhX3B1dChza2IsIFNNQ19ESUFHX0RNQklORk8sIHNpemVvZihkaW5mbyks
+ICZkaW5mbykgPCAwKQogCQkJZ290byBlcnJvdXQ7CiAJfQotCisJcmVsZWFzZV9zb2NrKHNr
+KTsKIAlubG1zZ19lbmQoc2tiLCBubGgpOwogCXJldHVybiAwOwogCiBlcnJvdXQ6CisJcmVs
+ZWFzZV9zb2NrKHNrKTsKIAlubG1zZ19jYW5jZWwoc2tiLCBubGgpOwogCXJldHVybiAtRU1T
+R1NJWkU7CiB9CkBAIC0yMDQsMjUgKzIyNiw0MyBAQCBzdGF0aWMgaW50IHNtY19kaWFnX2R1
+bXBfcHJvdG8oc3RydWN0IHByb3RvICpwcm90LCBzdHJ1Y3Qgc2tfYnVmZiAqc2tiLAogCWlu
+dCByYyA9IDAsIG51bSA9IDA7CiAJc3RydWN0IHNvY2sgKnNrOwogCi0JcmVhZF9sb2NrKCZw
+cm90LT5oLnNtY19oYXNoLT5sb2NrKTsKIAloZWFkID0gJnByb3QtPmguc21jX2hhc2gtPmh0
+OworcmVzdGFydDoKKwludW0gPSAwOworCXJlYWRfbG9jaygmcHJvdC0+aC5zbWNfaGFzaC0+
+bG9jayk7CiAJaWYgKGhsaXN0X2VtcHR5KGhlYWQpKQogCQlnb3RvIG91dDsKLQogCXNrX2Zv
+cl9lYWNoKHNrLCBoZWFkKSB7CiAJCWlmICghbmV0X2VxKHNvY2tfbmV0KHNrKSwgbmV0KSkK
+IAkJCWNvbnRpbnVlOwogCQlpZiAobnVtIDwgc251bSkKIAkJCWdvdG8gbmV4dDsKKwkJLyoK
+KwkJICogUGluIHNrIGJlZm9yZSBkcm9wcGluZyB0aGUgbG9jay4gcmVmY291bnRfaW5jX25v
+dF96ZXJvKCkKKwkJICogc2tpcHMgc29ja2V0cyBhbHJlYWR5IHBhc3QgdGhlaXIgbGFzdCBy
+ZWZlcmVuY2UuCisJCSAqIHNtY191bmhhc2hfc2soKSBudWxscyBzay0+c2tfbm9kZS5uZXh0
+IHZpYSBza19kZWxfbm9kZV9pbml0KCkKKwkJICogc28gcmVzdW1pbmcgYW4gaW50ZXJydXB0
+ZWQgc2tfZm9yX2VhY2goKSB3b3VsZCB0ZXJtaW5hdGUKKwkJICogZWFybHkgaWYgYSBzb2Nr
+ZXQgaXMgdW5oYXNoZWQgd2hpbGUgdGhlIGxvY2sgaXMgZHJvcHBlZC4KKwkJICogUmVzdGFy
+dCBmcm9tIGhlYWQgYWZ0ZXIgZWFjaCB1bmxvY2ssIHVzaW5nIHNudW0gdG8gc2tpcAorCQkg
+KiBhbHJlYWR5LWR1bXBlZCBlbnRyaWVzLgorCQkgKi8KKwkJaWYgKCFyZWZjb3VudF9pbmNf
+bm90X3plcm8oJnNrLT5za19yZWZjbnQpKQorCQkJZ290byBuZXh0OworCQlyZWFkX3VubG9j
+aygmcHJvdC0+aC5zbWNfaGFzaC0+bG9jayk7CisKIAkJcmMgPSBfX3NtY19kaWFnX2R1bXAo
+c2ssIHNrYiwgY2IsIG5sbXNnX2RhdGEoY2ItPm5saCksIGJjKTsKKwkJc29ja19wdXQoc2sp
+OworCiAJCWlmIChyYyA8IDApCi0JCQlnb3RvIG91dDsKKwkJCWdvdG8gb3V0X25vbG9jazsK
+KwkJc251bSA9IG51bSArIDE7CisJCWdvdG8gcmVzdGFydDsKIG5leHQ6CiAJCW51bSsrOwog
+CX0KLQogb3V0OgogCXJlYWRfdW5sb2NrKCZwcm90LT5oLnNtY19oYXNoLT5sb2NrKTsKK291
+dF9ub2xvY2s6CiAJY2JfY3R4LT5wb3NbcF90eXBlXSA9IG51bTsKIAlyZXR1cm4gcmM7CiB9
+Ci0tIAoyLjUwLjEK
 
-***
-
-kernel build error
-
-tree:      drm-next
-URL:       https://gitlab.freedesktop.org/drm/kernel.git
-base:      db2ddb87143519e20a95aa36c60b36107b736a58
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
-1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/8357f6cd-d6e5-416f-b852-88307a3e562=
-6/config
-
-error[E0433]: cannot find `module` in `crate`
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a patch for this bug, please reply with `#syz test`
-(should be on a separate line).
-
-The patch should be attached to the email.
-Note: arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[a.hindborg@kernel.org acourbot@nvidia.com aliceryhl@google.com alvin.sun@l=
-inux.dev bjorn3_gh@protonmail.com boqun@kernel.org dakr@kernel.org daniel.a=
-lmeida@collabora.com gary@garyguo.net linux-block@vger.kernel.org lossin@ke=
-rnel.org ojeda@kernel.org rust-for-linux@vger.kernel.org tamird@kernel.org =
-tmgross@umich.edu work@onurozkan.dev]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
+--------------9FIW4NC8HR1t5xcTBLRymH63--
 
