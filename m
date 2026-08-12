@@ -1,290 +1,231 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB3162E612E
-	for <syzbot@lists.linux.dev>; Wed, 12 Aug 2026 05:24:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C527F351C31
+	for <syzbot@lists.linux.dev>; Wed, 12 Aug 2026 06:16:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786512261; cv=none; b=t+jQXbVJP5rqBXELjFqlELisdEpf79mMkXohMenQLh9IoOTwAK09ZxgXSSiFUmgK8eHSi6sLy1sqGUyULXbin9R+4v4zD41NZ9JeAzB3hl+WosVF1SbfFDHFXOIkPP2oMBYiPfwF0r6K/+TvlwAwms4rlBLT6Lw5jI5DWeWJ5xE=
+	t=1786515421; cv=none; b=WQfSkKPAqRmD6tY81HFiVdmT4wwGyi+il2xJPdGIg7E6/vFeVxv71xL2IKDqzwAhRnTzuzVrUNf/HjRqjVxaMVXfdNyJGlmWd1hBToboaRei10IWhHbkvs/dna55xLhxGJ1Q0rLJjwadxZprGfQO2ywI8Ty6DiwJpCrNI+0llZo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786512261; c=relaxed/simple;
-	bh=X98jPDJe7337ui6aO5GS+duYuLNf+p4vbMKqgdEJXpM=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Y/dy198rrAZGIACHiAffXRfgBAfmxTsN0YNbfpIFY8W0UP2ahx1xkDb8xiBKVqEPXXqaPgJVfqjRE2Bgyao2UDdRO2euMdTFSkuEMQvoJHDsLIptSknwayA69Ssas197LZQm0JB3RNF/K66ccMZ/9DCA0+1C0tT7g9hyZI0PuQE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=o0bNXDpd; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="o0bNXDpd"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 631EA1F000E9;
-	Wed, 12 Aug 2026 05:24:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786512259;
-	bh=7ZEhZLCN+dGOblilwGLl+7BNaLlyCgmglXOrPPsy5Bo=;
-	h=From:To:Cc:Subject:Date;
-	b=o0bNXDpdXHcTRObk1QccPMhi3NZoPthAmy5undZAZMSytEH+9yxpIhVWM0JKQqEct
-	 MmLW4Ua/FqzdB3DVT8GvmBgCB8jYFKDy7RuuaxTc0Ty0dpFoykm8KIqeev8RKkBPfp
-	 3sNOZubLxVHCiC4pRn8FuD3Xvr2IguI81y5n1BPyj6+lJuW5S56737nqOL5fRHK+2U
-	 2gp3UYKkN5rEmyX5OeE9y+2E51lX05DT8U8dtaU59N6lX+o/LQQxrTQAVJ3S7DxrvS
-	 bGS9BAyB3x0TY++fuFL6xVhAnQz3qeqXudtQjGO94CccihkmtqDd8J0nHU1X7iF2da
-	 oxYxAtx7HZ55w==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] i2c: core: fix adapter deregistration race and USB PHY type overwrite
-Message-ID: <cfb582d8-dbab-4e13-a732-e113dfd66617@mail.kernel.org>
+	s=arc-20240116; t=1786515421; c=relaxed/simple;
+	bh=WmsbDXXJU3lEAmbtsOYSOkft8DtD64HwjuwyzGmb8LY=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=ahFTkWReFeRhYA+13D0mC0ckL7GU6dVoVBfT1HHBtXhz7ADbJx+M76eBl9LlhrvuiLU4rYhV2NrDHNY5kkjpS7a7p/PBVKaUxzHdyBJf1zd7IY1d3HZrHU5/iu84rrA4N6vEpydon18W7M2Mq8jqib7CmucWwGZ/InIXpoxYg3o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-4a36606e230so798987b6e.2
+        for <syzbot@lists.linux.dev>; Tue, 11 Aug 2026 23:16:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786515415; x=1787120215;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:in-reply-to:date:mime-version:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=2Ua1b7LZZwIQAXi75HRQ2C+ryCIooDiweOwOTuRymws=;
+        b=jy3msyXiOnImX/iPJ6gJmvncDL5A2L+SpxiJsSrH+gFUdM5/Et6f0G+nuqQbw5yoap
+         3FnMZgW4i7r/fzqRJpuj1wOF1zlDtPqnLLfwCxwtwYXYsGuC7lIIQbL6QpVDaHHmnjhj
+         W1xTjYGxSLL0ZZYic5IIG5Avr9hK99trvswTs6tukgYbUI0VfgWzxvc18sGkyYIo9zlK
+         CmB767pDGYPgJAK4ht/OKs7ytPsXWt8ZuDJFjhWA5D9ZIhiXaud7zrFptwK7MWpfKVDv
+         Yo8CXYZrJEBXssOmzZwEqZbZ+oyKe/WmXjVGIBYC0eRME5UWIgTAhkgyCVkODBlX8/fn
+         2yyw==
+X-Gm-Message-State: AOJu0Yyyzw41RTtxOiISO+UC6jxZAFCWCDrA+MF+Emh/A7HBc+K4S0Lc
+	uKcQZH3i4jxTBJPcoA36l6UYo/UhMhzdzX64twmy2z0b/1dUOnBIV6DpXTf3AeQgTkCreRQrLqr
+	80xGDO0o/KwljdYgl5E3KOB3bFBFWzxx5/hgcbBXBh+vrsAWBhOD8IKU3v9Y=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Wed, 12 Aug 2026 05:24:19 +0000 (UTC)
+X-Received: by 2002:a05:6808:6504:b0:4a3:4598:f390 with SMTP id
+ 5614622812f47-4b210b9932emr2724319b6e.17.1786515415479; Tue, 11 Aug 2026
+ 23:16:55 -0700 (PDT)
+Date: Tue, 11 Aug 2026 23:16:55 -0700
+In-Reply-To: <CAJWNTGxJqUKLaecNTpd90ikBKSqRWO4QKF2qbowA_QPuu3FHuw@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a7c0fd7.d5f0ebe7.22d851.0008.GAE@google.com>
+Subject: Forwarded: Re: [moderation/CI] Re: wifi: mac80211: guard
+ drv_net_setup_tc() against unbound AP_VLAN sdata
+From: syzbot <syzbot@syzkaller.appspotmail.com>
+To: syzbot@lists.linux.dev
+Cc: syzbot <syzbot+ci59a1ab611e254e14@syzkaller.appspotmail.com>, pimyn@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The USB PHY subsystem incorrectly overwrites the `type` of the device
-passed to it in `usb_add_phy_dev()`. This destroys the device's original
-`release` function (e.g., `i2c_client_dev_release`), leading to a memory
-leak and a warning when the device is removed:
+For archival purposes, forwarding an incoming command email to
+syzbot@lists.linux.dev.
 
-WARNING: drivers/base/core.c:2639 at device_release+0x194/0x1f0
-Call Trace:
- kobject_put+0x222/0x550 lib/kobject.c:737
- i2c_deregister_clients+0x281/0x3a0 drivers/i2c/i2c-core-base.c:1782
- i2c_del_adapter+0x10c/0x430 drivers/i2c/i2c-core-base.c:1820
- i2c_tiny_usb_disconnect+0x49/0xd0 drivers/i2c/busses/i2c-tiny-usb.c:282
+***
 
-Additionally, there is a race condition between `new_device_store()` and
-`i2c_del_adapter()`. If `new_device_store()` creates a new client device
-while `i2c_del_adapter()` is deregistering clients, it can result in a
-double unregister of the I2C client. There is also a race involving debugfs
-removal during adapter deregistration, which triggers KASAN null-ptr-deref
-errors:
+Subject: Re: [moderation/CI] Re: wifi: mac80211: guard drv_net_setup_tc() a=
+gainst unbound AP_VLAN sdata
+Author: pimyn@google.com
 
-KASAN: null-ptr-deref in range [0x0000000000000140-0x0000000000000147]
-Call Trace:
- __kasan_check_byte+0x12/0x40 mm/kasan/common.c:573
- lock_acquire+0x84/0x350 kernel/locking/lockdep.c:5842
- down_write_nested+0x9d/0x210 kernel/locking/rwsem.c:1757
- start_dirop+0x4f/0x90 fs/namei.c:2942
- debugfs_create_dir+0x24/0x350 fs/debugfs/inode.c:572
- i2c_device_probe+0x814/0xbf0 drivers/i2c/i2c-core-base.c:588
-
-To fix the USB PHY issue, we stop overwriting `dev->type` in
-`usb_add_phy_dev()` and instead pass the uevent environment variables
-directly in `usb_phy_notify_charger_work()`. We also add
-`cancel_work_sync(&x->chg_work)` in `usb_remove_phy()` to ensure no pending
-work accesses the freed PHY.
-
-To fix the I2C race condition, we hold `adap->userspace_clients_lock` in
-`new_device_store()` before checking the IDR and keep it held while calling
-`i2c_new_client_device()`. This ensures that if `i2c_del_adapter()` is
-running, it will either block waiting for the lock to finish and safely
-unregister the newly created client, or it has already removed the adapter
-from the IDR, causing `new_device_store()` to abort.
-
-Finally, we move `debugfs_remove_recursive(adap->debugfs)` to the end of
-`i2c_del_adapter()` to prevent use-after-free issues if debugfs files are
-accessed during adapter removal.
-
-Fixes: a8534cb092d7 ("usb: phy: introduce usb_phy device type with its own uevent handler")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+3fb7629cfd12d04beeab@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=3fb7629cfd12d04beeab
-Link: https://syzkaller.appspot.com/ai_job?id=63493d50-95d9-4a1c-9ccf-fa45ca05bef8
-To: "Andi Shyti" <andi.shyti@kernel.org>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-i2c@vger.kernel.org>
-To: <linux-usb@vger.kernel.org>
-To: "Grzegorz Jaszczyk" <grzegorz.jaszczyk@linaro.org>
-Cc: "Diogo Ivo" <diogo.ivo@tecnico.ulisboa.pt>
-Cc: <linux-kernel@vger.kernel.org>
-
----
-diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
-index 3ec04787a..f4ff6ce5b 100644
---- a/drivers/i2c/i2c-core-base.c
-+++ b/drivers/i2c/i2c-core-base.c
-@@ -1304,12 +1304,24 @@ new_device_store(struct device *dev, struct device_attribute *attr,
- 		info.flags |= I2C_CLIENT_SLAVE;
- 	}
- 
-+	mutex_lock_nested(&adap->userspace_clients_lock,
-+			  i2c_adapter_depth(adap));
-+
-+	mutex_lock(&core_lock);
-+	if (idr_find(&i2c_adapter_idr, adap->nr) != adap) {
-+		mutex_unlock(&core_lock);
-+		mutex_unlock(&adap->userspace_clients_lock);
-+		return -ENODEV;
-+	}
-+	mutex_unlock(&core_lock);
-+
- 	client = i2c_new_client_device(adap, &info);
--	if (IS_ERR(client))
-+	if (IS_ERR(client)) {
-+		mutex_unlock(&adap->userspace_clients_lock);
- 		return PTR_ERR(client);
-+	}
- 
- 	/* Keep track of the added device */
--	mutex_lock(&adap->userspace_clients_lock);
- 	list_add_tail(&client->detected, &adap->userspace_clients);
- 	mutex_unlock(&adap->userspace_clients_lock);
- 	dev_info(dev, "%s: Instantiated device %s at 0x%02hx\n", "new_device",
-@@ -1826,8 +1838,6 @@ void i2c_del_adapter(struct i2c_adapter *adap)
- 
- 	i2c_host_notify_irq_teardown(adap);
- 
--	debugfs_remove_recursive(adap->debugfs);
--
- 	/* wait until all references to the device are gone
- 	 *
- 	 * FIXME: This is old code and should ideally be replaced by an
-@@ -1847,6 +1857,8 @@ void i2c_del_adapter(struct i2c_adapter *adap)
- 	/* Clear the device structure in case this adapter is ever going to be
- 	   added again */
- 	memset(&adap->dev, 0, sizeof(adap->dev));
-+
-+	debugfs_remove_recursive(adap->debugfs);
- }
- EXPORT_SYMBOL(i2c_del_adapter);
- 
-diff --git a/drivers/usb/phy/phy.c b/drivers/usb/phy/phy.c
-index 5a9b9353f..e5643d4ce 100644
---- a/drivers/usb/phy/phy.c
-+++ b/drivers/usb/phy/phy.c
-@@ -80,18 +80,6 @@ static struct usb_phy *__of_usb_find_phy(struct device_node *node)
- 	return ERR_PTR(-EPROBE_DEFER);
- }
- 
--static struct usb_phy *__device_to_usb_phy(const struct device *dev)
--{
--	struct usb_phy *usb_phy;
--
--	list_for_each_entry(usb_phy, &phy_list, head) {
--		if (usb_phy->dev == dev)
--			return usb_phy;
--	}
--
--	return NULL;
--}
--
- static void usb_phy_set_default_current(struct usb_phy *usb_phy)
- {
- 	usb_phy->chg_cur.sdp_min = DEFAULT_SDP_CUR_MIN;
-@@ -123,6 +111,9 @@ static void usb_phy_set_default_current(struct usb_phy *usb_phy)
- static void usb_phy_notify_charger_work(struct work_struct *work)
- {
- 	struct usb_phy *usb_phy = container_of(work, struct usb_phy, chg_work);
-+	char uchger_state[50] = { 0 };
-+	char uchger_type[50] = { 0 };
-+	char *envp[3];
- 	unsigned int min, max;
- 
- 	switch (usb_phy->chg_state) {
-@@ -130,11 +121,15 @@ static void usb_phy_notify_charger_work(struct work_struct *work)
- 		usb_phy_get_charger_current(usb_phy, &min, &max);
- 
- 		atomic_notifier_call_chain(&usb_phy->notifier, max, usb_phy);
-+		snprintf(uchger_state, ARRAY_SIZE(uchger_state),
-+			 "USB_CHARGER_STATE=%s", usb_chger_state[usb_phy->chg_state]);
- 		break;
- 	case USB_CHARGER_ABSENT:
- 		usb_phy_set_default_current(usb_phy);
- 
- 		atomic_notifier_call_chain(&usb_phy->notifier, 0, usb_phy);
-+		snprintf(uchger_state, ARRAY_SIZE(uchger_state),
-+			 "USB_CHARGER_STATE=%s", usb_chger_state[usb_phy->chg_state]);
- 		break;
- 	default:
- 		dev_warn(usb_phy->dev, "Unknown USB charger state: %d\n",
-@@ -142,36 +137,12 @@ static void usb_phy_notify_charger_work(struct work_struct *work)
- 		return;
- 	}
- 
--	kobject_uevent(&usb_phy->dev->kobj, KOBJ_CHANGE);
--}
--
--static int usb_phy_uevent(const struct device *dev, struct kobj_uevent_env *env)
--{
--	const struct usb_phy *usb_phy;
--	char uchger_state[50] = { 0 };
--	char uchger_type[50] = { 0 };
--	unsigned long flags;
--
--	spin_lock_irqsave(&phy_lock, flags);
--	usb_phy = __device_to_usb_phy(dev);
--	spin_unlock_irqrestore(&phy_lock, flags);
--
--	if (!usb_phy)
--		return -ENODEV;
--
--	snprintf(uchger_state, ARRAY_SIZE(uchger_state),
--		 "USB_CHARGER_STATE=%s", usb_chger_state[usb_phy->chg_state]);
--
- 	snprintf(uchger_type, ARRAY_SIZE(uchger_type),
- 		 "USB_CHARGER_TYPE=%s", usb_chger_type[usb_phy->chg_type]);
--
--	if (add_uevent_var(env, uchger_state))
--		return -ENOMEM;
--
--	if (add_uevent_var(env, uchger_type))
--		return -ENOMEM;
--
--	return 0;
-+	envp[0] = uchger_state;
-+	envp[1] = uchger_type;
-+	envp[2] = NULL;
-+	kobject_uevent_env(&usb_phy->dev->kobj, KOBJ_CHANGE, envp);
- }
- 
- static void __usb_phy_get_charger_type(struct usb_phy *usb_phy)
-@@ -675,11 +646,6 @@ int usb_add_phy(struct usb_phy *x, enum usb_phy_type type)
- }
- EXPORT_SYMBOL_GPL(usb_add_phy);
- 
--static const struct device_type usb_phy_dev_type = {
--	.name = "usb_phy",
--	.uevent = usb_phy_uevent,
--};
--
- /**
-  * usb_add_phy_dev - declare the USB PHY
-  * @x: the USB phy to be used; or NULL
-@@ -705,8 +671,6 @@ int usb_add_phy_dev(struct usb_phy *x)
- 	if (ret)
- 		return ret;
- 
--	x->dev->type = &usb_phy_dev_type;
--
- 	ATOMIC_INIT_NOTIFIER_HEAD(&x->notifier);
- 
- 	spin_lock_irqsave(&phy_lock, flags);
-@@ -727,9 +691,13 @@ void usb_remove_phy(struct usb_phy *x)
- {
- 	unsigned long	flags;
- 
-+	if (!x)
-+		return;
-+
-+	cancel_work_sync(&x->chg_work);
-+
- 	spin_lock_irqsave(&phy_lock, flags);
--	if (x)
--		list_del(&x->head);
-+	list_del(&x->head);
- 	spin_unlock_irqrestore(&phy_lock, flags);
- }
- EXPORT_SYMBOL_GPL(usb_remove_phy);
+#syz upstream
 
 
-base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+On Wed, Aug 12, 2026 at 3:36=E2=80=AFAM syzbot ci
+<syzbot+ci59a1ab611e254e14@syzkaller.appspotmail.com> wrote:
+>
+> syzbot ci has tested the following series
+>
+> [v1] wifi: mac80211: guard drv_net_setup_tc() against unbound AP_VLAN sda=
+ta
+> https://lore.kernel.org/all/20260811210926.11422-1-ayushmanrout27@gmail.c=
+om
+> * [PATCH] wifi: mac80211: guard drv_net_setup_tc() against unbound AP_VLA=
+N sdata
+>
+> and found the following issue:
+> WARNING in ieee80211_netdev_setup_tc
+>
+> Full report is available here:
+> https://ci.syzbot.org/series/db0f7870-cfa6-4a9b-b78b-225ce86c2a89
+>
+> ***
+>
+> WARNING in ieee80211_netdev_setup_tc
+>
+> tree:      wireless-next
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/wirel=
+ess/wireless-next.git
+> base:      ca800a9302764c445de0da0e84d2252400a770ee
+> arch:      amd64
+> compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~e=
+xp1~20260613092250.77), Debian LLD 22.1.8
+> config:    https://ci.syzbot.org/builds/e40f4f29-7949-48eb-9c12-006be4046=
+454/config
+> syz repro: https://ci.syzbot.org/findings/4c184dbd-070a-4d74-8afd-085fa1b=
+5f0a2/syz_repro
+>
+> ------------[ cut here ]------------
+> syzkaller0: Failed check-sdata-in-driver check, flags: 0x0
+> WARNING: net/mac80211/driver-ops.h:1719 at drv_net_setup_tc net/mac80211/=
+driver-ops.h:1719 [inline], CPU#1: syz.1.18/5848
+> WARNING: net/mac80211/driver-ops.h:1719 at ieee80211_netdev_setup_tc+0x2f=
+0/0x550 net/mac80211/iface.c:938, CPU#1: syz.1.18/5848
+> Modules linked in:
+> CPU: 1 UID: 0 PID: 5848 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> RIP: 0010:drv_net_setup_tc net/mac80211/driver-ops.h:1719 [inline]
+> RIP: 0010:ieee80211_netdev_setup_tc+0x345/0x550 net/mac80211/iface.c:938
+> Code: 48 8b 02 48 8d b0 20 01 00 00 48 85 c0 48 0f 44 f1 0f b6 04 2b 84 c=
+0 4d 89 ee 0f 85 ad 00 00 00 49 8d 84 24 68 0a 00 00 8b 10 <67> 48 0f b9 3a=
+ e9 16 fe ff ff e8 cc ee 86 f6 90 0f 0b 90 e9 75 fe
+> RSP: 0018:ffffc900042ff078 EFLAGS: 00010246
+> RAX: ffff8881709e9928 RBX: 1ffff1102e13d325 RCX: ffff8881709e9938
+> RDX: 0000000000000000 RSI: ffff8881709e8120 RDI: ffffffff9068ed60
+> RBP: dffffc0000000000 R08: ffffc900042ff157 R09: 0000000000000000
+> R10: ffffc900042ff128 R11: ffffffff8b3fff60 R12: ffff8881709e8ec0
+> R13: ffffc900042ff120 R14: ffffc900042ff120 R15: ffff8881709e8000
+> FS:  00007f5cd6df16c0(0000) GS:ffff8882a8f66000(0000) knlGS:0000000000000=
+000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00002000000012c0 CR3: 000000016f0fc000 CR4: 00000000000006f0
+> Call Trace:
+>  <TASK>
+>  tcf_block_offload_cmd+0x235/0x3b0 net/sched/cls_api.c:838
+>  tcf_block_offload_bind net/sched/cls_api.c:875 [inline]
+>  tcf_block_get_ext+0xfe0/0x17d0 net/sched/cls_api.c:1498
+>  tcf_block_get+0x67/0xa0 net/sched/cls_api.c:1543
+>  multiq_init+0x72/0x2b0 net/sched/sch_multiq.c:246
+>  qdisc_create+0x7b5/0xf00 net/sched/sch_api.c:1337
+>  __tc_modify_qdisc net/sched/sch_api.c:1771 [inline]
+>  tc_modify_qdisc+0x17af/0x2390 net/sched/sch_api.c:1835
+>  rtnetlink_rcv_msg+0x7b9/0xc00 net/core/rtnetlink.c:7121
+>  netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2556
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+>  netlink_unicast+0x7bb/0x940 net/netlink/af_netlink.c:1345
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+>  sock_sendmsg_nosec+0x13a/0x180 net/socket.c:775
+>  __sock_sendmsg net/socket.c:790 [inline]
+>  ____sys_sendmsg+0x54e/0x850 net/socket.c:2684
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2738
+>  __sys_sendmsg net/socket.c:2770 [inline]
+>  __do_sys_sendmsg net/socket.c:2775 [inline]
+>  __se_sys_sendmsg net/socket.c:2773 [inline]
+>  __x64_sys_sendmsg+0x1b1/0x290 net/socket.c:2773
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7f5cd5f9e0d9
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f5cd6df1028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007f5cd6225fa0 RCX: 00007f5cd5f9e0d9
+> RDX: 0000000000000000 RSI: 00002000000012c0 RDI: 0000000000000004
+> RBP: 00007f5cd6035024 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007f5cd6226038 R14: 00007f5cd6225fa0 R15: 00007ffc6aba2558
+>  </TASK>
+> ----------------
+> Code disassembly (best guess):
+>    0:   48 8b 02                mov    (%rdx),%rax
+>    3:   48 8d b0 20 01 00 00    lea    0x120(%rax),%rsi
+>    a:   48 85 c0                test   %rax,%rax
+>    d:   48 0f 44 f1             cmove  %rcx,%rsi
+>   11:   0f b6 04 2b             movzbl (%rbx,%rbp,1),%eax
+>   15:   84 c0                   test   %al,%al
+>   17:   4d 89 ee                mov    %r13,%r14
+>   1a:   0f 85 ad 00 00 00       jne    0xcd
+>   20:   49 8d 84 24 68 0a 00    lea    0xa68(%r12),%rax
+>   27:   00
+>   28:   8b 10                   mov    (%rax),%edx
+> * 2a:   67 48 0f b9 3a          ud1    (%edx),%rdi <-- trapping instructi=
+on
+>   2f:   e9 16 fe ff ff          jmp    0xfffffe4a
+>   34:   e8 cc ee 86 f6          call   0xf686ef05
+>   39:   90                      nop
+>   3a:   0f 0b                   ud2
+>   3c:   90                      nop
+>   3d:   e9                      .byte 0xe9
+>   3e:   75 fe                   jne    0x3e
+>
+>
+> ***
+>
+> If these findings have caused you to resend the series or submit a
+> separate fix, please add the following tag to your commit message:
+>   Tested-by: syzbot@syzkaller.appspotmail.com
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+>
+> To test a patch for this bug, please reply with `#syz test`
+> (should be on a separate line).
+>
+> The patch should be attached to the email.
+> Note: arguments like custom git repos and branches are not supported.
+>
+> The email will later be sent to:
+> [ayushmanrout27@gmail.com johannes@sipsolutions.net linux-kernel@vger.ker=
+nel.org linux-wireless@vger.kernel.org nbd@nbd.name syzbot@syzkaller.appspo=
+tmail.com]
+>
+> If the report looks fine to you, reply with:
+> #syz upstream
+>
+> If the report is a false positive, reply with
+> #syz invalid
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/6a7bce19.d5f0ebe7.22d851.0004.GAE%40google.com.
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+
+--=20
+=E2=B2=A0=E2=B2=9F=E2=B2=93=E2=B2=99=E2=B2=8F=E2=B2=9B =E2=B2=84=E2=B2=89=
+=E2=B2=B1=E2=B2=A3=E2=B2=85=E2=B2=93=E2=B2=9F=E2=B2=A5 - Pimyn Girgis
+Software Engineer
+Kernel Dynamic Analysis
+pimyn@google.com
