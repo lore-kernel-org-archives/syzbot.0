@@ -1,182 +1,217 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D16630EF8F;
-	Wed, 12 Aug 2026 10:05:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786529121; cv=none; b=Keg5jv5V8yEQOejim3PtmD1itDsUwZNDM4P6ahtRDlA687ChR6dJX0SjapYM/Oqr+y3uc9Fi9cnqMlvsfirMd22o2jodP4OHsJi+QPa61FRISgkhnKK9Eji7yydVHVcBnOjLRmH27gG+eub3bliPp2Mt3yJkam3iGifNc5nNmXQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786529121; c=relaxed/simple;
-	bh=8s3GHvJv82Bk/+3SJe+EdJhdNNvV5JESRmb/47DaCZs=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=NLgdNSiCFxa2DQqlCRCxedQCCGh5G3Hd6izV6CCLcyYnLLzMkwefC/NH1OY22vqoX755cbJSVhmkm4fLhB4YukGUlhbuTELZI7xSiVn+LNnAedMyRDq8yIRBeEIWFaBW6DmiXbNhrAYLvfU4I2MuAXDvfSu54btlTR5Z9H+pMK8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oHf4ayjo; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BDD0336881
+	for <syzbot@lists.linux.dev>; Wed, 12 Aug 2026 11:36:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786534591; cv=pass; b=nDY2h0PYFrM1s0aRBsm0nXxyhRAL2RFfczv1chftjomsPcF8tUJSYrLiDav92bt4Mg4OdHtpKGUhK5g7td96ft/ueCQH6h9dO6rA1kBQ2byTrox+vITPfTG5RUKuEKhlqot74XXf9FTmRoF+36bg8yQK+l0yEu+KmlFaTg1zHis=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786534591; c=relaxed/simple;
+	bh=q/6h8mxOBA59dDgpPQksu2SKxrdiK9G3hPcDOBimiYU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=PKHQNBAsRlCIrBpt1RWwUAD0/uH052yWRKJJ8JNxOQpp065o8oVQeCm95UhiVSB5SAXfq4k1i6lDD3TuBwGOdSGLJ3lHvYj7dH1vO13DEDqEjZU4eIm2MamieUJ2ZPlfMAuHeoZkeiQiiZecTZLW7SisfBbp4HFDrqJvJjTB5W0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=na8c8lQX; arc=pass smtp.client-ip=209.85.161.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oHf4ayjo"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 4178B1F000E9;
-	Wed, 12 Aug 2026 10:05:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786529119;
-	bh=WKIJnMIpPwtsBlJ0wkO1LtnFiGIt1kXUxaJvMOp5dxc=;
-	h=From:To:Cc:Subject:Date;
-	b=oHf4ayjopmn9tZeNOshlrwMjCoVxZPt0eMG3Ay1vf5KUjP5uvqz7KTneJ/45h/2Yd
-	 U28BvPlFEe2lL9/+6Tu/BMrrBS75ISuxVgvCYerv5pKzRrHPuyIKM9sd0WzhErM4X7
-	 8PxwMBJUIfAyjFqo75GE77A1qlTYR0gP2VNTt2IDM9rPsUf5teB3YV+4QHwxr/qY/s
-	 tBLg1ne1VwdZNb0DPpyft9T2ao+BrdLKmqDbIUlQmX2YuFwCzNf9ciK9AXaNeR8XXM
-	 BD0umQGpjKXg5dqo9/ZvnewV0A+j2IWUP3yPncfQcZvSz5QNJxg21NCM0EzsE/jsrx
-	 AL+kFXYlgO6YQ==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Krystian Kaniewski <krystianmkaniewski@gmail.com>, "David Airlie" <airlied@gmail.com>, <dri-devel@lists.freedesktop.org>, "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>, "Maxime Ripard" <mripard@kernel.org>, "Simona Vetter" <simona@ffwll.ch>, "Thomas Zimmermann" <tzimmermann@suse.de>
-Cc: linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Subject: [PATCH] drm/client: Avoid warning on vblank timeout during modeset client waits
-Message-ID: <ad8b0286-7779-4682-9516-da4280f1d846@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="na8c8lQX"
+Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-6acbf97e9a1so500270eaf.1
+        for <syzbot@lists.linux.dev>; Wed, 12 Aug 2026 04:36:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786534589; cv=none;
+        d=google.com; s=arc-20260327;
+        b=m5fuBqfxAxdfOMlEzc1aR2gznng+y6GBH5rCP9wB1g4vHBntI9+S+Hmp3ZDxA9I5+t
+         KkqOEusCqHqGdEyKpeBjV5WftNUuy1pjHlEvkfNs7CMYey8wNhVvw1s2Trkc79Y/YbT0
+         Hrh5+ohcj/bGaiPDayoKlWM1NBB6+xe7yk92ImTQayIb7i6AxNYP6TFzhPYNHKQf0vSH
+         7slbpyGloKQkvYj+QgkK1yalqqxDYMKBMRJoCUltX9JKJlAibyFK/Ot96Z0xPBkBm1tc
+         ML/oSBjYLWGOHV5taoC6RWFGsgwkdXUFVBoCXTFx3hRxmVM8tz7M30GEFxguVXuIS+/i
+         gwxw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=XwC/UaxnifFe9FwzzZuoQZkMoYwyN5Bt5HbnYRSq14s=;
+        fh=Ir8DcQTpEUlJUfKii1kwXvpjo7JCnNlAB41lUudIRRg=;
+        b=SCRpYLrEFMIXq5e44y/hHwUvCi2yytiJu/NCkqmZzqMI63HRp7iSIY3ie/284q51t6
+         lSL1pvj+qVAxKRO/YvV/mOzljxoS+V/ZRuv+Q3RdTtZCdTgz9OizaK7HhGPnd5pyeRAn
+         8O9bzTSTHQ475HKycktWQcHRq4hBSTdXsQ9NEhK8K9zo7tsoKR8vurCb0qrH4dk3MtP0
+         2eOhUs8/VRQMjMFnYUlaBJDHEjw5I3mSzUYicsjuhK0KgqYj02fsCxc+6KiGut6DLeCb
+         LqPlsNQLOIF/EL0uN3aGIWGIW0R3WoFqvVD7SjGqbNcBStlKQKyf9yweAmHjwn2K9fbE
+         vyig==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1786534589; x=1787139389; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=XwC/UaxnifFe9FwzzZuoQZkMoYwyN5Bt5HbnYRSq14s=;
+        b=na8c8lQXaJDO6OSBWsy4WCt8b8NrRCF4wKj8/Lm2JoFjpy2anPnBF5FQSmoLGYU6se
+         Qc1u54RI5zARX1Ma9Kuu7jhgPPVJm7lJmMOzanwEgHXxybCuRRihD3hnQ/XTCPbWD567
+         AHEU43BUutElP0wkFLx5tSEzVpQG8r10WDrgPv/BqkzY8hMc7ogRwMPCzzkY2yW+VkIU
+         46TBlusWftDvz6z2WWmrDQAgoyth+w5u8lTJaVOvrNHHC7A8zDYMl1skvbtgVeoIjEbO
+         aWD4tafm248YllhPl6Vm0PJo0nkhobq/BbY/IIL4FPmL3EiMTyp/NkJMzghRbAUOKbSq
+         c1yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786534589; x=1787139389;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=XwC/UaxnifFe9FwzzZuoQZkMoYwyN5Bt5HbnYRSq14s=;
+        b=E2NKAT9sDuZzsnKawGI7npHy53V3oFxiB3GmK+wNdgJusHKmSQPLhKntElm0bHdj3V
+         bZH+/n0mc6SLL00lyylpfC1hFgB9yLqbMzL3H640I+O+hllRWUeu/N0N+SKafPd5TkId
+         5C94DW4EwRy+Bc1ZI35zoCPat4AIhsFNA0kaiHi+ABuD1AJLv3g93/3k3N2QqO21rKFb
+         aGeZhnvMulRovzXBi1K9i4fNBUNJmYx449rBEWNSHtOVgbMrcQLNODmptvV2cy366A6C
+         teu2DjzcUa1gfjw24tUNZlZ49y94rF3CXvvi6y6IRzGss24W68HiFnmFdUDM09S25Oxi
+         oYuw==
+X-Forwarded-Encrypted: i=1; AHgh+RrP8pItq7fsHVwdYy/zjbz0JpfqSDMEBNHVxj79xJCsr26dnj0yw6YInne78jXfJQJmXXxm2qk=@lists.linux.dev
+X-Gm-Message-State: AOJu0YxHivWAN8ZAoocczJqeHvMyb+3s5DlRlsvHzJdbs1IWFHR7ClGn
+	dHlEfY9BBpNUzMM845t8rZ+96Sa1sYBn3mRqdq6go8DrmRBLdKeeQ65WV7y/ShC1+Y6vC3mthjB
+	vvPmSr9gykHY3flRPJTZ+9kVVF0CnRJ0Vv2odW+w67ELjJKPShURq5/Awn/Q=
+X-Gm-Gg: AR+sD11mqHrHfyRTq9n43/2MJfE4/L10+8MUH0eawpyPqhHU7F/Oi1W3UKv/Bo1bv4g
+	fjvD8Przr/a+xm+TU1jNBYFWhnipbKE4OCGADDSIQWaTCyemdfinGv80VPBz+uMbv6Gyiza1bSl
+	8G631eMxJIrJmgimBPaREH1XIwgcaYHCUrT/iDa6o+4p2603ScDmb1MhT9j+kFSFO3MkZHKocvT
+	bBCuQgzQblXJgkNL1IPItxc82Js3AeZQ2VWDTTRvr9QFy0DKYrNAxCS8gKZYCN28zQfYT+X/mrA
+	moBdJPHIHl6jjYTTlXc7KlOZW9pT/TMDOJWcXSID8UYI0mJz6hX/aCMfOpPqCXFdAw+/K4GRzyy
+	nQ8QZT07qpOLIDQEUcJK9vuKdt4Bh41Mmea3/fET1tYGorOULvLbki1zvitRVEP7KKF2cwJiSMK
+	bAtzRV7mMvjg6jm7GpM5xYwjA=
+X-Received: by 2002:a05:6820:3088:b0:6aa:e573:9ce0 with SMTP id
+ 006d021491bc7-6b0b2673f66mr3677020eaf.16.1786534588390; Wed, 12 Aug 2026
+ 04:36:28 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Wed, 12 Aug 2026 10:05:19 +0000 (UTC)
+References: <f345b3ad-4dff-4a90-8a9e-672979e4a8ba@mail.kernel.org>
+In-Reply-To: <f345b3ad-4dff-4a90-8a9e-672979e4a8ba@mail.kernel.org>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Wed, 12 Aug 2026 13:36:17 +0200
+X-Gm-Features: AUfX_myleEE0pByerKBFIzjv0ZPOJqhToPFe5KAhjUX1Np0_bipKXgxkgdMk5j0
+Message-ID: <CANp29Y6hUUYBGYsgL2A6jFJH+cpiEhsm+ChgDw+D13OkL=aopw@mail.gmail.com>
+Subject: Re: [PATCH RFC] usb: gadget: uvc: check endpoint enabled state in uvcg_video_enable()
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+The fix papers over a different problem.
 
-On PREEMPT_RT kernels, a user-space task with elevated Real-Time (RT)
-priority can starve essential kernel threads. For example, the VKMS driver
-simulates vblank interrupts using hrtimers. On PREEMPT_RT, these timers run
-in the per-CPU timer threads at a low RT priority. If a user-space task
-elevates its priority above the timer thread and monopolizes the CPU, the
-timer thread is starved and the VKMS software vblank delivery is delayed
-beyond the timeout.
+1. Validate state in uvc_v4l2_streamon() to prevent completing the
+setup handshake out of turn.
+2. Check `!video->ep->enabled` / `!video->ep->desc` in uvc_video.c to
+guard against concurrent USB disconnects/resets during request
+allocation.
 
-This leads to a timeout when a worker thread waits for the vblank event.
-For instance, a console update triggers a framebuffer update, scheduling
-drm_fb_helper_damage_work() on the system workqueue. The worker thread
-eventually calls drm_client_modeset_wait_for_vblank() to synchronize the
-screen update with the vblank interval. Due to the starved timer, the wait
-times out and triggers a warning in drm_crtc_wait_one_vblank().
-
-Since this vblank wait in the client modeset path is only used for optional
-client update throttling, a timeout is acceptable and does not indicate a
-kernel bug. Therefore, a warning should not be triggered in this case.
-
-Introduce drm_crtc_wait_one_vblank_internal(), which performs the vblank
-wait without triggering a warning on timeout. This new function is used in
-drm_client_modeset_wait_for_vblank() to avoid the warning, while keeping
-the warning in drm_crtc_wait_one_vblank() for other callers where a timeout
-might still indicate an actual issue.
-
-Keeping the vblank reference acquisition (drm_vblank_get()) in the public
-wrapper drm_crtc_wait_one_vblank() rather than moving it to the internal
-helper prevents an enable_vblank() error from being mislabeled as a wait
-timeout.
-
-Fixes: d8c4bddcd8bc ("drm/fb-helper: Synchronize dirty worker with vblank")
-Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+f59157955aba9d0cb43b@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=f59157955aba9d0cb43b
-Link: https://syzkaller.appspot.com/ai_job?id=f37d4830-e66f-4bce-be00-e7ac1d70c469
-Signed-off-by: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-
----
-diff --git a/drivers/gpu/drm/drm_client_modeset.c b/drivers/gpu/drm/drm_client_modeset.c
-index 0080a8e95..7ff0f24a0 100644
---- a/drivers/gpu/drm/drm_client_modeset.c
-+++ b/drivers/gpu/drm/drm_client_modeset.c
-@@ -1328,7 +1328,7 @@ int drm_client_modeset_wait_for_vblank(struct drm_client_dev *client, unsigned i
- 	 */
- 	ret = drm_crtc_vblank_get(crtc);
- 	if (!ret) {
--		drm_crtc_wait_one_vblank(crtc);
-+		drm_crtc_wait_one_vblank_internal(crtc);
- 		drm_crtc_vblank_put(crtc);
- 	}
- 
-diff --git a/drivers/gpu/drm/drm_internal.h b/drivers/gpu/drm/drm_internal.h
-index f893b1e3a..6fd33672d 100644
---- a/drivers/gpu/drm/drm_internal.h
-+++ b/drivers/gpu/drm/drm_internal.h
-@@ -115,6 +115,7 @@ void drm_vblank_disable_and_save(struct drm_device *dev, unsigned int pipe);
- int drm_vblank_get(struct drm_device *dev, unsigned int pipe);
- void drm_vblank_put(struct drm_device *dev, unsigned int pipe);
- u64 drm_vblank_count(struct drm_device *dev, unsigned int pipe);
-+int drm_crtc_wait_one_vblank_internal(struct drm_crtc *crtc);
- 
- /* drm_vblank_work.c */
- static inline void drm_vblank_flush_worker(struct drm_vblank_crtc *vblank)
-diff --git a/drivers/gpu/drm/drm_vblank.c b/drivers/gpu/drm/drm_vblank.c
-index f90fb2d13..9cac7013b 100644
---- a/drivers/gpu/drm/drm_vblank.c
-+++ b/drivers/gpu/drm/drm_vblank.c
-@@ -1297,6 +1297,32 @@ void drm_crtc_vblank_put(struct drm_crtc *crtc)
- }
- EXPORT_SYMBOL(drm_crtc_vblank_put);
- 
-+/**
-+ * drm_crtc_wait_one_vblank_internal - wait for one vblank
-+ * @crtc: DRM crtc
-+ *
-+ * This waits for one vblank to pass on @crtc, using the irq driver interfaces.
-+ * Every caller must hold a vblank reference across the complete wait.
-+ *
-+ * Returns: 0 on success, negative error on failures.
-+ */
-+int drm_crtc_wait_one_vblank_internal(struct drm_crtc *crtc)
-+{
-+	struct drm_device *dev = crtc->dev;
-+	int pipe = drm_crtc_index(crtc);
-+	struct drm_vblank_crtc *vblank = drm_crtc_vblank_crtc(crtc);
-+	int ret;
-+	u64 last;
-+
-+	last = drm_vblank_count(dev, pipe);
-+
-+	ret = wait_event_timeout(vblank->queue,
-+				 last != drm_vblank_count(dev, pipe),
-+				 msecs_to_jiffies(1000));
-+
-+	return ret ? 0 : -ETIMEDOUT;
-+}
-+
- /**
-  * drm_crtc_wait_one_vblank - wait for one vblank
-  * @crtc: DRM crtc
-@@ -1311,26 +1337,20 @@ int drm_crtc_wait_one_vblank(struct drm_crtc *crtc)
- {
- 	struct drm_device *dev = crtc->dev;
- 	int pipe = drm_crtc_index(crtc);
--	struct drm_vblank_crtc *vblank = drm_crtc_vblank_crtc(crtc);
- 	int ret;
--	u64 last;
- 
- 	ret = drm_vblank_get(dev, pipe);
- 	if (drm_WARN(dev, ret, "vblank not available on crtc %i, ret=%i\n",
- 		     pipe, ret))
- 		return ret;
- 
--	last = drm_vblank_count(dev, pipe);
--
--	ret = wait_event_timeout(vblank->queue,
--				 last != drm_vblank_count(dev, pipe),
--				 msecs_to_jiffies(1000));
-+	ret = drm_crtc_wait_one_vblank_internal(crtc);
- 
--	drm_WARN(dev, ret == 0, "vblank wait timed out on crtc %i\n", pipe);
-+	drm_WARN(dev, ret == -ETIMEDOUT, "vblank wait timed out on crtc %i\n", pipe);
- 
- 	drm_vblank_put(dev, pipe);
- 
--	return ret ? 0 : -ETIMEDOUT;
-+	return ret;
- }
- EXPORT_SYMBOL(drm_crtc_wait_one_vblank);
- 
-
-
-base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
--- 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On Tue, Aug 11, 2026 at 11:16=E2=80=AFPM 'syzbot' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
+>
+> A NULL pointer dereference can occur in uvc_video_prep_requests() if
+> userspace issues a VIDIOC_STREAMON ioctl before the USB host has fully
+> configured the streaming endpoint.
+>
+> When userspace calls VIDIOC_STREAMON, the driver handles it in
+> uvc_v4l2_streamon(), which in turn calls uvcg_video_enable(). Currently,
+> uvcg_video_enable() only checks if the endpoint pointer is allocated
+> (video->ep =3D=3D NULL), but it fails to check if the endpoint is actuall=
+y
+> enabled (video->ep->enabled).
+>
+> The endpoint descriptor (video->ep->desc) is only assigned when the USB
+> host explicitly selects the streaming alternate setting via a SET_INTERFA=
+CE
+> control request. If userspace prematurely calls VIDIOC_STREAMON before th=
+e
+> host has selected the streaming alternate setting, video->ep->desc will
+> still be NULL.
+>
+> Because uvcg_video_enable() does not verify the endpoint's enabled state,
+> it proceeds to call uvc_video_alloc_requests() and then
+> uvc_video_prep_requests(). Inside uvc_video_prep_requests(), the code
+> unconditionally dereferences video->ep->desc, resulting in a KASAN
+> null-ptr-deref / general protection fault:
+>
+> Oops: general protection fault, probably for non-canonical address
+> 0xdffffc0000000000: 0000 [#1] SMP KASAN NOPTI
+> KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+> RIP: 0010:usb_endpoint_xfer_isoc include/uapi/linux/usb/ch9.h:571 [inline=
+]
+> RIP: 0010:uvc_video_prep_requests
+> drivers/usb/gadget/function/uvc_video.c:508 [inline]
+> RIP: 0010:uvc_video_alloc_requests
+> drivers/usb/gadget/function/uvc_video.c:559 [inline]
+> RIP: 0010:uvcg_video_enable+0x142/0xe70
+> drivers/usb/gadget/function/uvc_video.c:784
+> Call Trace:
+>  <TASK>
+>  uvc_v4l2_streamon+0x7e/0x110 drivers/usb/gadget/function/uvc_v4l2.c:531
+>  __video_do_ioctl+0x8af/0xc70 drivers/media/v4l2-core/v4l2-ioctl.c:3133
+>  video_usercopy+0x860/0x1430 drivers/media/v4l2-core/v4l2-ioctl.c:3475
+>  v4l2_ioctl+0x18d/0x1e0 drivers/media/v4l2-core/v4l2-dev.c:366
+>  vfs_ioctl fs/ioctl.c:51 [inline]
+>  __do_sys_ioctl fs/ioctl.c:597 [inline]
+>  __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+>
+> To fix this, update uvcg_video_enable() to also verify that the endpoint =
+is
+> enabled (!video->ep->enabled). This ensures that if userspace prematurely
+> calls VIDIOC_STREAMON, the driver will safely reject the request with
+> -ENODEV instead of crashing the kernel.
+>
+> Fixes: 48dbe731171e ("usb: gadget: uvc: set req_size and n_requests based=
+ on the frame interval")
+> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+44835f0858f11e3e923c@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3D44835f0858f11e3e923c
+> Link: https://syzkaller.appspot.com/ai_job?id=3D7c0e5e06-0c49-4143-aeab-5=
+a4c53b4bdaa
+> To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+> To: <linux-usb@vger.kernel.org>
+> To: "Michael Grzeschik" <m.grzeschik@pengutronix.de>
+> Cc: "Frank Li" <Frank.Li@nxp.com>
+> Cc: "Kees Cook" <kees@kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+> Cc: "Junzhong Pan" <panjunzhong@linux.spacemit.com>
+> Cc: "Xu Yang" <xu.yang_2@nxp.com>
+>
+> ---
+> diff --git a/drivers/usb/gadget/function/uvc_video.c b/drivers/usb/gadget=
+/function/uvc_video.c
+> index 2f9700b3f..d4aeedacc 100644
+> --- a/drivers/usb/gadget/function/uvc_video.c
+> +++ b/drivers/usb/gadget/function/uvc_video.c
+> @@ -764,7 +764,7 @@ int uvcg_video_enable(struct uvc_video *video)
+>  {
+>         int ret;
+>
+> -       if (video->ep =3D=3D NULL) {
+> +       if (video->ep =3D=3D NULL || !video->ep->enabled) {
+>                 uvcg_info(&video->uvc->func,
+>                           "Video enable failed, device is uninitialized.\=
+n");
+>                 return -ENODEV;
+>
+>
+> base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+>
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated =
+patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/f345b3ad-4dff-4a90-8a9e-672979e4a8ba%40mail.kernel.org=
+.
