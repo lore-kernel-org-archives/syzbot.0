@@ -1,73 +1,140 @@
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F0493346BE
-	for <syzbot@lists.linux.dev>; Wed, 12 Aug 2026 13:22:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6B203546F9
+	for <syzbot@lists.linux.dev>; Wed, 12 Aug 2026 13:25:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786540954; cv=none; b=V6nWvAOIQWUTEivuY+44P9RDTi/NPmGabMUi5S+Qwh4wJ+x90FhYpEis/1Glemx/VExW28oJjPbzIJ3OcNWDLbR7g1ZMslFCBkwXgSkk3wqLsRu4jFszS78Dr/FDq/XwRhLupqycJi6Cy8AGEKMLg/mfpYm3rNSzyXczKKtKKvM=
+	t=1786541151; cv=none; b=HDRNwypklcbvsJ2kohIvdIRPof0N0doyO6OThRQh6jEfg7FEHC9grVyYeBajFaU/PQO+1H+QtSeup4U7AXhdcfZNvrWe7yx7FJvCNrNy6tWGgD7NlZ1h19kziCiPAmnflhMZ0IRB2Jdo0B1dX6902WAVTbkGFVYHWfrLr2om32A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786540954; c=relaxed/simple;
-	bh=HTiDNmjxasqGU/1ijxs2O8qn8C6HETKx4++iaL/0Esc=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=hX11RDcP/NwE2pGONGmrIXA4fmDzZzXoQCr8rjRXMt45stGWAE0OT7FfdcSi/kw2+PA5j1x7/EHvih07St1zhTFHJeDyjteTxY65AIISkrhJgt8/SgDzUfHh6mRVOmAT5gPJkELrl8ifEnszzHAQ54nQB7O97tmkR9bymJC081s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-7ead32f5c6aso531119a34.1
-        for <syzbot@lists.linux.dev>; Wed, 12 Aug 2026 06:22:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786540952; x=1787145752;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=wC5M3XMazNDIeC5di7bVLnKEXrQKD4GXwO1ON9r6zCA=;
-        b=fJpCdSushGZ8R2A4rGX532MYdKqa90aHyPCP8WN3ZkQiV9LGKf2zX9m6uY0b1I6Bxz
-         XlObvNj+I0pcrNnJrvMZk5lsWmj7DrefeH8fm2OzTS6G9ZYsBNDNIqR3XMzWsd2GITuB
-         kNI3HVGO8xyAaPoDvZAIf2NsrzPBJ5ccT7tuW6R9RyfuPqLEJYVIo7F9t4lbpjgkoJNB
-         HRdc0wF/nxy7kZho1M9qCaMRiF/oH/xBcA3GwkEfghIc8e377TQi3oc5CE0Pzw67GuB1
-         zWNkMyOL6yuS3U/vA9a9Sth5kLEA0ovNMclv938kVaVs/LzYhPkKQgaNK2yHJvipx+qN
-         Yf2A==
-X-Gm-Message-State: AOJu0YzERDCnPIKZrQmjO+ixlbJ/uqWU2+thBOq1dTD6ZQYuZ1xTU1rI
-	W8/94yQycDwTD00mZzCmioJUDAFXFayCpU3urlVlNbH7axripoWOnTbOQgqijIubD6WzVw41ZK5
-	5cBQBvCIBktLu1Kcr6kN2ogSQ2NAsiyGz6ePuBv2tn41LojS0q3Ms+860wSQ=
+	s=arc-20240116; t=1786541151; c=relaxed/simple;
+	bh=TD5TYz+z9A+x9iTXPkc/S1K0sx7Z8jGcZw9hYNrlSOI=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=GZUXQItZwuFLdyxIomiI8K4ZvQMj4hDyHVlhNcOEVlI4OtM6fOcEN6wK7ymWtPc1IB0Q8vyayYJ81PD/cyBaUCl+yd0Z8GGNuyZ0kCWjUZVPsJnPwqhtppKG/3cAuFpsMnVFBEfAaG6pHzz4eHa2M+eCjS4xFLh5bxQYHnqWmvQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oj26bqN0; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oj26bqN0"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 8D5CA1F000E9;
+	Wed, 12 Aug 2026 13:25:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786541149;
+	bh=P1OI0/E6W4s3siykuZtsT3X+CLuNku4LfnEYL1hZhoo=;
+	h=From:To:Cc:Subject:Date;
+	b=oj26bqN0h/QUHLUePJUO6AzEyw6KE9SlctsX/ajEf93w2DtEsnhFixDZLZSlLGLFD
+	 gvOtxOIhhnFy+z1VWhZMdnkn1Xfor46K7lhqu9/z18b3Q2E8aDHfzTq7jwjhnI3/Rq
+	 mOf+VdB5rUQiJv9yOvxot2uOQXLyZEUi08mgsGNi+vcusToIOTdyEzCyTgTr72C2l2
+	 3lUFAEMmcWw+PUS+EbTVpPa4V+rtwKcKgfYSHC4bPMELcqHSRAP8Sl4spP3UzWjzmu
+	 /Odua1EHdSgdtQC9keHH3ap9TYDIqYqT+upY88gWkisIkNXYlYv82neghl2k3ZZ8h7
+	 2lXF9Xrnpc2HQ==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] futex: Fix might_sleep() warning in futex_pivot_pending()
+Message-ID: <1f966921-7789-4c70-92cd-ae6c4f8d5be4@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:f008:b0:6aa:f61e:2463 with SMTP id
- 006d021491bc7-6b0b28abdebmr3716104eaf.24.1786540952141; Wed, 12 Aug 2026
- 06:22:32 -0700 (PDT)
-Date: Wed, 12 Aug 2026 06:22:32 -0700
-In-Reply-To: <6a7c692e.d5f0ebe7.22d851.000c.GAE@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a7c7398.c5ad36c8.12f49d.0028.GAE@google.com>
-Subject: [syzbot ci] Re: net/smc: fix clcsock and lgr/lnk races in smc_diag
- dump path
-From: syzbot ci <syzbot+ci56a328c65c235c77@syzkaller.appspotmail.com>
-To: syzbot@syzkaller.appspotmail.com, mjambigi@linux.ibm.com, 
-	syzbot@lists.linux.dev
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Wed, 12 Aug 2026 13:25:49 +0000 (UTC)
 
-syzbot ci has tested the suggested fix patch on top of the following series:
+A recent change in commit 8e7ff730dd96 ("futex: Fix race in
+futex_pivot_pending() during private hash resize") modified
+futex_pivot_pending() to acquire a mutex to fix a race condition. However,
+futex_pivot_pending() is evaluated as a condition inside wait_var_event()
+in futex_hash_allocate(). Since wait_var_event() sets the task state to
+TASK_UNINTERRUPTIBLE before evaluating the condition, calling a blocking
+operation like mutex_lock() is invalid and triggers a might_sleep()
+warning:
 
-[v3] net/smc: fix clcsock and lgr/lnk races in smc_diag dump path
-https://lore.kernel.org/all/20260807081606.3200128-1-mjambigi@linux.ibm.com
+do not call blocking ops when !TASK_RUNNING; state=2 set at
+[<ffffffff819e8c8d>] prepare_to_wait_event+0x3dd/0x480
+kernel/sched/wait.c:317
+WARNING: kernel/sched/core.c:9124 at __might_sleep+0x92/0xf0
+kernel/sched/core.c:9120
+Call Trace:
+ <TASK>
+ __mutex_lock_common kernel/locking/mutex.c:623 [inline]
+ __mutex_lock+0x118/0x1550 kernel/locking/mutex.c:821
+ class_mutex_constructor include/linux/mutex.h:253 [inline]
+ futex_pivot_pending kernel/futex/core.c:1789 [inline]
+ futex_hash_allocate+0x7fb/0xf00 kernel/futex/core.c:1872
+ __do_sys_prctl kernel/sys.c:2885 [inline]
+ __se_sys_prctl+0x78c/0x1910 kernel/sys.c:2534
 
-Patch: https://ci.syzbot.org/jobs/0c1c7e8f-103f-49ac-9196-1a291971a9cd/patch
-Testing results:
-* [build 0] Build Patched: passed
-* [build 0] Boot test: Patched: passed
-* [build 0] Previous reproducers: passed
-  - WARNING in smc_diag_dump_proto (patched) - passed
+Furthermore, if the mutex is contended, mutex_lock() will block. When it
+acquires the lock and returns, the task state will be reset to
+TASK_RUNNING. This causes the subsequent schedule() in the wait loop to
+return immediately, leading to a busy loop that consumes 100% CPU until the
+condition is met.
 
-Full report is available here:
-https://ci.syzbot.org/session/f5a9f860-ef52-446f-a775-661f3e756d37
+Fix this by reverting futex_pivot_pending() to a lockless implementation
+using RCU and memory barriers, which is the idiomatic way to handle
+conditions in wait_event loops. By reading the hash pointer first,
+executing an smp_rmb() memory barrier, and then reading hash_new, we
+leverage the Message Passing (MP) pattern to guarantee correctness without
+blocking. This pairs with the rcu_assign_pointer() release barrier in
+__futex_pivot_hash(). If the reader sees the new hash, it is guaranteed to
+see the cleared hash_new and correctly return true. If the reader sees the
+old hash, it will check futex_ref_is_dead(old), which will return true if
+the writer has already completed the pivot. The old hash memory is
+guaranteed to remain valid for the duration of the check in
+futex_ref_is_dead() because futex_pivot_pending() executes within an RCU
+read-side critical section and the old hash is freed using kvfree_rcu().
+
+Fixes: 8e7ff730dd96 ("futex: Fix race in futex_pivot_pending() during private hash resize")
+Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+350a93852ac854927f45@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=350a93852ac854927f45
+Link: https://syzkaller.appspot.com/ai_job?id=78f30cbc-93e5-4bed-a5bc-32f4877252b1
+To: <linux-kernel@vger.kernel.org>
+To: "Ingo Molnar" <mingo@redhat.com>
+To: "Thomas Gleixner" <tglx@kernel.org>
+To: "Yao Kai" <yaokai34@huawei.com>
+Cc: =?utf-8?q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>
+Cc: "Davidlohr Bueso" <dave@stgolabs.net>
+Cc: "Darren Hart" <dvhart@infradead.org>
+Cc: "Peter Zijlstra" <peterz@infradead.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/kernel/futex/core.c b/kernel/futex/core.c
+index 128c5752f..b1eab5843 100644
+--- a/kernel/futex/core.c
++++ b/kernel/futex/core.c
+@@ -1786,12 +1786,18 @@ static bool futex_pivot_pending(struct mm_struct *mm)
+ 	struct futex_mm_phash *mmph = &mm->futex.phash;
+ 	struct futex_private_hash *fph;
+ 
+-	guard(mutex)(&mmph->lock);
++	guard(rcu)();
+ 
+-	if (!mmph->hash_new)
++	fph = rcu_dereference(mmph->hash);
++	/*
++	 * Ensure that if we see the new hash, we will also see the cleared
++	 * hash_new pointer. Pairs with rcu_assign_pointer() in
++	 * __futex_pivot_hash().
++	 */
++	smp_rmb();
++	if (!READ_ONCE(mmph->hash_new))
+ 		return true;
+ 
+-	fph = rcu_dereference_raw(mmph->hash);
+ 	return futex_ref_is_dead(fph);
+ }
+ 
+
+
+base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
