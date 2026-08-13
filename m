@@ -1,76 +1,206 @@
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71D7747ECF7
-	for <syzbot@lists.linux.dev>; Thu, 13 Aug 2026 13:31:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC30F40DB56
+	for <syzbot@lists.linux.dev>; Thu, 13 Aug 2026 13:59:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786627913; cv=none; b=iLDaPyEYSNUidgakZ0mWEXNeKiKpqkPaNHmf1TCzBZrtgPDXgYbArHz1FitdpDDcOTHt7JDmdxdMitJpyOqijOCeHL/FIqpEOE+O2a2SQ+HXWABe3fwYfTVBtTQbRM/R9gNM5r1pWIa7qeOy1ROLQL9iehxgiOnWGVKOFBLYawQ=
+	t=1786629551; cv=none; b=cU8DPrNBLYYjPbmRcMW4m7tTj9dJfQzJGkeeBSuKig4KMjtQv6xf+tY57tcWtmnzB1TGGzjaM3PHf1PafzNH6NxgDi/YdNUGvlZjgb8m+KwW5pwNzOQEtgbnTJx2kzpJtif2kG+mU10sioJoizYdThISyl2EJ82PrE474t6EIrc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786627913; c=relaxed/simple;
-	bh=jZyRY7IlCmXPHgLnDyjNlS4qJ0ax5CJ+e+LbWlV+YC0=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=GjA0ZA6Rjzg79E7uX6zmLeOFnmiUmHk5JguPAX9N7l4jf6aLRNcAbceja4vxgs+UnFIgSir17U6GrCJiNfTFD94r7mZXY1ld9ePD3cFFo/yH6t5rAaL7A9/P+m5KkEb746eHsjWJi6calxSlNRWAJd4jfrfgko+mbrpPYoWadk4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4ab4af22d09so1970511b6e.0
-        for <syzbot@lists.linux.dev>; Thu, 13 Aug 2026 06:31:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786627911; x=1787232711;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=JergMOWG8FZ7I6bLt6LJk+RXyiAg+VlSoNXVvRVys3Y=;
-        b=hyAexlK8yZ66zRvZogbmaefGo5VyfrkkA6GRiX3IXEsw3IdUsfodFqsoysvLHGLDcl
-         zqd7fOWxAq6kWcpPCk3Bo8rs3IaPCp4eNIRe0gOJrkkHHGaJTxzvSORAOsQktUBUZLJX
-         A6wVRfH7wJdCfPJ36+HBQS5gvaVZLaA0BYpb5I042eqXwD+p8UhpiFZ8B0kx3iJreXJ2
-         yh96p0vv1lP5FbA7uw9iv+ZhGrV6BOQZG21UzW1Mh38iViVW7/oo7B4yvlwSaWLCqvUH
-         x1yWqm4D4y22GjWEljSGW1VH4DWczoo3hEiBPkGkyZ2q0tbmbduw47blc57oYgqS9Bjv
-         HB2Q==
-X-Gm-Message-State: AOJu0YyqJS54Mqi6JgCS2vu0rwFBtWUq3C8REQmzVFHTfH6DZcjAQdCq
-	MzbaqloV+NTsZdS84IlqPrUENsSgfChqRk86BYB2oIhAhGJkXIk0Z75cNSab+KW0UZZryWimFUr
-	dDm7o2aoseaJ8Higm9ilaNHADDaPNRlqPm1YFG6erALgvHDg7cl2toizQ894=
+	s=arc-20240116; t=1786629551; c=relaxed/simple;
+	bh=ECUUUuH2RzBPokA3BPAoSPrG7QbIJG7VIutd5uH99b4=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=f2XtZ72Eeb4cTjKXKM13TJKFgsO4svmxDRVe97rikvNkYXOAOkB40C2jAHJmqiSt6aFvcqyNLfzbWr+wauXWAdKtoa/lOa7plH0JwEIUK0aD8yFMmkVlbEQlDT0ISpSO6eTjLniPhwQr7VJQW2URmMMyylcGTBy5gRJkSuy4yTE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JOdzGavT; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JOdzGavT"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 2B7571F000E9;
+	Thu, 13 Aug 2026 13:59:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786629549;
+	bh=dSvJcJJIGGjZruSMMXvndcFuFgVcBxthV7KVjAIjIUI=;
+	h=From:To:Cc:Subject:Date;
+	b=JOdzGavTmmCUH2V6b8CDDYRxQPiYIk2VrblaDcRMLrWDuZZsEZqsddUn6NmTTY+Fx
+	 1tnLqGP18qN6EdgOGElFyy+jFadKUE7mCQNy1qs4aPB89KIlw8nPwbPliwRGJCGvGg
+	 NbGdv+7kxNyz79HzSke9OuNb4O9LeVz9s4biCGmuhEkZc3nrlA/m6wDKj8Azy+fcoF
+	 MmuamO8j66kj9sNP+h8/5RMt114qzvBsj0SBgQ9HQ5vVIlNiv8sD2UGmMycVcGo4I5
+	 cenR2FP2bUswQgmJgT8xfKy2Hrso4vtKjIRpHtcJtmO8/XuV4tLAuQ/GGTb+4zGNDz
+	 BXZeeXdV/wpYQ==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v3] Bluetooth: hci_sync: Fix tx_work queuing race during device close
+Message-ID: <5d8471b1-69f3-4f3d-809c-7c0d396aa6f1@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:3095:b0:6a1:5347:2af9 with SMTP id
- 006d021491bc7-6b0c46b9319mr5145815eaf.36.1786627911454; Thu, 13 Aug 2026
- 06:31:51 -0700 (PDT)
-Date: Thu, 13 Aug 2026 06:31:51 -0700
-In-Reply-To: <20260813090434.2071318-1-sst@poczta.fm>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a7dc747.ec5dc6cc.21cb3f.00b8.GAE@google.com>
-Subject: [syzbot ci] Re: wifi: cfg80211: do not support direct add of station
- to AP_VLAN interfaces
-From: syzbot ci <syzbot+cib9942bb046476719@syzkaller.appspotmail.com>
-To: sst@poczta.fm
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Thu, 13 Aug 2026 13:59:09 +0000 (UTC)
 
-syzbot ci has tested the following series
+During the shutdown process of a Bluetooth device in hci_dev_close_sync(),
+tx_work can still be queued by concurrent transmission paths or raw HCI
+socket operations after HCI_UP has been checked or while workqueues are
+being flushed. This causes __queue_work() to trigger a warning when
+attempting to queue work on a draining workqueue:
 
-[v1] wifi: cfg80211: do not support direct add of station to AP_VLAN interfaces
-https://lore.kernel.org/all/20260813090434.2071318-1-sst@poczta.fm
-* [PATCH 1/3] wifi: cfg80211: do not support direct add of station to AP_VLAN interfaces
-* [PATCH 2/3] wifi: cfg80211: move link_id validation earlier in nl80211_new_station()
-* [PATCH 3/3] wifi: cfg80211: check if AP has been started before adding new station
+WARNING: kernel/workqueue.c:2306 at __queue_work+0xd4a/0x1090
+Call Trace:
+ <TASK>
+ queue_work_on+0x106/0x1c0 kernel/workqueue.c:2452
+ l2cap_chan_send+0x168a/0x22f0 net/bluetooth/l2cap_core.c:-1
+ l2cap_sock_sendmsg+0x33a/0x4d0 net/bluetooth/l2cap_sock.c:1180
+ ____sys_sendmsg+0x54e/0x850 net/socket.c:2684
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2738
+ __sys_sendmmsg+0x273/0x4d0 net/socket.c:2827
+ </TASK>
 
-and found no issues.
+To fix this, flush pending TX work before disabling later scheduling with
+disable_work_sync() and re-enable it with enable_work() in
+hci_dev_close_sync() to establish a work exclusion interval for
+hdev->tx_work while the device is closing. Additionally, ensure raw HCI
+socket producers in hci_sock_sendmsg() are quiesced by holding
+rcu_read_lock() while checking HCI_UP, paired with synchronize_rcu() in
+hci_dev_close_sync() right after disabling tx_work.
 
-Full report is available here:
-https://ci.syzbot.org/series/256a0130-8f99-4e7d-8116-32518d856b6f
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: 76727c02c1e1 ("Bluetooth: Call drain_workqueue() before resetting state")
+Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+b6919040d9958e2fc1ae@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=b6919040d9958e2fc1ae
+Link: https://syzkaller.appspot.com/ai_job?id=13d65dad-50b4-4275-9c89-8f2b9ce91f77
+To: <linux-bluetooth@vger.kernel.org>
+To: "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>
+To: "Marcel Holtmann" <marcel@holtmann.org>
+To: "Johan Hedberg" <johan.hedberg@intel.com>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+v3:
+- Flush pending TX work with flush_work() before disabling work scheduling with disable_work_sync().
+- Update commit description to note that pending TX work is flushed before scheduling is disabled.
+
+v2:
+- Replaced per-send HCI_UP checks in hci_core.c with disable_work_sync() and enable_work() on hdev->tx_work in hci_dev_close_sync() to establish a work exclusion interval during shutdown.
+- Added rcu_read_lock() protection around the HCI_UP check in hci_sock_sendmsg() and synchronize_rcu() in hci_dev_close_sync() to quiesce raw HCI producers.
+https://lore.kernel.org/all/2df2fce5-9a9d-4baa-8b00-c1ccaf72d400@mail.kernel.org/T/
+
+v1:
+https://lore.kernel.org/all/2c2febf2-fc12-4407-9c81-d3d9713f09a4@mail.kernel.org/T/
+---
+diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+index 070ca388f..8345ebbbd 100644
+--- a/net/bluetooth/hci_sock.c
++++ b/net/bluetooth/hci_sock.c
+@@ -1850,9 +1850,10 @@ static int hci_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 		goto drop;
+ 	}
+ 
++	rcu_read_lock();
+ 	if (!test_bit(HCI_UP, &hdev->flags)) {
+ 		err = -ENETDOWN;
+-		goto drop;
++		goto drop_rcu;
+ 	}
+ 
+ 	hci_skb_pkt_type(skb) = skb->data[0];
+@@ -1870,7 +1871,7 @@ static int hci_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 		    hci_skb_pkt_type(skb) != HCI_ISODATA_PKT &&
+ 		    hci_skb_pkt_type(skb) != HCI_DRV_PKT) {
+ 			err = -EINVAL;
+-			goto drop;
++			goto drop_rcu;
+ 		}
+ 
+ 		skb_queue_tail(&hdev->raw_q, skb);
+@@ -1885,7 +1886,7 @@ static int hci_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 				   &hci_sec_filter.ocf_mask[ogf])) &&
+ 		    !capable(CAP_NET_RAW)) {
+ 			err = -EPERM;
+-			goto drop;
++			goto drop_rcu;
+ 		}
+ 
+ 		/* Since the opcode has already been extracted here, store
+@@ -1908,14 +1909,14 @@ static int hci_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 	} else {
+ 		if (!capable(CAP_NET_RAW)) {
+ 			err = -EPERM;
+-			goto drop;
++			goto drop_rcu;
+ 		}
+ 
+ 		if (hci_skb_pkt_type(skb) != HCI_ACLDATA_PKT &&
+ 		    hci_skb_pkt_type(skb) != HCI_SCODATA_PKT &&
+ 		    hci_skb_pkt_type(skb) != HCI_ISODATA_PKT) {
+ 			err = -EINVAL;
+-			goto drop;
++			goto drop_rcu;
+ 		}
+ 
+ 		skb_queue_tail(&hdev->raw_q, skb);
+@@ -1923,14 +1924,16 @@ static int hci_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+ 	}
+ 
+ 	err = len;
++	rcu_read_unlock();
++	goto done;
+ 
++drop_rcu:
++	rcu_read_unlock();
++drop:
++	kfree_skb(skb);
+ done:
+ 	release_sock(sk);
+ 	return err;
+-
+-drop:
+-	kfree_skb(skb);
+-	goto done;
+ }
+ 
+ static int hci_sock_setsockopt_old(struct socket *sock, int level, int optname,
+diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+index c8d14128c..8cb01e074 100644
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -5471,10 +5471,15 @@ int hci_dev_close_sync(struct hci_dev *hdev)
+ 
+ 	hci_leds_update_powered(hdev, false);
+ 
+-	/* Flush RX and TX works */
++	/* Flush RX and TX works. Pending TX work is flushed before
++	 * later scheduling is disabled.
++	 */
+ 	flush_work(&hdev->tx_work);
++	disable_work_sync(&hdev->tx_work);
+ 	flush_work(&hdev->rx_work);
+ 
++	synchronize_rcu();
++
+ 	if (hdev->discov_timeout > 0) {
+ 		hdev->discov_timeout = 0;
+ 		hci_dev_clear_flag(hdev, HCI_DISCOVERABLE);
+@@ -5576,6 +5581,8 @@ int hci_dev_close_sync(struct hci_dev *hdev)
+ 	bacpy(&hdev->random_addr, BDADDR_ANY);
+ 	hci_codec_list_clear(&hdev->local_codecs);
+ 
++	enable_work(&hdev->tx_work);
++
+ 	hci_dev_put(hdev);
+ 	return err;
+ }
+
+
+base-commit: 075b74841bd0065a3bda3440873c747938e69b68
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
