@@ -1,154 +1,222 @@
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 729C2432E9E
-	for <syzbot@lists.linux.dev>; Wed, 12 Aug 2026 18:43:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 375D7318EEE
+	for <syzbot@lists.linux.dev>; Thu, 13 Aug 2026 02:11:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786560232; cv=none; b=J7bgkZMAXmBEyi5J8dqq1Tvi0FvpfIp0lJu3+w9T73r5xJWS+d3OAB9npexVH0TR4it/iETDnq+19CdtrsYrGrMhdQCHrrSxI6zNtAg0X3iBXa0R4geFqkECC4LraAP4dshSaCKHZaMmN3FiYsK4rW/QOC7LNPvbNv+OXZfb9Gs=
+	t=1786587062; cv=none; b=TXegechAS2Q+iraSgdgpyqyO9dsNpBJ9klAmernoing5Ll32adVlVxfsDNlD2j1RBt65RmRPI8FrX9UsFg519I6u1SLp8DVlZkCT/IARN7fMrbvXVTQK58Bg23CRxTb8OtDXYHyXOkgr8bUDIhc1tzc0EUjjtcsnZkWcSKdk1Ws=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786560232; c=relaxed/simple;
-	bh=W2CUyOOyJybBDm2eGKkfgobH1y2juKUQr/SSRHn5Fh4=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=FG4RrayEBnXCwB0KbatJdxiC9/k+sBsJkv4S3fE+zJm8qw4aY69Hlpb4PQCNGTbncw1cfbxVYA6IEUYxh2UXRWTWl/WvoNnEwbWoHT9K1QJdZjVR+bltS4nSdGqnUWj4Jtyzfj6A2ROTuf70ZLAVRUDQpeNO7VEbmdGfDxl8sss=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-6ae8bc06f00so1121970eaf.3
-        for <syzbot@lists.linux.dev>; Wed, 12 Aug 2026 11:43:49 -0700 (PDT)
+	s=arc-20240116; t=1786587062; c=relaxed/simple;
+	bh=21L6LEwW0Kk2k09X1ddj6DxULwgI0Ky+04CJoZScCWQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=KlYyXUoF8aaJTWB/pRNATdL62RcAl+GGk3QW33qwcOy1h6hhlDmx/F67pVldAJJPoWjqm7PD0CnsR6FBYV9PtZ0APJQVriImo2dQpN9RVttuc1APxlnud08po0Cc2jRdzD/APimCeG18nc+x9EKCSM+JnEF5MOLwWDxrDZjuRr8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gCfSveT3; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gCfSveT3"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-495635a85d2so12879245e9.0
+        for <syzbot@lists.linux.dev>; Wed, 12 Aug 2026 19:10:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786587058; x=1787191858; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=RsLryur3a4MeMdmFwWdBX2hb3BzsyFJfyD/vztUa1Nk=;
+        b=gCfSveT31RDU3T4zNMKUu7lpFi1JIpfOjdJtTn1KCqF8je+sZFSP1QOAzl3xTf0xo+
+         h4o+aS6tcxeYfoG9O1C1Nl9ck86yJn4hF5DahVx29ObYl9ktEixo/WM5xF1wYQ4VbAg5
+         S1j7HrGBBkinWBr60DDk6aAN2XZqGiZR9OeKegsYOM3FLaTbZo7Cn7fq0TIZ23uZ6AgT
+         r3KMaGXc98nfAOhxORs5YI8Y9QO1NDuyDT7w6TE57FqmciSSBwHk7msndRpMnc7TF1/M
+         63BVvQzHdzzdBx6Ik9MA/cMSs0Cn/RxF/407zMKD+qzb4TNwOfmZbVQWsKigQ+FsW0cq
+         a7Cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786560229; x=1787165029;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=2nOnEP6s5ZFHBeRiC7l9C5aO+OftVEamtMaVLI+uigg=;
-        b=S4g5rlMrsbigpffPil7x5T/NiDB9XfUaSCNLaNL5OIPqcuMiwKFU7c89vCVYpTMpkc
-         awGfzt1ecsOp/DP9nw3jErPyNnAPfSkQ4fdRIFfab+R0/hfKfVC5unkdRzAutuCCZwg4
-         pi+YAOzaVDjnlQXeZ2+SaWY6lW+Nav9bQKBWpijUF1/uhiTM3Kfq3WEQg/i5sa2z4Gyq
-         PM2mzGwmrUFBKeafODVVuJTLtcuuwbLq476+C/6aNOx1w5wQ1Nqj6GQclatLJYK2f4gO
-         jNYFCtC4ekXc5yQ3BHaCDGR+O9fG93fcu31GQwswN3SlI7dfPbDJ7OdGJcyqqRMsOZrR
-         pFrA==
-X-Gm-Message-State: AOJu0YxmWOhP9OrP3ZF5eLx7qK6YsFdpgOEcNbkiH0f4TJ3zrKw3IcCZ
-	dgY7vU/F+hIlDGU0DE7hTq05w1fYmAEAcR8EK5fKUMCI0p6d+0mgaFBGQiwlRhPaAzvPnHMxUqL
-	sUPgN6GI6MW/Z6p/zzRK1SKXPyIUdd226elCR/uMzwfOq9s4RcD01eyw8pAc=
+        d=1e100.net; s=20251104; t=1786587058; x=1787191858;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=RsLryur3a4MeMdmFwWdBX2hb3BzsyFJfyD/vztUa1Nk=;
+        b=RHqM1nMMuUQqvBFRWu3k7Ag60szFzbJmryZqW450ZwGZKYNXLzz1mCDEtpWkpQFBp7
+         p9Rzj3G7NMeMcms1pU16v0Ogu6qpOpl9joUNjwI2wyrXMC/8+/77XMB+M4NIJ9jV9h3h
+         6QhyULrGzQsP+fLdBUR0xkby5nwphUk9UJXIQEBjAtmzBPSrZQDrma41JHgrpjBOZA4h
+         xxl5EdY0/c2f6pdoRzJAdZ4i86K6Q0tHgk6a+eJWEd5sHkrSu+ghxAi6aquDaYgrZOWU
+         T2TRggfOSqk8W3H+cXdhvjHNTG62JMeWnZ10bH6WuxcsIHejsw6lBfHBctrMCFVm3T1L
+         xmzg==
+X-Gm-Message-State: AOJu0YwYJw946uSAdi/Pry22dyvFd0cJu7UX2/+CSardfK8kgHfDnsHD
+	HEq3ydXnU8CoVB3wWGpOrBF9UAtb2aljV11YG77tROiXN+mnNKSGsXge
+X-Gm-Gg: AR+sD13vc55IGPVv/0F2l1dzNlTyFCrEWGHxMnSVpkz8Q/oS0FQhuhPQnVjPVThS0eW
+	SmgDdxXmLcezMuKg5xkZiq5uTghIwHOsXbJZlCSMaH0inmLAGVDJ4dbfrrMQAgHU17kPnNOKv9Z
+	4Mlhe+i1+UilmQ10V+GIkh0yKpsNKjsjVmLBEmEMP47atcpSLcqrNZlr1dFs6HzFUNR1C7qj6Sm
+	HfMrAOJuOGkr7HTgN3vZtzHdBOveocT6GJYAb2w85kyk6tGsLHjOCDgIxQIQ/BJgOdmTSycxccV
+	wZqc1ZMk7IxvEbD4U6kWRcgJQ9alQ+kCpLljzTZdabModYxTXmAIvir8jJrUV02uEYYRTN5UJr+
+	cTGTRXiSo3qV70yB4FbMdhlGOh6hfCF2kJnCYkI+gZAaFxiXEiBjGUsTy1yin8JC+NT6GYjP63o
+	0QRAyRksc4rCXhDqpjHBh/t+PvD/FqIDY6BXmf5gePsTjEhB8BJBkXWF81ZrMWI3pa6H7uuUvI9
+	WUJ0eTA8JitTouua71v28XACQG1FauRi5EkVLxRUg==
+X-Received: by 2002:a05:600c:4f87:b0:493:f140:c3fb with SMTP id 5b1f17b1804b1-499821cf33bmr18826625e9.7.1786587058232;
+        Wed, 12 Aug 2026 19:10:58 -0700 (PDT)
+Received: from [192.168.0.50] (93-159-28-168.cgnat.inetia.pl. [93.159.28.168])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4815a5af4b2sm1968989f8f.17.2026.08.12.19.10.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Aug 2026 19:10:57 -0700 (PDT)
+Message-ID: <50609ef0-6534-4e5f-8377-cc954e513c5a@gmail.com>
+Date: Thu, 13 Aug 2026 04:10:56 +0200
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4b8b:b0:6b0:449e:5d15 with SMTP id
- 006d021491bc7-6b0c41a23a2mr595744eaf.4.1786560229077; Wed, 12 Aug 2026
- 11:43:49 -0700 (PDT)
-Date: Wed, 12 Aug 2026 11:43:49 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a7cbee5.ed659fcc.23056a.0086.GAE@google.com>
-Subject: [moderation/CI] Re: KVM: s390: Introduce arm64 KVM
-From: syzbot ci <syzbot+ci970088ae3d7f589e@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v2] net/sched: taprio: enforce minimum software
+ scheduling interval
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+References: <d54f0bbd-ed4d-42bc-8a37-3268d9b3ebb8@mail.kernel.org>
+Content-Language: en-US
+From: Uladzislau Zhauniarovich <uladzislau.zhauniarovich@gmail.com>
+In-Reply-To: <d54f0bbd-ed4d-42bc-8a37-3268d9b3ebb8@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-syzbot ci has tested the following series
-
-[v6] KVM: s390: Introduce arm64 KVM
-https://lore.kernel.org/all/20260812153631.3376090-1-seiden@linux.ibm.com
-* [PATCH v6 01/33] vfio: Use file-based reference counting for KVM
-* [PATCH v6 02/33] KVM: Make device name configurable
-* [PATCH v6 03/33] KVM: Allow KVM implementations to switch off MMIO indepe=
-ndent of Kconfig
-* [PATCH v6 04/33] arm64: Use proper include variant
-* [PATCH v6 05/33] arm64: ptrace: Use constants for compat register numbers
-* [PATCH v6 06/33] arm64: sysreg: Convert SPSR_ELx to automatic register ge=
-neration
-* [PATCH v6 07/33] KVM: arm64: Access elements of vcpu_gp_regs individually
-* [PATCH v6 08/33] KVM: arm64: Use accessor functions for core regs
-* [PATCH v6 09/33] arm64: Prepare sharing arm64 headers with s390
-* [PATCH v6 10/33] arm64: Share arm64 headers with s390
-* [PATCH v6 11/33] KVM: arm64: Share arm64 code with s390
-* [PATCH v6 12/33] KVM: s390: Extract gmap tracing to a separate header
-* [PATCH v6 13/33] KVM: s390: Prepare include guards for a new location
-* [PATCH v6 14/33] KVM: s390: Rename kvm-s390.{c,h} to s390.{c,h}
-* [PATCH v6 15/33] KVM: s390: Move kvm_host definitions to kvm_host_s390
-* [PATCH v6 16/33] KVM: s390: Move s390 kvm code into a subdirectory
-* [PATCH v6 17/33] KVM: s390: Move PGM code definitions to asm/kvm_host.h
-* [PATCH v6 18/33] KVM: s390: Prepare gmap for a second KVM implementation
-* [PATCH v6 19/33] KVM: s390: gmap: Make storage keys optional
-* [PATCH v6 20/33] KVM: s390: gmap: Make CMMA optional
-* [PATCH v6 21/33] KVM: s390: gmap: Make prefix handling optional
-* [PATCH v6 22/33] KVM: s390: Prepare KVM/s390 for a second KVM module
-* [PATCH v6 23/33] s390: Use arm64 headers
-* [PATCH v6 24/33] KVM: s390: Use arm64 code
-* [PATCH v6 25/33] s390: Introduce Start Arm Execution instruction
-* [PATCH v6 26/33] KVM: s390: arm64: Introduce host definitions
-* [PATCH v6 27/33] s390/hwcaps: Report SAE support as hwcap
-* [PATCH v6 28/33] KVM: s390: Add basic arm64 kvm module
-* [PATCH v6 29/33] KVM: s390: arm64: Implement required functions
-* [PATCH v6 30/33] KVM: s390: arm64: Implement vm/vcpu create destroy.
-* [PATCH v6 31/33] KVM: s390: arm64: Implement vCPU IOCTLs
-* [PATCH v6 32/33] KVM: s390: arm64: Implement basic page fault handler
-* [PATCH v6 33/33] KVM: s390: arm64: Enable KVM_ARM64 config and Kbuild
-
-and found the following issue:
-kernel build error
-
-Full report is available here:
-https://ci.syzbot.org/series/f8f86d18-d51e-46a4-9c78-a6c3b3725817
-
-***
-
-kernel build error
-
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
-nux-next
-base:      5e6de6a2b522f659defacb1551d0465ba6ce13cf
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
-1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/2ede6171-aff4-442a-95cd-d85847a0fef=
-1/config
-
-drivers/vfio/vfio_main.c:1549:29: error: incompatible pointer types passing=
- 'struct file *' to parameter of type 'struct kvm *' [-Wincompatible-pointe=
-r-types]
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
-
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[agordeev@linux.ibm.com arnd@arndb.de borntraeger@linux.ibm.com brueckner@l=
-inux.ibm.com catalin.marinas@arm.com david@kernel.org frankja@linux.ibm.com=
- fritz@linux.ibm.com ggala@linux.ibm.com gor@linux.ibm.com gra@linux.ibm.co=
-m hari55@linux.ibm.com hca@linux.ibm.com iii@linux.ibm.com imbrenda@linux.i=
-bm.com joey.gouly@arm.com kvm@vger.kernel.org kvmarm@lists.linux.dev linux-=
-arm-kernel@lists.infradead.org linux-kernel@vger.kernel.org linux-s390@vger=
-.kernel.org maz@kernel.org nrb@linux.ibm.com oss@nina.schoetterlglausch.eu =
-oupton@kernel.org pbonzini@redhat.com seanjc@google.com seiden@linux.ibm.co=
-m suzuki.poulose@arm.com svens@linux.ibm.com tabba@google.com ulrich.weigan=
-d@de.ibm.com will@kernel.org yuzenghui@huawei.com]
-
-If the report looks fine to you, reply with:
 #syz upstream
 
-If the report is a false positive, reply with
-#syz invalid
-
+On 22/07/2026 20:32, syzbot wrote:
+> When configuring taprio with a very small schedule interval (e.g., 129 ns),
+> the kernel validates the interval against the time it takes to transmit a
+> minimum-sized Ethernet frame (60 bytes). On high-speed links, this minimum
+> duration is extremely small (e.g., 48 ns at 10 Gbps). Since the requested
+> interval is larger than this, the validation passes. Virtual devices like
+> veth or bonding can defeat this link-speed minimum check because they
+> report inflated link speeds (e.g., veth reports 10 Gbps, and bonding sums
+> member speeds).
+>
+> However, when hardware offload is not used, taprio falls back to software
+> scheduling and arms an hrtimer. The hrtimer is programmed to fire at the
+> configured interval. If this interval is too small, it cannot sustain the
+> timer service cost of one advance_sched() invocation, which includes lock
+> acquisition, budget recomputation, and TX softirq processing. As a result,
+> the timer constantly falls behind, and the CPU is livelocked in hardirq
+> context endlessly servicing the advance_sched() hrtimer. This starves the
+> RCU grace-period kthreads, leading to an RCU stall panic:
+>
+> rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+> rcu: 	1-...!: (1 GPs behind) idle=4854/0/0x1 softirq=136062/136068 fqs=0
+> rcu: 	(detected by 0, t=10506 jiffies, g=161469, q=1866 ncpus=2)
+> Sending NMI from CPU 0 to CPUs 1:
+> NMI backtrace for cpu 1
+> CPU: 1 UID: 0 PID: 0 Comm: swapper/1 Not tainted
+> Call Trace:
+>   <IRQ>
+>   lock_is_held include/linux/lockdep.h:249 [inline]
+>   enqueue_hrtimer+0x79/0x2c0 kernel/time/hrtimer.c:1107
+>   __run_hrtimer kernel/time/hrtimer.c:1946 [inline]
+>   __hrtimer_run_queues+0x4ce/0xa10 kernel/time/hrtimer.c:1994
+>   hrtimer_interrupt+0x448/0x910 kernel/time/hrtimer.c:2113
+>   local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1050 [inline]
+>   __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:1067
+>   instr_sysvec_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1061
+>   [inline]
+>   sysvec_apic_timer_interrupt+0xa1/0xc0 arch/x86/kernel/apic/apic.c:1061
+>   </IRQ>
+>
+> To fix this, enforce a hard absolute minimum interval of 100 microseconds
+> (TAPRIO_MIN_SW_INTERVAL_NS) for software-based scheduling, which provides
+> enough margin over the timer service cost. Fully offloaded schedules are
+> unaffected since they do not rely on the CPU's hrtimer. Introduce a helper
+> taprio_min_interval() to consolidate the minimum interval logic for both
+> individual schedule entries and the overall cycle_time validation.
+>
+> Fixes: b5b73b26b3ca ("taprio: Fix allowing too small intervals")
+> Assisted-by: Gemini:gemini-3.5-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+19d01f6082ec61dd45b2@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=19d01f6082ec61dd45b2
+> Link: https://syzkaller.appspot.com/ai_job?id=37f064ee-e021-43aa-8cfc-9f2a5a7c35d7
+> To: "David S. Miller" <davem@davemloft.net>
+> To: "Eric Dumazet" <edumazet@google.com>
+> To: "Jamal Hadi Salim" <jhs@mojatatu.com>
+> To: "Jiri Pirko" <jiri@resnulli.us>
+> To: "Jakub Kicinski" <kuba@kernel.org>
+> To: <netdev@vger.kernel.org>
+> To: "Paolo Abeni" <pabeni@redhat.com>
+> To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
+> Cc: "Simon Horman" <horms@kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> ---
+> v2:
+> - Increased the minimum software scheduling interval from 1us to 100us to cover the timer service cost.
+> - Explained how virtual devices (veth, bonding) bypass the link-speed validation.
+> - Clarified that fully offloaded schedules are unaffected.
+> - Refactored the minimum interval check into a new taprio_min_interval() helper.
+>
+> v1:
+> https://lore.kernel.org/all/be92b2ea-2bf9-4d7f-a833-de781ee804c8@mail.kernel.org/T/
+> ---
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index 45245157e..2bf4cae16 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -49,6 +49,13 @@ static struct static_key_false taprio_have_working_mqprio;
+>    */
+>   #define TAPRIO_PICOS_PER_BYTE_MIN 17
+>   
+> +/* The software scheduler cannot sustain hrtimer intervals smaller than
+> + * this without livelocking the CPU. The value must exceed the cost of
+> + * one advance_sched() invocation (lock acquisition, budget recomputation,
+> + * TX softirq) with margin.
+> + */
+> +#define TAPRIO_MIN_SW_INTERVAL_NS (100 * NSEC_PER_USEC)
+> +
+>   struct sched_entry {
+>   	/* Durations between this GCL entry and the GCL entry where the
+>   	 * respective traffic class gate closes
+> @@ -259,6 +266,16 @@ static int length_to_duration(struct taprio_sched *q, int len)
+>   	return div_u64(len * atomic64_read(&q->picos_per_byte), PSEC_PER_NSEC);
+>   }
+>   
+> +static int taprio_min_interval(struct taprio_sched *q)
+> +{
+> +	int min_duration = length_to_duration(q, ETH_ZLEN);
+> +
+> +	if (!FULL_OFFLOAD_IS_ENABLED(q->flags))
+> +		min_duration = max_t(int, min_duration, TAPRIO_MIN_SW_INTERVAL_NS);
+> +
+> +	return min_duration;
+> +}
+> +
+>   static int duration_to_length(struct taprio_sched *q, u64 duration)
+>   {
+>   	return div_u64(duration * PSEC_PER_NSEC, atomic64_read(&q->picos_per_byte));
+> @@ -1038,7 +1055,7 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
+>   			    struct sched_entry *entry,
+>   			    struct netlink_ext_ack *extack)
+>   {
+> -	int min_duration = length_to_duration(q, ETH_ZLEN);
+> +	int min_duration = taprio_min_interval(q);
+>   	u32 interval = 0;
+>   
+>   	if (tb[TCA_TAPRIO_SCHED_ENTRY_CMD])
+> @@ -1054,7 +1071,8 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
+>   			tb[TCA_TAPRIO_SCHED_ENTRY_INTERVAL]);
+>   
+>   	/* The interval should allow at least the minimum ethernet
+> -	 * frame to go out.
+> +	 * frame to go out. When software scheduling is used, the
+> +	 * interval must also be at least the minimum hrtimer interval.
+>   	 */
+>   	if (interval < min_duration) {
+>   		NL_SET_ERR_MSG(extack, "Invalid interval for schedule entry");
+> @@ -1166,7 +1184,7 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+>   		new->cycle_time = cycle;
+>   	}
+>   
+> -	if (new->cycle_time < new->num_entries * length_to_duration(q, ETH_ZLEN)) {
+> +	if (new->cycle_time < (s64)new->num_entries * taprio_min_interval(q)) {
+>   		NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
+>   		return -EINVAL;
+>   	}
+>
+>
+> base-commit: 8cd9520d35a6c38db6567e97dd93b1f11f185dc6
