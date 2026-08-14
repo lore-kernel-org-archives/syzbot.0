@@ -1,237 +1,205 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E76845FFB6;
-	Fri, 14 Aug 2026 13:38:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786714694; cv=none; b=lLRllrDnf5aU4Q0DKPTIAwD9Ch4h+apktqP8MqIKvWQlMGGlmkyRb53T48y47JaDXr51VeRwWxMd6bhAS6nDJJ/+h8gdjek7nZSRUtBgGzOsEAG9Vdpi5OF1c8C4tZuHXQA+HDcejLm0y73C8UVsdvAjjUP5hpxhZ1wRsiYw170=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786714694; c=relaxed/simple;
-	bh=yT9N4kXHlHT4ZDM9zDRGXnGHoFLLH4bIPxDioxZ8bKw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DI9Hio9FcIBgGkxRgTWRoyHuAF3C2LoOS9HVs0qjSUfjxLKqVaKLhpdr+XcKDbbGt4J5GlIbG38WnH/QvCU+LgAA82oKR8qCeznORxICyloo1jiy2fs+L2XgMKefyQ53L+rUXj3QesyO00Xi8tNEKgmKzv9jC2tDuDIxOvzKYms=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=XVU1uF3X; arc=none smtp.client-ip=90.155.92.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F30A459AF4
+	for <syzbot@lists.linux.dev>; Fri, 14 Aug 2026 13:38:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786714720; cv=pass; b=guZV3iU+2/I32nU1lyHldebJg2L/AOXoww0/5cJbtEKKT8qID8Ayex5ODmEpd07nk5A79buIJVIN8BIfx5hBM2LpgDXB2lJWOVBcMTy71BREaNwpYw8/jnz/SZ77sRQNVe9IHMhZVqS3mPyV3HX5W8Urrvd4eQ6GIMhtOr+0q1g=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786714720; c=relaxed/simple;
+	bh=llEs8Dgagm5ztfGQ24bnX/RL6fnvJKr997N7Nzvu4n4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=OHICd6oXEBQ/nHcehi1EP3BQaG1h85M5CZry3ZQyehvXRNpHgdoL+Q7+mjDzPti9jz8kyvX+grCm7XH9H5nDfS/SYEVXVU7F1jkDLXMriIExvxkc/7Av1yRw5gXhyux/rW/Jx30jBETPTuDA+goGKoWj0mPL1h8KFeXZ+Dr0HEI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=twHaR+Tm; arc=pass smtp.client-ip=209.85.160.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="XVU1uF3X"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=bwl2I5N5VmSOPwbZsc1ZPlRQ+yjTEMN7SiezAHXNeH0=; b=XVU1uF3XjlhwF00BC3oa4TK5LK
-	35CP88ZLIaSL5KogP3iAH70vl7a/yw6WFXS2qpEw+9Kcr40h5NCHDSTJDbvP2ltlq0aZXFMhjkDXz
-	EWWHWRF28Sl7KhftqmB+szE3ZrosdJBBv//425lV70h4zsIxnM7dqRcqj3+b/XRqqonhnxI5w2eEA
-	1Vj/+n9olSglcleNar+4gA7PHdrV7NlJJbKKGlYqPjsAaccdA323dql7ZLoYYUUvuscE6uu7X8+wV
-	6E9G7xUM1G3QQSyMeZtK8gilgq0uZwh5A2CcOmnF9ojcb0xHkVr+8hQfVvbKglxjzGBsAL49RAqHS
-	Nj73b4aA==;
-Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.99.2 #2 (Red Hat Linux))
-	id 1wus6m-0000000GxAi-0Ya1;
-	Fri, 14 Aug 2026 13:38:04 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 24C7B302D6E; Fri, 14 Aug 2026 15:38:03 +0200 (CEST)
-Date: Fri, 14 Aug 2026 15:38:03 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-bugs@googlegroups.com, Yao Kai <yaokai34@huawei.com>,
-	linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-	Thomas Gleixner <tglx@kernel.org>, andrealmeid@igalia.com,
-	dave@stgolabs.net, dvhart@infradead.org, liuyongqiang13@huawei.com,
-	syzbot@lists.linux.dev
-Subject: Re: [PATCH] futex: Fix might_sleep() warning in futex_pivot_pending()
-Message-ID: <20260814133803.GA687043@noisy.programming.kicks-ass.net>
-References: <515ea00f-a081-4b9a-bcb3-f5517fd4e565@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="twHaR+Tm"
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-4518ad44e83so636829fac.0
+        for <syzbot@lists.linux.dev>; Fri, 14 Aug 2026 06:38:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786714718; cv=none;
+        d=google.com; s=arc-20260327;
+        b=XKpEQaZ22iGQNawNGURt/M8Ut/L4UzoNtMxVrBpHqu7YJBKfL88Hjlm56fJ3zW9ADp
+         xiRAPxEK7XwK67lv13tUhD53BXO1Fjp3LbyTZNEtTCcfUUMXL2La593qhSX2zlEWCWT3
+         9bGX12IwEsRIrpknyAuGrOcECyt8K1jmYi+Ya8l8VrRPpAJq6EbOv3JAsvPvM2WnB9oG
+         C5h/MyLFQJ0rtlCT0BS/ZSCrP6YsEKzT0tgPvaXvBGdSorKFW2Du1BGLiaiL6WhTmc88
+         vuOjhQd76k+uBuP7n9YWxdu9QGPpQyqkfOnT/vYR3DxquVdbk3ryXda+4E5xpriYoxXy
+         qw0w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=h5y94mIJNJzdKUNy2CbJPeZfCNVq2VmsXcWCtje19XI=;
+        fh=eG6en2/0hpMD8r1DGLKfUN2oW5w03GxNocMXoJdHJH8=;
+        b=RBqpC9ODcN6ZwKGEI+Kw0KXDXtbuKrjb2fL973JFiYV4c16VP//4AvQRkwgxIfyy0I
+         h2FfioErIjrLsMKBJ1yUC3oj1IQKI5jqN9wDVD3lifPRsAYWNzWFhuL0ksT6hyHD1ruO
+         tdHsODVhR6JvGRZ1DEm2CCw5q9YmrmLyeumjoC93uX39SqFfVPa0Rxel95+F0smHGZJ1
+         6RCyzYJRpT3i3KqUTr8usUWvRyEsatsNnr/6pBYPxWp2eA28bEBJzfJAoPjWWFNhgIxS
+         ju8dj3T1nU5bJUxTZzbOkb72AaLEVoNdFPdz4rO7Duds5XpIifjFPq22P95PtIOodjel
+         JyJQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1786714718; x=1787319518; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=h5y94mIJNJzdKUNy2CbJPeZfCNVq2VmsXcWCtje19XI=;
+        b=twHaR+Tm+jC0abN+JqgPjZR9Dbrm9zU5iYXutXDCDewcNNiJ42s4L5RukObCQJB0C5
+         Y56F+VkSNFj+BfS75waKoGJWpEYOU1tKzDoA1WBVf7yWZb9oduljPi1osd76cFh1hUwr
+         tcuk2lJTgmn4iers5WyfdjdvTdOLrCCQWDNejHLueubH4Jnpwo7zC29iQfs+YXC0c0pe
+         WiKY3motMmEiEm18J0g8Nw7qOXjHlsL6uJ7IF6jnrh/7kpV7N+41Bewiqdyd2JuGGXER
+         dM2tYtAeD20Euf/W6tzOFtCcNyh25Pu+klv2QrpdGt5FHxL+e7raeurHrwRBkG/e7q8M
+         KJvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786714718; x=1787319518;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=h5y94mIJNJzdKUNy2CbJPeZfCNVq2VmsXcWCtje19XI=;
+        b=Hz2cJCuHHqyxGSSfQ5Dp2jwfRKIzp8jwHl7eZFJ7coZ1qOpkHU0Vpe9qhVWIbYuG/4
+         8pzFZ5Sv7GbkhPuU0uLPmPszTbudwqdlTFh1FeNZcxS1QEnQuWvdBH/QydNlD3sVOUBp
+         s3XYfeKyg3R/kPe3SN/+YOc16fb0Fi9ZErDhmzf4OnpjRp1Ov1VBkB8M3LQDKNq3MoPO
+         bOlsRrSf+m/4EGgQ3qX8sIpgBobIjRkhYuCtkGeR5WzIrw8L8I3ImABmLzLzRwXEsWfV
+         I4236iPBOm7UMwifwnylkF/WpLr16NO7F15tyB4IU2y48M8h2otzw+i/SfMx1+44SePC
+         TSbQ==
+X-Forwarded-Encrypted: i=1; AHgh+Ro9tEZKyHghc4znIc5NkdGY6UPIo1ssGcfsitZUVh1SsRR+SgTObcvcjl+d/ZeA1PH80GRDxPU=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx0YH3aS5qlno91brVJ8fPQMNbhWNDhKEHnflY5xHsR0xTeYE1I
+	zMdbfV7sHEL73++IrBbLzGkPmWSXjo8OnxdlESGzHhVv5PZK6RB6NcZv/n794JkPoj/s+we+36V
+	P60Bnw6Ru3WK6Pvydhp3gRtR/pkpgxUFB26tPMl5M
+X-Gm-Gg: AR+sD11NL2fWFPnPEuH3O02VwhnPqvVHWer/FGpWnGqaOTzqQr5veLvIhmvrMgXGm54
+	8ndVm8+7xGZUGL1d0l5tzX7t6nyNKNl+yYN5sRHM0x/Cte0GnzdbNDRJpAK3FEa08IpwUtJOHPn
+	Bv0zvzTJ7i1Etyu5DHxqBeCxWuv3zGAx4lb7QTymdYkfs7N8WGNgjDhBfSiGVx/LRUqRKlX3zOm
+	BLmeC8rono7W3/RxscAqnTu7orfWUa1aFFLlKwcvWy9VX8/LNhEmQB8gOYQslRaG504Yv9erHqa
+	ITG5O68/gb5ifsc9622ispVQ+VlQoHYg8WJkTIfmYcTsVrtyplc5+qidkYvnc6yLaH9h3xMUrjH
+	AQGkz59cyBVvFyVliNaDVB2HQiQMlkrYPcAmHN/86TLDrBnxBa9qSUK/dp0tyMAxxdl2jOwkvlG
+	NuT6rPfx8CYGLx
+X-Received: by 2002:a05:6808:4fc9:b0:497:d3d6:6a40 with SMTP id
+ 5614622812f47-4b240f872f9mr5487854b6e.3.1786714717348; Fri, 14 Aug 2026
+ 06:38:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <515ea00f-a081-4b9a-bcb3-f5517fd4e565@mail.kernel.org>
+References: <94a2df4a-c0d2-4a29-a692-e7250a623057@mail.kernel.org>
+In-Reply-To: <94a2df4a-c0d2-4a29-a692-e7250a623057@mail.kernel.org>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Fri, 14 Aug 2026 15:38:24 +0200
+X-Gm-Features: AUfX_mzWiWmzckXhSaSOnnO-hSkx2UrsRxJQO3kzR9NP9ipGulute3h6IoMaDMk
+Message-ID: <CANp29Y73TgQaGYowKoQ2TRAjgB3Y7dBq48ajtobUsn-o80qqGQ@mail.gmail.com>
+Subject: Re: [PATCH RFC] Input: serio - check if device is registered in serio_find_driver()
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 13, 2026 at 06:50:49AM +0000, syzbot wrote:
-> From: Yao Kai <yaokai34@huawei.com>
-> 
-> A recent change modified futex_pivot_pending() to acquire a mutex to fix a
-> race condition. However, futex_pivot_pending() is evaluated as a condition
-> inside wait_var_event() in futex_hash_allocate(). Since wait_var_event()
-> sets the task state to TASK_UNINTERRUPTIBLE before evaluating the
-> condition, calling a blocking operation like mutex_lock() is invalid and
-> triggers a might_sleep() warning:
-> 
-> do not call blocking ops when !TASK_RUNNING; state=2 set at
-> [<ffffffff819e8c8d>] prepare_to_wait_event+0x3dd/0x480
-> kernel/sched/wait.c:317
-> WARNING: kernel/sched/core.c:9124 at __might_sleep+0x92/0xf0
-> kernel/sched/core.c:9120
+On Fri, Aug 14, 2026 at 11:42=E2=80=AFAM 'syzbot' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
+>
+> A general protection fault can occur in __device_attach() due to a race
+> condition between serio_add_port() and serio_interrupt() when device_add(=
+)
+> fails.
+>
+> If device_add() fails (e.g., due to a memory allocation failure), it clea=
+ns
+> up and sets dev->p =3D NULL. However, there is a brief window during
+> device_add() where kobject_add() sets state_in_sysfs =3D 1, causing
+> device_is_registered() to return true. If an interrupt occurs during this
+> window, serio_interrupt() might queue a SERIO_RESCAN_PORT event.
+>
+> When the workqueue processes this stale event, it eventually calls
+> serio_find_driver(), which directly invokes device_attach() without
+> verifying if the device was successfully registered. This leads to a NULL
+> pointer dereference when __device_attach() attempts to lock the device
+> using the freed dev->p.
+>
+> Oops: general protection fault, probably for non-canonical address
+> 0xdffffc0000000021: 0000 [#1] SMP KASAN NOPTI
+> KASAN: null-ptr-deref in range [0x0000000000000108-0x000000000000010f]
+> CPU: 1 UID: 0 PID: 5689 Comm: kworker/1:4 Not tainted
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+> 1.16.3-debian-1.16.3-2 04/01/2014
+> Workqueue: events_long serio_handle_event
+> RIP: 0010:__device_attach+0xb3/0x450 drivers/base/dd.c:1074
 > Call Trace:
 >  <TASK>
->  __mutex_lock_common kernel/locking/mutex.c:623 [inline]
->  __mutex_lock+0x118/0x1550 kernel/locking/mutex.c:821
->  class_mutex_constructor include/linux/mutex.h:253 [inline]
->  futex_pivot_pending kernel/futex/core.c:1789 [inline]
->  futex_hash_allocate+0x7fb/0xf00 kernel/futex/core.c:1872
->  __do_sys_prctl kernel/sys.c:2885 [inline]
->  __se_sys_prctl+0x78c/0x1910 kernel/sys.c:2534
-> 
-> Fix this by reverting futex_pivot_pending() to a lockless implementation
-> using RCU and memory barriers, which is the idiomatic way to handle
-> conditions in wait_event loops. By reading the hash pointer first,
-> executing an smp_rmb() memory barrier, and then reading hash_new, we
-> leverage the Message Passing (MP) pattern to guarantee correctness without
-> blocking. This pairs with the rcu_assign_pointer() release barrier in
-> __futex_pivot_hash(). If the reader sees the new hash, it is guaranteed to
-> see the cleared hash_new and correctly return true. If the reader sees the
-> old hash, it will check futex_ref_is_dead(old), which will return true if
-> the writer has already completed the pivot. The old hash memory is
-> guaranteed to remain valid for the duration of the check in
-> futex_ref_is_dead() because futex_pivot_pending() executes within an RCU
-> read-side critical section and the old hash is freed using kvfree_rcu().
-> 
-> Fixes: 8e7ff730dd96 ("futex: Fix race in futex_pivot_pending() during private hash resize")
+>  serio_find_driver drivers/input/serio/serio.c:112 [inline]
+>  serio_handle_event+0x581/0x860 drivers/input/serio/serio.c:206
+>  process_one_work kernel/workqueue.c:3322 [inline]
+>  process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+>  worker_thread+0x92d/0xe10 kernel/workqueue.c:3486
+>  kthread+0x388/0x470 kernel/kthread.c:436
+>  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+>  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+>  </TASK>
+>
+> Fix this by checking if the device is registered in serio_find_driver()
+> before attempting to attach a driver, safely ignoring any stale events fo=
+r
+> devices that failed registration.
+>
+> Fixes: ddf1ffbd40c9 ("Input: serio - let device core tell us if device wa=
+s registered")
 > Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+350a93852ac854927f45@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=350a93852ac854927f45
-> Link: https://syzkaller.appspot.com/ai_job?id=29771462-e030-4501-832d-adbf8cb167c2
-> Signed-off-by: Yao Kai <yaokai34@huawei.com>
+> Reported-by: syzbot+de42beb9ccc760a210ab@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3Dde42beb9ccc760a210ab
+> Link: https://syzkaller.appspot.com/ai_job?id=3D4397f1ef-be0d-4e1b-897a-f=
+cd37e50cc6b
+> To: "Dmitry Torokhov" <dmitry.torokhov@gmail.com>
+> To: <linux-input@vger.kernel.org>
+> Cc: "Kees Cook" <kees@kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> ---
+> diff --git a/drivers/input/serio/serio.c b/drivers/input/serio/serio.c
+> index 54dd26249..c24e431af 100644
+> --- a/drivers/input/serio/serio.c
+> +++ b/drivers/input/serio/serio.c
+> @@ -109,6 +109,9 @@ static void serio_find_driver(struct serio *serio)
+>  {
+>         int error;
+>
+> +       if (!device_is_registered(&serio->dev))
+> +               return;
+> +
+>         error =3D device_attach(&serio->dev);
+>         if (error < 0 && error !=3D -EPROBE_DEFER)
+>                 dev_warn(&serio->dev,
+>
+>
 
-Bah. So a younger me added that might_sleep() test, because yes,
-sleeping from a wait loop is dodgy. It mostly works in this case, but
-bah.
 
-I also build an alternative wait look scheme it seems, but we don't have
-nice helpers for that, and its never been applied to bit/var waits.
+This papers over the real bug: serio_add_port() does not roll back
+registration when device_add() fails.
 
-I've hacked up the below. Its not exactly what I call nice, but it
-compiles, so it must be perfect... right?
+Instead of defensive checks in serio_find_driver(), serio_add_port()
+(and gameport_add_port()) must unwind on device_add() failure: stop
+the port, unlink from lists, flush pending events with
+serio_remove_pending_events(), and call put_device().
 
----
-diff --git a/include/linux/wait.h b/include/linux/wait.h
-index dce055e6add3..7e215330199c 100644
---- a/include/linux/wait.h
-+++ b/include/linux/wait.h
-@@ -1228,6 +1228,7 @@ long prepare_to_wait_event(struct wait_queue_head *wq_head, struct wait_queue_en
- void finish_wait(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
- long wait_woken(struct wait_queue_entry *wq_entry, unsigned mode, long timeout);
- int woken_wake_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *key);
-+int woken_wake_bit_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *key);
- int autoremove_wake_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *key);
- 
- #define DEFINE_WAIT_FUNC(name, function)					\
-diff --git a/include/linux/wait_bit.h b/include/linux/wait_bit.h
-index ace7379d627d..553d7b23e3ad 100644
---- a/include/linux/wait_bit.h
-+++ b/include/linux/wait_bit.h
-@@ -32,6 +32,7 @@ int out_of_line_wait_on_bit_timeout(unsigned long *word, int, wait_bit_action_f
- int out_of_line_wait_on_bit_lock(unsigned long *word, int, wait_bit_action_f *action, unsigned int mode);
- struct wait_queue_head *bit_waitqueue(unsigned long *word, int bit);
- extern void __init wait_bit_init(void);
-+extern struct wait_bit_key *__var_wake_key(struct wait_queue_entry *wq_entry, void *arg);
- 
- int wake_bit_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *key);
- 
-diff --git a/kernel/futex/core.c b/kernel/futex/core.c
-index a7c2a6242718..d3311047d259 100644
---- a/kernel/futex/core.c
-+++ b/kernel/futex/core.c
-@@ -46,6 +46,7 @@
- #include <linux/slab.h>
- #include <linux/vmalloc.h>
- #include <linux/kmemleak.h>
-+#include <linux/wait_bit.h>
- 
- #include <vdso/futex.h>
- 
-@@ -1886,11 +1887,24 @@ static int futex_hash_allocate(unsigned int hash_slots, unsigned int flags)
- 		futex_hash_bucket_init(&fph->queues[i]);
- 
- 	if (custom) {
-+		struct wait_bit_queue_entry __wbq_entry;
-+		struct wait_queue_head *__wq_head;
-+
- 		/*
- 		 * Only let prctl() wait / retry; don't unduly delay clone().
- 		 */
- again:
--		wait_var_event(mm, futex_pivot_pending(mm));
-+		__wq_head = __var_waitqueue(mm);
-+		init_wait_var_entry(&__wbq_entry, mm, 0);
-+		__wbq_entry.wq_entry.func = woken_wake_bit_function;
-+		add_wait_queue(__wq_head, &__wbq_entry.wq_entry);
-+		while (!futex_pivot_pending(mm)) {
-+			int rc = wait_woken(&__wbq_entry.wq_entry, TASK_UNINTERRUPTIBLE,
-+					    MAX_SCHEDULE_TIMEOUT);
-+			if (!rc)
-+				break;
-+		}
-+		remove_wait_queue(__wq_head, &__wbq_entry.wq_entry);
- 	}
- 
- 	scoped_guard(mutex, &mm->futex.phash.lock) {
-diff --git a/kernel/sched/wait.c b/kernel/sched/wait.c
-index 20f27e2cf7ae..d033f600f48c 100644
---- a/kernel/sched/wait.c
-+++ b/kernel/sched/wait.c
-@@ -5,6 +5,7 @@
-  * (C) 2004 Nadia Yvette Chambers, Oracle
-  */
- #include "sched.h"
-+#include <linux/wait_bit.h>
- 
- void __init_waitqueue_head(struct wait_queue_head *wq_head, const char *name, struct lock_class_key *key)
- {
-@@ -463,3 +464,17 @@ int woken_wake_function(struct wait_queue_entry *wq_entry, unsigned mode, int sy
- 	return default_wake_function(wq_entry, mode, sync, key);
- }
- EXPORT_SYMBOL(woken_wake_function);
-+
-+int woken_wake_bit_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *arg)
-+{
-+	struct wait_bit_key *key = __var_wake_key(wq_entry, arg);
-+	if (!key)
-+		return 0;
-+
-+	/* Pairs with the smp_store_mb() in wait_woken(). */
-+	smp_mb(); /* C */
-+	wq_entry->flags |= WQ_FLAG_WOKEN;
-+
-+	return default_wake_function(wq_entry, mode, sync, key);
-+}
-+EXPORT_SYMBOL(woken_wake_bit_function);
-diff --git a/kernel/sched/wait_bit.c b/kernel/sched/wait_bit.c
-index 1088d3b7012c..e8127e83a48f 100644
---- a/kernel/sched/wait_bit.c
-+++ b/kernel/sched/wait_bit.c
-@@ -167,9 +167,7 @@ wait_queue_head_t *__var_waitqueue(void *p)
- }
- EXPORT_SYMBOL(__var_waitqueue);
- 
--static int
--var_wake_function(struct wait_queue_entry *wq_entry, unsigned int mode,
--		  int sync, void *arg)
-+struct wait_bit_key *__var_wake_key(struct wait_queue_entry *wq_entry, void *arg)
- {
- 	struct wait_bit_key *key = arg;
- 	struct wait_bit_queue_entry *wbq_entry =
-@@ -177,6 +175,17 @@ var_wake_function(struct wait_queue_entry *wq_entry, unsigned int mode,
- 
- 	if (wbq_entry->key.flags != key->flags ||
- 	    wbq_entry->key.bit_nr != key->bit_nr)
-+		return NULL;
-+
-+	return key;
-+}
-+
-+static int
-+var_wake_function(struct wait_queue_entry *wq_entry, unsigned int mode,
-+		  int sync, void *arg)
-+{
-+	struct wait_bit_key *key = __var_wake_key(wq_entry, arg);
-+	if (!key)
- 		return 0;
- 
- 	return autoremove_wake_function(wq_entry, mode, sync, key);
+> base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+>
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated =
+patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/94a2df4a-c0d2-4a29-a692-e7250a623057%40mail.kernel.org=
+.
