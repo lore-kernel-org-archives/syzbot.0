@@ -1,206 +1,237 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97DDF472535
-	for <syzbot@lists.linux.dev>; Fri, 14 Aug 2026 13:30:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E76845FFB6;
+	Fri, 14 Aug 2026 13:38:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786714224; cv=none; b=BpRpfwfgujZ6J+P6HRtYEGYbgs8XwBBgbk5A4d91YWxds03WvgwPy/mMU1MYvy27CI2zH5d+ZXEK0n4tR7SKsAM9XvIsFqJDN3OxlSBCcZ9O1imuInZuNsH41TcZDaBZqabXYNCkFHe32NzYjIy+F34dtFAhW9tfHDAPt6Dio1w=
+	t=1786714694; cv=none; b=lLRllrDnf5aU4Q0DKPTIAwD9Ch4h+apktqP8MqIKvWQlMGGlmkyRb53T48y47JaDXr51VeRwWxMd6bhAS6nDJJ/+h8gdjek7nZSRUtBgGzOsEAG9Vdpi5OF1c8C4tZuHXQA+HDcejLm0y73C8UVsdvAjjUP5hpxhZ1wRsiYw170=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786714224; c=relaxed/simple;
-	bh=Uh2GB1/qrA73GWb7hvofXqCjGqlqeTl6zZuVZvbQuC4=;
-	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=plMa9ztsNPu4rh9iukAPiqgCxkbzbXsizUlBQPRS+YvXYtReUSpVtwzSl9X3eP0P5Lh1BZs8rFhuo5d6bcLzSuGrEH+bU4vReROVC9X2lV2wjxBGUtuHYXQRAeNGS1rj8tF1IOIiS74wQZtAmqaxKzRoUpbAsU1B4k6oeUPGHLk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qZop4vvh; arc=none smtp.client-ip=209.85.221.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1786714694; c=relaxed/simple;
+	bh=yT9N4kXHlHT4ZDM9zDRGXnGHoFLLH4bIPxDioxZ8bKw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DI9Hio9FcIBgGkxRgTWRoyHuAF3C2LoOS9HVs0qjSUfjxLKqVaKLhpdr+XcKDbbGt4J5GlIbG38WnH/QvCU+LgAA82oKR8qCeznORxICyloo1jiy2fs+L2XgMKefyQ53L+rUXj3QesyO00Xi8tNEKgmKzv9jC2tDuDIxOvzKYms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=XVU1uF3X; arc=none smtp.client-ip=90.155.92.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qZop4vvh"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-47362928f65so960834f8f.2
-        for <syzbot@lists.linux.dev>; Fri, 14 Aug 2026 06:30:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786714221; x=1787319021; darn=lists.linux.dev;
-        h=mime-version:content-transfer-encoding:content-type:references
-         :in-reply-to:subject:cc:to:from:message-id:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=QltvzOeHMR23w+hq5zaVdr4TzSIx2nreQRoyPMgK+L8=;
-        b=qZop4vvhJFN9tDDxCRR8aTSKnT76Rrnwo8r5tmoTxt1Nh86XRLcfL0bbSS4YSPcZlA
-         THrbYeFMM2hSqQN1vrK0MtCZYFT8jvzMJyh5s2+Sw0pn0MZoEZVr09fqFSqEN6eygXTW
-         2I7W6Qzczr3gvAK/+yIOY6sg017kEBeY7IiNJTIhDH7VBEQA7CBOoFE5CBiSnvKd1dib
-         NIqn3DKV2d8f83E0cv89h7ahngr8uP15APRh+3rr36YiXnyMFNnQSJKwp5hghlgxQQ3q
-         PDbf761FRbSX0r/ZHQOCXX4wxhqCQUfIQISvqb7eR7BVZW+1KqiVUCG0PJYIMBWfuq0m
-         oZJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786714221; x=1787319021;
-        h=mime-version:content-transfer-encoding:content-type:references
-         :in-reply-to:subject:cc:to:from:message-id:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=QltvzOeHMR23w+hq5zaVdr4TzSIx2nreQRoyPMgK+L8=;
-        b=b554gk5N+S+j+3aeQJmqk8el1j/g5k3p1csBgdnLY2yqw8w2tQHxE9fS2rm8CejsJN
-         oRa/bccyY3DO1GmGQm9s9JNgjKmank6tm31O+TErHyEWuytWvlbAQnUsnvyi+QE1fp9i
-         403HoE5ruv32El0hLOf1Tu2i2Ug2gZ0qFaqHmV2UocuE3t/WXzeVN8LhwlQ0I5XgM3bc
-         lRgWKWX7xKS8s3IlX/d4Slx9YtmYbaRH1FcB9Vs5swzITdCjGtK05qOD7tJn1KvV/UuP
-         bjTX1/EoXC9YF8MR1woOgoi5iLShmmPrLNBl+hs+zyJGrsAe/99r8ru4KWwjvHAZdEfb
-         fraw==
-X-Forwarded-Encrypted: i=1; AHgh+Rp8jNcQzzBnqieqFPqReXHqMC/6NYFctpqpiTRILJUJcXhmtcrH/oLTOlHQJ8NSjzT1JmVsyXI=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzajSUBU2j1fxg2uqZymM/HZD9kmHrQJQtiMn2Bbwet9nXSCIBo
-	rcBQqV85pD2VV/s8CJMx/NmzwlhxGqnKV5Qgi+KFY7ygJbuAhY/jQK/u
-X-Gm-Gg: AR+sD13cmhECb1vjbD0npVH4abV7rgcKQjuHJzDUB2eHXDSosKuqzHHJIO8oC+B8KFl
-	GLMFeSa1Lf8tDAIYmplmxUQSoR+RmDEsbTlKF9xUqkK36iVn/++N5api+CHe2KLqGosODfDSxDp
-	vaxHRMwbv5AyCHY350ARG2B8vQGUgFV9QXUSNOubRv0VJJ0ZV/UxK0RvDwiHIj7jTdkLIuoWr5J
-	kPHE0zgGpYGqLG947pc6vAjuAHMQZ5DiKiCjipV1ojNj8ojDM22gqrFVNeb6M1blKjn1P7T+kR/
-	VShNrptQLI8wKTPkIZv0pb0Viyu5rDlTHlnb4Q/ulwgotTIdznBjsHiZBGnSzLinGuAilZfBpGW
-	GHgYVS2tMwHOyQpnMlVlLbVO+19c2yDl6/XVwuLhHUfs2HTJFhDFFNsuB3g7iVagDeJeLJ/PGPl
-	Z5egvBonihWtwkZteg3r57T+gmP1penRHX2M5zxD5/pj7hMs//HU5Y2k5xAXKjeVvkBoMo/6V+m
-	RfLQMe3rYspvvg=
-X-Received: by 2002:a05:600c:198d:b0:499:7aa7:eaa7 with SMTP id 5b1f17b1804b1-499879a213dmr70583895e9.15.1786714220681;
-        Fri, 14 Aug 2026 06:30:20 -0700 (PDT)
-Received: from localhost ([37.30.50.141])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49989ae1ef2sm26281515e9.9.2026.08.14.06.30.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Aug 2026 06:30:19 -0700 (PDT)
-Date: Fri, 14 Aug 2026 13:29:59 +0000
-Message-ID: <178671419949.2648204.15668657474779239190@gmail.com>
-From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
-To: syzbot <syzbot+10a41dc44eef71aa9450@syzkaller.appspotmail.com>
-Cc: Tung Quang Nguyen <tung.quang.nguyen@est.tech>, horms@kernel.org,
- linux-kernel@vger.kernel.org, syzbot@lists.linux.dev,
- Eric Dumazet <edumazet@google.com>, Jon Maloy <jmaloy@redhat.com>,
- Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
- Paolo Abeni <pabeni@redhat.com>, tipc-discussion@lists.sourceforge.net,
- syzkaller-bugs@googlegroups.com, syzbot <syzbot@kernel.org>,
- David S. Miller <davem@davemloft.net>
-Subject: Re: [PATCH] tipc: defer local Nagle backlog xmit from receive path
-In-Reply-To: =?utf-8?q?=3CGV1P189MB1988F6301FA670CA9818F7FCC6DB2=40GV1P189MB?=
- =?utf-8?q?1988=2EEURP189=2EPROD=2EOUTLOOK=2ECOM=3E?=
-References: <631b75b4-d1e3-40ea-a129-5ed090f914bf@mail.kernel.org> 
- =?utf-8?q?=3CGV1P189MB1988F6301FA670CA9818F7FCC6DB2=40GV1P189MB1988=2EEURP1?=
- =?utf-8?q?89=2EPROD=2EOUTLOOK=2ECOM=3E?=
-X-Kernel-Ph2-Extid: 10a41dc44eef71aa9450
-X-Kernel-Ph2-Human-Revision: 2
-X-Kernel-Ph2-Patch-SHA256:
- c82ee5c8d899d19d7675bbc18b1270d670d74fdfb455a3b39c182d07fbeb4958
-X-Kernel-Ph2-Fingerprint:
- f2657cd81fedfff2f7fc01adc5a1ff647de95ce6d4031968585e19411fffcc1c
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="XVU1uF3X"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=bwl2I5N5VmSOPwbZsc1ZPlRQ+yjTEMN7SiezAHXNeH0=; b=XVU1uF3XjlhwF00BC3oa4TK5LK
+	35CP88ZLIaSL5KogP3iAH70vl7a/yw6WFXS2qpEw+9Kcr40h5NCHDSTJDbvP2ltlq0aZXFMhjkDXz
+	EWWHWRF28Sl7KhftqmB+szE3ZrosdJBBv//425lV70h4zsIxnM7dqRcqj3+b/XRqqonhnxI5w2eEA
+	1Vj/+n9olSglcleNar+4gA7PHdrV7NlJJbKKGlYqPjsAaccdA323dql7ZLoYYUUvuscE6uu7X8+wV
+	6E9G7xUM1G3QQSyMeZtK8gilgq0uZwh5A2CcOmnF9ojcb0xHkVr+8hQfVvbKglxjzGBsAL49RAqHS
+	Nj73b4aA==;
+Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
+	by desiato.infradead.org with esmtpsa (Exim 4.99.2 #2 (Red Hat Linux))
+	id 1wus6m-0000000GxAi-0Ya1;
+	Fri, 14 Aug 2026 13:38:04 +0000
+Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 24C7B302D6E; Fri, 14 Aug 2026 15:38:03 +0200 (CEST)
+Date: Fri, 14 Aug 2026 15:38:03 +0200
+From: Peter Zijlstra <peterz@infradead.org>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-bugs@googlegroups.com, Yao Kai <yaokai34@huawei.com>,
+	linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+	Thomas Gleixner <tglx@kernel.org>, andrealmeid@igalia.com,
+	dave@stgolabs.net, dvhart@infradead.org, liuyongqiang13@huawei.com,
+	syzbot@lists.linux.dev
+Subject: Re: [PATCH] futex: Fix might_sleep() warning in futex_pivot_pending()
+Message-ID: <20260814133803.GA687043@noisy.programming.kicks-ass.net>
+References: <515ea00f-a081-4b9a-bcb3-f5517fd4e565@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <515ea00f-a081-4b9a-bcb3-f5517fd4e565@mail.kernel.org>
 
-#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 1590cf0329716306e948a8fc29f1d3ee87d3989f
+On Thu, Aug 13, 2026 at 06:50:49AM +0000, syzbot wrote:
+> From: Yao Kai <yaokai34@huawei.com>
+> 
+> A recent change modified futex_pivot_pending() to acquire a mutex to fix a
+> race condition. However, futex_pivot_pending() is evaluated as a condition
+> inside wait_var_event() in futex_hash_allocate(). Since wait_var_event()
+> sets the task state to TASK_UNINTERRUPTIBLE before evaluating the
+> condition, calling a blocking operation like mutex_lock() is invalid and
+> triggers a might_sleep() warning:
+> 
+> do not call blocking ops when !TASK_RUNNING; state=2 set at
+> [<ffffffff819e8c8d>] prepare_to_wait_event+0x3dd/0x480
+> kernel/sched/wait.c:317
+> WARNING: kernel/sched/core.c:9124 at __might_sleep+0x92/0xf0
+> kernel/sched/core.c:9120
+> Call Trace:
+>  <TASK>
+>  __mutex_lock_common kernel/locking/mutex.c:623 [inline]
+>  __mutex_lock+0x118/0x1550 kernel/locking/mutex.c:821
+>  class_mutex_constructor include/linux/mutex.h:253 [inline]
+>  futex_pivot_pending kernel/futex/core.c:1789 [inline]
+>  futex_hash_allocate+0x7fb/0xf00 kernel/futex/core.c:1872
+>  __do_sys_prctl kernel/sys.c:2885 [inline]
+>  __se_sys_prctl+0x78c/0x1910 kernel/sys.c:2534
+> 
+> Fix this by reverting futex_pivot_pending() to a lockless implementation
+> using RCU and memory barriers, which is the idiomatic way to handle
+> conditions in wait_event loops. By reading the hash pointer first,
+> executing an smp_rmb() memory barrier, and then reading hash_new, we
+> leverage the Message Passing (MP) pattern to guarantee correctness without
+> blocking. This pairs with the rcu_assign_pointer() release barrier in
+> __futex_pivot_hash(). If the reader sees the new hash, it is guaranteed to
+> see the cleared hash_new and correctly return true. If the reader sees the
+> old hash, it will check futex_ref_is_dead(old), which will return true if
+> the writer has already completed the pivot. The old hash memory is
+> guaranteed to remain valid for the duration of the check in
+> futex_ref_is_dead() because futex_pivot_pending() executes within an RCU
+> read-side critical section and the old hash is freed using kvfree_rcu().
+> 
+> Fixes: 8e7ff730dd96 ("futex: Fix race in futex_pivot_pending() during private hash resize")
+> Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+350a93852ac854927f45@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=350a93852ac854927f45
+> Link: https://syzkaller.appspot.com/ai_job?id=29771462-e030-4501-832d-adbf8cb167c2
+> Signed-off-by: Yao Kai <yaokai34@huawei.com>
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index e564341e0216d35ae4fe539576b6e0be89b84ddb..0bf259672827db095046cda5646df047002dd663 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -94,6 +94,7 @@ struct sockaddr_pair {
-  * @peer: 'connected' peer for dgram/rdm
-  * @node: hash table node
-  * @mc_method: cookie for use between socket and broadcast layer
-+ * @backlog_work: processes receive backlog under socket ownership
-  * @rcu: rcu struct for tipc_sock
-  * @group: TIPC communications group
-  * @oneway: message count in one direction (FIXME)
-@@ -128,6 +129,7 @@ struct tipc_sock {
- 	struct sockaddr_tipc peer;
- 	struct rhash_head node;
- 	struct tipc_mc_method mc_method;
-+	struct work_struct backlog_work;
- 	struct rcu_head rcu;
- 	struct tipc_group *group;
- 	u32 oneway;
-@@ -143,6 +145,7 @@ struct tipc_sock {
- };
+Bah. So a younger me added that might_sleep() test, because yes,
+sleeping from a wait loop is dodgy. It mostly works in this case, but
+bah.
+
+I also build an alternative wait look scheme it seems, but we don't have
+nice helpers for that, and its never been applied to bit/var waits.
+
+I've hacked up the below. Its not exactly what I call nice, but it
+compiles, so it must be perfect... right?
+
+---
+diff --git a/include/linux/wait.h b/include/linux/wait.h
+index dce055e6add3..7e215330199c 100644
+--- a/include/linux/wait.h
++++ b/include/linux/wait.h
+@@ -1228,6 +1228,7 @@ long prepare_to_wait_event(struct wait_queue_head *wq_head, struct wait_queue_en
+ void finish_wait(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
+ long wait_woken(struct wait_queue_entry *wq_entry, unsigned mode, long timeout);
+ int woken_wake_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *key);
++int woken_wake_bit_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *key);
+ int autoremove_wake_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *key);
  
- static int tipc_sk_backlog_rcv(struct sock *sk, struct sk_buff *skb);
-+static void tipc_sk_backlog_work(struct work_struct *work);
- static void tipc_data_ready(struct sock *sk);
- static void tipc_write_space(struct sock *sk);
- static void tipc_sock_destruct(struct sock *sk);
-@@ -520,6 +523,7 @@ static int tipc_sk_create(struct net *net, struct socket *sock,
- 	sk->sk_data_ready = tipc_data_ready;
- 	sk->sk_write_space = tipc_write_space;
- 	sk->sk_destruct = tipc_sock_destruct;
-+	INIT_WORK(&tsk->backlog_work, tipc_sk_backlog_work);
- 	tsk->conn_timeout = CONN_TIMEOUT_DEFAULT;
- 	tsk->group_is_open = true;
- 	atomic_set(&tsk->dupl_rcvcnt, 0);
-@@ -2417,6 +2421,17 @@ static int tipc_sk_backlog_rcv(struct sock *sk, struct sk_buff *skb)
- 	return 0;
- }
+ #define DEFINE_WAIT_FUNC(name, function)					\
+diff --git a/include/linux/wait_bit.h b/include/linux/wait_bit.h
+index ace7379d627d..553d7b23e3ad 100644
+--- a/include/linux/wait_bit.h
++++ b/include/linux/wait_bit.h
+@@ -32,6 +32,7 @@ int out_of_line_wait_on_bit_timeout(unsigned long *word, int, wait_bit_action_f
+ int out_of_line_wait_on_bit_lock(unsigned long *word, int, wait_bit_action_f *action, unsigned int mode);
+ struct wait_queue_head *bit_waitqueue(unsigned long *word, int bit);
+ extern void __init wait_bit_init(void);
++extern struct wait_bit_key *__var_wake_key(struct wait_queue_entry *wq_entry, void *arg);
  
-+static void tipc_sk_backlog_work(struct work_struct *work)
-+{
-+	struct tipc_sock *tsk = container_of(work, struct tipc_sock,
-+					     backlog_work);
-+	struct sock *sk = &tsk->sk;
+ int wake_bit_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *key);
+ 
+diff --git a/kernel/futex/core.c b/kernel/futex/core.c
+index a7c2a6242718..d3311047d259 100644
+--- a/kernel/futex/core.c
++++ b/kernel/futex/core.c
+@@ -46,6 +46,7 @@
+ #include <linux/slab.h>
+ #include <linux/vmalloc.h>
+ #include <linux/kmemleak.h>
++#include <linux/wait_bit.h>
+ 
+ #include <vdso/futex.h>
+ 
+@@ -1886,11 +1887,24 @@ static int futex_hash_allocate(unsigned int hash_slots, unsigned int flags)
+ 		futex_hash_bucket_init(&fph->queues[i]);
+ 
+ 	if (custom) {
++		struct wait_bit_queue_entry __wbq_entry;
++		struct wait_queue_head *__wq_head;
 +
-+	lock_sock(sk);
-+	release_sock(sk);
-+	sock_put(sk);
+ 		/*
+ 		 * Only let prctl() wait / retry; don't unduly delay clone().
+ 		 */
+ again:
+-		wait_var_event(mm, futex_pivot_pending(mm));
++		__wq_head = __var_waitqueue(mm);
++		init_wait_var_entry(&__wbq_entry, mm, 0);
++		__wbq_entry.wq_entry.func = woken_wake_bit_function;
++		add_wait_queue(__wq_head, &__wbq_entry.wq_entry);
++		while (!futex_pivot_pending(mm)) {
++			int rc = wait_woken(&__wbq_entry.wq_entry, TASK_UNINTERRUPTIBLE,
++					    MAX_SCHEDULE_TIMEOUT);
++			if (!rc)
++				break;
++		}
++		remove_wait_queue(__wq_head, &__wbq_entry.wq_entry);
+ 	}
+ 
+ 	scoped_guard(mutex, &mm->futex.phash.lock) {
+diff --git a/kernel/sched/wait.c b/kernel/sched/wait.c
+index 20f27e2cf7ae..d033f600f48c 100644
+--- a/kernel/sched/wait.c
++++ b/kernel/sched/wait.c
+@@ -5,6 +5,7 @@
+  * (C) 2004 Nadia Yvette Chambers, Oracle
+  */
+ #include "sched.h"
++#include <linux/wait_bit.h>
+ 
+ void __init_waitqueue_head(struct wait_queue_head *wq_head, const char *name, struct lock_class_key *key)
+ {
+@@ -463,3 +464,17 @@ int woken_wake_function(struct wait_queue_entry *wq_entry, unsigned mode, int sy
+ 	return default_wake_function(wq_entry, mode, sync, key);
+ }
+ EXPORT_SYMBOL(woken_wake_function);
++
++int woken_wake_bit_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *arg)
++{
++	struct wait_bit_key *key = __var_wake_key(wq_entry, arg);
++	if (!key)
++		return 0;
++
++	/* Pairs with the smp_store_mb() in wait_woken(). */
++	smp_mb(); /* C */
++	wq_entry->flags |= WQ_FLAG_WOKEN;
++
++	return default_wake_function(wq_entry, mode, sync, key);
++}
++EXPORT_SYMBOL(woken_wake_bit_function);
+diff --git a/kernel/sched/wait_bit.c b/kernel/sched/wait_bit.c
+index 1088d3b7012c..e8127e83a48f 100644
+--- a/kernel/sched/wait_bit.c
++++ b/kernel/sched/wait_bit.c
+@@ -167,9 +167,7 @@ wait_queue_head_t *__var_waitqueue(void *p)
+ }
+ EXPORT_SYMBOL(__var_waitqueue);
+ 
+-static int
+-var_wake_function(struct wait_queue_entry *wq_entry, unsigned int mode,
+-		  int sync, void *arg)
++struct wait_bit_key *__var_wake_key(struct wait_queue_entry *wq_entry, void *arg)
+ {
+ 	struct wait_bit_key *key = arg;
+ 	struct wait_bit_queue_entry *wbq_entry =
+@@ -177,6 +175,17 @@ var_wake_function(struct wait_queue_entry *wq_entry, unsigned int mode,
+ 
+ 	if (wbq_entry->key.flags != key->flags ||
+ 	    wbq_entry->key.bit_nr != key->bit_nr)
++		return NULL;
++
++	return key;
 +}
 +
- /**
-  * tipc_sk_enqueue - extract all buffers with destination 'dport' from
-  *                   inputq and try adding them to socket or backlog queue
-@@ -2434,18 +2449,30 @@ static void tipc_sk_enqueue(struct sk_buff_head *inputq, struct sock *sk,
- 	struct sk_buff *skb;
- 	unsigned int lim;
- 	atomic_t *dcnt;
-+	bool deferred = false;
-+	bool owned;
-+	bool local_backlog;
- 	u32 onode;
++static int
++var_wake_function(struct wait_queue_entry *wq_entry, unsigned int mode,
++		  int sync, void *arg)
++{
++	struct wait_bit_key *key = __var_wake_key(wq_entry, arg);
++	if (!key)
+ 		return 0;
  
- 	while (skb_queue_len(inputq)) {
- 		if (unlikely(time_after_eq(jiffies, time_limit)))
--			return;
-+			break;
- 
- 		skb = tipc_skb_dequeue(inputq, dport);
- 		if (unlikely(!skb))
--			return;
-+			break;
- 
--		/* Add message directly to receive queue if possible */
--		if (!sock_owned_by_user(sk)) {
-+		/*
-+		 * A local Nagle backlog may loop back into this socket while its
-+		 * spinlock is held.  Queue the triggering input for processing under
-+		 * socket ownership, which keeps a concurrent sender from overtaking
-+		 * the already queued output.
-+		 */
-+		owned = sock_owned_by_user(sk);
-+		local_backlog = !skb_queue_empty(&sk->sk_write_queue) &&
-+				in_own_node(sock_net(sk),
-+					    tsk_peer_node(tipc_sk(sk)));
-+		if (!owned && !local_backlog) {
- 			tipc_sk_filter_rcv(sk, skb, xmitq);
- 			continue;
- 		}
-@@ -2456,6 +2483,7 @@ static void tipc_sk_enqueue(struct sk_buff_head *inputq, struct sock *sk,
- 			atomic_set(dcnt, 0);
- 		lim = rcvbuf_limit(sk, skb) + atomic_read(dcnt);
- 		if (likely(!sk_add_backlog(sk, skb, lim))) {
-+			deferred |= !owned;
- 			trace_tipc_sk_overlimit1(sk, skb, TIPC_DUMP_SK_BKLGQ,
- 						 "bklg & rcvq >90% allocated!");
- 			continue;
-@@ -2472,6 +2500,12 @@ static void tipc_sk_enqueue(struct sk_buff_head *inputq, struct sock *sk,
- 		}
- 		break;
- 	}
-+
-+	if (deferred) {
-+		sock_hold(sk);
-+		if (!schedule_work(&tipc_sk(sk)->backlog_work))
-+			sock_put(sk);
-+	}
- }
- 
- /**
+ 	return autoremove_wake_function(wq_entry, mode, sync, key);
