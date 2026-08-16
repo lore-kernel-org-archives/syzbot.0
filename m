@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D4203E49D0
-	for <syzbot@lists.linux.dev>; Sun, 16 Aug 2026 22:53:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0745125AA
+	for <syzbot@lists.linux.dev>; Sun, 16 Aug 2026 23:09:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786920787; cv=none; b=O4y/ggCHSpRhDe921IGWMdag7BTsm/HfzD1vTuOhWnfAhOhT026DY1V1BG44Wq7Itu8yKkhRiqkDmqeB98IhaqNzh6DCLO+zuPdQPRWS5lUnsKGrf7xh+5Ki5VpGT90x/jGjEkbd2tKVF/89kJkSSgk6JmiZdNfC0Wv0uNovY5o=
+	t=1786921747; cv=none; b=Yyjx3A6G0nmUwUaXxrp/A3DfIXviQ40s11B/q1XxOOBxrdJOxhyZ3PrJEcD0YspqheLLIZERxOM6I0sZS7B3S+5P5xixsIZ88Jmw2HIHl1IrG37g/VQXpiD96eqqV9oLUCrWENqf/1a4ljqn0zE3KGGTPg4/9fZPwUia9Zx0FSA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786920787; c=relaxed/simple;
-	bh=MdWbbp8yuEPNWRHoAh8XQFiVbywTmFnqppHov+vWmdg=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=LWRiIM9h83GLaaNc0X2xCbmXeUnubYx+ANYFCyks7K8zVfCx27AWdsTo4fSzITY3Puu10Cq8luwiQ4jm7ROl8+B+b2kuJ4E+9ltv6UxKDa/zk6TzmbR2M9lwbMozHB4d5es8BZkRkiIbVvFffZd506FvNRKtiUeAzCg9PGvvr/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TE73oErU; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786921747; c=relaxed/simple;
+	bh=mm4tRGRPmfBqn+KfjgFZdCC+eRSV71zy5TNZ+Fw7ZSY=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=m7D8geJ6JqrRSBJCtvvS0QWUvFaBG2cQirfBorKcYj5XBOnn5rfXx6n/7KXXavmZ6OhjUjHFc152sHNr1nBefxuBDsQ0IVLqX31R5YBM2VmxCvNjd+PV5wCs9Zyig27DB3E8+A+1SAEMK5swFbyh9v9Q74y+D86JsKxeE6UQ/ew=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S3sbvcv0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TE73oErU"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 74C3E1F000E9;
-	Sun, 16 Aug 2026 22:53:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S3sbvcv0"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7FE001F000E9;
+	Sun, 16 Aug 2026 23:09:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786920785;
-	bh=+SKbABiRQvgQ8/XbRkZRuPcsgnT+KVBhI27/0LdC5Qg=;
+	s=k20260515; t=1786921745;
+	bh=3XiIJkGlp8MrYCaUiZrPYhgsxNiDGjj+SkWfjx96wzA=;
 	h=From:To:Cc:Subject:Date;
-	b=TE73oErUcPmiI3RCm4NQwsclzYaXzeL519F8VcBbzrs+6hBCnL1ZsGdq0n90H1J2K
-	 e4dCHzC0ydOsPTDLhb604kBSAj8TkbTYxY4/O9GXI//Vv51lmG1f107yDoSzRiXRla
-	 wJSlC41nb4e3DyQNkTaYZGvL93LDXcM/yFVOQP8iBJcQfUv9O3bLAIZY9YjT7u/+8E
-	 a1/ZkKSTba5hMV4XQUKkuq5zxF6lwgYl79GCFDynl4Sm3CZLSQPGxFBQk0w3XrYWPR
-	 p1MwM0YQafNSMeJ4JNyNEFCjZL0HqwmVflM9fbSN4XFMb5C4QEtkn5EpxB93gDPNPo
-	 psBSOBxBxUYoA==
+	b=S3sbvcv0j3gdpvWEC/4BAASWKYySjVq7vKpO0Jqy5rvh0Y+cPap9FWAGl6YDGy+QZ
+	 UFrSQfWZuH4+cujhn4rv3/Z/KYZyF2UAQ7vY63UKKjXRffMdqhvNsuNF+taYGAHhST
+	 SSe3KiU6KesDgx1ZXLGIeUpgbgfRFixum/aARmzGBHCxEVmt/G4y2XZ8agb0L4inOS
+	 5i529fVNyn44poBC7y69sB6tmXa6H8dmHgYzEl7RzAK0mEQRENXXQLAAj+uZKOnP73
+	 tHyJb5hkb0hbzIoZgcrmTMeJLZNG6wTmsmLD7I8ZvoNbj+qp9GZnTDAnhuIF9hF645
+	 8UTYxQJcR7oUw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] e1000e: reject non-PCIe devices and check reset_hw() return value
-Message-ID: <c7465765-2009-4803-b5de-69a84efcdeb6@mail.kernel.org>
+Subject: [PATCH RFC] media: usbtv: fix null-pointer dereference on disconnect
+Message-ID: <20d7b17b-9c29-4c28-95a4-e4377e35f440@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,108 +38,91 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Sun, 16 Aug 2026 22:53:05 +0000 (UTC)
+Date: Sun, 16 Aug 2026 23:09:05 +0000 (UTC)
 
-When forcing the e1000e driver to bind to an incompatible non-PCIe device
-(such as the e1000 82540EM) via sysfs driver_override, a mismatch in
-hardware register layouts occurs. This causes the driver to blindly retry
-NVM reads and wait for a hardware response that never comes. When multiple
-threads attempt this concurrently, they serialize on the device lock, and
-the cumulative wait time easily exceeds the kernel's hung task timeout,
-leading to a system crash:
+A null-pointer dereference can occur in usb_make_path() when called from
+usbtv_querycap() (and other ioctl handlers) during device disconnection.
 
-INFO: task syz.2.41:7507 blocked for more than 143 seconds.
+Oops: general protection fault, probably for non-canonical address
+0xdffffc000000000a: 0000 [#1] SMP KASAN NOPTI
+KASAN: null-ptr-deref in range [0x0000000000000050-0x0000000000000057]
+RIP: 0010:usb_make_path include/linux/usb.h:985 [inline]
+RIP: 0010:usbtv_querycap+0x9c/0x100
+drivers/media/usb/usbtv/usbtv-video.c:612
 ...
 Call Trace:
  <TASK>
- __schedule+0x17e7/0x5630 kernel/sched/core.c:7234
- schedule+0x164/0x2b0 kernel/sched/core.c:7326
- __mutex_lock_common kernel/locking/mutex.c:726 [inline]
- __mutex_lock+0x7bf/0x1550 kernel/locking/mutex.c:821
- device_lock include/linux/device.h:1104 [inline]
- __device_driver_lock drivers/base/dd.c:1171 [inline]
- device_driver_attach+0xd5/0x1d0 drivers/base/dd.c:1202
- bind_store+0x1d0/0x220 drivers/base/bus.c:267
-...
-NMI backtrace for cpu 1
-...
-RIP: 0010:e1000e_poll_eerd_eewr_done
-drivers/net/ethernet/intel/e1000e/nvm.c:133 [inline]
-RIP: 0010:e1000e_read_nvm_eerd+0xdf/0x300
-drivers/net/ethernet/intel/e1000e/nvm.c:311
-...
-Call Trace:
- <TASK>
- e1000_read_nvm drivers/net/ethernet/intel/e1000e/e1000.h:588 [inline]
- e1000e_validate_nvm_checksum_generic+0xcb/0x3e0
- drivers/net/ethernet/intel/e1000e/nvm.c:553
- e1000_validate_nvm_checksum_82571+0x176/0x290
- drivers/net/ethernet/intel/e1000e/82571.c:787
- e1000_validate_nvm_checksum drivers/net/ethernet/intel/e1000e/e1000.h:577
- [inline]
- e1000_probe+0x12f8/0x2b20 drivers/net/ethernet/intel/e1000e/netdev.c:7590
- local_pci_probe drivers/pci/pci-driver.c:332 [inline]
- pci_call_probe drivers/pci/pci-driver.c:394 [inline]
- __pci_device_probe drivers/pci/pci-driver.c:455 [inline]
- pci_device_probe+0x431/0xc90 drivers/pci/pci-driver.c:489
- call_driver_probe drivers/base/dd.c:-1 [inline]
- really_probe+0x254/0xae0 drivers/base/dd.c:706
- __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
- device_driver_attach+0xe0/0x1d0 drivers/base/dd.c:1203
- bind_store+0x1d0/0x220 drivers/base/bus.c:267
+ v4l_querycap+0x236/0x470 drivers/media/v4l2-core/v4l2-ioctl.c:1106
+ __video_do_ioctl+0x8af/0xc70 drivers/media/v4l2-core/v4l2-ioctl.c:3133
+ video_usercopy+0x860/0x1430 drivers/media/v4l2-core/v4l2-ioctl.c:3475
+ v4l2_ioctl+0x18d/0x1e0 drivers/media/v4l2-core/v4l2-dev.c:366
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:597 [inline]
+ __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
 
-Fix this by adding an early sanity check in e1000_probe() to reject
-non-PCIe devices using pci_is_pcie(). Additionally, check the return value
-of adapter->hw.mac.ops.reset_hw() and abort the probe with -EIO if it
-fails. This prevents the driver from proceeding to the NVM checksum
-validation loop, which is responsible for the massive delay.
+This happens due to a race condition between the USB device disconnect
+routine (usbtv_disconnect()) and V4L2 ioctls. When the device is
+disconnected, usbtv_disconnect() sets usbtv->udev = NULL without holding
+the usbtv->v4l2_lock mutex. Concurrently, an ioctl handler like
+usbtv_querycap() can be executing under the v4l2_lock and attempt to use
+usbtv->udev, leading to a crash.
 
-Fixes: bc7f75fa9788 ("[E1000E]: New pci-express e1000 driver (currently for ICH9 devices only)")
+To fix this, move the usbtv->udev = NULL assignment into usbtv_video_free()
+and protect it with mutex_lock(&usbtv->v4l2_lock). This ensures that no
+non-queue ioctl handler can run concurrently with the pointer being
+nullified. If an ioctl is already running, the mutex will block the
+disconnect path until the ioctl finishes. If an ioctl is blocked waiting
+for the lock, it will acquire it after the disconnect routine releases it,
+but will then check video_is_registered() (which was cleared by
+vb2_video_unregister_device()) and safely return -ENODEV.
+
+Acquiring v4l2_lock after vb2_video_unregister_device() avoids
+reintroducing a historical deadlock issue, and usbtv_audio_free() remains
+safe as it is called before usbtv_video_free().
+
+Fixes: 65e6a2773d65 ("media: usbtv: Remove useless locks in usbtv_video_free()")
 Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+8ce4dba751e79facdc38@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=8ce4dba751e79facdc38
-Link: https://syzkaller.appspot.com/ai_job?id=bf813674-8b64-4b49-ac67-92a88e64885d
-To: "Andrew Lunn" <andrew+netdev@lunn.ch>
-To: "Tony Nguyen" <anthony.l.nguyen@intel.com>
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: <intel-wired-lan@lists.osuosl.org>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Przemek Kitszel" <przemyslaw.kitszel@intel.com>
-To: "Auke Kok" <auke-jan.h.kok@intel.com>
+Reported-by: syzbot+37a57a84893052ab6071@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=37a57a84893052ab6071
+Link: https://syzkaller.appspot.com/ai_job?id=5abbe65a-5853-4bc2-9135-5c75f88d51ed
+To: <linux-media@vger.kernel.org>
+To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
+To: "Benjamin Gaignard" <benjamin.gaignard@collabora.com>
+Cc: "Hans Verkuil" <hverkuil+cisco@kernel.org>
+Cc: "Johan Hovold" <johan@kernel.org>
+Cc: "Kees Cook" <kees@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 844f31ab3..6d087a414 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -7393,6 +7393,9 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	int bars, i, err;
- 	s32 ret_val = 0;
+diff --git a/drivers/media/usb/usbtv/usbtv-core.c b/drivers/media/usb/usbtv/usbtv-core.c
+index 6c4facf4f..b33b54fdb 100644
+--- a/drivers/media/usb/usbtv/usbtv-core.c
++++ b/drivers/media/usb/usbtv/usbtv-core.c
+@@ -136,8 +136,6 @@ static void usbtv_disconnect(struct usb_interface *intf)
+ 	usbtv_audio_free(usbtv);
+ 	usbtv_video_free(usbtv);
  
-+	if (!pci_is_pcie(pdev))
-+		return -ENODEV;
+-	usbtv->udev = NULL;
+-
+ 	/* the usbtv structure will be deallocated when v4l2 will be
+ 	   done using it */
+ 	v4l2_device_put(&usbtv->v4l2_dev);
+diff --git a/drivers/media/usb/usbtv/usbtv-video.c b/drivers/media/usb/usbtv/usbtv-video.c
+index de0328100..ef066df71 100644
+--- a/drivers/media/usb/usbtv/usbtv-video.c
++++ b/drivers/media/usb/usbtv/usbtv-video.c
+@@ -968,5 +968,9 @@ void usbtv_video_free(struct usbtv *usbtv)
+ 	vb2_video_unregister_device(&usbtv->vdev);
+ 	v4l2_device_disconnect(&usbtv->v4l2_dev);
+ 
++	mutex_lock(&usbtv->v4l2_lock);
++	usbtv->udev = NULL;
++	mutex_unlock(&usbtv->v4l2_lock);
 +
- 	if (ei->flags2 & FLAG2_DISABLE_ASPM_L0S)
- 		aspm_disable_flag = PCIE_LINK_STATE_L0S;
- 	if (ei->flags2 & FLAG2_DISABLE_ASPM_L1)
-@@ -7581,7 +7584,12 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	/* before reading the NVM, reset the controller to
- 	 * put the device in a known good starting state
- 	 */
--	adapter->hw.mac.ops.reset_hw(&adapter->hw);
-+	err = adapter->hw.mac.ops.reset_hw(&adapter->hw);
-+	if (err) {
-+		dev_err(&pdev->dev, "Hardware Error\n");
-+		err = -EIO;
-+		goto err_hw_init;
-+	}
- 
- 	/* systems with ASPM and others may see the checksum fail on the first
- 	 * attempt. Let's give it a few tries
+ 	v4l2_device_put(&usbtv->v4l2_dev);
+ }
 
 
 base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
