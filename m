@@ -1,183 +1,155 @@
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64317390618
-	for <syzbot@lists.linux.dev>; Sun, 16 Aug 2026 20:05:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D4203E49D0
+	for <syzbot@lists.linux.dev>; Sun, 16 Aug 2026 22:53:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786910708; cv=none; b=VtnCEzSE13fEhjGX1RJR2qm231CsWQxq6aAvVPMPirKlnlBpefQPJ2fdhQuPeBr4nsvPmDN1oG8T9XkDQdAvK+EavWEjckzVj8uxKzIC5cnO3WyKdfkJSzS8b/aSrUeFWwe+ORAY0CT5OUpsdcLD3JetspDq/GWvBNhE/et722M=
+	t=1786920787; cv=none; b=O4y/ggCHSpRhDe921IGWMdag7BTsm/HfzD1vTuOhWnfAhOhT026DY1V1BG44Wq7Itu8yKkhRiqkDmqeB98IhaqNzh6DCLO+zuPdQPRWS5lUnsKGrf7xh+5Ki5VpGT90x/jGjEkbd2tKVF/89kJkSSgk6JmiZdNfC0Wv0uNovY5o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786910708; c=relaxed/simple;
-	bh=Xl+xL/8odHySiLAIW25zShNFEfGDVMS7v6GKGNgiQRA=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=OWV6KwA8GKGPosm1tY6gqMC7o9RUoklRN5O0bYbfQ0S8VWhYsXrUlYBL2iDcyxAZw/F1S90XCKljkBNbp0MnqKz3uUaGfPl6wIwJ5OfwXnKmyX+nZB9Wp6+vyJwhJE9g2yver+NGG1dTEBrbXhlvcSSAjtNI+D/+M8PmJXiZCsc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-6a0f261aeb6so3544398eaf.3
-        for <syzbot@lists.linux.dev>; Sun, 16 Aug 2026 13:05:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786910705; x=1787515505;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=snAcyl0gv5TWT2L62C65dVR8mCxGTCotyWNRbY99H40=;
-        b=n4YCztFF4YJAW8yCOARBT+RlACiodB0z9Ayhq6m7gZb6d2bykgZ/1hewMHBEcKbZCf
-         0KqALN/3LgXmzXsIYYu+BVDHGN4xJEu50hTqOUeIeWDWV38DxVjkU597nnrfw/PdZRAM
-         oS6+dvBkA3mCIiUC0sp4uxEp4zzWox1IBcOWoC2p6R59/RtTc+694slmET2zkWQSKCi2
-         hxvbY4g25xJMtBeftT8fAzEABTFTAT3Fe2eANcfce4u6ZzPAr38VfGW4erbU/6v58UFg
-         /cMNQlIA+zAbmnxgM7bX43n6LBh6D8n9P4oAAbXBRvFKGlGrAvVFghfvP/qxHyqgcava
-         iOqg==
-X-Gm-Message-State: AOJu0YyAEm0tGtjI+tqiUPhgq3l9ZRAqtD4tg+xECorSKtSOlZbxaxbS
-	52fLJCuFklHUb5GT9MfBCBH62QrpSgeK+cwrVaV/N4mkpbaGTdQlKvQfXYYF3PQDafSaPUpB9wo
-	fSdkfWKuBrIUYn4WhPsFQik2bTQBeGMZ0JOh438/3nhUBLQqDGqmgvPnKziQ=
+	s=arc-20240116; t=1786920787; c=relaxed/simple;
+	bh=MdWbbp8yuEPNWRHoAh8XQFiVbywTmFnqppHov+vWmdg=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=LWRiIM9h83GLaaNc0X2xCbmXeUnubYx+ANYFCyks7K8zVfCx27AWdsTo4fSzITY3Puu10Cq8luwiQ4jm7ROl8+B+b2kuJ4E+9ltv6UxKDa/zk6TzmbR2M9lwbMozHB4d5es8BZkRkiIbVvFffZd506FvNRKtiUeAzCg9PGvvr/M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TE73oErU; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TE73oErU"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 74C3E1F000E9;
+	Sun, 16 Aug 2026 22:53:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786920785;
+	bh=+SKbABiRQvgQ8/XbRkZRuPcsgnT+KVBhI27/0LdC5Qg=;
+	h=From:To:Cc:Subject:Date;
+	b=TE73oErUcPmiI3RCm4NQwsclzYaXzeL519F8VcBbzrs+6hBCnL1ZsGdq0n90H1J2K
+	 e4dCHzC0ydOsPTDLhb604kBSAj8TkbTYxY4/O9GXI//Vv51lmG1f107yDoSzRiXRla
+	 wJSlC41nb4e3DyQNkTaYZGvL93LDXcM/yFVOQP8iBJcQfUv9O3bLAIZY9YjT7u/+8E
+	 a1/ZkKSTba5hMV4XQUKkuq5zxF6lwgYl79GCFDynl4Sm3CZLSQPGxFBQk0w3XrYWPR
+	 p1MwM0YQafNSMeJ4JNyNEFCjZL0HqwmVflM9fbSN4XFMb5C4QEtkn5EpxB93gDPNPo
+	 psBSOBxBxUYoA==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] e1000e: reject non-PCIe devices and check reset_hw() return value
+Message-ID: <c7465765-2009-4803-b5de-69a84efcdeb6@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:f004:b0:6aa:e1f6:32dc with SMTP id
- 006d021491bc7-6b0d6279964mr17509338eaf.22.1786910705330; Sun, 16 Aug 2026
- 13:05:05 -0700 (PDT)
-Date: Sun, 16 Aug 2026 13:05:05 -0700
-In-Reply-To: <tencent_BDF7C28D876E422418FB57474B765F0C1A09@qq.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a8217f1.10853dc7.22f513.0012.GAE@google.com>
-Subject: [syzbot ci] Re: Add EXT4_STATE_MAY_INLINE_DATA check in ext4_readdir
-From: syzbot ci <syzbot+ci9421a54babc42f5f@syzkaller.appspotmail.com>
-To: 1289151713@qq.com, ack@suse.cz, adilger.kernel@dilger.ca, 
-	libaokun@linux.alibaba.com, linux-ext4@vger.kernel.org, ojaswin@linux.ibm.com, 
-	tytso@mit.edu, yi.zhang@huawei.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Sun, 16 Aug 2026 22:53:05 +0000 (UTC)
 
-syzbot ci has tested the following series
+When forcing the e1000e driver to bind to an incompatible non-PCIe device
+(such as the e1000 82540EM) via sysfs driver_override, a mismatch in
+hardware register layouts occurs. This causes the driver to blindly retry
+NVM reads and wait for a hardware response that never comes. When multiple
+threads attempt this concurrently, they serialize on the device lock, and
+the cumulative wait time easily exceeds the kernel's hung task timeout,
+leading to a system crash:
 
-[v2] Add EXT4_STATE_MAY_INLINE_DATA check in ext4_readdir
-https://lore.kernel.org/all/tencent_BDF7C28D876E422418FB57474B765F0C1A09@qq.com
-* [PATCH v2] Add EXT4_STATE_MAY_INLINE_DATA check in ext4_readdir
-
-and found the following issue:
-WARNING in invalidate_bh_lru
-
-Full report is available here:
-https://ci.syzbot.org/series/74cf3860-255d-49bb-b3df-51f8ee44a69f
-
-***
-
-WARNING in invalidate_bh_lru
-
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-base:      1351c159c59b04195647917c5a5f0e5467f44bb0
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/500e2ced-dbe6-480e-affe-813e984ba307/config
-syz repro: https://ci.syzbot.org/findings/875c08a7-1950-4014-851b-0d660dfa2413/syz_repro
-
-------------[ cut here ]------------
-VFS: brelse: Trying to free free buffer
-WARNING: fs/buffer.c:1147 at __brelse fs/buffer.c:1147 [inline], CPU#0: udevd/5048
-WARNING: fs/buffer.c:1147 at brelse include/linux/buffer_head.h:326 [inline], CPU#0: udevd/5048
-WARNING: fs/buffer.c:1147 at __invalidate_bh_lrus fs/buffer.c:1506 [inline], CPU#0: udevd/5048
-WARNING: fs/buffer.c:1147 at invalidate_bh_lru+0xfa/0x1b0 fs/buffer.c:1519, CPU#0: udevd/5048
-Modules linked in:
-CPU: 0 UID: 0 PID: 5048 Comm: udevd Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__brelse fs/buffer.c:1147 [inline]
-RIP: 0010:brelse include/linux/buffer_head.h:326 [inline]
-RIP: 0010:__invalidate_bh_lrus fs/buffer.c:1506 [inline]
-RIP: 0010:invalidate_bh_lru+0xfa/0x1b0 fs/buffer.c:1519
-Code: f7 be 04 00 00 00 e8 85 c0 d8 ff f0 41 ff 0e eb 1e e8 8a 21 6b ff 80 3c 2b 00 75 20 eb 26 e8 7d 21 6b ff 48 8d 3d e6 bf 01 0e <67> 48 0f b9 3a 4c 89 fd 4f 8d 3c 2c 80 3c 2b 00 74 08 4c 89 ff e8
-RSP: 0018:ffffc90000007f38 EFLAGS: 00010006
-RAX: ffffffff825be013 RBX: 1ffff11024206b2d RCX: ffff888172139dc0
-RDX: 0000000000010000 RSI: 0000000000000000 RDI: ffffffff905da000
-RBP: 0000000000000000 R08: ffff8881078c875b R09: 1ffff11020f190eb
-R10: dffffc0000000000 R11: ffffed1020f190ec R12: ffff888121035960
-R13: 0000000000000008 R14: ffff8881078c8758 R15: dffffc0000000000
-FS:  00007f6c32242c80(0000) GS:ffff88818d952000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fc1515eb7c0 CR3: 000000016c5ac000 CR4: 00000000000006f0
+INFO: task syz.2.41:7507 blocked for more than 143 seconds.
+...
 Call Trace:
- <IRQ>
- csd_do_func kernel/smp.c:136 [inline]
- __flush_smp_call_function_queue+0x32c/0xa20 kernel/smp.c:580
- __sysvec_call_function_single+0x9a/0x3d0 arch/x86/kernel/smp.c:272
- instr_sysvec_call_function_single arch/x86/kernel/smp.c:267 [inline]
- sysvec_call_function_single+0x9e/0xc0 arch/x86/kernel/smp.c:267
- </IRQ>
  <TASK>
- asm_sysvec_call_function_single+0x1a/0x20 arch/x86/include/asm/idtentry.h:681
-RIP: 0010:lock_is_held_type+0x106/0x150 kernel/locking/lockdep.c:5945
-Code: 1a 00 00 b8 ff ff ff ff 65 0f c1 05 54 4c 9c 07 83 f8 01 75 25 9c 58 a9 00 02 00 00 75 39 41 f7 c4 00 02 00 00 74 01 fb 89 d8 <5b> 41 5c 41 5d 41 5e 41 5f 5d e9 1b 00 03 00 cc 90 0f 0b 90 48 c7
-RSP: 0018:ffffc9000624f818 EFLAGS: 00000206
-RAX: 0000000000000001 RBX: 0000000000000001 RCX: 0000000000000046
-RDX: 0000000000000000 RSI: ffffffff8e4ae37e RDI: ffffffff8c4bbd80
-RBP: 00000000ffffffff R08: ffffc9000020daa7 R09: 1ffff92000041b54
-R10: dffffc0000000000 R11: fffff52000041b55 R12: 0000000000000246
-R13: ffff888172139dc0 R14: ffffffff8eb59c60 R15: 0000000000000000
- __d_lookup+0x170/0x790 fs/dcache.c:2612
- lookup_fast+0x82/0x5d0 fs/namei.c:1878
- walk_component fs/namei.c:2278 [inline]
- link_path_walk+0x71f/0x1910 fs/namei.c:2656
- path_openat+0x236/0x3830 fs/namei.c:4859
- do_file_open+0x23e/0x4a0 fs/namei.c:4892
- do_sys_openat2+0x115/0x200 fs/open.c:1368
- do_sys_open fs/open.c:1374 [inline]
- __do_sys_openat fs/open.c:1390 [inline]
- __se_sys_openat fs/open.c:1385 [inline]
- __x64_sys_openat+0x138/0x170 fs/open.c:1385
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f6c3231a477
-Code: 10 00 00 00 44 8b 54 24 e0 48 89 44 24 c0 48 8d 44 24 d0 48 89 44 24 c8 44 89 c2 4c 89 ce bf 9c ff ff ff b8 01 01 00 00 0f 05 <48> 3d 00 f0 ff ff 76 10 48 8b 15 82 69 0d 00 f7 d8 64 89 02 48 83
-RSP: 002b:00007ffe8da39558 EFLAGS: 00000287 ORIG_RAX: 0000000000000101
-RAX: ffffffffffffffda RBX: 000055a56911c8f0 RCX: 00007f6c3231a477
-RDX: 0000000000090800 RSI: 000055a569100840 RDI: 00000000ffffff9c
-RBP: 000055a569196980 R08: 0000000000090800 R09: 000055a569100840
-R10: 0000000000000000 R11: 0000000000000287 R12: 000055a569100840
-R13: 00000000000000ff R14: 000055a53ac761c4 R15: 0000000000000000
- </TASK>
-----------------
-Code disassembly (best guess):
-   0:	f7 be 04 00 00 00    	idivl  0x4(%rsi)
-   6:	e8 85 c0 d8 ff       	call   0xffd8c090
-   b:	f0 41 ff 0e          	lock decl (%r14)
-   f:	eb 1e                	jmp    0x2f
-  11:	e8 8a 21 6b ff       	call   0xff6b21a0
-  16:	80 3c 2b 00          	cmpb   $0x0,(%rbx,%rbp,1)
-  1a:	75 20                	jne    0x3c
-  1c:	eb 26                	jmp    0x44
-  1e:	e8 7d 21 6b ff       	call   0xff6b21a0
-  23:	48 8d 3d e6 bf 01 0e 	lea    0xe01bfe6(%rip),%rdi        # 0xe01c010
-* 2a:	67 48 0f b9 3a       	ud1    (%edx),%rdi <-- trapping instruction
-  2f:	4c 89 fd             	mov    %r15,%rbp
-  32:	4f 8d 3c 2c          	lea    (%r12,%r13,1),%r15
-  36:	80 3c 2b 00          	cmpb   $0x0,(%rbx,%rbp,1)
-  3a:	74 08                	je     0x44
-  3c:	4c 89 ff             	mov    %r15,%rdi
-  3f:	e8                   	.byte 0xe8
+ __schedule+0x17e7/0x5630 kernel/sched/core.c:7234
+ schedule+0x164/0x2b0 kernel/sched/core.c:7326
+ __mutex_lock_common kernel/locking/mutex.c:726 [inline]
+ __mutex_lock+0x7bf/0x1550 kernel/locking/mutex.c:821
+ device_lock include/linux/device.h:1104 [inline]
+ __device_driver_lock drivers/base/dd.c:1171 [inline]
+ device_driver_attach+0xd5/0x1d0 drivers/base/dd.c:1202
+ bind_store+0x1d0/0x220 drivers/base/bus.c:267
+...
+NMI backtrace for cpu 1
+...
+RIP: 0010:e1000e_poll_eerd_eewr_done
+drivers/net/ethernet/intel/e1000e/nvm.c:133 [inline]
+RIP: 0010:e1000e_read_nvm_eerd+0xdf/0x300
+drivers/net/ethernet/intel/e1000e/nvm.c:311
+...
+Call Trace:
+ <TASK>
+ e1000_read_nvm drivers/net/ethernet/intel/e1000e/e1000.h:588 [inline]
+ e1000e_validate_nvm_checksum_generic+0xcb/0x3e0
+ drivers/net/ethernet/intel/e1000e/nvm.c:553
+ e1000_validate_nvm_checksum_82571+0x176/0x290
+ drivers/net/ethernet/intel/e1000e/82571.c:787
+ e1000_validate_nvm_checksum drivers/net/ethernet/intel/e1000e/e1000.h:577
+ [inline]
+ e1000_probe+0x12f8/0x2b20 drivers/net/ethernet/intel/e1000e/netdev.c:7590
+ local_pci_probe drivers/pci/pci-driver.c:332 [inline]
+ pci_call_probe drivers/pci/pci-driver.c:394 [inline]
+ __pci_device_probe drivers/pci/pci-driver.c:455 [inline]
+ pci_device_probe+0x431/0xc90 drivers/pci/pci-driver.c:489
+ call_driver_probe drivers/base/dd.c:-1 [inline]
+ really_probe+0x254/0xae0 drivers/base/dd.c:706
+ __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
+ device_driver_attach+0xe0/0x1d0 drivers/base/dd.c:1203
+ bind_store+0x1d0/0x220 drivers/base/bus.c:267
 
+Fix this by adding an early sanity check in e1000_probe() to reject
+non-PCIe devices using pci_is_pcie(). Additionally, check the return value
+of adapter->hw.mac.ops.reset_hw() and abort the probe with -EIO if it
+fails. This prevents the driver from proceeding to the NVM checksum
+validation loop, which is responsible for the massive delay.
 
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: bc7f75fa9788 ("[E1000E]: New pci-express e1000 driver (currently for ICH9 devices only)")
+Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+8ce4dba751e79facdc38@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=8ce4dba751e79facdc38
+Link: https://syzkaller.appspot.com/ai_job?id=bf813674-8b64-4b49-ac67-92a88e64885d
+To: "Andrew Lunn" <andrew+netdev@lunn.ch>
+To: "Tony Nguyen" <anthony.l.nguyen@intel.com>
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: <intel-wired-lan@lists.osuosl.org>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Przemek Kitszel" <przemyslaw.kitszel@intel.com>
+To: "Auke Kok" <auke-jan.h.kok@intel.com>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index 844f31ab3..6d087a414 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -7393,6 +7393,9 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	int bars, i, err;
+ 	s32 ret_val = 0;
+ 
++	if (!pci_is_pcie(pdev))
++		return -ENODEV;
++
+ 	if (ei->flags2 & FLAG2_DISABLE_ASPM_L0S)
+ 		aspm_disable_flag = PCIE_LINK_STATE_L0S;
+ 	if (ei->flags2 & FLAG2_DISABLE_ASPM_L1)
+@@ -7581,7 +7584,12 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	/* before reading the NVM, reset the controller to
+ 	 * put the device in a known good starting state
+ 	 */
+-	adapter->hw.mac.ops.reset_hw(&adapter->hw);
++	err = adapter->hw.mac.ops.reset_hw(&adapter->hw);
++	if (err) {
++		dev_err(&pdev->dev, "Hardware Error\n");
++		err = -EIO;
++		goto err_hw_init;
++	}
+ 
+ 	/* systems with ASPM and others may see the checksum fail on the first
+ 	 * attempt. Let's give it a few tries
 
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
 
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
+base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
