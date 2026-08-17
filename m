@@ -1,123 +1,150 @@
-Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F44244C653
-	for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 18:14:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFC2F2E2665
+	for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 18:46:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786990465; cv=none; b=Gd9iXRUUmgGf1O3sPGOLC3GwYYJOpSFwYVdZnLQ6L/bpA5Ptx8UKIm5h2K17qn+JRPMkmmM/kla9P69Df72Im/HhHJmzDMXNPQ/DSV4lM4V+kNPP4EWbA4bHQ9JlLOkgQkaLEheL1t9golnEaC3FZ5OgrZhRHx4kZt9Fj2+jVk4=
+	t=1786992376; cv=none; b=CitrZ+AKDOuJ+/s3mAw1MrSzxeGHVb6g4+MPRaV1MxgerXziogD+FyAE05U1c3RszCY8J1aXomtygUt8LhytzLrwV0W5GV1Lt22JomIJp5o2HhBjxDnSstEUtNZBqhiVxJfSJmy6e/qTJa2hJAXw/DkRM1DM3TE3zdcE96yzjOU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786990465; c=relaxed/simple;
-	bh=ao9m2sLvbtNitvCpUq+Gv1OifNM6AgmqBnJ0gntYEVQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rbN13dwTExW0SwMhCDUo2ZERm/0uEsD6PFR3GvgSyQG67cCz+FUhTvg9qXBDSnxW9iUhJ49Uq26vpLZgeL9aAiPvtmgNb0li7RLb5zUcYXXrmSfP3Ae1FrItjylJcZYl9AS6KLaHmfk+ZoSg7nEEV2XpvRDJw10cwpwSV/ey9EM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rowland.harvard.edu; spf=fail smtp.mailfrom=g.harvard.edu; dkim=pass (2048-bit key) header.d=rowland.harvard.edu header.i=@rowland.harvard.edu header.b=l5U8sK7U; arc=none smtp.client-ip=209.85.160.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rowland.harvard.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=g.harvard.edu
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rowland.harvard.edu header.i=@rowland.harvard.edu header.b="l5U8sK7U"
-Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-52b6543169fso24738881cf.2
-        for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 11:14:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rowland.harvard.edu; s=google; t=1786990461; x=1787595261; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=AhYnEHSrQOfQP14QlDp7s2GCgdzZ6d9RZ1i39j+Wq9Y=;
-        b=l5U8sK7UynRGlHXSFp76U7raAZWLhJPv09ZuYccQyVqDFlUxM0l7ycDa3HTFXzRcIm
-         wLTBX/lwQ/Xw6U9f6eCj8Cq8qRvWbrtrzBoTuO9f3wG6hjfiBkfT9cIKAxkEnwy06b2K
-         ncrEoB2YviCT8zHnw23sWxHXaBXGnYE4VKcKIITMddHvLMIZ4pxq5wCglDlLNDBsgWk0
-         P33z2PAEOzk22M9MPilHjnDu03WwNbKlU55USHQCNsbnRfvM2qXrWPH7PnGdnVdRunDv
-         wiBnqYM9mjx1QdeVC6VlrK0VBhTSlsqP8mvI8Xv0jzm2wDvKUf0yzAeCm8pxAJLowaax
-         GpKg==
+	s=arc-20240116; t=1786992376; c=relaxed/simple;
+	bh=UxUwHHAgcfvBgsnfR1PEpB1uiq6UqDshQiL5YAZWCZ4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Q1cCUGMz6gd5LLzpp8+FZuquT4CO3oru7e+ChSt6Q3mi9hUTME2OWzv7SBs2D7LyAyo8ySrkwAnkb8FXvgo8WX1I2llanxa4HEkZYB2TMwGpkRkv8TBY+IOdg85eVEDvYJOaRz3KrXxyoKb2X+1DptXEjfgZEkKJiSIhztYVszc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-49ab6a82cd5so5677577b6e.2
+        for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 11:46:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786990461; x=1787595261;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=AhYnEHSrQOfQP14QlDp7s2GCgdzZ6d9RZ1i39j+Wq9Y=;
-        b=U3G7fqzoAXR/9leaDHBN4jqNgdSLopJLXhNBjhUGUGuCAxcDQMuBPhKcexOrg3cvhg
-         I95YrlOebcoVQsIQMD5XsU9XJyGv6OtJ310pDvTzR09aN5TQeO5vg/gwAtD+q8gghSS2
-         Tl7Cnq4I4t/PSLb/Bq0LT1NqnH8wYG3VBxINQUVuMTC+EkI4ZhhqBT0XLduvE8lFYotD
-         fHzQNoFPSGozLMU5Lcqah5S5JwsuKRsCPPWwih8ZxML7HUSDI1B6lWG+UgrZfIqIpMcF
-         jcAh4msDMh3GTUeydsndyIV9C1wr9wiitVhqLmf5jhYj6/RM/2QWWrs91b0pPyaTeYAk
-         XUew==
-X-Forwarded-Encrypted: i=1; AHgh+RqhSomcCyKlHyQESEGZltuL8BHaOOrkfwflScSlBi/Xfnu+UhKea4KLCi5MOTtufPkqS6NhP4k=@lists.linux.dev
-X-Gm-Message-State: AOJu0YxumgHFyAZ/9CJL1IBmP+jkxy8JpQG227pGVJyryKDRUNK3Jb2G
-	RT2qrnYSJDSk+ECQsrGOqAg5yeo2CE22mApmmABJpKgM4jkJHDrMhBnZL2x1zAgIjw==
-X-Gm-Gg: AR+sD10CqpVeIVDQmHCN8lkGoGnIwT+jjkZnx7c82rC4GO625oyLzLvDzBvJjt65On9
-	R3VBJ6CorikL67oA4VxAyybCukqZyZcgUz/b79th9IrNWgScG2y2ja9jhDNcOCqIcrpA8Vp1+k4
-	cMzGhcKMoFfnCrM3WuH36h3OmgEOXOkbvksaJpvW0Wg/b7Y+0I3hDLU/mZcPK9cbfhbVPylj8ex
-	tgNcK3NUsiwkYDJdSHm9rUty4nx3xVjaukwnBIn+A8ramDlsIcrXn44IfNe6Dx6NvJJK8QbCkQH
-	aWDeUl2HM2x5+HityrCO9+VMOc6dKPT5N4V0lpeUM4V0OY7JsNx68FQNFWPjIJwrcjFQI2g6bdU
-	rF+6jkvgvSjPMIVwzUSidRLXcg02AOHJc2vcBsH0M9i//UFGahJG2UH0BgeE8NTK5wpORaO5WKl
-	vzmKmfjguQYBuE6CKJUpO4Y4ReWjki39ah2nnM4Ej163PQv/UovDmIsGpn6VkhwTKyw5BxCyGuR
-	A+gjJWKmxkcggSd2D1wt6fpukCVDvIyWcNpgRjo4HE=
-X-Received: by 2002:a05:622a:2445:b0:528:3d62:16c8 with SMTP id d75a77b69052e-52d854a46f0mr317463501cf.31.1786990460710;
-        Mon, 17 Aug 2026 11:14:20 -0700 (PDT)
-Received: from rowland.harvard.edu ([2607:fb60:1011:2006:2008:aeb7:73d7:d8ff])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-90c4580f7ebsm14450746d6.5.2026.08.17.11.14.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2026 11:14:19 -0700 (PDT)
-Date: Mon, 17 Aug 2026 14:14:17 -0400
-From: Alan Stern <stern@rowland.harvard.edu>
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: syzbot <syzbot+df9e891bf8ea586f846b@syzkaller.appspotmail.com>,
-	asml.silence@gmail.com, axboe@kernel.dk, brauner@kernel.org,
-	io-uring@vger.kernel.org, jack@suse.cz, kartikey406@gmail.com,
-	kees@kernel.org, linux-kernel@vger.kernel.org,
-	linux-usb@vger.kernel.org, mjguzik@gmail.com, nogikh@google.com,
-	syzbot@kernel.org, syzbot@lists.linux.dev,
-	syzkaller-bugs@googlegroups.com,
-	syzkaller-upstream-moderation@googlegroups.com,
-	torvalds@ppc970.osdl.org, viro@zeniv.linux.org.uk
-Subject: Re: [syzbot] [usb?] KASAN: slab-use-after-free Read in ep_open
-Message-ID: <16741050-a3e2-4193-bfca-232a615a1311@rowland.harvard.edu>
-References: <34e65096-8827-470c-9a88-8c643cccef22@rowland.harvard.edu>
- <6a8338ea.dbb3a75c.20434b.006a.GAE@google.com>
+        d=1e100.net; s=20251104; t=1786992374; x=1787597174;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=03bATdLPkH35hdLyeMO+k8SzFcRocSlt9wafx+PvZOc=;
+        b=eM23EUeRIa9NKUz0Z3ryGUeBCoBJDOuWtlxUSXg6PHaeaZXHVGQrtWCbldnNfbCwr3
+         lgQiMSy09TjwbPImJo/K14eGRSYNNRGS/I1rnusjPGc5NDm8o6yyUFMLpjR3RO/nRF3c
+         Sv7akSr6i6e6VqcDR56Ev3IQOiiLzkLroi4P3eD/PTPDyAcuUrvaML+WWKl8he3iDtwR
+         JnvkkRcIX36h0uNMPFVLOA4vvoXyPLGLj2aPeqWftOn+cz2XiGv+Gil1Cr9nWKBkbck+
+         pZYUKOO0ZJ5NO73qtwGPMFGp6I3iObxUJGMbNO8sf2mOUTUeY1d4XcTsGdgM0+HtG2dt
+         yuMQ==
+X-Gm-Message-State: AOJu0YyUrN063+jQmt3UVI4L6eriy/CRyC70MLt+WV1UjEG2UqPlBusk
+	kh3ei0UYSqjyjU9qdrygrleD5clxA/g0gqI+yiBeRHJQfNuYLyw/nnrilNeF/IFUyV9GEdFq3GW
+	p50JqnWlIHnsjz4VqiBftKYcyJE9aYUTeGcLJBXXi6Zr+bAEJ+oiHmoZf1Ic=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6a8338ea.dbb3a75c.20434b.006a.GAE@google.com>
+X-Received: by 2002:a05:6808:3306:b0:495:d7ec:b6ae with SMTP id
+ 5614622812f47-4b241e43eb0mr26844268b6e.16.1786992373859; Mon, 17 Aug 2026
+ 11:46:13 -0700 (PDT)
+Date: Mon, 17 Aug 2026 11:46:13 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a8356f5.dbb3a75c.20434b.006d.GAE@google.com>
+Subject: [moderation/CI] Re: lib/folio_pool: Direct-Map Large Folio Pool &
+ Scratchpad bump allocators
+From: syzbot ci <syzbot+ci6592343467b4698a@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 17, 2026 at 09:38:02AM -0700, syzbot wrote:
-> Hello,
-> 
-> syzbot has tested the proposed patch and the reproducer did not trigger any issue:
-> 
-> Reported-by: syzbot+df9e891bf8ea586f846b@syzkaller.appspotmail.com
-> Tested-by: syzbot+df9e891bf8ea586f846b@syzkaller.appspotmail.com
-> 
-> Tested on:
-> 
-> commit:         8d3ae592 Linux 7.2
-> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/ v7.2
-> console output: https://syzkaller.appspot.com/x/log.txt?x=16a91a25580000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=c44651ea7dd2f307
-> dashboard link: https://syzkaller.appspot.com/bug?extid=df9e891bf8ea586f846b
-> compiler:       gcc (Debian 14.2.0-19) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44
-> patch:          https://syzkaller.appspot.com/x/patch.diff?x=15790679580000
-> 
-> Note: testing is done by a robot and is best-effort only.
+syzbot ci has tested the following series
 
-Greg:
+[v1] lib/folio_pool: Direct-Map Large Folio Pool & Scratchpad bump allocato=
+rs
+https://lore.kernel.org/all/20260817-folio-pool-v1-v1-0-0c1d230aa3af@gmail.=
+com
+* [PATCH 1/9] lib/folio_pool: Introduce Direct-Map Large Folio Pool & Scrat=
+chpad bump allocators
+* [PATCH 2/9] netfilter/nf_tables: Add folio_scratchpad collector to struct=
+ nftables_pernet
+* [PATCH 3/9] bpf/verifier: Route verifier stack state node allocations to =
+folio_pool
+* [PATCH 4/9] drm/gpuvm: Route gpuva_op allocations to folio_scratchpad
+* [PATCH 5/9] bpf/syscall: Route generic_map_update_batch key/value allocat=
+ions to folio_scratchpad
+* [PATCH 6/9] locking/lockdep: Fallback to folio_pool in alloc_list_entry w=
+hen static pool is full
+* [PATCH 7/9] locking/lockdep: Traverse adjacency lists directly in zap_cla=
+ss()
+* [PATCH 8/9] locking/lockdep: Shrink static list_entries array to early bo=
+otstrap buffer
+* [PATCH 9/9] locking/lockdep: Migrate and compact boot-time dependency gra=
+ph from __initdata
 
-Has this patch ever been queued?
+and found the following issue:
+kernel build error
 
-https://lore.kernel.org/linux-usb/ee41fbfd-f368-4a06-95d6-ae9b4267fd82@mail.kernel.org/
+Full report is available here:
+https://ci.syzbot.org/series/0cb00027-e611-48c2-b3cf-f1fa17fa3ba2
 
-Looks like you can add syzbot's Tested-by: tag, as well as my Acked-by:.
+***
 
-Note that a different patch to fix the same problem was submitted here:
+kernel build error
 
-https://lore.kernel.org/linux-usb/20260731230603.4637-1-kartikey406@gmail.com/
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
+net-next.git
+base:      e6a5d573d24cd375e09d24f136523cb3cc85c9d3
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/fee80397-36af-4dbf-9041-4ac6840fc40=
+d/config
 
-IMO the first patch above is superior.
+net/netfilter/nf_tables_api.c:12172:7: error: incompatible pointer types pa=
+ssing 'struct static_key_true *' to parameter of type 'struct static_key *'=
+ [-Wincompatible-pointer-types]
+drivers/gpu/drm/drm_gpuvm.c:1113:8: error: use of undeclared identifier 'gp=
+uvm_scratchpad_key'
+kernel/bpf/syscall.c:2090:42: error: incompatible pointer types passing 'st=
+ruct static_key_true *' to parameter of type 'struct static_key *' [-Wincom=
+patible-pointer-types]
+kernel/bpf/verifier.c:19799:27: error: incompatible pointer types passing '=
+struct static_key_true *' to parameter of type 'struct static_key *' [-Winc=
+ompatible-pointer-types]
 
-Alan Stern
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
+
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[airlied@gmail.com akpm@linux-foundation.org aliceryhl@google.com andrii@ke=
+rnel.org ast@kernel.org boqun@kernel.org boris.brezillon@collabora.com bpf@=
+vger.kernel.org coreteam@netfilter.org dakr@kernel.org daniel@iogearbox.net=
+ davem@davemloft.net devnull@kernel.org dri-devel@lists.freedesktop.org edd=
+yz87@gmail.com edumazet@google.com emil@etsalapatis.com fw@strlen.de horms@=
+kernel.org jim.cromie@gmail.com john.fastabend@gmail.com jolsa@kernel.org k=
+uba@kernel.org linux-kernel@vger.kernel.org linux-mm@kvack.org longman@redh=
+at.com maarten.lankhorst@linux.intel.com martin.lau@linux.dev matthew.brost=
+@intel.com memxor@gmail.com mingo@redhat.com mripard@kernel.org netdev@vger=
+.kernel.org netfilter-devel@vger.kernel.org pabeni@redhat.com pablo@netfilt=
+er.org peterz@infradead.org phil@nwl.cc simona@ffwll.ch song@kernel.org tho=
+mas.hellstrom@linux.intel.com tzimmermann@suse.de will@kernel.org yonghong.=
+song@linux.dev]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
