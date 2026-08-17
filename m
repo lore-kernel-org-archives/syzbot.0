@@ -1,150 +1,313 @@
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFC2F2E2665
-	for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 18:46:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C64C3AEF5F
+	for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 22:11:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786992376; cv=none; b=CitrZ+AKDOuJ+/s3mAw1MrSzxeGHVb6g4+MPRaV1MxgerXziogD+FyAE05U1c3RszCY8J1aXomtygUt8LhytzLrwV0W5GV1Lt22JomIJp5o2HhBjxDnSstEUtNZBqhiVxJfSJmy6e/qTJa2hJAXw/DkRM1DM3TE3zdcE96yzjOU=
+	t=1787004681; cv=none; b=hvjQ4nR2fd0u0yYpL24Mj9U+T8nG5ihdYHeYRK87dqhx9S2i9IaDoLBuKYodcuDkX4peH2N2crlHobh70edi22QMdAU1wHx4Q8m9ZMx3MNPBvOS0gkk7HkSYB3yILu3Nk0H0fmNy5tI/tzje2jL/2dO0l9ZebllV4QKziRJtJxQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786992376; c=relaxed/simple;
-	bh=UxUwHHAgcfvBgsnfR1PEpB1uiq6UqDshQiL5YAZWCZ4=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=Q1cCUGMz6gd5LLzpp8+FZuquT4CO3oru7e+ChSt6Q3mi9hUTME2OWzv7SBs2D7LyAyo8ySrkwAnkb8FXvgo8WX1I2llanxa4HEkZYB2TMwGpkRkv8TBY+IOdg85eVEDvYJOaRz3KrXxyoKb2X+1DptXEjfgZEkKJiSIhztYVszc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-49ab6a82cd5so5677577b6e.2
-        for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 11:46:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786992374; x=1787597174;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=03bATdLPkH35hdLyeMO+k8SzFcRocSlt9wafx+PvZOc=;
-        b=eM23EUeRIa9NKUz0Z3ryGUeBCoBJDOuWtlxUSXg6PHaeaZXHVGQrtWCbldnNfbCwr3
-         lgQiMSy09TjwbPImJo/K14eGRSYNNRGS/I1rnusjPGc5NDm8o6yyUFMLpjR3RO/nRF3c
-         Sv7akSr6i6e6VqcDR56Ev3IQOiiLzkLroi4P3eD/PTPDyAcuUrvaML+WWKl8he3iDtwR
-         JnvkkRcIX36h0uNMPFVLOA4vvoXyPLGLj2aPeqWftOn+cz2XiGv+Gil1Cr9nWKBkbck+
-         pZYUKOO0ZJ5NO73qtwGPMFGp6I3iObxUJGMbNO8sf2mOUTUeY1d4XcTsGdgM0+HtG2dt
-         yuMQ==
-X-Gm-Message-State: AOJu0YyUrN063+jQmt3UVI4L6eriy/CRyC70MLt+WV1UjEG2UqPlBusk
-	kh3ei0UYSqjyjU9qdrygrleD5clxA/g0gqI+yiBeRHJQfNuYLyw/nnrilNeF/IFUyV9GEdFq3GW
-	p50JqnWlIHnsjz4VqiBftKYcyJE9aYUTeGcLJBXXi6Zr+bAEJ+oiHmoZf1Ic=
+	s=arc-20240116; t=1787004681; c=relaxed/simple;
+	bh=13rn2XO+i7q6/LV62GgnHV8KcVmshSeL9WmWJigGRJY=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=mlPeZgy095Uu+ai0vb27kCFUNi3nCuummgjDYTwIAg8+6/A0z/qL7JemExtoetb+JkzLVf/VBFveqRHKnhCWNYtqpunoOkpb2OhIXu0c88QLYtdTQCrxAq+Imq6dWgwTR3BBPlfnGhKDSciLhvk4KpaFQ4jsEK0hu5S5t8azZTI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TiVPi4Ll; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TiVPi4Ll"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 9F3B91F000E9;
+	Mon, 17 Aug 2026 22:11:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787004679;
+	bh=7TXyt+Qd2p5bb4CVshBhxTgRAkoEC8I9ogtUVE6jHsI=;
+	h=From:To:Cc:Subject:Date;
+	b=TiVPi4LlxCrzYBah4BrJQEpMCUSlPpcYq1WNSD5pc/ED+RvflqwNYrDtuy+ffER/K
+	 SL+9ja3stOC3Vi4r9fhGRpPvxGRrgcaSsEi2ZsIc1AsP9RExCJ0ezhj2dBYKA5reAX
+	 NH7TvP7VIu4esBFlaRa8fAC21Ta3Thm+eUQn8HMRC2KG/9RljE3xBKT6seR1oQlb2C
+	 1NvJ3LSMoGM9DY3DAMaPnXJaO3WmZwxOnk0zvTr2f11nASIEwvpmjPf3hVFKbfmYof
+	 CfXRtB1uhkUwYu94dTjRgBiUn5oVZXLzDqBQTjplVvoaUrqSut69AXPJIzfOsFLoEB
+	 1L6p/+zfNVn2Q==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] media: ttusb-dec: fix buffer overflow in ttusb_dec_send_command()
+Message-ID: <e78cd021-f23c-4737-b60c-a57001be13c9@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:3306:b0:495:d7ec:b6ae with SMTP id
- 5614622812f47-4b241e43eb0mr26844268b6e.16.1786992373859; Mon, 17 Aug 2026
- 11:46:13 -0700 (PDT)
-Date: Mon, 17 Aug 2026 11:46:13 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a8356f5.dbb3a75c.20434b.006d.GAE@google.com>
-Subject: [moderation/CI] Re: lib/folio_pool: Direct-Map Large Folio Pool &
- Scratchpad bump allocators
-From: syzbot ci <syzbot+ci6592343467b4698a@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Mon, 17 Aug 2026 22:11:19 +0000 (UTC)
 
-syzbot ci has tested the following series
+The ttusb_dec_send_command() function allocates a 64-byte buffer
+(COMMAND_PACKET_SIZE + 4) for USB communication. After receiving a
+response, it reads the payload length from b[3] (which is fully controlled
+by the USB device) and copies the payload into the caller-provided
+cmd_result buffer. There are two missing bounds checks. First, b[3] can be
+up to 255, exceeding the 60-byte payload capacity of the allocated buffer,
+leading to an out-of-bounds read. Second, the size of cmd_result is not
+passed to the function, so a large b[3] can cause a buffer overflow in the
+destination buffer (e.g., a 4-byte buffer in
+ttusbdecfe_dvbt_read_status()).
 
-[v1] lib/folio_pool: Direct-Map Large Folio Pool & Scratchpad bump allocato=
-rs
-https://lore.kernel.org/all/20260817-folio-pool-v1-v1-0-0c1d230aa3af@gmail.=
-com
-* [PATCH 1/9] lib/folio_pool: Introduce Direct-Map Large Folio Pool & Scrat=
-chpad bump allocators
-* [PATCH 2/9] netfilter/nf_tables: Add folio_scratchpad collector to struct=
- nftables_pernet
-* [PATCH 3/9] bpf/verifier: Route verifier stack state node allocations to =
-folio_pool
-* [PATCH 4/9] drm/gpuvm: Route gpuva_op allocations to folio_scratchpad
-* [PATCH 5/9] bpf/syscall: Route generic_map_update_batch key/value allocat=
-ions to folio_scratchpad
-* [PATCH 6/9] locking/lockdep: Fallback to folio_pool in alloc_list_entry w=
-hen static pool is full
-* [PATCH 7/9] locking/lockdep: Traverse adjacency lists directly in zap_cla=
-ss()
-* [PATCH 8/9] locking/lockdep: Shrink static list_entries array to early bo=
-otstrap buffer
-* [PATCH 9/9] locking/lockdep: Migrate and compact boot-time dependency gra=
-ph from __initdata
+This can result in a fortify panic:
 
-and found the following issue:
-kernel build error
+memcpy: detected buffer overflow: 75 byte read of buffer size 60
+WARNING: lib/string_helpers.c:1037 at __fortify_report+0xa0/0xb8
+lib/string_helpers.c:1036
+...
+Call trace:
+ __fortify_report+0xa0/0xb8 lib/string_helpers.c:1036 (P)
+ __fortify_panic+0x10/0x14 lib/string_helpers.c:1043
+ fortify_memcpy_chk include/linux/fortify-string.h:549 [inline]
+ ttusb_dec_start_feed+0x0/0x10ac
+ drivers/media/usb/ttusb-dec/ttusb_dec.c:372
+ ttusb_dec_get_stb_state drivers/media/usb/ttusb-dec/ttusb_dec.c:392
+ [inline]
+ ttusb_dec_init_stb drivers/media/usb/ttusb-dec/ttusb_dec.c:1413 [inline]
+ ttusb_dec_probe+0x724/0x1aa0 drivers/media/usb/ttusb-dec/ttusb_dec.c:1671
 
-Full report is available here:
-https://ci.syzbot.org/series/0cb00027-e611-48c2-b3cf-f1fa17fa3ba2
+Fix this by adding a cmd_result_len parameter to ttusb_dec_send_command()
+and the send_command callback in ttusbdecfe_config. Update all callers to
+pass the correct buffer size. Inside ttusb_dec_send_command(), validate
+param_length, ensure actual_len is at least 4 bytes, and check that b[3]
+does not exceed COMMAND_PACKET_SIZE, actual_len - 4, or cmd_result_len.
 
-***
-
-kernel build error
-
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/=
-net-next.git
-base:      e6a5d573d24cd375e09d24f136523cb3cc85c9d3
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
-1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/fee80397-36af-4dbf-9041-4ac6840fc40=
-d/config
-
-net/netfilter/nf_tables_api.c:12172:7: error: incompatible pointer types pa=
-ssing 'struct static_key_true *' to parameter of type 'struct static_key *'=
- [-Wincompatible-pointer-types]
-drivers/gpu/drm/drm_gpuvm.c:1113:8: error: use of undeclared identifier 'gp=
-uvm_scratchpad_key'
-kernel/bpf/syscall.c:2090:42: error: incompatible pointer types passing 'st=
-ruct static_key_true *' to parameter of type 'struct static_key *' [-Wincom=
-patible-pointer-types]
-kernel/bpf/verifier.c:19799:27: error: incompatible pointer types passing '=
-struct static_key_true *' to parameter of type 'struct static_key *' [-Winc=
-ompatible-pointer-types]
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+e1dbaae5eefaa2dfbc35@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=e1dbaae5eefaa2dfbc35
+Link: https://syzkaller.appspot.com/ai_job?id=372cefef-e134-4934-87ec-0fbe6dfbc958
+To: <linux-media@vger.kernel.org>
+To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
+To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
+Cc: "Kees Cook" <kees@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/drivers/media/usb/ttusb-dec/ttusb_dec.c b/drivers/media/usb/ttusb-dec/ttusb_dec.c
+index 825a38759..b54b7b4bb 100644
+--- a/drivers/media/usb/ttusb-dec/ttusb_dec.c
++++ b/drivers/media/usb/ttusb-dec/ttusb_dec.c
+@@ -314,13 +314,17 @@ static u16 crc16(u16 crc, const u8 *buf, size_t len)
+ 
+ static int ttusb_dec_send_command(struct ttusb_dec *dec, const u8 command,
+ 				  int param_length, const u8 params[],
+-				  int *result_length, u8 cmd_result[])
++				  int *result_length, u8 cmd_result[],
++				  int cmd_result_len)
+ {
+ 	int result, actual_len;
+ 	u8 *b;
+ 
+ 	dprintk("%s\n", __func__);
+ 
++	if (param_length > COMMAND_PACKET_SIZE)
++		return -EINVAL;
++
+ 	b = kzalloc(COMMAND_PACKET_SIZE + 4, GFP_KERNEL);
+ 	if (!b)
+ 		return -ENOMEM;
+@@ -366,10 +370,25 @@ static int ttusb_dec_send_command(struct ttusb_dec *dec, const u8 command,
+ 			       __func__, actual_len, b);
+ 		}
+ 
++		if (actual_len < 4) {
++			result = -EIO;
++			goto err_mutex_unlock;
++		}
++
++		if (b[3] > COMMAND_PACKET_SIZE || b[3] > actual_len - 4) {
++			result = -EIO;
++			goto err_mutex_unlock;
++		}
++
+ 		if (result_length)
+ 			*result_length = b[3];
+-		if (cmd_result && b[3] > 0)
++		if (cmd_result && b[3] > 0) {
++			if (b[3] > cmd_result_len) {
++				result = -EIO;
++				goto err_mutex_unlock;
++			}
+ 			memcpy(cmd_result, &b[4], b[3]);
++		}
+ 	}
+ 
+ err_mutex_unlock:
+@@ -389,7 +408,8 @@ static int ttusb_dec_get_stb_state (struct ttusb_dec *dec, unsigned int *mode,
+ 
+ 	dprintk("%s\n", __func__);
+ 
+-	result = ttusb_dec_send_command(dec, 0x08, 0, NULL, &c_length, c);
++	result = ttusb_dec_send_command(dec, 0x08, 0, NULL, &c_length, c,
++					sizeof(c));
+ 	if (result)
+ 		return result;
+ 
+@@ -448,7 +468,7 @@ static void ttusb_dec_set_pids(struct ttusb_dec *dec)
+ 	memcpy(&b[2], &audio, 2);
+ 	memcpy(&b[4], &video, 2);
+ 
+-	ttusb_dec_send_command(dec, 0x50, sizeof(b), b, NULL, NULL);
++	ttusb_dec_send_command(dec, 0x50, sizeof(b), b, NULL, NULL, 0);
+ 
+ 	dvb_filter_pes2ts_init(&dec->a_pes2ts, dec->pid[DMX_PES_AUDIO],
+ 			       ttusb_dec_audio_pes2ts_cb, dec);
+@@ -902,7 +922,7 @@ static int ttusb_dec_set_interface(struct ttusb_dec *dec,
+ 			break;
+ 		case TTUSB_DEC_INTERFACE_IN:
+ 			result = ttusb_dec_send_command(dec, 0x80, sizeof(b),
+-							b, NULL, NULL);
++							b, NULL, NULL, 0);
+ 			if (result)
+ 				return result;
+ 			result = usb_set_interface(dec->udev, 0, 8);
+@@ -1021,7 +1041,7 @@ static int ttusb_dec_start_ts_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 
+ 	}
+ 
+-	result = ttusb_dec_send_command(dec, 0x80, sizeof(b0), b0, NULL, NULL);
++	result = ttusb_dec_send_command(dec, 0x80, sizeof(b0), b0, NULL, NULL, 0);
+ 	if (result)
+ 		return result;
+ 
+@@ -1056,7 +1076,7 @@ static int ttusb_dec_start_sec_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 	memcpy(&b0[5], &dvbdmxfeed->filter->filter.filter_value[0], 1);
+ 
+ 	result = ttusb_dec_send_command(dec, 0x60, sizeof(b0), b0,
+-					&c_length, c);
++					&c_length, c, sizeof(c));
+ 
+ 	if (!result) {
+ 		if (c_length == 2) {
+@@ -1114,7 +1134,7 @@ static int ttusb_dec_stop_ts_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 	struct ttusb_dec *dec = dvbdmxfeed->demux->priv;
+ 	u8 b0[] = { 0x00 };
+ 
+-	ttusb_dec_send_command(dec, 0x81, sizeof(b0), b0, NULL, NULL);
++	ttusb_dec_send_command(dec, 0x81, sizeof(b0), b0, NULL, NULL, 0);
+ 
+ 	dec->pva_stream_count--;
+ 
+@@ -1135,7 +1155,7 @@ static int ttusb_dec_stop_sec_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 	list_del(&finfo->filter_info_list);
+ 	spin_unlock_irqrestore(&dec->filter_info_list_lock, flags);
+ 	kfree(finfo);
+-	ttusb_dec_send_command(dec, 0x62, sizeof(b0), b0, NULL, NULL);
++	ttusb_dec_send_command(dec, 0x62, sizeof(b0), b0, NULL, NULL, 0);
+ 
+ 	dec->filter_stream_count--;
+ 
+@@ -1238,7 +1258,7 @@ static int ttusb_init_rc( struct ttusb_dec *dec)
+ 	if (usb_submit_urb(dec->irq_urb, GFP_KERNEL))
+ 		printk("%s: usb_submit_urb failed\n",__func__);
+ 	/* enable irq pipe */
+-	ttusb_dec_send_command(dec,0xb0,sizeof(b),b,NULL,NULL);
++	ttusb_dec_send_command(dec, 0xb0, sizeof(b), b, NULL, NULL, 0);
+ 
+ 	return 0;
+ }
+@@ -1354,7 +1374,7 @@ static int ttusb_dec_boot_dsp(struct ttusb_dec *dec)
+ 	firmware_csum_ns = htons(firmware_csum);
+ 	memcpy(&b0[6], &firmware_csum_ns, 2);
+ 
+-	result = ttusb_dec_send_command(dec, 0x41, sizeof(b0), b0, NULL, NULL);
++	result = ttusb_dec_send_command(dec, 0x41, sizeof(b0), b0, NULL, NULL, 0);
+ 
+ 	if (result) {
+ 		release_firmware(fw_entry);
+@@ -1395,7 +1415,7 @@ static int ttusb_dec_boot_dsp(struct ttusb_dec *dec)
+ 		}
+ 	}
+ 
+-	result = ttusb_dec_send_command(dec, 0x43, sizeof(b1), b1, NULL, NULL);
++	result = ttusb_dec_send_command(dec, 0x43, sizeof(b1), b1, NULL, NULL, 0);
+ 
+ 	release_firmware(fw_entry);
+ 	kfree(b);
+@@ -1621,10 +1641,13 @@ static void ttusb_dec_exit_filters(struct ttusb_dec *dec)
+ 
+ static int fe_send_command(struct dvb_frontend* fe, const u8 command,
+ 			   int param_length, const u8 params[],
+-			   int *result_length, u8 cmd_result[])
++			   int *result_length, u8 cmd_result[],
++			   int cmd_result_len)
+ {
+ 	struct ttusb_dec* dec = fe->dvb->priv;
+-	return ttusb_dec_send_command(dec, command, param_length, params, result_length, cmd_result);
++	return ttusb_dec_send_command(dec, command, param_length, params,
++				      result_length, cmd_result,
++				      cmd_result_len);
+ }
+ 
+ static const struct ttusbdecfe_config fe_config = {
+diff --git a/drivers/media/usb/ttusb-dec/ttusbdecfe.c b/drivers/media/usb/ttusb-dec/ttusbdecfe.c
+index 215221370..b013d6dfc 100644
+--- a/drivers/media/usb/ttusb-dec/ttusbdecfe.c
++++ b/drivers/media/usb/ttusb-dec/ttusbdecfe.c
+@@ -44,7 +44,8 @@ static int ttusbdecfe_dvbt_read_status(struct dvb_frontend *fe,
+ 
+ 	*status=0;
+ 
+-	ret=state->config->send_command(fe, 0x73, sizeof(b), b, &len, result);
++	ret = state->config->send_command(fe, 0x73, sizeof(b), b, &len, result,
++					  sizeof(result));
+ 	if(ret)
+ 		return ret;
+ 
+@@ -85,7 +86,7 @@ static int ttusbdecfe_dvbt_set_frontend(struct dvb_frontend *fe)
+ 
+ 	__be32 freq = htonl(p->frequency / 1000);
+ 	memcpy(&b[4], &freq, sizeof (u32));
+-	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL);
++	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL, 0);
+ 
+ 	return 0;
+ }
+@@ -130,7 +131,7 @@ static int ttusbdecfe_dvbs_set_frontend(struct dvb_frontend *fe)
+ 	lnb_voltage = htonl(state->voltage);
+ 	memcpy(&b[28], &lnb_voltage, sizeof(u32));
+ 
+-	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL);
++	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL, 0);
+ 
+ 	return 0;
+ }
+@@ -149,7 +150,7 @@ static int ttusbdecfe_dvbs_diseqc_send_master_cmd(struct dvb_frontend* fe, struc
+ 
+ 	state->config->send_command(fe, 0x72,
+ 				    sizeof(b) - (6 - cmd->msg_len), b,
+-				    NULL, NULL);
++				    NULL, NULL, 0);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/media/usb/ttusb-dec/ttusbdecfe.h b/drivers/media/usb/ttusb-dec/ttusbdecfe.h
+index 73828bb22..96600ad4c 100644
+--- a/drivers/media/usb/ttusb-dec/ttusbdecfe.h
++++ b/drivers/media/usb/ttusb-dec/ttusbdecfe.h
+@@ -14,7 +14,8 @@ struct ttusbdecfe_config
+ {
+ 	int (*send_command)(struct dvb_frontend* fe, const u8 command,
+ 			    int param_length, const u8 params[],
+-			    int *result_length, u8 cmd_result[]);
++			    int *result_length, u8 cmd_result[],
++			    int cmd_result_len);
+ };
+ 
+ extern struct dvb_frontend* ttusbdecfe_dvbs_attach(const struct ttusbdecfe_config* config);
 
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
 
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
+base-commit: 8d3ae59288f1e7d58d76558a6ee96d533bc5019f
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
 
-The email will later be sent to:
-[airlied@gmail.com akpm@linux-foundation.org aliceryhl@google.com andrii@ke=
-rnel.org ast@kernel.org boqun@kernel.org boris.brezillon@collabora.com bpf@=
-vger.kernel.org coreteam@netfilter.org dakr@kernel.org daniel@iogearbox.net=
- davem@davemloft.net devnull@kernel.org dri-devel@lists.freedesktop.org edd=
-yz87@gmail.com edumazet@google.com emil@etsalapatis.com fw@strlen.de horms@=
-kernel.org jim.cromie@gmail.com john.fastabend@gmail.com jolsa@kernel.org k=
-uba@kernel.org linux-kernel@vger.kernel.org linux-mm@kvack.org longman@redh=
-at.com maarten.lankhorst@linux.intel.com martin.lau@linux.dev matthew.brost=
-@intel.com memxor@gmail.com mingo@redhat.com mripard@kernel.org netdev@vger=
-.kernel.org netfilter-devel@vger.kernel.org pabeni@redhat.com pablo@netfilt=
-er.org peterz@infradead.org phil@nwl.cc simona@ffwll.ch song@kernel.org tho=
-mas.hellstrom@linux.intel.com tzimmermann@suse.de will@kernel.org yonghong.=
-song@linux.dev]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
