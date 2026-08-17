@@ -1,129 +1,115 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi2-f11.google.com (mail-oi2-f11.google.com [74.125.231.203])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85D0B3033E7;
-	Mon, 17 Aug 2026 14:09:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69B062C11DE
+	for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 15:04:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.231.203
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786975791; cv=none; b=E2/dJUnADlJu5RCWpP+nJFeIE0lJkP+EZRLrKWRjAN6BJxtfp8TUGOKnpgkTVF0mUwIp6dOYqjNNB+2TiHrSMpc8K3eGaeMuT7ZW74aqvlgXdctFF/lV4MRfUJooLUhtKs27IklSDOk1+EgsO8FUKutnia1mJ2GbOC/BzMAOhVg=
+	t=1786979053; cv=none; b=euWHg5o2IM5pVUMJ0Z2LllA2VQsGijgguN98DBJjVZ+zuZDP/+lNbLOPzd5Q2Q3fCcgM0AOlLsVOPxtEcq0zLROdB4uQ8fDH7W9S+7IzaqQnm6nElsOmvt5duHxaqakPVTI+rTFO6cA/t7FsCAhkrJQku8olEi87RS4a2kN/EzI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786975791; c=relaxed/simple;
-	bh=ikrN+WOvyP/q7nZDyj0/RmCJO4FSqpU5YZZG++6JWrA=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=qmxIDaG56c4mSN19wD45OtaJ+beOMaHgV1HQ/cuIh3Vi0KPYt79qcWpkZupfTFusgGWNY68otbvkKUinFi1J+EC2rc2DLrt6xt2ODO7ghYEAlZ8ZJHzCVXZhizA77IH2m2bTuVyf3XR9cdlLhW0701SaqnCfYEK2/s7FbY61NXQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FfgdM2vR; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786979053; c=relaxed/simple;
+	bh=Ur+cKiVbAh3ZsrGizOKH+9+i3VfuiVrSQMhUYBEr/Ao=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=RfDeKNigH64RqT/9XVjA04pKdofCNem3Y90kilxPK842jfUzMy9wh4j3SfmlaNUYlCXqARSEH24NC6/JC4YFGgvIOlLPQsOFx8n3MG5I3ookyzHdDni8VRoxLZ1tYnycAiENxtPuWVtP7G5cHtNlfkxbIoQBrZHrR6CKfOnVFYw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk; spf=pass smtp.mailfrom=kernel.dk; dkim=pass (2048-bit key) header.d=kernel-dk.20251104.gappssmtp.com header.i=@kernel-dk.20251104.gappssmtp.com header.b=m/c0mAFr; arc=none smtp.client-ip=74.125.231.203
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel.dk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FfgdM2vR"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id CBECD1F000E9;
-	Mon, 17 Aug 2026 14:09:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786975790;
-	bh=JiAxXXFG28McNCClUPtlPyvc899bEhfijY5AIAjgWcs=;
-	h=From:To:Cc:Subject:Date;
-	b=FfgdM2vRej4a4S810ZLyOoFABhp7ps8xdWtEBz8FB87YwrviIle1E0d75DeEOs4X8
-	 4bIdcPFJ+C5R54pqv9Z27LZuUrrY6ha+n2bWOERLLLI18c2M9OgK0PAwz/wNyaVsL5
-	 MHVEu8EUroHtnTlY5q4dgFwKmlCbesef0Q4euoTfRJge0jcjottfwHvtodlw9eba3x
-	 UZfqR6PUB7Jn6Cm1xRii4VTGCnTuPiAokA+0TROmjQ6yxZZViftGR+j14qef2d8Y5M
-	 qPdayqQWA9SC4V5PY3+rF0GJ772CTVnnBFd+t3C/gNcdQsT7/qhYfUA7bgIJTfX0da
-	 HOW9JHodVGh0g==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Aleksandr Nogikh <nogikh@google.com>, <linux-media@vger.kernel.org>, "Mauro Carvalho Chehab" <mchehab@kernel.org>, "Benjamin Gaignard" <benjamin.gaignard@collabora.com>
-Cc: hverkuil+cisco@kernel.org, johan@kernel.org, kees@kernel.org, linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Subject: [PATCH] media: usbtv: fix null-pointer dereference on disconnect
-Message-ID: <df73ba45-4d7a-4cf9-bff4-821124045c55@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel-dk.20251104.gappssmtp.com header.i=@kernel-dk.20251104.gappssmtp.com header.b="m/c0mAFr"
+Received: by mail-oi2-f11.google.com with SMTP id 5614622812f47-4b25c60f07cso893124b6e.1
+        for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 08:04:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20251104.gappssmtp.com; s=20251104; t=1786979049; x=1787583849; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:to:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=hzh00wSs4akcYyh6M7Ta6jCsY96mvygh9fJXvzCpDIs=;
+        b=m/c0mAFraLCxl1JUd2Hn8suEi++m9LUFTHoAA3WXfV/QDMxMqiJoOr59P8T0h6P6SB
+         Us8DtgYHk6gVHSDvoHYEw2adT0C4Bjo5Uf+CIQmvZmW5NWWT2wudEYQqHceKdO72t5Fy
+         oa9mtfUaWRVQAWtRH+LL+8GL9By1ESrPBjYpY3nRlixuC79c/GuPow0cbLK15GL0MwF7
+         F3HQywJZ/R69eLXcwAweYROXighnu2lDbC7BrQqfIuurgETFO5KoSYknpRnm2PqQDk3O
+         IEWvv6o3K1sWpv6Iitbhg9f8D10bnoNd0kNMrxpSrlwDbzUoo7frdmB0u9c7tysHK+iz
+         lX/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786979049; x=1787583849;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=hzh00wSs4akcYyh6M7Ta6jCsY96mvygh9fJXvzCpDIs=;
+        b=EqBMkjBRglBCfRyuZX0X+4D/HwHiOJb+jZOdxacdcsWtmFRG4eZhFoXly6q/98I3/z
+         yHYsEL7rjlQQE8E/BWW9TYQZBFR5qqPw3B6EljsR0WVDAicJPCGhEyn51K6ju3+2j9Gs
+         Ztp/HpONl6Lf8vBq8ARtatKO+LxVdh3u0biDswz/NriNjQwk/YZhoUQ5ityivIL9Pjav
+         oA+318BK13Zq7+/mmHb1njEeNwUcnS0OLVG2qNh5eoLS/dkdkzIhkcJqat8useXK1/qZ
+         ophhq1Cda57b3JiLIS6eDK/0ttn6uKzXuf1hDdq3IKZc/0EEt3rwyV/30PJCajNjjVPN
+         787w==
+X-Forwarded-Encrypted: i=1; AHgh+Ro36ErDfKwYWdYC6HdNt3ss69meQTFxaLmts5K/sAvCIa/zF6UF/REN25njhfVKmV7o0p93Yqo=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy2FxdUUKFM7oAIwGvINzGTn/332ti4v2ukcz58wwsp2m4qvkER
+	ajoofkT2XOr6UX8BzAsg8pt2lLXYP7tX8vtMhObHR010SbbRfdvJfxWSEIqWazLhiUg=
+X-Gm-Gg: AR+sD12VcLsIEfZB6x/i7zE/8et+CdyATw9iW23EN96TpTJkAwyGCbBBTw6WiH8UgGK
+	1xtroK4X4NhabF1KQ4LbmOEnPS+Hiqp+y6PyE4AxeebY8H683kIzqtwlc++B22xVHf7O7L0Ameq
+	PGjD0LM/i+bYXyTrWzgFPD0n1OxyEWXjx4nQKFIAZXikIsvT1Yq9uetVU/woRgANaEK0PdNj+4v
+	92v+MDvYAOKquFLjlbRocywHqRaYDpz7p+tc9sVFmP2GdKizUEvFkiMyTeNeaRbZ0yaXKR4Abju
+	ZN8WCysMUdjD/f73xDxorVf85l5J/8NagE5udzLLBlNol5kkQ0EtY1G/0Yi+UQFnR9D4z/3fWN5
+	EYHaOiMbK19/kMPB4mf30HGkcVGaeFru5EzOp1bpmYAyE6+Zb4fY00iPQcO4+Pan/KjplE6f6yE
+	B1F0mTpcsWargLFYyfQihkGYRhsQFhu+7VWo7LeKHw4oJ06Fw7riCmItqJznJMqSuOMaA6wv28y
+	ymV1YBR9RNHHbtHoHzCVteTSRsv+jeDgwTzAlWG73vCuQ4=
+X-Received: by 2002:a05:6808:238b:b0:48b:1e49:24a8 with SMTP id 5614622812f47-4b241cbe2e6mr24394079b6e.11.1786979049030;
+        Mon, 17 Aug 2026 08:04:09 -0700 (PDT)
+Received: from [192.168.1.150] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4b290a3d048sm1165264b6e.1.2026.08.17.08.04.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Aug 2026 08:04:08 -0700 (PDT)
+Message-ID: <7c6ce54c-ec12-4754-a36e-d5550f8337b0@kernel.dk>
+Date: Mon, 17 Aug 2026 09:04:06 -0600
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [syzbot] [usb?] KASAN: slab-use-after-free Read in ep_open
+To: syzbot <syzbot+df9e891bf8ea586f846b@syzkaller.appspotmail.com>,
+ asml.silence@gmail.com, brauner@kernel.org, gregkh@linuxfoundation.org,
+ io-uring@vger.kernel.org, jack@suse.cz, kartikey406@gmail.com,
+ kees@kernel.org, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+ mjguzik@gmail.com, nogikh@google.com, stern@rowland.harvard.edu,
+ syzbot@kernel.org, syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com,
+ syzkaller-upstream-moderation@googlegroups.com, torvalds@ppc970.osdl.org,
+ viro@zeniv.linux.org.uk
+References: <6a830fab.dbb3a75c.20434b.005d.GAE@google.com>
+Content-Language: en-US
+From: Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <6a830fab.dbb3a75c.20434b.005d.GAE@google.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Mon, 17 Aug 2026 14:09:49 +0000 (UTC)
+Content-Transfer-Encoding: 7bit
 
-From: Aleksandr Nogikh <nogikh@google.com>
+On 8/17/26 7:42 AM, syzbot wrote:
+> syzbot has bisected this issue to:
+> 
+> commit aa00f67adc2c0d6439f81b5a81ff181377c47a7e
+> Author: Jens Axboe <axboe@kernel.dk>
+> Date:   Tue Oct 22 19:47:00 2024 +0000
+> 
+>     io_uring: add support for fixed wait regions
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10e60679580000
+> start commit:   9a143525f62b Merge tag 'ata-7.2-rc7' of git://git.kernel.o..
+> git tree:       upstream
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=12e60679580000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=14e60679580000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=c44651ea7dd2f307
+> dashboard link: https://syzkaller.appspot.com/bug?extid=df9e891bf8ea586f846b
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=120defb9580000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16323fb9580000
+> 
+> Reported-by: syzbot+df9e891bf8ea586f846b@syzkaller.appspotmail.com
+> Fixes: aa00f67adc2c ("io_uring: add support for fixed wait regions")
 
-A null-pointer dereference can occur in usb_make_path() when called from
-usbtv_querycap() (and other ioctl handlers) during device disconnection.
+That looks like nonsense, I strongly suspect it's a race and hence your
+bisection ends up being mostly useless as it sends you in random directions.
 
-Oops: general protection fault, probably for non-canonical address
-0xdffffc000000000a: 0000 [#1] SMP KASAN NOPTI
-KASAN: null-ptr-deref in range [0x0000000000000050-0x0000000000000057]
-RIP: 0010:usb_make_path include/linux/usb.h:985 [inline]
-RIP: 0010:usbtv_querycap+0x9c/0x100
-drivers/media/usb/usbtv/usbtv-video.c:612
-...
-Call Trace:
- <TASK>
- v4l_querycap+0x236/0x470 drivers/media/v4l2-core/v4l2-ioctl.c:1106
- __video_do_ioctl+0x8af/0xc70 drivers/media/v4l2-core/v4l2-ioctl.c:3133
- video_usercopy+0x860/0x1430 drivers/media/v4l2-core/v4l2-ioctl.c:3475
- v4l2_ioctl+0x18d/0x1e0 drivers/media/v4l2-core/v4l2-dev.c:366
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
-
-This happens due to a race condition between the USB device disconnect
-routine (usbtv_disconnect()) and V4L2 ioctls. When the device is
-disconnected, usbtv_disconnect() sets usbtv->udev = NULL without holding
-the usbtv->v4l2_lock mutex. Concurrently, an ioctl handler like
-usbtv_querycap() can be executing under the v4l2_lock and attempt to use
-usbtv->udev, leading to a crash.
-
-To fix this, move the usbtv->udev = NULL assignment into usbtv_video_free()
-and protect it with mutex_lock(&usbtv->v4l2_lock). This ensures that no
-non-queue ioctl handler can run concurrently with the pointer being
-nullified. If an ioctl is already running, the mutex will block the
-disconnect path until the ioctl finishes. If an ioctl is blocked waiting
-for the lock, it will acquire it after the disconnect routine releases it,
-but will then check video_is_registered() (which was cleared by
-vb2_video_unregister_device()) and safely return -ENODEV.
-
-Acquiring v4l2_lock after vb2_video_unregister_device() avoids
-reintroducing a historical deadlock issue, and usbtv_audio_free() remains
-safe as it is called before usbtv_video_free().
-
-Fixes: 65e6a2773d65 ("media: usbtv: Remove useless locks in usbtv_video_free()")
-Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+37a57a84893052ab6071@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=37a57a84893052ab6071
-Link: https://syzkaller.appspot.com/ai_job?id=5abbe65a-5853-4bc2-9135-5c75f88d51ed
-Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
-
----
-diff --git a/drivers/media/usb/usbtv/usbtv-core.c b/drivers/media/usb/usbtv/usbtv-core.c
-index 6c4facf4f..b33b54fdb 100644
---- a/drivers/media/usb/usbtv/usbtv-core.c
-+++ b/drivers/media/usb/usbtv/usbtv-core.c
-@@ -136,8 +136,6 @@ static void usbtv_disconnect(struct usb_interface *intf)
- 	usbtv_audio_free(usbtv);
- 	usbtv_video_free(usbtv);
- 
--	usbtv->udev = NULL;
--
- 	/* the usbtv structure will be deallocated when v4l2 will be
- 	   done using it */
- 	v4l2_device_put(&usbtv->v4l2_dev);
-diff --git a/drivers/media/usb/usbtv/usbtv-video.c b/drivers/media/usb/usbtv/usbtv-video.c
-index de0328100..ef066df71 100644
---- a/drivers/media/usb/usbtv/usbtv-video.c
-+++ b/drivers/media/usb/usbtv/usbtv-video.c
-@@ -968,5 +968,9 @@ void usbtv_video_free(struct usbtv *usbtv)
- 	vb2_video_unregister_device(&usbtv->vdev);
- 	v4l2_device_disconnect(&usbtv->v4l2_dev);
- 
-+	mutex_lock(&usbtv->v4l2_lock);
-+	usbtv->udev = NULL;
-+	mutex_unlock(&usbtv->v4l2_lock);
-+
- 	v4l2_device_put(&usbtv->v4l2_dev);
- }
-
-
-base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
 -- 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Jens Axboe
+
