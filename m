@@ -1,150 +1,218 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28B2C3033E7
-	for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 14:03:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786975431; cv=none; b=gSB+3qAxTnAqaeUpIWScVkCiC2UIpabqbOGhLkk6XJCPO/V/DLA+/f+PyBRwOd4XfkDXSmAafs+n2Ef8LZKr3gKEZcxCXGvToKjQMhF3+DspHTvdpUQR60Jjd7kJNS8evE+S4VWHWDIF0nV2GiCOgFGIafEV2dKrnbT033NU16A=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786975431; c=relaxed/simple;
-	bh=u1RJBSa7RCnjoFDPZqv2ClD/2TvL8fAcJbIplsKrMP4=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ckYCVwq6a6AgpyVi92zCsRRO/Xo46avlv/NxBnug2hTp9fLi7kFf2HAhbauWVDIBNzN6RKANbyhOnqpkWfnWQHxi7/Ot2E/bFRWAUDwI4ORik7oPpFMGNrou4sbwzuOylhUWtaiaGZyQCewTwGBYkxO68IwJP3VplTTpFajRImc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jjP36DRH; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29BC5285061
+	for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 14:04:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786975479; cv=pass; b=s97a53A5CkQPa8/JBVmkU2WIWsC0L0NaFXstZ+jGYjJ2kswIwK2CsakBfpKDYuSQvOJuSPlI9wJ9YRZYcSlIoF8ZlcM6i+vMRgKA6LybmynHlUgHg5XX9u9KfDzulItZQ9M96ioBtJtPGJU16gU1L/ANR27n68+YoP3KtYIg4TU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786975479; c=relaxed/simple;
+	bh=BE4maXQgFKNpUctNwwGrqjVBbdmOrX4tS9VbQM95J9c=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=tS0rAC5WpAjLwpso2X6szXh9sinHrCZD2bwSp/SI0AVS2PJjz8+91qiNX4NeUXprPQ/lkCCR4ba/Iri5QDAwkl6hq3CyL3tycXSuav4hLtCNL/D/T8zXhMy1mG8TiQ7YvJrzGQ7caso6GC7U35DxPZJxTYgPOwCsCyUeqUh29C4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ItZjQIQy; arc=pass smtp.client-ip=209.85.161.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jjP36DRH"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id D283A1F00A3A;
-	Mon, 17 Aug 2026 14:03:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786975430;
-	bh=0EafBsKAThkHo3TLkqnOxTd8l1qp7/hNx1TmVp3hX/0=;
-	h=From:To:Cc:Subject:Date;
-	b=jjP36DRHMKVMKPuAKZ72g0ImVZCA8yuVA4PLpo7NYUetSgY0XduO/bnxPAHxilhyF
-	 k4llfuSmWxr1P+trHPS7bPu/NINHur8rTHDspBF/eE+qUGZMHi9p2ELGRPEum53W5/
-	 GEpGN48cbT8sD7ZpymECaBZAnt9TX+18uwa9IFzVuvKQz5k3fdPc6MTX6X+7m93vFb
-	 jpRicQYqtGaOlqw0C+rGhdoPsuoiRhsh+LSI3sbqXZd7qhv+9DvB0gxbHVvCWgnNl+
-	 lKG81dMB5Q4GbtYY29sdoe+C7miLkIVoN+LsGowAeq2CGLEgOnxh+PNCRfCA9EIpQN
-	 4Zuvn4ELxS10g==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: nogikh@google.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] e1000e: check reset_hw() return value in e1000_probe()
-Message-ID: <f666ec18-0a7c-48ad-a5b9-636804e01f3c@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ItZjQIQy"
+Received: by mail-oo1-f50.google.com with SMTP id 006d021491bc7-6b051516aaaso2190031eaf.2
+        for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 07:04:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786975477; cv=none;
+        d=google.com; s=arc-20260327;
+        b=DyQNp1bBjii6fojQmfG2HhBgQcfIxmHBsnqu3dFM/HtYMC6Zjha6WGVLRBMJjNA6TJ
+         slULdlBIkLs1oTGlgQsF3OI1S8YXyBaERpHP05veO6UNSW4/K4Fq1ptFkCywy/q1tZcf
+         lDQ7V4FP4TUCtjnoBARG/TpBsmrtE+3a2uOgisZaXr7XrsvVlbsZawWT/0n9K8hs/mCT
+         CvpOR/6SYBlLtPFQQEu73uQVOP/hxYtnpdsenktCThs7VAaPgg6xXuIYxM8I5n+BMwlS
+         t5p8aJvsD3w+kkQ/i69ntsb0nqWY5FsgCHuYTaqr00Vux546/yAmcGKYGvaTaUfRsAEJ
+         sFYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=aP+6MoQFs4CQ8trb/G1U2gW7Ry1QTrDoqABKqNg1gB8=;
+        fh=jiG/kJSI8xooOy3gn0HQZiRKci3ZW56oB0sopl1eIys=;
+        b=QAFRowUYZIJiud+nlPhvVVn0j0nT12R/4yREgjD2QwPBvb8wCz/DkWwKPv5yxHw5RD
+         2S7fdVr5L99MMsaeV/p5U/p/sVLqQge1iHgAlSK5CHTIBR6+baUtxHq+L+/tdktOCD8h
+         KxivoOWKn5e3dn6kGhJR5H5KNIvIZouvIdMm8NrLfLsKvkdZUbIpMZr9wrsBJolW82FJ
+         gwQbXEteh/6I34sgLBeNL4eDdd/9TUrXZE9VrO3st86rcCdkoyTtjIhJk2Wmhg6CPbdv
+         S2obV/fF/KEx4tRSGdL2sIh3EVbAV1FKoqSwXgbRcvJOfaxLS3UwOgPvNdYsayLfBrij
+         mA9g==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1786975477; x=1787580277; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=aP+6MoQFs4CQ8trb/G1U2gW7Ry1QTrDoqABKqNg1gB8=;
+        b=ItZjQIQy9DybGYpMiiKR2dg33UTlbLoXC8dC0ymt38oO9TVB/hGuyXJDiBS9YJRzrs
+         VglFLs19vyxk1XOEdgIunUBeFsNXFlbQDfl7R7Z23TLoI3i4ZCFLDHvo0Vf/w9bJS+Y+
+         g24SiP2wtQ1fmgFkpVtc4IotNNmrmJWK8MDCG4kcrVeq/E5uGdlv129WUi2Y8kHbGr1t
+         NeTLsdhN62AQNQMbRVIh3a4gPi4wWps5CZQ/SvxZlC0kI3/eyiKeuJzHE44D7SmCn8Vi
+         38aqn0JmgrIC0v2qAxhW4W80c01AjGYyULRQR8IV7zzK3Y4wananUUmRwHrh/RlyjmJk
+         Rgtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786975477; x=1787580277;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=aP+6MoQFs4CQ8trb/G1U2gW7Ry1QTrDoqABKqNg1gB8=;
+        b=l7gTKT7egof8RQw/WSJh966iQOAqzGd1y1cn8jnVkq/BnSQrVUWiqMCcpZmQ8bwPys
+         lfiwcJopUt+IHpcsw+LwaM9tr5Ix8D9g3vk0BjkN/yhiY2OF7jjOyWvQKzC9xPnlKHBV
+         tjru+4v6A/zkbHE4FZfcndq6th8a30znUuE1J0ERQenpN9m3BqKVRfdSfbprtdH/gAlT
+         uDX3SnHDSDeUv9cVDFtcmUlbHojtGgl/9LMPmu+apYwHoitrA2SsF0lc8T5W9C9JfTFx
+         YK76qvXqRkj+nIcaz/yIPT1PdtGGYRxbf44FFwWNBmO3qfnJENUm6cogdozqMXKhv7Zd
+         S+pw==
+X-Forwarded-Encrypted: i=1; AHgh+RoaN5YbwfHsNnWEiCJJRc2eSVcqCAZ4LzgDBC3zx2kFJ7iUreoLIFVIS1Dww6bKrofCFoHoCAo=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzjQpeNAbfWSkVBA31LSyV4YkGg30vZRHYeuHWhJ2CAcXNIfcYG
+	XdrZxNv9wWznZS5b0E9VgdL4/x1cS/KU39psOiNlnKimCcvF7O0TtWX+AfTQ3I4HnEcK7ARoCQU
+	XI0x8HZMn74ahed5L4rvZTIvfY4xlEvY2RdVNuU6t
+X-Gm-Gg: AR+sD11mhujQwDXu7c7L81/sNjHx4TXaKA61c5ONp/nzq8f8ciR/insLNnlRyQYT39m
+	NHt503ICq/wwDgmnaMJS8P83xrF2Bq/jROW9NlWIunKtZqefvIjyUIQ8l81lS+ZNR/7YozQ826D
+	xamhvZWp/eD2jbr4gM1XKxyjaDd/oeS3L3PK30sJJBLi2gOHAKoEethZg0hRLD/MZbrB+zbKges
+	5FjznvQr8hPSBiKDk5tx+Dv5+4slbfJhvhpWM/Nkac4qAWClzZLe4WiO5CX9h9t9tzfg88dYADo
+	3WXX2ih5uvtcs0KICiyQt2zBxJ7WBNcmZ8nPicq+hUk+ITGU5v8a5FZFPb/al1CshUAeUm06U+2
+	TKfvojmaeNKSzhkwKakT0fXV4EbpQSC3Gqx51sX4v2OgRywhnPhZwPOpDCAW2zh6/ot8ItvyBmr
+	JAEV4p+9wWGCU=
+X-Received: by 2002:a05:6820:1c8a:b0:6b0:4c0a:c8bd with SMTP id
+ 006d021491bc7-6b11e222d57mr412870eaf.26.1786975476388; Mon, 17 Aug 2026
+ 07:04:36 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Mon, 17 Aug 2026 14:03:49 +0000 (UTC)
+References: <20d7b17b-9c29-4c28-95a4-e4377e35f440@mail.kernel.org>
+In-Reply-To: <20d7b17b-9c29-4c28-95a4-e4377e35f440@mail.kernel.org>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Mon, 17 Aug 2026 16:04:25 +0200
+X-Gm-Features: AcwNN1Ug6dgw7aNQhaAEyyqnLCzIPILZJtTvnMokHtStbpIJQyj1HBx5FixBczk
+Message-ID: <CANp29Y6HAAavTb1yeiRL-ybGwnfA-W1GYjDNYTFdTYT4cndQ_g@mail.gmail.com>
+Subject: Re: [PATCH RFC] media: usbtv: fix null-pointer dereference on disconnect
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-When forcing the e1000e driver to bind to an incompatible non-PCIe device
-(such as the e1000 82540EM) via sysfs driver_override, a mismatch in
-hardware register layouts occurs. This causes the driver to blindly retry
-NVM reads and wait for a hardware response that never comes. When multiple
-threads attempt this concurrently, they serialize on the device lock, and
-the cumulative wait time easily exceeds the kernel's hung task timeout,
-leading to a system crash:
+#syz upstream
 
-INFO: task syz.2.41:7507 blocked for more than 143 seconds.
-...
-Call Trace:
- <TASK>
- __schedule+0x17e7/0x5630 kernel/sched/core.c:7234
- schedule+0x164/0x2b0 kernel/sched/core.c:7326
- __mutex_lock_common kernel/locking/mutex.c:726 [inline]
- __mutex_lock+0x7bf/0x1550 kernel/locking/mutex.c:821
- device_lock include/linux/device.h:1104 [inline]
- __device_driver_lock drivers/base/dd.c:1171 [inline]
- device_driver_attach+0xd5/0x1d0 drivers/base/dd.c:1202
- bind_store+0x1d0/0x220 drivers/base/bus.c:267
-...
-NMI backtrace for cpu 1
-...
-RIP: 0010:e1000e_poll_eerd_eewr_done
-drivers/net/ethernet/intel/e1000e/nvm.c:133 [inline]
-RIP: 0010:e1000e_read_nvm_eerd+0xdf/0x300
-drivers/net/ethernet/intel/e1000e/nvm.c:311
-...
-Call Trace:
- <TASK>
- e1000_read_nvm drivers/net/ethernet/intel/e1000e/e1000.h:588 [inline]
- e1000e_validate_nvm_checksum_generic+0xcb/0x3e0
- drivers/net/ethernet/intel/e1000e/nvm.c:553
- e1000_validate_nvm_checksum_82571+0x176/0x290
- drivers/net/ethernet/intel/e1000e/82571.c:787
- e1000_validate_nvm_checksum drivers/net/ethernet/intel/e1000e/e1000.h:577
- [inline]
- e1000_probe+0x12f8/0x2b20 drivers/net/ethernet/intel/e1000e/netdev.c:7590
- local_pci_probe drivers/pci/pci-driver.c:332 [inline]
- pci_call_probe drivers/pci/pci-driver.c:394 [inline]
- __pci_device_probe drivers/pci/pci-driver.c:455 [inline]
- pci_device_probe+0x431/0xc90 drivers/pci/pci-driver.c:489
- call_driver_probe drivers/base/dd.c:-1 [inline]
- really_probe+0x254/0xae0 drivers/base/dd.c:706
- __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
- device_driver_attach+0xe0/0x1d0 drivers/base/dd.c:1203
- bind_store+0x1d0/0x220 drivers/base/bus.c:267
-
-Fix this by checking the return value of adapter->hw.mac.ops.reset_hw() in
-e1000_probe() and aborting the probe if it fails. This prevents the driver
-from proceeding to the NVM checksum validation loop, which is responsible
-for the massive delay.
-
-Fixes: bc7f75fa9788 ("[E1000E]: New pci-express e1000 driver (currently for ICH9 devices only)")
-Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+8ce4dba751e79facdc38@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=8ce4dba751e79facdc38
-Link: https://syzkaller.appspot.com/ai_job?id=b99283dd-d283-4051-ad09-bed857e6c35f
-To: "Andrew Lunn" <andrew+netdev@lunn.ch>
-To: "Tony Nguyen" <anthony.l.nguyen@intel.com>
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: <intel-wired-lan@lists.osuosl.org>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Przemek Kitszel" <przemyslaw.kitszel@intel.com>
-To: "Auke Kok" <auke-jan.h.kok@intel.com>
-Cc: <linux-kernel@vger.kernel.org>
-
----
-v2:
-- Removed pci_is_pcie() device check.
-- Preserved original error code returned by reset_hw() instead of overriding with -EIO.
-
-v1:
-https://lore.kernel.org/all/c7465765-2009-4803-b5de-69a84efcdeb6@mail.kernel.org/T/
----
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 844f31ab3..ae287ed53 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -7581,7 +7581,11 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	/* before reading the NVM, reset the controller to
- 	 * put the device in a known good starting state
- 	 */
--	adapter->hw.mac.ops.reset_hw(&adapter->hw);
-+	err = adapter->hw.mac.ops.reset_hw(&adapter->hw);
-+	if (err) {
-+		dev_err(&pdev->dev, "Hardware Error\n");
-+		goto err_hw_init;
-+	}
- 
- 	/* systems with ASPM and others may see the checksum fail on the first
- 	 * attempt. Let's give it a few tries
-
-
-base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On Mon, Aug 17, 2026 at 1:09=E2=80=AFAM 'syzbot' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
+>
+> A null-pointer dereference can occur in usb_make_path() when called from
+> usbtv_querycap() (and other ioctl handlers) during device disconnection.
+>
+> Oops: general protection fault, probably for non-canonical address
+> 0xdffffc000000000a: 0000 [#1] SMP KASAN NOPTI
+> KASAN: null-ptr-deref in range [0x0000000000000050-0x0000000000000057]
+> RIP: 0010:usb_make_path include/linux/usb.h:985 [inline]
+> RIP: 0010:usbtv_querycap+0x9c/0x100
+> drivers/media/usb/usbtv/usbtv-video.c:612
+> ...
+> Call Trace:
+>  <TASK>
+>  v4l_querycap+0x236/0x470 drivers/media/v4l2-core/v4l2-ioctl.c:1106
+>  __video_do_ioctl+0x8af/0xc70 drivers/media/v4l2-core/v4l2-ioctl.c:3133
+>  video_usercopy+0x860/0x1430 drivers/media/v4l2-core/v4l2-ioctl.c:3475
+>  v4l2_ioctl+0x18d/0x1e0 drivers/media/v4l2-core/v4l2-dev.c:366
+>  vfs_ioctl fs/ioctl.c:51 [inline]
+>  __do_sys_ioctl fs/ioctl.c:597 [inline]
+>  __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>  do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+>
+> This happens due to a race condition between the USB device disconnect
+> routine (usbtv_disconnect()) and V4L2 ioctls. When the device is
+> disconnected, usbtv_disconnect() sets usbtv->udev =3D NULL without holdin=
+g
+> the usbtv->v4l2_lock mutex. Concurrently, an ioctl handler like
+> usbtv_querycap() can be executing under the v4l2_lock and attempt to use
+> usbtv->udev, leading to a crash.
+>
+> To fix this, move the usbtv->udev =3D NULL assignment into usbtv_video_fr=
+ee()
+> and protect it with mutex_lock(&usbtv->v4l2_lock). This ensures that no
+> non-queue ioctl handler can run concurrently with the pointer being
+> nullified. If an ioctl is already running, the mutex will block the
+> disconnect path until the ioctl finishes. If an ioctl is blocked waiting
+> for the lock, it will acquire it after the disconnect routine releases it=
+,
+> but will then check video_is_registered() (which was cleared by
+> vb2_video_unregister_device()) and safely return -ENODEV.
+>
+> Acquiring v4l2_lock after vb2_video_unregister_device() avoids
+> reintroducing a historical deadlock issue, and usbtv_audio_free() remains
+> safe as it is called before usbtv_video_free().
+>
+> Fixes: 65e6a2773d65 ("media: usbtv: Remove useless locks in usbtv_video_f=
+ree()")
+> Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+37a57a84893052ab6071@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3D37a57a84893052ab6071
+> Link: https://syzkaller.appspot.com/ai_job?id=3D5abbe65a-5853-4bc2-9135-5=
+c75f88d51ed
+> To: <linux-media@vger.kernel.org>
+> To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
+> To: "Benjamin Gaignard" <benjamin.gaignard@collabora.com>
+> Cc: "Hans Verkuil" <hverkuil+cisco@kernel.org>
+> Cc: "Johan Hovold" <johan@kernel.org>
+> Cc: "Kees Cook" <kees@kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> ---
+> diff --git a/drivers/media/usb/usbtv/usbtv-core.c b/drivers/media/usb/usb=
+tv/usbtv-core.c
+> index 6c4facf4f..b33b54fdb 100644
+> --- a/drivers/media/usb/usbtv/usbtv-core.c
+> +++ b/drivers/media/usb/usbtv/usbtv-core.c
+> @@ -136,8 +136,6 @@ static void usbtv_disconnect(struct usb_interface *in=
+tf)
+>         usbtv_audio_free(usbtv);
+>         usbtv_video_free(usbtv);
+>
+> -       usbtv->udev =3D NULL;
+> -
+>         /* the usbtv structure will be deallocated when v4l2 will be
+>            done using it */
+>         v4l2_device_put(&usbtv->v4l2_dev);
+> diff --git a/drivers/media/usb/usbtv/usbtv-video.c b/drivers/media/usb/us=
+btv/usbtv-video.c
+> index de0328100..ef066df71 100644
+> --- a/drivers/media/usb/usbtv/usbtv-video.c
+> +++ b/drivers/media/usb/usbtv/usbtv-video.c
+> @@ -968,5 +968,9 @@ void usbtv_video_free(struct usbtv *usbtv)
+>         vb2_video_unregister_device(&usbtv->vdev);
+>         v4l2_device_disconnect(&usbtv->v4l2_dev);
+>
+> +       mutex_lock(&usbtv->v4l2_lock);
+> +       usbtv->udev =3D NULL;
+> +       mutex_unlock(&usbtv->v4l2_lock);
+> +
+>         v4l2_device_put(&usbtv->v4l2_dev);
+>  }
+>
+>
+> base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+>
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated =
+patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/20d7b17b-9c29-4c28-95a4-e4377e35f440%40mail.kernel.org=
+.
