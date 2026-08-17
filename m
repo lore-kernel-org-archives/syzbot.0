@@ -1,318 +1,242 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C833531D730
-	for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 07:29:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FA49418345
+	for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 12:46:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.51
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786951773; cv=pass; b=RU0KMn4yRcnCXw3CLFZD/5CRcXpB0t0viKraTEgiA1OF53cKsnj9hZq+DqqBmc3K8kb6vjcy7g8AcFcejr0PW3AInJV+EBU9OKpqFKfj5WnXMoavc5iTI2EYwTwHFEqE8I5mpLKCQ9N2qRER88t6kh4ymzpQYYU+g4EaYAZszl4=
+	t=1786970765; cv=pass; b=OwcQzeGSbaK4yS9pJoQsqD3F1M3EuAo7v+GoXUAOGhuk0vKWCZePn/TM1OAlX03H38d1M9W9dN7IgkyfEWFcsrv3Lv/5zNQ+4oP4gtdrs2rjByxaUQ2Ug3YS5QYNzeUe17kkTz7wZdfP+WInmVpls6yQoDcMT7IIBjVtu3A0UfY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786951773; c=relaxed/simple;
-	bh=NHCImg+W4Nd7TlPQwatno/U/yPDtY3s/jVUrQSSILPQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=N9+uSCWjncT9xbuKDRF/jxaRJ1Q6YutyztQWx8szCtEIj4knmKT6Esg+McpesQqR/gXF1n/0L5yA4hhZdjbwYDxZjTEe29BgixA55uhutdXkyttybuLtd+/qJHgzv/XsRxNKZXn5+W/P4XwGaDyxbd0OjSNpNgSt3w6a+H+6rcE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=0RY4EZ4q; arc=pass smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786970765; c=relaxed/simple;
+	bh=zEo9b41GTR6Cr3dXcKrYXfXJ0Rjfa2vTYkessrBPpKU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=sU5UcRN+D3yZnBwTe8HkWWOc2W/N6DwoIxoVXPg/SzKSCx9fPNQhewMmqKTYhMlbBD00zHbHzeKABKHiFPXb/UoGd0MUumzsV5w10ZHXyiQhw7HN8N2kWKL68omkp5SC63fC5kzz3S7XgccgDjfxoSVxBWeQkNZW2Qho75+hOmo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=d6VCYSO1; arc=pass smtp.client-ip=209.85.160.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="0RY4EZ4q"
-Received: by smtp.kernel.org (Postfix)
-	id 89F961F00A3A; Mon, 17 Aug 2026 07:29:31 +0000 (UTC)
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=113.46.200.218
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1786951771;
-	b=if0vjTvTrSMbwWzaOHGugyKyKjj3V+WvBOswY1EYMZ4sbZ6lg7S5Jz8u2hWP+AaVdGDb
-	 nxoUSR0ZUW6CBDyLWh3Mn0qhUVrztKIpCjY5RWTMCOjny06Nc5Kuxt9/oLvhd6iOutoHT
-	 J5VjcrW19JVW/J7FfgiDpGtxucy8C2rdtnkj+yWuF8Q6JHCUImPC096zIzzlYDYh25PYs
-	 3b+TTq2CyBlKH0Xj1QoN8G7FD5+8SQY/90hz0bQ1MhrNSrDWJGblVRLzhfOmijOTWnJv2
-	 vZjlW69/KFKRFmkgWh+KCCDM1DheDDQB+Pm/joldpLIyAp+U4m4yg1AcWN5ju0mONZw==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1786951771;
-	h=DMARC-Filter:dkim-signature:Received:Received:Received:Message-ID:
-	 Date:MIME-Version:User-Agent:Subject:To:CC:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-	bh=+RfG1H7RaUlmyWyQ+7T/2vNJQx4JOfVf5PR0Ty0edAE=;
-	b=MY16mMcZYZCfL4cg0BQRcA5NEXP/VNdX0fLyrZLHemDmhho8vgfhECkvVquKy4A7jyU8
-	 B0zBhEdp4ETPJGh2KiDwxM5nnb/ZHWdp2I7qcHQS/N+yNneV4cq1EDetGCpLgJzSWdWW1
-	 ovLr8NWYJ+mdmIKd8kokW7ac8iW1zqGGw7noj75EIg51nzNbw6H7f49WXIdFt7EVu93Od
-	 /RsOmh+e29pcTMZI555tFdhdxvQ8m+GEqnV2rt0ef8/XM0+atM1t4ud7C6XJDD9reMWIC
-	 RXOFfnG2NpcdRQOiuOJdxla1/PCpnVx81kNoTOJTH5lO7n7d1hd08hM7RORL5jxhuOA==
-ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=huawei.com header.i=@huawei.com header.a=rsa-sha256 header.s=dkim header.b=0RY4EZ4q;
-	dmarc=pass header.from=huawei.com;
-	spf=pass smtp.mailfrom=huawei.com;
-	arc=none smtp.remote-ip=113.46.200.218
-Received: from canpmsgout03.his.huawei.com (canpmsgout03.his.huawei.com [113.46.200.218])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 060891F000E9;
-	Mon, 17 Aug 2026 07:29:29 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=huawei.com header.i=@huawei.com header.a=rsa-sha256 header.s=dkim header.b=0RY4EZ4q
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 060891F000E9
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=huawei.com
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=+RfG1H7RaUlmyWyQ+7T/2vNJQx4JOfVf5PR0Ty0edAE=;
-	b=0RY4EZ4q9a3um9wcUwSV0ELeUuX5TWY3rGWcgvLU+1SiKbo9BnsbEiCR8ER/xXy8FcRNiphcj
-	z9JmSEQGv0BOIptKHYg0nsRathkZZ9LC79sTBF365dVcb3uWy/5Gys4z0c85gmtqZI2UvY6gxnd
-	hM+iKFXKmqDmHq8jtzekF2U=
-Received: from mail.maildlp.com (unknown [172.19.163.0])
-	by canpmsgout03.his.huawei.com (SkyGuard) with ESMTPS id 4hNkhH3XW4zpSvB;
-	Mon, 17 Aug 2026 15:18:23 +0800 (CST)
-Received: from dggpemr500006.china.huawei.com (unknown [7.185.36.185])
-	by mail.maildlp.com (Postfix) with ESMTPS id CE5D540537;
-	Mon, 17 Aug 2026 15:29:15 +0800 (CST)
-Received: from [100.103.109.15] (100.103.109.15) by
- dggpemr500006.china.huawei.com (7.185.36.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.45; Mon, 17 Aug 2026 15:29:14 +0800
-Message-ID: <f3ed739d-fa18-43b8-a7d7-c5f1db0e22b0@huawei.com>
-Date: Mon, 17 Aug 2026 15:29:14 +0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="d6VCYSO1"
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-446f87b6de1so3319837fac.3
+        for <syzbot@lists.linux.dev>; Mon, 17 Aug 2026 05:46:02 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786970762; cv=none;
+        d=google.com; s=arc-20260327;
+        b=G8msouF5tTUOBA+5udy8fa3EcGrikhJyq9DwZScwNoGeHT+5kCmPzvMIkMryTvBWkS
+         uqQLzdmif2prQcrtYDD7GLky+iXl4QEimaK3lJ+SWD/PKbwMW/rDL1TdP3EpWMVa1Aqf
+         IV5qcvx5A8xpEfh7yl903tAihvUjenY3GzuIWDsykjnwoQ+AYfhAqZTjRWgn93Ffyo43
+         duXQF4cOs8MzDysDlnhdgK7rL9MGHu1wPk6ozyUuXuXB9g+I8UxCWYZJfm9gkWzpBJEF
+         bEjHwfOGRyg0eMGxL8FQ7EfAHNDCnuvuK9Kcj8mND325bbxAuPQXIYn/fFs2nGWQCpAJ
+         dPqw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=AbPFJkXAYN10OuubkONPhjTUUrN7o/IfKyiv6SqiWVo=;
+        fh=OTVQzgbppZuzWX3eq9VdFdrkfDYz5rt7Qv6HhhtvR64=;
+        b=UxO7o/aCBq7fH5szEu9zvqlD4zQvYerqsaZevADtAWFdXcNYbk8irowMUctiQth2mu
+         4fHjJca7JffQKw4WdfB/mWhGpydzsYAFn5D8Io1AOwHrvPSJE+324ton4c5NMJZnXj8m
+         H32OV4SJbxyNYIeA+BCJVPc6aVJZud5EEvsIz+MElm5fZJuXY8E+mestX+7eXZ/9dSEn
+         +LZKnhYUzcmNwHhQI285qw4/UdkBbIM068mNygU1/obKgrvcx5cG4pfRiC5GaQlieF0s
+         w3SkO8eipc3TyCrWWjbKfx4N0T+7VZFXAtFq5DQs48bAw4RFLrsoKC/uChnCq+MnS/um
+         c57Q==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1786970762; x=1787575562; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=AbPFJkXAYN10OuubkONPhjTUUrN7o/IfKyiv6SqiWVo=;
+        b=d6VCYSO1uccUm0quAxwlAy/x2+PTLqmzAYbUj4DvOdmM769g7Etfy9OmPauMiYrZDX
+         4UIX8HIwakT+HZzAUq799gZ2EGyuchsSx6ch7AaQ6H3Weft6fsFyPfc+4Lt2fkHBKu25
+         OfoFG6dC9yM3QsyE3ujeZlqPUfDpUwNoe0fD4p0ez2cFKqpEDBNzGEUz03laLKFu37DL
+         BbAl06tf2uGSIvnm25EWQfRNNNS+0zQ5W+EeHiVBbSzZldON/FaWgrcgJTJDNVUxzu83
+         YhMox1ccNYLpce748r92MGm8Drs0PINxhvVFCqhvU0jifIlHsMDd/1su54Mt5MZsfKLl
+         yeXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786970762; x=1787575562;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=AbPFJkXAYN10OuubkONPhjTUUrN7o/IfKyiv6SqiWVo=;
+        b=XcxH+owz8PBsBYCI9qZcnYrBf96CWHUhbCPfoRKHpcdqmFcINquZwy2kGPSh4ro877
+         Z7OzftAPbEENs8N+nsMcVDdqflWnxC4Ow6BerXvfAR1mJpchw02xs/MJZKqHZVr81YQp
+         evAvVS/XTW4HZUHW5kFdEmoZ0K+aIui+qWEGyCG0b/85W9OEBpW4NHICjWMT5Eka+Kvl
+         dqT5hcxpTo3ScvRAHodmVqxVGB4sh/0GXmEdacjlDRAG9EQLcQeNcPjxlAvwAHDW/lUO
+         k2RE8UZpATVdUtbO3/yIR6E/I30GEia1kL7r65KMuIgdjcLp7IJqVYf0jq45GzMkYG5i
+         8sAg==
+X-Forwarded-Encrypted: i=1; AHgh+RrIGE5DriBTm2DCvqJWHbkpXjYoisLChdQQavCaEChQ1RsFPs2qVRKfuXlhIvKqo1ikT0rXjgE=@lists.linux.dev
+X-Gm-Message-State: AOJu0YymAADWaNxNWmdsM8HcItovTd8y+JBsjnDyAskwcnVcNkfpU9MV
+	91WZkQUmGpJOGZ/7oHoy0nMWbdbtrV8eEDhyb94ne+wfHCbOn9WS4NavBMxH9UFgcVOJSYHQuoN
+	EFKYBNu4wfNcdU9a1vQBI9bdAXeNde92IDeGuNXHk
+X-Gm-Gg: AR+sD138KcJ/az+0Fkix5g1RwBNvL4s+ChKuRlhzuSAv+jqs21Xz0iJX+f8AGSsYdg3
+	iDtFPG3GZmp99HoJDjbOA4TsAVNI3kpOCGlqnHqneysa2xkGwgrqFPwDqJKhcWy2gY/CbRr//HP
+	RdP2dnxxo7mULVV6my+SKLx4KCnCM6/xvKA6yZG7a3ZGmspw7HYuaxQSaQmrkdhdx2f9UhpKLvK
+	1jIQ0c9B4rcYu19TGF0uU0HYO1IH6CfgYGmm19U/VujoIuguQEmDE5M6hI6OV0fybczUVE+mGlH
+	PXMuACH05P9Dcb+35Qr5BfTu2wwRvKPXGuBzbcgz8a5fDNKoMDUvVZzMxn1hHUhn+huaIAGs902
+	KcuIYznKY4MMTNiwnY+PnTOr1jHiZlJkIaJwFPh+Uk9zBDPm168Mqd0qQN9Q406+RyNP65M7kje
+	TmJUj7yTe/mYw=
+X-Received: by 2002:a05:6870:ac23:b0:44b:7917:7173 with SMTP id
+ 586e51a60fabf-45f3571617dmr42254fac.7.1786970761077; Mon, 17 Aug 2026
+ 05:46:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] futex: Fix might_sleep() warning in futex_pivot_pending()
-To: Peter Zijlstra <peterz@infradead.org>, syzbot <syzbot@kernel.org>
-CC: <syzkaller-bugs@googlegroups.com>, <linux-kernel@vger.kernel.org>, Ingo
- Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@kernel.org>,
-	<andrealmeid@igalia.com>, <dave@stgolabs.net>, <dvhart@infradead.org>,
-	<liuyongqiang13@huawei.com>, <syzbot@lists.linux.dev>
-References: <515ea00f-a081-4b9a-bcb3-f5517fd4e565@mail.kernel.org>
- <20260814133803.GA687043@noisy.programming.kicks-ass.net>
-Content-Language: en-US
-From: Yao Kai <yaokai34@huawei.com>
-In-Reply-To: <20260814133803.GA687043@noisy.programming.kicks-ass.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: kwepems200002.china.huawei.com (7.221.188.68) To
- dggpemr500006.china.huawei.com (7.185.36.185)
+References: <c7465765-2009-4803-b5de-69a84efcdeb6@mail.kernel.org>
+In-Reply-To: <c7465765-2009-4803-b5de-69a84efcdeb6@mail.kernel.org>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Mon, 17 Aug 2026 14:45:50 +0200
+X-Gm-Features: AcwNN1UwsV5Znha9fod1WosY-IYpwnqDHdcILFVJlr0KqJ04Sr7komK7Frzu9bk
+Message-ID: <CANp29Y5512qBVgXN-UPp6WgDoU03j_EkV-ChG9QhUee53XCeGA@mail.gmail.com>
+Subject: Re: [PATCH RFC] e1000e: reject non-PCIe devices and check reset_hw()
+ return value
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-
-
-On 8/14/2026 9:38 PM, Peter Zijlstra wrote:
-> On Thu, Aug 13, 2026 at 06:50:49AM +0000, syzbot wrote:
->> From: Yao Kai <yaokai34@huawei.com>
->>
->> A recent change modified futex_pivot_pending() to acquire a mutex to fix a
->> race condition. However, futex_pivot_pending() is evaluated as a condition
->> inside wait_var_event() in futex_hash_allocate(). Since wait_var_event()
->> sets the task state to TASK_UNINTERRUPTIBLE before evaluating the
->> condition, calling a blocking operation like mutex_lock() is invalid and
->> triggers a might_sleep() warning:
->>
->> do not call blocking ops when !TASK_RUNNING; state=2 set at
->> [<ffffffff819e8c8d>] prepare_to_wait_event+0x3dd/0x480
->> kernel/sched/wait.c:317
->> WARNING: kernel/sched/core.c:9124 at __might_sleep+0x92/0xf0
->> kernel/sched/core.c:9120
->> Call Trace:
->>   <TASK>
->>   __mutex_lock_common kernel/locking/mutex.c:623 [inline]
->>   __mutex_lock+0x118/0x1550 kernel/locking/mutex.c:821
->>   class_mutex_constructor include/linux/mutex.h:253 [inline]
->>   futex_pivot_pending kernel/futex/core.c:1789 [inline]
->>   futex_hash_allocate+0x7fb/0xf00 kernel/futex/core.c:1872
->>   __do_sys_prctl kernel/sys.c:2885 [inline]
->>   __se_sys_prctl+0x78c/0x1910 kernel/sys.c:2534
->>
->> Fix this by reverting futex_pivot_pending() to a lockless implementation
->> using RCU and memory barriers, which is the idiomatic way to handle
->> conditions in wait_event loops. By reading the hash pointer first,
->> executing an smp_rmb() memory barrier, and then reading hash_new, we
->> leverage the Message Passing (MP) pattern to guarantee correctness without
->> blocking. This pairs with the rcu_assign_pointer() release barrier in
->> __futex_pivot_hash(). If the reader sees the new hash, it is guaranteed to
->> see the cleared hash_new and correctly return true. If the reader sees the
->> old hash, it will check futex_ref_is_dead(old), which will return true if
->> the writer has already completed the pivot. The old hash memory is
->> guaranteed to remain valid for the duration of the check in
->> futex_ref_is_dead() because futex_pivot_pending() executes within an RCU
->> read-side critical section and the old hash is freed using kvfree_rcu().
->>
->> Fixes: 8e7ff730dd96 ("futex: Fix race in futex_pivot_pending() during private hash resize")
->> Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
->> Reported-by: syzbot+350a93852ac854927f45@syzkaller.appspotmail.com
->> Closes: https://syzkaller.appspot.com/bug?extid=350a93852ac854927f45
->> Link: https://syzkaller.appspot.com/ai_job?id=29771462-e030-4501-832d-adbf8cb167c2
->> Signed-off-by: Yao Kai <yaokai34@huawei.com>
-> 
-> Bah. So a younger me added that might_sleep() test, because yes,
-> sleeping from a wait loop is dodgy. It mostly works in this case, but
-> bah.
-> 
-> I also build an alternative wait look scheme it seems, but we don't have
-> nice helpers for that, and its never been applied to bit/var waits.
-> 
-> I've hacked up the below. Its not exactly what I call nice, but it
-> compiles, so it must be perfect... right?
-> 
+On Mon, Aug 17, 2026 at 12:53=E2=80=AFAM 'syzbot' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
+>
+> When forcing the e1000e driver to bind to an incompatible non-PCIe device
+> (such as the e1000 82540EM) via sysfs driver_override, a mismatch in
+> hardware register layouts occurs. This causes the driver to blindly retry
+> NVM reads and wait for a hardware response that never comes. When multipl=
+e
+> threads attempt this concurrently, they serialize on the device lock, and
+> the cumulative wait time easily exceeds the kernel's hung task timeout,
+> leading to a system crash:
+>
+> INFO: task syz.2.41:7507 blocked for more than 143 seconds.
+> ...
+> Call Trace:
+>  <TASK>
+>  __schedule+0x17e7/0x5630 kernel/sched/core.c:7234
+>  schedule+0x164/0x2b0 kernel/sched/core.c:7326
+>  __mutex_lock_common kernel/locking/mutex.c:726 [inline]
+>  __mutex_lock+0x7bf/0x1550 kernel/locking/mutex.c:821
+>  device_lock include/linux/device.h:1104 [inline]
+>  __device_driver_lock drivers/base/dd.c:1171 [inline]
+>  device_driver_attach+0xd5/0x1d0 drivers/base/dd.c:1202
+>  bind_store+0x1d0/0x220 drivers/base/bus.c:267
+> ...
+> NMI backtrace for cpu 1
+> ...
+> RIP: 0010:e1000e_poll_eerd_eewr_done
+> drivers/net/ethernet/intel/e1000e/nvm.c:133 [inline]
+> RIP: 0010:e1000e_read_nvm_eerd+0xdf/0x300
+> drivers/net/ethernet/intel/e1000e/nvm.c:311
+> ...
+> Call Trace:
+>  <TASK>
+>  e1000_read_nvm drivers/net/ethernet/intel/e1000e/e1000.h:588 [inline]
+>  e1000e_validate_nvm_checksum_generic+0xcb/0x3e0
+>  drivers/net/ethernet/intel/e1000e/nvm.c:553
+>  e1000_validate_nvm_checksum_82571+0x176/0x290
+>  drivers/net/ethernet/intel/e1000e/82571.c:787
+>  e1000_validate_nvm_checksum drivers/net/ethernet/intel/e1000e/e1000.h:57=
+7
+>  [inline]
+>  e1000_probe+0x12f8/0x2b20 drivers/net/ethernet/intel/e1000e/netdev.c:759=
+0
+>  local_pci_probe drivers/pci/pci-driver.c:332 [inline]
+>  pci_call_probe drivers/pci/pci-driver.c:394 [inline]
+>  __pci_device_probe drivers/pci/pci-driver.c:455 [inline]
+>  pci_device_probe+0x431/0xc90 drivers/pci/pci-driver.c:489
+>  call_driver_probe drivers/base/dd.c:-1 [inline]
+>  really_probe+0x254/0xae0 drivers/base/dd.c:706
+>  __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
+>  device_driver_attach+0xe0/0x1d0 drivers/base/dd.c:1203
+>  bind_store+0x1d0/0x220 drivers/base/bus.c:267
+>
+> Fix this by adding an early sanity check in e1000_probe() to reject
+> non-PCIe devices using pci_is_pcie(). Additionally, check the return valu=
+e
+> of adapter->hw.mac.ops.reset_hw() and abort the probe with -EIO if it
+> fails. This prevents the driver from proceeding to the NVM checksum
+> validation loop, which is responsible for the massive delay.
+>
+> Fixes: bc7f75fa9788 ("[E1000E]: New pci-express e1000 driver (currently f=
+or ICH9 devices only)")
+> Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+8ce4dba751e79facdc38@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3D8ce4dba751e79facdc38
+> Link: https://syzkaller.appspot.com/ai_job?id=3Dbf813674-8b64-4b49-ac67-9=
+2a88e64885d
+> To: "Andrew Lunn" <andrew+netdev@lunn.ch>
+> To: "Tony Nguyen" <anthony.l.nguyen@intel.com>
+> To: "David S. Miller" <davem@davemloft.net>
+> To: "Eric Dumazet" <edumazet@google.com>
+> To: <intel-wired-lan@lists.osuosl.org>
+> To: "Jakub Kicinski" <kuba@kernel.org>
+> To: <netdev@vger.kernel.org>
+> To: "Paolo Abeni" <pabeni@redhat.com>
+> To: "Przemek Kitszel" <przemyslaw.kitszel@intel.com>
+> To: "Auke Kok" <auke-jan.h.kok@intel.com>
+> Cc: <linux-kernel@vger.kernel.org>
+>
 > ---
-> diff --git a/include/linux/wait.h b/include/linux/wait.h
-> index dce055e6add3..7e215330199c 100644
-> --- a/include/linux/wait.h
-> +++ b/include/linux/wait.h
-> @@ -1228,6 +1228,7 @@ long prepare_to_wait_event(struct wait_queue_head *wq_head, struct wait_queue_en
->   void finish_wait(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
->   long wait_woken(struct wait_queue_entry *wq_entry, unsigned mode, long timeout);
->   int woken_wake_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *key);
-> +int woken_wake_bit_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *key);
->   int autoremove_wake_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *key);
->   
->   #define DEFINE_WAIT_FUNC(name, function)					\
-> diff --git a/include/linux/wait_bit.h b/include/linux/wait_bit.h
-> index ace7379d627d..553d7b23e3ad 100644
-> --- a/include/linux/wait_bit.h
-> +++ b/include/linux/wait_bit.h
-> @@ -32,6 +32,7 @@ int out_of_line_wait_on_bit_timeout(unsigned long *word, int, wait_bit_action_f
->   int out_of_line_wait_on_bit_lock(unsigned long *word, int, wait_bit_action_f *action, unsigned int mode);
->   struct wait_queue_head *bit_waitqueue(unsigned long *word, int bit);
->   extern void __init wait_bit_init(void);
-> +extern struct wait_bit_key *__var_wake_key(struct wait_queue_entry *wq_entry, void *arg);
->   
->   int wake_bit_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *key);
->   
-> diff --git a/kernel/futex/core.c b/kernel/futex/core.c
-> index a7c2a6242718..d3311047d259 100644
-> --- a/kernel/futex/core.c
-> +++ b/kernel/futex/core.c
-> @@ -46,6 +46,7 @@
->   #include <linux/slab.h>
->   #include <linux/vmalloc.h>
->   #include <linux/kmemleak.h>
-> +#include <linux/wait_bit.h>
->   
->   #include <vdso/futex.h>
->   
-> @@ -1886,11 +1887,24 @@ static int futex_hash_allocate(unsigned int hash_slots, unsigned int flags)
->   		futex_hash_bucket_init(&fph->queues[i]);
->   
->   	if (custom) {
-> +		struct wait_bit_queue_entry __wbq_entry;
-> +		struct wait_queue_head *__wq_head;
+> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/eth=
+ernet/intel/e1000e/netdev.c
+> index 844f31ab3..6d087a414 100644
+> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
+> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+> @@ -7393,6 +7393,9 @@ static int e1000_probe(struct pci_dev *pdev, const =
+struct pci_device_id *ent)
+>         int bars, i, err;
+>         s32 ret_val =3D 0;
+>
+> +       if (!pci_is_pcie(pdev))
+> +               return -ENODEV;
+
+Is it really correct to enforce it must only be a pci device here?
+
 > +
->   		/*
->   		 * Only let prctl() wait / retry; don't unduly delay clone().
->   		 */
->   again:
-> -		wait_var_event(mm, futex_pivot_pending(mm));
-> +		__wq_head = __var_waitqueue(mm);
-> +		init_wait_var_entry(&__wbq_entry, mm, 0);
-> +		__wbq_entry.wq_entry.func = woken_wake_bit_function;
-> +		add_wait_queue(__wq_head, &__wbq_entry.wq_entry);
-> +		while (!futex_pivot_pending(mm)) {
-> +			int rc = wait_woken(&__wbq_entry.wq_entry, TASK_UNINTERRUPTIBLE,
-> +					    MAX_SCHEDULE_TIMEOUT);
-> +			if (!rc)
-> +				break;
-> +		}
-> +		remove_wait_queue(__wq_head, &__wbq_entry.wq_entry);
->   	}
->   
->   	scoped_guard(mutex, &mm->futex.phash.lock) {
-> diff --git a/kernel/sched/wait.c b/kernel/sched/wait.c
-> index 20f27e2cf7ae..d033f600f48c 100644
-> --- a/kernel/sched/wait.c
-> +++ b/kernel/sched/wait.c
-> @@ -5,6 +5,7 @@
->    * (C) 2004 Nadia Yvette Chambers, Oracle
->    */
->   #include "sched.h"
-> +#include <linux/wait_bit.h>
->   
->   void __init_waitqueue_head(struct wait_queue_head *wq_head, const char *name, struct lock_class_key *key)
->   {
-> @@ -463,3 +464,17 @@ int woken_wake_function(struct wait_queue_entry *wq_entry, unsigned mode, int sy
->   	return default_wake_function(wq_entry, mode, sync, key);
->   }
->   EXPORT_SYMBOL(woken_wake_function);
-> +
-> +int woken_wake_bit_function(struct wait_queue_entry *wq_entry, unsigned mode, int sync, void *arg)
-> +{
-> +	struct wait_bit_key *key = __var_wake_key(wq_entry, arg);
-> +	if (!key)
-> +		return 0;
-> +
-> +	/* Pairs with the smp_store_mb() in wait_woken(). */
-> +	smp_mb(); /* C */
-> +	wq_entry->flags |= WQ_FLAG_WOKEN;
-> +
-> +	return default_wake_function(wq_entry, mode, sync, key);
-> +}
-> +EXPORT_SYMBOL(woken_wake_bit_function);
-> diff --git a/kernel/sched/wait_bit.c b/kernel/sched/wait_bit.c
-> index 1088d3b7012c..e8127e83a48f 100644
-> --- a/kernel/sched/wait_bit.c
-> +++ b/kernel/sched/wait_bit.c
-> @@ -167,9 +167,7 @@ wait_queue_head_t *__var_waitqueue(void *p)
->   }
->   EXPORT_SYMBOL(__var_waitqueue);
->   
-> -static int
-> -var_wake_function(struct wait_queue_entry *wq_entry, unsigned int mode,
-> -		  int sync, void *arg)
-> +struct wait_bit_key *__var_wake_key(struct wait_queue_entry *wq_entry, void *arg)
->   {
->   	struct wait_bit_key *key = arg;
->   	struct wait_bit_queue_entry *wbq_entry =
-> @@ -177,6 +175,17 @@ var_wake_function(struct wait_queue_entry *wq_entry, unsigned int mode,
->   
->   	if (wbq_entry->key.flags != key->flags ||
->   	    wbq_entry->key.bit_nr != key->bit_nr)
-> +		return NULL;
-> +
-> +	return key;
-> +}
-> +
-> +static int
-> +var_wake_function(struct wait_queue_entry *wq_entry, unsigned int mode,
-> +		  int sync, void *arg)
-> +{
-> +	struct wait_bit_key *key = __var_wake_key(wq_entry, arg);
-> +	if (!key)
->   		return 0;
->   
->   	return autoremove_wake_function(wq_entry, mode, sync, key);
+>         if (ei->flags2 & FLAG2_DISABLE_ASPM_L0S)
+>                 aspm_disable_flag =3D PCIE_LINK_STATE_L0S;
+>         if (ei->flags2 & FLAG2_DISABLE_ASPM_L1)
+> @@ -7581,7 +7584,12 @@ static int e1000_probe(struct pci_dev *pdev, const=
+ struct pci_device_id *ent)
+>         /* before reading the NVM, reset the controller to
+>          * put the device in a known good starting state
+>          */
+> -       adapter->hw.mac.ops.reset_hw(&adapter->hw);
+> +       err =3D adapter->hw.mac.ops.reset_hw(&adapter->hw);
+> +       if (err) {
+> +               dev_err(&pdev->dev, "Hardware Error\n");
+> +               err =3D -EIO;
+> +               goto err_hw_init;
+> +       }
 
+Can we return an actual error here?
 
-Thanks! I think there is still a lost-wakeup window:
-
-         T1                              T2
-
-         add_wait_queue()
-           /* not visible to T2 */
-         futex_pivot_pending()
-           futex_ref_is_dead() = false
-                                         futex_ref_put() = true
-                                         wake_up_var()
-                                           waitqueue_active() = false
-                                             /* observes empty */
-                                           return
-         wait_woken()
-         schedule()
-
-Since wake_up_var() uses a lockless waitqueue_active() check, I think
-we need to order the waitqueue insertion before the first condition
-check:
-
-   add_wait_queue(__wq_head, &__wbq_entry.wq_entry);
-
-   /*
-    * Pairs with the fully ordered refcount operation before wake_up_var().
-    * Ensures either the waker sees this waiter or we see the dead refcount.
-    */
-   smp_mb();
-
-   while (!futex_pivot_pending(mm))
-           wait_woken(&__wbq_entry.wq_entry, TASK_UNINTERRUPTIBLE,
-                      MAX_SCHEDULE_TIMEOUT);
-
-The rc check can be dropped because MAX_SCHEDULE_TIMEOUT does not expire.
-
-Thanks,
-Yao Kai
+>
+>         /* systems with ASPM and others may see the checksum fail on the =
+first
+>          * attempt. Let's give it a few tries
+>
+>
+> base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+>
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated =
+patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/c7465765-2009-4803-b5de-69a84efcdeb6%40mail.kernel.org=
+.
