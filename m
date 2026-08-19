@@ -1,180 +1,167 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 400913E1218
-	for <syzbot@lists.linux.dev>; Wed, 19 Aug 2026 07:32:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6D7C367B8B
+	for <syzbot@lists.linux.dev>; Wed, 19 Aug 2026 08:30:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787124764; cv=none; b=lM+7SKIssipwBD7rBNXMDt6Kf1lQCTJH4BICyyFcCrvOv9mWNH9elqRW0TZA4Zpu/Ml+f3WGVA5lVQFj5gRFyeXXMsjQ5MGXNz4D8u20komqxJ7nkvi/+SvGd3472MgM6pYfVUL+MQnU0GruQW0WgSIyJICxHE40CpSqYYOKUsE=
+	t=1787128237; cv=none; b=R/UkHa8G4TaqOqBSXTYrCtEPgMp2l/M5snB6dwM91Yac3v6ypXoZen7ru2x1ibYFYIXjfcC+yuywX/2wrKfVbP9QbmD1EjVB84iWcFIYdI6mhMNKRiWVejJT6rvgyx1pnimRYSK7U2hiz7JWIf29o66hUh//AZd0t8hdRiX53Qw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787124764; c=relaxed/simple;
-	bh=VPeKBfuvfNvpny90s+OEiSFpt2LC7rJK5kPuJHvTMPk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=aY0QHZbt1J5cSq8q+pyjwgbwA7UI+dMv9gpaGVIMimob78ACd0cIUhppPAOTGox+/QKCzW+9W3gacTa3Mke6hzUnboCDibUfUPImfdpp7DMnM1SnbStJfpbQB3DfPTV6PXmw5s2RIogNrQ96ZAFLvwOy/gMDL/8vSmFDBghtqak=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Xf+FiVHh; arc=none smtp.client-ip=209.85.208.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787128237; c=relaxed/simple;
+	bh=ECOLIaVhGG6m4edP7ZpkGnDuJe3ytAk4TAYzKNouFmc=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=qvKchVRrq5UIW/mAQZxzMG61xtYoKnTmrdLW+1UF2mzXAK37OdjjHaDIEAB3qHW8Thhp3L1Ai+afhNfzeXzkWboyclJXtdRnh/Iq1Hwnqkjwfa8+pt1GYi/f8m150paSUrSQNt69gdyh4wGhlI31zsOzj8QwvbvoHjc6BNGG+24=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P44r07M5; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xf+FiVHh"
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6a36982a875so1101218a12.0
-        for <syzbot@lists.linux.dev>; Wed, 19 Aug 2026 00:32:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787124760; x=1787729560; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=hH825Fr5Lnit/D/5pt4IJTuS2ae+IJVeyuadtcJRcUA=;
-        b=Xf+FiVHhpAXGwE55+/1K2xL5NuAo20Pnr+JynCW13UQVtrq6yU1KiWVNlM4g3bk7Ag
-         0ZkKmdc/2y27i6PnnlY864jJpeR/FLspzbAHCD8xvyK83Zk5LdCNn1uGI+juvdI1bYQ8
-         6HEiz41FhAdj1tbAro+jP3I5QCMPUhjkz4zDtrY21GGELBZpnXEKEhuSfI4lHN59CfLS
-         ZMYs5eLHDKg8tocJJzbuAdHl4twmpbTaGffo1fByLnFUvtmUV4Vo7JNzSVWO0J07phZT
-         8o3yCZW+6rZnxb12MhEBIWPqopInplU1U2BdgnV0O7RMnwBgQeSDQsHHU/yowbVmze3A
-         fi/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787124760; x=1787729560;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=hH825Fr5Lnit/D/5pt4IJTuS2ae+IJVeyuadtcJRcUA=;
-        b=XDTLTVREeOIouuhY6KnJBl0lIq1opEZ+SPUPhLhjczNlIdwoPjpmEINO7LVN0FoVxn
-         qDGwiSULDMzkKjni+rnDsBNX1t9zXwwbkmWQzucp9qkx4hZnjFf5AX+f9+RVFcZHVVFg
-         YQ3fbp58mdHE7zINQ9aB33/QzmT1j5P00EuuY7+uxgUx39EboifYFo4pzyFiUmVGmEXV
-         AgVPvJgdk4WeXgBzbtGuAyYwC0v/XzPjJYkk9iJIzTrD4hPYBlkzlq79mab4BxUtXisw
-         YSl8FdGkpWPOI6scsojYzDcLx+ivvF9PxTOk+AD00NT9SoTZOGvdwSc+iCiVIJXtLLhI
-         +xlA==
-X-Gm-Message-State: AOJu0Yx+KsaYLwZ237yc3lK86u+cZLRX7b+NN281zZ5L8mQrn1L2AJnL
-	7U7c7f0pKW7dV62v/VcgDvDFXRHIiBi3aqNziNhuQnZjx/X0dMT+OneY
-X-Gm-Gg: AR+sD12f4C3dSfMW1fLtQ7OvniwMbz3mD8EH7WjKIik0RihaPXyrbtZhv2+xVZHuWzb
-	ahQMe1hExCgbpldN1sVkS9QGj/yE4woFUXviDG80KxIJ3wlUcX6YY4he4JQerzBMKR4QMFA0K4n
-	iNRZ6JLnPYYgOxb0jnyS5iPuPybzbqDQUsn4rV1aeSTjY3pg62+/v9DmNy/klSzaZDJaFiO45tN
-	/2OdjUrzqlglvM45JXMBUX+WPPg/p+Q/9Af2podRvElcDPzfdvEGrOOpzS+zI8hbnv73HTG9KuL
-	KRehFbMt9qaDhyarwEa/btzvCXqku+yXcSvFnBJDgvhHOYTRW7RgSyIytEwWAlzu2iYR6FqMRCv
-	rUv6cQQDmzWPK4VjcsgPnFUQfPrjB/CQRJmbjnEjI0FXr8jyF/Mo+qWVVU0bYQx2tYkN5+LEyEz
-	oXwdVCdRERAbXjNnaoXCYdcAlxuxG5097g+Xshpww8GQ/3NbkSRBFVUFpjMTfuWUSuxgd2jRacG
-	aUZQCcpV4XT+DiVGfgjJgp1A2Udh60b3HG4qxRUatXVO89z94o59ptbZJhRV0WJJL5u6H8re/Y6
-	S24AwaZlQyhvaUZTnwo4eEKh3/vN8MG6W7TuL14QExHuvNSxIJtdK9E=
-X-Received: by 2002:a17:907:5c6:b0:c21:9411:881b with SMTP id a640c23a62f3a-c242e26974fmr134100066b.25.1787124760132;
-        Wed, 19 Aug 2026 00:32:40 -0700 (PDT)
-Received: from [192.168.100.51] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c243c4ac06asm38061366b.33.2026.08.19.00.32.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Aug 2026 00:32:39 -0700 (PDT)
-Message-ID: <17449f8c-df13-42b5-8a0b-de5cfa32918c@gmail.com>
-Date: Wed, 19 Aug 2026 09:32:38 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P44r07M5"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 612A81F00A3A;
+	Wed, 19 Aug 2026 08:30:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787128235;
+	bh=aFsJuc8oHNkPqUGs6Ab+rLzNDcb8A1GPLDDonk8ALr0=;
+	h=From:To:Cc:Subject:Date;
+	b=P44r07M5aQXQSWia33blEAS6WGFRbHtdy/+Yt9kGhoW4a0CNH7tEZ2gSiE2u7Dm0d
+	 DtWUNjCW3WTN+4MUMGwPTopwOnypmUNPffeYQPYZkc/mEM3SazCq5+xl0w2x/nmLWx
+	 SkGadTM72Z/QYWCx9v2QQm6LWK5wOghGhpiGwKcQ8vfGCrDlX6s5hvFcp4YFLgnaa3
+	 f9NGZIyJiNMb/nzorwpOOSikk/OacTGEoeXl7NPGUghXXod48Te0s/EUuOF74+GJ5g
+	 IELnhwR6ydEhhLQqfAFnBytsGAxuWOB6TPdQafv9rmNHBrZTvnSFCyz/hDjHXtq4C4
+	 1jvG3oFm/15lQ==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: sst@poczta.fm, syzbot@lists.linux.dev
+Subject: [PATCH RFC v2] nfsd: prevent hung task in nfsd_nl_listener_set_doit()
+Message-ID: <4c63b53f-3063-484b-b5e6-6b024c2322af@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC] XArray: fix index jumping backwards in xas_find()
-To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-References: <e62bb2ac-6ecf-41a2-823f-c13547d5db78@mail.kernel.org>
-Content-Language: en-US
-From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-In-Reply-To: <e62bb2ac-6ecf-41a2-823f-c13547d5db78@mail.kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Wed, 19 Aug 2026 08:30:35 +0000 (UTC)
 
-Resynchronize a non-leaf `xas_find()` cursor to the node slot containing
-`xa_index` before the existing `xas_next_offset()` call. The current
-`get_offset(xa_index - 1, node) + 1` assignment already moves past the
-resynchronization slot, then the common increment moves once more. For an
-order-7 entry covering indexes 0 through 127, an adjacent entry at 128, 
-and a
-walk beginning at 100, the current code changes the offset from 0 to 2 
-and then
-to 3. It skips the stable entry at offset 2. This violates the documented
-forward-iteration contract without any concurrent modification.
+In nfsd_nl_listener_set_doit(), the kernel iterates over all
+NFSD_A_SERVER_SOCK_ADDR attributes provided in a netlink message to
+configure NFS server listeners. There is currently no limit on the number
+of attributes a user can send.
 
-Keep the shift-aware mismatch detection and the XArray-layer repair. Use the
-slot containing `xa_index` as the non-leaf resynchronization point, then 
-let the
-existing helper perform the single forward step. Preserve the 
-established leaf
-boundary calculation. Add deterministic coverage for the order-7 adjacent
-entry case and for splitting a multi-index entry after a lookup begins 
-inside
-it. Implement both cases in a new `check_multi_find_4()` helper in
-`lib/test_xarray.c` and invoke it from `check_find()`.
+For each attribute, svc_xprt_create_from_sa() is called, which may
+synchronously invoke request_module() to load the corresponding transport
+module. If a user provides a large number of invalid transport names,
+request_module() is called sequentially for each, taking a massive amount
+of time. Since this entire process occurs while holding the global
+nfsd_mutex, it blocks other tasks attempting to acquire the mutex and
+triggers a hung task timeout:
 
-Correct the commit message to describe the retained KASAN use-after-free in
-`filemap_map_pages()` through `ptep_get()`, not a slab-out-of-bounds report.
-Preserve the verified backward-index mechanism, the `Fixes` tag, syzbot 
-links,
-and the existing Gemini provenance tag. Do not change locking, public 
-APIs, or
-caller error behavior.
+  INFO: task blocked for more than 10 seconds.
+  ...
+  Call Trace:
+   <TASK>
+   __schedule+0x17e7/0x5630 kernel/sched/core.c:7234
+   schedule+0x164/0x2b0 kernel/sched/core.c:7326
+   schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7383
+   __mutex_lock_common kernel/locking/mutex.c:726 [inline]
+   __mutex_lock+0x7bf/0x1550 kernel/locking/mutex.c:821
+   nfsd_nl_version_get_doit+0x17c/0xd20 fs/nfsd/nfsctl.c:1889
+   genl_family_rcv_msg_doit+0x233/0x340 net/netlink/genetlink.c:1114
+   genl_family_rcv_msg net/netlink/genetlink.c:1194 [inline]
+   genl_rcv_msg+0x614/0x7a0 net/netlink/genetlink.c:1209
+  ...
+  2 locks held by task/5864:
+   #0: ffffffff90114168 (cb_lock){++++}-{4:4}, at: genl_rcv+0x19/0x40
+   net/netlink/genetlink.c:1217
+   #1: ffffffff8eeb1a60 (nfsd_mutex){+.+.}-{4:4}, at:
+   nfsd_nl_listener_set_doit+0x135/0x1750 fs/nfsd/nfsctl.c:1964
 
-On 8/17/2026 3:04 AM, syzbot wrote:
-> A bug in the XArray iterator xas_find() causes the iterator's index
-> (xas->xa_index) to jump backwards when iterating over a multi-index entry
-> (like a THP) that resides in a non-leaf node and is concurrently split.
->
-> When iterating over a multi-index entry in a non-leaf node, xas_load() sets
-> xas->xa_offset to the base offset of the entry, but leaves xas->xa_index at
-> the requested index. When the caller subsequently wants to advance to the
-> next entry, xas_find() is called. xas_find() attempts to synchronize
-> xas->xa_offset with xas->xa_index before advancing. However, the fixup
-> logic was incorrectly restricted to leaf nodes (!xas->xa_node->shift).
-> Because the THP resides in a non-leaf node, the fixup is skipped.
->
-> As a result, xas_find() simply increments xas->xa_offset and recalculates
-> xas->xa_index based on this new offset. This causes xas->xa_index to jump
-> backwards. If the THP was concurrently split, the entry at the new offset
-> is a node pointer, so xas_find() descends into it and returns the folio at
-> the backwards index. The caller (filemap_map_pages()) then calculates the
-> PTE pointer based on this backwards index, resulting in an out-of-bounds
-> memory access.
->
-> For example, a KASAN slab-out-of-bounds read can be triggered in ptep_get()
-> via filemap_map_pages():
->
-> BUG: KASAN: slab-out-of-bounds in ptep_get include/linux/pgtable.h:495
-> [inline]
-> BUG: KASAN: slab-out-of-bounds in filemap_map_folio_range mm/filemap.c:3820
-> [inline]
-> BUG: KASAN: slab-out-of-bounds in filemap_map_pages+0x1100/0x2090
-> mm/filemap.c:3955
-> Read of size 8 at addr ffff88811b3b4a00 by task syz-executor411/5876
->
-> To fix this, remove the !xas->xa_node->shift restriction and use the
-> get_offset() helper to correctly calculate the offset for any node shift.
-> This ensures that xas->xa_offset is correctly synchronized with
-> xas->xa_index before advancing, regardless of the node's depth in the tree.
->
-> Fixes: b803b42823d0 ("xarray: Add XArray iterators")
-> Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+b72767277f29b6407083@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=b72767277f29b6407083
-> Link: https://syzkaller.appspot.com/ai_job?id=608570d2-1765-472d-a79b-ea5b0b3a226a
-> To: "Andrew Morton" <akpm@linux-foundation.org>
-> To: <linux-fsdevel@vger.kernel.org>
-> To: <linux-mm@kvack.org>
-> To: "Matthew Wilcox" <willy@infradead.org>
-> Cc: <linux-kernel@vger.kernel.org>
->
-> ---
-> diff --git a/lib/xarray.c b/lib/xarray.c
-> index 9a8b49165..5695618bf 100644
-> --- a/lib/xarray.c
-> +++ b/lib/xarray.c
-> @@ -1406,9 +1406,8 @@ void *xas_find(struct xa_state *xas, unsigned long max)
->   		entry = xas_load(xas);
->   		if (entry || xas_not_node(xas->xa_node))
->   			return entry;
-> -	} else if (!xas->xa_node->shift &&
-> -		    xas->xa_offset != (xas->xa_index & XA_CHUNK_MASK)) {
-> -		xas->xa_offset = ((xas->xa_index - 1) & XA_CHUNK_MASK) + 1;
-> +	} else if (xas->xa_offset != get_offset(xas->xa_index, xas->xa_node)) {
-> +		xas->xa_offset = get_offset(xas->xa_index - 1, xas->xa_node) + 1;
->   	}
->   
->   	xas_next_offset(xas);
->
->
-> base-commit: 8d3ae59288f1e7d58d76558a6ee96d533bc5019f
+Furthermore, the function does not break out of the loop if
+svc_xprt_create_from_sa() fails, and it suffers from an O(N^2) complexity
+issue because svc_find_listener() iterates over the serv->sv_permsocks list
+for each attribute.
+
+Address this by introducing a hard limit of 128 NFSD_A_SERVER_SOCK_ADDR
+attributes per netlink message. The limit is enforced before acquiring the
+nfsd_mutex to prevent lock contention. Additionally, modify the loop to
+break immediately if listener creation fails, avoiding needless sequential
+request_module() calls for invalid configurations.
+
+Fixes: 16a471177496 ("NFSD: add listener-{set,get} netlink command")
+Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+41bc60511c2884783c27@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=41bc60511c2884783c27
+Link: https://syzkaller.appspot.com/ai_job?id=30871f87-7a83-46b8-ab83-919894b0787b
+To: "Chuck Lever" <cel@kernel.org>
+To: "Jeff Layton" <jlayton@kernel.org>
+To: <linux-nfs@vger.kernel.org>
+To: "Lorenzo Bianconi" <lorenzo@kernel.org>
+Cc: "Dai Ngo" <Dai.Ngo@oracle.com>
+Cc: <linux-kernel@vger.kernel.org>
+Cc: "NeilBrown" <neil@brown.name>
+Cc: "Olga Kornievskaia" <okorniev@redhat.com>
+Cc: "Tom Talpey" <tom@talpey.com>
+
+---
+v2:
+- Defined NFSD_MAX_LISTENERS macro instead of using a hardcoded constant.
+- Changed type of count variable to unsigned int.
+
+v1:
+https://lore.kernel.org/all/851cf46d-c7e4-470a-8319-36811d8b1da3@mail.kernel.org/T/
+---
+diff --git a/fs/nfsd/nfsctl.c b/fs/nfsd/nfsctl.c
+index fa92e31d1..516c04c14 100644
+--- a/fs/nfsd/nfsctl.c
++++ b/fs/nfsd/nfsctl.c
+@@ -1943,6 +1943,8 @@ int nfsd_nl_version_get_doit(struct sk_buff *skb, struct genl_info *info)
+ 	return err;
+ }
+ 
++#define NFSD_MAX_LISTENERS 128
++
+ /**
+  * nfsd_nl_listener_set_doit - set the nfs running sockets
+  * @skb: reply buffer
+@@ -1955,12 +1957,19 @@ int nfsd_nl_listener_set_doit(struct sk_buff *skb, struct genl_info *info)
+ 	struct net *net = genl_info_net(info);
+ 	struct svc_xprt *xprt, *tmp;
+ 	const struct nlattr *attr;
++	unsigned int count = 0;
+ 	struct svc_serv *serv;
+ 	LIST_HEAD(permsocks);
+ 	struct nfsd_net *nn;
+ 	bool delete = false;
+ 	int err, rem;
+ 
++	nlmsg_for_each_attr_type(attr, NFSD_A_SERVER_SOCK_ADDR, info->nlhdr,
++				 GENL_HDRLEN, rem) {
++		if (++count > NFSD_MAX_LISTENERS)
++			return -EINVAL;
++	}
++
+ 	mutex_lock(&nfsd_mutex);
+ 
+ 	err = nfsd_create_serv(net);
+@@ -2073,8 +2082,10 @@ int nfsd_nl_listener_set_doit(struct sk_buff *skb, struct genl_info *info)
+ 		ret = svc_xprt_create_from_sa(serv, xcl_name, net, sa, 0,
+ 					      current_cred());
+ 		/* always save the latest error */
+-		if (ret < 0)
++		if (ret < 0) {
+ 			err = ret;
++			break;
++		}
+ 	}
+ 
+ 	if (!serv->sv_nrthreads && list_empty(&nn->nfsd_serv->sv_permsocks))
+
+
+base-commit: 075b74841bd0065a3bda3440873c747938e69b68
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
