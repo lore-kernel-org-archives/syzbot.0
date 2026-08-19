@@ -1,167 +1,254 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6D7C367B8B
-	for <syzbot@lists.linux.dev>; Wed, 19 Aug 2026 08:30:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787128237; cv=none; b=R/UkHa8G4TaqOqBSXTYrCtEPgMp2l/M5snB6dwM91Yac3v6ypXoZen7ru2x1ibYFYIXjfcC+yuywX/2wrKfVbP9QbmD1EjVB84iWcFIYdI6mhMNKRiWVejJT6rvgyx1pnimRYSK7U2hiz7JWIf29o66hUh//AZd0t8hdRiX53Qw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787128237; c=relaxed/simple;
-	bh=ECOLIaVhGG6m4edP7ZpkGnDuJe3ytAk4TAYzKNouFmc=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=qvKchVRrq5UIW/mAQZxzMG61xtYoKnTmrdLW+1UF2mzXAK37OdjjHaDIEAB3qHW8Thhp3L1Ai+afhNfzeXzkWboyclJXtdRnh/Iq1Hwnqkjwfa8+pt1GYi/f8m150paSUrSQNt69gdyh4wGhlI31zsOzj8QwvbvoHjc6BNGG+24=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P44r07M5; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4124E31716B
+	for <syzbot@lists.linux.dev>; Wed, 19 Aug 2026 09:12:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=3; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787130746; cv=pass; b=Ptlemz/qUwTmF0Rvkf6NYam4h9nMdk1tU1Z8xdleuy6HaQRupWUvz0/hOLPG3SqC1erTp4TwE/7OIx5NlH3yEGuuJy0nU5ZFUT1YjR/HfTebtQEzvwNQjGIPYH1CvgvpEKhF15pgx9V0OlsPezOZltMZBm2Y/crOca67jIHqnig=
+ARC-Message-Signature:i=3; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787130746; c=relaxed/simple;
+	bh=0jsVKaplioDI3RfvqV6dH1N41jEKVm3dnCsuuH8ktx4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=q2+vFg4HZ1zbkmP0E7aj+2Mjj2gH18zi01XDtA3dc5nGLt22jqBP0iNOB0BZdkd2gA+BLE+a8N697IjqhUKPZU4zLzUDp9eJ60Uhftsl6gnUKqBFO9wJXFEPHKs6nFrdZEN4FS5hDPghI8fS+o78i2JSOMclRDLkDputYql1WcA=
+ARC-Authentication-Results:i=3; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Y6xBFpyr; arc=pass smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P44r07M5"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 612A81F00A3A;
-	Wed, 19 Aug 2026 08:30:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787128235;
-	bh=aFsJuc8oHNkPqUGs6Ab+rLzNDcb8A1GPLDDonk8ALr0=;
-	h=From:To:Cc:Subject:Date;
-	b=P44r07M5aQXQSWia33blEAS6WGFRbHtdy/+Yt9kGhoW4a0CNH7tEZ2gSiE2u7Dm0d
-	 DtWUNjCW3WTN+4MUMGwPTopwOnypmUNPffeYQPYZkc/mEM3SazCq5+xl0w2x/nmLWx
-	 SkGadTM72Z/QYWCx9v2QQm6LWK5wOghGhpiGwKcQ8vfGCrDlX6s5hvFcp4YFLgnaa3
-	 f9NGZIyJiNMb/nzorwpOOSikk/OacTGEoeXl7NPGUghXXod48Te0s/EUuOF74+GJ5g
-	 IELnhwR6ydEhhLQqfAFnBytsGAxuWOB6TPdQafv9rmNHBrZTvnSFCyz/hDjHXtq4C4
-	 1jvG3oFm/15lQ==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: sst@poczta.fm, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] nfsd: prevent hung task in nfsd_nl_listener_set_doit()
-Message-ID: <4c63b53f-3063-484b-b5e6-6b024c2322af@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Y6xBFpyr"
+Received: by smtp.kernel.org (Postfix)
+	id 286041F00A3F; Wed, 19 Aug 2026 09:12:25 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.224.43
+ARC-Seal: i=2; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=pass;
+	t=1787130745;
+	b=dLgFU4LmJD75hbzSXCbkfgHkBERP0uFqydYgAz0Cm5vqDJT2HQeyKFtbhX+C4I3x11+W
+	 r1rv3eFpbRDHN7W1j4xv9PNR23Y1KEzR6uX8LUUYv56QoRzaHH9TEfWT0z0K0t83v3CZo
+	 YCZgGnpL1waazBl1TkvbJ12UKixwFGQ0/OcFSXoVmvSngyhlKlpHpTWr/IH9fbEiLPIWC
+	 ZV2xTobAIwBDlZOzv+b5JoArb8ueQ9sxEjdn8NvcYbP1bzcwf7Z+38xz3jiUxuCXZLBm5
+	 T0C4rGtyldJX/dhRZ0+GukZDGK/eoOqpTMrEitZoguCFqx2C7lW8SxAvadKDjQNm9yA==
+ARC-Message-Signature: i=2; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1787130745;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:References:
+	 In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
+	 Content-Type;
+	bh=E4gB6En5WX+1P6pIBA/eVdZpLbYsPByTdzKBMJ7oGB8=;
+	b=ApRGRtgSqsxhQdkVsRNdHYtT/kjn1R6XXYaHdol+5VBc7K0lBp0EZOdc0Xp4EXTIo3fN
+	 czC6tMB1A+N9brZUbxcR/lo/WWoUyKG05/2LQSdUthstk8NefY63A1cbTQoUHp/XCl6pT
+	 h7C2Phow/nOvMkPpxC/NuLMRZV2Z0j/GJy9qmq7qyNEl62C0DaoHqtVvLaKNItJ/uaJhA
+	 PtUkXQHNst9o9oEx0tsRrLiQD8CbMM2uaSh0hCgGJcKCsw9H3asVXtY/2JX8z/prF2NJG
+	 utQZrY3pxZtMVLtnHwLOjGbwLiN5hH/YYeyZOLewqhTZqrsntnie9Lyktf0CDEeLCPQ==
+ARC-Authentication-Results: i=2; smtp.kernel.org; dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=Y6xBFpyr;
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.224.43
+Received: from mail-yx1-f43.google.com (mail-yx1-f43.google.com [74.125.224.43])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 7ECF81F00A3A
+	for <syzbot@kernel.org>; Wed, 19 Aug 2026 09:12:24 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=Y6xBFpyr
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 7ECF81F00A3A
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=google.com
+Received: by mail-yx1-f43.google.com with SMTP id 956f58d0204a3-66c711b7f2aso1407693d50.3
+        for <syzbot@kernel.org>; Wed, 19 Aug 2026 02:12:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1787130743; cv=none;
+        d=google.com; s=arc-20260327;
+        b=ZT6Gz51MJ8qSlqBIsElwU7IZxF4RGlTwukDz+mZz74cQeobJT8c0fuhkplGCf8P9j5
+         Q6c+pn4NmmKApAlffQfmqeKm2ZifoArnKSeTLJ3fknue0eXRKptjyhy9WzUWeFSFsPoc
+         s0kp+nKz3U0tLTjxeZyr7nRJ1/4WpcUqZOsrxUhp+JLbZeemJzcY6EM3Sstn7sfr4tR4
+         PSrN+usXSmAd8YmZbuJV4x0bPWUD80IbCrKNiUBic53gkXJfcA5Zgio80EOEQy8Z4UZL
+         BKfOEXTOPl9l9mTOyFGoqHYqlVnwvn6h7BYb94g8pWMDh3twuCMnKeKAIJ41ffJajyyy
+         OHDw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=E4gB6En5WX+1P6pIBA/eVdZpLbYsPByTdzKBMJ7oGB8=;
+        fh=2Ld/g5BVZzBadtquf8mrXl84q+iOtbUed/2ECOFnmmI=;
+        b=OgRLY49FjSbdTYeKA07tayPjhZUTS6B1ZELTtZ9KcSmDkZHnbfHLsVjS+RHHRPX+bk
+         Y3k2xW9Ny3uwlGlFVpFvwYFFsJaFp9ehmiLya7/PWYrk5gNXR/ZtxLHiW5sE+ba5Bxpx
+         yE+yAjkquOHnFTrOseSj9Xw3oFtVeVjU0DlG8vAFMXSeJdeFcWf8+XJw/Z9UTmBF0y3e
+         9dwKvjGpDAC4QzoQw1UGNB/HnbGanqjdsr9MPWrTgrT4Swa0nQUZgT0la+4uL5nTXYK4
+         TBY8v9diCrkls8uWIYM0VsMNOFmdLSUsUwDfDRMdFCZ2Y6k02xuRoyPtvPY5JtElYqwL
+         t2Nw==;
+        darn=kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1787130743; x=1787735543; darn=kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=E4gB6En5WX+1P6pIBA/eVdZpLbYsPByTdzKBMJ7oGB8=;
+        b=Y6xBFpyrutiOSpG3TKszGknteMyGDWUwvgeYXQOijF/MKlu2szTERFP+dh8z0XR3Db
+         R2UWw/XNy4OqQhFMNaSWYIT6SoOjUgXumiL7kTt/LvFm7Jr3KX7plT3MfpbD5tpDaF7K
+         9Nzfj+krMC3g2+KFGHPKbsn1hWWs7N4ebMIGrhxsuP4GU9aAB33zqqO1AzikzDoN761V
+         hCphfyky6WwEHmFdOH/c7RywnF3eLS3BFETUG6G5LLVXQJSZe3XZTjUCIrHrf4yGMYA2
+         MtHf5PzTVfWavFa+NRiYBr+BhIh/IXeagpUMlMA8BhPPWI+juB6UIVIZDyVF1HnJEjYM
+         PJrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787130743; x=1787735543;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=E4gB6En5WX+1P6pIBA/eVdZpLbYsPByTdzKBMJ7oGB8=;
+        b=PCGDHL5CWKsjHyAitST6yFnqGK95JnYODUpV5S4c6poGu2nC7Li8BtsntmHVaA/X+V
+         /pPH/JWQ4KV97QUZo362ekl0/Y3TSBIyWqmqIjDoVcesEklUcFbd72zcGSTVRBWrLNpj
+         iV80dP+Zy9b+2puTFuLk0AmI5y3vm4ozn+6ZG44fn6+Hi0cPlAkcVgNCp/35mKREJKwm
+         norCyG3uIZCQtx971pbKMDcew3COQ4WJXmhONCvEYse0omffA4xa+kAgohysiTvn18D0
+         iIqeKrAMm47fCTevaBa4/rBnsRD85/KSo86B9FXxXnl2pJiyW+ySAYwB4rGq3dHKoXLF
+         VQGg==
+X-Gm-Message-State: AFuF++mw/yXNwAsT2yd44wl9Wf2nK7XeRWL0oXVEUwKJfkz6pXGASZyg
+	qPI0Pbr6cQx/YHOBi6l1CgHjJkmQUZChIWeNtKlZeft+8PvivVRhpBnqSSmbKN39GJfmOLRyH9n
+	XjDfBm1R7RxhbghdTzAfjOgKCxGU9YW40/dcaGz3czMgXtl+eJRDevdIJ
+X-Gm-Gg: AR+sD13Cs5WUguR7l25+Mtd5XJQHOH/HEr9uuDlywFDmGC/YzxFXcDVmN74NyRtKvLd
+	gFe73WCfviUCZ4cK802AX/rPFVlpsGChOf6HU7yrRdP51vBuZY7T7Sobp8z5hhCi4V06aply8un
+	q7/sZvbl8MEYzqfQtBetrY3iWvjotp8jf2aoHHOpLMlVFxwO3hZdpVdwbRo2nujYpAxgBk+SQw5
+	rPaOe8OYijKvQxJfKycY+lX7/CHvt4f6a7seCZc6n0BgA6kzUg7Fc/G6x75GE0iwzLbHAuJ5noG
+	tRokj+83wYV+Gf0dnBi694ZOxFKRf1cS4KFYRBBMgUrIQMpIrY6x1wSp1eFXz8mfkaj4B780zOU
+	m
+X-Received: by 2002:a53:c80d:0:b0:668:172a:47a7 with SMTP id
+ 956f58d0204a3-66ccb6ce373mr938464d50.25.1787130741936; Wed, 19 Aug 2026
+ 02:12:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Wed, 19 Aug 2026 08:30:35 +0000 (UTC)
+References: <61c18ade-b0ce-426a-9c62-a7a1e550fe46@mail.kernel.org>
+In-Reply-To: <61c18ade-b0ce-426a-9c62-a7a1e550fe46@mail.kernel.org>
+From: Marco Elver <elver@google.com>
+Date: Wed, 19 Aug 2026 11:11:44 +0200
+X-Gm-Features: AcwNN1X-h2fcf_uBotHkG-2UVTKAss0yIeDrs7Gri8wJoGL9j3cJVPCOlJMwEkA
+Message-ID: <CANpmjNMhiiiZvtD3of5aCw2qp06dFsDrLUxBK09tC-F2hkPOEA@mail.gmail.com>
+Subject: Re: [PATCH RFC v3] rxrpc: Fix use-after-free in rxrpc_destroy_all_peers()
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-In nfsd_nl_listener_set_doit(), the kernel iterates over all
-NFSD_A_SERVER_SOCK_ADDR attributes provided in a netlink message to
-configure NFS server listeners. There is currently no limit on the number
-of attributes a user can send.
+#syz upstream
 
-For each attribute, svc_xprt_create_from_sa() is called, which may
-synchronously invoke request_module() to load the corresponding transport
-module. If a user provides a large number of invalid transport names,
-request_module() is called sequentially for each, taking a massive amount
-of time. Since this entire process occurs while holding the global
-nfsd_mutex, it blocks other tasks attempting to acquire the mutex and
-triggers a hung task timeout:
-
-  INFO: task blocked for more than 10 seconds.
-  ...
-  Call Trace:
-   <TASK>
-   __schedule+0x17e7/0x5630 kernel/sched/core.c:7234
-   schedule+0x164/0x2b0 kernel/sched/core.c:7326
-   schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7383
-   __mutex_lock_common kernel/locking/mutex.c:726 [inline]
-   __mutex_lock+0x7bf/0x1550 kernel/locking/mutex.c:821
-   nfsd_nl_version_get_doit+0x17c/0xd20 fs/nfsd/nfsctl.c:1889
-   genl_family_rcv_msg_doit+0x233/0x340 net/netlink/genetlink.c:1114
-   genl_family_rcv_msg net/netlink/genetlink.c:1194 [inline]
-   genl_rcv_msg+0x614/0x7a0 net/netlink/genetlink.c:1209
-  ...
-  2 locks held by task/5864:
-   #0: ffffffff90114168 (cb_lock){++++}-{4:4}, at: genl_rcv+0x19/0x40
-   net/netlink/genetlink.c:1217
-   #1: ffffffff8eeb1a60 (nfsd_mutex){+.+.}-{4:4}, at:
-   nfsd_nl_listener_set_doit+0x135/0x1750 fs/nfsd/nfsctl.c:1964
-
-Furthermore, the function does not break out of the loop if
-svc_xprt_create_from_sa() fails, and it suffers from an O(N^2) complexity
-issue because svc_find_listener() iterates over the serv->sv_permsocks list
-for each attribute.
-
-Address this by introducing a hard limit of 128 NFSD_A_SERVER_SOCK_ADDR
-attributes per netlink message. The limit is enforced before acquiring the
-nfsd_mutex to prevent lock contention. Additionally, modify the loop to
-break immediately if listener creation fails, avoiding needless sequential
-request_module() calls for invalid configurations.
-
-Fixes: 16a471177496 ("NFSD: add listener-{set,get} netlink command")
-Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+41bc60511c2884783c27@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=41bc60511c2884783c27
-Link: https://syzkaller.appspot.com/ai_job?id=30871f87-7a83-46b8-ab83-919894b0787b
-To: "Chuck Lever" <cel@kernel.org>
-To: "Jeff Layton" <jlayton@kernel.org>
-To: <linux-nfs@vger.kernel.org>
-To: "Lorenzo Bianconi" <lorenzo@kernel.org>
-Cc: "Dai Ngo" <Dai.Ngo@oracle.com>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "NeilBrown" <neil@brown.name>
-Cc: "Olga Kornievskaia" <okorniev@redhat.com>
-Cc: "Tom Talpey" <tom@talpey.com>
-
----
-v2:
-- Defined NFSD_MAX_LISTENERS macro instead of using a hardcoded constant.
-- Changed type of count variable to unsigned int.
-
-v1:
-https://lore.kernel.org/all/851cf46d-c7e4-470a-8319-36811d8b1da3@mail.kernel.org/T/
----
-diff --git a/fs/nfsd/nfsctl.c b/fs/nfsd/nfsctl.c
-index fa92e31d1..516c04c14 100644
---- a/fs/nfsd/nfsctl.c
-+++ b/fs/nfsd/nfsctl.c
-@@ -1943,6 +1943,8 @@ int nfsd_nl_version_get_doit(struct sk_buff *skb, struct genl_info *info)
- 	return err;
- }
- 
-+#define NFSD_MAX_LISTENERS 128
-+
- /**
-  * nfsd_nl_listener_set_doit - set the nfs running sockets
-  * @skb: reply buffer
-@@ -1955,12 +1957,19 @@ int nfsd_nl_listener_set_doit(struct sk_buff *skb, struct genl_info *info)
- 	struct net *net = genl_info_net(info);
- 	struct svc_xprt *xprt, *tmp;
- 	const struct nlattr *attr;
-+	unsigned int count = 0;
- 	struct svc_serv *serv;
- 	LIST_HEAD(permsocks);
- 	struct nfsd_net *nn;
- 	bool delete = false;
- 	int err, rem;
- 
-+	nlmsg_for_each_attr_type(attr, NFSD_A_SERVER_SOCK_ADDR, info->nlhdr,
-+				 GENL_HDRLEN, rem) {
-+		if (++count > NFSD_MAX_LISTENERS)
-+			return -EINVAL;
-+	}
-+
- 	mutex_lock(&nfsd_mutex);
- 
- 	err = nfsd_create_serv(net);
-@@ -2073,8 +2082,10 @@ int nfsd_nl_listener_set_doit(struct sk_buff *skb, struct genl_info *info)
- 		ret = svc_xprt_create_from_sa(serv, xcl_name, net, sa, 0,
- 					      current_cred());
- 		/* always save the latest error */
--		if (ret < 0)
-+		if (ret < 0) {
- 			err = ret;
-+			break;
-+		}
- 	}
- 
- 	if (!serv->sv_nrthreads && list_empty(&nn->nfsd_serv->sv_permsocks))
-
-
-base-commit: 075b74841bd0065a3bda3440873c747938e69b68
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On Tue, 18 Aug 2026 at 22:52, syzbot <syzbot@kernel.org> wrote:
+>
+> During network namespace teardown, rxrpc_destroy_all_peers() iterates over
+> the rxnet->peer_hash table to print leaked peers. However, it does so
+> without holding rxnet->peer_hash_lock. This allows a race condition with
+> asynchronous peer destruction, where RCU callbacks concurrently remove
+> peers from the hash table and free them. When rxrpc_destroy_all_peers()
+> accesses the freed peer, it results in a KASAN slab-use-after-free.
+>
+> BUG: KASAN: slab-use-after-free in rxrpc_destroy_all_peers+0xcc/0x150
+> net/rxrpc/peer_object.c:461
+> Read of size 8 at addr ffff88811089e420 by task kworker/u8:1/13
+> Call Trace:
+>  <TASK>
+>  rxrpc_destroy_all_peers+0xcc/0x150 net/rxrpc/peer_object.c:461
+>  rxrpc_exit_net+0x7f/0xc0 net/rxrpc/net_ns.c:114
+>  ops_exit_list net/core/net_namespace.c:199 [inline]
+>  ops_undo_list+0x43d/0x8d0 net/core/net_namespace.c:252
+>  cleanup_net+0x572/0x810 net/core/net_namespace.c:702
+>  process_one_work kernel/workqueue.c:3322 [inline]
+>  process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+>  worker_thread+0x92d/0xe10 kernel/workqueue.c:3486
+>  kthread+0x388/0x470 kernel/kthread.c:436
+>  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+>  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+>  </TASK>
+>
+> To fix the slab-use-after-free, acquire rxnet->peer_hash_lock with
+> spin_lock_bh() while iterating over rxnet->peer_hash in
+> rxrpc_destroy_all_peers().
+>
+> Additionally, insert rcu_barrier() in rxrpc_exit_net() prior to destroying
+> peers and local endpoints. Without rcu_barrier(), rxrpc_destroy_all_peers()
+> races with pending RCU callbacks that drop peer and local references,
+> logging spurious leak warnings. Furthermore, this missing synchronization
+> causes a downstream panic hazard in rxrpc_destroy_all_locals() because
+> in-flight peer releases leave rxnet->local_endpoints populated. Calling
+> rcu_barrier() ensures all pending RCU callbacks that drop peer and local
+> references complete prior to leak checks and local endpoint destruction.
+>
+> Fixes: 17226f124038 ("rxrpc: Fix leak of rxrpc_peer objects")
+> Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+c876adfab6362679008c@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=c876adfab6362679008c
+> Link: https://syzkaller.appspot.com/ai_job?id=7fecbeb2-cd9b-4ca2-8149-48663e20b153
+> To: "David S. Miller" <davem@davemloft.net>
+> To: "David Howells" <dhowells@redhat.com>
+> To: "Eric Dumazet" <edumazet@google.com>
+> To: "Jakub Kicinski" <kuba@kernel.org>
+> To: <linux-afs@lists.infradead.org>
+> To: "Marc Dionne" <marc.dionne@auristor.com>
+> To: <netdev@vger.kernel.org>
+> To: "Paolo Abeni" <pabeni@redhat.com>
+> Cc: "Simon Horman" <horms@kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> ---
+> v3:
+> - Added inline comments explaining the purpose of rcu_barrier() in rxrpc_exit_net() and peer_hash_lock acquisition in rxrpc_destroy_all_peers().
+>
+> v2:
+> - Added rcu_barrier() in rxrpc_exit_net() before peer and local endpoint teardown.
+> - Updated commit message to detail how rcu_barrier() prevents spurious leak warnings and downstream panics in rxrpc_destroy_all_locals().
+> https://lore.kernel.org/all/23b6e672-549a-4fd9-b731-9bfdc16148ea@mail.kernel.org/T/
+>
+> v1:
+> https://lore.kernel.org/all/efbfa532-8931-4227-9ba4-701ac86a342e@mail.kernel.org/T/
+> ---
+> diff --git a/net/rxrpc/net_ns.c b/net/rxrpc/net_ns.c
+> index 9a9834145..c00cddfd3 100644
+> --- a/net/rxrpc/net_ns.c
+> +++ b/net/rxrpc/net_ns.c
+> @@ -111,6 +111,11 @@ static __net_exit void rxrpc_exit_net(struct net *net)
+>         timer_delete_sync(&rxnet->peer_keepalive_timer);
+>         rxrpc_destroy_all_calls(rxnet);
+>         rxrpc_destroy_all_connections(rxnet);
+> +       /*
+> +        * Wait for pending RCU callbacks that drop peer and local
+> +        * references to avoid spurious leak warnings and panics.
+> +        */
+> +       rcu_barrier();
+>         rxrpc_destroy_all_peers(rxnet);
+>         rxrpc_destroy_all_locals(rxnet);
+>         proc_remove(rxnet->proc_net);
+> diff --git a/net/rxrpc/peer_object.c b/net/rxrpc/peer_object.c
+> index fa9a406e1..32da76256 100644
+> --- a/net/rxrpc/peer_object.c
+> +++ b/net/rxrpc/peer_object.c
+> @@ -454,6 +454,12 @@ void rxrpc_destroy_all_peers(struct rxrpc_net *rxnet)
+>         struct rxrpc_peer *peer;
+>         int i;
+>
+> +       /*
+> +        * The lock is needed to prevent use-after-free if a peer is being
+> +        * destroyed concurrently by an RCU callback.
+> +        */
+> +       spin_lock_bh(&rxnet->peer_hash_lock);
+> +
+>         for (i = 0; i < HASH_SIZE(rxnet->peer_hash); i++) {
+>                 if (hlist_empty(&rxnet->peer_hash[i]))
+>                         continue;
+> @@ -465,6 +471,8 @@ void rxrpc_destroy_all_peers(struct rxrpc_net *rxnet)
+>                                &peer->srx.transport);
+>                 }
+>         }
+> +
+> +       spin_unlock_bh(&rxnet->peer_hash_lock);
+>  }
+>
+>  /**
+>
+>
+> base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+>
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
