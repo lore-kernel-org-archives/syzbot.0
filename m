@@ -1,47 +1,35 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtpo49.interia.pl (smtpo49.interia.pl [217.74.67.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88F66448D05;
-	Wed, 19 Aug 2026 12:27:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E8C73A451E
+	for <syzbot@lists.linux.dev>; Thu, 20 Aug 2026 06:52:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787142421; cv=none; b=tTMpuRXboCPCZ22xyqKCAeUgslTOXfDlLum/CkT04yZMIfXhEq69KDgwEwFgS3wghjy8j/Zwm0R5FW/kE3RY9GqoeSB52WPKpZNGovyeDmbVmmlhwd57rzLzZFTzh5qtAdM+k/Qpwo9TIJ9tBslfFT0xwXRb8vHe+RHiHosBEz4=
+	t=1787208760; cv=none; b=nriCNhhBG8Bq/jQIW1CuK/Qa9V16GamxfEhBOaL6zNubRK181vYza57rAz0T6ldlYw/U4x1qs5DETdSg/rgafnxcNcudyKu9O/SdXuOeB8rpGpXMDRyLk3y8J87PtFEj1cv0HWBhZV8gP3LvhVekBhCDkWBSMFV6CFsXa/ZBIr4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787142421; c=relaxed/simple;
-	bh=xvy76afzqrjZfTVLB4UNNNQtHgPbZ45FXx+pRWkQAaI=;
+	s=arc-20240116; t=1787208760; c=relaxed/simple;
+	bh=wBkW5PYISKJjjdLQctEWtnN777EjgI27+GJWu8aoSzM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OSPRZcvW+j/+yo49sGajovEvhyC/0SfGvZimrKqEroe6aVOi2TPctAcbN7xy2dIp2i1Wl16Y4TErBN9PiwDdPpSNkltpvaMmh9wX4RCXpyWQ3cdkBIgrt2yRFgJS0djLfIlre1uz5p/QAixAuGaF8psNdQ6HRmTCs8IjnaDdB8g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Ni1zrXGo; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=MjRCayqkj++oU6VEOsExhvXF1bINNgUhYN0mgEQ2Fc/eVMCePYy5OI0v5neo67iAM11UxZlWxNak+FEdMgLNwROSvIgbwyy1BV9CNpYam44KVZz2lBwBF3Zbt5h1D2H3jFaCpEh76LI8zXUsUNwmy4R/Y8jQN1Wq08TaQKU9n0s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=NLci3cnG; arc=none smtp.client-ip=217.74.67.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Ni1zrXGo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D95EF1F00A3A;
-	Wed, 19 Aug 2026 12:26:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1787142420;
-	bh=XPbX6PsQGH85lxvob7JhlQFhog6YchHNLpyShfsHTtY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Ni1zrXGotEMmjhh/Ax69CVpU5xlqZorAQzkKy7V6RBu0otLdZKSZ9LILqzNOz6IzK
-	 Tx+6gQx5XVqpJYM008OgTCfpjw1i6pl+XVsp44fu1pu0ExAL9ljO9aFvHH5PYvCchU
-	 KHLqzb7QlgtlyGd7nErM3UvTNK/ylEgTsAotpjko=
-Date: Wed, 19 Aug 2026 14:26:54 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Alan Stern <stern@rowland.harvard.edu>
-Cc: syzbot <syzbot+df9e891bf8ea586f846b@syzkaller.appspotmail.com>,
-	asml.silence@gmail.com, axboe@kernel.dk, brauner@kernel.org,
-	io-uring@vger.kernel.org, jack@suse.cz, kartikey406@gmail.com,
-	kees@kernel.org, linux-kernel@vger.kernel.org,
-	linux-usb@vger.kernel.org, mjguzik@gmail.com, nogikh@google.com,
-	syzbot@kernel.org, syzbot@lists.linux.dev,
-	syzkaller-bugs@googlegroups.com,
-	syzkaller-upstream-moderation@googlegroups.com,
-	torvalds@ppc970.osdl.org, viro@zeniv.linux.org.uk
-Subject: Re: [syzbot] [usb?] KASAN: slab-use-after-free Read in ep_open
-Message-ID: <2026081906-possible-seltzer-6db9@gregkh>
-References: <34e65096-8827-470c-9a88-8c643cccef22@rowland.harvard.edu>
- <6a8338ea.dbb3a75c.20434b.006a.GAE@google.com>
- <16741050-a3e2-4193-bfca-232a615a1311@rowland.harvard.edu>
- <2026081849-flatbed-unashamed-a52d@gregkh>
- <6232f9c1-8b07-42b9-8660-ad514702ae1c@rowland.harvard.edu>
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="NLci3cnG"
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Thu, 20 Aug 2026 08:52:32 +0200 (CEST)
+Date: Thu, 20 Aug 2026 08:52:29 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC v2] nfsd: prevent hung task in
+ nfsd_nl_listener_set_doit()
+Message-ID: <aoakLRUQsmUCyRRX@nr200>
+References: <4c63b53f-3063-484b-b5e6-6b024c2322af@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -50,43 +38,132 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6232f9c1-8b07-42b9-8660-ad514702ae1c@rowland.harvard.edu>
+In-Reply-To: <4c63b53f-3063-484b-b5e6-6b024c2322af@mail.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1787208753; bh=Gfalw4YhrCFxkHd1/bIOInuKfP+NryqbUfb5WfGvNoA=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=NLci3cnGAbVQcmdslTHH0FlzSMyCs19sFRhXHcuUWrYODmnF+xtSjVZYStiaszZpI
+	 GKUKAuKDujfeLnfJgOxi4cOn76hcw4rS9eTPbOZTHD7sPweUHkq8iidBwRJzqa3yzY
+	 D9eyipX+GQB75S+J4y1+O3wdlKejoPeSTa6CTSnE=
 
-On Tue, Aug 18, 2026 at 11:37:16AM -0400, Alan Stern wrote:
-> On Tue, Aug 18, 2026 at 09:42:34AM +0200, Greg KH wrote:
-> > On Mon, Aug 17, 2026 at 02:14:17PM -0400, Alan Stern wrote:
-> > > Greg:
-> > > 
-> > > Has this patch ever been queued?
-> > > 
-> > > https://lore.kernel.org/linux-usb/ee41fbfd-f368-4a06-95d6-ae9b4267fd82@mail.kernel.org/
-> > 
-> > No because it looks like there are competing patches here as you point
-> > out.
-> > 
-> > > Looks like you can add syzbot's Tested-by: tag, as well as my Acked-by:.
-> > > 
-> > > Note that a different patch to fix the same problem was submitted here:
-> > > 
-> > > https://lore.kernel.org/linux-usb/20260731230603.4637-1-kartikey406@gmail.com/
-> > > 
-> > > IMO the first patch above is superior.
-> > 
-> > So Aleksandr's patch should be applied and not Deepanshu's?
+#syz upstream
+
+On sie 19, 2026 08:30, syzbot wrote:
+> In nfsd_nl_listener_set_doit(), the kernel iterates over all
+> NFSD_A_SERVER_SOCK_ADDR attributes provided in a netlink message to
+> configure NFS server listeners. There is currently no limit on the number
+> of attributes a user can send.
 > 
-> That's my recommendation.  You can take a quick look at the two patches 
-> and see what you think.
+> For each attribute, svc_xprt_create_from_sa() is called, which may
+> synchronously invoke request_module() to load the corresponding transport
+> module. If a user provides a large number of invalid transport names,
+> request_module() is called sequentially for each, taking a massive amount
+> of time. Since this entire process occurs while holding the global
+> nfsd_mutex, it blocks other tasks attempting to acquire the mutex and
+> triggers a hung task timeout:
 > 
-> We haven't heard back from Deepanshu.  Aleksandr doesn't seem to have 
-> strong feelings either way.
+>   INFO: task blocked for more than 10 seconds.
+>   ...
+>   Call Trace:
+>    <TASK>
+>    __schedule+0x17e7/0x5630 kernel/sched/core.c:7234
+>    schedule+0x164/0x2b0 kernel/sched/core.c:7326
+>    schedule_preempt_disabled+0x13/0x30 kernel/sched/core.c:7383
+>    __mutex_lock_common kernel/locking/mutex.c:726 [inline]
+>    __mutex_lock+0x7bf/0x1550 kernel/locking/mutex.c:821
+>    nfsd_nl_version_get_doit+0x17c/0xd20 fs/nfsd/nfsctl.c:1889
+>    genl_family_rcv_msg_doit+0x233/0x340 net/netlink/genetlink.c:1114
+>    genl_family_rcv_msg net/netlink/genetlink.c:1194 [inline]
+>    genl_rcv_msg+0x614/0x7a0 net/netlink/genetlink.c:1209
+>   ...
+>   2 locks held by task/5864:
+>    #0: ffffffff90114168 (cb_lock){++++}-{4:4}, at: genl_rcv+0x19/0x40
+>    net/netlink/genetlink.c:1217
+>    #1: ffffffff8eeb1a60 (nfsd_mutex){+.+.}-{4:4}, at:
+>    nfsd_nl_listener_set_doit+0x135/0x1750 fs/nfsd/nfsctl.c:1964
+> 
+> Furthermore, the function does not break out of the loop if
+> svc_xprt_create_from_sa() fails, and it suffers from an O(N^2) complexity
+> issue because svc_find_listener() iterates over the serv->sv_permsocks list
+> for each attribute.
+> 
+> Address this by introducing a hard limit of 128 NFSD_A_SERVER_SOCK_ADDR
+> attributes per netlink message. The limit is enforced before acquiring the
+> nfsd_mutex to prevent lock contention. Additionally, modify the loop to
+> break immediately if listener creation fails, avoiding needless sequential
+> request_module() calls for invalid configurations.
+> 
+> Fixes: 16a471177496 ("NFSD: add listener-{set,get} netlink command")
+> Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+41bc60511c2884783c27@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=41bc60511c2884783c27
+> Link: https://syzkaller.appspot.com/ai_job?id=30871f87-7a83-46b8-ab83-919894b0787b
+> To: "Chuck Lever" <cel@kernel.org>
+> To: "Jeff Layton" <jlayton@kernel.org>
+> To: <linux-nfs@vger.kernel.org>
+> To: "Lorenzo Bianconi" <lorenzo@kernel.org>
+> Cc: "Dai Ngo" <Dai.Ngo@oracle.com>
+> Cc: <linux-kernel@vger.kernel.org>
+> Cc: "NeilBrown" <neil@brown.name>
+> Cc: "Olga Kornievskaia" <okorniev@redhat.com>
+> Cc: "Tom Talpey" <tom@talpey.com>
+> 
+> ---
+> v2:
+> - Defined NFSD_MAX_LISTENERS macro instead of using a hardcoded constant.
+> - Changed type of count variable to unsigned int.
+> 
+> v1:
+> https://lore.kernel.org/all/851cf46d-c7e4-470a-8319-36811d8b1da3@mail.kernel.org/T/
+> ---
+> diff --git a/fs/nfsd/nfsctl.c b/fs/nfsd/nfsctl.c
+> index fa92e31d1..516c04c14 100644
+> --- a/fs/nfsd/nfsctl.c
+> +++ b/fs/nfsd/nfsctl.c
+> @@ -1943,6 +1943,8 @@ int nfsd_nl_version_get_doit(struct sk_buff *skb, struct genl_info *info)
+>  	return err;
+>  }
+>  
+> +#define NFSD_MAX_LISTENERS 128
+> +
+>  /**
+>   * nfsd_nl_listener_set_doit - set the nfs running sockets
+>   * @skb: reply buffer
+> @@ -1955,12 +1957,19 @@ int nfsd_nl_listener_set_doit(struct sk_buff *skb, struct genl_info *info)
+>  	struct net *net = genl_info_net(info);
+>  	struct svc_xprt *xprt, *tmp;
+>  	const struct nlattr *attr;
+> +	unsigned int count = 0;
+>  	struct svc_serv *serv;
+>  	LIST_HEAD(permsocks);
+>  	struct nfsd_net *nn;
+>  	bool delete = false;
+>  	int err, rem;
+>  
+> +	nlmsg_for_each_attr_type(attr, NFSD_A_SERVER_SOCK_ADDR, info->nlhdr,
+> +				 GENL_HDRLEN, rem) {
+> +		if (++count > NFSD_MAX_LISTENERS)
+> +			return -EINVAL;
+> +	}
+> +
+>  	mutex_lock(&nfsd_mutex);
+>  
+>  	err = nfsd_create_serv(net);
+> @@ -2073,8 +2082,10 @@ int nfsd_nl_listener_set_doit(struct sk_buff *skb, struct genl_info *info)
+>  		ret = svc_xprt_create_from_sa(serv, xcl_name, net, sa, 0,
+>  					      current_cred());
+>  		/* always save the latest error */
+> -		if (ret < 0)
+> +		if (ret < 0) {
+>  			err = ret;
+> +			break;
+> +		}
+>  	}
+>  
+>  	if (!serv->sv_nrthreads && list_empty(&nn->nfsd_serv->sv_permsocks))
+> 
+> 
+> base-commit: 075b74841bd0065a3bda3440873c747938e69b68
 
-Aleksandr's patch is much more simple, and relies on the reference
-counting logic in the inode itself, instead of "hand rolling" it like
-Deepanshu's does.
-
-I'll take it after -rc1 is out.  As this is a syzbot-only type of thing,
-there's no rush here.
-
-thanks,
-
-greg k-h
+-- 
+Slawomir Stepien
