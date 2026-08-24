@@ -1,235 +1,177 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55695417BE2
-	for <syzbot@lists.linux.dev>; Mon, 24 Aug 2026 11:58:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787572735; cv=pass; b=fVi3AamcRE/zCZaPJuQ5MB79aPu+Hr/D+xqWwJBFYASWH/qXbwRufu0LN8Ry0B1j57oyG0CWAoYkAogBRNWQf+xAKosHvwWs0Y/+9S3VM9+Ho4vjtmA5GoI7zhh6cYgUCwy9YT/ZeCXfPIXq44NOIOOzzPfsylYbbhlcHIAAksY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787572735; c=relaxed/simple;
-	bh=emICK5/qnW90205Qvb+86L87S74pEFmyev1Z9BL/9zY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AgClJN+ojKzAakvpwxSka9ySez9IkT0D0eALCfJs1wsryMAQL47feU6o+jwYTSmvSsYIYf6GPLs+k9i1unM99U6Ub3JxVBk1g3mbmMS3ly2UHiSVzEFx3zFIFCH88SLTPQSpHQpFfhaDUEgu5fXZZi9oa6XkG47d8xLAemkvYZE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=hvNd82TJ; arc=pass smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6313641D213
+	for <syzbot@lists.linux.dev>; Mon, 24 Aug 2026 12:00:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787572808; cv=none; b=XEtC3RZ6ZZ6g+tuu5vkCNtQjx5L5290YIU9SqepaQuBfa4y860ljt/gu8I9KNjrf21e9i/zCH38fBgOYbWE5edrMt0EUFDR1ON7sl9l+5V8kULV2Wi2GI90nfKnJrHgKN4fiLVevImKTWcxqQ38WrQbBqKr7OxWxW/hpVYTUNQU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787572808; c=relaxed/simple;
+	bh=XO409K0StwpLQ51ttUnysXq9fibcVbJfjW6VngM7GzU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=NmTlvfJY41+MkzOnnTp3WcfGWPNVjL/cbbgXhf5Uhz1zJU7IFHw+EnKIiUTX7JWlk/NgaBP3zNmyTMTHX7YqzdEjQ6/PaPDYTc+kJCkf6rEk+utm5P9Bemn5Q2jaRY18TYdFhx+ZHEVxPEG6hGKSds0tLicAKG0Ptsbr/cmIXco=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VgLKseqW; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="hvNd82TJ"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VgLKseqW"
 Received: by smtp.kernel.org (Postfix)
-	id E87BE1F00A3A; Mon, 24 Aug 2026 11:58:52 +0000 (UTC)
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=217.74.67.75
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1787572732;
-	b=wn+LD4XbBrkJ8RM8j7wCq+Fw11J05Q23wL9yv8HLKVE5Gvb1IS3peSnw3HrAAMjKw9sS
-	 8NhFuY44mROFrwNuPqZ8KGYAAnAnGHzOzhS7PQkkiEzM1cdh/hXDGvkzZwBtNHIZeyuPW
-	 u2sRpTnanoSiu15AGhfmPxxAOs4kxKytGMg0GMzLvooF6+PvDee/ID1arc/LQJLKa3ZC9
-	 DvJirpy4DRVGSSDbh1pKa/4uCWWxwSAT4NtNbx4f//9AHf1UCeueLkjvfbFOmA1rlxgF2
-	 iUUmu2NBym/JUBxaXOPjA5AGAawrMFTUZcSYntzd4NtSfhESrCGA+vg+/S4KRSkiDEg==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1787572732;
-	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 DKIM-Signature;
-	bh=UbHYck8WvBnA94SIGXSWUg/gY2wL//QWFj6Avk+5M6o=;
-	b=z1MakmW5p/ibpMjm4U7m+R0JFeGjlWgtypLpGoJuHLwicCUZ/eqAWJRg0LLbJkFzsaDL
-	 6FVAgyn5UkBvo4Pgve9FrwYV6Ry6TLzHRKoDuFr8HFC5mWwVErVS5mIOcYM6GrW0tHyK3
-	 ej4uZhWi9Uefsf32uQ/MbyKF4Eclr2v7XKLdKGq2x3JzNBxO4T18Q5Fq8923TtTVu8kPS
-	 dbPv8BA8jIslDfTsFCTqt1oqmwmClFSfHgKSkEew/aE1xBlrR8uLiYgYq2NLnp3fKccz3
-	 SZBz+bHCCi8qjDMslpfBoxwbGFu8Vm5MHDJkCMe1FUmVVEwPuPJCHkP1VqZP2Asciew==
-ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=hvNd82TJ;
-	dmarc=pass header.from=poczta.fm;
-	spf=pass smtp.mailfrom=poczta.fm;
-	arc=none smtp.remote-ip=217.74.67.75
-Received: from smtpo75.interia.pl (smtpo75.interia.pl [217.74.67.75])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id E83DD1F000E9
-	for <syzbot@kernel.org>; Mon, 24 Aug 2026 11:58:50 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=hvNd82TJ
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org E83DD1F000E9
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=poczta.fm
-Received: from nr200 (unknown [80.68.231.31])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
-	Mon, 24 Aug 2026 13:58:47 +0200 (CEST)
-Date: Mon, 24 Aug 2026 13:58:44 +0200
-From: Slawomir Stepien <sst@poczta.fm>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC] drm/cirrus-qemu: Use actual VRAM size to prevent
- out-of-bounds write
-Message-ID: <aowx9LUZgrhDZnSM@nr200>
-References: <6e0e7e49-c50d-472e-9cc2-ceaf814e0fc7@mail.kernel.org>
+	id 1544E1F00A3A; Mon, 24 Aug 2026 12:00:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B5B31F000E9;
+	Mon, 24 Aug 2026 12:00:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787572807;
+	bh=XO409K0StwpLQ51ttUnysXq9fibcVbJfjW6VngM7GzU=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References;
+	b=VgLKseqWQpqDndGPbJJhdF6YhVpH5QytuXmaGdh/SRH+MRo2X3PIBMOCBhOuc4/37
+	 HnpiQuULhmzGxLyNNruSXMuKxR5yBc8ooVzMwQStM6EcOWjIswJsI2J0sLhVGMFcfp
+	 0vF+ypPMcHJJ9TMTAkvm3mgrwqgY6ZB51FbWhdsL4rS0srugTuJGT1fq2P4wqnAQA5
+	 OAhsu992GxvZYcWJicn/y35giqb4Rufr1BMfnD1YjLnMxW3SgzcZpslAOX5ULCHD1F
+	 e3tfhbzzxttWyDM50BrIAk+eu6MrZW3ee6GQkqPntWqG4VzZSPrzgjwRdCwg3bhVSK
+	 HKRWqiiLNPIhA==
+Message-ID: <15f03f6f3c8a3b0f1d68fcf376fb082e1b4dbc5d.camel@kernel.org>
+Subject: Re: [PATCH] nfsd: prevent hung task in nfsd_nl_listener_set_doit()
+From: Jeff Layton <jlayton@kernel.org>
+To: Slawomir Stepien <sst@poczta.fm>
+Cc: syzbot <syzbot@kernel.org>, syzkaller-bugs@googlegroups.com, Chuck Lever
+	 <cel@kernel.org>, linux-nfs@vger.kernel.org, Lorenzo Bianconi
+ <lorenzo@kernel.org>, 	Dai.Ngo@oracle.com, linux-kernel@vger.kernel.org,
+ neil@brown.name, 	okorniev@redhat.com, syzbot@lists.linux.dev,
+ tom@talpey.com
+Date: Mon, 24 Aug 2026 08:00:04 -0400
+In-Reply-To: <aotXzLmrd-B89YRg@nr200>
+References: <4601ffd5-c662-4ab1-ab2f-50a67a0a990e@mail.kernel.org>
+	 <699bacb503758fbe2ebf01f3e8aca95e3eee4128.camel@kernel.org>
+	 <aotXzLmrd-B89YRg@nr200>
+Autocrypt: addr=jlayton@kernel.org; prefer-encrypt=mutual;
+ keydata=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
+ QZIQXVeAA+smfTT0tDrisj1U5x6ZB9b3nBg65kc=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.60.2 (3.60.2-1.fc44) 
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6e0e7e49-c50d-472e-9cc2-ceaf814e0fc7@mail.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
-	t=1787572728; bh=UbHYck8WvBnA94SIGXSWUg/gY2wL//QWFj6Avk+5M6o=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-	b=hvNd82TJNgX35dfWnQLlVYWfykUbKrDfZq08zazz6YMYfBrsDMYaaNlM7YxvdINVl
-	 H2I1byin3n5iATUHYEqLRrA904GUEvB6L57bZ0qg1wl4fhLCJSnlC+svwPtuu8zDkU
-	 iRTMr4mBnenNf5L7/TwrPWL83RiWDCuW//VDYZ00=
 
-On sie 16, 2026 23:42, 'syzbot' via syzkaller-upstream-moderation wrote:
-> The `cirrus-qemu` driver previously relied on a hardcoded constant
-> `CIRRUS_VRAM_SIZE` (4 MB) to validate framebuffer sizes. However, during
-> device probe, the driver maps the VRAM using the actual size of the PCI
-> device's BAR0.
-> 
-> If a privileged user unbinds a random PCI device with a BAR0 smaller than 4
-> MB and binds the `cirrus-qemu` driver to it, the mapped VRAM will be
-> smaller than 4 MB. Because the validation checks still used the hardcoded 4
-> MB size, the driver would allow the creation of a framebuffer larger than
-> the actually mapped VRAM.
-> 
-> When the DRM device is closed, `drm_release()` triggers a full atomic
-> commit to restore the fbdev mode. This calls
-> `cirrus_primary_plane_helper_atomic_update()`, which uses `drm_fb_memcpy()`
-> to copy the framebuffer into the mapped VRAM. Since the mapped VRAM is
-> smaller than the framebuffer, `memcpy_toio()` writes past the end of the
-> mapped I/O memory, resulting in a supervisor write page fault:
-> 
-> BUG: unable to handle page fault for address: ffffc900033dd000
-> #PF: supervisor write access in kernel mode
-> #PF: error_code(0x0002) - not-present page
-> ...
-> RIP: 0010:rep_movs arch/x86/lib/iomem.c:13 [inline]
-> RIP: 0010:string_memcpy_toio arch/x86/lib/iomem.c:64 [inline]
-> RIP: 0010:memcpy_toio+0x7c/0xe0 arch/x86/lib/iomem.c:110
-> ...
-> Call Trace:
->  <TASK>
->  iosys_map_memcpy_to include/linux/iosys-map.h:285 [inline]
->  drm_fb_memcpy+0x325/0x5d0 drivers/gpu/drm/drm_format_helper.c:442
->  cirrus_primary_plane_helper_atomic_update+0x98a/0xb00
->  drivers/gpu/drm/tiny/cirrus-qemu.c:358
->  drm_atomic_helper_commit_planes+0x626/0xea0
->  drivers/gpu/drm/drm_atomic_helper.c:3038
->  drm_atomic_helper_commit_tail+0x60/0x510
->  drivers/gpu/drm/drm_atomic_helper.c:1989
->  commit_tail+0x2b1/0x3c0 drivers/gpu/drm/drm_atomic_helper.c:2074
->  drm_atomic_helper_commit+0xa77/0xb10
->  drivers/gpu/drm/drm_atomic_helper.c:2312
-> ...
-> 
-> To fix this, remove the hardcoded `CIRRUS_VRAM_SIZE` and dynamically track
-> the actual VRAM size in `struct cirrus_device`. Initialize this size from
-> the PCI resource length during probe, ensuring it is non-zero. Update the
-> validation hooks `cirrus_primary_plane_helper_atomic_check()` and
-> `cirrus_mode_config_mode_valid()` to use the dynamically tracked VRAM size,
-> ensuring that framebuffers strictly fit within the mapped memory.
-> 
-> Fixes: ab3e023b1b4c ("drm/cirrus: rewrite and modernize driver.")
-> Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+2442951a6abb004df963@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=2442951a6abb004df963
-> Link: https://syzkaller.appspot.com/ai_job?id=0995d2c9-3eea-4945-84e7-ab3d2acd4f21
-> To: "David Airlie" <airlied@gmail.com>
-> To: "Dave Airlie" <airlied@redhat.com>
-> To: <dri-devel@lists.freedesktop.org>
-> To: "Gerd Hoffmann" <kraxel@redhat.com>
-> To: "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>
-> To: "Maxime Ripard" <mripard@kernel.org>
-> To: "Simona Vetter" <simona@ffwll.ch>
-> To: "Thomas Zimmermann" <tzimmermann@suse.de>
-> To: <virtualization@lists.linux.dev>
-> Cc: "Jani Nikula" <jani.nikula@intel.com>
-> Cc: <linux-kernel@vger.kernel.org>
-> Cc: "Luca Ceresoli" <luca.ceresoli@bootlin.com>
-> 
-> ---
-> diff --git a/drivers/gpu/drm/tiny/cirrus-qemu.c b/drivers/gpu/drm/tiny/cirrus-qemu.c
-> index 075221b43..7f8cb3264 100644
-> --- a/drivers/gpu/drm/tiny/cirrus-qemu.c
-> +++ b/drivers/gpu/drm/tiny/cirrus-qemu.c
-> @@ -55,7 +55,6 @@
->  #define DRIVER_MINOR 0
->  
->  #define CIRRUS_MAX_PITCH (0x1FF << 3)      /* (4096 - 1) & ~111b bytes */
-> -#define CIRRUS_VRAM_SIZE (4 * 1024 * 1024) /* 4 MB */
->  
->  struct cirrus_device {
->  	struct drm_device	       dev;
-> @@ -68,6 +67,7 @@ struct cirrus_device {
->  
->  	/* HW resources */
->  	void __iomem		       *vram;
-> +	size_t			       vram_size;
->  	void __iomem		       *mmio;
->  };
->  
-> @@ -298,6 +298,7 @@ static const uint64_t cirrus_primary_plane_format_modifiers[] = {
->  static int cirrus_primary_plane_helper_atomic_check(struct drm_plane *plane,
->  						    struct drm_atomic_commit *state)
->  {
-> +	struct cirrus_device *cirrus = to_cirrus(plane->dev);
->  	struct drm_plane_state *new_plane_state = drm_atomic_get_new_plane_state(state, plane);
->  	struct drm_framebuffer *fb = new_plane_state->fb;
->  	struct drm_crtc *new_crtc = new_plane_state->crtc;
-> @@ -319,7 +320,7 @@ static int cirrus_primary_plane_helper_atomic_check(struct drm_plane *plane,
->  	/* validate size constraints */
->  	if (fb->pitches[0] > CIRRUS_MAX_PITCH)
->  		return -EINVAL;
-> -	else if (fb->pitches[0] > CIRRUS_VRAM_SIZE / fb->height)
-> +	else if (fb->pitches[0] > cirrus->vram_size / fb->height)
->  		return -EINVAL;
->  
->  	return 0;
-> @@ -514,6 +515,7 @@ static int cirrus_pipe_init(struct cirrus_device *cirrus)
->  static enum drm_mode_status cirrus_mode_config_mode_valid(struct drm_device *dev,
->  							  const struct drm_display_mode *mode)
->  {
-> +	struct cirrus_device *cirrus = to_cirrus(dev);
->  	const struct drm_format_info *format = drm_format_info(DRM_FORMAT_XRGB8888);
->  	u64 pitch;
->  
-> @@ -525,7 +527,7 @@ static enum drm_mode_status cirrus_mode_config_mode_valid(struct drm_device *dev
->  		return MODE_BAD_WIDTH;
->  	if (pitch > CIRRUS_MAX_PITCH)
->  		return MODE_BAD_WIDTH; /* maximum programmable pitch */
-> -	if (pitch > CIRRUS_VRAM_SIZE / mode->vdisplay)
-> +	if (pitch > cirrus->vram_size / mode->vdisplay)
->  		return MODE_MEM;
->  
->  	return MODE_OK;
-> @@ -602,8 +604,12 @@ static int cirrus_pci_probe(struct pci_dev *pdev,
->  
->  	dev = &cirrus->dev;
->  
-> +	if (pci_resource_len(pdev, 0) == 0)
+On Sun, 2026-08-23 at 22:27 +0200, Slawomir Stepien wrote:
+> On sie 20, 2026 07:37, Jeff Layton wrote:
+> > On Thu, 2026-08-20 at 06:55 +0000, syzbot wrote:
+> > > From: Slawomir Stepien <sst@poczta.fm>
+> > >=20
+> > > In nfsd_nl_listener_set_doit(), the kernel iterates over all
+> > > NFSD_A_SERVER_SOCK_ADDR attributes provided in a netlink message to
+> > > configure NFS server listeners. There is currently no limit on the nu=
+mber
+> > > of attributes a user can send.
+> > >=20
+> > > For each attribute, svc_xprt_create_from_sa() is called, which may
+> > > synchronously invoke request_module() to load the corresponding trans=
+port
+> > > module. If a user provides a large number of invalid transport names,
+> > > request_module() is called sequentially for each, taking a massive am=
+ount
+> > > of time. Since this entire process occurs while holding the global
+> > > nfsd_mutex, it blocks other tasks attempting to acquire the mutex and
+> > > triggers a hung task timeout:
+> > >=20
+> >=20
+> > My LLM latched onto the same explanation, but the request module
+> > upcalls are actually quite quick and have some other gates on them that
+> > make this problem hard to hit in practice.
+>=20
+> Oh, OK. Thanks for clearing that up!
+>=20
+> > The real problem is rpcbind registration, which can be quite slow. The
+> > fix for that is to make the registration asynchronous, and to not
+> > trigger errors on rpcbind registration failure. That's a bigger
+> > project, but let us know if you're interested!
+>=20
+> I think I'm not that good to do it correctly and in some reasonable time.=
+ I might take a 2nd look at
+> this and understand the root cause (also, based on your comments in your =
+series) but I think in the
+> end it might be too hard for me.
+>=20
 
-How about checking here also if the returned value is == to CIRRUS_VRAM_SIZE and leave the
-CIRRUS_VRAM_SIZE as it is right now? Or even better:
+Fair enough. It's a non-trivial project, and after some discussion with
+Chuck, I'm leaning toward moving most of the rpcbind registration into
+userland. That'll mean having to rev the netlink protocol, etc.
 
-if (pci_resource_len(pdev, 0) != CIRRUS_VRAM_SIZE)
-	return -ENODEV;
-
-This will make this change a much simpler one!
-
-It seems, after checking the qemu sources, that CLGD5446 must have 4MB and there is not other
-option.
-
-> +		return -ENODEV;
-> +
-> +	cirrus->vram_size = pci_resource_len(pdev, 0);
->  	cirrus->vram = devm_ioremap(&pdev->dev, pci_resource_start(pdev, 0),
-> -				    pci_resource_len(pdev, 0));
-> +				    cirrus->vram_size);
->  	if (cirrus->vram == NULL)
->  		return -ENOMEM;
->  
-> 
-> 
-> base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
-
--- 
-Slawomir Stepien
+Right now, I don't have a timeline for working on this, so we're
+probably just going to have to suffer with more syzbot reports until
+that can come to fruition.
+--=20
+Jeff Layton <jlayton@kernel.org>
