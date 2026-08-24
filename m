@@ -1,438 +1,235 @@
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE28E3A168E
-	for <syzbot@lists.linux.dev>; Mon, 24 Aug 2026 07:54:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787558089; cv=none; b=DonYy1GPOHVMHeYSm41Xpb4vxfFOnbO/bf92bYJanKj9i8pM1iNM7NhM2qK90k2j+2zmUHZQT06tUSh8ubvqFTWcPz4jH80t/apuZflQNyQSudSbGa4uUxiiCIcGNrpN+Z3thD5MmOtXntS5ZkiMpECYH2vhMsv7Jb+Yv5QyZxA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787558089; c=relaxed/simple;
-	bh=ZSd73m+EQF5nrlp/cg45LGphbHQY0AXi1CVHNqkSjYc=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=bmfjLuCf/XITZM8bXoFsPJ7di2jZ6PQHjFSynDMUbzdTOg3GNCLsbEYsqmgHElCv7ISAifJPCqx0AEDUim5iVKWHpYkjw5dU/F17JoTRBlZn8C6gxZZq1cMTCvCM3sCkZFjqPQKFzloILMYBV9ilA4yfV/Zan9eCJvFe0UK7XCg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4a49f09233dso3178020b6e.2
-        for <syzbot@lists.linux.dev>; Mon, 24 Aug 2026 00:54:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787558086; x=1788162886;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=UV5uddHbJVhKxXuaUP79OfyMHygUsuBFadJkYsxDixM=;
-        b=JYxhmCkz37P+suff//0Hqgf9GX2vFcyimuT6U4lK1Wmj49KP5NdW2sbZMZBN/tjPS9
-         9N83ovW9S+wxtKKW5e0Y7UI+cLMlDmXe4dR6NZi+NLvvPzTYGTv6Enbv8IdoMw05lSCJ
-         R2D8Eq9ycUKDp6af4hq9ISQ/JY5yyUt4MfHAq+B/F4SKyVIdY6n20L4H4Jp4eZE1gth7
-         CgkB3VqvziTgB1bFceifRiY5sr8MRhQ6pT45d0IY0eY1dMx38eUusP9nfLZlexiUfW76
-         HwAvLEyDpTqOpnTDaRTsXaHMfTBJ0pq1CIZPCQovDfw0NgwBGKeWxEQFpRXRPp5goT0r
-         BN3w==
-X-Gm-Message-State: AFuF++mQBUWHxxAcxmrZS6ccnZq6n7VQbMD468h7NeIvjODqks9idv+T
-	LL+wXg3ZIP5c1DxtKqCvBpbRQhv4dNqszfQoayh75Hs9Iu+6YmhXw7ioajkqllwVRuudT/vDnWm
-	y7PpGQZG4zQvmexGDq8+y2RDsqmRjhVxsRZI1LCMNKq/yt3I9Cc/ZRVqyfKU=
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55695417BE2
+	for <syzbot@lists.linux.dev>; Mon, 24 Aug 2026 11:58:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787572735; cv=pass; b=fVi3AamcRE/zCZaPJuQ5MB79aPu+Hr/D+xqWwJBFYASWH/qXbwRufu0LN8Ry0B1j57oyG0CWAoYkAogBRNWQf+xAKosHvwWs0Y/+9S3VM9+Ho4vjtmA5GoI7zhh6cYgUCwy9YT/ZeCXfPIXq44NOIOOzzPfsylYbbhlcHIAAksY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787572735; c=relaxed/simple;
+	bh=emICK5/qnW90205Qvb+86L87S74pEFmyev1Z9BL/9zY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AgClJN+ojKzAakvpwxSka9ySez9IkT0D0eALCfJs1wsryMAQL47feU6o+jwYTSmvSsYIYf6GPLs+k9i1unM99U6Ub3JxVBk1g3mbmMS3ly2UHiSVzEFx3zFIFCH88SLTPQSpHQpFfhaDUEgu5fXZZi9oa6XkG47d8xLAemkvYZE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=hvNd82TJ; arc=pass smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="hvNd82TJ"
+Received: by smtp.kernel.org (Postfix)
+	id E87BE1F00A3A; Mon, 24 Aug 2026 11:58:52 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=217.74.67.75
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1787572732;
+	b=wn+LD4XbBrkJ8RM8j7wCq+Fw11J05Q23wL9yv8HLKVE5Gvb1IS3peSnw3HrAAMjKw9sS
+	 8NhFuY44mROFrwNuPqZ8KGYAAnAnGHzOzhS7PQkkiEzM1cdh/hXDGvkzZwBtNHIZeyuPW
+	 u2sRpTnanoSiu15AGhfmPxxAOs4kxKytGMg0GMzLvooF6+PvDee/ID1arc/LQJLKa3ZC9
+	 DvJirpy4DRVGSSDbh1pKa/4uCWWxwSAT4NtNbx4f//9AHf1UCeueLkjvfbFOmA1rlxgF2
+	 iUUmu2NBym/JUBxaXOPjA5AGAawrMFTUZcSYntzd4NtSfhESrCGA+vg+/S4KRSkiDEg==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1787572732;
+	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 DKIM-Signature;
+	bh=UbHYck8WvBnA94SIGXSWUg/gY2wL//QWFj6Avk+5M6o=;
+	b=z1MakmW5p/ibpMjm4U7m+R0JFeGjlWgtypLpGoJuHLwicCUZ/eqAWJRg0LLbJkFzsaDL
+	 6FVAgyn5UkBvo4Pgve9FrwYV6Ry6TLzHRKoDuFr8HFC5mWwVErVS5mIOcYM6GrW0tHyK3
+	 ej4uZhWi9Uefsf32uQ/MbyKF4Eclr2v7XKLdKGq2x3JzNBxO4T18Q5Fq8923TtTVu8kPS
+	 dbPv8BA8jIslDfTsFCTqt1oqmwmClFSfHgKSkEew/aE1xBlrR8uLiYgYq2NLnp3fKccz3
+	 SZBz+bHCCi8qjDMslpfBoxwbGFu8Vm5MHDJkCMe1FUmVVEwPuPJCHkP1VqZP2Asciew==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=hvNd82TJ;
+	dmarc=pass header.from=poczta.fm;
+	spf=pass smtp.mailfrom=poczta.fm;
+	arc=none smtp.remote-ip=217.74.67.75
+Received: from smtpo75.interia.pl (smtpo75.interia.pl [217.74.67.75])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id E83DD1F000E9
+	for <syzbot@kernel.org>; Mon, 24 Aug 2026 11:58:50 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (1024-bit key, unprotected) header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=hvNd82TJ
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org E83DD1F000E9
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Mon, 24 Aug 2026 13:58:47 +0200 (CEST)
+Date: Mon, 24 Aug 2026 13:58:44 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC] drm/cirrus-qemu: Use actual VRAM size to prevent
+ out-of-bounds write
+Message-ID: <aowx9LUZgrhDZnSM@nr200>
+References: <6e0e7e49-c50d-472e-9cc2-ceaf814e0fc7@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1b0c:b0:4a4:744:a4ff with SMTP id
- 5614622812f47-4b30998976bmr15045069b6e.4.1787558085797; Mon, 24 Aug 2026
- 00:54:45 -0700 (PDT)
-Date: Mon, 24 Aug 2026 00:54:45 -0700
-In-Reply-To: <20260822023918.2498361-1-hanzhijian1991@gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a8bf8c5.91706f20.16b6e3.02d4.GAE@google.com>
-Subject: [syzbot ci] Re: fs: fix s_fs_info leak when setup_bdev_super() fails
-From: syzbot ci <syzbot+cide8e486f4ae0dc83@syzkaller.appspotmail.com>
-To: brauner@kernel.org, hanzhijian1991@gmail.com, jack@suse.cz, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	syzbot@syzkaller.appspotmail.com, viro@zeniv.linux.org.uk
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6e0e7e49-c50d-472e-9cc2-ceaf814e0fc7@mail.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1787572728; bh=UbHYck8WvBnA94SIGXSWUg/gY2wL//QWFj6Avk+5M6o=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=hvNd82TJNgX35dfWnQLlVYWfykUbKrDfZq08zazz6YMYfBrsDMYaaNlM7YxvdINVl
+	 H2I1byin3n5iATUHYEqLRrA904GUEvB6L57bZ0qg1wl4fhLCJSnlC+svwPtuu8zDkU
+	 iRTMr4mBnenNf5L7/TwrPWL83RiWDCuW//VDYZ00=
 
-syzbot ci has tested the following series
+On sie 16, 2026 23:42, 'syzbot' via syzkaller-upstream-moderation wrote:
+> The `cirrus-qemu` driver previously relied on a hardcoded constant
+> `CIRRUS_VRAM_SIZE` (4 MB) to validate framebuffer sizes. However, during
+> device probe, the driver maps the VRAM using the actual size of the PCI
+> device's BAR0.
+> 
+> If a privileged user unbinds a random PCI device with a BAR0 smaller than 4
+> MB and binds the `cirrus-qemu` driver to it, the mapped VRAM will be
+> smaller than 4 MB. Because the validation checks still used the hardcoded 4
+> MB size, the driver would allow the creation of a framebuffer larger than
+> the actually mapped VRAM.
+> 
+> When the DRM device is closed, `drm_release()` triggers a full atomic
+> commit to restore the fbdev mode. This calls
+> `cirrus_primary_plane_helper_atomic_update()`, which uses `drm_fb_memcpy()`
+> to copy the framebuffer into the mapped VRAM. Since the mapped VRAM is
+> smaller than the framebuffer, `memcpy_toio()` writes past the end of the
+> mapped I/O memory, resulting in a supervisor write page fault:
+> 
+> BUG: unable to handle page fault for address: ffffc900033dd000
+> #PF: supervisor write access in kernel mode
+> #PF: error_code(0x0002) - not-present page
+> ...
+> RIP: 0010:rep_movs arch/x86/lib/iomem.c:13 [inline]
+> RIP: 0010:string_memcpy_toio arch/x86/lib/iomem.c:64 [inline]
+> RIP: 0010:memcpy_toio+0x7c/0xe0 arch/x86/lib/iomem.c:110
+> ...
+> Call Trace:
+>  <TASK>
+>  iosys_map_memcpy_to include/linux/iosys-map.h:285 [inline]
+>  drm_fb_memcpy+0x325/0x5d0 drivers/gpu/drm/drm_format_helper.c:442
+>  cirrus_primary_plane_helper_atomic_update+0x98a/0xb00
+>  drivers/gpu/drm/tiny/cirrus-qemu.c:358
+>  drm_atomic_helper_commit_planes+0x626/0xea0
+>  drivers/gpu/drm/drm_atomic_helper.c:3038
+>  drm_atomic_helper_commit_tail+0x60/0x510
+>  drivers/gpu/drm/drm_atomic_helper.c:1989
+>  commit_tail+0x2b1/0x3c0 drivers/gpu/drm/drm_atomic_helper.c:2074
+>  drm_atomic_helper_commit+0xa77/0xb10
+>  drivers/gpu/drm/drm_atomic_helper.c:2312
+> ...
+> 
+> To fix this, remove the hardcoded `CIRRUS_VRAM_SIZE` and dynamically track
+> the actual VRAM size in `struct cirrus_device`. Initialize this size from
+> the PCI resource length during probe, ensuring it is non-zero. Update the
+> validation hooks `cirrus_primary_plane_helper_atomic_check()` and
+> `cirrus_mode_config_mode_valid()` to use the dynamically tracked VRAM size,
+> ensuring that framebuffers strictly fit within the mapped memory.
+> 
+> Fixes: ab3e023b1b4c ("drm/cirrus: rewrite and modernize driver.")
+> Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+2442951a6abb004df963@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=2442951a6abb004df963
+> Link: https://syzkaller.appspot.com/ai_job?id=0995d2c9-3eea-4945-84e7-ab3d2acd4f21
+> To: "David Airlie" <airlied@gmail.com>
+> To: "Dave Airlie" <airlied@redhat.com>
+> To: <dri-devel@lists.freedesktop.org>
+> To: "Gerd Hoffmann" <kraxel@redhat.com>
+> To: "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>
+> To: "Maxime Ripard" <mripard@kernel.org>
+> To: "Simona Vetter" <simona@ffwll.ch>
+> To: "Thomas Zimmermann" <tzimmermann@suse.de>
+> To: <virtualization@lists.linux.dev>
+> Cc: "Jani Nikula" <jani.nikula@intel.com>
+> Cc: <linux-kernel@vger.kernel.org>
+> Cc: "Luca Ceresoli" <luca.ceresoli@bootlin.com>
+> 
+> ---
+> diff --git a/drivers/gpu/drm/tiny/cirrus-qemu.c b/drivers/gpu/drm/tiny/cirrus-qemu.c
+> index 075221b43..7f8cb3264 100644
+> --- a/drivers/gpu/drm/tiny/cirrus-qemu.c
+> +++ b/drivers/gpu/drm/tiny/cirrus-qemu.c
+> @@ -55,7 +55,6 @@
+>  #define DRIVER_MINOR 0
+>  
+>  #define CIRRUS_MAX_PITCH (0x1FF << 3)      /* (4096 - 1) & ~111b bytes */
+> -#define CIRRUS_VRAM_SIZE (4 * 1024 * 1024) /* 4 MB */
+>  
+>  struct cirrus_device {
+>  	struct drm_device	       dev;
+> @@ -68,6 +67,7 @@ struct cirrus_device {
+>  
+>  	/* HW resources */
+>  	void __iomem		       *vram;
+> +	size_t			       vram_size;
+>  	void __iomem		       *mmio;
+>  };
+>  
+> @@ -298,6 +298,7 @@ static const uint64_t cirrus_primary_plane_format_modifiers[] = {
+>  static int cirrus_primary_plane_helper_atomic_check(struct drm_plane *plane,
+>  						    struct drm_atomic_commit *state)
+>  {
+> +	struct cirrus_device *cirrus = to_cirrus(plane->dev);
+>  	struct drm_plane_state *new_plane_state = drm_atomic_get_new_plane_state(state, plane);
+>  	struct drm_framebuffer *fb = new_plane_state->fb;
+>  	struct drm_crtc *new_crtc = new_plane_state->crtc;
+> @@ -319,7 +320,7 @@ static int cirrus_primary_plane_helper_atomic_check(struct drm_plane *plane,
+>  	/* validate size constraints */
+>  	if (fb->pitches[0] > CIRRUS_MAX_PITCH)
+>  		return -EINVAL;
+> -	else if (fb->pitches[0] > CIRRUS_VRAM_SIZE / fb->height)
+> +	else if (fb->pitches[0] > cirrus->vram_size / fb->height)
+>  		return -EINVAL;
+>  
+>  	return 0;
+> @@ -514,6 +515,7 @@ static int cirrus_pipe_init(struct cirrus_device *cirrus)
+>  static enum drm_mode_status cirrus_mode_config_mode_valid(struct drm_device *dev,
+>  							  const struct drm_display_mode *mode)
+>  {
+> +	struct cirrus_device *cirrus = to_cirrus(dev);
+>  	const struct drm_format_info *format = drm_format_info(DRM_FORMAT_XRGB8888);
+>  	u64 pitch;
+>  
+> @@ -525,7 +527,7 @@ static enum drm_mode_status cirrus_mode_config_mode_valid(struct drm_device *dev
+>  		return MODE_BAD_WIDTH;
+>  	if (pitch > CIRRUS_MAX_PITCH)
+>  		return MODE_BAD_WIDTH; /* maximum programmable pitch */
+> -	if (pitch > CIRRUS_VRAM_SIZE / mode->vdisplay)
+> +	if (pitch > cirrus->vram_size / mode->vdisplay)
+>  		return MODE_MEM;
+>  
+>  	return MODE_OK;
+> @@ -602,8 +604,12 @@ static int cirrus_pci_probe(struct pci_dev *pdev,
+>  
+>  	dev = &cirrus->dev;
+>  
+> +	if (pci_resource_len(pdev, 0) == 0)
 
-[v1] fs: fix s_fs_info leak when setup_bdev_super() fails
-https://lore.kernel.org/all/20260822023918.2498361-1-hanzhijian1991@gmail.com
-* [PATCH] fs: fix s_fs_info leak when setup_bdev_super() fails
+How about checking here also if the returned value is == to CIRRUS_VRAM_SIZE and leave the
+CIRRUS_VRAM_SIZE as it is right now? Or even better:
 
-and found the following issues:
-* general protection fault in call_rcu
-* general protection fault in erofs_kill_sb
-* general protection fault in fuse_kill_sb_blk
-* general protection fault in xfs_kill_sb
+if (pci_resource_len(pdev, 0) != CIRRUS_VRAM_SIZE)
+	return -ENODEV;
 
-Full report is available here:
-https://ci.syzbot.org/series/1ef55243-f163-4d98-bbd1-41b579082704
+This will make this change a much simpler one!
 
-***
+It seems, after checking the qemu sources, that CLGD5446 must have 4MB and there is not other
+option.
 
-general protection fault in call_rcu
+> +		return -ENODEV;
+> +
+> +	cirrus->vram_size = pci_resource_len(pdev, 0);
+>  	cirrus->vram = devm_ioremap(&pdev->dev, pci_resource_start(pdev, 0),
+> -				    pci_resource_len(pdev, 0));
+> +				    cirrus->vram_size);
+>  	if (cirrus->vram == NULL)
+>  		return -ENOMEM;
+>  
+> 
+> 
+> base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
 
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      26260251022fbc2f248a3d747a9b2b961b18d2d8
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/41c2a7e2-d41f-466f-8380-e05ef414bf62/config
-syz repro: https://ci.syzbot.org/findings/f6ebcbaf-d8f4-4c25-9e68-98f46740729d/syz_repro
-
-/dev/sr0: Can't open blockdev
-Oops: general protection fault, probably for non-canonical address 0xdffffc000000005a: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x00000000000002d0-0x00000000000002d7]
-CPU: 0 UID: 0 PID: 5792 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__call_rcu_common kernel/rcu/tree.c:3157 [inline]
-RIP: 0010:call_rcu+0xb9/0x8b0 kernel/rcu/tree.c:3279
-Code: 48 c1 e8 03 42 80 3c 28 00 74 08 48 89 df e8 0e eb 8a 00 48 c7 03 c0 9a ac 81 e9 b3 05 00 00 48 8d 7b 08 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 74 05 e8 eb ea 8a 00 4c 89 73 08 48 89 d8 48 c1 e8
-RSP: 0018:ffffc900041dfb08 EFLAGS: 00010206
-RAX: 000000000000005a RBX: 00000000000002c8 RCX: ffffffff9a9ab501
-RDX: 0000000000000001 RSI: ffffffff8e46456f RDI: 00000000000002d0
-RBP: 0000000000000000 R08: ffffffff90793d37 R09: 1ffffffff20f27a6
-R10: dffffc0000000000 R11: fffffbfff20f27a7 R12: dffffc0000000000
-R13: dffffc0000000000 R14: ffffffff82b4b6c0 R15: ffff88811e37e7a0
-FS:  00007f1ef40546c0(0000) GS:ffff88818d708000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f1ef4053ff8 CR3: 0000000173ace000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- deactivate_locked_super+0xbc/0x110 fs/super.c:603
- get_tree_bdev_flags+0x40e/0x560 fs/super.c:1895
- vfs_get_tree+0x92/0x2a0 fs/super.c:1958
- fc_mount fs/namespace.c:1198 [inline]
- do_new_mount_fc fs/namespace.c:3772 [inline]
- do_new_mount+0x319/0xdc0 fs/namespace.c:3848
- do_mount fs/namespace.c:4181 [inline]
- __do_sys_mount fs/namespace.c:4397 [inline]
- __se_sys_mount+0x31d/0x420 fs/namespace.c:4374
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f1ef319e0d9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f1ef4054028 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 00007f1ef3425fa0 RCX: 00007f1ef319e0d9
-RDX: 0000200000000080 RSI: 00002000000000c0 RDI: 0000200000000000
-RBP: 00007f1ef3235024 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000214003 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f1ef3426038 R14: 00007f1ef3425fa0 R15: 00007ffc4bde52a8
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:__call_rcu_common kernel/rcu/tree.c:3157 [inline]
-RIP: 0010:call_rcu+0xb9/0x8b0 kernel/rcu/tree.c:3279
-Code: 48 c1 e8 03 42 80 3c 28 00 74 08 48 89 df e8 0e eb 8a 00 48 c7 03 c0 9a ac 81 e9 b3 05 00 00 48 8d 7b 08 48 89 f8 48 c1 e8 03 <42> 80 3c 28 00 74 05 e8 eb ea 8a 00 4c 89 73 08 48 89 d8 48 c1 e8
-RSP: 0018:ffffc900041dfb08 EFLAGS: 00010206
-RAX: 000000000000005a RBX: 00000000000002c8 RCX: ffffffff9a9ab501
-RDX: 0000000000000001 RSI: ffffffff8e46456f RDI: 00000000000002d0
-RBP: 0000000000000000 R08: ffffffff90793d37 R09: 1ffffffff20f27a6
-R10: dffffc0000000000 R11: fffffbfff20f27a7 R12: dffffc0000000000
-R13: dffffc0000000000 R14: ffffffff82b4b6c0 R15: ffff88811e37e7a0
-FS:  00007f1ef40546c0(0000) GS:ffff88818d708000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f1ef4053ff8 CR3: 0000000173ace000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess):
-   0:	48 c1 e8 03          	shr    $0x3,%rax
-   4:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1)
-   9:	74 08                	je     0x13
-   b:	48 89 df             	mov    %rbx,%rdi
-   e:	e8 0e eb 8a 00       	call   0x8aeb21
-  13:	48 c7 03 c0 9a ac 81 	movq   $0xffffffff81ac9ac0,(%rbx)
-  1a:	e9 b3 05 00 00       	jmp    0x5d2
-  1f:	48 8d 7b 08          	lea    0x8(%rbx),%rdi
-  23:	48 89 f8             	mov    %rdi,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1) <-- trapping instruction
-  2f:	74 05                	je     0x36
-  31:	e8 eb ea 8a 00       	call   0x8aeb21
-  36:	4c 89 73 08          	mov    %r14,0x8(%rbx)
-  3a:	48 89 d8             	mov    %rbx,%rax
-  3d:	48                   	rex.W
-  3e:	c1                   	.byte 0xc1
-  3f:	e8                   	.byte 0xe8
-
-
-***
-
-general protection fault in erofs_kill_sb
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      26260251022fbc2f248a3d747a9b2b961b18d2d8
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/41c2a7e2-d41f-466f-8380-e05ef414bf62/config
-syz repro: https://ci.syzbot.org/findings/a828baa5-9634-4255-a0b1-41e60df7067d/syz_repro
-
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 UID: 0 PID: 5846 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:erofs_kill_sb+0x53/0x270 fs/erofs/super.c:950
-Code: 00 00 48 89 d8 48 c1 e8 03 48 89 44 24 08 80 3c 28 00 74 08 48 89 df e8 bb 60 b8 fd 4c 8b 33 4d 8d 66 08 4d 89 e7 49 c1 ef 03 <41> 80 3c 2f 00 74 08 4c 89 e7 e8 9e 60 b8 fd 49 83 3c 24 00 4c 89
-RSP: 0018:ffffc90003dbfc08 EFLAGS: 00010202
-RAX: 1ffff1102edb18cf RBX: ffff888176d8c678 RCX: ffff88816bcabc00
-RDX: 0000000000000000 RSI: ffffffff8e46456f RDI: ffff888176d8c000
-RBP: dffffc0000000000 R08: ffffffff90793d37 R09: 1ffffffff20f27a6
-R10: dffffc0000000000 R11: ffffffff847e7250 R12: 0000000000000008
-R13: ffff888176d8c000 R14: 0000000000000000 R15: 0000000000000001
-FS:  00007efdff1c96c0(0000) GS:ffff88818d708000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ff27edb9095 CR3: 0000000174554000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- deactivate_locked_super+0xbc/0x110 fs/super.c:603
- get_tree_bdev_flags+0x40e/0x560 fs/super.c:1895
- vfs_get_tree+0x92/0x2a0 fs/super.c:1958
- vfs_cmd_create+0xa2/0x200 fs/fsopen.c:231
- __do_sys_fsconfig fs/fsopen.c:463 [inline]
- __se_sys_fsconfig+0x6b9/0x810 fs/fsopen.c:350
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7efdfe39e0d9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007efdff1c9028 EFLAGS: 00000246 ORIG_RAX: 00000000000001af
-RAX: ffffffffffffffda RBX: 00007efdfe625fa0 RCX: 00007efdfe39e0d9
-RDX: 0000000000000000 RSI: 0000000000000006 RDI: 0000000000000004
-RBP: 00007efdfe435024 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007efdfe626038 R14: 00007efdfe625fa0 R15: 00007ffde183e908
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:erofs_kill_sb+0x53/0x270 fs/erofs/super.c:950
-Code: 00 00 48 89 d8 48 c1 e8 03 48 89 44 24 08 80 3c 28 00 74 08 48 89 df e8 bb 60 b8 fd 4c 8b 33 4d 8d 66 08 4d 89 e7 49 c1 ef 03 <41> 80 3c 2f 00 74 08 4c 89 e7 e8 9e 60 b8 fd 49 83 3c 24 00 4c 89
-RSP: 0018:ffffc90003dbfc08 EFLAGS: 00010202
-RAX: 1ffff1102edb18cf RBX: ffff888176d8c678 RCX: ffff88816bcabc00
-RDX: 0000000000000000 RSI: ffffffff8e46456f RDI: ffff888176d8c000
-RBP: dffffc0000000000 R08: ffffffff90793d37 R09: 1ffffffff20f27a6
-R10: dffffc0000000000 R11: ffffffff847e7250 R12: 0000000000000008
-R13: ffff888176d8c000 R14: 0000000000000000 R15: 0000000000000001
-FS:  00007efdff1c96c0(0000) GS:ffff88818d708000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ff27edb9095 CR3: 0000000174554000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess):
-   0:	00 00                	add    %al,(%rax)
-   2:	48 89 d8             	mov    %rbx,%rax
-   5:	48 c1 e8 03          	shr    $0x3,%rax
-   9:	48 89 44 24 08       	mov    %rax,0x8(%rsp)
-   e:	80 3c 28 00          	cmpb   $0x0,(%rax,%rbp,1)
-  12:	74 08                	je     0x1c
-  14:	48 89 df             	mov    %rbx,%rdi
-  17:	e8 bb 60 b8 fd       	call   0xfdb860d7
-  1c:	4c 8b 33             	mov    (%rbx),%r14
-  1f:	4d 8d 66 08          	lea    0x8(%r14),%r12
-  23:	4d 89 e7             	mov    %r12,%r15
-  26:	49 c1 ef 03          	shr    $0x3,%r15
-* 2a:	41 80 3c 2f 00       	cmpb   $0x0,(%r15,%rbp,1) <-- trapping instruction
-  2f:	74 08                	je     0x39
-  31:	4c 89 e7             	mov    %r12,%rdi
-  34:	e8 9e 60 b8 fd       	call   0xfdb860d7
-  39:	49 83 3c 24 00       	cmpq   $0x0,(%r12)
-  3e:	4c                   	rex.WR
-  3f:	89                   	.byte 0x89
-
-
-***
-
-general protection fault in fuse_kill_sb_blk
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      26260251022fbc2f248a3d747a9b2b961b18d2d8
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/41c2a7e2-d41f-466f-8380-e05ef414bf62/config
-syz repro: https://ci.syzbot.org/findings/842bf23d-2982-4d44-81b0-f1e6e37301b2/syz_repro
-
-erofs (device loop0): mounted with root inode @ nid 36.
-/dev/loop0: Can't open blockdev
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 1 UID: 0 PID: 5856 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:fuse_mount_destroy fs/fuse/inode.c:1989 [inline]
-RIP: 0010:fuse_kill_sb_blk+0x23c/0x290 fs/fuse/inode.c:2016
-Code: 00 00 00 00 00 fc ff df 4c 89 f7 e8 9e e2 f2 fe 42 80 3c 2b 00 74 08 48 89 ef e8 8f 92 de fe 48 8b 5d 00 48 89 d8 48 c1 e8 03 <42> 80 3c 28 00 74 08 48 89 df e8 75 92 de fe 48 8b 3b e8 3d 72 ff
-RSP: 0018:ffffc9000234fb08 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffff88816c3cbc00
-RDX: 0000000000000000 RSI: 0000000000000008 RDI: 00000000ffffffff
-RBP: ffff888174cb6678 R08: ffff888174cb6087 R09: 1ffff1102e996c10
-R10: dffffc0000000000 R11: ffffed102e996c11 R12: ffff888174cb6078
-R13: dffffc0000000000 R14: ffff888174cb6000 R15: 0000000000000000
-FS:  00007fb71cf006c0(0000) GS:ffff8882a8d08000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000200000001000 CR3: 00000001be98a000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- deactivate_locked_super+0xbc/0x110 fs/super.c:603
- get_tree_bdev_flags+0x40e/0x560 fs/super.c:1895
- fuse_get_tree+0x194/0x3b0 fs/fuse/inode.c:1877
- vfs_get_tree+0x92/0x2a0 fs/super.c:1958
- fc_mount fs/namespace.c:1198 [inline]
- do_new_mount_fc fs/namespace.c:3772 [inline]
- do_new_mount+0x319/0xdc0 fs/namespace.c:3848
- do_mount fs/namespace.c:4181 [inline]
- __do_sys_mount fs/namespace.c:4397 [inline]
- __se_sys_mount+0x31d/0x420 fs/namespace.c:4374
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fb71bf9e0d9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fb71cf00028 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 00007fb71c225fa0 RCX: 00007fb71bf9e0d9
-RDX: 0000200000000140 RSI: 00002000000002c0 RDI: 0000200000000240
-RBP: 00007fb71c035024 R08: 0000200000000400 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fb71c226038 R14: 00007fb71c225fa0 R15: 00007ffe55b01cb8
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:fuse_mount_destroy fs/fuse/inode.c:1989 [inline]
-RIP: 0010:fuse_kill_sb_blk+0x23c/0x290 fs/fuse/inode.c:2016
-Code: 00 00 00 00 00 fc ff df 4c 89 f7 e8 9e e2 f2 fe 42 80 3c 2b 00 74 08 48 89 ef e8 8f 92 de fe 48 8b 5d 00 48 89 d8 48 c1 e8 03 <42> 80 3c 28 00 74 08 48 89 df e8 75 92 de fe 48 8b 3b e8 3d 72 ff
-RSP: 0018:ffffc9000234fb08 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffff88816c3cbc00
-RDX: 0000000000000000 RSI: 0000000000000008 RDI: 00000000ffffffff
-RBP: ffff888174cb6678 R08: ffff888174cb6087 R09: 1ffff1102e996c10
-R10: dffffc0000000000 R11: ffffed102e996c11 R12: ffff888174cb6078
-R13: dffffc0000000000 R14: ffff888174cb6000 R15: 0000000000000000
-FS:  00007fb71cf006c0(0000) GS:ffff8882a8d08000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f9fb604de68 CR3: 00000001be98a000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess), 7 bytes skipped:
-   0:	df 4c 89 f7          	fisttps -0x9(%rcx,%rcx,4)
-   4:	e8 9e e2 f2 fe       	call   0xfef2e2a7
-   9:	42 80 3c 2b 00       	cmpb   $0x0,(%rbx,%r13,1)
-   e:	74 08                	je     0x18
-  10:	48 89 ef             	mov    %rbp,%rdi
-  13:	e8 8f 92 de fe       	call   0xfede92a7
-  18:	48 8b 5d 00          	mov    0x0(%rbp),%rbx
-  1c:	48 89 d8             	mov    %rbx,%rax
-  1f:	48 c1 e8 03          	shr    $0x3,%rax
-* 23:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1) <-- trapping instruction
-  28:	74 08                	je     0x32
-  2a:	48 89 df             	mov    %rbx,%rdi
-  2d:	e8 75 92 de fe       	call   0xfede92a7
-  32:	48 8b 3b             	mov    (%rbx),%rdi
-  35:	e8                   	.byte 0xe8
-  36:	3d                   	.byte 0x3d
-  37:	72 ff                	jb     0x38
-
-
-***
-
-general protection fault in xfs_kill_sb
-
-tree:      torvalds
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
-base:      26260251022fbc2f248a3d747a9b2b961b18d2d8
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/41c2a7e2-d41f-466f-8380-e05ef414bf62/config
-syz repro: https://ci.syzbot.org/findings/6086312c-12df-4d69-b442-5c8a99793535/syz_repro
-
-/dev/loop1: Can't open blockdev
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000035: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x00000000000001a8-0x00000000000001af]
-CPU: 0 UID: 0 PID: 5903 Comm: syz.1.24 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:xfs_kill_sb+0x4e/0x260 fs/xfs/xfs_super.c:2335
-Code: 78 06 00 00 4c 89 f0 48 c1 e8 03 80 3c 18 00 74 08 4c 89 f7 e8 83 08 96 fe 4d 8b 36 4d 8d be a8 01 00 00 4c 89 f8 48 c1 e8 03 <80> 3c 18 00 74 08 4c 89 ff e8 64 08 96 fe 4d 8b 27 4d 85 e4 0f 84
-RSP: 0018:ffffc900027afb50 EFLAGS: 00010206
-RAX: 0000000000000035 RBX: dffffc0000000000 RCX: ffff888110aa0000
-RDX: 0000000000000000 RSI: ffffffff8e46456f RDI: ffff888114d4e000
-RBP: ffffc900027afc00 R08: ffffffff90793d37 R09: 1ffffffff20f27a6
-R10: dffffc0000000000 R11: ffffffff83a0ca90 R12: dffffc0000000000
-R13: ffff888114d4e000 R14: 0000000000000000 R15: 00000000000001a8
-FS:  00007f104ac686c0(0000) GS:ffff88818d708000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000555f35035578 CR3: 00000001bf1d2000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- deactivate_locked_super+0xbc/0x110 fs/super.c:603
- get_tree_bdev_flags+0x40e/0x560 fs/super.c:1895
- vfs_get_tree+0x92/0x2a0 fs/super.c:1958
- fc_mount fs/namespace.c:1198 [inline]
- do_new_mount_fc fs/namespace.c:3772 [inline]
- do_new_mount+0x319/0xdc0 fs/namespace.c:3848
- do_mount fs/namespace.c:4181 [inline]
- __do_sys_mount fs/namespace.c:4397 [inline]
- __se_sys_mount+0x31d/0x420 fs/namespace.c:4374
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f1049d9e0d9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f104ac68028 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 00007f104a026090 RCX: 00007f1049d9e0d9
-RDX: 0000200000000000 RSI: 00002000000001c0 RDI: 0000200000000080
-RBP: 00007f1049e35024 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000001a0c099 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f104a026128 R14: 00007f104a026090 R15: 00007ffd22a73788
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:xfs_kill_sb+0x4e/0x260 fs/xfs/xfs_super.c:2335
-Code: 78 06 00 00 4c 89 f0 48 c1 e8 03 80 3c 18 00 74 08 4c 89 f7 e8 83 08 96 fe 4d 8b 36 4d 8d be a8 01 00 00 4c 89 f8 48 c1 e8 03 <80> 3c 18 00 74 08 4c 89 ff e8 64 08 96 fe 4d 8b 27 4d 85 e4 0f 84
-RSP: 0018:ffffc900027afb50 EFLAGS: 00010206
-
-RAX: 0000000000000035 RBX: dffffc0000000000 RCX: ffff888110aa0000
-RDX: 0000000000000000 RSI: ffffffff8e46456f RDI: ffff888114d4e000
-RBP: ffffc900027afc00 R08: ffffffff90793d37 R09: 1ffffffff20f27a6
-R10: dffffc0000000000 R11: ffffffff83a0ca90 R12: dffffc0000000000
-R13: ffff888114d4e000 R14: 0000000000000000 R15: 00000000000001a8
-FS:  00007f104ac686c0(0000) GS:ffff88818d708000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f5295e4de68 CR3: 00000001bf1d2000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess):
-   0:	78 06                	js     0x8
-   2:	00 00                	add    %al,(%rax)
-   4:	4c 89 f0             	mov    %r14,%rax
-   7:	48 c1 e8 03          	shr    $0x3,%rax
-   b:	80 3c 18 00          	cmpb   $0x0,(%rax,%rbx,1)
-   f:	74 08                	je     0x19
-  11:	4c 89 f7             	mov    %r14,%rdi
-  14:	e8 83 08 96 fe       	call   0xfe96089c
-  19:	4d 8b 36             	mov    (%r14),%r14
-  1c:	4d 8d be a8 01 00 00 	lea    0x1a8(%r14),%r15
-  23:	4c 89 f8             	mov    %r15,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	80 3c 18 00          	cmpb   $0x0,(%rax,%rbx,1) <-- trapping instruction
-  2e:	74 08                	je     0x38
-  30:	4c 89 ff             	mov    %r15,%rdi
-  33:	e8 64 08 96 fe       	call   0xfe96089c
-  38:	4d 8b 27             	mov    (%r15),%r12
-  3b:	4d 85 e4             	test   %r12,%r12
-  3e:	0f                   	.byte 0xf
-  3f:	84                   	.byte 0x84
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
-
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
+-- 
+Slawomir Stepien
