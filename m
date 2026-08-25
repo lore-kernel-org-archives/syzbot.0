@@ -1,165 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34C033FE645
-	for <syzbot@lists.linux.dev>; Tue, 25 Aug 2026 11:27:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787657229; cv=pass; b=McPeCpvX9SQUpMxsuBQOmrwjcev+se+UxBIQVsrNaAU1sUiVUL7ASIx2o4uOMvXvF1AduJOjMzDUSKB1h2+8cMyEiTgahllcQRT3Gy5hBevU4S/ElDLxS81E5psM5YrZjJixpyWC+x/NjAwUZi9Jj6itMjaE1Q9OMfeZVNf23Lw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787657229; c=relaxed/simple;
-	bh=/nanS065TlBm8RMB1VQp3Q7XNBTCXcLcKnG17dOhiGs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QmuVT8RJAGxVDkmbjgKeKhX74wU/W0AAIpvIZBpwgPwLpMM+PMH6Y0/dKnrTi08h+jXKbn+Ynri37U8eLIxyDe2DO1f2QUO6ISGgBvEXztH2scaSHplcukqHHJ8t8TVuPxl/3AqkLZKDEiJSYGacEpmYXk5xKLd+JpyNJiOIkcg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=cmhpM67M; arc=pass smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="cmhpM67M"
-Received: by smtp.kernel.org (Postfix)
-	id D1FFA1F00A3A; Tue, 25 Aug 2026 11:27:06 +0000 (UTC)
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=217.74.67.75
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1787657226;
-	b=wEOd6u5d0hEzcAmpCSUbECfTmLrOVdTl8QuPWVLBUtXcx0ekd1ioQ4TdDj69sNSuvtsZ
-	 /UsZ5fthKD/SadfIND64d6CxX6epLm8CpLPC8Z7HvrVX7xv95JzMcdhhPP3Dqqk7+Q0P5
-	 hRGmf+NiKiE2dp+Vs3nwcwtKHOHBro32FeyKc9xVVQSd3e6VPZfXUBQnL30fq/eqhoF2T
-	 ZjfUEANp+TssqPofaOhGoq5z+RWNetLZEw06yn4leE5sy65Fx09dBh3z1stOwLa63Cu3f
-	 0ga9iTMxjS02NUMsZqtszzpoqgAnNBQYb6B+ISgCEdLeXPUW8PJJAvCKAJsk5aXfAug==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1787657226;
-	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:
-	 Content-Transfer-Encoding:In-Reply-To:DKIM-Signature;
-	bh=u849jbuokEGJrG4MX8DSBd4S8qyShqARHeqPFRwMBnk=;
-	b=1LizbNO3No6+cw3uT2DAzkvwME+rpVJqdSnjADqNAV2j57JjC3eDohaC5o1ctouHbdiB
-	 gVNep96X+82AxFb8bOcxV6I8PXczatr7w9xkrLmmjR9jNB0K/vUcIa5zn1+uffM/cwh9v
-	 Xt4nryQkxA4/HKMjaE8+Z2NSi1hg7Y4FVL4c43X5SzN9qLO8dNRUrY22sLtBMga38Hajb
-	 hZVcQ5y5Oyti4nkiIeCat9hoSXZpdYpi0YqEw+SJlu3E8U3/6t7K8VwS/j/fj8QsJfRaV
-	 gI1CDflFq9+hzU4KyZNleQ9faYQqlTfixn4JEZgUe3RrbDWdOvLTLbfGtBoitROpgYw==
-ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=cmhpM67M;
-	dmarc=pass header.from=poczta.fm;
-	spf=pass smtp.mailfrom=poczta.fm;
-	arc=none smtp.remote-ip=217.74.67.75
 Received: from smtpo75.interia.pl (smtpo75.interia.pl [217.74.67.75])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id C27CC1F000E9
-	for <syzbot@kernel.org>; Tue, 25 Aug 2026 11:27:04 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=cmhpM67M
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org C27CC1F000E9
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=poczta.fm
-Received: from nr200 (unknown [80.68.231.31])
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC3EA401494
+	for <syzbot@lists.linux.dev>; Tue, 25 Aug 2026 12:07:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.75
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787659678; cv=none; b=uXobrpcu6CIiuxcAvrfGjGfSshnDWEsnNi3d8jJ5KHt25xZet8oz6tFoVJ9oHy5BIsnvSHxUPnMD5ahauYNAxZOlavpssVcAvs6ddYIkF3vk8v18VDj4hDsuexZ59bGS1oHN2AVz4AkcAJUVoDRns01aWEiEFRswkR5ywWFZts8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787659678; c=relaxed/simple;
+	bh=6XYYwrw5I4/VJMBNXqCDxibwYzR9UjgLa3qxbfPXvEA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=DRjXPhdc+09PKsNo0Cua2F6iAb9Km0TwV9wnXIsmwkfZvBmogevPhnHke+qvNPH3O9Gvtu4u7PAF24W+yJept3LyAtTL7HqwoZvk7Y3UNPJGM//EehcO6gZB5YA702w2hW3IvtZ1vAdHDhnPWL/l/1Sg44aBIV2GqnIxhq2oO5Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=ouInsyUQ; arc=none smtp.client-ip=217.74.67.75
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="ouInsyUQ"
+Received: from localhost (unknown [80.68.231.31])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
 	(No client certificate requested)
 	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
-	Tue, 25 Aug 2026 13:27:01 +0200 (CEST)
-Date: Tue, 25 Aug 2026 13:26:58 +0200
+	Tue, 25 Aug 2026 14:07:45 +0200 (CEST)
 From: Slawomir Stepien <sst@poczta.fm>
-To: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: sashiko-reviews@lists.linux.dev, syzbot <syzbot@kernel.org>,
-	dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH] drm/cirrus-qemu: Validate BAR0 size during probe
-Message-ID: <ao18Ag6ucRMqGRVI@nr200>
-References: <b11f8965-5896-4119-98b7-6bd0eb9fa139@mail.kernel.org>
- <20260825074432.0B4511F00A3A@smtp.kernel.org>
- <ce0912d6-fdc4-4ead-9388-a9e0e9a1954c@suse.de>
- <ao1ketQ4oxNiWGAM@nr200>
- <7a61b8fc-68f4-4d8d-b5ff-0ffd9a9507fc@suse.de>
+To: syzkaller-bugs@googlegroups.com,
+	sst@poczta.fm,
+	airlied@gmail.com,
+	airlied@redhat.com,
+	dri-devel@lists.freedesktop.org,
+	kraxel@redhat.com,
+	maarten.lankhorst@linux.intel.com,
+	mripard@kernel.org,
+	simona@ffwll.ch,
+	tzimmermann@suse.de,
+	virtualization@lists.linux.dev
+Cc: jani.nikula@intel.com,
+	linux-kernel@vger.kernel.org,
+	syzbot@lists.linux.dev,
+	syzbot+2442951a6abb004df963@syzkaller.appspotmail.com
+Subject: [PATCH v2] drm/cirrus-qemu: Validate BAR0 size during probe
+Date: Tue, 25 Aug 2026 14:07:29 +0200
+Message-ID: <20260825120729.493611-1-sst@poczta.fm>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <7a61b8fc-68f4-4d8d-b5ff-0ffd9a9507fc@suse.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
-	t=1787657222; bh=u849jbuokEGJrG4MX8DSBd4S8qyShqARHeqPFRwMBnk=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-	b=cmhpM67MEZ37ijAG671Dl4j3ZWeRnGYqh4YR7REM468lXUCBDEwTY2dm9SMflzmzn
-	 JduRxTM2zNKIbkSGGj59M9QbOwS6aOtC1Y5ijxDslfEiyxjN0zCrmwfbRtAbHbnA3U
-	 8FnXHmcHG4cGlxrKxQpWhzRsOKsb/Hh9rtZGhwGM=
+	t=1787659667; bh=SOCo4mafwNDw5JOKkR3x/JLutK9fHb/X8EWCgU8SQA8=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version;
+	b=ouInsyUQ8NjNoY97pVtVgVjXytaeyhAxNRn7Bb3wxgkaVqKVyIlSMGqa+9UPw575w
+	 aiRH5+RyZDYoLK385C/Z+QbNAAlQ3iOhX/SMvW39gG4OMtmb8y1T4BqpgRfTYKI/Sz
+	 +c0CsAx3ZDfswGIvRtAnxORYYsgR4FfdPcOy7vcU=
 
-On sie 25, 2026 12:21, Thomas Zimmermann wrote:
-> Hi
-> 
-> Am 25.08.26 um 11:46 schrieb Slawomir Stepien:
-> > On sie 25, 2026 10:00, Thomas Zimmermann wrote:
-> > > (cc: Slawomir)
-> > > 
-> > > Hi,
-> > Hello,
-> > 
-> > > thanks for the fix. Please see below for changes that should go into the
-> > > patch.
-> > thanks I will look into them and make a manual v2!
-> > 
-> > > Best regards
-> > > Thomas
-> > > 
-> > > Am 25.08.26 um 09:44 schrieb sashiko-bot@kernel.org:
-> > > > Thank you for your contribution! Sashiko AI review found 2 potential issue(s) to consider:
-> > > > - [High] The exact equality check for BAR0 size (`!= CIRRUS_VRAM_SIZE`) incorrectly rejects valid QEMU configurations with larger VRAM.
-> > > > - [High] The VRAM size validation check is placed after `aperture_remove_conflicting_pci_devices()`, meaning the firmware framebuffer is permanently destroyed even if the driver ultimately fails to bind.
-> > > > --
-> > > > 
-> > > > --- Patch [1]: [PATCH] drm/cirrus-qemu: Validate BAR0 size during probe ---
-> > > > commit 75467ead62a494b6afbc057c666ab59f7e4b8915
-> > > > Author: Slawomir Stepien <sst@poczta.fm>
-> > > > 
-> > > > drm/cirrus-qemu: Validate BAR0 size during probe
-> > > > 
-> > > > This commit adds a check during PCI probe to verify that the BAR0 resource
-> > > > length equals CIRRUS_VRAM_SIZE. This is intended to prevent supervisor write
-> > > > page faults caused by writing past the end of the mapped I/O memory when
-> > > > smaller BARs are presented.
-> > > > 
-> > > > Link: https://syzkaller.appspot.com/ai_job?id=ba262a3a-bccf-4ad8-a1b0-583c55d34fd6
-> > > > 
-> > > > > diff --git a/drivers/gpu/drm/tiny/cirrus-qemu.c b/drivers/gpu/drm/tiny/cirrus-qemu.c
-> > > > > index 075221b431d37..70c995025f508 100644
-> > > > > --- a/drivers/gpu/drm/tiny/cirrus-qemu.c
-> > > > > +++ b/drivers/gpu/drm/tiny/cirrus-qemu.c
-> > > > > @@ -602,6 +602,9 @@ static int cirrus_pci_probe(struct pci_dev *pdev,
-> > > > >    	dev = &cirrus->dev;
-> > > > > +	if (pci_resource_len(pdev, 0) != CIRRUS_VRAM_SIZE)
-> > > > > +		return -ENODEV;
-> > > > > +
-> > > > [Severity: High]
-> > > > Does this strict equality check unintentionally break valid QEMU
-> > > > configurations that have more than 4 MB of VRAM?
-> > > > 
-> > > > When a VM is booted with a configuration like -device cirrus-vga,vgamem_mb=8,
-> > > > the BAR0 size will be 8 MB. The check in cirrus_pci_probe() evaluates
-> > > > to true (since 8 MB is not equal to 4 MB) and rejects the device by
-> > > > returning -ENODEV.
-> > > > 
-> > > > Would it be safer to check if pci_resource_len(pdev, 0) < CIRRUS_VRAM_SIZE
-> > > > instead of requiring an exact match?
-> > It seems that 4MB is the default one and 8 and 16MB are just for compatibility:
-> > 
-> > (qemu hw/display/cirrus_vga.c):
-> > 
-> > 2951     /*
-> > 2952      * Follow real hardware, cirrus card emulated has 4 MB video memory.
-> > 2953      * Also accept 8 MB/16 MB for backward compatibility.
-> > 2954      */
-> > 2955     if (s->vga.vram_size_mb != 4 && s->vga.vram_size_mb != 8 &&
-> > 2956         s->vga.vram_size_mb != 16) {
-> > 2957         error_setg(errp, "Invalid cirrus_vga ram size '%u'",
-> > 2958                    s->vga.vram_size_mb);
-> > 2959         return;
-> > 2960     }
-> > 
-> > I will add the 8 and 16MB then in v2.
-> 
-> Please check that  it is >= VRAM_SIZE, so we're flexible.
+The `cirrus-qemu` driver relies on `CIRRUS_VRAM_SIZE` (4 MB) to validate
+framebuffer sizes. However, during PCI probe, the driver mapped BAR0
+without verifying that its size matches `CIRRUS_VRAM_SIZE`.
 
-Sure!
+If a PCI device with a BAR0 smaller than 4 MB is bound to the driver, the
+mapped VRAM will be smaller than expected. Because validation checks assume
+4 MB VRAM, framebuffers larger than the mapped memory can be created.
 
+When the display plane is updated (e.g. during release),
+`cirrus_primary_plane_helper_atomic_update()` copies the framebuffer to
+VRAM using `drm_fb_memcpy()`. Writing past the end of the mapped I/O memory
+causes a supervisor write page fault:
+
+BUG: unable to handle page fault for address: ffffc9000389c000
+...
+RIP: 0010:memcpy_toio+0x7c/0xe0 arch/x86/lib/iomem.c:110
+...
+Call Trace:
+ <TASK>
+ iosys_map_memcpy_to include/linux/iosys-map.h:285 [inline]
+ drm_fb_memcpy+0x325/0x5d0 drivers/gpu/drm/drm_format_helper.c:442
+ cirrus_primary_plane_helper_atomic_update+0x98a/0xb00
+ drivers/gpu/drm/tiny/cirrus-qemu.c:358
+ drm_atomic_helper_commit_planes+0x626/0xea0
+ drivers/gpu/drm/drm_atomic_helper.c:3038
+ drm_atomic_helper_commit_tail+0x60/0x510
+ drivers/gpu/drm/drm_atomic_helper.c:1989
+ commit_tail+0x2b1/0x3c0 drivers/gpu/drm/drm_atomic_helper.c:2074
+ drm_atomic_helper_commit+0xa77/0xb10
+ drivers/gpu/drm/drm_atomic_helper.c:2312
+
+Fix this by validating in `cirrus_pci_probe()` that the PCI BAR0 resource
+is not less than `CIRRUS_VRAM_SIZE`, returning `-ENODEV` if it is less.
+
+Fixes: ab3e023b1b4c ("drm/cirrus: rewrite and modernize driver.")
+Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+2442951a6abb004df963@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=2442951a6abb004df963
+Link: https://syzkaller.appspot.com/ai_job?id=ba262a3a-bccf-4ad8-a1b0-583c55d34fd6
+Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+---
+v2:
+* move the check before aperture_remove_conflicting_pci_devices() as suggested by sashiko.
+* check if the pci_resource_len() for BAR0 is less than CIRRUS_VRAM_SIZE as suggested by Thomas. The
+  qemu emulates 4, (8 and 16 MB for compatibility) - never less than 4MB.
+
+v1:
+* https://lore.kernel.org/all/b11f8965-5896-4119-98b7-6bd0eb9fa139@mail.kernel.org/T/
+---
+ drivers/gpu/drm/tiny/cirrus-qemu.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/gpu/drm/tiny/cirrus-qemu.c b/drivers/gpu/drm/tiny/cirrus-qemu.c
+index 075221b431d3..3bf23fcf6574 100644
+--- a/drivers/gpu/drm/tiny/cirrus-qemu.c
++++ b/drivers/gpu/drm/tiny/cirrus-qemu.c
+@@ -582,6 +582,9 @@ static int cirrus_pci_probe(struct pci_dev *pdev,
+ 	struct cirrus_device *cirrus;
+ 	int ret;
+ 
++	if (pci_resource_len(pdev, 0) < CIRRUS_VRAM_SIZE)
++		return -ENODEV;
++
+ 	ret = aperture_remove_conflicting_pci_devices(pdev, cirrus_driver.name);
+ 	if (ret)
+ 		return ret;
 -- 
-Slawomir Stepien
+2.55.0
+
