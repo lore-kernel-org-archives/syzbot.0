@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30D5248A2CE
-	for <syzbot@lists.linux.dev>; Tue, 25 Aug 2026 15:33:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8959351C13
+	for <syzbot@lists.linux.dev>; Tue, 25 Aug 2026 15:50:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787671991; cv=none; b=M0pSGrlgIPEER12ZIRIXD26xLu7pT39EYHghTV4B/8vfJEs7N/LEg51BAkjyBcU5TLJRh2nslajUToFu1Rps3znCCKmVEksor4PrUcy66tZDYkPL4Ew68ajI9xStyY2tSyaBrImsIuPtFRSSG/YKRa+k9CPUlxffUPMIhn90EgE=
+	t=1787673038; cv=none; b=t8GrZ9biTV08HbiWWuf10+L2NrwUtrlRBaYtiDB5GwVQz5L80kIb35Kji0Sc5oZX4w4tNe4Sd/pu+SA/e1mfrYXlrQ72AS9Pjujbxz1kLN3Sq31rHyQosHbEH50zYipIEIJc8g0AVncVP/rMNFWygz1Na7IGxsyF6YFqS4pfOdc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787671991; c=relaxed/simple;
-	bh=8PwHXIKEVDcUzCgOHNVV7wqIiUC48n4bfxIrX6fCbsk=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=U+LqaDBL7ixkq8WUROzgaeD04tp/dEpnqHvOfjI83nSgzhD+9XJH2kr+jHez6qUf6Fzb5JrFh3V8srcRvqrTOiuctsp325fwqZI65ogSYVlEu1YM6WHwqRrkRXbWZ2ezmz8pwPs3QwYtFyL2Gwy+dAtG5oEJAvimA8a2C72x8Wk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SH8nUEIm; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787673038; c=relaxed/simple;
+	bh=+MaCfOO5fmQcQR0mTMkh3JjZ16yIwn8mOKRrnvr1kd4=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=uHtoTqMtsGrhYF858ZitgQCHiuOBjXflDz3Dm/NieRxSLHka8GgJWk0+oZtIJF7YBGwti+rjEWERa+YEUFVrYEvlMB2qiRa+Li08P6Re1EvbMWTKzCObpMgfrUXJclg6ezvAkzUZY7XRKleOKTjHmnsJzrBDXRy4sfqSWkMDWjU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VLgkPEFB; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SH8nUEIm"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 57C6B1F00AC4;
-	Tue, 25 Aug 2026 15:33:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VLgkPEFB"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 630FA1F00A3D;
+	Tue, 25 Aug 2026 15:50:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787671987;
-	bh=ka3yelK3994hjAcPVQ9/BzdcniwV0h9B8GWcNCX2TVI=;
+	s=k20260515; t=1787673037;
+	bh=34dbNNrYPzitFoUWwLTUJKByvIFAsE4WU6/hWDYwgf0=;
 	h=From:To:Cc:Subject:Date;
-	b=SH8nUEIm71YwRlr8q1d3s8VM8LvtqVnAsyvkrt0W3q73DIzX7T2hSrY3jDzjPqCTp
-	 1UwRJsm7bnbD6U/L46eBrn/K60xZM57dJiRVGG96Er4OUyhuFkYFeSbV3wRlow6jB4
-	 jp0FklAoSN4YjpiJKiShHj3CxZKAZ/lpH82TyNpIdTG2KC1gjoiFGSGbEEDuif4iAI
-	 QVD067PXV/dvBAXXW7LpJiv0yFQBX4e0zta2C5AfaRQkYQKgDYupSCp76z0u5lzj9C
-	 ASV0GuhqdpPOJSQqlAP4mhr354AuMp3SaEqCJjXDax9FKutfEcH11H3c/1YL+VWVy3
-	 C5e1k2vaTjLyA==
+	b=VLgkPEFB/0lLxmiakGKZL6iAZCkDy3zCvw/hF1ChQQNiKwWCwLlSX2JHJuekCHAz2
+	 ptHFaJSqG3wrk2tIt1upfAfFN0ntXkdB34eOjdB/GjoTMSSMCfaTaN7BYjVJy2rJ3A
+	 BW3+3C7qfsaGAZYSL1AYoo4OmdIMNGECblHpnVbRg8vB6OznjFhn4JfvQnEdZD7YPz
+	 TIkU9w5rd11ynCz/xoiNupxopLwEZyKC8rw16tWtDVPUISy5oppIxGJ0OoMbNvVl1Q
+	 bb07tLiFW1ZyR9x40Rh/orMK3B7ztDE1n9sa5vUV4VTPWNKgm/gUiMlh6xGszSBSIK
+	 1D1TY6nssYjAg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] apparmor: fix error handling in aa_alloc_profile
-Message-ID: <205c8a70-057b-492d-a249-3c429c990dea@mail.kernel.org>
+Cc: elver@google.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v2] thunderbolt: Validate BAR 0 resource type and size
+Message-ID: <8f0f37a9-953e-4b36-8ce5-37a811dbea49@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,102 +38,89 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue, 25 Aug 2026 15:33:07 +0000 (UTC)
+Date: Tue, 25 Aug 2026 15:50:37 +0000 (UTC)
 
-When aa_alloc_profile() fails to initialize a profile, it jumps to a single
-error label that calls aa_free_profile(). This monolithic cleanup function
-calls aa_policy_destroy() on the profile's base policy. However, if the
-failure occurs early in aa_policy_init() (e.g., during aa_str_alloc()), the
-policy's list heads are not yet initialized. Because the profile is
-allocated with kzalloc_flex(), the uninitialized list heads are zeroed,
-causing list_empty() to evaluate to false. This triggers an AA_BUG()
-assertion in aa_policy_destroy():
+The thunderbolt driver can crash with a page fault if it binds to an
+arbitrary PCI device (e.g., via sysfs driver_override) that has an I/O port
+BAR at index 0 instead of an MMIO BAR.
 
-  ------------[ cut here ]------------
-  AppArmor WARN aa_policy_destroy: (((!list_empty(&policy->profiles) &&
-  (&policy->profiles)->prev != ((void *) 0x122 +
-  (0xdead000000000000UL))))):
-  WARNING: security/apparmor/lib.c:509 at aa_policy_destroy+0x164/0x1b0
-  security/apparmor/lib.c:509
+The driver maps this BAR without validating its type or size. When it
+attempts to read a Thunderbolt register at a large offset, the resulting
+I/O port cookie overflows the reserved PIO space on x86. This causes the
+generic ioread32() function to misinterpret the out-of-bounds I/O port
+cookie as a valid MMIO virtual address, leading to a direct dereference of
+an unmapped physical-like address and a page fault:
+
+  BUG: unable to handle page fault for address: 00000000000556c0
+  #PF: supervisor read access in kernel mode
+  #PF: error_code(0x0000) - not-present page
   ...
   Call Trace:
    <TASK>
-   aa_free_profile+0x9d/0x9f0 security/apparmor/policy.c:334
-   aa_alloc_profile+0x1e4/0x3e0 security/apparmor/policy.c:416
-   unpack_profile security/apparmor/policy_unpack.c:1153 [inline]
-   aa_unpack+0x17db/0x7430 security/apparmor/policy_unpack.c:1748
-   aa_replace_profiles+0x226/0x2a20 security/apparmor/policy.c:1183
-   policy_update+0x234/0x4a0 security/apparmor/apparmorfs.c:505
-   profile_load+0x1cb/0x320 security/apparmor/apparmorfs.c:522
-   vfs_write+0x296/0xba0 fs/read_write.c:685
+   nhi_probe+0xcc/0x870 drivers/thunderbolt/nhi.c:1198
+   nhi_pci_probe+0x46b/0x580 drivers/thunderbolt/pci.c:479
+   local_pci_probe drivers/pci/pci-driver.c:332 [inline]
+   pci_call_probe drivers/pci/pci-driver.c:394 [inline]
+   __pci_device_probe drivers/pci/pci-driver.c:455 [inline]
+   pci_device_probe+0x431/0xc90 drivers/pci/pci-driver.c:489
 
-To fix this, modify aa_alloc_profile() to use a strict reverse LIFO goto
-ladder for error handling. This ensures that cleanup functions are only
-called for fully initialized components, preventing aa_policy_destroy()
-from being executed on a partially initialized policy.
+To fix this, add explicit validation in nhi_pci_probe() to ensure that BAR
+0 is an MMIO resource and is large enough to contain all the NHI registers
+before attempting to map it. The NHI register space extends up to offset
+0x39944 (REG_FW_STS), so checking for a minimum size of 0x40000 (256 KB) is
+appropriate.
 
-Fixes: 637f688dc3dc ("apparmor: switch from profiles to using labels on contexts")
+Fixes: 16603153666d ("thunderbolt: Add initial cactus ridge NHI support")
 Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+faed97c4ed43bfe7fee5@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=faed97c4ed43bfe7fee5
-Link: https://syzkaller.appspot.com/ai_job?id=8594cc18-d31f-4dc1-9d81-89d765382445
-To: <apparmor@lists.ubuntu.com>
-To: "Georgia Garcia" <georgia.garcia@canonical.com>
-To: "James Morris" <jmorris@namei.org>
-To: "John Johansen" <john.johansen@canonical.com>
-To: <linux-security-module@vger.kernel.org>
-To: "Paul Moore" <paul@paul-moore.com>
-To: "Serge E. Hallyn" <serge@hallyn.com>
+Reported-by: syzbot+97999b836ee62ddb0181@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=97999b836ee62ddb0181
+Link: https://syzkaller.appspot.com/ai_job?id=2570f821-2184-40c8-8bd7-344a30c18a13
+To: "Yehezkel Bernat" <YehezkelShB@gmail.com>
+To: "Andreas Noever" <andreas.noever@gmail.com>
+To: <linux-usb@vger.kernel.org>
+To: "Mika Westerberg" <westeri@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/security/apparmor/policy.c b/security/apparmor/policy.c
-index 94b4a7e72..7ec43a491 100644
---- a/security/apparmor/policy.c
-+++ b/security/apparmor/policy.c
-@@ -385,21 +385,21 @@ struct aa_profile *aa_alloc_profile(const char *hname, struct aa_proxy *proxy,
- 		return NULL;
+v2:
+- Define NHI_MIN_BAR_SIZE macro in nhi_regs.h instead of using a hardcoded value
+
+v1:
+https://lore.kernel.org/all/3b721f07-79ad-423c-9bd3-f945e97a1d9b@mail.kernel.org/T/
+---
+diff --git a/drivers/thunderbolt/nhi_regs.h b/drivers/thunderbolt/nhi_regs.h
+index d6a197fab..1feb0bfb0 100644
+--- a/drivers/thunderbolt/nhi_regs.h
++++ b/drivers/thunderbolt/nhi_regs.h
+@@ -140,6 +140,9 @@ struct ring_desc {
+ #define REG_FW_STS_ICM_EN_INVERT	BIT(1)
+ #define REG_FW_STS_ICM_EN		BIT(0)
  
- 	if (!aa_policy_init(&profile->base, NULL, hname, gfp))
--		goto fail;
-+		goto fail_profile;
- 	if (!aa_label_init(&profile->label, 1, gfp))
--		goto fail;
-+		goto fail_policy;
++/* Minimum BAR size to contain NHI registers */
++#define NHI_MIN_BAR_SIZE		0x40000
++
+ /* ICL NHI VSEC registers */
  
- 	/* allocate the first ruleset, but leave it empty */
- 	profile->label.rules[0] = aa_alloc_ruleset(gfp);
- 	if (!profile->label.rules[0])
--		goto fail;
-+		goto fail_label;
- 	profile->n_rules = 1;
+ /* FW ready */
+diff --git a/drivers/thunderbolt/pci.c b/drivers/thunderbolt/pci.c
+index bbd186c29..fa69e4609 100644
+--- a/drivers/thunderbolt/pci.c
++++ b/drivers/thunderbolt/pci.c
+@@ -466,6 +466,14 @@ static int nhi_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	nhi->dev = dev;
+ 	nhi->ops = (const struct tb_nhi_ops *)id->driver_data ?: &pci_nhi_default_ops;
  
- 	/* update being set needed by fs interface */
- 	if (!proxy) {
- 		proxy = aa_alloc_proxy(&profile->label, gfp);
- 		if (!proxy)
--			goto fail;
-+			goto fail_rules;
- 	} else
- 		aa_get_proxy(proxy);
- 	profile->label.proxy = proxy;
-@@ -412,8 +412,14 @@ struct aa_profile *aa_alloc_profile(const char *hname, struct aa_proxy *proxy,
- 	/* refcount released by caller */
- 	return profile;
- 
--fail:
--	aa_free_profile(profile);
-+fail_rules:
-+	free_ruleset(profile->label.rules[0]);
-+fail_label:
-+	aa_label_destroy(&profile->label);
-+fail_policy:
-+	aa_policy_destroy(&profile->base);
-+fail_profile:
-+	kfree_sensitive(profile);
- 
- 	return NULL;
- }
++	/* Ensure BAR 0 is an MMIO resource */
++	if (!(pci_resource_flags(pdev, 0) & IORESOURCE_MEM))
++		return dev_err_probe(dev, -EINVAL, "BAR 0 is not an MMIO resource\n");
++
++	/* Ensure BAR 0 is large enough to contain the NHI registers */
++	if (pci_resource_len(pdev, 0) < NHI_MIN_BAR_SIZE)
++		return dev_err_probe(dev, -EINVAL, "BAR 0 is too small\n");
++
+ 	nhi->iobase = pcim_iomap_region(pdev, 0, "thunderbolt");
+ 	res = PTR_ERR_OR_ZERO(nhi->iobase);
+ 	if (res)
 
 
 base-commit: 8d3ae59288f1e7d58d76558a6ee96d533bc5019f
