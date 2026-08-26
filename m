@@ -1,122 +1,211 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ABBB420488
-	for <syzbot@lists.linux.dev>; Wed, 26 Aug 2026 13:28:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.173
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787750935; cv=pass; b=mR1KFmWwKTHhZH8BHIFhx7nljFhtFEXB8AgpMBJBj8ZOaTZHveo6SUoqMK80j9tAIKpWH2Its9/IM4GPsGab1zJ3pbcO/upvXaixUsYwNi/R43tbZ7NIdUPxVvM9sv3s12jyRUIneQ9XkX9yunwb7THfWJ4Qyko3VSgeYthDYd0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787750935; c=relaxed/simple;
-	bh=+VLTGuxNrZSVqZv6ytH0WhOOdBFfC+XvJLF1f1/v9Rs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=WTnlJr0iO6xjAweJlF/7XLURKpnRqIYC3U7KVslmioIqybyNrZ2mSuyQCy89NQs2ZSQuzK56rvP38YrKnImYBO8K8rR6SwN+nphyiusbZJIZEyXz/xvZPBTTl/F1iyxSgDyxphcEnnXsBs3UlIqlAIXcmgJiHOS1QyNLx/g8GYs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=szeredi.hu; spf=pass smtp.mailfrom=szeredi.hu; dkim=pass (1024-bit key) header.d=szeredi.hu header.i=@szeredi.hu header.b=fAaIczbt; arc=pass smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=szeredi.hu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=szeredi.hu
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53B6041DEE5
+	for <syzbot@lists.linux.dev>; Wed, 26 Aug 2026 15:23:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787757834; cv=none; b=gmB0HwcLZd2+xBMHvr9VTytDWOOn1az1T+p4DhBECM+dyphlgHbDowF/GC+Ibw/foeT9BIbwVPndgrBFzZbIoMH03yBAfbBXH75dbpKzEwFgZg1Kh82V9gafmP6iM4v0EGA45xhAxbyZwVoU+MfOSzbKysi0N8ryAl6Lr1LDLCA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787757834; c=relaxed/simple;
+	bh=Zn4FbeDyAg0w5s7QosaTClKMeLW+qHDq2NodS3/avzY=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ZqMxaEkKXWL7yJikIivs+hjikbwXGzJEgfmA1wYb7jCo1dQp+x37u/AamwGLP09ybWl3dbNsGh6sgS/njDM7VrOYxQIFFdlSKLyrU7Q1A8FuTw7azx/CTJEgRi6lYoBJtb2FS7Hh9o/c0lXfTGPySsYvTRcRosvaZEkOF13S5VU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X8QO3ljs; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=szeredi.hu header.i=@szeredi.hu header.b="fAaIczbt"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-52b3934af3fso10374061cf.1
-        for <syzbot@lists.linux.dev>; Wed, 26 Aug 2026 06:28:53 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1787750932; cv=none;
-        d=google.com; s=arc-20260327;
-        b=iw6B5NH9HoWCrhYs2csTusgaL2ncjkScM3LnE3y98Bk87EL5AGF00u2dm7BByG/0CQ
-         MCluTWkGTWaHeF8kKzHgVjI6co5Ijx1u34c1dEUMI4Ghwj0eWNiOoP89yS2sxplHzrHH
-         hu4wt8LJN/HTDmeuOLKsHjgwdyrGixDYpWuXTj4CWw0TawG+4jre2nf2C/k7b/QJvUUL
-         hLvTZjNLIdHi1++lX8UXg62z1stpeQdzRFj6oXDoPNTrvEzK/qXDDr29QnyhDUbBBd12
-         +/7oH0g5lFFDnosShJXr8/o0A+muglzYpxqelqUJT8HrJg+/CrrloiXqviUjBnZkQoK1
-         9mYg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=g4RMaWFMxncWKjk5/j6ryLpkwNl+5YtCqnC/Ijuyn+A=;
-        fh=Fd1daXNgmha5BTdAJjiRdVPU6WR46hMfPyPpi8eCHvM=;
-        b=SW7VCOmxndG3TOxGYrhC4Tgp6R7hNxxmBQwdTxMWcpM1G+JTo+Lt13Pc4vnIqDGY/a
-         UgrRHrvZL5DCbxMuyx1LZvCP/d43Jtsnst+M1lyTshqdKz8BAka3G1Ty0inmrrgivyqr
-         IlfK6MQjUFQ/zGyqmnugXZPxLw7f4DTtoo0aKRZ3bAveOMwK2afVAiPAjzZTwolHe5aL
-         X5JqwbPEJWPw5NkYs4ZKIl19eLqMaSkOMGUQnh4lTmWjPK8P86l3vbqDgeN1L8TKJYov
-         izTRDFSLKjHh7dMxHtZ2KNS8BqkJ+V30I4/paffQKuKKRr+Vqj//MDpzPJ7ulnt4SCyo
-         5YvA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google; t=1787750932; x=1788355732; darn=lists.linux.dev;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=g4RMaWFMxncWKjk5/j6ryLpkwNl+5YtCqnC/Ijuyn+A=;
-        b=fAaIczbtUWwvWiQoMNrVzXFBerbRpXI12FYzTSUFvbVh6JB7ZNkrjVpwSpF3Nw0G80
-         zY67FkvNUKMdNb+jpgh1e3f6a0d8TH5li6Pt3CHz4FEft2gvQbQczBekeyOsbu3bWZch
-         m8EPLdnzRVMfpyf89Jiz6R881L9rjKYZPoaQQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787750932; x=1788355732;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=g4RMaWFMxncWKjk5/j6ryLpkwNl+5YtCqnC/Ijuyn+A=;
-        b=sp5UVCLGGXFt3iVofkXboq1WorgqfIPodoCzFSh8iEQysv2jNOORQW7wpR/k02bpqx
-         KjvqIoYSEKBYm6jJRfCoBFt7GuVBo+8zaj8afSZBvH1uaV1iavLu2CkSl+X/LA8Mz4sE
-         h8EbJ3ARb7eEieFzWY7Sun6e5hWQcPI6FXiGpwDpGFWms/TbefwpjHK9lZbboPKt7ZFG
-         0uzl4uLcgUtkU/HmZtcjHfqBTuNv85NXqs8OMt/LRJBkz+Ys8c5ZYJLMFJq2quNAdj/e
-         jzIyKxTvPefNwhvmR/ecup9N/ao6G/WbQzBTId/9aTvmbEb4g8LgilZcX8FAxlLR0ILf
-         fkBw==
-X-Forwarded-Encrypted: i=1; AHgh+RomsVo2OK2XR4U+muWCqTAb3IjkJHCv7MS+hc5ICu+/CfDM2Npjj2+TefVFzhOlE2zLdutODos=@lists.linux.dev
-X-Gm-Message-State: AFuF++n8NZbhG70KoHW/xB0VI7lbAWb0WhiZ4NN6zNTADejVsEXhKwam
-	hT4zn8v60VkhhsFIRVDYEjwxH07brvDsgbinIy7jK9UQbVb64+Z5w3pFb6TWDLtPzImXApFppRJ
-	4jTeequTOdmJf8aCU55ciWZqpnysI0tb/cXKLk8evqg==
-X-Gm-Gg: AR+sD10qLOS9OKcYrIjTlWQanX1DlzibGiBbuyJAK/ljhc77caRMDuGbWBMQrwWTrq+
-	noA2TAbQIA6logpIKItpnVH6cwAePYRsAUm58OM8uGAa2kYHNxtGP7V+6EAdw+HDp2D2dxU9hSd
-	12YpNxspmkgZ61V+9IfnPVoYnHBXXLCtSFix9no7KOyAhDvD5131BJEZHmvAhM93jpivx4w3sY7
-	cP+4uc5oDS3M6ExMsrZtIOHoxfvVSlBBOiRzx7n+7nS0N52rGihR99He4KPKUqgDgUVv4jI+RVo
-	Bmm2YP8xMe/OE9+v6OvlDAqRCCMhl/l0N09ORtLjgIqhwvYu8h5Ot5J+5kPP5NzsqpYisDoZNi/
-	Mfoi4WBFrMbLzVg==
-X-Received: by 2002:ac8:5e4c:0:b0:51b:ef2c:7bf0 with SMTP id
- d75a77b69052e-52e423dda91mr62183301cf.35.1787750932189; Wed, 26 Aug 2026
- 06:28:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X8QO3ljs"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id D4F161F000E9;
+	Wed, 26 Aug 2026 15:23:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787757833;
+	bh=TQnMV+SsuipoCiygtsJ9ax3MiOAQ88c0kePg1VDO+qw=;
+	h=From:To:Cc:Subject:Date;
+	b=X8QO3ljsiikWLsGZWrAtos3cKWLN2V61iZHQgEfM46mKx+mE8JorTSYt/tAMfY4D3
+	 H18pRBKGUJauZsC5xf/nFGlQsm2QirEyxe6rxSuTKoKN2e+2NQeofJIw32+xdVExj3
+	 IvdaMa/UHaxz+iO6wA1LN6TrNohWQJ/a+BhCBX3iVLQlGXGcpXfuMofjwCfKUrX1aS
+	 le7tjvDeebpqwQTRre0Is31/lxN4v0+cJSW1m/upjBS0XjzFrttolh5rjgFTX2op9f
+	 PnG0rAcrlzpodXI/dJSttKY7x5aF0q1neTz+wQLmfRP/aqr3Oz8j429yw84987yFs5
+	 3WbM02RYG8HIQ==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] NFC: nfcmrvl_usb: fix NULL pointer dereference in bulk completion
+Message-ID: <e55c153d-a839-41d7-8669-2015811b0ab1@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <9650a974-ec3b-49d6-b6f8-89159d399239@mail.kernel.org>
-In-Reply-To: <9650a974-ec3b-49d6-b6f8-89159d399239@mail.kernel.org>
-From: Miklos Szeredi <miklos@szeredi.hu>
-Date: Wed, 26 Aug 2026 15:28:40 +0200
-X-Gm-Features: AcwNN1W34QF2PZAcvy3R9PLtw4HgRT6ulwuI-xiElq-21GqRFQaQZlS-b0FIZNg
-Message-ID: <CAJfpegvhRK8QqRM_dsdNAxyEAGBNR2iFh1mOtH50QC0gMKyiag@mail.gmail.com>
-Subject: Re: [PATCH] fuse: abort connection on /dev/fuse flush to prevent deadlock
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-bugs@googlegroups.com, Kusaram Devineni <kusaram@devineni.in>, 
-	fuse-devel@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Wed, 26 Aug 2026 15:23:52 +0000 (UTC)
 
-On Mon, 27 Jul 2026 at 19:30, syzbot <syzbot@kernel.org> wrote:
->
-> From: Kusaram Devineni <kusaram@devineni.in>
->
-> A single-threaded FUSE daemon can deadlock if it mounts a filesystem and
-> opens a file on it. When the process exits or calls close_range(), the
-> kernel closes file descriptors in ascending numerical order.
->
-> If the /dev/fuse file descriptor (e.g., fd 5) is closed first, filp_close()
-> decrements the file reference count but defers the actual release (fput) to
-> task work. As a result, the FUSE connection remains active.
->
-> Next, when the FUSE file descriptor (e.g., fd 6) is closed, filp_close()
-> calls fuse_flush(), which sends a synchronous FUSE_FLUSH request to the
-> daemon. Since the daemon is the same thread that is currently blocked in
-> the close() syscall, it cannot process the request. The FUSE_FLUSH request
-> uses args.force = true, making the wait uninterruptible. The thread hangs
-> forever, eventually triggering a hung task panic:
+In nfcmrvl_probe(), the driver calls nfcmrvl_nci_register_dev(), which
+creates and registers the NCI device via nci_register_device(). Once
+registered, the device is immediately exposed to userspace, which can bring
+the interface up via netlink. When the interface is opened,
+nfcmrvl_usb_nci_open() submits bulk RX URBs. However, nfcmrvl_probe()
+assigns drv_data->priv = priv only after nfcmrvl_nci_register_dev()
+returns. If an URB completes before drv_data->priv is assigned, the
+completion handler nfcmrvl_bulk_complete() dereferences drv_data->priv
+(which is still NULL) when allocating an skb, triggering a general
+protection fault.
 
-If the server doesn't reply to a FUSE_FLUSH request, the calling
-process with be hung.   It could be due to a hung network connection
-or whatever.
+Additionally, nfcmrvl_bulk_complete() and nfcmrvl_resume() checked
+test_bit(NFCMRVL_NCI_RUNNING, &drv_data->flags) instead of &priv->flags.
+Since NFCMRVL_NCI_RUNNING and NFCMRVL_USB_BULK_RUNNING both share the value
+1, this inadvertently tested drv_data->flags for NFCMRVL_USB_BULK_RUNNING,
+masking the issue on the first URB completion while failing on subsequent
+completions.
 
-Is this special because sysbot was able to trigger this?   Why isn't
-the fuse abort code taking care of this?
+KASAN report:
+Oops: general protection fault, probably for non-canonical address
+0xdffffc0000000004: 0000 [#1] SMP KASAN NOPTI
+KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
+RIP: 0010:nfcmrvl_bulk_complete+0x107/0x600 drivers/nfc/nfcmrvl/usb.c:71
+Call Trace:
+ <IRQ>
+ __usb_hcd_giveback_urb+0x374/0x530 drivers/usb/core/hcd.c:1657
+ dummy_timer+0xa91/0x4cf0 drivers/usb/gadget/udc/dummy_hcd.c:2019
+ __run_hrtimer kernel/time/hrtimer.c:2032 [inline]
+ __hrtimer_run_queues+0x3bc/0xa10 kernel/time/hrtimer.c:2096
+ hrtimer_run_softirq+0x17a/0x240 kernel/time/hrtimer.c:2113
+ handle_softirqs+0x225/0x840 kernel/softirq.c:622
+ </IRQ>
 
-Thanks,
-Miklos
+Fix this by passing priv as the URB context in nfcmrvl_submit_bulk_urb()
+and retrieving priv directly from urb->context in nfcmrvl_bulk_complete().
+Because priv is already initialized and valid when nfcmrvl_usb_nci_open()
+is called, this removes the reliance on drv_data->priv. Also, update
+nfcmrvl_bulk_complete() and nfcmrvl_resume() to test NFCMRVL_NCI_RUNNING
+against priv->flags.
+
+Fixes: f26e30cc6b50 ("NFC: nfcmrvl: Initial commit for Marvell NFC driver")
+Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+59d5e6a8ed04e6a000c8@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=59d5e6a8ed04e6a000c8
+Link: https://syzkaller.appspot.com/ai_job?id=cf4896f2-e0ed-48cf-888c-6677fdcd9ee8
+To: "David Heidelberg" <david@ixit.cz>
+To: <oe-linux-nfc@lists.linux.dev>
+To: "Amitkumar Karwar" <akarwar@marvell.com>
+Cc: "Bartosz Golaszewski" <bartosz.golaszewski@oss.qualcomm.com>
+Cc: "Johan Hovold" <johan@kernel.org>
+Cc: "Jakub Kicinski" <kuba@kernel.org>
+Cc: "Linus Walleij" <linusw@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+Cc: "Jialu Xu" <xujialu@vimux.org>
+
+---
+diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
+index 4babde8e4..ca20030bd 100644
+--- a/drivers/nfc/nfcmrvl/usb.c
++++ b/drivers/nfc/nfcmrvl/usb.c
+@@ -56,26 +56,27 @@ static int nfcmrvl_inc_tx(struct nfcmrvl_usb_drv_data *drv_data)
+ 
+ static void nfcmrvl_bulk_complete(struct urb *urb)
+ {
+-	struct nfcmrvl_usb_drv_data *drv_data = urb->context;
++	struct nfcmrvl_private *priv = urb->context;
++	struct nfcmrvl_usb_drv_data *drv_data = priv->drv_data;
+ 	int err;
+ 
+ 	dev_dbg(&drv_data->udev->dev, "urb %p status %d count %d\n",
+ 		urb, urb->status, urb->actual_length);
+ 
+-	if (!test_bit(NFCMRVL_NCI_RUNNING, &drv_data->flags))
++	if (!test_bit(NFCMRVL_NCI_RUNNING, &priv->flags))
+ 		return;
+ 
+ 	if (!urb->status) {
+ 		struct sk_buff *skb;
+ 
+-		skb = nci_skb_alloc(drv_data->priv->ndev, urb->actual_length,
++		skb = nci_skb_alloc(priv->ndev, urb->actual_length,
+ 				    GFP_ATOMIC);
+ 		if (!skb) {
+ 			nfc_err(&drv_data->udev->dev, "failed to alloc mem\n");
+ 		} else {
+ 			skb_put_data(skb, urb->transfer_buffer,
+ 				     urb->actual_length);
+-			if (nfcmrvl_nci_recv_frame(drv_data->priv, skb) < 0)
++			if (nfcmrvl_nci_recv_frame(priv, skb) < 0)
+ 				nfc_err(&drv_data->udev->dev,
+ 					"corrupted Rx packet\n");
+ 		}
+@@ -100,8 +101,9 @@ static void nfcmrvl_bulk_complete(struct urb *urb)
+ }
+ 
+ static int
+-nfcmrvl_submit_bulk_urb(struct nfcmrvl_usb_drv_data *drv_data, gfp_t mem_flags)
++nfcmrvl_submit_bulk_urb(struct nfcmrvl_private *priv, gfp_t mem_flags)
+ {
++	struct nfcmrvl_usb_drv_data *drv_data = priv->drv_data;
+ 	struct urb *urb;
+ 	unsigned char *buf;
+ 	unsigned int pipe;
+@@ -124,7 +126,7 @@ nfcmrvl_submit_bulk_urb(struct nfcmrvl_usb_drv_data *drv_data, gfp_t mem_flags)
+ 			       drv_data->bulk_rx_ep->bEndpointAddress);
+ 
+ 	usb_fill_bulk_urb(urb, drv_data->udev, pipe, buf, size,
+-			  nfcmrvl_bulk_complete, drv_data);
++			  nfcmrvl_bulk_complete, priv);
+ 
+ 	urb->transfer_flags |= URB_FREE_BUFFER;
+ 
+@@ -174,12 +176,12 @@ static int nfcmrvl_usb_nci_open(struct nfcmrvl_private *priv)
+ 
+ 	drv_data->intf->needs_remote_wakeup = 1;
+ 
+-	err = nfcmrvl_submit_bulk_urb(drv_data, GFP_KERNEL);
++	err = nfcmrvl_submit_bulk_urb(priv, GFP_KERNEL);
+ 	if (err)
+ 		goto failed;
+ 
+ 	set_bit(NFCMRVL_USB_BULK_RUNNING, &drv_data->flags);
+-	nfcmrvl_submit_bulk_urb(drv_data, GFP_KERNEL);
++	nfcmrvl_submit_bulk_urb(priv, GFP_KERNEL);
+ 
+ 	usb_autopm_put_interface(drv_data->intf);
+ 	return 0;
+@@ -400,6 +402,7 @@ static void nfcmrvl_play_deferred(struct nfcmrvl_usb_drv_data *drv_data)
+ static int nfcmrvl_resume(struct usb_interface *intf)
+ {
+ 	struct nfcmrvl_usb_drv_data *drv_data = usb_get_intfdata(intf);
++	struct nfcmrvl_private *priv = drv_data->priv;
+ 	int err = 0;
+ 
+ 	nfc_info(&drv_data->udev->dev, "intf %p\n", intf);
+@@ -407,17 +410,17 @@ static int nfcmrvl_resume(struct usb_interface *intf)
+ 	if (--drv_data->suspend_count)
+ 		return 0;
+ 
+-	if (!test_bit(NFCMRVL_NCI_RUNNING, &drv_data->flags))
++	if (!test_bit(NFCMRVL_NCI_RUNNING, &priv->flags))
+ 		goto done;
+ 
+ 	if (test_bit(NFCMRVL_USB_BULK_RUNNING, &drv_data->flags)) {
+-		err = nfcmrvl_submit_bulk_urb(drv_data, GFP_NOIO);
++		err = nfcmrvl_submit_bulk_urb(priv, GFP_NOIO);
+ 		if (err) {
+ 			clear_bit(NFCMRVL_USB_BULK_RUNNING, &drv_data->flags);
+ 			goto failed;
+ 		}
+ 
+-		nfcmrvl_submit_bulk_urb(drv_data, GFP_NOIO);
++		nfcmrvl_submit_bulk_urb(priv, GFP_NOIO);
+ 	}
+ 
+ 	spin_lock_irq(&drv_data->txlock);
+
+
+base-commit: 8d3ae59288f1e7d58d76558a6ee96d533bc5019f
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
