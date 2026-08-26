@@ -1,59 +1,128 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DAA5361961
-	for <syzbot@lists.linux.dev>; Wed, 26 Aug 2026 18:35:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A39E396565
+	for <syzbot@lists.linux.dev>; Wed, 26 Aug 2026 18:38:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787769363; cv=none; b=DiRlfQiyllNwkF0yJwqVgksbgdY1BKkPGAcI3UkgckQ7LeZFPHYuYCRpfWp2yF/I+n93JmT+mR9yRYTxDqcJvRnZ5PmWg4Wb+JVduq1HxKj7XLC02PL1dXMQgY86C/ZLtqcW2A0dtLDfjMCYN+PQnTXAeVkp1cyyCWJzyLCQxSo=
+	t=1787769492; cv=none; b=KwQU1+xuFnqa9EXpHMZduKOjsOPZzJiZ9FTIHGtKIFXi78WnvM1OQZsg+fm663EcaZDfvotUseCCzwWWAuPTOQvTjk+fSe4O4LLip2yi2Sn+6mXYilZKqiV0dulxuEnGxvyPeKFoGSctA3tvnt51KkG7IXVBcAc2MIrt4JqDsWU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787769363; c=relaxed/simple;
-	bh=hNciU6mHkOnpuPcga/RZMdDMdncjkZSRjbRtlgKaK4Y=;
-	h=From:To:Cc:Subject:In-Reply-To:Message-ID:MIME-Version:
-	 Content-Type:Date; b=dxNvzyzwsTENdqd4MGEPEWYlBA2uarY6HfCEJ9Ge7oi80agjabIl0eFbDAZHhi8K3gCJTkvQx9gC2sCdGeveya6lubiK1e8/UQ9BPFnBcBnssFH4Quqt+An1N+bTMNy2e+33lmf8W7VX1B8Ydc79DnY5s0nMbYQVXvdO/s19eXU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h9rCzbIJ; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h9rCzbIJ"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 567B01F00A3D;
-	Wed, 26 Aug 2026 18:35:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787769352;
-	bh=l8SbpvzKHkd0qGU3leV0abceXTxG+6uu0pTtOq0G18Q=;
-	h=From:To:Cc:Subject:In-Reply-To:Date;
-	b=h9rCzbIJvNH/O6fPFP41Vpf84Zvros3CsbkzZsxo/5nopya36HKUNJW+BQAI+yglb
-	 7151mer+RH4NtLcMqe8sC6Zvv9VtiPrew47igw/NKTgau2kxu2C/PpRyTLgAToIIY5
-	 82WnUikyXyMo97jdUvzVau20qIlcESoI1SyHAosP0ZvC56yg3mgC/YrWvoUf7WvjD6
-	 HiHC8YYhV4JQu5m62frDlHmrfWzGAZTwvZJm1PrMqUrShU4V3FJp/VUhEBSv6GCqwf
-	 HHH3FmbsKrK57yC5kdLhvpfcL3EhQtUuVn0F05r0KsU9YtznXq4PaEBck70Xu1ArH3
-	 5wIQWJIJhZpNg==
-From: "syzbot" <syzbot@kernel.org>
-To: nogikh@google.com, syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC] NFC: nfcmrvl_usb: fix NULL pointer dereference in bulk completion
-In-Reply-To: <CANp29Y5r7daGYmd46Rpv3YV5SOiYRRK4JJGs30EB7tYL4WVuGw@mail.gmail.com>
-Message-ID: <d6f060f6-f578-4ee3-95b9-9d4a36b65892@mail.kernel.org>
+	s=arc-20240116; t=1787769492; c=relaxed/simple;
+	bh=QqawRMZtu4vig3FxTk76oM1ZkULZJYhJJapQuQ2Zu9M=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=V6hAlhtmNjhAS3FI8waWD0w7NdOQPTzgWiV5ppXeZP+wflQZMZCWu+6/UGnjYCmCCxwxuH7YE9fhfhV1Vegjo3DdgkWaCXfP9EErX86gaBflAS622VxO3/yQkmxE/fpjGuTYmNsn0xCJdCkv6fhg9i2Xg7OMh2uTPkcrXgz083Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-4ab4ca7ce3fso2214507b6e.0
+        for <syzbot@lists.linux.dev>; Wed, 26 Aug 2026 11:37:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787769477; x=1788374277;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=GRtX+/AMD+nCNRWUGNxDBoP4pd6qD7Uga5Q/GEl0lLA=;
+        b=PzAorOo67Afz8go6v3zzFk8z8gYIIbZWOpd/WJkqyBiA+njzfKJ2NpC4DLXT4IdgvK
+         h1ERRL7w6BQAYqDBKLbUHYjQSYERDSHZBBAsir74wI42LdP/GLlkILu7e5E72eAbrs0z
+         jSYJihnMzAZrXNvB1tJSXp/N8TSkE7k8IujmrCMm2lPDGtYWKnCLT7BaJumLkkytaymz
+         ij/KnEY/L9boUDij+G6Aa2xdUvpO85dyixGRX3W94jl7UObmy/uIfbydjpHewWYXr1hw
+         nZaRmocYm1NWcTmV/s4ECm+hUVamfML1rkM4nD6jtM9O7HKByUuKIk61gpY6ybjlGxJS
+         8zgw==
+X-Gm-Message-State: AFuF++mXOE5X08IYcC7zWlheu3sPRzHaYNU5Zk+gkbgIn/xTf+uFEaoN
+	pSJPypyo0x9eCjXBy1SE2wTpGg6itccZuK/llQuTlWFr7YCg1BJa/nOkYV30LFimqvpOJC11/sw
+	WbbjS1HASnbcL/erom4jMsUTeMaMeH3o0TtplYCOUlbWgB7XIiQASoQ3kFxs=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Wed, 26 Aug 2026 18:35:52 +0000 (UTC)
+X-Received: by 2002:a05:6809:34c:10b0:4b3:7da2:f393 with SMTP id
+ 5614622812f47-4b37da2f462mr843923b6e.15.1787769477569; Wed, 26 Aug 2026
+ 11:37:57 -0700 (PDT)
+Date: Wed, 26 Aug 2026 11:37:57 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a8f3285.4d659fcc.734b4.0005.GAE@google.com>
+Subject: [moderation/CI] Re: tcp: fix use-after-free in do_tcp_getsockopt()
+From: syzbot ci <syzbot+cie3ec19fdda59ffb3@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> If you change nfcmrvl_submit_bulk_urb() to accept both drv_data and
-> priv, would the code be simpler?
-Passing both `drv_data` and `priv` would avoid the local variable
-assignment `drv_data = priv->drv_data` inside
-`nfcmrvl_submit_bulk_urb()`, but it adds an extra parameter to the
-function signature and all call sites.
+syzbot ci has tested the following series
 
-Since `priv->drv_data` is already initialized before device registration
-and remains valid, passing `priv` alone provides access to both
-structures without passing redundant arguments.
+[v2] tcp: fix use-after-free in do_tcp_getsockopt()
+https://lore.kernel.org/all/20260826171344.4133-1-blbllhy@gmail.com
+* [PATCH net v2 1/2] tcp: fix use-after-free in do_tcp_getsockopt(TCP_CONGE=
+STION)
+* [PATCH net v2 2/2] tcp: fix use-after-free in do_tcp_getsockopt(TCP_CC_IN=
+FO)
 
--- 
-This reply was generated by an AI model.
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+and found the following issue:
+kernel build error
+
+Full report is available here:
+https://ci.syzbot.org/series/2f1649c0-f2ae-4dba-91fe-85e6de6ced71
+
+***
+
+kernel build error
+
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
+nux-next
+base:      f967455fb2a5a2079b9eb5823e9ccf359174bf9f
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/d1a76ec6-f991-45ea-95a6-725073b26fb=
+5/config
+
+net/ipv4/tcp.c:4592:3: error: use of undeclared identifier 'ca_ops'; did yo=
+u mean 'pv_ops'?
+net/ipv4/tcp.c:4592:10: error: assigning to 'struct paravirt_patch_template=
+' from incompatible type 'typeof_unqual (icsk->icsk_ca_ops)' (aka 'const st=
+ruct tcp_congestion_ops *')
+net/ipv4/tcp.c:4593:19: error: use of undeclared identifier 'ca_ops'; did y=
+ou mean 'pv_ops'?
+net/ipv4/tcp.c:4593:25: error: member reference type 'struct paravirt_patch=
+_template' is not a pointer; did you mean to use '.'?
+net/ipv4/tcp.c:4593:27: error: no member named 'name' in 'struct paravirt_p=
+atch_template'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
+
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[andriin@fb.com ast@kernel.org autonomouscodesecurity@microsoft.com blbllhy=
+@gmail.com bpf@vger.kernel.org davem@davemloft.net edumazet@google.com geli=
+ang@kernel.org horms@kernel.org kafai@fb.com kuba@kernel.org kuniyu@google.=
+com kys@microsoft.com linux-kernel@vger.kernel.org martineau@kernel.org mat=
+ttbe@kernel.org mptcp@lists.linux.dev ncardwell@google.com netdev@vger.kern=
+el.org pabeni@redhat.com stable@vger.kernel.org tgopinath@linux.microsoft.c=
+om xmei5@asu.edu yhs@fb.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
