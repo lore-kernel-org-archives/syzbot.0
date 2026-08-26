@@ -1,148 +1,122 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDA273E8C77
-	for <syzbot@lists.linux.dev>; Wed, 26 Aug 2026 12:32:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787747544; cv=none; b=QeQcwz7/Hywua20CrWWAFA6/tDa3oM9MPD4sj6LhobxijDXzau5VzJKkKt0lciaj1rQAlWBkgN63yR0nFILXwitJoSDQzuSVQX/CFYdDkdWrn03ELBCASRO9DNH28B/tH08KdNG+5e7WGpaaDtb5A/u1lj4S9YtXqliSaoBtUNA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787747544; c=relaxed/simple;
-	bh=vQsnqX5COhU2rXLp51qBlsbv5mKlh1tDhIMyHnI3mCA=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=KRB9cQ7VTIE3ANb9Om41469W4s03PWkhZWTdU+BekBWEXBfJxPEQ3U46Z4ahHz8z746apD31lKSa3XslmvBjrEM4ZclKdhgVztqi0FEq9+I8WsVZBXnWvKD8JjkM069uJMLkIs96PSH3fCRo8fR6bPJb8o+Pw1AgSaGz9lAzK9w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iVNHWAz4; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ABBB420488
+	for <syzbot@lists.linux.dev>; Wed, 26 Aug 2026 13:28:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.173
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787750935; cv=pass; b=mR1KFmWwKTHhZH8BHIFhx7nljFhtFEXB8AgpMBJBj8ZOaTZHveo6SUoqMK80j9tAIKpWH2Its9/IM4GPsGab1zJ3pbcO/upvXaixUsYwNi/R43tbZ7NIdUPxVvM9sv3s12jyRUIneQ9XkX9yunwb7THfWJ4Qyko3VSgeYthDYd0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787750935; c=relaxed/simple;
+	bh=+VLTGuxNrZSVqZv6ytH0WhOOdBFfC+XvJLF1f1/v9Rs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=WTnlJr0iO6xjAweJlF/7XLURKpnRqIYC3U7KVslmioIqybyNrZ2mSuyQCy89NQs2ZSQuzK56rvP38YrKnImYBO8K8rR6SwN+nphyiusbZJIZEyXz/xvZPBTTl/F1iyxSgDyxphcEnnXsBs3UlIqlAIXcmgJiHOS1QyNLx/g8GYs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=szeredi.hu; spf=pass smtp.mailfrom=szeredi.hu; dkim=pass (1024-bit key) header.d=szeredi.hu header.i=@szeredi.hu header.b=fAaIczbt; arc=pass smtp.client-ip=209.85.160.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=szeredi.hu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=szeredi.hu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iVNHWAz4"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 5D9E21F000E9;
-	Wed, 26 Aug 2026 12:32:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787747542;
-	bh=ipZ4Gnt0HXtoARhtDo5imHzjWS6EzDfgEpKWXndYdRw=;
-	h=From:To:Cc:Subject:Date;
-	b=iVNHWAz4rIFlLzq/mwv9pWtf75ufRUtG5CpOZhYLr5Fztx7U9Yzjsb5WlCu6EuZbl
-	 +CVBLKdBC4cG7BcJzghgPgi5oP2CUgcpebG3xUQPbvATrcwwmifmCaNqD9tcFZCwqf
-	 EHDaEi6SRyNyzXOSz987x424niopbxipt+8Wo51nzYTqGVZNaWt8FC5GUAIF6NeKB9
-	 +AjA31bfk8MwHIqi6V8Pqp9LPDcaSDy1iz0moQ75Kh3ECkgW7C8QxYlKtjZ8qDxnSl
-	 Js9ObVYHslDI2asgOUVCBPeXVqiom5hahyg7C/bnNBm4D6STp5ZcF54wf+9moLiFwf
-	 lt139aCHkoNaQ==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb-storage: alauda: Track media_initialized per port
-Message-ID: <6a872422-fe69-4f50-8fa1-20fe34af5da2@mail.kernel.org>
+	dkim=pass (1024-bit key) header.d=szeredi.hu header.i=@szeredi.hu header.b="fAaIczbt"
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-52b3934af3fso10374061cf.1
+        for <syzbot@lists.linux.dev>; Wed, 26 Aug 2026 06:28:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1787750932; cv=none;
+        d=google.com; s=arc-20260327;
+        b=iw6B5NH9HoWCrhYs2csTusgaL2ncjkScM3LnE3y98Bk87EL5AGF00u2dm7BByG/0CQ
+         MCluTWkGTWaHeF8kKzHgVjI6co5Ijx1u34c1dEUMI4Ghwj0eWNiOoP89yS2sxplHzrHH
+         hu4wt8LJN/HTDmeuOLKsHjgwdyrGixDYpWuXTj4CWw0TawG+4jre2nf2C/k7b/QJvUUL
+         hLvTZjNLIdHi1++lX8UXg62z1stpeQdzRFj6oXDoPNTrvEzK/qXDDr29QnyhDUbBBd12
+         +/7oH0g5lFFDnosShJXr8/o0A+muglzYpxqelqUJT8HrJg+/CrrloiXqviUjBnZkQoK1
+         9mYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=g4RMaWFMxncWKjk5/j6ryLpkwNl+5YtCqnC/Ijuyn+A=;
+        fh=Fd1daXNgmha5BTdAJjiRdVPU6WR46hMfPyPpi8eCHvM=;
+        b=SW7VCOmxndG3TOxGYrhC4Tgp6R7hNxxmBQwdTxMWcpM1G+JTo+Lt13Pc4vnIqDGY/a
+         UgrRHrvZL5DCbxMuyx1LZvCP/d43Jtsnst+M1lyTshqdKz8BAka3G1Ty0inmrrgivyqr
+         IlfK6MQjUFQ/zGyqmnugXZPxLw7f4DTtoo0aKRZ3bAveOMwK2afVAiPAjzZTwolHe5aL
+         X5JqwbPEJWPw5NkYs4ZKIl19eLqMaSkOMGUQnh4lTmWjPK8P86l3vbqDgeN1L8TKJYov
+         izTRDFSLKjHh7dMxHtZ2KNS8BqkJ+V30I4/paffQKuKKRr+Vqj//MDpzPJ7ulnt4SCyo
+         5YvA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google; t=1787750932; x=1788355732; darn=lists.linux.dev;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=g4RMaWFMxncWKjk5/j6ryLpkwNl+5YtCqnC/Ijuyn+A=;
+        b=fAaIczbtUWwvWiQoMNrVzXFBerbRpXI12FYzTSUFvbVh6JB7ZNkrjVpwSpF3Nw0G80
+         zY67FkvNUKMdNb+jpgh1e3f6a0d8TH5li6Pt3CHz4FEft2gvQbQczBekeyOsbu3bWZch
+         m8EPLdnzRVMfpyf89Jiz6R881L9rjKYZPoaQQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787750932; x=1788355732;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=g4RMaWFMxncWKjk5/j6ryLpkwNl+5YtCqnC/Ijuyn+A=;
+        b=sp5UVCLGGXFt3iVofkXboq1WorgqfIPodoCzFSh8iEQysv2jNOORQW7wpR/k02bpqx
+         KjvqIoYSEKBYm6jJRfCoBFt7GuVBo+8zaj8afSZBvH1uaV1iavLu2CkSl+X/LA8Mz4sE
+         h8EbJ3ARb7eEieFzWY7Sun6e5hWQcPI6FXiGpwDpGFWms/TbefwpjHK9lZbboPKt7ZFG
+         0uzl4uLcgUtkU/HmZtcjHfqBTuNv85NXqs8OMt/LRJBkz+Ys8c5ZYJLMFJq2quNAdj/e
+         jzIyKxTvPefNwhvmR/ecup9N/ao6G/WbQzBTId/9aTvmbEb4g8LgilZcX8FAxlLR0ILf
+         fkBw==
+X-Forwarded-Encrypted: i=1; AHgh+RomsVo2OK2XR4U+muWCqTAb3IjkJHCv7MS+hc5ICu+/CfDM2Npjj2+TefVFzhOlE2zLdutODos=@lists.linux.dev
+X-Gm-Message-State: AFuF++n8NZbhG70KoHW/xB0VI7lbAWb0WhiZ4NN6zNTADejVsEXhKwam
+	hT4zn8v60VkhhsFIRVDYEjwxH07brvDsgbinIy7jK9UQbVb64+Z5w3pFb6TWDLtPzImXApFppRJ
+	4jTeequTOdmJf8aCU55ciWZqpnysI0tb/cXKLk8evqg==
+X-Gm-Gg: AR+sD10qLOS9OKcYrIjTlWQanX1DlzibGiBbuyJAK/ljhc77caRMDuGbWBMQrwWTrq+
+	noA2TAbQIA6logpIKItpnVH6cwAePYRsAUm58OM8uGAa2kYHNxtGP7V+6EAdw+HDp2D2dxU9hSd
+	12YpNxspmkgZ61V+9IfnPVoYnHBXXLCtSFix9no7KOyAhDvD5131BJEZHmvAhM93jpivx4w3sY7
+	cP+4uc5oDS3M6ExMsrZtIOHoxfvVSlBBOiRzx7n+7nS0N52rGihR99He4KPKUqgDgUVv4jI+RVo
+	Bmm2YP8xMe/OE9+v6OvlDAqRCCMhl/l0N09ORtLjgIqhwvYu8h5Ot5J+5kPP5NzsqpYisDoZNi/
+	Mfoi4WBFrMbLzVg==
+X-Received: by 2002:ac8:5e4c:0:b0:51b:ef2c:7bf0 with SMTP id
+ d75a77b69052e-52e423dda91mr62183301cf.35.1787750932189; Wed, 26 Aug 2026
+ 06:28:52 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Wed, 26 Aug 2026 12:32:22 +0000 (UTC)
+References: <9650a974-ec3b-49d6-b6f8-89159d399239@mail.kernel.org>
+In-Reply-To: <9650a974-ec3b-49d6-b6f8-89159d399239@mail.kernel.org>
+From: Miklos Szeredi <miklos@szeredi.hu>
+Date: Wed, 26 Aug 2026 15:28:40 +0200
+X-Gm-Features: AcwNN1W34QF2PZAcvy3R9PLtw4HgRT6ulwuI-xiElq-21GqRFQaQZlS-b0FIZNg
+Message-ID: <CAJfpegvhRK8QqRM_dsdNAxyEAGBNR2iFh1mOtH50QC0gMKyiag@mail.gmail.com>
+Subject: Re: [PATCH] fuse: abort connection on /dev/fuse flush to prevent deadlock
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-bugs@googlegroups.com, Kusaram Devineni <kusaram@devineni.in>, 
+	fuse-devel@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-Commit 16637fea001a ("usb-storage: alauda: Check whether the media is
-initialized") added a `media_initialized` boolean to `struct alauda_info`
-to prevent `uzonesize` from remaining 0 on initialization failure. However,
-`media_initialized` is shared between both LUNs (XD and SM media ports)
-supported by the Alauda driver.
+On Mon, 27 Jul 2026 at 19:30, syzbot <syzbot@kernel.org> wrote:
+>
+> From: Kusaram Devineni <kusaram@devineni.in>
+>
+> A single-threaded FUSE daemon can deadlock if it mounts a filesystem and
+> opens a file on it. When the process exits or calls close_range(), the
+> kernel closes file descriptors in ascending numerical order.
+>
+> If the /dev/fuse file descriptor (e.g., fd 5) is closed first, filp_close()
+> decrements the file reference count but defers the actual release (fput) to
+> task work. As a result, the FUSE connection remains active.
+>
+> Next, when the FUSE file descriptor (e.g., fd 6) is closed, filp_close()
+> calls fuse_flush(), which sends a synchronous FUSE_FLUSH request to the
+> daemon. Since the daemon is the same thread that is currently blocked in
+> the close() syscall, it cannot process the request. The FUSE_FLUSH request
+> uses args.force = true, making the wait uninterruptible. The thread hangs
+> forever, eventually triggering a hung task panic:
 
-When the kernel probes LUN 0, it successfully initializes the media and
-sets `media_initialized = true`. When it subsequently probes LUN 1,
-`alauda_check_media()` sees that `media_initialized` is already true, skips
-the initialization for LUN 1, and leaves its `uzonesize` as 0. Later, when
-a read/write command is issued to LUN 1, the driver attempts to divide by
-`uzonesize` in `alauda_read_data()`, resulting in a divide-by-zero
-exception:
+If the server doesn't reply to a FUSE_FLUSH request, the calling
+process with be hung.   It could be due to a hung network connection
+or whatever.
 
-Oops: divide error: 0000 [#1] SMP KASAN NOPTI
-CPU: 1 UID: 0 PID: 5849 Comm: usb-storage Not tainted
-RIP: 0010:alauda_read_data drivers/usb/storage/alauda.c:954 [inline]
-RIP: 0010:alauda_transport+0xbd6/0x43a0 drivers/usb/storage/alauda.c:1187
-Call Trace:
- <TASK>
- usb_stor_invoke_transport+0x115/0x1a40 drivers/usb/storage/transport.c:611
- usb_stor_control_thread+0x44c/0x8f0 drivers/usb/storage/usb.c:462
- kthread+0x388/0x470 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
+Is this special because sysbot was able to trigger this?   Why isn't
+the fuse abort code taking care of this?
 
-To fix this, move the `media_initialized` boolean from `struct alauda_info`
-to `struct alauda_media_info` so that each LUN tracks its initialization
-state independently. Additionally, explicitly set `media_initialized =
-false` when no media is present or before calling `alauda_init_media()`.
-This ensures that if initialization fails halfway through, the driver won't
-accidentally trust stale data from a previously inserted card.
-
-Fixes: 16637fea001a ("usb-storage: alauda: Check whether the media is initialized")
-Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+dc208a8cf8d37cf3e5ac@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=dc208a8cf8d37cf3e5ac
-Link: https://syzkaller.appspot.com/ai_job?id=87935d94-4387-493a-8061-bcb7752c517c
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-To: "Alan Stern" <stern@rowland.harvard.edu>
-To: <usb-storage@lists.one-eyed-alien.net>
-To: "Shichao Lai" <shichaorai@gmail.com>
-Cc: <linux-kernel@vger.kernel.org>
-
----
-diff --git a/drivers/usb/storage/alauda.c b/drivers/usb/storage/alauda.c
-index 691fe4700..807492f75 100644
---- a/drivers/usb/storage/alauda.c
-+++ b/drivers/usb/storage/alauda.c
-@@ -96,6 +96,8 @@ struct alauda_media_info {
- 
- 	u16 **lba_to_pba;		/* logical to physical block map */
- 	u16 **pba_to_lba;		/* physical to logical block map */
-+
-+	bool media_initialized;
- };
- 
- struct alauda_info {
-@@ -105,8 +107,6 @@ struct alauda_info {
- 	unsigned char sense_key;
- 	unsigned long sense_asc;	/* additional sense code */
- 	unsigned long sense_ascq;	/* additional sense code qualifier */
--
--	bool media_initialized;
- };
- 
- #define short_pack(lsb,msb) ( ((u16)(lsb)) | ( ((u16)(msb))<<8 ) )
-@@ -471,6 +471,7 @@ static int alauda_check_media(struct us_data *us)
- 		|| ((status[1] & 0x01) == 0)) {
- 		usb_stor_dbg(us, "No media, or door open\n");
- 		alauda_free_maps(&MEDIA_INFO(us));
-+		MEDIA_INFO(us).media_initialized = false;
- 		info->sense_key = 0x02;
- 		info->sense_asc = 0x3A;
- 		info->sense_ascq = 0x00;
-@@ -478,12 +479,13 @@ static int alauda_check_media(struct us_data *us)
- 	}
- 
- 	/* Check for media change */
--	if (status[0] & 0x08 || !info->media_initialized) {
-+	if (status[0] & 0x08 || !MEDIA_INFO(us).media_initialized) {
- 		usb_stor_dbg(us, "Media change detected\n");
- 		alauda_free_maps(&MEDIA_INFO(us));
-+		MEDIA_INFO(us).media_initialized = false;
- 		rc = alauda_init_media(us);
- 		if (rc == USB_STOR_TRANSPORT_GOOD)
--			info->media_initialized = true;
-+			MEDIA_INFO(us).media_initialized = true;
- 		info->sense_key = UNIT_ATTENTION;
- 		info->sense_asc = 0x28;
- 		info->sense_ascq = 0x00;
-
-
-base-commit: 8d3ae59288f1e7d58d76558a6ee96d533bc5019f
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Thanks,
+Miklos
