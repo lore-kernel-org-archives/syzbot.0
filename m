@@ -1,108 +1,145 @@
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpo49.interia.pl (smtpo49.interia.pl [217.74.67.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7BED1E5B68
-	for <syzbot@lists.linux.dev>; Thu, 27 Aug 2026 05:17:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AD7B22CBE6
+	for <syzbot@lists.linux.dev>; Thu, 27 Aug 2026 06:35:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787807858; cv=none; b=ImVorWJKrb9TqCO6J7hft38OqEH8qgtSlsINN9b22m69u39b4RX1NY+KknmsDPtSBj9nXs/ObazpT8Xv9OorjxCK1dy+7aZT1/a9QB4iEhOqRCUQpFzZLLWvz7HqXSmDwkiQstMIvd/L/7hKwhjL6iYGJ9KJUZ4e0UIlmCTMNlQ=
+	t=1787812530; cv=none; b=pYumKeMhTWmeAr7mSfa/whP+xM8OAqyHa2CqzLKVN1aVB8JecfV2CWDMns5+DAeBBkEXRy9YNNsl6Rb5KdeG9hcQm5HaJdDsV4JtBJnOKFwaWAjgXQnAOuQRZ7A1cFvZdENr15oud02HFU9rsz/VS+AB9eOAnWruMxkClLb7tPU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787807858; c=relaxed/simple;
-	bh=V3kS37rhuJvkRcpoAouOwKlVXLXw6rrhdphmfNHCEyo=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=jGGVp97rPZyvEtmw0rGSDeanfrSLjGAjNRKSFibRl6mqzFqGubUM4RJcvxvnEuUlJzF3lh51TZ5UNr1AZGkI6+aho6XW01ux4UVHR14pVq6aI/1BM+9d0gt75dtldskFSbTw9TneSHOtsUQzC4jGC4S+4XPfPtqMN3+HEaHTI9M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-48e5de5a23cso438738b6e.0
-        for <syzbot@lists.linux.dev>; Wed, 26 Aug 2026 22:17:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787807855; x=1788412655;
-        h=content-type:cc:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=sOJjYBX68a6obTajRstXqUK497ePsbtjWa6/JKMwrHU=;
-        b=Gocyxe2Ygzc6UOGXj5bLDqUPbtr998H+5uyYt19ohUYfOveXtNmv0HL10OBpRJnB6h
-         sKR1s3eqNsRDjvN3vJ+uAdHh7EJMdkL/jxgwkR1sn9fZSkc9VknXz6ZxOlXLE8OwECSu
-         /gbcDLUG4O7lWdxWu/6/sTPqKDrEt5J/xX6K7r9mrLccd9FPbQDyuCeEkI/X4Ts6iFSZ
-         63iCYxqDA4RLdH08K2XhffK9x2HsWGhx3DrUMA0zQlmWv9mySyEzIUD0YwphFA36Bo/j
-         g+hw8TI/ZyFphN8qER37x3eGuRz4d5UYskVhgjciSC5rkM+truc2Y061o5xx/UOEsz0X
-         PmXg==
-X-Gm-Message-State: AFuF++nkTfKLaUjEPp1l3euwLX5Osd6RCNtlj1xU3DYoFY5glbgFo3OC
-	koPaQmD9CtScyqhad5NfV4owjUnwSwUELn+cr/m7yTXrp6Ve/1y7rwzv4s/VPxtFGrSjgxoSyLe
-	+DymTstCZWhslGktPBJa2cxZa+5yvVpdtOFQDTgeeSviUZgYY2turKqVEy60=
+	s=arc-20240116; t=1787812530; c=relaxed/simple;
+	bh=64+EAApCG9OlWIgzQ8vGjp02wRoizxDXu5EaklukJzo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jSv1xa91VpqZYrRvl2NZcG5wp4stKqAIdVWGLHpdtHV1Q6941M+BGphhxJOlU18sNaETcgjX15VoKyGVaqm3aIW/x7h29U//zm7Xt0uGTanbTniheA27cYeedkSbSyDAv960Kie04SYXW4bfalzXyrMdED23ThD9EL3r9dNjaNU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=sxdjCtUK; arc=none smtp.client-ip=217.74.67.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="sxdjCtUK"
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Thu, 27 Aug 2026 08:35:22 +0200 (CEST)
+Date: Thu, 27 Aug 2026 08:35:19 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC v3] HID: amd_sfh: Validate PCI BAR size before mapping
+Message-ID: <ao_apyAjwGIHE-p9@nr200>
+References: <ff58a23d-f6e2-4b2d-b374-06f7d0f1b264@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:c2c2:20b0:6b1:404f:6eb4 with SMTP id
- 006d021491bc7-6b1a0424049mr9747568eaf.9.1787807855517; Wed, 26 Aug 2026
- 22:17:35 -0700 (PDT)
-Date: Wed, 26 Aug 2026 22:17:35 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a8fc86f.1d9ded08.62e62.00c5.GAE@google.com>
-Subject: [moderation/CI] Re: mm/damon: fix wrong behaviors in DAMOS PSI goal
- and sysfs refresh_ms
-From: syzbot ci <syzbot+cida8e421433f3222c@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ff58a23d-f6e2-4b2d-b374-06f7d0f1b264@mail.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1787812523; bh=mB6IR3iMYDeqXciJKypX0SNWTuU2c7K/WZT81jRpzN4=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=sxdjCtUKNOi7h3S0CFf2u0D4qBu87CnQPjNfTMZOIWh9jkIksgHKqicbNGyznhT55
+	 9bPMhjRnP5nF1SanD1WeU2MRe01zjpQrseqyCAatQqDJj9qadzSx4yxj483Bum0fIm
+	 NrqRA/wsh9Q/MAk60YT3419oztv/nFnRWE54fJpA=
 
-syzbot ci has tested the following series
-
-[v1] mm/damon: fix wrong behaviors in DAMOS PSI goal and sysfs refresh_ms
-https://lore.kernel.org/all/20260827042920.93580-1-sj@kernel.org
-* [PATCH 1/2] mm/damon/core: initialize damos_quota_goal->last_psi_total
-* [PATCH 2/2] mm/damon/sysfs: set next refresh jiffies per sysfs context
-
-and found the following issue:
-kernel build error
-
-Full report is available here:
-https://ci.syzbot.org/series/b6f5cc47-9651-4223-a739-e2141668ed75
-
-***
-
-kernel build error
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      1a46b1e97bde62afa7d925bb0dcd9f9748a1d7c3
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/ba589a95-7a6a-4c62-84dc-f2fe194cdd4b/config
-
-mm/damon/core.c:1126:25: error: call to undeclared function 'damos_get_some_mem_psi_total'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-mm/damon/core.c:2783:12: error: conflicting types for 'damos_get_some_mem_psi_total'
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
-
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[akpm@linux-foundation.org damon@lists.linux.dev linux-kernel@vger.kernel.org linux-mm@kvack.org sj@kernel.org stable@vger.kernel.org yanquanmin1@huawei.com]
-
-If the report looks fine to you, reply with:
 #syz upstream
 
-If the report is a false positive, reply with
-#syz invalid
+On sie 26, 2026 09:54, syzbot wrote:
+> The amd_sfh driver maps PCI BAR 2 using pcim_iomap_regions() and
+> subsequently accesses MMIO registers at offsets up to 0x10958 (e.g.,
+> AMD_P2C_MSG3 at 0x1068C). However, the driver never validates that the BAR
+> size is large enough to cover these accesses. If the driver is bound to a
+> device with a smaller BAR 2, this leads to an out-of-bounds memory access
+> and a page fault during the probe function.
+> 
+> For example, a page fault can occur when reading from privdata->mmio +
+> AMD_P2C_MSG3 in mp2_select_ops():
+> 
+>   BUG: unable to handle page fault for address: ffffc9000390368c
+>   PGD 100000067 P4D 100000067 PUD 1012c1067 PMD 105b64067 PTE 0
+>   Oops: Oops: 0000 [#1] SMP KASAN NOPTI
+>   RIP: 0010:readl arch/x86/include/asm/io.h:59 [inline]
+>   RIP: 0010:mp2_select_ops drivers/hid/amd-sfh-hid/amd_sfh_pcie.c:282
+>   [inline]
+>   RIP: 0010:amd_mp2_pci_probe+0x337/0x5f0
+>   drivers/hid/amd-sfh-hid/amd_sfh_pcie.c:487
+>   Call Trace:
+>    <TASK>
+>    local_pci_probe drivers/pci/pci-driver.c:332 [inline]
+>    pci_call_probe drivers/pci/pci-driver.c:394 [inline]
+>    __pci_device_probe drivers/pci/pci-driver.c:455 [inline]
+>    pci_device_probe+0x431/0xc90 drivers/pci/pci-driver.c:489
+> 
+> Fix this by verifying that the length of BAR 2 is at least 128KB before
+> attempting to map it. Since the maximum accessed offset is 0x10958, and PCI
+> BAR sizes are powers of 2, any legitimate hardware will have a BAR size of
+> at least 128KB.
+> 
+> Fixes: 4f567b9f8141 ("SFH: PCIe driver to add support of AMD sensor fusion hub")
+> Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+4eadd4dfe9e66522bae8@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=4eadd4dfe9e66522bae8
+> Link: https://syzkaller.appspot.com/ai_job?id=3bc1c45c-548f-4ab5-8243-d2c8ec321d6c
+> To: "Basavaraj Natikar" <basavaraj.natikar@amd.com>
+> To: "Benjamin Tissoires" <bentiss@kernel.org>
+> To: "Jiri Kosina" <jikos@kernel.org>
+> To: <linux-input@vger.kernel.org>
+> To: "Sandeep Singh" <sandeep.singh@amd.com>
+> Cc: <linux-kernel@vger.kernel.org>
+> 
+> ---
+> v3:
+> - Check that BAR 2 is an MMIO resource (IORESOURCE_MEM).
+> - Drop unrelated changes in sfh1_1/amd_sfh_init.c.
+> 
+> v2:
+> - Define AMD_SFH_MIN_BAR_SIZE macro instead of hardcoded 128 * 1024
+> - Use AMD_SFH_MIN_BAR_SIZE in amd_sfh1_1_init()
+> https://lore.kernel.org/all/2d083f63-913d-45c5-b770-c88ee06589ba@mail.kernel.org/T/
+> 
+> v1:
+> https://lore.kernel.org/all/f83daf97-4762-4a67-bac7-615b34d1b661@mail.kernel.org/T/
+> ---
+> diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_common.h b/drivers/hid/amd-sfh-hid/amd_sfh_common.h
+> index 78f830c13..c0c324565 100644
+> --- a/drivers/hid/amd-sfh-hid/amd_sfh_common.h
+> +++ b/drivers/hid/amd-sfh-hid/amd_sfh_common.h
+> @@ -17,6 +17,8 @@
+>  #define PCI_DEVICE_ID_AMD_MP2		0x15E4
+>  #define PCI_DEVICE_ID_AMD_MP2_1_1	0x164A
+>  
+> +#define AMD_SFH_MIN_BAR_SIZE		(128 * 1024)
+> +
+>  #define AMD_C2P_MSG(regno) (0x10500 + ((regno) * 4))
+>  #define AMD_P2C_MSG(regno) (0x10680 + ((regno) * 4))
+>  
+> diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
+> index 4b81cebdc..039b6ac32 100644
+> --- a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
+> +++ b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
+> @@ -451,6 +451,16 @@ static int amd_mp2_pci_probe(struct pci_dev *pdev, const struct pci_device_id *i
+>  	if (rc)
+>  		return rc;
+>  
+> +	if (!(pci_resource_flags(pdev, 2) & IORESOURCE_MEM)) {
+> +		dev_err(&pdev->dev, "BAR 2 is not IORESOURCE_MEM\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (pci_resource_len(pdev, 2) < AMD_SFH_MIN_BAR_SIZE) {
+> +		dev_err(&pdev->dev, "BAR 2 is too small\n");
+> +		return -EINVAL;
+> +	}
+> +
+>  	rc = pcim_iomap_regions(pdev, BIT(2), DRIVER_NAME);
+>  	if (rc)
+>  		return rc;
+> 
+> 
+> base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
 
+-- 
+Slawomir Stepien
