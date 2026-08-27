@@ -1,550 +1,416 @@
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 818EE3CB55A
-	for <syzbot@lists.linux.dev>; Thu, 27 Aug 2026 13:58:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.182
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787839126; cv=pass; b=o2a8nSDXX3LUPYU4hK2iOKMiZMjiN5ET+zzRlCb6lpF/63lrZUr+2z3jLjsK1WYQ22hmJyc/yG4LK2kHMaEgwysnzqECe8NIQjbeiLE8uE22o0EjH2fpw5zTeQRgsfXUBOa4esJ6yzi9kY3VYxOMwhQrFpeQuSP8HX+HKNMVZD8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787839126; c=relaxed/simple;
-	bh=BW4ycLqEfbRAFrqrl3vV6eGmIeofnBRRMXglm79xhYs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=VsKvHY1OVY23iBVnYOaKOxX6HaziJXyaqDiAj+C2Ux28vCPpxmj3o0+ajy0GBy14WYz0Zcnbl8spaPYEOW3SU4z6QLQCBLpKaGl2gkb+q8nmaAhn2iqUaT4CojZOcA61tUsv+4/14kfkPNLPDdccp76gk9aZVM5W1X7sXoBtVj0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=boigHofY; arc=pass smtp.client-ip=209.85.167.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="boigHofY"
-Received: by mail-oi1-f182.google.com with SMTP id 5614622812f47-4a483a552efso1294132b6e.1
-        for <syzbot@lists.linux.dev>; Thu, 27 Aug 2026 06:58:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1787839123; cv=none;
-        d=google.com; s=arc-20260327;
-        b=FSgtqpQm6HuDYEKKPClY39Z12PM1No9rSvORrOZs0UkyaPMnYZBDdARA+Y1a3yOwHO
-         DHD18GFv4uZvMjWD53uZAnaUbUEaMu4zGATOpHNmUjoW+JctUalcDKuibnJSFEr4Qfac
-         ZhaEEtSHDjCl2y3sBjFyj2SQGcKXyBdVTUqzxCT3v9LdZDB9DBxawVBSPrvKZvla44nP
-         16n3GhbsL6AecajJqY5UW6dWl0i4RRnaJKQRpEvysZ8gSZD4TXwKkr/mm0t23yMKFN0a
-         NjLvdsd4KkTTQ/SBokojVRuRspXtnjsxDp9S+yrEtQIfpCDxEM4r9BuZ9qtxJfqN6gZi
-         AIYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=n5lytkOVu9vuIjPg0t1CMrP3696uNwwd/2CoJt1kO7Q=;
-        fh=bHbAgSA3bePHkr0an/PpNRn2CnchFvlRgMNHnS0/GLM=;
-        b=CRJPQs6OgUnJuafSfEyZ10GBQTQaUVjS3jjMdtcTeUsK2Wv2IivZANN61rXTl6kjgk
-         cTTJiUdXYzDiCX+6kuZ1FwNr1qBk+Kfo6/vYnOspPH2Gz6heNKEp/66IPM+KeNFbAsP6
-         gINm9x5HMe+BzLRZSQ8v0wNjiZBsgO8G+SgyjaIF/6zNzkfuuP7eELSjwsFkQIllUFgS
-         jZcoyrD12X7/x97L6UEfTK1qORt+2DAI4JM/PL2HhY49snbxTb43ipNGoqFbRicREsNB
-         4/TZ6aOhfWgyB8Fv27QAFfZK5U3vfrsxf+ztGR21Xm2JbaGwTTaZ5ZSO/YXo+7u3bt6d
-         QD/Q==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1787839123; x=1788443923; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=n5lytkOVu9vuIjPg0t1CMrP3696uNwwd/2CoJt1kO7Q=;
-        b=boigHofYRp6wRAMAcwJg5HFJ3t4zrTa77XHwGRFKm1mVa41QdHZCpcUo+hU67m1XE6
-         ofj1cwKIjg/vxQ/CgD0Ux1b9HoUB/wd3pNt+NqaXCXdYFZ0ixLGaQNy/RX5qIsNBWG5D
-         2N7Y3mxD2PuAIEzl/89L1u3qEWwpu0H+lr5vqJZYlRKTImpIi6hhMaZW9LRMAisTsDD8
-         jd92gHayanHbydwvIn73xhFXOdDkaNxXitdmKIHZMavnOEQRlAVTu8PAi0sBYdpkd22d
-         R3Pp8ABCy+Ocbs7xPcmt9TbRGrQiatHnCVTP/oo1Xt6iaOBfny5kQgqQIcxmT6n5tQ7G
-         q8Ww==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C12E44684B
+	for <syzbot@lists.linux.dev>; Thu, 27 Aug 2026 13:59:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787839184; cv=none; b=XeqP3Pw/b5J3juZ9Z7KRC6TDT2hkNlktOoBA7rSUnC/CnF13cEHt55SvMb17JE1VN2Cqd+VKzcMNxD9sSbyylnHGqH4zv4A8JMnjfNCYDZfwLmLRmGdDcsXlrDRHDA+l1SZ4NePR4nphNyQwZySW5saswRFobv7kDZp0tJnbl9w=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787839184; c=relaxed/simple;
+	bh=Lx9FZrQWcuYBmQGf8/mjXbV4/cVEOgq5LcYLjNzq3/I=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=CoICpW9rTvSkshIAR6Nn/KzAlZXUv11kpikaiMWmN5hemzkh8s0Bnrb4OaqvsBfXG3Yv5DA2reVpWW1c36P8K6VcvniX9utMF6MyeH5N+QT44R56xUJ2ox+vkLv5o+csOs4aeuJAOVRBPu4CR2Q7lpLOk/BbsfPvcs+tCCy5Ycs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-4ad778bacbeso4076820b6e.1
+        for <syzbot@lists.linux.dev>; Thu, 27 Aug 2026 06:59:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787839123; x=1788443923;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=n5lytkOVu9vuIjPg0t1CMrP3696uNwwd/2CoJt1kO7Q=;
-        b=bP6H9gviMjKfXazVwOS9Ad5GOkt4pq327MdN/Lp80SeQ2EPyE5aKf+8Faynwro0v5s
-         e0YMxxK7vh7uhoPmgMYFulX6yird9sTxGBGRRb/rh0Q6Tmzv271jFgRlwkZcOtFxc3ev
-         xwhtfT0XNN0tznOk2M65ZfOWPAGYFgm91Zr/ve31TN6xDlpu5/5y8T9EtDFJX3AvbD33
-         q4n1EAao2pflNmiVwhbwwIM1Gjf4wgrHH5IpS7mrmBq0UZjCT9k6qixDVAYYcBwBCS93
-         3A0sxvGu4hWnF7LOkdvoI/GSkV8eza3y0S2JfwxxFQzbEEB3bulY6ev6NhhxLyLeTaO6
-         kSqQ==
-X-Forwarded-Encrypted: i=1; AHgh+Ro2CO7bBH/FnSw5P14z/XM5wBKYE/91orEKZP7ewppZ8agyZCaI78F/wrWqWdJou3Sd9dJy0xA=@lists.linux.dev
-X-Gm-Message-State: AFuF++l9rD1bhDTfT7lJ9EugRCIG7rd/9IchiD0UmwA8aIaShH6ijagW
-	s7vS0/SRuwSt/B6X2RAmPdTwVwIkX4KeCUPMtloeY8czdJs9uDUp+sNUZuxY11DFI42tPkMC5HF
-	1tB62Biw2mLtssXRBwIn0EGAujLI3ur0RQ1DrurgJ
-X-Gm-Gg: AR+sD12bbtT9v+breBGIGtnZfgoIpNbXCqG0G0ARx+S/7cXDvIqIaoD5Fm8FMM3OYN7
-	uSYrFJQbSWDeUrNxBDpwNwnMCDFp/93kC70rE2B/vCsKdt+gfjX1LlVVZsSmkKaHQWQiB/TpxsV
-	b3BgSDaoc86ntdEleHMtMJSjSrcKsTVHMtaE1zmbo4ZLeYn7e8oLtBjTpUiSv4MW/DsHDFqJGl+
-	EWw2eiIQgKPdrpsQVwlp3+nDbHglxnWTvPCEYhHNn0sKRpCbAJS/mRdzDZN15hdp5ogi2gol+Bo
-	jYnt1RLLnZSz8K/RYYFQok1lwAXM6tJSivyf7ZCD/BhPg0FlFYVCDDxx0xQmc+sM7lRIERnUA7F
-	tB2veiyxrncMSDcxUB5IruZhEPLgglTZ4I23JVoHX9uggXqER2fDn/DjeMEwiY7XGCN3NrRis4I
-	iulmGl4vyApb6s+g==
-X-Received: by 2002:a05:6808:3503:b0:4b2:8dbf:1013 with SMTP id
- 5614622812f47-4b366aabfc3mr17234424b6e.14.1787839122389; Thu, 27 Aug 2026
- 06:58:42 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1787839181; x=1788443981;
+        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=6jlAodZTMdJ5oEqgjDXWKFeou0hDngy1iIMXLLJ7X7M=;
+        b=Is3ARDnUPy7EgJ+1MmYicJu5+J2VmRtYPVuvmXraOVeAGAL8rNB6vpFfq6dBL4ZMds
+         WxdId3UjB9+i24WxEhQW2HG8b44vWNj1Qxnn1HeBcUn6kgntPRXjkc1rSYOTRObnjezS
+         YNM074iSE0VufximxgsA9KGM0ujlw3JS7vxb1SFzPRBp387xDHWiRgzutK+K4gc6ZvtF
+         ghlryuUuRPJ0C+oPc9jMUuv+WxfIkeze6YTuOSIJDAjMcMQnUISgyWuS0XGSIdBMX9TP
+         7xWe6Qaz2nuK61NcgK8kd+3CC0yuEXLM4YBKWHY3PRtEQWfpFTU3OGIhxwIbLFkIPq2G
+         0N9g==
+X-Gm-Message-State: AFuF++lCjB9DGAnUe+DHHY+5r0YeJBsJVemgX8O8TRSdkUX5BTHuSPpA
+	Uj0sEwX74yZtCMenEE3O0mdbme7gSLB8qzxj4lFFRMgRskpT8h7pPOAxpERwF+9xAGk6vKcKh/e
+	+G1j1B0VGx2k1+vubNnOlrZcUL6zK0k7YsEvc6v16G1AAUQqxOubcngS/MUc=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <6a903ffb.1d9ded08.62e62.00d3.GAE@google.com>
-In-Reply-To: <6a903ffb.1d9ded08.62e62.00d3.GAE@google.com>
-From: Aleksandr Nogikh <nogikh@google.com>
-Date: Thu, 27 Aug 2026 15:58:29 +0200
-X-Gm-Features: AcwNN1VxiZ9csFRSTLYn2PotZVVB5jU_jrZn8diH3V4aufqz1kLHT7dzfpGPxNg
-Message-ID: <CANp29Y6PPT0PiSh-5OHuj3DKDei0pH0nk7VE_Ld+1Yg5P0TP0g@mail.gmail.com>
-Subject: Re: [moderation/CI] Re: xswap: extendable swap device backed by zswap
-To: syzbot ci <syzbot+cic0c0e9afbc5b56bf@syzkaller.appspotmail.com>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+X-Received: by 2002:a05:6820:3090:b0:6b1:b946:bffe with SMTP id
+ 006d021491bc7-6b1b946dd1bmr3119756eaf.25.1787839181352; Thu, 27 Aug 2026
+ 06:59:41 -0700 (PDT)
+Date: Thu, 27 Aug 2026 06:59:41 -0700
+In-Reply-To: <20260827094509.1016740-1-hebaoquan@kylinos.cn>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a9042cd.50659fcc.60cd.0014.GAE@google.com>
+Subject: [syzbot ci] Re: xswap: extendable swap device backed by zswap
+From: syzbot ci <syzbot+cibdf28e878344e870@syzkaller.appspotmail.com>
+To: akpm@linux-foundation.org, baohua@kernel.org, baoquan.he@linux.dev, 
+	chengming.zhou@linux.dev, chrisl@kernel.org, david@kernel.org, 
+	hannes@cmpxchg.org, hebaoquan@kylinos.cn, kasong@tencent.com, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, nphamcs@gmail.com, 
+	shikemeng@huaweicloud.com, yosry@kernel.org, youngjun.park@lge.com
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-#syz upstream
+syzbot ci has tested the following series
 
-On Thu, Aug 27, 2026 at 3:47=E2=80=AFPM syzbot ci
-<syzbot+cic0c0e9afbc5b56bf@syzkaller.appspotmail.com> wrote:
->
-> syzbot ci has tested the following series
->
-> [v1] xswap: extendable swap device backed by zswap
-> https://lore.kernel.org/all/20260827094509.1016740-1-hebaoquan@kylinos.cn
-> * [PATCH 01/16] mm: zswap: return -ENOENT when the swap device is gone
-> * [PATCH 02/16] mm: xswap support for zswap
-> * [PATCH 03/16] mm, swap: add CONFIG_XSWAP and xswap fields to swap_info_=
-struct
-> * [PATCH 04/16] mm, swap: refactor free_swap_cluster_info to take swap_in=
-fo_struct
-> * [PATCH 05/16] mm, swap: add xswap cluster grow via VM_SPARSE vmalloc
-> * [PATCH 06/16] mm, swap: add sysfs create interface for xswap
-> * [PATCH 07/16] mm, swap: add xswap grow trigger on cluster allocation
-> * [PATCH 08/16] mm, swap: add xswap_try_shrink and shrink trigger on clus=
-ter free
-> * [PATCH 09/16] mm, swap: free backing pages in xswap_unmap_clusters
-> * [PATCH 10/16] mm, swap: add nr_free_tail for O(1) xswap shrink detectio=
-n
-> * [PATCH 11/16] mm, swap: add adjustable runtime ceiling (nr_clusters) fo=
-r xswap
-> * [PATCH 12/16] mm, swap: add debugfs knob for xswap per-device cluster l=
-imit
-> * [PATCH 13/16] mm, swap: defer xswap shrink to workqueue to avoid lock r=
-ecursion
-> * [PATCH 14/16] mm, swap: refactor swapoff + add xswap_destroy
-> * [PATCH 15/16] mm, swap: require zswap for xswap devices
-> * [PATCH 16/16] mm, swap: allow setting xswap device priority at creation
->
-> and found the following issue:
-> possible deadlock in console_flush_all
->
-> Full report is available here:
-> https://ci.syzbot.org/series/6e23a918-7d02-47ba-a61f-bcad82aebf14
->
-> ***
->
-> possible deadlock in console_flush_all
->
-> tree:      linux-next
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/=
-linux-next
-> base:      169393fff5d1ec2690934067eeb95544ff5ebdd7
-> arch:      amd64
-> compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~e=
-xp1~20260613092250.77), Debian LLD 22.1.8
-> config:    https://ci.syzbot.org/builds/633d2731-0a5e-45d2-96bf-bd2930547=
-5b9/config
-> syz repro: https://ci.syzbot.org/findings/b9106c23-79f3-457d-bb14-c0cf63e=
-4bed2/syz_repro
->
-> ------------[ cut here ]------------
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
-> WARNING: possible circular locking dependency detected
-> syzkaller #0 Not tainted
-> ------------------------------------------------------
-> syz.1.20/5854 is trying to acquire lock:
-> ffffffff8eb4bf40 (console_owner){..-.}-{0:0}, at: rcu_try_lock_acquire in=
-clude/linux/rcupdate.h:305 [inline]
-> ffffffff8eb4bf40 (console_owner){..-.}-{0:0}, at: srcu_read_lock_nmisafe =
-include/linux/srcu.h:428 [inline]
-> ffffffff8eb4bf40 (console_owner){..-.}-{0:0}, at: console_srcu_read_lock =
-kernel/printk/printk.c:291 [inline]
-> ffffffff8eb4bf40 (console_owner){..-.}-{0:0}, at: console_flush_one_recor=
-d kernel/printk/printk.c:3246 [inline]
-> ffffffff8eb4bf40 (console_owner){..-.}-{0:0}, at: console_flush_all+0x123=
-/0xaf0 kernel/printk/printk.c:3343
->
-> but task is already holding lock:
-> ffff88823c63a898 (&pool->lock){-.-.}-{2:2}, at: __queue_work+0x7fe/0x10a0=
- kernel/workqueue.c:2358
->
-> which lock already depends on the new lock.
->
->
-> the existing dependency chain (in reverse order) is:
->
-> -> #3 (&pool->lock){-.-.}-{2:2}:
->        __raw_spin_lock include/linux/spinlock_api_smp.h:158 [inline]
->        _raw_spin_lock+0x2e/0x40 kernel/locking/spinlock.c:158
->        __queue_work+0x72f/0x10a0 kernel/workqueue.c:2361
->        queue_work_on+0x106/0x1d0 kernel/workqueue.c:2452
->        queue_work include/linux/workqueue.h:699 [inline]
->        rpm_suspend+0xeca/0x17b0 drivers/base/power/runtime.c:688
->        __pm_runtime_idle+0x12f/0x1a0 drivers/base/power/runtime.c:1129
->        pm_runtime_put include/linux/pm_runtime.h:551 [inline]
->        __device_attach+0x355/0x450 drivers/base/dd.c:1116
->        device_initial_probe+0xa1/0xd0 drivers/base/dd.c:1153
->        bus_probe_device+0x12a/0x220 drivers/base/bus.c:620
->        device_add+0x7d7/0xb80 drivers/base/core.c:3772
->        serial_base_port_add+0x18f/0x270 drivers/tty/serial/serial_base_bu=
-s.c:186
->        serial_core_port_device_add drivers/tty/serial/serial_core.c:3275 =
-[inline]
->        serial_core_register_port+0x37f/0x2840 drivers/tty/serial/serial_c=
-ore.c:3314
->        serial8250_register_8250_port+0x16b4/0x2090 drivers/tty/serial/825=
-0/8250_core.c:828
->        serial_pnp_probe+0x56a/0x7f0 drivers/tty/serial/8250/8250_pnp.c:48=
-0
->        pnp_device_probe+0x30b/0x4c0 drivers/pnp/driver.c:111
->        call_driver_probe drivers/base/dd.c:-1 [inline]
->        really_probe+0x254/0xae0 drivers/base/dd.c:706
->        __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
->        driver_probe_device+0x4f/0x240 drivers/base/dd.c:898
->        __driver_attach+0x339/0x600 drivers/base/dd.c:1292
->        bus_for_each_dev+0x23b/0x2c0 drivers/base/bus.c:383
->        bus_add_driver+0x345/0x670 drivers/base/bus.c:763
->        driver_register+0x23a/0x320 drivers/base/driver.c:174
->        serial8250_init+0x8f/0x160 drivers/tty/serial/8250/8250_platform.c=
-:317
->        do_one_initcall+0x250/0x870 init/main.c:1347
->        do_initcall_level+0x10a/0x1a0 init/main.c:1409
->        do_initcalls+0x59/0xa0 init/main.c:1425
->        kernel_init_freeable+0x29d/0x3e0 init/main.c:1658
->        kernel_init+0x1d/0x1d0 init/main.c:1548
->        ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
->        ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
->
-> -> #2 (&dev->power.lock){-...}-{3:3}:
->        __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:132 [inli=
-ne]
->        _raw_spin_lock_irqsave+0x40/0x60 kernel/locking/spinlock.c:166
->        __pm_runtime_resume+0x10f/0x180 drivers/base/power/runtime.c:1196
->        pm_runtime_get include/linux/pm_runtime.h:494 [inline]
->        __uart_start+0x171/0x460 drivers/tty/serial/serial_core.c:149
->        uart_write+0x251/0x9f0 drivers/tty/serial/serial_core.c:629
->        process_output_block drivers/tty/n_tty.c:557 [inline]
->        n_tty_write+0xd49/0x11e0 drivers/tty/n_tty.c:2366
->        iterate_tty_write drivers/tty/tty_io.c:1006 [inline]
->        file_tty_write+0x509/0x9c0 drivers/tty/tty_io.c:1081
->        new_sync_write fs/read_write.c:595 [inline]
->        vfs_write+0x612/0xba0 fs/read_write.c:687
->        ksys_write+0x150/0x270 fs/read_write.c:739
->        do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->        do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
->        entry_SYSCALL_64_after_hwframe+0x77/0x7f
->
-> -> #1 (&port_lock_key){-.-.}-{3:3}:
->        __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:132 [inli=
-ne]
->        _raw_spin_lock_irqsave+0x40/0x60 kernel/locking/spinlock.c:166
->        uart_port_lock_irqsave include/linux/serial_core.h:719 [inline]
->        serial8250_console_write+0x153/0x1ba0 drivers/tty/serial/8250/8250=
-_port.c:3344
->        console_emit_next_record kernel/printk/printk.c:3183 [inline]
->        console_flush_one_record kernel/printk/printk.c:3269 [inline]
->        console_flush_all+0x6ea/0xaf0 kernel/printk/printk.c:3343
->        __console_flush_and_unlock kernel/printk/printk.c:3373 [inline]
->        console_unlock+0xd1/0x1c0 kernel/printk/printk.c:3413
->        vprintk_emit+0x485/0x560 kernel/printk/printk.c:2479
->        _printk+0xdd/0x130 kernel/printk/printk.c:2504
->        register_console+0xbc3/0xfc0 kernel/printk/printk.c:4208
->        univ8250_console_init+0x3a/0x70 drivers/tty/serial/8250/8250_core.=
-c:515
->        console_init+0x10b/0x4a0 kernel/printk/printk.c:4407
->        start_kernel+0x238/0x3e0 init/main.c:1112
->        x86_64_start_reservations+0x24/0x30 arch/x86/kernel/head64.c:310
->        x86_64_start_kernel+0x137/0x1b0 arch/x86/kernel/head64.c:291
->        common_startup_64+0x13e/0x157
->
-> -> #0 (console_owner){..-.}-{0:0}:
->        check_prev_add kernel/locking/lockdep.c:3165 [inline]
->        check_prevs_add kernel/locking/lockdep.c:3284 [inline]
->        validate_chain kernel/locking/lockdep.c:3908 [inline]
->        __lock_acquire+0x15ff/0x2e50 kernel/locking/lockdep.c:5238
->        lock_acquire+0x115/0x350 kernel/locking/lockdep.c:5890
->        console_lock_spinning_enable kernel/printk/printk.c:1902 [inline]
->        console_emit_next_record kernel/printk/printk.c:3177 [inline]
->        console_flush_one_record kernel/printk/printk.c:3269 [inline]
->        console_flush_all+0x693/0xaf0 kernel/printk/printk.c:3343
->        __console_flush_and_unlock kernel/printk/printk.c:3373 [inline]
->        console_unlock+0xd1/0x1c0 kernel/printk/printk.c:3413
->        vprintk_emit+0x485/0x560 kernel/printk/printk.c:2479
->        _printk+0xdd/0x130 kernel/printk/printk.c:2504
->        __report_bug+0x349/0x570 lib/bug.c:248
->        report_bug+0x16a/0x220 lib/bug.c:286
->        handle_bug+0x9c/0x200 arch/x86/kernel/traps.c:436
->        exc_invalid_op+0x1a/0x50 arch/x86/kernel/traps.c:490
->        asm_exc_invalid_op+0x1a/0x20 arch/x86/include/asm/idtentry.h:593
->        __queue_work+0xd18/0x10a0 kernel/workqueue.c:2385
->        queue_work_on+0x106/0x1d0 kernel/workqueue.c:2452
->        swap_put_entries_cluster+0x3b1/0x4b0 mm/swapfile.c:1893
->        swap_put_entries_direct+0x94/0x100 mm/swapfile.c:2403
->        zap_nonpresent_ptes mm/memory.c:1900 [inline]
->        do_zap_pte_range mm/memory.c:1967 [inline]
->        zap_pte_range mm/memory.c:2065 [inline]
->        zap_pmd_range mm/memory.c:2151 [inline]
->        zap_pud_range mm/memory.c:2179 [inline]
->        zap_p4d_range mm/memory.c:2200 [inline]
->        __zap_vma_range+0x1da0/0x4f70 mm/memory.c:2240
->        unmap_vmas+0x390/0x550 mm/memory.c:2309
->        exit_mmap+0x293/0x9f0 mm/mmap.c:1315
->        __mmput+0x118/0x420 kernel/fork.c:1187
->        exit_mm+0x221/0x2d0 kernel/exit.c:615
->        do_exit+0x6cd/0x2360 kernel/exit.c:997
->        do_group_exit+0x22d/0x2f0 kernel/exit.c:1152
->        get_signal+0x121b/0x12c0 kernel/signal.c:3046
->        arch_do_signal_or_restart+0xbb/0x860 arch/x86/kernel/signal.c:337
->        __exit_to_user_mode_loop kernel/entry/common.c:66 [inline]
->        exit_to_user_mode_loop+0x104/0x730 kernel/entry/common.c:101
->        __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [=
-inline]
->        syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h=
-:230 [inline]
->        syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline=
-]
->        do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
->        entry_SYSCALL_64_after_hwframe+0x77/0x7f
->
-> other info that might help us debug this:
->
-> Chain exists of:
->   console_owner --> &dev->power.lock --> &pool->lock
->
->  Possible unsafe locking scenario:
->
->        CPU0                    CPU1
->        ----                    ----
->   lock(&pool->lock);
->                                lock(&dev->power.lock);
->                                lock(&pool->lock);
->   lock(console_owner);
->
->  *** DEADLOCK ***
->
-> 8 locks held by syz.1.20/5854:
->  #0: ffff8881bb3703b8 (&mm->mmap_lock){++++}-{4:4}, at: mmap_read_lock in=
-clude/linux/mmap_lock.h:600 [inline]
->  #0: ffff8881bb3703b8 (&mm->mmap_lock){++++}-{4:4}, at: exit_mmap+0x1a4/0=
-x9f0 mm/mmap.c:1299
->  #1: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire i=
-nclude/linux/rcupdate.h:300 [inline]
->  #1: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock incl=
-ude/linux/rcupdate.h:840 [inline]
->  #1: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: __pte_offset_map+0=
-x29/0x240 mm/pgtable-generic.c:290
->  #2: ffff88816d267f18 (ptlock_ptr(ptdesc)#2){+.+.}-{3:3}, at: spin_lock i=
-nclude/linux/spinlock.h:342 [inline]
->  #2: ffff88816d267f18 (ptlock_ptr(ptdesc)#2){+.+.}-{3:3}, at: pte_offset_=
-map_lock+0x13d/0x210 mm/pgtable-generic.c:404
->  #3: ffff8881102a40f8 (&cluster_info[i].lock){+.+.}-{3:3}, at: spin_lock =
-include/linux/spinlock.h:342 [inline]
->  #3: ffff8881102a40f8 (&cluster_info[i].lock){+.+.}-{3:3}, at: __swap_clu=
-ster_lock mm/swap.h:155 [inline]
->  #3: ffff8881102a40f8 (&cluster_info[i].lock){+.+.}-{3:3}, at: swap_clust=
-er_lock mm/swap.h:170 [inline]
->  #3: ffff8881102a40f8 (&cluster_info[i].lock){+.+.}-{3:3}, at: swap_put_e=
-ntries_cluster+0x109/0x4b0 mm/swapfile.c:1864
->  #4: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire i=
-nclude/linux/rcupdate.h:300 [inline]
->  #4: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock incl=
-ude/linux/rcupdate.h:840 [inline]
->  #4: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: __queue_work+0x1ea=
-/0x10a0 kernel/workqueue.c:2321
->  #5: ffff88823c63a898 (&pool->lock){-.-.}-{2:2}, at: __queue_work+0x7fe/0=
-x10a0 kernel/workqueue.c:2358
->  #6: ffffffff8eb4bfa0 (console_lock){+.+.}-{0:0}, at: _printk+0xdd/0x130 =
-kernel/printk/printk.c:2504
->  #7: ffffffff8ea33838 (console_srcu){....}-{0:0}, at: rcu_try_lock_acquir=
-e include/linux/rcupdate.h:305 [inline]
->  #7: ffffffff8ea33838 (console_srcu){....}-{0:0}, at: srcu_read_lock_nmis=
-afe include/linux/srcu.h:428 [inline]
->  #7: ffffffff8ea33838 (console_srcu){....}-{0:0}, at: console_srcu_read_l=
-ock kernel/printk/printk.c:291 [inline]
->  #7: ffffffff8ea33838 (console_srcu){....}-{0:0}, at: console_flush_one_r=
-ecord kernel/printk/printk.c:3246 [inline]
->  #7: ffffffff8ea33838 (console_srcu){....}-{0:0}, at: console_flush_all+0=
-x123/0xaf0 kernel/printk/printk.c:3343
->
-> stack backtrace:
-> CPU: 1 UID: 0 PID: 5854 Comm: syz.1.20 Not tainted syzkaller #0 PREEMPT(f=
-ull)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->  print_circular_bug+0x2e2/0x300 kernel/locking/lockdep.c:2043
->  check_noncircular+0x12f/0x150 kernel/locking/lockdep.c:2175
->  check_prev_add kernel/locking/lockdep.c:3165 [inline]
->  check_prevs_add kernel/locking/lockdep.c:3284 [inline]
->  validate_chain kernel/locking/lockdep.c:3908 [inline]
->  __lock_acquire+0x15ff/0x2e50 kernel/locking/lockdep.c:5238
->  lock_acquire+0x115/0x350 kernel/locking/lockdep.c:5890
->  console_lock_spinning_enable kernel/printk/printk.c:1902 [inline]
->  console_emit_next_record kernel/printk/printk.c:3177 [inline]
->  console_flush_one_record kernel/printk/printk.c:3269 [inline]
->  console_flush_all+0x693/0xaf0 kernel/printk/printk.c:3343
->  __console_flush_and_unlock kernel/printk/printk.c:3373 [inline]
->  console_unlock+0xd1/0x1c0 kernel/printk/printk.c:3413
->  vprintk_emit+0x485/0x560 kernel/printk/printk.c:2479
->  _printk+0xdd/0x130 kernel/printk/printk.c:2504
->  __report_bug+0x349/0x570 lib/bug.c:248
->  report_bug+0x16a/0x220 lib/bug.c:286
->  handle_bug+0x9c/0x200 arch/x86/kernel/traps.c:436
->  exc_invalid_op+0x1a/0x50 arch/x86/kernel/traps.c:490
->  asm_exc_invalid_op+0x1a/0x20 arch/x86/include/asm/idtentry.h:593
-> RIP: 0010:__queue_work+0xd18/0x10a0 kernel/workqueue.c:2385
-> Code: 3d 7e ec b2 0e 01 0f 85 35 02 00 00 e8 a1 28 39 00 e9 82 f3 ff ff e=
-8 97 28 39 00 90 0f 0b 90 e9 21 fd ff ff e8 89 28 39 00 90 <0f> 0b 90 e9 80=
- fe ff ff e8 7b 28 39 00 eb 11 e8 74 28 39 00 4c 8b
-> RSP: 0018:ffffc90003cdf1d8 EFLAGS: 00010093
-> RAX: ffffffff818dc2d7 RBX: dffffc0000000000 RCX: ffff888113955a00
-> RDX: 0000000000000000 RSI: ffffffff8c4bca60 RDI: ffffffff8c4bca20
-> RBP: 0000000000000001 R08: ffffffff90572d37 R09: 1ffffffff20ae5a6
-> R10: dffffc0000000000 R11: fffffbfff20ae5a7 R12: ffff888160408400
-> R13: ffff88810fdd7088 R14: 0000000000000001 R15: ffff88810fdd7090
->  queue_work_on+0x106/0x1d0 kernel/workqueue.c:2452
->  swap_put_entries_cluster+0x3b1/0x4b0 mm/swapfile.c:1893
->  swap_put_entries_direct+0x94/0x100 mm/swapfile.c:2403
->  zap_nonpresent_ptes mm/memory.c:1900 [inline]
->  do_zap_pte_range mm/memory.c:1967 [inline]
->  zap_pte_range mm/memory.c:2065 [inline]
->  zap_pmd_range mm/memory.c:2151 [inline]
->  zap_pud_range mm/memory.c:2179 [inline]
->  zap_p4d_range mm/memory.c:2200 [inline]
->  __zap_vma_range+0x1da0/0x4f70 mm/memory.c:2240
->  unmap_vmas+0x390/0x550 mm/memory.c:2309
->  exit_mmap+0x293/0x9f0 mm/mmap.c:1315
->  __mmput+0x118/0x420 kernel/fork.c:1187
->  exit_mm+0x221/0x2d0 kernel/exit.c:615
->  do_exit+0x6cd/0x2360 kernel/exit.c:997
->  do_group_exit+0x22d/0x2f0 kernel/exit.c:1152
->  get_signal+0x121b/0x12c0 kernel/signal.c:3046
->  arch_do_signal_or_restart+0xbb/0x860 arch/x86/kernel/signal.c:337
->  __exit_to_user_mode_loop kernel/entry/common.c:66 [inline]
->  exit_to_user_mode_loop+0x104/0x730 kernel/entry/common.c:101
->  __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline=
-]
->  syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [=
-inline]
->  syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
->  do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7f46ce79e0d9
-> Code: Unable to access opcode bytes at 0x7f46ce79e0af.
-> RSP: 002b:00007f46cf6fc028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
-> RAX: 0000000000000000 RBX: 00007f46cea26090 RCX: 00007f46ce79e0d9
-> RDX: 0000000000000015 RSI: 0000000000600003 RDI: 0000200000000000
-> RBP: 00007f46ce835024 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007f46cea26128 R14: 00007f46cea26090 R15: 00007ffefd86c578
->  </TASK>
-> !list_empty(&work->entry)
-> WARNING: kernel/workqueue.c:2385 at __queue_work+0xd18/0x10a0 kernel/work=
-queue.c:2385, CPU#1: syz.1.20/5854
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 5854 Comm: syz.1.20 Not tainted syzkaller #0 PREEMPT(f=
-ull)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> RIP: 0010:__queue_work+0xd18/0x10a0 kernel/workqueue.c:2385
-> Code: 3d 7e ec b2 0e 01 0f 85 35 02 00 00 e8 a1 28 39 00 e9 82 f3 ff ff e=
-8 97 28 39 00 90 0f 0b 90 e9 21 fd ff ff e8 89 28 39 00 90 <0f> 0b 90 e9 80=
- fe ff ff e8 7b 28 39 00 eb 11 e8 74 28 39 00 4c 8b
-> RSP: 0018:ffffc90003cdf1d8 EFLAGS: 00010093
-> RAX: ffffffff818dc2d7 RBX: dffffc0000000000 RCX: ffff888113955a00
-> RDX: 0000000000000000 RSI: ffffffff8c4bca60 RDI: ffffffff8c4bca20
-> RBP: 0000000000000001 R08: ffffffff90572d37 R09: 1ffffffff20ae5a6
-> R10: dffffc0000000000 R11: fffffbfff20ae5a7 R12: ffff888160408400
-> R13: ffff88810fdd7088 R14: 0000000000000001 R15: ffff88810fdd7090
-> FS:  00007f46cf6fc6c0(0000) GS:ffff8882a8f5a000(0000) knlGS:0000000000000=
-000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000200000e6c000 CR3: 000000010a5a2000 CR4: 00000000000006f0
-> Call Trace:
->  <TASK>
->  queue_work_on+0x106/0x1d0 kernel/workqueue.c:2452
->  swap_put_entries_cluster+0x3b1/0x4b0 mm/swapfile.c:1893
->  swap_put_entries_direct+0x94/0x100 mm/swapfile.c:2403
->  zap_nonpresent_ptes mm/memory.c:1900 [inline]
->  do_zap_pte_range mm/memory.c:1967 [inline]
->  zap_pte_range mm/memory.c:2065 [inline]
->  zap_pmd_range mm/memory.c:2151 [inline]
->  zap_pud_range mm/memory.c:2179 [inline]
->  zap_p4d_range mm/memory.c:2200 [inline]
->  __zap_vma_range+0x1da0/0x4f70 mm/memory.c:2240
->  unmap_vmas+0x390/0x550 mm/memory.c:2309
->  exit_mmap+0x293/0x9f0 mm/mmap.c:1315
->  __mmput+0x118/0x420 kernel/fork.c:1187
->  exit_mm+0x221/0x2d0 kernel/exit.c:615
->  do_exit+0x6cd/0x2360 kernel/exit.c:997
->  do_group_exit+0x22d/0x2f0 kernel/exit.c:1152
->  get_signal+0x121b/0x12c0 kernel/signal.c:3046
->  arch_do_signal_or_restart+0xbb/0x860 arch/x86/kernel/signal.c:337
->  __exit_to_user_mode_loop kernel/entry/common.c:66 [inline]
->  exit_to_user_mode_loop+0x104/0x730 kernel/entry/common.c:101
->  __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline=
-]
->  syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [=
-inline]
->  syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
->  do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7f46ce79e0d9
-> Code: Unable to access opcode bytes at 0x7f46ce79e0af.
-> RSP: 002b:00007f46cf6fc028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
-> RAX: 0000000000000000 RBX: 00007f46cea26090 RCX: 00007f46ce79e0d9
-> RDX: 0000000000000015 RSI: 0000000000600003 RDI: 0000200000000000
-> RBP: 00007f46ce835024 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007f46cea26128 R14: 00007f46cea26090 R15: 00007ffefd86c578
->  </TASK>
->
->
-> ***
->
-> If these findings have caused you to resend the series or submit a
-> separate fix, please add the following tag to your commit message:
->   Tested-by: syzbot@syzkaller.appspotmail.com
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
->
-> To test a fix for this bug, please reply with `#syz test`
-> (on a separate line) and attach the patch to the email.
->
-> Notes:
-> - The patch will be applied on top of the tested series (as an
->   incremental fix).
-> - To test a new version of the whole series, please send it directly
->   to syzbot@lists.linux.dev.
-> - Arguments like custom git repos and branches are not supported.
->
-> The email will later be sent to:
-> [akpm@linux-foundation.org baohua@kernel.org baoquan.he@linux.dev chengmi=
-ng.zhou@linux.dev chrisl@kernel.org david@kernel.org hannes@cmpxchg.org heb=
-aoquan@kylinos.cn kasong@tencent.com linux-kernel@vger.kernel.org linux-mm@=
-kvack.org nphamcs@gmail.com shikemeng@huaweicloud.com yosry@kernel.org youn=
-gjun.park@lge.com]
->
-> If the report looks fine to you, reply with:
-> #syz upstream
->
-> If the report is a false positive, reply with
-> #syz invalid
->
-> --
-> You received this message because you are subscribed to the Google Groups=
- "syzkaller-upstream-moderation" group.
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/6a903ffb.1d9ded08.62e62.00d3.GAE%40google.com.
+[v1] xswap: extendable swap device backed by zswap
+https://lore.kernel.org/all/20260827094509.1016740-1-hebaoquan@kylinos.cn
+* [PATCH 01/16] mm: zswap: return -ENOENT when the swap device is gone
+* [PATCH 02/16] mm: xswap support for zswap
+* [PATCH 03/16] mm, swap: add CONFIG_XSWAP and xswap fields to swap_info_struct
+* [PATCH 04/16] mm, swap: refactor free_swap_cluster_info to take swap_info_struct
+* [PATCH 05/16] mm, swap: add xswap cluster grow via VM_SPARSE vmalloc
+* [PATCH 06/16] mm, swap: add sysfs create interface for xswap
+* [PATCH 07/16] mm, swap: add xswap grow trigger on cluster allocation
+* [PATCH 08/16] mm, swap: add xswap_try_shrink and shrink trigger on cluster free
+* [PATCH 09/16] mm, swap: free backing pages in xswap_unmap_clusters
+* [PATCH 10/16] mm, swap: add nr_free_tail for O(1) xswap shrink detection
+* [PATCH 11/16] mm, swap: add adjustable runtime ceiling (nr_clusters) for xswap
+* [PATCH 12/16] mm, swap: add debugfs knob for xswap per-device cluster limit
+* [PATCH 13/16] mm, swap: defer xswap shrink to workqueue to avoid lock recursion
+* [PATCH 14/16] mm, swap: refactor swapoff + add xswap_destroy
+* [PATCH 15/16] mm, swap: require zswap for xswap devices
+* [PATCH 16/16] mm, swap: allow setting xswap device priority at creation
+
+and found the following issue:
+possible deadlock in console_flush_all
+
+Full report is available here:
+https://ci.syzbot.org/series/6e23a918-7d02-47ba-a61f-bcad82aebf14
+
+***
+
+possible deadlock in console_flush_all
+
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
+base:      169393fff5d1ec2690934067eeb95544ff5ebdd7
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/633d2731-0a5e-45d2-96bf-bd29305475b9/config
+syz repro: https://ci.syzbot.org/findings/b9106c23-79f3-457d-bb14-c0cf63e4bed2/syz_repro
+
+------------[ cut here ]------------
+======================================================
+WARNING: possible circular locking dependency detected
+syzkaller #0 Not tainted
+------------------------------------------------------
+syz.1.20/5854 is trying to acquire lock:
+ffffffff8eb4bf40 (console_owner){..-.}-{0:0}, at: rcu_try_lock_acquire include/linux/rcupdate.h:305 [inline]
+ffffffff8eb4bf40 (console_owner){..-.}-{0:0}, at: srcu_read_lock_nmisafe include/linux/srcu.h:428 [inline]
+ffffffff8eb4bf40 (console_owner){..-.}-{0:0}, at: console_srcu_read_lock kernel/printk/printk.c:291 [inline]
+ffffffff8eb4bf40 (console_owner){..-.}-{0:0}, at: console_flush_one_record kernel/printk/printk.c:3246 [inline]
+ffffffff8eb4bf40 (console_owner){..-.}-{0:0}, at: console_flush_all+0x123/0xaf0 kernel/printk/printk.c:3343
+
+but task is already holding lock:
+ffff88823c63a898 (&pool->lock){-.-.}-{2:2}, at: __queue_work+0x7fe/0x10a0 kernel/workqueue.c:2358
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #3 (&pool->lock){-.-.}-{2:2}:
+       __raw_spin_lock include/linux/spinlock_api_smp.h:158 [inline]
+       _raw_spin_lock+0x2e/0x40 kernel/locking/spinlock.c:158
+       __queue_work+0x72f/0x10a0 kernel/workqueue.c:2361
+       queue_work_on+0x106/0x1d0 kernel/workqueue.c:2452
+       queue_work include/linux/workqueue.h:699 [inline]
+       rpm_suspend+0xeca/0x17b0 drivers/base/power/runtime.c:688
+       __pm_runtime_idle+0x12f/0x1a0 drivers/base/power/runtime.c:1129
+       pm_runtime_put include/linux/pm_runtime.h:551 [inline]
+       __device_attach+0x355/0x450 drivers/base/dd.c:1116
+       device_initial_probe+0xa1/0xd0 drivers/base/dd.c:1153
+       bus_probe_device+0x12a/0x220 drivers/base/bus.c:620
+       device_add+0x7d7/0xb80 drivers/base/core.c:3772
+       serial_base_port_add+0x18f/0x270 drivers/tty/serial/serial_base_bus.c:186
+       serial_core_port_device_add drivers/tty/serial/serial_core.c:3275 [inline]
+       serial_core_register_port+0x37f/0x2840 drivers/tty/serial/serial_core.c:3314
+       serial8250_register_8250_port+0x16b4/0x2090 drivers/tty/serial/8250/8250_core.c:828
+       serial_pnp_probe+0x56a/0x7f0 drivers/tty/serial/8250/8250_pnp.c:480
+       pnp_device_probe+0x30b/0x4c0 drivers/pnp/driver.c:111
+       call_driver_probe drivers/base/dd.c:-1 [inline]
+       really_probe+0x254/0xae0 drivers/base/dd.c:706
+       __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
+       driver_probe_device+0x4f/0x240 drivers/base/dd.c:898
+       __driver_attach+0x339/0x600 drivers/base/dd.c:1292
+       bus_for_each_dev+0x23b/0x2c0 drivers/base/bus.c:383
+       bus_add_driver+0x345/0x670 drivers/base/bus.c:763
+       driver_register+0x23a/0x320 drivers/base/driver.c:174
+       serial8250_init+0x8f/0x160 drivers/tty/serial/8250/8250_platform.c:317
+       do_one_initcall+0x250/0x870 init/main.c:1347
+       do_initcall_level+0x10a/0x1a0 init/main.c:1409
+       do_initcalls+0x59/0xa0 init/main.c:1425
+       kernel_init_freeable+0x29d/0x3e0 init/main.c:1658
+       kernel_init+0x1d/0x1d0 init/main.c:1548
+       ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+       ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+
+-> #2 (&dev->power.lock){-...}-{3:3}:
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:132 [inline]
+       _raw_spin_lock_irqsave+0x40/0x60 kernel/locking/spinlock.c:166
+       __pm_runtime_resume+0x10f/0x180 drivers/base/power/runtime.c:1196
+       pm_runtime_get include/linux/pm_runtime.h:494 [inline]
+       __uart_start+0x171/0x460 drivers/tty/serial/serial_core.c:149
+       uart_write+0x251/0x9f0 drivers/tty/serial/serial_core.c:629
+       process_output_block drivers/tty/n_tty.c:557 [inline]
+       n_tty_write+0xd49/0x11e0 drivers/tty/n_tty.c:2366
+       iterate_tty_write drivers/tty/tty_io.c:1006 [inline]
+       file_tty_write+0x509/0x9c0 drivers/tty/tty_io.c:1081
+       new_sync_write fs/read_write.c:595 [inline]
+       vfs_write+0x612/0xba0 fs/read_write.c:687
+       ksys_write+0x150/0x270 fs/read_write.c:739
+       do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+       do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+       entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+-> #1 (&port_lock_key){-.-.}-{3:3}:
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:132 [inline]
+       _raw_spin_lock_irqsave+0x40/0x60 kernel/locking/spinlock.c:166
+       uart_port_lock_irqsave include/linux/serial_core.h:719 [inline]
+       serial8250_console_write+0x153/0x1ba0 drivers/tty/serial/8250/8250_port.c:3344
+       console_emit_next_record kernel/printk/printk.c:3183 [inline]
+       console_flush_one_record kernel/printk/printk.c:3269 [inline]
+       console_flush_all+0x6ea/0xaf0 kernel/printk/printk.c:3343
+       __console_flush_and_unlock kernel/printk/printk.c:3373 [inline]
+       console_unlock+0xd1/0x1c0 kernel/printk/printk.c:3413
+       vprintk_emit+0x485/0x560 kernel/printk/printk.c:2479
+       _printk+0xdd/0x130 kernel/printk/printk.c:2504
+       register_console+0xbc3/0xfc0 kernel/printk/printk.c:4208
+       univ8250_console_init+0x3a/0x70 drivers/tty/serial/8250/8250_core.c:515
+       console_init+0x10b/0x4a0 kernel/printk/printk.c:4407
+       start_kernel+0x238/0x3e0 init/main.c:1112
+       x86_64_start_reservations+0x24/0x30 arch/x86/kernel/head64.c:310
+       x86_64_start_kernel+0x137/0x1b0 arch/x86/kernel/head64.c:291
+       common_startup_64+0x13e/0x157
+
+-> #0 (console_owner){..-.}-{0:0}:
+       check_prev_add kernel/locking/lockdep.c:3165 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3284 [inline]
+       validate_chain kernel/locking/lockdep.c:3908 [inline]
+       __lock_acquire+0x15ff/0x2e50 kernel/locking/lockdep.c:5238
+       lock_acquire+0x115/0x350 kernel/locking/lockdep.c:5890
+       console_lock_spinning_enable kernel/printk/printk.c:1902 [inline]
+       console_emit_next_record kernel/printk/printk.c:3177 [inline]
+       console_flush_one_record kernel/printk/printk.c:3269 [inline]
+       console_flush_all+0x693/0xaf0 kernel/printk/printk.c:3343
+       __console_flush_and_unlock kernel/printk/printk.c:3373 [inline]
+       console_unlock+0xd1/0x1c0 kernel/printk/printk.c:3413
+       vprintk_emit+0x485/0x560 kernel/printk/printk.c:2479
+       _printk+0xdd/0x130 kernel/printk/printk.c:2504
+       __report_bug+0x349/0x570 lib/bug.c:248
+       report_bug+0x16a/0x220 lib/bug.c:286
+       handle_bug+0x9c/0x200 arch/x86/kernel/traps.c:436
+       exc_invalid_op+0x1a/0x50 arch/x86/kernel/traps.c:490
+       asm_exc_invalid_op+0x1a/0x20 arch/x86/include/asm/idtentry.h:593
+       __queue_work+0xd18/0x10a0 kernel/workqueue.c:2385
+       queue_work_on+0x106/0x1d0 kernel/workqueue.c:2452
+       swap_put_entries_cluster+0x3b1/0x4b0 mm/swapfile.c:1893
+       swap_put_entries_direct+0x94/0x100 mm/swapfile.c:2403
+       zap_nonpresent_ptes mm/memory.c:1900 [inline]
+       do_zap_pte_range mm/memory.c:1967 [inline]
+       zap_pte_range mm/memory.c:2065 [inline]
+       zap_pmd_range mm/memory.c:2151 [inline]
+       zap_pud_range mm/memory.c:2179 [inline]
+       zap_p4d_range mm/memory.c:2200 [inline]
+       __zap_vma_range+0x1da0/0x4f70 mm/memory.c:2240
+       unmap_vmas+0x390/0x550 mm/memory.c:2309
+       exit_mmap+0x293/0x9f0 mm/mmap.c:1315
+       __mmput+0x118/0x420 kernel/fork.c:1187
+       exit_mm+0x221/0x2d0 kernel/exit.c:615
+       do_exit+0x6cd/0x2360 kernel/exit.c:997
+       do_group_exit+0x22d/0x2f0 kernel/exit.c:1152
+       get_signal+0x121b/0x12c0 kernel/signal.c:3046
+       arch_do_signal_or_restart+0xbb/0x860 arch/x86/kernel/signal.c:337
+       __exit_to_user_mode_loop kernel/entry/common.c:66 [inline]
+       exit_to_user_mode_loop+0x104/0x730 kernel/entry/common.c:101
+       __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
+       syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
+       syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
+       do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
+       entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+other info that might help us debug this:
+
+Chain exists of:
+  console_owner --> &dev->power.lock --> &pool->lock
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&pool->lock);
+                               lock(&dev->power.lock);
+                               lock(&pool->lock);
+  lock(console_owner);
+
+ *** DEADLOCK ***
+
+8 locks held by syz.1.20/5854:
+ #0: ffff8881bb3703b8 (&mm->mmap_lock){++++}-{4:4}, at: mmap_read_lock include/linux/mmap_lock.h:600 [inline]
+ #0: ffff8881bb3703b8 (&mm->mmap_lock){++++}-{4:4}, at: exit_mmap+0x1a4/0x9f0 mm/mmap.c:1299
+ #1: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
+ #1: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:840 [inline]
+ #1: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: __pte_offset_map+0x29/0x240 mm/pgtable-generic.c:290
+ #2: ffff88816d267f18 (ptlock_ptr(ptdesc)#2){+.+.}-{3:3}, at: spin_lock include/linux/spinlock.h:342 [inline]
+ #2: ffff88816d267f18 (ptlock_ptr(ptdesc)#2){+.+.}-{3:3}, at: pte_offset_map_lock+0x13d/0x210 mm/pgtable-generic.c:404
+ #3: ffff8881102a40f8 (&cluster_info[i].lock){+.+.}-{3:3}, at: spin_lock include/linux/spinlock.h:342 [inline]
+ #3: ffff8881102a40f8 (&cluster_info[i].lock){+.+.}-{3:3}, at: __swap_cluster_lock mm/swap.h:155 [inline]
+ #3: ffff8881102a40f8 (&cluster_info[i].lock){+.+.}-{3:3}, at: swap_cluster_lock mm/swap.h:170 [inline]
+ #3: ffff8881102a40f8 (&cluster_info[i].lock){+.+.}-{3:3}, at: swap_put_entries_cluster+0x109/0x4b0 mm/swapfile.c:1864
+ #4: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
+ #4: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:840 [inline]
+ #4: ffffffff8eb59c60 (rcu_read_lock){....}-{1:3}, at: __queue_work+0x1ea/0x10a0 kernel/workqueue.c:2321
+ #5: ffff88823c63a898 (&pool->lock){-.-.}-{2:2}, at: __queue_work+0x7fe/0x10a0 kernel/workqueue.c:2358
+ #6: ffffffff8eb4bfa0 (console_lock){+.+.}-{0:0}, at: _printk+0xdd/0x130 kernel/printk/printk.c:2504
+ #7: ffffffff8ea33838 (console_srcu){....}-{0:0}, at: rcu_try_lock_acquire include/linux/rcupdate.h:305 [inline]
+ #7: ffffffff8ea33838 (console_srcu){....}-{0:0}, at: srcu_read_lock_nmisafe include/linux/srcu.h:428 [inline]
+ #7: ffffffff8ea33838 (console_srcu){....}-{0:0}, at: console_srcu_read_lock kernel/printk/printk.c:291 [inline]
+ #7: ffffffff8ea33838 (console_srcu){....}-{0:0}, at: console_flush_one_record kernel/printk/printk.c:3246 [inline]
+ #7: ffffffff8ea33838 (console_srcu){....}-{0:0}, at: console_flush_all+0x123/0xaf0 kernel/printk/printk.c:3343
+
+stack backtrace:
+CPU: 1 UID: 0 PID: 5854 Comm: syz.1.20 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_circular_bug+0x2e2/0x300 kernel/locking/lockdep.c:2043
+ check_noncircular+0x12f/0x150 kernel/locking/lockdep.c:2175
+ check_prev_add kernel/locking/lockdep.c:3165 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3284 [inline]
+ validate_chain kernel/locking/lockdep.c:3908 [inline]
+ __lock_acquire+0x15ff/0x2e50 kernel/locking/lockdep.c:5238
+ lock_acquire+0x115/0x350 kernel/locking/lockdep.c:5890
+ console_lock_spinning_enable kernel/printk/printk.c:1902 [inline]
+ console_emit_next_record kernel/printk/printk.c:3177 [inline]
+ console_flush_one_record kernel/printk/printk.c:3269 [inline]
+ console_flush_all+0x693/0xaf0 kernel/printk/printk.c:3343
+ __console_flush_and_unlock kernel/printk/printk.c:3373 [inline]
+ console_unlock+0xd1/0x1c0 kernel/printk/printk.c:3413
+ vprintk_emit+0x485/0x560 kernel/printk/printk.c:2479
+ _printk+0xdd/0x130 kernel/printk/printk.c:2504
+ __report_bug+0x349/0x570 lib/bug.c:248
+ report_bug+0x16a/0x220 lib/bug.c:286
+ handle_bug+0x9c/0x200 arch/x86/kernel/traps.c:436
+ exc_invalid_op+0x1a/0x50 arch/x86/kernel/traps.c:490
+ asm_exc_invalid_op+0x1a/0x20 arch/x86/include/asm/idtentry.h:593
+RIP: 0010:__queue_work+0xd18/0x10a0 kernel/workqueue.c:2385
+Code: 3d 7e ec b2 0e 01 0f 85 35 02 00 00 e8 a1 28 39 00 e9 82 f3 ff ff e8 97 28 39 00 90 0f 0b 90 e9 21 fd ff ff e8 89 28 39 00 90 <0f> 0b 90 e9 80 fe ff ff e8 7b 28 39 00 eb 11 e8 74 28 39 00 4c 8b
+RSP: 0018:ffffc90003cdf1d8 EFLAGS: 00010093
+RAX: ffffffff818dc2d7 RBX: dffffc0000000000 RCX: ffff888113955a00
+RDX: 0000000000000000 RSI: ffffffff8c4bca60 RDI: ffffffff8c4bca20
+RBP: 0000000000000001 R08: ffffffff90572d37 R09: 1ffffffff20ae5a6
+R10: dffffc0000000000 R11: fffffbfff20ae5a7 R12: ffff888160408400
+R13: ffff88810fdd7088 R14: 0000000000000001 R15: ffff88810fdd7090
+ queue_work_on+0x106/0x1d0 kernel/workqueue.c:2452
+ swap_put_entries_cluster+0x3b1/0x4b0 mm/swapfile.c:1893
+ swap_put_entries_direct+0x94/0x100 mm/swapfile.c:2403
+ zap_nonpresent_ptes mm/memory.c:1900 [inline]
+ do_zap_pte_range mm/memory.c:1967 [inline]
+ zap_pte_range mm/memory.c:2065 [inline]
+ zap_pmd_range mm/memory.c:2151 [inline]
+ zap_pud_range mm/memory.c:2179 [inline]
+ zap_p4d_range mm/memory.c:2200 [inline]
+ __zap_vma_range+0x1da0/0x4f70 mm/memory.c:2240
+ unmap_vmas+0x390/0x550 mm/memory.c:2309
+ exit_mmap+0x293/0x9f0 mm/mmap.c:1315
+ __mmput+0x118/0x420 kernel/fork.c:1187
+ exit_mm+0x221/0x2d0 kernel/exit.c:615
+ do_exit+0x6cd/0x2360 kernel/exit.c:997
+ do_group_exit+0x22d/0x2f0 kernel/exit.c:1152
+ get_signal+0x121b/0x12c0 kernel/signal.c:3046
+ arch_do_signal_or_restart+0xbb/0x860 arch/x86/kernel/signal.c:337
+ __exit_to_user_mode_loop kernel/entry/common.c:66 [inline]
+ exit_to_user_mode_loop+0x104/0x730 kernel/entry/common.c:101
+ __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
+ syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
+ do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f46ce79e0d9
+Code: Unable to access opcode bytes at 0x7f46ce79e0af.
+RSP: 002b:00007f46cf6fc028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+RAX: 0000000000000000 RBX: 00007f46cea26090 RCX: 00007f46ce79e0d9
+RDX: 0000000000000015 RSI: 0000000000600003 RDI: 0000200000000000
+RBP: 00007f46ce835024 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f46cea26128 R14: 00007f46cea26090 R15: 00007ffefd86c578
+ </TASK>
+!list_empty(&work->entry)
+WARNING: kernel/workqueue.c:2385 at __queue_work+0xd18/0x10a0 kernel/workqueue.c:2385, CPU#1: syz.1.20/5854
+Modules linked in:
+CPU: 1 UID: 0 PID: 5854 Comm: syz.1.20 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:__queue_work+0xd18/0x10a0 kernel/workqueue.c:2385
+Code: 3d 7e ec b2 0e 01 0f 85 35 02 00 00 e8 a1 28 39 00 e9 82 f3 ff ff e8 97 28 39 00 90 0f 0b 90 e9 21 fd ff ff e8 89 28 39 00 90 <0f> 0b 90 e9 80 fe ff ff e8 7b 28 39 00 eb 11 e8 74 28 39 00 4c 8b
+RSP: 0018:ffffc90003cdf1d8 EFLAGS: 00010093
+RAX: ffffffff818dc2d7 RBX: dffffc0000000000 RCX: ffff888113955a00
+RDX: 0000000000000000 RSI: ffffffff8c4bca60 RDI: ffffffff8c4bca20
+RBP: 0000000000000001 R08: ffffffff90572d37 R09: 1ffffffff20ae5a6
+R10: dffffc0000000000 R11: fffffbfff20ae5a7 R12: ffff888160408400
+R13: ffff88810fdd7088 R14: 0000000000000001 R15: ffff88810fdd7090
+FS:  00007f46cf6fc6c0(0000) GS:ffff8882a8f5a000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000200000e6c000 CR3: 000000010a5a2000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ queue_work_on+0x106/0x1d0 kernel/workqueue.c:2452
+ swap_put_entries_cluster+0x3b1/0x4b0 mm/swapfile.c:1893
+ swap_put_entries_direct+0x94/0x100 mm/swapfile.c:2403
+ zap_nonpresent_ptes mm/memory.c:1900 [inline]
+ do_zap_pte_range mm/memory.c:1967 [inline]
+ zap_pte_range mm/memory.c:2065 [inline]
+ zap_pmd_range mm/memory.c:2151 [inline]
+ zap_pud_range mm/memory.c:2179 [inline]
+ zap_p4d_range mm/memory.c:2200 [inline]
+ __zap_vma_range+0x1da0/0x4f70 mm/memory.c:2240
+ unmap_vmas+0x390/0x550 mm/memory.c:2309
+ exit_mmap+0x293/0x9f0 mm/mmap.c:1315
+ __mmput+0x118/0x420 kernel/fork.c:1187
+ exit_mm+0x221/0x2d0 kernel/exit.c:615
+ do_exit+0x6cd/0x2360 kernel/exit.c:997
+ do_group_exit+0x22d/0x2f0 kernel/exit.c:1152
+ get_signal+0x121b/0x12c0 kernel/signal.c:3046
+ arch_do_signal_or_restart+0xbb/0x860 arch/x86/kernel/signal.c:337
+ __exit_to_user_mode_loop kernel/entry/common.c:66 [inline]
+ exit_to_user_mode_loop+0x104/0x730 kernel/entry/common.c:101
+ __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
+ syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
+ do_syscall_64+0x353/0x580 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f46ce79e0d9
+Code: Unable to access opcode bytes at 0x7f46ce79e0af.
+RSP: 002b:00007f46cf6fc028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+RAX: 0000000000000000 RBX: 00007f46cea26090 RCX: 00007f46ce79e0d9
+RDX: 0000000000000015 RSI: 0000000000600003 RDI: 0000200000000000
+RBP: 00007f46ce835024 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f46cea26128 R14: 00007f46cea26090 R15: 00007ffefd86c578
+ </TASK>
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
+
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
