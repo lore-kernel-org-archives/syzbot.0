@@ -1,187 +1,316 @@
-Received: from mail-oi2-f1.google.com (mail-oi2-f1.google.com [74.125.231.193])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37B623B95F9
-	for <syzbot@lists.linux.dev>; Fri, 28 Aug 2026 19:34:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.231.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 599F33B961F
+	for <syzbot@lists.linux.dev>; Fri, 28 Aug 2026 20:39:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787945676; cv=none; b=EZaTs4hqh9GMIVbh+tu4oFnH16mp5h3vy8DuksqiCPT4DyrnZD0knmXpSpAlXkr6JlxBb0gPavcue2aF/gZnuFVby5zawU+O4gLMkNPHqELe5CV7JJtYaMwScfkW8e8tWFK9Qvm2/H8wQbDW923czF/q/0hI5stCDUzCtmdE+ds=
+	t=1787949551; cv=none; b=ZdzRXImBq3VvS7YK2m5s4tRwikoiGSdTaKvC9rRBR4s2vUAfOl9h9q8hFtKk2XBodZq5EEFxn7g9U/JmBT2ggmzxJvb3eAafAKAzqDvqm86ZPTgP3KKlVWJ/5FeLh7kuCy4DwkrakSOR+y0TK/f4SFSyd+xe3bBiz8GPfo18XF0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787945676; c=relaxed/simple;
-	bh=rIDic2O9l/GS7rRQDlr/0lWFt8qc/ste6l8CtDOTGr0=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:
-	 Content-Type; b=kP40W6Tp+x3b6iGSnlAa31ksBY/ei0CJ7E6KE5zEmsl15mg66j/daeitQIGmDAc8ZH3Im2JB4ssaS/ZJyQmCb4KKt9K7n0AKg/D+1JMcLiE8AQ3KiFYghxjJEtYLm/EgIFleLPL+KqN5kOvRTnrCeChCLMcaiWg+BbO5tHitcS0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=74.125.231.193
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi2-f1.google.com with SMTP id 5614622812f47-4b379409c74so475436b6e.0
-        for <syzbot@lists.linux.dev>; Fri, 28 Aug 2026 12:34:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787945674; x=1788550474;
-        h=content-type:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=98nWEY1hN1kg8FloyxfUIcpI3fw4Dep5t6bB4KJAlno=;
-        b=lEX7GUZTFMwAwtJzYhE2s5XjBkueEFlRwZTkJ6Pb9DVypxL0jVws5XCs/EAsP3dgt9
-         l3RJt0luFaBojDhMfCZ24QHPlKMNAsNiLUaFNXaE1uhZQzR65jiVbitY3nCYcCaWJSDA
-         e0JPtFODMRHd+HM6X0md7oI1bwVyqbliJJdCP06hQrvnvagI3Os7cfW+JH6V4WTh41oo
-         zHpryzRr/c1kp1sqotnmwPB01HhmsniKXM/Z7gT+kgQcM6tvhK0f/Z3GsUljB577vrZn
-         hqEityf0wdOJ188upIt74l4D5rA1Ci19gQtdRQumgmoiNV39IoRAJdoHyVXUOeeEVfZo
-         FkbQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpRozxuMenZw3pYKbEaXMvB3WdjJ1oeBfLgdPd3VA7H62OYKAFTABoVvBH56C9rnCiq5Et2rIg=@lists.linux.dev
-X-Gm-Message-State: AFuF++l3xt+2HvD1UcesEa8kp7ElMN/wJs/ROETUSCtBmFk4grn28OB9
-	RD1DYpS0IWfUgBEVaSghTn70n0b5gMP00YFss8XkxK/ldze2HS1WdiLETe8prDRIjcGsJj0Uhbl
-	alEyE3/o25MYGzEubn+6mMA38tPl0KNthfY4aIm5xkuit7ZVqw/kcLg2hOeg=
+	s=arc-20240116; t=1787949551; c=relaxed/simple;
+	bh=sZUlGmXRgHVZfjh7874KKlH4nNv9G2WYy1PzX+ypYig=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=qSTibU+F5v1yTqth0YNue1MXa6MWmnTG6vuaCohL9EqUM2ZKieqTSaC2OXQmOKiGOlbyKoFQJWzi7bVmRFDHHrgzKkUweD7xJ1c31TiGnwBX6NHJo9DijaPuXukTyBZPFFuqF+8zBja5tTImJImmJcY8QSDkY7VQCTSl3sGbtNU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ChAWiVNK; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ChAWiVNK"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id E1CB11F000E9;
+	Fri, 28 Aug 2026 20:39:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787949549;
+	bh=TGKL52o9jeWwhNA7mANOGdxw8u7NziOtmCd8ycG/Sa8=;
+	h=From:To:Cc:Subject:Date;
+	b=ChAWiVNKh3k3BWVT2ebtp9xt0I7KdLovR330BbE79un6ulsyY4tjAed9M0P2HtlYW
+	 HV5RifUAc+W9kQhFXqj2QIhrPWXeNtFWCopHBENkI+mv3xY8iJpTdnje6Bs/gD0CXt
+	 GzoCJ9Qb4busZwTBfwNNcS3m/76ETWhD2JWJMpAIoZLItZDFw/NjEj1BPGuBqZnbRU
+	 p4HoV1MOi4y/SoEFH5rcwlUriRvWgTnUdcgiiKSCQebT319V8y7yQE3cx5w4yOKPZW
+	 EqMYPVRdm2T+MMM+qvmsJv0RNcQwTZfUz8X2mwhXoGdyXPgLKKURFQya7B44FmMpGp
+	 seimfTtkWW4ww==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] usb-storage: alauda: Fix null-ptr-deref and divide-by-zero errors
+Message-ID: <c8b7e322-fe84-4bcf-9eaa-b222cb88d678@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1992:b0:4b3:2274:247a with SMTP id
- 5614622812f47-4b39819525dmr10306895b6e.11.1787945674295; Fri, 28 Aug 2026
- 12:34:34 -0700 (PDT)
-Date: Fri, 28 Aug 2026 12:34:34 -0700
-In-Reply-To: <6a7a68ea.9c11d2ce.289b96.00f3.GAE@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a91e2ca.1d9ded08.62e62.00f3.GAE@google.com>
-Subject: Re: [syzbot] [x25?] inconsistent lock state in valid_state (7)
-From: syzbot <syzbot+15cbd86f569e8b084383@syzkaller.appspotmail.com>
-To: davem@davemloft.net, edumazet@google.com, horms@kernel.org, 
-	kirigirik076@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org, 
-	linux-x25@vger.kernel.org, ms@dev.tdt.de, netdev@vger.kernel.org, 
-	pabeni@redhat.com, syzbot@kernel.org, syzbot@lists.linux.dev, 
-	syzkaller-bugs@googlegroups.com, 
-	syzkaller-upstream-moderation@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Fri, 28 Aug 2026 20:39:08 +0000 (UTC)
 
-syzbot has found a reproducer for the following issue on:
+In alauda_read_data() and alauda_write_lba(), alauda_ensure_map_for_zone()
+is called to ensure that the zone block mapping tables (lba_to_pba and
+pba_to_lba) are initialized and populated. However,
+alauda_ensure_map_for_zone() had a void return type and ignored the return
+value of alauda_read_map(). When alauda_read_map() failed (such as on USB
+transfer error or memory allocation failure),
+MEDIA_INFO(us).lba_to_pba[zone] remained NULL. Subsequent accesses to
+MEDIA_INFO(us).lba_to_pba[zone][lba_offset] resulted in a NULL pointer
+dereference:
 
-HEAD commit:    1b78070aaef6 Merge tag 'net-7.3-rc1' of git://git.kernel.o..
-git tree:       net-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=134d8c15580000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5e4e3a0e188a497e
-dashboard link: https://syzkaller.appspot.com/bug?extid=15cbd86f569e8b084383
-compiler:       Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14336d79580000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1781ce25580000
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/18856a03a9a3/disk-1b78070a.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/cc2bc68d7ef4/vmlinux-1b78070a.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/05a5e00f8f91/bzImage-1b78070a.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+15cbd86f569e8b084383@syzkaller.appspotmail.com
-
-================================
-WARNING: inconsistent lock state
-syzkaller #0 Not tainted
---------------------------------
-inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
-ksoftirqd/0/15 [HC0[0]:SC1[1]:HE1:SE0] takes:
-ffff88807f892260 (sk_lock-AF_X25){+.?.}-{0:0}, at: lock_sock include/net/sock.h:1713 [inline]
-ffff88807f892260 (sk_lock-AF_X25){+.?.}-{0:0}, at: x25_kill_by_neigh+0x10d/0x250 net/x25/af_x25.c:1778
-{SOFTIRQ-ON-W} state was registered at:
-  lock_acquire+0x115/0x350 kernel/locking/lockdep.c:5908
-  lock_sock_nested+0x41/0x100 net/core/sock.c:3827
-  lock_sock include/net/sock.h:1713 [inline]
-  x25_bind+0x209/0x450 net/x25/af_x25.c:694
-  __sys_bind_socket net/socket.c:1945 [inline]
-  __sys_bind+0x2e3/0x410 net/socket.c:1976
-  __do_sys_bind net/socket.c:1981 [inline]
-  __se_sys_bind net/socket.c:1979 [inline]
-  __x64_sys_bind+0x7a/0x90 net/socket.c:1979
-  do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
-  do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
-  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-irq event stamp: 732208
-hardirqs last  enabled at (732208): [<ffffffff8188ed06>] __local_bh_enable_ip+0xd6/0x140 kernel/softirq.c:478
-hardirqs last disabled at (732207): [<ffffffff8188eca2>] __local_bh_enable_ip+0x72/0x140 kernel/softirq.c:455
-softirqs last  enabled at (732126): [<ffffffff818919e6>] run_ksoftirqd+0x36/0x60 kernel/softirq.c:1108
-softirqs last disabled at (732131): [<ffffffff818919e6>] run_ksoftirqd+0x36/0x60 kernel/softirq.c:1108
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(sk_lock-AF_X25);
-  <Interrupt>
-    lock(sk_lock-AF_X25);
-
- *** DEADLOCK ***
-
-locks held by ksoftirqd/0/15: 1, last CPU#0:
- #0: ffffffff8ed5c6e0 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
- #0: ffffffff8ed5c6e0 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
- #0: ffffffff8ed5c6e0 (rcu_read_lock){....}-{1:3}, at: netif_receive_skb_core+0x33/0x2b0 net/core/dev.c:6288
-
-stack backtrace:
-CPU: 0 UID: 0 PID: 15 Comm: ksoftirqd/0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/24/2026
+Oops: general protection fault, probably for non-canonical address
+0xdffffc0000000000: 0000 [#1] SMP KASAN NOPTI
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+RIP: 0010:alauda_read_data drivers/usb/storage/alauda.c:972 [inline]
+RIP: 0010:alauda_transport+0xd68/0x43a0 drivers/usb/storage/alauda.c:1187
 Call Trace:
  <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_usage_bug+0x28c/0x2e0 kernel/locking/lockdep.c:4058
- valid_state+0xbe/0xf0 kernel/locking/lockdep.c:4072
- mark_lock_irq+0x36/0x380 kernel/locking/lockdep.c:4283
- mark_lock+0x117/0x190 kernel/locking/lockdep.c:4769
- mark_usage kernel/locking/lockdep.c:-1 [inline]
- __lock_acquire+0x6b7/0x2e50 kernel/locking/lockdep.c:5208
- lock_acquire+0x115/0x350 kernel/locking/lockdep.c:5908
- lock_sock_nested+0x41/0x100 net/core/sock.c:3827
- lock_sock include/net/sock.h:1713 [inline]
- x25_kill_by_neigh+0x10d/0x250 net/x25/af_x25.c:1778
- x25_lapb_receive_frame+0x1b0/0xfb0 net/x25/x25_dev.c:138
- __netif_receive_skb_one_core net/core/dev.c:6264 [inline]
- netif_receive_skb_core+0x2a6/0x2b0 net/core/dev.c:6289
- lapbeth_napi_poll+0x42/0x90 drivers/net/wan/lapbether.c:100
- __napi_poll+0xaa/0x330 net/core/dev.c:7787
- napi_poll net/core/dev.c:7850 [inline]
- net_rx_action+0x61d/0xf50 net/core/dev.c:8007
- handle_softirqs+0x226/0x860 kernel/softirq.c:645
- run_ksoftirqd+0x36/0x60 kernel/softirq.c:1108
- smpboot_thread_fn+0x565/0xa70 kernel/smpboot.c:160
- kthread+0x38b/0x480 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-BUG: sleeping function called from invalid context at net/core/sock.c:3829
-in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 15, name: ksoftirqd/0
-preempt_count: 100, expected: 0
-RCU nest depth: 1, expected: 0
-INFO: lockdep is turned off.
-Preemption disabled at:
-[<ffffffff8188ef0b>] softirq_handle_begin kernel/softirq.c:486 [inline]
-[<ffffffff8188ef0b>] handle_softirqs+0xab/0x860 kernel/softirq.c:621
-CPU: 0 UID: 0 PID: 15 Comm: ksoftirqd/0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/24/2026
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- __might_resched+0x36a/0x4c0 kernel/sched/core.c:9234
- lock_sock_nested+0x56/0x100 net/core/sock.c:3829
- lock_sock include/net/sock.h:1713 [inline]
- x25_kill_by_neigh+0x10d/0x250 net/x25/af_x25.c:1778
- x25_lapb_receive_frame+0x1b0/0xfb0 net/x25/x25_dev.c:138
- __netif_receive_skb_one_core net/core/dev.c:6264 [inline]
- netif_receive_skb_core+0x2a6/0x2b0 net/core/dev.c:6289
- lapbeth_napi_poll+0x42/0x90 drivers/net/wan/lapbether.c:100
- __napi_poll+0xaa/0x330 net/core/dev.c:7787
- napi_poll net/core/dev.c:7850 [inline]
- net_rx_action+0x61d/0xf50 net/core/dev.c:8007
- handle_softirqs+0x226/0x860 kernel/softirq.c:645
- run_ksoftirqd+0x36/0x60 kernel/softirq.c:1108
- smpboot_thread_fn+0x565/0xa70 kernel/smpboot.c:160
- kthread+0x38b/0x480 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ usb_stor_invoke_transport+0x115/0x1a70 drivers/usb/storage/transport.c:611
+ usb_stor_control_thread+0x44c/0x8f0 drivers/usb/storage/usb.c:462
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x491/0xad0 arch/x86/kernel/process.c:158
  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
  </TASK>
 
+Additionally, commit 16637fea001a ("usb-storage: alauda: Check whether the
+media is initialized") added the media_initialized flag to struct
+alauda_info. Because Alauda card readers support two independent media
+ports (xD and SmartMedia) mapped to LUN 0 and LUN 1, setting the flag on
+the shared device structure upon initializing LUN 0 caused
+alauda_check_media() to skip calling alauda_init_media() when handling
+requests for LUN 1. Consequently, port 1's uzonesize remained 0, causing a
+divide-by-zero error (lba / uzonesize) in alauda_read_data(),
+alauda_write_lba(), and alauda_write_data(). Furthermore,
+alauda_read_data() calculated lba / uzonesize and invoked
+alauda_ensure_map_for_zone() before validating whether lba exceeded
+max_lba.
+
+Fix these issues by:
+- Moving the media_initialized boolean from struct alauda_info to struct
+alauda_media_info so that each port's initialization status is tracked
+independently, and clearing it when media absence or removal is detected.
+- Updating alauda_ensure_map_for_zone() to return an error status code,
+verifying that mapping table pointers are non-NULL, and propagating the
+result of alauda_read_map().
+- Checking the return code of alauda_ensure_map_for_zone() in
+alauda_read_data() and alauda_write_lba() and aborting the transfer on
+failure.
+- Adding sanity checks for uzonesize before division operations in
+alauda_read_data(), alauda_write_lba(), and alauda_write_data(), and
+performing the lba >= max_lba check before zone calculation in
+alauda_read_data().
+- Freeing top-level mapping arrays and resetting capacity and uzonesize in
+alauda_free_maps(), and ensuring alauda_free_maps() is called on error
+paths in alauda_init_media().
+
+Fixes: e80b0fade09e ("[PATCH] USB Storage: add alauda support")
+Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+ccc9a7cb39fa1af827ea@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=ccc9a7cb39fa1af827ea
+Link: https://syzkaller.appspot.com/ai_job?id=f19433e4-a93f-4b85-a1da-d33b9943d037
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
+To: "Alan Stern" <stern@rowland.harvard.edu>
+To: <usb-storage@lists.one-eyed-alien.net>
+To: "Matthew Dharm" <mdharm-usb@one-eyed-alien.net>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
+diff --git a/drivers/usb/storage/alauda.c b/drivers/usb/storage/alauda.c
+index 691fe4700..a2a333419 100644
+--- a/drivers/usb/storage/alauda.c
++++ b/drivers/usb/storage/alauda.c
+@@ -96,6 +96,8 @@ struct alauda_media_info {
+ 
+ 	u16 **lba_to_pba;		/* logical to physical block map */
+ 	u16 **pba_to_lba;		/* physical to logical block map */
++
++	bool media_initialized;
+ };
+ 
+ struct alauda_info {
+@@ -105,8 +107,6 @@ struct alauda_info {
+ 	unsigned char sense_key;
+ 	unsigned long sense_asc;	/* additional sense code */
+ 	unsigned long sense_ascq;	/* additional sense code qualifier */
+-
+-	bool media_initialized;
+ };
+ 
+ #define short_pack(lsb,msb) ( ((u16)(lsb)) | ( ((u16)(msb))<<8 ) )
+@@ -290,17 +290,25 @@ static void alauda_free_maps (struct alauda_media_info *media_info)
+ 	unsigned int num_zones = media_info->capacity >> shift;
+ 	unsigned int i;
+ 
+-	if (media_info->lba_to_pba != NULL)
++	if (media_info->lba_to_pba != NULL) {
+ 		for (i = 0; i < num_zones; i++) {
+ 			kfree(media_info->lba_to_pba[i]);
+ 			media_info->lba_to_pba[i] = NULL;
+ 		}
++		kfree(media_info->lba_to_pba);
++		media_info->lba_to_pba = NULL;
++	}
+ 
+-	if (media_info->pba_to_lba != NULL)
++	if (media_info->pba_to_lba != NULL) {
+ 		for (i = 0; i < num_zones; i++) {
+ 			kfree(media_info->pba_to_lba[i]);
+ 			media_info->pba_to_lba[i] = NULL;
+ 		}
++		kfree(media_info->pba_to_lba);
++		media_info->pba_to_lba = NULL;
++	}
++	media_info->capacity = 0;
++	media_info->uzonesize = 0;
+ }
+ 
+ /*
+@@ -441,11 +449,15 @@ static int alauda_init_media(struct us_data *us)
+ 		+ MEDIA_INFO(us).blockshift + MEDIA_INFO(us).pageshift);
+ 	MEDIA_INFO(us).pba_to_lba = kcalloc(num_zones, sizeof(u16*), GFP_NOIO);
+ 	MEDIA_INFO(us).lba_to_pba = kcalloc(num_zones, sizeof(u16*), GFP_NOIO);
+-	if (MEDIA_INFO(us).pba_to_lba == NULL || MEDIA_INFO(us).lba_to_pba == NULL)
++	if (MEDIA_INFO(us).pba_to_lba == NULL || MEDIA_INFO(us).lba_to_pba == NULL) {
++		alauda_free_maps(&MEDIA_INFO(us));
+ 		return USB_STOR_TRANSPORT_ERROR;
++	}
+ 
+-	if (alauda_reset_media(us) != USB_STOR_XFER_GOOD)
++	if (alauda_reset_media(us) != USB_STOR_XFER_GOOD) {
++		alauda_free_maps(&MEDIA_INFO(us));
+ 		return USB_STOR_TRANSPORT_ERROR;
++	}
+ 
+ 	return USB_STOR_TRANSPORT_GOOD;
+ }
+@@ -457,6 +469,7 @@ static int alauda_init_media(struct us_data *us)
+ static int alauda_check_media(struct us_data *us)
+ {
+ 	struct alauda_info *info = (struct alauda_info *) us->extra;
++	struct alauda_media_info *media_info = &MEDIA_INFO(us);
+ 	unsigned char *status = us->iobuf;
+ 	int rc;
+ 
+@@ -470,7 +483,8 @@ static int alauda_check_media(struct us_data *us)
+ 	if ((status[0] & 0x80) || ((status[0] & 0x1F) == 0x10)
+ 		|| ((status[1] & 0x01) == 0)) {
+ 		usb_stor_dbg(us, "No media, or door open\n");
+-		alauda_free_maps(&MEDIA_INFO(us));
++		alauda_free_maps(media_info);
++		media_info->media_initialized = false;
+ 		info->sense_key = 0x02;
+ 		info->sense_asc = 0x3A;
+ 		info->sense_ascq = 0x00;
+@@ -478,12 +492,13 @@ static int alauda_check_media(struct us_data *us)
+ 	}
+ 
+ 	/* Check for media change */
+-	if (status[0] & 0x08 || !info->media_initialized) {
++	if (status[0] & 0x08 || !media_info->media_initialized) {
+ 		usb_stor_dbg(us, "Media change detected\n");
+-		alauda_free_maps(&MEDIA_INFO(us));
++		alauda_free_maps(media_info);
++		media_info->media_initialized = false;
+ 		rc = alauda_init_media(us);
+ 		if (rc == USB_STOR_TRANSPORT_GOOD)
+-			info->media_initialized = true;
++			media_info->media_initialized = true;
+ 		info->sense_key = UNIT_ATTENTION;
+ 		info->sense_asc = 0x28;
+ 		info->sense_ascq = 0x00;
+@@ -689,11 +704,16 @@ static int alauda_read_map(struct us_data *us, unsigned int zone)
+  * Checks to see whether we have already mapped a certain zone
+  * If we haven't, the map is generated
+  */
+-static void alauda_ensure_map_for_zone(struct us_data *us, unsigned int zone)
++static int alauda_ensure_map_for_zone(struct us_data *us, unsigned int zone)
+ {
++	if (!MEDIA_INFO(us).lba_to_pba || !MEDIA_INFO(us).pba_to_lba)
++		return USB_STOR_TRANSPORT_ERROR;
++
+ 	if (MEDIA_INFO(us).lba_to_pba[zone] == NULL
+ 		|| MEDIA_INFO(us).pba_to_lba[zone] == NULL)
+-		alauda_read_map(us, zone);
++		return alauda_read_map(us, zone);
++
++	return USB_STOR_TRANSPORT_GOOD;
+ }
+ 
+ /*
+@@ -819,11 +839,19 @@ static int alauda_write_lba(struct us_data *us, u16 lba,
+ 	unsigned int zonesize = MEDIA_INFO(us).zonesize;
+ 	unsigned int pagesize = MEDIA_INFO(us).pagesize;
+ 	unsigned int blocksize = MEDIA_INFO(us).blocksize;
+-	unsigned int lba_offset = lba % uzonesize;
++	unsigned int lba_offset;
+ 	unsigned int new_pba_offset;
+-	unsigned int zone = lba / uzonesize;
++	unsigned int zone;
+ 
+-	alauda_ensure_map_for_zone(us, zone);
++	if (!uzonesize)
++		return USB_STOR_TRANSPORT_ERROR;
++
++	lba_offset = lba % uzonesize;
++	zone = lba / uzonesize;
++
++	result = alauda_ensure_map_for_zone(us, zone);
++	if (result != USB_STOR_TRANSPORT_GOOD)
++		return result;
+ 
+ 	pba = MEDIA_INFO(us).lba_to_pba[zone][lba_offset];
+ 	if (pba == 1) {
+@@ -927,6 +955,9 @@ static int alauda_read_data(struct us_data *us, unsigned long address,
+ 	struct scatterlist *sg;
+ 	int result;
+ 
++	if (!uzonesize)
++		return USB_STOR_TRANSPORT_ERROR;
++
+ 	/*
+ 	 * Since we only read in one block at a time, we have to create
+ 	 * a bounce buffer and move the data a piece at a time between the
+@@ -950,11 +981,10 @@ static int alauda_read_data(struct us_data *us, unsigned long address,
+ 	sg = NULL;
+ 
+ 	while (sectors > 0) {
+-		unsigned int zone = lba / uzonesize; /* integer division */
+-		unsigned int lba_offset = lba - (zone * uzonesize);
++		unsigned int zone;
++		unsigned int lba_offset;
+ 		unsigned int pages;
+ 		u16 pba;
+-		alauda_ensure_map_for_zone(us, zone);
+ 
+ 		/* Not overflowing capacity? */
+ 		if (lba >= max_lba) {
+@@ -964,6 +994,13 @@ static int alauda_read_data(struct us_data *us, unsigned long address,
+ 			break;
+ 		}
+ 
++		zone = lba / uzonesize; /* integer division */
++		lba_offset = lba - (zone * uzonesize);
++
++		result = alauda_ensure_map_for_zone(us, zone);
++		if (result != USB_STOR_TRANSPORT_GOOD)
++			break;
++
+ 		/* Find number of pages we can read in this block */
+ 		pages = min(sectors, blocksize - page);
+ 		len = pages << pageshift;
+@@ -1021,6 +1058,9 @@ static int alauda_write_data(struct us_data *us, unsigned long address,
+ 	u16 lba, max_lba;
+ 	int result;
+ 
++	if (!MEDIA_INFO(us).uzonesize)
++		return USB_STOR_TRANSPORT_ERROR;
++
+ 	/*
+ 	 * Since we don't write the user data directly to the device,
+ 	 * we have to create a bounce buffer and move the data a piece
+
+
+base-commit: 8d3ae59288f1e7d58d76558a6ee96d533bc5019f
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
