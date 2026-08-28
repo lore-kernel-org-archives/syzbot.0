@@ -1,152 +1,184 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DB4D3AA1B5
-	for <syzbot@lists.linux.dev>; Fri, 28 Aug 2026 11:31:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787916699; cv=none; b=oMKoLQbzKZ8tfJxpm9r2niq1m759flrnVjMU6DgJ0mc9IPz5Wk54Pupab3acXN844TT66bFa+0+5VqF1gmX4P4diwkhZOkiBwWwWZPjKlIN3WCOgTf7lXWoR5s7AsN0o2Oz6GszstkCNZPqIKVe2AYLY67sUGDJKzdT1Zj5ZIrI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787916699; c=relaxed/simple;
-	bh=YvCV6NZ4mkbqqtDlLpF6SOS4A/d+Duon/jbj2eShHTI=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=gAqrDytmPjSN4FtM2YzOvtLT4wso1Q/a9XFVheIrZ+A/64P0SUM0X74ztrLIcsnLgQ0V4wzvB/ikOoGMSf1Jx1VF3ipZ3r0V5o1tl7a5oJBqTuAtW9Au3NQD/U849Up4hCBwq7wO5bX32Lv96PWVdeRhqDpuP3Dj3es1ofJoe8Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RDWvK0jh; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E889343CEED
+	for <syzbot@lists.linux.dev>; Fri, 28 Aug 2026 12:25:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787919942; cv=pass; b=EZmJYGEfdMoDCwO4/Qwf3a3Q3FIPBnlHVAkvCLwAchpxdrCWj9NJiAeySv5wCSFUP1X6/Pms2ufe5KpgT6Y5r00pmJPGATKzKINCdv/krA/Sy966MdA1LhfHxHIir0/epRL+SUkSOj7t6zADZLwEEM4h7/Y5IwCQsO2SEMrkR1g=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787919942; c=relaxed/simple;
+	bh=4dOHM4Jcyiynb24Yy3fBsCK4hNeRCYxIhYIo1vRb0qU=;
+	h=Message-ID:Date:Content-Type:MIME-Version:From:To:Subject:
+	 In-Reply-To:References; b=E2rwB5ShNzloiYgNwS4g6Fl4K11wXGNg5D/ePmzLeIhNTDNz6bHEminmjbbSGDNCye6Lf1o72lajmGkFrXRDf1FzncjbDraG2sTODg+QV+XGzyW/uAu7KKBhs+aYjk08wwSJN5N+vE1cMUBA4IJ94alNwc2QcM7/WuQN7r4bzjo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=boWz+vhZ; arc=pass smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RDWvK0jh"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id ABFE21F00A3A;
-	Fri, 28 Aug 2026 11:31:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787916697;
-	bh=MBvC7yUtNbSBCmvyFPLVIsGTcMmfzbOI1IW6V0cFgIM=;
-	h=From:To:Cc:Subject:Date;
-	b=RDWvK0jhG0aDm2x3ypg+PwV4tb0reBbsoa7wpM8UUjnHAXtu5Oycv914xLyhFQD3d
-	 oCZHlVa9CibjUv1Vl1O2uTcrSg7oNA2rJGo9jp9UTYXq1t/1qwPyv8POLYkiZEdcBG
-	 ykyz8i+0kzcWeyISjZNtMUMtWFboUAtGrWAtZq+EZf2rgtpjYu2aEI40PSp9gV0H8e
-	 SlE9GD0Z6RnwuO2qOPYPAxlADoV4hrMLDzCPwh3i6w8GwE8U2QSjcfUJYz/l8vruk3
-	 /wQvxeYsRSsQOMbCGN1aG2w1qQhnCqBlsX3NuRZQN5zyLCecsM0D4XGhxVYUy6CISX
-	 7dNpbyuk60XlQ==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: immersa.bartosz.chronowski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v3] net/sched: taprio: reject excessively small intervals in software mode
-Message-ID: <ecbfe945-f1ab-45de-aaa0-b9b57ae730c2@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="boWz+vhZ"
+Received: by smtp.kernel.org (Postfix)
+	id B46D01F00A3A; Fri, 28 Aug 2026 12:25:31 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=209.85.160.50
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1787919931;
+	b=k5k7xjzMfFl8wkPp6skNHzionKDCq8i1zi06Tl6N4gHFXpZTuI/Wa2GTbQff8d9ugoM0
+	 QzKIAGOgLu5k4FiOoKrBK+e80jun0dqXUZV3Tg9jiN5ROhuKdArKNClPB3DRPudQ5hgak
+	 VQhVDfVwGN2498saLr/l/MGKzkMU6dZmSa9zr+gUvSGPWA9JT8hXTz8FQ6vL8suiX1j5j
+	 /Lc0rD+hSHVN1ZLAYkQFKXtnjdDF/8MdQSU23gLNusNpL5HvCVeaNUNVmEKLsUYjbX9zX
+	 HUwK7lLC0Q1lSdbkcBa+MpdTv7qD8vo66SMTHom1x+VUhOJiy1HRMS7gYmhFQYUtWRg==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1787919931;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Message-ID:Date:Content-Type:MIME-Version:From:To:Subject:In-Reply-To:
+	 References:Reply-To;
+	bh=Taeen07Ab6QBzP5rvV4V5up2Wbw1UZylpsmEgYYI6Bg=;
+	b=Dh83sOiUIMwvteIj6mfJk1cSyxT4ZMVLmt3CPj00Ljq+YyuOm2iLRUZTlxjS4mF8Leic
+	 LsCjsE6IiOFlyS32AgAuZtpRfW5pxSzCVlmQ/QUhCQXgKjkaUrbdZmq7zlYSHIT8ONXiO
+	 LnGH16YwpiHzv8tZz1ebkUK2NPHc5aO4SkYdY4gF9H3bg7fcMZWeLG6tCuP9cygDIMCgC
+	 a/d5amCJHgAsPfpW2/hofj3yVLTg9HG2Y7H+zPyw96KeiufqHynk7mCrhAsiU7/tLU2zP
+	 doq2dXDEK/4MrcZRsUk5VTEXm0Fe6oS/9jWySOZEo94cui8YGqW/0QMLghnrjKcBSoA==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=boWz+vhZ;
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	arc=none smtp.remote-ip=209.85.160.50
+Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 2AA9D1F000E9
+	for <syzbot@kernel.org>; Fri, 28 Aug 2026 12:25:31 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=boWz+vhZ
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 2AA9D1F000E9
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-465cfc7e33dso810567fac.1
+        for <syzbot@kernel.org>; Fri, 28 Aug 2026 05:25:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787919930; x=1788524730; darn=kernel.org;
+        h=reply-to:references:in-reply-to:subject:to:from:mime-version
+         :content-type:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=Taeen07Ab6QBzP5rvV4V5up2Wbw1UZylpsmEgYYI6Bg=;
+        b=boWz+vhZhUyMoYXJhqWvZ1TwqFgcK975THnaMsY263vWB6qqU8oDLd2PVsA4+HGdMC
+         dq4cE52DBKSs9eHYy9NHAiHvYjN3kFVqvpRI+sVZZb3qUFj1SFHAfYXc16YpH0jK0a0A
+         8ZS37BLCiqQLYPvydRR+yek0PYqQkciv0HlC1ns8W+2ya7UA9hhY1ztbsTjJ9DFQCQeV
+         uUuil+cDQAxdqcybfqptybK9BaaHjtwG9jQLG5BaD8uWOlChQXLkbOlGeDSg8gaxbfyr
+         hLzW7q15pOLvOijNSybeJJATCofWS75Jnefp8hXKo+Z7AiAVZD5rCuVkAZpCMkiypF4u
+         LxGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787919930; x=1788524730;
+        h=reply-to:references:in-reply-to:subject:to:from:mime-version
+         :content-type:date:message-id:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=Taeen07Ab6QBzP5rvV4V5up2Wbw1UZylpsmEgYYI6Bg=;
+        b=ao2hzRU9ew9Cf2NKcx0OZmNHJTqxAfJX6CJAT4xwfKfS77xEGVB44X/LTlOIbq3goZ
+         Ypy1DcZO8jIs6EcfZsh4vI9D75WwNsJR7AvN5EqeDUFKjUR5UB5Ei814ZTelU0ct5ztL
+         5aU0YvvyvamkyILY9prX2bQP0kK4oM+4XfEJP5A7u4NR3JyC0c+vDxfzvuy+YYRd/pI5
+         ktgz/fiSb8THbnnUZUu2TkVeTbLmjm5/U64eqLqha1bu+hGX5368q36OGCloQZQkDn3D
+         g+xxITiospVp63/VjNeLKimzFcj8rFInAPeDDre30blEPomehksGdPbUbEoHdUA5LPEZ
+         nZqw==
+X-Forwarded-Encrypted: i=1; AHgh+RrLrt3XVYsjyZb0QuHl2Y+0EHV6iZXvte6VSyAiz4izEpHt5YQmjeYTpn2lQ/g/NxhwPASKNAk=@kernel.org
+X-Gm-Message-State: AFuF++msIUgu9OskbGWE7iRKFLv068RR1iqM+IhQL6bac1ULBuy13NRZ
+	S9892BfZTUxLZjo4Gun+ro4q2b6EEcoxsZmq+6H66fP+Juq2MJb0Njlwf5WbwA==
+X-Gm-Gg: AR+sD13849H+Hi+WtzA25d7+G6MV3vF3ig81qlZ8XJmSGtc0EBlIr8YONi7TCBn2Khg
+	2OP4hurJHSB+XVLr+2z306d3KGNR+iJo/QykEgGjUbtaGQtezGgy9M2stZ3O4ZwKXMpogSHMh1g
+	+mvIZa08yvu9vrLnnOt2VqwJG2N4yI6QufQ+edPh4nW/+BnbqP70obZhQ5rrjR8QbaMNG6Y51xg
+	Eqh9BeFsqbmxI1WWl5T6/E7WaPaTpnLEnntVr5/6LiRZSb3mKJtdW5Zkzwp/yosLd7NfpYDwvEv
+	GYkzMhb9U5DGBSbHX9VBzp65E8xYFU3phkcz63vNQz5IaF6QaAoPFwMe0ec+MTjiNo9flsgHLKh
+	BlLD4cXE0D50Qu2GPjIoxnwxGGg2+l+mZhtttg5Szr0v2mTfANvgAgIdb/VgCcXaAqv3rc+gvEs
+	WrVkE8vlDbN2qngvO45PT8G4MLibLCdzsNo42mi70NX9R0+TbQyqBl2LHrTGybuKO5mulM
+X-Received: by 2002:a05:6870:a0b2:b0:44a:e7ac:b14 with SMTP id 586e51a60fabf-46837136d60mr7040279fac.11.1787919929902;
+        Fri, 28 Aug 2026 05:25:29 -0700 (PDT)
+Received: from [172.17.0.2] ([52.173.162.101])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-468a353d45asm1370173fac.7.2026.08.28.05.25.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Aug 2026 05:25:29 -0700 (PDT)
+Message-ID: <6a917e39.566b9172.fde58.8cb8@mx.google.com>
+Date: Fri, 28 Aug 2026 05:25:29 -0700 (PDT)
+Content-Type: multipart/mixed; boundary="===============2566281102231485205=="
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri, 28 Aug 2026 11:31:37 +0000 (UTC)
+From: bluez.test.bot@gmail.com
+To: linux-bluetooth@vger.kernel.org, syzbot@kernel.org
+Subject: RE: Bluetooth: hci_core: Fix race condition during device registration
+In-Reply-To: <7f282e86-b9fa-4a3d-8dea-208975771b35@mail.kernel.org>
+References: <7f282e86-b9fa-4a3d-8dea-208975771b35@mail.kernel.org>
+Reply-To: linux-bluetooth@vger.kernel.org
 
-The taprio qdisc allows configuring excessively small intervals (e.g., 255
-ns) which can completely overwhelm the CPU when using software timers. When
-the interval is shorter than the time it takes to process the timer
-interrupt, the timer expiration falls continuously into the past. This
-overdue-absolute-deadline condition causes the hrtimer subsystem to
-repeatedly re-enqueue and fire the timer, resulting in an interrupt storm
-that starves CPU tasks and triggers RCU stalls:
+--===============2566281102231485205==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 
-rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-	1-...!: (1 GPs behind) idle=5b64/0/0x1 softirq=135954/135971 fqs=1
-Call Trace:
- <IRQ>
- advance_sched+0xc2/0xc80 net/sched/sch_taprio.c:930
- __run_hrtimer kernel/time/hrtimer.c:2032 [inline]
- __hrtimer_run_queues+0x3bc/0xa10 kernel/time/hrtimer.c:2096
- hrtimer_interrupt+0x448/0x910 kernel/time/hrtimer.c:2215
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1051 [inline]
- __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:1068
- sysvec_apic_timer_interrupt+0xa1/0xc0 arch/x86/kernel/apic/apic.c:1062
- </IRQ>
+This is automated email and please do not reply to this email!
 
-Fix this by rejecting intervals smaller than 100 us (-EINVAL) at admission
-time for software TAPRIO schedules driven by advance_timer. When neither
-txtime-assist nor full-offload mode is enabled, enforce a minimum interval
-duration of 100 us in fill_sched_entry() and parse_taprio_schedule(), while
-retaining length_to_duration(q, ETH_ZLEN) for hardware-offloaded schedules.
+Dear submitter,
 
-Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
-Assisted-by: Gemini:gemini-3.7-flash syzbot
-Reported-by: syzbot+f8850bc3986562f79619@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=f8850bc3986562f79619
-Link: https://syzkaller.appspot.com/ai_job?id=896b8415-1acd-41a7-bb99-31c5f93cb5d3
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: "Jamal Hadi Salim" <jhs@mojatatu.com>
-To: "Jiri Pirko" <jiri@resnulli.us>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
-Cc: "Simon Horman" <horms@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+Thank you for submitting the patches to the linux bluetooth mailing list.
+This is a CI test results with your patch series:
+PW Link:https://patchwork.kernel.org/project/bluetooth/list/?series=1153084
+
+---Test result---
+
+Test Summary:
+CheckPatch                    PASS      0.89 seconds
+VerifyFixes                   PASS      0.11 seconds
+VerifySignedoff               PASS      0.11 seconds
+GitLint                       PASS      0.29 seconds
+SubjectPrefix                 PASS      0.10 seconds
+BuildKernel                   PASS      27.41 seconds
+CheckAllWarning               PASS      34.74 seconds
+CheckSparse                   PASS      28.58 seconds
+BuildKernel32                 PASS      25.52 seconds
+CheckKernelLLVM               SKIP      0.00 seconds
+TestRunnerSetup               PASS      466.41 seconds
+TestRunner_l2cap-tester       PASS      64.57 seconds
+TestRunner_iso-tester         PASS      132.46 seconds
+TestRunner_bnep-tester        PASS      19.08 seconds
+TestRunner_mgmt-tester        FAIL      216.23 seconds
+TestRunner_rfcomm-tester      PASS      25.55 seconds
+TestRunner_sco-tester         PASS      31.73 seconds
+TestRunner_ioctl-tester       PASS      26.83 seconds
+TestRunner_mesh-tester        FAIL      26.22 seconds
+TestRunner_smp-tester         PASS      24.29 seconds
+TestRunner_userchan-tester    PASS      20.68 seconds
+TestRunner_6lowpan-tester     PASS      24.25 seconds
+IncrementalBuild              PASS      25.80 seconds
+
+Details
+##############################
+Test: CheckKernelLLVM - SKIP
+Desc: Build kernel with LLVM + context analysis
+Output:
+Clang not found
+##############################
+Test: TestRunner_mgmt-tester - FAIL
+Desc: Run mgmt-tester with test-runner
+Output:
+Total: 501, Passed: 496 (99.0%), Failed: 1, Not Run: 4
+
+Failed Test Cases
+Read Exp Feature - Success                           Failed       0.236 seconds
+##############################
+Test: TestRunner_mesh-tester - FAIL
+Desc: Run mesh-tester with test-runner
+Output:
+Total: 10, Passed: 8 (80.0%), Failed: 2, Not Run: 0
+
+Failed Test Cases
+Mesh - Send cancel - 1                               Timed out    1.872 seconds
+Mesh - Send cancel - 2                               Timed out    1.988 seconds
+
+
+https://github.com/bluez/bluetooth-next/pull/660
 
 ---
-v3:
-- Reject intervals smaller than 100 us at admission time for software TAPRIO schedules instead of modifying advance_sched().
-- Drop catch-up cycle arithmetic, loop iteration limits, and physical expiration fallbacks from advance_sched().
-
-v2:
-- Removed the 1 microsecond admission policy for software taprio.
-- Reduced the loop iteration limit from 2048 to 32 to avoid softirq stalls.
-- Added handling for administrative schedules during fast-forwarding to avoid overshooting `admin->base_time`.
-- Split logical schedule deadline (`end_time`) and physical timer expiration (`expires`).
-- Updated the fallback mechanism to request a physical expiration 1 microsecond in the future relative to the current time rather than yielding the CPU.
-- Optimized gate close time calculation to only run once after the loop if not already calculated.
-https://lore.kernel.org/all/03dbde3b-8c45-46b6-8291-dd12bcc3120c@mail.kernel.org/T/
-
-v1:
-https://lore.kernel.org/all/bc6a8890-9230-489a-bbce-5c255c1ef01a@mail.kernel.org/T/
----
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 299234a5f..e5a560a3e 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -1034,11 +1034,22 @@ static const struct nla_policy taprio_policy[TCA_TAPRIO_ATTR_MAX + 1] = {
- 	[TCA_TAPRIO_ATTR_TC_ENTRY]		     = { .type = NLA_NESTED },
- };
- 
-+static int taprio_min_interval_duration(struct taprio_sched *q)
-+{
-+	int min_duration = length_to_duration(q, ETH_ZLEN);
-+
-+	if (TXTIME_ASSIST_IS_ENABLED(q->flags) ||
-+	    FULL_OFFLOAD_IS_ENABLED(q->flags))
-+		return min_duration;
-+
-+	return max_t(int, min_duration, 100 * NSEC_PER_USEC);
-+}
-+
- static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
- 			    struct sched_entry *entry,
- 			    struct netlink_ext_ack *extack)
- {
--	int min_duration = length_to_duration(q, ETH_ZLEN);
-+	int min_duration = taprio_min_interval_duration(q);
- 	u32 interval = 0;
- 
- 	if (tb[TCA_TAPRIO_SCHED_ENTRY_CMD])
-@@ -1166,7 +1177,7 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
- 		new->cycle_time = cycle;
- 	}
- 
--	if (new->cycle_time < new->num_entries * length_to_duration(q, ETH_ZLEN)) {
-+	if (new->cycle_time < (s64)new->num_entries * taprio_min_interval_duration(q)) {
- 		NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
- 		return -EINVAL;
- 	}
+Regards,
+Linux Bluetooth
 
 
-base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+--===============2566281102231485205==--
