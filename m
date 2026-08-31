@@ -1,82 +1,374 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 008E54A92D2
-	for <syzbot@lists.linux.dev>; Mon, 31 Aug 2026 17:21:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AEF93AE6F4
+	for <syzbot@lists.linux.dev>; Mon, 31 Aug 2026 22:11:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788196875; cv=none; b=cyheF9JZmfUSNfLyAE5v1Qg9G6xj3nA0A7Cbv+l4LEAcSc2qhtFkTUtBtKb3YDhTuQSiPu2+9tEpABe7lczJVTkWxKyj7Rgp2OQA41bNlZGESIf2wvCC86RLEKqk5f2DqHQbF5hluFoUlVbZv1IcFMXXDT++InuY2p73EbC8t3Q=
+	t=1788214273; cv=none; b=FWV6uVK81h0rNuf0DMIDc/hzmG4fFwRIHUTxFUgcOH6uYFZhdzyEeH1BISnPo9+DDfgahfhgv309s4mjuI2HKH5K1xn47/MQnm6YAlvfQ41J7NnFpgowvnS7r3NJdoqf/y6rZP5TsX0LT74UqwylW6GvcJUrmj+aSiAlvJxb0g8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788196875; c=relaxed/simple;
-	bh=A2Fb2BJLLa8WywQNEhyRAqurBRM0sIyaNi+/eNOKGRY=;
-	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
-	 In-Reply-To:To:Cc; b=it70C3Je86zN+xoYH1GTfOb5UUOnvdWYAjITduTkpKPNXHJ5HpQf6nRh0OGFjqfywvQJpe5FqtTim+6Gvyx6CQyTsPuCFo8nJveu1WK7WO+RLuUL1VmvjA/1+mAUwg+KcJ1MxnVK/FdUJrNWBErPnhdaKeqO2p/QC375Cr2x+gA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TJdwDrhG; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788214273; c=relaxed/simple;
+	bh=oJWkAmCqI+OTEcH4FK+rkgTWGaQhgbCDBEECA64TuCQ=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=r+sRUZ8Jksf+OYBDbQmpDmBWcu3D0TLYVCCoqgp+lePwaCuIgqUwDRNeFVAKb4isAANezpDnKzuX0DIGRd38wNl1GD2dVG/g8Hz862Muc7VWM8Qy8R86Sy9irDV5ugCbdOju6Czp+1H1/K+uE+p5aK+nCCWRJdOHPwqNm5TF9uE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DSkm94YJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TJdwDrhG"
-Received: by smtp.kernel.org (Postfix)
-	id B899C1F00A3D; Mon, 31 Aug 2026 17:21:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A074F1F000E9;
-	Mon, 31 Aug 2026 17:21:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DSkm94YJ"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id AC6E71F00A3D;
+	Mon, 31 Aug 2026 22:11:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788196873;
-	bh=dqs07UrmJC4WYoGrW53i6oe+pcaROH6TcoP+t5hJ+Rk=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc;
-	b=TJdwDrhGZD957gGbOXRtLLUKoT4d+TsWs49Zfp3ZQU1fpxRCncfycPS6E0N2mbKOd
-	 V3v2ZfjBphJhxPHsg9AL6qX4MhpmiOKi5LABCFkyRp2VZh6/n9knsMowkya0jApmaf
-	 TZEOn9flM5RQLF8poWI1YFi0HnE7YMk1jUvFCwNS86/bbErFLWnd2PWGiS0b9NmiY9
-	 RUbGk4jN8Qr8UB9sUHJ7vWe+1tyDyfkQA17LJoEMdn80cpAtnmtH/EXqh+YwF/nE9s
-	 OMt6yPhzIXjUtFZL2fok4nx7rgIhX2iaVVdRIpcLUIosGLWh7fc3kzPwjb4uCfTkCL
-	 ZmdcZj65dCtdg==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 01A693924458;
-	Mon, 31 Aug 2026 17:20:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	s=k20260515; t=1788214271;
+	bh=+sTqaWAOtbnfR0uzFYKdsIhuAAG0bKW/eO3B0Umu2CI=;
+	h=From:To:Cc:Subject:Date;
+	b=DSkm94YJye4bDjSuHNxzMGhfN5QOG/YAXXSSV4M3BWb45RENll6siTOp+qC2UQSSQ
+	 nngp/9JAf1wAKgW4kU+1gDTypxP4hI6ZoV8f5UusmxmR1mxFmfiO0QvKAuJsnPBVq/
+	 YhflsoVWYFOqEaOU1XmM66brj6dGtW/eYKgN7wvLtJSW6LjkYCo2UD1RErS66Ruaiw
+	 yfBkbm++ZYsRS5ipDDhJsw41Ms0IGCZzZeRFm6OcpSDMWqlt21mm/y53IutmntfoIc
+	 ASaxLbTbtcFdssCwDgQ0AO3JilStp6RQ9SGlIwMk0Wgbb3rojvCd0ahB6fxMcTblwR
+	 /CY+lLZME49xA==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] blktrace: handle tracepoint registration failures
+Message-ID: <b112c135-ed93-4de0-ba6b-dabe2296b519@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] Bluetooth: hci_core: Fix race condition during device
- registration
-From: patchwork-bot+bluetooth@kernel.org
-Message-Id: 
- <178819681664.671757.11271710951105188207.git-patchwork-notify@kernel.org>
-Date: Mon, 31 Aug 2026 17:20:16 +0000
-References: <7f282e86-b9fa-4a3d-8dea-208975771b35@mail.kernel.org>
-In-Reply-To: <7f282e86-b9fa-4a3d-8dea-208975771b35@mail.kernel.org>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-bugs@googlegroups.com, nogikh@google.com,
- linux-bluetooth@vger.kernel.org, luiz.dentz@gmail.com, marcel@holtmann.org,
- hildawu@realtek.com, linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
+Date: Mon, 31 Aug 2026 22:11:11 +0000 (UTC)
 
-Hello:
+In blk_register_tracepoints(), register_trace_*() functions are called with
+WARN_ON(ret). Tracepoint registration allocates memory for probe arrays and
+can legitimately fail with -ENOMEM under memory pressure. WARN_ON() must
+not be used for conditions that can legitimately happen.
 
-This patch was applied to bluetooth/bluetooth-next.git (master)
-by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
+WARNING: kernel/trace/blktrace.c:1332 at blk_register_tracepoints
+kernel/trace/blktrace.c:1332 [inline]
+WARNING: kernel/trace/blktrace.c:1332 at get_probe_ref+0x377/0x470
+kernel/trace/blktrace.c:492
+RIP: 0010:blk_register_tracepoints kernel/trace/blktrace.c:1332 [inline]
+RIP: 0010:get_probe_ref+0x377/0x470 kernel/trace/blktrace.c:492
+Call Trace:
+ <TASK>
+ blk_trace_setup_queue kernel/trace/blktrace.c:1920 [inline]
+ sysfs_blk_trace_attr_store+0xb1d/0x11e0 kernel/trace/blktrace.c:2116
+ kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
+ vfs_write+0x612/0xba0 fs/read_write.c:687
+ ksys_write+0x150/0x270 fs/read_write.c:739
+ do_syscall_64+0x155/0x510 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+ </TASK>
 
-On Fri, 28 Aug 2026 08:55:09 +0000 (UTC) you wrote:
-> From: Aleksandr Nogikh <nogikh@google.com>
-> 
-> In hci_register_dev(), the power_on work item is queued to
-> hdev->req_workqueue before initializing hdev->adv_monitors_idr and
-> registering the MSFT extension via msft_register(). For devices marked with
-> quirks such as HCI_QUIRK_RAW_DEVICE, the HCI_UNCONFIGURED flag is set on
-> the device. When the power_on work item runs concurrently on another CPU,
-> hci_power_on() detects that the device is unconfigured and immediately
-> invokes hci_dev_do_close(), which calls msft_do_close().
-> 
-> [...]
+Furthermore, blk_register_tracepoints() ignores registration errors and
+continues, leaving tracepoints in a partially registered state. When
+blktrace is later stopped, blk_unregister_tracepoints() unconditionally
+attempts to unregister all tracepoints, which fails with -ENOENT and
+triggers an additional warning in tracepoint_remove_func().
 
-Here is the summary with links:
-  - Bluetooth: hci_core: Fix race condition during device registration
-    https://git.kernel.org/bluetooth/bluetooth-next/c/78f08df9649c
+Fix this by removing WARN_ON() and properly handling registration failures
+in blk_register_tracepoints(). If any registration fails, unwinding is
+performed by unregistering previously registered tracepoints in reverse
+order, synchronizing tracepoint unregistration, and returning the error
+code. In addition, propagate the error through get_probe_ref(),
+blk_trace_setup_finalize(), and the setup entry points (blk_trace_setup(),
+blk_trace_setup2(), compat_blk_trace_setup(), and blk_trace_setup_queue()),
+properly cleaning up allocated resources on failure.
 
-You are awesome, thank you!
+Fixes: 5f3ea37c7716 ("blktrace: port to tracepoints")
+Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+c54ded83396afee31eb1@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=c54ded83396afee31eb1
+Link: https://syzkaller.appspot.com/ai_job?id=b81a3c49-0fe5-44e7-bf10-a4e460a67fe2
+To: "Jens Axboe" <axboe@kernel.dk>
+To: <linux-block@vger.kernel.org>
+To: <linux-trace-kernel@vger.kernel.org>
+To: "Masami Hiramatsu" <mhiramat@kernel.org>
+To: "Steven Rostedt" <rostedt@goodmis.org>
+To: "Arnaldo Carvalho de Melo" <acme@redhat.com>
+Cc: <linux-kernel@vger.kernel.org>
+Cc: "Mathieu Desnoyers" <mathieu.desnoyers@efficios.com>
+
+---
+diff --git a/kernel/trace/blktrace.c b/kernel/trace/blktrace.c
+index 8cd2520b4..c2324298c 100644
+--- a/kernel/trace/blktrace.c
++++ b/kernel/trace/blktrace.c
+@@ -60,7 +60,7 @@ static struct tracer_flags blk_tracer_flags = {
+ static DEFINE_MUTEX(blk_probe_mutex);
+ static int blk_probes_ref;
+ 
+-static void blk_register_tracepoints(void);
++static int blk_register_tracepoints(void);
+ static void blk_unregister_tracepoints(void);
+ 
+ static void record_blktrace_event(struct blk_io_trace *t, pid_t pid, int cpu,
+@@ -485,12 +485,18 @@ static void blk_trace_free(struct request_queue *q, struct blk_trace *bt)
+ 	kfree(bt);
+ }
+ 
+-static void get_probe_ref(void)
++static int get_probe_ref(void)
+ {
++	int ret = 0;
++
+ 	mutex_lock(&blk_probe_mutex);
+-	if (++blk_probes_ref == 1)
+-		blk_register_tracepoints();
++	if (++blk_probes_ref == 1) {
++		ret = blk_register_tracepoints();
++		if (ret)
++			blk_probes_ref--;
++	}
+ 	mutex_unlock(&blk_probe_mutex);
++	return ret;
+ }
+ 
+ static void put_probe_ref(void)
+@@ -727,12 +733,14 @@ static struct blk_trace *blk_trace_setup_prepare(struct request_queue *q,
+ 	return ERR_PTR(ret);
+ }
+ 
+-static void blk_trace_setup_finalize(struct request_queue *q,
+-				     char *name, int version,
+-				     struct blk_trace *bt,
+-				     struct blk_user_trace_setup2 *buts)
++static int blk_trace_setup_finalize(struct request_queue *q,
++				    char *name, int version,
++				    struct blk_trace *bt,
++				    struct blk_user_trace_setup2 *buts)
+ 
+ {
++	int ret;
++
+ 	strscpy_pad(buts->name, name, BLKTRACE_BDEV_SIZE2);
+ 
+ 	/*
+@@ -755,8 +763,12 @@ static void blk_trace_setup_finalize(struct request_queue *q,
+ 	bt->pid = buts->pid;
+ 	bt->trace_state = Blktrace_setup;
+ 
++	ret = get_probe_ref();
++	if (ret)
++		return ret;
++
+ 	rcu_assign_pointer(q->blk_trace, bt);
+-	get_probe_ref();
++	return 0;
+ }
+ 
+ int blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
+@@ -792,7 +804,12 @@ int blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
+ 		blk_debugfs_unlock(q, memflags);
+ 		return PTR_ERR(bt);
+ 	}
+-	blk_trace_setup_finalize(q, name, 1, bt, &buts2);
++	ret = blk_trace_setup_finalize(q, name, 1, bt, &buts2);
++	if (ret) {
++		blk_trace_free(q, bt);
++		blk_debugfs_unlock(q, memflags);
++		return ret;
++	}
+ 	strscpy(buts.name, buts2.name, BLKTRACE_BDEV_SIZE);
+ 	blk_debugfs_unlock(q, memflags);
+ 
+@@ -810,6 +827,7 @@ static int blk_trace_setup2(struct request_queue *q, char *name, dev_t dev,
+ 	struct blk_user_trace_setup2 buts2;
+ 	struct blk_trace *bt;
+ 	unsigned int memflags;
++	int ret;
+ 
+ 	if (copy_from_user(&buts2, arg, sizeof(buts2)))
+ 		return -EFAULT;
+@@ -827,7 +845,12 @@ static int blk_trace_setup2(struct request_queue *q, char *name, dev_t dev,
+ 		blk_debugfs_unlock(q, memflags);
+ 		return PTR_ERR(bt);
+ 	}
+-	blk_trace_setup_finalize(q, name, 2, bt, &buts2);
++	ret = blk_trace_setup_finalize(q, name, 2, bt, &buts2);
++	if (ret) {
++		blk_trace_free(q, bt);
++		blk_debugfs_unlock(q, memflags);
++		return ret;
++	}
+ 	blk_debugfs_unlock(q, memflags);
+ 
+ 	if (copy_to_user(arg, &buts2, sizeof(buts2))) {
+@@ -846,6 +869,7 @@ static int compat_blk_trace_setup(struct request_queue *q, char *name,
+ 	struct compat_blk_user_trace_setup cbuts;
+ 	struct blk_trace *bt;
+ 	unsigned int memflags;
++	int ret;
+ 
+ 	if (copy_from_user(&cbuts, arg, sizeof(cbuts)))
+ 		return -EFAULT;
+@@ -869,7 +893,12 @@ static int compat_blk_trace_setup(struct request_queue *q, char *name,
+ 		blk_debugfs_unlock(q, memflags);
+ 		return PTR_ERR(bt);
+ 	}
+-	blk_trace_setup_finalize(q, name, 1, bt, &buts2);
++	ret = blk_trace_setup_finalize(q, name, 1, bt, &buts2);
++	if (ret) {
++		blk_trace_free(q, bt);
++		blk_debugfs_unlock(q, memflags);
++		return ret;
++	}
+ 	blk_debugfs_unlock(q, memflags);
+ 
+ 	if (copy_to_user(arg, &buts2.name, ARRAY_SIZE(buts2.name))) {
+@@ -1324,49 +1353,108 @@ void blk_add_driver_data(struct request *rq, void *data, size_t len)
+ }
+ EXPORT_SYMBOL_GPL(blk_add_driver_data);
+ 
+-static void blk_register_tracepoints(void)
++static int blk_register_tracepoints(void)
+ {
+ 	int ret;
+ 
+ 	ret = register_trace_block_rq_insert(blk_add_trace_rq_insert, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out;
+ 	ret = register_trace_block_rq_issue(blk_add_trace_rq_issue, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_rq_insert;
+ 	ret = register_trace_block_rq_merge(blk_add_trace_rq_merge, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_rq_issue;
+ 	ret = register_trace_block_rq_requeue(blk_add_trace_rq_requeue, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_rq_merge;
+ 	ret = register_trace_block_rq_complete(blk_add_trace_rq_complete, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_rq_requeue;
+ 	ret = register_trace_block_bio_complete(blk_add_trace_bio_complete, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_rq_complete;
+ 	ret = register_trace_block_bio_backmerge(blk_add_trace_bio_backmerge, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_bio_complete;
+ 	ret = register_trace_block_bio_frontmerge(blk_add_trace_bio_frontmerge, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_bio_backmerge;
+ 	ret = register_trace_block_bio_queue(blk_add_trace_bio_queue, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_bio_frontmerge;
+ 	ret = register_trace_block_getrq(blk_add_trace_getrq, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_bio_queue;
+ 	ret = register_trace_blk_zone_append_update_request_bio(
+ 		blk_add_trace_zone_update_request, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_getrq;
+ 	ret = register_trace_disk_zone_wplug_add_bio(blk_add_trace_zone_plug,
+ 						     NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_zone_update_request;
+ 	ret = register_trace_blk_zone_wplug_bio(blk_add_trace_zone_unplug,
+ 						NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_zone_plug;
+ 	ret = register_trace_block_plug(blk_add_trace_plug, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_zone_unplug;
+ 	ret = register_trace_block_unplug(blk_add_trace_unplug, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_plug;
+ 	ret = register_trace_block_split(blk_add_trace_split, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_unplug;
+ 	ret = register_trace_block_bio_remap(blk_add_trace_bio_remap, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_split;
+ 	ret = register_trace_block_rq_remap(blk_add_trace_rq_remap, NULL);
+-	WARN_ON(ret);
++	if (ret)
++		goto out_bio_remap;
++
++	return 0;
++
++out_bio_remap:
++	unregister_trace_block_bio_remap(blk_add_trace_bio_remap, NULL);
++out_split:
++	unregister_trace_block_split(blk_add_trace_split, NULL);
++out_unplug:
++	unregister_trace_block_unplug(blk_add_trace_unplug, NULL);
++out_plug:
++	unregister_trace_block_plug(blk_add_trace_plug, NULL);
++out_zone_unplug:
++	unregister_trace_blk_zone_wplug_bio(blk_add_trace_zone_unplug, NULL);
++out_zone_plug:
++	unregister_trace_disk_zone_wplug_add_bio(blk_add_trace_zone_plug, NULL);
++out_zone_update_request:
++	unregister_trace_blk_zone_append_update_request_bio(
++		blk_add_trace_zone_update_request, NULL);
++out_getrq:
++	unregister_trace_block_getrq(blk_add_trace_getrq, NULL);
++out_bio_queue:
++	unregister_trace_block_bio_queue(blk_add_trace_bio_queue, NULL);
++out_bio_frontmerge:
++	unregister_trace_block_bio_frontmerge(blk_add_trace_bio_frontmerge, NULL);
++out_bio_backmerge:
++	unregister_trace_block_bio_backmerge(blk_add_trace_bio_backmerge, NULL);
++out_bio_complete:
++	unregister_trace_block_bio_complete(blk_add_trace_bio_complete, NULL);
++out_rq_complete:
++	unregister_trace_block_rq_complete(blk_add_trace_rq_complete, NULL);
++out_rq_requeue:
++	unregister_trace_block_rq_requeue(blk_add_trace_rq_requeue, NULL);
++out_rq_merge:
++	unregister_trace_block_rq_merge(blk_add_trace_rq_merge, NULL);
++out_rq_issue:
++	unregister_trace_block_rq_issue(blk_add_trace_rq_issue, NULL);
++out_rq_insert:
++	unregister_trace_block_rq_insert(blk_add_trace_rq_insert, NULL);
++	tracepoint_synchronize_unregister();
++out:
++	return ret;
+ }
+ 
+ static void blk_unregister_tracepoints(void)
+@@ -1916,8 +2004,11 @@ static int blk_trace_setup_queue(struct request_queue *q,
+ 
+ 	blk_trace_setup_lba(bt, bdev);
+ 
++	ret = get_probe_ref();
++	if (ret)
++		goto free_bt;
++
+ 	rcu_assign_pointer(q->blk_trace, bt);
+-	get_probe_ref();
+ 	return 0;
+ 
+ free_bt:
+
+
+base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
 
-
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
