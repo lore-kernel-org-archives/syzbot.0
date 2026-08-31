@@ -1,125 +1,115 @@
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AB6F41D65D
-	for <syzbot@lists.linux.dev>; Mon, 31 Aug 2026 13:22:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57F2E455162;
+	Mon, 31 Aug 2026 14:40:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788182574; cv=none; b=WVx69ny9+BKTsKdml2ebHiLpOcwl+OAWg6DLOQAQtDbidLvl3254KYw4MMAQRe4C+7ynPrNEMGoSmScCIQr8bHO+kNF1VpMaq9j75a8rSEESYTb+4lbWqT5sHZAuEzbs0d54IinnETdkYa6uEzUpW5Tc3wO4Bat7qpNFnNlM0fQ=
+	t=1788187244; cv=none; b=LZVILTvJFJDcYvGuaeiPggLA9J1Tjd57ouYBdLTvDQQLhw7YMYMpImqzUhr3fJwH7xvMNbuPxstcv6aOlRWAtGR2QrzThhK3aRKtnaROcOpRWupDau0tSTUeMyu975NSj+JjAZv/3JoYZnf/lRu3wC/BFaGLaF45SD98T31AFRM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788182574; c=relaxed/simple;
-	bh=vdBQr759cVWxWlZ8WIenKf/0JfdYQTs43utq9eqB9Ys=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=gZ08T0K/ii94Oh9bannRnBcswUr6Q2R971zCBxhaMcH3RVQnzP9G1flVI3yJAjIFYiKAB7sFcIQu3Gzhy0toIr6BalmADhenKbHjPMpODjdqz63243YpeqXaJVGopeutZFf6rw7H5yLmmnjRj2+sgL6jf1x791lWYfLVjZ0R8eI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4b37620eb73so7446601b6e.1
-        for <syzbot@lists.linux.dev>; Mon, 31 Aug 2026 06:22:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788182572; x=1788787372;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=pd1FCV9He4t/+7A7bTKjg5mxIMYhWAqVFX9XMRkgDK0=;
-        b=nkatouMZ9quDhQ1TpGnM02CACgo5geKYr3XOgvg8kJfS7eW2yIqFtGYYF7fYKlEL1e
-         BncSwu4Kjo/0WQxj8nuOlkJ9tcxbP5nXiVl8rLPOyqo/arzDWpmpLBpgg4fBgaQBHqjj
-         lEmLRb1vR8dgYr0CWbNVoERcvkO1iJi1VDQIDDWqxLBXw4p+XcmbYU5/aWiAHmfaU31f
-         HkwaKNxh4cH9fY9zDfthTRDo0APFluclacCn3xHsBCEzzYEcnlrZuh1vbF/ycAhdP0/V
-         qpIbvzzh4munUp2C0x5bpzpk86Na7IT98B9ETjrPB7h28Y3xurS0t4PL7Y6uy6iqyC02
-         Xdvw==
-X-Gm-Message-State: AFuF++lrq2zddNUkTk10ahpWTCLHqh6T6S7kR89W4le/MT4XU0cxd16g
-	tmPThJ0HHNYgk9/QuxOVWHQmdTPf55wQJeuL0D/ElyoPy688hhhUV8d6ICTuuaIb+yziyxBvKL4
-	cb7VBufKCnfRLsCcoDeXA+AhLA3Ntfnd8oeYwvX2SIK5XIhC9N2lZ9LG/hPw=
+	s=arc-20240116; t=1788187244; c=relaxed/simple;
+	bh=XnYbv/lvSUhA3IIkJg1wTTbKCIckEW6sc1YJvlWOlDc=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=jPtjbtRW6G7LoVUY/uZi+yQjnO+FSTX6/tPozdaTebYJ0glT+1egPqXFxbwi2ZpgXZjjKeEY9XqVAYxrKcECKIaonY5L5N2fJLnc34VqAcTpDEJ353VCXIMyIbL2LTGTUl+l0p0fWyWM0d51Y4wTKs8cjhBeaegTpvK6NW8517w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hfJBce/f; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hfJBce/f"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 769651F000E9;
+	Mon, 31 Aug 2026 14:40:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788187243;
+	bh=glU5brsq9stFhaeEUTYuaXur4gpoMrHcD9Sa+u8+sdg=;
+	h=From:To:Cc:Subject:Date;
+	b=hfJBce/fvMIR4mLQ4PXQ3TRh9fkfE4WBk2bYRVZ/iYYtplkxC3nwZMky4QTC5BLVI
+	 rPSzFKiGkQLoJ5WSVkzb9XC/I4n/OFEHTVNdKE8aaujzRwWgR154mDedpth9LTnhHv
+	 dizKdiUKcuNtNuqDIvaevQ7g94iF6667dQOy+kzY3qdiLiCSzWFfKJn8Mw3CVeiW6X
+	 lq7XAD0p/TzzLwGKcgVe4wmjr5Lcu5JPOpgmxAHTnjGKZhWTBKdjmsZQttCykmWI05
+	 apiXUI8LXhjQoiOGeVnZLxQKusOXa2e1MRslSbEXjll5ShMj3AGMecd9ZwCDWn5jce
+	 jU0CQydiPoXMQ==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-bugs@googlegroups.com, "Wang, Jie" <jie.wang@intel.com>, "Chas Williams" <3chas3@gmail.com>, <accessrunner-general@lists.sourceforge.net>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, <linux-atm-general@lists.sourceforge.net>, <linux-usb@vger.kernel.org>, <netdev@vger.kernel.org>
+Cc: linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
+Subject: [PATCH] usb: atm: cxacru: fix NULL pointer dereference on uninitialized atm_dev
+Message-ID: <f3ef0a67-79d7-47da-be6e-7e82d92e68fe@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1a11:b0:4b2:8d9e:de11 with SMTP id
- 5614622812f47-4b5b837c725mr883242b6e.19.1788182572000; Mon, 31 Aug 2026
- 06:22:52 -0700 (PDT)
-Date: Mon, 31 Aug 2026 06:22:51 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a95802b.a8e469d2.cbf3.561c.GAE@google.com>
-Subject: [moderation/CI] Re: net: support thread-specific pidfds for send and connect
-From: syzbot ci <syzbot+ci0b5ad5c5b8f14a59@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Mon, 31 Aug 2026 14:40:42 +0000 (UTC)
 
-syzbot ci has tested the following series
+From: "Wang, Jie" <jie.wang@intel.com>
 
-[v1] net: support thread-specific pidfds for send and connect
-https://lore.kernel.org/all/20260831-work-unix-passpidfd-v1-0-70cbfda0c7ba@=
-kernel.org
-* [PATCH 01/10] pid: add helpers to operate on a struct pid array
-* [PATCH 02/10] af_unix: record the pid of the sending thread
-* [PATCH 03/10] net: add SO_PASSPIDFD_THREAD to get a thread-specific SCM_P=
-IDFD
-* [PATCH 04/10] selftests/net: SO_PASSPIDFD_THREAD
-* [PATCH 05/10] net: turn sk_peer_pid into an array indexed by pid type
-* [PATCH 06/10] af_unix: record the pid of the connecting thread
-* [PATCH 07/10] net: add SO_PEERPIDFD_THREAD to get a thread-specific pidfd
-* [PATCH 08/10] selftests/net: SO_PEERPIDFD_THREAD
-* [PATCH 09/10] pidfs: record the coredump on the dumping thread's pid too
-* [PATCH 10/10] selftests/coredump: check the dumping thread's pidfd
+The cxacru driver uses the usbatm framework, which defers the ATM device
+registration to a kernel thread (usbatm_do_heavy_init()) but immediately
+returns success from the USB probe. Because the probe returns success, the
+driver core creates sysfs attribute files (like adsl_state and
+adsl_config), making them accessible to userspace before the ATM device is
+fully initialized.
 
-and found the following issue:
-kernel build error
+If a user writes to these sysfs files before the initialization is complete
+or if it fails, the driver attempts to send a command to the device. If the
+command fails, the error handling path calls atm_err(), which
+unconditionally dereferences instance->usbatm->atm_dev. Since atm_dev is
+NULL, this leads to a NULL pointer dereference:
 
-Full report is available here:
-https://ci.syzbot.org/series/524fcdbe-c7b4-4e1d-b6d3-52ea41fd5526
+Oops: general protection fault, probably for non-canonical address
+0xdffffc0000000002: 0000 [#1] SMP KASAN NOPTI
+KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
+RIP: 0010:adsl_state_store+0x5cc/0x770 drivers/usb/atm/cxacru.c:359
+Call Trace:
+ <TASK>
+ kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
+ new_sync_write fs/read_write.c:595 [inline]
+ vfs_write+0x612/0xba0 fs/read_write.c:687
+ ksys_write+0x150/0x270 fs/read_write.c:739
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+ </TASK>
 
-***
+To fix this, add checks for instance->usbatm->atm_dev == NULL in
+adsl_state_store() and adsl_config_store(). This prevents the functions
+from proceeding and dereferencing the uninitialized atm_dev, consistent
+with how mac_address_show() handles the same race condition.
 
-kernel build error
-
-tree:      drm-next
-URL:       https://gitlab.freedesktop.org/drm/kernel.git
-base:      cee9395acd8043be0644b25c34bfa86623f2b935
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
-1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/f7d70247-4c01-4de9-bc8c-1c0ada6de44=
-8/config
-
-./include/trace/events/landlock.h:946:13: error: incompatible pointer types=
- assigning to 'struct pid *' from 'struct pid *const volatile *' [-Wincompa=
-tible-pointer-types]
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: e605c30977bb ("USB: atm: cxacru: convert to use dev_groups")
+Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+9b195c4f412ea5c4e56a@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=9b195c4f412ea5c4e56a
+Link: https://syzkaller.appspot.com/ai_job?id=b6352d63-d03a-4e87-92a4-b334c3ebcf97
+Signed-off-by: "Wang, Jie" <jie.wang@intel.com>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/drivers/usb/atm/cxacru.c b/drivers/usb/atm/cxacru.c
+index 429ac20a8..dee15f7b7 100644
+--- a/drivers/usb/atm/cxacru.c
++++ b/drivers/usb/atm/cxacru.c
+@@ -347,7 +347,7 @@ static ssize_t adsl_state_store(struct device *dev,
+ 		return -EINVAL;
+ 	ret = 0;
+ 
+-	if (instance == NULL)
++	if (instance == NULL || instance->usbatm->atm_dev == NULL)
+ 		return -ENODEV;
+ 
+ 	if (mutex_lock_interruptible(&instance->adsl_state_serialize))
+@@ -444,7 +444,7 @@ static ssize_t adsl_config_store(struct device *dev,
+ 	if (!capable(CAP_NET_ADMIN))
+ 		return -EACCES;
+ 
+-	if (instance == NULL)
++	if (instance == NULL || instance->usbatm->atm_dev == NULL)
+ 		return -ENODEV;
+ 
+ 	pos = 0;
 
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
 
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[alexander@mihalicyn.com brauner@kernel.org davem@davemloft.net edumazet@go=
-ogle.com horms@kernel.org jack@suse.cz kuba@kernel.org kuniyu@google.com li=
-nux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel=
-.org oleg@redhat.com pabeni@redhat.com viro@zeniv.linux.org.uk willemb@goog=
-le.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+base-commit: 8d3ae59288f1e7d58d76558a6ee96d533bc5019f
+-- 
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+The person who has signed off on the patch is responsible for
+addressing comments.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
