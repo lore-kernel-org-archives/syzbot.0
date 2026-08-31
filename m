@@ -1,101 +1,140 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1DA64A3879
-	for <syzbot@lists.linux.dev>; Mon, 31 Aug 2026 14:40:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788187256; cv=pass; b=era5JWhih9sE1XJPzzdXUu3AS/xUbdi6S0w2CF5rRt8iade4fYUH5fYd49GY2cO5HnBJj9BIxGXjiGcE/Kdi9bZqEkZOgSAQLB3uqyIrvZQHyM/zC2kfCD0hU+OzFtkqleWm8324PPVdzG4AWFNwvlu5rJNeazENIxRqjdUXzFk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788187256; c=relaxed/simple;
-	bh=/JLBX9lRrd/OuJ0flmOxwkrF94Yv4RTTIj1dzzbqCa8=;
-	h=MIME-Version:Content-Type:Subject:From:To:Message-ID:Date; b=Q1ybuu9Ag55P1YQJu3FLFOmz/wAC+2ywva4+Likcleqb+1ll/E/VKWEzwNm/nr8RwujEfo1PzMGybOX/cCLuYvQwwq19xRnyH5XTS7dVQkylCwInlYiDfA7zfj8Il/lAcUAanuWE51YKNpj+zS9h+kxpP8mlAGzGl4u4MoWR26Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.b=hlMHqr6y; arc=pass smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDF0941D4E9;
+	Mon, 31 Aug 2026 14:41:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788187274; cv=none; b=jg6p5kVhiPSDdRJ4Skn/wn5Ar8J52jEArLhy3V6rUSxZAjdKvK3o8bBcClrivkpQkUqWUdTmQtEO1yhsCpwKU/QpHdQuhZs0qL3jT84kz2X1xyRjvD0GDalYHtZ+aG0KmfVhhaae9fBy2crJ7ql6JyNVCOyww7ssjhMjlLPNTaM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788187274; c=relaxed/simple;
+	bh=LP4VHK+2DGWjV/VDKVwdCXHTI8uMRJT1fG21fDTw00o=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=RZlzftDLf8vs6iKzOzdjiriEGVj0+hlsYkBHyQI/+/fwfCUmHtwJj2T6DFOn/goM/IYrnt8ksqku/EAQ5rlsJor9TtZbFKeHxE0LrsI93TOmYi6yybcGoborFhQIJRCCvQAkioIEDietY+LmVpZcmbzMrv0y4rxwO95fYxu88qk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DiSAVSFM; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.b="hlMHqr6y"
-Received: by smtp.kernel.org (Postfix)
-	id B60BA1F00A3D; Mon, 31 Aug 2026 14:40:55 +0000 (UTC)
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=216.105.38.7
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1788187255;
-	b=OZx0PTRGOqpcUFB2OffH+soT9oS83uQ+UVLNmomZWnxNWotW4zr0MGpdlIhal4rvIU/7
-	 OMCKPZxzPY/oXPh5LBdspiwxp2F3rkE7sYXpeo1xbc0Uj6m0g4VrAnSOpI0mpvJdmIiZE
-	 PRbbxfZ4al2mWmgIzyIbnjoG/8xWRsWjNLF8SaRrFMfamoATDlwc8HQ5NnPitbKe89muL
-	 9S6ov1wnuHKjvhpQcqfjjkMiwHdlf0/7KWrdHw1TLu/KMWprIXK2IQMxvd8N0QqFdP28n
-	 Mr9OtKMppgCSldY7GwZMWtX+KELjPdzQKIoh+IXcrMkuNFwvkqeuJVaMdyBRK21pRaQ==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1788187255;
-	h=DMARC-Filter:DKIM-Signature:Received:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:Subject:From:To:Message-ID:Date:Precedence:
-	 X-BeenThere:X-Mailman-Version:List-Id:X-List-Administrivia:Errors-To;
-	bh=ONvbFPGcbVfAXsdFZ2E2dLtT7tWoJPwgbGufljH1qcc=;
-	b=rtZMOsJ4Wc0yHC00DM9CzFP7lb60mZhX54JYTP2M4Anyu56ilT/vsSuyY3XVWXG3Sryq
-	 oMg9l0xkSRN7XAuCpD0u2jXRgu9qdOs+fAkGw5W5ax0pMePRy08C4Qg/E9Fg0xBq8g3J8
-	 kEr8cAhd6K9bEnnjiFittDFT+ovqrjRySFfaq9bbcImkh+41XHHW7wpo/B1XdydvcB1Gf
-	 JX0fXk0wdq3qMC4DRxzSAkZBp9efSNU0U8OLPIiH0F1jJlsU6aYjfOegWryP1LSjtvxFd
-	 HTqqHfKqsi2zqJ53eUTgOWXfNs8Rxi1wAUKJT+8kVVitwVCeNjzuMxrxKgYBGEjK2zA==
-ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=hlMHqr6y;
-	dmarc=pass header.from=lists.sourceforge.net;
-	spf=pass smtp.mailfrom=lists.sourceforge.net;
-	arc=none smtp.remote-ip=216.105.38.7
-Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 3D6841F000E9
-	for <syzbot@kernel.org>; Mon, 31 Aug 2026 14:40:55 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=hlMHqr6y
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 3D6841F000E9
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=none dis=none) header.from=lists.sourceforge.net
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=lists.sourceforge.net
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=List-Id:Date:Message-ID:To:From:Subject:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Sender:Reply-To:Cc:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=ONvbFPGcbVfAXsdFZ2E2dLtT7tWoJPwgbGufljH1qcc=; b=hlMHqr6yv/htRUTQkf+InNtHam
-	+B7Oj0QDg9137uBAPMzASd69e0aGxmL7DftiV1urUsKP1Zjscu/ELUd6pV0z+dfLDW7phzrkVgd5t
-	Jz+9toIuRd2n0oFexnEvgl9e7WUGthBMY3METKDb+jrsG+PcGVWFxjfCzmT67f13hzVw=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
-	(envelope-from <linux-atm-general-bounces@lists.sourceforge.net>)
-	id 1x13Bx-0001qn-AV
-	for syzbot@kernel.org;
-	Mon, 31 Aug 2026 14:40:54 +0000
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DiSAVSFM"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id D33251F000E9;
+	Mon, 31 Aug 2026 14:41:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788187272;
+	bh=lONNy1SwbONmIsuWBz38jeNQ7nHKBLG1amF732KmUM8=;
+	h=From:To:Cc:Subject:Date;
+	b=DiSAVSFMg01JBloKBPTXcT6v5ysJLfMQgKgKhCPyw9rAEE3/J9p3oszdWWN0f14a+
+	 kT5hFULJ/OSR9F0tWg7si0bXrBerQ44UihaP1Dp+g0XfdCq7h2U5PxevbwKZBHPJ7u
+	 kBfrwnEt8Ega+wa8THPJi62j2ANJ9PXoMGJUnV4ZaZglCXqt0z6PvkKCZwF5tCUxkZ
+	 LOptNhSL+xyNzEZW9nrrW9sIkU56oP4cTDw7BfrStpGC9ZpXgmZfzTx0lnixjtyQiB
+	 Z6hlIjrItvrt4TVEjfoA43DGU8x1CUAmP/4aP51GjZ+Ln99Zyca8Kbcku3L6bmZZPK
+	 YWmxWoQxB9CRQ==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-bugs@googlegroups.com, Marco Elver <elver@google.com>, "David S. Miller" <davem@davemloft.net>, "David Howells" <dhowells@redhat.com>, "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>, <linux-afs@lists.infradead.org>, "Marc Dionne" <marc.dionne@auristor.com>, <netdev@vger.kernel.org>, "Paolo Abeni" <pabeni@redhat.com>
+Cc: horms@kernel.org, linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
+Subject: [PATCH] rxrpc: Fix use-after-free in rxrpc_destroy_all_peers()
+Message-ID: <5a786da9-f9cb-4957-938d-51000793a4a8@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: Your message to Linux-atm-general awaits moderator approval
-From: linux-atm-general-owner@lists.sourceforge.net
-To: syzbot@kernel.org
-Message-ID: <mailman.36332.1788187251.1621.linux-atm-general@lists.sourceforge.net>
-Date: Mon, 31 Aug 2026 14:40:51 +0000
-Precedence: bulk
-X-BeenThere: linux-atm-general@lists.sourceforge.net
-X-Mailman-Version: 2.1.21
-X-List-Administrivia: yes
-Errors-To: linux-atm-general-bounces@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Mon, 31 Aug 2026 14:41:11 +0000 (UTC)
 
-Your mail to 'Linux-atm-general' with the subject
+From: Marco Elver <elver@google.com>
 
-    [PATCH] usb: atm: cxacru: fix NULL pointer dereference on
-uninitialized atm_dev
+During network namespace teardown, rxrpc_destroy_all_peers() iterates over
+the rxnet->peer_hash table to print leaked peers. However, it does so
+without holding rxnet->peer_hash_lock. This allows a race condition with
+asynchronous peer destruction, where RCU callbacks concurrently remove
+peers from the hash table and free them. When rxrpc_destroy_all_peers()
+accesses the freed peer, it results in a KASAN slab-use-after-free.
 
-Is being held until the list moderator can review it for approval.
+BUG: KASAN: slab-use-after-free in rxrpc_destroy_all_peers+0xcc/0x150
+net/rxrpc/peer_object.c:461
+Read of size 8 at addr ffff88811089e420 by task kworker/u8:1/13
+Call Trace:
+ <TASK>
+ rxrpc_destroy_all_peers+0xcc/0x150 net/rxrpc/peer_object.c:461
+ rxrpc_exit_net+0x7f/0xc0 net/rxrpc/net_ns.c:114
+ ops_exit_list net/core/net_namespace.c:199 [inline]
+ ops_undo_list+0x43d/0x8d0 net/core/net_namespace.c:252
+ cleanup_net+0x572/0x810 net/core/net_namespace.c:702
+ process_one_work kernel/workqueue.c:3322 [inline]
+ process_scheduled_works+0xa8e/0x14e0 kernel/workqueue.c:3405
+ worker_thread+0x92d/0xe10 kernel/workqueue.c:3486
+ kthread+0x388/0x470 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
 
-The reason it is being held:
+To fix the slab-use-after-free, acquire rxnet->peer_hash_lock with
+spin_lock_bh() while iterating over rxnet->peer_hash in
+rxrpc_destroy_all_peers().
 
-    Post by non-member to a members-only list
+Additionally, insert rcu_barrier() in rxrpc_exit_net() prior to destroying
+peers and local endpoints. Without rcu_barrier(), rxrpc_destroy_all_peers()
+races with pending RCU callbacks that drop peer and local references,
+logging spurious leak warnings. Furthermore, this missing synchronization
+causes a downstream panic hazard in rxrpc_destroy_all_locals() because
+in-flight peer releases leave rxnet->local_endpoints populated. Calling
+rcu_barrier() ensures all pending RCU callbacks that drop peer and local
+references complete prior to leak checks and local endpoint destruction.
 
-Either the message will get posted to the list, or you will receive
-notification of the moderator's decision.  If you would like to cancel
-this posting, please visit the following URL:
+Fixes: 17226f124038 ("rxrpc: Fix leak of rxrpc_peer objects")
+Assisted-by: Gemini:gemini-3.6-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+c876adfab6362679008c@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=c876adfab6362679008c
+Link: https://syzkaller.appspot.com/ai_job?id=7fecbeb2-cd9b-4ca2-8149-48663e20b153
+Signed-off-by: Marco Elver <elver@google.com>
 
-    https://lists.sourceforge.net/lists/confirm/linux-atm-general/415fc29b94582deb8f729500f071f294d69cf148
+---
+diff --git a/net/rxrpc/net_ns.c b/net/rxrpc/net_ns.c
+index 9a9834145..c00cddfd3 100644
+--- a/net/rxrpc/net_ns.c
++++ b/net/rxrpc/net_ns.c
+@@ -111,6 +111,11 @@ static __net_exit void rxrpc_exit_net(struct net *net)
+ 	timer_delete_sync(&rxnet->peer_keepalive_timer);
+ 	rxrpc_destroy_all_calls(rxnet);
+ 	rxrpc_destroy_all_connections(rxnet);
++	/*
++	 * Wait for pending RCU callbacks that drop peer and local
++	 * references to avoid spurious leak warnings and panics.
++	 */
++	rcu_barrier();
+ 	rxrpc_destroy_all_peers(rxnet);
+ 	rxrpc_destroy_all_locals(rxnet);
+ 	proc_remove(rxnet->proc_net);
+diff --git a/net/rxrpc/peer_object.c b/net/rxrpc/peer_object.c
+index fa9a406e1..32da76256 100644
+--- a/net/rxrpc/peer_object.c
++++ b/net/rxrpc/peer_object.c
+@@ -454,6 +454,12 @@ void rxrpc_destroy_all_peers(struct rxrpc_net *rxnet)
+ 	struct rxrpc_peer *peer;
+ 	int i;
+ 
++	/*
++	 * The lock is needed to prevent use-after-free if a peer is being
++	 * destroyed concurrently by an RCU callback.
++	 */
++	spin_lock_bh(&rxnet->peer_hash_lock);
++
+ 	for (i = 0; i < HASH_SIZE(rxnet->peer_hash); i++) {
+ 		if (hlist_empty(&rxnet->peer_hash[i]))
+ 			continue;
+@@ -465,6 +471,8 @@ void rxrpc_destroy_all_peers(struct rxrpc_net *rxnet)
+ 			       &peer->srx.transport);
+ 		}
+ 	}
++
++	spin_unlock_bh(&rxnet->peer_hash_lock);
+ }
+ 
+ /**
 
+
+base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
+-- 
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+The person who has signed off on the patch is responsible for
+addressing comments.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
