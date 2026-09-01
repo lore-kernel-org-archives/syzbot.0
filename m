@@ -1,177 +1,121 @@
-Received: from smtpo75.interia.pl (smtpo75.interia.pl [217.74.67.75])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 124BA3B42D7
-	for <syzbot@lists.linux.dev>; Tue,  1 Sep 2026 07:04:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.75
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 327A73BF694
+	for <syzbot@lists.linux.dev>; Tue,  1 Sep 2026 07:05:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788246267; cv=none; b=QR1EZ9Rnrbasmi07xbH1XuxtrgCJwxvvc0dBObckWPg7cDKdF/AUnH68Xzo5snmcy6KTXREdlKE/pfkwF27UUKXRuE0qif3836E9y4/azJZa2TFC4uFJjLnjP/T16g0FjgKXLnk3JY0zGKdAQc5kBKsy5BXvA3oppF1arzgzvBI=
+	t=1788246307; cv=none; b=FQ8nM5QL4TExPN0n6YZyg10OJkbIdYzvqfMagpSvQq3hby9LqfS7GTpJyY9fNr2dhjNeTpmG5ZXefXhye9WI3T2t6vXCgZDj8NcZD0thommfOF60pi6sEGYBk56PM28u2fcHPIi+pdue1lzoWFK5eA/V4ICS/Uu4BT8TGQ6gzZo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788246267; c=relaxed/simple;
-	bh=R4t+zKkP/m7v1726WxTpyt4g1BPYAEiA6cijixewKgU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SBnFxlLV+rL6E/Qpi5JCf81RPzGKsdfQ5Kx4ZHw0PfadJIYsB9QAwmj53/ho46pejto/X7QKkmK8ZlyzLksuYusLSiT77w34KkTz/MPNp5aD9eMCYU2crfSZ+G0RP3xvGoQ/mkXkDXXyUSk9McmkQKqpvzHkKmy344qAXC8vp84=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=TbXuVSJV; arc=none smtp.client-ip=217.74.67.75
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="TbXuVSJV"
-Received: from nr200 (unknown [80.68.231.31])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
-	Tue,  1 Sep 2026 09:04:11 +0200 (CEST)
-Date: Tue, 1 Sep 2026 09:04:09 +0200
-From: Slawomir Stepien <sst@poczta.fm>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC] can: j1939: fix memory leaks caused by pending
- address claim timer
-Message-ID: <apZ46WhlSzFCL9bz@nr200>
-References: <9ceb1720-e6ce-4063-9896-36cfaa47ac3b@mail.kernel.org>
+	s=arc-20240116; t=1788246307; c=relaxed/simple;
+	bh=R6455ZC6tYkOrHfHvS4vknpiRZhGU4LJv6LZXPiwamk=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=JSchUXty+r58L9QKCwGG9ZK7aI/qjmulYwo9B0uTMHJ89tPGhtyQ2cQtjkGG/Chd/gG04ojEht/GaMhf54Ya3uO47EcsroITMwFNxZ4tDQremBB9+MZLuxSWKB6SQ4sWJ1Ivkrl2+Y7xtSYxaII7Libf/4qp23OTcqfjKWlmk98=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-4b28d9206f8so2464759b6e.0
+        for <syzbot@lists.linux.dev>; Tue, 01 Sep 2026 00:05:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788246305; x=1788851105;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=2OLnM40zxnSUo2xLKTH0RqN2e1rfE1t9CeALc7Ilz4U=;
+        b=rQUX0kLoi+pWfkvgA6MoD7nyhI1lqaitoryQRmtYa3GrcU3JwA8zdWC6HHK8Wm5OIA
+         B3pxG8z8hYvpKmGKDiWaVgTosjzDSWDay1br986mvFxopoda21/BzJcXkaXA8swNcIoZ
+         2IKvsYpsEOI0CG+r1aIS3iSFbabRDPZvyqG8tknrhwHC7lbicWVQCugmwCHC9TDUR4qp
+         QhNj55kbkw22dpSGLnDg8Us3CceP5gwjz4ylMeclXw4Dv9LeGjvKcAqrocb6n0AlGPlM
+         FLTIZcosCQehgfkoUyq16vWFsKRZw+WEl+9HurbDlawPnVJ/6Vc7aMVsDTh5A3eNjrYn
+         ZHBg==
+X-Gm-Message-State: AFuF++nUoqi7Y6iKule9HdXZ7PMtojKQWwBFeSwciRyEarP64cTvyHjY
+	ctWqDigW8findKm6sWkeidD4H6ufoyuL/oLn8L4BRXa8rN17CclVGOwOnh92QjRNKRqhBiUbf/V
+	jxjAbbiNRVqzkFZliwo98RcicuqxNJWCcOUIhpuqY7eTmLcV5w1IELEUqJvA=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9ceb1720-e6ce-4063-9896-36cfaa47ac3b@mail.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
-	t=1788246253; bh=32mC+Ov9BU7racPSqh59F31trw3rLAAtIB5OeFzTZOk=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-	b=TbXuVSJV1Vp8DRSLczy12wZAgHalK6HdU6WUpQm9fIHGBGuxK8dAJdNZUjivdEPN9
-	 tkjaZF96NZxmdgxFh1/Wf71hJsLNPG2wINq3QI0MK445nxhKVlpqrlNMQkmNyBnH8P
-	 pXwOg3r/TVtzWze45VAaKBiLh4SWqLS7WplqS6Ow=
+X-Received: by 2002:a05:6808:228f:b0:4b2:b4d3:f919 with SMTP id
+ 5614622812f47-4b398294fd8mr34784171b6e.14.1788246304958; Tue, 01 Sep 2026
+ 00:05:04 -0700 (PDT)
+Date: Tue, 01 Sep 2026 00:05:04 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a967920.99925153.16bd3d.0008.GAE@google.com>
+Subject: [moderation/CI] Re: Change skb secmarks to x-array indexes
+From: syzbot ci <syzbot+cifd631cebd4b65f57@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+syzbot ci has tested the following series
+
+[v1] Change skb secmarks to x-array indexes
+https://lore.kernel.org/all/20260831223748.4304-1-casey@schaufler-ca.com
+* [PATCH 1/7] net, smack: Create a function to set secmarks
+* [PATCH 2/7] LSM: Implement x array functions for secmarks
+* [PATCH 3/7] LSM: Two hooks for manipulating struct lsm_prop
+* [PATCH 4/7] SELinux: hooks for secctx_to_lsmprop and update_lsmprop
+* [PATCH 5/7] Smack: hooks for secctx_to_lsmprop and update_lsmprop
+* [PATCH 6/7] Apparmor: hooks for secctx_to_lsmprop and update_lsmprop
+* [PATCH 7/7] net, lsm: Change skb secmarks to x-array indexes
+
+and found the following issue:
+kernel build error
+
+Full report is available here:
+https://ci.syzbot.org/series/b7e84029-29b2-4b15-ba26-02449fec62f9
+
+***
+
+kernel build error
+
+tree:      nf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilt=
+er/nf-next.git
+base:      8d3ae59288f1e7d58d76558a6ee96d533bc5019f
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/5b9eb8c0-a439-498f-9723-e4751cea7a2=
+f/config
+
+security/lsm_secxa.c:75:27: error: use of undeclared identifier 'CBS'
+security/lsm_secxa.c:89:28: error: use of undeclared identifier 'CBS'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
+
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[casey@schaufler-ca.com coreteam@netfilter.org fw@strlen.de jmorris@namei.o=
+rg john.johansen@canonical.com keescook@chromium.org linux-kernel@vger.kern=
+el.org linux-security-module@vger.kernel.org netfilter-devel@vger.kernel.or=
+g pablo@netfilter.org paul@paul-moore.com penguin-kernel@i-love.sakura.ne.j=
+p phil@nwl.cc selinux@vger.kernel.org serge@hallyn.com stephen.smalley.work=
+@gmail.com]
+
+If the report looks fine to you, reply with:
 #syz upstream
 
-On sie 27, 2026 00:17, 'syzbot' via syzkaller-upstream-moderation wrote:
-> A memory leak of struct j1939_ecu and struct j1939_priv objects occurs when
-> a CAN netdev is stopped while an Address Claim timer is pending:
-> 
-> BUG: memory leak
-> unreferenced object 0xffff888198faa000 (size 8192):
->   backtrace (crc 42a920ae):
->     j1939_priv_create net/can/j1939/main.c:131 [inline]
->     j1939_netdev_start+0x11b/0x5c0 net/can/j1939/main.c:268
->     j1939_sk_bind+0x42c/0x4a0 net/can/j1939/socket.c:506
->     __sys_bind+0x1fa/0x2c0 net/socket.c:1951
->     __x64_sys_bind+0x1c/0x30 net/socket.c:1954
->     do_syscall_64+0x14f/0x3c0 arch/x86/entry/syscall_64.c:94
-> 
-> BUG: memory leak
-> unreferenced object 0xffff8881978f36c0 (size 192):
->   backtrace (crc f1bed932):
->     j1939_ecu_create_locked+0x4e/0x1c0 net/can/j1939/bus.c:155
->     j1939_local_ecu_get+0xe6/0x1b0 net/can/j1939/bus.c:293
->     j1939_sk_bind+0x300/0x4a0 net/can/j1939/socket.c:529
->     __sys_bind+0x1fa/0x2c0 net/socket.c:1951
->     __x64_sys_bind+0x1c/0x30 net/socket.c:1954
->     do_syscall_64+0x14f/0x3c0 arch/x86/entry/syscall_64.c:94
-> 
-> When an Address Claim message is processed, j1939_ecu_timer_start() starts
-> a 250ms timer (ecu->ac_timer) and acquires a reference to the ECU. At this
-> stage, the ECU is linked to priv->ecus but not yet mapped into priv->ents.
-> If the socket is closed or the netdev is stopped before the timer expires,
-> j1939_netdev_stop() calls __j1939_rx_release(), which invokes
-> j1939_ecu_unmap_all(). However, j1939_ecu_unmap_all() only unmapped entries
-> in priv->ents, leaving the pending ECU timer running. When ecu->ac_timer
-> expires after netdev teardown, j1939_ecu_timer_handler() unconditionally
-> maps the ECU into priv->ents of the stopped priv instance, where it will
-> never be unmapped or freed. Since the leaked ECU retains a reference to
-> priv, both the ECU and priv structures are leaked.
-> 
-> Furthermore, calling hrtimer_cancel() while holding priv->lock can lead to
-> a deadlock if j1939_ecu_timer_handler() runs concurrently on another CPU
-> waiting to acquire priv->lock.
-> 
-> Fix the memory leak and deadlock by:
-> - Iterating over priv->ecus in j1939_ecu_unmap_all() to cancel any pending
-> ECU timers with j1939_ecu_timer_cancel().
-> - Checking kref_read(&priv->rx_kref) > 0 in j1939_ecu_timer_handler()
-> before calling j1939_ecu_map_locked(ecu) so that unmapped ECUs are not
-> mapped into a stopped netdev.
-> - Using hrtimer_try_to_cancel() in j1939_ecu_timer_cancel() to avoid
-> spinning with priv->lock held.
-> - Taking temporary references with j1939_priv_get() and j1939_priv_put()
-> around j1939_ecu_unmap_all() and j1939_ecu_timer_handler() to ensure priv
-> memory remains valid while held.
-> 
-> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-> Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
-> Reported-by: syzbot+489e907b2a026a6f5fa0@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=489e907b2a026a6f5fa0
-> Link: https://syzkaller.appspot.com/ai_job?id=c118979e-3d39-430b-b07e-608d26aeaa70
-> To: <linux-can@vger.kernel.org>
-> To: "Marc Kleine-Budde" <mkl@pengutronix.de>
-> To: "Oleksij Rempel" <o.rempel@pengutronix.de>
-> To: "Robin van der Gracht" <robin@protonic.nl>
-> To: "Oliver Hartkopp" <socketcan@hartkopp.net>
-> Cc: <kernel@pengutronix.de>
-> Cc: <linux-kernel@vger.kernel.org>
-> 
-> ---
-> diff --git a/net/can/j1939/bus.c b/net/can/j1939/bus.c
-> index cdc3c0a71..71e52f25a 100644
-> --- a/net/can/j1939/bus.c
-> +++ b/net/can/j1939/bus.c
-> @@ -98,13 +98,18 @@ void j1939_ecu_unmap(struct j1939_ecu *ecu)
->  
->  void j1939_ecu_unmap_all(struct j1939_priv *priv)
->  {
-> +	struct j1939_ecu *ecu, *tmp;
->  	int i;
->  
-> +	j1939_priv_get(priv);
->  	write_lock_bh(&priv->lock);
->  	for (i = 0; i < ARRAY_SIZE(priv->ents); i++)
->  		if (priv->ents[i].ecu)
->  			j1939_ecu_unmap_locked(priv->ents[i].ecu);
-> +	list_for_each_entry_safe(ecu, tmp, &priv->ecus, list)
-> +		j1939_ecu_timer_cancel(ecu);
->  	write_unlock_bh(&priv->lock);
-> +	j1939_priv_put(priv);
->  }
->  
->  void j1939_ecu_timer_start(struct j1939_ecu *ecu)
-> @@ -121,7 +126,7 @@ void j1939_ecu_timer_start(struct j1939_ecu *ecu)
->  
->  void j1939_ecu_timer_cancel(struct j1939_ecu *ecu)
->  {
-> -	if (hrtimer_cancel(&ecu->ac_timer))
-> +	if (hrtimer_try_to_cancel(&ecu->ac_timer) == 1)
->  		j1939_ecu_put(ecu);
->  }
->  
-> @@ -131,17 +136,18 @@ static enum hrtimer_restart j1939_ecu_timer_handler(struct hrtimer *hrtimer)
->  		container_of(hrtimer, struct j1939_ecu, ac_timer);
->  	struct j1939_priv *priv = ecu->priv;
->  
-> +	j1939_priv_get(priv);
->  	write_lock_bh(&priv->lock);
-> -	/* TODO: can we test if ecu->addr is unicast before starting
-> -	 * the timer?
-> -	 */
-> -	j1939_ecu_map_locked(ecu);
-> +	/* Only map the ECU if the netdev is still active */
-> +	if (kref_read(&priv->rx_kref) > 0)
-> +		j1939_ecu_map_locked(ecu);
->  
->  	/* The corresponding j1939_ecu_get() is in
->  	 * j1939_ecu_timer_start().
->  	 */
->  	j1939_ecu_put(ecu);
->  	write_unlock_bh(&priv->lock);
-> +	j1939_priv_put(priv);
->  
->  	return HRTIMER_NORESTART;
->  }
-> 
-> 
-> base-commit: 8d3ae59288f1e7d58d76558a6ee96d533bc5019f
+If the report is a false positive, reply with
+#syz invalid
 
--- 
-Slawomir Stepien
