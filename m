@@ -1,166 +1,159 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FEDB366054;
-	Tue,  1 Sep 2026 07:05:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 184734562B1
+	for <syzbot@lists.linux.dev>; Tue,  1 Sep 2026 07:19:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788246319; cv=none; b=VeCy0YPoZHq0EBnHFZJpC/bJaiI4sjpwCOAbqmoShLQesX/6HB7jVyL6tbJa5oHiCik4/w59QNggowr7jRNuQD6PGNz+bqLtm0pjc5oXJJ9WByBb/cTGYQ8vBGGnvkNED55rU2+EYwdWd5i2ejU+/bFC/8pcuBtZti+NjZ6cI3U=
+	t=1788247200; cv=none; b=lenuGEvhdXURBxHbLIrP+q/ubshN0IMuO/xBWZNbJ23iABUI1iowC/yX6M/fiQ+IRzlqiHNY+xcdtWQVTcWy+nb5mFXg62QKx46cxADU1Zm+8xL0gLFsTLzEdVZ/mkVlnlLELBK4/saXD9olJu+pnuc1Oj4rLAtOEjWwEptCRPk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788246319; c=relaxed/simple;
-	bh=BNnwTkLpNgwjjOgAxpbaqxeMhaf6RaFfWbZht8sdiP0=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=jVBoXaqlz/Q7/yxBIncd3NFahbFi+BsH4nOvgQlb5HAez4ILzetMkUw6GglpI9YdgGKpz6HcrRWqNxZlli+3SOeJLIBVYDpKyM4HeVQ2mX+LhdROIYcmtPJubIHToPTWCuIU41edEYoZWr2/lstQwSuS4Qabr5MuBah5SN7RuXg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PEGrsa5Q; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788247200; c=relaxed/simple;
+	bh=1k6SvENvEjYzl/25C74rme3ARcao/Z8y5ktfWVP+uRY=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=cSIErXX7eUCu4sBEo5YzRXjIdO7cEFoQcFGRDuTuJqlaG1HHrOEk62BgcsOY+nAbBmqwRwBCxSfgD8Bl8kkOXGO5hOZ0DbzM+w4Jd+ogLeJ19SCS7nYxAbjK/wbBKh899gwTfELPv6HRwGFbtQbVZqdKGiD1HWN/nD3BtXIdVBE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SmN96TQK; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PEGrsa5Q"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id CD42D1F000E9;
-	Tue,  1 Sep 2026 07:05:12 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SmN96TQK"
+Received: by smtp.kernel.org (Postfix)
+	id C74B31F00A3E; Tue,  1 Sep 2026 07:19:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF4A1F000E9;
+	Tue,  1 Sep 2026 07:19:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788246313;
-	bh=alcsJvwbavOJDF2dKctaAspblRRpq2eG2OjeWVMhJAQ=;
-	h=From:To:Cc:Subject:Date;
-	b=PEGrsa5QREACNUNn4UuNnKCLSQSx535WdrtJ6atc2zAZSFMaTY9pcBc9EIiGk38sO
-	 Tt0p1tTyrQm72+6e+qyvLP4ycqWVzhQcfttiXVVBPgIs+N6qihP2QKsKui5QMuDU+q
-	 8bXmvD+Mb4A/AKxlavEWAmIJZ6vG/Wey6vEq+yFXis9YUYk4DbVkkmhRyKBrvhETNg
-	 pUt9nhKHH4fKGdhszr6DNypeHCVqnjszdtL279sPVeFj+ceMxNT2O2ZtiPnclGH0eP
-	 BuobWyJ7ug/00CeAQdGUF5G2E93/jpqKx3EWIPPc89xxu0wQ6L5wHn2dYHTox5jAHN
-	 Poln2vvZBpPPA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Slawomir Stepien <sst@poczta.fm>, <linux-can@vger.kernel.org>, "Marc Kleine-Budde" <mkl@pengutronix.de>, "Oleksij Rempel" <o.rempel@pengutronix.de>, "Robin van der Gracht" <robin@protonic.nl>, "Oliver Hartkopp" <socketcan@hartkopp.net>
-Cc: kernel@pengutronix.de, linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Subject: [PATCH] can: j1939: fix memory leaks caused by pending address claim timer
-Message-ID: <1ca51efc-8929-4df1-ab11-72407b6d496f@mail.kernel.org>
+	s=k20260515; t=1788247198;
+	bh=En8NI5CYr3Gdzq3Szy33g5qcxCTQrfJufFyXDLF1Oi4=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=SmN96TQKE4Q13Ke1IutQwZchzCzXbTcnkuGb1xVqouBenbg+N02pDNHbxu36UgfC9
+	 chLnQYAt0JsE/HlB5YB5zON3OyoSrJgiSY6UWmuOGPqVLlbJRDm+0JKR7WfGBW1g+p
+	 hLNcmG/PeEkWqiFmFFyYoNrErgD2qzVB58Nc80XdCBlDiZmtlJXOXEdRAJhSLbjsz0
+	 S3ZnJgPLLj3KV2fdOyI7rSo8akUeZbU4WbHppWPbFK7DLxlNqsQIuTdYjge7KwWzH1
+	 aIQJSUJPK23Mks+arHfilIVEoSxdT0YGtgjjQVJ3DOxiUp2HMuG6XdkxtoXdadzO2D
+	 4unWCZYOdb1ug==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH] can: j1939: fix memory leaks caused by pending address
+ claim timer
+Reply-To: sashiko-reviews@lists.linux.dev
+To: syzbot <syzbot@kernel.org>
+Cc: "Vincent Mailhol" <mailhol@kernel.org>, "Oliver Hartkopp" <socketcan@hartkopp.net>, "Marc
+ Kleine-Budde" <mkl@pengutronix.de>, "Oleksij Rempel" <o.rempel@pengutronix.de>, linux-can@vger.kernel.org
+In-Reply-To: <1ca51efc-8929-4df1-ab11-72407b6d496f@mail.kernel.org>
+References: <1ca51efc-8929-4df1-ab11-72407b6d496f@mail.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 01 Sep 2026 07:19:57 +0000
+Message-Id: <20260901071958.5EF4A1F000E9@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Tue,  1 Sep 2026 07:05:12 +0000 (UTC)
 
-From: Slawomir Stepien <sst@poczta.fm>
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+s) to consider:
 
-A memory leak of struct j1939_ecu and struct j1939_priv objects occurs when
-a CAN netdev is stopped while an Address Claim timer is pending:
+New issues:
+- [High] Ignoring hrtimer_try_to_cancel() failure introduces race condition=
+s leading to inappropriate ECU mapping (NETDEV_DOWN, IDLE claims, and delay=
+ bypass).
 
-BUG: memory leak
-unreferenced object 0xffff888198faa000 (size 8192):
-  backtrace (crc 42a920ae):
-    j1939_priv_create net/can/j1939/main.c:131 [inline]
-    j1939_netdev_start+0x11b/0x5c0 net/can/j1939/main.c:268
-    j1939_sk_bind+0x42c/0x4a0 net/can/j1939/socket.c:506
-    __sys_bind+0x1fa/0x2c0 net/socket.c:1951
-    __x64_sys_bind+0x1c/0x30 net/socket.c:1954
-    do_syscall_64+0x14f/0x3c0 arch/x86/entry/syscall_64.c:94
+Pre-existing issues:
+- [Critical] Lockless list_del in __j1939_ecu_release leads to linked list =
+corruption and use-after-free.
+--
 
-BUG: memory leak
-unreferenced object 0xffff8881978f36c0 (size 192):
-  backtrace (crc f1bed932):
-    j1939_ecu_create_locked+0x4e/0x1c0 net/can/j1939/bus.c:155
-    j1939_local_ecu_get+0xe6/0x1b0 net/can/j1939/bus.c:293
-    j1939_sk_bind+0x300/0x4a0 net/can/j1939/socket.c:529
-    __sys_bind+0x1fa/0x2c0 net/socket.c:1951
-    __x64_sys_bind+0x1c/0x30 net/socket.c:1954
-    do_syscall_64+0x14f/0x3c0 arch/x86/entry/syscall_64.c:94
+commit 2b6762bc65c5c7e152f9be9bd0a6d303989290db
+Author: Slawomir Stepien <sst@poczta.fm>
 
-When an Address Claim message is processed, j1939_ecu_timer_start() starts
-a 250ms timer (ecu->ac_timer) and acquires a reference to the ECU. At this
-stage, the ECU is linked to priv->ecus but not yet mapped into priv->ents.
-If the socket is closed or the netdev is stopped before the timer expires,
-j1939_netdev_stop() calls __j1939_rx_release(), which invokes
-j1939_ecu_unmap_all(). However, j1939_ecu_unmap_all() only unmapped entries
-in priv->ents, leaving the pending ECU timer running. When ecu->ac_timer
-expires after netdev teardown, j1939_ecu_timer_handler() unconditionally
-maps the ECU into priv->ents of the stopped priv instance, where it will
-never be unmapped or freed. Since the leaked ECU retains a reference to
-priv, both the ECU and priv structures are leaked.
+can: j1939: fix memory leaks caused by pending address claim timer
 
-Furthermore, calling hrtimer_cancel() while holding priv->lock can lead to
-a deadlock if j1939_ecu_timer_handler() runs concurrently on another CPU
-waiting to acquire priv->lock.
+Fixes a memory leak and deadlock involving pending Address Claim timers dur=
+ing
+netdev teardown. It cancels timers during j1939_ecu_unmap_all() and adds
+kref_read(&priv->rx_kref) checks to prevent remapping ECUs on stopped
+interfaces.
 
-Fix the memory leak and deadlock by:
-- Iterating over priv->ecus in j1939_ecu_unmap_all() to cancel any pending
-ECU timers with j1939_ecu_timer_cancel().
-- Checking kref_read(&priv->rx_kref) > 0 in j1939_ecu_timer_handler()
-before calling j1939_ecu_map_locked(ecu) so that unmapped ECUs are not
-mapped into a stopped netdev.
-- Using hrtimer_try_to_cancel() in j1939_ecu_timer_cancel() to avoid
-spinning with priv->lock held.
-- Taking temporary references with j1939_priv_get() and j1939_priv_put()
-around j1939_ecu_unmap_all() and j1939_ecu_timer_handler() to ensure priv
-memory remains valid while held.
+Link: https://syzkaller.appspot.com/ai_job?id=3Dc118979e-3d39-430b-b07e-608=
+d26aeaa70
 
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+489e907b2a026a6f5fa0@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=489e907b2a026a6f5fa0
-Link: https://syzkaller.appspot.com/ai_job?id=c118979e-3d39-430b-b07e-608d26aeaa70
-Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+> diff --git a/net/can/j1939/bus.c b/net/can/j1939/bus.c
+> index cdc3c0a719379..71e52f25aa604 100644
+> --- a/net/can/j1939/bus.c
+> +++ b/net/can/j1939/bus.c
+[ ... ]
+> @@ -121,7 +126,7 @@ void j1939_ecu_timer_start(struct j1939_ecu *ecu)
+> =20
+>  void j1939_ecu_timer_cancel(struct j1939_ecu *ecu)
+>  {
+> -	if (hrtimer_cancel(&ecu->ac_timer))
+> +	if (hrtimer_try_to_cancel(&ecu->ac_timer) =3D=3D 1)
+>  		j1939_ecu_put(ecu);
+>  }
 
----
-diff --git a/net/can/j1939/bus.c b/net/can/j1939/bus.c
-index cdc3c0a71..71e52f25a 100644
---- a/net/can/j1939/bus.c
-+++ b/net/can/j1939/bus.c
-@@ -98,13 +98,18 @@ void j1939_ecu_unmap(struct j1939_ecu *ecu)
- 
- void j1939_ecu_unmap_all(struct j1939_priv *priv)
- {
-+	struct j1939_ecu *ecu, *tmp;
- 	int i;
- 
-+	j1939_priv_get(priv);
- 	write_lock_bh(&priv->lock);
- 	for (i = 0; i < ARRAY_SIZE(priv->ents); i++)
- 		if (priv->ents[i].ecu)
- 			j1939_ecu_unmap_locked(priv->ents[i].ecu);
-+	list_for_each_entry_safe(ecu, tmp, &priv->ecus, list)
-+		j1939_ecu_timer_cancel(ecu);
- 	write_unlock_bh(&priv->lock);
-+	j1939_priv_put(priv);
- }
- 
- void j1939_ecu_timer_start(struct j1939_ecu *ecu)
-@@ -121,7 +126,7 @@ void j1939_ecu_timer_start(struct j1939_ecu *ecu)
- 
- void j1939_ecu_timer_cancel(struct j1939_ecu *ecu)
- {
--	if (hrtimer_cancel(&ecu->ac_timer))
-+	if (hrtimer_try_to_cancel(&ecu->ac_timer) == 1)
- 		j1939_ecu_put(ecu);
- }
- 
-@@ -131,17 +136,18 @@ static enum hrtimer_restart j1939_ecu_timer_handler(struct hrtimer *hrtimer)
- 		container_of(hrtimer, struct j1939_ecu, ac_timer);
- 	struct j1939_priv *priv = ecu->priv;
- 
-+	j1939_priv_get(priv);
- 	write_lock_bh(&priv->lock);
--	/* TODO: can we test if ecu->addr is unicast before starting
--	 * the timer?
--	 */
--	j1939_ecu_map_locked(ecu);
-+	/* Only map the ECU if the netdev is still active */
-+	if (kref_read(&priv->rx_kref) > 0)
-+		j1939_ecu_map_locked(ecu);
- 
- 	/* The corresponding j1939_ecu_get() is in
- 	 * j1939_ecu_timer_start().
- 	 */
- 	j1939_ecu_put(ecu);
- 	write_unlock_bh(&priv->lock);
-+	j1939_priv_put(priv);
- 
- 	return HRTIMER_NORESTART;
- }
+[Severity: High]
+Does ignoring the -1 return value from hrtimer_try_to_cancel() introduce ra=
+ce
+conditions that could lead to inappropriate ECU mapping?
 
+The patch replaces a deadlocking hrtimer_cancel() with hrtimer_try_to_cance=
+l()
+but ignores failures. If the timer callback is running concurrently on anot=
+her
+CPU, it will block on write_lock_bh(&priv->lock).=20
 
-base-commit: 8d3ae59288f1e7d58d76558a6ee96d533bc5019f
--- 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+If the current CPU executes j1939_ecu_unmap_all() or processes an IDLE claim
+in j1939_ac_process(), it holds priv->lock, calls hrtimer_try_to_cancel()
+(which fails and returns -1), modifies the state, and unlocks.
+
+The other CPU running the timer callback then acquires the lock and could
+execute j1939_ecu_map_locked() based on old state. Could this cause the ECU=
+ to
+be mapped back onto a DOWN interface, ignore IDLE claims by re-mapping the =
+old
+address, or bypass the J1939 250ms delay by immediately mapping the new
+address?
+
+[ ... ]
+> @@ -131,17 +136,18 @@ static enum hrtimer_restart j1939_ecu_timer_handler=
+(struct hrtimer *hrtimer)
+>  		container_of(hrtimer, struct j1939_ecu, ac_timer);
+>  	struct j1939_priv *priv =3D ecu->priv;
+> =20
+> +	j1939_priv_get(priv);
+>  	write_lock_bh(&priv->lock);
+> -	/* TODO: can we test if ecu->addr is unicast before starting
+> -	 * the timer?
+> -	 */
+> -	j1939_ecu_map_locked(ecu);
+> +	/* Only map the ECU if the netdev is still active */
+> +	if (kref_read(&priv->rx_kref) > 0)
+> +		j1939_ecu_map_locked(ecu);
+> =20
+>  	/* The corresponding j1939_ecu_get() is in
+>  	 * j1939_ecu_timer_start().
+>  	 */
+>  	j1939_ecu_put(ecu);
+
+[Severity: Critical]
+This is a pre-existing issue, but could dropping the last ECU reference
+outside of priv->lock lead to list corruption?
+
+In __j1939_ecu_release(), there is a lockless call to list_del(&ecu->list).
+If CPU 1 receives an address claim, j1939_ac_recv() takes a temporary
+reference via j1939_ecu_get_by_addr(). If CPU 2 concurrently executes
+j1939_ecu_unmap_all(), unmapping the ECU and dropping its mapping reference,
+then when CPU 1 finishes processing it calls j1939_ecu_put(), dropping the
+final reference.
+
+Because paths like j1939_ac_recv() and j1939_ac_fixup() call
+j1939_ecu_put(ecu) without holding priv->lock, does this cause
+__j1939_ecu_release() to execute list_del(&ecu->list) locklessly, resulting
+in list corruption and use-after-free crashes on subsequent traversals?
+
+>  	write_unlock_bh(&priv->lock);
+> +	j1939_priv_put(priv);
+> =20
+>  	return HRTIMER_NORESTART;
+>  }
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/1ca51efc-8929-4df1-=
+ab11-72407b6d496f@mail.kernel.org?part=3D1
