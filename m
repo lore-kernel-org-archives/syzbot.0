@@ -1,244 +1,177 @@
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpo75.interia.pl (smtpo75.interia.pl [217.74.67.75])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4536036494F
-	for <syzbot@lists.linux.dev>; Tue,  1 Sep 2026 06:59:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 124BA3B42D7
+	for <syzbot@lists.linux.dev>; Tue,  1 Sep 2026 07:04:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.75
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788245977; cv=none; b=suOVgzJfQ29vOPGhPHPRGmajVhIqcSZkcQJDXJBIW0sQVczipKCICKvSwBiORonO+GE2E8g6w813ua2p3xDigm4B6f1vf1VQrIj4FgnkCicxk0p52k+Xq2Dx3uLqBJ0k70BdV3vj6a1Xqpx/36lTo99Tecw1e09i2XkEHdapSiQ=
+	t=1788246267; cv=none; b=QR1EZ9Rnrbasmi07xbH1XuxtrgCJwxvvc0dBObckWPg7cDKdF/AUnH68Xzo5snmcy6KTXREdlKE/pfkwF27UUKXRuE0qif3836E9y4/azJZa2TFC4uFJjLnjP/T16g0FjgKXLnk3JY0zGKdAQc5kBKsy5BXvA3oppF1arzgzvBI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788245977; c=relaxed/simple;
-	bh=bybDq+Dgk+bd3pbHkkH+vj+kmBGHB1tiLHdPmcf3tRo=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=UcfGHcMCXNAqdLpT4FSkCg0pCU5nON3uTcs2BlLBvbu8+gEiH3DqV4porUGHyfqDmRSwdQUVqQyMd0WHKC0SbesJ21mL9dNFWCZXq9w2VNQSIy6bFgJ94T5jiG+XIeM58T/3pIVQevKQYOChAHLyFKNXwa8HBaMCF3kH8CE08t0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7f4e8568ccdso881016a34.3
-        for <syzbot@lists.linux.dev>; Mon, 31 Aug 2026 23:59:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788245974; x=1788850774;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=63L/bxFUv722Vl7mOzFbgh0sRzdogZ3j1mEhDHkXGRo=;
-        b=ICsEfYdfQPC5jqqT/SE0dw3uMvwKW6V7U1f0evJyExrGicSsOcUsiplcoa2HP+Ojoi
-         WX9rlwHa3I9hUv2zjJcECQ9IOm1y1OYIN+crgadX1ZQZL8VRVD6zA4VmSWFSHj4ZnbwR
-         Df/+UPycXodoLyuKelY0xDRs9O4n4yP8SqUuNsp3QC6sWQhw4yHa7z/2HWMzRSwkLLZs
-         XUhsvyB+dZVldBwtQRzDhAtlFUoHWi34nL1ln/NQRpFESHw/D8r63mpTjLeXia342yy7
-         k9uwxZ434gz/lIRc5JsWLohyj0ifRrkLIYspBfGxr0tzv0cGaU6I1+lMuXdm9wIJGAhg
-         OYJA==
-X-Gm-Message-State: AFuF++nTPElILDNKZ9NRJJ6AQzTi54xlyKHx5BS44ML2BjJhN8Z/BGl/
-	F7+XOL03w/MJJlFw7xdutqxxnrqa6TitVuHgeCxjlNSCyLjMf44y/eypfmAlLQSWTZqJKiWAF4h
-	6/uogh+E2XacrH/5wJ+tOHv2BaUibtRxAx2s2DZh55gJYbbnTgR46k0wSOmA=
+	s=arc-20240116; t=1788246267; c=relaxed/simple;
+	bh=R4t+zKkP/m7v1726WxTpyt4g1BPYAEiA6cijixewKgU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SBnFxlLV+rL6E/Qpi5JCf81RPzGKsdfQ5Kx4ZHw0PfadJIYsB9QAwmj53/ho46pejto/X7QKkmK8ZlyzLksuYusLSiT77w34KkTz/MPNp5aD9eMCYU2crfSZ+G0RP3xvGoQ/mkXkDXXyUSk9McmkQKqpvzHkKmy344qAXC8vp84=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=TbXuVSJV; arc=none smtp.client-ip=217.74.67.75
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="TbXuVSJV"
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Tue,  1 Sep 2026 09:04:11 +0200 (CEST)
+Date: Tue, 1 Sep 2026 09:04:09 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC] can: j1939: fix memory leaks caused by pending
+ address claim timer
+Message-ID: <apZ46WhlSzFCL9bz@nr200>
+References: <9ceb1720-e6ce-4063-9896-36cfaa47ac3b@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:824:b0:6b3:6d00:263b with SMTP id
- 006d021491bc7-6b36d00398emr7086198eaf.19.1788245974251; Mon, 31 Aug 2026
- 23:59:34 -0700 (PDT)
-Date: Mon, 31 Aug 2026 23:59:34 -0700
-In-Reply-To: <20260831152044.166353-1-ivanrwcm25@gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a9677d6.04428c52.29b18.0002.GAE@google.com>
-Subject: [syzbot ci] Re: block: brd/loop error-path cleanup
-From: syzbot ci <syzbot+ci7c1a0fc0cefeacdb@syzkaller.appspotmail.com>
-To: axboe@kernel.dk, ivanrwcm25@gmail.com, linux-block@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9ceb1720-e6ce-4063-9896-36cfaa47ac3b@mail.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1788246253; bh=32mC+Ov9BU7racPSqh59F31trw3rLAAtIB5OeFzTZOk=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=TbXuVSJV1Vp8DRSLczy12wZAgHalK6HdU6WUpQm9fIHGBGuxK8dAJdNZUjivdEPN9
+	 tkjaZF96NZxmdgxFh1/Wf71hJsLNPG2wINq3QI0MK445nxhKVlpqrlNMQkmNyBnH8P
+	 pXwOg3r/TVtzWze45VAaKBiLh4SWqLS7WplqS6Ow=
 
-syzbot ci has tested the following series
+#syz upstream
 
-[v1] block: brd/loop error-path cleanup
-https://lore.kernel.org/all/20260831152044.166353-1-ivanrwcm25@gmail.com
-* [PATCH v1 1/2] block: brd: destroy xa on allocation failure
-* [PATCH v1 2/2] block: loop: restore state on loop_configure() error
+On sie 27, 2026 00:17, 'syzbot' via syzkaller-upstream-moderation wrote:
+> A memory leak of struct j1939_ecu and struct j1939_priv objects occurs when
+> a CAN netdev is stopped while an Address Claim timer is pending:
+> 
+> BUG: memory leak
+> unreferenced object 0xffff888198faa000 (size 8192):
+>   backtrace (crc 42a920ae):
+>     j1939_priv_create net/can/j1939/main.c:131 [inline]
+>     j1939_netdev_start+0x11b/0x5c0 net/can/j1939/main.c:268
+>     j1939_sk_bind+0x42c/0x4a0 net/can/j1939/socket.c:506
+>     __sys_bind+0x1fa/0x2c0 net/socket.c:1951
+>     __x64_sys_bind+0x1c/0x30 net/socket.c:1954
+>     do_syscall_64+0x14f/0x3c0 arch/x86/entry/syscall_64.c:94
+> 
+> BUG: memory leak
+> unreferenced object 0xffff8881978f36c0 (size 192):
+>   backtrace (crc f1bed932):
+>     j1939_ecu_create_locked+0x4e/0x1c0 net/can/j1939/bus.c:155
+>     j1939_local_ecu_get+0xe6/0x1b0 net/can/j1939/bus.c:293
+>     j1939_sk_bind+0x300/0x4a0 net/can/j1939/socket.c:529
+>     __sys_bind+0x1fa/0x2c0 net/socket.c:1951
+>     __x64_sys_bind+0x1c/0x30 net/socket.c:1954
+>     do_syscall_64+0x14f/0x3c0 arch/x86/entry/syscall_64.c:94
+> 
+> When an Address Claim message is processed, j1939_ecu_timer_start() starts
+> a 250ms timer (ecu->ac_timer) and acquires a reference to the ECU. At this
+> stage, the ECU is linked to priv->ecus but not yet mapped into priv->ents.
+> If the socket is closed or the netdev is stopped before the timer expires,
+> j1939_netdev_stop() calls __j1939_rx_release(), which invokes
+> j1939_ecu_unmap_all(). However, j1939_ecu_unmap_all() only unmapped entries
+> in priv->ents, leaving the pending ECU timer running. When ecu->ac_timer
+> expires after netdev teardown, j1939_ecu_timer_handler() unconditionally
+> maps the ECU into priv->ents of the stopped priv instance, where it will
+> never be unmapped or freed. Since the leaked ECU retains a reference to
+> priv, both the ECU and priv structures are leaked.
+> 
+> Furthermore, calling hrtimer_cancel() while holding priv->lock can lead to
+> a deadlock if j1939_ecu_timer_handler() runs concurrently on another CPU
+> waiting to acquire priv->lock.
+> 
+> Fix the memory leak and deadlock by:
+> - Iterating over priv->ecus in j1939_ecu_unmap_all() to cancel any pending
+> ECU timers with j1939_ecu_timer_cancel().
+> - Checking kref_read(&priv->rx_kref) > 0 in j1939_ecu_timer_handler()
+> before calling j1939_ecu_map_locked(ecu) so that unmapped ECUs are not
+> mapped into a stopped netdev.
+> - Using hrtimer_try_to_cancel() in j1939_ecu_timer_cancel() to avoid
+> spinning with priv->lock held.
+> - Taking temporary references with j1939_priv_get() and j1939_priv_put()
+> around j1939_ecu_unmap_all() and j1939_ecu_timer_handler() to ensure priv
+> memory remains valid while held.
+> 
+> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+489e907b2a026a6f5fa0@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=489e907b2a026a6f5fa0
+> Link: https://syzkaller.appspot.com/ai_job?id=c118979e-3d39-430b-b07e-608d26aeaa70
+> To: <linux-can@vger.kernel.org>
+> To: "Marc Kleine-Budde" <mkl@pengutronix.de>
+> To: "Oleksij Rempel" <o.rempel@pengutronix.de>
+> To: "Robin van der Gracht" <robin@protonic.nl>
+> To: "Oliver Hartkopp" <socketcan@hartkopp.net>
+> Cc: <kernel@pengutronix.de>
+> Cc: <linux-kernel@vger.kernel.org>
+> 
+> ---
+> diff --git a/net/can/j1939/bus.c b/net/can/j1939/bus.c
+> index cdc3c0a71..71e52f25a 100644
+> --- a/net/can/j1939/bus.c
+> +++ b/net/can/j1939/bus.c
+> @@ -98,13 +98,18 @@ void j1939_ecu_unmap(struct j1939_ecu *ecu)
+>  
+>  void j1939_ecu_unmap_all(struct j1939_priv *priv)
+>  {
+> +	struct j1939_ecu *ecu, *tmp;
+>  	int i;
+>  
+> +	j1939_priv_get(priv);
+>  	write_lock_bh(&priv->lock);
+>  	for (i = 0; i < ARRAY_SIZE(priv->ents); i++)
+>  		if (priv->ents[i].ecu)
+>  			j1939_ecu_unmap_locked(priv->ents[i].ecu);
+> +	list_for_each_entry_safe(ecu, tmp, &priv->ecus, list)
+> +		j1939_ecu_timer_cancel(ecu);
+>  	write_unlock_bh(&priv->lock);
+> +	j1939_priv_put(priv);
+>  }
+>  
+>  void j1939_ecu_timer_start(struct j1939_ecu *ecu)
+> @@ -121,7 +126,7 @@ void j1939_ecu_timer_start(struct j1939_ecu *ecu)
+>  
+>  void j1939_ecu_timer_cancel(struct j1939_ecu *ecu)
+>  {
+> -	if (hrtimer_cancel(&ecu->ac_timer))
+> +	if (hrtimer_try_to_cancel(&ecu->ac_timer) == 1)
+>  		j1939_ecu_put(ecu);
+>  }
+>  
+> @@ -131,17 +136,18 @@ static enum hrtimer_restart j1939_ecu_timer_handler(struct hrtimer *hrtimer)
+>  		container_of(hrtimer, struct j1939_ecu, ac_timer);
+>  	struct j1939_priv *priv = ecu->priv;
+>  
+> +	j1939_priv_get(priv);
+>  	write_lock_bh(&priv->lock);
+> -	/* TODO: can we test if ecu->addr is unicast before starting
+> -	 * the timer?
+> -	 */
+> -	j1939_ecu_map_locked(ecu);
+> +	/* Only map the ECU if the netdev is still active */
+> +	if (kref_read(&priv->rx_kref) > 0)
+> +		j1939_ecu_map_locked(ecu);
+>  
+>  	/* The corresponding j1939_ecu_get() is in
+>  	 * j1939_ecu_timer_start().
+>  	 */
+>  	j1939_ecu_put(ecu);
+>  	write_unlock_bh(&priv->lock);
+> +	j1939_priv_put(priv);
+>  
+>  	return HRTIMER_NORESTART;
+>  }
+> 
+> 
+> base-commit: 8d3ae59288f1e7d58d76558a6ee96d533bc5019f
 
-and found the following issues:
-* general protection fault in lo_release
-* general protection fault in lo_rw_aio
-
-Full report is available here:
-https://ci.syzbot.org/series/9ab490fc-567e-414a-9754-890ca131012d
-
-***
-
-general protection fault in lo_release
-
-tree:      axboe
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
-base:      44e96e364b04163ddddc8a24289cef4982b7e36e
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/f5d23472-69ec-45bc-b33a-b59f7c0e7493/config
-syz repro: https://ci.syzbot.org/findings/a48673c0-89de-4ffc-b71c-3aa9e5313ec8/syz_repro
-
-Oops: general protection fault, probably for non-canonical address 0xdffffc000000000a: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000050-0x0000000000000057]
-CPU: 0 UID: 0 PID: 5946 Comm: syz.0.87 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__loop_clr_fd drivers/block/loop.c:1177 [inline]
-RIP: 0010:lo_release+0x47c/0x7e0 drivers/block/loop.c:1780
-Code: 89 e7 e8 77 60 fc fb bf e0 01 00 00 49 03 3c 24 be 02 00 00 00 e8 84 c6 9c 05 48 8b 44 24 30 4c 8d 70 50 4c 89 f0 48 c1 e8 03 <42> 80 3c 28 00 74 08 4c 89 f7 e8 45 60 fc fb 41 bc e8 00 00 00 4d
-RSP: 0018:ffffc90003787b60 EFLAGS: 00010206
-RAX: 000000000000000a RBX: ffff8881063f93c8 RCX: 0000000000000046
-RDX: 0000000000000006 RSI: ffffffff8e46de57 RDI: ffffffff8c6d5780
-RBP: ffffc90003787d08 R08: ffffffff9079c73f R09: 1ffffffff20f38e7
-R10: dffffc0000000000 R11: fffffbfff20f38e8 R12: ffff8881063f8080
-R13: dffffc0000000000 R14: 0000000000000050 R15: 1ffff920006f0f74
-FS:  00007fae103d46c0(0000) GS:ffff88818d6f1000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fae0f5eb840 CR3: 000000010c31a000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- bdev_release+0x571/0x690 block/bdev.c:-1
- blkdev_release+0x15/0x20 block/fops.c:682
- __fput+0x418/0xa50 fs/file_table.c:512
- fput_close_sync+0x11f/0x240 fs/file_table.c:617
- __do_sys_close fs/open.c:1560 [inline]
- __se_sys_close fs/open.c:1545 [inline]
- __x64_sys_close+0x7e/0x110 fs/open.c:1545
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fae0f55e98e
-Code: 08 0f 85 a5 a8 ff ff 49 89 fb 48 89 f0 48 89 d7 48 89 ce 4c 89 c2 4d 89 ca 4c 8b 44 24 08 4c 8b 4c 24 10 4c 89 5c 24 08 0f 05 <c3> 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 80 00 00 00 00 48 83 ec 08
-RSP: 002b:00007fae103d3da8 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
-RAX: ffffffffffffffda RBX: 00007fae103d46c0 RCX: 00007fae0f55e98e
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000004
-RBP: 0000000000000010 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
-R13: 00007fae103d3ee0 R14: 00007fae103d46a8 R15: 00007fae06600000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:__loop_clr_fd drivers/block/loop.c:1177 [inline]
-RIP: 0010:lo_release+0x47c/0x7e0 drivers/block/loop.c:1780
-Code: 89 e7 e8 77 60 fc fb bf e0 01 00 00 49 03 3c 24 be 02 00 00 00 e8 84 c6 9c 05 48 8b 44 24 30 4c 8d 70 50 4c 89 f0 48 c1 e8 03 <42> 80 3c 28 00 74 08 4c 89 f7 e8 45 60 fc fb 41 bc e8 00 00 00 4d
-RSP: 0018:ffffc90003787b60 EFLAGS: 00010206
-RAX: 000000000000000a RBX: ffff8881063f93c8 RCX: 0000000000000046
-RDX: 0000000000000006 RSI: ffffffff8e46de57 RDI: ffffffff8c6d5780
-RBP: ffffc90003787d08 R08: ffffffff9079c73f R09: 1ffffffff20f38e7
-R10: dffffc0000000000 R11: fffffbfff20f38e8 R12: ffff8881063f8080
-R13: dffffc0000000000 R14: 0000000000000050 R15: 1ffff920006f0f74
-FS:  00007fae103d46c0(0000) GS:ffff8882a8cf1000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffd52a75ff8 CR3: 000000010c31a000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess):
-   0:	89 e7                	mov    %esp,%edi
-   2:	e8 77 60 fc fb       	call   0xfbfc607e
-   7:	bf e0 01 00 00       	mov    $0x1e0,%edi
-   c:	49 03 3c 24          	add    (%r12),%rdi
-  10:	be 02 00 00 00       	mov    $0x2,%esi
-  15:	e8 84 c6 9c 05       	call   0x59cc69e
-  1a:	48 8b 44 24 30       	mov    0x30(%rsp),%rax
-  1f:	4c 8d 70 50          	lea    0x50(%rax),%r14
-  23:	4c 89 f0             	mov    %r14,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1) <-- trapping instruction
-  2f:	74 08                	je     0x39
-  31:	4c 89 f7             	mov    %r14,%rdi
-  34:	e8 45 60 fc fb       	call   0xfbfc607e
-  39:	41 bc e8 00 00 00    	mov    $0xe8,%r12d
-  3f:	4d                   	rex.WRB
-
-
-***
-
-general protection fault in lo_rw_aio
-
-tree:      axboe
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
-base:      44e96e364b04163ddddc8a24289cef4982b7e36e
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/f5d23472-69ec-45bc-b33a-b59f7c0e7493/config
-syz repro: https://ci.syzbot.org/findings/556532c0-64a7-4471-9558-ea3a7a213af7/syz_repro
-
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000009: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000048-0x000000000000004f]
-CPU: 0 UID: 0 PID: 83 Comm: kworker/u9:3 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: loop0 loop_rootcg_workfn
-RIP: 0010:lo_rw_aio+0xc36/0xf20 include/linux/percpu-rwsem.h:-1
-Code: fb 48 8d 35 00 00 00 00 bf 60 04 00 00 48 03 3b e8 9f 51 68 fb bb 30 00 00 00 4c 8b 74 24 58 49 83 c6 48 4c 89 f0 48 c1 e8 03 <42> 80 3c 20 00 74 08 4c 89 f7 e8 8b 6c fc fb 49 03 1e 48 89 d8 48
-RSP: 0018:ffffc9000277f620 EFLAGS: 00010206
-RAX: 0000000000000009 RBX: 0000000000000028 RCX: ffff888102725a00
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffffc9000277f790 R08: ffff88810aa529a7 R09: 1ffff1102154a534
-R10: dffffc0000000000 R11: ffffed102154a535 R12: dffffc0000000000
-R13: 0000000000000000 R14: 0000000000000048 R15: ffff88810aa529b0
-FS:  0000000000000000(0000) GS:ffff88818d6f1000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000558fd5b46210 CR3: 00000001bb152000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- do_req_filebacked drivers/block/loop.c:432 [inline]
- loop_handle_cmd drivers/block/loop.c:1954 [inline]
- loop_process_work+0x960/0x11c0 drivers/block/loop.c:1989
- process_one_work kernel/workqueue.c:3387 [inline]
- process_scheduled_works+0xc3d/0x1630 kernel/workqueue.c:3470
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3551
- kthread+0x38b/0x480 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:lo_rw_aio+0xc36/0xf20 include/linux/percpu-rwsem.h:-1
-Code: fb 48 8d 35 00 00 00 00 bf 60 04 00 00 48 03 3b e8 9f 51 68 fb bb 30 00 00 00 4c 8b 74 24 58 49 83 c6 48 4c 89 f0 48 c1 e8 03 <42> 80 3c 20 00 74 08 4c 89 f7 e8 8b 6c fc fb 49 03 1e 48 89 d8 48
-RSP: 0018:ffffc9000277f620 EFLAGS: 00010206
-RAX: 0000000000000009 RBX: 0000000000000028 RCX: ffff888102725a00
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffffc9000277f790 R08: ffff88810aa529a7 R09: 1ffff1102154a534
-R10: dffffc0000000000 R11: ffffed102154a535 R12: dffffc0000000000
-R13: 0000000000000000 R14: 0000000000000048 R15: ffff88810aa529b0
-FS:  0000000000000000(0000) GS:ffff88818d6f1000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000558fd5b46210 CR3: 0000000169ee2000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess):
-   0:	fb                   	sti
-   1:	48 8d 35 00 00 00 00 	lea    0x0(%rip),%rsi        # 0x8
-   8:	bf 60 04 00 00       	mov    $0x460,%edi
-   d:	48 03 3b             	add    (%rbx),%rdi
-  10:	e8 9f 51 68 fb       	call   0xfb6851b4
-  15:	bb 30 00 00 00       	mov    $0x30,%ebx
-  1a:	4c 8b 74 24 58       	mov    0x58(%rsp),%r14
-  1f:	49 83 c6 48          	add    $0x48,%r14
-  23:	4c 89 f0             	mov    %r14,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	42 80 3c 20 00       	cmpb   $0x0,(%rax,%r12,1) <-- trapping instruction
-  2f:	74 08                	je     0x39
-  31:	4c 89 f7             	mov    %r14,%rdi
-  34:	e8 8b 6c fc fb       	call   0xfbfc6cc4
-  39:	49 03 1e             	add    (%r14),%rbx
-  3c:	48 89 d8             	mov    %rbx,%rax
-  3f:	48                   	rex.W
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
-
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
+-- 
+Slawomir Stepien
