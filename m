@@ -1,211 +1,251 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0124C399D02
-	for <syzbot@lists.linux.dev>; Mon, 31 Aug 2026 22:22:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44F393CCFC4
+	for <syzbot@lists.linux.dev>; Tue,  1 Sep 2026 02:36:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788214966; cv=none; b=etezma5n9DMHd3V29xev3QrBqdLKJs6N+pekaUeGoLhT15TFTjMUWjW4FvPCXucuRcKWerQ2EKycT3D718uzPDVQACPBFg62IBDpHS3TQIm+dkN/dUKo6EyzPt8ItsmUp9Mi6Bfgtzith+5f2ZN6iSY1XuEWKpySi73vNjyp9LI=
+	t=1788230217; cv=none; b=UEFnEjIWGi7x4c6HCd4IriWKd+emxosaS0eiENF29JAfuYvJNQORzk9LeWg6jfqPo+UIRtu14Tlzrwbb70gHdh13vzkeNcbog8DpEK1EHwa3OqSMqnrCdAOTu7bsQYa3sRcXe0Xg0rUv2mXXBHxQU2RlxRM6Buufl8Kfu00enkg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788214966; c=relaxed/simple;
-	bh=fyjj8CwwmFeQt+dWOPSA0iI5PcFBRuWfJThMjYGRooY=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=R9zLw/7Q5NRKnUIAyUT1MnFKJazy4EKRJTIxaexDIeFYJ2QTLoMm30hFJKlJg2eXLCe905XS33CDnFwdb6t/RKZnSGEaZn1m1oAP8fjo8rQAGCcDFRmnJ9GkrDvxHIiE+N4uPrInOrfWSNK1KD2lW/iAwONlROcNpO7JeI1VIok=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SoJj4AgO; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SoJj4AgO"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id B60A71F000E9;
-	Mon, 31 Aug 2026 22:22:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788214964;
-	bh=NpcOrQ7D1KRMFyd2DfjDpFAYj+4+B/wAWCU/QtuZKB0=;
-	h=From:To:Cc:Subject:Date;
-	b=SoJj4AgOeFGsh9W2TqKtHobGOn7vF+FRid+qPY18zt4KXYrJZ77Bs3IMpDVb8eCyv
-	 hdzHUOx8ssioFLXIN4phuMQK8Wu6P64nMg8ag1hPn7grYd35dFrxomZ7KAhzs48vBE
-	 1py9PG8laoI4UTpeqBnV+xeqN6rczGoI1/y0alp/3U4Si5cpLrhh8iZA3Gnrm7a6X2
-	 3g+CSCNFpqyJ2Ghm829A8u3JyL5dvFCkuAcpHsXU9cUs02zDj+zsLSzIPXWlzW8ELp
-	 MJTa4W7Jrw2CZ+bg/gr/eAkPBIJiCgH3K+MQvzul05ceWcvYcZN0+DHXnb/nikJvYH
-	 01QvNlYK0uT7g==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] Input: sur40 - fix use-after-free on disconnect
-Message-ID: <c305426b-d890-42d1-8202-c0e48512c8a3@mail.kernel.org>
+	s=arc-20240116; t=1788230217; c=relaxed/simple;
+	bh=UE6LTm3coNGiWVht46alGoNxW/zjNzjG5UJB22lAaPs=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=sHXXcfZTDMuVBIVYbrNRYYv1hclTrifnswNRZE9ajCUHc9gst75VgARGXcGdrgsn5RB08D9JVpMQrw5nd4phUNE0YIAT21cuz/fP1cquUPKSrEsvIHvRK+7K007fx/ADHvUZW9gecgcDkRDzejPnV3B335YukyldSWpYGqO6tkM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-6b34c5c6de4so2576949eaf.1
+        for <syzbot@lists.linux.dev>; Mon, 31 Aug 2026 19:36:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788230210; x=1788835010;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=FWdV8R9QzmJmDzN0L1OXMXp83221eUSKKbfomoVKPYQ=;
+        b=rjps1T/xadKP3lgjPqbgs4ssyzwHBmGBtasBrgT15+Il6TDx7ItXmzwyuq+SWohJ4a
+         0L/1e5WLdUeEKFCisDLiOkoCW27a/BJ9vHrHjeDhVXNst+L1KPDXRMtK1THdFL+c8jv3
+         EUsSJWvx5Y3gZbkl9zl4qp4MOjXx6AdadVV0kXpohy96HRclM9zU/SNxpdPt1/eFY3ZB
+         K39tVkdNtBWy+2s/at5LvnzZ14fZZf4IiQDOaT+DmRUhPc/kaqw2R/wFbKTn1cHS+2Mq
+         9FC9ANuNxyaUono8yaieD/cBanfGRDPeVdOWzoPDS9g2h03C4mymaYQD6Vp8BecN3REo
+         Cl1g==
+X-Gm-Message-State: AFuF++lgaz4pZqZVAYd4eY7kR80NJLehgiFDzi7X6LDwwwbE7s2oI8Ao
+	WmWuWKZsK90WJcTn76/vsDmYzsBb9maofHu7XdEgSBoH0EbiQAvUQ9Q3+3Ty71bBxZAdtuFFMeR
+	VucoIfxYwOvhepKFWWRx+BD3k+rf3NZA3y6Em3VV+J0Vf598Y4H3epNWLVwY=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Mon, 31 Aug 2026 22:22:44 +0000 (UTC)
+X-Received: by 2002:a05:6820:c92:b0:6b1:681f:81a1 with SMTP id
+ 006d021491bc7-6b372efb723mr4909815eaf.24.1788230209922; Mon, 31 Aug 2026
+ 19:36:49 -0700 (PDT)
+Date: Mon, 31 Aug 2026 19:36:49 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a963a41.764875ec.b345.0005.GAE@google.com>
+Subject: [moderation/CI] Re: block: brd/loop error-path cleanup
+From: syzbot ci <syzbot+cidfd2c43a08ae75d8@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-In sur40_probe(), struct sur40_state is allocated and embeds struct
-video_device and struct v4l2_device. When the USB device is disconnected,
-sur40_disconnect() directly frees the sur40_state structure via kfree().
-However, if a user space process has an open file descriptor on the video
-device at the time of disconnection, the file descriptor retains a
-reference to the video device. When the process subsequently closes the
-file descriptor, v4l2_release() is called and attempts to access
-vdev->v4l2_dev inside the already freed sur40_state structure, triggering a
-slab-use-after-free.
+syzbot ci has tested the following series
 
-BUG: KASAN: slab-use-after-free in v4l2_release+0xb5/0x350
-drivers/media/v4l2-core/v4l2-dev.c:466
-Read of size 8 at addr ffff8881fb29c658 by task v4l_id/9888
+[v1] block: brd/loop error-path cleanup
+https://lore.kernel.org/all/20260831152044.166353-1-ivanrwcm25@gmail.com
+* [PATCH v1 1/2] block: brd: destroy xa on allocation failure
+* [PATCH v1 2/2] block: loop: restore state on loop_configure() error
 
+and found the following issues:
+* general protection fault in lo_release
+* general protection fault in lo_rw_aio
+
+Full report is available here:
+https://ci.syzbot.org/series/9ab490fc-567e-414a-9754-890ca131012d
+
+***
+
+general protection fault in lo_release
+
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
+base:      44e96e364b04163ddddc8a24289cef4982b7e36e
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/f5d23472-69ec-45bc-b33a-b59f7c0e7493/config
+syz repro: https://ci.syzbot.org/findings/a48673c0-89de-4ffc-b71c-3aa9e5313ec8/syz_repro
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc000000000a: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000050-0x0000000000000057]
+CPU: 0 UID: 0 PID: 5946 Comm: syz.0.87 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:__loop_clr_fd drivers/block/loop.c:1177 [inline]
+RIP: 0010:lo_release+0x47c/0x7e0 drivers/block/loop.c:1780
+Code: 89 e7 e8 77 60 fc fb bf e0 01 00 00 49 03 3c 24 be 02 00 00 00 e8 84 c6 9c 05 48 8b 44 24 30 4c 8d 70 50 4c 89 f0 48 c1 e8 03 <42> 80 3c 28 00 74 08 4c 89 f7 e8 45 60 fc fb 41 bc e8 00 00 00 4d
+RSP: 0018:ffffc90003787b60 EFLAGS: 00010206
+RAX: 000000000000000a RBX: ffff8881063f93c8 RCX: 0000000000000046
+RDX: 0000000000000006 RSI: ffffffff8e46de57 RDI: ffffffff8c6d5780
+RBP: ffffc90003787d08 R08: ffffffff9079c73f R09: 1ffffffff20f38e7
+R10: dffffc0000000000 R11: fffffbfff20f38e8 R12: ffff8881063f8080
+R13: dffffc0000000000 R14: 0000000000000050 R15: 1ffff920006f0f74
+FS:  00007fae103d46c0(0000) GS:ffff88818d6f1000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fae0f5eb840 CR3: 000000010c31a000 CR4: 00000000000006f0
 Call Trace:
  <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_report+0x58/0x70 mm/kasan/report.c:482
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- v4l2_release+0xb5/0x350 drivers/media/v4l2-core/v4l2-dev.c:466
+ bdev_release+0x571/0x690 block/bdev.c:-1
+ blkdev_release+0x15/0x20 block/fops.c:682
  __fput+0x418/0xa50 fs/file_table.c:512
  fput_close_sync+0x11f/0x240 fs/file_table.c:617
+ __do_sys_close fs/open.c:1560 [inline]
+ __se_sys_close fs/open.c:1545 [inline]
  __x64_sys_close+0x7e/0x110 fs/open.c:1545
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
  do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fae0f55e98e
+Code: 08 0f 85 a5 a8 ff ff 49 89 fb 48 89 f0 48 89 d7 48 89 ce 4c 89 c2 4d 89 ca 4c 8b 44 24 08 4c 8b 4c 24 10 4c 89 5c 24 08 0f 05 <c3> 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 80 00 00 00 00 48 83 ec 08
+RSP: 002b:00007fae103d3da8 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
+RAX: ffffffffffffffda RBX: 00007fae103d46c0 RCX: 00007fae0f55e98e
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000004
+RBP: 0000000000000010 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
+R13: 00007fae103d3ee0 R14: 00007fae103d46a8 R15: 00007fae06600000
  </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__loop_clr_fd drivers/block/loop.c:1177 [inline]
+RIP: 0010:lo_release+0x47c/0x7e0 drivers/block/loop.c:1780
+Code: 89 e7 e8 77 60 fc fb bf e0 01 00 00 49 03 3c 24 be 02 00 00 00 e8 84 c6 9c 05 48 8b 44 24 30 4c 8d 70 50 4c 89 f0 48 c1 e8 03 <42> 80 3c 28 00 74 08 4c 89 f7 e8 45 60 fc fb 41 bc e8 00 00 00 4d
+RSP: 0018:ffffc90003787b60 EFLAGS: 00010206
+RAX: 000000000000000a RBX: ffff8881063f93c8 RCX: 0000000000000046
+RDX: 0000000000000006 RSI: ffffffff8e46de57 RDI: ffffffff8c6d5780
+RBP: ffffc90003787d08 R08: ffffffff9079c73f R09: 1ffffffff20f38e7
+R10: dffffc0000000000 R11: fffffbfff20f38e8 R12: ffff8881063f8080
+R13: dffffc0000000000 R14: 0000000000000050 R15: 1ffff920006f0f74
+FS:  00007fae103d46c0(0000) GS:ffff8882a8cf1000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffd52a75ff8 CR3: 000000010c31a000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	89 e7                	mov    %esp,%edi
+   2:	e8 77 60 fc fb       	call   0xfbfc607e
+   7:	bf e0 01 00 00       	mov    $0x1e0,%edi
+   c:	49 03 3c 24          	add    (%r12),%rdi
+  10:	be 02 00 00 00       	mov    $0x2,%esi
+  15:	e8 84 c6 9c 05       	call   0x59cc69e
+  1a:	48 8b 44 24 30       	mov    0x30(%rsp),%rax
+  1f:	4c 8d 70 50          	lea    0x50(%rax),%r14
+  23:	4c 89 f0             	mov    %r14,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1) <-- trapping instruction
+  2f:	74 08                	je     0x39
+  31:	4c 89 f7             	mov    %r14,%rdi
+  34:	e8 45 60 fc fb       	call   0xfbfc607e
+  39:	41 bc e8 00 00 00    	mov    $0xe8,%r12d
+  3f:	4d                   	rex.WRB
 
-Allocated by task 53:
- kasan_save_stack mm/kasan/common.c:57 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
- __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
- _kzalloc_noprof include/linux/slab.h:1312 [inline]
- sur40_probe+0x16c/0xfa0 drivers/input/touchscreen/sur40.c:675
- usb_probe_interface+0x788/0xe50 drivers/usb/core/driver.c:399
- really_probe+0x254/0xae0 drivers/base/dd.c:706
- driver_probe_device+0x4f/0x240 drivers/base/dd.c:898
 
-Freed by task 53:
- kasan_save_stack mm/kasan/common.c:57 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
- kasan_save_free_info+0x40/0x50 mm/kasan/generic.c:584
- __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
- kfree+0x1c5/0x650 mm/slub.c:6792
- sur40_disconnect+0xaf/0x140 drivers/input/touchscreen/sur40.c:835
- usb_unbind_interface+0x295/0x9f0 drivers/usb/core/driver.c:461
- device_release_driver_internal+0x4f5/0x880 drivers/base/dd.c:1372
+***
 
-To fix this, tie the lifetime of the sur40_state structure to the refcount
-of struct v4l2_device by implementing a sur40_video_release() callback and
-assigning it to sur40->v4l2.release. In sur40_disconnect(), call
-v4l2_device_disconnect() and v4l2_device_put() so that the memory is freed
-only when the last reference to the v4l2_device is released. Also update
-the error cleanup path in sur40_probe() to use v4l2_device_put() after
-v4l2_device_register() succeeds.
+general protection fault in lo_rw_aio
 
-Fixes: e831cd251fb9 ("[media] add raw video stream support for Samsung SUR40")
-Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+2a123f6269da57ffefaa@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=2a123f6269da57ffefaa
-Link: https://syzkaller.appspot.com/ai_job?id=23a1aec1-d3a0-425c-995e-9788f0e98e07
-To: "Dmitry Torokhov" <dmitry.torokhov@gmail.com>
-To: <linux-input@vger.kernel.org>
-To: "Florian Echtler" <floe@butterbrot.org>
-Cc: "Kees Cook" <kees@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Oliver" <oliverburns.kernel@gmail.com>
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
+base:      44e96e364b04163ddddc8a24289cef4982b7e36e
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/f5d23472-69ec-45bc-b33a-b59f7c0e7493/config
+syz repro: https://ci.syzbot.org/findings/556532c0-64a7-4471-9558-ea3a7a213af7/syz_repro
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc0000000009: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000048-0x000000000000004f]
+CPU: 0 UID: 0 PID: 83 Comm: kworker/u9:3 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Workqueue: loop0 loop_rootcg_workfn
+RIP: 0010:lo_rw_aio+0xc36/0xf20 include/linux/percpu-rwsem.h:-1
+Code: fb 48 8d 35 00 00 00 00 bf 60 04 00 00 48 03 3b e8 9f 51 68 fb bb 30 00 00 00 4c 8b 74 24 58 49 83 c6 48 4c 89 f0 48 c1 e8 03 <42> 80 3c 20 00 74 08 4c 89 f7 e8 8b 6c fc fb 49 03 1e 48 89 d8 48
+RSP: 0018:ffffc9000277f620 EFLAGS: 00010206
+RAX: 0000000000000009 RBX: 0000000000000028 RCX: ffff888102725a00
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: ffffc9000277f790 R08: ffff88810aa529a7 R09: 1ffff1102154a534
+R10: dffffc0000000000 R11: ffffed102154a535 R12: dffffc0000000000
+R13: 0000000000000000 R14: 0000000000000048 R15: ffff88810aa529b0
+FS:  0000000000000000(0000) GS:ffff88818d6f1000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000558fd5b46210 CR3: 00000001bb152000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ do_req_filebacked drivers/block/loop.c:432 [inline]
+ loop_handle_cmd drivers/block/loop.c:1954 [inline]
+ loop_process_work+0x960/0x11c0 drivers/block/loop.c:1989
+ process_one_work kernel/workqueue.c:3387 [inline]
+ process_scheduled_works+0xc3d/0x1630 kernel/workqueue.c:3470
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3551
+ kthread+0x38b/0x480 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:lo_rw_aio+0xc36/0xf20 include/linux/percpu-rwsem.h:-1
+Code: fb 48 8d 35 00 00 00 00 bf 60 04 00 00 48 03 3b e8 9f 51 68 fb bb 30 00 00 00 4c 8b 74 24 58 49 83 c6 48 4c 89 f0 48 c1 e8 03 <42> 80 3c 20 00 74 08 4c 89 f7 e8 8b 6c fc fb 49 03 1e 48 89 d8 48
+RSP: 0018:ffffc9000277f620 EFLAGS: 00010206
+RAX: 0000000000000009 RBX: 0000000000000028 RCX: ffff888102725a00
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: ffffc9000277f790 R08: ffff88810aa529a7 R09: 1ffff1102154a534
+R10: dffffc0000000000 R11: ffffed102154a535 R12: dffffc0000000000
+R13: 0000000000000000 R14: 0000000000000048 R15: ffff88810aa529b0
+FS:  0000000000000000(0000) GS:ffff88818d6f1000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000558fd5b46210 CR3: 0000000169ee2000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	fb                   	sti
+   1:	48 8d 35 00 00 00 00 	lea    0x0(%rip),%rsi        # 0x8
+   8:	bf 60 04 00 00       	mov    $0x460,%edi
+   d:	48 03 3b             	add    (%rbx),%rdi
+  10:	e8 9f 51 68 fb       	call   0xfb6851b4
+  15:	bb 30 00 00 00       	mov    $0x30,%ebx
+  1a:	4c 8b 74 24 58       	mov    0x58(%rsp),%r14
+  1f:	49 83 c6 48          	add    $0x48,%r14
+  23:	4c 89 f0             	mov    %r14,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 80 3c 20 00       	cmpb   $0x0,(%rax,%r12,1) <-- trapping instruction
+  2f:	74 08                	je     0x39
+  31:	4c 89 f7             	mov    %r14,%rdi
+  34:	e8 8b 6c fc fb       	call   0xfbfc6cc4
+  39:	49 03 1e             	add    (%r14),%rbx
+  3c:	48 89 d8             	mov    %rbx,%rax
+  3f:	48                   	rex.W
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/drivers/input/touchscreen/sur40.c b/drivers/input/touchscreen/sur40.c
-index 09d8c5f8d..a525011a1 100644
---- a/drivers/input/touchscreen/sur40.c
-+++ b/drivers/input/touchscreen/sur40.c
-@@ -647,6 +647,17 @@ static int sur40_input_setup_events(struct input_dev *input_dev)
- 	return 0;
- }
- 
-+static void sur40_video_release(struct v4l2_device *v)
-+{
-+	struct sur40_state *sur40 =
-+		container_of(v, struct sur40_state, v4l2);
-+
-+	v4l2_ctrl_handler_free(&sur40->hdl);
-+	v4l2_device_unregister(&sur40->v4l2);
-+	kfree(sur40->bulk_in_buffer);
-+	kfree(sur40);
-+}
-+
- /* Check candidate USB interface. */
- static int sur40_probe(struct usb_interface *interface,
- 		       const struct usb_device_id *id)
-@@ -726,6 +737,7 @@ static int sur40_probe(struct usb_interface *interface,
- 	}
- 
- 	/* register the video master device */
-+	sur40->v4l2.release = sur40_video_release;
- 	snprintf(sur40->v4l2.name, sizeof(sur40->v4l2.name), "%s", DRIVER_LONG);
- 	error = v4l2_device_register(sur40->dev, &sur40->v4l2);
- 	if (error) {
-@@ -743,7 +755,7 @@ static int sur40_probe(struct usb_interface *interface,
- 	/* initialize the queue */
- 	error = vb2_queue_init(&sur40->queue);
- 	if (error)
--		goto err_unreg_v4l2;
-+		goto err_v4l2_put;
- 
- 	sur40->pix_fmt = sur40_pix_format[0];
- 	sur40->vdev = sur40_video_device;
-@@ -778,16 +790,15 @@ static int sur40_probe(struct usb_interface *interface,
- 	if (sur40->hdl.error) {
- 		dev_err(&interface->dev,
- 			"Unable to register video controls.");
--		v4l2_ctrl_handler_free(&sur40->hdl);
- 		error = sur40->hdl.error;
--		goto err_unreg_v4l2;
-+		goto err_v4l2_put;
- 	}
- 
- 	error = video_register_device(&sur40->vdev, VFL_TYPE_TOUCH, -1);
- 	if (error) {
- 		dev_err(&interface->dev,
- 			"Unable to register video subdevice.");
--		goto err_free_ctrl;
-+		goto err_v4l2_put;
- 	}
- 
- 	/* register the polled input device */
-@@ -806,10 +817,10 @@ static int sur40_probe(struct usb_interface *interface,
- 
- err_unreg_video:
- 	video_unregister_device(&sur40->vdev);
--err_free_ctrl:
--	v4l2_ctrl_handler_free(&sur40->hdl);
--err_unreg_v4l2:
--	v4l2_device_unregister(&sur40->v4l2);
-+err_v4l2_put:
-+	input_free_device(input);
-+	v4l2_device_put(&sur40->v4l2);
-+	return error;
- err_free_buffer:
- 	kfree(sur40->bulk_in_buffer);
- err_free_input:
-@@ -827,12 +838,9 @@ static void sur40_disconnect(struct usb_interface *interface)
- 
- 	input_unregister_device(sur40->input);
- 
--	v4l2_ctrl_handler_free(&sur40->hdl);
-+	v4l2_device_disconnect(&sur40->v4l2);
- 	video_unregister_device(&sur40->vdev);
--	v4l2_device_unregister(&sur40->v4l2);
--
--	kfree(sur40->bulk_in_buffer);
--	kfree(sur40);
-+	v4l2_device_put(&sur40->v4l2);
- 
- 	usb_set_intfdata(interface, NULL);
- 	dev_dbg(&interface->dev, "%s is now disconnected\n", DRIVER_DESC);
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
-base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+The email will later be sent to:
+[axboe@kernel.dk ivanrwcm25@gmail.com linux-block@vger.kernel.org linux-kernel@vger.kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
