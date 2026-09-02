@@ -1,155 +1,204 @@
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B269421A07
-	for <syzbot@lists.linux.dev>; Wed,  2 Sep 2026 22:05:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CECE641686D
+	for <syzbot@lists.linux.dev>; Wed,  2 Sep 2026 22:23:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788386730; cv=none; b=OqVNJC0HFaGNK26jt1S6I6I5C4e10VJbXlMs5eBQc7+iQlKDx7TR7RPEfb+JnVMM19nLvjLKaa+OQQ2zkiIzhadZikYZuXyv+a7QMTAs6h6xLRX7hg8i3IONsis+Jyt+XoesSuqnenlhGOjiiqV3KL1dg7X/kP45JZVb/Bu9Ye8=
+	t=1788387789; cv=none; b=lfzqCtP2n+K4054/LGaDZEif07+7N29NKg9pe3gYnHj/Y1Wr21MB88CrV9KscUgLTKVTsOALj5RKKBcGCHH5niPShyzqRq/3Ne2PY3VjRvdE/BtzRlryHsWbC2pzRTC9vfuCFkI6YdjcCnVabIMjya+Bw0mjm4pdB7NNJjRgVJQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788386730; c=relaxed/simple;
-	bh=WrNsgg1LDugEtKCJojlK1pSJgViIdBqsDBJpxyfRqe0=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=E3ljulh7ATs9oW5S2IFMMR6NYQar/55T7uZAklfGpU1qAvgI9WabEpWLEmGFgoMBNYJoFq8SrxA1Z+bNlscCS3REX5RGM9AGA0MyZAmHMRAtZsb9zyK4BTNG/TTXaFzXj4HowAlaPX/7aJxOec65cZ/4Yc7NaGR8Mm0lWW7a9GI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-4ad778bacbeso2105076b6e.1
-        for <syzbot@lists.linux.dev>; Wed, 02 Sep 2026 15:05:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788386722; x=1788991522;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=LfKD6ngQRTKOJI4e0mUBdk+l6HtVu+CazLqp1wl6LGY=;
-        b=mkaqP8EecpDjZ2J4fwLj3M4G8d4J8MBrFUMMrPQNMtiGhy8maN+UNoOWD3kHUBlx2W
-         cBsNBPpcXxg9oed8yJRse4iNoF6aL9BWrJcPk0n6LI1mHoAbsT9YUCzj8XuZeQnecZbA
-         GNuDNo1Vog2/PjSWbqzWCSgqrIzpYuI5WYLGuX5nBDsiVCgN76n5y9yWjB5gzkZ9H2cM
-         KC4a9REwLKfFPTaOBtob1vth9d9MpkLCvBbh1kLebkkejJ3LAUazKAlR5TqYLmeGgUAp
-         tQFOObU6/gbFaSMcrQVnLyZxBOmqjxfy7SH8G8JCXRiVicAFLCqfCI0FPqPjGSmbfH2H
-         mMzw==
-X-Gm-Message-State: AFuF++mYddDAtGy4a7SiaUienL58eZpj/VnTrH8ov6gIY5M4/jEsjo1n
-	LMQlOrJR63dXpdPk9C5KM3BaebJg1R46YiAvX++ng5p2i07yla+DeekhOmeDt5hYiNw49O+bnpr
-	EqRzGufC0KWqtBBj/Q01pnjQq9oeaVALyQkkCKCYr/kHiXjovxTS0Kbv5+nM=
+	s=arc-20240116; t=1788387789; c=relaxed/simple;
+	bh=A88bS0OlT8rvvN5VrfNX7DKDdSbtAHY0MTXWsj0Kd6M=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=i3cYOZ+M9+v/X6eOGJzdG7lmhEbfztXfcprElHo1CnN29xhAaUQyQCc1gvSpeU+RUp/dKXeEADGVk/YmdbuCCJxMspgSaQN1ahWLZQiX0Dfa9NrKqdiSJeENp/oJkvkZ9ZeYg3lt4r3tACgly9Zh5NLVjX2j4jUQl0jRDdzum0Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kPVzTsvB; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kPVzTsvB"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7192A1F000E9;
+	Wed,  2 Sep 2026 22:23:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788387782;
+	bh=RgP7hZmIoKVcyTrGZrR2vRQcxYnsSk0IBAYKyRzn590=;
+	h=From:To:Cc:Subject:Date;
+	b=kPVzTsvB5scoehLhvufgsredzNLLsStz/TbC0rGfEGFy8J4ddlqowAGveSPEhNp6F
+	 pwlR4zyhp9fjkkNCdTmyCutVD+wan3rdjHeTZp9bi1qm9qsVztb8ONMfI+7Ianop7M
+	 G8YK7PJCxGEjtAXM/CvHdodvrNcWOkl0eVKupONWrWQ7v0VdgY8sSIsk14avYGdN1L
+	 oLfwMoO5M1RpyMWX4TsX8nV6ucqi7NmrXx+kudqvoLv1gbsWjDAWPg52v6GaO4RJcL
+	 u8JVPYhqS1jWG6yK21b7qBwWCP2LTAdPhptTJXe37tEDeQpRtjH4RCM8xvYzwS6piu
+	 OpLm7irJACRJw==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] configfs: fix use-after-free in configfs_symlink()
+Message-ID: <ccce0ada-669c-4d3b-929a-5e95de4e54dd@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:199a:b0:6b3:619f:25ce with SMTP id
- 006d021491bc7-6b47eed806amr6317636eaf.30.1788386722094; Wed, 02 Sep 2026
- 15:05:22 -0700 (PDT)
-Date: Wed, 02 Sep 2026 15:05:22 -0700
-In-Reply-To: <20260902055802.3724915-1-4ncienth@gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a989da2.2e567484.299ffc.0001.GAE@google.com>
-Subject: [syzbot ci] Re: ip: validate options before echoing them
-From: syzbot ci <syzbot+cid466e4e888be6037@syzkaller.appspotmail.com>
-To: 4ncienth@gmail.com, davem@davemloft.net, dsahern@kernel.org, 
-	edumazet@google.com, horms@kernel.org, idosch@nvidia.com, kuba@kernel.org, 
-	linux-kernel@vger.kernel.org, netdev@vger.kernel.org, pabeni@redhat.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Wed,  2 Sep 2026 22:23:02 +0000 (UTC)
 
-syzbot ci has tested the following series
+In configfs_symlink(), inode_unlock(dir) is called before resolving the
+symlink target via get_target() to avoid deadlocks during pathname lookup.
+When configfs_symlink() operates within a default group (such as
+ports/1/subsystems/ in NVMe-oF target), parent_item is an embedded default
+group inside the dynamically allocated parent object (struct nvmet_port).
+Because default groups are embedded within their containing structure,
+holding a reference to parent_item alone does not prevent the containing
+parent structure from being freed when a concurrent configfs_rmdir()
+removes the root directory.
 
-[v3] ip: validate options before echoing them
-https://lore.kernel.org/all/20260902055802.3724915-1-4ncienth@gmail.com
-* [PATCH net v3] ip: validate options before echoing them
+When configfs_rmdir() runs concurrently while inode_lock(dir) is dropped in
+configfs_symlink(), it detaches all default groups, unlinks the root group,
+sets frag_dead to true, and drops the subsystem's reference to the root
+group. Once the root object's refcount drops to zero, the entire containing
+structure is freed via kfree(). When configfs_symlink() re-acquires
+inode_lock(dir), accessing parent_item in allow_link() accesses freed
+memory, causing a slab-use-after-free:
 
-and found the following issue:
-WARNING in __ip_options_echo
+BUG: KASAN: slab-use-after-free in nvmet_port_subsys_allow_link+0x41/0x2e0
+drivers/nvme/target/configfs.c:1059
+Read of size 8 at addr ffff88811c6d44c8
 
-Full report is available here:
-https://ci.syzbot.org/series/58d17295-c695-49b2-826d-b0fe305808e9
-
-***
-
-WARNING in __ip_options_echo
-
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-base:      70f3995830d3f1e79faa14eb0605914f778feca9
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/9a250d6c-0a45-4565-bbc0-cac6bc3e42ee/config
-syz repro: https://ci.syzbot.org/findings/5fa937c9-0c72-4a82-8221-cd01d8dc83d5/syz_repro
-
-------------[ cut here ]------------
-len > ((int)(~0U >> 1))
-WARNING: ./include/linux/skbuff.h:2864 at pskb_may_pull_reason include/linux/skbuff.h:2864 [inline], CPU#1: syz.0.17/5791
-WARNING: ./include/linux/skbuff.h:2864 at pskb_network_may_pull_reason include/linux/skbuff.h:3294 [inline], CPU#1: syz.0.17/5791
-WARNING: ./include/linux/skbuff.h:2864 at pskb_network_may_pull include/linux/skbuff.h:3299 [inline], CPU#1: syz.0.17/5791
-WARNING: ./include/linux/skbuff.h:2864 at __ip_options_echo+0x10e4/0x1870 net/ipv4/ip_options.c:115, CPU#1: syz.0.17/5791
-Modules linked in:
-CPU: 1 UID: 0 PID: 5791 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:pskb_may_pull_reason include/linux/skbuff.h:2864 [inline]
-RIP: 0010:pskb_network_may_pull_reason include/linux/skbuff.h:3294 [inline]
-RIP: 0010:pskb_network_may_pull include/linux/skbuff.h:3299 [inline]
-RIP: 0010:__ip_options_echo+0x10e4/0x1870 net/ipv4/ip_options.c:115
-Code: 00 00 00 fc ff df 43 0f b6 04 3c 84 c0 0f 85 64 07 00 00 41 88 1e 4c 8b 64 24 10 41 83 c4 04 e9 a7 fe ff ff e8 7d 13 84 f7 90 <0f> 0b 90 e9 35 f1 ff ff 44 89 e7 44 89 f6 e8 79 15 84 f7 45 39 f4
-RSP: 0018:ffffc90004efef40 EFLAGS: 00010293
-RAX: ffffffff8a43a023 RBX: ffff8881b89a6b58 RCX: ffff888111125a00
-RDX: 0000000000000000 RSI: 00000000fffffff8 RDI: 0000000000000000
-RBP: ffffc90004eff070 R08: ffffc90004eff2c7 R09: 0000000000000000
-R10: ffffc90004eff2b8 R11: fffff520009dfe59 R12: 00000000fffffff8
-R13: ffff8881b89a6a80 R14: ffff8881b89a6b00 R15: 000000000000001c
-FS:  00007f39f8af86c0(0000) GS:ffff8882a8cdf000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f39f8af7ff8 CR3: 0000000112830000 CR4: 00000000000006f0
 Call Trace:
  <TASK>
- ip_options_echo include/net/ip.h:798 [inline]
- icmp_reply+0x2da/0xc90 net/ipv4/icmp.c:429
- icmp_timestamp+0x246/0x370 net/ipv4/icmp.c:1430
- icmp_rcv+0xd33/0x1290 net/ipv4/icmp.c:1543
- ip_protocol_deliver_rcu+0x2dc/0x440 net/ipv4/ip_input.c:207
- ip_local_deliver_finish+0x3bb/0x6f0 net/ipv4/ip_input.c:241
- NF_HOOK+0x336/0x3c0 include/linux/netfilter.h:325
- NF_HOOK+0x336/0x3c0 include/linux/netfilter.h:325
- __netif_receive_skb_one_core net/core/dev.c:6264 [inline]
- __netif_receive_skb net/core/dev.c:6377 [inline]
- netif_receive_skb_internal net/core/dev.c:6463 [inline]
- netif_receive_skb+0x45b/0xbf0 net/core/dev.c:6522
- tun_rx_batched+0x1de/0x790 drivers/net/tun.c:1571
- tun_get_user+0x2be0/0x44d0 drivers/net/tun.c:2045
- tun_chr_write_iter+0x113/0x200 drivers/net/tun.c:2091
- new_sync_write fs/read_write.c:595 [inline]
- vfs_write+0x612/0xba0 fs/read_write.c:687
- ksys_write+0x150/0x270 fs/read_write.c:739
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ nvmet_port_subsys_allow_link+0x41/0x2e0
+ drivers/nvme/target/configfs.c:1059
+ configfs_symlink+0x59a/0x1030 fs/configfs/symlink.c:196
+ vfs_symlink+0x18b/0x330 fs/namei.c:5794
+ filename_symlinkat+0x1cd/0x410 fs/namei.c:5819
  do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f39f7b5e98e
-Code: 08 0f 85 a5 a8 ff ff 49 89 fb 48 89 f0 48 89 d7 48 89 ce 4c 89 c2 4d 89 ca 4c 8b 44 24 08 4c 8b 4c 24 10 4c 89 5c 24 08 0f 05 <c3> 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 80 00 00 00 00 48 83 ec 08
-RSP: 002b:00007f39f8af7fb8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 00007f39f8af86c0 RCX: 00007f39f7b5e98e
-RDX: 000000000000003e RSI: 0000200000000780 RDI: 00000000000000c8
-RBP: 00007f39f7c35024 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f39f7e26038 R14: 00007f39f7e25fa0 R15: 00007fff66b2b028
  </TASK>
 
+Allocated by task 5847:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
+ __kmalloc_cache_noprof+0x321/0x600 mm/slub.c:5563
+ nvmet_ports_make+0xe6/0xf00 drivers/nvme/target/configfs.c:2051
+ configfs_mkdir+0x4f6/0x9e0 fs/configfs/dir.c:1360
+ vfs_mkdir+0x40c/0x620 fs/namei.c:5410
+ filename_mkdirat+0x285/0x510 fs/namei.c:5443
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
 
-***
+Freed by task 5847:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+ kfree+0x1c5/0x650 mm/slub.c:6792
+ config_item_release+0x13a/0x2d0 fs/configfs/item.c:137
+ configfs_rmdir+0x885/0x950 fs/configfs/dir.c:1571
+ vfs_rmdir+0x3e6/0x6a0 fs/namei.c:5515
+ filename_rmdir+0x292/0x520 fs/namei.c:5572
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
 
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fix this by:
+1. Adding configfs_get_root_item() to walk up the dentry tree past any
+default groups (CONFIGFS_USET_DEFAULT) while holding inode_lock(dir) to
+acquire a reference to the root object (root_item), preventing the
+containing structure from being freed while inode_lock(dir) is dropped.
+2. Checking sd->s_frag->frag_dead after re-acquiring inode_lock(dir) to
+detect if the directory was removed during the unlocked window, returning
+-ENOENT instead of calling allow_link().
+3. Releasing parent_item before root_item in the out_put cleanup path so
+that the embedded item reference is dropped while the memory of the
+containing root object remains pinned.
+
+Fixes: 351e5d869e5a ("configfs: fix a deadlock in configfs_symlink()")
+Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+b0996ac2197dd7420c3e@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=b0996ac2197dd7420c3e
+Link: https://syzkaller.appspot.com/ai_job?id=e3aa1920-4324-4492-b79e-dffb87dfa600
+To: "Breno Leitao" <leitao@debian.org>
+To: <linux-kernel@vger.kernel.org>
+To: "Al Viro" <viro@zeniv.linux.org.uk>
+Cc: "Andreas Hindborg" <a.hindborg@kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/fs/configfs/symlink.c b/fs/configfs/symlink.c
+index 31eb28b27..5fe3722bd 100644
+--- a/fs/configfs/symlink.c
++++ b/fs/configfs/symlink.c
+@@ -131,6 +131,19 @@ static int get_target(const char *symname, struct config_item **target,
+ 	return 0;
+ }
+ 
++static struct config_item *configfs_get_root_item(struct dentry *dentry)
++{
++	struct dentry *root_dentry = dentry;
++	struct configfs_dirent *sd;
++
++	while (root_dentry) {
++		sd = root_dentry->d_fsdata;
++		if (!sd || !(sd->s_type & CONFIGFS_USET_DEFAULT))
++			break;
++		root_dentry = root_dentry->d_parent;
++	}
++	return root_dentry ? configfs_get_config_item(root_dentry) : NULL;
++}
+ 
+ int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
+ 		     struct dentry *dentry, const char *symname)
+@@ -139,6 +152,7 @@ int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
+ 	struct configfs_dirent *sd;
+ 	struct config_item *parent_item;
+ 	struct config_item *target_item = NULL;
++	struct config_item *root_item = NULL;
+ 	const struct config_item_type *type;
+ 
+ 	sd = dentry->d_parent->d_fsdata;
+@@ -157,6 +171,12 @@ int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
+ 	    !type->ct_item_ops->allow_link)
+ 		goto out_put;
+ 
++	/*
++	 * Pin the root object so that the parent_item (which may be an
++	 * embedded default group) is not freed while we drop the lock.
++	 */
++	root_item = configfs_get_root_item(dentry->d_parent);
++
+ 	/*
+ 	 * This is really sick.  What they wanted was a hybrid of
+ 	 * link(2) and symlink(2) - they wanted the target resolved
+@@ -192,8 +212,12 @@ int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
+ 	else
+ 		ret = inode_permission(&nop_mnt_idmap, dir,
+ 				       MAY_WRITE | MAY_EXEC);
+-	if (!ret)
+-		ret = type->ct_item_ops->allow_link(parent_item, target_item);
++	if (!ret) {
++		if (sd->s_frag->frag_dead)
++			ret = -ENOENT;
++		else
++			ret = type->ct_item_ops->allow_link(parent_item, target_item);
++	}
+ 	if (!ret) {
+ 		mutex_lock(&configfs_symlink_mutex);
+ 		ret = create_link(parent_item, target_item, dentry);
+@@ -207,6 +231,7 @@ int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
+ 
+ out_put:
+ 	config_item_put(parent_item);
++	config_item_put(root_item);
+ 	return ret;
+ }
+ 
 
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
 
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
+base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
