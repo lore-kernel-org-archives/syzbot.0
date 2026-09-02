@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CECE641686D
-	for <syzbot@lists.linux.dev>; Wed,  2 Sep 2026 22:23:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6120B443E4D
+	for <syzbot@lists.linux.dev>; Wed,  2 Sep 2026 23:34:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788387789; cv=none; b=lfzqCtP2n+K4054/LGaDZEif07+7N29NKg9pe3gYnHj/Y1Wr21MB88CrV9KscUgLTKVTsOALj5RKKBcGCHH5niPShyzqRq/3Ne2PY3VjRvdE/BtzRlryHsWbC2pzRTC9vfuCFkI6YdjcCnVabIMjya+Bw0mjm4pdB7NNJjRgVJQ=
+	t=1788392079; cv=none; b=DOy9NLzA88I21bwW/q+93wzDKhLz/EAseW5GtFjtGuOEUvTc0YdCFtrkEjmk013TQ1v+WcwOS7JzSDpy8nyXiiORWE7v+E80ewJRbQH1nfeoNrGDK2/FbbdtW3CpfggRtCx1yTaRtE0IFe5EWac9EhYav8nFFWiY+5cbw7fpb8c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788387789; c=relaxed/simple;
-	bh=A88bS0OlT8rvvN5VrfNX7DKDdSbtAHY0MTXWsj0Kd6M=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=i3cYOZ+M9+v/X6eOGJzdG7lmhEbfztXfcprElHo1CnN29xhAaUQyQCc1gvSpeU+RUp/dKXeEADGVk/YmdbuCCJxMspgSaQN1ahWLZQiX0Dfa9NrKqdiSJeENp/oJkvkZ9ZeYg3lt4r3tACgly9Zh5NLVjX2j4jUQl0jRDdzum0Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kPVzTsvB; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788392079; c=relaxed/simple;
+	bh=G2esCXcc0JQL8iwmUEEeYSZfwxW9dcRc011QMjo2/7o=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=dnOh/+sAMtIedWx3G8ZsTaIVrB0BAfZlA4tldzxvzWm0bWWnU1ozGmn2Q3Kcx/iX+xzDy5H0FL+XsnmEvEfSBv5bZm5HN8bus1KLAzNz32gcSyLU06TcaEAuU2yTxK1ghIoE9hBxPCeeQQ6qGtKS3DPWZyLKagdHLXmZUN0DccA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NzCkMGSJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kPVzTsvB"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 7192A1F000E9;
-	Wed,  2 Sep 2026 22:23:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NzCkMGSJ"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 3D2111F000E9;
+	Wed,  2 Sep 2026 23:34:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788387782;
-	bh=RgP7hZmIoKVcyTrGZrR2vRQcxYnsSk0IBAYKyRzn590=;
+	s=k20260515; t=1788392074;
+	bh=Gwd1ydndNyGi1shSLDAUjXr7+7tVy9d7vxobkn60nvU=;
 	h=From:To:Cc:Subject:Date;
-	b=kPVzTsvB5scoehLhvufgsredzNLLsStz/TbC0rGfEGFy8J4ddlqowAGveSPEhNp6F
-	 pwlR4zyhp9fjkkNCdTmyCutVD+wan3rdjHeTZp9bi1qm9qsVztb8ONMfI+7Ianop7M
-	 G8YK7PJCxGEjtAXM/CvHdodvrNcWOkl0eVKupONWrWQ7v0VdgY8sSIsk14avYGdN1L
-	 oLfwMoO5M1RpyMWX4TsX8nV6ucqi7NmrXx+kudqvoLv1gbsWjDAWPg52v6GaO4RJcL
-	 u8JVPYhqS1jWG6yK21b7qBwWCP2LTAdPhptTJXe37tEDeQpRtjH4RCM8xvYzwS6piu
-	 OpLm7irJACRJw==
+	b=NzCkMGSJMPF7JFjbNwPpcFnr1szGlV/SI5qQCC0x27Jg9BcpWMN4Q6eUbwpLae85u
+	 RXwSBsnRNk1w6pe7D0nLKVn50DrAaVzxu3mZE/0h6KOV0kArh/Tdp+9zVLxZC12AUI
+	 r6YdVOYqecNB9lYB64p6zVQT/IbJ++5DB2p0Qm8a9MsEG2ip/v3PxI0vKQ96F7J6T0
+	 Ppm3ZPbC4ZWXzb9G42yRbkPQdN57AbAdWj0Ngq8Qx6o2GgAzhI9kWvYOTavcQLuf9Y
+	 yvtsm+A4TQ8RWmK/X8q7W3v+wv7T1QiglluS0cJ7TLYp02JDMQowcpJHXU7A/uTxkN
+	 YWFJrcgTE/wBQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] configfs: fix use-after-free in configfs_symlink()
-Message-ID: <ccce0ada-669c-4d3b-929a-5e95de4e54dd@mail.kernel.org>
+Subject: [PATCH RFC] locking/lockdep: Avoid redundant BFS checks in check_prev_add()
+Message-ID: <78c47b3e-4fb2-4dcc-9d9a-3d255f900b44@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,157 +38,192 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed,  2 Sep 2026 22:23:02 +0000 (UTC)
+Date: Wed,  2 Sep 2026 23:34:34 +0000 (UTC)
 
-In configfs_symlink(), inode_unlock(dir) is called before resolving the
-symlink target via get_target() to avoid deadlocks during pathname lookup.
-When configfs_symlink() operates within a default group (such as
-ports/1/subsystems/ in NVMe-oF target), parent_item is an embedded default
-group inside the dynamically allocated parent object (struct nvmet_port).
-Because default groups are embedded within their containing structure,
-holding a reference to parent_item alone does not prevent the containing
-parent structure from being freed when a concurrent configfs_rmdir()
-removes the root directory.
+When a new lock chain is encountered (such as when a timer interrupt occurs
+while holding a dynamically allocated workqueue lockdep map during
+workqueue destruction), validate_chain() calls check_prevs_add() and
+check_prev_add() to validate the locks held in the chain.
 
-When configfs_rmdir() runs concurrently while inode_lock(dir) is dropped in
-configfs_symlink(), it detaches all default groups, unlinks the root group,
-sets frag_dead to true, and drops the subsystem's reference to the root
-group. Once the root object's refcount drops to zero, the entire containing
-structure is freed via kfree(). When configfs_symlink() re-acquires
-inode_lock(dir), accessing parent_item in allow_link() accesses freed
-memory, causing a slab-use-after-free:
+In check_prev_add(), lockdep previously performed expensive BFS graph
+traversals (check_noncircular() and check_irq_usage()) before checking
+whether the <prev> -> <next> dependency already existed in
+hlock_class(prev)->locks_after. For heavily used core locks such as
+cpu_base->lock (the hrtimer base lock), which have thousands of backward
+dependencies across the kernel, traversing the backward dependency graph
+during check_irq_usage() can exceed MAX_CIRCULAR_QUEUE_SIZE (1UL <<
+CONFIG_LOCKDEP_CIRCULAR_QUEUE_BITS), triggering a BFS queue overflow
+warning:
 
-BUG: KASAN: slab-use-after-free in nvmet_port_subsys_allow_link+0x41/0x2e0
-drivers/nvme/target/configfs.c:1059
-Read of size 8 at addr ffff88811c6d44c8
-
+lockdep bfs error:-1
+WARNING: kernel/locking/lockdep.c:2075 at print_bfs_bug+0x20/0x40
 Call Trace:
  <TASK>
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- nvmet_port_subsys_allow_link+0x41/0x2e0
- drivers/nvme/target/configfs.c:1059
- configfs_symlink+0x59a/0x1030 fs/configfs/symlink.c:196
- vfs_symlink+0x18b/0x330 fs/namei.c:5794
- filename_symlinkat+0x1cd/0x410 fs/namei.c:5819
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
+ check_irq_usage kernel/locking/lockdep.c:-1 [inline]
+ check_prev_add kernel/locking/lockdep.c:3185 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3300 [inline]
+ validate_chain kernel/locking/lockdep.c:3924 [inline]
+ __lock_acquire+0x262d/0x2e50 kernel/locking/lockdep.c:5254
+ lock_acquire+0x115/0x350 kernel/locking/lockdep.c:5908
+ seqcount_lockdep_reader_access+0x55/0x100 include/linux/seqlock.h:73
+ ktime_expiry_to_cycles+0x4e/0x1e0 kernel/time/timekeeping.c:941
+ clockevents_program_event+0x199/0x630 kernel/time/clockevents.c:360
+ __hrtimer_rearm_deferred+0x36c/0x4b0 kernel/time/hrtimer.c:2189
+ irqentry_exit+0x8d3/0x910 kernel/entry/common.c:167
+ asm_sysvec_apic_timer_interrupt+0x1a/0x20
+ arch/x86/include/asm/idtentry.h:674
+ touch_wq_lockdep_map+0xcb/0x180 kernel/workqueue.c:4102
+ __flush_workqueue+0x148/0x1470 kernel/workqueue.c:4144
+ destroy_workqueue+0xbb/0xc60 kernel/workqueue.c:6146
  </TASK>
 
-Allocated by task 5847:
- kasan_save_stack mm/kasan/common.c:57 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
- __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
- __kmalloc_cache_noprof+0x321/0x600 mm/slub.c:5563
- nvmet_ports_make+0xe6/0xf00 drivers/nvme/target/configfs.c:2051
- configfs_mkdir+0x4f6/0x9e0 fs/configfs/dir.c:1360
- vfs_mkdir+0x40c/0x620 fs/namei.c:5410
- filename_mkdirat+0x285/0x510 fs/namei.c:5443
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
+Because an existing <prev> -> <next> dependency was already validated for
+circular deadlocks and IRQ usage conflicts when it was originally inserted
+into the graph (and subsequent IRQ state changes dynamically trigger
+validations in mark_lock_irq()), repeating full BFS traversals for every
+new lock chain containing that dependency is redundant and can cause
+spurious BFS queue overflows.
 
-Freed by task 5847:
- kasan_save_stack mm/kasan/common.c:57 [inline]
- kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
- __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
- kfree+0x1c5/0x650 mm/slub.c:6792
- config_item_release+0x13a/0x2d0 fs/configfs/item.c:137
- configfs_rmdir+0x885/0x950 fs/configfs/dir.c:1571
- vfs_rmdir+0x3e6/0x6a0 fs/namei.c:5515
- filename_rmdir+0x292/0x520 fs/namei.c:5572
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
+Fix this by inspecting hlock_class(prev)->locks_after before executing BFS
+graph traversals in check_prev_add():
 
-Fix this by:
-1. Adding configfs_get_root_item() to walk up the dentry tree past any
-default groups (CONFIGFS_USET_DEFAULT) while holding inode_lock(dir) to
-acquire a reference to the root object (root_item), preventing the
-containing structure from being freed while inode_lock(dir) is dropped.
-2. Checking sd->s_frag->frag_dead after re-acquiring inode_lock(dir) to
-detect if the directory was removed during the unlocked window, returning
--ENOENT instead of calling allow_link().
-3. Releasing parent_item before root_item in the out_put cleanup path so
-that the embedded item reference is dropped while the memory of the
-containing root object remains pinned.
+1. If the <prev> -> <next> dependency is already present and covers the
+requested dependency bits (entry->dep & calc_dep(prev, next)), update the
+distance and the reverse dependency entry in locks_before and return
+immediately, skipping redundant BFS traversals.
+2. If the dependency is present but introduces new dependency bits, record
+the target entry, run check_noncircular() and check_irq_usage() for the new
+dependency bits, and update the existing entries in place.
+3. If the dependency is not present in locks_after, proceed with full BFS
+validation and dependency insertion as before.
 
-Fixes: 351e5d869e5a ("configfs: fix a deadlock in configfs_symlink()")
+Fixes: fbb9ce9530fd ("[PATCH] lockdep: core")
 Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+b0996ac2197dd7420c3e@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=b0996ac2197dd7420c3e
-Link: https://syzkaller.appspot.com/ai_job?id=e3aa1920-4324-4492-b79e-dffb87dfa600
-To: "Breno Leitao" <leitao@debian.org>
+Reported-by: syzbot+085adc3f91549d11066a@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=085adc3f91549d11066a
+Link: https://syzkaller.appspot.com/ai_job?id=17926c9a-f772-43b3-ae90-c5fa5b0275a0
+To: "Boqun Feng" <boqun@kernel.org>
 To: <linux-kernel@vger.kernel.org>
-To: "Al Viro" <viro@zeniv.linux.org.uk>
-Cc: "Andreas Hindborg" <a.hindborg@kernel.org>
+To: "Ingo Molnar" <mingo@redhat.com>
+To: "Peter Zijlstra" <peterz@infradead.org>
+To: "Will Deacon" <will@kernel.org>
+To: "Ingo Molnar" <mingo@elte.hu>
+Cc: "Waiman Long" <longman@redhat.com>
 
 ---
-diff --git a/fs/configfs/symlink.c b/fs/configfs/symlink.c
-index 31eb28b27..5fe3722bd 100644
---- a/fs/configfs/symlink.c
-+++ b/fs/configfs/symlink.c
-@@ -131,6 +131,19 @@ static int get_target(const char *symname, struct config_item **target,
- 	return 0;
- }
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index c56a7f91d..4307410d9 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -3140,6 +3140,7 @@ check_prev_add(struct task_struct *curr, struct held_lock *prev,
+ 	       struct lock_trace **const trace)
+ {
+ 	struct lock_list *entry;
++	struct lock_list *target_entry = NULL;
+ 	enum bfs_result ret;
  
-+static struct config_item *configfs_get_root_item(struct dentry *dentry)
-+{
-+	struct dentry *root_dentry = dentry;
-+	struct configfs_dirent *sd;
-+
-+	while (root_dentry) {
-+		sd = root_dentry->d_fsdata;
-+		if (!sd || !(sd->s_type & CONFIGFS_USET_DEFAULT))
-+			break;
-+		root_dentry = root_dentry->d_parent;
-+	}
-+	return root_dentry ? configfs_get_config_item(root_dentry) : NULL;
-+}
- 
- int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
- 		     struct dentry *dentry, const char *symname)
-@@ -139,6 +152,7 @@ int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
- 	struct configfs_dirent *sd;
- 	struct config_item *parent_item;
- 	struct config_item *target_item = NULL;
-+	struct config_item *root_item = NULL;
- 	const struct config_item_type *type;
- 
- 	sd = dentry->d_parent->d_fsdata;
-@@ -157,6 +171,12 @@ int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
- 	    !type->ct_item_ops->allow_link)
- 		goto out_put;
+ 	if (!hlock_class(prev)->key || !hlock_class(next)->key) {
+@@ -3168,6 +3169,40 @@ check_prev_add(struct task_struct *curr, struct held_lock *prev,
+ 			return 2;
+ 	}
  
 +	/*
-+	 * Pin the root object so that the parent_item (which may be an
-+	 * embedded default group) is not freed while we drop the lock.
++	 * Is the <prev> -> <next> dependency already present?
++	 *
++	 * (this may occur even though this is a new chain: consider
++	 *  e.g. the L1 -> L2 -> L3 -> L4 and the L5 -> L1 -> L2 -> L3
++	 *  chains - the second one will be new, but L1 already has
++	 *  L2 added to its dependency list, due to the first chain.)
 +	 */
-+	root_item = configfs_get_root_item(dentry->d_parent);
++	list_for_each_entry(entry, &hlock_class(prev)->locks_after, entry) {
++		if (entry->class == hlock_class(next)) {
++			if (distance == 1)
++				entry->distance = 1;
++			if (entry->dep & calc_dep(prev, next)) {
++				/*
++				 * Also, update the reverse dependency in @next's
++				 * ->locks_before list.
++				 */
++				list_for_each_entry(entry, &hlock_class(next)->locks_before,
++						    entry) {
++					if (entry->class == hlock_class(prev)) {
++						if (distance == 1)
++							entry->distance = 1;
++						return 1;
++					}
++				}
++
++				/* <prev> is not found in <next>::locks_before */
++				return 0;
++			}
++			target_entry = entry;
++			break;
++		}
++	}
 +
  	/*
- 	 * This is really sick.  What they wanted was a hybrid of
- 	 * link(2) and symlink(2) - they wanted the target resolved
-@@ -192,8 +212,12 @@ int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
- 	else
- 		ret = inode_permission(&nop_mnt_idmap, dir,
- 				       MAY_WRITE | MAY_EXEC);
--	if (!ret)
--		ret = type->ct_item_ops->allow_link(parent_item, target_item);
-+	if (!ret) {
-+		if (sd->s_frag->frag_dead)
-+			ret = -ENOENT;
-+		else
-+			ret = type->ct_item_ops->allow_link(parent_item, target_item);
-+	}
- 	if (!ret) {
- 		mutex_lock(&configfs_symlink_mutex);
- 		ret = create_link(parent_item, target_item, dentry);
-@@ -207,6 +231,7 @@ int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
+ 	 * Prove that the new <prev> -> <next> dependency would not
+ 	 * create a circular dependency in the graph. (We do this by
+@@ -3185,48 +3220,19 @@ check_prev_add(struct task_struct *curr, struct held_lock *prev,
+ 	if (!check_irq_usage(curr, prev, next))
+ 		return 0;
  
- out_put:
- 	config_item_put(parent_item);
-+	config_item_put(root_item);
- 	return ret;
- }
+-	/*
+-	 * Is the <prev> -> <next> dependency already present?
+-	 *
+-	 * (this may occur even though this is a new chain: consider
+-	 *  e.g. the L1 -> L2 -> L3 -> L4 and the L5 -> L1 -> L2 -> L3
+-	 *  chains - the second one will be new, but L1 already has
+-	 *  L2 added to its dependency list, due to the first chain.)
+-	 */
+-	list_for_each_entry(entry, &hlock_class(prev)->locks_after, entry) {
+-		if (entry->class == hlock_class(next)) {
+-			if (distance == 1)
+-				entry->distance = 1;
+-			entry->dep |= calc_dep(prev, next);
+-
+-			/*
+-			 * Also, update the reverse dependency in @next's
+-			 * ->locks_before list.
+-			 *
+-			 *  Here we reuse @entry as the cursor, which is fine
+-			 *  because we won't go to the next iteration of the
+-			 *  outer loop:
+-			 *
+-			 *  For normal cases, we return in the inner loop.
+-			 *
+-			 *  If we fail to return, we have inconsistency, i.e.
+-			 *  <prev>::locks_after contains <next> while
+-			 *  <next>::locks_before doesn't contain <prev>. In
+-			 *  that case, we return after the inner and indicate
+-			 *  something is wrong.
+-			 */
+-			list_for_each_entry(entry, &hlock_class(next)->locks_before, entry) {
+-				if (entry->class == hlock_class(prev)) {
+-					if (distance == 1)
+-						entry->distance = 1;
+-					entry->dep |= calc_depb(prev, next);
+-					return 1;
+-				}
++	if (target_entry) {
++		target_entry->dep |= calc_dep(prev, next);
++		list_for_each_entry(entry, &hlock_class(next)->locks_before, entry) {
++			if (entry->class == hlock_class(prev)) {
++				if (distance == 1)
++					entry->distance = 1;
++				entry->dep |= calc_depb(prev, next);
++				return 1;
+ 			}
+-
+-			/* <prev> is not found in <next>::locks_before */
+-			return 0;
+ 		}
++
++		/* <prev> is not found in <next>::locks_before */
++		return 0;
+ 	}
  
+ 	/*
 
 
 base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
