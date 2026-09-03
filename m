@@ -1,186 +1,149 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtpo63.interia.pl (smtpo63.interia.pl [217.74.67.63])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A1354B0C86;
-	Thu,  3 Sep 2026 13:48:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFF2D439F93
+	for <syzbot@lists.linux.dev>; Thu,  3 Sep 2026 14:05:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.63
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788443349; cv=none; b=nnee6bYIopAzamhwY7QWkZmlTjH9gy9+hLR1mbrid6XXNYP3ZxFsNgoQ/ZYggn3TsDsXld4Y9h8H44AV9HavzGsrs2WQCP828vju8ELcinuhVPAEhix4Z3dLYozKeNK41PHoYKQ7rau/8hT4O+dOhIm0n+5k24dZrxU/brRRRZo=
+	t=1788444368; cv=none; b=YjNkWS9ueylGqSAeAj43Tl+iNSsj+8g2iSJ2QRhzGYt+6rxMBNXbcwl4wnBaS2iHkJtkTeLgHMwC2idxNHDQFiwY4ZeODORpPv1jBs1W5KXUr75GnvJCwmHgn837vGsgdoOGfGzwkNsVZq6vKfbxl5ft2UviiKr/5Qs7LrAg3r8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788443349; c=relaxed/simple;
-	bh=xwRswq87lvm5eihQOLOsUYUUFXoY/BZYZif+E60hD9g=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=pIPjXz+/7+sCTt2L2Mf3HWyRfb664qcegtY4dTSzxyEtVaG15bfH2jxwe8C45aaWdBsEMJIwm5JcguKj7AoCCptPrI2KOjTEUHkMs1tyWZg+K4IpoaYDoq6hmh2DieqIiicP/2zXXE591Uc0JNfAtu1+g+2JRPSaksMZFjgK8F8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z9MeGmA2; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788444368; c=relaxed/simple;
+	bh=jIg0gQVea/HpkmYQ6hpRxOBNe+E0GsfphvWvKN4xPmE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=N1mH20EHJJjYlRLl5IXOsUvdlfQNr0WN71i/nYKz/EYxLmyPyXnbRC51Cn2LgUWryy1st24yDvWzmsHzGbq0ipiuGhRxHxER2BwQlupBlmBlonfEAqde+mwzLpsbiB1TgBbaNHj00m4Lwe2eB+yFVuNEP+lsbrPMgMTKPadz2BM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=nU0Dj+Yc; arc=none smtp.client-ip=217.74.67.63
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z9MeGmA2"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 26F671F00A3F;
-	Thu,  3 Sep 2026 13:48:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788443335;
-	bh=6To+8fe2xKabaq6LuBCZ/jPSqRixKgPLH1mPUnM4bHo=;
-	h=From:To:Cc:Subject:Date;
-	b=Z9MeGmA21BkOeddjLE5LR+XMcG1y6ECfJya73DU/Sz4bHhlqCXj9ITrKmN35Q9USh
-	 9qcDv7PZgOTejj2ZGZ3GMj7N82R6dxusbEjROgDFwnjcGW7Dsc7h8dK8K8J1RZaQuG
-	 tzLfqGgTZqj1uHoEqyedjDD4zynzhcK8sDLVyERsZQuldPVq1iTS4+ae11s3Uba+QV
-	 wjizbqXtIE0xB4UAr3wRcV2gr/SDYnfcourzrSV2lJyTbclsxpztfBmiuZgU371VeJ
-	 jwiPw1HfSLolZiiF1UgH9xGXB40nQiASCwYCyKhlJMhYwNy7xK+w0FYhXTyA7qZ4ND
-	 nraERTUl1ykyA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Krystian Kaniewski <krystianmkaniewski@gmail.com>, "Andrew Morton" <akpm@linux-foundation.org>, <linux-fsdevel@vger.kernel.org>, <linux-mm@kvack.org>, "Matthew Wilcox" <willy@infradead.org>
-Cc: linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Subject: [PATCH] xarray: fix index jumping backwards in xas_find()
-Message-ID: <2992424b-2120-489e-9010-f45f46ed52c8@mail.kernel.org>
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="nU0Dj+Yc"
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Thu,  3 Sep 2026 16:05:50 +0200 (CEST)
+Date: Thu, 3 Sep 2026 16:05:47 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: Chuck Lever <cel@kernel.org>
+Cc: syzbot <syzbot@kernel.org>, syzkaller-bugs@googlegroups.com,
+	Anna Schumaker <anna@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jeff Layton <jlayton@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+	linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
+	Paolo Abeni <pabeni@redhat.com>,
+	Trond Myklebust <trondmy@kernel.org>,
+	Trond Myklebust <trond.myklebust@primarydata.com>,
+	Dai Ngo <Dai.Ngo@oracle.com>, Simon Horman <horms@kernel.org>,
+	linux-kernel@vger.kernel.org, NeilBrown <neil@brown.name>,
+	Olga Kornievskaia <okorniev@redhat.com>, syzbot@lists.linux.dev,
+	Tom Talpey <tom@talpey.com>
+Subject: Re: [PATCH] sunrpc: reject socket already in use in svc_addsock()
+Message-ID: <apl-u5wtRUO6o5wC@nr200>
+References: <554e50fa-697c-4e57-b5a5-a1c280816436@mail.kernel.org>
+ <c31de847-f77f-4dd8-87c4-46e3d21c57a9@app.fastmail.com>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Thu,  3 Sep 2026 13:48:55 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c31de847-f77f-4dd8-87c4-46e3d21c57a9@app.fastmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1788444353; bh=4yzE0r6uHgl6auw9ViVevz1l+8qKEPBoHma3z4nNR2U=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=nU0Dj+YcWB8dzesRuOdepnOzLEnxTfRXHtH3xyuzIM8MPUznP1whML583lcbWvA2V
+	 7zCNtepXFEZv0HxIFP1tTXNmOEzCG6tIN7AXIjuA/NE3Ng58j/uBGaZGNEqNU/eYXh
+	 BW4suu84bIyRxBIgEjMcQazuy+NqPCI8pljVV0po=
 
-From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+On wrz 03, 2026 09:48, Chuck Lever wrote:
+> On Thu, Sep 3, 2026, at 9:28 AM, syzbot wrote:
+> > From: Slawomir Stepien <sst@poczta.fm>
+> >
+> > When a socket is added to an RPC service via svc_addsock() (for example, by
+> > writing its file descriptor to /proc/fs/nfsd/portlist), svc_setup_socket()
+> > saves the original socket callbacks (such as sk_state_change) into struct
+> > svc_sock and replaces them with RPC-specific callbacks (such as
+> > svc_tcp_state_change). It also attaches the new svc_sock to
+> > sk->sk_user_data.
+> >
+> > If the same socket file descriptor is added to an RPC service again,
+> > svc_addsock() invokes svc_setup_socket() a second time on the same socket.
+> > During the second setup, svsk->sk_ostate is assigned the socket's current
+> > sk_state_change callback, which was already replaced with
+> > svc_tcp_state_change. When a state change event subsequently occurs on the
+> > socket (for example, when connect() is called), svc_tcp_state_change()
+> > invokes svsk->sk_ostate, calling itself in an infinite recursion until the
+> > kernel stack overflows and triggers a stack guard page fault:
+> >
+> > BUG: TASK stack guard page was hit at ffffc900030b7ff8 (stack is
+> > ffffc900030b8000..ffffc900030c0000)
+> > Oops: stack guard page: 0000 [#1] SMP KASAN NOPTI
+> > ...
+> > Call Trace:
+> >  <TASK>
+> >  svc_tcp_state_change+0x76/0x2e0 net/sunrpc/svcsock.c:917
+> >  svc_tcp_state_change+0x76/0x2e0 net/sunrpc/svcsock.c:917
+> >  svc_tcp_state_change+0x76/0x2e0 net/sunrpc/svcsock.c:917
+> >  ...
+> >  tcp_done_with_error net/ipv4/tcp_input.c:4877 [inline]
+> >  tcp_reset+0x176/0x380 net/ipv4/tcp_input.c:4909
+> >  tcp_rcv_synsent_state_process net/ipv4/tcp_input.c:6903 [inline]
+> >  tcp_rcv_state_process+0x13bc/0x48a0 net/ipv4/tcp_input.c:7197
+> >  tcp_v4_do_rcv+0xafc/0x1530 net/ipv4/tcp_ipv4.c:1876
+> >  sk_backlog_rcv include/net/sock.h:1192 [inline]
+> >  __release_sock+0x25b/0x390 net/core/sock.c:3260
+> >  release_sock+0x190/0x260 net/core/sock.c:3859
+> >  inet_wait_for_connect net/ipv4/af_inet.c:616 [inline]
+> >  __inet_stream_connect+0x863/0xe00 net/ipv4/af_inet.c:710
+> >  inet_stream_connect+0x66/0xa0 net/ipv4/af_inet.c:755
+> >  connect_socket net/socket.c:2141 [inline]
+> >  __sys_connect_file net/socket.c:2166 [inline]
+> >  __sys_connect+0x316/0x450 net/socket.c:2183
+> >  ...
+> >  </TASK>
+> >
+> > Fix this by checking if so->sk->sk_user_data is already set in
+> > svc_addsock() before proceeding with svc_setup_socket(). If it is already
+> > non-NULL, return -EBUSY to prevent re-initializing an active socket.
+> >
+> > Fixes: fa9251afc33c ("SUNRPC: Call the default socket callbacks instead 
+> > of open coding")
+> > Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview 
+> > syzbot
+> > Reported-by: syzbot+c9834a0c0215e6d8697a@syzkaller.appspotmail.com
+> > Closes: https://syzkaller.appspot.com/bug?extid=c9834a0c0215e6d8697a
+> > Link: 
+> > https://syzkaller.appspot.com/ai_job?id=30de91d1-1d14-4676-8c38-a3564f7acf48
+> > Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+> >
+> > ---
+> > diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+> > index 50e5e7f5b..e8cc4329f 100644
+> > --- a/net/sunrpc/svcsock.c
+> > +++ b/net/sunrpc/svcsock.c
+> > @@ -1541,6 +1541,9 @@ int svc_addsock(struct svc_serv *serv, struct net 
+> > *net, const int fd,
+> >  	err = -EISCONN;
+> >  	if (so->state > SS_UNCONNECTED)
+> >  		goto out;
+> > +	err = -EBUSY;
+> > +	if (so->sk->sk_user_data)
+> > +		goto out;
+> >  	err = -ENOENT;
+> >  	if (!try_module_get(THIS_MODULE))
+> >  		goto out;
+> >
+> >
+> > base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
+> 
+> A similar fix is already in nfsd-testing:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git/commit/net/sunrpc/svcsock.c?h=nfsd-testing&id=7e8d1b4845aac4ad3c7bcd39032754917f5b966d
 
-A bug in the XArray iterator xas_find() causes the iterator's index
-(xas->xa_index) to jump backwards when iterating over a multi-index entry
-(like a THP) that resides in a non-leaf node and is concurrently split.
+Ah ok, a different extid of syzbug that's why I've missed it. Thanks!
 
-When iterating over a multi-index entry in a non-leaf node, xas_load() sets
-xas->xa_offset to the base offset of the entry, but leaves xas->xa_index at
-the requested index. When the caller subsequently wants to advance to the
-next entry, xas_find() is called. xas_find() attempts to synchronize
-xas->xa_offset with xas->xa_index before advancing. However, the fixup
-logic was incorrectly restricted to leaf nodes (!xas->xa_node->shift).
-Because the THP resides in a non-leaf node, the fixup is skipped.
-
-As a result, xas_find() simply increments xas->xa_offset and recalculates
-xas->xa_index based on this new offset. This causes xas->xa_index to jump
-backwards. If the THP was concurrently split, the entry at the new offset
-is a node pointer, so xas_find() descends into it and returns the folio at
-the backwards index. The caller (filemap_map_pages()) then calculates the
-PTE pointer based on this backwards index, resulting in an invalid memory
-access such as an out-of-bounds read or use-after-free on a page-table page
-freed via tlb_remove_table_rcu().
-
-To fix this, check if xas->xa_offset matches get_offset(xas->xa_index,
-xas->xa_node). If it does not and the node is a non-leaf node, set
-xas->xa_offset to get_offset(xas->xa_index, xas->xa_node) before advancing.
-Also add test cases in test_xarray to verify xas_find() behavior when
-iterating over and splitting multi-index entries.
-
-Fixes: b803b42823d0 ("xarray: Add XArray iterators")
-Assisted-by: Gemini:gemini-3.7-flash syzbot
-Reported-by: syzbot+b72767277f29b6407083@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=b72767277f29b6407083
-Link: https://syzkaller.appspot.com/ai_job?id=a01c56bd-74d0-411c-afb4-ee6f0cb6cb61
-Signed-off-by: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-
----
-diff --git a/lib/test_xarray.c b/lib/test_xarray.c
-index 5ca0aefee..cda7245e4 100644
---- a/lib/test_xarray.c
-+++ b/lib/test_xarray.c
-@@ -1247,6 +1247,67 @@ static noinline void check_multi_find_3(struct xarray *xa)
- 	}
- }
- 
-+static noinline void check_multi_find_4(struct xarray *xa)
-+{
-+#ifdef CONFIG_XARRAY_MULTI
-+	XA_STATE(xas, xa, 100);
-+	XA_STATE_ORDER(split, xa, 0, 0);
-+	void *entry;
-+	unsigned long i;
-+
-+	/* (1) Order-7 entry (0-127) with adjacent entry at 128, starting at 100 */
-+	xa_store_order(xa, 0, 7, xa_mk_index(0), GFP_KERNEL);
-+	XA_BUG_ON(xa, xa_store_index(xa, 128, GFP_KERNEL) != NULL);
-+
-+	rcu_read_lock();
-+	entry = xas_find(&xas, ULONG_MAX);
-+	XA_BUG_ON(xa, entry != xa_mk_index(0));
-+	XA_BUG_ON(xa, xas.xa_index != 100);
-+
-+	entry = xas_find(&xas, ULONG_MAX);
-+	XA_BUG_ON(xa, entry != xa_mk_index(128));
-+	XA_BUG_ON(xa, xas.xa_index != 128);
-+
-+	entry = xas_find(&xas, ULONG_MAX);
-+	XA_BUG_ON(xa, entry != NULL);
-+	rcu_read_unlock();
-+
-+	xa_erase_index(xa, 128);
-+	xa_erase_index(xa, 0);
-+	XA_BUG_ON(xa, !xa_empty(xa));
-+
-+	/* (2) Splitting a multi-index entry after a lookup begins inside it */
-+	xa_store_order(xa, 0, 7, xa_mk_index(0), GFP_KERNEL);
-+	XA_BUG_ON(xa, xa_store_index(xa, 128, GFP_KERNEL) != NULL);
-+
-+	xas_set(&xas, 100);
-+	rcu_read_lock();
-+	entry = xas_find(&xas, ULONG_MAX);
-+	XA_BUG_ON(xa, entry != xa_mk_index(0));
-+	XA_BUG_ON(xa, xas.xa_index != 100);
-+	rcu_read_unlock();
-+
-+	xas_split_alloc(&split, xa_mk_index(0), 7, GFP_KERNEL);
-+	xas_lock(&split);
-+	xas_split(&split, xa_mk_index(0), 7);
-+	for (i = 0; i < 128; i++)
-+		__xa_store(xa, i, xa_mk_index(i), 0);
-+	xas_unlock(&split);
-+
-+	rcu_read_lock();
-+	entry = xas_find(&xas, ULONG_MAX);
-+	XA_BUG_ON(xa, entry != xa_mk_index(128));
-+	XA_BUG_ON(xa, xas.xa_index != 128);
-+
-+	entry = xas_find(&xas, ULONG_MAX);
-+	XA_BUG_ON(xa, entry != NULL);
-+	rcu_read_unlock();
-+
-+	xa_destroy(xa);
-+	XA_BUG_ON(xa, !xa_empty(xa));
-+#endif
-+}
-+
- static noinline void check_find_1(struct xarray *xa)
- {
- 	unsigned long i, j, k;
-@@ -1370,6 +1431,7 @@ static noinline void check_find(struct xarray *xa)
- 		check_multi_find_1(xa, i);
- 	check_multi_find_2(xa);
- 	check_multi_find_3(xa);
-+	check_multi_find_4(xa);
- }
- 
- /* See find_swap_entry() in mm/shmem.c */
-diff --git a/lib/xarray.c b/lib/xarray.c
-index 9a8b49165..980324d68 100644
---- a/lib/xarray.c
-+++ b/lib/xarray.c
-@@ -1406,9 +1406,11 @@ void *xas_find(struct xa_state *xas, unsigned long max)
- 		entry = xas_load(xas);
- 		if (entry || xas_not_node(xas->xa_node))
- 			return entry;
--	} else if (!xas->xa_node->shift &&
--		    xas->xa_offset != (xas->xa_index & XA_CHUNK_MASK)) {
--		xas->xa_offset = ((xas->xa_index - 1) & XA_CHUNK_MASK) + 1;
-+	} else if (xas->xa_offset != get_offset(xas->xa_index, xas->xa_node)) {
-+		if (!xas->xa_node->shift)
-+			xas->xa_offset = ((xas->xa_index - 1) & XA_CHUNK_MASK) + 1;
-+		else
-+			xas->xa_offset = get_offset(xas->xa_index, xas->xa_node);
- 	}
- 
- 	xas_next_offset(xas);
-
-
-base-commit: 8d3ae59288f1e7d58d76558a6ee96d533bc5019f
 -- 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Slawomir Stepien
