@@ -1,89 +1,162 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05A4B513572
-	for <syzbot@lists.linux.dev>; Fri,  4 Sep 2026 16:57:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3860D4EA394
+	for <syzbot@lists.linux.dev>; Fri,  4 Sep 2026 20:32:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788541046; cv=none; b=orn4GoPNyaf+Xt/qpo6sKXpvEuXDU+Uu5JuVQmoNBPER3fzak3X8ONqfuHRNen3k0bmhyzQ24ZuDiksH607NftszhoZ932ZWhPu99C+uNlvQ3QTmJJzBxD9EBxwbNFxVSYwZzf8Z07LKbVh5FCczUZkYD+DBesAshk2xLAdKRjw=
+	t=1788553953; cv=none; b=g5fgCwZyJoELRt56b5Yds24i+pGThcD1QKCHD+xBYlRF7n66YzUfJAdLwrPkh3pQ4bBNPLEoDqewr8xeVO91aK+u+bG3gnpOwDmyvyqVJqEy6EtfpWPIjXbj/QrEiTtoh2wImJiJWMu3WZ/l7LeGDtROuI+EgSuF01Q8lB47iN0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788541046; c=relaxed/simple;
-	bh=d9LE71YMOWvgwrfLXCc0TVHu4a7rCzbS5efLWgT/eVA=;
-	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
-	 In-Reply-To:To:Cc; b=W0TRwRvwzQZse8MMhz1f2Naunag7w+7rUx5WpRzcCQ5jrJpS1e9W6tRhP83bYMxV8FelpCdjOa/59MvhKd7lZtvJP7ajp1w67U2y0dQNewJ6JG/Aryv7UCusyjHTX4d1Hi0IRwfSV8NeqgrcmlR2I1zlhUxNrvPePByDgEyl86I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LxxpBRW2; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788553953; c=relaxed/simple;
+	bh=HcElqqC3tva/YvvKgD3N3Bg9tsyBXESQxnO3Z3nxNsc=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=MbaGSHmtFzs42/9uA1HOnoKtTeEj4S/OY4FI/FAxGcXShcqG6EE4o/oSdFvEByovdhEzfb/M+NdC5zrDyUg3AGcsGTbptNvv+gdOxwhgdwU5qR0UaH3IOZl5SyayM29m1JXUN1GVqp173XZFEGDywSg/0baPaLFQDsGIJewWJTo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VMBnKIUy; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LxxpBRW2"
-Received: by smtp.kernel.org (Postfix)
-	id AD5501F00A3E; Fri,  4 Sep 2026 16:57:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96B971F00A3D;
-	Fri,  4 Sep 2026 16:57:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VMBnKIUy"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id DFF2C1F00A3E;
+	Fri,  4 Sep 2026 20:32:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788541044;
-	bh=q8QHZNNoPSZ8H5EGMIMVa3JWvIiJV5t0mCimEQh3VyQ=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc;
-	b=LxxpBRW2epqs5JrEKGYDfmU6ILtFkM1RUVluI2HN5DcVFXFvkBHCirBH29+wy6Pdc
-	 wunJPhbD5E0Ldj0gZXX1Pbmlx67joE7zmxKDb6tZpuW62tIJMmaIgyoqpxtWbOs5qp
-	 Y/HUQ8zL5qwEjeUEkY8elmF3h2tKpNepjfEFqLZpT5cRQC5qT+AHCd8+7ahl7ONVSH
-	 6M9K1N/EO+JWBnBXa/LCs8rntLm0kPLdYtbmzuIRHpDJDajd7BdHMNasUdEkhF/69F
-	 9uSokXS5ihbfX1MAkK1zPKFjeg6ZDY/9RXfKx0moKKvoO9zgsN0TshMvVZIT4V/IN4
-	 6gb22v4CFJo3w==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 9398B3924A50;
-	Fri,  4 Sep 2026 16:56:26 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	s=k20260515; t=1788553943;
+	bh=sW+xj17SDeVE1DNlOF6izo4vMzo4DOxUwyGAzqUCe38=;
+	h=From:To:Cc:Subject:Date;
+	b=VMBnKIUyIRlfsZQfAM3JHyPwYKzRSVudJEqUl5O3IIEbrbnUmS+r/PsGm+Uh7tyPy
+	 e0O+AZskBRNqKkunbw+ntJx9JweBWBiWRVF05Lf5JTIBpIqbHlQ6KGdQtj+/DKn82l
+	 bcq6SwV+SMnSUcnOuKIhpUt7zkl41zw3EqDujf6TgOJ2eXiXBQrhdy/k6Sex1HsxjO
+	 aGg2AIZT+dwInXvwWMvbC9oR8oq+8ELn/5RMKtMVppGnNJ51Im+3VequYhfCAmvrB0
+	 ySa5gb3LCf4IT6atrOTk3RkiUuGT5ta7l95bjofhlLMYsnWNo6qbmaiRSeSuX7OEbW
+	 sgDCrlPdq6+oA==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] usb: image: mdc800: fix deadlock between io_lock and minor_rwsem
+Message-ID: <607b1e62-28f5-49f8-a74a-2e7d8d3c263a@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] Bluetooth: hci_sysfs: Fix NULL pointer dereference in
- device_del()
-From: patchwork-bot+bluetooth@kernel.org
-Message-Id: 
- <178854098513.344939.1951546712000714507.git-patchwork-notify@kernel.org>
-Date: Fri, 04 Sep 2026 16:56:25 +0000
-References: <388cbac3-b865-4843-bd65-c74059a5a459@mail.kernel.org>
-In-Reply-To: <388cbac3-b865-4843-bd65-c74059a5a459@mail.kernel.org>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-bugs@googlegroups.com, krystianmkaniewski@gmail.com,
- linux-bluetooth@vger.kernel.org, luiz.dentz@gmail.com, marcel@holtmann.org,
- dmantipov@yandex.ru, linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
+Date: Fri,  4 Sep 2026 20:32:22 +0000 (UTC)
 
-Hello:
+A circular locking dependency warning is detected between the driver's
+internal mutex mdc800->io_lock and the USB core's minor_rwsem:
 
-This patch was applied to bluetooth/bluetooth-next.git (master)
-by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
+WARNING: possible circular locking dependency detected
+is trying to acquire lock:
+ffff88810c4c6218 (&mdc800->io_lock){+.+.}-{4:4}, at:
+mdc800_device_open+0x2e/0x470 drivers/usb/image/mdc800.c:611
 
-On Fri,  4 Sep 2026 12:24:22 +0000 (UTC) you wrote:
-> From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-> 
-> A NULL pointer dereference in klist_put() occurs when a child device (such
-> as a BNEP network device in bnep_session) is concurrently being
-> unregistered while hci_conn_del_sysfs() reparents child devices.
-> 
-> This is caused by a race condition between hci_conn_del_sysfs() and
-> concurrent child device unregistration (e.g. bnep_session calling
-> unregister_netdev()). During device unregistration, device_del() snapshots
-> a non-NULL parent pointer. Concurrently, hci_conn_del_sysfs() finds the
-> child device using device_find_any_child() and calls device_move() to
-> reparent it to NULL, which removes the node from its parent's klist and
-> clears knode_parent. Subsequently, device_del() calls
-> klist_del(&dev->p->knode_parent) using the stale parent snapshot, causing
-> klist_put() to dereference knode_klist(n)->put on an already removed node,
-> resulting in a NULL pointer dereference.
-> 
-> [...]
+but task is already holding lock:
+ffffffff8fd638a8 (minor_rwsem#2){++++}-{4:4}, at: usb_open+0x30/0x1e0
+drivers/usb/core/file.c:38
 
-Here is the summary with links:
-  - Bluetooth: hci_sysfs: Fix NULL pointer dereference in device_del()
-    https://git.kernel.org/bluetooth/bluetooth-next/c/21c3501e5f46
+which lock already depends on the new lock.
 
-You are awesome, thank you!
+the existing dependency chain (in reverse order) is:
+
+-> #1 (minor_rwsem#2){++++}-{4:4}:
+       down_write+0x96/0x200 kernel/locking/rwsem.c:1631
+       usb_register_dev+0x142/0x5e0 drivers/usb/core/file.c:134
+       mdc800_usb_probe+0xf96/0x18c0 drivers/usb/image/mdc800.c:485
+       usb_probe_interface+0x788/0xe50 drivers/usb/core/driver.c:399
+       really_probe+0x254/0xae0 drivers/base/dd.c:706
+
+-> #0 (&mdc800->io_lock){+.+.}-{4:4}:
+       __mutex_lock+0x19d/0x1550 kernel/locking/mutex.c:821
+       mdc800_device_open+0x2e/0x470 drivers/usb/image/mdc800.c:611
+       usb_open+0x156/0x1e0 drivers/usb/core/file.c:47
+       chrdev_open+0x4d9/0x600 fs/char_dev.c:411
+       do_dentry_open+0x816/0x1380 fs/open.c:996
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  rlock(minor_rwsem#2);
+                               lock(&mdc800->io_lock);
+                               lock(minor_rwsem#2);
+  lock(&mdc800->io_lock);
+
+ *** DEADLOCK ***
+
+In mdc800_usb_probe(), usb_register_dev() is called while holding
+mdc800->io_lock. usb_register_dev() acquires minor_rwsem via down_write(),
+establishing the lock order mdc800->io_lock -> minor_rwsem. Meanwhile, when
+opening the character device, usb_open() acquires minor_rwsem via
+down_read() and then calls the driver's open callback mdc800_device_open(),
+which acquires mdc800->io_lock, establishing the reverse lock order
+minor_rwsem -> mdc800->io_lock. If probe and open run concurrently, this
+leads to an AB-BA deadlock.
+
+Fix this by moving usb_register_dev() outside the mdc800->io_lock critical
+section in mdc800_usb_probe(). Complete device initialization under
+io_lock, release the lock, and then call usb_register_dev(). Userspace
+cannot open the device before usb_register_dev() succeeds, so exposing the
+initialized state is safe. If usb_register_dev() fails, re-acquire io_lock
+to reset mdc800->dev to NULL and mdc800->state to NOT_CONNECTED before
+returning the error.
+
+Fixes: d4ead16f50f9 ("USB: prevent char device open/deregister race")
+Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+023b30ebfe0dc4bcfafe@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=023b30ebfe0dc4bcfafe
+Link: https://syzkaller.appspot.com/ai_job?id=4d021e48-ac69-45de-9f8b-153d5f28a42a
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
+To: "Alan Stern" <stern@rowland.harvard.edu>
+Cc: "Kees Cook" <kees@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+Cc: "Ziyi Guo" <n7l8m4@u.northwestern.edu>
+Cc: "Oliver Neukum" <oneukum@suse.com>
+
+---
+diff --git a/drivers/usb/image/mdc800.c b/drivers/usb/image/mdc800.c
+index ca287b770..019314702 100644
+--- a/drivers/usb/image/mdc800.c
++++ b/drivers/usb/image/mdc800.c
+@@ -482,13 +482,6 @@ static int mdc800_usb_probe (struct usb_interface *intf,
+ 
+ 	mutex_lock(&mdc800->io_lock);
+ 
+-	retval = usb_register_dev(intf, &mdc800_class);
+-	if (retval) {
+-		dev_err(&intf->dev, "Not able to get a minor for this device.\n");
+-		mutex_unlock(&mdc800->io_lock);
+-		return -ENODEV;
+-	}
+-
+ 	mdc800->dev=dev;
+ 	mdc800->open=0;
+ 
+@@ -527,6 +520,16 @@ static int mdc800_usb_probe (struct usb_interface *intf,
+ 	mdc800->state=READY;
+ 
+ 	mutex_unlock(&mdc800->io_lock);
++
++	retval = usb_register_dev(intf, &mdc800_class);
++	if (retval) {
++		dev_err(&intf->dev, "Not able to get a minor for this device.\n");
++		mutex_lock(&mdc800->io_lock);
++		mdc800->dev = NULL;
++		mdc800->state = NOT_CONNECTED;
++		mutex_unlock(&mdc800->io_lock);
++		return -ENODEV;
++	}
+ 	
+ 	usb_set_intfdata(intf, mdc800);
+ 	return 0;
+
+
+base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
 
-
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
