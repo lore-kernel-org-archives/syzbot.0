@@ -1,341 +1,196 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C20C3B9D9A
-	for <syzbot@lists.linux.dev>; Fri,  4 Sep 2026 22:10:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEBA43BB40
+	for <syzbot@lists.linux.dev>; Fri,  4 Sep 2026 23:20:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788559825; cv=none; b=i+XQQTgIhar7JvIUUMKWD2FUjJvF9LSKgRE2FgI2Qc6qmTLY4YGTdRgPDrrs0H06P9ZEDyEK7PTs6d1BftYhFEnvjuEDxQZ5XujLXvyZkwlwagispDl+wKkT1RbtuY/WJlyFiAWjDOv0fRqUHsyDQXVh7jOD1sDv9Kl+fM/Tfz0=
+	t=1788564038; cv=none; b=eStKCRC8YRVU55S/Ts+NNqlqsyQu1pO2jPEw6yTiv1iWq5VKBB0C8hF+7x9tWVlUZA31yEKn39Oi+wCwtWgFKpVn64TXdS5wNt1yiOqBqrXvP5+kqpVtJc0W374iKW/arBFlu1L8k7MiUUVfQIza/g2BaIRsmf9YsJjA9mey8aI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788559825; c=relaxed/simple;
-	bh=UXOwvXoXGYnr/KkmquFPD4USubOonNUbdxBLORo3nuo=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=o4NJHXS9vRNoM9iAb93aO5x+AIemjZFfv8gF69qeC++sJaUsl/ioJ3sPon8hRUtrQutLe/2VRTNCfKkC3o97OzxlgEmTxGedG8p++zY41iym01/nZiVO42TqmuL/FrLne0rCNMmZ8mOkDIGi6clDrjyqvPKYsO9vy9w7fFoSX2U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GoXsKu1C; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GoXsKu1C"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 0FF061F00A3D;
-	Fri,  4 Sep 2026 22:10:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788559823;
-	bh=9I7iFCfnv0jzwAqT067FCSPJ/d7BAuUpqoa14zfOQgI=;
-	h=From:To:Cc:Subject:Date;
-	b=GoXsKu1C9JBFSv/PT96dtJYX4I6COne1nTHMGswnX/DkqbPSfj4lDP/LV+qHGPdtT
-	 Ya8mtHNMXdVtmHgmxk2x9xknsZY1NXJ7ToFx27T3CIGYPKTONlHYKDMeXiKog44zU8
-	 wQ1SMcu3j/Lh5/bMpP8oVGjBc7jvOBsdXITW5TcaumoZX6h3ZU67nHtTexQk07a4AN
-	 H/9LWdXQtnVUzcgEmjXlxy6H83F/1a4YyzFQQ7K0mHGO1KsMe+nbyOnpqkIO8vFz6L
-	 jd5eWCJ52HtwsY/usQnL6kQDWytuPpbzqWN+JuQso7ihtOZioZnpadUU8LsVTv97+z
-	 UHIGsxOkfQDTw==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: gadget: u_serial: Fix use-after-free race on port teardown
-Message-ID: <1a9a7d3d-5930-46e6-a2a7-7241200ad612@mail.kernel.org>
+	s=arc-20240116; t=1788564038; c=relaxed/simple;
+	bh=DRFEoYaPI0Bujo3o5Rdq0L85mjByEaR2cOeXOJVu6m0=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=L/EvqkvKgMvbVOZgU4fBBbhafOEyuaaULCTwdyVBzkkU1gOdYM4Izf0IWjqJAhcWcKN9p7993dEgRYb5Ib+JqRrCi+xqjOAmahCRjn3PUzRgdhUiHhBVZ0N02vTzYp/OI8fiYayIK9aYc7dz/1Mhh70JkpHoweqqT8baOBxPTME=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-6b34c5c6de4so1868329eaf.1
+        for <syzbot@lists.linux.dev>; Fri, 04 Sep 2026 16:20:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788564036; x=1789168836;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=b/WxlZqVWyfm4KV+k6KsBRKOEP90t/CoeWuNUOyshWw=;
+        b=qQOjmRa3k9MyrQjkycOlJ87hPNQXEeQlsygKwkm9XiGvJkYoA/JDJJJ12qHR5n/glT
+         OH+IMGxjwzwvmT2O5ru8xx19PAD03lSBA7t3PlUaN+7eeKK96jkJIEsLDzoQhC98nzVX
+         ezZ92VSs2pUAAxbSdSUbkJLlbnzOnyh/fq7+2NU/ztn/QXbTQ01BKNG3/KrRQmuF+Eij
+         RmQZ+pkyUQxaJvaVQeNDybdLyeGHok8xhaEwWwIJQyvwTV1qNukf64K0miVjc03/nuTv
+         jQlUQ6XwMnT4nr3zNNNSY8vqpIPWcYaXvD2LRlrleLAjqvE17CiwB591FgR8pVmhwwwc
+         l1nQ==
+X-Gm-Message-State: AFuF++l4+bEbIZsliQMp6FCnBEwpYBGozVmJb7CoLj7exwrzwbKbvx7X
+	IPBv2YFXoSariqsApH+WPTo7/yDGwYjpjyI0eiTaxt21tVYfuXF2LtSheKwBF2euGM2pyrHuDYC
+	Bl2Oi3jVykGdVkdb+V/Hu9zMyMgHxWFaJG+iN8LRtfBwt/Lt+i0RmZirgQOE=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri,  4 Sep 2026 22:10:23 +0000 (UTC)
+X-Received: by 2002:a05:6820:810a:b0:6ac:8e23:3078 with SMTP id
+ 006d021491bc7-6b6fa6dd815mr7193952eaf.5.1788564035687; Fri, 04 Sep 2026
+ 16:20:35 -0700 (PDT)
+Date: Fri, 04 Sep 2026 16:20:35 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a9b5243.b5d4176b.238c3e.0008.GAE@google.com>
+Subject: [moderation/CI] Re: f2fs: enable buffered RWF_DONTCACHE
+From: syzbot ci <syzbot+cif2741c11656adb66@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-A race condition exists between opening the gadget serial TTY device (via
-tty_open()) and tearing down the USB function instance (via configfs rmdir
-/ gserial_free_line()).
+syzbot ci has tested the following series
 
-When opening the TTY device (/dev/ttyGS*), tty_open() calls
-tty_open_by_driver(), which in turn calls tty_init_dev(). At this point,
-tty_init_dev() assigns tty->port to driver->ports[idx], which points to
-gs_port->port. If concurrently the USB function is removed via configfs
-rmdir, gserial_free_line() sets ports[port_num].port to NULL and calls
-gserial_free_port(). gserial_free_port() attempts to wait for port closure
-using wait_event(port->close_wait, gs_closed(port)). However, because the
-opening thread has not yet invoked gs_open(), port->port.count is still 0,
-causing gs_closed() to return true immediately. Consequently,
-gserial_free_port() frees struct gs_port via kfree(). When the opening
-thread subsequently executes gs_open(), it sees ports[port_num].port is
-NULL and returns -ENODEV. tty_open() then falls back to tty_release(),
-which calls check_tty_count(). check_tty_count() dereferences tty->port
-(which pointed inside the freed gs_port) to evaluate tty_port_kopened(),
-triggering a slab-use-after-free:
+[v4] f2fs: enable buffered RWF_DONTCACHE
+https://lore.kernel.org/all/cover.1788438786.git.qiwenjie@xiaomi.com
+* [PATCH v4 1/2] f2fs: complete dropbehind write bios in task context
+* [PATCH v4 2/2] f2fs: enable buffered RWF_DONTCACHE
 
-==================================================================
-BUG: KASAN: slab-use-after-free in check_tty_count+0x18a/0x310
-drivers/tty/tty_io.c:287
-Read of size 8 at addr ffff8881e0e8b230 by task syz.3.22/6291
+and found the following issue:
+general protection fault in f2fs_write_begin
 
-CPU: 1 UID: 0 PID: 6291 Comm: syz.3.22 Not tainted
+Full report is available here:
+https://ci.syzbot.org/series/cbb9ded8-1388-4a7b-bfa7-44082b04025b
+
+***
+
+general protection fault in f2fs_write_begin
+
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm=
+.git
+base:      e3fc12b08aadde9cec7b3799ac0e0c9a1aa245c4
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/e5903709-6ea2-4b1e-9dfc-f073e36367f=
+7/config
+syz repro: https://ci.syzbot.org/findings/d05a5d64-e9a3-4714-9b41-43042eaaa=
+82c/syz_repro
+
+loop0: detected capacity change from 0 to 40427
+F2FS-fs (loop0): invalid crc value
+F2FS-fs (loop0): f2fs_recover_fsync_data: recovery fsync data, check_only: =
+0
+F2FS-fs (loop0): Mounted with checkpoint version =3D 48b305e5
+Oops: general protection fault, probably for non-canonical address 0xdffffc=
+0000000004: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
+CPU: 1 UID: 0 PID: 5791 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:f2fs_write_begin+0x181/0x28e0 fs/f2fs/data.c:3893
+Code: e7 e8 23 21 d4 fd 49 8b 04 24 48 89 44 24 40 41 c6 45 2c 04 c7 84 24 =
+a0 02 00 00 00 00 00 00 48 83 c3 20 48 89 d8 48 c1 e8 03 <42> 0f b6 04 30 8=
+4 c0 0f 85 e9 23 00 00 41 be 80 00 00 00 44 23 33
+RSP: 0018:ffffc900037af7a0 EFLAGS: 00010202
+RAX: 0000000000000004 RBX: 0000000000000020 RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: ffff8881b465c918 RDI: 0000000000000000
+RBP: ffffc900037afad0 R08: ffffc900037afb80 R09: ffffc900037afba0
+R10: dffffc0000000000 R11: ffffffff8463a450 R12: ffff88816b91e678
+R13: fffff520006f5f1c R14: dffffc0000000000 R15: ffff8881b465c918
+FS:  00007f65b5e096c0(0000) GS:ffff8882a8cd9000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f65b4e70050 CR3: 000000016a860000 CR4: 00000000000006f0
 Call Trace:
  <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_report+0x58/0x70 mm/kasan/report.c:482
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- check_tty_count+0x18a/0x310 drivers/tty/tty_io.c:287
- tty_release+0x8a/0x1670 drivers/tty/tty_io.c:1701
- __fput+0x418/0xa50 fs/file_table.c:512
- task_work_run+0x1d9/0x270 kernel/task_work.c:233
- exit_to_user_mode_loop+0x204/0x770 kernel/entry/common.c:101
- do_syscall_64+0x328/0x520 arch/x86/entry/syscall_64.c:89
+ page_symlink+0x27a/0x440 fs/namei.c:6556
+ f2fs_symlink+0x5fc/0x970 fs/f2fs/namei.c:714
+ vfs_symlink+0x18b/0x330 fs/namei.c:5794
+ filename_symlinkat+0x1cd/0x410 fs/namei.c:5819
+ __do_sys_symlinkat fs/namei.c:5839 [inline]
+ __se_sys_symlinkat+0x4e/0x2b0 fs/namei.c:5834
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f65b4f9e159
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f65b5e09028 EFLAGS: 00000246 ORIG_RAX: 000000000000010a
+RAX: ffffffffffffffda RBX: 00007f65b5225fa0 RCX: 00007f65b4f9e159
+RDX: 00002000000005c0 RSI: ffffffffffffff9c RDI: 0000200000000700
+RBP: 00007f65b5035024 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f65b5226038 R14: 00007f65b5225fa0 R15: 00007fffb6ecc0c8
  </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:f2fs_write_begin+0x181/0x28e0 fs/f2fs/data.c:3893
+Code: e7 e8 23 21 d4 fd 49 8b 04 24 48 89 44 24 40 41 c6 45 2c 04 c7 84 24 =
+a0 02 00 00 00 00 00 00 48 83 c3 20 48 89 d8 48 c1 e8 03 <42> 0f b6 04 30 8=
+4 c0 0f 85 e9 23 00 00 41 be 80 00 00 00 44 23 33
+RSP: 0018:ffffc900037af7a0 EFLAGS: 00010202
+RAX: 0000000000000004 RBX: 0000000000000020 RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: ffff8881b465c918 RDI: 0000000000000000
+RBP: ffffc900037afad0 R08: ffffc900037afb80 R09: ffffc900037afba0
+R10: dffffc0000000000 R11: ffffffff8463a450 R12: ffff88816b91e678
+R13: fffff520006f5f1c R14: dffffc0000000000 R15: ffff8881b465c918
+FS:  00007f65b5e096c0(0000) GS:ffff8882a8cd9000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f65b4feb840 CR3: 000000016a860000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess), 1 bytes skipped:
+   0:	e8 23 21 d4 fd       	call   0xfdd42128
+   5:	49 8b 04 24          	mov    (%r12),%rax
+   9:	48 89 44 24 40       	mov    %rax,0x40(%rsp)
+   e:	41 c6 45 2c 04       	movb   $0x4,0x2c(%r13)
+  13:	c7 84 24 a0 02 00 00 	movl   $0x0,0x2a0(%rsp)
+  1a:	00 00 00 00
+  1e:	48 83 c3 20          	add    $0x20,%rbx
+  22:	48 89 d8             	mov    %rbx,%rax
+  25:	48 c1 e8 03          	shr    $0x3,%rax
+* 29:	42 0f b6 04 30       	movzbl (%rax,%r14,1),%eax <-- trapping instruct=
+ion
+  2e:	84 c0                	test   %al,%al
+  30:	0f 85 e9 23 00 00    	jne    0x241f
+  36:	41 be 80 00 00 00    	mov    $0x80,%r14d
+  3c:	44 23 33             	and    (%rbx),%r14d
 
-Allocated by task 6292:
- gs_port_alloc drivers/usb/gadget/function/u_serial.c:1218 [inline]
- gserial_alloc_line_no_console+0x232/0x6e0
- drivers/usb/gadget/function/u_serial.c:1298
- gserial_alloc_line+0x18/0x90 drivers/usb/gadget/function/u_serial.c:1332
- acm_alloc_instance+0xc7/0x140 drivers/usb/gadget/function/f_acm.c:891
- usb_get_function_instance+0xe3/0x2f0 drivers/usb/gadget/functions.c:44
- function_make+0x127/0x360 drivers/usb/gadget/configfs.c:626
- configfs_mkdir+0x4f6/0x9e0 fs/configfs/dir.c:1360
- vfs_mkdir+0x40c/0x620 fs/namei.c:5410
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
 
-Freed by task 6292:
- kfree+0x1c5/0x650 mm/slub.c:6792
- gserial_free_port+0x248/0x2c0 drivers/usb/gadget/function/u_serial.c:1262
- gserial_free_line+0xc0/0x1f0 drivers/usb/gadget/function/u_serial.c:1279
- acm_free_instance+0x39/0x60 drivers/usb/gadget/function/f_acm.c:875
- usb_put_function_instance+0x90/0xb0 drivers/usb/gadget/functions.c:77
- config_item_release+0x13a/0x2d0 fs/configfs/item.c:137
- configfs_rmdir+0x885/0x950 fs/configfs/dir.c:1571
- vfs_rmdir+0x3e6/0x6a0 fs/namei.c:5515
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-==================================================================
+***
 
-Fix this by managing the lifecycle of struct gs_port using standard
-tty_port reference counting:
-
-1. Provide a tty_port_operations .destruct callback (gs_port_destruct) that
-cancels the push delayed work, frees the circular write buffer, destroys
-the tty_port, and frees struct gs_port. Assign these operations during
-gs_port_alloc().
-
-2. Implement .install (gs_install) and .cleanup (gs_cleanup) TTY
-operations. In gs_install(), take a reference using tty_port_get() under
-ports[port_num].lock, install the TTY via tty_standard_install(), and
-assign tty->driver_data = port. In gs_cleanup(), drop the reference via
-tty_port_put().
-
-3. In gserial_free_port(), drop the initial reference via tty_port_put()
-instead of calling kfree() directly.
-
-4. Remove the ad-hoc close_wait waitqueue and gs_closed() helper, and
-simplify gs_open() to obtain the port pointer directly from
-tty->driver_data without re-checking ports[port_num].port.
-
-Fixes: 19b10a8828a6 ("usb: gadget: allocate & giveback serial ports instead hard code them")
-Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+39a2135de1558208d3b3@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=39a2135de1558208d3b3
-Link: https://syzkaller.appspot.com/ai_job?id=b09f1d71-b116-4ec4-b7c5-08219435370e
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-To: "Sebastian Andrzej Siewior" <bigeasy@linutronix.de>
-Cc: "Ai Chao" <aichao@kylinos.cn>
-Cc: "Kees Cook" <kees@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/drivers/usb/gadget/function/u_serial.c b/drivers/usb/gadget/function/u_serial.c
-index cdd1dfc66..c82c5888c 100644
---- a/drivers/usb/gadget/function/u_serial.c
-+++ b/drivers/usb/gadget/function/u_serial.c
-@@ -125,7 +125,6 @@ struct gs_port {
- 	struct kfifo		port_write_buf;
- 	wait_queue_head_t	drain_wait;	/* wait while writes drain */
- 	bool                    write_busy;
--	wait_queue_head_t	close_wait;
- 	bool			suspended;	/* port suspended */
- 	bool			start_delayed;	/* delay start when suspended */
- 	struct async_icount	icount;
-@@ -610,17 +609,9 @@ static int gserial_wakeup_host(struct gserial *gser)
-  */
- static int gs_open(struct tty_struct *tty, struct file *file)
- {
--	int		port_num = tty->index;
--	struct gs_port	*port;
-+	struct gs_port	*port = tty->driver_data;
- 	int		status = 0;
- 
--	mutex_lock(&ports[port_num].lock);
--	port = ports[port_num].port;
--	if (!port) {
--		status = -ENODEV;
--		goto out;
--	}
--
- 	spin_lock_irq(&port->port_lock);
- 
- 	/* allocate circular buffer on first open */
-@@ -628,17 +619,12 @@ static int gs_open(struct tty_struct *tty, struct file *file)
- 
- 		spin_unlock_irq(&port->port_lock);
- 
--		/*
--		 * portmaster's mutex still protects from simultaneous open(),
--		 * and close() can't happen, yet.
--		 */
--
- 		status = kfifo_alloc(&port->port_write_buf,
- 				     WRITE_BUF_SIZE, GFP_KERNEL);
- 		if (status) {
- 			pr_debug("gs_open: ttyGS%d (%p,%p) no buffer\n",
--				 port_num, tty, file);
--			goto out;
-+				 port->port_num, tty, file);
-+			return status;
- 		}
- 
- 		spin_lock_irq(&port->port_lock);
-@@ -648,7 +634,6 @@ static int gs_open(struct tty_struct *tty, struct file *file)
- 	if (port->port.count++)
- 		goto exit_unlock_port;
- 
--	tty->driver_data = port;
- 	port->port.tty = tty;
- 
- 	/* if connected, start the I/O stream */
-@@ -672,8 +657,6 @@ static int gs_open(struct tty_struct *tty, struct file *file)
- 
- exit_unlock_port:
- 	spin_unlock_irq(&port->port_lock);
--out:
--	mutex_unlock(&ports[port_num].lock);
- 	return status;
- }
- 
-@@ -744,7 +727,6 @@ static void gs_close(struct tty_struct *tty, struct file *file)
- 	pr_debug("gs_close: ttyGS%d (%p,%p) done!\n",
- 			port->port_num, tty, file);
- 
--	wake_up(&port->close_wait);
- exit:
- 	spin_unlock_irq(&port->port_lock);
- }
-@@ -908,7 +890,42 @@ static int gs_get_icount(struct tty_struct *tty,
- 	return 0;
- }
- 
-+static int gs_install(struct tty_driver *driver, struct tty_struct *tty)
-+{
-+	int port_num = tty->index;
-+	struct gs_port *port;
-+	int ret;
-+
-+	mutex_lock(&ports[port_num].lock);
-+	port = ports[port_num].port;
-+	if (!port) {
-+		mutex_unlock(&ports[port_num].lock);
-+		return -ENODEV;
-+	}
-+
-+	tty_port_get(&port->port);
-+	mutex_unlock(&ports[port_num].lock);
-+
-+	ret = tty_standard_install(driver, tty);
-+	if (ret) {
-+		tty_port_put(&port->port);
-+		return ret;
-+	}
-+
-+	tty->driver_data = port;
-+	return 0;
-+}
-+
-+static void gs_cleanup(struct tty_struct *tty)
-+{
-+	struct gs_port *port = tty->driver_data;
-+
-+	if (port)
-+		tty_port_put(&port->port);
-+}
-+
- static const struct tty_operations gs_tty_ops = {
-+	.install =		gs_install,
- 	.open =			gs_open,
- 	.close =		gs_close,
- 	.write =		gs_write,
-@@ -919,6 +936,7 @@ static const struct tty_operations gs_tty_ops = {
- 	.unthrottle =		gs_unthrottle,
- 	.break_ctl =		gs_break_ctl,
- 	.get_icount =		gs_get_icount,
-+	.cleanup =		gs_cleanup,
- };
- 
- /*-------------------------------------------------------------------------*/
-@@ -1203,6 +1221,20 @@ static void gs_console_exit(struct gs_port *port)
- 
- #endif
- 
-+static void gs_port_destruct(struct tty_port *port)
-+{
-+	struct gs_port *gs_port = container_of(port, struct gs_port, port);
-+
-+	cancel_delayed_work_sync(&gs_port->push);
-+	kfifo_free(&gs_port->port_write_buf);
-+	tty_port_destroy(port);
-+	kfree(gs_port);
-+}
-+
-+static const struct tty_port_operations gs_port_ops = {
-+	.destruct = gs_port_destruct,
-+};
-+
- static int
- gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
- {
-@@ -1222,9 +1254,9 @@ gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
- 	}
- 
- 	tty_port_init(&port->port);
-+	port->port.ops = &gs_port_ops;
- 	spin_lock_init(&port->port_lock);
- 	init_waitqueue_head(&port->drain_wait);
--	init_waitqueue_head(&port->close_wait);
- 
- 	INIT_DELAYED_WORK(&port->push, gs_rx_push);
- 
-@@ -1241,25 +1273,10 @@ gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
- 	return ret;
- }
- 
--static int gs_closed(struct gs_port *port)
--{
--	int cond;
--
--	spin_lock_irq(&port->port_lock);
--	cond = port->port.count == 0;
--	spin_unlock_irq(&port->port_lock);
--
--	return cond;
--}
--
- static void gserial_free_port(struct gs_port *port)
- {
--	cancel_delayed_work_sync(&port->push);
--	/* wait for old opens to finish */
--	wait_event(port->close_wait, gs_closed(port));
- 	WARN_ON(port->port_usb != NULL);
--	tty_port_destroy(&port->port);
--	kfree(port);
-+	tty_port_put(&port->port);
- }
- 
- void gserial_free_line(unsigned char port_num)
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
-base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+The email will later be sent to:
+[axboe@kernel.dk baohua@kernel.org chao@kernel.org hch@lst.de jack@suse.cz =
+jaegeuk@kernel.org linux-block@vger.kernel.org linux-f2fs-devel@lists.sourc=
+eforge.net linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org linux=
+-mm@kvack.org qiwenjie@xiaomi.com qwjhust@gmail.com tz2294@columbia.edu]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
