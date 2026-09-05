@@ -1,154 +1,78 @@
-Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com [209.85.160.70])
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 050A93EDE7E
-	for <syzbot@lists.linux.dev>; Sat,  5 Sep 2026 07:07:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A07D31D63E4
+	for <syzbot@lists.linux.dev>; Sat,  5 Sep 2026 09:05:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788592025; cv=none; b=qKRCcml+daIjy5HDr+Jqj5Bs3IRLbjmEzQrYACplzGQ43QyjDwsbpqbZousHmM1w2/opC77wX/eSsOtttE7BdePISyZ2VJbooyyg1JMRyPdjw3Udbp6I7MzqEmMIjiwkIQ56gErGyKXYFJ0BO2+LII6lA7YcMwnajxJzyd3I1uM=
+	t=1788599116; cv=none; b=IFAK8fDdVf1XSCAwwE0ueY7SeNrRkcVOTC+Q2MYK5y+fFpfzyr8slpjgFFFnZuQecooeNMwrfz6qjmtJjXZwLMBq9Et8qCJ5kvWirqHrAI66SDarwu1UUhHM0Ty/nWGElg3C5KLk+vb+Ud0gE20MdZRV7G6sIaRwvLWlOEvxKaY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788592025; c=relaxed/simple;
-	bh=6oaGc/WO4cwTtsEqJt5kWPU00aUPc/WnmINShN+4QPM=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=SKQhC73GiZfgExW/r3Ftw/X0FDnswSjJSm8waNxlqvkMac7LoAuOIgp/12A3/zAqiCpjhJ/3HldJTLBjRlDIgpH4YoHuxDQa4nywxuNbtqy/SpK+zxdmbtTrBwznoaAhbLueSM693MHgFivN0y7F+q/gQM5WH5uNAvgByfDjnC0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.70
+	s=arc-20240116; t=1788599116; c=relaxed/simple;
+	bh=zf0Y0T8hZUzxZELn7F/t3zWBgRrsh8XYAXJSlm6Sqls=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=LBB/aiuTv47TA5hRShMBhMuXA33JTmB3B5kJoCN8vlA9uNppASY+cvccIunr1bWD5zGGHvyzTXRVtQGbK6i+VyLnXUPOfGK9u+WvljwuUhSGir0J2aWg6SHBP8P7boTJyHYD61a9W/iW5dr/kClklqaTQOUz+73y1kqGQStpOGQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-46dade0d7cdso1793866fac.1
-        for <syzbot@lists.linux.dev>; Sat, 05 Sep 2026 00:07:01 -0700 (PDT)
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-7e99ff505c2so2322949a34.1
+        for <syzbot@lists.linux.dev>; Sat, 05 Sep 2026 02:05:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788592020; x=1789196820;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=nnvwnS1OPKAjnbL2Ffg9wjdt+AOLqiiejT+aXhRtPlk=;
-        b=X079NKZkMhhaoe0AzXVPhz0dCMDvn3G4pplAIjLMMFAittUTl5fVhB3Y9qvle4eJ68
-         7g9+t+AHHkLVAIfc68zoLE6fa7UeM0KkDA3NKbL0A+raoBmN7Yjq04EYFvsKM6e7aPhD
-         TUQbAta4PCZgmGcsR3AdbSgIpO9N28kJrzd75Lf4452FU9MSnA25HgI9NVF1+F23GxCr
-         zHWuoDUFhLmIqszY857tDB7sGPC6XhkBzgrCeKJFSRAUUqU64C+81oTeqqUbbNMgkoRj
-         mboMXph0kCqQUV+jFZypgSfkDyymWKdKIA2/7hTQfJ/zy/6dmxDX8PM/yHoM4dv2G5Hj
-         nhng==
-X-Gm-Message-State: AFuF++lo0oCsWg+Yi2TlWzqgML7NcQkWR7PDxcC1wpHjiQ0MOeVMs4H2
-	4qFjDRmkPTKlKkq+WFJnECzAxVd/KfK+p4Z4pCf2z/dkxL76DuvZBpTktnztj6aZUTmLI9Sq8Zg
-	DQHoXFq43OFS4DUE+ajYLF6pOnoA2fBRjAABRbC60cFsRHZQ+xsuQGKw7fQ8=
+        d=1e100.net; s=20251104; t=1788599106; x=1789203906;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Ie8ItCdeqkICPy/4fnlFsR66GDczAeIMtxXdpMNVmn0=;
+        b=ILH24xdJ9IXn3KGMZzfzRCV1UCw2wdFlaFgQ1kKCbPFmbHL1yGrwS8NVPhC8fasKuF
+         F6ivu/9hJ2H/rL9UK8A/ShAebtY3Db4XFT0VnnphjMeU73hb6kq7uaFRd3jLrb39aUws
+         Po9R414WuIDna7Soy6ePJ/ZCU5/NmSc3IVnD25khO/4FqYQBSwMyNDyHhUlOrnSY/R/a
+         0D5V1nRkjPgk8NRmGPtPhfvhLHoVSgeJEcOVCHhviMJN+Eznai2WF36xPU4uyS5P4/Sh
+         mQNR1YaryRGeI92og9duyxEgy83zOiRc787APi9/2fLyC9tVsCGFc3mnxAdK6yloIaZp
+         EaeQ==
+X-Gm-Message-State: AFuF++mD8Va62X27EJv8BdBHk/s600unYThRhbMvGkGTHg/yseN4fQWg
+	7fdBfZ48qwsnrGTgiWutSK+x2xm3zl/DUjTBfflShcFsh3VjJ9sM2gzO41WA5Sfxsiug//j3zKd
+	uBkxCzYNtBQyg5LjLu4FBITirQMs0gHau/osDfsBF3mbNuYoaM2g8MG4/lrg=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4cca:b0:6b7:8415:d790 with SMTP id
- 006d021491bc7-6b78415d8d8mr4693626eaf.59.1788592020180; Sat, 05 Sep 2026
- 00:07:00 -0700 (PDT)
-Date: Sat, 05 Sep 2026 00:07:00 -0700
-In-Reply-To: <cover.1788438786.git.qiwenjie@xiaomi.com>
+X-Received: by 2002:a05:6820:1623:b0:6ae:8a52:ffa9 with SMTP id
+ 006d021491bc7-6b6fbdc5bdcmr9409750eaf.3.1788599106318; Sat, 05 Sep 2026
+ 02:05:06 -0700 (PDT)
+Date: Sat, 05 Sep 2026 02:05:06 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a9bbf94.a5e650b3.26d8a.0006.GAE@google.com>
-Subject: [syzbot ci] Re: f2fs: enable buffered RWF_DONTCACHE
-From: syzbot ci <syzbot+cid5582b8164122eda@syzkaller.appspotmail.com>
-To: axboe@kernel.dk, baohua@kernel.org, chao@kernel.org, hch@lst.de, 
-	jack@suse.cz, jaegeuk@kernel.org, linux-block@vger.kernel.org, 
-	linux-f2fs-devel@lists.sourceforge.net, linux-fsdevel@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, qiwenjie@xiaomi.com, 
-	qwjhust@gmail.com, tz2294@columbia.edu
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <6a9bdb42.a5e650b3.26d8a.0009.GAE@google.com>
+Subject: [moderation/CI] Re: mm/memory: fix hugetlb_zap_begin() call in zap_vma_range_batched()
+From: syzbot ci <syzbot+ci74bc0c65f3724fb4@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v4] f2fs: enable buffered RWF_DONTCACHE
-https://lore.kernel.org/all/cover.1788438786.git.qiwenjie@xiaomi.com
-* [PATCH v4 1/2] f2fs: complete dropbehind write bios in task context
-* [PATCH v4 2/2] f2fs: enable buffered RWF_DONTCACHE
+[v1] mm/memory: fix hugetlb_zap_begin() call in zap_vma_range_batched()
+https://lore.kernel.org/all/20260904000028.149656-1-sj@kernel.org
+* [PATCH] mm/memory: fix hugetlb_zap_begin() call in zap_vma_range_batched()
 
 and found the following issue:
-general protection fault in f2fs_write_begin
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/cbb9ded8-1388-4a7b-bfa7-44082b04025b
+https://ci.syzbot.org/series/62239cdd-0901-45e4-ba20-e2ae8e212ee8
 
 ***
 
-general protection fault in f2fs_write_begin
+kernel build error
 
 tree:      mm-new
 URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
 base:      e3fc12b08aadde9cec7b3799ac0e0c9a1aa245c4
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/e5903709-6ea2-4b1e-9dfc-f073e36367f7/config
-syz repro: https://ci.syzbot.org/findings/d05a5d64-e9a3-4714-9b41-43042eaaa82c/syz_repro
+config:    https://ci.syzbot.org/builds/44bbebee-2095-4bcb-be13-5072c427460b/config
 
-loop0: detected capacity change from 0 to 40427
-F2FS-fs (loop0): invalid crc value
-F2FS-fs (loop0): f2fs_recover_fsync_data: recovery fsync data, check_only: 0
-F2FS-fs (loop0): Mounted with checkpoint version = 48b305e5
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000004: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
-CPU: 1 UID: 0 PID: 5791 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:f2fs_write_begin+0x181/0x28e0 fs/f2fs/data.c:3893
-Code: e7 e8 23 21 d4 fd 49 8b 04 24 48 89 44 24 40 41 c6 45 2c 04 c7 84 24 a0 02 00 00 00 00 00 00 48 83 c3 20 48 89 d8 48 c1 e8 03 <42> 0f b6 04 30 84 c0 0f 85 e9 23 00 00 41 be 80 00 00 00 44 23 33
-RSP: 0018:ffffc900037af7a0 EFLAGS: 00010202
-RAX: 0000000000000004 RBX: 0000000000000020 RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: ffff8881b465c918 RDI: 0000000000000000
-RBP: ffffc900037afad0 R08: ffffc900037afb80 R09: ffffc900037afba0
-R10: dffffc0000000000 R11: ffffffff8463a450 R12: ffff88816b91e678
-R13: fffff520006f5f1c R14: dffffc0000000000 R15: ffff8881b465c918
-FS:  00007f65b5e096c0(0000) GS:ffff8882a8cd9000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f65b4e70050 CR3: 000000016a860000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- page_symlink+0x27a/0x440 fs/namei.c:6556
- f2fs_symlink+0x5fc/0x970 fs/f2fs/namei.c:714
- vfs_symlink+0x18b/0x330 fs/namei.c:5794
- filename_symlinkat+0x1cd/0x410 fs/namei.c:5819
- __do_sys_symlinkat fs/namei.c:5839 [inline]
- __se_sys_symlinkat+0x4e/0x2b0 fs/namei.c:5834
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f65b4f9e159
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f65b5e09028 EFLAGS: 00000246 ORIG_RAX: 000000000000010a
-RAX: ffffffffffffffda RBX: 00007f65b5225fa0 RCX: 00007f65b4f9e159
-RDX: 00002000000005c0 RSI: ffffffffffffff9c RDI: 0000200000000700
-RBP: 00007f65b5035024 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f65b5226038 R14: 00007f65b5225fa0 R15: 00007fffb6ecc0c8
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:f2fs_write_begin+0x181/0x28e0 fs/f2fs/data.c:3893
-Code: e7 e8 23 21 d4 fd 49 8b 04 24 48 89 44 24 40 41 c6 45 2c 04 c7 84 24 a0 02 00 00 00 00 00 00 48 83 c3 20 48 89 d8 48 c1 e8 03 <42> 0f b6 04 30 84 c0 0f 85 e9 23 00 00 41 be 80 00 00 00 44 23 33
-RSP: 0018:ffffc900037af7a0 EFLAGS: 00010202
-RAX: 0000000000000004 RBX: 0000000000000020 RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: ffff8881b465c918 RDI: 0000000000000000
-RBP: ffffc900037afad0 R08: ffffc900037afb80 R09: ffffc900037afba0
-R10: dffffc0000000000 R11: ffffffff8463a450 R12: ffff88816b91e678
-R13: fffff520006f5f1c R14: dffffc0000000000 R15: ffff8881b465c918
-FS:  00007f65b5e096c0(0000) GS:ffff8882a8cd9000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f65b4feb840 CR3: 000000016a860000 CR4: 00000000000006f0
-----------------
-Code disassembly (best guess), 1 bytes skipped:
-   0:	e8 23 21 d4 fd       	call   0xfdd42128
-   5:	49 8b 04 24          	mov    (%r12),%rax
-   9:	48 89 44 24 40       	mov    %rax,0x40(%rsp)
-   e:	41 c6 45 2c 04       	movb   $0x4,0x2c(%r13)
-  13:	c7 84 24 a0 02 00 00 	movl   $0x0,0x2a0(%rsp)
-  1a:	00 00 00 00
-  1e:	48 83 c3 20          	add    $0x20,%rbx
-  22:	48 89 d8             	mov    %rbx,%rax
-  25:	48 c1 e8 03          	shr    $0x3,%rax
-* 29:	42 0f b6 04 30       	movzbl (%rax,%r14,1),%eax <-- trapping instruction
-  2e:	84 c0                	test   %al,%al
-  30:	0f 85 e9 23 00 00    	jne    0x241f
-  36:	41 be 80 00 00 00    	mov    $0x80,%r14d
-  3c:	44 23 33             	and    (%rbx),%r14d
-
+mm/memory.c:2307:51: error: too many arguments to function call, expected 3, have 4
 
 ***
 
@@ -169,3 +93,13 @@ Notes:
 - To test a new version of the whole series, please send it directly
   to syzbot@lists.linux.dev.
 - Arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[akpm@linux-foundation.org david@kernel.org liam@infradead.org linux-kernel@vger.kernel.org linux-mm@kvack.org ljs@kernel.org mhocko@suse.com rppt@kernel.org sj@kernel.org surenb@google.com vbabka@kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
