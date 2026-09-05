@@ -1,72 +1,74 @@
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97688383310
-	for <syzbot@lists.linux.dev>; Sat,  5 Sep 2026 14:09:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8701D324B24
+	for <syzbot@lists.linux.dev>; Sat,  5 Sep 2026 14:26:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788617365; cv=none; b=HZeMvUA33v4LyYy86g7gLYrtNmUa+loelkZXTC4LgwZyEPEDilrx/XYxFb3hlPpHVcu6yCdaViytrNiunF1dbMl1a0gWiNNhIdI6XkuBuvVj7ISy3VG3Rurv56OEZIj67t+35r2dNv11/UWKFRaEHkuGoeRzhrxUZ8K5csPY/fw=
+	t=1788618386; cv=none; b=PHzlbiHr/LkdSlnQzszdChtXokS/g0jYD9vWTgph6aNtErFIgz9wsOlpRja4DTS9PpxF7IybuII5dEapGPOVcxGtwaexIyJkVPqugCYsfPVux4R8SUF5x8oOa068FTalsps/Drc9H6+pQ8nNRrK8Mno0QzW8gdAhayigNH6Z40k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788617365; c=relaxed/simple;
-	bh=89z+E26TQapP46ieSrbzTGMtfTkC8KUdUbzyOFKPRMo=;
+	s=arc-20240116; t=1788618386; c=relaxed/simple;
+	bh=bLGZqFjwKWwJ6Tuf7d+9jt+f34PRzR2MJVMi8+7Glb0=;
 	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=Pblj+a3cTgbRNQrWRaGCZq+lrZEBNV703/3a/LgAWfc9B/VuUCJryOZkHL2YfaAKQFh9lj6f6HPvZQugQJcSX2vgKIHdfzQGcdtXpAs3mG5011EBqPz/WSvTMZvAxaG3uIwpLPODuqRIZ2Y89CvgUUyooci1UfJJdj+T2RTOLLw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
+	 Content-Type; b=YwL3uXm5+X4etN61MZIkYEXuyORBlLUD6FGDMwV9DCJoxd0ccgYGeoCfslJur58f8Kzkf39ppX2573gTNYz/KZbrx0zAqEgfnjLMHxFFIhmhLNAT9D5Xzr+4m//vc5mdgVOQf9KRPCapy4QJWdwV3AYekh4bVe7ggNwFAHKO/Eg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-6b1aa28c903so1300190eaf.0
-        for <syzbot@lists.linux.dev>; Sat, 05 Sep 2026 07:09:23 -0700 (PDT)
+Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7e9fc6dc091so2004550a34.2
+        for <syzbot@lists.linux.dev>; Sat, 05 Sep 2026 07:26:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788617362; x=1789222162;
+        d=1e100.net; s=20251104; t=1788618383; x=1789223183;
         h=content-type:cc:to:from:subject:message-id:in-reply-to:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=sxYLlFg2UhqVEsCqNOU1X2zYTWypzaFseEOTLWSbq0U=;
-        b=Fogd2nz2FHBx9xHoY9pPX2LKgF9oMcjtumxR5i9k2IirEGKWYOxjuKO64lMxbjhyIq
-         /wsRnmqsg8PH/xr6vPKWKdYVpDsXilzD7H0A6kTmlID3ZWUUTvRkcZcRcGX/4wUL93iG
-         XgKLUpWyuyamxVLl6yUAqwfopQyYn7XYQo5l+O2qjpEZ562UizGXIvdsHd714qAQGMpC
-         +yiXWu0sfpcv2bmdb+lHbmqOn8kCykerqeWa2wXoX5REBL80hcrCtcw0xsWlGaYzgavz
-         pZVjXFwIKy/2qPTHB8QZL6xoo3R79RV6sC/Poi7C7BR7+Wk4rdAzInyHh0wgqYZMgWX+
-         hNVA==
-X-Gm-Message-State: AFuF++mhZOnUFFXJNiUnPr5tVIOMIjxuEfFaWQ8c8cV4ybHts0TScKyS
-	rFGdrKzI3pHVGBygteLytPFclr2pJNpknAhQLZuNSS+oHvPk66L27qbqNompJawA+MUB7AQor3m
-	v+hi/a9B7VDaU/P3UF3KiAjM4klbbgYDcjUg6GLowKY7RO+c7ELTa2l7KIWM=
+        bh=1ETkXqycGRjohhEM+siMcRzRNo0ykM9QCfZj8kTd0Fk=;
+        b=qUT/frjKi/1iiEpef6EuHOwAUTULKRyXFkRVukrLUIyyr9CL+yLJfNPm1/viO0Z31R
+         ZjeNKEAj/IPFKpw9la+6HpuT1a8O/YX+Jq9df3pKtzmxcKK3H2PUQZrWL9tI9mXnzy5i
+         S+cAQM6hPl0kR4CUIMZ2+uOSWY/oAhhYM0H2WRVHynhrTNMRVXzxYdl6OfSDoYUueDJm
+         PJj81QFc9w1OJcmfZPV1oZ9CyJ3zkDXiagl0K6QQuMJBxrlzW6HyLRqn7ic1KUNC6tPE
+         fkgdUigCPVnfspP7Ryb0zWX7ke9pzpRRIKr7COMyvEtBU5qfELLzVXk+h7zxFR5AfJkG
+         dyug==
+X-Gm-Message-State: AFuF++nbaVw0/CGzVJduLI0MJ6y9SK0zASQ+cRHd32Bq9ZIVr1D1XEr9
+	U0j+uMXtmqgXLqdqjPSo0u4fSsdh1wFZXXsBnRCQpsShph0lFTNGRigkEdXfyWETF5afJhmkG+M
+	QJLdGihbXgnNw9UNY93opfTBXvWmFvIOxeNEePb6xxFgiZfCoegdF+eIFIE4=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:16a2:b0:6b7:46e9:9707 with SMTP id
- 006d021491bc7-6b746e9a278mr6595471eaf.55.1788617362284; Sat, 05 Sep 2026
- 07:09:22 -0700 (PDT)
-Date: Sat, 05 Sep 2026 07:09:22 -0700
+X-Received: by 2002:a05:6820:617:b0:6b3:506e:b484 with SMTP id
+ 006d021491bc7-6b6fc9d0782mr8242414eaf.16.1788618383574; Sat, 05 Sep 2026
+ 07:26:23 -0700 (PDT)
+Date: Sat, 05 Sep 2026 07:26:23 -0700
 In-Reply-To: <5fdd4d960a6b47ab7cfa6ef0f44fb575fc45d1ca.1788611415.git.qiwenjie@xiaomi.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a9c2292.4a487d73.3c8564.0007.GAE@google.com>
-Subject: [syzbot ci] Re: f2fs: handle NULL kiocb in write_begin
-From: syzbot ci <syzbot+ci6936c8ed4bb088a7@syzkaller.appspotmail.com>
-To: qwjhust@gmail.com
+Message-ID: <6a9c268f.a6639fcc.23b8b0.0003.GAE@google.com>
+Subject: [syzbot ci] Re: f2fs: enable buffered RWF_DONTCACHE
+From: syzbot ci <syzbot+ci2f6618cc34ef3809@syzkaller.appspotmail.com>
+To: qwjhust@gmail.com, axboe@kernel.dk, baohua@kernel.org, chao@kernel.org, 
+	hch@lst.de, jack@suse.cz, jaegeuk@kernel.org, linux-block@vger.kernel.org, 
+	linux-f2fs-devel@lists.sourceforge.net, linux-fsdevel@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, qiwenjie@xiaomi.com, 
+	syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com, tz2294@columbia.edu
 Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 
-syzbot ci has tested the following series
+syzbot ci has tested the suggested fix patch on top of the following series:
 
-[v1] f2fs: handle NULL kiocb in write_begin
-https://lore.kernel.org/all/5fdd4d960a6b47ab7cfa6ef0f44fb575fc45d1ca.1788611415.git.qiwenjie@xiaomi.com
-* [PATCH] f2fs: handle NULL kiocb in write_begin
+[v4] f2fs: enable buffered RWF_DONTCACHE
+https://lore.kernel.org/all/cover.1788438786.git.qiwenjie@xiaomi.com
 
-and found no issues.
+Patch: https://ci.syzbot.org/jobs/279baf88-89a3-4cb8-93c2-4bd86aa5092e/patch
+Testing results:
+* [build 0] Build Patched: passed
+* [build 0] Boot test: Patched: passed
+* [build 0] Previous reproducers: passed
+  - general protection fault in f2fs_write_begin (patched) - passed
 
 Full report is available here:
-https://ci.syzbot.org/series/0e15ef53-5cba-40ac-9d83-cc082be2a442
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+https://ci.syzbot.org/session/7e05d54c-8b9e-4e22-a746-48153ea42a60
 
 ---
 This report is generated by a bot. It may contain errors.
