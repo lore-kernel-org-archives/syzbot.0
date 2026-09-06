@@ -1,186 +1,304 @@
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 197CC37BE6B
-	for <syzbot@lists.linux.dev>; Sun,  6 Sep 2026 06:53:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD0B2357D0D
+	for <syzbot@lists.linux.dev>; Sun,  6 Sep 2026 23:58:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788677626; cv=none; b=qbxdKjxT6AyU9e0QfGOhrockaFUaFnmrzbbXswT6tb4HqVFle80rLkK7rDmeNMEHC9uoLZp68T3drpTF4tQXwHZItB5bvufmL3hkoxlThopKUgFoCv9azAtUqf1XkjC4nTxazFP4mIW6dNkNED6+Hsvibmwq9+0jqMM0Ke2/Mms=
+	t=1788739087; cv=none; b=FbLbSaVyOT6t9g4WDITCRwJg+2d1oT3Gi+nINVXb+SHEgsmagPuUSHyut+mPTz04ZV+QEsKjPGCPZpoPNGbTBghjfkPOi+B249rALY3Rm+LUmiMlqrT+f4mIfViBO7fYx6pes/xeBM0d+XDJwOiGaYSRwMYR8If+TIKug6tDzes=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788677626; c=relaxed/simple;
-	bh=slNRKK1qqmgMRQK7dcFyyagEVRkU0/v67Mmng7ReoI4=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=qY1r/yQehWvV6U0jwfTOvoutPtiY6HM/0Xfqv9JXiGVDZVr2mLnTbg2ryczeVT3Y0Kw02QnGA9nc2gzjAshhne1aEPotn041dlKQN1rOfPDatSA1CwP9ZRQ/BV+FvOGwvmKr1mLKXKwet3y7JGTIAZ9lP21sUMySZE/C+GaNm9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-4ad778bacbeso3876724b6e.1
-        for <syzbot@lists.linux.dev>; Sat, 05 Sep 2026 23:53:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788677624; x=1789282424;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=PVZTOHUmWPPHgQn8fYuWFVTYCawkrbtKAtu0dFMRMFQ=;
-        b=tKYwOFOsUkFMmKwVpKxjUj5mVpg/VHC2SNmGTebZos6zHGQT2B7bSAX6ruRj952RI9
-         /EHJ/2TiDFGQeS7jI8FA1EZ7rRIcHllbQGy3MgNwOgloIrpEZz0Q+jiGV+fhuckN4KP4
-         i5g4Ilvyz1zR3i2XA/mbuniGwiSNgrP4aTtJoIKenrv6uNVmwTbZKaiWGNhhLicCq7cj
-         kMINtmgXZ3RgZsKUj5NqfG7r8zrZeGgJBPx92Fe0Ffhm5t9xiRMb6viVD2eJ5WZM6OsR
-         Q93n5GjNxHgiT11N/jwg8FYSPvs8FHY/Sswoeefkz/8UKYONQQljd2WKaRldtFWXSXvT
-         KHiQ==
-X-Gm-Message-State: AFuF++kDFfzYReSl/cvqUDl+PlND794bOmjSykIO4P6eITD1rbiHiiUs
-	UA/ltPfRelhUyrE6xpX+hKMsGRCS4k83515DJN+KvG8+3OUdUg9sr3ywFyvcyDlb3bha6pwKnqo
-	uCTjnc7O/mCJmPrdZ5CdaDfl3d3CqgG/VFoPGWhqyN3I8XS3C/BhCJCoPxbM=
+	s=arc-20240116; t=1788739087; c=relaxed/simple;
+	bh=X4ViS0nv4SHI62kOF1eHxQK6QR8DGVh3xR988SEvrTw=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=MuAOSmM6NEx2uUItkKdKuUuuOQzVRCAk1mFwai0a4IGvpInriE2Isz3YwC5Znk3DWA30Jw7HTO9yYkjEJWN9KHRCGgn0l2zpIRDsvpOIWi7Xx0tdRlWQWCWyOS1BrXnRC0+NpaTRPqeCjO9BjqyT48CbqFPkvfKT1xWb9Cokg1Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iiFPz90W; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iiFPz90W"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 5A8A31F00A3A;
+	Sun,  6 Sep 2026 23:58:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788739085;
+	bh=HRYgUdiT+mB01iJ4c0Y36CoigpS3p61piY8jua9jTkE=;
+	h=From:To:Cc:Subject:Date;
+	b=iiFPz90WdcsiNa8h/1qPg6MxEouReRPjbReUXoYxROhlDUNV5i0xeVVdqFlIlY8Au
+	 rSnzZEPxI+RbOwC3AFtalftBl/km0Xt9E3F6GLVF+EPRT/F3r01snKbb6GagTVpsv7
+	 RFcft6FnrPYcSaF7kzISY2bJvj3jTgwZFMTjWK+SNOhQTCejqOsparAbzuXjSNwOXU
+	 bIn9y3FL3Iq6NNcVLNlwUQvh0J1YQ+NAT0Ps8Lx/KDYoxjX/9gH62KmBhumwKzJxbb
+	 hr9SMWGz/IEiJ8RXmnlNI7fPvqFJB8o6JmIBUOSICBJ6OijCl0/HdOinTxTH3CiXx5
+	 H0jcms7MjKpPw==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] md: defer bitmap sysfs removal to mddev_unlock()
+Message-ID: <d5840b4d-cf46-48be-8004-3c274af89dcf@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:a07:b0:6b9:3295:7712 with SMTP id
- 006d021491bc7-6b932957a0cmr2849741eaf.53.1788677624012; Sat, 05 Sep 2026
- 23:53:44 -0700 (PDT)
-Date: Sat, 05 Sep 2026 23:53:43 -0700
-In-Reply-To: <20260904170140.5f69a10d606b.I4a7921d00643f69e439c7a3b221d104f66a3dcdc@changeid>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a9d0df7.0a3344eb.391530.001e.GAE@google.com>
-Subject: [syzbot ci] Re: wifi: mac80211_hwsim: don't hand frames to mac80211
- while stopping
-From: syzbot ci <syzbot+cid341333ae0c934f1@syzkaller.appspotmail.com>
-To: johannes.berg@intel.com, johannes@sipsolutions.net, 
-	linux-wireless@vger.kernel.org, syzbot@syzkaller.appspotmail.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Sun,  6 Sep 2026 23:58:05 +0000 (UTC)
 
-syzbot ci has tested the following series
+A circular locking dependency is detected by lockdep between kernfs active
+protection (kn->active) and mddev->reconfig_mutex when tearing down bitmap
+sysfs attribute groups:
 
-[v1] wifi: mac80211_hwsim: don't hand frames to mac80211 while stopping
-https://lore.kernel.org/all/20260904170140.5f69a10d606b.I4a7921d00643f69e439c7a3b221d104f66a3dcdc@changeid
-* [PATCH wireless] wifi: mac80211_hwsim: don't hand frames to mac80211 while stopping
+  WARNING: possible circular locking dependency detected
+  task is trying to acquire lock:
+  (&mddev->reconfig_mutex){+.+.}-{4:4}, at: mddev_suspend_and_lock
+  drivers/md/md.h:1019 [inline]
+  (&mddev->reconfig_mutex){+.+.}-{4:4}, at: location_store+0xb8/0x938
+  drivers/md/md-bitmap.c:2636
 
-and found the following issue:
-BUG: unable to handle kernel paging request in hwsim_cloned_frame_received_nl
+  but task is already holding lock:
+  (kn->active#62){++++}-{0:0}, at: kernfs_fop_write_iter+0x1f0/0x3b8
+  fs/kernfs/file.c:337
 
-Full report is available here:
-https://ci.syzbot.org/series/219738fc-ed0e-47c8-8100-a5940fbc20b7
+  which lock already depends on the new lock.
 
-***
+  the existing dependency chain (in reverse order) is:
 
-BUG: unable to handle kernel paging request in hwsim_cloned_frame_received_nl
+  -> #1 (kn->active#62){++++}-{0:0}:
+         kernfs_drain+0x1cc/0x4d0 fs/kernfs/dir.c:532
+         __kernfs_remove+0x354/0x718 fs/kernfs/dir.c:1579
+         sysfs_remove_group+0x98/0x160 fs/sysfs/group.c:328
+         md_bitmap_sysfs_del drivers/md/md.c:707 [inline]
+         md_bitmap_destroy+0x1b0/0x230 drivers/md/md.c:6635
+         __md_stop+0x54/0x154 drivers/md/md.c:7089
+         do_md_stop+0x284/0xe6c drivers/md/md.c:7193
+         array_state_store+0x6ac/0xce8 drivers/md/md.c:-1
+         sysfs_kf_write+0xe0/0x108 fs/sysfs/file.c:145
+         kernfs_fop_write_iter+0x260/0x3b8 fs/kernfs/file.c:345
 
-tree:      wireless-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/wireless/wireless-next.git
-base:      1b60ed34f712e9f606d80951f1586f4274ebadf1
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/f0e5a89a-2d3b-4813-b1a1-01cf1b6e2ce4/config
-syz repro: https://ci.syzbot.org/findings/457734e4-6b31-48a4-9aa6-ac6a4c6d65ee/syz_repro
+  -> #0 (&mddev->reconfig_mutex){+.+.}-{4:4}:
+         __mutex_lock+0x164/0xf14 kernel/locking/mutex.c:821
+         mddev_suspend_and_lock drivers/md/md.h:1019 [inline]
+         location_store+0xb8/0x938 drivers/md/md-bitmap.c:2636
+         md_attr_store+0x304/0x438 drivers/md/md.c:6158
+         sysfs_kf_write+0xe0/0x108 fs/sysfs/file.c:145
+         kernfs_fop_write_iter+0x260/0x3b8 fs/kernfs/file.c:345
 
-BUG: unable to handle page fault for address: 00000000000048d0
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 10ab48067 P4D 10ab48067 PUD 0 
-Oops: Oops: 0000 [#1] SMP KASAN NOPTI
-CPU: 1 UID: 0 PID: 5793 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:lock_release+0x85/0x3c0 kernel/locking/lockdep.c:5923
-Code: 84 26 02 00 00 65 8b 05 71 68 f1 11 85 c0 0f 85 17 02 00 00 65 4c 8b 3d b1 23 f1 11 41 83 bf a4 0b 00 00 00 0f 85 01 02 00 00 <49> 81 3e e0 24 56 94 0f 84 f4 01 00 00 9c 5b fa 48 c7 c7 60 f2 48
-RSP: 0018:ffffc900036ef418 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 0000000000004870 RCX: 8000000000000001
-RDX: 0000000000000000 RSI: ffffffff8c6d9460 RDI: ffffffff8c6d9420
-RBP: ffffc900036ef570 R08: ffffc900036ef60f R09: 0000000000000000
-R10: ffffc900036ef5e0 R11: fffff520006ddec2 R12: ffff888171777aa4
-R13: ffffffff873ae393 R14: 00000000000048d0 R15: ffff88810ccca580
-FS:  00007fe9e40d46c0(0000) GS:ffff8882a8cd9000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000000048d0 CR3: 0000000113f11000 CR4: 0000000000352ef0
-Call Trace:
- <TASK>
- __mutex_unlock_slowpath+0x88/0x900 kernel/locking/mutex.c:989
- hwsim_cloned_frame_received_nl+0x363/0xcf0 drivers/net/wireless/virtual/mac80211_hwsim_main.c:6607
- genl_family_rcv_msg_doit+0x233/0x340 net/netlink/genetlink.c:1114
- genl_family_rcv_msg net/netlink/genetlink.c:1194 [inline]
- genl_rcv_msg+0x614/0x7a0 net/netlink/genetlink.c:1209
- netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2556
- genl_rcv+0x28/0x40 net/netlink/genetlink.c:1218
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x7bd/0x940 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
- sock_sendmsg_nosec+0x13a/0x180 net/socket.c:800
- __sock_sendmsg net/socket.c:815 [inline]
- __sys_sendto+0x408/0x5a0 net/socket.c:2281
- __do_sys_sendto net/socket.c:2288 [inline]
- __se_sys_sendto net/socket.c:2284 [inline]
- __x64_sys_sendto+0xde/0x100 net/socket.c:2284
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fe9e315e98e
-Code: 08 0f 85 a5 a8 ff ff 49 89 fb 48 89 f0 48 89 d7 48 89 ce 4c 89 c2 4d 89 ca 4c 8b 44 24 08 4c 8b 4c 24 10 4c 89 5c 24 08 0f 05 <c3> 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 80 00 00 00 00 48 83 ec 08
-RSP: 002b:00007fe9e40d2ea8 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 00007fe9e40d46c0 RCX: 00007fe9e315e98e
-RDX: 0000000000000034 RSI: 00007fe9e40d2fe0 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 00007fe9e40d2f24 R09: 000000000000000c
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
-R13: 0000000000000000 R14: 00007fe9e40d2fe0 R15: 0000000000000000
- </TASK>
-Modules linked in:
-CR2: 00000000000048d0
----[ end trace 0000000000000000 ]---
-RIP: 0010:lock_release+0x85/0x3c0 kernel/locking/lockdep.c:5923
-Code: 84 26 02 00 00 65 8b 05 71 68 f1 11 85 c0 0f 85 17 02 00 00 65 4c 8b 3d b1 23 f1 11 41 83 bf a4 0b 00 00 00 0f 85 01 02 00 00 <49> 81 3e e0 24 56 94 0f 84 f4 01 00 00 9c 5b fa 48 c7 c7 60 f2 48
-RSP: 0018:ffffc900036ef418 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 0000000000004870 RCX: 8000000000000001
-RDX: 0000000000000000 RSI: ffffffff8c6d9460 RDI: ffffffff8c6d9420
-RBP: ffffc900036ef570 R08: ffffc900036ef60f R09: 0000000000000000
-R10: ffffc900036ef5e0 R11: fffff520006ddec2 R12: ffff888171777aa4
-R13: ffffffff873ae393 R14: 00000000000048d0 R15: ffff88810ccca580
-FS:  00007fe9e40d46c0(0000) GS:ffff8882a8cd9000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000000048d0 CR3: 0000000113f11000 CR4: 0000000000352ef0
-----------------
-Code disassembly (best guess):
-   0:	84 26                	test   %ah,(%rsi)
-   2:	02 00                	add    (%rax),%al
-   4:	00 65 8b             	add    %ah,-0x75(%rbp)
-   7:	05 71 68 f1 11       	add    $0x11f16871,%eax
-   c:	85 c0                	test   %eax,%eax
-   e:	0f 85 17 02 00 00    	jne    0x22b
-  14:	65 4c 8b 3d b1 23 f1 	mov    %gs:0x11f123b1(%rip),%r15        # 0x11f123cd
-  1b:	11
-  1c:	41 83 bf a4 0b 00 00 	cmpl   $0x0,0xba4(%r15)
-  23:	00
-  24:	0f 85 01 02 00 00    	jne    0x22b
-* 2a:	49 81 3e e0 24 56 94 	cmpq   $0xffffffff945624e0,(%r14) <-- trapping instruction
-  31:	0f 84 f4 01 00 00    	je     0x22b
-  37:	9c                   	pushf
-  38:	5b                   	pop    %rbx
-  39:	fa                   	cli
-  3a:	48                   	rex.W
-  3b:	c7                   	.byte 0xc7
-  3c:	c7                   	(bad)
-  3d:	60                   	(bad)
-  3e:	f2                   	repnz
-  3f:	48                   	rex.W
+   Possible unsafe locking scenario:
 
+         CPU0                    CPU1
+         ----                    ----
+    rlock(kn->active#62);
+                                 lock(&mddev->reconfig_mutex);
+                                 lock(kn->active#62);
+    lock(&mddev->reconfig_mutex);
 
-***
+   *** DEADLOCK ***
 
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+When a thread writes to a bitmap sysfs attribute such as
+/sys/block/mdX/md/bitmap/location via location_store(), kernfs holds active
+protection (a read lock on kn->active) and location_store() calls
+mddev_suspend_and_lock(), attempting to acquire mddev->reconfig_mutex.
+Concurrently, when another thread stops the array via array_state_store(),
+it acquires mddev->reconfig_mutex and calls do_md_stop() -> __md_stop() ->
+md_bitmap_destroy() -> md_bitmap_sysfs_del(), which invokes
+sysfs_remove_group() and sysfs_unmerge_group() under reconfig_mutex. Kernfs
+file removal waits for active references (kn->active) to drain, creating an
+AB-BA deadlock with location_store(). Similarly, location_store()
+synchronously called sysfs_unmerge_group() on md_bitmap_internal_group
+under reconfig_mutex, risking deadlocks with concurrent accesses to bitmap
+attributes such as backlog_store().
+
+Fix this by deferring bitmap sysfs attribute removal and unmerging outside
+reconfig_mutex in mddev_unlock(), following the existing deferred removal
+mechanism used for mddev->to_remove:
+
+- Add to_unmerge and to_remove_groups fields to struct mddev to queue
+attribute groups for deferred teardown.
+- In mddev_unlock(), if to_remove, to_unmerge, or to_remove_groups are set,
+set mddev->sysfs_active = 1, release reconfig_mutex, and call
+sysfs_unmerge_group(), md_bitmap_sysfs_del(), and sysfs_remove_group()
+outside the mutex before clearing mddev->sysfs_active.
+- In md_bitmap_destroy(), assign mddev->to_remove_groups =
+mddev->bitmap_ops->groups instead of calling md_bitmap_sysfs_del() directly
+under the mutex.
+- In md_bitmap_set_none(), assign mddev->to_unmerge =
+mddev->bitmap_ops->groups[1] before destroying the bitmap.
+- In location_store(), check mddev->sysfs_active and return -EBUSY if sysfs
+namespace removal is active, and defer unmerging md_bitmap_internal_group
+via mddev->to_unmerge.
+- Remove redundant md_bitmap_destroy() calls prior to md_bitmap_set_none()
+in set_bitmap_file() and update_array_info().
+
+Fixes: fb8cc3b0d9db ("md/md-bitmap: delay registration of bitmap_ops until creating bitmap")
+Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+ab46e65f9ffd10729c79@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=ab46e65f9ffd10729c79
+Link: https://syzkaller.appspot.com/ai_job?id=4fb7d122-e26c-4a63-bf27-401d1dfa06de
+To: <linux-raid@vger.kernel.org>
+To: "Song Liu" <song@kernel.org>
+To: "Yu Kuai" <yukuai@fygo.io>
+To: "Yu Kuai" <yukuai3@huawei.com>
+Cc: <linux-kernel@vger.kernel.org>
+Cc: "Li Nan" <magiclinan@didiglobal.com>
+Cc: "Xiao Ni" <xiao@kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/drivers/md/md-bitmap.c b/drivers/md/md-bitmap.c
+index b8325cb09..3a97aa463 100644
+--- a/drivers/md/md-bitmap.c
++++ b/drivers/md/md-bitmap.c
+@@ -2638,6 +2638,11 @@ location_store(struct mddev *mddev, const char *buf, size_t len)
+ 		return rv;
+ 	noio_flags = memalloc_noio_save();
+ 
++	if (mddev->sysfs_active) {
++		rv = -EBUSY;
++		goto out;
++	}
++
+ 	if (mddev->pers) {
+ 		if (mddev->recovery || mddev->sync_thread) {
+ 			rv = -EBUSY;
+@@ -2653,7 +2658,7 @@ location_store(struct mddev *mddev, const char *buf, size_t len)
+ 			goto out;
+ 		}
+ 
+-		sysfs_unmerge_group(&mddev->kobj, &md_bitmap_internal_group);
++		mddev->to_unmerge = &md_bitmap_internal_group;
+ 		md_bitmap_destroy_nosysfs(mddev);
+ 		mddev->bitmap_id = ID_BITMAP_NONE;
+ 		if (!mddev_set_bitmap_ops_nosysfs(mddev))
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 680b34a63..e83caec09 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -694,17 +694,20 @@ static void md_bitmap_sysfs_add(struct mddev *mddev)
+ 		kobject_uevent(&mddev->kobj, KOBJ_CHANGE);
+ }
+ 
+-static void md_bitmap_sysfs_del(struct mddev *mddev)
++static void md_bitmap_sysfs_del(struct mddev *mddev,
++				const struct attribute_group *const *groups)
+ {
+ 	int nr_groups = 0;
+ 
+-	for (nr_groups = 0; mddev->bitmap_ops->groups[nr_groups]; nr_groups++)
++	if (!groups)
++		return;
++
++	for (nr_groups = 0; groups[nr_groups]; nr_groups++)
+ 		;
+ 
+ 	while (--nr_groups >= 1)
+-		sysfs_unmerge_group(&mddev->kobj,
+-				    mddev->bitmap_ops->groups[nr_groups]);
+-	sysfs_remove_group(&mddev->kobj, mddev->bitmap_ops->groups[0]);
++		sysfs_unmerge_group(&mddev->kobj, groups[nr_groups]);
++	sysfs_remove_group(&mddev->kobj, groups[0]);
+ }
+ 
+ bool mddev_set_bitmap_ops_nosysfs(struct mddev *mddev)
+@@ -921,7 +924,7 @@ void mddev_unlock(struct mddev *mddev)
+ 	if (!list_empty(&mddev->deleting))
+ 		list_splice_init(&mddev->deleting, &delete);
+ 
+-	if (mddev->to_remove) {
++	if (mddev->to_remove || mddev->to_unmerge || mddev->to_remove_groups) {
+ 		/* These cannot be removed under reconfig_mutex as
+ 		 * an access to the files will try to take reconfig_mutex
+ 		 * while holding the file unremovable, which leads to
+@@ -935,12 +938,21 @@ void mddev_unlock(struct mddev *mddev)
+ 		 * is seen.
+ 		 */
+ 		const struct attribute_group *to_remove = mddev->to_remove;
++		const struct attribute_group *to_unmerge = mddev->to_unmerge;
++		const struct attribute_group *const *to_remove_groups = mddev->to_remove_groups;
++
+ 		mddev->to_remove = NULL;
++		mddev->to_unmerge = NULL;
++		mddev->to_remove_groups = NULL;
+ 		mddev->sysfs_active = 1;
+ 		mutex_unlock(&mddev->reconfig_mutex);
+ 
+ 		if (mddev->kobj.sd) {
+-			if (to_remove != &md_redundancy_group)
++			if (to_unmerge)
++				sysfs_unmerge_group(&mddev->kobj, to_unmerge);
++			if (to_remove_groups)
++				md_bitmap_sysfs_del(mddev, to_remove_groups);
++			if (to_remove && to_remove != &md_redundancy_group)
+ 				sysfs_remove_group(&mddev->kobj, to_remove);
+ 			if (mddev->pers == NULL ||
+ 			    mddev->pers->sync_request == NULL) {
+@@ -6632,13 +6644,19 @@ static void md_bitmap_destroy(struct mddev *mddev)
+ {
+ 	if (!mddev_is_dm(mddev) && mddev->bitmap_ops &&
+ 	    mddev->bitmap_ops->groups)
+-		md_bitmap_sysfs_del(mddev);
++		mddev->to_remove_groups = mddev->bitmap_ops->groups;
+ 
+ 	md_bitmap_destroy_nosysfs(mddev);
+ }
+ 
+ static void md_bitmap_set_none(struct mddev *mddev)
+ {
++	if (!mddev_is_dm(mddev) && mddev->bitmap_ops &&
++	    mddev->bitmap_ops->groups && mddev->bitmap_ops->groups[1])
++		mddev->to_unmerge = mddev->bitmap_ops->groups[1];
++
++	md_bitmap_destroy_nosysfs(mddev);
++
+ 	mddev->bitmap_id = ID_BITMAP_NONE;
+ 	if (!mddev_set_bitmap_ops_nosysfs(mddev))
+ 		return;
+@@ -7868,12 +7886,10 @@ static int set_bitmap_file(struct mddev *mddev, int fd)
+ 				err = mddev->bitmap_ops->load(mddev);
+ 
+ 			if (err) {
+-				md_bitmap_destroy(mddev);
+ 				md_bitmap_set_none(mddev);
+ 				fd = -1;
+ 			}
+ 		} else if (fd < 0) {
+-			md_bitmap_destroy(mddev);
+ 			md_bitmap_set_none(mddev);
+ 		}
+ 	}
+@@ -8187,7 +8203,6 @@ static int update_array_info(struct mddev *mddev, mdu_array_info_t *info)
+ 				rv = mddev->bitmap_ops->load(mddev);
+ 
+ 			if (rv) {
+-				md_bitmap_destroy(mddev);
+ 				mddev->bitmap_info.offset = 0;
+ 				md_bitmap_set_none(mddev);
+ 			}
+@@ -8216,7 +8231,6 @@ static int update_array_info(struct mddev *mddev, mdu_array_info_t *info)
+ 				put_cluster_ops(mddev);
+ 				mddev->safemode_delay = DEFAULT_SAFEMODE_DELAY;
+ 			}
+-			md_bitmap_destroy(mddev);
+ 			mddev->bitmap_info.offset = 0;
+ 			md_bitmap_set_none(mddev);
+ 		}
+diff --git a/drivers/md/md.h b/drivers/md/md.h
+index b6d2e8929..c862d6519 100644
+--- a/drivers/md/md.h
++++ b/drivers/md/md.h
+@@ -608,6 +608,8 @@ struct mddev {
+ 	struct list_head		all_mddevs;
+ 
+ 	const struct attribute_group	*to_remove;
++	const struct attribute_group	*to_unmerge;
++	const struct attribute_group	*const *to_remove_groups;
+ 
+ 	struct bio_set			bio_set;
+ 	struct bio_set			sync_set; /* for sync operations like
 
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
 
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
+base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
