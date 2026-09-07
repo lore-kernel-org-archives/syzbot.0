@@ -1,119 +1,117 @@
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B7B542E413
-	for <syzbot@lists.linux.dev>; Mon,  7 Sep 2026 16:18:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9660F43B3EE
+	for <syzbot@lists.linux.dev>; Mon,  7 Sep 2026 19:04:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788797906; cv=none; b=WAzqzNBSQ1d1VXTe1bcinjcTXKV9xy/5aGY/9GR7rIg+a87GVFWflFLTvaxtAB7BD0v9hFyPZEXD2sSDcndFRIn2TBspIIqe8aBd+sluaGFj/4xguGG8AasvZwhxChlUPiVv2xU0EcfEHP4tYlPP1/tZrIThLCrVbfEHb55tPNk=
+	t=1788807862; cv=none; b=rDp+7LhzfZNtvrh86l2Zn8apSYUxQTYq6u0l2wYC8EBT7T76cRJIRIj3MBZa/T3+TM+AvYyRabtN7ucPfaKAxoYN11yPuOxPidYVDJ4NRrl8RqtqrtxuUo+W+GsXwlbgcfHWLlemKz8yqJO1fI/fnG+1CuqRu5xAW72PEiNXBV4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788797906; c=relaxed/simple;
-	bh=h14F8ygs+Pr9C05bxBiFHqFoCkL3AoPtt3oY0CHE3jQ=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=EMc4+2gWFhNytI7iwRr8tEcFp28XuVjfmnNveUwW5p80nAGVXeBUh/PAnsCf5acACvSNMwcKrTQ+RudiJ8ZrYi2zDoX/oKyc6faQi7wYY1CQiKdlTEkkU8PaCcJUVvsVP4V3MsFszTpy6kqpYcaUrMMb8tTsJKHoYXtDLeejF0s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7f1ddcd241aso6573125a34.0
-        for <syzbot@lists.linux.dev>; Mon, 07 Sep 2026 09:18:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788797903; x=1789402703;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=xwUfGfC0Akzn3VKkrjFpArgHHA3fJYXlKyrAbsA+CPM=;
-        b=Bqu0Xo4DtLCsHWcf467d1CIBCTnmSVvCWEUkzw+hL8uFh698V5IrVBecOep2zZ5Wa8
-         vie7660dZd642OWOLL0Fw7viHinuiWDwxPWugGA8MOHECwQUoExIhwPR82lfqxjPCEpJ
-         0T8fqv3dmb1eyFb4xf1fyEWh7z1XMopP04KAkXP5Z/CP+slAMypeAjez/6bNen9rku/x
-         dEKvMTSmlFZzTwkaT4BB0kcggZf4eyqDsmmqcOYBoE3j97YF6K/oYWiKf6hXcdD//y4h
-         3M33Hlh/hkJEISb+121PbVwjShDs6fHiLYDJw7EP5jbCgxZ6EGFzy1nhB+2VNJ7RUowW
-         eo9w==
-X-Gm-Message-State: AFuF++kC4KavOda9G/46yyTo3bEUJDfQ99h4K+V1+eKsQNp4MPAvqqIb
-	6VCxI+ZS1JRuO9G6pDdJwR/dPlcnyyZjLZfbXEXYQuMlB/emFC9aQHBG/d/iZlSv7MaszNoZge1
-	9l69yQ9OKfCys/1VRab5HPXv6TbP9o/8I1h1hwfMyjmzy3KZzIOJxKxe/Sdg=
+	s=arc-20240116; t=1788807862; c=relaxed/simple;
+	bh=7QZKYMgDpnd7YbEJ1tFI7nzHW+CYf0HKGiqjQ0wdlBs=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=OARhbQYMAFNChnq1k+fgO7kPKK7cL8gzejlAy/3vZ01qABkqEbnsUJhbxcLJaKPl6nE3pGQjrnKy4lUyf1tzZR0EFgRRLy3N+OU3Io+dV+toXHVFeA9CNp1QGiSWB7XohzzHde2CYl7DIptmIqhzBoBLXl840co8vHWWTzK40vs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O2zJ+3Ye; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O2zJ+3Ye"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 155891F00A3A;
+	Mon,  7 Sep 2026 19:04:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788807861;
+	bh=dxNW5FtES+xWgNoKpL0+CbjYXhsQSjY5fcVkOgiOcCo=;
+	h=From:To:Cc:Subject:Date;
+	b=O2zJ+3YeFWjBUO3tyx6diPsLFemc3BP2HagjgRDoIhVYIEXZUSb4oXjbRln+0hImX
+	 mjciOQDgxm132LKnAYsTbRjMreNH7ssqXKqOGzQqN0Ya66Q24SlbeFigPsMpYnObwp
+	 9GVhhFc7+EDMKFDr2YF1vcLA49jqXElRMu6tG8BbmKCWEfQh+aQ+YlAcTTZAoznaYL
+	 PltE6v8SRFlNxS9FV7YAfzSoqh01pW/OdptadqBKsbNeu4UwY4F9glvPQ27R/ImQzb
+	 y4RSdozuCg2HYj8x6nMedV3DYKNEeJEV8nCk1uS/QaqCLspVISsm6GtHatSvP/xZG2
+	 EOK00isNsPppg==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] net: usb: asix: hold RTNL lock around phylink_connect_phy()
+Message-ID: <2835933a-117e-405a-a369-86459e8c8299@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:2d08:b0:6b1:a812:9871 with SMTP id
- 006d021491bc7-6b6fbbdb3cbmr15267193eaf.18.1788797903255; Mon, 07 Sep 2026
- 09:18:23 -0700 (PDT)
-Date: Mon, 07 Sep 2026 09:18:23 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a9ee3cf.6e6c5f9e.240462.0005.GAE@google.com>
-Subject: [moderation/CI] Re: net: add USB CDC Ethernet NCSI support and fix
- unregister UAF
-From: syzbot ci <syzbot+cic0167a1595ee82a5@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Mon,  7 Sep 2026 19:04:21 +0000 (UTC)
 
-syzbot ci has tested the following series
+During device probe in ax88772_bind(), ax88772_init_phy() invokes
+phylink_connect_phy() to connect the PHY to the phylink instance without
+holding the RTNL lock. If phylink_bringup_phy() fails inside
+phylink_connect_phy(), the error cleanup path invokes phy_detach(). In
+phy_detach(), dev->hwprov is dereferenced using rtnl_dereference(), which
+expects the RTNL lock to be held. Because the RTNL lock is not held,
+lockdep triggers a suspicious RCU usage warning:
 
-[v1] net: add USB CDC Ethernet NCSI support and fix unregister UAF
-https://lore.kernel.org/all/20260907-ncsi-over-usb-v1-0-6b74d2f1196c@gmail.=
-com
-* [PATCH 1/2] net: usb: cdc_ether: add NCSI passthrough support
-* [PATCH 2/2] net/ncsi: fix use-after-free in ncsi_unregister_dev()
+WARNING: suspicious RCU usage
+drivers/net/phy/phy_device.c:1944 suspicious rcu_dereference_protected()
+usage!
 
-and found the following issue:
-kernel build error
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ lockdep_rcu_suspicious+0x140/0x1d0 kernel/locking/lockdep.c:6972
+ phy_detach+0x219/0x550 drivers/net/phy/phy_device.c:1944
+ phylink_connect_phy+0x1dc/0x300 drivers/net/phy/phylink.c:2251
+ ax88772_init_phy+0xe3/0x390 drivers/net/usb/asix_devices.c:714
+ ax88772_bind+0x9cb/0xe50 drivers/net/usb/asix_devices.c:925
+ usbnet_probe+0xab3/0x2ad0 drivers/net/usb/usbnet.c:1808
+ </TASK>
 
-Full report is available here:
-https://ci.syzbot.org/series/7b7762a5-b91f-42a2-834f-7cc19d10893b
+Fix this by acquiring and releasing the RTNL lock around the call to
+phylink_connect_phy() in ax88772_init_phy(). This ensures that the RTNL
+lock is held when connecting the PHY and during any cleanup in phy_detach()
+on failure.
 
-***
-
-kernel build error
-
-tree:      axboe
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/l=
-inux.git
-base:      8d3ae59288f1e7d58d76558a6ee96d533bc5019f
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
-1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/b274d4d4-ff72-4e49-bd36-5dfe5052069=
-f/config
-
-net/ncsi/ncsi-manage.c:1978:3: error: call to undeclared function 'del_time=
-r_sync'; ISO C99 and later do not support implicit function declarations [-=
-Wimplicit-function-declaration]
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: 35f7cad1743e ("net: Add the possibility to support a selected hwtstamp in netdevice")
+Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+694b49f41098a5df4fd7@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=694b49f41098a5df4fd7
+Link: https://syzkaller.appspot.com/ai_job?id=9fb2ef8a-63d1-4762-bbc3-010edc6ff458
+To: "Andrew Lunn" <andrew+netdev@lunn.ch>
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <linux-usb@vger.kernel.org>
+To: "Russell King" <linux@armlinux.org.uk>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Kory Maincent" <kory.maincent@bootlin.com>
+Cc: "Ethan Nelson-Moore" <enelsonmoore@gmail.com>
+Cc: <linux-kernel@vger.kernel.org>
+Cc: "Oleksij Rempel" <o.rempel@pengutronix.de>
+Cc: "Peter Korsgaard" <peter@korsgaard.com>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
+index 293ef80c4..67b22c736 100644
+--- a/drivers/net/usb/asix_devices.c
++++ b/drivers/net/usb/asix_devices.c
+@@ -711,7 +711,9 @@ static int ax88772_init_phy(struct usbnet *dev)
+ 		return -ENODEV;
+ 	}
+ 
++	rtnl_lock();
+ 	ret = phylink_connect_phy(priv->phylink, priv->phydev);
++	rtnl_unlock();
+ 	if (ret) {
+ 		netdev_err(dev->net, "Could not connect PHY\n");
+ 		return ret;
 
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
 
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
+base-commit: df2908090cda368b01ff43709f51890076c56157
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
 
-The email will later be sent to:
-[aambrozewicz@nvidia.com andrew@lunn.ch cosmo.chou@quantatw.com davem@davem=
-loft.net edumazet@google.com fercerpav@gmail.com horms@kernel.org kuba@kern=
-el.org linux-kernel@vger.kernel.org linux-usb@vger.kernel.org mik.lin@quant=
-atw.com mike_hsieh@quantatw.com netdev@vger.kernel.org oliver@neukum.org pa=
-beni@redhat.com potin.lai.pt@gmail.com potin.lai@quantatw.com sam@mendozajo=
-nas.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
