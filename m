@@ -1,77 +1,119 @@
-Received: from sipsolutions.net (s3.sipsolutions.net [168.119.38.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1764037BE93;
-	Mon,  7 Sep 2026 09:47:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=168.119.38.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B7B542E413
+	for <syzbot@lists.linux.dev>; Mon,  7 Sep 2026 16:18:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788774441; cv=none; b=AgMQN4fSiXfmdWS2fm2cfSL7pbFAaTzmXfdt4gsGgtEcZYuB/D7YWRDYOSgQN5cXZex7tCDuCTR+TH3XIfqxVzt14/ZLltzDLmfrpMlGQ/pgPep+ksa4raQenUUqpiIvOx2cBa3AxZUDFKZKDAFohYp8yV9xzIXosKwEll7cR7I=
+	t=1788797906; cv=none; b=WAzqzNBSQ1d1VXTe1bcinjcTXKV9xy/5aGY/9GR7rIg+a87GVFWflFLTvaxtAB7BD0v9hFyPZEXD2sSDcndFRIn2TBspIIqe8aBd+sluaGFj/4xguGG8AasvZwhxChlUPiVv2xU0EcfEHP4tYlPP1/tZrIThLCrVbfEHb55tPNk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788774441; c=relaxed/simple;
-	bh=43b7EzOAzU+8AHXIAeUmr9FriOvzo5/nVUwwv8bvaTs=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=NkMH1elk9IsedtHChFreX88iHY0HIVPKX9BFKbexVp+Y5OlnONy+kTQ6yRAOvJdmdJFZLRJG+acDw2PScfJq39EyP0uqya/UwbvA4qWoKHRStBq/tO74HoQxSn4L/uaijjg3kNrwR19MSMa7uRVen4zlmp8YmDuNFpNlS/FmBuo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=permerror header.from=sipsolutions.net; spf=pass smtp.mailfrom=sipsolutions.net; dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b=SuDq/sX2; arc=none smtp.client-ip=168.119.38.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=permerror header.from=sipsolutions.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sipsolutions.net
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b="SuDq/sX2"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-	Resent-Cc:Resent-Message-ID; bh=Hnr58vE73LK7YGXuPdZbJ4n+GfIeo3BTqA/oxTPuMs4=;
-	t=1788774440; x=1789984040; b=SuDq/sX28I8gz/809ms59Vb6c35+deDjoj8zbMNufXtbQfu
-	uDgJfo7UP3GLtu/22DY/pXskSJ8zNqeekCDHqBTJkdYcqS/Ntpj/CRkyrLBcF5TuSn73rBfiu93fG
-	HIS/LmHRCZI+3cM09N2gl+F2iMlS44GL06jKYCbrhnSRRNLgwf1eI/qOnU28d38tDP163ScBY5wkD
-	8ygfXJzPTp9jf839U7ZvMMjle6CgJZfLeqwt7j+d0pL80Pr7pbUHdT5henyQp4cVBxrhsq9DZrgBQ
-	zXVItT2Obcj8iLNkQvzZSamkPgDeLOuwsdxSwIIpTMjL+Jq9dEoknBWNC4BYbO4g==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__ECDSA_SECP256R1_SHA256__AES_256_GCM:256)
-	(Exim 4.98.2)
-	(envelope-from <johannes@sipsolutions.net>)
-	id 1x3Vwb-00000004S9x-0yPF;
-	Mon, 07 Sep 2026 11:47:17 +0200
-Message-ID: <87f5112aeea92eb84350eaa19ef8ccdf4c630c96.camel@sipsolutions.net>
-Subject: Re: [PATCH 3/3] wifi: cfg80211: check if AP has been started before
- adding new station
-From: Johannes Berg <johannes@sipsolutions.net>
-To: Slawomir Stepien <sst@poczta.fm>
-Cc: syzkaller-bugs@googlegroups.com, linux-wireless@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev, 
-	syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
-Date: Mon, 07 Sep 2026 11:47:16 +0200
-In-Reply-To: <ap6H7U3j0CgPj2IR@nr200>
-References: <20260813090434.2071318-1-sst@poczta.fm>
-	 <20260813090434.2071318-3-sst@poczta.fm>
-	 <113768c35523738bdc7ab8441ecda64a063900bf.camel@sipsolutions.net>
-	 <ap6H7U3j0CgPj2IR@nr200>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.60.2 (3.60.2-1.fc44) 
+	s=arc-20240116; t=1788797906; c=relaxed/simple;
+	bh=h14F8ygs+Pr9C05bxBiFHqFoCkL3AoPtt3oY0CHE3jQ=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=EMc4+2gWFhNytI7iwRr8tEcFp28XuVjfmnNveUwW5p80nAGVXeBUh/PAnsCf5acACvSNMwcKrTQ+RudiJ8ZrYi2zDoX/oKyc6faQi7wYY1CQiKdlTEkkU8PaCcJUVvsVP4V3MsFszTpy6kqpYcaUrMMb8tTsJKHoYXtDLeejF0s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7f1ddcd241aso6573125a34.0
+        for <syzbot@lists.linux.dev>; Mon, 07 Sep 2026 09:18:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788797903; x=1789402703;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=xwUfGfC0Akzn3VKkrjFpArgHHA3fJYXlKyrAbsA+CPM=;
+        b=Bqu0Xo4DtLCsHWcf467d1CIBCTnmSVvCWEUkzw+hL8uFh698V5IrVBecOep2zZ5Wa8
+         vie7660dZd642OWOLL0Fw7viHinuiWDwxPWugGA8MOHECwQUoExIhwPR82lfqxjPCEpJ
+         0T8fqv3dmb1eyFb4xf1fyEWh7z1XMopP04KAkXP5Z/CP+slAMypeAjez/6bNen9rku/x
+         dEKvMTSmlFZzTwkaT4BB0kcggZf4eyqDsmmqcOYBoE3j97YF6K/oYWiKf6hXcdD//y4h
+         3M33Hlh/hkJEISb+121PbVwjShDs6fHiLYDJw7EP5jbCgxZ6EGFzy1nhB+2VNJ7RUowW
+         eo9w==
+X-Gm-Message-State: AFuF++kC4KavOda9G/46yyTo3bEUJDfQ99h4K+V1+eKsQNp4MPAvqqIb
+	6VCxI+ZS1JRuO9G6pDdJwR/dPlcnyyZjLZfbXEXYQuMlB/emFC9aQHBG/d/iZlSv7MaszNoZge1
+	9l69yQ9OKfCys/1VRab5HPXv6TbP9o/8I1h1hwfMyjmzy3KZzIOJxKxe/Sdg=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+X-Received: by 2002:a05:6820:2d08:b0:6b1:a812:9871 with SMTP id
+ 006d021491bc7-6b6fbbdb3cbmr15267193eaf.18.1788797903255; Mon, 07 Sep 2026
+ 09:18:23 -0700 (PDT)
+Date: Mon, 07 Sep 2026 09:18:23 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a9ee3cf.6e6c5f9e.240462.0005.GAE@google.com>
+Subject: [moderation/CI] Re: net: add USB CDC Ethernet NCSI support and fix
+ unregister UAF
+From: syzbot ci <syzbot+cic0167a1595ee82a5@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2026-09-07 at 11:46 +0200, Slawomir Stepien wrote:
-> On wrz 04, 2026 11:25, Johannes Berg wrote:
-> > On Thu, 2026-08-13 at 11:04 +0200, Slawomir Stepien wrote:
-> > >=20
-> > >  	case NL80211_IFTYPE_P2P_GO:
-> > > +		/* Add a new station only after the AP and link has been started *=
-/
-> > > +		link_id =3D wdev->valid_links ? params.link_sta_params.link_id : 0=
-;
-> >=20
-> > max() maybe?
->=20
-> But wouldn't that blur the intent here? It's not about a bigger value. It=
-'s about MLO or not MLO
-> device handling.
+syzbot ci has tested the following series
 
-Yeah, true, was thinking more of the pattern than the semantics.
+[v1] net: add USB CDC Ethernet NCSI support and fix unregister UAF
+https://lore.kernel.org/all/20260907-ncsi-over-usb-v1-0-6b74d2f1196c@gmail.=
+com
+* [PATCH 1/2] net: usb: cdc_ether: add NCSI passthrough support
+* [PATCH 2/2] net/ncsi: fix use-after-free in ncsi_unregister_dev()
 
-johannes
+and found the following issue:
+kernel build error
+
+Full report is available here:
+https://ci.syzbot.org/series/7b7762a5-b91f-42a2-834f-7cc19d10893b
+
+***
+
+kernel build error
+
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/l=
+inux.git
+base:      8d3ae59288f1e7d58d76558a6ee96d533bc5019f
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/b274d4d4-ff72-4e49-bd36-5dfe5052069=
+f/config
+
+net/ncsi/ncsi-manage.c:1978:3: error: call to undeclared function 'del_time=
+r_sync'; ISO C99 and later do not support implicit function declarations [-=
+Wimplicit-function-declaration]
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
+
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[aambrozewicz@nvidia.com andrew@lunn.ch cosmo.chou@quantatw.com davem@davem=
+loft.net edumazet@google.com fercerpav@gmail.com horms@kernel.org kuba@kern=
+el.org linux-kernel@vger.kernel.org linux-usb@vger.kernel.org mik.lin@quant=
+atw.com mike_hsieh@quantatw.com netdev@vger.kernel.org oliver@neukum.org pa=
+beni@redhat.com potin.lai.pt@gmail.com potin.lai@quantatw.com sam@mendozajo=
+nas.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
