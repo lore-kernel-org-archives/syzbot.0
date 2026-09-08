@@ -1,263 +1,204 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 169A65328AE
-	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 12:00:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788868835; cv=none; b=OZmLLV/u9TGP1BlF4dpbYWAwm/eV9LPgK0z7KlL5EMP7138JvaF2uUjGTMsA+OVec+HFbxKKxNcpS9sAOSAGVJgue+CcqU9t6HorJZvKuY+YYZaa6wfRqXxFg0tKJLJzDBplqwnqv4x+1neoyf6Wha+SMpKv2sbJmtnMZdhirUw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788868835; c=relaxed/simple;
-	bh=CSKghGisqQNcB9DzZPnm3i+T8pe1hZl0slkFiVj/Qno=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=TNLmyo5hcrbOW7IOIW6KyNLIIEMQF07LgyGrC1ggmo9EU1N251ugvYdQgDj7E/7B1av2DavT9JkUL+oxLO4YwFnzzKt9qTiTI89vYw2g7Fz803di2ZGUzMrHr0Imds+ucThXONt0n2eRRcWlOPQ4W1VaHamte+Dl5oy1LZeHBPo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZKoS0Jbz; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AF81533594
+	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 12:06:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.51
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788869208; cv=pass; b=PwTpvoEtCF7cM293ZEjuVzHbsj4yqQ6Ic7Nk6kosUgDblrwkl6vDCMx2ay6XfScGTguIPUoqipn8sHqn6mW1uODWfelvfozsVFVutdWSTwtTycvLfmzUYxKuf5Qd9A2PbAd/iQjHAsXOJKduP1izeQDKaIZmu1JkpvwV5hCn64o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788869208; c=relaxed/simple;
+	bh=IBEo1FS4L5fUaLDolysMAI/e1LuRp8R3Ue9ubO+fEVc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=H23YlqfRBtXuOabJGfN2NvRIxLTGGf/GEiEXGaHJzdfXVTZ19IDdS6xvzBOdaEW0VzNra++bUNmNE5rI4wNKZIy+wBYS9zS0Q9CS3kvJnnfBzkM8d+R6/4eJ3lsK0NDn7hXrJMXFR0i4I0zWEsCeW0h2HEufu6ocJM+KBU1CnX0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=W/6+4/5o; arc=pass smtp.client-ip=209.85.210.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZKoS0Jbz"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 9A8ED1F00A3A;
-	Tue,  8 Sep 2026 12:00:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788868833;
-	bh=HDoi5XzzvhXUQzqkW2RaPduWrI6W5R3G/APUQu9TfQM=;
-	h=From:To:Cc:Subject:Date;
-	b=ZKoS0JbzlvCuvZCHAh0G5I/goFaDoOpIAS+byZSSvgjMrHd8cBWPjOWZ3JcPz/vJa
-	 /u1IC50PAlNe875PfeaQs6bJ/niQ/GQ2WM+yPHsZMQHXe7t0Tz57Vlc+KhE8pTmcxW
-	 V6rPaNqj8rxKphbC6SMhs9Tlgp2AZHHvKTA1ZQdPBCcfimSKaoBTOtf9/TIVODzAlH
-	 5fBgieOtNehssNYjViaq/0zGijGmPmCMxZg2XSHB4rshSbS8aOEx1CG6yLyLXOXepx
-	 5nEIJ25Am89ihtEy7dmdSgZniLp9xsXyhjzpR4nPYuDd6mq7K4Vv3i3S8RKwqYv4Lq
-	 rBWyh/f3rtwIg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: gadget: u_serial: Fix use-after-free in release_tty
-Message-ID: <acde99b9-2954-43ab-8403-6ca10699472d@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="W/6+4/5o"
+Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7f4df360cc9so5070474a34.1
+        for <syzbot@lists.linux.dev>; Tue, 08 Sep 2026 05:06:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788869201; cv=none;
+        d=google.com; s=arc-20260327;
+        b=QzZ6sbnwt7QnB80ct/yeAE40PccyTMlStv320qIZvJIOcQFOseEumT7eT3au61O5Xq
+         sFUG9DuNzjM5cadEMmwGSFkSxl6slcU7tlEu4rW7+5cLuStLtw5S1BeZzwrfsFdPH978
+         BGNqVROHVdJi0Yfmq/jaS9FwDvWoMcWn3dyopk9kJJ1+aZs2bD1iB2M5hbePaV9NckHC
+         O2QQlTt4EEEz/2W/p7PfmBZ6KiHE4nELJlYvUH8hI2Kk6ed+leC7CUeGKnu8xLEM2ycG
+         UGS9SDWvsiLeii/4CTHqWwcyCVJMxW48xjaxn3LDZGmlQGJqfdoiw+NAkub0iPyigYSf
+         kvLg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=I2XGpFJYGYdAW4FLjaZcGv7JF4d29sj493tkbkgrUhE=;
+        fh=T8PpPXZqq48Ovdvxiuz1hZWgX1X8V55bQny7zxao6hc=;
+        b=mJJpdY6+QiEsSoxhIKWaNEBsFd1Of4wVuXVSc3GtHbzOMAm7dD5BmXvio7libNZ2M5
+         ja+AuytKdEwRic2PO8WAMpxQRkhGqbqadblJm/ZihNNdreIPnk3+K8GDteq9TCxf3Tzx
+         bEC/tuRW3G5v1nYOJWWaFSPzIWbFDeggvZXbEJL8kf7T59+KXc7aPPKclrzgIAgc7Gp+
+         WK/WLxUeRyZjskMJRB0twJxFaEoMNexbih0J1d94+3pu9oegWVsrBxef4khiuK7yDNSt
+         cvSar5IXdmSHzDMhbJBMbsWFH27NDee/NN5l0hFVoe5TYnalGL/Kol+SRWixoO4It2S1
+         w3dA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1788869201; x=1789474001; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=I2XGpFJYGYdAW4FLjaZcGv7JF4d29sj493tkbkgrUhE=;
+        b=W/6+4/5o36IHTpaInn3/oTev+1uZaztjXKZDiGRhmOW9kFYSJR8CK/if//0UfS4zvJ
+         wy4d58mrtDApxJI/7W+MTYQ/xLf6RlS/hZzGdhRruec6lV7Bzdw0Bpd1Y8WfdVYz9EU7
+         2P5adGRHBecqz6NhUBbu9gPuk7wveL/WKe6wld5bd9t7HmI6yiAYm1jt92kk+Px73UUG
+         X7tE0+FpPVCGm23D+uw3+0cOHBgJncYWPZs2RuYr1qYR7yD4w0Jb/qIX+kl1DCex0t3j
+         814oM22YR6PTbu/WXC4+nprlAHN7pQJO9ArKCTDb/O/6OJNW7I98ngtrVjtTGp8kUgl6
+         KCQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788869201; x=1789474001;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=I2XGpFJYGYdAW4FLjaZcGv7JF4d29sj493tkbkgrUhE=;
+        b=gExkWUpiJ8LhalfR1+XAWi42e4bVtY011dSof81TMk1PQ5gNuctC1k35ASTBSVpcg7
+         C4DzebEpqhE7NE10sdkZ7PVRxjG/bdLTcrxnXJeMRHZ7VhlrnSmbPw8DEcfE2a6pOhfz
+         t1Vo6j735wxLjSLA+eZBbeDffQjlb92S02oXP68p809Ex1WIT2A24IYSBPFqhjzkTQ7S
+         dW4LOgHerGs/VGgc9Ygo6E3ix9ac5lYYfTa+BosBjIjDA1HbOmsmZFNlG8bttykocN/4
+         KtRQcKGMelkBmrpnTNnZh7eQC8t2IdsWN8m0n16EVWbN1+Nvi6XbNBtYCK1e+Bb7Jt1m
+         SaMg==
+X-Forwarded-Encrypted: i=1; AKwUvByXrsdQBEl/aOJgKQZjqLIP+I2aBfcCW+la2XPzK//4K+IEkx/RynSLOi2OSiXsyJgfFm6q2Fo=@lists.linux.dev
+X-Gm-Message-State: AFuF++mzJMCmIc8Uv0TKJXtwqHVGQJxstB+kTiluHryOAnFX/4XPjCID
+	HogYV4CcvPTkAX4fMteS83UVHX2XtkElwJJtHAtTmaTFJ2XyEBRhzmzomSvwiEt62bISIL+iHbz
+	p2SLT3u792uUnmO+ULOdbgabe1sC+He73Lw4W074r
+X-Gm-Gg: AYBFou1wWtuvzR8vkeqY6VoARN1q4A7ySmtEsDEwEDcyZDyHnUHlCXTe6aNBJCZaVt7
+	qBXBViRWT1Ulu7xVuywHeqOYnKlXiIIG2uGkb2O6qHpmWooo9uVgjpBY8NQF9APKgWEDVjJdfyR
+	Dc0p2fYHStEYpR1UrFN72QYopwK9R9WrA3I1KsupHKaHdN3Q2VORWqK+foRgHiFx7aMMfRqEeD0
+	oIsf3iGTWevFkxOrTjiviWEqSPR00V7tT+lJZx93tmvbhEx4ItxnBLwzht6qlLxUsELt/hh1hD8
+	CGpwF2p5Dv8V17DpQD/Yzj9J5MyzkGMG0mExIgGYjfH0D95GCQDxycYNYfw5/r6Hve+p9PaX82k
+	nuRy9kgZ56n8mZ7SwGiour511hfaYBEHdWXoT0BSM4dBLdL9auFePdO/iTqlENIJIMMVi74O8gH
+	dkevFGAIZ8viZH
+X-Received: by 2002:a05:6830:e01:b0:800:1292:4d9f with SMTP id
+ 46e09a7af769-80012924fb9mr702305a34.16.1788869200782; Tue, 08 Sep 2026
+ 05:06:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Tue,  8 Sep 2026 12:00:33 +0000 (UTC)
+References: <5a7201b1-c826-4855-9105-3caa58977bc3@mail.kernel.org>
+In-Reply-To: <5a7201b1-c826-4855-9105-3caa58977bc3@mail.kernel.org>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Tue, 8 Sep 2026 14:06:29 +0200
+X-Gm-Features: AcwNN1Uzh5sIx26s7RVMW8d-EsJkaOPZ3vB8ZsNCR-q09DFZMNObwexot-wE4Dc
+Message-ID: <CANp29Y4ibb_u6Ov7ejfxg96PuUGdJdgsZejKoRmBUNzzfGZBEw@mail.gmail.com>
+Subject: Re: [PATCH RFC v2] net: phy: fix suspicious RCU usage in phy_detach()
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-A slab-use-after-free occurs in release_tty() when closing a USB serial
-port while the gadget is concurrently being unbound or destroyed. When a
-user closes /dev/ttyGS*, tty_release() invokes gs_close(), which decrements
-port->port.count to 0 and wakes up port->close_wait. Concurrently,
-gserial_free_port() (invoked during gadget unbind/rmdir) wakes up from
-wait_event(port->close_wait, gs_closed(port)) and frees the gs_port
-structure with tty_port_destroy() and kfree(). After gs_close() completes,
-tty_release() continues execution and calls release_tty(), which accesses
-the already freed gs_port through tty->port->itty = NULL.
+On Tue, Sep 8, 2026 at 12:30=E2=80=AFPM syzbot <syzbot@kernel.org> wrote:
+>
+> During device probe (for example, in ax88772_bind()), drivers may invoke
+> phylink_connect_phy() before the net_device is registered (while
+> dev->reg_state is NETREG_UNINITIALIZED) and without holding the RTNL lock=
+.
+> If connecting or bringing up the PHY fails inside phylink_connect_phy(),
+> the error cleanup path invokes phy_detach(). In phy_detach(), dev->hwprov
+> is dereferenced using rtnl_dereference(), which expects the RTNL lock to =
+be
+> held. Because the RTNL lock is not held, lockdep triggers a suspicious RC=
+U
+> usage warning:
+>
+> WARNING: suspicious RCU usage
+> drivers/net/phy/phy_device.c:1944 suspicious rcu_dereference_protected()
+> usage!
+>
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  lockdep_rcu_suspicious+0x140/0x1d0 kernel/locking/lockdep.c:6972
+>  phy_detach+0x219/0x550 drivers/net/phy/phy_device.c:1944
+>  phylink_connect_phy+0x1dc/0x300 drivers/net/phy/phylink.c:2251
+>  ax88772_init_phy+0xe3/0x390 drivers/net/usb/asix_devices.c:714
+>  ax88772_bind+0x9cb/0xe50 drivers/net/usb/asix_devices.c:925
+>  usbnet_probe+0xab3/0x2ad0 drivers/net/usb/usbnet.c:1808
+>  </TASK>
+>
+> Fix this by using rcu_dereference_protected() in phy_detach() with a
+> condition checking whether the RTNL lock is held or dev->reg_state =3D=3D
+> NETREG_UNINITIALIZED. This allows safe cleanup on probe failure before
+> device registration without requiring drivers to acquire the RTNL lock.
+>
+> Fixes: 35f7cad1743e ("net: Add the possibility to support a selected hwts=
+tamp in netdevice")
+> Assisted-by: Gemini:gemini-3.7-flash syzbot
+> Reported-by: syzbot+694b49f41098a5df4fd7@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3D694b49f41098a5df4fd7
+> Link: https://syzkaller.appspot.com/ai_job?id=3D360ce09e-643b-4b98-9061-0=
+d730f847be9
+> To: "Andrew Lunn" <andrew@lunn.ch>
+> To: "David S. Miller" <davem@davemloft.net>
+> To: "Eric Dumazet" <edumazet@google.com>
+> To: "Heiner Kallweit" <hkallweit1@gmail.com>
+> To: "Jakub Kicinski" <kuba@kernel.org>
+> To: <netdev@vger.kernel.org>
+> To: "Paolo Abeni" <pabeni@redhat.com>
+> To: "Kory Maincent" <kory.maincent@bootlin.com>
+> Cc: <linux-kernel@vger.kernel.org>
+> Cc: "Russell King" <linux@armlinux.org.uk>
+>
+> ---
+> v2:
+> - Moved the fix to phy_detach() in phylib by allowing rcu_dereference_pro=
+tected() when dev->reg_state is NETREG_UNINITIALIZED, instead of acquiring =
+RTNL in asix.
+> - Updated the commit subject and description to reflect the changes in ph=
+ylib.
+>
+> v1:
+> https://lore.kernel.org/all/2835933a-117e-405a-a369-86459e8c8299@mail.ker=
+nel.org/T/
+> ---
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 94b2e85e0..50c7a060b 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -1939,9 +1939,13 @@ void phy_detach(struct phy_device *phydev)
+>                 struct hwtstamp_provider *hwprov;
+>
+>                 /* hwprov may technically be protected by ops lock but
+> -                * not for devices with a phydev, see phy_link_topo_add_p=
+hy()
+> +                * not for devices with a phydev, see phy_link_topo_add_p=
+hy().
+> +                * RTNL is not held when cleaning up on probe failure bef=
+ore
+> +                * device registration.
+>                  */
+> -               hwprov =3D rtnl_dereference(dev->hwprov);
+> +               hwprov =3D rcu_dereference_protected(dev->hwprov,
+> +                                                  lockdep_rtnl_is_held()=
+ ||
+> +                                                  dev->reg_state =3D=3D =
+NETREG_UNINITIALIZED);
 
-BUG: KASAN: slab-use-after-free in release_tty+0x371/0x570
-drivers/tty/tty_io.c:1557
-Write of size 8 at addr ffff8881903f2128 by task syz-executor600/5845
+should that be `dev->reg_state !=3D NETREG_REGISTERED`?
 
-Call Trace:
- <TASK>
- release_tty+0x371/0x570 drivers/tty/tty_io.c:1557
- tty_release_struct+0xb8/0xd0 drivers/tty/tty_io.c:1665
- tty_release+0xc62/0x1670 drivers/tty/tty_io.c:1825
- __fput+0x418/0xa50 fs/file_table.c:512
- fput_close_sync+0x11f/0x240 fs/file_table.c:617
- __x64_sys_close+0x7e/0x110 fs/open.c:1545
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
-
-Allocated by task 5843:
- __kmalloc_cache_noprof+0x321/0x600 mm/slub.c:5563
- gs_port_alloc drivers/usb/gadget/function/u_serial.c:1218 [inline]
- gserial_alloc_line_no_console+0x232/0x6e0
- drivers/usb/gadget/function/u_serial.c:1298
- gserial_alloc_line+0x18/0x90 drivers/usb/gadget/function/u_serial.c:1332
- acm_alloc_instance+0xc7/0x140 drivers/usb/gadget/function/f_acm.c:891
- usb_get_function_instance+0xe3/0x2f0 drivers/usb/gadget/functions.c:44
- function_make+0x127/0x360 drivers/usb/gadget/configfs.c:626
- configfs_mkdir+0x4f6/0x9e0 fs/configfs/dir.c:1360
- vfs_mkdir+0x40c/0x620 fs/namei.c:5410
-
-Freed by task 5843:
- kfree+0x1c5/0x650 mm/slub.c:6792
- gserial_free_port+0x248/0x2c0 drivers/usb/gadget/function/u_serial.c:1262
- gserial_free_line+0xc0/0x1f0 drivers/usb/gadget/function/u_serial.c:1279
- acm_free_instance+0x39/0x60 drivers/usb/gadget/function/f_acm.c:875
- usb_put_function_instance+0x95/0xc0 drivers/usb/gadget/functions.c:77
- config_item_release+0x13a/0x2d0 fs/configfs/item.c:137
- configfs_rmdir+0x885/0x950 fs/configfs/dir.c:1571
- vfs_rmdir+0x3e6/0x6a0 fs/namei.c:5515
-
-Fix this by managing the lifetime of struct gs_port through standard
-tty_port reference counting:
-- Implement .install (gs_install) to acquire a port reference with
-tty_port_get(), attach the port via tty_port_install(), and initialize
-tty->driver_data.
-- Implement .cleanup (gs_cleanup) to drop the tty_struct's reference with
-tty_port_put().
-- Implement the .destruct port operation (gs_port_destruct) to free the
-write FIFO buffer and kfree() the gs_port structure once all references
-have been dropped.
-- In gserial_free_port(), replace the direct tty_port_destroy() and kfree()
-calls with tty_port_put().
-- In gs_close(), check if port is NULL or if port->port.count is 0 (which
-may occur if open failed) to prevent NULL pointer dereferences or spurious
-warnings.
-
-Fixes: 19b10a8828a6 ("usb: gadget: allocate & giveback serial ports instead hard code them")
-Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+fe63e4d633540f230624@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=fe63e4d633540f230624
-Link: https://syzkaller.appspot.com/ai_job?id=b41b38ff-60c3-4626-adff-58b24c0a4cbc
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-To: "Sebastian Andrzej Siewior" <bigeasy@linutronix.de>
-Cc: "Ai Chao" <aichao@kylinos.cn>
-Cc: "Kees Cook" <kees@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-
----
-diff --git a/drivers/usb/gadget/function/u_serial.c b/drivers/usb/gadget/function/u_serial.c
-index cdd1dfc66..592bb9504 100644
---- a/drivers/usb/gadget/function/u_serial.c
-+++ b/drivers/usb/gadget/function/u_serial.c
-@@ -603,6 +603,41 @@ static int gserial_wakeup_host(struct gserial *gser)
- 
- /* TTY Driver */
- 
-+static int gs_install(struct tty_driver *driver, struct tty_struct *tty)
-+{
-+	struct gs_port *port;
-+	struct tty_port *tport;
-+	int ret;
-+
-+	mutex_lock(&ports[tty->index].lock);
-+	port = ports[tty->index].port;
-+	if (!port) {
-+		mutex_unlock(&ports[tty->index].lock);
-+		return -ENODEV;
-+	}
-+
-+	tport = tty_port_get(&port->port);
-+	mutex_unlock(&ports[tty->index].lock);
-+
-+	if (!tport)
-+		return -ENODEV;
-+
-+	ret = tty_port_install(tport, driver, tty);
-+	if (ret) {
-+		tty_port_put(tport);
-+		return ret;
-+	}
-+
-+	tty->driver_data = port;
-+
-+	return 0;
-+}
-+
-+static void gs_cleanup(struct tty_struct *tty)
-+{
-+	tty_port_put(tty->port);
-+}
-+
- /*
-  * gs_open sets up the link between a gs_port and its associated TTY.
-  * That link is broken *only* by TTY close(), and all driver methods
-@@ -695,14 +730,16 @@ static void gs_close(struct tty_struct *tty, struct file *file)
- 	struct gs_port *port = tty->driver_data;
- 	struct gserial	*gser;
- 
-+	if (!port)
-+		return;
-+
- 	spin_lock_irq(&port->port_lock);
- 
--	if (port->port.count != 1) {
--raced_with_open:
--		if (port->port.count == 0)
--			WARN_ON(1);
--		else
--			--port->port.count;
-+	if (port->port.count == 0)
-+		goto exit;
-+
-+	if (port->port.count > 1) {
-+		--port->port.count;
- 		goto exit;
- 	}
- 
-@@ -722,8 +759,11 @@ static void gs_close(struct tty_struct *tty, struct file *file)
- 					GS_CLOSE_TIMEOUT * HZ);
- 		spin_lock_irq(&port->port_lock);
- 
--		if (port->port.count != 1)
--			goto raced_with_open;
-+		if (port->port.count != 1) {
-+			if (port->port.count > 1)
-+				--port->port.count;
-+			goto exit;
-+		}
- 
- 		gser = port->port_usb;
- 	}
-@@ -909,8 +949,10 @@ static int gs_get_icount(struct tty_struct *tty,
- }
- 
- static const struct tty_operations gs_tty_ops = {
-+	.install =		gs_install,
- 	.open =			gs_open,
- 	.close =		gs_close,
-+	.cleanup =		gs_cleanup,
- 	.write =		gs_write,
- 	.put_char =		gs_put_char,
- 	.flush_chars =		gs_flush_chars,
-@@ -1203,6 +1245,18 @@ static void gs_console_exit(struct gs_port *port)
- 
- #endif
- 
-+static void gs_port_destruct(struct tty_port *tport)
-+{
-+	struct gs_port *port = container_of(tport, struct gs_port, port);
-+
-+	kfifo_free(&port->port_write_buf);
-+	kfree(port);
-+}
-+
-+static const struct tty_port_operations gs_port_ops = {
-+	.destruct = gs_port_destruct,
-+};
-+
- static int
- gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
- {
-@@ -1222,6 +1276,7 @@ gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
- 	}
- 
- 	tty_port_init(&port->port);
-+	port->port.ops = &gs_port_ops;
- 	spin_lock_init(&port->port_lock);
- 	init_waitqueue_head(&port->drain_wait);
- 	init_waitqueue_head(&port->close_wait);
-@@ -1258,8 +1313,7 @@ static void gserial_free_port(struct gs_port *port)
- 	/* wait for old opens to finish */
- 	wait_event(port->close_wait, gs_closed(port));
- 	WARN_ON(port->port_usb != NULL);
--	tty_port_destroy(&port->port);
--	kfree(port);
-+	tty_port_put(&port->port);
- }
- 
- void gserial_free_line(unsigned char port_num)
-
-
-base-commit: df2908090cda368b01ff43709f51890076c56157
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+>                 /* Disable timestamp if it is the one selected */
+>                 if (hwprov && hwprov->phydev =3D=3D phydev) {
+>                         rcu_assign_pointer(dev->hwprov, NULL);
+>
+>
+> base-commit: df2908090cda368b01ff43709f51890076c56157
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+>
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated =
+patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
