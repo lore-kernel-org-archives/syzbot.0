@@ -1,132 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtpo75.interia.pl (smtpo75.interia.pl [217.74.67.75])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 563E0534443
-	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 12:38:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D529155295A
+	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 13:36:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.75
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788871085; cv=none; b=nQ5gXOsPtG6vGMVFbUBFZqE1MMMPzvX/63k01JH5kpNU78SI2niwehJ5noKAnhXfNI43kgrm5tdmAX2peYxr9nKad06bx7bQYjlQzBbPETrxXtJkWiD+IEF9Q6jnZbfQVMD4GA6T56IXfppRyS1e8AHhP+XGiH7S9yNXyr9FZI0=
+	t=1788874580; cv=none; b=e2eDWrULsuH5Njp1lXKELguWDn8i1Csll/lz/Qjg2B+TIiUxACuJQa8JLRdLp6W3yrGWYlaWNoVMZJULufM/Pr60SLgvn55RgDU7BAnOfJS08jY4y5TFR/Sy487nefTmawdHx8EqXM9JFZpUvi0v66BiPOxbox8v3svM2WS3A8k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788871085; c=relaxed/simple;
-	bh=Wb+6HlRQIENxSQ23vpOY9MOvZi58lATQ0Inal4pftWA=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=m+0PuDAu4dJOItokdlxT87ppRUlM5Z+p3hc2A52T+Xq05ImaUf5FcCxK8CK90rALEZZKCi5oYoGhsb5Iz6yijERYc2+ImrAzUe3qDKTCEey6s9d/DmdANX3SLeY+ux+J4G4Ca9CL9Kf223ElFtw0iBSDL11W1YdzTAX7z2HB5UU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ocsZxUFE; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788874580; c=relaxed/simple;
+	bh=d91FVQPyCh+jTIQ3aXYMVCYEU0FdnfxhA9uDRZlyrrs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ean7kxcnk8AD1HerKgqNiJ6y7t9TGfX1f4M1VV2QtF5PywEB8OcMN0HamEpu2TU35Nj9ZtSDqamMjyHq1yNI+8UP4Rps9sRgcjAgRrd+1xq8XVo3pH9nVkgIcTSy3UY+RsImXSX1pr2wbrJfJY8Qp2EvksmXbkrKLrCyQcVOHLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=zQxDii8h; arc=none smtp.client-ip=217.74.67.75
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ocsZxUFE"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id D06E01F00A3D;
-	Tue,  8 Sep 2026 12:38:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788871083;
-	bh=JfiqDf3fpJZY1ieottFpPauwOo3s7JZXV02SwYs8eW4=;
-	h=From:To:Cc:Subject:Date;
-	b=ocsZxUFED70M1PegBZw9HiLxXI4E2rsrHuuV7LOkV52VThdtkUIwW4eMk6xmVSdjI
-	 apGikrZjx9hic5gBNTDUsiFh9nWYhjvlBqKNdrnzQZmihmhcmSmVCMAtkLL0CqnizA
-	 Q8mAtMcf0I2ChJsrFRGXq0PcWSFcog92M9Pgfj8HXZAxQfkmOws86hXBdJ1QkZF7vH
-	 n6YjeAXpbKHvhOOFUpUJBbS137VD4IQDCGCapwzn9Yg7oNkAxjBtNZXGtBtIiOR9zq
-	 aWI5sk+o2a6OnRzZSt1zcqtAqiei+vEAcairAnaLvAvSkO8PCtgSDcHQMXJ1Rnn8jz
-	 pSav+lzzCULBg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: nogikh@google.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v3] net: phy: fix suspicious RCU usage in phy_detach()
-Message-ID: <5e1c820e-982c-4c4b-ae8f-682ae1fe2da2@mail.kernel.org>
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="zQxDii8h"
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Tue,  8 Sep 2026 15:36:00 +0200 (CEST)
+Date: Tue, 8 Sep 2026 15:35:57 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: Johannes Berg <johannes@sipsolutions.net>
+Cc: syzkaller-bugs@googlegroups.com, linux-wireless@vger.kernel.org,
+	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev,
+	syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
+Subject: Re: [PATCH 3/3] wifi: cfg80211: check if AP has been started before
+ adding new station
+Message-ID: <aqAPPd4qHy0qjo1k@nr200>
+References: <20260813090434.2071318-1-sst@poczta.fm>
+ <20260813090434.2071318-3-sst@poczta.fm>
+ <113768c35523738bdc7ab8441ecda64a063900bf.camel@sipsolutions.net>
+ <ap_Y8OD0eBAnB8QS@nr200>
+ <8934029f86b1c0e75f777185b2768f8e9755cae5.camel@sipsolutions.net>
+ <ap_4hS6M8g4u6z--@nr200>
+ <22e7ddfc50d7a6a16c437b876dab5fe223799610.camel@sipsolutions.net>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Tue,  8 Sep 2026 12:38:02 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <22e7ddfc50d7a6a16c437b876dab5fe223799610.camel@sipsolutions.net>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1788874562; bh=lBw5ksq4+FXFhNeSk6hQ2VvNAC5I5/HvJUHhLvQbRj8=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=zQxDii8hLUsaYr/bYhQWf7U/wkq+Ttc2YzDutw9jTlv/9ZQlDUFgT2g/qlYj4LOHV
+	 3Yi2BGlUapTflGznIQDsk7RB2DqEeBorQ+1xqt/jbFQnELdCfRnu8BrOGHUODzihT0
+	 9Bf35ia7nXCvqIyMpyZe051cXRHmZEzNtaQr2ZKI=
 
-During device probe (for example, in ax88772_bind()), drivers may invoke
-phylink_connect_phy() before the net_device is registered (while
-dev->reg_state is NETREG_UNINITIALIZED) and without holding the RTNL lock.
-If connecting or bringing up the PHY fails inside phylink_connect_phy(),
-the error cleanup path invokes phy_detach(). In phy_detach(), dev->hwprov
-is dereferenced using rtnl_dereference(), which expects the RTNL lock to be
-held. Because the RTNL lock is not held, lockdep triggers a suspicious RCU
-usage warning:
+On wrz 08, 2026 14:25, Johannes Berg wrote:
+> On Tue, 2026-09-08 at 13:59 +0200, Slawomir Stepien wrote:
+> > > 
+> > > Don't think you're missing anything, there's just the block handling
+> > > param->vlan in add_station, it's dead code now. But why not kill it?
+> > 
+> > For the reason explained below (in my previous message).
+> > There can still be a command from userspace with AP base interface (as wdev) with
+> > attrs[NL80211_ATTR_STA_VLAN] set and this block will be executed in such case. Right?
+> 
+> D'oh. Going too fast, I somehow managed to not connect the two things.
+> Sorry!
+> 
+> But it's another messy code path - if you have AP A and B, and VLANs A'
+> and B' belonging to A and B respectively, then you can
+> 
+> 	add_station(A, vlan=B')
+> 
+> and it gets added on B/B', and B must be IFF_UP (because B' must be
+> IFF_UP) but doesn't need to be beaconing and we're back to the bug, it
+> seems? Maybe I'm missing something.
 
-WARNING: suspicious RCU usage
-drivers/net/phy/phy_device.c:1944 suspicious rcu_dereference_protected()
-usage!
+You can't add a vlan interface that dosn't have correct "parent" wiphy, get_vlan() checks that
+already:
 
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- lockdep_rcu_suspicious+0x140/0x1d0 kernel/locking/lockdep.c:6972
- phy_detach+0x219/0x550 drivers/net/phy/phy_device.c:1944
- phylink_connect_phy+0x1dc/0x300 drivers/net/phy/phylink.c:2251
- ax88772_init_phy+0xe3/0x390 drivers/net/usb/asix_devices.c:714
- ax88772_bind+0x9cb/0xe50 drivers/net/usb/asix_devices.c:925
- usbnet_probe+0xab3/0x2ad0 drivers/net/usb/usbnet.c:1808
- </TASK>
+	v = dev_get_by_index(genl_info_net(info), nla_get_u32(vlanattr));
+	if (!v)
+		return ERR_PTR(-ENODEV);
 
-Fix this by using rcu_dereference_protected() in phy_detach() with a
-condition checking whether the RTNL lock is held or dev->reg_state !=
-NETREG_REGISTERED. This allows safe cleanup on probe failure before device
-registration without requiring drivers to acquire the RTNL lock.
+	if (!v->ieee80211_ptr || v->ieee80211_ptr->wiphy != &rdev->wiphy) {
+		ret = -EINVAL;
+		goto error;
+	}
 
-Fixes: 35f7cad1743e ("net: Add the possibility to support a selected hwtstamp in netdevice")
-Assisted-by: Gemini:gemini-3.7-flash syzbot
-Reported-by: syzbot+694b49f41098a5df4fd7@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=694b49f41098a5df4fd7
-Link: https://syzkaller.appspot.com/ai_job?id=63daf6f3-5d22-4261-b346-dfd3a5537965
-To: "Andrew Lunn" <andrew@lunn.ch>
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: "Heiner Kallweit" <hkallweit1@gmail.com>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Kory Maincent" <kory.maincent@bootlin.com>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Russell King" <linux@armlinux.org.uk>
+> Since VLANs have to have the same local address as their AP (i.e. we
+> need addr(B') == addr(B)), I guess get_vlan() could check this though,
+> if it's indeed a problem, and that would avoid it through the chain of
+> other invariants (IFF_UP, beaconing, etc.)
 
----
-v3:
-- Check dev->reg_state != NETREG_REGISTERED instead of dev->reg_state == NETREG_UNINITIALIZED in phy_detach().
+This check I've pasted should be good enough, right?
 
-v2:
-- Moved the fix to phy_detach() in phylib by allowing rcu_dereference_protected() when dev->reg_state is NETREG_UNINITIALIZED, instead of acquiring RTNL in asix.
-- Updated the commit subject and description to reflect the changes in phylib.
-https://lore.kernel.org/all/5a7201b1-c826-4855-9105-3caa58977bc3@mail.kernel.org/T/
-
-v1:
-https://lore.kernel.org/all/2835933a-117e-405a-a369-86459e8c8299@mail.kernel.org/T/
----
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 94b2e85e0..ac09943e1 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1939,9 +1939,13 @@ void phy_detach(struct phy_device *phydev)
- 		struct hwtstamp_provider *hwprov;
- 
- 		/* hwprov may technically be protected by ops lock but
--		 * not for devices with a phydev, see phy_link_topo_add_phy()
-+		 * not for devices with a phydev, see phy_link_topo_add_phy().
-+		 * RTNL is not held when cleaning up on probe failure before
-+		 * device registration.
- 		 */
--		hwprov = rtnl_dereference(dev->hwprov);
-+		hwprov = rcu_dereference_protected(dev->hwprov,
-+						   lockdep_rtnl_is_held() ||
-+						   dev->reg_state != NETREG_REGISTERED);
- 		/* Disable timestamp if it is the one selected */
- 		if (hwprov && hwprov->phydev == phydev) {
- 			rcu_assign_pointer(dev->hwprov, NULL);
-
-
-base-commit: df2908090cda368b01ff43709f51890076c56157
 -- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Slawomir Stepien
