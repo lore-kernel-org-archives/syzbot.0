@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2E2943DA4C
-	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 10:30:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A148525A96
+	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 11:05:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788863436; cv=none; b=tABdT3yToTR3Miq/olRGFX2/qPyiv0kPELlct5hQUIq7fWbncn8UciioiRVIffWPDEhVhKf8L5IC9avqcup12uqMG3DoGf4v0qASrJovpeqV8D8frE4RSm4h4EYZ9Jpz8VU0aM1rnSRSnCeCMDngj1k3/on2zdkvp1uc0gp369E=
+	t=1788865535; cv=none; b=OenNQ+MgGwv84q6Z1pR3xj/AWT3bF/4ob5/SSwoGLqgu9+iHm+xuYGwyv2i5DXJNjKs6XJpX9EbyQvUOztFGFb/YADkS6sMr/1FM4XX4sZNQBIr0W4UvbRtXJ2qjANv08R8xIxMZJrBMSm0oCraTQqRX7fgXNS+E5G04/KKVwVQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788863436; c=relaxed/simple;
-	bh=Fspl9mU7/n2cE9pdub0BS4lKPsz4/70GEKfbxjJJypI=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=kFDYiJcIzo4gAUUG/7/xRq5sXv23BoLeiN86W22+fNVYqvOBnvCGbOg41CsaWZCWy8RaTtaz3mQy2eipHDUoUa8fwHWI7O0aK30DuuUj5iqDxRpbuZlX9vGr0ioEk47+xycgAXREif3uEn+LmUS+zq98tlDxDmbjBfLBMsobN4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HPdBx7MO; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788865535; c=relaxed/simple;
+	bh=7DNkFEzRYYnav9OjGI/WFZdCWbrFYQ/bxBkgbI4g9nU=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=RzeOL6ww5uEOxAvFfy7LHYtxqeHZRp7R5MxjhuL2OsJ8nUSjGB1ggVB2XxVCoHhFnbepRzPYrfodKlBopDS1wsWRTC9KVlHS+Yw8F83Wt/86lLYBv97AfFk5r21gMWNU/lti4pX4vF8LfEc398wN/zdCeg0Olc6ZwnyxxLF88vA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bax8S0Lp; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HPdBx7MO"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 967261F00A3A;
-	Tue,  8 Sep 2026 10:30:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bax8S0Lp"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id AD4F51F00A3A;
+	Tue,  8 Sep 2026 11:05:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788863434;
-	bh=fcQNKowFUuD6yUyAq9VCb8ZoPi9o/SFJFWwqMXaWltw=;
+	s=k20260515; t=1788865532;
+	bh=/fhYxUkyYeUK/W4Dp0pfExfeYqs89Q+mWMUmlE6CFcI=;
 	h=From:To:Cc:Subject:Date;
-	b=HPdBx7MOkocaGLso04YgFEL+SXNo48kl3kgqohWhoAgAND5Rce1TRw+lhKWHykw+u
-	 73F7nNbYKuBF6eIi19VvPuhy5azeSpL0czFvq3pSo6zNUYZxc0/6igpKiZEqzS1CUX
-	 TJs2Oj+zyyJU4jASRsH69q8kqoq2KyCWh28aAYS09dru0jpb+Oic1vfTLUiK8pxYVj
-	 t5QDBxA3gP6sWSzrfp5R0LyFCtSQsgt9c7t43EiEH5FPkYwpmxLv9jpxQDxiwAMbTp
-	 xBnTHkvXLXFxe+vFPQ+mvdq18ia2t4SlEH8b5hie74IqGry84Gngc40b1t6ULmSde/
-	 REKKXPmDuQjog==
+	b=Bax8S0LpEbB2U2fbN9/G557h6GNVX4eU/hCdlOhHcefqim+yuJOizUIUN4Y6C1zmf
+	 oxoPIUQ8SPK/grGNaFC3peSi/yyfqHEE2QHR79pIJioZ/vqdeMcWQtkiBLvjXFNBPF
+	 sO1VpN6g2rfw0hAGSf1Q1mcAv10eF6QBHTi1d+mSyJv9Yw1WnkEU9U23r1N8pKSaZJ
+	 grBSdpRDU8+sLnWObzcp3kaRZospppvquiw7JRva154s2I1dA18PH4JDkPD2qK9RoH
+	 GRTPz7IDFUWJZFSuNUCuH5bFOZGc1bj8B2Jq8A89TM62bnHmWJVp/hZ5kYPt+RP2qN
+	 M8YjngDIw0OuQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: nogikh@google.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] net: phy: fix suspicious RCU usage in phy_detach()
-Message-ID: <5a7201b1-c826-4855-9105-3caa58977bc3@mail.kernel.org>
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] usb: phy: do not overwrite dev->type in usb_add_phy_dev()
+Message-ID: <36d44b2d-6fd1-4bc6-8bf6-78f1f4e9558b@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,81 +38,185 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue,  8 Sep 2026 10:30:34 +0000 (UTC)
+Date: Tue,  8 Sep 2026 11:05:32 +0000 (UTC)
 
-During device probe (for example, in ax88772_bind()), drivers may invoke
-phylink_connect_phy() before the net_device is registered (while
-dev->reg_state is NETREG_UNINITIALIZED) and without holding the RTNL lock.
-If connecting or bringing up the PHY fails inside phylink_connect_phy(),
-the error cleanup path invokes phy_detach(). In phy_detach(), dev->hwprov
-is dereferenced using rtnl_dereference(), which expects the RTNL lock to be
-held. Because the RTNL lock is not held, lockdep triggers a suspicious RCU
-usage warning:
+In usb_add_phy_dev(), x->dev->type is overwritten with &usb_phy_dev_type.
+However, the underlying struct device is allocated and managed by a parent
+subsystem or bus driver, such as an I2C client device in phy-isp1301.
+Overwriting x->dev->type clobbers the original device type (e.g.
+i2c_client_type) and removes its lifecycle release callback (such as
+i2c_client_dev_release).
 
-WARNING: suspicious RCU usage
-drivers/net/phy/phy_device.c:1944 suspicious rcu_dereference_protected()
-usage!
+When an I2C client device using a USB PHY is deregistered and its reference
+count drops to zero, device_release() falls back to dev->type->release
+since dev->release is NULL for I2C clients. Because usb_phy_dev_type does
+not provide a .release callback, a warning is triggered and the memory of
+the client structure is leaked:
 
+Device '2-002c' does not have a release() function, it is broken and must
+be fixed. See Documentation/core-api/kobject.rst.
+WARNING: drivers/base/core.c:2643 at device_release+0x194/0x1f0
+drivers/base/core.c:2642
 Call Trace:
  <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- lockdep_rcu_suspicious+0x140/0x1d0 kernel/locking/lockdep.c:6972
- phy_detach+0x219/0x550 drivers/net/phy/phy_device.c:1944
- phylink_connect_phy+0x1dc/0x300 drivers/net/phy/phylink.c:2251
- ax88772_init_phy+0xe3/0x390 drivers/net/usb/asix_devices.c:714
- ax88772_bind+0x9cb/0xe50 drivers/net/usb/asix_devices.c:925
- usbnet_probe+0xab3/0x2ad0 drivers/net/usb/usbnet.c:1808
+ kobject_cleanup lib/kobject.c:689 [inline]
+ kobject_release lib/kobject.c:720 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ kobject_put+0x222/0x550 lib/kobject.c:737
+ i2c_deregister_clients+0x281/0x3a0 drivers/i2c/i2c-core-base.c:1783
+ i2c_del_adapter+0x124/0x440 drivers/i2c/i2c-core-base.c:1827
+ i2c_tiny_usb_disconnect+0x49/0xd0 drivers/i2c/busses/i2c-tiny-usb.c:282
+ usb_unbind_interface+0x295/0x9f0 drivers/usb/core/driver.c:461
+ device_remove drivers/base/dd.c:618 [inline]
+ __device_release_driver drivers/base/dd.c:1349 [inline]
+ device_release_driver_internal+0x4f5/0x880 drivers/base/dd.c:1372
+ bus_remove_device+0x444/0x560 drivers/base/bus.c:664
+ device_del+0x524/0x8f0 drivers/base/core.c:3965
  </TASK>
 
-Fix this by using rcu_dereference_protected() in phy_detach() with a
-condition checking whether the RTNL lock is held or dev->reg_state ==
-NETREG_UNINITIALIZED. This allows safe cleanup on probe failure before
-device registration without requiring drivers to acquire the RTNL lock.
+Platform devices were unaffected because platform_device_release is
+assigned directly to dev->release, which device_release() checks before
+dev->type->release. However, subsystems should not overwrite dev->type on
+devices they do not own.
 
-Fixes: 35f7cad1743e ("net: Add the possibility to support a selected hwtstamp in netdevice")
-Assisted-by: Gemini:gemini-3.7-flash syzbot
-Reported-by: syzbot+694b49f41098a5df4fd7@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=694b49f41098a5df4fd7
-Link: https://syzkaller.appspot.com/ai_job?id=360ce09e-643b-4b98-9061-0d730f847be9
-To: "Andrew Lunn" <andrew@lunn.ch>
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: "Heiner Kallweit" <hkallweit1@gmail.com>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Kory Maincent" <kory.maincent@bootlin.com>
+Fix this by removing usb_phy_dev_type and its assignment in
+usb_add_phy_dev(). To maintain the charger uevents, construct the
+environment variables directly and pass them to kobject_uevent_env() in
+usb_phy_notify_charger_work().
+
+Fixes: a8534cb092d7 ("usb: phy: introduce usb_phy device type with its own uevent handler")
+Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+3fb7629cfd12d04beeab@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=3fb7629cfd12d04beeab
+Link: https://syzkaller.appspot.com/ai_job?id=313c85bd-96bf-44e8-a1a6-e25813b43afe
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
+To: "Grzegorz Jaszczyk" <grzegorz.jaszczyk@linaro.org>
+Cc: "Diogo Ivo" <diogo.ivo@tecnico.ulisboa.pt>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Russell King" <linux@armlinux.org.uk>
 
 ---
-v2:
-- Moved the fix to phy_detach() in phylib by allowing rcu_dereference_protected() when dev->reg_state is NETREG_UNINITIALIZED, instead of acquiring RTNL in asix.
-- Updated the commit subject and description to reflect the changes in phylib.
-
-v1:
-https://lore.kernel.org/all/2835933a-117e-405a-a369-86459e8c8299@mail.kernel.org/T/
----
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 94b2e85e0..50c7a060b 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1939,9 +1939,13 @@ void phy_detach(struct phy_device *phydev)
- 		struct hwtstamp_provider *hwprov;
+diff --git a/drivers/usb/phy/phy.c b/drivers/usb/phy/phy.c
+index 5a9b9353f..7c85c7ca1 100644
+--- a/drivers/usb/phy/phy.c
++++ b/drivers/usb/phy/phy.c
+@@ -42,12 +42,6 @@ static const char *const usb_chger_type[] = {
+ 	[ACA_TYPE]			= "USB_CHARGER_ACA_TYPE",
+ };
  
- 		/* hwprov may technically be protected by ops lock but
--		 * not for devices with a phydev, see phy_link_topo_add_phy()
-+		 * not for devices with a phydev, see phy_link_topo_add_phy().
-+		 * RTNL is not held when cleaning up on probe failure before
-+		 * device registration.
- 		 */
--		hwprov = rtnl_dereference(dev->hwprov);
-+		hwprov = rcu_dereference_protected(dev->hwprov,
-+						   lockdep_rtnl_is_held() ||
-+						   dev->reg_state == NETREG_UNINITIALIZED);
- 		/* Disable timestamp if it is the one selected */
- 		if (hwprov && hwprov->phydev == phydev) {
- 			rcu_assign_pointer(dev->hwprov, NULL);
+-static const char *const usb_chger_state[] = {
+-	[USB_CHARGER_DEFAULT]	= "USB_CHARGER_DEFAULT",
+-	[USB_CHARGER_PRESENT]	= "USB_CHARGER_PRESENT",
+-	[USB_CHARGER_ABSENT]	= "USB_CHARGER_ABSENT",
+-};
+-
+ static struct usb_phy *__usb_find_phy(struct list_head *list,
+ 	enum usb_phy_type type)
+ {
+@@ -80,18 +74,6 @@ static struct usb_phy *__of_usb_find_phy(struct device_node *node)
+ 	return ERR_PTR(-EPROBE_DEFER);
+ }
+ 
+-static struct usb_phy *__device_to_usb_phy(const struct device *dev)
+-{
+-	struct usb_phy *usb_phy;
+-
+-	list_for_each_entry(usb_phy, &phy_list, head) {
+-		if (usb_phy->dev == dev)
+-			return usb_phy;
+-	}
+-
+-	return NULL;
+-}
+-
+ static void usb_phy_set_default_current(struct usb_phy *usb_phy)
+ {
+ 	usb_phy->chg_cur.sdp_min = DEFAULT_SDP_CUR_MIN;
+@@ -123,6 +105,9 @@ static void usb_phy_set_default_current(struct usb_phy *usb_phy)
+ static void usb_phy_notify_charger_work(struct work_struct *work)
+ {
+ 	struct usb_phy *usb_phy = container_of(work, struct usb_phy, chg_work);
++	char uchger_state[50] = { 0 };
++	char uchger_type[50] = { 0 };
++	char *envp[] = { uchger_state, uchger_type, NULL };
+ 	unsigned int min, max;
+ 
+ 	switch (usb_phy->chg_state) {
+@@ -130,11 +115,15 @@ static void usb_phy_notify_charger_work(struct work_struct *work)
+ 		usb_phy_get_charger_current(usb_phy, &min, &max);
+ 
+ 		atomic_notifier_call_chain(&usb_phy->notifier, max, usb_phy);
++		snprintf(uchger_state, ARRAY_SIZE(uchger_state),
++			 "USB_CHARGER_STATE=%s", "USB_CHARGER_PRESENT");
+ 		break;
+ 	case USB_CHARGER_ABSENT:
+ 		usb_phy_set_default_current(usb_phy);
+ 
+ 		atomic_notifier_call_chain(&usb_phy->notifier, 0, usb_phy);
++		snprintf(uchger_state, ARRAY_SIZE(uchger_state),
++			 "USB_CHARGER_STATE=%s", "USB_CHARGER_ABSENT");
+ 		break;
+ 	default:
+ 		dev_warn(usb_phy->dev, "Unknown USB charger state: %d\n",
+@@ -142,36 +131,9 @@ static void usb_phy_notify_charger_work(struct work_struct *work)
+ 		return;
+ 	}
+ 
+-	kobject_uevent(&usb_phy->dev->kobj, KOBJ_CHANGE);
+-}
+-
+-static int usb_phy_uevent(const struct device *dev, struct kobj_uevent_env *env)
+-{
+-	const struct usb_phy *usb_phy;
+-	char uchger_state[50] = { 0 };
+-	char uchger_type[50] = { 0 };
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&phy_lock, flags);
+-	usb_phy = __device_to_usb_phy(dev);
+-	spin_unlock_irqrestore(&phy_lock, flags);
+-
+-	if (!usb_phy)
+-		return -ENODEV;
+-
+-	snprintf(uchger_state, ARRAY_SIZE(uchger_state),
+-		 "USB_CHARGER_STATE=%s", usb_chger_state[usb_phy->chg_state]);
+-
+ 	snprintf(uchger_type, ARRAY_SIZE(uchger_type),
+ 		 "USB_CHARGER_TYPE=%s", usb_chger_type[usb_phy->chg_type]);
+-
+-	if (add_uevent_var(env, uchger_state))
+-		return -ENOMEM;
+-
+-	if (add_uevent_var(env, uchger_type))
+-		return -ENOMEM;
+-
+-	return 0;
++	kobject_uevent_env(&usb_phy->dev->kobj, KOBJ_CHANGE, envp);
+ }
+ 
+ static void __usb_phy_get_charger_type(struct usb_phy *usb_phy)
+@@ -675,11 +637,6 @@ int usb_add_phy(struct usb_phy *x, enum usb_phy_type type)
+ }
+ EXPORT_SYMBOL_GPL(usb_add_phy);
+ 
+-static const struct device_type usb_phy_dev_type = {
+-	.name = "usb_phy",
+-	.uevent = usb_phy_uevent,
+-};
+-
+ /**
+  * usb_add_phy_dev - declare the USB PHY
+  * @x: the USB phy to be used; or NULL
+@@ -705,8 +662,6 @@ int usb_add_phy_dev(struct usb_phy *x)
+ 	if (ret)
+ 		return ret;
+ 
+-	x->dev->type = &usb_phy_dev_type;
+-
+ 	ATOMIC_INIT_NOTIFIER_HEAD(&x->notifier);
+ 
+ 	spin_lock_irqsave(&phy_lock, flags);
 
 
 base-commit: df2908090cda368b01ff43709f51890076c56157
