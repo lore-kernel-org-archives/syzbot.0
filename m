@@ -1,144 +1,122 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com [209.85.160.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCAF657D22F
-	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 16:04:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35FDA524B08
+	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 21:45:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788883477; cv=none; b=UWY6SFhrG4Fi520e87Bz74hYWqgxYSTs4KQMjkZWqUbO48o43/qK2sLrJ9S40zmQzDz6Q9bSagFJdtSo6Coh4Lq34vfSxwi6fyg25tCxN10GOLOqn/JzGTWO3OYxmQPyMqeMUGpFEhRyy6ikxDvu/GbaX9nHIeIOVVuYKZvSHWc=
+	t=1788903919; cv=none; b=Wn7igo0Xgj1l5er7/U4Lex9FLeiu0j+HXG1atHwNuT0yKjfgqGRhD6AD4FrPx3mvHrCqEDyLvaTkbvYeb69YL1hoNBTiHmfxCaM+VaG6LhLrAdd1FiKEFO5wIzG4OKlyPtRpR/Sg0pAEHVXQrC01ec8FyzAW57Thv9uzC0NZFa0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788883477; c=relaxed/simple;
-	bh=zsaHOezx/yJNwfpNWRD13Mbyknk7nTO3+HJRjFTV/Yo=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=bAEObxUE0EdTv+ZJ2SsNJ7W64JRY17tfcM5gPdiL9tEiRH+apw8bm8KeBkhG1Jpm0V+Z3C3xUez9UmBuMybVjKqPPuryBPvzno5BdtDzrhSqLtF4LMh1ezLTwmSSvXSK/I/4ME6aTyR1d+Mi/2SWZ2NuZcL1T9JBgSt7HAguGXk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H8Eont4K; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H8Eont4K"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 3633F1F00A3A;
-	Tue,  8 Sep 2026 16:04:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788883475;
-	bh=v5h9VzwyHbBdfn/E6ZHniM9cWwAU4Ksesd4Vpw7dqkM=;
-	h=From:To:Cc:Subject:Date;
-	b=H8Eont4Ka3XB8OCoGcAPd09mugtamf5JNlaHaFqPCvHMYSg+DPkbNfUUNpmtY7jEw
-	 mfAMr/AkTUl9lGIsQ1NkmUJD8KIvcVaMU4Ai/0wjSKDHsfu5yCQcOGcCVLquteHuA0
-	 soRMVexBHx+eWv5Xj+KkFE63i1fYa8IKRJ+6OBGAmAlszIfNmYjGQRu+ZDmYDeNG8y
-	 /1nwlIVLUOOJz50zMQTcJzVqRlXAUBqnv94K322wL9gPdURWygTh+cKduNUKGkh9kG
-	 18En+cSsFgUhYB/f0bwDacT+oHgg6oci+WRnIsvgvKg3V1OgkGBwQdjPgaf7sL01DV
-	 4HBkWfCLk1Qwg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: elver@google.com, nogikh@google.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v5] net: phy: fix suspicious RCU usage in phy_detach()
-Message-ID: <eb31c4ec-3f9f-43e4-8f4a-d4dbdde72e7f@mail.kernel.org>
+	s=arc-20240116; t=1788903919; c=relaxed/simple;
+	bh=uQW2+Dbv/tSQWMrQKnQt38dNZR+6zjHCUK9RWW7+ziA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=VN2Hsc/4ojMs1mVHiIn0K4XUVN2wUCGCR2iCSyTBPKDC7Mue1ruvgAzABSd4nUUBHH/4ILdeSOezgdZZDFIFRc8e3yQzUu85wzHP8CTnH8/n2K3smnghE1Wrzos7T8s/wtXnBJPIfsoONDhBX7IHrqNdTVGn603Sy4MYOHgeXyw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-45ecb9dd589so3012850fac.0
+        for <syzbot@lists.linux.dev>; Tue, 08 Sep 2026 14:45:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788903917; x=1789508717;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=FQA8PpJUJIMqFWTVOuzCafqVH3VRje2wdmaucgJF6L8=;
+        b=SigOKfluMjv0c+Iaw9N/ic2QGltU0JFGhnzshpYMpQGCgbrgjuJ/b5DMPYEnma/r3I
+         vRqHljBmfdtvNhTSn3AXK1IyRBidToNrome5R4gZIBDiak5CQ3wLc7aCq/dejtxuoWa2
+         o/hqLeDha6xKnIJI/mzBpbJpkdeEy42tERMIPXTQuxzQX60yfSMwR/6o3RDdHISK4wDR
+         ARsS2t9bC5/Si2AYkIBnU3Y3+9jDujCVEBbBlhF9NuW0MitHV83OGdq71YJH2NzDEKkW
+         av+4l14q0K9UBGRfPzZZGACyz5Y3LnFf3mpIfE95mXwWgySdmXDWRtVyh90YlOdazeZV
+         S7Nw==
+X-Gm-Message-State: AFuF++ldDL0TBS0g+dczeAPtUkzZe6VH2vfoSFGJP7I2Dxfs0v3oApt6
+	kUvWRdOoCxh5Y6xQMrIL1QwXjpRro+LdNc51+nBHCfryUlBOmHj3MvgT9/vOCc2S1Ed0yH1RPl7
+	q9IMVTbdmTpeIoP5vCI3+3XVC/fKV9JHsQDBwN9XJqAuEXC5ENaRMXTwS5GQ=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Tue,  8 Sep 2026 16:04:35 +0000 (UTC)
+X-Received: by 2002:a05:6820:f02c:b0:6b7:8396:f3c4 with SMTP id
+ 006d021491bc7-6b78396f8b9mr17876517eaf.38.1788903917161; Tue, 08 Sep 2026
+ 14:45:17 -0700 (PDT)
+Date: Tue, 08 Sep 2026 14:45:17 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6aa081ed.6e6c5f9e.28f11f.001a.GAE@google.com>
+Subject: [moderation/CI] Re: wifi: Add Seamless Mobility Domain (SMD) AP support
+From: syzbot ci <syzbot+ci4b9092ac2b5224d4@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-During device probe (for example, in ax88772_bind()), drivers may invoke
-phylink_connect_phy() before the net_device is registered (while
-dev->reg_state is NETREG_UNINITIALIZED) and without holding the RTNL lock.
+syzbot ci has tested the following series
 
-If connecting or bringing up the PHY fails inside phylink_connect_phy(),
-the error cleanup path invokes phy_detach(). In phy_detach(), dev->hwprov
-is dereferenced using rtnl_dereference(), which expects the RTNL lock to be
-held. Because the RTNL lock is not held, lockdep triggers a suspicious RCU
-usage warning:
+[v1] wifi: Add Seamless Mobility Domain (SMD) AP support
+https://lore.kernel.org/all/20260908-smd-v1-0-9fd2d876a1fb@oss.qualcomm.com
+* [PATCH RESEND wireless-next 01/18] net: skbuff: Add SKB extension support to wireless drivers
+* [PATCH RESEND wireless-next 02/18] wifi: nl80211: Define Seamless Mobility Domain (SMD) device capability
+* [PATCH RESEND wireless-next 03/18] wifi: nl80211: Add kernel interfaces for Seamless Mobility Domain setup
+* [PATCH RESEND wireless-next 04/18] wifi: cfg80211/mac80211: Configure AP with SMD capabilities
+* [PATCH RESEND wireless-next 05/18] wifi: cfg80211/mac80211: Parse SMD parameters in STA addition/modification
+* [PATCH RESEND wireless-next 06/18] wifi: nl80211/cfg80211: Indicate STA creation via SMD BSS Transition
+* [PATCH RESEND wireless-next 07/18] wifi: nl80211/mac80211: Add SMD BSS Transition sub-state STA flags
+* [PATCH RESEND wireless-next 08/18] wifi: mac80211: Add driver_op for SMD substate changes
+* [PATCH RESEND wireless-next 09/18] wifi: mac80211: Send BlockAck policy in AMPDU action
+* [PATCH RESEND wireless-next 10/18] wifi: mac80211: Define SMD BSS Transition context for transport
+* [PATCH RESEND wireless-next 11/18] wifi: mac80211: Enable skb extensions along with mac80211
+* [PATCH RESEND wireless-next 12/18] wifi: nl80211: Define attributes to pack SMD BSS Transition context
+* [PATCH RESEND wireless-next 13/18] wifi: cfg80211/mac80211: Handle UHR Link Reconfiguration frame
+* [PATCH RESEND wireless-next 14/18] wifi: nl80211: Pack SMD dynamic context along with frame
+* [PATCH RESEND wireless-next 15/18] wifi: nl80211/cfg80211: Add support for SMD context programming
+* [PATCH RESEND wireless-next 16/18] wifi: mac80211: Add mac80211 support to handle NL80211_CMD_SET_SMD_CTX
+* [PATCH RESEND wireless-next 17/18] wifi: nl80211/cfg80211: Add support for querying SMD context for target AP MLD
+* [PATCH RESEND wireless-next 18/18] wifi: mac80211: Add mac80211 support to handle NL80211_CMD_GET_SMD_CTX
 
-WARNING: suspicious RCU usage
-drivers/net/phy/phy_device.c:1944 suspicious rcu_dereference_protected()
-usage!
+and found the following issue:
+kernel build error
 
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- lockdep_rcu_suspicious+0x140/0x1d0 kernel/locking/lockdep.c:6972
- phy_detach+0x219/0x550 drivers/net/phy/phy_device.c:1944
- phylink_connect_phy+0x1dc/0x300 drivers/net/phy/phylink.c:2251
- ax88772_init_phy+0xe3/0x390 drivers/net/usb/asix_devices.c:714
- ax88772_bind+0x9cb/0xe50 drivers/net/usb/asix_devices.c:925
- usbnet_probe+0xab3/0x2ad0 drivers/net/usb/usbnet.c:1808
- </TASK>
+Full report is available here:
+https://ci.syzbot.org/series/8d747db8-d307-40ad-aa87-3069da74c69e
 
-Before a net_device is registered (dev->reg_state != NETREG_REGISTERED), it
-is not exposed to the rest of the network stack, so the probing context has
-exclusive access and holding the RTNL lock is not required. Fix this by
-using rcu_dereference_protected() in phy_detach() with a condition checking
-whether the RTNL lock is held or dev->reg_state != NETREG_REGISTERED. This
-allows safe cleanup on probe failure before device registration without
-requiring drivers to acquire the RTNL lock.
+***
 
-Fixes: 35f7cad1743e ("net: Add the possibility to support a selected hwtstamp in netdevice")
-Assisted-by: Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+694b49f41098a5df4fd7@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=694b49f41098a5df4fd7
-Link: https://syzkaller.appspot.com/ai_job?id=03f9ee28-d9b3-48a4-8d9a-3878018387f0
-To: "Andrew Lunn" <andrew@lunn.ch>
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: "Heiner Kallweit" <hkallweit1@gmail.com>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Kory Maincent" <kory.maincent@bootlin.com>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Russell King" <linux@armlinux.org.uk>
+kernel build error
+
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
+base:      1b60ed34f712e9f606d80951f1586f4274ebadf1
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/702b616f-509b-4fdc-8f3d-60b1cf2ff58d/config
+
+net/wireless/nl80211.c:19576:7: error: use of undeclared identifier 'n_dl_tids'
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v5:
-- Use READ_ONCE() to read dev->reg_state.
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v4:
-- Clarify in the commit description why dereferencing dev->hwprov without RTNL is safe before device registration.
-https://lore.kernel.org/all/cc8448ce-5426-472c-b0f4-84f9237eb50f@mail.kernel.org/T/
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
-v3:
-- Check dev->reg_state != NETREG_REGISTERED instead of dev->reg_state == NETREG_UNINITIALIZED in phy_detach().
-https://lore.kernel.org/all/5e1c820e-982c-4c4b-ae8f-682ae1fe2da2@mail.kernel.org/T/
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
 
-v2:
-- Moved the fix to phy_detach() in phylib by allowing rcu_dereference_protected() when dev->reg_state is NETREG_UNINITIALIZED, instead of acquiring RTNL in asix.
-- Updated the commit subject and description to reflect the changes in phylib.
-https://lore.kernel.org/all/5a7201b1-c826-4855-9105-3caa58977bc3@mail.kernel.org/T/
+The email will later be sent to:
+[davem@davemloft.net edumazet@google.com horms@kernel.org johannes@sipsolutions.net kuba@kernel.org linux-kernel@vger.kernel.org linux-wireless@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com pooventhiran.g@oss.qualcomm.com]
 
-v1:
-https://lore.kernel.org/all/2835933a-117e-405a-a369-86459e8c8299@mail.kernel.org/T/
----
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 94b2e85e0..2f0a10739 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1939,9 +1939,13 @@ void phy_detach(struct phy_device *phydev)
- 		struct hwtstamp_provider *hwprov;
- 
- 		/* hwprov may technically be protected by ops lock but
--		 * not for devices with a phydev, see phy_link_topo_add_phy()
-+		 * not for devices with a phydev, see phy_link_topo_add_phy().
-+		 * RTNL is not held when cleaning up on probe failure before
-+		 * device registration.
- 		 */
--		hwprov = rtnl_dereference(dev->hwprov);
-+		hwprov = rcu_dereference_protected(dev->hwprov,
-+						   lockdep_rtnl_is_held() ||
-+						   READ_ONCE(dev->reg_state) != NETREG_REGISTERED);
- 		/* Disable timestamp if it is the one selected */
- 		if (hwprov && hwprov->phydev == phydev) {
- 			rcu_assign_pointer(dev->hwprov, NULL);
+If the report looks fine to you, reply with:
+#syz upstream
 
+If the report is a false positive, reply with
+#syz invalid
 
-base-commit: df2908090cda368b01ff43709f51890076c56157
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
