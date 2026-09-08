@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C9C5531AE1
-	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 11:48:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8F82519904
+	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 11:53:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788868128; cv=none; b=LvPd/clSFeehHH69JkVnJq/YRHHwT5+jO3gO034KsaUxcGCPijcZxbriaXuC7aKiS6M2X42JAUSeuzJ9xjZNk5se/tLEuQNR9h2cKD30PFFjet8YXjmLYgWBfYEVf5smnL0bEHVQfUIcy7/FEm3AsiPMUTA8USTyxF+9whPUjOQ=
+	t=1788868389; cv=none; b=UWnOnzdeVjiGGFT+x6RAVlrAYqgXuS2zSEqxE05U5t4Ww5qnHJxBBMA4XMxH1d0qtXsokGcfhiJLldtBnhACoFO0aJgSj8khwaSOl49QDobNI1D4ZtENQ+ur9zbdlBnb15m8G3mbOMPBVdKOiUkOOLS8gFvP9ZPRv8jDPf/09gk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788868128; c=relaxed/simple;
-	bh=hnH3gMBGnOW7h94oe1zXTVsfPHZyQQNTaBmvbejrytc=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Vfxzi6YHo6HvcAvMsc0gy2I1enJGwI6IwUHKiPi6GEYpSMDmHU+UAMMTjQZhLqupSS+OS++UNQ983EYzA6uFswzmrl1eqsuBalaiXmNKCvuDvC0/1BLDypUsV7EpLDnzUwNwVdyWiaYSwmMOIlEtD8pMiA7X+H0d7pGUgPs3MtM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kDWxzC+t; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788868389; c=relaxed/simple;
+	bh=QIH8eJgZV9WUg5fTctZBBVYVygEvpVUTCBOgsm97Lew=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=tiFVqxFQLqjx8kZxdw3bQyMdfylJu2G8Yv0ZmBIZJOgob8lczpK71Ew+kGQlO1yhSX2Md+Ptlqf9FUEilXFXUgBg6RuTNXwv7ZU//Ms+Rb3/rQsyHUAS2rBT60/eanOPKfNVFANaMvZJHHa90+OQ1AkfPMQqtMjvdr6/ixRTWvI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oZFzY2KY; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kDWxzC+t"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 0E81F1F00A3A;
-	Tue,  8 Sep 2026 11:48:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oZFzY2KY"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id ABA801F00A3A;
+	Tue,  8 Sep 2026 11:53:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788868113;
-	bh=Hhk6cdAwfbJvTdC7g0kMCgPSOArKJZCvUTCT+SS2VYw=;
+	s=k20260515; t=1788868382;
+	bh=1bCTnTBjWSuoyRPv30ST6VynuxqA6cMhAY61p6RidyY=;
 	h=From:To:Cc:Subject:Date;
-	b=kDWxzC+tY68D/8/UOWYf/bD0uXCkas3pqrsc2TaHZC3BYI1p/L0vYoQDI9ruWaxL/
-	 5e9lvc0PbskHehqmR84Mmti2Q8hkCEhZzVtRNAsZiuJ4cOvafq82AqPr9SFhQLgVyB
-	 YJY/q6aDlg78czSYz3oBR3KZaejSiAkZXGjFQHZvo1iVFHZBlbfjGGE+eI36/kn0Zh
-	 Oh2YdBpexBzCyPdC9uA2wOCszXe4UfDtOJmVtvlqdQcJoAjvbaw/ueYW0BUMlv8NLM
-	 Bw/Wv0rhWEtjjfq07Cx9WDbh7AwpAI4aYg7AEuNUEyOIhHa7fCY6o4CEIn8eKGrscy
-	 jjpK6/FXJ2Mzw==
+	b=oZFzY2KY60ysKAMKakZ9CZDvtuCXbKVQYZFNgJ2NoZvbZDMw1sLi4zalAyVvOsAWc
+	 VNWntfDS2XYqGDZXJxMX0r34T50BdQyCb4xZU2ANsdliAmlBqMLLdFyg+CqyF67HgI
+	 Z0fJqt113WW8ORpknjixlisVPYsT6eVzVdG2MZBMznHrdkczSlfN0/u7vJt1MTkpH0
+	 DqdgM3tymA2NQeM8b3zPhQ5XZArYZNyuXMTGYKj4an2NbweiFvYrbTHcIWdTxvhdOK
+	 wsPSwVtoTJe7C6cL9Kt0h0tdQOZ/YlTtHhk+0INVep3L29w9r2BqAwbHOKarrHY8eD
+	 hlCGVDNE5XR5A==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] ring-buffer: Fix false warning in ring_buffer_map_get_reader()
-Message-ID: <97fb4855-693b-429f-9e75-b4c2a0348ef0@mail.kernel.org>
+Subject: [PATCH RFC] fuse: use TASK_FREEZABLE_UNSAFE in fuse_get_req()
+Message-ID: <53fcf56a-db74-43f3-81be-bd5bac1c0d4f@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,75 +38,69 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue,  8 Sep 2026 11:48:33 +0000 (UTC)
+Date: Tue,  8 Sep 2026 11:53:02 +0000 (UTC)
 
-In ring_buffer_map_get_reader(), an unconditional WARN_ON(!reader) is
-triggered when rb_get_reader_page() returns NULL:
+Commit 14cbb72d7595 ("fuse: use freezable wait in fuse_get_req()") switched
+fuse_get_req() to wait using TASK_KILLABLE | TASK_FREEZABLE so that tasks
+waiting for connection initialization or available request slots would not
+block system suspend or hibernation.
 
-WARNING: CPU: 1 PID: 5906 at kernel/trace/ring_buffer.c:7998
-ring_buffer_map_get_reader+0x940/0x9d0
-CPU: 1 UID: 0 PID: 5906 Comm: task Not tainted
-RIP: 0010:ring_buffer_map_get_reader+0x940/0x9d0
-kernel/trace/ring_buffer.c:7998
+However, fuse_get_req() is frequently invoked from VFS and filesystem
+operations (such as lookup_open() or atomic_open()) while holding locks
+like the VFS directory inode lock or FUSE-specific inode mutex. When the
+system freezer freezes processes, __set_task_frozen() uses lockdep to
+verify that the task being frozen does not hold locks (via
+WARN_ON_ONCE(debug_locks && p->lockdep_depth)), unless the sleep state
+explicitly marks that freezing with locks held is expected via
+__TASK_FREEZABLE_UNSAFE. Because TASK_FREEZABLE was used instead of
+TASK_FREEZABLE_UNSAFE, freezing a task waiting in fuse_get_req() with locks
+held triggers a warning:
+
+WARNING: kernel/freezer.c:139 at __set_task_frozen+0x260/0x340
 Call Trace:
  <TASK>
- tracing_buffers_ioctl+0x258/0x300 kernel/trace/trace.c:7381
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+ task_call_func+0x1aa/0x260 kernel/sched/core.c:4511
+ __freeze_task kernel/freezer.c:150 [inline]
+ freeze_task+0x229/0x3b0 kernel/freezer.c:169
+ try_to_freeze_tasks+0x190/0x620 kernel/power/process.c:54
+ freeze_processes+0xd0/0x1f0 kernel/power/process.c:137
+ hibernate+0x247/0x680 kernel/power/hibernate.c:801
+ state_store+0x234/0x290 kernel/power/main.c:821
+ kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
+ vfs_write+0x612/0xba0 fs/read_write.c:687
+ ksys_write+0x150/0x270 fs/read_write.c:739
  do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
  entry_SYSCALL_64_after_hwframe+0x77/0x7f
  </TASK>
 
-This warning is triggered due to a race between a writer committing events
-and a reader mapping the ring buffer via TRACE_MMAP_IOCTL_GET_READER. When
-a writer commits an event in rb_set_commit_to_write(), it advances
-cpu_buffer->commit_page to cpu_buffer->tail_page in its first loop before
-updating the commit counter (commit_page->page->commit) in the second loop.
-If a reader invokes ring_buffer_map_get_reader() at this moment, the
-initial check cpu_buffer->reader_page == cpu_buffer->commit_page is false,
-and it calls rb_get_reader_page(). Inside __rb_get_reader_page(), the
-reader swaps reader_page with the head page (which is the new commit_page).
-Because the writer has not yet updated the commit count on the new page,
-rb_page_size() is zero and reader_page->read < rb_page_size() evaluates to
-false. __rb_get_reader_page() then checks if cpu_buffer->commit_page ==
-cpu_buffer->reader_page. Since both now point to the swapped page, the
-condition evaluates to true and rb_get_reader_page() legitimately returns
-NULL to indicate the reader caught up to the writer.
+Fix this by switching the wait state in fuse_get_req() to TASK_KILLABLE |
+TASK_FREEZABLE_UNSAFE, informing lockdep and the freezer that freezing
+while holding locks is expected at this wait site.
 
-Because WARN_ON must not be used for conditions that can legitimately
-happen, ring_buffer_map_get_reader() should not unconditionally warn when
-rb_get_reader_page() returns NULL. Fix this by only warning if
-rb_get_reader_page() returns NULL while cpu_buffer->reader_page !=
-cpu_buffer->commit_page.
-
-Fixes: 117c39200d9d ("ring-buffer: Introducing ring-buffer mapping functions")
+Fixes: 14cbb72d7595 ("fuse: use freezable wait in fuse_get_req()")
 Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+de3d7f9bcc9212f3fae1@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=de3d7f9bcc9212f3fae1
-Link: https://syzkaller.appspot.com/ai_job?id=f119d7de-b21d-4d27-b61e-5503e31edccd
-To: <linux-trace-kernel@vger.kernel.org>
-To: "Masami Hiramatsu" <mhiramat@kernel.org>
-To: "Steven Rostedt" <rostedt@goodmis.org>
-To: "Vincent Donnefort" <vdonnefort@google.com>
+Reported-by: syzbot+622acb507894a48b2ce9@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=622acb507894a48b2ce9
+Link: https://syzkaller.appspot.com/ai_job?id=cc254232-e52e-4755-a734-0b8fc80a4302
+To: <fuse-devel@lists.linux.dev>
+To: "Miklos Szeredi" <miklos@szeredi.hu>
+To: "Sergey Senozhatsky" <senozhatsky@chromium.org>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Mathieu Desnoyers" <mathieu.desnoyers@efficios.com>
 
 ---
-diff --git a/kernel/trace/ring_buffer.c b/kernel/trace/ring_buffer.c
-index 9c03a555a..98130182e 100644
---- a/kernel/trace/ring_buffer.c
-+++ b/kernel/trace/ring_buffer.c
-@@ -7995,8 +7995,10 @@ int ring_buffer_map_get_reader(struct trace_buffer *buffer, int cpu)
- 		goto out;
+diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
+index 4fec31fc0..e0e0ad0ee 100644
+--- a/fs/fuse/dev.c
++++ b/fs/fuse/dev.c
+@@ -122,7 +122,7 @@ static struct fuse_req *fuse_get_req(struct fuse_chan *fch, bool for_background)
+ 		err = -EINTR;
+ 		if (wait_event_state_exclusive(fch->blocked_waitq,
+ 				!fuse_block_alloc(fch, for_background),
+-				(TASK_KILLABLE | TASK_FREEZABLE)))
++				(TASK_KILLABLE | TASK_FREEZABLE_UNSAFE)))
+ 			goto out;
+ 	}
  
- 	reader = rb_get_reader_page(cpu_buffer);
--	if (WARN_ON(!reader))
-+	if (!reader) {
-+		WARN_ON(cpu_buffer->reader_page != cpu_buffer->commit_page);
- 		goto out;
-+	}
- 
- 	/* Check if any events were dropped */
- 	missed_events = cpu_buffer->lost_events;
 
 
 base-commit: df2908090cda368b01ff43709f51890076c56157
