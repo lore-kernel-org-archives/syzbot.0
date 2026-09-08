@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A148525A96
-	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 11:05:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C9C5531AE1
+	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 11:48:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788865535; cv=none; b=OenNQ+MgGwv84q6Z1pR3xj/AWT3bF/4ob5/SSwoGLqgu9+iHm+xuYGwyv2i5DXJNjKs6XJpX9EbyQvUOztFGFb/YADkS6sMr/1FM4XX4sZNQBIr0W4UvbRtXJ2qjANv08R8xIxMZJrBMSm0oCraTQqRX7fgXNS+E5G04/KKVwVQ=
+	t=1788868128; cv=none; b=LvPd/clSFeehHH69JkVnJq/YRHHwT5+jO3gO034KsaUxcGCPijcZxbriaXuC7aKiS6M2X42JAUSeuzJ9xjZNk5se/tLEuQNR9h2cKD30PFFjet8YXjmLYgWBfYEVf5smnL0bEHVQfUIcy7/FEm3AsiPMUTA8USTyxF+9whPUjOQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788865535; c=relaxed/simple;
-	bh=7DNkFEzRYYnav9OjGI/WFZdCWbrFYQ/bxBkgbI4g9nU=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=RzeOL6ww5uEOxAvFfy7LHYtxqeHZRp7R5MxjhuL2OsJ8nUSjGB1ggVB2XxVCoHhFnbepRzPYrfodKlBopDS1wsWRTC9KVlHS+Yw8F83Wt/86lLYBv97AfFk5r21gMWNU/lti4pX4vF8LfEc398wN/zdCeg0Olc6ZwnyxxLF88vA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bax8S0Lp; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788868128; c=relaxed/simple;
+	bh=hnH3gMBGnOW7h94oe1zXTVsfPHZyQQNTaBmvbejrytc=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Vfxzi6YHo6HvcAvMsc0gy2I1enJGwI6IwUHKiPi6GEYpSMDmHU+UAMMTjQZhLqupSS+OS++UNQ983EYzA6uFswzmrl1eqsuBalaiXmNKCvuDvC0/1BLDypUsV7EpLDnzUwNwVdyWiaYSwmMOIlEtD8pMiA7X+H0d7pGUgPs3MtM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kDWxzC+t; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bax8S0Lp"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id AD4F51F00A3A;
-	Tue,  8 Sep 2026 11:05:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kDWxzC+t"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 0E81F1F00A3A;
+	Tue,  8 Sep 2026 11:48:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788865532;
-	bh=/fhYxUkyYeUK/W4Dp0pfExfeYqs89Q+mWMUmlE6CFcI=;
+	s=k20260515; t=1788868113;
+	bh=Hhk6cdAwfbJvTdC7g0kMCgPSOArKJZCvUTCT+SS2VYw=;
 	h=From:To:Cc:Subject:Date;
-	b=Bax8S0LpEbB2U2fbN9/G557h6GNVX4eU/hCdlOhHcefqim+yuJOizUIUN4Y6C1zmf
-	 oxoPIUQ8SPK/grGNaFC3peSi/yyfqHEE2QHR79pIJioZ/vqdeMcWQtkiBLvjXFNBPF
-	 sO1VpN6g2rfw0hAGSf1Q1mcAv10eF6QBHTi1d+mSyJv9Yw1WnkEU9U23r1N8pKSaZJ
-	 grBSdpRDU8+sLnWObzcp3kaRZospppvquiw7JRva154s2I1dA18PH4JDkPD2qK9RoH
-	 GRTPz7IDFUWJZFSuNUCuH5bFOZGc1bj8B2Jq8A89TM62bnHmWJVp/hZ5kYPt+RP2qN
-	 M8YjngDIw0OuQ==
+	b=kDWxzC+tY68D/8/UOWYf/bD0uXCkas3pqrsc2TaHZC3BYI1p/L0vYoQDI9ruWaxL/
+	 5e9lvc0PbskHehqmR84Mmti2Q8hkCEhZzVtRNAsZiuJ4cOvafq82AqPr9SFhQLgVyB
+	 YJY/q6aDlg78czSYz3oBR3KZaejSiAkZXGjFQHZvo1iVFHZBlbfjGGE+eI36/kn0Zh
+	 Oh2YdBpexBzCyPdC9uA2wOCszXe4UfDtOJmVtvlqdQcJoAjvbaw/ueYW0BUMlv8NLM
+	 Bw/Wv0rhWEtjjfq07Cx9WDbh7AwpAI4aYg7AEuNUEyOIhHa7fCY6o4CEIn8eKGrscy
+	 jjpK6/FXJ2Mzw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] usb: phy: do not overwrite dev->type in usb_add_phy_dev()
-Message-ID: <36d44b2d-6fd1-4bc6-8bf6-78f1f4e9558b@mail.kernel.org>
+Subject: [PATCH RFC] ring-buffer: Fix false warning in ring_buffer_map_get_reader()
+Message-ID: <97fb4855-693b-429f-9e75-b4c2a0348ef0@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,185 +38,75 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue,  8 Sep 2026 11:05:32 +0000 (UTC)
+Date: Tue,  8 Sep 2026 11:48:33 +0000 (UTC)
 
-In usb_add_phy_dev(), x->dev->type is overwritten with &usb_phy_dev_type.
-However, the underlying struct device is allocated and managed by a parent
-subsystem or bus driver, such as an I2C client device in phy-isp1301.
-Overwriting x->dev->type clobbers the original device type (e.g.
-i2c_client_type) and removes its lifecycle release callback (such as
-i2c_client_dev_release).
+In ring_buffer_map_get_reader(), an unconditional WARN_ON(!reader) is
+triggered when rb_get_reader_page() returns NULL:
 
-When an I2C client device using a USB PHY is deregistered and its reference
-count drops to zero, device_release() falls back to dev->type->release
-since dev->release is NULL for I2C clients. Because usb_phy_dev_type does
-not provide a .release callback, a warning is triggered and the memory of
-the client structure is leaked:
-
-Device '2-002c' does not have a release() function, it is broken and must
-be fixed. See Documentation/core-api/kobject.rst.
-WARNING: drivers/base/core.c:2643 at device_release+0x194/0x1f0
-drivers/base/core.c:2642
+WARNING: CPU: 1 PID: 5906 at kernel/trace/ring_buffer.c:7998
+ring_buffer_map_get_reader+0x940/0x9d0
+CPU: 1 UID: 0 PID: 5906 Comm: task Not tainted
+RIP: 0010:ring_buffer_map_get_reader+0x940/0x9d0
+kernel/trace/ring_buffer.c:7998
 Call Trace:
  <TASK>
- kobject_cleanup lib/kobject.c:689 [inline]
- kobject_release lib/kobject.c:720 [inline]
- kref_put include/linux/kref.h:65 [inline]
- kobject_put+0x222/0x550 lib/kobject.c:737
- i2c_deregister_clients+0x281/0x3a0 drivers/i2c/i2c-core-base.c:1783
- i2c_del_adapter+0x124/0x440 drivers/i2c/i2c-core-base.c:1827
- i2c_tiny_usb_disconnect+0x49/0xd0 drivers/i2c/busses/i2c-tiny-usb.c:282
- usb_unbind_interface+0x295/0x9f0 drivers/usb/core/driver.c:461
- device_remove drivers/base/dd.c:618 [inline]
- __device_release_driver drivers/base/dd.c:1349 [inline]
- device_release_driver_internal+0x4f5/0x880 drivers/base/dd.c:1372
- bus_remove_device+0x444/0x560 drivers/base/bus.c:664
- device_del+0x524/0x8f0 drivers/base/core.c:3965
+ tracing_buffers_ioctl+0x258/0x300 kernel/trace/trace.c:7381
+ __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
  </TASK>
 
-Platform devices were unaffected because platform_device_release is
-assigned directly to dev->release, which device_release() checks before
-dev->type->release. However, subsystems should not overwrite dev->type on
-devices they do not own.
+This warning is triggered due to a race between a writer committing events
+and a reader mapping the ring buffer via TRACE_MMAP_IOCTL_GET_READER. When
+a writer commits an event in rb_set_commit_to_write(), it advances
+cpu_buffer->commit_page to cpu_buffer->tail_page in its first loop before
+updating the commit counter (commit_page->page->commit) in the second loop.
+If a reader invokes ring_buffer_map_get_reader() at this moment, the
+initial check cpu_buffer->reader_page == cpu_buffer->commit_page is false,
+and it calls rb_get_reader_page(). Inside __rb_get_reader_page(), the
+reader swaps reader_page with the head page (which is the new commit_page).
+Because the writer has not yet updated the commit count on the new page,
+rb_page_size() is zero and reader_page->read < rb_page_size() evaluates to
+false. __rb_get_reader_page() then checks if cpu_buffer->commit_page ==
+cpu_buffer->reader_page. Since both now point to the swapped page, the
+condition evaluates to true and rb_get_reader_page() legitimately returns
+NULL to indicate the reader caught up to the writer.
 
-Fix this by removing usb_phy_dev_type and its assignment in
-usb_add_phy_dev(). To maintain the charger uevents, construct the
-environment variables directly and pass them to kobject_uevent_env() in
-usb_phy_notify_charger_work().
+Because WARN_ON must not be used for conditions that can legitimately
+happen, ring_buffer_map_get_reader() should not unconditionally warn when
+rb_get_reader_page() returns NULL. Fix this by only warning if
+rb_get_reader_page() returns NULL while cpu_buffer->reader_page !=
+cpu_buffer->commit_page.
 
-Fixes: a8534cb092d7 ("usb: phy: introduce usb_phy device type with its own uevent handler")
+Fixes: 117c39200d9d ("ring-buffer: Introducing ring-buffer mapping functions")
 Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+3fb7629cfd12d04beeab@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=3fb7629cfd12d04beeab
-Link: https://syzkaller.appspot.com/ai_job?id=313c85bd-96bf-44e8-a1a6-e25813b43afe
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-To: "Grzegorz Jaszczyk" <grzegorz.jaszczyk@linaro.org>
-Cc: "Diogo Ivo" <diogo.ivo@tecnico.ulisboa.pt>
+Reported-by: syzbot+de3d7f9bcc9212f3fae1@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=de3d7f9bcc9212f3fae1
+Link: https://syzkaller.appspot.com/ai_job?id=f119d7de-b21d-4d27-b61e-5503e31edccd
+To: <linux-trace-kernel@vger.kernel.org>
+To: "Masami Hiramatsu" <mhiramat@kernel.org>
+To: "Steven Rostedt" <rostedt@goodmis.org>
+To: "Vincent Donnefort" <vdonnefort@google.com>
 Cc: <linux-kernel@vger.kernel.org>
+Cc: "Mathieu Desnoyers" <mathieu.desnoyers@efficios.com>
 
 ---
-diff --git a/drivers/usb/phy/phy.c b/drivers/usb/phy/phy.c
-index 5a9b9353f..7c85c7ca1 100644
---- a/drivers/usb/phy/phy.c
-+++ b/drivers/usb/phy/phy.c
-@@ -42,12 +42,6 @@ static const char *const usb_chger_type[] = {
- 	[ACA_TYPE]			= "USB_CHARGER_ACA_TYPE",
- };
+diff --git a/kernel/trace/ring_buffer.c b/kernel/trace/ring_buffer.c
+index 9c03a555a..98130182e 100644
+--- a/kernel/trace/ring_buffer.c
++++ b/kernel/trace/ring_buffer.c
+@@ -7995,8 +7995,10 @@ int ring_buffer_map_get_reader(struct trace_buffer *buffer, int cpu)
+ 		goto out;
  
--static const char *const usb_chger_state[] = {
--	[USB_CHARGER_DEFAULT]	= "USB_CHARGER_DEFAULT",
--	[USB_CHARGER_PRESENT]	= "USB_CHARGER_PRESENT",
--	[USB_CHARGER_ABSENT]	= "USB_CHARGER_ABSENT",
--};
--
- static struct usb_phy *__usb_find_phy(struct list_head *list,
- 	enum usb_phy_type type)
- {
-@@ -80,18 +74,6 @@ static struct usb_phy *__of_usb_find_phy(struct device_node *node)
- 	return ERR_PTR(-EPROBE_DEFER);
- }
+ 	reader = rb_get_reader_page(cpu_buffer);
+-	if (WARN_ON(!reader))
++	if (!reader) {
++		WARN_ON(cpu_buffer->reader_page != cpu_buffer->commit_page);
+ 		goto out;
++	}
  
--static struct usb_phy *__device_to_usb_phy(const struct device *dev)
--{
--	struct usb_phy *usb_phy;
--
--	list_for_each_entry(usb_phy, &phy_list, head) {
--		if (usb_phy->dev == dev)
--			return usb_phy;
--	}
--
--	return NULL;
--}
--
- static void usb_phy_set_default_current(struct usb_phy *usb_phy)
- {
- 	usb_phy->chg_cur.sdp_min = DEFAULT_SDP_CUR_MIN;
-@@ -123,6 +105,9 @@ static void usb_phy_set_default_current(struct usb_phy *usb_phy)
- static void usb_phy_notify_charger_work(struct work_struct *work)
- {
- 	struct usb_phy *usb_phy = container_of(work, struct usb_phy, chg_work);
-+	char uchger_state[50] = { 0 };
-+	char uchger_type[50] = { 0 };
-+	char *envp[] = { uchger_state, uchger_type, NULL };
- 	unsigned int min, max;
- 
- 	switch (usb_phy->chg_state) {
-@@ -130,11 +115,15 @@ static void usb_phy_notify_charger_work(struct work_struct *work)
- 		usb_phy_get_charger_current(usb_phy, &min, &max);
- 
- 		atomic_notifier_call_chain(&usb_phy->notifier, max, usb_phy);
-+		snprintf(uchger_state, ARRAY_SIZE(uchger_state),
-+			 "USB_CHARGER_STATE=%s", "USB_CHARGER_PRESENT");
- 		break;
- 	case USB_CHARGER_ABSENT:
- 		usb_phy_set_default_current(usb_phy);
- 
- 		atomic_notifier_call_chain(&usb_phy->notifier, 0, usb_phy);
-+		snprintf(uchger_state, ARRAY_SIZE(uchger_state),
-+			 "USB_CHARGER_STATE=%s", "USB_CHARGER_ABSENT");
- 		break;
- 	default:
- 		dev_warn(usb_phy->dev, "Unknown USB charger state: %d\n",
-@@ -142,36 +131,9 @@ static void usb_phy_notify_charger_work(struct work_struct *work)
- 		return;
- 	}
- 
--	kobject_uevent(&usb_phy->dev->kobj, KOBJ_CHANGE);
--}
--
--static int usb_phy_uevent(const struct device *dev, struct kobj_uevent_env *env)
--{
--	const struct usb_phy *usb_phy;
--	char uchger_state[50] = { 0 };
--	char uchger_type[50] = { 0 };
--	unsigned long flags;
--
--	spin_lock_irqsave(&phy_lock, flags);
--	usb_phy = __device_to_usb_phy(dev);
--	spin_unlock_irqrestore(&phy_lock, flags);
--
--	if (!usb_phy)
--		return -ENODEV;
--
--	snprintf(uchger_state, ARRAY_SIZE(uchger_state),
--		 "USB_CHARGER_STATE=%s", usb_chger_state[usb_phy->chg_state]);
--
- 	snprintf(uchger_type, ARRAY_SIZE(uchger_type),
- 		 "USB_CHARGER_TYPE=%s", usb_chger_type[usb_phy->chg_type]);
--
--	if (add_uevent_var(env, uchger_state))
--		return -ENOMEM;
--
--	if (add_uevent_var(env, uchger_type))
--		return -ENOMEM;
--
--	return 0;
-+	kobject_uevent_env(&usb_phy->dev->kobj, KOBJ_CHANGE, envp);
- }
- 
- static void __usb_phy_get_charger_type(struct usb_phy *usb_phy)
-@@ -675,11 +637,6 @@ int usb_add_phy(struct usb_phy *x, enum usb_phy_type type)
- }
- EXPORT_SYMBOL_GPL(usb_add_phy);
- 
--static const struct device_type usb_phy_dev_type = {
--	.name = "usb_phy",
--	.uevent = usb_phy_uevent,
--};
--
- /**
-  * usb_add_phy_dev - declare the USB PHY
-  * @x: the USB phy to be used; or NULL
-@@ -705,8 +662,6 @@ int usb_add_phy_dev(struct usb_phy *x)
- 	if (ret)
- 		return ret;
- 
--	x->dev->type = &usb_phy_dev_type;
--
- 	ATOMIC_INIT_NOTIFIER_HEAD(&x->notifier);
- 
- 	spin_lock_irqsave(&phy_lock, flags);
+ 	/* Check if any events were dropped */
+ 	missed_events = cpu_buffer->lost_events;
 
 
 base-commit: df2908090cda368b01ff43709f51890076c56157
