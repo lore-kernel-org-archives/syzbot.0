@@ -1,116 +1,96 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtpo49.interia.pl (smtpo49.interia.pl [217.74.67.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8F82519904
-	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 11:53:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AE3652ED32
+	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 11:59:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.74.67.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788868389; cv=none; b=UWnOnzdeVjiGGFT+x6RAVlrAYqgXuS2zSEqxE05U5t4Ww5qnHJxBBMA4XMxH1d0qtXsokGcfhiJLldtBnhACoFO0aJgSj8khwaSOl49QDobNI1D4ZtENQ+ur9zbdlBnb15m8G3mbOMPBVdKOiUkOOLS8gFvP9ZPRv8jDPf/09gk=
+	t=1788868756; cv=none; b=hcql2wncBLAZXeVlWZxGS/6P6QF6E9A73PEF55+zVBfh70XydnjG26VGJ01fdpFu1dr0BtYivZRTOnEukDh+ZQaGgj8HELYtPFQYqgsQqbvxjceWzHRmEcgvRJGYultuiDhf25D4UlLahyoo4PMORTwf3VVyf6O4x0BZjCfmlS4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788868389; c=relaxed/simple;
-	bh=QIH8eJgZV9WUg5fTctZBBVYVygEvpVUTCBOgsm97Lew=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=tiFVqxFQLqjx8kZxdw3bQyMdfylJu2G8Yv0ZmBIZJOgob8lczpK71Ew+kGQlO1yhSX2Md+Ptlqf9FUEilXFXUgBg6RuTNXwv7ZU//Ms+Rb3/rQsyHUAS2rBT60/eanOPKfNVFANaMvZJHHa90+OQ1AkfPMQqtMjvdr6/ixRTWvI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oZFzY2KY; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788868756; c=relaxed/simple;
+	bh=MfsxBJ6NlEeM+8rbXq+NIID3c9HT4pB92XAyZW+nVrs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bDkBE4et75h8T7yuY75P3KUzHHpYhW0CwEbaCSCOSoH2y3v6clUVe3vQ/N1nXZZWy55kVHfgqTUgYinkrT5WbtKySeHalyjO8OBZaELb3z8MUpMnV1dGa+s8dT5WnYzC7D6808rp+tgddGABn0k8EuGlecquRvbJJHv1ubldElk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm; spf=pass smtp.mailfrom=poczta.fm; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=t7KnY8Cx; arc=none smtp.client-ip=217.74.67.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=poczta.fm
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oZFzY2KY"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id ABA801F00A3A;
-	Tue,  8 Sep 2026 11:53:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788868382;
-	bh=1bCTnTBjWSuoyRPv30ST6VynuxqA6cMhAY61p6RidyY=;
-	h=From:To:Cc:Subject:Date;
-	b=oZFzY2KY60ysKAMKakZ9CZDvtuCXbKVQYZFNgJ2NoZvbZDMw1sLi4zalAyVvOsAWc
-	 VNWntfDS2XYqGDZXJxMX0r34T50BdQyCb4xZU2ANsdliAmlBqMLLdFyg+CqyF67HgI
-	 Z0fJqt113WW8ORpknjixlisVPYsT6eVzVdG2MZBMznHrdkczSlfN0/u7vJt1MTkpH0
-	 DqdgM3tymA2NQeM8b3zPhQ5XZArYZNyuXMTGYKj4an2NbweiFvYrbTHcIWdTxvhdOK
-	 wsPSwVtoTJe7C6cL9Kt0h0tdQOZ/YlTtHhk+0INVep3L29w9r2BqAwbHOKarrHY8eD
-	 hlCGVDNE5XR5A==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] fuse: use TASK_FREEZABLE_UNSAFE in fuse_get_req()
-Message-ID: <53fcf56a-db74-43f3-81be-bd5bac1c0d4f@mail.kernel.org>
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="t7KnY8Cx"
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Tue,  8 Sep 2026 13:59:03 +0200 (CEST)
+Date: Tue, 8 Sep 2026 13:59:01 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: Johannes Berg <johannes@sipsolutions.net>
+Cc: syzkaller-bugs@googlegroups.com, linux-wireless@vger.kernel.org,
+	linux-kernel@vger.kernel.org, syzbot@lists.linux.dev,
+	syzbot+9bdc0c5998ab45b05030@syzkaller.appspotmail.com
+Subject: Re: [PATCH 3/3] wifi: cfg80211: check if AP has been started before
+ adding new station
+Message-ID: <ap_4hS6M8g4u6z--@nr200>
+References: <20260813090434.2071318-1-sst@poczta.fm>
+ <20260813090434.2071318-3-sst@poczta.fm>
+ <113768c35523738bdc7ab8441ecda64a063900bf.camel@sipsolutions.net>
+ <ap_Y8OD0eBAnB8QS@nr200>
+ <8934029f86b1c0e75f777185b2768f8e9755cae5.camel@sipsolutions.net>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Tue,  8 Sep 2026 11:53:02 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8934029f86b1c0e75f777185b2768f8e9755cae5.camel@sipsolutions.net>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1788868745; bh=LD3kiUlCRno+rl8RodUamrYcjrOz0JXo82CrRqMJUik=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=t7KnY8Cxk9Z4tNellCBXBlu2LLB0TV58LK8rLgSBtloJptm0mDHDwTDHZulK3IYUU
+	 m9WJd5/o4FdSndrEBspzMOFtXx+vYNZT1Dux9L2Nr89uAuUSziuM/eo1THZalajUeA
+	 BwqOUrzJ5Xj8kaJ+VhJA+jJh1RhAfGupGmdXJJpE=
 
-Commit 14cbb72d7595 ("fuse: use freezable wait in fuse_get_req()") switched
-fuse_get_req() to wait using TASK_KILLABLE | TASK_FREEZABLE so that tasks
-waiting for connection initialization or available request slots would not
-block system suspend or hibernation.
+On wrz 08, 2026 11:46, Johannes Berg wrote:
+> On Tue, 2026-09-08 at 11:44 +0200, Slawomir Stepien wrote:
+> > On wrz 04, 2026 11:25, Johannes Berg wrote:
+> > > On Thu, 2026-08-13 at 11:04 +0200, Slawomir Stepien wrote:
+> > > > 
+> > > >  	case NL80211_IFTYPE_P2P_GO:
+> > > > +		/* Add a new station only after the AP and link has been started */
+> > > > +		link_id = wdev->valid_links ? params.link_sta_params.link_id : 0;
+> > > 
+> > > max() maybe?
+> > > 
+> > > > +		if (!wdev->links[link_id].ap.beacon_interval)
+> > > > +			return -ENETDOWN;
+> > > 
+> > > I think the same issue might exist also for mesh, maybe address that as
+> > > well?
+> > > 
+> > > And I think you could have a fourth patch to clean up the mac80211 code
+> > > to no longer handle the "STA creation on AP_VLAN" case?
+> > 
+> > But is there such case?
+> > The only part I think is related is the handling code when params.vlan is set. However, this code is
+> > still OK. I do not see any other code that would be a good candidate for removal/change.
+> > 
+> > Am I missing something here?
+> 
+> Don't think you're missing anything, there's just the block handling
+> param->vlan in add_station, it's dead code now. But why not kill it?
 
-However, fuse_get_req() is frequently invoked from VFS and filesystem
-operations (such as lookup_open() or atomic_open()) while holding locks
-like the VFS directory inode lock or FUSE-specific inode mutex. When the
-system freezer freezes processes, __set_task_frozen() uses lockdep to
-verify that the task being frozen does not hold locks (via
-WARN_ON_ONCE(debug_locks && p->lockdep_depth)), unless the sleep state
-explicitly marks that freezing with locks held is expected via
-__TASK_FREEZABLE_UNSAFE. Because TASK_FREEZABLE was used instead of
-TASK_FREEZABLE_UNSAFE, freezing a task waiting in fuse_get_req() with locks
-held triggers a warning:
+For the reason explained below (in my previous message).
+There can still be a command from userspace with AP base interface (as wdev) with
+attrs[NL80211_ATTR_STA_VLAN] set and this block will be executed in such case. Right?
 
-WARNING: kernel/freezer.c:139 at __set_task_frozen+0x260/0x340
-Call Trace:
- <TASK>
- task_call_func+0x1aa/0x260 kernel/sched/core.c:4511
- __freeze_task kernel/freezer.c:150 [inline]
- freeze_task+0x229/0x3b0 kernel/freezer.c:169
- try_to_freeze_tasks+0x190/0x620 kernel/power/process.c:54
- freeze_processes+0xd0/0x1f0 kernel/power/process.c:137
- hibernate+0x247/0x680 kernel/power/hibernate.c:801
- state_store+0x234/0x290 kernel/power/main.c:821
- kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
- vfs_write+0x612/0xba0 fs/read_write.c:687
- ksys_write+0x150/0x270 fs/read_write.c:739
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
+> > Also, during this check, I've came to a conclusion that I will reword a bit the commit message for
+> > PATCH 1/3, since userspace can still add STA to AP_VLAN in one go, using
+> > attrs[NL80211_ATTR_STA_VLAN] and that's fine, since the wdev would be the base AP interface, so all
+> > check will happen.
+> 
+> Sure :)
 
-Fix this by switching the wait state in fuse_get_req() to TASK_KILLABLE |
-TASK_FREEZABLE_UNSAFE, informing lockdep and the freezer that freezing
-while holding locks is expected at this wait site.
-
-Fixes: 14cbb72d7595 ("fuse: use freezable wait in fuse_get_req()")
-Assisted-by: Gemini:gemini-3.7-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+622acb507894a48b2ce9@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=622acb507894a48b2ce9
-Link: https://syzkaller.appspot.com/ai_job?id=cc254232-e52e-4755-a734-0b8fc80a4302
-To: <fuse-devel@lists.linux.dev>
-To: "Miklos Szeredi" <miklos@szeredi.hu>
-To: "Sergey Senozhatsky" <senozhatsky@chromium.org>
-Cc: <linux-kernel@vger.kernel.org>
-
----
-diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
-index 4fec31fc0..e0e0ad0ee 100644
---- a/fs/fuse/dev.c
-+++ b/fs/fuse/dev.c
-@@ -122,7 +122,7 @@ static struct fuse_req *fuse_get_req(struct fuse_chan *fch, bool for_background)
- 		err = -EINTR;
- 		if (wait_event_state_exclusive(fch->blocked_waitq,
- 				!fuse_block_alloc(fch, for_background),
--				(TASK_KILLABLE | TASK_FREEZABLE)))
-+				(TASK_KILLABLE | TASK_FREEZABLE_UNSAFE)))
- 			goto out;
- 	}
- 
-
-
-base-commit: df2908090cda368b01ff43709f51890076c56157
 -- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Slawomir Stepien
