@@ -1,252 +1,268 @@
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDA443D3D00
-	for <syzbot@lists.linux.dev>; Wed,  9 Sep 2026 07:07:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFCB153D0C2
+	for <syzbot@lists.linux.dev>; Wed,  9 Sep 2026 11:29:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788937674; cv=pass; b=KxAAPSsVbQdZqw94+k9nACvB9Uj2qyo7zdKaZ4CB7oQrViV7Rbod1Y1xvhz+WX4IQIJ5L+xo0+2NJYFZ+FczTgmaER7jid/C72TjLqUrMcQ4PH/Pl3mthBZcE8tfHXQPwtN829ZHYe26lidKLNDsqAPbb01XR4TnXSFdtXK5HSE=
+	t=1788953391; cv=pass; b=W/DBe6Go8BXNQF8/i1XlYve/WysNrXfcl/q0i1aOlAd+8JKTgXJ7/cjNLuSXVvUUZYvUEJ1NFShImSXSWJ2TvXaEtRyiC1PL25lWia2DUeu3u/50WXfzQXw0BISTgrytK6t9Rm8ZNfCh0QjBZ5BrFktaQazaSQk2QTWo3apCEts=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788937674; c=relaxed/simple;
-	bh=0+SXt9+Mr1E+6PDYlROkAlLp1jy6uYiRpA/8GArGaRY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gyr/DA+KPOG3w57RiRvb47z0wCg7wssak4gViDdD1EyzebTD+99PdRv0A0qP3Y++i/NNSpaNxDa6P/kBnfSv3flcExlzLpFf0hmv8d5cBwTSlCrTIC8zDa/hLJseAHcULCdPKX92OmJQwQIBUQIh83F5BR6+2H3m5FW9HfT8MUc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=uD2LGgVp; arc=pass smtp.client-ip=209.85.210.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1788953391; c=relaxed/simple;
+	bh=B1hE7enSCW77TAE1TOuwg31qv1on6AbSG6J6VnmEcY8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pwqfOJyVRoODvjAW4JqmQ4cDCrCDh/Ulr1nmyF8gXikn8iD/c1uDiCMz0QqXWACK9B3yPDVGkPYeEpVYcV5bBNBqfzfNHvJ1eyP1xGTc0nXbJ8IJY+T9Nk2u9qbxSlHOkgFZOhkiDz+LLb4iJHRUN4A4Tcsk5KR9io9uV35erEg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JyugsNHJ; arc=pass smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="uD2LGgVp"
-Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-7f4e729368fso4713251a34.0
-        for <syzbot@lists.linux.dev>; Wed, 09 Sep 2026 00:07:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788937670; cv=none;
-        d=google.com; s=arc-20260327;
-        b=WSlnZ6raRCEB8WAMOcvTU8xMFPlWn667WD+4oIKsYeFYDVpMtL+G2xfiDwGThgXYQa
-         zT9K5mjQahgtSrHVm4RbnwT1TdEre+QxZFT00liLxLVQq/GMpvFWLnTbyHK37jBwNVdE
-         4QBO8obKRdLV4a0C78DZ9RmQUWlwmHNlQPEpqZTzeaaNDvkBc7qhFpC8R7QTPHYlA7bc
-         oJbZjpaPD1lk3150Kg0ijNr01GTHuGFyMNf28XFqf7Vy/9vNxqlt5tQvWEI082f7wH8I
-         10YdzBSrLOb4WFcPOEuStDC6DMPp7QNuR02/+FAEZbDjRKzM4zcCmDXoUcIPYnlWEx/Z
-         ZoXg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=I/pLSZyXU6PCA3dKzgHr3wxK4vwdapheAXzR8O5CzBw=;
-        fh=+gkkTEeV6X0kyRF91OCeag04v9bbVIQvZV9nn7DHj1Y=;
-        b=da+KeNoXlLxLw5/mhqg5dkRBbWzmMmGmg6tbrLYtQApXO7yrLoW0PNjefm4Jh7S07E
-         +2pEZivpicbms/nTje138aCST0aMurNi3tKmX2DXg6x3IkwC9N5BQMUHHxJ0aSbmpKfM
-         n86oiH2wggyV5IAuwU9dj/WYmH0RjioCcLuwU2YOdLl6MtKcdLaQe/dHL5+MAYyOxu7I
-         LGxJKqHR98A/w6aM1eNzRbNzmp4nS+2Hzw8FHK0qx1ZNfDa5epE6fdM0Kyel2cX3MhD/
-         SbKySJE+8iwMGwJpeAhRrV4joz/ggFuwa1zS2qFFao+uK+fSrFM0MCNFJZG6dA1lZEf7
-         JYAw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JyugsNHJ"
+Received: by smtp.kernel.org (Postfix)
+	id A11D41F00A3E; Wed,  9 Sep 2026 11:29:49 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=74.125.228.140
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1788953389;
+	b=pJb9g2enYwe7hJ7o2/dBvlfviPNrS2NMr7eNfU/l90SFEP8ELLMs122+7pTSZbc9SJKe
+	 x+bIFMiVsa/psE212SxhXs+XZ/WT4hl9E3sNDf23honsKS0PGxTn+08ltyY6VWgj9MYw2
+	 t7B/yiB62YtHaBQQ3gC3v9Atca/vVoDreKrSSZAY01lMx7aS0Q90/suWhcfKbZmz0L5c5
+	 6vuufXpuhGdZYxLAghoE9ZhB/1RFMTtcJoe0o2oLobGLCrYS9Wz9jy+xbW8vk6vvWu5Ms
+	 LpdHXmI9dSH7XRAfXVT4kmhOPR8C4yGeqDRIs8arD62b8LhIUoGU10gqWYBnrAiICJQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1788953389;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=/8p0etPt3lBBCxoaHa3ZUI2g+ZSv7/moetzIFIabMAo=;
+	b=vjbIPsjL671CMulT0N7tbaNkglqp8s2tlJ9jbz3xVJlioMHSlJ5p5okaRCILwLVChFom
+	 nTDx4BpHs15BYRvWtKT0UkaLy4aR3kf62zW0Ql7lOs869nWvreytGIbvqIniX11fYYM2E
+	 q27VILymo3Kq9ZLlHNVErdPfwsAryAXJKhvy1sHOEdQK2NUeySYfbSSOxspsS7RRl0p6c
+	 8YwLfUssTV9fiZ544zRarQzjJJzBFHwWzsBtmRchJbvh1+vsA4aYWQCh9LYXmF20SULlB
+	 G69+fou49sFf22yBbjRGs2T1v0FHsLR72MbySbUMsPuB/O8P8bi3sNgtkmPtUttW70g==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=JyugsNHJ;
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	arc=none smtp.remote-ip=74.125.228.140
+Received: from mail-ej2-f12.google.com (mail-ej2-f12.google.com [74.125.228.140])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id E25141F00A3A
+	for <syzbot@kernel.org>; Wed,  9 Sep 2026 11:29:48 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=JyugsNHJ
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org E25141F00A3A
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ej2-f12.google.com with SMTP id a640c23a62f3a-c254f9f0b23so168886166b.0
+        for <syzbot@kernel.org>; Wed, 09 Sep 2026 04:29:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1788937670; x=1789542470; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+        d=gmail.com; s=20251104; t=1788953387; x=1789558187; darn=kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=I/pLSZyXU6PCA3dKzgHr3wxK4vwdapheAXzR8O5CzBw=;
-        b=uD2LGgVpgSv5r1UAAw2RO9sVKPjVwBqMJbHYt2kzn95cztfqtSRl/v7Bc3FlFSgwhF
-         w8cumb4jFAIsg4BWcZcen948DY/jazeOVMhxTX+c98hFxwkt4NjvkUBppuZUjNaqR+dE
-         q47+mScVKw94KOiXefZxUXG59Ce9enh4J5o70RdX3l+0XxBT2nBxwgzt2xMSCY1j1nrM
-         MNzQmodDHITAe+Nsotns4pmHTmlOp/3tVFmmX04v/1H0n5C14/PPcVUESA3vvUPe60Ux
-         nvT1NMlS0BBTXAi+/mA6GU9DCTXr8IzWo7THlRLuHC3Ijl8jMNR51biaZ6rfbxQSBy86
-         c1Dg==
+        bh=/8p0etPt3lBBCxoaHa3ZUI2g+ZSv7/moetzIFIabMAo=;
+        b=JyugsNHJvVo3HUWbIE/JmJiJh/9arXhGzKUm7BfWlXei9P02wSBScGStRaitsuWNCb
+         nnUyCpM3B/y3PuczF7jyyx/MhVvM9jNhAqg3WI0l+jo4xj4wub9V5ymvlV7ZesMEXTfn
+         RskqryilrvcjhpUFurgTMCMY8v7qyT8lKj7chcGHSRlEVhHLO0lIn66czA4xwbz2sMZb
+         hLiicutrBAmM07kqAWwjn2UtNLD9rrvbNQ6pbpAPIWi+bDMaCMVvi7Gh9Ldig+s85unA
+         rjiwevwjcbWrDN1uL7ldT4/IjJbduQCAQLYFWlNXfNe9Yx/tRbguCm4SYG/8z5wi+9Sy
+         2+DA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788937670; x=1789542470;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20251104; t=1788953387; x=1789558187;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=I/pLSZyXU6PCA3dKzgHr3wxK4vwdapheAXzR8O5CzBw=;
-        b=DTvfXpeM0+KZQ4BDNIg8bKDiJqns7tGlRYHLU3Ng3f66wN26ulTt3Mk+Q80FlC2XyP
-         lngp7lOz2cwizv4Q0wxEuHIKEDe/fTuwrY6wcRok6jlVU46VI7khGExoKm2dmasGutep
-         5mAla/nx12PRY4fEJafnH/pXay+KL7wQYwZ+u1T7D0N1bBPnTxhLMR7M7L+l7YIh1YTw
-         Ch3orilJB+7grGeO6iqWp3AKMA8PmGG1BwLLP9TfqYJ8S8LlJ0k6Y5RGiPghxEmRljJO
-         PtRsEDCF6LK6lZ+DS1J1bVvTZSj1djCkiYLy5xjU8HCSwBbDH9/F4X7yvL64XvrCtXIA
-         5ZPw==
-X-Forwarded-Encrypted: i=1; AKwUvBzyYInCjozolcYe2l9T7GHi0AYWPc4T4KICkFSZ6xPGpcvQN9iSlHXS0M5OOltFlqQv8ESjSys=@lists.linux.dev
-X-Gm-Message-State: AFuF++nJbVLr1xgvIOqy0u7l6xGs8ryTYICRZ1OEBNQZ0GHTUKuxYRHg
-	p+AVYpZwZRlnp4p1wS2u3xmGDd163riMWj07JYIn81y86Ecm3LJQkhENET4K6fV8Ke4bYT/dq8N
-	EVCtCNvem3lNGJ6M515nO4a7xMiP3k6bq/Dkv6vln
-X-Gm-Gg: AYBFou0TnKKZY2F2uUvXmgFRS0Hz/V5kLgSsQIQAYhKVIFJxSlYMVrM1USUEMfQ7ndv
-	i307w5YPpFUHzR3NLvx4YUce67JJS7Em1Nj/O12rfxJ6PvQK0PS5QsgcQuQWQYe1A9WRU8stp2X
-	/Fnb+N2U2hniv7xbcTxDCIpXeFF1Rty8ybk/Hf93vMWqZdzMPSNEaYVxXPlxEoFBiYiN3MFr3IX
-	ul1+zkzC6FVu9e212zIUH9RC7jV5vfbaVG0vgWnUpUDPfjkf+NPkKJVcNfOrscZsg6uKaPuk79c
-	R22pWq+6EjnuETNUIofmlR3h31WoJJ3HOAZ1Obil7zCQFuU1I0e+oDUD8Qdt9jycORJek1HMJBX
-	jiNSF9Jm/zzBnRIOKVOicYt5CDCSe65wsDKIcdBNnj3mthOtQkHv6KLMZXx+WSnMkPJUw3DpBfI
-	9irj2nszOkvmNSzX6Q73Y7PLA=
-X-Received: by 2002:a05:6830:4987:b0:7fa:ac4f:785 with SMTP id
- 46e09a7af769-7faac4f0f32mr18626741a34.17.1788937669869; Wed, 09 Sep 2026
- 00:07:49 -0700 (PDT)
+        bh=/8p0etPt3lBBCxoaHa3ZUI2g+ZSv7/moetzIFIabMAo=;
+        b=Jk7qooekbhiJfeQ4ZaOWZIzeH/zzCxPtgm3HLdUP4q09QmCN7dhJyUNwsjn40gGT4S
+         E8wOq0qdL5NqCSL24R3di2GOU/87Fq2Kme40jeTgYs93XTzlwO6gdMMuDH79yX9KuY4E
+         GDUqswmAQgUFpFGPN0LnSEbQvD+yze8TWVDzr9LAeGnWkPfcNtyTpGRJa8h4KqEmUrB3
+         sB90R6vRTTGjAkIsfhJSLTlbmSrvPhdVRmabreWOElS91kzZR2Ai3Ux+3YiQXnZrEBBu
+         jlDDSf8DDxGsTo1O+831bKwT0iJYThTu41H01Kt5JeGEoV9AxKU6/PfNDe7rIVoQ876W
+         u1tQ==
+X-Gm-Message-State: AFuF++kdFg+s+SUJryDwe6ojL8BiHzGJLO4o6Yeu6boA1c1A1LN1yrpD
+	Q2WhwwbqdfOo0bTuf9nZrk8hRYV6rlptM3tGvuJK89CgAMkVCwNAS3JlDheGHg==
+X-Gm-Gg: AYBFou12Uf+psics4DAamtvvcZ2XcujyXoFv3iWaIwPckfiiCMuOoDBillT1nj8kgas
+	7CbELcz2Coq0dJeeU/Dy4NGMzG8u523xB4i1khnp2lfz8H6T73GuqOgkyDncuTAxYhvIbK+EOhy
+	ZPVbwdlli3fXbJCT2PLtMGcqwdX8fsRtRMCZKfodEsHufb7YoH7H4Fv/uyqrSWcWNccYH3x7GMb
+	uYplYWZWcjjJ2BFwflJqudhrP5NfRme7zjI0TUFP/qIrS48hqQysgk6WecMZvmzOooxJyyjR3rA
+	6V772lFs5udsHOXGaqGFaiuH7m4mQ74xp4zKBOFXsMDkyYbomPP8/8/ek4Y0nf1N2IuwJC3135B
+	epMZDct7azQB2myMJo43zlybazau6i57xBkPO8wZzcKMXVQUD/MHYgBkV2uZgeVazj+QZUTTVh/
+	Wobk9/hVeLsglpDwAr4gfiWeXMmVvPiiIas0HvacFeT4Jh/WMvVxKYZF2SPZSq2yx/x1uUCLpNz
+	0k+IU/6TRZeC64=
+X-Received: by 2002:a17:907:9623:b0:c12:b2db:873d with SMTP id a640c23a62f3a-c292adecac8mr424156166b.5.1788953386950;
+        Wed, 09 Sep 2026 04:29:46 -0700 (PDT)
+Received: from localhost ([37.31.154.38])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c260d4a98efsm765934166b.14.2026.09.09.04.29.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Sep 2026 04:29:46 -0700 (PDT)
+Date: Wed, 9 Sep 2026 13:29:45 +0200
+From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC v2] net/sched: taprio: enforce minimum interval in
+ software mode
+Message-ID: <4cxcc2k5elnupfinr3s34h5itggygrflbzdfmsseomnyemsqnm@klxk77vjmljt>
+References: <edd30c9e-6673-42a0-ab07-b7fb2bb67795@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <6aa0ce0f.f81106d8.285f0a.0008.GAE@google.com>
-In-Reply-To: <6aa0ce0f.f81106d8.285f0a.0008.GAE@google.com>
-From: Aleksandr Nogikh <nogikh@google.com>
-Date: Wed, 9 Sep 2026 09:07:37 +0200
-X-Gm-Features: AcwNN1W3qxoCbXN6izX3WUKw5PoKwz-iSEPupkinz59cy9zJ7k30uOMaH6iwZWU
-Message-ID: <CANp29Y7Y8Z0VfL_qXv_8hrQD_qPPZRqv1N0eufG8ztqCsocx8A@mail.gmail.com>
-Subject: Re: [moderation/CI] Re: hfsplus: convert regular file I/O to
- iomap-based operations
-To: syzbot ci <syzbot+ci823a0e2cb68b1a0a@syzkaller.appspotmail.com>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <edd30c9e-6673-42a0-ab07-b7fb2bb67795@mail.kernel.org>
 
-The crash is unrelated to hfs.
+The software-only minimum addresses the direction requested for v1, and
+removing the entry-sum comparison is progress. The selected implicit-cycle
+case is now rejected by the new guard. The new admission policy still
+needs justification for the effective schedule, and its rejection path
+runs after configuration changes. The patch needs another revision.
+This review has no comparable runtime result establishing the v2 fix.
 
-#syz invalid
+The remaining requests concern the current code:
 
-On Wed, Sep 9, 2026 at 5:10=E2=80=AFAM syzbot ci
-<syzbot+ci823a0e2cb68b1a0a@syzkaller.appspotmail.com> wrote:
->
-> syzbot ci has tested the following series
->
-> [v3] hfsplus: convert regular file I/O to iomap-based operations
-> https://lore.kernel.org/all/20260908210448.296772-1-slava@dubeyko.com
-> * [PATCH v3 1/7] hfs/hfsplus: exchange hardcoded number of extents on nam=
-ed constants
-> * [PATCH v3 2/7] hfsplus: rework hfsplus_get_block() logic
-> * [PATCH v3 3/7] hfsplus: take the bitmap page lock for allocate/free
-> * [PATCH v3 4/7] hfsplus: add iomap operations for regular file data
-> * [PATCH v3 5/7] hfsplus: move file related operations to file.c
-> * [PATCH v3 6/7] hfsplus: introduce iomap-based file_operations
-> * [PATCH v3 7/7] hfsplus: switch address_space_operations on iomap-based =
-support
->
-> and found the following issue:
-> general protection fault in __bh_submit
->
-> Full report is available here:
-> https://ci.syzbot.org/series/38a0586d-f4cb-4955-aebf-8908d87645ed
->
-> ***
->
-> general protection fault in __bh_submit
->
-> tree:      vfs
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/v=
-fs.git
-> base:      21860bb220225edeb87e9c831e6bf25c620e2126
-> arch:      amd64
-> compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~e=
-xp1~20260613092250.77), Debian LLD 22.1.8
-> config:    https://ci.syzbot.org/builds/fca9c940-9a44-4e03-8515-7d438025f=
-0e2/config
-> syz repro: https://ci.syzbot.org/findings/e6b3388b-2033-41f8-b2d7-55ceca2=
-562f6/syz_repro
->
-> Oops: general protection fault, probably for non-canonical address 0xdfff=
-fc0000000001: 0000 [#1] SMP KASAN PTI
-> KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-> CPU: 1 UID: 0 PID: 5002 Comm: jbd2/sda1-8 Not tainted syzkaller #0 PREEMP=
-T(full)
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
-16.2-1 04/01/2014
-> RIP: 0010:const_folio_flags include/linux/page-flags.h:345 [inline]
-> RIP: 0010:folio_test_dropbehind include/linux/page-flags.h:601 [inline]
-> RIP: 0010:__bh_submit+0x22d/0x8d0 fs/buffer.c:1108
-> Code: c1 e8 03 48 89 44 24 18 42 80 3c 20 00 74 08 48 89 df e8 86 e1 d7 f=
-f 48 89 5c 24 28 48 8b 1b 4c 8d 7b 08 4c 89 f8 48 c1 e8 03 <42> 80 3c 20 00=
- 74 08 4c 89 ff e8 64 e1 d7 ff 4d 8b 3f 4c 89 fe 48
-> RSP: 0018:ffffc9000fe07868 EFLAGS: 00010202
-> RAX: 0000000000000001 RBX: 0000000000000000 RCX: ffffffff84b8b669
-> RDX: 0000000000000001 RSI: 0000000000000004 RDI: ffff888169ab56a0
-> RBP: 0000000000009801 R08: ffff888169ab56ff R09: 1ffff1102d356adf
-> R10: dffffc0000000000 R11: ffffed102d356ae0 R12: dffffc0000000000
-> R13: ffff888169ab5680 R14: ffff88811d795700 R15: 0000000000000008
-> FS:  0000000000000000(0000) GS:ffff8882a8cd5000(0000) knlGS:0000000000000=
-000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007fb21ba27dac CR3: 000000000eb48000 CR4: 00000000000006f0
+1. Define and justify the serviceability guarantee for the effective
+   schedule in parse_taprio_schedule() and advance_sched(). The cycle-time
+   check counts every configured entry, including unused tails, while an
+   entry clipped at the cycle boundary can be shorter than its declared
+   interval. An average bound is not a per-transition bound; demonstrate
+   that the chosen policy provides the required CPU progress. Preserve
+   supported explicit-cycle truncation and v2's software-only admission
+   scope. Verify the changed arithmetic in TXTIME-assist and full-offload
+   mode as well.
+   
+On Fri, Sep 04, 2026 at 12:20:22PM +0000, syzbot wrote:
+> In taprio software mode (when full offload and txtime-assist are not
+> enabled), schedule advancement is driven in software by an hrtimer running
+> advance_sched(). The minimum allowed duration for schedule entries was
+> previously bounded only by length_to_duration(q, ETH_ZLEN). For high link
+> speeds or small picos_per_byte, this allows entry intervals to be
+> configured to extremely small values (e.g., tens of nanoseconds).
+> 
+> When entry intervals or cycle_time are configured to values shorter than
+> the time required to execute the timer callback, the newly calculated
+> expiration time is in the past. Consequently, the hrtimer subsystem
+> repeatedly and immediately re-invokes advance_sched() in hardirq context,
+> resulting in an interrupt storm that starves the CPU and triggers RCU
+> stalls:
+> 
+> rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+> rcu: 	0-...!: (1 GPs behind) idle=fc14/1/0x4000000000000000
+> softirq=20212/20212 fqs=5
+> rcu: 	(detected by 1, t=10502 jiffies, g=16909, q=1720 ncpus=2)
+> Sending NMI from CPU 1 to CPUs 0:
+> NMI backtrace for cpu 0
+> CPU: 0 UID: 0 PID: 200 Comm: kworker/u9:4 Not tainted
+> RIP: 0010:advance_sched+0x10f/0xc80 net/sched/sch_taprio.c:932
 > Call Trace:
->  <TASK>
->  jbd2_journal_commit_transaction+0x22a9/0x5cd0 fs/jbd2/commit.c:751
->  kjournald2+0x3bc/0x750 fs/jbd2/journal.c:200
->  kthread+0x38b/0x480 kernel/kthread.c:436
->  ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
->  ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
->  </TASK>
-> Modules linked in:
-> ---[ end trace 0000000000000000 ]---
-> RIP: 0010:const_folio_flags include/linux/page-flags.h:345 [inline]
-> RIP: 0010:folio_test_dropbehind include/linux/page-flags.h:601 [inline]
-> RIP: 0010:__bh_submit+0x22d/0x8d0 fs/buffer.c:1108
-> Code: c1 e8 03 48 89 44 24 18 42 80 3c 20 00 74 08 48 89 df e8 86 e1 d7 f=
-f 48 89 5c 24 28 48 8b 1b 4c 8d 7b 08 4c 89 f8 48 c1 e8 03 <42> 80 3c 20 00=
- 74 08 4c 89 ff e8 64 e1 d7 ff 4d 8b 3f 4c 89 fe 48
-> RSP: 0018:ffffc9000fe07868 EFLAGS: 00010202
-> RAX: 0000000000000001 RBX: 0000000000000000 RCX: ffffffff84b8b669
-> RDX: 0000000000000001 RSI: 0000000000000004 RDI: ffff888169ab56a0
-> RBP: 0000000000009801 R08: ffff888169ab56ff R09: 1ffff1102d356adf
-> R10: dffffc0000000000 R11: ffffed102d356ae0 R12: dffffc0000000000
-> R13: ffff888169ab5680 R14: ffff88811d795700 R15: 0000000000000008
-> FS:  0000000000000000(0000) GS:ffff8882a8cd5000(0000) knlGS:0000000000000=
-000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 000035dc4b324000 CR3: 00000001bb4be000 CR4: 00000000000006f0
-> ----------------
-> Code disassembly (best guess):
->    0:   c1 e8 03                shr    $0x3,%eax
->    3:   48 89 44 24 18          mov    %rax,0x18(%rsp)
->    8:   42 80 3c 20 00          cmpb   $0x0,(%rax,%r12,1)
->    d:   74 08                   je     0x17
->    f:   48 89 df                mov    %rbx,%rdi
->   12:   e8 86 e1 d7 ff          call   0xffd7e19d
->   17:   48 89 5c 24 28          mov    %rbx,0x28(%rsp)
->   1c:   48 8b 1b                mov    (%rbx),%rbx
->   1f:   4c 8d 7b 08             lea    0x8(%rbx),%r15
->   23:   4c 89 f8                mov    %r15,%rax
->   26:   48 c1 e8 03             shr    $0x3,%rax
-> * 2a:   42 80 3c 20 00          cmpb   $0x0,(%rax,%r12,1) <-- trapping in=
-struction
->   2f:   74 08                   je     0x39
->   31:   4c 89 ff                mov    %r15,%rdi
->   34:   e8 64 e1 d7 ff          call   0xffd7e19d
->   39:   4d 8b 3f                mov    (%r15),%r15
->   3c:   4c 89 fe                mov    %r15,%rsi
->   3f:   48                      rex.W
->
->
-> ***
->
-> If these findings have caused you to resend the series or submit a
-> separate fix, please add the following tag to your commit message:
->   Tested-by: syzbot@syzkaller.appspotmail.com
->
+>  <IRQ>
+>  __run_hrtimer kernel/time/hrtimer.c:2067 [inline]
+>  __hrtimer_run_queues+0x3bc/0xa10 kernel/time/hrtimer.c:2124
+>  hrtimer_interrupt+0x4cd/0xaa0 kernel/time/hrtimer.c:2243
+>  local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1051 [inline]
+>  __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:1068
+>  sysvec_apic_timer_interrupt+0xa1/0xc0 arch/x86/kernel/apic/apic.c:1062
+>  </IRQ>
+> 
+> Fix this by defining TAPRIO_MIN_SW_INTERVAL_NS (10 us) and introducing
+> taprio_min_interval() to enforce a minimum interval in software mode for
+> both individual schedule entries in fill_sched_entry() and the overall
+> cycle_time in parse_taprio_schedule().
+> 
+> Fixes: 6ca6a6654225 ("taprio: Add support for setting the cycle-time manually")
+> Assisted-by: Gemini:gemini-3.7-flash syzbot
+> Reported-by: syzbot+14c6ac6811273526cfa5@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=14c6ac6811273526cfa5
+> Link: https://syzkaller.appspot.com/ai_job?id=2540dd3a-bcf0-4dd0-be22-164f6203df0b
+> To: "David S. Miller" <davem@davemloft.net>
+> To: "Eric Dumazet" <edumazet@google.com>
+> To: "Jamal Hadi Salim" <jhs@mojatatu.com>
+> To: "Jiri Pirko" <jiri@resnulli.us>
+> To: "Jakub Kicinski" <kuba@kernel.org>
+> To: <netdev@vger.kernel.org>
+> To: "Paolo Abeni" <pabeni@redhat.com>
+> To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
+> Cc: "Simon Horman" <horms@kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+> 
 > ---
-> This report is generated by a bot. It may contain errors.
-> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
->
-> To test a fix for this bug, please reply with `#syz test`
-> (on a separate line) and attach the patch to the email.
->
-> Notes:
-> - The patch will be applied on top of the tested series (as an
->   incremental fix).
-> - To test a new version of the whole series, please send it directly
->   to syzbot@lists.linux.dev.
-> - Arguments like custom git repos and branches are not supported.
->
-> The email will later be sent to:
-> [brauner@kernel.org djwong@kernel.org frank.li@vivo.com glaubitz@physik.f=
-u-berlin.de hch@lst.de linux-fsdevel@vger.kernel.org linux-kernel@vger.kern=
-el.org slava@dubeyko.com vdubeyko@coreweave.com willy@infradead.org]
->
-> If the report looks fine to you, reply with:
-> #syz upstream
->
-> If the report is a false positive, reply with
-> #syz invalid
->
-> --
-> You received this message because you are subscribed to the Google Groups=
- "syzkaller-upstream-moderation" group.
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
--upstream-moderation/6aa0ce0f.f81106d8.285f0a.0008.GAE%40google.com.
+> v2:
+> - Enforce a minimum interval of 10 us (TAPRIO_MIN_SW_INTERVAL_NS) in software mode instead of comparing cycle_time against the sum of intervals.
+> - Add taprio_min_interval() helper to determine the minimum interval based on offload and txtime-assist flags.
+> - Use taprio_min_interval() in fill_sched_entry() and parse_taprio_schedule().
+> 
+> v1:
+> https://lore.kernel.org/all/3527dbf1-ab94-4184-8405-8552799efb71@mail.kernel.org/T/
+> ---
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index 39ac5b97a..3890cdbfc 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -48,6 +48,10 @@ static struct static_key_false taprio_have_working_mqprio;
+>   * 60 * 17 > PSEC_PER_NSEC (1000)
+>   */
+>  #define TAPRIO_PICOS_PER_BYTE_MIN 17
+> +/* Minimum interval for software mode (hrtimer-driven advance_sched) to
+> + * avoid hrtimer interrupt storms and CPU starvation.
+> + */
+> +#define TAPRIO_MIN_SW_INTERVAL_NS (10 * NSEC_PER_USEC)
+>  
+>  struct sched_entry {
+>  	/* Durations between this GCL entry and the GCL entry where the
+> @@ -259,6 +263,17 @@ static int length_to_duration(struct taprio_sched *q, int len)
+>  	return div_u64(len * atomic64_read(&q->picos_per_byte), PSEC_PER_NSEC);
+>  }
+>  
+> +static int taprio_min_interval(struct taprio_sched *q)
+> +{
+> +	int min_duration = length_to_duration(q, ETH_ZLEN);
+> +
+> +	if (!FULL_OFFLOAD_IS_ENABLED(q->flags) &&
+> +	    !TXTIME_ASSIST_IS_ENABLED(q->flags))
+> +		min_duration = max_t(int, min_duration, TAPRIO_MIN_SW_INTERVAL_NS);
+> +
+> +	return min_duration;
+> +}
+> +
+>  static int duration_to_length(struct taprio_sched *q, u64 duration)
+>  {
+>  	return div_u64(duration * PSEC_PER_NSEC, atomic64_read(&q->picos_per_byte));
+> @@ -1039,7 +1054,7 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
+>  			    struct sched_entry *entry,
+>  			    struct netlink_ext_ack *extack)
+>  {
+> -	int min_duration = length_to_duration(q, ETH_ZLEN);
+> +	int min_duration = taprio_min_interval(q);
+>  	u32 interval = 0;
+>  
+>  	if (tb[TCA_TAPRIO_SCHED_ENTRY_CMD])
+> @@ -1130,6 +1145,7 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+>  				 struct sched_gate_list *new,
+>  				 struct netlink_ext_ack *extack)
+>  {
+> +	int min_duration = taprio_min_interval(q);
+>  	int err = 0;
+>  
+>  	if (tb[TCA_TAPRIO_ATTR_SCHED_SINGLE_ENTRY]) {
+> @@ -1167,7 +1183,7 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+>  		new->cycle_time = cycle;
+>  	}
+>  
+> -	if (new->cycle_time < new->num_entries * length_to_duration(q, ETH_ZLEN)) {
+> +	if (new->cycle_time < (s64)new->num_entries * min_duration) {
+>  		NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
+>  		return -EINVAL;
+>  	}
+> 
+> 
+> base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
+> -- 
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+> 
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
