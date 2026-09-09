@@ -1,95 +1,145 @@
-Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com [209.85.160.69])
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35FDA524B08
-	for <syzbot@lists.linux.dev>; Tue,  8 Sep 2026 21:45:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E555317173
+	for <syzbot@lists.linux.dev>; Wed,  9 Sep 2026 03:10:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788903919; cv=none; b=Wn7igo0Xgj1l5er7/U4Lex9FLeiu0j+HXG1atHwNuT0yKjfgqGRhD6AD4FrPx3mvHrCqEDyLvaTkbvYeb69YL1hoNBTiHmfxCaM+VaG6LhLrAdd1FiKEFO5wIzG4OKlyPtRpR/Sg0pAEHVXQrC01ec8FyzAW57Thv9uzC0NZFa0=
+	t=1788923413; cv=none; b=hxp+5r2I9vFsyVw+WaUxIm4XHW9Zc5J1zgEXFFcdq6B1Z4SO2ZzNt+iCPhFo+KjnvwyDFbajku2X8nVq5RPLtO+GvD3JobNpwePrm9bwVbKj0oeOD5HhAaQBVna0B0sgz2u5ZsLCGryVac4qFZW2ieXhRaP5MCGyyxGEw/NQeQw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788903919; c=relaxed/simple;
-	bh=uQW2+Dbv/tSQWMrQKnQt38dNZR+6zjHCUK9RWW7+ziA=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=VN2Hsc/4ojMs1mVHiIn0K4XUVN2wUCGCR2iCSyTBPKDC7Mue1ruvgAzABSd4nUUBHH/4ILdeSOezgdZZDFIFRc8e3yQzUu85wzHP8CTnH8/n2K3smnghE1Wrzos7T8s/wtXnBJPIfsoONDhBX7IHrqNdTVGn603Sy4MYOHgeXyw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.69
+	s=arc-20240116; t=1788923413; c=relaxed/simple;
+	bh=UmMa8xqvpeNo3PJFewMB8VkZiyTKg2Nx1Eo6rDQAjuU=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=VPxZwPj/C8tskEixzqkajMVBj409vk2FTl0zo8rsfXC+jxA6TKxZZ2QBNjBEozDY/RfbQ46PMUizbfQqRuX51WFwoUGbwPqNyQhIH9yAMQjAbiiDeEYS3kWgdobj8OXn/6SqJ4Qxx6yUUNrJJ8uAQH7ebv7byMkGxuN7b2JOA/A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-45ecb9dd589so3012850fac.0
-        for <syzbot@lists.linux.dev>; Tue, 08 Sep 2026 14:45:18 -0700 (PDT)
+Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-7e9dc0f5900so8369237a34.0
+        for <syzbot@lists.linux.dev>; Tue, 08 Sep 2026 20:10:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788903917; x=1789508717;
+        d=1e100.net; s=20251104; t=1788923408; x=1789528208;
         h=content-type:cc:to:from:subject:message-id:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=FQA8PpJUJIMqFWTVOuzCafqVH3VRje2wdmaucgJF6L8=;
-        b=SigOKfluMjv0c+Iaw9N/ic2QGltU0JFGhnzshpYMpQGCgbrgjuJ/b5DMPYEnma/r3I
-         vRqHljBmfdtvNhTSn3AXK1IyRBidToNrome5R4gZIBDiak5CQ3wLc7aCq/dejtxuoWa2
-         o/hqLeDha6xKnIJI/mzBpbJpkdeEy42tERMIPXTQuxzQX60yfSMwR/6o3RDdHISK4wDR
-         ARsS2t9bC5/Si2AYkIBnU3Y3+9jDujCVEBbBlhF9NuW0MitHV83OGdq71YJH2NzDEKkW
-         av+4l14q0K9UBGRfPzZZGACyz5Y3LnFf3mpIfE95mXwWgySdmXDWRtVyh90YlOdazeZV
-         S7Nw==
-X-Gm-Message-State: AFuF++ldDL0TBS0g+dczeAPtUkzZe6VH2vfoSFGJP7I2Dxfs0v3oApt6
-	kUvWRdOoCxh5Y6xQMrIL1QwXjpRro+LdNc51+nBHCfryUlBOmHj3MvgT9/vOCc2S1Ed0yH1RPl7
-	q9IMVTbdmTpeIoP5vCI3+3XVC/fKV9JHsQDBwN9XJqAuEXC5ENaRMXTwS5GQ=
+        bh=AoPGqeI2bHO9q7+2ErdnI4dvaIkPsO8SDC7h/Q/Bg7g=;
+        b=Cl2fchrHyRUeLI4GRJ3TKj0jgFrz+8KEZR5AjRRXz/O6dvVbhD+ytdrbsNKbKkNK9F
+         8oew/Ggf/OSfuupOq5Jr+2QBkZ6uChGD1RKS8GXvR8W2fH37WldivrgsmI7rl5Vqqmk/
+         T4B1bJ+b99n1PU/DG7k+7uHT8zxsAxmxDH7/VhVlitoy/yqb/Sm5qvKzwPXojai1AFKp
+         MMMnmzx6Zxr2T2MEFCsZMsaZotNNM5CWkcP4JoyEdAw1B++RUsZHoGg3+z+n4PJrat9C
+         6JLyVospA7oW6siiAOO50Vif3UxN3YQMkUM5v/fUP4kBb21ww8V6H5I5zChrZVLn6eT0
+         eVOg==
+X-Gm-Message-State: AFuF++lB2SISTNAgEtIdt1vRsn9lG+u2K0diMkKCmK2je6wh0upxt03O
+	5K80ZBVYekkY4wnKHCXeCUFWFJ2AaHkX8XNMEh8f6yur7W8N+igyV22tAhOisCchyxuF2rIhOw9
+	4nzz2DjLSj1b2xgXVGYnPVRKWZENDO6FlMjYLp5tVaA+lkEr5iiGvKeYNtmA=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:f02c:b0:6b7:8396:f3c4 with SMTP id
- 006d021491bc7-6b78396f8b9mr17876517eaf.38.1788903917161; Tue, 08 Sep 2026
- 14:45:17 -0700 (PDT)
-Date: Tue, 08 Sep 2026 14:45:17 -0700
+X-Received: by 2002:a4a:e914:0:b0:6b5:ec2f:3565 with SMTP id
+ 006d021491bc7-6b5ec2f36bfmr14749281eaf.22.1788923407951; Tue, 08 Sep 2026
+ 20:10:07 -0700 (PDT)
+Date: Tue, 08 Sep 2026 20:10:07 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6aa081ed.6e6c5f9e.28f11f.001a.GAE@google.com>
-Subject: [moderation/CI] Re: wifi: Add Seamless Mobility Domain (SMD) AP support
-From: syzbot ci <syzbot+ci4b9092ac2b5224d4@syzkaller.appspotmail.com>
+Message-ID: <6aa0ce0f.f81106d8.285f0a.0008.GAE@google.com>
+Subject: [moderation/CI] Re: hfsplus: convert regular file I/O to iomap-based operations
+From: syzbot ci <syzbot+ci823a0e2cb68b1a0a@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] wifi: Add Seamless Mobility Domain (SMD) AP support
-https://lore.kernel.org/all/20260908-smd-v1-0-9fd2d876a1fb@oss.qualcomm.com
-* [PATCH RESEND wireless-next 01/18] net: skbuff: Add SKB extension support to wireless drivers
-* [PATCH RESEND wireless-next 02/18] wifi: nl80211: Define Seamless Mobility Domain (SMD) device capability
-* [PATCH RESEND wireless-next 03/18] wifi: nl80211: Add kernel interfaces for Seamless Mobility Domain setup
-* [PATCH RESEND wireless-next 04/18] wifi: cfg80211/mac80211: Configure AP with SMD capabilities
-* [PATCH RESEND wireless-next 05/18] wifi: cfg80211/mac80211: Parse SMD parameters in STA addition/modification
-* [PATCH RESEND wireless-next 06/18] wifi: nl80211/cfg80211: Indicate STA creation via SMD BSS Transition
-* [PATCH RESEND wireless-next 07/18] wifi: nl80211/mac80211: Add SMD BSS Transition sub-state STA flags
-* [PATCH RESEND wireless-next 08/18] wifi: mac80211: Add driver_op for SMD substate changes
-* [PATCH RESEND wireless-next 09/18] wifi: mac80211: Send BlockAck policy in AMPDU action
-* [PATCH RESEND wireless-next 10/18] wifi: mac80211: Define SMD BSS Transition context for transport
-* [PATCH RESEND wireless-next 11/18] wifi: mac80211: Enable skb extensions along with mac80211
-* [PATCH RESEND wireless-next 12/18] wifi: nl80211: Define attributes to pack SMD BSS Transition context
-* [PATCH RESEND wireless-next 13/18] wifi: cfg80211/mac80211: Handle UHR Link Reconfiguration frame
-* [PATCH RESEND wireless-next 14/18] wifi: nl80211: Pack SMD dynamic context along with frame
-* [PATCH RESEND wireless-next 15/18] wifi: nl80211/cfg80211: Add support for SMD context programming
-* [PATCH RESEND wireless-next 16/18] wifi: mac80211: Add mac80211 support to handle NL80211_CMD_SET_SMD_CTX
-* [PATCH RESEND wireless-next 17/18] wifi: nl80211/cfg80211: Add support for querying SMD context for target AP MLD
-* [PATCH RESEND wireless-next 18/18] wifi: mac80211: Add mac80211 support to handle NL80211_CMD_GET_SMD_CTX
+[v3] hfsplus: convert regular file I/O to iomap-based operations
+https://lore.kernel.org/all/20260908210448.296772-1-slava@dubeyko.com
+* [PATCH v3 1/7] hfs/hfsplus: exchange hardcoded number of extents on named constants
+* [PATCH v3 2/7] hfsplus: rework hfsplus_get_block() logic
+* [PATCH v3 3/7] hfsplus: take the bitmap page lock for allocate/free
+* [PATCH v3 4/7] hfsplus: add iomap operations for regular file data
+* [PATCH v3 5/7] hfsplus: move file related operations to file.c
+* [PATCH v3 6/7] hfsplus: introduce iomap-based file_operations
+* [PATCH v3 7/7] hfsplus: switch address_space_operations on iomap-based support
 
 and found the following issue:
-kernel build error
+general protection fault in __bh_submit
 
 Full report is available here:
-https://ci.syzbot.org/series/8d747db8-d307-40ad-aa87-3069da74c69e
+https://ci.syzbot.org/series/38a0586d-f4cb-4955-aebf-8908d87645ed
 
 ***
 
-kernel build error
+general protection fault in __bh_submit
 
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-base:      1b60ed34f712e9f606d80951f1586f4274ebadf1
+tree:      vfs
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs.git
+base:      21860bb220225edeb87e9c831e6bf25c620e2126
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/702b616f-509b-4fdc-8f3d-60b1cf2ff58d/config
+config:    https://ci.syzbot.org/builds/fca9c940-9a44-4e03-8515-7d438025f0e2/config
+syz repro: https://ci.syzbot.org/findings/e6b3388b-2033-41f8-b2d7-55ceca2562f6/syz_repro
 
-net/wireless/nl80211.c:19576:7: error: use of undeclared identifier 'n_dl_tids'
+Oops: general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+CPU: 1 UID: 0 PID: 5002 Comm: jbd2/sda1-8 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:const_folio_flags include/linux/page-flags.h:345 [inline]
+RIP: 0010:folio_test_dropbehind include/linux/page-flags.h:601 [inline]
+RIP: 0010:__bh_submit+0x22d/0x8d0 fs/buffer.c:1108
+Code: c1 e8 03 48 89 44 24 18 42 80 3c 20 00 74 08 48 89 df e8 86 e1 d7 ff 48 89 5c 24 28 48 8b 1b 4c 8d 7b 08 4c 89 f8 48 c1 e8 03 <42> 80 3c 20 00 74 08 4c 89 ff e8 64 e1 d7 ff 4d 8b 3f 4c 89 fe 48
+RSP: 0018:ffffc9000fe07868 EFLAGS: 00010202
+RAX: 0000000000000001 RBX: 0000000000000000 RCX: ffffffff84b8b669
+RDX: 0000000000000001 RSI: 0000000000000004 RDI: ffff888169ab56a0
+RBP: 0000000000009801 R08: ffff888169ab56ff R09: 1ffff1102d356adf
+R10: dffffc0000000000 R11: ffffed102d356ae0 R12: dffffc0000000000
+R13: ffff888169ab5680 R14: ffff88811d795700 R15: 0000000000000008
+FS:  0000000000000000(0000) GS:ffff8882a8cd5000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fb21ba27dac CR3: 000000000eb48000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ jbd2_journal_commit_transaction+0x22a9/0x5cd0 fs/jbd2/commit.c:751
+ kjournald2+0x3bc/0x750 fs/jbd2/journal.c:200
+ kthread+0x38b/0x480 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:const_folio_flags include/linux/page-flags.h:345 [inline]
+RIP: 0010:folio_test_dropbehind include/linux/page-flags.h:601 [inline]
+RIP: 0010:__bh_submit+0x22d/0x8d0 fs/buffer.c:1108
+Code: c1 e8 03 48 89 44 24 18 42 80 3c 20 00 74 08 48 89 df e8 86 e1 d7 ff 48 89 5c 24 28 48 8b 1b 4c 8d 7b 08 4c 89 f8 48 c1 e8 03 <42> 80 3c 20 00 74 08 4c 89 ff e8 64 e1 d7 ff 4d 8b 3f 4c 89 fe 48
+RSP: 0018:ffffc9000fe07868 EFLAGS: 00010202
+RAX: 0000000000000001 RBX: 0000000000000000 RCX: ffffffff84b8b669
+RDX: 0000000000000001 RSI: 0000000000000004 RDI: ffff888169ab56a0
+RBP: 0000000000009801 R08: ffff888169ab56ff R09: 1ffff1102d356adf
+R10: dffffc0000000000 R11: ffffed102d356ae0 R12: dffffc0000000000
+R13: ffff888169ab5680 R14: ffff88811d795700 R15: 0000000000000008
+FS:  0000000000000000(0000) GS:ffff8882a8cd5000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000035dc4b324000 CR3: 00000001bb4be000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	c1 e8 03             	shr    $0x3,%eax
+   3:	48 89 44 24 18       	mov    %rax,0x18(%rsp)
+   8:	42 80 3c 20 00       	cmpb   $0x0,(%rax,%r12,1)
+   d:	74 08                	je     0x17
+   f:	48 89 df             	mov    %rbx,%rdi
+  12:	e8 86 e1 d7 ff       	call   0xffd7e19d
+  17:	48 89 5c 24 28       	mov    %rbx,0x28(%rsp)
+  1c:	48 8b 1b             	mov    (%rbx),%rbx
+  1f:	4c 8d 7b 08          	lea    0x8(%rbx),%r15
+  23:	4c 89 f8             	mov    %r15,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 80 3c 20 00       	cmpb   $0x0,(%rax,%r12,1) <-- trapping instruction
+  2f:	74 08                	je     0x39
+  31:	4c 89 ff             	mov    %r15,%rdi
+  34:	e8 64 e1 d7 ff       	call   0xffd7e19d
+  39:	4d 8b 3f             	mov    (%r15),%r15
+  3c:	4c 89 fe             	mov    %r15,%rsi
+  3f:	48                   	rex.W
+
 
 ***
 
@@ -112,7 +162,7 @@ Notes:
 - Arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[davem@davemloft.net edumazet@google.com horms@kernel.org johannes@sipsolutions.net kuba@kernel.org linux-kernel@vger.kernel.org linux-wireless@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com pooventhiran.g@oss.qualcomm.com]
+[brauner@kernel.org djwong@kernel.org frank.li@vivo.com glaubitz@physik.fu-berlin.de hch@lst.de linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org slava@dubeyko.com vdubeyko@coreweave.com willy@infradead.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
