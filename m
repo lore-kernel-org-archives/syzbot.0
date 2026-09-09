@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A78F5A514C
-	for <syzbot@lists.linux.dev>; Wed,  9 Sep 2026 21:27:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E75CC3FAE09
+	for <syzbot@lists.linux.dev>; Wed,  9 Sep 2026 21:45:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788989249; cv=none; b=oMOYA0b4tRJfyl/92wV4UDJqkIrVQdDXPxnh9EKJd6ANxSRk4AKyE4TXwixAtHpWW3ibrbvKP08z8dPT9/7Fb7NN0rTfCgBE21oo6SuogfdPcji+yOUGrVF9W+N2xYMYXCc0Dr37Di6m6m7nLUmH+FCjxbJFs1K+yZWwUM1Ysjo=
+	t=1788990319; cv=none; b=B9/N6OkjqdslLif7PkKR7iqtMbWNHo4xmgLT8kVkVYG+ZcLpPK7hw8L0/d8WTWfNKH2iLeg4ezpJtIXtVGp+fR70YVMcVPj9h4e9vOEopZMy27cCgaOWU7s0tNjFnBFkamdhWJj67n3qZhFXUeJAgnbtg5cE7Buo+XnSKCOGnnU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788989249; c=relaxed/simple;
-	bh=J8oNc4lSd9++48nEHIPGRBg2Qo2NhnKV5NgfBcx3ob4=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=su/nI+9Pb1F73x/Z802f5SY9ywCee7onbrKV0pCtD2jy5ZcOlP+g5SYKiWUKkQxA5IHXtsgdCnrUYc7cMenfwKuUOmUR5+werOlRlfYRiJKP54AZWIdF+xtzdOhheU/FtUYN02sG013WBG9GsWQoiXyp0m8AMHvsVHD+hZRolYM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b5NMuDpZ; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788990319; c=relaxed/simple;
+	bh=jhOnw9DxtXRQYleCY907p0/Aa52xq8+sDGdQwPBLGMM=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=bHBFkSVEo4D512XzVlVj199m13vVcdtTa7F/GIu7k1iiVX5/uZEdRCj8RroEuD69e0U8bDmle3rqw2/2fRDYDbvNNqqXVsyhQfV9eZySNsat1s1uyM6p0T5WRcy/7w3ExQFzUw9J6kkOHc+2UK7PiD2WB/nq93d/Vxg1CsCg8sk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bCGiR4If; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b5NMuDpZ"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 2BBAA1F00893;
-	Wed,  9 Sep 2026 21:27:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bCGiR4If"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 5EC4C1F000FF;
+	Wed,  9 Sep 2026 21:45:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788989231;
-	bh=cxVzFkduDi+tx/RlMzm2QtqV1K5VKoWPgRovPmC02jM=;
+	s=k20260515; t=1788990311;
+	bh=mb7IdX5yZuVKlfuif13eWy7p2A9FMOZoZC3w8efoZF4=;
 	h=From:To:Cc:Subject:Date;
-	b=b5NMuDpZZlOwo5g5XH6YZaaSO//RXyCOG0DIoHFjenFb7kd4ieizw1YZHz3giYjCg
-	 1OYVWMC9ndD8Ts25ffXNz9OaYk/lADBUlhRixaUoGj2kP01X8bGVx12eVOBmw7TOU7
-	 Tnujsm0Dw+k/H5dKUGEU98SZQXbVjzPzWxwzLxymeo7DjdZq57UG728b4o7/L0ctZx
-	 loMmLuAAlFnhsxtJ2r65fDWryEsfwipqp4YDvCdJHTbCKmezSaONyiE4GgIsLBTaq0
-	 7MCfkUuILyreE7dj7lj5Vfd1f9xx4AVvW3t+IM/ptbu7UsDcetL15kmxEj34jPk5oF
-	 tzSvlIhZAwhVw==
+	b=bCGiR4IfBM7Zm7CF27qXdsnwAF/UGbQzqd26Ps2HHSVuN5DvnUw+1Z24wMtf+EiKj
+	 qLS1m5jhllYn8jvfhZSGG6KJHAiuyG6Afae9ZG4xpvDdLjg5h2b0Tf7naEtCYCKJDL
+	 tYKf5524/EGAn6kURpqZk0aSEShP0VgcWmQt9GI2t96cYozVJmlK3NUnmIGpMd8LcH
+	 Q21iKuSExqU9r5dKRG09YYc+gNsJUFZFEjoTCbMlPnH61eB2H9EjUuLncPIh1ZF+cV
+	 lFiRLtd/r0gxjOMy0m3n5YVcz57Xdyfz60JDfVDlEeozkD1HcVeKPpvSd0xau2kzFJ
+	 6/2EDX+kABbIQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] media: v4l2-ctrls: Handle NULL master control in clustering helpers
-Message-ID: <ba8b1584-f84e-4418-8b79-2d7f2b714c56@mail.kernel.org>
+Subject: [PATCH RFC] md: clear pending reshape parameters in __md_stop()
+Message-ID: <0bbc5530-3021-49ec-a8cd-a006c2639d53@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,111 +38,82 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Wed,  9 Sep 2026 21:27:11 +0000 (UTC)
+Date: Wed,  9 Sep 2026 21:45:11 +0000 (UTC)
 
-The V4L2 control framework employs a deferred error handling mechanism for
-control creation. Drivers can invoke multiple control creation helpers
-(such as v4l2_ctrl_new_std()) without checking the return value of each
-call. If an error occurs, such as a memory allocation failure during
-v4l2_ctrl_handler_init() or v4l2_ctrl_new_*(), the handler records the
-error in hdl->error, and subsequent control creation calls immediately
-return NULL. Drivers check hdl->error once at the end of setup.
+When reconfiguring an active MD array (for instance, updating the number of
+disks via the raid_disks sysfs attribute), pending reshape parameters such
+as delta_disks, new_level, new_layout, and new_chunk_sectors are stored in
+struct mddev. At this stage, the reshape has not yet started running and
+mddev->reshape_position remains set to MaxSector.
 
-Drivers are documented and encouraged to cluster controls right after
-creating them using helpers like v4l2_ctrl_cluster() or
-v4l2_ctrl_auto_cluster(). However, v4l2_ctrl_cluster() checked
-`WARN_ON(ncontrols == 0 || controls[0] == NULL)`. If an allocation failure
-occurs prior to clustering, controls[0] is NULL. Because this condition can
-legitimately happen when memory allocation fails under deferred error
-handling, WARN_ON must not be used for conditions that can legitimately
-happen, and pr_err should be used instead if necessary.
+If userspace deactivates or stops the array before the reshape begins (such
+as by writing "inactive" to array_state), do_md_stop() invokes __md_stop().
+Unlike a full stop which invokes md_clean() to clear all configuration
+fields, __md_stop() detaches the personality and frees private data but
+leaves the pending reshape parameters in struct mddev. When the array is
+later restarted (e.g. by writing "active" to array_state), md_run() calls
+the personality's run method, raid5_run(). Because mddev->reshape_position
+is still MaxSector, raid5_run() assumes no reshape is taking place and
+expects no pending reshape parameters, causing BUG_ON(mddev->delta_disks !=
+0) to trigger:
 
-Additionally, on systems where panic_on_warn is not set and execution
-continues after the warning, v4l2_ctrl_cluster() returns early, but
-v4l2_ctrl_auto_cluster() proceeds to dereference master (controls[0]),
-causing a NULL pointer dereference crash when evaluating master->minimum
-and master->maximum. v4l2_ctrl_auto_cluster() also assigned `master =
-controls[0]` unconditionally prior to checking ncontrols.
-
-For instance, during hackrf_probe(), if handler initialization fails to
-allocate memory, dev->rx_bandwidth_auto remains NULL. Calling
-v4l2_ctrl_auto_cluster() with dev->rx_bandwidth_auto triggers the warning:
-
-WARNING: drivers/media/v4l2-core/v4l2-ctrls-core.c:2525 at
-v4l2_ctrl_auto_cluster+0x1c1/0x610
-drivers/media/v4l2-core/v4l2-ctrls-core.c:2547
+kernel BUG at drivers/md/raid5.c:8117!
+Oops: invalid opcode: 0000 [#1] SMP
+RIP: 0010:raid5_run+0x2550/0x2560 drivers/md/raid5.c:8117
 Call Trace:
  <TASK>
- hackrf_probe+0x80a/0x1360 drivers/media/usb/hackrf/hackrf.c:1430
- usb_probe_interface+0x788/0xe50 drivers/usb/core/driver.c:399
- really_probe+0x254/0xae0 drivers/base/dd.c:706
- __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
- driver_probe_device+0x4f/0x240 drivers/base/dd.c:898
- __device_attach_driver+0x270/0x410 drivers/base/dd.c:1026
- bus_for_each_drv+0x258/0x2f0 drivers/base/bus.c:500
- __device_attach+0x2c4/0x450 drivers/base/dd.c:1098
+ md_run+0xc3d/0x1cd0 drivers/md/md.c:6779
+ do_md_run+0x35/0x720 drivers/md/md.c:6880
+ array_state_store+0x958/0xe90 drivers/md/md.c:-1
+ md_attr_store+0x3b7/0x640 drivers/md/md.c:6158
+ kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
+ vfs_write+0x612/0xba0 fs/read_write.c:687
+ ksys_write+0x150/0x270 fs/read_write.c:739
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
  </TASK>
 
-Fix this by separating the checks in v4l2_ctrl_cluster(): retain
-WARN_ON(ncontrols == 0) as passing zero controls indicates a driver bug,
-but silently return when controls[0] is NULL, consistent with other control
-helpers like v4l2_ctrl_activate() and __v4l2_ctrl_grab(). In
-v4l2_ctrl_auto_cluster(), safely initialize master with `ncontrols ?
-controls[0] : NULL` and return immediately if master is NULL before
-dereferencing any of its fields.
+Fix this by clearing pending reshape parameters in __md_stop() if no
+reshape is currently running (mddev->reshape_position == MaxSector).
+Specifically, reset delta_disks and reshape_backwards to 0, and reset
+new_level, new_layout, and new_chunk_sectors to level, layout, and
+chunk_sectors, respectively. If a reshape is actively in progress
+(mddev->reshape_position != MaxSector), the parameters are preserved so the
+reshape can resume when the array is restarted.
 
-Fixes: c817d927b0f7 ("[media] v4l2-ctrls: replace BUG_ON by WARN_ON")
+Fixes: 91adb56473fe ("md/raid5: refactor raid5 "run"")
 Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+cf896de36144391bcde1@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=cf896de36144391bcde1
-Link: https://syzkaller.appspot.com/ai_job?id=b5f6d956-eb5a-4244-a774-4b9f4cf9a078
-To: <linux-media@vger.kernel.org>
-To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-To: "Hans Verkuil" <hverkuil@xs4all.nl>
-Cc: "Hans Verkuil" <hverkuil+cisco@kernel.org>
+Reported-by: syzbot+1f5a7de91d547763f4c8@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=1f5a7de91d547763f4c8
+Link: https://syzkaller.appspot.com/ai_job?id=ebe142c5-4399-48c5-aad4-4ee23cb2055d
+To: <linux-raid@vger.kernel.org>
+To: "Song Liu" <song@kernel.org>
+To: "Yu Kuai" <yukuai@fygo.io>
+To: "NeilBrown" <neilb@suse.de>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Ming Qian" <ming.qian@oss.nxp.com>
-Cc: "Nicolas Dufresne" <nicolas.dufresne@collabora.com>
-Cc: "Pavan Bobba" <opensource206@gmail.com>
+Cc: "Li Nan" <magiclinan@didiglobal.com>
+Cc: "Xiao Ni" <xiao@kernel.org>
 
 ---
-diff --git a/drivers/media/v4l2-core/v4l2-ctrls-core.c b/drivers/media/v4l2-core/v4l2-ctrls-core.c
-index 5b8a594fb..e77ce7b56 100644
---- a/drivers/media/v4l2-core/v4l2-ctrls-core.c
-+++ b/drivers/media/v4l2-core/v4l2-ctrls-core.c
-@@ -2521,8 +2521,14 @@ void v4l2_ctrl_cluster(unsigned ncontrols, struct v4l2_ctrl **controls)
- 	bool has_volatiles = false;
- 	int i;
- 
--	/* The first control is the master control and it must not be NULL */
--	if (WARN_ON(ncontrols == 0 || controls[0] == NULL))
-+	if (WARN_ON(ncontrols == 0))
-+		return;
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 680b34a63..38ab41bbc 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -7095,6 +7095,14 @@ static void __md_stop(struct mddev *mddev)
+ 	mddev->private = NULL;
+ 	put_pers(pers);
+ 	clear_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
 +
-+	/*
-+	 * The first control is the master control. If this is NULL then
-+	 * there is nothing to do.
-+	 */
-+	if (controls[0] == NULL)
- 		return;
++	if (mddev->reshape_position == MaxSector) {
++		mddev->delta_disks = 0;
++		mddev->reshape_backwards = 0;
++		mddev->new_level = mddev->level;
++		mddev->new_layout = mddev->layout;
++		mddev->new_chunk_sectors = mddev->chunk_sectors;
++	}
+ }
  
- 	for (i = 0; i < ncontrols; i++) {
-@@ -2540,12 +2546,14 @@ EXPORT_SYMBOL(v4l2_ctrl_cluster);
- void v4l2_ctrl_auto_cluster(unsigned ncontrols, struct v4l2_ctrl **controls,
- 			    u8 manual_val, bool set_volatile)
- {
--	struct v4l2_ctrl *master = controls[0];
-+	struct v4l2_ctrl *master = ncontrols ? controls[0] : NULL;
- 	u32 flag = 0;
- 	int i;
- 
- 	v4l2_ctrl_cluster(ncontrols, controls);
- 	WARN_ON(ncontrols <= 1);
-+	if (!master)
-+		return;
- 	WARN_ON(manual_val < master->minimum || manual_val > master->maximum);
- 	WARN_ON(set_volatile && !has_op(master, g_volatile_ctrl));
- 	master->is_auto = true;
+ void md_stop(struct mddev *mddev)
 
 
 base-commit: df2908090cda368b01ff43709f51890076c56157
