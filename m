@@ -1,259 +1,155 @@
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 850E041B8DC
-	for <syzbot@lists.linux.dev>; Mon, 14 Sep 2026 08:50:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF2DA41CB5E
+	for <syzbot@lists.linux.dev>; Mon, 14 Sep 2026 09:09:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789375860; cv=none; b=b5LbGqRvDpfgen75A5EU6gBrEQ3lcHBLBTdL9RHcmpQMXdKwanGKJat0CBELgB/9iVVJuVWnxMkk07Y+6TZ1tCpt1ccBF5H41AphmSKtA3aALOD81ROXNjn4v9ohURg9ySpV9cM2Yv3QBA5wIrOGjlk4IS9viwEk0Ew+HNed/eA=
+	t=1789376977; cv=none; b=DvjsaFhgvKsZuxzTrX3jYNi2jm4AvT3JGRzq8Bly+GtO4Z/vv5gfZ2/hR0X6VnQefU90JGW2KGkdISKSQIsO43lGjrV/YHnp0Xa/EYbO7GTBrYu/F+qy2pFxOaSMq/SbHXhvTOgeZN71aQVgiSFCFHO72lpeganVRZWWRLtG/H4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789375860; c=relaxed/simple;
-	bh=4kmKGPl8jrWtWetJGovz3XHXjjaAKGy6v1BRtuq+Sr0=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=gHgB1ZJRMPhElA9UO4OGE921lafwEpkLE8aWaZs/kwmlfiWMkO3kMelQ3oqfOun55xeTdt4vpzzl3idPPTyrdf8jPoHBusokB8gD8TrLyQY/zzux1U/ZBi49qqLqXd62IliRR7NHV85ObQnE7XyKa86fG76imCulYX0mvHh0R2Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.70
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-8050554892dso4463972a34.2
-        for <syzbot@lists.linux.dev>; Mon, 14 Sep 2026 01:50:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789375843; x=1789980643;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=BqDut2NvegO8zSRLp9JVh14GmyI892vgOxBKkgFiEtc=;
-        b=h8zki9s2w+xK7k/Gb5xb7bML7PImkmmZEMRwoAktaffECusLEv3MzsN4pL7nVWfRPW
-         GtnrtlVHKAb5+SKePh8aXMGhZ+3PLML3KMMohExWhjCCyNnEmQxMvrrE1QOn+XZ7c7N2
-         hX5dQBGsLGYVYLmGTd5op0Zb/vUcmaAZN822PhggOX1QOlSXXu7c0mmIdqCulkyFEpCu
-         VyIahScPFaX9WpotxJVOjohDmy5CWoBl60gK8oFedGhv0wk9iuhW8lbjht+NgBbwpfFV
-         ZWSLqYn6RxddLTTJjPfE0DLyqdfGQNOkIPRFbwzAMBwI4gSZ8wA7pkXs/bYf4USJmY/Y
-         JfWg==
-X-Gm-Message-State: AFuF++l/sMt653eBNdUNsz0Sgk8RGrOBIfYvbJshyqJ4Bwh6VQbZb9V4
-	JrW9EcHHmcfxgm/HtkxhuHgdgW1cyw/12Wp38uKZzoX1pYqWvjP2IMF06h/+qNT4VNBVxoFXcbV
-	ARgq4KKreQ+yOp2Dlh2hdY0qlQLLxdat2+1sggwjuwBOyRyljx8GIL6TMV5Q=
+	s=arc-20240116; t=1789376977; c=relaxed/simple;
+	bh=X9Yx+aNWN2Ex0UBsWVWlr1hEnAZjxDha7PRccPJi9u8=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=nH+5kdsSVWXFnBy+gC930e0/qGrRrTOSmEE5B6si4Ca7We7qUZ5NFOGngooG8QF1eCjUWoWEAvBCAMY3VpvZmGC4C0a53u7DvYyQy8E594pkfH0CmBAtgJdPBv9kl71M2lbVbYyI+8rF/1hjVypn1gxy8xpjOuEKjPoUv2uE/oU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iwc+JBda; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iwc+JBda"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6D26A1F000FF;
+	Mon, 14 Sep 2026 09:09:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789376975;
+	bh=wkUybl/odTOx2gFNSHv75sZhHhUg6Fdlrgnlbd3DLSI=;
+	h=From:To:Cc:Subject:Date;
+	b=iwc+JBdaMpR9P8+msrjTo0xBpbf1U+rQxYzOPkqIPQyZthXvw9onqdcFBGgE/djAz
+	 rXrqkfb6e10atn2DIl2w0JvAgwL6/BT5bIhyHnB7nuy+7CzM1a4oaxkLS2Ie039b6x
+	 yGqOqU2lL6JkI4E3Lj8KKarhiHkeZDvEFVvHUkHCwQUQFiAvBNiRoSmwLFsjM625AD
+	 DEDBuBil9zZE5IFq0ZyaaRS2u1YiFJk6JXiuGF7be+vx6iY79EozQVEfDtlP2xUVd9
+	 KDXvQbqAB4wm6JTNpBnjL0SGC4tayzo11r/fiio1fOiOlUaRA0Q1hMRPP2TJDNWfuo
+	 EtvXJ7lr0HASw==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: sst@poczta.fm, syzbot@lists.linux.dev
+Subject: [PATCH RFC v2] Input: yealink - abort URB submission on fatal errors
+Message-ID: <2a0b5e96-dd8a-4ce9-ba3f-dd9efa26275d@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:16ab:b0:6c2:e131:676a with SMTP id
- 006d021491bc7-6c5401806e8mr729341eaf.28.1789375842729; Mon, 14 Sep 2026
- 01:50:42 -0700 (PDT)
-Date: Mon, 14 Sep 2026 01:50:42 -0700
-In-Reply-To: <20260914061449.4024632-1-huangsj@hygon.cn>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6aa7b562.3aa11909.1a03b8.007c.GAE@google.com>
-Subject: [syzbot ci] Re: fs/proc: split the inode list for procfs
-From: syzbot ci <syzbot+cic7fceedca4fbf785@syzkaller.appspotmail.com>
-To: adobriyan@gmail.com, akpm@linux-foundation.org, aleksa@amutable.com, 
-	brauner@kernel.org, dev.jain@arm.com, ebiggers@kernel.org, 
-	fangbaoshun@hygon.cn, hpa@zytor.com, huangsj@hygon.cn, jack@suse.cz, 
-	jannh@google.com, joannelkoong@gmail.com, joel.granados@kernel.org, 
-	kees@kernel.org, legion@kernel.org, libaokun@linux.alibaba.com, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, ljs@kernel.org, 
-	mjguzik@gmail.com, oleg@redhat.com, ryan.roberts@arm.com, sandeen@redhat.com, 
-	tj@kernel.org, viro@zeniv.linux.org.uk, yingzhiwei@hygon.cn, 
-	zhongyuan@hygon.cn
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Mon, 14 Sep 2026 09:09:35 +0000 (UTC)
 
-syzbot ci has tested the following series
+The yealink driver uses two URBs (interrupt and control) to communicate
+with the device. When an URB completes with an error status (such as
+-EPROTO), the completion handlers (urb_irq_callback and urb_ctl_callback)
+log the error but do not abort. Instead, they proceed to process the
+potentially invalid data and unconditionally resubmit the URB.
 
-[v1] fs/proc: split the inode list for procfs
-https://lore.kernel.org/all/20260914061449.4024632-1-huangsj@hygon.cn
-* [RFC PATCH 1/3] fs/drop_caches: do not scan procfs in drop_pagecache_sb()
-* [RFC PATCH 2/3] fs/super: introduce a helper sb_inodes_empty()
-* [RFC PATCH 3/3] fs/proc: split the inode list
+Because control URBs are not rate-limited by the USB core, resubmitting a
+failing control URB in a tight loop floods the console with error messages
+and keeps the CPU completely busy in the softirq context. This eventually
+triggers an RCU preempt stall:
 
-and found the following issue:
-KASAN: slab-out-of-bounds Read in hook_sb_delete
-
-Full report is available here:
-https://ci.syzbot.org/series/736afa16-0dc2-40e7-9a6c-74db419044d7
-
-***
-
-KASAN: slab-out-of-bounds Read in hook_sb_delete
-
-tree:      vfs
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs.git
-base:      15aa70de9f706fb0e3852f636b8a0a9d5bc048ab
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/cd4bf6c8-aad6-4b38-b003-31dcd0a8a4bf/config
-
-ima: No TPM chip found, activating TPM-bypass!
-Loading compiled-in module X.509 certificates
-Loaded X.509 cert 'Build time autogenerated kernel key: affe42cfbb2369724f6c4c4a3fe3f0b2fe4692dc'
-ima: Allocated hash algorithm: sha256
-ima: No architecture policies found
-evm: Initialising EVM extended attributes:
-evm: security.selinux (disabled)
-evm: security.SMACK64 (disabled)
-evm: security.SMACK64EXEC (disabled)
-evm: security.SMACK64TRANSMUTE (disabled)
-evm: security.SMACK64MMAP (disabled)
-evm: security.apparmor
-evm: security.ima
-evm: security.capability
-evm: HMAC attrs: 0x1
-PM:   Magic number: 10:739:371
-usb usb44-port5: hash matches
-udc dummy_udc.27: hash matches
-dummy_udc dummy_udc.27: hash matches
-usb usb12-port1: hash matches
-netconsole: network logging started
-gtp: GTP module loaded (pdp ctx size 128 bytes)
-rdma_rxe: loaded
-cfg80211: Loading compiled-in X.509 certificates for regulatory database
-Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
-Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
-clk: Disabling unused clocks
-ALSA device list:
-  #0: Dummy 1
-  #1: Loopback 1
-  #2: Virtual MIDI Card 1
-md: Waiting for all devices to be available before autodetect
-md: If you don't use raid, use raid=noautodetect
-md: Autodetecting RAID arrays.
-md: autorun ...
-md: ... autorun DONE.
-EXT4-fs (sda1): mounted filesystem b4773fba-1738-4da0-8a90-0fe043d0a496 ro with ordered data mode. Quota mode: none.
-VFS: Mounted root (ext4 filesystem) readonly on device 8:1.
-devtmpfs: mounted
-VFS: Pivoted into new rootfs
-Freeing unused kernel image (initmem) memory: 27172K
-Write protecting the kernel read-only data: 223232k
-Freeing unused kernel image (text/rodata gap) memory: 1552K
-Freeing unused kernel image (rodata/data gap) memory: 804K
-x86/mm: Checked W+X mappings: passed, no W+X pages found.
-x86/mm: Checking user space page tables
-x86/mm: Checked W+X mappings: passed, no W+X pages found.
-Failed to set sysctl parameter 'max_rcu_stall_to_panic=1': parameter not found
-Run /sbin/init as init process
-==================================================================
-BUG: KASAN: slab-out-of-bounds in _raw_spin_lock+0x2e/0x40
-Read of size 1 at addr ffff88810eea9ce0 by task init/1
-
-CPU: 0 UID: 0 PID: 1 Comm: init Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+yealink 3-1:36.0: unexpected response 0
+yealink 3-1:36.0: urb_ctl_callback - urb status -71
+rcu: INFO: rcu_preempt self-detected stall on CPU
 Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150
- print_address_description+0x55/0x1e0
- print_report+0x58/0x70
- kasan_report+0x117/0x150
- __kasan_check_byte+0x2a/0x40
- lock_acquire+0x7d/0x350
- _raw_spin_lock+0x2e/0x40
- hook_sb_delete+0x15d/0xd10
- security_sb_delete+0x76/0x110
- generic_shutdown_super+0xb2/0x3d0
- kill_anon_super+0x3b/0x70
- proc_kill_sb+0x47/0x180
- deactivate_locked_super+0xbc/0x110
- cleanup_mnt+0x3d3/0x460
- mntput_no_expire_slowpath+0xa58/0xbf0
- __fput+0x6a4/0xa50
- task_work_run+0x1d9/0x270
- exit_to_user_mode_loop+0x204/0x770
- ret_from_fork+0x593/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
+ __console_flush_and_unlock kernel/printk/printk.c:3373 [inline]
+ console_unlock+0xd1/0x1c0 kernel/printk/printk.c:3413
+ dev_vprintk_emit+0x338/0x400 drivers/base/core.c:4996
+ dev_printk_emit+0xee/0x140 drivers/base/core.c:5007
+ usb_generic_driver_probe+0x10b/0x150 drivers/usb/core/generic.c:252
+ ...
+ hub_event+0x28e8/0x4d30 drivers/usb/core/hub.c:5953
+ worker_thread+0x92d/0xe10 kernel/workqueue.c:3486
+ kthread+0x388/0x470 kernel/kthread.c:436
 
-Allocated by task 1:
- kasan_save_track+0x3e/0x80
- __kasan_kmalloc+0x93/0xb0
- __kmalloc_flags_noprof+0x532/0x7a0
- __alloc_empty_sheaf+0x28/0x40
- __pcs_replace_empty_main+0x43b/0x6c0
- kmem_cache_alloc_noprof+0x399/0x600
- bio_alloc_bioset+0x271/0xc60
- ext4_mpage_readpages+0x12a7/0x1c40
- read_pages+0x193/0x5a0
- page_cache_ra_unbounded+0x754/0x9d0
- page_cache_ra_order+0xb47/0xee0
- filemap_get_pages+0x86d/0x1ec0
- filemap_read+0x426/0x11e0
- ext4_file_read_iter+0x553/0xad0
- __kernel_read+0x4ca/0x960
- integrity_kernel_read+0x89/0xd0
- ima_calc_file_hash+0x451/0x890
- ima_collect_measurement+0x51b/0xa00
- process_measurement+0x1272/0x1c10
- ima_file_mmap+0x1b0/0x200
- security_mmap_file+0x773/0xa20
- vm_mmap_pgoff+0x134/0x4e0
- elf_load+0x237/0x6a0
- load_elf_interp+0x4da/0xb50
- load_elf_binary+0x1bda/0x28d0
- bprm_execve+0x930/0x1590
- kernel_execve+0x8c3/0x9c0
- try_to_run_init_process+0x13/0x60
- kernel_init+0xb2/0x1d0
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
+Fix this by explicitly checking the URB status for fatal errors (-ENOENT,
+-ECONNRESET, -ESHUTDOWN, -EPROTO, -EPIPE, -EILSEQ) in both
+urb_irq_callback() and urb_ctl_callback(). If a fatal error is detected,
+the callback now returns early, breaking the infinite resubmission loop and
+preventing the RCU stall.
 
-The buggy address belongs to the object at ffff88810eea9c00
- which belongs to the cache kmalloc-128 of size 128
-The buggy address is located 96 bytes to the right of
- allocated 128-byte region [ffff88810eea9c00, ffff88810eea9c80)
-
-The buggy address belongs to the physical page:
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x10eea9
-flags: 0x17ff00000000000(node=0|zone=2|lastcpupid=0x7ff)
-page_type: f5(slab)
-raw: 017ff00000000000 ffff888100041a00 dead000000000122 0000000000000000
-raw: 0000000000000000 0000000000100010 00000000f5000000 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2c40(GFP_NOFS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 1, tgid 1 (swapper/0), ts 18944299736
- post_alloc_hook+0x1f9/0x250
- get_page_from_freelist+0x2209/0x2280
- __alloc_frozen_pages_noprof+0x217/0x5a0
- allocate_slab+0x7d/0x620
- refill_objects+0x2d5/0x350
- __pcs_replace_empty_main+0x2c8/0x6c0
- __kmalloc_noprof+0x47b/0x720
- tomoyo_commit_ok+0x29/0x1d0
- tomoyo_update_domain+0x4ea/0x7e0
- tomoyo_update_mount_acl+0x11c/0x2d0
- tomoyo_write_file+0xae4/0xc50
- tomoyo_supervisor+0xff8/0x1560
- tomoyo_mount_permission+0x670/0x9e0
- security_sb_mount+0xe4/0x320
- path_mount+0xbc/0x1050
- init_mount+0xc3/0x110
-page_owner free stack trace missing
-
-Memory state around the buggy address:
- ffff88810eea9b80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88810eea9c00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff88810eea9c80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                                                       ^
- ffff88810eea9d00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff88810eea9d80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-==================================================================
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: aca951a22a1d ("[PATCH] input-driver-yealink-P1K-usb-phone")
+Assisted-by: Gemini:gemini-3.8-flash syzbot
+Reported-by: syzbot+78e2288f58b881ed3c45@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=78e2288f58b881ed3c45
+Link: https://syzkaller.appspot.com/ai_job?id=479730c2-f271-451c-a31b-837d89cb018e
+To: "Henk Vergonet" <Henk.Vergonet@gmail.com>
+To: "Dmitry Torokhov" <dmitry.torokhov@gmail.com>
+To: <linux-input@vger.kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+v2:
+- Factored out fatal error checks into is_fatal_error() helper
 
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
+v1:
+https://lore.kernel.org/all/57cf484d-3235-473f-a61d-570585626176@mail.kernel.org/T/
+---
+diff --git a/drivers/input/misc/yealink.c b/drivers/input/misc/yealink.c
+index 560f895a0..bf91f40cd 100644
+--- a/drivers/input/misc/yealink.c
++++ b/drivers/input/misc/yealink.c
+@@ -400,14 +400,32 @@ static int yealink_do_idle_tasks(struct yealink_dev *yld)
+  * error,start
+  *
+  */
++static bool is_fatal_error(int status)
++{
++	switch (status) {
++	case -ENOENT:
++	case -ECONNRESET:
++	case -ESHUTDOWN:
++	case -EPROTO:
++	case -EPIPE:
++	case -EILSEQ:
++		return true;
++	default:
++		return false;
++	}
++}
++
+ static void urb_irq_callback(struct urb *urb)
+ {
+ 	struct yealink_dev *yld = urb->context;
+ 	int ret, status = urb->status;
+ 
+-	if (status)
++	if (status) {
+ 		dev_err(&yld->intf->dev, "%s - urb status %d\n",
+ 			__func__, status);
++		if (is_fatal_error(status))
++			return;
++	}
+ 
+ 	switch (yld->irq_data->cmd) {
+ 	case CMD_KEYPRESS:
+@@ -443,9 +461,12 @@ static void urb_ctl_callback(struct urb *urb)
+ 	struct yealink_dev *yld = urb->context;
+ 	int ret = 0, status = urb->status;
+ 
+-	if (status)
++	if (status) {
+ 		dev_err(&yld->intf->dev, "%s - urb status %d\n",
+ 			__func__, status);
++		if (is_fatal_error(status))
++			return;
++	}
+ 
+ 	switch (yld->ctl_data->cmd) {
+ 	case CMD_KEYPRESS:
 
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
+
+base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
