@@ -1,129 +1,280 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D558740B119
-	for <syzbot@lists.linux.dev>; Mon, 14 Sep 2026 08:29:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3CF240B6F9
+	for <syzbot@lists.linux.dev>; Mon, 14 Sep 2026 08:33:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789374548; cv=none; b=LxwswzV8Dvtkpae/yWOVh7VlbeRNDvoxNdO/utKLTde1/V0deDu/LWeMCYAUbHDqQp78iyFqBbk3ED3pWUon1odqGogcnwD0VQlCaBaP8ZFJBe1mRpPNqxjbM6QzN7jG8ny4TtGrts+ptCoKwMEYPF0TtQB6B33Zna1bqRXjoL8=
+	t=1789374824; cv=none; b=Vbr+YtWCwgL+tcMwL+m7n8di/VvtKdWjOxFeaygZxH3Zg7TiNOXj2//sscdDDdRz7MJM1+ARvtxed017abiY010XGpw8m6bj0nUR/CYMegXo1kOAe6ZfqwfxRi9oFPFVFmysKFrSMiH4gEFy287XlwNaymUHpEJWKsbPXPTLGYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789374548; c=relaxed/simple;
-	bh=jnFFH0krT0X5/tnQTm7G5nPnyYVbfQAv8TIN0avP+l0=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=feM/kIML9VW+84Q4eHyvdZPIg3Z45T7BX82/JpXXwMIEspi3mtDCBH0CRKTHvEOc23BGetOM8XHsndah+OypSke9TfJfZQyFjVN62PW+N0CTIcwNrrYKZCQam5fsYm2KG/FiZn5WvpltRyqXw0GRChjaKrDmi0lvtvjLUMVQRDg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F/UegGpP; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F/UegGpP"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 9B7871F000FF;
-	Mon, 14 Sep 2026 08:29:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789374545;
-	bh=LLLHLLb4zSb9ABoX0eTxPUu1sCkR3/nrxqWgntUbY0g=;
-	h=From:To:Cc:Subject:Date;
-	b=F/UegGpPbgspwsOXk9ZiyJ5juCvegv7EqkTfa5KzLODTsVuLz63NMElQvieWsjJ1j
-	 MbyIQdw0cxkWQxnuYH9QHRD3ph6+mcBTd+Zi3Te0eTxVsGDoqazwYmrmvF2u3CqTO5
-	 TS20jOCY0Sm48+AdbrNMdUvsuhwOTZ2HO8woj+D+CinN9lr4DkIrkSYqdt9gmXwGD8
-	 39+riuw0EyAXqJ2DGsbBJpDxPTlxLUwnFS60IxEcd2JCZr7ExBrlywhqAaA02n3m5V
-	 hhMqc4Mztb1LrF7J9xPQYFkZ0RL2dlYrgrW966lUvPAqzrYPIlI12xG6RFEEGAobNY
-	 pnDMoKfu7GEfQ==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] scsi: sg: Fix shift-out-of-bounds in sg_build_indirect()
-Message-ID: <4c6c124f-f448-4854-b8dd-9bfc194fa944@mail.kernel.org>
+	s=arc-20240116; t=1789374824; c=relaxed/simple;
+	bh=jvyxfDg9PoG1+qnovRxc97QaX40XOVvjlwT4p1+/STQ=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=mJLW+ihlJRr0LbwczfqDERVyg4Zkzx/ZQuQejO2t6JxXXzhosEJOrriO0jvS9nUokYjA+dM3M8IqZMSEbyHqJB/4Rji0wXbasvpPg5186T8SRnsGWlhe7z88OzWnftz7bgH8XOovghRiiF9U66U2Pgzs7Kq3lzA777K9nqo4g7M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-6be260da3fdso3341396eaf.1
+        for <syzbot@lists.linux.dev>; Mon, 14 Sep 2026 01:33:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1789374821; x=1789979621;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=RTDOYuG5KHqb/wnMpZs6DqUtNef6MBmdPGl4+XVcg1k=;
+        b=LuyNYxzQXDoVqQd2qt60Oj2A66trNRYW8rkgJn4WoW8Mus0s1eIFBgQl43eWsCnaOB
+         LXfOySuLgXGN+7Rrq6x9LWR+MMpvZ7uxKWKgSa12TAuRUzpI/gy5TemOXLaD8gfqrMs+
+         vDR5Fn0SEqSe99hl6DVJ9CmxetD2XFs2B/bZEgPFQOVcOULUzX99CDaq1V7tUdGbRYo7
+         HoDiMA7yAME2BbJk5ml7E7+DlNI6LVrOarcrXDtrUCGBO7j0m1fqF9NcYREeyWcvFR6E
+         w/KmBE20omvTtbPoXtLiZoqpNlD833vV4LzIKutkxg3GFPkrnyiZTo6UvUj3CnwhRiuH
+         wujA==
+X-Gm-Message-State: AFuF++mYoIVRcoVjpFlPY/tnE1+38ShV3mSb4xdtA7K6p7jy/TfelAR8
+	vlXMba2FTSpfO4PPstqutV4J3IpG8jPy/U8lgzseQ1bjFpdqgxv8MqZJ55yJ+Ek0AopuxKvSZdQ
+	9hiLMxOFQXDZxdU/tTD9jOOp1ebT3dIrnODJ8qNEovsxkTkFZEygc5R0fWSs=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Mon, 14 Sep 2026 08:29:05 +0000 (UTC)
+X-Received: by 2002:a05:6820:2909:b0:6ae:8a52:ffa9 with SMTP id
+ 006d021491bc7-6c53fb644dfmr1257168eaf.3.1789374821349; Mon, 14 Sep 2026
+ 01:33:41 -0700 (PDT)
+Date: Mon, 14 Sep 2026 01:33:41 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6aa7b165.3aa11909.1a03b8.007a.GAE@google.com>
+Subject: [moderation/CI] Re: fs/proc: split the inode list for procfs
+From: syzbot ci <syzbot+cif1533b673d3bef08@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Writing an invalid value such as 0 or a negative number to
-/sys/module/sg/parameters/scatter_elem_sz causes a shift-out-of-bounds bug
-during subsequent device operations. When opening a device via sg_open(),
-the driver calls sg_build_indirect() to allocate scatter-gather buffers. In
-sg_build_indirect(), scatter_elem_sz is read into the local snapshot
-variable num. Because PAGE_SIZE is unsigned, comparing num against
-PAGE_SIZE results in an unsigned comparison that bypasses negative values.
-Furthermore, even if the condition is met, the code updates the global
-scatter_elem_sz and scatter_elem_sz_prev variables but leaves the local
-snapshot variable num unupdated before get_order(). As a result, an invalid
-value such as 0 remains in num and is passed to order = get_order(num).
-Calling get_order(0) is undefined and underflows to 52 on 64-bit systems,
-causing ret_sz = 1 << (PAGE_SHIFT + order) to compute 1 << 64. Shifting a
-32-bit int by 64 bits triggers a UBSAN shift-out-of-bounds warning:
+syzbot ci has tested the following series
 
-UBSAN: shift-out-of-bounds in drivers/scsi/sg.c:1887:13
-shift exponent 64 is too large for 32-bit type 'int'
+[v1] fs/proc: split the inode list for procfs
+https://lore.kernel.org/all/20260914061449.4024632-1-huangsj@hygon.cn
+* [RFC PATCH 1/3] fs/drop_caches: do not scan procfs in drop_pagecache_sb()
+* [RFC PATCH 2/3] fs/super: introduce a helper sb_inodes_empty()
+* [RFC PATCH 3/3] fs/proc: split the inode list
+
+and found the following issue:
+KASAN: slab-out-of-bounds Read in hook_sb_delete
+
+Full report is available here:
+https://ci.syzbot.org/series/736afa16-0dc2-40e7-9a6c-74db419044d7
+
+***
+
+KASAN: slab-out-of-bounds Read in hook_sb_delete
+
+tree:      vfs
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs=
+.git
+base:      15aa70de9f706fb0e3852f636b8a0a9d5bc048ab
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/cd4bf6c8-aad6-4b38-b003-31dcd0a8a4b=
+f/config
+
+ima: No TPM chip found, activating TPM-bypass!
+Loading compiled-in module X.509 certificates
+Loaded X.509 cert 'Build time autogenerated kernel key: affe42cfbb2369724f6=
+c4c4a3fe3f0b2fe4692dc'
+ima: Allocated hash algorithm: sha256
+ima: No architecture policies found
+evm: Initialising EVM extended attributes:
+evm: security.selinux (disabled)
+evm: security.SMACK64 (disabled)
+evm: security.SMACK64EXEC (disabled)
+evm: security.SMACK64TRANSMUTE (disabled)
+evm: security.SMACK64MMAP (disabled)
+evm: security.apparmor
+evm: security.ima
+evm: security.capability
+evm: HMAC attrs: 0x1
+PM:   Magic number: 10:739:371
+usb usb44-port5: hash matches
+udc dummy_udc.27: hash matches
+dummy_udc dummy_udc.27: hash matches
+usb usb12-port1: hash matches
+netconsole: network logging started
+gtp: GTP module loaded (pdp ctx size 128 bytes)
+rdma_rxe: loaded
+cfg80211: Loading compiled-in X.509 certificates for regulatory database
+Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
+clk: Disabling unused clocks
+ALSA device list:
+  #0: Dummy 1
+  #1: Loopback 1
+  #2: Virtual MIDI Card 1
+md: Waiting for all devices to be available before autodetect
+md: If you don't use raid, use raid=3Dnoautodetect
+md: Autodetecting RAID arrays.
+md: autorun ...
+md: ... autorun DONE.
+EXT4-fs (sda1): mounted filesystem b4773fba-1738-4da0-8a90-0fe043d0a496 ro =
+with ordered data mode. Quota mode: none.
+VFS: Mounted root (ext4 filesystem) readonly on device 8:1.
+devtmpfs: mounted
+VFS: Pivoted into new rootfs
+Freeing unused kernel image (initmem) memory: 27172K
+Write protecting the kernel read-only data: 223232k
+Freeing unused kernel image (text/rodata gap) memory: 1552K
+Freeing unused kernel image (rodata/data gap) memory: 804K
+x86/mm: Checked W+X mappings: passed, no W+X pages found.
+x86/mm: Checking user space page tables
+x86/mm: Checked W+X mappings: passed, no W+X pages found.
+Failed to set sysctl parameter 'max_rcu_stall_to_panic=3D1': parameter not =
+found
+Run /sbin/init as init process
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+BUG: KASAN: slab-out-of-bounds in _raw_spin_lock+0x2e/0x40
+Read of size 1 at addr ffff88810eea9ce0 by task init/1
+
+CPU: 0 UID: 0 PID: 1 Comm: init Not tainted syzkaller #0 PREEMPT(full)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
 Call Trace:
  <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
- __ubsan_handle_shift_out_of_bounds+0x36d/0x400 lib/ubsan.c:494
- sg_build_indirect+0x559/0x870 drivers/scsi/sg.c:1887
- sg_build_reserve drivers/scsi/sg.c:1997 [inline]
- sg_add_sfp drivers/scsi/sg.c:2177 [inline]
- sg_open+0x1128/0x18a0 drivers/scsi/sg.c:349
- chrdev_open+0x4d9/0x600 fs/char_dev.c:411
- do_dentry_open+0x816/0x1380 fs/open.c:996
- vfs_open+0x3b/0x340 fs/open.c:1101
+ dump_stack_lvl+0xe8/0x150
+ print_address_description+0x55/0x1e0
+ print_report+0x58/0x70
+ kasan_report+0x117/0x150
+ __kasan_check_byte+0x2a/0x40
+ lock_acquire+0x7d/0x350
+ _raw_spin_lock+0x2e/0x40
+ hook_sb_delete+0x15d/0xd10
+ security_sb_delete+0x76/0x110
+ generic_shutdown_super+0xb2/0x3d0
+ kill_anon_super+0x3b/0x70
+ proc_kill_sb+0x47/0x180
+ deactivate_locked_super+0xbc/0x110
+ cleanup_mnt+0x3d3/0x460
+ mntput_no_expire_slowpath+0xa58/0xbf0
+ __fput+0x6a4/0xa50
+ task_work_run+0x1d9/0x270
+ exit_to_user_mode_loop+0x204/0x770
+ ret_from_fork+0x593/0xb70
+ ret_from_fork_asm+0x1a/0x30
  </TASK>
 
-Fix this by casting PAGE_SIZE to int so that the comparison is signed and
-negative values do not bypass the check, and by updating the local snapshot
-variable num to PAGE_SIZE when num < (int)PAGE_SIZE before get_order() is
-called.
+Allocated by task 1:
+ kasan_save_track+0x3e/0x80
+ __kasan_kmalloc+0x93/0xb0
+ __kmalloc_flags_noprof+0x532/0x7a0
+ __alloc_empty_sheaf+0x28/0x40
+ __pcs_replace_empty_main+0x43b/0x6c0
+ kmem_cache_alloc_noprof+0x399/0x600
+ bio_alloc_bioset+0x271/0xc60
+ ext4_mpage_readpages+0x12a7/0x1c40
+ read_pages+0x193/0x5a0
+ page_cache_ra_unbounded+0x754/0x9d0
+ page_cache_ra_order+0xb47/0xee0
+ filemap_get_pages+0x86d/0x1ec0
+ filemap_read+0x426/0x11e0
+ ext4_file_read_iter+0x553/0xad0
+ __kernel_read+0x4ca/0x960
+ integrity_kernel_read+0x89/0xd0
+ ima_calc_file_hash+0x451/0x890
+ ima_collect_measurement+0x51b/0xa00
+ process_measurement+0x1272/0x1c10
+ ima_file_mmap+0x1b0/0x200
+ security_mmap_file+0x773/0xa20
+ vm_mmap_pgoff+0x134/0x4e0
+ elf_load+0x237/0x6a0
+ load_elf_interp+0x4da/0xb50
+ load_elf_binary+0x1bda/0x28d0
+ bprm_execve+0x930/0x1590
+ kernel_execve+0x8c3/0x9c0
+ try_to_run_init_process+0x13/0x60
+ kernel_init+0xb2/0x1d0
+ ret_from_fork+0x514/0xb70
+ ret_from_fork_asm+0x1a/0x30
 
-Fixes: 10db10d144c0 ("sg: convert the indirect IO path to use the block layer")
-Assisted-by: Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+270f1c719ee7baab9941@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=270f1c719ee7baab9941
-Link: https://syzkaller.appspot.com/ai_job?id=e273ef4c-bec0-4d7e-af59-32e327619af1
-To: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
-To: "Doug Gilbert" <dgilbert@interlog.com>
-To: <linux-scsi@vger.kernel.org>
-To: "Martin K. Petersen" <mkp@kernel.org>
-To: "FUJITA Tomonori" <fujita.tomonori@lab.ntt.co.jp>
-Cc: <linux-kernel@vger.kernel.org>
+The buggy address belongs to the object at ffff88810eea9c00
+ which belongs to the cache kmalloc-128 of size 128
+The buggy address is located 96 bytes to the right of
+ allocated 128-byte region [ffff88810eea9c00, ffff88810eea9c80)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x10eea9
+flags: 0x17ff00000000000(node=3D0|zone=3D2|lastcpupid=3D0x7ff)
+page_type: f5(slab)
+raw: 017ff00000000000 ffff888100041a00 dead000000000122 0000000000000000
+raw: 0000000000000000 0000000000100010 00000000f5000000 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0xd2c40(GF=
+P_NOFS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 1, tgid=
+ 1 (swapper/0), ts 18944299736
+ post_alloc_hook+0x1f9/0x250
+ get_page_from_freelist+0x2209/0x2280
+ __alloc_frozen_pages_noprof+0x217/0x5a0
+ allocate_slab+0x7d/0x620
+ refill_objects+0x2d5/0x350
+ __pcs_replace_empty_main+0x2c8/0x6c0
+ __kmalloc_noprof+0x47b/0x720
+ tomoyo_commit_ok+0x29/0x1d0
+ tomoyo_update_domain+0x4ea/0x7e0
+ tomoyo_update_mount_acl+0x11c/0x2d0
+ tomoyo_write_file+0xae4/0xc50
+ tomoyo_supervisor+0xff8/0x1560
+ tomoyo_mount_permission+0x670/0x9e0
+ security_sb_mount+0xe4/0x320
+ path_mount+0xbc/0x1050
+ init_mount+0xc3/0x110
+page_owner free stack trace missing
+
+Memory state around the buggy address:
+ ffff88810eea9b80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88810eea9c00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff88810eea9c80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                                                       ^
+ ffff88810eea9d00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88810eea9d80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v2:
-- Drop module_param_cb() setter callback and range validation at sysfs boundary.
-- Cast PAGE_SIZE to int in sg_build_indirect() to prevent negative values from bypassing the check.
-- Update local snapshot variable num to PAGE_SIZE when num is less than PAGE_SIZE.
-- Update commit description to explain the unsigned comparison and unupdated local variable, and remove claims regarding parameter data races.
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v1:
-https://lore.kernel.org/all/30c58052-61b7-4425-9fd7-c188a0bef4ea@mail.kernel.org/T/
----
-diff --git a/drivers/scsi/sg.c b/drivers/scsi/sg.c
-index 5408f002e..39c8e52fa 100644
---- a/drivers/scsi/sg.c
-+++ b/drivers/scsi/sg.c
-@@ -1875,9 +1875,10 @@ sg_build_indirect(Sg_scatter_hold * schp, Sg_fd * sfp, int buff_size)
- 
- 	num = scatter_elem_sz;
- 	if (unlikely(num != scatter_elem_sz_prev)) {
--		if (num < PAGE_SIZE) {
-+		if (num < (int)PAGE_SIZE) {
- 			scatter_elem_sz = PAGE_SIZE;
- 			scatter_elem_sz_prev = PAGE_SIZE;
-+			num = PAGE_SIZE;
- 		} else
- 			scatter_elem_sz_prev = num;
- 	}
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
 
-base-commit: df2908090cda368b01ff43709f51890076c56157
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+The email will later be sent to:
+[adobriyan@gmail.com akpm@linux-foundation.org aleksa@amutable.com brauner@=
+kernel.org dev.jain@arm.com ebiggers@kernel.org fangbaoshun@hygon.cn hpa@zy=
+tor.com huangsj@hygon.cn jack@suse.cz jannh@google.com joannelkoong@gmail.c=
+om joel.granados@kernel.org kees@kernel.org legion@kernel.org libaokun@linu=
+x.alibaba.com linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org lj=
+s@kernel.org mjguzik@gmail.com oleg@redhat.com ryan.roberts@arm.com sandeen=
+@redhat.com tj@kernel.org viro@zeniv.linux.org.uk yingzhiwei@hygon.cn zhong=
+yuan@hygon.cn]
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
