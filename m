@@ -1,240 +1,182 @@
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68B084A4983
-	for <syzbot@lists.linux.dev>; Tue, 15 Sep 2026 14:50:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC70D313E0D
+	for <syzbot@lists.linux.dev>; Wed, 16 Sep 2026 15:03:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789483860; cv=none; b=LRYk+aoE6jOKQFFe654t7X6QKTDDqJZp47FERe5L4lnYVaaPUOE5rWWx3itc8cdUC0AEeLEckytbpX6WSsWS4HGi4fXt56hvUZNut3c7xw+0kRiJ00QmByXOJ5IGhuCJmTKPYLGjcflR8JkBLrS7JXPyn9IiXOs9LfVkJaomNl0=
+	t=1789570982; cv=none; b=XvSh4AjOMEhjE1gDCE4ae06We/eARwIb+jMFnYN2QkckA00GbKls3gR7tayuLSIrzLLmxI7EIkNK7xAsSFubtNzp5uZlzc6xEe6/nhFxMjRRsszSIlHjIOgFrg0bQ/KYV+OsRYkD27yfWqV0hiT++OrHbh3vr8N8VknokRMyR94=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789483860; c=relaxed/simple;
-	bh=mP63S2kSIDdQdSMZvjLxECnRPXQjALds9wMvo+cDuJ0=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=oGiztGLEDJZCFIcvYu66T2UdhLfCju+qWzhlq0E/4QhOF0DrjEjr45pqfUX2+PBd5cvZmJddPIyDSSFZQwPTd3U85oPgkJStUc6LY59Tvxo92oTKKVgg7ThRdg9mg8pl9TnNi63P6ivmQ5Z4dH38V1teLeh7B14PhM+nVdeFHC0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6c07dcbe60eso5481027eaf.3
-        for <syzbot@lists.linux.dev>; Tue, 15 Sep 2026 07:50:57 -0700 (PDT)
+	s=arc-20240116; t=1789570982; c=relaxed/simple;
+	bh=QEFwEGiGwvJqngCDLVwzGZHtpaBQbKFV6N+giUEFjIs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Vf08+qku0zHBOzbuev/3vdYG8r9UFCEfiQtVounLFEtgJlmkzYF7OyQGalBUtkfkA991uEfaC3F9QHSKl6U06S3hrv4ejTieLSYo9M4EO0pF3TvrjAuvS/VSY8GrGVsYEG5hmpAdC/NoLwGRFEkxBRgVErX1Brab8Lg7DbkmDe8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F/QT9rje; arc=none smtp.client-ip=74.125.225.140
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F/QT9rje"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49ccfd61ecaso9660405e9.3
+        for <syzbot@lists.linux.dev>; Wed, 16 Sep 2026 08:03:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789570979; x=1790175779; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Mln4TqF/7+Pi47OzKQGRJbQK+tSglhI87SFwR/lH6uk=;
+        b=F/QT9rjeNpr+qwiX6fxEJHplm69g259o0M7p+rNjoWJCiydXysxfoIVb5pxd+hNbcM
+         E4+jVRdM508ShyyFyvu3UQvpv7c3CIXgUS6v4o1zZ3s4PqkWYSAlwwj3uthY+/GvJil+
+         I2G6mh6zUcelQW5n+p6o/mGCrb9Hxt9fs7bX6LF0VN1n7NM9YVDICfaLtIlbH3akYCQC
+         Yfto2i498wneUtEYYAm+bW1iqofMd8HiJkS+EOK7788y/DDNVWdcEX27gZXpruv0Vds4
+         oTCPpsZwBnbxtIIgkhXRjEM/ySO4jAbw7KbCWSTxrAON+tQGCI832kOzZD7rpy++iqka
+         n1nA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789483856; x=1790088656;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=/JjqUbcpC8Uiq3Jgl8nzKIuk3KGjIIRFE3T7zA0MDfE=;
-        b=YHEBoUbOWUo4vAirqTAPU1Ly+MnkpyfI3eQdkL717mYN8gzt6xF0UqPQLEWHbZfn5n
-         WXKf9S1v5DO8B2g9DHqud7Q/90zfmjyOCljy0rrZUb9fkOHmID88RvJ+MaxllhubfmMO
-         BXTZjdAXFiTln9lHdxj5OBWShBCjkMOMvdVloAOo9D97ULGJiT2lnGuz6pkbCCdfLzDA
-         bDhWk2FL/Tt7VFoyTIavg/iNJcjoNSizsoGF42vaT6/K/EcJNkZk2KvUmqSGUdRmFAYK
-         /WFDaPRzY8ugNd1dDCLRNkPP+3He45y1MxaObdPT87OVYERV3nfQ2X2hUTdJOvTBJYiz
-         aOoA==
-X-Gm-Message-State: AFuF++le/CkyPSMSK/oMHhNhQC74b7gOSjhT57yVSCwlSyQ6/LVNBgly
-	c39KjHsXi098s6JvKrlV53RAqPe8N3DQstR5NHMWPG1Cif3Qjb5B6eGTOhH0yodc6a0AziMh4zv
-	lPV2HxAU36Mf4LJtpwETsIFZD2imE0QeDxtrZH0O9m6e02FbDrDU7xy9MxX4=
+        d=1e100.net; s=20260707; t=1789570979; x=1790175779;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Mln4TqF/7+Pi47OzKQGRJbQK+tSglhI87SFwR/lH6uk=;
+        b=0xc023U/Hf7E09Cjm/NmWE6a+IKHrNopQx3a8jPQOrVV/vhxM1XyptiTHYx0APXDht
+         p7Qc9yjGM/NsRjwoVlarV/B1sKRkIxS15LLIHPGvuSQ+4p6HxgEu0xYVeowDaR09pPZL
+         eo0SYqcVte/bmA9JLcqJaLs9P+bWzjHp7UYajxcKa+x3/MrOx1OPX1QOo15fUKzJPHuM
+         633lejsssfXbWswzKnfO+p1phi9GNIvEicMLCIPeZszQ4oFf1g7oYQZxBI9AgjCbSCwq
+         fxCec7s2HnHU7ka8+3xlLobrFDpuUhp8j1+/+PcWRQnvS1df/QvDt6GTfPROdROt8o8b
+         RE/A==
+X-Gm-Message-State: AFuF++m6LjqUaD/SEjwSl1ef7DrDMZVE2HplC9xHflqKtAJ6CaTCtI/+
+	B6zFz4YH930xIGx7U8oMEPUFPVi8vnkZ8REOxPz1Qful4ilEUT8DTljr
+X-Gm-Gg: AYBFou3liNja8RrfrIT+mAbwSdrBKFHUhSlGS11yptNeSX6OnpCiDAhN66UYplNvxkb
+	jNjqVWLCPn0kXiQqcLQlK+DlU08ZXcHRwRDN69de5aGNVHb9rt0xdQjVCOE9XsDkF57gs7DsoMd
+	uyw3zUVPvKyEtRRrdZmP21VE0dq5DaaXyDtYw72EgjzjIJD0BnesenR/x52zn4YWslqDud+MfRf
+	wh653xq3S+vY3vmCM1jd0MDxCSd8/7FdPcIgPQCPjBsSovbOgkg8z1/da5eShmUtPKqsvVt/S1h
+	TosVc6tqgDy+NCJ5kQpYudwHqgElIplc3dX4YqQsee9TyzlNryOvm2M6d/dDBW2/LdBxCxXbRLX
+	Rx9un/kqZtzC2Or87LSUn2nNSxzsJwNyGpiKXFlPLCD9b4nHN6U01aYPa5VR3KE0SCOJ/l593Ln
+	qtt7cnB9GC4a/xk13TvYj+29vijo2Az0ceWcQksyP/ngca7vv3QsnAGjleXs94f4Vj0r77Bg7wL
+	mJ05fUaQx8u2B3UZgy608uLLD+TO7+rzKkKu8vArJHtfTg27JQdzmMyOH5S27+3O4IQMbH58zN9
+	OAFeXKPWmCXuV+o7iqbPVQ65Vu+0r+42UmItEKIQPAON8WIC4iDa0YP0+hyuMzL5P7pYwyZZV0N
+	YLAPWAbd8yHVleAkmsan+JorZTocWuyQKjbZhDHitb0z0xA==
+X-Received: by 2002:a05:600c:8b61:b0:49e:6891:27a8 with SMTP id 5b1f17b1804b1-49eb732e411mr32405435e9.25.1789570978769;
+        Wed, 16 Sep 2026 08:02:58 -0700 (PDT)
+Received: from [192.168.100.51] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49e83fc3da0sm60617575e9.1.2026.09.16.08.02.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Sep 2026 08:02:58 -0700 (PDT)
+Message-ID: <193c1157-3676-463b-bc3b-81143ca5c511@gmail.com>
+Date: Wed, 16 Sep 2026 17:02:57 +0200
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:4d01:b0:6b7:83d6:2935 with SMTP id
- 006d021491bc7-6c739c763f3mr966337eaf.56.1789483856152; Tue, 15 Sep 2026
- 07:50:56 -0700 (PDT)
-Date: Tue, 15 Sep 2026 07:50:56 -0700
-In-Reply-To: <20260915081023.7433-1-ahemadkhawar123@gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6aa95b50.a211d2ce.1a5198.02ad.GAE@google.com>
-Subject: [syzbot ci] Re: xsk: Fix circular locking dependency between
- &net->xdp.lock, &xs->mutex, and netdev_lock_ops
-From: syzbot ci <syzbot+ci38b383cd8e5a02dc@syzkaller.appspotmail.com>
-To: ahemadkhawar123@gmail.com, ast@kernel.org, bpf@vger.kernel.org, 
-	daniel@iogearbox.net, edumazet@google.com, hawk@kernel.org, horms@kernel.org, 
-	john.fastabend@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org, 
-	maciej.fijalkowski@intel.com, magnus.karlsson@intel.com, 
-	netdev@vger.kernel.org, pabeni@redhat.com, sdf@fomichev.me, 
-	syzbot@syzkaller.appspotmail.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v2] scsi: sg: Fix shift-out-of-bounds in
+ sg_build_indirect()
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+References: <4c6c124f-f448-4854-b8dd-9bfc194fa944@mail.kernel.org>
+Content-Language: en-US
+From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+In-Reply-To: <4c6c124f-f448-4854-b8dd-9bfc194fa944@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-syzbot ci has tested the following series
+Extend the signed lower-bound handling to init_sg(). scatter_elem_sz is 
+an int, while PAGE_SIZE is unsigned long. A negative module parameter is 
+therefore converted to unsigned in the current initialization-time 
+comparison and bypasses the intended PAGE_SIZE clamp. Compare 
+scatter_elem_sz against (int)PAGE_SIZE in init_sg(), while keeping the 
+existing assignments that normalize scatter_elem_sz and 
+scatter_elem_sz_prev. This should make negative initialization values 
+follow the same minimum as zero and positive sub-page values.
 
-[v6] xsk: Fix circular locking dependency between &net->xdp.lock, &xs->mutex, and netdev_lock_ops
-https://lore.kernel.org/all/20260915081023.7433-1-ahemadkhawar123@gmail.com
-* [PATCH bpf-next v6] xsk: Fix circular locking dependency between &net->xdp.lock, &xs->mutex, and netdev_lock_ops
+Keep the current sg_build_indirect() repair unchanged. It must still 
+compare the local num snapshot in the signed domain and assign PAGE_SIZE 
+to num before get_order(). Preserve module_param_named(), successful 
+parameter stores, runtime normalization, rounded-value publication, 
+accepted high values, allocation retry, cleanup, and existing error 
+precedence. Do not add a custom parameter callback, new -ERANGE policy, 
+or a claim that this fixes the broader parameter race. Update the commit 
+message to cover both the stale local snapshot and the 
+initialization-time signed comparison, while preserving the existing 
+tags and assistance provenance.
 
-and found the following issue:
-possible deadlock in xp_clear_dev
-
-Full report is available here:
-https://ci.syzbot.org/series/fd897794-4f0d-45f4-8e63-bcb526e0b175
-
-***
-
-possible deadlock in xp_clear_dev
-
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf-next.git
-base:      b0ca562e0d05cf7afedcfa71c9aed180b72bcc97
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/d5521b86-a0b8-4ffc-ada4-91f534b028bc/config
-syz repro: https://ci.syzbot.org/findings/6aa094b3-5f39-460c-b0f7-709bbf72644c/syz_repro
-
-netlink: 14 bytes leftover after parsing attributes in process `syz.1.18'.
-======================================================
-WARNING: possible circular locking dependency detected
-syzkaller #0 Not tainted
-------------------------------------------------------
-syz.1.18/5842 is trying to acquire lock:
-ffff8881793b4e70 (&dev_instance_lock_key#3){+.+.}-{4:4}, at: netdev_lock include/linux/netdevice.h:2861 [inline]
-ffff8881793b4e70 (&dev_instance_lock_key#3){+.+.}-{4:4}, at: netdev_lock_ops include/net/netdev_lock.h:42 [inline]
-ffff8881793b4e70 (&dev_instance_lock_key#3){+.+.}-{4:4}, at: xp_clear_dev+0x13b/0x340 net/xdp/xsk_buff_pool.c:297
-
-but task is already holding lock:
-ffff8881bd5ca6b8 (&xs->mutex){+.+.}-{4:4}, at: xsk_notifier+0xcd/0x230 net/xdp/xsk.c:2114
-
-which lock already depends on the new lock.
-
-
-the existing dependency chain (in reverse order) is:
-
--> #1 (&xs->mutex){+.+.}-{4:4}:
-       __mutex_lock_common kernel/locking/mutex.c:646 [inline]
-       __mutex_lock+0x19d/0x1550 kernel/locking/mutex.c:821
-       xsk_bind+0x297/0x13f0 net/xdp/xsk.c:1620
-       __sys_bind_socket net/socket.c:1945 [inline]
-       __sys_bind+0x2e3/0x410 net/socket.c:1976
-       __do_sys_bind net/socket.c:1981 [inline]
-       __se_sys_bind net/socket.c:1979 [inline]
-       __x64_sys_bind+0x7a/0x90 net/socket.c:1979
-       do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
-       do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
-       entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
--> #0 (&dev_instance_lock_key#3){+.+.}-{4:4}:
-       check_prev_add kernel/locking/lockdep.c:3181 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3300 [inline]
-       validate_chain kernel/locking/lockdep.c:3924 [inline]
-       __lock_acquire+0x1520/0x2cf0 kernel/locking/lockdep.c:5253
-       lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5886
-       __mutex_lock_common kernel/locking/mutex.c:646 [inline]
-       __mutex_lock+0x19d/0x1550 kernel/locking/mutex.c:821
-       netdev_lock include/linux/netdevice.h:2861 [inline]
-       netdev_lock_ops include/net/netdev_lock.h:42 [inline]
-       xp_clear_dev+0x13b/0x340 net/xdp/xsk_buff_pool.c:297
-       xsk_notifier+0x1a1/0x230 net/xdp/xsk.c:2123
-       notifier_call_chain+0x1a5/0x3d0 kernel/notifier.c:85
-       call_netdevice_notifiers_extack net/core/dev.c:2313 [inline]
-       call_netdevice_notifiers net/core/dev.c:2327 [inline]
-       unregister_netdevice_many_notify+0x17f9/0x2140 net/core/dev.c:12518
-       rtnl_delete_link net/core/rtnetlink.c:3652 [inline]
-       rtnl_dellink+0x5be/0x810 net/core/rtnetlink.c:3694
-       rtnetlink_rcv_msg+0x802/0xc00 net/core/rtnetlink.c:7132
-       netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2556
-       netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
-       netlink_unicast+0x7bd/0x940 net/netlink/af_netlink.c:1345
-       netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
-       sock_sendmsg_nosec+0x13a/0x180 net/socket.c:800
-       __sock_sendmsg net/socket.c:815 [inline]
-       ____sys_sendmsg+0x54e/0x850 net/socket.c:2713
-       ___sys_sendmsg+0x2a5/0x360 net/socket.c:2767
-       __sys_sendmsg net/socket.c:2799 [inline]
-       __do_sys_sendmsg net/socket.c:2804 [inline]
-       __se_sys_sendmsg net/socket.c:2802 [inline]
-       __x64_sys_sendmsg+0x1b1/0x290 net/socket.c:2802
-       do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
-       do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
-       entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-other info that might help us debug this:
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(&xs->mutex);
-                               lock(&dev_instance_lock_key#3);
-                               lock(&xs->mutex);
-  lock(&dev_instance_lock_key#3);
-
- *** DEADLOCK ***
-
-locks held by syz.1.18/5842: 3, last CPU#0:
- #0: ffffffff90036ac0 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_lock net/core/rtnetlink.c:80 [inline]
- #0: ffffffff90036ac0 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_net_lock include/linux/rtnetlink.h:134 [inline]
- #0: ffffffff90036ac0 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_dellink+0x41b/0x810 net/core/rtnetlink.c:3686
- #1: ffff88810e3ac750 (&net->xdp.lock){+.+.}-{4:4}, at: xsk_notifier+0x89/0x230 net/xdp/xsk.c:2110
- #2: ffff8881bd5ca6b8 (&xs->mutex){+.+.}-{4:4}, at: xsk_notifier+0xcd/0x230 net/xdp/xsk.c:2114
-
-stack backtrace:
-CPU: 0 UID: 0 PID: 5842 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_circular_bug+0x2e1/0x300 kernel/locking/lockdep.c:2059
- check_noncircular+0x12e/0x150 kernel/locking/lockdep.c:2191
- check_prev_add kernel/locking/lockdep.c:3181 [inline]
- check_prevs_add kernel/locking/lockdep.c:3300 [inline]
- validate_chain kernel/locking/lockdep.c:3924 [inline]
- __lock_acquire+0x1520/0x2cf0 kernel/locking/lockdep.c:5253
- lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5886
- __mutex_lock_common kernel/locking/mutex.c:646 [inline]
- __mutex_lock+0x19d/0x1550 kernel/locking/mutex.c:821
- netdev_lock include/linux/netdevice.h:2861 [inline]
- netdev_lock_ops include/net/netdev_lock.h:42 [inline]
- xp_clear_dev+0x13b/0x340 net/xdp/xsk_buff_pool.c:297
- xsk_notifier+0x1a1/0x230 net/xdp/xsk.c:2123
- notifier_call_chain+0x1a5/0x3d0 kernel/notifier.c:85
- call_netdevice_notifiers_extack net/core/dev.c:2313 [inline]
- call_netdevice_notifiers net/core/dev.c:2327 [inline]
- unregister_netdevice_many_notify+0x17f9/0x2140 net/core/dev.c:12518
- rtnl_delete_link net/core/rtnetlink.c:3652 [inline]
- rtnl_dellink+0x5be/0x810 net/core/rtnetlink.c:3694
- rtnetlink_rcv_msg+0x802/0xc00 net/core/rtnetlink.c:7132
- netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2556
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x7bd/0x940 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
- sock_sendmsg_nosec+0x13a/0x180 net/socket.c:800
- __sock_sendmsg net/socket.c:815 [inline]
- ____sys_sendmsg+0x54e/0x850 net/socket.c:2713
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2767
- __sys_sendmsg net/socket.c:2799 [inline]
- __do_sys_sendmsg net/socket.c:2804 [inline]
- __se_sys_sendmsg net/socket.c:2802 [inline]
- __x64_sys_sendmsg+0x1b1/0x290 net/socket.c:2802
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f47db99e159
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f47dc90c028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f47dbc25fa0 RCX: 00007f47db99e159
-RDX: 0000000004048004 RSI: 00002000000001c0 RDI: 0000000000000005
-RBP: 00007f47dba3503b R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f47dbc26038 R14: 00007f47dbc25fa0 R15: 00007ffc72db97b8
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
-
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
+On 9/14/2026 10:29 AM, syzbot wrote:
+> Writing an invalid value such as 0 or a negative number to
+> /sys/module/sg/parameters/scatter_elem_sz causes a shift-out-of-bounds bug
+> during subsequent device operations. When opening a device via sg_open(),
+> the driver calls sg_build_indirect() to allocate scatter-gather buffers. In
+> sg_build_indirect(), scatter_elem_sz is read into the local snapshot
+> variable num. Because PAGE_SIZE is unsigned, comparing num against
+> PAGE_SIZE results in an unsigned comparison that bypasses negative values.
+> Furthermore, even if the condition is met, the code updates the global
+> scatter_elem_sz and scatter_elem_sz_prev variables but leaves the local
+> snapshot variable num unupdated before get_order(). As a result, an invalid
+> value such as 0 remains in num and is passed to order = get_order(num).
+> Calling get_order(0) is undefined and underflows to 52 on 64-bit systems,
+> causing ret_sz = 1 << (PAGE_SHIFT + order) to compute 1 << 64. Shifting a
+> 32-bit int by 64 bits triggers a UBSAN shift-out-of-bounds warning:
+>
+> UBSAN: shift-out-of-bounds in drivers/scsi/sg.c:1887:13
+> shift exponent 64 is too large for 32-bit type 'int'
+> Call Trace:
+>   <TASK>
+>   dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>   ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
+>   __ubsan_handle_shift_out_of_bounds+0x36d/0x400 lib/ubsan.c:494
+>   sg_build_indirect+0x559/0x870 drivers/scsi/sg.c:1887
+>   sg_build_reserve drivers/scsi/sg.c:1997 [inline]
+>   sg_add_sfp drivers/scsi/sg.c:2177 [inline]
+>   sg_open+0x1128/0x18a0 drivers/scsi/sg.c:349
+>   chrdev_open+0x4d9/0x600 fs/char_dev.c:411
+>   do_dentry_open+0x816/0x1380 fs/open.c:996
+>   vfs_open+0x3b/0x340 fs/open.c:1101
+>   </TASK>
+>
+> Fix this by casting PAGE_SIZE to int so that the comparison is signed and
+> negative values do not bypass the check, and by updating the local snapshot
+> variable num to PAGE_SIZE when num < (int)PAGE_SIZE before get_order() is
+> called.
+>
+> Fixes: 10db10d144c0 ("sg: convert the indirect IO path to use the block layer")
+> Assisted-by: Gemini:gemini-3.8-flash syzbot
+> Reported-by: syzbot+270f1c719ee7baab9941@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=270f1c719ee7baab9941
+> Link: https://syzkaller.appspot.com/ai_job?id=e273ef4c-bec0-4d7e-af59-32e327619af1
+> To: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+> To: "Doug Gilbert" <dgilbert@interlog.com>
+> To: <linux-scsi@vger.kernel.org>
+> To: "Martin K. Petersen" <mkp@kernel.org>
+> To: "FUJITA Tomonori" <fujita.tomonori@lab.ntt.co.jp>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> ---
+> v2:
+> - Drop module_param_cb() setter callback and range validation at sysfs boundary.
+> - Cast PAGE_SIZE to int in sg_build_indirect() to prevent negative values from bypassing the check.
+> - Update local snapshot variable num to PAGE_SIZE when num is less than PAGE_SIZE.
+> - Update commit description to explain the unsigned comparison and unupdated local variable, and remove claims regarding parameter data races.
+>
+> v1:
+> https://lore.kernel.org/all/30c58052-61b7-4425-9fd7-c188a0bef4ea@mail.kernel.org/T/
+> ---
+> diff --git a/drivers/scsi/sg.c b/drivers/scsi/sg.c
+> index 5408f002e..39c8e52fa 100644
+> --- a/drivers/scsi/sg.c
+> +++ b/drivers/scsi/sg.c
+> @@ -1875,9 +1875,10 @@ sg_build_indirect(Sg_scatter_hold * schp, Sg_fd * sfp, int buff_size)
+>   
+>   	num = scatter_elem_sz;
+>   	if (unlikely(num != scatter_elem_sz_prev)) {
+> -		if (num < PAGE_SIZE) {
+> +		if (num < (int)PAGE_SIZE) {
+>   			scatter_elem_sz = PAGE_SIZE;
+>   			scatter_elem_sz_prev = PAGE_SIZE;
+> +			num = PAGE_SIZE;
+>   		} else
+>   			scatter_elem_sz_prev = num;
+>   	}
+>
+>
+> base-commit: df2908090cda368b01ff43709f51890076c56157
