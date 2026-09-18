@@ -1,266 +1,153 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C1B951AEE0
-	for <syzbot@lists.linux.dev>; Fri, 18 Sep 2026 18:12:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59DC043E9D2
+	for <syzbot@lists.linux.dev>; Fri, 18 Sep 2026 18:46:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789755147; cv=none; b=QZE6Fia+/5EdISo/McazbomO0i/aDTm4psaSjbN1pE2b1bnnptQ7XCXJdHU+bOYNNUCztdkpuHIpNHq3WkSAfjj3zM9ta630IMsGqYySuy5lzDDkaUQRGbQu1DpCgTSyiHrt/tR7EkUVO3vlkuLDgwprwYC0KgUagMTUoN1rel8=
+	t=1789757173; cv=none; b=Bc+1QnCzooAx4P7eqlgkbof4FOj0qoIXItI5o++LbpMFNOBWcOvDzMiDoisyUkg4EeKcxCqx8OYlzGOEzFB6Ob6VE8ZmNrCj1o228duyvCkY0AnSmD9LhSKJWsy2CKX0C1Qm2/Z60xevcKEBP2sfVLOrGtufJV7Krngw22V5kdY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789755147; c=relaxed/simple;
-	bh=hhVKDteSsJWceG+OMxJYhS5I1iv60inCrjm0HnQAEpI=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=N9A+AtNdKveE7Ot76He0QlHcmTPMyoSR2YYj+VwxseN3r4ng6G7uA+Sd02qfrQHHQMKCqqsVRxJasecU83vIB8knuV0z8D0Ir4ZxHXbxCK5Vybn3oVRtzDvaKQAlntmTThxsnDNpVpXzhyK6DVz+vT0vndeT03S3iHS5XoZFdiI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gZM8OILP; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gZM8OILP"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id E6BF71F000FF;
-	Fri, 18 Sep 2026 18:12:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789755146;
-	bh=Hzyfl7IvHO8DiIbzVlXKs9rBOFBon1aY3u2WMfBQOeA=;
-	h=From:To:Cc:Subject:Date;
-	b=gZM8OILP6kYWSqSw/rLfnYiZCMFmUgOE9di5bdxt3u7BY4whJMfSCq3dwosGx9r4z
-	 IH4qq//TxRu8DyB8sPxeqei/biThvEAIqceE6CFivBL9EhoMSt07154QUGv9eBB6QD
-	 ++A+kIqbkHi0uJD3I2z/v/HRwuH6TwEmJDlr69X9wpBN+zPMcdznA0BF52I6vCa87g
-	 D1LQv0R56rj/GEqykd2sKhbi34zkhsfx7hwyV83cqsRAUayUTB3873ofbb9BMfyVPW
-	 DPZk7uj6vRC34ETijxGCoMunuv/suEk+iAwlTvaqI1WwdWHn4Dd/pJgM8z5cgt/HAx
-	 vtRDxsw5Yz3Pg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v3] net/sched: taprio: enforce minimum interval to prevent hrtimer storms
-Message-ID: <6f795e5c-0c42-4ff3-b8f3-de5cffb73045@mail.kernel.org>
+	s=arc-20240116; t=1789757173; c=relaxed/simple;
+	bh=OMs9EXNtOOYltCMU+k9e9PkI/tu2TPDUGaPAcp7IvXE=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=l1fqJEO5PafvvJsE0/sdy1rBND553Unl5WD+mADt5oxnm+bFldIhWjHb4XSLVhO81ydf7GL0upp9IvZksPbuzIl1BB/T5v1ShpHH/Kc4sFp8YKyLsYdaSzBe+LHAGdbwVUCg9kO/Lk3lniPIaqg5cEDm7OTSBabQdGEf6Ts8dAA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-6a17dafd042so1611896eaf.2
+        for <syzbot@lists.linux.dev>; Fri, 18 Sep 2026 11:46:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789757160; x=1790361960;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=eQzJSsS9Zl+ml99m2w5uw8Luw+5lh7PAJ7SmWqqn2+8=;
+        b=GIxaD1lyvOYBoYwC0y5Qnq6ljKL/N83o6Zw9HYBekjWSuf/7yqzsn48BFqnn1c1P/k
+         jyd9YtATROWhROb00Car9F/4ps9FQYOy31nt+R04vHjnmGg/oZ1nrQ4xphWbvG5Qf2SK
+         RHExEPs7Cwk6xFb4wOYT2pjahme8e4QcHuDss/nF73Q2VnwX7tCixQFOuYbXLfkvGgsI
+         9ywUpfcGOb+iPxpY7b1s6GHUxX922zdxGGUBFXnlZv4N7xlcmJQYsBnXN09EZ+u+WQrF
+         ExjJHCZTVl5iIjSZKny5wY7ICO3yqN3tqZKDdQXdHBPc/saC6NvRLCu8H19C78PnI5Kl
+         LnrA==
+X-Gm-Message-State: AFuF++kZJr1uCp9FIcSiixlPiZxPA1cATBZS++YavSiyofm+Jw10WmRB
+	+6laMsYaZ4iIaLGKU3RfsKO0/SgcPH1euzpX0hn6wT43ef0eVjtM6rXZm/JGff7zExTQP8sajQw
+	sn27XcSH5Kg87XIRsvBSbtMRnkQgjpEPEY/XTsvv7PSF8fdMJjcOZdQfCL04=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri, 18 Sep 2026 18:12:25 +0000 (UTC)
+X-Received: by 2002:a05:6820:4c14:b0:6cd:3fdc:5fff with SMTP id
+ 006d021491bc7-6cd3fdc6096mr455466eaf.80.1789757160558; Fri, 18 Sep 2026
+ 11:46:00 -0700 (PDT)
+Date: Fri, 18 Sep 2026 11:46:00 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6aad86e8.b398a7c9.1f86be.003b.GAE@google.com>
+Subject: [moderation/CI] Re: loop: Fix teardown
+From: syzbot ci <syzbot+cid93fbb9db8ac4291@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-An issue with the taprio packet scheduler allows a user to configure an
-extremely small schedule interval (e.g., 127 ns). While taprio validates
-that the interval is at least the time required to transmit a minimum-sized
-Ethernet frame (ETH_ZLEN), on high-speed virtual interfaces like 10 Gbps
-veth, this minimum duration evaluates to just 48 ns.
+syzbot ci has tested the following series
 
-Because the execution time of the hrtimer callback (plus hardware interrupt
-overhead) is significantly larger than 127 ns, the newly calculated
-end_time in advance_sched() is already in the past by the time the
-interrupt handler finishes. The hrtimer subsystem immediately fires the
-timer again, trapping the CPU in a continuous stream of timer interrupts
-(an hrtimer interrupt storm). This starves other threads, including the RCU
-grace-period kthread, leading to an RCU stall:
+[v1] loop: Fix teardown
+https://lore.kernel.org/all/cover.1789587960.git.bvanassche@acm.org
+* [PATCH 1/2] block: Add post_release() operation
+* [PATCH 2/2] loop: Perform __loop_clr_fd() after disk->open_mutex is dropped
 
-rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-rcu: 	(detected by 0, t=10502 jiffies, g=15113, q=737 ncpus=2)
-rcu: All QSes seen, last rcu_preempt kthread activity 10502
-(4294956675-4294946173), jiffies_till_next_fqs=1, root ->qsmask 0x0
-rcu: rcu_preempt kthread timer wakeup didn't happen for 10501 jiffies!
-g15113 f0x2 RCU_GP_WAIT_FQS(5) ->state=0x200
-rcu: 	Possible timer handling issue on cpu=1 timer-softirq=3485
-rcu: rcu_preempt kthread starved for 10502 jiffies! g15113 f0x2
-RCU_GP_WAIT_FQS(5) ->state=0x200 ->cpu=1
-rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now
-expected behavior.
-...
+and found the following issue:
+general protection fault in lo_post_release
+
+Full report is available here:
+https://ci.syzbot.org/series/81bfb244-11b0-4b8a-aa02-a212681ff0af
+
+***
+
+general protection fault in lo_post_release
+
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
+base:      2dd9768a37dbb99398c5e332485dbb107ac397c8
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/e21a78bb-e498-4518-8734-d31ae58a2538/config
+AI triage: https://ci.syzbot.org/findings/add69d7e-57e2-465d-8c07-9db3934582f9/triage_trajectory
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc000000000a: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000050-0x0000000000000057]
+CPU: 0 UID: 0 PID: 26297 Comm: udevd Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:lo_post_release+0x498/0x7f0
+Code: 4c 89 ff e8 7a 73 f9 fb bf e0 01 00 00 49 03 3f be 02 00 00 00 e8 18 05 9e 05 48 8b 44 24 10 4c 8d 60 50 4c 89 e0 48 c1 e8 03 <42> 80 3c 30 00 74 08 4c 89 e7 e8 49 73 f9 fb 41 bf e8 00 00 00 4d
+RSP: 0018:ffffc90003d6fb60 EFLAGS: 00010206
+RAX: 000000000000000a RBX: ffff8881699b3000 RCX: 0000000000000046
+RDX: 0000000000000006 RSI: ffffffff8e414976 RDI: ffffffff8c6da780
+RBP: ffffc90003d6fd08 R08: ffffffff907a477f R09: 1ffffffff20f48ef
+R10: dffffc0000000000 R11: fffffbfff20f48f0 R12: 0000000000000050
+R13: 1ffff920007adf74 R14: dffffc0000000000 R15: ffff888169a02080
+FS:  00007fa1afb46c80(0000) GS:ffff88818d6ce000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f0d423a8440 CR3: 00000001bee1a000 CR4: 00000000000006f0
 Call Trace:
- <IRQ>
- lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5868
- rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
- rcu_read_lock include/linux/rcupdate.h:840 [inline]
- advance_sched+0xa04/0xc80 net/sched/sch_taprio.c:992
- __run_hrtimer kernel/time/hrtimer.c:2032 [inline]
- __hrtimer_run_queues+0x3bc/0xa10 kernel/time/hrtimer.c:2096
- hrtimer_interrupt+0x448/0x910 kernel/time/hrtimer.c:2215
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1051 [inline]
- __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:1068
+ <TASK>
+ bdev_release+0x59a/0x6b0
+ blkdev_release+0x15/0x20
+ __fput+0x418/0xa50
+ fput_close_sync+0x11f/0x240
+ __x64_sys_close+0x7e/0x110
+ do_syscall_64+0x166/0x520
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fa1af7170a8
+Code: 48 8b 05 83 9d 0d 00 64 c7 00 16 00 00 00 83 c8 ff 48 83 c4 20 5b c3 64 8b 04 25 18 00 00 00 85 c0 75 20 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 76 5b 48 8b 15 51 9d 0d 00 f7 d8 64 89 02 48 83
+RSP: 002b:00007ffeef68bbb8 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
+RAX: ffffffffffffffda RBX: 00007fa1afb46ae0 RCX: 00007fa1af7170a8
+RDX: 0000559097caaeb5 RSI: 00007ffeef68b3b8 RDI: 0000000000000008
+RBP: 00005595ce9a3e90 R08: 0000000000000006 R09: a8cc15e7d6acaf3b
+R10: 000000000000010f R11: 0000000000000246 R12: 0000000000000002
+R13: 00005595ce999920 R14: 0000000000000008 R15: 00005595ce964910
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:lo_post_release+0x498/0x7f0
+Code: 4c 89 ff e8 7a 73 f9 fb bf e0 01 00 00 49 03 3f be 02 00 00 00 e8 18 05 9e 05 48 8b 44 24 10 4c 8d 60 50 4c 89 e0 48 c1 e8 03 <42> 80 3c 30 00 74 08 4c 89 e7 e8 49 73 f9 fb 41 bf e8 00 00 00 4d
+RSP: 0018:ffffc90003d6fb60 EFLAGS: 00010206
+RAX: 000000000000000a RBX: ffff8881699b3000 RCX: 0000000000000046
+RDX: 0000000000000006 RSI: ffffffff8e414976 RDI: ffffffff8c6da780
+RBP: ffffc90003d6fd08 R08: ffffffff907a477f R09: 1ffffffff20f48ef
+R10: dffffc0000000000 R11: fffffbfff20f48f0 R12: 0000000000000050
+R13: 1ffff920007adf74 R14: dffffc0000000000 R15: ffff888169a02080
+FS:  00007fa1afb46c80(0000) GS:ffff88818d6ce000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055556cac6a68 CR3: 00000001bee1a000 CR4: 00000000000006f0
 
-To prevent this, enforce a minimum interval threshold during configuration
-when operating in software timer-driven mode (i.e. neither txtime-assist
-nor full offload is enabled). Introduce TAPRIO_MIN_INTERVAL set to 100
-microseconds (100 * NSEC_PER_USEC). Rather than serving as an absolute
-CPU-safety guarantee across all possible hardware and workloads, this 100
-us floor acts as a nominal callback-rate policy that limits the timer
-interrupt rate to at most 10,000 events per second. Hardware-assisted and
-offloaded modes do not rely on this software timer and remain unaffected.
 
-Apply this clamped minimum duration in fill_sched_entry() and
-parse_taprio_schedule() for timer-driven mode to ensure that both
-individual entry intervals and the overall cycle time respect this floor.
-Also add and use taprio_is_timer_driven() to simplify timer-mode checks
-across taprio.
+***
 
-Fixes: b5b73b26b3ca ("taprio: Fix allowing too small intervals")
-Assisted-by: Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+e044a9b6370ed8ca9737@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=e044a9b6370ed8ca9737
-Link: https://syzkaller.appspot.com/ai_job?id=27da4e09-1a14-4b2d-b724-c2398c57d3b3
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: "Jamal Hadi Salim" <jhs@mojatatu.com>
-To: "Jiri Pirko" <jiri@resnulli.us>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
-Cc: "Simon Horman" <horms@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v3:
-- Switch advance_timer to HRTIMER_MODE_ABS_SOFT in taprio_init(), taprio_change(), and taprio_start_sched()
-- In parse_taprio_schedule(), validate that cycle_time is not less than the sum of entry intervals in timer-driven mode
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v2:
-- Increased the minimum interval floor (TAPRIO_MIN_INTERVAL) from 1 us to 100 us.
-- Restricted the minimum interval constraint to software timer-driven mode via a new taprio_is_timer_driven() helper.
-- Used taprio_is_timer_driven() helper in taprio_start_sched() and taprio_change().
-- Clarified in the commit message that the threshold represents a nominal callback-rate policy rather than an absolute safety guarantee.
-https://lore.kernel.org/all/4de7b2e3-3f72-41a4-8735-67d91fc74009@mail.kernel.org/T/
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
-v1:
-https://lore.kernel.org/all/7d5b3fcb-ab75-4a18-909f-5ff072e562e1@mail.kernel.org/T/
----
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 299234a5f..47110f506 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -43,12 +43,26 @@ static struct static_key_false taprio_have_working_mqprio;
- #define TAPRIO_SUPPORTED_FLAGS \
- 	(TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST | TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD)
- #define TAPRIO_FLAGS_INVALID U32_MAX
-+
-+static inline bool taprio_is_timer_driven(u32 flags)
-+{
-+	return !TXTIME_ASSIST_IS_ENABLED(flags) &&
-+	       !FULL_OFFLOAD_IS_ENABLED(flags);
-+}
-+
- /* Minimum value for picos_per_byte to ensure non-zero duration
-  * for minimum-sized Ethernet frames (ETH_ZLEN = 60).
-  * 60 * 17 > PSEC_PER_NSEC (1000)
-  */
- #define TAPRIO_PICOS_PER_BYTE_MIN 17
- 
-+/* Nominal callback-rate policy for timer-driven mode to prevent
-+ * hrtimer interrupt storms (100 us floor corresponds to at most
-+ * 10,000 timer interrupts per second). This is a nominal callback-rate
-+ * policy rather than an absolute CPU-safety guarantee.
-+ */
-+#define TAPRIO_MIN_INTERVAL (100 * NSEC_PER_USEC)
-+
- struct sched_entry {
- 	/* Durations between this GCL entry and the GCL entry where the
- 	 * respective traffic class gate closes
-@@ -1041,6 +1055,9 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
- 	int min_duration = length_to_duration(q, ETH_ZLEN);
- 	u32 interval = 0;
- 
-+	if (taprio_is_timer_driven(q->flags))
-+		min_duration = max_t(int, min_duration, TAPRIO_MIN_INTERVAL);
-+
- 	if (tb[TCA_TAPRIO_SCHED_ENTRY_CMD])
- 		entry->command = nla_get_u8(
- 			tb[TCA_TAPRIO_SCHED_ENTRY_CMD]);
-@@ -1129,6 +1146,8 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
- 				 struct sched_gate_list *new,
- 				 struct netlink_ext_ack *extack)
- {
-+	struct sched_entry *entry;
-+	ktime_t cycle = 0;
- 	int err = 0;
- 
- 	if (tb[TCA_TAPRIO_ATTR_SCHED_SINGLE_ENTRY]) {
-@@ -1151,13 +1170,10 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
- 	if (err < 0)
- 		return err;
- 
--	if (!new->cycle_time) {
--		struct sched_entry *entry;
--		ktime_t cycle = 0;
--
--		list_for_each_entry(entry, &new->entries, list)
--			cycle = ktime_add_ns(cycle, entry->interval);
-+	list_for_each_entry(entry, &new->entries, list)
-+		cycle = ktime_add_ns(cycle, entry->interval);
- 
-+	if (!new->cycle_time) {
- 		if (cycle < 0 || cycle > INT_MAX) {
- 			NL_SET_ERR_MSG(extack, "'cycle_time' is too big");
- 			return -EINVAL;
-@@ -1166,9 +1182,16 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
- 		new->cycle_time = cycle;
- 	}
- 
--	if (new->cycle_time < new->num_entries * length_to_duration(q, ETH_ZLEN)) {
--		NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
--		return -EINVAL;
-+	if (taprio_is_timer_driven(q->flags)) {
-+		if (new->cycle_time < cycle) {
-+			NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
-+			return -EINVAL;
-+		}
-+	} else {
-+		if (new->cycle_time < new->num_entries * length_to_duration(q, ETH_ZLEN)) {
-+			NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
-+			return -EINVAL;
-+		}
- 	}
- 
- 	taprio_calculate_gate_durations(q, new);
-@@ -1274,7 +1297,7 @@ static void taprio_start_sched(struct Qdisc *sch,
- 	struct taprio_sched *q = qdisc_priv(sch);
- 	ktime_t expires;
- 
--	if (FULL_OFFLOAD_IS_ENABLED(q->flags))
-+	if (!taprio_is_timer_driven(q->flags))
- 		return;
- 
- 	expires = hrtimer_get_expires(&q->advance_timer);
-@@ -1287,7 +1310,7 @@ static void taprio_start_sched(struct Qdisc *sch,
- 	 */
- 	start = min_t(ktime_t, start, expires);
- 
--	hrtimer_start(&q->advance_timer, start, HRTIMER_MODE_ABS);
-+	hrtimer_start(&q->advance_timer, start, HRTIMER_MODE_ABS_SOFT);
- }
- 
- static void taprio_set_picos_per_byte(struct net_device *dev,
-@@ -1946,10 +1969,9 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 			   nla_get_u32(tb[TCA_TAPRIO_ATTR_TXTIME_DELAY]));
- 	}
- 
--	if (!TXTIME_ASSIST_IS_ENABLED(q->flags) &&
--	    !FULL_OFFLOAD_IS_ENABLED(q->flags) &&
-+	if (taprio_is_timer_driven(q->flags) &&
- 	    !hrtimer_active(&q->advance_timer)) {
--		hrtimer_setup(&q->advance_timer, advance_sched, q->clockid, HRTIMER_MODE_ABS);
-+		hrtimer_setup(&q->advance_timer, advance_sched, q->clockid, HRTIMER_MODE_ABS_SOFT);
- 	}
- 
- 	err = taprio_get_start_time(sch, new_admin, &start);
-@@ -2072,7 +2094,7 @@ static int taprio_init(struct Qdisc *sch, struct nlattr *opt,
- 
- 	spin_lock_init(&q->current_entry_lock);
- 
--	hrtimer_setup(&q->advance_timer, advance_sched, CLOCK_TAI, HRTIMER_MODE_ABS);
-+	hrtimer_setup(&q->advance_timer, advance_sched, CLOCK_TAI, HRTIMER_MODE_ABS_SOFT);
- 
- 	q->root = sch;
- 
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
 
+The email will later be sent to:
+[a.hindborg@kernel.org axboe@kernel.dk bvanassche@acm.org gary@garyguo.net hch@lst.de linux-block@vger.kernel.org nilay@linux.ibm.com ojeda@kernel.org penguin-kernel@i-love.sakura.ne.jp royenheart@gmail.com sunke@kylinos.cn]
 
-base-commit: a13c140cc289c0b7b3770bce5b3ad42ab35074aa
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+If the report looks fine to you, reply with:
+#syz upstream
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+If the report is a false positive, reply with
+#syz invalid
+
