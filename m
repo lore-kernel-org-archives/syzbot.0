@@ -1,82 +1,78 @@
-Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E03143A7FB
-	for <syzbot@lists.linux.dev>; Sun, 20 Sep 2026 12:35:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C59B53DB964
+	for <syzbot@lists.linux.dev>; Sun, 20 Sep 2026 19:02:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789907714; cv=none; b=GKVXte/G2s/5Zz7nI/JHkhRRL7D7Nv7M9TYim7+V3jNzKytguIS1GGp30VhoWNHY8X0WqPqhGoIrb0i1N+S736p8bK4obSRL2ePJPvjSPjMqsp/citCJJmiTD+QgumO3WGuE0jlaA2WuL6DtJ165Iqv2WIdP4eg/2lel+KcAeqs=
+	t=1789930943; cv=none; b=kkKVf7vNBvkXXQYPWtwE/tk7KQIToh4yBa150gw4/lo21F8ye1okj5riYclrSBSL5Hm3lhJM6OX58kJDJlR/qIk5DUYPzT25pDR2qqVJaN5WBp+WyN0cdm4iZfpziQi8JZEl8XWKtNLyp/RLuk+tO+B+nzhqoZ0NstF4zEw3AFE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789907714; c=relaxed/simple;
-	bh=6krTSyy2BJMWzJj7pqOruZeNMVY5gkt6/KYk2hluBs8=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=gt704sotSkC9s+acVoXoN5dur2y3B0jkJmOY7L/aNXmtTq+uC8xQUkcaJnsTOKaSpA1mzWqvnBpPa0JxAGVeCcQBfEgY4tR7HnWJeEELHNK+LJuP8F29GE3BINgTeGr0xNjeIncfZAvM4SOeHX8Kyd803rL3bCeCume6KLPIW0s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.72
+	s=arc-20240116; t=1789930943; c=relaxed/simple;
+	bh=cb9nwWChm8/eYN3tkr3X7cpHiNjzlGuwFR+oIS5l/Fg=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=tBNFCxPerkJjycymQuHYE/z8/C37Zqmy06YM5kT62bf1iADIYgRIsravNaFcfi26pNdFmlHJ6Q90YhsyC8+q8VwMXYLWVhB+onWufacP5K0qWzEy0HkVSFhzNicslcIa+afvl+ZVGfKyJdA68yJndjcaK6PIGsKSvihAxVL5VIA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-482966c4f4fso5020035fac.1
-        for <syzbot@lists.linux.dev>; Sun, 20 Sep 2026 05:35:01 -0700 (PDT)
+Received: by mail-oo1-f70.google.com with SMTP id 006d021491bc7-6bdc0e8af81so2260647eaf.0
+        for <syzbot@lists.linux.dev>; Sun, 20 Sep 2026 12:02:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789907699; x=1790512499;
+        d=1e100.net; s=20260707; t=1789930939; x=1790535739;
         h=content-type:cc:to:from:subject:message-id:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=6vYeh1t71XOXT2uD26iZSXtrau5cFSa7ZoIXWwl78Ts=;
-        b=LYjsqQqtzGDASmUhVxHVp+rKik2QpC6lWkitc5AnjXy5Qvo60mtLNqp/yiAiZGJMMn
-         UEQm0GSAaOQ2M3QOffy6/WdfCz86NElhjBfDiKOmDjfELtZccxap+AltW/QUwz4VWeaV
-         rr3uBXG79ml0V0bLZ4KS1CcQf4akcLiiJyIrG/c/pSt7nbi+Tztty4nppA75rzQpkWvj
-         hP7wrrYfPM05eBzQKDckCJhtG/s3h0/X/dtdjLsCbJmyJrWbb3YVSL0mw4yJVI+GtDQd
-         oGjnpd2pBk+y4Q4nMae6eStrTIurB1Uh8VEu3vJuOnL1A/2j9rty/v54gxiQ1KWhiL1j
-         g6KA==
-X-Gm-Message-State: AFuF++lclREOy9dPENFopxQdyKUcsb+cArryrL7/4YM1slb47jhYqmBN
-	jCB5N5mIBjmtb8m6mqBLMHiTBtbcOT/b6QLkjiPIWOz6yKksge/Rm7UU+FfR7dIlGWEg7iPMoIf
-	JqkxBYN02p8NAqVa0VhMW8dOoWDaHqgetEp1mN+1d3/LqRSiOTi/mfcPSE/U=
+        bh=Q+0xu47a+46ubO3Uy1XYpJ2sJNFOacUYt4HcSsPcvM4=;
+        b=GyVl/fUfAtdhZAGRnkcZPyR0Fyj+cuLfAJ/pbpXGlN/MoFSHO7eQZFXylsSlLPXNud
+         0xZxQ2QfSt0Dwto/P1Ds+pQq1KodMvGHNh5avEU1a0YilN/82GlMbHwy7OyD9BG6z/Nd
+         n/jUCLgmyWp0BqyHy9nJivDe/XsCp9H7uEnH1v1YLk83zl+WzW3W8SXFPtIkA0CFRDco
+         4SKNm31eVvV7GYC1jGNx4f3z404DLqzGP8xy6hrPIRKoBT8C62uGD/FVMf4+wERS/QPG
+         s/xTXlGykHQUx1HEOjgihFySdZRu3o4Hj8J3a/rq3Krgz3Qevz64KUUX+DmjLmKooEgF
+         pjLA==
+X-Gm-Message-State: AFuF++mKbWgfRsavbVoHqOD9HlJLBRu2Yk+Wiqi/PBYCgYhIcXTMnrWb
+	4ykCrT3kBVGD8PlwtcdjuaMEXzjCso2w0Dpx0+PPUIoJlFkkG3U5XTpp+3ORAC1ewg1b2Sn6E7G
+	62+TPviFkslrOSiLlKGioqVyqIwapVFDTP7Y6+7eQx4MS/oU/Sh6Lpm1IdMc=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:16ab:b0:6b6:aee6:c81f with SMTP id
- 006d021491bc7-6c8ff30277emr9612010eaf.36.1789907699328; Sun, 20 Sep 2026
- 05:34:59 -0700 (PDT)
-Date: Sun, 20 Sep 2026 05:34:59 -0700
+X-Received: by 2002:a05:6820:4b82:b0:6c9:80d8:a1f1 with SMTP id
+ 006d021491bc7-6ca9cb53b91mr7832578eaf.46.1789930938812; Sun, 20 Sep 2026
+ 12:02:18 -0700 (PDT)
+Date: Sun, 20 Sep 2026 12:02:18 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6aafd2f3.3179f8cd.1e36b2.000f.GAE@google.com>
-Subject: [moderation/CI] Re: hfsplus: validate b-tree fork extents at mount
- and inode read
-From: syzbot ci <syzbot+ci64b8b93d66db86d2@syzkaller.appspotmail.com>
+Message-ID: <6ab02dba.3179f8cd.1e36b2.0019.GAE@google.com>
+Subject: [moderation/CI] Re: netfilter: flowtable: generalize pending status bit
+From: syzbot ci <syzbot+cie28f6d81f3375f23@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v6] hfsplus: validate b-tree fork extents at mount and inode read
-https://lore.kernel.org/all/20260918085156.920842-1-ngocthang2710.1999@gmail.com
-* [PATCH v6] hfsplus: validate b-tree fork extents at mount and inode read
+[v1] netfilter: flowtable: generalize pending status bit
+https://lore.kernel.org/all/20260918115317.200054-1-pablo@netfilter.org
+* [PATCH nf] netfilter: flowtable: generalize pending status bit
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/1a9ef6de-01d7-4a6e-a590-94670355d046
+https://ci.syzbot.org/series/30be2eac-83b5-46de-a321-aa13083c3f75
 
 ***
 
 kernel build error
 
-tree:      vfs
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs.git
-base:      33d280b462dfabeae3264b462d4e91339320be00
+tree:      nf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf.git
+base:      ceac0de741bfb47ca255eee075257b3bb31f0651
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/a34c3b73-64be-44d9-b975-48f355468b18/config
+config:    https://ci.syzbot.org/builds/30efdc9e-b622-4b45-90b2-ec79c34439b2/config
 
-fs/hfsplus/inode.c:562:5: error: conflicting types for 'hfsplus_inode_read_fork'
-fs/hfsplus/inode.c:571:11: error: call to undeclared function 'hfsplus_check_fork'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-fs/hfsplus/inode.c:574:10: error: use of undeclared identifier 'HFSPLUS_I_CORRUPT_TREE'
-fs/hfsplus/inode.c:580:33: error: use of undeclared identifier 'HFSPLUS_EXTENT_LAST_IDX'
+net/sched/act_ct.c:292:19: error: use of undeclared identifier 'NF_FLOW_HW_PENDING'; did you mean 'NF_FLOW_PENDING'?
 
 ***
 
@@ -99,7 +95,7 @@ Notes:
 - Arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[frank.li@vivo.com glaubitz@physik.fu-berlin.de linux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org ngocthang2710.1999@gmail.com slava@dubeyko.com syzbot@syzkaller.appspotmail.com]
+[netfilter-devel@vger.kernel.org pablo@netfilter.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
