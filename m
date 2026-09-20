@@ -1,129 +1,122 @@
-Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com [209.85.160.70])
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B28436C9C2
-	for <syzbot@lists.linux.dev>; Sat, 19 Sep 2026 02:48:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 962FB2E266C
+	for <syzbot@lists.linux.dev>; Sun, 20 Sep 2026 05:12:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789786113; cv=none; b=kgCH050YLy2c/NfzGQ6p6L5BDl2U0UL2SYqN/Nx0i+F3Pf9kRBSkCKL4clTYxd1PC/pVQsi8rb+0rimwLcir8l5dT9TX8u1BhsQtOS+EWwlZfceG4ueGFMA8aZukyYiDOpyfLxQ9WxTKRag3fL8AF3HVnrMDVib0vK6Xgch1CvI=
+	t=1789881159; cv=none; b=qbtfEsATi9i6gmL5zMJ2F5sH1ARUdD8xH1Av+utzipeyjh4bIND5bIUFFqdWa96jbbd4ditcUySM9/oR3zXv5JFttYDsErTk0XIj4c9wuFULfdVRIyJAXKjS+to2aZhlHSXEdPnwEtZT+JSB6wgSaNx7w96yYwTanEVfxEcuePY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789786113; c=relaxed/simple;
-	bh=nh+Ydm3rUWMGSsSWqSF7Ee4XN4kQwm5jHOh5Y4J3Xb0=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=ZihTyFKwH2dZhAq2qZZndtb6KS50YLyOC1eN/vsyUfLOGjan1tFETPIb46vk5xqrN3DQYQRbeSwpwjNHmlDGTKDbiLgvIV0FzUC8tPTL6Pe/FdpGmgEA7XcJtRjtMYrzywnlKRCstevZWUxh8wwPWviM4fkqwEyy26/xeuzPNfU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.70
+	s=arc-20240116; t=1789881159; c=relaxed/simple;
+	bh=XH0CBgsPyHRZWeeFrHkpw1/1E66HJ38Om17b+yZ261Q=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=JBD/U1krf4Y/ecp+wNvdsxyKm80aoaqkcYNQyvico+tl8P2jZFlfuv1M1RtrrJYIdIVunSg7s+NxswZW3fOK54eRZPmQpQV9dOOQLL+IWMnUwu+cEV6ikE+sL7vCIFeHYOedT9nUa+sPe+a5Uo1URyDzFl423y5t1DAvFJqPRYE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-486a057f5b9so1606016fac.3
-        for <syzbot@lists.linux.dev>; Fri, 18 Sep 2026 19:48:28 -0700 (PDT)
+Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-8048c813cceso3390839a34.1
+        for <syzbot@lists.linux.dev>; Sat, 19 Sep 2026 22:12:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789786108; x=1790390908;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=4PylnLHodzqyTo55OT/B54tvdw5lHhxC53KAGCgawlY=;
-        b=rwh/aYOooCqF4qCX3Fg4fbJKUzApmIYAdlZkbAEAWGT3tp0UxIn+a5GhoDFA99i+1Q
-         dKo0aYuSWGeKA81WOZI+PldAvpgkW55pM5k/SoeRwxO45rdQU5ZPM0ap970uzfuIrDBp
-         uEeUh0naIGG3fSOMlMwt5ap9eJmSfcBZuySMu0FFWVVv97G7wFfvFRzygtbc4ZOPYWBX
-         w3b7ckbigIty+qCBRSY7oUxEw1OePcm9s0/e1OC1lff9FN3U7aCh0Y3W7b8dAe5qPVnn
-         QftDP+JqyDLQyrSEMLojuABnpV7vDWi9DHabS2hQhjhaDkh4C60PEbdcGc+6c5fHzZKD
-         onsg==
-X-Gm-Message-State: AFuF++nMe3TXLtfw3+fPC0cx1l5y+t5zxtAqVFwvENXm5wa6ipDPdsEH
-	QC+oWh18nsUuUdUiGxmF09x4q/yN6TODshDiGgPx5m20cAPJjKFEcDo8skoQXeeeRGYPxRAGoJ8
-	8hD8XHjmaytIplP8vztGNtNSvUnNGQ93CHhhcxXOrifTGsqPCWchg0v6qZv8=
+        d=1e100.net; s=20260707; t=1789881156; x=1790485956;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=6MihNCZUKTYyS8yT6JT8yocNZMY9/IyNlUU4OFWlGJs=;
+        b=pR3Y5+ZHJjzi13NQzjSULO+b5IaPbzMi+wKKn/PWqlZzQs4QqVeL2nJHUtuM4z2CY0
+         gP4Rly07woenHZPTDzGwbAFwHjGUBjtGCPHcnVfaJR3dM+4LDAZSOx+Ogq5yn4E/9nq8
+         Z4jp5BgYeiNemVgmt248mxn9rO6MYT/Ecruiwvzk6XZO5hEXPjB+ttiqMuIvquKTUdX1
+         P969o+V9beuqB2aAiPmFhoJMLgvdsbuYvHMUzXaZip280Lv7rsUsuPSfHaRG/wB6NZAy
+         Y2bom7hz3ydNqLWnUcuxMU/RyPmqhw+ronI9C88EgajFPNrj52MghUPnqqkyQ+7o8wVJ
+         pVAw==
+X-Gm-Message-State: AFuF++kNG2TFnlHynvgWDRegwucWw2AfIaNHnIFcd2s4FIzJ2olZEpPD
+	tP0njyWG0GoPYTAsuj8ZQHuN2jShJia6LF+Bb0V0fdWWh8upPP0KbPt4ULedFyziDS4JlPq42ip
+	GGiK1Bn/vXqH+yVzsGiqT6Uq4rdzpeq71llWOzDlem1JVmSXe0x2g8lCpjrU=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:609:b0:6cd:3fdc:5ff6 with SMTP id
- 006d021491bc7-6cd3fdc608amr1630467eaf.71.1789786107887; Fri, 18 Sep 2026
- 19:48:27 -0700 (PDT)
-Date: Fri, 18 Sep 2026 19:48:27 -0700
-In-Reply-To: <cover.1789587960.git.bvanassche@acm.org>
+X-Received: by 2002:a05:6820:7092:20b0:6cd:3fec:de82 with SMTP id
+ 006d021491bc7-6cd3fecf3bbmr2586130eaf.88.1789881156487; Sat, 19 Sep 2026
+ 22:12:36 -0700 (PDT)
+Date: Sat, 19 Sep 2026 22:12:36 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6aadf7fb.71f81b7d.15fa6d.0003.GAE@google.com>
-Subject: [syzbot ci] Re: loop: Fix teardown
-From: syzbot ci <syzbot+ci95a1b00e6c96231b@syzkaller.appspotmail.com>
-To: a.hindborg@kernel.org, axboe@kernel.dk, bvanassche@acm.org, 
-	gary@garyguo.net, hch@lst.de, linux-block@vger.kernel.org, 
-	nilay@linux.ibm.com, ojeda@kernel.org, penguin-kernel@i-love.sakura.ne.jp, 
-	royenheart@gmail.com, sunke@kylinos.cn
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <6aaf6b44.3179f8cd.1e36b2.0009.GAE@google.com>
+Subject: [moderation/CI] Re: net: cfg80211: Validate monitor channel set
+ against radio usage
+From: syzbot ci <syzbot+cifdd8742fac68be6d@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] loop: Fix teardown
-https://lore.kernel.org/all/cover.1789587960.git.bvanassche@acm.org
-* [PATCH 1/2] block: Add post_release() operation
-* [PATCH 2/2] loop: Perform __loop_clr_fd() after disk->open_mutex is dropped
+[v1] net: cfg80211: Validate monitor channel set against radio usage
+https://lore.kernel.org/all/20260917221205.3214125-1-roryl@candelatech.com
+* [PATCH wireless-next] net: cfg80211: Validate monitor channel set against radio usage
 
 and found the following issue:
-general protection fault in lo_post_release
+UBSAN: shift-out-of-bounds in cfg80211_set_monitor_channel
 
 Full report is available here:
-https://ci.syzbot.org/series/81bfb244-11b0-4b8a-aa02-a212681ff0af
+https://ci.syzbot.org/series/096ed229-0401-4402-9865-92c5b6d81b57
 
 ***
 
-general protection fault in lo_post_release
+UBSAN: shift-out-of-bounds in cfg80211_set_monitor_channel
 
-tree:      axboe
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
-base:      2dd9768a37dbb99398c5e332485dbb107ac397c8
+tree:      wireless-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/wireless/wireless-next.git
+base:      3b35f726c20d138fafa154182ee926a419306269
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/e21a78bb-e498-4518-8734-d31ae58a2538/config
+config:    https://ci.syzbot.org/builds/7147a923-683e-41dc-b623-05cfe4ac2a30/config
+syz repro: https://ci.syzbot.org/findings/525583ec-5ed7-4adc-aeab-6eb3b293f9ee/syz_repro
 
-Oops: general protection fault, probably for non-canonical address 0xdffffc000000000a: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000050-0x0000000000000057]
-CPU: 0 UID: 0 PID: 26297 Comm: udevd Not tainted syzkaller #0 PREEMPT(full) 
+------------[ cut here ]------------
+UBSAN: shift-out-of-bounds in net/wireless/chan.c:1831:49
+shift exponent -22 is negative
+CPU: 1 UID: 0 PID: 5855 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:lo_post_release+0x498/0x7f0
-Code: 4c 89 ff e8 7a 73 f9 fb bf e0 01 00 00 49 03 3f be 02 00 00 00 e8 18 05 9e 05 48 8b 44 24 10 4c 8d 60 50 4c 89 e0 48 c1 e8 03 <42> 80 3c 30 00 74 08 4c 89 e7 e8 49 73 f9 fb 41 bf e8 00 00 00 4d
-RSP: 0018:ffffc90003d6fb60 EFLAGS: 00010206
-RAX: 000000000000000a RBX: ffff8881699b3000 RCX: 0000000000000046
-RDX: 0000000000000006 RSI: ffffffff8e414976 RDI: ffffffff8c6da780
-RBP: ffffc90003d6fd08 R08: ffffffff907a477f R09: 1ffffffff20f48ef
-R10: dffffc0000000000 R11: fffffbfff20f48f0 R12: 0000000000000050
-R13: 1ffff920007adf74 R14: dffffc0000000000 R15: ffff888169a02080
-FS:  00007fa1afb46c80(0000) GS:ffff88818d6ce000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f0d423a8440 CR3: 00000001bee1a000 CR4: 00000000000006f0
 Call Trace:
  <TASK>
- bdev_release+0x59a/0x6b0
- blkdev_release+0x15/0x20
- __fput+0x418/0xa50
- fput_close_sync+0x11f/0x240
- __x64_sys_close+0x7e/0x110
- do_syscall_64+0x166/0x520
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
+ __ubsan_handle_shift_out_of_bounds+0x36d/0x400 lib/ubsan.c:494
+ cfg80211_can_set_monitor_channel net/wireless/chan.c:1831 [inline]
+ cfg80211_set_monitor_channel+0x38a/0x8d0 net/wireless/chan.c:1844
+ __nl80211_set_channel+0x340/0x990 net/wireless/nl80211.c:4203
+ nl80211_set_wiphy+0x127c/0x3050 net/wireless/nl80211.c:-1
+ genl_family_rcv_msg_doit+0x233/0x340 net/netlink/genetlink.c:1114
+ genl_family_rcv_msg net/netlink/genetlink.c:1194 [inline]
+ genl_rcv_msg+0x614/0x7a0 net/netlink/genetlink.c:1209
+ netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2556
+ genl_rcv+0x28/0x40 net/netlink/genetlink.c:1218
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x7bd/0x940 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+ sock_sendmsg_nosec+0x13a/0x180 net/socket.c:800
+ __sock_sendmsg net/socket.c:815 [inline]
+ ____sys_sendmsg+0x54e/0x850 net/socket.c:2713
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2767
+ __sys_sendmsg net/socket.c:2799 [inline]
+ __do_sys_sendmsg net/socket.c:2804 [inline]
+ __se_sys_sendmsg net/socket.c:2802 [inline]
+ __x64_sys_sendmsg+0x1b1/0x290 net/socket.c:2802
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fa1af7170a8
-Code: 48 8b 05 83 9d 0d 00 64 c7 00 16 00 00 00 83 c8 ff 48 83 c4 20 5b c3 64 8b 04 25 18 00 00 00 85 c0 75 20 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 76 5b 48 8b 15 51 9d 0d 00 f7 d8 64 89 02 48 83
-RSP: 002b:00007ffeef68bbb8 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
-RAX: ffffffffffffffda RBX: 00007fa1afb46ae0 RCX: 00007fa1af7170a8
-RDX: 0000559097caaeb5 RSI: 00007ffeef68b3b8 RDI: 0000000000000008
-RBP: 00005595ce9a3e90 R08: 0000000000000006 R09: a8cc15e7d6acaf3b
-R10: 000000000000010f R11: 0000000000000246 R12: 0000000000000002
-R13: 00005595ce999920 R14: 0000000000000008 R15: 00005595ce964910
+RIP: 0033:0x7f7e3a59e159
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f7e3b3d5028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f7e3a825fa0 RCX: 00007f7e3a59e159
+RDX: 0000000004040000 RSI: 0000200000000040 RDI: 0000000000000003
+RBP: 00007f7e3a63506b R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f7e3a826038 R14: 00007f7e3a825fa0 R15: 00007ffd12ef16a8
  </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:lo_post_release+0x498/0x7f0
-Code: 4c 89 ff e8 7a 73 f9 fb bf e0 01 00 00 49 03 3f be 02 00 00 00 e8 18 05 9e 05 48 8b 44 24 10 4c 8d 60 50 4c 89 e0 48 c1 e8 03 <42> 80 3c 30 00 74 08 4c 89 e7 e8 49 73 f9 fb 41 bf e8 00 00 00 4d
-RSP: 0018:ffffc90003d6fb60 EFLAGS: 00010206
-RAX: 000000000000000a RBX: ffff8881699b3000 RCX: 0000000000000046
-RDX: 0000000000000006 RSI: ffffffff8e414976 RDI: ffffffff8c6da780
-RBP: ffffc90003d6fd08 R08: ffffffff907a477f R09: 1ffffffff20f48ef
-R10: dffffc0000000000 R11: fffffbfff20f48f0 R12: 0000000000000050
-R13: 1ffff920007adf74 R14: dffffc0000000000 R15: ffff888169a02080
-FS:  00007fa1afb46c80(0000) GS:ffff88818d6ce000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055556cac6a68 CR3: 00000001bee1a000 CR4: 00000000000006f0
+---[ end trace ]---
 
 
 ***
@@ -145,3 +138,13 @@ Notes:
 - To test a new version of the whole series, please send it directly
   to syzbot@lists.linux.dev.
 - Arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[dylan.eskew@candelatech.com johannes@sipsolutions.net linux-wireless@vger.kernel.org roryl@candelatech.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
