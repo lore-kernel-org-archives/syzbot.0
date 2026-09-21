@@ -1,200 +1,235 @@
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 280D83358B9
-	for <syzbot@lists.linux.dev>; Mon, 21 Sep 2026 03:47:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789962468; cv=none; b=ThBmKLPrtaizBCHhkIiAmDl9jhrTn76Yd5myqLVOkYcn3aHTLP+YnzarsymU32cen6Z7bWf/D5bAVl2/7G90/I1u56F8ZbvA8R4AetMhuxyxAE5ktn9s2xr1PZ0jGOo87PtCEmOaHTAdxuikgQXIRf4pkXaXx2dFmUYo3yDKjDU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789962468; c=relaxed/simple;
-	bh=3qnQenjR0UcRC490s3o1IIUTnA5EqiUyNeWNn7jIRxo=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=TlOLdPJoEOynhjTgOzqwD6QTEjaRfSIVtF6eupJKhosfemsRE0MqNW3kitIz0MOnSkitQCjtVwdc6us0LccI8x2rZCfD5oBYCED/mbguJ1l/qhKUIsG0bUjB1fxdJcD6GPk9hUgh8FZA2QjHslmNFUSSYRbVjaVlNbF/hFEjZA0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4c467e19391so4631392b6e.3
-        for <syzbot@lists.linux.dev>; Sun, 20 Sep 2026 20:47:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789962466; x=1790567266;
-        h=content-type:cc:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=8zrkjnG7tujc9aXaI9uEMtCUqj4PEonowP/BmyOuejw=;
-        b=Y8mdzHBi+f3wBHDVqpDw/L2IOuQDr5OdP/e1DXV7QBlbDLcRUQNPHFJEcnM5NRBo0t
-         YKe4EVGMukCSqI3vJCHtdc23/fNoVLb/CrRUjWrIChZJ5krgtl2y2j6dPBXQ80H3uOTP
-         Z2Tieg2eNwvVKU3VhLepvLn6O/YaAi/lA59GDq+yyHDYNtXd0d7/6RSGQeLTjvAZnmSc
-         bvnJgqoUyO6PdlqygaqCYDw961/yAQ45VZIGBLTCFcd5XNrHH8vKtjZfYdjmJSOkdpQw
-         YVy+dIt4QI+5pHoHccqWqXVqd/mXGVkMk7SyXGbdWHjOXbRX8erdKPc2MzfxD+9FLynX
-         nvdQ==
-X-Gm-Message-State: AFuF++nwC3AK25OW0a7huBYJ5nFHnofeK32CXuVRoYm4UhHkMU2YwmkX
-	JQO1pKxgGic1/DCgYbuTtwe9eYQskRI32LBAQqhstSoWgajyrcG7oWYX3IgNJCk3cpziwY2E7O8
-	NlnSNjGpNZEQ5V6xQYvMLmBF1BwYfLhkSuvK7NKRB2eXppMpgtm2i48vNxJg=
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FFFE3BE647
+	for <syzbot@lists.linux.dev>; Mon, 21 Sep 2026 08:01:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789977683; cv=pass; b=QvAbe6GLCnIU/fbiLvJnR5xreFBCuMlKXUHGtpLVaWSP4rO0+vHFgiibePUdckEZ8Ac/onNg/YAK93oFKDP6nHQ0708jzWeClgMSVbNvDI46Z6Yp5jiKYFDwFxDs/4ECbDwggWQPLUEp+XIE7ymVFeriE1qOnjZIUGvKxvQwuKg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789977683; c=relaxed/simple;
+	bh=RN/D42EWk9WFhL+pB3XQYeVjVf7hzSytYfW3oUqKqlo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lVN6xYuTPplaIkK4wwvKrgHVUZmMbW8dKeRr4GN6CfDfWNlW3ph3a7u1gYDxwGIqntKPG4UNMrSeUzr29YiMIQ/iKNYMPLh1drdcf+t8Z7uQuLRM1kHhPEw6166xr+JFIlaNUu9wZt1ODddOQWBJpqL6ARjb/rvaw8AyHNmDB6w=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=YcyKKuVw; arc=pass smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="YcyKKuVw"
+Received: by smtp.kernel.org (Postfix)
+	id E1E551F00893; Mon, 21 Sep 2026 08:01:20 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=217.74.67.63
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1789977680;
+	b=dzgjQu0Rg4SO/SiH1qZFJiXfPNTahYXLgRrrAhkmuLn4ltKAfU8M9ZoDvJHDkZvJAMpf
+	 ZJiMTsRW87bu8P1r+lTN0HHpk2Gs/ii9KbpqJNB0S6gVpv3iGbcfSo2Q8BLDCRonrFGzS
+	 tz6Oi3fjFqD4ZGszfEGzT/mzb9L/47BmoSjRnkuGuJYdWNPjy+VivI/b5BNc4Z6ucYfDH
+	 MQ542eXRwRJYjras2PcFD4wQAy9uPaPfq+p4AVaxcfC9F972gG9dG5XzXKB5B+35k/dMG
+	 aop6XEiRRz0WWjc4kxiaDJnb6AFqkZwp0CsCE3NSp0le/fQqfDvmTweHS9YgpWF3/fg==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1789977680;
+	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 DKIM-Signature;
+	bh=HrgTW7FHmQo3G5WSFB+5FOCpaTdYtlORvOx7OaZv8x8=;
+	b=pJvRqwyjgtdxpjhrUNvTxBRWuFUDV5fXToHsJU2M0Pizb08MGi1l7JYDnH9XfdWXMZWL
+	 g3tx+6fZ/fPOP8Bulitsr1aMjkmdTNBJlfdbCzzmrK2zi4+BZqm0oIvDTKkm5vwcgHPxv
+	 RT6RjIPbQ2za8VqkKt7JR6g76hL2k1H2RszSCyeJNIZMlBMNS6UkeI3mqudCngyghnWyC
+	 NiPdChsCxik7AaVlYA8bZPDWyRDNwBHPbT+FhmusYM9OdrbWv6imdmhtxCuukk3tC+kBv
+	 el9kPhp+S/ubgGUr7TL8Eocc+CAXDzP1u9X1Ck+IyELZvm4yXaXwAZi/nHJHEU7XRiw==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=YcyKKuVw;
+	dmarc=pass header.from=poczta.fm;
+	spf=pass smtp.mailfrom=poczta.fm;
+	arc=none smtp.remote-ip=217.74.67.63
+Received: from smtpo63.interia.pl (smtpo63.interia.pl [217.74.67.63])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id A16791F000FF
+	for <syzbot@kernel.org>; Mon, 21 Sep 2026 08:01:18 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (1024-bit key, unprotected) header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=YcyKKuVw
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org A16791F000FF
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Mon, 21 Sep 2026 10:01:09 +0200 (CEST)
+Date: Mon, 21 Sep 2026 10:01:07 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC v3] Input: yealink - abort URB submission on fatal
+ errors
+Message-ID: <arDkQzftGxevJ02n@nr200>
+References: <2b0508e9-fe78-40dd-a290-7156817e394c@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:2212:b0:4b9:e6ab:d083 with SMTP id
- 5614622812f47-4ccf978b902mr10041906b6e.35.1789962466088; Sun, 20 Sep 2026
- 20:47:46 -0700 (PDT)
-Date: Sun, 20 Sep 2026 20:47:46 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ab0a8e2.3179f8cd.1e36b2.001c.GAE@google.com>
-Subject: [moderation/CI] Re: net: cfg80211: Validate monitor channel set
- against radio usage
-From: syzbot ci <syzbot+ci95b1659da90f9918@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2b0508e9-fe78-40dd-a290-7156817e394c@mail.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1789977670; bh=HrgTW7FHmQo3G5WSFB+5FOCpaTdYtlORvOx7OaZv8x8=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=YcyKKuVwQMuei7o5zh9WyNXkCzRgCiX8ml+cHZd8Iml0eXckAAeu/eSTXy5MAAi9c
+	 Bh7+LbM7gKsb4MRCx0yb1lO/ZOeYMP+UXuVJFc/2cIFYrA61q6R94d7nte52iu5VXw
+	 Rc0ifT7CJuydMQahudOwpyDR8SfdkwnbtXIT7LD4=
 
-syzbot ci has tested the following series
+On wrz 18, 2026 16:55, syzbot wrote:
+> The yealink driver uses two URBs (interrupt and control) to communicate
+> with the device. When an URB completes with an error status (such as
+> -EPROTO), the completion handlers (urb_irq_callback and urb_ctl_callback)
+> log the error but do not abort. Instead, they proceed to process the
+> potentially invalid data and unconditionally resubmit the URB.
+> 
+> Because control URBs are not rate-limited by the USB core, resubmitting a
+> failing control URB in a tight loop floods the console with error messages
+> and keeps the CPU completely busy in the softirq context. This eventually
+> triggers an RCU preempt stall:
+> 
+> yealink 3-1:36.0: unexpected response 0
+> yealink 3-1:36.0: urb_ctl_callback - urb status -71
+> rcu: INFO: rcu_preempt self-detected stall on CPU
+> Call Trace:
+>  __console_flush_and_unlock kernel/printk/printk.c:3373 [inline]
+>  console_unlock+0xd1/0x1c0 kernel/printk/printk.c:3413
+>  dev_vprintk_emit+0x338/0x400 drivers/base/core.c:4996
+>  dev_printk_emit+0xee/0x140 drivers/base/core.c:5007
+>  usb_generic_driver_probe+0x10b/0x150 drivers/usb/core/generic.c:252
+>  ...
+>  hub_event+0x28e8/0x4d30 drivers/usb/core/hub.c:5953
+>  worker_thread+0x92d/0xe10 kernel/workqueue.c:3486
+>  kthread+0x388/0x470 kernel/kthread.c:436
+> 
+> Fix this by checking the URB status for fatal errors (-ECONNRESET, -ENOENT,
+> -ESHUTDOWN, -ENODEV) in both urb_irq_callback() and urb_ctl_callback(). If
+> a fatal error is detected, the callback now returns early, breaking the
+> resubmission loop. For other non-zero statuses, skip processing the
+> response data and jump directly to resubmission. Additionally, use
+> dev_err_ratelimited() instead of dev_err() to prevent flooding the console
+> and triggering an RCU stall.
+> 
+> Fixes: aca951a22a1d ("[PATCH] input-driver-yealink-P1K-usb-phone")
+> Assisted-by: Gemini:gemini-3.8-flash syzbot
+> Reported-by: syzbot+78e2288f58b881ed3c45@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=78e2288f58b881ed3c45
+> Link: https://syzkaller.appspot.com/ai_job?id=24a48a3f-a005-45ce-9020-4a27b38d9683
+> To: "Henk Vergonet" <Henk.Vergonet@gmail.com>
+> To: "Dmitry Torokhov" <dmitry.torokhov@gmail.com>
+> To: <linux-input@vger.kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+> 
+> ---
+> v3:
+> - Only abort URB submission on fatal errors (-ECONNRESET, -ENOENT, -ESHUTDOWN, -ENODEV).
+> - Skip processing packet data and jump directly to resubmission on non-fatal errors.
+> - Use dev_err_ratelimited() instead of dev_err() to prevent console flooding.
+> - Drop is_fatal_error() helper in favor of switch statements.
+> 
+> v2:
+> - Factored out fatal error checks into is_fatal_error() helper
+> https://lore.kernel.org/all/2a0b5e96-dd8a-4ce9-ba3f-dd9efa26275d@mail.kernel.org/T/
+> 
+> v1:
+> https://lore.kernel.org/all/57cf484d-3235-473f-a61d-570585626176@mail.kernel.org/T/
+> ---
+> diff --git a/drivers/input/misc/yealink.c b/drivers/input/misc/yealink.c
+> index 560f895a0..c67c619db 100644
+> --- a/drivers/input/misc/yealink.c
+> +++ b/drivers/input/misc/yealink.c
+> @@ -405,9 +405,19 @@ static void urb_irq_callback(struct urb *urb)
+>  	struct yealink_dev *yld = urb->context;
+>  	int ret, status = urb->status;
+>  
+> -	if (status)
+> -		dev_err(&yld->intf->dev, "%s - urb status %d\n",
+> -			__func__, status);
+> +	switch (status) {
+> +	case 0:
+> +		break;
+> +	case -ECONNRESET:
+> +	case -ENOENT:
+> +	case -ESHUTDOWN:
+> +	case -ENODEV:
+> +		return;
+> +	default:
+> +		dev_err_ratelimited(&yld->intf->dev, "%s - urb status %d\n",
+> +				    __func__, status);
+> +		goto resubmit;
+> +	}
+>  
+>  	switch (yld->irq_data->cmd) {
+>  	case CMD_KEYPRESS:
+> @@ -429,12 +439,13 @@ static void urb_irq_callback(struct urb *urb)
+>  
+>  	yealink_do_idle_tasks(yld);
+>  
+> +resubmit:
+>  	if (!yld->shutdown) {
+>  		ret = usb_submit_urb(yld->urb_ctl, GFP_ATOMIC);
+>  		if (ret && ret != -EPERM)
+> -			dev_err(&yld->intf->dev,
+> -				"%s - usb_submit_urb failed %d\n",
+> -				__func__, ret);
+> +			dev_err_ratelimited(&yld->intf->dev,
+> +					    "%s - usb_submit_urb failed %d\n",
+> +					    __func__, ret);
+>  	}
+>  }
+>  
+> @@ -443,9 +454,19 @@ static void urb_ctl_callback(struct urb *urb)
+>  	struct yealink_dev *yld = urb->context;
+>  	int ret = 0, status = urb->status;
+>  
+> -	if (status)
+> -		dev_err(&yld->intf->dev, "%s - urb status %d\n",
+> -			__func__, status);
+> +	switch (status) {
+> +	case 0:
+> +		break;
+> +	case -ECONNRESET:
+> +	case -ENOENT:
+> +	case -ESHUTDOWN:
+> +	case -ENODEV:
+> +		return;
+> +	default:
+> +		dev_err_ratelimited(&yld->intf->dev, "%s - urb status %d\n",
+> +				    __func__, status);
+> +		goto resubmit;
 
-[v1] net: cfg80211: Validate monitor channel set against radio usage
-https://lore.kernel.org/all/20260918170746.3824-1-roryl@candelatech.com
-* [PATCH wireless-next] net: cfg80211: Validate monitor channel set against radio usage
+I do not like this jump to inside a default case. Maybe just check for yld->shutdown and do
+usb_submit_urb here and then do goto to lines below to check ret value?
 
-and found the following issues:
-* UBSAN: shift-out-of-bounds in cfg80211_set_monitor_channel
-* UBSAN: shift-out-of-bounds in corrupted
+> +	}
+>  
+>  	switch (yld->ctl_data->cmd) {
+>  	case CMD_KEYPRESS:
+> @@ -457,14 +478,16 @@ static void urb_ctl_callback(struct urb *urb)
+>  	default:
+>  		/* send new command */
+>  		yealink_do_idle_tasks(yld);
+> +resubmit:
+>  		if (!yld->shutdown)
+>  			ret = usb_submit_urb(yld->urb_ctl, GFP_ATOMIC);
+>  		break;
+>  	}
+>  
+>  	if (ret && ret != -EPERM)
+> -		dev_err(&yld->intf->dev, "%s - usb_submit_urb failed %d\n",
+> -			__func__, ret);
+> +		dev_err_ratelimited(&yld->intf->dev,
+> +				    "%s - usb_submit_urb failed %d\n",
+> +				    __func__, ret);
+>  }
+>  
+>  /*******************************************************************************
+> 
+> 
+> base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
 
-Full report is available here:
-https://ci.syzbot.org/series/8cc9e8b7-7ee7-4960-86f8-d3d32e74b751
-
-***
-
-UBSAN: shift-out-of-bounds in cfg80211_set_monitor_channel
-
-tree:      wireless-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/wireless/wireless-next.git
-base:      3b35f726c20d138fafa154182ee926a419306269
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/007f6283-0b6e-4ff9-84e0-69128d745e0c/config
-syz repro: https://ci.syzbot.org/findings/ba5a8e20-28a0-4771-b097-95a9703e3244/syz_repro
-
-UBSAN: shift-out-of-bounds in net/wireless/chan.c:1831:49
-shift exponent -22 is negative
-CPU: 0 UID: 0 PID: 5850 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
- __ubsan_handle_shift_out_of_bounds+0x36d/0x400 lib/ubsan.c:494
- cfg80211_can_set_monitor_channel net/wireless/chan.c:1831 [inline]
- cfg80211_set_monitor_channel+0x38a/0x8d0 net/wireless/chan.c:1844
- __nl80211_set_channel+0x340/0x990 net/wireless/nl80211.c:4203
- nl80211_set_wiphy+0x127c/0x3050 net/wireless/nl80211.c:-1
- genl_family_rcv_msg_doit+0x233/0x340 net/netlink/genetlink.c:1114
- genl_family_rcv_msg net/netlink/genetlink.c:1194 [inline]
- genl_rcv_msg+0x614/0x7a0 net/netlink/genetlink.c:1209
- netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2556
- genl_rcv+0x28/0x40 net/netlink/genetlink.c:1218
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x7bd/0x940 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
- sock_sendmsg_nosec+0x13a/0x180 net/socket.c:800
- __sock_sendmsg net/socket.c:815 [inline]
- ____sys_sendmsg+0x54e/0x850 net/socket.c:2713
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2767
- __sys_sendmsg net/socket.c:2799 [inline]
- __do_sys_sendmsg net/socket.c:2804 [inline]
- __se_sys_sendmsg net/socket.c:2802 [inline]
- __x64_sys_sendmsg+0x1b1/0x290 net/socket.c:2802
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fc73059e159
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fc731480028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fc730825fa0 RCX: 00007fc73059e159
-RDX: 0000000004040000 RSI: 0000200000000040 RDI: 0000000000000003
-RBP: 00007fc73063506b R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fc730826038 R14: 00007fc730825fa0 R15: 00007ffd4fd500b8
- </TASK>
----[ end trace ]---
-
-
-***
-
-UBSAN: shift-out-of-bounds in corrupted
-
-tree:      wireless-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/wireless/wireless-next.git
-base:      3b35f726c20d138fafa154182ee926a419306269
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/007f6283-0b6e-4ff9-84e0-69128d745e0c/config
-AI triage: https://ci.syzbot.org/findings/412a77e9-4657-490d-8b72-2bca17c93acf/triage_trajectory
-
-------------[ cut here ]------------
-UBSAN: shift-out-of-bounds in net/wireless/chan.c:1831:49
-shift exponent -22 is negative
-CPU: 0 UID: 0 PID: 6635 Comm: syz.3.380 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150
- ubsan_epilogue+0xa/0x30
- __ubsan_handle_shift_out_of_bounds+0x36d/0x400
- cfg80211_set_monitor_channel+0x38a/0x8d0
- __nl80211_set_channel+0x340/0x990
- nl80211_set_wiphy+0x127c/0x3050
- genl_family_rcv_msg_doit+0x233/0x340
- genl_rcv_msg+0x614/0x7a0
- netlink_rcv_skb+0x226/0x4a0
- genl_rcv+0x28/0x40
- netlink_unicast+0x7bd/0x940
- netlink_sendmsg+0x813/0xb40
- sock_sendmsg_nosec+0x13a/0x180
- ____sys_sendmsg+0x54e/0x850
- ___sys_sendmsg+0x2a5/0x360
- __x64_sys_sendmsg+0x1b1/0x290
- do_syscall_64+0x166/0x520
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fbeb4b9e159
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fbeb5aef028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fbeb4e25fa0 RCX: 00007fbeb4b9e159
-RDX: 0000000004040000 RSI: 0000200000000040 RDI: 0000000000000003
-RBP: 00007fbeb4c3506b R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fbeb4e26038 R14: 00007fbeb4e25fa0 R15: 00007ffe46366df8
- </TASK>
----[ end trace ]---
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
-
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[dylan.eskew@candelatech.com johannes@sipsolutions.net linux-wireless@vger.kernel.org roryl@candelatech.com]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+-- 
+Slawomir Stepien
