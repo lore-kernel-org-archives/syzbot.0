@@ -1,155 +1,266 @@
-Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFA285013D6
-	for <syzbot@lists.linux.dev>; Mon, 21 Sep 2026 19:00:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.225.140
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790017226; cv=pass; b=GCcIUl1Q/164OF1sHCGIFqykptgYnyHzNj1F+DUyeOk56+PfjpJbcKezjmIHNav8EI7bD2FjlpsyUmmTa8u5udRQLjefztU0hCgdWtZtIAa1tw+bAnng/VvMh5LbG4COCuEafRZaEVJ2jYEbIz2bXACrMW3b47baB9D3GUZ90Ro=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790017226; c=relaxed/simple;
-	bh=FeFO3AREa1i0Oy9rChHlku4bTopkweu2G7chupZtHVk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=r9+6hwRqMtm3nZ8dPbS6cbAeqjXH/gTH4HR5KdC5MmkW9ImrvgzeMIIsa8bpYMnvTthi5oOQEFDDpUXUkdX45K1iwjH5NvSTO+n/27SpVMM1uMNP5NWDdVRYU9XgQzxB1SlLSpME6ngoABKVnB8NGUQe1/vtyuX9d/d1XBZ/3A0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lIRKT67f; arc=pass smtp.client-ip=74.125.225.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2EB551AEEA
+	for <syzbot@lists.linux.dev>; Mon, 21 Sep 2026 22:44:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790030651; cv=none; b=Wl91FQrD4Vc1rgTAUQgfkRxBEilH/37ghXMV6xZsggLvRiEaJHtmG40zOJo66c3GQM7/CGBV37tYJB3DRDT7ExwrLE7J6GS8oafYPMG91HcP1+3mitepkConJw3ZrVbJ5DSEHhg2jCAXdSt/OYDOqvxgmEBV/92L1vYbWhRPo5Y=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790030651; c=relaxed/simple;
+	bh=NeUnK5Komd2zseZ/rVFr0Rc2I8n6kuNFXgOcrYKW/NE=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=P9VLuDZmAj2sK8RDuxQarrcA2SoApMbcPFG5nTQq42vaOfyrrmvX3wTro1i9R20GwbTYEzkij+TDDWS5/jTIi19kmraiEHeLlARrPbdE71T+guzH586majPv2aeuiPz9Od9I3wPgzK00MFUfw/MBAiLp6ChGGvEbdTctq/vS5I0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S6+fuBB9; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lIRKT67f"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49cd4ba9f68so46105765e9.1
-        for <syzbot@lists.linux.dev>; Mon, 21 Sep 2026 12:00:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1790017223; cv=none;
-        d=google.com; s=arc-20260327;
-        b=PdIo6ZkOzH4Fj1Aa2YFTNHg2taNpO+FZ0iN7N76fk5birGBMGmjSvsk/OEhiefR0nc
-         AjQQcLDYKnK3Sj5H6wCh9Ut6ORnZp+rQhjFAB8bWG2QmF1KWGpFoLCHPRPA1wCYxm9UN
-         wkl4YQRemuMWYLnlCwbutil6waiQ0hRS/Wq8kL12Y1cu1ZF5SpUs/nkf83gzSJedQfLc
-         WxGx0L2Mh5nfWikER0KoNaHLfS40/b6s97K+FAToG1JMq+r+q29QDE2Jn7NFrFRCybFh
-         syIMHYZgG2+UJeiR/8pj3nlAxGRgrFi1/UAUrxZxb9lV+qiXYLbvJamtrBUx/YkeFgIL
-         g4TA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=FeFO3AREa1i0Oy9rChHlku4bTopkweu2G7chupZtHVk=;
-        fh=/DX4rTjr9dAjzlzl5Ewx3PbxMnYkY5bLzUlxdgL3S5k=;
-        b=DA5NRo2d5UeZk046TNDZ+uNRvuqVi0BPT97GuOL+ZVYeupJ7iGln3CqyMifrbfV83f
-         skURh/bVoW/AwbbZ0yFwLya18xIxbtJRu7jT22NkTInouoktGkpAXWL/wLUxCC93WavD
-         0/RjPv9od+O3vG3U6rASDnLNYNXlNab3h4JaIs2U2G0n8WNMYNM7HIJyYwHqm9sYWb1x
-         5brAtW+u07VnFKdTMjYt4J78rWj4ZV20vfI5vyBmhiANeKkFWvp61rCtbh2BsJriDs9l
-         PoUCmJDoAMjqSWFA6UXE9yI3GQqTSYsGvBsKWvdphunipAh8R4d4KwfgRNHv2lxNfDRW
-         Q5zw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790017223; x=1790622023; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=FeFO3AREa1i0Oy9rChHlku4bTopkweu2G7chupZtHVk=;
-        b=lIRKT67f4CK6zCh+IkV08mbniAtuhS1voktxBOd1AKNy3u2+GktilYOUhXXhO0u6vl
-         4bKvJCsZBhpqa34Z/C1+WgLdcqYzMjSZe6EWqCqFfwqCQ3FB6KrpiUhPJRFzRmYzKBKz
-         gS3PJdLCFTQDNxoVkrawXwFF5LunYEdgHSKBiEAzGqISAm1NcDEe4ZRzZUfhDrqCHhgA
-         BFkqJMrMUbEGrXESDRTgM6wH/qCxfKozmSJuDVTK1n1awXvf1i7FBMriICK8l8a8ALkn
-         UqnB8EOQarRN2hjA8qpxD6a1Dt15J8CIx3RDs1Vw/Vk1kGamiq1gE07T4RB3ZoDOzChX
-         4s2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790017223; x=1790622023;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=FeFO3AREa1i0Oy9rChHlku4bTopkweu2G7chupZtHVk=;
-        b=NhrMGu1mMXIXtwcuSqkJKhn8+siOdGB4yXn/P9JwqvKJbrR45KhmVL5qLmD/KhYfEm
-         TvVINIPx8q2NidwdAIM0abtKqHbWE2CXhO9pWeTRWPlM7PEtT9FKJWtE5bHih2eLE51Y
-         5IpVA1FVgzubmTJB5UHZxMcnTLq/uVkD1Yy83fZh4lWhx82fx8a5M6eQ8newtwwqGNaS
-         5yOTRHO84BXkYWcTBqcQkiBMGvBCZbgbz3S789+l2OC7YV/CvZoEZUJTLE1MFfpmXeQR
-         j5FVxjjnhSKOrLw3dD0PS/y010KXdH3mFbtrN8fX9/up/jip9Gbv1FShEqj3oDgPWKxf
-         N41g==
-X-Forwarded-Encrypted: i=1; AKwUvBxNmvsVRf0s4LOv1FNE+M+OlMXK63qs1FGRJR5NCJBkGbYRjS6+bL1mhhgB9LblG5F7z6ZjuBo=@lists.linux.dev
-X-Gm-Message-State: AFuF++lG3nLuYhSsTL9wINZLPHfZ/TyqNx3IAU1bZi4vsWtMG62pXN2X
-	lhiKE2y1kcF0xBrtwKl8VTxG4pB56gVTPz0eNQeElqclyGoMdKqHBOrIWNrxKocweYkuRdu4zgf
-	JcdA931wQRmCZAjewlWPofLi40sysJqM=
-X-Gm-Gg: AYBFou1Z67veGIlGh3YS6TJyjlLb4putO4Ns7T8KPuRv1rEH0bvjMIhkKQBxMKGigAs
-	taLb9aTuKHjp0wbpmfcUST/+0HjVLqx5eUuEumoBmZKgpa7OxcPAXODSMwzbUFCHcrOlvJpOsWA
-	NqZHUQrOGoIdYmL46WjRB6ASLvpbOR7nQwWDpn3QbZTM+2TGaoIAqNyVfrgYSGUSfHeEOnAbY9b
-	ABNmghGiwDHCsyzRVh6G212NIlU6+cMpQ3X0dUajAaJT327xxwKkSJ6wQ5LTaiXl11KM3yGsPyd
-	l5ayJ9rsLMG6RopLNG1rlvpmnsy9c6ZQDPt7qeqZW4Qt8DHsDuz+7cUEdx5rbmvTyxYq2dhkRrK
-	zPW7GMzvLZe8=
-X-Received: by 2002:a05:600c:c8a:b0:49d:433:c3b6 with SMTP id
- 5b1f17b1804b1-49fc5743da1mr174500025e9.27.1790017222438; Mon, 21 Sep 2026
- 12:00:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S6+fuBB9"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 49B5F1F000FF;
+	Mon, 21 Sep 2026 22:44:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790030649;
+	bh=y26vIKzA2nYby1WmLSw3+6JxXxK7GNLaFpTkLy2lLqU=;
+	h=From:To:Cc:Subject:Date;
+	b=S6+fuBB9HBfqnZB2uhuOa4keNFTnwVh+OKngq+tKYkoIHWVpyhB5N/GSU/ktrORXS
+	 v8Mvrw7XnPfbO5pXiySgFaqdb1o3OcS6tTQGImxvXOHGfUIH4ug+6A4eto/WsgWGUy
+	 DaPmjaoti6fS34bDsuKaWTzKyY3oFYgs9n4D3Lew3uGJHWbm54nvVwpklQHV5djmY5
+	 hyd7hIN3vVqwQhbZQCuc72HTBU0CuBUzKZn/otSmKd55BrVOvrDPdWt8zCsGfT+PlO
+	 Dg3ag90bTWKvaBDQvwtFA9YZlskoWQ+4exPJ/v6HB/T8B/tyKvqGoSoGGcao6NwXQ0
+	 0EvMyGmX8PBzA==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v4] net/sched: taprio: enforce minimum interval to prevent hrtimer storms
+Message-ID: <955ce7e5-3e6d-4d4a-bbce-8033da4ffb3f@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260918180241.3424851-1-nphamcs@gmail.com> <6ab13438.71f81b7d.15fa6d.002c.GAE@google.com>
-In-Reply-To: <6ab13438.71f81b7d.15fa6d.002c.GAE@google.com>
-From: Nhat Pham <nphamcs@gmail.com>
-Date: Mon, 21 Sep 2026 12:00:08 -0700
-X-Gm-Features: AcwNN1VSiww_CbRe6xoCT3Rgd63gTKNcURFr8FJ8W6bVgDoo9VnivNDHr1UO828
-Message-ID: <CAKEwX=NczHcGVrGsArjV34Viv95kKbV3jo+c57BdG9pHc087GQ@mail.gmail.com>
-Subject: Re: [syzbot ci] Re: Virtual Swap Space (Swap Table Edition)
-To: syzbot ci <syzbot+cid08c37b8dadb4c43@syzkaller.appspotmail.com>
-Cc: akpm@linux-foundation.org, axelrasmussen@google.com, baohua@kernel.org, 
-	baolin.wang@linux.alibaba.com, baoquan.he@linux.dev, cgroups@vger.kernel.org, 
-	chengming.zhou@linux.dev, chrisl@kernel.org, corbet@lwn.net, david@kernel.org, 
-	gourry@gourry.net, hannes@cmpxchg.org, haowenchao22@gmail.com, 
-	hughd@google.com, kasong@tencent.com, kernel-team@meta.com, 
-	kunwu.chan@linux.dev, liam@infradead.org, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, ljs@kernel.org, 
-	mhocko@kernel.org, mkoutny@suse.com, muchun.song@linux.dev, 
-	qi.zheng@linux.dev, riel@surriel.com, roman.gushchin@linux.dev, 
-	rppt@kernel.org, shakeel.butt@linux.dev, shikemeng@huaweicloud.com, 
-	skhan@linuxfoundation.org, surenb@google.com, tj@kernel.org, 
-	vbabka@kernel.org, weixugc@google.com, yosry@kernel.org, 
-	youngjun.park@lge.com, yuanchu@google.com, syzbot@lists.linux.dev, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Mon, 21 Sep 2026 22:44:09 +0000 (UTC)
 
-On Mon, Sep 21, 2026 at 6:42=E2=80=AFAM syzbot ci
-<syzbot+cid08c37b8dadb4c43@syzkaller.appspotmail.com> wrote:
->
-> syzbot ci has tested the following series
->
-> [v5] Virtual Swap Space (Swap Table Edition)
-> https://lore.kernel.org/all/20260918180241.3424851-1-nphamcs@gmail.com
-> * [PATCH v5 01/11] mm, swap: add virtual swap device infrastructure
-> * [PATCH v5 02/11] mm, swap: support zswap and zero-filled swap pages as =
-vswap backends
-> * [PATCH v5 03/11] mm, swap: prepare the swap IO path for vswap
-> * [PATCH v5 04/11] mm, swap: support physical swap as a vswap backend
-> * [PATCH v5 05/11] mm, swap: enable THP swapin for vswap entries
-> * [PATCH v5 06/11] mm, swap: write back vswap zswap entries to physical s=
-wap
-> * [PATCH v5 07/11] mm, swap: reclaim physical slots backing cache-only vs=
-wap entries
-> * [PATCH v5 08/11] mm, swap: only charge physical swap entries
-> * [PATCH v5 09/11] mm, swap: add debugfs counters for vswap
-> * [PATCH v5 10/11] mm, swap: defer memcg_table allocation for physical sw=
-ap clusters
-> * [RFC PATCH v5 11/11] mm, swap: back vswap clusters with a VM_SPARSE arr=
-ay
->
-> and found the following issue:
-> KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
->
-> Full report is available here:
-> https://ci.syzbot.org/series/713f2473-328a-4c16-8bce-63005d15a338
->
-> ***
->
-> KASAN: null-ptr-deref Read in swap_entry_backend_has_flag
+An issue with the taprio packet scheduler allows a user to configure an
+extremely small schedule interval (e.g., 127 ns). While taprio validates
+that the interval is at least the time required to transmit a minimum-sized
+Ethernet frame (ETH_ZLEN), on high-speed virtual interfaces like 10 Gbps
+veth, this minimum duration evaluates to just 48 ns.
 
-Ah I think the bug is in the RFC patch (the one that does the
-conversion). I was too overzealous in deleting checks :)
+Because the execution time of the hrtimer callback (plus hardware interrupt
+overhead) is significantly larger than 127 ns, the newly calculated
+end_time in advance_sched() is already in the past by the time the
+interrupt handler finishes. The hrtimer subsystem immediately fires the
+timer again, trapping the CPU in a continuous stream of timer interrupts
+(an hrtimer interrupt storm). This starves other threads, including the RCU
+grace-period kthread, leading to an RCU stall:
 
-The skeleton (cluster struct) itself is no longer freed (I just put it
-back on the free list). But I do free the vtable when there is no slot
-used in that cluster. It's one invariant replaced with another -
-"cluster freeable, but if cluster exists then vtable exists" becomes
-"cluster is never freed but the vtable inside it might be freed", so I
-should change the check rather than just deleting the check.
+rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+rcu: 	(detected by 0, t=10502 jiffies, g=15113, q=737 ncpus=2)
+rcu: All QSes seen, last rcu_preempt kthread activity 10502
+(4294956675-4294946173), jiffies_till_next_fqs=1, root ->qsmask 0x0
+rcu: rcu_preempt kthread timer wakeup didn't happen for 10501 jiffies!
+g15113 f0x2 RCU_GP_WAIT_FQS(5) ->state=0x200
+rcu: 	Possible timer handling issue on cpu=1 timer-softirq=3485
+rcu: rcu_preempt kthread starved for 10502 jiffies! g15113 f0x2
+RCU_GP_WAIT_FQS(5) ->state=0x200 ->cpu=1
+rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now
+expected behavior.
+...
+Call Trace:
+ <IRQ>
+ lock_acquire+0x106/0x350 kernel/locking/lockdep.c:5868
+ rcu_lock_acquire include/linux/rcupdate.h:300 [inline]
+ rcu_read_lock include/linux/rcupdate.h:840 [inline]
+ advance_sched+0xa04/0xc80 net/sched/sch_taprio.c:992
+ __run_hrtimer kernel/time/hrtimer.c:2032 [inline]
+ __hrtimer_run_queues+0x3bc/0xa10 kernel/time/hrtimer.c:2096
+ hrtimer_interrupt+0x448/0x910 kernel/time/hrtimer.c:2215
+ local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1051 [inline]
+ __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:1068
 
-Should be easily fixable.
+To prevent this, enforce a minimum interval threshold during configuration
+when operating in software timer-driven mode (i.e. neither txtime-assist
+nor full offload is enabled). Introduce TAPRIO_MIN_INTERVAL set to 100
+microseconds (100 * NSEC_PER_USEC). Rather than serving as an absolute
+CPU-safety guarantee across all possible hardware and workloads, this 100
+us floor acts as a nominal callback-rate policy that limits the timer
+interrupt rate to at most 10,000 events per second. Hardware-assisted and
+offloaded modes do not rely on this software timer and remain unaffected.
+
+Apply this clamped minimum duration in fill_sched_entry() and
+parse_taprio_schedule() for timer-driven mode to ensure that both
+individual entry intervals and the overall cycle time respect this floor.
+Also add and use taprio_is_timer_driven() to simplify timer-mode checks
+across taprio.
+
+Fixes: b5b73b26b3ca ("taprio: Fix allowing too small intervals")
+Assisted-by: Gemini:gemini-3.8-flash syzbot
+Reported-by: syzbot+e044a9b6370ed8ca9737@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=e044a9b6370ed8ca9737
+Link: https://syzkaller.appspot.com/ai_job?id=d1e28442-a465-49a7-bd30-dbc3a9c3f631
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jamal Hadi Salim" <jhs@mojatatu.com>
+To: "Jiri Pirko" <jiri@resnulli.us>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
+Cc: "Simon Horman" <horms@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+
+---
+v4:
+- Clamp first->end_time to sched->cycle_end_time in setup_first_end_time().
+- In parse_taprio_schedule(), allow cycle_time shorter than the total schedule duration while ensuring the truncated interval is at least TAPRIO_MIN_INTERVAL.
+
+v3:
+- Switch advance_timer to HRTIMER_MODE_ABS_SOFT in taprio_init(), taprio_change(), and taprio_start_sched()
+- In parse_taprio_schedule(), validate that cycle_time is not less than the sum of entry intervals in timer-driven mode
+https://lore.kernel.org/all/6f795e5c-0c42-4ff3-b8f3-de5cffb73045@mail.kernel.org/T/
+
+v2:
+- Increased the minimum interval floor (TAPRIO_MIN_INTERVAL) from 1 us to 100 us.
+- Restricted the minimum interval constraint to software timer-driven mode via a new taprio_is_timer_driven() helper.
+- Used taprio_is_timer_driven() helper in taprio_start_sched() and taprio_change().
+- Clarified in the commit message that the threshold represents a nominal callback-rate policy rather than an absolute safety guarantee.
+https://lore.kernel.org/all/4de7b2e3-3f72-41a4-8735-67d91fc74009@mail.kernel.org/T/
+
+v1:
+https://lore.kernel.org/all/7d5b3fcb-ab75-4a18-909f-5ff072e562e1@mail.kernel.org/T/
+---
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 299234a5f..912a66267 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -43,12 +43,26 @@ static struct static_key_false taprio_have_working_mqprio;
+ #define TAPRIO_SUPPORTED_FLAGS \
+ 	(TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST | TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD)
+ #define TAPRIO_FLAGS_INVALID U32_MAX
++
++static inline bool taprio_is_timer_driven(u32 flags)
++{
++	return !TXTIME_ASSIST_IS_ENABLED(flags) &&
++	       !FULL_OFFLOAD_IS_ENABLED(flags);
++}
++
+ /* Minimum value for picos_per_byte to ensure non-zero duration
+  * for minimum-sized Ethernet frames (ETH_ZLEN = 60).
+  * 60 * 17 > PSEC_PER_NSEC (1000)
+  */
+ #define TAPRIO_PICOS_PER_BYTE_MIN 17
+ 
++/* Nominal callback-rate policy for timer-driven mode to prevent
++ * hrtimer interrupt storms (100 us floor corresponds to at most
++ * 10,000 timer interrupts per second). This is a nominal callback-rate
++ * policy rather than an absolute CPU-safety guarantee.
++ */
++#define TAPRIO_MIN_INTERVAL (100 * NSEC_PER_USEC)
++
+ struct sched_entry {
+ 	/* Durations between this GCL entry and the GCL entry where the
+ 	 * respective traffic class gate closes
+@@ -1041,6 +1055,9 @@ static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
+ 	int min_duration = length_to_duration(q, ETH_ZLEN);
+ 	u32 interval = 0;
+ 
++	if (taprio_is_timer_driven(q->flags))
++		min_duration = max_t(int, min_duration, TAPRIO_MIN_INTERVAL);
++
+ 	if (tb[TCA_TAPRIO_SCHED_ENTRY_CMD])
+ 		entry->command = nla_get_u8(
+ 			tb[TCA_TAPRIO_SCHED_ENTRY_CMD]);
+@@ -1166,9 +1183,29 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+ 		new->cycle_time = cycle;
+ 	}
+ 
+-	if (new->cycle_time < new->num_entries * length_to_duration(q, ETH_ZLEN)) {
+-		NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
+-		return -EINVAL;
++	if (taprio_is_timer_driven(q->flags)) {
++		struct sched_entry *entry;
++		ktime_t accum = 0;
++
++		list_for_each_entry(entry, &new->entries, list) {
++			ktime_t next_accum = ktime_add_ns(accum, entry->interval);
++
++			if (ktime_compare(new->cycle_time, next_accum) <= 0) {
++				ktime_t rem = ktime_sub(new->cycle_time, accum);
++
++				if (rem < TAPRIO_MIN_INTERVAL) {
++					NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
++					return -EINVAL;
++				}
++				break;
++			}
++			accum = next_accum;
++		}
++	} else {
++		if (new->cycle_time < new->num_entries * length_to_duration(q, ETH_ZLEN)) {
++			NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
++			return -EINVAL;
++		}
+ 	}
+ 
+ 	taprio_calculate_gate_durations(q, new);
+@@ -1256,6 +1293,7 @@ static void setup_first_end_time(struct taprio_sched *q,
+ 	sched->cycle_end_time = ktime_add_ns(base, cycle);
+ 
+ 	first->end_time = ktime_add_ns(base, first->interval);
++	first->end_time = min_t(ktime_t, first->end_time, sched->cycle_end_time);
+ 	taprio_set_budgets(q, sched, first);
+ 
+ 	for (tc = 0; tc < num_tc; tc++) {
+@@ -1274,7 +1312,7 @@ static void taprio_start_sched(struct Qdisc *sch,
+ 	struct taprio_sched *q = qdisc_priv(sch);
+ 	ktime_t expires;
+ 
+-	if (FULL_OFFLOAD_IS_ENABLED(q->flags))
++	if (!taprio_is_timer_driven(q->flags))
+ 		return;
+ 
+ 	expires = hrtimer_get_expires(&q->advance_timer);
+@@ -1287,7 +1325,7 @@ static void taprio_start_sched(struct Qdisc *sch,
+ 	 */
+ 	start = min_t(ktime_t, start, expires);
+ 
+-	hrtimer_start(&q->advance_timer, start, HRTIMER_MODE_ABS);
++	hrtimer_start(&q->advance_timer, start, HRTIMER_MODE_ABS_SOFT);
+ }
+ 
+ static void taprio_set_picos_per_byte(struct net_device *dev,
+@@ -1946,10 +1984,9 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 			   nla_get_u32(tb[TCA_TAPRIO_ATTR_TXTIME_DELAY]));
+ 	}
+ 
+-	if (!TXTIME_ASSIST_IS_ENABLED(q->flags) &&
+-	    !FULL_OFFLOAD_IS_ENABLED(q->flags) &&
++	if (taprio_is_timer_driven(q->flags) &&
+ 	    !hrtimer_active(&q->advance_timer)) {
+-		hrtimer_setup(&q->advance_timer, advance_sched, q->clockid, HRTIMER_MODE_ABS);
++		hrtimer_setup(&q->advance_timer, advance_sched, q->clockid, HRTIMER_MODE_ABS_SOFT);
+ 	}
+ 
+ 	err = taprio_get_start_time(sch, new_admin, &start);
+@@ -2072,7 +2109,7 @@ static int taprio_init(struct Qdisc *sch, struct nlattr *opt,
+ 
+ 	spin_lock_init(&q->current_entry_lock);
+ 
+-	hrtimer_setup(&q->advance_timer, advance_sched, CLOCK_TAI, HRTIMER_MODE_ABS);
++	hrtimer_setup(&q->advance_timer, advance_sched, CLOCK_TAI, HRTIMER_MODE_ABS_SOFT);
+ 
+ 	q->root = sch;
+ 
+
+
+base-commit: a13c140cc289c0b7b3770bce5b3ad42ab35074aa
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
