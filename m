@@ -1,199 +1,277 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo2-f38.google.com (mail-oo2-f38.google.com [74.125.231.166])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9664A457E42
-	for <syzbot@lists.linux.dev>; Mon, 21 Sep 2026 08:46:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789980401; cv=none; b=tFd8BNtYHVrtuzh3eJUkw6K5C208K9gAcF5gYSrHAttUES8sjohBHHTJk5LKZXjgHKIrR/4gpdaVWypXE8pkU4e4xNXnMqkNFp14Cgao3EZjKktEH0ab1sR/Pb+493/DR2yIHhT2K8Nn9cEPa0090k1XPhGKtsgfiIcg+Ycylbk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789980401; c=relaxed/simple;
-	bh=MXLfhaKNtKnD80AuSWsUndy/Vh6VARWVFFZUly4P0Dc=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=jH8KCLwnxqUhCtkqNe0uB6NKEQGqseyQxEhu/E3PEqScD0LESx88+gfS5YjAOxtSZr9EQL07FxYr4C75WPgA7r3Y+XagSwHZwTTcvhQBeLdMReHZBPGHxQHbqspN/viEpnX4Pv1yxAcqF1+HfqPrZhEqBXfQEZKAtfedFB3Q7iQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Mz3YqCE5; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AB2544F54B
+	for <syzbot@lists.linux.dev>; Mon, 21 Sep 2026 12:01:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.231.166
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789992116; cv=pass; b=VFwD1Te7aFj2k9YFqI9Btm+qWh1/laQ9JGc8oMFIarkF5WqdSbDPXCan1hFO8aulhVaClmK4Z1tHrDKzhryenaAAZQWGz56M39cE7Pxov9oiHkhxnwoKyNVT5UGZE3WeAk/+PST6YjjMt/g+cO5tpR6DpPfmVgQSM936Ita+4a4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789992116; c=relaxed/simple;
+	bh=IVX/2rVs876PTDlOC+d4E+BL7OQxny5AyN7XfJRpRdw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=P4tKWHMTHhg3QdUgoxjV5vzH2WQ9MhbXOi1jaDP9lxwm1Ote2dlWIpJ5UWsakL1QBX8KkgaC2ab7x8oEWEb3oP9b55ewLvSQLXfd8CMfF615YZOk4ehJ/+iELulfkOGqIciq9dWLmOopxj+h3KTziygh0OBhs1CvdSUxvI6kgfg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=JFYQ7hUO; arc=pass smtp.client-ip=74.125.231.166
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Mz3YqCE5"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 0C6A01F000FF;
-	Mon, 21 Sep 2026 08:46:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789980399;
-	bh=PtE4kzFOwjcrgf2zOjSG1DKZKF359224qUuT8lw8Mik=;
-	h=From:To:Cc:Subject:Date;
-	b=Mz3YqCE5TPcOTJ42MEFYoccFeMT2XKoBvpcwXdC+bRFhM7glSfP00PAJ5AD/U4m/M
-	 XTxyo4idUVwFLA9VJeSW4BDdLmcuCdO02EAsdCbWDhBNKvmq3KoN0a8AEzg6w3iHoz
-	 kWbeWLF7KSbq35btOTezSLdHJgAA2hCBNdoNTz6DQWTKGrLiMqpDaLA480BSE43+IY
-	 638Nft9q85T+foFFIVKjNq8YlURk3uoco6ZXHXSlfF7kyTyrA0JxUm2LG1E7u5w2C4
-	 MH9HwNCDmNUHJeKzXVH7mVwYfZkVBajF3n6hcT3J2auIrtGu/kzvcc5O5ur9lCUvG+
-	 1X6FBqFv+aYzQ==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: sst@poczta.fm, syzbot@lists.linux.dev
-Subject: [PATCH RFC v4] Input: yealink - abort URB submission on fatal errors
-Message-ID: <ec4cb3d1-f22e-4bd4-94d8-1563a62cfeb5@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="JFYQ7hUO"
+Received: by mail-oo2-f38.google.com with SMTP id 006d021491bc7-6b1ae736c63so1539893eaf.1
+        for <syzbot@lists.linux.dev>; Mon, 21 Sep 2026 05:01:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1789992112; cv=none;
+        d=google.com; s=arc-20260327;
+        b=LIAcb/dwyLcnBKrpVdHODCuj0Tjke43KIqadvVjN6LUP7IFsV4mICysUAQuzG9L1RA
+         f4Sx1AXHrQJC1pm+FQyEMKq/qWB/zqMaa2VAvCYLlLUb9Jst24AIFNb6qsm1Aib9tqiI
+         aZmVfFhgu0i9hhZ4ABh69FQVjbaW+SdKeimKkuUfNxzZxjU/TMjBndcyjgNpmX/IdaFV
+         EoSKRJj2sJ63RG0taq2x/O8PRiswjm5X2VzNkhRKDVZH0iFay3eXNU/L08Y3Z6IN/B2T
+         TUarT+rgRYWKAO74IeAx6rR0VoLFKV3M/vwvpMccOD0y3azQZo8fE0wklXHk6yQWOxjx
+         yy3g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=M3PyVO49XXVkETREo5V1FBfIadMHzGd8w/QvxkimwvI=;
+        fh=8G5R9X48NCQ1c6LMvt77b/g3ddkqSSHqEh0tdkP1ChE=;
+        b=o1uxCWsAN4DqSIqcwoOUmA86UDrLU0hSv9JsVViiI6RkTrV9pvtZYHB+EiHft44Qyo
+         IHJCO31Ce4pWMQVobsTXarB9pp3i0rnWMq+EiJS7DtK+HPYFd0q8DQPTE6UVAdIh4EMV
+         03UwRA1yxtkT8S/wp1ybINpEE7VbiQ35OPGE2Rw8YJ2do6Cl+/7ISql5FB4AGjVveh92
+         TNkIoj1w+6bjDWNoEA6uPdbolelWn+M79rYfaPHqdiOvsuTra49U+G3jWAu1/4hzkfdr
+         rW02uHTl20D6g7N2bM+QnhAdsuzy1W44xHOsbutd2IfFI6kLzEAEeV9wp8uJ7J0hkDxa
+         ui5w==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1789992112; x=1790596912; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=M3PyVO49XXVkETREo5V1FBfIadMHzGd8w/QvxkimwvI=;
+        b=JFYQ7hUOVw5eNg+FIouaWhTIC8JHwoOy/yWlIABHCp70FY570IuXjLU7gcM3pEKGJT
+         fb/q1+q0WYxa12Yt+5zx1MH36jMaQ1qwbuPl7YwKdeUg+6QK+Xy1kw1590eQZC9Bm//N
+         Xw4GStlCRsEPjv7o7wzGUJbfh+KeBoHyc+/xNtKoKL7apEVS3fMw6gU05pz4Pz8bC5B3
+         FhTQBsBEicsJ/y8NRfLlWb/r61sgSA3jQOxcEr+EQa7RuiP9yp+3FEJgyxLQMOR8LdcB
+         H6W6e5lThcxMEnXn49NcNDjfKTxLUxLXsiYj6thrUqWQRSQbnf60o2dGcMkff0DZ+qVY
+         6/Dg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789992112; x=1790596912;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=M3PyVO49XXVkETREo5V1FBfIadMHzGd8w/QvxkimwvI=;
+        b=rqGtlnidrCQvI6CURXz53V30yEP7LSzJp4OhrPSPu8r2SxfVeThCJ957osxbCg+pE1
+         OYeKFpzclBKi6GfL88kTCK7xJjdxh6PSdbCnW8IdvGNs1OU4eMQgN5sUMBNedmwtLQXe
+         CZ4jBbJQJnac4Da31pHSK9KzXDN2mjV0cdDMwaYQvsIFtaw44P8pCGmQlvGgQtJXzjEj
+         smsMmKSyPhoaNfPytN7neq9/pjTAgaPRNdDLyODGiWfXShdGjbg+vRvKnP90XKhMVn2J
+         WLvArxwqbjf4117D5p5hLw9pAeItYM1S38ndf+mbp2vPycQbih4Wm7ULeCgi+puYyF92
+         w7sQ==
+X-Forwarded-Encrypted: i=1; AKwUvBymtnVVodaN1BMeAFCKD1KLZhK+h5FSa5vT0SON2qDWIvEEUJDwoZlPrLUWu3ISZU6dSXXODfE=@lists.linux.dev
+X-Gm-Message-State: AFuF++mKsvhzaPEsjKTkKahf3tVrnU3KK1JufiQdfdnvVyd+IjGe0CBd
+	CRm0j97e1tqtX941L7CW2xmDXZ87E1AOAdegPt3HnXqRUgH7fLNcKN1OLGtlrGLBGR46wKRX2g3
+	PRQTnuDxOikxBu4I6/HH1gtvYXsnK+JZt8p1ZUZLoWbUEztdBOaVczV25
+X-Gm-Gg: AYBFou3Banr5MT9hQnAuZXQKDB48GM4G1dC+zL75g9FPL6OSurUEAiKT8s4AjKO9eC4
+	k5QGUwDplCptzcPyMBPQ0QXKzuLgneq8jAtkPO9x74lzsadifLhV7UrF2DH4+QnMNu+O6fhDT6u
+	t1MnyNxiFCcHN5OJJf6j92z6Wi0qtEJbSD3McVy3HHiCYi5DUyhA0PBT70ChTysihz0xPGEoFhS
+	4OEv0S/vErcp4sbRZHqlPF8k78zz9YQ3HKtl2RDxLh2Xazhc2JkrWtUEZjgbI0Ou6//g4VbJDjc
+	jGvO54iqohS7UlEXFBVdX9zdocpoM076s97wGcsPmq2B6OO5EnkF1uPTfej2SYyYPX1F2TRjZq6
+	eyydcsNrleNtXdROEnpCPh3cU6vZp8tYyrN0N1Xyq2sR0pfQucL07gl7TvqAssj7z1z2bzycVKa
+	oQJFCP2AgSdWs+0047KnKVPA==
+X-Received: by 2002:a05:6820:1846:b0:6cd:3fec:de78 with SMTP id
+ 006d021491bc7-6cd3fecf349mr5876873eaf.78.1789992111651; Mon, 21 Sep 2026
+ 05:01:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Mon, 21 Sep 2026 08:46:39 +0000 (UTC)
+References: <6ab0a8e2.3179f8cd.1e36b2.001c.GAE@google.com>
+In-Reply-To: <6ab0a8e2.3179f8cd.1e36b2.001c.GAE@google.com>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Mon, 21 Sep 2026 08:01:40 -0400
+X-Gm-Features: AcwNN1Vh-qFTLJhPOcMGVAHmh3XAJWeW4lRTCg6QUgcLm4jKp76qewIzvr9Oqqo
+Message-ID: <CANp29Y6zMTJqBt9mLH9qLk2f8PoYpS2w-pxWJLLr-XjBR8F=ig@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: net: cfg80211: Validate monitor channel set
+ against radio usage
+To: syzbot ci <syzbot+ci95b1659da90f9918@syzkaller.appspotmail.com>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The yealink driver uses two URBs (interrupt and control) to communicate
-with the device. When an URB completes with an error status (such as
--EPROTO), the completion handlers (urb_irq_callback and urb_ctl_callback)
-log the error but do not abort. Instead, they proceed to process the
-potentially invalid data and unconditionally resubmit the URB.
+#syz upstream
 
-Because control URBs are not rate-limited by the USB core, resubmitting a
-failing control URB in a tight loop floods the console with error messages
-and keeps the CPU completely busy in the softirq context. This eventually
-triggers an RCU preempt stall:
-
-yealink 3-1:36.0: unexpected response 0
-yealink 3-1:36.0: urb_ctl_callback - urb status -71
-rcu: INFO: rcu_preempt self-detected stall on CPU
-Call Trace:
- __console_flush_and_unlock kernel/printk/printk.c:3373 [inline]
- console_unlock+0xd1/0x1c0 kernel/printk/printk.c:3413
- dev_vprintk_emit+0x338/0x400 drivers/base/core.c:4996
- dev_printk_emit+0xee/0x140 drivers/base/core.c:5007
- usb_generic_driver_probe+0x10b/0x150 drivers/usb/core/generic.c:252
- ...
- hub_event+0x28e8/0x4d30 drivers/usb/core/hub.c:5953
- worker_thread+0x92d/0xe10 kernel/workqueue.c:3486
- kthread+0x388/0x470 kernel/kthread.c:436
-
-Fix this by checking the URB status for fatal errors (-ECONNRESET, -ENOENT,
--ESHUTDOWN, -ENODEV) in both urb_irq_callback() and urb_ctl_callback(). If
-a fatal error is detected, the callback now returns early, breaking the
-resubmission loop. For other non-zero statuses, skip processing the
-response data and jump directly to resubmission. Additionally, use
-dev_err_ratelimited() instead of dev_err() to prevent flooding the console
-and triggering an RCU stall.
-
-Fixes: aca951a22a1d ("[PATCH] input-driver-yealink-P1K-usb-phone")
-Assisted-by: Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+78e2288f58b881ed3c45@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=78e2288f58b881ed3c45
-Link: https://syzkaller.appspot.com/ai_job?id=89a6c0c7-a0c4-4f05-b1b1-e36a92e373e0
-To: "Henk Vergonet" <Henk.Vergonet@gmail.com>
-To: "Dmitry Torokhov" <dmitry.torokhov@gmail.com>
-To: <linux-input@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-
----
-v4:
-- In urb_ctl_callback(), resubmit urb_ctl directly instead of jumping into the switch statement.
-
-v3:
-- Only abort URB submission on fatal errors (-ECONNRESET, -ENOENT, -ESHUTDOWN, -ENODEV).
-- Skip processing packet data and jump directly to resubmission on non-fatal errors.
-- Use dev_err_ratelimited() instead of dev_err() to prevent console flooding.
-- Drop is_fatal_error() helper in favor of switch statements.
-https://lore.kernel.org/all/2b0508e9-fe78-40dd-a290-7156817e394c@mail.kernel.org/T/
-
-v2:
-- Factored out fatal error checks into is_fatal_error() helper
-https://lore.kernel.org/all/2a0b5e96-dd8a-4ce9-ba3f-dd9efa26275d@mail.kernel.org/T/
-
-v1:
-https://lore.kernel.org/all/57cf484d-3235-473f-a61d-570585626176@mail.kernel.org/T/
----
-diff --git a/drivers/input/misc/yealink.c b/drivers/input/misc/yealink.c
-index 560f895a0..f0ec4c5ea 100644
---- a/drivers/input/misc/yealink.c
-+++ b/drivers/input/misc/yealink.c
-@@ -405,9 +405,19 @@ static void urb_irq_callback(struct urb *urb)
- 	struct yealink_dev *yld = urb->context;
- 	int ret, status = urb->status;
- 
--	if (status)
--		dev_err(&yld->intf->dev, "%s - urb status %d\n",
--			__func__, status);
-+	switch (status) {
-+	case 0:
-+		break;
-+	case -ECONNRESET:
-+	case -ENOENT:
-+	case -ESHUTDOWN:
-+	case -ENODEV:
-+		return;
-+	default:
-+		dev_err_ratelimited(&yld->intf->dev, "%s - urb status %d\n",
-+				    __func__, status);
-+		goto resubmit;
-+	}
- 
- 	switch (yld->irq_data->cmd) {
- 	case CMD_KEYPRESS:
-@@ -429,12 +439,13 @@ static void urb_irq_callback(struct urb *urb)
- 
- 	yealink_do_idle_tasks(yld);
- 
-+resubmit:
- 	if (!yld->shutdown) {
- 		ret = usb_submit_urb(yld->urb_ctl, GFP_ATOMIC);
- 		if (ret && ret != -EPERM)
--			dev_err(&yld->intf->dev,
--				"%s - usb_submit_urb failed %d\n",
--				__func__, ret);
-+			dev_err_ratelimited(&yld->intf->dev,
-+					    "%s - usb_submit_urb failed %d\n",
-+					    __func__, ret);
- 	}
- }
- 
-@@ -443,9 +454,21 @@ static void urb_ctl_callback(struct urb *urb)
- 	struct yealink_dev *yld = urb->context;
- 	int ret = 0, status = urb->status;
- 
--	if (status)
--		dev_err(&yld->intf->dev, "%s - urb status %d\n",
--			__func__, status);
-+	switch (status) {
-+	case 0:
-+		break;
-+	case -ECONNRESET:
-+	case -ENOENT:
-+	case -ESHUTDOWN:
-+	case -ENODEV:
-+		return;
-+	default:
-+		dev_err_ratelimited(&yld->intf->dev, "%s - urb status %d\n",
-+				    __func__, status);
-+		if (!yld->shutdown)
-+			ret = usb_submit_urb(yld->urb_ctl, GFP_ATOMIC);
-+		goto out;
-+	}
- 
- 	switch (yld->ctl_data->cmd) {
- 	case CMD_KEYPRESS:
-@@ -462,9 +485,11 @@ static void urb_ctl_callback(struct urb *urb)
- 		break;
- 	}
- 
-+out:
- 	if (ret && ret != -EPERM)
--		dev_err(&yld->intf->dev, "%s - usb_submit_urb failed %d\n",
--			__func__, ret);
-+		dev_err_ratelimited(&yld->intf->dev,
-+				    "%s - usb_submit_urb failed %d\n",
-+				    __func__, ret);
- }
- 
- /*******************************************************************************
-
-
-base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On Sun, Sep 20, 2026 at 11:47=E2=80=AFPM syzbot ci
+<syzbot+ci95b1659da90f9918@syzkaller.appspotmail.com> wrote:
+>
+> syzbot ci has tested the following series
+>
+> [v1] net: cfg80211: Validate monitor channel set against radio usage
+> https://lore.kernel.org/all/20260918170746.3824-1-roryl@candelatech.com
+> * [PATCH wireless-next] net: cfg80211: Validate monitor channel set again=
+st radio usage
+>
+> and found the following issues:
+> * UBSAN: shift-out-of-bounds in cfg80211_set_monitor_channel
+> * UBSAN: shift-out-of-bounds in corrupted
+>
+> Full report is available here:
+> https://ci.syzbot.org/series/8cc9e8b7-7ee7-4960-86f8-d3d32e74b751
+>
+> ***
+>
+> UBSAN: shift-out-of-bounds in cfg80211_set_monitor_channel
+>
+> tree:      wireless-next
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/wirel=
+ess/wireless-next.git
+> base:      3b35f726c20d138fafa154182ee926a419306269
+> arch:      amd64
+> compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~e=
+xp1~20260613092250.77), Debian LLD 22.1.8
+> config:    https://ci.syzbot.org/builds/007f6283-0b6e-4ff9-84e0-69128d745=
+e0c/config
+> syz repro: https://ci.syzbot.org/findings/ba5a8e20-28a0-4771-b097-95a9703=
+e3244/syz_repro
+>
+> UBSAN: shift-out-of-bounds in net/wireless/chan.c:1831:49
+> shift exponent -22 is negative
+> CPU: 0 UID: 0 PID: 5850 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(f=
+ull)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
+>  __ubsan_handle_shift_out_of_bounds+0x36d/0x400 lib/ubsan.c:494
+>  cfg80211_can_set_monitor_channel net/wireless/chan.c:1831 [inline]
+>  cfg80211_set_monitor_channel+0x38a/0x8d0 net/wireless/chan.c:1844
+>  __nl80211_set_channel+0x340/0x990 net/wireless/nl80211.c:4203
+>  nl80211_set_wiphy+0x127c/0x3050 net/wireless/nl80211.c:-1
+>  genl_family_rcv_msg_doit+0x233/0x340 net/netlink/genetlink.c:1114
+>  genl_family_rcv_msg net/netlink/genetlink.c:1194 [inline]
+>  genl_rcv_msg+0x614/0x7a0 net/netlink/genetlink.c:1209
+>  netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2556
+>  genl_rcv+0x28/0x40 net/netlink/genetlink.c:1218
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+>  netlink_unicast+0x7bd/0x940 net/netlink/af_netlink.c:1345
+>  netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1900
+>  sock_sendmsg_nosec+0x13a/0x180 net/socket.c:800
+>  __sock_sendmsg net/socket.c:815 [inline]
+>  ____sys_sendmsg+0x54e/0x850 net/socket.c:2713
+>  ___sys_sendmsg+0x2a5/0x360 net/socket.c:2767
+>  __sys_sendmsg net/socket.c:2799 [inline]
+>  __do_sys_sendmsg net/socket.c:2804 [inline]
+>  __se_sys_sendmsg net/socket.c:2802 [inline]
+>  __x64_sys_sendmsg+0x1b1/0x290 net/socket.c:2802
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+>  do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7fc73059e159
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007fc731480028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007fc730825fa0 RCX: 00007fc73059e159
+> RDX: 0000000004040000 RSI: 0000200000000040 RDI: 0000000000000003
+> RBP: 00007fc73063506b R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007fc730826038 R14: 00007fc730825fa0 R15: 00007ffd4fd500b8
+>  </TASK>
+> ---[ end trace ]---
+>
+>
+> ***
+>
+> UBSAN: shift-out-of-bounds in corrupted
+>
+> tree:      wireless-next
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/wirel=
+ess/wireless-next.git
+> base:      3b35f726c20d138fafa154182ee926a419306269
+> arch:      amd64
+> compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~e=
+xp1~20260613092250.77), Debian LLD 22.1.8
+> config:    https://ci.syzbot.org/builds/007f6283-0b6e-4ff9-84e0-69128d745=
+e0c/config
+> AI triage: https://ci.syzbot.org/findings/412a77e9-4657-490d-8b72-2bca17c=
+93acf/triage_trajectory
+>
+> ------------[ cut here ]------------
+> UBSAN: shift-out-of-bounds in net/wireless/chan.c:1831:49
+> shift exponent -22 is negative
+> CPU: 0 UID: 0 PID: 6635 Comm: syz.3.380 Not tainted syzkaller #0 PREEMPT(=
+full)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> Call Trace:
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150
+>  ubsan_epilogue+0xa/0x30
+>  __ubsan_handle_shift_out_of_bounds+0x36d/0x400
+>  cfg80211_set_monitor_channel+0x38a/0x8d0
+>  __nl80211_set_channel+0x340/0x990
+>  nl80211_set_wiphy+0x127c/0x3050
+>  genl_family_rcv_msg_doit+0x233/0x340
+>  genl_rcv_msg+0x614/0x7a0
+>  netlink_rcv_skb+0x226/0x4a0
+>  genl_rcv+0x28/0x40
+>  netlink_unicast+0x7bd/0x940
+>  netlink_sendmsg+0x813/0xb40
+>  sock_sendmsg_nosec+0x13a/0x180
+>  ____sys_sendmsg+0x54e/0x850
+>  ___sys_sendmsg+0x2a5/0x360
+>  __x64_sys_sendmsg+0x1b1/0x290
+>  do_syscall_64+0x166/0x520
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7fbeb4b9e159
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007fbeb5aef028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007fbeb4e25fa0 RCX: 00007fbeb4b9e159
+> RDX: 0000000004040000 RSI: 0000200000000040 RDI: 0000000000000003
+> RBP: 00007fbeb4c3506b R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007fbeb4e26038 R14: 00007fbeb4e25fa0 R15: 00007ffe46366df8
+>  </TASK>
+> ---[ end trace ]---
+>
+>
+> ***
+>
+> If these findings have caused you to resend the series or submit a
+> separate fix, please add the following tag to your commit message:
+>   Tested-by: syzbot@syzkaller.appspotmail.com
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+>
+> To test a fix for this bug, please reply with `#syz test`
+> (on a separate line) and attach the patch to the email.
+>
+> Notes:
+> - The patch will be applied on top of the tested series (as an
+>   incremental fix).
+> - To test a new version of the whole series, please send it directly
+>   to syzbot@lists.linux.dev.
+> - Arguments like custom git repos and branches are not supported.
+>
+> The email will later be sent to:
+> [dylan.eskew@candelatech.com johannes@sipsolutions.net linux-wireless@vge=
+r.kernel.org roryl@candelatech.com]
+>
+> If the report looks fine to you, reply with:
+> #syz upstream
+>
+> If the report is a false positive, reply with
+> #syz invalid
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/6ab0a8e2.3179f8cd.1e36b2.001c.GAE%40google.com.
