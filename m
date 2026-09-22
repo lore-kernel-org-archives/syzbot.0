@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6793E530DE9
-	for <syzbot@lists.linux.dev>; Tue, 22 Sep 2026 10:14:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43AF33F54BF
+	for <syzbot@lists.linux.dev>; Tue, 22 Sep 2026 19:10:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790072100; cv=none; b=BdZffeFr5JJUVnen1LBYj5VHk+iPdhQth/dJ+q9Mi0udrXt0mk8vmWuQAn6tEdINskG3cjxA0cMcwtPYCTAbvMhXa3zKjMgaM/EJLw4N0MTsIlLV7JuHkP2KWJ3rbZLBL15W/ivrwZIR/sC0GweuA7Lyy5Uirwpo4VR//Q/nqRI=
+	t=1790104260; cv=none; b=e6Y0OSjuqpNPIhbpeYyBtDslrDFKG59YyoxM+x6qjloUb/LdaQofg6+szXOcvfw2/5V5TQVd4FoyPdvgi6lrGOIvE1EPVIQiW7Rnl5rS/c4aBotOYFqghvemJJRVrrYsUEW36jARkyVS5/56A4iF8V0cL0MBmyDDbbc6hXVPXe4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790072100; c=relaxed/simple;
-	bh=3xJ0tNDd0tJbYRQiM5yOBKxz1wKJRqfoFoRnuUpBJJc=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=FP/rZe4BWdh0lysX7gU3BqQZeg47sa0UiQsaELhyjnCq7qEJ4FE7tBUbgpZ0ki+YFnX3d5kH00BCQ0GCg43AIVUK/pgcUFgsYsXTafHgqpseN8iQbnh+J+5zAqteDsULaWNymMa9NFB/KwVM667YMw+uC1xTQwkHW6LbkN91qTo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=B4FI+QhF; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790104260; c=relaxed/simple;
+	bh=dT56cSWqZFn+KkHpiqXEMUDHgK5ESKjHi1UVgjvfJKc=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=kthX5V87WGQ/IwIG2PGRiJziYfdOwXVqTfZhTMb8Uc9smrzLmziQw1T+EfWmIlqlgj4C/m9mpQe1ItjDmkKnSayqfqZ58oTnBMv4pjWm+j4hPHrElSJo2MB85xYhrS5JXU4XsluuFXC82PGAmuOTpcbBxbznIPWgDXQgBk8a9cQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LdBkJjmV; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="B4FI+QhF"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 2527A1F000FF;
-	Tue, 22 Sep 2026 10:14:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LdBkJjmV"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id C5F8F1F000FF;
+	Tue, 22 Sep 2026 19:10:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790072099;
-	bh=VQtiYLy3J/OZoeyIItwAuT2WuX/+6ZDk3kuCCxWXvZ8=;
+	s=k20260515; t=1790104258;
+	bh=+u8p6g0Cf8p5+wp4S0Sx/vDaFqYVO6Itt3VSxngRp/8=;
 	h=From:To:Cc:Subject:Date;
-	b=B4FI+QhF7Cq8shy9XTctleRLXC11+3aKJlCaeD/soQeKMcP8Zk49KLG9QhvcbSc+I
-	 hDowf+LDII8UjqoORMTSoEH8X/NSRnB/eNYNItAFzKSp8yewlsDi2d+eB5eoe6ENkX
-	 DM7/mS/btPAMWB3pYTBsE2cvBHF6lxsG9fu5H5OeJuvjbQXuVw420b6+JMVUFpFDWV
-	 6AyAN66Hm6yEcdTEXo03xeD3H2qVb7V8grfgzZsiewU3QGKnr6VpvV6qX5htmyZcNB
-	 UF2oC8ATyVNFGlcRPKzmX6zIRR6bfyrI9qZLf10mbk1FL5QSdmG6fwBudgvLVzyClk
-	 bA4fTG0lv5pGg==
+	b=LdBkJjmVVN7xKkXd3WKFiVCeJZyNMSaE3yCMhgQ5x2KNDZtfff9MorLPAac5tHKUE
+	 pLXcllqSTFmUDZD8h4H1kJ/PfMCuk0dBuT4Slv/5UrC5DH8AynsnuI3QN9HiWCzpCH
+	 zzLHiYiHwN7OARMivjuey2gnfYLSv1RLwPssCQl89TXQlLt8dBa0MGb0vaRHEp8Sjx
+	 LbY0pw82k13YVqLaOYNbjIRODkEho+ERh6iwR4H7pSbCW2Fceuis0H5TJw/zCLkP5k
+	 ik9DqaMyJH7MczWZ2jDm6tEmJ4MVq0hxNRfp6Le2+xV/p0g+qXX8U0fR3xzdJf6cw1
+	 Ie7gKGFcXX9Tg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] fs/ntfs3: hold invalidate_lock around size changes in ntfs_setattr
-Message-ID: <b78d7df0-1bce-4161-a252-e20c40b12310@mail.kernel.org>
+Subject: [PATCH RFC] fat: set buffer uptodate before dirtying in vfat_update_dotdot_de()
+Message-ID: <012d4ac1-83f3-48af-8781-00fbbc4adc93@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,81 +38,75 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue, 22 Sep 2026 10:14:59 +0000 (UTC)
+Date: Tue, 22 Sep 2026 19:10:58 +0000 (UTC)
 
-A race condition exists between file size changes in ntfs_setattr() and
-concurrent page faults in filemap_fault(). When a file containing resident
-(inline) data is extended, ntfs_setattr() calls truncate_setsize(), which
-immediately updates inode->i_size to the new size before ntfs_set_size()
-updates the underlying NTFS attribute size. Because ntfs_setattr() does not
-hold filemap_invalidate_lock, a concurrent page fault can call
-filemap_fault() (which acquires filemap_invalidate_lock_shared()) and
-invoke ntfs_read_folio(). In ntfs_iomap_begin(), the resident attribute
-size has not yet been updated, leaving iomap->length set to the old
-attribute size. When iomap_read_inline_data() subsequently computes size as
-i_size_read(iter->inode) - iomap->offset, size exceeds iomap->length,
-triggering a warning:
+During a directory rename operation (such as rename or rename-exchange),
+vfat_update_dotdot_de() is invoked to update the ".." directory entry to
+point to the new parent directory. In vfat_update_dotdot_de(), the buffer
+head is dirtied via mmb_mark_buffer_dirty(), and if synchronous directory
+operations are enabled (such as when mounted with MS_SYNCHRONOUS where
+IS_DIRSYNC() is true), sync_dirty_buffer() is immediately called to write
+the buffer to disk. If writing the buffer fails due to an I/O error on the
+underlying block device, the block layer completion handler clears the
+BH_Uptodate flag on the buffer head, and sync_dirty_buffer() returns an
+error.
 
-size > iomap->length
-WARNING: fs/iomap/buffered-io.c:431 at iomap_read_inline_data+0xa7b/0xc40
-fs/iomap/buffered-io.c:431
+When vfat_rename_exchange() or vfat_rename() encounters an error during the
+rename sequence, it jumps to an error rollback path to restore the original
+".." entry by calling vfat_update_dotdot_de() again with the same buffer
+head. When vfat_update_dotdot_de() calls mmb_mark_buffer_dirty(),
+mark_buffer_dirty() checks whether the buffer is uptodate and triggers a
+warning because BH_Uptodate was cleared by the earlier write error:
+
+!buffer_uptodate(bh)
+WARNING: fs/buffer.c:991 at mark_buffer_dirty+0x299/0x410 fs/buffer.c:991
 Call Trace:
  <TASK>
- iomap_read_folio_iter+0x30d/0xe80 fs/iomap/buffered-io.c:571
- iomap_read_folio+0x58b/0x970 fs/iomap/buffered-io.c:676
- ntfs_read_folio+0x3f1/0x4b0 fs/ntfs3/inode.c:856
- filemap_read_folio+0x12c/0x3a0 mm/filemap.c:2520
- filemap_fault+0xd06/0x13b0 mm/filemap.c:3689
- __do_fault+0x138/0x2a0 mm/memory.c:5565
- do_read_fault mm/memory.c:6000 [inline]
- do_fault mm/memory.c:6134 [inline]
- do_pte_missing+0x2313/0x3260 mm/memory.c:4700
- handle_pte_fault mm/memory.c:6558 [inline]
- __handle_mm_fault mm/memory.c:6707 [inline]
- handle_mm_fault+0x1a2c/0x3770 mm/memory.c:6876
- do_user_addr_fault+0xa4f/0x1340 arch/x86/mm/fault.c:1343
- handle_page_fault arch/x86/mm/fault.c:1483 [inline]
- exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1536
- asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:595
+ mmb_mark_buffer_dirty+0x2c/0x1f0 fs/buffer.c:624
+ vfat_update_dotdot_de+0x90/0x1c0 fs/fat/namei_vfat.c:917
+ vfat_rename_exchange fs/fat/namei_vfat.c:1140 [inline]
+ vfat_rename2+0xe3e/0x1c90 fs/fat/namei_vfat.c:1171
+ vfs_rename+0xbd9/0xef0 fs/namei.c:6208
+ filename_renameat2+0x533/0x9a0 fs/namei.c:6326
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
  </TASK>
 
-Fix this by acquiring filemap_invalidate_lock(inode->i_mapping) around
-truncate_setsize() and ntfs_set_size(), releasing it afterwards and on the
-error rollback path. This serializes file size updates against concurrent
-page faults and page cache reads, ensuring readers cannot observe an
-inconsistent state where inode->i_size has been updated before the
-underlying filesystem attribute layout and size updates are complete.
+The in-memory data in the buffer head remains valid because it was
+originally read successfully from disk and only modified in memory; the I/O
+failure only indicates that writing it to the media failed. Fix this by
+calling set_buffer_uptodate() in vfat_update_dotdot_de() prior to marking
+the buffer dirty. This ensures that BH_Uptodate is set before
+mark_buffer_dirty() is called, preventing the spurious warning during error
+rollback.
 
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+079e16bc964fb91acb4a@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=079e16bc964fb91acb4a
-Link: https://syzkaller.appspot.com/ai_job?id=f1473b28-efba-4427-995b-64ef3decdc90
-To: "Konstantin Komarov" <almaz.alexandrovich@paragon-software.com>
-To: <ntfs3@lists.linux.dev>
-Cc: <linux-kernel@vger.kernel.org>
+Reported-by: syzbot+b0aebd03565f5774f7f8@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=b0aebd03565f5774f7f8
+Link: https://syzkaller.appspot.com/ai_job?id=047c8bd2-3171-476a-9977-78f4bc3e39b3
+To: "OGAWA Hirofumi" <hirofumi@mail.parknet.co.jp>
+To: <linux-kernel@vger.kernel.org>
+To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
 
 ---
-diff --git a/fs/ntfs3/file.c b/fs/ntfs3/file.c
-index 2abf334bf..80518de36 100644
---- a/fs/ntfs3/file.c
-+++ b/fs/ntfs3/file.c
-@@ -736,13 +736,16 @@ int ntfs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
- 		newsize = attr->ia_size;
- 
- 		if (newsize != oldsize) {
-+			filemap_invalidate_lock(inode->i_mapping);
- 			truncate_setsize(inode, newsize);
- 
- 			err = ntfs_set_size(inode, newsize);
- 			if (err) {
- 				i_size_write(inode, oldsize);
-+				filemap_invalidate_unlock(inode->i_mapping);
- 				goto out;
- 			}
-+			filemap_invalidate_unlock(inode->i_mapping);
- 
- 			ni->std_fa |= FILE_ATTRIBUTE_ARCHIVE;
- 			ni->ni_flags |= NI_FLAG_UPDATE_PARENT;
+diff --git a/fs/fat/namei_vfat.c b/fs/fat/namei_vfat.c
+index da3e89c0b..b84228e7f 100644
+--- a/fs/fat/namei_vfat.c
++++ b/fs/fat/namei_vfat.c
+@@ -914,6 +914,12 @@ static int vfat_update_dotdot_de(struct inode *dir, struct inode *inode,
+ 				 struct msdos_dir_entry *dotdot_de)
+ {
+ 	fat_set_start(dotdot_de, MSDOS_I(dir)->i_logstart);
++	/*
++	 * If a previous sync failed, the block layer's end-io handler clears
++	 * BH_Uptodate. Set it uptodate before marking dirty to prevent
++	 * mark_buffer_dirty() from warning during error rollback.
++	 */
++	set_buffer_uptodate(dotdot_bh);
+ 	mmb_mark_buffer_dirty(dotdot_bh, &MSDOS_I(inode)->i_metadata_bhs);
+ 	if (IS_DIRSYNC(dir))
+ 		return sync_dirty_buffer(dotdot_bh);
 
 
 base-commit: 93f51579e7df248780214094418f205253383cc5
