@@ -1,240 +1,121 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28FDA37BE98
-	for <syzbot@lists.linux.dev>; Wed, 23 Sep 2026 03:51:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD69B3F20ED
+	for <syzbot@lists.linux.dev>; Wed, 23 Sep 2026 18:27:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790135490; cv=none; b=UP+bEr9zt9HbuTXFqgUG+G6h0NONFpjYGObTr3WNz9Uw2rpYJ9fD5itxDiPCT9Uo55slYJPiXdkKubJ8bGpn6y36mqjE4jybfC+/VRwlR/EnbTC7mcDnbQoecqs3coAUcP17diSoluUMLsvE37H5hw139yaEurfOM6of5hllXIM=
+	t=1790188030; cv=none; b=qX/FXkNsoIiGJnYv8wbhpg3ubm638//JhV9+l3YajcFH6cgOjuqmiG0GQgHwVUYUQzz0tSzj5iWFBBnwF+2vdEYpJJ291UYf2AVRl8GpXBN482yc0HsnEILqnVZnD0A3i8DeDjIp2bMO3CWPnoEA6oBA/gGhTk2STkofJMmZV10=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790135490; c=relaxed/simple;
-	bh=SpuWyUquuXItYLqAC6p1vGV7dURGuC7r2W53o6xF5ew=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=MI//TDtPmuFk8L70s6GqIbx9J3zKwUs1zbbLRde90nbzzDDyLLTEBqOTKsY0krYl9plgJnt40ktl3UobG3U1NLlRVRn89P90RSXlIPpg9rYhYjjhDKsrRRqdPpYBbf7fUNBCL0bHLIgbZxzOXEn9mcR/ZUJzmdhVj29UQFclU1k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dWAXHPcm; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dWAXHPcm"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id BC0891F000FF;
-	Wed, 23 Sep 2026 03:51:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790135488;
-	bh=B4tXwA69NpgDHcGX00rjINfhnQL+fLKnDTVHjb18cIo=;
-	h=From:To:Cc:Subject:Date;
-	b=dWAXHPcm+MbYVfYmFX2SU73CYDP5z8kALQFWOn1IyeEpqO66sp/99HdEE+hwWhN7l
-	 L7PDWthxR/UDq7TEJMdgWxrgfJRHXeriaRWJw7isVgOziM7RA17v0SEno3N8CDJLIN
-	 es0WsEvhouDoEr0pqus+HANQ2iBKKfJe89MbXYSqezCy8+L9NyDI7olvYyYI40N5Ys
-	 13yif2epV8zvcHmbhgqCPGGzpq/m4EV2KJs83psn8rNpLRwvTONx1jXut6a7aqg/KP
-	 JS0oyS2RJpqTRhEvrg2SYHm+ZhucIMsAdYTOJZ9yo0GxCfxK+JX4kACFLsrrUw6YMf
-	 FZxpVYCVEusrg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] net/x25: defer socket cleanup in x25_kill_by_neigh() to workqueue
-Message-ID: <b790da86-7914-4ffe-a479-5f86ffbd47d3@mail.kernel.org>
+	s=arc-20240116; t=1790188030; c=relaxed/simple;
+	bh=vIKW4ZyyGcJCcpnwTQE6MYp/eNDUE7M5DYSo6grT0u4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=OSZRoKK3+1hLvIvUeCd4vetNXi/7RoLfKteGCinAMtkhnTTT76ooVFR3JcdktiCg7KwTdrjSprdOvTe3FL2Btrwhjbuzu9swx9clRiLqw7ycrZ6098PoMv5PX6cCms3OmWAr4alrn3zs1Mb7pHacmqvkNk+LCy/PXqacJugIPEQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-81120824498so240534a34.0
+        for <syzbot@lists.linux.dev>; Wed, 23 Sep 2026 11:27:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790188027; x=1790792827;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ZVFW88t8tm8IkxioqXPHEVSOKyIy/da8bCmhRQzD2TY=;
+        b=ip7XCwDEm6AFAzKpg8Hc4nwlZjqKkMOGUOew/oEy3DMkYLQY17ocEOJpRCdinof9zf
+         ZJrkw2o+7xXW4pRn5Sptm5y2UNRXpmBahMlj8EkDHdQCuxqqQswEcOEJoB+iE+1EPAW0
+         D0FDCtRrGd9FNpWQLdvjxlfkZGZe2EXLTbDeaPFnPipVpwfaAxpjMkL27GhpA8VqSG7d
+         DmDC3i1frUjyGn2fPL7iAQ9B7sDi7j3Psgg3dcS0kqSsgua8KWLWTcIFeFJdHvcDR/88
+         BYSupYJ2N3CwCXGNtSa1tffpF9EYaC2DSKmNLXFlUWFlm2OxdOiDFnXLi3KkQXUILlmG
+         zUMw==
+X-Gm-Message-State: AFuF++nlyof9nhu6sUSp55PoOTlHbBV6lYcDLIV17QRfE05ZJGaQ7YDM
+	Q7P1CfuKa/opId218RSLcVogJDBnjEEZcbtCDd/vqh2oX4bEWt4iKlkPnBPFteIQVAiQFWNchuy
+	9CD3BGSHnU0KI73P5S4XajE+Y+RjuLc4w7M+4U4D8yHupBEGPro6O2JGHkH0=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Wed, 23 Sep 2026 03:51:28 +0000 (UTC)
+X-Received: by 2002:a05:6820:a0e:b0:6be:49c2:7be9 with SMTP id
+ 006d021491bc7-6d43eedd866mr71435eaf.5.1790188027603; Wed, 23 Sep 2026
+ 11:27:07 -0700 (PDT)
+Date: Wed, 23 Sep 2026 11:27:07 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6ab419fb.71f81b7d.15fa6d.0051.GAE@google.com>
+Subject: [moderation/CI] Re: Type2 multipf support
+From: syzbot ci <syzbot+ciabc64b91bcf1d980@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-When an X.25 link layer connection is disconnected or terminated,
-x25_link_terminated() calls x25_kill_by_neigh() to disconnect all sockets
-associated with the terminating neighbor. However, this path can be
-executed in softirq context, for instance when processing an incoming LAPB
-disconnect frame via net_rx_action() -> lapbeth_napi_poll() ->
-x25_lapb_receive_frame() -> x25_link_terminated(). Within
-x25_kill_by_neigh(), lock_sock() is invoked for each matching socket.
-Because lock_sock() can sleep, calling it from softirq context violates
-kernel locking rules and triggers a sleeping function called from invalid
-context bug:
+syzbot ci has tested the following series
 
-BUG: sleeping function called from invalid context at net/core/sock.c:3839
-in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 16, name: ktimers/0
-preempt_count: 0, expected: 0
-RCU nest depth: 2, expected: 0
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- __might_resched+0x31b/0x470 kernel/sched/core.c:9264
- lock_sock_nested+0x56/0x130 net/core/sock.c:3839
- lock_sock include/net/sock.h:1713 [inline]
- x25_kill_by_neigh+0x134/0x2a0 net/x25/af_x25.c:1778
- x25_lapb_receive_frame+0x1b0/0xfb0 net/x25/x25_dev.c:138
- netif_receive_skb_core+0x2a6/0x2b0 net/core/dev.c:6289
- lapbeth_napi_poll+0x45/0x90 drivers/net/wan/lapbether.c:100
- net_rx_action+0x621/0xd70 net/core/dev.c:8007
- handle_softirqs+0x1da/0x6d0 kernel/softirq.c:645
- </TASK>
+[v1] Type2 multipf support
+https://lore.kernel.org/all/20260921191239.4249-1-alucerop@amd.com
+* [PATCH v1 1/4] driver core: Rely on supplier driver binding at link creation
+* [PATCH v1 2/4] cxl/region: Add region reference in memdev attach
+* [PATCH v1 3/4] cxl/memdev: Add support for multi PF devices
+* [PATCH v1 4/4] sfc: add multipf support
 
-Fix this by deferring the socket disconnection logic in x25_kill_by_neigh()
-to process context via a dedicated workqueue (x25_wq). Add a kill_work
-work_struct to struct x25_neigh and initialize it in x25_link_device_up().
-In x25_kill_by_neigh(), clear forwarding entries synchronously, increment
-the neighbor reference count, and dispatch kill_work onto x25_wq. If the
-work was already queued, drop the reference immediately. In
-x25_kill_by_neigh_work(), iterate over x25_list in process context where
-lock_sock() can safely sleep, and release the neighbor reference upon
-completion. In addition, allocate x25_wq with WQ_UNBOUND during module
-initialization and destroy it during module unload and init failure
-unwinding.
+and found the following issue:
+WARNING: synchronous SCSI scan failed without making any progress, switching to async
 
-Fixes: 7781607938c8 ("net/x25: Fix null-ptr-deref caused by
-x25_disconnect")
+Full report is available here:
+https://ci.syzbot.org/series/cce74032-73a7-4071-a29e-65a7ec02c350
 
-Fixes: 7781607938c8 ("net/x25: Fix null-ptr-deref caused by x25_disconnect")
-Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+9faa82ae2e94c5c7d2ef@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=9faa82ae2e94c5c7d2ef
-Link: https://syzkaller.appspot.com/ai_job?id=4f5af180-1ab7-4f6e-b59a-f3affbe7eb02
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <linux-x25@vger.kernel.org>
-To: "Martin Schiller" <ms@dev.tdt.de>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Duoming Zhou" <duoming@zju.edu.cn>
-Cc: "Simon Horman" <horms@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+***
+
+WARNING: synchronous SCSI scan failed without making any progress, switching to async
+
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
+base:      93f51579e7df248780214094418f205253383cc5
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/50697200-bc23-49c1-b943-c9c91049cf06/config
+
+ata1: Failed to create link to scsi device 0:0:0:0
+scsi_alloc_sdev: Allocation failure during SCSI scanning, some SCSI devices might not be configured
+ata1: Failed to create link to scsi device 0:0:0:0
+scsi_alloc_sdev: Allocation failure during SCSI scanning, some SCSI devices might not be configured
+ata1: Failed to create link to scsi device 0:0:0:0
+scsi_alloc_sdev: Allocation failure during SCSI scanning, some SCSI devices might not be configured
+ata1: Failed to create link to scsi device 0:0:0:0
+scsi_alloc_sdev: Allocation failure during SCSI scanning, some SCSI devices might not be configured
+ata1: Failed to create link to scsi device 0:0:0:0
+scsi_alloc_sdev: Allocation failure during SCSI scanning, some SCSI devices might not be configured
+ata1: Failed to create link to scsi device 0:0:0:0
+scsi_alloc_sdev: Allocation failure during SCSI scanning, some SCSI devices might not be configured
+ata1: WARNING: synchronous SCSI scan failed without making any progress, switching to async
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/include/net/x25.h b/include/net/x25.h
-index 414f3fd99..369f24d98 100644
---- a/include/net/x25.h
-+++ b/include/net/x25.h
-@@ -13,6 +13,7 @@
- #include <linux/x25.h>
- #include <linux/slab.h>
- #include <linux/refcount.h>
-+#include <linux/workqueue.h>
- #include <net/sock.h>
- 
- #define	X25_ADDR_LEN			16
-@@ -145,6 +146,7 @@ struct x25_neigh {
- 	struct timer_list	t20timer;
- 	unsigned long		global_facil_mask;
- 	refcount_t		refcnt;
-+	struct work_struct	kill_work;
- };
- 
- struct x25_sock {
-@@ -197,6 +199,7 @@ struct sock *x25_find_socket(unsigned int, struct x25_neigh *);
- void x25_destroy_socket_from_timer(struct sock *);
- int x25_rx_call_request(struct sk_buff *, struct x25_neigh *, unsigned int);
- void x25_kill_by_neigh(struct x25_neigh *);
-+void x25_kill_by_neigh_work(struct work_struct *work);
- 
- /* x25_dev.c */
- void x25_send_frame(struct sk_buff *, struct x25_neigh *);
-diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-index 033e7d059..536b6b350 100644
---- a/net/x25/af_x25.c
-+++ b/net/x25/af_x25.c
-@@ -67,6 +67,7 @@ int sysctl_x25_forward                 = 0;
- 
- HLIST_HEAD(x25_list);
- DEFINE_RWLOCK(x25_list_lock);
-+static struct workqueue_struct *x25_wq;
- 
- static const struct proto_ops x25_proto_ops;
- 
-@@ -1764,8 +1765,9 @@ static struct notifier_block x25_dev_notifier = {
- 	.notifier_call = x25_device_event,
- };
- 
--void x25_kill_by_neigh(struct x25_neigh *nb)
-+void x25_kill_by_neigh_work(struct work_struct *work)
- {
-+	struct x25_neigh *nb = container_of(work, struct x25_neigh, kill_work);
- 	struct sock *s;
- 
- again:
-@@ -1785,8 +1787,20 @@ void x25_kill_by_neigh(struct x25_neigh *nb)
- 	}
- 	write_unlock_bh(&x25_list_lock);
- 
-+	x25_neigh_put(nb);
-+}
-+
-+void x25_kill_by_neigh(struct x25_neigh *nb)
-+{
-+	if (!nb)
-+		return;
-+
- 	/* Remove any related forwards */
- 	x25_clear_forward_by_dev(nb->dev);
-+
-+	x25_neigh_hold(nb);
-+	if (!queue_work(x25_wq, &nb->kill_work))
-+		x25_neigh_put(nb);
- }
- 
- static int __init x25_init(void)
-@@ -1801,11 +1815,17 @@ static int __init x25_init(void)
- 	if (rc)
- 		goto out_proto;
- 
-+	x25_wq = alloc_workqueue("x25_wq", WQ_UNBOUND, 0);
-+	if (!x25_wq) {
-+		rc = -ENOMEM;
-+		goto out_sock;
-+	}
-+
- 	dev_add_pack(&x25_packet_type);
- 
- 	rc = register_netdevice_notifier(&x25_dev_notifier);
- 	if (rc)
--		goto out_sock;
-+		goto out_pack;
- 
- 	rc = x25_register_sysctl();
- 	if (rc)
-@@ -1823,8 +1843,10 @@ static int __init x25_init(void)
- 	x25_unregister_sysctl();
- out_dev:
- 	unregister_netdevice_notifier(&x25_dev_notifier);
--out_sock:
-+out_pack:
- 	dev_remove_pack(&x25_packet_type);
-+	destroy_workqueue(x25_wq);
-+out_sock:
- 	sock_unregister(AF_X25);
- out_proto:
- 	proto_unregister(&x25_proto);
-@@ -1844,6 +1866,8 @@ static void __exit x25_exit(void)
- 
- 	dev_remove_pack(&x25_packet_type);
- 
-+	destroy_workqueue(x25_wq);
-+
- 	sock_unregister(AF_X25);
- 	proto_unregister(&x25_proto);
- }
-diff --git a/net/x25/x25_link.c b/net/x25/x25_link.c
-index d1e8cd81c..a77274cf1 100644
---- a/net/x25/x25_link.c
-+++ b/net/x25/x25_link.c
-@@ -269,6 +269,7 @@ void x25_link_device_up(struct net_device *dev)
- 
- 	skb_queue_head_init(&nb->queue);
- 	timer_setup(&nb->t20timer, x25_t20timer_expiry, 0);
-+	INIT_WORK(&nb->kill_work, x25_kill_by_neigh_work);
- 
- 	dev_hold(dev);
- 	nb->dev      = dev;
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
-base-commit: 93f51579e7df248780214094418f205253383cc5
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+The email will later be sent to:
+[alucerop@amd.com davem@davemloft.net ecree.xilinx@gmail.com edumazet@google.com icheng@nvidia.com kuba@kernel.org linux-cxl@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com rafael@kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
