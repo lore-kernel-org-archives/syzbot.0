@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAB5952F276
-	for <syzbot@lists.linux.dev>; Tue, 22 Sep 2026 22:54:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28FDA37BE98
+	for <syzbot@lists.linux.dev>; Wed, 23 Sep 2026 03:51:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790117643; cv=none; b=BGyjSp14E4fq4xzWGxaGyEW//8DXqK7ZNe2kFPRHo8wwYOYr62H1rbKPoiw96Fiiuzf3sbOzGMAoU7uZZI+KRYPtje+MI32R9OLDUHyu7tEzT3yp9j5yYfQtQblPJta48ueC9ZpqNjSmd1vos3GY8u3VdE23aPRwjj2DcwtOT9o=
+	t=1790135490; cv=none; b=UP+bEr9zt9HbuTXFqgUG+G6h0NONFpjYGObTr3WNz9Uw2rpYJ9fD5itxDiPCT9Uo55slYJPiXdkKubJ8bGpn6y36mqjE4jybfC+/VRwlR/EnbTC7mcDnbQoecqs3coAUcP17diSoluUMLsvE37H5hw139yaEurfOM6of5hllXIM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790117643; c=relaxed/simple;
-	bh=pu+0VFsTVVEShC2ATr0Rj6MeeQesu3+HKJtp2LDt9vg=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=So92tzSxrMXjDRRmPCiQFIP4N6ApOBh8iAZAFtllHXPKVNEzNBtHtfnavxPMjpN4s7c/vyEOKsNaDY6k5a04WsG6Y+fLuX8aRGwcOFjlw7fVNLnwpjnq6YmTe92MNAyPnwwsJCdXXRpSqNMeSrP915PlCktZVDClc9JI8JsgaRU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Zd58uXdr; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790135490; c=relaxed/simple;
+	bh=SpuWyUquuXItYLqAC6p1vGV7dURGuC7r2W53o6xF5ew=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=MI//TDtPmuFk8L70s6GqIbx9J3zKwUs1zbbLRde90nbzzDDyLLTEBqOTKsY0krYl9plgJnt40ktl3UobG3U1NLlRVRn89P90RSXlIPpg9rYhYjjhDKsrRRqdPpYBbf7fUNBCL0bHLIgbZxzOXEn9mcR/ZUJzmdhVj29UQFclU1k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dWAXHPcm; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zd58uXdr"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id CF2251F000FF;
-	Tue, 22 Sep 2026 22:53:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dWAXHPcm"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id BC0891F000FF;
+	Wed, 23 Sep 2026 03:51:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790117638;
-	bh=aXaTHzd5tBhRBdMM4TSl8z01IjFGvbYY/dIAB0rwijE=;
+	s=k20260515; t=1790135488;
+	bh=B4tXwA69NpgDHcGX00rjINfhnQL+fLKnDTVHjb18cIo=;
 	h=From:To:Cc:Subject:Date;
-	b=Zd58uXdr0vOXBJU7zWb4MRJI1l07nqSAisZQVVVGQ7CPQUzv8NcODTipMdVkxQZu5
-	 YELG3pZPLGVFaLJojmbU4zbybs0Z/4GlPdYr8xRyNHWR7M+99wOMpyiFjYzlWxLhtC
-	 6yhhd5hmQDGKI/AvhHUre+Oe/vSin8b+nKNhU6GxY0IUkd840yj565iH090rpy124U
-	 udOCN9r0SM5RgQxeMeoOBvkUOg/bP9gSI0egbJ/5zbYp2RK1KpgBUlBxyKyVtH2tjJ
-	 RZSCvC4mUQyDiUlrda6Cq0g03o6Yi8F1jQOBV1MhLwAxvYk9xcdIxU1++0bpA9sber
-	 52/AvmxzG3mtQ==
+	b=dWAXHPcm+MbYVfYmFX2SU73CYDP5z8kALQFWOn1IyeEpqO66sp/99HdEE+hwWhN7l
+	 L7PDWthxR/UDq7TEJMdgWxrgfJRHXeriaRWJw7isVgOziM7RA17v0SEno3N8CDJLIN
+	 es0WsEvhouDoEr0pqus+HANQ2iBKKfJe89MbXYSqezCy8+L9NyDI7olvYyYI40N5Ys
+	 13yif2epV8zvcHmbhgqCPGGzpq/m4EV2KJs83psn8rNpLRwvTONx1jXut6a7aqg/KP
+	 JS0oyS2RJpqTRhEvrg2SYHm+ZhucIMsAdYTOJZ9yo0GxCfxK+JX4kACFLsrrUw6YMf
+	 FZxpVYCVEusrg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] media: vivid: reject binding to foreign platform devices
-Message-ID: <5d9741ff-fba2-4cc7-aafd-3e89d95a6884@mail.kernel.org>
+Subject: [PATCH RFC] net/x25: defer socket cleanup in x25_kill_by_neigh() to workqueue
+Message-ID: <b790da86-7914-4ffe-a479-5f86ffbd47d3@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,111 +38,193 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue, 22 Sep 2026 22:53:58 +0000 (UTC)
+Date: Wed, 23 Sep 2026 03:51:28 +0000 (UTC)
 
-The vivid driver is designed as a virtual test driver that instantiates and
-manages its own static platform device, vivid_pdev. It maintains global
-state across device instances, including the global vivid_devs array and
-n_devs counter.
+When an X.25 link layer connection is disconnected or terminated,
+x25_link_terminated() calls x25_kill_by_neigh() to disconnect all sockets
+associated with the terminating neighbor. However, this path can be
+executed in softirq context, for instance when processing an incoming LAPB
+disconnect frame via net_rx_action() -> lapbeth_napi_poll() ->
+x25_lapb_receive_frame() -> x25_link_terminated(). Within
+x25_kill_by_neigh(), lock_sock() is invoked for each matching socket.
+Because lock_sock() can sleep, calling it from softirq context violates
+kernel locking rules and triggers a sleeping function called from invalid
+context bug:
 
-However, userspace can bind arbitrary platform devices to the vivid
-platform driver via sysfs using driver_override and bind. When a foreign
-platform device is bound to the driver, vivid_probe() runs again for that
-device and overwrites entries in the global vivid_devs array. If an unbind
-is performed concurrently on one of the devices, vivid_remove() cleans up
-the instance and sets the corresponding vivid_devs entry to NULL. When
-vivid_probe() continues its execution to configure menu controls, it
-accesses vivid_devs[i]->has_vid_out, dereferencing the NULL pointer and
-triggering a general protection fault:
-
-Oops: general protection fault, probably for non-canonical address
-0xdffffc0000000be7: 0000 [#1] SMP KASAN NOPTI
-KASAN: probably user-memory-access in range
-[0x0000000000005f38-0x0000000000005f3f]
-RIP: 0010:vivid_probe+0x6421/0x70c0
-drivers/media/test-drivers/vivid/vivid-core.c:2119
+BUG: sleeping function called from invalid context at net/core/sock.c:3839
+in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 16, name: ktimers/0
+preempt_count: 0, expected: 0
+RCU nest depth: 2, expected: 0
 Call Trace:
  <TASK>
- platform_probe+0xf9/0x190 drivers/base/platform.c:1507
- really_probe+0x254/0xae0 drivers/base/dd.c:706
- __driver_probe_device+0x1e8/0x360 drivers/base/dd.c:868
- device_driver_attach+0xe0/0x1d0 drivers/base/dd.c:1203
- bind_store+0x1d0/0x220 drivers/base/bus.c:267
- kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
- vfs_write+0x612/0xba0 fs/read_write.c:687
- ksys_write+0x150/0x270 fs/read_write.c:739
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ __might_resched+0x31b/0x470 kernel/sched/core.c:9264
+ lock_sock_nested+0x56/0x130 net/core/sock.c:3839
+ lock_sock include/net/sock.h:1713 [inline]
+ x25_kill_by_neigh+0x134/0x2a0 net/x25/af_x25.c:1778
+ x25_lapb_receive_frame+0x1b0/0xfb0 net/x25/x25_dev.c:138
+ netif_receive_skb_core+0x2a6/0x2b0 net/core/dev.c:6289
+ lapbeth_napi_poll+0x45/0x90 drivers/net/wan/lapbether.c:100
+ net_rx_action+0x621/0xd70 net/core/dev.c:8007
+ handle_softirqs+0x1da/0x6d0 kernel/softirq.c:645
  </TASK>
 
-Fix this by moving vivid_pdev and vivid_pdev_release() above vivid_probe(),
-and checking whether the probed platform device is vivid_pdev at the
-beginning of vivid_probe(). If it is not, return -ENODEV to reject the
-probe attempt and prevent binding to unintended devices.
+Fix this by deferring the socket disconnection logic in x25_kill_by_neigh()
+to process context via a dedicated workqueue (x25_wq). Add a kill_work
+work_struct to struct x25_neigh and initialize it in x25_link_device_up().
+In x25_kill_by_neigh(), clear forwarding entries synchronously, increment
+the neighbor reference count, and dispatch kill_work onto x25_wq. If the
+work was already queued, drop the reference immediately. In
+x25_kill_by_neigh_work(), iterate over x25_list in process context where
+lock_sock() can safely sleep, and release the neighbor reference upon
+completion. In addition, allocate x25_wq with WQ_UNBOUND during module
+initialization and destroy it during module unload and init failure
+unwinding.
 
-Fixes: f46d740fb025 ("[media] vivid: turn this into a platform_device")
+Fixes: 7781607938c8 ("net/x25: Fix null-ptr-deref caused by
+x25_disconnect")
+
+Fixes: 7781607938c8 ("net/x25: Fix null-ptr-deref caused by x25_disconnect")
 Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+caaca441bae2799984d3@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=caaca441bae2799984d3
-Link: https://syzkaller.appspot.com/ai_job?id=4b91af24-1dbf-4056-9c38-21b8f3a7585f
-To: "Hans Verkuil" <hverkuil@kernel.org>
-To: <linux-media@vger.kernel.org>
-To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-To: "Hans Verkuil" <hans.verkuil@cisco.com>
+Reported-by: syzbot+9faa82ae2e94c5c7d2ef@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=9faa82ae2e94c5c7d2ef
+Link: https://syzkaller.appspot.com/ai_job?id=4f5af180-1ab7-4f6e-b59a-f3affbe7eb02
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <linux-x25@vger.kernel.org>
+To: "Martin Schiller" <ms@dev.tdt.de>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Duoming Zhou" <duoming@zju.edu.cn>
+Cc: "Simon Horman" <horms@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/drivers/media/test-drivers/vivid/vivid-core.c b/drivers/media/test-drivers/vivid/vivid-core.c
-index 62cfb5feb..c108af6b9 100644
---- a/drivers/media/test-drivers/vivid/vivid-core.c
-+++ b/drivers/media/test-drivers/vivid/vivid-core.c
-@@ -2071,6 +2071,15 @@ static int vivid_create_instance(struct platform_device *pdev, int inst)
- 	return ret;
- }
+diff --git a/include/net/x25.h b/include/net/x25.h
+index 414f3fd99..369f24d98 100644
+--- a/include/net/x25.h
++++ b/include/net/x25.h
+@@ -13,6 +13,7 @@
+ #include <linux/x25.h>
+ #include <linux/slab.h>
+ #include <linux/refcount.h>
++#include <linux/workqueue.h>
+ #include <net/sock.h>
  
-+static void vivid_pdev_release(struct device *dev)
-+{
+ #define	X25_ADDR_LEN			16
+@@ -145,6 +146,7 @@ struct x25_neigh {
+ 	struct timer_list	t20timer;
+ 	unsigned long		global_facil_mask;
+ 	refcount_t		refcnt;
++	struct work_struct	kill_work;
+ };
+ 
+ struct x25_sock {
+@@ -197,6 +199,7 @@ struct sock *x25_find_socket(unsigned int, struct x25_neigh *);
+ void x25_destroy_socket_from_timer(struct sock *);
+ int x25_rx_call_request(struct sk_buff *, struct x25_neigh *, unsigned int);
+ void x25_kill_by_neigh(struct x25_neigh *);
++void x25_kill_by_neigh_work(struct work_struct *work);
+ 
+ /* x25_dev.c */
+ void x25_send_frame(struct sk_buff *, struct x25_neigh *);
+diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+index 033e7d059..536b6b350 100644
+--- a/net/x25/af_x25.c
++++ b/net/x25/af_x25.c
+@@ -67,6 +67,7 @@ int sysctl_x25_forward                 = 0;
+ 
+ HLIST_HEAD(x25_list);
+ DEFINE_RWLOCK(x25_list_lock);
++static struct workqueue_struct *x25_wq;
+ 
+ static const struct proto_ops x25_proto_ops;
+ 
+@@ -1764,8 +1765,9 @@ static struct notifier_block x25_dev_notifier = {
+ 	.notifier_call = x25_device_event,
+ };
+ 
+-void x25_kill_by_neigh(struct x25_neigh *nb)
++void x25_kill_by_neigh_work(struct work_struct *work)
+ {
++	struct x25_neigh *nb = container_of(work, struct x25_neigh, kill_work);
+ 	struct sock *s;
+ 
+ again:
+@@ -1785,8 +1787,20 @@ void x25_kill_by_neigh(struct x25_neigh *nb)
+ 	}
+ 	write_unlock_bh(&x25_list_lock);
+ 
++	x25_neigh_put(nb);
 +}
 +
-+static struct platform_device vivid_pdev = {
-+	.name		= "vivid",
-+	.dev.release	= vivid_pdev_release,
-+};
++void x25_kill_by_neigh(struct x25_neigh *nb)
++{
++	if (!nb)
++		return;
 +
- /* This routine allocates from 1 to n_devs virtual drivers.
- 
-    The real maximum number of virtual drivers will depend on how many drivers
-@@ -2079,9 +2088,13 @@ static int vivid_create_instance(struct platform_device *pdev, int inst)
-  */
- static int vivid_probe(struct platform_device *pdev)
- {
--	const struct font_desc *font = find_font("VGA8x16");
-+	const struct font_desc *font;
- 	int ret = 0, i;
- 
-+	if (pdev != &vivid_pdev)
-+		return -ENODEV;
+ 	/* Remove any related forwards */
+ 	x25_clear_forward_by_dev(nb->dev);
 +
-+	font = find_font("VGA8x16");
- 	if (font == NULL) {
- 		pr_err("vivid: could not find font\n");
- 		return -ENODEV;
-@@ -2226,15 +2239,6 @@ static void vivid_remove(struct platform_device *pdev)
- 	}
++	x25_neigh_hold(nb);
++	if (!queue_work(x25_wq, &nb->kill_work))
++		x25_neigh_put(nb);
  }
  
--static void vivid_pdev_release(struct device *dev)
--{
--}
--
--static struct platform_device vivid_pdev = {
--	.name		= "vivid",
--	.dev.release	= vivid_pdev_release,
--};
--
- static struct platform_driver vivid_pdrv = {
- 	.probe		= vivid_probe,
- 	.remove		= vivid_remove,
+ static int __init x25_init(void)
+@@ -1801,11 +1815,17 @@ static int __init x25_init(void)
+ 	if (rc)
+ 		goto out_proto;
+ 
++	x25_wq = alloc_workqueue("x25_wq", WQ_UNBOUND, 0);
++	if (!x25_wq) {
++		rc = -ENOMEM;
++		goto out_sock;
++	}
++
+ 	dev_add_pack(&x25_packet_type);
+ 
+ 	rc = register_netdevice_notifier(&x25_dev_notifier);
+ 	if (rc)
+-		goto out_sock;
++		goto out_pack;
+ 
+ 	rc = x25_register_sysctl();
+ 	if (rc)
+@@ -1823,8 +1843,10 @@ static int __init x25_init(void)
+ 	x25_unregister_sysctl();
+ out_dev:
+ 	unregister_netdevice_notifier(&x25_dev_notifier);
+-out_sock:
++out_pack:
+ 	dev_remove_pack(&x25_packet_type);
++	destroy_workqueue(x25_wq);
++out_sock:
+ 	sock_unregister(AF_X25);
+ out_proto:
+ 	proto_unregister(&x25_proto);
+@@ -1844,6 +1866,8 @@ static void __exit x25_exit(void)
+ 
+ 	dev_remove_pack(&x25_packet_type);
+ 
++	destroy_workqueue(x25_wq);
++
+ 	sock_unregister(AF_X25);
+ 	proto_unregister(&x25_proto);
+ }
+diff --git a/net/x25/x25_link.c b/net/x25/x25_link.c
+index d1e8cd81c..a77274cf1 100644
+--- a/net/x25/x25_link.c
++++ b/net/x25/x25_link.c
+@@ -269,6 +269,7 @@ void x25_link_device_up(struct net_device *dev)
+ 
+ 	skb_queue_head_init(&nb->queue);
+ 	timer_setup(&nb->t20timer, x25_t20timer_expiry, 0);
++	INIT_WORK(&nb->kill_work, x25_kill_by_neigh_work);
+ 
+ 	dev_hold(dev);
+ 	nb->dev      = dev;
 
 
 base-commit: 93f51579e7df248780214094418f205253383cc5
