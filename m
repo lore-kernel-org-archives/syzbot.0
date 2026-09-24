@@ -1,138 +1,183 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAD0A42EEC4
-	for <syzbot@lists.linux.dev>; Thu, 24 Sep 2026 07:18:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FA69424D7C
+	for <syzbot@lists.linux.dev>; Thu, 24 Sep 2026 08:19:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790234342; cv=none; b=JbzcUAhxAEjxmZL/o4aUV5/QuyTjKrtwQJshsdZ4Wkz5hyAP1nN+LtG5I7Wyzb4Ma4CNtpam4kxnnmLMK8twgoaXOocl9Nd26HH/Ny8BNNun5trvwSSd0EDZBhfG7L3U70XoJKA+eYHyTxE9Tv491csWgLkqMjhrQYHxEjO5ZjQ=
+	t=1790237946; cv=none; b=JbBBrj+q+xQ0eB7bE4l8DuQJR9aULi9zEEc0gYO/VqJPYgOJ6cW2DB95fF3prU2V7NPdp1Qyoy+17NP18eEpEfRN91W4xAPXlbJBI6/sYZgXjAXpwCsd042mp3ZLxZ7GSUh2x7Xwgv894qnKbv/nFtMGplnUUSsDQUqx4p8Do6w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790234342; c=relaxed/simple;
-	bh=GM0ZDPb9BQzRxofJIx3YFOhVBCnyP7MFE2bvxS+0eMQ=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=rbE9nqmS5GQ9xIlofsDAsBvdrKK/uWmZSF2ANPyRZg5PETrJgaS/5q9HM7Eb09QrBEPQY2Mpvf9Z5wE+Gf0X9ivUmPH3dikLbL41y3vnNsfI4/l9xwnLY1UNrcGqPe3lElmUqoimC7hxYuGyh99S8wuEnQU11vjaG4cssaw+s2Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NQY87VU4; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790237946; c=relaxed/simple;
+	bh=k8r4Mit6isxGbzezwZVQt+fP51xldiqWhFfQGJ/ZHwE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=NMXnhYsSunfx8s3BI7AVKrP+Ce3Tbc1f+Ubt7ErxkQNsa/HY5Rc8x8p/igH4xBQ6NuCTs/DPEb4YNXEl4YcaSY21eu6xKLwLM+Ek9J0TYqvW2TE3NBzjt7PnOIj7NGPZB9h/IpblXGrui6wChdVxa6zC/KgkZ2Zg9m3WG/FPzqc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SvqSZOAm; arc=none smtp.client-ip=74.125.225.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NQY87VU4"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A0E141F000FF;
-	Thu, 24 Sep 2026 07:18:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790234332;
-	bh=WjZT7aMcfxWXxpdb/47mrQR48gi7BM4vCXAizA8Pw+g=;
-	h=From:To:Cc:Subject:Date;
-	b=NQY87VU4xrZohlY65Xq1RJDfywmjmFSop6wlgqpY8BrwEDKDSJHJBVnJ0w9IJ4ig4
-	 DRb5IqzAUC/1flKy3DSGQhlEn/q4SlyE/pwilxD1z1l4GC3xOsfuTr48icNaOAtT9/
-	 cHo/T2fiOLgsNYdhCPIkl56sxE2D2k8zHsjLjdY0KGaY97pbhViv3D2ZLTkVnorSFU
-	 tMrlGwGzh3x62yKNeAkdlG3lgp5MwPIBcKM32TRafnBJUlunFIDja/SMSTlppAYd0A
-	 BONKEN0pJzYvnbpgAH6dLZMsTe5ghHjGWkhyWlTZ31TnUK3N3UdsN6oivwITW8QVG4
-	 W26mEoFJeynIA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] SUNRPC: Use TASK_FREEZABLE_UNSAFE in __rpc_execute()
-Message-ID: <1a25e233-381b-4a90-9a62-da0a6968b575@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SvqSZOAm"
+Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-485933b24c3so1152994f8f.0
+        for <syzbot@lists.linux.dev>; Thu, 24 Sep 2026 01:19:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790237943; x=1790842743; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=vPDmEiJWTqhxeivaya9n4navVYHJBo360qvjV6+gdg4=;
+        b=SvqSZOAmU0ad7yajq5BD/UKkkR8JQ36jjFao/1HSmVSE+F/3WIsu41Ap7sniij4siS
+         X2UV2VT7Er/fqXkLvBEenOQI22oF6Q414XB/3SoNgAYySIU1mUo1kUhzuGcHredkrkU+
+         GGBJ99StWqTrT9pwlUxCRHV/TH2FgqshGDSGIvaF/Rx/0YM20rzuANm/BLFMtoVg8Yn8
+         fivkhEzXY7FQHu0NkS46tuqmcpM52l7VoOjKgBjbfTEVgS6rDB/eSKVOZPFM4te4ZiPA
+         Si9tTqkliq8mhYl+fFRNu67gRK47LMtM4+4qDaOADpd7uPMK/CBhX04aRNFDF0zGJ3Rw
+         Z81A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790237943; x=1790842743;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=vPDmEiJWTqhxeivaya9n4navVYHJBo360qvjV6+gdg4=;
+        b=1dtPs6HAR0iY3n9yqtNH0TFFVohb3IiX66kf/xgvDfvMCnODsL1XjLLTlZhTpAGSj+
+         rjwJfqE6VUg5W1EhPeuYMm1VeXJD9uLk9hM7dpcGucq11t5diBCvRclgjc+4lsVpJMnM
+         6d9rgx4IML3L0Sml3nXltGgJqK0QjlAZMVSwSnC/DKy5MhsIi4jtF7Je+S1+jmr8P1Al
+         YrEjDwoANdloarkGy1GP4Irv5dZiM3SMFmIEl8JKzAmUy/j1HCdkszOkRdWdHE7psi28
+         p0v7jQ4MppgoODO1+I4hv71CR75cNamEtkonBMdFX3dT+kN5ojqw3zQZX4A30+k/iJ/X
+         RQDw==
+X-Gm-Message-State: AFuF++lHZpgzkv22wchhzEsDukDqJsuuVKbkgY/fkAdytIf7J0fTeaZm
+	uRiFwJDo88eT43j0MJnYr4l2iUNzT/L+E7ha31nIYxxhvfUwOol0BSB8
+X-Gm-Gg: AYBFou0YUsSWrkA6BWBNzzjZxhEjqBLbfE44mqnW+jPB4iXFXhfCxtbQ3yOp6It1VO1
+	L0OvkdUVcTFN1oixB6f0EA0x9aivj2IwXzV4m7WdITZZeok55yqhTVZdMXsySF2ElLqZd5bWhAF
+	Bw9OGj020x7MaAmBx8PkOH0GHNX3bsb84YlHRePolIGn0AXZ1b7NbPWqfeP3IgSNviznPbqJ01O
+	NzkQ79217Ujqakcl+19TTcI942gmbaA68a9HPwLnLGA1+JMtozeT0hNKmx2jKwW00JIIKbvFJVj
+	Lv6Uf7jEOkZFuIcDNgMRWPhiikumuZI4H/jQa2cBrtrYCeztC6q8hTS3RIpi0X8HFCtzRhSvA0b
+	4uFEYN2fCso4D28/+nnUEIDpwgGvvNvTpFHxZtbZuRCGxD5qImQONYCtq/HXBel/wbEkDzVQfAw
+	q6v7bNNCEFFsNKipgnUQw8WV8YD5YFTaybIX0pjOKyIMRDVY+JZZblOLsU7X5UmwyOoAXGEJvuV
+	KJlgZwtK51Zjr04S8/JygQz0kkmtcVkrpTDFcAQVjCULrSgp/t4Y6IlIh1T7a5GY+On0bVXj76r
+	oHd+5+WKAnkIQW7h60KW3unlpHPIOE32ave6vkY/XA0N/6DDetB13ZutlpZ75apoPpa8/aeCprC
+	B5v+sRHYRChLAhSbiybyeiGpfbHk9OkkFCZXsK3KNrCgsb84=
+X-Received: by 2002:a5d:5f83:0:b0:487:725:8204 with SMTP id ffacd0b85a97d-4887170f5a2mr2817418f8f.44.1790237942510;
+        Thu, 24 Sep 2026 01:19:02 -0700 (PDT)
+Received: from [192.168.100.51] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-488687791cdsm11882885f8f.22.2026.09.24.01.19.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Sep 2026 01:19:02 -0700 (PDT)
+Message-ID: <ba18d9bb-55b5-44ad-8bb6-e610630c465d@gmail.com>
+Date: Thu, 24 Sep 2026 10:19:01 +0200
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Thu, 24 Sep 2026 07:18:52 +0000 (UTC)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC] fat: set buffer uptodate before dirtying in
+ vfat_update_dotdot_de()
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+References: <012d4ac1-83f3-48af-8781-00fbbc4adc93@mail.kernel.org>
+Content-Language: en-US
+From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+In-Reply-To: <012d4ac1-83f3-48af-8781-00fbbc4adc93@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-When a task executes a synchronous RPC call via __rpc_execute(), it waits
-for the queued RPC task to wake up using out_of_line_wait_on_bit(). Callers
-in subsystems such as NFS or NFSD (for example, write_ports() acquiring
-nfsd_mutex during NFS server initialization and issuing an rpc_ping())
-frequently hold locks across these synchronous RPC waits.
+On 9/22/2026 9:10 PM, syzbot wrote:
+> During a directory rename operation (such as rename or rename-exchange),
+> vfat_update_dotdot_de() is invoked to update the ".." directory entry to
+> point to the new parent directory. In vfat_update_dotdot_de(), the buffer
+> head is dirtied via mmb_mark_buffer_dirty(), and if synchronous directory
+> operations are enabled (such as when mounted with MS_SYNCHRONOUS where
+> IS_DIRSYNC() is true), sync_dirty_buffer() is immediately called to write
+> the buffer to disk. If writing the buffer fails due to an I/O error on the
+> underlying block device, the block layer completion handler clears the
+> BH_Uptodate flag on the buffer head, and sync_dirty_buffer() returns an
+> error.
+> 
+> When vfat_rename_exchange() or vfat_rename() encounters an error during the
+> rename sequence, it jumps to an error rollback path to restore the original
+> ".." entry by calling vfat_update_dotdot_de() again with the same buffer
+> head. When vfat_update_dotdot_de() calls mmb_mark_buffer_dirty(),
+> mark_buffer_dirty() checks whether the buffer is uptodate and triggers a
+> warning because BH_Uptodate was cleared by the earlier write error:
+> 
+> !buffer_uptodate(bh)
+> WARNING: fs/buffer.c:991 at mark_buffer_dirty+0x299/0x410 fs/buffer.c:991
+> Call Trace:
+>   <TASK>
+>   mmb_mark_buffer_dirty+0x2c/0x1f0 fs/buffer.c:624
+>   vfat_update_dotdot_de+0x90/0x1c0 fs/fat/namei_vfat.c:917
+>   vfat_rename_exchange fs/fat/namei_vfat.c:1140 [inline]
+>   vfat_rename2+0xe3e/0x1c90 fs/fat/namei_vfat.c:1171
+>   vfs_rename+0xbd9/0xef0 fs/namei.c:6208
+>   filename_renameat2+0x533/0x9a0 fs/namei.c:6326
+>   do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+>   entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>   </TASK>
+> 
+> The in-memory data in the buffer head remains valid because it was
+> originally read successfully from disk and only modified in memory; the I/O
+> failure only indicates that writing it to the media failed. Fix this by
+> calling set_buffer_uptodate() in vfat_update_dotdot_de() prior to marking
+> the buffer dirty. This ensures that BH_Uptodate is set before
+> mark_buffer_dirty() is called, preventing the spurious warning during error
+> rollback.
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+b0aebd03565f5774f7f8@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=b0aebd03565f5774f7f8
+> Link: https://syzkaller.appspot.com/ai_job?id=047c8bd2-3171-476a-9977-78f4bc3e39b3
+> To: "OGAWA Hirofumi" <hirofumi@mail.parknet.co.jp>
+> To: <linux-kernel@vger.kernel.org>
+> To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
+> 
+> ---
+> diff --git a/fs/fat/namei_vfat.c b/fs/fat/namei_vfat.c
+> index da3e89c0b..b84228e7f 100644
+> --- a/fs/fat/namei_vfat.c
+> +++ b/fs/fat/namei_vfat.c
+> @@ -914,6 +914,12 @@ static int vfat_update_dotdot_de(struct inode *dir, struct inode *inode,
+>   				 struct msdos_dir_entry *dotdot_de)
+>   {
+>   	fat_set_start(dotdot_de, MSDOS_I(dir)->i_logstart);
+> +	/*
+> +	 * If a previous sync failed, the block layer's end-io handler clears
+> +	 * BH_Uptodate. Set it uptodate before marking dirty to prevent
+> +	 * mark_buffer_dirty() from warning during error rollback.
+> +	 */
+> +	set_buffer_uptodate(dotdot_bh);
+>   	mmb_mark_buffer_dirty(dotdot_bh, &MSDOS_I(inode)->i_metadata_bhs);
+>   	if (IS_DIRSYNC(dir))
+>   		return sync_dirty_buffer(dotdot_bh);
+> 
+> 
+> base-commit: 93f51579e7df248780214094418f205253383cc5
 
-Historically, rpc_wait_bit_killable() invoked freezable_schedule_unsafe(),
-which explicitly bypassed lockdep checks for held locks during freeze.
-However, during the core freezer refactoring in commit f5d39b020809
-("freezer,sched: Rewrite core freezer logic"), freezable_schedule_unsafe()
-was removed, and callers were updated to pass freezer flags directly into
-out_of_line_wait_on_bit(). While rpc_wait_for_completion_task() was
-correctly updated to use TASK_KILLABLE | TASK_FREEZABLE_UNSAFE,
-__rpc_execute() was mistakenly updated to use TASK_KILLABLE |
-TASK_FREEZABLE without the unsafe flag.
+In `vfat_update_dotdot_de()`, remove the unconditional 
+`set_buffer_uptodate(dotdot_bh)`. A failed synchronous write clears 
+`BH_Uptodate`, and the rename rollback then warns when it dirties the 
+same buffer. The current assignment can suppress that warning after one 
+isolated failed write, but it claims that the whole buffer is valid 
+after changing only two entry fields. It also races with I/O completion, 
+which can clear the bit again. The buffer API requires serialization for 
+this state change.
 
-As a result, if a system suspend occurs concurrently while a task is
-waiting in __rpc_execute() with a lock held, __set_task_frozen() observes
-p->lockdep_depth > 0 without __TASK_FREEZABLE_UNSAFE and triggers a lockdep
-warning:
+Keep the check in this shared VFAT helper. Take `BH_Lock` before testing 
+`buffer_uptodate(dotdot_bh)`. If the bit is clear after waiting for I/O, 
+unlock and return `-EIO` before changing the `..` entry or marking its 
+buffer dirty. Keep the lock through `fat_set_start()` and 
+`mmb_mark_buffer_dirty()`, then unlock before the existing 
+`sync_dirty_buffer()` call. Preserve the existing buffer reference, 
+rename cleanup, and first forward error. Do not duplicate the check in 
+the rename rollback labels or expand this revision to the separate MSDOS 
+path.
 
-WARNING: kernel/freezer.c:139 at __set_task_frozen+0x260/0x340
-Call Trace:
- <TASK>
- task_call_func+0x1aa/0x260 kernel/sched/core.c:4518
- __freeze_task kernel/freezer.c:150 [inline]
- freeze_task+0x216/0x390 kernel/freezer.c:169
- try_to_freeze_tasks+0x190/0x620 kernel/power/process.c:54
- freeze_processes+0xd0/0x1f0 kernel/power/process.c:137
- suspend_prepare kernel/power/suspend.c:387 [inline]
- enter_state kernel/power/suspend.c:609 [inline]
- pm_suspend+0x2f1/0x760 kernel/power/suspend.c:644
- state_store+0x206/0x290 kernel/power/main.c:819
- kernfs_fop_write_iter+0x3a5/0x540 fs/kernfs/file.c:345
- vfs_write+0x61e/0xbb0 fs/read_write.c:687
- ksys_write+0x156/0x270 fs/read_write.c:739
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
+Update the subject so it describes validation rather than forcing the 
+bit set. A suitable subject is `fat: validate VFAT dotdot buffers before 
+dirtying`. Shorten the body to explain the failed write, the rollback 
+warning, and how the locked state check avoids it. Remove the full stack 
+trace and the broad claim that the held bytes are always valid after a 
+failed write. Keep the existing `Fixes`, `Reported-by`, `Closes`, 
+`Link`, and Gemini provenance tags.
 
-Update __rpc_execute() to pass TASK_KILLABLE | TASK_FREEZABLE_UNSAFE to
-out_of_line_wait_on_bit(). This restores the pre-regression behavior and
-aligns __rpc_execute() with rpc_wait_for_completion_task(), avoiding the
-false-positive lockdep warning when tasks holding locks are frozen during
-synchronous RPC execution.
-
-Fixes: f5d39b020809 ("freezer,sched: Rewrite core freezer logic")
-Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+209eccd8f507de9f7f1b@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=209eccd8f507de9f7f1b
-Link: https://syzkaller.appspot.com/ai_job?id=cb10c20b-f568-4900-8b09-dc937852ee3f
-To: "Anna Schumaker" <anna@kernel.org>
-To: "Chuck Lever" <cel@kernel.org>
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: "Jeff Layton" <jlayton@kernel.org>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <linux-nfs@vger.kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Trond Myklebust" <trondmy@kernel.org>
-To: "Peter Zijlstra" <peterz@infradead.org>
-Cc: "Dai Ngo" <Dai.Ngo@oracle.com>
-Cc: "Simon Horman" <horms@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "NeilBrown" <neil@brown.name>
-Cc: "Olga Kornievskaia" <okorniev@redhat.com>
-Cc: "Tom Talpey" <tom@talpey.com>
-
----
-diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
-index 016f16ca5..494947d50 100644
---- a/net/sunrpc/sched.c
-+++ b/net/sunrpc/sched.c
-@@ -984,7 +984,7 @@ static void __rpc_execute(struct rpc_task *task)
- 		trace_rpc_task_sync_sleep(task, task->tk_action);
- 		status = out_of_line_wait_on_bit(&task->tk_runstate,
- 				RPC_TASK_QUEUED, rpc_wait_bit_killable,
--				TASK_KILLABLE|TASK_FREEZABLE);
-+				TASK_KILLABLE | TASK_FREEZABLE_UNSAFE);
- 		if (status < 0) {
- 			/*
- 			 * When a sync task receives a signal, it exits with
-
-
-base-commit: 93f51579e7df248780214094418f205253383cc5
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
