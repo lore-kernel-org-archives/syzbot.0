@@ -1,156 +1,257 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35A5B2673AA
-	for <syzbot@lists.linux.dev>; Thu, 24 Sep 2026 14:00:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEC273F076E
+	for <syzbot@lists.linux.dev>; Thu, 24 Sep 2026 19:19:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790258402; cv=none; b=rOQfeN6Fg1iss766n9Lfl2T3jhHbyESLUvfXUvntpSvV/URQgNqHMMTS1fh3XSIBi+PbOR8E5uUNCdF5BFzb4FWNYyFD7/ESB9VoXHM3xJ3wavOGvumBpput3O5sp9nL+AkyCnDVtLvaksBpAZaNereOYE7JaerCOBXOQE3+HCw=
+	t=1790277597; cv=none; b=AY2REb0zLy6h6MZvcE46VaFRT4fM2bQ1W3K5bu1wuJSov9xqVI58mtKa3ez7LQSr01rR+wcn31Fusd/YWXFxMXiLANspYYeorLCGBtUH7t2VMTdJdW+9L3GRpJBrXgg5V3tOi9tE1LR4H91DibKJwZXYv+NcATLxcIEr9rk1bvo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790258402; c=relaxed/simple;
-	bh=pEwGVev/ihnU+GyVkhAZ6TstUk/ylrqsIXMKRmww/FI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OPWouPp7plCTvDbPqUbxpahhNYJPtcC7Zd0/5xWIEJcI2tss3Af4XYZMot3QJWzoux7RJGE3RGzTkjpLoYaNfqLtz7NEpLM5766T9wgYvYHUjEEdwMbUVVUhuXOkckoPz1j9u/XN9nmEINqNjpSRc3Pdsz7DRH62AO6S+99vC/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nxz36pJn; arc=none smtp.client-ip=209.85.167.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790277597; c=relaxed/simple;
+	bh=x7XunwwHVgum1ifat5Y7QSPAv0BpY1eF4FzF4qL+cgk=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=IY189VfS/ww7BNwYkB5amTKEyDtMr7DUuu7mHUa4c57/zHS99NIzV87s16CO0ODapy/yXs1FWF4CTyBi9Rd/NmRn4SbmD71FlSBTw2ZtSjNXPCX/OviDf7HAV4PjeM8jyDQZYsdH0+F/uGAbps2uRUzKyg7+PyKE1vM9rv4rBsY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kkHmEdJD; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nxz36pJn"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-5b76694fb7aso1094297e87.0
-        for <syzbot@lists.linux.dev>; Thu, 24 Sep 2026 06:59:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790258398; x=1790863198; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=RFICnFn82EQZJWy8+/UPCsZMJMATAJUe2Jzx6Q1O5Nw=;
-        b=nxz36pJnGjaZFYUaS6fyc8hihdw6D8GG8dug/ZOg9jHTp9RG70jOYsG+CGCLMh+xu1
-         qwqO4lAWcB6b0R9sOng8YSK01aEt3U2Nl/9R1M5tGITSrfecpRqB6fsFu0Jav+EkPBHs
-         YjKhPbRhVl4tFrUuTh6oZqKi8eTtqCVUiI1uaDLKaqYInHfAomDs2BnxUUGTGBZBxERw
-         IPtnORFnkNAwtpyB/KA7IRE1O+6rPlpEIL0ZILTirkyb+px+jYFyylLAKk1BVo/x4E/I
-         kLW20WueWTqwqx3xvydD9F9z4/Los8qH7lgvh1Y2A7y1Vh19VXbdRL8Ffa2wk0iJiEsJ
-         nHjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790258398; x=1790863198;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=RFICnFn82EQZJWy8+/UPCsZMJMATAJUe2Jzx6Q1O5Nw=;
-        b=bxIqqej/jujBNBf/CKBf2YXnPqAA0+tIiJatXVT+Eo71OFR1OA1SPdwOBvotKBzOt+
-         nfcf0fZMsyvMCDwuwS/kJsFFBTqC7z96uagXgYpmxdxa3Akx4JLt9QiT+SmNbUy/+At2
-         DfoE1/1e8vueH0mUMycDl6661Ym2zNM12kubkqWZH2RstRshCdhYw91cKSh2ug9meBu8
-         +78jK9E3Ni5x4JkUOS8gGdaYP6GF6OGfTVC/hm3wTnxoXAWr4YDY6yVkEAV+L/OyTtjd
-         a3qQvqHomUiQ1MuY0NgajunoBwj5QGls7GP4ZtcKqWR3aocrKql50mT0PGkCR+4f7pOX
-         Zknw==
-X-Gm-Message-State: AFuF++lx92f9qq79z7ypzq/BQq1mlPBDboveYWi65txVjyi2E8Yoc8FI
-	INeFwAJ3d2b0B3hGgj2zyIjymyygH5bGdq3SVgoGvucNT6tjg7llIpTE
-X-Gm-Gg: AYBFou2+JPFYrX7/YmJ+xYzg2ouRZQOsypLQtIP+Nqibd8dAFdW+jIxCI3gr07Wrpog
-	M3yz0nLtY2aDwvweZOdZg64srwndykUwIVwi/WyJAxC9J8lCB1i4bb0GwBMx0itiwrjk3ls/hUZ
-	t7EGwzt6zCwONtS53gd90zsS/p+3biCN+rq+XbylgZ3SDJmdDDmZCCNXOLT9joqQawYEdl0ztzh
-	clEtKC6nwlj9c6rx9VIoVAwK07BtWaNFbMSgS03SuQTrZpcGPKlm7gIEJ58skO8KEuX49IS809H
-	wyR0x2pZ0XLRysIewwX9FHEtwLce4iYdTGqH0dFNMjEnIrWF0vzECrnMXRWA2/gVtyZQQw24Rjy
-	Yhs0zz4zN+9jjHWgy2UMoxYmzFVJVOKFsfkFxDwvrL6zB8uuopkb8YpEBMMAM/fa5XT/X+4CA5T
-	kutDcAJfxHA4UjB/mb9FSMnEDLpS8MTtW3zMp5ptPFQdphIg5VjRtYLCqlIW/lxW8ZSkDN5itbx
-	i4XxQn1L9hwPuJJu+Ocm/U6RAXZzOyoIvoAhiV3q1f8FjggyJr8qEccKFTbGS7bDv3ogihSNbKQ
-	5/4x4CoiRdTIiMgEgfR1eouymHGwS/Q0H1AJ4Ycj1wo/6N+hY4OMXNqWCgmpZt7pQD7h06UTHkD
-	Rjof6wePGCaG0Vi5sl+ndgU7pQJCLzMNGMJICAqiv/3W4A1hDmMPzYoi7
-X-Received: by 2002:a05:6512:3d28:b0:5b3:13eb:ef5f with SMTP id 2adb3069b0e04-5b8df0d3ebdmr856155e87.15.1790258397893;
-        Thu, 24 Sep 2026 06:59:57 -0700 (PDT)
-Received: from [192.168.100.51] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b8d858085bsm1496924e87.40.2026.09.24.06.59.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Sep 2026 06:59:57 -0700 (PDT)
-Message-ID: <185f9c15-803d-4e57-8f2e-350d985849a1@gmail.com>
-Date: Thu, 24 Sep 2026 15:59:56 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kkHmEdJD"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 41BB71F000FF;
+	Thu, 24 Sep 2026 19:19:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790277595;
+	bh=QCM+6txNCPLg/YiWQe4qVWwblxg/8wfu6v1YZNIqBkw=;
+	h=From:To:Cc:Subject:Date;
+	b=kkHmEdJD+ACoJwXarSWnMROOTONUoO4RgnmWLS86TvYkxYMRZHvdwPWs2ruS4oCiF
+	 SreEJ5l52uFoDE+18XpnL7C8F5f1FHXOdAgda6wVhdcOIS1yzf3AArikuT21C+b58g
+	 SPLvpWenScIBxjHQw88mURrNzsTCw6s1nTPpl8inwWmFlUQUJk+7XPSnhLm1gxFFTA
+	 Agt73fbBaJ/c0WsReXxOlZeof1t29+5E49G7yfGISNaiXyUl5pmJ6EN9g4AmeAQKlM
+	 sb9iPfIgear0e7GgA9LNv4jmxyFz/Wig3s9R95clZb/oWpO6+fSRrVCrJF/2Y9WnYk
+	 YopoEcF9EDm6w==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v3] fat: validate dotdot buffers in VFAT and MSDOS rename and rollback
+Message-ID: <7ea246ae-9417-4507-920d-4afb771c59ac@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v2] fat: validate VFAT dotdot buffers before dirtying
-To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-References: <56341edb-4dc2-4683-9776-641253569bb3@mail.kernel.org>
-Content-Language: en-US
-From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-In-Reply-To: <56341edb-4dc2-4683-9776-641253569bb3@mail.kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Thu, 24 Sep 2026 19:19:55 +0000 (UTC)
 
-On 9/24/2026 12:05 PM, syzbot wrote:
-> During directory rename operations with synchronous directory updates
-> enabled, vfat_update_dotdot_de() writes the ".." directory entry via
-> sync_dirty_buffer(). If this write fails due to an I/O error, the block
-> layer clears the BH_Uptodate flag. When rename enters its error rollback
-> path, it calls vfat_update_dotdot_de() again with the same buffer head,
-> which calls mmb_mark_buffer_dirty() and triggers a "!buffer_uptodate(bh)"
-> warning in mark_buffer_dirty().
-> 
-> Fix this by locking the buffer head in vfat_update_dotdot_de() and checking
-> buffer_uptodate() before modifying the entry. If the buffer is not
-> uptodate, unlock it and return -EIO, preventing mmb_mark_buffer_dirty()
-> from being called on a non-uptodate buffer.
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Assisted-by: Gemini:gemini-3.8-flash syzbot
-> Reported-by: syzbot+b0aebd03565f5774f7f8@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=b0aebd03565f5774f7f8
-> Link: https://syzkaller.appspot.com/ai_job?id=27914cea-b3da-4f37-a39a-cc2d26c706b7
-> To: "OGAWA Hirofumi" <hirofumi@mail.parknet.co.jp>
-> To: <linux-kernel@vger.kernel.org>
-> To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
-> 
-> ---
-> v2:
-> - Lock the buffer head and return -EIO if it is not uptodate instead of calling set_buffer_uptodate().
-> - Update the patch subject to reflect buffer validation.
-> - Shorten the commit description and remove the stack trace.
-> 
-> v1:
-> https://lore.kernel.org/all/012d4ac1-83f3-48af-8781-00fbbc4adc93@mail.kernel.org/T/
-> ---
-> diff --git a/fs/fat/namei_vfat.c b/fs/fat/namei_vfat.c
-> index da3e89c0b..1e7fd4003 100644
-> --- a/fs/fat/namei_vfat.c
-> +++ b/fs/fat/namei_vfat.c
-> @@ -913,8 +913,14 @@ static int vfat_update_dotdot_de(struct inode *dir, struct inode *inode,
->   				 struct buffer_head *dotdot_bh,
->   				 struct msdos_dir_entry *dotdot_de)
->   {
-> +	lock_buffer(dotdot_bh);
-> +	if (!buffer_uptodate(dotdot_bh)) {
-> +		unlock_buffer(dotdot_bh);
-> +		return -EIO;
-> +	}
->   	fat_set_start(dotdot_de, MSDOS_I(dir)->i_logstart);
->   	mmb_mark_buffer_dirty(dotdot_bh, &MSDOS_I(inode)->i_metadata_bhs);
-> +	unlock_buffer(dotdot_bh);
->   	if (IS_DIRSYNC(dir))
->   		return sync_dirty_buffer(dotdot_bh);
->   	return 0;
-> 
-> 
-> base-commit: 93f51579e7df248780214094418f205253383cc5
+During cross-directory rename operations with synchronous directory updates
+enabled in VFAT and MSDOS, updating the ".." directory entry writes the
+buffer via sync_dirty_buffer(). If this write fails due to an I/O error,
+the block layer clears the BH_Uptodate flag. When rename enters its error
+rollback path, it attempts to update the ".." directory entry again with
+the same buffer head, which calls mmb_mark_buffer_dirty() and triggers a
+"!buffer_uptodate(bh)" warning in mark_buffer_dirty().
 
-Please extend the `BH_Uptodate` guard to MSDOS cross-directory rename 
-and its rollback. A failed synchronous write of the `..` entry clears 
-`BH_Uptodate`. `do_msdos_rename()` then changes and dirties the same 
-retained buffer during rollback, so `mark_buffer_dirty()` can still 
-warn. The current VFAT-only change leaves that sibling path exposed.
+Fix this by introducing a common helper fat_update_dotdot_de() in
+fs/fat/dir.c, used by both VFAT and MSDOS cross-directory rename and
+rollback paths. The helper locks the buffer head and checks
+buffer_uptodate() before modifying the entry. If the buffer is not
+uptodate, unlock it and return -EIO, preventing mmb_mark_buffer_dirty()
+from being called on a non-uptodate buffer.
 
-Put the locked state check, parent-cluster update, and dirty mark in one 
-shared FAT `..` update operation used by VFAT and MSDOS. Return `-EIO` 
-before modifying a non-uptodate buffer. Keep the buffer lock through the 
-dirty mark and release it before `sync_dirty_buffer()`. Preserve the 
-current VFAT check, each caller's existing synchronous-write choice, 
-rename cleanup, original error precedence, and filesystem-corruption 
-reporting.
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Assisted-by: Gemini:gemini-3.8-flash syzbot
+Reported-by: syzbot+b0aebd03565f5774f7f8@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=b0aebd03565f5774f7f8
+Link: https://syzkaller.appspot.com/ai_job?id=a860bfca-0d0a-4ee1-ab62-38c1df430ba2
+To: "OGAWA Hirofumi" <hirofumi@mail.parknet.co.jp>
+To: <linux-kernel@vger.kernel.org>
+To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
 
-Update the subject and short commit description to cover both VFAT and 
-MSDOS. Keep the supported `Fixes:` tag and existing syzbot provenance 
-and report tags. No other behavior change is requested.
+---
+v3:
+- Move vfat_update_dotdot_de() to a shared fat_update_dotdot_de() helper in fs/fat/dir.c
+- Use fat_update_dotdot_de() in MSDOS cross-directory rename and rollback paths
+- Update commit subject and description to reflect both VFAT and MSDOS coverage
 
+v2:
+- Lock the buffer head and return -EIO if it is not uptodate instead of calling set_buffer_uptodate().
+- Update the patch subject to reflect buffer validation.
+- Shorten the commit description and remove the stack trace.
+https://lore.kernel.org/all/56341edb-4dc2-4683-9776-641253569bb3@mail.kernel.org/T/
+
+v1:
+https://lore.kernel.org/all/012d4ac1-83f3-48af-8781-00fbbc4adc93@mail.kernel.org/T/
+---
+diff --git a/fs/fat/dir.c b/fs/fat/dir.c
+index 35bdb6294..daddae43e 100644
+--- a/fs/fat/dir.c
++++ b/fs/fat/dir.c
+@@ -941,6 +941,24 @@ int fat_get_dotdot_entry(struct inode *dir, struct buffer_head **bh,
+ }
+ EXPORT_SYMBOL_GPL(fat_get_dotdot_entry);
+ 
++int fat_update_dotdot_de(struct inode *dir, struct inode *inode,
++			 struct buffer_head *dotdot_bh,
++			 struct msdos_dir_entry *dotdot_de)
++{
++	lock_buffer(dotdot_bh);
++	if (!buffer_uptodate(dotdot_bh)) {
++		unlock_buffer(dotdot_bh);
++		return -EIO;
++	}
++	fat_set_start(dotdot_de, MSDOS_I(dir)->i_logstart);
++	mmb_mark_buffer_dirty(dotdot_bh, &MSDOS_I(inode)->i_metadata_bhs);
++	unlock_buffer(dotdot_bh);
++	if (IS_DIRSYNC(dir))
++		return sync_dirty_buffer(dotdot_bh);
++	return 0;
++}
++EXPORT_SYMBOL_GPL(fat_update_dotdot_de);
++
+ /* See if directory is empty */
+ int fat_dir_empty(struct inode *dir)
+ {
+diff --git a/fs/fat/fat.h b/fs/fat/fat.h
+index 61338413d..07092e055 100644
+--- a/fs/fat/fat.h
++++ b/fs/fat/fat.h
+@@ -339,6 +339,9 @@ extern int fat_scan_logstart(struct inode *dir, int i_logstart,
+ 			     struct fat_slot_info *sinfo);
+ extern int fat_get_dotdot_entry(struct inode *dir, struct buffer_head **bh,
+ 				struct msdos_dir_entry **de);
++extern int fat_update_dotdot_de(struct inode *dir, struct inode *inode,
++				struct buffer_head *dotdot_bh,
++				struct msdos_dir_entry *dotdot_de);
+ extern int fat_alloc_new_dir(struct inode *dir, struct timespec64 *ts);
+ extern int fat_add_entries(struct inode *dir, void *slots, int nr_slots,
+ 			   struct fat_slot_info *sinfo);
+diff --git a/fs/fat/namei_msdos.c b/fs/fat/namei_msdos.c
+index d46d1a385..ee0af94a1 100644
+--- a/fs/fat/namei_msdos.c
++++ b/fs/fat/namei_msdos.c
+@@ -527,14 +527,10 @@ static int do_msdos_rename(struct inode *old_dir, unsigned char *old_name,
+ 	}
+ 
+ 	if (update_dotdot) {
+-		fat_set_start(dotdot_de, MSDOS_I(new_dir)->i_logstart);
+-		mmb_mark_buffer_dirty(dotdot_bh,
+-				      &MSDOS_I(old_inode)->i_metadata_bhs);
+-		if (IS_DIRSYNC(new_dir)) {
+-			err = sync_dirty_buffer(dotdot_bh);
+-			if (err)
+-				goto error_dotdot;
+-		}
++		err = fat_update_dotdot_de(new_dir, old_inode, dotdot_bh,
++					   dotdot_de);
++		if (err)
++			goto error_dotdot;
+ 		drop_nlink(old_dir);
+ 		if (!new_inode)
+ 			inc_nlink(new_dir);
+@@ -565,12 +561,9 @@ static int do_msdos_rename(struct inode *old_dir, unsigned char *old_name,
+ 	/* data cluster is shared, serious corruption */
+ 	corrupt = 1;
+ 
+-	if (update_dotdot) {
+-		fat_set_start(dotdot_de, MSDOS_I(old_dir)->i_logstart);
+-		mmb_mark_buffer_dirty(dotdot_bh,
+-				      &MSDOS_I(old_inode)->i_metadata_bhs);
+-		corrupt |= sync_dirty_buffer(dotdot_bh);
+-	}
++	if (update_dotdot)
++		corrupt |= fat_update_dotdot_de(old_dir, old_inode, dotdot_bh,
++						dotdot_de);
+ error_inode:
+ 	fat_detach(old_inode);
+ 	fat_attach(old_inode, old_sinfo.i_pos);
+diff --git a/fs/fat/namei_vfat.c b/fs/fat/namei_vfat.c
+index da3e89c0b..56da78455 100644
+--- a/fs/fat/namei_vfat.c
++++ b/fs/fat/namei_vfat.c
+@@ -909,16 +909,6 @@ static int vfat_sync_ipos(struct inode *dir, struct inode *inode)
+ 	return 0;
+ }
+ 
+-static int vfat_update_dotdot_de(struct inode *dir, struct inode *inode,
+-				 struct buffer_head *dotdot_bh,
+-				 struct msdos_dir_entry *dotdot_de)
+-{
+-	fat_set_start(dotdot_de, MSDOS_I(dir)->i_logstart);
+-	mmb_mark_buffer_dirty(dotdot_bh, &MSDOS_I(inode)->i_metadata_bhs);
+-	if (IS_DIRSYNC(dir))
+-		return sync_dirty_buffer(dotdot_bh);
+-	return 0;
+-}
+ 
+ static void vfat_update_dir_metadata(struct inode *dir, struct timespec64 *ts)
+ {
+@@ -981,8 +971,8 @@ static int vfat_rename(struct inode *old_dir, struct dentry *old_dentry,
+ 		goto error_inode;
+ 
+ 	if (dotdot_de) {
+-		err = vfat_update_dotdot_de(new_dir, old_inode, dotdot_bh,
+-					    dotdot_de);
++		err = fat_update_dotdot_de(new_dir, old_inode, dotdot_bh,
++					   dotdot_de);
+ 		if (err)
+ 			goto error_dotdot;
+ 		drop_nlink(old_dir);
+@@ -1014,8 +1004,8 @@ static int vfat_rename(struct inode *old_dir, struct dentry *old_dentry,
+ 	corrupt = 1;
+ 
+ 	if (dotdot_de) {
+-		corrupt |= vfat_update_dotdot_de(old_dir, old_inode, dotdot_bh,
+-						 dotdot_de);
++		corrupt |= fat_update_dotdot_de(old_dir, old_inode, dotdot_bh,
++						dotdot_de);
+ 	}
+ error_inode:
+ 	fat_detach(old_inode);
+@@ -1103,14 +1093,14 @@ static int vfat_rename_exchange(struct inode *old_dir, struct dentry *old_dentry
+ 
+ 	/* update ".." directory entry info */
+ 	if (old_dotdot_de) {
+-		err = vfat_update_dotdot_de(new_dir, old_inode, old_dotdot_bh,
+-					    old_dotdot_de);
++		err = fat_update_dotdot_de(new_dir, old_inode, old_dotdot_bh,
++					   old_dotdot_de);
+ 		if (err)
+ 			goto error_old_dotdot;
+ 	}
+ 	if (new_dotdot_de) {
+-		err = vfat_update_dotdot_de(old_dir, new_inode, new_dotdot_bh,
+-					    new_dotdot_de);
++		err = fat_update_dotdot_de(old_dir, new_inode, new_dotdot_bh,
++					   new_dotdot_de);
+ 		if (err)
+ 			goto error_new_dotdot;
+ 	}
+@@ -1137,14 +1127,14 @@ static int vfat_rename_exchange(struct inode *old_dir, struct dentry *old_dentry
+ 
+ error_new_dotdot:
+ 	if (new_dotdot_de) {
+-		corrupt |= vfat_update_dotdot_de(new_dir, new_inode,
+-						 new_dotdot_bh, new_dotdot_de);
++		corrupt |= fat_update_dotdot_de(new_dir, new_inode,
++						new_dotdot_bh, new_dotdot_de);
+ 	}
+ 
+ error_old_dotdot:
+ 	if (old_dotdot_de) {
+-		corrupt |= vfat_update_dotdot_de(old_dir, old_inode,
+-						 old_dotdot_bh, old_dotdot_de);
++		corrupt |= fat_update_dotdot_de(old_dir, old_inode,
++						old_dotdot_bh, old_dotdot_de);
+ 	}
+ 
+ error_exchange:
+
+
+base-commit: 93f51579e7df248780214094418f205253383cc5
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
