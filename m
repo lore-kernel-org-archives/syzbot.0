@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C449D3E7BD5
-	for <syzbot@lists.linux.dev>; Thu, 24 Sep 2026 19:43:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4A57476CC6
+	for <syzbot@lists.linux.dev>; Thu, 24 Sep 2026 21:01:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790279007; cv=none; b=bE8IR4yYTuaIqNo2U4JCASJ2Sti3z5roQ/dNvlEapAQKYyLEQn8wGEJdj3435atb2GFe6NndUaj9SWHRWL7CmvBbp1bWXDgKtywmpsKmVUHSSMgh8j2k1+EMqA4P//vzJrAGlMZ90gjLgEZGWjLjz6LHOSEVHh0gbVCY0LkjOL0=
+	t=1790283689; cv=none; b=epj6d9OnzVBES/kdhJ5/wAzSod2RJRzCT2G5XFY6O4MSw2ER6BHQoJ6TbrGHO5eNPVPMFuC7VHpHHAxP+JxWS8APU2U/Yd9JM8kijXvN/qWkXAQb/uwLTnuDVH9NHYLCqfQcfq1PvcFK1GoMiXg3EYrpE/6dIlHdvwmT+KqJJOo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790279007; c=relaxed/simple;
-	bh=z6l86SS38fVxvP8rD1YoWg5dfc3UAZBeg2wm9vVVHa0=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ESkJsWU08zqmvcf+VpLdXjw/Zh9126iejbGvchEVR0+ldFfBweKpcLYgMjdCtxoA3iJDwBKFy1CFxa0JVQhcBoXNiMYMdaI23mELdIDK8mH3qRP3OvEUQMVjHRxFr+hcXiIVJOibpXB+tFxIpnI7qplBv642alBtrAZKB/XFlBc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q+Fjj/9L; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790283689; c=relaxed/simple;
+	bh=+twgyE+ke/lnUVfH1iGSRe0wxeVpyYFFHTkr1PD0BNI=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=lrWgO6ep/zm2f1Et8xgBzAs4Unm/xaDalrHU+nsMnB5mR8B+ZcoGoq2HRZZcJ0cHECeVvTWghy2EbMFFI0nohSqvlIy6nF/Uddv1+Z7IOaJM+pt3R1ztM45Zg8ZRJcZsXnWLKfdamf5F4D3qGGBTlNm8208yZOoOLdjWiD/Q/ek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rtij5zYh; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q+Fjj/9L"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id E78741F000FF;
-	Thu, 24 Sep 2026 19:43:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rtij5zYh"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 0B6FC1F00893;
+	Thu, 24 Sep 2026 21:01:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790279005;
-	bh=9Eo3Cy4Kq3ik0qEInIh8gWc0HpiHgQBMDBGA+ednp74=;
+	s=k20260515; t=1790283685;
+	bh=GM3TqanimrZpxHNr0dp91FqBJegvML/l/XNXVZv1ofo=;
 	h=From:To:Cc:Subject:Date;
-	b=Q+Fjj/9LwGNWIR462jV7TfZ9GX9RM2lqhsBuTBsEj0w82cjoq/sSh5bIAN6H/kzIK
-	 PX0Q0uXt3VNpX3WM3cZUBV2sBfDFUDyEdMpz1cppBZudaXBnqqU4TB8/9xmrF2IslO
-	 5GLXKieVCeMidsfpo3lIUmoB0EGxBmQOCYCkLCYJ2G/OJOY6lad4PhbhCn+iidqhmx
-	 KJCb44H5OQJNbbLEboIFVJLdHLnZSKmtibzGMfBfKp40ZgASqjjPOyipYMiccYppSt
-	 8MZVNKn8KeQEpxpOeK0sbkjmPkV+RGaFACaK6ZjRnt3twFJX6ptDa8A+M80WzN9XvR
-	 zyZolajwK9vwQ==
+	b=Rtij5zYhe6HAsuETnr8hm7UkxPANSc/w0wdAhbox4NEeJ13ZVpBxoETGkhImQZvdu
+	 wtsRZv1RxVqpmV41X37zFZSUbYTft9D96ADpLTpx6AIuuyd7RtoXlSjt8Eg8lxeYDm
+	 +HYcgUZq0ZVO9r8HlSCLogX69uyh5b72d76NzIkRyRHkL48XkbuEOEnv4bdmiUzx2z
+	 din19TQnQF+BrrCQqoCW4X0Z077ed+RVu7MPyP0Njv8+vBDfrfHbA/zyKkeBI2vZO8
+	 Oy0axAvmhuKr2Xf8LSPR7uWJ6rOHlaoTQRUlx61pIwf3lpPn8X1YUQqD3NTkjEndlh
+	 IPLWXjEnrGXJg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] media: ttusb-dec: fix buffer overflow in ttusb_dec_send_command()
-Message-ID: <84b5473b-2ef9-4a91-90fb-57fea553af7b@mail.kernel.org>
+Subject: [PATCH RFC] usb: gadget: f_tcm: fix circular locking dependency in usbg_make_tpg()
+Message-ID: <d336f46d-4fb6-4c72-9588-d43329617f60@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,275 +38,181 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Thu, 24 Sep 2026 19:43:24 +0000 (UTC)
+Date: Thu, 24 Sep 2026 21:01:25 +0000 (UTC)
 
-In ttusb_dec_send_command(), a 64-byte buffer is allocated
-(COMMAND_PACKET_SIZE + 4, where COMMAND_PACKET_SIZE is 60) for sending a
-command to the USB device and receiving the response via usb_bulk_msg().
-After receiving the response, the fourth byte b[3] is treated as the
-payload length and used directly in memcpy(cmd_result, &b[4], b[3]) without
-validating it against the actual number of received bytes (actual_len), the
-allocated source buffer bounds, or the capacity of the destination buffer
-cmd_result.
+Lockdep detected a circular locking dependency between the configfs
+directory inode lock (&sb->s_type->i_mutex_key), gadget_subsys.su_mutex,
+func_lock, and tpg_instances_lock. When creating a symlink in configfs (for
+example, in uvcg_streaming_header_allow_link()), configfs_symlink()
+acquires the directory inode lock and invokes allow_link(), which acquires
+gadget_subsys.su_mutex. When creating a USB function directory (e.g. mkdir
+functions/tcm.usb0), configfs_mkdir() acquires gadget_subsys.su_mutex and
+calls function_make() -> usb_get_function_instance(), acquiring func_lock
+and invoking tcm_alloc_inst(), which acquires tpg_instances_lock. Finally,
+when creating a Target Portal Group directory (e.g. mkdir tpgt_1),
+target_fabric_make_tpg() calls usbg_make_tpg(), which acquires
+tpg_instances_lock and invokes configfs_depend_item_unlocked(). Because the
+dependent target item belongs to a different subsystem (gadget_subsys vs
+target_fabric_configfs), configfs_depend_item_unlocked() acquires the
+configfs root directory inode lock.
 
-During device probe in ttusb_dec_probe(), ttusb_dec_init_stb() calls
-ttusb_dec_get_stb_state() to query the device state. If the device returns
-a response with a payload length b[3] greater than COMMAND_PACKET_SIZE
-(e.g. 75), memcpy() reads past the end of the source buffer and overflows
-the caller's 60-byte destination buffer on the stack, triggering a
-FORTIFY_SOURCE buffer overflow panic:
+Commit 9dbf74f4022f ("usb: gadget: f_tcm: fix deadlock in usbg_make_tpg()")
+previously removed dep_lock from usbg_make_tpg() to avoid a circular
+dependency with configfs_rmdir(). However, tpg_instances_lock remained held
+across the call to configfs_depend_item_unlocked(), creating the same
+circular locking dependency:
 
-memcpy: detected buffer overflow: 75 byte read of buffer size 60
-Call trace:
- __fortify_report+0xa0/0xb8 lib/string_helpers.c:1036
- __fortify_panic+0x10/0x14 lib/string_helpers.c:1043
- fortify_memcpy_chk include/linux/fortify-string.h:549 [inline]
- ttusb_dec_start_feed+0x0/0x10ac
- drivers/media/usb/ttusb-dec/ttusb_dec.c:372
- ttusb_dec_get_stb_state drivers/media/usb/ttusb-dec/ttusb_dec.c:392
- [inline]
- ttusb_dec_init_stb drivers/media/usb/ttusb-dec/ttusb_dec.c:1413 [inline]
- ttusb_dec_probe+0x724/0x1aa0 drivers/media/usb/ttusb-dec/ttusb_dec.c:1671
+WARNING: possible circular locking dependency detected
+a task is trying to acquire lock:
+ffffffff8f1f06e0 (gadget_subsys.su_mutex){+.+.}-{4:4}, at:
+uvcg_streaming_header_allow_link+0x75/0x4d0
+drivers/usb/gadget/function/uvc_configfs.c:1750
 
-Moreover, other callers such as ttusbdecfe_dvbt_read_status() supply
-destination buffers as small as 4 bytes, which can lead to a stack buffer
-overflow even if the device returns fewer than 60 bytes. Additionally,
-param_length is copied into &b[4] without checking whether it exceeds
-COMMAND_PACKET_SIZE.
+but task is already holding lock:
+ffff8881b10421e8 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at:
+configfs_symlink+0x4d0/0x11d0 fs/configfs/symlink.c:201
 
-Fix this by first verifying that param_length is non-negative and does not
-exceed COMMAND_PACKET_SIZE. Next, ensure actual_len is at least 4 bytes
-before reading b[3], and clamp the payload length to both
-COMMAND_PACKET_SIZE and actual_len - 4. Finally, add a cmd_result_len
-parameter to ttusb_dec_send_command(), fe_send_command(), and struct
-ttusbdecfe_config.send_command to pass the destination buffer capacity,
-bound the memcpy() to min_t(int, payload_len, cmd_result_len), and update
-all callers accordingly.
+which lock already depends on the new lock.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+the existing dependency chain (in reverse order) is:
+
+ -> #3 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}:
+        down_write+0x3a/0x50 kernel/locking/rwsem.c:1631
+        configfs_depend_item_unlocked+0x153/0x420 fs/configfs/dir.c:1268
+        usbg_make_tpg+0x1e0/0x550 drivers/usb/gadget/function/f_tcm.c:1692
+        target_fabric_make_tpg+0xa8/0x6d0
+        drivers/target/target_core_fabric_configfs.c:947
+        configfs_mkdir+0x4f6/0x9e0 fs/configfs/dir.c:1369
+
+ -> #2 (tpg_instances_lock){+.+.}-{4:4}:
+        tcm_alloc_inst+0x65/0x1a0 drivers/usb/gadget/function/f_tcm.c:2687
+        usb_get_function_instance+0xe3/0x2f0
+        drivers/usb/gadget/functions.c:44
+        function_make+0x127/0x360 drivers/usb/gadget/configfs.c:626
+        configfs_mkdir+0x4f6/0x9e0 fs/configfs/dir.c:1369
+
+ -> #1 (func_lock){+.+.}-{4:4}:
+        usb_get_function_instance+0x2e/0x2f0
+        drivers/usb/gadget/functions.c:44
+        function_make+0x127/0x360 drivers/usb/gadget/configfs.c:626
+        configfs_mkdir+0x4f6/0x9e0 fs/configfs/dir.c:1369
+
+ -> #0 (gadget_subsys.su_mutex){+.+.}-{4:4}:
+        uvcg_streaming_header_allow_link+0x75/0x4d0
+        drivers/usb/gadget/function/uvc_configfs.c:1750
+        configfs_symlink+0x74e/0x11d0 fs/configfs/symlink.c:211
+
+Chain exists of:
+  gadget_subsys.su_mutex --> tpg_instances_lock -->
+  &sb->s_type->i_mutex_key#24
+
+Fix this by dropping tpg_instances_lock before calling
+configfs_depend_item_unlocked() in usbg_make_tpg().
+
+Safely dropping tpg_instances_lock requires addressing several lifecycle
+and concurrency invariants. First, before releasing the lock, obtain a
+reference using
+config_item_get_unless_zero(&opts->func_inst.group.cg_item). If the
+function instance is already being torn down concurrently via
+configfs_rmdir(), its refcount is zero and tcm_free_inst() is waiting for
+tpg_instances_lock; attempting an unconditional config_item_get() would
+trigger an addition-on-zero refcount warning and allow tcm_free_inst() to
+free opts as soon as the lock is dropped, leading to a use-after-free. If
+config_item_get_unless_zero() returns NULL, abort immediately with -ENODEV.
+Second, after re-acquiring tpg_instances_lock, verify that the instance
+slot remains valid and has not been claimed concurrently
+(tpg_instances[i].func_inst == &opts->func_inst && !tpg_instances[i].tpg).
+If another thread claimed it, clean up via
+configfs_undepend_item_unlocked() and return -EBUSY. Finally, ensure that
+config_item_put(&opts->func_inst.group.cg_item) is called strictly after
+dropping tpg_instances_lock on both the success and error paths, preventing
+self-deadlock since tcm_free_inst() acquires tpg_instances_lock.
+
+Fixes: 4bb8548df632 ("usb: gadget: f_tcm: add configfs support")
 Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+e1dbaae5eefaa2dfbc35@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=e1dbaae5eefaa2dfbc35
-Link: https://syzkaller.appspot.com/ai_job?id=b90a55d4-d957-43fa-9fac-3b06b57d7537
-To: <linux-media@vger.kernel.org>
-To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
-Cc: "Kees Cook" <kees@kernel.org>
+Reported-by: syzbot+ed4b9a6a61280b24d9c3@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=ed4b9a6a61280b24d9c3
+Link: https://syzkaller.appspot.com/ai_job?id=f2f15bbe-0acd-4ca3-90d4-55830859cd45
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
+To: "Andrzej Pietrasiewicz" <andrzej.p@samsung.com>
+Cc: "Jiasheng Jiang" <jiashengjiangcool@gmail.com>
 Cc: <linux-kernel@vger.kernel.org>
+Cc: "Yun Zhou" <yun.zhou@windriver.com>
+Cc: "Cen Zhang" <zzzccc427@gmail.com>
 
 ---
-diff --git a/drivers/media/usb/ttusb-dec/ttusb_dec.c b/drivers/media/usb/ttusb-dec/ttusb_dec.c
-index 825a38759..8bc9c16f3 100644
---- a/drivers/media/usb/ttusb-dec/ttusb_dec.c
-+++ b/drivers/media/usb/ttusb-dec/ttusb_dec.c
-@@ -314,13 +314,17 @@ static u16 crc16(u16 crc, const u8 *buf, size_t len)
+diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
+index 9e6d4f399..9a3774781 100644
+--- a/drivers/usb/gadget/function/f_tcm.c
++++ b/drivers/usb/gadget/function/f_tcm.c
+@@ -1658,8 +1658,9 @@ static struct se_portal_group *usbg_make_tpg(struct se_wwn *wwn,
+ 	struct usbg_tpg *tpg;
+ 	u16 tpgt;
+ 	int ret;
+-	struct f_tcm_opts *opts;
++	struct f_tcm_opts *opts = NULL;
+ 	unsigned i;
++	bool drop_ref = false;
  
- static int ttusb_dec_send_command(struct ttusb_dec *dec, const u8 command,
- 				  int param_length, const u8 params[],
--				  int *result_length, u8 cmd_result[])
-+				  int *result_length, u8 cmd_result[],
-+				  int cmd_result_len)
- {
- 	int result, actual_len;
- 	u8 *b;
- 
- 	dprintk("%s\n", __func__);
- 
-+	if (param_length < 0 || param_length > COMMAND_PACKET_SIZE)
-+		return -EINVAL;
-+
- 	b = kzalloc(COMMAND_PACKET_SIZE + 4, GFP_KERNEL);
- 	if (!b)
- 		return -ENOMEM;
-@@ -361,15 +365,24 @@ static int ttusb_dec_send_command(struct ttusb_dec *dec, const u8 command,
- 		       __func__, result);
- 		goto err_mutex_unlock;
- 	} else {
-+		int payload_len = 0;
-+
- 		if (debug) {
- 			printk(KERN_DEBUG "%s: result: %*ph\n",
- 			       __func__, actual_len, b);
- 		}
- 
-+		if (actual_len >= 4) {
-+			payload_len = min_t(int, b[3], COMMAND_PACKET_SIZE);
-+			payload_len = min_t(int, payload_len, actual_len - 4);
+ 	if (strstr(name, "tpgt_") != name)
+ 		return ERR_PTR(-EINVAL);
+@@ -1685,15 +1686,33 @@ static struct se_portal_group *usbg_make_tpg(struct se_wwn *wwn,
+ 		/*
+ 		 * configfs_depend_item_unlocked() may acquire the configfs
+ 		 * root inode lock when the target belongs to a different
+-		 * subsystem. Calling it under dep_lock would create a
++		 * subsystem. Calling it under tpg_instances_lock would create a
+ 		 * circular dependency:
+-		 *   dep_lock -> configfs inode lock -> su_mutex -> dep_lock
++		 *   tpg_instances_lock -> configfs inode lock -> su_mutex ->
++		 *     func_lock -> tpg_instances_lock
++		 * Drop tpg_instances_lock around the call, holding a reference
++		 * to the config_item to prevent it from being freed.
+ 		 */
++		if (!config_item_get_unless_zero(&opts->func_inst.group.cg_item)) {
++			ret = -ENODEV;
++			goto unlock_inst;
 +		}
++		drop_ref = true;
++		mutex_unlock(&tpg_instances_lock);
 +
- 		if (result_length)
--			*result_length = b[3];
--		if (cmd_result && b[3] > 0)
--			memcpy(cmd_result, &b[4], b[3]);
-+			*result_length = payload_len;
+ 		ret = configfs_depend_item_unlocked(
+ 			wwn->wwn_group.cg_subsys,
+ 			&opts->func_inst.group.cg_item);
 +
-+		if (cmd_result && payload_len > 0 && cmd_result_len > 0)
-+			memcpy(cmd_result, &b[4],
-+			       min_t(int, payload_len, cmd_result_len));
++		mutex_lock(&tpg_instances_lock);
+ 		if (ret)
+ 			goto unlock_inst;
++
++		if (tpg_instances[i].func_inst != &opts->func_inst ||
++		    tpg_instances[i].tpg) {
++			ret = -EBUSY;
++			goto unref_dep;
++		}
  	}
  
- err_mutex_unlock:
-@@ -389,7 +402,8 @@ static int ttusb_dec_get_stb_state (struct ttusb_dec *dec, unsigned int *mode,
+ 	tpg = kzalloc_obj(struct usbg_tpg);
+@@ -1721,6 +1740,10 @@ static struct se_portal_group *usbg_make_tpg(struct se_wwn *wwn,
+ 	tpg_instances[i].tpg = tpg;
+ 	tpg->fi = tpg_instances[i].func_inst;
+ 	mutex_unlock(&tpg_instances_lock);
++
++	if (drop_ref)
++		config_item_put(&opts->func_inst.group.cg_item);
++
+ 	return &tpg->se_tpg;
  
- 	dprintk("%s\n", __func__);
+ free_workqueue:
+@@ -1734,6 +1757,8 @@ static struct se_portal_group *usbg_make_tpg(struct se_wwn *wwn,
+ 		configfs_undepend_item_unlocked(&opts->func_inst.group.cg_item);
+ unlock_inst:
+ 	mutex_unlock(&tpg_instances_lock);
++	if (drop_ref)
++		config_item_put(&opts->func_inst.group.cg_item);
  
--	result = ttusb_dec_send_command(dec, 0x08, 0, NULL, &c_length, c);
-+	result = ttusb_dec_send_command(dec, 0x08, 0, NULL, &c_length, c,
-+					sizeof(c));
- 	if (result)
- 		return result;
- 
-@@ -448,7 +462,7 @@ static void ttusb_dec_set_pids(struct ttusb_dec *dec)
- 	memcpy(&b[2], &audio, 2);
- 	memcpy(&b[4], &video, 2);
- 
--	ttusb_dec_send_command(dec, 0x50, sizeof(b), b, NULL, NULL);
-+	ttusb_dec_send_command(dec, 0x50, sizeof(b), b, NULL, NULL, 0);
- 
- 	dvb_filter_pes2ts_init(&dec->a_pes2ts, dec->pid[DMX_PES_AUDIO],
- 			       ttusb_dec_audio_pes2ts_cb, dec);
-@@ -902,7 +916,7 @@ static int ttusb_dec_set_interface(struct ttusb_dec *dec,
- 			break;
- 		case TTUSB_DEC_INTERFACE_IN:
- 			result = ttusb_dec_send_command(dec, 0x80, sizeof(b),
--							b, NULL, NULL);
-+							b, NULL, NULL, 0);
- 			if (result)
- 				return result;
- 			result = usb_set_interface(dec->udev, 0, 8);
-@@ -1021,7 +1035,7 @@ static int ttusb_dec_start_ts_feed(struct dvb_demux_feed *dvbdmxfeed)
- 
- 	}
- 
--	result = ttusb_dec_send_command(dec, 0x80, sizeof(b0), b0, NULL, NULL);
-+	result = ttusb_dec_send_command(dec, 0x80, sizeof(b0), b0, NULL, NULL, 0);
- 	if (result)
- 		return result;
- 
-@@ -1056,7 +1070,7 @@ static int ttusb_dec_start_sec_feed(struct dvb_demux_feed *dvbdmxfeed)
- 	memcpy(&b0[5], &dvbdmxfeed->filter->filter.filter_value[0], 1);
- 
- 	result = ttusb_dec_send_command(dec, 0x60, sizeof(b0), b0,
--					&c_length, c);
-+					&c_length, c, sizeof(c));
- 
- 	if (!result) {
- 		if (c_length == 2) {
-@@ -1114,7 +1128,7 @@ static int ttusb_dec_stop_ts_feed(struct dvb_demux_feed *dvbdmxfeed)
- 	struct ttusb_dec *dec = dvbdmxfeed->demux->priv;
- 	u8 b0[] = { 0x00 };
- 
--	ttusb_dec_send_command(dec, 0x81, sizeof(b0), b0, NULL, NULL);
-+	ttusb_dec_send_command(dec, 0x81, sizeof(b0), b0, NULL, NULL, 0);
- 
- 	dec->pva_stream_count--;
- 
-@@ -1135,7 +1149,7 @@ static int ttusb_dec_stop_sec_feed(struct dvb_demux_feed *dvbdmxfeed)
- 	list_del(&finfo->filter_info_list);
- 	spin_unlock_irqrestore(&dec->filter_info_list_lock, flags);
- 	kfree(finfo);
--	ttusb_dec_send_command(dec, 0x62, sizeof(b0), b0, NULL, NULL);
-+	ttusb_dec_send_command(dec, 0x62, sizeof(b0), b0, NULL, NULL, 0);
- 
- 	dec->filter_stream_count--;
- 
-@@ -1238,7 +1252,7 @@ static int ttusb_init_rc( struct ttusb_dec *dec)
- 	if (usb_submit_urb(dec->irq_urb, GFP_KERNEL))
- 		printk("%s: usb_submit_urb failed\n",__func__);
- 	/* enable irq pipe */
--	ttusb_dec_send_command(dec,0xb0,sizeof(b),b,NULL,NULL);
-+	ttusb_dec_send_command(dec, 0xb0, sizeof(b), b, NULL, NULL, 0);
- 
- 	return 0;
+ 	return ERR_PTR(ret);
  }
-@@ -1354,7 +1368,7 @@ static int ttusb_dec_boot_dsp(struct ttusb_dec *dec)
- 	firmware_csum_ns = htons(firmware_csum);
- 	memcpy(&b0[6], &firmware_csum_ns, 2);
- 
--	result = ttusb_dec_send_command(dec, 0x41, sizeof(b0), b0, NULL, NULL);
-+	result = ttusb_dec_send_command(dec, 0x41, sizeof(b0), b0, NULL, NULL, 0);
- 
- 	if (result) {
- 		release_firmware(fw_entry);
-@@ -1395,7 +1409,7 @@ static int ttusb_dec_boot_dsp(struct ttusb_dec *dec)
- 		}
- 	}
- 
--	result = ttusb_dec_send_command(dec, 0x43, sizeof(b1), b1, NULL, NULL);
-+	result = ttusb_dec_send_command(dec, 0x43, sizeof(b1), b1, NULL, NULL, 0);
- 
- 	release_firmware(fw_entry);
- 	kfree(b);
-@@ -1621,10 +1635,12 @@ static void ttusb_dec_exit_filters(struct ttusb_dec *dec)
- 
- static int fe_send_command(struct dvb_frontend* fe, const u8 command,
- 			   int param_length, const u8 params[],
--			   int *result_length, u8 cmd_result[])
-+			   int *result_length, u8 cmd_result[],
-+			   int cmd_result_len)
- {
- 	struct ttusb_dec* dec = fe->dvb->priv;
--	return ttusb_dec_send_command(dec, command, param_length, params, result_length, cmd_result);
-+	return ttusb_dec_send_command(dec, command, param_length, params,
-+				      result_length, cmd_result, cmd_result_len);
- }
- 
- static const struct ttusbdecfe_config fe_config = {
-diff --git a/drivers/media/usb/ttusb-dec/ttusbdecfe.c b/drivers/media/usb/ttusb-dec/ttusbdecfe.c
-index 215221370..1c2892a1e 100644
---- a/drivers/media/usb/ttusb-dec/ttusbdecfe.c
-+++ b/drivers/media/usb/ttusb-dec/ttusbdecfe.c
-@@ -44,7 +44,8 @@ static int ttusbdecfe_dvbt_read_status(struct dvb_frontend *fe,
- 
- 	*status=0;
- 
--	ret=state->config->send_command(fe, 0x73, sizeof(b), b, &len, result);
-+	ret = state->config->send_command(fe, 0x73, sizeof(b), b, &len,
-+					  result, sizeof(result));
- 	if(ret)
- 		return ret;
- 
-@@ -85,7 +86,7 @@ static int ttusbdecfe_dvbt_set_frontend(struct dvb_frontend *fe)
- 
- 	__be32 freq = htonl(p->frequency / 1000);
- 	memcpy(&b[4], &freq, sizeof (u32));
--	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL);
-+	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL, 0);
- 
- 	return 0;
- }
-@@ -130,7 +131,7 @@ static int ttusbdecfe_dvbs_set_frontend(struct dvb_frontend *fe)
- 	lnb_voltage = htonl(state->voltage);
- 	memcpy(&b[28], &lnb_voltage, sizeof(u32));
- 
--	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL);
-+	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL, 0);
- 
- 	return 0;
- }
-@@ -149,7 +150,7 @@ static int ttusbdecfe_dvbs_diseqc_send_master_cmd(struct dvb_frontend* fe, struc
- 
- 	state->config->send_command(fe, 0x72,
- 				    sizeof(b) - (6 - cmd->msg_len), b,
--				    NULL, NULL);
-+				    NULL, NULL, 0);
- 
- 	return 0;
- }
-diff --git a/drivers/media/usb/ttusb-dec/ttusbdecfe.h b/drivers/media/usb/ttusb-dec/ttusbdecfe.h
-index 73828bb22..96600ad4c 100644
---- a/drivers/media/usb/ttusb-dec/ttusbdecfe.h
-+++ b/drivers/media/usb/ttusb-dec/ttusbdecfe.h
-@@ -14,7 +14,8 @@ struct ttusbdecfe_config
- {
- 	int (*send_command)(struct dvb_frontend* fe, const u8 command,
- 			    int param_length, const u8 params[],
--			    int *result_length, u8 cmd_result[]);
-+			    int *result_length, u8 cmd_result[],
-+			    int cmd_result_len);
- };
- 
- extern struct dvb_frontend* ttusbdecfe_dvbs_attach(const struct ttusbdecfe_config* config);
 
 
 base-commit: 93f51579e7df248780214094418f205253383cc5
