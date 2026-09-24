@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEC273F076E
-	for <syzbot@lists.linux.dev>; Thu, 24 Sep 2026 19:19:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C449D3E7BD5
+	for <syzbot@lists.linux.dev>; Thu, 24 Sep 2026 19:43:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790277597; cv=none; b=AY2REb0zLy6h6MZvcE46VaFRT4fM2bQ1W3K5bu1wuJSov9xqVI58mtKa3ez7LQSr01rR+wcn31Fusd/YWXFxMXiLANspYYeorLCGBtUH7t2VMTdJdW+9L3GRpJBrXgg5V3tOi9tE1LR4H91DibKJwZXYv+NcATLxcIEr9rk1bvo=
+	t=1790279007; cv=none; b=bE8IR4yYTuaIqNo2U4JCASJ2Sti3z5roQ/dNvlEapAQKYyLEQn8wGEJdj3435atb2GFe6NndUaj9SWHRWL7CmvBbp1bWXDgKtywmpsKmVUHSSMgh8j2k1+EMqA4P//vzJrAGlMZ90gjLgEZGWjLjz6LHOSEVHh0gbVCY0LkjOL0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790277597; c=relaxed/simple;
-	bh=x7XunwwHVgum1ifat5Y7QSPAv0BpY1eF4FzF4qL+cgk=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=IY189VfS/ww7BNwYkB5amTKEyDtMr7DUuu7mHUa4c57/zHS99NIzV87s16CO0ODapy/yXs1FWF4CTyBi9Rd/NmRn4SbmD71FlSBTw2ZtSjNXPCX/OviDf7HAV4PjeM8jyDQZYsdH0+F/uGAbps2uRUzKyg7+PyKE1vM9rv4rBsY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kkHmEdJD; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790279007; c=relaxed/simple;
+	bh=z6l86SS38fVxvP8rD1YoWg5dfc3UAZBeg2wm9vVVHa0=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ESkJsWU08zqmvcf+VpLdXjw/Zh9126iejbGvchEVR0+ldFfBweKpcLYgMjdCtxoA3iJDwBKFy1CFxa0JVQhcBoXNiMYMdaI23mELdIDK8mH3qRP3OvEUQMVjHRxFr+hcXiIVJOibpXB+tFxIpnI7qplBv642alBtrAZKB/XFlBc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q+Fjj/9L; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kkHmEdJD"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 41BB71F000FF;
-	Thu, 24 Sep 2026 19:19:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q+Fjj/9L"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id E78741F000FF;
+	Thu, 24 Sep 2026 19:43:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790277595;
-	bh=QCM+6txNCPLg/YiWQe4qVWwblxg/8wfu6v1YZNIqBkw=;
+	s=k20260515; t=1790279005;
+	bh=9Eo3Cy4Kq3ik0qEInIh8gWc0HpiHgQBMDBGA+ednp74=;
 	h=From:To:Cc:Subject:Date;
-	b=kkHmEdJD+ACoJwXarSWnMROOTONUoO4RgnmWLS86TvYkxYMRZHvdwPWs2ruS4oCiF
-	 SreEJ5l52uFoDE+18XpnL7C8F5f1FHXOdAgda6wVhdcOIS1yzf3AArikuT21C+b58g
-	 SPLvpWenScIBxjHQw88mURrNzsTCw6s1nTPpl8inwWmFlUQUJk+7XPSnhLm1gxFFTA
-	 Agt73fbBaJ/c0WsReXxOlZeof1t29+5E49G7yfGISNaiXyUl5pmJ6EN9g4AmeAQKlM
-	 sb9iPfIgear0e7GgA9LNv4jmxyFz/Wig3s9R95clZb/oWpO6+fSRrVCrJF/2Y9WnYk
-	 YopoEcF9EDm6w==
+	b=Q+Fjj/9LwGNWIR462jV7TfZ9GX9RM2lqhsBuTBsEj0w82cjoq/sSh5bIAN6H/kzIK
+	 PX0Q0uXt3VNpX3WM3cZUBV2sBfDFUDyEdMpz1cppBZudaXBnqqU4TB8/9xmrF2IslO
+	 5GLXKieVCeMidsfpo3lIUmoB0EGxBmQOCYCkLCYJ2G/OJOY6lad4PhbhCn+iidqhmx
+	 KJCb44H5OQJNbbLEboIFVJLdHLnZSKmtibzGMfBfKp40ZgASqjjPOyipYMiccYppSt
+	 8MZVNKn8KeQEpxpOeK0sbkjmPkV+RGaFACaK6ZjRnt3twFJX6ptDa8A+M80WzN9XvR
+	 zyZolajwK9vwQ==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v3] fat: validate dotdot buffers in VFAT and MSDOS rename and rollback
-Message-ID: <7ea246ae-9417-4507-920d-4afb771c59ac@mail.kernel.org>
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] media: ttusb-dec: fix buffer overflow in ttusb_dec_send_command()
+Message-ID: <84b5473b-2ef9-4a91-90fb-57fea553af7b@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,210 +38,275 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Thu, 24 Sep 2026 19:19:55 +0000 (UTC)
+Date: Thu, 24 Sep 2026 19:43:24 +0000 (UTC)
 
-During cross-directory rename operations with synchronous directory updates
-enabled in VFAT and MSDOS, updating the ".." directory entry writes the
-buffer via sync_dirty_buffer(). If this write fails due to an I/O error,
-the block layer clears the BH_Uptodate flag. When rename enters its error
-rollback path, it attempts to update the ".." directory entry again with
-the same buffer head, which calls mmb_mark_buffer_dirty() and triggers a
-"!buffer_uptodate(bh)" warning in mark_buffer_dirty().
+In ttusb_dec_send_command(), a 64-byte buffer is allocated
+(COMMAND_PACKET_SIZE + 4, where COMMAND_PACKET_SIZE is 60) for sending a
+command to the USB device and receiving the response via usb_bulk_msg().
+After receiving the response, the fourth byte b[3] is treated as the
+payload length and used directly in memcpy(cmd_result, &b[4], b[3]) without
+validating it against the actual number of received bytes (actual_len), the
+allocated source buffer bounds, or the capacity of the destination buffer
+cmd_result.
 
-Fix this by introducing a common helper fat_update_dotdot_de() in
-fs/fat/dir.c, used by both VFAT and MSDOS cross-directory rename and
-rollback paths. The helper locks the buffer head and checks
-buffer_uptodate() before modifying the entry. If the buffer is not
-uptodate, unlock it and return -EIO, preventing mmb_mark_buffer_dirty()
-from being called on a non-uptodate buffer.
+During device probe in ttusb_dec_probe(), ttusb_dec_init_stb() calls
+ttusb_dec_get_stb_state() to query the device state. If the device returns
+a response with a payload length b[3] greater than COMMAND_PACKET_SIZE
+(e.g. 75), memcpy() reads past the end of the source buffer and overflows
+the caller's 60-byte destination buffer on the stack, triggering a
+FORTIFY_SOURCE buffer overflow panic:
+
+memcpy: detected buffer overflow: 75 byte read of buffer size 60
+Call trace:
+ __fortify_report+0xa0/0xb8 lib/string_helpers.c:1036
+ __fortify_panic+0x10/0x14 lib/string_helpers.c:1043
+ fortify_memcpy_chk include/linux/fortify-string.h:549 [inline]
+ ttusb_dec_start_feed+0x0/0x10ac
+ drivers/media/usb/ttusb-dec/ttusb_dec.c:372
+ ttusb_dec_get_stb_state drivers/media/usb/ttusb-dec/ttusb_dec.c:392
+ [inline]
+ ttusb_dec_init_stb drivers/media/usb/ttusb-dec/ttusb_dec.c:1413 [inline]
+ ttusb_dec_probe+0x724/0x1aa0 drivers/media/usb/ttusb-dec/ttusb_dec.c:1671
+
+Moreover, other callers such as ttusbdecfe_dvbt_read_status() supply
+destination buffers as small as 4 bytes, which can lead to a stack buffer
+overflow even if the device returns fewer than 60 bytes. Additionally,
+param_length is copied into &b[4] without checking whether it exceeds
+COMMAND_PACKET_SIZE.
+
+Fix this by first verifying that param_length is non-negative and does not
+exceed COMMAND_PACKET_SIZE. Next, ensure actual_len is at least 4 bytes
+before reading b[3], and clamp the payload length to both
+COMMAND_PACKET_SIZE and actual_len - 4. Finally, add a cmd_result_len
+parameter to ttusb_dec_send_command(), fe_send_command(), and struct
+ttusbdecfe_config.send_command to pass the destination buffer capacity,
+bound the memcpy() to min_t(int, payload_len, cmd_result_len), and update
+all callers accordingly.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Assisted-by: Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+b0aebd03565f5774f7f8@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=b0aebd03565f5774f7f8
-Link: https://syzkaller.appspot.com/ai_job?id=a860bfca-0d0a-4ee1-ab62-38c1df430ba2
-To: "OGAWA Hirofumi" <hirofumi@mail.parknet.co.jp>
-To: <linux-kernel@vger.kernel.org>
+Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+e1dbaae5eefaa2dfbc35@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=e1dbaae5eefaa2dfbc35
+Link: https://syzkaller.appspot.com/ai_job?id=b90a55d4-d957-43fa-9fac-3b06b57d7537
+To: <linux-media@vger.kernel.org>
+To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
 To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
+Cc: "Kees Cook" <kees@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-v3:
-- Move vfat_update_dotdot_de() to a shared fat_update_dotdot_de() helper in fs/fat/dir.c
-- Use fat_update_dotdot_de() in MSDOS cross-directory rename and rollback paths
-- Update commit subject and description to reflect both VFAT and MSDOS coverage
-
-v2:
-- Lock the buffer head and return -EIO if it is not uptodate instead of calling set_buffer_uptodate().
-- Update the patch subject to reflect buffer validation.
-- Shorten the commit description and remove the stack trace.
-https://lore.kernel.org/all/56341edb-4dc2-4683-9776-641253569bb3@mail.kernel.org/T/
-
-v1:
-https://lore.kernel.org/all/012d4ac1-83f3-48af-8781-00fbbc4adc93@mail.kernel.org/T/
----
-diff --git a/fs/fat/dir.c b/fs/fat/dir.c
-index 35bdb6294..daddae43e 100644
---- a/fs/fat/dir.c
-+++ b/fs/fat/dir.c
-@@ -941,6 +941,24 @@ int fat_get_dotdot_entry(struct inode *dir, struct buffer_head **bh,
- }
- EXPORT_SYMBOL_GPL(fat_get_dotdot_entry);
+diff --git a/drivers/media/usb/ttusb-dec/ttusb_dec.c b/drivers/media/usb/ttusb-dec/ttusb_dec.c
+index 825a38759..8bc9c16f3 100644
+--- a/drivers/media/usb/ttusb-dec/ttusb_dec.c
++++ b/drivers/media/usb/ttusb-dec/ttusb_dec.c
+@@ -314,13 +314,17 @@ static u16 crc16(u16 crc, const u8 *buf, size_t len)
  
-+int fat_update_dotdot_de(struct inode *dir, struct inode *inode,
-+			 struct buffer_head *dotdot_bh,
-+			 struct msdos_dir_entry *dotdot_de)
-+{
-+	lock_buffer(dotdot_bh);
-+	if (!buffer_uptodate(dotdot_bh)) {
-+		unlock_buffer(dotdot_bh);
-+		return -EIO;
-+	}
-+	fat_set_start(dotdot_de, MSDOS_I(dir)->i_logstart);
-+	mmb_mark_buffer_dirty(dotdot_bh, &MSDOS_I(inode)->i_metadata_bhs);
-+	unlock_buffer(dotdot_bh);
-+	if (IS_DIRSYNC(dir))
-+		return sync_dirty_buffer(dotdot_bh);
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(fat_update_dotdot_de);
-+
- /* See if directory is empty */
- int fat_dir_empty(struct inode *dir)
+ static int ttusb_dec_send_command(struct ttusb_dec *dec, const u8 command,
+ 				  int param_length, const u8 params[],
+-				  int *result_length, u8 cmd_result[])
++				  int *result_length, u8 cmd_result[],
++				  int cmd_result_len)
  {
-diff --git a/fs/fat/fat.h b/fs/fat/fat.h
-index 61338413d..07092e055 100644
---- a/fs/fat/fat.h
-+++ b/fs/fat/fat.h
-@@ -339,6 +339,9 @@ extern int fat_scan_logstart(struct inode *dir, int i_logstart,
- 			     struct fat_slot_info *sinfo);
- extern int fat_get_dotdot_entry(struct inode *dir, struct buffer_head **bh,
- 				struct msdos_dir_entry **de);
-+extern int fat_update_dotdot_de(struct inode *dir, struct inode *inode,
-+				struct buffer_head *dotdot_bh,
-+				struct msdos_dir_entry *dotdot_de);
- extern int fat_alloc_new_dir(struct inode *dir, struct timespec64 *ts);
- extern int fat_add_entries(struct inode *dir, void *slots, int nr_slots,
- 			   struct fat_slot_info *sinfo);
-diff --git a/fs/fat/namei_msdos.c b/fs/fat/namei_msdos.c
-index d46d1a385..ee0af94a1 100644
---- a/fs/fat/namei_msdos.c
-+++ b/fs/fat/namei_msdos.c
-@@ -527,14 +527,10 @@ static int do_msdos_rename(struct inode *old_dir, unsigned char *old_name,
+ 	int result, actual_len;
+ 	u8 *b;
+ 
+ 	dprintk("%s\n", __func__);
+ 
++	if (param_length < 0 || param_length > COMMAND_PACKET_SIZE)
++		return -EINVAL;
++
+ 	b = kzalloc(COMMAND_PACKET_SIZE + 4, GFP_KERNEL);
+ 	if (!b)
+ 		return -ENOMEM;
+@@ -361,15 +365,24 @@ static int ttusb_dec_send_command(struct ttusb_dec *dec, const u8 command,
+ 		       __func__, result);
+ 		goto err_mutex_unlock;
+ 	} else {
++		int payload_len = 0;
++
+ 		if (debug) {
+ 			printk(KERN_DEBUG "%s: result: %*ph\n",
+ 			       __func__, actual_len, b);
+ 		}
+ 
++		if (actual_len >= 4) {
++			payload_len = min_t(int, b[3], COMMAND_PACKET_SIZE);
++			payload_len = min_t(int, payload_len, actual_len - 4);
++		}
++
+ 		if (result_length)
+-			*result_length = b[3];
+-		if (cmd_result && b[3] > 0)
+-			memcpy(cmd_result, &b[4], b[3]);
++			*result_length = payload_len;
++
++		if (cmd_result && payload_len > 0 && cmd_result_len > 0)
++			memcpy(cmd_result, &b[4],
++			       min_t(int, payload_len, cmd_result_len));
  	}
  
- 	if (update_dotdot) {
--		fat_set_start(dotdot_de, MSDOS_I(new_dir)->i_logstart);
--		mmb_mark_buffer_dirty(dotdot_bh,
--				      &MSDOS_I(old_inode)->i_metadata_bhs);
--		if (IS_DIRSYNC(new_dir)) {
--			err = sync_dirty_buffer(dotdot_bh);
--			if (err)
--				goto error_dotdot;
--		}
-+		err = fat_update_dotdot_de(new_dir, old_inode, dotdot_bh,
-+					   dotdot_de);
-+		if (err)
-+			goto error_dotdot;
- 		drop_nlink(old_dir);
- 		if (!new_inode)
- 			inc_nlink(new_dir);
-@@ -565,12 +561,9 @@ static int do_msdos_rename(struct inode *old_dir, unsigned char *old_name,
- 	/* data cluster is shared, serious corruption */
- 	corrupt = 1;
+ err_mutex_unlock:
+@@ -389,7 +402,8 @@ static int ttusb_dec_get_stb_state (struct ttusb_dec *dec, unsigned int *mode,
  
--	if (update_dotdot) {
--		fat_set_start(dotdot_de, MSDOS_I(old_dir)->i_logstart);
--		mmb_mark_buffer_dirty(dotdot_bh,
--				      &MSDOS_I(old_inode)->i_metadata_bhs);
--		corrupt |= sync_dirty_buffer(dotdot_bh);
--	}
-+	if (update_dotdot)
-+		corrupt |= fat_update_dotdot_de(old_dir, old_inode, dotdot_bh,
-+						dotdot_de);
- error_inode:
- 	fat_detach(old_inode);
- 	fat_attach(old_inode, old_sinfo.i_pos);
-diff --git a/fs/fat/namei_vfat.c b/fs/fat/namei_vfat.c
-index da3e89c0b..56da78455 100644
---- a/fs/fat/namei_vfat.c
-+++ b/fs/fat/namei_vfat.c
-@@ -909,16 +909,6 @@ static int vfat_sync_ipos(struct inode *dir, struct inode *inode)
+ 	dprintk("%s\n", __func__);
+ 
+-	result = ttusb_dec_send_command(dec, 0x08, 0, NULL, &c_length, c);
++	result = ttusb_dec_send_command(dec, 0x08, 0, NULL, &c_length, c,
++					sizeof(c));
+ 	if (result)
+ 		return result;
+ 
+@@ -448,7 +462,7 @@ static void ttusb_dec_set_pids(struct ttusb_dec *dec)
+ 	memcpy(&b[2], &audio, 2);
+ 	memcpy(&b[4], &video, 2);
+ 
+-	ttusb_dec_send_command(dec, 0x50, sizeof(b), b, NULL, NULL);
++	ttusb_dec_send_command(dec, 0x50, sizeof(b), b, NULL, NULL, 0);
+ 
+ 	dvb_filter_pes2ts_init(&dec->a_pes2ts, dec->pid[DMX_PES_AUDIO],
+ 			       ttusb_dec_audio_pes2ts_cb, dec);
+@@ -902,7 +916,7 @@ static int ttusb_dec_set_interface(struct ttusb_dec *dec,
+ 			break;
+ 		case TTUSB_DEC_INTERFACE_IN:
+ 			result = ttusb_dec_send_command(dec, 0x80, sizeof(b),
+-							b, NULL, NULL);
++							b, NULL, NULL, 0);
+ 			if (result)
+ 				return result;
+ 			result = usb_set_interface(dec->udev, 0, 8);
+@@ -1021,7 +1035,7 @@ static int ttusb_dec_start_ts_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 
+ 	}
+ 
+-	result = ttusb_dec_send_command(dec, 0x80, sizeof(b0), b0, NULL, NULL);
++	result = ttusb_dec_send_command(dec, 0x80, sizeof(b0), b0, NULL, NULL, 0);
+ 	if (result)
+ 		return result;
+ 
+@@ -1056,7 +1070,7 @@ static int ttusb_dec_start_sec_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 	memcpy(&b0[5], &dvbdmxfeed->filter->filter.filter_value[0], 1);
+ 
+ 	result = ttusb_dec_send_command(dec, 0x60, sizeof(b0), b0,
+-					&c_length, c);
++					&c_length, c, sizeof(c));
+ 
+ 	if (!result) {
+ 		if (c_length == 2) {
+@@ -1114,7 +1128,7 @@ static int ttusb_dec_stop_ts_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 	struct ttusb_dec *dec = dvbdmxfeed->demux->priv;
+ 	u8 b0[] = { 0x00 };
+ 
+-	ttusb_dec_send_command(dec, 0x81, sizeof(b0), b0, NULL, NULL);
++	ttusb_dec_send_command(dec, 0x81, sizeof(b0), b0, NULL, NULL, 0);
+ 
+ 	dec->pva_stream_count--;
+ 
+@@ -1135,7 +1149,7 @@ static int ttusb_dec_stop_sec_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 	list_del(&finfo->filter_info_list);
+ 	spin_unlock_irqrestore(&dec->filter_info_list_lock, flags);
+ 	kfree(finfo);
+-	ttusb_dec_send_command(dec, 0x62, sizeof(b0), b0, NULL, NULL);
++	ttusb_dec_send_command(dec, 0x62, sizeof(b0), b0, NULL, NULL, 0);
+ 
+ 	dec->filter_stream_count--;
+ 
+@@ -1238,7 +1252,7 @@ static int ttusb_init_rc( struct ttusb_dec *dec)
+ 	if (usb_submit_urb(dec->irq_urb, GFP_KERNEL))
+ 		printk("%s: usb_submit_urb failed\n",__func__);
+ 	/* enable irq pipe */
+-	ttusb_dec_send_command(dec,0xb0,sizeof(b),b,NULL,NULL);
++	ttusb_dec_send_command(dec, 0xb0, sizeof(b), b, NULL, NULL, 0);
+ 
  	return 0;
  }
+@@ -1354,7 +1368,7 @@ static int ttusb_dec_boot_dsp(struct ttusb_dec *dec)
+ 	firmware_csum_ns = htons(firmware_csum);
+ 	memcpy(&b0[6], &firmware_csum_ns, 2);
  
--static int vfat_update_dotdot_de(struct inode *dir, struct inode *inode,
--				 struct buffer_head *dotdot_bh,
--				 struct msdos_dir_entry *dotdot_de)
--{
--	fat_set_start(dotdot_de, MSDOS_I(dir)->i_logstart);
--	mmb_mark_buffer_dirty(dotdot_bh, &MSDOS_I(inode)->i_metadata_bhs);
--	if (IS_DIRSYNC(dir))
--		return sync_dirty_buffer(dotdot_bh);
--	return 0;
--}
+-	result = ttusb_dec_send_command(dec, 0x41, sizeof(b0), b0, NULL, NULL);
++	result = ttusb_dec_send_command(dec, 0x41, sizeof(b0), b0, NULL, NULL, 0);
  
- static void vfat_update_dir_metadata(struct inode *dir, struct timespec64 *ts)
+ 	if (result) {
+ 		release_firmware(fw_entry);
+@@ -1395,7 +1409,7 @@ static int ttusb_dec_boot_dsp(struct ttusb_dec *dec)
+ 		}
+ 	}
+ 
+-	result = ttusb_dec_send_command(dec, 0x43, sizeof(b1), b1, NULL, NULL);
++	result = ttusb_dec_send_command(dec, 0x43, sizeof(b1), b1, NULL, NULL, 0);
+ 
+ 	release_firmware(fw_entry);
+ 	kfree(b);
+@@ -1621,10 +1635,12 @@ static void ttusb_dec_exit_filters(struct ttusb_dec *dec)
+ 
+ static int fe_send_command(struct dvb_frontend* fe, const u8 command,
+ 			   int param_length, const u8 params[],
+-			   int *result_length, u8 cmd_result[])
++			   int *result_length, u8 cmd_result[],
++			   int cmd_result_len)
  {
-@@ -981,8 +971,8 @@ static int vfat_rename(struct inode *old_dir, struct dentry *old_dentry,
- 		goto error_inode;
+ 	struct ttusb_dec* dec = fe->dvb->priv;
+-	return ttusb_dec_send_command(dec, command, param_length, params, result_length, cmd_result);
++	return ttusb_dec_send_command(dec, command, param_length, params,
++				      result_length, cmd_result, cmd_result_len);
+ }
  
- 	if (dotdot_de) {
--		err = vfat_update_dotdot_de(new_dir, old_inode, dotdot_bh,
--					    dotdot_de);
-+		err = fat_update_dotdot_de(new_dir, old_inode, dotdot_bh,
-+					   dotdot_de);
- 		if (err)
- 			goto error_dotdot;
- 		drop_nlink(old_dir);
-@@ -1014,8 +1004,8 @@ static int vfat_rename(struct inode *old_dir, struct dentry *old_dentry,
- 	corrupt = 1;
+ static const struct ttusbdecfe_config fe_config = {
+diff --git a/drivers/media/usb/ttusb-dec/ttusbdecfe.c b/drivers/media/usb/ttusb-dec/ttusbdecfe.c
+index 215221370..1c2892a1e 100644
+--- a/drivers/media/usb/ttusb-dec/ttusbdecfe.c
++++ b/drivers/media/usb/ttusb-dec/ttusbdecfe.c
+@@ -44,7 +44,8 @@ static int ttusbdecfe_dvbt_read_status(struct dvb_frontend *fe,
  
- 	if (dotdot_de) {
--		corrupt |= vfat_update_dotdot_de(old_dir, old_inode, dotdot_bh,
--						 dotdot_de);
-+		corrupt |= fat_update_dotdot_de(old_dir, old_inode, dotdot_bh,
-+						dotdot_de);
- 	}
- error_inode:
- 	fat_detach(old_inode);
-@@ -1103,14 +1093,14 @@ static int vfat_rename_exchange(struct inode *old_dir, struct dentry *old_dentry
+ 	*status=0;
  
- 	/* update ".." directory entry info */
- 	if (old_dotdot_de) {
--		err = vfat_update_dotdot_de(new_dir, old_inode, old_dotdot_bh,
--					    old_dotdot_de);
-+		err = fat_update_dotdot_de(new_dir, old_inode, old_dotdot_bh,
-+					   old_dotdot_de);
- 		if (err)
- 			goto error_old_dotdot;
- 	}
- 	if (new_dotdot_de) {
--		err = vfat_update_dotdot_de(old_dir, new_inode, new_dotdot_bh,
--					    new_dotdot_de);
-+		err = fat_update_dotdot_de(old_dir, new_inode, new_dotdot_bh,
-+					   new_dotdot_de);
- 		if (err)
- 			goto error_new_dotdot;
- 	}
-@@ -1137,14 +1127,14 @@ static int vfat_rename_exchange(struct inode *old_dir, struct dentry *old_dentry
+-	ret=state->config->send_command(fe, 0x73, sizeof(b), b, &len, result);
++	ret = state->config->send_command(fe, 0x73, sizeof(b), b, &len,
++					  result, sizeof(result));
+ 	if(ret)
+ 		return ret;
  
- error_new_dotdot:
- 	if (new_dotdot_de) {
--		corrupt |= vfat_update_dotdot_de(new_dir, new_inode,
--						 new_dotdot_bh, new_dotdot_de);
-+		corrupt |= fat_update_dotdot_de(new_dir, new_inode,
-+						new_dotdot_bh, new_dotdot_de);
- 	}
+@@ -85,7 +86,7 @@ static int ttusbdecfe_dvbt_set_frontend(struct dvb_frontend *fe)
  
- error_old_dotdot:
- 	if (old_dotdot_de) {
--		corrupt |= vfat_update_dotdot_de(old_dir, old_inode,
--						 old_dotdot_bh, old_dotdot_de);
-+		corrupt |= fat_update_dotdot_de(old_dir, old_inode,
-+						old_dotdot_bh, old_dotdot_de);
- 	}
+ 	__be32 freq = htonl(p->frequency / 1000);
+ 	memcpy(&b[4], &freq, sizeof (u32));
+-	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL);
++	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL, 0);
  
- error_exchange:
+ 	return 0;
+ }
+@@ -130,7 +131,7 @@ static int ttusbdecfe_dvbs_set_frontend(struct dvb_frontend *fe)
+ 	lnb_voltage = htonl(state->voltage);
+ 	memcpy(&b[28], &lnb_voltage, sizeof(u32));
+ 
+-	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL);
++	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL, 0);
+ 
+ 	return 0;
+ }
+@@ -149,7 +150,7 @@ static int ttusbdecfe_dvbs_diseqc_send_master_cmd(struct dvb_frontend* fe, struc
+ 
+ 	state->config->send_command(fe, 0x72,
+ 				    sizeof(b) - (6 - cmd->msg_len), b,
+-				    NULL, NULL);
++				    NULL, NULL, 0);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/media/usb/ttusb-dec/ttusbdecfe.h b/drivers/media/usb/ttusb-dec/ttusbdecfe.h
+index 73828bb22..96600ad4c 100644
+--- a/drivers/media/usb/ttusb-dec/ttusbdecfe.h
++++ b/drivers/media/usb/ttusb-dec/ttusbdecfe.h
+@@ -14,7 +14,8 @@ struct ttusbdecfe_config
+ {
+ 	int (*send_command)(struct dvb_frontend* fe, const u8 command,
+ 			    int param_length, const u8 params[],
+-			    int *result_length, u8 cmd_result[]);
++			    int *result_length, u8 cmd_result[],
++			    int cmd_result_len);
+ };
+ 
+ extern struct dvb_frontend* ttusbdecfe_dvbs_attach(const struct ttusbdecfe_config* config);
 
 
 base-commit: 93f51579e7df248780214094418f205253383cc5
