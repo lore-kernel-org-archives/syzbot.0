@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 178A341F349
-	for <syzbot@lists.linux.dev>; Thu, 24 Sep 2026 07:11:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAD0A42EEC4
+	for <syzbot@lists.linux.dev>; Thu, 24 Sep 2026 07:18:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790233893; cv=none; b=EG9ZPe6SOxkkso50YcnPvUFMuCpn3bU/BIu/0W4GqORCrgVcFtmVXhm+uEKzvLFPARfaDMGBZCzLHll/nD1MHQhUZ9tayb+YnkbD2EWrumXsqwFwEsk3Lem2I8VTt4tpgPYajPBcOOQrtcvA6mnniu3+yM6nEwA2FDzW5agSxhc=
+	t=1790234342; cv=none; b=JbzcUAhxAEjxmZL/o4aUV5/QuyTjKrtwQJshsdZ4Wkz5hyAP1nN+LtG5I7Wyzb4Ma4CNtpam4kxnnmLMK8twgoaXOocl9Nd26HH/Ny8BNNun5trvwSSd0EDZBhfG7L3U70XoJKA+eYHyTxE9Tv491csWgLkqMjhrQYHxEjO5ZjQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790233893; c=relaxed/simple;
-	bh=AZFes0IHnTuLDOnNQRZYaLXMV/ftOYSjTi59WzyFHEk=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=DuD26fO8Jhz1BOGHfFj+noggPnvCPracIDBW/KasV8NfQVQ1aLg1bzBgWWNrqGek+bIsGI5vw3M8/9JXts4mJXbyNWWDElAqyS0DX1FHpLCMkn2ETHEykXoAemTbSYcKGKPKXXSH7I8J89WinNWb0XGqu7lu2mzJm+hbUrXiVMs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i2QDZkNw; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790234342; c=relaxed/simple;
+	bh=GM0ZDPb9BQzRxofJIx3YFOhVBCnyP7MFE2bvxS+0eMQ=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=rbE9nqmS5GQ9xIlofsDAsBvdrKK/uWmZSF2ANPyRZg5PETrJgaS/5q9HM7Eb09QrBEPQY2Mpvf9Z5wE+Gf0X9ivUmPH3dikLbL41y3vnNsfI4/l9xwnLY1UNrcGqPe3lElmUqoimC7hxYuGyh99S8wuEnQU11vjaG4cssaw+s2Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NQY87VU4; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i2QDZkNw"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A59301F000FF;
-	Thu, 24 Sep 2026 07:11:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NQY87VU4"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A0E141F000FF;
+	Thu, 24 Sep 2026 07:18:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790233882;
-	bh=4S7gNJL4jhhGdwXOnA6NONPUMnNVSYEvRLBcrVkG0oM=;
+	s=k20260515; t=1790234332;
+	bh=WjZT7aMcfxWXxpdb/47mrQR48gi7BM4vCXAizA8Pw+g=;
 	h=From:To:Cc:Subject:Date;
-	b=i2QDZkNw9+aqHPd0fIIV4h8dNoASotlRXhnLDxsqeECSsT24g76SOHOusbuhAxu3s
-	 OxYEsVQ5f4NSXUTp/ZkxG9dapsrfnw7i6LU8GJRkoUwLy70elvnZYy2swcBqTwflwA
-	 3gqS9pbfXM1Qfax4LH7TxG8M+4bR+TYycNx2XWOv4TXyLmiH44vsqROsj017noUlXm
-	 jl3Ogw34hwEQ2MdtPUccY7pQ3lAnlfCkJHz78NRGTJsBHY/mVXJ//La9u0Y0QAmNcV
-	 NL4ykGB0ZLHFKjbTKrhm5gIDG7Ku0iKpk5sFZob2Tq2eAhA4gGaqgrG3CXzRCp+o2L
-	 IL11hj+ILhFyA==
+	b=NQY87VU4xrZohlY65Xq1RJDfywmjmFSop6wlgqpY8BrwEDKDSJHJBVnJ0w9IJ4ig4
+	 DRb5IqzAUC/1flKy3DSGQhlEn/q4SlyE/pwilxD1z1l4GC3xOsfuTr48icNaOAtT9/
+	 cHo/T2fiOLgsNYdhCPIkl56sxE2D2k8zHsjLjdY0KGaY97pbhViv3D2ZLTkVnorSFU
+	 tMrlGwGzh3x62yKNeAkdlG3lgp5MwPIBcKM32TRafnBJUlunFIDja/SMSTlppAYd0A
+	 BONKEN0pJzYvnbpgAH6dLZMsTe5ghHjGWkhyWlTZ31TnUK3N3UdsN6oivwITW8QVG4
+	 W26mEoFJeynIA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] kernfs: drop splice_write support
-Message-ID: <af4efe2d-7856-46ff-9088-28400130dbce@mail.kernel.org>
+Subject: [PATCH RFC] SUNRPC: Use TASK_FREEZABLE_UNSAFE in __rpc_execute()
+Message-ID: <1a25e233-381b-4a90-9a62-da0a6968b575@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,123 +38,91 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Thu, 24 Sep 2026 07:11:22 +0000 (UTC)
+Date: Thu, 24 Sep 2026 07:18:52 +0000 (UTC)
 
-A circular locking dependency was detected between &pipe->mutex (in struct
-pipe_inode_info), &of->mutex (in struct kernfs_open_file), and
-&sbi->pipe_mutex (in struct autofs_sb_info).
+When a task executes a synchronous RPC call via __rpc_execute(), it waits
+for the queued RPC task to wake up using out_of_line_wait_on_bit(). Callers
+in subsystems such as NFS or NFSD (for example, write_ports() acquiring
+nfsd_mutex during NFS server initialization and issuing an rpc_ping())
+frequently hold locks across these synchronous RPC waits.
 
-The cycle arises from two conflicting execution paths:
+Historically, rpc_wait_bit_killable() invoked freezable_schedule_unsafe(),
+which explicitly bypassed lockdep checks for held locks during freeze.
+However, during the core freezer refactoring in commit f5d39b020809
+("freezer,sched: Rewrite core freezer logic"), freezable_schedule_unsafe()
+was removed, and callers were updated to pass freezer flags directly into
+out_of_line_wait_on_bit(). While rpc_wait_for_completion_task() was
+correctly updated to use TASK_KILLABLE | TASK_FREEZABLE_UNSAFE,
+__rpc_execute() was mistakenly updated to use TASK_KILLABLE |
+TASK_FREEZABLE without the unsafe flag.
 
-First, splicing data from a pipe into a kernfs file (such as a sysfs
-attribute) invokes iter_file_splice_write(), which locks the pipe via
-pipe_lock(pipe) (&pipe->mutex) and then calls kernfs_fop_write_iter(),
-acquiring mutex_lock(&of->mutex). This establishes the dependency
-&pipe->mutex -> &of->mutex.
+As a result, if a system suspend occurs concurrently while a task is
+waiting in __rpc_execute() with a lock held, __set_task_frozen() observes
+p->lockdep_depth > 0 without __TASK_FREEZABLE_UNSAFE and triggers a lockdep
+warning:
 
-Second, a regular write to a kernfs attribute (such as /sys/power/resume)
-acquires mutex_lock(&of->mutex) in kernfs_fop_write_iter() and invokes the
-attribute's store handler (resume_store()). In resume_store(), path
-resolution via lookup_bdev() and kern_path() can traverse an automount
-point managed by autofs. This triggers autofs_d_automount() ->
-autofs_wait() -> autofs_notify_daemon(), which acquires
-mutex_lock(&sbi->pipe_mutex) and writes a notification packet to the
-automount daemon pipe via __kernel_write(). That write enters
-anon_pipe_write() -> anon_pipe_prefill_and_lock() and acquires
-mutex_lock(&pipe->mutex). This establishes the dependency &of->mutex ->
-&sbi->pipe_mutex -> &pipe->mutex.
+WARNING: kernel/freezer.c:139 at __set_task_frozen+0x260/0x340
+Call Trace:
+ <TASK>
+ task_call_func+0x1aa/0x260 kernel/sched/core.c:4518
+ __freeze_task kernel/freezer.c:150 [inline]
+ freeze_task+0x216/0x390 kernel/freezer.c:169
+ try_to_freeze_tasks+0x190/0x620 kernel/power/process.c:54
+ freeze_processes+0xd0/0x1f0 kernel/power/process.c:137
+ suspend_prepare kernel/power/suspend.c:387 [inline]
+ enter_state kernel/power/suspend.c:609 [inline]
+ pm_suspend+0x2f1/0x760 kernel/power/suspend.c:644
+ state_store+0x206/0x290 kernel/power/main.c:819
+ kernfs_fop_write_iter+0x3a5/0x540 fs/kernfs/file.c:345
+ vfs_write+0x61e/0xbb0 fs/read_write.c:687
+ ksys_write+0x156/0x270 fs/read_write.c:739
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+ </TASK>
 
-Because all anonymous pipes share the same lockdep lock class
-(&pipe->mutex), this creates an ABBA circular locking dependency:
+Update __rpc_execute() to pass TASK_KILLABLE | TASK_FREEZABLE_UNSAFE to
+out_of_line_wait_on_bit(). This restores the pre-regression behavior and
+aligns __rpc_execute() with rpc_wait_for_completion_task(), avoiding the
+false-positive lockdep warning when tasks holding locks are frozen during
+synchronous RPC execution.
 
-======================================================
-WARNING: possible circular locking dependency detected
-======================================================
-task is trying to acquire lock:
-ffff888113c20c60 (&pipe->mutex){+.+.}-{4:4}, at:
-anon_pipe_write+0x28f/0x1a30 fs/pipe.c:534
-
-but task is already holding lock:
-ffff888115813938 (&sbi->pipe_mutex){+.+.}-{4:4}, at:
-autofs_notify_daemon+0x72a/0xe80 fs/autofs/waitq.c:164
-
-which lock already depends on the new lock.
-
-the existing dependency chain (in reverse order) is:
-
- -> #2 (&sbi->pipe_mutex){+.+.}-{4:4}:
-       __mutex_lock+0x19d/0x1550 kernel/locking/mutex.c:821
-       autofs_notify_daemon+0x72a/0xe80 fs/autofs/waitq.c:164
-       autofs_wait+0x11bd/0x1880 fs/autofs/waitq.c:426
-       autofs_d_automount+0x64e/0x810 fs/autofs/root.c:410
-       kern_path+0x3d/0x150 fs/namei.c:3036
-       lookup_bdev+0xc8/0x2b0 block/bdev.c:1268
-       resume_store+0x16f/0x4f0 kernel/power/hibernate.c:1278
-       kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
-       vfs_write+0x612/0xba0 fs/read_write.c:687
-       ksys_write+0x150/0x270 fs/read_write.c:739
-
- -> #1 (&of->mutex){+.+.}-{4:4}:
-       __mutex_lock+0x19d/0x1550 kernel/locking/mutex.c:821
-       kernfs_fop_write_iter+0x1d8/0x540 fs/kernfs/file.c:336
-       iter_file_splice_write+0xa31/0x1240 fs/splice.c:736
-       do_splice+0xc3e/0x16a0 fs/splice.c:1349
-       __do_sys_splice fs/splice.c:1634 [inline]
-
- -> #0 (&pipe->mutex){+.+.}-{4:4}:
-       __mutex_lock+0x19d/0x1550 kernel/locking/mutex.c:821
-       anon_pipe_write+0x28f/0x1a30 fs/pipe.c:534
-       __kernel_write+0x106/0x170 fs/read_write.c:641
-       autofs_notify_daemon+0x73d/0xe80 fs/autofs/waitq.c:164
-       autofs_wait+0x11bd/0x1880 fs/autofs/waitq.c:426
-       autofs_d_automount+0x64e/0x810 fs/autofs/root.c:410
-       kern_path+0x3d/0x150 fs/namei.c:3036
-       lookup_bdev+0xc8/0x2b0 block/bdev.c:1268
-       resume_store+0x16f/0x4f0 kernel/power/hibernate.c:1278
-       kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
-       vfs_write+0x612/0xba0 fs/read_write.c:687
-       ksys_write+0x150/0x270 fs/read_write.c:739
-
-Fix this by removing .splice_write = iter_file_splice_write from
-kernfs_file_fops. Kernfs attributes (sysfs, cgroupfs) are control
-interfaces designed for small configuration strings and numbers, rather
-than high-throughput data streams. Kernfs does not do page-cache zero-copy
-writes; kernfs_fop_write_iter() allocates a kernel buffer and copies data
-from the iterator via copy_from_iter(), so splice_write provides no benefit
-over write(). In addition, kernfs write callbacks invoke arbitrary
-subsystem callbacks across the kernel, and holding a generic VFS lock like
-pipe->mutex across them breaks subsystem layering and creates lock
-inversion hazards whenever an attribute callback interacts with pipes,
-usermode helpers, or automounts. Dropping .splice_write aligns kernfs with
-other pseudo-filesystems such as procfs, debugfs, tracefs, and configfs,
-and causes splice() into a kernfs file to return -EINVAL.
-
-Fixes: f2d6c2708bd8 ("kernfs: wire up ->splice_read and ->splice_write")
-
-Fixes: f2d6c2708bd8 ("kernfs: wire up ->splice_read and ->splice_write")
+Fixes: f5d39b020809 ("freezer,sched: Rewrite core freezer logic")
 Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+002fb7b2d0bc53bf7e75@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=002fb7b2d0bc53bf7e75
-Link: https://syzkaller.appspot.com/ai_job?id=b88d0e47-6c54-4575-a4c8-62628424d6ba
-To: <driver-core@lists.linux.dev>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: "Tejun Heo" <tj@kernel.org>
-To: "Christoph Hellwig" <hch@lst.de>
+Reported-by: syzbot+209eccd8f507de9f7f1b@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=209eccd8f507de9f7f1b
+Link: https://syzkaller.appspot.com/ai_job?id=cb10c20b-f568-4900-8b09-dc937852ee3f
+To: "Anna Schumaker" <anna@kernel.org>
+To: "Chuck Lever" <cel@kernel.org>
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jeff Layton" <jlayton@kernel.org>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <linux-nfs@vger.kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Trond Myklebust" <trondmy@kernel.org>
+To: "Peter Zijlstra" <peterz@infradead.org>
+Cc: "Dai Ngo" <Dai.Ngo@oracle.com>
+Cc: "Simon Horman" <horms@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
+Cc: "NeilBrown" <neil@brown.name>
+Cc: "Olga Kornievskaia" <okorniev@redhat.com>
+Cc: "Tom Talpey" <tom@talpey.com>
 
 ---
-diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
-index 8e0e90c93..2f87e426c 100644
---- a/fs/kernfs/file.c
-+++ b/fs/kernfs/file.c
-@@ -1015,7 +1015,6 @@ const struct file_operations kernfs_file_fops = {
- 	.poll		= kernfs_fop_poll,
- 	.fsync		= noop_fsync,
- 	.splice_read	= copy_splice_read,
--	.splice_write	= iter_file_splice_write,
- };
- 
- /**
+diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
+index 016f16ca5..494947d50 100644
+--- a/net/sunrpc/sched.c
++++ b/net/sunrpc/sched.c
+@@ -984,7 +984,7 @@ static void __rpc_execute(struct rpc_task *task)
+ 		trace_rpc_task_sync_sleep(task, task->tk_action);
+ 		status = out_of_line_wait_on_bit(&task->tk_runstate,
+ 				RPC_TASK_QUEUED, rpc_wait_bit_killable,
+-				TASK_KILLABLE|TASK_FREEZABLE);
++				TASK_KILLABLE | TASK_FREEZABLE_UNSAFE);
+ 		if (status < 0) {
+ 			/*
+ 			 * When a sync task receives a signal, it exits with
 
 
 base-commit: 93f51579e7df248780214094418f205253383cc5
