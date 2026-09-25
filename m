@@ -1,178 +1,202 @@
-Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com [209.85.160.71])
+Received: from mail-dy2-f12.google.com (mail-dy2-f12.google.com [74.125.229.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A694248094F
-	for <syzbot@lists.linux.dev>; Fri, 25 Sep 2026 09:24:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.71
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790328257; cv=none; b=ouHI0eoGiNNMmHZC6hwSpVZHJkh9h19slRwQebZOeZ0lgCbv0fQRVlEIB7pIziALR3arjWduUyB2+0CqiuYmCqmjvQv/xge77nIxWaeUlqIVnPI2lbvLANdYQQUfTXDBoMR1ycgDn1go9LiwBLgKg/bvoCmJJJzFHI02O6YCZyk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790328257; c=relaxed/simple;
-	bh=Mun91e+a2sgF6TvIy/utfHU4x6hsKg0c3RJ65Bt4F9Q=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=ophqanPXMF7+XH9si8VhCZj0EPatlRHpFbqBpBznVjaSD79qa24BtYnET2Ta2y0XMz0zTtcYRSYeRFqzzvPnnRn67gEdC4XpFSdwRZVHEKg9Jt3LVPwlMKeoiWw6JF/gN1lreIwFkBlpVnTc3EZZXK6pNS+UivhA1BXA1OdANpQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-45ecb9dd589so648409fac.0
-        for <syzbot@lists.linux.dev>; Fri, 25 Sep 2026 02:24:12 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97339303A37
+	for <syzbot@lists.linux.dev>; Fri, 25 Sep 2026 09:25:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.229.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790328343; cv=pass; b=KL5+/mholcSR2qKSwIWtbiBAOI0MA9Ii1fs/3FxmWIGk1AgTZ6q8cUVSvkFizuggHUPaWWNLQLWKW8uiJ/adPq3BRlx9atgB5NeTvJ8HbT1DjRkEkT2lVjyvMZAOLjjt/UO5hSvUzSmgeUpuW5mkvFssRcT5gDcrvE/GFXwz7CM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790328343; c=relaxed/simple;
+	bh=/iQRL/kO7F8tg4q1nSOmaw6U8D8aOQPxBhSYrk+Cenc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Qjl7DCjWn7LOmCWRAI4VYweeXmTAzGrXicaUMSOXWefdgNxHFNReRIQyJ5HRsjR7fxLMhZYj9gOHVAJ6OfoIaUM8Y89wkAvxWyxaQLlprpxt6f8v1XKFWVqXNqdq06jHlfJfQthqNDMq0YHBkUyBtfqkYBxoahir2ea0CcnBGJE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=rdzSCJSl; arc=pass smtp.client-ip=74.125.229.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rdzSCJSl"
+Received: by mail-dy2-f12.google.com with SMTP id 5a478bee46e88-32dbbe82e13so540146eec.0
+        for <syzbot@lists.linux.dev>; Fri, 25 Sep 2026 02:25:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1790328339; cv=none;
+        d=google.com; s=arc-20260327;
+        b=ExbFtthq7nU478YSF6/Te4FGYs/DCyZ62//uLVUD0uRg4Oxt34rnxue64XKtIaLigf
+         4OeSfFfNGmhnfFTZKV8/dgXpLCMHak0OHZqyDAzug6PNl03HsE8jZCA3paYLPrVZ0vk4
+         xffiqRHNTk4IBnsxymIIGQYdNWnXOeIKf9cE4ZRtCTIo2Ab0QkzwW7txe8eqDHSEIBs0
+         2dwWqdiESQBUTWxA+GmJ1H7WLXWVk2U1nXas0YqPUJ2+q0MHDbA4KDUQm/TZVklSl6ue
+         GrIoo4tTWW7I7QFRzwbajoUW8ju5Ve24tVPCSSrgYp+6tFeHdoOYgVWNRB0uFxgbHhLp
+         Drnw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=TEFDqKFCuBcZVH+pYiLp3oOwpErSQJFP5Bj8gcJnWyo=;
+        fh=AV6UsZiEEbWi+MAflVTmxJfHJEaIay6MVN6y+xvYdTI=;
+        b=W0of+eiKqKzMZvalHNwFZesRGv7xLrh8KeL3HeafbqCo0D8T8XFTwSjppTrdnIFZUV
+         +PsgYS00W7S21U9avfXOGRFQcQPAZaQNM4ue8ZummX0mRaG1cr+5W70ebQ1DoJYgLfwS
+         rScL4Acxh446YTlLsy924VboD/3/Vh5vB64uuNF/g26rqVWAzfbp3uD88nqJANznWpeE
+         7NxeL706T7zXe3AEKDS3WFKl7QfhQ/3nptWohz0Cgng6cvYqH5FW5nKS5hOYIW8bfJnI
+         Ij1NmTqteJaSqQJ7Xb79MFPDjaM5gaKXetpBdsuwRv3drzqA/azMfrHx80AxN1P7lqp8
+         0pWQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1790328339; x=1790933139; darn=lists.linux.dev;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=TEFDqKFCuBcZVH+pYiLp3oOwpErSQJFP5Bj8gcJnWyo=;
+        b=rdzSCJSlGzPuyYGgwtrf2LyK0sjQlgFENLqpet9nWHK+RwDa8QwKOQNH9M/URQSmnk
+         nB89K9ftmAbnwrYlOV4ML65/qIAYCl55iRe9RTMENCT4h62k73g8eEeFW3c7mSpQNGDR
+         abHu/p/wvh4cHrfkAxshmDJ0ZAsxRTcRGRpD9dj3cO+mXgqtnf5RjbPds+nCjJfQTZIY
+         dpxSayQEAkt5BDdfp/KZQFhwJ8lrMU7MwYFkwgxeyun9dkSo2V90SQHd8KtpZ+V4FKq7
+         rhn5yTTCGPKrmQZ2JnwK55bcjE9rpEdkmPZIdMGKDl5a5uNMWeC1UswIwcmzemWtXUAY
+         l52g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790328251; x=1790933051;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=SG9sz1wN9Eat286bNsFicmln6CdKM5JJEaOgRGJ1Aao=;
-        b=032QGDAoxTTBepFcLCDTkz5ohUe4e9uEruPRWA9njDKCDlTNOcIAbEhh5bcDvcNfZF
-         SZiM/NDCZKdZAvw9xtS3IOwqGeb7zGqqoexBKAiLbAWxBCKz8RNXYe+RQOUBphu+X9VR
-         D/1VFbHVEFK9UurdWV5nLaA6MbeCSdhkdlNoEyz/m9C/pdZYBYDpCAaMMyAbecayjgqy
-         TLRz71H7+ZEwd6gTpF5lJzsMCDfsLhbhp/a286XZwspopIrIB9Eb/f24ssTTWDGCJjnr
-         qnEDKhkduaO50na2Xf0UFEKnYt/Th1Bh0h+L2n7TOn1XJI6GIAvsYXYHcRHQrCTVtC2Z
-         txLg==
-X-Gm-Message-State: AFuF++kO5RGhvZ9mViDd8YnyqS1dc5cm7m62Cot6OfMKVEYgBGNiUGSg
-	dkIlGD3w/iz+7YA6/rha7YrgIIGHesHQwnJ90r0MyoMjtnAsRXykxwycX/+hMZ3OA1FOMlRr6pV
-	G+JcKXL1C2H1g9wEwed9xiuvUJwcVff05acHbHe1APkBAKYeXCh/2v019148=
+        d=1e100.net; s=20260707; t=1790328339; x=1790933139;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=TEFDqKFCuBcZVH+pYiLp3oOwpErSQJFP5Bj8gcJnWyo=;
+        b=vnZxnE33nvHK4upQ8AQmMSRhwfsYpt0mv90o3f8UG9ddlCQYcrhNZGtuwDuDXqimVl
+         zWhmPwpZsA364R9FMmM7lR2g4x7j2IGUXMpqLyJeg/W9sh7k7xi6jsnpmPpGnobJmE3l
+         cmxKOuMLGFLPh8knGZcl93RsDNB7/wqAVhNt6TbZtp5M8sMPvunFjZh1+/P1yZ0O57SP
+         V0lm8Sr0Vtuqg21msQjAiwzLILeJ/4HPqby0BUOZ3zWvtS7Z5U1HjDK0BQsQwLxMxAt4
+         M/uYwk5WGeZGLWAsb+xBt40GN4/bjYYj7mnSyJ0k+CYG24EVDr1czkGx+xMarvpzPTOe
+         ZXtQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwsG2CAXetAGOsgzewTpc2pz6lSqk+WDbn7OdNIRJfxW7k4oIRxJAtVFywvxS+G6FxNO1nc0Is=@lists.linux.dev
+X-Gm-Message-State: AFuF++k+/2dSioSJyPh+/xpDSoEX7b3Yg/1WKoda8K5PZ4mbi7fNKD1O
+	uCzNOw97ZCraPzCWCxb29n2/l29HFYlWDp6o8O9HIPWZzxTWFqQX24KBUUYKSy2cC86bmSFqnCv
+	NuROfoQIdmwbK+8DpwWcyfD++DGDuXru78RiNXKZxyxzuvsxvJZD7KUPhGa4=
+X-Gm-Gg: AYBFou2K81Eh2kfkwfGXnUIbU5KmQ/Y467XkqkXuRF65kA8UAsqO3dypmSuqGnPMOK3
+	hKGxpqNshKWuk741JMUHz71ZbKIpnQbJK6Xhm4Hb02B2uQNZwbcYvPqPef8HwHxGeAoS43dTNKh
+	1cgoVRbJ0nV7WU+h+fBNgRRWNfYreWHGCxCF2gRUBrd2s6vKdltDdpcxnHG4GK+AJbSodJBgDDg
+	3hmULSj4WgKV9nPYP65OJFBT4cCjfBhgDLYUyWomhxljqE8PyFixAY+W1BbeY4OEQc19NCsuvVU
+	QFmL2GOcbNVlKYiBPw+SsrDsfHN0OzztZSg+vctoQoCc641KW18kl9rCUfVlPqfFFiT8QBHBQvW
+	G4SOaN8XZD32QV3L05Jh7
+X-Received: by 2002:a05:7022:3b0c:b0:143:761a:863e with SMTP id
+ a92af1059eb24-145040d406amr5952725c88.44.1790328337617; Fri, 25 Sep 2026
+ 02:25:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:11c9:b0:4b3:98f4:f057 with SMTP id
- 5614622812f47-4dc57e294demr1386127b6e.3.1790328251491; Fri, 25 Sep 2026
- 02:24:11 -0700 (PDT)
-Date: Fri, 25 Sep 2026 02:24:11 -0700
-In-Reply-To: <6b07af04b3ba66a09009e1a0a7b98ec5ec85d3a0.1790109248.git.sunnytiwari@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ab63dbb.7eec07f4.c25c.0005.GAE@google.com>
-Subject: [syzbot ci] Re: net/rds: replace tasklets with workqueue
-From: syzbot ci <syzbot+cic449f4593b46dd93@syzkaller.appspotmail.com>
-To: achender@kernel.org, davem@davemloft.net, edumazet@google.com, 
-	horms@kernel.org, kuba@kernel.org, linux-rdma@vger.kernel.org, 
-	netdev@vger.kernel.org, pabeni@redhat.com, rds-devel@oss.oracle.com, 
-	santosh.shilimkar@oracle.com, sunnytiwari@google.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <1a25e233-381b-4a90-9a62-da0a6968b575@mail.kernel.org>
+In-Reply-To: <1a25e233-381b-4a90-9a62-da0a6968b575@mail.kernel.org>
+From: Marco Elver <elver@google.com>
+Date: Fri, 25 Sep 2026 11:25:01 +0200
+X-Gm-Features: AclHuK8GnKJAOZrVZRHJzRmKBo8xvL3fi7hSVIVv-BGTLldQmC3ACHGTeCpiv7E
+Message-ID: <CANpmjNOrDg9HWZcR3Ro_Jkr=43Ks9c9JjQyjG1Vk-tFABaaeng@mail.gmail.com>
+Subject: Re: [PATCH RFC] SUNRPC: Use TASK_FREEZABLE_UNSAFE in __rpc_execute()
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
-syzbot ci has tested the following series
+#syz upstream
 
-[v1] net/rds: replace tasklets with workqueue
-https://lore.kernel.org/all/6b07af04b3ba66a09009e1a0a7b98ec5ec85d3a0.1790109248.git.sunnytiwari@google.com
-* [PATCH net-next] net/rds: replace tasklets with workqueue
-
-and found the following issue:
-WARNING in __alloc_workqueue
-
-Full report is available here:
-https://ci.syzbot.org/series/e7102860-1b25-4e10-b653-afe8e9820ef8
-
-***
-
-WARNING in __alloc_workqueue
-
-tree:      net-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
-base:      42a9fb3382fc2573e92f41d203b095d9a372cfc9
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/220e9c3a-eede-449e-8bb1-d34ad95dc867/config
-
-gre: GRE over IPv4 demultiplexer driver
-ip_gre: GRE over IPv4 tunneling driver
-IPv4 over IPsec tunneling driver
-Initializing XFRM netlink socket
-IPsec XFRM device driver
-xfrm_iptfs: IPsec IP-TFS tunnel mode module
-NET: Registered PF_INET6 protocol family
-Segment Routing with IPv6
-RPL Segment Routing with IPv6
-In-situ OAM (IOAM) with IPv6
-mip6: Mobile IPv6
-sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
-ip6_gre: GRE over IPv6 tunneling driver
-NET: Registered PF_PACKET protocol family
-PFKEY is deprecated and scheduled to be removed in 2027, please contact the netdev mailing list
-NET: Registered PF_KEY protocol family
-Bridge firewalling registered
-NET: Registered PF_X25 protocol family
-X25: Linux Version 0.2
-can: controller area network core
-NET: Registered PF_CAN protocol family
-can: raw protocol
-can: broadcast manager protocol
-can: netlink gateway - max_hops=1
-can: SAE J1939
-can: isotp protocol (max_pdu_size 8300)
-Bluetooth: RFCOMM TTY layer initialized
-Bluetooth: RFCOMM socket layer initialized
-Bluetooth: RFCOMM ver 1.11
-Bluetooth: BNEP (Ethernet Emulation) ver 1.3
-Bluetooth: BNEP filters: protocol multicast
-Bluetooth: BNEP socket layer initialized
-Bluetooth: HIDP (Human Interface Emulation) ver 1.2
-Bluetooth: HIDP socket layer initialized
-NET: Registered PF_RXRPC protocol family
-Key type rxrpc registered
-Key type rxrpc_s registered
-NET: Registered PF_KCM protocol family
-l2tp_core: L2TP core driver, V2.0
-l2tp_ppp: PPPoL2TP kernel driver, V2.0
-l2tp_ip: L2TP IP encapsulation support (L2TPv3)
-l2tp_netlink: L2TP netlink interface
-l2tp_eth: L2TP ethernet pseudowire support (L2TPv3)
-l2tp_ip6: L2TP IP encapsulation support for IPv6 (L2TPv3)
-NET: Registered PF_PHONET protocol family
-8021q: 802.1Q VLAN Support v1.8
-sctp: Hash tables configured (bind 32/56)
-NET: Registered PF_RDS protocol family
-------------[ cut here ]------------
-workqueue: rds_ib_wq is using neither WQ_PERCPU or WQ_UNBOUND. Setting WQ_PERCPU.
-WARNING: kernel/workqueue.c:5939 at __alloc_workqueue+0x1cd2/0x1fe0, CPU#1: swapper/0/1
-Modules linked in:
-CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__alloc_workqueue+0x1cd5/0x1fe0
-Code: 0b 90 e9 6d fc ff ff e8 89 02 39 00 e9 7f fb ff ff e8 7f 02 39 00 e9 85 fb ff ff e8 75 02 39 00 48 8d 3d ce 68 ee 0e 4c 89 f6 <67> 48 0f b9 3a 41 81 cf 00 01 00 00 e9 10 e6 ff ff e8 55 02 39 00
-RSP: 0000:ffffc900000676a8 EFLAGS: 00010293
-RAX: ffffffff818ed98b RBX: 0000000000000000 RCX: ffff888102adda00
-RDX: 0000000000000000 RSI: ffff888173f5d170 RDI: ffffffff907d4260
-RBP: ffffffff8d43a5a0 R08: ffff888102adda00 R09: 0000000000000002
-R10: 0000000000000102 R11: 0000000000000000 R12: ffff888173f5d000
-R13: ffff888173f5d000 R14: ffff888173f5d170 R15: 0000000000000018
-FS:  0000000000000000(0000) GS:ffff8882a8cc6000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 000000000eb48000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- alloc_workqueue_noprof+0xe3/0x210
- rds_ib_init+0x54/0x190
- rds_rdma_init+0x74/0x170
- do_one_initcall+0x250/0x870
- do_initcall_level+0x10a/0x1a0
- do_initcalls+0x59/0xa0
- kernel_init_freeable+0x29d/0x3e0
- kernel_init+0x22/0x1d0
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
-
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
+On Thu, 24 Sept 2026 at 09:18, 'syzbot' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
+>
+> When a task executes a synchronous RPC call via __rpc_execute(), it waits
+> for the queued RPC task to wake up using out_of_line_wait_on_bit(). Callers
+> in subsystems such as NFS or NFSD (for example, write_ports() acquiring
+> nfsd_mutex during NFS server initialization and issuing an rpc_ping())
+> frequently hold locks across these synchronous RPC waits.
+>
+> Historically, rpc_wait_bit_killable() invoked freezable_schedule_unsafe(),
+> which explicitly bypassed lockdep checks for held locks during freeze.
+> However, during the core freezer refactoring in commit f5d39b020809
+> ("freezer,sched: Rewrite core freezer logic"), freezable_schedule_unsafe()
+> was removed, and callers were updated to pass freezer flags directly into
+> out_of_line_wait_on_bit(). While rpc_wait_for_completion_task() was
+> correctly updated to use TASK_KILLABLE | TASK_FREEZABLE_UNSAFE,
+> __rpc_execute() was mistakenly updated to use TASK_KILLABLE |
+> TASK_FREEZABLE without the unsafe flag.
+>
+> As a result, if a system suspend occurs concurrently while a task is
+> waiting in __rpc_execute() with a lock held, __set_task_frozen() observes
+> p->lockdep_depth > 0 without __TASK_FREEZABLE_UNSAFE and triggers a lockdep
+> warning:
+>
+> WARNING: kernel/freezer.c:139 at __set_task_frozen+0x260/0x340
+> Call Trace:
+>  <TASK>
+>  task_call_func+0x1aa/0x260 kernel/sched/core.c:4518
+>  __freeze_task kernel/freezer.c:150 [inline]
+>  freeze_task+0x216/0x390 kernel/freezer.c:169
+>  try_to_freeze_tasks+0x190/0x620 kernel/power/process.c:54
+>  freeze_processes+0xd0/0x1f0 kernel/power/process.c:137
+>  suspend_prepare kernel/power/suspend.c:387 [inline]
+>  enter_state kernel/power/suspend.c:609 [inline]
+>  pm_suspend+0x2f1/0x760 kernel/power/suspend.c:644
+>  state_store+0x206/0x290 kernel/power/main.c:819
+>  kernfs_fop_write_iter+0x3a5/0x540 fs/kernfs/file.c:345
+>  vfs_write+0x61e/0xbb0 fs/read_write.c:687
+>  ksys_write+0x156/0x270 fs/read_write.c:739
+>  do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>  </TASK>
+>
+> Update __rpc_execute() to pass TASK_KILLABLE | TASK_FREEZABLE_UNSAFE to
+> out_of_line_wait_on_bit(). This restores the pre-regression behavior and
+> aligns __rpc_execute() with rpc_wait_for_completion_task(), avoiding the
+> false-positive lockdep warning when tasks holding locks are frozen during
+> synchronous RPC execution.
+>
+> Fixes: f5d39b020809 ("freezer,sched: Rewrite core freezer logic")
+> Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+209eccd8f507de9f7f1b@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=209eccd8f507de9f7f1b
+> Link: https://syzkaller.appspot.com/ai_job?id=cb10c20b-f568-4900-8b09-dc937852ee3f
+> To: "Anna Schumaker" <anna@kernel.org>
+> To: "Chuck Lever" <cel@kernel.org>
+> To: "David S. Miller" <davem@davemloft.net>
+> To: "Eric Dumazet" <edumazet@google.com>
+> To: "Jeff Layton" <jlayton@kernel.org>
+> To: "Jakub Kicinski" <kuba@kernel.org>
+> To: <linux-nfs@vger.kernel.org>
+> To: <netdev@vger.kernel.org>
+> To: "Paolo Abeni" <pabeni@redhat.com>
+> To: "Trond Myklebust" <trondmy@kernel.org>
+> To: "Peter Zijlstra" <peterz@infradead.org>
+> Cc: "Dai Ngo" <Dai.Ngo@oracle.com>
+> Cc: "Simon Horman" <horms@kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+> Cc: "NeilBrown" <neil@brown.name>
+> Cc: "Olga Kornievskaia" <okorniev@redhat.com>
+> Cc: "Tom Talpey" <tom@talpey.com>
+>
+> ---
+> diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
+> index 016f16ca5..494947d50 100644
+> --- a/net/sunrpc/sched.c
+> +++ b/net/sunrpc/sched.c
+> @@ -984,7 +984,7 @@ static void __rpc_execute(struct rpc_task *task)
+>                 trace_rpc_task_sync_sleep(task, task->tk_action);
+>                 status = out_of_line_wait_on_bit(&task->tk_runstate,
+>                                 RPC_TASK_QUEUED, rpc_wait_bit_killable,
+> -                               TASK_KILLABLE|TASK_FREEZABLE);
+> +                               TASK_KILLABLE | TASK_FREEZABLE_UNSAFE);
+>                 if (status < 0) {
+>                         /*
+>                          * When a sync task receives a signal, it exits with
+>
+>
+> base-commit: 93f51579e7df248780214094418f205253383cc5
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+>
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> --
+> You received this message because you are subscribed to the Google Groups "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller-upstream-moderation/1a25e233-381b-4a90-9a62-da0a6968b575%40mail.kernel.org.
