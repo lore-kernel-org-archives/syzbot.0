@@ -1,78 +1,78 @@
 Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D2A61632E7
-	for <syzbot@lists.linux.dev>; Sat, 26 Sep 2026 02:48:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A38A2C3757
+	for <syzbot@lists.linux.dev>; Sat, 26 Sep 2026 09:35:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790390889; cv=none; b=tR0maiLCYB7SYN2d+Pb8AoBY1X7I4xyGgGd5WGfpL5S5osR0cnEXqfjt1w2ZXTOXQ0/NAZshLPgHTpuJXp+l83B9F0mLiXcp6a2MlCICXkiTxy/HbIUk8WTjdo0Xg43Qp6I4eBUsYBpLBpKej4jAHf+hnbgQEfrLL2wMU+EjPoY=
+	t=1790415329; cv=none; b=lfC0Lbru4CPo0K4f89yxGj0LAsXJybCf4WEjIsD2cRU1R9sp3mmn3yYAPlKElzh4Q+0ucU0OQVAKYJ02PUM35NUu+yeCqSVBEoCr7eS9vcSt3GgBx6/IMprKNUM3ShBuLRojP+j4TYP4G2NuiQRrKT0mmWni75DNPVe8iqU5zmM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790390889; c=relaxed/simple;
-	bh=rycV1b7sONEvgzra8OXlZFrGey6UEdDooDhcxQNzSEA=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=CUTk0dC6jOh+jjQTo9NEX4HzGvcak9SK5MCJNNb63Ad85oPe1r5zuRzbhWvZkeWjiSFiompYF1sb92HMjGQux/6YXYXXppbo5GOaCHdTYcWaG6612mgQb0bRss4f93zBZVdSDMXLMUWhKF2NYAzgnchn6IbEYANlIkjOPuVwpdA=
+	s=arc-20240116; t=1790415329; c=relaxed/simple;
+	bh=fi7kifwCoVxhPuqpcnasMY3DD31ixs3j/hErLFPpu1c=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=a+H0ujukInJtBINp3V3ntiG9Fc+f2vP65L++tuUOwTo0hBFe+D7EJRaAUsWVAnqwGMF94h47d6r4t1g2epl/tbAxEJrClC8p3JJB9pTFaHJgNhALuiPqqdL9N4RNRdENZQ6aMMPMn2XTlgvVkqkrLLU8QH/SCRQ5YHi8+JvmgRs=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4cbf700ddccso1737612b6e.0
-        for <syzbot@lists.linux.dev>; Fri, 25 Sep 2026 19:48:07 -0700 (PDT)
+Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4e778acdbc6so48959b6e.3
+        for <syzbot@lists.linux.dev>; Sat, 26 Sep 2026 02:35:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790390887; x=1790995687;
+        d=1e100.net; s=20260707; t=1790415326; x=1791020126;
         h=content-type:cc:to:from:subject:message-id:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=JKmhbf9Wkn82RQeX5N/WaJWKwxeeUTJi0Vigs5yQi6w=;
-        b=ffz9uqXXXbZsiVNZaxVTA/DVV+Ij/RCq9t/sy8d4DEDmuUWz2Y3Ze2P3HYQdGzvjpY
-         fi1XVx4ZN3RxpKsoP5a4KylNEoGar7+arMEDDtZ2IrKD6I0I/18xSZCZQep8f3NtGNvC
-         i7bM2/1Bd2cQ5LJnVbokFaBtOMv8uFv09aNi7UpTJn/1Zr2z+0rKOAKDjXfh5qcSW3oX
-         uNXWKa1vdKyB0iRj80AnjA/gIrvA62Ijg/aU12wAs1sD2nHQudX9XU0hgnLobIDa7cjP
-         8UmOp023WFgdH3sFBqHf2bC48aT/6b7mLxBCgui8MYXAwPsX20b8rdKnWxvzW2yobtKV
-         7ljA==
-X-Gm-Message-State: AFuF++luz52Do7Eu/lekeKSOb6fX19EIiumj6AyNCbNo2yE5dN4UCHqS
-	Rhm/LCCYdp13abggYA9DB6Xuuqm1GnoXsN00n+mbn35AWkvvLKRJ/3QjR2XhkxI5+6W68E7OxeR
-	hcLiTKWZT3bVLTOt8nUiA1ExKyE9MMjME8KocYlUdYRCWUvXaS0wdEaVIwNs=
+        bh=CeOsosY48HIES5Gbm7jmjpLGei58QuzXqSs/sbIt4xQ=;
+        b=xnycM6LnAgDai5c4oeOlEHSOUjDyazgsyurVU0fbQ7EnQMuwWIXmObBQjH4zdoYNNq
+         9XMNz3gy1qYBczUrz8UJf3EJwf9QlT8Fmnkq4lO7fujxgxU7FhB3IWZiXwlD53PeqJTa
+         0u5ayLghACMgH5xz5g/CWn6hsbqzHXbApZyHLOw4a/a1i7UBLirnBBnepzqK9G2lDL0C
+         uWyfaDQ9FsAtAWj/1T5183oNVxL/QWkaGfyTQpE1o5h9X9W80o2o6eaJWGOsAS+YYrFm
+         uDzkanRsAw5R82KTOkQqUIZesRiBkSF5GteIKqunxTkRSBXqwnn+wSsufd+iIa03Jfb/
+         nqwA==
+X-Gm-Message-State: AFuF++nQGWPDviBcU+UOSxwFwwt8jFgjJW2yG5hJ926BCAg1etQNmp0u
+	AHsuRqIS3Q0/TEBuk8sqMBmlwFo+SDeHuvX6tY7Tpc9OanWknDgvcbhwViBX9D03NvsrRc3A31Y
+	w+4yrs5U7MOwRkZ+Hhth8WEmW3RT+hzeJdYSLVuMDHeZqOLOhy5uTlfNPJzA=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1645:b0:4b9:e5fa:8a24 with SMTP id
- 5614622812f47-4dc640aa3a3mr4315326b6e.41.1790390887079; Fri, 25 Sep 2026
- 19:48:07 -0700 (PDT)
-Date: Fri, 25 Sep 2026 19:48:07 -0700
+X-Received: by 2002:a05:6808:f03:b0:4cb:f21c:a79e with SMTP id
+ 5614622812f47-4d72ac471c2mr10524842b6e.38.1790415326513; Sat, 26 Sep 2026
+ 02:35:26 -0700 (PDT)
+Date: Sat, 26 Sep 2026 02:35:26 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ab73267.7eec07f4.c25c.000c.GAE@google.com>
-Subject: [moderation/CI] Re: netfilter: flowtable: restore wireless forward path
-From: syzbot ci <syzbot+ci8b743cc3df21c3a7@syzkaller.appspotmail.com>
+Message-ID: <6ab791de.dc2998a4.2261f5.0051.GAE@google.com>
+Subject: [moderation/CI] Re: scsi: sg: finish request on error in sg_read()
+From: syzbot ci <syzbot+ci2a09259b0dd510ea@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] netfilter: flowtable: restore wireless forward path
-https://lore.kernel.org/all/20260923195046.59867-1-pablo@netfilter.org
-* [PATCH nf] netfilter: flowtable: restore wireless forward path
+[v2] scsi: sg: finish request on error in sg_read()
+https://lore.kernel.org/all/20260924054625.2282544-1-benquike@gmail.com
+* [PATCH v2] scsi: sg: finish request on error in sg_read()
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/99fc533e-f476-4eb2-a5d6-71c4fd36a7d2
+https://ci.syzbot.org/series/aed47eb2-6ec5-4898-9773-270ca029d8ff
 
 ***
 
 kernel build error
 
-tree:      nf
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf.git
-base:      9c572a83037a7dcd653ba3a9cc468c16b857d0c9
+tree:      linux-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
+base:      0b1c23743a4e24cd5f126f84b01555532e0b5a2a
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/a7c820b4-9673-40ee-a4cc-5760c6f14ccd/config
+config:    https://ci.syzbot.org/builds/930c8f0a-39e7-4dc8-b4d2-21b973bf50fc/config
 
-net/mac80211/iface.c:1026:12: error: no member named 'ieee80211' in 'struct net_device_path'
+drivers/scsi/sg.c:535:9: error: use of undeclared label 'free_old_hdr'
 
 ***
 
@@ -95,7 +95,7 @@ Notes:
 - Arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[hauke@hauke-m.de netfilter-devel@vger.kernel.org pablo@netfilter.org]
+[benquike@gmail.com dgilbert@interlog.com jejb@linux.ibm.com john.garry@linux.dev linux-kernel@vger.kernel.org linux-scsi@vger.kernel.org martin.petersen@oracle.com stable@vger.kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
