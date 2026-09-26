@@ -1,85 +1,80 @@
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20ECF3CB564
-	for <syzbot@lists.linux.dev>; Fri, 25 Sep 2026 23:58:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E91330E858
+	for <syzbot@lists.linux.dev>; Sat, 26 Sep 2026 01:01:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790380739; cv=none; b=F6irWG9XRD+i192YC13fw/ZRaMA5+9pxAOiOZGzCDU9y1p4sNVJr9YsRmdF3JVaEFK8sGRpHi3QbmYKfn03LdVIjtHnAvMk6iSlccqzb3q0SSXhcqA2r/YfELQDk+ivgACVUdqoMbKqIRaEcBjBhrPbj6fFGGr3oAIIVeHaRsKU=
+	t=1790384467; cv=none; b=p4UG46jeiOK0FDbgpH7NDdJDC0Vpdc1nt6go6ZAzwOBvISgrj/8fjGE7lkj5BKh2e1PN74WNqu0pKHT+EtkvIUP40E39idDGkJeuqIX+6i5cJKj1RiZ8tQ/PSkSLjW9VOeJnaAbFd8ahUA5oGsrznitj0IGLHsh4PTRrygrqC28=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790380739; c=relaxed/simple;
-	bh=0sY0W1kQJrtrg7LIE1KdZ6AEuDJXvD0WiGH+yDGCDGI=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=hR/qovDA1bNJVS9FWCpFh8Wk+8Cpyb4vChQZZl2mtEajE2UTuvT/8rRdMZPUkgkGhrA/PSSUNB8clH9AFp4jAy49K8KwRbL1Vf8ykA6q6Wj20+lbGepr5S4CttAvY/B+hoxKc+p8lsZ/i8BUh/UQcWexWnQEu1xFOuDLldh5t3Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.198
+	s=arc-20240116; t=1790384467; c=relaxed/simple;
+	bh=F/bAotl5HpNtIN2jY6ThIFmvpfZDIuw7023xs8OgZrg=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=bq2FPXa9h5XX7n2tBS/F/jinPsFs+zPtNlz3HXW0HPVk2sBiIZTtaGP6wUxN/2OFgfXDtGVSYJ73YNKzIbCPd9Fzl079KI0Hv8m7k3mTdhyV7NUhmq9R7PIccu7NNcTOwAcd1LtGvjSgZUX/01vsmyr/zyqHu7xQBnnOXCqgJQs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-48e5de5a23cso2535949b6e.0
-        for <syzbot@lists.linux.dev>; Fri, 25 Sep 2026 16:58:57 -0700 (PDT)
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4959c49e054so1611310b6e.3
+        for <syzbot@lists.linux.dev>; Fri, 25 Sep 2026 18:01:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790380737; x=1790985537;
+        d=1e100.net; s=20260707; t=1790384461; x=1790989261;
         h=content-type:cc:to:from:subject:message-id:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=g0Ym3VJzdgOALmuQPesixfwkYZPyP7ZuCjNoZBrCvNY=;
-        b=ZFidwEzRWOi9sfmJOUX1fF3ZoArwDQxerS5vMkbpspLY18I71r4c0WOZeaU7/gqQzK
-         0+JkVuQGREaQJXOIxFf4ZAc7xayUIb+jMMgtJ68/4hni+ODGY5a3dz7D2LWmXcT+0a/2
-         vl60wtWyFwdLkfFukDx6UKun+AXnaeXEhJD8vC0dHoIBOeks4ZwpPlgPjApUjEET/Whb
-         ELxBa6sOb32khOWf7rdiaa5+awRSGVYZWqqzpf8WsQ7dAlKtfgFEni9e9iAaQBZrRtSf
-         hEnm8zQvAvZlXoPdJ5laqW031glswJQvIucRQ5qn/WYkMPZJImsUoFSBK7hyAYNO32Jo
-         E52Q==
-X-Gm-Message-State: AFuF++mDIRAwkdDgRr83f5CLJ9T5Hnr3dhBBHOjA3mxMNOS3j8YsdjwQ
-	2679vcOGTigS4Y9NZNEELc4y8JpQyf6R62U3w90m7uJp3MUv5Fq4cdbTNnZ5qNRzGZUHbCn8Bk4
-	m0Q7pR+hyDJTbnyxHy1PiVFODc8c5j+0Ni66ZsevaO96ECHiAKDw1zZn88Qg=
+        bh=xGkxm3MEgNDRWN/XUNyhnutIquM0zSa6afWun+5ka0Y=;
+        b=Ef4V15097QAD4awmy/2zrqhfMkLpBx4LcupstWJXoWTtAiq7Imt2GrWnf4OW9xH7Cn
+         1ziptQeIx716xECBYxlDGlGxVFhtsU+xzGYaRo7pJjXcVKvER0Sh+7Di/Axkz77tI8Zr
+         3AErAOjOIxTlXsgsUg76JwCLsMZSI2h96dwNtbS9ezZfztbzOKukDTDh/EUF7+2su8Ee
+         2XxLnr7T8BgVABI92LSbop26BcVPPMwSsWT6AAekbUATyrw5JZZmmX9w+EPtJfnsPKwA
+         QXWxGlShI+tfYEAYDdiaHbxIiawNXB+4FUr2QxUNUaAJQhyLuyYiYsdlGQ1X90f7jtGk
+         I9OA==
+X-Gm-Message-State: AFuF++moHvAs7bRCU5SYykoNO+XcGUu60RnsWiOKSFy0r4ZwDIrJTvCN
+	Nm/RHfn4w461pTDtWNkGM5DVbOi2fT5gVIWqMbrk5vytHxL5al1QlgMXWjwZSYCF9xBPofNFwAT
+	jNy3VHuma+IeUxKrTdbZAmjpm4mwdkdIHPCLBY/YxJQzvsywuvqsqFLdp/bw=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:3199:b0:4d6:90f4:48bc with SMTP id
- 5614622812f47-4d72b24b95amr9659794b6e.46.1790380737064; Fri, 25 Sep 2026
- 16:58:57 -0700 (PDT)
-Date: Fri, 25 Sep 2026 16:58:57 -0700
+X-Received: by 2002:a05:6808:bc3:b0:4c4:aed5:c0c9 with SMTP id
+ 5614622812f47-4d72b13aa9dmr7961323b6e.28.1790384461167; Fri, 25 Sep 2026
+ 18:01:01 -0700 (PDT)
+Date: Fri, 25 Sep 2026 18:01:01 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ab70ac1.80e1c6cc.1e8e5f.003c.GAE@google.com>
-Subject: [moderation/CI] Re: replace CONFIG_SLUB_TINY with a slab_tiny boot parameter
-From: syzbot ci <syzbot+ci40908ab0a091769f@syzkaller.appspotmail.com>
+Message-ID: <6ab7194d.80e1c6cc.1e8e5f.003f.GAE@google.com>
+Subject: [moderation/CI] Re: io_uring/lock: Keep spinlock release before wake_up()
+From: syzbot ci <syzbot+ci1fa361fcf0838b72@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] replace CONFIG_SLUB_TINY with a slab_tiny boot parameter
-https://lore.kernel.org/all/20260923-slub_tiny_rework-v1-0-a0e66d536eb5@kernel.org
-* [PATCH RFC 1/8] mm, slab: refactor slab_min/max_order handling
-* [PATCH RFC 2/8] mm, slab: introduce slab_debug=N
-* [PATCH RFC 3/8] mm, slab: rework KMALLOC_RECLAIM handling of SLUB_TINY
-* [PATCH RFC 4/8] mm, slab: make SLUB_TINY handling dynamic for sizing decisions
-* [PATCH RFC 5/8] mm, slab: convert CONFIG_SLUB_TINY checks to kmem_cache_debug()
-* [PATCH RFC 6/8] mm, slab: remove remaining compile-time checks for CONFIG_SLUB_TINY
-* [PATCH RFC 7/8] mm, slab: add slab_tiny boot param
-* [PATCH RFC 8/8] mm, slab: deprecate CONFIG_SLUB_TINY and reduce its Kconfig effects
+[v2] io_uring/lock: Keep spinlock release before wake_up()
+https://lore.kernel.org/all/20260923161622.25737-1-chuanx2070@163.com
+* [PATCH v2] io_uring/lock: Keep spinlock release before wake_up()
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/5d4e0140-9eec-4e00-adb5-cf9c2ad766bb
+https://ci.syzbot.org/series/1462f16e-4c23-4cf5-8d45-f6749892a327
 
 ***
 
 kernel build error
 
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      2589c5593c200e5146db848730baa1d7dd0c9f4e
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
+base:      d431e03d831c043707e22311c4bdea1907166c34
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/d19a2813-b0ba-44a4-b622-a5ead49b44c5/config
+config:    https://ci.syzbot.org/builds/6ee236cb-a94c-489c-8509-2e4ec7cadf48/config
 
-mm/slub.c:8695:26: error: use of undeclared identifier 'slub_tiny_enabled'; did you mean 'slab_tiny_enabled'?
+io_uring/io-wq.c:530:9: error: expected ')'
+io_uring/io-wq.c:578:5: error: use of undeclared identifier 'need_wake'
+io_uring/io-wq.c:619:37: error: too many arguments to function call, expected 2, have 3
 
 ***
 
@@ -102,7 +97,7 @@ Notes:
 - Arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[cl@gentwo.org conor@kernel.org damien.lemoal@opensource.wdc.com geert@linux-m68k.org hao.li@linux.dev harry@kernel.org linux-kernel@vger.kernel.org linux-mm@kvack.org rientjes@google.com roman.gushchin@linux.dev vbabka@kernel.org]
+[axboe@kernel.dk bigeasy@linutronix.de chuanx2070@163.com io-uring@vger.kernel.org linux-kernel@vger.kernel.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
