@@ -1,256 +1,253 @@
 Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 288AB371056
-	for <syzbot@lists.linux.dev>; Sat, 26 Sep 2026 20:12:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DA17EEA8
+	for <syzbot@lists.linux.dev>; Sat, 26 Sep 2026 20:13:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790453556; cv=none; b=JCPnh378RJ/g5y2vuzG9iTUTPUuyJx8dxYFEiLrotYOkPRqx7ZG+sRUl1zc3CRcjVaBC1kr4QyWuNQyRoMVZhlbH9EGTOPwwXYp/vlK0jekBT0bJNk4c6sUnwwQ88a+zoPjqR5nemnbm3PhWhyxBbIRloAPIxKrNciAma4PNwKw=
+	t=1790453587; cv=none; b=Ey0OuzuHtfPXmBPhGmg99HDL7Q5DY5oeb5xUrsjFapYDLAOnBIAMfPNDOLxbAIkpUf2BE3z3qmvcbCU/7bhZz3N8iXqsPb3vn2NeTu0K3Z4JviTtBfDwp1tGm35qte9w8q4xY4cxBA6e8LaMmz18mgahP4jlSU74fgIERz6wPts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790453556; c=relaxed/simple;
-	bh=KrqAEzECgiUFL/pJcmc7/mUSV9tGrf+20pUN7qnrF3A=;
+	s=arc-20240116; t=1790453587; c=relaxed/simple;
+	bh=U3L+YHQPZ9Fdg5xPpvxHXwBpO4HqEwdZylo0vbzA2J8=;
 	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=qAwQdMXa+SjAS/hTjHEEKaLFWyFPkLrkwjmBgsLggwpK/OuB+rH/4edoav/TSbW9dgcSBRWTzMLn8vaHsSULV7usKihY5/E+HtqJaFQCuD6/o9YzjzbQ5MgJg0zNi3CA9c9KnFAlqSQ4BnD0KePIJVKFHbQ/4mvBQP2Bclscm8A=
+	 Content-Type; b=WqSotNLaaTLlfbPNhwn7DZakPr1soGSAWflqpP3u+v9bCSS8seNc5jJaH0TrJiujZwxb412FZBB8rs7ziLXlyVifBEZd1wi0ObPgGvt/m4PnovR4wS2lslnbG3s6TOjzeHsCDs6zV4oF4x+GiLmC/0paQDK6TTXGjJCjsIGoZ8g=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4b28dbf4197so3888600b6e.2
-        for <syzbot@lists.linux.dev>; Sat, 26 Sep 2026 13:12:30 -0700 (PDT)
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4cbf700ddccso2197612b6e.0
+        for <syzbot@lists.linux.dev>; Sat, 26 Sep 2026 13:13:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790453548; x=1791058348;
+        d=1e100.net; s=20260707; t=1790453578; x=1791058378;
         h=content-type:cc:to:from:subject:message-id:in-reply-to:date
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=3X22zhN6f9uRMNSR7GwIXXr+DjResBRWtpt3aWN0XfE=;
-        b=YpyrOHw52gsKdBWTJK3d5hVIlQPJMRz0SMIwSnUmejyDZo+Tt0aHseH0V+v2E3vdlo
-         mMoQ0JGY7bsqE9KL00OVtzsz6IiZxyYZhglB+PSYUFT+0LpZjDR2npbWRiYTuq2w/jTm
-         XxcqKc0ou7IlkiBA3xgGg9avJk5PeNR7lbtE24WV8QS7jUmJ+aB0rMQaQdzS9mq1qaEY
-         WcKIZ+s/aXHWDx7oF5JcR8iJNm6HM9QfBjlc4kbhyBNHUNzQXd3p8qMEYiHVHC7w31pM
-         CGXQDn/XpCvA9yFyBGYXrw/6CWowIBSnqY6Ig8y8eRg2mlp8azSp19PvIfjfjXhbZFev
-         +wrA==
-X-Gm-Message-State: AFuF++ntNeMQpIHbm+bmVL6SJiy2ikYU/T8gYnU5tzmGStm8ODidXm7X
-	SJLqPfu0zChPcpv1w58Jsa8dnoqfpLnBCUpm5MjvDiyp4e843h792AbPwQqfMJTjzB49gZqgCCh
-	2H/D2fj4wA27YjFxQFKysBzK5rtYdke7SR1lFWjNIacThLHyORgePuUYghB0=
+        bh=ZBbSho+P85GL1kTDFS5QcK1B7GkOen3bl7RXC8pXvK4=;
+        b=sb+kJ+4cIkLA3rjw7baj9slrIPEfwZ+C5yKmQgqmLGrdTiTSQcwHGMZndGA+qudUtk
+         2znJjd+6JtvkZ1oud0pHV4VkbEngqJXxUl63eXACBjuO2kgXsNiSI8Hv9ElAxxDd8Rvr
+         JQic6U94D7pn6WrhpRUdZHCCAmNEjGrrPek+E+NeV5bRmVImQvFfR6BGW7drnT/yGsZa
+         KlfbxKyIb/fBmh+Gp0vNTCSx4O0ntSss0pUwVbHzlRyclc/6Uj72AAoxsP8ecVi/uI+m
+         DzN18lqSADwVL4576HR5bdfzTNJb4M4H7vFbIadmdOJj2MhXgSRdxsWVQeWSBLYJmuio
+         Jv2Q==
+X-Gm-Message-State: AFuF++k1xyRxW1qzKMw0ePWfAVls8t7DPr2tF1A0gwtAMdq7B7I1loYt
+	LmDl34RV0Dr5/8mml5lMmo7rFbcmvYz+rXGufXfm9QPQliGAQ/yYDKz5oFB3APD6vVSqf08Njzv
+	6KVHmAeLXLVCkH9FDNcTdPymEeLmuQDQM8otglOJ3jaQ9+BOec7yDDx/e4L4=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1993:b0:4d6:90d3:e185 with SMTP id
- 5614622812f47-4d72e670404mr13218907b6e.46.1790453548022; Sat, 26 Sep 2026
- 13:12:28 -0700 (PDT)
-Date: Sat, 26 Sep 2026 13:12:28 -0700
-In-Reply-To: <20260924063312.1194019-1-chenguang.zhao@linux.dev>
+X-Received: by 2002:a05:6808:1599:b0:4cb:d056:b14f with SMTP id
+ 5614622812f47-4dc57e2b419mr5560159b6e.1.1790453578422; Sat, 26 Sep 2026
+ 13:12:58 -0700 (PDT)
+Date: Sat, 26 Sep 2026 13:12:58 -0700
+In-Reply-To: <20260924070410.2629558-1-benquike@gmail.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ab8272c.dc2998a4.2261f5.0058.GAE@google.com>
-Subject: [syzbot ci] Re: ipvs: fix infinite loop with ipvlan L3 from
- unconditional ipvs_property clear
-From: syzbot ci <syzbot+cic4f1f7c33eb59a01@syzkaller.appspotmail.com>
-To: chenguang.zhao@linux.dev, davem@davemloft.net, dsahern@kernel.org, 
-	edumazet@google.com, horms@kernel.org, idosch@nvidia.com, 
-	kerneljasonxing@gmail.com, kuba@kernel.org, netdev@vger.kernel.org, 
-	pabeni@redhat.com, syzbot@syzkaller.appspotmail.com, zhaochenguang@kylinos.cn
+Message-ID: <6ab8274a.80e1c6cc.1e8e5f.004a.GAE@google.com>
+Subject: [syzbot ci] Re: hfs: validate allocation block parameters in hfs_mdb_get()
+From: syzbot ci <syzbot+cie54066e4e095b471@syzkaller.appspotmail.com>
+To: benquike@gmail.com, frank.li@vivo.com, glaubitz@physik.fu-berlin.de, 
+	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	slava@dubeyko.com, stable@vger.kernel.org
 Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] ipvs: fix infinite loop with ipvlan L3 from unconditional ipvs_property clear
-https://lore.kernel.org/all/20260924063312.1194019-1-chenguang.zhao@linux.dev
-* [PATCH net] ipvs: fix infinite loop with ipvlan L3 from unconditional ipvs_property clear
+[v2] hfs: validate allocation block parameters in hfs_mdb_get()
+https://lore.kernel.org/all/20260924070410.2629558-1-benquike@gmail.com
+* [PATCH v2] hfs: validate allocation block parameters in hfs_mdb_get()
 
 and found the following issue:
-INFO: task hung in netdev_run_todo
+KASAN: invalid-free in hfs_mdb_put
 
 Full report is available here:
-https://ci.syzbot.org/series/b6478e5d-791e-4d72-8b8d-0fa748c90168
+https://ci.syzbot.org/series/cf0561b3-479e-4e81-9209-dcf5e7c97d22
 
 ***
 
-INFO: task hung in netdev_run_todo
+KASAN: invalid-free in hfs_mdb_put
 
-tree:      net
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
-base:      e7e0a54300a896e731dffd3e2e8dae5631d6243d
+tree:      vfs
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs.git
+base:      84086827932b58e7645d93d970bbc566c4ee408b
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/9865431b-add2-4883-97e2-de4ec60d969e/config
+config:    https://ci.syzbot.org/builds/23fc2a96-ed2b-4fed-8d8d-653b871c6c0f/config
+syz repro: https://ci.syzbot.org/findings/d2c81756-7cff-47d8-b984-468d9efaef7b/syz_repro
 
-INFO: task syz-executor:31961 blocked for more than 144 seconds.
-      Not tainted syzkaller #0
-      Blocked by coredump.
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor    state:D stack:26120 pid:31961 tgid:31961 ppid:1      task_flags:0x40054c flags:0x00080003
+loop1: detected capacity change from 0 to 64
+hfs: inconsistent allocation block parameters in MDB
+hfs: can't find a HFS filesystem on dev loop1
+==================================================================
+BUG: KASAN: double-free in hfs_mdb_put+0x15b/0x270 fs/hfs/mdb.c:467
+Free of addr ffff888117e9bc00 by task syz.1.18/5837
+
+CPU: 0 UID: 0 PID: 5837 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
 Call Trace:
  <TASK>
- __schedule+0x17db/0x58f0
- schedule+0x164/0x2b0
- schedule_preempt_disabled+0x13/0x30
- __mutex_lock+0x7c1/0x1550
- rcu_barrier+0x4c/0x530
- netdev_run_todo+0x2fc/0x1060
- tun_chr_close+0x13c/0x1c0
- __fput+0x418/0xa50
- task_work_run+0x1d9/0x270
- do_exit+0x73a/0x2360
- do_group_exit+0x22d/0x2f0
- get_signal+0x121b/0x12c0
- arch_do_signal_or_restart+0xbb/0x860
- exit_to_user_mode_loop+0x10e/0x770
- do_syscall_64+0x328/0x520
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+ print_report+0x58/0x70 mm/kasan/report.c:482
+ kasan_report_invalid_free+0xea/0x110 mm/kasan/report.c:557
+ check_slab_allocation mm/kasan/common.c:-1 [inline]
+ __kasan_slab_pre_free+0x104/0x120 mm/kasan/common.c:261
+ kasan_slab_pre_free include/linux/kasan.h:199 [inline]
+ slab_free_hook mm/slub.c:2693 [inline]
+ slab_free mm/slub.c:6508 [inline]
+ kfree+0x173/0x650 mm/slub.c:6801
+ hfs_mdb_put+0x15b/0x270 fs/hfs/mdb.c:467
+ hfs_fill_super+0x4d2/0x7b0 fs/hfs/super.c:403
+ get_tree_bdev_flags+0x430/0x4f0 fs/super.c:1897
+ vfs_get_tree+0x92/0x2a0 fs/super.c:1957
+ fc_mount fs/namespace.c:1209 [inline]
+ do_new_mount_fc fs/namespace.c:3785 [inline]
+ do_new_mount+0x319/0xdc0 fs/namespace.c:3861
+ do_mount fs/namespace.c:4194 [inline]
+ __do_sys_mount fs/namespace.c:4408 [inline]
+ __se_sys_mount+0x31d/0x420 fs/namespace.c:4385
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f4b2cf9ddeb
-RSP: 002b:00007ffedfbd6b60 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: 0000000000000000 RBX: 00007ffedfbd6c10 RCX: 00007f4b2cf9ddeb
-RDX: 00007ffedfbd6be0 RSI: 00000000400454ca RDI: 00000000000000c8
-RBP: 00007f4b2d0359ad R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000008
-R13: 0000000000000003 R14: 00007ffedfbd6f08 R15: 0000000000000000
+RIP: 0033:0x7f0f2619f3ca
+Code: 48 c7 c2 e8 ff ff ff f7 d8 64 89 02 b8 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f0f27037e58 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 00007f0f27037ee0 RCX: 00007f0f2619f3ca
+RDX: 0000200000000180 RSI: 00002000000000c0 RDI: 00007f0f27037ea0
+RBP: 0000200000000180 R08: 00007f0f27037ee0 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00002000000000c0
+R13: 00007f0f27037ea0 R14: 0000000000000305 R15: 0000200000001800
  </TASK>
 
-Showing all locks held in the system:
-locks held by kworker/u8:1/13: 3, on CPU#1:
- #0: ffff88817721b940 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc90000127c40 ((work_completion)(&(&net->ipv6.addr_chk_work)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffffffff90253600 (rtnl_mutex){+.+.}-{4:4}, at: addrconf_verify_work+0x19/0x30
-locks held by khungtaskd/35: 1, last CPU#1:
- #0: ffffffff8ed5c8a0 (rcu_read_lock){....}-{1:3}, at: debug_show_all_locks+0x2e/0x180
-locks held by getty/5419: 2, on CPU#1:
- #0: ffff88817a7b30a0 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x25/0x70
- #1: ffffc900027682e8 (&ldata->atomic_read_lock){+.+.}-{4:4}, at: n_tty_read+0x45a/0x1360
-locks held by kworker/u8:4/9945: 2, last CPU#1:
- #0: ffff888177d09940 ((wq_completion)bat_events){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc90006db7c40 ((work_completion)(&(&bat_priv->tt.work)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
-locks held by kworker/u8:5/19085: 4, last CPU#1:
- #0: ffff88817741f940 ((wq_completion)krds_cp_wq#12/0){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc90003a0fc40 ((work_completion)(&(&cp->cp_conn_w)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffff888169e6a180 (&tc->t_conn_path_lock){+.+.}-{4:4}, at: rds_tcp_conn_path_connect+0x1cc/0x920
- #3: ffff888192303660 (k-sk_lock-AF_INET){+.+.}-{0:0}, at: rds_tcp_tune+0x220/0x920
-locks held by kworker/u10:0/25329: 3, on CPU#1:
- #0: ffff8881000ac140 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc9000418fc40 ((linkwatch_work).work){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffffffff90253600 (rtnl_mutex){+.+.}-{4:4}, at: linkwatch_event+0xe/0x60
-locks held by kworker/0:1/27790: 7, last CPU#0:
- #0: ffff88810006a940 ((wq_completion)events_long){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc9000141fc40 ((work_completion)(&(&br->gc_work)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffffffff8ed5c8a0 (rcu_read_lock){....}-{1:3}, at: process_backlog+0x3de/0x18b0
- #3: ffffffff8ed5c8a0 (rcu_read_lock){....}-{1:3}, at: NF_HOOK+0x9e/0x3c0
- #4: ffffffff8ed5c8a0 (rcu_read_lock){....}-{1:3}, at: ip_route_output_key_hash+0xd8/0x2a0
- #5: ffff888121028298 (hrtimer_bases.lock){-.-.}-{2:2}, at: __hrtimer_rearm_deferred+0x99/0x4b0
- #6: ffffffff9aa29748 (&____s->seqcount#2){----}-{0:0}, at: __ip_vs_conn_in_get+0x2db/0x10f0
-locks held by syz.0.7664/31917: 1, on CPU#1:
- #0: ffffffff90253600 (rtnl_mutex){+.+.}-{4:4}, at: tun_chr_close+0x3e/0x1c0
-locks held by syz.3.7666/31925: 1, on CPU#1:
- #0: ffffffff8ed62b38 (rcu_state.barrier_mutex){+.+.}-{4:4}, at: rcu_barrier+0x4c/0x530
-locks held by syz.2.7668/31938: 1, on CPU#1:
- #0: ffffffff8ed62b38 (rcu_state.barrier_mutex){+.+.}-{4:4}, at: rcu_barrier+0x4c/0x530
-locks held by syz-executor/31955: 1, on CPU#1:
- #0: ffffffff8ed62b38 (rcu_state.barrier_mutex){+.+.}-{4:4}, at: rcu_barrier+0x4c/0x530
-locks held by syz-executor/31961: 1, on CPU#1:
- #0: ffffffff8ed62b38 (rcu_state.barrier_mutex){+.+.}-{4:4}, at: rcu_barrier+0x4c/0x530
-locks held by kworker/u8:7/31997: 4, on CPU#1:
- #0: ffff8881012d5940 ((wq_completion)netns){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc900079cfc40 (net_cleanup_work){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffffffff90244da8 (pernet_ops_rwsem){++++}-{4:4}, at: cleanup_net+0xf5/0x810
- #3: ffffffff90253600 (rtnl_mutex){+.+.}-{4:4}, at: ops_undo_list+0x28e/0x8d0
-locks held by syz-executor/31998: 1, on CPU#1:
- #0: ffffffff8ed62b38 (rcu_state.barrier_mutex){+.+.}-{4:4}, at: rcu_barrier+0x4c/0x530
-locks held by syz-executor/32005: 1, on CPU#1:
- #0: ffffffff90253600 (rtnl_mutex){+.+.}-{4:4}, at: tun_chr_close+0x3e/0x1c0
-locks held by syz-executor/32009: 1, last CPU#1:
- #0: ffffffff90253600 (rtnl_mutex){+.+.}-{4:4}, at: tun_chr_close+0x3e/0x1c0
-locks held by syz-executor/32074: 1, on CPU#1:
- #0: ffffffff90253600 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_newlink+0xc10/0x1c30
-locks held by syz-executor/32077: 1, on CPU#1:
- #0: ffffffff90253600 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_newlink+0xc10/0x1c30
-locks held by syz-executor/32095: 2, last CPU#1:
- #0: ffff88816f5b1d38 (&mm->mmap_lock){++++}-{4:4}, at: exit_mmap+0x1a4/0x9f0
- #1: ffffffff8ed5c8a0 (rcu_read_lock){....}-{1:3}, at: __pte_offset_map+0x29/0x240
-locks held by syz-executor/32096: 1, on CPU#1:
- #0: ffffffff90253600 (rtnl_mutex){+.+.}-{4:4}, at: inet_rtm_newaddr+0x470/0x19f0
-locks held by syz-executor/32103: 1, on CPU#1:
- #0: ffffffff90253600 (rtnl_mutex){+.+.}-{4:4}, at: inet_rtm_newaddr+0x470/0x19f0
-locks held by syz-executor/32108: 1, on CPU#1:
- #0: ffffffff90253600 (rtnl_mutex){+.+.}-{4:4}, at: inet_rtm_newaddr+0x470/0x19f0
-locks held by syz-executor/32116: 2, last CPU#1:
- #0: ffff88817a26d038 (&mm->mmap_lock){++++}-{4:4}, at: vm_mmap_pgoff+0x1dd/0x4e0
- #1: ffffffff8ed5c8a0 (rcu_read_lock){....}-{1:3}, at: __pte_offset_map+0x29/0x240
+Allocated by task 5837:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ poison_kmalloc_redzone mm/kasan/common.c:398 [inline]
+ __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:415
+ kasan_kmalloc include/linux/kasan.h:263 [inline]
+ __do_kmalloc_node mm/slub.c:5414 [inline]
+ __kmalloc_node_track_caller_noprof+0x4b4/0x720 mm/slub.c:5545
+ kmemdup_noprof+0x2b/0x70 mm/util.c:138
+ kmemdup_noprof include/linux/fortify-string.h:715 [inline]
+ hfs_mdb_get+0x895/0x2350 fs/hfs/mdb.c:194
+ hfs_fill_super+0x482/0x7b0 fs/hfs/super.c:352
+ get_tree_bdev_flags+0x430/0x4f0 fs/super.c:1897
+ vfs_get_tree+0x92/0x2a0 fs/super.c:1957
+ fc_mount fs/namespace.c:1209 [inline]
+ do_new_mount_fc fs/namespace.c:3785 [inline]
+ do_new_mount+0x319/0xdc0 fs/namespace.c:3861
+ do_mount fs/namespace.c:4194 [inline]
+ __do_sys_mount fs/namespace.c:4408 [inline]
+ __se_sys_mount+0x31d/0x420 fs/namespace.c:4385
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
 
-=============================================
+Freed by task 5837:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ kasan_save_free_info+0x40/0x50 mm/kasan/generic.c:584
+ poison_slab_object mm/kasan/common.c:253 [inline]
+ __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:285
+ kasan_slab_free include/linux/kasan.h:235 [inline]
+ slab_free_hook mm/slub.c:2748 [inline]
+ slab_free mm/slub.c:6508 [inline]
+ kfree+0x1c5/0x650 mm/slub.c:6801
+ hfs_mdb_put+0x15b/0x270 fs/hfs/mdb.c:467
+ hfs_mdb_get+0x1935/0x2350 fs/hfs/mdb.c:318
+ hfs_fill_super+0x482/0x7b0 fs/hfs/super.c:352
+ get_tree_bdev_flags+0x430/0x4f0 fs/super.c:1897
+ vfs_get_tree+0x92/0x2a0 fs/super.c:1957
+ fc_mount fs/namespace.c:1209 [inline]
+ do_new_mount_fc fs/namespace.c:3785 [inline]
+ do_new_mount+0x319/0xdc0 fs/namespace.c:3861
+ do_mount fs/namespace.c:4194 [inline]
+ __do_sys_mount fs/namespace.c:4408 [inline]
+ __se_sys_mount+0x31d/0x420 fs/namespace.c:4385
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
 
-NMI backtrace for cpu 1
-CPU: 1 UID: 0 PID: 35 Comm: khungtaskd Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150
- nmi_cpu_backtrace+0x274/0x2d0
- nmi_trigger_cpumask_backtrace+0x17d/0x390
- sys_info+0x135/0x170
- watchdog+0xfd7/0x1030
- kthread+0x38b/0x480
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
-Sending NMI from CPU 1 to CPUs 0:
-NMI backtrace for cpu 0
-CPU: 0 UID: 0 PID: 27790 Comm: kworker/0:1 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: events_long br_fdb_cleanup
-RIP: 0010:lock_acquire+0x232/0x350
-Code: ff ff ff e8 50 28 42 0a f7 44 24 10 00 02 00 00 0f 84 38 ff ff ff 65 48 8b 05 a2 e3 f1 11 48 3b 44 24 50 75 33 fb 48 83 c4 58 <5b> 41 5c 41 5d 41 5e 41 5f 5d e9 bf 2c 45 0a cc 48 8d 3d 67 4e da
-RSP: 0018:ffffc90000006dc0 EFLAGS: 00000296
-RAX: 32f582729c8e9900 RBX: 0000000000000000 RCX: 8000000000000100
-RDX: 00000000071bee9f RSI: ffffffff8e69ca38 RDI: ffffffff8c6da580
-RBP: ffff888112a39e00 R08: ffffffff8177f1df R09: 0000000000000000
-R10: ffffc90000006ef8 R11: ffffffff81b28790 R12: ffffffff8ed5c8a0
-R13: 0000000000000002 R14: 0000000000000000 R15: 0000000000000246
-FS:  0000000000000000(0000) GS:ffff88818d6cf000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000200000000040 CR3: 000000000eb48000 CR4: 00000000000006f0
-Call Trace:
- <IRQ>
- unwind_next_frame+0xac/0x2550
- arch_stack_walk+0x11b/0x150
- stack_trace_save+0xa9/0x100
- kasan_save_track+0x3e/0x80
- __kasan_slab_alloc+0x6c/0x80
- kmem_cache_alloc_node_noprof+0x354/0x610
- __alloc_skb+0x1db/0x7a0
- synproxy_send_client_synack+0x175/0xde0
- nft_synproxy_eval_v4+0x362/0x4e0
- nft_synproxy_do_eval+0x335/0x550
- nft_do_chain+0x132b/0x1b10
- nft_do_chain_ipv4+0x195/0x290
- nf_hook_slow+0xc5/0x220
- NF_HOOK+0x21f/0x3c0
- NF_HOOK+0x336/0x3c0
- process_backlog+0xa6b/0x18b0
- __napi_poll+0xaa/0x330
- net_rx_action+0x61d/0xf50
- handle_softirqs+0x226/0x860
- __irq_exit_rcu+0xcb/0x220
- irq_exit_rcu+0x9/0x30
- sysvec_apic_timer_interrupt+0xa6/0xc0
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x1a/0x20
-RIP: 0010:lock_acquire+0x232/0x350
-Code: ff ff ff e8 50 28 42 0a f7 44 24 10 00 02 00 00 0f 84 38 ff ff ff 65 48 8b 05 a2 e3 f1 11 48 3b 44 24 50 75 33 fb 48 83 c4 58 <5b> 41 5c 41 5d 41 5e 41 5f 5d e9 bf 2c 45 0a cc 48 8d 3d 67 4e da
-RSP: 0018:ffffc9000141faa0 EFLAGS: 00000296
-RAX: 32f582729c8e9900 RBX: 0000000000000001 RCX: 0000000000000046
-RDX: 000000004abe915d RSI: ffffffff8e69ca38 RDI: ffffffff8c6da580
-RBP: ffff888112a39e00 R08: ffffffff818f9aba R09: 0000000000000000
-R10: dffffc0000000000 R11: fffffbfff20f4830 R12: ffffc9000141fc40
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000246
- process_scheduled_works+0xc03/0x1630
- worker_thread+0xa47/0xfb0
- kthread+0x38b/0x480
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
+The buggy address belongs to the object at ffff888117e9bc00
+ which belongs to the cache kmalloc-512 of size 512
+The buggy address is located 0 bytes inside of
+ 512-byte region [ffff888117e9bc00, ffff888117e9be00)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0xffff888117e9b400 pfn:0x117e98
+head: order:2 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+flags: 0x17ff00000000240(workingset|head|node=0|zone=2|lastcpupid=0x7ff)
+page_type: f5(slab)
+raw: 017ff00000000240 ffff888100041c80 ffffea00045caa10 ffffea000440b710
+raw: ffff888117e9b400 000000000010000c 00000000f5000000 0000000000000000
+head: 017ff00000000240 ffff888100041c80 ffffea00045caa10 ffffea000440b710
+head: ffff888117e9b400 000000000010000c 00000000f5000000 0000000000000000
+head: 017ff00000000002 ffffffffffffff01 00000000ffffffff 00000000ffffffff
+head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000004
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 2, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5611, tgid 5611 (syz-executor), ts 59180259569
+ set_page_owner include/linux/page_owner.h:33 [inline]
+ post_alloc_hook+0x1f9/0x250 mm/page_alloc.c:1871
+ prep_new_page mm/page_alloc.c:1879 [inline]
+ get_page_from_freelist+0x2209/0x2280 mm/page_alloc.c:3943
+ __alloc_frozen_pages_noprof+0x217/0x5a0 mm/page_alloc.c:5436
+ alloc_slab_page mm/slub.c:3347 [inline]
+ allocate_slab+0x7d/0x620 mm/slub.c:3462
+ new_slab mm/slub.c:3513 [inline]
+ refill_objects+0x2d5/0x350 mm/slub.c:7417
+ refill_sheaf mm/slub.c:2885 [inline]
+ __pcs_replace_empty_main+0x2c8/0x6c0 mm/slub.c:4774
+ alloc_from_pcs mm/slub.c:4850 [inline]
+ slab_alloc_node mm/slub.c:4984 [inline]
+ __kmalloc_cache_noprof+0x39b/0x600 mm/slub.c:5559
+ _kmalloc_noprof include/linux/slab.h:991 [inline]
+ _kzalloc_noprof include/linux/slab.h:1312 [inline]
+ device_private_init drivers/base/core.c:3606 [inline]
+ device_add+0xb6/0xb80 drivers/base/core.c:3657
+ netdev_register_kobject+0x197/0x350 net/core/net-sysfs.c:2340
+ register_netdevice+0x1433/0x1eb0 net/core/dev.c:11503
+ __ip_tunnel_create+0x3e8/0x550 net/ipv4/ip_tunnel.c:268
+ ip_tunnel_init_net+0x2e5/0x820 net/ipv4/ip_tunnel.c:1137
+ ops_init+0x35d/0x5d0 net/core/net_namespace.c:137
+ setup_net+0x118/0x350 net/core/net_namespace.c:443
+ copy_net_ns+0x53b/0x780 net/core/net_namespace.c:582
+ create_new_namespaces+0x3f0/0x6b0 kernel/nsproxy.c:132
+page last free pid 5575 tgid 5575 ts 47941916741 stack trace:
+ reset_page_owner include/linux/page_owner.h:26 [inline]
+ __free_pages_prepare mm/page_alloc.c:1418 [inline]
+ __free_frozen_pages+0xc93/0xd90 mm/page_alloc.c:2962
+ __slab_free+0x274/0x2c0 mm/slub.c:5823
+ qlink_free mm/kasan/quarantine.c:163 [inline]
+ qlist_free_all+0x99/0x100 mm/kasan/quarantine.c:179
+ kasan_quarantine_reduce+0x148/0x160 mm/kasan/quarantine.c:286
+ __kasan_slab_alloc+0x22/0x80 mm/kasan/common.c:350
+ kasan_slab_alloc include/linux/kasan.h:253 [inline]
+ slab_post_alloc_hook mm/slub.c:4683 [inline]
+ slab_alloc_node mm/slub.c:4996 [inline]
+ kmem_cache_alloc_noprof+0x2b9/0x600 mm/slub.c:5010
+ alloc_buffer_head+0x2a/0x280 fs/buffer.c:2881
+ folio_alloc_buffers+0x1a4/0x630 fs/buffer.c:749
+ create_empty_buffers+0x3a/0x520 fs/buffer.c:1587
+ ext4_block_write_begin+0x610/0x1560 fs/ext4/inode.c:1193
+ ext4_da_write_begin+0x879/0xd70 fs/ext4/inode.c:3167
+ generic_perform_write+0x2d5/0x8f0 mm/filemap.c:4374
+ ext4_buffered_write_iter+0xd4/0x380 fs/ext4/file.c:354
+ ext4_file_write_iter+0xae4/0x1cd0 fs/ext4/file.c:-1
+ new_sync_write fs/read_write.c:595 [inline]
+ vfs_write+0x612/0xba0 fs/read_write.c:687
+ ksys_write+0x150/0x270 fs/read_write.c:739
+
+Memory state around the buggy address:
+ ffff888117e9bb00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff888117e9bb80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff888117e9bc00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                   ^
+ ffff888117e9bc80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888117e9bd00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
 ***
