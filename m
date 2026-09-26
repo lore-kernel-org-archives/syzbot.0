@@ -1,80 +1,78 @@
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E91330E858
-	for <syzbot@lists.linux.dev>; Sat, 26 Sep 2026 01:01:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D2A61632E7
+	for <syzbot@lists.linux.dev>; Sat, 26 Sep 2026 02:48:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790384467; cv=none; b=p4UG46jeiOK0FDbgpH7NDdJDC0Vpdc1nt6go6ZAzwOBvISgrj/8fjGE7lkj5BKh2e1PN74WNqu0pKHT+EtkvIUP40E39idDGkJeuqIX+6i5cJKj1RiZ8tQ/PSkSLjW9VOeJnaAbFd8ahUA5oGsrznitj0IGLHsh4PTRrygrqC28=
+	t=1790390889; cv=none; b=tR0maiLCYB7SYN2d+Pb8AoBY1X7I4xyGgGd5WGfpL5S5osR0cnEXqfjt1w2ZXTOXQ0/NAZshLPgHTpuJXp+l83B9F0mLiXcp6a2MlCICXkiTxy/HbIUk8WTjdo0Xg43Qp6I4eBUsYBpLBpKej4jAHf+hnbgQEfrLL2wMU+EjPoY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790384467; c=relaxed/simple;
-	bh=F/bAotl5HpNtIN2jY6ThIFmvpfZDIuw7023xs8OgZrg=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=bq2FPXa9h5XX7n2tBS/F/jinPsFs+zPtNlz3HXW0HPVk2sBiIZTtaGP6wUxN/2OFgfXDtGVSYJ73YNKzIbCPd9Fzl079KI0Hv8m7k3mTdhyV7NUhmq9R7PIccu7NNcTOwAcd1LtGvjSgZUX/01vsmyr/zyqHu7xQBnnOXCqgJQs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
+	s=arc-20240116; t=1790390889; c=relaxed/simple;
+	bh=rycV1b7sONEvgzra8OXlZFrGey6UEdDooDhcxQNzSEA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=CUTk0dC6jOh+jjQTo9NEX4HzGvcak9SK5MCJNNb63Ad85oPe1r5zuRzbhWvZkeWjiSFiompYF1sb92HMjGQux/6YXYXXppbo5GOaCHdTYcWaG6612mgQb0bRss4f93zBZVdSDMXLMUWhKF2NYAzgnchn6IbEYANlIkjOPuVwpdA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4959c49e054so1611310b6e.3
-        for <syzbot@lists.linux.dev>; Fri, 25 Sep 2026 18:01:03 -0700 (PDT)
+Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4cbf700ddccso1737612b6e.0
+        for <syzbot@lists.linux.dev>; Fri, 25 Sep 2026 19:48:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790384461; x=1790989261;
+        d=1e100.net; s=20260707; t=1790390887; x=1790995687;
         h=content-type:cc:to:from:subject:message-id:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=xGkxm3MEgNDRWN/XUNyhnutIquM0zSa6afWun+5ka0Y=;
-        b=Ef4V15097QAD4awmy/2zrqhfMkLpBx4LcupstWJXoWTtAiq7Imt2GrWnf4OW9xH7Cn
-         1ziptQeIx716xECBYxlDGlGxVFhtsU+xzGYaRo7pJjXcVKvER0Sh+7Di/Axkz77tI8Zr
-         3AErAOjOIxTlXsgsUg76JwCLsMZSI2h96dwNtbS9ezZfztbzOKukDTDh/EUF7+2su8Ee
-         2XxLnr7T8BgVABI92LSbop26BcVPPMwSsWT6AAekbUATyrw5JZZmmX9w+EPtJfnsPKwA
-         QXWxGlShI+tfYEAYDdiaHbxIiawNXB+4FUr2QxUNUaAJQhyLuyYiYsdlGQ1X90f7jtGk
-         I9OA==
-X-Gm-Message-State: AFuF++moHvAs7bRCU5SYykoNO+XcGUu60RnsWiOKSFy0r4ZwDIrJTvCN
-	Nm/RHfn4w461pTDtWNkGM5DVbOi2fT5gVIWqMbrk5vytHxL5al1QlgMXWjwZSYCF9xBPofNFwAT
-	jNy3VHuma+IeUxKrTdbZAmjpm4mwdkdIHPCLBY/YxJQzvsywuvqsqFLdp/bw=
+        bh=JKmhbf9Wkn82RQeX5N/WaJWKwxeeUTJi0Vigs5yQi6w=;
+        b=ffz9uqXXXbZsiVNZaxVTA/DVV+Ij/RCq9t/sy8d4DEDmuUWz2Y3Ze2P3HYQdGzvjpY
+         fi1XVx4ZN3RxpKsoP5a4KylNEoGar7+arMEDDtZ2IrKD6I0I/18xSZCZQep8f3NtGNvC
+         i7bM2/1Bd2cQ5LJnVbokFaBtOMv8uFv09aNi7UpTJn/1Zr2z+0rKOAKDjXfh5qcSW3oX
+         uNXWKa1vdKyB0iRj80AnjA/gIrvA62Ijg/aU12wAs1sD2nHQudX9XU0hgnLobIDa7cjP
+         8UmOp023WFgdH3sFBqHf2bC48aT/6b7mLxBCgui8MYXAwPsX20b8rdKnWxvzW2yobtKV
+         7ljA==
+X-Gm-Message-State: AFuF++luz52Do7Eu/lekeKSOb6fX19EIiumj6AyNCbNo2yE5dN4UCHqS
+	Rhm/LCCYdp13abggYA9DB6Xuuqm1GnoXsN00n+mbn35AWkvvLKRJ/3QjR2XhkxI5+6W68E7OxeR
+	hcLiTKWZT3bVLTOt8nUiA1ExKyE9MMjME8KocYlUdYRCWUvXaS0wdEaVIwNs=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:bc3:b0:4c4:aed5:c0c9 with SMTP id
- 5614622812f47-4d72b13aa9dmr7961323b6e.28.1790384461167; Fri, 25 Sep 2026
- 18:01:01 -0700 (PDT)
-Date: Fri, 25 Sep 2026 18:01:01 -0700
+X-Received: by 2002:a05:6808:1645:b0:4b9:e5fa:8a24 with SMTP id
+ 5614622812f47-4dc640aa3a3mr4315326b6e.41.1790390887079; Fri, 25 Sep 2026
+ 19:48:07 -0700 (PDT)
+Date: Fri, 25 Sep 2026 19:48:07 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ab7194d.80e1c6cc.1e8e5f.003f.GAE@google.com>
-Subject: [moderation/CI] Re: io_uring/lock: Keep spinlock release before wake_up()
-From: syzbot ci <syzbot+ci1fa361fcf0838b72@syzkaller.appspotmail.com>
+Message-ID: <6ab73267.7eec07f4.c25c.000c.GAE@google.com>
+Subject: [moderation/CI] Re: netfilter: flowtable: restore wireless forward path
+From: syzbot ci <syzbot+ci8b743cc3df21c3a7@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v2] io_uring/lock: Keep spinlock release before wake_up()
-https://lore.kernel.org/all/20260923161622.25737-1-chuanx2070@163.com
-* [PATCH v2] io_uring/lock: Keep spinlock release before wake_up()
+[v1] netfilter: flowtable: restore wireless forward path
+https://lore.kernel.org/all/20260923195046.59867-1-pablo@netfilter.org
+* [PATCH nf] netfilter: flowtable: restore wireless forward path
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/1462f16e-4c23-4cf5-8d45-f6749892a327
+https://ci.syzbot.org/series/99fc533e-f476-4eb2-a5d6-71c4fd36a7d2
 
 ***
 
 kernel build error
 
-tree:      axboe
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
-base:      d431e03d831c043707e22311c4bdea1907166c34
+tree:      nf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf.git
+base:      9c572a83037a7dcd653ba3a9cc468c16b857d0c9
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/6ee236cb-a94c-489c-8509-2e4ec7cadf48/config
+config:    https://ci.syzbot.org/builds/a7c820b4-9673-40ee-a4cc-5760c6f14ccd/config
 
-io_uring/io-wq.c:530:9: error: expected ')'
-io_uring/io-wq.c:578:5: error: use of undeclared identifier 'need_wake'
-io_uring/io-wq.c:619:37: error: too many arguments to function call, expected 2, have 3
+net/mac80211/iface.c:1026:12: error: no member named 'ieee80211' in 'struct net_device_path'
 
 ***
 
@@ -97,7 +95,7 @@ Notes:
 - Arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[axboe@kernel.dk bigeasy@linutronix.de chuanx2070@163.com io-uring@vger.kernel.org linux-kernel@vger.kernel.org]
+[hauke@hauke-m.de netfilter-devel@vger.kernel.org pablo@netfilter.org]
 
 If the report looks fine to you, reply with:
 #syz upstream
