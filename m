@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9247A53D9D5
-	for <syzbot@lists.linux.dev>; Tue, 29 Sep 2026 17:00:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B4AD38F934
+	for <syzbot@lists.linux.dev>; Tue, 29 Sep 2026 21:44:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790701221; cv=none; b=jwN5SVZVaZcMnOYdWBnxTQSW/Gs7kZwePVuLPyqWTGIb36UxsTUtiljxCQaUgx+4kpGF6CsHcIju8cT4KhQMci3c03qgDRLtit4IZkZrVA55JFPa1TLSlFbqNtOgtEc1SxkapLe3D3BzAJIlh9KyfngRsiMBGQRKkj87y/1Ql8c=
+	t=1790718300; cv=none; b=sXzlZykwycKus8u+3Nsa8lEKGJzu1IgTLiDqnS4OE9dqGE9ci/S/sjZ4h85s38FnLh6lvNRZ65g3DtvTAQ2WJ0RSZRbmXclse17KJmunqgB6YIoZFxoXEp8LQ/Juwop1kr0P7kb8KAf+Od+c5aSxO0Q1x8rcUf5vmZI5NOcUYL4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790701221; c=relaxed/simple;
-	bh=kI8pFLHCMrRM95qmQFs0MriMBuBTdveVuo79/1uZC6g=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=jGpS2yxAUEDwXmsPrlzO/hS+yeoajAXwwLiP4I6ZwYP51fvxUplR9KIbbF6oh/DG+rHLdXR8XJh1LOx/DtdZjv3ogI7TBQHyaikv9hQIODRC7+gnWMkcP6qc7BAOeXUKmhJ757fP5df1sAFwSZ8sVxXumM4lZIGqz2Qg3W0Wllo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NT/yM1tK; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790718300; c=relaxed/simple;
+	bh=1ukkmxDbo7jPfvWbC7jdeAy0+Yc20xD8Jlv417HhmrQ=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=HgViF5O3F9YfPZmX9XEJPxedY2AY4nVRwmrX7ris4wmbyxMPyb3h+6lHwcE8avIwBKFp8qeynyDkvpjoatjRDZYIZgkcbCOUP9NoGqTAGmodWJeSzeTrWm4b7u6ueQtAAOlfZQp0kd2ngZd+SYaeGJIX17j0X4nswqUPS+5lShk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kaJXQVVL; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NT/yM1tK"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 18AA31F000FF;
-	Tue, 29 Sep 2026 17:00:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kaJXQVVL"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 275AF1F000FF;
+	Tue, 29 Sep 2026 21:44:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790701219;
-	bh=rWUPqdmsgqsvrcd4s8wXc1S3C8vt/PZKW4jkbqGbjq0=;
+	s=k20260515; t=1790718289;
+	bh=ORRlSNLHn1/xR4WZ+e4Nzz2xaUYazku3rgMrl2hQSgA=;
 	h=From:To:Cc:Subject:Date;
-	b=NT/yM1tKMYoAeoYHPsEaKnHHO9IwhHYeEJGbkrtgkb1nm1sGewMiGTuj3x7U3D3IH
-	 rj63IyUHZBF+WjHlu+HLlw1u2cvk3G1NdbIES8vkD2ssn5tp4dqFMto4cjbcZT1E2I
-	 p33/UoFRANzDC8nbv8h+zm+4qKEfRnLJZiSuFHHOzSLv1NZ2l1wjCPjdAw3V4VtBKj
-	 fIPdsFJOlHdL/Ph5hw5CxHYvsZ+YuRiU0BeC0A5I/938fW/mnwo5Zqpegc1EksZi1O
-	 IT9fCwmSHbws+bszFckUyAUbkM2lAoQpm9ykHml3fawQEhFxbZ+TNzEEvbO4bAxeFo
-	 SDuwHmEp9JFYg==
+	b=kaJXQVVL8g2oSF1Kc0Ig1y9tmcuP5AC8W3Ms5+mhl5nqu7EFEyIDCy3E4eiizEoxz
+	 2RpH0soBj/hUtclmhTNoNo8Tg7nEVt18sjZIWlzm/12Jf0ottJIxPUT6Fd4o8gdklM
+	 lqhTfFji2G8LUYcV136eUBZ+FNmRN1Hxbim/pA8UdEc5I9IfykM9t6CctLigO2pQDZ
+	 hByU403GhmvtRPEiYQJku47MxG/NqBm5MqLOhKcP61WnBpma7mVSeaEyyELXlyUFOW
+	 kdfdTqK0V16mb0LNnYZU6MUmhuJSFzH+/xfi4iudUMt6U63w1Aw1pcCCk1ZkivjgXE
+	 x3w2dU1JC+syw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] media: dvb_frontend: fix OOB read in dtv_property_process_get()
-Message-ID: <2a5ea27d-445e-4ffe-9447-9d7bfccd4a36@mail.kernel.org>
+Subject: [PATCH RFC] arm64: suspend: Only track cpuidle context for idle tasks
+Message-ID: <c2fd8aff-c1ea-4bfc-a24d-79a58f58b6aa@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,179 +38,108 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue, 29 Sep 2026 17:00:19 +0000 (UTC)
+Date: Tue, 29 Sep 2026 21:44:49 +0000 (UTC)
 
-In dtv_property_process_get(), properties requested via the FE_GET_PROPERTY
-ioctl are processed and copied back to userspace. In struct dtv_property,
-member u is a union containing __u32 data, struct dtv_fe_stats st, and
-struct buffer (which has __u8 data[32] followed by __u32 len at offset 32).
-Commit 60f0618d157b ("media: dvb-core: frontend: make GET/SET safer")
-introduced an out-of-bounds read and a data corruption issue due to
-mishandling this union.
+Commit 19235e472798 ("cpuidle, arm64: Fix the ARM64 cpuidle logic") moved
+the calls to ct_cpuidle_enter() and ct_cpuidle_exit() into cpu_suspend() so
+that arm64 cpuidle could keep RCU watching longer and manage context
+tracking internally. However, cpu_suspend() is called not only by cpuidle
+via psci_cpu_suspend_enter() (which runs in the context of the idle task),
+but also during system suspend via psci_system_suspend_enter() (which runs
+in the context of the task initiating suspend, such as a process writing to
+/sys/power/state).
 
-For commands that only set tvp->u.data (such as DTV_FREQUENCY),
-tvp->u.buffer.len is never initialized by the kernel and retains whatever
-value userspace passed into the ioctl. At the end of
-dtv_property_process_get(), dev_dbg() unconditionally formatted the
-property using "%*ph", passing tvp->u.buffer.len as the field width and
-tvp->u.buffer.data as the buffer pointer. When dynamic debug is enabled and
-userspace supplies a large length value, vsprintf() emits a field width out
-of range warning, and hex_string() clamps the length to 64 bytes. Since
-struct dtv_property is 76 bytes long and u.buffer.data starts at offset 16,
-reading 64 bytes reaches offset 80 (4 bytes past the end of the slab
-object), triggering a KASAN slab-out-of-bounds read:
+When entering system suspend, current is a non-idle task. Calling
+ct_cpuidle_enter() invokes ct_kernel_exit() from kernel space (!user) on a
+non-idle task. With CONFIG_RCU_EQS_DEBUG enabled, this violates context
+tracking invariants and triggers a warning:
 
-field width 1163001896 out of range
-WARNING: lib/vsprintf.c:2654 at vsnprintf+0xb9c/0xd10 lib/vsprintf.c:2918
+WARNING: kernel/context_tracking.c:120 at ct_kernel_exit+0x1b4/0x1f4
+kernel/context_tracking.c:118
 Call trace:
- set_field_width lib/vsprintf.c:2654 [inline]
- vsnprintf+0xb9c/0xd10 lib/vsprintf.c:2918
- pointer+0x5e8/0x6b4 lib/vsprintf.c:2577
- vsnprintf+0x618/0xd10 lib/vsprintf.c:2953
- dev_vprintk_emit+0x2ec/0x3b4 drivers/base/core.c:5000
- dev_printk_emit+0xe0/0x130 drivers/base/core.c:5011
- __dynamic_dev_dbg+0x1b4/0x254 lib/dynamic_debug.c:904
- dtv_property_process_get+0x26bc/0x2838
- drivers/media/dvb-core/dvb_frontend.c:1595
- dvb_get_property drivers/media/dvb-core/dvb_frontend.c:2397 [inline]
- dvb_frontend_handle_ioctl+0x1644/0x2424
- drivers/media/dvb-core/dvb_frontend.c:2478
- dvb_frontend_do_ioctl+0x124/0x278
- drivers/media/dvb-core/dvb_frontend.c:2101
- dvb_usercopy+0x2a4/0x4d4 drivers/media/dvb-core/dvbdev.c:996
- dvb_frontend_ioctl+0x68/0x8c drivers/media/dvb-core/dvb_frontend.c:2115
-BUG: KASAN: slab-out-of-bounds in hex_string+0x274/0x364
-lib/vsprintf.c:1209
-Read of size 1 at addr ffff0000c240314c
+ ct_kernel_exit+0x1b4/0x1f4 kernel/context_tracking.c:118
+ ct_idle_enter+0x20/0x34 kernel/context_tracking.c:299
+ ct_cpuidle_enter include/linux/cpuidle.h:134 [inline]
+ cpu_suspend+0x264/0x474 arch/arm64/kernel/suspend.c:136
+ psci_system_suspend_enter+0x4c/0x80 drivers/firmware/psci/psci.c:544
+ suspend_enter kernel/power/suspend.c:468 [inline]
+ suspend_devices_and_enter+0x88c/0xd0c kernel/power/suspend.c:533
+ enter_state kernel/power/suspend.c:618 [inline]
+ pm_suspend+0x498/0x698 kernel/power/suspend.c:644
+ state_store+0x14c/0x1fc kernel/power/main.c:819
+ kobj_attr_store+0x6c/0x90 lib/kobject.c:842
+ sysfs_kf_write+0xe0/0x108 fs/sysfs/file.c:145
+ kernfs_fop_write_iter+0x260/0x3b8 fs/kernfs/file.c:345
+ vfs_write+0x51c/0xa0c fs/read_write.c:687
+ ksys_write+0x12c/0x228 fs/read_write.c:739
 
-Additionally, commit 60f0618d157b added bounds checks that clamped
-tvp->u.buffer.len in all eight DTV_STAT_* cases. However, DTV_STAT_*
-commands populate tvp->u.st (struct dtv_fe_stats). In union u, u.buffer.len
-is located at offset 32, which directly overlaps bytes 3 to 6 of
-tvp->u.st.stat[3].uvalue (layer C statistics). Clamping and overwriting
-tvp->u.buffer.len therefore silently corrupted the statistics returned to
-userspace.
+A corresponding warning is subsequently triggered in ct_kernel_enter() via
+ct_cpuidle_exit() upon resume.
 
-Fix this by only formatting with "%*ph" using tvp->u.buffer.len and
-tvp->u.buffer.data when tvp->cmd == DTV_ENUM_DELSYS, which is the only
-property command that populates the buffer union member. For all other
-commands, format tvp->u.data as "= 0x%08x". Furthermore, remove the bogus
-bounds clamping of tvp->u.buffer.len and the unused len variable from all
-DTV_STAT_* cases to prevent corruption of frontend statistics.
+Fix this by checking is_idle_task(current) in cpu_suspend() and only
+invoking ct_cpuidle_enter() and ct_cpuidle_exit() when executing in the
+context of an idle task.
 
-Fixes: 60f0618d157b ("media: dvb-core: frontend: make GET/SET safer")
-
-Fixes: 60f0618d157b ("media: dvb-core: frontend: make GET/SET safer")
+Fixes: 19235e472798 ("cpuidle, arm64: Fix the ARM64 cpuidle logic")
 Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+6102f1c3a0ea8073fd64@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=6102f1c3a0ea8073fd64
-Link: https://syzkaller.appspot.com/ai_job?id=8f3957bb-b063-4d03-9e7e-dca8802ba8a9
-To: <linux-media@vger.kernel.org>
-To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-Cc: "Hans Verkuil" <hverkuil+cisco@kernel.org>
-Cc: "Kees Cook" <kees@kernel.org>
+Reported-by: syzbot+79883955da3a62652a80@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=79883955da3a62652a80
+Link: https://syzkaller.appspot.com/ai_job?id=5359e16f-013b-4850-9cbc-ddfb3bac95e5
+To: "Catalin Marinas" <catalin.marinas@arm.com>
+To: <linux-arm-kernel@lists.infradead.org>
+To: "Will Deacon" <will@kernel.org>
+To: "Peter Zijlstra" <peterz@infradead.org>
+Cc: "Ada Couprie Diaz" <ada.coupriediaz@arm.com>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Ricardo Ribalda" <ribalda@chromium.org>
+Cc: "Mark Rutland" <mark.rutland@arm.com>
+Cc: "Jinjie Ruan" <ruanjinjie@huawei.com>
+Cc: "Vladimir Murzin" <vladimir.murzin@arm.com>
 
 ---
-diff --git a/drivers/media/dvb-core/dvb_frontend.c b/drivers/media/dvb-core/dvb_frontend.c
-index 0286da57f..e57f1935c 100644
---- a/drivers/media/dvb-core/dvb_frontend.c
-+++ b/drivers/media/dvb-core/dvb_frontend.c
-@@ -1348,7 +1348,6 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
- 				    struct file *file)
- {
- 	int ncaps;
--	unsigned int len = 1;
+diff --git a/arch/arm64/kernel/suspend.c b/arch/arm64/kernel/suspend.c
+index c41724a40..cde0b8c19 100644
+--- a/arch/arm64/kernel/suspend.c
++++ b/arch/arm64/kernel/suspend.c
+@@ -5,6 +5,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/pgtable.h>
+ #include <linux/cpuidle.h>
++#include <linux/sched.h>
+ #include <asm/alternative.h>
+ #include <asm/cacheflush.h>
+ #include <asm/cpufeature.h>
+@@ -99,6 +100,7 @@ int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
+ 	int ret = 0;
+ 	unsigned long flags;
+ 	struct sleep_stack_data state;
++	bool idle = is_idle_task(current);
  
- 	switch (tvp->cmd) {
- 	case DTV_ENUM_DELSYS:
-@@ -1358,7 +1357,6 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
- 			ncaps++;
- 		}
- 		tvp->u.buffer.len = ncaps;
--		len = ncaps;
- 		break;
- 	case DTV_FREQUENCY:
- 		tvp->u.data = c->frequency;
-@@ -1536,51 +1534,27 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
- 	/* Fill quality measures */
- 	case DTV_STAT_SIGNAL_STRENGTH:
- 		tvp->u.st = c->strength;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	case DTV_STAT_CNR:
- 		tvp->u.st = c->cnr;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	case DTV_STAT_PRE_ERROR_BIT_COUNT:
- 		tvp->u.st = c->pre_bit_error;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	case DTV_STAT_PRE_TOTAL_BIT_COUNT:
- 		tvp->u.st = c->pre_bit_count;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	case DTV_STAT_POST_ERROR_BIT_COUNT:
- 		tvp->u.st = c->post_bit_error;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	case DTV_STAT_POST_TOTAL_BIT_COUNT:
- 		tvp->u.st = c->post_bit_count;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	case DTV_STAT_ERROR_BLOCK_COUNT:
- 		tvp->u.st = c->block_error;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	case DTV_STAT_TOTAL_BLOCK_COUNT:
- 		tvp->u.st = c->block_count;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	default:
- 		dev_dbg(fe->dvb->device,
-@@ -1589,13 +1563,18 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
- 		return -EINVAL;
+ 	/*
+ 	 * Some portions of CPU state (e.g. PSTATE.{PAN,DIT}) are initialized
+@@ -133,7 +135,8 @@ int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
+ 	 */
+ 	pause_graph_tracing();
+ 
+-	ct_cpuidle_enter();
++	if (idle)
++		ct_cpuidle_enter();
+ 
+ 	if (__cpu_suspend_enter(&state)) {
+ 		/* Call the suspend finisher */
+@@ -149,9 +152,11 @@ int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
+ 		if (!ret)
+ 			ret = -EOPNOTSUPP;
+ 
+-		ct_cpuidle_exit();
++		if (idle)
++			ct_cpuidle_exit();
+ 	} else {
+-		ct_cpuidle_exit();
++		if (idle)
++			ct_cpuidle_exit();
+ 		__cpu_suspend_exit();
  	}
  
--	if (len < 1)
--		len = 1;
--
--	dev_dbg(fe->dvb->device,
--		"%s: GET cmd 0x%08x (%s) len %d: %*ph\n",
--		__func__, tvp->cmd, dtv_cmd_name(tvp->cmd),
--		tvp->u.buffer.len, tvp->u.buffer.len, tvp->u.buffer.data);
-+	if (tvp->cmd == DTV_ENUM_DELSYS) {
-+		dev_dbg(fe->dvb->device,
-+			"%s: GET cmd 0x%08x (%s) len %d: %*ph\n",
-+			__func__, tvp->cmd, dtv_cmd_name(tvp->cmd),
-+			tvp->u.buffer.len, tvp->u.buffer.len,
-+			tvp->u.buffer.data);
-+	} else {
-+		dev_dbg(fe->dvb->device,
-+			"%s: GET cmd 0x%08x (%s) = 0x%08x\n",
-+			__func__, tvp->cmd, dtv_cmd_name(tvp->cmd),
-+			tvp->u.data);
-+	}
- 
- 	return 0;
- }
 
 
 base-commit: 72d3fcf802c45d00b300f25b848a93c3a2bd7c7e
