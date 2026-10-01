@@ -1,468 +1,506 @@
-Received: from mail-ed2-f32.google.com (mail-ed2-f32.google.com [74.125.228.96])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBDFA3CB907
-	for <syzbot@lists.linux.dev>; Thu,  1 Oct 2026 11:16:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.96
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6217A1D5CFE
+	for <syzbot@lists.linux.dev>; Thu,  1 Oct 2026 13:24:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790853367; cv=none; b=cXP2DL/Fl52NqEWRgfMdn08ETBLDd7kBxHoUPL6YFaubBT3kzxAb5z8Fd8zhmUFpoJY4V0glzTMcJ7ncOdMsp/DRFwkU3dCcUyph2xqztqzgRfcauDq5vLv9JAad6TgMoHQRaICVVnACHUaE2BIIPrtLesMqBzdKwypt5zOptzI=
+	t=1790861051; cv=none; b=KJjeY0q+V9kXPK0PxFvXBXdk3v2b/uken0mXyuPiHhaka9+l6VJLS/1esZm3GWvIr1Qih1qsT52Z5md+fBb7WY0Ps6o9BeHd+3B4rSS4iYQ1FCXWniJq6hOLm5IGY2RPN6z07MP39FkWc3CUVxQQOYKOHWjPskVfee/gyJcMS3o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790853367; c=relaxed/simple;
-	bh=hm/8XO0+MZ0/DyXdj6/Dr+9zmOGg/v4EqAqxctXjGgk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cdN2XkVcC0GFTj729gatQU8akQvaneRPb9qnjhxv/25ig6S7fAWPUOjHejKz7ClfbqhAxRyrpMJ2CJ1RHdz+dAIi76zGmny7PKglx6rxBmcxOnXO3Q4SZUB1APhrxAz/PKynINUE+uskbWFE8MbDOB8vbibWxK+mjYTF1QiY26k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JOySCl9N; arc=none smtp.client-ip=74.125.228.96
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790861051; c=relaxed/simple;
+	bh=eBN8bGxOCcMp6M/cndCyggMWkHXfF7LcSONLr4RB7fY=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=FtmJ97HR/tijPDbypRygH6mSMqHlLtaj+Ec1V7lWuOWEG6/6XzmLd3tN7HV5waBLsYdIKYj/z4gl4QQFBLszJKerk1wJUtHl8nrHBvJ2/D5vEJNGHElQaw9jX+mR/fQiflyS1ozxaNlnP1K4GL5jOV5DltUKmMt4lRXOxDZ1NFw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hfs2t9v0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JOySCl9N"
-Received: by mail-ed2-f32.google.com with SMTP id 4fb4d7f45d1cf-6acb91ecaccso4197636a12.2
-        for <syzbot@lists.linux.dev>; Thu, 01 Oct 2026 04:16:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790853363; x=1791458163; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=HTPWMHzyWsbr77YWduEMsz4zVE54oq1+DCiXpx2Fo5g=;
-        b=JOySCl9NKcGSKyfJYXM4D/dHsmwNQPh10vhVO7FoYq13yuoq3vk0owGUnuaBLUMQ3d
-         mW2M8b/4tifSsOJ8U5hYDRaplRftvC69GN7Z4UIQYCJy4wUX5PD0+FMlAQihuYoXzavH
-         BXpQOgforsPdfsgRY0K2AFJMHFX2b5PcuCKrXLhKT7ipx0UlwEd+BclQ5yEB8bMuJ1xG
-         k8ak/FQ5W3l1iTjHlDMSq1ddsYJFrgotkhSMZJKAbnMPr0a/je7VCGaG5jZ8+jzAaEUX
-         /ZIlvJJ8XOxDo+WAPwyoL7hoKZUImUNgMXsVdufY0LR8r9NxUvhfmRcgYNe4ONDnIoLM
-         WJEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790853363; x=1791458163;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=HTPWMHzyWsbr77YWduEMsz4zVE54oq1+DCiXpx2Fo5g=;
-        b=U5I5y/oZy0Rlo0OXVuGj1EFA09K5ejUf9EcSxFFRcY4CDGcTO417wjggSEvU2qTFwY
-         UL6LDw/kMqplE8t+KP+97Q8PiN3s/b8J55/r64IezANax9Il8Op4Tj4RP/uFE97xtJ0L
-         BtFVukjnrvCWNcCDZxsh8SHJWTZNqyTYLgCi2l9TdYWff8ebnIaxxnEufH2zs/1sGoBA
-         pnmekNdbHrN1BFhwNIVsnBe1DYBgXK2woVtRtw64cwVFlouV02dls66F/KnG5jq4VmjV
-         g3pQqN71/YjmJrUU9+Q4s58C6hhPUmxG+Oa1bxeaiBf7Dj69G1jvshUIhzaKUQ3O4KWp
-         Iyxw==
-X-Gm-Message-State: AFuF++lptMo4ClsvP8wlhL/vs026A6MFXdgEAp9jOgdqPM0hVvpyxbbT
-	2EFcw/kmQzTkO+bDcz+rLP29CKIASofMwQXpmannsr+a+8gzfk4JVdfB
-X-Gm-Gg: AYBFou1A0K/fsD87QlHIUk27h7JLxJ11l8r3jdnCydn2aXiReC7PYTtXkT2H5dvc2e3
-	lF5+SY6oMPM0fpEgvgC2DDvJwltxw8DHGdDw84fV7Ox5ne0aNmgs77ecg9kJix1W6Ize939I2wE
-	ka0S+/PJD+PCFh2QVlGiB3BoeZfMmGym58YthNOxhAn3KUKwfTz2BnbEBU9vPrGCK6PLFS22fW5
-	E9ixq1UtdgxLdGb2r0Hih2r1B/3kR9QGKB/Z0HBBXkrVZbvyU128PBHjHHNsmFdkH8XRpU9N0/5
-	YLZ31UsbwM/eSVW2Hnzd3VHj+Xb2PpSnUUvDGKqqr4YSFJHMQWiiOHBvW0XAccRfDjIyq1Hh5zb
-	5QRQmON2ojCiAllPdaTbXLd2d1Toz0/gQjnGlGZcaqfdFAzpnoDEPNk2hqjO1TBBudHpykO0Gnh
-	ujXSvw8Sx3JSvHaB1oEHRt0+5+iwrMugrxQ8+CLVmiOC1Wgwh0QIruDSqBxStcu0ijhP/GvgK4h
-	kUNyTCuYmVaC07yCnFm33mz8pps53UUaiUorSCj52/C75aw8K8dSxrCiUFSyelJnFU2XdKkdBe8
-	nhOcYW7Os+VVqfp0YpB72rHj8mtrB6qk4NX4uEPt2rSwQJqMKz2OcHKjtFFm2c6+lXZNrxtPLx+
-	Sl/pQ5R7SyocyNo6iYVClDqqTAUsaN/V2Gw==
-X-Received: by 2002:a17:907:728d:b0:c2d:fc0b:551c with SMTP id a640c23a62f3a-c2e23ca157fmr354425266b.16.1790853362541;
-        Thu, 01 Oct 2026 04:16:02 -0700 (PDT)
-Received: from [192.168.100.100] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c2e31ce3219sm141606966b.26.2026.10.01.04.16.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Oct 2026 04:16:01 -0700 (PDT)
-Message-ID: <3dc9bf36-29da-48e8-a541-ee25cfe94e6f@gmail.com>
-Date: Thu, 1 Oct 2026 13:16:00 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hfs2t9v0"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id D3E261F000FF;
+	Thu,  1 Oct 2026 13:24:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790861049;
+	bh=YcRJljrOsiavA2ofIgyOJUpxAMj2lK+6J13QJZ0ENuY=;
+	h=From:To:Cc:Subject:Date;
+	b=hfs2t9v0JdbHHdHVqt+gkqJCiKoTCfYypyI9udpV07wOOmaQrOTM5URbLWWHaLej2
+	 YzZ4XQCdWko3ix6Mpl2RUpSVuDH3aw3f1aDg5/5+rXSe1F9jcFt3/ujy5lMJC/+amb
+	 KGkI1/YciAG29qbfO+Cby8iEpZ1HhrLMzrvBr99391eVWmB/Dfuo+fCcaGuFYFfHRs
+	 bqN82ut0SV7RzDpBr3caiPMOIJ+fFq0COuxau1ofau7JqnS2G/qiPgHRcd8lKVV3N8
+	 xdwKB2fCdluVSp2ABZyGCI5R0vgJ8JDGmm8cR1lS/Tr2I7rdHH9k5bxU8xG6oWh+IE
+	 SF0rpTl2TB+Sw==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v5] usb: gadget: u_serial: pin ports while TTYs are installed
+Message-ID: <4226681d-e7e2-4ef8-92a8-4374c06132db@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v4] usb: gadget: u_serial: pin ports while TTYs are
- installed
-To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-References: <e53f1fc8-ddd7-4dbf-be17-696c5c36b68a@mail.kernel.org>
-Content-Language: en-US
-From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-In-Reply-To: <e53f1fc8-ddd7-4dbf-be17-696c5c36b68a@mail.kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Date: Thu,  1 Oct 2026 13:24:08 +0000 (UTC)
 
-On 9/28/26 22:19, syzbot wrote:
-> A slab-use-after-free can occur when opening or closing a USB serial port
-> while the gadget is concurrently being unbound or destroyed. The lifetime
-> of struct gs_port was previously tracked only by port->port.count, with
-> teardown waiting on wait_event(port->close_wait, gs_closed(port)) where
-> gs_closed() checks whether count is zero. This leaves two intervals where
-> gs_port is actively referenced by the TTY core but port->port.count is
-> zero:
-> 
-> 1. The install-to-open interval: when opening /dev/ttyGS*, the TTY layer
-> installs the port before invoking gs_open(). In this interval,
-> port->port.count is zero, so gs_closed() evaluates to true. If the gadget
-> is concurrently unbound or destroyed, gserial_free_port() does not wait and
-> frees gs_port, resulting in a slab-use-after-free write in tty_init_dev()
-> or tty_open().
-> 
-> 2. The close-to-cleanup/release interval: when closing /dev/ttyGS*,
-> gs_close() decrements port->port.count to zero and wakes up close_wait.
-> Concurrently, gserial_free_port() wakes up and frees gs_port before
-> tty_release() finishes, causing a slab-use-after-free in release_tty() when
-> it accesses tty->port.
-> 
-> Fix these issues by managing the lifetime of struct gs_port with standard
-> tty_port reference counting. Pin the port during tty install and release it
-> in tty cleanup, deferring buffer and struct freeing to the port destructor
-> once all references are dropped.
-> 
-> Enforce port-generation validation in gs_open() under the port lock to
-> verify that the installed port matches the registered port, ensuring the
-> port was not unregistered or replaced between install and open. Track
-> failed opens as aggregate credits across the port rather than paired with
-> individual files (another gs_close() can consume a failed open's credit
-> before that file's own close runs), allowing gs_close() called by the TTY
-> core on failure to exit cleanly without altering open counts. Finally,
-> delay minor reuse to protect saved termios by keeping the slot reserved
-> until port destruction completes and unregistering the device before
-> dropping the driver's port reference.
-> 
-> Fixes: 19b10a8828a6 ("usb: gadget: allocate & giveback serial ports instead hard code them")
-> Assisted-by: Gemini:gemini-3.8-flash syzbot
-> Reported-by: syzbot+fe63e4d633540f230624@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=fe63e4d633540f230624
-> Link: https://syzkaller.appspot.com/ai_job?id=47fc8e8b-9ef9-4e57-8471-e728e0d08b61
-> To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-> To: <linux-usb@vger.kernel.org>
-> To: "Sebastian Andrzej Siewior" <bigeasy@linutronix.de>
-> Cc: "Ai Chao" <aichao@kylinos.cn>
-> Cc: "Kees Cook" <kees@kernel.org>
-> Cc: <linux-kernel@vger.kernel.org>
-> 
-> ---
-> v4:
-> - Clarified in the commit message and comments that open_close_failures accounting is aggregate across the port rather than paired with individual files
-> - Cleared gs_tty_driver->ports[port_num] in gs_port_destruct()
-> 
-> v3:
-> - Clarify the lifecycle comment and slot invariant.
-> - Shorten the commit message by removing the full call trace and condensing implementation details.
-> https://lore.kernel.org/all/1e5c22f0-19bc-4c1f-9638-6ae619179e29@mail.kernel.org/T/
-> 
-> v2:
-> - Added minor reservation tracking (`reserved` flag) released in `gs_port_destruct()` to delay minor reuse and protect saved termios.
-> - Reordered `tty_unregister_device()` to run before `gserial_free_port()` in `gserial_free_line()`.
-> - Added an `open_close_failures` counter to pair failed `gs_open()` calls with matching `gs_close()` invocations without corrupting `port->port.count`.
-> - Added installed-port identity verification in `gs_open()` against the registered port slot.
-> - Retained `ports[].lock` across `tty_port_install()` and `tty->driver_data` assignment in `gs_install()`.
-> - Replaced `gserial_free_port()` with `tty_port_put()` on error path in `gserial_alloc_line_no_console()`.
-> https://lore.kernel.org/all/5dc8c18b-cfac-4e42-a158-b5e92bab89ca@mail.kernel.org/T/
-> 
-> v1:
-> https://lore.kernel.org/all/acde99b9-2954-43ab-8403-6ca10699472d@mail.kernel.org/T/
-> ---
-> diff --git a/drivers/usb/gadget/function/u_serial.c b/drivers/usb/gadget/function/u_serial.c
-> index cdd1dfc66..89c4feb42 100644
-> --- a/drivers/usb/gadget/function/u_serial.c
-> +++ b/drivers/usb/gadget/function/u_serial.c
-> @@ -60,20 +60,40 @@
->   * is managed in userspace ... OBEX, PTP, and MTP have been mentioned.
->   *
->   *
-> - * gserial is the lifecycle interface, used by USB functions
-> - * gs_port is the I/O nexus, used by the tty driver
-> - * tty_struct links to the tty/filesystem framework
-> + * Lifecycle and state management:
-> + *
-> + * gserial is the lifecycle interface, used by USB functions.
-> + * gs_port is the I/O nexus, used by the tty driver.
-> + * tty_struct links to the tty/filesystem framework.
->   *
->   * gserial <---> gs_port ... links will be null when the USB link is
-> - * inactive; managed by gserial_{connect,disconnect}().  each gserial
-> + * inactive; managed by gserial_{connect,disconnect}().  Each gserial
->   * instance can wrap its own USB control protocol.
->   *	gserial->ioport == usb_ep->driver_data ... gs_port
->   *	gs_port->port_usb ... gserial
->   *
-> - * gs_port <---> tty_struct ... links will be null when the TTY file
-> - * isn't opened; managed by gs_open()/gs_close()
-> - *	gserial->port_tty ... tty_struct
-> - *	tty_struct->driver_data ... gserial
-> + * gs_port <---> tty_struct:
-> + *	tty->driver_data refers to gs_port from install through cleanup,
-> + *	pinning the port via tty_port reference counting.
-> + *	gs_port->port.tty exists only while the port is open.
-> + *
-> + * Each entry in ports[] is guarded by ports[i].lock and models three states:
-> + *   - Free:      !port && !reserved
-> + *   - Published:  port &&  reserved
-> + *   - Retiring:  !port &&  reserved
-> + *
-> + * A minor remains reserved until gs_port_destruct() runs upon final tty_port
-> + * release, preventing minor reuse while cleanup or termios saving is still
-> + * underway. The owner reference is retained through device unregister so the
-> + * destructor releases the reservation only after device teardown is complete.
-> + *
-> + * open_close_failures tracks failed gs_open() calls where port->port.count
-> + * was not incremented. The TTY core calls gs_close() on open failure to tear
-> + * down the tty; tracking failures as aggregate credits allows gs_close() to
-> + * consume a credit and exit without decrementing port->port.count. Credits
-> + * are aggregate rather than paired with individual files (another gs_close()
-> + * can consume a failed open's credit before that file's own close runs).
-> + * It is protected by tty_lock.
->   */
->  
->  /* RX and TX queues can buffer QUEUE_SIZE packets before they hit the
-> @@ -128,6 +148,7 @@ struct gs_port {
->  	wait_queue_head_t	close_wait;
->  	bool			suspended;	/* port suspended */
->  	bool			start_delayed;	/* delay start when suspended */
-> +	unsigned int		open_close_failures; /* protected by tty_lock */
->  	struct async_icount	icount;
->  
->  	/* REVISIT this state ... */
-> @@ -135,8 +156,9 @@ struct gs_port {
->  };
->  
->  static struct portmaster {
-> -	struct mutex	lock;			/* protect open/close */
-> +	struct mutex	lock;			/* protect open/close and port slot */
->  	struct gs_port	*port;
-> +	bool		reserved;
->  } ports[MAX_U_SERIAL_PORTS];
->  
->  #define GS_CLOSE_TIMEOUT		15		/* seconds */
-> @@ -603,42 +625,81 @@ static int gserial_wakeup_host(struct gserial *gser)
->  
->  /* TTY Driver */
->  
-> +static int gs_install(struct tty_driver *driver, struct tty_struct *tty)
-> +{
-> +	struct gs_port *port;
-> +	struct tty_port *tport;
-> +	int ret;
-> +
-> +	mutex_lock(&ports[tty->index].lock);
-> +	port = ports[tty->index].port;
-> +	if (!port) {
-> +		mutex_unlock(&ports[tty->index].lock);
-> +		return -ENODEV;
-> +	}
-> +
-> +	tport = tty_port_get(&port->port);
-> +	if (!tport) {
-> +		mutex_unlock(&ports[tty->index].lock);
-> +		return -ENODEV;
-> +	}
-> +
-> +	ret = tty_port_install(tport, driver, tty);
-> +	if (ret) {
-> +		mutex_unlock(&ports[tty->index].lock);
-> +		tty_port_put(tport);
-> +		return ret;
-> +	}
-> +
-> +	tty->driver_data = port;
-> +	mutex_unlock(&ports[tty->index].lock);
-> +
-> +	return 0;
-> +}
-> +
-> +static void gs_cleanup(struct tty_struct *tty)
-> +{
-> +	tty_port_put(tty->port);
-> +}
-> +
->  /*
-> - * gs_open sets up the link between a gs_port and its associated TTY.
-> - * That link is broken *only* by TTY close(), and all driver methods
-> - * know that.
-> + * gs_open associates an open TTY with its gs_port.
-> + *
-> + * There are two TTY-to-port relationships: port->port.tty exists from the
-> + * first successful open until final close, while tty->driver_data is assigned
-> + * during gs_install() and remains valid through gs_cleanup().
->   */
->  static int gs_open(struct tty_struct *tty, struct file *file)
->  {
->  	int		port_num = tty->index;
-> -	struct gs_port	*port;
-> +	struct gs_port	*port = tty->driver_data;
->  	int		status = 0;
->  
-> +	if (!port)
-> +		return -ENODEV;
-> +
->  	mutex_lock(&ports[port_num].lock);
-> -	port = ports[port_num].port;
-> -	if (!port) {
-> +	if (ports[port_num].port != port) {
->  		status = -ENODEV;
-> -		goto out;
-> +		goto fail_unlock;
->  	}
->  
->  	spin_lock_irq(&port->port_lock);
->  
->  	/* allocate circular buffer on first open */
->  	if (!kfifo_initialized(&port->port_write_buf)) {
-> -
->  		spin_unlock_irq(&port->port_lock);
->  
->  		/*
->  		 * portmaster's mutex still protects from simultaneous open(),
->  		 * and close() can't happen, yet.
->  		 */
-> -
->  		status = kfifo_alloc(&port->port_write_buf,
->  				     WRITE_BUF_SIZE, GFP_KERNEL);
->  		if (status) {
->  			pr_debug("gs_open: ttyGS%d (%p,%p) no buffer\n",
->  				 port_num, tty, file);
-> -			goto out;
-> +			goto fail_unlock;
->  		}
->  
->  		spin_lock_irq(&port->port_lock);
-> @@ -648,7 +709,6 @@ static int gs_open(struct tty_struct *tty, struct file *file)
->  	if (port->port.count++)
->  		goto exit_unlock_port;
->  
-> -	tty->driver_data = port;
->  	port->port.tty = tty;
->  
->  	/* if connected, start the I/O stream */
-> @@ -672,7 +732,11 @@ static int gs_open(struct tty_struct *tty, struct file *file)
->  
->  exit_unlock_port:
->  	spin_unlock_irq(&port->port_lock);
-> -out:
-> +	mutex_unlock(&ports[port_num].lock);
-> +	return status;
-> +
-> +fail_unlock:
-> +	port->open_close_failures++;
->  	mutex_unlock(&ports[port_num].lock);
->  	return status;
->  }
-> @@ -695,6 +759,14 @@ static void gs_close(struct tty_struct *tty, struct file *file)
->  	struct gs_port *port = tty->driver_data;
->  	struct gserial	*gser;
->  
-> +	if (!port)
-> +		return;
-> +
-> +	if (port->open_close_failures > 0) {
-> +		port->open_close_failures--;
-> +		return;
-> +	}
-> +
->  	spin_lock_irq(&port->port_lock);
->  
->  	if (port->port.count != 1) {
-> @@ -909,8 +981,10 @@ static int gs_get_icount(struct tty_struct *tty,
->  }
->  
->  static const struct tty_operations gs_tty_ops = {
-> +	.install =		gs_install,
->  	.open =			gs_open,
->  	.close =		gs_close,
-> +	.cleanup =		gs_cleanup,
->  	.write =		gs_write,
->  	.put_char =		gs_put_char,
->  	.flush_chars =		gs_flush_chars,
-> @@ -1203,6 +1277,28 @@ static void gs_console_exit(struct gs_port *port)
->  
->  #endif
->  
-> +static void gs_port_destruct(struct tty_port *tport)
-> +{
-> +	struct gs_port *port = container_of(tport, struct gs_port, port);
-> +	unsigned int port_num = port->port_num;
-> +
-> +	mutex_lock(&ports[port_num].lock);
-> +	if (WARN_ON(ports[port_num].port))
-> +		ports[port_num].port = NULL;
-> +	WARN_ON(!ports[port_num].reserved);
-> +	if (gs_tty_driver)
-> +		gs_tty_driver->ports[port_num] = NULL;
-> +	ports[port_num].reserved = false;
-> +	mutex_unlock(&ports[port_num].lock);
-> +
-> +	kfifo_free(&port->port_write_buf);
-> +	kfree(port);
-> +}
-> +
-> +static const struct tty_port_operations gs_port_ops = {
-> +	.destruct = gs_port_destruct,
-> +};
-> +
->  static int
->  gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
->  {
-> @@ -1210,7 +1306,12 @@ gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
->  	int		ret = 0;
->  
->  	mutex_lock(&ports[port_num].lock);
-> -	if (ports[port_num].port) {
-> +	if (WARN_ON_ONCE(ports[port_num].port && !ports[port_num].reserved)) {
-> +		ret = -EBUSY;
-> +		goto out;
-> +	}
-> +
-> +	if (ports[port_num].reserved) {
->  		ret = -EBUSY;
->  		goto out;
->  	}
-> @@ -1222,6 +1323,7 @@ gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
->  	}
->  
->  	tty_port_init(&port->port);
-> +	port->port.ops = &gs_port_ops;
->  	spin_lock_init(&port->port_lock);
->  	init_waitqueue_head(&port->drain_wait);
->  	init_waitqueue_head(&port->close_wait);
-> @@ -1235,6 +1337,7 @@ gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
->  	port->port_num = port_num;
->  	port->port_line_coding = *coding;
->  
-> +	ports[port_num].reserved = true;
->  	ports[port_num].port = port;
->  out:
->  	mutex_unlock(&ports[port_num].lock);
-> @@ -1258,8 +1361,7 @@ static void gserial_free_port(struct gs_port *port)
->  	/* wait for old opens to finish */
->  	wait_event(port->close_wait, gs_closed(port));
->  	WARN_ON(port->port_usb != NULL);
-> -	tty_port_destroy(&port->port);
-> -	kfree(port);
-> +	tty_port_put(&port->port);
->  }
->  
->  void gserial_free_line(unsigned char port_num)
-> @@ -1276,8 +1378,8 @@ void gserial_free_line(unsigned char port_num)
->  	ports[port_num].port = NULL;
->  	mutex_unlock(&ports[port_num].lock);
->  
-> -	gserial_free_port(port);
->  	tty_unregister_device(gs_tty_driver, port_num);
-> +	gserial_free_port(port);
->  }
->  EXPORT_SYMBOL_GPL(gserial_free_line);
->  
-> @@ -1318,7 +1420,7 @@ int gserial_alloc_line_no_console(unsigned char *line_num)
->  		mutex_lock(&ports[port_num].lock);
->  		ports[port_num].port = NULL;
->  		mutex_unlock(&ports[port_num].lock);
-> -		gserial_free_port(port);
-> +		tty_port_put(&port->port);
->  		goto err;
->  	}
->  	*line_num = port_num;
-> 
-> 
-> base-commit: df2908090cda368b01ff43709f51890076c56157
-Reserve the replacement gadget serial minor without publishing its port until `tty_port_register_device()` has completed. The current patch publishes `ports[minor].port` before TTY registration clears saved termios for that minor. A concurrent `gs_install()` can then enter `tty_init_termios()` while `tty_register_device_attr()` frees the pointer, and the supplied race reproduced a KASAN use-after-free on the patched kernel.
+A slab-use-after-free can occur when opening or closing a USB serial port
+while removing the serial function instance via configfs rmdir, which
+reaches acm_free_instance() and gserial_free_line() to free the port
+(gadget unbind or gserial_disconnect() alone only disconnects without
+freeing gs_port). The lifetime of struct gs_port was previously tracked
+only by port->port.count, with teardown waiting on
+wait_event(port->close_wait, gs_closed(port)) where gs_closed() checks
+whether count is zero. This leaves two intervals where gs_port is actively
+referenced by the TTY core but port->port.count is zero:
 
-Keep the TTY install-to-cleanup port reference, generation check on open, failed-open close credits, delayed old-minor reuse, destructor cleanup, and unregister-before-owner-put ordering. During new registration, an install should see no published port and return `-ENODEV`. Publish the new port under the slot mutex only after registration succeeds. On registration failure, release the unpublished owner reference and reservation. Update the commit message to explain this publication ordering and its saved-termios consequence.
+1. The install-to-open interval: when opening /dev/ttyGS*, the TTY layer
+installs the port before invoking gs_open(). In this interval,
+port->port.count is zero, so gs_closed() evaluates to true. If the serial
+function instance is concurrently removed via configfs rmdir,
+gserial_free_port() does not wait and frees gs_port, resulting in a
+slab-use-after-free write in tty_init_dev() or tty_open().
 
-After making that ordering correction, also fix two inaccurate statements in the commit message. Say that `gs_open()` compares the installed port with the slot under `ports[port_num].lock`, the portmaster mutex. Do not call this "the port lock", because `port->port_lock` is a different lock and is not held for that comparison. Describe the free trigger as removal of the serial function instance, which reaches `acm_free_instance()` and `gserial_free_line()` in the reported configfs `rmdir` path. Gadget unbind or `gserial_disconnect()` alone only disconnects the port and does not free `gs_port`.
+2. The close-to-cleanup/release interval: when closing /dev/ttyGS*,
+gs_close() decrements port->port.count to zero and wakes up close_wait.
+Concurrently, gserial_free_port() wakes up and frees gs_port before
+tty_release() finishes, causing a slab-use-after-free in release_tty() when
+it accesses tty->port.
 
-Keep the new comments about `tty->driver_data`, the slot states, and `open_close_failures`, but drop unrelated formatting churn. Remove the added "Lifecycle and state management:" heading, restore the original punctuation and capitalization in the surrounding unchanged sentences, and restore the two blank lines around `kfifo_alloc()` in `gs_open()`. Do not make any other behavioral change.
+BUG: KASAN: slab-use-after-free in tty_init_dev+0x244/0x4d0
+drivers/tty/tty_io.c:1397
+Write of size 8 at addr ffff8881f8248128
+Call Trace:
+ <TASK>
+ tty_init_dev+0x244/0x4d0 drivers/tty/tty_io.c:1397
+ tty_open_by_driver drivers/tty/tty_io.c:2046 [inline]
+ tty_open+0x7d9/0xcc0 drivers/tty/tty_io.c:2093
+ chrdev_open+0x4d9/0x600 fs/char_dev.c:411
+ do_dentry_open+0x816/0x1380 fs/open.c:996
+ vfs_open+0x3b/0x340 fs/open.c:1101
+ ...
+ </TASK>
 
+Allocated by task 5843:
+ ...
+ gs_port_alloc drivers/usb/gadget/function/u_serial.c:1218 [inline]
+ gserial_alloc_line_no_console+0x232/0x6e0
+ drivers/usb/gadget/function/u_serial.c:1298
+ gserial_alloc_line+0x18/0x90 drivers/usb/gadget/function/u_serial.c:1332
+ acm_alloc_instance+0xc7/0x140 drivers/usb/gadget/function/f_acm.c:891
+ configfs_mkdir+0x4f6/0x9e0 fs/configfs/dir.c:1360
+ ...
+
+Freed by task 5843:
+ ...
+ kfree+0x1c5/0x650 mm/slub.c:6792
+ gserial_free_port+0x248/0x2c0 drivers/usb/gadget/function/u_serial.c:1262
+ gserial_free_line+0xc0/0x1f0 drivers/usb/gadget/function/u_serial.c:1279
+ acm_free_instance+0x39/0x60 drivers/usb/gadget/function/f_acm.c:875
+ configfs_rmdir+0x885/0x950 fs/configfs/dir.c:1571
+ ...
+
+Fix these issues by managing the lifetime of struct gs_port with standard
+tty_port reference counting. Pin the port during tty install and release it
+in tty cleanup, deferring buffer and struct freeing to the port destructor
+once all references are dropped.
+
+Enforce port validation in gs_open() under the portmaster mutex
+(ports[port_num].lock) to verify that the installed port matches the
+registered port, ensuring the port was not unregistered or replaced between
+install and open. Defer publishing the port pointer in ports[port_num].port
+until after tty_port_register_device() succeeds; this deferred publication
+prevents a concurrent gs_install() from accessing saved termios while
+tty_register_device_attr() frees them upon registration failure. Track
+failed opens as aggregate credits across the port rather than paired with
+individual files (another gs_close() can consume a failed open's credit
+before that file's own close runs), allowing gs_close() called by the TTY
+core on failure to exit cleanly without altering open counts. Finally,
+delay minor reuse to protect saved termios by keeping the slot reserved
+until port destruction completes and unregistering the device before
+dropping the driver's port reference.
+
+Fixes: 19b10a8828a6 ("usb: gadget: allocate & giveback serial ports instead hard code them")
+Assisted-by: Gemini:gemini-3.8-flash syzbot
+Reported-by: syzbot+fe63e4d633540f230624@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=fe63e4d633540f230624
+Link: https://syzkaller.appspot.com/ai_job?id=80d6efd5-e349-4663-8b4d-c08e605a4517
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: <linux-usb@vger.kernel.org>
+To: "Sebastian Andrzej Siewior" <bigeasy@linutronix.de>
+Cc: "Ai Chao" <aichao@kylinos.cn>
+Cc: "Kees Cook" <kees@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+
+---
+v5:
+- Defer publishing ports[port_num].port until after tty_port_register_device() succeeds to avoid racing with gs_install().
+- Return struct gs_port * from gs_port_alloc() instead of assigning ports[port_num].port early.
+- Simplify error handling in gserial_alloc_line_no_console() on registration failure.
+- Update commit message to explain deferred port publication ordering and its protection of saved termios.
+- Correct commit message to refer to the portmaster mutex (ports[port_num].lock) rather than the port lock.
+- Clarify in commit message that port freeing is triggered by configfs rmdir reaching acm_free_instance() and gserial_free_line().
+- Include relevant KASAN report traces in commit message.
+
+v4:
+- Clarified in the commit message and comments that open_close_failures accounting is aggregate across the port rather than paired with individual files
+- Cleared gs_tty_driver->ports[port_num] in gs_port_destruct()
+https://lore.kernel.org/all/e53f1fc8-ddd7-4dbf-be17-696c5c36b68a@mail.kernel.org/T/
+
+v3:
+- Clarify the lifecycle comment and slot invariant.
+- Shorten the commit message by removing the full call trace and condensing implementation details.
+https://lore.kernel.org/all/1e5c22f0-19bc-4c1f-9638-6ae619179e29@mail.kernel.org/T/
+
+v2:
+- Added minor reservation tracking (`reserved` flag) released in `gs_port_destruct()` to delay minor reuse and protect saved termios.
+- Reordered `tty_unregister_device()` to run before `gserial_free_port()` in `gserial_free_line()`.
+- Added an `open_close_failures` counter to pair failed `gs_open()` calls with matching `gs_close()` invocations without corrupting `port->port.count`.
+- Added installed-port identity verification in `gs_open()` against the registered port slot.
+- Retained `ports[].lock` across `tty_port_install()` and `tty->driver_data` assignment in `gs_install()`.
+- Replaced `gserial_free_port()` with `tty_port_put()` on error path in `gserial_alloc_line_no_console()`.
+https://lore.kernel.org/all/5dc8c18b-cfac-4e42-a158-b5e92bab89ca@mail.kernel.org/T/
+
+v1:
+https://lore.kernel.org/all/acde99b9-2954-43ab-8403-6ca10699472d@mail.kernel.org/T/
+---
+diff --git a/drivers/usb/gadget/function/u_serial.c b/drivers/usb/gadget/function/u_serial.c
+index cdd1dfc66..e4bbf4211 100644
+--- a/drivers/usb/gadget/function/u_serial.c
++++ b/drivers/usb/gadget/function/u_serial.c
+@@ -70,10 +70,28 @@
+  *	gserial->ioport == usb_ep->driver_data ... gs_port
+  *	gs_port->port_usb ... gserial
+  *
+- * gs_port <---> tty_struct ... links will be null when the TTY file
+- * isn't opened; managed by gs_open()/gs_close()
+- *	gserial->port_tty ... tty_struct
+- *	tty_struct->driver_data ... gserial
++ * gs_port <---> tty_struct:
++ *	tty->driver_data refers to gs_port from install through cleanup,
++ *	pinning the port via tty_port reference counting.
++ *	gs_port->port.tty exists only while the port is open.
++ *
++ * Each entry in ports[] is guarded by ports[i].lock and models three states:
++ *   - Free:      !port && !reserved
++ *   - Published:  port &&  reserved
++ *   - Retiring:  !port &&  reserved
++ *
++ * A minor remains reserved until gs_port_destruct() runs upon final tty_port
++ * release, preventing minor reuse while cleanup or termios saving is still
++ * underway. The owner reference is retained through device unregister so the
++ * destructor releases the reservation only after device teardown is complete.
++ *
++ * open_close_failures tracks failed gs_open() calls where port->port.count
++ * was not incremented. The TTY core calls gs_close() on open failure to tear
++ * down the tty; tracking failures as aggregate credits allows gs_close() to
++ * consume a credit and exit without decrementing port->port.count. Credits
++ * are aggregate rather than paired with individual files (another gs_close()
++ * can consume a failed open's credit before that file's own close runs).
++ * It is protected by tty_lock.
+  */
+ 
+ /* RX and TX queues can buffer QUEUE_SIZE packets before they hit the
+@@ -128,6 +146,7 @@ struct gs_port {
+ 	wait_queue_head_t	close_wait;
+ 	bool			suspended;	/* port suspended */
+ 	bool			start_delayed;	/* delay start when suspended */
++	unsigned int		open_close_failures; /* protected by tty_lock */
+ 	struct async_icount	icount;
+ 
+ 	/* REVISIT this state ... */
+@@ -135,8 +154,9 @@ struct gs_port {
+ };
+ 
+ static struct portmaster {
+-	struct mutex	lock;			/* protect open/close */
++	struct mutex	lock;			/* protect open/close and port slot */
+ 	struct gs_port	*port;
++	bool		reserved;
+ } ports[MAX_U_SERIAL_PORTS];
+ 
+ #define GS_CLOSE_TIMEOUT		15		/* seconds */
+@@ -603,22 +623,63 @@ static int gserial_wakeup_host(struct gserial *gser)
+ 
+ /* TTY Driver */
+ 
++static int gs_install(struct tty_driver *driver, struct tty_struct *tty)
++{
++	struct gs_port *port;
++	struct tty_port *tport;
++	int ret;
++
++	mutex_lock(&ports[tty->index].lock);
++	port = ports[tty->index].port;
++	if (!port) {
++		mutex_unlock(&ports[tty->index].lock);
++		return -ENODEV;
++	}
++
++	tport = tty_port_get(&port->port);
++	if (!tport) {
++		mutex_unlock(&ports[tty->index].lock);
++		return -ENODEV;
++	}
++
++	ret = tty_port_install(tport, driver, tty);
++	if (ret) {
++		mutex_unlock(&ports[tty->index].lock);
++		tty_port_put(tport);
++		return ret;
++	}
++
++	tty->driver_data = port;
++	mutex_unlock(&ports[tty->index].lock);
++
++	return 0;
++}
++
++static void gs_cleanup(struct tty_struct *tty)
++{
++	tty_port_put(tty->port);
++}
++
+ /*
+- * gs_open sets up the link between a gs_port and its associated TTY.
+- * That link is broken *only* by TTY close(), and all driver methods
+- * know that.
++ * gs_open associates an open TTY with its gs_port.
++ *
++ * There are two TTY-to-port relationships: port->port.tty exists from the
++ * first successful open until final close, while tty->driver_data is assigned
++ * during gs_install() and remains valid through gs_cleanup().
+  */
+ static int gs_open(struct tty_struct *tty, struct file *file)
+ {
+ 	int		port_num = tty->index;
+-	struct gs_port	*port;
++	struct gs_port	*port = tty->driver_data;
+ 	int		status = 0;
+ 
++	if (!port)
++		return -ENODEV;
++
+ 	mutex_lock(&ports[port_num].lock);
+-	port = ports[port_num].port;
+-	if (!port) {
++	if (ports[port_num].port != port) {
+ 		status = -ENODEV;
+-		goto out;
++		goto fail_unlock;
+ 	}
+ 
+ 	spin_lock_irq(&port->port_lock);
+@@ -638,7 +699,7 @@ static int gs_open(struct tty_struct *tty, struct file *file)
+ 		if (status) {
+ 			pr_debug("gs_open: ttyGS%d (%p,%p) no buffer\n",
+ 				 port_num, tty, file);
+-			goto out;
++			goto fail_unlock;
+ 		}
+ 
+ 		spin_lock_irq(&port->port_lock);
+@@ -648,7 +709,6 @@ static int gs_open(struct tty_struct *tty, struct file *file)
+ 	if (port->port.count++)
+ 		goto exit_unlock_port;
+ 
+-	tty->driver_data = port;
+ 	port->port.tty = tty;
+ 
+ 	/* if connected, start the I/O stream */
+@@ -672,7 +732,11 @@ static int gs_open(struct tty_struct *tty, struct file *file)
+ 
+ exit_unlock_port:
+ 	spin_unlock_irq(&port->port_lock);
+-out:
++	mutex_unlock(&ports[port_num].lock);
++	return status;
++
++fail_unlock:
++	port->open_close_failures++;
+ 	mutex_unlock(&ports[port_num].lock);
+ 	return status;
+ }
+@@ -695,6 +759,14 @@ static void gs_close(struct tty_struct *tty, struct file *file)
+ 	struct gs_port *port = tty->driver_data;
+ 	struct gserial	*gser;
+ 
++	if (!port)
++		return;
++
++	if (port->open_close_failures > 0) {
++		port->open_close_failures--;
++		return;
++	}
++
+ 	spin_lock_irq(&port->port_lock);
+ 
+ 	if (port->port.count != 1) {
+@@ -909,8 +981,10 @@ static int gs_get_icount(struct tty_struct *tty,
+ }
+ 
+ static const struct tty_operations gs_tty_ops = {
++	.install =		gs_install,
+ 	.open =			gs_open,
+ 	.close =		gs_close,
++	.cleanup =		gs_cleanup,
+ 	.write =		gs_write,
+ 	.put_char =		gs_put_char,
+ 	.flush_chars =		gs_flush_chars,
+@@ -1203,14 +1277,41 @@ static void gs_console_exit(struct gs_port *port)
+ 
+ #endif
+ 
+-static int
++static void gs_port_destruct(struct tty_port *tport)
++{
++	struct gs_port *port = container_of(tport, struct gs_port, port);
++	unsigned int port_num = port->port_num;
++
++	mutex_lock(&ports[port_num].lock);
++	if (WARN_ON(ports[port_num].port))
++		ports[port_num].port = NULL;
++	WARN_ON(!ports[port_num].reserved);
++	if (gs_tty_driver)
++		gs_tty_driver->ports[port_num] = NULL;
++	ports[port_num].reserved = false;
++	mutex_unlock(&ports[port_num].lock);
++
++	kfifo_free(&port->port_write_buf);
++	kfree(port);
++}
++
++static const struct tty_port_operations gs_port_ops = {
++	.destruct = gs_port_destruct,
++};
++
++static struct gs_port *
+ gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
+ {
+ 	struct gs_port	*port;
+ 	int		ret = 0;
+ 
+ 	mutex_lock(&ports[port_num].lock);
+-	if (ports[port_num].port) {
++	if (WARN_ON_ONCE(ports[port_num].port && !ports[port_num].reserved)) {
++		ret = -EBUSY;
++		goto out;
++	}
++
++	if (ports[port_num].reserved) {
+ 		ret = -EBUSY;
+ 		goto out;
+ 	}
+@@ -1222,6 +1323,7 @@ gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
+ 	}
+ 
+ 	tty_port_init(&port->port);
++	port->port.ops = &gs_port_ops;
+ 	spin_lock_init(&port->port_lock);
+ 	init_waitqueue_head(&port->drain_wait);
+ 	init_waitqueue_head(&port->close_wait);
+@@ -1235,10 +1337,13 @@ gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
+ 	port->port_num = port_num;
+ 	port->port_line_coding = *coding;
+ 
+-	ports[port_num].port = port;
++	ports[port_num].reserved = true;
++	mutex_unlock(&ports[port_num].lock);
++	return port;
++
+ out:
+ 	mutex_unlock(&ports[port_num].lock);
+-	return ret;
++	return ERR_PTR(ret);
+ }
+ 
+ static int gs_closed(struct gs_port *port)
+@@ -1258,8 +1363,7 @@ static void gserial_free_port(struct gs_port *port)
+ 	/* wait for old opens to finish */
+ 	wait_event(port->close_wait, gs_closed(port));
+ 	WARN_ON(port->port_usb != NULL);
+-	tty_port_destroy(&port->port);
+-	kfree(port);
++	tty_port_put(&port->port);
+ }
+ 
+ void gserial_free_line(unsigned char port_num)
+@@ -1276,15 +1380,15 @@ void gserial_free_line(unsigned char port_num)
+ 	ports[port_num].port = NULL;
+ 	mutex_unlock(&ports[port_num].lock);
+ 
+-	gserial_free_port(port);
+ 	tty_unregister_device(gs_tty_driver, port_num);
++	gserial_free_port(port);
+ }
+ EXPORT_SYMBOL_GPL(gserial_free_line);
+ 
+ int gserial_alloc_line_no_console(unsigned char *line_num)
+ {
+ 	struct usb_cdc_line_coding	coding;
+-	struct gs_port			*port;
++	struct gs_port			*port = ERR_PTR(-EBUSY);
+ 	struct device			*tty_dev;
+ 	int				ret;
+ 	int				port_num;
+@@ -1295,19 +1399,20 @@ int gserial_alloc_line_no_console(unsigned char *line_num)
+ 	coding.bDataBits = USB_CDC_1_STOP_BITS;
+ 
+ 	for (port_num = 0; port_num < MAX_U_SERIAL_PORTS; port_num++) {
+-		ret = gs_port_alloc(port_num, &coding);
+-		if (ret == -EBUSY)
+-			continue;
+-		if (ret)
++		port = gs_port_alloc(port_num, &coding);
++		if (IS_ERR(port)) {
++			ret = PTR_ERR(port);
++			if (ret == -EBUSY)
++				continue;
+ 			return ret;
++		}
+ 		break;
+ 	}
+-	if (ret)
+-		return ret;
++	if (IS_ERR(port))
++		return PTR_ERR(port);
+ 
+ 	/* ... and sysfs class devices, so mdev/udev make /dev/ttyGS* */
+ 
+-	port = ports[port_num].port;
+ 	tty_dev = tty_port_register_device(&port->port,
+ 			gs_tty_driver, port_num, NULL);
+ 	if (IS_ERR(tty_dev)) {
+@@ -1315,15 +1420,16 @@ int gserial_alloc_line_no_console(unsigned char *line_num)
+ 				__func__, port_num, PTR_ERR(tty_dev));
+ 
+ 		ret = PTR_ERR(tty_dev);
+-		mutex_lock(&ports[port_num].lock);
+-		ports[port_num].port = NULL;
+-		mutex_unlock(&ports[port_num].lock);
+-		gserial_free_port(port);
+-		goto err;
++		tty_port_put(&port->port);
++		return ret;
+ 	}
++
++	mutex_lock(&ports[port_num].lock);
++	ports[port_num].port = port;
++	mutex_unlock(&ports[port_num].lock);
++
+ 	*line_num = port_num;
+-err:
+-	return ret;
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(gserial_alloc_line_no_console);
+ 
+
+
+base-commit: df2908090cda368b01ff43709f51890076c56157
 -- 
-Krystian Kaniewski
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
