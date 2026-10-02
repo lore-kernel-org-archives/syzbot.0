@@ -1,160 +1,558 @@
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 741B514883F
-	for <syzbot@lists.linux.dev>; Thu,  1 Oct 2026 20:44:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B34717A30A
+	for <syzbot@lists.linux.dev>; Fri,  2 Oct 2026 02:31:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790887482; cv=none; b=bOR0nRdfaMfMbGjowz0gJLQ8d0PsKEClPxlHIONvHyDrGdHcfy5aAfwY+KeTZ7QU3P1VYRy357H66hr44oi3JpZPJxpwhb4GwvpSbGY2I0sja19qu1YcZptmDC4ZEgkeoaJhCMDnltEZ8/Qd1HAqYCG+7ILQLYG9KCHUT7ZbcAQ=
+	t=1790908271; cv=none; b=f2xYTj4SGQc0crJEX9W2tIlvaSvVG1w0PsNzDdxgZus+JldWuosSnbc3luoXIaHAt7wc7CaKaQgybAjU5l3EvimDLEhepHMACBm+w8/+mWtu4fpB8sC9kpuluCDs9VdFVmAg6JByJ58U+LErfHWvxQEHjQ5H1OGE1S7G+/0XDCI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790887482; c=relaxed/simple;
-	bh=KJn0QhtEtLoJch6pEICL6WI3sI1z1uRT4P4EyjWUbLc=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=mgvGuVF0uaTi9xMeFjeTzYRTTf+D4r8vCl8zyu8QCsYEAZAfbU60WpPLCIf6tU8N6bc8eMNfQjRJFhnDw55kY3kiaEaW4P+dcP1dmuoEmWm7Ma6CCmhIrOzA0FwqEnDQf3BGsxkk4O4P7FpGJTd8VJHjegM4GMTlBuMDCrI4/EQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-809f1af7992so16829157a34.3
-        for <syzbot@lists.linux.dev>; Thu, 01 Oct 2026 13:44:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790887479; x=1791492279;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=Mz37xzZPmzC/x5l9vHJH36dpPP1odnZmnV3cNoLfw7k=;
-        b=VJa9BB5cc36b1I2ay6uoxJnQHZOVhyJNgmGWnwy7qm368adgIzvfV+g4I5Q94CLYxy
-         ZI+ddO/kyZWm6PVZWWMBIRRU5BAKP0tvwX8iPtln8cujqdZgfxRZNBw5qJL7QhoUZbgU
-         YVoVwRtsC4bDYk/G8molCG/xdArO3gPY89s5aMyB6BPgoamW4l5x4D5DOM2Q8+uts2Eq
-         ZNBZuJCUxpgV1nt9uye209qqLOeet2UUK0013YeBRPRyeLFJaD5SZVwShwTHE2OReD0v
-         DSdlfbwrqdqWpAmK+mKcUK+oLF0wq1eiJOSkZuT/wr6XhQdRly+sgA2mDFyIfNvJvHEV
-         BCFQ==
-X-Gm-Message-State: AFuF++n+/TPI5wQPoX7wPLgT2a8Disch6JkN6cdrY+hiuLlCmkQMBagh
-	LIPHxdOpECd1wId392p916ONJWM2bqbWlRFy8fNyNZMHNEJB+uau9TBRtRPWzoAKPpXhbX9W5jm
-	8lzd23z2SR+1vx5UTl65WckTHdUZJs5W9d/fkvvNVr3LglswsvlCqbOEJok8=
+	s=arc-20240116; t=1790908271; c=relaxed/simple;
+	bh=9gHJU0Nqq5jWnBbd63Vudew3qKb28oYBzoo9pMakazk=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=DdqpjygQtAcQSJJcQwPRh9Sl7SNmcfU84kEsIJ7emMlQNdwWyIGv+s2NiVyp79Fg7Q5MGPYZuTzAgE05DGdQF4R6fg0Z0LO5YXupgJmMcYzqStnOkv+DGTm3uIfIoVuIrFGtdhmqmfkVOBibqfwp15MnkUbJS3S9IjneU4K1QkE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RPA2jAu+; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RPA2jAu+"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id DCC781F000FF;
+	Fri,  2 Oct 2026 02:31:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790908269;
+	bh=neeR3bi7TtOSvFQdNNnFFs34h9bJmV7BplrIFZGO5qE=;
+	h=From:To:Cc:Subject:Date;
+	b=RPA2jAu+haJYqemCsvN2D07saskdXriQiHAJryIzTqBjE5LOO86ABFsSXhHBtIBjk
+	 fxZHztC5f4KwYOrDBQ72scbljSpFWrbtEav0EEHfHdeKAfUEa6aJeQBxweSF/C3rL+
+	 b4kGDQt88apl5eN08CfzQ/aE04VzExuMLrxOwIdJ9RpGO+0nrHaWQ4REOoG8QgW9rJ
+	 ikIdHclZ6BeYDN/kaGPqZygUo52a52eeQXySYBahcmHNvuxgQK83wYDK1i8fkz7E/g
+	 8Ww3ip+SE4Ugl3pSGORPxLsIsipFECvGCwjhSAEEfhTdv9u5NrVX7rI/iPn2+ur8WD
+	 N2XTooVbtP6KA==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: immersa.bartosz.chronowski@gmail.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v4] net/sched: taprio: enforce minimum interval in software mode
+Message-ID: <e048bbcd-a352-43e2-bef2-a08c12b27099@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:bc6:b0:4d6:90f4:48b1 with SMTP id
- 5614622812f47-4f52b3b8911mr376388b6e.51.1790887479547; Thu, 01 Oct 2026
- 13:44:39 -0700 (PDT)
-Date: Thu, 01 Oct 2026 13:44:39 -0700
-In-Reply-To: <20260930152229.1453929-1-hengyul@cs.unc.edu>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6abec637.7503fbd6.2d3f6.000c.GAE@google.com>
-Subject: [syzbot ci] Re: ipv6: route: fix adding routes via the loopback device
-From: syzbot ci <syzbot+cidbf3efe2a5ca243b@syzkaller.appspotmail.com>
-To: davem@davemloft.net, dsahern@kernel.org, edumazet@kernel.org, 
-	hengyul@cs.unc.edu, horms@kernel.org, idosch@nvidia.com, 
-	jiayuan.chen@linux.dev, jiayuan.chen@shopee.com, kuba@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-	netdev@vger.kernel.org, pabeni@redhat.com, shuah@kernel.org, 
-	stable@vger.kernel.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Fri,  2 Oct 2026 02:31:08 +0000 (UTC)
 
-syzbot ci has tested the following series
+In taprio software mode (when full offload and txtime-assist are not
+enabled), schedule advancement is driven in software by an hrtimer running
+advance_sched(). The minimum allowed duration for schedule entries was
+previously bounded only by length_to_duration(q, ETH_ZLEN). For high link
+speeds or small picos_per_byte, this allows entry intervals to be
+configured to extremely small values (e.g., tens of nanoseconds).
 
-[v1] ipv6: route: fix adding routes via the loopback device
-https://lore.kernel.org/all/20260930152229.1453929-1-hengyul@cs.unc.edu
-* [PATCH net 1/2] ipv6: route: do not validate nexthop of routes promoted to reject routes
-* [PATCH net 2/2] selftests: net: fib_tests: add tests for IPv6 routes via loopback device
+When entry intervals or cycle_time are configured to values shorter than
+the time required to execute the timer callback, the newly calculated
+expiration time is in the past. Consequently, the hrtimer subsystem
+repeatedly and immediately re-invokes advance_sched() in hardirq context,
+resulting in an interrupt storm that starves the CPU and triggers RCU
+stalls:
 
-and found the following issue:
-WARNING in nsim_fib_event_nb
-
-Full report is available here:
-https://ci.syzbot.org/series/7c566bff-eca1-4b49-90ae-6537c6011730
-
-***
-
-WARNING in nsim_fib_event_nb
-
-tree:      net
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
-base:      e23a64eb244356ee47c0620f0722d51bd88db522
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/ef50b46f-5dab-4a9c-943a-321047ec0627/config
-syz repro: https://ci.syzbot.org/findings/96331068-e137-4de8-85a3-65ac3caafea0/syz_repro
-
-------------[ cut here ]------------
-i != fen6_info->nsiblings
-WARNING: drivers/net/netdevsim/fib.c:831 at nsim_fib6_event_init drivers/net/netdevsim/fib.c:831 [inline], CPU#1: syz.2.19/5834
-WARNING: drivers/net/netdevsim/fib.c:831 at nsim_fib6_prepare_event drivers/net/netdevsim/fib.c:947 [inline], CPU#1: syz.2.19/5834
-WARNING: drivers/net/netdevsim/fib.c:831 at nsim_fib_event_schedule_work drivers/net/netdevsim/fib.c:1003 [inline], CPU#1: syz.2.19/5834
-WARNING: drivers/net/netdevsim/fib.c:831 at nsim_fib_event_nb+0x1029/0x11d0 drivers/net/netdevsim/fib.c:1043, CPU#1: syz.2.19/5834
-Modules linked in:
-CPU: 1 UID: 0 PID: 5834 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:nsim_fib6_event_init drivers/net/netdevsim/fib.c:831 [inline]
-RIP: 0010:nsim_fib6_prepare_event drivers/net/netdevsim/fib.c:947 [inline]
-RIP: 0010:nsim_fib_event_schedule_work drivers/net/netdevsim/fib.c:1003 [inline]
-RIP: 0010:nsim_fib_event_nb+0x1029/0x11d0 drivers/net/netdevsim/fib.c:1043
-Code: eb 0d 4d 89 fd e8 97 75 6e fa be 01 00 00 00 48 89 df e8 aa db 85 fd 4d 89 ef 4c 8b 6c 24 20 e9 4a f3 ff ff e8 78 75 6e fa 90 <0f> 0b 90 e9 db fa ff ff 89 e9 80 e1 07 80 c1 03 38 c1 0f 8c df f0
-RSP: 0018:ffffc9000388f030 EFLAGS: 00010293
-RAX: ffffffff87596688 RBX: 0000000000000001 RCX: ffff88816f738000
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
-RBP: ffffc9000388f1c0 R08: ffff88816ecf302f R09: 1ffff1102dd9e605
-R10: dffffc0000000000 R11: ffffed102dd9e606 R12: dffffc0000000000
-R13: 0000000000000001 R14: 0000000000000000 R15: ffff8881be596000
-FS:  00007f94438b96c0(0000) GS:ffff8882a8cca000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f94429eb840 CR3: 000000016e632000 CR4: 00000000000006f0
+rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+rcu: 	0-...!: (1 GPs behind) idle=fc14/1/0x4000000000000000
+softirq=20212/20212 fqs=5
+rcu: 	(detected by 1, t=10502 jiffies, g=16909, q=1720 ncpus=2)
+Sending NMI from CPU 1 to CPUs 0:
+NMI backtrace for cpu 0
+CPU: 0 UID: 0 PID: 200 Comm: kworker/u9:4 Not tainted
+RIP: 0010:advance_sched+0x10f/0xc80 net/sched/sch_taprio.c:932
 Call Trace:
- <TASK>
- notifier_call_chain+0x1a5/0x3d0 kernel/notifier.c:85
- atomic_notifier_call_chain+0xda/0x180 kernel/notifier.c:223
- call_fib_notifiers+0x31/0x60 net/core/fib_notifier.c:36
- call_fib6_multipath_entry_notifiers+0xf5/0x160 net/ipv6/ip6_fib.c:428
- ip6_route_multipath_add net/ipv6/route.c:5591 [inline]
- inet6_rtm_newroute+0x14f5/0x1a30 net/ipv6/route.c:5713
- rtnetlink_rcv_msg+0x802/0xc00 net/core/rtnetlink.c:7137
- netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2575
- netlink_unicast_kernel net/netlink/af_netlink.c:1338 [inline]
- netlink_unicast+0x7bd/0x940 net/netlink/af_netlink.c:1364
- netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec+0x13a/0x180 net/socket.c:800
- __sock_sendmsg net/socket.c:815 [inline]
- ____sys_sendmsg+0x54e/0x850 net/socket.c:2713
- ___sys_sendmsg+0x2a5/0x360 net/socket.c:2767
- __sys_sendmsg net/socket.c:2799 [inline]
- __do_sys_sendmsg net/socket.c:2804 [inline]
- __se_sys_sendmsg net/socket.c:2802 [inline]
- __x64_sys_sendmsg+0x1b1/0x290 net/socket.c:2802
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f944299e159
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f94438b9028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f9442c25fa0 RCX: 00007f944299e159
-RDX: 0000000004000040 RSI: 0000200000000000 RDI: 0000000000000003
-RBP: 00007f9442a3506b R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f9442c26038 R14: 00007f9442c25fa0 R15: 00007ffdb2cbb968
- </TASK>
+ <IRQ>
+ __run_hrtimer kernel/time/hrtimer.c:2067 [inline]
+ __hrtimer_run_queues+0x3bc/0xa10 kernel/time/hrtimer.c:2124
+ hrtimer_interrupt+0x4cd/0xaa0 kernel/time/hrtimer.c:2243
+ local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1051 [inline]
+ __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:1068
+ sysvec_apic_timer_interrupt+0xa1/0xc0 arch/x86/kernel/apic/apic.c:1062
+ </IRQ>
 
+To prevent CPU starvation, define TAPRIO_MIN_SW_INTERVAL_NS (10 us) and
+introduce taprio_min_interval(). For software mode, enforcing a minimum
+interval of 10 us establishes a serviceability guarantee: because 10 us is
+significantly larger than the execution latency of advance_sched(), the CPU
+is guaranteed sufficient processing time between timer interrupts to make
+forward progress, service softirqs, and advance RCU grace periods. For
+TXTIME-assist and full-offload modes, advance_sched() does not drive
+schedule switching in software, so taprio_min_interval() continues to
+compute length_to_duration(q, ETH_ZLEN) without the 10 us clamp, preserving
+hardware offload capabilities.
 
-***
+Unify the derivation of the effective schedule directly in
+parse_taprio_schedule(). When an explicit cycle_time is configured, entries
+exceeding cycle_time are dropped, any entry straddling the cycle boundary
+is truncated to fit the remaining cycle duration, and if the total duration
+is less than cycle_time, the final entry is extended to fill the cycle. The
+entries are reindexed and validated so that every effective interval
+satisfies taprio_min_interval(). Materializing this effective schedule
+in-place ensures that all consumers—including gate duration calculations
+(taprio_calculate_gate_durations), packet transmission lookup
+(find_entry_to_transmit), transmission budgets, queueMaxSDU validation, and
+hardware offload drivers—operate on an identical, consistent schedule
+definition without sub-minimum trailing intervals.
 
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+To further guarantee serviceability under worst-case timer delays (e.g.
+from high interrupt latency or preemption), advance_sched() now enforces
+bounded catch-up work and strictly future timer expiration. If the timer
+fires late such that the scheduled expiration time has already passed,
+advance_sched() advances at most a bounded number of entries (up to 32)
+before switching to an O(1) cycle-advancement fast-forward path. If the
+resulting target expiration remains in the past, it clamps the next
+expiration time to at least taprio_min_interval(q) into the future.
+Bounding catch-up iterations to constant time and guaranteeing that timer
+expiry is always strictly in the future ensures that the CPU cannot be
+trapped in an hrtimer interrupt loop and will always make forward progress.
+
+Finally, parse and validate the schedule in taprio_change() before invoking
+netdev_set_num_tc(), ensure netdev traffic class configuration is cleanly
+rolled back on subsequent errors, move taprio_calculate_gate_durations()
+after traffic classes are established, and reject empty schedules.
+
+Fixes: 6ca6a6654225 ("taprio: Add support for setting the cycle-time manually")
+Assisted-by: Gemini:gemini-3.8-flash syzbot
+Reported-by: syzbot+14c6ac6811273526cfa5@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=14c6ac6811273526cfa5
+Link: https://syzkaller.appspot.com/ai_job?id=706e3d4e-5003-47b1-b0b1-1eb29cf65731
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jamal Hadi Salim" <jhs@mojatatu.com>
+To: "Jiri Pirko" <jiri@resnulli.us>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
+Cc: "Simon Horman" <horms@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+v4:
+- Unified effective schedule derivation in parse_taprio_schedule() by dropping out-of-bounds entries, truncating boundary-straddling entries, and padding trailing entries, ensuring all consumers operate on the identical schedule.
+- Moved entry interval validation to parse_taprio_schedule() to validate effective post-truncation intervals against taprio_min_interval().
+- Added bounded catch-up advancement (up to 32 entries) and fast-forward cycle calculation in advance_sched() to bound interrupt latency.
+- Enforced strictly future hrtimer expiration in advance_sched() by clamping end_time to at least taprio_min_interval() ahead of the current time.
+- Added cleanup logic to reset netdev traffic classes in taprio_change() if an error occurs after netdev_set_num_tc().
+- Added safety checks for NULL oper in should_change_schedules() and advance_sched().
+- Updated curr_intv_start boundary check in find_entry_to_transmit().
 
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
+v3:
+- Ensure schedule entries truncated by an explicit cycle_time meet min_duration in parse_taprio_schedule()
+- Clamp first entry end_time to cycle_time in setup_first_end_time()
+- Parse and validate schedule before applying netdev traffic class configuration in taprio_change()
+- Reject schedules with no entries in parse_taprio_schedule()
+- Update commit message to detail the serviceability guarantee, cycle truncation handling, and offload mode arithmetic
+https://lore.kernel.org/all/5a7fa927-7ed9-4c7b-82b8-97cb8fdadfc9@mail.kernel.org/T/
 
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
+v2:
+- Enforce a minimum interval of 10 us (TAPRIO_MIN_SW_INTERVAL_NS) in software mode instead of comparing cycle_time against the sum of intervals.
+- Add taprio_min_interval() helper to determine the minimum interval based on offload and txtime-assist flags.
+- Use taprio_min_interval() in fill_sched_entry() and parse_taprio_schedule().
+https://lore.kernel.org/all/edd30c9e-6673-42a0-ab07-b7fb2bb67795@mail.kernel.org/T/
+
+v1:
+https://lore.kernel.org/all/3527dbf1-ab94-4184-8405-8552799efb71@mail.kernel.org/T/
+---
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 39ac5b97a..c02a03cf2 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -48,6 +48,10 @@ static struct static_key_false taprio_have_working_mqprio;
+  * 60 * 17 > PSEC_PER_NSEC (1000)
+  */
+ #define TAPRIO_PICOS_PER_BYTE_MIN 17
++/* Minimum interval for software mode (hrtimer-driven advance_sched) to
++ * avoid hrtimer interrupt storms and CPU starvation.
++ */
++#define TAPRIO_MIN_SW_INTERVAL_NS (10 * NSEC_PER_USEC)
+ 
+ struct sched_entry {
+ 	/* Durations between this GCL entry and the GCL entry where the
+@@ -259,6 +263,17 @@ static int length_to_duration(struct taprio_sched *q, int len)
+ 	return div_u64(len * atomic64_read(&q->picos_per_byte), PSEC_PER_NSEC);
+ }
+ 
++static int taprio_min_interval(struct taprio_sched *q)
++{
++	int min_duration = length_to_duration(q, ETH_ZLEN);
++
++	if (!FULL_OFFLOAD_IS_ENABLED(q->flags) &&
++	    !TXTIME_ASSIST_IS_ENABLED(q->flags))
++		min_duration = max_t(int, min_duration, TAPRIO_MIN_SW_INTERVAL_NS);
++
++	return min_duration;
++}
++
+ static int duration_to_length(struct taprio_sched *q, u64 duration)
+ {
+ 	return div_u64(duration * PSEC_PER_NSEC, atomic64_read(&q->picos_per_byte));
+@@ -357,7 +372,7 @@ static struct sched_entry *find_entry_to_transmit(struct sk_buff *skb,
+ 		curr_intv_end = get_interval_end_time(sched, admin, entry,
+ 						      curr_intv_start);
+ 
+-		if (ktime_after(curr_intv_start, cycle_end))
++		if (ktime_compare(curr_intv_start, cycle_end) >= 0)
+ 			break;
+ 
+ 		if (!(entry->gate_mask & BIT(tc)) ||
+@@ -888,7 +903,7 @@ static bool should_change_schedules(const struct sched_gate_list *admin,
+ {
+ 	ktime_t next_base_time, extension_time;
+ 
+-	if (!admin)
++	if (!admin || !oper)
+ 		return false;
+ 
+ 	next_base_time = sched_base_time(admin);
+@@ -916,6 +931,57 @@ static bool should_change_schedules(const struct sched_gate_list *admin,
+ 	return false;
+ }
+ 
++static void taprio_advance_one_entry(struct taprio_sched *q,
++				     struct sched_gate_list **p_oper,
++				     struct sched_gate_list **p_admin,
++				     struct sched_entry **p_entry,
++				     struct sched_entry **p_next,
++				     ktime_t *p_end_time,
++				     int num_tc)
++{
++	struct sched_gate_list *oper = *p_oper;
++	struct sched_gate_list *admin = *p_admin;
++	struct sched_entry *entry = *p_entry;
++	struct sched_entry *next;
++	ktime_t end_time;
++	int tc;
++
++	if (should_restart_cycle(oper, entry)) {
++		next = list_first_entry(&oper->entries, struct sched_entry,
++					list);
++		oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
++						    oper->cycle_time);
++	} else {
++		next = list_next_entry(entry, list);
++	}
++
++	end_time = ktime_add_ns(entry->end_time, next->interval);
++	end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
++
++	for (tc = 0; tc < num_tc; tc++) {
++		if (next->gate_duration[tc] == oper->cycle_time)
++			next->gate_close_time[tc] = KTIME_MAX;
++		else
++			next->gate_close_time[tc] = ktime_add_ns(entry->end_time,
++								 next->gate_duration[tc]);
++	}
++
++	if (should_change_schedules(admin, oper, end_time)) {
++		switch_schedules(q, &admin, &oper);
++		*p_admin = admin;
++		*p_oper = oper;
++		next = list_first_entry(&oper->entries, struct sched_entry, list);
++		end_time = next->end_time;
++	}
++
++	next->end_time = end_time;
++	taprio_set_budgets(q, oper, next);
++
++	*p_entry = next;
++	*p_next = next;
++	*p_end_time = end_time;
++}
++
+ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ {
+ 	struct taprio_sched *q = container_of(timer, struct taprio_sched,
+@@ -925,8 +991,7 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 	int num_tc = netdev_get_num_tc(dev);
+ 	struct sched_entry *entry, *next;
+ 	struct Qdisc *sch = q->root;
+-	ktime_t end_time;
+-	int tc;
++	ktime_t end_time, now;
+ 
+ 	spin_lock(&q->current_entry_lock);
+ 	entry = rcu_dereference_protected(q->current_entry,
+@@ -939,6 +1004,13 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 	if (!oper)
+ 		switch_schedules(q, &admin, &oper);
+ 
++	if (unlikely(!oper)) {
++		spin_unlock(&q->current_entry_lock);
++		return HRTIMER_NORESTART;
++	}
++
++	now = taprio_get_time(q);
++
+ 	/* This can happen in two cases: 1. this is the very first run
+ 	 * of this function (i.e. we weren't running any schedule
+ 	 * previously); 2. The previous schedule just ended. The first
+@@ -949,42 +1021,74 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 		next = list_first_entry(&oper->entries, struct sched_entry,
+ 					list);
+ 		end_time = next->end_time;
+-		goto first_run;
+-	}
+-
+-	if (should_restart_cycle(oper, entry)) {
+-		next = list_first_entry(&oper->entries, struct sched_entry,
+-					list);
+-		oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
+-						    oper->cycle_time);
+ 	} else {
+-		next = list_next_entry(entry, list);
++		taprio_advance_one_entry(q, &oper, &admin, &entry, &next,
++					 &end_time, num_tc);
+ 	}
+ 
+-	end_time = ktime_add_ns(entry->end_time, next->interval);
+-	end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
++	if (unlikely(ktime_compare(end_time, now) <= 0)) {
++		size_t max_steps = min_t(size_t, oper->num_entries, 32);
++		size_t i;
+ 
+-	for (tc = 0; tc < num_tc; tc++) {
+-		if (next->gate_duration[tc] == oper->cycle_time)
+-			next->gate_close_time[tc] = KTIME_MAX;
+-		else
+-			next->gate_close_time[tc] = ktime_add_ns(entry->end_time,
+-								 next->gate_duration[tc]);
+-	}
++		for (i = 0; i < max_steps && ktime_compare(end_time, now) <= 0; i++) {
++			entry = next;
++			taprio_advance_one_entry(q, &oper, &admin, &entry, &next,
++						 &end_time, num_tc);
++		}
+ 
+-	if (should_change_schedules(admin, oper, end_time)) {
+-		switch_schedules(q, &admin, &oper);
+-		/* After changing schedules, the next entry is the first one
+-		 * in the new schedule, with a pre-calculated end_time.
+-		 */
+-		next = list_first_entry(&oper->entries, struct sched_entry, list);
+-		end_time = next->end_time;
+-	}
++		if (ktime_compare(end_time, now) <= 0) {
++			ktime_t cur_start;
++			s64 diff;
++			int tc;
+ 
+-	next->end_time = end_time;
+-	taprio_set_budgets(q, oper, next);
++			if (admin && ktime_compare(sched_base_time(admin), now) <= 0)
++				switch_schedules(q, &admin, &oper);
++
++			diff = ktime_sub(now, oper->cycle_end_time);
++			if (diff >= 0) {
++				u64 cycles = div64_u64(diff, oper->cycle_time) + 1;
++
++				oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
++								    cycles * oper->cycle_time);
++			}
++
++			cur_start = ktime_sub_ns(oper->cycle_end_time, oper->cycle_time);
++			next = list_last_entry(&oper->entries, struct sched_entry, list);
++			list_for_each_entry(entry, &oper->entries, list) {
++				ktime_t cur_end = ktime_add_ns(cur_start, entry->interval);
++
++				if (ktime_compare(cur_end, now) > 0) {
++					next = entry;
++					end_time = min_t(ktime_t, cur_end, oper->cycle_end_time);
++					next->end_time = end_time;
++					for (tc = 0; tc < num_tc; tc++) {
++						u64 dur = next->gate_duration[tc];
++
++						if (dur == oper->cycle_time)
++							next->gate_close_time[tc] = KTIME_MAX;
++						else
++							next->gate_close_time[tc] =
++								ktime_add_ns(cur_start, dur);
++					}
++					taprio_set_budgets(q, oper, next);
++					break;
++				}
++				cur_start = cur_end;
++			}
++
++			if (should_change_schedules(admin, oper, end_time)) {
++				switch_schedules(q, &admin, &oper);
++				next = list_first_entry(&oper->entries, struct sched_entry, list);
++				end_time = next->end_time;
++			}
++
++			if (unlikely(ktime_compare(end_time, now) <= 0)) {
++				end_time = ktime_add_ns(now, taprio_min_interval(q));
++				next->end_time = end_time;
++			}
++		}
++	}
+ 
+-first_run:
+ 	rcu_assign_pointer(q->current_entry, next);
+ 	spin_unlock(&q->current_entry_lock);
+ 
+@@ -1130,7 +1234,11 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+ 				 struct sched_gate_list *new,
+ 				 struct netlink_ext_ack *extack)
+ {
++	int min_duration = taprio_min_interval(q);
++	struct sched_entry *entry, *n;
++	s64 elapsed = 0;
+ 	int err = 0;
++	int i = 0;
+ 
+ 	if (tb[TCA_TAPRIO_ATTR_SCHED_SINGLE_ENTRY]) {
+ 		NL_SET_ERR_MSG(extack, "Adding a single entry is not supported");
+@@ -1152,8 +1260,12 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+ 	if (err < 0)
+ 		return err;
+ 
++	if (list_empty(&new->entries)) {
++		NL_SET_ERR_MSG(extack, "There should be at least one entry in the schedule");
++		return -EINVAL;
++	}
++
+ 	if (!new->cycle_time) {
+-		struct sched_entry *entry;
+ 		ktime_t cycle = 0;
+ 
+ 		list_for_each_entry(entry, &new->entries, list)
+@@ -1167,12 +1279,45 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+ 		new->cycle_time = cycle;
+ 	}
+ 
+-	if (new->cycle_time < new->num_entries * length_to_duration(q, ETH_ZLEN)) {
++	if (new->cycle_time < min_duration) {
+ 		NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
+ 		return -EINVAL;
+ 	}
+ 
+-	taprio_calculate_gate_durations(q, new);
++	list_for_each_entry_safe(entry, n, &new->entries, list) {
++		if (elapsed >= new->cycle_time) {
++			list_del(&entry->list);
++			kfree(entry);
++			new->num_entries--;
++			continue;
++		}
++
++		if (elapsed + entry->interval > new->cycle_time) {
++			entry->interval = new->cycle_time - elapsed;
++			elapsed = new->cycle_time;
++		} else {
++			elapsed += entry->interval;
++		}
++	}
++
++	if (list_empty(&new->entries)) {
++		NL_SET_ERR_MSG(extack, "There should be at least one entry in the schedule");
++		return -EINVAL;
++	}
++
++	if (elapsed < new->cycle_time) {
++		entry = list_last_entry(&new->entries, struct sched_entry, list);
++		entry->interval += new->cycle_time - elapsed;
++	}
++
++	list_for_each_entry(entry, &new->entries, list) {
++		if (entry->interval < min_duration) {
++			NL_SET_ERR_MSG(extack, "Invalid interval for schedule entry");
++			return -EINVAL;
++		}
++		entry->index = i++;
++	}
++	new->num_entries = i;
+ 
+ 	return 0;
+ }
+@@ -1256,7 +1401,7 @@ static void setup_first_end_time(struct taprio_sched *q,
+ 	/* FIXME: find a better place to do this */
+ 	sched->cycle_end_time = ktime_add_ns(base, cycle);
+ 
+-	first->end_time = ktime_add_ns(base, first->interval);
++	first->end_time = ktime_add_ns(base, min_t(s64, first->interval, cycle));
+ 	taprio_set_budgets(q, sched, first);
+ 
+ 	for (tc = 0; tc < num_tc; tc++) {
+@@ -1828,6 +1973,7 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 	struct taprio_sched *q = qdisc_priv(sch);
+ 	struct net_device *dev = qdisc_dev(sch);
+ 	struct tc_mqprio_qopt *mqprio = NULL;
++	bool tc_configured = false;
+ 	unsigned long flags;
+ 	u32 taprio_flags;
+ 	ktime_t start;
+@@ -1897,10 +2043,25 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 		goto free_sched;
+ 	}
+ 
++	err = parse_taprio_schedule(q, tb, new_admin, extack);
++	if (err < 0)
++		goto free_sched;
++
++	if (new_admin->num_entries == 0) {
++		NL_SET_ERR_MSG(extack, "There should be at least one entry in the schedule");
++		err = -EINVAL;
++		goto free_sched;
++	}
++
++	err = taprio_parse_clockid(sch, tb, extack);
++	if (err < 0)
++		goto free_sched;
++
+ 	if (mqprio) {
+ 		err = netdev_set_num_tc(dev, mqprio->num_tc);
+ 		if (err)
+ 			goto free_sched;
++		tc_configured = true;
+ 		for (i = 0; i < mqprio->num_tc; i++) {
+ 			netdev_set_tc_queue(dev, i,
+ 					    mqprio->count[i],
+@@ -1914,19 +2075,7 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 					       mqprio->prio_tc_map[i]);
+ 	}
+ 
+-	err = parse_taprio_schedule(q, tb, new_admin, extack);
+-	if (err < 0)
+-		goto free_sched;
+-
+-	if (new_admin->num_entries == 0) {
+-		NL_SET_ERR_MSG(extack, "There should be at least one entry in the schedule");
+-		err = -EINVAL;
+-		goto free_sched;
+-	}
+-
+-	err = taprio_parse_clockid(sch, tb, extack);
+-	if (err < 0)
+-		goto free_sched;
++	taprio_calculate_gate_durations(q, new_admin);
+ 
+ 	taprio_update_queue_max_sdu(q, new_admin, stab);
+ 
+@@ -2008,6 +2157,11 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 	spin_unlock_bh(qdisc_lock(sch));
+ 
+ free_sched:
++	if (err && tc_configured) {
++		netdev_reset_tc(dev);
++		memset(q->cur_txq, 0, sizeof(q->cur_txq));
++	}
++
+ 	if (new_admin)
+ 		call_rcu(&new_admin->rcu, taprio_free_sched_cb);
+ 
+
+
+base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
