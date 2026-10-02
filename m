@@ -1,105 +1,155 @@
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08FE736197E
-	for <syzbot@lists.linux.dev>; Fri,  2 Oct 2026 20:39:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1ABE33AD9B
+	for <syzbot@lists.linux.dev>; Fri,  2 Oct 2026 21:37:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790973571; cv=none; b=t2iiWD49khDd7SfNGNpeFG7NRDV5eTRznvnr7AY7aEsquLlHVSNJ04NaNLz8BLxsm9kwCeEEFwGdJrOwcJVHJjSM9qggSrwTHwyoO5t2hGi9FijIf0Gu7zqUh00ffiJJi5KZ434qaRBPFVu3PUmvwO8TmjbtcEBd5HhlbiVUBfc=
+	t=1790977045; cv=none; b=SmLuckkW7qpjkgqq60EQoQnXclr43VpyORKnr5oc5PfQIP4kVLjJcNdmzyVEQ0wBF6OeGoZyAjEbvZaypOFVDTARzu3t/WYgesgE1+a0FrJf2k2HGapzyrTOnmYoMXXhPcoRR7CFxW9phAnJkYiRma7mil7I6lxHOnMtujZjcYQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790973571; c=relaxed/simple;
-	bh=S0ge2C9Y15thBhCiKs8x41HME8Zo3cnqn4nPcWu4Sog=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=NVjR9mZnmviw4N+UZboMy9EzejC/wsUtlOQsOaAjtXNmd7WqspydpNryGFKuAtEK57c9hawyeLq2/fBlutJcZKFEz71NJuDc7vNCclIfJ2BQmY8MlyzBcyZc0YNMNIxbjBQDGUA7ozwRmCE7npzojOLGLb2jU48o0IFuSS7Wn+A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=AYJv55z3; arc=none smtp.client-ip=209.85.214.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1790977045; c=relaxed/simple;
+	bh=tuBZYNKBiWpSOlY9kGcHSwAg9IfZ1hHaP/XWIx0cMkI=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=uXel/EXPHM9z1X2kKK/UV0/R5usLhooMikXOgKwG5OyfsQb4GAPucU0caPg8uEsKNdoShrpW29wAWLTdwhqXJhtgWrk2GY9YwBczjHunau54A6WpurB2pe/VU5hfhOCr4GNImIVQL4TShvTxMq0HYnbfl+rbVtauFJTRrNLwAq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=btynifJ6; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="AYJv55z3"
-Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2df8d1e91c9so305415ad.0
-        for <syzbot@lists.linux.dev>; Fri, 02 Oct 2026 13:39:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790973566; x=1791578366; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=J0j9tHQdvgPyeE7kOurEk+4M8mVRW7MJtC+t0YWufic=;
-        b=AYJv55z3iyttR0iXGyAtP8j/D1mJ/up932SV0wuRlT60hz5TRr7HWFKZ8jxin/BIBd
-         VGaAgnx59/JeaWe7TMAfmO2AusRGlyT3ixVJYGUMK9/zQ5jTiFVr3jbNkz+iABP0DEYN
-         61O4cVqunMFFzXfaTgC0oYo5MYse0j0YHbyaa4v80fQhe0yScSymlbHyp2SET16b0K01
-         1KJL77gU7YitILC9zscY14oiR7Orbw0kzsU7A8Vvl3bCfQ6SFvJgrzPK8Xq6tYyFjkgD
-         7+uMixdcZjAjzU+hwd1btD8iAzbs6nV/mhotgvrdyixdAgJJYof4aL6IdrO+qRPlBa5r
-         sUlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790973566; x=1791578366;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=J0j9tHQdvgPyeE7kOurEk+4M8mVRW7MJtC+t0YWufic=;
-        b=fBIQFWfyDxfWF8kgrH2wSHOkZplAxAMWbPgZaFtYm0vGCWT/X6/H3aAFXQezeA5Z2P
-         jkEmf53lEw1r5K6+tsm/x8LJytu+eKh1kHMPm/eY6clBo0Dws70hEOT0soVrI89HnneI
-         +nFeBNPVI5r6zKfJqqkPhqv5mWLcGnFHHU4uajnVw4Ud03enk90iBhzy/5BNsFHcFt8g
-         69ctrCBBjSH5aY7OkmyF1OCN+Vk+BITe8MoOFlVrTaON0e33Ok+l1+KBxoI7mhkgz2Yf
-         fMNQAmJf+/jOYaEfSkcWmZXpaQ2wuoaYZy+CHZ91ZRc2hnrw3XgmXHvcRiQNMKopGHmF
-         rTag==
-X-Forwarded-Encrypted: i=1; AKwUvBzxbOoHkjgVhVqwheAstINL3LKjTp4a8gsC2O+tJ4P5FuCDnUAk727WE8+6r1nllRgkg+Nc3B8=@lists.linux.dev
-X-Gm-Message-State: AFq9FYJyT+3nbtYj9c3uVmw7kbQxyqvuoHoAnhHf8lmGgY6XAXUIipgb
-	f3AWmJQtz1tpLmqCUaXVOpPckq24hB9yPO23LFMLXHNGEDPAnm30yK3uM5ymqHAbsskZvV+rK93
-	iN0pYPQ==
-X-Received: from plhd13.prod.google.com ([2002:a17:903:230d:b0:2df:8053:e258])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:903:18b:b0:2e3:1bb4:611d
- with SMTP id d9443c01a7336-2e49b6771e7mr42633885ad.49.1790973566345; Fri, 02
- Oct 2026 13:39:26 -0700 (PDT)
-Date: Fri, 2 Oct 2026 13:39:25 -0700
-In-Reply-To: <6ac0145f.34119e79.2f92f3.0003.GAE@google.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="btynifJ6"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 188001F000FF;
+	Fri,  2 Oct 2026 21:37:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790977043;
+	bh=twysSR2VSRIC+lc0coLNFEwaqrVt9N7vcAiglp73yVg=;
+	h=From:To:Cc:Subject:Date;
+	b=btynifJ6ntWqMXWj5XV4wgVUeXktMLzeBHM7B3n/gJTJoQyB58KLd4m7S5vKh0N/p
+	 gubTxV1kUkzi+d0zYoUAXlZ9St+ryrVbB4zQv40FvrztWQcqrEAlYuEl0NzCKfJAQM
+	 WxInKGF9hTz0fK103bUu3Fr9ADplF++4QEjAKJ4bJCZV81dt0WFp4JfPk/jhaW3+6L
+	 Cj3409lkGSu4CY0YxgUPPRCushW2XxDnGztdpZ1IAQswnYd1TzqXm+6C5DHIXnsBey
+	 rxwoyvCYOc0M3o9rI8KNPUhxasVlgCyaZNoApOtGKdsZtJlbj90XRgM0Boqa6DpD4D
+	 8FqpsIS4NUMvQ==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] usbnet: only detach and attach netdevice on suspend if open
+Message-ID: <102109f9-6262-4b92-9494-11c6b6fef812@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20261001202234.3794060-1-seanjc@google.com> <6ac0145f.34119e79.2f92f3.0003.GAE@google.com>
-Message-ID: <asAWfZ0N1MXgwQtn@google.com>
-Subject: Re: [syzbot ci] Re: KVM: Fix+harden against bad uaccess using dying VM
-From: Sean Christopherson <seanjc@google.com>
-To: syzbot ci <syzbot+ci69d67bf25886d3bd@syzkaller.appspotmail.com>
-Cc: jmattson@google.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, maddy@linux.ibm.com, npiggin@gmail.com, 
-	pbonzini@redhat.com, syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Fri,  2 Oct 2026 21:37:23 +0000 (UTC)
 
-On Fri, Oct 02, 2026, syzbot ci wrote:
-> ------------[ cut here ]------------
-> !__kvm_can_do_uaccess(kvm)
-> WARNING: ./include/linux/kvm_host.h:1360 at kvm_can_do_uaccess include/linux/kvm_host.h:1360 [inline], CPU#1: syz.1.18/5858
-> WARNING: ./include/linux/kvm_host.h:1360 at kvm_is_guest_access_ok virt/kvm/kvm_main.c:3216 [inline], CPU#1: syz.1.18/5858
-> WARNING: ./include/linux/kvm_host.h:1360 at __kvm_read_guest_page+0x38e/0x440 virt/kvm/kvm_main.c:3226, CPU#1: syz.1.18/5858
-> Modules linked in:
-> CPU: 1 UID: 0 PID: 5858 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> RIP: 0010:kvm_can_do_uaccess include/linux/kvm_host.h:1360 [inline]
-> RIP: 0010:kvm_is_guest_access_ok virt/kvm/kvm_main.c:3216 [inline]
-> RIP: 0010:__kvm_read_guest_page+0x38e/0x440 virt/kvm/kvm_main.c:3226
-> Code: f2 ff ff ff 0f 44 d8 31 ff e8 5e a4 89 00 89 d8 48 83 c4 30 5b 41 5c 41 5d 41 5e 41 5f 5d e9 09 ac a8 0a cc e8 83 9e 89 00 90 <0f> 0b 90 bb f2 ff ff ff eb da e8 73 9e 89 00 90 0f 0b 90 bb f2 ff
-> RSP: 0018:ffffc90003157778 EFLAGS: 00010293
-> RAX: ffffffff813e2d22 RBX: 0000000000000000 RCX: ffff888174382580
-> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-> RBP: 1ffff1102217d82a R08: ffff888110bee183 R09: 1ffff1102217dc30
-> R10: dffffc0000000000 R11: ffffed102217dc31 R12: ffff888110bee180
-> R13: ffff888174382b40 R14: 1ffff1102217dc30 R15: 0000000000000000
-> FS:  000055557c0db500(0000) GS:ffff8882a8cda000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f458dfeb840 CR3: 000000016c9d0000 CR4: 0000000000352ef0
-> Call Trace:
->  <TASK>
->  kvm_vcpu_read_guest+0x64/0x140 virt/kvm/kvm_main.c:3284
->  nested_vmx_load_msr+0x133/0x4d0 arch/x86/kvm/vmx/nested.c:1107
+A race condition between the network device open path (__dev_open()) and
+USB suspend (usbnet_suspend()) can lead to a leaked watchdog timer when
+opening the interface fails. When bringing up an interface, __dev_open()
+sets the __LINK_STATE_START flag in dev->state before calling the driver's
+ndo_open callback (usbnet_open()). If usbnet_suspend() runs concurrently
+before usbnet_open() finishes initialization, it invokes
+netif_device_detach() followed by netif_device_attach() to accelerate
+emptying device queues. Because __LINK_STATE_START was already set,
+netif_device_attach() sees netif_running(dev) as true and calls
+netdev_watchdog_up(), which starts dev->watchdog_timer.
 
-Oh man.  vmx_leave_nested() is so broken.  If loading MSRs on nested VM-Exit is
-broken (and it obviously is), then storing MSRs on nested VM-Exit is also broken,
-i.e. there's at least a second case where nVMX can write to random process memory
-on vCPU teardown (shadow vmcs12 being the other one).
+If usbnet_open() subsequently fails (e.g., usb_autopm_get_interface() fails
+due to the concurrent suspend or device disconnect), __dev_open() clears
+__LINK_STATE_START and returns an error without setting IFF_UP in
+dev->flags. It has no indication that netif_device_attach() concurrently
+started the watchdog timer. When the device is later unregistered via
+unregister_netdev(), unregister_netdevice_many_notify() skips
+__dev_close_many() because IFF_UP is not set. As a result,
+dev_deactivate_many() is not called and the watchdog timer is never
+stopped. When unregistration reaches dev_shutdown(), it triggers a warning
+due to the orphaned active timer:
 
-It probably makes sense to go straight to open coding punting the vCPU out of L2
-in vmx_leave_nested() instead of hack-a-fixing a bunch of flows.  I.e. replace
-patch 8 and 9 with a proper fix.
+timer_pending(&dev->watchdog_timer)
+WARNING: net/sched/sch_generic.c:1518 at dev_shutdown+0x3ea/0x450
+net/sched/sch_generic.c:1518
+RIP: 0010:dev_shutdown+0x3ea/0x450 net/sched/sch_generic.c:1518
+Call Trace:
+ <TASK>
+ unregister_netdevice_many_notify+0x11f4/0x2140 net/core/dev.c:12516
+ unregister_netdev+0x155/0x1f0 net/core/dev.c:12708
+ usbnet_disconnect+0xcd/0x390 drivers/net/usb/usbnet.c:1681
+ usb_unbind_interface+0x295/0x9f0 drivers/usb/core/driver.c:461
+ usb_disconnect+0x346/0x9a0 drivers/usb/core/hub.c:2350
+ </TASK>
+
+Fix this by only calling netif_device_detach(), usbnet_terminate_urbs(),
+and netif_device_attach() in usbnet_suspend() if the EVENT_DEV_OPEN flag is
+set in dev->flags. This flag is only set after usbnet_open() has completed
+all initialization and power management steps. If the device is closed or
+in the process of opening, its queues are empty and draining them is
+unnecessary, preventing netif_device_attach() from prematurely starting the
+watchdog timer. Calling __usbnet_status_stop_force() remains unconditional
+outside the check to ensure status interrupt URBs submitted during probe by
+drivers such as sierra_net are properly stopped across suspend.
+
+Fixes: a11a6544c0bf ("support for USB autosuspend in the asix driver")
+Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
+Reported-by: syzbot+c9ecf60a8adb7629821e@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=c9ecf60a8adb7629821e
+Link: https://syzkaller.appspot.com/ai_job?id=47242a3d-87fb-4d8e-9678-a9c77bc025e3
+To: "Andrew Lunn" <andrew+netdev@lunn.ch>
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <linux-usb@vger.kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Oliver Neukum" <oneukum@suse.com>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Oliver Neukum" <oneukum@suse.de>
+Cc: <linux-kernel@vger.kernel.org>
+
+---
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index a19ecf718..25d43f3b7 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -1951,19 +1951,21 @@ int usbnet_suspend(struct usb_interface *intf, pm_message_t message)
+ 			set_bit(EVENT_DEV_ASLEEP, &dev->flags);
+ 			spin_unlock_irq(&dev->txq.lock);
+ 		}
+-		/*
+-		 * accelerate emptying of the rx and queues, to avoid
+-		 * having everything error out.
+-		 */
+-		netif_device_detach(dev->net);
+-		usbnet_terminate_urbs(dev);
+-		__usbnet_status_stop_force(dev);
++		if (test_bit(EVENT_DEV_OPEN, &dev->flags)) {
++			/*
++			 * accelerate emptying of the rx and queues, to avoid
++			 * having everything error out.
++			 */
++			netif_device_detach(dev->net);
++			usbnet_terminate_urbs(dev);
+ 
+-		/*
+-		 * reattach so runtime management can use and
+-		 * wake the device
+-		 */
+-		netif_device_attach(dev->net);
++			/*
++			 * reattach so runtime management can use and
++			 * wake the device
++			 */
++			netif_device_attach(dev->net);
++		}
++		__usbnet_status_stop_force(dev);
+ 	}
+ 	return 0;
+ }
+
+
+base-commit: 72d3fcf802c45d00b300f25b848a93c3a2bd7c7e
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
