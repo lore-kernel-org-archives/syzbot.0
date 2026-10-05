@@ -1,122 +1,264 @@
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A77934AA024
-	for <syzbot@lists.linux.dev>; Sun,  4 Oct 2026 21:24:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.197
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791149088; cv=none; b=mIsYK6H52veI9vCo8VdQc7G5Sk1IJ+4o9EGUkBDpQKb0qPRwRYJQqTzWYfyxfpfMG8k1Q7kNEwW1hw65fyliiVldt4T3pk5eN2iX4KSWBVX4CPSEFO37oG3hOkjUMxZwHl3jceI8gnlOlGE5Pj4YI6R9JrisfEs6ALPL6J79vek=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791149088; c=relaxed/simple;
-	bh=iScre4XUs9qmr06nU8XMjWBP8BXNl9+fAEd+DwRN+7I=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=IZXH/8lBLNIs1GyPrvFmGMmKv5tD+XauA58qbj02FJwckJPyWG7Bmp+vIXbQgVvg4ZxkMe1MwGnFAfcy7eOKhBFLfiLOBVhYXzAUIHczanEPVRRQ/962BZAQsJ1iZq/xFWBF4O/8sRN+nOhDNS7l0Ot9fpDRER7rnmxUI7EkXg4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4e778acdbc6so2176447b6e.3
-        for <syzbot@lists.linux.dev>; Sun, 04 Oct 2026 14:24:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791149084; x=1791753884;
-        h=content-type:cc:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ObpYd4OCM6MMbOhU8Tp9fytVhfbQBcP/7zYzn2Dp9v4=;
-        b=oC9fDsyNN8L6gXWGlejN0pbPgw5aK+0Z8nDfjHYVPZrULvaYlB69Fi6r8j9Jjo/AEj
-         EIjLS8rBGBg9AszDwx96+X+aREBDtq5sT7YNt/Jb0Qy5KKxeLjwA8ITeslYJaOnicv2D
-         mhAE/l9ht6/wAD0KkC//mYJoRR/E4hyq6NsQZoB4mHkuBpu3PrE+hFUslbUrFoOymOv5
-         +CebzYRakNWZonRn3Kd86vetR+5SSdyR3hfiT6XFqq4rTUkfI0Lwbs1vMQyAQRhp5gHM
-         Wp56rj2dp1iaZeabK/w3usQmNGOvVtUJ8uxQ5nCjbvOTeZoSdmI/Z+1Q6e3KOki4QQ8/
-         AJdQ==
-X-Gm-Message-State: AFuF++mdX15dX7EDPGqFkahLrdH80qpkbFI/1Jdrt1Ijoth1Y18enAJK
-	8K/IIoq7feP7FurktWAdJfnbcqvLhDfttMiSmxLa5M/fJvfzT80TCfRBXwpL7u1VPeA+Hr2HyvZ
-	oEDXbpQ2WnU2aZrjWDCt+QY/Sv+UbDmHZ6dl0376CDLj6l+dAzu6sXO9v/n0=
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E87B22AD35
+	for <syzbot@lists.linux.dev>; Mon,  5 Oct 2026 10:02:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791194562; cv=pass; b=BlEjFqpmdp13BpQWIJPtovfbvLvuHyazNUXF5m0e7261QV3+0Z1EzM9e0xAJQ+YQuNN5V/6gAWC9jmT39koSwN1Tg+nFNQ49VUauvWjnYy208d6fJxJXWpaXZMxUzEM/ZC7ATpXBVFSMO9e59aKFYh6VGJm4LcPyQKGsTvQ4qWg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791194562; c=relaxed/simple;
+	bh=Q1o4IR9k+4YlBlGo2smC1NACkSHUJ5eTZq+rsrQ7vG8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=J+X1waAxUqylLhgHD7QpxO4FO9cyMgkBPhW6oUcGoNcq2PKKSaHQC98RsDvLfNxIIWYXPxZL9FbVhTsy4pF9LBO7ZBZsh0WduRXYqsx0Yum6i5DmiQCCf/qMmh8gxs5GXD+G13CyMOaCv5kjRCGWkYiTMe6qzU9R++Kv1WPHqAE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b=D17Xe8OU; arc=pass smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=poczta.fm header.i=@poczta.fm header.b="D17Xe8OU"
+Received: by smtp.kernel.org (Postfix)
+	id E2DF41F00893; Mon,  5 Oct 2026 10:02:39 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=217.74.67.75
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1791194559;
+	b=Q3Ziixfv4D8RwDH2pIJ1XYOqUhrcOvdlcJNeX8rTQuBlWKPA/9cZs0R8kBGxubBiCfX6
+	 ElIb2LlWDA/rX8kKokLKZEjZs8xeIE3gtqay2c8GcTpcnO4RkG3CM3+lmkbWEjSj6oJVO
+	 bMhIAvsWvowfXj7U3CpriE9ebgdZu8kGWjm0ut4BtKE7FlBU/QMXUihFIpN9Bg9qUi2D1
+	 brVQeNDoA7bn/AW8JbOaOZWVOWNoL4Z/B+5eAnx1SoL6tgoqXGCLZlDIa5ghlGDS7rWYy
+	 Zvgz5yzTzB0bMoPtSvGXDfHCBebikRFupn3+U5gF2pbf3enAzar0H4GbegZ42AskbQA==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1791194559;
+	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 DKIM-Signature;
+	bh=15TOeObXhLY0jpw6/YNN69SS1kCX78z5bIemSqGAC+k=;
+	b=WXyZsHm+f42LAMp/axrVTMoHpXAHsLM2l1ud6yRPfmUPShtHJrbcHLNbLzG7kWAIj3KK
+	 ZyQOwWUMkTWcvU1OPQ1KfBBC61/DuainmE+0DI+VYUN+fymgKt2ojOK0RZR3AaxNRdohv
+	 qYUvf6UeJw3QASyVR+he+hrO1UX47Xqd4SYxu2FICw38MJR2SuGSINCdn5K+LedC1tndC
+	 NjWEHEuDFKECPwM3IIYRsZ/OJ7Rh9slSBlhxtoDsYiTC0/+V6TopN0YKZ+q13Vs1CJkkb
+	 11Tzpa06CWo1aTa8QLY2cEIb9nNda6jxkEwzD1/VkBMywaLQQN+qbUgMf3fliklLdBw==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=D17Xe8OU;
+	dmarc=pass header.from=poczta.fm;
+	spf=pass smtp.mailfrom=poczta.fm;
+	arc=none smtp.remote-ip=217.74.67.75
+Received: from smtpo75.interia.pl (smtpo75.interia.pl [217.74.67.75])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 608AE1F000FF
+	for <syzbot@kernel.org>; Mon,  5 Oct 2026 10:02:36 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (1024-bit key, unprotected) header.d=poczta.fm header.i=@poczta.fm header.a=rsa-sha256 header.s=dk header.b=D17Xe8OU
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 608AE1F000FF
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=poczta.fm
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=poczta.fm
+Received: from nr200 (unknown [80.68.231.31])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by poczta.interia.pl (INTERIA.PL) with ESMTPSA;
+	Mon,  5 Oct 2026 12:02:27 +0200 (CEST)
+Date: Mon, 5 Oct 2026 12:02:25 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC] media: dvb_frontend: fix OOB read in
+ dtv_property_process_get()
+Message-ID: <asN1sdDJVeOQgtYQ@nr200>
+References: <2a5ea27d-445e-4ffe-9447-9d7bfccd4a36@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1823:b0:4c3:95d:91f1 with SMTP id
- 5614622812f47-4f526948ca0mr10669723b6e.1.1791149084518; Sun, 04 Oct 2026
- 14:24:44 -0700 (PDT)
-Date: Sun, 04 Oct 2026 14:24:44 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ac2c41c.9ad129c8.3858c0.0035.GAE@google.com>
-Subject: [moderation/CI] Re: wifi: further RTNL redux
-From: syzbot ci <syzbot+ci1ee7eee4e49c2917@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2a5ea27d-445e-4ffe-9447-9d7bfccd4a36@mail.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=poczta.fm; s=dk;
+	t=1791194548; bh=15TOeObXhLY0jpw6/YNN69SS1kCX78z5bIemSqGAC+k=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+	b=D17Xe8OUQUqjiKOv2Xw+0a2gMLPPtiX+DR6YWPehVNFR1IDlL1f8LTuR5FY7vkKbm
+	 h4vX2h7gK86vcs/bfbPk3WNDFPu4gxsup/JNt/33UbFQjOtlXXSBEhzqDRPTLZRCXy
+	 c4SOEv3nYzgEMsNwwrRjduMC/seXq93V7EB1lLs0=
 
-syzbot ci has tested the following series
+On wrz 29, 2026 17:00, 'syzbot' via syzkaller-upstream-moderation wrote:
+> In dtv_property_process_get(), properties requested via the FE_GET_PROPERTY
+> ioctl are processed and copied back to userspace. In struct dtv_property,
+> member u is a union containing __u32 data, struct dtv_fe_stats st, and
+> struct buffer (which has __u8 data[32] followed by __u32 len at offset 32).
+> Commit 60f0618d157b ("media: dvb-core: frontend: make GET/SET safer")
+> introduced an out-of-bounds read and a data corruption issue due to
+> mishandling this union.
+> 
+> For commands that only set tvp->u.data (such as DTV_FREQUENCY),
+> tvp->u.buffer.len is never initialized by the kernel and retains whatever
+> value userspace passed into the ioctl. At the end of
+> dtv_property_process_get(), dev_dbg() unconditionally formatted the
+> property using "%*ph", passing tvp->u.buffer.len as the field width and
+> tvp->u.buffer.data as the buffer pointer. When dynamic debug is enabled and
+> userspace supplies a large length value, vsprintf() emits a field width out
+> of range warning, and hex_string() clamps the length to 64 bytes. Since
+> struct dtv_property is 76 bytes long and u.buffer.data starts at offset 16,
+> reading 64 bytes reaches offset 80 (4 bytes past the end of the slab
+> object), triggering a KASAN slab-out-of-bounds read:
+> 
+> field width 1163001896 out of range
+> WARNING: lib/vsprintf.c:2654 at vsnprintf+0xb9c/0xd10 lib/vsprintf.c:2918
+> Call trace:
+>  set_field_width lib/vsprintf.c:2654 [inline]
+>  vsnprintf+0xb9c/0xd10 lib/vsprintf.c:2918
+>  pointer+0x5e8/0x6b4 lib/vsprintf.c:2577
+>  vsnprintf+0x618/0xd10 lib/vsprintf.c:2953
+>  dev_vprintk_emit+0x2ec/0x3b4 drivers/base/core.c:5000
+>  dev_printk_emit+0xe0/0x130 drivers/base/core.c:5011
+>  __dynamic_dev_dbg+0x1b4/0x254 lib/dynamic_debug.c:904
+>  dtv_property_process_get+0x26bc/0x2838
+>  drivers/media/dvb-core/dvb_frontend.c:1595
+>  dvb_get_property drivers/media/dvb-core/dvb_frontend.c:2397 [inline]
+>  dvb_frontend_handle_ioctl+0x1644/0x2424
+>  drivers/media/dvb-core/dvb_frontend.c:2478
+>  dvb_frontend_do_ioctl+0x124/0x278
+>  drivers/media/dvb-core/dvb_frontend.c:2101
+>  dvb_usercopy+0x2a4/0x4d4 drivers/media/dvb-core/dvbdev.c:996
+>  dvb_frontend_ioctl+0x68/0x8c drivers/media/dvb-core/dvb_frontend.c:2115
+> BUG: KASAN: slab-out-of-bounds in hex_string+0x274/0x364
+> lib/vsprintf.c:1209
+> Read of size 1 at addr ffff0000c240314c
+> 
+> Additionally, commit 60f0618d157b added bounds checks that clamped
+> tvp->u.buffer.len in all eight DTV_STAT_* cases. However, DTV_STAT_*
+> commands populate tvp->u.st (struct dtv_fe_stats). In union u, u.buffer.len
+> is located at offset 32, which directly overlaps bytes 3 to 6 of
+> tvp->u.st.stat[3].uvalue (layer C statistics). Clamping and overwriting
+> tvp->u.buffer.len therefore silently corrupted the statistics returned to
+> userspace.
+> 
+> Fix this by only formatting with "%*ph" using tvp->u.buffer.len and
+> tvp->u.buffer.data when tvp->cmd == DTV_ENUM_DELSYS, which is the only
+> property command that populates the buffer union member. For all other
+> commands, format tvp->u.data as "= 0x%08x". Furthermore, remove the bogus
+> bounds clamping of tvp->u.buffer.len and the unused len variable from all
+> DTV_STAT_* cases to prevent corruption of frontend statistics.
+> 
+> Fixes: 60f0618d157b ("media: dvb-core: frontend: make GET/SET safer")
+> 
+> Fixes: 60f0618d157b ("media: dvb-core: frontend: make GET/SET safer")
+> Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+6102f1c3a0ea8073fd64@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=6102f1c3a0ea8073fd64
+> Link: https://syzkaller.appspot.com/ai_job?id=8f3957bb-b063-4d03-9e7e-dca8802ba8a9
+> To: <linux-media@vger.kernel.org>
+> To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
+> Cc: "Hans Verkuil" <hverkuil+cisco@kernel.org>
+> Cc: "Kees Cook" <kees@kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+> Cc: "Ricardo Ribalda" <ribalda@chromium.org>
+> 
+> ---
+> diff --git a/drivers/media/dvb-core/dvb_frontend.c b/drivers/media/dvb-core/dvb_frontend.c
+> index 0286da57f..e57f1935c 100644
+> --- a/drivers/media/dvb-core/dvb_frontend.c
+> +++ b/drivers/media/dvb-core/dvb_frontend.c
+> @@ -1348,7 +1348,6 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
+>  				    struct file *file)
+>  {
+>  	int ncaps;
+> -	unsigned int len = 1;
+>  
+>  	switch (tvp->cmd) {
+>  	case DTV_ENUM_DELSYS:
+> @@ -1358,7 +1357,6 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
+>  			ncaps++;
+>  		}
+>  		tvp->u.buffer.len = ncaps;
+> -		len = ncaps;
+>  		break;
+>  	case DTV_FREQUENCY:
+>  		tvp->u.data = c->frequency;
+> @@ -1536,51 +1534,27 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
+>  	/* Fill quality measures */
+>  	case DTV_STAT_SIGNAL_STRENGTH:
+>  		tvp->u.st = c->strength;
+> -		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+> -			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+> -		len = tvp->u.buffer.len;
+>  		break;
+>  	case DTV_STAT_CNR:
+>  		tvp->u.st = c->cnr;
+> -		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+> -			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+> -		len = tvp->u.buffer.len;
+>  		break;
+>  	case DTV_STAT_PRE_ERROR_BIT_COUNT:
+>  		tvp->u.st = c->pre_bit_error;
+> -		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+> -			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+> -		len = tvp->u.buffer.len;
+>  		break;
+>  	case DTV_STAT_PRE_TOTAL_BIT_COUNT:
+>  		tvp->u.st = c->pre_bit_count;
+> -		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+> -			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+> -		len = tvp->u.buffer.len;
+>  		break;
+>  	case DTV_STAT_POST_ERROR_BIT_COUNT:
+>  		tvp->u.st = c->post_bit_error;
+> -		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+> -			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+> -		len = tvp->u.buffer.len;
+>  		break;
+>  	case DTV_STAT_POST_TOTAL_BIT_COUNT:
+>  		tvp->u.st = c->post_bit_count;
+> -		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+> -			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+> -		len = tvp->u.buffer.len;
+>  		break;
+>  	case DTV_STAT_ERROR_BLOCK_COUNT:
+>  		tvp->u.st = c->block_error;
+> -		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+> -			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+> -		len = tvp->u.buffer.len;
+>  		break;
+>  	case DTV_STAT_TOTAL_BLOCK_COUNT:
+>  		tvp->u.st = c->block_count;
+> -		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+> -			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+> -		len = tvp->u.buffer.len;
+>  		break;
+>  	default:
+>  		dev_dbg(fe->dvb->device,
+> @@ -1589,13 +1563,18 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
+>  		return -EINVAL;
+>  	}
+>  
+> -	if (len < 1)
+> -		len = 1;
+> -
+> -	dev_dbg(fe->dvb->device,
+> -		"%s: GET cmd 0x%08x (%s) len %d: %*ph\n",
+> -		__func__, tvp->cmd, dtv_cmd_name(tvp->cmd),
+> -		tvp->u.buffer.len, tvp->u.buffer.len, tvp->u.buffer.data);
+> +	if (tvp->cmd == DTV_ENUM_DELSYS) {
+> +		dev_dbg(fe->dvb->device,
+> +			"%s: GET cmd 0x%08x (%s) len %d: %*ph\n",
+> +			__func__, tvp->cmd, dtv_cmd_name(tvp->cmd),
+> +			tvp->u.buffer.len, tvp->u.buffer.len,
+> +			tvp->u.buffer.data);
+> +	} else {
+> +		dev_dbg(fe->dvb->device,
+> +			"%s: GET cmd 0x%08x (%s) = 0x%08x\n",
+> +			__func__, tvp->cmd, dtv_cmd_name(tvp->cmd),
+> +			tvp->u.data);
 
-[v1] wifi: further RTNL redux
-https://lore.kernel.org/all/20261004190122.1559001-20-johannes@sipsolutions.net
-* [PATCH wireless-next 01/18] wifi: cfg80211: track netdev running state under wiphy mutex
-* [PATCH wireless-next 02/18] wifi: nl80211: allow device lookup under RCU
-* [PATCH wireless-next 03/18] wifi: nl80211: avoid rtnl for commands that don't want it
-* [PATCH wireless-next 04/18] wifi: nl80211: don't take rtnl for most dumps
-* [PATCH wireless-next 05/18] wifi: cfg80211: reg: update channels under wiphy mutex
-* [PATCH wireless-next 06/18] wifi: cfg80211: reg: set intersected regd under wiphy mutex
-* [PATCH wireless-next 07/18] wifi: cfg80211: update channel DFS data under wiphy mutex
-* [PATCH wireless-next 08/18] wifi: mac80211_hwsim: call cfg80211 event with wiphy mutex
-* [PATCH wireless-next 09/18] wifi: cfg80211: document wiphy mutex for radar/CAC events
-* [PATCH wireless-next 10/18] wifi: cfg80211: add a mutex for regulatory/device list
-* [PATCH wireless-next 11/18] wifi: cfg80211: allow walking wiphy list under cfg80211_mutex
-* [PATCH wireless-next 12/18] wifi: ath: use freq_reg_info() under RCU
-* [PATCH wireless-next 13/18] wifi: brcmsmac: use freq_reg_info() under RCU
-* [PATCH wireless-next 14/18] wifi: rtlwifi: use freq_reg_info() under RCU
-* [PATCH wireless-next 15/18] wifi: nl80211: read WMM reg rule under RCU
-* [PATCH wireless-next 16/18] wifi: ath11k: read wiphy regd under RCU
-* [PATCH wireless-next 17/18] wifi: ath12k: read wiphy regd under RCU
-* [PATCH wireless-next 18/18] wifi: cfg80211: regulatory: stop using RTNL
+But now, this dev_dbg will be used for DTV_STAT_* and the amount of tvp->u.data will not represent
+the whole tvp->u.st. So here, not all bytes would be printed from stats struct. I think this is a
+regression. Could you do better for DTV_STAT_*?
 
-and found the following issue:
-SYZFATAL: image testing failed w/o kernel bug
+> +	}
+>  
+>  	return 0;
+>  }
+> 
+> 
+> base-commit: 72d3fcf802c45d00b300f25b848a93c3a2bd7c7e
 
-Full report is available here:
-https://ci.syzbot.org/series/0ddad86e-f612-4f74-9efc-50b8333a678f
-
-***
-
-SYZFATAL: image testing failed w/o kernel bug
-
-tree:      wireless-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/wireless/wireless-next.git
-base:      f49defea7668d8c68ec19fa085ef3da6075561c7
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/542e9d51-0d68-4eac-8303-1412498c7192/config
-
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
-
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[johannes.berg@intel.com johannes@sipsolutions.net linux-wireless@vger.kernel.org]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+-- 
+Slawomir Stepien
