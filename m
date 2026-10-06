@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C46B4CEE65
-	for <syzbot@lists.linux.dev>; Mon,  5 Oct 2026 17:55:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FF45261B9E
+	for <syzbot@lists.linux.dev>; Tue,  6 Oct 2026 00:20:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791222905; cv=none; b=RXcwH5Beq1hQxWiHodf4t914C/fZsVBFzRTcgakPHl6GhMgwu3kifLsUu946rCHvQo2EJCoML0RPoZ51c5/bj5O7jyP+95/Q4jQVysnlphBOekwDoL3xWwVHU34O1QGQOu+wIfwROLkzBraDc87vavSgAgSykrYJNxK0v9xf0qU=
+	t=1791246035; cv=none; b=gjEZozVdz2aSLuRoAO7WJQaaWqHyy4QkshFCvgiQ5Y2RMmgj1wteARkPXZosNQ+aBQjOEVMk+79mWflFilZsSGZ+un5XCwDvA5aGvtWpBb4jY0N3IWD3HW1VPseXKzmvHQvs5sHHJWVlg8Px7pD3CU4myMMP5MeIHfMh13dNTjY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791222905; c=relaxed/simple;
-	bh=gRMMqcSMNdoZHMNOK7vN9U9atv9BtpdmqfxMSHYFXRQ=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=iRmbNAYYRBunpLmMiz4n/VjrxqwGduFkorAzXGPhNZ1J2QPGx7dJc0xPv0ayl3+PBfTz6E1OcG1SIspsSTa/ADnC0rxLz5tIYYcrR4yowFHBbpAdi93zaI9JGZjTCFikdANxR8w/nO8rnr0kz5MClP992KVeJY8f5eCAP71nejE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eovJKq7/; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791246035; c=relaxed/simple;
+	bh=1a+QJzRtk0LCrmeXRXRyhb79MiL6xlO1TN0sLhkFLJk=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=GNbWid+KlPhPfTEwrknavjkstnqQZxBa87Y57hG/YCUcZdyR8/5QTzApfsQglHZWtOYvoKABG9Ei4N54KJDklFh47NRFmEF9FrlQveTMcDMXUddYBsgKVLfJN9oU+h7olxne3ZkRavuYzL3P/nW6/wV2yZ4suEt6HBVRBAVbbco=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z6pFOs5M; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eovJKq7/"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id BB8881F000FF;
-	Mon,  5 Oct 2026 17:55:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z6pFOs5M"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id C062B1F000FF;
+	Tue,  6 Oct 2026 00:20:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791222903;
-	bh=C6GO3GtLJlz6T0nAQoVfSF72lDxE4e9RMtLjGz+rC9s=;
+	s=k20260515; t=1791246033;
+	bh=pp3wl/gzViR0Cwf9gzhs091TNVqhQFhxiq2BDgrRAAw=;
 	h=From:To:Cc:Subject:Date;
-	b=eovJKq7/DhRM6KbvBHOjMMy17+L3wi32UmfC5OJRzsLPMKjnUJM0r12oBOj//+9ym
-	 puPUPj6jqRtlNFSlM+ezZTnXIZ8kRaMnc9HGTj2+a4FwZwmWXCXMFJWjMsqPkqEIUZ
-	 E9EM+8onuY51u731lfYeR8WkZ5Viaelo/viIRed5YgzDG1oHQauQTZdUK3mXoqTPP+
-	 BoK5h3seYeXinNsok4DRCmgiJipccxN+f+f0WvwyMNt90lCQymdWYQVa8r1FtRDcQB
-	 QwxL11Lmm/sb5jQYk0ydus9XjFYpLnFYn5JphC1MB0x3bjBd4uHGfBOkFdydcbGt0o
-	 APZQBKsczdJPw==
+	b=Z6pFOs5MwMrYwhepsu9aST4ws01uT+NRQLrAjJAeMU1PA3WN2Zwb7nQeHh+ryxNyb
+	 4gIta7aka02lKCFd3T0zGxez2IpByaattCd0VJozX/0YZnrLoHossej4ORE1hb/fCs
+	 pLwo8Yaxy8tUn2rjpHhM5aKUOPF0B+S9dR7W44Zp5LC2DtxHiQBO2JUSbGzQ9A0xKd
+	 DQPF9peaN5M0gro057LOpICa4JxcKSh29tVV3kCIdU5WdwxOS4Oim5GQBdNDxp03ok
+	 EX5YKKFJLJiy2AQK2CvnR8r+Wcj0jLxCSwJZVTE9/YVOQBMMAtOVicK8la8gh8OUCR
+	 6jxEJha4G3OrA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] driver core: Fix race between device_move() and device_del()
-Message-ID: <c329c26b-9395-4a31-8908-904d88df7574@mail.kernel.org>
+Subject: [PATCH RFC] usb: gadget: f_tcm: defer TPG assignment to fix circular locking
+Message-ID: <b1646de9-ae67-4626-89f3-76a04e181581@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,170 +38,198 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Mon,  5 Oct 2026 17:55:03 +0000 (UTC)
+Date: Tue,  6 Oct 2026 00:20:33 +0000 (UTC)
 
-A race condition exists between device_move() and device_del() when
-operating concurrently on the same device. For instance, when an HCI
-connection disconnects, hci_conn_del_sysfs() iterates over child devices
-(such as RFCOMM TTY devices) and calls device_move(dev, NULL,
-DPM_ORDER_DEV_LAST) to reparent them to NULL. Concurrently, releasing or
-closing the TTY device triggers device_del() on the exact same device.
+A circular locking dependency exists between tpg_instances_lock, the
+configfs directory inode_lock, and the gadget info lock gi->lock when
+configuring TCM gadget functions through configfs.
 
-In device_del(), kill_device(dev) sets dev->p->dead = true under
-device_lock(dev). Later, device_del() calls
-klist_del(&dev->p->knode_parent) to remove the device from its parent's
-child list. When the klist node's reference count drops to 0,
-klist_release() clears the node's klist pointer to NULL. Because
-device_move() did not hold device_lock(dev) and did not check dev->p->dead,
-it could execute concurrently and call klist_remove(&dev->p->knode_parent).
-Inside klist_remove() -> klist_del() -> klist_put(), the code attempts to
-dereference k->put at offset 0x58 on the NULL klist pointer, triggering a
-NULL pointer dereference general protection fault:
+  WARNING: possible circular locking dependency detected
+  ======================================================
+  task is trying to acquire lock:
+  ffffffff8f24ae58 (tpg_instances_lock){+.+.}-{4:4}, at:
+  tcm_alloc+0x21/0x2f0 drivers/usb/gadget/function/f_tcm.c:2734
 
-Oops: general protection fault, probably for non-canonical address
-0xdffffc000000000b: 0000 [#1] SMP KASAN NOPTI
-KASAN: null-ptr-deref in range [0x0000000000000058-0x000000000000005f]
-RIP: 0010:klist_put lib/klist.c:212 [inline]
-RIP: 0010:klist_del lib/klist.c:230 [inline]
-RIP: 0010:klist_remove+0x156/0x340 lib/klist.c:249
-Call Trace:
- <TASK>
- device_move+0x18e/0x720 drivers/base/core.c:4702
- hci_conn_del_sysfs+0xb8/0x1a0 net/bluetooth/hci_sysfs.c:88
- hci_conn_del+0xc3d/0x1200 net/bluetooth/hci_conn.c:1339
- hci_disconn_complete_evt+0x5ac/0x890 net/bluetooth/hci_event.c:3508
- hci_rx_work+0x3ee/0x1020 net/bluetooth/hci_core.c:4087
- process_one_work kernel/workqueue.c:3396 [inline]
- process_scheduled_works+0xc3d/0x1630 kernel/workqueue.c:3479
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3560
- kthread+0x38b/0x480 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
+  but task is already holding lock:
+  ffff888192990388 (&gi->lock){+.+.}-{4:4}, at:
+  config_usb_cfg_link+0x59/0x260 drivers/usb/gadget/configfs.c:439
 
-Additionally, if device_move() ran before device_del() acquired
-device_lock(dev), device_del() previously sampled dev->parent before taking
-device_lock(dev). If device_move() reparented the device and dropped the
-old parent reference, device_del() proceeded with a stale parent pointer,
-resulting in a duplicate klist_del() and put_device(parent) on old_parent,
-leading to list corruption and reference count underflow.
+  which lock already depends on the new lock.
 
-Fix this by properly serializing device_move() with device_del(). In
-device_del(), sample dev->parent under device_lock(dev) directly after
-kill_device(dev) marks the device dead, ensuring that device_del() observes
-any prior reparenting. In device_move(), acquire device_lock(dev) at entry
-and check whether dev->p is uninitialized or dev->p->dead is true,
-returning -ENODEV immediately if deletion has already begun. Furthermore,
-narrow the scope of device_pm_lock() to only cover the DPM list reordering
-switch block, adhering strictly to the driver core locking hierarchy of
-acquiring device_lock(dev) before device_pm_lock() and preventing potential
-ABBA deadlocks against probe paths. Finally, consolidate error cleanup
-paths in device_move() to properly balance references and remove sysfs glue
-directories before releasing device_lock(dev).
+  the existing dependency chain (in reverse order) is:
 
-Fixes: 8a82472f86bf ("driver core: Introduce device_move(): move a device to a new parent.")
+   -> #2 (&gi->lock){+.+.}-{4:4}:
+         config_usb_cfg_link+0x59/0x260 drivers/usb/gadget/configfs.c:439
+         configfs_symlink+0x74e/0x11d0 fs/configfs/symlink.c:211
+         vfs_symlink+0x18b/0x330 fs/namei.c:5794
+
+   -> #1 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}:
+         inode_lock include/linux/fs.h:1024 [inline]
+         configfs_depend_item_unlocked+0x153/0x420 fs/configfs/dir.c:1268
+         usbg_make_tpg+0x1e0/0x550 drivers/usb/gadget/function/f_tcm.c:1692
+         target_fabric_make_tpg+0xa8/0x6d0
+         drivers/target/target_core_fabric_configfs.c:947
+         configfs_mkdir+0x4f6/0x9e0 fs/configfs/dir.c:1369
+
+   -> #0 (tpg_instances_lock){+.+.}-{4:4}:
+         tcm_alloc+0x21/0x2f0 drivers/usb/gadget/function/f_tcm.c:2734
+         usb_get_function+0x63/0xb0 drivers/usb/gadget/functions.c:61
+         config_usb_cfg_link+0x148/0x260 drivers/usb/gadget/configfs.c:469
+         configfs_symlink+0x74e/0x11d0 fs/configfs/symlink.c:211
+
+The deadlock arises from two conflicting lock acquisition paths across
+configfs:
+
+1. When creating a Target Portal Group (TPG) directory in configfs (e.g.
+target/usb_gadget/.../tpgt_1), VFS takes the directory inode_lock. In
+usbg_make_tpg(), tpg_instances_lock is acquired. While holding
+tpg_instances_lock, usbg_make_tpg() calls configfs_depend_item_unlocked()
+to depend on the gadget function item, which acquires the configfs root
+directory inode_lock across subsystems (tpg_instances_lock -> inode_lock).
+
+2. When linking the TCM function to a gadget configuration (e.g. symlink
+functions/tcm.usb0 configs/c.1/tcm.usb0), VFS acquires the configuration
+directory inode_lock. The callback configfs_symlink() calls
+config_usb_cfg_link(), acquiring gi->lock. While holding gi->lock,
+config_usb_cfg_link() calls usb_get_function(), invoking tcm_alloc(). In
+tcm_alloc(), tpg_instances_lock was acquired to search the tpg_instances
+array and set fu->tpg (inode_lock -> gi->lock -> tpg_instances_lock).
+
+In addition to the deadlock, initializing fu->tpg in tcm_alloc() introduces
+a race condition. If the user symlinks the function into a gadget
+configuration before creating the TPG directory, tpg_instances[i].tpg is
+NULL, causing tcm_alloc() to leave fu->tpg as NULL. When the TPG is later
+created and enabled, tcm_bind() succeeds because opts->can_attach is true,
+but fu->tpg remains NULL. When USB transfers are subsequently processed,
+dereferencing fu->tpg results in a NULL pointer dereference crash.
+Furthermore, removing an enabled TPG via rmdir calls usbg_drop_tpg()
+directly without detaching, leaving opts->can_attach set to true and
+permitting subsequent binds against a destroyed TPG.
+
+Fix these issues by storing the TPG pointer in struct f_tcm_opts, removing
+the tpg_instances_lock acquisition from tcm_alloc(), and deferring fu->tpg
+assignment until tcm_bind(). The function instance is already valid for the
+item's lifetime, making the search in tcm_alloc() redundant; removing it
+breaks the circular lock dependency cycle. In tcm_bind(), fu->tpg is
+assigned under opts->dep_lock after validating that both opts->can_attach
+and opts->tpg are valid. In usbg_make_tpg(), opts->tpg is set under
+opts->dep_lock. In usbg_drop_tpg(), both opts->can_attach is reset to false
+and opts->tpg is cleared under opts->dep_lock, ensuring consistent state
+and preventing NULL pointer dereferences.
+
+Fixes: 4bb8548df632 ("usb: gadget: f_tcm: add configfs support")
 Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+1f4e278e8e1a9b01f95f@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=1f4e278e8e1a9b01f95f
-Link: https://syzkaller.appspot.com/ai_job?id=3161b773-18b4-4410-aecf-8a0e46fe46d6
-To: "Danilo Krummrich" <dakr@kernel.org>
-To: <driver-core@lists.linux.dev>
+Reported-by: syzbot+2799146a53c356f8017d@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=2799146a53c356f8017d
+Link: https://syzkaller.appspot.com/ai_job?id=a5b86f29-4d77-48c4-90c7-2467ea27765f
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-To: "Cornelia Huck" <cornelia.huck@de.ibm.com>
+To: <linux-usb@vger.kernel.org>
+To: "Andrzej Pietrasiewicz" <andrzej.p@samsung.com>
+Cc: "Jiasheng Jiang" <jiashengjiangcool@gmail.com>
 Cc: <linux-kernel@vger.kernel.org>
+Cc: "Yun Zhou" <yun.zhou@windriver.com>
+Cc: "Cen Zhang" <zzzccc427@gmail.com>
 
 ---
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 4c0c37399..de90b7753 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -3919,13 +3919,14 @@ EXPORT_SYMBOL_GPL(kill_device);
- void device_del(struct device *dev)
+diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
+index 9e6d4f399..c7bdedd46 100644
+--- a/drivers/usb/gadget/function/f_tcm.c
++++ b/drivers/usb/gadget/function/f_tcm.c
+@@ -1720,6 +1720,9 @@ static struct se_portal_group *usbg_make_tpg(struct se_wwn *wwn,
+ 
+ 	tpg_instances[i].tpg = tpg;
+ 	tpg->fi = tpg_instances[i].func_inst;
++	mutex_lock(&opts->dep_lock);
++	opts->tpg = tpg;
++	mutex_unlock(&opts->dep_lock);
+ 	mutex_unlock(&tpg_instances_lock);
+ 	return &tpg->se_tpg;
+ 
+@@ -1760,6 +1763,8 @@ static void usbg_drop_tpg(struct se_portal_group *se_tpg)
+ 		opts = container_of(tpg_instances[i].func_inst,
+ 			struct f_tcm_opts, func_inst);
+ 		mutex_lock(&opts->dep_lock);
++		opts->can_attach = false;
++		opts->tpg = NULL;
+ 		if (opts->has_dep)
+ 			module_put(opts->dependent);
+ 		else
+@@ -2300,10 +2305,11 @@ static int tcm_bind(struct usb_configuration *c, struct usb_function *f)
+ 	opts = container_of(f->fi, struct f_tcm_opts, func_inst);
+ 
+ 	mutex_lock(&opts->dep_lock);
+-	if (!opts->can_attach) {
++	if (!opts->can_attach || !opts->tpg) {
+ 		mutex_unlock(&opts->dep_lock);
+ 		return -ENODEV;
+ 	}
++	fu->tpg = opts->tpg;
+ 	mutex_unlock(&opts->dep_lock);
+ 	us = usb_gstrings_attach(c->cdev, tcm_strings,
+ 		ARRAY_SIZE(tcm_us_strings));
+@@ -2729,22 +2735,10 @@ static void tcm_unbind(struct usb_configuration *c, struct usb_function *f)
+ static struct usb_function *tcm_alloc(struct usb_function_instance *fi)
  {
- 	struct subsys_private *sp;
--	struct device *parent = dev->parent;
-+	struct device *parent;
- 	struct kobject *glue_dir = NULL;
- 	struct class_interface *class_intf;
- 	unsigned int noio_flag;
- 
- 	device_lock(dev);
- 	kill_device(dev);
-+	parent = dev->parent;
- 	device_unlock(dev);
- 
- 	if (dev->fwnode && dev->fwnode->dev == dev)
-@@ -4679,23 +4680,26 @@ int device_move(struct device *dev, struct device *new_parent,
- 	if (!dev)
- 		return -EINVAL;
- 
--	device_pm_lock();
-+	device_lock(dev);
-+	if (!dev->p || dev->p->dead) {
-+		error = -ENODEV;
-+		goto out_unlock;
-+	}
-+
- 	new_parent = get_device(new_parent);
- 	new_parent_kobj = get_device_parent(dev, new_parent);
- 	if (IS_ERR(new_parent_kobj)) {
- 		error = PTR_ERR(new_parent_kobj);
- 		put_device(new_parent);
--		goto out;
-+		goto out_unlock;
- 	}
- 
- 	pr_debug("device: '%s': %s: moving to '%s'\n", dev_name(dev),
- 		 __func__, new_parent ? dev_name(new_parent) : "<NULL>");
- 	error = kobject_move(&dev->kobj, new_parent_kobj);
--	if (error) {
--		cleanup_glue_dir(dev, new_parent_kobj);
--		put_device(new_parent);
--		goto out;
+ 	struct f_uas *fu;
+-	unsigned i;
+-
+-	mutex_lock(&tpg_instances_lock);
+-	for (i = 0; i < TPG_INSTANCES; ++i)
+-		if (tpg_instances[i].func_inst == fi)
+-			break;
+-	if (i == TPG_INSTANCES) {
+-		mutex_unlock(&tpg_instances_lock);
+-		return ERR_PTR(-ENODEV);
 -	}
-+	if (error)
-+		goto out_cleanup;
-+
- 	old_parent = dev->parent;
- 	dev->parent = new_parent;
- 	if (old_parent)
-@@ -4721,11 +4725,10 @@ int device_move(struct device *dev, struct device *new_parent,
- 					set_dev_node(dev, dev_to_node(old_parent));
- 				}
- 			}
--			cleanup_glue_dir(dev, new_parent_kobj);
--			put_device(new_parent);
--			goto out;
-+			goto out_cleanup;
- 		}
- 	}
-+	device_pm_lock();
- 	switch (dpm_order) {
- 	case DPM_ORDER_NONE:
- 		break;
-@@ -4742,10 +4745,19 @@ int device_move(struct device *dev, struct device *new_parent,
- 		devices_kset_move_last(dev);
- 		break;
- 	}
-+	device_pm_unlock();
-+
-+	device_unlock(dev);
  
- 	put_device(old_parent);
--out:
--	device_pm_unlock();
-+	put_device(dev);
-+	return error;
-+
-+out_cleanup:
-+	cleanup_glue_dir(dev, new_parent_kobj);
-+	put_device(new_parent);
-+out_unlock:
-+	device_unlock(dev);
- 	put_device(dev);
- 	return error;
+ 	fu = kzalloc_obj(*fu);
+-	if (!fu) {
+-		mutex_unlock(&tpg_instances_lock);
++	if (!fu)
+ 		return ERR_PTR(-ENOMEM);
+-	}
+ 
+ 	fu->function.name = "Target Function";
+ 	fu->function.bind = tcm_bind;
+@@ -2754,12 +2748,10 @@ static struct usb_function *tcm_alloc(struct usb_function_instance *fi)
+ 	fu->function.setup = tcm_setup;
+ 	fu->function.disable = tcm_disable;
+ 	fu->function.free_func = tcm_free;
+-	fu->tpg = tpg_instances[i].tpg;
+ 	INIT_WORK(&fu->delayed_set_alt, tcm_delayed_set_alt);
+ 	spin_lock_init(&fu->delayed_set_alt_lock);
+ 
+ 	hash_init(fu->stream_hash);
+-	mutex_unlock(&tpg_instances_lock);
+ 
+ 	return &fu->function;
  }
+diff --git a/drivers/usb/gadget/function/u_tcm.h b/drivers/usb/gadget/function/u_tcm.h
+index 2cd15d9a1..1376b6ebc 100644
+--- a/drivers/usb/gadget/function/u_tcm.h
++++ b/drivers/usb/gadget/function/u_tcm.h
+@@ -15,6 +15,8 @@
+ 
+ #include <linux/usb/composite.h>
+ 
++struct usbg_tpg;
++
+ /**
+  * @dependent: optional dependent module. Meant for legacy gadget.
+  * If non-null its refcount will be increased when a tpg is created and
+@@ -23,10 +25,12 @@
+  * @ready: true if the dependent module information is set.
+  * @can_attach: true a function can be bound to gadget
+  * @has_dep: true if there is a dependent module
++ * @tpg: target portal group
+  *
+  */
+ struct f_tcm_opts {
+ 	struct usb_function_instance	func_inst;
++	struct usbg_tpg			*tpg;
+ 	struct module			*dependent;
+ 	struct mutex			dep_lock;
+ 	bool				ready;
 
 
 base-commit: a90ee4305c4a5df72c11b31dacfdc76e00fcf78a
