@@ -1,176 +1,133 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A24C7376A01
-	for <syzbot@lists.linux.dev>; Tue,  6 Oct 2026 18:01:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6D442931E9
+	for <syzbot@lists.linux.dev>; Wed,  7 Oct 2026 02:49:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791309703; cv=none; b=LHOtH/UTCWtghTAh/tAnKSFcs/ik+Lu2mZX5KqjNhC8POlT9r/BRDuyTuzOvuKymgfrVFuWPDAsSh9TFvAd5FZ5YwgC4bodcEKULW7112FQGGRvhB6SpLzOXJJaLs6RwOjWm6AIyhYxl+0rAfjbvBBfp4ebLYy3eCHr4X+Sq6aI=
+	t=1791341355; cv=none; b=CK3NEAiGy5InyqC6oJ/FaOHW41+ST7vdfzyC3Uuz1RydbVv/mDYflfIF6zvqDvvZZErooFT5pHFBktHfIbGWGJL4qq29cNn/Kga2+Je1/cl+2ygbWNANulCC2CRAU80/rzv2JBFwXprckfe/TjyfNUuvDu5u/iatZmFkzvBG2gU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791309703; c=relaxed/simple;
-	bh=7cAvbWatm3VFHzw7Qca6shqDi7VmMi+oeojtQbfHFG4=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=bincbnO+bfZCg+bY0DjU3tDOFZo+jMSum1T2N83YPQ1gNTl0SlQotgEwdEhaQg4Ca8jPcRLe5bBwoiwLgu6yAxzmIaGLNjwQvtKtypLteTddvhuYR061hwYGzm3bQaLZGe1E2Y89TEWd1E2Baoy9eIkaaphQLMQ4hKpNjbijPF4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hSABmIfD; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hSABmIfD"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id CE7F01F0089D;
-	Tue,  6 Oct 2026 18:01:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791309700;
-	bh=EaU+LBLkcNEVFo83ScPOXu9rOqmF8dnh+b9yjr0W1l8=;
-	h=From:To:Cc:Subject:Date;
-	b=hSABmIfD1jxlV1r7YCVVAja3YWgdQy7vZp6ABYJ0sR7vUlhjwWvAaQO6E7PIyzfFX
-	 u5WI5I01VzKhkV760s1ahmA08buHApKn9zJrnHtWWS9wC5FiyZsKe3e/f6WsnKPMvG
-	 JgLRQStBppBoi3SLyvclsZsukno2SxfcrePceU+92itR+3kpaILjKc+77N+QocOtyN
-	 lE5vWbl26a6CZ6OxW1M8u9I9PTD8P7tWF8AV04y5sGA4sPijyHpTgoLzbRgEiMcUHs
-	 KzEAj+fG16N9qhBRLNa2J+Xpzn1ohDtlnYb5T2aGOk42eg7ltTkx64WK8/BVGA6mU6
-	 et1E+by1BdTQg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] x86/mce: Synchronize sysfs reconfiguration against CPU hotplug
-Message-ID: <eca86078-6360-4453-9893-a384d3df0065@mail.kernel.org>
+	s=arc-20240116; t=1791341355; c=relaxed/simple;
+	bh=+IEr2BTKp2XjqaduRORJhzYXSRJDuQVMpkd0ADJBfRg=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=YPGFoc/ooR0omLa2thFrU1OxutrHbZpEqIY8kZM9JcbBajLNrrJA8KXBEq2q0uNUzJikUIrSnZ2WlImUT2TUkOVGmZPpLXeUYo0fVxuutz0yd9+aJ10F73E5OsCcF59PvrMaXORB5g5F2tMzqhq9PXK13OB5uyKPsvFGno34gZs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.210.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-82412fd5f11so4924919a34.1
+        for <syzbot@lists.linux.dev>; Tue, 06 Oct 2026 19:49:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791341352; x=1791946152;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=UchB3u6jBQU3iT49vlL0+TqEm8u9BLAnOH/RpHKqQE0=;
+        b=L74Z3oDdn4lApkF0Qatc+Mswjq0K9ZLuj0ls2cDUxqCfMVBb2M/G6MsujFyLWXcAKe
+         A4bicjrhJIZXVlQFLkpwgnLNhzzIo4z6kqKgNS+yPXkOJ/zYReLNwzFAwxRjDUZvqRkc
+         1mkbaCK5qLyqpvQf6pz6Mk2P3AiL1piWD9eNO3j+PtdF2UR/lbtHb0bnBz4ELyExNMTi
+         Ud6TJEZjZJe+OVkiIr05+w7Vrg7QQg2IrnPgN+nrXO6OapObZwSzA4QQnhph0YuK5t2r
+         mnll9SKBNZS0MbKde2Cjj1hW+ADaaA3aEzx6iBDwHfHbUYROs3MWllJlPRfvTQNmiZHF
+         UUmw==
+X-Gm-Message-State: AFuF++m8NqImuAhaFG+qDlvQ5E2+SUeFr8RJFBW1oQPgWyYv10Y0Ek6u
+	KucsDX269dNlrm92ZKVzuKLcu0OnFRRY+be9djkDtnqkk6Upg4ZHza9d6DQunltDSeMZuqUnZZN
+	Bc2aSy38YnaDx0q0u7YozFDonTK2SwiemQEOJqyFcL7DV3xWPlT873NLZ88A=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Tue,  6 Oct 2026 18:01:40 +0000 (UTC)
+X-Received: by 2002:a05:6808:14c2:b0:490:315d:e0d5 with SMTP id
+ 5614622812f47-4fc45041d0bmr1260395b6e.16.1791341352555; Tue, 06 Oct 2026
+ 19:49:12 -0700 (PDT)
+Date: Tue, 06 Oct 2026 19:49:12 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6ac5b328.9ad129c8.3ce5b3.0011.GAE@google.com>
+Subject: [moderation/CI] Re: Add dmabuf read/write via io_uring
+From: syzbot ci <syzbot+ci4ae19a64bceb36f8@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-When offlining a CPU, the CPU hotplug teardown callback mce_cpu_pre_down()
-is invoked at CPUHP_AP_ONLINE_DYN to disable MCE reporting and delete the
-per-CPU timer via timer_delete_sync(). However, the CPU remains marked in
-cpu_online_mask until the later CPUHP_TEARDOWN_CPU state. If a user
-concurrently updates MCE configuration settings via sysfs (such as
-ignore_ce, cmci_disabled, check_interval, or bank controls), the sysfs
-handlers broadcast configuration changes across all online CPUs using
-on_each_cpu(). Because cpus_read_lock() is not held by the sysfs store
-handlers, an offlining CPU that is still present in cpu_online_mask can
-receive the IPI after its timer has already been deactivated. The IPI
-handler (such as mce_enable_ce() or mce_cpu_restart()) calls
-__mcheck_cpu_init_timer(), which re-arms the timer on the dying CPU. The
-CPU then finishes the offline teardown and halts with an active timer left
-in the timer wheel.
+syzbot ci has tested the following series
 
-When the CPU is subsequently brought back online, identify_secondary_cpu()
-calls mcheck_cpu_init() -> __mcheck_cpu_setup_timer(), which invokes
-timer_setup() on the already active timer, triggering a debugobjects
-warning:
+[v8] Add dmabuf read/write via io_uring
+https://lore.kernel.org/all/cover.1791336002.git.asml.silence@gmail.com
+* [PATCH v8 01/13] block: always adjust bi_offset on bio_advance_iter
+* [PATCH v8 02/13] block: introduce dma map backed bio type
+* [PATCH v8 03/13] block: add dma-buf support for raw bdev
+* [PATCH v8 04/13] nvme-pci: rename nvme_pci_sgl_set_data to nvme_pci_dma_i=
+ter_set_sgl
+* [PATCH v8 05/13] nvme-pci: implement dma-buf backed requests
+* [PATCH v8 06/13] nvme seaparate file
+* [PATCH v8 07/13] nvme-pci: add SGL support for the dmabuf path
+* [PATCH v8 08/13] nvme sgl fixup
+* [PATCH v8 09/13] io_uring/rsrc: introduce buf registration structure
+* [PATCH v8 10/13] io_uring/rsrc: extend buffer update
+* [PATCH v8 11/13] io_uring/rsrc: add uncloneable regbuf flag
+* [PATCH v8 12/13] io_uring/rsrc: add regbuf import flags
+* [PATCH v8 13/13] io_uring/rsrc: add dmabuf backed registered buffers
 
-ODEBUG: init active (active state 0) object: ffff88827be234a0 object type:
-timer_list hint: mce_timer_fn+0x0/0x280
-WARNING: lib/debugobjects.c:632 at debug_print_object+0xec/0x230
-lib/debugobjects.c:629
-Call Trace:
- <TASK>
- __debug_object_init+0x224/0x350 lib/debugobjects.c:818
- timer_init_key+0x41/0x2c0 kernel/time/timer.c:880
- __mcheck_cpu_setup_timer arch/x86/kernel/cpu/mce/core.c:2087 [inline]
- mcheck_cpu_init+0x3dc/0x600 arch/x86/kernel/cpu/mce/core.c:2262
- identify_cpu+0x1f2c/0x3940 arch/x86/kernel/cpu/common.c:2126
- identify_secondary_cpu+0xaa/0x160 arch/x86/kernel/cpu/common.c:2187
- ap_starting+0x9c/0x150 arch/x86/kernel/smpboot.c:190
- start_secondary+0x66/0x110 arch/x86/kernel/smpboot.c:280
- common_startup_64+0x13e/0x157
- </TASK>
+and found the following issue:
+kernel build error
 
-Fix this by acquiring cpus_read_lock() around mce_sysfs_mutex in the sysfs
-store handlers (set_bank(), set_ignore_ce(), set_cmci_disabled(), and
-store_int_with_restart()). Holding cpus_read_lock() serializes sysfs
-reconfigurations against CPU hotplug, ensuring that CPUs undergoing
-teardown do not receive broadcast IPIs to re-enable or re-arm MCE timers
-after mce_cpu_pre_down() has cleaned them up.
+Full report is available here:
+https://ci.syzbot.org/series/9e2044d9-8e0f-4dfc-aed6-ad086308f512
 
-Fixes: b3b7c4795cca ("x86/MCE: Serialize sysfs changes")
-Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+edc6b57cbed1fb72d0f9@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=edc6b57cbed1fb72d0f9
-Link: https://syzkaller.appspot.com/ai_job?id=c8580209-1c6b-40d9-834d-2e3ce14f6111
-To: "Borislav Petkov" <bp@alien8.de>
-To: "Dave Hansen" <dave.hansen@linux.intel.com>
-To: <linux-edac@vger.kernel.org>
-To: "Ingo Molnar" <mingo@redhat.com>
-To: "Thomas Gleixner" <tglx@kernel.org>
-To: "Tony Luck" <tony.luck@intel.com>
-To: <x86@kernel.org>
-To: "Seunghun Han" <kkamagui@gmail.com>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: <linux-kernel@vger.kernel.org>
+***
+
+kernel build error
+
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/l=
+inux.git
+base:      c71f470705faa9d1a5ad546aaf3aa3b24de5c188
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/d03c4b75-f8db-4210-8ec8-4afca36d93e=
+b/config
+
+./include/linux/bio.h:447:32: error: call to undeclared function 'iov_iter_=
+is_dmabuf_map'; ISO C99 and later do not support implicit function declarat=
+ions [-Wimplicit-function-declaration]
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 39f238952..6ba802a5c 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -2532,9 +2532,11 @@ static ssize_t set_bank(struct device *s, struct device_attribute *attr,
- 
- 	b->ctl = new;
- 
-+	cpus_read_lock();
- 	mutex_lock(&mce_sysfs_mutex);
- 	mce_restart();
- 	mutex_unlock(&mce_sysfs_mutex);
-+	cpus_read_unlock();
- 
- 	return size;
- }
-@@ -2548,6 +2550,7 @@ static ssize_t set_ignore_ce(struct device *s,
- 	if (kstrtou64(buf, 0, &new) < 0)
- 		return -EINVAL;
- 
-+	cpus_read_lock();
- 	mutex_lock(&mce_sysfs_mutex);
- 	if (mca_cfg.ignore_ce ^ !!new) {
- 		if (new) {
-@@ -2562,6 +2565,7 @@ static ssize_t set_ignore_ce(struct device *s,
- 		}
- 	}
- 	mutex_unlock(&mce_sysfs_mutex);
-+	cpus_read_unlock();
- 
- 	return size;
- }
-@@ -2575,6 +2579,7 @@ static ssize_t set_cmci_disabled(struct device *s,
- 	if (kstrtou64(buf, 0, &new) < 0)
- 		return -EINVAL;
- 
-+	cpus_read_lock();
- 	mutex_lock(&mce_sysfs_mutex);
- 	if (mca_cfg.cmci_disabled ^ !!new) {
- 		if (new) {
-@@ -2588,6 +2593,7 @@ static ssize_t set_cmci_disabled(struct device *s,
- 		}
- 	}
- 	mutex_unlock(&mce_sysfs_mutex);
-+	cpus_read_unlock();
- 
- 	return size;
- }
-@@ -2602,9 +2608,11 @@ static ssize_t store_int_with_restart(struct device *s,
- 	if (check_interval == old_check_interval)
- 		return ret;
- 
-+	cpus_read_lock();
- 	mutex_lock(&mce_sysfs_mutex);
- 	mce_restart();
- 	mutex_unlock(&mce_sysfs_mutex);
-+	cpus_read_unlock();
- 
- 	return ret;
- }
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
-base-commit: a90ee4305c4a5df72c11b31dacfdc76e00fcf78a
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+The email will later be sent to:
+[agk@redhat.com akpm@linux-foundation.org anuj20.g@samsung.com asml.silence=
+@gmail.com axboe@kernel.dk bmarzins@redhat.com brauner@kernel.org christian=
+.koenig@amd.com dm-devel@lists.linux.dev dri-devel@lists.freedesktop.org hc=
+h@lst.de io-uring@vger.kernel.org jack@suse.cz joshi.k@samsung.com kbusch@k=
+ernel.org linaro-mm-sig@lists.linaro.org linux-block@vger.kernel.org linux-=
+fsdevel@vger.kernel.org linux-kernel@vger.kernel.org linux-media@vger.kerne=
+l.org linux-nvme@lists.infradead.org matthew.brost@intel.com mpatocka@redha=
+t.com nj.shetty@samsung.com sagi@grimberg.me snitzer@kernel.org sumit.semwa=
+l@linaro.org tushar.gohad@intel.com viro@zeniv.linux.org.uk william.power@i=
+ntel.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
