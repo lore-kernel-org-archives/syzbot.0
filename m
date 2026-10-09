@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 860994FC334
-	for <syzbot@lists.linux.dev>; Fri,  9 Oct 2026 18:08:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07B4F370D5E
+	for <syzbot@lists.linux.dev>; Fri,  9 Oct 2026 19:10:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791569336; cv=none; b=q3/3t1PvNv3FdamEslZPIp6ObOJ5DMrLynOJYfILFIlvEW1HjEEsY9onpfmoAZc+MKbFedYAfIvYNuKZLaKywasKoWf2IXLybbAFWeJlpzNYrkS+j0zjUGxo8PKqGvErREGplL8BniHHWCkRCRY3HCKkyKvSKmUopjC2Hb4+4Cg=
+	t=1791573003; cv=none; b=TNirW7jpnlj46Iy7ksPjHYlWQlmmeaYPkggtKjVrtw7f8RSWLcwzcRObrfEFS9rFyOVIw7QC8Bezkvze11j9osWrH5PAKv4fClJCAhvh2MwwnswN6Ob2aSwqRWYNo8c1bqRxO2lw8m5ZSY0n4mMKrl68S2AXFWIVKdcFZSxHtyY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791569336; c=relaxed/simple;
-	bh=ZQSCKmx3gN2eurObFzxH2PaOqbVISIiJLo7cWhjUK10=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=KCe6QVSsJRw0YAFO1Ok3xcTueS00lO9nq4IDCGMco1CiWAoXBk1iZP4qpfgIBtro+gs8wUo0/Lw+y0pRKYpH8ZmJKuZFl9Bk8Zp30tzAaPnSrP0k5mAupY0VgSYSrkkCABJAIfnegm9G7+260OBiMq2vjllQ5y3I3iMkwmLNyzI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TyRjeVuA; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791573003; c=relaxed/simple;
+	bh=lRPHjqd9T07oMkFljoTxw6A+hlSiI+82jjh+Pbc9T00=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=TJFvCn3pFJCIvttkjjAdUMa0rLdz0LzLGJggLKCY9OfLQ9Ql0Df+8xegu/zVLvz5fVpYDXKGdpBR6UVNH+IJocr2JqMucNCelnPeYUW43EL3ejoeSaI+JQ9a1wsX080kfQV25MDhj6gH5lwXxlDEhQT2asjc6PaiRQgICMRXPaM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J8ZAi1Ag; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TyRjeVuA"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 100661F00893;
-	Fri,  9 Oct 2026 18:08:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J8ZAi1Ag"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 897321F000FF;
+	Fri,  9 Oct 2026 19:10:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791569335;
-	bh=jU9+TkuxOKnkdHfjkpxox9G1TTb4BTLcUwHYyLG1Xb0=;
+	s=k20260515; t=1791573001;
+	bh=C7Gpl/5jGP0y0uRRfewvqglIoN2ReWjSvwswcF99rTo=;
 	h=From:To:Cc:Subject:Date;
-	b=TyRjeVuAryzy7lasxlLh0ch1iI3vQuv2ZVo09FqpRItBWAhJ4VPLNywbaLSKo0LKW
-	 2qNOSXX4bmdM+qbdJs+63mrWO/cEvxdDXhEsP5ZF6jHNbCpkw5AEy03lGmlD7GFvz2
-	 zKXHnCpNSxDojuhG+a9yJ6PkbnGiFf4tKVjmtnykiD1rzRWPcz17h+FvFj6aVTBykD
-	 vLYicIl1EB8w66olnlQ6kw+B4msV2QRh8wZTwOZs7VxmJ8A5GlcNDO0uzlgaan+s8x
-	 XlTpZ9knWYT5ot7LV8oIJJW4tpVjVCML9IaoDzksW8xo1J9KvE/o+XHaBwerzxLsNZ
-	 pBNH203HC7rAA==
+	b=J8ZAi1AgtHAYFFRV+hmX8QKxP6MFf9aUvd0BxdislN6/uKL/L7RBC1JptH64ivaZh
+	 oryH/R3tepxloV6xj/mk7wV48LVDydPPjLA59t7EQoeildS83deeRVwKZXL/TBX/NT
+	 JO8qRamqnma0NVTRBNw2ipnj5hxJmYSFfXcAvw7OMKhSA7ySaDjmPrkNnrvUij7J+S
+	 KDI2WjJ7SMOabq0k035KidDdz613lkbhTDXijzFuYNcchUy72r+rCX5xMaHivu0m2s
+	 xHpjghUrK5Ad8HHkcP8BLEpZZE43jzNDGXKbs/q/BGL0JH3k9636345DE19Vrx24z6
+	 w4ZLMek3el+Iw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v3] kernfs: do not hold of->mutex across sysfs ->store()
-Message-ID: <c55e68c8-d895-4b6d-ad52-eedc0417562b@mail.kernel.org>
+Cc: immersa.bartosz.chronowski@gmail.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v5] net/sched: taprio: catch up overdue cycles in advance_sched()
+Message-ID: <2fcb3fdb-42b4-4a7a-bf17-3b5a422bfa75@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,203 +38,265 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri,  9 Oct 2026 18:08:55 +0000 (UTC)
+Date: Fri,  9 Oct 2026 19:10:01 +0000 (UTC)
 
-A circular locking dependency was detected between &pipe->mutex (in struct
-pipe_inode_info), &of->mutex (in struct kernfs_open_file), and
-&sbi->pipe_mutex (in struct autofs_sb_info):
-&pipe->mutex --> &of->mutex --> &sbi->pipe_mutex
+The taprio qdisc allows configuring small intervals which can overwhelm the
+CPU when using software timers. When the interval is shorter than the time
+it takes to process the timer interrupt, or when the system experiences
+scheduling delays, the timer expiration falls into the past. This
+overdue-absolute-deadline condition causes the hrtimer subsystem to
+repeatedly re-enqueue and fire the timer, resulting in an interrupt storm
+that starves CPU tasks and triggers RCU stalls:
 
-The cycle arises from two conflicting execution paths: splicing data from
-or to a pipe holds the pipe lock (&pipe->mutex) while invoking
-->write_iter() or ->read_iter() on the kernfs file, acquiring of->mutex
-(&pipe->mutex -> &of->mutex). Conversely, a write to a sysfs file such as
-/sys/power/resume acquires of->mutex and calls resume_store(), which
-resolves paths via lookup_bdev() and kern_path(). Traversing an autofs
-mount during lookup invokes autofs_notify_daemon(), which acquires
-sbi->pipe_mutex and writes to the daemon pipe via __kernel_write(),
-acquiring pipe->mutex (&of->mutex -> &sbi->pipe_mutex -> &pipe->mutex).
+rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+	1-...!: (1 GPs behind) idle=5b64/0/0x1 softirq=135954/135971 fqs=1
+Call Trace:
+ <IRQ>
+ advance_sched+0xc2/0xc80 net/sched/sch_taprio.c:930
+ __run_hrtimer kernel/time/hrtimer.c:2032 [inline]
+ __hrtimer_run_queues+0x3bc/0xa10 kernel/time/hrtimer.c:2096
+ hrtimer_interrupt+0x448/0x910 kernel/time/hrtimer.c:2215
+ local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1051 [inline]
+ __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:1068
+ sysvec_apic_timer_interrupt+0xa1/0xc0 arch/x86/kernel/apic/apic.c:1062
+ </IRQ>
 
-To address this, do not hold of->mutex across sysfs ->store() callbacks by
-introducing a write_unlocked flag in struct kernfs_ops and caching it in
-struct kernfs_open_file. Running ->store() without of->mutex is safe
-because sysfs ->store() maintains no per-open-file state, and concurrent
-opens of the same file already execute ->store() concurrently without
-serialization. Other kernfs users retain per-open-file serialization under
-of->mutex, and preallocated sysfs attributes still serialize buffer access
-via of->prealloc_mutex.
+Fix this by implementing bounded catch-up in advance_sched() instead of
+rejecting small intervals at admission time. When advance_sched() detects
+that the timer expiration is overdue, complete schedule periods are skipped
+arithmetically by advancing oper->cycle_end_time by the elapsed number of
+full cycles without exceeding any pending admin schedule base time. Overdue
+entries within the cycle are then traversed in a loop bounded by
+oper->num_entries to catch up to the active entry, and the next timer
+expiration is guaranteed to be in the future.
 
-Note that not every cycle is eliminated: a pipe spliced into such an
-attribute stays locked while ->store() resolves paths, and callbacks
-holding their own locks across lookup and ->show() retain dependencies.
-
-Fixes: f2d6c2708bd8 ("kernfs: wire up ->splice_read and ->splice_write")
-
-Fixes: 1e8c813b083c ("PM: hibernate: don't use early_lookup_bdev in resume_store")
+Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
 Assisted-by: Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+002fb7b2d0bc53bf7e75@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=002fb7b2d0bc53bf7e75
-Link: https://syzkaller.appspot.com/ai_job?id=74fbf9ab-54e4-46c2-b9e9-7867573ff823
-To: "Danilo Krummrich" <dakr@kernel.org>
-To: <driver-core@lists.linux.dev>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-To: "Tejun Heo" <tj@kernel.org>
-To: "Christoph Hellwig" <hch@lst.de>
+Reported-by: syzbot+f8850bc3986562f79619@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=f8850bc3986562f79619
+Link: https://syzkaller.appspot.com/ai_job?id=069b71fb-28b3-4676-9783-f9c3f6bf377d
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jamal Hadi Salim" <jhs@mojatatu.com>
+To: "Jiri Pirko" <jiri@resnulli.us>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
+Cc: "Simon Horman" <horms@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
+v5:
+- Drop cycle_interval_sum and do not modify parse_taprio_schedule().
+- Avoid skipping past pending admin schedule base time during cycle catch-up.
+- Advance overdue entries within the cycle using a loop bounded by oper->num_entries.
+- Clamp timer expiration to at least now + 1 ns if still overdue.
+- Fix should_restart_cycle() to check for end_time >= cycle_end_time.
+- Handle cycle_end_time capping for the first entry in setup_first_end_time().
+
+v4:
+- Replace admission-time interval rejection with bounded catch-up in advance_sched().
+- Arithmetically advance overdue full periods instead of walking individual entries.
+- Record cycle_interval_sum in parse_taprio_schedule() to determine the cycle period.
+- Set timer expiration before releasing current_entry_lock.
+https://lore.kernel.org/all/a75dd710-09c2-4dce-bc7b-65fd6c4be4d8@mail.kernel.org/T/
+
 v3:
-- Changed write_unlocked in struct kernfs_open_file from a bitfield to a bool
-- Expanded comments in kernfs.h and sysfs/file.c to clarify concurrency expectations and locking scope
+- Reject intervals smaller than 100 us at admission time for software TAPRIO schedules instead of modifying advance_sched().
+- Drop catch-up cycle arithmetic, loop iteration limits, and physical expiration fallbacks from advance_sched().
+https://lore.kernel.org/all/ecbfe945-f1ab-45de-aaa0-b9b57ae730c2@mail.kernel.org/T/
 
 v2:
-- Avoid dropping splice_write support in kernfs_file_fops.
-- Introduce write_unlocked flag in struct kernfs_ops and struct kernfs_open_file to run sysfs ->store() without of->mutex.
-- Update commit subject and description to reflect the new locking approach.
-https://lore.kernel.org/all/bc6a8f1d-d7bf-43bf-80e2-c3489ded269a@mail.kernel.org/T/
+- Removed the 1 microsecond admission policy for software taprio.
+- Reduced the loop iteration limit from 2048 to 32 to avoid softirq stalls.
+- Added handling for administrative schedules during fast-forwarding to avoid overshooting `admin->base_time`.
+- Split logical schedule deadline (`end_time`) and physical timer expiration (`expires`).
+- Updated the fallback mechanism to request a physical expiration 1 microsecond in the future relative to the current time rather than yielding the CPU.
+- Optimized gate close time calculation to only run once after the loop if not already calculated.
+https://lore.kernel.org/all/03dbde3b-8c45-46b6-8291-dd12bcc3120c@mail.kernel.org/T/
 
 v1:
-https://lore.kernel.org/all/af4efe2d-7856-46ff-9088-28400130dbce@mail.kernel.org/T/
+https://lore.kernel.org/all/bc6a8890-9230-489a-bbce-5c255c1ef01a@mail.kernel.org/T/
 ---
-diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
-index 8e0e90c93..8084a858f 100644
---- a/fs/kernfs/file.c
-+++ b/fs/kernfs/file.c
-@@ -333,9 +333,11 @@ static ssize_t kernfs_fop_write_iter(struct kiocb *iocb, struct iov_iter *iter)
- 	 * @of->mutex nests outside active ref and is used both to ensure that
- 	 * the ops aren't called concurrently for the same open file.
- 	 */
--	mutex_lock(&of->mutex);
-+	if (!of->write_unlocked)
-+		mutex_lock(&of->mutex);
- 	if (!kernfs_get_active_of(of)) {
--		mutex_unlock(&of->mutex);
-+		if (!of->write_unlocked)
-+			mutex_unlock(&of->mutex);
- 		len = -ENODEV;
- 		goto out_free;
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 299234a5f..31e123d97 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -875,7 +875,7 @@ static bool should_restart_cycle(const struct sched_gate_list *oper,
+ 	if (list_is_last(&entry->list, &oper->entries))
+ 		return true;
+ 
+-	if (ktime_compare(entry->end_time, oper->cycle_end_time) == 0)
++	if (ktime_compare(entry->end_time, oper->cycle_end_time) >= 0)
+ 		return true;
+ 
+ 	return false;
+@@ -924,8 +924,9 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 	int num_tc = netdev_get_num_tc(dev);
+ 	struct sched_entry *entry, *next;
+ 	struct Qdisc *sch = q->root;
+-	ktime_t end_time;
+-	int tc;
++	ktime_t start_time, end_time, expires, now;
++	bool admin_switched = false;
++	int tc, i;
+ 
+ 	spin_lock(&q->current_entry_lock);
+ 	entry = rcu_dereference_protected(q->current_entry,
+@@ -938,6 +939,8 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 	if (!oper)
+ 		switch_schedules(q, &admin, &oper);
+ 
++	now = hrtimer_cb_get_time(timer);
++
+ 	/* This can happen in two cases: 1. this is the very first run
+ 	 * of this function (i.e. we weren't running any schedule
+ 	 * previously); 2. The previous schedule just ended. The first
+@@ -948,47 +951,98 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 		next = list_first_entry(&oper->entries, struct sched_entry,
+ 					list);
+ 		end_time = next->end_time;
+-		goto first_run;
++		if (ktime_after(end_time, now))
++			goto first_run;
++		entry = next;
  	}
-@@ -347,7 +349,8 @@ static ssize_t kernfs_fop_write_iter(struct kiocb *iocb, struct iov_iter *iter)
- 		len = -EINVAL;
  
- 	kernfs_put_active_of(of);
--	mutex_unlock(&of->mutex);
-+	if (!of->write_unlocked)
-+		mutex_unlock(&of->mutex);
+-	if (should_restart_cycle(oper, entry)) {
+-		next = list_first_entry(&oper->entries, struct sched_entry,
+-					list);
+-		oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
+-						    oper->cycle_time);
+-	} else {
+-		next = list_next_entry(entry, list);
++	if (oper->cycle_time > 0 && ktime_after(now, oper->cycle_end_time)) {
++		s64 diff = ktime_to_ns(ktime_sub(now, oper->cycle_end_time));
++		s64 cycles = div64_s64(diff, oper->cycle_time) + 1;
++
++		if (admin) {
++			ktime_t admin_base = sched_base_time(admin);
++
++			if (ktime_after(ktime_add_ns(oper->cycle_end_time,
++						     cycles * oper->cycle_time),
++					admin_base)) {
++				diff = ktime_to_ns(ktime_sub(admin_base,
++							     oper->cycle_end_time));
++				cycles = diff > 0 ? div64_s64(diff, oper->cycle_time) : 0;
++			}
++		}
++
++		if (cycles > 0) {
++			s64 delta = cycles * oper->cycle_time;
++
++			oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time, delta);
++			entry = NULL;
++		}
+ 	}
  
- 	if (len > 0)
- 		iocb->ki_pos += len;
-@@ -651,6 +654,8 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
- 	 * lockdep key, because the writable file /sys/power/resume may call vfs
- 	 * lookup helpers for arbitrary paths and readonly files can be read by
- 	 * overlayfs from vfs helpers when sysfs is a lower layer of overalyfs.
-+	 * (Note that regular sysfs attributes no longer run ->store() under
-+	 * @of->mutex, but other kernfs users still do.)
- 	 *
- 	 * All three cases look the same.  They're supposed to
- 	 * look that way and give @of->mutex different static lockdep keys.
-@@ -666,10 +671,12 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
- 	of->file = file;
+-	end_time = ktime_add_ns(entry->end_time, next->interval);
+-	end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
++	for (i = 0; i < oper->num_entries; i++) {
++		if (!entry) {
++			next = list_first_entry(&oper->entries, struct sched_entry,
++						list);
++			start_time = ktime_sub_ns(oper->cycle_end_time,
++						  oper->cycle_time);
++		} else {
++			start_time = entry->end_time;
++
++			if (should_restart_cycle(oper, entry)) {
++				next = list_first_entry(&oper->entries,
++							struct sched_entry, list);
++				oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
++								    oper->cycle_time);
++			} else {
++				next = list_next_entry(entry, list);
++			}
++		}
  
- 	/*
--	 * Write path needs to atomic_write_len outside active reference.
--	 * Cache it in open_file.  See kernfs_fop_write_iter() for details.
-+	 * Write path needs atomic_write_len and write_unlocked outside
-+	 * active reference.  Cache them in open_file.  See
-+	 * kernfs_fop_write_iter() for details.
- 	 */
- 	of->atomic_write_len = ops->atomic_write_len;
-+	of->write_unlocked = ops->write_unlocked;
+-	for (tc = 0; tc < num_tc; tc++) {
+-		if (next->gate_duration[tc] == oper->cycle_time)
+-			next->gate_close_time[tc] = KTIME_MAX;
++		if (list_is_last(&next->list, &oper->entries))
++			end_time = oper->cycle_end_time;
+ 		else
+-			next->gate_close_time[tc] = ktime_add_ns(entry->end_time,
+-								 next->gate_duration[tc]);
+-	}
++			end_time = min_t(ktime_t,
++					 ktime_add_ns(start_time, next->interval),
++					 oper->cycle_end_time);
++
++		if (should_change_schedules(admin, oper, end_time)) {
++			switch_schedules(q, &admin, &oper);
++			next = list_first_entry(&oper->entries, struct sched_entry,
++						list);
++			end_time = next->end_time;
++			admin_switched = true;
++			break;
++		}
  
- 	error = -EINVAL;
- 	/*
-diff --git a/fs/sysfs/file.c b/fs/sysfs/file.c
-index cd5bb0f9f..71a7faf43 100644
---- a/fs/sysfs/file.c
-+++ b/fs/sysfs/file.c
-@@ -132,7 +132,19 @@ static ssize_t sysfs_kf_read(struct kernfs_open_file *of, char *buf,
- 	return min_t(ssize_t, count, len);
- }
+-	if (should_change_schedules(admin, oper, end_time)) {
+-		switch_schedules(q, &admin, &oper);
+-		/* After changing schedules, the next entry is the first one
+-		 * in the new schedule, with a pre-calculated end_time.
+-		 */
+-		next = list_first_entry(&oper->entries, struct sched_entry, list);
+-		end_time = next->end_time;
++		if (ktime_after(end_time, now))
++			break;
++
++		entry = next;
++		entry->end_time = end_time;
+ 	}
  
--/* kernfs write callback for regular sysfs files */
-+/*
-+ * kernfs write callback for regular sysfs files.
-+ *
-+ * Regular sysfs files set .write_unlocked = true and are called without
-+ * holding of->mutex. Sysfs ->store() maintains no per-open-file state, and
-+ * concurrent opens already execute ->store() concurrently without
-+ * serialization. Calling ->store() without of->mutex avoids circular
-+ * locking dependencies when ->store() performs operations like path
-+ * lookups or automounts while a generic VFS lock is held (such as a pipe
-+ * lock during splice). Preallocated attributes still serialize buffer
-+ * access via of->prealloc_mutex. Existing autofs and callback-owned lock
-+ * dependencies remain outside this narrow change.
-+ */
- static ssize_t sysfs_kf_write(struct kernfs_open_file *of, char *buf,
- 			      size_t count, loff_t pos)
- {
-@@ -229,11 +241,13 @@ static const struct kernfs_ops sysfs_file_kfops_ro = {
+-	next->end_time = end_time;
+-	taprio_set_budgets(q, oper, next);
++	if (!admin_switched) {
++		for (tc = 0; tc < num_tc; tc++) {
++			if (next->gate_duration[tc] == oper->cycle_time)
++				next->gate_close_time[tc] = KTIME_MAX;
++			else
++				next->gate_close_time[tc] = ktime_add_ns(start_time,
++									 next->gate_duration[tc]);
++		}
++
++		next->end_time = end_time;
++		taprio_set_budgets(q, oper, next);
++	}
  
- static const struct kernfs_ops sysfs_file_kfops_wo = {
- 	.write		= sysfs_kf_write,
-+	.write_unlocked	= true,
- };
+ first_run:
+ 	rcu_assign_pointer(q->current_entry, next);
++	expires = end_time;
++	if (unlikely(ktime_compare(expires, now) <= 0))
++		expires = ktime_add_ns(now, 1);
++	hrtimer_set_expires(&q->advance_timer, expires);
+ 	spin_unlock(&q->current_entry_lock);
  
- static const struct kernfs_ops sysfs_file_kfops_rw = {
- 	.seq_show	= sysfs_kf_seq_show,
- 	.write		= sysfs_kf_write,
-+	.write_unlocked	= true,
- };
+-	hrtimer_set_expires(&q->advance_timer, end_time);
+-
+ 	rcu_read_lock();
+ 	__netif_schedule(sch);
+ 	rcu_read_unlock();
+@@ -1255,7 +1309,13 @@ static void setup_first_end_time(struct taprio_sched *q,
+ 	/* FIXME: find a better place to do this */
+ 	sched->cycle_end_time = ktime_add_ns(base, cycle);
  
- static const struct kernfs_ops sysfs_prealloc_kfops_ro = {
-@@ -244,12 +258,14 @@ static const struct kernfs_ops sysfs_prealloc_kfops_ro = {
- static const struct kernfs_ops sysfs_prealloc_kfops_wo = {
- 	.write		= sysfs_kf_write,
- 	.prealloc	= true,
-+	.write_unlocked	= true,
- };
+-	first->end_time = ktime_add_ns(base, first->interval);
++	if (list_is_last(&first->list, &sched->entries))
++		first->end_time = sched->cycle_end_time;
++	else
++		first->end_time = min_t(ktime_t,
++					ktime_add_ns(base, first->interval),
++					sched->cycle_end_time);
++
+ 	taprio_set_budgets(q, sched, first);
  
- static const struct kernfs_ops sysfs_prealloc_kfops_rw = {
- 	.read		= sysfs_kf_read,
- 	.write		= sysfs_kf_write,
- 	.prealloc	= true,
-+	.write_unlocked	= true,
- };
- 
- static const struct kernfs_ops sysfs_bin_kfops_ro = {
-diff --git a/include/linux/kernfs.h b/include/linux/kernfs.h
-index 351a5101c..cbb09f953 100644
---- a/include/linux/kernfs.h
-+++ b/include/linux/kernfs.h
-@@ -272,6 +272,7 @@ struct kernfs_open_file {
- 	char			*prealloc_buf;
- 
- 	size_t			atomic_write_len;
-+	bool			write_unlocked;
- 	bool			mmapped:1;
- 	bool			released:1;
- 	const struct vm_operations_struct *vm_ops;
-@@ -320,6 +321,16 @@ struct kernfs_ops {
- 	 * ->prealloc.  Provide ->read and ->write with ->prealloc.
- 	 */
- 	bool prealloc;
-+	/*
-+	 * "write_unlocked" indicates that ->write() does not require
-+	 * per-open-file serialization with of->mutex and can be called
-+	 * concurrently for the same open file. Callbacks must handle
-+	 * concurrent execution. Buffer access for preallocated attributes
-+	 * is still protected by of->prealloc_mutex. Lock dependencies from
-+	 * callers (such as pipe locks during splice) or within callbacks
-+	 * remain outside this scope.
-+	 */
-+	bool write_unlocked;
- 	ssize_t (*write)(struct kernfs_open_file *of, char *buf, size_t bytes,
- 			 loff_t off);
- 
+ 	for (tc = 0; tc < num_tc; tc++) {
 
 
-base-commit: 93f51579e7df248780214094418f205253383cc5
+base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
