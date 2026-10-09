@@ -1,165 +1,247 @@
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6C7D3EDAA9
-	for <syzbot@lists.linux.dev>; Fri,  9 Oct 2026 17:54:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 860994FC334
+	for <syzbot@lists.linux.dev>; Fri,  9 Oct 2026 18:08:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791568463; cv=none; b=ltTugTKeFcm5i1lsM7LolMSXhFlOlPsYHW3zfiYMmQCpE53w9WvYcOMjmHimUjWpBKgNrJTLyJiSuSsnv63UsSPTMFyjRhGNyo3iwnUrchLog+mTEI6YJ+XQJEe+Gwsp1mDh3c29PUAu2OjGcCrthuQB5SZzk1dSIuqyOXPb/iI=
+	t=1791569336; cv=none; b=q3/3t1PvNv3FdamEslZPIp6ObOJ5DMrLynOJYfILFIlvEW1HjEEsY9onpfmoAZc+MKbFedYAfIvYNuKZLaKywasKoWf2IXLybbAFWeJlpzNYrkS+j0zjUGxo8PKqGvErREGplL8BniHHWCkRCRY3HCKkyKvSKmUopjC2Hb4+4Cg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791568463; c=relaxed/simple;
-	bh=8RnH9GuPagBX6F9GffrrKe3MQ2cVs+r9jdOGWXAEbOg=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=n8O0cVnTXmsKFcQSYaM1YqNFEzD7JQcg6qEeqXCt5wkS0/76eWtureARNJ/8sXXEKPJcv9PP+WGpwTNRl8SXyaPoJYAy1Vs8zZgilZ6SFeAi3hPrBwjD9TB+SYpRzRezBESNipWcONnb3EekPb/8z0zhWKy+vEafYgEWgZB/aDg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4b2d1eb484aso68505b6e.2
-        for <syzbot@lists.linux.dev>; Fri, 09 Oct 2026 10:54:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791568461; x=1792173261;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=zPD9BdrlBaG5YPzJzYY3HFzR6feRrXbYDBkB6lUduvY=;
-        b=rFU8cn6N+lrDuY7E57QlCZoutecRqR9BJQI+7UAJb51wsvaiqp6msPY33VRaCcU2Y/
-         ac9MF9guiCAbrPqkCYUrAqiv81xrK3nuUMrznVSDP/0bQnzNVkN7yd36OFDTvPK6qC8N
-         UkRlVzFA2971VcmymIP2WEViQBsQZtJ0RGmgPV2RaLds3RlhPMSOZb6JhhnSLW8aBc+c
-         3NX2hHTbtKzvpZL9Smmnx8t3bhzw36j7ZemcmFNim17+6kFxHVmpfVOfntRREVqcgE5P
-         zQEFEJy5qV2s1CKoQDfrBmFc8LLaFzYENohcCtyNEr3/2QIXivarC7/XtcZgABx+BaKs
-         OZKQ==
-X-Gm-Message-State: AFuF++nU/hW10WY18ba68Vggt+WW2xVXL5IQx6kbBcSpN8KqL5L57h6c
-	haP+j4GdYCE5T8JIP+J1OcH92rhEpcrBltRNyrHbD+EnMnBlb/8UwaqZ67DHPDowWgKVy4jMsyX
-	OUWoYRVi0Zj9l8FCcJuK8CpYf3orkwDLOYjMzrAO65HdXTsz6D85/1+lke4w=
+	s=arc-20240116; t=1791569336; c=relaxed/simple;
+	bh=ZQSCKmx3gN2eurObFzxH2PaOqbVISIiJLo7cWhjUK10=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=KCe6QVSsJRw0YAFO1Ok3xcTueS00lO9nq4IDCGMco1CiWAoXBk1iZP4qpfgIBtro+gs8wUo0/Lw+y0pRKYpH8ZmJKuZFl9Bk8Zp30tzAaPnSrP0k5mAupY0VgSYSrkkCABJAIfnegm9G7+260OBiMq2vjllQ5y3I3iMkwmLNyzI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TyRjeVuA; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TyRjeVuA"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 100661F00893;
+	Fri,  9 Oct 2026 18:08:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791569335;
+	bh=jU9+TkuxOKnkdHfjkpxox9G1TTb4BTLcUwHYyLG1Xb0=;
+	h=From:To:Cc:Subject:Date;
+	b=TyRjeVuAryzy7lasxlLh0ch1iI3vQuv2ZVo09FqpRItBWAhJ4VPLNywbaLSKo0LKW
+	 2qNOSXX4bmdM+qbdJs+63mrWO/cEvxdDXhEsP5ZF6jHNbCpkw5AEy03lGmlD7GFvz2
+	 zKXHnCpNSxDojuhG+a9yJ6PkbnGiFf4tKVjmtnykiD1rzRWPcz17h+FvFj6aVTBykD
+	 vLYicIl1EB8w66olnlQ6kw+B4msV2QRh8wZTwOZs7VxmJ8A5GlcNDO0uzlgaan+s8x
+	 XlTpZ9knWYT5ot7LV8oIJJW4tpVjVCML9IaoDzksW8xo1J9KvE/o+XHaBwerzxLsNZ
+	 pBNH203HC7rAA==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v3] kernfs: do not hold of->mutex across sysfs ->store()
+Message-ID: <c55e68c8-d895-4b6d-ad52-eedc0417562b@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1304:b0:4f4:9314:af39 with SMTP id
- 5614622812f47-50c54170c5dmr2039521b6e.28.1791568460765; Fri, 09 Oct 2026
- 10:54:20 -0700 (PDT)
-Date: Fri, 09 Oct 2026 10:54:20 -0700
-In-Reply-To: <20261009103033.2920530-1-yi.zhang@huaweicloud.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ac92a4c.70ed5d86.2ac85.0072.GAE@google.com>
-Subject: [syzbot ci] Re: ext4: use iomap for regular file's buffered I/O path
-From: syzbot ci <syzbot+ci46f64f7b6a2a188e@syzkaller.appspotmail.com>
-To: adilger.kernel@dilger.ca, chengzhihao1@huawei.com, djwong@kernel.org, 
-	hch@infradead.org, jack@suse.cz, libaokun@linux.alibaba.com, 
-	linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, ojaswin@linux.ibm.com, ritesh.list@gmail.com, 
-	tytso@mit.edu, wangkefeng.wang@huawei.com, yangerkun@huawei.com, 
-	yi.zhang@huawei.com, yi.zhang@huaweicloud.com, yizhang089@gmail.com, 
-	yukuai@fnnas.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Date: Fri,  9 Oct 2026 18:08:55 +0000 (UTC)
 
-syzbot ci has tested the following series
+A circular locking dependency was detected between &pipe->mutex (in struct
+pipe_inode_info), &of->mutex (in struct kernfs_open_file), and
+&sbi->pipe_mutex (in struct autofs_sb_info):
+&pipe->mutex --> &of->mutex --> &sbi->pipe_mutex
 
-[v7] ext4: use iomap for regular file's buffered I/O path
-https://lore.kernel.org/all/20261009103033.2920530-1-yi.zhang@huaweicloud.com
-* [PATCH v7 01/31] ext4: simplify size updating in ext4_setattr()
-* [PATCH v7 02/31] ext4: factor out ext4_truncate_[up|down]()
-* [PATCH v7 03/31] ext4: set EXT4_MAP_NEW flag for delayed allocated blocks
-* [PATCH v7 04/31] ext4: recheck extent status tree before block allocation
-* [PATCH v7 05/31] ext4: fix orig_mlen initialization in ext4_map_blocks()
-* [PATCH v7 06/31] ext4: allow ext4_map_blocks() to start its own transaction handle
-* [PATCH v7 07/31] ext4: avoid unnecessary transaction in ext4_map_blocks() for unwritten extents
-* [PATCH v7 08/31] ext4: skip block allocation for holes in the data submission path
-* [PATCH v7 09/31] ext4: add iomap address space operations for buffered I/O
-* [PATCH v7 10/31] ext4: implement buffered read path using iomap
-* [PATCH v7 11/31] ext4: pass out extent seq counter when mapping da blocks
-* [PATCH v7 12/31] ext4: do not use data=ordered mode for inodes using buffered iomap path
-* [PATCH v7 13/31] ext4: implement buffered write path using iomap
-* [PATCH v7 14/31] ext4: rework handle credit accounting for unwritten extent conversion
-* [PATCH v7 15/31] ext4: implement writeback path using iomap
-* [PATCH v7 16/31] ext4: implement mmap path using iomap
-* [PATCH v7 17/31] ext4: implement partial block zero range path using iomap
-* [PATCH v7 18/31] ext4: drain writeback before removing extents on the iomap path
-* [PATCH v7 19/31] ext4: add block mapping tracepoints for iomap buffered I/O path
-* [PATCH v7 20/31] ext4: disable online defrag when inode using iomap buffered I/O path
-* [PATCH v7 21/31] ext4: add EXT4_STATE_DISKSIZE_GROW_PENDING state bit and helpers
-* [PATCH v7 22/31] ext4: submit and wait for pending disksize-grow I/O on writeback
-* [PATCH v7 23/31] ext4: advance i_disksize to i_size upon disksize-grow I/O completion
-* [PATCH v7 24/31] ext4: defer i_disksize update while DISKSIZE_GROW_PENDING is set
-* [PATCH v7 25/31] ext4: submit and wait for disksize-grow I/O in fallocate paths
-* [PATCH v7 26/31] ext4: clear DISKSIZE_GROW_PENDING on truncate or error
-* [PATCH v7 27/31] ext4: set DISKSIZE_GROW_PENDING after zeroing unaligned EOF block
-* [PATCH v7 28/31] ext4: add tracepoints for DISKSIZE_GROW_PENDING set, clear, and wait
-* [PATCH v7 29/31] ext4: add tracepoints for EOF block zeroing and disksize-grow I/O
-* [PATCH v7 30/31] ext4: partially enable iomap for the buffered I/O path of regular files
-* [PATCH v7 31/31] ext4: introduce a mount option for iomap buffered I/O path
+The cycle arises from two conflicting execution paths: splicing data from
+or to a pipe holds the pipe lock (&pipe->mutex) while invoking
+->write_iter() or ->read_iter() on the kernfs file, acquiring of->mutex
+(&pipe->mutex -> &of->mutex). Conversely, a write to a sysfs file such as
+/sys/power/resume acquires of->mutex and calls resume_store(), which
+resolves paths via lookup_bdev() and kern_path(). Traversing an autofs
+mount during lookup invokes autofs_notify_daemon(), which acquires
+sbi->pipe_mutex and writes to the daemon pipe via __kernel_write(),
+acquiring pipe->mutex (&of->mutex -> &sbi->pipe_mutex -> &pipe->mutex).
 
-and found the following issue:
-WARNING in ext4_do_writepages
+To address this, do not hold of->mutex across sysfs ->store() callbacks by
+introducing a write_unlocked flag in struct kernfs_ops and caching it in
+struct kernfs_open_file. Running ->store() without of->mutex is safe
+because sysfs ->store() maintains no per-open-file state, and concurrent
+opens of the same file already execute ->store() concurrently without
+serialization. Other kernfs users retain per-open-file serialization under
+of->mutex, and preallocated sysfs attributes still serialize buffer access
+via of->prealloc_mutex.
 
-Full report is available here:
-https://ci.syzbot.org/series/3711c951-acf4-4ebe-a920-9cc89b6be2ff
+Note that not every cycle is eliminated: a pipe spliced into such an
+attribute stays locked while ->store() resolves paths, and callbacks
+holding their own locks across lookup and ->show() retain dependencies.
 
-***
+Fixes: f2d6c2708bd8 ("kernfs: wire up ->splice_read and ->splice_write")
 
-WARNING in ext4_do_writepages
-
-tree:      vfs
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs.git
-base:      3d399224425573875b6f6f1181bd8cf9a28cc7d1
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/c3c01f8c-846d-4c7a-955a-fd7427af6b0d/config
-
-------------[ cut here ]------------
-!err
-WARNING: fs/ext4/inode.c:2512 at ext4_do_writepages+0x33b3/0x44a0, CPU#0: kworker/u9:3/147
-Modules linked in:
-CPU: 0 UID: 0 PID: 147 Comm: kworker/u9:3 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: writeback wb_workfn (flush-7:1)
-RIP: 0010:ext4_do_writepages+0x33b3/0x44a0
-Code: 0f 0b 90 e9 b6 d9 ff ff e8 6a e2 36 ff 90 0f 0b 90 e9 e6 dc ff ff e8 5c e2 36 ff 90 0f 0b 90 e9 94 df ff ff e8 4e e2 36 ff 90 <0f> 0b 90 bb ea ff ff ff e9 ae f8 ff ff e8 3b e2 36 ff 48 8d 3d 64
-RSP: 0018:ffffc90003106ce0 EFLAGS: 00010293
-RAX: ffffffff8290e912 RBX: 0000000000000000 RCX: ffff8881053f9e00
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffffc900031070f0 R08: ffff888025da4a37 R09: 1ffff11004bb4946
-R10: dffffc0000000000 R11: ffffed1004bb4947 R12: ffffc900031071a0
-R13: dffffc0000000000 R14: 0000000000000000 R15: 1ffff11004bb495d
-FS:  0000000000000000(0000) GS:ffff88818d6c9000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00005555565a5a28 CR3: 0000000031f66000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- ext4_writepages+0x241/0x3b0
- do_writepages+0x338/0x560
- __writeback_single_inode+0x136/0x1220
- writeback_sb_inodes+0x9de/0x1b00
- wb_writeback+0x41c/0xad0
- wb_workfn+0x431/0x10f0
- process_scheduled_works+0xc3d/0x1630
- worker_thread+0xa47/0xfb0
- kthread+0x38b/0x480
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Fixes: 1e8c813b083c ("PM: hibernate: don't use early_lookup_bdev in resume_store")
+Assisted-by: Gemini:gemini-3.8-flash syzbot
+Reported-by: syzbot+002fb7b2d0bc53bf7e75@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=002fb7b2d0bc53bf7e75
+Link: https://syzkaller.appspot.com/ai_job?id=74fbf9ab-54e4-46c2-b9e9-7867573ff823
+To: "Danilo Krummrich" <dakr@kernel.org>
+To: <driver-core@lists.linux.dev>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+To: "Rafael J. Wysocki" <rafael@kernel.org>
+To: "Tejun Heo" <tj@kernel.org>
+To: "Christoph Hellwig" <hch@lst.de>
+Cc: <linux-kernel@vger.kernel.org>
 
 ---
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+v3:
+- Changed write_unlocked in struct kernfs_open_file from a bitfield to a bool
+- Expanded comments in kernfs.h and sysfs/file.c to clarify concurrency expectations and locking scope
 
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
+v2:
+- Avoid dropping splice_write support in kernfs_file_fops.
+- Introduce write_unlocked flag in struct kernfs_ops and struct kernfs_open_file to run sysfs ->store() without of->mutex.
+- Update commit subject and description to reflect the new locking approach.
+https://lore.kernel.org/all/bc6a8f1d-d7bf-43bf-80e2-c3489ded269a@mail.kernel.org/T/
 
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
+v1:
+https://lore.kernel.org/all/af4efe2d-7856-46ff-9088-28400130dbce@mail.kernel.org/T/
+---
+diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
+index 8e0e90c93..8084a858f 100644
+--- a/fs/kernfs/file.c
++++ b/fs/kernfs/file.c
+@@ -333,9 +333,11 @@ static ssize_t kernfs_fop_write_iter(struct kiocb *iocb, struct iov_iter *iter)
+ 	 * @of->mutex nests outside active ref and is used both to ensure that
+ 	 * the ops aren't called concurrently for the same open file.
+ 	 */
+-	mutex_lock(&of->mutex);
++	if (!of->write_unlocked)
++		mutex_lock(&of->mutex);
+ 	if (!kernfs_get_active_of(of)) {
+-		mutex_unlock(&of->mutex);
++		if (!of->write_unlocked)
++			mutex_unlock(&of->mutex);
+ 		len = -ENODEV;
+ 		goto out_free;
+ 	}
+@@ -347,7 +349,8 @@ static ssize_t kernfs_fop_write_iter(struct kiocb *iocb, struct iov_iter *iter)
+ 		len = -EINVAL;
+ 
+ 	kernfs_put_active_of(of);
+-	mutex_unlock(&of->mutex);
++	if (!of->write_unlocked)
++		mutex_unlock(&of->mutex);
+ 
+ 	if (len > 0)
+ 		iocb->ki_pos += len;
+@@ -651,6 +654,8 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
+ 	 * lockdep key, because the writable file /sys/power/resume may call vfs
+ 	 * lookup helpers for arbitrary paths and readonly files can be read by
+ 	 * overlayfs from vfs helpers when sysfs is a lower layer of overalyfs.
++	 * (Note that regular sysfs attributes no longer run ->store() under
++	 * @of->mutex, but other kernfs users still do.)
+ 	 *
+ 	 * All three cases look the same.  They're supposed to
+ 	 * look that way and give @of->mutex different static lockdep keys.
+@@ -666,10 +671,12 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
+ 	of->file = file;
+ 
+ 	/*
+-	 * Write path needs to atomic_write_len outside active reference.
+-	 * Cache it in open_file.  See kernfs_fop_write_iter() for details.
++	 * Write path needs atomic_write_len and write_unlocked outside
++	 * active reference.  Cache them in open_file.  See
++	 * kernfs_fop_write_iter() for details.
+ 	 */
+ 	of->atomic_write_len = ops->atomic_write_len;
++	of->write_unlocked = ops->write_unlocked;
+ 
+ 	error = -EINVAL;
+ 	/*
+diff --git a/fs/sysfs/file.c b/fs/sysfs/file.c
+index cd5bb0f9f..71a7faf43 100644
+--- a/fs/sysfs/file.c
++++ b/fs/sysfs/file.c
+@@ -132,7 +132,19 @@ static ssize_t sysfs_kf_read(struct kernfs_open_file *of, char *buf,
+ 	return min_t(ssize_t, count, len);
+ }
+ 
+-/* kernfs write callback for regular sysfs files */
++/*
++ * kernfs write callback for regular sysfs files.
++ *
++ * Regular sysfs files set .write_unlocked = true and are called without
++ * holding of->mutex. Sysfs ->store() maintains no per-open-file state, and
++ * concurrent opens already execute ->store() concurrently without
++ * serialization. Calling ->store() without of->mutex avoids circular
++ * locking dependencies when ->store() performs operations like path
++ * lookups or automounts while a generic VFS lock is held (such as a pipe
++ * lock during splice). Preallocated attributes still serialize buffer
++ * access via of->prealloc_mutex. Existing autofs and callback-owned lock
++ * dependencies remain outside this narrow change.
++ */
+ static ssize_t sysfs_kf_write(struct kernfs_open_file *of, char *buf,
+ 			      size_t count, loff_t pos)
+ {
+@@ -229,11 +241,13 @@ static const struct kernfs_ops sysfs_file_kfops_ro = {
+ 
+ static const struct kernfs_ops sysfs_file_kfops_wo = {
+ 	.write		= sysfs_kf_write,
++	.write_unlocked	= true,
+ };
+ 
+ static const struct kernfs_ops sysfs_file_kfops_rw = {
+ 	.seq_show	= sysfs_kf_seq_show,
+ 	.write		= sysfs_kf_write,
++	.write_unlocked	= true,
+ };
+ 
+ static const struct kernfs_ops sysfs_prealloc_kfops_ro = {
+@@ -244,12 +258,14 @@ static const struct kernfs_ops sysfs_prealloc_kfops_ro = {
+ static const struct kernfs_ops sysfs_prealloc_kfops_wo = {
+ 	.write		= sysfs_kf_write,
+ 	.prealloc	= true,
++	.write_unlocked	= true,
+ };
+ 
+ static const struct kernfs_ops sysfs_prealloc_kfops_rw = {
+ 	.read		= sysfs_kf_read,
+ 	.write		= sysfs_kf_write,
+ 	.prealloc	= true,
++	.write_unlocked	= true,
+ };
+ 
+ static const struct kernfs_ops sysfs_bin_kfops_ro = {
+diff --git a/include/linux/kernfs.h b/include/linux/kernfs.h
+index 351a5101c..cbb09f953 100644
+--- a/include/linux/kernfs.h
++++ b/include/linux/kernfs.h
+@@ -272,6 +272,7 @@ struct kernfs_open_file {
+ 	char			*prealloc_buf;
+ 
+ 	size_t			atomic_write_len;
++	bool			write_unlocked;
+ 	bool			mmapped:1;
+ 	bool			released:1;
+ 	const struct vm_operations_struct *vm_ops;
+@@ -320,6 +321,16 @@ struct kernfs_ops {
+ 	 * ->prealloc.  Provide ->read and ->write with ->prealloc.
+ 	 */
+ 	bool prealloc;
++	/*
++	 * "write_unlocked" indicates that ->write() does not require
++	 * per-open-file serialization with of->mutex and can be called
++	 * concurrently for the same open file. Callbacks must handle
++	 * concurrent execution. Buffer access for preallocated attributes
++	 * is still protected by of->prealloc_mutex. Lock dependencies from
++	 * callers (such as pipe locks during splice) or within callbacks
++	 * remain outside this scope.
++	 */
++	bool write_unlocked;
+ 	ssize_t (*write)(struct kernfs_open_file *of, char *buf, size_t bytes,
+ 			 loff_t off);
+ 
+
+
+base-commit: 93f51579e7df248780214094418f205253383cc5
+-- 
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
