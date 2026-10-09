@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07B4F370D5E
-	for <syzbot@lists.linux.dev>; Fri,  9 Oct 2026 19:10:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3554370ADF
+	for <syzbot@lists.linux.dev>; Fri,  9 Oct 2026 23:56:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791573003; cv=none; b=TNirW7jpnlj46Iy7ksPjHYlWQlmmeaYPkggtKjVrtw7f8RSWLcwzcRObrfEFS9rFyOVIw7QC8Bezkvze11j9osWrH5PAKv4fClJCAhvh2MwwnswN6Ob2aSwqRWYNo8c1bqRxO2lw8m5ZSY0n4mMKrl68S2AXFWIVKdcFZSxHtyY=
+	t=1791590216; cv=none; b=CJtSSfaTqVwy7JOFYTm5iU58Iihu/8c6pqmtOK/0mae7h5kL0gv7A5jPOX5UQx65ERtTSLWQnynKYkuL77pOvkn9ufQZ4XqYRzIq637W2eQZwYzBzAVdjYeI1NXYp6D5o2Xx0U7JTVfq5aSpDoM/HPfc6ldl1WOiek9y8xNJ5Us=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791573003; c=relaxed/simple;
-	bh=lRPHjqd9T07oMkFljoTxw6A+hlSiI+82jjh+Pbc9T00=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=TJFvCn3pFJCIvttkjjAdUMa0rLdz0LzLGJggLKCY9OfLQ9Ql0Df+8xegu/zVLvz5fVpYDXKGdpBR6UVNH+IJocr2JqMucNCelnPeYUW43EL3ejoeSaI+JQ9a1wsX080kfQV25MDhj6gH5lwXxlDEhQT2asjc6PaiRQgICMRXPaM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J8ZAi1Ag; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791590216; c=relaxed/simple;
+	bh=0USePrZ/yczKbxArrUyh3VYFtOmatjpYDXThMruDDhI=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ooCQTbAHkCLeQMGE8bcJ4wXDz4R1L30xmcjMgpDY10UYY+cVRGXNrNgFnBxtaUnJ3OexVfW2mJWlchAppnJtaDVGLYLZDd1IP6PM+ZIb9+5Nw7jmQDmzaPdhr3YILqhYb/mKHcUlaaXCL2qmS8G/15D99gH3ecykmazWWtw30ZU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jv+73NWY; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J8ZAi1Ag"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 897321F000FF;
-	Fri,  9 Oct 2026 19:10:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jv+73NWY"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 0CDEA1F000FF;
+	Fri,  9 Oct 2026 23:56:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791573001;
-	bh=C7Gpl/5jGP0y0uRRfewvqglIoN2ReWjSvwswcF99rTo=;
+	s=k20260515; t=1791590215;
+	bh=EbSmETMo4gzh599xUtVga5nAsYn31/UHYW60qWDVaXA=;
 	h=From:To:Cc:Subject:Date;
-	b=J8ZAi1AgtHAYFFRV+hmX8QKxP6MFf9aUvd0BxdislN6/uKL/L7RBC1JptH64ivaZh
-	 oryH/R3tepxloV6xj/mk7wV48LVDydPPjLA59t7EQoeildS83deeRVwKZXL/TBX/NT
-	 JO8qRamqnma0NVTRBNw2ipnj5hxJmYSFfXcAvw7OMKhSA7ySaDjmPrkNnrvUij7J+S
-	 KDI2WjJ7SMOabq0k035KidDdz613lkbhTDXijzFuYNcchUy72r+rCX5xMaHivu0m2s
-	 xHpjghUrK5Ad8HHkcP8BLEpZZE43jzNDGXKbs/q/BGL0JH3k9636345DE19Vrx24z6
-	 w4ZLMek3el+Iw==
+	b=jv+73NWY/JP4PGVI8XQ8pkdM26cj6xv6w3YNzsS/V+OWnoNX33srbD3l5C4g/1Rtg
+	 IOuS+TGGjotlYNM51bjcOexqQnVzepdl8fksmusxelxnJw25My4FZS5L0hN2afiUd3
+	 uZOn0YIZGOutjnhYbEsQ5IbWnX3x450mutotJQRI0/0D5ONPwowLu8zmdeK1aE/PeB
+	 haiWgrnN3141rLhZ09VZ/OLA2bod1mgddaA1wrbjZ9vqbQIId7wLA9eTljGxsyrknI
+	 HVN3HHxZt0ZLT08lhrPJGTm2qS+hsDD7djaCkPEvmsCx7Be64Eeit2AcLQTMoLeWNP
+	 1XzDm7cM1QaXg==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: immersa.bartosz.chronowski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v5] net/sched: taprio: catch up overdue cycles in advance_sched()
-Message-ID: <2fcb3fdb-42b4-4a7a-bf17-3b5a422bfa75@mail.kernel.org>
+Cc: sst@poczta.fm, syzbot@lists.linux.dev
+Subject: [PATCH RFC v2] media: dvb_frontend: fix OOB read in dtv_property_process_get()
+Message-ID: <a7a95e8f-6160-4bed-a950-43c578958049@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,265 +38,195 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Fri,  9 Oct 2026 19:10:01 +0000 (UTC)
+Date: Fri,  9 Oct 2026 23:56:54 +0000 (UTC)
 
-The taprio qdisc allows configuring small intervals which can overwhelm the
-CPU when using software timers. When the interval is shorter than the time
-it takes to process the timer interrupt, or when the system experiences
-scheduling delays, the timer expiration falls into the past. This
-overdue-absolute-deadline condition causes the hrtimer subsystem to
-repeatedly re-enqueue and fire the timer, resulting in an interrupt storm
-that starves CPU tasks and triggers RCU stalls:
+In dtv_property_process_get(), properties requested via the FE_GET_PROPERTY
+ioctl are processed and copied back to userspace. In struct dtv_property,
+member u is a union containing __u32 data, struct dtv_fe_stats st, and
+struct buffer (which has __u8 data[32] followed by __u32 len at offset 32).
+Commit 60f0618d157b ("media: dvb-core: frontend: make GET/SET safer")
+introduced an out-of-bounds read and a data corruption issue due to
+mishandling this union.
 
-rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-	1-...!: (1 GPs behind) idle=5b64/0/0x1 softirq=135954/135971 fqs=1
-Call Trace:
- <IRQ>
- advance_sched+0xc2/0xc80 net/sched/sch_taprio.c:930
- __run_hrtimer kernel/time/hrtimer.c:2032 [inline]
- __hrtimer_run_queues+0x3bc/0xa10 kernel/time/hrtimer.c:2096
- hrtimer_interrupt+0x448/0x910 kernel/time/hrtimer.c:2215
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1051 [inline]
- __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:1068
- sysvec_apic_timer_interrupt+0xa1/0xc0 arch/x86/kernel/apic/apic.c:1062
- </IRQ>
+For commands that only set tvp->u.data (such as DTV_FREQUENCY),
+tvp->u.buffer.len is never initialized by the kernel and retains whatever
+value userspace passed into the ioctl. At the end of
+dtv_property_process_get(), dev_dbg() unconditionally formatted the
+property using "%*ph", passing tvp->u.buffer.len as the field width and
+tvp->u.buffer.data as the buffer pointer. When dynamic debug is enabled and
+userspace supplies a large length value, vsprintf() emits a field width out
+of range warning, and hex_string() clamps the length to 64 bytes. Since
+struct dtv_property is 76 bytes long and u.buffer.data starts at offset 16,
+reading 64 bytes reaches offset 80 (4 bytes past the end of the slab
+object), triggering a KASAN slab-out-of-bounds read:
 
-Fix this by implementing bounded catch-up in advance_sched() instead of
-rejecting small intervals at admission time. When advance_sched() detects
-that the timer expiration is overdue, complete schedule periods are skipped
-arithmetically by advancing oper->cycle_end_time by the elapsed number of
-full cycles without exceeding any pending admin schedule base time. Overdue
-entries within the cycle are then traversed in a loop bounded by
-oper->num_entries to catch up to the active entry, and the next timer
-expiration is guaranteed to be in the future.
+field width 1163001896 out of range
+WARNING: lib/vsprintf.c:2654 at vsnprintf+0xb9c/0xd10 lib/vsprintf.c:2918
+Call trace:
+ set_field_width lib/vsprintf.c:2654 [inline]
+ vsnprintf+0xb9c/0xd10 lib/vsprintf.c:2918
+ pointer+0x5e8/0x6b4 lib/vsprintf.c:2577
+ vsnprintf+0x618/0xd10 lib/vsprintf.c:2953
+ dev_vprintk_emit+0x2ec/0x3b4 drivers/base/core.c:5000
+ dev_printk_emit+0xe0/0x130 drivers/base/core.c:5011
+ __dynamic_dev_dbg+0x1b4/0x254 lib/dynamic_debug.c:904
+ dtv_property_process_get+0x26bc/0x2838
+ drivers/media/dvb-core/dvb_frontend.c:1595
+ dvb_get_property drivers/media/dvb-core/dvb_frontend.c:2397 [inline]
+ dvb_frontend_handle_ioctl+0x1644/0x2424
+ drivers/media/dvb-core/dvb_frontend.c:2478
+ dvb_frontend_do_ioctl+0x124/0x278
+ drivers/media/dvb-core/dvb_frontend.c:2101
+ dvb_usercopy+0x2a4/0x4d4 drivers/media/dvb-core/dvbdev.c:996
+ dvb_frontend_ioctl+0x68/0x8c drivers/media/dvb-core/dvb_frontend.c:2115
+BUG: KASAN: slab-out-of-bounds in hex_string+0x274/0x364
+lib/vsprintf.c:1209
+Read of size 1 at addr ffff0000c240314c
 
-Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
+Additionally, commit 60f0618d157b added bounds checks that clamped
+tvp->u.buffer.len in all eight DTV_STAT_* cases. However, DTV_STAT_*
+commands populate tvp->u.st (struct dtv_fe_stats). In union u, u.buffer.len
+is located at offset 32, which directly overlaps bytes 3 to 6 of
+tvp->u.st.stat[3].uvalue (layer C statistics). Clamping and overwriting
+tvp->u.buffer.len therefore silently corrupted the statistics returned to
+userspace.
+
+Fix this by formatting with "%*ph" using tvp->u.buffer.len and
+tvp->u.buffer.data when tvp->cmd == DTV_ENUM_DELSYS, formatting tvp->u.st
+for DTV_STAT_* commands, and formatting tvp->u.data as "= 0x%08x" for all
+other commands. Furthermore, remove the bogus bounds clamping of
+tvp->u.buffer.len and the unused len variable from all DTV_STAT_* cases to
+prevent corruption of frontend statistics.
+
+Fixes: 60f0618d157b ("media: dvb-core: frontend: make GET/SET safer")
+
+Fixes: 60f0618d157b ("media: dvb-core: frontend: make GET/SET safer")
 Assisted-by: Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+f8850bc3986562f79619@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=f8850bc3986562f79619
-Link: https://syzkaller.appspot.com/ai_job?id=069b71fb-28b3-4676-9783-f9c3f6bf377d
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@google.com>
-To: "Jamal Hadi Salim" <jhs@mojatatu.com>
-To: "Jiri Pirko" <jiri@resnulli.us>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
-Cc: "Simon Horman" <horms@kernel.org>
+Reported-by: syzbot+6102f1c3a0ea8073fd64@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=6102f1c3a0ea8073fd64
+Link: https://syzkaller.appspot.com/ai_job?id=d2df895b-f169-41a7-b454-a604fb666c9b
+To: <linux-media@vger.kernel.org>
+To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
+Cc: "Hans Verkuil" <hverkuil+cisco@kernel.org>
+Cc: "Kees Cook" <kees@kernel.org>
 Cc: <linux-kernel@vger.kernel.org>
+Cc: "Ricardo Ribalda" <ribalda@chromium.org>
 
 ---
-v5:
-- Drop cycle_interval_sum and do not modify parse_taprio_schedule().
-- Avoid skipping past pending admin schedule base time during cycle catch-up.
-- Advance overdue entries within the cycle using a loop bounded by oper->num_entries.
-- Clamp timer expiration to at least now + 1 ns if still overdue.
-- Fix should_restart_cycle() to check for end_time >= cycle_end_time.
-- Handle cycle_end_time capping for the first entry in setup_first_end_time().
-
-v4:
-- Replace admission-time interval rejection with bounded catch-up in advance_sched().
-- Arithmetically advance overdue full periods instead of walking individual entries.
-- Record cycle_interval_sum in parse_taprio_schedule() to determine the cycle period.
-- Set timer expiration before releasing current_entry_lock.
-https://lore.kernel.org/all/a75dd710-09c2-4dce-bc7b-65fd6c4be4d8@mail.kernel.org/T/
-
-v3:
-- Reject intervals smaller than 100 us at admission time for software TAPRIO schedules instead of modifying advance_sched().
-- Drop catch-up cycle arithmetic, loop iteration limits, and physical expiration fallbacks from advance_sched().
-https://lore.kernel.org/all/ecbfe945-f1ab-45de-aaa0-b9b57ae730c2@mail.kernel.org/T/
-
 v2:
-- Removed the 1 microsecond admission policy for software taprio.
-- Reduced the loop iteration limit from 2048 to 32 to avoid softirq stalls.
-- Added handling for administrative schedules during fast-forwarding to avoid overshooting `admin->base_time`.
-- Split logical schedule deadline (`end_time`) and physical timer expiration (`expires`).
-- Updated the fallback mechanism to request a physical expiration 1 microsecond in the future relative to the current time rather than yielding the CPU.
-- Optimized gate close time calculation to only run once after the loop if not already calculated.
-https://lore.kernel.org/all/03dbde3b-8c45-46b6-8291-dd12bcc3120c@mail.kernel.org/T/
+- Format tvp->u.st with "%*ph" for DTV_STAT_* commands in dev_dbg()
 
 v1:
-https://lore.kernel.org/all/bc6a8890-9230-489a-bbce-5c255c1ef01a@mail.kernel.org/T/
+https://lore.kernel.org/all/2a5ea27d-445e-4ffe-9447-9d7bfccd4a36@mail.kernel.org/T/
 ---
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 299234a5f..31e123d97 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -875,7 +875,7 @@ static bool should_restart_cycle(const struct sched_gate_list *oper,
- 	if (list_is_last(&entry->list, &oper->entries))
- 		return true;
+diff --git a/drivers/media/dvb-core/dvb_frontend.c b/drivers/media/dvb-core/dvb_frontend.c
+index 0286da57f..7b9596396 100644
+--- a/drivers/media/dvb-core/dvb_frontend.c
++++ b/drivers/media/dvb-core/dvb_frontend.c
+@@ -1348,7 +1348,6 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
+ 				    struct file *file)
+ {
+ 	int ncaps;
+-	unsigned int len = 1;
  
--	if (ktime_compare(entry->end_time, oper->cycle_end_time) == 0)
-+	if (ktime_compare(entry->end_time, oper->cycle_end_time) >= 0)
- 		return true;
- 
- 	return false;
-@@ -924,8 +924,9 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
- 	int num_tc = netdev_get_num_tc(dev);
- 	struct sched_entry *entry, *next;
- 	struct Qdisc *sch = q->root;
--	ktime_t end_time;
--	int tc;
-+	ktime_t start_time, end_time, expires, now;
-+	bool admin_switched = false;
-+	int tc, i;
- 
- 	spin_lock(&q->current_entry_lock);
- 	entry = rcu_dereference_protected(q->current_entry,
-@@ -938,6 +939,8 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
- 	if (!oper)
- 		switch_schedules(q, &admin, &oper);
- 
-+	now = hrtimer_cb_get_time(timer);
-+
- 	/* This can happen in two cases: 1. this is the very first run
- 	 * of this function (i.e. we weren't running any schedule
- 	 * previously); 2. The previous schedule just ended. The first
-@@ -948,47 +951,98 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
- 		next = list_first_entry(&oper->entries, struct sched_entry,
- 					list);
- 		end_time = next->end_time;
--		goto first_run;
-+		if (ktime_after(end_time, now))
-+			goto first_run;
-+		entry = next;
+ 	switch (tvp->cmd) {
+ 	case DTV_ENUM_DELSYS:
+@@ -1358,7 +1357,6 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
+ 			ncaps++;
+ 		}
+ 		tvp->u.buffer.len = ncaps;
+-		len = ncaps;
+ 		break;
+ 	case DTV_FREQUENCY:
+ 		tvp->u.data = c->frequency;
+@@ -1536,51 +1534,27 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
+ 	/* Fill quality measures */
+ 	case DTV_STAT_SIGNAL_STRENGTH:
+ 		tvp->u.st = c->strength;
+-		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+-			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+-		len = tvp->u.buffer.len;
+ 		break;
+ 	case DTV_STAT_CNR:
+ 		tvp->u.st = c->cnr;
+-		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+-			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+-		len = tvp->u.buffer.len;
+ 		break;
+ 	case DTV_STAT_PRE_ERROR_BIT_COUNT:
+ 		tvp->u.st = c->pre_bit_error;
+-		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+-			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+-		len = tvp->u.buffer.len;
+ 		break;
+ 	case DTV_STAT_PRE_TOTAL_BIT_COUNT:
+ 		tvp->u.st = c->pre_bit_count;
+-		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+-			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+-		len = tvp->u.buffer.len;
+ 		break;
+ 	case DTV_STAT_POST_ERROR_BIT_COUNT:
+ 		tvp->u.st = c->post_bit_error;
+-		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+-			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+-		len = tvp->u.buffer.len;
+ 		break;
+ 	case DTV_STAT_POST_TOTAL_BIT_COUNT:
+ 		tvp->u.st = c->post_bit_count;
+-		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+-			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+-		len = tvp->u.buffer.len;
+ 		break;
+ 	case DTV_STAT_ERROR_BLOCK_COUNT:
+ 		tvp->u.st = c->block_error;
+-		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+-			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+-		len = tvp->u.buffer.len;
+ 		break;
+ 	case DTV_STAT_TOTAL_BLOCK_COUNT:
+ 		tvp->u.st = c->block_count;
+-		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
+-			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
+-		len = tvp->u.buffer.len;
+ 		break;
+ 	default:
+ 		dev_dbg(fe->dvb->device,
+@@ -1589,13 +1563,25 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
+ 		return -EINVAL;
  	}
  
--	if (should_restart_cycle(oper, entry)) {
--		next = list_first_entry(&oper->entries, struct sched_entry,
--					list);
--		oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
--						    oper->cycle_time);
--	} else {
--		next = list_next_entry(entry, list);
-+	if (oper->cycle_time > 0 && ktime_after(now, oper->cycle_end_time)) {
-+		s64 diff = ktime_to_ns(ktime_sub(now, oper->cycle_end_time));
-+		s64 cycles = div64_s64(diff, oper->cycle_time) + 1;
-+
-+		if (admin) {
-+			ktime_t admin_base = sched_base_time(admin);
-+
-+			if (ktime_after(ktime_add_ns(oper->cycle_end_time,
-+						     cycles * oper->cycle_time),
-+					admin_base)) {
-+				diff = ktime_to_ns(ktime_sub(admin_base,
-+							     oper->cycle_end_time));
-+				cycles = diff > 0 ? div64_s64(diff, oper->cycle_time) : 0;
-+			}
-+		}
-+
-+		if (cycles > 0) {
-+			s64 delta = cycles * oper->cycle_time;
-+
-+			oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time, delta);
-+			entry = NULL;
-+		}
- 	}
- 
--	end_time = ktime_add_ns(entry->end_time, next->interval);
--	end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
-+	for (i = 0; i < oper->num_entries; i++) {
-+		if (!entry) {
-+			next = list_first_entry(&oper->entries, struct sched_entry,
-+						list);
-+			start_time = ktime_sub_ns(oper->cycle_end_time,
-+						  oper->cycle_time);
-+		} else {
-+			start_time = entry->end_time;
-+
-+			if (should_restart_cycle(oper, entry)) {
-+				next = list_first_entry(&oper->entries,
-+							struct sched_entry, list);
-+				oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
-+								    oper->cycle_time);
-+			} else {
-+				next = list_next_entry(entry, list);
-+			}
-+		}
- 
--	for (tc = 0; tc < num_tc; tc++) {
--		if (next->gate_duration[tc] == oper->cycle_time)
--			next->gate_close_time[tc] = KTIME_MAX;
-+		if (list_is_last(&next->list, &oper->entries))
-+			end_time = oper->cycle_end_time;
- 		else
--			next->gate_close_time[tc] = ktime_add_ns(entry->end_time,
--								 next->gate_duration[tc]);
--	}
-+			end_time = min_t(ktime_t,
-+					 ktime_add_ns(start_time, next->interval),
-+					 oper->cycle_end_time);
-+
-+		if (should_change_schedules(admin, oper, end_time)) {
-+			switch_schedules(q, &admin, &oper);
-+			next = list_first_entry(&oper->entries, struct sched_entry,
-+						list);
-+			end_time = next->end_time;
-+			admin_switched = true;
-+			break;
-+		}
- 
--	if (should_change_schedules(admin, oper, end_time)) {
--		switch_schedules(q, &admin, &oper);
--		/* After changing schedules, the next entry is the first one
--		 * in the new schedule, with a pre-calculated end_time.
--		 */
--		next = list_first_entry(&oper->entries, struct sched_entry, list);
--		end_time = next->end_time;
-+		if (ktime_after(end_time, now))
-+			break;
-+
-+		entry = next;
-+		entry->end_time = end_time;
- 	}
- 
--	next->end_time = end_time;
--	taprio_set_budgets(q, oper, next);
-+	if (!admin_switched) {
-+		for (tc = 0; tc < num_tc; tc++) {
-+			if (next->gate_duration[tc] == oper->cycle_time)
-+				next->gate_close_time[tc] = KTIME_MAX;
-+			else
-+				next->gate_close_time[tc] = ktime_add_ns(start_time,
-+									 next->gate_duration[tc]);
-+		}
-+
-+		next->end_time = end_time;
-+		taprio_set_budgets(q, oper, next);
+-	if (len < 1)
+-		len = 1;
+-
+-	dev_dbg(fe->dvb->device,
+-		"%s: GET cmd 0x%08x (%s) len %d: %*ph\n",
+-		__func__, tvp->cmd, dtv_cmd_name(tvp->cmd),
+-		tvp->u.buffer.len, tvp->u.buffer.len, tvp->u.buffer.data);
++	if (tvp->cmd == DTV_ENUM_DELSYS) {
++		dev_dbg(fe->dvb->device,
++			"%s: GET cmd 0x%08x (%s) len %d: %*ph\n",
++			__func__, tvp->cmd, dtv_cmd_name(tvp->cmd),
++			tvp->u.buffer.len, tvp->u.buffer.len,
++			tvp->u.buffer.data);
++	} else if (tvp->cmd >= DTV_STAT_SIGNAL_STRENGTH &&
++		   tvp->cmd <= DTV_STAT_TOTAL_BLOCK_COUNT) {
++		dev_dbg(fe->dvb->device,
++			"%s: GET cmd 0x%08x (%s) len %d: %*ph\n",
++			__func__, tvp->cmd, dtv_cmd_name(tvp->cmd),
++			(int)sizeof(tvp->u.st), (int)sizeof(tvp->u.st),
++			&tvp->u.st);
++	} else {
++		dev_dbg(fe->dvb->device,
++			"%s: GET cmd 0x%08x (%s) = 0x%08x\n",
++			__func__, tvp->cmd, dtv_cmd_name(tvp->cmd),
++			tvp->u.data);
 +	}
  
- first_run:
- 	rcu_assign_pointer(q->current_entry, next);
-+	expires = end_time;
-+	if (unlikely(ktime_compare(expires, now) <= 0))
-+		expires = ktime_add_ns(now, 1);
-+	hrtimer_set_expires(&q->advance_timer, expires);
- 	spin_unlock(&q->current_entry_lock);
- 
--	hrtimer_set_expires(&q->advance_timer, end_time);
--
- 	rcu_read_lock();
- 	__netif_schedule(sch);
- 	rcu_read_unlock();
-@@ -1255,7 +1309,13 @@ static void setup_first_end_time(struct taprio_sched *q,
- 	/* FIXME: find a better place to do this */
- 	sched->cycle_end_time = ktime_add_ns(base, cycle);
- 
--	first->end_time = ktime_add_ns(base, first->interval);
-+	if (list_is_last(&first->list, &sched->entries))
-+		first->end_time = sched->cycle_end_time;
-+	else
-+		first->end_time = min_t(ktime_t,
-+					ktime_add_ns(base, first->interval),
-+					sched->cycle_end_time);
-+
- 	taprio_set_budgets(q, sched, first);
- 
- 	for (tc = 0; tc < num_tc; tc++) {
+ 	return 0;
+ }
 
 
-base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
+base-commit: 72d3fcf802c45d00b300f25b848a93c3a2bd7c7e
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
