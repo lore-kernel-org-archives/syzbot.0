@@ -1,311 +1,865 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1E4B4D4896
-	for <syzbot@lists.linux.dev>; Fri,  9 Oct 2026 12:52:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791550341; cv=pass; b=jF9owbDmgxSG61tg5tPuha2IBIwld0lmJYQh684hEaxh7SD2b7EDy+bXblIPN4rn1lTf7UEyAHDqWy190USIWqb0sR1ae+GiYZ/cb+EOJOIPEKLwvahSLZdWRAJ4cU3DTB12TSAJZ8cBveZrJ/UeVSOOWW355Vx+lnGBHgNjt54=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791550341; c=relaxed/simple;
-	bh=U3mWVifhXmsedMAOuTNx0745DltQevrneWcCfBkFrk4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mC1ECvlKhpEv+k2wIiQ1ImJbHn9CRdi/42Der4W8/q572IMOCMFOfEfllQkULc3Lmoah0O3Szlfjz1miG1ZB0Yd6xxlol4eg70Q9X+7bqp6gWQ05f6RCoCtVYzk3WnB5H5ce5nBNnSaDNw0jVZ/5HvlaCWRBh2Jtee+84DU8Dq8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fBGwED9o; arc=pass smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE0213D6CD4
+	for <syzbot@lists.linux.dev>; Fri,  9 Oct 2026 15:14:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791558899; cv=none; b=H5Cn0zQFGgz3mWk5OmrvFvub1350KfKBuN1u60VVhLtIso4antgNYa1QdyoOCOSKHK/nCAU30oWVQrkA17yAGu20ETPZl+it+2E9WgHH/xr0A7hpn5JlNf9k3UL0tnbkvenV9fDUSU2IN/PMyDzE2gIYP8ReXCTxlvfjIYp0SRY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791558899; c=relaxed/simple;
+	bh=j49O4/1y2FztXFQM5fSgZOJx+kAw7gev6BrpIVuA8+o=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=oV3EN3TCPAjUSMrKKALhezcKnxbqAd4jXPn0XkKNxo784utKBN5H186PMGdcem2YT8Pf74aYpLy8zynswxbcfItLbYV/sDxBdqwqIwEp/7WlCzz2nMDNPfRX9P1e3IhNQiMPQDbK8+zOdq3HUmE7Ew8cGiy/X+LdYmScnCBCVhw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=msRbA/oF; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fBGwED9o"
-Received: by smtp.kernel.org (Postfix)
-	id 22BDF1F00893; Fri,  9 Oct 2026 12:52:15 +0000 (UTC)
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=209.85.208.47
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1791550335;
-	b=vdWbMaIvJFn7MOAPWnPzPvnfGZr5cFezT0FcmhrXs+2o6+DQ1kvSTlfPuw+I++UyND8U
-	 2SGg1mhXxsz0PhCPNQaXsuU9RWRR+Sl3oUUgABbC1VkroKLV9tcsvUYcO1Rt5vnxALmSN
-	 FralMIHsBOSf0u+IIfuSFzj4r5zgUgAg1k4NgC7r8Gfn/QmlDRBL7VlVI14CeFNM/gHG2
-	 ZKPYPVMVsN1v6/xbKjEqW3YGaiyHm2MRW7XaYDLTvWR+Pxy1Np8cQ2tRMZ9KL6qoQsmkD
-	 7llFFA4PqVUuiZco37vPOSOeNMdISXScTgg4HBcRPOeBUgwJ+A/4DR/pJAVROA1E+Zg==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1791550335;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=AUsDGIO1ObMbqNmYlSxQRYtalG9ut+Z+xVGAxbmjTZc=;
-	b=MI6/DkX77Bhl5eXaz2uXCxQZXmZAvC2aozkU+mNHCu7ahkPNmId42jXHKEwHU1aQEDBn
-	 4Qsdgo6HsgFuqq1sMxaLltfPF8pzD4gpN7NO/cOQJ0Mm3RgF4sPTN4iZHnYX7xstV4JAU
-	 FPwC3IkQob4h/6CGwBLY862d4WUPWNRsWwNlK37OKdBJZiDpD5mIojhLe4PdFmJ6tVBOC
-	 3Ov6Pu7CEYu2gICZtdwrfMals2dvmfIu/a/0+ShWeTSHMdlF9ALgGfUvMQ0g3GHOd7z4r
-	 TgiPXXdX9GqzkX5h8HT4pazgZx1NMud2r+fTZIi/UcXdZ/ww9eEnVMtdBPaSasb+mHA==
-ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=fBGwED9o;
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	arc=none smtp.remote-ip=209.85.208.47
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 5E1E31F000FF
-	for <syzbot@kernel.org>; Fri,  9 Oct 2026 12:52:14 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=fBGwED9o
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 5E1E31F000FF
-Authentication-Results: smtp.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-6acb57c2b88so8949694a12.2
-        for <syzbot@kernel.org>; Fri, 09 Oct 2026 05:52:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791550332; x=1792155132; darn=kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=AUsDGIO1ObMbqNmYlSxQRYtalG9ut+Z+xVGAxbmjTZc=;
-        b=fBGwED9o9r9ldnGtW4SX/wENqQMLEqLrgmLucacDohvHA2MXUIPVt5COM4zvvNiSQl
-         2h0bB2NjxPbNaoYzI6QIEVHVvYxNHK2Oat4nn8ZBsRvxazgONmIpvXa8dVwGoIzU0nxe
-         rWdHWORd0uBS4FI+FsTqNSlfkjXWpgTu1mUDR3ZGjZt4aTj3sOBl49UpHDAhppSZcnNd
-         E7U6RYCqzKTQrdldqXXTF8SPrzQknyzMtnr9pJJRVqXvEkESOjSEN8XHQOeYCSenY6RT
-         v1/b+ob2A8WjKHOI3U2L9SRd09D/0Y+E1KoTzCtspM+7f5yo5HXzngql45TG582OlWJ5
-         kQpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791550332; x=1792155132;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=AUsDGIO1ObMbqNmYlSxQRYtalG9ut+Z+xVGAxbmjTZc=;
-        b=RKGw0xBL2L9Fdr8rtf2S5+JRQCcsVOtkF19r/d6feTEJxb8VNZZi2aPT7lfkcqJrDq
-         TRoGo/VLTqIfztihQ1/nMmKiKeJ7upF4icWp5Ua13RDJwpM5rQIcTIcgVQM5z+XmQ2MT
-         r4n+B3dAZrFN4NMJdF1c96VioorVtUoIYDlN3yq/qb5VlSExTRclGuvf97ZOcRPY6u0/
-         7Bcw2bYHGT7Db/UtZmldnG8ls+KrCX6y8AGs3DlrYsaDyV84SYsETJr4WQgaipPyWn8P
-         j57L1rLPCHCa3ihjVu9+jTxP0+hv4+CHq2m4G9BkvxJerzGicRYF+6NtC9a4ihmXeEz5
-         3nKA==
-X-Gm-Message-State: AFq9FYIdWlS7S8yjzgs8q42Mf9SXO/Vw7+5YFQIXq6Y2U3BJiO5SrJ7c
-	zTVxTHGr/ba65XDauPnZKArc2tr33TyHfue36a2FQ0KNz6DdU53M00MdtzIBdaHxGsaECQ==
-X-Gm-Gg: AYBFou0CKIa5ceAzwwE00AhfhNSKlQvKZDp40TRzjx+iIg9S7sc2IVrdd6rUVjaVZSJ
-	qN2yG7eUwn8yCuhPqbcV8MJ7nI7oTzx+E+sqCj8HMphlolkYp6d2W/E7qWoUxosTn3MzANqNDwT
-	k2QNyws7lM6YEyfdoyiqseNfgr/dutahxJbKS5G5ed05dfpjZ/QWtI4uHAsDpZ6OremGwv54e0y
-	xGYjrIKsl6yWrOpepv7xOTZ+ZAvbEPbJT7xdyHklvsfEeemn2i0dRW/sqVtptJ+MArKjPGEcM9v
-	q8NVx7gUrT6sbY2qkXFqQlVJbwWRCvkBVylIlcWCJcyLAMLKLtND98iC+TWfKS/d45EkXpwhhlF
-	QUKxOOw3VgTgQGuprjVgGB0Y9//zjAgwomXmT010yhSmUCLTqzsodaN9/2JmilNmB8RwBNPRSz6
-	PpZgEcY8IYTiIjccAoqLdngp5D1rQvb0GuDnDaNWyvYrZgzvNaw9rSvon5razc1aMI0Gf+AnkVU
-	OQ1MsNk5CepxVisPfhkgP6Uqb9AJm9z8u89IYVgap0wis+bnuCt11iNPAcFihGs8WcBxb0xxB4p
-	8yzbtlgHTP5yLcaYPCChxqB3EaaCT/ViRrNnt5dl1iWhDjVUEJdG04hAZlvNeoiyA8Qq8umZUrN
-	2zNtbF65lOCyJAffm+6muHrD0oeQ2ihEK3vOTcKi0W+EJ
-X-Received: by 2002:a17:906:f592:b0:c26:19de:912c with SMTP id a640c23a62f3a-c31aa07ba07mr221714666b.31.1791550332231;
-        Fri, 09 Oct 2026 05:52:12 -0700 (PDT)
-Received: from [192.168.100.100] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c31a9ae59f9sm86392466b.80.2026.10.09.05.52.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Oct 2026 05:52:11 -0700 (PDT)
-Message-ID: <63544210-d9ba-4f77-97d0-f4f1cd39d4d2@gmail.com>
-Date: Fri, 9 Oct 2026 14:52:11 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="msRbA/oF"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6D4211F000FF;
+	Fri,  9 Oct 2026 15:14:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791558897;
+	bh=ycnOMID6mLxFCdogr4phyixbBx2HtXNliqyMEcv+m9E=;
+	h=From:To:Cc:Subject:Date;
+	b=msRbA/oFNq2/BakvJzBmuF4fzSzJHCKDyBEdQuz0BLNBF6V7hsjyd3tMW986wD3iJ
+	 PpL9nqCjYqgnOIrLq6TJd8D1i2kbQiYxiTlVxW4cI8FgV6FOYQx1/Xr+MHsx0ff59s
+	 TSkckygC8/nX0iU6X++PnV6Zhix8DcyBiyjBF2MfasaiSYnzxw87yV/htw36rdfHQB
+	 G+OGkHROtlRVqKokfsiGpsPsStdbbsZj/CSrV1Xkj3Vvm751ZKUwpLhA4GpeWfR5Su
+	 xVsRwVh80L0ECA4I/jEmBohJyRpZX4dFTHGit/0CD//z1fieMGkeP6804KQQSfa1K4
+	 xOlWhzZrijg7g==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: immersa.bartosz.chronowski@gmail.com, syzbot@lists.linux.dev
+Subject: [PATCH RFC v5] net/sched: taprio: enforce minimum interval in software mode
+Message-ID: <9e73068d-a591-4830-a002-b08d999679fb@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v2] kernfs: do not hold of->mutex across sysfs
- ->store()
-To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-References: <bc6a8f1d-d7bf-43bf-80e2-c3489ded269a@mail.kernel.org>
-Content-Language: en-US
-From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-In-Reply-To: <bc6a8f1d-d7bf-43bf-80e2-c3489ded269a@mail.kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Date: Fri,  9 Oct 2026 15:14:57 +0000 (UTC)
 
-On 10/8/26 19:15, syzbot wrote:
-> A circular locking dependency was detected between &pipe->mutex (in struct
-> pipe_inode_info), &of->mutex (in struct kernfs_open_file), and
-> &sbi->pipe_mutex (in struct autofs_sb_info):
-> &pipe->mutex --> &of->mutex --> &sbi->pipe_mutex
-> 
-> The cycle arises from two conflicting execution paths: splicing data from
-> or to a pipe holds the pipe lock (&pipe->mutex) while invoking
-> ->write_iter() or ->read_iter() on the kernfs file, acquiring of->mutex
-> (&pipe->mutex -> &of->mutex). Conversely, a write to a sysfs file such as
-> /sys/power/resume acquires of->mutex and calls resume_store(), which
-> resolves paths via lookup_bdev() and kern_path(). Traversing an autofs
-> mount during lookup invokes autofs_notify_daemon(), which acquires
-> sbi->pipe_mutex and writes to the daemon pipe via __kernel_write(),
-> acquiring pipe->mutex (&of->mutex -> &sbi->pipe_mutex -> &pipe->mutex).
-> 
-> To address this, do not hold of->mutex across sysfs ->store() callbacks by
-> introducing a write_unlocked flag in struct kernfs_ops and caching it in
-> struct kernfs_open_file. Running ->store() without of->mutex is safe
-> because sysfs ->store() maintains no per-open-file state, and concurrent
-> opens of the same file already execute ->store() concurrently without
-> serialization. Other kernfs users retain per-open-file serialization under
-> of->mutex, and preallocated sysfs attributes still serialize buffer access
-> via of->prealloc_mutex.
-> 
-> Note that not every cycle is eliminated: a pipe spliced into such an
-> attribute stays locked while ->store() resolves paths, and callbacks
-> holding their own locks across lookup and ->show() retain dependencies.
-> 
-> Fixes: f2d6c2708bd8 ("kernfs: wire up ->splice_read and ->splice_write")
-> 
-> Fixes: 1e8c813b083c ("PM: hibernate: don't use early_lookup_bdev in resume_store")
-> Assisted-by: Gemini:gemini-3.8-flash syzbot
-> Reported-by: syzbot+002fb7b2d0bc53bf7e75@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=002fb7b2d0bc53bf7e75
-> Link: https://syzkaller.appspot.com/ai_job?id=8a561103-0443-4299-83d7-bc101cef8482
-> To: "Danilo Krummrich" <dakr@kernel.org>
-> To: <driver-core@lists.linux.dev>
-> To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-> To: "Rafael J. Wysocki" <rafael@kernel.org>
-> To: "Tejun Heo" <tj@kernel.org>
-> To: "Christoph Hellwig" <hch@lst.de>
-> Cc: <linux-kernel@vger.kernel.org>
-> 
-> ---
-> v2:
-> - Avoid dropping splice_write support in kernfs_file_fops.
-> - Introduce write_unlocked flag in struct kernfs_ops and struct kernfs_open_file to run sysfs ->store() without of->mutex.
-> - Update commit subject and description to reflect the new locking approach.
-> 
-> v1:
-> https://lore.kernel.org/all/af4efe2d-7856-46ff-9088-28400130dbce@mail.kernel.org/T/
-> ---
-> diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
-> index 8e0e90c93..8084a858f 100644
-> --- a/fs/kernfs/file.c
-> +++ b/fs/kernfs/file.c
-> @@ -333,9 +333,11 @@ static ssize_t kernfs_fop_write_iter(struct kiocb *iocb, struct iov_iter *iter)
->  	 * @of->mutex nests outside active ref and is used both to ensure that
->  	 * the ops aren't called concurrently for the same open file.
->  	 */
-> -	mutex_lock(&of->mutex);
-> +	if (!of->write_unlocked)
-> +		mutex_lock(&of->mutex);
->  	if (!kernfs_get_active_of(of)) {
-> -		mutex_unlock(&of->mutex);
-> +		if (!of->write_unlocked)
-> +			mutex_unlock(&of->mutex);
->  		len = -ENODEV;
->  		goto out_free;
->  	}
-> @@ -347,7 +349,8 @@ static ssize_t kernfs_fop_write_iter(struct kiocb *iocb, struct iov_iter *iter)
->  		len = -EINVAL;
->  
->  	kernfs_put_active_of(of);
-> -	mutex_unlock(&of->mutex);
-> +	if (!of->write_unlocked)
-> +		mutex_unlock(&of->mutex);
->  
->  	if (len > 0)
->  		iocb->ki_pos += len;
-> @@ -651,6 +654,8 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
->  	 * lockdep key, because the writable file /sys/power/resume may call vfs
->  	 * lookup helpers for arbitrary paths and readonly files can be read by
->  	 * overlayfs from vfs helpers when sysfs is a lower layer of overalyfs.
-> +	 * (Note that regular sysfs attributes no longer run ->store() under
-> +	 * @of->mutex, but other kernfs users still do.)
->  	 *
->  	 * All three cases look the same.  They're supposed to
->  	 * look that way and give @of->mutex different static lockdep keys.
-> @@ -666,10 +671,12 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
->  	of->file = file;
->  
->  	/*
-> -	 * Write path needs to atomic_write_len outside active reference.
-> -	 * Cache it in open_file.  See kernfs_fop_write_iter() for details.
-> +	 * Write path needs atomic_write_len and write_unlocked outside
-> +	 * active reference.  Cache them in open_file.  See
-> +	 * kernfs_fop_write_iter() for details.
->  	 */
->  	of->atomic_write_len = ops->atomic_write_len;
-> +	of->write_unlocked = ops->write_unlocked;
->  
->  	error = -EINVAL;
->  	/*
-> diff --git a/fs/sysfs/file.c b/fs/sysfs/file.c
-> index cd5bb0f9f..1a097e171 100644
-> --- a/fs/sysfs/file.c
-> +++ b/fs/sysfs/file.c
-> @@ -132,7 +132,17 @@ static ssize_t sysfs_kf_read(struct kernfs_open_file *of, char *buf,
->  	return min_t(ssize_t, count, len);
->  }
->  
-> -/* kernfs write callback for regular sysfs files */
-> +/*
-> + * kernfs write callback for regular sysfs files.
-> + *
-> + * Regular sysfs files set .write_unlocked = true and are called without
-> + * holding of->mutex. Sysfs attributes do not rely on per-open-file
-> + * serialization for writes, and calling ->store() without of->mutex avoids
-> + * circular locking dependencies (such as &pipe->mutex -> &of->mutex ->
-> + * &sbi->pipe_mutex -> &pipe->mutex) when ->store() performs operations like
-> + * path lookups or automounts while a generic VFS lock is held. Preallocated
-> + * attributes are still serialized by of->prealloc_mutex.
-> + */
->  static ssize_t sysfs_kf_write(struct kernfs_open_file *of, char *buf,
->  			      size_t count, loff_t pos)
->  {
-> @@ -229,11 +239,13 @@ static const struct kernfs_ops sysfs_file_kfops_ro = {
->  
->  static const struct kernfs_ops sysfs_file_kfops_wo = {
->  	.write		= sysfs_kf_write,
-> +	.write_unlocked	= true,
->  };
->  
->  static const struct kernfs_ops sysfs_file_kfops_rw = {
->  	.seq_show	= sysfs_kf_seq_show,
->  	.write		= sysfs_kf_write,
-> +	.write_unlocked	= true,
->  };
->  
->  static const struct kernfs_ops sysfs_prealloc_kfops_ro = {
-> @@ -244,12 +256,14 @@ static const struct kernfs_ops sysfs_prealloc_kfops_ro = {
->  static const struct kernfs_ops sysfs_prealloc_kfops_wo = {
->  	.write		= sysfs_kf_write,
->  	.prealloc	= true,
-> +	.write_unlocked	= true,
->  };
->  
->  static const struct kernfs_ops sysfs_prealloc_kfops_rw = {
->  	.read		= sysfs_kf_read,
->  	.write		= sysfs_kf_write,
->  	.prealloc	= true,
-> +	.write_unlocked	= true,
->  };
->  
->  static const struct kernfs_ops sysfs_bin_kfops_ro = {
-> diff --git a/include/linux/kernfs.h b/include/linux/kernfs.h
-> index 351a5101c..7cb7c248b 100644
-> --- a/include/linux/kernfs.h
-> +++ b/include/linux/kernfs.h
-> @@ -274,6 +274,7 @@ struct kernfs_open_file {
->  	size_t			atomic_write_len;
->  	bool			mmapped:1;
->  	bool			released:1;
-> +	bool			write_unlocked:1;
->  	const struct vm_operations_struct *vm_ops;
->  };
->  
-> @@ -320,6 +321,11 @@ struct kernfs_ops {
->  	 * ->prealloc.  Provide ->read and ->write with ->prealloc.
->  	 */
->  	bool prealloc;
-> +	/*
-> +	 * "write_unlocked" indicates that ->write() does not require
-> +	 * per-open-file serialization with of->mutex.
-> +	 */
-> +	bool write_unlocked;
->  	ssize_t (*write)(struct kernfs_open_file *of, char *buf, size_t bytes,
->  			 loff_t off);
->  
-> 
-> 
-> base-commit: 93f51579e7df248780214094418f205253383cc5
-Change the cached write_unlocked field in struct kernfs_open_file to a standalone bool, placed after atomic_write_len and before mmapped and released. The write path reads it before taking of->mutex or an active reference, including for files where the flag is false. The neighboring bitfields are updated at run time under of->mutex or the node mutex and share one C memory location with the added bitfield. A standalone bool keeps the cached flag separate from those mutable fields.
+In taprio software mode (when full offload and txtime-assist are not
+enabled), schedule advancement is driven in software by an hrtimer running
+advance_sched(). The minimum allowed duration for schedule entries was
+previously bounded only by length_to_duration(q, ETH_ZLEN). For high link
+speeds or small picos_per_byte, this allows entry intervals to be
+configured to extremely small values (e.g., tens of nanoseconds).
 
-Keep the current write_unlocked approach and the same four regular sysfs write tables that opt out of of->mutex. Preserve both splice methods, active-reference handling, prealloc_mutex and the existing serialization for reads, binary sysfs attributes, cgroup and resctrl. Keep the explicit statement that existing autofs and callback-owned lock dependencies remain outside this narrow change. Preserve the Reported-by, Closes, Link and Assisted-by tags.
+When entry intervals or cycle_time are configured to values shorter than
+the time required to execute the timer callback, the newly calculated
+expiration time is in the past. Consequently, the hrtimer subsystem
+repeatedly and immediately re-invokes advance_sched() in hardirq context,
+resulting in an interrupt storm that starves the CPU and triggers RCU
+stalls:
 
-Also use only Fixes: 1e8c813b083c ("PM: hibernate: don't use early_lookup_bdev in resume_store"), removing the additional f2d6c2708bd8 tag. Update the write-path comment and the flag documentation to describe the concurrent-callback contract. Shorten the repeated lock-chain explanation while retaining the buffer protection and known limits. Keep the current balanced error-path unlock.
+rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+rcu: 	0-...!: (1 GPs behind) idle=fc14/1/0x4000000000000000
+softirq=20212/20212 fqs=5
+rcu: 	(detected by 1, t=10502 jiffies, g=16909, q=1720 ncpus=2)
+Sending NMI from CPU 1 to CPUs 0:
+NMI backtrace for cpu 0
+CPU: 0 UID: 0 PID: 200 Comm: kworker/u9:4 Not tainted
+RIP: 0010:advance_sched+0x10f/0xc80 net/sched/sch_taprio.c:932
+Call Trace:
+ <IRQ>
+ __run_hrtimer kernel/time/hrtimer.c:2067 [inline]
+ __hrtimer_run_queues+0x3bc/0xa10 kernel/time/hrtimer.c:2124
+ hrtimer_interrupt+0x4cd/0xaa0 kernel/time/hrtimer.c:2243
+ local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1051 [inline]
+ __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:1068
+ sysvec_apic_timer_interrupt+0xa1/0xc0 arch/x86/kernel/apic/apic.c:1062
+ </IRQ>
 
+To prevent CPU starvation, define TAPRIO_MIN_SW_INTERVAL_NS (10 us) and
+introduce taprio_min_interval(). In software mode, each entry's duration
+and cycle_time are bounded to at least taprio_min_interval() (max(ETH_ZLEN
+duration, 10 us)). In steady-state operation, this ensures that entry
+durations are significantly larger than the execution latency of
+advance_sched(), allowing the CPU to service softirqs and advance RCU grace
+periods between normal timer interrupts. For TXTIME-assist and full-offload
+modes, advance_sched() does not drive schedule switching in software, so
+taprio_min_interval() continues to compute length_to_duration(q, ETH_ZLEN)
+without the 10 us clamp, preserving hardware offload capabilities.
+
+Unify the derivation of the effective schedule directly in
+parse_taprio_schedule(). When an explicit cycle_time is configured, entries
+exceeding cycle_time are dropped, any entry straddling the cycle boundary
+is truncated to fit the remaining cycle duration, and if the total duration
+is less than cycle_time, the final entry is extended to fill the cycle. The
+entries are reindexed and validated so that every effective interval
+satisfies taprio_min_interval(). Materializing this effective schedule
+in-place ensures that all consumers—including gate duration calculations
+(taprio_calculate_gate_durations), packet transmission lookup
+(find_entry_to_transmit), transmission budgets, queueMaxSDU validation, and
+hardware offload drivers—operate on an identical, consistent schedule
+definition without sub-minimum trailing intervals.
+
+To mitigate timer delays (e.g. from interrupt latency or preemption),
+advance_sched() now enforces bounded catch-up work and guarantees strictly
+future timer expiration. If the timer fires late such that the scheduled
+expiration time has already passed, advance_sched() advances step-by-step
+for at most 32 entries before falling back to taprio_fast_forward_sched().
+This fallback advances full cycles via division and scans the effective
+entries list once to locate the active entry. While the remaining time to
+that entry's boundary may be less than 10 us if the timer fired late into
+its window, subsequent intervals return to the configured minimum.
+Furthermore, if the resulting target expiration is still not in the future,
+it is clamped to at least taprio_min_interval(q) ahead of current time.
+Bounding catch-up work to at most 32 steps plus a single pass over the
+schedule entries list, and ensuring timer expiry is always strictly in the
+future, prevents advance_sched() from getting trapped in an hrtimer
+interrupt loop.
+
+Finally, parse and validate the schedule in taprio_change() before invoking
+netdev_set_num_tc(), stage max_sdu and fp configurations locally until
+commit time, ensure netdev traffic classes and driver state are cleanly
+rolled back on subsequent errors during initial setup, move
+taprio_calculate_gate_durations() after traffic classes are established,
+and reject empty schedules.
+
+Fixes: 6ca6a6654225 ("taprio: Add support for setting the cycle-time manually")
+Assisted-by: Gemini:gemini-3.8-flash syzbot
+Reported-by: syzbot+14c6ac6811273526cfa5@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=14c6ac6811273526cfa5
+Link: https://syzkaller.appspot.com/ai_job?id=f8888df0-4ae5-4e93-8956-65f2938114b2
+To: "David S. Miller" <davem@davemloft.net>
+To: "Eric Dumazet" <edumazet@google.com>
+To: "Jamal Hadi Salim" <jhs@mojatatu.com>
+To: "Jiri Pirko" <jiri@resnulli.us>
+To: "Jakub Kicinski" <kuba@kernel.org>
+To: <netdev@vger.kernel.org>
+To: "Paolo Abeni" <pabeni@redhat.com>
+To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
+Cc: "Simon Horman" <horms@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+
+---
+v5:
+- Factored out schedule fast-forward logic into taprio_fast_forward_sched().
+- Clarified commit description regarding fast-forward scanning of the effective list and narrowed 10 us interval claims to steady-state operation.
+- Staged max_sdu and fp configurations in taprio_change() to avoid premature state mutation before commit.
+- Restored flags, clockid, and tk_offset on rollback if setup fails during initial configuration in taprio_change().
+- Adjusted boundary time comparisons in find_entry_to_transmit(), is_valid_interval(), and get_packet_txtime().
+
+v4:
+- Unified effective schedule derivation in parse_taprio_schedule() by dropping out-of-bounds entries, truncating boundary-straddling entries, and padding trailing entries, ensuring all consumers operate on the identical schedule.
+- Moved entry interval validation to parse_taprio_schedule() to validate effective post-truncation intervals against taprio_min_interval().
+- Added bounded catch-up advancement (up to 32 entries) and fast-forward cycle calculation in advance_sched() to bound interrupt latency.
+- Enforced strictly future hrtimer expiration in advance_sched() by clamping end_time to at least taprio_min_interval() ahead of the current time.
+- Added cleanup logic to reset netdev traffic classes in taprio_change() if an error occurs after netdev_set_num_tc().
+- Added safety checks for NULL oper in should_change_schedules() and advance_sched().
+- Updated curr_intv_start boundary check in find_entry_to_transmit().
+https://lore.kernel.org/all/e048bbcd-a352-43e2-bef2-a08c12b27099@mail.kernel.org/T/
+
+v3:
+- Ensure schedule entries truncated by an explicit cycle_time meet min_duration in parse_taprio_schedule()
+- Clamp first entry end_time to cycle_time in setup_first_end_time()
+- Parse and validate schedule before applying netdev traffic class configuration in taprio_change()
+- Reject schedules with no entries in parse_taprio_schedule()
+- Update commit message to detail the serviceability guarantee, cycle truncation handling, and offload mode arithmetic
+https://lore.kernel.org/all/5a7fa927-7ed9-4c7b-82b8-97cb8fdadfc9@mail.kernel.org/T/
+
+v2:
+- Enforce a minimum interval of 10 us (TAPRIO_MIN_SW_INTERVAL_NS) in software mode instead of comparing cycle_time against the sum of intervals.
+- Add taprio_min_interval() helper to determine the minimum interval based on offload and txtime-assist flags.
+- Use taprio_min_interval() in fill_sched_entry() and parse_taprio_schedule().
+https://lore.kernel.org/all/edd30c9e-6673-42a0-ab07-b7fb2bb67795@mail.kernel.org/T/
+
+v1:
+https://lore.kernel.org/all/3527dbf1-ab94-4184-8405-8552799efb71@mail.kernel.org/T/
+---
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 39ac5b97a..54a84ac58 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -48,6 +48,10 @@ static struct static_key_false taprio_have_working_mqprio;
+  * 60 * 17 > PSEC_PER_NSEC (1000)
+  */
+ #define TAPRIO_PICOS_PER_BYTE_MIN 17
++/* Minimum interval for software mode (hrtimer-driven advance_sched) to
++ * avoid hrtimer interrupt storms and CPU starvation.
++ */
++#define TAPRIO_MIN_SW_INTERVAL_NS (10 * NSEC_PER_USEC)
+ 
+ struct sched_entry {
+ 	/* Durations between this GCL entry and the GCL entry where the
+@@ -259,6 +263,17 @@ static int length_to_duration(struct taprio_sched *q, int len)
+ 	return div_u64(len * atomic64_read(&q->picos_per_byte), PSEC_PER_NSEC);
+ }
+ 
++static int taprio_min_interval(struct taprio_sched *q)
++{
++	int min_duration = length_to_duration(q, ETH_ZLEN);
++
++	if (!FULL_OFFLOAD_IS_ENABLED(q->flags) &&
++	    !TXTIME_ASSIST_IS_ENABLED(q->flags))
++		min_duration = max_t(int, min_duration, TAPRIO_MIN_SW_INTERVAL_NS);
++
++	return min_duration;
++}
++
+ static int duration_to_length(struct taprio_sched *q, u64 duration)
+ {
+ 	return div_u64(duration * PSEC_PER_NSEC, atomic64_read(&q->picos_per_byte));
+@@ -270,7 +285,8 @@ static int duration_to_length(struct taprio_sched *q, u64 duration)
+  */
+ static void taprio_update_queue_max_sdu(struct taprio_sched *q,
+ 					struct sched_gate_list *sched,
+-					struct qdisc_size_table *stab)
++					struct qdisc_size_table *stab,
++					const u32 max_sdu_user[TC_MAX_QUEUE])
+ {
+ 	struct net_device *dev = qdisc_dev(q->root);
+ 	int num_tc = netdev_get_num_tc(dev);
+@@ -280,7 +296,7 @@ static void taprio_update_queue_max_sdu(struct taprio_sched *q,
+ 	int tc;
+ 
+ 	for (tc = 0; tc < num_tc; tc++) {
+-		max_sdu_from_user = q->max_sdu[tc] ?: U32_MAX;
++		max_sdu_from_user = max_sdu_user[tc] ?: U32_MAX;
+ 
+ 		/* TC gate never closes => keep the queueMaxSDU
+ 		 * selected by the user
+@@ -357,7 +373,7 @@ static struct sched_entry *find_entry_to_transmit(struct sk_buff *skb,
+ 		curr_intv_end = get_interval_end_time(sched, admin, entry,
+ 						      curr_intv_start);
+ 
+-		if (ktime_after(curr_intv_start, cycle_end))
++		if (ktime_compare(curr_intv_start, cycle_end) >= 0)
+ 			break;
+ 
+ 		if (!(entry->gate_mask & BIT(tc)) ||
+@@ -366,10 +382,10 @@ static struct sched_entry *find_entry_to_transmit(struct sk_buff *skb,
+ 
+ 		txtime = entry->next_txtime;
+ 
+-		if (ktime_before(txtime, time) || validate_interval) {
++		if (!ktime_after(txtime, time) || validate_interval) {
+ 			transmit_end_time = ktime_add_ns(time, packet_transmit_time);
+-			if ((ktime_before(curr_intv_start, time) &&
+-			     ktime_before(transmit_end_time, curr_intv_end)) ||
++			if ((!ktime_after(curr_intv_start, time) &&
++			     !ktime_after(transmit_end_time, curr_intv_end)) ||
+ 			    (ktime_after(curr_intv_start, time) && !validate_interval)) {
+ 				entry_found = entry;
+ 				*interval_start = curr_intv_start;
+@@ -405,8 +421,19 @@ static bool is_valid_interval(struct sk_buff *skb, struct Qdisc *sch)
+ 	struct sched_entry *entry;
+ 
+ 	rcu_read_lock();
+-	sched = rcu_dereference(q->oper_sched);
+ 	admin = rcu_dereference(q->admin_sched);
++	sched = rcu_dereference(q->oper_sched);
++
++	if (admin && !ktime_before(skb->tstamp, admin->base_time)) {
++		sched = admin;
++		admin = NULL;
++	}
++
++	/* Until the schedule starts, all the queues are open */
++	if (!sched || ktime_before(skb->tstamp, sched->base_time)) {
++		rcu_read_unlock();
++		return true;
++	}
+ 
+ 	entry = find_entry_to_transmit(skb, sch, sched, admin, skb->tstamp,
+ 				       &interval_start, &interval_end, true);
+@@ -484,7 +511,7 @@ static long get_packet_txtime(struct sk_buff *skb, struct Qdisc *sch)
+ 	rcu_read_lock();
+ 	admin = rcu_dereference(q->admin_sched);
+ 	sched = rcu_dereference(q->oper_sched);
+-	if (admin && ktime_after(minimum_time, admin->base_time))
++	if (admin && !ktime_before(minimum_time, admin->base_time))
+ 		switch_schedules(q, &admin, &sched);
+ 
+ 	/* Until the schedule starts, all the queues are open */
+@@ -513,8 +540,9 @@ static long get_packet_txtime(struct sk_buff *skb, struct Qdisc *sch)
+ 		txtime = max_t(ktime_t, txtime, interval_start);
+ 
+ 		if (admin && admin != sched &&
+-		    ktime_after(txtime, admin->base_time)) {
++		    !ktime_before(txtime, admin->base_time)) {
+ 			sched = admin;
++			admin = NULL;
+ 			sched_changed = true;
+ 			continue;
+ 		}
+@@ -888,7 +916,7 @@ static bool should_change_schedules(const struct sched_gate_list *admin,
+ {
+ 	ktime_t next_base_time, extension_time;
+ 
+-	if (!admin)
++	if (!admin || !oper)
+ 		return false;
+ 
+ 	next_base_time = sched_base_time(admin);
+@@ -916,6 +944,126 @@ static bool should_change_schedules(const struct sched_gate_list *admin,
+ 	return false;
+ }
+ 
++static void taprio_advance_one_entry(struct taprio_sched *q,
++				     struct sched_gate_list **p_oper,
++				     struct sched_gate_list **p_admin,
++				     struct sched_entry **p_entry,
++				     struct sched_entry **p_next,
++				     ktime_t *p_end_time,
++				     int num_tc)
++{
++	struct sched_gate_list *oper = *p_oper;
++	struct sched_gate_list *admin = *p_admin;
++	struct sched_entry *entry = *p_entry;
++	struct sched_entry *next;
++	ktime_t end_time;
++	int tc;
++
++	if (should_restart_cycle(oper, entry)) {
++		next = list_first_entry(&oper->entries, struct sched_entry,
++					list);
++		oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
++						    oper->cycle_time);
++	} else {
++		next = list_next_entry(entry, list);
++	}
++
++	end_time = ktime_add_ns(entry->end_time, next->interval);
++	end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
++
++	for (tc = 0; tc < num_tc; tc++) {
++		if (next->gate_duration[tc] == oper->cycle_time)
++			next->gate_close_time[tc] = KTIME_MAX;
++		else
++			next->gate_close_time[tc] = ktime_add_ns(entry->end_time,
++								 next->gate_duration[tc]);
++	}
++
++	if (should_change_schedules(admin, oper, end_time)) {
++		switch_schedules(q, &admin, &oper);
++		*p_admin = admin;
++		*p_oper = oper;
++		next = list_first_entry(&oper->entries, struct sched_entry, list);
++		end_time = next->end_time;
++	}
++
++	next->end_time = end_time;
++	taprio_set_budgets(q, oper, next);
++
++	*p_entry = next;
++	*p_next = next;
++	*p_end_time = end_time;
++}
++
++static void taprio_fast_forward_sched(struct taprio_sched *q,
++				      struct sched_gate_list **p_oper,
++				      struct sched_gate_list **p_admin,
++				      struct sched_entry **p_next,
++				      ktime_t *p_end_time,
++				      ktime_t now,
++				      int num_tc)
++{
++	struct sched_gate_list *oper = *p_oper;
++	struct sched_gate_list *admin = *p_admin;
++	struct sched_entry *entry, *next;
++	ktime_t end_time, cur_start;
++	s64 diff;
++	int tc;
++
++	if (admin && ktime_compare(sched_base_time(admin), now) <= 0)
++		switch_schedules(q, &admin, &oper);
++
++	diff = ktime_sub(now, oper->cycle_end_time);
++	if (diff >= 0) {
++		u64 cycles = div64_u64(diff, oper->cycle_time) + 1;
++
++		oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
++						    cycles * oper->cycle_time);
++	}
++
++	cur_start = ktime_sub_ns(oper->cycle_end_time, oper->cycle_time);
++	next = list_last_entry(&oper->entries, struct sched_entry, list);
++	end_time = oper->cycle_end_time;
++
++	list_for_each_entry(entry, &oper->entries, list) {
++		ktime_t cur_end = ktime_add_ns(cur_start, entry->interval);
++
++		if (ktime_compare(cur_end, now) > 0) {
++			next = entry;
++			end_time = min_t(ktime_t, cur_end, oper->cycle_end_time);
++			next->end_time = end_time;
++			for (tc = 0; tc < num_tc; tc++) {
++				u64 dur = next->gate_duration[tc];
++
++				if (dur == oper->cycle_time)
++					next->gate_close_time[tc] = KTIME_MAX;
++				else
++					next->gate_close_time[tc] =
++						ktime_add_ns(cur_start, dur);
++			}
++			taprio_set_budgets(q, oper, next);
++			break;
++		}
++		cur_start = cur_end;
++	}
++
++	if (should_change_schedules(admin, oper, end_time)) {
++		switch_schedules(q, &admin, &oper);
++		next = list_first_entry(&oper->entries, struct sched_entry, list);
++		end_time = next->end_time;
++	}
++
++	if (unlikely(ktime_compare(end_time, now) <= 0)) {
++		end_time = ktime_add_ns(now, taprio_min_interval(q));
++		next->end_time = end_time;
++	}
++
++	*p_oper = oper;
++	*p_admin = admin;
++	*p_next = next;
++	*p_end_time = end_time;
++}
++
+ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ {
+ 	struct taprio_sched *q = container_of(timer, struct taprio_sched,
+@@ -925,8 +1073,7 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 	int num_tc = netdev_get_num_tc(dev);
+ 	struct sched_entry *entry, *next;
+ 	struct Qdisc *sch = q->root;
+-	ktime_t end_time;
+-	int tc;
++	ktime_t end_time, now;
+ 
+ 	spin_lock(&q->current_entry_lock);
+ 	entry = rcu_dereference_protected(q->current_entry,
+@@ -939,6 +1086,13 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 	if (!oper)
+ 		switch_schedules(q, &admin, &oper);
+ 
++	if (unlikely(!oper)) {
++		spin_unlock(&q->current_entry_lock);
++		return HRTIMER_NORESTART;
++	}
++
++	now = taprio_get_time(q);
++
+ 	/* This can happen in two cases: 1. this is the very first run
+ 	 * of this function (i.e. we weren't running any schedule
+ 	 * previously); 2. The previous schedule just ended. The first
+@@ -949,42 +1103,26 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+ 		next = list_first_entry(&oper->entries, struct sched_entry,
+ 					list);
+ 		end_time = next->end_time;
+-		goto first_run;
+-	}
+-
+-	if (should_restart_cycle(oper, entry)) {
+-		next = list_first_entry(&oper->entries, struct sched_entry,
+-					list);
+-		oper->cycle_end_time = ktime_add_ns(oper->cycle_end_time,
+-						    oper->cycle_time);
+ 	} else {
+-		next = list_next_entry(entry, list);
++		taprio_advance_one_entry(q, &oper, &admin, &entry, &next,
++					 &end_time, num_tc);
+ 	}
+ 
+-	end_time = ktime_add_ns(entry->end_time, next->interval);
+-	end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
++	if (unlikely(ktime_compare(end_time, now) <= 0)) {
++		size_t max_steps = min_t(size_t, oper->num_entries, 32);
++		size_t i;
+ 
+-	for (tc = 0; tc < num_tc; tc++) {
+-		if (next->gate_duration[tc] == oper->cycle_time)
+-			next->gate_close_time[tc] = KTIME_MAX;
+-		else
+-			next->gate_close_time[tc] = ktime_add_ns(entry->end_time,
+-								 next->gate_duration[tc]);
+-	}
++		for (i = 0; i < max_steps && ktime_compare(end_time, now) <= 0; i++) {
++			entry = next;
++			taprio_advance_one_entry(q, &oper, &admin, &entry, &next,
++						 &end_time, num_tc);
++		}
+ 
+-	if (should_change_schedules(admin, oper, end_time)) {
+-		switch_schedules(q, &admin, &oper);
+-		/* After changing schedules, the next entry is the first one
+-		 * in the new schedule, with a pre-calculated end_time.
+-		 */
+-		next = list_first_entry(&oper->entries, struct sched_entry, list);
+-		end_time = next->end_time;
++		if (ktime_compare(end_time, now) <= 0)
++			taprio_fast_forward_sched(q, &oper, &admin, &next,
++						  &end_time, now, num_tc);
+ 	}
+ 
+-	next->end_time = end_time;
+-	taprio_set_budgets(q, oper, next);
+-
+-first_run:
+ 	rcu_assign_pointer(q->current_entry, next);
+ 	spin_unlock(&q->current_entry_lock);
+ 
+@@ -1130,7 +1268,11 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+ 				 struct sched_gate_list *new,
+ 				 struct netlink_ext_ack *extack)
+ {
++	int min_duration = taprio_min_interval(q);
++	struct sched_entry *entry, *n;
++	s64 elapsed = 0;
+ 	int err = 0;
++	int i = 0;
+ 
+ 	if (tb[TCA_TAPRIO_ATTR_SCHED_SINGLE_ENTRY]) {
+ 		NL_SET_ERR_MSG(extack, "Adding a single entry is not supported");
+@@ -1152,8 +1294,12 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+ 	if (err < 0)
+ 		return err;
+ 
++	if (list_empty(&new->entries)) {
++		NL_SET_ERR_MSG(extack, "There should be at least one entry in the schedule");
++		return -EINVAL;
++	}
++
+ 	if (!new->cycle_time) {
+-		struct sched_entry *entry;
+ 		ktime_t cycle = 0;
+ 
+ 		list_for_each_entry(entry, &new->entries, list)
+@@ -1167,12 +1313,45 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+ 		new->cycle_time = cycle;
+ 	}
+ 
+-	if (new->cycle_time < new->num_entries * length_to_duration(q, ETH_ZLEN)) {
++	if (new->cycle_time < min_duration) {
+ 		NL_SET_ERR_MSG(extack, "'cycle_time' is too small");
+ 		return -EINVAL;
+ 	}
+ 
+-	taprio_calculate_gate_durations(q, new);
++	list_for_each_entry_safe(entry, n, &new->entries, list) {
++		if (elapsed >= new->cycle_time) {
++			list_del(&entry->list);
++			kfree(entry);
++			new->num_entries--;
++			continue;
++		}
++
++		if (elapsed + entry->interval > new->cycle_time) {
++			entry->interval = new->cycle_time - elapsed;
++			elapsed = new->cycle_time;
++		} else {
++			elapsed += entry->interval;
++		}
++	}
++
++	if (list_empty(&new->entries)) {
++		NL_SET_ERR_MSG(extack, "There should be at least one entry in the schedule");
++		return -EINVAL;
++	}
++
++	if (elapsed < new->cycle_time) {
++		entry = list_last_entry(&new->entries, struct sched_entry, list);
++		entry->interval += new->cycle_time - elapsed;
++	}
++
++	list_for_each_entry(entry, &new->entries, list) {
++		if (entry->interval < min_duration) {
++			NL_SET_ERR_MSG(extack, "Invalid interval for schedule entry");
++			return -EINVAL;
++		}
++		entry->index = i++;
++	}
++	new->num_entries = i;
+ 
+ 	return 0;
+ }
+@@ -1256,7 +1435,7 @@ static void setup_first_end_time(struct taprio_sched *q,
+ 	/* FIXME: find a better place to do this */
+ 	sched->cycle_end_time = ktime_add_ns(base, cycle);
+ 
+-	first->end_time = ktime_add_ns(base, first->interval);
++	first->end_time = ktime_add_ns(base, min_t(s64, first->interval, cycle));
+ 	taprio_set_budgets(q, sched, first);
+ 
+ 	for (tc = 0; tc < num_tc; tc++) {
+@@ -1349,11 +1528,11 @@ static int taprio_dev_notifier(struct notifier_block *nb, unsigned long event,
+ 		rcu_read_lock();
+ 		oper = rcu_dereference(q->oper_sched);
+ 		if (oper)
+-			taprio_update_queue_max_sdu(q, oper, stab);
++			taprio_update_queue_max_sdu(q, oper, stab, q->max_sdu);
+ 
+ 		admin = rcu_dereference(q->admin_sched);
+ 		if (admin)
+-			taprio_update_queue_max_sdu(q, admin, stab);
++			taprio_update_queue_max_sdu(q, admin, stab, q->max_sdu);
+ 		rcu_read_unlock();
+ 
+ 		break;
+@@ -1516,6 +1695,8 @@ static void taprio_cleanup_broken_mqprio(struct taprio_sched *q)
+ static int taprio_enable_offload(struct net_device *dev,
+ 				 struct taprio_sched *q,
+ 				 struct sched_gate_list *sched,
++				 const u32 max_sdu[TC_MAX_QUEUE],
++				 u32 fp[TC_QOPT_MAX_QUEUE],
+ 				 struct netlink_ext_ack *extack)
+ {
+ 	const struct net_device_ops *ops = dev->netdev_ops;
+@@ -1534,7 +1715,7 @@ static int taprio_enable_offload(struct net_device *dev,
+ 
+ 	if (!caps.supports_queue_max_sdu) {
+ 		for (tc = 0; tc < TC_MAX_QUEUE; tc++) {
+-			if (q->max_sdu[tc]) {
++			if (max_sdu[tc]) {
+ 				NL_SET_ERR_MSG_MOD(extack,
+ 						   "Device does not handle queueMaxSDU");
+ 				return -EOPNOTSUPP;
+@@ -1553,10 +1734,10 @@ static int taprio_enable_offload(struct net_device *dev,
+ 	mqprio_qopt_reconstruct(dev, &offload->mqprio.qopt);
+ 	offload->mqprio.extack = extack;
+ 	taprio_sched_to_offload(dev, sched, offload, &caps);
+-	mqprio_fp_to_offload(q->fp, &offload->mqprio);
++	mqprio_fp_to_offload(fp, &offload->mqprio);
+ 
+ 	for (tc = 0; tc < TC_MAX_QUEUE; tc++)
+-		offload->max_sdu[tc] = q->max_sdu[tc];
++		offload->max_sdu[tc] = max_sdu[tc];
+ 
+ 	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
+ 	if (err < 0) {
+@@ -1747,14 +1928,14 @@ static int taprio_parse_tc_entry(struct Qdisc *sch,
+ 
+ static int taprio_parse_tc_entries(struct Qdisc *sch,
+ 				   struct nlattr *opt,
++				   u32 max_sdu[TC_MAX_QUEUE],
++				   u32 fp[TC_QOPT_MAX_QUEUE],
+ 				   struct netlink_ext_ack *extack)
+ {
+ 	struct taprio_sched *q = qdisc_priv(sch);
+ 	struct net_device *dev = qdisc_dev(sch);
+-	u32 max_sdu[TC_QOPT_MAX_QUEUE];
+ 	bool have_preemption = false;
+ 	unsigned long seen_tcs = 0;
+-	u32 fp[TC_QOPT_MAX_QUEUE];
+ 	struct nlattr *n;
+ 	int tc, rem;
+ 	int err = 0;
+@@ -1772,8 +1953,6 @@ static int taprio_parse_tc_entries(struct Qdisc *sch,
+ 	}
+ 
+ 	for (tc = 0; tc < TC_QOPT_MAX_QUEUE; tc++) {
+-		WRITE_ONCE(q->max_sdu[tc], max_sdu[tc]);
+-		WRITE_ONCE(q->fp[tc], fp[tc]);
+ 		if (fp[tc] != TC_FP_EXPRESS)
+ 			have_preemption = true;
+ 	}
+@@ -1792,7 +1971,7 @@ static int taprio_parse_tc_entries(struct Qdisc *sch,
+ 		}
+ 	}
+ 
+-	return err;
++	return 0;
+ }
+ 
+ static int taprio_mqprio_cmp(const struct net_device *dev,
+@@ -1825,13 +2004,27 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 	struct qdisc_size_table *stab = rtnl_dereference(sch->stab);
+ 	struct nlattr *tb[TCA_TAPRIO_ATTR_MAX + 1] = { };
+ 	struct sched_gate_list *oper, *admin, *new_admin;
++	enum tk_offsets old_tk_offset;
+ 	struct taprio_sched *q = qdisc_priv(sch);
+ 	struct net_device *dev = qdisc_dev(sch);
+ 	struct tc_mqprio_qopt *mqprio = NULL;
++	u32 max_sdu[TC_MAX_QUEUE] = { };
++	u32 fp[TC_QOPT_MAX_QUEUE] = { };
++	bool tc_configured = false;
++	int old_clockid, i, err;
+ 	unsigned long flags;
++	bool initial_setup;
+ 	u32 taprio_flags;
++	u32 old_flags;
+ 	ktime_t start;
+-	int i, err;
++
++	oper = rtnl_dereference(q->oper_sched);
++	admin = rtnl_dereference(q->admin_sched);
++	initial_setup = (!oper && !admin);
++
++	old_flags = q->flags;
++	old_clockid = q->clockid;
++	old_tk_offset = q->tk_offset;
+ 
+ 	err = nla_parse_nested_deprecated(tb, TCA_TAPRIO_ATTR_MAX, opt,
+ 					  taprio_policy, extack);
+@@ -1866,41 +2059,62 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 		WRITE_ONCE(q->flags, taprio_flags);
+ 	}
+ 
++	if (tb[TCA_TAPRIO_ATTR_TXTIME_DELAY]) {
++		if (!TXTIME_ASSIST_IS_ENABLED(q->flags)) {
++			NL_SET_ERR_MSG_MOD(extack, "txtime-delay can only be set when txtime-assist mode is enabled");
++			err = -EINVAL;
++			goto free_sched;
++		}
++	}
++
+ 	/* Needed for length_to_duration() during netlink attribute parsing */
+ 	taprio_set_picos_per_byte(dev, q, extack);
+ 
+ 	err = taprio_parse_mqprio_opt(dev, mqprio, extack, q->flags);
+ 	if (err < 0)
+-		return err;
++		goto free_sched;
+ 
+-	err = taprio_parse_tc_entries(sch, opt, extack);
++	err = taprio_parse_tc_entries(sch, opt, max_sdu, fp, extack);
+ 	if (err)
+-		return err;
++		goto free_sched;
+ 
+ 	new_admin = kzalloc_obj(*new_admin);
+ 	if (!new_admin) {
+ 		NL_SET_ERR_MSG(extack, "Not enough memory for a new schedule");
+-		return -ENOMEM;
++		err = -ENOMEM;
++		goto free_sched;
+ 	}
+ 	INIT_LIST_HEAD(&new_admin->entries);
+ 
+-	oper = rtnl_dereference(q->oper_sched);
+-	admin = rtnl_dereference(q->admin_sched);
+-
+ 	/* no changes - no new mqprio settings */
+ 	if (!taprio_mqprio_cmp(dev, mqprio))
+ 		mqprio = NULL;
+ 
+-	if (mqprio && (oper || admin)) {
++	if (mqprio && !initial_setup) {
+ 		NL_SET_ERR_MSG(extack, "Changing the traffic mapping of a running schedule is not supported");
+ 		err = -ENOTSUPP;
+ 		goto free_sched;
+ 	}
+ 
++	err = parse_taprio_schedule(q, tb, new_admin, extack);
++	if (err < 0)
++		goto free_sched;
++
++	if (new_admin->num_entries == 0) {
++		NL_SET_ERR_MSG(extack, "There should be at least one entry in the schedule");
++		err = -EINVAL;
++		goto free_sched;
++	}
++
++	err = taprio_parse_clockid(sch, tb, extack);
++	if (err < 0)
++		goto free_sched;
++
+ 	if (mqprio) {
+ 		err = netdev_set_num_tc(dev, mqprio->num_tc);
+ 		if (err)
+ 			goto free_sched;
++		tc_configured = true;
+ 		for (i = 0; i < mqprio->num_tc; i++) {
+ 			netdev_set_tc_queue(dev, i,
+ 					    mqprio->count[i],
+@@ -1914,24 +2128,12 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 					       mqprio->prio_tc_map[i]);
+ 	}
+ 
+-	err = parse_taprio_schedule(q, tb, new_admin, extack);
+-	if (err < 0)
+-		goto free_sched;
++	taprio_calculate_gate_durations(q, new_admin);
+ 
+-	if (new_admin->num_entries == 0) {
+-		NL_SET_ERR_MSG(extack, "There should be at least one entry in the schedule");
+-		err = -EINVAL;
+-		goto free_sched;
+-	}
+-
+-	err = taprio_parse_clockid(sch, tb, extack);
+-	if (err < 0)
+-		goto free_sched;
+-
+-	taprio_update_queue_max_sdu(q, new_admin, stab);
++	taprio_update_queue_max_sdu(q, new_admin, stab, max_sdu);
+ 
+ 	if (FULL_OFFLOAD_IS_ENABLED(q->flags))
+-		err = taprio_enable_offload(dev, q, new_admin, extack);
++		err = taprio_enable_offload(dev, q, new_admin, max_sdu, fp, extack);
+ 	else
+ 		err = taprio_disable_offload(dev, q, extack);
+ 	if (err)
+@@ -1940,15 +2142,10 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 	/* Protects against enqueue()/dequeue() */
+ 	spin_lock_bh(qdisc_lock(sch));
+ 
+-	if (tb[TCA_TAPRIO_ATTR_TXTIME_DELAY]) {
+-		if (!TXTIME_ASSIST_IS_ENABLED(q->flags)) {
+-			NL_SET_ERR_MSG_MOD(extack, "txtime-delay can only be set when txtime-assist mode is enabled");
+-			err = -EINVAL;
+-			goto unlock;
+-		}
+-
+-		WRITE_ONCE(q->txtime_delay,
+-			   nla_get_u32(tb[TCA_TAPRIO_ATTR_TXTIME_DELAY]));
++	err = taprio_get_start_time(sch, new_admin, &start);
++	if (err < 0) {
++		NL_SET_ERR_MSG(extack, "Internal error: failed get start time");
++		goto unlock;
+ 	}
+ 
+ 	if (!TXTIME_ASSIST_IS_ENABLED(q->flags) &&
+@@ -1957,11 +2154,14 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 		hrtimer_setup(&q->advance_timer, advance_sched, q->clockid, HRTIMER_MODE_ABS);
+ 	}
+ 
+-	err = taprio_get_start_time(sch, new_admin, &start);
+-	if (err < 0) {
+-		NL_SET_ERR_MSG(extack, "Internal error: failed get start time");
+-		goto unlock;
+-	}
++	if (tb[TCA_TAPRIO_ATTR_TXTIME_DELAY])
++		WRITE_ONCE(q->txtime_delay,
++			   nla_get_u32(tb[TCA_TAPRIO_ATTR_TXTIME_DELAY]));
++
++	for (i = 0; i < TC_MAX_QUEUE; i++)
++		WRITE_ONCE(q->max_sdu[i], max_sdu[i]);
++	for (i = 0; i < TC_QOPT_MAX_QUEUE; i++)
++		WRITE_ONCE(q->fp[i], fp[i]);
+ 
+ 	setup_txtime(q, new_admin, start);
+ 
+@@ -2008,6 +2208,16 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 	spin_unlock_bh(qdisc_lock(sch));
+ 
+ free_sched:
++	if (err && initial_setup) {
++		if (tc_configured) {
++			netdev_reset_tc(dev);
++			memset(q->cur_txq, 0, sizeof(q->cur_txq));
++		}
++		WRITE_ONCE(q->flags, old_flags);
++		q->clockid = old_clockid;
++		WRITE_ONCE(q->tk_offset, old_tk_offset);
++	}
++
+ 	if (new_admin)
+ 		call_rcu(&new_admin->rcu, taprio_free_sched_cb);
+ 
+
+
+base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
 -- 
-Krystian Kaniewski
+This is an AI-generated patch subject to moderation.
+Reply with '#syz upstream' to Sign-off the patch as a human author
+and send it to the upstream kernel mailing lists.
+Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+You can comment on the patch as usual, syzbot will try to address
+the comments and send a new version of the patch if necessary.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
