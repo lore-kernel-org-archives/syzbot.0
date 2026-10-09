@@ -1,345 +1,311 @@
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ECFD34CCE
-	for <syzbot@lists.linux.dev>; Fri,  9 Oct 2026 09:54:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791539679; cv=none; b=PlPgxX2EO6mkMwrf7GfOeoto8/4p4P6tCHWQj/U5Uek1+VFnP2e/TB+7p+19ps3kRQNRq9FeQ4ry062SNdX1bkpyb0jLdllaLucw1aUVrn4zTzuIHkQjMJnaxbjzrKr6yI8+ubyXTDAldjXPFrhKX7N7xoR3OD+Caw1ksRlZEmE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791539679; c=relaxed/simple;
-	bh=aeu1hpY4KclAgmQxX3l2cL1Q+yPSl56I63MZuBlr90k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kjv8SleihNtgmdgNVrhlNzeTGcZZhbyNmZt9nDhoYYp9/yePSKBBqt5x7nO3fBVhrMhGqgvCLz1qiQ7LM/MeI3faJMb6hy3hTvjR4il5VVpbd1OUJkZP4nR+GnR6vCOmtZCpEQSPbf66WZC5O/U1RV8K5BPEti6kegqbtvRqoRQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aEkqpLTw; arc=none smtp.client-ip=209.85.208.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1E4B4D4896
+	for <syzbot@lists.linux.dev>; Fri,  9 Oct 2026 12:52:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791550341; cv=pass; b=jF9owbDmgxSG61tg5tPuha2IBIwld0lmJYQh684hEaxh7SD2b7EDy+bXblIPN4rn1lTf7UEyAHDqWy190USIWqb0sR1ae+GiYZ/cb+EOJOIPEKLwvahSLZdWRAJ4cU3DTB12TSAJZ8cBveZrJ/UeVSOOWW355Vx+lnGBHgNjt54=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791550341; c=relaxed/simple;
+	bh=U3mWVifhXmsedMAOuTNx0745DltQevrneWcCfBkFrk4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=mC1ECvlKhpEv+k2wIiQ1ImJbHn9CRdi/42Der4W8/q572IMOCMFOfEfllQkULc3Lmoah0O3Szlfjz1miG1ZB0Yd6xxlol4eg70Q9X+7bqp6gWQ05f6RCoCtVYzk3WnB5H5ce5nBNnSaDNw0jVZ/5HvlaCWRBh2Jtee+84DU8Dq8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fBGwED9o; arc=pass smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aEkqpLTw"
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-6ae185cc40fso2914696a12.1
-        for <syzbot@lists.linux.dev>; Fri, 09 Oct 2026 02:54:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fBGwED9o"
+Received: by smtp.kernel.org (Postfix)
+	id 22BDF1F00893; Fri,  9 Oct 2026 12:52:15 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=209.85.208.47
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1791550335;
+	b=vdWbMaIvJFn7MOAPWnPzPvnfGZr5cFezT0FcmhrXs+2o6+DQ1kvSTlfPuw+I++UyND8U
+	 2SGg1mhXxsz0PhCPNQaXsuU9RWRR+Sl3oUUgABbC1VkroKLV9tcsvUYcO1Rt5vnxALmSN
+	 FralMIHsBOSf0u+IIfuSFzj4r5zgUgAg1k4NgC7r8Gfn/QmlDRBL7VlVI14CeFNM/gHG2
+	 ZKPYPVMVsN1v6/xbKjEqW3YGaiyHm2MRW7XaYDLTvWR+Pxy1Np8cQ2tRMZ9KL6qoQsmkD
+	 7llFFA4PqVUuiZco37vPOSOeNMdISXScTgg4HBcRPOeBUgwJ+A/4DR/pJAVROA1E+Zg==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1791550335;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=AUsDGIO1ObMbqNmYlSxQRYtalG9ut+Z+xVGAxbmjTZc=;
+	b=MI6/DkX77Bhl5eXaz2uXCxQZXmZAvC2aozkU+mNHCu7ahkPNmId42jXHKEwHU1aQEDBn
+	 4Qsdgo6HsgFuqq1sMxaLltfPF8pzD4gpN7NO/cOQJ0Mm3RgF4sPTN4iZHnYX7xstV4JAU
+	 FPwC3IkQob4h/6CGwBLY862d4WUPWNRsWwNlK37OKdBJZiDpD5mIojhLe4PdFmJ6tVBOC
+	 3Ov6Pu7CEYu2gICZtdwrfMals2dvmfIu/a/0+ShWeTSHMdlF9ALgGfUvMQ0g3GHOd7z4r
+	 TgiPXXdX9GqzkX5h8HT4pazgZx1NMud2r+fTZIi/UcXdZ/ww9eEnVMtdBPaSasb+mHA==
+ARC-Authentication-Results: i=1; smtp.kernel.org; dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=fBGwED9o;
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	arc=none smtp.remote-ip=209.85.208.47
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 5E1E31F000FF
+	for <syzbot@kernel.org>; Fri,  9 Oct 2026 12:52:14 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=fBGwED9o
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 5E1E31F000FF
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-6acb57c2b88so8949694a12.2
+        for <syzbot@kernel.org>; Fri, 09 Oct 2026 05:52:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791539675; x=1792144475; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=3U/weMNjE0RNv9GxK0mpfZnY51CIXTmL1yTgvRjCJRk=;
-        b=aEkqpLTwTFOwC2TiFMqibG0CjvNGQ08/Lashi/PM6Of9guYQIa41+AcUWIm3f1AJhk
-         RcocrsWa7zQ0yNgLHdokgSySfdb/Y0yj8EAOyqYGsPyP0X24pNk9rPShi3ddx3TLhdjD
-         uJcOCoUJVCFp1BCwPdpohZXA7FEk2sxIhilchoAViM/4373lyU7tbpkD2Per873K9HIq
-         tUEZeAgO7IXkbBRVksnpWmpwZs6z5SoBmyywgEc9mU2qvOXButFyEwZJx+DE4o4CoHFM
-         yl61TMwvh0aH2dwxRKrbDJoZmYjqGdG2cOUWoPnKW2Im0Digp7tieQohPaMzFr9dGwFB
-         sKcQ==
+        d=gmail.com; s=20251104; t=1791550332; x=1792155132; darn=kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=AUsDGIO1ObMbqNmYlSxQRYtalG9ut+Z+xVGAxbmjTZc=;
+        b=fBGwED9o9r9ldnGtW4SX/wENqQMLEqLrgmLucacDohvHA2MXUIPVt5COM4zvvNiSQl
+         2h0bB2NjxPbNaoYzI6QIEVHVvYxNHK2Oat4nn8ZBsRvxazgONmIpvXa8dVwGoIzU0nxe
+         rWdHWORd0uBS4FI+FsTqNSlfkjXWpgTu1mUDR3ZGjZt4aTj3sOBl49UpHDAhppSZcnNd
+         E7U6RYCqzKTQrdldqXXTF8SPrzQknyzMtnr9pJJRVqXvEkESOjSEN8XHQOeYCSenY6RT
+         v1/b+ob2A8WjKHOI3U2L9SRd09D/0Y+E1KoTzCtspM+7f5yo5HXzngql45TG582OlWJ5
+         kQpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791539675; x=1792144475;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=3U/weMNjE0RNv9GxK0mpfZnY51CIXTmL1yTgvRjCJRk=;
-        b=fW0wJ6MFndvWimHaWlysw+aEblTVeu6rqf7LRbM4OluIUv4X6LgxnxgfHyLPJZAlcO
-         BZFQaRP5UPNEg784pH1H7Kgau5LHGU/vIiEF+BTiML+7s/mVRI4oNCzVvHg3FXN5dLMe
-         9eO1vWxYEYlC7AXWrj8mheUiMroFzyK5E4E73XGJHzQxbjwOsHPbd6sSOY1bG9ZsmyFC
-         wRMmIvTemWaJfinB7jqftjsrZAqteuzSOg2B2hdKEhCZZQkBPCTe3j30LBBJYCFUUDhN
-         BOUJq615id10nHToLDu+b4BvAojCPrkOMr/eqlKNCeguy6j8SFTnTMgC6+CSxrnbEZZL
-         kWRQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzKdeTjEHPvF5T0+Ljf+43WRTL0UQkWJdCjy356GGTbn5sfB+8JWPyCxdlB2SZVpX5AoN6Fshg=@lists.linux.dev
-X-Gm-Message-State: AFq9FYIGkm0HXefUHBiZICBwKhJP0uAJs35tT8AU/GHfdZ1FeQcbongd
-	BDP9k9T/HQcb826ju2sUZOYlfZn/qWcSOG4J6sZodO2smHwgcBruW9+t
-X-Gm-Gg: AYBFou0W407ilN+VrYG8E0S7mX6IFB7/ZK7bEqpTykvVKXyqHxtVGkckaTJDiHL15Rk
-	1M2QxzFpO2O1km47H38QCj6cUEydMd+jPwSxUHDi8MJES6MTQdd3bBAswAzJy7hzDXVetSUsV42
-	JQtBgBAuJxakoYUMtFCcYPnEag2b6RyFK3r02Eu7Qx9946drcl5+SjipT2bk1tLXueyiBeoAANN
-	64LD9C1wQCJO+uTg17MhmSP1fWTufgTvYqvuWWreFvfrM67nM/hCxfzpi535BRMcIAsXv1ZUQFf
-	eLKQ/xto2sZs6L1HdUB7yX5IrOpD5Dz9of+SblopOyLtbZ8MwmJhP0Bm1XzzybYlO9sQR7jqFIL
-	Q0kvhfSWAd0AyND8BqY/RXf9udIHs37n2sGmbAIVcrFPteyNLmQC4DM9yoH+ndmZ0A/ZyKO4x4o
-	D1+YpcaGs+O7CRVF6jb0GyQJ7GXB1vX4BwQQaz3Ta3AXJGz628dhxdWV2DCAGN3SHjXs+7czMjY
-	HEmKtJPqvg6Hz2dTHBAAg==
-X-Received: by 2002:a17:907:1c81:b0:c25:f7db:4bec with SMTP id a640c23a62f3a-c31a9f94581mr148321366b.18.1791539675373;
-        Fri, 09 Oct 2026 02:54:35 -0700 (PDT)
-Received: from localhost ([37.30.48.8])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c31a9a3bbeesm70028366b.18.2026.10.09.02.54.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Oct 2026 02:54:35 -0700 (PDT)
-Date: Fri, 9 Oct 2026 11:54:34 +0200
-From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC v4] net/sched: taprio: catch up overdue cycles in
- advance_sched()
-Message-ID: <gjvyztem7smxfqj7zovzr7gga5lzofyffoprnecwv4wkrh7bqx@567y5bpr64q6>
-References: <a75dd710-09c2-4dce-bc7b-65fd6c4be4d8@mail.kernel.org>
+        d=1e100.net; s=20260707; t=1791550332; x=1792155132;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=AUsDGIO1ObMbqNmYlSxQRYtalG9ut+Z+xVGAxbmjTZc=;
+        b=RKGw0xBL2L9Fdr8rtf2S5+JRQCcsVOtkF19r/d6feTEJxb8VNZZi2aPT7lfkcqJrDq
+         TRoGo/VLTqIfztihQ1/nMmKiKeJ7upF4icWp5Ua13RDJwpM5rQIcTIcgVQM5z+XmQ2MT
+         r4n+B3dAZrFN4NMJdF1c96VioorVtUoIYDlN3yq/qb5VlSExTRclGuvf97ZOcRPY6u0/
+         7Bcw2bYHGT7Db/UtZmldnG8ls+KrCX6y8AGs3DlrYsaDyV84SYsETJr4WQgaipPyWn8P
+         j57L1rLPCHCa3ihjVu9+jTxP0+hv4+CHq2m4G9BkvxJerzGicRYF+6NtC9a4ihmXeEz5
+         3nKA==
+X-Gm-Message-State: AFq9FYIdWlS7S8yjzgs8q42Mf9SXO/Vw7+5YFQIXq6Y2U3BJiO5SrJ7c
+	zTVxTHGr/ba65XDauPnZKArc2tr33TyHfue36a2FQ0KNz6DdU53M00MdtzIBdaHxGsaECQ==
+X-Gm-Gg: AYBFou0CKIa5ceAzwwE00AhfhNSKlQvKZDp40TRzjx+iIg9S7sc2IVrdd6rUVjaVZSJ
+	qN2yG7eUwn8yCuhPqbcV8MJ7nI7oTzx+E+sqCj8HMphlolkYp6d2W/E7qWoUxosTn3MzANqNDwT
+	k2QNyws7lM6YEyfdoyiqseNfgr/dutahxJbKS5G5ed05dfpjZ/QWtI4uHAsDpZ6OremGwv54e0y
+	xGYjrIKsl6yWrOpepv7xOTZ+ZAvbEPbJT7xdyHklvsfEeemn2i0dRW/sqVtptJ+MArKjPGEcM9v
+	q8NVx7gUrT6sbY2qkXFqQlVJbwWRCvkBVylIlcWCJcyLAMLKLtND98iC+TWfKS/d45EkXpwhhlF
+	QUKxOOw3VgTgQGuprjVgGB0Y9//zjAgwomXmT010yhSmUCLTqzsodaN9/2JmilNmB8RwBNPRSz6
+	PpZgEcY8IYTiIjccAoqLdngp5D1rQvb0GuDnDaNWyvYrZgzvNaw9rSvon5razc1aMI0Gf+AnkVU
+	OQ1MsNk5CepxVisPfhkgP6Uqb9AJm9z8u89IYVgap0wis+bnuCt11iNPAcFihGs8WcBxb0xxB4p
+	8yzbtlgHTP5yLcaYPCChxqB3EaaCT/ViRrNnt5dl1iWhDjVUEJdG04hAZlvNeoiyA8Qq8umZUrN
+	2zNtbF65lOCyJAffm+6muHrD0oeQ2ihEK3vOTcKi0W+EJ
+X-Received: by 2002:a17:906:f592:b0:c26:19de:912c with SMTP id a640c23a62f3a-c31aa07ba07mr221714666b.31.1791550332231;
+        Fri, 09 Oct 2026 05:52:12 -0700 (PDT)
+Received: from [192.168.100.100] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c31a9ae59f9sm86392466b.80.2026.10.09.05.52.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Oct 2026 05:52:11 -0700 (PDT)
+Message-ID: <63544210-d9ba-4f77-97d0-f4f1cd39d4d2@gmail.com>
+Date: Fri, 9 Oct 2026 14:52:11 +0200
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <a75dd710-09c2-4dce-bc7b-65fd6c4be4d8@mail.kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v2] kernfs: do not hold of->mutex across sysfs
+ ->store()
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+References: <bc6a8f1d-d7bf-43bf-80e2-c3489ded269a@mail.kernel.org>
+Content-Language: en-US
+From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+In-Reply-To: <bc6a8f1d-d7bf-43bf-80e2-c3489ded269a@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The v4 patch is not ready for upstream. Skipping complete overdue periods is
-the right direction. The exact target appeared in 2/4 baseline VMs and 0/4
-patched VMs in the comparable run, but the arithmetic still produces an
-invalid gate interval for an accepted schedule.
-
-Consider entry durations [5u, u] and an explicit cycle of 2u, where u is a
-duration unit and B is the cycle origin. The first entry is truncated at
-B + 2u. With the sampled time at B + 5u, v4 can publish a start at B + 7u
-while both the end and cycle end are B + 4u. The start is after the end, and
-the next timer expiry is already in the past.
-
-1. In advance_sched(), derive catch-up from the effective, truncated
-   schedule. Select a coherent current entry, keep its start, end and cycle
-   end ordered, and arm a strictly future expiry. Bound the work by the
-   schedule size. Preserve the operational entry until the administrative
-   schedule activates, derive masks and budgets from the selected entry,
-   and serialize entry and timer updates with schedule replacement.
-2. Check implicit cycles and explicit cycles shorter than, equal to and
-   longer than the entry sum, including first- and later-entry truncation,
-   exact expiry and delays spanning whole periods plus a remainder.
-   Compare the exact reproducer on a target-reproducing baseline and the
-   patched kernel with matching configuration and exposure.
-
-Keep the patch as small as possible while preserving the required behavior;=
- avoid unrelated refactoring.
-
-Impact assessment: Overdue software TAPRIO timer work can starve a CPU long
-enough to trigger an RCU stall. The invalid schedule state remains a
-correctness blocker despite suppression of the selected runtime trigger.
-
-Kind Regards / Mit freundlichen Gr=C3=BC=C3=9Fen
-BART CHRONOWSKI
-
-On Tue, Sep 29, 2026 at 01:06:19PM +0000, syzbot wrote:
-> The taprio qdisc allows configuring small intervals which can overwhelm t=
-he
-> CPU when using software timers. When the interval is shorter than the time
-> it takes to process the timer interrupt, or when the system experiences
-> scheduling delays, the timer expiration falls into the past. This
-> overdue-absolute-deadline condition causes the hrtimer subsystem to
-> repeatedly re-enqueue and fire the timer, resulting in an interrupt storm
-> that starves CPU tasks and triggers RCU stalls:
->=20
-> rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-> 	1-...!: (1 GPs behind) idle=3D5b64/0/0x1 softirq=3D135954/135971 fqs=3D1
-> Call Trace:
->  <IRQ>
->  advance_sched+0xc2/0xc80 net/sched/sch_taprio.c:930
->  __run_hrtimer kernel/time/hrtimer.c:2032 [inline]
->  __hrtimer_run_queues+0x3bc/0xa10 kernel/time/hrtimer.c:2096
->  hrtimer_interrupt+0x448/0x910 kernel/time/hrtimer.c:2215
->  local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1051 [inline]
->  __sysvec_apic_timer_interrupt+0x102/0x430 arch/x86/kernel/apic/apic.c:10=
-68
->  sysvec_apic_timer_interrupt+0xa1/0xc0 arch/x86/kernel/apic/apic.c:1062
->  </IRQ>
->=20
-> Fix this by implementing bounded catch-up in advance_sched() instead of
-> rejecting small intervals at admission time. When advance_sched() detects
-> that the timer expiration is overdue, complete schedule periods are skipp=
-ed
-> arithmetically by advancing start_time, end_time, and oper->cycle_end_time
-> by the elapsed number of full cycles. Residual entry transitions are left
-> to subsequent callbacks to prevent unbounded replay while avoiding
-> multi-entry walks in a single callback that could circle back to an entry
-> visible to lockless dequeue readers.
->=20
-> Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio schedule=
-r")
+On 10/8/26 19:15, syzbot wrote:
+> A circular locking dependency was detected between &pipe->mutex (in struct
+> pipe_inode_info), &of->mutex (in struct kernfs_open_file), and
+> &sbi->pipe_mutex (in struct autofs_sb_info):
+> &pipe->mutex --> &of->mutex --> &sbi->pipe_mutex
+> 
+> The cycle arises from two conflicting execution paths: splicing data from
+> or to a pipe holds the pipe lock (&pipe->mutex) while invoking
+> ->write_iter() or ->read_iter() on the kernfs file, acquiring of->mutex
+> (&pipe->mutex -> &of->mutex). Conversely, a write to a sysfs file such as
+> /sys/power/resume acquires of->mutex and calls resume_store(), which
+> resolves paths via lookup_bdev() and kern_path(). Traversing an autofs
+> mount during lookup invokes autofs_notify_daemon(), which acquires
+> sbi->pipe_mutex and writes to the daemon pipe via __kernel_write(),
+> acquiring pipe->mutex (&of->mutex -> &sbi->pipe_mutex -> &pipe->mutex).
+> 
+> To address this, do not hold of->mutex across sysfs ->store() callbacks by
+> introducing a write_unlocked flag in struct kernfs_ops and caching it in
+> struct kernfs_open_file. Running ->store() without of->mutex is safe
+> because sysfs ->store() maintains no per-open-file state, and concurrent
+> opens of the same file already execute ->store() concurrently without
+> serialization. Other kernfs users retain per-open-file serialization under
+> of->mutex, and preallocated sysfs attributes still serialize buffer access
+> via of->prealloc_mutex.
+> 
+> Note that not every cycle is eliminated: a pipe spliced into such an
+> attribute stays locked while ->store() resolves paths, and callbacks
+> holding their own locks across lookup and ->show() retain dependencies.
+> 
+> Fixes: f2d6c2708bd8 ("kernfs: wire up ->splice_read and ->splice_write")
+> 
+> Fixes: 1e8c813b083c ("PM: hibernate: don't use early_lookup_bdev in resume_store")
 > Assisted-by: Gemini:gemini-3.8-flash syzbot
-> Reported-by: syzbot+f8850bc3986562f79619@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=3Df8850bc3986562f79619
-> Link: https://syzkaller.appspot.com/ai_job?id=3D337aa421-80c1-40fd-a577-e=
-b7fe10007fe
-> To: "David S. Miller" <davem@davemloft.net>
-> To: "Eric Dumazet" <edumazet@google.com>
-> To: "Jamal Hadi Salim" <jhs@mojatatu.com>
-> To: "Jiri Pirko" <jiri@resnulli.us>
-> To: "Jakub Kicinski" <kuba@kernel.org>
-> To: <netdev@vger.kernel.org>
-> To: "Paolo Abeni" <pabeni@redhat.com>
-> To: "Vinicius Costa Gomes" <vinicius.gomes@intel.com>
-> Cc: "Simon Horman" <horms@kernel.org>
+> Reported-by: syzbot+002fb7b2d0bc53bf7e75@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=002fb7b2d0bc53bf7e75
+> Link: https://syzkaller.appspot.com/ai_job?id=8a561103-0443-4299-83d7-bc101cef8482
+> To: "Danilo Krummrich" <dakr@kernel.org>
+> To: <driver-core@lists.linux.dev>
+> To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+> To: "Rafael J. Wysocki" <rafael@kernel.org>
+> To: "Tejun Heo" <tj@kernel.org>
+> To: "Christoph Hellwig" <hch@lst.de>
 > Cc: <linux-kernel@vger.kernel.org>
->=20
+> 
 > ---
-> v4:
-> - Replace admission-time interval rejection with bounded catch-up in adva=
-nce_sched().
-> - Arithmetically advance overdue full periods instead of walking individu=
-al entries.
-> - Record cycle_interval_sum in parse_taprio_schedule() to determine the c=
-ycle period.
-> - Set timer expiration before releasing current_entry_lock.
->=20
-> v3:
-> - Reject intervals smaller than 100 us at admission time for software TAP=
-RIO schedules instead of modifying advance_sched().
-> - Drop catch-up cycle arithmetic, loop iteration limits, and physical exp=
-iration fallbacks from advance_sched().
-> https://lore.kernel.org/all/ecbfe945-f1ab-45de-aaa0-b9b57ae730c2@mail.ker=
-nel.org/T/
->=20
 > v2:
-> - Removed the 1 microsecond admission policy for software taprio.
-> - Reduced the loop iteration limit from 2048 to 32 to avoid softirq stall=
-s.
-> - Added handling for administrative schedules during fast-forwarding to a=
-void overshooting `admin->base_time`.
-> - Split logical schedule deadline (`end_time`) and physical timer expirat=
-ion (`expires`).
-> - Updated the fallback mechanism to request a physical expiration 1 micro=
-second in the future relative to the current time rather than yielding the =
-CPU.
-> - Optimized gate close time calculation to only run once after the loop i=
-f not already calculated.
-> https://lore.kernel.org/all/03dbde3b-8c45-46b6-8291-dd12bcc3120c@mail.ker=
-nel.org/T/
->=20
+> - Avoid dropping splice_write support in kernfs_file_fops.
+> - Introduce write_unlocked flag in struct kernfs_ops and struct kernfs_open_file to run sysfs ->store() without of->mutex.
+> - Update commit subject and description to reflect the new locking approach.
+> 
 > v1:
-> https://lore.kernel.org/all/bc6a8890-9230-489a-bbce-5c255c1ef01a@mail.ker=
-nel.org/T/
+> https://lore.kernel.org/all/af4efe2d-7856-46ff-9088-28400130dbce@mail.kernel.org/T/
 > ---
-> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-> index 299234a5f..2f73c7a84 100644
-> --- a/net/sched/sch_taprio.c
-> +++ b/net/sched/sch_taprio.c
-> @@ -83,6 +83,7 @@ struct sched_gate_list {
->  	s64 cycle_time;
->  	s64 cycle_time_extension;
->  	s64 base_time;
-> +	s64 cycle_interval_sum;
+> diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
+> index 8e0e90c93..8084a858f 100644
+> --- a/fs/kernfs/file.c
+> +++ b/fs/kernfs/file.c
+> @@ -333,9 +333,11 @@ static ssize_t kernfs_fop_write_iter(struct kiocb *iocb, struct iov_iter *iter)
+>  	 * @of->mutex nests outside active ref and is used both to ensure that
+>  	 * the ops aren't called concurrently for the same open file.
+>  	 */
+> -	mutex_lock(&of->mutex);
+> +	if (!of->write_unlocked)
+> +		mutex_lock(&of->mutex);
+>  	if (!kernfs_get_active_of(of)) {
+> -		mutex_unlock(&of->mutex);
+> +		if (!of->write_unlocked)
+> +			mutex_unlock(&of->mutex);
+>  		len = -ENODEV;
+>  		goto out_free;
+>  	}
+> @@ -347,7 +349,8 @@ static ssize_t kernfs_fop_write_iter(struct kiocb *iocb, struct iov_iter *iter)
+>  		len = -EINVAL;
+>  
+>  	kernfs_put_active_of(of);
+> -	mutex_unlock(&of->mutex);
+> +	if (!of->write_unlocked)
+> +		mutex_unlock(&of->mutex);
+>  
+>  	if (len > 0)
+>  		iocb->ki_pos += len;
+> @@ -651,6 +654,8 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
+>  	 * lockdep key, because the writable file /sys/power/resume may call vfs
+>  	 * lookup helpers for arbitrary paths and readonly files can be read by
+>  	 * overlayfs from vfs helpers when sysfs is a lower layer of overalyfs.
+> +	 * (Note that regular sysfs attributes no longer run ->store() under
+> +	 * @of->mutex, but other kernfs users still do.)
+>  	 *
+>  	 * All three cases look the same.  They're supposed to
+>  	 * look that way and give @of->mutex different static lockdep keys.
+> @@ -666,10 +671,12 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
+>  	of->file = file;
+>  
+>  	/*
+> -	 * Write path needs to atomic_write_len outside active reference.
+> -	 * Cache it in open_file.  See kernfs_fop_write_iter() for details.
+> +	 * Write path needs atomic_write_len and write_unlocked outside
+> +	 * active reference.  Cache them in open_file.  See
+> +	 * kernfs_fop_write_iter() for details.
+>  	 */
+>  	of->atomic_write_len = ops->atomic_write_len;
+> +	of->write_unlocked = ops->write_unlocked;
+>  
+>  	error = -EINVAL;
+>  	/*
+> diff --git a/fs/sysfs/file.c b/fs/sysfs/file.c
+> index cd5bb0f9f..1a097e171 100644
+> --- a/fs/sysfs/file.c
+> +++ b/fs/sysfs/file.c
+> @@ -132,7 +132,17 @@ static ssize_t sysfs_kf_read(struct kernfs_open_file *of, char *buf,
+>  	return min_t(ssize_t, count, len);
+>  }
+>  
+> -/* kernfs write callback for regular sysfs files */
+> +/*
+> + * kernfs write callback for regular sysfs files.
+> + *
+> + * Regular sysfs files set .write_unlocked = true and are called without
+> + * holding of->mutex. Sysfs attributes do not rely on per-open-file
+> + * serialization for writes, and calling ->store() without of->mutex avoids
+> + * circular locking dependencies (such as &pipe->mutex -> &of->mutex ->
+> + * &sbi->pipe_mutex -> &pipe->mutex) when ->store() performs operations like
+> + * path lookups or automounts while a generic VFS lock is held. Preallocated
+> + * attributes are still serialized by of->prealloc_mutex.
+> + */
+>  static ssize_t sysfs_kf_write(struct kernfs_open_file *of, char *buf,
+>  			      size_t count, loff_t pos)
+>  {
+> @@ -229,11 +239,13 @@ static const struct kernfs_ops sysfs_file_kfops_ro = {
+>  
+>  static const struct kernfs_ops sysfs_file_kfops_wo = {
+>  	.write		= sysfs_kf_write,
+> +	.write_unlocked	= true,
 >  };
-> =20
->  struct taprio_sched {
-> @@ -924,7 +925,8 @@ static enum hrtimer_restart advance_sched(struct hrti=
-mer *timer)
->  	int num_tc =3D netdev_get_num_tc(dev);
->  	struct sched_entry *entry, *next;
->  	struct Qdisc *sch =3D q->root;
-> -	ktime_t end_time;
-> +	ktime_t start_time, end_time, now;
-> +	s64 period;
->  	int tc;
-> =20
->  	spin_lock(&q->current_entry_lock);
-> @@ -951,6 +953,8 @@ static enum hrtimer_restart advance_sched(struct hrti=
-mer *timer)
->  		goto first_run;
->  	}
-> =20
-> +	start_time =3D entry->end_time;
-> +
->  	if (should_restart_cycle(oper, entry)) {
->  		next =3D list_first_entry(&oper->entries, struct sched_entry,
->  					list);
-> @@ -960,15 +964,22 @@ static enum hrtimer_restart advance_sched(struct hr=
-timer *timer)
->  		next =3D list_next_entry(entry, list);
->  	}
-> =20
-> -	end_time =3D ktime_add_ns(entry->end_time, next->interval);
-> -	end_time =3D min_t(ktime_t, end_time, oper->cycle_end_time);
-> +	if (next->interval > ktime_sub(oper->cycle_end_time, start_time))
-> +		end_time =3D oper->cycle_end_time;
-> +	else
-> +		end_time =3D ktime_add_ns(start_time, next->interval);
-> =20
-> -	for (tc =3D 0; tc < num_tc; tc++) {
-> -		if (next->gate_duration[tc] =3D=3D oper->cycle_time)
-> -			next->gate_close_time[tc] =3D KTIME_MAX;
-> -		else
-> -			next->gate_close_time[tc] =3D ktime_add_ns(entry->end_time,
-> -								 next->gate_duration[tc]);
-> +	period =3D min_t(s64, oper->cycle_time, oper->cycle_interval_sum);
-> +
-> +	now =3D hrtimer_cb_get_time(timer);
-> +	if (period > 0 && ktime_after(now, end_time)) {
-> +		s64 diff =3D ktime_to_ns(ktime_sub(now, end_time));
-> +		s64 periods =3D div64_s64(diff, period);
-> +		s64 delta =3D periods * period;
-> +
-> +		start_time =3D ktime_add_ns(start_time, delta);
-> +		end_time =3D ktime_add_ns(end_time, delta);
-> +		oper->cycle_end_time =3D ktime_add_ns(oper->cycle_end_time, delta);
->  	}
-> =20
->  	if (should_change_schedules(admin, oper, end_time)) {
-> @@ -978,16 +989,23 @@ static enum hrtimer_restart advance_sched(struct hr=
-timer *timer)
->  		 */
->  		next =3D list_first_entry(&oper->entries, struct sched_entry, list);
->  		end_time =3D next->end_time;
-> -	}
-> +	} else {
-> +		for (tc =3D 0; tc < num_tc; tc++) {
-> +			if (next->gate_duration[tc] =3D=3D oper->cycle_time)
-> +				next->gate_close_time[tc] =3D KTIME_MAX;
-> +			else
-> +				next->gate_close_time[tc] =3D ktime_add_ns(start_time,
-> +									 next->gate_duration[tc]);
-> +		}
-> =20
-> -	next->end_time =3D end_time;
-> -	taprio_set_budgets(q, oper, next);
-> +		next->end_time =3D end_time;
-> +		taprio_set_budgets(q, oper, next);
-> +	}
-> =20
->  first_run:
->  	rcu_assign_pointer(q->current_entry, next);
-> -	spin_unlock(&q->current_entry_lock);
-> -
->  	hrtimer_set_expires(&q->advance_timer, end_time);
-> +	spin_unlock(&q->current_entry_lock);
-> =20
->  	rcu_read_lock();
->  	__netif_schedule(sch);
-> @@ -1151,19 +1169,23 @@ static int parse_taprio_schedule(struct taprio_sc=
-hed *q, struct nlattr **tb,
->  	if (err < 0)
->  		return err;
-> =20
-> -	if (!new->cycle_time) {
-> +	{
->  		struct sched_entry *entry;
->  		ktime_t cycle =3D 0;
-> =20
->  		list_for_each_entry(entry, &new->entries, list)
->  			cycle =3D ktime_add_ns(cycle, entry->interval);
-> =20
-> -		if (cycle < 0 || cycle > INT_MAX) {
-> -			NL_SET_ERR_MSG(extack, "'cycle_time' is too big");
-> -			return -EINVAL;
-> -		}
-> +		new->cycle_interval_sum =3D cycle;
-> +
-> +		if (!new->cycle_time) {
-> +			if (cycle < 0 || cycle > INT_MAX) {
-> +				NL_SET_ERR_MSG(extack, "'cycle_time' is too big");
-> +				return -EINVAL;
-> +			}
-> =20
-> -		new->cycle_time =3D cycle;
-> +			new->cycle_time =3D cycle;
-> +		}
->  	}
-> =20
->  	if (new->cycle_time < new->num_entries * length_to_duration(q, ETH_ZLEN=
-)) {
->=20
->=20
-> base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
-> --=20
-> This is an AI-generated patch subject to moderation.
-> Reply with '#syz upstream' to Sign-off the patch as a human author
-> and send it to the upstream kernel mailing lists.
-> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
->=20
-> See https://goo.gle/syzbot-ai-patches for information about AI-generated =
-patches.
-> You can comment on the patch as usual, syzbot will try to address
-> the comments and send a new version of the patch if necessary.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>  
+>  static const struct kernfs_ops sysfs_file_kfops_rw = {
+>  	.seq_show	= sysfs_kf_seq_show,
+>  	.write		= sysfs_kf_write,
+> +	.write_unlocked	= true,
+>  };
+>  
+>  static const struct kernfs_ops sysfs_prealloc_kfops_ro = {
+> @@ -244,12 +256,14 @@ static const struct kernfs_ops sysfs_prealloc_kfops_ro = {
+>  static const struct kernfs_ops sysfs_prealloc_kfops_wo = {
+>  	.write		= sysfs_kf_write,
+>  	.prealloc	= true,
+> +	.write_unlocked	= true,
+>  };
+>  
+>  static const struct kernfs_ops sysfs_prealloc_kfops_rw = {
+>  	.read		= sysfs_kf_read,
+>  	.write		= sysfs_kf_write,
+>  	.prealloc	= true,
+> +	.write_unlocked	= true,
+>  };
+>  
+>  static const struct kernfs_ops sysfs_bin_kfops_ro = {
+> diff --git a/include/linux/kernfs.h b/include/linux/kernfs.h
+> index 351a5101c..7cb7c248b 100644
+> --- a/include/linux/kernfs.h
+> +++ b/include/linux/kernfs.h
+> @@ -274,6 +274,7 @@ struct kernfs_open_file {
+>  	size_t			atomic_write_len;
+>  	bool			mmapped:1;
+>  	bool			released:1;
+> +	bool			write_unlocked:1;
+>  	const struct vm_operations_struct *vm_ops;
+>  };
+>  
+> @@ -320,6 +321,11 @@ struct kernfs_ops {
+>  	 * ->prealloc.  Provide ->read and ->write with ->prealloc.
+>  	 */
+>  	bool prealloc;
+> +	/*
+> +	 * "write_unlocked" indicates that ->write() does not require
+> +	 * per-open-file serialization with of->mutex.
+> +	 */
+> +	bool write_unlocked;
+>  	ssize_t (*write)(struct kernfs_open_file *of, char *buf, size_t bytes,
+>  			 loff_t off);
+>  
+> 
+> 
+> base-commit: 93f51579e7df248780214094418f205253383cc5
+Change the cached write_unlocked field in struct kernfs_open_file to a standalone bool, placed after atomic_write_len and before mmapped and released. The write path reads it before taking of->mutex or an active reference, including for files where the flag is false. The neighboring bitfields are updated at run time under of->mutex or the node mutex and share one C memory location with the added bitfield. A standalone bool keeps the cached flag separate from those mutable fields.
+
+Keep the current write_unlocked approach and the same four regular sysfs write tables that opt out of of->mutex. Preserve both splice methods, active-reference handling, prealloc_mutex and the existing serialization for reads, binary sysfs attributes, cgroup and resctrl. Keep the explicit statement that existing autofs and callback-owned lock dependencies remain outside this narrow change. Preserve the Reported-by, Closes, Link and Assisted-by tags.
+
+Also use only Fixes: 1e8c813b083c ("PM: hibernate: don't use early_lookup_bdev in resume_store"), removing the additional f2d6c2708bd8 tag. Update the write-path comment and the flag documentation to describe the concurrent-callback contract. Shorten the repeated lock-chain explanation while retaining the buffer protection and known limits. Keep the current balanced error-path unlock.
+
+-- 
+Krystian Kaniewski
