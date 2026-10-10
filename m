@@ -1,239 +1,214 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3554370ADF
-	for <syzbot@lists.linux.dev>; Fri,  9 Oct 2026 23:56:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 881A31FF7C7
+	for <syzbot@lists.linux.dev>; Sat, 10 Oct 2026 00:58:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791590216; cv=none; b=CJtSSfaTqVwy7JOFYTm5iU58Iihu/8c6pqmtOK/0mae7h5kL0gv7A5jPOX5UQx65ERtTSLWQnynKYkuL77pOvkn9ufQZ4XqYRzIq637W2eQZwYzBzAVdjYeI1NXYp6D5o2Xx0U7JTVfq5aSpDoM/HPfc6ldl1WOiek9y8xNJ5Us=
+	t=1791593925; cv=none; b=P/HzdbHBx61tdYNowuHk7IvKlJqUi6AqAJ9B3EXXcoIpyrCoZuFpQPvVh27zu7Y3AmfPCZ7YGF5etsp6CVNqmi7SsjyFUhS7zC4Jajot7tX3oya3jiHBhuclcFOB/MC/BPezu8Gy+3h13E3m3v9pl+9eQRRJBwjRmImEgBkUM+c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791590216; c=relaxed/simple;
-	bh=0USePrZ/yczKbxArrUyh3VYFtOmatjpYDXThMruDDhI=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ooCQTbAHkCLeQMGE8bcJ4wXDz4R1L30xmcjMgpDY10UYY+cVRGXNrNgFnBxtaUnJ3OexVfW2mJWlchAppnJtaDVGLYLZDd1IP6PM+ZIb9+5Nw7jmQDmzaPdhr3YILqhYb/mKHcUlaaXCL2qmS8G/15D99gH3ecykmazWWtw30ZU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jv+73NWY; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jv+73NWY"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 0CDEA1F000FF;
-	Fri,  9 Oct 2026 23:56:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791590215;
-	bh=EbSmETMo4gzh599xUtVga5nAsYn31/UHYW60qWDVaXA=;
-	h=From:To:Cc:Subject:Date;
-	b=jv+73NWY/JP4PGVI8XQ8pkdM26cj6xv6w3YNzsS/V+OWnoNX33srbD3l5C4g/1Rtg
-	 IOuS+TGGjotlYNM51bjcOexqQnVzepdl8fksmusxelxnJw25My4FZS5L0hN2afiUd3
-	 uZOn0YIZGOutjnhYbEsQ5IbWnX3x450mutotJQRI0/0D5ONPwowLu8zmdeK1aE/PeB
-	 haiWgrnN3141rLhZ09VZ/OLA2bod1mgddaA1wrbjZ9vqbQIId7wLA9eTljGxsyrknI
-	 HVN3HHxZt0ZLT08lhrPJGTm2qS+hsDD7djaCkPEvmsCx7Be64Eeit2AcLQTMoLeWNP
-	 1XzDm7cM1QaXg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: sst@poczta.fm, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] media: dvb_frontend: fix OOB read in dtv_property_process_get()
-Message-ID: <a7a95e8f-6160-4bed-a950-43c578958049@mail.kernel.org>
+	s=arc-20240116; t=1791593925; c=relaxed/simple;
+	bh=b585rXM1jDsHHS0HTzUddtr/0WhgGrWd/6rvKrv10f4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=vAakD2j5bqzApnjRULDreoDQo8WwgpzWZxNo2SrMyWVPAmAiw8+ENWnEjM/5USt9bIQXIgvmbyAHTdIDf9aY36X0osYKwKOwBDVX4YukCqGNkoTqUqerNCTXHgLechFFJyH5eDQoOPG1UgzkdhnuXsBJlRb0ahctsEHiAv09N+E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-4b28deb7ee3so705237b6e.0
+        for <syzbot@lists.linux.dev>; Fri, 09 Oct 2026 17:58:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791593922; x=1792198722;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=m2fcWhldlDNR0HBhmhAkY6YtyEyA/avE76JXznZp7qY=;
+        b=ez9yKXwYeoEIqaX1yLx8W3t9wl/7A0ASp6EBtWfBSsjQfkzWyzyc8W/xVhsO8uLj0W
+         gSl4fXqJpQgS03Tv59Lfp7thrgOQNTa10PIgek/KkcACXJZ7tlvjsFaNDL4nyiR5BF/s
+         0KDCfRPnrN+GQwVdCunRqxiuIPR2/Yr2/0J7Nyf+rXbwhz6tIj8mC7VatLpohuIKaWk/
+         dJ1VlYaT/9aFnsKzTLEtbuM4l3RuaV/QI81CLKSPfB9K97iq+QEeKVL4BMCS/ReG1lWT
+         Uxe+E4QO4VuQGctzTkA9EYFHsCi3qJEvaisI2pcGmOvQoQ22B9Rkhko6s/okwRKSHqSw
+         pVtA==
+X-Gm-Message-State: AFq9FYJwas2vI8cUn77+VRzj3/3xtsmGh58Igfyxf8n06R9LUAQgK30i
+	APTv+lwX2oMnqaAD6MeadH1SJC8fiNaeyfnoC7TUlWf+Sbf5e6A9PcXtUavgx4T4RTHZ07J95V3
+	RBsQaP2okUNu0EJY7Dn42Ew9j4GKXXKpVh+EEjEJ2kbureldoseQt18XhA10=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri,  9 Oct 2026 23:56:54 +0000 (UTC)
+X-Received: by 2002:a05:6808:1183:b0:4f7:27ba:9db4 with SMTP id
+ 5614622812f47-50c574a306cmr2782844b6e.60.1791593922078; Fri, 09 Oct 2026
+ 17:58:42 -0700 (PDT)
+Date: Fri, 09 Oct 2026 17:58:42 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6ac98dc2.70ed5d86.2ac85.008c.GAE@google.com>
+Subject: [moderation/CI] Re: Extend drm_ras for qaic telemetry
+From: syzbot ci <syzbot+ci75bba038493d80b5@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-In dtv_property_process_get(), properties requested via the FE_GET_PROPERTY
-ioctl are processed and copied back to userspace. In struct dtv_property,
-member u is a union containing __u32 data, struct dtv_fe_stats st, and
-struct buffer (which has __u8 data[32] followed by __u32 len at offset 32).
-Commit 60f0618d157b ("media: dvb-core: frontend: make GET/SET safer")
-introduced an out-of-bounds read and a data corruption issue due to
-mishandling this union.
+syzbot ci has tested the following series
 
-For commands that only set tvp->u.data (such as DTV_FREQUENCY),
-tvp->u.buffer.len is never initialized by the kernel and retains whatever
-value userspace passed into the ioctl. At the end of
-dtv_property_process_get(), dev_dbg() unconditionally formatted the
-property using "%*ph", passing tvp->u.buffer.len as the field width and
-tvp->u.buffer.data as the buffer pointer. When dynamic debug is enabled and
-userspace supplies a large length value, vsprintf() emits a field width out
-of range warning, and hex_string() clamps the length to 64 bytes. Since
-struct dtv_property is 76 bytes long and u.buffer.data starts at offset 16,
-reading 64 bytes reaches offset 80 (4 bytes past the end of the slab
-object), triggering a KASAN slab-out-of-bounds read:
+[v1] Extend drm_ras for qaic telemetry
+https://lore.kernel.org/all/20261009173152.2436195-1-zachary.mckevitt@oss.q=
+ualcomm.com
+* [PATCH 1/3] drm/drm_ras: Remove admin-perm flag from list-nodes operation
+* [PATCH 2/3] drm/drm_ras: Extend DRM RAS interface to include telemetry no=
+des
+* [PATCH 3/3] accel/qaic: Add callbacks for DRM RAS netlink telemetry
 
-field width 1163001896 out of range
-WARNING: lib/vsprintf.c:2654 at vsnprintf+0xb9c/0xd10 lib/vsprintf.c:2918
-Call trace:
- set_field_width lib/vsprintf.c:2654 [inline]
- vsnprintf+0xb9c/0xd10 lib/vsprintf.c:2918
- pointer+0x5e8/0x6b4 lib/vsprintf.c:2577
- vsnprintf+0x618/0xd10 lib/vsprintf.c:2953
- dev_vprintk_emit+0x2ec/0x3b4 drivers/base/core.c:5000
- dev_printk_emit+0xe0/0x130 drivers/base/core.c:5011
- __dynamic_dev_dbg+0x1b4/0x254 lib/dynamic_debug.c:904
- dtv_property_process_get+0x26bc/0x2838
- drivers/media/dvb-core/dvb_frontend.c:1595
- dvb_get_property drivers/media/dvb-core/dvb_frontend.c:2397 [inline]
- dvb_frontend_handle_ioctl+0x1644/0x2424
- drivers/media/dvb-core/dvb_frontend.c:2478
- dvb_frontend_do_ioctl+0x124/0x278
- drivers/media/dvb-core/dvb_frontend.c:2101
- dvb_usercopy+0x2a4/0x4d4 drivers/media/dvb-core/dvbdev.c:996
- dvb_frontend_ioctl+0x68/0x8c drivers/media/dvb-core/dvb_frontend.c:2115
-BUG: KASAN: slab-out-of-bounds in hex_string+0x274/0x364
-lib/vsprintf.c:1209
-Read of size 1 at addr ffff0000c240314c
+and found the following issue:
+general protection fault in drm_ras_nl_pre_telemetry
 
-Additionally, commit 60f0618d157b added bounds checks that clamped
-tvp->u.buffer.len in all eight DTV_STAT_* cases. However, DTV_STAT_*
-commands populate tvp->u.st (struct dtv_fe_stats). In union u, u.buffer.len
-is located at offset 32, which directly overlaps bytes 3 to 6 of
-tvp->u.st.stat[3].uvalue (layer C statistics). Clamping and overwriting
-tvp->u.buffer.len therefore silently corrupted the statistics returned to
-userspace.
+Full report is available here:
+https://ci.syzbot.org/series/6915fb7c-08cd-48b4-b8a4-3834f3e60de5
 
-Fix this by formatting with "%*ph" using tvp->u.buffer.len and
-tvp->u.buffer.data when tvp->cmd == DTV_ENUM_DELSYS, formatting tvp->u.st
-for DTV_STAT_* commands, and formatting tvp->u.data as "= 0x%08x" for all
-other commands. Furthermore, remove the bogus bounds clamping of
-tvp->u.buffer.len and the unused len variable from all DTV_STAT_* cases to
-prevent corruption of frontend statistics.
+***
 
-Fixes: 60f0618d157b ("media: dvb-core: frontend: make GET/SET safer")
+general protection fault in drm_ras_nl_pre_telemetry
 
-Fixes: 60f0618d157b ("media: dvb-core: frontend: make GET/SET safer")
-Assisted-by: Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+6102f1c3a0ea8073fd64@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=6102f1c3a0ea8073fd64
-Link: https://syzkaller.appspot.com/ai_job?id=d2df895b-f169-41a7-b454-a604fb666c9b
-To: <linux-media@vger.kernel.org>
-To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-Cc: "Hans Verkuil" <hverkuil+cisco@kernel.org>
-Cc: "Kees Cook" <kees@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Ricardo Ribalda" <ribalda@chromium.org>
+tree:      drm-next
+URL:       https://gitlab.freedesktop.org/drm/kernel.git
+base:      f2bf20011b95401f63e573d54134544c452c4117
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/d48f7944-a0fb-4983-a3c6-c037c81dd83=
+2/config
+syz repro: https://ci.syzbot.org/findings/c2ca90ba-3f79-4e56-94d4-b1ddc6405=
+6e5/syz_repro
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc=
+0000000000: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 1 UID: 0 PID: 5808 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:nla_get_u32 include/net/netlink.h:1734 [inline]
+RIP: 0010:drm_ras_nl_pre_telemetry+0x60/0xe0 drivers/gpu/drm/drm_ras.c:656
+Code: 8b 1b 48 83 c3 08 48 89 d8 48 c1 e8 03 42 80 3c 38 00 74 08 48 89 df =
+e8 3e 3c 9a fc 48 8b 1b 48 83 c3 04 48 89 d8 48 c1 e8 03 <42> 0f b6 04 38 8=
+4 c0 75 5b 8b 33 48 c7 c7 80 d3 6f 90 e8 c9 8c 49
+RSP: 0018:ffffc9000379f420 EFLAGS: 00010247
+RAX: 0000000000000000 RBX: 0000000000000004 RCX: ffff8881bf17bc00
+RDX: 0000000000000000 RSI: ffff8881bf38d380 RDI: ffffc9000379f600
+RBP: ffffc9000379f588 R08: ffffc9000379f4ff R09: 0000000000000000
+R10: ffffc9000379f4d0 R11: ffffffff859eb380 R12: ffffc9000379f600
+R13: dffffc0000000000 R14: ffff8881bf38d380 R15: dffffc0000000000
+FS:  00007f2c256e36c0(0000) GS:ffff8882a7cb6000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000200000000100 CR3: 000000016e7ee000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ genl_family_rcv_msg_doit+0x1db/0x340 net/netlink/genetlink.c:1109
+ genl_family_rcv_msg net/netlink/genetlink.c:1194 [inline]
+ genl_rcv_msg+0x614/0x7a0 net/netlink/genetlink.c:1209
+ netlink_rcv_skb+0x226/0x4a0 net/netlink/af_netlink.c:2575
+ genl_rcv+0x28/0x40 net/netlink/genetlink.c:1218
+ netlink_unicast_kernel net/netlink/af_netlink.c:1338 [inline]
+ netlink_unicast+0x7bd/0x940 net/netlink/af_netlink.c:1364
+ netlink_sendmsg+0x813/0xb40 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec+0x13a/0x180 net/socket.c:800
+ __sock_sendmsg net/socket.c:815 [inline]
+ ____sys_sendmsg+0x54e/0x850 net/socket.c:2713
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2767
+ __sys_sendmsg net/socket.c:2799 [inline]
+ __do_sys_sendmsg net/socket.c:2804 [inline]
+ __se_sys_sendmsg net/socket.c:2802 [inline]
+ __x64_sys_sendmsg+0x1b1/0x290 net/socket.c:2802
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f2c2479e1d9
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f2c256e3028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f2c24a25fa0 RCX: 00007f2c2479e1d9
+RDX: 0000000000000000 RSI: 0000200000000100 RDI: 0000000000000004
+RBP: 00007f2c24835888 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f2c24a26038 R14: 00007f2c24a25fa0 R15: 00007ffc88247b58
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:nla_get_u32 include/net/netlink.h:1734 [inline]
+RIP: 0010:drm_ras_nl_pre_telemetry+0x60/0xe0 drivers/gpu/drm/drm_ras.c:656
+Code: 8b 1b 48 83 c3 08 48 89 d8 48 c1 e8 03 42 80 3c 38 00 74 08 48 89 df =
+e8 3e 3c 9a fc 48 8b 1b 48 83 c3 04 48 89 d8 48 c1 e8 03 <42> 0f b6 04 38 8=
+4 c0 75 5b 8b 33 48 c7 c7 80 d3 6f 90 e8 c9 8c 49
+RSP: 0018:ffffc9000379f420 EFLAGS: 00010247
+RAX: 0000000000000000 RBX: 0000000000000004 RCX: ffff8881bf17bc00
+RDX: 0000000000000000 RSI: ffff8881bf38d380 RDI: ffffc9000379f600
+RBP: ffffc9000379f588 R08: ffffc9000379f4ff R09: 0000000000000000
+R10: ffffc9000379f4d0 R11: ffffffff859eb380 R12: ffffc9000379f600
+R13: dffffc0000000000 R14: ffff8881bf38d380 R15: dffffc0000000000
+FS:  00007f2c256e36c0(0000) GS:ffff8882a7cb6000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f2c247eb8c0 CR3: 000000016e7ee000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	8b 1b                	mov    (%rbx),%ebx
+   2:	48 83 c3 08          	add    $0x8,%rbx
+   6:	48 89 d8             	mov    %rbx,%rax
+   9:	48 c1 e8 03          	shr    $0x3,%rax
+   d:	42 80 3c 38 00       	cmpb   $0x0,(%rax,%r15,1)
+  12:	74 08                	je     0x1c
+  14:	48 89 df             	mov    %rbx,%rdi
+  17:	e8 3e 3c 9a fc       	call   0xfc9a3c5a
+  1c:	48 8b 1b             	mov    (%rbx),%rbx
+  1f:	48 83 c3 04          	add    $0x4,%rbx
+  23:	48 89 d8             	mov    %rbx,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 0f b6 04 38       	movzbl (%rax,%r15,1),%eax <-- trapping instruct=
+ion
+  2f:	84 c0                	test   %al,%al
+  31:	75 5b                	jne    0x8e
+  33:	8b 33                	mov    (%rbx),%esi
+  35:	48 c7 c7 80 d3 6f 90 	mov    $0xffffffff906fd380,%rdi
+  3c:	e8                   	.byte 0xe8
+  3d:	c9                   	leave
+  3e:	8c                   	.byte 0x8c
+  3f:	49                   	rex.WB
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v2:
-- Format tvp->u.st with "%*ph" for DTV_STAT_* commands in dev_dbg()
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v1:
-https://lore.kernel.org/all/2a5ea27d-445e-4ffe-9447-9d7bfccd4a36@mail.kernel.org/T/
----
-diff --git a/drivers/media/dvb-core/dvb_frontend.c b/drivers/media/dvb-core/dvb_frontend.c
-index 0286da57f..7b9596396 100644
---- a/drivers/media/dvb-core/dvb_frontend.c
-+++ b/drivers/media/dvb-core/dvb_frontend.c
-@@ -1348,7 +1348,6 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
- 				    struct file *file)
- {
- 	int ncaps;
--	unsigned int len = 1;
- 
- 	switch (tvp->cmd) {
- 	case DTV_ENUM_DELSYS:
-@@ -1358,7 +1357,6 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
- 			ncaps++;
- 		}
- 		tvp->u.buffer.len = ncaps;
--		len = ncaps;
- 		break;
- 	case DTV_FREQUENCY:
- 		tvp->u.data = c->frequency;
-@@ -1536,51 +1534,27 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
- 	/* Fill quality measures */
- 	case DTV_STAT_SIGNAL_STRENGTH:
- 		tvp->u.st = c->strength;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	case DTV_STAT_CNR:
- 		tvp->u.st = c->cnr;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	case DTV_STAT_PRE_ERROR_BIT_COUNT:
- 		tvp->u.st = c->pre_bit_error;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	case DTV_STAT_PRE_TOTAL_BIT_COUNT:
- 		tvp->u.st = c->pre_bit_count;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	case DTV_STAT_POST_ERROR_BIT_COUNT:
- 		tvp->u.st = c->post_bit_error;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	case DTV_STAT_POST_TOTAL_BIT_COUNT:
- 		tvp->u.st = c->post_bit_count;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	case DTV_STAT_ERROR_BLOCK_COUNT:
- 		tvp->u.st = c->block_error;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	case DTV_STAT_TOTAL_BLOCK_COUNT:
- 		tvp->u.st = c->block_count;
--		if (tvp->u.buffer.len > MAX_DTV_STATS * sizeof(u32))
--			tvp->u.buffer.len = MAX_DTV_STATS * sizeof(u32);
--		len = tvp->u.buffer.len;
- 		break;
- 	default:
- 		dev_dbg(fe->dvb->device,
-@@ -1589,13 +1563,25 @@ static int dtv_property_process_get(struct dvb_frontend *fe,
- 		return -EINVAL;
- 	}
- 
--	if (len < 1)
--		len = 1;
--
--	dev_dbg(fe->dvb->device,
--		"%s: GET cmd 0x%08x (%s) len %d: %*ph\n",
--		__func__, tvp->cmd, dtv_cmd_name(tvp->cmd),
--		tvp->u.buffer.len, tvp->u.buffer.len, tvp->u.buffer.data);
-+	if (tvp->cmd == DTV_ENUM_DELSYS) {
-+		dev_dbg(fe->dvb->device,
-+			"%s: GET cmd 0x%08x (%s) len %d: %*ph\n",
-+			__func__, tvp->cmd, dtv_cmd_name(tvp->cmd),
-+			tvp->u.buffer.len, tvp->u.buffer.len,
-+			tvp->u.buffer.data);
-+	} else if (tvp->cmd >= DTV_STAT_SIGNAL_STRENGTH &&
-+		   tvp->cmd <= DTV_STAT_TOTAL_BLOCK_COUNT) {
-+		dev_dbg(fe->dvb->device,
-+			"%s: GET cmd 0x%08x (%s) len %d: %*ph\n",
-+			__func__, tvp->cmd, dtv_cmd_name(tvp->cmd),
-+			(int)sizeof(tvp->u.st), (int)sizeof(tvp->u.st),
-+			&tvp->u.st);
-+	} else {
-+		dev_dbg(fe->dvb->device,
-+			"%s: GET cmd 0x%08x (%s) = 0x%08x\n",
-+			__func__, tvp->cmd, dtv_cmd_name(tvp->cmd),
-+			tvp->u.data);
-+	}
- 
- 	return 0;
- }
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
 
-base-commit: 72d3fcf802c45d00b300f25b848a93c3a2bd7c7e
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+The email will later be sent to:
+[airlied@gmail.com aravind.iddamsetty@linux.intel.com carl.vanderlip@oss.qu=
+alcomm.com dri-devel@lists.freedesktop.org jeff.hugo@oss.qualcomm.com karol=
+.wachowski@linux.intel.com kuba@kernel.org lizhi.hou@amd.com netdev@vger.ke=
+rnel.org ogabbay@kernel.org raag.jadav@intel.com riana.tauro@intel.com rodr=
+igo.vivi@intel.com simona.vetter@ffwll.ch troy.hanson@oss.qualcomm.com yous=
+sef.abdulrahman@oss.qualcomm.com zachary.mckevitt@oss.qualcomm.com]
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
