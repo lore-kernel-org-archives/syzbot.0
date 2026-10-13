@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C08A0472528
-	for <syzbot@lists.linux.dev>; Tue, 13 Oct 2026 04:26:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6EBC3E51E2
+	for <syzbot@lists.linux.dev>; Tue, 13 Oct 2026 10:09:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791865572; cv=none; b=q0uSIJatroGsNqREx3Y3xikZuPpLPdcrs8asF9nsJgstW3pLLx0QftMiFOClsaqy4jzOw066ksXxPQkbHItKJnFmKKUmVx67oVWnBgpmXhPkbk5kzNiacvQED6zkYRU4JXoExZOnhePskF5V/QoA1CU+4/8Ozd/vKIdznKGB3uY=
+	t=1791886142; cv=none; b=QdzQ2phhP0HEiW6wEXVk0F7Biqkts37dILz4/Zt+iXa+fQFHht0vS5JQoRJv4ttPJR7vz2QIoKWA3cvS2iecFz1X0NMS3hlLp2KKcgpQKr2Tej2xU0QVDvKWDEjpOF6RDlrcrW/Ryn2C+GGLBHNV03j8Z6M6EJok8zkNlXv9UNY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791865572; c=relaxed/simple;
-	bh=zNNiG9U1NvvAJCFWECTWdjWGt8zSdKVYI8NvtOyrvWY=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=ZPysgX9n2DPo0A9vvXTSmcUbs39kF2moGsmUaFeQ0jsRCa2RaxX3+wD+S2VlqVN8hPnMA+JUlXLtk65ElK4EzHPa8oadPbQqWDi+RF0Cx5Ca0N7PUsdnym6aHYM7dI6OiX66ON4tTEKyqgr5CPVAaR9HGgaLzXrSKT0RWR5O46Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c9dawtc3; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791886142; c=relaxed/simple;
+	bh=mqoOrF2mYghsXVEVs0pA19pC8sKkN1ydYeyY2rjBUQc=;
+	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=FWXvBUxXHiy/Q/mLvXpn+VfH/7ikaMgQryQ7Tq8tL0ba7w2L0ePLhfWUUnqB5XrFRiuWoYW/uNLp28Es/dGNZ0y1m+YUmUeaCAUUpmNTXwG9tHz7VYLmtXiu731vzdBFPLsxx2lAJ3/giNSm/uYTtRBnql/7ITZuPDv5xBqvIz0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G7+4KUfL; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c9dawtc3"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 3FE171F00893;
-	Tue, 13 Oct 2026 04:26:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G7+4KUfL"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 604531F000FF;
+	Tue, 13 Oct 2026 10:09:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791865570;
-	bh=NbG/ZYtbhT6qgXof451pTeZ59DyWlEzKrtBVYzQjJ0w=;
+	s=k20260515; t=1791886140;
+	bh=baymPg1cnfVUfi71WGv47beCJRZ49BofQnN50zn56IM=;
 	h=From:To:Cc:Subject:Date;
-	b=c9dawtc3h3/1KPXm5r9duvzfvxpp71D3rMOWpA0OdgJKGMrdn6lbP2AcsZU4ZmD8b
-	 +pNlUKu8BBhpmdm3TFGzSul3PB1auyAonTgpL/3qHS9cXY8lqw1+y9sMff+vqKVyYv
-	 VrdmjOgGy1CsIb4g3JAXv+Fe8E2QCDPYAqr/dgjkDAdwuMTS5zGwTyR3qFYs+ZXMel
-	 T345ydzfMgQSrr+VsYVIRp36fxJKd3neusi9/iD8ImOgn8JXNfDy9RZlxpP0xu0nFG
-	 QbNYvJo7ROBTaJbB0aLJ6db6+zJWVhd9fayzd0HhOsbbvS8mhRyBHIL/zYon0LLg2Y
-	 zbMQTaxcg3MEQ==
+	b=G7+4KUfLpfGtox7Knai4fYyIbXmyqJFhHFMcaTcaR8ML8wKvAAsWsl/eZ+wRcBhZR
+	 LazsfDa6fGgrpzEhIHS7KyBaNd6WxkbfP2S8ABNFyz6f5+FiNGDImBLhZruxa9ELn4
+	 qYmfYlFH4Ca9JeNX27Br1RmIf1C3lCkhRyZOB4MD5zajNhWQ8D0v4ESlylrUrcBJOd
+	 gp50rI159AqBvCSW9hicZJJ84bT5FDjzGQZEk0d0nEpp06U7jWlmXBVK2KmDBCgxCZ
+	 y9Hl64N4WMPol561pjo865LVHxKhnu4p+E0Xgurhky/nVf9TyBFHJAV2SoyNZX0CBK
+	 KZcTFC/M//3cA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] fs/ntfs3: use ni_lock_dir() in ntfs_readdir()
-Message-ID: <3a72d0ff-b0a3-41de-b2d7-bb629cf3ca02@mail.kernel.org>
+Subject: [PATCH RFC] minix: restore buffer uptodate flag on persistent metadata buffers
+Message-ID: <1aa7350c-565f-4f86-a95a-28fabee9abba@mail.kernel.org>
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
@@ -38,109 +38,178 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue, 13 Oct 2026 04:26:10 +0000 (UTC)
+Date: Tue, 13 Oct 2026 10:09:00 +0000 (UTC)
 
-A circular locking dependency warning is detected by lockdep between
-&ni->ni_lock and mapping.invalidate_lock when getdents64() writes into a
-memory-mapped buffer while an operation such as fallocate() runs
-concurrently on a regular file:
+When a minix filesystem experiences a writeback failure on a block device
+(for example, when an underlying device is detached or encounters an I/O
+error), the block layer I/O completion handler clears the BH_Uptodate flag
+and sets BH_Write_EIO on the failed buffer head. In minix, the superblock
+buffer (sbi->s_sbh) and bitmap buffers (sbi->s_imap and sbi->s_zmap) are
+read at mount time and kept pinned in memory in minix_sb_info throughout
+the lifetime of the filesystem mount. Although their in-memory data remains
+valid, when subsequent operations modify and re-dirty these buffers—such as
+during unmount in minix_put_super() after sync_filesystem() attempts
+writeout, during remount in minix_reconfigure(), or during inode and block
+allocations or deallocations—mark_buffer_dirty() checks the uptodate state
+and triggers a warning:
 
- WARNING: possible circular locking dependency detected
- task is trying to acquire lock:
- ffff88819b6dbb20 (mapping.invalidate_lock#3){++++}-{4:4}, at:
- filemap_fault+0x6e0/0x13c0 mm/filemap.c:3585
- but task is already holding lock:
- ffff88819b6997e8 (&ni->ni_lock/5){+.+.}-{4:4}, at:
- ntfs_readdir+0x717/0xf70 fs/ntfs3/dir.c:541
- which lock already depends on the new lock.
+!buffer_uptodate(bh)
+WARNING: fs/buffer.c:991 at mark_buffer_dirty+0x299/0x410 fs/buffer.c:991
+...
+Call Trace:
+ <TASK>
+ minix_put_super+0x16d/0x460 fs/minix/inode.c:70
+ generic_shutdown_super+0x13d/0x2d0 fs/super.c:751
+ kill_block_super+0x44/0xa0 fs/super.c:1903
+ deactivate_locked_super+0xbe/0x110 fs/super.c:586
+ cleanup_mnt+0x204/0x2a0 fs/namespace.c:1392
+ </TASK>
 
- the existing dependency chain (in reverse order) is:
+Following the pattern in ext2, ext4, and udf, fix this by restoring the
+BH_Uptodate flag and clearing any write error on persistent metadata
+buffers before marking them dirty. Introduce a helper
+minix_set_buffer_uptodate() to clear BH_Write_EIO and set BH_Uptodate if
+the buffer had an error or was not marked uptodate. Use
+minix_clear_super_error() to log any prior superblock I/O error via
+pr_err() and restore the uptodate flag before dirtying the superblock in
+minix_put_super() and minix_reconfigure(). Similarly, call
+minix_set_buffer_uptodate() before mark_buffer_dirty() on block and inode
+bitmap buffers in minix_free_block(), minix_new_block(),
+minix_free_inode(), and minix_new_inode(). Transient metadata buffers (such
+as raw inode blocks and indirect blocks) are left untouched so errors
+propagate normally.
 
-  -> #1 (&ni->ni_lock/5){+.+.}-{4:4}:
-        ni_lock fs/ntfs3/ntfs_fs.h:1247 [inline]
-        ntfs_fallocate+0x56a/0x1080 fs/ntfs3/file.c:535
-        vfs_fallocate+0x663/0x7f0 fs/open.c:338
-        ioctl_preallocate fs/ioctl.c:289 [inline]
-        file_ioctl+0x5db/0x7e0 fs/ioctl.c:332
-        do_vfs_ioctl+0xc2a/0x1550 fs/ioctl.c:576
-
-  -> #0 (mapping.invalidate_lock#3){++++}-{4:4}:
-        filemap_invalidate_lock_shared include/linux/fs.h:1089 [inline]
-        filemap_fault+0x6e0/0x13c0 mm/filemap.c:3585
-        __do_fault+0x138/0x2a0 mm/memory.c:5565
-        handle_pte_fault mm/memory.c:6558 [inline]
-        __handle_mm_fault mm/memory.c:6707 [inline]
-        handle_mm_fault+0x100a/0x28a0 mm/memory.c:6876
-        do_user_addr_fault+0x746/0x1340 arch/x86/mm/fault.c:1394
-        exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1536
-        filldir64+0x2bc/0x620 fs/readdir.c:-1
-        dir_emit include/linux/fs.h:3610 [inline]
-        ntfs_dir_emit fs/ntfs3/dir.c:388 [inline]
-        ntfs_read_hdr+0x8a7/0xc10 fs/ntfs3/dir.c:429
-        ntfs_readdir+0x9ab/0xf70 fs/ntfs3/dir.c:589
-        iterate_dir+0x3ea/0x8a0 fs/readdir.c:114
-        __do_sys_getdents64 fs/readdir.c:404 [inline]
-
-The warning occurs because ntfs_fallocate() on a regular file acquires
-mapping.invalidate_lock and then calls ni_lock(), which locks the regular
-file inode's ni_lock with the default subclass NTFS_INODE_MUTEX_NORMAL
-(subclass 5). Meanwhile, ntfs_readdir() on a directory inode also uses
-ni_lock() with subclass 5, and while holding the lock across directory
-traversal, calls dir_emit() to fill directory entries into the user buffer.
-If that buffer is backed by a memory-mapped file, writing to it triggers a
-page fault (filemap_fault()), which acquires the mapped file's
-mapping.invalidate_lock. Because lockdep sees mapping.invalidate_lock ->
-ni_lock (subclass 5) in fallocate and ni_lock (subclass 5) ->
-mapping.invalidate_lock in readdir, it flags a circular locking dependency.
-
-This is a false positive because the two operations involve distinct
-inodes: readdir holds the mutex of the directory inode, while the page
-fault acquires the invalidate_lock of the regular file whose pages back the
-user buffer, so an actual deadlock cannot occur.
-
-In ntfs3, directory inodes are intended to be locked with ni_lock_dir(),
-which uses the lockdep subclass NTFS_INODE_MUTEX_PARENT (subclass 6). This
-subclass hierarchy is already used by other directory operations like
-ntfs_lookup(), ntfs_create_inode(), ntfs_link(), ntfs_unlink(), and
-ntfs_rename(). Replace ni_lock() with ni_lock_dir() in ntfs_readdir() when
-loading subrecords and when traversing directory metadata. This changes the
-directory lock subclass to NTFS_INODE_MUTEX_PARENT (6), establishing the
-hierarchy ni_lock_dir (subclass 6) -> mapping.invalidate_lock -> ni_lock
-(subclass 5) and eliminating the false lockdep warning.
-
-Fixes: d62cf685d12e ("fs/ntfs3: hold ni_lock across readdir metadata walk")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+7736960b837908f3a81d@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=7736960b837908f3a81d
-Link: https://syzkaller.appspot.com/ai_job?id=fae916f3-c2b4-47da-86b5-063a011b5c01
-To: "Konstantin Komarov" <almaz.alexandrovich@paragon-software.com>
-To: <ntfs3@lists.linux.dev>
-To: "ZhengYuan Huang" <gality369@gmail.com>
-Cc: <linux-kernel@vger.kernel.org>
+Reported-by: syzbot+d35de3666410c93fd821@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=d35de3666410c93fd821
+Link: https://syzkaller.appspot.com/ai_job?id=6f8ed031-e95a-4ac4-a2bd-3033ec4cadd9
+To: <linux-kernel@vger.kernel.org>
+To: "Linus Torvalds" <torvalds@ppc970.osdl.org>
+Cc: "Christian Brauner" <brauner@kernel.org>
+Cc: "Darrick J. Wong" <djwong@kernel.org>
+Cc: "Jan Kara" <jack@suse.cz>
+Cc: "Jori Koolstra" <jkoolstra@xs4all.nl>
+Cc: "Michael Bommarito" <michael.bommarito@gmail.com>
 
 ---
-diff --git a/fs/ntfs3/dir.c b/fs/ntfs3/dir.c
-index eb9152e9f..8bf62d2fb 100644
---- a/fs/ntfs3/dir.c
-+++ b/fs/ntfs3/dir.c
-@@ -522,7 +522,7 @@ static int ntfs_readdir(struct file *file, struct dir_context *ctx)
- 		 * Load all subrecords to avoid 'write' access to 'ni' during
- 		 * directory reading.
- 		 */
--		ni_lock(ni);
-+		ni_lock_dir(ni);
- 		if (!ni->mi_loaded && ni->attr_list.size) {
- 			err = ni_load_all_mi(ni);
- 			if (!err)
-@@ -538,7 +538,7 @@ static int ntfs_readdir(struct file *file, struct dir_context *ctx)
- 	 * once is not enough if concurrent writeback can still compact ATTR_LIST
- 	 * entries and free the record that ntfs_read_hdr() is currently walking.
- 	 */
--	ni_lock(ni);
-+	ni_lock_dir(ni);
+diff --git a/fs/minix/bitmap.c b/fs/minix/bitmap.c
+index abec43833..1650d22c3 100644
+--- a/fs/minix/bitmap.c
++++ b/fs/minix/bitmap.c
+@@ -64,6 +64,7 @@ void minix_free_block(struct inode *inode, unsigned long block)
+ 		printk("minix_free_block (%s:%lu): bit already cleared\n",
+ 		       sb->s_id, block);
+ 	spin_unlock(&bitmap_lock);
++	minix_set_buffer_uptodate(bh);
+ 	mark_buffer_dirty(bh);
+ 	return;
+ }
+@@ -83,6 +84,7 @@ int minix_new_block(struct inode * inode)
+ 		if (j < bits_per_zone) {
+ 			minix_set_bit(j, bh->b_data);
+ 			spin_unlock(&bitmap_lock);
++			minix_set_buffer_uptodate(bh);
+ 			mark_buffer_dirty(bh);
+ 			j += i * bits_per_zone + sbi->s_firstdatazone-1;
+ 			if (j < sbi->s_firstdatazone || j >= sbi->s_nzones)
+@@ -207,6 +209,7 @@ void minix_free_inode(struct inode * inode)
+ 	if (!minix_test_and_clear_bit(bit, bh->b_data))
+ 		printk("minix_free_inode: bit %lu already cleared\n", bit);
+ 	spin_unlock(&bitmap_lock);
++	minix_set_buffer_uptodate(bh);
+ 	mark_buffer_dirty(bh);
+ }
  
- 	root = indx_get_root(&ni->dir, ni, NULL, NULL);
- 	if (!root) {
+@@ -243,6 +246,7 @@ struct inode *minix_new_inode(const struct inode *dir, umode_t mode)
+ 		return ERR_PTR(-ENOSPC);
+ 	}
+ 	spin_unlock(&bitmap_lock);
++	minix_set_buffer_uptodate(bh);
+ 	mark_buffer_dirty(bh);
+ 	j += i * bits_per_zone;
+ 	if (!j || j > sbi->s_ninodes) {
+diff --git a/fs/minix/inode.c b/fs/minix/inode.c
+index daf83e4ff..c715f37a5 100644
+--- a/fs/minix/inode.c
++++ b/fs/minix/inode.c
+@@ -59,6 +59,18 @@ static void minix_evict_inode(struct inode *inode)
+ 		minix_free_inode(inode);
+ }
+ 
++static void minix_clear_super_error(struct super_block *sb)
++{
++	struct minix_sb_info *sbi = minix_sb(sb);
++	struct buffer_head *sbh = sbi->s_sbh;
++
++	if (buffer_write_io_error(sbh) || !buffer_uptodate(sbh)) {
++		pr_err("MINIX-fs: %s: previous I/O error to superblock detected\n",
++		       sb->s_id);
++		minix_set_buffer_uptodate(sbh);
++	}
++}
++
+ static void minix_put_super(struct super_block *sb)
+ {
+ 	int i;
+@@ -67,6 +79,7 @@ static void minix_put_super(struct super_block *sb)
+ 	if (!sb_rdonly(sb)) {
+ 		if (sbi->s_version != MINIX_V3)	 /* s_state is now out from V3 sb */
+ 			sbi->s_ms->s_state = sbi->s_mount_state;
++		minix_clear_super_error(sb);
+ 		mark_buffer_dirty(sbi->s_sbh);
+ 	}
+ 	for (i = 0; i < sbi->s_imap_blocks; i++)
+@@ -153,6 +166,7 @@ static int minix_reconfigure(struct fs_context *fc)
+ 		/* Mounting a rw partition read-only. */
+ 		if (sbi->s_version != MINIX_V3)
+ 			ms->s_state = sbi->s_mount_state;
++		minix_clear_super_error(sb);
+ 		mark_buffer_dirty(sbi->s_sbh);
+ 	} else {
+ 	  	/* Mount a partition which is read-only, read-write. */
+@@ -162,6 +176,7 @@ static int minix_reconfigure(struct fs_context *fc)
+ 		} else {
+ 			sbi->s_mount_state = MINIX_VALID_FS;
+ 		}
++		minix_clear_super_error(sb);
+ 		mark_buffer_dirty(sbi->s_sbh);
+ 
+ 		if (!(sbi->s_mount_state & MINIX_VALID_FS))
+diff --git a/fs/minix/minix.h b/fs/minix/minix.h
+index 78722ce22..b0806cd23 100644
+--- a/fs/minix/minix.h
++++ b/fs/minix/minix.h
+@@ -5,6 +5,7 @@
+ #include <linux/fs.h>
+ #include <linux/pagemap.h>
+ #include <linux/minix_fs.h>
++#include <linux/buffer_head.h>
+ 
+ #define INODE_VERSION(inode)	minix_sb(inode->i_sb)->s_version
+ #define MINIX_V1		0x0001		/* original minix fs */
+@@ -43,6 +44,21 @@ struct minix_sb_info {
+ 	unsigned short s_version;
+ };
+ 
++/*
++ * Persistent in-memory metadata buffers (superblock, inode/zone bitmaps)
++ * are read once at mount time and kept pinned. If a previous writeback
++ * failed, BH_Uptodate was cleared and BH_Write_EIO was set. Restore the
++ * uptodate flag and clear the error before dirtying so that mark_buffer_dirty()
++ * does not trigger a warning.
++ */
++static inline void minix_set_buffer_uptodate(struct buffer_head *bh)
++{
++	if (buffer_write_io_error(bh) || !buffer_uptodate(bh)) {
++		clear_buffer_write_io_error(bh);
++		set_buffer_uptodate(bh);
++	}
++}
++
+ void __minix_error_inode(struct inode *inode, const char *function,
+ 			 unsigned int line, const char *fmt, ...);
+ 
 
 
 base-commit: 24a19b953e2a3d0ea5a8c4951a0ab8f32720c907
