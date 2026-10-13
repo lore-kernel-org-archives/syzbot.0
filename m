@@ -1,150 +1,281 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB49B54145F;
-	Tue, 13 Oct 2026 19:40:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791920402; cv=none; b=qxeuMu5PPsOLSKbQamVIUgXvCocJXAGya1lxwk/o0elKSWRXUUQGWRG+KcNwzjGrGEwf2vyrn7tkYOnf+C+/wo/rnd7kGQz1Pel3pdGTApQnoaD9FQejl1kPEgWtZPblN6f0hsTW2af1xFdvaTvjFeWoRaVkConZOBnHPPwE/EY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791920402; c=relaxed/simple;
-	bh=MZg58M268Eh0VZqIkyS55G+P1rLcbo9ml1/whWRf554=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=sLKocZ7fUcZGdhkuVGyTC/iOcfm36d+xNiSZIy7k67z1hlvhqAbsGVcFjpkwYJ6sZ4IUx1MzzVYYy5RC/Sgf2IErm22b7rdzf6j7QKKFGbKbpETYOGzKdlv21Ki9XgylKEtC9f9WXl0BpPak+Gmh6/XmIh4ZNxIg7WdtsoP0YK8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KJh8OY5d; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A29BE5013B9
+	for <syzbot@lists.linux.dev>; Tue, 13 Oct 2026 20:04:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=100.103.45.18
+ARC-Seal:i=3; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791921883; cv=pass; b=pocAcfNy+PU7A2wTnSqSEocIeM6Wfq7TfVLJPM7XHKj8HTeNxI6CcRD5Av2ZYgfsKGW4SDIrjUs+dNpWAaoGYsBR4TOdGhO72VySm5LsemNjt851wc+Hzp6WMbmTNfiDXDcKOKIDcNXs6iyz06wzPJ0xMMb3QNyQtqLviOFKfSo=
+ARC-Message-Signature:i=3; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791921883; c=relaxed/simple;
+	bh=7Jv1iSFAbrSjZoi6l0tfv1a+KvqYPKKxMV/IhR1HN+U=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=rqgvg7dP++1LpNQxgU8lHnSQ7la10VhZiyyjn01tQK2UCk65RM2u8zoWxDGkJ2H1CnyhHGGglfpunGDK/lMTFWoYfpZW75f8BKpaOhLW8JOtqed3FEheEqZkurcBn3Gy07a1uo0siCdWpJIttX5i7udxoizWuSFBeJ8HoVUvUgA=
+ARC-Authentication-Results:i=3; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PLt7fNKR; arc=pass smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KJh8OY5d"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 0109B1F000FF;
-	Tue, 13 Oct 2026 19:39:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791920400;
-	bh=2qwfRg5DXWganUmwiKbDvHA+hLYxjOJ4/zQ8YVt+nQc=;
-	h=From:To:Cc:Subject:Date;
-	b=KJh8OY5dsfrlTbt0uZJ/ZgQGpO/tCEXqLvPkvaMtVhFsS402ePkcQ0P/m91P0jtnL
-	 mU8rOj+SSPn8nTHhlls4+jy9HpL7NMS0pFQmooOiIaymZ0NZVUSsZ0RY3wbUXq3PvE
-	 GfeUjzCPG7a2PkxsE3dKQh4QURT/EOvCwJ4inqOFkShTvZp6ZiRUvs/H6EAFwhiWAK
-	 711Q7MIl66NZPQchto9gEL4vFkTtHRVqOIVXT68Om+PQ0+fsaD/SJj6GI15McWd+Dr
-	 mdgC4pyxhZhAT5oeH5ieb1yFgZUtEYVdv+sEqAppozHdY5YP7FyiAqoQWf308JUMqi
-	 VsVj5SwXECzEA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Aleksandr Nogikh <nogikh@google.com>, "Konstantin Komarov" <almaz.alexandrovich@paragon-software.com>, <ntfs3@lists.linux.dev>, "ZhengYuan Huang" <gality369@gmail.com>
-Cc: linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Subject: [PATCH] fs/ntfs3: use ni_lock_dir() in ntfs_readdir()
-Message-ID: <09f6cbed-aafb-4e5b-8b0f-36d55a248644@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PLt7fNKR"
+Received: by smtp.kernel.org (Postfix)
+	id 43DC51F000FF; Tue, 13 Oct 2026 20:04:41 +0000 (UTC)
+Authentication-Results: smtp.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.210.48
+ARC-Seal: i=2; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=pass;
+	t=1791921881;
+	b=xDKZS4GHpxBxxHJIGLrRkY68m24JjBMUOgSbJ5dERXkKchMgFRLv5NlsmxWXGsHMYV0/
+	 vfeAm6FwlRfSWov8LhPUgVcwdphGAGV4lbTq1D/blNZbhLTOCoDcOL/T+2zKJEVlcYHeR
+	 RqW6Sg4bdGFA8OO24mImXye3yyJ8JcPic1QHYWG8otbXm/w4948A/8lWSk0PBz767v0ZI
+	 hWq3VZPt3lYakZdEZBWLfOK7sSP/45SUtT9PVC4wXKl8bG0P983J8bFkL/kC45sMPE3qh
+	 pybLN9uCYDZEWQhiHMMpg7GqHG6BXsUch/yknbjSrqeZoocAIEwgs287oUoSPkx88lQ==
+ARC-Message-Signature: i=2; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1791921881;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:References:
+	 In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=tUFEhL4DQJd+O8HSIhVwqm3r983DtF+LPqL5gtfmFQY=;
+	b=FIB+yfy+fDJ7L0MiQ3+iBisURkPUa8Ongjgw7NZwEOTrneHgUDJ4yaUTrgaiPj38gvcI
+	 rdkyUxlTu59Mdvn2jZdUAq4Fhgyi4tvWusBKc7E4ZXffQ1xdHq/mWGJjRR7iZwROb7v+s
+	 u372d163di5tiXoLgyqnAH3TlBRb8NisS8yEOq8gy86rV/FOty12PmSkfdJzpy06lG4/t
+	 Bon/wLBkDyWNWCndJGOeVYX54r9yf6dLohxxbw22k/Kq/wbQAcuOTW7oapVUl0P65DQ2f
+	 RwVySVq8LogmFABXXUXGkBrKnvDSOsY+nNK1qZ41sZP5So2u/s1wPKaGQaJsVayxV/w==
+ARC-Authentication-Results: i=2; smtp.kernel.org; dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=PLt7fNKR;
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.210.48
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 8125A1F00893
+	for <syzbot@kernel.org>; Tue, 13 Oct 2026 20:04:40 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=PLt7fNKR
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 8125A1F00893
+Authentication-Results: smtp.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=google.com
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-82380b0f55dso1574471a34.1
+        for <syzbot@kernel.org>; Tue, 13 Oct 2026 13:04:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791921879; cv=none;
+        d=google.com; s=arc-20260327;
+        b=RPmN5pbtKBXnqMUxjDW7hrU9jjW9noodd4WfV0JizKSmw7bLjdG19T8XAc6v9mSIKc
+         rQcaaRn/Ijh4tw++2wcl5egoIpILTQSjOl9zcwylUIXiXFbJchpYz0Kir/pTuhwcKfpE
+         0AQ5p9RB9AP+2ktyJOPQF6i45GbVQym6BK6VefB6kWarCEzsvKHWqM0bKp4MuBlx59gI
+         tVIsS02dq0dTavvnsbk+AH5KKe1ddCA4lzPoDDf6+EZOVwo0plKZEY5wixsIHbJj4E2f
+         URCpo43jO9XaSmg0Tfvv4WflM96auSeswsd459IK+VWrK6yrR2p9ynoaSo2klLk3/gxi
+         Nr6A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=tUFEhL4DQJd+O8HSIhVwqm3r983DtF+LPqL5gtfmFQY=;
+        fh=2Ld/g5BVZzBadtquf8mrXl84q+iOtbUed/2ECOFnmmI=;
+        b=lS1DAY7VOT5Yncz9/q/xLYCBOUQx92p2mjq0BTOt72Jqaw36k0zHT4gN6z7uc2coXE
+         LReXciGY7XHszNDMjnRQVfqObQJPZhDZSQY4hNG18mN7gIZo3Qsd85yvbXV8P9/Mhkaq
+         U2zKsU1dArxEV4F3Qak0biEhYYqaFqPjQkkykU8f9moGZVSD9ohDquBI1ZvVtv0T4rSU
+         A0U6X7qCtYmNn+qxKaWxp6INXUoIe80OtPBEiGraMzMATWeFOlAeACdJCPIsTgcvpI8w
+         HBZhEIyAO/7zwKFR6/T8edv37shzUOuRbtBHapeldOF/feNWa79wPI/Yn2n0HNPFQZui
+         bY9A==;
+        darn=kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1791921879; x=1792526679; darn=kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=tUFEhL4DQJd+O8HSIhVwqm3r983DtF+LPqL5gtfmFQY=;
+        b=PLt7fNKR1APsIwMDEqN28Wi0cP0Fnb61mWb0U/rxcurdLXHiYnU1D5rkHJaFi2fCUh
+         AthhP1YoQjWrgne9voT9dQppCR4ygjfIhqWPQRI6k6Xw/hKB+N+555Fvjw7tZkIu3Tvp
+         qZYnRaqJaaSNdy9AHkApREUM3kyenTF08g0VNzu49RP0Sv3McLbPCLGb/+GXeVEDM7/H
+         Z8KHKI802mfLenMzvsjmt+ASXDTJ8vzsbDkDQaNDV/KXPaG9u87xpvXUDI5tzSG1sqe5
+         eym93CbAZoD7NAQdK/jfoEVHDzBYKUiBkxIZ/z+S9sSGUpD6k3b/KrGQSiu9Kx8gYvVn
+         dTcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791921879; x=1792526679;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=tUFEhL4DQJd+O8HSIhVwqm3r983DtF+LPqL5gtfmFQY=;
+        b=Y2tMQN2TqxkmIqyQoYNPLQc0se29CHhZ07uZvwta5OjZVxgb7ai4a3/TCWFTuGnPO3
+         0sO7htL45a4djmliRngyz04zbkLt6DS28tB866DkqOOOIVwdEkjZ/D5QE4ddFr4j7c5T
+         rLC+4Z4kLxg3U93DSCzEWGjKYwyOmZZP8sl8lodSorTezsHyT7Yf+NDM1yZMZhUAtflF
+         /M2twGykyksDUjPvQasmtCGMXTugVczRIqtE3O2e+ptikGz+mi0IQNb8YqpcidYAyp8N
+         o91q27hhMFtiOt0qlG8JGEgg+k8nVxm6I46gGTe8qmSt7FZ0Ejm5SeCshHQ0JBXaR/1T
+         +uZA==
+X-Gm-Message-State: AFq9FYKfELPMSmxyb//XHAlnJbSmiNVyB4ulKIeqpE/+nlwRw8QrIFJR
+	WK8MY92AH5Xx+y3B427XI1qJK2sGS96IuYXtZi6VMxoT7nJgPwau7Mp/KaN8QvW0doutoXbNr6U
+	CEiKob3Rtjqe7uOIYm76meZ9uOxryXdYEUaeABAydFzbis2kg2l0aIECO
+X-Gm-Gg: AYBFou1NRrMgISd9HSEu3ozEaupriQOyzOmUkUruYya6N1iMpP8VS8/F8kXfmV7NAEq
+	ZfmlLkqfTMgqRaF4a4356hc81RK9XHJ32GQvBxUDwLRRrCyoQyaaf397JwoBOKDmqMQAqoK/IDM
+	ZLOA7JVPY9BeWsIsU6FrSdxDXdQd6zmeHNrVpgHnqqf8vuODZR2VlakYzoY7wu/KrjJR1217PVn
+	JSlMX8aSAAUQDDJXNRoinAXNsVdDyijmZQkw4FXDbi7chLdgXqYSumEuBtNs8IYUEh/wsDvIMSY
+	YUp+HI5Z9PptKAXBP/MUKkmQB2H1XemykUa3SMRm4opUHbZ/05Z1ud8++nnb/evEU4L8AhVwOUo
+	6VXJhurIrBreTiV575kcHM43H1nMIV50vkM7l5sP8xqndyArw222RLFPPHyTnC36HR+6qXQ2tD5
+	4giw6+ny0K0w9y86eL7ADb8shP6w==
+X-Received: by 2002:a05:6808:4fd0:b0:4cb:d056:b14f with SMTP id
+ 5614622812f47-50c41aa9d1fmr14145142b6e.1.1791921878640; Tue, 13 Oct 2026
+ 13:04:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Tue, 13 Oct 2026 19:39:59 +0000 (UTC)
-
+References: <ef965aec-2c08-41e1-9f81-59bfb3e2892a@mail.kernel.org>
+In-Reply-To: <ef965aec-2c08-41e1-9f81-59bfb3e2892a@mail.kernel.org>
 From: Aleksandr Nogikh <nogikh@google.com>
+Date: Tue, 13 Oct 2026 22:04:27 +0200
+X-Gm-Features: AclHuK__D1UsXvY_jcaja4Z25cB6sEAkbyTP5mIBBGUzxKUbn9H6uFzShXueSI0
+Message-ID: <CANp29Y5Bc329gaZw4w11d=DTJwEwXWik084P8JFzJyOuJUw0Og@mail.gmail.com>
+Subject: Re: [PATCH RFC] KVM: x86/xen: Skip fast path for Xen timer delivery
+ on PREEMPT_RT
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-A circular locking dependency warning is detected by lockdep between
-&ni->ni_lock and mapping.invalidate_lock when getdents64() writes into a
-memory-mapped buffer while an operation such as fallocate() runs
-concurrently on a regular file:
+#syz reject
 
- WARNING: possible circular locking dependency detected
- task is trying to acquire lock:
- ffff88819b6dbb20 (mapping.invalidate_lock#3){++++}-{4:4}, at:
- filemap_fault+0x6e0/0x13c0 mm/filemap.c:3585
- but task is already holding lock:
- ffff88819b6997e8 (&ni->ni_lock/5){+.+.}-{4:4}, at:
- ntfs_readdir+0x717/0xf70 fs/ntfs3/dir.c:541
- which lock already depends on the new lock.
-
- the existing dependency chain (in reverse order) is:
-
-  -> #1 (&ni->ni_lock/5){+.+.}-{4:4}:
-        ni_lock fs/ntfs3/ntfs_fs.h:1247 [inline]
-        ntfs_fallocate+0x56a/0x1080 fs/ntfs3/file.c:535
-        vfs_fallocate+0x663/0x7f0 fs/open.c:338
-        ioctl_preallocate fs/ioctl.c:289 [inline]
-        file_ioctl+0x5db/0x7e0 fs/ioctl.c:332
-        do_vfs_ioctl+0xc2a/0x1550 fs/ioctl.c:576
-
-  -> #0 (mapping.invalidate_lock#3){++++}-{4:4}:
-        filemap_invalidate_lock_shared include/linux/fs.h:1089 [inline]
-        filemap_fault+0x6e0/0x13c0 mm/filemap.c:3585
-        __do_fault+0x138/0x2a0 mm/memory.c:5565
-        handle_pte_fault mm/memory.c:6558 [inline]
-        __handle_mm_fault mm/memory.c:6707 [inline]
-        handle_mm_fault+0x100a/0x28a0 mm/memory.c:6876
-        do_user_addr_fault+0x746/0x1340 arch/x86/mm/fault.c:1394
-        exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1536
-        filldir64+0x2bc/0x620 fs/readdir.c:-1
-        dir_emit include/linux/fs.h:3610 [inline]
-        ntfs_dir_emit fs/ntfs3/dir.c:388 [inline]
-        ntfs_read_hdr+0x8a7/0xc10 fs/ntfs3/dir.c:429
-        ntfs_readdir+0x9ab/0xf70 fs/ntfs3/dir.c:589
-        iterate_dir+0x3ea/0x8a0 fs/readdir.c:114
-        __do_sys_getdents64 fs/readdir.c:404 [inline]
-
-The warning occurs because ntfs_fallocate() on a regular file acquires
-mapping.invalidate_lock and then calls ni_lock(), which locks the regular
-file inode's ni_lock with the default subclass NTFS_INODE_MUTEX_NORMAL
-(subclass 5). Meanwhile, ntfs_readdir() on a directory inode also uses
-ni_lock() with subclass 5, and while holding the lock across directory
-traversal, calls dir_emit() to fill directory entries into the user buffer.
-If that buffer is backed by a memory-mapped file, writing to it triggers a
-page fault (filemap_fault()), which acquires the mapped file's
-mapping.invalidate_lock. Because lockdep sees mapping.invalidate_lock ->
-ni_lock (subclass 5) in fallocate and ni_lock (subclass 5) ->
-mapping.invalidate_lock in readdir, it flags a circular locking dependency.
-
-This is a false positive because the two operations involve distinct
-inodes: readdir holds the mutex of the directory inode, while the page
-fault acquires the invalidate_lock of the regular file whose pages back the
-user buffer, so an actual deadlock cannot occur.
-
-In ntfs3, directory inodes are intended to be locked with ni_lock_dir(),
-which uses the lockdep subclass NTFS_INODE_MUTEX_PARENT (subclass 6). This
-subclass hierarchy is already used by other directory operations like
-ntfs_lookup(), ntfs_create_inode(), ntfs_link(), ntfs_unlink(), and
-ntfs_rename(). Replace ni_lock() with ni_lock_dir() in ntfs_readdir() when
-loading subrecords and when traversing directory metadata. This changes the
-directory lock subclass to NTFS_INODE_MUTEX_PARENT (6), establishing the
-hierarchy ni_lock_dir (subclass 6) -> mapping.invalidate_lock -> ni_lock
-(subclass 5) and eliminating the false lockdep warning.
-
-Fixes: d62cf685d12e ("fs/ntfs3: hold ni_lock across readdir metadata walk")
-Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
-Reported-by: syzbot+7736960b837908f3a81d@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=7736960b837908f3a81d
-Link: https://syzkaller.appspot.com/ai_job?id=fae916f3-c2b4-47da-86b5-063a011b5c01
-Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
-
----
-diff --git a/fs/ntfs3/dir.c b/fs/ntfs3/dir.c
-index eb9152e9f..8bf62d2fb 100644
---- a/fs/ntfs3/dir.c
-+++ b/fs/ntfs3/dir.c
-@@ -522,7 +522,7 @@ static int ntfs_readdir(struct file *file, struct dir_context *ctx)
- 		 * Load all subrecords to avoid 'write' access to 'ni' during
- 		 * directory reading.
- 		 */
--		ni_lock(ni);
-+		ni_lock_dir(ni);
- 		if (!ni->mi_loaded && ni->attr_list.size) {
- 			err = ni_load_all_mi(ni);
- 			if (!err)
-@@ -538,7 +538,7 @@ static int ntfs_readdir(struct file *file, struct dir_context *ctx)
- 	 * once is not enough if concurrent writeback can still compact ATTR_LIST
- 	 * entries and free the record that ntfs_read_hdr() is currently walking.
- 	 */
--	ni_lock(ni);
-+	ni_lock_dir(ni);
- 
- 	root = indx_get_root(&ni->dir, ni, NULL, NULL);
- 	if (!root) {
-
-
-base-commit: 24a19b953e2a3d0ea5a8c4951a0ab8f32720c907
--- 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On Tue, Oct 13, 2026 at 4:09=E2=80=AFAM 'syzbot' via
+syzkaller-upstream-moderation
+<syzkaller-upstream-moderation@googlegroups.com> wrote:
+>
+> The Xen vCPU timer hrtimer (vcpu->arch.xen.timer) is initialized with
+> HRTIMER_MODE_ABS_HARD so that timer expiration occurs with high precision
+> in hard interrupt context. When the timer expires, xen_timer_callback()
+> runs in hardirq context and attempts to deliver the event directly via
+> kvm_xen_set_evtchn_fast().
+>
+> However, kvm_xen_set_evtchn_fast() acquires &gpc->lock using
+> read_lock_irqsave(). On CONFIG_PREEMPT_RT kernels, rwlock_t is implemente=
+d
+> as rt_rw_lock, which is a sleeping lock based on rtmutexes. Attempting to
+> acquire a sleeping lock in hardirq context triggers a sleeping function
+> called from invalid context BUG:
+>
+> BUG: sleeping function called from invalid context at
+> kernel/locking/spinlock_rt.c:248
+> in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 6214, name: rm
+> preempt_count: 1000000, expected: 0
+> RCU nest depth: 1, expected: 1
+> Call Trace:
+>  <IRQ>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  __might_resched+0x31b/0x470 kernel/sched/core.c:9264
+>  rt_read_lock+0xa9/0x4b0 kernel/locking/spinlock_rt.c:248
+>  kvm_xen_set_evtchn_fast+0x1f4/0x990 arch/x86/kvm/xen.c:1843
+>  xen_timer_callback+0x109/0x220 arch/x86/kvm/xen.c:139
+>  __run_hrtimer kernel/time/hrtimer.c:2074 [inline]
+>  __hrtimer_run_queues+0x3a0/0xaf0 kernel/time/hrtimer.c:2131
+>  hrtimer_interrupt+0x4c2/0xa80 kernel/time/hrtimer.c:2250
+>  ...
+>  </IRQ>
+>
+> Using read_trylock() instead would still be unsafe on PREEMPT_RT, because=
+ a
+> successful read trylock followed by read_unlock() can wake up a blocked
+> writer, which takes the rtmutex wait lock and releases it with
+> raw_spin_unlock_irq(), unconditionally enabling interrupts from within th=
+e
+> hardirq handler. Furthermore, gpc->lock cannot be converted to raw_rwlock=
+_t
+> because no raw reader-writer spinlock exists in Linux, and converting it =
+to
+> a raw_spinlock_t would serialize all concurrent readers across Xen memory
+> cache lookups.
+>
+> Fix this by bypassing the kvm_xen_set_evtchn_fast() fast path in
+> xen_timer_callback() on CONFIG_PREEMPT_RT kernels. When PREEMPT_RT is
+> enabled, xen_timer_callback() falls back to the slow path: incrementing
+> vcpu->arch.xen.timer_pending, setting KVM_REQ_UNBLOCK, and kicking the
+> vCPU. When the vCPU thread is subsequently scheduled, it delivers the tim=
+er
+> event in task context via kvm_xen_inject_timer_irqs(), where acquiring
+> &gpc->lock is safe.
+>
+> Fixes: 77c9b9dea4fb ("KVM: x86/xen: Use fast path for Xen timer delivery"=
+)
+> Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+e42793f1299e53beb2ee@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3De42793f1299e53beb2ee
+> Link: https://syzkaller.appspot.com/ai_job?id=3Df51d6e61-bc74-4ce3-8f36-5=
+4e585622882
+> To: "Sebastian Andrzej Siewior" <bigeasy@linutronix.de>
+> To: "Borislav Petkov" <bp@alien8.de>
+> To: "Clark Williams" <clrkwllms@kernel.org>
+> To: "Dave Hansen" <dave.hansen@linux.intel.com>
+> To: "David Woodhouse" <dwmw2@infradead.org>
+> To: <kvm@vger.kernel.org>
+> To: <linux-rt-devel@lists.linux.dev>
+> To: "Ingo Molnar" <mingo@redhat.com>
+> To: "Paul Durrant" <paul@xen.org>
+> To: "Paolo Bonzini" <pbonzini@redhat.com>
+> To: "Steven Rostedt" <rostedt@goodmis.org>
+> To: "Sean Christopherson" <seanjc@google.com>
+> To: "Thomas Gleixner" <tglx@kernel.org>
+> To: <x86@kernel.org>
+> To: "David Woodhouse" <dwmw@amazon.co.uk>
+> Cc: "H. Peter Anvin" <hpa@zytor.com>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> ---
+> diff --git a/arch/x86/kvm/xen.c b/arch/x86/kvm/xen.c
+> index d113bd0f1..7aa387d8d 100644
+> --- a/arch/x86/kvm/xen.c
+> +++ b/arch/x86/kvm/xen.c
+> @@ -125,21 +125,24 @@ static enum hrtimer_restart xen_timer_callback(stru=
+ct hrtimer *timer)
+>  {
+>         struct kvm_vcpu *vcpu =3D container_of(timer, struct kvm_vcpu,
+>                                              arch.xen.timer);
+> -       struct kvm_xen_evtchn e;
+> -       int rc;
+>
+>         if (atomic_read(&vcpu->arch.xen.timer_pending))
+>                 return HRTIMER_NORESTART;
+>
+> -       e.vcpu_id =3D vcpu->vcpu_id;
+> -       e.vcpu_idx =3D vcpu->vcpu_idx;
+> -       e.port =3D vcpu->arch.xen.timer_virq;
+> -       e.priority =3D KVM_IRQ_ROUTING_XEN_EVTCHN_PRIO_2LEVEL;
+> +       if (!IS_ENABLED(CONFIG_PREEMPT_RT)) {
+> +               struct kvm_xen_evtchn e;
+> +               int rc;
+>
+> -       rc =3D kvm_xen_set_evtchn_fast(&e, vcpu->kvm);
+> -       if (rc !=3D -EWOULDBLOCK) {
+> -               vcpu->arch.xen.timer_expires =3D 0;
+> -               return HRTIMER_NORESTART;
+> +               e.vcpu_id =3D vcpu->vcpu_id;
+> +               e.vcpu_idx =3D vcpu->vcpu_idx;
+> +               e.port =3D vcpu->arch.xen.timer_virq;
+> +               e.priority =3D KVM_IRQ_ROUTING_XEN_EVTCHN_PRIO_2LEVEL;
+> +
+> +               rc =3D kvm_xen_set_evtchn_fast(&e, vcpu->kvm);
+> +               if (rc !=3D -EWOULDBLOCK) {
+> +                       vcpu->arch.xen.timer_expires =3D 0;
+> +                       return HRTIMER_NORESTART;
+> +               }
+>         }
+>
+>         atomic_inc(&vcpu->arch.xen.timer_pending);
+>
+>
+> base-commit: 24a19b953e2a3d0ea5a8c4951a0ab8f32720c907
+> --
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+>
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated =
+patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/ef965aec-2c08-41e1-9f81-59bfb3e2892a%40mail.kernel.org=
+.
