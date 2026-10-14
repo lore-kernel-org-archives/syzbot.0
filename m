@@ -1,291 +1,724 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D9973B83F9;
-	Wed, 14 Oct 2026 08:40:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C95C449BD71
+	for <syzbot@lists.linux.dev>; Wed, 14 Oct 2026 09:00:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791967202; cv=none; b=oLlkmgbK9qdGquMKoN9IVmwg/w25ZE1c/qLJVeIF32ECcrzxbg8NR79vDBHATERHx+da2/87VRQzJKaIIFulmfJScyH65C/UVlnt0vOOdqiSMBHsK7Lk2Yn/IzIDYbCWKviJ8DoIgDWfdFPiWlO5A5R+TIlSpQScdiORSWW1suE=
+	t=1791968412; cv=none; b=XsPjyeFzq8L3sVjT3isWeOZ6aReLQjIHXCHMR4qnqE0T5sBLsc1M9PY02THqvD5z7ola3/3D5jCCUy5Ybj+uHfl2tDcTzCsW4pwiPwLlVX2tBrAMKWT8NcyS0mQahD1zwAjvBMgNF7JTI2RRz8E6umk9Qsqpjt6oNr01DPkMZI8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791967202; c=relaxed/simple;
-	bh=bpPuIS3RC+fQbyWeH8q4nk9ocP5zYJlWV0tzJUaHRJA=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=Tw7+6jiY8MF54W33+g+W5ntzjvmrGLkDKEbx4tMxgqBmVQvIPERijwmAMsb1ObmlHX5US8LN33AGA2mYsilgeoBeZ2GalZChJUnhOnQyl9pn3G90daEbKaNhujD4950XETy5qtiW8xBhmrboRt9U2cD1L0glZiCV3VZlnV8oOlE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g08pHBsx; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g08pHBsx"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 5C1E91F000FF;
-	Wed, 14 Oct 2026 08:40:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791967200;
-	bh=ndSOnXH9akC/oEngD3YgzdbULw1ZSB1oMqmqeyzMUp8=;
-	h=From:To:Cc:Subject:Date;
-	b=g08pHBsxTdkCYpBKUreISzuC2WK7Jt7y0tyLiyEUvVbwW+L4zjM1f2quBezsJlc7R
-	 B23mwRgrr1jnMqBKPcbKzcKF56k9FPH3YzX1ly3GvZ7E1Hzs/JlxKHXekq3OxNIKPw
-	 IfEvSOFZmzRoYt17FcresdpX/hMqnZYhLMjFPImp2qlkIS/WRO7qU3ZrVo6o9G+gw2
-	 iGYMFkFhNJFt/EaHjZ9sVzOUn+Etv7y0aL00y+LKSnqpGhu4UiOjpjRE72fenA6GQ4
-	 d+jheMWD/zkD/CaaLfNSaAp6beOdRG/4RlmVkkudyLCBoHckeikm/umTkudPCfyvg9
-	 e6j8Eu4a5Bgwg==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Krystian Kaniewski <krystianmkaniewski@gmail.com>, <linux-media@vger.kernel.org>, "Mauro Carvalho Chehab" <mchehab@kernel.org>, "Linus Torvalds" <torvalds@ppc970.osdl.org>
-Cc: kees@kernel.org, linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
-Subject: [PATCH] media: ttusb-dec: fix buffer overflow in ttusb_dec_send_command()
-Message-ID: <66cb7980-f474-41c8-bf2f-529ebfbdc62a@mail.kernel.org>
+	s=arc-20240116; t=1791968412; c=relaxed/simple;
+	bh=EVDExeUMCMVI0MVdvNFe/Vjx9DJ4ZHz9RQSXiv41N+E=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=VzAvnsgXkpgS0bhNNcBTDS7HndA4EJz6VWfaDAQHlZoP/Ga17A96zGJ8pjAi12Q1JMU9jZ83YF9N2gOEfdox6vT282NdVEgx+SxnQrv8GxO+H5EMpho/one+yU82krL6R4E+R/FTBXpDV8t/XLy9h6Pbwm3oHsVCdVft2reBWFo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-4c55ba309c2so6343802b6e.1
+        for <syzbot@lists.linux.dev>; Wed, 14 Oct 2026 02:00:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791968405; x=1792573205;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=TEATTZIA7yzG6Dc0dz6qFNWW+qryqCfmplEPlHDOiP0=;
+        b=li6zG6ONwa0rqbYoAc+ltBl7Tpi6AzupER+mCdy5hWn9DKLIc/GCORa8Q6ssRZH+9j
+         3w+ueGFOMZEtemfpzo806oVH+vPjx3ZlODyQ6QwKbri93rSr31lOqWrDX9Vp6U+uQouC
+         k0f+3edU//ZBRNX7eZpcAcGiiqbCScE+wo+kZRYRrYNVMyfccJbnGruRmhW+pizg3UGm
+         sjo9sGLvZjYgNyG5MB2XY1TlLyBqpmwkmnEc+PW08FxFwfDzcUKQcU72oLYLrHLFZe/q
+         FoHuAqumOJ+l/Npv3zEbtnL/EwrxukKfgkbaN5wZPRnNhAvokzffhKLQI92w3zc8Vmw6
+         WEBg==
+X-Gm-Message-State: AFq9FYLqdWzz3hFQPUzibQnT8V5YclcXublW55XTnT1EtqQvuFy6fLgW
+	CoYphb/PXAnMmPHtOxmcMF8H4bnAd/CTcePEiMgU5ryG4irlSqViE5YpxBqHY1p4+5lNZMpRI/l
+	Zeby81smCBCTWK6fC6K4FnNdIZ11OYJlufADa10w2luYFYXtSibRtvkL7fRk=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Wed, 14 Oct 2026 08:40:00 +0000 (UTC)
+X-Received: by 2002:a05:6808:308f:b0:4b9:a8ac:480 with SMTP id
+ 5614622812f47-50c50f29888mr15982297b6e.30.1791968405440; Wed, 14 Oct 2026
+ 02:00:05 -0700 (PDT)
+Date: Wed, 14 Oct 2026 02:00:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6acf4495.38256f13.2006af.00f2.GAE@google.com>
+Subject: [moderation/CI] Re: netfilter: pin file with get_file_rcu() before
+ reading f_cred
+From: syzbot ci <syzbot+ci8b9a443f75341413@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+syzbot ci has tested the following series
 
-In ttusb_dec_send_command(), a 64-byte buffer is allocated
-(COMMAND_PACKET_SIZE + 4, where COMMAND_PACKET_SIZE is 60) for sending a
-command to the USB device and receiving the response via usb_bulk_msg().
-After receiving the response, the fourth byte b[3] is treated as the
-payload length and used directly in memcpy(cmd_result, &b[4], b[3]) without
-validating it against the actual number of received bytes (actual_len), the
-allocated source buffer bounds, or the capacity of the destination buffer
-cmd_result.
+[v1] netfilter: pin file with get_file_rcu() before reading f_cred
+https://lore.kernel.org/all/20261013234329.2797868-1-tristmd@gmail.com
+* [PATCH nf 1/5] netfilter: xt_owner: pin file with get_file_rcu() before r=
+eading f_cred
+* [PATCH nf 2/5] netfilter: nft_meta: pin file with get_file_rcu() before r=
+eading f_cred
+* [PATCH nf 3/5] netfilter: nfnetlink_log: pin file with get_file_rcu() bef=
+ore reading f_cred
+* [PATCH nf 4/5] netfilter: nfnetlink_queue: pin file with get_file_rcu() b=
+efore reading f_cred
+* [PATCH nf 5/5] netfilter: nf_log_syslog: pin file with get_file_rcu() bef=
+ore reading f_cred
 
-During device probe in ttusb_dec_probe(), ttusb_dec_init_stb() calls
-ttusb_dec_get_stb_state() to query the device state. If the device returns
-a response with an untrusted payload length b[3] greater than
-COMMAND_PACKET_SIZE (e.g. 75), memcpy() reads past the end of the source
-buffer and overflows the caller's 60-byte destination buffer on the stack,
-triggering a FORTIFY_SOURCE buffer overflow failure ("memcpy: detected
-buffer overflow: 75 byte read of buffer size 60").
+and found the following issues:
+* BUG: soft lockup in inet_release
+* BUG: soft lockup in tcp_write_timer
+* INFO: rcu detected stall in __sock_release
+* INFO: rcu detected stall in do_idle
+* INFO: rcu detected stall in inet_release
 
-Moreover, other callers such as ttusbdecfe_dvbt_read_status() supply
-destination buffers as small as 4 bytes, which can lead to a stack buffer
-overflow even if the device returns fewer than 60 bytes. Additionally,
-param_length is copied into &b[4] without checking whether it exceeds
-COMMAND_PACKET_SIZE.
+Full report is available here:
+https://ci.syzbot.org/series/12bffa5e-1b93-48be-972a-d42a2d609c08
 
-Fix this by first verifying that param_length is non-negative and does not
-exceed COMMAND_PACKET_SIZE. Next, add a cmd_result_len parameter to
-ttusb_dec_send_command(), fe_send_command(), and struct
-ttusbdecfe_config.send_command to pass the destination buffer capacity, and
-update all callers accordingly. Finally, strictly reject malformed replies
-with -EIO if actual_len is less than 4 bytes, if the untrusted payload
-length b[3] exceeds the remaining received bytes (actual_len - 4), or if
-cmd_result is provided and b[3] exceeds cmd_result_len. This ensures that
-invalid replies fail safely and memcpy() never performs an out-of-bounds
-read or write.
+***
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Assisted-by: Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+e1dbaae5eefaa2dfbc35@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=e1dbaae5eefaa2dfbc35
-Link: https://syzkaller.appspot.com/ai_job?id=5d2e7c8a-5cf6-49fe-a6e9-124e4d1e051d
-Signed-off-by: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+BUG: soft lockup in inet_release
+
+tree:      nf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilt=
+er/nf.git
+base:      ab699d296e066eb64f51d2a8a1d42237a3b186c8
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/2622922d-df96-41f8-b0fb-efd53f4efbe=
+f/config
+AI triage: https://ci.syzbot.org/findings/59e26111-6a1e-48ea-b7e6-a588d2ef1=
+2fe/triage_trajectory
+
+watchdog: BUG: soft lockup - CPU#0 stuck for 143s! [syz.1.665:7928]
+Modules linked in:
+irq event stamp: 53103
+hardirqs last  enabled at (53102): [<ffffffff8be80f08>] irqentry_exit+0x218=
+/0x910
+hardirqs last disabled at (53103): [<ffffffff8be7fc2e>] sysvec_apic_timer_i=
+nterrupt+0xe/0xc0
+softirqs last  enabled at (2568): [<ffffffff8a73a559>] ipt_do_table+0x2b9/0=
+x15d0
+softirqs last disabled at (2574): [<ffffffff8a01a607>] nfulnl_log_packet+0x=
+267/0x2a50
+CPU: 0 UID: 0 PID: 7928 Comm: syz.1.665 Not tainted syzkaller #0 PREEMPT(fu=
+ll)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:__sanitizer_cov_trace_pc+0x75/0x80
+Code: 18 17 00 00 83 fa 02 75 21 48 8b 91 20 17 00 00 48 8b 32 48 8d 7e 01 =
+8b 89 1c 17 00 00 48 39 cf 73 08 48 89 3a 48 89 44 f2 08 <e9> 96 1b 23 0a c=
+c 0f 1f 44 00 00 90 90 90 90 90 90 90 90 90 90 90
+RSP: 0018:ffffc90004a2eec0 EFLAGS: 00000293
+RAX: ffffffff8255c089 RBX: ffff8880254a0050 RCX: ffff88810c5c5a00
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000002
+RBP: ffffc90004a2f100 R08: ffff8881b97d955f R09: 1ffff110372fb2ab
+R10: dffffc0000000000 R11: ffffed10372fb2ac R12: dffffc0000000000
+R13: 1ffff11004a9400a R14: ffff8881b97d9400 R15: fffffffffffffff5
+FS:  000055559266b500(0000) GS:ffff88818c4c3000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000200000d8e000 CR3: 0000000115740000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ get_file_rcu+0xd9/0x100
+ nfulnl_log_packet+0x1b02/0x2a50
+ nf_log_packet+0x49a/0x650
+ nft_log_eval+0x2c4/0x3b0
+ nft_do_chain+0x48d/0x1b10
+ nft_do_chain_ipv4+0x195/0x290
+ nf_hook_slow+0xc5/0x220
+ nf_hook+0x22a/0x3a0
+ __ip_local_out+0x558/0x6a0
+ ip_local_out+0x2a/0x190
+ __ip_queue_xmit+0x10df/0x1b10
+ __tcp_transmit_skb+0x2d18/0x47c0
+ tcp_send_active_reset+0x2a8/0x5a0
+ __tcp_close+0x43d/0xe70
+ tcp_close+0x28/0x110
+ inet_release+0x143/0x190
+ __sock_release+0xa0/0x1f0
+ sock_close+0x1c/0x30
+ __fput+0x418/0xa50
+ task_work_run+0x1d9/0x270
+ exit_to_user_mode_loop+0x204/0x770
+ do_syscall_64+0x328/0x520
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f9944b9e1d9
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffdbcd33af8 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
+RAX: 0000000000000000 RBX: 00007f9944e27da0 RCX: 00007f9944b9e1d9
+RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000000000000003
+RBP: 00007f9944e27da0 R08: 00007f9944e26038 R09: 0000000000000000
+R10: 00000000003ffc6c R11: 0000000000000246 R12: 00000000000187bd
+R13: 00007f9944e2609c R14: 00000000000184ed R15: 00007ffdbcd33c00
+ </TASK>
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1
+CPU: 1 UID: 0 PID: 12 Comm: kworker/u8:0 Not tainted syzkaller #0 PREEMPT(f=
+ull)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+Workqueue: bond1 bond_alb_monitor
+RIP: 0010:kasan_check_range+0x7/0x2c0
+Code: 48 c7 c6 bc 1f 6f 8e e8 47 7c ef fe 90 0f 0b cc cc cc cc 90 90 90 90 =
+90 90 90 90 90 90 90 90 90 90 90 90 0f 1f 40 d6 55 41 57 <41> 56 41 55 41 5=
+4 53 b0 01 48 85 f6 0f 84 ae 01 00 00 4c 8d 04 37
+RSP: 0018:ffffc90000116548 EFLAGS: 00000246
+RAX: 0000000000000001 RBX: ffff8881b9073810 RCX: ffffffff8beacbc2
+RDX: 0000000000000000 RSI: 0000000000000004 RDI: ffff8881b9073810
+RBP: ffffc90000116650 R08: ffff8881b9073813 R09: 1ffff1103720e702
+R10: dffffc0000000000 R11: ffffed103720e703 R12: 1ffff92000022cb4
+R13: 0000000000000001 R14: ffffc900001165c0 R15: 1ffff1103720e702
+FS:  0000000000000000(0000) GS:ffff8882a7cc3000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000200001000000 CR3: 00000001af03e000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ native_queued_spin_lock_slowpath+0xc2/0x960
+ do_raw_spin_lock+0x26c/0x2f0
+ nfulnl_log_packet+0x267/0x2a50
+ nf_log_packet+0x49a/0x650
+ nft_log_eval+0x2c4/0x3b0
+ nft_do_chain+0x48d/0x1b10
+ nft_do_chain_ipv4+0x195/0x290
+ nf_hook_slow+0xc5/0x220
+ nf_hook+0x22a/0x3a0
+ __ip_local_out+0x558/0x6a0
+ ip_local_out+0x2a/0x190
+ iptunnel_xmit+0x626/0xd10
+ udp_tunnel_xmit_skb+0x29b/0x3e0
+ geneve_xmit+0x24f4/0x3350
+ dev_hard_start_xmit+0x2cd/0x830
+ __dev_queue_xmit+0x14d1/0x3920
+ alb_send_lp_vid+0x348/0x550
+ alb_send_learning_packets+0x12c/0x300
+ bond_alb_monitor+0x3d0/0x1820
+ process_scheduled_works+0xc3d/0x1630
+ worker_thread+0xa47/0xfb0
+ kthread+0x38b/0x480
+ ret_from_fork+0x514/0xb70
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
+
+
+***
+
+BUG: soft lockup in tcp_write_timer
+
+tree:      nf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilt=
+er/nf.git
+base:      ab699d296e066eb64f51d2a8a1d42237a3b186c8
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/2622922d-df96-41f8-b0fb-efd53f4efbe=
+f/config
+AI triage: https://ci.syzbot.org/findings/a1db8c69-1d04-4e7c-9c73-c0a772d9d=
+5b8/triage_trajectory
+
+watchdog: BUG: soft lockup - CPU#0 stuck for 123s! [swapper/0:0]
+Modules linked in:
+irq event stamp: 1709023
+hardirqs last  enabled at (1709022): [<ffffffff810014ca>] asm_sysvec_apic_t=
+imer_interrupt+0x1a/0x20
+hardirqs last disabled at (1709023): [<ffffffff8be7fc2e>] sysvec_apic_timer=
+_interrupt+0xe/0xc0
+softirqs last  enabled at (1685548): [<ffffffff8188fd3b>] __irq_exit_rcu+0x=
+cb/0x220
+softirqs last disabled at (1685579): [<ffffffff8188fd3b>] __irq_exit_rcu+0x=
+cb/0x220
+CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full)=
+=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:get_file_rcu+0xbe/0x100
+Code: 72 ff 4c 89 f7 e8 22 b1 f6 ff 49 c7 c7 f5 ff ff ff 49 81 ff 00 f0 ff =
+ff 77 10 eb 35 e8 ab 2d 72 ff 49 81 ff 00 f0 ff ff 76 27 <e8> 9d 2d 72 ff 4=
+3 80 7c 25 00 00 0f 85 60 ff ff ff e9 63 ff ff ff
+RSP: 0018:ffffc90000006fd0 EFLAGS: 00000206
+RAX: ffffffff8255c089 RBX: ffff88811b418c50 RCX: ffffffff8fa8f000
+RDX: 0000000000000100 RSI: 0000000000000100 RDI: 0000000000000002
+RBP: 0000000000000000 R08: 0000000000000100 R09: 1ffff11022ee972b
+R10: dffffc0000000000 R11: ffffed1022ee972c R12: dffffc0000000000
+R13: 1ffff1102368318a R14: ffff88811774b800 R15: fffffffffffffff5
+FS:  0000000000000000(0000) GS:ffff88818c4c3000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f679c7eb8c0 CR3: 000000000fb48000 CR4: 00000000000006f0
+Call Trace:
+ <IRQ>
+ owner_mt+0x28a/0x970
+ nft_match_eval+0x1ad/0x2b0
+ nft_do_chain+0x48d/0x1b10
+ nft_do_chain_ipv4+0x195/0x290
+ nf_hook_slow+0xc5/0x220
+ nf_hook+0x22a/0x3a0
+ __ip_local_out+0x558/0x6a0
+ ip_local_out+0x2a/0x190
+ __ip_queue_xmit+0x10df/0x1b10
+ __tcp_transmit_skb+0x2d18/0x47c0
+ __tcp_retransmit_skb+0xb15/0x16a0
+ tcp_retransmit_skb+0x33/0x440
+ tcp_retransmit_timer+0x1d5f/0x3830
+ tcp_write_timer+0x15c/0x2d0
+ call_timer_fn+0x18d/0x5f0
+ __run_timer_base+0x652/0x8b0
+ run_timer_softirq+0xb7/0x170
+ handle_softirqs+0x226/0x860
+ __irq_exit_rcu+0xcb/0x220
+ irq_exit_rcu+0x9/0x30
+ sysvec_apic_timer_interrupt+0xa6/0xc0
+ </IRQ>
+ <TASK>
+ asm_sysvec_apic_timer_interrupt+0x1a/0x20
+RIP: 0010:pv_native_safe_halt+0xf/0x20
+Code: ab 8b 02 c3 cc cc cc cc cc cc cc 90 90 90 90 90 90 90 90 90 90 90 90 =
+90 90 90 90 f3 0f 1e fa eb 07 0f 00 2d d3 85 21 00 fb f4 <e9> 8c 08 03 00 c=
+c cc cc cc cc cc cc cc cc cc cc cc 90 90 90 90 90
+RSP: 0018:ffffffff8fa07ca0 EFLAGS: 00000202
+RAX: 000000000019b849 RBX: ffffffff819bcc20 RCX: 8000000000000001
+RDX: 0000000000000001 RSI: ffffffff8e46796e RDI: ffffffff8c6dd780
+RBP: ffffffff8fa07d78 R08: ffff888120e33a1b R09: 1ffff110241c6743
+R10: dffffc0000000000 R11: ffffed10241c6744 R12: 0000000000000000
+R13: 1ffffffff1f51e00 R14: 1ffffffff1f40f9c R15: dffffc0000000000
+ default_idle+0x9/0x20
+ default_idle_call+0x72/0xb0
+ do_idle+0x2e0/0x540
+ cpu_startup_entry+0x43/0x60
+ rest_init+0x378/0x3a0
+ start_kernel+0x392/0x3e0
+ x86_64_start_reservations+0x24/0x30
+ x86_64_start_kernel+0x137/0x1b0
+ common_startup_64+0x13e/0x157
+ </TASK>
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1
+CPU: 1 UID: 0 PID: 24 Comm: ksoftirqd/1 Not tainted syzkaller #0 PREEMPT(fu=
+ll)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:native_apic_msr_write+0x39/0x50
+Code: 74 2a 83 ff 30 74 25 eb 10 81 ff d0 00 00 00 74 1b 81 ff e0 00 00 00 =
+74 13 c1 ef 04 81 c7 00 08 00 00 89 f9 89 f0 31 d2 0f 30 <66> 90 c3 cc cc c=
+c cc cc 89 f6 31 d2 e9 a6 07 a8 03 66 0f 1f 44 00
+RSP: 0018:ffffc900001e7ab0 EFLAGS: 00000046
+RAX: 000000000003088e RBX: ffff88823c623c80 RCX: 0000000000000838
+RDX: 0000000000000000 RSI: 000000000003088e RDI: 0000000000000838
+RBP: ffffc900001e7b70 R08: 0000000000000100 R09: 0000000000000001
+R10: 0000000000000003 R11: ffffffff81754510 R12: 000000000003088e
+R13: dffffc0000000000 R14: 0000000010007570 R15: 0000000000000020
+FS:  0000000000000000(0000) GS:ffff8882a7cc3000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f272104ea09 CR3: 00000001be49e000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ lapic_next_event+0x11/0x20
+ clockevents_program_event+0x385/0x630
+ __hrtimer_rearm_deferred+0x36c/0x4b0
+ irqentry_exit+0x8d3/0x910
+ asm_sysvec_apic_timer_interrupt+0x1a/0x20
+RIP: 0010:_raw_spin_unlock_irqrestore+0x47/0x80
+Code: f7 e8 cd 2f b9 f5 f7 c3 00 02 00 00 74 05 e8 50 7d e5 f5 9c 58 a9 00 =
+02 00 00 75 29 f7 c3 00 02 00 00 74 01 fb bf 01 00 00 00 <e8> 04 2d aa f5 6=
+5 48 8b 05 4c 10 ab 08 48 85 c0 74 18 5b 41 5e e9
+RSP: 0018:ffffc900001e7cc8 EFLAGS: 00000206
+RAX: 0000000000000006 RBX: 0000000000000283 RCX: 8000000000000101
+RDX: 0000000000000000 RSI: ffffffff8e46796e RDI: 0000000000000001
+RBP: 0000000000000003 R08: ffffffff917a6d7f R09: 1ffffffff22f4daf
+R10: dffffc0000000000 R11: fffffbfff22f4db0 R12: 0000000000000009
+R13: 0000000000000008 R14: ffff88823c628280 R15: 0000000000000100
+ handle_softirqs+0x226/0x860
+ run_ksoftirqd+0x36/0x60
+ smpboot_thread_fn+0x565/0xa70
+ kthread+0x38b/0x480
+ ret_from_fork+0x514/0xb70
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
+
+
+***
+
+INFO: rcu detected stall in __sock_release
+
+tree:      nf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilt=
+er/nf.git
+base:      ab699d296e066eb64f51d2a8a1d42237a3b186c8
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/2622922d-df96-41f8-b0fb-efd53f4efbe=
+f/config
+AI triage: https://ci.syzbot.org/findings/04844d1b-14a6-4ba3-836e-490ed6724=
+2c5/triage_trajectory
+
+rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+rcu: 	(detected by 1, t=3D10502 jiffies, g=3D21357, q=3D124 ncpus=3D2)
+rcu: All QSes seen, last rcu_preempt kthread activity 10502 (4294959758-429=
+4949256), jiffies_till_next_fqs=3D1, root ->qsmask 0x0
+rcu: rcu_preempt kthread starved for 10502 jiffies! g21357 f0x2 RCU_GP_WAIT=
+_FQS(5) ->state=3DR ->cpu=3D1
+rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expec=
+ted behavior.
+rcu: RCU grace-period kthread stack dump:
+task:rcu_preempt     state:R  running task     stack:27496 pid:17    tgid:1=
+7    ppid:2      task_flags:0x208040 flags:0x00080000
+Call Trace:
+ <TASK>
+ __schedule+0x17db/0x58f0
+ schedule+0x164/0x2b0
+ schedule_timeout+0x152/0x2c0
+ rcu_gp_fqs_loop+0x30c/0x11f0
+ rcu_gp_kthread+0x9e/0x2b0
+ kthread+0x38b/0x480
+ ret_from_fork+0x514/0xb70
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
+rcu: Stack dump where RCU GP kthread last ran:
+CPU: 1 UID: 0 PID: 8420 Comm: syz.2.714 Not tainted syzkaller #0 PREEMPT(fu=
+ll)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:its_return_thunk+0x0/0x10
+Code: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc =
+cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc <c3> cc 90 90 90 9=
+0 90 90 90 90 90 90 90 90 90 90 e9 3b 05 48 f5 cc
+RSP: 0018:ffffc90000a17ce0 EFLAGS: 00000246
+RAX: ffffffff8255c073 RBX: ffff8881bab1c250 RCX: ffff88810e591e00
+RDX: 0000000000000300 RSI: 0000000000000100 RDI: 0000000000000002
+RBP: ffffc90000a17f00 R08: 0000000000000100 R09: 1ffff1102da8a8ab
+R10: dffffc0000000000 R11: ffffed102da8a8ac R12: dffffc0000000000
+R13: 1ffff1103756384a R14: ffff88816d454400 R15: fffffffffffffff5
+FS:  0000555583040500(0000) GS:ffff8882a7cc3000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000110c35ea7b CR3: 00000001bd488000 CR4: 00000000000006f0
+Call Trace:
+ <IRQ>
+ get_file_rcu+0xc3/0x100
+ nfulnl_log_packet+0x1b02/0x2a50
+ nf_log_packet+0x49a/0x650
+ nft_log_eval+0x2c4/0x3b0
+ nft_do_chain+0x48d/0x1b10
+ nft_do_chain_ipv4+0x195/0x290
+ nf_hook_slow+0xc5/0x220
+ nf_hook+0x22a/0x3a0
+ __ip_local_out+0x558/0x6a0
+ ip_local_out+0x2a/0x190
+ __ip_queue_xmit+0x10df/0x1b10
+ __tcp_transmit_skb+0x2d18/0x47c0
+ tcp_write_xmit+0x1bfa/0x6400
+ tcp_send_loss_probe+0x20b/0x920
+ tcp_write_timer+0x15c/0x2d0
+ call_timer_fn+0x18d/0x5f0
+ __run_timer_base+0x652/0x8b0
+ run_timer_softirq+0xb7/0x170
+ handle_softirqs+0x226/0x860
+ __irq_exit_rcu+0xcb/0x220
+ irq_exit_rcu+0x9/0x30
+ sysvec_apic_timer_interrupt+0xa6/0xc0
+ </IRQ>
+ <TASK>
+ asm_sysvec_apic_timer_interrupt+0x1a/0x20
+RIP: 0010:lock_acquire+0x232/0x350
+Code: ff ff ff e8 b0 bd 44 0a f7 44 24 10 00 02 00 00 0f 84 38 ff ff ff 65 =
+48 8b 05 42 88 f2 12 48 3b 44 24 50 75 33 fb 48 83 c4 58 <5b> 41 5c 41 5d 4=
+1 5e 41 5f 5d c3 cc cc cc cc cc 48 8d 3d 87 5f da
+RSP: 0018:ffffc900063cfc40 EFLAGS: 00000292
+RAX: be519d89c48d4400 RBX: 0000000000000001 RCX: 0000000000000046
+RDX: 000000000185c73d RSI: ffffffff8e6f0840 RDI: ffffffff8c6dd780
+RBP: ffff88810e591e00 R08: ffffffff89a7dfaa R09: 0000000000000000
+R10: dffffc0000000000 R11: ffffffff89a90a00 R12: ffff8880134a6240
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000246
+ down_write+0x96/0x200
+ __sock_release+0x7a/0x1f0
+ sock_close+0x1c/0x30
+ __fput+0x418/0xa50
+ task_work_run+0x1d9/0x270
+ exit_to_user_mode_loop+0x204/0x770
+ do_syscall_64+0x328/0x520
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f2ced79e1d9
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fffd96153a8 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
+RAX: 0000000000000000 RBX: 00007fffd9615490 RCX: 00007f2ced79e1d9
+RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000000000000003
+RBP: 000000000001da87 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000001b31520000 R11: 0000000000000246 R12: 00007fffd96154d0
+R13: 00007f2ceda25fac R14: 000000000001dad7 R15: 00007f2ceda25fa0
+ </TASK>
+
+
+***
+
+INFO: rcu detected stall in do_idle
+
+tree:      nf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilt=
+er/nf.git
+base:      ab699d296e066eb64f51d2a8a1d42237a3b186c8
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/2622922d-df96-41f8-b0fb-efd53f4efbe=
+f/config
+AI triage: https://ci.syzbot.org/findings/96ab4606-bde9-46d9-9093-4130f1f54=
+479/triage_trajectory
+
+rcu: INFO: rcu_preempt self-detected stall on CPU
+rcu: 	0-...!: (1 GPs behind) idle=3D96fc/1/0x4000000000000000 softirq=3D149=
+048/149048 fqs=3D48
+rcu: 	(t=3D10500 jiffies g=3D207709 q=3D131 ncpus=3D2)
+rcu: rcu_preempt kthread timer wakeup didn't happen for 10402 jiffies! g207=
+709 f0x0 RCU_GP_WAIT_FQS(5) ->state=3DI
+rcu: 	Possible timer handling issue on cpu=3D1 timer-softirq=3D87930
+rcu: rcu_preempt kthread starved for 10403 jiffies! g207709 f0x0 RCU_GP_WAI=
+T_FQS(5) ->state=3DI ->cpu=3D1
+rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expec=
+ted behavior.
+rcu: RCU grace-period kthread stack dump:
+task:rcu_preempt     state:I stack:28104 pid:17    tgid:17    ppid:2      t=
+ask_flags:0x208040 flags:0x00080000
+Call Trace:
+ <TASK>
+ __schedule+0x17db/0x58f0
+ schedule+0x164/0x2b0
+ schedule_timeout+0x152/0x2c0
+ rcu_gp_fqs_loop+0x30c/0x11f0
+ rcu_gp_kthread+0x9e/0x2b0
+ kthread+0x38b/0x480
+ ret_from_fork+0x514/0xb70
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
+rcu: Stack dump where RCU GP kthread last ran:
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1
+CPU: 1 UID: 0 PID: 0 Comm: swapper/1 Not tainted syzkaller #0 PREEMPT(full)=
+=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:kasan_check_range+0x1d/0x2c0
+Code: 90 90 90 90 90 90 90 90 90 90 90 90 90 0f 1f 40 d6 55 41 57 41 56 41 =
+55 41 54 53 b0 01 48 85 f6 0f 84 ae 01 00 00 4c 8d 04 37 <49> 39 f8 0f 82 3=
+6 02 00 00 49 b9 00 00 00 00 00 80 ff ff eb 0d cc
+RSP: 0018:ffffc90000a18a48 EFLAGS: 00000202
+RAX: 0000000000000001 RBX: ffff888115985810 RCX: ffffffff8beacbc2
+RDX: 0000000000000000 RSI: 0000000000000004 RDI: ffff888115985810
+RBP: ffffc90000a18b70 R08: ffff888115985814 R09: 1ffff11022b30b02
+R10: dffffc0000000000 R11: ffffed1022b30b03 R12: 1ffff92000143158
+R13: 0000000000000001 R14: ffffc90000a18ae0 R15: 1ffff11022b30b02
+FS:  0000000000000000(0000) GS:ffff8882a7cc3000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f4106beb8c0 CR3: 00000001a7d98000 CR4: 00000000000006f0
+Call Trace:
+ <IRQ>
+ native_queued_spin_lock_slowpath+0xc2/0x960
+ do_raw_spin_lock+0x26c/0x2f0
+ nfulnl_timer+0x20/0x110
+ call_timer_fn+0x18d/0x5f0
+ __run_timer_base+0x652/0x8b0
+ run_timer_softirq+0xb7/0x170
+ handle_softirqs+0x226/0x860
+ __irq_exit_rcu+0xcb/0x220
+ irq_exit_rcu+0x9/0x30
+ sysvec_apic_timer_interrupt+0xa6/0xc0
+ </IRQ>
+ <TASK>
+ asm_sysvec_apic_timer_interrupt+0x1a/0x20
+RIP: 0010:pv_native_safe_halt+0xf/0x20
+Code: ab 8b 02 c3 cc cc cc cc cc cc cc 90 90 90 90 90 90 90 90 90 90 90 90 =
+90 90 90 90 f3 0f 1e fa eb 07 0f 00 2d d3 85 21 00 fb f4 <e9> 8c 08 03 00 c=
+c cc cc cc cc cc cc cc cc cc cc cc 90 90 90 90 90
+RSP: 0018:ffffc900001a7e40 EFLAGS: 00000206
+RAX: 00000000005c2139 RBX: ffffffff819bcc20 RCX: 8000000000000001
+RDX: 0000000000000001 RSI: ffffffff8e46796e RDI: ffffffff8c6dd780
+RBP: ffffc900001a7f10 R08: ffff88823c633a1b R09: 1ffff110478c6743
+R10: dffffc0000000000 R11: ffffed10478c6744 R12: 0000000000000000
+R13: 1ffff1102c09d000 R14: 1ffff92000034fd0 R15: dffffc0000000000
+ default_idle+0x9/0x20
+ default_idle_call+0x72/0xb0
+ do_idle+0x2e0/0x540
+ cpu_startup_entry+0x43/0x60
+ start_secondary+0x101/0x110
+ common_startup_64+0x13e/0x157
+ </TASK>
+CPU: 0 UID: 0 PID: 31900 Comm: syz.3.6377 Not tainted syzkaller #0 PREEMPT(=
+full)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:get_file_rcu+0x5f/0x100
+Code: e2 ff 4c 8b 33 4d 85 f6 0f 84 98 00 00 00 49 8d be 58 01 00 00 be 08 =
+00 00 00 e8 0c 02 e3 ff 31 f6 f0 49 83 86 58 01 00 00 01 <40> 0f 99 c5 40 0=
+f 98 c6 bf 02 00 00 00 e8 6f 31 72 ff 40 84 ed 74
+RSP: 0018:ffffc9000694eec8 EFLAGS: 00000286
+RAX: ffffffff8255c001 RBX: ffff8881aa509250 RCX: ffffffff8255c004
+RDX: 0000000000000001 RSI: 0000000000000000 RDI: ffff88811134b958
+RBP: ffffc9000694f100 R08: ffff88811134b95f R09: 1ffff1102226972b
+R10: dffffc0000000000 R11: ffffed102226972c R12: dffffc0000000000
+R13: 1ffff110354a124a R14: ffff88811134b800 R15: fffffffffffffff5
+FS:  000055556a26b500(0000) GS:ffff88818c4c3000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f41079d6ff8 CR3: 00000001a589a000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ nfulnl_log_packet+0x1b02/0x2a50
+ nf_log_packet+0x49a/0x650
+ nft_log_eval+0x2c4/0x3b0
+ nft_do_chain+0x48d/0x1b10
+ nft_do_chain_ipv4+0x195/0x290
+ nf_hook_slow+0xc5/0x220
+ nf_hook+0x22a/0x3a0
+ __ip_local_out+0x558/0x6a0
+ ip_local_out+0x2a/0x190
+ __ip_queue_xmit+0x10df/0x1b10
+ __tcp_transmit_skb+0x2d18/0x47c0
+ tcp_send_active_reset+0x2a8/0x5a0
+ __tcp_close+0x43d/0xe70
+ tcp_close+0x28/0x110
+ inet_release+0x143/0x190
+ __sock_release+0xa0/0x1f0
+ sock_close+0x1c/0x30
+ __fput+0x418/0xa50
+ task_work_run+0x1d9/0x270
+ exit_to_user_mode_loop+0x204/0x770
+ do_syscall_64+0x328/0x520
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f584b99e1d9
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffdb6062668 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
+RAX: 0000000000000000 RBX: 00007f584bc27da0 RCX: 00007f584b99e1d9
+RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000000000000003
+RBP: 00007f584bc27da0 R08: 00007f584bc26218 R09: 0000000000000000
+R10: 000000000003fd20 R11: 0000000000000246 R12: 000000000013db89
+R13: 00007f584bc2636c R14: 000000000013d8a7 R15: 00007ffdb6062770
+ </TASK>
+
+
+***
+
+INFO: rcu detected stall in inet_release
+
+tree:      nf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilt=
+er/nf.git
+base:      ab699d296e066eb64f51d2a8a1d42237a3b186c8
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp=
+1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/2622922d-df96-41f8-b0fb-efd53f4efbe=
+f/config
+AI triage: https://ci.syzbot.org/findings/9d8b6960-1b28-4725-973e-e39b3e1c7=
+8f1/triage_trajectory
+
+rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+rcu: 	Tasks blocked on level-0 rcu_node (CPUs 0-1): P7332
+rcu: 	(detected by 0, t=3D10502 jiffies, g=3D20017, q=3D4308 ncpus=3D2)
+task:syz.1.387       state:R  running task     stack:25040 pid:7332  tgid:7=
+330  ppid:5598   task_flags:0x400140 flags:0x00080003
+Call Trace:
+ <IRQ>
+ sched_show_task+0x4aa/0x5f0
+ print_other_cpu_stall+0xfc1/0x1350
+ rcu_sched_clock_irq+0x9fe/0x10e0
+ update_process_times+0x23b/0x2f0
+ tick_nohz_handler+0x38f/0x6b0
+ __hrtimer_run_queues+0x371/0xa10
+ hrtimer_interrupt+0x4cd/0xaa0
+ __sysvec_apic_timer_interrupt+0x102/0x430
+ sysvec_apic_timer_interrupt+0xa1/0xc0
+ </IRQ>
+ <TASK>
+ asm_sysvec_apic_timer_interrupt+0x1a/0x20
+RIP: 0010:__sanitizer_cov_trace_const_cmp1+0x8/0xb0
+Code: 0a 10 48 89 74 0a 18 48 89 44 0a 20 c3 cc cc cc cc cc 90 90 90 90 90 =
+90 90 90 90 90 90 90 90 90 90 90 f3 0f 1e fa 48 8b 04 24 <65> 48 8b 0d 68 d=
+e cd 12 65 48 8b 15 68 de cd 12 f7 c2 00 01 00 ff
+RSP: 0018:ffffc90007257228 EFLAGS: 00000286
+RAX: ffffffff8255c021 RBX: ffff888023d91850 RCX: ffffffff8255c004
+RDX: 0000000000000001 RSI: 0000000000000001 RDI: 0000000000000002
+RBP: 0000000000000000 R08: ffff888025fab95f R09: 1ffff11004bf572b
+R10: dffffc0000000000 R11: ffffed1004bf572c R12: dffffc0000000000
+R13: 1ffff110047b230a R14: ffff888025fab800 R15: fffffffffffffff5
+ get_file_rcu+0x71/0x100
+ owner_mt+0x28a/0x970
+ nft_match_eval+0x1ad/0x2b0
+ nft_do_chain+0x48d/0x1b10
+ nft_do_chain_ipv4+0x195/0x290
+ nf_hook_slow+0xc5/0x220
+ nf_hook+0x22a/0x3a0
+ __ip_local_out+0x558/0x6a0
+ ip_local_out+0x2a/0x190
+ __ip_queue_xmit+0x10df/0x1b10
+ __tcp_transmit_skb+0x2d18/0x47c0
+ tcp_send_active_reset+0x2a8/0x5a0
+ mptcp_do_fastclose+0x2d8/0x4a0
+ __mptcp_close+0x21c/0xd10
+ mptcp_close+0x28/0x1a0
+ inet_release+0x143/0x190
+ __sock_release+0xa0/0x1f0
+ sock_close+0x1c/0x30
+ __fput+0x418/0xa50
+ fput_close_sync+0x11f/0x240
+ __x64_sys_close+0x7e/0x110
+ do_syscall_64+0x166/0x520
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f2ae4d9e1d9
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f2ae5c36028 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
+RAX: ffffffffffffffda RBX: 00007f2ae5026090 RCX: 00007f2ae4d9e1d9
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000006
+RBP: 00007f2ae4e35888 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f2ae5026128 R14: 00007f2ae5026090 R15: 00007ffd59d7a8d8
+ </TASK>
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/drivers/media/usb/ttusb-dec/ttusb_dec.c b/drivers/media/usb/ttusb-dec/ttusb_dec.c
-index 825a38759..524be8f10 100644
---- a/drivers/media/usb/ttusb-dec/ttusb_dec.c
-+++ b/drivers/media/usb/ttusb-dec/ttusb_dec.c
-@@ -314,13 +314,17 @@ static u16 crc16(u16 crc, const u8 *buf, size_t len)
- 
- static int ttusb_dec_send_command(struct ttusb_dec *dec, const u8 command,
- 				  int param_length, const u8 params[],
--				  int *result_length, u8 cmd_result[])
-+				  int *result_length, u8 cmd_result[],
-+				  int cmd_result_len)
- {
- 	int result, actual_len;
- 	u8 *b;
- 
- 	dprintk("%s\n", __func__);
- 
-+	if (param_length < 0 || param_length > COMMAND_PACKET_SIZE)
-+		return -EINVAL;
-+
- 	b = kzalloc(COMMAND_PACKET_SIZE + 4, GFP_KERNEL);
- 	if (!b)
- 		return -ENOMEM;
-@@ -366,6 +370,12 @@ static int ttusb_dec_send_command(struct ttusb_dec *dec, const u8 command,
- 			       __func__, actual_len, b);
- 		}
- 
-+		if (actual_len < 4 || b[3] > actual_len - 4 ||
-+		    (cmd_result && b[3] > cmd_result_len)) {
-+			result = -EIO;
-+			goto err_mutex_unlock;
-+		}
-+
- 		if (result_length)
- 			*result_length = b[3];
- 		if (cmd_result && b[3] > 0)
-@@ -389,7 +399,8 @@ static int ttusb_dec_get_stb_state (struct ttusb_dec *dec, unsigned int *mode,
- 
- 	dprintk("%s\n", __func__);
- 
--	result = ttusb_dec_send_command(dec, 0x08, 0, NULL, &c_length, c);
-+	result = ttusb_dec_send_command(dec, 0x08, 0, NULL, &c_length, c,
-+					sizeof(c));
- 	if (result)
- 		return result;
- 
-@@ -448,7 +459,7 @@ static void ttusb_dec_set_pids(struct ttusb_dec *dec)
- 	memcpy(&b[2], &audio, 2);
- 	memcpy(&b[4], &video, 2);
- 
--	ttusb_dec_send_command(dec, 0x50, sizeof(b), b, NULL, NULL);
-+	ttusb_dec_send_command(dec, 0x50, sizeof(b), b, NULL, NULL, 0);
- 
- 	dvb_filter_pes2ts_init(&dec->a_pes2ts, dec->pid[DMX_PES_AUDIO],
- 			       ttusb_dec_audio_pes2ts_cb, dec);
-@@ -902,7 +913,7 @@ static int ttusb_dec_set_interface(struct ttusb_dec *dec,
- 			break;
- 		case TTUSB_DEC_INTERFACE_IN:
- 			result = ttusb_dec_send_command(dec, 0x80, sizeof(b),
--							b, NULL, NULL);
-+							b, NULL, NULL, 0);
- 			if (result)
- 				return result;
- 			result = usb_set_interface(dec->udev, 0, 8);
-@@ -1021,7 +1032,7 @@ static int ttusb_dec_start_ts_feed(struct dvb_demux_feed *dvbdmxfeed)
- 
- 	}
- 
--	result = ttusb_dec_send_command(dec, 0x80, sizeof(b0), b0, NULL, NULL);
-+	result = ttusb_dec_send_command(dec, 0x80, sizeof(b0), b0, NULL, NULL, 0);
- 	if (result)
- 		return result;
- 
-@@ -1056,7 +1067,7 @@ static int ttusb_dec_start_sec_feed(struct dvb_demux_feed *dvbdmxfeed)
- 	memcpy(&b0[5], &dvbdmxfeed->filter->filter.filter_value[0], 1);
- 
- 	result = ttusb_dec_send_command(dec, 0x60, sizeof(b0), b0,
--					&c_length, c);
-+					&c_length, c, sizeof(c));
- 
- 	if (!result) {
- 		if (c_length == 2) {
-@@ -1114,7 +1125,7 @@ static int ttusb_dec_stop_ts_feed(struct dvb_demux_feed *dvbdmxfeed)
- 	struct ttusb_dec *dec = dvbdmxfeed->demux->priv;
- 	u8 b0[] = { 0x00 };
- 
--	ttusb_dec_send_command(dec, 0x81, sizeof(b0), b0, NULL, NULL);
-+	ttusb_dec_send_command(dec, 0x81, sizeof(b0), b0, NULL, NULL, 0);
- 
- 	dec->pva_stream_count--;
- 
-@@ -1135,7 +1146,7 @@ static int ttusb_dec_stop_sec_feed(struct dvb_demux_feed *dvbdmxfeed)
- 	list_del(&finfo->filter_info_list);
- 	spin_unlock_irqrestore(&dec->filter_info_list_lock, flags);
- 	kfree(finfo);
--	ttusb_dec_send_command(dec, 0x62, sizeof(b0), b0, NULL, NULL);
-+	ttusb_dec_send_command(dec, 0x62, sizeof(b0), b0, NULL, NULL, 0);
- 
- 	dec->filter_stream_count--;
- 
-@@ -1238,7 +1249,7 @@ static int ttusb_init_rc( struct ttusb_dec *dec)
- 	if (usb_submit_urb(dec->irq_urb, GFP_KERNEL))
- 		printk("%s: usb_submit_urb failed\n",__func__);
- 	/* enable irq pipe */
--	ttusb_dec_send_command(dec,0xb0,sizeof(b),b,NULL,NULL);
-+	ttusb_dec_send_command(dec, 0xb0, sizeof(b), b, NULL, NULL, 0);
- 
- 	return 0;
- }
-@@ -1354,7 +1365,7 @@ static int ttusb_dec_boot_dsp(struct ttusb_dec *dec)
- 	firmware_csum_ns = htons(firmware_csum);
- 	memcpy(&b0[6], &firmware_csum_ns, 2);
- 
--	result = ttusb_dec_send_command(dec, 0x41, sizeof(b0), b0, NULL, NULL);
-+	result = ttusb_dec_send_command(dec, 0x41, sizeof(b0), b0, NULL, NULL, 0);
- 
- 	if (result) {
- 		release_firmware(fw_entry);
-@@ -1395,7 +1406,7 @@ static int ttusb_dec_boot_dsp(struct ttusb_dec *dec)
- 		}
- 	}
- 
--	result = ttusb_dec_send_command(dec, 0x43, sizeof(b1), b1, NULL, NULL);
-+	result = ttusb_dec_send_command(dec, 0x43, sizeof(b1), b1, NULL, NULL, 0);
- 
- 	release_firmware(fw_entry);
- 	kfree(b);
-@@ -1621,10 +1632,12 @@ static void ttusb_dec_exit_filters(struct ttusb_dec *dec)
- 
- static int fe_send_command(struct dvb_frontend* fe, const u8 command,
- 			   int param_length, const u8 params[],
--			   int *result_length, u8 cmd_result[])
-+			   int *result_length, u8 cmd_result[],
-+			   int cmd_result_len)
- {
- 	struct ttusb_dec* dec = fe->dvb->priv;
--	return ttusb_dec_send_command(dec, command, param_length, params, result_length, cmd_result);
-+	return ttusb_dec_send_command(dec, command, param_length, params,
-+				      result_length, cmd_result, cmd_result_len);
- }
- 
- static const struct ttusbdecfe_config fe_config = {
-diff --git a/drivers/media/usb/ttusb-dec/ttusbdecfe.c b/drivers/media/usb/ttusb-dec/ttusbdecfe.c
-index 215221370..1c2892a1e 100644
---- a/drivers/media/usb/ttusb-dec/ttusbdecfe.c
-+++ b/drivers/media/usb/ttusb-dec/ttusbdecfe.c
-@@ -44,7 +44,8 @@ static int ttusbdecfe_dvbt_read_status(struct dvb_frontend *fe,
- 
- 	*status=0;
- 
--	ret=state->config->send_command(fe, 0x73, sizeof(b), b, &len, result);
-+	ret = state->config->send_command(fe, 0x73, sizeof(b), b, &len,
-+					  result, sizeof(result));
- 	if(ret)
- 		return ret;
- 
-@@ -85,7 +86,7 @@ static int ttusbdecfe_dvbt_set_frontend(struct dvb_frontend *fe)
- 
- 	__be32 freq = htonl(p->frequency / 1000);
- 	memcpy(&b[4], &freq, sizeof (u32));
--	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL);
-+	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL, 0);
- 
- 	return 0;
- }
-@@ -130,7 +131,7 @@ static int ttusbdecfe_dvbs_set_frontend(struct dvb_frontend *fe)
- 	lnb_voltage = htonl(state->voltage);
- 	memcpy(&b[28], &lnb_voltage, sizeof(u32));
- 
--	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL);
-+	state->config->send_command(fe, 0x71, sizeof(b), b, NULL, NULL, 0);
- 
- 	return 0;
- }
-@@ -149,7 +150,7 @@ static int ttusbdecfe_dvbs_diseqc_send_master_cmd(struct dvb_frontend* fe, struc
- 
- 	state->config->send_command(fe, 0x72,
- 				    sizeof(b) - (6 - cmd->msg_len), b,
--				    NULL, NULL);
-+				    NULL, NULL, 0);
- 
- 	return 0;
- }
-diff --git a/drivers/media/usb/ttusb-dec/ttusbdecfe.h b/drivers/media/usb/ttusb-dec/ttusbdecfe.h
-index 73828bb22..96600ad4c 100644
---- a/drivers/media/usb/ttusb-dec/ttusbdecfe.h
-+++ b/drivers/media/usb/ttusb-dec/ttusbdecfe.h
-@@ -14,7 +14,8 @@ struct ttusbdecfe_config
- {
- 	int (*send_command)(struct dvb_frontend* fe, const u8 command,
- 			    int param_length, const u8 params[],
--			    int *result_length, u8 cmd_result[]);
-+			    int *result_length, u8 cmd_result[],
-+			    int cmd_result_len);
- };
- 
- extern struct dvb_frontend* ttusbdecfe_dvbs_attach(const struct ttusbdecfe_config* config);
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
-base-commit: 93f51579e7df248780214094418f205253383cc5
--- 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[brauner@kernel.org coreteam@netfilter.org davem@davemloft.net edumazet@ker=
+nel.org fw@strlen.de horms@kernel.org kuba@kernel.org netdev@vger.kernel.or=
+g netfilter-devel@vger.kernel.org pabeni@redhat.com pablo@netfilter.org phi=
+l@nwl.cc stable@vger.kernel.org tristan@talencesecurity.com tristmd@gmail.c=
+om]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
