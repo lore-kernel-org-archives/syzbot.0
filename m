@@ -1,228 +1,139 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BF9E55931E
-	for <syzbot@lists.linux.dev>; Fri, 16 Oct 2026 18:57:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 888453DB337
+	for <syzbot@lists.linux.dev>; Sun, 18 Oct 2026 17:48:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792177028; cv=none; b=jo7zQctLw+STmXYt44jLYCLACB9Q2YhWXKDdiH4OqCpgRnToDs9wWTHGHZmhOVKOTeqGkVDIDPppdRfAgWYHFuCL9MAchZr1T7MEkre2+9ganlYwYJI7D2REdZVpmUCDTd+yM9rFZuDmCO8ZfDAs2doXzSkdUm9EMEtPSBoa9ic=
+	t=1792345708; cv=none; b=ev4DCu0rrP4DkD5tX9SfWekDl0UtvfLAHwr/nrRx9S42toGHM7ZhttKsAB1otAj1hDg7MUnu9BBerdQ/3KMVpt+CdOmaVHSFWFvYucoYRkbDH8jItUkBM7f86rJ476CxYzg7GQRKveZj/HMtOUDdLM5r+zResGEIedcItVLez8I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792177028; c=relaxed/simple;
-	bh=SWU5wNk4jVjZFiG+kUdFb67gZCbmy8MX1FtQ3pDr0dM=;
-	h=From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:Date; b=QFBDc6GA+ZI+f+9l+wL7I28yPdUFp71wZOKojdJeD1zOIj2Rl4EfD0oKWLYlU6Z2AYgm3If1BclWBuBRloli5FwlE6BkTOLdQ/V33d63NKaKQzx6QnAzmRNSy4UFovZEaxlz9qxQuKg2zbLDQcu2siNyNeuSqM3mYVPt092L/Y8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ar+0oAw7; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ar+0oAw7"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id ED4921F000C4;
-	Fri, 16 Oct 2026 18:57:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792177027;
-	bh=SR3YjUGxNP0utvimey+7WtOcXpqgizk7QDdt2paMNBk=;
-	h=From:To:Cc:Subject:Date;
-	b=ar+0oAw7ESGNvqiC7/qBXv13J519lvuw7cJhMFxxWC5I4nxoF3q8H+SsLSCssQaZL
-	 ZUw7Sy3ROWTQ33/LpCtU1fZo6Q3xyC57AfUsKhKtS7WvvQXx+7mVMNejaMb+D5oslU
-	 8xR+J3rEsZy8KxqhXTwuOz36VFgR79sqP/e+uIGUXYwG0KdtIP5XhKpc1vogz1dN0L
-	 J3rgHVddHy0TWdwhYJQnqJqKG3oEOXIcDY5tbkGiamu3xsIxYbLmCzugwHYOc6++7q
-	 hzmjtx1+OHbaYUD1A0i3trphKQVhsFQ10H276f9f0VQpkZah6lf6q8Dy4aVt4Yo/Ew
-	 5VJD55gzVEgpw==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] media: em28xx: initialize videobuf2 queues before device registration
-Message-ID: <2fdb5af1-fad9-47fe-93dc-d1400f44b60b@mail.kernel.org>
+	s=arc-20240116; t=1792345708; c=relaxed/simple;
+	bh=7rQa7rdfErAGWaxQQi64Jh/b7eLyL1isnKpyVN4Xfko=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Cc:Content-Type; b=nnhyf+67cGIjOkclgal46I52M5Y8dzz4zdfs01KNPLWx12y5sDXh1s1m75i/h4lVXE5uF8zdfUqJtbZzoeoBwGHZdS+04R5FQSRv6ZIvhiuj4QAx2obLs7bJUV67gvTln5OAVm33rUPT7RNlo+ax7EhggdhCK9CrlD75WKNuClM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4e937c5bd4fso1807274b6e.2
+        for <syzbot@lists.linux.dev>; Sun, 18 Oct 2026 10:48:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792345704; x=1792950504;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=bgXMcMdcc5Fki3QNx1JrlNz3qi+WiSYDJxX7Opn3+9k=;
+        b=z5sCeoI1OaKSQSlXwnVqwWV2d4d8jefH+SFxTL3UBSJE75FKb1l0NPiGDmRto+LFKZ
+         Sl0t84u148PqZ9xwGQDBu/R+q5cyhbJ1o2aKsCeckcLdUmoUU/OHbTu2yamc7WNaQc86
+         bXXLfcWQztm2qoykdIvF1AYQSzbP/ZDqbBPUFvBC+uvPcMFyOM8fll4SADRZZ8jr69Id
+         SJyihmpRJYPriJCSqmwjo0NLmuZEOdw7Me/hUrJ8ICfP+WWLZr++VWBeAKS+6Xs/o12Y
+         hpU8qPTJRMwkzDfA/vwNbO4UCcSsTsZir5fEfmbNJd3lha0U01/Yjwz+CBUW63NK/5Em
+         BBFw==
+X-Gm-Message-State: AFq9FYJpGqqZvlKq0v9vDGV2/hJ9h3pUNBjZZ+9zWYQvUJSRSbqKDjhK
+	9Onc6d9fAsOiyNYnCp3rV2XvS9DAe/yIuTxjTsdj78UM1lmMhlPuvt7Wo4hZSu2fb1yNu9VY5td
+	KVv7JwBmbI9e9mha9se689NF8uAl25/TkCPMEyOGW1cfUFeU53bR5vs7tC18=
 Precedence: bulk
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Subscribe: <mailto:syzbot+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri, 16 Oct 2026 18:57:06 +0000 (UTC)
+X-Received: by 2002:a05:6808:6808:b0:4c3:a091:52f9 with SMTP id
+ 5614622812f47-53cc3e3c6a7mr5084041b6e.2.1792345704130; Sun, 18 Oct 2026
+ 10:48:24 -0700 (PDT)
+Date: Sun, 18 Oct 2026 10:48:24 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6ad50668.7f4e89eb.3d59aa.00b6.GAE@google.com>
+Subject: [moderation/CI] Re: kallsyms: optimise symbol search by name
+From: syzbot ci <syzbot+ci0f5f89ea9f7f1dc5@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-In em28xx_v4l2_init(), the videobuf2 queues (v4l2->vb_vidq and
-v4l2->vb_vbiq) are assigned to v4l2->vdev.queue and v4l2->vbi_dev.queue,
-and the video devices are registered with video_register_device() before
-em28xx_vb2_setup() is called to initialize the queues via vb2_queue_init().
+syzbot ci has tested the following series
 
-When an error occurs after video_register_device() succeeds but before
-em28xx_vb2_setup() is reached (such as v4l2_mc_create_media_graph() failing
-when no decoder is present), the error cleanup path at unregister_dev calls
-vb2_video_unregister_device() on the registered devices. Because
-vdev->queue is set, vb2_video_unregister_device() calls
-vb2_queue_release(), which invokes __vb2_queue_cancel(). However, because
-vb2_queue_init() was never called on the queue, its internal locks and
-waitqueue heads remain zero-filled. This triggers a lockdep warning when
-acquiring q->done_wq.lock, followed by a NULL pointer dereference in
-__wake_up_common() when dereferencing the uninitialized waitqueue head:
+[v2] kallsyms: optimise symbol search by name
+https://lore.kernel.org/all/20261018155206.132411-1-david.laight.linux@gmai=
+l.com
+* [PATCH v2 next 01/15] kallsyms: scripts/kallsyms.c: Avoid overrunning on-=
+stack buffer
+* [PATCH v2 next 02/15] kallsyms: Fix selftest startup delay
+* [PATCH v2 next 03/15] kallsyms: Improve selftest test_perf_kallsyms_looku=
+p_name() output
+* [PATCH v2 next 04/15] kallsyms: scripts/kallsyms: Check for output file w=
+rite errors
+* [PATCH v2 next 05/15] kallsyms: Match compressed tokens on the fly during=
+ binary search
+* [PATCH v2 next 06/15] kallsyms: Optimise symbol name search
+* [PATCH v2 next 07/15] kallsyms: Optimise detection of duplicate symbol na=
+mes
+* [PATCH v2 next 08/15] kallsyms: Support changing the density of the kalls=
+yms_markers[] array
+* [PATCH v2 next 09/15] kallsyms: Add a kernel parameter for the marker shi=
+ft
+* [PATCH v2 next 10/15] kallsyms: scripts/kallsyms: Rename some variables f=
+or clarity
+* [PATCH v2 next 11/15] kallsyms: scripts/kallsyms: Keep full expansion of =
+tokens
+* [PATCH v2 next 12/15] kallsyms: scripts/kallsyms: Optimise compress_symbo=
+ls()
+* [PATCH v2 next 13/15] kallsyms: scripts/kallsyms: Reuse tokens that have =
+no references
+* [PATCH 14/15] kallsyms: scripts/kallsyms: Reduce the output file size
+* [PATCH 15/15] kallsyms: scripts/kallsyms: Improve compression by about 2%
 
-INFO: trying to register non-static key.
-The code is fine but needs lockdep annotation, or maybe
-you didn't initialize this object before use?
-turning off the locking correctness validator.
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- register_lock_class+0xcc/0x2e0 kernel/locking/lockdep.c:1343
- __lock_acquire+0x10c/0x2de0 kernel/locking/lockdep.c:5162
- lock_acquire+0x115/0x350 kernel/locking/lockdep.c:5942
- _raw_spin_lock_irqsave+0x40/0x60 kernel/locking/spinlock.c:181
- __wake_up_common_lock+0x30/0x1f0 kernel/sched/wait.c:125
- __vb2_queue_cancel+0x2de/0xde0
- drivers/media/common/videobuf2/videobuf2-core.c:2244
- vb2_core_queue_release+0x2f/0x150
- drivers/media/common/videobuf2/videobuf2-core.c:2677
- vb2_queue_release drivers/media/common/videobuf2/videobuf2-v4l2.c:943
- [inline]
- vb2_video_unregister_device+0x15b/0x200
- drivers/media/common/videobuf2/videobuf2-v4l2.c:1279
- em28xx_v4l2_init+0x1a12/0x2df0
- drivers/media/usb/em28xx/em28xx-video.c:3097
- </TASK>
-Oops: general protection fault, probably for non-canonical address
-0xdffffc0000000000: 0000 [#1] SMP KASAN NOPTI
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-RIP: 0010:__wake_up_common kernel/sched/wait.c:105 [inline]
-RIP: 0010:__wake_up_common_lock+0xd6/0x1f0 kernel/sched/wait.c:126
-Call Trace:
- <TASK>
- __vb2_queue_cancel+0x2de/0xde0
- drivers/media/common/videobuf2/videobuf2-core.c:2244
- vb2_core_queue_release+0x2f/0x150
- drivers/media/common/videobuf2/videobuf2-core.c:2677
- vb2_queue_release drivers/media/common/videobuf2/videobuf2-v4l2.c:943
- [inline]
- vb2_video_unregister_device+0x15b/0x200
- drivers/media/common/videobuf2/videobuf2-v4l2.c:1279
- em28xx_v4l2_init+0x1a12/0x2df0
- drivers/media/usb/em28xx/em28xx-video.c:3097
- </TASK>
+and found the following issue:
+kernel build error
 
-Additionally, if em28xx_v4l2_init() fails, dev->v4l2 is left set. When the
-device is later disconnected, em28xx_close_extension() invokes
-em28xx_v4l2_fini(), which calls v4l2_device_put() a second time and leads
-to a use-after-free.
+Full report is available here:
+https://ci.syzbot.org/series/b38c1cac-393b-482e-8fc6-3608acd56bbe
 
-Fix this by moving em28xx_vb2_setup() before video_register_device() and
-checking its return value so that queues are initialized prior to device
-registration and any subsequent cleanup. In em28xx_vb2_setup(), initialize
-vb_queue_lock and vb_vbi_queue_lock and assign q->lock before calling
-vb2_queue_init(), and make VBI queue initialization conditional on
-em28xx_vbi_supported(). Finally, set dev->v4l2 to NULL under dev->lock in
-both the unregister_dev error path and in em28xx_v4l2_fini() to prevent
-em28xx_v4l2_fini() from performing a duplicate teardown upon disconnect.
+***
 
-Fixes: 7c8bf63b7937 ("media: em28xx: use vb2_video_unregister_device")
-Assisted-by: Gemini:gemini-4-argon Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+1a7507a194fff09e5c44@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=1a7507a194fff09e5c44
-Link: https://syzkaller.appspot.com/ai_job?id=9fb455aa-6431-4fd2-9460-4bb223f71e03
-To: <linux-media@vger.kernel.org>
-To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-To: "Hans Verkuil" <hverkuil+cisco@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+kernel build error
+
+tree:      bpf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
+-next.git
+base:      cee9395acd8043be0644b25c34bfa86623f2b935
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/125a8c98-5370-4a3f-8594-fda40dba54a=
+1/config
+
+timedout after 1h0m0s ["make" "KERNELVERSION=3Dsyzkaller" "KERNELRELEASE=3D=
+syzkaller" "LOCALVERSION=3D-syzkaller" "-j" "48" "ARCH=3Dx86_64" "LLVM=3D1"=
+ "bzImage"]
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/drivers/media/usb/em28xx/em28xx-video.c b/drivers/media/usb/em28xx/em28xx-video.c
-index 79af15476..edcd884ec 100644
---- a/drivers/media/usb/em28xx/em28xx-video.c
-+++ b/drivers/media/usb/em28xx/em28xx-video.c
-@@ -1396,6 +1396,9 @@ static int em28xx_vb2_setup(struct em28xx *dev)
- 	struct vb2_queue *q;
- 	struct em28xx_v4l2 *v4l2 = dev->v4l2;
- 
-+	mutex_init(&v4l2->vb_queue_lock);
-+	mutex_init(&v4l2->vb_vbi_queue_lock);
-+
- 	/* Setup Videobuf2 for Video capture */
- 	q = &v4l2->vb_vidq;
- 	q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-@@ -1405,11 +1408,15 @@ static int em28xx_vb2_setup(struct em28xx *dev)
- 	q->buf_struct_size = sizeof(struct em28xx_buffer);
- 	q->ops = &em28xx_video_qops;
- 	q->mem_ops = &vb2_vmalloc_memops;
-+	q->lock = &v4l2->vb_queue_lock;
- 
- 	rc = vb2_queue_init(q);
- 	if (rc < 0)
- 		return rc;
- 
-+	if (!em28xx_vbi_supported(dev))
-+		return 0;
-+
- 	/* Setup Videobuf2 for VBI capture */
- 	q = &v4l2->vb_vbiq;
- 	q->type = V4L2_BUF_TYPE_VBI_CAPTURE;
-@@ -1419,6 +1426,7 @@ static int em28xx_vb2_setup(struct em28xx *dev)
- 	q->buf_struct_size = sizeof(struct em28xx_buffer);
- 	q->ops = &em28xx_vbi_qops;
- 	q->mem_ops = &vb2_vmalloc_memops;
-+	q->lock = &v4l2->vb_vbi_queue_lock;
- 
- 	rc = vb2_queue_init(q);
- 	if (rc < 0)
-@@ -2429,6 +2437,7 @@ static int em28xx_v4l2_fini(struct em28xx *dev)
- 		vb2_video_unregister_device(&v4l2->vdev);
- 	}
- 
-+	dev->v4l2 = NULL;
- 	mutex_unlock(&dev->lock);
- 
- 	/*
-@@ -2948,12 +2957,14 @@ static int em28xx_v4l2_init(struct em28xx *dev)
- 	if (ret)
- 		goto unregister_dev;
- 
-+	/* initialize videobuf2 stuff */
-+	ret = em28xx_vb2_setup(dev);
-+	if (ret)
-+		goto unregister_dev;
-+
- 	/* allocate and fill video video_device struct */
- 	em28xx_vdev_init(dev, &v4l2->vdev, &em28xx_video_template, "video");
--	mutex_init(&v4l2->vb_queue_lock);
--	mutex_init(&v4l2->vb_vbi_queue_lock);
- 	v4l2->vdev.queue = &v4l2->vb_vidq;
--	v4l2->vdev.queue->lock = &v4l2->vb_queue_lock;
- 	v4l2->vdev.device_caps = V4L2_CAP_READWRITE | V4L2_CAP_VIDEO_CAPTURE |
- 				 V4L2_CAP_STREAMING;
- 	if (dev->int_audio_type != EM28XX_INT_AUDIO_NONE)
-@@ -2998,7 +3009,6 @@ static int em28xx_v4l2_init(struct em28xx *dev)
- 				 "vbi");
- 
- 		v4l2->vbi_dev.queue = &v4l2->vb_vbiq;
--		v4l2->vbi_dev.queue->lock = &v4l2->vb_vbi_queue_lock;
- 		v4l2->vbi_dev.device_caps = V4L2_CAP_STREAMING |
- 			V4L2_CAP_READWRITE | V4L2_CAP_VBI_CAPTURE;
- 		if ((v4l2->vdev.device_caps & V4L2_CAP_TUNER) == 0)
-@@ -3068,9 +3078,6 @@ static int em28xx_v4l2_init(struct em28xx *dev)
- 	/* Save some power by putting tuner to sleep */
- 	v4l2_device_call_all(&v4l2->v4l2_dev, 0, tuner, standby);
- 
--	/* initialize videobuf2 stuff */
--	em28xx_vb2_setup(dev);
--
- 	dev_info(&dev->intf->dev,
- 		 "V4L2 extension successfully initialized\n");
- 
-@@ -3097,6 +3104,7 @@ static int em28xx_v4l2_init(struct em28xx *dev)
- 		vb2_video_unregister_device(&v4l2->vdev);
- 	}
- 
-+	dev->v4l2 = NULL;
- 	mutex_unlock(&dev->lock);
- 
- 	/*
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
-base-commit: 24a19b953e2a3d0ea5a8c4951a0ab8f32720c907
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+The email will later be sent to:
+[akpm@linux-foundation.org andrey.grodzovsky@crowdstrike.com bpf@vger.kerne=
+l.org david.laight.linux@gmail.com jim.cromie@gmail.com kees@kernel.org lin=
+ux-kbuild@vger.kernel.org linux-kernel@vger.kernel.org ljs@kernel.org mcgro=
+f@kernel.org pmladek@suse.com rostedt@goodmis.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
