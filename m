@@ -1,49 +1,49 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792426686;
-	b=QYjSeX0hhnI4RwIPxLqsFRjIokUaX+yMPgbtx2OCNitpzJLxZXfFy2HAlZ8A11yJ598V
-	 1P3l6TxkOZpQz1jbfmVYMLS+x5R/n+DnGxDqAX8QEvFHcCdBqPIul+wYP6yvTStIh1mxp
-	 CcHtGNFy5rLaWdHuZ3jqCIogDz3Rvwr6Nd4k62cbTIyVxS5dEG1q6rlh9bNmGS9yvGQGP
-	 e22NGJJltuktw9+a/HKtNPFxuGKzAbfLxPVwjRagPUj4JfPrH1X4jqhbcjZM6/ydhbhBP
-	 Fooukn7xdf7Ws9Isq7XEyb/3qQ+tAzOjLRkpoukXCK5iNBwsPt6sErcB61pCAbaXi0A==
+	t=1792430555;
+	b=hykMJRhuCYLYmZ1xpvbKyb+Z/6ZoDhoVzRWhTNpaVPhiFY8h9j8eSfu8TO5fAL/zExlA
+	 iFMnGTjTl3vDwP0l+6XEshBFUww0sLDpMutU7z9UH3RIIakbqBZypdJ08a7pV4ZV37kiP
+	 JO10xCBZZ8qQaOA8LN8I4zw/QnQTV9ipec1X6s7JHG4i07JPzU7DYKpEBslY9PJpBPUNP
+	 iPtrwsJsGQNFFG18RIUA5m6AWQkGzcpfTw1Jitvz8suKLseNDZbSvS23y+P2OOzEGB41P
+	 oNMqYL4Qu1HO4MQnFAoAxFA+EFVf2eTAzFoaSdLWVQG12HQuSFRYMHo2BdeksVT0mmQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792426686;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792430555;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Message-ID:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding:Date;
-	bh=EwhMZNVoLOUZ91nOGK6cu+jX5DAzzraQ8WLmbh72NGE=;
-	b=i2+LmXQJQ/4TxH+K0c8OfExpPlMMn0CeXcR5GATWpjObSf6/mrnZaNoMc2l8bNVmk0pA
-	 6BSFpoPOOg+azdJGHA+xiiMQUy8GvWww5P1CqPX2fBdQteLj7hBwmO08jdHmL9vPe6Han
-	 kIqiXLn9lNhSt4Fjo+VRXq1o0jfExSAGJwq2dVyGUE6VanMR+8oH8TxwaUSbLU86lPkNv
-	 905v859oW6UXUqeD3sl3wHX9f27Zj65eNx3EKZlSqpC9JthTe46t4T/FQDo+f8fJjvUyS
-	 7d4KHMTSWFdOlfix7cdJ3p9wFRmrF/HDQQiM2dxJK209VL9z3rJPmrnbT9EWPHTq5dw==
+	bh=0eWn2LiPe0RvTHwN9fR65kwTv81S56WqGHCmjnDcYI4=;
+	b=yPpKoZ6ULcqbkSdspI2FGt3TErSOFwAhkUS+7pzA3LRjplohArWN/QqyMeEV9pwNI/Q0
+	 IPUJB9xVflCZdsSW2gXRifECNPDtxlZtChHJdOx+Gc3p10WLD8wIb7sftcPOpq74G8dYQ
+	 mMzgmnUsGDAOYmDjKws6lNSyYjh8n+5Hj0VKNz0QJVpXz/ekpduMrR8tLIkvEnxz5oChg
+	 AGPFfke5zD2MBq6a+UWW6SkJg2S5eBVCBxfb7HkHRG1kjZgO/5f862+we0useqTFGkign
+	 SQXmrkHGdZfJqdqhNigXRvpVEc9spOyfi1R2ecWKVZh3wMQ/vbgTc8id4oyoQED1/hQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=c79jffmc;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hzG1DPNY;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id BB27E606A31B
-	for <syzbot@lists.linux.dev>; Mon, 19 Oct 2026 16:18:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 7BD26606A31D
+	for <syzbot@lists.linux.dev>; Mon, 19 Oct 2026 17:22:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=c79jffmc
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 20AE11F01573;
-	Mon, 19 Oct 2026 16:18:05 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hzG1DPNY
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 089A21F000C4;
+	Mon, 19 Oct 2026 17:22:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792426685;
-	bh=EwhMZNVoLOUZ91nOGK6cu+jX5DAzzraQ8WLmbh72NGE=;
+	s=k20260515; t=1792430555;
+	bh=0eWn2LiPe0RvTHwN9fR65kwTv81S56WqGHCmjnDcYI4=;
 	h=From:To:Cc:Subject:Date;
-	b=c79jffmcLGgoDIbEI2BZqtlDW6GXd4SvxIiJ9gJAwMO0nfmElAuE3MYljHjMZSyRa
-	 5Bcve7xv6BReipZRI08glImxyO14NAGdSHQYYwBmeAmx44VEbDmkFqv55fJsYap6hi
-	 5BOmSHx436clwFmf+tTzUILYbKYsfA+CRKyD9yQ0dDOguZ/OZFWLyqBFI1TY7Uyd7A
-	 1Jowdr4yaaVc/FShixRAZMI7OjNZ9bYtfyaZgEudVlC9WvSIobk97vAgbj/IZg9i2A
-	 DfhdRVQcEpJGBoL/AXOwcVXWytl6xbmGrI2+0gOf8Usyjz5QTGrglXggsbXlWlRLsd
-	 iGeLbWo2bzkoA==
+	b=hzG1DPNYMIEtiMamwOHkd9E832LocOu3G81okaeg+F0sbkUW71MTrR1p3s9aWu7Ke
+	 /cgz3DWQImcg3X9x3Mn4S9D9EQNxRCVt0i3VeVVbeFf7Bnfyl4FFaqeNcgY8Rbbvcp
+	 ybNM6V2RaJfWLGu/MzT/RBE3Ornkn9IPxb4+y6phwK5G+mXFZ/vZf4xJArZAFYa3fc
+	 mnZek/jnslFlyItBVAxZNsNx3aprIxnd3YNeoAXLjJnYT/uAj6x/PYTH9LsRCVZMug
+	 Ggc7czUlO8pbLZbC1XMX0NLCYdDPvJoNaVSvNYxxC5zNzOH/vp+/+A0T0YeqDiMCbC
+	 IyZ1MANU45QMA==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
-Cc: sst@poczta.fm, syzbot@lists.linux.dev
-Subject: [PATCH RFC v3] usb: gadget: f_tcm: defer TPG assignment to fix circular locking
-Message-ID: <238d334a-dcfa-4c70-8cc8-dee47460a451@mail.kernel.org>
+Cc: syzbot@lists.linux.dev
+Subject: [PATCH RFC] media: az6007: Fix out-of-bounds access and mutex reinitialization
+Message-ID: <98467e25-6e27-41d8-94d9-5367714ce9b0@mail.kernel.org>
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -55,221 +55,213 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Mon, 19 Oct 2026 16:18:05 +0000 (UTC)
+Date: Mon, 19 Oct 2026 17:22:35 +0000 (UTC)
 
-A circular locking dependency exists between tpg_instances_lock, the
-configfs directory inode_lock, and the gadget info lock gi->lock when
-configuring TCM gadget functions through configfs.
+In az6007_i2c_xfer(), user-controlled I2C messages transferred via
+/dev/i2c-* (through i2c-dev) can specify lengths up to 8192 bytes. The
+driver uses a fixed 4096-byte bounce buffer, st->data, defined in struct
+az6007_device_state. The driver does not validate message lengths against
+sizeof(st->data) before copying data or issuing USB control transfers,
+leading to out-of-bounds buffer accesses.
 
-WARNING: possible circular locking dependency detected
-======================================================
-task is trying to acquire lock:
-ffffffff8f24ae58 (tpg_instances_lock){+.+.}-{4:4}, at: tcm_alloc+0x21/0x2f0
-drivers/usb/gadget/function/f_tcm.c:2734
+When userspace reads from an I2C device (such as via preadv() on
+/dev/i2c-*), i2cdev_read() calls i2c_master_recv() -> i2c_transfer() ->
+__i2c_transfer() -> az6007_i2c_xfer() with msgs[0].len matching the
+requested read size. In the single read branch, length is computed as
+msgs[i].len + 6. If msgs[i].len exceeds 4090 bytes, length exceeds
+sizeof(st->data). Furthermore, the return value of __az6007_read() was not
+validated before copying bytes from st->data[j + 5] into msgs[i].buf[j].
+When a large read request fails at the USB level, the copy loop still
+executes unconditionally. When j reaches 4091, j + 5 equals 4096, reading
+past the end of st->data and triggering a UBSAN array-index-out-of-bounds
+warning:
 
-but task is already holding lock:
-ffff888192990388 (&gi->lock){+.+.}-{4:4}, at:
-config_usb_cfg_link+0x59/0x260 drivers/usb/gadget/configfs.c:439
+UBSAN: array-index-out-of-bounds in
+drivers/media/usb/dvb-usb-v2/az6007.c:821:22
+index 4096 is out of range for type 'unsigned char[4096]'
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
+ __ubsan_handle_out_of_bounds+0xe8/0xf0 lib/ubsan.c:455
+ az6007_i2c_xfer+0x419/0xaa0 drivers/media/usb/dvb-usb-v2/az6007.c:821
+ __i2c_transfer+0x7bf/0x1fe0 drivers/i2c/i2c-core-base.c:-1
+ i2c_transfer+0x1cb/0x2d0 drivers/i2c/i2c-core-base.c:2350
+ i2c_transfer_buffer_flags+0x10d/0x1a0 drivers/i2c/i2c-core-base.c:2378
+ i2c_master_recv include/linux/i2c.h:79 [inline]
+ i2cdev_read+0x10d/0x250 drivers/i2c/i2c-dev.c:155
+ vfs_readv+0x57c/0x850 fs/read_write.c:1021
+ do_preadv fs/read_write.c:1133 [inline]
+ </TASK>
 
-which lock already depends on the new lock.
+Similar buffer overflow issues exist in the other transfer paths: the
+combined write+read branch lacked checks on msgs[i + 1].len < 1 and length
+> sizeof(st->data), while the write branch copied msgs[i].len - 1 bytes
+into st->data without verifying that the payload fit within st->data.
+Additionally, in __az6007_write(), the blen > 64 check was performed after
+dumping the payload to the kernel log under az6007_xfer_debug.
 
-the existing dependency chain (in reverse order) is:
+Separately, mutex_init(&state->mutex) was called inside az6007_power_ctrl()
+when !state->warm. If the initial power-on command failed, state->warm
+remained false, causing subsequent invocations of az6007_power_ctrl() to
+reinitialize state->mutex while the device was active. If another thread
+held the mutex during az6007_i2c_xfer(), reinitializing the mutex cleared
+the lock owner and triggered a DEBUG_LOCKS_WARN_ON warning on unlock.
 
- -> #2 (&gi->lock){+.+.}-{4:4}:
-       config_usb_cfg_link+0x59/0x260 drivers/usb/gadget/configfs.c:439
-       configfs_symlink+0x74e/0x11d0 fs/configfs/symlink.c:211
-       vfs_symlink+0x18b/0x330 fs/namei.c:5794
+Fix these issues by:
+- Moving mutex initialization out of az6007_power_ctrl() into a newly
+introduced probe callback (az6007_probe) that initializes state->mutex once
+upon device probing.
+- Adding upper-bound checks against sizeof(st->data) in the single read,
+single write, and combined write+read paths of az6007_i2c_xfer(), as well
+as verifying msgs[i + 1].len >= 1 in the combined path.
+- Checking that __az6007_read() succeeded before copying data from st->data
+to msgs[i].buf in the single read path.
+- Moving the blen > 64 check in __az6007_write() before the debug hex dump.
 
- -> #1 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}:
-       inode_lock include/linux/fs.h:1024 [inline]
-       configfs_depend_item_unlocked+0x153/0x420 fs/configfs/dir.c:1268
-       usbg_make_tpg+0x1e0/0x550 drivers/usb/gadget/function/f_tcm.c:1692
-       target_fabric_make_tpg+0xa8/0x6d0
-       drivers/target/target_core_fabric_configfs.c:947
-       configfs_mkdir+0x4f6/0x9e0 fs/configfs/dir.c:1369
-
- -> #0 (tpg_instances_lock){+.+.}-{4:4}:
-       tcm_alloc+0x21/0x2f0 drivers/usb/gadget/function/f_tcm.c:2734
-       usb_get_function+0x63/0xb0 drivers/usb/gadget/functions.c:61
-       config_usb_cfg_link+0x148/0x260 drivers/usb/gadget/configfs.c:469
-       configfs_symlink+0x74e/0x11d0 fs/configfs/symlink.c:211
-
-The deadlock arises from two conflicting lock acquisition paths across
-configfs:
-
-1. When creating a Target Portal Group (TPG) directory in configfs (e.g.
-target/usb_gadget/.../tpgt_1), VFS takes the directory inode_lock. In
-usbg_make_tpg(), tpg_instances_lock is acquired. While holding
-tpg_instances_lock, usbg_make_tpg() calls configfs_depend_item_unlocked()
-to depend on the gadget function item, which acquires the configfs root
-directory inode_lock across subsystems (tpg_instances_lock -> inode_lock).
-
-2. When linking the TCM function to a gadget configuration (e.g. symlink
-functions/tcm.usb0 configs/c.1/tcm.usb0), VFS acquires the configuration
-directory inode_lock. The callback configfs_symlink() calls
-config_usb_cfg_link(), acquiring gi->lock. While holding gi->lock,
-config_usb_cfg_link() calls usb_get_function(), invoking tcm_alloc(). In
-tcm_alloc(), tpg_instances_lock was acquired to search the tpg_instances
-array and set fu->tpg (inode_lock -> gi->lock -> tpg_instances_lock).
-
-In addition to the deadlock, initializing fu->tpg in tcm_alloc() introduces
-a race condition. If the user symlinks the function into a gadget
-configuration before creating the TPG directory, tpg_instances[i].tpg is
-NULL, causing tcm_alloc() to leave fu->tpg as NULL. When the TPG is later
-created and enabled, tcm_bind() succeeds because opts->can_attach is true,
-but fu->tpg remains NULL. When USB transfers are subsequently processed,
-dereferencing fu->tpg results in a NULL pointer dereference crash.
-Furthermore, removing an enabled TPG via rmdir calls usbg_drop_tpg()
-directly without detaching, leaving opts->can_attach set to true and
-permitting subsequent binds against a destroyed TPG.
-
-Fix these issues by storing the TPG pointer in struct f_tcm_opts, removing
-the tpg_instances_lock acquisition from tcm_alloc(), and deferring fu->tpg
-assignment until tcm_bind(). The function instance is already valid for the
-item's lifetime, making the search in tcm_alloc() redundant; removing it
-breaks the circular lock dependency cycle. In tcm_bind(), fu->tpg is
-assigned under opts->dep_lock after validating that both opts->can_attach
-and opts->tpg are valid. In usbg_make_tpg(), opts->tpg is set under
-opts->dep_lock. In usbg_drop_tpg(), opts->tpg is cleared under
-opts->dep_lock and opts->can_attach is reset to false only for the configfs
-case (when there is no dependency module), ensuring consistent state and
-preventing NULL pointer dereferences.
-
-Fixes: 4bb8548df632 ("usb: gadget: f_tcm: add configfs support")
+Fixes: b19280cf2bee ("[media] az6007: code cleanups and fixes")
 Assisted-by: Gemini:gemini-4-argon Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+2799146a53c356f8017d@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=2799146a53c356f8017d
-Link: https://syzkaller.appspot.com/ai_job?id=51e1f189-6d91-4321-a6ba-07d4eb3cd8cd
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-To: <linux-usb@vger.kernel.org>
-To: "Andrzej Pietrasiewicz" <andrzej.p@samsung.com>
-Cc: "Jiasheng Jiang" <jiashengjiangcool@gmail.com>
+Reported-by: syzbot+0192952caa411a3be209@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=0192952caa411a3be209
+Link: https://syzkaller.appspot.com/ai_job?id=8ca38357-fe34-43e4-bc49-e73c595eb9a2
+To: <linux-media@vger.kernel.org>
+To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
+To: "Mauro Carvalho Chehab" <mchehab@redhat.com>
 Cc: <linux-kernel@vger.kernel.org>
-Cc: "Yun Zhou" <yun.zhou@windriver.com>
-Cc: "Cen Zhang" <zzzccc427@gmail.com>
 
 ---
-v3:
-- Reset opts->can_attach in usbg_drop_tpg() only when there is no dependent module (configfs case).
-- Clarify in the commit description that opts->can_attach is reset to false only for the configfs case.
-
-v2:
-- Updated kerneldoc description for @tpg in struct f_tcm_opts.
-https://lore.kernel.org/all/93101153-3ab9-47e9-a050-a565e2f46951@mail.kernel.org/T/
-
-v1:
-https://lore.kernel.org/all/b1646de9-ae67-4626-89f3-76a04e181581@mail.kernel.org/T/
----
-diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
-index 9e6d4f399..cc75d7e97 100644
---- a/drivers/usb/gadget/function/f_tcm.c
-+++ b/drivers/usb/gadget/function/f_tcm.c
-@@ -1720,6 +1720,9 @@ static struct se_portal_group *usbg_make_tpg(struct se_wwn *wwn,
- 
- 	tpg_instances[i].tpg = tpg;
- 	tpg->fi = tpg_instances[i].func_inst;
-+	mutex_lock(&opts->dep_lock);
-+	opts->tpg = tpg;
-+	mutex_unlock(&opts->dep_lock);
- 	mutex_unlock(&tpg_instances_lock);
- 	return &tpg->se_tpg;
- 
-@@ -1760,11 +1763,14 @@ static void usbg_drop_tpg(struct se_portal_group *se_tpg)
- 		opts = container_of(tpg_instances[i].func_inst,
- 			struct f_tcm_opts, func_inst);
- 		mutex_lock(&opts->dep_lock);
--		if (opts->has_dep)
-+		opts->tpg = NULL;
-+		if (opts->has_dep) {
- 			module_put(opts->dependent);
--		else
-+		} else {
-+			opts->can_attach = false;
- 			configfs_undepend_item_unlocked(
- 				&opts->func_inst.group.cg_item);
-+		}
- 		mutex_unlock(&opts->dep_lock);
- 	}
- 	mutex_unlock(&tpg_instances_lock);
-@@ -2300,10 +2306,11 @@ static int tcm_bind(struct usb_configuration *c, struct usb_function *f)
- 	opts = container_of(f->fi, struct f_tcm_opts, func_inst);
- 
- 	mutex_lock(&opts->dep_lock);
--	if (!opts->can_attach) {
-+	if (!opts->can_attach || !opts->tpg) {
- 		mutex_unlock(&opts->dep_lock);
- 		return -ENODEV;
- 	}
-+	fu->tpg = opts->tpg;
- 	mutex_unlock(&opts->dep_lock);
- 	us = usb_gstrings_attach(c->cdev, tcm_strings,
- 		ARRAY_SIZE(tcm_us_strings));
-@@ -2729,22 +2736,10 @@ static void tcm_unbind(struct usb_configuration *c, struct usb_function *f)
- static struct usb_function *tcm_alloc(struct usb_function_instance *fi)
+diff --git a/drivers/media/usb/dvb-usb-v2/az6007.c b/drivers/media/usb/dvb-usb-v2/az6007.c
+index 65ef045b7..20b2bd944 100644
+--- a/drivers/media/usb/dvb-usb-v2/az6007.c
++++ b/drivers/media/usb/dvb-usb-v2/az6007.c
+@@ -143,6 +143,12 @@ static int __az6007_write(struct usb_device *udev, u8 req, u16 value,
  {
- 	struct f_uas *fu;
--	unsigned i;
--
--	mutex_lock(&tpg_instances_lock);
--	for (i = 0; i < TPG_INSTANCES; ++i)
--		if (tpg_instances[i].func_inst == fi)
--			break;
--	if (i == TPG_INSTANCES) {
--		mutex_unlock(&tpg_instances_lock);
--		return ERR_PTR(-ENODEV);
--	}
+ 	int ret;
  
- 	fu = kzalloc_obj(*fu);
--	if (!fu) {
--		mutex_unlock(&tpg_instances_lock);
-+	if (!fu)
- 		return ERR_PTR(-ENOMEM);
--	}
- 
- 	fu->function.name = "Target Function";
- 	fu->function.bind = tcm_bind;
-@@ -2754,12 +2749,10 @@ static struct usb_function *tcm_alloc(struct usb_function_instance *fi)
- 	fu->function.setup = tcm_setup;
- 	fu->function.disable = tcm_disable;
- 	fu->function.free_func = tcm_free;
--	fu->tpg = tpg_instances[i].tpg;
- 	INIT_WORK(&fu->delayed_set_alt, tcm_delayed_set_alt);
- 	spin_lock_init(&fu->delayed_set_alt_lock);
- 
- 	hash_init(fu->stream_hash);
--	mutex_unlock(&tpg_instances_lock);
- 
- 	return &fu->function;
- }
-diff --git a/drivers/usb/gadget/function/u_tcm.h b/drivers/usb/gadget/function/u_tcm.h
-index 2cd15d9a1..fa38d55c2 100644
---- a/drivers/usb/gadget/function/u_tcm.h
-+++ b/drivers/usb/gadget/function/u_tcm.h
-@@ -15,6 +15,8 @@
- 
- #include <linux/usb/composite.h>
- 
-+struct usbg_tpg;
++	if (blen > 64) {
++		pr_err("az6007: tried to write %d bytes, but I2C max size is 64 bytes\n",
++		       blen);
++		return -EOPNOTSUPP;
++	}
 +
- /**
-  * @dependent: optional dependent module. Meant for legacy gadget.
-  * If non-null its refcount will be increased when a tpg is created and
-@@ -23,10 +25,12 @@
-  * @ready: true if the dependent module information is set.
-  * @can_attach: true a function can be bound to gadget
-  * @has_dep: true if there is a dependent module
-+ * @tpg: target portal group associated with this function instance.
-  *
-  */
- struct f_tcm_opts {
- 	struct usb_function_instance	func_inst;
-+	struct usbg_tpg			*tpg;
- 	struct module			*dependent;
- 	struct mutex			dep_lock;
- 	bool				ready;
+ 	if (az6007_xfer_debug) {
+ 		printk(KERN_DEBUG "az6007: OUT req: %02x, value: %04x, index: %04x\n",
+ 		       req, value, index);
+@@ -150,12 +156,6 @@ static int __az6007_write(struct usb_device *udev, u8 req, u16 value,
+ 				     DUMP_PREFIX_NONE, b, blen);
+ 	}
+ 
+-	if (blen > 64) {
+-		pr_err("az6007: tried to write %d bytes, but I2C max size is 64 bytes\n",
+-		       blen);
+-		return -EOPNOTSUPP;
+-	}
+-
+ 	ret = usb_control_msg(udev,
+ 			      usb_sndctrlpipe(udev, 0),
+ 			      req,
+@@ -694,8 +694,6 @@ static int az6007_power_ctrl(struct dvb_usb_device *d, int onoff)
+ 	pr_debug("%s()\n", __func__);
+ 
+ 	if (!state->warm) {
+-		mutex_init(&state->mutex);
+-
+ 		ret = az6007_write(d, AZ6007_POWER, 0, 2, NULL, 0);
+ 		if (ret < 0)
+ 			return ret;
+@@ -770,11 +768,19 @@ static int az6007_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
+ 			if (az6007_xfer_debug)
+ 				printk(KERN_DEBUG "az6007: I2C W/R addr=0x%x len=%d/%d\n",
+ 				       addr, msgs[i].len, msgs[i + 1].len);
++			if (msgs[i + 1].len < 1) {
++				ret = -EIO;
++				goto err;
++			}
+ 			req = AZ6007_I2C_RD;
+ 			index = msgs[i].buf[0];
+ 			value = addr | (1 << 8);
+ 			length = 6 + msgs[i + 1].len;
+ 			len = msgs[i + 1].len;
++			if (length > sizeof(st->data)) {
++				ret = -EOPNOTSUPP;
++				goto err;
++			}
+ 			ret = __az6007_read(d->udev, req, value, index,
+ 					    st->data, length);
+ 			if (ret >= len) {
+@@ -797,6 +803,10 @@ static int az6007_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
+ 			value = addr | (1 << 8);
+ 			length = msgs[i].len - 1;
+ 			len = msgs[i].len - 1;
++			if (length > sizeof(st->data)) {
++				ret = -EOPNOTSUPP;
++				goto err;
++			}
+ 			for (j = 0; j < len; j++)
+ 				st->data[j] = msgs[i].buf[j + 1];
+ 			ret =  __az6007_write(d->udev, req, value, index,
+@@ -815,10 +825,18 @@ static int az6007_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
+ 			value = addr;
+ 			length = msgs[i].len + 6;
+ 			len = msgs[i].len;
++			if (length > sizeof(st->data)) {
++				ret = -EOPNOTSUPP;
++				goto err;
++			}
+ 			ret = __az6007_read(d->udev, req, value, index,
+ 					    st->data, length);
+-			for (j = 0; j < len; j++)
+-				msgs[i].buf[j] = st->data[j + 5];
++			if (ret >= len) {
++				for (j = 0; j < len; j++)
++					msgs[i].buf[j] = st->data[j + 5];
++			} else {
++				ret = -EIO;
++			}
+ 		}
+ 		if (ret < 0)
+ 			goto err;
+@@ -889,6 +907,15 @@ static int az6007_download_firmware(struct dvb_usb_device *d,
+ 	return cypress_load_firmware(d->udev, fw, CYPRESS_FX2);
+ }
+ 
++static int az6007_probe(struct dvb_usb_device *d)
++{
++	struct az6007_device_state *state = d_to_priv(d);
++
++	mutex_init(&state->mutex);
++
++	return 0;
++}
++
+ /* DVB USB Driver stuff */
+ static struct dvb_usb_device_properties az6007_props = {
+ 	.driver_name         = KBUILD_MODNAME,
+@@ -897,6 +924,7 @@ static struct dvb_usb_device_properties az6007_props = {
+ 
+ 	.adapter_nr          = adapter_nr,
+ 	.size_of_priv        = sizeof(struct az6007_device_state),
++	.probe               = az6007_probe,
+ 	.i2c_algo            = &az6007_i2c_algo,
+ 	.tuner_attach        = az6007_tuner_attach,
+ 	.frontend_attach     = az6007_frontend_attach,
+@@ -919,11 +947,12 @@ static struct dvb_usb_device_properties az6007_cablestar_hdci_props = {
+ 
+ 	.adapter_nr          = adapter_nr,
+ 	.size_of_priv        = sizeof(struct az6007_device_state),
++	.probe               = az6007_probe,
+ 	.i2c_algo            = &az6007_i2c_algo,
+ 	.tuner_attach        = az6007_tuner_attach,
+ 	.frontend_attach     = az6007_cablestar_hdci_frontend_attach,
+ 	.streaming_ctrl      = az6007_streaming_ctrl,
+-/* ditch get_rc_config as it can't work (TS35 remote, I believe it's rc5) */
++	/* ditch get_rc_config as it can't work (TS35 remote, I believe it's rc5) */
+ 	.get_rc_config       = NULL,
+ 	.read_mac_address    = az6007_read_mac_addr,
+ 	.download_firmware   = az6007_download_firmware,
 
 
-base-commit: a90ee4305c4a5df72c11b31dacfdc76e00fcf78a
+base-commit: c03c1a14507dfaf8b856c2608f9ac216021fc222
 -- 
 This is an AI-generated patch subject to moderation.
 Reply with '#syz upstream' to Sign-off the patch as a human author
