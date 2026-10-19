@@ -1,49 +1,49 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792422635;
-	b=k6hIVqaxN8uAPcRHRIh8lIO9wqS7MW1RfIy6ICLZ3uabxoeK0El7B0PbRRpy2ZsPmA4I
-	 0AhRwQjIvLfC6KTkbs2w7asIePsHKwqKhPm+hbom77aBQR1N5Ujbxb/HQaZptSvoxeGGb
-	 wlP+XtLz1NFQmonh3VYtSWKDhFLgItyec2wXEo84XWwktO4UdJnPu2jOAl3QmpRi0z1tK
-	 SlAdJO17FnWlB5G93q2+TFmjqqPWkz5CbXx7968zQWtSt2SUM9WQS3+defTwFwJHEirN1
-	 g/W+nWdj09CmR4xx8vkACQT47EVT0i7hDT1m7Wu+FZVFKxvPKnG1jyPO3dLiYpRtWSQ==
+	t=1792424706;
+	b=tdaHJDtA67YcjnJXACexiq5sC3KKwT3mZRxkMQ+7HQpLne25ZGGGkV1D4SkN04ZZ/5/A
+	 hWgGn1C+GgPnb4iZ4qIOJ6NQQYzRQcVT7S6x3NA5PxmOZ3Iy+DmpVY+E/NYU7OKS/EhMH
+	 y1Ox86YCdtXOI0ziyb0Ko3z6X3eQ0nPx+LubLvSLNbd0eKHqLtTOm+z4e2XMK9HSwjyPM
+	 15/AkumusBuYTeQ2gcKowVsEPDAzhstnPVcEXgf9iVXiXHppGLXHT8Cswe2b21Qe5DhP3
+	 dKZLMk2L8Izdi6a6dlkTWJcGSNPudSQaz4CXXxDaYjDSRKKaP8MHzCEpBTnzviABObw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792422635;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792424706;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Message-ID:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding:Date;
-	bh=1aVD9cohcurtO2a9S+3cpWkuI6sq9RR+ZGmd6DFoC1U=;
-	b=BMi3oJ7c68Jgu8z2ZMt+p7CHyLjZFGk8odJpGrY2AMS6Uq8dcOPPTNJtG5DvLmXnKD5t
-	 Qx4ehk02oVR1Fg2oSp730hbFN4HctSANURohGwptTugca+1piPHjuQ7WkiatgrONbuRu0
-	 n2D4ROx0qvAzKbf+tp9jDzMcYTA3rr6iJ1C+7z2YK9q2pIPYTZUJduuOqoXdk8sBSTyJ3
-	 WwqmdZar5gFp6S1zD6dfyQZrFoxliawohPvWyzvmiHQLGKRMKat2f3Q/LHdl/lOl+gtDD
-	 JCjB+Xh6xAt7b0ThJM6wvwLdea5BeoxjzreD0CT9p2kCY9B0vrsGhMGZ8eREsQ+4rQw==
+	bh=YChTk36msbEq+mMlqPRFsKar6hurLwfpVpmLf1Nmyh8=;
+	b=gJ2BXDbN4/QOeeymow4AxWTIq0gd5LTLl8kGXro4imV3VF/gPIsyJ0GwEsaeqJ2ViYFC
+	 KnMMv0KZO6qjpQSXWkdmN404Pp4KTsD4GnGp+xsY4M1LIeN7UzHuaw2zIdDPBdDGVMeMH
+	 yl+wpt6gm6n1LUbhZhUvHhnXg5UHNF47KVYXe8XbA9/aSZatAYNt58x9CglPRYPBHuF0f
+	 QgVZ88BvlpEadtFLDpOOHMf0x3VNHnPM2yWdpkajG1C5bv099D1lzh6Z5gG5xQ9EZsQs8
+	 dXs0MZZVyvB3j70S6RLqZchtiWtDylrxXv+KAVbIFqqCvBcLyH+6Ue2ej4xdziq3gdw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RHbnFKCl;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WxDbBbRC;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 39C6D60882B4
-	for <syzbot@lists.linux.dev>; Mon, 19 Oct 2026 15:10:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 4A5896078860
+	for <syzbot@lists.linux.dev>; Mon, 19 Oct 2026 15:45:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RHbnFKCl
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 0046A1F000C4;
-	Mon, 19 Oct 2026 15:10:34 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WxDbBbRC
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 1E6EE1F000CE;
+	Mon, 19 Oct 2026 15:45:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792422635;
-	bh=1aVD9cohcurtO2a9S+3cpWkuI6sq9RR+ZGmd6DFoC1U=;
+	s=k20260515; t=1792424705;
+	bh=YChTk36msbEq+mMlqPRFsKar6hurLwfpVpmLf1Nmyh8=;
 	h=From:To:Cc:Subject:Date;
-	b=RHbnFKClrooUDIz9DoogtEXizGJ89bARLBWPZRmDwk9ljO7CERqp3pLB4QJKX55H3
-	 EogKbNfkx+wRyG8pjtsiBpDf+YsNNDE8RX684/kQ3XXzBObQoUBVAiP4EhiMTRj4DY
-	 HQejZby7fhyUgU98uUY4t/2NvPk8TlpSVcbqT7R1gZ7uMK/3JA5nyMG7C8fu/QSi/Z
-	 7OxXPh/3msEzS16vFN0zLzdhAknDWg3sEIuAIZh3m7RtX5bp44Dibkbp4zB/lLLv04
-	 noarsGvae45ETn6vPqn9mVoPa5ZcbcOKNMfxmsqXkkt8dG6OgGDPW6tU6mfpPdG7PM
-	 Xs53qlhejk/WA==
+	b=WxDbBbRC4KAMWYCMDVvfmuNku4YjKfvMDgf+YxLxysxRYRN+Xls5Q5pNRiNqFCjgj
+	 HKPft8Ps+tjJ6A5M+bEhRtwmBfidYDKyaBzWnqB+tKOnxx1skbUwHgsx1aKHhSJBLH
+	 jINJRMw9qU17Oo8WNPmFBxVZZGomohyvjN4zfAESB25ZUMJ3lHlziBMNCVYezxj0zk
+	 dMNoLw6m4yzDGaaw0gDyFTGwNqfMGcN65TVonmbszNQAPcXNn03z8xEaaPuj7sRiOt
+	 4n5OrAmFEsbdEx5oBYurpL3LRuEkJlgLfUPi6fZgvpukJ9aV1EStoY6qE2HmIO0utm
+	 uaDadNl4Q0mjw==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] media: dw2102: Fix null-ptr-deref in i2c transfer callbacks
-Message-ID: <9dda9080-8d80-4504-95dd-0faef04af12d@mail.kernel.org>
+Subject: [PATCH RFC] media: mxl111sf: initialize state->d and fe_lock in probe
+Message-ID: <b8b6fc2d-1c9a-4046-bba5-c9ef864bfae3@mail.kernel.org>
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -55,24 +55,40 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Mon, 19 Oct 2026 15:10:34 +0000 (UTC)
+Date: Mon, 19 Oct 2026 15:45:05 +0000 (UTC)
 
-When user space issues an I2C_RDWR ioctl on an exposed I2C device
-(/dev/i2c-X) with a zero-length message (msg.len == 0), i2cdev_ioctl_rdwr()
-allocates the message buffer using memdup_user(..., 0). This causes
-kmalloc_track_caller() to return ZERO_SIZE_PTR (0x10). When
-su3000_i2c_transfer() subsequently processes the request, commands such as
-SU3000_STREAM_CTRL unconditionally dereference msg[j].buf[0] without
-verifying that msg[j].len is at least 1. Dereferencing ZERO_SIZE_PTR leads
-to a general protection fault and KASAN null-ptr-deref report.
+During device initialization in dvb_usbv2_probe(), the dvb-usb-v2 core
+allocates the dvb_usb_device structure and its private state (struct
+mxl111sf_state) via kzalloc(), then invokes dvb_usbv2_init(). Within
+dvb_usbv2_init(), dvb_usbv2_i2c_init() registers the I2C adapter with
+i2c_add_adapter(), which immediately exposes the I2C adapter to userspace
+via the /dev/i2c-X character device.
+
+However, state->d was only assigned later during frontend attachment inside
+dvb_usbv2_adapter_frontend_init() via d->props->frontend_attach(). If
+userspace performs an I2C transaction before frontend_attach() completes,
+mxl111sf_i2c_xfer() delegates to mxl111sf_ctrl_msg(), which reads state->d
+and passes it to dvb_usbv2_generic_write() or dvb_usbv2_generic_rw(). Since
+state->d is still NULL, dereferencing &d->usb_mutex inside
+dvb_usbv2_generic_write() triggers a null-pointer dereference crash:
 
 Oops: general protection fault, probably for non-canonical address
-0xdffffc0000000002: 0000 [#1] SMP KASAN NOPTI
-KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
-RIP: 0010:su3000_i2c_transfer+0x1aa/0xfc0
-drivers/media/usb/dvb-usb/dw2102.c:740
+0xdffffc0000000018: 0000 [#1] SMP KASAN NOPTI
+KASAN: null-ptr-deref in range [0x00000000000000c0-0x00000000000000c7]
+RIP: 0010:__mutex_lock_common kernel/locking/mutex.c:625 [inline]
+RIP: 0010:__mutex_lock+0x149/0x1550 kernel/locking/mutex.c:821
 Call Trace:
  <TASK>
+ dvb_usbv2_generic_write+0x26/0x60
+ drivers/media/usb/dvb-usb-v2/dvb_usb_urb.c:77
+ mxl111sf_ctrl_msg+0x160/0x2f0 drivers/media/usb/dvb-usb-v2/mxl111sf.c:73
+ mxl111sf_write_reg+0xa9/0x1b0 drivers/media/usb/dvb-usb-v2/mxl111sf.c:123
+ mxl111sf_i2c_start drivers/media/usb/dvb-usb-v2/mxl111sf-i2c.c:130
+ [inline]
+ mxl111sf_i2c_sw_xfer_msg drivers/media/usb/dvb-usb-v2/mxl111sf-i2c.c:-1
+ [inline]
+ mxl111sf_i2c_xfer+0x463/0x5060
+ drivers/media/usb/dvb-usb-v2/mxl111sf-i2c.c:813
  __i2c_transfer+0x7bf/0x1fe0 drivers/i2c/i2c-core-base.c:-1
  i2c_transfer+0x1cb/0x2d0 drivers/i2c/i2c-core-base.c:2350
  i2cdev_ioctl_rdwr+0x460/0x740 drivers/i2c/i2c-dev.c:306
@@ -81,210 +97,100 @@ Call Trace:
  __do_sys_ioctl fs/ioctl.c:597 [inline]
  __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
  do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x155/0x510 arch/x86/entry/syscall_64.c:84
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
  entry_SYSCALL_64_after_hwframe+0x77/0x7f
  </TASK>
 
-Although dw2102_i2c_transfer() was previously fixed for this issue in
-commit 5ae544d94abc ("media: dw2102: Fix null-ptr-deref in
-dw2102_i2c_transfer()"), other transfer callbacks in
-drivers/media/usb/dvb-usb/dw2102.c (su3000_i2c_transfer,
-dw2102_serit_i2c_transfer, dw2102_earda_i2c_transfer, dw2104_i2c_transfer,
-dw3101_i2c_transfer, and s6x0_i2c_transfer) also accessed msg[].buf without
-checking msg[].len during operations such as DW2102_RC_QUERY,
-DW2102_VOLTAGE_CTRL, DW2102_LED_CTRL, and default write commands.
-Additionally, dw2102_earda_i2c_transfer() incorrectly logged msg[1].len
-instead of msg[0].len in warning messages for single-message transfers.
+Additionally, state->fe_lock was initialized in mxl111sf_init() (called via
+d->props->init()), which runs after frontend attachment, leaving the mutex
+uninitialized during frontend registration.
 
-Fix these issues by validating msg[].len against the minimum required size
-before indexing into or copying to msg[].buf in all dw2102 I2C transfer
-callbacks, returning -EOPNOTSUPP on failure, and correct the message index
-in dw2102_earda_i2c_transfer() warning logs.
+Fix this by setting state->d = dev and initializing state->fe_lock in
+mxl111sf_probe(), which runs before dvb_usbv2_init() registers the I2C
+adapter or attaches frontends. Furthermore, remove the redundant
+mutex_init(&state->fe_lock) from mxl111sf_init() and the redundant
+assignments of state->d in the frontend attach functions.
 
-Fixes: d2ffc447cabb ("[media] dw2102: add support for Geniatech SU3000 USB DVB-S2 card")
+Fixes: 8572211842af ("[media] mxl111sf: convert to new DVB USB")
 Assisted-by: Gemini:gemini-4-argon Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+d99f3a288cc7d8ef60fb@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=d99f3a288cc7d8ef60fb
-Link: https://syzkaller.appspot.com/ai_job?id=d863a1b0-1ca0-4436-b7e6-658d0c1cc4be
+Reported-by: syzbot+f9f5333782a854509322@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=f9f5333782a854509322
+Link: https://syzkaller.appspot.com/ai_job?id=0eff5308-2f93-4b3a-b8d1-021ddc25aa49
 To: <linux-media@vger.kernel.org>
 To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-To: "Igor M. Liplianin" <liplianin@me.by>
+To: "Michael Krufky" <mkrufky@linuxtv.org>
+To: "Antti Palosaari" <crope@iki.fi>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/drivers/media/usb/dvb-usb/dw2102.c b/drivers/media/usb/dvb-usb/dw2102.c
-index 4fecf2f96..a76bc2887 100644
---- a/drivers/media/usb/dvb-usb/dw2102.c
-+++ b/drivers/media/usb/dvb-usb/dw2102.c
-@@ -265,12 +265,20 @@ static int dw2102_serit_i2c_transfer(struct i2c_adapter *adap,
- 				     msg[0].len + 2, DW210X_WRITE_MSG);
- 			break;
- 		case(DW2102_RC_QUERY):
-+			if (msg[0].len < 2) {
-+				num = -EOPNOTSUPP;
-+				break;
-+			}
- 			dw210x_op_rw(d->udev, 0xb8, 0, 0,
- 				     buf6, 2, DW210X_READ_MSG);
- 			msg[0].buf[0] = buf6[0];
- 			msg[0].buf[1] = buf6[1];
- 			break;
- 		case(DW2102_VOLTAGE_CTRL):
-+			if (msg[0].len < 1) {
-+				num = -EOPNOTSUPP;
-+				break;
-+			}
- 			buf6[0] = 0x30;
- 			buf6[1] = msg[0].buf[0];
- 			dw210x_op_rw(d->udev, 0xb2, 0, 0,
-@@ -334,7 +342,7 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
+diff --git a/drivers/media/usb/dvb-usb-v2/mxl111sf.c b/drivers/media/usb/dvb-usb-v2/mxl111sf.c
+index 6404eb74d..fc4010b6e 100644
+--- a/drivers/media/usb/dvb-usb-v2/mxl111sf.c
++++ b/drivers/media/usb/dvb-usb-v2/mxl111sf.c
+@@ -431,8 +431,6 @@ static int mxl111sf_lgdt3305_frontend_attach(struct dvb_usb_adapter *adap, u8 fe
  
- 			if (2 + msg[0].len > sizeof(obuf)) {
- 				warn("i2c wr: len=%d is too big!\n",
--				     msg[1].len);
-+				     msg[0].len);
- 				ret = -EOPNOTSUPP;
- 				goto unlock;
- 			}
-@@ -352,7 +360,7 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
+ 	pr_debug("%s()\n", __func__);
  
- 			if (2 + msg[0].len > sizeof(obuf)) {
- 				warn("i2c wr: len=%d is too big!\n",
--				     msg[1].len);
-+				     msg[0].len);
- 				ret = -EOPNOTSUPP;
- 				goto unlock;
- 			}
-@@ -367,6 +375,10 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
- 		case(DW2102_RC_QUERY): {
- 			u8 ibuf[2];
+-	/* save a pointer to the dvb_usb_device in device state */
+-	state->d = d;
+ 	adap_state->alt_mode = (dvb_usb_mxl111sf_isoc) ? 2 : 1;
+ 	state->alt_mode = adap_state->alt_mode;
  
-+			if (msg[0].len < 2) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			dw210x_op_rw(d->udev, 0xb8, 0, 0,
- 				     ibuf, 2, DW210X_READ_MSG);
- 			memcpy(msg[0].buf, ibuf, 2);
-@@ -375,6 +387,10 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
- 		case(DW2102_VOLTAGE_CTRL): {
- 			u8 obuf[2];
+@@ -502,8 +500,6 @@ static int mxl111sf_lg2160_frontend_attach(struct dvb_usb_adapter *adap, u8 fe_i
  
-+			if (msg[0].len < 1) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			obuf[0] = 0x30;
- 			obuf[1] = msg[0].buf[0];
- 			dw210x_op_rw(d->udev, 0xb2, 0, 0,
-@@ -407,6 +423,10 @@ static int dw2104_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[], i
- 		case(DW2102_RC_QUERY): {
- 			u8 ibuf[2];
+ 	pr_debug("%s()\n", __func__);
  
-+			if (msg[j].len < 2) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			dw210x_op_rw(d->udev, 0xb8, 0, 0,
- 				     ibuf, 2, DW210X_READ_MSG);
- 			memcpy(msg[j].buf, ibuf, 2);
-@@ -415,6 +435,10 @@ static int dw2104_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[], i
- 		case(DW2102_VOLTAGE_CTRL): {
- 			u8 obuf[2];
+-	/* save a pointer to the dvb_usb_device in device state */
+-	state->d = d;
+ 	adap_state->alt_mode = (dvb_usb_mxl111sf_isoc) ? 2 : 1;
+ 	state->alt_mode = adap_state->alt_mode;
  
-+			if (msg[j].len < 1) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			obuf[0] = 0x30;
- 			obuf[1] = msg[j].buf[0];
- 			dw210x_op_rw(d->udev, 0xb2, 0, 0,
-@@ -444,6 +468,9 @@ static int dw2104_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[], i
- 					     DW210X_READ_MSG);
- 				memcpy(msg[j].buf, ibuf + 2, msg[j].len);
- 				mdelay(10);
-+			} else if (msg[j].len < 1) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
- 			} else if (((msg[j].buf[0] == 0xb0) && (msg[j].addr == 0x68)) ||
- 				   ((msg[j].buf[0] == 0xf7) && (msg[j].addr == 0x55))) {
- 				/* write firmware */
-@@ -557,6 +584,10 @@ static int dw3101_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
- 		case(DW2102_RC_QUERY): {
- 			u8 ibuf[2];
+@@ -587,8 +583,6 @@ static int mxl111sf_lg2161_frontend_attach(struct dvb_usb_adapter *adap, u8 fe_i
  
-+			if (msg[0].len < 2) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			dw210x_op_rw(d->udev, 0xb8, 0, 0,
- 				     ibuf, 2, DW210X_READ_MSG);
- 			memcpy(msg[0].buf, ibuf, 2);
-@@ -597,6 +628,10 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
- 		case (DW2102_RC_QUERY): {
- 			u8 ibuf[5];
+ 	pr_debug("%s()\n", __func__);
  
-+			if (msg[j].len < 2) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			dw210x_op_rw(d->udev, 0xb8, 0, 0,
- 				     ibuf, 5, DW210X_READ_MSG);
- 			memcpy(msg[j].buf, ibuf + 3, 2);
-@@ -605,6 +640,10 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
- 		case (DW2102_VOLTAGE_CTRL): {
- 			u8 obuf[2];
+-	/* save a pointer to the dvb_usb_device in device state */
+-	state->d = d;
+ 	adap_state->alt_mode = (dvb_usb_mxl111sf_isoc) ? 2 : 1;
+ 	state->alt_mode = adap_state->alt_mode;
  
-+			if (msg[j].len < 2) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			obuf[0] = 1;
- 			obuf[1] = msg[j].buf[1];/* off-on */
- 			dw210x_op_rw(d->udev, 0x8a, 0, 0,
-@@ -618,6 +657,10 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
- 		case (DW2102_LED_CTRL): {
- 			u8 obuf[2];
+@@ -674,8 +668,6 @@ static int mxl111sf_lg2161_ep6_frontend_attach(struct dvb_usb_adapter *adap, u8
  
-+			if (msg[j].len < 1) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			obuf[0] = 5;
- 			obuf[1] = msg[j].buf[0];
- 			dw210x_op_rw(d->udev, 0x8a, 0, 0,
-@@ -647,6 +690,9 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
- 						DW210X_READ_MSG);
- 				memcpy(msg[j].buf, ibuf, msg[j].len);
- 				break;
-+			} else if (msg[j].len < 1) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
- 			} else if ((msg[j].buf[0] == 0xb0) && (msg[j].addr == 0x68)) {
- 				/* write firmware */
- 				u8 obuf[19];
-@@ -737,6 +783,10 @@ static int su3000_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
- 	while (j < num) {
- 		switch (msg[j].addr) {
- 		case SU3000_STREAM_CTRL:
-+			if (msg[j].len < 1) {
-+				num = -EOPNOTSUPP;
-+				break;
-+			}
- 			state->data[0] = msg[j].buf[0] + 0x36;
- 			state->data[1] = 3;
- 			state->data[2] = 0;
-@@ -745,6 +795,10 @@ static int su3000_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
- 				err("i2c transfer failed.");
- 			break;
- 		case DW2102_RC_QUERY:
-+			if (msg[j].len < 2) {
-+				num = -EOPNOTSUPP;
-+				break;
-+			}
- 			state->data[0] = 0x10;
- 			if (dvb_usb_generic_rw(d, state->data, 1,
- 					       state->data, 2, 0) < 0)
+ 	pr_debug("%s()\n", __func__);
+ 
+-	/* save a pointer to the dvb_usb_device in device state */
+-	state->d = d;
+ 	adap_state->alt_mode = (dvb_usb_mxl111sf_isoc) ? 2 : 1;
+ 	state->alt_mode = adap_state->alt_mode;
+ 
+@@ -749,8 +741,6 @@ static int mxl111sf_attach_demod(struct dvb_usb_adapter *adap, u8 fe_id)
+ 
+ 	pr_debug("%s()\n", __func__);
+ 
+-	/* save a pointer to the dvb_usb_device in device state */
+-	state->d = d;
+ 	adap_state->alt_mode = (dvb_usb_mxl111sf_isoc) ? 1 : 2;
+ 	state->alt_mode = adap_state->alt_mode;
+ 
+@@ -935,8 +925,6 @@ static int mxl111sf_init(struct dvb_usb_device *d)
+ 	if (mxl_fail(ret))
+ 		pr_err("failed to get chip info during probe");
+ 
+-	mutex_init(&state->fe_lock);
+-
+ 	if (state->chip_rev > MXL111SF_V6)
+ 		mxl111sf_config_pin_mux_modes(state, PIN_MUX_TS_SPI_IN_MODE_1);
+ 
+@@ -1068,7 +1056,9 @@ static int mxl111sf_probe(struct dvb_usb_device *dev)
+ {
+ 	struct mxl111sf_state *state = d_to_priv(dev);
+ 
++	state->d = dev;
+ 	mutex_init(&state->msg_lock);
++	mutex_init(&state->fe_lock);
+ 	return 0;
+ }
+ 
 
 
 base-commit: c03c1a14507dfaf8b856c2608f9ac216021fc222
