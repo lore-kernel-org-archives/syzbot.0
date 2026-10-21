@@ -1,53 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.72
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.45
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792541440;
-	b=WJpa2wrfhCEQRfhVr3KIXClyZ/RUhNWM/V4pYXfoinzGXakWJ4m4028w+vDyXRi4wnpv
-	 8NMblW2fHe6pTOt7k+bPjIAezT9HTJqF7sTTahOWL4M0qa6XWXFpfIk9blqiPzhxuF8RV
-	 LrvmX26pnjT1JTR8T4SSDLLFRlbanoYHVZaK1YQWoAlYQUytegofJxVrQfCB2r1IKzoJJ
-	 tP8M3UzFslxg9iAXaMqmVO4cLKgWWBG83zIbgdq2uJnMde4IfwBJygttuC90FsRfLp6vm
-	 XUtGWZiOie28ObCLkzDlGbosF5bDH/N/KD8MdlDQ6lz4jHhxVnTn3h9QrgJaG+13Lxg==
+	t=1792563459;
+	b=Acsv/SRfh/NCNrt0YamNhg4Jey7lZWvfvUPFaTPSq6jazGrR35kH250dmZJQDRtij5uP
+	 eLLK2vjAQmRUHDYulX70cV0pol6t6eVjRvzkt04edv3HNnnO2wArB/F0aIO83+1AqFrRg
+	 pvOKjsVjO1fty5dPu8masnKeFzT4b/0V7yQZ8RCrV1HtYs/nlixa7CRNExtDjvcVmqAGP
+	 nCVs+2xMk0NL1uuYKWa3b0h8vRQcrRxvLUJkykQRPh0sM3AaIOWm6PV5JyrgpPCpnbNLX
+	 erngkBnCwxTDi4wjd3+4DS1gFeEkZIhHieJB6kBf/ApEbTnEGe5zlM9CdQjYbp7Pxpg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792541440;
-	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
-	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
-	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=DaUC3hVOoDyoJw/alart1u8NCQtPkLuvlnm8SNRPYGc=;
-	b=4PXTdO4kyf3ICjMOqM1YFwhrJm5EgNUTON3LW0v1Cq5qAQMpHiuYyflT+CPccU+4hMhc
-	 si5WOo9EcDJoPcL5MgYAVActArAbLSJVVUjjVL8wj0mCeYZ8hmw9FRg7kRyq2lZZpfweL
-	 pTElAUZcqc68xIe/RLnU9VpvUCoL1c9HIdbYcAgpWMCWA16qptsFcVa4jK/Dxmx4EEMsO
-	 pDYf1JZAywjLqb0SBneQvSNb83FNJGoTAb66ceZcywU5+eIcNMJLgOYyS23a1kqEAJy7C
-	 Gs6JFjOYaxQLsROaAPTNexSXIWnTp1t2YBNJGXVBR0UDKa9UpFdTIUmOnwc0zVrsjUQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792563459;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=D6XUWb0GjEEWdU6R5sZ+fFb8cLsQeyN87HkVdMPgxsA=;
+	b=Yh8zsn4QgyTM4XHCm0FNq/vZWwImafh+DAO5bTV9N7MqBWThdpMcR7aUk+ccqGNnTi2M
+	 s3WdHGWoVVIza4q9qTg4nWw1RFAMFNoYicO8TDskMGlpo/QXFuyF+OV9x+Q01XH8zo0jN
+	 RftveDS0hdg6Yq3bzawZ6spckki80/Ez+FvuOvSH5qO5jttXuRmw81EGle1Wo/JJzlxux
+	 Yw2cAfgAGfmSteBRESV5J888OISAmHbiksUpL/TacVJxcQj0SP9mZJFeJkM7//f1fT0Ub
+	 vzTcxJZiWRg6FIevd+d+dLAknvHaGSJC1LLjj84VG1MLuf/AtmI20h6wdJT41SQYpGg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=fail header.from=syzkaller.appspotmail.com;
-	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
-	arc=none smtp.remote-ip=209.85.210.72
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=QNDZ7Moo;
+	arc=none smtp.remote-ip=209.85.221.45
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D50F606A319
-	for <syzbot@lists.linux.dev>; Wed, 21 Oct 2026 00:10:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4D50F606A319
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f72.google.com with SMTP id 46e09a7af769-81447a16061so476201a34.3
-        for <syzbot@lists.linux.dev>; Tue, 20 Oct 2026 17:10:40 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32C7C606A319
+	for <syzbot@lists.linux.dev>; Wed, 21 Oct 2026 06:17:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 32C7C606A319
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=QNDZ7Moo
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-48e20edd106so223675f8f.1
+        for <syzbot@lists.linux.dev>; Tue, 20 Oct 2026 23:17:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792563456; x=1793168256; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=D6XUWb0GjEEWdU6R5sZ+fFb8cLsQeyN87HkVdMPgxsA=;
+        b=QNDZ7Mooawsj+clal/WU79NFlqnKlR1L9QGdLEc28m44xBitce0KimJX6PzJBIh6z7
+         RfsRHJU76gkdi65oWaGrYVDxCCmM3DpFNsrPyhev0/udEzxLg1xZBdxyXZcY2SLcjckj
+         dAmQGCOasZJH9gHpkWuU9URJxH7vRQDj1BnOCjSwW8AraclGpfcEqEg7rifWxWFlaq00
+         fOWrhrpcSnPyYm4U0ha5SlQJOBcStfiwHNE6ZRLiL7Te/Z/oEKAhPfwGl/Wbnzq0HIRS
+         cFN4uXB270Pcg6BdkGitOdwEbMJrd1dF4PqqnY8RFwv4pyMpE/uQ6kDvC3Qqjvj0XRDg
+         vsGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792541439; x=1793146239;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=DaUC3hVOoDyoJw/alart1u8NCQtPkLuvlnm8SNRPYGc=;
-        b=QooIcLlkvvW1+Z+wHX2UvhHhhxHwmpO6uS4zIFb81CtxBllieA7gP6MEukZUXI8osH
-         6Lvb63D8YMEAL0IfJStyD2tRYhs482RZRCcDcv/zcbw7dqx2+e9KNWQABsBxonHi3wbf
-         uQk+uOF3Ru8LwfFzxWT+uUzNG4GAGUI017flse3Hodk7xXrUVJ3wUR/YVL22X6kxwA/f
-         RRbtnf8gtnPmem3V3H5CjV7IOwegmIO3Nhvvlzq1p+qwwZIyI9Q4B/zso5Z8ymf4bj9Q
-         RWV+SaXrOXOFX1UjU6Poq9upgRunXKVEU8d6ksv5OOuXDrs3Qyxq4XhxzZD+0Fbsj1wE
-         uA1A==
-X-Gm-Message-State: AFq9FYK/GSoZaaKhFsa2y+D/58ZE5ULx4BgKEdf1AkfpUidMhIaXeWE6
-	PltyVmCCZ569LXZnbKqejwR/IjEAflbqB4ex6rOCm4MgypPcV1kS4K1Q2BW6XcKin+d40Is7LND
-	j8IrAO3gFFKaQO2DJ9Pt09zQumQeQMFhIa/hXcPh/lBFrrmTzFj2xbxqupCs=
+        d=1e100.net; s=20260707; t=1792563456; x=1793168256;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=D6XUWb0GjEEWdU6R5sZ+fFb8cLsQeyN87HkVdMPgxsA=;
+        b=jRzmEtRKH0ReZGjSv9BUlNI9PbUK0XYBj0GS8mzKQXitNlGylaX5mcpd0LWYsIzIGy
+         OJFti10QrL+MNrGjKWgqNpmgKatOc2LRcYi3kR2st/XLlE7SekqH0xosqfBXoxkxhiwT
+         7dJQbnyXgka4TWG328wvHw6vUl41UmwcXPL1IllskzZInWBzY6pR+27ENQ0DIxLj2LWK
+         r09MU0GqFYEdW5AQ/KeyZjPF5euo7s2RoizInwbhWie1T99/mPAtOBYTG91y3utUXRjn
+         QSgI3C9YLTvX+F9KLvGaCIdQqMTs9sQVg045xPBDljD+t5or4dTuQMXbvaA9HRIwQNsX
+         I/oA==
+X-Forwarded-Encrypted: i=1; AKwUvByCGKx1AwUxOIlW+fohOjfNH/kaHBBqKBEB4pkdj/79H1ZTf9gQ8JVvcOYoMgElT8NyvFhlBo8=@lists.linux.dev
+X-Gm-Message-State: AFq9FYJs/N+oG9iV+iWSh+WaV51CZKLUjJWvbssBxjnEIH1C6UB0jjJZ
+	XG9Y0GbPtHZy/j9TJMZCdORY1OlYrggylu/LlEWLH4NXz6+pxQaurGuXdrfE1vUSxBs=
+X-Gm-Gg: AYBFou0mSU9CqhaAlaemh3bVe/kD7tcAWZ3L5nusXYiZZNhxsUk0ZfrG4XWMxUxJSyW
+	NpyclUEdLSfl211pTBLSN9OdKDKCcL2yiTUCO9nWGandM81OUs+QQwidXwlNV+nGsluSsFPepLD
+	G6CO5S4vn7l26smUw4KpdCff946vmNiXpBcLXZtS1iDf3AoafT1bz8Bu+UO3CouK2DshG21vBhX
+	aL4gdwJsnW5Q9EPRwFji4FP5JOOyOSODJEWLCQ0/f/uFoG8H0LY1NOcnP9OBmrHvSZQrKGfT8Nw
+	IltMdhtrWSgzpuA44DSGBtaaEgYh46EvSoqrvWL7WvOmfMfhzAM2aSe7I7ZtZEIBX5ut27x2uAu
+	7rA0uw4dZQhyj5wlablpTiWMAg4uvBvd6XBnM3opGDzRNAyNGq7O/kzaU1O0mm2i17OmTUVx68J
+	7EAeaHGovkW8W35zUUgNfQH1kiZO9EwG0RJiW0eWUQwlpvlRc2+2WGYqUSsrc+IkhxbIPofVBni
+	75wNcFQTH9GZl4yg+U5ddC0P9Ymm64ebOhGa1N/K4xxJQxiZCvVuqVkHBUf1A==
+X-Received: by 2002:a05:6000:2086:b0:48e:b62:d133 with SMTP id ffacd0b85a97d-48e2642cf54mr1849014f8f.5.1792563456309;
+        Tue, 20 Oct 2026 23:17:36 -0700 (PDT)
+Received: from deb05.proceq.com ([213.160.61.66])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e25835404sm3663876f8f.42.2026.10.20.23.17.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Oct 2026 23:17:35 -0700 (PDT)
+From: Mehmet Fide <mehmet.fide@gmail.com>
+To: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	linux-usb@vger.kernel.org,
+	syzkaller-bugs@googlegroups.com,
+	aichao@kylinos.cn,
+	kees@kernel.org,
+	linux-kernel@vger.kernel.org,
+	syzbot@lists.linux.dev,
+	Neill Kapron <nkapron@google.com>,
+	mehmet.fide@screeningeagle.com
+Subject: Re: [PATCH] usb: gadget: u_serial: pin ports while TTYs are installed
+Date: Wed, 21 Oct 2026 08:17:34 +0200
+Message-ID: <20261021061734.3972101-1-mehmet.fide@gmail.com>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <6941beb7-8cae-4cc5-ba07-e1c8a8753fe1@mail.kernel.org>
+References: 
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -57,133 +104,35 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:3094:b0:500:5e36:3a9d with SMTP id
- 5614622812f47-5535ab467e8mr292804b6e.30.1792541439223; Tue, 20 Oct 2026
- 17:10:39 -0700 (PDT)
-Date: Tue, 20 Oct 2026 17:10:39 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ad802ff.5c73e770.1a06c9.013d.GAE@google.com>
-Subject: [moderation/CI] Re: KEYS: Return user session keyring on lookup
-From: syzbot ci <syzbot+ci174dd4219b0034e2@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-syzbot ci has tested the following series
+Hi Krystian,
 
-[v2] KEYS: Return user session keyring on lookup
-https://lore.kernel.org/all/20261019145624.309790-1-jarkko@kernel.org
-* [PATCH v2 1/2] KEYS: Return user session keyring on lookup
-* [PATCH v2 2/2] KEYS: Reject keyring creation with overridden credentials
+I sent a narrower fix for the same problem [1]. This patch also covers
+the two holes Sashiko found in mine, so I will withdraw it.
 
-and found the following issue:
-general protection fault in keyctl_session_to_parent
+Tested in QEMU with dummy_hcd on usb-next with KASAN and lockdep, and on
+a Colibri VF50 on 7.2-rc1, with delays injected into gs_open() and
+gs_close(). Without the patch, freeing the line during a close gives a
+use-after-free, and a close after a failed open a NULL deref. With it
+there are no reports, also over 40 add/remove cycles against
+concurrent opens.
 
-Full report is available here:
-https://ci.syzbot.org/series/7566814a-52ba-4f0b-b506-d7adf67fda29
+Tested-by: Mehmet Fide <mehmet.fide@screeningeagle.com>
 
-***
+Two notes:
 
-general protection fault in keyctl_session_to_parent
+1. Since Johan's 8df07fe93573 ("tty: fix saved termios reset race"),
+   registration no longer frees the saved termios for u_serial, so that
+   reason in the commit message is out of date. Publishing the port
+   after registration is still right.
 
-tree:      linux-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/li=
-nux-next
-base:      17a7501b9612a52b38bc57e33c7b64636d438bc0
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/eee373c7-f447-49cf-a350-83830580c7b=
-2/config
-AI triage: https://ci.syzbot.org/findings/38560df7-46ef-4e6d-b6fa-6e0718f03=
-397/triage_trajectory
+2. The NULL checks in gs_open() and gs_close() cannot trigger, since
+   gs_install() fails first. The gs_close() one is what Brian Ellis' v4
+   [2] adds, and this patch makes that one unnecessary.
 
-Oops: general protection fault, probably for non-canonical address 0xdffffc=
-000000001b: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x00000000000000d8-0x00000000000000df]
-CPU: 0 UID: 0 PID: 5730 Comm: syz.0.6 Not tainted syzkaller #0 PREEMPT(full=
-)=20
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
-.2-1 04/01/2014
-RIP: 0010:keyctl_session_to_parent+0x825/0xa30
-Code: 35 3b fd e9 fe fa ff ff e8 38 35 3b fd e9 f4 fa ff ff e8 2e 35 3b fd =
-48 8b 54 24 20 48 81 c2 d8 00 00 00 48 89 d0 48 c1 e8 03 <0f> b6 04 18 84 c=
-0 0f 85 b2 01 00 00 8b 2a 89 ef 8b 5c 24 1c 89 de
-RSP: 0018:ffffc9000621fc70 EFLAGS: 00010006
-RAX: 000000000000001b RBX: dffffc0000000000 RCX: ffff88810b603c00
-RDX: 00000000000000d8 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000000 R08: 0000000000000003 R09: 0000000000000004
-R10: dffffc0000000000 R11: fffff52000c43f7c R12: ffff88811a010000
-R13: 0000000000000000 R14: ffff88810c2631a8 R15: 0000000000000000
-FS:  00007f7f2068b6c0(0000) GS:ffff88818c4bf000(0000) knlGS:000000000000000=
-0
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f7f2068aff8 CR3: 000000010cae8000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- __se_sys_keyctl+0x780/0x9d0
- do_syscall_64+0x166/0x520
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f7f1f79f559
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
-f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f7f2068b028 EFLAGS: 00000246 ORIG_RAX: 00000000000000fa
-RAX: ffffffffffffffda RBX: 00007f7f1fa26270 RCX: 00007f7f1f79f559
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000012
-RBP: 00007f7f1f836b20 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f7f1fa26308 R14: 00007f7f1fa26270 R15: 00007ffe789f59b8
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:keyctl_session_to_parent+0x825/0xa30
-Code: 35 3b fd e9 fe fa ff ff e8 38 35 3b fd e9 f4 fa ff ff e8 2e 35 3b fd =
-48 8b 54 24 20 48 81 c2 d8 00 00 00 48 89 d0 48 c1 e8 03 <0f> b6 04 18 84 c=
-0 0f 85 b2 01 00 00 8b 2a 89 ef 8b 5c 24 1c 89 de
-RSP: 0018:ffffc9000621fc70 EFLAGS: 00010006
-RAX: 000000000000001b RBX: dffffc0000000000 RCX: ffff88810b603c00
-RDX: 00000000000000d8 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000000 R08: 0000000000000003 R09: 0000000000000004
-R10: dffffc0000000000 R11: fffff52000c43f7c R12: ffff88811a010000
-R13: 0000000000000000 R14: ffff88810c2631a8 R15: 0000000000000000
-FS:  00007f7f2068b6c0(0000) GS:ffff88818c4bf000(0000) knlGS:000000000000000=
-0
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f7f2068aff8 CR3: 000000010cae8000 CR4: 00000000000006f0
+[1] https://lore.kernel.org/linux-usb/20261019085855.3259716-1-mehmet.fide@gmail.com/
+[2] https://lore.kernel.org/linux-usb/20261013-u_serial-gs-close-null-v4-1-9ea038501994@gotenna.com/
 
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
-
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[corbet@lwn.net dhowells@redhat.com ebiggers@kernel.org jannh@google.com ja=
-rkko@kernel.org jmorris@namei.org keyrings@vger.kernel.org linux-doc@vger.k=
-ernel.org linux-kernel@vger.kernel.org linux-security-module@vger.kernel.or=
-g paul@paul-moore.com rdunlap@infradead.org serge@hallyn.com skhan@linuxfou=
-ndation.org stable@vger.kernel.org]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+Thanks,
+Mehmet
