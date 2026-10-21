@@ -1,94 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.158.5
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792569905;
-	b=rnkCI3JDylPGzMaXPkNX79FQTTBK4p6www8hzL47B8tRbOXmgCG8MSCBp0ACtvCW3Tyu
-	 PlyGB3Oq12WAac6vImBSQ7ZspG/UoiGTkguNMw0Wd8ST32j7dhYKi/O7v8C9OKHXSJksr
-	 juT2ukv4dxRngptuevdvdl/nlLKptSn35rMPGyqXB+cJDLVEaf1yd8h6Nk4MiwpVHvVsq
-	 xpjxis4Wa4R0rkvoOG7t3EUdtrGlwDibnQISK7kt/YS7OXY6M1R0NH/g/Jpbl3KNMfv4I
-	 dosw3PkZKmbR2zftQ4GxS5unBdkoFyT3Ege07z8s3SsUCP/sfJvCadp3e6MS0otxrOA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792569905;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Received:
-	 Received:Received:Received:Received:Date:From:To:Cc:Subject:
-	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
-	 In-Reply-To:X-TM-AS-GCONF:X-Proofpoint-Reinject:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-ORIG-GUID:
-	 X-Proofpoint-GUID:X-Proofpoint-Spam-Info:X-Authority-Analysis:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=5SiSOmgntifWep9/vcUkd3FyFlinf0yZ1waE0Teg3lY=;
-	b=BgiaiotHDQqVF64KQVyEnr2g5aKPJeK+cODSjRtGXlqcDnpg12tv2SENQ//Npv6ZMf2+
-	 /Is0Gt4JmqQ0BcvSE1W36D3V212ILnz7T4fI9wyCY2uE+WpKRcsrxYUa+sU4B6FVyAZkr
-	 J7aHRKTxEegQMqd7B7o67rL0sIdw1hXBbTzzufCwG3clnLccxsSWN5ls6ryamIa8uK1gq
-	 TXphI33wYFUbwDrdvy9GioKHMBJoW34OBC0A17D2XmOpwIvBEN5ru5pIb4ef7kh/E3mys
-	 rEbUa91xEjrWLTnLThlcAQWTsTuJ9P+tl0w3Wow45W50EC/RZmIrlkUyDngHs0Ca/FA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.ibm.com;
-	spf=pass smtp.mailfrom=linux.ibm.com;
-	dkim=pass header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=mSwc3+L2;
-	arc=none smtp.remote-ip=148.163.158.5
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.210.46
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792570783;
+	b=VkPuQARLjpCvLkCmbFlvPC9xl3XhJAnRyskDVhTnPbbiJwOSulp4ZeZd+vjoKDc6kkuq
+	 ngJkDrT+f1PvWudUyosMmvJfFMRM6b6wJchyucs9HTJk5UFS8DjR12+BEvJwysF5HKnlZ
+	 WkXYUa4QSyMoc0EnwWmrJfNZf/2zdTTpehVHZXFmFSc2i/y2NCgkGKAx95gboObIRynBm
+	 5y57n2fuXgb3aUTRMF1mIFhkPCUlZR3pgX6Pg9hlW5KYiP6mCwvlY2zFrlIM+HL5l89k7
+	 pt0XBp1XmQo/ykuICWCfBAVWixdOxFcAwkUP6aTpcjw79VSSgFoC3CFRKyLZila4+vQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792570783;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=aOETIRHCqwYatvUBXgOmr8SiFiHEwcfa3ycdLC3WLzU=;
+	b=FQphiu9bL2c8bQrXCAkWph278s7cpHQiUWXYSbDF705d/yo7PMTAIdJoeVG38Fmhca3y
+	 TCgqTqN1oOUf6pA1qd14kA72/GlfFHXxUlCIQWeAVBt33C+keUfZQK+jOJPgh51Ui1CtU
+	 oHgKqCEEc4KtGu49gSCbsXv+fQ7IsuNqCJH/Wb8DP1uxTaHOB/281rOddvFykwnK+UVUf
+	 gxHAovmJkC4ytQXDQEc+1msrrdMUkXvAIzneWciv6Vyoi9K8hkOIhFU8CJjN5VxPTY9KW
+	 mB+9IVH4C8a2grOvKcIe7NJiVkrvVQWQKVlaBiBybbx4o4z3e99FDlXlCuaRTbfA+aQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=A0lxb7RU;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.210.46
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50DCE606A319
-	for <syzbot@lists.linux.dev>; Wed, 21 Oct 2026 08:05:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 50DCE606A319
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD806606A32A
+	for <syzbot@lists.linux.dev>; Wed, 21 Oct 2026 08:19:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AD806606A32A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=mSwc3+L2
-Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69L5ijA9359953;
-	Wed, 21 Oct 2026 08:04:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=pp1; bh=5SiSOmgntifWep9/vcUkd3FyFlinf0
-	yZ1waE0Teg3lY=; b=mSwc3+L2vj4lPySFIR+IP8tG8VVcyJkAHjd1ZN7O5Q9/Mx
-	qRSHbmyK2L6fzm5Cm8HtJetR+0Sjgm16Lm9h4ypdoJXw2hK+ss59UHKRIjKeSMWj
-	yT/kWF4rcdaJJp10IpqkahPEX4oBbxMpja4VIFGgSXWoj1SpOdwQCQpwUthv+nTm
-	hXY/oK2gqfdcANgpTCh1tcr+KVy1IIZdxX8ZPjMljrPKntkKGJsQYzhP95DPg2mD
-	hTS/r51znAxabASZzoni+phbvajiHfsr9JJkzeU+gTKIzS2C9EyWBbhKfcHuFDrN
-	cCNZcY0dFyz6v9l+RC3SQ/lAI9ZbDhRVAUsuXuPA==
-Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4hdw59yf0b-1
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Wed, 21 Oct 2026 08:04:04 +0000 (GMT)
-Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma13.dal12v.mail.ibm.com (8.18.1.11/8.18.1.11) with ESMTP id 69L5nt841455843;
-	Wed, 21 Oct 2026 08:04:03 GMT
-Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
-	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 4hefss200u-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 21 Oct 2026 08:04:03 +0000 (GMT)
-Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
-	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 69L842bj48824638
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 21 Oct 2026 08:04:02 GMT
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id EC73620040;
-	Wed, 21 Oct 2026 08:04:01 +0000 (GMT)
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 706EE2004B;
-	Wed, 21 Oct 2026 08:03:57 +0000 (GMT)
-Received: from li-dc0c254c-257c-11b2-a85c-98b6c1322444.ibm.com (unknown [9.39.16.155])
-	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Wed, 21 Oct 2026 08:03:57 +0000 (GMT)
-Date: Wed, 21 Oct 2026 13:33:54 +0530
-From: Ojaswin Mujoo <ojaswin@linux.ibm.com>
-To: Zhang Yi <yi.zhang@huaweicloud.com>
-Cc: syzbot ci <syzbot+ci46f64f7b6a2a188e@syzkaller.appspotmail.com>,
-        syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com,
-        adilger.kernel@dilger.ca, chengzhihao1@huawei.com, djwong@kernel.org,
-        hch@infradead.org, jack@suse.cz, libaokun@linux.alibaba.com,
-        linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ritesh.list@gmail.com, tytso@mit.edu,
-        wangkefeng.wang@huawei.com, yangerkun@huawei.com, yi.zhang@huawei.com,
-        yizhang089@gmail.com, yukuai@fnnas.com
-Subject: Re: [syzbot ci] Re: ext4: use iomap for regular file's buffered I/O
- path
-Message-ID: <athx6i4FVmzaCWXE@li-dc0c254c-257c-11b2-a85c-98b6c1322444.ibm.com>
-References: <6ac92a4c.70ed5d86.2ac85.0072.GAE@google.com>
- <34423908-aceb-4c57-9502-7da10b12e4a4@huaweicloud.com>
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=A0lxb7RU
+Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-8256106635eso242798a34.0
+        for <syzbot@lists.linux.dev>; Wed, 21 Oct 2026 01:19:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792570781; cv=none;
+        d=google.com; s=arc-20260327;
+        b=JTwAIbH9bfsDg0JOfoalFrmEPsd1j8ZJ7VixbExaIIwwoHa3RijHbRH80bhDzEPh1V
+         Lha4hxiYgwLbB5vC8N1wXe5jN8oXTE2EZj+n/Z5TqobnV8Uus0G2r1P40l52ZF817pav
+         +ItxLNq1TbLWyAmMT3P5nmaQA0w2stFazlaEHLCY1FOGPM/+el1EXLKQdpKtyhDuJ/1z
+         UGgq1tAN+CFjcbUtjfXA1emNYUgXZIEXcULmPc2Thmetc9Xy5Z8iHLiNXI2GQ8XpTBP7
+         NHi2nDZ9Mno3PIyMu00qCoat6uewORc3c7VlsBqaXID3/QN8jiiIU4i2aDoc8eiKN254
+         vJLg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=aOETIRHCqwYatvUBXgOmr8SiFiHEwcfa3ycdLC3WLzU=;
+        fh=FfrGBLnVPqPJKND0gAQKJZYxXkM4AvhEpLq5QW7HHd8=;
+        b=enItvLx1fp/qtnNmxoXy+7gggMclcnH5HuS6C+4Bc+41TRpeFabU6kiQP1/E+XyKj/
+         tusff4NvaxID4VDoVVoS0Dzvm2/sBCwY7T8xhSWiqIzhcNQPScPnEO4k0DjG4ppHyahw
+         vUgTedKnp+2McAmXDqJQuAPDCu4nAqAO1Ur8eTHLA+h+1e10adi+Q36PSRHE7DAdxVSH
+         7O31OvZHZZc1gwA1l3Hj7rN6VkRgJ83KfEAYVVViJjP3Cc/VPt6cBa8G9oJyts7/I9BV
+         c6JvqvrBz4EggZPmz6TsrV+RIVvDUSp78RTsDqROcL/9iS3ic8DHcV63hxFSdB0y1EiA
+         31Iw==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1792570781; x=1793175581; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=aOETIRHCqwYatvUBXgOmr8SiFiHEwcfa3ycdLC3WLzU=;
+        b=A0lxb7RUba1EBkVd3/aWC96ZlGs9+g/ZOVTaQd/ue3+wUOYFEunPnhXblMqQ2RPn5Y
+         a84EyN51jok85Gov6JVBUfvLoHu9gpZEsfxoC7YLKPVkbwoIV/5gWD5RWjWXMG1l3MfT
+         0NOQEeoqKhmBaFRJwvU77ovxIHtByZzkbRWdpeJ5EOS9eZ05XLkdZl3lnQT0nKwZv7UX
+         5mscwS/JE/lmay34YXMskPcYG53eBBzsCGarHcDm+jTrS36IeELbqiYPF/JFSa45BqBb
+         Vwe58gNOOLdgA7KFZBj1hgpHTHZIt9tEdoftYTH8ROUpuqfC/6YY0lZmHYnWMxKfPRJE
+         RamQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792570781; x=1793175581;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=aOETIRHCqwYatvUBXgOmr8SiFiHEwcfa3ycdLC3WLzU=;
+        b=lMo3taemDv7fF01N5YbUS3vSKPMUzwvmYHxUW2d8fvP5PH8SP33+qvEHdGrHzEml10
+         g2RZWDqPxCjiYCwZO2dTeJXF1Uy7+p0orwviKKbAmeKZa/hdSUqOEGkYvzZuGzZokhlx
+         aQNvtHRKVElwylRZdsCP4dwWgW8IjCpxQuP/w3zkzkj81Udi8DVqIGmuDQ3Px963jlGk
+         XouwSqyU/IlBTqw5svczG9TZQ7ag+iEOt5FK4Zu1P/uyzgr+H4jzzAiFl9iPD12nN0xC
+         LDnE0QrcVl8jirH+XZYRneMFsjouksOF7qfcI/0Ymq1WiMfEHnhnQ7IEikGN6oBwx67I
+         4/Ig==
+X-Forwarded-Encrypted: i=1; AKwUvBxHTqQK130e5lMSkFdDrbeNS3fqnauC9zOaMOVxV16JoBzGdurAXi6AV2sqlOp1+ibQpA1vlt0=@lists.linux.dev
+X-Gm-Message-State: AFq9FYKn779Vrw06G6YLNslhxa4BXr2hWXfW2Wo5XgBby+yebnu48LdG
+	53YmUJ0jTGKkHQwUy54kWmVqx9USqxGMzVIvKmmkS9OasDhVsWD68PRX0pDbFxEHBVN1+qb1/i1
+	C4Xr52FFJlygK0yebDTC7CvbzWB+L5L73uVdKuzn9
+X-Gm-Gg: AYBFou0+eKcmXY3aM3pyBr4sobbVBZDP7WaXTMd0ZOzAz7A038okSSUymK3Oa3BalAK
+	4dQwFO8pezt2JPDQdmIUPmMVztOayg3IZ6FhR60y/WtrIKxt3+r09p1I08c+aDhH5Q6rhz0RD/T
+	AXOcz2zbYtsSB9sPayTW39nBeusYEqfUvmWwR0TP6MYny4lsWwYbiNUdaLnpsHg4Q9GjhH1xwUV
+	ic+tY4G1PD43oWClUz690jgE8Ze4IrbsKTrMnNLvkeMS4B+JoG8BNqmJrqyhyubgGzNeyXOASTj
+	7YBNVS4dM38RqwAlzqMIFIEzapJZJmNiiVS7oO8YapUqhhKU7jNVDEn3uGRvbqpWX31OZb5U9/h
+	YF1O1jj+C2p82LSfM3FjC5Kd83Iue75MZvWM1F4q9vxfKEulPjflv4gvm4JPLzQsVlDOb+G3DFc
+	F09wPNE9vfPT3n0C4lzuRoDORXTucIUBNTyRk5GU7NZdh7GkM5bYRHz2Kj3O2hiQB3Ipc5ELMpH
+	bo3T131
+X-Received: by 2002:a05:6808:3501:b0:4d6:9232:b3bc with SMTP id
+ 5614622812f47-5535e5556ecmr905290b6e.51.1792570780721; Wed, 21 Oct 2026
+ 01:19:40 -0700 (PDT)
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -98,139 +106,145 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <34423908-aceb-4c57-9502-7da10b12e4a4@huaweicloud.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Reinject: loops=2 maxloops=12
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDIxMDAzMCBTYWx0ZWRfXzsXyA2dIO8Qh
- y/lgMMVSbvT0U2Nq9ZyOneGzRpvSy0Faq8ihn/1UK2LKZ9YddgNlKEdlF825BLPLqNSijQ1l582
- FORg04Dq965Yg4NYcC77L8x7MCXIGRB6xfqbPwvmtd6dnWgWvBUv1PIBG1dDfQ60Zn+UhNOpN8E
- a5T1FS5SF5Qo48Ki8ur6woXkzOOOiPXF2A0m3+utnNX69IvtKKKanDhCfecJKn/z4dgtBeQj1CO
- 1ovVnC9TPo5lfJJWFS7hCQHQgQGQCx48+aXxdzglkbGCQqKNeAfZqZ3VcslkwJpn0cBpDeZDscY
- iVxuRX/o4V+tXAIznLsygS3Fz+EDd3eCknMqjOtwwO58ZUu9fOZPAD0A01gbTJvR9a1sRCllf/v
- KqaxqxaNOMKuOl/tW2a7g+nJmiW4VlHlJY9S9YzFVL7F8SfgFtLPKP47AajB/JuSOG9kaQ6SO2A
- C65RVP1jDYv7HBySOQQ==
-X-Proofpoint-ORIG-GUID: 5FeDTI84D-HXPvyT0PjDI3h5Bjndv76q
-X-Proofpoint-GUID: EUjwOC3SLIJUZxBKbbjXIQr-QHKwup66
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDIxMDAzMCBTYWx0ZWRfXzyM4Q7Plq2T5
- 9jYPuWQYodPyxKp5xRX+4Jpdh7fk2hjfJSEOJGUhOJUSYJs71F2Et8LJ574HpRW6R1VtRCD10Eg
- CnVs5Hl8Cy4noapi5CLX8jpyirMVWrU=
-X-Authority-Analysis: v=2.4 cv=ZfSIpcVA c=1 sm=1 tr=0 ts=6ad871f5 cx=c_pps
- a=AfN7/Ok6k8XGzOShvHwTGQ==:117 a=AfN7/Ok6k8XGzOShvHwTGQ==:17
- a=kj9zAlcOel0A:10 a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22
- a=RnoormkPH1_aCDwRdu11:22 a=RzCfie-kr_QcCd8fBx8p:22 a=-ibLmwfWAAAA:8
- a=Oh2cFVv5AAAA:8 a=hSkVLCK3AAAA:8 a=4RBUngkUAAAA:8 a=LAgt6U_hPI2_JMarfT4A:9
- a=CjuIK1q_8ugA:10 a=A6MkUVyZPcTV1i89ro0M:22 a=7KeoIwV6GZqOttXkcoxL:22
- a=cQPPKAXgyycSBL8etih5:22 a=_sbA2Q-Kp09kWB8D3iXc:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-10-21_02,2026-10-19_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 impostorscore=0 malwarescore=0 spamscore=0 suspectscore=0
- clxscore=1011 phishscore=0 bulkscore=0 lowpriorityscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610210030
+References: <6ad802ff.5c73e770.1a06c9.013d.GAE@google.com>
+In-Reply-To: <6ad802ff.5c73e770.1a06c9.013d.GAE@google.com>
+From: Aleksandr Nogikh <nogikh@google.com>
+Date: Wed, 21 Oct 2026 10:19:29 +0200
+X-Gm-Features: AclHuK-fGMNjspGEh6rQDbB1nmlkHC7y6Z4TV4VwG8o_Wc-I3gnphMvoZiSRq0Y
+Message-ID: <CANp29Y41OFKQY59yDEA7X8aM22s0jRpYV6w07xnJ72qU7WhvYA@mail.gmail.com>
+Subject: Re: [moderation/CI] Re: KEYS: Return user session keyring on lookup
+To: syzbot ci <syzbot+ci174dd4219b0034e2@syzkaller.appspotmail.com>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, Oct 10, 2026 at 04:44:52PM +0800, Zhang Yi wrote:
-> On 10/10/2026 1:54 AM, syzbot ci wrote:
-> > syzbot ci has tested the following series
-> > 
-> 
-> [...]
-> 
-> > and found the following issue:
-> > WARNING in ext4_do_writepages
-> > 
-> > Full report is available here:
-> > https://ci.syzbot.org/series/3711c951-acf4-4ebe-a920-9cc89b6be2ff
-> > 
-> > ***
-> > 
-> > WARNING in ext4_do_writepages
-> > 
-> > tree:      vfs
-> > URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs.git
-> > base:      3d399224425573875b6f6f1181bd8cf9a28cc7d1
-> > arch:      amd64
-> > compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-> > config:    https://ci.syzbot.org/builds/c3c01f8c-846d-4c7a-955a-fd7427af6b0d/config
-> > 
-> > ------------[ cut here ]------------
-> > !err
-> > WARNING: fs/ext4/inode.c:2512 at ext4_do_writepages+0x33b3/0x44a0, CPU#0: kworker/u9:3/147
-> > Modules linked in:
-> > CPU: 0 UID: 0 PID: 147 Comm: kworker/u9:3 Not tainted syzkaller #0 PREEMPT(full) 
-> > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> > Workqueue: writeback wb_workfn (flush-7:1)
-> > RIP: 0010:ext4_do_writepages+0x33b3/0x44a0
-> > Code: 0f 0b 90 e9 b6 d9 ff ff e8 6a e2 36 ff 90 0f 0b 90 e9 e6 dc ff ff e8 5c e2 36 ff 90 0f 0b 90 e9 94 df ff ff e8 4e e2 36 ff 90 <0f> 0b 90 bb ea ff ff ff e9 ae f8 ff ff e8 3b e2 36 ff 48 8d 3d 64
-> > RSP: 0018:ffffc90003106ce0 EFLAGS: 00010293
-> > RAX: ffffffff8290e912 RBX: 0000000000000000 RCX: ffff8881053f9e00
-> > RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-> > RBP: ffffc900031070f0 R08: ffff888025da4a37 R09: 1ffff11004bb4946
-> > R10: dffffc0000000000 R11: ffffed1004bb4947 R12: ffffc900031071a0
-> > R13: dffffc0000000000 R14: 0000000000000000 R15: 1ffff11004bb495d
-> > FS:  0000000000000000(0000) GS:ffff88818d6c9000(0000) knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 00005555565a5a28 CR3: 0000000031f66000 CR4: 00000000000006f0
-> > Call Trace:
-> >  <TASK>
-> >  ext4_writepages+0x241/0x3b0
-> >  do_writepages+0x338/0x560
-> >  __writeback_single_inode+0x136/0x1220
-> >  writeback_sb_inodes+0x9de/0x1b00
-> >  wb_writeback+0x41c/0xad0
-> >  wb_workfn+0x431/0x10f0
-> >  process_scheduled_works+0xc3d/0x1630
-> >  worker_thread+0xa47/0xfb0
-> >  kthread+0x38b/0x480
-> >  ret_from_fork+0x514/0xb70
-> >  ret_from_fork_asm+0x1a/0x30
-> >  </TASK>
-> > 
-> > 
-> 
-> This WARNING was newly introduced by patch 8, "ext4: skip block
-> allocation for holes in the data submission path". It doesn't actually
-> cause a new regression, it just appears to expose a pre-existing issue
-> in the buffer_head buffered I/O path, where an inconsistency between
-> the bh and extent state could potentially lead to allocating a block and
-> writing data into a hole. The logic of the patch itself is fine. To
-> avoid noise, I can drop the WARN_ON_ONCE() while still keeping return
-> -EINVAL. Thoughts?
+#syz upstream
 
-Hi Zhang,
 
-I think we can keep the WARN_ON. Failing in writeback here will anyways
-throw out some error messages about data loss so having an extra WARN
-dump should be okay. It will help us find and eliminate paths that cause
-this quickly, like your patch for the inline truncate fix.
-
-Regards,
-ojaswin
-
-> 
-> Thanks,
-> Yi.
-> 
-> > ***
-> > 
-> > If these findings have caused you to resend the series or submit a
-> > separate fix, please add the following tag to your commit message:
-> >   Tested-by: syzbot@syzkaller.appspotmail.com
-> > 
-> > ---
-> > This report is generated by a bot. It may contain errors.
-> > syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-> > 
-> > To test a fix for this bug, please reply with `#syz test`
-> > (on a separate line) and attach the patch to the email.
-> > 
-> > Notes:
-> > - The patch will be applied on top of the tested series (as an
-> >   incremental fix).
-> > - To test a new version of the whole series, please send it directly
-> >   to syzbot@lists.linux.dev.
-> > - Arguments like custom git repos and branches are not supported.
-> 
+On Wed, Oct 21, 2026 at 2:10=E2=80=AFAM syzbot ci
+<syzbot+ci174dd4219b0034e2@syzkaller.appspotmail.com> wrote:
+>
+> syzbot ci has tested the following series
+>
+> [v2] KEYS: Return user session keyring on lookup
+> https://lore.kernel.org/all/20261019145624.309790-1-jarkko@kernel.org
+> * [PATCH v2 1/2] KEYS: Return user session keyring on lookup
+> * [PATCH v2 2/2] KEYS: Reject keyring creation with overridden credential=
+s
+>
+> and found the following issue:
+> general protection fault in keyctl_session_to_parent
+>
+> Full report is available here:
+> https://ci.syzbot.org/series/7566814a-52ba-4f0b-b506-d7adf67fda29
+>
+> ***
+>
+> general protection fault in keyctl_session_to_parent
+>
+> tree:      linux-next
+> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/=
+linux-next
+> base:      17a7501b9612a52b38bc57e33c7b64636d438bc0
+> arch:      amd64
+> compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+> config:    https://ci.syzbot.org/builds/eee373c7-f447-49cf-a350-83830580c=
+7b2/config
+> AI triage: https://ci.syzbot.org/findings/38560df7-46ef-4e6d-b6fa-6e0718f=
+03397/triage_trajectory
+>
+> Oops: general protection fault, probably for non-canonical address 0xdfff=
+fc000000001b: 0000 [#1] SMP KASAN PTI
+> KASAN: null-ptr-deref in range [0x00000000000000d8-0x00000000000000df]
+> CPU: 0 UID: 0 PID: 5730 Comm: syz.0.6 Not tainted syzkaller #0 PREEMPT(fu=
+ll)
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.=
+16.2-1 04/01/2014
+> RIP: 0010:keyctl_session_to_parent+0x825/0xa30
+> Code: 35 3b fd e9 fe fa ff ff e8 38 35 3b fd e9 f4 fa ff ff e8 2e 35 3b f=
+d 48 8b 54 24 20 48 81 c2 d8 00 00 00 48 89 d0 48 c1 e8 03 <0f> b6 04 18 84=
+ c0 0f 85 b2 01 00 00 8b 2a 89 ef 8b 5c 24 1c 89 de
+> RSP: 0018:ffffc9000621fc70 EFLAGS: 00010006
+> RAX: 000000000000001b RBX: dffffc0000000000 RCX: ffff88810b603c00
+> RDX: 00000000000000d8 RSI: 0000000000000000 RDI: 0000000000000000
+> RBP: 0000000000000000 R08: 0000000000000003 R09: 0000000000000004
+> R10: dffffc0000000000 R11: fffff52000c43f7c R12: ffff88811a010000
+> R13: 0000000000000000 R14: ffff88810c2631a8 R15: 0000000000000000
+> FS:  00007f7f2068b6c0(0000) GS:ffff88818c4bf000(0000) knlGS:0000000000000=
+000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007f7f2068aff8 CR3: 000000010cae8000 CR4: 00000000000006f0
+> Call Trace:
+>  <TASK>
+>  __se_sys_keyctl+0x780/0x9d0
+>  do_syscall_64+0x166/0x520
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+> RIP: 0033:0x7f7f1f79f559
+> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f=
+7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff=
+ ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f7f2068b028 EFLAGS: 00000246 ORIG_RAX: 00000000000000fa
+> RAX: ffffffffffffffda RBX: 00007f7f1fa26270 RCX: 00007f7f1f79f559
+> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000012
+> RBP: 00007f7f1f836b20 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007f7f1fa26308 R14: 00007f7f1fa26270 R15: 00007ffe789f59b8
+>  </TASK>
+> Modules linked in:
+> ---[ end trace 0000000000000000 ]---
+> RIP: 0010:keyctl_session_to_parent+0x825/0xa30
+> Code: 35 3b fd e9 fe fa ff ff e8 38 35 3b fd e9 f4 fa ff ff e8 2e 35 3b f=
+d 48 8b 54 24 20 48 81 c2 d8 00 00 00 48 89 d0 48 c1 e8 03 <0f> b6 04 18 84=
+ c0 0f 85 b2 01 00 00 8b 2a 89 ef 8b 5c 24 1c 89 de
+> RSP: 0018:ffffc9000621fc70 EFLAGS: 00010006
+> RAX: 000000000000001b RBX: dffffc0000000000 RCX: ffff88810b603c00
+> RDX: 00000000000000d8 RSI: 0000000000000000 RDI: 0000000000000000
+> RBP: 0000000000000000 R08: 0000000000000003 R09: 0000000000000004
+> R10: dffffc0000000000 R11: fffff52000c43f7c R12: ffff88811a010000
+> R13: 0000000000000000 R14: ffff88810c2631a8 R15: 0000000000000000
+> FS:  00007f7f2068b6c0(0000) GS:ffff88818c4bf000(0000) knlGS:0000000000000=
+000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007f7f2068aff8 CR3: 000000010cae8000 CR4: 00000000000006f0
+>
+>
+> ***
+>
+> If these findings have caused you to resend the series or submit a
+> separate fix, please add the following tag to your commit message:
+>   Tested-by: syzbot@syzkaller.appspotmail.com
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+>
+> To test a fix for this bug, please reply with `#syz test`
+> (on a separate line) and attach the patch to the email.
+>
+> Notes:
+> - The patch will be applied on top of the tested series (as an
+>   incremental fix).
+> - To test a new version of the whole series, please send it directly
+>   to syzbot@lists.linux.dev.
+> - Arguments like custom git repos and branches are not supported.
+>
+> The email will later be sent to:
+> [corbet@lwn.net dhowells@redhat.com ebiggers@kernel.org jannh@google.com =
+jarkko@kernel.org jmorris@namei.org keyrings@vger.kernel.org linux-doc@vger=
+.kernel.org linux-kernel@vger.kernel.org linux-security-module@vger.kernel.=
+org paul@paul-moore.com rdunlap@infradead.org serge@hallyn.com skhan@linuxf=
+oundation.org stable@vger.kernel.org]
+>
+> If the report looks fine to you, reply with:
+> #syz upstream
+>
+> If the report is a false positive, reply with
+> #syz invalid
+>
+> --
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/6ad802ff.5c73e770.1a06c9.013d.GAE%40google.com.
