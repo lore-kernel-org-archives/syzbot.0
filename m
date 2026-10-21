@@ -1,58 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.197
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792583520;
-	b=W6a9805kR63JFuSBGiaFY8YB9bc7t8n1OP4myWey1i9GJD8BQ2/WZxQ/xmI9eouKj28U
-	 deN2NyJiifcnw3ojjqWJRFCPs+JXr2poPDmFwGVyfrhphDcy2mJrwiUpO+zEwgPfyvJ2C
-	 /KK1/lM4m5+eWOTxwNFEuog7EGhy4e2Vs5LxFEHnAAI3jTsprgSSOSfMNJ4DmIIquL6K3
-	 lK1ee3cPkI334JgEvPZXfpX9WCwGfi7oSEqt5s714y+W4fKAcpcEbaL4u1d88whhtnDZK
-	 o6hb+BevSoJno9ZxRx7c17SdsSvWcuNPZnT9i2YEwaw47TJi7HPe0MbytZyqIShhmig==
+	t=1792590627;
+	b=KJVQMESd6Bv1kGSEN2lrb8TJhXuXZS5alVPj+N16VagwIyeE2O27AumQ4qjVuL8zIFH5
+	 ZG5F6Rv3pvXrANvxdBm2EW9ZA9jHGner6HdE8so5L6vaScAsFObdLjiF+LaPahtrIRicO
+	 JJlKaNFwxheoXHUmbctjT7NtS+2FHVFHQtxfgxTi1qR1ASSfIcwFEG0zNI3ZV7kTdw0Ow
+	 5lOOaK87n991ljcFGMHHJxiwej8IYzQTbpB7jZmDV/gh8aO8lgpiAqRKfJrys0VmJbPBU
+	 iVL+eHNA99enY+W807l3fjCelo5joQRzm5oMNShAlr5u6YIjOoGp5hMBZWU695l9nhw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792583520;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=8+uhPZSAcrIBVQRFHA3AjpuARr+Y5uh4d7ju5klGlzE=;
-	b=DsB/j+VVvqk6rZOm9MFzTWXwL0wYHFx2MUWhCVIV/wSH486bIgr7k3Kv51PktyDi8Zfq
-	 AQyTm1yYePHyN1B99nXfbcNRJq1QYE77jIGqX5TPIp5CQ7W5XAJ+P9gvjpzqezqGqNj9U
-	 cxafzylZraTchkl2ZfFRPnXvHcdrR/yP8RuYCb93bhSvS9qTG0/jNDEDEF/qCCLtEGG/s
-	 8/mrcLgk5dtAXUB9BGqkbdoIB+z6CRZq6Y2HajDSbZuCoGbJnCllO+4vBT50oP5DdY+O7
-	 psdViXyv5XuEEG2mD0R+KRS54SZc6GraO1Cn8/6MS5T5yJk9VesHEg1aIkm08brE9XA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792590627;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
+	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
+	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=YqXwsIuVHHgPFbpTbjaFhQFOWetJOCvYOYn5lXCbEAk=;
+	b=DyGQZ+gxrZCKM7CVY6uw3k26fvz6o2jD6A7a0ZmM9mahUoQEGJXddvMsnah5dMPxsMGj
+	 UIkLXtadX/B4gQzsMpiCmeP4A0cz5R7eiwYCknDOXO8NSKoQ+DYmkKeVxPiE/zWqc0hTD
+	 qGClwefj0gh/BfDlidrhi1ZqChxu3C3khJFiRp08nh7hZGodE3cj+Fz3Qd9upHomg2BrO
+	 DdIfd+QeG2u1ov4eRKGGmRQ8Bv1lg/K4uZlyUPJlJj0PKG5VV+mzWcXaLGgj/kwPXWcoy
+	 8tnd5nTHO0F5XHprPD95poUAQKs/S0y9sw33fWUnNWGL2Fzq2IPxniFgMcoLUgdzFwg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PaFMpquh;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=fail header.from=syzkaller.appspotmail.com;
+	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
+	arc=none smtp.remote-ip=209.85.167.197
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id C547D606A330;
-	Wed, 21 Oct 2026 11:51:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PaFMpquh
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 225C41F000C4;
-	Wed, 21 Oct 2026 11:51:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792583519;
-	bh=8+uhPZSAcrIBVQRFHA3AjpuARr+Y5uh4d7ju5klGlzE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=PaFMpquhWfs9AjCJcWqAxr2pJDk2EP+jvDiazGWfurMpt29HXvJzjzX7nLUWKWUa5
-	 IJnwObm7CvlCikN3jQ1dfZk+K6LR8clGd4eVwfgFy29C8sNApPK4SLbopmXVzGXoBP
-	 8TyqCZcJyY31lbOVdN+/XDKoGXtO86Wm8n186DB6gwRzSHD0WeRBRvrFvsHB6kendB
-	 4fOTgyRFULJbSLyuE6i71lafZ1ICwBJC/GhXCWE5thyWUEjiKdFMrs4YyMTZS9SrQH
-	 TAwW4dpwDPI7VArxk4+0szI+YM3JaBAh4imjcil/wk5gtOEW8vHWzAx/EYHXVD0Feq
-	 M6BuzMdv5aaMQ==
-Date: Wed, 21 Oct 2026 14:51:55 +0300
-From: Jarkko Sakkinen <jarkko@kernel.org>
-To: syzbot ci <syzbot+ci05eb01a9f28bbd7c@syzkaller.appspotmail.com>
-Cc: corbet@lwn.net, dhowells@redhat.com, ebiggers@kernel.org,
-	jannh@google.com, jmorris@namei.org, keyrings@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-security-module@vger.kernel.org, paul@paul-moore.com,
-	rdunlap@infradead.org, serge@hallyn.com, skhan@linuxfoundation.org,
-	stable@vger.kernel.org, syzbot@lists.linux.dev,
-	syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot ci] Re: KEYS: Return user session keyring on lookup
-Message-ID: <atinW_xXMbDrG_0Y@kernel.org>
-References: <20261019145624.309790-1-jarkko@kernel.org>
- <6ad875b6.e74039fe.1cb511.0000.GAE@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F2EC60A260C
+	for <syzbot@lists.linux.dev>; Wed, 21 Oct 2026 13:50:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4F2EC60A260C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4ab260600easo2338306b6e.1
+        for <syzbot@lists.linux.dev>; Wed, 21 Oct 2026 06:50:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792590626; x=1793195426;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=YqXwsIuVHHgPFbpTbjaFhQFOWetJOCvYOYn5lXCbEAk=;
+        b=WKnoN+12dwvFqDs2zLmkWPSCRPdJ6Ds8qYgJ+LWk228iwDoS54DkZMcP7EqUTkR1LR
+         8FjyLNw/a/OkDH9GLlvmqUyEs6MfhLA4afaVzrvtpC+UhB2+EwY+vWe6IoaY2j8BXRFZ
+         cVPLOpciJ1+9z7c0N/wbWKDovz1N1PawCP3X57iEkuF2ckr1nJsUrUnWen9aQi0ad9qv
+         UW3gnw7+8nClYRkao9uUO9fazLql3hMbUc1talxS/Ig+nWqSRFoPgaAa0CjhlsUp5856
+         hSnzRh0QuVwo7S93I5L9ymoFJ5+yAb900GfmtD4MijhfWhjg2mU3EVnYq/E4RQHGYPgH
+         10Ow==
+X-Gm-Message-State: AFq9FYJPf6v7tgu0l7QIpKwfJ63enEs+cgw/lC2wr87olDrAwxGWAVex
+	3nPLYXWXX6CPJVQnQiiA4Nb/IVcvV3Cu3eY34YEzbr9VJ0igPIMlyhYUk/h4NGoS5zDj9BiU6uH
+	76+dLoFw8rzESdsVG9dassl1UX4dT+4OmRMd2+k5V2Dy29YFN2j8Ra1v7s/k=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -62,100 +57,145 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6ad875b6.e74039fe.1cb511.0000.GAE@google.com>
+X-Received: by 2002:a05:6808:c224:b0:4e6:76eb:b991 with SMTP id
+ 5614622812f47-54d950c7a3emr3095435b6e.29.1792590626219; Wed, 21 Oct 2026
+ 06:50:26 -0700 (PDT)
+Date: Wed, 21 Oct 2026 06:50:26 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6ad8c322.297debc7.3b379c.0000.GAE@google.com>
+Subject: [moderation/CI] Re: UUID and GUID user and group ids (*_r system calls)
+From: syzbot ci <syzbot+ci4891a3a45469a242@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 21, 2026 at 01:20:06AM -0700, syzbot ci wrote:
-> syzbot ci has tested the following series
-> 
-> [v2] KEYS: Return user session keyring on lookup
-> https://lore.kernel.org/all/20261019145624.309790-1-jarkko@kernel.org
-> * [PATCH v2 1/2] KEYS: Return user session keyring on lookup
-> * [PATCH v2 2/2] KEYS: Reject keyring creation with overridden credentials
-> 
-> and found the following issue:
-> general protection fault in keyctl_session_to_parent
-> 
-> Full report is available here:
-> https://ci.syzbot.org/series/7566814a-52ba-4f0b-b506-d7adf67fda29
-> 
-> ***
-> 
-> general protection fault in keyctl_session_to_parent
-> 
-> tree:      linux-next
-> URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-> base:      17a7501b9612a52b38bc57e33c7b64636d438bc0
-> arch:      amd64
-> compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
-> config:    https://ci.syzbot.org/builds/eee373c7-f447-49cf-a350-83830580c7b2/config
-> 
-> Oops: general protection fault, probably for non-canonical address 0xdffffc000000001b: 0000 [#1] SMP KASAN PTI
-> KASAN: null-ptr-deref in range [0x00000000000000d8-0x00000000000000df]
-> CPU: 0 UID: 0 PID: 5730 Comm: syz.0.6 Not tainted syzkaller #0 PREEMPT(full) 
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> RIP: 0010:keyctl_session_to_parent+0x825/0xa30
-> Code: 35 3b fd e9 fe fa ff ff e8 38 35 3b fd e9 f4 fa ff ff e8 2e 35 3b fd 48 8b 54 24 20 48 81 c2 d8 00 00 00 48 89 d0 48 c1 e8 03 <0f> b6 04 18 84 c0 0f 85 b2 01 00 00 8b 2a 89 ef 8b 5c 24 1c 89 de
-> RSP: 0018:ffffc9000621fc70 EFLAGS: 00010006
-> RAX: 000000000000001b RBX: dffffc0000000000 RCX: ffff88810b603c00
-> RDX: 00000000000000d8 RSI: 0000000000000000 RDI: 0000000000000000
-> RBP: 0000000000000000 R08: 0000000000000003 R09: 0000000000000004
-> R10: dffffc0000000000 R11: fffff52000c43f7c R12: ffff88811a010000
-> R13: 0000000000000000 R14: ffff88810c2631a8 R15: 0000000000000000
-> FS:  00007f7f2068b6c0(0000) GS:ffff88818c4bf000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f7f2068aff8 CR3: 000000010cae8000 CR4: 00000000000006f0
-> Call Trace:
->  <TASK>
->  __se_sys_keyctl+0x780/0x9d0
->  do_syscall_64+0x166/0x520
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7f7f1f79f559
-> Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f7f2068b028 EFLAGS: 00000246 ORIG_RAX: 00000000000000fa
-> RAX: ffffffffffffffda RBX: 00007f7f1fa26270 RCX: 00007f7f1f79f559
-> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000012
-> RBP: 00007f7f1f836b20 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007f7f1fa26308 R14: 00007f7f1fa26270 R15: 00007ffe789f59b8
->  </TASK>
-> Modules linked in:
-> ---[ end trace 0000000000000000 ]---
-> RIP: 0010:keyctl_session_to_parent+0x825/0xa30
-> Code: 35 3b fd e9 fe fa ff ff e8 38 35 3b fd e9 f4 fa ff ff e8 2e 35 3b fd 48 8b 54 24 20 48 81 c2 d8 00 00 00 48 89 d0 48 c1 e8 03 <0f> b6 04 18 84 c0 0f 85 b2 01 00 00 8b 2a 89 ef 8b 5c 24 1c 89 de
-> RSP: 0018:ffffc9000621fc70 EFLAGS: 00010006
-> RAX: 000000000000001b RBX: dffffc0000000000 RCX: ffff88810b603c00
-> RDX: 00000000000000d8 RSI: 0000000000000000 RDI: 0000000000000000
-> RBP: 0000000000000000 R08: 0000000000000003 R09: 0000000000000004
-> R10: dffffc0000000000 R11: fffff52000c43f7c R12: ffff88811a010000
-> R13: 0000000000000000 R14: ffff88810c2631a8 R15: 0000000000000000
-> FS:  00007f7f2068b6c0(0000) GS:ffff88818c4bf000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f7f2068aff8 CR3: 000000010cae8000 CR4: 00000000000006f0
-> 
-> 
-> ***
-> 
-> If these findings have caused you to resend the series or submit a
-> separate fix, please add the following tag to your commit message:
->   Tested-by: syzbot@syzkaller.appspotmail.com
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-> 
-> To test a fix for this bug, please reply with `#syz test`
-> (on a separate line) and attach the patch to the email.
-> 
-> Notes:
-> - The patch will be applied on top of the tested series (as an
->   incremental fix).
-> - To test a new version of the whole series, please send it directly
->   to syzbot@lists.linux.dev.
-> - Arguments like custom git repos and branches are not supported.
+syzbot ci has tested the following series
 
-This helps, I save this to my TODO-folder (no time to address this
-week).
+[v2] UUID and GUID user and group ids (*_r system calls)
+https://lore.kernel.org/all/cover.1792552161.git.jan.koester@tuxist.de
+* [RFC PATCH v2 01/41] uuid: move uuid_t and guid_t into <linux/uuid_types.=
+h>
+* [RFC PATCH v2 02/41] uapi: add <linux/uidgid_r.h> for 128 bit capable use=
+r and group ids
+* [RFC PATCH v2 03/41] uidgid: add uid_is_legacy() and gid_is_legacy()
+* [RFC PATCH v2 04/41] net: sock: read sk_uid through a seqcount
+* [RFC PATCH v2 05/41] af_unix: keep sender ids in skb->cb only when they a=
+re classic ids
+* [RFC PATCH v2 06/41] netlink: keep classic sender ids in skb->cb
+* [RFC PATCH v2 07/41] Bluetooth: keep classic sender ids in skb->cb
+* [RFC PATCH v2 08/41] smb: client: use __kuid_val() for the unix SIDs of t=
+he caller
+* [RFC PATCH v2 09/41] uidgid: let kuid_t and kgid_t hold a UUID or a GUID
+* [RFC PATCH v2 10/41] uidgid: convert between kernel ids and the ids of th=
+e *_r system calls
+* [RFC PATCH v2 11/41] fscrypt: show the whole uid in the description of us=
+er key claims
+* [RFC PATCH v2 12/41] keys: name per-user keyrings of UUID and GUID users =
+by the whole uid
+* [RFC PATCH v2 13/41] ublk: refuse unprivileged devices to UUID and GUID u=
+sers
+* [RFC PATCH v2 14/41] nfsd: don't hand out uid 0 for read layouts of UUID-=
+owned files
+* [RFC PATCH v2 15/41] SUNRPC: name UUID and GUID users to gssd as uid_r=3D
+* [RFC PATCH v2 16/41] ecryptfs: hash daemons by kuid_hash()
+* [RFC PATCH v2 17/41] quota: don't account UUID and GUID owners
+* [RFC PATCH v2 18/41] fs: keep UUID and GUID owners off filesystems that c=
+an't store them
+* [RFC PATCH v2 19/41] cred: add the *_r variants of the get/set*id() syste=
+m calls
+* [RFC PATCH v2 20/41] groups: add getgroups_r() and setgroups_r()
+* [RFC PATCH v2 21/41] fs: add chown_r(), lchown_r(), fchown_r() and fchown=
+at_r()
+* [RFC PATCH v2 22/41] arch: wire up the *_r uid and gid system calls
+* [RFC PATCH v2 23/41] statx: report UUID and GUID owners
+* [RFC PATCH v2 24/41] shmem, ramfs: allow UUID and GUID owners
+* [RFC PATCH v2 25/41] uidgid: parse and print ids in their text form
+* [RFC PATCH v2 26/41] proc: show UUID and GUID ids in status, accept them =
+for loginuid
+* [RFC PATCH v2 27/41] audit: log UUID and GUID ids in full
+* [RFC PATCH v2 28/41] net: add SO_PEERCRED_R, SO_PEERGROUPS_R and SCM_CRED=
+ENTIALS_R
+* [RFC PATCH v2 29/41] signal: report the sender's UUID or GUID uid in si_u=
+id_r
+* [RFC PATCH v2 30/41] ipc: add IPC_STAT_R and IPC_SET_R
+* [RFC PATCH v2 31/41] ext4: add the uid_r feature for UUID and GUID owners
+* [RFC PATCH v2 32/41] ext4: let uid_r be turned on while the filesystem is=
+ mounted
+* [RFC PATCH v2 33/41] posix_acl: support UUID and GUID entries
+* [RFC PATCH v2 34/41] ext4: store ACLs with UUID and GUID entries on uid_r=
+ filesystems
+* [RFC PATCH v2 35/41] Documentation: describe UUID and GUID user and group=
+ ids
+* [RFC PATCH v2 36/41] selftests: add tests for UUID and GUID ids
+* [RFC PATCH v2 37/41] ovl: allow UUID and GUID owners when the upper layer=
+ does
+* [RFC PATCH v2 38/41] devpts: allow UUID and GUID owners
+* [RFC PATCH v2 39/41] ksmbd: log in UUID and GUID users and map them to SI=
+Ds
+* [RFC PATCH v2 40/41] nfsd, nfs: carry UUID and GUID owners as their text =
+form
+* [RFC PATCH v2 41/41] Documentation: uid_r: describe SMB and NFSv4
 
-Br, Jarkko
+and found the following issue:
+kernel build error
+
+Full report is available here:
+https://ci.syzbot.org/series/89b2b873-9ea1-40a5-88ca-0f427c9de5f3
+
+***
+
+kernel build error
+
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/l=
+inux.git
+base:      24a19b953e2a3d0ea5a8c4951a0ab8f32720c907
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/1702ff95-4e48-4182-9d0c-18d968407a2=
+6/config
+
+drivers/net/tun.c:2452:17: error: call to '__compiletime_assert_2155' decla=
+red with 'error' attribute: Unsupported access size for {READ,WRITE}_ONCE()=
+.
+drivers/net/tun.c:3337:3: error: call to '__compiletime_assert_2179' declar=
+ed with 'error' attribute: Unsupported access size for {READ,WRITE}_ONCE().
+drivers/net/tun.c:3324:3: error: call to '__compiletime_assert_2178' declar=
+ed with 'error' attribute: Unsupported access size for {READ,WRITE}_ONCE().
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
+
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[arnd@arndb.de audit@vger.kernel.org brauner@kernel.org jack@suse.cz jan.ko=
+ester@tuxist.de keyrings@vger.kernel.org linux-api@vger.kernel.org linux-ar=
+ch@vger.kernel.org linux-cifs@vger.kernel.org linux-ext4@vger.kernel.org li=
+nux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org linux-nfs@vger.ker=
+nel.org linux-security-module@vger.kernel.org netdev@vger.kernel.org paul@p=
+aul-moore.com serge@hallyn.com tytso@mit.edu viro@zeniv.linux.org.uk]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
