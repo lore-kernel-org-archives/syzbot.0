@@ -1,100 +1,94 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.45
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.158.5
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792563459;
-	b=Acsv/SRfh/NCNrt0YamNhg4Jey7lZWvfvUPFaTPSq6jazGrR35kH250dmZJQDRtij5uP
-	 eLLK2vjAQmRUHDYulX70cV0pol6t6eVjRvzkt04edv3HNnnO2wArB/F0aIO83+1AqFrRg
-	 pvOKjsVjO1fty5dPu8masnKeFzT4b/0V7yQZ8RCrV1HtYs/nlixa7CRNExtDjvcVmqAGP
-	 nCVs+2xMk0NL1uuYKWa3b0h8vRQcrRxvLUJkykQRPh0sM3AaIOWm6PV5JyrgpPCpnbNLX
-	 erngkBnCwxTDi4wjd3+4DS1gFeEkZIhHieJB6kBf/ApEbTnEGe5zlM9CdQjYbp7Pxpg==
+	t=1792569905;
+	b=rnkCI3JDylPGzMaXPkNX79FQTTBK4p6www8hzL47B8tRbOXmgCG8MSCBp0ACtvCW3Tyu
+	 PlyGB3Oq12WAac6vImBSQ7ZspG/UoiGTkguNMw0Wd8ST32j7dhYKi/O7v8C9OKHXSJksr
+	 juT2ukv4dxRngptuevdvdl/nlLKptSn35rMPGyqXB+cJDLVEaf1yd8h6Nk4MiwpVHvVsq
+	 xpjxis4Wa4R0rkvoOG7t3EUdtrGlwDibnQISK7kt/YS7OXY6M1R0NH/g/Jpbl3KNMfv4I
+	 dosw3PkZKmbR2zftQ4GxS5unBdkoFyT3Ege07z8s3SsUCP/sfJvCadp3e6MS0otxrOA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792563459;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=D6XUWb0GjEEWdU6R5sZ+fFb8cLsQeyN87HkVdMPgxsA=;
-	b=Yh8zsn4QgyTM4XHCm0FNq/vZWwImafh+DAO5bTV9N7MqBWThdpMcR7aUk+ccqGNnTi2M
-	 s3WdHGWoVVIza4q9qTg4nWw1RFAMFNoYicO8TDskMGlpo/QXFuyF+OV9x+Q01XH8zo0jN
-	 RftveDS0hdg6Yq3bzawZ6spckki80/Ez+FvuOvSH5qO5jttXuRmw81EGle1Wo/JJzlxux
-	 Yw2cAfgAGfmSteBRESV5J888OISAmHbiksUpL/TacVJxcQj0SP9mZJFeJkM7//f1fT0Ub
-	 vzTcxJZiWRg6FIevd+d+dLAknvHaGSJC1LLjj84VG1MLuf/AtmI20h6wdJT41SQYpGg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792569905;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Received:
+	 Received:Received:Received:Received:Date:From:To:Cc:Subject:
+	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
+	 In-Reply-To:X-TM-AS-GCONF:X-Proofpoint-Reinject:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-ORIG-GUID:
+	 X-Proofpoint-GUID:X-Proofpoint-Spam-Info:X-Authority-Analysis:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=5SiSOmgntifWep9/vcUkd3FyFlinf0yZ1waE0Teg3lY=;
+	b=BgiaiotHDQqVF64KQVyEnr2g5aKPJeK+cODSjRtGXlqcDnpg12tv2SENQ//Npv6ZMf2+
+	 /Is0Gt4JmqQ0BcvSE1W36D3V212ILnz7T4fI9wyCY2uE+WpKRcsrxYUa+sU4B6FVyAZkr
+	 J7aHRKTxEegQMqd7B7o67rL0sIdw1hXBbTzzufCwG3clnLccxsSWN5ls6ryamIa8uK1gq
+	 TXphI33wYFUbwDrdvy9GioKHMBJoW34OBC0A17D2XmOpwIvBEN5ru5pIb4ef7kh/E3mys
+	 rEbUa91xEjrWLTnLThlcAQWTsTuJ9P+tl0w3Wow45W50EC/RZmIrlkUyDngHs0Ca/FA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=QNDZ7Moo;
-	arc=none smtp.remote-ip=209.85.221.45
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=linux.ibm.com;
+	spf=pass smtp.mailfrom=linux.ibm.com;
+	dkim=pass header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=mSwc3+L2;
+	arc=none smtp.remote-ip=148.163.158.5
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32C7C606A319
-	for <syzbot@lists.linux.dev>; Wed, 21 Oct 2026 06:17:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 32C7C606A319
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50DCE606A319
+	for <syzbot@lists.linux.dev>; Wed, 21 Oct 2026 08:05:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 50DCE606A319
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=QNDZ7Moo
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-48e20edd106so223675f8f.1
-        for <syzbot@lists.linux.dev>; Tue, 20 Oct 2026 23:17:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792563456; x=1793168256; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=D6XUWb0GjEEWdU6R5sZ+fFb8cLsQeyN87HkVdMPgxsA=;
-        b=QNDZ7Mooawsj+clal/WU79NFlqnKlR1L9QGdLEc28m44xBitce0KimJX6PzJBIh6z7
-         RfsRHJU76gkdi65oWaGrYVDxCCmM3DpFNsrPyhev0/udEzxLg1xZBdxyXZcY2SLcjckj
-         dAmQGCOasZJH9gHpkWuU9URJxH7vRQDj1BnOCjSwW8AraclGpfcEqEg7rifWxWFlaq00
-         fOWrhrpcSnPyYm4U0ha5SlQJOBcStfiwHNE6ZRLiL7Te/Z/oEKAhPfwGl/Wbnzq0HIRS
-         cFN4uXB270Pcg6BdkGitOdwEbMJrd1dF4PqqnY8RFwv4pyMpE/uQ6kDvC3Qqjvj0XRDg
-         vsGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792563456; x=1793168256;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=D6XUWb0GjEEWdU6R5sZ+fFb8cLsQeyN87HkVdMPgxsA=;
-        b=jRzmEtRKH0ReZGjSv9BUlNI9PbUK0XYBj0GS8mzKQXitNlGylaX5mcpd0LWYsIzIGy
-         OJFti10QrL+MNrGjKWgqNpmgKatOc2LRcYi3kR2st/XLlE7SekqH0xosqfBXoxkxhiwT
-         7dJQbnyXgka4TWG328wvHw6vUl41UmwcXPL1IllskzZInWBzY6pR+27ENQ0DIxLj2LWK
-         r09MU0GqFYEdW5AQ/KeyZjPF5euo7s2RoizInwbhWie1T99/mPAtOBYTG91y3utUXRjn
-         QSgI3C9YLTvX+F9KLvGaCIdQqMTs9sQVg045xPBDljD+t5or4dTuQMXbvaA9HRIwQNsX
-         I/oA==
-X-Forwarded-Encrypted: i=1; AKwUvByCGKx1AwUxOIlW+fohOjfNH/kaHBBqKBEB4pkdj/79H1ZTf9gQ8JVvcOYoMgElT8NyvFhlBo8=@lists.linux.dev
-X-Gm-Message-State: AFq9FYJs/N+oG9iV+iWSh+WaV51CZKLUjJWvbssBxjnEIH1C6UB0jjJZ
-	XG9Y0GbPtHZy/j9TJMZCdORY1OlYrggylu/LlEWLH4NXz6+pxQaurGuXdrfE1vUSxBs=
-X-Gm-Gg: AYBFou0mSU9CqhaAlaemh3bVe/kD7tcAWZ3L5nusXYiZZNhxsUk0ZfrG4XWMxUxJSyW
-	NpyclUEdLSfl211pTBLSN9OdKDKCcL2yiTUCO9nWGandM81OUs+QQwidXwlNV+nGsluSsFPepLD
-	G6CO5S4vn7l26smUw4KpdCff946vmNiXpBcLXZtS1iDf3AoafT1bz8Bu+UO3CouK2DshG21vBhX
-	aL4gdwJsnW5Q9EPRwFji4FP5JOOyOSODJEWLCQ0/f/uFoG8H0LY1NOcnP9OBmrHvSZQrKGfT8Nw
-	IltMdhtrWSgzpuA44DSGBtaaEgYh46EvSoqrvWL7WvOmfMfhzAM2aSe7I7ZtZEIBX5ut27x2uAu
-	7rA0uw4dZQhyj5wlablpTiWMAg4uvBvd6XBnM3opGDzRNAyNGq7O/kzaU1O0mm2i17OmTUVx68J
-	7EAeaHGovkW8W35zUUgNfQH1kiZO9EwG0RJiW0eWUQwlpvlRc2+2WGYqUSsrc+IkhxbIPofVBni
-	75wNcFQTH9GZl4yg+U5ddC0P9Ymm64ebOhGa1N/K4xxJQxiZCvVuqVkHBUf1A==
-X-Received: by 2002:a05:6000:2086:b0:48e:b62:d133 with SMTP id ffacd0b85a97d-48e2642cf54mr1849014f8f.5.1792563456309;
-        Tue, 20 Oct 2026 23:17:36 -0700 (PDT)
-Received: from deb05.proceq.com ([213.160.61.66])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e25835404sm3663876f8f.42.2026.10.20.23.17.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Oct 2026 23:17:35 -0700 (PDT)
-From: Mehmet Fide <mehmet.fide@gmail.com>
-To: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	linux-usb@vger.kernel.org,
-	syzkaller-bugs@googlegroups.com,
-	aichao@kylinos.cn,
-	kees@kernel.org,
-	linux-kernel@vger.kernel.org,
-	syzbot@lists.linux.dev,
-	Neill Kapron <nkapron@google.com>,
-	mehmet.fide@screeningeagle.com
-Subject: Re: [PATCH] usb: gadget: u_serial: pin ports while TTYs are installed
-Date: Wed, 21 Oct 2026 08:17:34 +0200
-Message-ID: <20261021061734.3972101-1-mehmet.fide@gmail.com>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <6941beb7-8cae-4cc5-ba07-e1c8a8753fe1@mail.kernel.org>
-References: 
+	dkim=pass (2048-bit key, unprotected) header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=mSwc3+L2
+Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69L5ijA9359953;
+	Wed, 21 Oct 2026 08:04:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=pp1; bh=5SiSOmgntifWep9/vcUkd3FyFlinf0
+	yZ1waE0Teg3lY=; b=mSwc3+L2vj4lPySFIR+IP8tG8VVcyJkAHjd1ZN7O5Q9/Mx
+	qRSHbmyK2L6fzm5Cm8HtJetR+0Sjgm16Lm9h4ypdoJXw2hK+ss59UHKRIjKeSMWj
+	yT/kWF4rcdaJJp10IpqkahPEX4oBbxMpja4VIFGgSXWoj1SpOdwQCQpwUthv+nTm
+	hXY/oK2gqfdcANgpTCh1tcr+KVy1IIZdxX8ZPjMljrPKntkKGJsQYzhP95DPg2mD
+	hTS/r51znAxabASZzoni+phbvajiHfsr9JJkzeU+gTKIzS2C9EyWBbhKfcHuFDrN
+	cCNZcY0dFyz6v9l+RC3SQ/lAI9ZbDhRVAUsuXuPA==
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4hdw59yf0b-1
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Wed, 21 Oct 2026 08:04:04 +0000 (GMT)
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.18.1.11/8.18.1.11) with ESMTP id 69L5nt841455843;
+	Wed, 21 Oct 2026 08:04:03 GMT
+Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 4hefss200u-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 21 Oct 2026 08:04:03 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 69L842bj48824638
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 21 Oct 2026 08:04:02 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id EC73620040;
+	Wed, 21 Oct 2026 08:04:01 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 706EE2004B;
+	Wed, 21 Oct 2026 08:03:57 +0000 (GMT)
+Received: from li-dc0c254c-257c-11b2-a85c-98b6c1322444.ibm.com (unknown [9.39.16.155])
+	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Wed, 21 Oct 2026 08:03:57 +0000 (GMT)
+Date: Wed, 21 Oct 2026 13:33:54 +0530
+From: Ojaswin Mujoo <ojaswin@linux.ibm.com>
+To: Zhang Yi <yi.zhang@huaweicloud.com>
+Cc: syzbot ci <syzbot+ci46f64f7b6a2a188e@syzkaller.appspotmail.com>,
+        syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com,
+        adilger.kernel@dilger.ca, chengzhihao1@huawei.com, djwong@kernel.org,
+        hch@infradead.org, jack@suse.cz, libaokun@linux.alibaba.com,
+        linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ritesh.list@gmail.com, tytso@mit.edu,
+        wangkefeng.wang@huawei.com, yangerkun@huawei.com, yi.zhang@huawei.com,
+        yizhang089@gmail.com, yukuai@fnnas.com
+Subject: Re: [syzbot ci] Re: ext4: use iomap for regular file's buffered I/O
+ path
+Message-ID: <athx6i4FVmzaCWXE@li-dc0c254c-257c-11b2-a85c-98b6c1322444.ibm.com>
+References: <6ac92a4c.70ed5d86.2ac85.0072.GAE@google.com>
+ <34423908-aceb-4c57-9502-7da10b12e4a4@huaweicloud.com>
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -104,35 +98,139 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <34423908-aceb-4c57-9502-7da10b12e4a4@huaweicloud.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-Reinject: loops=2 maxloops=12
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDIxMDAzMCBTYWx0ZWRfXzsXyA2dIO8Qh
+ y/lgMMVSbvT0U2Nq9ZyOneGzRpvSy0Faq8ihn/1UK2LKZ9YddgNlKEdlF825BLPLqNSijQ1l582
+ FORg04Dq965Yg4NYcC77L8x7MCXIGRB6xfqbPwvmtd6dnWgWvBUv1PIBG1dDfQ60Zn+UhNOpN8E
+ a5T1FS5SF5Qo48Ki8ur6woXkzOOOiPXF2A0m3+utnNX69IvtKKKanDhCfecJKn/z4dgtBeQj1CO
+ 1ovVnC9TPo5lfJJWFS7hCQHQgQGQCx48+aXxdzglkbGCQqKNeAfZqZ3VcslkwJpn0cBpDeZDscY
+ iVxuRX/o4V+tXAIznLsygS3Fz+EDd3eCknMqjOtwwO58ZUu9fOZPAD0A01gbTJvR9a1sRCllf/v
+ KqaxqxaNOMKuOl/tW2a7g+nJmiW4VlHlJY9S9YzFVL7F8SfgFtLPKP47AajB/JuSOG9kaQ6SO2A
+ C65RVP1jDYv7HBySOQQ==
+X-Proofpoint-ORIG-GUID: 5FeDTI84D-HXPvyT0PjDI3h5Bjndv76q
+X-Proofpoint-GUID: EUjwOC3SLIJUZxBKbbjXIQr-QHKwup66
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDIxMDAzMCBTYWx0ZWRfXzyM4Q7Plq2T5
+ 9jYPuWQYodPyxKp5xRX+4Jpdh7fk2hjfJSEOJGUhOJUSYJs71F2Et8LJ574HpRW6R1VtRCD10Eg
+ CnVs5Hl8Cy4noapi5CLX8jpyirMVWrU=
+X-Authority-Analysis: v=2.4 cv=ZfSIpcVA c=1 sm=1 tr=0 ts=6ad871f5 cx=c_pps
+ a=AfN7/Ok6k8XGzOShvHwTGQ==:117 a=AfN7/Ok6k8XGzOShvHwTGQ==:17
+ a=kj9zAlcOel0A:10 a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=RzCfie-kr_QcCd8fBx8p:22 a=-ibLmwfWAAAA:8
+ a=Oh2cFVv5AAAA:8 a=hSkVLCK3AAAA:8 a=4RBUngkUAAAA:8 a=LAgt6U_hPI2_JMarfT4A:9
+ a=CjuIK1q_8ugA:10 a=A6MkUVyZPcTV1i89ro0M:22 a=7KeoIwV6GZqOttXkcoxL:22
+ a=cQPPKAXgyycSBL8etih5:22 a=_sbA2Q-Kp09kWB8D3iXc:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-10-21_02,2026-10-19_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 impostorscore=0 malwarescore=0 spamscore=0 suspectscore=0
+ clxscore=1011 phishscore=0 bulkscore=0 lowpriorityscore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610210030
 
-Hi Krystian,
+On Sat, Oct 10, 2026 at 04:44:52PM +0800, Zhang Yi wrote:
+> On 10/10/2026 1:54 AM, syzbot ci wrote:
+> > syzbot ci has tested the following series
+> > 
+> 
+> [...]
+> 
+> > and found the following issue:
+> > WARNING in ext4_do_writepages
+> > 
+> > Full report is available here:
+> > https://ci.syzbot.org/series/3711c951-acf4-4ebe-a920-9cc89b6be2ff
+> > 
+> > ***
+> > 
+> > WARNING in ext4_do_writepages
+> > 
+> > tree:      vfs
+> > URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs.git
+> > base:      3d399224425573875b6f6f1181bd8cf9a28cc7d1
+> > arch:      amd64
+> > compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+> > config:    https://ci.syzbot.org/builds/c3c01f8c-846d-4c7a-955a-fd7427af6b0d/config
+> > 
+> > ------------[ cut here ]------------
+> > !err
+> > WARNING: fs/ext4/inode.c:2512 at ext4_do_writepages+0x33b3/0x44a0, CPU#0: kworker/u9:3/147
+> > Modules linked in:
+> > CPU: 0 UID: 0 PID: 147 Comm: kworker/u9:3 Not tainted syzkaller #0 PREEMPT(full) 
+> > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > Workqueue: writeback wb_workfn (flush-7:1)
+> > RIP: 0010:ext4_do_writepages+0x33b3/0x44a0
+> > Code: 0f 0b 90 e9 b6 d9 ff ff e8 6a e2 36 ff 90 0f 0b 90 e9 e6 dc ff ff e8 5c e2 36 ff 90 0f 0b 90 e9 94 df ff ff e8 4e e2 36 ff 90 <0f> 0b 90 bb ea ff ff ff e9 ae f8 ff ff e8 3b e2 36 ff 48 8d 3d 64
+> > RSP: 0018:ffffc90003106ce0 EFLAGS: 00010293
+> > RAX: ffffffff8290e912 RBX: 0000000000000000 RCX: ffff8881053f9e00
+> > RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+> > RBP: ffffc900031070f0 R08: ffff888025da4a37 R09: 1ffff11004bb4946
+> > R10: dffffc0000000000 R11: ffffed1004bb4947 R12: ffffc900031071a0
+> > R13: dffffc0000000000 R14: 0000000000000000 R15: 1ffff11004bb495d
+> > FS:  0000000000000000(0000) GS:ffff88818d6c9000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 00005555565a5a28 CR3: 0000000031f66000 CR4: 00000000000006f0
+> > Call Trace:
+> >  <TASK>
+> >  ext4_writepages+0x241/0x3b0
+> >  do_writepages+0x338/0x560
+> >  __writeback_single_inode+0x136/0x1220
+> >  writeback_sb_inodes+0x9de/0x1b00
+> >  wb_writeback+0x41c/0xad0
+> >  wb_workfn+0x431/0x10f0
+> >  process_scheduled_works+0xc3d/0x1630
+> >  worker_thread+0xa47/0xfb0
+> >  kthread+0x38b/0x480
+> >  ret_from_fork+0x514/0xb70
+> >  ret_from_fork_asm+0x1a/0x30
+> >  </TASK>
+> > 
+> > 
+> 
+> This WARNING was newly introduced by patch 8, "ext4: skip block
+> allocation for holes in the data submission path". It doesn't actually
+> cause a new regression, it just appears to expose a pre-existing issue
+> in the buffer_head buffered I/O path, where an inconsistency between
+> the bh and extent state could potentially lead to allocating a block and
+> writing data into a hole. The logic of the patch itself is fine. To
+> avoid noise, I can drop the WARN_ON_ONCE() while still keeping return
+> -EINVAL. Thoughts?
 
-I sent a narrower fix for the same problem [1]. This patch also covers
-the two holes Sashiko found in mine, so I will withdraw it.
+Hi Zhang,
 
-Tested in QEMU with dummy_hcd on usb-next with KASAN and lockdep, and on
-a Colibri VF50 on 7.2-rc1, with delays injected into gs_open() and
-gs_close(). Without the patch, freeing the line during a close gives a
-use-after-free, and a close after a failed open a NULL deref. With it
-there are no reports, also over 40 add/remove cycles against
-concurrent opens.
+I think we can keep the WARN_ON. Failing in writeback here will anyways
+throw out some error messages about data loss so having an extra WARN
+dump should be okay. It will help us find and eliminate paths that cause
+this quickly, like your patch for the inline truncate fix.
 
-Tested-by: Mehmet Fide <mehmet.fide@screeningeagle.com>
+Regards,
+ojaswin
 
-Two notes:
-
-1. Since Johan's 8df07fe93573 ("tty: fix saved termios reset race"),
-   registration no longer frees the saved termios for u_serial, so that
-   reason in the commit message is out of date. Publishing the port
-   after registration is still right.
-
-2. The NULL checks in gs_open() and gs_close() cannot trigger, since
-   gs_install() fails first. The gs_close() one is what Brian Ellis' v4
-   [2] adds, and this patch makes that one unnecessary.
-
-[1] https://lore.kernel.org/linux-usb/20261019085855.3259716-1-mehmet.fide@gmail.com/
-[2] https://lore.kernel.org/linux-usb/20261013-u_serial-gs-close-null-v4-1-9ea038501994@gotenna.com/
-
-Thanks,
-Mehmet
+> 
+> Thanks,
+> Yi.
+> 
+> > ***
+> > 
+> > If these findings have caused you to resend the series or submit a
+> > separate fix, please add the following tag to your commit message:
+> >   Tested-by: syzbot@syzkaller.appspotmail.com
+> > 
+> > ---
+> > This report is generated by a bot. It may contain errors.
+> > syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+> > 
+> > To test a fix for this bug, please reply with `#syz test`
+> > (on a separate line) and attach the patch to the email.
+> > 
+> > Notes:
+> > - The patch will be applied on top of the tested series (as an
+> >   incremental fix).
+> > - To test a new version of the whole series, please send it directly
+> >   to syzbot@lists.linux.dev.
+> > - Arguments like custom git repos and branches are not supported.
+> 
