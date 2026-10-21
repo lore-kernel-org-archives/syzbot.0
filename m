@@ -1,53 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.197
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.43
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792590627;
-	b=KJVQMESd6Bv1kGSEN2lrb8TJhXuXZS5alVPj+N16VagwIyeE2O27AumQ4qjVuL8zIFH5
-	 ZG5F6Rv3pvXrANvxdBm2EW9ZA9jHGner6HdE8so5L6vaScAsFObdLjiF+LaPahtrIRicO
-	 JJlKaNFwxheoXHUmbctjT7NtS+2FHVFHQtxfgxTi1qR1ASSfIcwFEG0zNI3ZV7kTdw0Ow
-	 5lOOaK87n991ljcFGMHHJxiwej8IYzQTbpB7jZmDV/gh8aO8lgpiAqRKfJrys0VmJbPBU
-	 iVL+eHNA99enY+W807l3fjCelo5joQRzm5oMNShAlr5u6YIjOoGp5hMBZWU695l9nhw==
+	t=1792594220;
+	b=BLJVdxyD4qEIu+qfCXXzwAtQ2nS2yXl5AkGqYCoJZ3m2Ra72wMRhSCIn7DxzPpWzfRd3
+	 bh/+wQpW7MrefdFTwBzqvKtjIb6xsiRXSeqT9nbt6s9Y1On5wiV1Uhc2E934CNEs18nJs
+	 Ww+9JI4y9UNnHTA1rmV6vD0K2mELoaI75xVQc37mvfRI6VI6chtNvG1yGp2Y25tKDEmHB
+	 lErB85STBxGhss9wHpQetRgg7B1IXIvgwId8cHh6zKqbgEtFFHwMPolblPQdZe1iqbWJH
+	 kUhgJIwZ5d5u0M/XReEtQXcDcLVby99vBN2/fhV7epGDDLBKmOjH4d8FjZoAbTDBBWQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792590627;
-	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
-	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
-	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=YqXwsIuVHHgPFbpTbjaFhQFOWetJOCvYOYn5lXCbEAk=;
-	b=DyGQZ+gxrZCKM7CVY6uw3k26fvz6o2jD6A7a0ZmM9mahUoQEGJXddvMsnah5dMPxsMGj
-	 UIkLXtadX/B4gQzsMpiCmeP4A0cz5R7eiwYCknDOXO8NSKoQ+DYmkKeVxPiE/zWqc0hTD
-	 qGClwefj0gh/BfDlidrhi1ZqChxu3C3khJFiRp08nh7hZGodE3cj+Fz3Qd9upHomg2BrO
-	 DdIfd+QeG2u1ov4eRKGGmRQ8Bv1lg/K4uZlyUPJlJj0PKG5VV+mzWcXaLGgj/kwPXWcoy
-	 8tnd5nTHO0F5XHprPD95poUAQKs/S0y9sw33fWUnNWGL2Fzq2IPxniFgMcoLUgdzFwg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792594220;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:References:Content-Language:From:
+	 In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=eN+BsTSZunKoVUDUNy2rO1fJxwQ/UVy22lL1+EC7Rbs=;
+	b=S3k4gEscLMXddoFcN2gTaMrtAEUVdDgrcZeiCxm+aKGaXXTBjpwTbblSrpeThlyQ3hkO
+	 +CqDQiGb8YpWzqdho1pqHD2O5wDfKdw1aW15qPOu89YnybEj/KNcI619TC1esXUeryVfr
+	 N25N49s3LUedVgIiX+M1VCKQ4YMDusrEFdVPfcQcvyzbSqpxIXgYVjs033843fLQUD697
+	 0ILC5rRce0MCX4Jtkeg+w62BtLuh0wTBr5xaogWdQxSfYOkaCC2vPmu3ttjclF5Tr7OWZ
+	 uhNyuTqx6T7vKTaK3FnpBj8z6BbkJm5LwLMvU2ertnIccm22waLMP8g1k4d5Lg6UYuw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=fail header.from=syzkaller.appspotmail.com;
-	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
-	arc=none smtp.remote-ip=209.85.167.197
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=qqkxpBvT;
+	arc=none smtp.remote-ip=209.85.208.43
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F2EC60A260C
-	for <syzbot@lists.linux.dev>; Wed, 21 Oct 2026 13:50:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4F2EC60A260C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4ab260600easo2338306b6e.1
-        for <syzbot@lists.linux.dev>; Wed, 21 Oct 2026 06:50:26 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DE81606A31B
+	for <syzbot@lists.linux.dev>; Wed, 21 Oct 2026 14:50:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9DE81606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=qqkxpBvT
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-6b1ec41d8e9so856122a12.0
+        for <syzbot@lists.linux.dev>; Wed, 21 Oct 2026 07:50:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792594218; x=1793199018; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:to:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=eN+BsTSZunKoVUDUNy2rO1fJxwQ/UVy22lL1+EC7Rbs=;
+        b=qqkxpBvTQMzogzwbPDU1Zj9n6W8eybuWhTUE/A+GLQlo359nAwfG+3SMVafUG237H6
+         cMdi5ifqrdzIQGZpuIwx+Bx56FYwvlzbN+6bgSjT5dfgH/t+8P6vZ2Xpkvzbax1m4vSx
+         KbQ6m2ZOpoLa4NzCrobaIwKvOF4ORhvSqupdz9amSjqC3R7eSSOP0AXHDkBBEMa5Px2J
+         YOjX4Gad3PoBRnS/Btyp8/YCmB9ovguaIzbxylK8MroD8KFfRB/0lHKfSQJK+QZnJglZ
+         82x6ztRIatWZNdCRRysMKdeDbJjOU+T6QTOYapXZV22lATPuqQrKxwp3yK9jkPp0TwU6
+         njIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792590626; x=1793195426;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=YqXwsIuVHHgPFbpTbjaFhQFOWetJOCvYOYn5lXCbEAk=;
-        b=WKnoN+12dwvFqDs2zLmkWPSCRPdJ6Ds8qYgJ+LWk228iwDoS54DkZMcP7EqUTkR1LR
-         8FjyLNw/a/OkDH9GLlvmqUyEs6MfhLA4afaVzrvtpC+UhB2+EwY+vWe6IoaY2j8BXRFZ
-         cVPLOpciJ1+9z7c0N/wbWKDovz1N1PawCP3X57iEkuF2ckr1nJsUrUnWen9aQi0ad9qv
-         UW3gnw7+8nClYRkao9uUO9fazLql3hMbUc1talxS/Ig+nWqSRFoPgaAa0CjhlsUp5856
-         hSnzRh0QuVwo7S93I5L9ymoFJ5+yAb900GfmtD4MijhfWhjg2mU3EVnYq/E4RQHGYPgH
-         10Ow==
-X-Gm-Message-State: AFq9FYJPf6v7tgu0l7QIpKwfJ63enEs+cgw/lC2wr87olDrAwxGWAVex
-	3nPLYXWXX6CPJVQnQiiA4Nb/IVcvV3Cu3eY34YEzbr9VJ0igPIMlyhYUk/h4NGoS5zDj9BiU6uH
-	76+dLoFw8rzESdsVG9dassl1UX4dT+4OmRMd2+k5V2Dy29YFN2j8Ra1v7s/k=
+        d=1e100.net; s=20260707; t=1792594218; x=1793199018;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=eN+BsTSZunKoVUDUNy2rO1fJxwQ/UVy22lL1+EC7Rbs=;
+        b=p6mRIGv1m66HuEwvRKvCZRXTXz7fvOfPDCH5cjS71exsNpvDsuLu3yqJPS5fScOyYi
+         bOXpNhWBuPIcvvEMeumc6iwrwZuDupADn6Htq7p7I6xVyf4I7XAdTYZpUBdkdnyUAtny
+         7kT6I2sDIvY85aNXU3ZCX0NdSnt3uWaW2LXHVvbvd2N9S0kGz+zI8qYrX+feUDqa3LNx
+         +JQ2PPfX4corb+bTV8S7cvpSOm5mpe6Oi1lZ20LJ1EDHkqK1a8KOKxfvhv9+QVStmdwL
+         rlq7/YMMkcs/aNQvPxle5PDtuqpHcXu5Mu/2ztDPPr2ibVtycR7lBn7XUguzCAjmkN2e
+         mAzw==
+X-Gm-Message-State: AFq9FYLjo9I6GlcLum5+PKUi5828M8Y9lARLovIO2udE/y9raL6eIomK
+	dTNHJYu2MUPZPq7WX9XSHlW3X+Ckqf3dpwdY6W+SoTqQd9CC2p8bdVLLRppNxSaIVtGI36we
+X-Gm-Gg: AYBFou02yvjpilJMbQei+pimMJhAsDVg0ux+gem5q8FFSoa08QnxB3RWiK/ABJjJS3F
+	5ch3Fqf6FVR3AbgpYNdvBQpxnyG3lLCEEoS4ODvYQRoXrO6jGIXPTFRjnTw4CS7hr6tyTTHl+NZ
+	TohgDYQz2vkBP/yHdrW9qSbXV/keAqIuCzyFJbxJYIac4eWRnTHsX38LU+zb+2RexHoDJAyMOrT
+	l7cdJlTQWTI2XwNBArJ2g7+utbhEbWPdoj6di1cseAtuGKfjGzxBWIGtC3IK/CMiiv9x/4xMlNE
+	8Qk4jrDY9zsU1+08Ad8pu04SaK9AJxCgo8kItkWHIAa8T5bEuaFXopAv42KCSDUANJoDhkEhbgn
+	8M3Gz04cAwriFa7QNS44+wK/D3U+FrpbvKGrbdhRCXSwlIHBJm7zPm3vajgwNraUCwwUNz45v3U
+	Lxe4WUdRmx2neQUQk64HLZKkPHqsOjVQsBCv7UNNEryGpm5W+PPoX1f94fWLQyjDSU47eNuRLka
+	zfpfjwjhFeV4F2NvSxHUOCF6bbb56jAEJR12SBThmYBXSzAnB+p58Z1ImOAcJ9JRtgp23E+GHqQ
+	sdMOb2rZDYvcQK1R0jnULPhLBwYw6QWXXqRuVSG+qGTbmbX6264IEXx1NIjvjp21fFdoVosxSGK
+	eZvKjv9/dhW/AHrQUZDhGx1I4uR1pOtnJB2IS7G/kX+/8AqzCOrd3UOy9QECvczItCs6Smfnhy4
+	iwQgbBiw0dV03Ofxc=
+X-Received: by 2002:a17:907:608d:b0:c2e:46d0:b802 with SMTP id a640c23a62f3a-c46797af00bmr211632966b.40.1792594217749;
+        Wed, 21 Oct 2026 07:50:17 -0700 (PDT)
+Received: from [192.168.100.100] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c468a61b2aasm10614666b.86.2026.10.21.07.50.17
+        for <syzbot@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Oct 2026 07:50:17 -0700 (PDT)
+Message-ID: <74076197-8f03-4f7e-a691-442b7d544cdb@gmail.com>
+Date: Wed, 21 Oct 2026 16:50:16 +0200
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -57,145 +92,62 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:c224:b0:4e6:76eb:b991 with SMTP id
- 5614622812f47-54d950c7a3emr3095435b6e.29.1792590626219; Wed, 21 Oct 2026
- 06:50:26 -0700 (PDT)
-Date: Wed, 21 Oct 2026 06:50:26 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ad8c322.297debc7.3b379c.0000.GAE@google.com>
-Subject: [moderation/CI] Re: UUID and GUID user and group ids (*_r system calls)
-From: syzbot ci <syzbot+ci4891a3a45469a242@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] usb: gadget: u_serial: pin ports while TTYs are installed
+To: syzbot@lists.linux.dev
+References: <20261021061734.3972101-1-mehmet.fide@gmail.com>
+Content-Language: en-US
+From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+In-Reply-To: <20261021061734.3972101-1-mehmet.fide@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-syzbot ci has tested the following series
+On 10/21/26 08:17, Mehmet Fide wrote:
+> Hi Krystian,
+> 
+> I sent a narrower fix for the same problem [1]. This patch also covers
+> the two holes Sashiko found in mine, so I will withdraw it.
+> 
+> Tested in QEMU with dummy_hcd on usb-next with KASAN and lockdep, and on
+> a Colibri VF50 on 7.2-rc1, with delays injected into gs_open() and
+> gs_close(). Without the patch, freeing the line during a close gives a
+> use-after-free, and a close after a failed open a NULL deref. With it
+> there are no reports, also over 40 add/remove cycles against
+> concurrent opens.
+> 
+> Tested-by: Mehmet Fide <mehmet.fide@screeningeagle.com>
+> 
+> Two notes:
+> 
+> 1. Since Johan's 8df07fe93573 ("tty: fix saved termios reset race"),
+>    registration no longer frees the saved termios for u_serial, so that
+>    reason in the commit message is out of date. Publishing the port
+>    after registration is still right.
+> 
+> 2. The NULL checks in gs_open() and gs_close() cannot trigger, since
+>    gs_install() fails first. The gs_close() one is what Brian Ellis' v4
+>    [2] adds, and this patch makes that one unnecessary.
+> 
+> [1] https://lore.kernel.org/linux-usb/20261019085855.3259716-1-mehmet.fide@gmail.com/
+> [2] https://lore.kernel.org/linux-usb/20261013-u_serial-gs-close-null-v4-1-9ea038501994@gotenna.com/
+> 
+> Thanks,
+> Mehmet
+Hi Mehmet,
 
-[v2] UUID and GUID user and group ids (*_r system calls)
-https://lore.kernel.org/all/cover.1792552161.git.jan.koester@tuxist.de
-* [RFC PATCH v2 01/41] uuid: move uuid_t and guid_t into <linux/uuid_types.=
-h>
-* [RFC PATCH v2 02/41] uapi: add <linux/uidgid_r.h> for 128 bit capable use=
-r and group ids
-* [RFC PATCH v2 03/41] uidgid: add uid_is_legacy() and gid_is_legacy()
-* [RFC PATCH v2 04/41] net: sock: read sk_uid through a seqcount
-* [RFC PATCH v2 05/41] af_unix: keep sender ids in skb->cb only when they a=
-re classic ids
-* [RFC PATCH v2 06/41] netlink: keep classic sender ids in skb->cb
-* [RFC PATCH v2 07/41] Bluetooth: keep classic sender ids in skb->cb
-* [RFC PATCH v2 08/41] smb: client: use __kuid_val() for the unix SIDs of t=
-he caller
-* [RFC PATCH v2 09/41] uidgid: let kuid_t and kgid_t hold a UUID or a GUID
-* [RFC PATCH v2 10/41] uidgid: convert between kernel ids and the ids of th=
-e *_r system calls
-* [RFC PATCH v2 11/41] fscrypt: show the whole uid in the description of us=
-er key claims
-* [RFC PATCH v2 12/41] keys: name per-user keyrings of UUID and GUID users =
-by the whole uid
-* [RFC PATCH v2 13/41] ublk: refuse unprivileged devices to UUID and GUID u=
-sers
-* [RFC PATCH v2 14/41] nfsd: don't hand out uid 0 for read layouts of UUID-=
-owned files
-* [RFC PATCH v2 15/41] SUNRPC: name UUID and GUID users to gssd as uid_r=3D
-* [RFC PATCH v2 16/41] ecryptfs: hash daemons by kuid_hash()
-* [RFC PATCH v2 17/41] quota: don't account UUID and GUID owners
-* [RFC PATCH v2 18/41] fs: keep UUID and GUID owners off filesystems that c=
-an't store them
-* [RFC PATCH v2 19/41] cred: add the *_r variants of the get/set*id() syste=
-m calls
-* [RFC PATCH v2 20/41] groups: add getgroups_r() and setgroups_r()
-* [RFC PATCH v2 21/41] fs: add chown_r(), lchown_r(), fchown_r() and fchown=
-at_r()
-* [RFC PATCH v2 22/41] arch: wire up the *_r uid and gid system calls
-* [RFC PATCH v2 23/41] statx: report UUID and GUID owners
-* [RFC PATCH v2 24/41] shmem, ramfs: allow UUID and GUID owners
-* [RFC PATCH v2 25/41] uidgid: parse and print ids in their text form
-* [RFC PATCH v2 26/41] proc: show UUID and GUID ids in status, accept them =
-for loginuid
-* [RFC PATCH v2 27/41] audit: log UUID and GUID ids in full
-* [RFC PATCH v2 28/41] net: add SO_PEERCRED_R, SO_PEERGROUPS_R and SCM_CRED=
-ENTIALS_R
-* [RFC PATCH v2 29/41] signal: report the sender's UUID or GUID uid in si_u=
-id_r
-* [RFC PATCH v2 30/41] ipc: add IPC_STAT_R and IPC_SET_R
-* [RFC PATCH v2 31/41] ext4: add the uid_r feature for UUID and GUID owners
-* [RFC PATCH v2 32/41] ext4: let uid_r be turned on while the filesystem is=
- mounted
-* [RFC PATCH v2 33/41] posix_acl: support UUID and GUID entries
-* [RFC PATCH v2 34/41] ext4: store ACLs with UUID and GUID entries on uid_r=
- filesystems
-* [RFC PATCH v2 35/41] Documentation: describe UUID and GUID user and group=
- ids
-* [RFC PATCH v2 36/41] selftests: add tests for UUID and GUID ids
-* [RFC PATCH v2 37/41] ovl: allow UUID and GUID owners when the upper layer=
- does
-* [RFC PATCH v2 38/41] devpts: allow UUID and GUID owners
-* [RFC PATCH v2 39/41] ksmbd: log in UUID and GUID users and map them to SI=
-Ds
-* [RFC PATCH v2 40/41] nfsd, nfs: carry UUID and GUID owners as their text =
-form
-* [RFC PATCH v2 41/41] Documentation: uid_r: describe SMB and NFSv4
+Thanks for reviewing and testing the patch.
 
-and found the following issue:
-kernel build error
+I agree with both of your points. Since commit 8df07fe93573 ("tty: fix saved termios reset race"), u_serial registration no longer resets saved termios, so I'll remove that outdated explanation. I'll also remove the two unreachable driver_data NULL checks from gs_open() and gs_close().
 
-Full report is available here:
-https://ci.syzbot.org/series/89b2b873-9ea1-40a5-88ca-0f427c9de5f3
+I also noticed another potential issue flagged by Sashiko:
 
-***
+https://sashiko.dev/#/patchset/84170
 
-kernel build error
+In v1, the TTY device could become visible before ports[port_num].port was published. This means that an open triggered by the add uevent could temporarily fail with -ENODEV. I'll address this by publishing the port before registering the TTY device and rolling back that publication if registration fails.
 
-tree:      axboe
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/l=
-inux.git
-base:      24a19b953e2a3d0ea5a8c4951a0ab8f32720c907
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/1702ff95-4e48-4182-9d0c-18d968407a2=
-6/config
+Since this changes part of the code you tested, I won't carry over your Tested-by tag to v2 for now. If you still have access to the setup, would you be willing to test v2 once it's available? Repeating the dummy_hcd test would already be helpful, though a VF50 test would also be appreciated if you have the time.
 
-drivers/net/tun.c:2452:17: error: call to '__compiletime_assert_2155' decla=
-red with 'error' attribute: Unsupported access size for {READ,WRITE}_ONCE()=
-.
-drivers/net/tun.c:3337:3: error: call to '__compiletime_assert_2179' declar=
-ed with 'error' attribute: Unsupported access size for {READ,WRITE}_ONCE().
-drivers/net/tun.c:3324:3: error: call to '__compiletime_assert_2178' declar=
-ed with 'error' attribute: Unsupported access size for {READ,WRITE}_ONCE().
+Thanks again for your help.
 
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
-
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[arnd@arndb.de audit@vger.kernel.org brauner@kernel.org jack@suse.cz jan.ko=
-ester@tuxist.de keyrings@vger.kernel.org linux-api@vger.kernel.org linux-ar=
-ch@vger.kernel.org linux-cifs@vger.kernel.org linux-ext4@vger.kernel.org li=
-nux-fsdevel@vger.kernel.org linux-kernel@vger.kernel.org linux-nfs@vger.ker=
-nel.org linux-security-module@vger.kernel.org netdev@vger.kernel.org paul@p=
-aul-moore.com serge@hallyn.com tytso@mit.edu viro@zeniv.linux.org.uk]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+-- 
+Krystian Kaniewski
