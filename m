@@ -1,99 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=185.203.200.13
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793093090;
-	b=wWa05ogx7wu1M8hcsIDB+13uFp729HpYVoH5I3mJDg7k/TPnhdBMmP01motjupjhvTG9
-	 KGx8IXtRjyj379Fqg39LDpdnzZN6MeVLZr2uGmGCvf3CmkbTJdm+8URASQMVuJvsWElzJ
-	 NXdVkDczlsQ3CVAJmEWse205+3Ct7qsokdpQQoEg+qqLUBmPhhp5UCq7vNHmc2+Z/ck63
-	 f4CYBb51ZQkKD7cnuLM3yTmHsSCP1EhMZwaf1lueMwWyeDZWHvxroDjmH0NOGipS4Ll3B
-	 Uhqkd+8vezqaZm8rNhq1qIqpfTfiMMrAJwIv/5hBIv3uwmeEtzVWltA8MclE5bS70PQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793093090;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Date:From:To:
-	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=8my48rriU+1hiwu2LJQFqQu6T4hm5/dNVAFr4Ytn5wo=;
-	b=PeFh4AIsJqeG1MchAF8D0VHjHGkCUjFNG5/fInEaCJEjS8ZO5bcGbWTlVz1U/7jfoynp
-	 bHJI2HoGEa7jmZKUnHGfXVKYOAaAMBcFwCqvX5W5r4KWvpMHTOs7AEe4KXHGZZ4NP5tSB
-	 9re6+YOgNqmvhyyDy3jgBn9shGGMWB1Jeq4aCfiUYUFXW8QUqiWTQxGsQVrjO4TFz3R7X
-	 ArNNMrYgdkdjiyiUNF3mvZfV7efeHmLhpXU3wlxS1BzltzO4watdIc/Ij7YwuSQCqei5P
-	 8zFQtpmkbWDedY9RWxo5bI7+cTi2iixfSCt2x0DcNM4JO6XPYLMDqPxeQt+IrpC/gAg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=none header.from=pengutronix.de;
-	spf=pass smtp.mailfrom=pengutronix.de;
-	dkim=pass header.d=pengutronix.de header.i=@pengutronix.de header.a=rsa-sha256 header.s=20260414 header.b=S1c1JpUL;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=185.203.200.13
-Received: from mx1.white.stw.pengutronix.de (mx1.white.stw.pengutronix.de [185.203.200.13])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.50
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793103048;
+	b=zhEebPRSopshECSr/XXruLUIeS/Vq2CTCGLbLba0EUkfuC5WetrgtXvd16p+nlZKaqxq
+	 HyyEl0yBRxKu7QF18zaCzeQYxjZ8o9LsCwhhHBpXxunZeVj7DMfTooWOaNPWXgCbMCpfH
+	 WcydHyGW/VbpwpAoXlnyPmyH1ScBllLbdqRR36ocNWVxKR+oYGh0DsE6I8QpffMPOSHLo
+	 ib4mjdyTb0+ko+4jFRizFXtK1bTxQizDY/0Gq+N9vr/jJ5tb70MUYyIiyz/OW/XrM8l4L
+	 ro8mdPKurTW0riYVsncxu+fPE+TFzBaEPjV55+2pX49XH5WlMjoXBM7xFKedvnEPN8A==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793103048;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=1VQjrw1Euxi4TbH9hbPniZhHv8s080YQR+PmEDM4C/c=;
+	b=SRHoby8Az3UEZ8gRSoOmV5jsOu8qg7B2d1vndmZdqGLmkCjYQScpMOy3r33SU2mncv+9
+	 xAPU363EKoGjCNUjGwjiwB1nUvEw/LYeDBELacphCr7/WE66IEenPNAcqksoz6SEpyl4w
+	 4UZBCyukkSxOLZRNVgh6qpZUpLaVQHeZF+F8HA8BvQIKyCPTb0Qri/nyk/pIIzF0Zk8Ht
+	 HsodxPeJrSqtYv/A4l/D//hAiKZuYv+kAMH91HVRGOY/HqHFvUTUs+PROFI7bvJlUPEAk
+	 zY6eEsJEPmIZPvfcCS4wm8lz4Udtwbfm/L42X0pnHOvpTRzHsKdcGXVpcf2UNgrFjRQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=none header.from=hackers.camp;
+	spf=pass smtp.mailfrom=gmail.com;
+	arc=none smtp.remote-ip=209.85.221.50
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25D49606A31D
-	for <syzbot@lists.linux.dev>; Tue, 27 Oct 2026 09:24:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 25D49606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=pengutronix.de header.i=@pengutronix.de header.a=rsa-sha256 header.s=20260414 header.b=S1c1JpUL
-Received: from drehscheibe.grey.stw.pengutronix.de (drehscheibe.grey.stw.pengutronix.de [IPv6:2a0a:edc0:0:c01:1d::a2])
-	(Authenticated sender: relay-from-drehscheibe.grey.stw.pengutronix.de)
-	by mx1.white.stw.pengutronix.de (Postfix) with ESMTPSA id 6B2D8202845;
-	Tue, 27 Oct 2026 10:24:47 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pengutronix.de;
-	s=20260414; t=1793093087;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=8my48rriU+1hiwu2LJQFqQu6T4hm5/dNVAFr4Ytn5wo=;
-	b=S1c1JpULSVRaWBc1jnWycbGlvTgSLHgN3XMIgR4qFIJdAblUQofqxCOvM8QqU7K22cD4j/
-	WWrK5KZoHpe/7XHlKGlvgRw/2wIF9xmTdFeTJoEwvBLqumuDeRQW3pwpG5n1SJWO4YKzun
-	ViFpmSk0cH2J/zJCGr8+gXamvd1uOy7xnuRyEJK6J8J7ZMdoXckUmOzCs4c1SaYp3fr0w1
-	gScCVSPw3nFM6gRG/Z1tOXDbgDNjxnCOSgS4qUbjsf0nl+v29b+rfia//lIYGJEMCfZs2g
-	+WzO68vfEho/ixmvZXLVUKYouGzO51XTTIodKkqGV9Z8lHY4apVHzjq4dA6LGA==
-ARC-Seal: i=1; s=20260414; d=pengutronix.de; t=1793093087; a=rsa-sha256;
-	cv=none;
-	b=ErasVOlbB3K2B0HZ0Yj5k7fYYzw38DLR1lD4MqbFZ24CQWuuRkKy2RLAylQ/itszvsuBKA
-	7fOlBUbCvGUhkRE8RyE1vN7bCuvI8blKUux6CDUkN+spImZqeB/5EG0TRZf6tkieHvd2ew
-	gCW4mvf+g4j/Ce3F7myCCo+t9UncpQc7u+G/7o72Aj7Av1NXEsmgtxWCiEw1hVkN0VjJt5
-	i5Q43qsSVVgOnfdukH3jtAmw1G3v4ob1vN6q9T0qfLB81h1FHzC/s54RWGLefGsjT5ilfp
-	HAJ5I7PrXmCBqsjn3lngZIzZ7MOvWD4wv6xCBYiQhp8TDwcqA2hLDJgviH9D8g==
-ARC-Authentication-Results: i=1;
-	ORIGINATING;
-	auth=pass smtp.auth=relay-from-drehscheibe.grey.stw.pengutronix.de smtp.mailfrom=mkl@pengutronix.de
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=pengutronix.de;
-	s=20260414; t=1793093087;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=8my48rriU+1hiwu2LJQFqQu6T4hm5/dNVAFr4Ytn5wo=;
-	b=Sr768xz0ql6DVARufteZTyKsCxfsNIrEPt0uFXpHXJJmLkhwxISUIoML6Oq69w4V1w8f/X
-	TFevrDGodt9FKukmdsMYrbzolKBxBFNd+poVCooSW14BRwAEEYFVpoYCNorL8n1FvXqkbc
-	e93Sz5Cz3khP2GnGL0Sj7fVvoSV1Xm2F8t+B8u8oTTbg+S2uvOiCSly/zU6gkUoiqS0ZvM
-	CgWicQXXdUtQMn2C1yhvC/u1vQbs0Ouqrk/t1HKwp2YSWdkd9oPVMZ86VjNyjj5tDJkWfY
-	NmwZ2qukQ+/Xoaj3QKSj0HUn1N8E5xoL0DIY8ARkzZROGEp2TMJDH9/mWiXwBA==
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <mkl@pengutronix.de>)
-	id 1xLdQF-001PMn-17;
-	Tue, 27 Oct 2026 10:24:47 +0100
-Received: from pengutronix.de (p4ffb23c7.dip0.t-ipconnect.de [79.251.35.199])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	(Authenticated sender: mkl-all@blackshift.org)
-	by smtp.blackshift.org (Postfix) with ESMTPSA id DE5AE5D7AC3;
-	Tue, 27 Oct 2026 09:24:46 +0000 (UTC)
-Date: Tue, 27 Oct 2026 10:24:46 +0100
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: syzbot ci <syzbot+ci0e4b58e5e6ed7fb1@syzkaller.appspotmail.com>
-Cc: eric@evenchick.com, kernel@pengutronix.de, linux-can@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, mailhol@kernel.org, max@schneidersoft.net, pfink@christ-es.de, 
-	stable@vger.kernel.org, wg@grandegger.com, syzbot@lists.linux.dev, 
-	syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot ci] Re: gs_usb: fixes
-Message-ID: <20261027-hungry-bright-nyala-ff2039-mkl@pengutronix.de>
-References: <20261026-gs_usb-fixes-v3-0-3a68f1f62813@pengutronix.de>
- <6ae06214.6200f071.51519.0f44.GAE@google.com>
- <20261027-cherubic-monumental-aardwolf-d2cf5f-mkl@pengutronix.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 928BE606A321
+	for <syzbot@lists.linux.dev>; Tue, 27 Oct 2026 12:10:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 928BE606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hackers.camp
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-48afcb1e5f9so583595f8f.2
+        for <syzbot@lists.linux.dev>; Tue, 27 Oct 2026 05:10:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793103046; x=1793707846;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=1VQjrw1Euxi4TbH9hbPniZhHv8s080YQR+PmEDM4C/c=;
+        b=rAs9ONdSihlNf+Jq0SQvz6cXMM7F51ORYdmliVki2kSL3AUkBodx5s5dc0NfjVneji
+         Ogjr5s3soQvY2wBw2+0IcfvnH/RN8RHMRxot2kzaz/B2hXbVds0Y5HNmdYRUYJoxA2og
+         eLfOhhPMzXNJF/5aiYL0Q1K8CWh23xB+VNP+GyY4Bo2wKzHcvg+d8ZTgqRbvS550CC5T
+         eEiP6PouK8UvCE3u/wFjzfNsklBiFe0AIZdVgeQdzBMWbkHhvKrtKMZKVyshyB3lruB5
+         UUF+WlJfZrv05kvBbaiuTQ13bD5Jzg47NZhEPahcifOxCEzJyImWE3Hpi4JwdARtb36V
+         rQ1A==
+X-Forwarded-Encrypted: i=1; AKwUvBwSUyZeHVyn0cTgBTBJo9IliE1KSEaJsJpUhRkb7dCtRpey54PndwPa+4n/PYgDxvg0hLZOzYY=@lists.linux.dev
+X-Gm-Message-State: AFq9FYKx1Dgf0qOJETeFgSmjPO+gsYhbfGaThImGpJN55H3nasTHjvEQ
+	aYdjcMJEu4J5cRnsZ0R37omV8hAhxDZ8+Ibq9S1amaxJXOfpeDLf1KWM
+X-Gm-Gg: AYBFou1mWxQqxzaSVu5J5XBVRTlRXQMuyuLkXq+3GZlm0tMsQq8kOvU7agwR9Nkdqr/
+	GElELziijULuUx0cRdbIJcQTqC+9+9LjtNkSpL5DGS55SCH1pa0KiWlv9ehi+ZWWEXkYRpL60cx
+	h2beP4jRkIu3/Y7jmpmtkR5qgQMWkYoicnOmkPWniahpF4Of3DiVc/6qXnuh3stcVtK87I3hpUy
+	+JUHs4iOyWkHpEKlDIH0wGi758ldyzxuts8BOO5U2on1kOZ3hVcigNNsYwDZDRVWeyz1aRpjGe/
+	fr/Esu4xE87kMbkAlYoOnS5Km7jksy2BTDt6jZu8/wFgY9+s6Ja/ZxWeTPxOQXQIZOUTbP2n7sD
+	SIQiFpfs02dAAadqrhr+m1luVjaYDtbVIpIuSh4K+xJWoQ61UmGF9L4cq7UcsgH+wYIV5PJknrv
+	vwiNi1MmVQZ75YhagVNaxv0nedyUtzP2aW/gVzYt+dL7RrmmZYwwfEiJnJsq+PFnB1pm1FNPJqN
+	e+zYW5aLcGbT22v+L6LqGUvUfIP4h7ZHlBZnpLCdquq9DoegVB9XG6C3g8oDufpPpcuG3PwdTA5
+	ZGAVdoy+zPpy8pdwUQ==
+X-Received: by 2002:a05:6000:2406:b0:48c:6611:82 with SMTP id ffacd0b85a97d-48e3eb2b637mr20593069f8f.1.1793103045646;
+        Tue, 27 Oct 2026 05:10:45 -0700 (PDT)
+Received: from spartian.home ([2a01:cb1c:76:ed00:602f:c5f4:d108:b925])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3eb8f387sm22239473f8f.4.2026.10.27.05.10.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Oct 2026 05:10:42 -0700 (PDT)
+From: Aurelien DESBRIERES <aurelien@hackers.camp>
+To: jack@suse.cz
+Cc: brauner@kernel.org,
+	willy@infradead.org,
+	viro@zeniv.linux.org.uk,
+	linux-fsdevel@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	syzbot@lists.linux.dev,
+	syzkaller-bugs@googlegroups.com,
+	aurelien.desbrieres@gmail.com
+Subject: Re: [syzbot ci] Re: buffer: warn when a buffer is attached to a second mmb
+Date: Tue, 27 Oct 2026 13:10:41 +0100
+Message-ID: <20261027121041.68485-1-aurelien@hackers.camp>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <6ae064e5.768774f5.3237ab.0015.GAE@google.com>
+References: <6ae064e5.768774f5.3237ab.0015.GAE@google.com>
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -103,63 +88,38 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="44mp5vz44fwlphoe"
-Content-Disposition: inline
-In-Reply-To: <20261027-cherubic-monumental-aardwolf-d2cf5f-mkl@pengutronix.de>
+Content-Transfer-Encoding: 8bit
 
+On Tue 27-10-26 01:46:29, syzbot ci wrote:
+> and found the following issues:
+> * WARNING in __ext4_handle_dirty_metadata
+> * WARNING in fat_add_entries
+> * WARNING in fat_alloc_new_dir
+> * WARNING in fat_remove_entries
 
---44mp5vz44fwlphoe
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [syzbot ci] Re: gs_usb: fixes
-MIME-Version: 1.0
+Jan, thanks for the Reviewed-by. Before the patch goes anywhere,
+syzbot answers the question it left open, in two different ways.
 
-On 27.10.2026 10:23:34, Marc Kleine-Budde wrote:
-> On 27.10.2026 01:34:28, syzbot ci wrote:
-> > syzbot ci has tested the following series
-> >
-> > [v3] gs_usb: fixes
-> > https://lore.kernel.org/all/20261026-gs_usb-fixes-v3-0-3a68f1f62813@pen=
-gutronix.de
-> > * [PATCH v3 1/4] can: gs_usb: gs_can_start_xmit(): don't leak uninitial=
-ized memory over USB
-> > * [PATCH v3 2/4] can: gs_usb: gs_usb_probe(): init netdev completely be=
-fore register_candev()
-> > * [PATCH v3 3/4] can: gs_usb: gs_usb_receive_bulk_callback(): check for=
- overflow flag if SKB allocation fails
-> > * [PATCH v3 4/4] can: gs_usb: gs_usb_receive_bulk_callback(): add missi=
-ng call to can_rx_offload_irq_finish
-> >
-> > and found the following issue:
-> > general protection fault in can_rx_offload_del
-> >
-> > Full report is available here:
-> > https://ci.syzbot.org/series/0c1fc4c5-6a50-43da-a45c-fbc3a8685c3d
->
-> Good bot! Will be fixed in v4.
+The three fat hits are on crafted images (two of them print "Invalid
+FSINFO signature" first): directories whose clusters overlap, so the
+same buffer is one directory's and then another's. That is the
+multiply claimed block the cmpxchg comment is about, on-disk data the
+kernel does not control, and a WARN_ON there will be filed as a bug
+for every new image syzbot finds. If the assertion is to stay, it
+should not be a WARN on that path; a ratelimited pr_warn naming the
+device would say the same thing without a splat. I can send that as
+v2 if you prefer it.
 
-Should already been fixed in v4: https://lore.kernel.org/all/20261026-gs_us=
-b-fixes-v4-0-59e3b6360053@pengutronix.de/
+The ext4 hit is different. It is the nojournal branch of
+__ext4_handle_dirty_metadata(), reached from ext4_xattr_block_set() at
+the "reusing; refcount now=N" point: an xattr block that mbcache
+deduplicates between inodes, by design, marked dirty through the mmb
+of whichever inode reuses it. That is one buffer on several inodes'
+lists in turn, in ext4 without a journal, the shape the warning was
+written for, and the window in mmb_sync() applies to it. I have not
+reproduced it outside syzbot's repro and do not know ext4 well enough
+to say what the right fix is there (mark_buffer_dirty() alone for a
+block with h_refcount > 1, or a list of their own, as we did); that
+one is yours to judge.
 
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
-
---44mp5vz44fwlphoe
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQSl+MghEFFAdY3pYJLMOmT6rpmt0gUCauBt3AAKCRDMOmT6rpmt
-0swYAQCt378K3MnYZAXpa1Buog9COxNAQTqm6qxdl3/SM82esAEAq1vckNVubtuA
-bR7Y5nt6X2lkCUs62z3M94vTuQ2xbAM=
-=W1cm
------END PGP SIGNATURE-----
-
---44mp5vz44fwlphoe--
+Aurelien
