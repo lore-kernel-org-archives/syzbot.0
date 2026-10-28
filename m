@@ -1,53 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.69
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793179113;
-	b=nxeyqA1HksnjxhwMqNHu8DJt4xCuDbw7Rd7t4ZNTsM7PVQaD378g+FVBooherW5DX9f+
-	 tIR1GGu9k/0P8LfYdlWGEOnE+ctgmFrCKgTPhhx2oauKETm2pLG/eS+fkKH08Gx1Qi6oM
-	 h7ZteVwChTDhpGA3c/RrmMxxI9QEtqMbJrBhPggvwfqocAWuCxLz+He1GXTN2XXxIQDOd
-	 KLUTf0ggjY0AQXUYMW02pO0TEcm8z0fOUVKR885H+WOXByiOeZRruMEZXW7KYfnPx56e1
-	 +NNT90iS8q0sWU/k5aQ7aQx5IMaty//N52KIMzDVNR2NumYSG0uRoeulyU8+ZC8lutA==
+	t=1793196560;
+	b=HBb+2R/GOby1a12h5GworrAEWEP1p57UC6nIKL6Zg+fLfVI6JkAJTcziOcvoYP5cGFgR
+	 phlsj0M8OFntCu/c4cmX+Jn2VeifOC1MVKq+d36DZfrZLN7gNM7OMQiCVAOCF5PaKJlqe
+	 puEw2tLdK7McPWkS4jZigfTgasVyf/HjLDYNU4bRr++qFDw5F3z1Cc1gdc1TQWC0/1TBI
+	 jJgl42Xim6rgW5XjBw7oM2WkoJTiRqrU6mHGhR+AoInmAST/YFDROI0o4DY4uZPdhhQcr
+	 cqLrVY/B/LE9WQkZgd6YYsCGig0kDgUzlWBNM2T/LcXxNkqKmTa7Q/Sg3aqPbcbkiNw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793179113;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793196560;
 	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
-	 MIME-Version:X-Received:Date:In-Reply-To:X-Google-Appengine-App-Id:
+	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
 	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
 	 Content-Type;
-	bh=l7lrYcEGz7yh1S6DURIldpkH4Iej6k+y8xqTeXsmih8=;
-	b=DmgHnbw7uPJVGCuzMISwus5hCVMMP9hRZzEe5u8c5VyF/ow6li1y6trPDe9OqG6r57qF
-	 s6n1IGGsMSymA7ti01vEHR4FEdEQTXSRGO9Da3B/epboWKbU0pM4IikgwzYrP/BCKrFtg
-	 voO+E3lVtDi6d1lmjy78IYCJzzrCuxqJK5l8VEl9QHaAT0kvMbM0oMdLlBbErydX+f56o
-	 r1HK3CynVUb0W3yBVdjsN61Xvk21/HGseezAb4n+uEbTBDprnd9N5CUm/ck1Lrd/gfqH6
-	 GGp5n2LS7/yVlbXV4O8i6xYnQcequ01cYd/k2CiEoQA3Q10rrOV2Xx0Zwnt3OZ+xBmA==
+	bh=iWp5qhIdhg7FDP8aypq55zXijpZBkV0xmXh0MaK851k=;
+	b=ZW8VDQpB+oRs+QVBO5baaTGDvBrG61OWIhhJj7Otf0je7VKEY8qDz7xn1bWWdWE4WuHC
+	 WKFsC5daB3blf/OQ0zSn8hBK16dd4n3IB5+q1+mQwNr9eNSsmEtWGbn6aQTIV+M2gDwXU
+	 GsN9G07WmBMZN4QF9e9R0kFxEegMdmp/KGDhauki9N++E9MRGfNhHv9oll1ILWwsS53xp
+	 GSla3Ir+ohGGMlEB7u/+uC7kZstokMlror9DG2PekvzF4B1qCEldBgYWsQQohuuK4q+Zm
+	 jnO/Vfx1e60E3X2ZSlwKy3kcLX67mZQ0IAaP5SX7ce1lcEea8EDRh+JRM0wPR9BAg3w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=fail header.from=syzkaller.appspotmail.com;
 	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
-	arc=none smtp.remote-ip=209.85.167.199
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+	arc=none smtp.remote-ip=209.85.210.69
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D252606A31C
-	for <syzbot@lists.linux.dev>; Wed, 28 Oct 2026 09:18:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3D252606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 625C8606A31D
+	for <syzbot@lists.linux.dev>; Wed, 28 Oct 2026 14:09:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 625C8606A31D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-4cc89e86e4dso1285061b6e.2
-        for <syzbot@lists.linux.dev>; Wed, 28 Oct 2026 02:18:32 -0700 (PDT)
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-83c2311eb1dso1679294a34.1
+        for <syzbot@lists.linux.dev>; Wed, 28 Oct 2026 07:09:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793179112; x=1793783912;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=l7lrYcEGz7yh1S6DURIldpkH4Iej6k+y8xqTeXsmih8=;
-        b=XVpmpQFHzFmIhJT5fW8068MJDfbHnPxibNFcO8eGrWQadHFpmRozCiqM1v59uxQmAM
-         uJfIaN1cO2gNpJv+QcXtvOIYGwHUpd0LoXykI/joJ6hnxFx9ZhX0oKOMXpBjugo1ZInu
-         QsYovRRkC/h4JWQNd+JrWghbFrY5rdhIYs4rH6PoX17FG+K6KQRH1l8+JbY3NAqDviY5
-         NiCxf5oCpUFzPcGnYbZymYgx3arX2kRuPrOHzpezric5iHxCyJ37tRwU6UuUGJOxe4H3
-         EssdXijYXNUaN6I9SLbr3yvmchYWmB7hjoAH196KCue7eQ583Hs3ORGhFnD86SQVO456
-         fowA==
-X-Gm-Message-State: AFq9FYJE7yFhkFOkjeedpVcI49MqBLm9FdN7FviXY5neQHEMigcUXlpY
-	VQo26tNqfyJuNSy2zFXvIpvfqh5zmJRZHkCBq4cCjJyiIW2zFj4KC8BFXvtrs502c68WwKWglrv
-	cf+AizOzwNh1TRgbxWGFXztzpeH2gktXwzZzaSqr8YgGM17FymG15C/zGGCQ=
+        d=1e100.net; s=20260707; t=1793196559; x=1793801359;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=iWp5qhIdhg7FDP8aypq55zXijpZBkV0xmXh0MaK851k=;
+        b=vmQWgmeZzkOlv1oLCWBppC9hV48uj0APN0qtAZbNLMRoa8Gehpf372ZceqbDTQbmPD
+         ewJp8W+b4RW3d1hBm6j4fRZisHrchHFMZcavqRLYRxpkGTC4GvFBcC2LkOWPHjzpKoN8
+         bKbKT9cbjcgFPbuWtm+36deQRozDqfwmMVY0Q+iZezQ4g3pJaasy/YOtJ00Ed7iVgRC5
+         6uXRJI6FnWi12Pq09gJBFPpLiPvlBKwIByDnRW3eeIVjiVMSdhQ1HHnyN675iXvFBtX5
+         jPX3o548FOs5CO8SL5zqpScm3bn/ibRzUJWgtBwWa/OoAe7EhFo93Tx+YphT6eSXKgbA
+         DH/Q==
+X-Gm-Message-State: AFq9FYLxADNu+AChqETZPD1MevFkMK8I1m9yLRwPhxBlOR3aqzCNtgi8
+	v4f6edLovfdum7oZBgBC2rO/qafclOn/hdSj9uxK+CPBadI7F9pqNNBETc3ttb29ioZQroBa1yf
+	vNxAIi/djD6PwqkryYgmWZA1aUvUbQMR3mJl0BWyjYCsHbsNzR1GdSKQfwGQ=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -57,98 +57,123 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:c133:b0:55b:fcf7:61f8 with SMTP id
- 5614622812f47-56383598cfamr956832b6e.40.1793179112073; Wed, 28 Oct 2026
- 02:18:32 -0700 (PDT)
-Date: Wed, 28 Oct 2026 02:18:32 -0700
-In-Reply-To: <20261027221209.1560865-1-seanjc@google.com>
+X-Received: by 2002:a05:6808:220e:b0:4e8:e73e:e945 with SMTP id
+ 5614622812f47-56384c7e60dmr1546420b6e.63.1793196559302; Wed, 28 Oct 2026
+ 07:09:19 -0700 (PDT)
+Date: Wed, 28 Oct 2026 07:09:19 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ae1bde8.f0fe5aea.79aa1.00a0.GAE@google.com>
-Subject: [syzbot ci] Re: KVM: Fix+harden against bad uaccess using dying VM
-From: syzbot ci <syzbot+ci372bc25d95b65291@syzkaller.appspotmail.com>
-To: jmattson@google.com, jthoughton@google.com, kvm@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
-	maddy@linux.ibm.com, mason@kernel.org, npiggin@gmail.com, pbonzini@redhat.com, 
-	seanjc@google.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <6ae2020f.cbab20e0.42a9b.0005.GAE@google.com>
+Subject: [moderation/CI] Re: hugetlb: supports unmapping private mappings
+From: syzbot ci <syzbot+ci4afffd1cc25e4433@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v3] KVM: Fix+harden against bad uaccess using dying VM
-https://lore.kernel.org/all/20261027221209.1560865-1-seanjc@google.com
-* [PATCH v3 01/15] KVM: Reject user accesses to guest memory if current->mm != kvm->mm
-* [PATCH v3 02/15] KVM: nVMX: Don't force a full nested VM-Exit when destroying a vCPU
-* [PATCH v3 03/15] KVM: PPC: Flush/zap all memslots on kvm_arch_flush_shadow_all()
-* [PATCH v3 04/15] KVM: x86: Unmap VMAs for KVM-internal memslots when the memslot is freed
-* [PATCH v3 05/15] KVM: Disallow setting memslots when the VM is being destroyed
-* [PATCH v3 06/15] KVM: Destroy memslots immediately after mmu_notifiers are unregistered
-* [PATCH v3 07/15] KVM: WARN if KVM attempts to do guest-related uaccess with "wrong" process
-* [PATCH v3 08/15] KVM: WARN and reject guest-based uaccess if VM is dying
-* [PATCH v3 09/15] KVM: Pre-check uaccesses in KVM's APIs to read/write guest memory
-* [PATCH v3 10/15] KVM: VMX: Explicility free vmcs01, not the current VMCS, in vCPU free paths
-* [PATCH v3 11/15] KVM: nVMX: Don't explicitly VMCLEAR+free() vmcs01's shadow VMCS when freeing vCPU
-* [PATCH v3 12/15] KVM: nVMX: Cancel the nested VMX Preemption Timer's hrtimer in free_nested()
-* [PATCH v3 13/15] KVM: VMX: Explicitly remove dying vCPUs from the PI wakeup list
-* [PATCH v3 14/15] KVM: nVMX: Don't switch to vmcs01 when freeing a vCPU
-* [PATCH v3 15/15] KVM: nVMX: Don't load+put the vCPU when freeing nested state for a dying vCPU
+[v1] hugetlb: supports unmapping private mappings
+https://lore.kernel.org/all/20261028041528.269829-1-eadavis@sina.com
+* [PATCH] hugetlb: supports unmapping private mappings
 
 and found the following issue:
-WARNING in vt_vcpu_pi_remove_from_wakeup_list
+WARNING: bad unlock balance in remove_inode_hugepages
 
 Full report is available here:
-https://ci.syzbot.org/series/c648fc23-f4c2-4346-93cd-b717ef38b27c
+https://ci.syzbot.org/series/bf349aec-df0c-48a8-ab82-9f71361a3830
 
 ***
 
-WARNING in vt_vcpu_pi_remove_from_wakeup_list
+WARNING: bad unlock balance in remove_inode_hugepages
 
-tree:      kvm-next
-URL:       https://kernel.googlesource.com/pub/scm/virt/kvm/kvm/
-base:      7e60162b16f9da0d2fa83da5c1723b6853a0ac1d
+tree:      mm-new
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
+base:      7d1f84f1b94e79cb95d974ab3ec54cb3a4d64f5b
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/e4ed6c4f-9b58-4549-9ac6-525add47e472/config
-syz repro: https://ci.syzbot.org/findings/320f356a-c5e9-41ff-b8f5-3f0866e300b7/syz_repro
+config:    https://ci.syzbot.org/builds/7d19c5c0-63db-4726-978e-d863eedfb488/config
+AI triage: https://ci.syzbot.org/findings/dcd884e0-680c-4d8d-82e4-551dbfcdaeae/triage_trajectory
 
-------------[ cut here ]------------
-refcount_read(&vcpu->kvm->users_count)
-WARNING: arch/x86/kvm/vmx/posted_intr.c:154 at vt_vcpu_pi_remove_from_wakeup_list+0x142/0x1f0 arch/x86/kvm/vmx/posted_intr.c:154, CPU#1: syz.2.19/5870
-Modules linked in:
-CPU: 1 UID: 0 PID: 5870 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
+=====================================
+WARNING: bad unlock balance detected!
+syzkaller #0 Not tainted
+-------------------------------------
+syz.4.862/12304 is trying to release lock (&vma_lock->rw_sema) at:
+[<ffffffff82b5a0e7>] remove_inode_hugepages+0xc57/0x1220
+but there are no more locks to release!
+
+other info that might help us debug this:
+locks held by syz.4.862/12304: 4, last CPU#1:
+ #0: ffff88810729e460 (sb_writers#12){.+.+}-{0:0}, at: vfs_fallocate+0x5e0/0x7e0
+ #1: ffff8881aa537b00 (&sb->s_type->i_mutex_key#24){+.+.}-{4:4}, at: hugetlbfs_fallocate+0x3f7/0x11c0
+ #2: ffff8881683dc638 (&hugetlb_fault_mutex_table[i]){+.+.}-{4:4}, at: remove_inode_hugepages+0x370/0x1220
+ #3: ffff8881aa537da8 (&hugetlbfs_i_mmap_rwsem_key){+.+.}-{4:4}, at: remove_inode_hugepages+0xa44/0x1220
+
+stack backtrace:
+CPU: 1 UID: 0 PID: 12304 Comm: syz.4.862 Not tainted syzkaller #0 PREEMPT(full) 
 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:vt_vcpu_pi_remove_from_wakeup_list+0x142/0x1f0 arch/x86/kvm/vmx/posted_intr.c:154
-Code: 48 85 db 74 2d e8 ee 1b 64 00 eb 0c e8 e7 1b 64 00 eb 05 e8 e0 1b 64 00 5b 41 5e 41 5f 5d e9 c5 b5 87 0a cc e8 cf 1b 64 00 90 <0f> 0b 90 e9 2b ff ff ff e8 c1 1b 64 00 e8 ac 60 cf ff eb da 44 89
-RSP: 0018:ffffc900037cf8c8 EFLAGS: 00010293
-RAX: ffffffff816404a1 RBX: ffff88816ada8000 RCX: ffff888110eb0000
-RDX: 0000000000000000 RSI: 0000000000000003 RDI: 0000000000000000
-RBP: 0000000000000003 R08: ffff88810fb01f83 R09: 1ffff11021f603f0
-R10: dffffc0000000000 R11: ffffed1021f603f1 R12: dffffc0000000000
-R13: 00000000fffffff8 R14: ffff88810fb01f80 R15: dffffc0000000000
-FS:  00007f9e487ab6c0(0000) GS:ffff8882a7cbf000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f07a7ed4870 CR3: 000000010eea9000 CR4: 0000000000352ef0
 Call Trace:
  <TASK>
- vmx_vcpu_free+0x28/0x400 arch/x86/kvm/vmx/vmx.c:7517
- kvm_arch_vcpu_destroy+0x154/0x380 arch/x86/kvm/x86.c:9556
- kvm_vm_ioctl_create_vcpu+0x76f/0x9f0 virt/kvm/kvm_main.c:4384
- kvm_vm_ioctl+0x442/0xcb0 virt/kvm/kvm_main.c:5294
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ dump_stack_lvl+0xe8/0x150
+ print_unlock_imbalance_bug+0xdc/0xf0
+ lock_release+0x252/0x3c0
+ up_write+0x2d/0x4a0
+ remove_inode_hugepages+0xc57/0x1220
+ hugetlbfs_fallocate+0xc51/0x11c0
+ vfs_fallocate+0x65a/0x7e0
+ madvise_vma_behavior+0x2cf5/0x43b0
+ madvise_walk_vmas+0x576/0xb00
+ madvise_do_behavior+0x385/0x540
+ do_madvise+0x327/0x3a0
+ __x64_sys_madvise+0xa6/0xc0
+ do_syscall_64+0x166/0x520
  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f9e4799f1eb
-Code: 00 48 89 44 24 18 31 c0 48 8d 44 24 60 c7 04 24 10 00 00 00 48 89 44 24 08 48 8d 44 24 20 48 89 44 24 10 b8 10 00 00 00 0f 05 <89> c2 3d 00 f0 ff ff 77 1c 48 8b 44 24 18 64 48 2b 04 25 28 00 00
-RSP: 002b:00007f9e487aaed0 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f9e4799f1eb
-RDX: 0000000000000003 RSI: 000000000000ae41 RDI: 0000000000000085
-RBP: 00007f9e47a36b20 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000200000c00000 R11: 0000000000000246 R12: 00000000000004ce
-R13: 0000200000c00000 R14: 0000200000001040 R15: 00007ffeb7342be8
+RIP: 0033:0x7f0c8dd9f559
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f0c8bff6028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+RAX: ffffffffffffffda RBX: 00007f0c8e026450 RCX: 00007f0c8dd9f559
+RDX: 0000000000000009 RSI: 0000000000c00000 RDI: 0000200000400000
+RBP: 00007f0c8de36b20 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f0c8e0264e8 R14: 00007f0c8e026450 R15: 00007ffc9fc94698
+ </TASK>
+------------[ cut here ]------------
+DEBUG_RWSEMS_WARN_ON((rwsem_owner(sem) != current) && !rwsem_test_oflags(sem, RWSEM_NONSPINNABLE)): count = 0x0, magic = 0xffff88810b4c2608, owner = 0x0, curr 0xffff88816ff4bc00, list not empty
+WARNING: kernel/locking/rwsem.c:1413 at up_write+0x35c/0x4a0, CPU#1: syz.4.862/12304
+Modules linked in:
+CPU: 1 UID: 0 PID: 12304 Comm: syz.4.862 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:up_write+0x40f/0x4a0
+Code: 0d 8c 49 c7 c2 80 33 0d 8c 4c 0f 44 d0 48 8b 7c 24 10 48 c7 c6 20 36 0d 8c 48 8b 14 24 48 8b 4c 24 08 4d 89 e0 4d 89 f9 41 52 <67> 48 0f b9 3a 48 83 c4 08 e8 f3 6f 45 03 e9 d6 fc ff ff 48 c7 c1
+RSP: 0018:ffffc900040cede0 EFLAGS: 00010246
+RAX: ffffffff8c0d33a0 RBX: ffff88810b4c2608 RCX: ffff88810b4c2608
+RDX: 0000000000000000 RSI: ffffffff8c0d3620 RDI: ffffffff917dda70
+RBP: dffffc0000000000 R08: 0000000000000000 R09: ffff88816ff4bc00
+R10: ffffffff8c0d33a0 R11: ffffed10216984c3 R12: 0000000000000000
+R13: ffff88810b4c2610 R14: ffff88810b4c2660 R15: ffff88816ff4bc00
+FS:  00007f0c8bff66c0(0000) GS:ffff8882a7c83000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f8981484378 CR3: 00000001ad2de000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ remove_inode_hugepages+0xc57/0x1220
+ hugetlbfs_fallocate+0xc51/0x11c0
+ vfs_fallocate+0x65a/0x7e0
+ madvise_vma_behavior+0x2cf5/0x43b0
+ madvise_walk_vmas+0x576/0xb00
+ madvise_do_behavior+0x385/0x540
+ do_madvise+0x327/0x3a0
+ __x64_sys_madvise+0xa6/0xc0
+ do_syscall_64+0x166/0x520
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f0c8dd9f559
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f0c8bff6028 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+RAX: ffffffffffffffda RBX: 00007f0c8e026450 RCX: 00007f0c8dd9f559
+RDX: 0000000000000009 RSI: 0000000000c00000 RDI: 0000200000400000
+RBP: 00007f0c8de36b20 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f0c8e0264e8 R14: 00007f0c8e026450 R15: 00007ffc9fc94698
  </TASK>
 
 
@@ -171,3 +196,13 @@ Notes:
 - To test a new version of the whole series, please send it directly
   to syzbot@lists.linux.dev.
 - Arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[eadavis@sina.com linux-kernel@vger.kernel.org linux-mm@kvack.org mike.kravetz@oracle.com muchun.song@linux.dev osalvador@suse.de syzbot@syzkaller.appspotmail.com syzkaller-bugs@googlegroups.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
