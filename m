@@ -1,88 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=35.157.23.187
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793151775;
-	b=YBzl3oZXbdCf3yhZy8jkCJ2s+CK+bKgghHPjYEQtaGL97RscOBYptdWqwy/WEqR65KiM
-	 SX96pq5zMTVs/uRo5yDHtvYtkUD5Dj2mmwgfseRpQcuSwYEKP+np+Qd2POCjxE/2NA+dl
-	 g3TwxZR4+MeQ+bSCTVKV0e7tkMncQwKqMbZWWYONbWuuy6NCUn2u3S96e0VBp4yUWn5YR
-	 ErJ0G0bKQbRgSE2g3NZDmV62x/R3SPwrfaHnnWIRXpz8nDwge1uKYaSGxm7YK3tWiV0XS
-	 5mcGvO0J5gqYIrFo7pftiSwD35TSOAPkhcWha1Z8GgWJLZAyKBU5AtFjih32VHzr3qw==
+	t=1793173247;
+	b=bp3RX4zLGrq4tuAZ5vRsDQrCf/Gu6lKE+JeWRYY3lwrAsuGduVo27strnERfBZIzNsng
+	 o1/ctXnEwBJf++nbxZ4woJEEemiJLfnNd1keFGtS5+/qWfCwTBwO72uhVWVfsWa5UBp5c
+	 O07YkZoluMsJe3MVR49h5gd4t3li+Ub71CGqM6pSy1dk+zXjnTwiPqqaSi9pIhoD5ht2R
+	 nX/U0zQonZw3Z5SpfzVmrHMrVLK068trvy/AGQSfqkMZrYFSKJJvYpPHDC2kZZ/dQ3Tgx
+	 KUFm8CKj7zuOI3SALRAMyXO7Mp3G5wcsT6E4E59SKoTCRka9sZItAqfX0BcIvXyInKg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793151775;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:From:To:Cc:References:
-	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=F2b/C//SFL1IpqmZ4dlyGzFHOKnAQfZ+yoE8clPtWLc=;
-	b=SMKRgSH/JtK42dXhIByzeGrkcVErX/KNZVvMWT+TO1ag2Jb+ZiVTec2ULirYi1hSxALN
-	 jq/9w7x3aFVFBrTLSruIIVo8CC+8Rt8OhTuMeqb3UdoSmoPmXwwEkzZFnEnQN1A3yKI3V
-	 lLYVjHBbL/9YD6khEiIFGpVJVjFytLONKAQyEoZ1PJKo2R6r6hPTaqFtbUBqwRmc2Kzy7
-	 ODt8K+c1GDCjzPxh+4IJJKJOTQQsW8DiiZEXQfrw6LlIphSL3rerjNFqlQfnBwYmaOeFo
-	 cRZyQeXqNeROk0BZCqeTuxsG2iRJqZRLEsrpIXRPM6R2RE2/5JMrr1tnLdZbwcAUdPw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793173247;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:Received:Message-ID:
+	 Date:MIME-Version:User-Agent:Subject:To:CC:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
+	bh=JgSqjGLkhPK3vICnAOXyWbM67kSh/OMJMraMs0151RA=;
+	b=uetwnEAzRmsB7Kxr0a5Nn20ymr+v9YL9eU8ajjsCWLRKi4KL/tXr1zDu3nBKLFv1MtZE
+	 dp5NNfXz65E7klv4dafQVMIfsRm3QCmLH3PaP0XHFUMeoF2uLSRL1xJ0mfJhHF3xAYu/8
+	 nkqz8UlUmjczM0Z3c3LJrudZOHcFdT4Yl8IFK5cshopdBUVNEkCtzHWaT/wLip6xpiDcm
+	 EAjbwS6jpomiDdJrgzv+Uw6wx9Jh22yAm+oTpp3KI8D6S125QypOqggcDeGS6xXNjodPG
+	 cQl1nToyUuCBvTcQo/gZneHCjG7IKg6K/RqmFre19tW/jqrPaIb4SnMe5cxw+9ckLfg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dvXVnqDO;
-	arc=none smtp.remote-ip=209.85.218.54
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=paragon-software.com;
+	spf=pass smtp.mailfrom=paragon-software.com;
+	dkim=pass header.d=paragon-software.com header.i=@paragon-software.com header.a=rsa-sha256 header.s=mail header.b=NoEC3t0D;
+	arc=none smtp.remote-ip=35.157.23.187
+Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84118606A31F
-	for <syzbot@lists.linux.dev>; Wed, 28 Oct 2026 01:42:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 84118606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 097DF606A31D;
+	Wed, 28 Oct 2026 07:40:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 097DF606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=paragon-software.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=paragon-software.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dvXVnqDO
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-c411e139259so37169766b.2
-        for <syzbot@lists.linux.dev>; Tue, 27 Oct 2026 18:42:55 -0700 (PDT)
+	dkim=pass (1024-bit key, unprotected) header.d=paragon-software.com header.i=@paragon-software.com header.a=rsa-sha256 header.s=mail header.b=NoEC3t0D
+Received: from relayfre-01.paragon-software.com (relayfre-01.paragon-software.com [176.12.100.13])
+	by relayaws-01.paragon-software.com (Postfix) with ESMTPS id 95D6D1D15;
+	Wed, 28 Oct 2026 07:41:32 +0000 (UTC)
+Authentication-Results: relayaws-01.paragon-software.com;
+	dkim=pass (1024-bit key; unprotected) header.d=paragon-software.com header.i=@paragon-software.com header.b=NoEC3t0D;
+	dkim-atps=neutral
+Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
+	by relayfre-01.paragon-software.com (Postfix) with ESMTPS id 0F881D9;
+	Wed, 28 Oct 2026 07:40:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793151774; x=1793756574; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:content-language
-         :references:cc:to:from:subject:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=F2b/C//SFL1IpqmZ4dlyGzFHOKnAQfZ+yoE8clPtWLc=;
-        b=dvXVnqDOMI58WCoZLVYj5NUCRdx4/mm8bqpcg6wX82WdqUoGbG9Z3GyS94qOWETSCi
-         RDWUo8XPUlfwZNnue5uJBm3eTDXOIEF14UTLxhmHLoKMWUGqGrOmqt976hXVqeFPocdp
-         FhkGIsS97Orm6m6Yf6USOc4yuLXGjEtKtzHud+GwsQYjPqeC7UJ86yiMXFPhnwhr+A+i
-         DvUIQdbPZBaS4XzBWt7RrnlIbBYKIxnvo1u4bJRjYoQgsGdVyoQyR9UKNfFtoLdcKZlj
-         SHRETacV48ZzOUMWLevQvBndMC4YvWj8F4+HQsVKC4rQ1L7Ykoxud7mMlmyyl2N/AuKq
-         mbQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793151774; x=1793756574;
-        h=content-transfer-encoding:content-type:in-reply-to:content-language
-         :references:cc:to:from:subject:user-agent:mime-version:date
-         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=F2b/C//SFL1IpqmZ4dlyGzFHOKnAQfZ+yoE8clPtWLc=;
-        b=h19uJbO8NI0/zbfbl6v+AYtKePBignUzPFd404K3M30Flic0TqfAmfjX+r9qhn9ET3
-         FrR/qErHssM4w0FeMfzhlWoS/qfRPwAHF+f/M4l0B82yZWc0KVFiga4+QbixvRWIILNI
-         MFfE6P0UX9LrfIbnlcx4Ay+By93geSj3GHRQV1AfqFy5eu1YlSORENw/AqFInuelLRsz
-         la8XRKtFc7nLLod336BOsoF+dBBlNBGEz8RxbZIXSvo2t4HlPG7+LGWi0cpSFvx4gNkN
-         SdoNXueJzqJKzzqmtUZ8S8q3+XTy9rVbIz5v3ib9ac9a7DZ1wzbIP1Q0f8OFO85I0vQD
-         qNyA==
-X-Forwarded-Encrypted: i=1; AKwUvBx490Kn2sd+sXHQ7rzOaQ6W7tulrum+Avt6QTSLivluQ+G7WnkXpSA1m7IljHTEiuyE34A52zk=@lists.linux.dev
-X-Gm-Message-State: AFq9FYJxvfIZT3PtAY5qQbo8hW52UhRRoasQ+GmOlQzXMmh/THnhNL8O
-	iYqnZ7VO73bQeXVyUzXQjWpU5JO/Icr3Q8+DA5gEGHRi7woUH8WidyoZ
-X-Gm-Gg: AYBFou2Nl65nbYuG6Rp/QeLv+uf2TPnumvG+pgLbBgfy3MzCB1mTaA3W/gUPg2M7C/i
-	CZ5h/XwFcta2SMn4M0x6wWtEv3ukDOaLxxONWuXLmzi8DuY8tEVffVHZPsHf2EYVc/0IrhlZ7cG
-	zRBAOqaabWrFbqXcLOPB/sqYuDXqi7hJ7+N7m5TBz1PcEmh1joo40+fJE290EnrX/z0GrOQKJN0
-	1OHE/TYUwORHJWa7fuatuH9BD/hv2gVVhx86ehnT8Fa+4kh4syr0aV55VORQtCOjAcllq7+vnf8
-	Pet8EFF6LMUdf/qe0oC5FL0DlFytdYGLF71JqAz69ngwwHKhKlOxzZLnzjiBIpxlYrBrAfWjOOz
-	VX+S3UMDJ0dmpBMdAG47rGxDUFje7W9xoua+2ZKsYaq3yDorSlNed30s8rKXU8oKg5pb5SAsbBr
-	bGOtz8M92N9DjNDSuFNpGke2DOzwJBNpqS//bUqmZu/Vw+BPvqYDjlpqjvJJCMsv2WtyOvpg/Ob
-	BGyyfPlT0VdcKTTI5LIXu0xTVT69ZOm/YtCFLo7TC8KvHIeq+GSooE6HwTy7mDeOrOEWIHuLOGN
-	eqVEa994xcqHP5+C5kg3B7cIgs2yGWO6FUVepLzsxIX9+C3B/uHIhC74rY+Kx6l5qU2D8yh6sr2
-	W6A3YLZKop3cAfBkhG12Dprg844bOMvB/Zz4kaTYLdpostn4WRdZLpUKAbFqe9S4AjUAYAuZkGM
-	oI7Uw3P+npP9Vgw2jZhke3bQw7QXp1HOLrKeFjmwc3Uitgn/BKe4ZhRLaWm7EocL4J
-X-Received: by 2002:a17:907:2d10:b0:c3f:153a:8663 with SMTP id a640c23a62f3a-c49bdf3abbdmr75122166b.23.1793151773813;
-        Tue, 27 Oct 2026 18:42:53 -0700 (PDT)
-Received: from [192.168.100.100] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c49a530f520sm217876066b.23.2026.10.27.18.42.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 27 Oct 2026 18:42:53 -0700 (PDT)
-Message-ID: <096b2691-238e-4f43-b5b6-e1565b62664f@gmail.com>
-Date: Wed, 28 Oct 2026 02:42:52 +0100
+	d=paragon-software.com; s=mail; t=1793173245;
+	bh=JgSqjGLkhPK3vICnAOXyWbM67kSh/OMJMraMs0151RA=;
+	h=Date:Subject:To:CC:References:From:In-Reply-To;
+	b=NoEC3t0DHZkfT3Qqa/klBaPU3+nWgQJJd1zTNeR7hQXw9AC0sTIKlByhPUlxDSu/Z
+	 hFjbxknPQ2chfPTzsM9yT0s++dIK1Kq89xw3ODrQtdUptswNKYATiN6xwpJK6UJA/F
+	 JPKEeSO8rl33wb0vvVrHVchOKJnu7S9OUjSEzYcc=
+Received: from [192.168.95.128] (172.30.20.183) by
+ vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Wed, 28 Oct 2026 10:40:43 +0300
+Message-ID: <16cff409-fe5e-4aa7-8f0f-abe0b62982f5@paragon-software.com>
+Date: Wed, 28 Oct 2026 08:40:42 +0100
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -93,49 +65,101 @@ List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] usb: gadget: u_serial: pin ports while TTYs are
- installed
-From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Neill Kapron <nkapron@google.com>, linux-usb@vger.kernel.org,
- Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Mehmet Fide <mehmet.fide@gmail.com>, Brian Ellis
- <brianellis@gotenna.com>, Johan Hovold <johan@kernel.org>,
- Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
- syzkaller-bugs@googlegroups.com, Ai Chao <aichao@kylinos.cn>,
- Kees Cook <kees@kernel.org>, linux-kernel@vger.kernel.org,
- syzbot@lists.linux.dev,
- syzbot+fe63e4d633540f230624@syzkaller.appspotmail.com, stable@kernel.org,
- syzbot+bca09f5d8b843bbf7571@syzkaller.appspotmail.com
-References: <6941beb7-8cae-4cc5-ba07-e1c8a8753fe1@mail.kernel.org>
- <20261022091359.1187468-1-krystianmkaniewski@gmail.com>
+Subject: Re: [PATCH] fs/ntfs3: handle partial allocation in
+ attr_data_get_block_locked()
+To: Slawomir Stepien <sst@poczta.fm>, <ntfs3@lists.linux.dev>
+CC: syzbot <syzbot@kernel.org>, <syzkaller-bugs@googlegroups.com>,
+	<linux-kernel@vger.kernel.org>, <syzbot@lists.linux.dev>,
+	<syzkaller-upstream-moderation@googlegroups.com>
+References: <8fc44517-e231-4539-a353-3dd47045a203@mail.kernel.org>
+ <ammdVFSsD9cP8eYU@nr200>
 Content-Language: en-US
-In-Reply-To: <20261022091359.1187468-1-krystianmkaniewski@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+In-Reply-To: <ammdVFSsD9cP8eYU@nr200>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: vobn-exch-01.paragon-software.com (172.30.72.13) To
+ vdlg-exch-02.paragon-software.com (172.30.1.105)
 
-This patch also fixes another syzbot report with the same cause,
-"KASAN: slab-use-after-free Write in release_tty":
-https://syzkaller.appspot.com/bug?extid=bca09f5d8b843bbf7571
+On 7/29/26 08:27, Slawomir Stepien wrote:
 
-It is the close side of the same lifetime bug. gs_close() drops
-port->port.count to zero, gserial_free_line() frees the gs_port, and
-release_tty() then writes tty->port->itty in the freed memory. The
-tty_init_dev() report is the same race on the open side. With this
-patch the TTY holds a tty_port reference from gs_install() to
-gs_cleanup(), so the port outlives both paths.
+> Hello
+>
+> A gentle reminder about this PATCH.
+>
+> On lip 15, 2026 12:29, syzbot wrote:
+>> From: Slawomir Stepien <sst@poczta.fm>
+>>
+>> When allocating clusters for a sparse or compressed attribute in
+>> attr_data_get_block_locked(), the requested virtual cluster number (vcn0)
+>> is aligned down to a frame boundary (vcn). The function then attempts to
+>> allocate a full frame of clusters.
+>>
+>> If the disk is nearly full and highly fragmented, attr_allocate_clusters()
+>> might only manage to allocate a small fragment and return success with a
+>> partial allocation length. If this partial allocation is so small that it
+>> does not even reach the originally requested vcn0 (i.e., end <= vcn0), vcn0
+>> remains unallocated (a sparse hole).
+>>
+>> When the code subsequently calls run_lookup_entry() for vcn0, it finds the
+>> original SPARSE_LCN entry, which triggers a WARN_ON(1).
+>>
+>> Fix this by adding a check to verify if the partial allocation reached
+>> vcn0. If it did not (vcn0 >= end), treat this as an -ENOSPC failure and
+>> jump to the undo1 label. This safely rolls back the partial allocation,
+>> restores the original size, and repacks the runs, leaving the inode in a
+>> consistent state before returning the error to the caller.
+>>
+>> WARNING: fs/ntfs3/attrib.c:1236 at attr_data_get_block_locked+0x1980/0x25d0
+>> fs/ntfs3/attrib.c:1236
+>> RIP: 0010:attr_data_get_block_locked+0x1980/0x25d0 fs/ntfs3/attrib.c:1236
+>> Call Trace:
+>>   <TASK>
+>>   attr_data_get_block+0x1f1/0x2a0 fs/ntfs3/attrib.c:979
+>>   ntfs_fallocate+0xd3d/0xf70 fs/ntfs3/file.c:670
+>>   vfs_fallocate+0x663/0x7f0 fs/open.c:338
+>>   ksys_fallocate fs/open.c:362 [inline]
+>>   __do_sys_fallocate fs/open.c:367 [inline]
+>>   __se_sys_fallocate fs/open.c:365 [inline]
+>>   __x64_sys_fallocate+0xbf/0x110 fs/open.c:365
+>>   do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+>>   do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
+>>   entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>>   </TASK>
+>>
+>> Fixes: 099ef9ab9203 ("fs/ntfs3: implement iomap-based file operations")
+>> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
+>> Reported-by: syzbot+7be6ad5cb228286af3e3@syzkaller.appspotmail.com
+>> Closes: https://syzkaller.appspot.com/bug?extid=7be6ad5cb228286af3e3
+>> Link: https://syzkaller.appspot.com/ai_job?id=3c9dee6e-001d-4972-8bf6-f6c960708246
+>> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+>>
+>> ---
+>> diff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c
+>> index c621a4c58..786fd0ec0 100644
+>> --- a/fs/ntfs3/attrib.c
+>> +++ b/fs/ntfs3/attrib.c
+>> @@ -1227,6 +1227,10 @@ int attr_data_get_block_locked(struct ntfs_inode *ni, CLST vcn, CLST clen,
+>>        total_size = total_size0 + ((u64)*len << cluster_bits);
+>>
+>>        if (vcn != vcn0) {
+>> +             if (vcn0 >= end) {
+>> +                     err = -ENOSPC;
+>> +                     goto undo1;
+>> +             }
+>>                if (!run_lookup_entry(run, vcn0, lcn, len, NULL)) {
+>>                        err = -EINVAL;
+>>                        goto out;
+>>
+>>
+>> base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
+> --
+> Slawomir Stepien
 
-Tested in QEMU on the base of this patch (usb-next bdf12cde3083) with
-the syzbot configuration and C reproducer of that report. Without the
-patch KASAN reported the use-after-free in release_tty() within a
-second in each of five boots. With the patch five runs of 300 seconds
-each (about 8,600 reproducer iterations) showed no reports.
+Hello,
 
-If the patch is accepted, these tags would close that report as well:
+Sorry for the delay. Your patch was applied, thanks.
 
-Reported-by: syzbot+bca09f5d8b843bbf7571@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=bca09f5d8b843bbf7571
+Regards,
+Konstantin
 
-Thanks,
---
-Krystian Kaniewski
