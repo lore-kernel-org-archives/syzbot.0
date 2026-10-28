@@ -1,60 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=35.157.23.187
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.200
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793173247;
-	b=bp3RX4zLGrq4tuAZ5vRsDQrCf/Gu6lKE+JeWRYY3lwrAsuGduVo27strnERfBZIzNsng
-	 o1/ctXnEwBJf++nbxZ4woJEEemiJLfnNd1keFGtS5+/qWfCwTBwO72uhVWVfsWa5UBp5c
-	 O07YkZoluMsJe3MVR49h5gd4t3li+Ub71CGqM6pSy1dk+zXjnTwiPqqaSi9pIhoD5ht2R
-	 nX/U0zQonZw3Z5SpfzVmrHMrVLK068trvy/AGQSfqkMZrYFSKJJvYpPHDC2kZZ/dQ3Tgx
-	 KUFm8CKj7zuOI3SALRAMyXO7Mp3G5wcsT6E4E59SKoTCRka9sZItAqfX0BcIvXyInKg==
+	t=1793178842;
+	b=n2uUYq4oYFF+4JmOnXyi2L6rAqG8U2m+XtgvEADwULcEERrAN5K/3j5st91az97vZVEM
+	 hi8lei+R9xZ9CpaDNyijwsKzuduy0zeDkZxBGGDoYSL0cllrJrrD9G8eAWOZ36YRJw+E4
+	 IA0hx66R5130Sx2lvQYv0oooPYkty64s1igZn6Qw3NwobxeLNAJcCJI/GmgYL3tuXxHCZ
+	 GykFSB1lckHCFKm7DXwzh6LBvs8Ug5fpz/3hDeoo60dgZj1Ay+43L9q7x7EgU95vvsglH
+	 sZABUPMn+fkgMAgOLDs6QZdqDvgvPww8ryFhjU1VXwfE0529n63tqIuxkcFYgd+nl4Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793173247;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:Received:Message-ID:
-	 Date:MIME-Version:User-Agent:Subject:To:CC:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-	bh=JgSqjGLkhPK3vICnAOXyWbM67kSh/OMJMraMs0151RA=;
-	b=uetwnEAzRmsB7Kxr0a5Nn20ymr+v9YL9eU8ajjsCWLRKi4KL/tXr1zDu3nBKLFv1MtZE
-	 dp5NNfXz65E7klv4dafQVMIfsRm3QCmLH3PaP0XHFUMeoF2uLSRL1xJ0mfJhHF3xAYu/8
-	 nkqz8UlUmjczM0Z3c3LJrudZOHcFdT4Yl8IFK5cshopdBUVNEkCtzHWaT/wLip6xpiDcm
-	 EAjbwS6jpomiDdJrgzv+Uw6wx9Jh22yAm+oTpp3KI8D6S125QypOqggcDeGS6xXNjodPG
-	 cQl1nToyUuCBvTcQo/gZneHCjG7IKg6K/RqmFre19tW/jqrPaIb4SnMe5cxw+9ckLfg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793178842;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
+	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
+	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
+	 Content-Type;
+	bh=LoB4sAuNmpCHUusghzgWdZ1QvJYHuw27J5nRueMaS04=;
+	b=mvECDw5sP7dM5q4dJS1cDMFodwZ2qOa+Nq1ZTjFlDA1pVP9q4fckp0CudcBuA6bG6dc6
+	 kJWfrDWuFVA7v9GDUD8J6QQeGkRd1GUahPX2CpqCSTphufzhgjhG54OGIx9NqiEaWzqMB
+	 CBe43zDy3/+FBBepvlarYLLC4MQ2+3rdqhjmKS9/IhqLGxSOGWPR+boJV2ueC7xIh7HzV
+	 r4fQ/LhLC5zzEcFk2P3W8eEF0Wn1Mt6skMbEhSoOy5g464GNwMTjch03me1EXRFHWn5gi
+	 o0AWda/VMxrsAzgHbJiTEmpqMzbX413qXBMJ5rFh2jY/QTAbO0/2WbzBPxQLtTKJrUw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=paragon-software.com;
-	spf=pass smtp.mailfrom=paragon-software.com;
-	dkim=pass header.d=paragon-software.com header.i=@paragon-software.com header.a=rsa-sha256 header.s=mail header.b=NoEC3t0D;
-	arc=none smtp.remote-ip=35.157.23.187
-Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=fail header.from=syzkaller.appspotmail.com;
+	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
+	arc=none smtp.remote-ip=209.85.167.200
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 097DF606A31D;
-	Wed, 28 Oct 2026 07:40:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 097DF606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=paragon-software.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=paragon-software.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=paragon-software.com header.i=@paragon-software.com header.a=rsa-sha256 header.s=mail header.b=NoEC3t0D
-Received: from relayfre-01.paragon-software.com (relayfre-01.paragon-software.com [176.12.100.13])
-	by relayaws-01.paragon-software.com (Postfix) with ESMTPS id 95D6D1D15;
-	Wed, 28 Oct 2026 07:41:32 +0000 (UTC)
-Authentication-Results: relayaws-01.paragon-software.com;
-	dkim=pass (1024-bit key; unprotected) header.d=paragon-software.com header.i=@paragon-software.com header.b=NoEC3t0D;
-	dkim-atps=neutral
-Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
-	by relayfre-01.paragon-software.com (Postfix) with ESMTPS id 0F881D9;
-	Wed, 28 Oct 2026 07:40:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=paragon-software.com; s=mail; t=1793173245;
-	bh=JgSqjGLkhPK3vICnAOXyWbM67kSh/OMJMraMs0151RA=;
-	h=Date:Subject:To:CC:References:From:In-Reply-To;
-	b=NoEC3t0DHZkfT3Qqa/klBaPU3+nWgQJJd1zTNeR7hQXw9AC0sTIKlByhPUlxDSu/Z
-	 hFjbxknPQ2chfPTzsM9yT0s++dIK1Kq89xw3ODrQtdUptswNKYATiN6xwpJK6UJA/F
-	 JPKEeSO8rl33wb0vvVrHVchOKJnu7S9OUjSEzYcc=
-Received: from [192.168.95.128] (172.30.20.183) by
- vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Wed, 28 Oct 2026 10:40:43 +0300
-Message-ID: <16cff409-fe5e-4aa7-8f0f-abe0b62982f5@paragon-software.com>
-Date: Wed, 28 Oct 2026 08:40:42 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CF88606A321
+	for <syzbot@lists.linux.dev>; Wed, 28 Oct 2026 09:14:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5CF88606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-54dbbf252cdso1157762b6e.2
+        for <syzbot@lists.linux.dev>; Wed, 28 Oct 2026 02:14:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793178841; x=1793783641;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=LoB4sAuNmpCHUusghzgWdZ1QvJYHuw27J5nRueMaS04=;
+        b=iYHzWtXu3KHCTFE++qTOw3vvTae6f4/I5JQHOq6eB2IQHWTpA9WK8t2dRwgaQ+fDA3
+         j1q+UcsDnjwE9HZFqHFsaP4mKOvC861nH+sWXFcxG/3nLbqDvgeTZ6tn122kpTj/TtT0
+         0aZQZou6EiROjitH7fy+RwJHr6qzHjxofpkdUzSlLP5OQXcrF0KQt8AxsP55GEhGRYfw
+         dHVxdKD5DtxHutnXJ7BH5F66OICAakXWvvNqZ9kqngJPVA/Wfn2W/N05KdF4soR7H2LJ
+         GPu5WnYxfmLOf6RuXps65FK1IIpeKF+wYOILqvtrQjweZwB5wgXuFQuhjumHyiV12Wgb
+         Gkhg==
+X-Gm-Message-State: AFq9FYJwTSgBGbKugAJ2xtjQYITFgs/3/qJCCtsGmnmZdCgR6Qh8Aaef
+	mL/R1gQ7aSVfX5azNeqGO6tm7cBFYT5+k2k4PLFyYBretrG3Di/73dzwWRENQ63ODVmf+6PKzIf
+	LECQOVEKjZfc4+nRI9TVOLapJl9V7/Rm3YF6/PHkSX78L+bd9DHbs8h2kuMI=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -64,102 +57,123 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] fs/ntfs3: handle partial allocation in
- attr_data_get_block_locked()
-To: Slawomir Stepien <sst@poczta.fm>, <ntfs3@lists.linux.dev>
-CC: syzbot <syzbot@kernel.org>, <syzkaller-bugs@googlegroups.com>,
-	<linux-kernel@vger.kernel.org>, <syzbot@lists.linux.dev>,
-	<syzkaller-upstream-moderation@googlegroups.com>
-References: <8fc44517-e231-4539-a353-3dd47045a203@mail.kernel.org>
- <ammdVFSsD9cP8eYU@nr200>
-Content-Language: en-US
-From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-In-Reply-To: <ammdVFSsD9cP8eYU@nr200>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: vobn-exch-01.paragon-software.com (172.30.72.13) To
- vdlg-exch-02.paragon-software.com (172.30.1.105)
+X-Received: by 2002:a05:6808:10c5:b0:4f3:e98f:fa26 with SMTP id
+ 5614622812f47-5638565c559mr1161976b6e.58.1793178841269; Wed, 28 Oct 2026
+ 02:14:01 -0700 (PDT)
+Date: Wed, 28 Oct 2026 02:14:01 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6ae1bcd9.f0fe5aea.79aa1.009f.GAE@google.com>
+Subject: [moderation/CI] Re: KVM: Fix+harden against bad uaccess using dying VM
+From: syzbot ci <syzbot+ci1eacd2ff5765fce8@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On 7/29/26 08:27, Slawomir Stepien wrote:
+syzbot ci has tested the following series
 
-> Hello
->
-> A gentle reminder about this PATCH.
->
-> On lip 15, 2026 12:29, syzbot wrote:
->> From: Slawomir Stepien <sst@poczta.fm>
->>
->> When allocating clusters for a sparse or compressed attribute in
->> attr_data_get_block_locked(), the requested virtual cluster number (vcn0)
->> is aligned down to a frame boundary (vcn). The function then attempts to
->> allocate a full frame of clusters.
->>
->> If the disk is nearly full and highly fragmented, attr_allocate_clusters()
->> might only manage to allocate a small fragment and return success with a
->> partial allocation length. If this partial allocation is so small that it
->> does not even reach the originally requested vcn0 (i.e., end <= vcn0), vcn0
->> remains unallocated (a sparse hole).
->>
->> When the code subsequently calls run_lookup_entry() for vcn0, it finds the
->> original SPARSE_LCN entry, which triggers a WARN_ON(1).
->>
->> Fix this by adding a check to verify if the partial allocation reached
->> vcn0. If it did not (vcn0 >= end), treat this as an -ENOSPC failure and
->> jump to the undo1 label. This safely rolls back the partial allocation,
->> restores the original size, and repacks the runs, leaving the inode in a
->> consistent state before returning the error to the caller.
->>
->> WARNING: fs/ntfs3/attrib.c:1236 at attr_data_get_block_locked+0x1980/0x25d0
->> fs/ntfs3/attrib.c:1236
->> RIP: 0010:attr_data_get_block_locked+0x1980/0x25d0 fs/ntfs3/attrib.c:1236
->> Call Trace:
->>   <TASK>
->>   attr_data_get_block+0x1f1/0x2a0 fs/ntfs3/attrib.c:979
->>   ntfs_fallocate+0xd3d/0xf70 fs/ntfs3/file.c:670
->>   vfs_fallocate+0x663/0x7f0 fs/open.c:338
->>   ksys_fallocate fs/open.c:362 [inline]
->>   __do_sys_fallocate fs/open.c:367 [inline]
->>   __se_sys_fallocate fs/open.c:365 [inline]
->>   __x64_sys_fallocate+0xbf/0x110 fs/open.c:365
->>   do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->>   do_syscall_64+0x174/0x580 arch/x86/entry/syscall_64.c:94
->>   entry_SYSCALL_64_after_hwframe+0x77/0x7f
->>   </TASK>
->>
->> Fixes: 099ef9ab9203 ("fs/ntfs3: implement iomap-based file operations")
->> Assisted-by: Gemini:gemini-3.1-pro-preview Gemini:gemini-3-flash-preview syzbot
->> Reported-by: syzbot+7be6ad5cb228286af3e3@syzkaller.appspotmail.com
->> Closes: https://syzkaller.appspot.com/bug?extid=7be6ad5cb228286af3e3
->> Link: https://syzkaller.appspot.com/ai_job?id=3c9dee6e-001d-4972-8bf6-f6c960708246
->> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
->>
->> ---
->> diff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c
->> index c621a4c58..786fd0ec0 100644
->> --- a/fs/ntfs3/attrib.c
->> +++ b/fs/ntfs3/attrib.c
->> @@ -1227,6 +1227,10 @@ int attr_data_get_block_locked(struct ntfs_inode *ni, CLST vcn, CLST clen,
->>        total_size = total_size0 + ((u64)*len << cluster_bits);
->>
->>        if (vcn != vcn0) {
->> +             if (vcn0 >= end) {
->> +                     err = -ENOSPC;
->> +                     goto undo1;
->> +             }
->>                if (!run_lookup_entry(run, vcn0, lcn, len, NULL)) {
->>                        err = -EINVAL;
->>                        goto out;
->>
->>
->> base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
-> --
-> Slawomir Stepien
+[v3] KVM: Fix+harden against bad uaccess using dying VM
+https://lore.kernel.org/all/20261027221209.1560865-1-seanjc@google.com
+* [PATCH v3 01/15] KVM: Reject user accesses to guest memory if current->mm != kvm->mm
+* [PATCH v3 02/15] KVM: nVMX: Don't force a full nested VM-Exit when destroying a vCPU
+* [PATCH v3 03/15] KVM: PPC: Flush/zap all memslots on kvm_arch_flush_shadow_all()
+* [PATCH v3 04/15] KVM: x86: Unmap VMAs for KVM-internal memslots when the memslot is freed
+* [PATCH v3 05/15] KVM: Disallow setting memslots when the VM is being destroyed
+* [PATCH v3 06/15] KVM: Destroy memslots immediately after mmu_notifiers are unregistered
+* [PATCH v3 07/15] KVM: WARN if KVM attempts to do guest-related uaccess with "wrong" process
+* [PATCH v3 08/15] KVM: WARN and reject guest-based uaccess if VM is dying
+* [PATCH v3 09/15] KVM: Pre-check uaccesses in KVM's APIs to read/write guest memory
+* [PATCH v3 10/15] KVM: VMX: Explicility free vmcs01, not the current VMCS, in vCPU free paths
+* [PATCH v3 11/15] KVM: nVMX: Don't explicitly VMCLEAR+free() vmcs01's shadow VMCS when freeing vCPU
+* [PATCH v3 12/15] KVM: nVMX: Cancel the nested VMX Preemption Timer's hrtimer in free_nested()
+* [PATCH v3 13/15] KVM: VMX: Explicitly remove dying vCPUs from the PI wakeup list
+* [PATCH v3 14/15] KVM: nVMX: Don't switch to vmcs01 when freeing a vCPU
+* [PATCH v3 15/15] KVM: nVMX: Don't load+put the vCPU when freeing nested state for a dying vCPU
 
-Hello,
+and found the following issue:
+WARNING in vt_vcpu_pi_remove_from_wakeup_list
 
-Sorry for the delay. Your patch was applied, thanks.
+Full report is available here:
+https://ci.syzbot.org/series/c648fc23-f4c2-4346-93cd-b717ef38b27c
 
-Regards,
-Konstantin
+***
+
+WARNING in vt_vcpu_pi_remove_from_wakeup_list
+
+tree:      kvm-next
+URL:       https://kernel.googlesource.com/pub/scm/virt/kvm/kvm/
+base:      7e60162b16f9da0d2fa83da5c1723b6853a0ac1d
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/e4ed6c4f-9b58-4549-9ac6-525add47e472/config
+syz repro: https://ci.syzbot.org/findings/320f356a-c5e9-41ff-b8f5-3f0866e300b7/syz_repro
+
+------------[ cut here ]------------
+refcount_read(&vcpu->kvm->users_count)
+WARNING: arch/x86/kvm/vmx/posted_intr.c:154 at vt_vcpu_pi_remove_from_wakeup_list+0x142/0x1f0 arch/x86/kvm/vmx/posted_intr.c:154, CPU#1: syz.2.19/5870
+Modules linked in:
+CPU: 1 UID: 0 PID: 5870 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:vt_vcpu_pi_remove_from_wakeup_list+0x142/0x1f0 arch/x86/kvm/vmx/posted_intr.c:154
+Code: 48 85 db 74 2d e8 ee 1b 64 00 eb 0c e8 e7 1b 64 00 eb 05 e8 e0 1b 64 00 5b 41 5e 41 5f 5d e9 c5 b5 87 0a cc e8 cf 1b 64 00 90 <0f> 0b 90 e9 2b ff ff ff e8 c1 1b 64 00 e8 ac 60 cf ff eb da 44 89
+RSP: 0018:ffffc900037cf8c8 EFLAGS: 00010293
+RAX: ffffffff816404a1 RBX: ffff88816ada8000 RCX: ffff888110eb0000
+RDX: 0000000000000000 RSI: 0000000000000003 RDI: 0000000000000000
+RBP: 0000000000000003 R08: ffff88810fb01f83 R09: 1ffff11021f603f0
+R10: dffffc0000000000 R11: ffffed1021f603f1 R12: dffffc0000000000
+R13: 00000000fffffff8 R14: ffff88810fb01f80 R15: dffffc0000000000
+FS:  00007f9e487ab6c0(0000) GS:ffff8882a7cbf000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f07a7ed4870 CR3: 000000010eea9000 CR4: 0000000000352ef0
+Call Trace:
+ <TASK>
+ vmx_vcpu_free+0x28/0x400 arch/x86/kvm/vmx/vmx.c:7517
+ kvm_arch_vcpu_destroy+0x154/0x380 arch/x86/kvm/x86.c:9556
+ kvm_vm_ioctl_create_vcpu+0x76f/0x9f0 virt/kvm/kvm_main.c:4384
+ kvm_vm_ioctl+0x442/0xcb0 virt/kvm/kvm_main.c:5294
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:597 [inline]
+ __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f9e4799f1eb
+Code: 00 48 89 44 24 18 31 c0 48 8d 44 24 60 c7 04 24 10 00 00 00 48 89 44 24 08 48 8d 44 24 20 48 89 44 24 10 b8 10 00 00 00 0f 05 <89> c2 3d 00 f0 ff ff 77 1c 48 8b 44 24 18 64 48 2b 04 25 28 00 00
+RSP: 002b:00007f9e487aaed0 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f9e4799f1eb
+RDX: 0000000000000003 RSI: 000000000000ae41 RDI: 0000000000000085
+RBP: 00007f9e47a36b20 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000200000c00000 R11: 0000000000000246 R12: 00000000000004ce
+R13: 0000200000c00000 R14: 0000200000001040 R15: 00007ffeb7342be8
+ </TASK>
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
+
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[jmattson@google.com jthoughton@google.com kvm@vger.kernel.org linux-kernel@vger.kernel.org linuxppc-dev@lists.ozlabs.org maddy@linux.ibm.com mason@kernel.org npiggin@gmail.com pbonzini@redhat.com seanjc@google.com]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
 
