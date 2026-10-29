@@ -1,53 +1,93 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.69
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.49
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793263103;
-	b=jwNM6MgWnYhrc8tBYTzAr/bDE1XlF3BDhPP2q+mggozerk2uMdKF9Ykl7NHqP4RQrCP8
-	 9XgM0y206R+ezgBT8Y5OFn5nsdbbxVAgGrtJo+Cl7gTOerld1KcyJfsxIGRQWJbX8aKC1
-	 jXZJJ3tBQgjLXSRKq2FrF+ksQ6GCg+5Ir4csIO4zdOgN1v0Z23gX1ILpTFEcVaL6adHzj
-	 uv06Ghrue3TtxYlAXcEklVFBZFME2AWgi/BY+g3Z7iAg1BYUmhdA3gKmN5bw3JhLjgL2k
-	 vO8wCu3aHoSSLmTsh261980q+5SNfG4FtcJMPt46vqRHEe5I+YYRcGvia63G7fIXg2g==
+	t=1793265421;
+	b=JNqyz2Ump3/THBmbz5S6rVb0RBtZ7tQxJrcwV6YOrP6f8lIVqBCwMPdqNrpPP6wbVBht
+	 7Z/7UMzr3ogrm9dHxT1HMp4QPWhzOvje+1xRYe2Du9GOJIxLLxE39RlXjgUES2udygUNp
+	 /wIVCv2FcM9XOyiIVPkSPlokt7H13wDsedYkq0I/GKz3KxuxVOZcH6AH1S114CswymzKB
+	 puiuCgwAslw4OhrcG/pxg0PaSsxlthSJ9U4rITIo7oPfEhYALhmkbwN0iwr+iRehw4W2X
+	 P5IdV3jufJ3X0OrXP77LLqVJWZKkvod+mSvRPn08D2zZarng4rbW3ckHLzd8FwhtZjQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793263103;
-	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
-	 MIME-Version:X-Received:Date:In-Reply-To:X-Google-Appengine-App-Id:
-	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
-	 Content-Type;
-	bh=ScDNiRu1LhhAqGnssz6v8Goe18dHxFftj2LJPSqODSs=;
-	b=YS3bIB+jsgJLp5f38RJP+lDqVnls6r5hmLRkvzSArrW+E0vK5RWxCJw0RmgUZRJJXW0/
-	 HLVow5ptnTGJG1Eu0+Ejnyjy40ro+djrfB5+oSm2/AXN4LCJ4KV0FYDHyy4b1vzcGaBxN
-	 qq0PzsMAQQV/etmmsCAokcvbS2u6/lajTBQJJ0JrYrVhEE0xrXEDfTtskGuNmUfOXNLD6
-	 GQXtBznYlIkVo+6TIoO8L+fuxtRBAtL4yv5g57pjvArwBr9U+R2q0ixDCr4upppov2jNu
-	 S/or8UDXLbq4msBON207Gc83j1j4bLweh7RQWitWl9/26QfwKsBAYDMZKwjWDsxc4xA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793265421;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
+	 In-Reply-To;
+	bh=ge1EzgBoVMN9k1VDFc5Z2du+Odf41+v73pP02bIxQWY=;
+	b=XRFaJVsZVtDJHTRqTHW/WDgOX37l19yg0krG85Dq8qRBKVttB39eTpiUisbFbV3sfwwb
+	 LfiUFg2GMUMkLWdcvCX2nHxJWSRAccW0mraam0c+tMDboIIZHJcOQSMukhUDChuUTlbCk
+	 Ks4GGMG3iHmab+aHIGZMG0FJ7HDkpncp8gvlWZLN/FNr4AalY4TK94F67Pl4Np2sNzZT9
+	 +7PQW+DeIX8JJ9kNYD4s2HKP+aj18rVXO91m17EEgz6XysehaGTrKWUi0RTNfxX0JuBf0
+	 elC02uvzvKEbBu7/vuuE+tGliFTfyNQxSu6DfG4EQceCRSYNK606qz1zt3VuxM8DRrA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=fail header.from=syzkaller.appspotmail.com;
-	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
-	arc=none smtp.remote-ip=209.85.210.69
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=JeHrlcZy;
+	arc=none smtp.remote-ip=209.85.218.49
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE166606A31A
-	for <syzbot@lists.linux.dev>; Thu, 29 Oct 2026 08:38:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DE166606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-821de0b7baaso2518254a34.1
-        for <syzbot@lists.linux.dev>; Thu, 29 Oct 2026 01:38:22 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C217C606A31A
+	for <syzbot@lists.linux.dev>; Thu, 29 Oct 2026 09:17:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C217C606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=JeHrlcZy
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-c4677aad67bso214288366b.0
+        for <syzbot@lists.linux.dev>; Thu, 29 Oct 2026 02:17:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793265419; x=1793870219; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=ge1EzgBoVMN9k1VDFc5Z2du+Odf41+v73pP02bIxQWY=;
+        b=JeHrlcZyh7qGzXFPvS+sVqA8jpju5PrEBmIqVTUeMnsbjAP7gMWLvlLRfH1Og4sggf
+         09RD55aHH/B2WeSWxd2sCRP6Ovgm+1185S26O6JEBuXFoWNTX7FIr0Af6KnKcflI+Lp0
+         hq7Bpz4II1BbCxAZr051s81Oxz5EvliSKjWbgQ8hqylo2jUMtwmc8iJTz/q16R/hCM+F
+         krwJn0iXr7PVimVPVhw88A6EwD+xneiLlbmv05ueWyRnLmY6PTiwUM+t16YUVAg4PhuH
+         R27grs1hLsjcUEk767jDXn10DshvzPoYZu6MNP62+bkhP19z8xg+kP0+uZBEokfU8FbD
+         0piQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793263102; x=1793867902;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20260707; t=1793265419; x=1793870219;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=ScDNiRu1LhhAqGnssz6v8Goe18dHxFftj2LJPSqODSs=;
-        b=iLaOjOeQQx4LNj7jZIoK5rHld1zcXq48oQQsh7Ohk8rZPEPZbUpVz51gUhP9qfXmN6
-         LWZ0Ppc52uxwihipzgpFNYX/dvIO8pJsE9gOC29Gs0VClhRlMZ8CTCjza+F9IgqteENw
-         ThPpumvSWyChz63mNewpvKEC6l0OymcawrGHzzz7ETaljUc0YlppWHtlyrK/LkxUhU1v
-         N7NNvk6bQpqq9jaxY1c+6s60Z/T7PKo80ijUi3I51adNefngl3M2YGIFvNxGfqBPl1ML
-         a75NOxgIndToWtQXRsnc1uD5LcgGRW+oEJhePatEMBXLEHFnAa1h/Zec3zHOYI2IWrLs
-         6hCA==
-X-Gm-Message-State: AFq9FYK/dGJhrsLVgVauju5jp9fimW8zYh4DslOMLJEFXJCCF4//Gu8z
-	FXPKFpovDalQFUshXg1o932PXkXwbswH2scJln45i8d+yl1dHeOUqJXqzF1zT6pKELLSdmI5CNs
-	OS3w0WCYm9rLJGYHOoQZ4rqLm6EznAiqMptJqgpVLYXE1vTTeCsaUSYovtHw=
+        bh=ge1EzgBoVMN9k1VDFc5Z2du+Odf41+v73pP02bIxQWY=;
+        b=rjw2q4/hsB8qT9qBjFkRiAyZPqbSHSg6b/OuLLfvi4TU/V+sx3VXJrsFa6cog0ckRN
+         8KfgEKUe0SewObhOHeoXMQH4xdU1/E4VyFVmzzTpvcx1Nh1Sb+KGqMjmgv7cT23xA6hY
+         zk+xUcS7w9xc2cqmBqocrvV5nKRff/FCnX/u8arUtRSAmIuNztla9eNY2f62Dku/tinf
+         osmTQ4ofpsnauZuuy10Hqzyr/Vz+WNv3H+uKnFPhjvufDA8t+TwQ/fgV3Xoj+tUpQN0B
+         4eiVcvyzbc6r/w3sNIl2fmC9/8/9/aAOatRPSj8N86Y03TsaTUTUrzF5oOu2ElOFMwlz
+         /urA==
+X-Forwarded-Encrypted: i=1; AKwUvBzNBUbp9rSD8Vruxi5AU6nVeVqMqOCTakJSEO/0Z0zEaKpIVOr6OYtpe/raIcz/e4FcLJb5CjQ=@lists.linux.dev
+X-Gm-Message-State: AFq9FYKsl5geYhY+rtCLqirQJ6bdxyo0t186lL80A4kc9y4+vbMqyR/y
+	eoqEPG3iO9KVkvwkKhWRKSHdjN83Wl1pouirGNcSkYykqezHZT/MwGEb
+X-Gm-Gg: AYBFou2HOhFtTFba3ZTBfYfcdn5ZTRHVPVAD7N71ReAkVCkpfNHhNlWtV+8fxXEucyJ
+	TCZO9E9yRPFuB7dR1wzZeaYHlYJC+viOrIi1qTv7nm2tgCSs6wFrceOUR3n4L+0V6vpeNpQkBLY
+	NJ+r74UYgRpQiKHK+nVeRC5xZlnOCLEAK1zvBOo2/WmsAl3uo/5oilkHadHWL0vXjILXqjd3tAh
+	0pFQz9SjqysbiiN9Pk2MPpJkl+jV1nyVugk2wrU3QPsI1mhXjw0+aplz+8YF+AfCDmMVmsmKuje
+	WJD8fQNfRG2KKn5MBvb3FC7v7xlmJwGe4C3TXNyAracD5Br3cY+cno6R8r2Jg33dBN4YIROS3B6
+	21VTApfcq/YkwR3LFadhfKYs1FemATSsBaAeZyMlkDL5gyiD6q4O/xSKRTT6q6xanK9AyVpX6CW
+	ZehYcXu4szCdYQHD7iwPkbbVu04hmCIov8WcRkwt+otNhkWlifpfisKTYqoRqw2Prq3NBsUbeRy
+	qByVR1RQtnI8NgMrlqHMoY0hYOmckEl1WayzA/BKU1jU1KRkLEblJol9ssLmNc2NdIEcOzvfuI1
+	Rr/NyEKCs+hKl8OXpD5Aym4vHCnXOMpv1nUcky9wWhxrHubl/ywN1A==
+X-Received: by 2002:a17:907:1c0d:b0:c2e:4292:d27e with SMTP id a640c23a62f3a-c49bdf6cfa4mr422827266b.22.1793265418855;
+        Thu, 29 Oct 2026 02:16:58 -0700 (PDT)
+Received: from localhost ([37.30.46.15])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c46bd7bbdc6sm706594966b.87.2026.10.29.02.16.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2026 02:16:58 -0700 (PDT)
+Date: Thu, 29 Oct 2026 10:16:56 +0100
+From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
+To: syzbot <syzbot@kernel.org>
+Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
+Subject: Re: [PATCH RFC] media: mxl111sf: initialize state->d and fe_lock in
+ probe
+Message-ID: <hblb6wiokwrksxr4aakie4svfxvjnogjqdvujysv7d7wmngmbc@pszgf7xbqh54>
+References: <b8b6fc2d-1c9a-4046-bba5-c9ef864bfae3@mail.kernel.org>
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -57,234 +97,231 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:83c5:20b0:70e:78ba:1192 with SMTP id
- 006d021491bc7-713ed7bcb3emr1972000eaf.27.1793263101856; Thu, 29 Oct 2026
- 01:38:21 -0700 (PDT)
-Date: Thu, 29 Oct 2026 01:38:21 -0700
-In-Reply-To: <20261028141751.6728-1-enderaoelyther@gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ae305fd.5451848c.f7707.0008.GAE@google.com>
-Subject: [syzbot ci] Re: wifi: mac80211_hwsim: fix netlink release and radio
- removal races
-From: syzbot ci <syzbot+ciaa26a4b0500f613c@syzkaller.appspotmail.com>
-To: enderaoelyther@gmail.com, jlopex@gmail.com, johannes@sipsolutions.net, 
-	jukka.rissanen@linux.intel.com, linux-kernel@vger.kernel.org, 
-	linux-wireless@vger.kernel.org, linville@tuxdriver.com, 
-	stable@vger.kernel.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <b8b6fc2d-1c9a-4046-bba5-c9ef864bfae3@mail.kernel.org>
 
-syzbot ci has tested the following series
+The v1 code change is sound in the tested scenario. The assembled patch sti=
+ll
+needs the submission corrections below; no code rewrite is requested.
 
-[v1] wifi: mac80211_hwsim: fix netlink release and radio removal races
-https://lore.kernel.org/all/20261028141751.6728-1-enderaoelyther@gmail.com
-* [PATCH 1/2] wifi: mac80211_hwsim: ignore non-generic netlink releases
-* [PATCH 2/2] wifi: mac80211_hwsim: serialize radio removal with frame commands
+Required changes:
+- Correct the formatter-owned Fixes: metadata. Replace 8572211842af with
+  4c66c9205c07, or provide source history supporting a narrower
+  conversion-specific claim. The syzkaller-side metadata owner must make th=
+is
+  change; editing the generated description alone cannot change the trailer.
+- Revise the description to distinguish its quoted x64/NOPTI trace from the
+  selected 2026-10-02 PTI/compat report, or quote that selected report. Des=
+cribe
+  fe_lock as initialized before frontend registration; the selected I2C fau=
+lt
+  does not demonstrate a frontend lock race.
 
-and found the following issue:
-INFO: task hung in mac80211_hwsim_netlink_notify
+Testing:
+In a matched 240-second run, the unpatched kernel hit the target fault in 3=
+/4
+guests and the patched kernel had no target crash in 4/4 guests. The C
+reproducer was confirmed to start on both sides. This supports the code cha=
+nge
+for the tested scenario; it is not a claim of general regression safety.
 
-Full report is available here:
-https://ci.syzbot.org/series/fe9cfff2-ef52-45eb-993c-ea84c287686d
+Context:
+mxl111sf_probe() assigns state->d and initializes fe_lock before the I2C
+adapter is published; the later back-pointer stores are redundant. The MxL1=
+11SF
+introduction, 4c66c9205c07 ("[media] dvb-usb: add ATSC support for the
+Hauppauge WinTV-Aero-M"), already registered I2C before frontend attachment
+and assigned state->d only during frontend attachment. The later 8572211842=
+af
+DVB USB v2 conversion did not introduce that ordering defect. Syzkaller
+appends Fixes: from patch metadata after the generated description.
 
-***
+The selected historical-kernel run had four setup attempts, all stopped bef=
+ore
+the reproducer started. It therefore supplies neither a repro nor a no-repro
+result. Source-order checks did not exercise an I2C transfer concurrently w=
+ith
+disconnect. Resolve the historical setup failure and exercise that overlap
+before claiming those cases are covered.
 
-INFO: task hung in mac80211_hwsim_netlink_notify
+Impact assessment:=20
+A userspace I2C transaction through the registered adapter
+can reach the null back pointer and cause a kernel oops; panic-on-oops poli=
+cy
+can turn that into an outage. No confidentiality or integrity effect is pro=
+ven.
 
-tree:      wireless-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/wireless/wireless-next.git
-base:      864c07de0c7dcbca58b61625dfa2e461ae63b242
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/ffa94119-c540-48f2-b244-f5fa2d9531b2/config
+Kind Regards / Mit freundlichen Gr=C3=BC=C3=9Fen
+BART CHRONOWSKI
 
-INFO: task syz-executor:21314 blocked for more than 143 seconds.
-      Not tainted syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor    state:D stack:22184 pid:21314 tgid:21314 ppid:1      task_flags:0x400140 flags:0x00080002
-Call Trace:
- <TASK>
- __schedule+0x17dd/0x5820
- schedule+0x164/0x2b0
- schedule_preempt_disabled+0x13/0x30
- __mutex_lock+0x7c4/0x15a0
- mac80211_hwsim_netlink_notify+0x193/0x1140
- notifier_call_chain+0x1a5/0x3d0
- blocking_notifier_call_chain+0x6a/0x90
- netlink_release+0x1211/0x1a90
- __sock_release+0xa0/0x1f0
- sock_close+0x1c/0x30
- __fput+0x408/0xa40
- fput_close_sync+0x11f/0x240
- __se_sys_close+0xa2/0x160
- do_syscall_64+0x166/0x520
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fed3715fd8e
-RSP: 002b:00007fffadf594c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
-RAX: ffffffffffffffda RBX: 000055557b013500 RCX: 00007fed3715fd8e
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000005
-RBP: 0000000000000005 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fed37f54670
-R13: 0000000000000014 R14: 00007fed37f54864 R15: 00000000000001f4
- </TASK>
-
-Showing all locks held in the system:
-locks held by kworker/u8:1/13: 3, on CPU#0:
- #0: ffff888111e50148 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc90000127c40 ((work_completion)(&(&ifa->dad_work)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffffffff9125a680 (rtnl_mutex){+.+.}-{4:4}, at: addrconf_dad_work+0x116/0x15c0
-locks held by khungtaskd/35: 1, last CPU#1:
- #0: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: debug_show_all_locks+0x2e/0x180
-locks held by getty/5413: 2, on CPU#1:
- #0: ffff88811659a0a0 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x25/0x70
- #1: ffffc9000348b2e8 (&ldata->atomic_read_lock){+.+.}-{4:4}, at: n_tty_read+0x45a/0x1360
-locks held by kworker/u8:2/5484: 3, last CPU#0:
- #0: ffff88810b983148 ((wq_completion)krds_cp_wq#3/0){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc90004407c40 ((work_completion)(&(&cp->cp_conn_w)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffff88811a039280 (&tc->t_conn_path_lock){+.+.}-{4:4}, at: rds_tcp_conn_path_connect+0x1cc/0x920
-locks held by kworker/u9:17/30931: 3, last CPU#1:
- #0: ffff8881000ac148 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc90006befc40 ((work_completion)(&(&nsim_dev->trap_data->trap_report_dw)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffff888054278258 (&devlink->lock_key#13){+.+.}-{4:4}, at: nsim_dev_trap_report_work+0x57/0xb30
-locks held by kworker/u9:38/30947: 3, last CPU#1:
- #0: ffff8881000ac148 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc9000765fc40 ((work_completion)(&(&nsim_dev->trap_data->trap_report_dw)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffff888075278258 (&devlink->lock_key#12){+.+.}-{4:4}, at: nsim_dev_trap_report_work+0x57/0xb30
-locks held by kworker/u9:39/30948: 3, last CPU#1:
- #0: ffff8881000ac148 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc9000768fc40 ((work_completion)(&(&nsim_dev->trap_data->trap_report_dw)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffff88806cffd258 (&devlink->lock_key#5){+.+.}-{4:4}, at: nsim_dev_trap_report_work+0x57/0xb30
-locks held by kworker/u8:7/20795: 7, on CPU#0:
- #0: ffff8881012dd948 ((wq_completion)netns){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc9000791fc40 (net_cleanup_work){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffffffff9124be48 (pernet_ops_rwsem){++++}-{4:4}, at: cleanup_net+0xf5/0x810
- #3: ffffffff90a92d40 (hwsim_radio_mutex){+.+.}-{4:4}, at: hwsim_exit_net+0xc9/0xf70
- #4: ffffffff9125a680 (rtnl_mutex){+.+.}-{4:4}, at: wiphy_unregister+0x26f/0xb20
- #5: ffff888068390800 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: wiphy_unregister+0x279/0xb20
- #6: ffffffff8fd60328 (rcu_state.exp_mutex){+.+.}-{4:4}, at: synchronize_rcu_expedited+0x2cb/0x760
-locks held by kworker/u8:8/20796: 2, last CPU#0:
- #0: ffff888113926148 ((wq_completion)bat_events){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc9000793fc40 ((work_completion)(&(&bat_priv->dat.work)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
-locks held by syz-executor/21314: 3, on CPU#0:
- #0: ffff8881bfaa2640 (&sb->s_type->i_mutex_key#13){+.+.}-{4:4}, at: __sock_release+0x7a/0x1f0
- #1: ffffffff912c9268 ((netlink_chain).rwsem){++++}-{4:4}, at: blocking_notifier_call_chain+0x54/0x90
- #2: ffffffff90a92d40 (hwsim_radio_mutex){+.+.}-{4:4}, at: mac80211_hwsim_netlink_notify+0x193/0x1140
-locks held by kworker/0:5/21344: 3, on CPU#0:
- #0: ffff88810006ad48 ((wq_completion)events){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc90003ed7c40 (netdev_work){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffffffff9125a680 (rtnl_mutex){+.+.}-{4:4}, at: netdev_work_proc+0x6f/0x770
-locks held by syz-executor/21396: 3, on CPU#0:
- #0: ffff888112f5c440 (&sb->s_type->i_mutex_key#13){+.+.}-{4:4}, at: __sock_release+0x7a/0x1f0
- #1: ffffffff912c9268 ((netlink_chain).rwsem){++++}-{4:4}, at: blocking_notifier_call_chain+0x54/0x90
- #2: ffffffff90a92d40 (hwsim_radio_mutex){+.+.}-{4:4}, at: mac80211_hwsim_netlink_notify+0x193/0x1140
-locks held by syz-executor/21403: 3, on CPU#1:
- #0: ffff888013e16240 (&sb->s_type->i_mutex_key#13){+.+.}-{4:4}, at: __sock_release+0x7a/0x1f0
- #1: ffffffff912c9268 ((netlink_chain).rwsem){++++}-{4:4}, at: blocking_notifier_call_chain+0x54/0x90
- #2: ffffffff90a92d40 (hwsim_radio_mutex){+.+.}-{4:4}, at: mac80211_hwsim_netlink_notify+0x193/0x1140
-locks held by syz-executor/21473: 3, on CPU#0:
- #0: ffff8881a662e240 (&sb->s_type->i_mutex_key#13){+.+.}-{4:4}, at: __sock_release+0x7a/0x1f0
- #1: ffffffff912c9268 ((netlink_chain).rwsem){++++}-{4:4}, at: blocking_notifier_call_chain+0x54/0x90
- #2: ffffffff90a92d40 (hwsim_radio_mutex){+.+.}-{4:4}, at: mac80211_hwsim_netlink_notify+0x193/0x1140
-locks held by syz-executor/21500: 3, on CPU#0:
- #0: ffff88816a9b4440 (&sb->s_type->i_mutex_key#13){+.+.}-{4:4}, at: __sock_release+0x7a/0x1f0
- #1: ffffffff912c9268 ((netlink_chain).rwsem){++++}-{4:4}, at: blocking_notifier_call_chain+0x54/0x90
- #2: ffffffff90a92d40 (hwsim_radio_mutex){+.+.}-{4:4}, at: mac80211_hwsim_netlink_notify+0x193/0x1140
-locks held by syz-executor/21503: 3, on CPU#1:
- #0: ffff8881a652ee40 (&sb->s_type->i_mutex_key#13){+.+.}-{4:4}, at: __sock_release+0x7a/0x1f0
- #1: ffffffff912c9268 ((netlink_chain).rwsem){++++}-{4:4}, at: blocking_notifier_call_chain+0x54/0x90
- #2: ffffffff90a92d40 (hwsim_radio_mutex){+.+.}-{4:4}, at: mac80211_hwsim_netlink_notify+0x193/0x1140
-locks held by syz-executor/21537: 3, on CPU#1:
- #0: ffff8881bfaa5040 (&sb->s_type->i_mutex_key#13){+.+.}-{4:4}, at: __sock_release+0x7a/0x1f0
- #1: ffffffff912c9268 ((netlink_chain).rwsem){++++}-{4:4}, at: blocking_notifier_call_chain+0x54/0x90
- #2: ffffffff90a92d40 (hwsim_radio_mutex){+.+.}-{4:4}, at: mac80211_hwsim_netlink_notify+0x193/0x1140
-locks held by syz-executor/21559: 7, on CPU#0:
- #0: ffff888117068460 (sb_writers#7){.+.+}-{0:0}, at: vfs_write+0x22b/0xba0
- #1: ffff888120412c80 (&of->mutex){+.+.}-{4:4}, at: kernfs_fop_write_iter+0x1d8/0x540
- #2: ffff88816bbcf4b8 (kn->active#49){.+.+}-{0:0}, at: kernfs_fop_write_iter+0x22b/0x540
- #3: ffffffff90ad1400 (nsim_bus_dev_list_lock){+.+.}-{4:4}, at: new_device_store+0x13c/0x6d0
- #4: ffff8881c71ac128 (&dev->mutex){....}-{4:4}, at: __device_attach+0x88/0x450
- #5: ffff8881c71a9258 (&devlink->lock_key#14){+.+.}-{4:4}, at: nsim_drv_probe+0xfb/0xbb0
- #6: ffffffff9125a680 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_net_dev_lock+0x257/0x2f0
-locks held by syz-executor/21566: 3, last CPU#1:
- #0: ffff88819720ac40 (&sb->s_type->i_mutex_key#13){+.+.}-{4:4}, at: __sock_release+0x7a/0x1f0
- #1: ffffffff912c9268 ((netlink_chain).rwsem){++++}-{4:4}, at: blocking_notifier_call_chain+0x54/0x90
- #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: nl80211_netlink_notify+0x75/0x860
-locks held by kworker/u9:0/21570: 3, last CPU#1:
- #0: ffff8881000ac148 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc90003e87c40 ((work_completion)(&(&nsim_dev->trap_data->trap_report_dw)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffff8881bbf09258 (&devlink->lock_key){+.+.}-{4:4}, at: nsim_dev_trap_report_work+0x57/0xb30
-locks held by syz-executor/21598: 2, on CPU#0:
- #0: ffffffff909c0ba8 (&ops->srcu#2){.+.+}-{0:0}, at: rtnl_link_ops_get+0x23/0x250
- #1: ffffffff9125a680 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_newlink+0xc10/0x1c30
-
-=============================================
-
-NMI backtrace for cpu 1
-CPU: 1 UID: 0 PID: 35 Comm: khungtaskd Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150
- nmi_cpu_backtrace+0x274/0x2d0
- nmi_trigger_cpumask_backtrace+0x17d/0x390
- sys_info+0x135/0x170
- watchdog+0xfd2/0x1030
- kthread+0x38b/0x480
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
-Sending NMI from CPU 1 to CPUs 0:
-NMI backtrace for cpu 0
-CPU: 0 UID: 0 PID: 20796 Comm: kworker/u8:8 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: bat_events batadv_dat_purge
-RIP: 0010:native_apic_msr_write+0x39/0x50
-Code: 74 2a 83 ff 30 74 25 eb 10 81 ff d0 00 00 00 74 1b 81 ff e0 00 00 00 74 13 c1 ef 04 81 c7 00 08 00 00 89 f9 89 f0 31 d2 0f 30 <66> 90 c3 cc cc cc cc cc 89 f6 31 d2 e9 e6 17 aa 03 66 0f 1f 44 00
-RSP: 0018:ffffc90000007e50 EFLAGS: 00000046
-RAX: 000000000000000f RBX: ffff888120e23f40 RCX: 0000000000000838
-RDX: 0000000000000000 RSI: 000000000000000f RDI: 0000000000000838
-RBP: ffffc90000007f10 R08: 0000000000000100 R09: 0000000000000001
-R10: 0000000000000003 R11: ffffffff81758510 R12: ffffffff81758510
-R13: 1ffff110241c47f1 R14: 0000000000000000 R15: ffff888120e23f8c
-FS:  0000000000000000(0000) GS:ffff88818c4a4000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f85c76b3866 CR3: 0000000169088000 CR4: 00000000000006f0
-Call Trace:
- <IRQ>
- lapic_next_event+0x11/0x20
- clockevents_program_event+0x44e/0x630
- hrtimer_run_softirq+0x255/0x2e0
- handle_softirqs+0x265/0x8d0
- do_softirq+0x77/0xd0
- </IRQ>
- <TASK>
- __local_bh_enable_ip+0x100/0x140
- batadv_dat_purge+0x2d7/0x3c0
- process_scheduled_works+0xc3d/0x1630
- worker_thread+0xa47/0xfb0
- kthread+0x38b/0x480
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
-
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
+On Mon, Oct 19, 2026 at 03:45:05PM +0000, 'syzbot' via syzkaller-upstream-m=
+oderation wrote:
+> During device initialization in dvb_usbv2_probe(), the dvb-usb-v2 core
+> allocates the dvb_usb_device structure and its private state (struct
+> mxl111sf_state) via kzalloc(), then invokes dvb_usbv2_init(). Within
+> dvb_usbv2_init(), dvb_usbv2_i2c_init() registers the I2C adapter with
+> i2c_add_adapter(), which immediately exposes the I2C adapter to userspace
+> via the /dev/i2c-X character device.
+>=20
+> However, state->d was only assigned later during frontend attachment insi=
+de
+> dvb_usbv2_adapter_frontend_init() via d->props->frontend_attach(). If
+> userspace performs an I2C transaction before frontend_attach() completes,
+> mxl111sf_i2c_xfer() delegates to mxl111sf_ctrl_msg(), which reads state->d
+> and passes it to dvb_usbv2_generic_write() or dvb_usbv2_generic_rw(). Sin=
+ce
+> state->d is still NULL, dereferencing &d->usb_mutex inside
+> dvb_usbv2_generic_write() triggers a null-pointer dereference crash:
+>=20
+> Oops: general protection fault, probably for non-canonical address
+> 0xdffffc0000000018: 0000 [#1] SMP KASAN NOPTI
+> KASAN: null-ptr-deref in range [0x00000000000000c0-0x00000000000000c7]
+> RIP: 0010:__mutex_lock_common kernel/locking/mutex.c:625 [inline]
+> RIP: 0010:__mutex_lock+0x149/0x1550 kernel/locking/mutex.c:821
+> Call Trace:
+>  <TASK>
+>  dvb_usbv2_generic_write+0x26/0x60
+>  drivers/media/usb/dvb-usb-v2/dvb_usb_urb.c:77
+>  mxl111sf_ctrl_msg+0x160/0x2f0 drivers/media/usb/dvb-usb-v2/mxl111sf.c:73
+>  mxl111sf_write_reg+0xa9/0x1b0 drivers/media/usb/dvb-usb-v2/mxl111sf.c:123
+>  mxl111sf_i2c_start drivers/media/usb/dvb-usb-v2/mxl111sf-i2c.c:130
+>  [inline]
+>  mxl111sf_i2c_sw_xfer_msg drivers/media/usb/dvb-usb-v2/mxl111sf-i2c.c:-1
+>  [inline]
+>  mxl111sf_i2c_xfer+0x463/0x5060
+>  drivers/media/usb/dvb-usb-v2/mxl111sf-i2c.c:813
+>  __i2c_transfer+0x7bf/0x1fe0 drivers/i2c/i2c-core-base.c:-1
+>  i2c_transfer+0x1cb/0x2d0 drivers/i2c/i2c-core-base.c:2350
+>  i2cdev_ioctl_rdwr+0x460/0x740 drivers/i2c/i2c-dev.c:306
+>  i2cdev_ioctl+0x6a5/0x880 drivers/i2c/i2c-dev.c:467
+>  vfs_ioctl fs/ioctl.c:51 [inline]
+>  __do_sys_ioctl fs/ioctl.c:597 [inline]
+>  __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+>  do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+>  do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>  </TASK>
+>=20
+> Additionally, state->fe_lock was initialized in mxl111sf_init() (called v=
+ia
+> d->props->init()), which runs after frontend attachment, leaving the mutex
+> uninitialized during frontend registration.
+>=20
+> Fix this by setting state->d =3D dev and initializing state->fe_lock in
+> mxl111sf_probe(), which runs before dvb_usbv2_init() registers the I2C
+> adapter or attaches frontends. Furthermore, remove the redundant
+> mutex_init(&state->fe_lock) from mxl111sf_init() and the redundant
+> assignments of state->d in the frontend attach functions.
+>=20
+> Fixes: 8572211842af ("[media] mxl111sf: convert to new DVB USB")
+> Assisted-by: Gemini:gemini-4-argon Gemini:gemini-3.8-flash syzbot
+> Reported-by: syzbot+f9f5333782a854509322@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=3Df9f5333782a854509322
+> Link: https://syzkaller.appspot.com/ai_job?id=3D0eff5308-2f93-4b3a-b8d1-0=
+21ddc25aa49
+> To: <linux-media@vger.kernel.org>
+> To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
+> To: "Michael Krufky" <mkrufky@linuxtv.org>
+> To: "Antti Palosaari" <crope@iki.fi>
+> Cc: <linux-kernel@vger.kernel.org>
+>=20
+> ---
+> diff --git a/drivers/media/usb/dvb-usb-v2/mxl111sf.c b/drivers/media/usb/=
+dvb-usb-v2/mxl111sf.c
+> index 6404eb74d..fc4010b6e 100644
+> --- a/drivers/media/usb/dvb-usb-v2/mxl111sf.c
+> +++ b/drivers/media/usb/dvb-usb-v2/mxl111sf.c
+> @@ -431,8 +431,6 @@ static int mxl111sf_lgdt3305_frontend_attach(struct d=
+vb_usb_adapter *adap, u8 fe
+> =20
+>  	pr_debug("%s()\n", __func__);
+> =20
+> -	/* save a pointer to the dvb_usb_device in device state */
+> -	state->d =3D d;
+>  	adap_state->alt_mode =3D (dvb_usb_mxl111sf_isoc) ? 2 : 1;
+>  	state->alt_mode =3D adap_state->alt_mode;
+> =20
+> @@ -502,8 +500,6 @@ static int mxl111sf_lg2160_frontend_attach(struct dvb=
+_usb_adapter *adap, u8 fe_i
+> =20
+>  	pr_debug("%s()\n", __func__);
+> =20
+> -	/* save a pointer to the dvb_usb_device in device state */
+> -	state->d =3D d;
+>  	adap_state->alt_mode =3D (dvb_usb_mxl111sf_isoc) ? 2 : 1;
+>  	state->alt_mode =3D adap_state->alt_mode;
+> =20
+> @@ -587,8 +583,6 @@ static int mxl111sf_lg2161_frontend_attach(struct dvb=
+_usb_adapter *adap, u8 fe_i
+> =20
+>  	pr_debug("%s()\n", __func__);
+> =20
+> -	/* save a pointer to the dvb_usb_device in device state */
+> -	state->d =3D d;
+>  	adap_state->alt_mode =3D (dvb_usb_mxl111sf_isoc) ? 2 : 1;
+>  	state->alt_mode =3D adap_state->alt_mode;
+> =20
+> @@ -674,8 +668,6 @@ static int mxl111sf_lg2161_ep6_frontend_attach(struct=
+ dvb_usb_adapter *adap, u8
+> =20
+>  	pr_debug("%s()\n", __func__);
+> =20
+> -	/* save a pointer to the dvb_usb_device in device state */
+> -	state->d =3D d;
+>  	adap_state->alt_mode =3D (dvb_usb_mxl111sf_isoc) ? 2 : 1;
+>  	state->alt_mode =3D adap_state->alt_mode;
+> =20
+> @@ -749,8 +741,6 @@ static int mxl111sf_attach_demod(struct dvb_usb_adapt=
+er *adap, u8 fe_id)
+> =20
+>  	pr_debug("%s()\n", __func__);
+> =20
+> -	/* save a pointer to the dvb_usb_device in device state */
+> -	state->d =3D d;
+>  	adap_state->alt_mode =3D (dvb_usb_mxl111sf_isoc) ? 1 : 2;
+>  	state->alt_mode =3D adap_state->alt_mode;
+> =20
+> @@ -935,8 +925,6 @@ static int mxl111sf_init(struct dvb_usb_device *d)
+>  	if (mxl_fail(ret))
+>  		pr_err("failed to get chip info during probe");
+> =20
+> -	mutex_init(&state->fe_lock);
+> -
+>  	if (state->chip_rev > MXL111SF_V6)
+>  		mxl111sf_config_pin_mux_modes(state, PIN_MUX_TS_SPI_IN_MODE_1);
+> =20
+> @@ -1068,7 +1056,9 @@ static int mxl111sf_probe(struct dvb_usb_device *de=
+v)
+>  {
+>  	struct mxl111sf_state *state =3D d_to_priv(dev);
+> =20
+> +	state->d =3D dev;
+>  	mutex_init(&state->msg_lock);
+> +	mutex_init(&state->fe_lock);
+>  	return 0;
+>  }
+> =20
+>=20
+>=20
+> base-commit: c03c1a14507dfaf8b856c2608f9ac216021fc222
+> --=20
+> This is an AI-generated patch subject to moderation.
+> Reply with '#syz upstream' to Sign-off the patch as a human author
+> and send it to the upstream kernel mailing lists.
+> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+>=20
+> See https://goo.gle/syzbot-ai-patches for information about AI-generated =
+patches.
+> You can comment on the patch as usual, syzbot will try to address
+> the comments and send a new version of the patch if necessary.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>=20
+> --=20
+> You received this message because you are subscribed to the Google Groups=
+ "syzkaller-upstream-moderation" group.
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
+> To view this discussion visit https://groups.google.com/d/msgid/syzkaller=
+-upstream-moderation/b8b6fc2d-1c9a-4046-bba5-c9ef864bfae3%40mail.kernel.org.
