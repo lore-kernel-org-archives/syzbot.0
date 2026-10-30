@@ -1,49 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.198
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793368911;
-	b=R5I7zTCU4YpDZMoJJMLd3WOurzO+BWA1A+mzXMEgJOwjEKZkzHwtP8bpyuw9GzdcOicy
-	 p2mOaoJmsr0twX/Scl71/D8Onbd5EBeuHeSIpndIUbSNZL3/HWSupBWKOcLYmigaGiE3z
-	 Pi5jwhCKV1h7BZz3u2mwEAStQwWjDfhrqmrrPl/GxD3v7WRRl311MtmCXKQHoTRQRCVG1
-	 JgWNYhOexAVFnOpG78yqk3UtmqbIEbnpx/oGDNcTDdow7hlxSzRmZ2MPruAwO22d9NypZ
-	 UeQhs4rO2SSFdn3Zm6PKufEhqgm7Xd2za55oxjU75v+FCDyQvdaUeBxK3docmEFvxKw==
+	t=1793373942;
+	b=aYukoOb/IIJRO8Moxp/zQXs9Dt58W5jszePxAGxMRn0vdhhgSjoxjl2Gx6TeRCq4vM9h
+	 ZC+5f585GCWYjMtN+5jbKfF61MUbV++U0raRpVLM/iSLZdFFYZkTlJFGl6ar1vhu7G02Q
+	 sP8p8vWqxcDr+c5ilEHP9b8cEyBi6vt9ad0/dZvZsLk0W0KyKWp/pXtF6BT0Mif5keIN8
+	 biVTzsmPhkQIaWHtCHslwSXyODnDRBXy5gS66nAv/O6i66zm5+qQQ1Ak3OzadHdngAlX5
+	 6QfRJDHslvk5NxdT2/8ndwMm61Z60pFXDvgDQRTKOBczk9QJnb51XlQYMMfcYw/8qLQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793368911;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:Date;
-	bh=/ASjCpIVbNOzm9NoLfIZPsMSRRyDN9+sXHJGaCixYZo=;
-	b=KY/+LzUFdXCDE3tUfM8uxg96yx73gdgZcZI9Pcg9TY13lTdg3Xq7NFlmdaPNxEfaUesu
-	 qM2OIPXdWS15yGVy9ML2gZ+K/0L5lWhYC4ZDbRaR+wUsqiE196aIWbUa4kY+R5AixjB2j
-	 LQEyuq2taWppcVOnymZ2UbusdxKCc5QLCRzKPW3d/ab8Emv7qwgLUgmJ5wt28EfhuIjJ/
-	 1+PUGIZK2Fj093lSQCG9HEOqecYsPeiZHvmPIqtxGZDkZIkXp2Y0f5rXN95NA2FFlsQ4F
-	 UK5CUdHn6tJMSUEyz8OnlmxkZIUG/uXsQaX7lzPAPxC92QuE2DNT4zY4W/c4CcQ1A3g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793373942;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
+	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
+	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
+	 Content-Type;
+	bh=D3vnLdiXuuhhQglu6b8pBI3ZKuDl3gYp7qCaasdpmVM=;
+	b=0yz99wLrUZKJDpKSqZ9p6dInU3Vs5L/q6c4e/23T9uqqXhEqgneJgzhTAJ3PTJlCPTLG
+	 h7sAwoT69mzJQ3WGSUPY5MyfDHSoWi7JiTygKyhEq+JBKjGLILVs9zWogXEgWMXUgeyas
+	 rEdOC4hBQ/s28fF/LdTX+x+CzmprKZTUXOwq9UkDFMmaqaomewj+z+zuge42E9xFQM2vI
+	 T9o5yH83feY2v49LkNPj1sPT3Bzv15qEoiYIXUt9bC7Hnk6Zr/PcbBL9r2JJ7YuG8mq6k
+	 4iScfpTM1Bfd/GAssNcLiTrOfHsgiNLFHNIzAz5x5cxUxCF8hLkUyNRTs/B0f7r0Ptg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eTWc4ehY;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=fail header.from=syzkaller.appspotmail.com;
+	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
+	arc=none smtp.remote-ip=209.85.167.198
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 9220D606A31F
-	for <syzbot@lists.linux.dev>; Fri, 30 Oct 2026 14:01:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eTWc4ehY
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 162F51F00A15;
-	Fri, 30 Oct 2026 14:01:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793368910;
-	bh=/ASjCpIVbNOzm9NoLfIZPsMSRRyDN9+sXHJGaCixYZo=;
-	h=From:To:Cc:Subject:Date;
-	b=eTWc4ehYRTRFH0SvAecjY9NR88SWPHMuMM8iF55IFJKRlnp+6BxxQIUKnngf5ExHI
-	 piD4gvZKlowaD67h+E2cs8cF6yG7YMASpcLZMQgQDWuDqlFJd6MSgvwuOmPQxd5UBf
-	 4RoAw8NgJLUrC1l37mtORA9k8ZYzV5UI8dNGMp4mB2lmRL8fe4b0Xd7GJl6KmM1+rI
-	 pe5BgrhmyDnO5d1zsfQRBlngBfBcpnk0nphbRgwcuEermxF6CqccTz61JZ4nHiauxY
-	 5zMuSfZeMkYhvVC7MiS95IT+1STMkvABkR+mvjsqopT953r1OpnygjbeyL1Vzhk5IT
-	 lb6C11hwKfp5w==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: immersa.bartosz.chronowski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] media: az6007: Fix out-of-bounds access and mutex reinitialization
-Message-ID: <baa09ccd-e29d-4434-bfd6-cebf6a9b8413@mail.kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5CB9606A325
+	for <syzbot@lists.linux.dev>; Fri, 30 Oct 2026 15:25:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B5CB9606A325
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-4eb0b989f0eso1137982b6e.0
+        for <syzbot@lists.linux.dev>; Fri, 30 Oct 2026 08:25:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793373940; x=1793978740;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=D3vnLdiXuuhhQglu6b8pBI3ZKuDl3gYp7qCaasdpmVM=;
+        b=lMj7cMe/0JWCttAmjrf3q9uu2t/t1gxfZ/nJAFrERIbePZfKrGtFtAYq6YvpffKoY6
+         ELuTBhcPbhqZq5Feo0upHYwWSDo7rIWu2uXtpBVzrFJ8pWNpTtEkBbmTQRMP3x3U77Nd
+         1EEp2Cs+Bkkg+XIrFgfJ39WZk6R1Ibdio3u29upWXJgV70HDXUA1/dEpwPLIMpn4SwUO
+         mlmoFddMxZ20ocUUbx2yzLwUKOjEYxB33N8Qd0M0siPtbPYqziQbPVGTXQv7xFrvTCSF
+         1qDjIRNvd0KapLjkmWx2je8r584dnCfSJqL+XVSQ8m+Wv1AMRasWyXIDtToahAG1KPJx
+         58aQ==
+X-Gm-Message-State: AFq9FYJEBb86VjAaMcv0OneKlhoQXBqTyFf24w/8RHCnTIkxdJVj8/JX
+	2NhAyQZOjEy4RX4NqQHot655/+WOd5hSahBCB8XnofBl1BJj/fPGlHVe99Nw73m/FBsqKEQx/JN
+	V0eoZgcFb2dcIGcLCg/n3M6zQM9osuNPlMHYlKSwKJCrTs9tgoh79Mas/A1c=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -53,244 +57,236 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri, 30 Oct 2026 14:01:50 +0000 (UTC)
+X-Received: by 2002:a05:6808:c12e:b0:4f5:dc0d:e013 with SMTP id
+ 5614622812f47-563ef615b7amr3282356b6e.4.1793373940671; Fri, 30 Oct 2026
+ 08:25:40 -0700 (PDT)
+Date: Fri, 30 Oct 2026 08:25:40 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6ae4b6f4.f57e0135.1770dd.007a.GAE@google.com>
+Subject: [moderation/CI] Re: netfilter: flowtable: purge entries immediately
+ when destroying the flowtable
+From: syzbot ci <syzbot+ci30e56c2ea4509e19@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-In az6007_i2c_xfer(), user-controlled I2C messages transferred via
-/dev/i2c-* (through i2c-dev) can specify lengths up to 8192 bytes. The
-driver uses a fixed 4096-byte bounce buffer, st->data, defined in struct
-az6007_device_state. The driver does not validate message lengths against
-sizeof(st->data) before copying data or issuing USB control transfers,
-leading to out-of-bounds buffer accesses.
+syzbot ci has tested the following series
 
-When userspace reads from an I2C device (such as via preadv() on
-/dev/i2c-*), i2cdev_read() calls i2c_master_recv() -> i2c_transfer() ->
-__i2c_transfer() -> az6007_i2c_xfer() with msgs[0].len matching the
-requested read size. In the single read branch, length is computed as
-msgs[i].len + 6. If msgs[i].len exceeds 4090 bytes, length exceeds
-sizeof(st->data). Furthermore, the return value of __az6007_read() was not
-validated before copying bytes from st->data[j + 5] into msgs[i].buf[j].
-When a large read request fails at the USB level, the copy loop still
-executes unconditionally. When j reaches 4091, j + 5 equals 4096, reading
-past the end of st->data and triggering a UBSAN array-index-out-of-bounds
-warning:
+[v1] netfilter: flowtable: purge entries immediately when destroying the flowtable
+https://lore.kernel.org/all/20261029171950.222776-1-pablo@netfilter.org
+* [PATCH nf] netfilter: flowtable: purge entries immediately when destroying the flowtable
 
-UBSAN: array-index-out-of-bounds in
-drivers/media/usb/dvb-usb-v2/az6007.c:821:22
-index 4096 is out of range for type 'unsigned char[4096]'
+and found the following issues:
+* BUG: sleeping function called from invalid context in flow_offload_work_del
+* WARNING: locking bug in flow_offload_work_del
+
+Full report is available here:
+https://ci.syzbot.org/series/5482d6d8-0683-4f36-bb55-ffcf94a9edcc
+
+***
+
+BUG: sleeping function called from invalid context in flow_offload_work_del
+
+tree:      nf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf.git
+base:      734bef548a96e8774d6eef5dfa2026c6edc4e80b
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/94e4012e-ffd8-430a-9ba4-d5a167bf8988/config
+syz repro: https://ci.syzbot.org/findings/6c0e698b-3bb6-4d1f-94cb-9ebf1c0a71db/syz_repro
+
+BUG: sleeping function called from invalid context at kernel/locking/rwsem.c:1573
+in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 5686, name: kworker/u8:3
+preempt_count: 0, expected: 0
+RCU nest depth: 1, expected: 0
+locks held by kworker/u8:3/5686: 3, last CPU#0:
+ #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
+ #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
+ #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3460 [inline]
+ #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630 kernel/workqueue.c:3578
+ #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
+ #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
+ #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3460 [inline]
+ #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630 kernel/workqueue.c:3578
+ #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
+ #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
+ #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rhashtable_walk_start_check+0x64/0xcf0 lib/rhashtable.c:872
+CPU: 0 UID: 0 PID: 5686 Comm: kworker/u8:3 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Workqueue: act_ct_workqueue tcf_ct_flow_table_cleanup_work
 Call Trace:
  <TASK>
  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
- __ubsan_handle_out_of_bounds+0xe8/0xf0 lib/ubsan.c:455
- az6007_i2c_xfer+0x419/0xaa0 drivers/media/usb/dvb-usb-v2/az6007.c:821
- __i2c_transfer+0x7bf/0x1fe0 drivers/i2c/i2c-core-base.c:-1
- i2c_transfer+0x1cb/0x2d0 drivers/i2c/i2c-core-base.c:2350
- i2c_transfer_buffer_flags+0x10d/0x1a0 drivers/i2c/i2c-core-base.c:2378
- i2c_master_recv include/linux/i2c.h:79 [inline]
- i2cdev_read+0x10d/0x250 drivers/i2c/i2c-dev.c:155
- vfs_readv+0x57c/0x850 fs/read_write.c:1021
- do_preadv fs/read_write.c:1133 [inline]
+ __might_resched+0x36a/0x4c0 kernel/sched/core.c:9195
+ down_read+0x26/0x320 kernel/locking/rwsem.c:1573
+ nf_flow_offload_tuple net/netfilter/nf_flow_table_offload.c:920 [inline]
+ flow_offload_tuple_del net/netfilter/nf_flow_table_offload.c:951 [inline]
+ flow_offload_work_del+0x240/0x5e0 net/netfilter/nf_flow_table_offload.c:995
+ nf_flow_table_offload_purge+0x51/0x80 net/netfilter/nf_flow_table_offload.c:1184
+ nf_flow_table_do_purge net/netfilter/nf_flow_table_core.c:776 [inline]
+ nf_flow_table_iterate net/netfilter/nf_flow_table_core.c:459 [inline]
+ nf_flow_table_free+0x29b/0x3b0 net/netfilter/nf_flow_table_core.c:789
+ tcf_ct_flow_table_cleanup_work+0x1a/0x90 net/sched/act_ct.c:386
+ process_one_work kernel/workqueue.c:3495 [inline]
+ process_scheduled_works+0xc3d/0x1630 kernel/workqueue.c:3578
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3659
+ kthread+0x38b/0x480 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
  </TASK>
 
-Similar buffer overflow issues exist in the other transfer paths: the
-combined write+read branch lacked checks on msgs[i + 1].len < 1 and length
-> sizeof(st->data), while the write branch copied msgs[i].len - 1 bytes
-into st->data without verifying that the payload fit within the 64-byte
-maximum supported by __az6007_write(). In addition, the read loops accessed
-st->data[j + 5] without verifying that __az6007_read() returned at least 5
-+ len bytes. Additionally, in __az6007_write(), the blen > 64 check was
-performed after dumping the payload to the kernel log under
-az6007_xfer_debug.
+=============================
+[ BUG: Invalid wait context ]
+syzkaller #0 Tainted: G        W           
+-----------------------------
+kworker/u8:3/5686 is trying to lock:
+ffff88817589eb28 (&flowtable->flow_block_lock){.+.+}-{4:4}, at: nf_flow_offload_tuple net/netfilter/nf_flow_table_offload.c:920 [inline]
+ffff88817589eb28 (&flowtable->flow_block_lock){.+.+}-{4:4}, at: flow_offload_tuple_del net/netfilter/nf_flow_table_offload.c:951 [inline]
+ffff88817589eb28 (&flowtable->flow_block_lock){.+.+}-{4:4}, at: flow_offload_work_del+0x240/0x5e0 net/netfilter/nf_flow_table_offload.c:995
+other info that might help us debug this:
+context-{5:5}
+locks held by kworker/u8:3/5686: 3, last CPU#0:
+ #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
+ #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
+ #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3460 [inline]
+ #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630 kernel/workqueue.c:3578
+ #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
+ #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
+ #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3460 [inline]
+ #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630 kernel/workqueue.c:3578
+ #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
+ #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
+ #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rhashtable_walk_start_check+0x64/0xcf0 lib/rhashtable.c:872
+stack backtrace:
+CPU: 0 UID: 0 PID: 5686 Comm: kworker/u8:3 Tainted: G        W            syzkaller #0 PREEMPT(full) 
+Tainted: [W]=WARN
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Workqueue: act_ct_workqueue tcf_ct_flow_table_cleanup_work
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_lock_invalid_wait_context kernel/locking/lockdep.c:4874 [inline]
+ check_wait_context kernel/locking/lockdep.c:4946 [inline]
+ __lock_acquire+0xf5b/0x2de0 kernel/locking/lockdep.c:5238
+ lock_acquire+0x115/0x350 kernel/locking/lockdep.c:5942
+ down_read+0x45/0x320 kernel/locking/rwsem.c:1574
+ nf_flow_offload_tuple net/netfilter/nf_flow_table_offload.c:920 [inline]
+ flow_offload_tuple_del net/netfilter/nf_flow_table_offload.c:951 [inline]
+ flow_offload_work_del+0x240/0x5e0 net/netfilter/nf_flow_table_offload.c:995
+ nf_flow_table_offload_purge+0x51/0x80 net/netfilter/nf_flow_table_offload.c:1184
+ nf_flow_table_do_purge net/netfilter/nf_flow_table_core.c:776 [inline]
+ nf_flow_table_iterate net/netfilter/nf_flow_table_core.c:459 [inline]
+ nf_flow_table_free+0x29b/0x3b0 net/netfilter/nf_flow_table_core.c:789
+ tcf_ct_flow_table_cleanup_work+0x1a/0x90 net/sched/act_ct.c:386
+ process_one_work kernel/workqueue.c:3495 [inline]
+ process_scheduled_works+0xc3d/0x1630 kernel/workqueue.c:3578
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3659
+ kthread+0x38b/0x480 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
 
-Separately, the crash report indicates corruption of the mutex wait list
-before the I2C transfer starts, which is distinct from the out-of-bounds
-read buffer issue found during testing. On the base commit, it was observed
-that mutex_init(&state->mutex) was called inside az6007_power_ctrl() when
-!state->warm. If the initial power-on command failed, state->warm remained
-false, causing subsequent invocations of az6007_power_ctrl() to
-reinitialize state->mutex while the device was active. If another thread
-held or waited on the mutex during az6007_i2c_xfer(), reinitializing the
-mutex cleared the lock owner and wait list, triggering a
-DEBUG_LOCKS_WARN_ON warning on unlock. Note that this failed-power mutex
-reset was observed on the base commit rather than being confirmed as the
-exact reproduction sequence in the crash report.
 
-Fix these issues by:
-- Moving mutex initialization out of az6007_power_ctrl() into a newly
-introduced probe callback (az6007_probe) that initializes state->mutex once
-upon device probing.
-- Adding upper-bound checks against sizeof(st->data) in the single read and
-combined write+read paths of az6007_i2c_xfer(), checking length <= 64 in
-the write path, and verifying msgs[i + 1].len >= 1 in the combined path.
-- Checking that __az6007_read() returned at least 5 + len bytes before
-copying data from st->data to msgs[i].buf in the single read and combined
-paths.
-- Moving the blen > 64 check in __az6007_write() before the debug hex dump.
+***
 
-Fixes: a2c35d346d9e ("[media] az6007: Protect read/write calls with a mutex")
-Assisted-by: Gemini:gemini-4-argon Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+0192952caa411a3be209@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=0192952caa411a3be209
-Link: https://syzkaller.appspot.com/ai_job?id=33295084-b1e3-4d4b-b832-b8fd4f72f6ac
-To: <linux-media@vger.kernel.org>
-To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-To: "Mauro Carvalho Chehab" <mchehab@redhat.com>
-Cc: <linux-kernel@vger.kernel.org>
+WARNING: locking bug in flow_offload_work_del
+
+tree:      nf
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf.git
+base:      734bef548a96e8774d6eef5dfa2026c6edc4e80b
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/94e4012e-ffd8-430a-9ba4-d5a167bf8988/config
+AI triage: https://ci.syzbot.org/findings/8d3389f2-6e3f-4f98-bc3b-bba34041a26f/triage_trajectory
+
+BUG: sleeping function called from invalid context at kernel/locking/rwsem.c:1573
+in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 5634, name: kworker/u8:2
+preempt_count: 0, expected: 0
+RCU nest depth: 1, expected: 0
+locks held by kworker/u8:2/5634: 3, last CPU#1:
+ #0: ffff888115805948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
+ #1: ffffc9000473fc40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
+ #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rhashtable_walk_start_check+0x64/0xcf0
+CPU: 1 UID: 0 PID: 5634 Comm: kworker/u8:2 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Workqueue: act_ct_workqueue tcf_ct_flow_table_cleanup_work
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150
+ __might_resched+0x36a/0x4c0
+ down_read+0x26/0x320
+ flow_offload_work_del+0x240/0x5e0
+ nf_flow_table_offload_purge+0x51/0x80
+ nf_flow_table_free+0x29b/0x3b0
+ tcf_ct_flow_table_cleanup_work+0x1a/0x90
+ process_scheduled_works+0xc3d/0x1630
+ worker_thread+0xa47/0xfb0
+ kthread+0x38b/0x480
+ ret_from_fork+0x514/0xb70
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
+=============================
+[ BUG: Invalid wait context ]
+syzkaller #0 Tainted: G        W           
+-----------------------------
+kworker/u8:2/5634 is trying to lock:
+ffff8881b9d94b28 (&flowtable->flow_block_lock){++++}-{4:4}, at: flow_offload_work_del+0x240/0x5e0
+other info that might help us debug this:
+context-{5:5}
+locks held by kworker/u8:2/5634: 3, last CPU#0:
+ #0: ffff888115805948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
+ #1: ffffc9000473fc40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
+ #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rhashtable_walk_start_check+0x64/0xcf0
+stack backtrace:
+CPU: 0 UID: 0 PID: 5634 Comm: kworker/u8:2 Tainted: G        W            syzkaller #0 PREEMPT(full) 
+Tainted: [W]=WARN
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Workqueue: act_ct_workqueue tcf_ct_flow_table_cleanup_work
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150
+ __lock_acquire+0xf5b/0x2de0
+ lock_acquire+0x115/0x350
+ down_read+0x45/0x320
+ flow_offload_work_del+0x240/0x5e0
+ nf_flow_table_offload_purge+0x51/0x80
+ nf_flow_table_free+0x29b/0x3b0
+ tcf_ct_flow_table_cleanup_work+0x1a/0x90
+ process_scheduled_works+0xc3d/0x1630
+ worker_thread+0xa47/0xfb0
+ kthread+0x38b/0x480
+ ret_from_fork+0x514/0xb70
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v2:
-- Require ret >= 5 + len instead of ret >= len in read paths before copying from st->data.
-- Limit write transfers to 64 bytes instead of sizeof(st->data).
-- Clarify in commit description that the crash report indicates mutex wait list corruption, distinct from the out-of-bounds read buffer issue, and that the failed-power mutex reset was observed on the base commit.
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v1:
-https://lore.kernel.org/all/98467e25-6e27-41d8-94d9-5367714ce9b0@mail.kernel.org/T/
----
-diff --git a/drivers/media/usb/dvb-usb-v2/az6007.c b/drivers/media/usb/dvb-usb-v2/az6007.c
-index 65ef045b7..783ec628f 100644
---- a/drivers/media/usb/dvb-usb-v2/az6007.c
-+++ b/drivers/media/usb/dvb-usb-v2/az6007.c
-@@ -143,6 +143,12 @@ static int __az6007_write(struct usb_device *udev, u8 req, u16 value,
- {
- 	int ret;
- 
-+	if (blen > 64) {
-+		pr_err("az6007: tried to write %d bytes, but I2C max size is 64 bytes\n",
-+		       blen);
-+		return -EOPNOTSUPP;
-+	}
-+
- 	if (az6007_xfer_debug) {
- 		printk(KERN_DEBUG "az6007: OUT req: %02x, value: %04x, index: %04x\n",
- 		       req, value, index);
-@@ -150,12 +156,6 @@ static int __az6007_write(struct usb_device *udev, u8 req, u16 value,
- 				     DUMP_PREFIX_NONE, b, blen);
- 	}
- 
--	if (blen > 64) {
--		pr_err("az6007: tried to write %d bytes, but I2C max size is 64 bytes\n",
--		       blen);
--		return -EOPNOTSUPP;
--	}
--
- 	ret = usb_control_msg(udev,
- 			      usb_sndctrlpipe(udev, 0),
- 			      req,
-@@ -694,8 +694,6 @@ static int az6007_power_ctrl(struct dvb_usb_device *d, int onoff)
- 	pr_debug("%s()\n", __func__);
- 
- 	if (!state->warm) {
--		mutex_init(&state->mutex);
--
- 		ret = az6007_write(d, AZ6007_POWER, 0, 2, NULL, 0);
- 		if (ret < 0)
- 			return ret;
-@@ -770,14 +768,22 @@ static int az6007_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
- 			if (az6007_xfer_debug)
- 				printk(KERN_DEBUG "az6007: I2C W/R addr=0x%x len=%d/%d\n",
- 				       addr, msgs[i].len, msgs[i + 1].len);
-+			if (msgs[i + 1].len < 1) {
-+				ret = -EIO;
-+				goto err;
-+			}
- 			req = AZ6007_I2C_RD;
- 			index = msgs[i].buf[0];
- 			value = addr | (1 << 8);
- 			length = 6 + msgs[i + 1].len;
- 			len = msgs[i + 1].len;
-+			if (length > sizeof(st->data)) {
-+				ret = -EOPNOTSUPP;
-+				goto err;
-+			}
- 			ret = __az6007_read(d->udev, req, value, index,
- 					    st->data, length);
--			if (ret >= len) {
-+			if (ret >= 5 + len) {
- 				for (j = 0; j < len; j++)
- 					msgs[i + 1].buf[j] = st->data[j + 5];
- 			} else
-@@ -797,6 +803,10 @@ static int az6007_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
- 			value = addr | (1 << 8);
- 			length = msgs[i].len - 1;
- 			len = msgs[i].len - 1;
-+			if (length > 64) {
-+				ret = -EOPNOTSUPP;
-+				goto err;
-+			}
- 			for (j = 0; j < len; j++)
- 				st->data[j] = msgs[i].buf[j + 1];
- 			ret =  __az6007_write(d->udev, req, value, index,
-@@ -815,10 +825,18 @@ static int az6007_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
- 			value = addr;
- 			length = msgs[i].len + 6;
- 			len = msgs[i].len;
-+			if (length > sizeof(st->data)) {
-+				ret = -EOPNOTSUPP;
-+				goto err;
-+			}
- 			ret = __az6007_read(d->udev, req, value, index,
- 					    st->data, length);
--			for (j = 0; j < len; j++)
--				msgs[i].buf[j] = st->data[j + 5];
-+			if (ret >= 5 + len) {
-+				for (j = 0; j < len; j++)
-+					msgs[i].buf[j] = st->data[j + 5];
-+			} else {
-+				ret = -EIO;
-+			}
- 		}
- 		if (ret < 0)
- 			goto err;
-@@ -889,6 +907,15 @@ static int az6007_download_firmware(struct dvb_usb_device *d,
- 	return cypress_load_firmware(d->udev, fw, CYPRESS_FX2);
- }
- 
-+static int az6007_probe(struct dvb_usb_device *d)
-+{
-+	struct az6007_device_state *state = d_to_priv(d);
-+
-+	mutex_init(&state->mutex);
-+
-+	return 0;
-+}
-+
- /* DVB USB Driver stuff */
- static struct dvb_usb_device_properties az6007_props = {
- 	.driver_name         = KBUILD_MODNAME,
-@@ -897,6 +924,7 @@ static struct dvb_usb_device_properties az6007_props = {
- 
- 	.adapter_nr          = adapter_nr,
- 	.size_of_priv        = sizeof(struct az6007_device_state),
-+	.probe               = az6007_probe,
- 	.i2c_algo            = &az6007_i2c_algo,
- 	.tuner_attach        = az6007_tuner_attach,
- 	.frontend_attach     = az6007_frontend_attach,
-@@ -919,11 +947,12 @@ static struct dvb_usb_device_properties az6007_cablestar_hdci_props = {
- 
- 	.adapter_nr          = adapter_nr,
- 	.size_of_priv        = sizeof(struct az6007_device_state),
-+	.probe               = az6007_probe,
- 	.i2c_algo            = &az6007_i2c_algo,
- 	.tuner_attach        = az6007_tuner_attach,
- 	.frontend_attach     = az6007_cablestar_hdci_frontend_attach,
- 	.streaming_ctrl      = az6007_streaming_ctrl,
--/* ditch get_rc_config as it can't work (TS35 remote, I believe it's rc5) */
-+	/* ditch get_rc_config as it can't work (TS35 remote, I believe it's rc5) */
- 	.get_rc_config       = NULL,
- 	.read_mac_address    = az6007_read_mac_addr,
- 	.download_firmware   = az6007_download_firmware,
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
 
-base-commit: c03c1a14507dfaf8b856c2608f9ac216021fc222
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+The email will later be sent to:
+[netfilter-devel@vger.kernel.org pablo@netfilter.org]
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
