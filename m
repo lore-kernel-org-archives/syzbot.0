@@ -1,53 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.200
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.70
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793381630;
-	b=bs+BLzwaQeE0hjy0Kj+ffQH8FbYNyqjeR7abAQ+3Nrl6YakYBdLyyjqHKuF+ReUi3+Qd
-	 xvvFK/rzhQKa8IyIUtkfphUteiIXe0q4h/4PRAjgV7P2brTZa3VfIiubBK6MoxW5JhqM9
-	 3LZZF4nGdeD3UdpP0xliRbYhr65BzdJ6/flh/aVHrwCb9S+nFxOeXsylJdx10XpZ0kPTL
-	 iigvvNUXd6OcPDdIMTYoysUH6GV9T6yh3mGOvXHg9cjDJ+tH+EpJzzKgfr2nXok7OdgiT
-	 yjSFQhomw/EtTY7zjXNnzSDJizfPpFMCC5VpS3Z+GpXaDbO9/DId40uLmtG0z8fo2ew==
+	t=1793391241;
+	b=S1DXp1ThqY+02B+5lr4LVDRkAxkA2fZn1fNUjc4YbUw9KAi2vblONNCdeKQC/NkQ/9NJ
+	 VRZ4ZUmhayEs5dJa3BndBaauGluRMczioaHExHQqQ/xo5uFH/u8x/QW5FEP0CHYBKhldN
+	 zWVpG4SIiNRhOVMp+yvmmym6J13CS7jDp3CyrK0BDTJOijfXYTsOtlw2Pn1aiScikNBmX
+	 eBmy+6r3ntK6qAmUa0JbN13OFf7YpQOuTxWNE0FCEN/KTq7uOpEqKeXPd4OyBC3vv5gra
+	 J8VfJBzYfb/HT48HGw08KErGAF8oufpuWugnHorY8XwOyKm3Xt9HTOKyHsGINGj8XTQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793381630;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793391241;
 	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
-	 MIME-Version:X-Received:Date:In-Reply-To:X-Google-Appengine-App-Id:
+	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
 	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
 	 Content-Type;
-	bh=9swxJ5zXJJBY0nNfgb0A9dSPa8XR0GO6rxRhKw0+TpM=;
-	b=ZtfWwPKl459h7MU9DFYlYMcZ4N1V9QKAKl6tRBzHHA0lLqOxJytVTnHUKio6EK3We8Qb
-	 Ed/vpQJArKDxyy4YkBc99F3pekf1Hp6yGMSjGiZRkhlFi/MpcayP18fTkOCbkNWO5LfaT
-	 qgAuXtiOUvi3Py8J81bqGXA7jmoLSRLvXoV00TYABkT7xU/bKOVN30FbgUiEx6JWP55c2
-	 nhhmCkdlMRwVi//TxJ9IXp7yATgWc1c/VYdKlkbjj8YrSp6bUBiPsH9GANt5jUj2icqOI
-	 LqjzpcC6jJCIsO0CRuzxQP8UDCsmZErbBokHu1SPga6un1i2npgm5bSb94G/pkj+Jcw==
+	bh=lMB9zcify57gjB/sJxbh4dzp0JfHp2InJCKmZGnUHJo=;
+	b=MIsSP481ktiabeNcTOeZyOJHBDXFL6kjwVAGL4UupKGtxeBgkjKI0+Wc6C0UVyPgNHf/
+	 p1f789ex5c4aGACTl6McMS+6e1NKVf5zorh/6J6M33txNhJq3qfxEjyqW9cymUevfNN7g
+	 E54LVcNwshpawaJ5XIbjkVR0xCR00dH+yLylV4VSoDQT0ktwk0LAKwD/aaOMzs7KVnk9X
+	 jhsuWI+niczC16gTCfdbz2wuD2dTOASfpcdGrw3Z9hSaXfypykuLrT8kafPTYVp5P4mnG
+	 DEFXTRch863RXoZBZMOSCA0DKlej3s2v3ZkVjgujF6hzyVheqXnscE+eIIBAesycd5Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=fail header.from=syzkaller.appspotmail.com;
 	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
-	arc=none smtp.remote-ip=209.85.167.200
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+	arc=none smtp.remote-ip=209.85.210.70
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D50DA606A31A
-	for <syzbot@lists.linux.dev>; Fri, 30 Oct 2026 17:33:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D50DA606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3FD7606A31A
+	for <syzbot@lists.linux.dev>; Fri, 30 Oct 2026 20:14:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C3FD7606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4ab260600easo2957449b6e.1
-        for <syzbot@lists.linux.dev>; Fri, 30 Oct 2026 10:33:49 -0700 (PDT)
+Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-823d73ffca1so1677382a34.2
+        for <syzbot@lists.linux.dev>; Fri, 30 Oct 2026 13:14:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793381629; x=1793986429;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=9swxJ5zXJJBY0nNfgb0A9dSPa8XR0GO6rxRhKw0+TpM=;
-        b=arNXwW46IPhlCC6KGz6kOTP7WXI9XZdECs0p91/aOxlZBydUij3jID+5ZdNmmt7ZDm
-         +G0EkyWhCEV2BKFfLWxEt3jMaM6Cg/MXhZW47dL7JG/P69DqdfEuoESBej9/30OJLg/H
-         l2q0rBZbgrQTcMOFzs72WXTWQOobCZNNzOm6UVuNPa/FDIz+U3rRbUOlKeoBI7Fiq1cg
-         jnu/kQuawpLrOxBg42bsIB8jFmottobedm6o8+Q9xGPMQ8HG8u7BCLex+eLWMc0ZSWGs
-         iYty0Fds36tqNMcPbiK8rootzhY/G+sC7d/UyXeGa45gdKTkmcFxDE8a55dAdPcBIX7l
-         4aKA==
-X-Gm-Message-State: AFq9FYIWpzT01epjfE7JmepiGXYwwhyHKD2WRC8nZWuj2gCH7OPsLLvU
-	nmD8RIF1tJXslWjlWk2SK2amxF4Y4OAxb5Y68OW5VUlTWydLnsoZ7ndQerOP4mz8wy0VSBGGM00
-	c4JdUgOzeoYvMpH/Gp3IghNUwGE5OpN1Et5cxzpF2fg6Cfp/ePlzEeNyyAkc=
+        d=1e100.net; s=20260707; t=1793391240; x=1793996040;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=lMB9zcify57gjB/sJxbh4dzp0JfHp2InJCKmZGnUHJo=;
+        b=09Msw+Z4+VGbe/k6L/2RCQswti1O4DM+EU1oOCv+dTeTV3CX8D0EFTZZZvrBDEYPAJ
+         8y/QiWBIlS24prt7l9NSfbxLM0HbStp61L2bCASiIbyKFSGbSBvi8zxnMtqIrmu5v9Nq
+         Q/BrA8r1sg5zs90q1Hzb8lyVBIwW0j9eCI9m8e+QnlImN8UcBGFTH05zf6M02uQDDmlt
+         dkGWlcrh/KESsIZDnVY9kJ+D9WItnh6p6U2nu2zEtXxk2xWvI5pztxjV3330VnMhXnun
+         oNAC15uMUBbwG3uh5t4jtDQfX7Quo3U3BB+jFwUTp3W52iOAlSIQkMrYpFNlprEle+cZ
+         HvpQ==
+X-Gm-Message-State: AFq9FYLexfJIXX2n//hou6Xu6dQsgShSiaoIC9m9MD4li31cF6TKH7nZ
+	65c08V1ilkYMqlXLwsdqVlV3/ETweM4SBiyW4QW6yDXU4w+OB6QgOuCJAoTAdrMfQhNwRgZcZyK
+	ynOw0iEHvX/cTOiFqq+d5bz28QFIy4/CamrGUlP3QACOiYaIVAt1eYMFEUu4=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -57,208 +57,180 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1691:b0:55c:844:989f with SMTP id
- 5614622812f47-563ef9c9687mr3468494b6e.23.1793381628994; Fri, 30 Oct 2026
- 10:33:48 -0700 (PDT)
-Date: Fri, 30 Oct 2026 10:33:48 -0700
-In-Reply-To: <20261029171950.222776-1-pablo@netfilter.org>
+X-Received: by 2002:a05:6808:1a1f:b0:53a:ad3c:17aa with SMTP id
+ 5614622812f47-5640de4a41dmr2622049b6e.55.1793391239809; Fri, 30 Oct 2026
+ 13:13:59 -0700 (PDT)
+Date: Fri, 30 Oct 2026 13:13:59 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ae4d4fc.0c1d3ab6.e3d48.0074.GAE@google.com>
-Subject: [syzbot ci] Re: netfilter: flowtable: purge entries immediately when
- destroying the flowtable
-From: syzbot ci <syzbot+ciffc525b53c2bb5ba@syzkaller.appspotmail.com>
-To: netfilter-devel@vger.kernel.org, pablo@netfilter.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <6ae4fa87.88e51036.1515fd.0000.GAE@google.com>
+Subject: [moderation/CI] Re: kcm: reject attaching sockets with a ULP, and TLS
+ on KCM sockets
+From: syzbot ci <syzbot+ci429596586d55e106@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
 syzbot ci has tested the following series
 
-[v1] netfilter: flowtable: purge entries immediately when destroying the flowtable
-https://lore.kernel.org/all/20261029171950.222776-1-pablo@netfilter.org
-* [PATCH nf] netfilter: flowtable: purge entries immediately when destroying the flowtable
+[v4] kcm: reject attaching sockets with a ULP, and TLS on KCM sockets
+https://lore.kernel.org/all/20261029203428.3057054-1-rjethwani@purestorage.com
+* [PATCH net v4] kcm: reject attaching sockets with a ULP, and TLS on KCM sockets
 
-and found the following issues:
-* BUG: sleeping function called from invalid context in flow_offload_work_del
-* WARNING: locking bug in flow_offload_work_del
+and found the following issue:
+KASAN: slab-out-of-bounds Write in kcm_ioctl
 
 Full report is available here:
-https://ci.syzbot.org/series/5482d6d8-0683-4f36-bb55-ffcf94a9edcc
+https://ci.syzbot.org/series/8bb553bd-8792-4a67-b142-8c396f2f2594
 
 ***
 
-BUG: sleeping function called from invalid context in flow_offload_work_del
+KASAN: slab-out-of-bounds Write in kcm_ioctl
 
-tree:      nf
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf.git
-base:      734bef548a96e8774d6eef5dfa2026c6edc4e80b
+tree:      net
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
+base:      5838f10563d58afca6711edb5e4eda968ca181d9
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/94e4012e-ffd8-430a-9ba4-d5a167bf8988/config
-syz repro: https://ci.syzbot.org/findings/6c0e698b-3bb6-4d1f-94cb-9ebf1c0a71db/syz_repro
+config:    https://ci.syzbot.org/builds/371e9558-3281-4ec8-8935-9d7fa1e94ef9/config
+syz repro: https://ci.syzbot.org/findings/b6f85fa5-eb30-4533-93b3-5c754fac4e45/syz_repro
 
-BUG: sleeping function called from invalid context at kernel/locking/rwsem.c:1573
-in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 5686, name: kworker/u8:3
-preempt_count: 0, expected: 0
-RCU nest depth: 1, expected: 0
-locks held by kworker/u8:3/5686: 3, last CPU#0:
- #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
- #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
- #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3460 [inline]
- #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630 kernel/workqueue.c:3578
- #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
- #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
- #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3460 [inline]
- #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630 kernel/workqueue.c:3578
- #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
- #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
- #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rhashtable_walk_start_check+0x64/0xcf0 lib/rhashtable.c:872
-CPU: 0 UID: 0 PID: 5686 Comm: kworker/u8:3 Not tainted syzkaller #0 PREEMPT(full) 
+==================================================================
+BUG: KASAN: slab-out-of-bounds in kcm_attach net/kcm/kcmsock.c:1324 [inline]
+BUG: KASAN: slab-out-of-bounds in kcm_attach_ioctl net/kcm/kcmsock.c:1376 [inline]
+BUG: KASAN: slab-out-of-bounds in kcm_ioctl+0xced/0x1140 net/kcm/kcmsock.c:1583
+Write of size 8 at addr ffff888113f70810 by task syz.1.18/5902
+
+CPU: 0 UID: 0 PID: 5902 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: act_ct_workqueue tcf_ct_flow_table_cleanup_work
 Call Trace:
  <TASK>
  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- __might_resched+0x36a/0x4c0 kernel/sched/core.c:9195
- down_read+0x26/0x320 kernel/locking/rwsem.c:1573
- nf_flow_offload_tuple net/netfilter/nf_flow_table_offload.c:920 [inline]
- flow_offload_tuple_del net/netfilter/nf_flow_table_offload.c:951 [inline]
- flow_offload_work_del+0x240/0x5e0 net/netfilter/nf_flow_table_offload.c:995
- nf_flow_table_offload_purge+0x51/0x80 net/netfilter/nf_flow_table_offload.c:1184
- nf_flow_table_do_purge net/netfilter/nf_flow_table_core.c:776 [inline]
- nf_flow_table_iterate net/netfilter/nf_flow_table_core.c:459 [inline]
- nf_flow_table_free+0x29b/0x3b0 net/netfilter/nf_flow_table_core.c:789
- tcf_ct_flow_table_cleanup_work+0x1a/0x90 net/sched/act_ct.c:386
- process_one_work kernel/workqueue.c:3495 [inline]
- process_scheduled_works+0xc3d/0x1630 kernel/workqueue.c:3578
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3659
- kthread+0x38b/0x480 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+ print_report+0x58/0x70 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ kcm_attach net/kcm/kcmsock.c:1324 [inline]
+ kcm_attach_ioctl net/kcm/kcmsock.c:1376 [inline]
+ kcm_ioctl+0xced/0x1140 net/kcm/kcmsock.c:1583
+ sock_do_ioctl+0x101/0x320 net/socket.c:1328
+ sock_ioctl+0x57a/0x7e0 net/socket.c:1449
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:597 [inline]
+ __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f96df39f559
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f96e01fe028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f96df625fa0 RCX: 00007f96df39f559
+RDX: 0000200000003880 RSI: 00000000000089e0 RDI: 0000000000000004
+RBP: 00007f96df436b20 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f96df626038 R14: 00007f96df625fa0 R15: 00007ffc97de2138
  </TASK>
 
-=============================
-[ BUG: Invalid wait context ]
-syzkaller #0 Tainted: G        W           
------------------------------
-kworker/u8:3/5686 is trying to lock:
-ffff88817589eb28 (&flowtable->flow_block_lock){.+.+}-{4:4}, at: nf_flow_offload_tuple net/netfilter/nf_flow_table_offload.c:920 [inline]
-ffff88817589eb28 (&flowtable->flow_block_lock){.+.+}-{4:4}, at: flow_offload_tuple_del net/netfilter/nf_flow_table_offload.c:951 [inline]
-ffff88817589eb28 (&flowtable->flow_block_lock){.+.+}-{4:4}, at: flow_offload_work_del+0x240/0x5e0 net/netfilter/nf_flow_table_offload.c:995
-other info that might help us debug this:
-context-{5:5}
-locks held by kworker/u8:3/5686: 3, last CPU#0:
- #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
- #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
- #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3460 [inline]
- #0: ffff8881108f3948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630 kernel/workqueue.c:3578
- #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
- #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
- #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3460 [inline]
- #1: ffffc90004e67c40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630 kernel/workqueue.c:3578
- #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
- #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
- #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rhashtable_walk_start_check+0x64/0xcf0 lib/rhashtable.c:872
-stack backtrace:
-CPU: 0 UID: 0 PID: 5686 Comm: kworker/u8:3 Tainted: G        W            syzkaller #0 PREEMPT(full) 
-Tainted: [W]=WARN
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: act_ct_workqueue tcf_ct_flow_table_cleanup_work
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_lock_invalid_wait_context kernel/locking/lockdep.c:4874 [inline]
- check_wait_context kernel/locking/lockdep.c:4946 [inline]
- __lock_acquire+0xf5b/0x2de0 kernel/locking/lockdep.c:5238
- lock_acquire+0x115/0x350 kernel/locking/lockdep.c:5942
- down_read+0x45/0x320 kernel/locking/rwsem.c:1574
- nf_flow_offload_tuple net/netfilter/nf_flow_table_offload.c:920 [inline]
- flow_offload_tuple_del net/netfilter/nf_flow_table_offload.c:951 [inline]
- flow_offload_work_del+0x240/0x5e0 net/netfilter/nf_flow_table_offload.c:995
- nf_flow_table_offload_purge+0x51/0x80 net/netfilter/nf_flow_table_offload.c:1184
- nf_flow_table_do_purge net/netfilter/nf_flow_table_core.c:776 [inline]
- nf_flow_table_iterate net/netfilter/nf_flow_table_core.c:459 [inline]
- nf_flow_table_free+0x29b/0x3b0 net/netfilter/nf_flow_table_core.c:789
- tcf_ct_flow_table_cleanup_work+0x1a/0x90 net/sched/act_ct.c:386
- process_one_work kernel/workqueue.c:3495 [inline]
- process_scheduled_works+0xc3d/0x1630 kernel/workqueue.c:3578
- worker_thread+0xa47/0xfb0 kernel/workqueue.c:3659
- kthread+0x38b/0x480 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
+Allocated by task 5902:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ unpoison_slab_object mm/kasan/common.c:351 [inline]
+ __kasan_slab_alloc+0x6c/0x80 mm/kasan/common.c:377
+ kasan_slab_alloc include/linux/kasan.h:253 [inline]
+ slab_post_alloc_hook mm/slub.c:4720 [inline]
+ slab_alloc_node mm/slub.c:5033 [inline]
+ kmem_cache_alloc_noprof+0x2b4/0x600 mm/slub.c:5047
+ sk_prot_alloc+0x57/0x210 net/core/sock.c:2275
+ sk_alloc+0x3a/0x390 net/core/sock.c:2337
+ inet6_create+0x81a/0x1270 net/ipv6/af_inet6.c:178
+ __sock_create+0x4b5/0xac0 net/socket.c:1679
+ sock_create net/socket.c:1737 [inline]
+ __sys_socket_create net/socket.c:1774 [inline]
+ __sys_socket+0xd6/0x1b0 net/socket.c:1821
+ __do_sys_socket net/socket.c:1835 [inline]
+ __se_sys_socket net/socket.c:1833 [inline]
+ __x64_sys_socket+0x7a/0x90 net/socket.c:1833
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
 
+The buggy address belongs to the object at ffff888113f70000
+ which belongs to the cache RAWv6 of size 1984
+The buggy address is located 80 bytes to the right of
+ allocated 1984-byte region [ffff888113f70000, ffff888113f707c0)
 
-***
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0xffff888113f73300 pfn:0x113f70
+head: order:3 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+memcg:ffff888113f77f81
+flags: 0x17ff00000000240(workingset|head|node=0|zone=2|lastcpupid=0x7ff)
+page_type: f5(slab)
+raw: 017ff00000000240 ffff888167e03500 ffffea000442be10 ffff888104ae4948
+raw: ffff888113f73300 00000002000f0006 00000000f5000000 ffff888113f77f81
+head: 017ff00000000240 ffff888167e03500 ffffea000442be10 ffff888104ae4948
+head: ffff888113f73300 00000002000f0006 00000000f5000000 ffff888113f77f81
+head: 017ff00000000003 fffffffffffffe01 00000000ffffffff 00000000ffffffff
+head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000008
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5785, tgid 5785 (syz-executor), ts 69263183053
+ set_page_owner include/linux/page_owner.h:33 [inline]
+ post_alloc_hook+0x1f9/0x250 mm/page_alloc.c:1856
+ prep_new_page mm/page_alloc.c:1864 [inline]
+ get_page_from_freelist+0x220f/0x2280 mm/page_alloc.c:3935
+ __alloc_frozen_pages_noprof+0x1fe/0x410 mm/page_alloc.c:5444
+ alloc_slab_page mm/slub.c:3384 [inline]
+ allocate_slab+0x7d/0x5e0 mm/slub.c:3499
+ new_slab mm/slub.c:3550 [inline]
+ refill_objects+0x2d5/0x350 mm/slub.c:7539
+ refill_sheaf mm/slub.c:2917 [inline]
+ __pcs_replace_empty_main+0x2c8/0x6c0 mm/slub.c:4811
+ alloc_from_pcs mm/slub.c:4887 [inline]
+ slab_alloc_node mm/slub.c:5021 [inline]
+ kmem_cache_alloc_noprof+0x394/0x600 mm/slub.c:5047
+ sk_prot_alloc+0x57/0x210 net/core/sock.c:2275
+ sk_alloc+0x3a/0x390 net/core/sock.c:2337
+ inet6_create+0x81a/0x1270 net/ipv6/af_inet6.c:178
+ __sock_create+0x4b5/0xac0 net/socket.c:1679
+ inet_ctl_sock_create+0xa2/0x220 net/ipv4/af_inet.c:1640
+ tcpv6_net_init+0x34/0xb0 net/ipv6/tcp_ipv6.c:2348
+ ops_init+0x35d/0x5d0 net/core/net_namespace.c:137
+ setup_net+0x118/0x350 net/core/net_namespace.c:443
+ copy_net_ns+0x536/0x770 net/core/net_namespace.c:582
+page last free pid 5803 tgid 5803 ts 69160417533 stack trace:
+ reset_page_owner include/linux/page_owner.h:26 [inline]
+ __free_pages_prepare mm/page_alloc.c:1403 [inline]
+ __free_frozen_pages+0xc97/0xd90 mm/page_alloc.c:2954
+ __slab_free+0x269/0x2c0 mm/slub.c:5926
+ qlink_free mm/kasan/quarantine.c:163 [inline]
+ qlist_free_all+0x99/0x100 mm/kasan/quarantine.c:179
+ kasan_quarantine_reduce+0x148/0x160 mm/kasan/quarantine.c:286
+ __kasan_slab_alloc+0x22/0x80 mm/kasan/common.c:361
+ kasan_slab_alloc include/linux/kasan.h:253 [inline]
+ slab_post_alloc_hook mm/slub.c:4720 [inline]
+ slab_alloc_node mm/slub.c:5033 [inline]
+ kmem_cache_alloc_noprof+0x2b4/0x600 mm/slub.c:5047
+ ptlock_alloc mm/memory.c:7769 [inline]
+ ptlock_init include/linux/mm.h:4039 [inline]
+ pmd_ptlock_init include/linux/mm.h:4151 [inline]
+ pagetable_pmd_ctor include/linux/mm.h:4179 [inline]
+ pmd_alloc_one_noprof include/asm-generic/pgalloc.h:146 [inline]
+ __pmd_alloc+0xc1/0x5c0 mm/memory.c:7029
+ pmd_alloc include/linux/mm.h:3865 [inline]
+ __handle_mm_fault mm/memory.c:6725 [inline]
+ handle_mm_fault+0xe9d/0x3750 mm/memory.c:6943
+ do_user_addr_fault+0x7f6/0x1480 arch/x86/mm/fault.c:1394
+ handle_page_fault arch/x86/mm/fault.c:1483 [inline]
+ exc_page_fault+0x6a/0xc0 arch/x86/mm/fault.c:1536
+ asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:595
 
-WARNING: locking bug in flow_offload_work_del
-
-tree:      nf
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netfilter/nf.git
-base:      734bef548a96e8774d6eef5dfa2026c6edc4e80b
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/94e4012e-ffd8-430a-9ba4-d5a167bf8988/config
-
-BUG: sleeping function called from invalid context at kernel/locking/rwsem.c:1573
-in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 5634, name: kworker/u8:2
-preempt_count: 0, expected: 0
-RCU nest depth: 1, expected: 0
-locks held by kworker/u8:2/5634: 3, last CPU#1:
- #0: ffff888115805948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc9000473fc40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rhashtable_walk_start_check+0x64/0xcf0
-CPU: 1 UID: 0 PID: 5634 Comm: kworker/u8:2 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: act_ct_workqueue tcf_ct_flow_table_cleanup_work
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150
- __might_resched+0x36a/0x4c0
- down_read+0x26/0x320
- flow_offload_work_del+0x240/0x5e0
- nf_flow_table_offload_purge+0x51/0x80
- nf_flow_table_free+0x29b/0x3b0
- tcf_ct_flow_table_cleanup_work+0x1a/0x90
- process_scheduled_works+0xc3d/0x1630
- worker_thread+0xa47/0xfb0
- kthread+0x38b/0x480
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
-=============================
-[ BUG: Invalid wait context ]
-syzkaller #0 Tainted: G        W           
------------------------------
-kworker/u8:2/5634 is trying to lock:
-ffff8881b9d94b28 (&flowtable->flow_block_lock){++++}-{4:4}, at: flow_offload_work_del+0x240/0x5e0
-other info that might help us debug this:
-context-{5:5}
-locks held by kworker/u8:2/5634: 3, last CPU#0:
- #0: ffff888115805948 ((wq_completion)act_ct_workqueue){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #1: ffffc9000473fc40 ((work_completion)(&(&ct_ft->rwork)->work)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630
- #2: ffffffff8fd59ca0 (rcu_read_lock){....}-{1:3}, at: rhashtable_walk_start_check+0x64/0xcf0
-stack backtrace:
-CPU: 0 UID: 0 PID: 5634 Comm: kworker/u8:2 Tainted: G        W            syzkaller #0 PREEMPT(full) 
-Tainted: [W]=WARN
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Workqueue: act_ct_workqueue tcf_ct_flow_table_cleanup_work
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150
- __lock_acquire+0xf5b/0x2de0
- lock_acquire+0x115/0x350
- down_read+0x45/0x320
- flow_offload_work_del+0x240/0x5e0
- nf_flow_table_offload_purge+0x51/0x80
- nf_flow_table_free+0x29b/0x3b0
- tcf_ct_flow_table_cleanup_work+0x1a/0x90
- process_scheduled_works+0xc3d/0x1630
- worker_thread+0xa47/0xfb0
- kthread+0x38b/0x480
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
+Memory state around the buggy address:
+ ffff888113f70700: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff888113f70780: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
+>ffff888113f70800: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                         ^
+ ffff888113f70880: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff888113f70900: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
 
 
 ***
@@ -280,3 +252,13 @@ Notes:
 - To test a new version of the whole series, please send it directly
   to syzbot@lists.linux.dev.
 - Arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[davem@davemloft.net edumazet@kernel.org hare@suse.de horms@kernel.org jiayuan.chen@linux.dev kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com rjethwani@purestorage.com sagi@grimberg.me stable@vger.kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
