@@ -1,53 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.200
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.69
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793524443;
-	b=bfQq5+2bGsbShDmF6HkVLl0zhJ0zOZs/HPk0IzQ7c/awVw4fBmOV5u2rlqPGZ99MOqK5
-	 O+Bfp/AIXsqxhNiVYslDB9ocuBDXmyNAcAcKETW/Xi4DPjGPp6rmIsKx7DVGu41wmEoRm
-	 GPHvjq80eyGMbAgAc5kKyABLuj0VDRJRnInZHsslRWFZ+F5aNsi8DpEjKtTBc9xqa9JSF
-	 PGwocOoDimxYVmN6dn3sxfLcSsVXfW7+JWQtNMaLKGsvYA066NqyyIOhTtji7WRQg3Oz1
-	 ts3Hx4xtXMChQv8K8X7i2mtKjkASrSknDzqvgtJqZ75CkXPBpzGVDIg4Oha0iGfqO2w==
+	t=1793551052;
+	b=Cj1Z8peOCxMlQkoZ7J9zS7bTWHU4MJA3SqxrqaknDxa/MC6JDbJNRlRzSUFKl43Y5/HO
+	 /CiCw9fbB6pXWD+pWRVjj/GBIPQMN45S7dyol3cWjNmLP5ut9tE43Gn0QgKbA2ozpECX5
+	 ho+gv0CMqmubixmbYm2z+1l322RckMgf6wYodWXsa/IsmnwZvtQs15f9jY1/9YjyLKQTd
+	 gyFbzkPpaGqvLR7/20hs5evR7GoCC8nK9WktKNzLe6GfKVpIZEZVqh7h9TaRhAdREwHV3
+	 thAkj3UEsjqopElSVPo8NvYt6qDKaLLZ8aVM27mLauO5oO/6/J5n2Pnu/hA5UUTp7lg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793524443;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793551052;
 	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
 	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
 	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=F3sJQP0gPQiTDUHhSH1cpDBDdq2LNHzoT7mV4zPmjR8=;
-	b=3V0U35NXCg7VSlOhHLtw4UcV0+HYN+O+GgqA/PQw2ZWoN34agJnTAW/wf9j1YsXhs+hc
-	 8W/hLjTlBPfKvA+yQ+9h4VlJUpusB9jRSXYtNYEOk28YtkrOj/9CyMaAS6jGDSrIPbkT0
-	 X/MU5UXLagZOEAsyqY9p7l0GODczEWFdO0UKJ4GDCgdWXgdVCK1qoMXQFeVCFFjIN2qsF
-	 lmdJWYrdFnm4ByuYtjn9qQzulpMkHTE0f5/J+aWID9EbkqMP+g2wY8+vM4qZZ5RA/FpDa
-	 RwXLwGVTfDuWecab3hS47mCS6ggq/OXgDG+E8KX9c1DZ9hJn4eFOw+EqWB0KtveECSg==
+	 Content-Type;
+	bh=16mY9gWL33K5iVLvCLS6Zlcx3Ll6BDqdYb+dAG0TR2E=;
+	b=lqa9asvZXW9Z3p+ao4vEPzhLJrrbrU+mIGskLugGDExYohIjA2Uq0xr6BJUcyZb9/BFb
+	 T05GKJKmqkfgZZIyZU9nwr33/q6YcezJNo+/aIhzQwA17QRmQmQBODr7oIbTWaRcJgOhi
+	 EpTKI8cdNDV9LcWvVLaRGV8348D4a4GQr1yup+jzGd1Mf9Hb7TADUlEEz56ezBhfAt6u9
+	 uMnAzRxoFgOP/3vbJJf9KQlLq5RbRCvsy84LfL5MlkXygL1WHeQqSa1rlkJX5aLUR1EH3
+	 +D6bhmfgSE2HEawasZ2FRwNHgYnx65MA0aJTtaxgQh/0a/FOu938NskamRQfBAWXJIg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=fail header.from=syzkaller.appspotmail.com;
 	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
-	arc=none smtp.remote-ip=209.85.167.200
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+	arc=none smtp.remote-ip=209.85.210.69
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91C12606A324
-	for <syzbot@lists.linux.dev>; Sun,  1 Nov 2026 09:14:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 91C12606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BECD606A324
+	for <syzbot@lists.linux.dev>; Sun,  1 Nov 2026 16:37:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3BECD606A324
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-540537f959fso2973554b6e.0
-        for <syzbot@lists.linux.dev>; Sun, 01 Nov 2026 01:14:03 -0800 (PST)
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-83edc5c5ae9so1546662a34.1
+        for <syzbot@lists.linux.dev>; Sun, 01 Nov 2026 08:37:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793524442; x=1794129242;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=F3sJQP0gPQiTDUHhSH1cpDBDdq2LNHzoT7mV4zPmjR8=;
-        b=NesilmhOd5Aoxh3AABJoiDd2eEjUqgNM4Bt+NNGv8RxsqyXRvi9K0yo3kGKd2CCi7k
-         7MzVfUaO0lvn45JRSYNYOyAfrsipPFuPco72lKM9aGa3Rt23pPkmvXA/fOVTXrJBOeNx
-         QrR2NrG1Bcv+9r0M2GlFzO12KxMJikiGNeeasOwBWyaZq/iczsRcersmzzPlnbIwBQxJ
-         TGRFeROPgjNVLSrzrMsZITuSBsNc+0cCLIS3N21Dt77VR+KyQznbkVUmWn3KjUDYLmLA
-         VI1siLjXBob+AfKCJOuDvwmGK2E1Sah7zJnuN1mDjCWhlFlH+z/HTwlEc+cp55oo+Ao+
-         wzHw==
-X-Gm-Message-State: AFq9FYLteGQ9yNig+XzAk3R85A0icHqopeVtubzlI05LhtKxHO14BITB
-	M2m4/B0UljahEzXi6xA4Z0Vkr/z3uOT+gpKCeNbb1q5F4H0FyfEXM4M1t6zAReO0SYRMfi/dTgM
-	H9Ry4scSGHwEE3CWIew8TLNqpWOg2T1X2IA46lRD+mriL5YTgcD5sio9MKSQ=
+        d=1e100.net; s=20260707; t=1793551051; x=1794155851;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=16mY9gWL33K5iVLvCLS6Zlcx3Ll6BDqdYb+dAG0TR2E=;
+        b=LvxGt+eovTW7zVgh9XmkTS4dZIk4ikgk7kbs+XJhHTKnz6e95r5wDo4NYLE71b4xkm
+         pePLE9St8idQ18ekFjrOKaWbw4WSensijPCYaC5YCWXLFmLBAVLTJY4nmfRDJU8oXasX
+         7kTL/n3V19pB8UmeXcI3rcLjKMTI8CfJ/4iIV3H8Zrpi9HZbCwk6ZPkITX7X0xhIdcIo
+         or6fJYV6dTeW19LfPdbTntmkSIZqXx5T64fzorjcr2NUrJWrr88trGNXXYVxAbECqKnX
+         r6VZNaQUI5d+Ky0G6mod8+QflWOB2howX0RmL2/6RKtLqBl9jZ4J4PIShRV4dxc+kgaV
+         1cmw==
+X-Gm-Message-State: AFq9FYJ7hcUTWp45FIGPGdTaGN0CcoOKTCfwZar7anRylV3jH3LoDrpP
+	MBLm53q5Gp5lvIIcJ4u4NTFQVGQEtPDo15/TsotJ39phr8lPjNbW24TVa5IwIskFNBoHUvq9B0r
+	F8hGU+NMrFopNuNW7BUABnAqX0bC8RWL1kcZdLLsfkr1n3KWjPtVjmthYl+8=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -57,72 +57,122 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:220f:b0:4e8:e73e:e945 with SMTP id
- 5614622812f47-5640de36543mr4429793b6e.63.1793524442502; Sun, 01 Nov 2026
- 01:14:02 -0800 (PST)
-Date: Sun, 01 Nov 2026 01:14:02 -0800
+X-Received: by 2002:a05:6808:244e:b0:4f4:73a9:f838 with SMTP id
+ 5614622812f47-5640dcea0camr5478585b6e.22.1793551051115; Sun, 01 Nov 2026
+ 08:37:31 -0800 (PST)
+Date: Sun, 01 Nov 2026 08:37:31 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ae702da.2ce51036.253fae.0003.GAE@google.com>
-Subject: [moderation/CI] Re: bpf: keep the vmlinux BTF compressed until first
- use (CONFIG_DEBUG_INFO_BTF_LAZY) to save ~6 MB memory
-From: syzbot ci <syzbot+ci4d65943d509edaf9@syzkaller.appspotmail.com>
+Message-ID: <6ae76acb.7fe51036.1ecf7.002b.GAE@google.com>
+Subject: [moderation/CI] Re: media: em28xx: fix v4l2 use-after-free after
+ failed init
+From: syzbot ci <syzbot+ciedcd9b7e9104cbc7@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] bpf: keep the vmlinux BTF compressed until first use (CONFIG_DEBUG_INF=
-O_BTF_LAZY) to save ~6 MB memory
-https://lore.kernel.org/all/20261031130959.23472-1-wanjay@amazon.com
-* [PATCH bpf-next 01/13] bpf: match program context types by name without v=
-mlinux BTF
-* [PATCH bpf-next 02/13] bpf: fetch the vmlinux BTF where kernel types ente=
-r a program
-* [PATCH bpf-next 03/13] bpf: check CAP_SYS_ADMIN before looking up bpffs d=
-elegation names
-* [PATCH bpf-next 04/13] bpf: move bpf_get_btf_vmlinux() to btf.c
-* [PATCH bpf-next 05/13] bpf: let btf_parse_module() adopt the caller's cop=
-y of the module BTF
-* [PATCH bpf-next 06/13] bpf: look up the struct_ops common value type in t=
-he given BTF
-* [PATCH bpf-next 07/13] bpf: parse the vmlinux BTF before taking cand_cach=
-e_mutex
-* [PATCH bpf-next 08/13] tracing: parse the vmlinux BTF when BTF-typed outp=
-ut is enabled
-* [PATCH bpf-next 09/13] bpf: keep the vmlinux BTF zstd-compressed in the k=
-ernel image
-* [PATCH bpf-next 10/13] bpf: defer kfunc and struct_ops registrations unti=
-l first BTF use
-* [PATCH bpf-next 11/13] bpf: keep module BTF until the vmlinux BTF is pars=
-ed
-* [PATCH bpf-next 12/13] selftests/bpf: keep ksyms and linked_vars working =
-without __start_BTF
-* [PATCH bpf-next 13/13] Documentation/bpf: describe CONFIG_DEBUG_INFO_BTF_=
-LAZY
+[v1] media: em28xx: fix v4l2 use-after-free after failed init
+https://lore.kernel.org/all/20261031204723.1415-1-drifabdelmalekmohamedsaid@gmail.com
+* [PATCH] media: em28xx: fix v4l2 use-after-free after failed init
 
 and found the following issue:
-kernel build error
+possible deadlock in em28xx_release_resources
 
 Full report is available here:
-https://ci.syzbot.org/series/a458b725-04a7-4acd-8bae-03303a203fc2
+https://ci.syzbot.org/series/92e27f7a-9ca9-4693-ad76-730262f6efd0
 
 ***
 
-kernel build error
+possible deadlock in em28xx_release_resources
 
-tree:      bpf-next
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
--next.git
-base:      eaae576c34d7e001767b6845a5950b0b8db3e68a
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux
+base:      cbbddb6b08cc9900a87cccaa9b22bbe06aa4f50a
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/4c72fd33-a422-4d38-8276-d463202193f=
-f/config
+config:    https://ci.syzbot.org/builds/5e867cfe-3c44-46f3-be9a-3394e10312c7/config
+syz repro: https://ci.syzbot.org/findings/de514af7-755a-455f-9075-91732cf09a76/syz_repro
 
-./scripts/gen-btf.sh: 96: zstd: not found
+em28xx 1-1:1.0: Closing video extension
+em28xx 1-1:1.0: Closing input extension
+============================================
+WARNING: possible recursive locking detected
+syzkaller #0 Not tainted
+--------------------------------------------
+kworker/0:3/5059 is trying to acquire lock:
+ffff88801cd25cf0 (&dev->lock#3){+.+.}-{4:4}, at: em28xx_release_resources+0x75/0x240 drivers/media/usb/em28xx/em28xx-cards.c:3796
+
+but task is already holding lock:
+ffff88801cd25cf0 (&dev->lock#3){+.+.}-{4:4}, at: em28xx_v4l2_fini+0xb7/0x3f0 drivers/media/usb/em28xx/em28xx-video.c:2431
+
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(&dev->lock#3);
+  lock(&dev->lock#3);
+
+ *** DEADLOCK ***
+
+ May be due to missing lock nesting notation
+
+locks held by kworker/0:3/5059: 6, last CPU#0:
+ #0: ffff8881032cb948 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
+ #0: ffff8881032cb948 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
+ #0: ffff8881032cb948 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3460 [inline]
+ #0: ffff8881032cb948 ((wq_completion)usb_hub_wq){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630 kernel/workqueue.c:3578
+ #1: ffffc900036cfc40 ((work_completion)(&hub->events)){+.+.}-{0:0}, at: rcu_lock_acquire include/linux/rcupdate.h:309 [inline]
+ #1: ffffc900036cfc40 ((work_completion)(&hub->events)){+.+.}-{0:0}, at: rcu_read_lock include/linux/rcupdate.h:849 [inline]
+ #1: ffffc900036cfc40 ((work_completion)(&hub->events)){+.+.}-{0:0}, at: process_one_work kernel/workqueue.c:3460 [inline]
+ #1: ffffc900036cfc40 ((work_completion)(&hub->events)){+.+.}-{0:0}, at: process_scheduled_works+0x97a/0x1630 kernel/workqueue.c:3578
+ #2: ffff88816eeb71d8 (&dev->mutex){....}-{4:4}, at: device_lock include/linux/device.h:1109 [inline]
+ #2: ffff88816eeb71d8 (&dev->mutex){....}-{4:4}, at: hub_event+0x184/0x4d30 drivers/usb/core/hub.c:5917
+ #3: ffff88801cdfc1d8 (&dev->mutex){....}-{4:4}, at: device_lock include/linux/device.h:1109 [inline]
+ #3: ffff88801cdfc1d8 (&dev->mutex){....}-{4:4}, at: usb_disconnect+0xfc/0x9a0 drivers/usb/core/hub.c:2346
+ #4: ffff88801ce5a1a0 (&dev->mutex){....}-{4:4}, at: device_lock include/linux/device.h:1109 [inline]
+ #4: ffff88801ce5a1a0 (&dev->mutex){....}-{4:4}, at: __device_driver_lock drivers/base/dd.c:1046 [inline]
+ #4: ffff88801ce5a1a0 (&dev->mutex){....}-{4:4}, at: device_release_driver_internal+0xa9/0x7d0 drivers/base/dd.c:1377
+ #5: ffff88801cd25cf0 (&dev->lock#3){+.+.}-{4:4}, at: em28xx_v4l2_fini+0xb7/0x3f0 drivers/media/usb/em28xx/em28xx-video.c:2431
+
+stack backtrace:
+CPU: 0 UID: 0 PID: 5059 Comm: kworker/0:3 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Workqueue: usb_hub_wq hub_event
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_deadlock_bug+0x27a/0x290 kernel/locking/lockdep.c:3085
+ check_deadlock kernel/locking/lockdep.c:3137 [inline]
+ validate_chain kernel/locking/lockdep.c:3939 [inline]
+ __lock_acquire+0x25db/0x2de0 kernel/locking/lockdep.c:5288
+ lock_acquire+0x115/0x350 kernel/locking/lockdep.c:5942
+ __mutex_lock_common kernel/locking/mutex.c:646 [inline]
+ __mutex_lock+0x197/0x15a0 kernel/locking/mutex.c:821
+ em28xx_release_resources+0x75/0x240 drivers/media/usb/em28xx/em28xx-cards.c:3796
+ em28xx_usb_disconnect+0x19f/0x2f0 drivers/media/usb/em28xx/em28xx-cards.c:4493
+ usb_unbind_interface+0x295/0x9c0 drivers/usb/core/driver.c:460
+ device_remove drivers/base/dd.c:619 [inline]
+ __device_release_driver drivers/base/dd.c:1357 [inline]
+ device_release_driver_internal+0x48d/0x7d0 drivers/base/dd.c:1380
+ bus_remove_device+0x444/0x560 drivers/base/bus.c:678
+ device_del+0x524/0x8f0 drivers/base/core.c:3967
+ usb_disable_device+0x3d4/0x8d0 drivers/usb/core/message.c:1484
+ usb_disconnect+0x346/0x9a0 drivers/usb/core/hub.c:2355
+ hub_port_connect drivers/usb/core/hub.c:5425 [inline]
+ hub_port_connect_change drivers/usb/core/hub.c:5725 [inline]
+ port_event drivers/usb/core/hub.c:5889 [inline]
+ hub_event+0x1bbb/0x4d30 drivers/usb/core/hub.c:5971
+ process_one_work kernel/workqueue.c:3495 [inline]
+ process_scheduled_works+0xc3d/0x1630 kernel/workqueue.c:3578
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3659
+ kthread+0x38b/0x480 kernel/kthread.c:436
+ ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
+
 
 ***
 
@@ -145,14 +195,7 @@ Notes:
 - Arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[abuehaze@amazon.com almagui@kernel.org andrii@kernel.org arnd@arndb.de ast=
-@kernel.org bpf@vger.kernel.org daniel@iogearbox.net doebel@amazon.de eddyz=
-87@gmail.com ihor.solodrai@linux.dev jay.wang.upstream@gmail.com jolsa@kern=
-el.org linux-arch@vger.kernel.org linux-doc@vger.kernel.org linux-kbuild@vg=
-er.kernel.org linux-kernel@vger.kernel.org linux-trace-kernel@vger.kernel.o=
-rg martin.lau@linux.dev mathieu.desnoyers@efficios.com memxor@gmail.com mhi=
-ramat@kernel.org mpohlack@amazon.de nathan@kernel.org nsc@kernel.org rosted=
-t@goodmis.org wanjay@amazon.com x86@kernel.org yonghong.song@linux.dev]
+[drifabdelmalekmohamedsaid@gmail.com hverkuil@kernel.org linux-kernel@vger.kernel.org linux-media@vger.kernel.org linux-usb@vger.kernel.org mchehab@kernel.org stable@vger.kernel.org syzbot@syzkaller.appspotmail.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
