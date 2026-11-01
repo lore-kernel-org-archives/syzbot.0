@@ -1,53 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.198
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.200
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793437187;
-	b=bw9Smjfm5Z7UG/bVKpenW9IJNiVvZOa4jHKYVd2/yqLS6/TevfvB2tOdiNgfJsbrxFXf
-	 Nx7Xsa3yHlENKOFfxXdYqQrc5Wv5MzV3V1qq5oJlR0Jj8FF1drs6+qgm1pL94uV3y0Olc
-	 B05jRCqwKsBwSngoKX5kBFGncGA5nTeRd8kzIfzNz+KEfuf5fxeTzzfa05teFuX7UNzcu
-	 IEHp51ZFFMrljjUGKDd2qjo0TeOfBao+K5lj/7eVL5Pp1j0+Idc7K96vyCB/lpq00dYOX
-	 fGbEIudiXvCNUZI8QswuwP7amAOx5iSt9qI+8xixFa2KurkuhJj7UyFGQRdGK4hvrkQ==
+	t=1793524443;
+	b=bfQq5+2bGsbShDmF6HkVLl0zhJ0zOZs/HPk0IzQ7c/awVw4fBmOV5u2rlqPGZ99MOqK5
+	 O+Bfp/AIXsqxhNiVYslDB9ocuBDXmyNAcAcKETW/Xi4DPjGPp6rmIsKx7DVGu41wmEoRm
+	 GPHvjq80eyGMbAgAc5kKyABLuj0VDRJRnInZHsslRWFZ+F5aNsi8DpEjKtTBc9xqa9JSF
+	 PGwocOoDimxYVmN6dn3sxfLcSsVXfW7+JWQtNMaLKGsvYA066NqyyIOhTtji7WRQg3Oz1
+	 ts3Hx4xtXMChQv8K8X7i2mtKjkASrSknDzqvgtJqZ75CkXPBpzGVDIg4Oha0iGfqO2w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793437187;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793524443;
 	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
-	 MIME-Version:X-Received:Date:In-Reply-To:X-Google-Appengine-App-Id:
+	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
 	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
-	 Content-Type;
-	bh=ZSLE5/DCeed2E3fh+d6OIsBXtvzSdC0fzCtMY5JqQv0=;
-	b=0aTFLBWsV49kIemRShqIehH+FbO+QxMm+rV0ngOwu2EWuH20tSgKJiEmpr6zczXEVJbG
-	 I+Ve8MEU0U7hAKkyZ/JWSeorpeh1wWQXQHDcUOHHIZbkTD68u7a12iA7bVpVD58lUil8f
-	 Gwlo7UhOHusyctbMFP5OQMzEuIfxkfBneBzyvpCrVbSwAfOCgncFXjPBGXDu7N3CV41Hn
-	 dBm61RODoXs4Q9FgoPwmPy+YuK0OUJeLpsuINM+FYZke3Mm89lZvAU8hNnZmS1jrI4YOL
-	 KotppWp7dX80q0o7n3x4KozxADxnf2X6wg6WFhtaGfit8/eKLogpGa6Uk8aCjJ3oOYQ==
+	 Content-Type:Content-Transfer-Encoding;
+	bh=F3sJQP0gPQiTDUHhSH1cpDBDdq2LNHzoT7mV4zPmjR8=;
+	b=3V0U35NXCg7VSlOhHLtw4UcV0+HYN+O+GgqA/PQw2ZWoN34agJnTAW/wf9j1YsXhs+hc
+	 8W/hLjTlBPfKvA+yQ+9h4VlJUpusB9jRSXYtNYEOk28YtkrOj/9CyMaAS6jGDSrIPbkT0
+	 X/MU5UXLagZOEAsyqY9p7l0GODczEWFdO0UKJ4GDCgdWXgdVCK1qoMXQFeVCFFjIN2qsF
+	 lmdJWYrdFnm4ByuYtjn9qQzulpMkHTE0f5/J+aWID9EbkqMP+g2wY8+vM4qZZ5RA/FpDa
+	 RwXLwGVTfDuWecab3hS47mCS6ggq/OXgDG+E8KX9c1DZ9hJn4eFOw+EqWB0KtveECSg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=fail header.from=syzkaller.appspotmail.com;
 	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
-	arc=none smtp.remote-ip=209.85.167.198
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
+	arc=none smtp.remote-ip=209.85.167.200
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80EFD606A31A
-	for <syzbot@lists.linux.dev>; Sat, 31 Oct 2026 08:59:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 80EFD606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91C12606A324
+	for <syzbot@lists.linux.dev>; Sun,  1 Nov 2026 09:14:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 91C12606A324
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-4c55ba309c2so2170604b6e.1
-        for <syzbot@lists.linux.dev>; Sat, 31 Oct 2026 01:59:46 -0700 (PDT)
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-540537f959fso2973554b6e.0
+        for <syzbot@lists.linux.dev>; Sun, 01 Nov 2026 01:14:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793437185; x=1794041985;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=ZSLE5/DCeed2E3fh+d6OIsBXtvzSdC0fzCtMY5JqQv0=;
-        b=QWaijCemfZRrIN7MsDprrnDDzk6bInBiQrkDwuZIKPLTyDLWZ4cOfXxroHBUDLHZ6M
-         TJIMSzvTuCtxeFNDiVyGeYKxhY485KwLGOz351KURgLPBslI7If2y5E2toEhmT4UhFgL
-         Sj0aPQud/oFK5V6Ah71ja6jIqVP9BaDPfS4uy/J+cmCglXQnbgyaS3wOp6M5aIkmDaEr
-         i0CekEyG4YT/h3W3jUs3I5odIsPg9hRW2k339a+XnAWvBivUDP4zHteAOY0aV8Y+z9IC
-         hf8pDXU3Ok8SrEtZwCuhNOlxWFHdTGtcfBGehKn2Ni+YmhueiEXUuBiP13/zKvQAU65Q
-         AWug==
-X-Gm-Message-State: AFq9FYL/dSu/B3knmer7TNHGUM+OFhXIrREpAzqkIbZNzALGaTv/D9ir
-	pZj0O9jCLZrIwSFtUbFYDWCpoh9985TGObsOGlwyaU8QgQ4icEP6wtKLVjEJ2QhzvzO256W1Kdl
-	IyztAZPOxFMriF/bxCPnR0qCj9gMRalOSf4OCiIZgwzJs/m3CrnkHYs2X4iE=
+        d=1e100.net; s=20260707; t=1793524442; x=1794129242;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=F3sJQP0gPQiTDUHhSH1cpDBDdq2LNHzoT7mV4zPmjR8=;
+        b=NesilmhOd5Aoxh3AABJoiDd2eEjUqgNM4Bt+NNGv8RxsqyXRvi9K0yo3kGKd2CCi7k
+         7MzVfUaO0lvn45JRSYNYOyAfrsipPFuPco72lKM9aGa3Rt23pPkmvXA/fOVTXrJBOeNx
+         QrR2NrG1Bcv+9r0M2GlFzO12KxMJikiGNeeasOwBWyaZq/iczsRcersmzzPlnbIwBQxJ
+         TGRFeROPgjNVLSrzrMsZITuSBsNc+0cCLIS3N21Dt77VR+KyQznbkVUmWn3KjUDYLmLA
+         VI1siLjXBob+AfKCJOuDvwmGK2E1Sah7zJnuN1mDjCWhlFlH+z/HTwlEc+cp55oo+Ao+
+         wzHw==
+X-Gm-Message-State: AFq9FYLteGQ9yNig+XzAk3R85A0icHqopeVtubzlI05LhtKxHO14BITB
+	M2m4/B0UljahEzXi6xA4Z0Vkr/z3uOT+gpKCeNbb1q5F4H0FyfEXM4M1t6zAReO0SYRMfi/dTgM
+	H9Ry4scSGHwEE3CWIew8TLNqpWOg2T1X2IA46lRD+mriL5YTgcD5sio9MKSQ=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -57,87 +57,72 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:1b2c:b0:536:611a:7fd9 with SMTP id
- 5614622812f47-5640d927810mr3068275b6e.7.1793437185453; Sat, 31 Oct 2026
- 01:59:45 -0700 (PDT)
-Date: Sat, 31 Oct 2026 01:59:45 -0700
-In-Reply-To: <20261030042903.4160506-1-hengyul@cs.unc.edu>
+X-Received: by 2002:a05:6808:220f:b0:4e8:e73e:e945 with SMTP id
+ 5614622812f47-5640de36543mr4429793b6e.63.1793524442502; Sun, 01 Nov 2026
+ 01:14:02 -0800 (PST)
+Date: Sun, 01 Nov 2026 01:14:02 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ae5ae01.78e51036.124520.0002.GAE@google.com>
-Subject: [syzbot ci] Re: hfs: fall back to buffered I/O for direct writes past phys_size
-From: syzbot ci <syzbot+cid81af4ef4a45835b@syzkaller.appspotmail.com>
-To: frank.li@vivo.com, glaubitz@physik.fu-berlin.de, hengyul@cs.unc.edu, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	slava@dubeyko.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Message-ID: <6ae702da.2ce51036.253fae.0003.GAE@google.com>
+Subject: [moderation/CI] Re: bpf: keep the vmlinux BTF compressed until first
+ use (CONFIG_DEBUG_INFO_BTF_LAZY) to save ~6 MB memory
+From: syzbot ci <syzbot+ci4d65943d509edaf9@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v1] hfs: fall back to buffered I/O for direct writes past phys_size
-https://lore.kernel.org/all/20261030042903.4160506-1-hengyul@cs.unc.edu
-* [PATCH 1/2] hfs: fall back to buffered I/O for direct writes past phys_size
-* [PATCH 2/2] hfs: remove the dead grow path from hfs_file_truncate()
+[v1] bpf: keep the vmlinux BTF compressed until first use (CONFIG_DEBUG_INF=
+O_BTF_LAZY) to save ~6 MB memory
+https://lore.kernel.org/all/20261031130959.23472-1-wanjay@amazon.com
+* [PATCH bpf-next 01/13] bpf: match program context types by name without v=
+mlinux BTF
+* [PATCH bpf-next 02/13] bpf: fetch the vmlinux BTF where kernel types ente=
+r a program
+* [PATCH bpf-next 03/13] bpf: check CAP_SYS_ADMIN before looking up bpffs d=
+elegation names
+* [PATCH bpf-next 04/13] bpf: move bpf_get_btf_vmlinux() to btf.c
+* [PATCH bpf-next 05/13] bpf: let btf_parse_module() adopt the caller's cop=
+y of the module BTF
+* [PATCH bpf-next 06/13] bpf: look up the struct_ops common value type in t=
+he given BTF
+* [PATCH bpf-next 07/13] bpf: parse the vmlinux BTF before taking cand_cach=
+e_mutex
+* [PATCH bpf-next 08/13] tracing: parse the vmlinux BTF when BTF-typed outp=
+ut is enabled
+* [PATCH bpf-next 09/13] bpf: keep the vmlinux BTF zstd-compressed in the k=
+ernel image
+* [PATCH bpf-next 10/13] bpf: defer kfunc and struct_ops registrations unti=
+l first BTF use
+* [PATCH bpf-next 11/13] bpf: keep module BTF until the vmlinux BTF is pars=
+ed
+* [PATCH bpf-next 12/13] selftests/bpf: keep ksyms and linked_vars working =
+without __start_BTF
+* [PATCH bpf-next 13/13] Documentation/bpf: describe CONFIG_DEBUG_INFO_BTF_=
+LAZY
 
 and found the following issue:
-WARNING in hfs_file_truncate
+kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/f8323fc4-a62a-40ea-9106-bff8391323a3
+https://ci.syzbot.org/series/a458b725-04a7-4acd-8bae-03303a203fc2
 
 ***
 
-WARNING in hfs_file_truncate
+kernel build error
 
-tree:      axboe
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
-base:      a804c5742bff224d4cb4d25dd383554d598be32b
+tree:      bpf-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/bpf/bpf=
+-next.git
+base:      eaae576c34d7e001767b6845a5950b0b8db3e68a
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/734131df-1170-4dc7-a0ec-85ffb659aeec/config
-syz repro: https://ci.syzbot.org/findings/95638e3e-6c06-4f46-a68b-e468dc287d1e/syz_repro
+config:    https://ci.syzbot.org/builds/4c72fd33-a422-4d38-8276-d463202193f=
+f/config
 
-------------[ cut here ]------------
-inode->i_size > HFS_I(inode)->phys_size
-WARNING: fs/hfs/extent.c:494 at hfs_file_truncate+0x7cf/0xa50 fs/hfs/extent.c:494, CPU#1: syz.2.19/5839
-Modules linked in:
-CPU: 1 UID: 0 PID: 5839 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:hfs_file_truncate+0x7cf/0xa50 fs/hfs/extent.c:494
-Code: 8b 05 ed eb db 11 48 3b 84 24 20 01 00 00 75 1f 48 8d 65 d8 5b 41 5c 41 5d 41 5e 41 5f 5d e9 88 09 33 09 cc e8 02 10 0b ff 90 <0f> 0b 90 eb 9b e8 67 00 30 09 44 89 e9 80 e1 07 80 c1 03 38 c1 0f
-RSP: 0018:ffffc900034afaa0 EFLAGS: 00010293
-RAX: ffffffff82bca45e RBX: 1ffff92000695f68 RCX: ffff88810ca50000
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000852
-RBP: ffffc900034afc08 R08: ffffc900034afb97 R09: 0000000000000000
-R10: ffffc900034afb60 R11: fffff52000695f73 R12: 0000000000000000
-R13: ffff88816b59b100 R14: dffffc0000000000 R15: 0000000000000852
-FS:  00007f4cc5ac36c0(0000) GS:ffff8882a7c97000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000560c8ef2a008 CR3: 00000001bd922000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- hfs_inode_setattr+0x4d0/0x730 fs/hfs/inode.c:698
- notify_change+0xbba/0xea0 fs/attr.c:556
- do_truncate+0x1c2/0x250 fs/open.c:68
- do_ftruncate+0x4d4/0x580 fs/open.c:194
- ksys_ftruncate fs/open.c:206 [inline]
- __do_sys_ftruncate fs/open.c:211 [inline]
- __se_sys_ftruncate fs/open.c:209 [inline]
- __x64_sys_ftruncate+0x8f/0xe0 fs/open.c:209
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f4cc4b9f559
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f4cc5ac3028 EFLAGS: 00000246 ORIG_RAX: 000000000000004d
-RAX: ffffffffffffffda RBX: 00007f4cc4e25fa0 RCX: 00007f4cc4b9f559
-RDX: 0000000000000000 RSI: 0000000000000852 RDI: 0000000000000004
-RBP: 00007f4cc4c36b20 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f4cc4e26038 R14: 00007f4cc4e25fa0 R15: 00007ffcf07cc2c8
- </TASK>
-
+./scripts/gen-btf.sh: 96: zstd: not found
 
 ***
 
@@ -158,3 +143,20 @@ Notes:
 - To test a new version of the whole series, please send it directly
   to syzbot@lists.linux.dev.
 - Arguments like custom git repos and branches are not supported.
+
+The email will later be sent to:
+[abuehaze@amazon.com almagui@kernel.org andrii@kernel.org arnd@arndb.de ast=
+@kernel.org bpf@vger.kernel.org daniel@iogearbox.net doebel@amazon.de eddyz=
+87@gmail.com ihor.solodrai@linux.dev jay.wang.upstream@gmail.com jolsa@kern=
+el.org linux-arch@vger.kernel.org linux-doc@vger.kernel.org linux-kbuild@vg=
+er.kernel.org linux-kernel@vger.kernel.org linux-trace-kernel@vger.kernel.o=
+rg martin.lau@linux.dev mathieu.desnoyers@efficios.com memxor@gmail.com mhi=
+ramat@kernel.org mpohlack@amazon.de nathan@kernel.org nsc@kernel.org rosted=
+t@goodmis.org wanjay@amazon.com x86@kernel.org yonghong.song@linux.dev]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
