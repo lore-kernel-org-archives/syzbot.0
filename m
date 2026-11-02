@@ -1,87 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.47
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.51
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793630280;
-	b=cImQIMWE6aADMKJSAhnGTZ2a/NMOxo5jG7VA6SSsrKEj0jflCw5mIb2Ye2QwyOShg9pf
-	 5gxz3zZ/nv/qmp8Cx8wpMwYQUeF1lxkn6MexjDwgkdxvJATAShEvAJFB10sKEeVziJ5yO
-	 C+bD8Dsyai/Hcc/HONlVyynt4LcCjOnjQgGr+iyBap9PAq8t0cqOnB/GCIGxq+kMHNdYZ
-	 R1REQTrm6+5aJErFYBK5vrSxy4axGA2xJUrzjsAeXyy9IPrEZrmS27ZwoUKCY1h2fDRbW
-	 KT9MQb9rKj6DgS9mf5zyVFgDWdI1RXavRr11WI+BGp8DjgbOEZIKadLAYEElQQCHyLg==
+	t=1793631457;
+	b=LdQrtCw2c76++i75XD3jqequq+Jv902nccN4G5XPEznGX0o9HsuIqs0ev39OtlEdnUar
+	 +2fbluihlFmK/Olxx0RHpFULk2wvFpE6o13lCE7rk9JotKzXqfTB9VubVa9cqc2+GdYmk
+	 wK9vssGRlCd02PHM0T7tkbS98LVb0FUYjU/fKG+T9fQW/D5JU/DUgXzPPx/W25us00HL/
+	 Ovhb1htEFlHsmC+ZWL5Tkglvk5obyj3kqQ20Lw4CWwoqlqL+pKBBopswk4PQ6K546Dcal
+	 dGD2D/e7EYH1NNivUCLGfr0GFxKNU7+XrDM46ybQEuoLbG1GH17yL15Yrj9BeKYt0TQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793630280;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793631457;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
 	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
 	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=oFKwSlcjJGOcGHwRINyu72SwWJcZjQnjYT2LvNoG4a0=;
-	b=0MlqziGS4P6aMWkjHReuNwQAcbuUSFUmIcZmAbrK1JQpgoSEuLFDPEkwTwCl+z7d/mxx
-	 eW/PcA2jmeBKyJAicv5qJroyPBahO8JE1gtceTA5krNXJnzV+60/K9C38mJRr0beHNAmz
-	 XGzrX97zEKirXETia9byqb7xGqBp5mhVyZ5YGk1ArpSLZRbK9CgmKbdc88KA893ayghXo
-	 cnFQoGpoV/6qZRRXbv6XITnak8Bz8kcyLnuNeZM1DQru7QQ7akkzcfpEpZTf+T2HtaXj0
-	 sex6yfvBOziYl2IXAz+Cd4i9T2scd4wDmkiUdOaw1FYZTh0n7ufmBwgvsOE0hWmN2og==
+	bh=Qnp94G0DRTWbZFaxE19m6TH0NvUhAeFNTa2yNCglEGI=;
+	b=XZRzbsNBfx18P0A7JAZNJFwEDCjwNuDxQ0Kosprt2gWx9PcBvR3dsNQFzqCVmEnz5GJ4
+	 YYgt2i6hguMcK/FeNibZCZCflgZXcwNZ89dkOV7PtL5/qO7VN9VWlsxP6bLO9mzD/aUXg
+	 OdP+whAip3aLKt87ZVbyx3F83rOjh88R1csontOtj6p2+U2pMUZQz8ltwsDFRCUVoGu1W
+	 2S1RGIqnHOYIMQV3V1gisBToTeXSn0xVVaUW7Jwnm6keWCuj2o3803w/0hcHQAnyNQbkp
+	 jD0PI/wqjWhv0ktCvZZLlunhXnBT9bd3HwsMhGyHH+xNncDNCRQIawnXj0krqzPBPdg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=LyF6SnL7;
-	arc=none smtp.remote-ip=209.85.208.47
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=gcSiuNCP;
+	arc=none smtp.remote-ip=209.85.218.51
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 342FC607992E
-	for <syzbot@lists.linux.dev>; Mon,  2 Nov 2026 14:38:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 342FC607992E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F2EA606A5A7
+	for <syzbot@lists.linux.dev>; Mon,  2 Nov 2026 14:57:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6F2EA606A5A7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=LyF6SnL7
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-6b1f31c63ebso6658075a12.0
-        for <syzbot@lists.linux.dev>; Mon, 02 Nov 2026 06:38:00 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=gcSiuNCP
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-c40e02b2ebaso538547066b.1
+        for <syzbot@lists.linux.dev>; Mon, 02 Nov 2026 06:57:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793630279; x=1794235079; darn=lists.linux.dev;
+        d=gmail.com; s=20260707; t=1793631456; x=1794236256; darn=lists.linux.dev;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=oFKwSlcjJGOcGHwRINyu72SwWJcZjQnjYT2LvNoG4a0=;
-        b=LyF6SnL7/C1cfEb6ov3ZoNrLXLYMoHO5ySJ2VE1UmM4bfNWw+6txwlWc0ZwDnSephq
-         V827RS8LJJdCKPEojzVlcs2w1CQVeUEwDNdvdW5ITNzh1slP6m2Xs55d98nZf/e5fUjp
-         Q9MuQRTsZqzspTV/HdlJQLKK1nzZ1FcSwLhi1GQVG94OZ7EzXOgpJVt4mXfMC++0plbA
-         k6rSO9SPRSFqEw9ANa+uiG+OPNm3LE7BXSWHhfwz7KSycGL7MLqmJm72pl8cPqeAwonU
-         +4NpV6DZJLOUATJ+ytEkoqKMa3Jhnmv/hnA/wwYiamBV/f1o50me6jFdFn1DTDHCHP8x
-         MV9w==
+        bh=Qnp94G0DRTWbZFaxE19m6TH0NvUhAeFNTa2yNCglEGI=;
+        b=gcSiuNCPB6xh5c8Tsjt79eS0gF6dtPEFPmbP3TD+jr/Q5/8/yMdnHG/1zzeYqEgRHk
+         g/3R7L7RpdpWXUW7cT5wAaBzTNf4U+v1wtiUcnIU7rEiSeg+e/D4pV02a9yJxqRB3SDW
+         XHoogAFRPpu4hTe13qeyrHhhwHgszDc6o9Fhv4qxVHcYSH/JwJMw9XPKrMLq6phnMMOF
+         jdsqRFGUvf9p1yRlzy9oDLamFoSEPCqlapTR4Fn6uFpJp9ecb1L8CqUYdbASmcrZkr3P
+         +Y+SK3XRfxCoarhMItS8jeyBEyOMQGNKlnBDz++7wq0XnGHnbiqX6rlCrsingaqatJvv
+         UOTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793630279; x=1794235079;
+        d=1e100.net; s=20260707; t=1793631456; x=1794236256;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=oFKwSlcjJGOcGHwRINyu72SwWJcZjQnjYT2LvNoG4a0=;
-        b=hQh59r1cB/vkO7FxOEf1ZJWxZTjmZ8mEZoJGyM5CAb/tMJ+Y+mke03RuTFcLoUH6j3
-         daXuRHmA5tQSyn1+EiHTZxGAhxWTVjBXb5xN/sPc6FfLlgi8sQkQcfzr3PKH1SxsmnyU
-         Ien3aq+VhF7tGtXYkK0cbRX9FPGTYjddfP6VETmfoUYGdGR7ka/5UpSHGlzrvxCLQgsN
-         9PsyHzHN5AoasVAvzp54Ox8mViW6g9YJUfCxbrpdI3O/0PSbyeRUm/EJyqj2T8Gk8UXk
-         0403XxlEQ/fSuAe7AwxqT7HMk92MuBugjD2Xry0isxkSrdHJzZdJQeVcrmH22UBQ8s8s
-         jlYQ==
-X-Gm-Message-State: APuU4Z/NotZkrOrj82p3P/5H3SG6LTfdIAcnkJhN8GkTYW9dDv5Y5nKH
-	ePawJBbYfuAuYjZeYHZH+XVNwJZnMdLYQmLMuGWZcYh+2Eqh4Up59HqI
-X-Gm-Gg: AYBFou3eQt4JRkq60j2rqxpY286Zs6TVpB6NFZfm8W5tEFobZX84P438OmQ1Udunzfd
-	4+OVrfR+Lx2XoAwQSRi/hAYJM6bE0E3KiXP7G+QUkmlcVb+Km6CrOFW6GGJoTeg7fx76FBZEv6t
-	NaV/PhEYHwd7Mk/o+HgY6JBjFMWNvPw5XaxMg1LXjVMWeDkxL3njgqAk/8JQvEwJxAie39m/Gxn
-	iWyGBQEv7csAV7Yjmk5jgTG9RWFxsc63DVlHLAUWx6bhq3icdW56schM35HqFtk7+mwpS3SF6zJ
-	WwnIOX5d/FVusaqtGh1aeMvkMjJHskFAXZQ7ABqdV7sZPLWJSenWQIgwNAMlzHDKES7/qYTFBL+
-	ZEG6KhRNjFt5iKy+uZsvLkDeyog8K+Eu1Z9pSN66a2YGPbufBUm8iInw3g8UklqiFcDOWGlc14u
-	kk4Ru9ijhoIrFdmYIB7JSsSwJezhp3Yh7k4E8DV+ZVVOD+vlewfCikeeoDfLiAza+vxrH37PtYp
-	Tl+GJGlNqJBToAh+wVdnIUXVpcbsyDff5TRLWixw7qH1qGdJhMKgNIVcYMcqFcuzDde7/vYS1Ez
-	uLN9OWqr0iTv3mWF75cFqiolvC/iNP+NO56zjNtWPrAR6C4MVcxXKGl0qz3yMJDXI6Gy5XggRSP
-	ewQGK
-X-Received: by 2002:a17:907:2d14:b0:c3f:2:6faa with SMTP id a640c23a62f3a-c49d10fcf82mr1151440266b.1.1793630278310;
-        Mon, 02 Nov 2026 06:37:58 -0800 (PST)
+        bh=Qnp94G0DRTWbZFaxE19m6TH0NvUhAeFNTa2yNCglEGI=;
+        b=qDECyr2E5DmHNYtnmLmZCY/OrAFYJKJrZCtFfSYRIKV1tNvmCJu0qa7U/Cw+ue9tgf
+         4vN3wxuBTc6x1TJm2GRqHEAB29i1Z5uQUIU57j0/DTVmTjCJneXJWUUeJXaIkP1iyLOp
+         vEa4Q4WQVuDlXYJSuYWquhpF9e88hD+p8lwV8F54cF+dm+nSU4UGd3Cgw3ZiksqBNtOL
+         yy+kZ7n/NLM0CA89z0U2cX9rpnXSVW+xgV410IcuSvXVaIZR5DZcPLOVRfw82WycbKFn
+         cQHWAz8b5M9BXaDhXjxy+0q6+goOKOcxeFLksieq0JvxP3vA1oYt0XowFGie3JWcQi4F
+         dOJQ==
+X-Gm-Message-State: APuU4Z932TyJhG2qb5cVjVwtC31QPJhv1li5FnyqZeX+19fNKOSvi6Pq
+	HuZW9MB48x51UpWqwSEMlnow7+lOmVJFV7otrHGTprKtHPVuo0OF5UgK
+X-Gm-Gg: AYBFou1/dRQjro+Xopds27HkNb8AlmIALEawYopATYVY735g2POWaj7qONNZ/cnzIkC
+	RuIep0gWFPjzFe0OqW+EPOkJ/7aWkeaPm7Vf4phHyjtkH32Vtaiy9eGGcL1jtm7LRRNGtVaJ3sg
+	AM70ulJZnQER8nuu6xDClc/6jb6nmoklMuGYb/5HTItiObNlj40d4PoNp1/s3NWM+tfC54Vdoxc
+	8dB9R8YaPnZFKMlbGknGL/V0opUFmXGJZOw4aMjB6JKUDXG1LtfzbHmUA0WjmI1POLY8Bsw+1PG
+	Ewhrf0Nxpc/0p7iWRVQ0AshODRGWkAyi3Y4/V1eWa++9v4LJeupZnu0m6F+krYILEgCojWC5DCa
+	OVRWpQQlCnO6dS86pSblo/Jz14SIJu/DHzTwnlOj9Rkb+QOYTTInBvsxCX2tA+aFkVWmafiki//
+	CTUIyNxA+dSpnNESb98TniMcPegtivKoglXVqHJqCu2RfHqgKAdAtUfinqz/Z6kAOy91nbDGz16
+	njK8FCAeSR9URPdbnxf8kxtBII2QCwmJz3fmem8VRHuTD4opm8+J7EbWnXs8QQXW/k5WeyMBrTE
+	oT63Xn3rgWlDq0BRSN7kVmt4OW8IYXzpvbyRhhMx21ZZWlmiDb/xu5JHztB81cR94kg8UFxdMJg
+	Pyq7r
+X-Received: by 2002:a17:907:1b29:b0:c41:26b8:c49d with SMTP id a640c23a62f3a-c4ca7ab18d6mr848792366b.38.1793631455654;
+        Mon, 02 Nov 2026 06:57:35 -0800 (PST)
 Received: from [192.168.0.50] (93-159-22-200.cgnat.inetia.pl. [93.159.22.200])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c4cabef2fd2sm395868166b.76.2026.11.02.06.37.57
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c4cabe1003fsm401959266b.44.2026.11.02.06.57.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Nov 2026 06:37:57 -0800 (PST)
-Message-ID: <8197cbc6-9310-4a40-b6be-698ade4bff06@gmail.com>
-Date: Mon, 2 Nov 2026 15:37:56 +0100
+        Mon, 02 Nov 2026 06:57:35 -0800 (PST)
+Message-ID: <fff5f1f4-b5b7-4378-b679-30d8a292e14d@gmail.com>
+Date: Mon, 2 Nov 2026 15:57:34 +0100
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -92,279 +92,213 @@ List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC] media: em28xx: initialize videobuf2 queues before
- device registration
+Subject: Re: [PATCH RFC] md: clear pending reshape parameters in __md_stop()
 To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-References: <2fdb5af1-fad9-47fe-93dc-d1400f44b60b@mail.kernel.org>
+References: <0bbc5530-3021-49ec-a8cd-a006c2639d53@mail.kernel.org>
 Content-Language: en-US
 From: Uladzislau Zhauniarovich <uladzislau.zhauniarovich@gmail.com>
-In-Reply-To: <2fdb5af1-fad9-47fe-93dc-d1400f44b60b@mail.kernel.org>
+In-Reply-To: <0bbc5530-3021-49ec-a8cd-a006c2639d53@mail.kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
+Thanks. The fix is in the right place and the guard is right. Please
+send a v2, rebased on current mainline (v7.4-rc1 or later), with the
+changes below.
 
-Thanks. Most of this patch is now redundant, but one hunk is the
-actual fix for this report. Please send a v2 that keeps only that hunk,
-rebased on current mainline (v7.4-rc1 or later).
+1) Context: mainline now has a related fix.
 
-1) Drop the videobuf2 changes. They are already in mainline:
+   0669c7dbd1d3 ("md/raid5: don't BUG() on an inconsistent reshape state 
+from the superblock")
 
-   487344a63f6a ("media: em28xx: setup queues before registering V4L2 
-device")
-   65ed6e9e3fe2 ("media: usb: em28xx: check if vbi is supported before 
-calling vb2_queue_init")
+It is in v7.4-rc1. It turns the BUG_ON()s in raid5_run() into
+"inconsistent reshape state - aborting." and -EINVAL, so the reproducer
+no longer oopses. But the stale request is still there: after the
+reproducer the array cannot be started again (writing "active" to
+array_state fails). Your hunk is what makes it start again, so v2 is a
+follow-up to 0669c7dbd1d3. Do not touch drivers/md/raid5.c.
 
-So drop all of the em28xx_vb2_setup() hunks (mutex_init/q->lock moves,
-the em28xx_vbi_supported() check, and calling em28xx_vb2_setup() before
-video_register_device()).
+2) Keep your hunk in __md_stop(), with its guard and the five
+    assignments, exactly as they are:
 
-2) Drop this hunk in em28xx_v4l2_fini():
+ > +    if (mddev->reshape_position == MaxSector) {
+ > +        mddev->delta_disks = 0;
+ > +        mddev->reshape_backwards = 0;
+ > +        mddev->new_level = mddev->level;
+ > +        mddev->new_layout = mddev->layout;
+ > +        mddev->new_chunk_sectors = mddev->chunk_sectors;
+ > +    }
 
- > @@ -2429,6 +2437,7 @@ static int em28xx_v4l2_fini(struct em28xx *dev)
- >          vb2_video_unregister_device(&v4l2->vdev);
- >      }
- >
- > +    dev->v4l2 = NULL;
- >      mutex_unlock(&dev->lock);
+Keep it at the end of __md_stop(), after
+clear_bit(MD_RECOVERY_FROZEN, ...). Do not move it into md_run() or
+do_md_run(). At that point new_* may legitimately come from the
+superblock, which 0669c7dbd1d3 deliberately rejects, and dm-raid sets
+new_* before md_run().
 
-It is not needed. em28xx_v4l2_fini() runs once per device. Since
-288254383674 ("media: em28xx: use v4l2_device release callback"),
-dev->v4l2 is meant to stay valid until the last file handle is gone,
-and em28xx_free_v4l2() already clears it at that point. Keep the
-lifetime rules of that commit unchanged.
+3) Add a reset of rdev->new_data_offset inside the same block, as
+    reshape_position_store() does:
 
-3) Keep this hunk exactly as it is. It is the fix:
+     if (mddev->reshape_position == MaxSector) {
+         struct md_rdev *rdev;
 
- > @@ -3097,6 +3104,7 @@ static int em28xx_v4l2_init(struct em28xx *dev)
- >          vb2_video_unregister_device(&v4l2->vdev);
- >      }
- >
- > +    dev->v4l2 = NULL;
- >      mutex_unlock(&dev->lock);
+         mddev->delta_disks = 0;
+         ...
+         mddev->new_chunk_sectors = mddev->chunk_sectors;
+         rdev_for_each(rdev, mddev)
+             rdev->new_data_offset = rdev->data_offset;
+     }
 
-Before 288254383674 the error path cleared dev->v4l2. That commit moved
-the clearing into em28xx_free_v4l2(), so after a failed init dev->v4l2
-still points to the dying instance. Two things follow:
+- new_offset (new_offset_store()) is part of the same pending request.
+- super_1_sync() writes it only while reshape_position != MaxSector.
+- A stale value makes update_raid_disks() refuse a later valid
+   raid_disks change.
+- reconfig_mutex is held here, so use plain rdev_for_each(), not the
+   _rcu variant.
 
-   - udev's v4l_id can be inside v4l2_open() -> em28xx_v4l2_open(),
-     blocked on dev->lock while init runs. When it gets the lock, it
-     finds dev->v4l2 set and opens the node that was just unregistered,
-     instead of getting -ENODEV.
+4) Add this comment above the if-block:
 
-   - On disconnect, em28xx_v4l2_fini() sees dev->v4l2 != NULL and calls
-     v4l2_device_put() a second time. The error path already dropped
-     the initial reference, so the refcount hits zero while v4l_id
-     still holds the video_device. em28xx_free_v4l2() frees struct
-     em28xx_v4l2, which embeds that video_device, and v4l2_open() reads
-     vdev->dev_debug from freed memory.
+     /*
+      * A reshape that was requested on the running array (raid_disks,
+      * layout or chunk_size written) but never started with
+      * sync_action=reshape exists only in memory: the superblock records
+      * delta_disks and the new geometry only while reshape_position !=
+      * MaxSector.  Drop it together with the personality, as
+      * reshape_position_store() does, so that the next md_run() does not
+      * see the geometry of a reshape that is not in progress.  A reshape
+      * that has started has reshape_position != MaxSector and is kept.
+      */
 
-That is exactly the latest crash of this bug, on linux-next
-20a33c6b6cbe (2026/10/26), which already has 288254383674:
+5) Tags and commit message for v2:
 
-   BUG: KASAN: slab-use-after-free in v4l2_open+0x397/0x3a0 
-drivers/media/v4l2-core/v4l2-dev.c:444
-   Freed by task 973:
-    em28xx_free_v4l2+0x77/0xf0 drivers/media/usb/em28xx/em28xx-video.c:2337
-    v4l2_device_put+0x81/0xd0 drivers/media/v4l2-core/v4l2-device.c:56
-    em28xx_v4l2_fini+0x1f3/0x3e0 
-drivers/media/usb/em28xx/em28xx-video.c:2465
-    em28xx_close_extension+0xde/0x390 
-drivers/media/usb/em28xx/em28xx-core.c:1262
-    em28xx_usb_disconnect+0x16b/0x2f0 
-drivers/media/usb/em28xx/em28xx-cards.c:4489
+   - Subject: "md: drop a never-started reshape request when stopping 
+the array"
+   - Fixes: 9e653b6342c9 ("[PATCH] md: Set/get state of array via sysfs")
+     instead of 91adb56473fe. 9e653b6342c9 added array_state=inactive
+     (do_md_stop() mode 2), the only stop that keeps the configuration.
+   - Cc: stable@vger.kernel.org. 0669c7dbd1d3 has a Fixes: tag, so it
+     will be backported, and backported arrays will then fail to restart
+     in this case too.
+   - Cc: Yogesh Gaur <yogeshgaur.83@gmail.com>
+   - Keep Reported-by: and Closes:.
+   - Rewrite the changelog around the mechanism:
+     * Writing raid_disks, layout or chunk_size to a running array only
+       records a request. update_raid_disks() sets delta_disks, not
+       new_level. The reshape starts only on sync_action=reshape;
+       "frozen" and a spare are not needed.
+     * super_90_sync() and super_1_sync() write the request only while
+       reshape_position != MaxSector, so dropping it at stop matches
+       what reassembling from disk gives.
+     * Minimal sequence:
+         # raid5 running on 3 devices
+         echo 4 > /sys/block/md0/md/raid_disks   # delta_disks = 1, 
+never started
+         echo inactive > /sys/block/md0/md/array_state
+         echo active > /sys/block/md0/md/array_state
+       A pending layout or chunk_size change ends the same way.
+     * Quote the trace from the syzbot report (raid5.c:8117), not the
+       one in v1 with "md.c:-1".
+     * Say what is left after 0669c7dbd1d3. raid5 refuses to start.
+       raid10 has no check at all: setup_conf() uses new_layout and
+       new_chunk_sectors, so after a pending layout change and
+       inactive -> active a raid10 array silently returns different
+       data.
+     * Do not write "Fix this". Two inputs are left to 0669c7dbd1d3's
+       -EINVAL: new_level written while the array is inactive, and a
+       crafted superblock with RESHAPE_ACTIVE and reshape_position ~0.
+       Say that a started reshape (reshape_position != MaxSector) is kept
+       and resumes.
 
-Please add a short comment above the assignment saying why it is
-there: so em28xx_v4l2_open() of the briefly registered node fails with
--ENODEV, and em28xx_v4l2_fini() does not tear the instance down a second
-time.
+The diff should be a single hunk at the end of __md_stop() in
+drivers/md/md.c: 22 added lines, nothing removed.
 
-4) Tags and commit message for v2:
+I tested exactly that hunk in QEMU with KASAN on a v7.2-rc5 based tree,
+with 0669c7dbd1d3 applied:
 
-   - Fixes: 288254383674 ("media: em28xx: use v4l2_device release callback")
-     instead of 7c8bf63b7937.
-   - Cc: stable@vger.kernel.org (288254383674 is in v7.3).
-   - Subject, e.g.: "media: em28xx: clear dev->v4l2 when v4l2 init fails"
-   - Rewrite the changelog around the mechanism in 3) and quote the
-     linux-next KASAN report above, not the videobuf2 splat.
+- The reproducer: 2/2 BUG without any fix, -EINVAL and an array that
+   stays down with only 0669c7dbd1d3, 3/3 clean with the hunk; the array
+   starts again with its old geometry.
+- The layout, chunk_size, shrink-by-2 and readonly-restart variants are
+   clean with the hunk.
+- raid10 with a pending layout change keeps its data intact.
+- A real grow 3->4 still completes.
+- A reshape parked at reshape_position 49152 and then taken
+   inactive -> active resumes at 49152 and finishes with the data intact.
 
-The diff should be a single hunk in em28xx_v4l2_init() of about
-8 lines (the comment plus "dev->v4l2 = NULL;").
-
-On 16/10/2026 20:57, syzbot wrote:
-> In em28xx_v4l2_init(), the videobuf2 queues (v4l2->vb_vidq and
-> v4l2->vb_vbiq) are assigned to v4l2->vdev.queue and v4l2->vbi_dev.queue,
-> and the video devices are registered with video_register_device() before
-> em28xx_vb2_setup() is called to initialize the queues via vb2_queue_init().
+On 09/09/2026 23:45, syzbot wrote:
+> When reconfiguring an active MD array (for instance, updating the number of
+> disks via the raid_disks sysfs attribute), pending reshape parameters such
+> as delta_disks, new_level, new_layout, and new_chunk_sectors are stored in
+> struct mddev. At this stage, the reshape has not yet started running and
+> mddev->reshape_position remains set to MaxSector.
 >
-> When an error occurs after video_register_device() succeeds but before
-> em28xx_vb2_setup() is reached (such as v4l2_mc_create_media_graph() failing
-> when no decoder is present), the error cleanup path at unregister_dev calls
-> vb2_video_unregister_device() on the registered devices. Because
-> vdev->queue is set, vb2_video_unregister_device() calls
-> vb2_queue_release(), which invokes __vb2_queue_cancel(). However, because
-> vb2_queue_init() was never called on the queue, its internal locks and
-> waitqueue heads remain zero-filled. This triggers a lockdep warning when
-> acquiring q->done_wq.lock, followed by a NULL pointer dereference in
-> __wake_up_common() when dereferencing the uninitialized waitqueue head:
+> If userspace deactivates or stops the array before the reshape begins (such
+> as by writing "inactive" to array_state), do_md_stop() invokes __md_stop().
+> Unlike a full stop which invokes md_clean() to clear all configuration
+> fields, __md_stop() detaches the personality and frees private data but
+> leaves the pending reshape parameters in struct mddev. When the array is
+> later restarted (e.g. by writing "active" to array_state), md_run() calls
+> the personality's run method, raid5_run(). Because mddev->reshape_position
+> is still MaxSector, raid5_run() assumes no reshape is taking place and
+> expects no pending reshape parameters, causing BUG_ON(mddev->delta_disks !=
+> 0) to trigger:
 >
-> INFO: trying to register non-static key.
-> The code is fine but needs lockdep annotation, or maybe
-> you didn't initialize this object before use?
-> turning off the locking correctness validator.
+> kernel BUG at drivers/md/raid5.c:8117!
+> Oops: invalid opcode: 0000 [#1] SMP
+> RIP: 0010:raid5_run+0x2550/0x2560 drivers/md/raid5.c:8117
 > Call Trace:
 >   <TASK>
->   dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
->   register_lock_class+0xcc/0x2e0 kernel/locking/lockdep.c:1343
->   __lock_acquire+0x10c/0x2de0 kernel/locking/lockdep.c:5162
->   lock_acquire+0x115/0x350 kernel/locking/lockdep.c:5942
->   _raw_spin_lock_irqsave+0x40/0x60 kernel/locking/spinlock.c:181
->   __wake_up_common_lock+0x30/0x1f0 kernel/sched/wait.c:125
->   __vb2_queue_cancel+0x2de/0xde0
->   drivers/media/common/videobuf2/videobuf2-core.c:2244
->   vb2_core_queue_release+0x2f/0x150
->   drivers/media/common/videobuf2/videobuf2-core.c:2677
->   vb2_queue_release drivers/media/common/videobuf2/videobuf2-v4l2.c:943
->   [inline]
->   vb2_video_unregister_device+0x15b/0x200
->   drivers/media/common/videobuf2/videobuf2-v4l2.c:1279
->   em28xx_v4l2_init+0x1a12/0x2df0
->   drivers/media/usb/em28xx/em28xx-video.c:3097
->   </TASK>
-> Oops: general protection fault, probably for non-canonical address
-> 0xdffffc0000000000: 0000 [#1] SMP KASAN NOPTI
-> KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-> RIP: 0010:__wake_up_common kernel/sched/wait.c:105 [inline]
-> RIP: 0010:__wake_up_common_lock+0xd6/0x1f0 kernel/sched/wait.c:126
-> Call Trace:
->   <TASK>
->   __vb2_queue_cancel+0x2de/0xde0
->   drivers/media/common/videobuf2/videobuf2-core.c:2244
->   vb2_core_queue_release+0x2f/0x150
->   drivers/media/common/videobuf2/videobuf2-core.c:2677
->   vb2_queue_release drivers/media/common/videobuf2/videobuf2-v4l2.c:943
->   [inline]
->   vb2_video_unregister_device+0x15b/0x200
->   drivers/media/common/videobuf2/videobuf2-v4l2.c:1279
->   em28xx_v4l2_init+0x1a12/0x2df0
->   drivers/media/usb/em28xx/em28xx-video.c:3097
+>   md_run+0xc3d/0x1cd0 drivers/md/md.c:6779
+>   do_md_run+0x35/0x720 drivers/md/md.c:6880
+>   array_state_store+0x958/0xe90 drivers/md/md.c:-1
+>   md_attr_store+0x3b7/0x640 drivers/md/md.c:6158
+>   kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
+>   vfs_write+0x612/0xba0 fs/read_write.c:687
+>   ksys_write+0x150/0x270 fs/read_write.c:739
+>   do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+>   entry_SYSCALL_64_after_hwframe+0x77/0x7f
 >   </TASK>
 >
-> Additionally, if em28xx_v4l2_init() fails, dev->v4l2 is left set. When the
-> device is later disconnected, em28xx_close_extension() invokes
-> em28xx_v4l2_fini(), which calls v4l2_device_put() a second time and leads
-> to a use-after-free.
+> Fix this by clearing pending reshape parameters in __md_stop() if no
+> reshape is currently running (mddev->reshape_position == MaxSector).
+> Specifically, reset delta_disks and reshape_backwards to 0, and reset
+> new_level, new_layout, and new_chunk_sectors to level, layout, and
+> chunk_sectors, respectively. If a reshape is actively in progress
+> (mddev->reshape_position != MaxSector), the parameters are preserved so the
+> reshape can resume when the array is restarted.
 >
-> Fix this by moving em28xx_vb2_setup() before video_register_device() and
-> checking its return value so that queues are initialized prior to device
-> registration and any subsequent cleanup. In em28xx_vb2_setup(), initialize
-> vb_queue_lock and vb_vbi_queue_lock and assign q->lock before calling
-> vb2_queue_init(), and make VBI queue initialization conditional on
-> em28xx_vbi_supported(). Finally, set dev->v4l2 to NULL under dev->lock in
-> both the unregister_dev error path and in em28xx_v4l2_fini() to prevent
-> em28xx_v4l2_fini() from performing a duplicate teardown upon disconnect.
->
-> Fixes: 7c8bf63b7937 ("media: em28xx: use vb2_video_unregister_device")
-> Assisted-by: Gemini:gemini-4-argon Gemini:gemini-3.8-flash syzbot
-> Reported-by: syzbot+1a7507a194fff09e5c44@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=1a7507a194fff09e5c44
-> Link: https://syzkaller.appspot.com/ai_job?id=9fb455aa-6431-4fd2-9460-4bb223f71e03
-> To: <linux-media@vger.kernel.org>
-> To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-> To: "Hans Verkuil" <hverkuil+cisco@kernel.org>
+> Fixes: 91adb56473fe ("md/raid5: refactor raid5 "run"")
+> Assisted-by: Gemini:gemini-3.8-flash Gemini:gemini-3.1-pro-preview syzbot
+> Reported-by: syzbot+1f5a7de91d547763f4c8@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=1f5a7de91d547763f4c8
+> Link: https://syzkaller.appspot.com/ai_job?id=ebe142c5-4399-48c5-aad4-4ee23cb2055d
+> To: <linux-raid@vger.kernel.org>
+> To: "Song Liu" <song@kernel.org>
+> To: "Yu Kuai" <yukuai@fygo.io>
+> To: "NeilBrown" <neilb@suse.de>
 > Cc: <linux-kernel@vger.kernel.org>
+> Cc: "Li Nan" <magiclinan@didiglobal.com>
+> Cc: "Xiao Ni" <xiao@kernel.org>
 >
 > ---
-> diff --git a/drivers/media/usb/em28xx/em28xx-video.c b/drivers/media/usb/em28xx/em28xx-video.c
-> index 79af15476..edcd884ec 100644
-> --- a/drivers/media/usb/em28xx/em28xx-video.c
-> +++ b/drivers/media/usb/em28xx/em28xx-video.c
-> @@ -1396,6 +1396,9 @@ static int em28xx_vb2_setup(struct em28xx *dev)
->   	struct vb2_queue *q;
->   	struct em28xx_v4l2 *v4l2 = dev->v4l2;
->   
-> +	mutex_init(&v4l2->vb_queue_lock);
-> +	mutex_init(&v4l2->vb_vbi_queue_lock);
+> diff --git a/drivers/md/md.c b/drivers/md/md.c
+> index 680b34a63..38ab41bbc 100644
+> --- a/drivers/md/md.c
+> +++ b/drivers/md/md.c
+> @@ -7095,6 +7095,14 @@ static void __md_stop(struct mddev *mddev)
+>   	mddev->private = NULL;
+>   	put_pers(pers);
+>   	clear_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
 > +
->   	/* Setup Videobuf2 for Video capture */
->   	q = &v4l2->vb_vidq;
->   	q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-> @@ -1405,11 +1408,15 @@ static int em28xx_vb2_setup(struct em28xx *dev)
->   	q->buf_struct_size = sizeof(struct em28xx_buffer);
->   	q->ops = &em28xx_video_qops;
->   	q->mem_ops = &vb2_vmalloc_memops;
-> +	q->lock = &v4l2->vb_queue_lock;
+> +	if (mddev->reshape_position == MaxSector) {
+> +		mddev->delta_disks = 0;
+> +		mddev->reshape_backwards = 0;
+> +		mddev->new_level = mddev->level;
+> +		mddev->new_layout = mddev->layout;
+> +		mddev->new_chunk_sectors = mddev->chunk_sectors;
+> +	}
+>   }
 >   
->   	rc = vb2_queue_init(q);
->   	if (rc < 0)
->   		return rc;
->   
-> +	if (!em28xx_vbi_supported(dev))
-> +		return 0;
-> +
->   	/* Setup Videobuf2 for VBI capture */
->   	q = &v4l2->vb_vbiq;
->   	q->type = V4L2_BUF_TYPE_VBI_CAPTURE;
-> @@ -1419,6 +1426,7 @@ static int em28xx_vb2_setup(struct em28xx *dev)
->   	q->buf_struct_size = sizeof(struct em28xx_buffer);
->   	q->ops = &em28xx_vbi_qops;
->   	q->mem_ops = &vb2_vmalloc_memops;
-> +	q->lock = &v4l2->vb_vbi_queue_lock;
->   
->   	rc = vb2_queue_init(q);
->   	if (rc < 0)
-> @@ -2429,6 +2437,7 @@ static int em28xx_v4l2_fini(struct em28xx *dev)
->   		vb2_video_unregister_device(&v4l2->vdev);
->   	}
->   
-> +	dev->v4l2 = NULL;
->   	mutex_unlock(&dev->lock);
->   
->   	/*
-> @@ -2948,12 +2957,14 @@ static int em28xx_v4l2_init(struct em28xx *dev)
->   	if (ret)
->   		goto unregister_dev;
->   
-> +	/* initialize videobuf2 stuff */
-> +	ret = em28xx_vb2_setup(dev);
-> +	if (ret)
-> +		goto unregister_dev;
-> +
->   	/* allocate and fill video video_device struct */
->   	em28xx_vdev_init(dev, &v4l2->vdev, &em28xx_video_template, "video");
-> -	mutex_init(&v4l2->vb_queue_lock);
-> -	mutex_init(&v4l2->vb_vbi_queue_lock);
->   	v4l2->vdev.queue = &v4l2->vb_vidq;
-> -	v4l2->vdev.queue->lock = &v4l2->vb_queue_lock;
->   	v4l2->vdev.device_caps = V4L2_CAP_READWRITE | V4L2_CAP_VIDEO_CAPTURE |
->   				 V4L2_CAP_STREAMING;
->   	if (dev->int_audio_type != EM28XX_INT_AUDIO_NONE)
-> @@ -2998,7 +3009,6 @@ static int em28xx_v4l2_init(struct em28xx *dev)
->   				 "vbi");
->   
->   		v4l2->vbi_dev.queue = &v4l2->vb_vbiq;
-> -		v4l2->vbi_dev.queue->lock = &v4l2->vb_vbi_queue_lock;
->   		v4l2->vbi_dev.device_caps = V4L2_CAP_STREAMING |
->   			V4L2_CAP_READWRITE | V4L2_CAP_VBI_CAPTURE;
->   		if ((v4l2->vdev.device_caps & V4L2_CAP_TUNER) == 0)
-> @@ -3068,9 +3078,6 @@ static int em28xx_v4l2_init(struct em28xx *dev)
->   	/* Save some power by putting tuner to sleep */
->   	v4l2_device_call_all(&v4l2->v4l2_dev, 0, tuner, standby);
->   
-> -	/* initialize videobuf2 stuff */
-> -	em28xx_vb2_setup(dev);
-> -
->   	dev_info(&dev->intf->dev,
->   		 "V4L2 extension successfully initialized\n");
->   
-> @@ -3097,6 +3104,7 @@ static int em28xx_v4l2_init(struct em28xx *dev)
->   		vb2_video_unregister_device(&v4l2->vdev);
->   	}
->   
-> +	dev->v4l2 = NULL;
->   	mutex_unlock(&dev->lock);
->   
->   	/*
+>   void md_stop(struct mddev *mddev)
 >
 >
-> base-commit: 24a19b953e2a3d0ea5a8c4951a0ab8f32720c907
+> base-commit: df2908090cda368b01ff43709f51890076c56157
