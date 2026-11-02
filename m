@@ -1,49 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.198
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793638407;
-	b=xz4aPM+qSojo0XFOy0QODdCPztI5XOQ3tnmzrVwH/7BFlwwQRFK/IuppvkVY2vGim9eO
-	 BZwsZBee+k9AkfarH0FrvFH59gG/XcRBMwEZHkq8BDenw/0gCA0M2kQfG3absTGHDJuXl
-	 jYcMNDVH3zktmf1uSRxBFARbPNKCnJJv0sDINXb3JyoujK7QiWVJ6hBrgaJonFSdOW6pS
-	 jKLPSUJgqBDwOIOKc6sGxxwSsi+w17Jwi0upQATa6T7fwQhMfrJxi46EzEGrvNr7JkZjz
-	 a4mbmy+ptWN1fYejbdPp44WXLj+vKnzokrtEGmTDIi7THX58I4MOjvZAQQVgYeOWk4w==
+	t=1793653990;
+	b=m5Z7kAcFnIh9e8y9epw6Qe1SUgEpzvxviImoDwqnHy5lwr5rfw5/gVTxPRWVp/aVVjVa
+	 RkQsWimAy5pCu89TPYZGYYTymsJU1A7EeRL+E3ykfZ5TEaz/UyYiMRuXsiwACT49M5tcC
+	 f6c7zJhsdOXBBnvtFYpKbvIPJbc/OCUpCNkRQmSDBHyFPW03yoSCAMyZMgL8iUxn1B09P
+	 P91K5lyyibc6mONN2p2uFEe+w7u1WEaGLx7AARzMPVxPGVRbtkHaaFcrZF4MCM0BY8mK5
+	 aRC6899/ynrD2Vt8joES8zkksj6ICOrMEIqSJ/ikvEos9a/S0MzYOfIHuDdbU9X6cqQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793638407;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:Date;
-	bh=QwFuzIOOajP+VUB/0//X5m/ehVoPWeH6NhblDzcNzMI=;
-	b=mkue8FaqjFhVGcuhLUf/7E0d3xfC0VtguAzuXj35EC57kelRYMiNVpJm9yJgKEf4CVWa
-	 tccvyq+CBdfkiiOJsZezvFhXStMcgtNUBtaw6DAKtNANE1lRvfCjoNEOrMGdv6kiJGKX9
-	 DYV23e4TS6sCp9Eepfbm7MGvn8djUzuEk7J27SAIlV8uI2mA8fAJDqWnUsrhM+Zi40tF4
-	 ScIQ9jCdPYKOBPgxgweJ/SEPYBAo0cplSTqhmf31pxSCgS/mEwBqelOY3Q/LOwkj99IZs
-	 oZLdjB+/yNGHv/8OsDHAthhhaRSKmExIqDzwr4Ktn7cIOdMGMWQxHnz4Ie/WSPtFr2g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793653990;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
+	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
+	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
+	 Content-Type;
+	bh=oB0LuMTgYWe7cERHUJNalCn8pvEx3jy5zBcnWXkFrPA=;
+	b=FwABLDGCcznxJnPNN5D+/V6EkjqbxukCuROVxbCEcTlLvIGA3eEu7aDgM+yMnaV5PDHQ
+	 VAyrUt9c4a8aPcsBRQ9nIFfXIzHaWgfskjmkAQCRhBokukktchfnZbcsuCE1q09gKKSVT
+	 cInYqhmldICLZhPsSElDljOuor54rhEo3tm4HIGBusFdBj9kBN/XhjJbdiJeHFta6bY5m
+	 aNKBHlHZBtkW9ZYaNoJ4dHIzYQlJdEIJMmc2UB8Hc7pU8KEUPNA3NxkHly3GUo1eV3QCL
+	 7/xs4LzU4VIwoQ9ARaxYIKA6HWLgJ1nbd5R+nNsWHNy8KksINdg3MDiCDvozxSsLwtA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oLwn4xRv;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=fail header.from=syzkaller.appspotmail.com;
+	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
+	arc=none smtp.remote-ip=209.85.167.198
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id C1A946079046
-	for <syzbot@lists.linux.dev>; Mon,  2 Nov 2026 16:53:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oLwn4xRv
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 3DADD1F00A16;
-	Mon,  2 Nov 2026 16:53:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793638406;
-	bh=QwFuzIOOajP+VUB/0//X5m/ehVoPWeH6NhblDzcNzMI=;
-	h=From:To:Cc:Subject:Date;
-	b=oLwn4xRvDrLEFPi7U1mCZD4CfqF/H+Ea8b0eun+Hu20tvMpYdmpOXA+4ZkYd75QvB
-	 50zLWujspIvlPEvJaofDcDejYmiCrIayWNtH+HcJ/uzm45f9MbHi3pqLdA6EmarkhF
-	 AK+6WAQ0/sr2nXPJL1AwR7Gbe2BcTjPiVuAw5jcO6+3D3AibS9IzqsxUle2L66dQdv
-	 EQv1Ux2by6/9RyDEP50gjMftgAyMEJyHt644ASDztuqMhaFu+7/JU4Sw3474hnAbfT
-	 lbQ/DTywRTQIPnFXFg43pi27Vq8s0MPf2eSFTgBPy0p8WoRNjpKDD9wXaUJ4cWFhjt
-	 RDy9M6Ik1khaw==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev, uladzislau.zhauniarovich@gmail.com
-Subject: [PATCH RFC v2] media: em28xx: clear dev->v4l2 when v4l2 init fails
-Message-ID: <46d5ee1f-d8ae-4555-9edd-6afa90861d4e@mail.kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB554606A32D
+	for <syzbot@lists.linux.dev>; Mon,  2 Nov 2026 21:13:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DB554606A32D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-4dab94dc3e7so5298376b6e.0
+        for <syzbot@lists.linux.dev>; Mon, 02 Nov 2026 13:13:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793653989; x=1794258789;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=oB0LuMTgYWe7cERHUJNalCn8pvEx3jy5zBcnWXkFrPA=;
+        b=Mh8Ak70+Y9GNifJV4I+vN5QWAtAxpf220VLJ8NAeNdit6R5VzRi6x8G1hIo6NFbWV8
+         njQZuSTwRaXJwVYGpMn1TncuYdAHdjbET6xZQzg9CAAL0eNUvFcpMYydnDhOPdiKxQVk
+         C/9oOeRKoT3NF9hmspcC85gsB/HFDY4g7/AkntwDPThE+8hwyebtqlXrmrgLyJng3Hlc
+         EB5AO6uzhYqqn92aPgRo1GQqsCekV8agL8Y+ey2aLSi6BT7qj/Q/sTU3otwqF++KiBtP
+         D2yAF3el0kVBJ8jCdAzjTjqgxavaW4TND4WphDpELt9yu5K0XaJKQ3RTKvUe8l9j6Y60
+         jIkw==
+X-Gm-Message-State: AFq9FYLFNv3v3GGn0UeYkmwtay10+vtbcVqvOxVm7Bj5rvpC18EVihzE
+	9Ce90VUIuNIu7zUnTiWlk8P78zS2iuHdsG8xVSEM2IKl1HqHAwxTSz3aSXPgyQfk/s3wNJqbwY5
+	EuVCLcUI3g6tXAsPDoYvvHC0nNWsXTRTmZ3YDdBBjwOqAmVZDlcb1hRSaMCk=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -53,205 +57,88 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Mon,  2 Nov 2026 16:53:26 +0000 (UTC)
+X-Received: by 2002:a05:6808:151f:b0:4c3:6d56:77c2 with SMTP id
+ 5614622812f47-5640de7e3a9mr7794816b6e.41.1793653988723; Mon, 02 Nov 2026
+ 13:13:08 -0800 (PST)
+Date: Mon, 02 Nov 2026 13:13:08 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6ae8fce4.52c4c7f9.b7231.0004.GAE@google.com>
+Subject: [moderation/CI] Re: igmp: use copy-on-write RCU updates in ip_mc_source()
+From: syzbot ci <syzbot+cia5e6e396ddec2565@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-In em28xx_v4l2_init(), if an error occurs after video_register_device()
-succeeds, the cleanup path at unregister_dev unregisters the devices and
-puts the v4l2_dev reference, but leaves dev->v4l2 set. Because dev->v4l2
-remains non-NULL, subsequent calls to v4l2_open() (such as from v4l_id when
-opening the device node) succeed instead of returning -ENODEV. When the
-device is later disconnected, em28xx_close_extension() invokes
-em28xx_v4l2_fini(), which sees dev->v4l2 is still set and calls
-v4l2_device_put() a second time. This prematurely drops the reference count
-to zero while v4l_id still holds the device, leading to a
-slab-use-after-free:
+syzbot ci has tested the following series
 
-BUG: KASAN: slab-use-after-free in v4l2_release+0xcd/0xe0
-Read of size 8 at addr ffff888114efc000 by task v4l_id/1234
-CPU: 1 UID: 0 PID: 1234 Comm: v4l_id Not tainted 6.14.0-rc1 #1
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
-1.16.3-debian-1.16.3-2 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x68/0x90
- print_report+0xd3/0x620
- kasan_report+0xb9/0xf0
- v4l2_release+0xcd/0xe0
- __fput+0x3f6/0xb30
- task_work_run+0x14d/0x240
- do_exit+0xa38/0x2c00
- do_group_exit+0xd4/0x2a0
- __x64_sys_exit_group+0x3e/0x50
- do_syscall_64+0xcb/0x250
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
+[v1] igmp: use copy-on-write RCU updates in ip_mc_source()
+https://lore.kernel.org/all/20261102095312.47767-1-18983559317@163.com
+* [PATCH net v1] igmp: use copy-on-write RCU updates in ip_mc_source()
 
-Allocated by task 6297:
- kasan_save_stack+0x33/0x60
- kasan_save_track+0x14/0x30
- __kasan_kmalloc+0xaa/0xb0
- em28xx_v4l2_init+0x9e/0x2df0 drivers/media/usb/em28xx/em28xx-video.c:2860
- em28xx_init_extension+0x120/0x1d0
- drivers/media/usb/em28xx/em28xx-core.c:1248
- process_scheduled_works+0xc3d/0x1630 kernel/workqueue.c:3479
- worker_thread+0x92d/0xe10 kernel/workqueue.c:3560
- kthread+0x38b/0x480 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+and found the following issue:
+kernel build error
 
-Freed by task 6297:
- kasan_save_stack+0x33/0x60
- kasan_save_track+0x14/0x30
- kasan_save_free_info+0x2b/0x50
- __kasan_slab_free+0x106/0x1a0
- kfree+0xd4/0x340
- v4l2_device_put+0xbc/0xf0 drivers/media/v4l2-core/v4l2-dev.c:1052
- em28xx_v4l2_fini+0x120/0x180 drivers/media/usb/em28xx/em28xx-video.c:2445
- em28xx_close_extension+0x120/0x1d0
- drivers/media/usb/em28xx/em28xx-core.c:1270
- em28xx_usb_disconnect+0x10a/0x230
- drivers/media/usb/em28xx/em28xx-cards.c:4254
- usb_unbind_interface+0x1eb/0x8e0 drivers/usb/core/driver.c:461
- device_release_driver_internal+0x43b/0x610 drivers/base/dd.c:1297
- bus_remove_device+0x2cc/0x3e0 drivers/base/bus.c:575
- device_del+0x49f/0x910 drivers/base/core.c:3851
- usb_disable_device+0x35b/0x7b0 drivers/usb/core/message.c:1418
- usb_disconnect+0x2c6/0x8d0 drivers/usb/core/hub.c:2303
+Full report is available here:
+https://ci.syzbot.org/series/03228251-9799-4e5a-8f98-a8e37eb3c89f
 
-Fix this by clearing dev->v4l2 under dev->lock in the unregister_dev error
-path of em28xx_v4l2_init(). This ensures em28xx_v4l2_open() fails with
--ENODEV and prevents em28xx_v4l2_fini() from tearing down the instance a
-second time upon disconnect.
+***
 
-In addition, move em28xx_vb2_setup() before video_register_device() and
-check its return value so that videobuf2 queues are initialized prior to
-device registration and can be safely cleaned up if an error occurs. In
-em28xx_vb2_setup(), initialize vb_queue_lock and vb_vbi_queue_lock and
-assign q->lock before calling vb2_queue_init(), and make VBI queue
-initialization conditional on em28xx_vbi_supported().
+kernel build error
 
-Cc: stable@vger.kernel.org
+tree:      net
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net.git
+base:      209108a5456171ab430e25b54b2dfe083455bfb6
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/a8f5c308-a81f-4c46-8bef-b7d2c3d0efbc/config
 
-Fixes: 288254383674 ("media: em28xx: use v4l2_device release callback")
-Assisted-by: Gemini:gemini-4-argon Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+1a7507a194fff09e5c44@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=1a7507a194fff09e5c44
-Link: https://syzkaller.appspot.com/ai_job?id=4d612d4a-3dfa-43bd-9919-40019986527f
-To: <linux-media@vger.kernel.org>
-To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-To: "Hans Verkuil" <hverkuil+cisco@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+net/ipv4/igmp.c:2646:1: error: function definition is not allowed here
+net/ipv4/igmp.c:2737:1: error: function definition is not allowed here
+net/ipv4/igmp.c:2797:1: error: function definition is not allowed here
+net/ipv4/igmp.c:2846:1: error: function definition is not allowed here
+net/ipv4/igmp.c:2893:1: error: function definition is not allowed here
+net/ipv4/igmp.c:2919:1: error: function definition is not allowed here
+net/ipv4/igmp.c:2972:1: error: function definition is not allowed here
+net/ipv4/igmp.c:2994:1: error: function definition is not allowed here
+net/ipv4/igmp.c:3013:1: error: function definition is not allowed here
+net/ipv4/igmp.c:3023:1: error: function definition is not allowed here
+net/ipv4/igmp.c:3029:1: error: function definition is not allowed here
+net/ipv4/igmp.c:3041:1: error: function definition is not allowed here
+net/ipv4/igmp.c:3050:1: error: function definition is not allowed here
+net/ipv4/igmp.c:3089:11: error: use of undeclared identifier 'igmp_mc_seq_start'; did you mean 'mr_mfc_seq_start'?
+net/ipv4/igmp.c:3090:10: error: use of undeclared identifier 'igmp_mc_seq_next'
+net/ipv4/igmp.c:3091:10: error: use of undeclared identifier 'igmp_mc_seq_stop'; did you mean 'igmp_mc_seq_ops'?
+net/ipv4/igmp.c:3092:10: error: use of undeclared identifier 'igmp_mc_seq_show'; did you mean 'igmp_mc_seq_ops'?
+net/ipv4/igmp.c:3105:1: error: function definition is not allowed here
+net/ipv4/igmp.c:3134:1: error: function definition is not allowed here
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v2:
-- Update patch subject to reflect clearing dev->v4l2 on init failure
-- Rewrite commit description to explain the slab-use-after-free and replace the lockdep/GPF report with the KASAN report
-- Drop setting dev->v4l2 to NULL in em28xx_v4l2_fini()
-- Add comment explaining why dev->v4l2 is cleared in em28xx_v4l2_init()
-- Add Cc: stable@vger.kernel.org tag
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v1:
-https://lore.kernel.org/all/2fdb5af1-fad9-47fe-93dc-d1400f44b60b@mail.kernel.org/T/
----
-diff --git a/drivers/media/usb/em28xx/em28xx-video.c b/drivers/media/usb/em28xx/em28xx-video.c
-index 79af15476..a48815840 100644
---- a/drivers/media/usb/em28xx/em28xx-video.c
-+++ b/drivers/media/usb/em28xx/em28xx-video.c
-@@ -1396,6 +1396,9 @@ static int em28xx_vb2_setup(struct em28xx *dev)
- 	struct vb2_queue *q;
- 	struct em28xx_v4l2 *v4l2 = dev->v4l2;
- 
-+	mutex_init(&v4l2->vb_queue_lock);
-+	mutex_init(&v4l2->vb_vbi_queue_lock);
-+
- 	/* Setup Videobuf2 for Video capture */
- 	q = &v4l2->vb_vidq;
- 	q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-@@ -1405,11 +1408,15 @@ static int em28xx_vb2_setup(struct em28xx *dev)
- 	q->buf_struct_size = sizeof(struct em28xx_buffer);
- 	q->ops = &em28xx_video_qops;
- 	q->mem_ops = &vb2_vmalloc_memops;
-+	q->lock = &v4l2->vb_queue_lock;
- 
- 	rc = vb2_queue_init(q);
- 	if (rc < 0)
- 		return rc;
- 
-+	if (!em28xx_vbi_supported(dev))
-+		return 0;
-+
- 	/* Setup Videobuf2 for VBI capture */
- 	q = &v4l2->vb_vbiq;
- 	q->type = V4L2_BUF_TYPE_VBI_CAPTURE;
-@@ -1419,6 +1426,7 @@ static int em28xx_vb2_setup(struct em28xx *dev)
- 	q->buf_struct_size = sizeof(struct em28xx_buffer);
- 	q->ops = &em28xx_vbi_qops;
- 	q->mem_ops = &vb2_vmalloc_memops;
-+	q->lock = &v4l2->vb_vbi_queue_lock;
- 
- 	rc = vb2_queue_init(q);
- 	if (rc < 0)
-@@ -2948,12 +2956,14 @@ static int em28xx_v4l2_init(struct em28xx *dev)
- 	if (ret)
- 		goto unregister_dev;
- 
-+	/* initialize videobuf2 stuff */
-+	ret = em28xx_vb2_setup(dev);
-+	if (ret)
-+		goto unregister_dev;
-+
- 	/* allocate and fill video video_device struct */
- 	em28xx_vdev_init(dev, &v4l2->vdev, &em28xx_video_template, "video");
--	mutex_init(&v4l2->vb_queue_lock);
--	mutex_init(&v4l2->vb_vbi_queue_lock);
- 	v4l2->vdev.queue = &v4l2->vb_vidq;
--	v4l2->vdev.queue->lock = &v4l2->vb_queue_lock;
- 	v4l2->vdev.device_caps = V4L2_CAP_READWRITE | V4L2_CAP_VIDEO_CAPTURE |
- 				 V4L2_CAP_STREAMING;
- 	if (dev->int_audio_type != EM28XX_INT_AUDIO_NONE)
-@@ -2998,7 +3008,6 @@ static int em28xx_v4l2_init(struct em28xx *dev)
- 				 "vbi");
- 
- 		v4l2->vbi_dev.queue = &v4l2->vb_vbiq;
--		v4l2->vbi_dev.queue->lock = &v4l2->vb_vbi_queue_lock;
- 		v4l2->vbi_dev.device_caps = V4L2_CAP_STREAMING |
- 			V4L2_CAP_READWRITE | V4L2_CAP_VBI_CAPTURE;
- 		if ((v4l2->vdev.device_caps & V4L2_CAP_TUNER) == 0)
-@@ -3068,9 +3077,6 @@ static int em28xx_v4l2_init(struct em28xx *dev)
- 	/* Save some power by putting tuner to sleep */
- 	v4l2_device_call_all(&v4l2->v4l2_dev, 0, tuner, standby);
- 
--	/* initialize videobuf2 stuff */
--	em28xx_vb2_setup(dev);
--
- 	dev_info(&dev->intf->dev,
- 		 "V4L2 extension successfully initialized\n");
- 
-@@ -3097,6 +3103,12 @@ static int em28xx_v4l2_init(struct em28xx *dev)
- 		vb2_video_unregister_device(&v4l2->vdev);
- 	}
- 
-+	/*
-+	 * Clear dev->v4l2 to prevent em28xx_v4l2_open() from opening an
-+	 * unregistered node (failing with -ENODEV instead) and to prevent
-+	 * em28xx_v4l2_fini() from tearing down the instance a second time.
-+	 */
-+	dev->v4l2 = NULL;
- 	mutex_unlock(&dev->lock);
- 
- 	/*
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
 
-base-commit: 24a19b953e2a3d0ea5a8c4951a0ab8f32720c907
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+The email will later be sent to:
+[18983559317@163.com davem@davemloft.net dsahern@kernel.org edumazet@google.com horms@kernel.org idosch@nvidia.com kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org pabeni@redhat.com]
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
