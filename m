@@ -1,53 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.200
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.46
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793581199;
-	b=TlOvzaUxT7HB4egwLRpwoWAX9Ytr/aaRPZi4a5bmH8jAa1+TfaAM5dOzSiKIUQb7+LPN
-	 9ZJUwCxn0aPwJRAoLUt4C5QM4Q3Sxusw+PnFFfnRRvpxu+nhwIEZ13O6xgNT9s2MLUIPf
-	 5GLMxfk6xFcG2pNM2tac/huW+o1n0dM3LNeg4OgzH5rmhwoKEz5OjKHNiVnuupBDyG40Q
-	 8lVIWrgQyGm4mLdlz3uUdturJl3bwpp3KNgJSe4Hu8pHBFkcC0BKIavAU15jeAvnAkUX8
-	 3kxuSIAVfUbBios0t4NSVjp4WcR0rehZQl9H8QxbAr/Dmec9bR+7Cw+/aMl/sZaSYZg==
+	t=1793616160;
+	b=QtOGgoOLcF93G9fRlW1dKIKEXilci1jilnillf8fyrQ7U+ruYGiLpQ9mGfBvnkHhXx2t
+	 JnvtOBw4zdwnUQrG1Dgmvr5Okd++JXfOmYNieYTf/oPWc4HWAh5DeqqZz/mGbNyqT8/uA
+	 27ky8f0s//G59/lzJXXc55e96+YK94HTFqzfcPETS/p/rsPesdSXZC7IQT33VzDKzUqrq
+	 m7KJ7gjjBp0oCO/hJX1Oqg/qg+OWqqM0kVabakklJ+YjZCZStA2ryCmVzKdSrQHTzTDeY
+	 V3hf41fBVktpOLw3PXr4yEFkXc3gLn6S3/xaVbsS3ONj3qbUNEcCLeuqmO1gi4Vlmdg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793581199;
-	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
-	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
-	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
-	 Content-Type;
-	bh=NB1aq9VnLv/CSz5nKP6XZR1rf1+9Nxa9bOZc6GxaMJA=;
-	b=i+UPyfp2msosfwyOS1SESxZsq8BcGirFHvL4rootzUTh+nbmi/X1E9k01snj/54O5WfE
-	 BOeg07m+edtX92j0GSWXpp/NA9jxhapj7/YYGyFZPjwdd4vL6TnK6KX4C8/60P8ylkfil
-	 jzl1hSlbzCYIn6dlJAuVGc1Af/O9mdYKfOjtRj+V33XFvAGutKjiUFLKINx6Uq7a5lYId
-	 2+3NHdfx3QTj1ZPqCJemwv51f0xXIyUZ3Rc9FMIBqPCyakP4YLfgEXXWyWA/eNUZDgyWn
-	 6Vs/ERsiG3aVhxKH8QbGD+YlNAxIM0x2Zd4/kXrNvlQcAI2vLAaoAG5uWt3erU/HlIA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793616160;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=KXRF5NFKMdcuYVka3K7Jjgx1eiDiSmm0GhEZsRoOLRA=;
+	b=kIp2DWsHIpxkhN691GnbzleJLkby58zY2QxNcZn/bU4tjuqTzhuDeBNSrFt0iqab/ATY
+	 CkTP/pxlMZiXj4quAVLG+ruTjr70tjiqV6WZn5TAaliffnOTlKtM9CZX3HPyAVwXN8+zh
+	 ps7isBk4gF8VoIH3T08SBqhCAxusB3UJIp+8Yi/psO36Oj8YmFS0K17MmPPvBmotiiwdx
+	 N5YJ7LwjCyJqDQXRxQAoCKEc9nAQBqSuw4uSqFFBGWLWjOggM3S3RDeSpz2ZIs/SCXiJD
+	 7zh/YQpFNAxCAwXorIbdKP1q94+zr3R5eCXiXoxJUxpmkU1/XtkJaBfXMbi10CHZ0fg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=fail header.from=syzkaller.appspotmail.com;
-	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
-	arc=none smtp.remote-ip=209.85.167.200
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=r4263GOm;
+	arc=none smtp.remote-ip=209.85.218.46
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85618606A324
-	for <syzbot@lists.linux.dev>; Mon,  2 Nov 2026 00:59:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 85618606A324
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-540537f959fso3582028b6e.0
-        for <syzbot@lists.linux.dev>; Sun, 01 Nov 2026 16:59:58 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793581197; x=1794185997;
-        h=content-type:cc:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05CC460A6F51
+	for <syzbot@lists.linux.dev>; Mon,  2 Nov 2026 10:42:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 05CC460A6F51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=r4263GOm
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-c37b612635bso385759666b.3
+        for <syzbot@lists.linux.dev>; Mon, 02 Nov 2026 02:42:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793616158; x=1794220958; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=NB1aq9VnLv/CSz5nKP6XZR1rf1+9Nxa9bOZc6GxaMJA=;
-        b=o8pwSXhY792VpbxaVQQk1eFSg5NYDzyz90l2qKW2gzFSg2/S28C25kRjVLLrjjbkUi
-         sl0keJYsxD0ZKeF9oMQIBuQ5VibotJdp0MYsn2vDx4o1iftPTBZULaZcyvfMylNGbhco
-         txyqpHDCY8FL2RECZs/t2JzzZ+8opea7sAe0bY19xIctEo5CJr4wuhU8MhsBcxos6WQT
-         lZ7TfGPZr4KzQ8jRcGrrAN0Au1ZZ+x8riVDeWIgHzJr8ZlOrAP4nPFig4laOvtfeXrJM
-         Yir5ECVBjFuZlM2zvlGnrrh1vI1x3lA1If73fxTytMidjwNbbzgvz3qU5zN2DLkjACrn
-         yDJQ==
-X-Gm-Message-State: AFq9FYJ9ZtyyQYI4SXNXJOst5UfqPxmYks9WTMlFkbdliBE0K7ecTLt7
-	MFW3ARDplA8UDrST5OkhzHsV3RBN7SyRvJg+6jGhvCDXY8YHtkWdeba1hTqIjU705DLcORTHLq+
-	1cWPFsUMuMAHM097kJNDELLM/PgoOXUEwBtquv8nnr73z4ljxEsGO0Y2TA9Q=
+        bh=KXRF5NFKMdcuYVka3K7Jjgx1eiDiSmm0GhEZsRoOLRA=;
+        b=r4263GOmPUClj9CUO5ycyXpmqkapj5lKpL7lFKE1Ew6r6uJ5TSFwGT/I6UEOhByhWb
+         JdgNU/0Mpoqq2V1Cqr8UHlNeafD8WYzf4BgVKi48jFtS2BebokpNEjBoXHBGeFx3GLHG
+         tS2H56tOgSKdk+T4FakQtD1ryBeFKAGLSATOMkAvzGAi0QimTLkKvt5Iyik7QaOk2kyo
+         5ko3gU/P+yXGz+VQfPVTqkTQsP+lICZ1fU4FojxCWveQvLsQ6EDulCoCgW8Jn49QxGdV
+         OuIw3K9htyvXy8l0kN97ifURG5z6RjRDyJyly10rgrFQDf6mjm+Mt4fA4NpeevKFRGUF
+         c0vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793616158; x=1794220958;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=KXRF5NFKMdcuYVka3K7Jjgx1eiDiSmm0GhEZsRoOLRA=;
+        b=p3NE8OCc46uewE5So7lDHdGm273ZM1MXnGm7YQdMON1E8Xnj/lRjlNef4Y213jtdp0
+         M/o0vmWj6PX4duFVzMACShne/POXKay9G7tZp9+Kd5MBjxtT1CfPpGq64crb7hGL+Pom
+         bB3BZqyRJ0kkBQqNdvA0Jr4oaBHafZsHvXLSGsVFqOqtrfO6Dy++xLqNh1CmCDoaW813
+         jm0esw1Uqd0g5IDhKLz9YEk0F+fDTzjYPakl1HlzP3Se+2ZF4Ar9jvKH7kCbytbP60el
+         FlIDVzZ7lX/Zx2sUFeKAqmKKFy3jxb8zKhIvnEv2XkNgMVmtu84EH43UMMU3yPkip8BW
+         QVBA==
+X-Forwarded-Encrypted: i=1; AKwUvBw7qOjqfuswzy3A0SRSTaOfqrgVKw53a5rp3tYdbufRR0vTBFuve43xLtu91+mN3ex85A/Vzl0=@lists.linux.dev
+X-Gm-Message-State: AFq9FYLDloKmLnZQNjuNuZo19AF09C8N/2rxIxNMO2nlbeEQ9sc+zv2U
+	DNZfLy4a1DrV5jVQMfwdaDdig8zd7vZ0IdFSVsIWMeFZOc+pJ0Zl7Vr/RaPQZoXfqRA8oA==
+X-Gm-Gg: AYBFou1WRfIfeMX0xLjd21Rcq/mopLNFTjS+0ZSu11tZvkKepLtZmfwBDFEwHWHphak
+	0xrGaQIu2p9Zxs9wY6KT40+y3oH9iyy+c4vkk/PJa7ygPvbRt+iMbg6n0KGlaczg1AeWfphvNf3
+	fYlEh4HfmxZQ6OEN5wkVGQ4qhCiZxtAMCJX3+29Rv0v+uRYYcIRLzX4i/qB1xfjVBSzhWiuxTRW
+	CTR0gSrJ18acnrj8ywAlCyNL5s9BaLiGqy9vbYJa92FX559DJRuLasehZA/tplVEIFVOaBzS+W3
+	2JWkG5qOHZog6JGmOdDxSPxeSkO+Pn2uClLW93kmVZaixZPIeFkPfgI+tAY8NvWbTwzGxalGKil
+	N9xh4LvWc3V+L0CjLoGfnDvvmOzU6QIVIi6+5EFRFG6Cqa7BOuY7KSlpyatg0j4oo45T/ABP4rp
+	ATPg70WE02Bb9QGbvNJdCYZGaFcoJCxw4Adp7XTj2iJQJl0vLKf6NpK427Q08o3xl5TkT7XL4Z/
+	IA0tmXR1/j/ptZRGrLxZ1+/FKCQVfv3rr3RFj/dBBoW6alC42ssv9wIwXw6entysMH1HHU3Yqaf
+	yBBp7g3QCGMVkejJTW0DQj4k3R0EcpEeCYx1NOhBiWMCM/ctdlrbUe6+ILAHCFfxaxkppBD4Wzv
+	8q8Nc9LAk6OEtBO5MZyVdUy5Wiscb0UpTpKG12626sRV9cqpKpjvWW9ce0DyAZY6fUxJ9Ik1n/5
+	oYvb0PxXbsRmvDu3iY/DOHLFCf08Nbrm+KihwEGeI2i3FHa5bJuwt792qhOyct3RI=
+X-Received: by 2002:a17:907:6d20:b0:c46:75e7:25af with SMTP id a640c23a62f3a-c4ca7a0dcb0mr776863566b.11.1793616158273;
+        Mon, 02 Nov 2026 02:42:38 -0800 (PST)
+Received: from [192.168.100.100] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c4cabc18ec5sm368948866b.12.2026.11.02.02.42.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 Nov 2026 02:42:37 -0800 (PST)
+Message-ID: <6f97dc68-b2e1-494a-b0f8-13c36fd84044@gmail.com>
+Date: Mon, 2 Nov 2026 11:42:36 +0100
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -57,77 +94,107 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:4fce:b0:4d6:9222:99f7 with SMTP id
- 5614622812f47-5640dde6011mr6475755b6e.55.1793581197506; Sun, 01 Nov 2026
- 16:59:57 -0800 (PST)
-Date: Sun, 01 Nov 2026 16:59:57 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ae7e08d.6552420f.2a0efc.00b1.GAE@google.com>
-Subject: [moderation/CI] Re: mm/damon: misc improvements/cleanups for core,
- vaddr, sysfs and tests
-From: syzbot ci <syzbot+cid6635130a31bd54c@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] scsi: sg: Fix shift-out-of-bounds in sg_build_indirect()
+To: syzbot <syzbot@kernel.org>, syzkaller-bugs@googlegroups.com,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Doug Gilbert <dgilbert@interlog.com>, linux-scsi@vger.kernel.org,
+ "Martin K. Petersen" <mkp@kernel.org>,
+ FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>
+Cc: linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
+References: <e68a2050-dc97-4531-95e2-29f4d1a109cb@mail.kernel.org>
+Content-Language: en-US
+From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+In-Reply-To: <e68a2050-dc97-4531-95e2-29f4d1a109cb@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-syzbot ci has tested the following series
+On 9/17/26 10:04, syzbot wrote:
+> From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+> 
+> Writing an invalid value such as 0 or a negative number to
+> /sys/module/sg/parameters/scatter_elem_sz, or setting it at module load
+> time, causes a shift-out-of-bounds bug during subsequent device operations.
+> In init_sg(), scatter_elem_sz is checked against PAGE_SIZE, but because
+> PAGE_SIZE is unsigned, the comparison is unsigned and bypasses negative
+> values. When opening a device via sg_open(), the driver calls
+> sg_build_indirect() to allocate scatter-gather buffers. In
+> sg_build_indirect(), scatter_elem_sz is read into the local snapshot
+> variable num. Because PAGE_SIZE is unsigned, comparing num against
+> PAGE_SIZE also results in an unsigned comparison that bypasses negative
+> values. Furthermore, even if the condition is met, the code updates the
+> global scatter_elem_sz and scatter_elem_sz_prev variables but leaves the
+> local snapshot variable num unupdated before get_order(). As a result, an
+> invalid value such as 0 remains in num and is passed to order =
+> get_order(num). Calling get_order(0) is undefined and underflows to 52 on
+> 64-bit systems, causing ret_sz = 1 << (PAGE_SHIFT + order) to compute 1 <<
+> 64. Shifting a 32-bit int by 64 bits triggers a UBSAN shift-out-of-bounds
+> warning:
+> 
+> UBSAN: shift-out-of-bounds in drivers/scsi/sg.c:1887:13
+> shift exponent 64 is too large for 32-bit type 'int'
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
+>  __ubsan_handle_shift_out_of_bounds+0x36d/0x400 lib/ubsan.c:494
+>  sg_build_indirect+0x559/0x870 drivers/scsi/sg.c:1887
+>  sg_build_reserve drivers/scsi/sg.c:1997 [inline]
+>  sg_add_sfp drivers/scsi/sg.c:2177 [inline]
+>  sg_open+0x1128/0x18a0 drivers/scsi/sg.c:349
+>  chrdev_open+0x4d9/0x600 fs/char_dev.c:411
+>  do_dentry_open+0x816/0x1380 fs/open.c:996
+>  vfs_open+0x3b/0x340 fs/open.c:1101
+>  </TASK>
+> 
+> Fix this by casting PAGE_SIZE to int in both init_sg() and
+> sg_build_indirect() so that the comparisons are signed and negative values
+> do not bypass the check, and by updating the local snapshot variable num to
+> PAGE_SIZE when num < (int)PAGE_SIZE in sg_build_indirect() before
+> get_order() is called.
+> 
+> Fixes: 10db10d144c0 ("sg: convert the indirect IO path to use the block layer")
+> Assisted-by: Gemini:gemini-3.8-flash syzbot
+> Reported-by: syzbot+270f1c719ee7baab9941@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=270f1c719ee7baab9941
+> Link: https://syzkaller.appspot.com/ai_job?id=1d412b83-5bbc-4d73-b690-4c798d45cee4
+> Signed-off-by: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+> 
+> ---
+> diff --git a/drivers/scsi/sg.c b/drivers/scsi/sg.c
+> index 5408f002e..46117d1a1 100644
+> --- a/drivers/scsi/sg.c
+> +++ b/drivers/scsi/sg.c
+> @@ -1667,7 +1667,7 @@ init_sg(void)
+>  {
+>  	int rc;
+>  
+> -	if (scatter_elem_sz < PAGE_SIZE) {
+> +	if (scatter_elem_sz < (int)PAGE_SIZE) {
+>  		scatter_elem_sz = PAGE_SIZE;
+>  		scatter_elem_sz_prev = scatter_elem_sz;
+>  	}
+> @@ -1875,9 +1875,10 @@ sg_build_indirect(Sg_scatter_hold * schp, Sg_fd * sfp, int buff_size)
+>  
+>  	num = scatter_elem_sz;
+>  	if (unlikely(num != scatter_elem_sz_prev)) {
+> -		if (num < PAGE_SIZE) {
+> +		if (num < (int)PAGE_SIZE) {
+>  			scatter_elem_sz = PAGE_SIZE;
+>  			scatter_elem_sz_prev = PAGE_SIZE;
+> +			num = PAGE_SIZE;
+>  		} else
+>  			scatter_elem_sz_prev = num;
+>  	}
+> 
+> 
+> base-commit: df2908090cda368b01ff43709f51890076c56157
+Hi Martin, Doug,
 
-[v2] mm/damon: misc improvements/cleanups for core, vaddr, sysfs and tests
-https://lore.kernel.org/all/20261101171630.81477-1-sj@kernel.org
-* [RFC PATCH v2 1/6] mm/damon/vaddr: advance migration attempt in folio level for filter out
-* [RFC PATCH v2 2/6] mm/damon/vaddr: use damos->last_applied for migrate action
-* [RFC PATCH v2 3/6] mm/damon/vaddr: implement sz_filter_passed for migrate_{hot,cold} action
-* [RFC PATCH v2 4/6] mm/damon/sysfs-schemes: drop redundant and racy zero target_value check
-* [RFC PATCH v2 5/6] selftests/damon/damos_apply_interval: remove unused variables
-* [RFC PATCH v2 6/6] selftests/damon: remove unused imports of os and sys modules
+A gentle ping on this patch. Patchwork currently shows it as deferred.
+Is there anything you would like me to change, or should I simply leave
+it pending?
 
-and found the following issue:
-kernel build error
-
-Full report is available here:
-https://ci.syzbot.org/series/71de7a4b-c1c2-42ca-bb10-eea627deddc0
-
-***
-
-kernel build error
-
-tree:      mm-new
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/akpm/mm.git
-base:      243e8cdab64129d6207c398f8cf5fbb1962ff7e1
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/f7c3cdf7-8d33-4608-b26d-34f4cae5dcfa/config
-
-mm/damon/vaddr.c:870:54: error: use of undeclared identifier 'dests'
-mm/damon/vaddr.c:899:54: error: use of undeclared identifier 'dests'
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
-
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
-
-The email will later be sent to:
-[akpm@linux-foundation.org damon@lists.linux.dev linux-kernel@vger.kernel.org linux-kselftest@vger.kernel.org linux-mm@kvack.org shuah@kernel.org sj@kernel.org]
-
-If the report looks fine to you, reply with:
-#syz upstream
-
-If the report is a false positive, reply with
-#syz invalid
-
+Thanks,
+-- 
+Krystian Kaniewski
