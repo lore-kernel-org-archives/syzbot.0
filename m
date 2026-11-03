@@ -1,53 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.70
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.199
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793667323;
-	b=aJ+0GhamqkwAxNr1tuGSB2567UaZW8nNl4KhumQcd8KVChGvkGfiEY8ud/1sACcV/28B
-	 0x7aX+HntSQwJ9saFJnI+PrM2eaxRbJEsYiqAPU8MODN8Uy6GD5oBDM3L5+GrzdCmpAVs
-	 Q6l6JQZvkdzvgPZNLEPDJmDKXSISgW3Ut5BktS6CGinq70Yp2OcFnb0LqhI3Ag+UHyGw/
-	 zTGInil7LaSytzw481hB+GdMu6ztiGjmbs/20GhUtkudpVAtNcW49ztr6j6qO6x1K+5FW
-	 CONsir7J6RjvQH4Pl7wzg0GzyZdm8hwPB6cJdlzJNF12SgbA1ADUSGkF6lQIIPPNtrg==
+	t=1793687261;
+	b=Sb8kTcSaSCQ/qt2+3Wqc698FNl1xj81Sj+tfosGPxopLQCyMoya+ix8y+DVWSG9D2m3R
+	 z+9OZZ2Keu3yGUVarF/gCcWSRMLCGRR3r8QSPWv/1trgn1aeMhjoPhMei/dC6dY2n4M+9
+	 r8MBualHSbnic4PldDx+i7AwGOpeBWcf2wy4enB7VMGl4+d3pzw/HncKSE91tg13q6Nr1
+	 EEY+R57431ZFhCA7d3KrszrK8DfWH+G00Iq52ccK2OILGVeQ/P590hhagqQoOT9t7S7qo
+	 Qtr4vGG8vibgQXshBM09MR9xuQMJKWJAM7q5t6eYGODDYCaQaD9kEv7qHCHAmgHj5KA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793667323;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793687261;
 	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
 	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
 	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=JnEYbNI7yHPElY4+uYltSnpg1gnA2yqgik2epRMQGQA=;
-	b=Y4tytNhQ1CXw/Y6lqZ2Fmjpid9oFCfFhxlScoXGUTegFEDK3cU3REI0aCS6fkZf1vWSe
-	 9OgyhAZEr7kgMMiqYsA8yBZORNBUV12nAg+eX7F2AW68uGi+GaPNJSiVDhDOELaFojaiP
-	 hy2Ec8xYot9qkiyEfAXUEzWZBYWHg1++AqGRWpfKBbm0my37SQy8Kuc/HHyzPv9vzyMyf
-	 /ho3XuC7GWiHT+pL4h1Hj2p8b/rQFR9B0C+weqdNLCD3t8mgmnc+p+ntdoPHsavHC5VCj
-	 aK1Rkrt/maABnYCXoLmLzzwmYOTUJpU7/Bbw38aZb/vcZWjLBi+bm6Qex6aDc180SYw==
+	bh=LV8/pxDuYDb3LiVfHb8BljkylG6lMtzHQWanEAuiuQc=;
+	b=vsHSNAeASQe8x46TlEOz2SDdiRlTasPRTIpMuQ9v0qMVHuWMs97YGz/OxuyB0SCZRVqK
+	 aAVN3zUC245UtCvRl4FL6FmpENSHGLDzMKfx8uP6L3TbvN+OGQm/wIwidY0thWkNH2VSD
+	 Gi5AGVVZ8+aKZlF2leR6GICg8kzv9NGo7hXeE7TaZi1dRViA+pyBryDvmoBLvkQOnlU+R
+	 I/kjUPL+fcBbS9Mmxu/wwkHNh5imuCp6pSLL8nSVuBps+iOdz7hjjGXCDu2ljaItMkBce
+	 4XjsQJs0RO1l35/xW7a3iQKRNUIQNQgwVWEvwV470ZXbvbDaDydKapSJXPN4LfJqdFg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=fail header.from=syzkaller.appspotmail.com;
 	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
-	arc=none smtp.remote-ip=209.85.210.70
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
+	arc=none smtp.remote-ip=209.85.167.199
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7DD2606A324
-	for <syzbot@lists.linux.dev>; Tue,  3 Nov 2026 00:55:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C7DD2606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7CA4606A324
+	for <syzbot@lists.linux.dev>; Tue,  3 Nov 2026 06:27:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C7CA4606A324
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-824cc5f7fcdso4496998a34.3
-        for <syzbot@lists.linux.dev>; Mon, 02 Nov 2026 16:55:22 -0800 (PST)
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-4f2040e10d8so3034480b6e.3
+        for <syzbot@lists.linux.dev>; Mon, 02 Nov 2026 22:27:40 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793667322; x=1794272122;
+        d=1e100.net; s=20260707; t=1793687260; x=1794292060;
         h=content-transfer-encoding:content-type:cc:to:from:subject
          :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=JnEYbNI7yHPElY4+uYltSnpg1gnA2yqgik2epRMQGQA=;
-        b=RJ40EZC+lKPa04IN57iShLpFTwPqan/xjqeLKDqVJMEpoE8tOXCOIsezLrAQyn8uur
-         5GoSA3lHxEezMIVuEW1QckDCUM6juG+7lsASXn+PBGMWxrbSZFW9xPfQ4YghpEwnPiH8
-         R3vZsONF8mCh3jKXjWIz3IcqztQe20q/ds1txZTNvX9mLa4sIr7+t768WsbDXSs/y8Z4
-         DFqFT6dCtHW5RU6siBSj0pT+hTG2SwXqh0rALU0WRtR7u2P6eRkWzsdGOfaz0MkxBfQV
-         FLKVnzU7mixKuzrFtqm2aXvzeNVv0tiWmrhQKxKp43dQzU8Ca+IIAkP6pe46p1eSv6Ni
-         kfTQ==
-X-Gm-Message-State: AFq9FYKXzVvCz4kiFHwzGYLuuEFCNZCR1cvm99L22TBszD75eJalFoa3
-	QuipJtkDLlfiZ6Q4DS994UsbpMiHtz+huTrD1X1yOGmybEPI/rMk9rpGF5fU2GieZjigIZDiQzS
-	QLoW63TzJLilt04oV4k8DdUEtPF490FEApDYnuRgzXoygFQmLSYAlIuuXy7A=
+        bh=LV8/pxDuYDb3LiVfHb8BljkylG6lMtzHQWanEAuiuQc=;
+        b=yVL/6WoEPvo4cMKOj4KS2E4Skz3G4tsFBGEdP3G2Lp4FAtpqQQDxF0GAEloBZ1YtLY
+         NnVQp2aZ6ILHf/b9j5pQQlohkldJh7oOuSf7WDdQRmMafV5GO9J7DHxr3dVD7cEd00XC
+         agP6Pqq4RoRW0VkNc2DP5ysUlAo+1f51N/TfEWtCX90suZ95TJCQhCwL9XpaDC8cUrjO
+         FWawSDdRnXEJT/hHgv6snLWyuqKrHZfN0iwVl+IqG/hngJGuc6HYuY5Y9wZJ9ObYh3aE
+         3iTziaBtCPZD8iys+htfDeoQ/MK5PCshHIEClkC2BcYXbCpsj59EzuSH8RlqBzVH25+W
+         tiqA==
+X-Gm-Message-State: AFq9FYIcAdE93sctJpb+70M/0v451voUJ4hK++SGaVXCYFygHjT55QmL
+	DiQoxMjY8855/e8qAjDXxZg2TdVg4rrVKF3LbVjk4/j41IKMWDkNAOmXyk6GD/Mfsuj2BXqPtsU
+	4NLHTD1Y30nHRDUBm1EuTDC7rb3rq4EvXQPRDDYNrVwG/KgAx1U89z0WB97w=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -57,16 +57,16 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:124a:b0:4e9:7d56:846f with SMTP id
- 5614622812f47-5640dd5fca9mr7543561b6e.41.1793667321782; Mon, 02 Nov 2026
- 16:55:21 -0800 (PST)
-Date: Mon, 02 Nov 2026 16:55:21 -0800
+X-Received: by 2002:a05:6808:250d:b0:53e:8376:dfbf with SMTP id
+ 5614622812f47-5640ddeb467mr7426570b6e.40.1793687259832; Mon, 02 Nov 2026
+ 22:27:39 -0800 (PST)
+Date: Mon, 02 Nov 2026 22:27:39 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ae930f9.52c4c7f9.b7231.0007.GAE@google.com>
-Subject: [moderation/CI] Re: KVM: SVM: Support direct setting of VMSA for
- SEV-SNP guests
-From: syzbot ci <syzbot+ci882598b7c73b14af@syzkaller.appspotmail.com>
+Message-ID: <6ae97edb.39567162.178b6c.0000.GAE@google.com>
+Subject: [moderation/CI] Re: Landlock: Restrict POSIX message queue creation
+ and access
+From: syzbot ci <syzbot+ci4c8cfb02fa7d05fa@syzkaller.appspotmail.com>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
@@ -74,22 +74,20 @@ Content-Transfer-Encoding: quoted-printable
 
 syzbot ci has tested the following series
 
-[v3] KVM: SVM: Support direct setting of VMSA for SEV-SNP guests
-https://lore.kernel.org/all/20261102114137.1198982-1-joro@8bytes.org
-* [PATCH v3 1/8] KVM: SEV: Document SNP direct VMSA userspace ABI
-* [PATCH v3 2/8] KVM: SVM: Implement GET_AP_APIC_IDS NAE event
-* [PATCH v3 3/8] KVM: SVM: Hold SRCU while reloading guest-owned VMSAs
-* [PATCH v3 4/8] KVM: SEV: Add direct VMSA capability
-* [PATCH v3 5/8] KVM: SEV: Allow VMSA pages in SNP launch updates
-* [PATCH v3 6/8] KVM: SEV: Add SNP vCPU state get and set commands
-* [PATCH v3 7/8] KVM: selftests: Test the SNP APIC-ID-list GHCB request
-* [PATCH v3 8/8] KVM: selftests: Test SNP vCPU state and direct VMSA launch
+[v2] Landlock: Restrict POSIX message queue creation and access
+https://lore.kernel.org/all/20261102144708.920232-1-webprosto@gmail.com
+* [PATCH v2 1/4] ipc: Move MQUEUE_MAGIC to a shared header
+* [PATCH v2 2/4] Landlock: Enforce MAKE_REG for POSIX message queue creatio=
+n
+* [PATCH v2 3/4] Landlock: Add POSIX message queue scoping
+* [PATCH v2 4/4] samples/landlock: Add POSIX message queue scoping to sandb=
+oxer
 
 and found the following issue:
 kernel build error
 
 Full report is available here:
-https://ci.syzbot.org/series/01dc1cf6-36a7-4046-a74c-d1aa7cc54a5c
+https://ci.syzbot.org/series/808eb419-26c4-4ba7-9c41-6a93f2b03d56
 
 ***
 
@@ -101,11 +99,16 @@ s/linux
 base:      6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
 arch:      amd64
 compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/43f9299c-2cb7-46c9-8c71-1cf0c3c09d1=
-e/config
+config:    https://ci.syzbot.org/builds/75289b70-faad-474c-98fd-320942ebab4=
+3/config
 
-arch/x86/kvm/svm/svm.c:5477:2: error: cannot jump from switch statement to =
-this case label
+security/landlock/fs.c:2213:30: error: incompatible function pointer types =
+initializing 'int (*)(const struct mnt_idmap *, struct inode *, struct dent=
+ry *, umode_t)' (aka 'int (*)(const struct mnt_idmap *, struct inode *, str=
+uct dentry *, unsigned short)') with an expression of type 'int (struct ino=
+de *const, struct dentry *const, const umode_t)' (aka 'int (struct inode *c=
+onst, struct dentry *const, const unsigned short)') [-Wincompatible-functio=
+n-pointer-types]
 
 ***
 
@@ -128,11 +131,9 @@ Notes:
 - Arguments like custom git repos and branches are not supported.
 
 The email will later be sent to:
-[coconut-svsm@lists.linux.dev james.bottomley@hansenpartnership.com joerg.r=
-oedel@amd.com joro@8bytes.org kvm@vger.kernel.org liam.merwick@oracle.com l=
-inux-doc@vger.kernel.org linux-kernel@vger.kernel.org linux-kselftest@vger.=
-kernel.org michael.roth@amd.com ninadnaik07@gmail.com pbonzini@redhat.com s=
-eanjc@google.com thomas.lendacky@amd.com vannapurve@google.com]
+[brauner@kernel.org gnoack@google.com landlock@lists.linux.dev linux-fsdeve=
+l@vger.kernel.org linux-security-module@vger.kernel.org mic@digikod.net uti=
+lityemal77@gmail.com viro@zeniv.linux.org.uk webprosto@gmail.com]
 
 If the report looks fine to you, reply with:
 #syz upstream
