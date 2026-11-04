@@ -1,49 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.197
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793832274;
-	b=UMhO0l4wkrvxTUovSCyN+y/OfVBTJX+mi9ZRNm9r/X3MvhH4pdvhz86sl7xKQdcMh8EQ
-	 aSXDXJj9v1r4GDfqmMhPVVQDXXggwlfix3xCycnSnOS7CkIFVENEZHgnOBrPgfCSEiRLp
-	 9/xHgDx7nGMk0sZbLKLiIxxyd7ttRvXpZVPJRL/fvOtW09B9oXcuaEHHzEGQ6Sl4YafhB
-	 bejurUJxr8v++pr0MEKBpUS5/qQiYUbv/oL4FARqaaKHhx7/a1a3O6wM6wrl5ViiwbGSj
-	 k6cMGYBCmx1Jw1ZlmB9qFH1JaSi0D2lKMXLee8CZ4WAhgsihpytaVfnd1Y9UW2tNqwA==
+	t=1793832859;
+	b=Ut5zSkooZEjjdlP40Q7ns3IrQAyZFyCTLerfN4nunk+vs2esBpz9VSMlQUpyjTFIIVbl
+	 C0Q5q5m000ShE0SJwv1msZMfHCOVMbeKZrqtfuP/ycZlD+Rn0jkEZbJTHJelx7DRw9/Wl
+	 cnYJ8FBBxx6l5A2stYwx6jCYFGp8lAIWMJRjvpOPTFS0KHeXuvYjvtmrfyfYWQXkNET3x
+	 kUESaxVNb/S2//wUbUG27clAFzvNYfjU6kvWiRWaaWZyEDyQ/IrnOrQmPaj0yHj7B0Zms
+	 /ErtS6c3DLC/TVYrD73IZUOMzwWsa2++jO8yICWacakR4MwnQ3cuCbka8SPqDiEdHOw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793832274;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:Date;
-	bh=5Fz5BYd7ptM/1ttg1YkqyqQljOPjGmnIX6ueQmZSMPA=;
-	b=u2LrphjtSnJD9umJQCGTIypqm4gwQKKLW9xJy3uIBiLYP47dC/MDX5L3Rqyt9R5CObkF
-	 RL1XyFwDAKtjOdlN62u4K0VC7oTztwjXIurhXS8wX7wgGVWBdZ4F7xwlQ54MICJhhim/v
-	 IRIYlgTDg7XcmFkAGt+YoocZGOU6DC4zf1FktrYFBAzi6TTLzKbPEARlkqqDBqH61lXdD
-	 rL2f5SKG9xNz3ANZFCxItY/d7APmDsVb5rSp7JSPINcgCQlfK2J0oTNeTIZHDCFBMshap
-	 I/7Tck3E9Y1CjxNaHkoSuoF13DRUBLFrVA/Po2HJ7Jpi7iDrLqrtZFYJOqjayrXrZmg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793832859;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
+	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
+	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
+	 Content-Type;
+	bh=JujMJkgeCLWkMFYQ0JNRG6jonNRW1ynfLZMv6gy2jhA=;
+	b=HXSkVAsV2CJS0wN+Cu8sEVzlH5hW7ywRnIrzt430hb2dPtsu/pyA+yAPtr0MhHwnAfDM
+	 AWzR3FN7gDApwwbSMZ6v2u8T4h37QzNYRv1UR2weQUqspgzA6Db+kozS5GOC12pagio3q
+	 Bi18nG7Awgh43UZfNy5ZDJfP65MsuaFtbKYvzHs817mvsat3Ph/VzIbcL0MG3Pv1h56WS
+	 I6RaKMQrFBh2zJ6cyC/AqnLPhDIHGmWKwIta7D5aqdEELq7nZMob/tZ4l9s6E1f9NPbqK
+	 9SMOp7e8AMGzOuuw2oWiGIn0BDsOtyb2vNv9W0dBU22COHavLY4ZFYBzQH2b8f6Wlcw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UUUuzHIn;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=fail header.from=syzkaller.appspotmail.com;
+	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
+	arc=none smtp.remote-ip=209.85.167.197
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 62E15606A31B
-	for <syzbot@lists.linux.dev>; Wed,  4 Nov 2026 22:44:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UUUuzHIn
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id E13621F00A15;
-	Wed,  4 Nov 2026 22:44:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793832274;
-	bh=5Fz5BYd7ptM/1ttg1YkqyqQljOPjGmnIX6ueQmZSMPA=;
-	h=From:To:Cc:Subject:Date;
-	b=UUUuzHInLz6/FNBjnuisZYV9HcHTdBLqYUTUui/QsuWeXyjpy2BOgLa4o6u7SYIkC
-	 YNd71J0cFIXd/7F8lSO317v7XJxK7kja6RUg/e2m989etTLNwEGczMvGCM7DX5KTpl
-	 aMi6Hu9td9Hx5QaRC7RRMk0cbTeQc02rKN0uW9sSRdjTqPySFPK36tMZ0dYSqgHOHr
-	 FN0DyWUeXkgkl/+D4OIveXybFPXJ3Z+99wmr+y5hZrhr8s2QciTWrI9fzoIuxfz80Y
-	 IOqGx0F+vPokxpV2YPFfLuHQbA8h+uz09QsKBj6+pBuIAX+rpK4ue6SbHU9Z78KMLG
-	 lCmYA74kKAO1g==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] iommu: Fix dev_iommu memory leak in iommu_fwspec_init()
-Message-ID: <57f56c9f-1822-4606-98fd-ebb96dbf8de8@mail.kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBEB1606A31B
+	for <syzbot@lists.linux.dev>; Wed,  4 Nov 2026 22:54:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CBEB1606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-547ae874949so1806689b6e.2
+        for <syzbot@lists.linux.dev>; Wed, 04 Nov 2026 14:54:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793832858; x=1794437658;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=JujMJkgeCLWkMFYQ0JNRG6jonNRW1ynfLZMv6gy2jhA=;
+        b=ShEFNFuzqUhkXTgVcYcRCshH3po8De8Rvfo42icTu9U2RpV+i14PdT3qhBYle7nc+5
+         c5rk/mQPUvEwf4RPB743FBzSiRfD6OtYbiTL/9Jv8lYvfSSO9mjzvjddQu3WEJv3nTBx
+         KLEWnr2pcGomfEH44e5eGHHL2bzIPGguiFRN7oZ3uWVh5BDjYUNRlpk3SU0mJ3oOwXLf
+         wUCiqg7gqtsjT99SpguObS8icJxqDr79JtkcyVBPsGmvpdAHlShJ7QWseyfgStQ0KQ2C
+         PENkLP57bIFYGQg3lDNbLNA0lIrvyjXWZaoFHykTA1sH0IwEX/LuXvtLnU/8w39r+ffh
+         09GQ==
+X-Gm-Message-State: APuU4Z8IDLqVg4GZZhsi0sDJECDEb4xPy2nsRJAsItwe6NT8mHRBp00S
+	gVez/tA4ELZbzz3IZQrh2QsPLj3TlBh1dWd5Tp2mnAZqHIizunZYv2f4P2SxnHNjVMk9J9I2pKQ
+	1Nn+sTmDvOPi5baOJlC5jy+kVEy58SKZwjuP+paSdBgzEnROlgUn6zNNL3zI=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -53,92 +57,70 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Wed,  4 Nov 2026 22:44:33 +0000 (UTC)
+X-Received: by 2002:a05:6808:181f:b0:54c:7bef:90d6 with SMTP id
+ 5614622812f47-5640dbd679bmr10814599b6e.4.1793832857869; Wed, 04 Nov 2026
+ 14:54:17 -0800 (PST)
+Date: Wed, 04 Nov 2026 14:54:17 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6aebb799.7bd3e221.25cd79.0006.GAE@google.com>
+Subject: [moderation/CI] Re: wifi: cfg80211: add APIs for SMD transition
+From: syzbot ci <syzbot+ci6b129393e781ecde@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-In iommu_fwspec_init(), dev_iommu_get() is called before allocating the
-struct iommu_fwspec. When dev->iommu is NULL (such as during mock device
-creation in iommu_mock_device_add()), dev_iommu_get() allocates and assigns
-a struct dev_iommu to dev->iommu. If the subsequent allocation fwspec =
-kzalloc_flex(*fwspec, ids, 1) fails, iommu_fwspec_init() returns -ENOMEM
-without rolling back the newly allocated dev->iommu. In callers like
-iommu_mock_device_add(), this failure results in an early exit before
-device_add() is invoked, so subsequent cleanup via put_device() does not
-trigger bus release notifications and dev->iommu is permanently leaked:
+syzbot ci has tested the following series
 
-BUG: memory leak
-unreferenced object 0xffff8881121d1340 (size 64):
-  comm "syz-executor358", pid 6003, jiffies 4294942186
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace (crc 0):
-    dev_iommu_get drivers/iommu/iommu.c:408 [inline]
-    iommu_fwspec_init+0xe2/0x1e0 drivers/iommu/iommu.c:3086
-    iommu_mock_device_add+0x31/0x110 drivers/iommu/iommu.c:385
-    mock_dev_create drivers/iommu/iommufd/selftest.c:1026 [inline]
-    iommufd_test_mock_domain drivers/iommu/iommufd/selftest.c:1068 [inline]
-    iommufd_test+0x1e1b/0x30f0 drivers/iommu/iommufd/selftest.c:2104
-    iommufd_fops_ioctl+0x2e8/0x3c0 drivers/iommu/iommufd/main.c:556
-    vfs_ioctl fs/ioctl.c:51 [inline]
-    __do_sys_ioctl fs/ioctl.c:597 [inline]
-    __se_sys_ioctl+0xbc/0x130 fs/ioctl.c:583
-    do_syscall_64+0x126/0x350 arch/x86/entry/syscall_64.c:84
-    entry_SYSCALL_64_after_hwframe+0x77/0x7f
+[v3] wifi: cfg80211: add APIs for SMD transition
+https://lore.kernel.org/all/20261103112102.a1b53635b494.Id451626c78a925e85aaf2598ab471120940a91c7@changeid
+* [PATCH v3 wireless-next] wifi: cfg80211: add APIs for SMD transition
 
-Fix this by reordering the allocations in iommu_fwspec_init() so that
-kzalloc_flex() is called before dev_iommu_get(). If allocating fwspec
-fails, dev->iommu is left untouched. If dev_iommu_get() fails subsequently,
-fwspec is freed with kfree() before returning -ENOMEM.
+and found the following issue:
+kernel build error
 
-Fixes: 72acd9df18f1 ("iommu: Move iommu_fwspec to struct dev_iommu")
-Assisted-by: Gemini:gemini-4-argon Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+fe84fc6a684e0beb86e2@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=fe84fc6a684e0beb86e2
-Link: https://syzkaller.appspot.com/ai_job?id=54355447-b374-414a-9297-218fdbc7e977
-To: <iommu@lists.linux.dev>
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>
-To: "Will Deacon" <will@kernel.org>
-To: "Joerg Roedel" <jroedel@suse.de>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Robin Murphy" <robin.murphy@arm.com>
+Full report is available here:
+https://ci.syzbot.org/series/3bc2c92a-22f2-40f7-b9b3-e3ae7c7ce038
+
+***
+
+kernel build error
+
+tree:      wireless-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/wireless/wireless-next.git
+base:      991a73f4909f1348ffb4b38765cdb522a775e4c2
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/7e5f9adb-a39a-4479-9604-c2b5893f7afb/config
+
+ld.lld: error: undefined symbol: cfg80211_update_assoc_bss_entry
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index b486b8bbd..8da858154 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -3083,14 +3083,16 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode)
- 	if (fwspec)
- 		return iommu->ops == iommu_fwspec_ops(fwspec) ? 0 : -EINVAL;
- 
--	if (!dev_iommu_get(dev))
--		return -ENOMEM;
--
- 	/* Preallocate for the overwhelmingly common case of 1 ID */
- 	fwspec = kzalloc_flex(*fwspec, ids, 1);
- 	if (!fwspec)
- 		return -ENOMEM;
- 
-+	if (!dev_iommu_get(dev)) {
-+		kfree(fwspec);
-+		return -ENOMEM;
-+	}
-+
- 	fwnode_handle_get(iommu_fwnode);
- 	fwspec->iommu_fwnode = iommu_fwnode;
- 	dev_iommu_fwspec_set(dev, fwspec);
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
-base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+The email will later be sent to:
+[johannes.berg@intel.com johannes@sipsolutions.net linux-wireless@vger.kernel.org]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
