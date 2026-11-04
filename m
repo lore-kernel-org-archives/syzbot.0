@@ -1,49 +1,49 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793742232;
-	b=f3RzP2Sx9y2/qZGeOxoDn63yzAjSyUsOzw67C2FEF83GxBtR9PnhPkt82c1u9P+HKa19
-	 sEf/eUv55npJuOcvc4lDaFFNdObQJNOwx5KufxtNdDYZtgpSZ4APjL2SnzOmCWmZAZoEb
-	 cUITNzFqGp36CYPtncDwujs3YnNLuGPZTndrpfxH2djuqXHiNIQQWtRUDre67ZzdxJcb4
-	 k8ZT2P/Qi5qBKHExwQcYOcfE0c66ydKAa0I0JhUUi5pxYR6LE42AerXeNJTsvOnpOivtp
-	 U42vqWjX3EDiBLAbNwyp03lMm/lB4ZEftDbn8Y48hBqSRBCl8Lqc4+RBhCWW/gjJJ8w==
+	t=1793750662;
+	b=oYMLsB3I5sKulu1qX4w8yJkYSz1E5iw5YWAYzYsDHIdsfkMoJ12LQPvM5rKEsBywN5t8
+	 AnfpvLC6q+4CRRDtC56MqrTBn3lN+qEDW+ARm1xnceaV2U+vu56BNYbOcTohV3Y5yL7Qw
+	 mYSqugSxXTOafi8t+I9GOYmCNT5j4qUd2jaA13ei7DIVOdxLkvcu96Z2WWn6L6uzFM/ht
+	 sm61n0/6KqZ+F/C8SVjtaSQnSBmKEifpVTFeYVwvXajlMYnAIn7GJW7ip2buAxvM25O9B
+	 WhoIiigzYaaQIrVv1xcj7AsTicLl5FUawPaIF2hXNo4TUCwBFJC+KeCDxuw+lfaRaUg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793742232;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793750662;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Message-ID:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding:Date;
-	bh=LvdZWVpaWuUhgg1vkmg/bCURAbnQK/+nQia+4t1gAiA=;
-	b=PDWl6k1PW7JUf2wFChl0WkK7+IL3OgLpD6YxED63gySgO8YLdp+xuXZPCF9cfYCT7DMh
-	 lnkGU9zT6Xq0T1d93facw2mQ3mBUtBJ81tpqzi+bPKTgqEgeIjyd2Nje+75Dha0ZDVUtw
-	 AHxGDlHCzRjA+vhUoB89Mg/a4s9G6xg0MsRd6SHhqglPdcUplrVEmPhn8eE3OKQvC5bfy
-	 Dh91fK6d0Dp2UFMUtfT4aqLeR5K4L2xjaXp+qfnMax4T2OihelsrAihWKfGJ5vrbvBKlz
-	 b+kMqb1eK89DF0ehDr9sbAKmR0XmsoO2a1DUEsPnUztwr8SIQMqlNmo4Y8Wrd5qjUSQ==
+	bh=hAlOijwFiTp4+ijl8gd1Pb1QeDuqJ/zidJMbSnXsThY=;
+	b=omo1D4CFBkewFrh4/phApEluq5uHvt1afEz+aHqjpoPznao5ZuvdkQLsVCOceTdDxxjv
+	 nucd+99zO+IyZx6cyPdN5jeyzI4MSQqYjga8lsjj4wGG4ZmnwlcXl9Ao7Jl5LHqw1Do1L
+	 ZPOngPP5AcDR1hCHcmTZp1T9wi0iBTAom96dVSK8LMSr18bgxME9+K7aevxB3SrVMvX69
+	 OsoVbzCC2xb0xnR24ylye9P1X86o5zZSysTFsSu0MZ/tKMxQ2Ax3npCUxco4AZ9gb8CSj
+	 tsS6qSRcjLNWv0UfPyxMMpCYoLiCAXW646nBCZWlZdjBR2fF9eZ3lrY+4KL1DkrSPxg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=m4b+oEPu;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BU0ynHoz;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 51E34606EEB9
-	for <syzbot@lists.linux.dev>; Tue,  3 Nov 2026 21:43:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 44A79606A324
+	for <syzbot@lists.linux.dev>; Wed,  4 Nov 2026 00:04:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=m4b+oEPu
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id ECAA71F00A15;
-	Tue,  3 Nov 2026 21:43:51 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BU0ynHoz
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id B770E1F000C1;
+	Wed,  4 Nov 2026 00:04:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793742232;
-	bh=LvdZWVpaWuUhgg1vkmg/bCURAbnQK/+nQia+4t1gAiA=;
+	s=k20260515; t=1793750661;
+	bh=hAlOijwFiTp4+ijl8gd1Pb1QeDuqJ/zidJMbSnXsThY=;
 	h=From:To:Cc:Subject:Date;
-	b=m4b+oEPuJ9XuPcRjhG8tukkHfPnFa0CI9dWtOQiPq237TGtB/oJHO0bIgQqF4H8Ca
-	 ORAzGrO87TlZMDN/tbnkqO9AHxbvy/DbJ0GliS7Y2wc82VNaxBaELAZcmcz1dEf5BE
-	 7AeRVr9n0teJ6vtbgq373B4qaGtkPGmZKds9Gv6CjqPu9LUeS/r0nflAFoVANohG7G
-	 QCTViArK/82jzvXW7b7xBdq/KcXBdt+1YlhDb4q1ejoAfBo1t5sFWIuh9852YuEXOS
-	 Ec3CVSrvXCOIxn01moFKuGAw9qXJ6EQr4NPyXuR4ZVrob2QQTe3HsV8fEIbGtpJK8o
-	 drY5/W7RWFHOQ==
+	b=BU0ynHoz/PCCbABBRSPW1QK16gQ21l2iu+g/s+6Lq+u/m2BW60XExs0HGzriwh1ss
+	 rFJYVDL8H4QdR9H2wN70ejYVL7ZGJgifpKBH8E0uy3b1DtcXhutH5HDgU4N0woxtQG
+	 uN9yGLK+HqxxcJSdmq+oR3dvkWitudtl67iC9RpfIoRsvD8rBb7C/b3OXI2mRWJnB3
+	 CItANnoQkHuIqq08C0Yr4yfZuOdjvA/o/++DNyTnWytZtVa8R9oKMBRj+aUoFZ3cBj
+	 HagmKtlHDWUoGptXNnk7M5l2Fii24z0V5HkLj86IhE4vweB6CkVV/cr0a8gstgRdkq
+	 uoD0AFcGn5U1A==
 From: "syzbot" <syzbot@kernel.org>
 To: syzkaller-upstream-moderation@googlegroups.com
 Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] dm: fix use-after-free when upgrading device access mode
-Message-ID: <02bb631b-9504-41c5-82ad-d85b3793f594@mail.kernel.org>
+Subject: [PATCH RFC] block: snapshot lock mask to fix queue freeze lockdep race
+Message-ID: <7cd2180d-2f43-42de-908d-3fb3b1d88b69@mail.kernel.org>
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -55,315 +55,377 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Date: Tue,  3 Nov 2026 21:43:51 +0000 (UTC)
+Date: Wed,  4 Nov 2026 00:04:21 +0000 (UTC)
 
-In Device Mapper tables, struct dm_dev_internal held a direct pointer
-dd->dm_dev pointing to the struct dm_dev embedded inside a
-per-mapped-device struct table_device. When a device was opened more than
-once within the same dm_table with a mode requiring an upgrade (for
-instance, opened read-only and later opened read-write), dm_get_device()
-invoked upgrade_mode(). In upgrade_mode(), dm_get_table_device() allocated
-or found a new struct table_device (new_dev), replaced dd->dm_dev with
-new_dev, and immediately freed the old struct table_device via
-dm_put_table_device(md, old_dev).
+A race between queue freeze/unfreeze operations and concurrent queue death
+or draining can cause lockdep to report a lock held when returning to user
+space:
 
-However, upgrade_mode() is only reached when dd already exists in the
-table's device list (dd->count >= 1), meaning an earlier caller or target
-in the table still holds a pointer to old_dev. Freeing old_dev leaves the
-earlier caller with a dangling pointer. When that caller subsequently
-cleans up via dm_put_device(ti, old_dev), dm_put_device() searches for
-dd->dm_dev == d. Because dd->dm_dev was overwritten with new_dev, the
-lookup fails to match, prompting an error message that reads d->name from
-the freed table_device and triggering a slab-use-after-free:
+================================================
+WARNING: lock held when returning to user space!
+...
+task is leaving the kernel with locks still held!
+locks held:
+  (&q->q_usage_counter(queue)){+.+.}-{0:0}, at: elevator_change+0x194/0x480
+  block/elevator.c:668
 
-BUG: KASAN: slab-use-after-free in string_nocheck lib/vsprintf.c:650
-[inline]
-BUG: KASAN: slab-use-after-free in string+0x216/0x2d0 lib/vsprintf.c:732
-Read of size 1 at addr ffff888186f917b4
+The lockdep tracking for queue freeze and unfreeze previously stored
+mq_freeze_queue_dying and mq_freeze_disk_dead directly in struct
+request_queue. These fields were initialized under q->mq_freeze_lock on the
+outermost freeze (when !q->mq_freeze_depth). During unfreeze,
+__blk_mq_unfreeze_queue() decremented q->mq_freeze_depth to 0, cleared
+q->mq_freeze_owner, and released q->mq_freeze_lock. Only after releasing
+the mutex did blk_mq_unfreeze_queue_nomemrestore() call
+blk_unfreeze_release_lock(q), which inspected q->mq_freeze_queue_dying and
+q->mq_freeze_disk_dead without holding q->mq_freeze_lock.
 
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- print_report+0x58/0x70 mm/kasan/report.c:482
- kasan_report+0x117/0x150 mm/kasan/report.c:595
- string_nocheck lib/vsprintf.c:650 [inline]
- string+0x216/0x2d0 lib/vsprintf.c:732
- vsnprintf+0x74a/0xef0 lib/vsprintf.c:2948
- _printk+0xdd/0x130 kernel/printk/printk.c:2504
- pool_ctr+0x752/0xd60 drivers/md/dm-thin.c:3431
- dm_table_add_target+0x58d/0xc70 drivers/md/dm-table.c:749
- table_load+0x325/0x8a0 drivers/md/dm-ioctl.c:1645
- dm_ctl_ioctl+0x9ec/0xe10 drivers/md/dm-ioctl.c:2243
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
+If another thread concurrently initiates queue draining or marks the queue
+dying (such as during device destruction via blk_mark_disk_dead()), it sets
+QUEUE_FLAG_DYING and calls __blk_freeze_queue_start(). Because
+q->mq_freeze_depth has already dropped to 0 and q->mq_freeze_lock is
+unlocked, the second thread acquires q->mq_freeze_lock, sees depth 0, and
+overwrites q->mq_freeze_queue_dying with true. When the unfreezing thread
+subsequently executes blk_unfreeze_release_lock(), it observes
+q->mq_freeze_queue_dying as true, skips releasing q->q_lockdep_map, and
+exits back to user space with the lockdep map still held.
 
-Allocated by task:
- open_table_device drivers/md/dm.c:733 [inline]
- dm_get_table_device+0x23e/0x730 drivers/md/dm.c:821
- dm_get_device+0x327/0x760 drivers/md/dm-table.c:388
- pool_ctr+0x4ae/0xd60 drivers/md/dm-thin.c:3329
- dm_table_add_target+0x58d/0xc70 drivers/md/dm-table.c:749
- table_load+0x325/0x8a0 drivers/md/dm-ioctl.c:1645
- dm_ctl_ioctl+0x9ec/0xe10 drivers/md/dm-ioctl.c:2243
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
+Additionally, blk_queue_start_drain() unconditionally passed current as the
+freeze owner to __blk_freeze_queue_start(). Because draining a dying queue
+is permanent and does not release lockdep maps, tracking freeze ownership
+on dying queues can corrupt owner tracking if called in contexts that
+already hold an outer freeze.
 
-Freed by task:
- close_table_device drivers/md/dm.c:798 [inline]
- dm_put_table_device+0x255/0x2a0 drivers/md/dm.c:841
- upgrade_mode drivers/md/dm-table.c:326 [inline]
- dm_get_device+0x56f/0x760 drivers/md/dm-table.c:399
- pool_ctr+0x585/0xd60 drivers/md/dm-thin.c:3336
- dm_table_add_target+0x58d/0xc70 drivers/md/dm-table.c:749
- table_load+0x325/0x8a0 drivers/md/dm-ioctl.c:1645
- dm_ctl_ioctl+0x9ec/0xe10 drivers/md/dm-ioctl.c:2243
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
+Fix these issues by replacing the mutable per-queue boolean flags with a
+snapshotted lock mask returned by value. Define BLK_FREEZE_LOCK_IO and
+BLK_FREEZE_LOCK_QUEUE bit flags and store unsigned int mq_freeze_lock_mask
+in struct request_queue. In blk_freeze_set_owner() and
+blk_unfreeze_check_owner(), compute and retrieve the lock mask while
+holding q->mq_freeze_lock, returning it by value from
+__blk_freeze_queue_start() and __blk_mq_unfreeze_queue(). Pass the lock
+mask by value to blk_freeze_acquire_lock() and blk_unfreeze_release_lock(),
+avoiding unlocked reads of mutable request_queue fields after dropping
+q->mq_freeze_lock. In blk_queue_start_drain(), pass NULL as owner to
+__blk_freeze_queue_start() when blk_queue_dying(q) is true, preventing
+permanent dying drains from claiming freeze ownership. Finally, propagate
+and consume the lock mask in __blk_mark_disk_dead() and __del_gendisk().
 
-Furthermore, because the lookup failed, dm_put_device() returned early
-without decrementing dd->count, leaking dd and new_dev.
-
-This issue could be reproduced via dm-thin targets because pool_ctr() and
-thin_ctr() relied on strcmp() checks (e.g., !strcmp(argv[0], argv[1])) to
-ensure conflicting devices were not specified. These string checks are
-easily bypassed when the same underlying block device is passed using
-different string representations (such as a device path "/dev/ram1" vs.
-major:minor "1:1" or symlinks). When creating a thin pool in read-only
-mode, pool_ctr() opened the metadata device as BLK_OPEN_READ and the data
-device as BLK_OPEN_READ | BLK_OPEN_WRITE. Bypassing the string check caused
-dm_get_device() to invoke upgrade_mode() on the shared dev_t, freeing the
-metadata device structure while pool_ctr() still held it.
-
-Fix this by:
-1. Embedding struct dm_dev dm_dev by value into struct dm_dev_internal and
-adding a table_dev pointer to track the underlying struct table_device.
-Callers of dm_get_device() receive &dd->dm_dev, ensuring a stable pointer
-lifetime within the table. In upgrade_mode(), switch dd->table_dev to
-new_dev while updating dd->dm_dev.mode and dd->dm_dev.bdev_file in-place.
-2. In dm_put_device(), match against &dd->dm_dev == d and release
-dd->table_dev when the reference count drops to zero.
-3. In dm-thin, replace the fragile strcmp() checks in pool_ctr() and
-thin_ctr() with checks comparing the opened block devices
-(metadata_dev->bdev == data_dev->bdev and tc->origin_dev->bdev ==
-tc->pool_dev->bdev) so that identical underlying devices are rejected
-regardless of how their paths are specified.
-
-Fixes: 86f1152b117a ("dm: allow active and inactive tables to share dm_devs")
+Fixes: f6661b1d0525 ("block: track queue dying state automatically for modeling queue freeze lockdep")
 Assisted-by: Gemini:gemini-4-argon Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+9519233e6d144970bbc2@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=9519233e6d144970bbc2
-Link: https://syzkaller.appspot.com/ai_job?id=b87c5628-c40e-46ad-909b-3df7926caa9a
-To: "Alasdair Kergon" <agk@redhat.com>
-To: "Benjamin Marzinski" <bmarzins@redhat.com>
-To: <dm-devel@lists.linux.dev>
-To: "Mikulas Patocka" <mpatocka@redhat.com>
-To: "Mike Snitzer" <snitzer@kernel.org>
+Reported-by: syzbot+48ca80a8587c1d97c433@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=48ca80a8587c1d97c433
+Link: https://syzkaller.appspot.com/ai_job?id=d7e2d57f-b3c0-415a-afc4-2e2bcac48fe1
+To: "Jens Axboe" <axboe@kernel.dk>
+To: <linux-block@vger.kernel.org>
+To: "Ming Lei" <ming.lei@redhat.com>
 Cc: <linux-kernel@vger.kernel.org>
 
 ---
-diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
-index 8f945f0ae..2147f6220 100644
---- a/drivers/md/dm-ioctl.c
-+++ b/drivers/md/dm-ioctl.c
-@@ -1794,7 +1794,7 @@ static void retrieve_deps(struct dm_table *table,
- 	deps->count = count;
- 	count = 0;
- 	list_for_each_entry(dd, dm_table_get_devices(table), list)
--		deps->dev[count++] = huge_encode_dev(dd->dm_dev->bdev->bd_dev);
-+		deps->dev[count++] = huge_encode_dev(dd->dm_dev.bdev->bd_dev);
- 
- 	param->data_size = param->data_start + needed;
+diff --git a/block/blk-core.c b/block/blk-core.c
+index 8836c7028..fc3ab62e8 100644
+--- a/block/blk-core.c
++++ b/block/blk-core.c
+@@ -324,20 +324,21 @@ void blk_put_queue(struct request_queue *q)
  }
-diff --git a/drivers/md/dm-table.c b/drivers/md/dm-table.c
-index a483f49dd..1753bee01 100644
---- a/drivers/md/dm-table.c
-+++ b/drivers/md/dm-table.c
-@@ -171,8 +171,8 @@ static void free_devices(struct list_head *devices, struct mapped_device *md)
- 		struct dm_dev_internal *dd =
- 		    list_entry(tmp, struct dm_dev_internal, list);
- 		DMWARN("%s: dm_table_destroy: dm_put_device call missing for %s",
--		       dm_device_name(md), dd->dm_dev->name);
--		dm_put_table_device(md, dd->dm_dev);
-+		       dm_device_name(md), dd->dm_dev.name);
-+		dm_put_table_device(md, dd->table_dev);
- 		kfree(dd);
- 	}
- }
-@@ -218,7 +218,7 @@ static struct dm_dev_internal *find_device(struct list_head *l, dev_t dev)
- 	struct dm_dev_internal *dd;
+ EXPORT_SYMBOL(blk_put_queue);
  
- 	list_for_each_entry(dd, l, list)
--		if (dd->dm_dev->bdev->bd_dev == dev)
-+		if (dd->dm_dev.bdev->bd_dev == dev)
- 			return dd;
- 
- 	return NULL;
-@@ -315,14 +315,16 @@ static int upgrade_mode(struct dm_dev_internal *dd, blk_mode_t new_mode,
- 	int r;
- 	struct dm_dev *old_dev, *new_dev;
- 
--	old_dev = dd->dm_dev;
-+	old_dev = dd->table_dev;
- 
--	r = dm_get_table_device(md, dd->dm_dev->bdev->bd_dev,
--				dd->dm_dev->mode | new_mode, &new_dev);
-+	r = dm_get_table_device(md, dd->dm_dev.bdev->bd_dev,
-+				dd->dm_dev.mode | new_mode, &new_dev);
- 	if (r)
- 		return r;
- 
--	dd->dm_dev = new_dev;
-+	dd->table_dev = new_dev;
-+	dd->dm_dev.mode |= new_mode;
-+	dd->dm_dev.bdev_file = new_dev->bdev_file;
- 	dm_put_table_device(md, old_dev);
- 
- 	return 0;
-@@ -385,24 +387,25 @@ int dm_get_device(struct dm_target *ti, const char *path, blk_mode_t mode,
- 		if (!dd)
- 			return -ENOMEM;
- 
--		r = dm_get_table_device(t->md, dev, mode, &dd->dm_dev);
-+		r = dm_get_table_device(t->md, dev, mode, &dd->table_dev);
- 		if (r) {
- 			kfree(dd);
- 			return r;
- 		}
- 
-+		dd->dm_dev = *dd->table_dev;
- 		refcount_set(&dd->count, 1);
- 		list_add(&dd->list, &t->devices);
- 		goto out;
- 
--	} else if (dd->dm_dev->mode != (mode | dd->dm_dev->mode)) {
-+	} else if (dd->dm_dev.mode != (mode | dd->dm_dev.mode)) {
- 		r = upgrade_mode(dd, mode, t->md);
- 		if (r)
- 			return r;
- 	}
- 	refcount_inc(&dd->count);
- out:
--	*result = dd->dm_dev;
-+	*result = &dd->dm_dev;
- 	return 0;
- }
- EXPORT_SYMBOL(dm_get_device);
-@@ -458,7 +461,7 @@ void dm_put_device(struct dm_target *ti, struct dm_dev *d)
- 	struct dm_dev_internal *dd;
- 
- 	list_for_each_entry(dd, devices, list) {
--		if (dd->dm_dev == d) {
-+		if (&dd->dm_dev == d) {
- 			found = 1;
- 			break;
- 		}
-@@ -469,7 +472,7 @@ void dm_put_device(struct dm_target *ti, struct dm_dev *d)
- 		return;
- 	}
- 	if (refcount_dec_and_test(&dd->count)) {
--		dm_put_table_device(ti->table->md, d);
-+		dm_put_table_device(ti->table->md, dd->table_dev);
- 		list_del(&dd->list);
- 		kfree(dd);
- 	}
-diff --git a/drivers/md/dm-thin.c b/drivers/md/dm-thin.c
-index 358ed77ff..9ee45dc02 100644
---- a/drivers/md/dm-thin.c
-+++ b/drivers/md/dm-thin.c
-@@ -3307,13 +3307,6 @@ static int pool_ctr(struct dm_target *ti, unsigned int argc, char **argv)
- 	as.argc = argc;
- 	as.argv = argv;
- 
--	/* make sure metadata and data are different devices */
--	if (!strcmp(argv[0], argv[1])) {
--		ti->error = "Error setting metadata or data device";
--		r = -EINVAL;
--		goto out_unlock;
--	}
--
+-bool blk_queue_start_drain(struct request_queue *q)
++unsigned int blk_queue_start_drain(struct request_queue *q)
+ {
  	/*
- 	 * Set default pool features.
+ 	 * When queue DYING flag is set, we need to block new req
+ 	 * entering queue, so we call blk_freeze_queue_start() to
+ 	 * prevent I/O from crossing blk_queue_enter().
  	 */
-@@ -3331,7 +3324,6 @@ static int pool_ctr(struct dm_target *ti, unsigned int argc, char **argv)
- 		ti->error = "Error opening metadata block device";
- 		goto out_unlock;
- 	}
--	warn_if_metadata_device_too_big(metadata_dev->bdev);
+-	bool freeze = __blk_freeze_queue_start(q, current);
++	unsigned int lock_mask = __blk_freeze_queue_start(q,
++			blk_queue_dying(q) ? NULL : current);
+ 	if (queue_is_mq(q))
+ 		blk_mq_wake_waiters(q);
+ 	/* Make blk_queue_enter() reexamine the DYING flag. */
+ 	wake_up_all(&q->mq_freeze_wq);
  
- 	r = dm_get_device(ti, argv[1], BLK_OPEN_READ | BLK_OPEN_WRITE, &data_dev);
- 	if (r) {
-@@ -3339,6 +3331,14 @@ static int pool_ctr(struct dm_target *ti, unsigned int argc, char **argv)
- 		goto out_metadata;
- 	}
+-	return freeze;
++	return lock_mask;
+ }
  
-+	/* make sure metadata and data are different devices */
-+	if (metadata_dev->bdev == data_dev->bdev) {
-+		ti->error = "Error setting metadata or data device";
-+		r = -EINVAL;
-+		goto out;
-+	}
-+	warn_if_metadata_device_too_big(metadata_dev->bdev);
+ /**
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index d9ab295be..3f64a59e5 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -113,60 +113,64 @@ void blk_mq_in_driver_rw(struct block_device *part, unsigned int inflight[2])
+ }
+ 
+ #ifdef CONFIG_LOCKDEP
+-static bool blk_freeze_set_owner(struct request_queue *q,
+-				 struct task_struct *owner)
++static unsigned int blk_freeze_set_owner(struct request_queue *q,
++					 struct task_struct *owner)
+ {
++	unsigned int lock_mask = 0;
 +
- 	if (kstrtoul(argv[2], 10, &block_size) || !block_size ||
- 	    block_size < DATA_DEV_BLOCK_SIZE_MIN_SECTORS ||
- 	    block_size > DATA_DEV_BLOCK_SIZE_MAX_SECTORS ||
-@@ -4204,12 +4204,6 @@ static int thin_ctr(struct dm_target *ti, unsigned int argc, char **argv)
- 	tc->sort_bio_list = RB_ROOT;
+ 	if (!owner)
+-		return false;
++		return 0;
  
- 	if (argc == 3) {
--		if (!strcmp(argv[0], argv[2])) {
--			ti->error = "Error setting origin device";
--			r = -EINVAL;
--			goto bad_origin_dev;
--		}
--
- 		r = dm_get_device(ti, argv[2], BLK_OPEN_READ, &origin_dev);
- 		if (r) {
- 			ti->error = "Error opening origin device";
-@@ -4225,6 +4219,12 @@ static int thin_ctr(struct dm_target *ti, unsigned int argc, char **argv)
+ 	if (!q->mq_freeze_depth) {
+ 		q->mq_freeze_owner = owner;
+ 		q->mq_freeze_owner_depth = 1;
+-		q->mq_freeze_disk_dead = !q->disk ||
+-			test_bit(GD_DEAD, &q->disk->state) ||
+-			!blk_queue_registered(q);
+-		q->mq_freeze_queue_dying = blk_queue_dying(q);
+-		return true;
++		if (q->disk && !test_bit(GD_DEAD, &q->disk->state) &&
++		    blk_queue_registered(q))
++			lock_mask |= BLK_FREEZE_LOCK_IO;
++		if (!blk_queue_dying(q))
++			lock_mask |= BLK_FREEZE_LOCK_QUEUE;
++		q->mq_freeze_lock_mask = lock_mask;
++		return lock_mask;
  	}
- 	tc->pool_dev = pool_dev;
  
-+	if (tc->origin_dev && tc->origin_dev->bdev == tc->pool_dev->bdev) {
-+		ti->error = "Error setting origin device";
-+		r = -EINVAL;
-+		goto bad_common;
-+	}
+ 	if (owner == q->mq_freeze_owner)
+ 		q->mq_freeze_owner_depth += 1;
+-	return false;
++	return 0;
+ }
+ 
+ /* verify the last unfreeze in owner context */
+-static bool blk_unfreeze_check_owner(struct request_queue *q)
++static unsigned int blk_unfreeze_check_owner(struct request_queue *q)
+ {
+ 	if (q->mq_freeze_owner != current)
+-		return false;
++		return 0;
+ 	if (--q->mq_freeze_owner_depth == 0) {
+ 		q->mq_freeze_owner = NULL;
+-		return true;
++		return q->mq_freeze_lock_mask;
+ 	}
+-	return false;
++	return 0;
+ }
+ 
+ #else
+ 
+-static bool blk_freeze_set_owner(struct request_queue *q,
+-				 struct task_struct *owner)
++static unsigned int blk_freeze_set_owner(struct request_queue *q,
++					 struct task_struct *owner)
+ {
+-	return false;
++	return 0;
+ }
+ 
+-static bool blk_unfreeze_check_owner(struct request_queue *q)
++static unsigned int blk_unfreeze_check_owner(struct request_queue *q)
+ {
+-	return false;
++	return 0;
+ }
+ #endif
+ 
+-bool __blk_freeze_queue_start(struct request_queue *q,
+-			      struct task_struct *owner)
++unsigned int __blk_freeze_queue_start(struct request_queue *q,
++				      struct task_struct *owner)
+ {
+-	bool freeze;
++	unsigned int lock_mask;
+ 
+ 	mutex_lock(&q->mq_freeze_lock);
+-	freeze = blk_freeze_set_owner(q, owner);
++	lock_mask = blk_freeze_set_owner(q, owner);
+ 	if (++q->mq_freeze_depth == 1) {
+ 		percpu_ref_kill(&q->q_usage_counter);
+ 		mutex_unlock(&q->mq_freeze_lock);
+@@ -176,13 +180,14 @@ bool __blk_freeze_queue_start(struct request_queue *q,
+ 		mutex_unlock(&q->mq_freeze_lock);
+ 	}
+ 
+-	return freeze;
++	return lock_mask;
+ }
+ 
+ void blk_freeze_queue_start(struct request_queue *q)
+ {
+-	if (__blk_freeze_queue_start(q, current))
+-		blk_freeze_acquire_lock(q);
++	unsigned int lock_mask = __blk_freeze_queue_start(q, current);
 +
- 	if (read_dev_id(argv[1], (unsigned long long *)&tc->dev_id, 0)) {
- 		ti->error = "Invalid device id";
- 		r = -EINVAL;
-diff --git a/drivers/md/dm.c b/drivers/md/dm.c
-index 1881d8611..575979168 100644
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -1588,7 +1588,7 @@ static void __send_empty_flush(struct clone_info *ci)
- 			 */
- 			clone = alloc_tio(ci, NULL, 0, &len, GFP_NOIO);
- 			atomic_add(1, &ci->io->io_count);
--			bio_set_dev(clone, dd->dm_dev->bdev);
-+			bio_set_dev(clone, dd->dm_dev.bdev);
- 			clone->bi_end_io = clone_endio;
- 			dm_submit_bio_remap(clone, NULL);
- 		}
-diff --git a/drivers/md/dm.h b/drivers/md/dm.h
-index 7a795979e..eaf05816c 100644
---- a/drivers/md/dm.h
-+++ b/drivers/md/dm.h
-@@ -41,7 +41,8 @@
- struct dm_dev_internal {
- 	struct list_head list;
- 	refcount_t count;
--	struct dm_dev *dm_dev;
-+	struct dm_dev dm_dev;
-+	struct dm_dev *table_dev;
- };
++	blk_freeze_acquire_lock(q, lock_mask);
+ }
+ EXPORT_SYMBOL_GPL(blk_freeze_queue_start);
  
- struct dm_table;
+@@ -208,9 +213,9 @@ void blk_mq_freeze_queue_nomemsave(struct request_queue *q)
+ }
+ EXPORT_SYMBOL_GPL(blk_mq_freeze_queue_nomemsave);
+ 
+-bool __blk_mq_unfreeze_queue(struct request_queue *q, bool force_atomic)
++unsigned int __blk_mq_unfreeze_queue(struct request_queue *q, bool force_atomic)
+ {
+-	bool unfreeze;
++	unsigned int lock_mask;
+ 
+ 	mutex_lock(&q->mq_freeze_lock);
+ 	if (force_atomic)
+@@ -221,16 +226,17 @@ bool __blk_mq_unfreeze_queue(struct request_queue *q, bool force_atomic)
+ 		percpu_ref_resurrect(&q->q_usage_counter);
+ 		wake_up_all(&q->mq_freeze_wq);
+ 	}
+-	unfreeze = blk_unfreeze_check_owner(q);
++	lock_mask = blk_unfreeze_check_owner(q);
+ 	mutex_unlock(&q->mq_freeze_lock);
+ 
+-	return unfreeze;
++	return lock_mask;
+ }
+ 
+ void blk_mq_unfreeze_queue_nomemrestore(struct request_queue *q)
+ {
+-	if (__blk_mq_unfreeze_queue(q, false))
+-		blk_unfreeze_release_lock(q);
++	unsigned int lock_mask = __blk_mq_unfreeze_queue(q, false);
++
++	blk_unfreeze_release_lock(q, lock_mask);
+ }
+ EXPORT_SYMBOL_GPL(blk_mq_unfreeze_queue_nomemrestore);
+ 
+diff --git a/block/blk.h b/block/blk.h
+index ed2172472..2c4d5ee7d 100644
+--- a/block/blk.h
++++ b/block/blk.h
+@@ -55,10 +55,11 @@ const char *blk_status_to_tag(blk_status_t status);
+ blk_status_t tag_to_blk_status(const char *tag);
+ enum req_op str_to_blk_op(const char *op);
+ 
+-bool __blk_mq_unfreeze_queue(struct request_queue *q, bool force_atomic);
+-bool blk_queue_start_drain(struct request_queue *q);
+-bool __blk_freeze_queue_start(struct request_queue *q,
+-			      struct task_struct *owner);
++unsigned int __blk_mq_unfreeze_queue(struct request_queue *q,
++				     bool force_atomic);
++unsigned int blk_queue_start_drain(struct request_queue *q);
++unsigned int __blk_freeze_queue_start(struct request_queue *q,
++				      struct task_struct *owner);
+ int __bio_queue_enter(struct request_queue *q, struct bio *bio);
+ void submit_bio_noacct_nocheck(struct bio *bio, bool split);
+ int bio_submit_or_kill(struct bio *bio, unsigned int flags);
+@@ -777,27 +778,36 @@ blk_status_t bio_integrity_verify(struct bio *bio,
+ void blk_integrity_prepare(struct request *rq);
+ void blk_integrity_complete(struct request *rq, unsigned int nr_bytes);
+ 
++enum {
++	BLK_FREEZE_LOCK_IO	= (1 << 0),
++	BLK_FREEZE_LOCK_QUEUE	= (1 << 1),
++};
++
+ #ifdef CONFIG_LOCKDEP
+-static inline void blk_freeze_acquire_lock(struct request_queue *q)
++static inline void blk_freeze_acquire_lock(struct request_queue *q,
++					   unsigned int lock_mask)
+ {
+-	if (!q->mq_freeze_disk_dead)
++	if (lock_mask & BLK_FREEZE_LOCK_IO)
+ 		rwsem_acquire(&q->io_lockdep_map, 0, 1, _RET_IP_);
+-	if (!q->mq_freeze_queue_dying)
++	if (lock_mask & BLK_FREEZE_LOCK_QUEUE)
+ 		rwsem_acquire(&q->q_lockdep_map, 0, 1, _RET_IP_);
+ }
+ 
+-static inline void blk_unfreeze_release_lock(struct request_queue *q)
++static inline void blk_unfreeze_release_lock(struct request_queue *q,
++					    unsigned int lock_mask)
+ {
+-	if (!q->mq_freeze_queue_dying)
++	if (lock_mask & BLK_FREEZE_LOCK_QUEUE)
+ 		rwsem_release(&q->q_lockdep_map, _RET_IP_);
+-	if (!q->mq_freeze_disk_dead)
++	if (lock_mask & BLK_FREEZE_LOCK_IO)
+ 		rwsem_release(&q->io_lockdep_map, _RET_IP_);
+ }
+ #else
+-static inline void blk_freeze_acquire_lock(struct request_queue *q)
++static inline void blk_freeze_acquire_lock(struct request_queue *q,
++					   unsigned int lock_mask)
+ {
+ }
+-static inline void blk_unfreeze_release_lock(struct request_queue *q)
++static inline void blk_unfreeze_release_lock(struct request_queue *q,
++					    unsigned int lock_mask)
+ {
+ }
+ #endif
+diff --git a/block/genhd.c b/block/genhd.c
+index 10ca8b4d6..e73349b74 100644
+--- a/block/genhd.c
++++ b/block/genhd.c
+@@ -657,13 +657,13 @@ static void blk_report_disk_dead(struct gendisk *disk, bool surprise)
+ 	rcu_read_unlock();
+ }
+ 
+-static bool __blk_mark_disk_dead(struct gendisk *disk)
++static unsigned int __blk_mark_disk_dead(struct gendisk *disk)
+ {
+ 	/*
+ 	 * Fail any new I/O.
+ 	 */
+ 	if (test_and_set_bit(GD_DEAD, &disk->state))
+-		return false;
++		return 0;
+ 
+ 	if (test_bit(GD_OWNS_QUEUE, &disk->state))
+ 		blk_queue_flag_set(QUEUE_FLAG_DYING, disk->queue);
+@@ -699,7 +699,7 @@ static void __del_gendisk(struct gendisk *disk)
+ 	struct request_queue *q = disk->queue;
+ 	struct block_device *part;
+ 	unsigned long idx;
+-	bool start_drain;
++	unsigned int lock_mask;
+ 
+ 	might_sleep();
+ 
+@@ -727,9 +727,8 @@ static void __del_gendisk(struct gendisk *disk)
+ 	 * Drop all partitions now that the disk is marked dead.
+ 	 */
+ 	mutex_lock(&disk->open_mutex);
+-	start_drain = __blk_mark_disk_dead(disk);
+-	if (start_drain)
+-		blk_freeze_acquire_lock(q);
++	lock_mask = __blk_mark_disk_dead(disk);
++	blk_freeze_acquire_lock(q, lock_mask);
+ 	xa_for_each_start(&disk->part_tbl, idx, part, 1)
+ 		drop_partition(part);
+ 	mutex_unlock(&disk->open_mutex);
+@@ -777,8 +776,7 @@ static void __del_gendisk(struct gendisk *disk)
+ 	else if (queue_is_mq(q))
+ 		blk_mq_exit_queue(q);
+ 
+-	if (start_drain)
+-		blk_unfreeze_release_lock(q);
++	blk_unfreeze_release_lock(q, lock_mask);
+ }
+ 
+ static void disable_elv_switch(struct request_queue *q)
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 0c2010230..32a8e93c4 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -637,11 +637,10 @@ struct request_queue {
+ 	struct task_struct	*mq_freeze_owner;
+ 	int			mq_freeze_owner_depth;
+ 	/*
+-	 * Records disk & queue state in current context, used in unfreeze
++	 * Records lockdep locks acquired in owner context, used in unfreeze
+ 	 * queue
+ 	 */
+-	bool			mq_freeze_disk_dead;
+-	bool			mq_freeze_queue_dying;
++	unsigned int		mq_freeze_lock_mask;
+ #endif
+ 	wait_queue_head_t	mq_freeze_wq;
+ 	/*
 
 
 base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
