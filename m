@@ -1,129 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793892708;
-	b=4IkkgamOqR5/r2i+00hu5rJXCX2TMhIDh6H/AstMErXvOWDa/eStCiWk8SjmHp/8+URW
-	 7sodg3OmZKUZhg2JtA06XSpGJHIpATD3B93/2uCP6zs61a8jpRU7gDWRgfV35UoZ7USq3
-	 7afjWUb2s0sSgHD8Rg8zQDaw79TRg4dvLFNDSmCawWhTjaC3giOK2H4hcLPtD4+DKF326
-	 lXRxlXHv75jHTQIszQNsLAM0BVrVItu3UAnxm1CjeuIqZdi5FtMF+DUV7CCrY1sRhyTYb
-	 4VvBfzssH+Pe01/dXrustkDCdo4F4TrMihja3tkqgRQLTH6T/Axsfzjph7Qoj5+CsTQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793892708;
-	h=Received:Delivered-To:Received:DMARC-Filter:Received:DKIM-Signature:
-	 X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 Received:Message-ID:Date:Subject:From:To:Reply-To:Cc:In-Reply-To:
-	 References:Content-Type:Content-Transfer-Encoding:MIME-Version;
-	bh=CgrgcR/Qznv2UxV78SRAe2w6aq04pP3vyGHaTftQ3Vw=;
-	b=cCXEXM7s4ecp2mkXhK5ztd9qeb2+j+KeflINV4GtDWXmv1nzjiKPYKeBpSGpEs3i7DZZ
-	 sE7OtxG3fnRXILKvP4nwHXMk+7Ya4J9n81LTreekJxAK3u5OEc1EzrDA4q4vx6Ee8frTD
-	 3TgAox6fjRY3g7S4haYMpAiQIanuIKvtE+gh8m5gPy9ZCzC8agBiAcFwfDg7oq+wZ2B11
-	 hxw8vHcgdnaeZLVQN1QELJCmfNv6mf5Q4AiEMYFEn1yko+5NocsrPrhMJ66zBXYDdec9M
-	 nrqSkJOzy2gJ9ANyxdV7SUM6/ZPPwn6dClFy+aGEKtbJFrTyPikhZencHl5VOCkdwHA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=ribalda-com.20260707.gappssmtp.com header.i=@ribalda-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=ofYWk2Nz;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3886606A329
-	for <syzbot@lists.linux.dev>; Thu,  5 Nov 2026 15:31:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ribalda-com.20260707.gappssmtp.com header.i=@ribalda-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=ofYWk2Nz
-Received: by smtp.kernel.org (Postfix)
-	id C46AC1F00A15; Thu,  5 Nov 2026 15:31:47 +0000 (UTC)
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=209.85.160.41
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793892707;
-	b=Vrn3H40tb0bJKxfnVXFPyD0wrT3czyIatKCzai7LqHU++aeOaNbzgQsE5XpAnBlt4yoB
-	 MXjCrx3jYxg/yiaFqHpFIIc4hq2ufyCY1RBE1nFnnABtMvpDNngj4Ps5IgeCgu6Xu7o7y
-	 FpN6HSHZ/nmsVC+tz3v4RQ3O2WxG5sHBlsOpQaVHjV+jhqaXL2IWu+hZ4P6TqK9eV3CBr
-	 tdy5BmcwgcE4Sfd5ZygzeX507tN0qNGAF11lSTjboe621d39xEYBtVu6dk8SjT5THMM/D
-	 XHqX1gWEok5XD2EJLHlSGpJOO1R3MfEBQt0HJtr9ohVRvBQmCHgkcLI5s5u4fwyDyVw==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793892707;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.51
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793908602;
+	b=WAzgh9OKOB2VJkNEboAJfK9dIxxiuBVOXeF551jPKclHb6COXKbOv9lqXkfevuWpDLe5
+	 mKr5m4aArFznbQFDhrTx4DC/hfvEcySESRfbNxFIMVi6O43Vr/iogb6LOiviyOmUYZqcS
+	 Wk/IaMuCvDtfl7N90P3SdBTP2NEu6+auY38Kne3V+OKGrVdMrmA/YerwGx9Ei6K5gFGqs
+	 TCeFzYpqrx7+/vyJkqJBnpl4gecskHsiwnmCHs8pwahxA1lkRMb+kwxA6GIVAPKuOiLyG
+	 gfhAl35HDgl7p3zXOCuExN4KEHNz1R2u1QI5+SfI7AxahHWcjzKrZ758f0W7q4Inm+w==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793908602;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
-	 Subject:From:To:Reply-To:Cc:In-Reply-To:References:Content-Type:
-	 Content-Transfer-Encoding:MIME-Version;
-	bh=CgrgcR/Qznv2UxV78SRAe2w6aq04pP3vyGHaTftQ3Vw=;
-	b=CVB+LZxDKTu1IIiIluobiKmzdsJiSUhSRyhlKWXkhMtv3/bN7qlfIsVfBQDQfXXc6ytW
-	 RDfYzqjPT9nmOl0uI4R0Ffmo/HQnFrMSgT1gMiBFTQvkTGmyyHi4R3ax+mj0sK5mPhZGJ
-	 oG9Six9gGg8H8MRVgTSiC0D5DVL8Wbcb9d51Bt8W3ICROoGwiaAyYnEreCJuBcAJd4jkE
-	 OWgJ0uWeqVl/qeuTilPlc8/ldbJIllusFd3BZfkKXepvyAHX430Yp1J/WFB3JlUe+OlDg
-	 tkg1TaIGMQlQt0wCncmOSBdXXsabIP8003wAuwgf9tugPpIpgTyn+fnbuXvkJ+DH1/g==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	dkim=pass header.d=ribalda-com.20260707.gappssmtp.com header.i=@ribalda-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=ofYWk2Nz;
-	dmarc=none header.from=media-ci.org;
-	spf=none smtp.mailfrom=ribalda.com;
-	arc=none smtp.remote-ip=209.85.160.41
-Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
+	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=+79bNgbupiQeNxrxjgpQjkbzWlu23rAY98ebtgDI/gg=;
+	b=sr2qVJrDwAQefGu87yEyIVm70ve2zV0EYRbhpqYmCO/E58OeEkilBj3HsIvycDSbnNux
+	 oY/MB3/IJ4Fkr+ZofDVdzwGd8Xa4Wk0/nMNNFjgscEeAj53wf9x84fmPJBUJIytzNJ+Bq
+	 8LeQ/A63z+bcSmHHVG/1lvjVmdt1JwcKYYb00McYc7vrJehQasZ4/H9TliA8QBxjR/9uD
+	 LtFTrxq1behBBzMIJvkHEIYaJGKEKkUoyNnoAy8TqQFt+ql0SqTueGdwhy2gF9BP/Jdfr
+	 Xfj6OKgU6dMCBINzwCPWR3j0o7D2lJgtiWo8DHhEoJX5IYxdgG4fjM1l3XSSwmXddjQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=U04eYkpy;
+	arc=none smtp.remote-ip=209.85.208.51
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 0AA521F00919
-	for <syzbot@kernel.org>; Thu,  5 Nov 2026 15:31:46 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ribalda-com.20260707.gappssmtp.com header.i=@ribalda-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=ofYWk2Nz
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.kernel.org 0AA521F00919
-Authentication-Results: smtp.kernel.org; dmarc=none (p=none dis=none) header.from=media-ci.org
-Authentication-Results: smtp.kernel.org; spf=none smtp.mailfrom=ribalda.com
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-4a85c656c58so1251827fac.3
-        for <syzbot@kernel.org>; Thu, 05 Nov 2026 07:31:46 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40142606A32C
+	for <syzbot@lists.linux.dev>; Thu,  5 Nov 2026 19:56:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 40142606A32C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=U04eYkpy
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-6b587538a37so1022291a12.2
+        for <syzbot@lists.linux.dev>; Thu, 05 Nov 2026 11:56:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ribalda-com.20260707.gappssmtp.com; s=20260707; t=1793892706; x=1794497506; darn=kernel.org;
-        h=mime-version:content-transfer-encoding:content-type:references
-         :in-reply-to:cc:reply-to:to:from:subject:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=CgrgcR/Qznv2UxV78SRAe2w6aq04pP3vyGHaTftQ3Vw=;
-        b=ofYWk2NzcML2MQ8LpMOsGKJ4fUzNHyljAbIV1KUTb8166tqz6OzctaeA7OJILUZsLv
-         Yy4UPXLLmNfN4ZDOOjJ8o2fRjfAXPGuHVEZSK5YDOZhAChJQt3KX34zz2zOj7n6r5LVx
-         nyP104Z9t6oMnxCN4TOqaDMruiXXVX3O8Qh4KUpeKmJn9xkhFACnSvTrtJ8GFQ+4MOAU
-         ZajKCVJ4srmzra4zp7rIsygNzyy4Ldi1kUBy74gLU379Hw/2bbVtaGK0QCrbPMKybZnM
-         RBmqVZi4I7XtI/RUi1tu7hFcJq4SDpKo9RsfAY1sN/xIGhkf4XT93RHaZWxlnQGvQ+/1
-         5gow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793892706; x=1794497506;
-        h=mime-version:content-transfer-encoding:content-type:references
-         :in-reply-to:cc:reply-to:to:from:subject:date:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20260707; t=1793908601; x=1794513401; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=CgrgcR/Qznv2UxV78SRAe2w6aq04pP3vyGHaTftQ3Vw=;
-        b=H/q/vbJ5Ccnx1GXaDA6gvz592arrtr0cm0RzZPsr2P/wPzGZYk2ZO2TX17iqNjKMaB
-         6Y6LHU6lT8FgDeJUB/9b+mZm40UnmgnbJvXo/h6zxvL2Rn7l3k3yVssbsxtBqlxDsb8l
-         HURlJszbyWgV+rdnTLUCXomtZtipQXx/aOvbm5jFMlbkhLbcRTPWIW7FZydDNA3/8nAn
-         cxxkb0VJPhOt0zdEnO6zEVIH6z6Fw05AeHs+phrIddnsedNxTBeVAWjjMsPdSJvYHfjA
-         dCFxVO5a8QS0CUDyR/B48gxcu9fU6FXC554/Fk8xY7pqJAyn0bNwupEXI7vGMQ4UjG50
-         2Zyw==
-X-Gm-Message-State: APuU4Z/hODyxR6rS4JRMKH3jn2aE4p3WeRVNrTr3elnmnLWZk/Itzbe6
-	r213YYPO8+7TgSKyDxyoAKQpLZJ2h/TiF+eDoUpZKwx9L0poufpOTUQTSKywb+J5/HDMW0lT6Fr
-	ni8Ju8/w=
-X-Gm-Gg: AYBFou1FdknRe9osXclNN8X8Vqs1vlInjgE22eEltRc2JvBIaZlshayT/oLquxAircZ
-	xNLOSHGNeGKNv6XiMPesGlmmbf8Rkr9VeCHcAttED7JT5YnaFbxKyCDZ8saqutLSgEcbDqcvtmW
-	l6IbcS/nSzIANg+Bc8FJu5zkJBaXMXnf2Iz655B4o0xzXShGYmtX2KV67rev3HY449+hB6Rla2y
-	x9dx0Pyf1L+ImIM+OFleaMYPtnkisCdn5H5GNT7JSABmUWbCL9cpIE5sK/ORoryewjHtNQcaob8
-	X9EAmxRrYKrfiTsR1vWmbCsC/f+QUUa4PkMiEPW2gHG/uT+cmq738grwNI2jLm9BPQU20MjE7NC
-	obPAFdpZKd3T1opeVCBalXnNGLPZolHAgKybtoIAb4Xi0JaHRgPCF8MIli+u5bSPvcyjWsIuRdm
-	ASxxysOvodJB4io8RXblsbLkTsiUJDcl0AMxg2D8vpMZ7FFL/FY+89NZBQ/tvi3Fw5/D8BKt4mu
-	y92c8ZqDMpPL8qHUWhqUOS3oXhTLsIXjF63uQbhVIaypwK4XKE8XzLNGyMGkkjko/Qv38rg7lRZ
-	dvHjSqCZQo9A10SyUZiqzkNjzeE2sgzwicC9or0+SWpS6UsjsTWNGoKg/aKBZg6Lg2KXL0mxARL
-	9E9kMMUNzMgbo0danlpgcb8AG5k2PcQ==
-X-Received: by 2002:a05:6871:cd8a:b0:4ad:5a7a:f7e9 with SMTP id 586e51a60fabf-4ad5a7bfbc7mr2844880fac.34.1793892705575;
-        Thu, 05 Nov 2026 07:31:45 -0800 (PST)
-Received: from gitlab-scheduler.us-central1-a.c.linux-media-ci.internal (172.60.173.34.bc.googleusercontent.com. [34.173.60.172])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4acea680cacsm4559948fac.16.2026.11.05.07.31.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2026 07:31:45 -0800 (PST)
-Message-ID: <6aeca161.99d0dbd8.3801b.50e8@mx.google.com>
-Date: Thu, 05 Nov 2026 07:31:45 -0800 (PST)
-Subject: Re: media: mxl111sf: initialize state->d and fe_lock in probe
-From: Patchwork Integration <patchwork@media-ci.org>
-To: syzbot <syzbot@kernel.org>
-Reply-To: linux-media@vger.kernel.org
-Cc: Linux Media CI <media-ci@linuxtv.org>
-In-Reply-To: <7cbccdb8-870c-46c4-bc61-2e40d8c4b4db@mail.kernel.org>
-References: <7cbccdb8-870c-46c4-bc61-2e40d8c4b4db@mail.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+        bh=+79bNgbupiQeNxrxjgpQjkbzWlu23rAY98ebtgDI/gg=;
+        b=U04eYkpyx2AZqi225ZGLDd1w1qBrzNMNw92CFIkgzx0HqzDHGPPrjCp8uTDtNakl9T
+         FxTJQDaAYmRwNm39g7Q8YMmtc6vEUy7UeiBzvMOOxJ9R5iTWUOQurjECw7mcA00s+N0C
+         TFiUBKiPlPKnHsJ5/WFNM0xDl963sp9uasJ0jSLps22QMgbKJ9Y4gd9eOUZlhPX7fQNo
+         NDuJjN1cD0QCWiyJNdkjdNM7FpJr15TD3uOURDxSr2HUxPIVpxh20TBPvR4UGvU2JAvP
+         5yNKFoG/3N6g7E7QUokNd5DpqgZCUf9kwE6jLarL5VmO6IOKZ4SRo0KydSN9uzfJ7Df9
+         UGSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793908601; x=1794513401;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=+79bNgbupiQeNxrxjgpQjkbzWlu23rAY98ebtgDI/gg=;
+        b=YcYlOoUt3SCmucgWEflzTboFDzGDxs4g+1urM7QmiKtQUm6UIfcz5VOYSZ7c4Dq97u
+         ConKX64oOTvkgCECC/l+KMCrlvFqFmpYxmVpUrJ5SP0yvypz2yirI4PMZSXFXslSUSLI
+         qKRf9NLy09tLqsfX+/G8ci2BKdJy4i8X9qxNL5lfxQCw1O6Ns5++sN2swRXrCBdhJJe7
+         5RI/1Z4jBPp6JKkYbX9F3RVhlPfnqtk5HllazDYZ1JtPjFLJumjFOyrQcPAuPE61M9zn
+         Aa/PCz71C6YgAbPBzHYNpPTJV6Wf5SP70RRcomnKERVAFx2vxSoZF304mXEORfazxFzQ
+         sd3A==
+X-Gm-Message-State: APuU4Z8YSWai/wqNb7AVUwTgNQ+x27xBZhVyUrb8a/9ch08+nULLqEfA
+	HIhmHBqX6SS8FqUdcDxUujTRtO+GAw++EEwDvy+dRJRIJ1DMSG3RvV/p
+X-Gm-Gg: AYBFou0T/6MgE8tN4t+Gh8S6bLGMAliMgMawZ6h/hWM0uOX7dPdeLNYmL0WTMyeShnj
+	oracAeglls8Tg9XC5xP5HgDVQdtvsuiFDHznaYnk8v0jjUqWoeYA22Hi/jHyS0bc4XxNhOM6aZr
+	/L+j3+rmnN+8v4AvSa2fmYHdrLQbiKG36RXRlegAe7sSjDBTDuN+7a/dpagLgMa09obDtw/3jjO
+	uV73HcqBdjCs7u6hZJV+dVA4KqaziU0B9EyjzeM1+/5hCYiG9bQvgy2VdU5MNC4gdeL+YJ3/m/7
+	qLUdK5GNrZenK53V6+6mJ0fBFFY8SsXSz0/VrastAiv6ub/9orNlY48DWgzsvDp8UblPg0GM+yI
+	VSnTMl/XetxPLuxeKUp3CDpbABakDetXljdM9rvcms51gB5ZUJEXMk7Ew484Z6tXL7GgGr3jjQr
+	PYcwXXMg4UKVZxrMrASJRTx/TKVM0bhULIQoNIbZifs0Z90TOgmgPXhYHKTUltWdc89vjv4lRBB
+	SlKcImxh3ZNKD0q45YpJ/aluSbfny67QjE8XmlEmZXPVu9hL+ZecBo9PaYM/mJwbglP+4Z4x7Wi
+	58b1jZ7yKWHVS9VgcqXNCTh0CZknNZhX9FumUrC7HPNcfp5iQlIyBl6sPfOLJPbDVYB36h4/LhE
+	r4w==
+X-Received: by 2002:a05:6402:43ca:b0:6b5:78c1:e22c with SMTP id 4fb4d7f45d1cf-6b59753cc2fmr239105a12.5.1793908600381;
+        Thu, 05 Nov 2026 11:56:40 -0800 (PST)
+Received: from [192.168.0.50] (93-159-22-87.cgnat.inetia.pl. [93.159.22.87])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b5719cd68dsm1278500a12.37.2026.11.05.11.56.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Nov 2026 11:56:39 -0800 (PST)
+Message-ID: <b7f6858b-5a8c-49f1-87a9-2763513300cf@gmail.com>
+Date: Thu, 5 Nov 2026 20:56:37 +0100
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -133,59 +91,191 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-
-Dear syzbot:
-
-Thanks for your patches! Unfortunately the Media CI robot detected some
-issues:
-
-# Test media-patchstyle:./0001-media-mxl111sf-initialize-state-d-and-fe_lock-=
-in-pro.patch media style
-ERROR: Commit 4c66c9205c0788e18eb09d482461aa2f551ee046 found in the stable tr=
-ee, but stable@vger.kernel.org not in Cc:
-WARNING: Non-standard signature: Assisted-by:
-#65:=20
-Assisted-by: Gemini:gemini-3.8-flash syzbot
-
-ERROR: Unrecognized email address: 'Gemini:gemini-3.8-flash syzbot'
-#65:=20
-Assisted-by: Gemini:gemini-3.8-flash syzbot
-
-total: 1 errors, 1 warnings, 57 lines checked
-
-ERROR: Fails one or more mandatory checkpatch tests
-
-# Test checkpatch:./0001-media-mxl111sf-initialize-state-d-and-fe_lock-in-pro=
-.patch checkpatch
-WARNING: Non-standard signature: Assisted-by:
-#65:=20
-Assisted-by: Gemini:gemini-3.8-flash syzbot
-
-ERROR: Unrecognized email address: 'Gemini:gemini-3.8-flash syzbot'
-#65:=20
-Assisted-by: Gemini:gemini-3.8-flash syzbot
-
-total: 1 errors, 1 warnings, 0 checks, 57 lines checked
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v2] md: drop a never-started reshape request when
+ stopping the array
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+References: <3ba40dcd-182e-4830-b254-c457032bef30@mail.kernel.org>
+Content-Language: en-US
+From: Uladzislau Zhauniarovich <uladzislau.zhauniarovich@gmail.com>
+In-Reply-To: <3ba40dcd-182e-4830-b254-c457032bef30@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
 
+The v2 code is correct. Please keep the diff exactly as it
+is, including where struct md_rdev *rdev is declared and the shorter
+comment.
 
-Please fix your series, and upload a new version. If you have a patchwork
-account, do not forget to mark the current series as Superseded.
+I tested v2 in QEMU with KASAN on a v7.2-rc5 based tree with
+0669c7dbd1d3 applied:
+- The reproducer: 2/2 clean. The array starts again with its old
+  geometry (3/3 devices).
+- The variants are all clean, and the array comes back each time:
+  raid_disks +1 without frozen, a pending layout change, a pending
+  chunk_size change, shrink by 2 (data md5 unchanged), and a restart
+  via readonly.
+- raid10 near2 with a pending offset2 layout: after inactive -> active
+  the data md5 is unchanged.
+- new_level written while the array is inactive, and a crafted
+  superblock with RESHAPE_ACTIVE and reshape_position ~0: both get
+  -EINVAL from 0669c7dbd1d3, as expected.
+- A grow from 3 to 4 disks completes with the data intact.
+- A reshape parked at reshape_position 49152, then inactive -> active,
+  resumes at 49152 and finishes with the data intact.
 
-For more details, check the full report at:
-https://linux-media.pages.freedesktop.org/-/users/patchwork/-/jobs/115152362/=
-artifacts/report.htm .
+Please send a v3 that changes only the commit message and the
+recipients:
 
+1) Fix the commit reference. checkpatch reports an ERROR for
+   "Commit 0669c7dbd1d3 replaced ...". Write it as:
 
+     Commit 0669c7dbd1d3 ("md/raid5: don't BUG() on an inconsistent
+     reshape state from the superblock") replaced the BUG_ON in
+     raid5_run() with an -EINVAL check, ...
 
-Best regards, and Happy Hacking!
-Media CI robot on behalf of the linux-media community.
+2) Replace the stack trace with the one from the syzbot report. The
+   current one is the v1 trace, and array_state_store has no file:line
+   in it:
 
----
-Check the latest rules for contributing your patches at:
-https://docs.kernel.org/driver-api/media/maintainer-entry-profile.html
+     kernel BUG at drivers/md/raid5.c:8117!
+     RIP: 0010:raid5_run+0x11a7/0x1670 drivers/md/raid5.c:8117
+     Call Trace:
+      md_run+0xc2f/0x2510 drivers/md/md.c:6779
+      do_md_run+0x36/0x660 drivers/md/md.c:6880
+      array_state_store+0x9c5/0xcf0 drivers/md/md.c:4765
 
-If you believe that the CI is wrong, kindly open an issue at
-https://gitlab.freedesktop.org/linux-media/media-ci/-/issues or reply-all
-to this message.
+3) Add the starting state as the first line of the reproduction
+   sequence:
+
+     # raid5 running on 3 devices
+     echo 4 > /sys/block/md0/md/raid_disks
+     echo inactive > /sys/block/md0/md/array_state
+     echo active > /sys/block/md0/md/array_state
+
+4) Add this tag after the Fixes: line:
+
+     Cc: stable@vger.kernel.org
+
+   0669c7dbd1d3 has a Fixes: tag and will be backported. Without this
+   patch, stable arrays that hit this sequence will then fail to
+   restart.
+
+5) Add Yogesh Gaur <yogeshgaur.83@gmail.com>, the author of
+   0669c7dbd1d3, to Cc.
+
+Keep everything else as it is: the subject, Fixes:, Reported-by:,
+Closes: and the rest of the text. v3 should have the same diff as v2.
+
+Tested-by: Uladzislau Zhauniarovich <uladzislau.zhauniarovich@gmail.com>
+
+On 02/11/2026 17:16, syzbot wrote:
+> Writing raid_disks, layout, or chunk_size on a running array records a
+> reshape request in struct mddev without starting the reshape until
+> sync_action is set to "reshape". Because super_90_sync() and super_1_sync()
+> only write reshape metadata to the superblock when reshape_position !=
+> MaxSector, a never-started reshape exists purely in memory. Dropping the
+> request when the array is stopped matches the state that would be loaded on
+> disk reassembly.
+> 
+> A minimal reproduction sequence is:
+> 
+>   echo 4 > /sys/block/md0/md/raid_disks
+>   echo inactive > /sys/block/md0/md/array_state
+>   echo active > /sys/block/md0/md/array_state
+> 
+> Modifying layout or chunk_size behaves similarly. When restarting the
+> array, raid5_run() previously assumed no reshape was taking place because
+> reshape_position was MaxSector and triggered a kernel BUG due to
+> delta_disks != 0:
+> 
+> kernel BUG at drivers/md/raid5.c:8117!
+> Oops: invalid opcode: 0000 [#1] SMP
+> RIP: 0010:raid5_run+0x2550/0x2560 drivers/md/raid5.c:8117
+> Call Trace:
+>  <TASK>
+>  md_run+0xc3d/0x1cd0 drivers/md/md.c:6779
+>  do_md_run+0x35/0x720 drivers/md/md.c:6880
+>  array_state_store+0x958/0xe90
+>  md_attr_store+0x3b7/0x640 drivers/md/md.c:6158
+>  kernfs_fop_write_iter+0x3a4/0x540 fs/kernfs/file.c:345
+>  vfs_write+0x612/0xba0 fs/read_write.c:687
+>  ksys_write+0x150/0x270 fs/read_write.c:739
+>  do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+>  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>  </TASK>
+> 
+> Commit 0669c7dbd1d3 replaced the BUG_ON in raid5_run() with an -EINVAL
+> check, but the underlying issue remained: raid5 fails to restart with
+> -EINVAL, and raid10 silently returns incorrect data due to unchecked
+> new_layout and new_chunk_sectors in setup_conf().
+> 
+> Drop the never-started reshape request in __md_stop() if no reshape is
+> currently running (mddev->reshape_position == MaxSector). Reset delta_disks
+> and reshape_backwards to 0, restore new_level, new_layout, and
+> new_chunk_sectors to level, layout, and chunk_sectors, and reset each
+> rdev's new_data_offset to data_offset. If a reshape is actively in progress
+> (mddev->reshape_position != MaxSector), the parameters are preserved so the
+> reshape can resume when the array is restarted.
+> 
+> Fixes: 9e653b6342c9 ("[PATCH] md: Set/get state of array via sysfs")
+> Assisted-by: Gemini:gemini-4-argon Gemini:gemini-3.8-flash syzbot
+> Reported-by: syzbot+1f5a7de91d547763f4c8@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=1f5a7de91d547763f4c8
+> Link: https://syzkaller.appspot.com/ai_job?id=aed1664c-30b2-4920-81b4-ed098ec14e92
+> To: <linux-raid@vger.kernel.org>
+> To: "Song Liu" <song@kernel.org>
+> To: "Yu Kuai" <yukuai@fygo.io>
+> To: "NeilBrown" <neilb@suse.de>
+> Cc: <linux-kernel@vger.kernel.org>
+> Cc: "Li Nan" <magiclinan@didiglobal.com>
+> Cc: "Xiao Ni" <xiao@kernel.org>
+> 
+> ---
+> v2:
+> - Reset rdev->new_data_offset to rdev->data_offset for all member devices.
+> - Add an explanatory comment in __md_stop().
+> - Update commit subject and description per reviewer feedback.
+> 
+> v1:
+> https://lore.kernel.org/all/0bbc5530-3021-49ec-a8cd-a006c2639d53@mail.kernel.org/T/
+> ---
+> diff --git a/drivers/md/md.c b/drivers/md/md.c
+> index 680b34a63..011a5ea54 100644
+> --- a/drivers/md/md.c
+> +++ b/drivers/md/md.c
+> @@ -7084,6 +7084,7 @@ static void mddev_detach(struct mddev *mddev)
+>  static void __md_stop(struct mddev *mddev)
+>  {
+>  	struct md_personality *pers = mddev->pers;
+> +	struct md_rdev *rdev;
+>  
+>  	mddev_detach(mddev);
+>  	md_bitmap_destroy(mddev);
+> @@ -7095,6 +7096,21 @@ static void __md_stop(struct mddev *mddev)
+>  	mddev->private = NULL;
+>  	put_pers(pers);
+>  	clear_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
+> +
+> +	/*
+> +	 * A reshape requested on a running array exists only in memory before
+> +	 * sync_action=reshape and should be dropped with the personality, while
+> +	 * a started reshape (reshape_position != MaxSector) is preserved.
+> +	 */
+> +	if (mddev->reshape_position == MaxSector) {
+> +		mddev->delta_disks = 0;
+> +		mddev->reshape_backwards = 0;
+> +		mddev->new_level = mddev->level;
+> +		mddev->new_layout = mddev->layout;
+> +		mddev->new_chunk_sectors = mddev->chunk_sectors;
+> +		rdev_for_each(rdev, mddev)
+> +			rdev->new_data_offset = rdev->data_offset;
+> +	}
+>  }
+>  
+>  void md_stop(struct mddev *mddev)
+> 
+> 
+> base-commit: df2908090cda368b01ff43709f51890076c56157
 
