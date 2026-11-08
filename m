@@ -1,49 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.70
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794007379;
-	b=BokpbL2lY8wxyhd3XYK/q1q47gz/PFQT46tgF8vIQFxC6VnPG/AnRYSi+2fVDBC1G8uP
-	 QD+d9vP1FOPdvgkokn1Y2kOYiaoUQoljjaLroIeGgoHBQFrCU2cdwq++TKG5ZyQXkTEob
-	 BHhEegg5oWCPvCaF6h5XBYZ3Ndmux+nRyEKelfrmkhi90gVOT5mCPkg5e1lR88/c6lDo1
-	 oKpfC2kls88jEojrozMSmZMMQMWOQhMFP/16quESTeeaxfR3AFIKeFM474OE3eB+9D7Ey
-	 EteOxrzgxvVzn8b/eu8T+lZBXI6IqgdxdBCWrWxbj3uerqLMp8xWDXx5jZZL4mrw54Q==
+	t=1794160711;
+	b=UxDu3xpe5zFmCofq6G4/hRbA4IUW7V1fWBqO95TQBIPwdhY60MjtMjGuhHFecBG3Jv/6
+	 CiczSuC93xJP7BZuEJ0D2erO4pHxZOyS5IuJQYEVbzEEXf0b044Hp2XIU8vE//ejfs174
+	 kBnvHnX2CzjGL3IzEvcQfoY+o6JMKmViTPJKIcDkhBCza+qrFynHpnv0blgXh/b3lbjxM
+	 lM8iQdOgseTvfgMVvRgY48v57gzC5tvxdi6wDDsEbMndHmRtk93t1G/NNSBhg0BErcsNA
+	 hT5k45DWaQ6o/fzTW17A8hH+gLt11Md188MU/3a2HCC488/i98eHT7uvnucif/ehSLA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794007379;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:Date;
-	bh=a613eMMKWFth7sgw3fKSigJfkmp0bZyTI6vpsKsRXmY=;
-	b=1v8L4y7Q73j1Eq5sY+yAeuvL+MUxS+msFFyqvIJUKiznrjxhLfGATtpayjiVh44Sp2oJ
-	 /BRu0Jk4CJql4lV4y0U9d82FDS/8cXRwkQJqDKiDY+YU5Eo0wZpbnDPw4e6KUY4AAwdeC
-	 GLPr92f4eG6dvC0mkZlGGa7+LMYZwWXOZb0vyltwCKeJP5nlH4OoGv0OfCIE8Koo8JQsY
-	 z6R/4qi+84RhXQOlI1fxTj7HCK7gpeKMe5bBFOtH/OgEKiEpv13ezMnVAzAt2jj/qKlZ6
-	 5FeirbTorZxQ+9aV5xIvbIGe2HDRDXMtt4+BzyR6VAeIQaQmJXL61OyWxPOwi2xX2MQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794160711;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
+	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
+	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=c5n+myrHXs0NZXn4VUopm3a1QAAJgJ/iDtzdgnakzG8=;
+	b=xAJTyVNWBCKStaw97gG4Bt0Wnz6lX7Ag2DQW1btGgM+/XhSEYcysFyZqKR08KKH1furr
+	 /C2+6T1FYt1KoqZ3eiZOQRFnIxw0eB1rS0k7DN/LlynoVQ7bNtWOUD4GFATfDGEhYgnUm
+	 TAq6CPv3PROfbgExT9x580D1cPCxu/NlZM2xIkvKmcJuvVbRHsqn6/edzecNG5klkQ6hG
+	 fFY6S+9yMvKDAXWkzF57yc48+KHemnEs8pnIVfscqHRbH+mdmv9VGxyegLNVRNPqQES7U
+	 IrMJufBoiSwxU1MuXizYIMpguiyZ/dM53AdN94JTqp7WyQLPwaTYXXebapw2L2Mgdxw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MXmZ2qKC;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=fail header.from=syzkaller.appspotmail.com;
+	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
+	arc=none smtp.remote-ip=209.85.160.70
+Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com [209.85.160.70])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 41E8B606A334
-	for <syzbot@lists.linux.dev>; Fri,  6 Nov 2026 23:22:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MXmZ2qKC
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id C421B1F008A5;
-	Fri,  6 Nov 2026 23:22:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794007378;
-	bh=a613eMMKWFth7sgw3fKSigJfkmp0bZyTI6vpsKsRXmY=;
-	h=From:To:Cc:Subject:Date;
-	b=MXmZ2qKC9WIsAtivK1OBfk9ide2rz+4oynIavhFqAEc0uZQ/frNCjLAUpiR1ywr1i
-	 NmweaXnSnQ7ejiSTYPxRPFRbhWVYuauF/53FSEFnai19rmgcqk7ahqBKWyz2g/Y7TH
-	 hOvNbcyq5H0ozt8d9qOIRzaII0R/l5RTWkqZVSEyexbZDMtLDu6f6e1VflbnuSgtQb
-	 cDL5/+vVR/gY956r+6TZxb+P/mdfPGDTIN0D/W1P8ohVFIK9UldZyu5fThCGuieRed
-	 j6JTa7E5VJ0dvLxHE7xpKJh02C4+/qT/yPsLJ5oto16/voJNs6pWlTiJzXxPMdSpsu
-	 jhsAvtURs8l4g==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] sched/core: Fix DL server picks and forced-idle accounting
-Message-ID: <66907bc3-07d0-4208-b1cb-6552ed2887c0@mail.kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D63F606A31C
+	for <syzbot@lists.linux.dev>; Sun,  8 Nov 2026 17:58:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0D63F606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-448d51840c4so100227fac.1
+        for <syzbot@lists.linux.dev>; Sun, 08 Nov 2026 09:58:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794160710; x=1794765510;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=c5n+myrHXs0NZXn4VUopm3a1QAAJgJ/iDtzdgnakzG8=;
+        b=fprVC7XI2+YGJxsaEaRIJC77aHvkqLQV5hly0lhhnnHJwY1hrGmsIsgumV8IUSwzCn
+         LHdvmAPtShySpzQdwIlmO455FnMz3k943uZSnWPNYFibhkk/9B50qYWZ4QyOmz9r0DKC
+         Ll6+wdU0KeKJB/rQH/TmTNmu6N+TMl5/GZ++cY/yQTcaSyFebdURIh4A2d/IWg846lWU
+         9FGZ42XNBZDZUrYe9bKIaFKaxjCUiiEkx2I2i8hpe7LpMOnjR1DFRD+S+RiWybPKzpG2
+         HqexGltljKOoSPUaro/uIyNhk+Kzfcp3Q538NbMmbvbnT+eypeMTMEsYSzvKA+swKIME
+         jg1A==
+X-Gm-Message-State: APuU4Z9mQQliyd8eBEGmqPGFcjLk795S2ROUbjT6cuLFbmH7ab3iZw3V
+	s8Y5Ey5mTUJq4TScm+oKvGyn3We6LvdaqyWySp0/6dlOYTlcSyfGFmiDJ1popksufGcfLyLNx9n
+	0kW8TaYEtO1isYEyz/exumB2WoEKooph9lKGRNgeLAJIUAEHl+4reB6fg4pA=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -53,237 +57,426 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri,  6 Nov 2026 23:22:58 +0000 (UTC)
+X-Received: by 2002:a05:6808:4497:b0:564:48f3:dfa8 with SMTP id
+ 5614622812f47-56814647a8amr1163675b6e.11.1794160709983; Sun, 08 Nov 2026
+ 09:58:29 -0800 (PST)
+Date: Sun, 08 Nov 2026 09:58:29 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6af0b845.4dd4714a.f8d02.0018.GAE@google.com>
+Subject: [moderation/CI] Re: configfs: fix slab-UAF Write in config_item_put
+From: syzbot ci <syzbot+ci93000cdc57c52911@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-When core scheduling is enabled and a real-time task (such as SCHED_RR or
-SCHED_FIFO) with a core cookie runs on one SMT sibling, while non-cookied
-CFS tasks (such as the rcu_preempt kthread with cookie 0) are queued on
-another sibling, the deadline server (rq->fair_server) fails to activate
-and boost the CFS tasks. Because RT bandwidth throttling is disabled by
-default, starvation prevention of CFS tasks relies entirely on the deadline
-server. Under this scenario, the sibling CPU running the non-cookied CFS
-tasks is forced into idle, and the CFS tasks starve indefinitely, resulting
-in RCU preempt stalls:
+syzbot ci has tested the following series
 
-rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-rcu: 	(detected by 1, t=10502 jiffies, g=30225, q=109 ncpus=2)
-rcu: rcu_preempt kthread starved for 10477 jiffies! g30225 f0x2
-RCU_GP_WAIT_FQS(5) ->state=R ->cpu=1
-rcu: RCU grace-period kthread stack dump:
-task:rcu_preempt     state:R  running task     stack:27496 pid:16
-tgid:16    ppid:2      task_flags:0x208040 flags:0x00080000
+[v3] configfs: fix slab-UAF Write in config_item_put
+https://lore.kernel.org/all/20261105165055.362-1-drifabdelmalekmohamedsaid@=
+gmail.com
+* [PATCH v3] configfs: fix slab-UAF Write in config_item_put
+
+and found the following issues:
+* KASAN: slab-use-after-free Write in config_item_get
+* kernel BUG in config_item_get
+* kernel BUG in configfs_symlink
+
+Full report is available here:
+https://ci.syzbot.org/series/6e7e3ace-c083-43ff-9d6c-4b65ef15bd2f
+
+***
+
+KASAN: slab-use-after-free Write in config_item_get
+
+tree:      vfs
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs=
+.git
+base:      691edd89507f8977eb8831892c3b460edc79d73c
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/b34863a5-8646-4b81-a3b6-8d7c722db7f=
+8/config
+syz repro: https://ci.syzbot.org/findings/4586cba9-fdc4-48a1-bbe4-43b477a6d=
+2cf/syz_repro
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+BUG: KASAN: slab-use-after-free in instrument_atomic_read_write include/lin=
+ux/instrumented.h:112 [inline]
+BUG: KASAN: slab-use-after-free in atomic_fetch_add_relaxed include/linux/a=
+tomic/atomic-instrumented.h:252 [inline]
+BUG: KASAN: slab-use-after-free in __refcount_add include/linux/refcount.h:=
+283 [inline]
+BUG: KASAN: slab-use-after-free in __refcount_inc include/linux/refcount.h:=
+366 [inline]
+BUG: KASAN: slab-use-after-free in refcount_inc include/linux/refcount.h:38=
+3 [inline]
+BUG: KASAN: slab-use-after-free in kref_get include/linux/kref.h:45 [inline=
+]
+BUG: KASAN: slab-use-after-free in config_item_get+0x26/0x90 fs/configfs/it=
+em.c:104
+Write of size 4 at addr ffff8881191a501c by task syz.1.22/5911
+
+CPU: 0 UID: 0 PID: 5911 Comm: syz.1.22 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
 Call Trace:
  <TASK>
- context_switch kernel/sched/core.c:5583 [inline]
- __schedule+0x17f9/0x5760 kernel/sched/core.c:7382
- schedule+0x164/0x2b0 kernel/sched/core.c:7474
- schedule_timeout+0x152/0x2c0 kernel/time/sleep_timeout.c:99
- rcu_gp_fqs_loop+0x30c/0x1230 kernel/rcu/tree.c:2122
- rcu_gp_kthread+0x9c/0x340 kernel/rcu/tree.c:2330
- kthread+0x38b/0x480 kernel/kthread.c:436
- ret_from_fork+0x514/0xb70 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ print_address_description+0x55/0x1e0 mm/kasan/report.c:378
+ print_report+0x58/0x70 mm/kasan/report.c:482
+ kasan_report+0x117/0x150 mm/kasan/report.c:595
+ check_region_inline mm/kasan/generic.c:-1 [inline]
+ kasan_check_range+0x264/0x2c0 mm/kasan/generic.c:200
+ instrument_atomic_read_write include/linux/instrumented.h:112 [inline]
+ atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:252 [i=
+nline]
+ __refcount_add include/linux/refcount.h:283 [inline]
+ __refcount_inc include/linux/refcount.h:366 [inline]
+ refcount_inc include/linux/refcount.h:383 [inline]
+ kref_get include/linux/kref.h:45 [inline]
+ config_item_get+0x26/0x90 fs/configfs/item.c:104
+ configfs_get_config_item fs/configfs/configfs_internal.h:127 [inline]
+ configfs_symlink+0x17d/0xa60 fs/configfs/symlink.c:167
+ vfs_symlink+0x18e/0x370 fs/namei.c:5812
+ filename_symlinkat+0x1a5/0x430 fs/namei.c:5837
+ __do_sys_symlinkat fs/namei.c:5857 [inline]
+ __se_sys_symlinkat+0x4e/0x2b0 fs/namei.c:5852
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7ffbd0f9fb19
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffbd1dfb028 EFLAGS: 00000246 ORIG_RAX: 000000000000010a
+RAX: ffffffffffffffda RBX: 00007ffbd1225fa0 RCX: 00007ffbd0f9fb19
+RDX: 0000200000000780 RSI: ffffffffffffff9c RDI: 0000200000000740
+RBP: 00007ffbd1037b70 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffbd1226038 R14: 00007ffbd1225fa0 R15: 00007ffeea8f6108
  </TASK>
 
-Two interacting issues in core scheduling prevent the deadline server from
-mitigating this starvation.
+Allocated by task 5903:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ poison_kmalloc_redzone mm/kasan/common.c:409 [inline]
+ __kasan_kmalloc+0x93/0xb0 mm/kasan/common.c:426
+ kasan_kmalloc include/linux/kasan.h:263 [inline]
+ __kmalloc_cache_noprof+0x31c/0x600 mm/slub.c:5680
+ _kmalloc_noprof include/linux/slab.h:991 [inline]
+ _kzalloc_noprof include/linux/slab.h:1312 [inline]
+ config_desc_make+0x23e/0x620 drivers/usb/gadget/configfs.c:730
+ configfs_mkdir+0x4f6/0x9e0 fs/configfs/dir.c:1369
+ vfs_mkdir+0x411/0x660 fs/namei.c:5428
+ filename_mkdirat+0x284/0x550 fs/namei.c:5461
+ __do_sys_mkdirat fs/namei.c:5482 [inline]
+ __se_sys_mkdirat+0x35/0x150 fs/namei.c:5479
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
 
-First, when a sibling CPU enters forced idle because its runnable tasks do
-not match the core cookie of the winning task, rq->curr runs rq->idle while
-rq->nr_running remains positive. On every tick, update_curr_idle()
-unconditionally calls dl_server_update_idle(&rq->fair_server, delta_exec).
-Because fair_server operates in defer mode (dl_se->dl_defer == 1),
-update_curr_dl_se() subtracts forced-idle runtime from the server. Once the
-server's runtime is consumed, dl_runtime_exceeded() checks idle_rq(rq).
-Because rq->nr_running > 0, idle_rq() evaluates to false, causing
-update_curr_dl_se() to cancel the replenishment timer (dl_se->dl_timer),
-advance the deadline and period by one second via
-replenish_dl_new_period(), and restart the timer another 950ms in the
-future. Repeated every 50ms of forced idle, this repeatedly pushes the
-zero-laxity replenishment timer into the future, preventing fair_server
-from ever firing and enqueuing onto dl_rq.
+Freed by task 5908:
+ kasan_save_stack mm/kasan/common.c:57 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:78
+ kasan_save_free_info+0x40/0x50 mm/kasan/generic.c:584
+ poison_slab_object mm/kasan/common.c:264 [inline]
+ __kasan_slab_free+0x5c/0x80 mm/kasan/common.c:296
+ kasan_slab_free include/linux/kasan.h:235 [inline]
+ slab_free_hook mm/slub.c:2780 [inline]
+ slab_free mm/slub.c:6630 [inline]
+ kfree+0x1c5/0x650 mm/slub.c:6923
+ config_item_cleanup fs/configfs/item.c:128 [inline]
+ config_item_release+0x13a/0x2d0 fs/configfs/item.c:137
+ configfs_symlink+0x7b4/0xa60 fs/configfs/symlink.c:240
+ vfs_symlink+0x18e/0x370 fs/namei.c:5812
+ filename_symlinkat+0x1a5/0x430 fs/namei.c:5837
+ __do_sys_symlinkat fs/namei.c:5857 [inline]
+ __se_sys_symlinkat+0x4e/0x2b0 fs/namei.c:5852
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
 
-Second, commit bd9bbc96e835 ("sched: Rework dl_server") stopped setting
-p->dl_server during pick_task(), deferring its assignment until
-put_prev_set_next_task(). However, __task_prio() and prio_less() continued
-to inspect p->dl_server. During pick_next_task(), when fair_server picks a
-CFS task, the DL server is staged in rq->dl_server (and rq->core_dl_server)
-while p->dl_server remains NULL. Consequently, __task_prio() evaluates the
-boosted CFS candidate as standard fair priority (119) rather than deadline
-priority (-1). The competing RT task on the sibling CPU wins core-wide
-selection, and the fair candidate is discarded during cookie matching.
-Furthermore, pick_next_task() unconditionally cleared rq_i->core_dl_server
-even when cookie matching succeeded, failed to clear rq_i->dl_server when
-cookie matching failed (leaking it to fallback idle or matched tasks), and
-failed to update rq_i->donor->dl_server when a sibling CPU was already
-running rq_i->core_pick.
+The buggy address belongs to the object at ffff8881191a5000
+ which belongs to the cache kmalloc-1k of size 1024
+The buggy address is located 28 bytes inside of
+ freed 1024-byte region [ffff8881191a5000, ffff8881191a5400)
 
-Fix these problems by:
-- Checking idle_rq() before calling dl_server_update_idle() in
-update_curr_idle() and inside dl_server_update_idle(). During forced idle,
-tasks are queued waiting to run, so forced-idle time is not charged against
-deferred DL servers, allowing their zero-laxity timers to expire on
-schedule.
-- Introducing task_dl_server() to check whether a candidate task is the
-active pick of an in-flight core selection (rq->core->core_pick_in_flight
-&& rq->core_pick == p), returning rq->core_dl_server. Updating
-__task_prio() and prio_less() to use task_dl_server() ensures DL server
-picks are evaluated with deadline priority during core selection without
-disturbing static core tree ordering.
-- Correcting DL server lifecycle tracking in core scheduling: initializing
-rq->core_pick and rq->core_dl_server to NULL in pick_task(), clearing
-rq_i->core_dl_server and rq_i->dl_server only when cookie matching fails,
-and updating rq_i->donor->dl_server and clearing rq_i->dl_server when a
-sibling is already running rq_i->core_pick.
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1191a0
+head: order:3 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+flags: 0x17ff00000000040(head|node=3D0|zone=3D2|lastcpupid=3D0x7ff)
+page_type: f5(slab)
+raw: 017ff00000000040 ffff888100041dc0 dead000000000100 dead000000000122
+raw: 0000000000000000 0000000000100010 00000000f5000000 0000000000000000
+head: 017ff00000000040 ffff888100041dc0 dead000000000100 dead000000000122
+head: 0000000000000000 0000000000100010 00000000f5000000 0000000000000000
+head: 017ff00000000003 fffffffffffffe01 00000000ffffffff 00000000ffffffff
+head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000008
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd2820(GF=
+P_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5697,=
+ tgid 5697 (kworker/u8:3), ts 73161807282
+ set_page_owner include/linux/page_owner.h:33 [inline]
+ post_alloc_hook+0x1f9/0x250 mm/page_alloc.c:1856
+ prep_new_page mm/page_alloc.c:1864 [inline]
+ get_page_from_freelist+0x220f/0x2280 mm/page_alloc.c:3935
+ __alloc_frozen_pages_noprof+0x1fe/0x410 mm/page_alloc.c:5444
+ alloc_slab_page mm/slub.c:3384 [inline]
+ allocate_slab+0x7d/0x5e0 mm/slub.c:3499
+ new_slab mm/slub.c:3550 [inline]
+ refill_objects+0x2d5/0x350 mm/slub.c:7539
+ refill_sheaf mm/slub.c:2917 [inline]
+ __pcs_replace_empty_main+0x2c8/0x6c0 mm/slub.c:4811
+ alloc_from_pcs mm/slub.c:4887 [inline]
+ slab_alloc_node mm/slub.c:5021 [inline]
+ __do_kmalloc_node mm/slub.c:5530 [inline]
+ __kmalloc_noprof+0x476/0x710 mm/slub.c:5556
+ _kmalloc_noprof include/linux/slab.h:995 [inline]
+ _kzalloc_noprof include/linux/slab.h:1312 [inline]
+ neigh_alloc net/core/neighbour.c:525 [inline]
+ ___neigh_create+0x6da/0x21f0 net/core/neighbour.c:659
+ ip6_finish_output2+0xe06/0x1460 net/ipv6/ip6_output.c:130
+ NF_HOOK_COND include/linux/netfilter.h:314 [inline]
+ ip6_output+0x337/0x540 net/ipv6/ip6_output.c:248
+ dst_output include/net/dst.h:472 [inline]
+ NF_HOOK include/linux/netfilter.h:325 [inline]
+ ndisc_send_skb+0xcb2/0x1650 net/ipv6/ndisc.c:513
+ ndisc_send_ns+0xd7/0x160 net/ipv6/ndisc.c:672
+ addrconf_dad_work+0xa8d/0x15c0 net/ipv6/addrconf.c:4343
+ process_one_work kernel/workqueue.c:3495 [inline]
+ process_scheduled_works+0xc3d/0x1630 kernel/workqueue.c:3578
+ worker_thread+0xa47/0xfb0 kernel/workqueue.c:3659
+ kthread+0x38b/0x480 kernel/kthread.c:436
+page last free pid 5696 tgid 5696 ts 63917357465 stack trace:
+ reset_page_owner include/linux/page_owner.h:26 [inline]
+ __free_pages_prepare mm/page_alloc.c:1403 [inline]
+ __free_frozen_pages+0xc97/0xd90 mm/page_alloc.c:2954
+ __slab_free+0x269/0x2c0 mm/slub.c:5926
+ qlink_free mm/kasan/quarantine.c:163 [inline]
+ qlist_free_all+0x99/0x100 mm/kasan/quarantine.c:179
+ kasan_quarantine_reduce+0x148/0x160 mm/kasan/quarantine.c:286
+ __kasan_slab_alloc+0x22/0x80 mm/kasan/common.c:361
+ kasan_slab_alloc include/linux/kasan.h:253 [inline]
+ slab_post_alloc_hook mm/slub.c:4720 [inline]
+ slab_alloc_node mm/slub.c:5033 [inline]
+ kmem_cache_alloc_noprof+0x2b4/0x600 mm/slub.c:5047
+ __proc_create+0x55d/0xad0 fs/proc/generic.c:462
+ proc_create_reg fs/proc/generic.c:606 [inline]
+ proc_create_data+0xa5/0x190 fs/proc/generic.c:620
+ nfs_net_init+0x1a7/0x290 fs/nfs/inode.c:2777
+ ops_init+0x35d/0x5d0 net/core/net_namespace.c:137
+ setup_net+0x118/0x350 net/core/net_namespace.c:443
+ copy_net_ns+0x536/0x770 net/core/net_namespace.c:584
+ create_new_namespaces+0x3f0/0x6b0 kernel/nsproxy.c:132
+ unshare_nsproxy_namespaces+0x144/0x190 kernel/nsproxy.c:234
+ ksys_unshare+0x532/0x890 kernel/fork.c:3320
+ __do_sys_unshare kernel/fork.c:3386 [inline]
+ __se_sys_unshare kernel/fork.c:3384 [inline]
+ __x64_sys_unshare+0x38/0x50 kernel/fork.c:3384
 
-Fixes: bd9bbc96e835 ("sched: Rework dl_server")
-Assisted-by: Gemini:gemini-4-argon Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+9431dc0c0741cff46a99@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=9431dc0c0741cff46a99
-Link: https://syzkaller.appspot.com/ai_job?id=b345cb31-2e9f-456a-92c3-61c605b1f4cd
-To: "Juri Lelli" <juri.lelli@redhat.com>
-To: <linux-kernel@vger.kernel.org>
-To: "Ingo Molnar" <mingo@redhat.com>
-To: "Peter Zijlstra" <peterz@infradead.org>
-To: "Vincent Guittot" <vincent.guittot@linaro.org>
-Cc: "Ben Segall" <bsegall@google.com>
-Cc: "Dietmar Eggemann" <dietmar.eggemann@arm.com>
-Cc: "K Prateek Nayak" <kprateek.nayak@amd.com>
-Cc: "Mel Gorman" <mgorman@suse.de>
-Cc: "Steven Rostedt" <rostedt@goodmis.org>
-Cc: "Valentin Schneider" <vschneid@redhat.com>
+Memory state around the buggy address:
+ ffff8881191a4f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff8881191a4f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff8881191a5000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                            ^
+ ffff8881191a5080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff8881191a5100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+
+***
+
+kernel BUG in config_item_get
+
+tree:      vfs
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs=
+.git
+base:      691edd89507f8977eb8831892c3b460edc79d73c
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/b34863a5-8646-4b81-a3b6-8d7c722db7f=
+8/config
+syz repro: https://ci.syzbot.org/findings/1475de5c-5602-4f7c-97d8-fa318d396=
+9f7/syz_repro
+
+refcount_t: addition on 0; use-after-free.
+------------[ cut here ]------------
+kernel BUG at lib/refcount.c:34!
+Oops: invalid opcode: 0000 [#1] SMP KASAN PTI
+CPU: 0 UID: 0 PID: 5904 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:refcount_warn_saturate+0xf0/0x110 lib/refcount.c:34
+Code: 80 c1 03 38 c1 0f 8c 6a ff ff ff 4c 89 f7 e8 a7 10 51 fd e9 5d ff ff =
+ff e8 fd c2 d9 fc 48 c7 c7 a0 98 8c 8c e8 e1 73 38 fc 90 <0f> 0b e8 e9 c2 d=
+9 fc 48 c7 c7 20 99 8c 8c e8 cd 73 38 fc 90 0f 0b
+RSP: 0018:ffffc900030bfc68 EFLAGS: 00010246
+RAX: 000000000000002a RBX: 0000000000000002 RCX: ca30be1f7752be00
+RDX: 0000000000000000 RSI: 8000000000000001 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffc900030bf9e7 R09: 1ffff92000617f3c
+R10: dffffc0000000000 R11: fffff52000617f3d R12: 1ffff1102365c80a
+R13: ffff88811776d218 R14: ffff888117f184b4 R15: ffff8881ba75a598
+FS:  00007fcbbc6696c0(0000) GS:ffff88818be0d000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fcbbb6716a0 CR3: 0000000117a68000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ __refcount_add include/linux/refcount.h:-1 [inline]
+ __refcount_inc include/linux/refcount.h:366 [inline]
+ refcount_inc include/linux/refcount.h:383 [inline]
+ kref_get include/linux/kref.h:45 [inline]
+ config_item_get+0x88/0x90 fs/configfs/item.c:104
+ configfs_get_config_item fs/configfs/configfs_internal.h:127 [inline]
+ configfs_symlink+0x17d/0xa60 fs/configfs/symlink.c:167
+ vfs_symlink+0x18e/0x370 fs/namei.c:5812
+ filename_symlinkat+0x1a5/0x430 fs/namei.c:5837
+ __do_sys_symlinkat fs/namei.c:5857 [inline]
+ __se_sys_symlinkat+0x4e/0x2b0 fs/namei.c:5852
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fcbbb79fb19
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fcbbc669028 EFLAGS: 00000246 ORIG_RAX: 000000000000010a
+RAX: ffffffffffffffda RBX: 00007fcbbba25fa0 RCX: 00007fcbbb79fb19
+RDX: 0000200000000840 RSI: ffffffffffffff9c RDI: 0000200000000800
+RBP: 00007fcbbb837b70 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fcbbba26038 R14: 00007fcbbba25fa0 R15: 00007ffd984fbca8
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:refcount_warn_saturate+0xf0/0x110 lib/refcount.c:34
+Code: 80 c1 03 38 c1 0f 8c 6a ff ff ff 4c 89 f7 e8 a7 10 51 fd e9 5d ff ff =
+ff e8 fd c2 d9 fc 48 c7 c7 a0 98 8c 8c e8 e1 73 38 fc 90 <0f> 0b e8 e9 c2 d=
+9 fc 48 c7 c7 20 99 8c 8c e8 cd 73 38 fc 90 0f 0b
+RSP: 0018:ffffc900030bfc68 EFLAGS: 00010246
+RAX: 000000000000002a RBX: 0000000000000002 RCX: ca30be1f7752be00
+RDX: 0000000000000000 RSI: 8000000000000001 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffc900030bf9e7 R09: 1ffff92000617f3c
+R10: dffffc0000000000 R11: fffff52000617f3d R12: 1ffff1102365c80a
+R13: ffff88811776d218 R14: ffff888117f184b4 R15: ffff8881ba75a598
+FS:  00007fcbbc6696c0(0000) GS:ffff88818be0d000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fcbbb6716a0 CR3: 0000000117a68000 CR4: 00000000000006f0
+
+
+***
+
+kernel BUG in configfs_symlink
+
+tree:      vfs
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/vfs/vfs=
+.git
+base:      691edd89507f8977eb8831892c3b460edc79d73c
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/b34863a5-8646-4b81-a3b6-8d7c722db7f=
+8/config
+AI triage: https://ci.syzbot.org/findings/124f4628-8711-4fab-bb9a-b0f7ba165=
+6ba/triage_trajectory
+
+refcount_t: underflow; use-after-free.
+------------[ cut here ]------------
+kernel BUG at lib/refcount.c:37!
+Oops: invalid opcode: 0000 [#1] SMP KASAN PTI
+CPU: 1 UID: 0 PID: 5815 Comm: syz.2.17 Not tainted syzkaller #0 PREEMPT(ful=
+l)=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:refcount_warn_saturate+0x104/0x110
+Code: 5d ff ff ff e8 fd c2 d9 fc 48 c7 c7 a0 98 8c 8c e8 e1 73 38 fc 90 0f =
+0b e8 e9 c2 d9 fc 48 c7 c7 20 99 8c 8c e8 cd 73 38 fc 90 <0f> 0b 66 2e 0f 1=
+f 84 00 00 00 00 00 90 90 90 90 90 90 90 90 90 90
+RSP: 0018:ffffc90006787c88 EFLAGS: 00010246
+RAX: 0000000000000026 RBX: 0000000000000003 RCX: 7d2d66e1f00cde00
+RDX: 0000000000000000 RSI: 8000000000000000 RDI: 0000000000000000
+RBP: ffffc90006787d88 R08: ffffc90006787a07 R09: 1ffff92000cf0f40
+R10: dffffc0000000000 R11: fffff52000cf0f41 R12: 1ffff110228fe2e2
+R13: 00000000fffffffe R14: ffff88816f8584b4 R15: 1ffff92000cf0fa0
+FS:  00007f3b9041d6c0(0000) GS:ffff8882a780d000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007feda95bb440 CR3: 0000000110044000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ configfs_symlink+0x7b4/0xa60
+ vfs_symlink+0x18e/0x370
+ filename_symlinkat+0x1a5/0x430
+ __se_sys_symlinkat+0x4e/0x2b0
+ do_syscall_64+0x166/0x520
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f3b8f59fb19
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 =
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f3b9041d028 EFLAGS: 00000246 ORIG_RAX: 000000000000010a
+RAX: ffffffffffffffda RBX: 00007f3b8f826090 RCX: 00007f3b8f59fb19
+RDX: 0000200000000840 RSI: ffffffffffffff9c RDI: 0000200000000800
+RBP: 00007f3b8f637b70 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f3b8f826128 R14: 00007f3b8f826090 R15: 00007ffcd3b51e38
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:refcount_warn_saturate+0x104/0x110
+Code: 5d ff ff ff e8 fd c2 d9 fc 48 c7 c7 a0 98 8c 8c e8 e1 73 38 fc 90 0f =
+0b e8 e9 c2 d9 fc 48 c7 c7 20 99 8c 8c e8 cd 73 38 fc 90 <0f> 0b 66 2e 0f 1=
+f 84 00 00 00 00 00 90 90 90 90 90 90 90 90 90 90
+RSP: 0018:ffffc90006787c88 EFLAGS: 00010246
+RAX: 0000000000000026 RBX: 0000000000000003 RCX: 7d2d66e1f00cde00
+RDX: 0000000000000000 RSI: 8000000000000000 RDI: 0000000000000000
+RBP: ffffc90006787d88 R08: ffffc90006787a07 R09: 1ffff92000cf0f40
+R10: dffffc0000000000 R11: fffff52000cf0f41 R12: 1ffff110228fe2e2
+R13: 00000000fffffffe R14: ffff88816f8584b4 R15: 1ffff92000cf0fa0
+FS:  00007f3b9041d6c0(0000) GS:ffff88818be0d000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fd9936587f0 CR3: 0000000110044000 CR4: 00000000000006f0
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 04b62c16f..1f34d2ce0 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -195,13 +195,24 @@ __read_mostly int scheduler_running;
- 
- DEFINE_STATIC_KEY_FALSE(__sched_core_enabled);
- 
-+static inline const struct sched_dl_entity *
-+task_dl_server(const struct task_struct *p)
-+{
-+	const struct rq *rq = task_rq(p);
-+
-+	if (rq->core->core_pick_in_flight && rq->core_pick == p)
-+		return rq->core_dl_server;
-+
-+	return NULL;
-+}
-+
- /* kernel prio, less is more */
- static inline int __task_prio(const struct task_struct *p)
- {
- 	if (p->sched_class == &stop_sched_class) /* trumps deadline */
- 		return -2;
- 
--	if (p->dl_server)
-+	if (task_dl_server(p))
- 		return -1; /* deadline */
- 
- 	if (rt_or_dl_prio(p->prio))
-@@ -239,18 +250,13 @@ static inline bool prio_less(const struct task_struct *a,
- 	if (pa == -1) { /* dl_prio() doesn't work because of stop_class above */
- 		const struct sched_dl_entity *a_dl, *b_dl;
- 
--		a_dl = &a->dl;
--		/*
--		 * Since,'a' and 'b' can be CFS tasks served by DL server,
--		 * __task_prio() can return -1 (for DL) even for those. In that
--		 * case, get to the dl_server's DL entity.
--		 */
--		if (a->dl_server)
--			a_dl = a->dl_server;
-+		a_dl = task_dl_server(a);
-+		if (!a_dl)
-+			a_dl = &a->dl;
- 
--		b_dl = &b->dl;
--		if (b->dl_server)
--			b_dl = b->dl_server;
-+		b_dl = task_dl_server(b);
-+		if (!b_dl)
-+			b_dl = &b->dl;
- 
- 		return !dl_time_before(a_dl->deadline, b_dl->deadline);
- 	}
-@@ -6277,6 +6283,8 @@ static inline struct task_struct *pick_task(struct rq *rq, struct rq_flags *rf)
- 	struct task_struct *p;
- 
- 	rq->dl_server = NULL;
-+	rq->core_pick = NULL;
-+	rq->core_dl_server = NULL;
- 
- 	for_each_active_class(class) {
- 		p = class->pick_task(rq, rf);
-@@ -6455,10 +6463,11 @@ pick_next_task(struct rq *rq, struct rq_flags *rf)
- 				p = sched_core_find(rq_i, cookie);
- 			if (!p)
- 				p = idle_sched_class.pick_task(rq_i, rf);
--		}
- 
--		rq_i->core_pick = p;
--		rq_i->core_dl_server = NULL;
-+			rq_i->core_pick = p;
-+			rq_i->core_dl_server = NULL;
-+			rq_i->dl_server = NULL;
-+		}
- 
- 		if (p == rq_i->idle) {
- 			if (rq_i->nr_running) {
-@@ -6526,8 +6535,10 @@ pick_next_task(struct rq *rq, struct rq_flags *rf)
- 		WARN_ON_ONCE(!cookie_match(next, rq_i->core_pick));
- 
- 		if (rq_i->curr == rq_i->core_pick) {
-+			rq_i->donor->dl_server = rq_i->core_dl_server;
- 			rq_i->core_pick = NULL;
- 			rq_i->core_dl_server = NULL;
-+			rq_i->dl_server = NULL;
- 			continue;
- 		}
- 
-diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index c0ebdcde5..ee1cdce42 100644
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -1578,6 +1578,9 @@ static void update_curr_dl_se(struct rq *rq, struct sched_dl_entity *dl_se, s64
-  */
- void dl_server_update_idle(struct sched_dl_entity *dl_se, s64 delta_exec)
- {
-+	if (!idle_rq(dl_se->rq))
-+		return;
-+
- 	if (dl_se->dl_server_active && dl_se->dl_runtime && dl_se->dl_defer)
- 		update_curr_dl_se(dl_se->rq, dl_se, delta_exec);
- }
-diff --git a/kernel/sched/idle.c b/kernel/sched/idle.c
-index e0c10a5db..6ee4b43b1 100644
---- a/kernel/sched/idle.c
-+++ b/kernel/sched/idle.c
-@@ -573,6 +573,9 @@ static void update_curr_idle(struct rq *rq)
- 
- 	se->exec_start = now;
- 
-+	if (!idle_rq(rq))
-+		return;
-+
- 	dl_server_update_idle(&rq->fair_server, delta_exec);
- #ifdef CONFIG_SCHED_CLASS_EXT
- 	dl_server_update_idle(&rq->ext_server, delta_exec);
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
-base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+The email will later be sent to:
+[a.hindborg@kernel.org brauner@kernel.org drifabdelmalekmohamedsaid@gmail.c=
+om jack@suse.cz leitao@debian.org linux-fsdevel@vger.kernel.org linux-kerne=
+l@vger.kernel.org ranhongyun1@huawei.com syzbot@syzkaller.appspotmail.com s=
+yzkaller-bugs@googlegroups.com viro@zeniv.linux.org.uk]
+
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
