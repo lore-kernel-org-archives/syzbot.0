@@ -1,49 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.200
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794331019;
-	b=Ww4gMB6WLMUywJLx7cRGK3nTCwEk3e5szfNoKzTE2A0jQ6KVXYHJatbJGu7uFqpULj7B
-	 oNCNBU+xLO9kl8n7Q/oDn1zXoxTeA49I5L+IkSLzECbj38Jf9dvE7AO7zuCKwi6kvEn2m
-	 1VH/g+16wIIpS19dxNJvW+MOrpblRByWYAbYndyM3qzp5fzGW7XL5GQOsInGITJh0op8R
-	 iv5jnYj+pXI28vxtVaTWHuMZPwTMhoZiQ9l5//zhjDLuElaxFFcU0b9XwZG2FiWPQAZxt
-	 fvwC0SlKpwaSV/CXErBIGWlP7cUHRCn/eMXqF2WLCG8++AOX2nAsbRATEg/W6S1BB+A==
+	t=1794418035;
+	b=LvWX8f5tlS5Rt8+i5kW17dXBWV+yFg7AkKI7Hi3nteM+BuwrHQfi0uZ/RRrLicHM+Giw
+	 k8oF9ZH80U+03+RpZD31iB9GcwraR97H7iXRTfR7V11jEGqHl/+p7cI9+viQYN97iLhFT
+	 glNyOhpGZ8m5CGR3PSilmYUfMtiNgGe0YlJHOFtlA1yUY1kSW3ykWUqjlxtLCQN5r1aVF
+	 Nt3alv9oUqOx77J3XLr7mFSxjWRwbGjf99sCGWZ5G1e5UVyuuAfW/dS9sHNitA1k++AuR
+	 OY0SA86JpDa/J07AUJILHuc5l/LTH5VLN7CvdhZT2y2SDddA8dw4ICcZQa7F3bOt3ew==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794331019;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:Date;
-	bh=bsaeHXQQBBDzq1J3ZcB0y6V09wiWtYa/Uat3Z0Zc+9c=;
-	b=Kk0FUWpZiC5ljjYMh1QUo/azApzAXzmwZ7nlZ08bTLrnvb92F8ITB0SugLnZfzoBMEaj
-	 Ell7VPiQp9rNB20xinmxzXdWGgwzbdLQblSMuDaV2Imw1gcu6z1Io3AVS4vNN4YaXNVWY
-	 rBBwkwEQPH88ddEDvZm2WRepFkvFuy+YkO+7iSH1+4bC4BlSkZuYEQxvXlGT9pjeNPZ45
-	 6clpAZfCUXan4smkduPhBLSLoEIWuY4871vPaekEKYCPNEbo7/v1VBAKP5Y5WYVOYgdz6
-	 leT2GjqKQ6UEruilQVKZj9a/v6O9dYbicpFvHonJvF9UmoUNDNKosfU+NgeyCWMD8Sg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794418035;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
+	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
+	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
+	 Content-Type;
+	bh=JfAezpAquvz/j7OV3MmjT9IcWRiTIkK0rN0vyNrpnEo=;
+	b=bt/ilGRlF8ed9oDyTcmvpLFqzvBdzCo4Vh5VXEN7KTi/pjkwulQTJREhNiEObVfAw0Qh
+	 xRLGzthGQPX824jaSGi0LnbRp7P3NX4gXy2JGQUL5VnjExFoVYdcDV6kdAOhnF+2dPcZe
+	 2cmBdmtsQ41PiFriwwUrBpbean7N1v+SR8ThYP/Iq7UeYsT1+H0+fdQnWNkhVAsS7jxKz
+	 97riCQexfcsnzK0CLFxt5QLod1pYNhl+kFLQ9/Ru5tTN1a1xLxmi2EbxKRoQxSR2Hch0a
+	 efEmA2CVBxrZOzZFRgwRAj8K+g/wxBq9LFvgjBuDf8e293pwD0h0qQIhCiVKRuIBHOA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FTbJHHjJ;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=fail header.from=syzkaller.appspotmail.com;
+	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
+	arc=none smtp.remote-ip=209.85.167.200
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 06B10606A320
-	for <syzbot@lists.linux.dev>; Tue, 10 Nov 2026 17:16:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FTbJHHjJ
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 63D891F0089F;
-	Tue, 10 Nov 2026 17:16:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794331018;
-	bh=bsaeHXQQBBDzq1J3ZcB0y6V09wiWtYa/Uat3Z0Zc+9c=;
-	h=From:To:Cc:Subject:Date;
-	b=FTbJHHjJO7e2Sb9m488X8h8SyW1HWesHE5357Y8y8JuRwW4uPPuFLJwuaIUlF32Ln
-	 LoBHNfFqrIj/ZxwWm/n1UQOUh6lkd+V1OP07zYRW+6NFLTY4qVMNKmCB0SlL0J/hTi
-	 b5J8Ket53dHBvld7GxhzrA9eua1mknw4gKG6zrIPVNDismVQZZq0bPPycJU3Tw1tpi
-	 t1y9tT4TRdwPxwzYZqzLGjzxZXHOlGFkwbH32e9TR6KjF3IjRsFTNc8EAIzETQ2+Ix
-	 h/C1KhISrbujtDSIJqQSbhEWke3lOTiZn0fdAKRYI4MP3dTsfwONgKcTun0zS1SLnB
-	 X3T/a4PH+gOog==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] net/x25: fix invalid lock_sock() usage in x25_kill_by_neigh()
-Message-ID: <b624bc4d-6240-4c80-82a8-c727545f2a5e@mail.kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 734C0606A31C
+	for <syzbot@lists.linux.dev>; Wed, 11 Nov 2026 17:27:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 734C0606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4c55ba309c2so4148595b6e.1
+        for <syzbot@lists.linux.dev>; Wed, 11 Nov 2026 09:27:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794418034; x=1795022834;
+        h=content-type:cc:to:from:subject:message-id:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=JfAezpAquvz/j7OV3MmjT9IcWRiTIkK0rN0vyNrpnEo=;
+        b=jCBW7KxmUYHIP9SVcaU4pBwk7L4PAwrmM9x2BcutTAcCq4B5alA0uNIUkqmITIATIF
+         wjdD2yvvrMHY9g/5r5IIYdAY4HoWLvgeRMCyDT0vnNAllMUK+mvkqM+x3qhbVt7Ggm3x
+         BXjtyZyMRdCF7QMnAB0K0Xx5Dhuq0u0RJoZkSixzduzno/yps8Q+VcrqRd648ZFv7CzF
+         QMFCDNUW6M/86MGHEh9i2BdHiV1aiZRgtYjgfSzWYvYnwnDHTT91NS8soHxI4R3a/ggV
+         Z9MGK/GSeAA09OyRY4ZDNrBjpdW8+uQn+KJmk/i21UCg1EqvVNe7FVgQUyCtEFK8rOW/
+         ZDhQ==
+X-Gm-Message-State: APuU4Z8IeyYmXUbv0bw1SdxVSf/xVqPeJ3awaLGduMJ0LWdOFPmxQs4Z
+	2O9s+Za6fbM2eFBc/jA1QL6QBkwBzDbjTJvlhVSKUc/OgZ3jAVtdzrCvQf76/GKHHxOahtZQXj/
+	ViI+w5dYZWuMbIhFvaDEwnV7IIQafyDVa0xy3IWcPSotqFGyrwc0O359Olw0=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -53,266 +57,133 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Tue, 10 Nov 2026 17:16:58 +0000 (UTC)
+X-Received: by 2002:a05:6808:c1b2:b0:4d6:90f4:48ab with SMTP id
+ 5614622812f47-56b97c18413mr2732395b6e.45.1794418034511; Wed, 11 Nov 2026
+ 09:27:14 -0800 (PST)
+Date: Wed, 11 Nov 2026 09:27:14 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6af4a572.ad703688.70d19.1af0.GAE@google.com>
+Subject: [moderation/CI] Re: tipc: bound reassembly size in tipc_buf_append()
+From: syzbot ci <syzbot+ci466aa6a3db8114ff@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-x25_kill_by_neigh() is invoked to tear down X.25 sockets associated with a
-terminating neighbour. This function is called in process context from
-netdevice notifier handlers (such as NETDEV_DOWN in x25_device_event()),
-but it is also called in softirq context (NET_RX_SOFTIRQ) under
-rcu_read_lock() when receiving LAPB frames in x25_lapb_receive_frame() or
-link control packets in x25_link_control().
+syzbot ci has tested the following series
 
-x25_kill_by_neigh() acquires lock_sock() around x25_disconnect(). Because
-lock_sock() is a sleeping lock, calling it from softirq context triggers a
-"BUG: sleeping function called from invalid context" and a lockdep
-inconsistent lock state warning ({SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W}) on
-sk_lock-AF_X25.
+[v1] tipc: bound reassembly size in tipc_buf_append()
+https://lore.kernel.org/all/AoU-V5M5ZCKF37bLl8ILhgeNdsnCEaiaQNuWP4K56kRfJsnhkIexZ8tFRLq7uzGiA0qNqK6shXcSZ5E4hyV0-QI0ZWSuKiJzKvMrv3NfqCg=@proton.me
+* [PATCH] tipc: bound reassembly size in tipc_buf_append()
 
-Fix this by passing a boolean parameter to x25_kill_by_neigh() and
-x25_link_terminated() to distinguish between process and softirq contexts.
-In process context (netdevice notifiers), continue using lock_sock() to
-synchronously disconnect sockets, ensuring that neighbour and netdevice
-references are cleared before the notifier returns to preserve the
-netdevice notifier lifetime guarantee. In softirq context, use
-bh_lock_sock() instead; if the socket is currently owned by user space,
-defer the disconnect by setting X25_KILL_BY_NEIGH_FLAG and handling it in
-x25_release_cb() when the socket is released.
+and found the following issue:
+general protection fault in tipc_buf_append
 
-Fixes: 7781607938c8 ("net/x25: Fix null-ptr-deref caused by
-x25_disconnect")
+Full report is available here:
+https://ci.syzbot.org/series/3856f5b1-55ca-4bc2-885e-034eb8af1bdf
 
-Fixes: 7781607938c8 ("net/x25: Fix null-ptr-deref caused by x25_disconnect")
-Assisted-by: Gemini:gemini-4-argon Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+300375dfd44665f063a6@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=300375dfd44665f063a6
-Link: https://syzkaller.appspot.com/ai_job?id=7eb00706-eb85-4671-b0e7-6b722aa4e884
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@kernel.org>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <linux-x25@vger.kernel.org>
-To: "Martin Schiller" <ms@dev.tdt.de>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Duoming Zhou" <duoming@zju.edu.cn>
-Cc: "Simon Horman" <horms@kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+***
+
+general protection fault in tipc_buf_append
+
+tree:      net-next
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/netdev/net-next.git
+base:      c4c470912125ec8a1a427a70f4085d8a731b00e4
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/28264169-6c3f-405e-9f6a-339572b43e52/config
+syz repro: https://ci.syzbot.org/findings/e9e2a2a5-41e6-4866-89fc-45c75bfe992b/syz_repro
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc000000000e: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x0000000000000070-0x0000000000000077]
+CPU: 1 UID: 0 PID: 5915 Comm: syz.1.18 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:tipc_buf_append+0x389/0xa20 net/tipc/msg.c:153
+Code: e9 b5 01 00 00 e8 97 ea 29 f6 48 8b 44 24 20 42 80 3c 30 00 48 8b 5c 24 28 74 08 48 89 df e8 8e 74 a1 f6 48 c7 03 00 00 00 00 <41> 0f b6 46 0e 84 c0 0f 85 ea 04 00 00 8b 1c 25 70 00 00 00 4d 8d
+RSP: 0018:ffffc900039defa0 EFLAGS: 00010246
+RAX: 1ffff9200073be13 RBX: ffffc900039df098 RCX: ffff88810d335a00
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff88816af130c0
+RBP: ffffc900039df078 R08: ffff8881ba5f6ee3 R09: 1ffff110374beddc
+R10: dffffc0000000000 R11: ffffed10374beddd R12: 1ffff1102d5e2617
+R13: 1ffff9200073bdfc R14: dffffc0000000000 R15: ffff88816af12ff0
+FS:  00007fbe193e76c0(0000) GS:ffff8882a7809000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fbe193e6ff8 CR3: 0000000117562000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ tipc_msg_reassemble+0x230/0x3b0 net/tipc/msg.c:807
+ tipc_mcast_xmit+0x254/0x19e0 net/tipc/bcast.c:392
+ tipc_sendmcast net/tipc/socket.c:887 [inline]
+ __tipc_sendmsg+0x2074/0x2b60 net/tipc/socket.c:1470
+ tipc_sendmsg+0x55/0x70 net/tipc/socket.c:1404
+ sock_sendmsg_nosec+0x14e/0x190 net/socket.c:800
+ __sock_sendmsg net/socket.c:818 [inline]
+ ____sys_sendmsg+0x54e/0x850 net/socket.c:2715
+ ___sys_sendmsg+0x2a5/0x360 net/socket.c:2769
+ __sys_sendmmsg+0x273/0x4e0 net/socket.c:2858
+ __do_sys_sendmmsg net/socket.c:2885 [inline]
+ __se_sys_sendmmsg net/socket.c:2882 [inline]
+ __x64_sys_sendmmsg+0xa0/0xc0 net/socket.c:2882
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fbe185a8f19
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fbe193e7028 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+RAX: ffffffffffffffda RBX: 00007fbe18825fa0 RCX: 00007fbe185a8f19
+RDX: 0000000000000300 RSI: 0000200000006740 RDI: 0000000000000003
+RBP: 00007fbe18637f6d R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fbe18826038 R14: 00007fbe18825fa0 R15: 00007ffeceeefb38
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:tipc_buf_append+0x389/0xa20 net/tipc/msg.c:153
+Code: e9 b5 01 00 00 e8 97 ea 29 f6 48 8b 44 24 20 42 80 3c 30 00 48 8b 5c 24 28 74 08 48 89 df e8 8e 74 a1 f6 48 c7 03 00 00 00 00 <41> 0f b6 46 0e 84 c0 0f 85 ea 04 00 00 8b 1c 25 70 00 00 00 4d 8d
+RSP: 0018:ffffc900039defa0 EFLAGS: 00010246
+RAX: 1ffff9200073be13 RBX: ffffc900039df098 RCX: ffff88810d335a00
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff88816af130c0
+RBP: ffffc900039df078 R08: ffff8881ba5f6ee3 R09: 1ffff110374beddc
+R10: dffffc0000000000 R11: ffffed10374beddd R12: 1ffff1102d5e2617
+R13: 1ffff9200073bdfc R14: dffffc0000000000 R15: ffff88816af12ff0
+FS:  00007fbe193e76c0(0000) GS:ffff8882a7809000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fbe193e6ff8 CR3: 0000000117562000 CR4: 00000000000006f0
+----------------
+Code disassembly (best guess):
+   0:	e9 b5 01 00 00       	jmp    0x1ba
+   5:	e8 97 ea 29 f6       	call   0xf629eaa1
+   a:	48 8b 44 24 20       	mov    0x20(%rsp),%rax
+   f:	42 80 3c 30 00       	cmpb   $0x0,(%rax,%r14,1)
+  14:	48 8b 5c 24 28       	mov    0x28(%rsp),%rbx
+  19:	74 08                	je     0x23
+  1b:	48 89 df             	mov    %rbx,%rdi
+  1e:	e8 8e 74 a1 f6       	call   0xf6a174b1
+  23:	48 c7 03 00 00 00 00 	movq   $0x0,(%rbx)
+* 2a:	41 0f b6 46 0e       	movzbl 0xe(%r14),%eax <-- trapping instruction
+  2f:	84 c0                	test   %al,%al
+  31:	0f 85 ea 04 00 00    	jne    0x521
+  37:	8b 1c 25 70 00 00 00 	mov    0x70,%ebx
+  3e:	4d                   	rex.WRB
+  3f:	8d                   	.byte 0x8d
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v2:
-- Pass a boolean parameter to x25_kill_by_neigh() and x25_link_terminated() to distinguish softirq from process context.
-- Retain lock_sock() in process context to preserve synchronous socket teardown for netdevice notifications.
-- Retain write_lock_bh() on x25_list_lock instead of manually managing local_bh_disable().
-- Shorten the commit description by removing stack traces and per-function details.
-- Fix line wrapping in the Fixes tag.
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v1:
-https://lore.kernel.org/all/f1cbebc5-aab9-44ac-8425-1bc9fdbbf5b7@mail.kernel.org/T/
----
-diff --git a/include/net/x25.h b/include/net/x25.h
-index 414f3fd99..ec4c9ced1 100644
---- a/include/net/x25.h
-+++ b/include/net/x25.h
-@@ -118,6 +118,7 @@ enum {
- #define X25_Q_BIT_FLAG		0
- #define X25_INTERRUPT_FLAG	1
- #define X25_ACCPT_APPRV_FLAG	2
-+#define X25_KILL_BY_NEIGH_FLAG	3
- 
- /**
-  *	struct x25_route - x25 routing entry
-@@ -196,7 +197,7 @@ int x25_addr_aton(unsigned char *, struct x25_address *, struct x25_address *);
- struct sock *x25_find_socket(unsigned int, struct x25_neigh *);
- void x25_destroy_socket_from_timer(struct sock *);
- int x25_rx_call_request(struct sk_buff *, struct x25_neigh *, unsigned int);
--void x25_kill_by_neigh(struct x25_neigh *);
-+void x25_kill_by_neigh(struct x25_neigh *, bool);
- 
- /* x25_dev.c */
- void x25_send_frame(struct sk_buff *, struct x25_neigh *);
-@@ -230,7 +231,7 @@ void x25_link_control(struct sk_buff *, struct x25_neigh *, unsigned short);
- void x25_link_device_up(struct net_device *);
- void x25_link_device_down(struct net_device *);
- void x25_link_established(struct x25_neigh *);
--void x25_link_terminated(struct x25_neigh *);
-+void x25_link_terminated(struct x25_neigh *, bool);
- void x25_transmit_clear_request(struct x25_neigh *, unsigned int,
- 				unsigned char);
- void x25_transmit_link(struct sk_buff *, struct x25_neigh *);
-diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-index f45c9ec7d..3fe3ba594 100644
---- a/net/x25/af_x25.c
-+++ b/net/x25/af_x25.c
-@@ -221,7 +221,7 @@ static int x25_device_event(struct notifier_block *this, unsigned long event,
- 		case NETDEV_DOWN:
- 			nb = x25_get_neigh(dev);
- 			if (nb) {
--				x25_link_terminated(nb);
-+				x25_link_terminated(nb, false);
- 				x25_neigh_put(nb);
- 			}
- 			x25_route_device_down(dev);
-@@ -234,7 +234,7 @@ static int x25_device_event(struct notifier_block *this, unsigned long event,
- 			if (!netif_carrier_ok(dev)) {
- 				nb = x25_get_neigh(dev);
- 				if (nb) {
--					x25_link_terminated(nb);
-+					x25_link_terminated(nb, false);
- 					x25_neigh_put(nb);
- 				}
- 			}
-@@ -492,10 +492,17 @@ static int x25_listen(struct socket *sock, int backlog)
- 	return rc;
- }
- 
-+static void x25_release_cb(struct sock *sk)
-+{
-+	if (test_and_clear_bit(X25_KILL_BY_NEIGH_FLAG, &x25_sk(sk)->flags))
-+		x25_disconnect(sk, ENETUNREACH, 0, 0);
-+}
-+
- static struct proto x25_proto = {
- 	.name	  = "X25",
- 	.owner	  = THIS_MODULE,
- 	.obj_size = sizeof(struct x25_sock),
-+	.release_cb = x25_release_cb,
- };
- 
- static struct sock *x25_alloc_socket(struct net *net, int kern)
-@@ -610,6 +617,7 @@ static struct sock *x25_make_new(struct sock *osk)
- 	x25->cudmatchlength = ox25->cudmatchlength;
- 
- 	clear_bit(X25_INTERRUPT_FLAG, &x25->flags);
-+	clear_bit(X25_KILL_BY_NEIGH_FLAG, &x25->flags);
- 	x25_init_timers(sk);
- out:
- 	return sk;
-@@ -827,6 +835,7 @@ static int x25_connect(struct socket *sock, struct sockaddr_unsized *uaddr,
- 		x25->neighbour = NULL;
- 		read_unlock_bh(&x25_list_lock);
- 		x25->state = X25_STATE_0;
-+		clear_bit(X25_KILL_BY_NEIGH_FLAG, &x25->flags);
- 	}
- out_put_route:
- 	x25_route_put(rt);
-@@ -1761,7 +1770,7 @@ static struct notifier_block x25_dev_notifier = {
- 	.notifier_call = x25_device_event,
- };
- 
--void x25_kill_by_neigh(struct x25_neigh *nb)
-+void x25_kill_by_neigh(struct x25_neigh *nb, bool bh)
- {
- 	struct sock *s;
- 
-@@ -1769,13 +1778,27 @@ void x25_kill_by_neigh(struct x25_neigh *nb)
- 	write_lock_bh(&x25_list_lock);
- 
- 	sk_for_each(s, &x25_list) {
--		if (x25_sk(s)->neighbour == nb) {
-+		if (x25_sk(s)->neighbour == nb &&
-+		    (!bh || !test_bit(X25_KILL_BY_NEIGH_FLAG, &x25_sk(s)->flags))) {
- 			sock_hold(s);
- 			write_unlock_bh(&x25_list_lock);
--			lock_sock(s);
--			if (x25_sk(s)->neighbour == nb)
--				x25_disconnect(s, ENETUNREACH, 0, 0);
--			release_sock(s);
-+			if (bh) {
-+				bh_lock_sock(s);
-+				if (x25_sk(s)->neighbour == nb) {
-+					if (sock_owned_by_user(s))
-+						set_bit(X25_KILL_BY_NEIGH_FLAG,
-+							&x25_sk(s)->flags);
-+					else
-+						x25_disconnect(s, ENETUNREACH,
-+							       0, 0);
-+				}
-+				bh_unlock_sock(s);
-+			} else {
-+				lock_sock(s);
-+				if (x25_sk(s)->neighbour == nb)
-+					x25_disconnect(s, ENETUNREACH, 0, 0);
-+				release_sock(s);
-+			}
- 			sock_put(s);
- 			goto again;
- 		}
-diff --git a/net/x25/x25_dev.c b/net/x25/x25_dev.c
-index fb8ac1aa5..be5eb01de 100644
---- a/net/x25/x25_dev.c
-+++ b/net/x25/x25_dev.c
-@@ -135,7 +135,7 @@ int x25_lapb_receive_frame(struct sk_buff *skb, struct net_device *dev,
- 		break;
- 
- 	case X25_IFACE_DISCONNECT:
--		x25_link_terminated(nb);
-+		x25_link_terminated(nb, true);
- 		break;
- 	}
- 	x25_neigh_put(nb);
-diff --git a/net/x25/x25_link.c b/net/x25/x25_link.c
-index d1e8cd81c..d3e90b402 100644
---- a/net/x25/x25_link.c
-+++ b/net/x25/x25_link.c
-@@ -82,7 +82,7 @@ void x25_link_control(struct sk_buff *skb, struct x25_neigh *nb,
- 			break;
- 		case X25_LINK_STATE_3:
- 			/* clear existing virtual calls */
--			x25_kill_by_neigh(nb);
-+			x25_kill_by_neigh(nb, true);
- 
- 			x25_transmit_restart_confirmation(nb);
- 			break;
-@@ -97,7 +97,7 @@ void x25_link_control(struct sk_buff *skb, struct x25_neigh *nb,
- 			break;
- 		case X25_LINK_STATE_3:
- 			/* clear existing virtual calls */
--			x25_kill_by_neigh(nb);
-+			x25_kill_by_neigh(nb, true);
- 
- 			x25_transmit_restart_request(nb);
- 			nb->state = X25_LINK_STATE_2;
-@@ -247,14 +247,14 @@ void x25_link_established(struct x25_neigh *nb)
-  *	request has failed.
-  */
- 
--void x25_link_terminated(struct x25_neigh *nb)
-+void x25_link_terminated(struct x25_neigh *nb, bool bh)
- {
- 	nb->state = X25_LINK_STATE_0;
- 	skb_queue_purge(&nb->queue);
- 	x25_stop_t20timer(nb);
- 
- 	/* Out of order: clear existing virtual calls (X.25 03/93 4.6.3) */
--	x25_kill_by_neigh(nb);
-+	x25_kill_by_neigh(nb, bh);
- }
- 
- /*
-diff --git a/net/x25/x25_subr.c b/net/x25/x25_subr.c
-index 159708d9a..344818f88 100644
---- a/net/x25/x25_subr.c
-+++ b/net/x25/x25_subr.c
-@@ -341,6 +341,8 @@ void x25_disconnect(struct sock *sk, int reason, unsigned char cause,
- {
- 	struct x25_sock *x25 = x25_sk(sk);
- 
-+	clear_bit(X25_KILL_BY_NEIGH_FLAG, &x25->flags);
-+
- 	x25_clear_queues(sk);
- 	x25_stop_timer(sk);
- 
+The email will later be sent to:
+[davem@davemloft.net edumazet@kernel.org jmaloy@redhat.com kuba@kernel.org linux-kernel@vger.kernel.org netdev@vger.kernel.org noahweinberger2003@proton.me pabeni@redhat.com tung.quang.nguyen@est.tech]
 
+If the report looks fine to you, reply with:
+#syz upstream
 
-base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+If the report is a false positive, reply with
+#syz invalid
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
