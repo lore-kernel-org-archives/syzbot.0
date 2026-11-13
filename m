@@ -1,92 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794573267;
-	b=qCzDgDRbSOSpn94D/hWYYvYjdzXWqgw0kzmCyErDesYj19CGjPqVr+68rkx5AaL8ifV3
-	 VdxwKirh0pGxhzrXNyZOHj9GsqxSy5Yd8ZPkMsHHpgLv5Xn08GvyZ3mnhgVazGh8Gyz0y
-	 YA5UkGz2ze3hBkROoBfvhk2Y3p3Xt4au4vBtfS6oaEH870AShdfR+NnOgJpdfJ/ENuD+C
-	 9mUVAVexjzbqv5TMd6RGj00GReoAONIOw2p6quoHrGdaih7dTH/0r+CxvIOUfm72s1+zU
-	 e/K5Gl6qx+C40HyzexT9ZbbKtS+ESXz/1qwt3WXTQO2lds2AXoDUaNJMesohFUyheyA==
+	t=1794573510;
+	b=TX71IuIUCKUnr6sQSOhT8XvtuszT4AQohXRwCANs3CvOpCaGfkcvAqGvFSf1z3NX7S6R
+	 AnsMQETpCJ4UhMDpPkDwAAZlkcJ5q3wjClZvFseWrhHHPcLfhgHNes84jtfARMVMP2W+u
+	 Zwfsq3q5ECfQ0Pf7TsYfwMsr+Kgi2tSlJ7Ru7eyCyMKQEojFFHz62G3mduictwAmhDlrr
+	 qTaY73n5zENigIpo5aWYo33Tnz9enztheqV25Mj7IvRmvvuHMh2CvntlydVEyCeob25FT
+	 Gi3KyU+OrU9uwkNdxkE4d/Yya49OfuaaWWQcrtq52pJSKhVy+712pPhOvr6Q2sacz2A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794573267;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794573510;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
 	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=/z3z0myIxh1PdyMu4DpOzI5hO72oLXWmo6VNQyNO4Rg=;
-	b=JrZa5uyiplM5E2TCI/TuWSdWAil+ookY65FgNfDfKiM/ch6roneaxl+4SM9lh7Jhs4ho
-	 32S2pz3Zid4y9SzO6OV2hlVTCHm/WNeqNqrCp2zA6n4O+oeXUUHBrVvAQFW4vfKY4FzEe
-	 6QUac8WwANiF0JLCkKYeSXGszYBKC66h/khuzbM79jW2pZLW0L2DQEJhq2HG21dSurmi0
-	 CpHcvf1qJucdqD8xmoghbvlny/7TK0kW4qIQDV9weLlzvfzZcO2H/+EMynGXjHx7x1BTj
-	 M44Kz06OST1BIcgrqANWnCWYmrj9EJu8GwQ0AmdhWulJoQLVQ09vjCjofa8C0bHpxHQ==
+	bh=ByhlRK6EFaFZEeyBNkEaLFcb6krCRfwemTI9Ed12QHI=;
+	b=vsnC+Ljg5dRvPuwrCWTmBeCED7gf63DEsjIiL3EB52WtMt7y3ZpGIv2aguhSBjra21Oe
+	 OeENsVwxwCi0FVAfbFii2mv5a/48wAZD4qat7aJSyv5u3jjXc0um4SSwccn+HN6X1f2Fn
+	 lluroWVISm/ZuUNpkGrrTadGQiwG6D034dvfClkiPqfNeGyngQTa3kVC6pgxsRSNeb7v5
+	 nm1r4+ThKtfE5gZd9xk7Qy2gWBHglCIJaCnbRIvGqZP+DHP0BBp3PMysuDg+aaaNGfXjD
+	 N92jkLlyEnswUNOuGFXehnFemUkwjH9FePSYsiGi1ffovOeX2Fn64fUSM9YhtVvPIqw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GO0CfO8Z;
-	arc=none smtp.remote-ip=209.85.218.44
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=oEvkSWdN;
+	arc=none smtp.remote-ip=209.85.218.50
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72267606A899
-	for <syzbot@lists.linux.dev>; Fri, 13 Nov 2026 12:34:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 72267606A899
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46788606A33E
+	for <syzbot@lists.linux.dev>; Fri, 13 Nov 2026 12:38:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 46788606A33E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GO0CfO8Z
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-c5075fa7ed0so202683366b.2
-        for <syzbot@lists.linux.dev>; Fri, 13 Nov 2026 04:34:26 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=oEvkSWdN
+Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-c4c9abc1824so177254966b.1
+        for <syzbot@lists.linux.dev>; Fri, 13 Nov 2026 04:38:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794573265; x=1795178065; darn=lists.linux.dev;
+        d=gmail.com; s=20260707; t=1794573508; x=1795178308; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=/z3z0myIxh1PdyMu4DpOzI5hO72oLXWmo6VNQyNO4Rg=;
-        b=GO0CfO8Zi8kVwQLxEBxZP3ngYTjb3Z5JwgeoUe5XVyqwgdHAq0sFS+R1Rotz85JG/x
-         emZXvyD3umIzW55rgH2NAdxuR1+UM1CD9DKxtWs68ouFv/UFLfBF846q5R2wbfhBJElv
-         jdXcY31D1F2+N8YOg/N+prgCiIsmh4b3L2iBP2WB5UQPx5qPoFw+YDNl38VTOu+/QYwe
-         E5+laopRVCdtX35zoUQ//J2yYB1vrEDOyl3pX5749JlGbfQc5NYmKofNNrU1wIda/k+X
-         kagwohfDI0jpkNUHemUmVdAQuZFy7aUVykvXX3paL2DTOSqwGPFV8WeDxmcp+s6hx572
-         245w==
+        bh=ByhlRK6EFaFZEeyBNkEaLFcb6krCRfwemTI9Ed12QHI=;
+        b=oEvkSWdNAmk6VO4YgV4amsXAc8D7dQgruyS2vQqsRekP7AxlwA4FPXhSaKAL+3OTmm
+         dQ8HT6FeuG1zpt7728kH+VLzxfTYBPSRHM27F9qh1QGcrRFqDQbquhCxsbfXwc4hxa4U
+         WCXwibcjCFIeOtP7EahdlX74rFRyjuK60XtMQEA0x11fe8jwHR3HJ4yCP4EHbdgRw4VM
+         QecfPzQQR45rYLTWl4t2wF0D2YHcKPTm2/viUIF9+JJJxelIByz42j6YhP66YEQb6rFF
+         E2EMUtpAfAExUYQQ/7aZV9zaaH565d6dO9Wr6w0o7umHj5LTrv4GHsLHvhuj0vWrWy3b
+         T+Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794573265; x=1795178065;
+        d=1e100.net; s=20260707; t=1794573508; x=1795178308;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=/z3z0myIxh1PdyMu4DpOzI5hO72oLXWmo6VNQyNO4Rg=;
-        b=yK7byOIWcQUcFT2XLb8IW/lptqQWKntiA4oRZ3OOw7OWn07h25KcmTARr/aq3+auy6
-         zAqutTlTqoGqPlokXL22DXHg+2lyjojyOdQOov0papmg6/9Unc70aF4Gmr2q5nNxcSug
-         p1oI5jsRZgzuUkeHmHDb2wWkKYf7okeFJGiaeeFgCCuKZYhKMf/7GsAaT/aFLCYLuFBh
-         JOZGWSgOc6SLKCMfOYFZ7JeFNeqDzeUgwp+FSNvQPZWC4KCbEzhXQYGDkaS+T6njV5Ou
-         Hf6qzQcfdu4oiLkXSEMTztJagYFLSpkjtDM5B8STnOyzXNVua6eFVC/fMs0p1ACCyASi
-         sGBw==
-X-Forwarded-Encrypted: i=1; AL+hErGi5awnHmgDxeAjJLrF7InJh6iOu+3PncvyFk5HOI4CBuBwrpeUxQ5ypDZpnPOXY4CFn6jTvLo=@lists.linux.dev
-X-Gm-Message-State: APuU4Z9rBlqTWbPPjzdl6hQPFRaOkF58hCOn/usBOYY0ZbWl9qf2Iwe/
-	3EsNLeMzYl11RZHJ3dMK41Rm5RozxKyFXNhiGA4aMcHHf9mtAKYi25Kl
-X-Gm-Gg: AYBFou1puxjOnvKpz/E4umDGkjBpGqusdfOb1ebcEbILsZ3AmweQWYkvEakV02Ro2rX
-	VwP82o3TnRavZyOCWCY7qcmjb/QKlG9mNsF913VLwzD46eiTXFgvYNs0kuNQCzTt1Xn4GnRWQpA
-	Q7sW+uLoQBexiybYY9wNsBFGUNDVaCmnS90n2L5upC9zUeS7Tmv+LldoyP9LTD+rcKPuErgkeF9
-	Q6dRBVY1Fsydf8h/d7qd0jCF5sfp56i2P87bLuC8HAdv01dCaar/aFa632qKA05nZpP0JXnVVfD
-	6YqvG9FpsYN5616A+BMdQZKyNwJEjEB0De6X3F5UydF2GdS1DscK5OL1Af2bNYTBvPCZKRgrC6I
-	WUqEvrdDr2S42XPs4AsZYuoF7BRRbgYsX9LGTwud0PWhuiD0Awekw7Pro3hDu5FL+ZCxNaJqK6K
-	tr9p9TC5cJKFRtW23Guz5VoIUze74BJCxcPDk4zTgWbKaVwwEa41s++yDCdDDg0v3WkC9n3QJfD
-	AzNTZCAk9HDmY3OiM1mr2MhEfUvogJum3ieHAjwpBtUqwos5PrfZ5TGpuSD3tO26f4DeUzcQuT1
-	awdzb+AQfMkFTnxXQHog75UFzq2yO+YHS3DhMoUuFYNN7o1L
-X-Received: by 2002:a17:907:9345:b0:c3f:8c92:3b51 with SMTP id a640c23a62f3a-c509611011cmr212382066b.4.1794573264610;
-        Fri, 13 Nov 2026 04:34:24 -0800 (PST)
+        bh=ByhlRK6EFaFZEeyBNkEaLFcb6krCRfwemTI9Ed12QHI=;
+        b=CgfOnnYX1NPpcdZt3Xw8arZxC6YVg/NPcxirJP9Jgbms7nD9XFQWE4cRB7cUHMFU2f
+         p6VMORa9JlxR5X0i+dXOQKmDg359GETDXDCznfxlBbiopDrKtzPVoHwoeOqn0f4Sa+CK
+         7MuIIWVWbweLrXbqf9zrjF7F82iiIXKWbhb4tMLAiVeJN9mH9OnyapH/VMYdmMHax1Qb
+         UMvJeO6WyPREY/a7KpqRRtXBC+xNicQHFM1Hlw6mvFex1aNCMdVsftGQh/RIQq3sF/76
+         st2avG/d043OKHRWU7uUNSOtPAKOQ17dsj3TvUCI665QwZqELOEL9Ak8LGey0t5TLmYf
+         xZbg==
+X-Forwarded-Encrypted: i=1; AL+hErHCeEdNwfI1O14qf5QaZFhV+DGSyi1NdAUuAlB9ZDOJ/rz+DzWrXh+3vO7vQOcIqc0wPFNXNT0=@lists.linux.dev
+X-Gm-Message-State: APuU4Z8SKXe3oEAnzofrzAcm/l4u/EENClK9E0IiV41Srb+x4ksCIr42
+	KGnOp2EHkRiHIBMQFXp+l/+Df7FU7oaXzcy3iCsa5HBZmV86x2RnasLJ
+X-Gm-Gg: AYBFou1AW9Si3HnCSdfF5N3YM+RRC1kB8KWVe0GQIkJII0GqVcVcHZSb2HEbtys1Q+w
+	WmchS3I21+yr4C4x5xkPlxNx+f6tTAgBI2FR8JyZJw3d7FqDW4MbcXQmH0u04QfzdA5Jrp1peGd
+	0PSeRcWZEvqMSOpwCKA+EQou0QP3P823bPJPYziGTTTrWLnhcf24fnlEtXs1FGzQmztF3tdixde
+	pQBfLKwnCb/s1BuAP7rbrs+41afbNywjByBaOg0D9OsbBAJxqoR0h/+RYI0HA7ebSlusua5jAe8
+	14DiP7JqKsrOOagPSrCIHYKXDXANIyL6PEfaBznuOmNifHDx1WK/VlSfdUos0+imBeX1vdacY0x
+	Dj/arAxNWt7FTZm02xeRUPqojBhaEFfTIrRFNwIfaDRkT4MuoslCPoIr5AHwt/18bqeBrHD6NvW
+	g1K/Ws8gP5afvG0z2uezuuhOTmHfP8VYBGCNKfNPRoXIcRqCyrmHrMaxXPkLRM/xoAdNdZxMweG
+	WcLDHHep6QSje6A5IaYO957pNKXZF5Z1o/9LiHkpxDBp1GEjl3A//aqDySoXsltI0AHI028H+Wy
+	+KlrStiKkP27mqEeAH2WRWaLsHxHeKS79AUcds7Ij5wTe3P5
+X-Received: by 2002:a17:906:1f4a:b0:c50:aa10:d898 with SMTP id a640c23a62f3a-c50aa10db4bmr17965066b.26.1794573508398;
+        Fri, 13 Nov 2026 04:38:28 -0800 (PST)
 Received: from localhost ([188.146.170.61])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c5095b6091dsm86941166b.57.2026.11.13.04.34.23
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c5095b58981sm87024266b.45.2026.11.13.04.38.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Nov 2026 04:34:24 -0800 (PST)
-Date: Fri, 13 Nov 2026 13:34:23 +0100
+        Fri, 13 Nov 2026 04:38:28 -0800 (PST)
+Date: Fri, 13 Nov 2026 13:38:27 +0100
 From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
 To: syzbot <syzbot@kernel.org>
 Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC] media: dw2102: Fix null-ptr-deref in i2c transfer
- callbacks
-Message-ID: <5rsvymmu6xd7amjhapko7yyu2imvo23xlqp7mjoog33uoyqe7f@3unpa5o6cy4u>
-References: <9dda9080-8d80-4504-95dd-0faef04af12d@mail.kernel.org>
+Subject: Re: [PATCH RFC v3] media: az6007: Fix mutex reinitialization and
+ buffer overflows
+Message-ID: <bwmnrlg2sseox2grlxoytyxexdo5fs3iggauzciqcbkoy6akks@o3qdmtszdgqf>
+References: <391e1e11-54c8-4c10-ad15-7ea3659ec388@mail.kernel.org>
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -98,295 +98,309 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9dda9080-8d80-4504-95dd-0faef04af12d@mail.kernel.org>
+In-Reply-To: <391e1e11-54c8-4c10-ad15-7ea3659ec388@mail.kernel.org>
 
-The two SU3000 length checks in v1 are correct; no code change is requested
-in this review. The matched runs support the SU3000 fix; correct the commit
-message and clarify the history of the additional fixes before submission.
+Version 3 keeps the sound transfer bounds and one-time probe mutex
+initialization. A matched kernel run confirms that the new rate limit cuts
+repeated-error log volume, but its shared budget hides first errors from
+another adapter and a distinct errno; the patch still needs a logging fix,
+corrected metadata and description, and warning-specific proof.
 
 Required changes:
-- Commit message: Drop the kmalloc_track_caller() claim. Explain that a
-  zero-length memdup_user() can return ZERO_SIZE_PTR and that the callback
-  accesses the buffer without checking its length; the internal allocator
-  helper's name is not needed.
-- Commit message: The description already identifies missing length checks
-  in the other five callbacks. State the minimum length for each guarded
-  command, and distinguish the Earda message-index fix: with num == 1, the
-  oversized-write warnings read msg[1].len outside the message array. Describe
-  this as an out-of-bounds read, not just an incorrect diagnostic.
-- Metadata: Keep Fixes: d2ffc447cabb tied to the original SU3000 access;
-  do not imply that it identifies the introducing commit for the other
-  callbacks. Have the eventual submitter verify tool attribution against the
-  intended submission tree's documentation and checkpatch rules.
+- Commit message: Keep the selected mutex wait-list warning separate from
+  the oversized-read UBSAN. Describe the failed-power mutex reset with a
+  queued waiter as a separate targeted observation, and state that the
+  selected report does not identify the store that damaged the wait list.
+- Metadata: Correct the formatter-owned Fixes: trailers before submission.
+  Include a2c35d346d9e for mutex initialization and b19280cf2bee for the
+  buffer path in this combined patch, or route a split into separately
+  described and tagged submissions. Correct Assisted-by: to the documented
+  AGENT_NAME:MODEL_VERSION [TOOL] form with accurate attribution, or omit it
+  if accurate attribution is unavailable.
+- Code: Keep repeated identical errors bounded without sharing the first-error
+  budget across adapters or errno values. Include the device and errno in
+  each useful diagnostic, and preserve the first distinct error from each
+  adapter. Keep the existing transfer guards and probe mutex placement.
 
 Testing:
-On base commit c03c1a14507d, the direct x86-64 C reproducer at
-https://syzkaller.appspot.com/text?tag=ReproC&x=1667ea31580000 hit the
-su3000_i2c_transfer() first-byte fault in 4 of 4 unpatched test VMs. The
-patched kernel had 0 target crashes in 4 test VMs with the same input and a
-byte-identical effective config. The runs lasted about 55 and 45 seconds,
-including boot.
-
-Separately, the SU3000-only change was tested on base 05441d697f7f with
-https://syzkaller.appspot.com/text?tag=ReproSyz&x=1130a1a5580000 in 32-bit
-repeat/threaded mode. Its complete SU3000 callback is identical to v1's.
-The unpatched kernel crashed in 4 of 4 test VMs; the patched kernel completed
-300-second runs in 4 test VMs without a target crash. KCOV probes confirmed
-callback entry and EOPNOTSUPP for the stream command and for zero- and
-one-byte RC queries. These results cover the SU3000-only change on that base,
-not the complete v1 patch. The original
-standalone 32-bit C comparison remains inconclusive. The sanitizer-backed
-callback tests use USB stubs and do not establish physical-device behavior.
+In matched v2/v3 kernel runs with an emulated AZ6007 adapter and a separately
+enabled frontend config, each version received 430 three-byte short replies.
+V2 emitted 432 AZ6007 error lines and 23,766 raw dmesg bytes; v3 emitted ten
+lines and 3,087 bytes. V3 hid the first -EOPNOTSUPP line, and a two-adapter
+run hid the second adapter's first -EIO and -EOPNOTSUPP errors. One paired
+process-CPU sample was 52.6 ms on v2 and 100.7 ms on v3; it does not show a
+CPU saving.
 
 Syzbot flow request:
-For runtime claims about the other five callbacks, exercise their short and
-valid command paths, alternate read flags and error unlock paths. The
-SU3000 results do not establish those outcomes.
+After changing the logger, rerun the repeated-short-reply and two-adapter
+mixed-error checks, retaining raw logs and enough CPU and latency samples
+for any performance claim. Before claiming that the selected corrupted-list
+warning is suppressed, obtain a target-positive unpatched control and compare
+the revised patch with the same reproducer and config. Report whether USB
+reply framing was checked on physical or emulated hardware.
 
 Context:
-A zero-length stream-control message reaches su3000_i2c_transfer() without a
-readable first byte. The one-byte guard now runs before buf[0] is read.
-Separate 2025-08-18 reports place a zero-length remote-query fault at the
-buf[1] write; the two-byte guard protects that access. Invalid calls take the
-existing mutex unlock paths, while valid in-driver commands still pass.
+The selected C reproducer produced the separate AZ6007 UBSAN, not the
+selected corrupted-list warning, in all four unpatched moderation-base test
+VMs. No crash appeared in four patched test VMs for that input, but the
+target-negative control cannot prove suppression of the list warning. The
+assembled v3 recipients already use the current media maintainer address
+and lists; no recipient change is requested.
 
 Impact assessment:
-A zero-length SU3000 stream command can oops the DVB USB driver when the
-adapter and device node are accessible. The selected config can panic on that
-oops.
+The old oversized request exceeded the 4096-byte state buffer, and a short
+positive reply could copy stale buffer bytes. The retained bounds and reply
+checks cover those paths. The shared rate limit reduces diagnostic visibility
+without changing the returned transfer error; the selected list warning's
+first corrupting store remains unconfirmed.
 
 Kind Regards,
 BART CHRONOWSKI
 
-On Mon, Oct 19, 2026 at 03:10:34PM +0000, 'syzbot' via syzkaller-upstream-moderation wrote:
-> When user space issues an I2C_RDWR ioctl on an exposed I2C device
-> (/dev/i2c-X) with a zero-length message (msg.len == 0), i2cdev_ioctl_rdwr()
-> allocates the message buffer using memdup_user(..., 0). This causes
-> kmalloc_track_caller() to return ZERO_SIZE_PTR (0x10). When
-> su3000_i2c_transfer() subsequently processes the request, commands such as
-> SU3000_STREAM_CTRL unconditionally dereference msg[j].buf[0] without
-> verifying that msg[j].len is at least 1. Dereferencing ZERO_SIZE_PTR leads
-> to a general protection fault and KASAN null-ptr-deref report.
+On Fri, Nov 06, 2026 at 06:11:58PM +0000, syzbot wrote:
+> A DEBUG_LOCKS_WARN_ON() warning can occur on mutex unlock due to corruption
+> of the mutex wait list when state->mutex is reinitialized while in use. On
+> the base commit, it was observed that mutex_init(&state->mutex) was called
+> inside az6007_power_ctrl() whenever !state->warm. If the initial power-on
+> command fails, state->warm remains false, causing subsequent invocations of
+> az6007_power_ctrl() to reinitialize state->mutex while the device is
+> active. If another thread holds or is queued as a waiter on state->mutex
+> during az6007_i2c_xfer(), reinitializing the mutex clears the lock owner
+> and wait list, triggering the mutex wait-list corruption warning on unlock.
+> This failed-power reset with a queued I2C waiter was observed on the base
+> commit, though the crash report does not prove that exact sequence.
 > 
-> Oops: general protection fault, probably for non-canonical address
-> 0xdffffc0000000002: 0000 [#1] SMP KASAN NOPTI
-> KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
-> RIP: 0010:su3000_i2c_transfer+0x1aa/0xfc0
-> drivers/media/usb/dvb-usb/dw2102.c:740
+> Distinct from the mutex issue, an out-of-bounds buffer access was
+> separately found in az6007_i2c_xfer(). User-controlled I2C messages
+> transferred via /dev/i2c-* (through i2c-dev) can specify lengths up to 8192
+> bytes. The driver uses a fixed 4096-byte bounce buffer, st->data, defined
+> in struct az6007_device_state. The driver does not validate message lengths
+> against sizeof(st->data) before copying data or issuing USB control
+> transfers, leading to out-of-bounds buffer accesses.
+> 
+> When userspace reads from an I2C device (such as via preadv() on
+> /dev/i2c-*), i2cdev_read() calls i2c_master_recv() -> i2c_transfer() ->
+> __i2c_transfer() -> az6007_i2c_xfer() with msgs[0].len matching the
+> requested read size. In the single read branch, length is computed as
+> msgs[i].len + 6. If msgs[i].len exceeds 4090 bytes, length exceeds
+> sizeof(st->data). Furthermore, the return value of __az6007_read() was not
+> validated before copying bytes from st->data[j + 5] into msgs[i].buf[j].
+> When a large read request fails at the USB level, the copy loop still
+> executes unconditionally. When j reaches 4091, j + 5 equals 4096, reading
+> past the end of st->data and triggering a UBSAN array-index-out-of-bounds
+> warning:
+> 
+> UBSAN: array-index-out-of-bounds in
+> drivers/media/usb/dvb-usb-v2/az6007.c:821:22
+> index 4096 is out of range for type 'unsigned char[4096]'
 > Call Trace:
 >  <TASK>
+>  dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+>  ubsan_epilogue+0xa/0x30 lib/ubsan.c:233
+>  __ubsan_handle_out_of_bounds+0xe8/0xf0 lib/ubsan.c:455
+>  az6007_i2c_xfer+0x419/0xaa0 drivers/media/usb/dvb-usb-v2/az6007.c:821
 >  __i2c_transfer+0x7bf/0x1fe0 drivers/i2c/i2c-core-base.c:-1
 >  i2c_transfer+0x1cb/0x2d0 drivers/i2c/i2c-core-base.c:2350
->  i2cdev_ioctl_rdwr+0x460/0x740 drivers/i2c/i2c-dev.c:306
->  i2cdev_ioctl+0x6a5/0x880 drivers/i2c/i2c-dev.c:467
->  vfs_ioctl fs/ioctl.c:51 [inline]
->  __do_sys_ioctl fs/ioctl.c:597 [inline]
->  __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
->  do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
->  do_syscall_64+0x155/0x510 arch/x86/entry/syscall_64.c:84
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>  i2c_transfer_buffer_flags+0x10d/0x1a0 drivers/i2c/i2c-core-base.c:2378
+>  i2c_master_recv include/linux/i2c.h:79 [inline]
+>  i2cdev_read+0x10d/0x250 drivers/i2c/i2c-dev.c:155
+>  vfs_readv+0x57c/0x850 fs/read_write.c:1021
+>  do_preadv fs/read_write.c:1133 [inline]
 >  </TASK>
 > 
-> Although dw2102_i2c_transfer() was previously fixed for this issue in
-> commit 5ae544d94abc ("media: dw2102: Fix null-ptr-deref in
-> dw2102_i2c_transfer()"), other transfer callbacks in
-> drivers/media/usb/dvb-usb/dw2102.c (su3000_i2c_transfer,
-> dw2102_serit_i2c_transfer, dw2102_earda_i2c_transfer, dw2104_i2c_transfer,
-> dw3101_i2c_transfer, and s6x0_i2c_transfer) also accessed msg[].buf without
-> checking msg[].len during operations such as DW2102_RC_QUERY,
-> DW2102_VOLTAGE_CTRL, DW2102_LED_CTRL, and default write commands.
-> Additionally, dw2102_earda_i2c_transfer() incorrectly logged msg[1].len
-> instead of msg[0].len in warning messages for single-message transfers.
+> Similar buffer overflow issues exist in the other transfer paths: the
+> combined write+read branch lacked checks on msgs[i + 1].len < 1 and length
+> > sizeof(st->data), while the write branch copied msgs[i].len - 1 bytes
+> into st->data without verifying that the payload fit within the 64-byte
+> maximum supported by __az6007_write(). In addition, the read loops accessed
+> st->data[j + 5] without verifying that __az6007_read() returned at least 5
+> + len bytes. Additionally, in __az6007_write(), the blen > 64 check was
+> performed after dumping the payload to the kernel log under
+> az6007_xfer_debug.
 > 
-> Fix these issues by validating msg[].len against the minimum required size
-> before indexing into or copying to msg[].buf in all dw2102 I2C transfer
-> callbacks, returning -EOPNOTSUPP on failure, and correct the message index
-> in dw2102_earda_i2c_transfer() warning logs.
+> Fix these issues by:
+> - Moving mutex initialization out of az6007_power_ctrl() into a newly
+> introduced probe callback (az6007_probe) that initializes state->mutex once
+> upon device probing.
+> - Adding upper-bound checks against sizeof(st->data) in the single read and
+> combined write+read paths of az6007_i2c_xfer(), and verifying msgs[i +
+> 1].len >= 1 in the combined path.
+> - Making writes over 64 bytes fail with -EOPNOTSUPP before copying into the
+> state buffer st->data in the write path.
+> - Ensuring that short USB replies now return -EIO and that __az6007_read()
+> returned at least 5 + len bytes before copying data from st->data to
+> msgs[i].buf in the single read and combined paths.
+> - Moving the blen > 64 check in __az6007_write() before the debug hex dump.
+> - Rate-limiting error logging in az6007_i2c_xfer() with
+> pr_info_ratelimited().
 > 
-> Fixes: d2ffc447cabb ("[media] dw2102: add support for Geniatech SU3000 USB DVB-S2 card")
+> Fixes: b19280cf2bee ("[media] az6007: code cleanups and fixes")
 > Assisted-by: Gemini:gemini-4-argon Gemini:gemini-3.8-flash syzbot
-> Reported-by: syzbot+d99f3a288cc7d8ef60fb@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=d99f3a288cc7d8ef60fb
-> Link: https://syzkaller.appspot.com/ai_job?id=d863a1b0-1ca0-4436-b7e6-658d0c1cc4be
+> Reported-by: syzbot+0192952caa411a3be209@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=0192952caa411a3be209
+> Link: https://syzkaller.appspot.com/ai_job?id=ecf8e51b-3f73-4d50-8052-531d59d7335e
 > To: <linux-media@vger.kernel.org>
 > To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-> To: "Igor M. Liplianin" <liplianin@me.by>
 > Cc: <linux-kernel@vger.kernel.org>
 > 
 > ---
-> diff --git a/drivers/media/usb/dvb-usb/dw2102.c b/drivers/media/usb/dvb-usb/dw2102.c
-> index 4fecf2f96..a76bc2887 100644
-> --- a/drivers/media/usb/dvb-usb/dw2102.c
-> +++ b/drivers/media/usb/dvb-usb/dw2102.c
-> @@ -265,12 +265,20 @@ static int dw2102_serit_i2c_transfer(struct i2c_adapter *adap,
->  				     msg[0].len + 2, DW210X_WRITE_MSG);
->  			break;
->  		case(DW2102_RC_QUERY):
-> +			if (msg[0].len < 2) {
-> +				num = -EOPNOTSUPP;
-> +				break;
-> +			}
->  			dw210x_op_rw(d->udev, 0xb8, 0, 0,
->  				     buf6, 2, DW210X_READ_MSG);
->  			msg[0].buf[0] = buf6[0];
->  			msg[0].buf[1] = buf6[1];
->  			break;
->  		case(DW2102_VOLTAGE_CTRL):
-> +			if (msg[0].len < 1) {
-> +				num = -EOPNOTSUPP;
-> +				break;
-> +			}
->  			buf6[0] = 0x30;
->  			buf6[1] = msg[0].buf[0];
->  			dw210x_op_rw(d->udev, 0xb2, 0, 0,
-> @@ -334,7 +342,7 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
+> v3:
+> - Use pr_info_ratelimited() instead of pr_info() for transfer error logging in az6007_i2c_xfer().
+> - Reorder the commit description to lead with the mutex wait-list corruption warning and keep the oversized buffer access issue distinct.
+> - Describe the failed-power reset with a queued I2C waiter as observed on the base commit.
+> - Clarify in the description that short USB replies now return -EIO and writes over 64 bytes fail before copying into the bounce buffer.
+> 
+> v2:
+> - Require ret >= 5 + len instead of ret >= len in read paths before copying from st->data.
+> - Limit write transfers to 64 bytes instead of sizeof(st->data).
+> - Clarify in commit description that the crash report indicates mutex wait list corruption, distinct from the out-of-bounds read buffer issue, and that the failed-power mutex reset was observed on the base commit.
+> https://lore.kernel.org/all/baa09ccd-e29d-4434-bfd6-cebf6a9b8413@mail.kernel.org/T/
+> 
+> v1:
+> https://lore.kernel.org/all/98467e25-6e27-41d8-94d9-5367714ce9b0@mail.kernel.org/T/
+> ---
+> diff --git a/drivers/media/usb/dvb-usb-v2/az6007.c b/drivers/media/usb/dvb-usb-v2/az6007.c
+> index 65ef045b7..b180a1913 100644
+> --- a/drivers/media/usb/dvb-usb-v2/az6007.c
+> +++ b/drivers/media/usb/dvb-usb-v2/az6007.c
+> @@ -143,6 +143,12 @@ static int __az6007_write(struct usb_device *udev, u8 req, u16 value,
+>  {
+>  	int ret;
 >  
->  			if (2 + msg[0].len > sizeof(obuf)) {
->  				warn("i2c wr: len=%d is too big!\n",
-> -				     msg[1].len);
-> +				     msg[0].len);
->  				ret = -EOPNOTSUPP;
->  				goto unlock;
->  			}
-> @@ -352,7 +360,7 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
+> +	if (blen > 64) {
+> +		pr_err("az6007: tried to write %d bytes, but I2C max size is 64 bytes\n",
+> +		       blen);
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+>  	if (az6007_xfer_debug) {
+>  		printk(KERN_DEBUG "az6007: OUT req: %02x, value: %04x, index: %04x\n",
+>  		       req, value, index);
+> @@ -150,12 +156,6 @@ static int __az6007_write(struct usb_device *udev, u8 req, u16 value,
+>  				     DUMP_PREFIX_NONE, b, blen);
+>  	}
 >  
->  			if (2 + msg[0].len > sizeof(obuf)) {
->  				warn("i2c wr: len=%d is too big!\n",
-> -				     msg[1].len);
-> +				     msg[0].len);
->  				ret = -EOPNOTSUPP;
->  				goto unlock;
->  			}
-> @@ -367,6 +375,10 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
->  		case(DW2102_RC_QUERY): {
->  			u8 ibuf[2];
+> -	if (blen > 64) {
+> -		pr_err("az6007: tried to write %d bytes, but I2C max size is 64 bytes\n",
+> -		       blen);
+> -		return -EOPNOTSUPP;
+> -	}
+> -
+>  	ret = usb_control_msg(udev,
+>  			      usb_sndctrlpipe(udev, 0),
+>  			      req,
+> @@ -694,8 +694,6 @@ static int az6007_power_ctrl(struct dvb_usb_device *d, int onoff)
+>  	pr_debug("%s()\n", __func__);
 >  
-> +			if (msg[0].len < 2) {
-> +				ret = -EOPNOTSUPP;
-> +				goto unlock;
+>  	if (!state->warm) {
+> -		mutex_init(&state->mutex);
+> -
+>  		ret = az6007_write(d, AZ6007_POWER, 0, 2, NULL, 0);
+>  		if (ret < 0)
+>  			return ret;
+> @@ -770,14 +768,22 @@ static int az6007_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
+>  			if (az6007_xfer_debug)
+>  				printk(KERN_DEBUG "az6007: I2C W/R addr=0x%x len=%d/%d\n",
+>  				       addr, msgs[i].len, msgs[i + 1].len);
+> +			if (msgs[i + 1].len < 1) {
+> +				ret = -EIO;
+> +				goto err;
 > +			}
->  			dw210x_op_rw(d->udev, 0xb8, 0, 0,
->  				     ibuf, 2, DW210X_READ_MSG);
->  			memcpy(msg[0].buf, ibuf, 2);
-> @@ -375,6 +387,10 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
->  		case(DW2102_VOLTAGE_CTRL): {
->  			u8 obuf[2];
+>  			req = AZ6007_I2C_RD;
+>  			index = msgs[i].buf[0];
+>  			value = addr | (1 << 8);
+>  			length = 6 + msgs[i + 1].len;
+>  			len = msgs[i + 1].len;
+> +			if (length > sizeof(st->data)) {
+> +				ret = -EOPNOTSUPP;
+> +				goto err;
+> +			}
+>  			ret = __az6007_read(d->udev, req, value, index,
+>  					    st->data, length);
+> -			if (ret >= len) {
+> +			if (ret >= 5 + len) {
+>  				for (j = 0; j < len; j++)
+>  					msgs[i + 1].buf[j] = st->data[j + 5];
+>  			} else
+> @@ -797,6 +803,10 @@ static int az6007_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
+>  			value = addr | (1 << 8);
+>  			length = msgs[i].len - 1;
+>  			len = msgs[i].len - 1;
+> +			if (length > 64) {
+> +				ret = -EOPNOTSUPP;
+> +				goto err;
+> +			}
+>  			for (j = 0; j < len; j++)
+>  				st->data[j] = msgs[i].buf[j + 1];
+>  			ret =  __az6007_write(d->udev, req, value, index,
+> @@ -815,10 +825,18 @@ static int az6007_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
+>  			value = addr;
+>  			length = msgs[i].len + 6;
+>  			len = msgs[i].len;
+> +			if (length > sizeof(st->data)) {
+> +				ret = -EOPNOTSUPP;
+> +				goto err;
+> +			}
+>  			ret = __az6007_read(d->udev, req, value, index,
+>  					    st->data, length);
+> -			for (j = 0; j < len; j++)
+> -				msgs[i].buf[j] = st->data[j + 5];
+> +			if (ret >= 5 + len) {
+> +				for (j = 0; j < len; j++)
+> +					msgs[i].buf[j] = st->data[j + 5];
+> +			} else {
+> +				ret = -EIO;
+> +			}
+>  		}
+>  		if (ret < 0)
+>  			goto err;
+> @@ -827,7 +845,7 @@ static int az6007_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
+>  	mutex_unlock(&st->mutex);
 >  
-> +			if (msg[0].len < 1) {
-> +				ret = -EOPNOTSUPP;
-> +				goto unlock;
-> +			}
->  			obuf[0] = 0x30;
->  			obuf[1] = msg[0].buf[0];
->  			dw210x_op_rw(d->udev, 0xb2, 0, 0,
-> @@ -407,6 +423,10 @@ static int dw2104_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[], i
->  		case(DW2102_RC_QUERY): {
->  			u8 ibuf[2];
+>  	if (ret < 0) {
+> -		pr_info("%s ERROR: %i\n", __func__, ret);
+> +		pr_info_ratelimited("%s ERROR: %i\n", __func__, ret);
+>  		return ret;
+>  	}
+>  	return num;
+> @@ -889,6 +907,15 @@ static int az6007_download_firmware(struct dvb_usb_device *d,
+>  	return cypress_load_firmware(d->udev, fw, CYPRESS_FX2);
+>  }
 >  
-> +			if (msg[j].len < 2) {
-> +				ret = -EOPNOTSUPP;
-> +				goto unlock;
-> +			}
->  			dw210x_op_rw(d->udev, 0xb8, 0, 0,
->  				     ibuf, 2, DW210X_READ_MSG);
->  			memcpy(msg[j].buf, ibuf, 2);
-> @@ -415,6 +435,10 @@ static int dw2104_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[], i
->  		case(DW2102_VOLTAGE_CTRL): {
->  			u8 obuf[2];
+> +static int az6007_probe(struct dvb_usb_device *d)
+> +{
+> +	struct az6007_device_state *state = d_to_priv(d);
+> +
+> +	mutex_init(&state->mutex);
+> +
+> +	return 0;
+> +}
+> +
+>  /* DVB USB Driver stuff */
+>  static struct dvb_usb_device_properties az6007_props = {
+>  	.driver_name         = KBUILD_MODNAME,
+> @@ -897,6 +924,7 @@ static struct dvb_usb_device_properties az6007_props = {
 >  
-> +			if (msg[j].len < 1) {
-> +				ret = -EOPNOTSUPP;
-> +				goto unlock;
-> +			}
->  			obuf[0] = 0x30;
->  			obuf[1] = msg[j].buf[0];
->  			dw210x_op_rw(d->udev, 0xb2, 0, 0,
-> @@ -444,6 +468,9 @@ static int dw2104_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[], i
->  					     DW210X_READ_MSG);
->  				memcpy(msg[j].buf, ibuf + 2, msg[j].len);
->  				mdelay(10);
-> +			} else if (msg[j].len < 1) {
-> +				ret = -EOPNOTSUPP;
-> +				goto unlock;
->  			} else if (((msg[j].buf[0] == 0xb0) && (msg[j].addr == 0x68)) ||
->  				   ((msg[j].buf[0] == 0xf7) && (msg[j].addr == 0x55))) {
->  				/* write firmware */
-> @@ -557,6 +584,10 @@ static int dw3101_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
->  		case(DW2102_RC_QUERY): {
->  			u8 ibuf[2];
+>  	.adapter_nr          = adapter_nr,
+>  	.size_of_priv        = sizeof(struct az6007_device_state),
+> +	.probe               = az6007_probe,
+>  	.i2c_algo            = &az6007_i2c_algo,
+>  	.tuner_attach        = az6007_tuner_attach,
+>  	.frontend_attach     = az6007_frontend_attach,
+> @@ -919,11 +947,12 @@ static struct dvb_usb_device_properties az6007_cablestar_hdci_props = {
 >  
-> +			if (msg[0].len < 2) {
-> +				ret = -EOPNOTSUPP;
-> +				goto unlock;
-> +			}
->  			dw210x_op_rw(d->udev, 0xb8, 0, 0,
->  				     ibuf, 2, DW210X_READ_MSG);
->  			memcpy(msg[0].buf, ibuf, 2);
-> @@ -597,6 +628,10 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
->  		case (DW2102_RC_QUERY): {
->  			u8 ibuf[5];
->  
-> +			if (msg[j].len < 2) {
-> +				ret = -EOPNOTSUPP;
-> +				goto unlock;
-> +			}
->  			dw210x_op_rw(d->udev, 0xb8, 0, 0,
->  				     ibuf, 5, DW210X_READ_MSG);
->  			memcpy(msg[j].buf, ibuf + 3, 2);
-> @@ -605,6 +640,10 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
->  		case (DW2102_VOLTAGE_CTRL): {
->  			u8 obuf[2];
->  
-> +			if (msg[j].len < 2) {
-> +				ret = -EOPNOTSUPP;
-> +				goto unlock;
-> +			}
->  			obuf[0] = 1;
->  			obuf[1] = msg[j].buf[1];/* off-on */
->  			dw210x_op_rw(d->udev, 0x8a, 0, 0,
-> @@ -618,6 +657,10 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
->  		case (DW2102_LED_CTRL): {
->  			u8 obuf[2];
->  
-> +			if (msg[j].len < 1) {
-> +				ret = -EOPNOTSUPP;
-> +				goto unlock;
-> +			}
->  			obuf[0] = 5;
->  			obuf[1] = msg[j].buf[0];
->  			dw210x_op_rw(d->udev, 0x8a, 0, 0,
-> @@ -647,6 +690,9 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
->  						DW210X_READ_MSG);
->  				memcpy(msg[j].buf, ibuf, msg[j].len);
->  				break;
-> +			} else if (msg[j].len < 1) {
-> +				ret = -EOPNOTSUPP;
-> +				goto unlock;
->  			} else if ((msg[j].buf[0] == 0xb0) && (msg[j].addr == 0x68)) {
->  				/* write firmware */
->  				u8 obuf[19];
-> @@ -737,6 +783,10 @@ static int su3000_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
->  	while (j < num) {
->  		switch (msg[j].addr) {
->  		case SU3000_STREAM_CTRL:
-> +			if (msg[j].len < 1) {
-> +				num = -EOPNOTSUPP;
-> +				break;
-> +			}
->  			state->data[0] = msg[j].buf[0] + 0x36;
->  			state->data[1] = 3;
->  			state->data[2] = 0;
-> @@ -745,6 +795,10 @@ static int su3000_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
->  				err("i2c transfer failed.");
->  			break;
->  		case DW2102_RC_QUERY:
-> +			if (msg[j].len < 2) {
-> +				num = -EOPNOTSUPP;
-> +				break;
-> +			}
->  			state->data[0] = 0x10;
->  			if (dvb_usb_generic_rw(d, state->data, 1,
->  					       state->data, 2, 0) < 0)
+>  	.adapter_nr          = adapter_nr,
+>  	.size_of_priv        = sizeof(struct az6007_device_state),
+> +	.probe               = az6007_probe,
+>  	.i2c_algo            = &az6007_i2c_algo,
+>  	.tuner_attach        = az6007_tuner_attach,
+>  	.frontend_attach     = az6007_cablestar_hdci_frontend_attach,
+>  	.streaming_ctrl      = az6007_streaming_ctrl,
+> -/* ditch get_rc_config as it can't work (TS35 remote, I believe it's rc5) */
+> +	/* ditch get_rc_config as it can't work (TS35 remote, I believe it's rc5) */
+>  	.get_rc_config       = NULL,
+>  	.read_mac_address    = az6007_read_mac_addr,
+>  	.download_firmware   = az6007_download_firmware,
 > 
 > 
 > base-commit: c03c1a14507dfaf8b856c2608f9ac216021fc222
@@ -400,8 +414,3 @@ On Mon, Oct 19, 2026 at 03:10:34PM +0000, 'syzbot' via syzkaller-upstream-modera
 > You can comment on the patch as usual, syzbot will try to address
 > the comments and send a new version of the patch if necessary.
 > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> -- 
-> You received this message because you are subscribed to the Google Groups "syzkaller-upstream-moderation" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-upstream-moderation+unsubscribe@googlegroups.com.
-> To view this discussion visit https://groups.google.com/d/msgid/syzkaller-upstream-moderation/9dda9080-8d80-4504-95dd-0faef04af12d%40mail.kernel.org.
