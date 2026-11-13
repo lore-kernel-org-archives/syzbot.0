@@ -1,93 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.48
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.51
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794573635;
-	b=DTzFPvINd0XqhBSN2vQJi90j9+eDVtJeWT0lkQxrr4Bv0gW6IiPygPKLpAVSraQy013c
-	 8ZERhJKom3O431VWAdJHbtJTP512bSFPkM1VgG1170XPNfT2HJUwIWFUiGL5x0c1dnXme
-	 wGJR4Jksv8K9tYbf/fRjHzSMwybjtfaMZntkf02qdE5LSv0GWFKslIAAv5+pNPOUBPAIo
-	 mycRumGxrvwM6RTcq4AlPqo6mVWxQZe4No0/nWQPLhx9P/Ckw0afaRAKFbvb0N6VUn8kg
-	 291OZrJIO12aS4OZu50ePJ2ueEXIJei3uwhbYCuTET+ozvNGhlJueKUP7I0AuUuFcfA==
+	t=1794575687;
+	b=ET/cJqs9pSVOEO0YfGGiXysWDts5ZsHL7uvUnMv5yBAFpYz8EaOLYR2T83aotkTunV6Q
+	 efJl2oog7wz3GRlp/Jgg+PStZ0f3iY2ftLFDVNe4rug0o6w4rLFVq7o0MnkB2XQBELjLh
+	 uLKA0OXHX3IkmH9kndbWC9GNFPDfhVbJ7SudV64DDpNxBoEjO1DTqxLZETOGmRmF9LapA
+	 fcSKw5X8yfCu766nOC/uj0eZ0u+yccdx3U5IcapAD7CEmaWLgzZFwgfqhm23xb/krNpT1
+	 L87kwsIiMu2evhk3VqPr/lls6W2Tkf9WCirbdR9Ha1J8bYU0eiQQkZaAwgjA3+v8tUw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794573635;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794575687;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
-	 In-Reply-To;
-	bh=YH1Aw+hN+FdLxvWXDU4craUlxyCuHUYXJSvNgOeGfPA=;
-	b=yYMpUeYtCIl8M0mgiRCKvcLYKMRBm0QVxlfAYQGD4eHYZcHGR+biK4VxkkmDEi9MCJCd
-	 uBopx8i5KXNh8jpuB0e0JECu2A/4Y7IIPNtTUIdHNe95dCNx/XaNTFMe6LGvyn5YtTnJq
-	 8cD/l9R7346LgWTIUqsJaHQmjKRtLG7tI6rMWB8+odHJeeFH7e6HBmpOlkLzRm9caDNhI
-	 RbL+uOM3aCpbGd9XpOrPMJhfTJMggOM5UUAis27EqpAJN+GuyiVspATMrm8wstK+5VVpZ
-	 GrFnBeQasIORvfaWtpQTmH0MamFQUJiSMl61Si+UQqlZyUcdHv+8OdbEdP8h+/L8Igg==
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=onbKA3BGt4l9GHRNtxkYjz7KVB7ZtHTNU01AjMrxcFw=;
+	b=V5WBe2OKRvKg+Rm2Xu1+sE0JnyYaFdnaMHl+baAu3o7tdVlkYippsp++XMHWC/aRreKy
+	 aV09XktmOocG1xBiwRj7NE5uCj6kclVBI53wXBIV6htrX+Y60bS++bgdp/hoqJXcuWH9J
+	 /42LilAUfujHLDgiiEazSaJOSGkRQ/C9xMU7uV4pRD+mmfuWv4X+YAiUom6Pvf61vnUpH
+	 JRteEFebi9b9UpfQlZ7mrLptARkzHg0c9Cby8RYWILprLyfT5Q1TEXhgYWCmkOhW6lfW3
+	 fN5av/hM/fVAMgTJHpznpAv/z/10iim8u8Bne5PdV/yKsIBVP0emQjOW2VN2YFV0LkQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=nb6RmG8f;
-	arc=none smtp.remote-ip=209.85.218.48
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=lJis+eQZ;
+	arc=none smtp.remote-ip=209.85.218.51
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C4BC606A327
-	for <syzbot@lists.linux.dev>; Fri, 13 Nov 2026 12:40:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8C4BC606A327
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AAB8606A323
+	for <syzbot@lists.linux.dev>; Fri, 13 Nov 2026 13:14:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8AAB8606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=nb6RmG8f
-Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-c506094fd93so195496366b.1
-        for <syzbot@lists.linux.dev>; Fri, 13 Nov 2026 04:40:34 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=lJis+eQZ
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-c40f29667e6so220404766b.0
+        for <syzbot@lists.linux.dev>; Fri, 13 Nov 2026 05:14:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794573633; x=1795178433; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=YH1Aw+hN+FdLxvWXDU4craUlxyCuHUYXJSvNgOeGfPA=;
-        b=nb6RmG8fDnGTVpM6w8sY7Q7vDRkPI3gOL6XtCUewTE4OY/HngPAWVKq2wbIqp+fhau
-         twKuBvm0JrsAJ7nQBgJs4WFocpQeDRcoXE4H/Zgw2AsuAYeIadRor/ml6xUI9OxlQL2C
-         cOlcEiv88/jnm1/CWXUQvKYlbf/wWZWIQvuIn/KQTVPQqMCPDF3H/W4W7BPrjPntW4JK
-         BtiXQMCvBxoyLH/xuxGlB8/51T7sTCppyEtC088x3gdY58taEA0YyuNxWJhhllaf+Z2J
-         AYb13XiWFJg6aUeYQNr4fDd329F3XlvwinGA9mNu+6cpWw00fhWElSNPuPh7zcaW9YfE
-         uB0g==
+        d=gmail.com; s=20260707; t=1794575685; x=1795180485; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=onbKA3BGt4l9GHRNtxkYjz7KVB7ZtHTNU01AjMrxcFw=;
+        b=lJis+eQZQhDmrRNQwf74mReekyo6wRXyN4++Yd9kEERlvrWZOqIR5Hs71O9ChjcNa/
+         pZ5KA6cA6f0G7rKsrXHX8zC7TVe/6FxLAckt25+Iz6ArjjS4s/pTUNMv7Em/Tk915+6Q
+         W6zI0cURAoKxnu+XrFlFKjpj4q9G1D4IgnK6zhMai1iWsj3F7hAy7P79jgVBmwZoWIHM
+         ElUB2KJxYKDDG9gz7Pq//iFahi/tUaovK0MEK6TCN8NcLJ/1obIB9yfW1Xpm+3IcqY36
+         TNDEP7uUUl+fvXuVGdOHG/cAX6m6+XfT+s+fqv3Lwlm16evN3XwrdG1p6rbSq3W/lnFb
+         7PIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794573633; x=1795178433;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=YH1Aw+hN+FdLxvWXDU4craUlxyCuHUYXJSvNgOeGfPA=;
-        b=twXtnVRSZfRoT4dW7YLCK5tnpcXPn4ROr0x7JPeozy5L3Nlvw9v3bcnoLRzDrmMFj6
-         pMrm7wFGldmII7X2J7wyyeBkG7I+MvyiE0pNGTyATd8kBPO6xYJKSDE2kkKdsnUMWBsR
-         SU3eKfHBvw/SbvLbTnJHdeQ4m7hp964ER9izjIn6qHiu1mzwV3I8vw31ZFDdCHWoLDXK
-         HSri3rf9LhoTUlJhdQ4808yPG5se60SitJMT9snX234C4SJFtauV8abtQUUVVLlY/RDY
-         4qYDL7x9pULzZGvn5ox2Hq0/38rgEsbeIMfRwKGHdlmfU7DVGrfIt/nCAXZAC2+Djngf
-         arMA==
-X-Forwarded-Encrypted: i=1; AL+hErEmsy2Ck2fRRWRBg12mbpfa8RLm1py794jVfrniTzAAXqpSUvaqMZbVkIayS7ul8CAj8SE81UE=@lists.linux.dev
-X-Gm-Message-State: APuU4Z8mY2Zz5WQ579gjzBVqKxFSYgsVb7IgwYPxJtQdVYzpSzQYdO6t
-	0Ljo2yPb8TiXv4+xLq2t4zL2cuPEKj6FjJB5KCrqjmSGdyDR6vAbO52J4faT+InIINk=
-X-Gm-Gg: AYBFou3tEg72YdtPbWBSIsRkUnlmNhcvzFosIwItFXF7U//7FIUKE86u6Ws3q2f5CpH
-	f6NHCQgLOQS2h1VDoRUeL6epGzCHKXjF3GWZWrYa+dFAnJlnoNIzPNMAHvpeB3lZR9nzaz//ept
-	3ClLsBDdkuoG/GGtF02qybR5xQ/GKGmaxKsCj+VpScBzOX9GUvkB+rP5rb7NaTmWWg4E01rwXfl
-	DXwM3LXGzy2XZv5wg/YKzXmbIGLDyf3BP2bI7I9DThMZAEr7EDA+FqGnrYr7q5eF9TCHj/2Pi0e
-	eepKLQb8wb2UeEG2RcGI6rnc8JqhOZwm9LrYJ0uLn1UwZmo9ncAHsjHVAhDbyKZcApGxSBNIZGq
-	QK64uWHcSmIxRSz0VeH9L9/2YvAyoTKuahci1kOVE8tv0LqwUkp64BlD5LXNY4Eql3vdOmxDKkm
-	6CSYc6Vum+PrNDdqLUEZXgMk0UWYBatN/g2UZ6K3nAVrQuax7LNGYH5nVSXGvY+QVsmCwTAKruP
-	j8lsCzfAGnlthjA6ABshnR+qITqvR3ZOxo1v1/vou4qmN0IPieMejGwdAvKvBrlN+eLrZLRnwEp
-	MSeYDz9PlYvs0VdrSPAevgRJJmAJmsHyyEWJZENlPEWzMjYY
-X-Received: by 2002:a17:907:7ba3:b0:c41:5a0e:3356 with SMTP id a640c23a62f3a-c50963cf40dmr205491466b.41.1794573632724;
-        Fri, 13 Nov 2026 04:40:32 -0800 (PST)
-Received: from localhost ([188.146.170.61])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c5095b24b88sm89132466b.16.2026.11.13.04.40.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Nov 2026 04:40:32 -0800 (PST)
-Date: Fri, 13 Nov 2026 13:40:31 +0100
-From: Bartosz Chronowski <immersa.bartosz.chronowski@gmail.com>
-To: syzbot <syzbot@kernel.org>
-Cc: syzkaller-upstream-moderation@googlegroups.com, syzbot@lists.linux.dev
-Subject: Re: [PATCH RFC v2] drm/lease: Use kvmalloc and bound object_count in
- create lease ioctl
-Message-ID: <agka76rdnestbdpdoaploq5nvbeovrz7gluzmnt37ry35dofli@fzdeim53wbf3>
-References: <c18e659d-1e93-4309-8c28-d9fa96827675@mail.kernel.org>
+        d=1e100.net; s=20260707; t=1794575685; x=1795180485;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=onbKA3BGt4l9GHRNtxkYjz7KVB7ZtHTNU01AjMrxcFw=;
+        b=G5HR3Wqhc+NG8CjfKtr9bg/MjYUU9fZ2HDdMtwv51nomKYSJCjfc412aWRcGUeVSBL
+         lrqIM6skTTucGNb5Jbnq43C20u9hZzw7nxFgdGAQjnABRZW9g2t5Hxs0HQBjl9Tx1q8K
+         RM4bUzpgIYb+mg54e5v9wXdStpjZO7Y4gfxX+9TaDQyHkBWohlcvXcBKhzlluK00IB/3
+         LvL0G0UHa6tZeU8bA+NaFgLRz7plPtHKusCQjtgL9jQaDNcsCcp+ENyLOGMNuv0KIpUK
+         jKV6FPCkxwrl3mDMO4qKMTi0tpOw8il5a9sicKylU7v8LBhgLoWa8zHqhciwvv7gd9Yf
+         GUUQ==
+X-Gm-Message-State: APuU4Z+XesGfDDwO98rWoRdPQUQ8u2v/IA+6rvvgLs7D/8DAdJT0X1yr
+	XknOpZz+dUkdOTysHaaN1oYAyh1iv0/X0LBEl7n0HIGRtLh+PxLI4eV3vAMF+ZR4G9L6ow==
+X-Gm-Gg: AYBFou3Fy28/u44tgzGOnpIICPx65Co6giudt9XB5sNMXh8ClozOkKZLSy4pEllKtX5
+	g5kXthvx8gMO0oXYXyyiR0Pu0xBpMFKygOWqWoNKLZa04rSYz0L3fNOkrBhGprmQq5TJ2KNEDb9
+	H6GZpR0ARzI1cjm6qPLIcaN1TawT9oFQ/tuU29rvza/t5eidcaxCUvXofIaNEXYqGf1YY7awIaW
+	EpvaB8tLig8gbuYEgZ5eqlla7WfFEI7yj1NjAjl8dA5Pk9ckDumgjIsOjXxE0G/rLjp8V3U53+C
+	kapinS6Rbq45UGGQ/yWU3gO9/YQuLe02d4sJwQN+W4JJ7Tqx1MRoe76L+ltNQL+kaT5mOsdvXO8
+	HwhFwNjLDZomn2ZrgZa+56CXFFGwtIqNCEDT36oh7SOMbEv9oGAMnLk66rvz8bosiDxPglueMlB
+	EDHBKxXgQNJbOh3yrQPwKXIMlqKvLJtgL3EZa9ohKGbwUfqWwISn0d8zY0tsAFJEajKos3tORHV
+	uHNEzhx3recH2tP1jsplnYFNVrwFVjDBrfhFWFU1orqVahwJ2mrZ9IY4rpTPQ17dlnepZ7UB2QI
+	NRxyafHhJLTjCCJCSowkhwFXyPW5HsZh6G1behNh5f7+MceXfhGjW+3P7Z47Oq85UyDiCOib6LY
+	/evt3O25nd4yQnkUuIEpYXGBCsiBAyBWu5b4LC677gRh6oUGYm4lTyNvuuVxMSltmJzKG9UkLRN
+	s+w8QFNLsiwdIFb8qY5adyhRiJkQ6qnTcDbcspIjm0nwsiUUv61j64a9tidttGxaTRfJsBJS+As
+	JAnz6ib4LjiFg==
+X-Received: by 2002:a17:906:5146:10b0:c46:645f:cedf with SMTP id a640c23a62f3a-c5096398ad5mr169397966b.15.1794575684727;
+        Fri, 13 Nov 2026 05:14:44 -0800 (PST)
+Received: from [192.168.100.100] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c5095b44739sm89903466b.40.2026.11.13.05.14.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Nov 2026 05:14:44 -0800 (PST)
+Message-ID: <354842e3-bcc3-487f-afde-49d5ead285c1@gmail.com>
+Date: Fri, 13 Nov 2026 14:14:43 +0100
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -97,238 +93,314 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <c18e659d-1e93-4309-8c28-d9fa96827675@mail.kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v2] net/x25: fix invalid lock_sock() usage in
+ x25_kill_by_neigh()
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+References: <b624bc4d-6240-4c80-82a8-c727545f2a5e@mail.kernel.org>
+Content-Language: en-US
+From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+In-Reply-To: <b624bc4d-6240-4c80-82a8-c727545f2a5e@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The v2 code change is sound in the tested scenario; no code change is
-requested. The patch still needs corrections to its description of the
-reported tree and warning trace.
-
-Required changes:
-- Correct the reported-tree allocation to kcalloc() at drm_lease.c:389.
-  kzalloc_objs() belongs to the later moderation base.
-- Use the reported mm/page_alloc.c:4727 warning, or label the quoted
-  mm/page_alloc.c:5340 stack as coming from a later source revision.
-
-Keep the corrected signed-conversion explanation and the 1024-object
-rationale. The existing Fixes: tag and recipients need no change.
-
-Testing:
-With the same base commit, C reproducer and comparable arm64 configuration,
-the earlier unpatched test reproduced the selected warning and the v2 test
-reproduced no crashes. The recorded v2 run used one guest and a 180-second
-reproducer budget; total elapsed time, including guest startup, was
-9 minutes 42 seconds under QEMU TCG.
-
-Count-boundary, zero-object and real-lease tests passed, as did invalid-ID
-recovery. Allocation-failure unwind was inspected in source but not tested
-with forced ENOMEM.
-
-Context:
-The 1024-object cap addresses the resource-limit request from the v1 review.
-It exceeds the DRM core limit of 96 distinct leaseable objects and bounds
-both temporary arrays before user IDs are copied. The signed-range guard
-remains separate, and both vmalloc-capable arrays keep matching kvfree()
-cleanup. The new rejection path destroys the temporary IDR and releases
-the lessor.
-
-Impact assessment:
-The selected request requires DRM-master access and demonstrated an
-allocator warning and failed ioctl. A system configured to panic on warnings
-could turn that warning into an outage. No memory corruption or disclosure
-was shown. Sustained memory pressure and concurrency were not tested.
-
-Kind Regards,
-BART CHRONOWSKI
-
-On Fri, Oct 23, 2026 at 01:18:15PM +0000, syzbot wrote:
-> In drm_mode_create_lease_ioctl(), user space supplies an object_count and
-> an array of object_ids to be leased. The kernel copies the IDs from user
-> space using memdup_array_user(), and then fill_object_idr() allocates a
-> temporary array of pointers using kzalloc_objs(struct drm_mode_object *,
-> object_count) (at drivers/gpu/drm/drm_lease.c:389 in the reported tree).
->=20
-> Because kzalloc_objs() performs a kmalloc-family allocation with GFP_KERN=
-EL
-> (which lacks __GFP_NOWARN), if user space requests a sufficiently large
-> object_count (for example, 1,000,000 mode objects), the allocation for the
-> pointer array (1,000,000 * 8 =3D 8,000,000 bytes on 64-bit systems) requi=
-res
-> order 11 pages. This exceeds MAX_PAGE_ORDER and triggers a warning in the
-> page allocator at historical warning-site line drm_lease.c:389 in the
-> reported tree:
->=20
-> WARNING: mm/page_alloc.c:5340 at alloc_order_allowed mm/page_alloc.c:5340
-> [inline]
-> WARNING: mm/page_alloc.c:5340 at __alloc_frozen_pages_noprof+0xe4/0x640
-> mm/page_alloc.c:5397
-> Call trace:
->  alloc_order_allowed mm/page_alloc.c:5340 [inline]
->  __alloc_frozen_pages_noprof+0xe4/0x640 mm/page_alloc.c:5397
->  alloc_pages_mpol+0x1fc/0x3d0 mm/mempolicy.c:2486
->  alloc_frozen_pages_noprof+0xe0/0x214 mm/mempolicy.c:2557
->  ___kmalloc_large_node+0xf0/0x160 mm/slub.c:5353
->  __kmalloc_large_node_noprof+0x2c/0x8c mm/slub.c:5385
->  fill_object_idr drivers/gpu/drm/drm_lease.c:389 [inline]
->  drm_mode_create_lease_ioctl+0x45c/0x15c8 drivers/gpu/drm/drm_lease.c:521
->  drm_ioctl_kernel+0x250/0x328 drivers/gpu/drm/drm_ioctl.c:817
->  drm_ioctl+0x65c/0xa58 drivers/gpu/drm/drm_ioctl.c:914
->  vfs_ioctl fs/ioctl.c:51 [inline]
->  __do_sys_ioctl fs/ioctl.c:597 [inline]
->=20
-> Furthermore, cl->object_count is an unbounded __u32, whereas helper
-> functions such as fill_object_idr() take object_count as a signed integer.
-> A value of cl->object_count greater than INT_MAX is converted to a signed
-> parameter (becoming negative) rather than causing signed arithmetic
-> overflow. In addition, an allocation size exceeding INT_MAX would trigger=
- a
-> WARN_ON_ONCE inside __kvmalloc_node_noprof().
->=20
-> Fix these issues by validating cl->object_count early in
-> drm_mode_create_lease_ioctl() so that values exceeding INT_MAX are reject=
-ed
-> with -EINVAL. In addition, cap object_count to DRM_MAX_LEASE_OBJECTS
-> (1024). In DRM, only CRTCs, connectors, and planes are leaseable, and DRM
-> core bounds each to 32 objects via 32-bit index bitmasks (totaling at most
-> 96 leaseable objects). A limit of 1024 covers all supported leaseable
-> objects while staying within a reasonable allocation budget. Additionally,
-> switch the object_ids allocation to vmemdup_array_user() and the objects
-> pointer array allocation to kvzalloc_objs(), freeing both with kvfree().
-> The vmalloc fallback eliminates the high-order allocation warning, while
-> the count limit controls resource usage.
->=20
-> Fixes: 62884cd386b8 ("drm: Add four ioctls for managing drm mode object l=
-eases [v7]")
+On 11/10/26 18:16, syzbot wrote:
+> x25_kill_by_neigh() is invoked to tear down X.25 sockets associated with a
+> terminating neighbour. This function is called in process context from
+> netdevice notifier handlers (such as NETDEV_DOWN in x25_device_event()),
+> but it is also called in softirq context (NET_RX_SOFTIRQ) under
+> rcu_read_lock() when receiving LAPB frames in x25_lapb_receive_frame() or
+> link control packets in x25_link_control().
+> 
+> x25_kill_by_neigh() acquires lock_sock() around x25_disconnect(). Because
+> lock_sock() is a sleeping lock, calling it from softirq context triggers a
+> "BUG: sleeping function called from invalid context" and a lockdep
+> inconsistent lock state warning ({SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W}) on
+> sk_lock-AF_X25.
+> 
+> Fix this by passing a boolean parameter to x25_kill_by_neigh() and
+> x25_link_terminated() to distinguish between process and softirq contexts.
+> In process context (netdevice notifiers), continue using lock_sock() to
+> synchronously disconnect sockets, ensuring that neighbour and netdevice
+> references are cleared before the notifier returns to preserve the
+> netdevice notifier lifetime guarantee. In softirq context, use
+> bh_lock_sock() instead; if the socket is currently owned by user space,
+> defer the disconnect by setting X25_KILL_BY_NEIGH_FLAG and handling it in
+> x25_release_cb() when the socket is released.
+> 
+> Fixes: 7781607938c8 ("net/x25: Fix null-ptr-deref caused by
+> x25_disconnect")
+> 
+> Fixes: 7781607938c8 ("net/x25: Fix null-ptr-deref caused by x25_disconnect")
 > Assisted-by: Gemini:gemini-4-argon Gemini:gemini-3.8-flash syzbot
-> Reported-by: syzbot+6754751ad05524dae739@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=3D6754751ad05524dae739
-> Link: https://syzkaller.appspot.com/ai_job?id=3D7dc96556-ceb4-414e-a4cf-b=
-696df125160
-> To: "David Airlie" <airlied@gmail.com>
-> To: <dri-devel@lists.freedesktop.org>
-> To: "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>
-> To: "Maxime Ripard" <mripard@kernel.org>
-> To: "Simona Vetter" <simona@ffwll.ch>
-> To: "Thomas Zimmermann" <tzimmermann@suse.de>
-> To: "Keith Packard" <keithp@keithp.com>
+> Reported-by: syzbot+300375dfd44665f063a6@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=300375dfd44665f063a6
+> Link: https://syzkaller.appspot.com/ai_job?id=7eb00706-eb85-4671-b0e7-6b722aa4e884
+> To: "David S. Miller" <davem@davemloft.net>
+> To: "Eric Dumazet" <edumazet@kernel.org>
+> To: "Jakub Kicinski" <kuba@kernel.org>
+> To: <linux-x25@vger.kernel.org>
+> To: "Martin Schiller" <ms@dev.tdt.de>
+> To: <netdev@vger.kernel.org>
+> To: "Paolo Abeni" <pabeni@redhat.com>
+> To: "Duoming Zhou" <duoming@zju.edu.cn>
+> Cc: "Simon Horman" <horms@kernel.org>
 > Cc: <linux-kernel@vger.kernel.org>
->=20
+> 
 > ---
 > v2:
-> - Define DRM_MAX_LEASE_OBJECTS (1024) and cap object_count to it to bound=
- per-request resource usage based on supported leaseable DRM objects.
-> - Validate cl->object_count > INT_MAX directly in early checks.
-> - Update commit description to clarify conversion to signed parameter, al=
-location budget rationale, and historical warning site line in reported tre=
-e.
->=20
+> - Pass a boolean parameter to x25_kill_by_neigh() and x25_link_terminated() to distinguish softirq from process context.
+> - Retain lock_sock() in process context to preserve synchronous socket teardown for netdevice notifications.
+> - Retain write_lock_bh() on x25_list_lock instead of manually managing local_bh_disable().
+> - Shorten the commit description by removing stack traces and per-function details.
+> - Fix line wrapping in the Fixes tag.
+> 
 > v1:
-> https://lore.kernel.org/all/4c497e30-fff3-4ef0-81f9-b9b47ca9e22f@mail.ker=
-nel.org/T/
+> https://lore.kernel.org/all/f1cbebc5-aab9-44ac-8425-1bc9fdbbf5b7@mail.kernel.org/T/
 > ---
-> diff --git a/drivers/gpu/drm/drm_lease.c b/drivers/gpu/drm/drm_lease.c
-> index 5d2cf724c..6f05dde38 100644
-> --- a/drivers/gpu/drm/drm_lease.c
-> +++ b/drivers/gpu/drm/drm_lease.c
-> @@ -3,6 +3,9 @@
->   * Copyright =C2=A9 2017 Keith Packard <keithp@keithp.com>
->   */
->  #include <linux/file.h>
-> +#include <linux/limits.h>
-> +#include <linux/slab.h>
-> +#include <linux/string.h>
->  #include <linux/uaccess.h>
-> =20
->  #include <drm/drm_auth.h>
-> @@ -69,6 +72,14 @@
->  #define drm_for_each_lessee(lessee, lessor) \
->  	list_for_each_entry((lessee), &(lessor)->lessees, lessee_list)
-> =20
-> +/*
-> + * Only CRTCs, connectors, and planes are leaseable, and DRM core bounds
-> + * each to 32 objects (32-bit index bitmasks). Cap per-request object_co=
-unt
-> + * to a small finite limit that covers all supported leaseable objects
-> + * within a reasonable allocation budget.
-> + */
-> +#define DRM_MAX_LEASE_OBJECTS 1024
-> +
->  static uint64_t drm_lease_idr_object;
-> =20
->  struct drm_master *drm_lease_owner(struct drm_master *master)
-> @@ -386,7 +397,7 @@ static int fill_object_idr(struct drm_device *dev,
->  	int ret;
->  	bool universal_planes =3D READ_ONCE(lessor_priv->universal_planes);
-> =20
-> -	objects =3D kzalloc_objs(struct drm_mode_object *, object_count);
-> +	objects =3D kvzalloc_objs(struct drm_mode_object *, object_count);
->  	if (!objects)
->  		return -ENOMEM;
-> =20
-> @@ -462,7 +473,7 @@ static int fill_object_idr(struct drm_device *dev,
->  		if (objects[o])
->  			drm_mode_object_put(objects[o]);
->  	}
-> -	kfree(objects);
-> +	kvfree(objects);
->  	return ret;
+> diff --git a/include/net/x25.h b/include/net/x25.h
+> index 414f3fd99..ec4c9ced1 100644
+> --- a/include/net/x25.h
+> +++ b/include/net/x25.h
+> @@ -118,6 +118,7 @@ enum {
+>  #define X25_Q_BIT_FLAG		0
+>  #define X25_INTERRUPT_FLAG	1
+>  #define X25_ACCPT_APPRV_FLAG	2
+> +#define X25_KILL_BY_NEIGH_FLAG	3
+>  
+>  /**
+>   *	struct x25_route - x25 routing entry
+> @@ -196,7 +197,7 @@ int x25_addr_aton(unsigned char *, struct x25_address *, struct x25_address *);
+>  struct sock *x25_find_socket(unsigned int, struct x25_neigh *);
+>  void x25_destroy_socket_from_timer(struct sock *);
+>  int x25_rx_call_request(struct sk_buff *, struct x25_neigh *, unsigned int);
+> -void x25_kill_by_neigh(struct x25_neigh *);
+> +void x25_kill_by_neigh(struct x25_neigh *, bool);
+>  
+>  /* x25_dev.c */
+>  void x25_send_frame(struct sk_buff *, struct x25_neigh *);
+> @@ -230,7 +231,7 @@ void x25_link_control(struct sk_buff *, struct x25_neigh *, unsigned short);
+>  void x25_link_device_up(struct net_device *);
+>  void x25_link_device_down(struct net_device *);
+>  void x25_link_established(struct x25_neigh *);
+> -void x25_link_terminated(struct x25_neigh *);
+> +void x25_link_terminated(struct x25_neigh *, bool);
+>  void x25_transmit_clear_request(struct x25_neigh *, unsigned int,
+>  				unsigned char);
+>  void x25_transmit_link(struct sk_buff *, struct x25_neigh *);
+> diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+> index f45c9ec7d..3fe3ba594 100644
+> --- a/net/x25/af_x25.c
+> +++ b/net/x25/af_x25.c
+> @@ -221,7 +221,7 @@ static int x25_device_event(struct notifier_block *this, unsigned long event,
+>  		case NETDEV_DOWN:
+>  			nb = x25_get_neigh(dev);
+>  			if (nb) {
+> -				x25_link_terminated(nb);
+> +				x25_link_terminated(nb, false);
+>  				x25_neigh_put(nb);
+>  			}
+>  			x25_route_device_down(dev);
+> @@ -234,7 +234,7 @@ static int x25_device_event(struct notifier_block *this, unsigned long event,
+>  			if (!netif_carrier_ok(dev)) {
+>  				nb = x25_get_neigh(dev);
+>  				if (nb) {
+> -					x25_link_terminated(nb);
+> +					x25_link_terminated(nb, false);
+>  					x25_neigh_put(nb);
+>  				}
+>  			}
+> @@ -492,10 +492,17 @@ static int x25_listen(struct socket *sock, int backlog)
+>  	return rc;
 >  }
-> =20
-> @@ -496,6 +507,11 @@ int drm_mode_create_lease_ioctl(struct drm_device *d=
-ev,
->  		return -EINVAL;
+>  
+> +static void x25_release_cb(struct sock *sk)
+> +{
+> +	if (test_and_clear_bit(X25_KILL_BY_NEIGH_FLAG, &x25_sk(sk)->flags))
+> +		x25_disconnect(sk, ENETUNREACH, 0, 0);
+> +}
+> +
+>  static struct proto x25_proto = {
+>  	.name	  = "X25",
+>  	.owner	  = THIS_MODULE,
+>  	.obj_size = sizeof(struct x25_sock),
+> +	.release_cb = x25_release_cb,
+>  };
+>  
+>  static struct sock *x25_alloc_socket(struct net *net, int kern)
+> @@ -610,6 +617,7 @@ static struct sock *x25_make_new(struct sock *osk)
+>  	x25->cudmatchlength = ox25->cudmatchlength;
+>  
+>  	clear_bit(X25_INTERRUPT_FLAG, &x25->flags);
+> +	clear_bit(X25_KILL_BY_NEIGH_FLAG, &x25->flags);
+>  	x25_init_timers(sk);
+>  out:
+>  	return sk;
+> @@ -827,6 +835,7 @@ static int x25_connect(struct socket *sock, struct sockaddr_unsized *uaddr,
+>  		x25->neighbour = NULL;
+>  		read_unlock_bh(&x25_list_lock);
+>  		x25->state = X25_STATE_0;
+> +		clear_bit(X25_KILL_BY_NEIGH_FLAG, &x25->flags);
 >  	}
-> =20
-> +	if (cl->object_count > INT_MAX) {
-> +		drm_dbg_lease(dev, "too many objects: %u\n", cl->object_count);
-> +		return -EINVAL;
-> +	}
+>  out_put_route:
+>  	x25_route_put(rt);
+> @@ -1761,7 +1770,7 @@ static struct notifier_block x25_dev_notifier = {
+>  	.notifier_call = x25_device_event,
+>  };
+>  
+> -void x25_kill_by_neigh(struct x25_neigh *nb)
+> +void x25_kill_by_neigh(struct x25_neigh *nb, bool bh)
+>  {
+>  	struct sock *s;
+>  
+> @@ -1769,13 +1778,27 @@ void x25_kill_by_neigh(struct x25_neigh *nb)
+>  	write_lock_bh(&x25_list_lock);
+>  
+>  	sk_for_each(s, &x25_list) {
+> -		if (x25_sk(s)->neighbour == nb) {
+> +		if (x25_sk(s)->neighbour == nb &&
+> +		    (!bh || !test_bit(X25_KILL_BY_NEIGH_FLAG, &x25_sk(s)->flags))) {
+>  			sock_hold(s);
+>  			write_unlock_bh(&x25_list_lock);
+> -			lock_sock(s);
+> -			if (x25_sk(s)->neighbour == nb)
+> -				x25_disconnect(s, ENETUNREACH, 0, 0);
+> -			release_sock(s);
+> +			if (bh) {
+> +				bh_lock_sock(s);
+> +				if (x25_sk(s)->neighbour == nb) {
+> +					if (sock_owned_by_user(s))
+> +						set_bit(X25_KILL_BY_NEIGH_FLAG,
+> +							&x25_sk(s)->flags);
+> +					else
+> +						x25_disconnect(s, ENETUNREACH,
+> +							       0, 0);
+> +				}
+> +				bh_unlock_sock(s);
+> +			} else {
+> +				lock_sock(s);
+> +				if (x25_sk(s)->neighbour == nb)
+> +					x25_disconnect(s, ENETUNREACH, 0, 0);
+> +				release_sock(s);
+> +			}
+>  			sock_put(s);
+>  			goto again;
+>  		}
+> diff --git a/net/x25/x25_dev.c b/net/x25/x25_dev.c
+> index fb8ac1aa5..be5eb01de 100644
+> --- a/net/x25/x25_dev.c
+> +++ b/net/x25/x25_dev.c
+> @@ -135,7 +135,7 @@ int x25_lapb_receive_frame(struct sk_buff *skb, struct net_device *dev,
+>  		break;
+>  
+>  	case X25_IFACE_DISCONNECT:
+> -		x25_link_terminated(nb);
+> +		x25_link_terminated(nb, true);
+>  		break;
+>  	}
+>  	x25_neigh_put(nb);
+> diff --git a/net/x25/x25_link.c b/net/x25/x25_link.c
+> index d1e8cd81c..d3e90b402 100644
+> --- a/net/x25/x25_link.c
+> +++ b/net/x25/x25_link.c
+> @@ -82,7 +82,7 @@ void x25_link_control(struct sk_buff *skb, struct x25_neigh *nb,
+>  			break;
+>  		case X25_LINK_STATE_3:
+>  			/* clear existing virtual calls */
+> -			x25_kill_by_neigh(nb);
+> +			x25_kill_by_neigh(nb, true);
+>  
+>  			x25_transmit_restart_confirmation(nb);
+>  			break;
+> @@ -97,7 +97,7 @@ void x25_link_control(struct sk_buff *skb, struct x25_neigh *nb,
+>  			break;
+>  		case X25_LINK_STATE_3:
+>  			/* clear existing virtual calls */
+> -			x25_kill_by_neigh(nb);
+> +			x25_kill_by_neigh(nb, true);
+>  
+>  			x25_transmit_restart_request(nb);
+>  			nb->state = X25_LINK_STATE_2;
+> @@ -247,14 +247,14 @@ void x25_link_established(struct x25_neigh *nb)
+>   *	request has failed.
+>   */
+>  
+> -void x25_link_terminated(struct x25_neigh *nb)
+> +void x25_link_terminated(struct x25_neigh *nb, bool bh)
+>  {
+>  	nb->state = X25_LINK_STATE_0;
+>  	skb_queue_purge(&nb->queue);
+>  	x25_stop_t20timer(nb);
+>  
+>  	/* Out of order: clear existing virtual calls (X.25 03/93 4.6.3) */
+> -	x25_kill_by_neigh(nb);
+> +	x25_kill_by_neigh(nb, bh);
+>  }
+>  
+>  /*
+> diff --git a/net/x25/x25_subr.c b/net/x25/x25_subr.c
+> index 159708d9a..344818f88 100644
+> --- a/net/x25/x25_subr.c
+> +++ b/net/x25/x25_subr.c
+> @@ -341,6 +341,8 @@ void x25_disconnect(struct sock *sk, int reason, unsigned char cause,
+>  {
+>  	struct x25_sock *x25 = x25_sk(sk);
+>  
+> +	clear_bit(X25_KILL_BY_NEIGH_FLAG, &x25->flags);
 > +
->  	lessor =3D drm_file_get_master(lessor_priv);
->  	/* Do not allow sub-leases */
->  	if (lessor->lessor) {
-> @@ -509,8 +525,15 @@ int drm_mode_create_lease_ioctl(struct drm_device *d=
-ev,
->  	/* Handle leased objects, if any */
->  	idr_init(&leases);
->  	if (object_count !=3D 0) {
-> -		object_ids =3D memdup_array_user(u64_to_user_ptr(cl->object_ids),
-> -					       object_count, sizeof(__u32));
-> +		if (object_count > DRM_MAX_LEASE_OBJECTS) {
-> +			drm_dbg_lease(dev, "too many objects: %zu\n", object_count);
-> +			ret =3D -EINVAL;
-> +			idr_destroy(&leases);
-> +			goto out_lessor;
-> +		}
-> +
-> +		object_ids =3D vmemdup_array_user(u64_to_user_ptr(cl->object_ids),
-> +						object_count, sizeof(__u32));
->  		if (IS_ERR(object_ids)) {
->  			ret =3D PTR_ERR(object_ids);
->  			idr_destroy(&leases);
-> @@ -520,7 +543,7 @@ int drm_mode_create_lease_ioctl(struct drm_device *de=
-v,
->  		/* fill and validate the object idr */
->  		ret =3D fill_object_idr(dev, lessor_priv, &leases,
->  				      object_count, object_ids);
-> -		kfree(object_ids);
-> +		kvfree(object_ids);
->  		if (ret) {
->  			drm_dbg_lease(dev, "lease object lookup failed: %i\n", ret);
->  			idr_destroy(&leases);
->=20
->=20
-> base-commit: 24a19b953e2a3d0ea5a8c4951a0ab8f32720c907
-> --=20
-> This is an AI-generated patch subject to moderation.
-> Reply with '#syz upstream' to Sign-off the patch as a human author
-> and send it to the upstream kernel mailing lists.
-> Reply with '#syz reject' to reject it ('#syz unreject' to undo).
->=20
-> See https://goo.gle/syzbot-ai-patches for information about AI-generated =
-patches.
-> You can comment on the patch as usual, syzbot will try to address
-> the comments and send a new version of the patch if necessary.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>  	x25_clear_queues(sk);
+>  	x25_stop_timer(sk);
+>  
+> 
+> 
+> base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+
+Please let x25_release_cb() clear the call only while the socket still
+uses a neighbour, by testing x25->neighbour together with
+X25_KILL_BY_NEIGH_FLAG before it calls x25_disconnect(). The receive
+path sets the flag under bh_lock_sock(), but a task that owns the
+socket runs x25_disconnect() without that spinlock, for example for a
+Clear Request that release_sock() processes from the socket backlog.
+x25_disconnect() clears the flag at its start and stores NULL in
+x25->neighbour only at its end, so a softirq walk that rechecks the
+neighbour in between still finds it and sets the flag after the clear.
+x25_release_cb() then calls x25_disconnect(sk, ENETUNREACH, 0, 0) a
+second time and overwrites sk_err and the clearing cause and
+diagnostic of a call that was already cleared. The x25_connect() error
+path has the same kind of window around its NULL store and its
+clear_bit(). x25_release_cb() runs from release_sock() with the socket
+spinlock held while the task still owns the socket, so neither the
+owner nor the receive path can change x25->neighbour at that point,
+and the check closes both windows without new locking.
+
+Please also remove the wrapped Fixes text from the end of the patch
+description. The description still ends with the Fixes tag for
+7781607938c8 split over two lines, and the same tag is added again
+below the description from the Fixes metadata. The posted mail
+therefore carries the tag twice, once in a broken form that tools
+cannot parse. Keep the Fixes metadata itself, since it points to the
+right commit. Only the copy inside the description text has to go.
+
+In x25_kill_by_neigh(), keep the added lines within 80 columns. The
+new condition that tests the neighbour and X25_KILL_BY_NEIGH_FLAG is
+84 columns wide, and netdev checks patches with an 80 column limit.
+Reflow it without changing the logic, for example with a local struct
+x25_sock pointer or with an early continue for a socket on another
+neighbour.
+
+Keep the rest of the design. The callers should keep passing the
+calling context, because each of them knows it, and deciding it inside
+x25_kill_by_neigh() would need in_softirq() style checks that new code
+should not use. The netdevice notifier path keeps lock_sock(), the
+neighbour recheck and the synchronous disconnect, and does not skip a
+socket that already carries the flag. The receive path,
+x25_lapb_receive_frame() and the restart cases in x25_link_control(),
+takes bh_lock_sock(), disconnects at once when no task owns the socket
+and otherwise sets the flag for x25_release_cb(). Keep the sock_hold(),
+recheck and restart structure of the walk, and keep clearing the flag
+in x25_make_new(), because a new socket copies the flags of its
+listener.
+
+-- 
+Krystian Kaniewski
