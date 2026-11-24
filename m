@@ -1,49 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.197
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795548615;
-	b=c1zlEuH5vhq4j9xqhY5urHjc6X0pbcCbeYOXih2FjQBzXe/U09k24RSdmb2bHW3Jm+zk
-	 PT4oSjHgPkVD5qe3LmxsJiCqam5FV42AWi6ZiyusrhSYAy91aP/1R2xSZVZzQR3Rkf/D/
-	 zt5TRAk2cE2u/HP/H0u3lyKdwDgn5UmjFm9Dbl7uwBb9LUKdXFPPLPwg1oWlohQAstt1U
-	 W/eE7/UOkdBXMrGSNC7ZAMi2m8fSMGdBgiK/6931CU4STRm3cu5cgFKjPy1W2Xn6c6LTt
-	 9/SOyN3UQOMl1J/Dju3SgNJmX2QerbKDqSjuVBgxBDQi0VEl6uEA3uaNIJgRIhin6CA==
+	t=1795553061;
+	b=v8jji9gA7ChIAABtefyVnTn41khaUqNWVF2WWLc6CgMKvUnC3qXJlyLa2/tTjcZHxp6Y
+	 wtzchyOK5kt+zVE20A9E3X3tG3r/4B21eMneiQlSMaCfimhdCzbJd/cvoVi6IjkxY9S91
+	 doPDZ1UN8TqBtfWW3uYEDQL0twfKaYhjmGPo06QeSk6wb0Dl0SYxp1uhxJlKB81W5s57P
+	 JDAAiVOMbrcL1+ed5Ju3uU5gPHFbc1g5zIYUKbSRPhzrhvN3cW/Rs+/1+lYTKpSWvMlxS
+	 Mp32jhOFO/kDArp7gNAhtXfnE5TKnpg5HZ98VQXnRGFfXa1kk3Tp2KVn0lWLQ5YgI/g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795548615;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:Date;
-	bh=GkXTirVkt3TbgL+S4J68YELlwZU5Zjz4xJSa0zJqP44=;
-	b=ZhWqqZqEAy9vR7sCp8zOjAz7gh4Dl4krsep5/cSw501VMnNLyRTMjlf261VmYOdFc38b
-	 cEhScU/YtvZNGfnecsU5MDZFShMKg9h/Pkd5HGcjxKXsH3SpqjrvJqpWAcDUkniap+eGo
-	 HPhsncZyNnc/0PdZ24NtY0l5TrhGczy4NMNeSjgZOe5VK6EQ3T258eo6l5jQqrob1QOuY
-	 sHpKqGJPKFBXHdd9J+nVJvtPGH9qRtlz1/HzNBaNjpPNaejtlx9UjCdzzsBNRTBGUz2XO
-	 GKMjgIAZN9LpvXOhVKOk9CQ9PpPwAheIudBmPS547L59B2qdUpm5mz7m4cujMtNZj3w==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795553061;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
+	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
+	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=E71EEVhugpYCsv9y55j6fe0uI0cwOOO1uZApmtIQ74E=;
+	b=L2ksYYGipYgvLwMwcW2y/kAiyA3n7V9nI7V630Wh8TUdSCuXheXyoHq2ikMUv4wGiGqh
+	 3Wrpi0CwzO0ZTN/F9FVoiIswNc8Unlzz4e6+RW5bKcaWdoJPwVU7KBdTlhSbRi/+agNbi
+	 taiWeIA5HMLz/+y3MmsC7By5rymS8vvX0CBSG6uqyupYFnLnrP5XZUbsxfhvsPCBAlwzy
+	 hBef7gQjyca6F8SpFXsqUf/+b48Etc0zT4naXLaJOee+gxJgmTRF7PnHOFHiVLSG45nD6
+	 SaR4bS6t0hOX4VIxiqvkfERETJmxvQrB/1uebolAqtWVo4moLj1lLrgyZrw1Q73HXWQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ijs3F4CG;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=fail header.from=syzkaller.appspotmail.com;
+	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
+	arc=none smtp.remote-ip=209.85.167.197
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 769C4606A326
-	for <syzbot@lists.linux.dev>; Tue, 24 Nov 2026 19:30:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ijs3F4CG
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 85BD41F000C4;
-	Tue, 24 Nov 2026 19:30:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795548614;
-	bh=GkXTirVkt3TbgL+S4J68YELlwZU5Zjz4xJSa0zJqP44=;
-	h=From:To:Cc:Subject:Date;
-	b=ijs3F4CGAH8+r5jZfoDTKIksGO7YptOYZ6cTAeUjPZ3spUKq67GqGYOAw7b28aAPV
-	 PauN9Rdk2X9Y4cVNc1v1c6kvhQr5TwhoRyFCp9nkzf7+8GX38ybSSesXGLwoy6agXk
-	 3IxIYyqSlntRoFfm5r635hiuZut1U+QU/dlkOMl2pNu6UZGUCUBzQ/YQvbg9isAa4G
-	 6ZKVhM8SgPg4osy2Jz80OBaY8VOEqVhpRWygHfQLhnI60qn9tKVOz6xzuX9H0So/4V
-	 QTUiqas1ach2ey4Jbs56e7bDHR8HtqsmAdMZJ+byjlQelpEZkjc6hejz7wTrTgzAaF
-	 W7yBWwPOEAxPA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Subject: [PATCH RFC] net: lapb: fix circular locking dependency with lapbether and hdlc_x25
-Message-ID: <144f609e-5895-4d8e-9a5d-79df8fb38d9c@mail.kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 341E9606A31E
+	for <syzbot@lists.linux.dev>; Tue, 24 Nov 2026 20:44:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 341E9606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4c55ba309c2so5643915b6e.1
+        for <syzbot@lists.linux.dev>; Tue, 24 Nov 2026 12:44:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795553060; x=1796157860;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=E71EEVhugpYCsv9y55j6fe0uI0cwOOO1uZApmtIQ74E=;
+        b=tmxcOesUcmBV0H/qPCni/NKj/LwWD1fnB05dLKVDqzVPoMebBL0Jkj7/cLhrxigbbK
+         APfEUoPQS+msXlx206lsN91xIX7OjH9kXV5weACzXKkD683j71nSi2sy9txKgKvqnZ5R
+         92KkGJTUvgWe7BGT/SLjt+vKf7nwrcYNPgyCzXLUmFUM2y/8wh7jTuSX4z+IoMIR5lxC
+         WnwsIDcghfNI0sqQR6AczvdkN9h7D5hbNk3OkYLbfWA48BglWp3mF+2NJzbhGxp9pHme
+         ZEFzzV5auLA3om7HNHxfaueXr0L+QwCGeiePnlgfVhSRba6vEdiHBSuDrv5CttTPHZiq
+         TXYw==
+X-Gm-Message-State: APuU4Z9Xf8CmJlku2HKGpeLlAepTlQvezoroyloMQ4V7JM2jqZKasPH8
+	ZLbrsPEHKQrS+vzoR5uiMArURj35rc2KDmR9jn61Y+//XAkdLHbXNxU8iQglv5Tc+VKPBX0+rM4
+	sOiqe3SOlKC2+O1hV5qd9WLaSoKHJy/Snr6rc55tE36eOo/epE7HwF3V3zhA=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -53,571 +57,183 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Tue, 24 Nov 2026 19:30:14 +0000 (UTC)
+X-Received: by 2002:a05:6808:1a04:b0:4f7:27ba:9db4 with SMTP id
+ 5614622812f47-57a0d2f7050mr16291019b6e.60.1795553060272; Tue, 24 Nov 2026
+ 12:44:20 -0800 (PST)
+Date: Tue, 24 Nov 2026 12:44:20 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6b05f724.eee51036.26eb72.03d8.GAE@google.com>
+Subject: [moderation/CI] Re: PISA: Pre-mapped IOVA Superpage Allocator for DMA
+ and CoCo
+From: syzbot ci <syzbot+cif40e4ba677709e68@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Lockdep reports a circular locking dependency between `lapb_list_lock`,
-`&lapb->lock`, `_xmit_X25`, and `&lapbeth->up_lock`:
+syzbot ci has tested the following series
 
-WARNING: possible circular locking dependency detected
-task is trying to acquire lock:
-ffffffff91666a98 (lapb_list_lock){++..}-{3:3}, at: lapb_devtostruct
-net/lapb/lapb_iface.c:102 [inline]
-ffffffff91666a98 (lapb_list_lock){++..}-{3:3}, at:
-lapb_connect_request+0x2c/0x270 net/lapb/lapb_iface.c:287
+[v3] PISA: Pre-mapped IOVA Superpage Allocator for DMA and CoCo
+https://lore.kernel.org/all/20261120010655.467825-1-lrizzo@google.com
+* [RFC PATCH v3 01/25] mm: Introduce CONFIG_PISA and metadata table
+* [RFC PATCH v3 02/25] mm: Add PISA allocator lifecycle and page recycle ho=
+ok
+* [RFC PATCH v3 03/25] mm: Add per-NUMA-node PISA page reservoir
+* [RFC PATCH v3 04/25] mm/page_alloc: Extend alloc_pages() to __GFP_PISA an=
+d PISA block allocation
+* [RFC PATCH v3 05/25] mm: Add global cap and shrinker for PISA pages
+* [RFC PATCH v3 06/25] iommu/dma: Map PISA memory in a per-domain IOVA wind=
+ow
+* [RFC PATCH v3 07/25] driver core: Add per-device pisa_* sysfs attributes =
+for PISA optin
+* [RFC PATCH v3 08/25] iommu/dma: Use PISA for coherent DMA allocations
+* [RFC PATCH v3 09/25] mm: Add per-CPU block caches to PISA allocators
+* [RFC PATCH v3 10/25] mm: Add background page scrubber for PISA allocators
+* [RFC PATCH v3 11/25] mm: Migrate user pages into PISA
+* [RFC PATCH v3 12/25] block, mm: Support PISA for disk I/O and scrub migra=
+tion
+* [RFC PATCH v3 13/25] net: Cache leaf PISA TX flags on struct net_device
+* [RFC PATCH v3 14/25] net: Use per-node PISA allocators for skb_page_frag_=
+refill()
+* [RFC PATCH v3 15/25] net: Use PISA for page_pool memory
+* [RFC PATCH v3 16/25] mm/slub: Add SLAB_CACHE_PISA_RO for PISA-backed slab=
+ caches
+* [RFC PATCH v3 17/25] net: Allocate small skb heads from PISA
+* [RFC PATCH v3 18/25] net: Migrate user pages into PISA for MSG_ZEROCOPY
+* [RFC PATCH v3 19/25] mm, iommu/dma: Support decrypted PISA pages
+* [RFC PATCH v3 20/25] arm64/mm, mm: Support decrypted PISA pages in Realms
+* [RFC PATCH v3 21/25] mm: Add PISA statistics and debugfs
+* [RFC PATCH v3 22/25] net/libeth: Use GFP_KERNEL when pre-filling RX rings
+* [RFC PATCH v3 23/25] net/gve: Use GFP_KERNEL when pre-filling RX rings
+* [RFC PATCH v3 24/25] net/gve: Use PISA memory for RX buffers
+* [RFC PATCH v3 25/25] Documentation: Add PISA architecture documentation
 
-but task is already holding lock:
-ffff888033d5cf40 (&lapbeth->up_lock){+...}-{3:3}, at:
-lapbeth_xmit+0x32/0x260 drivers/net/wan/lapbether.c:191
+and found the following issue:
+WARNING in __alloc_workqueue
 
-which lock already depends on the new lock.
+Full report is available here:
+https://ci.syzbot.org/series/80fa818b-452d-4361-bfc6-33c65f928f71
 
-the existing dependency chain (in reverse order) is:
+***
 
--> #3 (&lapbeth->up_lock){+...}-{3:3}:
-       lapbeth_xmit+0x32/0x260 drivers/net/wan/lapbether.c:191
-       dev_hard_start_xmit+0x2cd/0x830 net/core/dev.c:4084
-       __dev_queue_xmit+0x1237/0x3260 net/core/dev.c:5100
+WARNING in __alloc_workqueue
 
--> #2 (_xmit_X25#2){+...}-{3:3}:
-       __dev_queue_xmit+0xd8c/0x3260 net/core/dev.c:5094
-       gre_tap_xmit+0x543/0x760 net/ipv4/ip_gre.c:783
-       __dev_queue_xmit+0x14d3/0x3260 net/core/dev.c:5058
-       lapb_data_transmit+0x90/0xb0 net/lapb/lapb_iface.c:447
-       lapb_transmit_buffer+0x163/0x200 net/lapb/lapb_out.c:149
-       lapb_establish_data_link+0x89/0xe0 net/lapb/lapb_out.c:-1
-       lapb_device_event+0x4eb/0x680 net/lapb/lapb_iface.c:-1
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/l=
+inux.git
+base:      20eef29b7c8465ac98d7dd6d6f2ac07a8d8056ca
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/1b1679cb-3959-4df9-8546-bc04ba6e5cd=
+3/config
 
--> #1 (&lapb->lock){+.-.}-{3:3}:
-       lapb_unregister+0x1e1/0x450 net/lapb/lapb_iface.c:187
-       lapbeth_close+0x56/0xb0 drivers/net/wan/lapbether.c:350
+smpboot: CPU0: Intel QEMU Virtual CPU version 2.5+ (family: 0xf, model: 0x6=
+b, stepping: 0x1)
+Performance Events: unsupported Netburst CPU model 107 no PMU driver, softw=
+are events only.
+signal: max sigframe size: 1440
+rcu: Hierarchical SRCU implementation.
+rcu: 	Max phase no-delay instances is 1000.
+Timer migration: 1 hierarchy levels; 8 children per group; 0 crossnode leve=
+l
+NMI watchdog: Perf NMI watchdog permanently disabled
+smp: Bringing up secondary CPUs ...
+smpboot: x86: Booting SMP configuration:
+.... node  #1, CPUs:      #1
+smp: Brought up 2 nodes, 2 CPUs
+smpboot: Total of 2 processors activated (11200.80 BogoMIPS)
+Memory: 5553400K/7339508K available (181131K kernel code, 30788K rwdata, 59=
+468K rodata, 27564K init, 120564K bss, 1621204K reserved, 0K cma-reserved)
+devtmpfs: initialized
+x86/mm: Memory block size: 128MB
+Running RCU synchronous self tests
+Running RCU synchronous self tests
+Running RCU Tasks wait API self tests
+Running RCU Tasks Trace wait API self tests
+posixtimers hash table entries: 1024 (order: 5, 73728 bytes, vmalloc)
+futex hash table entries: 256 (32768 bytes on 2 NUMA nodes, total 64 KiB, l=
+inear).
+PM: RTC time: 20:32:46, date: 2026-11-24
+NET: Registered PF_NETLINK/PF_ROUTE protocol family
+audit: initializing netlink subsys (disabled)
+thermal_sys: Registered thermal governor 'step_wise'
+cpuidle: using governor menu
+NET: Registered PF_QIPCRTR protocol family
+dca service started, version 1.12.1
+PCI: ECAM [mem 0xb0000000-0xbfffffff] (base 0xb0000000) for domain 0000 [bu=
+s 00-ff]
+PCI: ECAM [mem 0xb0000000-0xbfffffff] reserved as E820 entry
+PCI: Using configuration type 1 for base access
+HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
+HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
+------------[ cut here ]------------
+workqueue: pisa is using neither WQ_PERCPU or WQ_UNBOUND. Setting WQ_PERCPU=
+.
+WARNING: kernel/workqueue.c:6151 at __alloc_workqueue+0x1e4b/0x21d0, CPU#1:=
+ swapper/0/1
+Modules linked in:
+CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full)=
+=20
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16=
+.2-1 04/01/2014
+RIP: 0010:__alloc_workqueue+0x1e4e/0x21d0
+Code: 18 89 39 00 90 0f 0b 90 e9 87 fd ff ff e8 0a 89 39 00 90 0f 0b 90 e9 =
+79 fd ff ff e8 fc 88 39 00 48 8d 3d 65 52 32 10 4c 89 f6 <67> 48 0f b9 3a 8=
+b 5c 24 20 81 cb 00 01 00 00 e9 99 e4 ff ff e8 d9
+RSP: 0000:ffffc90000067750 EFLAGS: 00010293
+RAX: ffffffff818fa174 RBX: 0000000000000000 RCX: ffff888102aa5ac0
+RDX: 0000000000000000 RSI: ffff888162ab5d78 RDI: ffffffff91c1f3e0
+RBP: ffffc900000678a0 R08: ffff888102aa5ac0 R09: 0000000000000002
+R10: 0000000000000102 R11: 0000000000000000 R12: dffffc0000000000
+R13: ffff888162ab5c00 R14: ffff888162ab5d78 R15: ffff888162ab5d18
+FS:  0000000000000000(0000) GS:ffff8882a77e4000(0000) knlGS:000000000000000=
+0
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 000000000ff48000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ alloc_workqueue_noprof+0xe3/0x210
+ pisa_init+0x127/0x260
+ do_one_initcall+0x250/0x870
+ do_initcall_level+0x10a/0x1a0
+ do_initcalls+0x59/0xa0
+ kernel_init_freeable+0x29d/0x3e0
+ kernel_init+0x22/0x1d0
+ ret_from_fork+0x514/0xb70
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
 
--> #0 (lapb_list_lock){++..}-{3:3}:
-       lapb_devtostruct net/lapb/lapb_iface.c:102 [inline]
-       lapb_connect_request+0x2c/0x270 net/lapb/lapb_iface.c:287
-       lapbeth_xmit+0x133/0x260 drivers/net/wan/lapbether.c:205
-       dev_hard_start_xmit+0x2cd/0x830 net/core/dev.c:4084
-       __dev_queue_xmit+0x1237/0x3260 net/core/dev.c:5100
-       packet_sendmsg+0x4089/0x5330 net/packet/af_packet.c:3189
 
-Chain exists of:
-  lapb_list_lock --> _xmit_X25#2 --> &lapbeth->up_lock
+***
 
-The cycle arises from bidirectional lock-ordering inversions across the
-`lapbether`, `lapb`, and netdevice transmit paths. In `lapbeth_xmit()`
-(invoked under the device TX queue lock `_xmit_X25`) and `lapbeth_rcv()`,
-`lapbether` acquires `&lapbeth->up_lock` and keeps it held across calls
-into `lapb_connect_request()`, `lapb_disconnect_request()`,
-`lapb_data_request()`, and `lapb_data_received()`, which acquire
-`lapb_list_lock` in `lapb_devtostruct()` and then `&lapb->lock`. Meanwhile,
-`lapbeth_close()` calls `lapb_unregister()`, which acquires
-`write_lock_bh(&lapb_list_lock)` and nests `spin_lock_bh(&lapb->lock)`
-inside it (and could also call `usleep_range()` while holding
-`lapb_list_lock`). Conversely, `lapb_device_event()`, LAPB timers, and
-other LAPB paths call `lapb_transmit_buffer()` -> `lapb_data_transmit()` ->
-`lapbeth_data_transmit()` -> `dev_queue_xmit()` synchronously while holding
-`&lapb->lock`. When the underlying Ethernet device is an L2 tunnel such as
-`gretap` whose outer route passes back through a `lapb` device,
-`dev_queue_xmit()` acquires `_xmit_X25` and calls `lapbeth_xmit()`
-(`&lapbeth->up_lock`), closing the cycle and enabling real ABBA deadlocks
-as well as single-CPU self-deadlocks on `&lapbeth->up_lock` or
-`&lapb->lock`. The `hdlc_x25` driver shares the same `up_lock` pattern
-across `x25_xmit()` and `x25_rx()`. In addition, `lapbeth_setup()` called
-`netdev_lockdep_set_classes()` before `alloc_netdev_mqs()` allocated TX
-queues (`dev->num_tx_queues == 0`), leaving the TX queue lock in the
-default `_xmit_X25` class, and `lapbeth` did not mark itself `lltx`.
-
-Fix this by decoupling locking across the LAPB and driver boundaries:
-
-1. Defer outbound lower-layer transmission outside `&lapb->lock` by adding
-`tx_queue` and `tx_work` to `struct lapb_cb`. `lapb_data_transmit()` now
-queues frames onto `lapb->tx_queue` (bounded by `LAPB_TX_QUEUE_LEN_MAX`)
-and schedules `lapb->tx_work` on `system_highpri_wq`, while
-`lapb_tx_work()` splices the queue and invokes
-`lapb->callbacks->data_transmit()` under
-`local_bh_disable()`/`local_bh_enable()` without holding `&lapb->lock`.
-
-2. Restructure `lapb_unregister()` to unlink the `lapb_cb` via
-`__lapb_remove_cb()` under `write_lock_bh(&lapb_list_lock)` and immediately
-release `lapb_list_lock` before waiting for other references to drop
-(`refcount_read(&lapb->refcnt) > 1`), acquiring `&lapb->lock` to clear
-queues and stop timers, calling `timer_delete_sync()`, cancelling
-`tx_work`, and purging `tx_queue`.
-
-3. Remove `up_lock` from `struct lapbethdev` and `struct x25_state`.
-Publish device readiness with `smp_store_release(&...->up, true)` in
-`lapbeth_open()`/`x25_open()`, guard TX and RX fastpaths (`lapbeth_xmit()`,
-`lapbeth_rcv()`, `x25_xmit()`, `x25_rx()`) with RCU read lock and
-`smp_load_acquire(&...->up)` so no driver spinlock is held across
-`lapb_*()` calls, and set `WRITE_ONCE(...->up, false)` followed by
-`synchronize_net()` in `lapbeth_close()`/`x25_close()` before
-`lapb_unregister()`, `napi_disable()`/`tasklet_kill()`, and
-`skb_queue_purge(&...->rx_queue)`.
-
-4. In `lapbether`, move `netdev_lockdep_set_classes()` into a new
-`.ndo_init` callback (`lapbeth_dev_init()`) so it runs after TX queue
-allocation, set `dev->lltx = true` in `lapbeth_setup()`, and defer
-`dev_put(ethdev)` in `lapbeth_free_device()` and `lapbeth_cleanup_driver()`
-until after `unregister_netdevice(lapbeth->axdev)` closes the device and
-drains `lapb->tx_work`.
-
-Fixes: b491e6a7391e ("net: lapb: Add locking to the lapb module")
-Assisted-by: Gemini:gemini-4-hydrogen Gemini:gemini-4-carbon Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+8328573e4d0514392471@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=8328573e4d0514392471
-Link: https://syzkaller.appspot.com/ai_job?id=08f7caee-ffcb-4407-8ed4-7be88c525cac
-To: "Andrew Lunn" <andrew+netdev@lunn.ch>
-To: "David S. Miller" <davem@davemloft.net>
-To: "Eric Dumazet" <edumazet@kernel.org>
-To: "Krzysztof Halasa" <khc@pm.waw.pl>
-To: "Jakub Kicinski" <kuba@kernel.org>
-To: <linux-x25@vger.kernel.org>
-To: "Martin Schiller" <ms@dev.tdt.de>
-To: <netdev@vger.kernel.org>
-To: "Paolo Abeni" <pabeni@redhat.com>
-To: "Xie He" <xie.he.0141@gmail.com>
-Cc: "Simon Horman" <horms@kernel.org>
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
-index f72c92c24..8ee626833 100644
---- a/drivers/net/wan/hdlc_x25.c
-+++ b/drivers/net/wan/hdlc_x25.c
-@@ -17,6 +17,7 @@
- #include <linux/module.h>
- #include <linux/pkt_sched.h>
- #include <linux/poll.h>
-+#include <linux/rcupdate.h>
- #include <linux/rtnetlink.h>
- #include <linux/skbuff.h>
- #include <net/x25device.h>
-@@ -24,7 +25,6 @@
- struct x25_state {
- 	x25_hdlc_proto settings;
- 	bool up;
--	spinlock_t up_lock; /* Protects "up" */
- 	struct sk_buff_head rx_queue;
- 	struct tasklet_struct rx_tasklet;
- };
-@@ -127,9 +127,9 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
- 		return NETDEV_TX_OK;
- 	}
- 
--	spin_lock_bh(&x25st->up_lock);
--	if (!x25st->up) {
--		spin_unlock_bh(&x25st->up_lock);
-+	guard(rcu)();
-+	/* Pairs with smp_store_release() in x25_open(). */
-+	if (!smp_load_acquire(&x25st->up)) {
- 		kfree_skb(skb);
- 		return NETDEV_TX_OK;
- 	}
-@@ -140,7 +140,6 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
- 		result = lapb_data_request(dev, skb);
- 		if (result != LAPB_OK)
- 			dev_kfree_skb(skb);
--		spin_unlock_bh(&x25st->up_lock);
- 		return NETDEV_TX_OK;
- 
- 	case X25_IFACE_CONNECT:
-@@ -171,7 +170,6 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
- 		break;
- 	}
- 
--	spin_unlock_bh(&x25st->up_lock);
- 	dev_kfree_skb(skb);
- 	return NETDEV_TX_OK;
- }
-@@ -214,9 +212,8 @@ static int x25_open(struct net_device *dev)
- 	if (result != LAPB_OK)
- 		return -EINVAL;
- 
--	spin_lock_bh(&x25st->up_lock);
--	x25st->up = true;
--	spin_unlock_bh(&x25st->up_lock);
-+	/* Publish LAPB setup before x25_xmit()/x25_rx() see up == true. */
-+	smp_store_release(&x25st->up, true);
- 
- 	return 0;
- }
-@@ -226,12 +223,12 @@ static void x25_close(struct net_device *dev)
- 	hdlc_device *hdlc = dev_to_hdlc(dev);
- 	struct x25_state *x25st = state(hdlc);
- 
--	spin_lock_bh(&x25st->up_lock);
--	x25st->up = false;
--	spin_unlock_bh(&x25st->up_lock);
-+	WRITE_ONCE(x25st->up, false);
-+	synchronize_net();
- 
- 	lapb_unregister(dev);
- 	tasklet_kill(&x25st->rx_tasklet);
-+	skb_queue_purge(&x25st->rx_queue);
- }
- 
- static int x25_rx(struct sk_buff *skb)
-@@ -246,20 +243,17 @@ static int x25_rx(struct sk_buff *skb)
- 		return NET_RX_DROP;
- 	}
- 
--	spin_lock_bh(&x25st->up_lock);
--	if (!x25st->up) {
--		spin_unlock_bh(&x25st->up_lock);
-+	guard(rcu)();
-+	/* Pairs with smp_store_release() in x25_open(). */
-+	if (!smp_load_acquire(&x25st->up)) {
- 		kfree_skb(skb);
- 		dev->stats.rx_dropped++;
- 		return NET_RX_DROP;
- 	}
- 
--	if (lapb_data_received(dev, skb) == LAPB_OK) {
--		spin_unlock_bh(&x25st->up_lock);
-+	if (lapb_data_received(dev, skb) == LAPB_OK)
- 		return NET_RX_SUCCESS;
--	}
- 
--	spin_unlock_bh(&x25st->up_lock);
- 	dev->stats.rx_errors++;
- 	dev_kfree_skb_any(skb);
- 	return NET_RX_DROP;
-@@ -344,7 +338,6 @@ static int x25_ioctl(struct net_device *dev, struct if_settings *ifs)
- 
- 		memcpy(&state(hdlc)->settings, &new_settings, size);
- 		state(hdlc)->up = false;
--		spin_lock_init(&state(hdlc)->up_lock);
- 		skb_queue_head_init(&state(hdlc)->rx_queue);
- 		tasklet_setup(&state(hdlc)->rx_tasklet, x25_rx_queue_kick);
- 
-diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
-index c3630a829..7f1b7eb21 100644
---- a/drivers/net/wan/lapbether.c
-+++ b/drivers/net/wan/lapbether.c
-@@ -38,6 +38,7 @@
- #include <linux/module.h>
- #include <linux/lapb.h>
- #include <linux/init.h>
-+#include <linux/rcupdate.h>
- 
- #include <net/netdev_lock.h>
- #include <net/x25device.h>
-@@ -54,7 +55,6 @@ struct lapbethdev {
- 	struct net_device	*ethdev;	/* link to ethernet device */
- 	struct net_device	*axdev;		/* lapbeth device (lapb#) */
- 	bool			up;
--	spinlock_t		up_lock;	/* Protects "up" */
- 	struct sk_buff_head	rx_queue;
- 	struct napi_struct	napi;
- };
-@@ -126,11 +126,9 @@ static int lapbeth_rcv(struct sk_buff *skb, struct net_device *dev,
- 
- 	rcu_read_lock();
- 	lapbeth = lapbeth_get_x25_dev(dev);
--	if (!lapbeth)
-+	/* Pairs with smp_store_release() in lapbeth_open(). */
-+	if (!lapbeth || !smp_load_acquire(&lapbeth->up))
- 		goto drop_unlock_rcu;
--	spin_lock_bh(&lapbeth->up_lock);
--	if (!lapbeth->up)
--		goto drop_unlock;
- 
- 	len = skb->data[0] + skb->data[1] * 256;
- 	dev->stats.rx_packets++;
-@@ -142,15 +140,10 @@ static int lapbeth_rcv(struct sk_buff *skb, struct net_device *dev,
- 	err = lapb_data_received(lapbeth->axdev, skb);
- 	if (err != LAPB_OK) {
- 		printk(KERN_DEBUG "lapbether: lapb_data_received err - %d\n", err);
--		goto drop_unlock;
-+		goto drop_unlock_rcu;
- 	}
--out:
--	spin_unlock_bh(&lapbeth->up_lock);
- 	rcu_read_unlock();
- 	return 0;
--drop_unlock:
--	kfree_skb(skb);
--	goto out;
- drop_unlock_rcu:
- 	rcu_read_unlock();
- drop:
-@@ -188,8 +181,9 @@ static netdev_tx_t lapbeth_xmit(struct sk_buff *skb,
- 	struct lapbethdev *lapbeth = netdev_priv(dev);
- 	int err;
- 
--	spin_lock_bh(&lapbeth->up_lock);
--	if (!lapbeth->up)
-+	rcu_read_lock();
-+	/* Pairs with smp_store_release() in lapbeth_open(). */
-+	if (!smp_load_acquire(&lapbeth->up))
- 		goto drop;
- 
- 	/* There should be a pseudo header of 1 byte added by upper layers.
-@@ -226,12 +220,12 @@ static netdev_tx_t lapbeth_xmit(struct sk_buff *skb,
- 		pr_err("lapb_data_request error - %d\n", err);
- 		goto drop;
- 	}
--out:
--	spin_unlock_bh(&lapbeth->up_lock);
-+	rcu_read_unlock();
- 	return NETDEV_TX_OK;
- drop:
-+	rcu_read_unlock();
- 	kfree_skb(skb);
--	goto out;
-+	return NETDEV_TX_OK;
- }
- 
- static void lapbeth_data_transmit(struct net_device *ndev, struct sk_buff *skb)
-@@ -331,9 +325,8 @@ static int lapbeth_open(struct net_device *dev)
- 		return -ENODEV;
- 	}
- 
--	spin_lock_bh(&lapbeth->up_lock);
--	lapbeth->up = true;
--	spin_unlock_bh(&lapbeth->up_lock);
-+	/* Publish LAPB/NAPI setup before rx/tx paths see up == true. */
-+	smp_store_release(&lapbeth->up, true);
- 
- 	return 0;
- }
-@@ -343,22 +336,29 @@ static int lapbeth_close(struct net_device *dev)
- 	struct lapbethdev *lapbeth = netdev_priv(dev);
- 	int err;
- 
--	spin_lock_bh(&lapbeth->up_lock);
--	lapbeth->up = false;
--	spin_unlock_bh(&lapbeth->up_lock);
-+	WRITE_ONCE(lapbeth->up, false);
-+	synchronize_net();
- 
- 	err = lapb_unregister(dev);
- 	if (err != LAPB_OK)
- 		pr_err("lapb_unregister error: %d\n", err);
- 
- 	napi_disable(&lapbeth->napi);
-+	skb_queue_purge(&lapbeth->rx_queue);
- 
- 	return 0;
- }
- 
-+static int lapbeth_dev_init(struct net_device *dev)
-+{
-+	netdev_lockdep_set_classes(dev);
-+	return 0;
-+}
-+
- /* ------------------------------------------------------------------------ */
- 
- static const struct net_device_ops lapbeth_netdev_ops = {
-+	.ndo_init	     = lapbeth_dev_init,
- 	.ndo_open	     = lapbeth_open,
- 	.ndo_stop	     = lapbeth_close,
- 	.ndo_start_xmit	     = lapbeth_xmit,
-@@ -367,9 +367,9 @@ static const struct net_device_ops lapbeth_netdev_ops = {
- 
- static void lapbeth_setup(struct net_device *dev)
- {
--	netdev_lockdep_set_classes(dev);
- 	dev->netdev_ops	     = &lapbeth_netdev_ops;
- 	dev->needs_free_netdev = true;
-+	dev->lltx	     = true;
- 	dev->type            = ARPHRD_X25;
- 	dev->hard_header_len = 0;
- 	dev->mtu             = 1000;
-@@ -411,7 +411,6 @@ static int lapbeth_new_device(struct net_device *dev)
- 	lapbeth->ethdev = dev;
- 
- 	lapbeth->up = false;
--	spin_lock_init(&lapbeth->up_lock);
- 
- 	skb_queue_head_init(&lapbeth->rx_queue);
- 	netif_napi_add_weight(ndev, &lapbeth->napi, lapbeth_napi_poll, 16);
-@@ -434,9 +433,11 @@ static int lapbeth_new_device(struct net_device *dev)
-  */
- static void lapbeth_free_device(struct lapbethdev *lapbeth)
- {
--	dev_put(lapbeth->ethdev);
-+	struct net_device *ethdev = lapbeth->ethdev;
-+
- 	list_del_rcu(&lapbeth->node);
- 	unregister_netdevice(lapbeth->axdev);
-+	dev_put(ethdev);
- }
- 
- /*	Handle device status changes.
-@@ -515,19 +516,14 @@ module_init(lapbeth_init_driver);
- 
- static void __exit lapbeth_cleanup_driver(void)
- {
--	struct lapbethdev *lapbeth;
--	struct list_head *entry, *tmp;
-+	struct lapbethdev *lapbeth, *tmp;
- 
- 	dev_remove_pack(&lapbeth_packet_type);
- 	unregister_netdevice_notifier(&lapbeth_dev_notifier);
- 
- 	rtnl_lock();
--	list_for_each_safe(entry, tmp, &lapbeth_devices) {
--		lapbeth = list_entry(entry, struct lapbethdev, node);
--
--		dev_put(lapbeth->ethdev);
--		unregister_netdevice(lapbeth->axdev);
--	}
-+	list_for_each_entry_safe(lapbeth, tmp, &lapbeth_devices, node)
-+		lapbeth_free_device(lapbeth);
- 	rtnl_unlock();
- }
- module_exit(lapbeth_cleanup_driver);
-diff --git a/include/net/lapb.h b/include/net/lapb.h
-index 6c0742064..8b4c5d13a 100644
---- a/include/net/lapb.h
-+++ b/include/net/lapb.h
-@@ -3,6 +3,7 @@
- #define _LAPB_H 
- #include <linux/lapb.h>
- #include <linux/refcount.h>
-+#include <linux/workqueue.h>
- 
- #define	LAPB_HEADER_LEN MAX_HEADER		/* LAPB over Ethernet + a bit more */
- 
-@@ -97,6 +98,8 @@ struct lapb_cb {
- 	/* Internal control information */
- 	struct sk_buff_head	write_queue;
- 	struct sk_buff_head	ack_queue;
-+	struct sk_buff_head	tx_queue;
-+	struct work_struct	tx_work;
- 	unsigned char		window;
- 	const struct lapb_register_struct *callbacks;
- 
-diff --git a/net/lapb/lapb_iface.c b/net/lapb/lapb_iface.c
-index 670e0859a..1c39dfee7 100644
---- a/net/lapb/lapb_iface.c
-+++ b/net/lapb/lapb_iface.c
-@@ -36,9 +36,13 @@
- #include <linux/init.h>
- #include <net/lapb.h>
- 
-+#define LAPB_TX_QUEUE_LEN_MAX 1000
-+
- static LIST_HEAD(lapb_list);
- static DEFINE_RWLOCK(lapb_list_lock);
- 
-+static void lapb_tx_work(struct work_struct *work);
-+
- /*
-  *	Free an allocated lapb control block.
-  */
-@@ -63,8 +67,8 @@ static __inline__ void lapb_put(struct lapb_cb *lapb)
-  */
- static void __lapb_remove_cb(struct lapb_cb *lapb)
- {
--	if (lapb->node.next) {
--		list_del(&lapb->node);
-+	if (!list_empty(&lapb->node)) {
-+		list_del_init(&lapb->node);
- 		lapb_put(lapb);
- 	}
- }
-@@ -115,8 +119,11 @@ static struct lapb_cb *lapb_create_cb(void)
- 	if (!lapb)
- 		goto out;
- 
-+	INIT_LIST_HEAD(&lapb->node);
- 	skb_queue_head_init(&lapb->write_queue);
- 	skb_queue_head_init(&lapb->ack_queue);
-+	skb_queue_head_init(&lapb->tx_queue);
-+	INIT_WORK(&lapb->tx_work, lapb_tx_work);
- 
- 	timer_setup(&lapb->t1timer, NULL, 0);
- 	timer_setup(&lapb->t2timer, NULL, 0);
-@@ -172,16 +179,20 @@ EXPORT_SYMBOL(lapb_register);
- int lapb_unregister(struct net_device *dev)
- {
- 	struct lapb_cb *lapb;
--	int rc = LAPB_BADTOKEN;
- 
- 	write_lock_bh(&lapb_list_lock);
- 	lapb = __lapb_devtostruct(dev);
-+	if (lapb) {
-+		lapb_put(lapb);
-+		__lapb_remove_cb(lapb);
-+	}
-+	write_unlock_bh(&lapb_list_lock);
-+
- 	if (!lapb)
--		goto out;
--	lapb_put(lapb);
-+		return LAPB_BADTOKEN;
- 
- 	/* Wait for other refs to "lapb" to drop */
--	while (refcount_read(&lapb->refcnt) > 2)
-+	while (refcount_read(&lapb->refcnt) > 1)
- 		usleep_range(1, 10);
- 
- 	spin_lock_bh(&lapb->lock);
-@@ -197,13 +208,11 @@ int lapb_unregister(struct net_device *dev)
- 	timer_delete_sync(&lapb->t1timer);
- 	timer_delete_sync(&lapb->t2timer);
- 
--	__lapb_remove_cb(lapb);
-+	cancel_work_sync(&lapb->tx_work);
-+	__skb_queue_purge(&lapb->tx_queue);
- 
- 	lapb_put(lapb);
--	rc = LAPB_OK;
--out:
--	write_unlock_bh(&lapb_list_lock);
--	return rc;
-+	return LAPB_OK;
- }
- EXPORT_SYMBOL(lapb_unregister);
- 
-@@ -439,12 +448,32 @@ int lapb_data_indication(struct lapb_cb *lapb, struct sk_buff *skb)
- 	return NET_RX_SUCCESS; /* For now; must be != NET_RX_DROP */
- }
- 
-+static void lapb_tx_work(struct work_struct *work)
-+{
-+	struct lapb_cb *lapb = container_of(work, struct lapb_cb, tx_work);
-+	struct sk_buff_head list;
-+	struct sk_buff *skb;
-+
-+	__skb_queue_head_init(&list);
-+	spin_lock_bh(&lapb->tx_queue.lock);
-+	skb_queue_splice_tail_init(&lapb->tx_queue, &list);
-+	spin_unlock_bh(&lapb->tx_queue.lock);
-+
-+	while ((skb = __skb_dequeue(&list))) {
-+		local_bh_disable();
-+		lapb->callbacks->data_transmit(lapb->dev, skb);
-+		local_bh_enable();
-+	}
-+}
-+
- int lapb_data_transmit(struct lapb_cb *lapb, struct sk_buff *skb)
- {
- 	int used = 0;
- 
--	if (lapb->callbacks->data_transmit) {
--		lapb->callbacks->data_transmit(lapb->dev, skb);
-+	if (lapb->callbacks->data_transmit &&
-+	    skb_queue_len_lockless(&lapb->tx_queue) < LAPB_TX_QUEUE_LEN_MAX) {
-+		skb_queue_tail(&lapb->tx_queue, skb);
-+		queue_work(system_highpri_wq, &lapb->tx_work);
- 		used = 1;
- 	}
- 
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+The email will later be sent to:
+[akpm@linux-foundation.org aleksander.lobakin@intel.com axboe@kernel.dk bre=
+ndan.jackman@linux.dev catalin.marinas@arm.com cl@gentwo.org corbet@lwn.net=
+ dakr@kernel.org davem@davemloft.net david@kernel.org driver-core@lists.lin=
+ux.dev dtatulea@nvidia.com edumazet@kernel.org gregkh@linuxfoundation.org h=
+annes@cmpxchg.org hao.li@linux.dev harry@kernel.org hawk@kernel.org hch@lst=
+.de horms@kernel.org hramamurthy@google.com ilias.apalodimas@linaro.org iom=
+mu@lists.linux.dev jack@suse.cz jannh@google.com jgg@ziepe.ca joro@8bytes.o=
+rg joshwash@google.com kuba@kernel.org kuniyu@google.com liam@infradead.org=
+ linux-api@vger.kernel.org linux-arm-kernel@lists.infradead.org linux-block=
+@vger.kernel.org linux-doc@vger.kernel.org linux-fsdevel@vger.kernel.org li=
+nux-kernel@vger.kernel.org linux-mm@kvack.org ljs@kernel.org lrizzo@google.=
+com m.szyprowski@samsung.com mhocko@suse.com namangulati@google.com netdev@=
+vger.kernel.org pabeni@redhat.com praan@google.com rafael@kernel.org rdunla=
+p@infradead.org rientjes@google.com rizzo.unipi@gmail.com]
 
-base-commit: b6a9fa34ce4187cb69d3c588a4bbffc31ce5db8f
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+If the report looks fine to you, reply with:
+#syz upstream
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+If the report is a false positive, reply with
+#syz invalid
+
