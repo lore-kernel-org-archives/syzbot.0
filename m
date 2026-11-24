@@ -1,49 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.71
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795450786;
-	b=b/UT339FvwxsBOlYw56TwUHuzyC/s4zEVSwoYIqyAaHylxMiQTCDqZIS/wkRHIaYkw9A
-	 CpwOAjyeseAB8BTXi8XBXaL2/qAPUDkvWnIWl7CtxH6TeAZ+7SALSNeno8nimb1yLz1Iz
-	 qGYuUEklvt//R0ZHckEKrDI72Ng7s/H/X2gOXe7uvS1K1Yy4a27t8MUTEy/wkWuwNbTGP
-	 Mq/94o7Cc1BQ/NQ7z6pMcXSyiKSa7/bW1lZKXQXHb4UIWJ5YyUs1+WONDMWD7cCBY/y6Y
-	 +HvyooSmR/OUbc7+wWUVD9P+EimrgPmu8rM8riVAMKv32Z/yNoVNu12Ezj7S8JCDuvg==
+	t=1795487304;
+	b=2ZVAAGeOZlzJP3qegWpkK18OiDigusNBwKwo4Q/JF/az8Zd95DlwMokJ+IV/GsQDzYUS
+	 YMlbMsKJrBpcMFe8r3AUNvjVgvZJK4AI3Rub+CbNEwieZ+cQCkM1FvaYPqAvBpFQE72Ix
+	 OSn+w+22lFr3qjrNjC2UcNVHOATi8yK+kY79lNqcuGsYZpjEEJbEE/2siz0UvQjiZVLEX
+	 o1E5eetBndHiJZMPNv3tJ3QjVAlq1k55az/VXc0DT10MC/RzBoDo4bx98iiQZYxWDMODn
+	 T9KKHxDN+dvYDqbKVnWKw4o43z7gbYuCEOyAdT53Mj1b4Gz+IWpSKgE05JNcQaOrPbg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795450786;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:Date;
-	bh=n9qlRErtr0Ug0NfOhV87GVLC94NDncg/dzhH0g7xeyY=;
-	b=2AoOPQSaSg2x51hvwZB755ivVReUMaupwuIoEUnqLvvXz39mSasQy0w4cUUac0zNHUc/
-	 rIfuehXPysdhDSdOP/9FJhqFEBdrQI6jUUzLA4OiwAPDZHNycveVGenbaUy3nWCSxri66
-	 8uMYOMSn21lZPRAoc2pJgW7/gnGUMfm02SCrKMm2JmULzi02J32fEof9IEKn35xkI00aO
-	 l4O07kpwZvyMIDZ+0eYJMXXU0VvsN5l9HusjDnuWmodO1zcN3mcZAaudxGkPYkkc7BljS
-	 FccQgmTNUJq4evDGDcM9HASiOASx74R8ne0vMfAuL2fGd4YC0fIehcMLZ/VEjDDIA2Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795487304;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
+	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
+	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=daMli+na3AERw8DkKcmsotokxxrrM0kIOzAJ4BIAmIY=;
+	b=t9IvZEZJGYX2C/Uan2vpx3ICuRKkRfz4r7vUgyfluLLETDRT/Y/SveVXh2AYvXbgmUgs
+	 QzaWO6VYKh9ePdM1EHbdkrn45V1eYFRRoVS9ZHD84+2temiaynf6y/KvM4cbhimceWL29
+	 0Eq5Pw4RW5OUAZnMCSRnlwmGYWD0AOCjfl8JdCVPXQIjx4jaGSS1n9qBrYsZntbYvAjZ0
+	 cDs6jZYgCXDTtyzULI7i7FXPwgMmQWoz267TEB7v9QBLi37+9HijDH2IjefxuPf8K5t5u
+	 wta3N9j8iZtXqEPjV+5OSip03InITba1nXa4ZLTwIdZImDcXQdFmiAqfMGTsYgy5dmw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nlbmRpvs;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=fail header.from=syzkaller.appspotmail.com;
+	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
+	arc=none smtp.remote-ip=209.85.210.71
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 29293606A31E
-	for <syzbot@lists.linux.dev>; Mon, 23 Nov 2026 16:19:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nlbmRpvs
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6BFA61F000C4;
-	Mon, 23 Nov 2026 16:19:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795450785;
-	bh=n9qlRErtr0Ug0NfOhV87GVLC94NDncg/dzhH0g7xeyY=;
-	h=From:To:Cc:Subject:Date;
-	b=nlbmRpvs7Iwly0lR2qGl5RbnCjiSoIi+FMp+1AHHjJE1gdj+NQ8HTjBotmFtVh6gj
-	 0yTp+deSSBDyQuLQcPjOz3lD7sAJY7B7/0Yh6QBOCgZ/03MSgmhYsBkOh1WFBbXPAw
-	 8WxEMppESYkbUPhAmFvSi7f87R5Pkejp+Lr6gzG5dq3Sr8+F9mkGTeqkPsirb+BRau
-	 lj7kwv0/ZBdhFv7ALMlKPpnTFr7VmX3bRmUyUrxYps74VWjZdKs+697fPNaZPUqozS
-	 bD2RMppDUT7+A5oRxSMD7M1nrhgzEL7OJNNgOKUI/gwlVK62is+hARms/bZop4nx7w
-	 4nMeh27qsaA7g==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev, uladzislau.zhauniarovich@gmail.com
-Subject: [PATCH RFC v4] md: drop a never-started reshape request when stopping the array
-Message-ID: <749832f1-1779-4aae-93a4-6be0fca10fe4@mail.kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45E50606A31E
+	for <syzbot@lists.linux.dev>; Tue, 24 Nov 2026 02:28:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 45E50606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-862a5ad18d0so4706548a34.3
+        for <syzbot@lists.linux.dev>; Mon, 23 Nov 2026 18:28:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795487303; x=1796092103;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=daMli+na3AERw8DkKcmsotokxxrrM0kIOzAJ4BIAmIY=;
+        b=ld9DDzJFAzQKYLVv1EQnhcgai5qEvQiql18XgdcEwVrBGc56SDf/4YeD2vJ+YK1Dz6
+         WTaA52RR7H7PdaDd6hP5f7mYTCXQ9xLWmmMrqstcYmR/VxnqM9YANsMqYts6EeaOp/ek
+         UaT2rDrdAcqUuT9LBNYkmnSuhWdDHU2ylLQMGWkTPjiemHJTBnwL2fPtGSFn+f/M8d3i
+         JqQGwpE10TwgwcsS79Nr2UPNYNQz9K8fQUhREap/PfoQCXWywCt4Ob43ft5KKKtlbNMz
+         wYJvzDs5tcP0HU5peak9BQC2OH5y/Po90xl+UE8/iF0MeLYD8Ev60Na3Vi8vlS50kvg9
+         V6Gw==
+X-Gm-Message-State: APuU4Z+eq2/ykiK40AP7v3A5VJ6q9e3jcPXQNWfbKTTN2roYIv5IVYBd
+	tRRqQT+6uK4+6mXI8m1FkQaaATi/9IhV1gBOsDXDVm07+WApbmEFr5FOOXhKywHgQV8cEAZnD+T
+	WdSdYU9qidtwscPhmUwTP1WcQRFRxgIgQcp4qYK8Ljc77imjLi6lJxbUjK0A=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -53,129 +57,80 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Mon, 23 Nov 2026 16:19:45 +0000 (UTC)
+X-Received: by 2002:a05:6808:3502:b0:4ec:77df:f4b1 with SMTP id
+ 5614622812f47-57a09e0c7f1mr15736469b6e.25.1795487303385; Mon, 23 Nov 2026
+ 18:28:23 -0800 (PST)
+Date: Mon, 23 Nov 2026 18:28:23 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6b04f647.44b41460.34b83f.0038.GAE@google.com>
+Subject: [moderation/CI] Re: mm/huge_memory: copy PMDs at fork like the PTE
+ path does
+From: syzbot ci <syzbot+ci8a78565f4200c734@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Writing raid_disks, layout, or chunk_size on a running array records a
-reshape request in struct mddev without starting the reshape until
-sync_action is set to "reshape". Because super_90_sync() and super_1_sync()
-only write reshape metadata to the superblock when reshape_position !=
-MaxSector, a never-started reshape exists purely in memory. Dropping the
-request when the array is stopped matches the state that would be loaded on
-disk reassembly.
+syzbot ci has tested the following series
 
-A minimal reproduction sequence is:
+[v6] mm/huge_memory: copy PMDs at fork like the PTE path does
+https://lore.kernel.org/all/20261119-b4-prep-vstor-149847-copy_huge_pmd-rec=
+heck-special-pmd-v6-0-efa7817a2bb3@virtuozzo.com
+* [PATCH v6 1/4] mm/rmap: duplicate a PMD mapping as one in folio_dup_file_=
+rmap_pmd()
+* [PATCH v6 2/4] mm/huge_memory: copy file THPs at fork like copy_present_p=
+tes() does
+* [PATCH v6 3/4] mm/huge_memory: read a special PMD under the lock in copy_=
+huge_pmd()
+* [PATCH v6 4/4] selftests/mm: test fork of PMD-mapped shmem THPs
 
-  # raid5 running on 3 devices
-  echo 4 > /sys/block/md0/md/raid_disks
-  echo inactive > /sys/block/md0/md/array_state
-  echo active > /sys/block/md0/md/array_state
+and found the following issue:
+kernel build error
 
-Modifying layout or chunk_size behaves similarly. When restarting the
-array, raid5_run() previously assumed no reshape was taking place because
-reshape_position was MaxSector and triggered a kernel BUG due to
-delta_disks != 0:
+Full report is available here:
+https://ci.syzbot.org/series/3d54bacd-d9c6-4667-b9cb-90bc93043559
 
-kernel BUG at drivers/md/raid5.c:8117!
-RIP: 0010:raid5_run+0x11a7/0x1670 drivers/md/raid5.c:8117
-Call Trace:
- md_run+0xc2f/0x2510 drivers/md/md.c:6779
- do_md_run+0x36/0x660 drivers/md/md.c:6880
- array_state_store+0x9c5/0xcf0 drivers/md/md.c:4765
+***
 
-Commit 0669c7dbd1d3 ("md/raid5: don't BUG() on an inconsistent reshape
-state from the superblock") replaced the BUG_ON in raid5_run() with an
--EINVAL check, but the underlying issue remained: raid5 fails to restart
-with -EINVAL, and raid10 silently returns incorrect data due to unchecked
-new_layout and new_chunk_sectors in setup_conf().
+kernel build error
 
-Drop the never-started reshape request in __md_stop() if no reshape is
-currently running (mddev->reshape_position == MaxSector). Reset delta_disks
-and reshape_backwards to 0, restore new_level, new_layout, and
-new_chunk_sectors to level, layout, and chunk_sectors, and reset each
-rdev's new_data_offset to data_offset. If a reshape is actively in progress
-(mddev->reshape_position != MaxSector), the parameters are preserved so the
-reshape can resume when the array is restarted.
+tree:      kvm-x86
+URL:       https://github.com/kvm-x86/linux.git
+base:      cbe54fc3462b3949ab27b9ae81fb9ddb509040c7
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/3530314e-3b31-47a0-af62-2f7aa3ad985=
+e/config
 
-Fixes: 9e653b6342c9 ("[PATCH] md: Set/get state of array via sysfs")
-Assisted-by: Gemini:gemini-4-hydrogen Gemini:gemini-3.8-flash syzbot
-Tested-by: Uladzislau Zhauniarovich <uladzislau.zhauniarovich@gmail.com>
-Reported-by: syzbot+1f5a7de91d547763f4c8@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=1f5a7de91d547763f4c8
-Link: https://syzkaller.appspot.com/ai_job?id=b860f0d5-7dab-4c40-98ef-61ceb8b4aa77
-To: <linux-raid@vger.kernel.org>
-To: "Song Liu" <song@kernel.org>
-To: "Yu Kuai" <yukuai@fygo.io>
-To: "NeilBrown" <neilb@suse.de>
-Cc: <linux-kernel@vger.kernel.org>
-Cc: "Li Nan" <magiclinan@didiglobal.com>
-Cc: "Xiao Ni" <xiao@kernel.org>
-Cc: <yogeshgaur.83@gmail.com>
+mm/huge_memory.c:2012:16: error: call to undeclared function 'folio_ref_cou=
+nt_over_limit'; ISO C99 and later do not support implicit function declarat=
+ions [-Wimplicit-function-declaration]
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v4:
-- Updated the stack trace in the commit description as requested by the reviewer.
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v3:
-- Updated the commit reference for 0669c7dbd1d3 to standard format with title.
-- Replaced the stack trace with the report's call trace including file and line information for array_state_store.
-- Added '# raid5 running on 3 devices' to the reproduction sequence.
-https://lore.kernel.org/all/fb44a7d5-0913-46d2-bc67-4958b18ad923@mail.kernel.org/T/
+The email will later be sent to:
+[akpm@linux-foundation.org alex@shazbot.org azpijr@gmail.com baohua@kernel.=
+org baolin.wang@linux.alibaba.com david@kernel.org dev.jain@arm.com dri-dev=
+el@lists.freedesktop.org jgg@ziepe.ca kas@kernel.org khorenko@virtuozzo.com=
+ kvm@vger.kernel.org lance.yang@linux.dev liam@infradead.org linux-kernel@v=
+ger.kernel.org linux-kselftest@vger.kernel.org linux-mm@kvack.org linuxppc-=
+dev@lists.ozlabs.org ljs@kernel.org loic.molinari@collabora.com maddy@linux=
+.ibm.com nico.pache@linux.dev peterx@redhat.com ritesh.list@gmail.com ryan.=
+roberts@arm.com sashiko-bot@kernel.org shuah@kernel.org stable@vger.kernel.=
+org usama.arif@linux.dev ziy@nvidia.com]
 
-v2:
-- Reset rdev->new_data_offset to rdev->data_offset for all member devices.
-- Add an explanatory comment in __md_stop().
-- Update commit subject and description per reviewer feedback.
-https://lore.kernel.org/all/3ba40dcd-182e-4830-b254-c457032bef30@mail.kernel.org/T/
+If the report looks fine to you, reply with:
+#syz upstream
 
-v1:
-https://lore.kernel.org/all/0bbc5530-3021-49ec-a8cd-a006c2639d53@mail.kernel.org/T/
----
-diff --git a/drivers/md/md.c b/drivers/md/md.c
-index 680b34a63..011a5ea54 100644
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -7084,6 +7084,7 @@ static void mddev_detach(struct mddev *mddev)
- static void __md_stop(struct mddev *mddev)
- {
- 	struct md_personality *pers = mddev->pers;
-+	struct md_rdev *rdev;
- 
- 	mddev_detach(mddev);
- 	md_bitmap_destroy(mddev);
-@@ -7095,6 +7096,21 @@ static void __md_stop(struct mddev *mddev)
- 	mddev->private = NULL;
- 	put_pers(pers);
- 	clear_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
-+
-+	/*
-+	 * A reshape requested on a running array exists only in memory before
-+	 * sync_action=reshape and should be dropped with the personality, while
-+	 * a started reshape (reshape_position != MaxSector) is preserved.
-+	 */
-+	if (mddev->reshape_position == MaxSector) {
-+		mddev->delta_disks = 0;
-+		mddev->reshape_backwards = 0;
-+		mddev->new_level = mddev->level;
-+		mddev->new_layout = mddev->layout;
-+		mddev->new_chunk_sectors = mddev->chunk_sectors;
-+		rdev_for_each(rdev, mddev)
-+			rdev->new_data_offset = rdev->data_offset;
-+	}
- }
- 
- void md_stop(struct mddev *mddev)
+If the report is a false positive, reply with
+#syz invalid
 
-
-base-commit: df2908090cda368b01ff43709f51890076c56157
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
