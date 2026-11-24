@@ -1,53 +1,61 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.71
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795487304;
-	b=2ZVAAGeOZlzJP3qegWpkK18OiDigusNBwKwo4Q/JF/az8Zd95DlwMokJ+IV/GsQDzYUS
-	 YMlbMsKJrBpcMFe8r3AUNvjVgvZJK4AI3Rub+CbNEwieZ+cQCkM1FvaYPqAvBpFQE72Ix
-	 OSn+w+22lFr3qjrNjC2UcNVHOATi8yK+kY79lNqcuGsYZpjEEJbEE/2siz0UvQjiZVLEX
-	 o1E5eetBndHiJZMPNv3tJ3QjVAlq1k55az/VXc0DT10MC/RzBoDo4bx98iiQZYxWDMODn
-	 T9KKHxDN+dvYDqbKVnWKw4o43z7gbYuCEOyAdT53Mj1b4Gz+IWpSKgE05JNcQaOrPbg==
+	t=1795514326;
+	b=GvXH6T4HhFbyJebkNqtIxVh1vmeiJlCN3Q/8d2sgLEPpvlj689pVNzwp9hgQ8VEXMUMv
+	 34gDPPe2euIaI7WN5Y/04R8fUld/kafpTXPyBhYZO0mJ5AlNPJ46p6534QsEIDidgTn8S
+	 NI6hq0l3hILaQuhSi7l2EqYBz72GnELPReP1+CBF3ke1KsDeXHymVoIhrNOHZ3wrJyYg/
+	 4kWHNX69qZysRAYWSWmVnISCSiQaiIqUPnXDeyJiO9wjyRuQYqFEP1HPaHCsdfLvSrA6s
+	 z+IzBtn21LsZgfrDSvtXLPGV5U/Pgkyw/kw+CyV7cWGA2wrTg5LfWHMOaP3OuqmLd6g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795487304;
-	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
-	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
-	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=daMli+na3AERw8DkKcmsotokxxrrM0kIOzAJ4BIAmIY=;
-	b=t9IvZEZJGYX2C/Uan2vpx3ICuRKkRfz4r7vUgyfluLLETDRT/Y/SveVXh2AYvXbgmUgs
-	 QzaWO6VYKh9ePdM1EHbdkrn45V1eYFRRoVS9ZHD84+2temiaynf6y/KvM4cbhimceWL29
-	 0Eq5Pw4RW5OUAZnMCSRnlwmGYWD0AOCjfl8JdCVPXQIjx4jaGSS1n9qBrYsZntbYvAjZ0
-	 cDs6jZYgCXDTtyzULI7i7FXPwgMmQWoz267TEB7v9QBLi37+9HijDH2IjefxuPf8K5t5u
-	 wta3N9j8iZtXqEPjV+5OSip03InITba1nXa4ZLTwIdZImDcXQdFmiAqfMGTsYgy5dmw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795514326;
+	h=Received:DKIM-Signature:Subject:From:To:Cc:Date:Message-ID:
+	 In-Reply-To:References:X-sashiko-severity:Content-Type:
+	 Content-Transfer-Encoding:MIME-Version;
+	bh=0F1BSj/xm7NejO8C6gphmJxoGj2OkwZ3aV8GLt6VHvU=;
+	b=vy3KFM2xu4Oug5yKQTeTqVFCuZR8cRBf9Zk5WDhEOgDHF2TTlFW3NK96afNYWT8qkBPT
+	 UJNri2hqFVlJe2URndZs0H+rG9tVA+MZ4T5RvfdoeLcdZuLKgM+z29IbOl7FDNI7yI+pW
+	 CwwcuZZoM/CEDNBv2Ze0G8Y1Ij2X7T7YfZ9+G6e67l2jrcUf6cLAnAQbp/3xvfELrJZ7o
+	 w3dweZg/FWzKfsU5WD0iWht1WnWeLUQjzvsa2SfjvFnVYxgfLX80HKUpwpEs2NGdpnww5
+	 /PXCnInHhJR5W8SZIPZvsaGtBn3GFyCroEHrD1KVDyUfmmSQmLy9vJnx24fthaiag+Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=fail header.from=syzkaller.appspotmail.com;
-	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
-	arc=none smtp.remote-ip=209.85.210.71
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HJzVJrgL;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45E50606A31E
-	for <syzbot@lists.linux.dev>; Tue, 24 Nov 2026 02:28:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 45E50606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-862a5ad18d0so4706548a34.3
-        for <syzbot@lists.linux.dev>; Mon, 23 Nov 2026 18:28:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795487303; x=1796092103;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=daMli+na3AERw8DkKcmsotokxxrrM0kIOzAJ4BIAmIY=;
-        b=ld9DDzJFAzQKYLVv1EQnhcgai5qEvQiql18XgdcEwVrBGc56SDf/4YeD2vJ+YK1Dz6
-         WTaA52RR7H7PdaDd6hP5f7mYTCXQ9xLWmmMrqstcYmR/VxnqM9YANsMqYts6EeaOp/ek
-         UaT2rDrdAcqUuT9LBNYkmnSuhWdDHU2ylLQMGWkTPjiemHJTBnwL2fPtGSFn+f/M8d3i
-         JqQGwpE10TwgwcsS79Nr2UPNYNQz9K8fQUhREap/PfoQCXWywCt4Ob43ft5KKKtlbNMz
-         wYJvzDs5tcP0HU5peak9BQC2OH5y/Po90xl+UE8/iF0MeLYD8Ev60Na3Vi8vlS50kvg9
-         V6Gw==
-X-Gm-Message-State: APuU4Z+eq2/ykiK40AP7v3A5VJ6q9e3jcPXQNWfbKTTN2roYIv5IVYBd
-	tRRqQT+6uK4+6mXI8m1FkQaaATi/9IhV1gBOsDXDVm07+WApbmEFr5FOOXhKywHgQV8cEAZnD+T
-	WdSdYU9qidtwscPhmUwTP1WcQRFRxgIgQcp4qYK8Ljc77imjLi6lJxbUjK0A=
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9400606A322;
+	Tue, 24 Nov 2026 09:58:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HJzVJrgL
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2211D1F000CA;
+	Tue, 24 Nov 2026 09:58:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795514325;
+	bh=0F1BSj/xm7NejO8C6gphmJxoGj2OkwZ3aV8GLt6VHvU=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References;
+	b=HJzVJrgLOwXbP5O6mg2yt8VGhjygr4IGZEwaETM60khcxgI1lBtm0N60e/5Z39zz0
+	 mteHa7fbR2AGVloRDY349K3pB5VIsPlGhJYFIeqIGPJKsRhJQ4MQu6eFDCxS54k6zb
+	 v8yWj3XB69PxHx6eIbcFh7qjnI2inR3sm4L6MqFD1KSGHvQJ9D2h1awPSDh9V4doTo
+	 LuqUCifLnRp9DKGBLcJF/RPPS5gSAeNhCvOcz5D5DrQ8QWz2b9JlNthdajxxOoXS5N
+	 QuMOpe2siYVb7fxfJq/1ZIWCCEkLv+vjGK34v+ENPCAQrz8WRGFkCk5hyL85oOlX8O
+	 OEQbUv/nWTTag==
+Subject:
+ Re: [PATCH] net/x25: fix invalid lock_sock() usage in x25_kill_by_neigh()
+From: netdev-bot+sashiko@kernel.org
+To: syzbot@kernel.org
+Cc: syzkaller-bugs@googlegroups.com, krystianmkaniewski@gmail.com,
+ davem@davemloft.net, edumazet@kernel.org, kuba@kernel.org,
+ linux-x25@vger.kernel.org, ms@dev.tdt.de, netdev@vger.kernel.org,
+ pabeni@redhat.com, duoming@zju.edu.cn, horms@kernel.org,
+ linux-kernel@vger.kernel.org, syzbot@lists.linux.dev
+Date: Tue, 24 Nov 2026 09:58:44 +0000
+Message-ID: <179551432467.3135.11868205229731190547@kernel.org>
+In-Reply-To: <00f667e3-a158-4fb5-84a3-9ecda4718ce8@mail.kernel.org>
+References: <00f667e3-a158-4fb5-84a3-9ecda4718ce8@mail.kernel.org>
+X-sashiko-severity: Medium
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -57,80 +65,194 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:3502:b0:4ec:77df:f4b1 with SMTP id
- 5614622812f47-57a09e0c7f1mr15736469b6e.25.1795487303385; Mon, 23 Nov 2026
- 18:28:23 -0800 (PST)
-Date: Mon, 23 Nov 2026 18:28:23 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6b04f647.44b41460.34b83f.0038.GAE@google.com>
-Subject: [moderation/CI] Re: mm/huge_memory: copy PMDs at fork like the PTE
- path does
-From: syzbot ci <syzbot+ci8a78565f4200c734@syzkaller.appspotmail.com>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-syzbot ci has tested the following series
+Thank you for your contribution! Sashiko AI review found 1 potential
+issue(s) to consider.
 
-[v6] mm/huge_memory: copy PMDs at fork like the PTE path does
-https://lore.kernel.org/all/20261119-b4-prep-vstor-149847-copy_huge_pmd-rec=
-heck-special-pmd-v6-0-efa7817a2bb3@virtuozzo.com
-* [PATCH v6 1/4] mm/rmap: duplicate a PMD mapping as one in folio_dup_file_=
-rmap_pmd()
-* [PATCH v6 2/4] mm/huge_memory: copy file THPs at fork like copy_present_p=
-tes() does
-* [PATCH v6 3/4] mm/huge_memory: read a special PMD under the lock in copy_=
-huge_pmd()
-* [PATCH v6 4/4] selftests/mm: test fork of PMD-mapped shmem THPs
+Critical: 0 · High: 0 (1) · Medium: 1 · Low: 0
 
-and found the following issue:
-kernel build error
+If you believe none of the issues are legitimate, please reply to each
+issue of Medium severity or higher and explain why the AI is wrong.
+If any of them are legitimate and you plan to respin, please let patchwork
+know by including "pw-bot: cr" as a separate line at the end of your reply
+(one such reply per series is enough).
 
-Full report is available here:
-https://ci.syzbot.org/series/3d54bacd-d9c6-4667-b9cb-90bc93043559
+- [Medium] When the new softirq path finds a socket owned by a task, it
+  only sets a flag and leaves the dead call usable until release_sock().
 
-***
+Pre-existing issues:
+- [High] This problem wasn't introduced by this patch, but it is still
+  reachable after it.
 
-kernel build error
+--
 
-tree:      kvm-x86
-URL:       https://github.com/kvm-x86/linux.git
-base:      cbe54fc3462b3949ab27b9ae81fb9ddb509040c7
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/3530314e-3b31-47a0-af62-2f7aa3ad985=
-e/config
+net/x25: fix invalid lock_sock() usage in x25_kill_by_neigh()
 
-mm/huge_memory.c:2012:16: error: call to undeclared function 'folio_ref_cou=
-nt_over_limit'; ISO C99 and later do not support implicit function declarat=
-ions [-Wimplicit-function-declaration]
+This patch adds a bh parameter to x25_kill_by_neigh() and
+x25_link_terminated(), so the softirq receive paths no longer call
+lock_sock(). In softirq context, an unowned socket is disconnected under
+bh_lock_sock(). If a task owns the socket, X25_KILL_BY_NEIGH_FLAG is set
+and the disconnect is deferred to a new x25_release_cb() hook.
 
-***
+Closes: https://syzkaller.appspot.com/bug?extid=300375dfd44665f063a6
+Link: https://syzkaller.appspot.com/ai_job?id=98a38af7-51e0-4126-afa7-b8246507da37
 
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+> diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+> index f45c9ec7d2c68..26a8deb82452b 100644
+> --- a/net/x25/af_x25.c
+> +++ b/net/x25/af_x25.c
 
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+[ ... ]
 
-The email will later be sent to:
-[akpm@linux-foundation.org alex@shazbot.org azpijr@gmail.com baohua@kernel.=
-org baolin.wang@linux.alibaba.com david@kernel.org dev.jain@arm.com dri-dev=
-el@lists.freedesktop.org jgg@ziepe.ca kas@kernel.org khorenko@virtuozzo.com=
- kvm@vger.kernel.org lance.yang@linux.dev liam@infradead.org linux-kernel@v=
-ger.kernel.org linux-kselftest@vger.kernel.org linux-mm@kvack.org linuxppc-=
-dev@lists.ozlabs.org ljs@kernel.org loic.molinari@collabora.com maddy@linux=
-.ibm.com nico.pache@linux.dev peterx@redhat.com ritesh.list@gmail.com ryan.=
-roberts@arm.com sashiko-bot@kernel.org shuah@kernel.org stable@vger.kernel.=
-org usama.arif@linux.dev ziy@nvidia.com]
+> @@ -1769,13 +1790,28 @@ void x25_kill_by_neigh(struct x25_neigh *nb)
+>  	write_lock_bh(&x25_list_lock);
+>  
+>  	sk_for_each(s, &x25_list) {
+> -		if (x25_sk(s)->neighbour == nb) {
+> +		if (x25_sk(s)->neighbour == nb &&
+> +		    (!bh ||
+> +		     !test_bit(X25_KILL_BY_NEIGH_FLAG, &x25_sk(s)->flags))) {
+>  			sock_hold(s);
+>  			write_unlock_bh(&x25_list_lock);
+> -			lock_sock(s);
+> -			if (x25_sk(s)->neighbour == nb)
+> -				x25_disconnect(s, ENETUNREACH, 0, 0);
+> -			release_sock(s);
+> +			if (bh) {
+> +				bh_lock_sock(s);
+> +				if (x25_sk(s)->neighbour == nb) {
+> +					if (sock_owned_by_user(s))
+> +						set_bit(X25_KILL_BY_NEIGH_FLAG,
+> +							&x25_sk(s)->flags);
 
-If the report looks fine to you, reply with:
-#syz upstream
+[Severity: Medium]
+When a task owns the socket, this branch only sets the flag. It leaves
+x25->lci, x25->neighbour, x25->state and sk_state unchanged. Can the
+cleared call still be used until release_sock()?
 
-If the report is a false positive, reply with
-#syz invalid
+__x25_find_socket() matches only on lci and neighbour. Frames that arrive
+on the old LCI after the restart or link loss still find this socket, and
+x25_receive_data() queues them on its backlog:
 
+    queued = !sk_add_backlog(sk, skb, READ_ONCE(sk->sk_rcvbuf));
+
+release_sock() drains the backlog before it calls the new hook:
+
+net/core/sock.c:release_sock() {
+    ...
+	if (unlikely(sk->sk_backlog.tail))
+		__release_sock(sk);
+
+	if (sk->sk_prot->release_cb) {
+		if (!tcp_release_cb_cond(sk))
+			sk->sk_prot->release_cb(sk);
+    ...
+}
+
+So those frames go through x25_backlog_rcv()->x25_process_rx_frame() in
+the call's old state. Only after that does x25_release_cb() run
+x25_disconnect().
+
+For example, a CALL_REQUEST from the peer on a reused LCI right after a
+restart would be dropped by the stale socket in state 3. It would not
+reach x25_rx_call_request(). DATA or INTERRUPT on that LCI would go to
+the dead call, and x25_process_rx_frame() can call x25_kick() and
+transmit on the stale LCI.
+
+x25_link_control() also sends the restart confirmation or request right
+after x25_kill_by_neigh() returns. At that point the deferred sockets
+still hold their LCIs on nb.
+
+The transmit side has a similar gap. x25_link_terminated() purges
+nb->queue and resets nb->state to X25_LINK_STATE_0. An owner that is
+still in sendmsg can then reach
+x25_kick()->x25_send_iframe()->x25_transmit_link():
+
+net/x25/x25_link.c:x25_transmit_link() {
+    ...
+	case X25_LINK_STATE_0:
+		skb_queue_tail(&nb->queue, skb);
+		nb->state = X25_LINK_STATE_1;
+		x25_establish_link(nb);
+    ...
+}
+
+Would that re-establish a link that the peer just took down?
+
+The RESTART_CONFIRMATION path in x25_link_control() sets nb->state to
+X25_LINK_STATE_2. There, the queued frames would be flushed once state 3
+is reached, on an LCI the restart already cleared.
+
+Before 7781607938c8, the socket was disconnected right away (lci = 0,
+neighbour = NULL). The unowned branch here does the same. With either,
+none of these paths can happen.
+
+> +					else
+> +						x25_disconnect(s, ENETUNREACH,
+> +							       0, 0);
+
+[Severity: High]
+This is a pre-existing issue and this patch did not introduce it, but the
+new unowned branch adds another way to reach it. Can x25_sendmsg() and
+x25_output() dereference a NULL x25->neighbour?
+
+x25_sendmsg() checks x25->neighbour under the socket lock, then drops the
+lock to allocate:
+
+net/x25/af_x25.c:x25_sendmsg() {
+    ...
+	rc = -ENETUNREACH;
+	if (!x25->neighbour)
+		goto out;
+    ...
+	release_sock(sk);
+	skb = sock_alloc_send_skb(sk, size, noblock, &rc);
+	lock_sock(sk);
+    ...
+	if (msg->msg_flags & MSG_OOB) {
+		if (x25->neighbour->extended) {
+    ...
+	} else {
+		if (x25->neighbour->extended) {
+    ...
+}
+
+x25_output() follows the same pattern in its fragmentation loop:
+
+net/x25/x25_out.c:x25_output() {
+    ...
+			release_sock(sk);
+			skbn = sock_alloc_send_skb(sk, frontlen + max_len,
+						   noblock, &err);
+			lock_sock(sk);
+    ...
+			if (skb->len > 0) {
+				if (x25->neighbour->extended)
+    ...
+}
+
+sock_alloc_send_pskb() checks sock_error() and SEND_SHUTDOWN only before
+it allocates. Suppose x25_disconnect() runs after those checks and before
+lock_sock() returns. Then x25->neighbour is NULL, and the next
+x25->neighbour->extended faults.
+
+Several softirq paths can do this while the socket is unowned:
+
+- a CLEAR_REQUEST from the peer in state 3/4/5, via
+  x25_receive_data()->x25_process_rx_frame()->x25_disconnect()
+- T23 timer expiry
+- with this patch, this branch, reached from x25_lapb_receive_frame() on
+  X25_IFACE_DISCONNECT, or from x25_link_control() on a
+  RESTART_REQUEST/RESTART_CONFIRMATION in X25_LINK_STATE_3
+
+The window gets wider if another thread holds lock_sock() while sendmsg
+waits in lock_sock(). Peer frames are then backlogged and processed by
+x25_backlog_rcv() in that thread's release_sock().
+
+7781607938c8, the commit in the Fixes: tag, was meant to close this class
+of neighbour NULL dereference in sendmsg/recvmsg. Should x25_sendmsg()
+and x25_output() check x25->neighbour (or sk_state) again after they
+retake lock_sock()?
+
+-- 
+Sashiko AI review · https://netdev-ai.bots.linux.dev/sashiko/#/patchset/00f667e3-a158-4fb5-84a3-9ecda4718ce8%40mail.kernel.org
