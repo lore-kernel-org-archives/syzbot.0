@@ -1,53 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.48
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795602213;
-	b=nCr9KK+HyO1nRni7Ln6GsrjC/8bHVUsJgBknmEEWtBmlQtsyefFkGNq8s/+1qGh9HBUQ
-	 AvVHmalz6AAHeR5LNLn0m6wLfOUG0qXyvy/Au1bZod903leEaHwIrKwyphs0om//NwS0t
-	 i7MICvTkvbgezjQS1U2I1syOEsfMuYSXvpqj46waAQidoErGlgouq14Os3xgov2jWxYiw
-	 fHNaBCMNf4rFSkFhrGYMQn9mTbmFaq+MT+yHi0AxmbwWmwVFzLaqKx4bDi1FT5ExGFwmC
-	 mbi5zlMbfApQASa8xU0KuSs2JBqDR9D49PDbq7XFAyOw/5lDvmAoX9KM46kMFUWw/kg==
+	t=1795617724;
+	b=5TR7y2VNMnTxL/Sr+yoKgcWkQpviZzjHYvfNg1YhA8ob69K3xlZmED84451lr7PkGVE3
+	 QXnUkWNtz4Ei3qrMJfoUKvHtSsei7skYxRvtZJO3neE6mgjA8abcFC+LQOJc9HIkltgBd
+	 bVYtn6gjcg3aVBRDiyS84daHMNpyr6fhajDAU5rLjG3tMdPzuCHz+HJQVj29+pje98Mxy
+	 q0thaMU6zMoKcFSY6v+V4NScRUk3I6eDM2MgtPKGgDL9MYf54jq1Geq3TaCp88VSy1PhG
+	 50VyAfb2MbUo8F9CkrGG3olU3IpshAWbJr8LU3MlYPOlwTKIL9WLaxTBO+yD41f/fYA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795602213;
-	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
-	 MIME-Version:X-Received:Date:In-Reply-To:X-Google-Appengine-App-Id:
-	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
-	 Content-Type;
-	bh=nAwEpdk8W5zOz8dRUea8wq0PG12t8rrSsYABB8slUxU=;
-	b=r6uAfkxnCM8niHtqLd/pvyJRn4RhJf9xWkuS+Yc2XgMwX+D0IOCKm4qCe4eBaqfFe0Mq
-	 lKW/3Vx+YHrozkJiSKRMZgHFUat76drEaaZYnL8bJV5tJ7aXwoBdJblOLa2xrrTrv0Noi
-	 6ZO18dkmJq6hXIrkh4Cdry8n4cRfWVn3YhRBjA1oqPrBQj92DPafPU6m/F2x8GItkZle/
-	 5Tqvp1PDIUZBzb394SZD3ViiKIVcRGwxIN8DUEvLZxz1mweX4CXXHrfXwMYqdiymS20Nu
-	 9/rUoHjQdmWHWaP0yrnZ439bGgGm/OoiLUm2natQGJ+V1JxTpFQ5Dm3Ri5syMwR0r9A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795617724;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=KBGJr4xk5Q2bzVWqvpBexfySHqqo9cMXvhdbMshGOQo=;
+	b=dcdSW+3wb9+gy+gg4x3+vlkykHzJIEu3/HpYYimo5W0ogTQl8ms4imFnqfO5ygbLIPTe
+	 bJz77f7Pp4MuwAU3DGnWcZqDu7tIHo8hHV40DW0ShGkPKoEOp7qH7AGviJ3QRfz3iBicM
+	 oRBkKTwg22yVaHoHf1GrmuF/FLRdOiYCkZ1eFgKHc/m0p6u6RLAB2DKMT7e0McZRuuuul
+	 YsZMfaIAxBuu6bs5RPYzjFKnfMwba8GdcS5u+hwcUZNi3carhMMNPnLTdZPzaSq7ennMc
+	 F/wE2+DPTgD69unG7peRCSs3LKMTN5Se3UL8e5/kl48hWJypp7jIyHGpn1r6rrVHPlw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=fail header.from=syzkaller.appspotmail.com;
-	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
-	arc=none smtp.remote-ip=209.85.167.199
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=MOdon+CP;
+	arc=none smtp.remote-ip=209.85.218.48
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C91F606A327
-	for <syzbot@lists.linux.dev>; Wed, 25 Nov 2026 10:23:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7C91F606A327
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-5727b04b81eso3598001b6e.3
-        for <syzbot@lists.linux.dev>; Wed, 25 Nov 2026 02:23:32 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C17E3606A323
+	for <syzbot@lists.linux.dev>; Wed, 25 Nov 2026 14:42:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C17E3606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=MOdon+CP
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-c4d28f75d62so969733466b.0
+        for <syzbot@lists.linux.dev>; Wed, 25 Nov 2026 06:42:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795617722; x=1796222522; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=KBGJr4xk5Q2bzVWqvpBexfySHqqo9cMXvhdbMshGOQo=;
+        b=MOdon+CP57Do8B8X2yyf5Td4mtsMT9Fse50OTvQX/Non3KJxqOeHrA9fag+8cvb//h
+         mLSckjXvRXtI8US1W0iWOfdfYdaBNh864CwxglVKkY/sDsaPZsLSwh4JszbAqQvZYGJ5
+         msXNAJ9026/+CN2P3RMDodX0MG9NBUyqS7oRHq++UoyjvRmLpdoYIo9W/z63/AA+2sLb
+         WxzRUWfE+DB2kW1hABt/pLJF17mAm2I6YZZ7i9eIiVoR0eS5T8z6acf+O2AKPyt5i9hI
+         GZwk/pcc5f5e98k3mW1WGvJahLsbsopswtpzRXO/uVSMHpJ1t74noR7MPdN1f84cI921
+         4RGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795602211; x=1796207011;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=nAwEpdk8W5zOz8dRUea8wq0PG12t8rrSsYABB8slUxU=;
-        b=2w6W7fr/9g26GEpSAXDWS0ii7wx16B37LXlgeBYU3RkOQE00flZnou/97C0gLU6KPA
-         uAaXjmzoG575daBIjjdpCiOc6KUxjd1UD1xlvMROOQG5dZAg8VlWjZYRP4qAIfG7kgE/
-         HevIC3enHN7hlqYcZbBMdbJDNZN0wc2glaGqzcBColwjjjetx+ZezxwYel0KOicDeCU/
-         q7OZqf9mFo8UjVmI0mLlsb3KNUU2jKkqGfcyG7ob5XojR4RgPWuKBUKVSTMPI4MsSHNn
-         9EFMHvCZWkqIbCpYR5i0CNF7ZJqMGv51JErgRzSBjKyDcQFYDPgKxungr/ajy++jqxag
-         iCrw==
-X-Gm-Message-State: APuU4Z+JVg/oSUAh/0HDFBLHlTpYbigHo417srGHlkZDTfoWtkXCnRwK
-	qd5Uvv9Y4c8GKZUv3R5nFulmUHZ0h/1rRZp7RcXEheUt4r68l1EMivslJ1Kyr75MokYqQLTmHRq
-	uGFTeFamXO8N/8jZ7cQdlCkOKVJ5TXkIJZlqkwtWODv7RZk4dVb5mzgDsobw=
+        d=1e100.net; s=20260707; t=1795617722; x=1796222522;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=KBGJr4xk5Q2bzVWqvpBexfySHqqo9cMXvhdbMshGOQo=;
+        b=J4Rnys7ckTZFsKtrbFIq/jNvHMcpdqtbfU/5bWdaDTYO1hIUp6kbn/2fN0BGvWx3Vq
+         iYmVEkX+KOWfrjQPsZ6Mg22grl3LSkyoTEjQLOnqpOz7fwwFUqGIOCyslvrxi5lb+8UK
+         LEgQ9wA385++o94M0sE9Dv27gZKuovSioPQybZQtxT1S9RlyIL95J/nViBC0KnyjfAs/
+         iAeOYcI+l8DK1GnixUmx0W9umo7kE/M9/aiFs2uLPRzjxCpEmlvAC723ubDbCjmxebPW
+         Irm0+8wEF0tvSO6jVSC38s2vPmE0ktOD9/8VDfjx5C0l6CPaRFY3cmbhtsqv/BEY0kkr
+         ieog==
+X-Gm-Message-State: APuU4Z/wketXRc1OO/63VZDOWdkWtz3PlF0Bo0RaW+ZBgjMG+GnLHmCH
+	bHJHobrSLGtNr9EtwSHigzT5CycjD/x86lp8EhhEEIPgcWW2asnanJZSzYnpYJ9npMg=
+X-Gm-Gg: AZFdTZc9Wl6C0KK8btPbh20qZ7Bzk1sA1SGKnU/rC48UEw58Q6c+82wtPX37BtXkCfP
+	hzL4cH4K8W1Qxs5uEMSZ0PoRgunqutp5vxPKZAJkTAKipgJcGmFwOwcf9sNe8wI++5f3GVNUg0t
+	mPY+4xztRz2tA26jXIGJSF4v1sbm4r0XSxZJFmg+Yp7KysXM+MW05lLTquOTX0ATpBblGG49slB
+	7xaUUIB4yzEPbqrwqCH0IEQkgiSo5P7w4K3LCXPO345boh1pz10SiviA/NTb2nTGS36VALbNxgp
+	baMBjOKDMWrPsk7FsIPrTI+gJag5QCewUTgzY3PfhEoadQR7FkVo6HI7kAFWuU+CfIKznn0sMJ8
+	zDN9nrOvy5XkicRMBuAMW+K7+ZqlehBr7aacOjM8koQjY5P+hX1cytxahLSiLXoziRvWVG3FO+J
+	38hZh0RJ/D7AcnUuCrGVkZ/Qqtl09QSPwH3aFo8gpm63iRNCmu6negNvEPL2Jp2Op/RuaNWnSr2
+	GCMw6maoH4kWbHU9K5AZYGdr98fUG4zSFe2U3Ckrqu2OkZZYpPzpdvhea9g+JglPoGHOgq+Wkuy
+	PrwLPy0DS+N1DQ6zWBCFixeW1NhfZihVKS1KH+7krHCl4cKCsiG+hLqU5o1f3eakoB0kV5PbU6T
+	XLFlLlNyr1mq4yYcHg7sM/W+vJLPj3ZHqXExKI24hHTq1x3RMqRR4vY93Wn2RYzKGrA2QOTYkZt
+	y1IGsxavQpQt91T8xA9G20L0XtQ+X9CQY7+57W2OfJjcFXfqntYNlbdvfDttvh6gA=
+X-Received: by 2002:a17:906:7309:b0:c51:ab50:326a with SMTP id a640c23a62f3a-c51ab503c7emr156658666b.1.1795617721888;
+        Wed, 25 Nov 2026 06:42:01 -0800 (PST)
+Received: from [192.168.100.100] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c513aebe94fsm632750566b.49.2026.11.25.06.42.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 Nov 2026 06:42:01 -0800 (PST)
+Message-ID: <c1da196b-c3b0-4701-9cbf-bf357bfebfc8@gmail.com>
+Date: Wed, 25 Nov 2026 15:42:00 +0100
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -57,153 +92,142 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:c2be:b0:4d6:90f3:74b1 with SMTP id
- 5614622812f47-57a0ba5a8e4mr18256405b6e.49.1795602211468; Wed, 25 Nov 2026
- 02:23:31 -0800 (PST)
-Date: Wed, 25 Nov 2026 02:23:31 -0800
-In-Reply-To: <20261120010655.467825-1-lrizzo@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6b06b723.588a1920.b1e98.0003.GAE@google.com>
-Subject: [syzbot ci] Re: PISA: Pre-mapped IOVA Superpage Allocator for DMA and CoCo
-From: syzbot ci <syzbot+ci910cdb42d3006024@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, aleksander.lobakin@intel.com, axboe@kernel.dk, 
-	brendan.jackman@linux.dev, catalin.marinas@arm.com, cl@gentwo.org, 
-	corbet@lwn.net, dakr@kernel.org, davem@davemloft.net, david@kernel.org, 
-	driver-core@lists.linux.dev, dtatulea@nvidia.com, edumazet@kernel.org, 
-	gregkh@linuxfoundation.org, hannes@cmpxchg.org, hao.li@linux.dev, 
-	harry@kernel.org, hawk@kernel.org, hch@lst.de, horms@kernel.org, 
-	hramamurthy@google.com, ilias.apalodimas@linaro.org, iommu@lists.linux.dev, 
-	jack@suse.cz, jannh@google.com, jgg@ziepe.ca, joro@8bytes.org, 
-	joshwash@google.com, kuba@kernel.org, kuniyu@google.com, liam@infradead.org, 
-	linux-api@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-block@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, ljs@kernel.org, lrizzo@google.com, 
-	m.szyprowski@samsung.com, mhocko@suse.com, namangulati@google.com, 
-	netdev@vger.kernel.org, pabeni@redhat.com, praan@google.com, 
-	rafael@kernel.org, rdunlap@infradead.org, rientjes@google.com, 
-	rizzo.unipi@gmail.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC] netfilter: nft_synproxy: enforce strict TCP flag
+ matching
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+References: <96d0756e-28cd-4b99-b0c7-17698acc8276@mail.kernel.org>
+Content-Language: en-US
+From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+In-Reply-To: <96d0756e-28cd-4b99-b0c7-17698acc8276@mail.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-syzbot ci has tested the following series
+On 11/24/26 18:28, syzbot wrote:
+> In nft_synproxy_eval_v4() and nft_synproxy_eval_v6(), TCP control flags are
+> checked only with `if (tcp->syn)` and `else if (tcp->ack)` without
+> excluding other flags, unlike the xtables SYNPROXY targets
+> (`synproxy_tg4()` and `synproxy_tg6()`). As a result, a SYN+ACK (or SYN+FIN
+> / SYN+RST) packet reaching `nft_synproxy` is misidentified as an initial
+> client SYN and causes `synproxy_send_client_synack()` or
+> `synproxy_send_client_synack_ipv6()` to reply with another SYN+ACK.
+> Likewise, FIN+ACK and RST+ACK packets enter the client ACK branch and can
+> be dropped with NF_DROP instead of continuing through the ruleset.
+> 
+> When an nftables rule evaluates `nft_synproxy` (either via the inline
+> expression or a stateful `NFT_OBJECT_SYNPROXY` object) on
+> `NF_INET_LOCAL_IN`, a local TCP SYN over loopback triggers
+> `nft_synproxy_eval_v4()` to send a SYN+ACK with swapped addresses and ports
+> and a fresh TTL via `synproxy_send_client_synack()`. When
+> `process_backlog()` in `NET_RX_SOFTIRQ` delivers that SYN+ACK back to
+> `NF_INET_LOCAL_IN`, `if (tcp->syn)` matches again, creating an infinite
+> SYN+ACK loop in softirq context. This saturates the CPUs, starves tasks
+> holding or waiting on `rtnl_mutex`, and triggers hung task warnings:
+> 
+> INFO: task kworker/R-ipv6_:60 blocked for more than 144 seconds.
+> Workqueue: ipv6_addrconf addrconf_dad_work
+> Call Trace:
+>  __mutex_lock+0x7c4/0x15a0 kernel/locking/mutex.c:821
+>  rtnl_net_lock include/linux/rtnetlink.h:134 [inline]
+>  addrconf_dad_work+0x116/0x15c0 net/ipv6/addrconf.c:4256
+> 
+> NMI backtrace for cpu 1
+>  __kfree_skb+0x5d/0x210 net/core/skbuff.c:1203
+>  nft_synproxy_eval_v4+0x36a/0x4e0 net/netfilter/nft_synproxy.c:-1
+>  nft_synproxy_do_eval+0x389/0x5d0 net/netfilter/nft_synproxy.c:142
+>  expr_call_ops_eval net/netfilter/nf_tables_core.c:237 [inline]
+>  nft_do_chain+0x48d/0x1b10 net/netfilter/nf_tables_core.c:285
+>  nft_do_chain_ipv4+0x195/0x290 net/netfilter/nft_chain_filter.c:24
+>  process_backlog+0xa6b/0x18b0 net/core/dev.c:6915
+> 
+> Fix this by enforcing the same strict TCP flag checks as `ipt_SYNPROXY` and
+> `ip6t_SYNPROXY` in both `nft_synproxy_eval_v4()` and
+> `nft_synproxy_eval_v6()`: require `tcp->syn && !(tcp->ack || tcp->fin ||
+> tcp->rst)` for the initial SYN branch and `tcp->ack && !(tcp->fin ||
+> tcp->rst || tcp->syn)` for the client ACK branch. Excluding `tcp->syn` from
+> the ACK branch ensures SYN+ACK packets are not passed to
+> `synproxy_recv_client_ack()` or `synproxy_recv_client_ack_ipv6()` and
+> dropped, while unrelated control packets fall through with
+> `regs->verdict.code` left as `NFT_CONTINUE`.
+> 
+> Fixes: ad49d86e07a4 ("netfilter: nf_tables: Add synproxy support")
+> Assisted-by: Gemini:gemini-4-hydrogen Gemini:gemini-4-carbon syzbot
+> Reported-by: syzbot+55141a0ffa0d17f01c71@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=55141a0ffa0d17f01c71
+> Link: https://syzkaller.appspot.com/ai_job?id=d414ed29-2420-4a5b-b4af-0b7b7dc8df30
+> To: <coreteam@netfilter.org>
+> To: "David S. Miller" <davem@davemloft.net>
+> To: "Eric Dumazet" <edumazet@kernel.org>
+> To: "Florian Westphal" <fw@strlen.de>
+> To: "Jakub Kicinski" <kuba@kernel.org>
+> To: <netdev@vger.kernel.org>
+> To: <netfilter-devel@vger.kernel.org>
+> To: "Paolo Abeni" <pabeni@redhat.com>
+> To: "Pablo Neira Ayuso" <pablo@netfilter.org>
+> To: "Fernando Fernandez Mancera" <ffmancera@riseup.net>
+> Cc: "Simon Horman" <horms@kernel.org>
+> Cc: "Phil Sutter" <phil@nwl.cc>
+> 
+> ---
+> diff --git a/net/netfilter/nft_synproxy.c b/net/netfilter/nft_synproxy.c
+> index 554a96a00..ad43faf1d 100644
+> --- a/net/netfilter/nft_synproxy.c
+> +++ b/net/netfilter/nft_synproxy.c
+> @@ -53,13 +53,13 @@ static void nft_synproxy_eval_v4(const struct nft_synproxy *priv,
+>  	struct synproxy_net *snet = synproxy_pernet(net);
+>  	struct sk_buff *skb = pkt->skb;
+>  
+> -	if (tcp->syn) {
+> +	if (tcp->syn && !(tcp->ack || tcp->fin || tcp->rst)) {
+>  		/* Initial SYN from client */
+>  		nft_synproxy_tcp_options(opts, tcp, snet, &info);
+>  		synproxy_send_client_synack(net, skb, tcp, opts);
+>  		consume_skb(skb);
+>  		regs->verdict.code = NF_STOLEN;
+> -	} else if (tcp->ack) {
+> +	} else if (tcp->ack && !(tcp->fin || tcp->rst || tcp->syn)) {
+>  		/* ACK from client */
+>  		if (synproxy_recv_client_ack(net, skb, tcp, opts,
+>  					     ntohl(tcp->seq))) {
+> @@ -84,13 +84,13 @@ static void nft_synproxy_eval_v6(const struct nft_synproxy *priv,
+>  	struct synproxy_net *snet = synproxy_pernet(net);
+>  	struct sk_buff *skb = pkt->skb;
+>  
+> -	if (tcp->syn) {
+> +	if (tcp->syn && !(tcp->ack || tcp->fin || tcp->rst)) {
+>  		/* Initial SYN from client */
+>  		nft_synproxy_tcp_options(opts, tcp, snet, &info);
+>  		synproxy_send_client_synack_ipv6(net, skb, tcp, opts);
+>  		consume_skb(skb);
+>  		regs->verdict.code = NF_STOLEN;
+> -	} else if (tcp->ack) {
+> +	} else if (tcp->ack && !(tcp->fin || tcp->rst || tcp->syn)) {
+>  		/* ACK from client */
+>  		if (synproxy_recv_client_ack_ipv6(net, skb, tcp, opts,
+>  						  ntohl(tcp->seq))) {
+> 
+> 
+> base-commit: b6a9fa34ce4187cb69d3c588a4bbffc31ce5db8f
 
-[v3] PISA: Pre-mapped IOVA Superpage Allocator for DMA and CoCo
-https://lore.kernel.org/all/20261120010655.467825-1-lrizzo@google.com
-* [RFC PATCH v3 01/25] mm: Introduce CONFIG_PISA and metadata table
-* [RFC PATCH v3 02/25] mm: Add PISA allocator lifecycle and page recycle hook
-* [RFC PATCH v3 03/25] mm: Add per-NUMA-node PISA page reservoir
-* [RFC PATCH v3 04/25] mm/page_alloc: Extend alloc_pages() to __GFP_PISA and PISA block allocation
-* [RFC PATCH v3 05/25] mm: Add global cap and shrinker for PISA pages
-* [RFC PATCH v3 06/25] iommu/dma: Map PISA memory in a per-domain IOVA window
-* [RFC PATCH v3 07/25] driver core: Add per-device pisa_* sysfs attributes for PISA optin
-* [RFC PATCH v3 08/25] iommu/dma: Use PISA for coherent DMA allocations
-* [RFC PATCH v3 09/25] mm: Add per-CPU block caches to PISA allocators
-* [RFC PATCH v3 10/25] mm: Add background page scrubber for PISA allocators
-* [RFC PATCH v3 11/25] mm: Migrate user pages into PISA
-* [RFC PATCH v3 12/25] block, mm: Support PISA for disk I/O and scrub migration
-* [RFC PATCH v3 13/25] net: Cache leaf PISA TX flags on struct net_device
-* [RFC PATCH v3 14/25] net: Use per-node PISA allocators for skb_page_frag_refill()
-* [RFC PATCH v3 15/25] net: Use PISA for page_pool memory
-* [RFC PATCH v3 16/25] mm/slub: Add SLAB_CACHE_PISA_RO for PISA-backed slab caches
-* [RFC PATCH v3 17/25] net: Allocate small skb heads from PISA
-* [RFC PATCH v3 18/25] net: Migrate user pages into PISA for MSG_ZEROCOPY
-* [RFC PATCH v3 19/25] mm, iommu/dma: Support decrypted PISA pages
-* [RFC PATCH v3 20/25] arm64/mm, mm: Support decrypted PISA pages in Realms
-* [RFC PATCH v3 21/25] mm: Add PISA statistics and debugfs
-* [RFC PATCH v3 22/25] net/libeth: Use GFP_KERNEL when pre-filling RX rings
-* [RFC PATCH v3 23/25] net/gve: Use GFP_KERNEL when pre-filling RX rings
-* [RFC PATCH v3 24/25] net/gve: Use PISA memory for RX buffers
-* [RFC PATCH v3 25/25] Documentation: Add PISA architecture documentation
+Move TCP flag eligibility into `nft_synproxy_do_eval()` after
+`synproxy_parse_options()` and before the IPv4 and IPv6 dispatch. Return
+without changing the nftables verdict when SYN and ACK have the same
+value, or when FIN or RST is set:
 
-and found the following issue:
-WARNING in __alloc_workqueue
+    if (tcp->syn == tcp->ack || tcp->fin || tcp->rst)
+            return;
 
-Full report is available here:
-https://ci.syzbot.org/series/80fa818b-452d-4361-bfc6-33c65f928f71
+Keep the family evaluators focused on packet construction and cookie
+processing so this family-neutral policy is defined only once. Preserve
+the existing checksum, header, and option error order, together with the
+current clean SYN and clean ACK behavior.
 
-***
-
-WARNING in __alloc_workqueue
-
-tree:      axboe
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
-base:      20eef29b7c8465ac98d7dd6d6f2ac07a8d8056ca
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/1b1679cb-3959-4df9-8546-bc04ba6e5cd3/config
-
-smpboot: CPU0: Intel QEMU Virtual CPU version 2.5+ (family: 0xf, model: 0x6b, stepping: 0x1)
-Performance Events: unsupported Netburst CPU model 107 no PMU driver, software events only.
-signal: max sigframe size: 1440
-rcu: Hierarchical SRCU implementation.
-rcu: 	Max phase no-delay instances is 1000.
-Timer migration: 1 hierarchy levels; 8 children per group; 0 crossnode level
-NMI watchdog: Perf NMI watchdog permanently disabled
-smp: Bringing up secondary CPUs ...
-smpboot: x86: Booting SMP configuration:
-.... node  #1, CPUs:      #1
-smp: Brought up 2 nodes, 2 CPUs
-smpboot: Total of 2 processors activated (11200.80 BogoMIPS)
-Memory: 5553400K/7339508K available (181131K kernel code, 30788K rwdata, 59468K rodata, 27564K init, 120564K bss, 1621204K reserved, 0K cma-reserved)
-devtmpfs: initialized
-x86/mm: Memory block size: 128MB
-Running RCU synchronous self tests
-Running RCU synchronous self tests
-Running RCU Tasks wait API self tests
-Running RCU Tasks Trace wait API self tests
-posixtimers hash table entries: 1024 (order: 5, 73728 bytes, vmalloc)
-futex hash table entries: 256 (32768 bytes on 2 NUMA nodes, total 64 KiB, linear).
-PM: RTC time: 20:32:46, date: 2026-11-24
-NET: Registered PF_NETLINK/PF_ROUTE protocol family
-audit: initializing netlink subsys (disabled)
-thermal_sys: Registered thermal governor 'step_wise'
-cpuidle: using governor menu
-NET: Registered PF_QIPCRTR protocol family
-dca service started, version 1.12.1
-PCI: ECAM [mem 0xb0000000-0xbfffffff] (base 0xb0000000) for domain 0000 [bus 00-ff]
-PCI: ECAM [mem 0xb0000000-0xbfffffff] reserved as E820 entry
-PCI: Using configuration type 1 for base access
-HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
-HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
-------------[ cut here ]------------
-workqueue: pisa is using neither WQ_PERCPU or WQ_UNBOUND. Setting WQ_PERCPU.
-WARNING: kernel/workqueue.c:6151 at __alloc_workqueue+0x1e4b/0x21d0, CPU#1: swapper/0/1
-Modules linked in:
-CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__alloc_workqueue+0x1e4e/0x21d0
-Code: 18 89 39 00 90 0f 0b 90 e9 87 fd ff ff e8 0a 89 39 00 90 0f 0b 90 e9 79 fd ff ff e8 fc 88 39 00 48 8d 3d 65 52 32 10 4c 89 f6 <67> 48 0f b9 3a 8b 5c 24 20 81 cb 00 01 00 00 e9 99 e4 ff ff e8 d9
-RSP: 0000:ffffc90000067750 EFLAGS: 00010293
-RAX: ffffffff818fa174 RBX: 0000000000000000 RCX: ffff888102aa5ac0
-RDX: 0000000000000000 RSI: ffff888162ab5d78 RDI: ffffffff91c1f3e0
-RBP: ffffc900000678a0 R08: ffff888102aa5ac0 R09: 0000000000000002
-R10: 0000000000000102 R11: 0000000000000000 R12: dffffc0000000000
-R13: ffff888162ab5c00 R14: ffff888162ab5d78 R15: ffff888162ab5d18
-FS:  0000000000000000(0000) GS:ffff8882a77e4000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 000000000ff48000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- alloc_workqueue_noprof+0xe3/0x210
- pisa_init+0x127/0x260
- do_one_initcall+0x250/0x870
- do_initcall_level+0x10a/0x1a0
- do_initcalls+0x59/0xa0
- kernel_init_freeable+0x29d/0x3e0
- kernel_init+0x22/0x1d0
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+Rewrite the commit message to remove the quoted hung-task and NMI excerpt.
+That exact excerpt does not match the retained crash report. Keep the
+supported explanation that a generated SYN+ACK can return through the same
+input rule and sustain a feedback loop in softirq context. Preserve the
+verified `Fixes` tag, syzbot report and job links, and existing Gemini
+provenance. Do not change any other behavior.
+-- 
+Krystian Kaniewski
