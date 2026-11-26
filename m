@@ -1,49 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.46
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795701164;
-	b=WjAkHY7pnobn3Bd9KC2HzjWU5dEbNqxzjSVA3PQOLa93B1VeujZdCodGAfdzz9DXCSzi
-	 w3t4YunBZceQ4dPJFpjxL7fWwvvrJjacjETTXd31z458mAQeSTUf1HQQ7tvRNmg5KYapj
-	 HHc5YAain12J2+9SuG0hTl3TsWxXvYcZlVo/kCIUG3/KSH7QYQCWDZ+U21aEXotRQ40h6
-	 x3eCN2wDDCABpLkj9M6gHL01XmITCpDNxBG6jkhLB7fNJD6hF67c/1TndUpdRDJ3Om8L2
-	 O6KLz+zdih+Va6Xhy1nHt+pxV+LMbCAEKDhD4f2/P9Fh7bQ0YQ8zLMLqo4U1fBVToVQ==
+	t=1795701460;
+	b=26aoedQJdTqDPK0qOB0hFTg7up1qTjfjdQcMfmbEvMYknRtiIUrbOGnP3oxfAaPw87nZ
+	 rEbyubXk6TCFjJ25uKU+Y2hqKTA8n8jWrN1WjEuFb0vvz63Ut1fTzn7+ycW4WRjGEPJR2
+	 9JjSijdwTNjgyzLBQGkdVdmTZA17L655ILW/sT+ZGRkzzqAHFI06def/Q/q0vNyYeHndb
+	 tz/VYauIYeJjuuz5qwHwD2bPGtwn3cyN3RTA2JZ7SOcv4L5OF0RDS226LrAfBC1cvOET3
+	 TbyorwSZoJ0ruW6IGHv+lwKKqYfeINGV8qt5qjPQeKvd+CL6VUwDtOgzq9/a/rjoDoA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795701164;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:Date;
-	bh=rF1aNpF3QhwINOcIWEatT/v72hgvTLqrc2zJvaAzcuw=;
-	b=3hvIGY+3WakOa/ZhqYTf2JCa2UUsdSk0zOfr+WGefRU6MAt9OLpBL7RXxrQ0lxNDZ1dz
-	 dWQjYdzMvnK9zP7+9+IIAPUT0dSVDaSgAjUUU9LMKs65UZpSQMoAk5qWRKTmX0truWjgC
-	 J/uRWMbpSpQa3HklpLiTZUTGJ5KSLzG1Huzk52lVj3ya26YHJMJk46dfoLPw2x/bvWvSg
-	 oj/fX8BQaC+tG3L8/kNZtyNhuYwk66lFIf6vyiriXZXeU3W9/35QrpXpV/6JA7iUsZdDR
-	 BfG1ctqTAv4+584rQmIPzGYFwPddDuu6Qn/LgWZKk8hKSPTcpWd6HofpOSbvDlw9Qtw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795701460;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=1Dfm3S1UBcGSYj7dVkvrTqNBQusoiI5NuYW/KxrmGvE=;
+	b=tabdLDi3FGOTvQ6SGzRG9+RGmGJjd1Lh9sLB4BWQXNd2x07S2ZQ3CfoBzg63pD5yRFQf
+	 T29tXXqVXciO1GobzWNv2IbkyfHxeB8JcKxvlmjXEeyLdFNd2U9LDjpOJ2WhJ4nBrDn1Q
+	 z0lwUxO4ECP34JasECra1QW8QXLIFQIJbVgwDu9ZF9leX/+ERmMAPm4YSc6y8tl1o2y2w
+	 1GVJ3gjrATyXj/RoA5N+lM3lRJb/2TwzohQpY5v9u57jLZEg/kpmYq21ek/s7flwjzBGk
+	 PBC3n4F8hj39fPRo6+93pVpZ03nG4tYIu6ZceMbgv6Se4SJONYnKbnnwshXrmpSrqxg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=E9cPvFxM;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=r0d1ig+1;
+	arc=none smtp.remote-ip=209.85.208.46
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 7C169606A31C
-	for <syzbot@lists.linux.dev>; Thu, 26 Nov 2026 13:52:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DE2E606A31E
+	for <syzbot@lists.linux.dev>; Thu, 26 Nov 2026 13:57:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7DE2E606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=E9cPvFxM
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id E11BE1F000C4;
-	Thu, 26 Nov 2026 13:52:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795701164;
-	bh=rF1aNpF3QhwINOcIWEatT/v72hgvTLqrc2zJvaAzcuw=;
-	h=From:To:Cc:Subject:Date;
-	b=E9cPvFxMHoycdra1V5N/EwjlXhKpbVLYOFeWGFH1xE3QuA7OPNLPRHmJlwtmDdADF
-	 vaHvtLbotb7tTj482L8ocvLX+gyeXPIps6u6fahcn9KnkfY/kJNHv4H0pPWs2hcsDe
-	 DTN1iuXYenbXGhpLaskZTtodE1Hsf+syODkloqzw+0bkwAtWQEHyXOcIItJxEbgKg4
-	 HP8wXmaZLeDxcXP1CsNjgxBZ9eZkS9F0i5Jntn9KWBw5/tbS95UfMushNPiTDqBAO6
-	 oSnw/tb84qdIJJg/xrLJHdqF0hBo2LFvMdWbfjv+akLP+4KBg1tev2o56MemSdTbtp
-	 uiiB5xvrqSxEA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: immersa.bartosz.chronowski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v3] media: dw2102: Fix null-ptr-deref in i2c transfer callbacks
-Message-ID: <5c9e0753-cd9b-4a67-b31a-c84d01c701db@mail.kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=r0d1ig+1
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-6b7ddb99db4so9164613a12.0
+        for <syzbot@lists.linux.dev>; Thu, 26 Nov 2026 05:57:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795701459; x=1796306259; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=1Dfm3S1UBcGSYj7dVkvrTqNBQusoiI5NuYW/KxrmGvE=;
+        b=r0d1ig+1LWGqgFj8CuLhK7l1L1Ek/kmr6r8lDmiC2D6unWLnWeU8kJ94xpCnlg5NrA
+         e1GrjWzelkY6Vv7UcWJjDJe6NAcWDCC4I23YrQmkoZd17L1/yS04FzbbzNvPsnD7VBwx
+         e/OgIHyfvoaNbEOxlz9I+5gMc0HNkbiIAE1BHZHX0lhQRuq95PrcX2Yj4fVtM1CeNe9W
+         mks3qLundP9EtJjBiceMRuq3on4UYTZG+v+sDqUGX2YpVbRusSMZUF3uVa0XAFNwVw4B
+         qlwAvHWI6IKs5SU3nDnSLrT5xkJS5zUkRguo0eLRT/uHYOfsSZDoEZbdVXbcnwJPHrMU
+         2wZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795701459; x=1796306259;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=1Dfm3S1UBcGSYj7dVkvrTqNBQusoiI5NuYW/KxrmGvE=;
+        b=ugSoVpCq4twZD2h1WulXjVbk2DVBIdQcMAkF5s22NDdKr0vdFDe4zxVpuo5HVYIoGd
+         +ag8o8ebwdSqW6FCAWgc0/fnsAfosJPdoOl/qIkKB6+95wQiVq3tNV033G24ck5v1edb
+         eZ0FHsRkhHUX/18122ki3t15NAon1Ut0cwr3+Zh4QXLOnU1IoSNacnDY+E+acDZP9kAf
+         cRnfizC65jRmtTpOR0CchNd0LOOHuxTmJ1Qk4Vr8kp96BTnU9x7+DixqnXoF+Y6LZ6su
+         kLM9roNKLcEYHamTrhPuHG7VZGUuNXT/YJFbgUo6lQhK2QPpcSF5LYP6UkPcegKoibbH
+         6x7g==
+X-Gm-Message-State: APuU4Z9OYiwYpvm4ldhWLS3rGAB1gcfnrqMIjPKj5OHvYIj5plY2Zi9f
+	VQRxXVx9TOEo5jjlk53fcU62iegwt8qe5ju6/EsFDlc4Tuk8fVW/zZIP
+X-Gm-Gg: AZFdTZeHFNjRZzTolLOqTlcjkechLWvUm6/StdU4w07VCdeL0sIhibNlL4J49t2snmN
+	muhDSDL9xUpFkuiRzZoM/NXHqWOlZSSn9Mm/n3WY25ZOrLxnVXGFfZIQhT3DOmqoymB+UwIPgy8
+	gRaXBBLqvrl2XE+GifAs/3SmNNX+NbkTD4fL6X/YQ7nNo/dCozPqqV3Fvq9ed/PX6vUcwH2F4Xi
+	ItjeWIl23USMywkCv0mn+CKlzWzfyLJuaRG+l2M8HmAhzAS8AE69H7d+ayQyh7JefiDp6LJXf0O
+	9HCv+bITyPKSgiE1j2tEyisI84YUa72CBGUhxRd6ysrjuUlkLvaAcI6RjWvj5uGirMhRHdXaNO8
+	bZIja2Frn3CE0L2UW6zppznWUFAnTlm9d3r8PiCsRYi8HVXXDgRbD+KaL90seMNH2VPSJjCsWM3
+	MmeA6Oxv06K5EUZq2MnKxlrf/oGBMSDOnOKxI5zRz4M7a7kbsqA+Kx0VHryLSYocHE0onw3x/1X
+	xbCV/jej9shfziU3CitgU3AKopEuxcX37WLx4g+GKhQT9HT2eBrUynjfJPFPPMH/tRgJlNmvpub
+	xTyIr6pLUWMs7xCL0/Z0VxYAyiANDMH3mWy/xCKeODsUSAl8rOvzMEPo7V4pDkUTQw9Zegiow4k
+	ntaX24iqIIVexLp/IgqFEFh6eTylZGFSmgtgpXTfSpUJmfv/K93ZINMaZVeU13l4ZfA+Wxe0+KA
+	5QpaQNrUIHw/2QgmQiBB8XHicUt234iV3k8CqPGoOaj+sYWy5zXTb9Ky3wYwtbZ04=
+X-Received: by 2002:aa7:ca4b:0:b0:6b5:817e:4bd5 with SMTP id 4fb4d7f45d1cf-6ba37d3de4amr11657915a12.18.1795701458632;
+        Thu, 26 Nov 2026 05:57:38 -0800 (PST)
+Received: from [192.168.100.100] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6ba36e35641sm9711713a12.1.2026.11.26.05.57.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Nov 2026 05:57:38 -0800 (PST)
+Message-ID: <54d0f310-e7c0-4439-8dd6-1c46d6aa0202@gmail.com>
+Date: Thu, 26 Nov 2026 14:57:37 +0100
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -53,275 +92,128 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v2] netfilter: nft_synproxy: enforce strict TCP flag
+ matching
+To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+References: <751ce8c9-049b-4177-8873-cea240e356e7@mail.kernel.org>
+Content-Language: en-US
+From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+In-Reply-To: <751ce8c9-049b-4177-8873-cea240e356e7@mail.kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Thu, 26 Nov 2026 13:52:43 +0000 (UTC)
+Content-Transfer-Encoding: 7bit
 
-When user space issues an I2C_RDWR ioctl on an exposed I2C device
-(/dev/i2c-X) with a zero-length message (msg.len == 0), i2cdev_ioctl_rdwr()
-allocates the message buffer using memdup_user(), which returns
-ZERO_SIZE_PTR (0x10) for a length of 0. When su3000_i2c_transfer()
-subsequently processes the request, it accesses the buffer without checking
-its length, unconditionally dereferencing msg[j].buf[0] for
-SU3000_STREAM_CTRL commands. Dereferencing ZERO_SIZE_PTR leads to a general
-protection fault and KASAN null-ptr-deref report.
+On 11/25/26 17:43, syzbot wrote:
+> In `nft_synproxy_eval_v4()` and `nft_synproxy_eval_v6()`, TCP control flags
+> are checked only with `if (tcp->syn)` and `else if (tcp->ack)` without
+> excluding other flags, unlike the xtables SYNPROXY targets
+> (`synproxy_tg4()` and `synproxy_tg6()`). As a result, a SYN+ACK (or SYN+FIN
+> / SYN+RST) packet reaching `nft_synproxy` is misidentified as an initial
+> client SYN and causes `synproxy_send_client_synack()` or
+> `synproxy_send_client_synack_ipv6()` to reply with another SYN+ACK.
+> Likewise, FIN+ACK and RST+ACK packets enter the client ACK branch and can
+> be dropped with NF_DROP instead of continuing through the ruleset.
+> 
+> When an nftables rule evaluates `nft_synproxy` (either via the inline
+> expression or a stateful `NFT_OBJECT_SYNPROXY` object) on
+> `NF_INET_LOCAL_IN`, a local TCP SYN over loopback triggers
+> `nft_synproxy_eval_v4()` to send a SYN+ACK with swapped addresses and ports
+> and a fresh TTL via `synproxy_send_client_synack()`. When
+> `process_backlog()` in `NET_RX_SOFTIRQ` delivers that generated SYN+ACK
+> back through the same input rule on `NF_INET_LOCAL_IN`, `if (tcp->syn)`
+> matches again and sustains an infinite SYN+ACK feedback loop in softirq
+> context, saturating the CPUs, starving tasks holding or waiting on
+> `rtnl_mutex`, and triggering hung task warnings.
+> 
+> Fix this by filtering out invalid TCP flag combinations in
+> `nft_synproxy_do_eval()` before dispatching to `nft_synproxy_eval_v4()` or
+> `nft_synproxy_eval_v6()`: return early when `tcp->syn == tcp->ack ||
+> tcp->fin || tcp->rst`. This rejects packets with FIN or RST set, packets
+> with neither SYN nor ACK set, and SYN+ACK packets, ensuring only SYN-only
+> or ACK-only control packets (without FIN/RST) reach the v4/v6 evaluation
+> helpers while unrelated control packets fall through with
+> `regs->verdict.code` left as `NFT_CONTINUE`.
+> 
+> Fixes: ad49d86e07a4 ("netfilter: nf_tables: Add synproxy support")
+> Assisted-by: Gemini:gemini-4-hydrogen Gemini:gemini-4-carbon Gemini:gemini-3.8-flash syzbot
+> Reported-by: syzbot+55141a0ffa0d17f01c71@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=55141a0ffa0d17f01c71
+> Link: https://syzkaller.appspot.com/ai_job?id=01904981-72da-437f-a636-e56909e8bc78
+> To: <coreteam@netfilter.org>
+> To: "David S. Miller" <davem@davemloft.net>
+> To: "Eric Dumazet" <edumazet@kernel.org>
+> To: "Florian Westphal" <fw@strlen.de>
+> To: "Jakub Kicinski" <kuba@kernel.org>
+> To: <netdev@vger.kernel.org>
+> To: <netfilter-devel@vger.kernel.org>
+> To: "Paolo Abeni" <pabeni@redhat.com>
+> To: "Pablo Neira Ayuso" <pablo@netfilter.org>
+> To: "Fernando Fernandez Mancera" <ffmancera@riseup.net>
+> Cc: "Simon Horman" <horms@kernel.org>
+> Cc: "Phil Sutter" <phil@nwl.cc>
+> 
+> ---
+> v2:
+> - Moved the strict TCP flag check from `nft_synproxy_eval_v4()` and `nft_synproxy_eval_v6()` into `nft_synproxy_do_eval()`
+> - Replaced the per-branch flag checks with `if (tcp->syn == tcp->ack || tcp->fin || tcp->rst) return;`
+> - Updated the commit message to match the new implementation and removed the quoted hung-task and NMI backtrace excerpt
+> 
+> v1:
+> https://lore.kernel.org/all/96d0756e-28cd-4b99-b0c7-17698acc8276@mail.kernel.org/T/
+> ---
+> diff --git a/net/netfilter/nft_synproxy.c b/net/netfilter/nft_synproxy.c
+> index 554a96a00..aa8dea698 100644
+> --- a/net/netfilter/nft_synproxy.c
+> +++ b/net/netfilter/nft_synproxy.c
+> @@ -137,6 +137,9 @@ static void nft_synproxy_do_eval(const struct nft_synproxy *priv,
+>  		return;
+>  	}
+>  
+> +	if (tcp->syn == tcp->ack || tcp->fin || tcp->rst)
+> +		return;
+> +
+>  	switch (skb->protocol) {
+>  	case htons(ETH_P_IP):
+>  		nft_synproxy_eval_v4(priv, regs, pkt, tcp, &_tcph, &opts);
+> 
+> 
+> base-commit: b6a9fa34ce4187cb69d3c588a4bbffc31ce5db8f
+Please rewrite the commit message as plain kernel changelog text and
+keep the code change exactly as it is. The single check in
+nft_synproxy_do_eval() is correct and needs no further change.
 
-Oops: general protection fault, probably for non-canonical address
-0xdffffc0000000002: 0000 [#1] SMP KASAN NOPTI
-KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
-RIP: 0010:su3000_i2c_transfer+0x1aa/0xfc0
-drivers/media/usb/dvb-usb/dw2102.c:740
-Call Trace:
- <TASK>
- __i2c_transfer+0x7bf/0x1fe0 drivers/i2c/i2c-core-base.c:-1
- i2c_transfer+0x1cb/0x2d0 drivers/i2c/i2c-core-base.c:2350
- i2cdev_ioctl_rdwr+0x460/0x740 drivers/i2c/i2c-dev.c:306
- i2cdev_ioctl+0x6a5/0x880 drivers/i2c/i2c-dev.c:467
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x155/0x510 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
- </TASK>
+The current description puts Markdown backticks around function names
+and code, which kernel changelogs do not use, and its second paragraph
+walks through the loop one function and hook at a time. Its last
+paragraph also calls SYN-ACK, FIN+ACK and RST+ACK "invalid TCP flag
+combinations" and says that the check "rejects" them. These are valid
+TCP segments that are only not part of the client handshake, and after
+the check they continue through the ruleset with the verdict
+unchanged, as the end of the same sentence says. A description along
+these lines would be enough:
 
-Commit d2ffc447cabb ("[media] dw2102: add SU3000 support") specifically
-introduced the SU3000 support and the unvalidated buffer access in
-su3000_i2c_transfer(). In addition, similar missing length checks exist
-across the other transfer callbacks in drivers/media/usb/dvb-usb/dw2102.c
-dating back to their original introductions, while dw2102_i2c_transfer()
-was previously fixed in commit 5ae544d94abc ("media: dw2102: Fix
-null-ptr-deref in dw2102_i2c_transfer()"). Specifically, SU3000_STREAM_CTRL
-requires msg[j].len >= 1 to read msg[j].buf[0]; DW2102_RC_QUERY requires
-msg[].len >= 2 to store the 2-byte query response across all callbacks;
-DW2102_VOLTAGE_CTRL requires msg[].len >= 1 in dw2102_serit_i2c_transfer,
-dw2102_earda_i2c_transfer, and dw2104_i2c_transfer to read msg[].buf[0],
-but requires msg[j].len >= 2 in s6x0_i2c_transfer to read msg[j].buf[1];
-DW2102_LED_CTRL requires msg[j].len >= 1 in s6x0_i2c_transfer to read
-msg[j].buf[0]; and default firmware write paths in dw2104_i2c_transfer and
-s6x0_i2c_transfer require msg[j].len >= 1 to inspect msg[j].buf[0].
-Additionally, dw2102_earda_i2c_transfer() suffered from an out-of-bounds
-read when num == 1 by reading msg[1].len outside the message array in
-warning logs when validating the transfer buffer size.
+  netfilter: nft_synproxy: only handle a plain SYN or a plain ACK
 
-Fix these issues by validating msg[].len against each command's minimum
-required size before indexing into or copying to msg[].buf across all
-dw2102 I2C transfer callbacks (returning -EOPNOTSUPP on failure, or
-guarding the firmware write check with msg[j].len >= 1 in
-dw2104_i2c_transfer and s6x0_i2c_transfer so zero-length writes fall
-through to the generic write path), and correct the out-of-bounds read in
-dw2102_earda_i2c_transfer() by referencing msg[0].len.
+  The synproxy expression and object answer every TCP segment with SYN
+  set with a SYN-ACK cookie and treat every other segment with ACK set
+  as the ACK that completes the handshake. The iptables and ip6tables
+  SYNPROXY targets act only on a SYN without ACK, FIN and RST, or an
+  ACK without SYN, FIN and RST.
 
-Fixes: d2ffc447cabb ("[media] dw2102: add support for Geniatech SU3000 USB DVB-S2 card")
-Assisted-by: Gemini:gemini-4-hydrogen Gemini:gemini-4-carbon Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+d99f3a288cc7d8ef60fb@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=d99f3a288cc7d8ef60fb
-Link: https://syzkaller.appspot.com/ai_job?id=562fa217-697d-40d1-9159-4daa0bcecc54
-To: <linux-media@vger.kernel.org>
-To: "Mauro Carvalho Chehab" <mchehab@kernel.org>
-To: "Igor M. Liplianin" <liplianin@me.by>
-Cc: <linux-kernel@vger.kernel.org>
+  A SYN-ACK is what synproxy sends itself. When it reaches the same rule
+  again, as it does over loopback for a connection to a local address,
+  it is answered with another SYN-ACK, and so on forever in softirq
+  context. Each retransmitted SYN starts one more such loop. syzbot hit
+  this with a synproxy rule on the input hook that matched all TCP
+  segments: a CPU kept running the loop in net_rx_action() and tasks
+  waiting for the RTNL mutex were reported as hung.
 
----
-v3:
-- Guarded firmware write checks in dw2104_i2c_transfer() and s6x0_i2c_transfer() with msg[j].len >= 1 instead of returning -EOPNOTSUPP so zero-length messages fall through to the generic write path.
-- Removed the duplicate Fixes tag from the commit description body.
+  Return early from nft_synproxy_do_eval(), before the family specific
+  code, for a segment that has FIN or RST set or that does not have
+  exactly one of SYN and ACK. Such segments continue through the
+  ruleset, as with the SYNPROXY targets.
 
-v2:
-- Clarified that zero-length memdup_user() returns ZERO_SIZE_PTR and dropped the reference to kmalloc_track_caller().
-- Documented the minimum required length for each guarded command across the transfer callbacks.
-- Described the msg[1].len access in dw2102_earda_i2c_transfer() as an out-of-bounds read when num == 1.
-- Clarified the history of the fixes, tying Fixes: d2ffc447cabb specifically to su3000_i2c_transfer().
-https://lore.kernel.org/all/c05e1655-d5b4-445d-aebf-e06ba6b44ad2@mail.kernel.org/T/
-
-v1:
-https://lore.kernel.org/all/9dda9080-8d80-4504-95dd-0faef04af12d@mail.kernel.org/T/
----
-diff --git a/drivers/media/usb/dvb-usb/dw2102.c b/drivers/media/usb/dvb-usb/dw2102.c
-index 4fecf2f96..9c94b94f7 100644
---- a/drivers/media/usb/dvb-usb/dw2102.c
-+++ b/drivers/media/usb/dvb-usb/dw2102.c
-@@ -265,12 +265,20 @@ static int dw2102_serit_i2c_transfer(struct i2c_adapter *adap,
- 				     msg[0].len + 2, DW210X_WRITE_MSG);
- 			break;
- 		case(DW2102_RC_QUERY):
-+			if (msg[0].len < 2) {
-+				num = -EOPNOTSUPP;
-+				break;
-+			}
- 			dw210x_op_rw(d->udev, 0xb8, 0, 0,
- 				     buf6, 2, DW210X_READ_MSG);
- 			msg[0].buf[0] = buf6[0];
- 			msg[0].buf[1] = buf6[1];
- 			break;
- 		case(DW2102_VOLTAGE_CTRL):
-+			if (msg[0].len < 1) {
-+				num = -EOPNOTSUPP;
-+				break;
-+			}
- 			buf6[0] = 0x30;
- 			buf6[1] = msg[0].buf[0];
- 			dw210x_op_rw(d->udev, 0xb2, 0, 0,
-@@ -334,7 +342,7 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
- 
- 			if (2 + msg[0].len > sizeof(obuf)) {
- 				warn("i2c wr: len=%d is too big!\n",
--				     msg[1].len);
-+				     msg[0].len);
- 				ret = -EOPNOTSUPP;
- 				goto unlock;
- 			}
-@@ -352,7 +360,7 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
- 
- 			if (2 + msg[0].len > sizeof(obuf)) {
- 				warn("i2c wr: len=%d is too big!\n",
--				     msg[1].len);
-+				     msg[0].len);
- 				ret = -EOPNOTSUPP;
- 				goto unlock;
- 			}
-@@ -367,6 +375,10 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
- 		case(DW2102_RC_QUERY): {
- 			u8 ibuf[2];
- 
-+			if (msg[0].len < 2) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			dw210x_op_rw(d->udev, 0xb8, 0, 0,
- 				     ibuf, 2, DW210X_READ_MSG);
- 			memcpy(msg[0].buf, ibuf, 2);
-@@ -375,6 +387,10 @@ static int dw2102_earda_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg ms
- 		case(DW2102_VOLTAGE_CTRL): {
- 			u8 obuf[2];
- 
-+			if (msg[0].len < 1) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			obuf[0] = 0x30;
- 			obuf[1] = msg[0].buf[0];
- 			dw210x_op_rw(d->udev, 0xb2, 0, 0,
-@@ -407,6 +423,10 @@ static int dw2104_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[], i
- 		case(DW2102_RC_QUERY): {
- 			u8 ibuf[2];
- 
-+			if (msg[j].len < 2) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			dw210x_op_rw(d->udev, 0xb8, 0, 0,
- 				     ibuf, 2, DW210X_READ_MSG);
- 			memcpy(msg[j].buf, ibuf, 2);
-@@ -415,6 +435,10 @@ static int dw2104_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[], i
- 		case(DW2102_VOLTAGE_CTRL): {
- 			u8 obuf[2];
- 
-+			if (msg[j].len < 1) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			obuf[0] = 0x30;
- 			obuf[1] = msg[j].buf[0];
- 			dw210x_op_rw(d->udev, 0xb2, 0, 0,
-@@ -444,8 +468,9 @@ static int dw2104_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[], i
- 					     DW210X_READ_MSG);
- 				memcpy(msg[j].buf, ibuf + 2, msg[j].len);
- 				mdelay(10);
--			} else if (((msg[j].buf[0] == 0xb0) && (msg[j].addr == 0x68)) ||
--				   ((msg[j].buf[0] == 0xf7) && (msg[j].addr == 0x55))) {
-+			} else if (msg[j].len >= 1 &&
-+				   (((msg[j].buf[0] == 0xb0) && (msg[j].addr == 0x68)) ||
-+				    ((msg[j].buf[0] == 0xf7) && (msg[j].addr == 0x55)))) {
- 				/* write firmware */
- 				u8 obuf[19];
- 
-@@ -557,6 +582,10 @@ static int dw3101_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
- 		case(DW2102_RC_QUERY): {
- 			u8 ibuf[2];
- 
-+			if (msg[0].len < 2) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			dw210x_op_rw(d->udev, 0xb8, 0, 0,
- 				     ibuf, 2, DW210X_READ_MSG);
- 			memcpy(msg[0].buf, ibuf, 2);
-@@ -597,6 +626,10 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
- 		case (DW2102_RC_QUERY): {
- 			u8 ibuf[5];
- 
-+			if (msg[j].len < 2) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			dw210x_op_rw(d->udev, 0xb8, 0, 0,
- 				     ibuf, 5, DW210X_READ_MSG);
- 			memcpy(msg[j].buf, ibuf + 3, 2);
-@@ -605,6 +638,10 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
- 		case (DW2102_VOLTAGE_CTRL): {
- 			u8 obuf[2];
- 
-+			if (msg[j].len < 2) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			obuf[0] = 1;
- 			obuf[1] = msg[j].buf[1];/* off-on */
- 			dw210x_op_rw(d->udev, 0x8a, 0, 0,
-@@ -618,6 +655,10 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
- 		case (DW2102_LED_CTRL): {
- 			u8 obuf[2];
- 
-+			if (msg[j].len < 1) {
-+				ret = -EOPNOTSUPP;
-+				goto unlock;
-+			}
- 			obuf[0] = 5;
- 			obuf[1] = msg[j].buf[0];
- 			dw210x_op_rw(d->udev, 0x8a, 0, 0,
-@@ -647,7 +688,8 @@ static int s6x0_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
- 						DW210X_READ_MSG);
- 				memcpy(msg[j].buf, ibuf, msg[j].len);
- 				break;
--			} else if ((msg[j].buf[0] == 0xb0) && (msg[j].addr == 0x68)) {
-+			} else if (msg[j].len >= 1 &&
-+				   (msg[j].buf[0] == 0xb0) && (msg[j].addr == 0x68)) {
- 				/* write firmware */
- 				u8 obuf[19];
- 
-@@ -737,6 +779,10 @@ static int su3000_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
- 	while (j < num) {
- 		switch (msg[j].addr) {
- 		case SU3000_STREAM_CTRL:
-+			if (msg[j].len < 1) {
-+				num = -EOPNOTSUPP;
-+				break;
-+			}
- 			state->data[0] = msg[j].buf[0] + 0x36;
- 			state->data[1] = 3;
- 			state->data[2] = 0;
-@@ -745,6 +791,10 @@ static int su3000_i2c_transfer(struct i2c_adapter *adap, struct i2c_msg msg[],
- 				err("i2c transfer failed.");
- 			break;
- 		case DW2102_RC_QUERY:
-+			if (msg[j].len < 2) {
-+				num = -EOPNOTSUPP;
-+				break;
-+			}
- 			state->data[0] = 0x10;
- 			if (dvb_usb_generic_rw(d, state->data, 1,
- 					       state->data, 2, 0) < 0)
-
-
-base-commit: c03c1a14507dfaf8b856c2608f9ac216021fc222
+Keep the Fixes tag of this version unchanged.
 -- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
-
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Krystian Kaniewski
