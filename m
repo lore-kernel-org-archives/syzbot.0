@@ -1,49 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.200
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795776615;
-	b=4aYNFSU4lGK3MpfXfrjcy9+JZM2BvkCwR6lylphvnBFXX7QxKKxDX+OVo0SNj03gdM9P
-	 LcC5GvsAJomHTT9sMi7e7XF6zMB9Mt6G1bUkbCVHFblMxgxuRHe3oXZBeuB5Y8t1BdB1T
-	 Xlem8IXq1Kx6Oo/cqPT2+lE9LAHdEOln9rsY3qokgw4i0IB3qjiGuH1O9o/7bjijsUGTo
-	 Di/YMNl7pOSe8tP7KxTEF2jeaPlYE41illmughjH38tmHzsx3M21y6xKp1NhoKAuevg9X
-	 xeWM0HzlfL+W80Bu349yqoue4Dd9/ZxSK2BBmXzTvcrmxHOab6SacQb62n7pCt15xBQ==
+	t=1795797138;
+	b=tb8RGUZJL6qrLlwQuiLD2GzLhpvRSYCcDGPECWLBwugK3x3ZO/oZeVeEq3CUur8oIY8k
+	 tyE06Hy1wUTg9TurCzefob1UnF//G7yRGmdVIgD8vBgS9R5sVUXMY/uRC6C0r1NT9r9qW
+	 mXxvEUswtSaFmBy6rq9FWjCetMR4m3JoLjMnPnUavwDRfnaZNyRPx6kLL4JRpOsVV80Sl
+	 5xyvf2VVPPbRtXjcF/vyZl08l6KTpaddLCqjP/lnm/r/6PjEq7b05Q1MghHL2Y+2w/ryR
+	 J4hjHfr6XzeahmvQA8PDVgI48LhkhMSB15hspFWPt+ThEQkXSq0cLy1Iyr2FAzK6uOg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795776615;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:Date;
-	bh=m1xJ2jZz3LYgTQ/9T2l2tE7BsbSdo/loePkJzVMlzsg=;
-	b=M8gqBQa5Z/VU9nBLIW8vpdbJXpfkkvida5hc0SBBXIKUvxDQrFehx8pawIQDuxjrWn/g
-	 ByYdyY6xvWEjCQThtsDV6wHP3krDtj42FpatAkWmd5rANh6j2dis4h89cnSjmRYoaYDc+
-	 SzM5dWsL79WKWY/5znFI8fZeYKsYNVkipbunyyTqoWEdalrazUJDd7pEYYtreDwPhpr/m
-	 VQyD7k6eyaUuaYD8moZWo8LneUQ5L5SpwGMS0idbXSQZVLx+6Jdxwr1L2IRhUcXo98oml
-	 qsLGyqw4INQOg0nR1F2E55aFW5U7ElRlsa9Wv6BlTvj3LddmtKDjTteusLrcklXWo8A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795797138;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
+	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
+	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=DclYKZfX4Xd2Igpf48u6zoKg8hrd6RY61FAoR0M2P0A=;
+	b=aARwD0G5p9t31cMLNOuteyX/UOf5zuPI3qUxN2QhNyj7Ayv4tOPkpoRfkYivHQbr5HN1
+	 nyDaLg0ILmMn7T+JQdMd9XwmGR1D8OeA6LcSS1ZQBc7KRXtk7V7S4ennZDH0s37Z+8xur
+	 h6VrXgKu3T9kfrgkeO46bU8rpVd7ooAz/i01jrQH6ScqsO2/gwJBZIcR0IU+IM+j6OG0Y
+	 MrUAuZEIpTuIgwUGJIb34uJb3N5n5ACNyf5zpvGdArtmBBKJOfD1R88LM+eyJlUY9F++k
+	 P2C0zXiYAZcgG9T8pyRWPfyJdwDGO1/vQBEHniq8VnuLyCkTV5zTL1gDXgXTP/u3xLg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZRufHj86;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=fail header.from=syzkaller.appspotmail.com;
+	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
+	arc=none smtp.remote-ip=209.85.167.200
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 2EAE0606A323;
-	Fri, 27 Nov 2026 10:50:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZRufHj86
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 1A7171F00898;
-	Fri, 27 Nov 2026 10:50:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795776614;
-	bh=m1xJ2jZz3LYgTQ/9T2l2tE7BsbSdo/loePkJzVMlzsg=;
-	h=From:To:Cc:Subject:Date;
-	b=ZRufHj862oNXCKBABV2iHBEDCjJPBsrx6ImRN4w2B7UtTUz6e6y/3Chv4D953IWMK
-	 jYLWVgGOXHjUT4LCUEfsqgNah/KzIwv5RbO5M+qcVkT3hfn9TUuvDq3+BYw8Ny1tIH
-	 sgCbROiy8h8sVje5i0OrTcI+xPAO+VVON149jrrLSnKzOEXD+hr6YGhevtL613dfXP
-	 xBDCN1bUgQWnutsnbmE4ClZxT8iDjTxIgrjEGO8inGPtl4g6j9I22nG2FI/ijduiWP
-	 zAEESElwD5T9FR6bDO2i0u3DQhsVg57HttAfu4TCmmDsSYxTtBXfYorH4ap7UaKbWs
-	 p1BPzEWug+qyw==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-bugs@googlegroups.com, Krystian Kaniewski <krystianmkaniewski@gmail.com>, <coreteam@netfilter.org>, "David S. Miller" <davem@davemloft.net>, "Eric Dumazet" <edumazet@kernel.org>, "Florian Westphal" <fw@strlen.de>, "Jakub Kicinski" <kuba@kernel.org>, <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>, "Paolo Abeni" <pabeni@redhat.com>, "Pablo Neira Ayuso" <pablo@netfilter.org>, "Fernando Fernandez Mancera" <ffmancera@riseup.net>
-Cc: horms@kernel.org, phil@nwl.cc, syzbot@lists.linux.dev
-Subject: [PATCH] netfilter: nft_synproxy: only handle a plain SYN or a plain ACK
-Message-ID: <4feea54c-bd91-4ff1-aae5-9ba4bb835449@mail.kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E55F3606A31C
+	for <syzbot@lists.linux.dev>; Fri, 27 Nov 2026 16:32:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E55F3606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4e937c5bd4fso6989944b6e.2
+        for <syzbot@lists.linux.dev>; Fri, 27 Nov 2026 08:32:17 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795797137; x=1796401937;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=DclYKZfX4Xd2Igpf48u6zoKg8hrd6RY61FAoR0M2P0A=;
+        b=SEkaICiY2uicuSEhI8jrJ3WvXbu7y4G4gebzs0b0E2hxGLzP8BoABEpOLF4e+RYvi8
+         7Q00O+gmgBqElwu3NTI1ze2Mb6EEp0C4GSM7nss7LoTtyeARdpYqeDnFmFF0oICYH49p
+         EBUiuSGSszB0yW/E41xtVsspwzI8dZ8PsPUfBXANUBYD9rByzdOW4i/JXDO4MJVhnnrr
+         Exadf3QK6B5ESd/bFHBErwMMwFcvs8iwlpfOrrpi1BnY8JakOwGPEWi54FDUy7Q6s002
+         6BVCq1Bn0TRbYaM68CMUu07ILW2nGcZdlPQns/agfjyOA8tMm0kos/i8NrOj2BbO2Mhq
+         1WUw==
+X-Gm-Message-State: APuU4Z8CNBLPTXncG2dzfXaoV+QFgWsI+PRw0T1PFjEvtzlDhWtVzMgh
+	p912dzpwD3y1q0tKeJduUqBMx5R/M6NsSklGabtGwQzihxLDbJ7RPRdSB7JuGYjI7UFQoUxTGUI
+	RJ+KhaFVe3Hr9TN5ktPHwf9AvRk1GDu/k7enRM/RqMhvvb1KAxVs3tw6waLM=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -53,64 +57,93 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Fri, 27 Nov 2026 10:50:14 +0000 (UTC)
+X-Received: by 2002:a05:6808:1a10:b0:564:48f3:dfa8 with SMTP id
+ 5614622812f47-57a0a111c93mr27696403b6e.11.1795797136982; Fri, 27 Nov 2026
+ 08:32:16 -0800 (PST)
+Date: Fri, 27 Nov 2026 08:32:16 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6b09b090.8ccee5ca.1045fd.0274.GAE@google.com>
+Subject: [moderation/CI] Re: unwind: Minimal DWARF CFI stack unwinding for
+ x86, arm64, and riscv
+From: syzbot ci <syzbot+ci6363fbdbfa31535f@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+syzbot ci has tested the following series
 
-nft_synproxy_eval_v4() and nft_synproxy_eval_v6() check tcp->syn and
-tcp->ack without excluding other TCP control flags, unlike the xtables
-SYNPROXY targets. As a result, a SYN+ACK (or SYN+FIN / SYN+RST) packet
-reaching nft_synproxy is misidentified as an initial client SYN and
-triggers another SYN+ACK reply, while FIN+ACK and RST+ACK packets enter the
-client ACK branch and can be dropped with NF_DROP instead of continuing
-through the ruleset.
+[v1] unwind: Minimal DWARF CFI stack unwinding for x86, arm64, and riscv
+https://lore.kernel.org/all/20261122235757.3456048-1-irogers@google.com
+* [RFC PATCH v1 01/11] unwind: Add Minimal DWARF CFI bytecode interpreter a=
+nd KUnit tests
+* [RFC PATCH v1 02/11] unwind_user: Support Minimal DWARF CFI user-space un=
+winding
+* [RFC PATCH v1 03/11] scripts, unwind: Add build-time .eh_frame minifier
+* [RFC PATCH v1 04/11] objtool/ibt: Ignore .eh_frame relocations during END=
+BR validation
+* [RFC PATCH v1 05/11] x86/unwind: Add Minimal DWARF CFI kernel unwinder
+* [RFC PATCH v1 06/11] arm64: unwind_user: Support Minimal DWARF CFI and FP=
+ user unwinding
+* [RFC PATCH v1 07/11] arm64/unwind: Add Minimal DWARF CFI kernel unwinder
+* [RFC PATCH v1 08/11] riscv: unwind_user: Support Minimal DWARF CFI and FP=
+ user unwinding
+* [RFC PATCH v1 09/11] riscv/unwind: Add Minimal DWARF CFI kernel unwinder
+* [RFC PATCH v1 10/11] selftests/perf_events: Add Minimal DWARF CFI deferre=
+d user unwind test
+* [RFC PATCH v1 11/11] scripts: Add eh_frame_min.py .eh_frame coverage and =
+size analyzer
 
-On loopback, when an nftables input rule evaluates nft_synproxy, a local
-SYN causes it to send a SYN+ACK back over loopback, which hits the same
-rule again and matches tcp->syn. This creates an infinite SYN+ACK feedback
-loop in softirq context that saturates the CPUs, starves tasks holding or
-waiting on rtnl_mutex, and triggers hung task warnings (such as "INFO: task
-kworker/R-ipv6_:60 blocked for more than 143 seconds" in
-addrconf_dad_work).
+and found the following issue:
+kernel build error
 
-Fix this in nft_synproxy_do_eval() by returning early when tcp->syn ==
-tcp->ack || tcp->fin || tcp->rst before dispatching to
-nft_synproxy_eval_v4() or nft_synproxy_eval_v6(). This ensures nft_synproxy
-only handles a plain SYN or a plain ACK (without FIN or RST), while valid
-TCP segments outside the client handshake such as SYN+ACK, FIN+ACK, and
-RST+ACK—as well as other segments with FIN, RST, or neither SYN nor ACK
-set—continue through the ruleset unchanged with regs->verdict.code left as
-NFT_CONTINUE.
+Full report is available here:
+https://ci.syzbot.org/series/ce9f5a45-b59b-480c-a630-f01db8cae398
 
-Fixes: ad49d86e07a4 ("netfilter: nf_tables: Add synproxy support")
-Assisted-by: Gemini:gemini-4-hydrogen Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+55141a0ffa0d17f01c71@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=55141a0ffa0d17f01c71
-Link: https://syzkaller.appspot.com/ai_job?id=19d80d6e-8025-483e-ac1b-da92f0b2dde3
-Signed-off-by: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+***
+
+kernel build error
+
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/l=
+inux.git
+base:      4843f6873f7c4835e62f2c73ba0fd538e57a2f22
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/7019f7d2-7e58-48fb-b627-81ed58d79b3=
+1/config
+
+ld.lld: error: undefined symbol: arch_rethook_trampoline
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-diff --git a/net/netfilter/nft_synproxy.c b/net/netfilter/nft_synproxy.c
-index 554a96a00..aa8dea698 100644
---- a/net/netfilter/nft_synproxy.c
-+++ b/net/netfilter/nft_synproxy.c
-@@ -137,6 +137,9 @@ static void nft_synproxy_do_eval(const struct nft_synproxy *priv,
- 		return;
- 	}
- 
-+	if (tcp->syn == tcp->ack || tcp->fin || tcp->rst)
-+		return;
-+
- 	switch (skb->protocol) {
- 	case htons(ETH_P_IP):
- 		nft_synproxy_eval_v4(priv, regs, pkt, tcp, &_tcph, &opts);
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
+The email will later be sent to:
+[acme@kernel.org alex@ghiti.fr andrii@kernel.org aou@eecs.berkeley.edu ardb=
+@kernel.org ast@kernel.org bp@alien8.de bpf@vger.kernel.org catalin.marinas=
+@arm.com daniel@iogearbox.net dave.hansen@linux.intel.com dylanbhatch@googl=
+e.com indu.bhagat@oracle.com irogers@google.com jpoimboe@kernel.org jremus@=
+linux.ibm.com kvmarm@lists.linux.dev linux-arch@vger.kernel.org linux-arm-k=
+ernel@lists.infradead.org linux-efi@vger.kernel.org linux-kbuild@vger.kerne=
+l.org linux-kernel@vger.kernel.org linux-kselftest@vger.kernel.org linux-pe=
+rf-users@vger.kernel.org linux-riscv@lists.infradead.org linux-trace-kernel=
+@vger.kernel.org mark.rutland@arm.com maz@kernel.org mhiramat@kernel.org mi=
+ngo@redhat.com namhyung@kernel.org nathan@kernel.org nsc@kernel.org ojeda@k=
+ernel.org oupton@kernel.org palmer@dabbelt.com peterz@infradead.org pjw@ker=
+nel.org rostedt@goodmis.org rust-for-linux@vger.kernel.org shuah@kernel.org=
+ tglx@kernel.org will@kernel.org wnliu@google.com x86@kernel.org]
 
-base-commit: b6a9fa34ce4187cb69d3c588a4bbffc31ce5db8f
--- 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-The person who has signed off on the patch is responsible for
-addressing comments.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+If the report looks fine to you, reply with:
+#syz upstream
+
+If the report is a false positive, reply with
+#syz invalid
+
