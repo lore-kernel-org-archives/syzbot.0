@@ -1,89 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.54
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795776269;
-	b=WRZBF0Y9FZgMAw/hJgHdQ8Jy0ZLssJj6R4munpRPqoI3vAFZ832q1GeLkVUmMPR8sva3
-	 i7+Kf0yin8b6YSDhtDxT4qrHtSn3J1WFSA2dpFd4t19/9i7nyjii3JyYUWfZnIKlJSZ6Q
-	 IxQjgAf2Uuyjkhfv5jBL4UbsJGFwO5+SgNW4jA5iiUt4r7pTLazcHkdnw+Zz4nDGZCnay
-	 YB64wW9Y7P/tvhX4oYrfkNwJaaBryWDkKXQZRvClET/EGREL+NW/dHNc4GJpZHSR7hCMH
-	 zSL2ILdigBIeutdNriQSicGlhcpDrepfzEt47WTUVvB7rUv7T8WoPgRsR1W4M3GhLyQ==
+	t=1795776615;
+	b=4aYNFSU4lGK3MpfXfrjcy9+JZM2BvkCwR6lylphvnBFXX7QxKKxDX+OVo0SNj03gdM9P
+	 LcC5GvsAJomHTT9sMi7e7XF6zMB9Mt6G1bUkbCVHFblMxgxuRHe3oXZBeuB5Y8t1BdB1T
+	 Xlem8IXq1Kx6Oo/cqPT2+lE9LAHdEOln9rsY3qokgw4i0IB3qjiGuH1O9o/7bjijsUGTo
+	 Di/YMNl7pOSe8tP7KxTEF2jeaPlYE41illmughjH38tmHzsx3M21y6xKp1NhoKAuevg9X
+	 xeWM0HzlfL+W80Bu349yqoue4Dd9/ZxSK2BBmXzTvcrmxHOab6SacQb62n7pCt15xBQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795776269;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=CLDeRKDXxQKFajbWU6UwFED1lEQmChZz42q33T7411c=;
-	b=E1LxhbIInGMDpfdvFKCNQwdxtgNyeK6ZU/uBTM7VxsgoRu1+Q3uAFiHRRPidiP3HpmXQ
-	 LV8lKvQe2MX9emQlHVg9Nu1MYwnt4O4zXKwKhvbMxrbnabgS5fJE2PvGmMntr/J8AZNhO
-	 dx1BEoLb3GaPxFWwc+iEpaNP/4gUuX0E1WnDWl1SyNgXm0hSqD619gUJ9zztW2jj1eSbj
-	 yVncPiNKKFBrqZYOoSPfZBGY6S0sxRSC1eyHyvjeJYFoDpDGHqvNUG/7VILOcF8TwD5Oz
-	 8P67H/9RYZowrhvlOJGDqO93aVG7W4nG7ItZipEm95/HsFwWYmv7MfD2c75EWGkFDgA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795776615;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Message-ID:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:Date;
+	bh=m1xJ2jZz3LYgTQ/9T2l2tE7BsbSdo/loePkJzVMlzsg=;
+	b=M8gqBQa5Z/VU9nBLIW8vpdbJXpfkkvida5hc0SBBXIKUvxDQrFehx8pawIQDuxjrWn/g
+	 ByYdyY6xvWEjCQThtsDV6wHP3krDtj42FpatAkWmd5rANh6j2dis4h89cnSjmRYoaYDc+
+	 SzM5dWsL79WKWY/5znFI8fZeYKsYNVkipbunyyTqoWEdalrazUJDd7pEYYtreDwPhpr/m
+	 VQyD7k6eyaUuaYD8moZWo8LneUQ5L5SpwGMS0idbXSQZVLx+6Jdxwr1L2IRhUcXo98oml
+	 qsLGyqw4INQOg0nR1F2E55aFW5U7ElRlsa9Wv6BlTvj3LddmtKDjTteusLrcklXWo8A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GHez8j1B;
-	arc=none smtp.remote-ip=209.85.208.54
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZRufHj86;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB3EE606A31E
-	for <syzbot@lists.linux.dev>; Fri, 27 Nov 2026 10:44:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EB3EE606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 2EAE0606A323;
+	Fri, 27 Nov 2026 10:50:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GHez8j1B
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-6b587538a37so11981479a12.2
-        for <syzbot@lists.linux.dev>; Fri, 27 Nov 2026 02:44:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795776267; x=1796381067; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=CLDeRKDXxQKFajbWU6UwFED1lEQmChZz42q33T7411c=;
-        b=GHez8j1BX2ByrxKK2DwcPzR0CTU9igsDG2m2wohgqBTS6iCmW6RFo3Ae9ZC1/aYGPZ
-         V0cdP9HUD/12UM7Yxh5NxIgfjQ7htB0OONW8ITYjibCAVxQwg3nlWYRwosRwOdByC74w
-         fCy7VoWGLSntPS5bCFJEbPE776h9/aCibGUtbtg7DOfqlobm6MY0mVRc6plxdJFJ9S5S
-         o2eDkOAUg7JMYJIUoBWyzed33yFAe3mV7l6eE9tNmV7r0yRh0B/xBUJN7mlHJjnElsbH
-         LaKP1Rg1rPf8IvSaj9nRDb0xSPJZTOgZzkzTY+7ql7/rHjlexTFCr294oYtllTmOecN9
-         L+0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795776267; x=1796381067;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=CLDeRKDXxQKFajbWU6UwFED1lEQmChZz42q33T7411c=;
-        b=t589pCB7kxflAg5XDoV6m+5moxIFsmcX/4pzIA4dnTWK4jATtGlln4RAGEyiCt1sKS
-         zZFejZGz3G6ifhdAbeT5liuuognbU5BdafRHuKxXff/Arggx2oYcNVjnDuxt01utew41
-         AS3MyTPHDDFIzs971Nz/Q0IoaP6/tF8kYKrfjmoOsfUr0/aogevLL4bVbLQzGmXDmWzj
-         WCtMvjaCUWwSK7EpWkIdeZSLX7I5HyGYCTMEe0cBLtqAHjXKhWuDIYIePYGL9cm7PJkM
-         cYs9rN9RpVd0QoexrPPV35MYHfW7Q9FwqKG6xpdvHFzW28foB9fv5deFalPoHpWV68Su
-         9vjQ==
-X-Gm-Message-State: APuU4Z/bxuTvefUUMYaCIhuJECO7OkxWzRJaCq42fcb16UWHV+GElAto
-	JsqpyFZVxPNuOTAeW5GmpTKWAV1h/7vjktRNeYNLuyumpqQLfptZgfMq
-X-Gm-Gg: AZFdTZclX8o8VKFnKASqASdqxg7J6+M/7q4Okjj+kYp7PXhraFav6jWk7v9LZFr0pYq
-	vqi669Vc4Fy0rGvHQKsSFZ45pOSfcTkrO8fktrPOU4OfvpQTB6PRT7pWcW0zQ4ies/P7hcxQ8kr
-	u+FAOOG2uCx/FNhdJdu9gFBp5eY9cZsh4q/pVmSf0oQcb9zH7DCVQF2TtP1Qs90oiAWtSOpcN8d
-	miK8V+LHUDNIut3QuiIEh/IDRj1iBzKYupRXXd/U8xq179RHZ/asVYy7TAhMjHJgdGT5YdYdIlo
-	t1IxTyx0j3pymUhHmJw2VKtCvvS/48CF/dnfyHLL0qYLcs6Byrj6LbcftHrHEohcXi/lTycNocP
-	flgHmn9pb/3OpzMvXNkMWilzga6AtrGjeOBidnHH+JvQKJV1v+naNY8se8mHtEdegBEgGU1RkWy
-	L0Sa1rFTDdrGtde+LqIaTgMM6j4iM6BEs6GU0Eqnna8JVgg+rIU3UAQ1QCqLKtTLOfX/cbput+v
-	Dymw4zCNsA36YgFlwhQr1rLttE9gF9JBc66Qmn3w5pRTUgk/DJhxDOEMf+Q7EVja/Co7qXDQCO6
-	KUahDGJWmhu7hv1S/rWt2q8ajBnTU1BsEzRO44PXjVLVL9Q+cys730sh8phLHaLXdKzFFH4fHax
-	gf8Wj/mK/Szbp7ZNbihwzH4eWJ352WBJcIpZB1+mBoggU1te0v2GFtHqS3iAxn2zlrL5Q9wQO1w
-	pYoM/22yDhG/lbXn5v7Q8XQCYpl1zY1CRQKCKxTLUwGqLhFqaixUZo6E7udJWVVR4RnphP54ZhU
-	FtgGJ392oWd
-X-Received: by 2002:aa7:d0d0:0:b0:6ba:56e9:2980 with SMTP id 4fb4d7f45d1cf-6ba56e92a4amr11503002a12.23.1795776267028;
-        Fri, 27 Nov 2026 02:44:27 -0800 (PST)
-Received: from [192.168.100.100] (87-205-15-91.static.ip.netia.com.pl. [87.205.15.91])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6bb34386705sm3001000a12.35.2026.11.27.02.44.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Nov 2026 02:44:26 -0800 (PST)
-Message-ID: <aa3281fc-7d06-4ac4-8bbf-1ed1a2066f81@gmail.com>
-Date: Fri, 27 Nov 2026 11:44:26 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZRufHj86
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 1A7171F00898;
+	Fri, 27 Nov 2026 10:50:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795776614;
+	bh=m1xJ2jZz3LYgTQ/9T2l2tE7BsbSdo/loePkJzVMlzsg=;
+	h=From:To:Cc:Subject:Date;
+	b=ZRufHj862oNXCKBABV2iHBEDCjJPBsrx6ImRN4w2B7UtTUz6e6y/3Chv4D953IWMK
+	 jYLWVgGOXHjUT4LCUEfsqgNah/KzIwv5RbO5M+qcVkT3hfn9TUuvDq3+BYw8Ny1tIH
+	 sgCbROiy8h8sVje5i0OrTcI+xPAO+VVON149jrrLSnKzOEXD+hr6YGhevtL613dfXP
+	 xBDCN1bUgQWnutsnbmE4ClZxT8iDjTxIgrjEGO8inGPtl4g6j9I22nG2FI/ijduiWP
+	 zAEESElwD5T9FR6bDO2i0u3DQhsVg57HttAfu4TCmmDsSYxTtBXfYorH4ap7UaKbWs
+	 p1BPzEWug+qyw==
+From: "syzbot" <syzbot@kernel.org>
+To: syzkaller-bugs@googlegroups.com, Krystian Kaniewski <krystianmkaniewski@gmail.com>, <coreteam@netfilter.org>, "David S. Miller" <davem@davemloft.net>, "Eric Dumazet" <edumazet@kernel.org>, "Florian Westphal" <fw@strlen.de>, "Jakub Kicinski" <kuba@kernel.org>, <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>, "Paolo Abeni" <pabeni@redhat.com>, "Pablo Neira Ayuso" <pablo@netfilter.org>, "Fernando Fernandez Mancera" <ffmancera@riseup.net>
+Cc: horms@kernel.org, phil@nwl.cc, syzbot@lists.linux.dev
+Subject: [PATCH] netfilter: nft_synproxy: only handle a plain SYN or a plain ACK
+Message-ID: <4feea54c-bd91-4ff1-aae5-9ba4bb835449@mail.kernel.org>
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -93,95 +53,64 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v3] netfilter: nft_synproxy: only handle a plain SYN
- or a plain ACK
-To: syzbot <syzbot@kernel.org>, syzkaller-upstream-moderation@googlegroups.com
-Cc: syzbot@lists.linux.dev
-References: <2afd11cc-186e-49de-8c72-d9f529532f9d@mail.kernel.org>
-Content-Language: en-US
-From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
-In-Reply-To: <2afd11cc-186e-49de-8c72-d9f529532f9d@mail.kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Date: Fri, 27 Nov 2026 10:50:14 +0000 (UTC)
 
-On 11/26/26 15:46, syzbot wrote:
-> nft_synproxy_eval_v4() and nft_synproxy_eval_v6() check tcp->syn and
-> tcp->ack without excluding other TCP control flags, unlike the xtables
-> SYNPROXY targets. As a result, a SYN+ACK (or SYN+FIN / SYN+RST) packet
-> reaching nft_synproxy is misidentified as an initial client SYN and
-> triggers another SYN+ACK reply, while FIN+ACK and RST+ACK packets enter the
-> client ACK branch and can be dropped with NF_DROP instead of continuing
-> through the ruleset.
-> 
-> On loopback, when an nftables input rule evaluates nft_synproxy, a local
-> SYN causes it to send a SYN+ACK back over loopback, which hits the same
-> rule again and matches tcp->syn. This creates an infinite SYN+ACK feedback
-> loop in softirq context that saturates the CPUs, starves tasks holding or
-> waiting on rtnl_mutex, and triggers hung task warnings (such as "INFO: task
-> kworker/R-ipv6_:60 blocked for more than 143 seconds" in
-> addrconf_dad_work).
-> 
-> Fix this in nft_synproxy_do_eval() by returning early when tcp->syn ==
-> tcp->ack || tcp->fin || tcp->rst before dispatching to
-> nft_synproxy_eval_v4() or nft_synproxy_eval_v6(). This ensures nft_synproxy
-> only handles a plain SYN or a plain ACK (without FIN or RST), while valid
-> TCP segments outside the client handshake such as SYN+ACK, FIN+ACK, and
-> RST+ACK—as well as other segments with FIN, RST, or neither SYN nor ACK
-> set—continue through the ruleset unchanged with regs->verdict.code left as
-> NFT_CONTINUE.
-> 
-> Fixes: ad49d86e07a4 ("netfilter: nf_tables: Add synproxy support")
-> Assisted-by: Gemini:gemini-4-hydrogen Gemini:gemini-3.8-flash syzbot
-> Reported-by: syzbot+55141a0ffa0d17f01c71@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=55141a0ffa0d17f01c71
-> Link: https://syzkaller.appspot.com/ai_job?id=19d80d6e-8025-483e-ac1b-da92f0b2dde3
-> To: <coreteam@netfilter.org>
-> To: "David S. Miller" <davem@davemloft.net>
-> To: "Eric Dumazet" <edumazet@kernel.org>
-> To: "Florian Westphal" <fw@strlen.de>
-> To: "Jakub Kicinski" <kuba@kernel.org>
-> To: <netdev@vger.kernel.org>
-> To: <netfilter-devel@vger.kernel.org>
-> To: "Paolo Abeni" <pabeni@redhat.com>
-> To: "Pablo Neira Ayuso" <pablo@netfilter.org>
-> To: "Fernando Fernandez Mancera" <ffmancera@riseup.net>
-> Cc: "Simon Horman" <horms@kernel.org>
-> Cc: "Phil Sutter" <phil@nwl.cc>
-> 
-> ---
-> v3:
-> - Updated the commit title and description to plain text without Markdown backticks.
-> - Simplified the description of the loopback SYN-ACK feedback loop.
-> - Clarified that valid TCP segments outside the client handshake (such as SYN+ACK, FIN+ACK, and RST+ACK) continue through the ruleset unchanged.
-> 
-> v2:
-> - Moved the strict TCP flag check from `nft_synproxy_eval_v4()` and `nft_synproxy_eval_v6()` into `nft_synproxy_do_eval()`
-> - Replaced the per-branch flag checks with `if (tcp->syn == tcp->ack || tcp->fin || tcp->rst) return;`
-> - Updated the commit message to match the new implementation and removed the quoted hung-task and NMI backtrace excerpt
-> https://lore.kernel.org/all/751ce8c9-049b-4177-8873-cea240e356e7@mail.kernel.org/T/
-> 
-> v1:
-> https://lore.kernel.org/all/96d0756e-28cd-4b99-b0c7-17698acc8276@mail.kernel.org/T/
-> ---
-> diff --git a/net/netfilter/nft_synproxy.c b/net/netfilter/nft_synproxy.c
-> index 554a96a00..aa8dea698 100644
-> --- a/net/netfilter/nft_synproxy.c
-> +++ b/net/netfilter/nft_synproxy.c
-> @@ -137,6 +137,9 @@ static void nft_synproxy_do_eval(const struct nft_synproxy *priv,
->  		return;
->  	}
->  
-> +	if (tcp->syn == tcp->ack || tcp->fin || tcp->rst)
-> +		return;
-> +
->  	switch (skb->protocol) {
->  	case htons(ETH_P_IP):
->  		nft_synproxy_eval_v4(priv, regs, pkt, tcp, &_tcph, &opts);
-> 
-> 
-> base-commit: b6a9fa34ce4187cb69d3c588a4bbffc31ce5db8f
-#syz upstream
+From: Krystian Kaniewski <krystianmkaniewski@gmail.com>
 
+nft_synproxy_eval_v4() and nft_synproxy_eval_v6() check tcp->syn and
+tcp->ack without excluding other TCP control flags, unlike the xtables
+SYNPROXY targets. As a result, a SYN+ACK (or SYN+FIN / SYN+RST) packet
+reaching nft_synproxy is misidentified as an initial client SYN and
+triggers another SYN+ACK reply, while FIN+ACK and RST+ACK packets enter the
+client ACK branch and can be dropped with NF_DROP instead of continuing
+through the ruleset.
+
+On loopback, when an nftables input rule evaluates nft_synproxy, a local
+SYN causes it to send a SYN+ACK back over loopback, which hits the same
+rule again and matches tcp->syn. This creates an infinite SYN+ACK feedback
+loop in softirq context that saturates the CPUs, starves tasks holding or
+waiting on rtnl_mutex, and triggers hung task warnings (such as "INFO: task
+kworker/R-ipv6_:60 blocked for more than 143 seconds" in
+addrconf_dad_work).
+
+Fix this in nft_synproxy_do_eval() by returning early when tcp->syn ==
+tcp->ack || tcp->fin || tcp->rst before dispatching to
+nft_synproxy_eval_v4() or nft_synproxy_eval_v6(). This ensures nft_synproxy
+only handles a plain SYN or a plain ACK (without FIN or RST), while valid
+TCP segments outside the client handshake such as SYN+ACK, FIN+ACK, and
+RST+ACK—as well as other segments with FIN, RST, or neither SYN nor ACK
+set—continue through the ruleset unchanged with regs->verdict.code left as
+NFT_CONTINUE.
+
+Fixes: ad49d86e07a4 ("netfilter: nf_tables: Add synproxy support")
+Assisted-by: Gemini:gemini-4-hydrogen Gemini:gemini-3.8-flash syzbot
+Reported-by: syzbot+55141a0ffa0d17f01c71@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=55141a0ffa0d17f01c71
+Link: https://syzkaller.appspot.com/ai_job?id=19d80d6e-8025-483e-ac1b-da92f0b2dde3
+Signed-off-by: Krystian Kaniewski <krystianmkaniewski@gmail.com>
+
+---
+diff --git a/net/netfilter/nft_synproxy.c b/net/netfilter/nft_synproxy.c
+index 554a96a00..aa8dea698 100644
+--- a/net/netfilter/nft_synproxy.c
++++ b/net/netfilter/nft_synproxy.c
+@@ -137,6 +137,9 @@ static void nft_synproxy_do_eval(const struct nft_synproxy *priv,
+ 		return;
+ 	}
+ 
++	if (tcp->syn == tcp->ack || tcp->fin || tcp->rst)
++		return;
++
+ 	switch (skb->protocol) {
+ 	case htons(ETH_P_IP):
+ 		nft_synproxy_eval_v4(priv, regs, pkt, tcp, &_tcph, &opts);
+
+
+base-commit: b6a9fa34ce4187cb69d3c588a4bbffc31ce5db8f
 -- 
-Krystian Kaniewski
+See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
+The person who has signed off on the patch is responsible for
+addressing comments.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
