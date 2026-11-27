@@ -1,49 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.70
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795711274;
-	b=WDnNjJGhEskvFL93fTBYdvasxA+U0C5mtYYCu1gY6v3vCJo2RrCtcdygVH6QTd5kphRs
-	 HQNjP/3k1RBD6tGBaYJJLDUUf1XRryuG0nBCIpgxEoDdg9M/vOydFfQQIqBKzZtFtIQc5
-	 YujCdTVsLRbcmwkaXBNftiJCoTj7FEJJthjJDR688da/nvuFvuDcjttsXv07Psh5Ojy4f
-	 n2He/EVXiR3C7CPhoGy6QMyP/V9JSXeUI8DRE+34c18sHOc0OSXIelzSv83Inx/zaHe7L
-	 hgkuIH9yR5p3/GWv7URxhW+gb/tXMMzPgPCWAe7MwCEfvuNljf2uYgdSaw9twpOHZgA==
+	t=1795740541;
+	b=hAYkubTyfxyUZosNHnRB5XegUSsgUjiimKRJvg2b3TTIeo6tcNb0q923DjMhy27bT+US
+	 mBqoEUJkv+aGvWkKT1oLM2oRPq9Nwud5fIob3Li21M3FxWB//X7cpMhI0wlIxwtsf477h
+	 QydTENepSgA4cBEHJO3NkDI8LCAehWGMIvJP3ZuGSHJ62AdDz6QUdVY4xm1NZ2OYmuhwW
+	 Py26YxEYzKTkw2LtiKoyAkzfuJSYqqngOC48ox4sRmoe8y0r7hOW7yjcmLXCJWIEDCEmF
+	 q0ym2HkgaHNZSlUpxRfNSZZmpm1sIwwdIjl78STuiDqF8l9Wcp75ubhgDSpDZkm/Dkw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795711274;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:Date;
-	bh=7pGVcnyCCOfV7sYm8+3euVTJqmPuA5Re8gukiMfAmY8=;
-	b=Ke/R9VbYLkaeojMWnzT1w6UOWNt6rFyKKwOu8eKHOF6pQwlJWYew4V/mCyh/BJwrc8lF
-	 Akx7wptxYi/vFOBw6/V5zdkrceEfg68Dr5rv4bBRs5an/ygWtH4q63ouzfWgM06Rb3UHC
-	 /wh0ZEy0xnbhOdWTcleFp+GDhR+MRoQathRZFSXtSupDsJoiESlsdQu+uc40APzWkinsE
-	 sbJjn0X/5I1enN/dez0GgKYFiXjvnS9RQzjwge76jOISm53Kpi9BKs76uMOWLNjrEsEEg
-	 yJjr62zbbW19YXBkbV7gCokfzVKfShjg7EFi916gGCguXwspRm3TBMxUQNZNdVB3MUg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795740541;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
+	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
+	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:Cc:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=xiQZljlHwZtvNF0t1X24YoQisqiYfoEyxk9+971YFYc=;
+	b=gR0vH5BfsBQmBV1WhJWNIIepJZK3fhJ3g5nKIafHQU13bR41dQsWo7co/fnjSVcUZrqt
+	 SE70w2x1gT2wkh9i+LbXeouyTCDPR6l88VjHuomugk5ClzOo8MQI6/IbsxNa6nJCcoFcF
+	 bXeRB13E9cJ4UYqYU6sgWbHRr2d4h0qsOVNSJ7rwiNTWB7HW8Cos4vD2UT2ID2ZM+7PxB
+	 DF0ltyloyp29wHwibP4cIn0zlEaeUssZ76S1QCwp6KBc1VblkUFX/keIjni/rb0YvEYkP
+	 xi8cew7Di72JLz8+tDpqrVguPwKg07oHiygdptBAyKMk1nVUcdj/mA1jFZGSmyaZgbA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XhqMeip1;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=fail header.from=syzkaller.appspotmail.com;
+	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
+	arc=none smtp.remote-ip=209.85.160.70
+Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com [209.85.160.70])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 3C4BD606A327
-	for <syzbot@lists.linux.dev>; Thu, 26 Nov 2026 16:41:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XhqMeip1
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 85C5F1F000CA;
-	Thu, 26 Nov 2026 16:41:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795711273;
-	bh=7pGVcnyCCOfV7sYm8+3euVTJqmPuA5Re8gukiMfAmY8=;
-	h=From:To:Cc:Subject:Date;
-	b=XhqMeip1GCCHRA1KRus3jOqU40uxMEusnvTkbhIec8zPv6LA1h4rjx53/VuTBAzZm
-	 f1KU+s6iNtKQwFKbTry5tAb1vbjBR2rN8EPc1YsmyOoWA6dvY2fd0iKibMMo5RefhQ
-	 C9VNbo7nGfSRRuvekWKZVeyiFYpHnXBncDCbWYN4cezICZvZQD/A5Jwk++06ociRuH
-	 FP43zPZO67VvyeiOO74l8oCiykoS9z0z+6Bs5ZjyDS1hq4ScJ4OE0Arrpw0V5E+j3W
-	 E4mP1bCaIXMqbbMWvUypGxXgq+2vQ+f5tlUlblIHmwYNuzW2aMSXWSXL9vwYYc1cWe
-	 aLPpKWClXFPGA==
-From: "syzbot" <syzbot@kernel.org>
-To: syzkaller-upstream-moderation@googlegroups.com
-Cc: krystianmkaniewski@gmail.com, syzbot@lists.linux.dev
-Subject: [PATCH RFC v2] ima: annotate iint->mutex per filesystem type and stacking depth
-Message-ID: <c9ac2764-cb73-4ae0-a70d-109d40ba5b9d@mail.kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92699606A31E
+	for <syzbot@lists.linux.dev>; Fri, 27 Nov 2026 00:49:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 92699606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-4943ed99826so5210491fac.3
+        for <syzbot@lists.linux.dev>; Thu, 26 Nov 2026 16:49:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795740539; x=1796345339;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:date:mime-version:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=xiQZljlHwZtvNF0t1X24YoQisqiYfoEyxk9+971YFYc=;
+        b=tdX1ULwHOvl9M4H8i0nXQNfoutOBKoG7+6P+QVOti7V2Cs5aY3NbOAYrKk3v7ns9nc
+         XMTh1cpnfDESlKMorfFY8/n1KiQSwpbo7CPYfOCi0Sisr+GVSz2O8KhF7ZACw7s/iM/e
+         xRgPtHYXScuiTbTk9IBCK1/Yl0wI7ty7GaA0Y7wEc8CgRGIjw7KKz4AgKtyKc4K1bsWJ
+         3H4SYjvgFt37gR0BqspsCc6uEnnjtuxoZka/JCnhXs+lZxCoGEmIKk0zzywZE/EALVYJ
+         fg2zdcw/31fifQh7xRoVvoOm4xjO799xeV9A+k53vQxDC49es3f2uxcRI61aXenid9kU
+         WWpg==
+X-Gm-Message-State: APuU4Z8t3qoa/JHtc7qN4lz99tHYgOud3klGAhnt8wItAtGTGDn60d0r
+	pvHCmX9k3p9ON5vKpRT6SfXge6zCLdquSyeBOY0Yts2+4ae0Pj5H1EvmWuNv9U1nAyVDK/YvSoz
+	yROqVOlC27K02FVB6SRW/NvDkvdZaFWablpGtqOakgQoPrqVGlcGUBsRMwCA=
 X-Mailing-List: syzbot@lists.linux.dev
 List-Id: <syzbot.lists.linux.dev>
 List-Post: <mailto:syzbot@lists.linux.dev>
@@ -53,126 +57,73 @@ List-Unsubscribe: <mailto:syzbot+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:syzbot+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Date: Thu, 26 Nov 2026 16:41:13 +0000 (UTC)
+X-Received: by 2002:a05:6808:4f46:b0:55c:6ea:3e3f with SMTP id
+ 5614622812f47-57a0b449e33mr24457013b6e.28.1795740539609; Thu, 26 Nov 2026
+ 16:48:59 -0800 (PST)
+Date: Thu, 26 Nov 2026 16:48:59 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6b08d37b.904258e1.78503.0027.GAE@google.com>
+Subject: [moderation/CI] Re: smb: client: convert DFS target node name from
+ cache charset on mount
+From: syzbot ci <syzbot+ci5745b6f180771df7@syzkaller.appspotmail.com>
+To: syzkaller-upstream-moderation@googlegroups.com
+Cc: syzbot@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-ima_iint_lockdep_annotate() currently assigns a global lockdep class
-ima_iint_mutex_key[depth] indexed solely by inode->i_sb->s_stack_depth.
-Consequently, all non-stacked filesystems (s_stack_depth == 0) share the
-same lockdep class for iint->mutex, allowing lockdep to falsely bridge lock
-dependencies across unrelated filesystems.
+syzbot ci has tested the following series
 
-With a custom IMA FILE_CHECK policy measuring files across filesystems,
-lockdep observes a false circular dependency cycle between overlayfs, ext4,
-and sysfs: overlayfs directory creation links ovl_i_mutex_dir_key to ext4
-sb_writers, opening an ext4 file with O_TRUNC links sb_writers to
-ima_iint_mutex_key[0] in process_measurement(), opening /sys/power/resume
-with O_RDWR links the same ima_iint_mutex_key[0] to kernfs of->mutex via
-integrity_kernel_read(), and writing an overlayfs path to /sys/power/resume
-acquires ovl_i_mutex_dir_key while holding of->mutex in resume_store().
+[v1] smb: client: convert DFS target node name from cache charset on mount
+https://lore.kernel.org/all/20261122045841.99012-1-fredric.cover.lkernel@gm=
+ail.com
+* [PATCH] smb: client: convert DFS target node name from cache charset on m=
+ount
 
-Fix this by adding per-filesystem-type lockdep keys
-i_ima_iint_key[FILESYSTEM_MAX_STACK_DEPTH + 1] (guarded by CONFIG_IMA) to
-struct file_system_type and updating ima_iint_lockdep_annotate() to set the
-class of iint->mutex to &sb->s_type->i_ima_iint_key[depth]. This isolates
-iint->mutex across unrelated filesystems, breaks the false cycle between
-ext4 and sysfs, and preserves distinct lockdep classes for each stacking
-layer (including nested overlayfs and pseudo-filesystems with s_stack_depth
-== FILESYSTEM_MAX_STACK_DEPTH).
+and found the following issue:
+kernel build error
 
-Assisted-by: Gemini:gemini-4-hydrogen Gemini:gemini-3.8-flash syzbot
-Reported-by: syzbot+da1d15f707a556f6e48c@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=da1d15f707a556f6e48c
-Link: https://syzkaller.appspot.com/ai_job?id=f0feaef1-2d84-47cc-908f-143543aa7da9
-To: "Christian Brauner" <brauner@kernel.org>
-To: "Dmitry Kasatkin" <dmitry.kasatkin@gmail.com>
-To: "James Morris" <jmorris@namei.org>
-To: <linux-fsdevel@vger.kernel.org>
-To: <linux-integrity@vger.kernel.org>
-To: <linux-security-module@vger.kernel.org>
-To: "Paul Moore" <paul@paul-moore.com>
-To: "Roberto Sassu" <roberto.sassu@huawei.com>
-To: "Serge E. Hallyn" <serge@hallyn.com>
-To: "Alexander Viro" <viro@zeniv.linux.org.uk>
-To: "Mimi Zohar" <zohar@linux.ibm.com>
-Cc: "Eric Snowberg" <eric.snowberg@oracle.com>
-Cc: "Jan Kara" <jack@suse.cz>
+Full report is available here:
+https://ci.syzbot.org/series/fb1aab4f-752b-40d9-8b79-5da469f0f2a4
+
+***
+
+kernel build error
+
+tree:      torvalds
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvald=
+s/linux
+base:      25faec9ce61c01fb45abf812a222c5b43c3cd5c5
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/cc82e701-1589-423f-83ed-3d69d495c7e=
+7/config
+
+fs/smb/client/dfs.c:44:14: error: call to undeclared function 'dfs_cache_lo=
+cal_path'; ISO C99 and later do not support implicit function declarations =
+[-Wimplicit-function-declaration]
+fs/smb/client/dfs.c:44:12: error: incompatible integer to pointer conversio=
+n assigning to 'char *' from 'int' [-Wint-conversion]
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
 
 ---
-v2:
-- Shortened the commit message by removing the quoted lockdep report and detailed lock chain walkthrough.
-- Removed Markdown backticks from the commit message.
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-v1:
-https://lore.kernel.org/all/3579fbbf-56d8-4607-b372-3ef99fd7b51a@mail.kernel.org/T/
----
-diff --git a/include/linux/fs.h b/include/linux/fs.h
-index 5b3a100ab..8fd02c303 100644
---- a/include/linux/fs.h
-+++ b/include/linux/fs.h
-@@ -2323,6 +2323,9 @@ struct file_system_type {
- 	struct lock_class_key i_mutex_key;
- 	struct lock_class_key invalidate_lock_key;
- 	struct lock_class_key i_mutex_dir_key;
-+#ifdef CONFIG_IMA
-+	struct lock_class_key i_ima_iint_key[FILESYSTEM_MAX_STACK_DEPTH + 1];
-+#endif
- 
- 	struct lock_class_key d_lookup_key;
- };
-diff --git a/security/integrity/ima/ima_iint.c b/security/integrity/ima/ima_iint.c
-index 00b249101..9372a2eec 100644
---- a/security/integrity/ima/ima_iint.c
-+++ b/security/integrity/ima/ima_iint.c
-@@ -32,26 +32,26 @@ struct ima_iint_cache *ima_iint_find(struct inode *inode)
- 	return ima_inode_get_iint(inode);
- }
- 
--#define IMA_MAX_NESTING (FILESYSTEM_MAX_STACK_DEPTH + 1)
--
- /*
-- * It is not clear that IMA should be nested at all, but as long is it measures
-- * files both on overlayfs and on underlying fs, we need to annotate the iint
-- * mutex to avoid lockdep false positives related to IMA + overlayfs.
-- * See ovl_lockdep_annotate_inode_mutex_key() for more details.
-+ * Annotate the iint mutex per filesystem type and stacking depth to avoid
-+ * lockdep false positives across unrelated filesystems as well as between
-+ * stacked filesystems (e.g. overlayfs, including nested overlayfs) and their
-+ * underlying filesystems.
-+ * See lockdep_annotate_inode_mutex_key() and
-+ * ovl_lockdep_annotate_inode_mutex_key() for more details.
-  */
- static inline void ima_iint_lockdep_annotate(struct ima_iint_cache *iint,
- 					     struct inode *inode)
- {
- #ifdef CONFIG_LOCKDEP
--	static struct lock_class_key ima_iint_mutex_key[IMA_MAX_NESTING];
--
--	int depth = inode->i_sb->s_stack_depth;
-+	struct super_block *sb = inode->i_sb;
-+	struct file_system_type *type = sb->s_type;
-+	int depth = sb->s_stack_depth;
- 
--	if (WARN_ON_ONCE(depth < 0 || depth >= IMA_MAX_NESTING))
-+	if (WARN_ON_ONCE(depth < 0 || depth > FILESYSTEM_MAX_STACK_DEPTH))
- 		depth = 0;
- 
--	lockdep_set_class(&iint->mutex, &ima_iint_mutex_key[depth]);
-+	lockdep_set_class(&iint->mutex, &type->i_ima_iint_key[depth]);
- #endif
- }
- 
+The email will later be sent to:
+[bharathsm@microsoft.com chenxiaosong@chenxiaosong.com fredric.cover.lkerne=
+l@gmail.com linkinjeon@kernel.org linux-cifs@vger.kernel.org linux-kernel@v=
+ger.kernel.org pc@manguebit.org ronniesahlberg@gmail.com sprasad@microsoft.=
+com stable@vger.kernel.org tom@talpey.com]
 
+If the report looks fine to you, reply with:
+#syz upstream
 
-base-commit: b6a9fa34ce4187cb69d3c588a4bbffc31ce5db8f
--- 
-This is an AI-generated patch subject to moderation.
-Reply with '#syz upstream' to Sign-off the patch as a human author
-and send it to the upstream kernel mailing lists.
-Reply with '#syz reject' to reject it ('#syz unreject' to undo).
+If the report is a false positive, reply with
+#syz invalid
 
-See https://goo.gle/syzbot-ai-patches for information about AI-generated patches.
-You can comment on the patch as usual, syzbot will try to address
-the comments and send a new version of the patch if necessary.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
